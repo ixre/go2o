@@ -1,0 +1,58 @@
+{{template "header"$}}
+
+<div class="panel page-main">
+    <div class="side">
+        {{template "menu"}}
+    </div>
+
+    <div class="main">
+
+
+        <div id="dg"></div>
+        <div id="pager"></div>
+
+        <script type="text/javascript" src="{{.static_serv}}/assets/js/core_full.js?ver=0.1"></script>
+        <script type="text/javascript">
+            var ORDER_STATE_TEXTS = new Array("已作废", "待确认", "等待配送", "配送中", "已完成");
+            var _dg = $JS.grid('dg', {
+                url: location.href,
+                data: {page:1,size:10},
+                idField: 'id',
+                columns: [
+                    { field: 'order_no', title: '订单号', width: 150},
+                    { field: 'items_info', title: '订单内容', width: 200},
+                    { field: 'fee', title: '订单金额', width: 200,align:'center',formatter:function(val){
+                        return '￥'+val;
+                    }},
+
+                    { field: 'create_time', title: '创建时间', width: 200},
+                    { field: 'status', title: '订单状态', width: 200,formatter:function(val){
+                        return ORDER_STATE_TEXTS[parseInt(val)+1];
+                    }}
+                ],
+                loaded: function (data) {
+                    var tables = document.getElementsByTagName('TABLE');
+                    var allowMultSelect = false;
+
+                    J.table.dynamic(tables[0], allowMultSelect, function (trs) {
+                        var id = trs[0].getAttribute('data-indent');
+                        cms.load2('pl', 'archive', 'view', 'archive.id=' + id);
+                    });
+
+                    //加载分页
+                   // this.panel.nextSibling.innerHTML = data.pager;
+
+                }
+            });
+
+            _dg.resize();
+
+        </script>
+    </div>
+</div>
+
+
+{{template "footer"$}}
+
+
+

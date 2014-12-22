@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<form id="form1">
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" width="80">名称:</td>
+            <td>
+                <input type="hidden" field="Id" value="0"/>
+                <input class="ui-validate" type="text" field="Name" required="true" />
+            </td>
+         </tr>
+
+
+        <tr>
+            <td class="title" valign="top">标志Logo:</td>
+            <td valign="top" style="position: relative;height:70px;">
+                <img id="upload_img" value="{{.img_serv}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+                <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+                <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">联系电话:</td>
+            <td>
+                <input class="ui-validate" type="text" field="Tel"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">联系手机:</td>
+            <td>
+                <input class="ui-validate" type="text" field="Phone"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">地址:</td>
+            <td>
+                <input class="ui-validate" type="text" field="Address"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td>
+                <input id="btn_save" type="button" value="提交" />
+            </td>
+        </tr>
+
+</table>
+</form>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+    cms.$('upload_img').src = '{{.img_serv}}/'+ entity.Logo;
+
+    //上传缩略图
+    $JS.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/pt/upload.cgi',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    },function (result, data) {
+        if (result) {
+            cms.$('upload_path').value = data.url;
+            cms.$('upload_img').src = '{{.img_serv}}/'+ data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message);
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

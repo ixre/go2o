@@ -1,0 +1,93 @@
+ /* æ­¤æ–‡ä»¶ç”±ç³»ç»Ÿè‡ªåŠ¨ç”Ÿæˆ,æ‰€æœ‰æ ·å¼è¡¨è¯·å¼•ç”¨æ­¤æ–‡ä»¶!*/
+body{font:62.5% Sans-Serif,Arial;margin:0;}
+img{border:none;}
+a{outline:none;}
+a:link,a:visited{color:#0000cc;}
+mask,.mask{background:url(/framework/assets/images/mask.gif);
+	width:100%;opacity:0.2;alpha(opacity=20);position:absolute;top:0;left:0;}
+
+
+/* +++++++++++++ Classes ++++++++++++++ */
+
+.left{float:left;}
+.right{float:right;}
+.center{text-align:center;}
+.clear{clear:both;}
+.overflow{overflow:hidden;}
+.hidden{display:none;}
+.clearfix{clear:both;}
+.nom{margin:auto;}
+div.line{border-top:solid 1px #ddd;border-bottom:solid 1px #fff;height:0px;overflow:hidden;}
+/* é«˜äº®æ˜¾ç¤º */
+.hight_light,.search_hightlight,.special{color:Red;}
+img.full{width:100%;}
+
+/* +++++++++++++ Layout ++++++++++++++ */
+
+/* é¡µé¢å†…å®¹å®¹å™¨ */
+.panel{margin:0 auto;}
+.page-top{line-height:150%;}
+.page-header{}
+.page-header .search{position:absolute;right:20px;}
+.page-header .logo{height:70px;width:400px;display:block;float:left;
+vertical-align: middle;	 text-indent:-999em;}
+
+
+/* å¯¼èˆªæ  */
+.page-navigator{height:35px;z-index:200;}
+.page-navigator .navs,.page-navigator .left,.page-navigator .right{padding-bottom:0px;margin-bottom:-0px;}
+.page-navigator .left{float:left;width:10px;margin-right:-10px;}
+.page-navigator .right{float:right;width:10px;margin-left:-10px;}
+.page-navigator .navs{width:auto;margin:0 10px;}
+.page-navigator .navs ul{margin:0;padding:0;list-style:none;}
+.page-navigator .navs li{float:left;position:relative;}
+.page-navigator .child{left:0;top:35px;position:absolute;display:none;z-index:201}
+.page-navigator .navs li.drop .child,.page-navigator .navs li:hover .child{display:block;}
+.page-navigator .child .menu li{padding:0;float:none;background:none;}
+.page-navigator .child .menu li.first{border-top:none;}
+.page-navigator .child .menu li.last{border-bottom:none;}
+
+/* å·¦å³æ  */
+.page-main{overflow:hidden;}
+.page-main .side{width:30%;float:left;margin-right:-30%;}
+.page-main .main{width:70%;float:right;margin-left:70%;}
+.page-main .box{background:#fff;}
+.page-main .side,.page-main .main{padding-bottom:1000px;margin-bottom:-1000px;}
+
+/* é¡µè„š */
+.page-footer{width:auto;}
+
+/* åˆ†é¡µ */
+.pager{font-size:1.2em;text-align:right;margin:10px auto;line-height:40px;}
+.pager .disabled{padding:2px 5px;color:#666;margin:0 2px;}
+.pager a{background:#f0f0f0;padding:0 10px;border:solid 1px #ddd;border-radius:10em;}
+.pager .current{padding:2px 1px;margin:0 2px;color:black;}
+.pager  input{width:30px;line-height:15px;}
+.pager  select{height:18px;overflow:hidden;line-height:12px;border:solid 1px #aaa;padding:1px;}
+.pager a{margin:0 2px;text-decoration:none;outline:none;}
+
+/* æ–‡æ¡£åˆ—è¡¨ */
+.panel-archives ul{margin:0;padding:0;}
+.panel-archives p.outline{text-indent:2em;margin:0;padding:10px 0;border:none;}
+.panel-archives li{clear:both;border-bottom:solid 1px #ddd;}
+.panel-archives img.thumbnail{float:left;margin-right:20px;}
+.panel-archives strong{font-size:1.3em;line-height:2em;}
+.panel-archives-hor ul{margin:0;list-style:none;}
+.panel-archives-hor li{position:relative;float:left;width:24%;margin:10px 0.5% 10px 0.5%;text-align:center;}
+.panel-archives-hor img{width:100%;border-radius: 5px;}
+.panel-archives-hor li:hover mask,.panel-archives-hor a:hover mask{display: none}
+
+/* æ–‡æ¡£é¡µé¢ï¼Œå¾…æ•´ç† */
+.panel-archive div.meta{padding:0 10px;}
+.panel-archive{padding:0 10px;}
+.panel-archive div.outline{border:solid 1px #d686cb;background:#ffccff;padding:10px;line-height:22px;margin:30px 10px 20px 10px;
+text-indent: 2em;}
+.panel-archive div.content{font-size:1.2em;line-height:2em;padding:10px;}
+.panel-archive div.content p{margin-top:0;margin-bottom: 20px}
+.panel-archive div.meta{border-top:dotted 1px #ddd;padding-top:10px;margin-top:10px;text-align:left;line-height:40px;}
+.panel-archive div.relation{}
+
+/* DropDown */
+li.drop,li.hover{position: relative;}
+li.drop div.menu{position:absolute;top:20px;left:0px;z-index:100;display:none;}
+li.drop:hover div.menu,li.hover div.menu{display:block;}

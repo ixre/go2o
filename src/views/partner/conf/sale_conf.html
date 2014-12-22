@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<form id="form1">
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" width="80">订单返现比例:</td>
+            <td>
+                <input type="hidden" field="PtId" value="0"/>
+                <input class="ui-validate" type="text" field="CashBackPercent" required="true" />
+            </td>
+         </tr>
+
+        <tr>
+            <td class="title">一级返现比例:</td>
+            <td>
+                <input class="ui-validate" type="text" field="CashBackTg1Percent" style="width:50px"/>元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">二级返现比例:</td>
+            <td>
+                <input class="ui-validate" type="text" field="CashBackTg2Percent" style="width:50px"/>元
+            </td>
+        </tr>
+        <tr>
+            <td class="title">会员返现比例:</td>
+            <td>
+                <input class="ui-validate" type="text" field="CashBackMemberPercent" style="width:50px"/>元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">订单返积分:</td>
+            <td>
+                <input class="ui-validate" type="text" field="IntegralBackNum" isnumber="true" style="width:50px"/>个/元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">订单额外赠送积分:</td>
+            <td>
+                <input class="ui-validate" type="text" field="IntegralBackExtra" isnumber="true" style="width:50px"/>个
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td>
+                <input id="btn_save" type="button" value="提交" />
+            </td>
+        </tr>
+
+</table>
+</form>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    var d = $JS.dialog.getDialog();
+                    if(d.window.refresh){
+                        d.window.refresh();
+                    }
+                    d.close();
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

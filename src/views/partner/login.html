@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<title>管理中心-商户版</title>
+<link rel="Stylesheet" href="{{.static_serv}}/css/common.css" />
+<link rel="Stylesheet" href="{{.static_serv}}/css/partner/common.css" />
+<style type="text/css">
+#form1 {
+	width: 400px;
+    opacity:0;filter:alpha(opacity=0)
+}
+
+.c1 {
+	border-bottom: solid 1px #e5e5e5;
+	padding-bottom: 5px;
+	margin-bottom: 15px;
+	font-size: 20px;
+	line-height: 25px;
+	color: #006699;
+}
+
+p {
+	margin: 5px 38px;
+	font-size: 14px;
+}
+
+.msg {
+	color: red;
+	text-align: center;
+}
+</style>
+</head>
+<body class="login-page">
+	<div id="form1" class="shadow">
+		<div class="content" style="padding: 50px">
+			<div class="center c1">
+				<strong>商户登录</strong>
+			</div>
+			<div class="msg" id="tip">&nbsp;</div>
+
+			<div>
+				<p>
+					用户：<input type="text" name="uid" field="uid" class="ui-validate"
+						required="true" />
+				</p>
+
+				<p>
+					密码：<input type="password" name="pwd" field="pwd"
+						class="ui-validate" required="true" />
+				</p>
+
+				<p style="text-align: right">
+					<input type="submit" class="btn" value="登录" id="login" />
+				</p>
+
+
+			</div>
+
+		</div>
+	</div>
+
+	<script type="text/javascript" src="{{.static_serv}}/assets/js/core_full.js"></script>
+	<script type="text/javascript">
+	 var d = $JS.$('form1');
+        $JS.style(d,{
+                position:'absolute',
+                left: ($JS.screen.width()- $JS.width(d) ) /2 +'px',
+                top: ($JS.screen.height() - $JS.height(d) - 40) /2 +'px'
+            })
+        
+		   var tip = $JS.$('tip');
+		   document.body.onkeydown = function (e) {
+	            var event = window.event || e;
+	            if (event.keyCode == 13) {
+	                login();
+	            }
+	        };
+	        function login() {
+	            var formData = $JS.json.toObject('form1');
+
+	            if (J.validator.validate('form1')){
+	            		
+	                $JS.xhr.jsonPost(location.href, formData, function (json) {
+	                    if (json.Result) {
+	                        tip.innerHTML = '<span style="color:green">登录成功,正在进入管理中心...</span>';
+	                        setTimeout(function () {
+	                            window.parent.location.replace('dashboard');
+	                        }, 1000);
+	                    }
+	                    else {
+	                        if (json.Message.indexOf('验证码') != -1) {
+	                            refreshImage();
+	                        }
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.Message + '</span>';
+	                    }
+	                }, function (x) {
+	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';
+	                });
+	            }
+	        }
+	        
+	        $JS.$('login').onclick=login;
+           $JS.animation.show('form1',null,4);
+		</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{{define "footer"}}
+    <div class="clearfix"></div>
+    <div class="page-footer">
+        <div class="panel">
+            2015 &copy;{{.partner.Name}}&nbsp;版权所有
+        </div>
+    </div>
+
+    <script type="text/javascript">
+      var menus = $JS.$('navs').getElementsByTagName('A');
+      for(var i=0;i<menus.length;i++){
+        var e = menus[i];
+        if(location.href.indexOf(e.href)!=-1){
+            e.parentNode.className='current';
+            break;
+        }
+      }
+  </script>
+
+</body>
+</html>
+{{end}}

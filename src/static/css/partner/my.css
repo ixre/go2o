@@ -1,0 +1,130 @@
+@import url(common.css);
+
+body {
+	font-size: 12px;
+	color: #666;
+	line-height: 20px;
+}
+
+p {
+	margin: 6px 0 0 0;
+	padding: 0;
+}
+/** Dialog **/
+.dialog .bglayer {
+	background: white;
+	opacity: 0.6;
+	filter: alpha(opacity = 60);
+}
+
+.dialog .box {
+	border: solid 1px #006699;
+	background: white;
+	padding: 5px;
+}
+
+.dialog .box .loader {
+	width: 80px;
+	background: url(/style/admin/ajax-loader.gif) center center no-repeat;
+	height: 30px;
+}
+
+.dialog .box .title {
+	font-size: 14px;
+	font-weight: bold;
+	color: #006699;
+	background: #f5f5f5;
+	padding: 0 10px;
+	line-height: 25px;
+	border-bottom: solid 1px #e5e5e5;
+	margin: -5px -5px 5px -5px;
+}
+
+.dialog .box .close {
+	padding: 0 5px;
+	font-weight: normal;
+}
+
+.pad10 {
+	padding: 10px;
+}
+
+.mar10 {
+	margin: 10px;
+}
+
+.title {
+	font-size: 14px;
+	color: #006699;
+	font-weight: bold;
+	line-height: 25px;
+}
+
+.tipbor {
+	border: none;
+}
+
+/* silver table */
+table.silver {
+	background: white;
+	line-height: 20px;
+}
+
+table.silver th {
+	color: white;
+	background: #666;
+}
+
+table.silver td {
+	background: #f0f0f0;
+}
+
+table.silver td,table.silver th {
+	padding: 1px 8px;
+}
+
+table.blue {
+	background: white;
+	line-height: 20px;
+}
+
+table.blue th {
+	color: white;
+	background: #006699;
+	font-weight: normal;
+}
+
+table.blue td {
+	background: #f0f0f0;
+}
+
+table.blue td,table.blue th {
+	padding: 1px 8px;
+}
+
+/* ul */
+ul.listlit {
+	list-style: none;
+	margin: 5px 12px;
+	padding: 0;
+	line-height: 20px;
+}
+
+ul.listlit li {
+	margin: 5px 0 10px 0;
+}
+
+ul.listlit li b {
+	color: green;
+}
+
+span.td {
+	display: block;
+	float: left;
+	width: 100px;
+	text-align: left;
+}
+
+div.smsitem {
+	background: url(../images/smsuser.gif) left center no-repeat;
+}

@@ -1,0 +1,26 @@
+package entity
+
+import "time"
+
+type Order struct {
+	Id             int       `db:"id" pk:"yes" auto:"yes"`
+	OrderNo        string    `db:"order_no"`
+	Mid            int       `db:"mid"`
+	PtId           int       `db:"pt_id"`
+	ShopId         int       `db:"shop_id"`
+	Items          string    `db:"items"`
+	ItemsInfo      string    `db:"items_info"`
+	TotalFee       float32   `db:"total_fee"`
+	Fee            float32   `db:"fee"`
+	PayFee         float32   `db:"pay_fee"`
+	Paymethod      int       `db:"pay_method"`
+	IsPayed        int       `db:"is_payed"`
+	Note           string    `db:"note"`
+	DeliverName    string    `db:"deliver_name"`
+	DeliverPhone   string    `db:"deliver_phone"`
+	DeliverAddress string    `db:"deliver_address"`
+	DeliverTime    time.Time `db:"deliver_time"`
+	CreateTime     time.Time `db:"create_time"`
+	Status         int       `db:"status"`
+	UpdateTime     time.Time `db:"update_time"`
+}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单管理</title>
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
+    <link  rel="stylesheet" type="text/css" href="{{.static_serv}}/css/sys_common.css"/>
+</head>
+<body>
+    <div id="gd"></div>
+    <div class="toolBar">
+        <div class="searchBar padding2" id="searchbar">
+            <input field="couponId" type="hidden" value="{{.entity.Id}}"/>
+            <ul>
+                <li>
+                    优惠券可绑数量：<span style="color:green">{{.entity.Amount}}</span>
+                    /{{.entity.TotalAmount}}
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" iconcls="icon-add" id="btnBind">
+                        <span class="icon"></span>发送优惠券</a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script src="{{.static_serv}}/assets/js/export.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+
+<script>
+        var shops = {{.shops}};
+        expr.ele = 'searchbar';
+
+        expr.portal = 'Partner.CouponMemberList'; //配置导出的入口
+        expr.checkParams = function (data) {
+            return true;
+        };
+
+        var refresh = function () { expr.reload('gd'); };
+
+        $JS.$('gd').style.height = $JS.screen.height() + 'px';
+
+        $(function () {
+
+            //导出
+            $('#btnExport').click(
+                function () {
+                    expr.showExportDialog();
+                });
+
+            $('#btnSearch').click(
+                function () {
+                    expr.search('gd');
+                });
+            $('#btnRefresh').click(refresh);
+
+            //加载数据
+            $('#gd').datagrid({
+                toolbar: '.toolBar',
+                singleSelect: false,
+                pagination: true,
+                rownumbers: true,
+                fitColumns: true,
+                url: expr.getDataUrl(),
+                columns: [
+                    [
+                        {field:'id',title:'选择',checkbox:true,width:50,align:'center'},
+                        {field:'name',title:'姓名',width:50,align:'center'},
+                        {field:'bind_num',title:'已发送(张)',width:40,sortable:true,align:'center',formatter:function(v){
+                            return v==0?"0":'<span style="color:green">'+v+"</span>";}},
+                        {field:'usr',title:'用户名',align:'center'},
+                        {field:'level_name',title:'等级',width:50,align:'center'},
+                        {field:'sex',title:'性别',width:30,align:'center', formatter:function(val,row){
+                            switch(val){
+                                default:
+                                case '0':return '-';
+                                case '1':return '男';
+                                case '2':return '女';
+                            }
+                        }},
+                        {field:'phone',title:'手机',width:60,sortable:true,align:'center'},
+                        {field:'reg_time',title:'注册时间',width:60,sortable:true,align:'center',formatter:function(val){
+                            return val.substring(0,val.indexOf(' '));
+                        }}
+                    ]
+                ]
+            });
+        });
+
+        var amount= {{.entity.Amount}};
+        $JS.$('btnBind').onclick=function(){
+            var rows = $('#gd').datagrid('getSelections');
+            var len = rows.length;
+            if (len == 0) {
+                $.messager.alert('提示', '请选择会员!');
+            }else if(len>amount){
+                $.messager.alert('提示', '优惠券可用数量不足('+ len +')!');
+            } else {
+                var data = '';
+                for (var i = 0; i < rows.length; i++) {
+                    if (i != 0) data += ',';
+                    data += rows[i].id;
+                }
+                $JS.xhr.jsonPost('pt/prom/bindCoupon', {id:{{.entity.Id}},member_ids: data }, function(json) {
+                    if (json.result) {
+                        $.messager.alert('提示', '发送成功!','',function(){
+                            location.reload();
+                            //expr.reload('gd');
+                        });
+                    }else{
+                        $.messager.alert('提示',json.message);
+                    }
+                });
+            }
+        };
+
+        function addRecord(){
+            $JS.tab.open2('新增优惠券', 'pt/prom/createCoupon', null, true);
+        }
+
+        function editRecord(id){
+            $JS.tab.open2('修改优惠券', 'pt/prom/editCoupon?id=' + id, null, true);
+        }
+
+        function bindCoupon(id,code){
+             $JS.dialog.create2('发送优惠券：'+code,true,true).open('pt/prom/bindCoupon?id=' + id, 800,500);
+        }
+
+        function delRecord(id) {
+            $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+                if (result) {
+                    $JS.xhr.jsonPost('pt/prom/delCoupon', { id: id }, function(json) {
+                        if (json.result) {
+                            expr.reload('gd');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>

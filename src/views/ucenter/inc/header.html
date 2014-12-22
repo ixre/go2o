@@ -1,0 +1,67 @@
+{{define "header"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{.title}}</title>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serv}}/css/page.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serv}}/css/usrcent/usrcent.css?v={{.version}}"/>
+</head>
+<body>
+
+<div class="page-top">
+    <div class="panel">
+        <span class="left">
+
+        </span>
+        <span class="right links">
+             <div class="usr">
+            欢迎您：
+            <span id="usrinfo">{{.member.Name}}</span>
+            &nbsp;[
+            <a href="/logout.html">退出</a>
+            ]
+            </div>
+        </span>
+        <div class="clearfix"></div>
+        <div class="top-attach hidden"></div>
+    </div>
+</div>
+
+
+<div class="page-header">
+    <div class="panel">
+        <a href="javascript:;" class="logo">
+            <img src="{{.img_serv}}/{{.conf.Logo}}" alt="{{.partner.Name}}" />
+            <h1>{{.partner.Name}}</h1>
+        </a>
+        <span class="right">
+        </span>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<div id="navigator" class="page-navigator">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="navs">
+        <div class="current"></div>
+        <ul>
+            <li>
+                <a href="/index.html" title="首页">首页</a>
+            </li>
+            <li>
+                <a href="http://{{.partner_host}}">在线订餐</a>
+            </li>
+            <li>
+                <a href="javascript:;">账户充值</a>
+            </li>
+            <li>
+                <a href="javascript:;">积分兑换</a>
+            </li>
+            <li>
+                <a href="javascript:;">客户服务</a>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+</div>
+{{end}}

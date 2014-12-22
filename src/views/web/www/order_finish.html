@@ -1,0 +1,25 @@
+{{template "header"$}}
+
+<style type="text/css">
+		h1{color:#018116;margin:30px;font-size:16px;font-family:'微软雅黑';text-align:center;border-bottom:dotted 1px #e5e5e5;padding-bottom:20px;}
+		div.member{font-size:14px;margin:20px 0;}
+		div.order,div.profile{margin-left:250px;}
+		h2.title{color:#7ec07f;font-size:14px;}
+		span.money{color:green;}
+		p.money{font-size:14px;font-weight:bold;color:green;}
+		p.menu{line-height:18px;margin:0;padding-left:5px;}
+		.ipt{width:300px;border:solid 1px #e0e0e0;}
+		label{width:80px;display:block;float:left;}
+		p.menu{border:dotted 1px #7ec07f;padding:10px;width:450px;background:#fafef6;}
+		.logintip{font-size:14px;}
+		.backhome{font-size:14px;color:#006699;margin-left:30px;}
+	</style>
+</head>
+<body>
+
+
+<div id="main">
+	<h1>您的订单成功,no:{{.order.OrderNo}}</h1>
+</div>
+
+{{template "footer".}}

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>菜谱管理</title>	
+	<link rel="stylesheet" type="text/css" href="/static/assets/easyui/js/themes/gray/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/static/assets/easyui/js/themes/icon.css">
+	<link href="/static/css/sys_common.css" rel="stylesheet" type="text/css" />
+	<link href="/static/css/partner/common.css" rel="stylesheet" type="text/css" />
+	
+	</head>
+<body class="easyui-layout">
+
+<div region="center">
+	<div id="gd"></div>
+	<div class="toolBar">
+    <div class="searchBar padding2" id="searchbar">
+        <ul>
+        	<li>
+        		<a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
+        		<span class="icon"></span>新增员工</a>
+        	</li>
+            <li class="hidden">
+                <span class="title">状态：</span>
+				<select field="state">
+					<option value="-100">一所有一</option>
+					<option value="1">正常</option>
+					<option value="0">停用</option>
+					<option value="2">暂停营业</option>
+				</select>
+            </li>
+            <li>
+                <span class="title">关键字：</span>
+                <input type="text" field="keyword" />
+            </li>
+            <li>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                <span class="icon"></span>搜索</a>
+            </li>
+
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+        <div class="clearfix"></div>
+</div>
+</div>
+
+  	<script type="text/javascript" src="/static/assets/easyui/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/assets/easyui/js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/static/assets/easyui/js/locale/easyui-lang-zh_CN.js"></script>
+	<script src="/static/assets/js/core_full.js"></script>    
+	<script src="/static/assets/js/export.js"></script>
+    <script src="/static/assets/js/plugins/sys.js"></script>
+	
+
+
+<script type="text/javascript">
+expr.ele = 'searchbar';
+expr.portal = 'Partner.List'; //配置导出的入口
+expr.checkParams = function (data) {
+    return true;
+};
+
+window.refresh = function () {
+ expr.reload('gd');
+};
+
+$JS.$('gd').style.height = $JS.screen.height() + 'px';
+
+$(function () {
+
+    //导出
+    $('#btnExport').click(
+        function () {
+            expr.showExportDialog();
+        });
+
+    $JS.$('btnSearch').onclick=function () {
+            expr.search('gd');
+        };
+
+
+    //加载数据
+    $('#gd').datagrid({
+        toolbar: '.toolBar',
+        singleSelect: !false,
+        pagination: true,
+        rownumbers: true,
+        fitColumns: true,
+        url: expr.getDataUrl(),
+        columns: [
+            [
+                { field: 'name', title: '姓名', align: 'center', width: 120 },
+                { field: 'address', title: '地址',align: 'center'},
+                { field: 'tel', title: '电话', align: 'center', width: 120 },
+                { field: 'user', title: '用户名', align: 'center', width: 120 },
+                { field: 'jointime', title: '注册时间', align: 'center', width: 120 },
+                //{ field: 'Idx', title: '排序',align: 'center', width: 120 },
+                /*{
+                    field: 'State',
+                    title: '状态',
+                    sortable: true,
+                    align: 'center',
+                    width: 100,
+                    formatter: function (val) {
+                        if (val == 1) {
+                            return '<span style="color:green">正常</span>';
+                        } else if(val == 0){
+                            return '<span style="color:darkorange">停用</span>';
+                        }else{
+                        	return '<span style="color:#333">暂停营业</span>';
+                        }
+                    }
+                },*/
+                { field: 'Id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
+                	return '<a href="javascript:;" onclick="editRecord('+row.id+')">修改</a>'+
+                		   ' | <a href="javascript:;" onclick="delRecord('+row.id+')">删除</a>'
+                } },
+            ]
+        ]
+    });
+});
+
+$JS.$('btnAdd').onclick=addRecord;
+
+function addRecord(){
+	var d = $JS.dialog.create2('新增员工',true,true);
+	d.open('/a/AddPartner',600,400);
+}
+
+function editRecord(id){
+	var d = $JS.dialog.create2('编辑员工',true,true);
+	d.open('/a/EditPartner?id='+id,600,400);
+}
+
+function delRecord(id) {
+    $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+        if (result) {
+            $JS.xhr.jsonPost('/a/DelPartner', { id: id }, function(json) {
+                if (json.result) {
+                	window.refresh()
+                }
+            });
+        }
+    });
+}
+</script>
+
+</body>
+</html>

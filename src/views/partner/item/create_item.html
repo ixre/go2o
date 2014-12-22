@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新增项</title>
+    <link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css"/>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<form id="form1">
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" width="80">菜名:</td>
+            <td>
+                <input type="hidden" field="Id" value="0"/>
+                <input class="ui-validate" type="text" field="Name" required="true"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">分类:</td>
+            <td>
+                <select class="ui-validate" field="Cid">
+                    {{.cate_opts}}
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">图片:</td>
+            <td valign="top" style="position: relative;height:100px;">
+                <img id="upload_img" value="{{.img_serv}}/resouce/item_nopic.gif"
+                     style="float:left;margin-right:10px;width: 80px; height: 80px;border:solid 1px #aaa;padding:1px;"/>
+                <input class="ui-validate" length="[0,150]" type="hidden" field="Image" id="upload_path"/>
+                <span id="upload_btn"><button>选择图片上传</button></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">成本价:</td>
+            <td>
+                <input class="ui-validate" type="text" field="Cost" style="width:50px"/>元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">定价:</td>
+            <td>
+                <input class="ui-validate" type="text" field="Price" style="width:50px"/>元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">销售价:</td>
+            <td>
+                <input class="ui-validate" type="text" field="SalePrice" required="num" style="width:50px"/>元
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">是否可订：</td>
+            <td>
+                <input type="radio" class="radio" field="State" name="State" id="State1" value="1"
+                       checked="checked"/><label for="State1">是</label>
+                <input type="radio" class="radio" field="State" name="State" id="State2" value="0"/><label for="State2">否</label>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">供应分店:</td>
+            <td>
+                {{.shop_chk}}
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title">备注:</td>
+            <td>
+                <input type="text" field="Note" id="note" style="width:250px"/>&nbsp;如："优惠仅限3日",20字内
+            </td>
+        </tr>
+
+
+        <tr>
+            <td class="title">描述:</td>
+            <td>
+                <textarea field="Description" id="desc" style="height:60px;"></textarea>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td></td>
+            <td>
+                <input id="btn_save" type="button" value="提交"/>
+            </td>
+        </tr>
+
+    </table>
+</form>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/export.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity = {
+    {.
+        entity
+    }
+    } ||
+    {
+    }
+    ;
+    $JS.json.bind('form1', entity);
+
+    //上传缩略图
+    $JS.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/pt/upload.cgi',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    }, function (result, data) {
+        if (result) {
+            cms.$('upload_path').value = data.url;
+            cms.$('upload_img').src = '{{.img_serv}}/' + data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+    $JS.$('btn_save').onclick = function () {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('SaveItem', data, function (json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
+                    $JS.tab.closeAndReresh('菜谱管理');
+                });
+            }, function (e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

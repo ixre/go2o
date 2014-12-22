@@ -1,0 +1,57 @@
+{{template "header"$}}
+
+<div class="panel page-main">
+    <div class="side">
+       {{template "menu"}}
+   </div>
+<div class="main">
+	
+	
+	<div style="padding:30px 50px;position:relative;">
+		<div class="avatar">
+			<!--<img src="{{.member.Avatar}}" alt="用户头像"/>-->
+           <img src="{{.static_serv}}/css/usrcent/noavatar.gif" alt="用户头像"/>
+		</div>
+		
+		<div class="profile">
+			<p><label>真实姓名：</label>
+               {{.name}}&nbsp;{{.sex}}
+			</p>
+			<p>等级：{{.level.Name}}&nbsp;{{.member.Exp}}/{{.nLevel.RequireExp}}</p>
+			<p><label>联系电话：</label>{{.member.Phone}}</p>
+			<p><label>联系地址：</label>{{.member.Address}}</p>
+			<p><label>Q&nbsp;Q号码：</label>{{.member.Qq}}&nbsp;</p>
+			<p><label>电子邮箱：</label>{{.member.Email}}&nbsp;</p>
+			<p><label>注册时间：</label>{{.regTime}}</p>
+		</div>
+
+	<div class="m20">
+		[ <a href="profile.html">修改资料</a> ] &nbsp;
+		[ <a href="account/imcomelog.html">我的收入</a> ]
+	</div>
+		
+	<div class="m20">
+		登录地址：{{.loginAddr}}<br >
+		共支付金额：￥{{.acc.TotalPay}}元
+		&nbsp;账户余额：{{.acc.Balance}} 元
+	</div>
+
+	</div>
+
+
+</div>
+
+</div>
+
+<style type="text/css">
+.red{color:red;}
+.m20{margin-top:30px;border-top:dashed 1px #79959a;padding-top:30px}
+.local{color:green;}
+.ip{color:#666;}
+.profile{position:absolute;left:200px;top:28px;font-size:11pt;}
+.profile p{margin:0;padding:0;line-height:23px;}
+.profile label{width:100px;float:left;display:block;}
+</style>
+<script type="text/javascript" src="{{.static_serv}}/assets/js/core.js?ver=0.1"></script>
+
+{{template "footer"$}}

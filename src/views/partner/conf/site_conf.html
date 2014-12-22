@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<form id="form1">
+    <input type="hidden" field="PtId" value="0"/>
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" valign="top" width="100">标志Logo:</td>
+            <td valign="top" style="position: relative;height:70px;">
+                <img id="upload_img" value="{{.img_serv}}/resouce/item_nopic.gif"
+                     style="float:left;margin-right:10px;width:150px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+                <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+                <span id="upload_btn"><button>选择图片上传(150*60)</button></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title" align="top">首页标题:</td>
+            <td>
+                <textarea class="ui-validate" field="IndexTitle"></textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="title" valign="top">子标题:</td>
+            <td>
+                <textarea class="ui-validate" field="SubTitle"></textarea>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td class="title" valign="top">站点状态:</td>
+            <td>
+                <input type="radio" class="radio" field="State" name="State" id="State1" value="1" checked="checked" /><label for="State1">打开</label>
+                <input type="radio" class="radio" field="State" name="State" id="State2" value="0" /><label for="State2">关闭</label>
+                <span id="statePanel" class="hidden" style="padding-left:20px">
+
+                   <div> <strong>提醒内容：</strong></div>
+                    <textarea field="StateHtml" id="note" style="width:300px"></textarea>
+                </span>
+            </td>
+        </tr>
+
+
+        <tr>
+            <td></td>
+            <td>
+                <input id="btn_save" type="button" value="提交" />
+            </td>
+        </tr>
+
+</table>
+</form>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+    cms.$('upload_img').src = '{{.img_serv}}/'+ entity.Logo;
+
+    //上传缩略图
+    $JS.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/pt/upload.cgi',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    },function (result, data) {
+        if (result) {
+            cms.$('upload_path').value = data.url;
+            cms.$('upload_img').src = '{{.img_serv}}/'+ data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+
+    //设置是否跳转显示
+    var statePanel = cms.$('statePanel');
+    cms.$('State1').onchange = cms.$('State2').onchange = function(){
+        if(this.checked){
+            if(this.value == '0'){
+                statePanel.className = '';
+            }else{
+                statePanel.className = 'hidden'
+            }
+        }
+    };
+    if(entity.State == 0)statePanel.className='';
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message);
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

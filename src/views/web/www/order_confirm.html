@@ -1,0 +1,126 @@
+{{template "header"$}}
+</head>
+
+<div id="main" class="order-confirm-panel panel">
+		<!--<h1>最后一步：请填写配送信息完成订单</h1>-->
+
+    <div class="cash-panel" id="cash-panel">
+             <p class="money">
+                 本次订餐总金额为：<span class="money">￥{{.cart.TotalFee}}</span> 元
+                 &nbsp;优惠￥<span field="PromFee">0</span>元&nbsp;
+             </p>
+             <div>
+                 实际需支付金额：￥<span field="OrderFee">0</span>元
+             </div>
+            <div class="submit-panel">
+                <input class="btn_submit" type="button" value="提交" id="btn_submit_order"/>
+                <a href="/" class="backhome">回到首页修改订单 >> </a>
+            </div>
+   </div>
+
+    <div class="main-panel">
+        <div class="order-panel">
+            <a href="/shopping/go"><<返回修改订单</a>
+            <h2 class="title">订单信息</h2>
+            <p class="summary">
+                {{.summary}}
+            </p>
+        </div>
+
+        <div class="profile">
+        {{if .member}}
+
+            <h2 class="title">送餐地址</h2>
+            <div class="tip" style="font-size:80%;margin:0 0 20px 0">温馨提示：您可以将送餐给您的朋友和小伙伴哦！</div>
+            <div class="line"></div>
+            <div id="deliver-panel">
+                加载收货信息
+            </div>
+
+
+            <div class="form" id="form1">
+                <h2 class="title">使用优惠券</h2>
+                <div class="fl">
+                    请输入优惠券：<input type="text" field="CouponCode" id="coupon_code"/>
+                    <div id="coupon_describe" class="coupon_desc hidden"></div>
+                </div>
+
+                <h2 class="title">备注</h2>
+                <div class="fl">
+                        <textarea field="note" rows="3"></textarea>
+                </div>
+            </div>
+
+            <script type="text/javascript" src="{{.static_serv}}/assets/js/core.js?{{.version}}"></script>
+            <script type="text/javascript" src="{{.static_serv}}/assets/js/lib/form.js?{{.version}}"></script>
+            <script type="text/javascript" src="{{.static_serv}}/assets/js/lib/animation.js?{{.version}}"></script>
+            <script type="text/javascript" src="{{.static_serv}}/assets/js/ppc.js?{{.version}}"></script>
+            <script type="text/javascript">
+                var total_fee = {{.cart.TotalFee}};
+                var prom_fee = {{.promFee}};
+                var order_fee = {{.cart.OrderFee}};
+
+                var cashPl = $JS.$('cash-panel');
+                var couDes = $JS.$('coupon_describe');
+
+                $JS.json.bind(cashPl,{PromFee:prom_fee,OrderFee:order_fee});
+
+                $JS.$('coupon_code').onblur=function(){
+                    if(this.value==''){
+                        $JS.validator.removeTip(this);
+                        couDes.innerHTML='';
+                    }else{
+                        var t = this;
+                        $JS.xhr.jsonPost('/shopping/applyCoupon',{code:this.value},function(json){
+                            if(json.result == false) {
+                                $JS.validator.setTip(t,false,null,json.message);
+                                couDes.className='coupon_desc hidden';
+                            }else{
+                                $JS.validator.removeTip(t);
+                                if(json.couponFee) {
+                                    couDes.className = 'coupon_desc';
+                                    couDes.innerHTML = '优惠内容：' + json.couponDescribe + '<br /><em>使用该优惠券总节省：￥' +
+                                    json.couponFee + '元</em>';
+                                }
+                                $JS.json.bind(cashPl,{PromFee:json.discountFee,
+                                        OrderFee:json.payFee});
+                            }
+                        });
+                    }
+                };
+
+            $JS.$('btn_submit_order').onclick=function(){
+                if($JS.validator.validate('form1')){
+                    var data = $JS.json.toObject(form1);
+                    var addr = $JS.json.toObject('addr_panel');
+                    if(!addr.AddrId){
+                        $JS.validator.validate('form-deliver');
+                        return false;
+                    }
+                    data.AddrId = addr.AddrId;
+                    $JS.xhr.jsonPost('SubmitOrder',data,function(j){
+                       if(j.result){
+                           var orderNo = j.data;
+                           location.replace("finish?order_no="+orderNo)
+                       }else{
+                           alert(j.message);
+                       }
+                    });
+                }
+            };
+
+            loadDeliver('deliver-panel');
+    </script>
+        {{else}}
+            <div class="member-panel">
+                <p class="ques">已经是会员？<a href="/login?return_url=/ding/order">登录</a>&nbsp;或&nbsp;<a href="/register?return_url=/ding/order">注册</a></p>
+                <p>注册会员可以免去重复输入的烦恼，更有优惠多多！还等什么，赶快注册吧！</p>
+            </div>
+        {{end}}
+
+    </div>
+
+        <div class="clearfix"></div>
+    </div>
+</div>
+{{template "footer".}}

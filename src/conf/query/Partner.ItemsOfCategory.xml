@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <Query>
+    <![CDATA[
+    SELECT
+f.id,
+`cid`,
+f.`name`,
+`img`,
+`price`,
+`cost`,
+`sale_price`,
+`apply_subs`,
+`note`,
+`state`,
+/*`description`,*/
+f.`create_time`,
+f.`update_time`
+FROM `it_item` f INNER JOIN it_category c ON f.cid = c.id
+WHERE c.ptid={partnerId} AND ({state}=-100 OR state={state})
+ AND ({cid}=0 OR f.cid={cid})
+ AND ('{keyword}'='' OR f.name Like '%{keyword}%')
+ /*AND ('{cost1}'='' OR cost  */
+ ORDER BY create_time DESC
+ LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[
+		    SELECT COUNT(0) FROM `it_item` f INNER JOIN it_category c ON f.cid = c.id
+            WHERE c.ptid={partnerId} AND ({state}=-100 OR state={state})
+             AND ({cid}=0 OR f.cid={cid})
+             AND ('{keyword}'='' OR f.name Like '%{keyword}%')
+             /*AND ('{cost1}'='' OR cost  */
+	]]>
+  </Total>
+</ExportItemConfig>

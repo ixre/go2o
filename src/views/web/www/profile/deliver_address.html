@@ -1,0 +1,116 @@
+<template id="addrTpl">
+    <div class="form" id="form-deliver">
+        <input type="hidden" field="Id" value="0"/>
+        <div class="fl">
+            <div class="label">姓名：</div>
+            <div class="in">
+                <input class="input ui-validate" type="text" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
+                       summary="{'regex':'姓名为2-4位中文'}" />
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">手机号码：</div>
+            <div class="in">
+                <input class="input ui-validate" regex="^(13[0-9]|15[1|2|3|4|5|6|8|9]|18[0|6|7|8|9])(\d{8})$" field="Phone"
+                       summary="{'regex':'手机号码不正确','required':'手机号码不能为空'}"/>
+                <div><span class="tip">请正确填写</span></div>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">地址：</div>
+            <div class="in">
+                <input class="input ui-validate" required="true" field="Address"
+                       summary="{'0':'地址不能为空'}" />
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label"></div>
+            <div class="in">
+                <input type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
+                <input type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<div id="addr_panel">
+
+</div>
+
+<div class="btn_newaddr" id="btn_newaddr">
+    <a href="javascript:;">+添加新的收货地址</a>
+</div>
+<div id="new_panel"></div>
+
+
+<script type="text/javascript">
+    var addrs = {{.addrs}};
+    var addrTpl = $JS.$('addrTpl').innerHTML;
+    var newPanel = $JS.$('new_panel');
+
+    function toggleNewAdd(){
+        $JS.animation.toggleHeight(newPanel,null,15);
+    }
+    $JS.$('btn_newaddr').onclick=function(){
+        $JS.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
+        if(newPanel.offsetHeight == 0){
+            toggleNewAdd();
+        }
+    }
+
+    function newAddr(show){
+        $JS.style(newPanel,{display:'none'});
+        newPanel.innerHTML=addrTpl;
+        $JS.validator.init();
+    }
+
+    if(addrs.length!=0){
+        var html ="";
+        var tpl ='<div class="addr_item"><input type="radio" id="addr_{Id}" field="AddrId" value="{Id}"/>'+
+            '<label for="addr_{Id}"><strong>{RealName}</strong>({Phone},{Address})</label>&nbsp;&nbsp;'+
+            '<a href="javascript:editAddr({Id})">修改</a></div>';
+        for(var i=0;i<addrs.length;i++){
+            html += $JS.template(tpl,addrs[i]);
+        }
+        $JS.$('addr_panel').innerHTML = html;
+        $JS.json.bind('addr_panel',{AddrId:addrs[0].Id});
+        newAddr();
+    }else{
+        newAddr();
+        toggleNewAdd();
+    }
+
+
+
+    function editAddr(id){
+        for(var i=0;i<addrs.length;i++){
+            if(addrs[i].Id == id){
+                $JS.json.bind(newPanel,addrs[i]);
+                if(newPanel.offsetHeight == 0){
+                    toggleNewAdd();
+                }
+                break;
+            }
+        }
+    }
+
+    function saveDeliveAddr(){
+        if($JS.validator.validate('form-deliver')){
+            var d = $JS.json.toObject('form-deliver');
+            $JS.xhr.jsonPost('/shopping/saveDeliverAddr',d,function(json){
+               if(json.result){
+                    loadDeliver('deliver-panel');
+               }else{
+                  alert(json.message);
+               }
+            },function(){});
+        }
+    }
+
+
+</script>
+

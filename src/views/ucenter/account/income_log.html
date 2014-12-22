@@ -1,0 +1,74 @@
+{{template "header"$}}
+<div class="panel page-main">
+    <div class="side">
+        {{template "menu"}}
+    </div>
+
+
+<div class="main">
+    {{if .record}}
+        <div id="dg"></div><div id="pager"></div>
+
+        <script type="text/javascript" src="{{.static_serv}}/assets/js/core_full.js?ver=0.1"></script>
+        <script type="text/javascript">
+            var _dg = $JS.grid('dg', {
+                url: location.href,
+                data: {page:$JS.request('page'),size:10},
+                idField: 'id',
+                columns: [
+                    { field: 'record_time', title: '产生时间', width: 200},
+                    { field: 'fee', title: '收入金额', width: 200},
+                    {
+
+                        field: 'log', title: '详细', width: 200, formatter: function (val, row, index) {
+                            return val.replace("\n","<br />");
+
+                    }
+                    }
+                ],
+                loaded: function (data) {
+                    var tables = document.getElementsByTagName('TABLE');
+
+                    //var tds = tables[2].getElementsByTagName('TD');
+
+//                    var allowMultSelect = false;
+//
+//                    J.table.dynamic(tables[2], allowMultSelect, function (trs) {
+//                        var id = trs[0].getAttribute('data-indent');
+//                        cms.load2('pl', 'archive', 'view', 'archive.id=' + id);
+//                    });
+//
+//                    cms.each(tds, function (i, e) {
+//                        cms.contextmenu.bind(e, null, function (menu) {
+//                            menu.innerHTML = cms.template(cms.$('tpl').innerHTML, { id: e.parentNode.getAttribute('data-indent') });
+//                        });
+//                    });
+//
+//
+//                    cms.each(cms.getElementsByClassName(document.body, 'ui-datagrid-view'), function (i, e) {
+//                        var tbs = e.getElementsByTagName('TABLE');
+//                        if (tbs.length != 0) {
+//                            tbs[0].className = 'ui-table ui-table-list';
+//                        }
+//                    });
+
+
+                    //加载分页
+                    this.panel.nextSibling.innerHTML = data.Text;
+
+                    if (cms.$('pl').innerHTML == '' && data.rows.length != 0) {
+                        cms.load2('pl', 'archive', 'view', 'archive.id=' + data.rows[0].id);
+                    }
+                }
+            });
+
+            _dg.resize();
+
+        </script>
+    {{else}}
+        <div>无收入记录</div>
+    {{end}}
+</div>
+</div>
+
+{{template "footer"$}}

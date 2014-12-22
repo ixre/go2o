@@ -1,0 +1,315 @@
+package dao
+
+import (
+	"com/domain/interface/enum"
+	"com/ording"
+	"com/ording/entity"
+	"database/sql"
+	"errors"
+	"fmt"
+	"ops/cf/db"
+	"time"
+)
+
+type orderDao struct {
+	db.Connector
+}
+
+func (this *orderDao) SetState(partnerId int, orderNo string, state int) bool {
+	n, _ := this.Connector.ExecNonQuery(`UPDATE pt_order SET status=? WHERE pt_id=? AND order_no=?`,
+		state, partnerId, orderNo)
+	return n == 1
+}
+
+func (this *orderDao) GetOrderByNo(partnerId int, orderNo string) *entity.Order {
+	e := new(entity.Order)
+	err := this.Connector.GetOrm().GetBy(e, fmt.Sprintf(`pt_id=%d AND order_no="%s"`, partnerId, orderNo))
+	if err != nil {
+		return nil
+	}
+	return e
+}
+
+func (this *orderDao) GetMemberPagerOrder(memberId, page, size int,
+	where, orderby string) (num int, rows []map[string]interface{}) {
+
+	d := this.Connector
+
+	if where != "" {
+		where = "AND " + where
+	}
+	if orderby != "" {
+		orderby = "ORDER BY " + orderby
+	} else {
+		orderby = " ORDER BY update_time DESC,create_time desc "
+	}
+
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pt_order WHERE
+	 		shop_id=? %s`, where), &num, memberId)
+
+	dtStr := `%Y-%m-%d %T`
+	d.Query(fmt.Sprintf(` SELECT id,
+			order_no,
+			member_id,
+			pt_id,
+			shop_id,
+			items,
+			replace(items_info,'\n','<br />') as items_info,
+			total_fee,
+			fee,
+			pay_fee,
+			pay_method,
+			is_payed,
+			note,
+			status,
+            date_format(create_time,'%s') as create_time,
+            date_format(deliver_time,'%s') as deliver_time,
+            date_format(update_time,'%s') as update_time
+            FROM pt_order WHERE member_id=? %s %s LIMIT ?,?`,
+		dtStr, dtStr, dtStr, where, orderby),
+		func(_rows *sql.Rows) {
+			rows = db.ConvRowsToMapForJson(_rows)
+			_rows.Close()
+		}, memberId, (page-1)*size, size)
+
+	return num, rows
+}
+
+func (this *orderDao) getFreeOrderNo(partnerId int) (order_no string) {
+	//todo:实际应用需要预先生成订单号
+	d := this.Connector
+	for {
+		order_no = ording.NewOrderNo(partnerId)
+		var rec int
+		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`, &rec, order_no); rec == 0 {
+			break
+		}
+	}
+	return order_no
+}
+
+//@depared
+
+// @deliverAddrId : 配送地址编号
+// 可以有多个收货地址
+func (this *orderDao) CreateOrder(partnerId, memberId, shopId int, paymethod int,
+	deliverAddrId int, items string, note string) (orderNo string, err error) {
+
+	//	if deliverAddrId == 0 {
+	//		return "", errors.New("address not exist.")
+	//	}
+	var addr *entity.DeliverAddress = Member().GetDeliverAddrById(memberId, deliverAddrId)
+	if addr == nil {
+		return "", errors.New("address not exist.")
+	}
+
+	cart, err := ParseShoppingCart(items)
+	if err != nil {
+		return orderNo, err
+	}
+
+	tfee, fee := cart.GetFee()
+	itemSum := cart.GetSummary()
+
+	dt := time.Now()
+
+	var order *entity.Order = &entity.Order{
+		Mid:            memberId,
+		PtId:           partnerId,
+		ShopId:         shopId,
+		Items:          items,
+		ItemsInfo:      itemSum,
+		TotalFee:       tfee,
+		Fee:            fee,
+		PayFee:         fee,
+		Paymethod:      paymethod,
+		IsPayed:        0,
+		Note:           note,
+		CreateTime:     dt,
+		DeliverTime:    dt,
+		DeliverName:    addr.RealName,
+		DeliverPhone:   addr.Phone,
+		DeliverAddress: addr.Address,
+		Status:         0,
+		UpdateTime:     dt,
+	}
+
+	_, order_no, err := this.SaveOrder(order)
+	return order_no, err
+}
+
+// *********** 该流程已经作废 ***********//
+
+// 创建订单
+func (this *orderDao) SaveOrder(order *entity.Order) (id int, order_no string, err error) {
+	if order.Id <= 0 {
+		d := this.Connector
+		order.OrderNo = this.getFreeOrderNo(order.PtId)
+
+		//验证Partner和Member是否有绑定关系
+		var num int
+		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_ptid=?`,
+			&num, order.Mid, order.PtId); num != 1 {
+			return id, order_no, errors.New("error partner and member.")
+		}
+
+		i, _, err := this.Connector.GetOrm().Save(nil, order)
+		if err != nil {
+			return 0, "", err
+		}
+		return int(i), order.OrderNo, err
+	}
+	return -1, "", errors.New("not support modify order.")
+}
+
+/********************  订单处理流程   ********************/
+//设置订单配送分店
+func (this *orderDao) SetShopForOrder(partnerId int, orderNo string, shopId int) {
+	this.Connector.ExecNonQuery(`UPDATE pt_order SET pt_shopid=? WHERE order_no=? AND pt_id=?`,
+		shopId, orderNo, partnerId)
+	/*
+			def setsub(partnerid,orderid,subid):
+		'设置订单配送分店'
+		row=newdb().fetchone('SELECT count(0) FROM pt_shop WHERE id=%(id)s AND ptid=%(ptid)s',
+		{
+		'id':subid,
+		'ptid':partnerid
+		})[0]
+
+		if row!=1:return False              #如果分店不存在，则返回False
+		return  newdb().query('UPDATE pt_orders SET ptsid=%(ptsid)s WHERE id=%(id)s AND ptid=%(ptid)s',
+		{
+		'id':orderid,
+		'ptid':partnerid,
+		'ptsid':subid
+		})==1
+	*/
+}
+
+func (this *orderDao) NextSetup(order *entity.Order) error {
+	if order.Status == enum.ORDER_DELETED {
+		return errors.New("订单已经作废")
+	}
+	if order.Status == enum.ORDER_FINISH {
+		return errors.New("订单已经完成")
+	}
+
+	order.Status = order.Status + 1
+	order.UpdateTime = time.Now()
+	if order.Status == enum.ORDER_SENDING {
+		order.DeliverTime = order.UpdateTime
+	}
+
+	_, _, err := this.Connector.GetOrm().Save(order.Id, order)
+	if err != nil {
+		return err
+	}
+
+	this.HandleOrder(order)
+
+	return nil
+}
+
+func (this *orderDao) HandleOrder(order *entity.Order) {
+	if order.Status == enum.ORDER_FINISH {
+		this.handleOrderFinish(order)
+	}
+}
+
+func (this *orderDao) handleOrderFinish(order *entity.Order) {
+	mlogic := Member()
+	now := time.Now()
+	m := mlogic.GetMemberById(order.Mid)
+
+	//返现比例
+	pt := Partner().GetPartnerById(order.PtId)
+	saleConf := Partner().GetSaleConf(order.PtId)
+	back_fee := order.Fee * saleConf.CashBackPercent
+
+	//todo: 增加阶梯的返积分,比如订单满30送100积分
+	backIntegral := int(order.Fee)*saleConf.IntegralBackNum +
+		saleConf.IntegralBackExtra
+
+	//将此次消费记入会员账户
+	this.updateShoppingMemberAccount(order, pt.Name,
+		back_fee*saleConf.CashBackMemberPercent,
+		now)
+
+	//判断是否满足升级条件
+	if backIntegral != 0 {
+		Member().AddIntegral(order.Mid, order.PtId,
+			enum.INTEGRAL_TYPE_ORDER,
+			backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
+	}
+
+	//给上级返现(二级)
+	i := 0
+	mid := m.Id //会员编号
+	percent := saleConf.CashBackTg2Percent
+	for i < 2 {
+		rl := Member().GetRelation(mid)
+		if rl == nil {
+			break
+		}
+		mid = rl.TgId
+		if i == 1 {
+			percent = saleConf.CashBackTg1Percent
+		}
+
+		this.updateMemberAccount(mid, order, pt.Name, m.Name, back_fee*percent, now)
+		i++
+	}
+}
+
+func (this *orderDao) updateShoppingMemberAccount(order *entity.Order,
+	ptName string, fee float32, t time.Time) {
+	if fee == 0 {
+		return
+	}
+
+	//更新账户
+	acc := Account().GetAccount(order.Mid)
+	acc.TotalFee = acc.TotalFee + order.Fee
+	acc.TotalPay = acc.TotalPay + order.PayFee
+	acc.PresentBalance = acc.PresentBalance + fee //更新赠送余额
+	acc.UpdateTime = time.Now()
+	this.Connector.GetOrm().Save(acc.MemberId, acc)
+
+	//给自己返现
+	icLog := &entity.IncomeLog{
+		MemberId:   order.Mid,
+		OrderId:    order.Id,
+		Type:       "backcash",
+		Fee:        fee,
+		Log:        fmt.Sprintf("订单:%s(商家:%s)返现￥%.2f元", order.OrderNo, ptName, fee),
+		State:      1,
+		RecordTime: t,
+	}
+	this.Connector.GetOrm().Save(nil, icLog)
+}
+
+func (this *orderDao) updateMemberAccount(memberId int, order *entity.Order,
+	ptName, mName string, fee float32, t time.Time) {
+	if fee == 0 {
+		return
+	}
+
+	//更新账户
+	acc := Account().GetAccount(memberId)
+	acc.PresentBalance = acc.PresentBalance + fee
+	acc.UpdateTime = time.Now()
+	this.Connector.GetOrm().Save(acc.MemberId, acc)
+
+	//给自己返现
+	icLog := &entity.IncomeLog{
+		MemberId:   order.Mid,
+		Type:       "backcash",
+		Fee:        fee,
+		Log:        fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元", order.OrderNo, ptName, mName, fee),
+		State:      1,
+		RecordTime: t,
+	}
+	this.Connector.GetOrm().Save(nil, icLog)
+}
+
+/********************  订单处理结束   ********************/

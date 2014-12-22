@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>分类管理</title>
+	<link href="/static/css/sys_common.css" rel="stylesheet" type="text/css" />
+	<link href="/static/css/partner/common.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<form id="form1">
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" width="120">姓名：</td>
+            <td>
+                <input type="hidden" field="Id" value="0" />
+                <input type="text" field="Name" class="ui-validate" required="true" />
+            </td>
+        </tr>
+		<tr>
+			<td class="title" width="120">住址：</td>
+			<td>
+                <input type="text" field="Address" class="ui-validate" required="true" />
+            </td>
+		</tr>
+        <tr>
+            <td class="title" width="120" valign="top">电话：</td>
+            <td>
+				 <input type="text" field="Tel" class="ui-validate" required="true" />
+			</td>
+        </tr>
+ 	<tr>
+            <td class="title" width="120">个人目标：</td>
+            <td>
+                <input type="text" field="ObjectNum" class="ui-validate" isnumber="true" required="true" value="10"/>
+	    </td>
+        </tr>
+
+        <tr>
+            <td class="title" width="120">用户名：</td>
+            <td>
+                <input type="text" field="User" class="ui-validate" required="true" />
+			 </td>
+        </tr>
+        <tr>
+            <td class="title" width="120">密码：</td>
+            <td>
+                <input type="password" field="Pwd" class="ui-validate" required="true" />
+			 </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="button" value=" 保存 " id="btn_save" />
+                <input type="reset" value=" 重置 " />
+            </td>
+        </tr>
+    </table>
+</form>
+
+    <script src="/static/assets/js/core_full.js"></script>
+    <script src="/static/assets/js/plugins/sys.js"></script>
+    
+    <script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('SavePartner', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    //$JS.tab.closeAndReresh(function() {}, '员工管理');
+                   var d = $JS.dialog.getDialog();
+                   d.close(function(){
+                       if(d.window.refresh){
+                       	 d.window.refresh();
+                       }
+                   });
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+    </script>
+</body>
+</html>

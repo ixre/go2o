@@ -1,0 +1,7 @@
+/* 此文件由系统自动生成! */
+//
+//文件：表单插件
+//版本: 1.0
+//时间：2011-10-01
+//
+eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('$A.B({C:{D:4(c){1 d=\'\';1 f=3.p[c||0];1 g=4(a,b){q(1 i=0;i<a.r;i++){b(a[i])}};1 h=E F();1 j=4(a){q(1 i=0;i<h.r;i++){2(h[i]==a){9 G}}9 H};g(f,4(a){1 b=a.k(\'5\');2(a.l==\'I\'){}2(b){2(a.l==\'s\'&&a.6&&a.6==\'J\'){2(!j(b)){g(3.K(b),4(e){2(e.t){d+=\'&\'+b+\'=\'+m(e.n);h.L(b)}})}}7 2(a.l==\'s\'&&a.6&&a.6==\'M\'){d+=\'&\'+b+\'=\'+m(a.t?a.n:\'\')}7{d+=\'&\'+b+\'=\'+m(a.n)}}7{}});9 d.N(\'&\',\'\')},O:4(a,b){1 c=3.p[a||0];1 d=3.P(\'$8\');2(!d){Q{d=3.u(\'<v 5="$8">\')}R(S){d=3.u(\'v\');d.o(\'5\',\'$8\')}d.o(\'T\',\'$8\');2(!b){d.w.x=\'U:V\'}7{d.w.x=\'W:X;Y:Z\'}3.y.10(d,3.y.11)}2(c.k(\'z\')!=d.5){c.o(\'z\',d.k(\'5\'))}c.12()}}});',62,65,'|var|if|document|function|name|type|else|async_ifr|return|||||||||||getAttribute|nodeName|encodeURIComponent|value|setAttribute|forms|for|length|INPUT|checked|createElement|iframe|style|cssText|body|target|JS|extend|form|getData|new|Array|true|false|IMG|radio|getElementsByName|push|checkbox|replace|asyncSubmit|getElementById|try|catch|ex|id|display|none|width|600px|height|400px|insertBefore|firstChild|submit'.split('|'),0,{}))
