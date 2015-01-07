@@ -30,7 +30,7 @@ func (this *orderC) SetShop_post(w http.ResponseWriter, r *http.Request, partner
 
 	shopId, err := strconv.Atoi(r.FormValue("shopId"))
 	if err == nil {
-		err = dproxy.SpService.SetDeliverShop(partnerId,
+		err = dproxy.ShoppingService.SetDeliverShop(partnerId,
 			r.FormValue("order_no"), shopId)
 	}
 	if err != nil {
@@ -47,15 +47,16 @@ func (this *orderC) setState(w http.ResponseWriter, r *http.Request,
 	var button string
 
 	switch order.Status {
-	case enum.ORDER_FINISH:
+	case enum.ORDER_COMPLETED:
 		descript = `<span style="color:green">订单已经完成！</span>`
 	case enum.ORDER_CANCEL:
 		descript = `<span style="color:red">订单已经作废！</span>`
 	case enum.ORDER_CREATED:
 		descript = "确认订单无误后，点击按钮进行下一步.."
 		button = `<input type="button" id="btn2" value="确认订单"/>`
+	case enum.ORDER_CONFIRMED:
+		button = `<input type="button" id="btn2" value="开始处理订单"/>`
 	case enum.ORDER_PROCESSING:
-		descript = "订单已经确认，请及时进行配送，如果已经配送，请点击按钮继续！"
 		button = `<input type="button" id="btn2" value="开始配送"/>`
 	case enum.ORDER_SENDING:
 		if order.IsPayed == 1 {

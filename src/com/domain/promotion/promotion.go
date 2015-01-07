@@ -11,17 +11,17 @@ package promotion
 
 import (
 	"com/domain/interface/member"
-	prom "com/domain/interface/promotion"
+	"com/domain/interface/promotion"
 )
 
 type Promotion struct {
-	promRep   prom.IPromotionRep
+	promRep   promotion.IPromotionRep
 	memberRep member.IMemberRep
 	partnerId int
 }
 
-func NewPromotion(partnerId int, promRep prom.IPromotionRep,
-	memberRep member.IMemberRep) prom.IPromotion {
+func NewPromotion(partnerId int, promRep promotion.IPromotionRep,
+	memberRep member.IMemberRep) promotion.IPromotion {
 	return &Promotion{
 		partnerId: partnerId,
 		promRep:   promRep,
@@ -33,11 +33,11 @@ func (this *Promotion) GetAggregateRootId() int {
 	return this.partnerId
 }
 
-func (this *Promotion) GetCoupon(id int) prom.ICoupon {
-	var val *prom.ValueCoupon = this.promRep.GetCoupon(id)
+func (this *Promotion) GetCoupon(id int) promotion.ICoupon {
+	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)
 	return this.CreateCoupon(val)
 }
 
-func (this *Promotion) CreateCoupon(val *prom.ValueCoupon) prom.ICoupon {
+func (this *Promotion) CreateCoupon(val *promotion.ValueCoupon) promotion.ICoupon {
 	return newCoupon(val, this.promRep, this.memberRep)
 }

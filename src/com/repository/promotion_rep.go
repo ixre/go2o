@@ -16,7 +16,7 @@ import (
 	"com/infrastructure/log"
 	"errors"
 	"fmt"
-	"ops/cf/db"
+	"github.com/newmin/gof/db"
 	"time"
 )
 
@@ -31,7 +31,7 @@ func (this *PromotionRep) GetPromotion(partnerId int) promotion.IPromotion {
 
 func (this *PromotionRep) GetCoupon(id int) *promotion.ValueCoupon {
 	var e promotion.ValueCoupon
-	if err := this.Connector.GetOrm().Get(&e, id); err == nil {
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
 	return nil
@@ -50,7 +50,7 @@ func (this *PromotionRep) SaveCoupon(c promotion.ValueCoupon) (id int, err error
 
 func (this *PromotionRep) GetCouponTake(couponId, takeId int) *promotion.ValueCouponTake {
 	var v promotion.ValueCouponTake
-	err := this.Connector.GetOrm().Get(&v, takeId)
+	err := this.Connector.GetOrm().Get(takeId, &v)
 	if err != nil || v.CouponId != couponId {
 		return nil
 	}
@@ -72,17 +72,17 @@ func (this *PromotionRep) GetCouponTakes(couponId int) []promotion.ValueCouponTa
 	var arr []promotion.ValueCouponTake = []promotion.ValueCouponTake{}
 
 	err := this.Connector.GetOrm().SelectByQuery(&arr,
-		promotion.ValueCouponTake{},
-		fmt.Sprintf("SELECT * FROM pm_coupon_take WHERE coupon_id = %d", couponId),
-	)
-	log.PrintErr(err)
+		"SELECT * FROM pm_coupon_take WHERE coupon_id =?", couponId)
+	if err != nil {
+		log.PrintErr(err)
+	}
 
 	return arr
 }
 
 func (this *PromotionRep) GetCouponBind(couponId, bindId int) *promotion.ValueCouponBind {
 	var v promotion.ValueCouponBind
-	err := this.Connector.GetOrm().Get(&v, bindId)
+	err := this.Connector.GetOrm().Get(bindId, &v)
 	if err != nil || v.CouponId != couponId {
 		return nil
 	}
@@ -91,10 +91,11 @@ func (this *PromotionRep) GetCouponBind(couponId, bindId int) *promotion.ValueCo
 
 func (this *PromotionRep) GetCouponBinds(couponId int) []promotion.ValueCouponBind {
 	var arr []promotion.ValueCouponBind = []promotion.ValueCouponBind{}
-	this.Connector.GetOrm().SelectByQuery(arr,
-		promotion.ValueCouponBind{},
-		fmt.Sprintf("SELECT * FROM pm_coupon_bind WHERE coupon_id = %d", couponId),
-	)
+	err := this.Connector.GetOrm().SelectByQuery(arr,
+		"SELECT * FROM pm_coupon_bind WHERE coupon_id = ?", couponId)
+	if err != nil {
+		log.PrintErr(err)
+	}
 	return arr
 }
 

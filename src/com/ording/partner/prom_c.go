@@ -14,9 +14,9 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"strconv"
 	"strings"
 	"time"
@@ -57,7 +57,7 @@ func (this *promC) BindCoupon(w http.ResponseWriter, r *http.Request, partnerId 
 }
 
 func (this *promC) BindCoupon_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
@@ -80,7 +80,7 @@ func (this *promC) BindCoupon_post(w http.ResponseWriter, r *http.Request, partn
 
 func (this *promC) SaveCoupon_post(w http.ResponseWriter, r *http.Request, partnerId int) {
 
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 	var e promotion.ValueCoupon
 	web.ParseFormToEntity(r.Form, &e)
@@ -99,9 +99,9 @@ func (this *promC) SaveCoupon_post(w http.ResponseWriter, r *http.Request, partn
 	_, err := dproxy.PromService.SaveCoupon(partnerId, &e)
 
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: ""}
+		result = gof.JsonResult{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

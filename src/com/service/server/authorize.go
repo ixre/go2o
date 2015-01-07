@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 	"strconv"
 )
 
@@ -25,9 +25,9 @@ func Verify(m *jsv.Args) (memberId int, err error) {
 		return memberId, err
 	}
 
-	if jsv.Context.Debug() {
-		jsv.Println("[Member][Verify]", memberId, token, servToken)
-	}
+	//	if jsv.Context.Debug() {
+	//		jsv.Println("[Member][Verify]", memberId, token, servToken)
+	//	}
 
 	if servToken != token {
 		return memberId, errors.New("会话超时，请重新登录！")

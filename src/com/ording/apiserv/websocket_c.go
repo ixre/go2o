@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/net/jsv"
 )
 
 type websocketC struct {

@@ -4,28 +4,20 @@ package server
 import (
 	"bytes"
 	"com/domain/interface/member"
+	"com/dto"
 	"com/ording"
 	"com/ording/dao"
 	"com/ording/dproxy"
 	"encoding/json"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 	"strconv"
 	"time"
 )
 
 type Partner struct{}
 
-//var partnerId int
-//	var partner *entity.Partner
-//	var err error
-//	_, err, partner = VerifyPartner((*m)["partner_id"], (*m)["secret"])
-//	if err != nil {
-//		r.Result = false
-//		r.Code = jsv.C_PERMISSION_DENIED
-//		r.Message = err.Error()
-//		return r
-//	}
 func (this *Partner) GetPartner(m *jsv.Args, r *jsv.Result) error {
+	return nil
 	_, err, e := VerifyPartner(m)
 	if err != nil {
 		return err
@@ -41,7 +33,7 @@ func (this *Partner) GetSiteConf(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	siteConf :=dproxy.PartnerService.GetSiteConf(partnerId)
+	siteConf := dproxy.PartnerService.GetSiteConf(partnerId)
 	r.Result = true
 	r.Data = siteConf
 	return nil
@@ -61,11 +53,12 @@ func (this *Partner) GetHost(m *jsv.Args, r *jsv.Result) error {
 
 func (this *Partner) GetShops(m *jsv.Args, r *jsv.Result) error {
 	partnerId, err, _ := VerifyPartner(m)
+
 	if err != nil {
 		return err
 	}
 
-	shops := dao.Shop().GetShopsOfPartner(partnerId)
+	shops := dproxy.PartnerService.GetShopsOfPartner(partnerId)
 	r.Result = true
 	r.Data = shops
 	return nil
@@ -91,14 +84,14 @@ func (this *Partner) GetItems(m *jsv.Args, r *jsv.Result) error {
 	cid, _ := strconv.Atoi((*m)["cid"].(string))
 	num, _ := strconv.Atoi((*m)["num"].(string))
 
-	items := dao.Item().GetItemsByCid(partnerId, cid, num)
+	items := dproxy.SaleService.GetProductsByCid(partnerId, cid, num)
 	r.Result = true
 	r.Data = items
 
 	return nil
 }
 
-func (this *Partner) RegistMember(m *jsv.Args, r *jsv.Result) error {
+func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 
 	var err error
 
@@ -132,6 +125,29 @@ func (this *Partner) RegistMember(m *jsv.Args, r *jsv.Result) error {
 	return err
 }
 
+func (this *Partner) GetShoppingCart(m *jsv.Args, r *jsv.Result) error {
+	partnerId, err, _ := VerifyPartner(m)
+	if err != nil {
+		return err
+	}
+
+	var cartData string = (*m)["cart"].(string)
+	cart, err := dproxy.ShoppingService.ParseShoppingCart(partnerId, cartData)
+	if err != nil {
+		return err
+	}
+
+	totalFee, orderFee := cart.GetFee()
+
+	r.Data = dto.ShoppingCart{
+		TotalFee: totalFee,
+		OrderFee: orderFee,
+		Summary:  cart.GetSummary(),
+	}
+	r.Result = true
+	return nil
+}
+
 func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 	partnerId, err, _ := VerifyPartner(m)
 	if err != nil {
@@ -145,7 +161,7 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	order, err := dproxy.SpService.BuildOrder(partnerId,
+	order, err := dproxy.ShoppingService.BuildOrder(partnerId,
 		memberId, cartData, couponCode)
 	if err != nil {
 		return err
@@ -203,7 +219,7 @@ func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
 	couponCode := (*m)["coupon_code"].(string)
 	note := (*m)["note"].(string)
 
-	orderNo, err := dproxy.SpService.SubmitOrder(
+	orderNo, err := dproxy.ShoppingService.SubmitOrder(
 		partnerId, memberId, shopId, pay_method,
 		deliverAddrId, cart, couponCode, note)
 	if err != nil {
@@ -220,7 +236,7 @@ func (this *Partner) GetOrderByNo(m *jsv.Args, r *jsv.Result) error {
 	if err != nil {
 		return err
 	}
-	order := dproxy.SpService.GetOrderByNo(partnerId,
+	order := dproxy.ShoppingService.GetOrderByNo(partnerId,
 		(*m)["order_no"].(string))
 	if order != nil {
 		r.Result = true

@@ -5,15 +5,17 @@ import (
 	"com/domain/interface/enum"
 	"com/service/goclient"
 	"fmt"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 )
 
 func GetShops(c app.Context, partnerId int, secret string) []byte {
 	//分店
 	var buf *bytes.Buffer = bytes.NewBufferString("")
 	shops, err := goclient.Partner.GetShops(partnerId, secret)
-	if err != nil {
-		c.Log().Panicf("[Error]:%s", err.Error())
+	if shops == nil {
+		if err != nil {
+			c.Log().Panicf("[Error]:%s", err.Error())
+		}
 		return []byte("<div class=\"nodata noshop\">还未添加分店</div>")
 	}
 	buf.WriteString("<ul class=\"shops\">")

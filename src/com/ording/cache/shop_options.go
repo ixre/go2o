@@ -2,13 +2,13 @@ package cache
 
 import (
 	"bytes"
-	"com/ording/dao"
+	"com/ording/dproxy"
 	"fmt"
 	"strings"
 )
 
 func GetShopCheckboxs(partnerId int, chks string) []byte {
-	shops := dao.Shop().GetShopsOfPartner(partnerId)
+	shops := dproxy.PartnerService.GetShopsOfPartner(partnerId)
 	buf := bytes.NewBufferString("")
 
 	if len(chks) == 0 {
@@ -53,7 +53,7 @@ func GetShopCheckboxs(partnerId int, chks string) []byte {
 }
 
 func GetShopsJson(partnerId int) []byte {
-	shops := dao.Shop().GetShopsOfPartner(partnerId)
+	shops := dproxy.PartnerService.GetShopsOfPartner(partnerId)
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {
 		if i != 0 {
@@ -67,7 +67,7 @@ func GetShopsJson(partnerId int) []byte {
 
 func GetShopDropList(partnerId int, selected int) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops := dao.Shop().GetShopsOfPartner(partnerId)
+	shops := dproxy.PartnerService.GetShopsOfPartner(partnerId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

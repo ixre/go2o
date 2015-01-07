@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"com/domain/interface/enum"
 	"com/domain/interface/member"
+	"com/domain/interface/partner"
 	"com/infrastructure/format"
 	"com/ording"
 	"com/ording/cache/apicache"
@@ -21,7 +22,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 	"strconv"
 	"strings"
 	"time"
@@ -61,7 +62,7 @@ func (this *ordingC) List(w http.ResponseWriter, r *http.Request, p *entity.Part
 	}
 	buf := bytes.NewBufferString("<ul>")
 
-	noPicPath := this.Context.Config().Get(variable.NoPicPath)
+	noPicPath := this.Context.Config().GetString(variable.NoPicPath)
 
 	for _, v := range items {
 
@@ -79,7 +80,7 @@ func (this *ordingC) List(w http.ResponseWriter, r *http.Request, p *entity.Part
                         <a href="javascript:cart.add({'id':'%d','name':'%s','price':%s});" class="add">&nbsp;</a>
                 </div>
              </li>
-		`, this.Context.Config().Get(variable.ImageServer),
+		`, this.Context.Config().GetString(variable.ImageServer),
 			v.Image, v.Name, v.Name, v.Note, format.FormatFloat(v.Price),
 			format.FormatFloat(v.SalePrice),
 			v.Id, v.Name, format.FormatFloat(v.SalePrice)))
@@ -99,7 +100,7 @@ func (this *ordingC) Order(w http.ResponseWriter, r *http.Request,
 		}
 
 		cartData := ording.CartCookieFmt(ck.Value)
-		cart, err := goclient.Share.GetShoppingCart(cartData)
+		cart, err := goclient.Partner.GetShoppingCart(p.Id, p.Secret, cartData)
 		if err != nil {
 			w.Write([]byte("订单异常，请清空重新下单"))
 			return
@@ -123,7 +124,7 @@ func (this *ordingC) Order(w http.ResponseWriter, r *http.Request,
 }
 
 func (this *ordingC) OrderEmpty(w http.ResponseWriter, r *http.Request,
-	p *entity.Partner, mm *member.ValueMember, conf *entity.SiteConf) {
+	p *entity.Partner, mm *member.ValueMember, conf *partner.SiteConf) {
 	this.Context.Template().Execute(w, func(m *map[string]interface{}) {
 		(*m)["partner"] = p
 		(*m)["title"] = "订单确认-" + p.Name

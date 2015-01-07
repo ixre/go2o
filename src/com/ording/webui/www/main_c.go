@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"strings"
 	"time"
 )
@@ -22,6 +22,9 @@ type mainC struct {
 func (this *mainC) Index(w http.ResponseWriter, r *http.Request, p *entity.Partner) {
 	if b, siteConf := GetSiteConf(w, p); b {
 		shops := apicache.GetShops(this.Context, p.Id, p.Secret)
+		if shops == nil {
+			shops = []byte("{}")
+		}
 		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["conf"] = siteConf
@@ -97,7 +100,7 @@ func (this *mainC) PostRegistInfo_post(w http.ResponseWriter, r *http.Request, p
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		member.RegIp = r.RemoteAddr[:i]
 	}
-	b, err := goclient.Partner.RegistMember(&member, p.Id, 0, "")
+	b, err := goclient.Partner.RegisterMember(&member, p.Id, 0, "")
 	if b {
 		w.Write([]byte(`{"result":true}`))
 	} else {
@@ -119,11 +122,11 @@ func (this *mainC) Member(w http.ResponseWriter, r *http.Request, p *entity.Part
 		cookie, _ := r.Cookie("ms_token")
 		location = fmt.Sprintf("http://%s.%s/login/partner_connect?token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
-			this.Context.Config().Get(variable.ServerDomain),
+			this.Context.Config().GetString(variable.ServerDomain),
 			cookie.Value,
 		)
 	}
-	w.Write([]byte("<script>window.parent.location.href='" + location + "'</script>"))
+	w.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
 }
 
 //退出
@@ -138,6 +141,6 @@ func (this *mainC) Logout(w http.ResponseWriter, r *http.Request) {
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,
 		variable.DOMAIN_MEMBER_PREFIX,
-		this.Context.Config().Get(variable.ServerDomain),
+		this.Context.Config().GetString(variable.ServerDomain),
 	)))
 }

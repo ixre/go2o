@@ -76,7 +76,6 @@ func (this *Shopping) GetCart(s string) (shopping.ICart, error) {
 	length := len(matches)
 	var ids []int = make([]int, length) //ID数组
 	cart.Quantities = make(map[int]int, length)
-	//cart.Items = []entity.FoodItem{}
 
 	var id int
 	var qua int
@@ -144,6 +143,7 @@ func (this *Shopping) BuildOrder(memberId int, cartStr string,
 	val.MemberId = memberId
 	val.PartnerId = this._partnerId
 	val.Items = cartStr
+	val.Status = 1
 	order = this.CreateOrder(val, cart)
 
 	if len(couponCode) != 0 {

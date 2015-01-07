@@ -1,17 +1,17 @@
 package goclient
 
 import (
+	"com/domain/interface/member"
 	"com/ording/entity"
 	"com/service/goclient"
 	"com/share/glob"
 	"com/share/variable"
 	"fmt"
-	"ops/cf/net/jsv"
-	"ops/cf/web/pager"
+	"github.com/newmin/gof/net/jsv"
+	"github.com/newmin/gof/web/pager"
 	"strconv"
 	"strings"
 	"time"
-	"com/domain/interface/member"
 )
 
 func main() {
@@ -32,7 +32,7 @@ func main() {
 	return
 
 	context := glob.NewContext()
-	goclient.Configure("tcp", ":"+context.Config().Get(variable.SocketPort), context)
+	goclient.Configure("tcp", ":"+context.Config().GetString(variable.SocketPort), context)
 	context.DebugMode = true
 	jsv.Configure(context)
 

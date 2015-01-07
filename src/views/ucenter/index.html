@@ -1,3 +1,4 @@
+{{define "title"}}会员中心{{end}}
 {{template "header"$}}
 
 <div class="panel page-main">
@@ -27,7 +28,7 @@
 
 	<div class="m20">
 		[ <a href="profile.html">修改资料</a> ] &nbsp;
-		[ <a href="account/imcomelog.html">我的收入</a> ]
+		[ <a href="account/IncomeLog.html">我的收入</a> ]
 	</div>
 		
 	<div class="m20">
@@ -52,6 +53,6 @@
 .profile p{margin:0;padding:0;line-height:23px;}
 .profile label{width:100px;float:left;display:block;}
 </style>
-<script type="text/javascript" src="{{.static_serv}}/assets/js/core.js?ver=0.1"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/js/core.js?ver={{.version}}"></script>
 
 {{template "footer"$}}

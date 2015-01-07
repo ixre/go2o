@@ -36,11 +36,15 @@ type IOrder interface {
 	IsOver() bool
 	// 处理订单
 	Process() error
+
+	// 确认订单
+	Confirm() error
+
 	// 配送订单
 	Deliver() error
 	// 完成订单
-	Finish() error
+	Complete() error
 
 	// 取消订单
-	Cancel() error
+	Cancel(reason string) error
 }

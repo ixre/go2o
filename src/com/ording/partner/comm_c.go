@@ -5,8 +5,8 @@ import (
 	"com/ording/dao"
 	"encoding/json"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web/ui/tree"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web/ui/tree"
 )
 
 type commC struct {

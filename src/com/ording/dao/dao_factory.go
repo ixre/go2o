@@ -2,15 +2,13 @@ package dao
 
 import (
 	"com/share/glob"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 )
 
 var (
 	context      app.Context
 	member_dao   *memberDao
-	item_dao     *itemDao
 	partner_dao  *partnerDao
-	shop_dao     *shopDao
 	category_dao *categoryDao
 	order_dao    *orderDao
 	comm_dao     *commDao
@@ -27,13 +25,6 @@ func Member() *memberDao {
 	return member_dao
 }
 
-func Item() *itemDao {
-	if item_dao == nil {
-		item_dao = &itemDao{context.Db()}
-	}
-	return item_dao
-}
-
 func Category() *categoryDao {
 	if category_dao == nil {
 		category_dao = &categoryDao{context.Db()}
@@ -46,13 +37,6 @@ func Partner() *partnerDao {
 		partner_dao = &partnerDao{Context: context, Connector: context.Db()}
 	}
 	return partner_dao
-}
-
-func Shop() *shopDao {
-	if shop_dao == nil {
-		shop_dao = &shopDao{context.Db()}
-	}
-	return shop_dao
 }
 
 func Order() *orderDao {

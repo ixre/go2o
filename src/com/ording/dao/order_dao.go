@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"ops/cf/db"
+	"github.com/newmin/gof/db"
 )
 
 type orderDao struct {
@@ -48,7 +48,7 @@ func (this *orderDao) GetMemberPagerOrder(memberId, page, size int,
             FROM pt_order WHERE member_id=? %s %s LIMIT ?,?`,
 		dtStr, dtStr, dtStr, where, orderby),
 		func(_rows *sql.Rows) {
-			rows = db.ConvRowsToMapForJson(_rows)
+			rows = db.RowsToMarshalMap(_rows)
 			_rows.Close()
 		}, memberId, (page-1)*size, size)
 

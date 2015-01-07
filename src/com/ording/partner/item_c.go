@@ -1,15 +1,15 @@
 package partner
 
 import (
+	"com/domain/interface/sale"
 	"com/ording/cache"
-	"com/ording/dao"
-	"com/ording/entity"
+	"com/ording/dproxy"
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"strconv"
 	"time"
 )
@@ -48,14 +48,18 @@ func (this *itemC) Create(w http.ResponseWriter, r *http.Request, ptId int) {
 		})
 }
 
-func (this *itemC) Edit(w http.ResponseWriter, r *http.Request, ptId int) {
-	var e entity.FoodItem
+func (this *itemC) Edit(w http.ResponseWriter, r *http.Request, partnerId int) {
+	var e *sale.ValueProduct
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	e = dao.Item().GetFoodItemById(ptId, id)
+	e = dproxy.SaleService.GetValueProduct(partnerId, id)
+	if e == nil {
+		w.Write([]byte("商品不存在"))
+		return
+	}
 	js, _ := json.Marshal(e)
 
-	shopChks := cache.GetShopCheckboxs(ptId, e.ApplySubs)
-	cateOpts := cache.GetDropOptionsOfCategory(ptId)
+	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
+	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
 	this.Context.Template().Render(w,
 		"views/partner/item/update_item.html",
@@ -66,45 +70,44 @@ func (this *itemC) Edit(w http.ResponseWriter, r *http.Request, ptId int) {
 		})
 }
 
-func (this *itemC) SaveItem_post(w http.ResponseWriter, r *http.Request, ptId int) {
-	var result cf.JsonResult
+func (this *itemC) SaveItem_post(w http.ResponseWriter, r *http.Request, partnerId int) {
+	var result gof.JsonResult
 	r.ParseForm()
 
-	e := entity.FoodItem{}
+	e := sale.ValueProduct{}
 	web.ParseFormToEntity(r.Form, &e)
-
 	t := time.Now()
 	e.UpdateTime = t
 
 	//更新
 	if e.Id > 0 {
-		origin := dao.Item().GetFoodItemById(ptId, e.Id)
+		origin := dproxy.SaleService.GetValueProduct(partnerId, e.Id)
 		e.CreateTime = origin.CreateTime
 	} else {
 		e.CreateTime = t
 	}
 
-	id, err := dao.Item().SaveFoodItem(&e)
+	id, err := dproxy.SaleService.SaveProduct(partnerId, &e)
 
 	if err != nil {
-		result = cf.JsonResult{Result: true, Message: err.Error()}
+		result = gof.JsonResult{Result: true, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.JsonResult{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
 
-func (this *itemC) Del_post(w http.ResponseWriter, r *http.Request, ptId int) {
-	var result cf.JsonResult
+func (this *itemC) Del_post(w http.ResponseWriter, r *http.Request, partnerId int) {
+	var result gof.JsonResult
 
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
-	_, err := dao.Item().DelFoodItem(ptId, id)
+	err := dproxy.SaleService.DeleteProduct(partnerId, id)
 
 	if err != nil {
-		result = cf.JsonResult{Result: true, Message: err.Error()}
+		result = gof.JsonResult{Result: true, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.JsonResult{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }

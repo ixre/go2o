@@ -2,7 +2,7 @@ package ording
 
 import (
 	"fmt"
-	"ops/cf/crypto"
+	"github.com/newmin/gof/crypto"
 	"strings"
 	"time"
 )

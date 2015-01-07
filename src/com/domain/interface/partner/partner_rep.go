@@ -10,7 +10,6 @@
 package partner
 
 type IPartnerRep interface {
-
 	CreatePartner(*ValuePartner) IPartner
 
 	GetPartner(int) IPartner
@@ -24,4 +23,12 @@ type IPartnerRep interface {
 	GetSiteConf(int) *SiteConf
 
 	SaveSiteConf(*SiteConf) error
+
+	SaveShop(*ValueShop) (int, error)
+
+	GetValueShop(partnerId, shopId int) *ValueShop
+
+	GetShopsOfPartner(partnerId int) []*ValueShop
+
+	DeleteShop(partnerId, shopId int) error
 }

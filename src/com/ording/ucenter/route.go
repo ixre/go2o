@@ -2,13 +2,14 @@ package ucenter
 
 import (
 	"com/domain/interface/member"
+	"com/domain/interface/partner"
 	"com/ording/entity"
 	"com/service/goclient"
 	"net/http"
 	"net/url"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/mvc"
 	"strconv"
 	"strings"
 )
@@ -27,7 +28,7 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 		url.QueryEscape(r.URL.String()) + "'</script>"))
 }
 
-func RegistRoutes(c app.Context) {
+func RegisterRoutes(c app.Context) {
 	mc := &mainC{Context: c}
 	oc := &orderC{Context: c}
 	ac := &accountC{Context: c}
@@ -62,7 +63,7 @@ func RegistRoutes(c app.Context) {
 	})
 }
 
-func chkLogin(r *http.Request) (m *member.ValueMember, p *entity.Partner, conf *entity.SiteConf) {
+func chkLogin(r *http.Request) (m *member.ValueMember, p *entity.Partner, conf *partner.SiteConf) {
 	cookie, err := r.Cookie("ms_token")
 	if err != nil {
 		return nil, nil, nil

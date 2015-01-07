@@ -2,9 +2,9 @@ package weixin
 
 import (
 	_ "net/http"
-	"ops/cf/app"
-	"ops/cf/web"
-	_ "ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	_ "github.com/newmin/gof/web/mvc"
 )
 
 var (
@@ -12,7 +12,7 @@ var (
 )
 
 //注册路由
-func RegistRoutes(context app.Context) {
+func RegisterRoutes(context app.Context) {
 	//	var mc *MainController //= &MainController{Context: context} //入口控制器
 	//
 	//	routes.Add("^/", func(weixin http.ResponseWriter, r *http.Request) {

@@ -13,19 +13,37 @@ import (
 	"com/domain/interface/sale"
 )
 
+var _ sale.IProduct = new(Product)
+
 type Product struct {
-	val     *sale.ValueProduct
+	value   *sale.ValueProduct
 	saleRep sale.ISaleRep
+	sale    *Sale
 }
 
-func newProduct(val *sale.ValueProduct, saleRep sale.ISaleRep) sale.IProduct {
-	return &Product{val: val, saleRep: saleRep}
+func newProduct(sale *Sale, v *sale.ValueProduct, saleRep sale.ISaleRep) sale.IProduct {
+	return &Product{value: v,
+		saleRep: saleRep,
+		sale:    sale,
+	}
 }
 
 func (this *Product) GetDomainId() int {
-	return this.val.Id
+	return this.value.Id
 }
 
 func (this *Product) GetValue() sale.ValueProduct {
-	return *this.val
+	return *this.value
+}
+
+func (this *Product) SetValue(v *sale.ValueProduct) error {
+	if v.Id == this.value.Id {
+		this.value = v
+	}
+	return nil
+}
+
+func (this *Product) Save() (int, error) {
+	this.sale.clearCache(this.value.Id)
+	return this.saleRep.SaveProduct(this.value)
 }

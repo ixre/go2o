@@ -1,0 +1,27 @@
+{{define "title"}}申请提现{{end}}
+{{template "header"$}}
+<div class="panel page-main">
+	<div class="side">
+		{{template "menu"}}
+	</div>
+
+
+	<div class="main">
+		<h1>我的积分</h1>
+
+		<div class="line"></div>
+
+		<div class="summary">当前积分：<b>{{.account.Integral}}</b></div>
+		<br /><br />
+
+		<h1>兑换商品</h1>
+		<div class="line"></div>
+		备货中...
+		<br /><br /><br /><br />
+		<h1>兑换优惠券</h1>
+		<div class="line"></div>
+		备货中...
+	</div>
+</div>
+
+{{template "footer"$}}

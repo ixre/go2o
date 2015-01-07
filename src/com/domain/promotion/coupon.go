@@ -16,7 +16,7 @@ import (
 	"com/infrastructure/format"
 	"errors"
 	"fmt"
-	"ops/cf/math"
+	"github.com/newmin/gof/math"
 	"strconv"
 	"time"
 )
@@ -167,13 +167,13 @@ func (this *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 	stUnix := cv.BeginTime.Unix()
 	ovUnix := cv.OverTime.Unix()
 
-	if dtUnix < stUnix{
+	if dtUnix < stUnix {
 		return false, errors.New(fmt.Sprintf("优惠券必须在%s~%s使用",
 			cv.BeginTime.Format("2006-01-02"),
 			cv.OverTime.Format("2006-01-02")),
 		)
-	}else if  dtUnix > ovUnix{
-		return false,errors.New("优惠拳已过期")
+	} else if dtUnix > ovUnix {
+		return false, errors.New("优惠拳已过期")
 	}
 
 	if cv.NeedBind == 0 && cv.Amount == 0 {
@@ -185,7 +185,7 @@ func (this *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 	}
 
 	if fee < float32(cv.MinFee) {
-		return false, errors.New(fmt.Sprintf("订单金额需达到￥%d",cv.MinFee))
+		return false, errors.New(fmt.Sprintf("订单金额需达到￥%d", cv.MinFee))
 	}
 
 	return true, nil

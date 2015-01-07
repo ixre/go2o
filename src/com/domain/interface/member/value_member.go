@@ -39,11 +39,11 @@ type ValueMember struct {
 }
 
 type BankInfo struct {
-	MemberId           int       `db:"member_id" pk:"yes"`
-	Name               string    `db:"name"`
-	MemberRelation     string    `db:"account"`
-	MemberRelationName string    `db:"account_name"`
-	Network            string    `db:"network"`
-	State              int       `db:"state"`
-	UpdateTime         time.Time `db:"update_time"`
+	MemberId    int       `db:"member_id" pk:"yes"`
+	Name        string    `db:"name"`
+	Account     string    `db:"account"`
+	AccountName string    `db:"account_name"`
+	Network     string    `db:"network"`
+	State       int       `db:"state"`
+	UpdateTime  time.Time `db:"update_time"`
 }

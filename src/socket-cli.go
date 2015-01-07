@@ -10,7 +10,7 @@
 package main
 
 import (
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 )
 
 func main() {

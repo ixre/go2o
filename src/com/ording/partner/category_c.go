@@ -6,12 +6,12 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/ui/tree"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/ui/tree"
 	"strconv"
 	"time"
+	"github.com/newmin/gof"
 )
 
 type categoryC struct {
@@ -69,7 +69,7 @@ func (this *categoryC) EditCategory(w http.ResponseWriter, r *http.Request, ptId
 
 //修改门店信息
 func (this *categoryC) SaveCategory_post(w http.ResponseWriter, r *http.Request, ptId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 
 	e := entity.Category{}
@@ -87,15 +87,15 @@ func (this *categoryC) SaveCategory_post(w http.ResponseWriter, r *http.Request,
 
 	id, err := dao.Category().SaveCategory(&e)
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.JsonResult{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
 
 func (this *categoryC) DelCategory_post(w http.ResponseWriter, r *http.Request, ptId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 	categoryId, _ := strconv.Atoi(r.Form.Get("id"))
 
@@ -104,9 +104,9 @@ func (this *categoryC) DelCategory_post(w http.ResponseWriter, r *http.Request, 
 
 	//id, err := dao.SaveCategory(&entity)
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: ""}
+		result = gof.JsonResult{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

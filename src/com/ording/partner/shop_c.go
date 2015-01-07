@@ -4,14 +4,14 @@ package partner
 //http://www.cnblogs.com/golove/archive/2013/08/20/3270918.html
 
 import (
-	"com/ording/dao"
-	"com/ording/entity"
+	"com/domain/interface/partner"
+	"com/ording/dproxy"
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"strconv"
 	"time"
 )
@@ -35,9 +35,9 @@ func (this *shopC) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 //修改门店信息
-func (this *shopC) Modify(w http.ResponseWriter, r *http.Request) {
+func (this *shopC) Modify(w http.ResponseWriter, r *http.Request, partnerId int) {
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	shop := dao.Shop().GetShopById(id)
+	shop := dproxy.PartnerService.GetShopValueById(partnerId, id)
 	entity, _ := json.Marshal(shop)
 
 	this.Context.Template().Render(w,
@@ -49,15 +49,15 @@ func (this *shopC) Modify(w http.ResponseWriter, r *http.Request) {
 
 //修改门店信息
 func (this *shopC) SaveShop_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 
-	shop := entity.Shop{}
+	shop := partner.ValueShop{}
 	web.ParseFormToEntity(r.Form, &shop)
 
 	//更新
 	if shop.Id > 0 {
-		orgialShop := dao.Shop().GetShopById(shop.Id)
+		orgialShop := dproxy.PartnerService.GetShopValueById(partnerId, shop.Id)
 		shop.CreateTime = orgialShop.CreateTime
 		shop.PartnerId = orgialShop.PartnerId
 	} else {
@@ -65,11 +65,11 @@ func (this *shopC) SaveShop_post(w http.ResponseWriter, r *http.Request, partner
 		shop.PartnerId = partnerId
 	}
 
-	id, err := dao.Shop().SaveShop(&shop)
+	id, err := dproxy.PartnerService.SaveShop(partnerId, &shop)
 	if err != nil {
-		result = cf.JsonResult{Result: true, Message: err.Error()}
+		result = gof.JsonResult{Result: true, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.JsonResult{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
@@ -78,7 +78,7 @@ func (this *shopC) Del_post(w http.ResponseWriter, r *http.Request, partnerId in
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		err = dao.Shop().DeleteShop(partnerId, shopId)
+		err = dproxy.PartnerService.DeleteShop(partnerId, shopId)
 	}
 
 	if err != nil {

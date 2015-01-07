@@ -2,13 +2,11 @@ package server
 
 import (
 	"com/domain/interface/member"
-	"com/ording/dao"
 	"com/ording/dproxy"
-	"com/ording/entity"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"ops/cf/crypto"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/crypto"
+	"github.com/newmin/gof/net/jsv"
 	"strconv"
 	"strings"
 	"time"
@@ -30,7 +28,6 @@ func (this *Member) Login(m *jsv.Args, r *jsv.Result) error {
 		rds := Redis().Get()
 		rds.Do("SETEX", fmt.Sprintf("member$%d_session_key", e.Id), 3600*300, md5)
 		r.Data = fmt.Sprintf("%d$%s", e.Id, md5)
-
 		if jsv.Context.Debug() {
 			jsv.Printf("[Member][Login]%d -- %s", e.Id, md5)
 		}
@@ -89,13 +86,36 @@ func (this *Member) GetBankInfo(m *jsv.Args, r *jsv.Result) error {
 	return nil
 }
 
+func (this *Member) SaveBankInfo(m *jsv.Args, r *jsv.Result) error {
+	memberId, err := Verify(m)
+	if err != nil {
+		return err
+	}
+
+	var e member.BankInfo
+	err = jsv.UnmarshalMap((*m)["json"], &e)
+	if err != nil {
+		return err
+	}
+	e.MemberId = memberId
+	err = dproxy.MemberService.SaveBankInfo(&e)
+
+	if err != nil {
+		jsv.LogErr(err)
+		return err
+	} else {
+		r.Result = true
+	}
+	return nil
+}
+
 func (this *Member) GetBindPartner(m *jsv.Args, r *jsv.Result) error {
 	memberId, err := Verify(m)
 	if err != nil {
 		return err
 	}
 	re := dproxy.MemberService.GetRelation(memberId)
-	e := dao.Partner().GetPartnerById(re.Reg_PtId)
+	e := dproxy.PartnerService.GetPartner(re.Reg_PtId)
 
 	if e != nil {
 		e.Pwd = ""
@@ -141,7 +161,7 @@ func (this *Member) GetDeliverAddrs(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	r.Result = true
-	r.Data = dao.Member().GetDeliverAddrs(memberId)
+	r.Data = dproxy.MemberService.GetDeliverAddrs(memberId)
 	return nil
 }
 
@@ -155,7 +175,7 @@ func (this *Member) GetDeliverAddrById(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	r.Result = true
-	r.Data = dao.Member().GetDeliverAddrById(memberId, addrId)
+	r.Data = dproxy.MemberService.GetDeliverAddrById(memberId, addrId)
 	return nil
 }
 
@@ -165,14 +185,14 @@ func (this *Member) SaveDeliverAddr(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	var e entity.DeliverAddress
+	var e member.DeliverAddress
 	err = jsv.UnmarshalMap((*m)["json"], &e)
 	if err != nil {
 		return err
 	}
-	e.Mid = memberId
+	e.MemberId = memberId
 
-	_, err = dao.Member().SaveDeliverAddr(&e)
+	_, err = dproxy.MemberService.SaveDeliverAddr(memberId, &e)
 	if err != nil {
 		jsv.LogErr(err)
 		r.Message = err.Error()
@@ -192,7 +212,7 @@ func (this *Member) DeleteDeliverAddr(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	if err = dao.Member().DeleteDeliverAddr(memberId, addrId); err == nil {
+	if err = dproxy.MemberService.DeleteDeliverAddr(memberId, addrId); err == nil {
 		r.Result = true
 	} else {
 		r.Data = err.Error()

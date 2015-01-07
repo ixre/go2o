@@ -25,9 +25,6 @@ type IMemberRep interface {
 	// 获取下一个等级
 	GetNextLevel(levelVal int) *MemberLevel
 
-	// 获取配送地址
-	GetDeliverAddr(memberId, deliverAddId int) *DeliverAddress
-
 	// 获取账户
 	GetAccount(memberId int) *Account
 
@@ -60,4 +57,16 @@ type IMemberRep interface {
 
 	// 保存绑定
 	SaveRelation(*MemberRelation) error
+
+	// 保存地址
+	SaveDeliver(*DeliverAddress) (int, error)
+
+	// 获取全部配送地址
+	GetDeliverAddrs(memberId int) []DeliverAddress
+
+	// 获取配送地址
+	GetDeliverAddr(memberId, deliverId int) *DeliverAddress
+
+	// 删除配送地址
+	DeleteDeliver(memberId, deliverId int) error
 }

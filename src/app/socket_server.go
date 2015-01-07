@@ -14,17 +14,17 @@ import (
 	"com/service"
 	"com/share/glob"
 	"fmt"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 	"os"
 	_ "runtime/debug"
 	"strconv"
 )
 
-func RunSocket(ctx app.Context, port int, debug bool) {
+func RunSocket(ctx app.Context, port int, debug, trace bool) {
 
 	if gcx, ok := ctx.(*glob.AppContext); ok {
 		if !gcx.Loaded {
-			gcx.Init(debug)
+			gcx.Init(debug, trace)
 		}
 	} else {
 		fmt.Println("app context err")
@@ -40,6 +40,5 @@ func RunSocket(ctx app.Context, port int, debug bool) {
 		fmt.Println("[Started]:Socket server running on port [" +
 			strconv.Itoa(port) + "]:")
 	}
-
 	service.ServerListen("tcp", ":"+strconv.Itoa(port), ctx)
 }

@@ -6,9 +6,9 @@ import (
 	"com/ording/entity"
 	"com/service/goclient"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/mvc"
 	"strconv"
 	"strings"
 )
@@ -28,7 +28,7 @@ func handleError(w http.ResponseWriter, err error) {
 }
 
 //注册路由
-func RegistRoutes(c app.Context) {
+func RegisterRoutes(c app.Context) {
 	mc := &mainC{Context: c}
 	dc := &ordingC{Context: c}
 	sp := &shoppingC{Context: c}

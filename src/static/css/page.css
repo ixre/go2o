@@ -20,7 +20,8 @@ mask,.mask{background:url(/framework/assets/images/mask.gif);
 div.line{border-top:solid 1px #ddd;border-bottom:solid 1px #fff;height:0px;overflow:hidden;}
 /* é«˜äº®æ˜¾ç¤º */
 .hight_light,.search_hightlight,.special{color:Red;}
-img.full{width:100%;}
+img.full{width:100%;}/*验证无外框*/
+*:required { /* insert your own styles for invalid form input */ -moz-box-shadow: none; }
 
 /* +++++++++++++ Layout ++++++++++++++ */
 
@@ -91,3 +92,19 @@ text-indent: 2em;}
 li.drop,li.hover{position: relative;}
 li.drop div.menu{position:absolute;top:20px;left:0px;z-index:100;display:none;}
 li.drop:hover div.menu,li.hover div.menu{display:block;}
+
+
+/* validate */
+.validator{font-size:120%;margin-left:1em;}
+.valid-error{border-radius: 10px;background:#ff0000;color:#fff;padding:3px 10px;line-height:25px;}
+.valid-right{color:green;}
+
+.form{}
+.form .fl{padding:8px 0;margin:0;}
+.form .fl div.label{width:80px;text-align: right;float:left;font-weight:bold;}
+.form .fl div.in{margin-left:90px;}
+.form .fl div.in div{padding:0;font-size:100%;color:#666;line-height:150%;}
+.form .red,.form .fl div.in .red{color:red;}
+.form .title{color:#006699;margin:20px 10px 10px 10px;padding:0 20px 20px 8px;margin-left:10px;
+       font-weight:bold;background:url(/framework/mui/css/latest/panel_item_line.gif) left bottom no-repeat;}
+.form .title span.icon{padding:0 10px;line-height:16px;background:url(/framework/assets/icons/admin/protected.gif) left 0px no-repeat;}

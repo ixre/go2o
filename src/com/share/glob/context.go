@@ -2,11 +2,11 @@ package glob
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/db"
-	"ops/cf/log"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/db"
+	"github.com/newmin/gof/log"
+	"github.com/newmin/gof/web"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 // impment of web.Application
 type AppContext struct {
 	Loaded      bool
-	config      *cf.Config
+	config      *gof.Config
 	Redis       *redis.Pool
 	dbConnector db.Connector
 	debugMode   bool
@@ -34,7 +34,7 @@ func (this *AppContext) Template() *web.TemplateWrapper {
 	return this.template
 }
 
-func (this *AppContext) Config() *cf.Config {
+func (this *AppContext) Config() *gof.Config {
 	return this.config
 }
 
@@ -50,20 +50,24 @@ func (this *AppContext) Log() log.ILogger {
 	if this.logger == nil {
 		var flag int = 0
 		if this.debugMode {
-			flag = log.LOpen | log.LSource | log.LStdFlags
+			flag = log.LOpen | log.LESource | log.LStdFlags
 		}
-		this.logger = log.NewLogger(nil, "O2O", flag)
+		this.logger = log.NewLogger(nil, " O2O", flag)
 	}
 	return this.logger
 }
 
-func (this *AppContext) Init(debug bool) {
+func (this *AppContext) Init(debug, trace bool) {
 	this.debugMode = debug
 	cfg := this.config
 	activeContext.Redis = createRedisPool(cfg)
+	//todo: check redis connected
 	activeContext.template = initTemplate(cfg)
 	activeContext.dbConnector = getDb(cfg, this.Log())
-	activeContext.Db().GetOrm().SetTrace(this.debugMode)
+
+	if trace {
+		activeContext.Db().GetOrm().SetTrace(this.debugMode)
+	}
 
 	this.Loaded = true
 }
@@ -71,7 +75,9 @@ func (this *AppContext) Init(debug bool) {
 //create a new context of application
 func NewContext() *AppContext {
 	if activeContext == nil {
-		cfg, err := cf.NewConfig("conf/boot.conf")
+		cfg, err := gof.NewConfig("conf/boot.conf")
+		cfg.Set("exp_fee_bit", float64(1.5))
+
 		if err != nil {
 			log.Fatalln("[Error]:", err.Error())
 		}

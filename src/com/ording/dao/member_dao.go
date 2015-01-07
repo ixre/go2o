@@ -2,10 +2,9 @@ package dao
 
 import (
 	"com/ording"
-	"com/ording/entity"
 	"database/sql"
 	"fmt"
-	"ops/cf/db"
+	"github.com/newmin/gof/db"
 )
 
 type memberDao struct {
@@ -34,7 +33,7 @@ func (this *memberDao) GetIncomeLog(memberId, page, size int,
 			WHERE member_id=? %s %s LIMIT ?,?`, "'%Y-%m-%d %T'",
 		where, orderby),
 		func(_rows *sql.Rows) {
-			rows = db.ConvRowsToMapForJson(_rows)
+			rows = db.RowsToMarshalMap(_rows)
 			_rows.Close()
 		}, memberId, (page-1)*size, size)
 
@@ -50,41 +49,4 @@ func (this *memberDao) Verify(usr, pwd string) bool {
 		return false
 	}
 	return id != 0
-}
-
-/*********** 收货地址 ***********/
-func (this *memberDao) GetDeliverAddrs(memberId int) []entity.DeliverAddress {
-	addresses := []entity.DeliverAddress{}
-	this.Connector.GetOrm().Select(&addresses, entity.DeliverAddress{}, fmt.Sprintf("member_id=%d", memberId))
-	return addresses
-}
-
-//获取配送地址
-func (this *memberDao) GetDeliverAddrById(memberId, deliverId int) *entity.DeliverAddress {
-	addr := new(entity.DeliverAddress)
-	if this.Connector.GetOrm().Get(addr, deliverId) == nil && addr.Mid == memberId {
-		return addr
-	}
-	return nil
-}
-
-//保存配送地址
-func (this *memberDao) SaveDeliverAddr(e *entity.DeliverAddress) (int, error) {
-	orm := this.Connector.GetOrm()
-	if e.Id <= 0 {
-		//多行字符用
-		_, id, err := orm.Save(nil, e)
-		return int(id), err
-	} else {
-		_, _, err := orm.Save(e.Id, e)
-		return e.Id, err
-	}
-}
-
-//删除配送地址
-func (this *memberDao) DeleteDeliverAddr(memberId int, deliverAddrId int) error {
-	_, err := this.Connector.ExecNonQuery(
-		"DELETE FROM mm_deliver_addr WHERE mid=? AND id=?",
-		memberId, deliverAddrId)
-	return err
 }

@@ -11,9 +11,12 @@ package member
 
 import (
 	"com/domain/interface/member"
+	"com/infrastructure/domain"
 	"errors"
 	"time"
 )
+
+var _ member.IMember = new(Member)
 
 type Member struct {
 	value    *member.ValueMember
@@ -28,6 +31,10 @@ func NewMember(val *member.ValueMember, rep member.IMemberRep) member.IMember {
 		value: val,
 		rep:   rep,
 	}
+}
+
+func (this *Member) GetAggregateRootId() int {
+	return this.value.Id
 }
 
 func (this *Member) GetValue() member.ValueMember {
@@ -69,7 +76,18 @@ func (this *Member) GetBank() member.BankInfo {
 
 // 保存提现银行信息
 func (this *Member) SaveBank(v *member.BankInfo) error {
-	this.bank = v
+	this.GetBank()
+
+	if this.bank == nil {
+		this.bank = v
+	} else {
+		this.bank.Account = v.Account
+		this.bank.AccountName = v.AccountName
+		this.bank.Network = v.Network
+		this.bank.State = v.State
+	}
+	this.bank.UpdateTime = time.Now()
+	//this.bank.MemberId = this.value.Id
 	return this.rep.SaveBankInfo(this.bank)
 }
 
@@ -86,6 +104,10 @@ func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {
 func (this *Member) AddExp(exp int) error {
 	this.value.Exp += exp
 	_, err := this.Save()
+
+	//判断是否升级
+	this.checkLevel()
+
 	return err
 }
 
@@ -109,9 +131,6 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 		acc.Integral = acc.Integral + integral
 		err = this.SaveAccount()
 	}
-
-	//判断是否升级
-	this.checkLevel()
 
 	return err
 }
@@ -140,6 +159,27 @@ func (this *Member) Save() (int, error) {
 	}
 
 	return this.create(this.value)
+}
+
+// 修改密码,旧密码可为空
+func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
+	var err error
+
+	if b, err := domain.ChkPwdRight(newPwd); !b {
+		return err
+	}
+
+	if len(oldPwd) != 0 {
+		dyp := domain.EncodeMemberPwd(this.value.Usr, oldPwd)
+		if dyp != this.value.Pwd {
+			return errors.New("原密码不正确")
+		}
+	}
+
+	this.value.Pwd = domain.EncodeMemberPwd(this.value.Usr, newPwd)
+	_, err = this.Save()
+
+	return err
 }
 
 // 创建会员
@@ -174,4 +214,34 @@ func (this *Member) SaveRelation(r *member.MemberRelation) error {
 	this.relation = r
 	this.relation.MemberId = this.value.Id
 	return this.rep.SaveRelation(this.relation)
+}
+
+// 创建配送地址
+func (this *Member) CreateDeliver(v *member.DeliverAddress) member.IDeliver {
+	return newDeliver(v, this.rep)
+}
+
+// 获取配送地址
+func (this *Member) GetDeliverAddrs() []member.IDeliver {
+	var vls []member.DeliverAddress
+	vls = this.rep.GetDeliverAddrs(this.GetAggregateRootId())
+	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
+	for i, v := range vls {
+		arr[i] = this.CreateDeliver(&v)
+	}
+	return arr
+}
+
+// 获取配送地址
+func (this *Member) GetDeliver(deliverId int) member.IDeliver {
+	v := this.rep.GetDeliverAddr(this.GetAggregateRootId(), deliverId)
+	if v != nil {
+		return this.CreateDeliver(v)
+	}
+	return nil
+}
+
+// 删除配送地址
+func (this *Member) DeleteDeliver(deliverId int) error {
+	return this.rep.DeleteDeliver(this.GetAggregateRootId(), deliverId)
 }

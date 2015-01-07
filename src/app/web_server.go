@@ -23,18 +23,19 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
 	API_DOMAIN string
 )
 
-func RunWeb(ctx app.Context, port int, debug bool) {
+func RunWeb(ctx app.Context, port int, debug, trace bool) {
 	var (
 		proxy *web.HttpHandleProxy
 	)
@@ -43,7 +44,7 @@ func RunWeb(ctx app.Context, port int, debug bool) {
 
 	if gcx, ok := ctx.(*glob.AppContext); ok {
 		if !gcx.Loaded {
-			gcx.Init(debug)
+			gcx.Init(debug, trace)
 		}
 	} else {
 		fmt.Println("app context err")
@@ -60,13 +61,14 @@ func RunWeb(ctx app.Context, port int, debug bool) {
 	}
 
 	//socket client
-	API_DOMAIN = ctx.Config().Get(variable.ApiDomain)
-	goclient.Configure("tcp", ctx.Config().Get(variable.ClientSocketServer), ctx)
+	time.Sleep(time.Second * 2) //等待启动Socket
+	API_DOMAIN = ctx.Config().GetString(variable.ApiDomain)
+	goclient.Configure("tcp", ctx.Config().GetString(variable.ClientSocketServer), ctx)
 
 	proxy = getHttpProxy()
 
 	//注册路由
-	registRoutes(ctx)
+	RegisterRoutes(ctx)
 	http.HandleFunc("/", proxy.For(nil))
 
 	//启动服务
@@ -122,11 +124,11 @@ func getHttpProxy() *web.HttpHandleProxy {
 	}
 }
 
-func registRoutes(context app.Context) {
-	partner.RegistRoutes(context)
-	ucenter.RegistRoutes(context)
-	www.RegistRoutes(context)
-	mobi.RegistRoutes(context)
-	weixin.RegistRoutes(context)
-	apiserv.RegistRoutes(context)
+func RegisterRoutes(context app.Context) {
+	partner.RegisterRoutes(context)
+	ucenter.RegisterRoutes(context)
+	www.RegisterRoutes(context)
+	mobi.RegisterRoutes(context)
+	weixin.RegisterRoutes(context)
+	apiserv.RegisterRoutes(context)
 }

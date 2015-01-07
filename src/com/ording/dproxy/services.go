@@ -11,29 +11,30 @@ package dproxy
 
 import (
 	"com/repository"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 )
 
 var (
-	Context       app.Context
-	PromService   *promotionService
-	SpService     *shoppingService
-	MemberService *memberService
-	PartnerService *partnerService
+	Context         app.Context
+	PromService     *promotionService
+	ShoppingService *shoppingService
+	MemberService   *memberService
+	PartnerService  *partnerService
+	SaleService     *saleService
 )
 
 func Init(ctx app.Context) {
 	Context := ctx
 	db := Context.Db()
-	partnerRep := &repository.PartnerRep{Connector: db}
+	partnerRep := repository.NewPartnerRep(db)
 	memberRep := &repository.MemberRep{Connector: db}
 	promRep := &repository.PromotionRep{Connector: db, MemberRep: memberRep}
-	saleRep := &repository.SaleRep{Connector: db}
-	spRep := &repository.ShoppingRep{Connector: db, PartnerRep: partnerRep,
-		SaleRep: saleRep, PromRep: promRep, MemberRep: memberRep}
+	saleRep := repository.NewSaleRep(db)
+	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, promRep, memberRep)
 
 	PromService = &promotionService{promRep: promRep}
-	SpService = &shoppingService{spRep: spRep}
+	ShoppingService = &shoppingService{spRep: spRep}
 	MemberService = &memberService{memberRep: memberRep}
-	PartnerService = &partnerService{partnerRep:partnerRep}
+	PartnerService = &partnerService{partnerRep: partnerRep}
+	SaleService = &saleService{saleRep: saleRep}
 }

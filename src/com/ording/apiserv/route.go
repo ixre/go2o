@@ -2,9 +2,9 @@ package apiserv
 
 import (
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/mvc"
 )
 
 var (
@@ -22,7 +22,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 //		url.QueryEscape(r.URL.String()) + "'</script>"))
 //}
 
-func RegistRoutes(c app.Context) {
+func RegisterRoutes(c app.Context) {
 	ws := &websocketC{Context: c}
 
 	routes.Add("^/ws/", func(w http.ResponseWriter, r *http.Request) {

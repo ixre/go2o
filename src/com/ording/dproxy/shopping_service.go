@@ -58,12 +58,14 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 
 		status := order.GetValue().Status
 		switch status + 1 {
+		case enum.ORDER_CONFIRMED:
+			err = order.Confirm()
 		case enum.ORDER_PROCESSING:
 			err = order.Process()
 		case enum.ORDER_SENDING:
 			err = order.Deliver()
-		case enum.ORDER_FINISH:
-			err = order.Finish()
+		case enum.ORDER_COMPLETED:
+			err = order.Complete()
 		}
 	}
 	return err
@@ -81,11 +83,16 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 	return &v
 }
 
-func (this *shoppingService) CancelOrder(partnerId int, orderNo string) error {
+func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason string) error {
 	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
-		err = order.Cancel()
+		err = order.Cancel(reason)
 	}
 	return err
+}
+
+func (this *shoppingService) ParseShoppingCart(partnerId int, cartData string) (shopping.ICart, error) {
+	sp := this.spRep.GetShopping(partnerId)
+	return sp.GetCart(cartData)
 }

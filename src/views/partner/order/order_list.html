@@ -15,11 +15,12 @@
                     <span class="title">订单状态：</span>
                     <select field="status">
                         <option value="100">一所有状态一</option>
-                        <option value="0">待确认</option>
-                        <option value="1">等待配送</option>
-                        <option value="2">配送中</option>
-                        <option value="3" style="color:green">已完成</option>
-                        <option value="-1" style="color:#ff0000">已作废</option>
+                        <option value="1">待确认</option>
+                        <option value="2">已确认</option>
+                        <option value="3">处理中</option>
+                        <option value="4">配送中</option>
+                        <option value="5" style="color:green">已完成</option>
+                        <option value="0" style="color:#ff0000">已作废</option>
                     </select>
                 </li>
                 <li>
@@ -41,12 +42,12 @@
         <div class="clearfix"></div>
     </div>
 
-<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/core_full.js"></script>
 <script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="{{.static_serv}}/assets/easyui/locale/easyui-lang-zh_CN.js"></script>
-<script src="{{.static_serv}}/assets/js/export.js"></script>
-<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/export.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
 
 
 <script>
@@ -141,9 +142,9 @@
                         {field:'id1',title:'操作',width:80,align:'center',
                             formatter:function(v,r){
                                 var html='';
-                                if(r.status!=-1){
+                                if(r.status!=0){
                                     html+='<a href="javascript:editRecord(\''+r.order_no+'\')">设置</a> | ';
-                                    html+='<a href="javascript:signDel(\''+r.order_no+'\')">作废</a>';
+                                    html+='<a href="javascript:signDel(\''+r.order_no+'\')">取消</a>';
                                 }else{
                                     html='-';
                                 }
@@ -160,29 +161,10 @@
             $JS.dialog.create2('订单操作',true,true).open('/pt/order/view?order_no=' + id, 600,400);
         }
 
-        /*
-        function delRecord(id) {
-            $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(r) {
-                if (r) {
-                    $JS.xhr.jsonPost('pt/shop/del', { id: id }, function(json) {
-                        if (json.result) {
-                            expr.reload('gd');
-                        }
-                    });
-                }
-            });
-        }*/
+
 
        function signDel(id){
-			$.messager.confirm('操作提示', '您确定要将此订单作废吗？',function(r){
-				 if (r) {
-                    $JS.xhr.jsonPost('SignDeleted', { order_no: id }, function(json) {
-                        if (json.result) {
-                            expr.reload('gd');
-                        }
-                    });
-                }
-			});
+           $JS.dialog.create2('订单取消',true,true).open('/pt/order/cancel?order_no=' + id, 600,400);
 		}
 
         setInterval(refresh,60000);

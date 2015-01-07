@@ -12,7 +12,7 @@ package partner
 //合作商网站配置
 type SiteConf struct {
 	//合作商编号
-	PtId int `db:"pt_id" auto:"no" pk:"yes"`
+	PartnerId int `db:"pt_id" auto:"no" pk:"yes"`
 
 	//主机
 	Host string `db:"host"`

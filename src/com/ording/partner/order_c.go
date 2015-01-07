@@ -12,12 +12,11 @@ package partner
 import (
 	"com/domain/interface/enum"
 	"com/ording/cache"
-	"com/ording/dao"
 	"com/ording/dproxy"
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 	"strings"
 )
 
@@ -34,22 +33,27 @@ func (this *orderC) List(w http.ResponseWriter, r *http.Request, partnerId int) 
 		}, "views/partner/order/order_list.html")
 }
 
-func (this *orderC) SignDeleted_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	r.ParseForm()
+func (this *orderC) Cancel(w http.ResponseWriter, r *http.Request, partnerId int) {
+	this.Context.Template().Execute(w, nil, "views/partner/order/cancel.html")
 
-	err := dproxy.SpService.CancelOrder(partnerId,
-		r.FormValue("order_no"))
+}
+
+func (this *orderC) Cancel_post(w http.ResponseWriter, r *http.Request, partnerId int) {
+	r.ParseForm()
+	reason := r.FormValue("reason")
+	err := dproxy.ShoppingService.CancelOrder(partnerId,
+		r.FormValue("order_no"), reason)
 
 	if err == nil {
 		w.Write([]byte("{result:true}"))
 	} else {
-		w.Write([]byte("{result:false}"))
+		w.Write([]byte(`{result:false,message:"` + err.Error() + `"}`))
 	}
 }
 
 func (this *orderC) View(w http.ResponseWriter, r *http.Request, partnerId int) {
 	r.ParseForm()
-	e := dproxy.SpService.GetOrderByNo(partnerId, r.FormValue("order_no"))
+	e := dproxy.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
 		w.Write([]byte("无效订单"))
 		return
@@ -74,10 +78,10 @@ func (this *orderC) View(w http.ResponseWriter, r *http.Request, partnerId int) 
 	if e.ShopId == 0 {
 		shopName = "未指定"
 	} else {
-		shopName = dao.Shop().GetShopById(e.ShopId).Name
+		shopName = dproxy.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 	}
 	payment = enum.GetPaymentName(e.PayMethod)
-	orderStateText = enum.GetOrderStatusName(e.Status)
+	orderStateText = enum.OrderState(e.Status).String()
 
 	this.Context.Template().Execute(w,
 		func(m *map[string]interface{}) {
@@ -92,7 +96,7 @@ func (this *orderC) View(w http.ResponseWriter, r *http.Request, partnerId int) 
 
 func (this *orderC) Setup(w http.ResponseWriter, r *http.Request, partnerId int) {
 	r.ParseForm()
-	e := dproxy.SpService.GetOrderByNo(partnerId, r.FormValue("order_no"))
+	e := dproxy.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
 		w.Write([]byte("无效订单"))
 		return
@@ -107,7 +111,7 @@ func (this *orderC) Setup(w http.ResponseWriter, r *http.Request, partnerId int)
 
 func (this *orderC) OrderSetup_post(w http.ResponseWriter, r *http.Request, partnerId int) {
 	r.ParseForm()
-	err := dproxy.SpService.HandleOrder(partnerId, r.FormValue("order_no"))
+	err := dproxy.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
 	if err != nil {
 		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
 	} else {

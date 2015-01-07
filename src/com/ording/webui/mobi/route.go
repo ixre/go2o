@@ -4,9 +4,9 @@ import (
 	"com/ording/dao"
 	"com/ording/entity"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/mvc"
 )
 
 var (
@@ -23,7 +23,7 @@ func handleError(w http.ResponseWriter, err error) {
 }
 
 //注册路由
-func RegistRoutes(c app.Context) {
+func RegisterRoutes(c app.Context) {
 	mc := &mainC{Context: c}
 
 	getPartner := func(r *http.Request) (*entity.Partner, error) {

@@ -4,8 +4,8 @@ import (
 	"com/service/server"
 	"io"
 	"net"
-	"ops/cf/app"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/net/jsv"
 	"time"
 )
 
@@ -21,10 +21,10 @@ const (
 func ServerListen(n, host string, c app.Context) {
 	context = c
 	jsv.Configure(c)
-	serv := jsv.NewServer()
-	serv.RegisterName("Member", &server.Member{})
-	serv.RegisterName("Partner", &server.Partner{})
-	serv.RegisterName("Share", &server.Share{})
+	serve := jsv.NewServer()
+	serve.RegisterName("Member", &server.Member{})
+	serve.RegisterName("Partner", &server.Partner{})
+	serve.RegisterName("Share", &server.Share{})
 
 	addr, err := net.ResolveTCPAddr(n, host)
 	checkErr(err)
@@ -39,22 +39,22 @@ func ServerListen(n, host string, c app.Context) {
 			continue
 		}
 		// set timeout
-		t := time.Now().Add(120 * time.Second)
-		conn.SetReadDeadline(t)
-		conn.SetWriteDeadline(t)
-		go receiveConn(conn, serv)
+		t := time.Now().Add(5 * time.Minute)
+		conn.SetDeadline(t)
+
+		go receiveConn(conn, serve)
 	}
 }
 
-// Receivce client request
+// Receive client request
 // command defined example :
 // 	[Member.Test]param1,param2\n
-func receiveConn(conn net.Conn, serv *jsv.Server) {
+func receiveConn(conn net.Conn, serve *jsv.Server) {
 	var buffer []byte
 	//var err error
 
 	if context.Debug() {
-		context.Log().Println("[Client]: new client connecting...", conn.RemoteAddr().String())
+		context.Log().Println("[CLIENT]: Client connecting...", conn.RemoteAddr().String())
 	}
 
 	buffer = make([]byte, maxLength)
@@ -65,7 +65,7 @@ func receiveConn(conn net.Conn, serv *jsv.Server) {
 		// timeout error
 		if err != nil {
 			if err == io.EOF {
-				context.Log().Println("[Disconnect]: client address :", conn.RemoteAddr().String())
+				context.Log().Println("[Client]: Client disconnect :", conn.RemoteAddr().String())
 			}
 			conn.Close()
 			break
@@ -74,7 +74,8 @@ func receiveConn(conn net.Conn, serv *jsv.Server) {
 		if context.Debug() {
 			context.Log().Println("[Client][Send]:", string(buffer[:n]))
 		}
-		serv.HandleRequest(conn, buffer[:n])
+
+		serve.HandleRequest(conn, buffer[:n])
 		buffer = make([]byte, maxLength)
 	}
 }

@@ -18,11 +18,23 @@ type IPartner interface {
 	GetSaleConf() SaleConf
 
 	// 保存销售配置
-	SaveSaleConf(*SaleConf)error
+	SaveSaleConf(*SaleConf) error
 
 	// 获取站点配置
-	GetSiteConf()SiteConf
+	GetSiteConf() SiteConf
 
 	// 保存站点配置
-	SaveSiteConf(*SiteConf)error
+	SaveSiteConf(*SiteConf) error
+
+	// 新建商店
+	CreateShop(*ValueShop) IShop
+
+	// 获取所有商店
+	GetShops() []IShop
+
+	// 获取商店
+	GetShop(int) IShop
+
+	// 删除门店
+	DeleteShop(shopId int) error
 }

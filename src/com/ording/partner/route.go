@@ -4,9 +4,9 @@ import (
 	"com/ording/session"
 	"net/http"
 	"net/url"
-	"ops/cf/app"
-	"ops/cf/web"
-	"ops/cf/web/mvc"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"github.com/newmin/gof/web/mvc"
 )
 
 var routes *web.RouteMap = new(web.RouteMap)
@@ -28,7 +28,7 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 }
 
 //注册路由
-func RegistRoutes(context app.Context) {
+func RegisterRoutes(context app.Context) {
 	mc := &mainC{Context: context} //入口控制器
 	sc := &shopC{context}          //商家门店控制器
 	ic := &itemC{context}          //食谱控制器

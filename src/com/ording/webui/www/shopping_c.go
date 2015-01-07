@@ -17,8 +17,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 )
 
 type shoppingC struct {
@@ -30,6 +30,7 @@ func (this *shoppingC) GetDeliverAddrs(w http.ResponseWriter, r *http.Request,
 	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
 	if err != nil {
 		w.Write([]byte(err.Error()))
+		return
 	}
 	js, _ := json.Marshal(addrs)
 	this.Context.Template().Execute(w, func(md *map[string]interface{}) {
@@ -40,9 +41,9 @@ func (this *shoppingC) GetDeliverAddrs(w http.ResponseWriter, r *http.Request,
 func (this *shoppingC) SaveDeliverAddr_post(w http.ResponseWriter,
 	r *http.Request, p *entity.Partner, m *member.ValueMember) {
 	r.ParseForm()
-	var e entity.DeliverAddress
+	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
-	e.Mid = m.Id
+	e.MemberId = m.Id
 	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
 	if err == nil {
 		if b {

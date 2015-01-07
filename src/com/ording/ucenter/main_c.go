@@ -2,16 +2,20 @@ package ucenter
 
 import (
 	"com/domain/interface/member"
+	"com/domain/interface/partner"
 	"com/ording/dproxy"
 	"com/ording/entity"
 	"com/service/goclient"
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
+	"strconv"
 	"time"
+	"errors"
 )
 
 type mainC struct {
@@ -23,7 +27,7 @@ func (this *mainC) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (this *mainC) Index(w http.ResponseWriter, r *http.Request, mm *member.ValueMember,
-	p *entity.Partner, conf *entity.SiteConf) {
+	p *entity.Partner, conf *partner.SiteConf) {
 	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
 	js, _ := json.Marshal(mm)
 	info := make(map[string]string)
@@ -39,7 +43,6 @@ func (this *mainC) Index(w http.ResponseWriter, r *http.Request, mm *member.Valu
 		mv := *m
 		mv["level"] = lv
 		mv["nLevel"] = nextLv
-		mv["title"] = "会员中心"
 		mv["member"] = mm
 		mv["partner"] = p
 		mv["conf"] = conf
@@ -47,12 +50,12 @@ func (this *mainC) Index(w http.ResponseWriter, r *http.Request, mm *member.Valu
 		mv["json"] = template.JS(js)
 		mv["acc"] = acc
 		mv["regTime"] = mm.RegTime.Format("2006-01-02")
-		mv["name"] = cf.BoolString(len(mm.Name) == 0,
+		mv["name"] = gof.BoolString(len(mm.Name) == 0,
 			`<span class="red">未填写</span>`,
 			mm.Name)
 
-		mv["sex"] = cf.BoolString(mm.Sex == 1, "先生",
-			cf.BoolString(mm.Sex == 2, "女士", ""))
+		mv["sex"] = gof.BoolString(mm.Sex == 1, "先生",
+			gof.BoolString(mm.Sex == 2, "女士", ""))
 
 	}, "views/ucenter/index.html",
 		"views/ucenter/inc/header.html",
@@ -71,15 +74,16 @@ func (this *mainC) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (this *mainC) Profile(w http.ResponseWriter, r *http.Request, mm *member.ValueMember,
-	p *entity.Partner, conf *entity.SiteConf) {
+	p *entity.Partner, conf *partner.SiteConf) {
 	js, _ := json.Marshal(mm)
 
 	this.Context.Template().Execute(w, func(m *map[string]interface{}) {
-		(*m)["partner"] = p
-		(*m)["conf"] = conf
-		(*m)["partner_host"] = conf.Host
-		(*m)["member"] = mm
-		(*m)["entity"] = template.JS(js)
+		v := *m
+		v["partner"] = p
+		v["conf"] = conf
+		v["partner_host"] = conf.Host
+		v["member"] = mm
+		v["entity"] = template.JS(js)
 
 	}, "views/ucenter/profile.html",
 		"views/ucenter/inc/header.html",
@@ -87,8 +91,45 @@ func (this *mainC) Profile(w http.ResponseWriter, r *http.Request, mm *member.Va
 		"views/ucenter/inc/footer.html")
 }
 
+func (this *mainC) Pwd(w http.ResponseWriter, r *http.Request, mm *member.ValueMember,
+	p *entity.Partner, conf *partner.SiteConf) {
+
+	this.Context.Template().Execute(w, func(m *map[string]interface{}) {
+		v := *m
+		v["partner"] = p
+		v["conf"] = conf
+		v["partner_host"] = conf.Host
+		v["member"] = mm
+
+	}, "views/ucenter/pwd.html",
+		"views/ucenter/inc/header.html",
+		"views/ucenter/inc/menu.html",
+		"views/ucenter/inc/footer.html")
+}
+
+func (this *mainC) Pwd_post(w http.ResponseWriter, r *http.Request, m *member.ValueMember,
+	p *entity.Partner, conf *partner.SiteConf) {
+	var result gof.JsonResult
+	r.ParseForm()
+	var oldPwd,newPwd,rePwd string
+	oldPwd =r.FormValue("OldPwd")
+	newPwd = r.FormValue("NewPwd")
+	rePwd = r.FormValue("RePwd")
+	var err error
+	if newPwd!= rePwd{
+		err = errors.New("两次密码输入不一致")
+	}else {
+		err = dproxy.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
+	}
+	if err != nil {
+		result = gof.JsonResult{Result: false, Message: err.Error()}
+	} else {
+		result = gof.JsonResult{Result: true}
+	}
+	w.Write(result.Marshal())
+}
 func (this *mainC) Profile_post(w http.ResponseWriter, r *http.Request, mm *member.ValueMember) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 	clientM := new(member.ValueMember)
 	web.ParseFormToEntity(r.Form, clientM)
@@ -96,9 +137,71 @@ func (this *mainC) Profile_post(w http.ResponseWriter, r *http.Request, mm *memb
 	_, err := goclient.Member.SaveMember(clientM, mm.LoginToken)
 
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true}
+		result = gof.JsonResult{Result: true}
 	}
 	w.Write(result.Marshal())
+}
+
+func (this *mainC) Deliver(w http.ResponseWriter, r *http.Request,
+	m *member.ValueMember, p *entity.Partner, conf *partner.SiteConf) {
+
+	this.Context.Template().Execute(w, func(mp *map[string]interface{}) {
+		v := *mp
+		v["partner"] = p
+		v["conf"] = conf
+		v["partner_host"] = conf.Host
+		v["member"] = m
+
+	}, "views/ucenter/deliver.html",
+		"views/ucenter/inc/header.html",
+		"views/ucenter/inc/menu.html",
+		"views/ucenter/inc/footer.html")
+}
+
+func (this *mainC) Deliver_post(w http.ResponseWriter, r *http.Request,
+	m *member.ValueMember, p *entity.Partner, conf *partner.SiteConf) {
+	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
+	if err != nil {
+		w.Write([]byte("{error:'错误:" + err.Error() + "'}"))
+		return
+	}
+	js, _ := json.Marshal(addrs)
+	w.Write([]byte(`{"rows":` + string(js) + `}`))
+}
+
+func (this *mainC) SaveDeliver_post(w http.ResponseWriter,
+	r *http.Request, m *member.ValueMember, p *entity.Partner) {
+	r.ParseForm()
+	var e member.DeliverAddress
+	web.ParseFormToEntity(r.Form, &e)
+	e.MemberId = m.Id
+	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
+	if err == nil {
+		if b {
+			w.Write([]byte(`{"result":true}`))
+		} else {
+			w.Write([]byte(`{"result":false}`))
+		}
+	} else {
+		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+	}
+}
+
+func (this *mainC) DeleteDeliver_post(w http.ResponseWriter,
+	r *http.Request, m *member.ValueMember) {
+	r.ParseForm()
+	id, _ := strconv.Atoi(r.FormValue("id"))
+
+	b, err := goclient.Member.DeleteDeliverAddr(m.Id, m.LoginToken, id)
+	if err == nil {
+		if b {
+			w.Write([]byte(`{"result":true}`))
+		} else {
+			w.Write([]byte(`{"result":false}`))
+		}
+	} else {
+		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+	}
 }

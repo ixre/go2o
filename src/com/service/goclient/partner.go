@@ -2,10 +2,13 @@ package goclient
 
 import (
 	"com/domain/interface/member"
+	"com/domain/interface/partner"
+	"com/domain/interface/sale"
 	"com/domain/interface/shopping"
+	"com/dto"
 	"com/ording/entity"
 	"fmt"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 	"strconv"
 )
 
@@ -39,7 +42,7 @@ func (this *partnerClient) Category(partnerId int, secret string) (a []entity.Ca
 	return a, err
 }
 
-func (this *partnerClient) GetShops(partnerId int, secret string) (a []entity.Shop, err error) {
+func (this *partnerClient) GetShops(partnerId int, secret string) (a []partner.ValueShop, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.GetShops`,
@@ -47,13 +50,13 @@ func (this *partnerClient) GetShops(partnerId int, secret string) (a []entity.Sh
 	if err != nil {
 		return nil, err
 	}
-	a = []entity.Shop{}
+	a = []partner.ValueShop{}
 	err = jsv.UnmarshalMap(result.Data, &a)
 	return a, err
 }
 
 func (this *partnerClient) GetItems(partnerId int, secret string, categoryId int, getNum int) (
-	a []entity.FoodItem, err error) {
+	a []sale.ValueProduct, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s","cid":"%d","num":"%d"}>>Partner.GetItems`,
@@ -61,7 +64,7 @@ func (this *partnerClient) GetItems(partnerId int, secret string, categoryId int
 	if err != nil {
 		return nil, err
 	}
-	a = []entity.FoodItem{}
+	a = []sale.ValueProduct{}
 	err = jsv.UnmarshalMap(result.Data, &a)
 	return a, err
 }
@@ -77,7 +80,7 @@ func (this *partnerClient) GetHost(partnerId int, secret string) (host string, e
 	return result.Data.(string), nil
 }
 
-func (this *partnerClient) GetSiteConf(partnerId int, secret string) (c *entity.SiteConf, err error) {
+func (this *partnerClient) GetSiteConf(partnerId int, secret string) (c *partner.SiteConf, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.GetSiteConf`,
@@ -85,7 +88,7 @@ func (this *partnerClient) GetSiteConf(partnerId int, secret string) (c *entity.
 	if err != nil {
 		return nil, err
 	}
-	c = new(entity.SiteConf)
+	c = new(partner.SiteConf)
 	err = jsv.UnmarshalMap(result.Data, &c)
 	return c, nil
 }
@@ -136,8 +139,8 @@ func (this *partnerClient) SubmitOrder(partnerId int, secret string, memberId in
 func (this *partnerClient) GetOrderByNo(partnerId int, secret string, order_no string) (*shopping.ValueOrder, error) {
 	var result jsv.Result
 	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
-		`{"partner_id":"%s","secret":"%s","order_no":"%s"}>>Partner.GetOrderByNo`,
-		strconv.Itoa(partnerId), secret, order_no)), &result, 2048)
+		`{"partner_id":"%d","secret":"%s","order_no":"%s"}>>Partner.GetOrderByNo`,
+		partnerId, secret, order_no)), &result, 2048)
 	if err != nil {
 		return nil, err
 	}
@@ -163,14 +166,28 @@ func (this *partnerClient) UserIsExist(partnerId int, secret string, usr string)
 }
 
 //注册会员
-func (this *partnerClient) RegistMember(m *member.ValueMember, ptId, tgId int, cardId string) (
+func (this *partnerClient) RegisterMember(m *member.ValueMember, ptId, tgId int, cardId string) (
 	b bool, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
-		`{"partner_id":"%d","tg_id":"%d","card_id":"%s","json":%s}>>Partner.RegistMember`,
+		`{"partner_id":"%d","tg_id":"%d","card_id":"%s","json":%s}>>Partner.RegisterMember`,
 		ptId, tgId, cardId, jsv.MarshalString(m))), &result, -1)
 	if err != nil {
 		return false, err
 	}
 	return result.Result, err
+}
+
+func (this *partnerClient) GetShoppingCart(partnerId int, secret string, cart string) (
+	a *dto.ShoppingCart, err error) {
+	var result jsv.Result
+	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
+		`{"partner_id":"%d","secret":"%s","cart":"%s"}>>Partner.GetShoppingCart`,
+		partnerId, secret, cart)), &result, 1024)
+	if err != nil {
+		return nil, err
+	}
+	a = &dto.ShoppingCart{}
+	err = jsv.UnmarshalMap(result.Data, &a)
+	return a, err
 }

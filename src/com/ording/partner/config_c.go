@@ -1,17 +1,17 @@
 package partner
 
 import (
+	"com/domain/interface/partner"
 	"com/ording/dao"
+	"com/ording/dproxy"
 	"com/ording/entity"
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"ops/cf"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"time"
-	"com/domain/interface/partner"
-	"com/ording/dproxy"
 )
 
 type configC struct {
@@ -35,7 +35,7 @@ func (this *configC) Profile(w http.ResponseWriter, r *http.Request, partnerId i
 }
 
 func (this *configC) Profile_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 
 	e := entity.Partner{}
@@ -55,9 +55,9 @@ func (this *configC) Profile_post(w http.ResponseWriter, r *http.Request, partne
 	id, err := dao.Partner().SavePartner(&e)
 
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.JsonResult{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
@@ -75,23 +75,23 @@ func (this *configC) SiteConf(w http.ResponseWriter, r *http.Request, partnerId 
 }
 
 func (this *configC) SiteConf_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 
 	e := partner.SiteConf{}
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin :=dproxy.PartnerService.GetSiteConf(partnerId)
+	origin := dproxy.PartnerService.GetSiteConf(partnerId)
 	e.Host = origin.Host
-	e.PtId = partnerId
+	e.PartnerId = partnerId
 
-	err := dproxy.PartnerService.SaveSiteConf(partnerId,&e)
+	err := dproxy.PartnerService.SaveSiteConf(partnerId, &e)
 
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: ""}
+		result = gof.JsonResult{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }
@@ -109,20 +109,20 @@ func (this *configC) SaleConf(w http.ResponseWriter, r *http.Request, partnerId 
 }
 
 func (this *configC) SaleConf_post(w http.ResponseWriter, r *http.Request, partnerId int) {
-	var result cf.JsonResult
+	var result gof.JsonResult
 	r.ParseForm()
 
 	e := partner.SaleConf{}
 	web.ParseFormToEntity(r.Form, &e)
 
-	e.PtId = partnerId
+	e.PartnerId = partnerId
 
-	err := dproxy.PartnerService.SaveSaleConf(partnerId,&e)
+	err := dproxy.PartnerService.SaveSaleConf(partnerId, &e)
 
 	if err != nil {
-		result = cf.JsonResult{Result: false, Message: err.Error()}
+		result = gof.JsonResult{Result: false, Message: err.Error()}
 	} else {
-		result = cf.JsonResult{Result: true, Message: ""}
+		result = gof.JsonResult{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

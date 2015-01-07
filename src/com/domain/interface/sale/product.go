@@ -11,5 +11,10 @@ package sale
 
 type IProduct interface {
 	GetDomainId() int
+
 	GetValue() ValueProduct
+
+	SetValue(*ValueProduct) error
+
+	Save() (int, error)
 }

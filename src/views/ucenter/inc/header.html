@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{.title}}</title>
+    <title>{{template "title".}}_{{.partner.Name}}-网上订餐|网上外卖平台</title>
     <link rel="StyleSheet" type="text/css" href="{{.static_serv}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serv}}/css/usrcent/usrcent.css?v={{.version}}"/>
 </head>
@@ -49,16 +49,16 @@
                 <a href="/index.html" title="首页">首页</a>
             </li>
             <li>
-                <a href="http://{{.partner_host}}">在线订餐</a>
+                <a href="http://{{.conf.Host}}/?go=ording" target="_blank">在线订餐</a>
             </li>
             <li>
                 <a href="javascript:;">账户充值</a>
             </li>
             <li>
-                <a href="javascript:;">积分兑换</a>
+                <a href="http://member.{{.domain}}/account/IntegralExchange.html">积分兑换</a>
             </li>
             <li>
-                <a href="javascript:;">客户服务</a>
+                <a href="http://{{.conf.Host}}/service.html">客户服务</a>
             </li>
         </ul>
         <div class="clearfix"></div>

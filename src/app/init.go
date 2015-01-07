@@ -11,7 +11,7 @@ package app
 
 import (
 	"com/ording/dproxy"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 )
 
 func Init(ctx app.Context) {

@@ -1,8 +1,10 @@
 package goclient
 
 import (
-	"ops/cf/app"
-	"ops/cf/net/jsv"
+	"fmt"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/net/jsv"
+	"os"
 )
 
 var (
@@ -14,7 +16,14 @@ var (
 )
 
 func Configure(net, addr string, c app.Context) {
-	_conn = jsv.Dial(net, addr)
+	var err error
+	_conn, err = jsv.Dial(net, addr)
+
+	if err != nil {
+		fmt.Println("[TCP]: Connect Refused,", addr)
+		os.Exit(1)
+	}
+
 	jsv.Configure(c)
 	Member = &memberClient{conn: _conn}
 	Partner = &partnerClient{conn: _conn}

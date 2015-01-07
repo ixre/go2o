@@ -3,8 +3,8 @@ package dao
 import (
 	"com/ording/entity"
 	"database/sql"
-	"ops/cf/db"
-	"ops/cf/web/ui/tree"
+	"github.com/newmin/gof/db"
+	"github.com/newmin/gof/web/ui/tree"
 )
 
 type commDao struct {

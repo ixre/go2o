@@ -132,3 +132,46 @@ func (this *memberService) GetBank(memberId int) *member.BankInfo {
 	b := m.GetBank()
 	return &b
 }
+
+func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
+	m := this.memberRep.CreateMember(&member.ValueMember{Id: v.MemberId})
+	return m.SaveBank(v)
+}
+
+/*********** 收货地址 ***********/
+func (this *memberService) GetDeliverAddrs(memberId int) []member.DeliverAddress {
+	return this.memberRep.GetDeliverAddrs(memberId)
+}
+
+//获取配送地址
+func (this *memberService) GetDeliverAddrById(memberId,
+	deliverId int) *member.DeliverAddress {
+	m := this.memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	v := m.GetDeliver(deliverId).GetValue()
+	return &v
+}
+
+//保存配送地址
+func (this *memberService) SaveDeliverAddr(memberId int, e *member.DeliverAddress) (int, error) {
+	m := this.memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	var v member.IDeliver
+	if e.Id > 0 {
+		v = m.GetDeliver(e.Id)
+		v.SetValue(e)
+	} else {
+		v = m.CreateDeliver(e)
+	}
+	return v.Save()
+}
+
+//删除配送地址
+func (this *memberService) DeleteDeliverAddr(memberId int, deliverId int) error {
+	m := this.memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	return m.DeleteDeliver(deliverId)
+}
+
+
+func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error{
+	m,_ := this.memberRep.GetMember(memberId)
+	return m.ModifyPassword(newPwd,oldPwd)
+}

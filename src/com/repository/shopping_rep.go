@@ -14,31 +14,56 @@ import (
 	"com/domain/interface/partner"
 	"com/domain/interface/promotion"
 	"com/domain/interface/sale"
-	sp "com/domain/interface/shopping"
-	"com/domain/shopping"
+	"com/domain/interface/shopping"
+	sp "com/domain/shopping"
 	"com/infrastructure/domain"
 	"errors"
-	"ops/cf/db"
+	"github.com/newmin/gof/db"
 )
 
-type ShoppingRep struct {
+var _ shopping.IShoppingRep = new(shoppingRep)
+
+type shoppingRep struct {
 	db.Connector
-	SaleRep    sale.ISaleRep
-	PromRep    promotion.IPromotionRep
-	MemberRep  member.IMemberRep
-	PartnerRep partner.IPartnerRep
+	saleRep    sale.ISaleRep
+	promRep    promotion.IPromotionRep
+	memberRep  member.IMemberRep
+	partnerRep partner.IPartnerRep
+	cache      map[int]shopping.IShopping
 }
 
-func (this *ShoppingRep) GetShopping(partnerId int) sp.IShopping {
-	if this.SaleRep == nil {
+func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
+	saleRep sale.ISaleRep, promRep promotion.IPromotionRep,
+	memRep member.IMemberRep) shopping.IShoppingRep {
+	return (&shoppingRep{
+		Connector:  c,
+		saleRep:    saleRep,
+		promRep:    promRep,
+		memberRep:  memRep,
+		partnerRep: ptRep,
+	}).init()
+}
+
+func (this *shoppingRep) init() shopping.IShoppingRep {
+	this.cache = make(map[int]shopping.IShopping)
+	return this
+}
+
+func (this *shoppingRep) GetShopping(partnerId int) shopping.IShopping {
+	if this.saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
-	return shopping.NewShopping(partnerId, this.PartnerRep,
-		this, this.SaleRep, this.PromRep, this.MemberRep)
+	v, ok := this.cache[partnerId]
+	if !ok {
+		v = sp.NewShopping(partnerId, this.partnerRep,
+			this, this.saleRep, this.promRep, this.memberRep)
+		this.cache[partnerId] = v
+	}
+	return v
 }
 
 // 获取可用的订单号
-func (this *ShoppingRep) GetFreeOrderNo(partnerId int) string {
+func (this *shoppingRep) GetFreeOrderNo(partnerId int) string {
 	//todo:实际应用需要预先生成订单号
 	d := this.Connector
 	var order_no string
@@ -52,7 +77,7 @@ func (this *ShoppingRep) GetFreeOrderNo(partnerId int) string {
 	}
 	return order_no
 }
-func (this *ShoppingRep) SaveOrder(partnerId int, v *sp.ValueOrder) (int, error) {
+func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, error) {
 	var err error
 	d := this.Connector
 	v.PartnerId = partnerId
@@ -78,14 +103,14 @@ func (this *ShoppingRep) SaveOrder(partnerId int, v *sp.ValueOrder) (int, error)
 }
 
 //　保存订单优惠券绑定
-func (this *ShoppingRep) SaveOrderCouponBind(val *sp.OrderCoupon) error {
+func (this *shoppingRep) SaveOrderCouponBind(val *shopping.OrderCoupon) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, val)
 	return err
 }
 
-func (this *ShoppingRep) GetOrderByNo(partnerId int, orderNo string) (
-	*sp.ValueOrder, error) {
-	var v = new(sp.ValueOrder)
+func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
+	*shopping.ValueOrder, error) {
+	var v = new(shopping.ValueOrder)
 	err := this.Connector.GetOrm().GetBy(v, "order_no='"+orderNo+"'")
 	if err != nil {
 		return nil, err

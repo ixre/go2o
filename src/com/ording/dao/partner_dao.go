@@ -7,8 +7,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"ops/cf/app"
-	"ops/cf/db"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/db"
 	"regexp"
 	"time"
 )
@@ -25,7 +25,7 @@ type partnerDao struct {
 func (this *partnerDao) getHostRegexp() *regexp.Regexp {
 	if commHostRegexp == nil {
 		commHostRegexp = regexp.MustCompile("([^.]+)." +
-			this.Context.Config().Get(variable.ServerDomain))
+			this.Context.Config().GetString(variable.ServerDomain))
 	}
 	return commHostRegexp
 }
@@ -49,7 +49,7 @@ func (this *partnerDao) Verify(usr, pwd string) int {
 //根据ID获取Partner信息
 func (this *partnerDao) GetPartnerById(id int) *entity.Partner {
 	e := new(entity.Partner)
-	if this.Context.Db().GetOrm().Get(e, id) != nil {
+	if this.Context.Db().GetOrm().Get(id, e) != nil {
 		return nil
 	}
 	return e
@@ -116,16 +116,16 @@ func (this *partnerDao) SavePartner(partner *entity.Partner) (int, error) {
 			return 0, err
 		}
 
-		var conf entity.SiteConf = entity.SiteConf{
-			PtId:       newPtId,
-			Host:       "",
-			Logo:       "nologo.gif",
-			IndexTitle: partner.Name,
-			SubTitle:   partner.Name,
-			State:      1,
-			StateHtml:  "",
-		}
-		orm.Save(nil, conf)
+		//		var conf entity.SiteConf = entity.SiteConf{
+		//			PtId:       newPtId,
+		//			Host:       "",
+		//			Logo:       "nologo.gif",
+		//			IndexTitle: partner.Name,
+		//			SubTitle:   partner.Name,
+		//			State:      1,
+		//			StateHtml:  "",
+		//		}
+		//		orm.Save(nil, conf)
 
 		return newPtId, err
 
@@ -152,8 +152,6 @@ func (this *partnerDao) SavePartner(partner *entity.Partner) (int, error) {
 	}
 }
 
-
-
 //删除合作商户
 func (this *partnerDao) DelPartner(partnerId int) error {
 	return errors.New("not allow")
@@ -169,7 +167,7 @@ func (this *partnerDao) GetHostById(partnerId int) (host string) {
 		this.Connector.ExecScalar(
 			`SELECT usr FROM pt_partner WHERE id=?`,
 			&usr, partnerId)
-		host = fmt.Sprintf("%s.%s", usr, this.Context.Config().Get(variable.ServerDomain))
+		host = fmt.Sprintf("%s.%s", usr, this.Context.Config().GetString(variable.ServerDomain))
 	}
 	return host
 }

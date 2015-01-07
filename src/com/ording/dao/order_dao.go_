@@ -187,10 +187,10 @@ func (this *orderDao) SetShopForOrder(partnerId int, orderNo string, shopId int)
 }
 
 func (this *orderDao) NextSetup(order *entity.Order) error {
-	if order.Status == enum.ORDER_DELETED {
+	if order.Status == enum.ORDER_COMPLETED {
 		return errors.New("订单已经作废")
 	}
-	if order.Status == enum.ORDER_FINISH {
+	if order.Status == enum.ORDER_COMPLETED {
 		return errors.New("订单已经完成")
 	}
 
@@ -211,7 +211,7 @@ func (this *orderDao) NextSetup(order *entity.Order) error {
 }
 
 func (this *orderDao) HandleOrder(order *entity.Order) {
-	if order.Status == enum.ORDER_FINISH {
+	if order.Status == enum.ORDER_COMPLETED {
 		this.handleOrderFinish(order)
 	}
 }

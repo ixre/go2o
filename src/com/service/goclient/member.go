@@ -5,7 +5,7 @@ import (
 	"com/ording/entity"
 	"errors"
 	"fmt"
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 )
 
 type memberClient struct {
@@ -83,6 +83,17 @@ func (this *memberClient) GetBankInfo(memberId int, token string) (
 	return a, err
 }
 
+func (this *memberClient) SaveBankInfo(memberId int, token string, v *member.BankInfo) error {
+	var result jsv.Result
+	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
+		`{"member_id":"%d","token":"%s","json":%s}>>Member.SaveBankInfo`,
+		memberId, token, jsv.MarshalString(v))), &result, -1)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
 func (this *memberClient) GetBindPartner(memberId int, token string) (
 	a *entity.Partner, err error) {
 	var result jsv.Result
@@ -108,21 +119,21 @@ func (this *memberClient) SaveMember(m *member.ValueMember, token string) (b boo
 	return result.Result, err
 }
 
-func (this *memberClient) GetDeliverAddrs(memberId int, token string) (addrs []entity.DeliverAddress, err error) {
+func (this *memberClient) GetDeliverAddrs(memberId int, token string) (addrs []member.DeliverAddress, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"member_id":"%d","token":"%s"}>>Member.GetDeliverAddrs`,
-		memberId, token)), &result, 256)
+		memberId, token)), &result, 1024)
 	if err != nil {
 		return nil, err
 	}
-	addrs = []entity.DeliverAddress{}
+	addrs = []member.DeliverAddress{}
 	err = jsv.UnmarshalMap(result.Data, &addrs)
 	return addrs, err
 }
 
 func (this *memberClient) GetDeliverAddrById(memberId int, token string, addr_id int) (
-	e *entity.DeliverAddress, err error) {
+	e *member.DeliverAddress, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"member_id":"%d","token":"%s","addr_id":"%d"}>>Member.GetDeliverAddrById`,
@@ -130,12 +141,12 @@ func (this *memberClient) GetDeliverAddrById(memberId int, token string, addr_id
 	if err != nil {
 		return nil, err
 	}
-	e = &entity.DeliverAddress{}
+	e = &member.DeliverAddress{}
 	err = jsv.UnmarshalMap(result.Data, &e)
 	return e, err
 }
 
-func (this *memberClient) SaveDeliverAddr(memberId int, token string, e *entity.DeliverAddress) (b bool, err error) {
+func (this *memberClient) SaveDeliverAddr(memberId int, token string, e *member.DeliverAddress) (b bool, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"member_id":"%d","token":"%s","json":%s}>>Member.SaveDeliverAddr`,

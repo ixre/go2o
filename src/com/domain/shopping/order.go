@@ -20,6 +20,7 @@ import (
 	"com/share/variable"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -177,7 +178,7 @@ func (this *Order) Save() error {
 // 订单是否已完成
 func (this *Order) IsOver() bool {
 	s := this.value.Status
-	return s == enum.ORDER_CANCEL || s == enum.ORDER_FINISH
+	return s == enum.ORDER_CANCEL || s == enum.ORDER_COMPLETED
 }
 
 // 处理订单
@@ -185,6 +186,13 @@ func (this *Order) Process() error {
 	dt := time.Now()
 	this.value.Status += 1
 	this.value.UpdateTime = dt
+	return this.Save()
+}
+
+// 确认订单
+func (this *Order) Confirm() error {
+	this.value.Status = enum.ORDER_CONFIRMED
+	this.value.UpdateTime = time.Now()
 	return this.Save()
 }
 
@@ -198,10 +206,12 @@ func (this *Order) Deliver() error {
 }
 
 // 取消订单
-func (this *Order) Cancel() error {
-
+func (this *Order) Cancel(reason string) error {
+	if len(strings.TrimSpace(reason)) == 0 {
+		return errors.New("取消原因不能为空")
+	}
 	status := this.value.Status
-	if status == enum.ORDER_FINISH {
+	if status == enum.ORDER_COMPLETED {
 		return errors.New("订单已经完成!")
 	}
 	if status == enum.ORDER_CANCEL {
@@ -209,11 +219,12 @@ func (this *Order) Cancel() error {
 	}
 
 	this.value.Status = enum.ORDER_CANCEL
+	this.value.Remark += "取消原因:" + reason
 	return this.Save()
 }
 
 // 完成订单
-func (this *Order) Finish() error {
+func (this *Order) Complete() error {
 	now := time.Now()
 	v := this.value
 	m, err := this.memberRep.GetMember(v.MemberId)
@@ -252,16 +263,24 @@ func (this *Order) Finish() error {
 
 		// 增加经验
 		if EXP_BIT == 0 {
-			fv, _ := infrastructure.GetContext().
+			fv := infrastructure.GetContext().
 				Config().GetFloat(variable.EXP_BIT)
 			EXP_BIT = float32(fv)
 		}
-		m.AddExp(int(v.Fee * EXP_BIT))
+
+		if EXP_BIT == 0 {
+			log.Println("[WANNING]:Exp_bit not set!")
+		}
+
+		err = m.AddExp(int(v.Fee * EXP_BIT))
+		if err != nil {
+			return err
+		}
 
 		// 三级返现
 		this.backFor3R(ptl, m, back_fee, now)
 
-		this.value.Status = enum.ORDER_FINISH
+		this.value.Status = enum.ORDER_COMPLETED
 		this.value.UpdateTime = now
 		err = this.Save()
 	}

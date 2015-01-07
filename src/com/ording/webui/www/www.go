@@ -11,13 +11,14 @@ package www
 
 import (
 	"com/domain/interface/enum"
+	"com/domain/interface/partner"
 	"com/ording/entity"
 	"com/service/goclient"
 	"net/http"
 	"strings"
 )
 
-func GetSiteConf(w http.ResponseWriter, p *entity.Partner) (bool, *entity.SiteConf) {
+func GetSiteConf(w http.ResponseWriter, p *entity.Partner) (bool, *partner.SiteConf) {
 	siteConf, _ := goclient.Partner.GetSiteConf(p.Id, p.Secret)
 	if siteConf.State == enum.PARTNER_SITE_CLOSED {
 		if strings.TrimSpace(siteConf.StateHtml) == "" {

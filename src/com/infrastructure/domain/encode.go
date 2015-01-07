@@ -11,10 +11,14 @@ package domain
 
 import (
 	"fmt"
-	"ops/cf/crypto"
+	"github.com/newmin/gof/crypto"
 	"strings"
 	"time"
 )
+
+func ChkPwdRight(pwd string)(bool,error){
+	return true,nil
+}
 
 //加密会员密码
 func EncodeMemberPwd(usr, pwd string) string {

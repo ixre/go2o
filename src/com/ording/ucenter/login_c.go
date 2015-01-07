@@ -3,7 +3,7 @@ package ucenter
 import (
 	"com/service/goclient"
 	"net/http"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 	"time"
 )
 

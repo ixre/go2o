@@ -13,7 +13,7 @@ import (
 	"com/domain/interface/member"
 	mb "com/domain/member"
 	"fmt"
-	"ops/cf/db"
+	"github.com/newmin/gof/db"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -34,7 +34,7 @@ func (this *MemberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 
 func (this *MemberRep) GetMember(memberId int) (member.IMember, error) {
 	e := &member.ValueMember{}
-	err := this.Connector.GetOrm().Get(e, memberId)
+	err := this.Connector.GetOrm().Get(memberId, e)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
 
 func (this *MemberRep) GetLevel(levelVal int) *member.MemberLevel {
 	var m member.MemberLevel
-	this.Connector.GetOrm().Get(&m, levelVal)
+	this.Connector.GetOrm().Get(levelVal, &m)
 	return &m
 }
 
@@ -62,20 +62,10 @@ func (this *MemberRep) GetNextLevel(levelVal int) *member.MemberLevel {
 	return &m
 }
 
-func (this *MemberRep) GetDeliverAddr(memberId, deliverAddId int) *member.DeliverAddress {
-	var addr member.DeliverAddress
-	err := this.Connector.GetOrm().Get(&addr, deliverAddId)
-
-	if err == nil && addr.MemberId == memberId {
-		return &addr
-	}
-	return nil
-}
-
 // 获取账户
 func (this *MemberRep) GetAccount(memberId int) *member.Account {
 	e := new(member.Account)
-	this.Connector.GetOrm().Get(e, memberId)
+	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
@@ -88,13 +78,14 @@ func (this *MemberRep) SaveAccount(a *member.Account) error {
 // 获取银行信息
 func (this *MemberRep) GetBankInfo(memberId int) *member.BankInfo {
 	e := new(member.BankInfo)
-	this.Connector.GetOrm().Get(e, memberId)
+	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存银行信息
 func (this *MemberRep) SaveBankInfo(v *member.BankInfo) error {
 	var err error
+	fmt.Println("------------------", v)
 	_, _, err = this.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
@@ -126,7 +117,7 @@ func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 // 获取会员关联
 func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
 	e := new(member.MemberRelation)
-	if this.Connector.GetOrm().Get(e, memberId) != nil {
+	if this.Connector.GetOrm().Get(memberId, e) != nil {
 		return nil
 	}
 	return e
@@ -206,5 +197,43 @@ func (this *MemberRep) CheckUsrExist(usr string) bool {
 // 保存绑定
 func (this *MemberRep) SaveRelation(v *member.MemberRelation) error {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
+	return err
+}
+
+// 保存地址
+func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
+	orm := this.Connector.GetOrm()
+	if v.Id <= 0 {
+		_, id, err := orm.Save(nil, v)
+		return int(id), err
+	} else {
+		_, _, err := orm.Save(v.Id, v)
+		return v.Id, err
+	}
+}
+
+// 获取全部配送地址
+func (this *MemberRep) GetDeliverAddrs(memberId int) []member.DeliverAddress {
+	addresses := []member.DeliverAddress{}
+	this.Connector.GetOrm().Select(&addresses, "member_id=?", memberId)
+	return addresses
+}
+
+// 获取配送地址
+func (this *MemberRep) GetDeliverAddr(memberId, deliverId int) *member.DeliverAddress {
+	var addr member.DeliverAddress
+	err := this.Connector.GetOrm().Get(deliverId, &addr)
+
+	if err == nil && addr.MemberId == memberId {
+		return &addr
+	}
+	return nil
+}
+
+// 删除配送地址
+func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
+	_, err := this.Connector.ExecNonQuery(
+		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
+		memberId, deliverId)
 	return err
 }

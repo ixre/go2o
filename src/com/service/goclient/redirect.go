@@ -1,7 +1,7 @@
 package goclient
 
 import (
-	"ops/cf/net/jsv"
+	"github.com/newmin/gof/net/jsv"
 )
 
 type redirectClient struct {

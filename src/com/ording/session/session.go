@@ -6,8 +6,8 @@ import (
 	"com/ording/entity"
 	"com/share/glob"
 	"net/http"
-	"ops/cf/app"
-	"ops/cf/web"
+	"github.com/newmin/gof/app"
+	"github.com/newmin/gof/web"
 	"strconv"
 	"strings"
 	"time"
@@ -24,7 +24,7 @@ type loginSession struct {
 
 func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, pwd string) bool {
 	loginTokenResult := ording.EncodePartnerPwd(usr, pwd)
-	loginResult := loginTokenResult == glob.CurrContext().Config().Get("master_token")
+	loginResult := loginTokenResult == glob.CurrContext().Config().GetString("master_token")
 
 	if loginResult {
 
@@ -43,7 +43,7 @@ func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, 
 
 func (this *loginSession) IsAdministrator(r *http.Request) bool {
 	cookie, _ := r.Cookie("mtkey")
-	if cookie == nil || cookie.Value != glob.CurrContext().Config().Get("master_token") {
+	if cookie == nil || cookie.Value != glob.CurrContext().Config().GetString("master_token") {
 		return false
 	}
 	return true

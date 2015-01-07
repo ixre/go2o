@@ -11,7 +11,7 @@ package infrastructure
 
 import (
 	"com/share/glob"
-	"ops/cf/app"
+	"github.com/newmin/gof/app"
 )
 
 var (

@@ -10,6 +10,8 @@
 package member
 
 type IMember interface {
+	GetAggregateRootId() int
+
 	GetValue() ValueMember
 
 	SetValue(*ValueMember) error
@@ -48,6 +50,21 @@ type IMember interface {
 	// 保存
 	Save() (int, error)
 
+	// 修改密码,旧密码可为空
+	ModifyPassword(newPwd,oldPwd string)error
+
 	// 用户是否已经存在
 	UsrIsExist() bool
+
+	// 创建配送地址
+	CreateDeliver(*DeliverAddress) IDeliver
+
+	// 获取配送地址
+	GetDeliverAddrs() []IDeliver
+
+	// 获取配送地址
+	GetDeliver(int) IDeliver
+
+	// 删除配送地址
+	DeleteDeliver(int) error
 }

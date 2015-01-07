@@ -2,6 +2,7 @@ package log
 
 import (
 	"com/infrastructure"
+	"fmt"
 	"runtime"
 )
 
@@ -9,7 +10,7 @@ func PrintErr(err error) {
 	_, f, line, _ := runtime.Caller(1)
 	if err != nil && infrastructure.DebugMode {
 		infrastructure.Context.Log().Println(
-			"[ERROR]:%s , File:%s line:%d", err.Error(), f, line)
+			fmt.Sprintf("[ERROR]:%s , File:%s line:%d", err.Error(), f, line))
 	}
 }
 

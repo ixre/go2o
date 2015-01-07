@@ -32,9 +32,12 @@ type ValueOrder struct {
 	//优惠券优惠金额
 	CouponFee float32 `db:"coupon_fee" json:"couponFee"`
 
-	PayMethod      int       `db:"pay_method" json:"payMethod"`
-	IsPayed        int       `db:"is_payed" json:"isPayed"`
-	Note           string    `db:"note" json:"note"`
+	PayMethod int    `db:"pay_method" json:"payMethod"`
+	IsPayed   int    `db:"is_payed" json:"isPayed"`
+	Note      string `db:"note" json:"note"`
+
+	Remark string `db:"note" json:"remark"`
+
 	DeliverName    string    `db:"deliver_name" json:"deliverName"`
 	DeliverPhone   string    `db:"deliver_phone" json:"deliverPhone"`
 	DeliverAddress string    `db:"deliver_address" json:"deliverAddress"`
