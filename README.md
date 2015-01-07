@@ -7,7 +7,8 @@ Promotions, orders, coupons implementation also includes a micro framework
 in package "ops/cf", providing ORM, Reporting, Web Framework,Rpc Framework.
 
 Golang 结合DDD领域驱动设计的简单o2o实现，包含多渠道(商家),多门店,多会员.商品，
-促销，订单，优惠券的实现，同时包含一个微型框架ops/cf,提供ORM,报表,Web Framework,Rpc Framework.
+促销，订单，优惠券的实现，同时包含一个微型框架gof,提供ORM,报表,Web Framework,Rpc Framework.
+gof已经独立为一个代码仓库，托管在：https://github.com/newmin/gof
 
 # Deploy #
 
