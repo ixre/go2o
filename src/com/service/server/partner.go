@@ -9,7 +9,7 @@ import (
 	"com/ording/dao"
 	"com/ording/dproxy"
 	"encoding/json"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 	"strconv"
 	"time"
 )

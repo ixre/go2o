@@ -14,7 +14,7 @@ import (
 	"com/service"
 	"com/share/glob"
 	"fmt"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 	"os"
 	_ "runtime/debug"
 	"strconv"

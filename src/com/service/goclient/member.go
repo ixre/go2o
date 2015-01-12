@@ -5,7 +5,7 @@ import (
 	"com/ording/entity"
 	"errors"
 	"fmt"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 )
 
 type memberClient struct {

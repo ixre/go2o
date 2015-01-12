@@ -4,8 +4,8 @@ import (
 	"com/share/glob"
 	"database/sql"
 	"encoding/json"
+	"github.com/atnet/gof/data/transfer"
 	"net/http"
-	"github.com/newmin/gof/data/transfer"
 	"strconv"
 	"strings"
 )
@@ -44,14 +44,16 @@ func GetExportData(w http.ResponseWriter, r *http.Request, ptId int) {
 			parameter.Parameters["pageSize"] = rows
 		}
 
-		_rows, total := exportItm.GetShemalAndData(parameter.Parameters)
-
-		var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
-
-		json, _ := json.Marshal(_rows)
-		arr[3] = string(json)
-		//fmt.Println(arr[3])
-		w.Write([]byte(strings.Join(arr, "")))
 		w.Header().Add("Content-Type", "application/json")
+
+		_rows, total, err := exportItm.GetSchemaAndData(parameter.Parameters)
+		if err == nil {
+			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
+			json, _ := json.Marshal(_rows)
+			arr[3] = string(json)
+			w.Write([]byte(strings.Join(arr, "")))
+		} else {
+			w.Write([]byte(`{"error":"` + err.Error() + `"}`))
+		}
 	}
 }

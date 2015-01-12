@@ -3,7 +3,7 @@ package partner
 import (
 	"com/ording/session"
 	"net/http"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 type loginC struct {

@@ -11,7 +11,7 @@ package domain
 
 import (
 	"fmt"
-	"github.com/newmin/gof/crypto"
+	"github.com/atnet/gof/crypto"
 	"strings"
 	"time"
 )

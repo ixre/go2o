@@ -1,7 +1,7 @@
 package goclient
 
 import (
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 )
 
 type shareClient struct {

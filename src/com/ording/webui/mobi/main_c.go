@@ -3,7 +3,7 @@ package mobi
 import (
 	"com/ording/entity"
 	"net/http"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 type mainC struct {

@@ -7,8 +7,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/db"
 	"regexp"
 	"time"
 )

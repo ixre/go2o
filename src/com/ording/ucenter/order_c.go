@@ -10,8 +10,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/web/pager"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/web/pager"
 	"strconv"
 )
 

@@ -3,7 +3,7 @@ package server
 import (
 	"com/share/glob"
 	"github.com/garyburd/redigo/redis"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 )
 
 var (

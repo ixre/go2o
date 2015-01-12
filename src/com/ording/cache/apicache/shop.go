@@ -5,7 +5,7 @@ import (
 	"com/domain/interface/enum"
 	"com/service/goclient"
 	"fmt"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 func GetShops(c app.Context, partnerId int, secret string) []byte {

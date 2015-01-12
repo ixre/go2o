@@ -5,8 +5,8 @@ import (
 	"com/ording/session"
 	"fmt"
 	"net/http"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/web"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/web"
 )
 
 type mainC struct {

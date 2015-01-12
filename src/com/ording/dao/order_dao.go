@@ -3,7 +3,7 @@ package dao
 import (
 	"database/sql"
 	"fmt"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 )
 
 type orderDao struct {

@@ -9,10 +9,10 @@ import (
 	"com/ording/entity"
 	"com/share/variable"
 	"fmt"
-	"github.com/newmin/gof"
-	"github.com/newmin/gof/db"
-	"github.com/newmin/gof/log"
-	"github.com/newmin/gof/web"
+	"github.com/atnet/gof"
+	"github.com/atnet/gof/db"
+	"github.com/atnet/gof/log"
+	"github.com/atnet/gof/web"
 )
 
 func getDb(c *gof.Config, l log.ILogger) db.Connector {

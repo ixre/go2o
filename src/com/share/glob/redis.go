@@ -4,8 +4,8 @@ import (
 	"com/share/variable"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/newmin/gof"
-	"github.com/newmin/gof/log"
+	"github.com/atnet/gof"
+	"github.com/atnet/gof/log"
 	"strconv"
 	"time"
 )

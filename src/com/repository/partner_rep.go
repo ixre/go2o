@@ -16,7 +16,7 @@ import (
 	"com/infrastructure/log"
 	"com/share/variable"
 	"fmt"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 )
 
 var _ partner.IPartnerRep = new(partnerRep)

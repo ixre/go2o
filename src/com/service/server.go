@@ -4,8 +4,8 @@ import (
 	"com/service/server"
 	"io"
 	"net"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/net/jsv"
 	"time"
 )
 

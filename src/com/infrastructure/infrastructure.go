@@ -11,7 +11,7 @@ package infrastructure
 
 import (
 	"com/share/glob"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 var (
