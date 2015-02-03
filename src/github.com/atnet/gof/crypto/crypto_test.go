@@ -1,8 +1,8 @@
 /**
- * Copyright 2014 @ Yunduo Inc.
+ * Copyright 2014 @ ops Inc.
  * name :
  * author : newmin
- * date : 2014-12-26 13:50
+ * date : 2014-12-26 23:50
  * description :
  * history :
  */
