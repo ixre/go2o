@@ -38,7 +38,11 @@
       <file leaf-file-name="init.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/init.go">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state vertical-scroll-proportion="0.0" vertical-offset="342" max-vertical-offset="450">
+=======
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="450">
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
               <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
               <folding />
             </state>
@@ -58,8 +62,13 @@
       <file leaf-file-name="partner_export.go" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/com/ording/partner/partner_export.go">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state vertical-scroll-proportion="0.17578125" vertical-offset="198" max-vertical-offset="1170">
               <caret line="16" column="43" selection-start-line="16" selection-start-column="43" selection-end-line="16" selection-end-column="43" />
+=======
+            <state vertical-scroll-proportion="0.34079173" vertical-offset="0" max-vertical-offset="1170">
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
               <folding />
             </state>
           </provider>
@@ -80,10 +89,16 @@
     <detection-done>true</detection-done>
   </component>
   <component name="ProjectFrameBounds">
+<<<<<<< HEAD
     <option name="x" value="485" />
     <option name="y" value="181" />
     <option name="width" value="1719" />
     <option name="height" value="920" />
+=======
+    <option name="y" value="28" />
+    <option name="width" value="1920" />
+    <option name="height" value="1023" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -175,7 +190,10 @@
       <method />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
+<<<<<<< HEAD
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+=======
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -193,6 +211,12 @@
       </option>
       <envs />
       <patterns />
+<<<<<<< HEAD
+=======
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <method />
     </configuration>
     <configuration default="true" type="Applet" factoryName="Applet">
@@ -213,6 +237,7 @@
       <option name="saveOutputToFile" value="false" />
       <option name="showConsoleOnStdErr" value="false" />
       <option name="showConsoleOnStdOut" value="false" />
+<<<<<<< HEAD
       <option name="GDB_PATH" value="gdb" />
       <option name="STARTUP_COMMANDS" value="" />
       <option name="autoStartGdb" value="true" />
@@ -224,15 +249,27 @@
       <option name="scriptArguments" value="" />
       <option name="runBuilderArguments" value="" />
       <option name="runExecutableName" value="" />
+=======
+      <option name="scriptName" value="" />
+      <option name="scriptArguments" value="" />
+      <option name="builderArguments" value="" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <option name="goBuildBeforeRun" value="false" />
       <option name="goOutputDir" value="" />
       <option name="workingDir" value="" />
       <option name="envVars" value="" />
+<<<<<<< HEAD
+=======
+      <option name="goVetEnabled" value="false" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <module name="" />
       <method />
     </configuration>
     <configuration default="true" type="JarApplication" factoryName="JAR Application">
+<<<<<<< HEAD
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+=======
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <envs />
       <method />
     </configuration>
@@ -271,6 +308,12 @@
       <option name="goVetEnabled" value="false" />
       <module name="" />
       <method />
+<<<<<<< HEAD
+=======
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <method />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
     </configuration>
     <list size="0" />
     <configuration name="&lt;template&gt;" type="TestNG" default="true" selected="false">
@@ -288,11 +331,15 @@
       <option name="number" value="Default" />
       <updated>1421040288290</updated>
       <workItem from="1421040289018" duration="438000" />
+<<<<<<< HEAD
       <workItem from="1422959152699" duration="21000" />
+=======
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="459000" />
   </component>
   <component name="ToolWindowManager">
@@ -325,6 +372,37 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+=======
+    <option name="totallyTimeSpent" value="438000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="28" width="1920" height="1023" extended-state="0" />
+    <editor active="false" />
+    <layout>
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3281768" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24973261" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32928178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -351,6 +429,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/server.go">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state vertical-scroll-proportion="0.0" vertical-offset="36" max-vertical-offset="1458">
           <caret line="17" column="7" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="23" />
           <folding />
@@ -383,6 +462,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server.go">
       <provider selected="true" editor-type-id="text-editor">
+=======
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1458">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
@@ -401,6 +482,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2520">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+<<<<<<< HEAD
+=======
+          <folding />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
         </state>
       </provider>
     </entry>
@@ -408,6 +493,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="900">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+<<<<<<< HEAD
+=======
+          <folding />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
         </state>
       </provider>
     </entry>
@@ -429,8 +518,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/com/ording/partner/partner_export.go">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state vertical-scroll-proportion="0.17578125" vertical-offset="198" max-vertical-offset="1170">
           <caret line="16" column="43" selection-start-line="16" selection-start-column="43" selection-end-line="16" selection-end-column="43" />
+=======
+        <state vertical-scroll-proportion="0.34079173" vertical-offset="0" max-vertical-offset="1170">
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+>>>>>>> bdf4ee0b511394323abefd0c447d3b950c0904b9
           <folding />
         </state>
       </provider>
