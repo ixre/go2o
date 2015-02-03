@@ -4,7 +4,7 @@ import (
 	"com/ording"
 	"database/sql"
 	"fmt"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 )
 
 type memberDao struct {

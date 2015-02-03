@@ -2,11 +2,11 @@ package glob
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/newmin/gof"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/db"
-	"github.com/newmin/gof/log"
-	"github.com/newmin/gof/web"
+	"github.com/atnet/gof"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/db"
+	"github.com/atnet/gof/log"
+	"github.com/atnet/gof/web"
 )
 
 var (

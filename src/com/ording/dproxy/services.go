@@ -11,7 +11,7 @@ package dproxy
 
 import (
 	"com/repository"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 var (

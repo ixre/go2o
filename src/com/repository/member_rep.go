@@ -13,7 +13,7 @@ import (
 	"com/domain/interface/member"
 	mb "com/domain/member"
 	"fmt"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 )
 
 var _ member.IMemberRep = new(MemberRep)

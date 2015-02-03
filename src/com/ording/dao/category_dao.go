@@ -3,8 +3,8 @@ package dao
 import (
 	"com/ording/entity"
 	"database/sql"
-	"github.com/newmin/gof/db"
-	"github.com/newmin/gof/web/ui/tree"
+	"github.com/atnet/gof/db"
+	"github.com/atnet/gof/web/ui/tree"
 	"strconv"
 	"time"
 )

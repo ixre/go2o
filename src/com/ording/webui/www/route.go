@@ -6,9 +6,9 @@ import (
 	"com/ording/entity"
 	"com/service/goclient"
 	"net/http"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/web"
-	"github.com/newmin/gof/web/mvc"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"strconv"
 	"strings"
 )

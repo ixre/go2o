@@ -13,7 +13,7 @@ import (
 	"bytes"
 	"com/service/goclient"
 	"fmt"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 )
 
 func GetCategories(c app.Context, partnerId int, secret string) []byte {

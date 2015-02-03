@@ -8,9 +8,9 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
-	"github.com/newmin/gof"
-	"github.com/newmin/gof/app"
-	"github.com/newmin/gof/web"
+	"github.com/atnet/gof"
+	"github.com/atnet/gof/app"
+	"github.com/atnet/gof/web"
 	"time"
 )
 

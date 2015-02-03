@@ -15,7 +15,7 @@ import (
 	"com/share/variable"
 	"flag"
 	"fmt"
-	a "github.com/newmin/gof/app"
+	a "github.com/atnet/gof/app"
 	"os"
 	"strconv"
 	"strings"

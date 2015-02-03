@@ -16,7 +16,7 @@ import (
 	"com/infrastructure/log"
 	"errors"
 	"fmt"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 	"time"
 )
 

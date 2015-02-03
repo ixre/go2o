@@ -8,7 +8,7 @@ import (
 	"com/dto"
 	"com/ording/entity"
 	"fmt"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 	"strconv"
 )
 

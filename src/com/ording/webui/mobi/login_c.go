@@ -3,7 +3,7 @@ package mobi
 import (
 	"com/service/goclient"
 	"net/http"
-	"github.com/newmin/gof/app"
+	"github.com/atnet/gof/app"
 	"time"
 )
 

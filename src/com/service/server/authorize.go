@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/newmin/gof/net/jsv"
+	"github.com/atnet/gof/net/jsv"
 	"strconv"
 )
 

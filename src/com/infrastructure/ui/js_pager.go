@@ -11,7 +11,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/newmin/gof/web/pager"
+	"github.com/atnet/gof/web/pager"
 	"strconv"
 )
 

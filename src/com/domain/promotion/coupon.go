@@ -16,7 +16,7 @@ import (
 	"com/infrastructure/format"
 	"errors"
 	"fmt"
-	"github.com/newmin/gof/math"
+	"github.com/atnet/gof/math"
 	"strconv"
 	"time"
 )

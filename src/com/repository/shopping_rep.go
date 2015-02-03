@@ -18,7 +18,7 @@ import (
 	sp "com/domain/shopping"
 	"com/infrastructure/domain"
 	"errors"
-	"github.com/newmin/gof/db"
+	"github.com/atnet/gof/db"
 )
 
 var _ shopping.IShoppingRep = new(shoppingRep)
