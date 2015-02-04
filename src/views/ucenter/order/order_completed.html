@@ -15,10 +15,10 @@
 
 		<script type="text/javascript" src="{{.static_serv}}/assets/js/core_full.js?ver={{.version}}"></script>
 		<script type="text/javascript">
-			var ORDER_STATE_TEXTS = new Array("已作废", "待确认","已确认", "处理中", "配送中", "已完成");
+			var ORDER_STATE_TEXTS =  new Array("已作废", "待确认","已确认", "处理中", "配送中", "已完成");
 			var _dg = $JS.grid('dg', {
 				url: "Orders",
-				data: {page:1,size:20,state:'{{.state}}'},
+				data: {page:1,size:20,state:'6'},
 				idField: 'id',
 				columns: [
 					{ field: 'order_no', title: '订单号', width: 100,align:'center'},

@@ -2,60 +2,56 @@
 <html>
 <head>
     <title>更新项</title>
-    <link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
     <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<form id="form1">
-    <table cellpadding="0" cellspacing="1" class="ui-table">
-        <tr>
-            <td class="title" width="80">名称:</td>
-            <td>
-                <input type="hidden" field="Id" value="0"/>
-                <input class="ui-validate" type="text" field="Name" required="true" />
-            </td>
-         </tr>
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0"/>
+            <input class="ui-validate" type="text" field="Name" required="true" />
+        </div>
+    </div>
 
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
+        <div class="in" style="position: relative;height:70px;">
+            <img id="upload_img" value="{{.img_serv}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+            <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+            <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title" valign="top">标志Logo:</td>
-            <td valign="top" style="position: relative;height:70px;">
-                <img id="upload_img" value="{{.img_serv}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
-                <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
-                <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
-            </td>
-        </tr>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系电话：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Tel"/>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title">联系电话:</td>
-            <td>
-                <input class="ui-validate" type="text" field="Tel"/>
-            </td>
-        </tr>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系手机：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Phone"/>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title">联系手机:</td>
-            <td>
-                <input class="ui-validate" type="text" field="Phone"/>
-            </td>
-        </tr>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>地址：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Address"/>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title">地址:</td>
-            <td>
-                <input class="ui-validate" type="text" field="Address"/>
-            </td>
-        </tr>
-
-        <tr>
-            <td></td>
-            <td>
-                <input id="btn_save" type="button" value="提交" />
-            </td>
-        </tr>
-
-</table>
-</form>
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <input id="btn_save" type="button" value="提交" />
+        </div>
+    </div>
+</div>
 
 <script src="{{.static_serv}}/assets/js/core_full.js"></script>
 <script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>

@@ -88,8 +88,13 @@ height:22px;overflow: hidden;margin-left:6px;}
 .login-left{width:30%;float:left;border-right:dashed 1px #ddd;
     padding:0 10%;
 }
+.login-left h1{font-size:150%;}
+.login-tip{border:solid 1px orange;background:#ffffcc;padding:5px;}
 .login-right{width:45%;float:right;}
 .login-left-note{padding-left:90px;padding-top:20px;font-size:125%;}
+
+.login-left  .fl div.label{width:80px;}
+.login-left  .fl div.in{margin-left:80px;}
 
 /* REGISTER PAGE */
 .reg-panel{width:50%;border-right: solid 1px #ddd;}
