@@ -1,0 +1,25 @@
+/**
+ * Copyright 2014 @ ops Inc.
+ * name :
+ * author : newmin
+ * date : 2015-01-08 21:35
+ * description :
+ * history :
+ */
+
+package daemon
+
+import (
+	"go2o/core/service/dps"
+)
+
+var (
+	partnerIds []int
+)
+
+func getPartners() []int {
+	if partnerIds == nil {
+		partnerIds = dps.PartnerService.GetPartnersId()
+	}
+	return partnerIds
+}

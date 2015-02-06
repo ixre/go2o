@@ -15,16 +15,12 @@
 //
 
 var cart = {
-    key:null,
-    api:'',
     cp: null, 						//cart panel
     total_fee: 0, 					//总金额
     total_num: 0, 					//总件数
     data: '', 						//数据字符串
 
     init: function (panel_id, usetheme) {
-        this.initCart();
-
         this.panel = document.getElementById(panel_id);
         var pnodes = this.panel.childNodes;
         for (var i = 0; i < pnodes.length; i++) {
@@ -45,25 +41,6 @@ var cart = {
 
         this.retrieval();
 
-    },
-    // 重置购物车KEY
-    renewKey:function(newKey){
-        if(this.key == null){
-            this.key = $JS.cookie.read('_cart');
-        }
-        if(newKey){
-            this.key = newKey;
-            $JS.cookie.write('_cart',this.key);
-        }
-        return this.key;
-    },
-    initCart:function(){
-        var t =this;
-        this.renewKey("1234");
-        $JS.xhr.post(this.api,{action:'get','cart.key':this.key},function(obj){
-            t.id = obj.Id;
-            alert(t.id);
-        });
     },
     retrieval: function () {
         //恢复购物车
@@ -194,5 +171,4 @@ function checkCart(){
 	 }
 }
 
-cart.api = '/cart_api';
 
