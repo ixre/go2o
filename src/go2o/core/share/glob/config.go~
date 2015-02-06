@@ -1,0 +1,52 @@
+package glob
+
+import (
+	"com.framework/util"
+	"strconv"
+	"strings"
+)
+
+type ApplicationConfig struct {
+	//所有配置
+	AllConfig *util.SimpleConfig
+
+	//监听端口
+	ServerPort int `json:"server_port"`
+	//域名
+	ServerDomain string `json:"server_domain"`
+	//静态服务器
+	StaticServer string `json:"static_server"`
+	//图片服务器
+	ImageServer string `json:"image_server"`
+	//数据库驱动名称
+	DbDriver string `json:"db_driver"`
+	//
+	DbServer string `json:"db_server"`
+	//
+	DbPort int `json:"db_port"`
+	//
+	DbName string `json:"db_name"`
+	//
+	DbUsr string `json:"db_usr"`
+	//
+	DbPwd string `json:"db_pwd"`
+	//
+	DbCharset string `json:"db_charset"`
+}
+
+//数据库连接字符串
+func (this *ApplicationConfig) GetDbSource() string {
+	//root@tcp(127.0.0.1:3306)/foodording?charset=utf8
+	if this.DbCharset == "" {
+		this.DbCharset = "utf8"
+	}
+
+	return strings.Join([]string{
+		this.DbUsr, ":", this.DbPwd, "@tcp(", this.DbServer, ":",
+		strconv.Itoa(this.DbPort), ")/", this.DbName, "?charset=",
+		this.DbCharset}, "")
+}
+
+func init() {
+
+}
