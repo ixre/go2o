@@ -1,3 +1,11 @@
+/**
+ * Copyright 2014 @ ops Inc.
+ * name :
+ * author : newmin
+ * date : 2014-02-05 21:53
+ * description :
+ * history :
+ */
 package partner
 
 //关于regexp的资料

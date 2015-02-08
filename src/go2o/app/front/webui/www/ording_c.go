@@ -32,7 +32,7 @@ func (this *ordingC) Index(w http.ResponseWriter, r *http.Request, p *partner.Va
 		categories := apicache.GetCategories(this.Context, p.Id, p.Secret)
 		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
-			(*m)["title"] = "在线订餐-" + p.Name
+			//(*m)["title"] = "在线订餐-" + p.Name
 			(*m)["categories"] = template.HTML(categories)
 			(*m)["member"] = mm
 			(*m)["conf"] = siteConf
@@ -72,13 +72,13 @@ func (this *ordingC) List(w http.ResponseWriter, r *http.Request, p *partner.Val
                         <h3 class="name">%s%s</h3>
                         <span class="srice">原价:￥%s</span>
                         <span class="sprice">优惠价:￥%s</span>
-                        <a href="javascript:cart.add({'id':'%d','name':'%s','price':%s});" class="add">&nbsp;</a>
+                        <a href="javascript:cart.add(%d,1);" class="add">&nbsp;</a>
                 </div>
              </li>
 		`, this.Context.Config().GetString(variable.ImageServer),
 			v.Image, v.Name, v.Name, v.SmallTitle, format.FormatFloat(v.Price),
 			format.FormatFloat(v.SalePrice),
-			v.Id, v.Name, format.FormatFloat(v.SalePrice)))
+			v.Id))
 	}
 	buf.WriteString("</ul>")
 	w.Write(buf.Bytes())

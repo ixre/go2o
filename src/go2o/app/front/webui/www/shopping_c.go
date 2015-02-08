@@ -106,20 +106,20 @@ func (this *shoppingC) Order(w http.ResponseWriter, r *http.Request,
 		//	return
 		//}
 
-//		cart.Summary = strings.Replace(cart.Summary, "\n", "<br />", -1)
-//
-//		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
-//			(*m)["partner"] = p
-//			(*m)["title"] = "订单确认-" + p.Name
-//			(*m)["member"] = mm
-//			(*m)["cart"] = cart
-//			(*m)["promFee"] = cart.TotalFee - cart.OrderFee
-//			(*m)["summary"] = template.HTML(cart.Summary)
-//			(*m)["conf"] = siteConf
-//		},
-//			"views/web/www/order_confirm.html",
-//			"views/web/www/inc/header.html",
-//			"views/web/www/inc/footer.html")
+		//		cart.Summary = strings.Replace(cart.Summary, "\n", "<br />", -1)
+		//
+		//		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
+		//			(*m)["partner"] = p
+		//			(*m)["title"] = "订单确认-" + p.Name
+		//			(*m)["member"] = mm
+		//			(*m)["cart"] = cart
+		//			(*m)["promFee"] = cart.TotalFee - cart.OrderFee
+		//			(*m)["summary"] = template.HTML(cart.Summary)
+		//			(*m)["conf"] = siteConf
+		//		},
+		//			"views/web/www/order_confirm.html",
+		//			"views/web/www/inc/header.html",
+		//			"views/web/www/inc/footer.html")
 	}
 }
 
@@ -197,26 +197,62 @@ func (this *shoppingC) SubmitOrder_post(w http.ResponseWriter, r *http.Request,
 
 // 购物车
 func (this *shoppingC) CartApi(w http.ResponseWriter, r *http.Request,
-	p *partner.ValuePartner,m *member.ValueMember) {
-	var action = strings.ToLower(r.URL.Query().Get("action"))
-	var cartKey = r.URL.Query().Get("cart.key")
-
-	switch action{
-	case "get":
-		this.GetCart(w,p,m,cartKey)
-	}
-}
-
-func (this *shoppingC) GetCart(w http.ResponseWriter,
-	p *partner.ValuePartner,m *member.ValueMember,cartKey string) {
+	p *partner.ValuePartner, m *member.ValueMember) {
+	r.ParseForm()
+	var action = strings.ToLower(r.FormValue("action"))
+	var cartKey = r.FormValue("cart.key")
 	var memberId int
 	if m != nil {
 		memberId = m.Id
 	}
+
+	switch action {
+	case "get":
+		this.Cart_GetCart(w, p, memberId, cartKey)
+	case "add":
+		this.Cart_AddItem(w, r, p, memberId, cartKey)
+	case "remove":
+		this.Cart_RemoveItem(w, r, p, memberId, cartKey)
+	}
+}
+
+func (this *shoppingC) Cart_GetCart(w http.ResponseWriter,
+	p *partner.ValuePartner, memberId int, cartKey string) {
 	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
 	d, _ := json.Marshal(cart)
 	w.Write(d)
 }
+
+func (this *shoppingC) Cart_AddItem(w http.ResponseWriter, r *http.Request,
+	p *partner.ValuePartner, memberId int, cartKey string) {
+	goodsId, _ := strconv.Atoi(r.FormValue("id"))
+	num, _ := strconv.Atoi(r.FormValue("num"))
+	item, err := goclient.Partner.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
+
+	var result = make(map[string]interface{}, 2)
+	if err != nil {
+		result["message"] = err.Error()
+	} else {
+		result["message"] = ""
+		result["item"] = item
+	}
+	d, _ := json.Marshal(result)
+	w.Write(d)
+}
+
+func (this *shoppingC) Cart_RemoveItem(w http.ResponseWriter, r *http.Request,
+	p *partner.ValuePartner, memberId int, cartKey string) {
+	goodsId, _ := strconv.Atoi(r.FormValue("id"))
+	num, _ := strconv.Atoi(r.FormValue("num"))
+	err := goclient.Partner.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
+	if err != nil{
+		w.Write([]byte(`{error:'`+ err.Error()+`'}`))
+	}else{
+		w.Write([]byte("{}"))
+	}
+}
+
+
 
 func (this *shoppingC) Cart(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner) {

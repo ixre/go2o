@@ -1,15 +1,22 @@
+/**
+ * Copyright 2014 @ ops Inc.
+ * name :
+ * author : newmin
+ * date : 2014-02-05 21:53
+ * description :
+ * history :
+ */
 package ucenter
 
 import (
-	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/partner"
-
 	"encoding/json"
 	"fmt"
 	"github.com/atnet/gof/app"
 	"github.com/atnet/gof/web/pager"
 	"go2o/app/front"
+	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/partner"
 	"go2o/core/service/dps"
 	"net/http"
 	"strconv"

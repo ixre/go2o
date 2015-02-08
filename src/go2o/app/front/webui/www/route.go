@@ -1,3 +1,11 @@
+/**
+ * Copyright 2014 @ ops Inc.
+ * name :
+ * author : newmin
+ * date : 2014-02-05 21:53
+ * description :
+ * history :
+ */
 package www
 
 import (
@@ -54,18 +62,17 @@ func RegisterRoutes(c app.Context) {
 
 		partnerId := dps.PartnerService.GetPartnerIdByHost(r.Host)
 		p, err := dps.PartnerService.GetPartner(partnerId)
-
 		return p, err, m
 	}
 
 	// 购物车
 	routes.Add("^/cart_api$", func(w http.ResponseWriter, r *http.Request) {
-			if p, err, m := getPartner(r); err == nil {
-				sp.CartApi(w, r, p,m)
-			} else {
-				handleError(w, err)
-			}
-		})
+		if p, err, m := getPartner(r); err == nil {
+			sp.CartApi(w, r, p, m)
+		} else {
+			handleError(w, err)
+		}
+	})
 
 	routes.Add("^/cart/*", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, _ := getPartner(r); err == nil {
