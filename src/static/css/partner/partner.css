@@ -1,0 +1,177 @@
+
+body {
+	font-size: 12px;
+	margin:0;
+}
+
+a:link,a:visited {
+	color: #0066cc;
+	outline: none;
+}
+
+a:hover {
+	color: #006699;
+}
+
+.center {
+	text-align: center;
+}
+
+.clearfix {
+	clear: both;
+}
+
+.rightalign {
+	text-align: right;
+	padding-right: 30px;
+}
+
+.rtalign {
+	text-align: right;
+}
+
+.shadow {
+	padding: 3px;
+	background: #d0d0d0;
+}
+
+.shadow .content {
+	border: solid 1px #006699;
+	padding: 1px;
+	margin: -5px 0 0 -5px;
+	background: white;
+	line-height: 20px;
+}
+
+.tipbor {
+	border-bottom: dotted 1px #006699;
+	padding: 5px;
+	color: #006699
+}
+
+div.hr {
+	border-bottom: solid 1px #f0f0f0;
+	height: 1px;
+}
+
+#footer {
+	text-align: center;
+	font-size: 12px;
+}
+
+.valid-error {
+	color: red;
+}
+
+/* silver table */
+table.silver {
+	background: white;
+	line-height: 20px;
+	border: solid 1px #e2e2e2;
+}
+
+table.silver th {
+	color: #006699;
+	background: url(../easyui/js/themes/default/images/panel_title.png) 0
+		-3px;
+}
+
+table.silver td {
+	background: #f5f5f5;
+}
+
+table.silver td,table.silver th {
+	padding: 1px 8px;
+}
+
+table.blue {
+	background: white;
+	line-height: 20px;
+	border: solid 1px #e2e2e2;
+}
+
+table.blue th {
+	color: #006699;
+	background: url(../easyui/js/themes/default/images/panel_title.png) 0
+		-3px;
+}
+
+table.blue td {
+	background: #f0f0f0;
+	color: #006699;
+}
+
+table.blue td,table.blue th {
+	padding: 1px 8px;
+}
+
+/* ul */
+ul.listlit {
+	list-style: none;
+	margin: 5px 12px;
+	padding: 0;
+	line-height: 20px;
+}
+
+ul.listlit li {
+	margin: 5px 0 10px 0;
+}
+
+ul.listlit li b {
+	color: green;
+}
+
+span.td {
+	display: block;
+	float: left;
+	width: 100px;
+	text-align: left;
+}
+
+.tabs li.tabs-selected{background-color:#ddd;border-bottom:solid 1px #f9f9f9;}
+.tabs li.tabs-selected a.tabs-inner{background:#f9f9f9;}
+.toolBar ul{margin:0 10px;}
+a.l-btn span span.l-btn-icon-left{padding-left:0px;}
+.datagrid-view2{left:0;}
+.panel-body{border-left:none;border-width:1px;border-top:none;border-bottom:none;}
+.panel-header{border-left:none;border-right:none;}
+.icon{padding-left:20px;}
+
+.opt2{text-indent: 1em}
+
+/************新样式 ************/
+.login-page{background:#e6e6e6 url(../../assets/images/bg_image.jpg) center top no-repeat;}
+
+
+
+
+.padding5{ padding: 5px;}
+.margin30{margin:30px;}
+.padding2{ padding: 2px 0 2px 5px;}
+.toolBar ul{ margin: 10px;padding: 0;list-style: none;}
+.toolBar li{ float: left;padding-right: 15px;}
+
+
+.ui-table {
+
+}
+
+
+.ui-autocompletion-panel{ border: solid 1px #ddd;border-top: 0px;color: #000000;background: #ffffff;}
+.ui-autocompletion-panel .inner{ padding: 0px;}
+.ui-autocompletion-panel ul li {padding: 5px 10px;float:inherit }
+.ui-autocompletion-panel ul li.first { border:none}
+.ui-autocompletion-panel ul li.selected {
+	background: #f0f0f0;
+}
+.ui-autocompletion-panel ul li b{ color: green;}
+
+.toolBar ul{margin:0 10px;}
+.datagrid-view2{left:0;}
+.panel-body{border-left:none;border-width:1px;border-top:none;border-bottom:none;}
+.panel-header{border-left:none;border-right:none;}
+.icon{padding-left:20px;}
+.datagrid-toolbar{background:#f9f9f9 url(/assets/easyui/themes/gray/images/datagrid_header_bg.gif) 0 5px repeat-x;}
+.tabs li.tabs-selected{padding-bottom:1px;background:#ddd;}
+a.l-btn span span.l-btn-icon-left{padding-left:0px;}
+.control{background: none;}

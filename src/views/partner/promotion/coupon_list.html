@@ -4,7 +4,8 @@
 	<title>订单管理</title>
     <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
     <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
-    <link  rel="stylesheet" type="text/css" href="{{.static_serv}}/css/sys_common.css"/>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div id="gd"></div>
@@ -129,6 +130,8 @@
                         },
                         {field:'begin_time',title:'有效时间',width:110,align:'center',
                             formatter:function(v,r){
+                               v = unix2str(v);
+                               r = unix2str(r);
                             return v.substring(0,v.indexOf(" "))+" ~ "+
                                     r.over_time.substring(0,r.over_time.indexOf(" "));
                         }},

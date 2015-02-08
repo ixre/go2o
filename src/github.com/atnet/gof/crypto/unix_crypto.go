@@ -21,7 +21,7 @@ package crypto
 //fmt.Println("str:", str)
 //
 //_,unix := cyp.Decode(str)
-//fmt.Println(time.Now().UTC().Unix()-unix)
+//fmt.Println(time.Now().Unix()-unix)
 //}
 
 import (
@@ -45,7 +45,7 @@ func getPos(token string) int {
 	return len(token)/2 + 1
 }
 func getUnix() string {
-	ux := time.Now().UTC().Unix()
+	ux := time.Now().Unix()
 	return strconv.FormatInt(ux, 10)
 }
 

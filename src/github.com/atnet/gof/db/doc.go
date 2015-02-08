@@ -1,14 +1,13 @@
 /**
  * Copyright 2014 @ ops Inc.
- * name : 
+ * name :
  * author : newmin
  * date : 2014-01-09 19:58
- * description : 
- * history : 
+ * description :
+ * history :
  */
 
 package db
-
 
 /*******  MYSQL DRIVER **********/
 // DSN后加上loc=Local，避免与Mysql的时区不一致导致的误差

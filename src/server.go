@@ -10,12 +10,13 @@
 package main
 
 import (
-	"app"
-	"com/share/glob"
-	"com/share/variable"
 	"flag"
 	"fmt"
 	a "github.com/atnet/gof/app"
+	"go2o/app"
+	"go2o/app/daemon"
+	"go2o/core/share/glob"
+	"go2o/core/share/variable"
 	"os"
 	"strconv"
 	"strings"
@@ -57,6 +58,8 @@ func main() {
 		return
 	}
 	app.Init(ctx)
+
+	daemon.Run(ctx)
 
 	var booted bool
 	if strings.Contains(mode, "s") {

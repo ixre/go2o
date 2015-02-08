@@ -11,29 +11,41 @@
     <div class="clearfix sitemap">»&nbsp;网站首页 > 会员登录</div>
 
     <div>
-	    <div id="form1" class="login-left">
+	    <div id="form1" class="login-left form">
             <h1>
 				会员登录
 			</h1>
 
-            <div class="login-tip" id="tip"></div>
-                <input name="returnuri" value="$returnuri" type="hidden" />
-			<p>
-				<label>用户名：</label> <input field="usr" id="username" type="text" class="ui-validate"
-                                           required="true" /><span class="tip"></span>
-			</p>
+            <div class="login-tip{{.tipStyle}}" id="tip">
+                您必须登录后才能继续操作!
+            </div>
 
-			<p>
-				<label>密码：</label> <input field="pwd" id="password" type="password" class="ui-validate"
-                                          required="true"/><span class="tip"></span>
-			</p>
-			<p>
-				<label>&nbsp;</label><span id="tip">&nbsp;</span> 
-			</p>
-			<p>
-				<label>&nbsp;</label><input value="登录" id="login" onclick="return login()" type="button" />
-                <input value="忘记密码" id="btn" type="button" />
-            </p>
+
+            <br />
+            <div class="fl">
+                <div class="label">用户名：</div>
+                <div class="in">
+                    <input field="usr" id="username" type="text" class="ui-validate"
+                           required="true" summary="{required:'请输入用户名'}" />
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label">密码：</div>
+                <div class="in">
+                    <input field="pwd" type="password" class="ui-validate"
+                           required="true" summary="{required:'请输入密码'}" />
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <input value="登录" id="login" onclick="return login()" type="button" />
+                    <!--<input value="忘记密码" id="btn" type="button" />-->
+                </div>
+            </div>
+
 
 
             <div class="login-left-note">还没有账号？点击<a href="/register.html">这里</a>进行注册！</div>

@@ -2,8 +2,8 @@
 <html>
 <head>
 	<title>分类管理</title>
-	<link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
-	<link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
@@ -16,33 +16,35 @@
                 <input type="text" field="Name" class="ui-validate" required="true" />
             </td>
         </tr>
-		<tr>
-			<td class="title" width="120">选择上级分类：</td>
-			<td>
-				[<a href="javascript:;" id="btnSelectCategory">选择分类</a>]	
-				<input type="hidden" field="Pid" value="0"/>
-				<label id="category_name"></label>		
-				</td>
-		</tr>
+
+        <tr>
+            <td class="title" width="120">选择上级分类：</td>
+            <td>
+                [<a href="javascript:;" id="btnSelectCategory">选择分类</a>]
+                <input type="hidden" field="ParentId" value="0"/>
+                <label id="category_name"></label>
+            </td>
+        </tr>
+
         <tr>
             <td class="title" width="120">是否启用：</td>
             <td>
-                <input type="radio" name="IsEnabled" field="IsEnabled" value="true" id="State1" checked="checked"/><label for="State1">启用</label>
-                <input type="radio" name="IsEnabled" field="IsEnabled" value="false" id="State2"/><label for="State2">停用</label>
+                <input type="radio" name="Enabled" field="Enabled" value="true" id="State1" checked="checked"/><label for="State1">启用</label>
+                <input type="radio" name="Enabled" field="Enabled" value="false" id="State2"/><label for="State2">停用</label>
             </td>
         </tr>
         <tr>
             <td class="title" width="120">排序：</td>
             <td>
-                    <input class="ui-validate" field="Idx" required="true" isnumber="true" style="width:30px" value="0"/>
-                    * 排序数字，越小排列越靠前
-           
+                <input class="ui-validate" field="OrderIndex" required="true" isnumber="true" style="width:30px" value="0"/>
+                * 排序数字，越小排列越靠前
+
             </td>
         </tr>
         <tr>
             <td class="title" width="120" valign="top">分类描述：</td>
             <td>
-                <textarea field="Descript" class="ui-validate tb_normal" length="[0,150]" style="height:80px"></textarea>
+                <textarea field="Description" class="ui-validate tb_normal" length="[0,150]" style="height:80px"></textarea>
             </td>
         </tr>
         <tr>
