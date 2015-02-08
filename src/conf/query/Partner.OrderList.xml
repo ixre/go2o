@@ -8,18 +8,18 @@
     member_id,
     pt_id,
     shop_id,
-    items,
     replace(items_info,'\n','<br />') as items_info,
     total_fee,
     fee,
     pay_fee,
     pay_method,
-    is_payed,
+    is_paid,
     note,
     status,
-    date_format(create_time,'%Y-%m-%d %T') as create_time,
-    date_format(deliver_time,'%Y-%m-%d %T') as deliver_time,
-    date_format(update_time,'%Y-%m-%d %T') as update_time
+    paid_time,
+    create_time,
+    deliver_time,
+    update_time
     FROM pt_order WHERE pt_id={partnerId} AND ({status}>99  OR status={status})
     ORDER BY update_time DESC,create_time desc LIMIT {page_start},{page_size}
      ]]>

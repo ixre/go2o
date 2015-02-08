@@ -132,14 +132,13 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 	return err
 }
 
-func (this *Partner) GetShoppingCart(m *jsv.Args, r *jsv.Result) error {
+func (this *Partner) GetShoppingCart(m *jsv.Args, r *dto.ShoppingCart) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
 
 	var cartKey string = (*m)["cart_key"].(string)
 	cart := dps.ShoppingService.GetShoppingCart(partnerId, memberId, cartKey)
-	r.Data = cart
-	r.Result = true
+	*r = *cart
 	return nil
 }
 
@@ -150,14 +149,12 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 	}
 
 	memberId, err := strconv.Atoi((*m)["member_id"].(string))
-	cartData := (*m)["cart"].(string)
 	couponCode := (*m)["coupon_code"].(string)
 	if err != nil {
 		return err
 	}
 
-	order, err := dps.ShoppingService.BuildOrder(partnerId,
-		memberId, cartData, couponCode)
+	order, _, err := dps.ShoppingService.BuildOrder(partnerId, memberId, "", couponCode)
 	if err != nil {
 		return err
 	}
@@ -210,13 +207,12 @@ func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
 	shopId, _ := strconv.Atoi((*m)["shop_id"].(string))
 	pay_method, _ := strconv.Atoi((*m)["pay_method"].(string))
 	deliverAddrId, _ := strconv.Atoi((*m)["addr_id"].(string))
-	cart := (*m)["cart"].(string)
 	couponCode := (*m)["coupon_code"].(string)
 	note := (*m)["note"].(string)
 
 	orderNo, err := dps.ShoppingService.SubmitOrder(
 		partnerId, memberId, shopId, pay_method,
-		deliverAddrId, cart, couponCode, note)
+		deliverAddrId, couponCode, note)
 	if err != nil {
 		return err
 	} else {
@@ -264,4 +260,16 @@ func (this *Partner) AddCartItem(m *jsv.Args, item *dto.CartItem) error {
 
 	*item = *v
 	return nil
+}
+
+func (this *Partner) SubCartItem(m *jsv.Args, r *jsv.Result) error {
+	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
+	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
+	cartKey := (*m)["cart_key"].(string)
+	goodsId, _ := strconv.Atoi((*m)["goods_id"].(string))
+	num, _ := strconv.Atoi((*m)["num"].(string))
+	err := dps.ShoppingService.SubCartItem(partnerId,
+		memberId, cartKey, goodsId, num)
+	//r.Result = err == nil
+	return err
 }

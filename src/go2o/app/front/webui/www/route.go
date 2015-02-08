@@ -93,7 +93,31 @@ func RegisterRoutes(c app.Context) {
 
 	routes.Add("^/buy/ship", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, m := getPartner(r); err == nil {
-			sp.Order(w, r, p, m)
+			sp.Ship(w, r, p, m)
+		} else {
+			handleError(w, err)
+		}
+	})
+
+	routes.Add("^/buy/order/submit_order$", func(w http.ResponseWriter, r *http.Request) {
+		if p, err, m := getPartner(r); err == nil {
+			sp.SubmitOrder_post(w, r, p, m)
+		} else {
+			handleError(w, err)
+		}
+	})
+
+	routes.Add("^/buy/apply/coupon$", func(w http.ResponseWriter, r *http.Request) {
+		if p, err, m := getPartner(r); err == nil {
+			sp.ApplyCoupon_post(w, r, p, m)
+		} else {
+			handleError(w, err)
+		}
+	})
+
+	routes.Add("^/buy/order/finish$", func(w http.ResponseWriter, r *http.Request) {
+		if p, err, m := getPartner(r); err == nil {
+			sp.OrderFinish(w, r, p, m)
 		} else {
 			handleError(w, err)
 		}

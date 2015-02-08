@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/atnet/gof/net/jsv"
 	"github.com/garyburd/redigo/redis"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
 	"go2o/core/service/dps"
 	"strconv"
@@ -30,7 +31,7 @@ func Verify(m *jsv.Args) (memberId int, err error) {
 	sessKey := fmt.Sprintf("member$%d_session_key", memberId)
 	servToken, err := redis.String(rds.Do("GET", sessKey))
 	if err != nil {
-		return memberId, err
+		return memberId, member.ErrInvalidSession
 	}
 
 	//	if jsv.Context.Debug() {
@@ -38,7 +39,7 @@ func Verify(m *jsv.Args) (memberId int, err error) {
 	//	}
 
 	if servToken != token {
-		return memberId, errors.New("会话超时，请重新登录！")
+		return memberId, member.ErrSessionTimeout
 	} else {
 		rds.Do("SETEX", sessKey, 3600*3, token) //更新回话并延长时间
 	}

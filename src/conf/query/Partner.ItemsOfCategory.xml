@@ -5,33 +5,35 @@
     <![CDATA[
     SELECT
 f.id,
-`cid`,
+category_id,
 f.`name`,
+f.small_title,
 `img`,
 `price`,
 `cost`,
 `sale_price`,
 `apply_subs`,
 `note`,
+on_shelves,
 `state`,
 /*`description`,*/
 f.`create_time`,
 f.`update_time`
-FROM `it_item` f INNER JOIN it_category c ON f.cid = c.id
-WHERE c.ptid={partnerId} AND ({state}=-100 OR state={state})
- AND ({cid}=0 OR f.cid={cid})
+FROM `gs_goods` f INNER JOIN gs_category c ON f.category_id = c.id
+WHERE c.partner_id={partnerId} AND ({state}=-100 OR state={state})
+ AND ({cid}=0 OR f.category_id={cid})
  AND ('{keyword}'='' OR f.name Like '%{keyword}%')
  /*AND ('{cost1}'='' OR cost  */
- ORDER BY create_time DESC
+ ORDER BY f.create_time DESC
  LIMIT {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
     <![CDATA[
-		    SELECT COUNT(0) FROM `it_item` f INNER JOIN it_category c ON f.cid = c.id
-            WHERE c.ptid={partnerId} AND ({state}=-100 OR state={state})
-             AND ({cid}=0 OR f.cid={cid})
+		    SELECT COUNT(0) FROM `gs_goods` f INNER JOIN gs_category c ON f.category_id = c.id
+            WHERE c.partner_id={partnerId} AND ({state}=-100 OR state={state})
+             AND ({cid}=0 OR f.category_id={cid})
              AND ('{keyword}'='' OR f.name Like '%{keyword}%')
              /*AND ('{cost1}'='' OR cost  */
 	]]>

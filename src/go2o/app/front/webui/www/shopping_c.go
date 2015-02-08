@@ -16,13 +16,11 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/service/goclient"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type shoppingC struct {
@@ -66,60 +64,41 @@ func (this *shoppingC) ApplyCoupon_post(w http.ResponseWriter, r *http.Request,
 	r.ParseForm()
 	var message string = "购物车还是空的!"
 	code := r.FormValue("code")
-	ck, err := r.Cookie("cart")
-	if err == nil {
-		cartData := domain.CartCookieFmt(ck.Value)
-		if len(cartData) != 0 {
-			json, err := goclient.Partner.BuildOrder(p.Id,
-				p.Secret, m.Id, cartData, code)
-			if err != nil {
-				message = err.Error()
-			} else {
-				w.Write([]byte(json))
-				return
-			}
-		}
+	json, err := goclient.Partner.BuildOrder(p.Id, p.Secret, m.Id, code)
+	if err != nil {
+		message = err.Error()
+	} else {
+		w.Write([]byte(json))
+		return
 	}
 
 	w.Write([]byte(`{"result":false,"message":"` + message + `"}`))
 
 }
 
-func (this *shoppingC) Order(w http.ResponseWriter, r *http.Request,
+func (this *shoppingC) Ship(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner, mm *member.ValueMember) {
-	//cart=%u91CE%u5C71%u6912%u7092%u8089*5*1*2|2
 	if b, siteConf := GetSiteConf(w, p); b {
-		ck, err := r.Cookie("cart")
-		if err != nil || ck.Value == "" {
-			this.Context.Log().PrintErr(err)
+		cart := goclient.Partner.GetShoppingCart(p.Id, mm.Id, "")
+		if cart.Items == nil || len(cart.Items) == 0 {
 			this.OrderEmpty(w, r, p, mm, siteConf)
 			return
 		}
 
-		//cartData := domain.CartCookieFmt(ck.Value)
+		cart.Summary = strings.Replace(cart.Summary, "\n", "<br />", -1)
 
-		//todo:
-
-		//cart, err := goclient.Partner.GetShoppingCart(p.Id, p.Secret, cartData)
-		//if err != nil {
-		//	w.Write([]byte("订单异常，请清空重新下单"))
-		//	return
-		//}
-
-		//		cart.Summary = strings.Replace(cart.Summary, "\n", "<br />", -1)
-		//
-		//		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
-		//			(*m)["partner"] = p
-		//			(*m)["title"] = "订单确认-" + p.Name
-		//			(*m)["member"] = mm
-		//			(*m)["cart"] = cart
-		//			(*m)["promFee"] = cart.TotalFee - cart.OrderFee
-		//			(*m)["summary"] = template.HTML(cart.Summary)
-		//			(*m)["conf"] = siteConf
-		//		},
-		//			"views/web/www/order_confirm.html",
-		//			"views/web/www/inc/header.html",
-		//			"views/web/www/inc/footer.html")
+		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
+			(*m)["partner"] = p
+			(*m)["title"] = "订单确认-" + p.Name
+			(*m)["member"] = mm
+			(*m)["cart"] = cart
+			(*m)["promFee"] = cart.TotalFee - cart.OrderFee
+			(*m)["summary"] = template.HTML(cart.Summary)
+			(*m)["conf"] = siteConf
+		},
+			"views/web/www/order_confirm.html",
+			"views/web/www/inc/header.html",
+			"views/web/www/inc/footer.html")
 	}
 }
 
@@ -136,15 +115,15 @@ func (this *shoppingC) OrderEmpty(w http.ResponseWriter, r *http.Request,
 		"views/web/www/inc/footer.html")
 }
 
-func (this *shoppingC) Finish(w http.ResponseWriter, r *http.Request,
+func (this *shoppingC) OrderFinish(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner, mm *member.ValueMember) {
 	// 清除购物车
-	cookie, _ := r.Cookie("cart")
-	if cookie != nil {
-		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
-		cookie.Path = "/"
-		http.SetCookie(w, cookie)
-	}
+	//	cookie, _ := r.Cookie("cart")
+	//	if cookie != nil {
+	//		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
+	//		cookie.Path = "/"
+	//		http.SetCookie(w, cookie)
+	//	}
 
 	if b, siteConf := GetSiteConf(w, p); b {
 		orderNo := r.URL.Query().Get("order_no")
@@ -172,21 +151,20 @@ func (this *shoppingC) Finish(w http.ResponseWriter, r *http.Request,
 
 func (this *shoppingC) SubmitOrder_post(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner, mm *member.ValueMember) {
+	r.ParseForm()
 	if p == nil || mm == nil {
 		w.Write([]byte(`{"result":false,"tag":"101"}`)) //未登录
 		return
 	}
-	r.ParseForm()
-	ck, err := r.Cookie("cart")
-	if err != nil || ck.Value == "" {
-		w.Write([]byte(`{"result":false,"tag":"102"}`)) //购物车为空
-		return
-	}
-	cart := domain.CartCookieFmt(ck.Value)
+	//	ck, err := r.Cookie("cart")
+	//	if err != nil || ck.Value == "" {
+	//		w.Write([]byte(`{"result":false,"tag":"102"}`)) //购物车为空
+	//		return
+	//	}
 	deliverAddrId, _ := strconv.Atoi(r.FormValue("AddrId"))
 	couponCode := r.FormValue("CouponCode")
 	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, mm.Id,
-		0, enum.PAY_OFFLINE, deliverAddrId, cart, couponCode, r.FormValue("note"))
+		0, enum.PAY_OFFLINE, deliverAddrId, couponCode, r.FormValue("note"))
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
@@ -245,19 +223,19 @@ func (this *shoppingC) Cart_RemoveItem(w http.ResponseWriter, r *http.Request,
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := goclient.Partner.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
-	if err != nil{
-		w.Write([]byte(`{error:'`+ err.Error()+`'}`))
-	}else{
+	if err != nil {
+		w.Write([]byte(`{error:'` + err.Error() + `'}`))
+	} else {
 		w.Write([]byte("{}"))
 	}
 }
 
-
-
 func (this *shoppingC) Cart(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner) {
 	//
-	w.Write([]byte("购物车"))
+	//w.Write([]byte("购物车"))
+	w.Header().Add("Location", "/buy/ship")
+	w.WriteHeader(302)
 }
 
 // 购买中转

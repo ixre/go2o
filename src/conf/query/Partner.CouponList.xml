@@ -14,8 +14,8 @@
         c.`integral`,
         c.`min_level`,
         c.`min_fee`,
-        date_format(begin_time,'%Y-%m-%d %T') as begin_time,
-        date_format(over_time,'%Y-%m-%d %T') as over_time,
+        begin_time,
+        over_time,
         c.`allow_enable`,
         c.`need_bind`,
             lv.name as limit_levelName

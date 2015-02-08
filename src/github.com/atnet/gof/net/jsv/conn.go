@@ -103,9 +103,10 @@ func (this *TCPConn) Read(b []byte) (int, error) {
 // size is the max length for required data
 // v is unmarsh struct
 func (this *TCPConn) WriteAndDecode(b []byte, v interface{}, size int) error {
-rewrite:
 	var n int
 	var err error
+
+rewrite:
 	c := this.getConn()
 	n, err = c.Write(b)
 	if err != nil {
@@ -133,13 +134,15 @@ rewrite:
 	if err = JsonCodec.Unmarshal(buffer[:n], &v); err != nil {
 		return errors.New(string(buffer[:n]))
 	}
+
 	return nil
 }
 
 func (this *TCPConn) WriteAndRead(b []byte, d []byte) error {
-rewrite:
 	var n int
 	var err error
+
+rewrite:
 	c := this.getConn()
 	n, err = c.Write(b)
 	if err != nil {

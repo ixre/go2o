@@ -20,6 +20,8 @@ var (
 	cartFmtRegex = regexp.MustCompile("[^\\*]+\\*(\\d+\\*\\d+)\\*\\d")
 )
 
+//todo: will removed
+
 //传唤客户端的购物车cookie为服务端的方式.
 func CartCookieFmt(s string) string {
 	//cart=%u91CE%u5C71%u6912%u7092%u8089*5*1*2|2

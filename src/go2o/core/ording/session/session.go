@@ -39,7 +39,7 @@ func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, 
 		//存入cookie
 		expires := time.Now()
 		expires = expires.Add(3600 * 72 * 1e9) //72H
-		cookie := http.Cookie{Name: "mtkey",
+		cookie := http.Cookie{Name:            "mtkey",
 			Value:   loginTokenResult,
 			Expires: expires}
 		http.SetCookie(w, &cookie)

@@ -55,6 +55,9 @@ func (this *memberClient) GetMember(memberId int, token string) (a *member.Value
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"member_id":"%d","token":"%s"}>>Member.GetMember`,
 		memberId, token)), &result, 512)
+	if err != nil {
+		result = nil
+	}
 	return result, err
 }
 

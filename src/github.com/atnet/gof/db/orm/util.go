@@ -76,7 +76,7 @@ func GetFields(t reflect.Type) (names []string, mapNames []string) {
 		f := t.Field(i)
 		if f.Tag != "" {
 			fmn = f.Tag.Get("db")
-			if fmn == "_" || len(fmn) == 0 {
+			if fmn == "-" || fmn == "_" || len(fmn) == 0 {
 				break
 			}
 		}

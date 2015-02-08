@@ -21,17 +21,17 @@ type shoppingService struct {
 }
 
 func (this *shoppingService) BuildOrder(partnerId int, memberId int,
-	cartKey string, couponCode string) (shopping.IOrder, error) {
+	cartKey string, couponCode string) (shopping.IOrder, shopping.ICart, error) {
 	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
 	return sp.BuildOrder(memberId, couponCode)
 }
 
 func (this *shoppingService) SubmitOrder(partnerId, memberId, shopId int, payMethod int,
-	deliverAddrId int, cart string, couponCode string, note string) (
+	deliverAddrId int, couponCode string, note string) (
 	orderNo string, err error) {
 	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
 	return sp.SubmitOrder(memberId, shopId, payMethod,
-		deliverAddrId, cart, couponCode, note)
+		deliverAddrId, couponCode, note)
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
@@ -129,7 +129,7 @@ func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKe
 					c.SetBuyer(memberId)
 				}
 				return c
-			} else {
+			} else if mc != nil {
 				// 合并购物车
 				nc, err := mc.Combine(c)
 				if err == nil {
@@ -159,6 +159,7 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	t, f := c.GetFee()
 	cart.TotalFee = t
 	cart.OrderFee = f
+	cart.Summary = c.GetSummary()
 
 	if v.Items != nil {
 		if l := len(v.Items); l != 0 {
@@ -196,6 +197,14 @@ func (this *shoppingService) AddCartItem(partnerId, memberId int, cartKey string
 		}
 	}
 	return nil
+}
+func (this *shoppingService) SubCartItem(partnerId, memberId int, cartKey string, goodsId, num int) error {
+	cart := this.getShoppingCart(partnerId, memberId, cartKey)
+	err := cart.RemoveItem(goodsId, num)
+	if err == nil {
+		_, err = cart.Save()
+	}
+	return err
 }
 
 func (this *shoppingService) OrderAutoSetup(partnerId int, f func(error)) {

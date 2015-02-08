@@ -71,7 +71,7 @@
                         couDes.innerHTML='';
                     }else{
                         var t = this;
-                        $JS.xhr.jsonPost('/shopping/applyCoupon',{code:this.value},function(json){
+                        $JS.xhr.jsonPost('/buy/apply/coupon',{code:this.value},function(json){
                             if(json.result == false) {
                                 $JS.validator.setTip(t,false,null,json.message);
                                 couDes.className='coupon_desc hidden';
@@ -98,10 +98,10 @@
                         return false;
                     }
                     data.AddrId = addr.AddrId;
-                    $JS.xhr.jsonPost('SubmitOrder',data,function(j){
+                    $JS.xhr.jsonPost('order/submit_order',data,function(j){
                        if(j.result){
                            var orderNo = j.data;
-                           location.replace("finish?order_no="+orderNo)
+                           location.replace("order/finish?order_no="+orderNo)
                        }else{
                            alert(j.message);
                        }

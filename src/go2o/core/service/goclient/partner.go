@@ -28,11 +28,14 @@ func (this *partnerClient) GetPartner(partnerId int, secret string) (a *partner.
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.GetPartner`,
 		strconv.Itoa(partnerId), secret)), &result, 256)
+
 	if err != nil {
 		return nil, err
 	}
+
 	a = &partner.ValuePartner{}
 	err = jsv.UnmarshalMap(result.Data, &a)
+
 	return a, err
 }
 
@@ -92,6 +95,7 @@ func (this *partnerClient) GetSiteConf(partnerId int, secret string) (c *partner
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.GetSiteConf`,
 		strconv.Itoa(partnerId), secret)), &result, 2048)
+
 	if err != nil {
 		return nil, err
 	}
@@ -101,12 +105,11 @@ func (this *partnerClient) GetSiteConf(partnerId int, secret string) (c *partner
 }
 
 //根据订单号获取订单
-func (this *partnerClient) BuildOrder(partnerId int, secret string, memberId int,
-	cartData string, couponCode string) (string, error) {
+func (this *partnerClient) BuildOrder(partnerId int, secret string, memberId int, couponCode string) (string, error) {
 	var result jsv.Result
 	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
-		`{"partner_id":"%s","secret":"%s","member_id":"%d","cart":"%s","coupon_code":"%s"}>>Partner.BuildOrder`,
-		strconv.Itoa(partnerId), secret, memberId, cartData,
+		`{"partner_id":"%s","secret":"%s","member_id":"%d","coupon_code":"%s"}>>Partner.BuildOrder`,
+		strconv.Itoa(partnerId), secret, memberId,
 		couponCode)), &result, 2048)
 	if err != nil {
 		return "{}", err
@@ -120,12 +123,12 @@ func (this *partnerClient) BuildOrder(partnerId int, secret string, memberId int
 
 // 提交订单，并返回订单号
 func (this *partnerClient) SubmitOrder(partnerId int, secret string, memberId int,
-	shopId int, paymentMethod int, deliverAddrId int, cart string, couponCode string,
+	shopId int, paymentMethod int, deliverAddrId int, couponCode string,
 	note string) (orderNo string, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%d","secret":"%s","member_id":"%d","shop_id":"%d",`+
-			`"pay_method":"%d","addr_id":"%d","cart":"%s","coupon_code":"%s"`+
+			`"pay_method":"%d","addr_id":"%d","coupon_code":"%s"`+
 			`,"note":"%s"}>>Partner.SubmitOrder`,
 		partnerId,
 		secret,
@@ -133,7 +136,6 @@ func (this *partnerClient) SubmitOrder(partnerId int, secret string, memberId in
 		shopId,
 		paymentMethod,
 		deliverAddrId,
-		cart,
 		couponCode,
 		note)), &result, 256)
 	if err != nil {
@@ -177,16 +179,14 @@ func (this *partnerClient) RegisterMember(m *member.ValueMember, ptId, tgId int,
 
 func (this *partnerClient) GetShoppingCart(partnerId int, memberId int, cartKey string) (
 	a *dto.ShoppingCart) {
-	var result jsv.Result
+	var result *dto.ShoppingCart = new(dto.ShoppingCart)
 	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%d","member_id":"%d","cart_key":"%s"}>>Partner.GetShoppingCart`,
 		partnerId, memberId, cartKey)), &result, 1024)
 	if err != nil {
 		return nil
 	}
-	a = &dto.ShoppingCart{}
-	err = jsv.UnmarshalMap(result.Data, &a)
-	return a
+	return result
 }
 
 func (this *partnerClient) AddCartItem(partnerId int, memberId int, cartKey string, goodsId, num int) (*dto.CartItem, error) {
@@ -198,4 +198,12 @@ func (this *partnerClient) AddCartItem(partnerId int, memberId int, cartKey stri
 		return nil, err
 	}
 	return &result, err
+}
+
+func (this *partnerClient) SubCartItem(partnerId int, memberId int, cartKey string, goodsId, num int) error {
+	var dst []byte = make([]byte, 50)
+	err := this.conn.WriteAndRead([]byte(fmt.Sprintf(
+		`{"partner_id":"%d","member_id":"%d","cart_key":"%s","goods_id":"%d","num":"%d"}>>Partner.SubCartItem`,
+		partnerId, memberId, cartKey, goodsId, num)), dst)
+	return err
 }
