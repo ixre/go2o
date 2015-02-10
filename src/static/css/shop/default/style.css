@@ -138,14 +138,31 @@ padding:1% 5%;position:relative;clear:both;height:10em;}
 
 
 /* shopping_confirm */
-.shopping-confirm{padding:50px 0;}
+.shopping-confirm{}
 .shopping-confirm p.shopping-error{font-size:200%;text-align:center;color:#ff0000;}
-.order-confirm-panel{position:relative;font-size:125%;margin:2% 5%;}
-.order-confirm-panel h2{color:green;}
-.order-confirm-panel .cash-panel{position: absolute;right:0;top:0;
-    width:25%;padding:2%;
+
+.order-confirm-panel{position:relative;}
+.order-confirm-panel .item .item_ctrl{display:none;}
+.order-confirm-panel .item .item_info{display:inherit;}
+.order-confirm-panel .item{padding:20px;border:solid 1px #ddd;border-top-width:0;  }
+.order-confirm-panel .first_item{border-top:solid 1px #ddd;}
+.order-confirm-panel .item h2{font-size:120%;color:#000;}
+.order-confirm-panel .item h2 span{padding-left:15px;}
+.order-confirm-panel .item h2 span a{color:#666;text-decoration: none;outline:none;font-size:80%;}
+
+/* 操作PANEL */
+.order-confirm-panel .active_item{border:solid 2px #ff6600;padding:18px;}
+.order-confirm-panel .active_item .item_info{display:none;}
+.order-confirm-panel .active_item .item_ctrl{display:inherit;}
+.order-confirm-panel .active_item h2 span{display:none;}
+
+.order-confirm-panel .confirm-button{display:inline-block;padding:8px 15px;background:green;color:#fff;text-decoration: none;font-size:100%;}
+.order-confirm-panel .submit-panel{text-align: right;background:#ddd;padding:10px 30px;}
+.order-confirm-panel .submit-panel .final_fee{font-size:120%;color:red;font-weight: bold;padding:0 5px;}
+
+.order-confirm-panel .cash-panel{padding:2%;
     border:solid 1px #ddd;background:#f0f0f0;}
-.order-confirm-panel .main-panel{margin-right:30%;padding:3%;border:solid 2px #ddd;border-radius: 5px;}
+.order-confirm-panel .main-panel{padding:3%;border:solid 2px #ddd;border-radius: 5px;}
 .order-confirm-panel .order-panel{}
 .order-confirm-panel .order-panel p.summary{padding:1%;background:#ddd;color:#000;
     font-size:120%;border:solid 1px #666;line-height:200%;}
@@ -156,13 +173,10 @@ padding:1% 5%;position:relative;clear:both;height:10em;}
 .order-confirm-panel .coupon_desc em{
     color:green;line-height: 200%;
 }
-.order-confirm-panel .submit-panel{margin:20px 0;}
-.order-confirm-panel .submit-panel .btn_submit{padding:5px 20px;}
-.order-confirm-panel .member-panel .ques{font-size:120%;color:green;}
+
 .order-confirm-panel .form .fl div.label{width:80px;}
 .order-confirm-panel .form{margin:20px 0;border-top:solid 1px #ddd;padding:10px;}
 .order-confirm-panel .form .fl div.in{margin-left:80px;}
-.order-confirm-panel textarea{width:40%;height:60px;}
 
 
 /* 餐盒 */

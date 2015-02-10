@@ -7,11 +7,15 @@ import (
 
 //路由映射
 type RouteMap struct {
+	deferFunc http.HandlerFunc
 	//地址模式
 	UrlPatterns []string
 	//路由集合
 	RouteCollection map[string]func(http.ResponseWriter, *http.Request)
 }
+
+// HTTP处理词典
+type httpFuncMap map[string]func(http.ResponseWriter, *http.Request)
 
 //添加路由
 func (this *RouteMap) Add(
@@ -29,8 +33,13 @@ func (this *RouteMap) Add(
 	}
 }
 
-//处理请求
-func (this *RouteMap) HandleRequest(w http.ResponseWriter, r *http.Request) {
+// 处理请求
+func (this *RouteMap) Handle(w http.ResponseWriter, r *http.Request) {
+	// 执行某些操作，如捕获异常等
+	if this.deferFunc != nil {
+		defer this.deferFunc(w, r)
+	}
+
 	routes := this.RouteCollection
 	path := r.URL.Path
 	var isHandled bool = false
@@ -58,11 +67,14 @@ func (this *RouteMap) HandleRequest(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// 延迟执行的操作，发生在请求完成后
+func (this *RouteMap) Defer(f http.HandlerFunc) {
+	this.deferFunc = f
+}
+
 //处理路由请求
-func handleMapRoute(
-	w http.ResponseWriter,
-	r *http.Request,
-	routes map[string]func(http.ResponseWriter, *http.Request)) {
+//todo: will be remove.
+func handleMapRoute(w http.ResponseWriter, r *http.Request, routes httpFuncMap) {
 	path := r.URL.Path
 	var isHandled bool = false
 

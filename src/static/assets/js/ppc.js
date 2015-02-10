@@ -47,6 +47,3 @@ window.funcs = {
 };
 
 
-function loadDeliver(id){
-    $JS.load(id,'/shopping/getDeliverAddrs');
-}
