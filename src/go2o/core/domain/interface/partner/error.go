@@ -16,4 +16,7 @@ import (
 var (
 	ErrNoSuchPartner *domain.DomainError = domain.NewDomainError(
 		"no_such_partner", "商家不存在")
+
+	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(
+		"no_such_shop", "门店不存在")
 )

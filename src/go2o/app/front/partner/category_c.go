@@ -19,6 +19,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"go2o/core/infrastructure/format"
 )
 
 type categoryC struct {
@@ -27,7 +28,10 @@ type categoryC struct {
 
 //分类树形功能
 func (this *categoryC) Category(w http.ResponseWriter, r *http.Request) {
-	this.Context.Template().Render(w, "views/partner/category/category.html", nil)
+
+	this.Context.Template().Execute(w,func(m *map[string]interface {}){
+			(*m)["nopicUrl"] = format.GetGoodsImageUrl("")
+		}, "views/partner/category/category.html")
 }
 
 //分类Json数据

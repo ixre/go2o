@@ -9,11 +9,14 @@
 package www
 
 import (
+	"github.com/atnet/gof/app"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/partner"
 	"go2o/core/service/goclient"
+	"html/template"
 	"net/http"
 	"net/url"
+	"runtime/debug"
 	"strings"
 )
 
@@ -40,4 +43,15 @@ func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner) (bool, *partner
 		return false, siteConf
 	}
 	return true, siteConf
+}
+
+// 处理自定义错误
+func handleCustomError(w http.ResponseWriter, ctx app.Context, err error) {
+	if err != nil {
+		ctx.Template().Execute(w, func(m *map[string]interface{}) {
+			(*m)["error"] = err.Error()
+			(*m)["statck"] = template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1))
+		},
+			"views/web/www/error.html")
+	}
 }

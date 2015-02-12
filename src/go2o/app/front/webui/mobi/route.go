@@ -22,8 +22,8 @@ var (
 )
 
 //处理请求
-func HandleRequest(w http.ResponseWriter, r *http.Request) {
-	routes.HandleRequest(w, r)
+func Handle(w http.ResponseWriter, r *http.Request) {
+	routes.Handle(w, r)
 }
 
 func handleError(w http.ResponseWriter, err error) {
@@ -41,7 +41,7 @@ func RegisterRoutes(c app.Context) {
 
 	routes.Add("/", func(w http.ResponseWriter, r *http.Request) {
 		if p, err := getPartner(r); err == nil {
-			mvc.HandleRequest(mc, w, r, true, p)
+			mvc.Handle(mc, w, r, true, p)
 		} else {
 			handleError(w, err)
 		}

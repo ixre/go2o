@@ -48,8 +48,7 @@ type IShopping interface {
 	BuildOrder(memberId int, couponCode string) (IOrder, ICart, error)
 
 	// 提交订单
-	SubmitOrder(memberId, shopId int, payMethod int, deliverAddrId int,
-		couponCode string, note string) (string, error)
+	SubmitOrder(memberId int, couponCode string) (string, error)
 
 	// 获取可用的订单号
 	GetFreeOrderNo() string

@@ -27,8 +27,8 @@ var (
 )
 
 //处理请求
-func HandleRequest(w http.ResponseWriter, r *http.Request) {
-	routes.HandleRequest(w, r)
+func Handle(w http.ResponseWriter, r *http.Request) {
+	routes.Handle(w, r)
 }
 
 func handleError(w http.ResponseWriter, err error) {
@@ -39,8 +39,15 @@ func handleError(w http.ResponseWriter, err error) {
 //注册路由
 func RegisterRoutes(c app.Context) {
 	mc := &mainC{Context: c}
-	dc := &ordingC{Context: c}
 	sp := &shoppingC{Context: c}
+	pc := &paymentC{Context: c}
+
+	var httpFunc http.HandlerFunc = func(w http.ResponseWriter, r *http.Request) {
+		if err, ok := recover().(error); ok {
+			handleCustomError(w, c, err)
+		}
+	}
+	routes.Defer(httpFunc)
 
 	getPartner := func(r *http.Request) (*partner.ValuePartner, error, *member.ValueMember) {
 		var m *member.ValueMember
@@ -91,17 +98,9 @@ func RegisterRoutes(c app.Context) {
 		}
 	})
 
-	routes.Add("^/buy/ship", func(w http.ResponseWriter, r *http.Request) {
+	routes.Add("^/buy/confirm$", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, m := getPartner(r); err == nil {
-			sp.Ship(w, r, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
-
-	routes.Add("^/buy/order/submit_order$", func(w http.ResponseWriter, r *http.Request) {
-		if p, err, m := getPartner(r); err == nil {
-			sp.SubmitOrder_post(w, r, p, m)
+			sp.OrderConfirm(w, r, p, m)
 		} else {
 			handleError(w, err)
 		}
@@ -109,7 +108,29 @@ func RegisterRoutes(c app.Context) {
 
 	routes.Add("^/buy/apply/coupon$", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, m := getPartner(r); err == nil {
-			sp.ApplyCoupon_post(w, r, p, m)
+			if r.Method == "POST" {
+				sp.ApplyCoupon_post(w, r, p, m)
+			}
+		} else {
+			handleError(w, err)
+		}
+	})
+
+	routes.Add("^/buy/order/persist", func(w http.ResponseWriter, r *http.Request) {
+		if p, err, m := getPartner(r); err == nil {
+			if r.Method == "POST" {
+				sp.OrderPersist_post(w, r, p, m)
+			}
+		} else {
+			handleError(w, err)
+		}
+	})
+
+	routes.Add("^/buy/order/submit_order$", func(w http.ResponseWriter, r *http.Request) {
+		if p, err, m := getPartner(r); err == nil {
+			if r.Method == "POST" {
+				sp.SubmitOrder_post(w, r, p, m)
+			}
 		} else {
 			handleError(w, err)
 		}
@@ -123,33 +144,21 @@ func RegisterRoutes(c app.Context) {
 		}
 	})
 
-	//	routes.Add("^/buy/ship/", func(w http.ResponseWriter, r *http.Request) {
-	//		if p, err, m := getPartner(r); err == nil {
-	//			//buy.HandleRequest(w, r, p, m)
-	//		} else {
-	//			handleError(w, err)
-	//		}
-	//	})
-
-	routes.Add("/ding/", func(w http.ResponseWriter, r *http.Request) {
+	routes.Add("/(shopping|buy)/", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, m := getPartner(r); err == nil {
-			mvc.HandleRequest(dc, w, r, true, p, m)
+			mvc.Handle(sp, w, r, true, p, m)
 		} else {
 			handleError(w, err)
 		}
 	})
 
-	routes.Add("/shopping/", func(w http.ResponseWriter, r *http.Request) {
-		if p, err, m := getPartner(r); err == nil {
-			mvc.HandleRequest(sp, w, r, true, p, m)
-		} else {
-			handleError(w, err)
-		}
+	routes.Add("^/pay/", func(w http.ResponseWriter, r *http.Request) {
+		mvc.Handle(pc, w, r, true)
 	})
 
 	routes.Add("/", func(w http.ResponseWriter, r *http.Request) {
 		if p, err, m := getPartner(r); err == nil {
-			mvc.HandleRequest(mc, w, r, true, p, m)
+			mvc.Handle(mc, w, r, true, p, m)
 		} else {
 			handleError(w, err)
 		}

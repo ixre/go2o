@@ -14,7 +14,7 @@ import (
 	"github.com/atnet/gof/app"
 	"go2o/core/infrastructure"
 	"go2o/core/service"
-	"go2o/core/share/glob"
+	"go2o/share/glob"
 	"os"
 	_ "runtime/debug"
 	"strconv"

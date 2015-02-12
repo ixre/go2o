@@ -11,7 +11,7 @@ package server
 import (
 	"github.com/atnet/gof/net/jsv"
 	"github.com/garyburd/redigo/redis"
-	"go2o/core/share/glob"
+	"go2o/share/glob"
 )
 
 var (

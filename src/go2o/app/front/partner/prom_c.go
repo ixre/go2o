@@ -85,7 +85,7 @@ func (this *promC) SaveCoupon_post(w http.ResponseWriter, r *http.Request, partn
 	var e promotion.ValueCoupon
 	web.ParseFormToEntity(r.Form, &e)
 
-	const layout string = "2006-01-02 15:04-05"
+	const layout string = "2006-01-02 15:04:05"
 	bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
 	ot, _ := time.Parse(layout, r.FormValue("OverTime"))
 	e.BeginTime = bt.Unix()

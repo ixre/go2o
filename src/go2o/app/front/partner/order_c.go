@@ -12,8 +12,8 @@ package partner
 import (
 	"encoding/json"
 	"github.com/atnet/gof/app"
+	"go2o/app/cache"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/ording/cache"
 	"go2o/core/service/dps"
 	"html/template"
 	"net/http"
@@ -80,7 +80,7 @@ func (this *orderC) View(w http.ResponseWriter, r *http.Request, partnerId int) 
 	} else {
 		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 	}
-	payment = enum.GetPaymentName(e.PayMethod)
+	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
 
 	this.Context.Template().Execute(w,

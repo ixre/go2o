@@ -19,7 +19,7 @@ import (
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/log"
-	"go2o/core/share/variable"
+	"go2o/share/variable"
 	"strings"
 	"time"
 )
@@ -97,7 +97,7 @@ func (this *Order) SetShop(shopId int) error {
 
 // 设置支付方式
 func (this *Order) SetPayment(payment int) {
-	this.value.PayMethod = payment
+	this.value.PaymentOpt = payment
 }
 
 // 标记已支付
@@ -180,6 +180,11 @@ func (this *Order) Submit() (string, error) {
 
 // 保存订单
 func (this *Order) Save() (int, error) {
+	// 有操作后解除挂起状态
+	if this.value.IsSuspend == 1 {
+		this.value.IsSuspend = 0
+	}
+
 	if this.value.Id > 0 {
 		return this.shoppingRep.SaveOrder(
 			this._shopping.GetAggregateRootId(), this.value)

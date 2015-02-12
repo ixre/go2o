@@ -16,10 +16,13 @@ import (
 
 type IOrder interface {
 	GetDomainId() int
+
 	// 获生成值
 	GetValue() ValueOrder
+
 	// 应用优惠券
 	ApplyCoupon(coupon promotion.ICoupon) error
+
 	// 获取应用的优惠券
 	GetCoupons() []promotion.ICoupon
 

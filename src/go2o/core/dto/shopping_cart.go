@@ -23,6 +23,7 @@ type ShoppingCart struct {
 type CartItem struct {
 	GoodsId    int     `json:"id"`
 	GoodsName  string  `json:"name"`
+	GoodsNo    string  `json:"no"`
 	SmallTitle string  `json:"title"`
 	GoodsImage string  `json:"image"`
 	Num        int     `json:"num"`

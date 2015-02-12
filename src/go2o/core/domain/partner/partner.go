@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/partner"
 	"go2o/core/infrastructure"
-	"go2o/core/share/variable"
+	"go2o/share/variable"
 	"time"
 )
 

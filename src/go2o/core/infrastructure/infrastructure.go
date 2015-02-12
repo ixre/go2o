@@ -11,7 +11,7 @@ package infrastructure
 
 import (
 	"github.com/atnet/gof/app"
-	"go2o/core/share/glob"
+	"go2o/share/glob"
 )
 
 var (

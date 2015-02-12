@@ -68,6 +68,7 @@ func (this *saleRep) GetGoodsByIds(ids ...int) ([]*sale.ValueGoods, error) {
 	//todo:改成database/sql方式，不使用orm
 	err := this.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_goods WHERE id IN (`+strings.Join(strIds, ",")+`)`)
+
 	return items, err
 }
 

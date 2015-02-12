@@ -26,12 +26,10 @@ func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 	return sp.BuildOrder(memberId, couponCode)
 }
 
-func (this *shoppingService) SubmitOrder(partnerId, memberId, shopId int, payMethod int,
-	deliverAddrId int, couponCode string, note string) (
+func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string) (
 	orderNo string, err error) {
 	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
-	return sp.SubmitOrder(memberId, shopId, payMethod,
-		deliverAddrId, couponCode, note)
+	return sp.SubmitOrder(memberId, couponCode)
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
@@ -96,7 +94,6 @@ func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason s
 }
 
 //  获取购物车
-
 func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKey string) shopping.ICart {
 	sp := this.spRep.GetShopping(partnerId)
 	var c shopping.ICart
@@ -115,20 +112,20 @@ func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKe
 	if !skIsNil {
 		// 根据Key获取购物车
 		c, _ = sp.GetCart(cartKey)
-
 		if c == nil {
 			// 新的购物车不存在，直接返回会员的购物车
 			if mc != nil {
 				return mc
 			}
 		} else {
+
+			cv := c.GetValue()
 			//合并购物车
-			if c.GetValue().BuyerId <= 0 {
+			if cv.BuyerId <= 0 {
 				// 设置购买者
 				if mmNotNil {
 					c.SetBuyer(memberId)
 				}
-				return c
 			} else if mc != nil {
 				// 合并购物车
 				nc, err := mc.Combine(c)
@@ -137,6 +134,11 @@ func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKe
 					return nc
 				}
 				return mc
+			}
+
+			// 如果没有购买，则返回
+			if cv.IsBought == 0 {
+				return c
 			}
 		}
 	}
@@ -168,6 +170,7 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 				cart.Items[i] = &dto.CartItem{
 					GoodsId:    v.GoodsId,
 					GoodsName:  v.Name,
+					GoodsNo:    v.GoodsNo,
 					SmallTitle: v.SmallTitle,
 					GoodsImage: v.Image,
 					Num:        v.Num,
@@ -205,6 +208,45 @@ func (this *shoppingService) SubCartItem(partnerId, memberId int, cartKey string
 		_, err = cart.Save()
 	}
 	return err
+}
+
+// 更新购物车结算
+func (this *shoppingService) PrepareSettlePersist(partnerId, memberId, shopId, paymentOpt, deliverOpt, deliverId int) error {
+	var cart = this.getShoppingCart(partnerId, memberId, "")
+	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
+	if err == nil {
+		_, err = cart.Save()
+	}
+	return err
+}
+
+func (this *shoppingService) GetCartSettle(partnerId, memberId int, cartKey string) *dto.SettleMeta {
+	var cart = this.getShoppingCart(partnerId, memberId, cartKey)
+	shop, deliver,payOpt,dlvOpt := cart.GetSettleData()
+	var st *dto.SettleMeta = new(dto.SettleMeta)
+	st.PaymentOpt = payOpt
+	st.DeliverOpt = dlvOpt
+	if shop != nil {
+		v := shop.GetValue()
+
+		st.Shop = &dto.SettleShopMeta{
+			Id:   v.Id,
+			Name: v.Name,
+			Tel:  v.Phone,
+		}
+	}
+
+	if deliver != nil {
+		v := deliver.GetValue()
+		st.Deliver = &dto.SettleDeliverMeta{
+			Id:         v.Id,
+			PersonName: v.RealName,
+			Phone:      v.Phone,
+			Address:    v.Address,
+		}
+	}
+
+	return st
 }
 
 func (this *shoppingService) OrderAutoSetup(partnerId int, f func(error)) {

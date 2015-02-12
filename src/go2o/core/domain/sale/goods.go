@@ -12,6 +12,7 @@ package sale
 import (
 	"fmt"
 	"go2o/core/domain/interface/sale"
+	"strconv"
 	"time"
 )
 
@@ -56,10 +57,18 @@ func (this *Goods) IsOnShelves() bool {
 func (this *Goods) Save() (int, error) {
 	this.sale.clearCache(this.value.Id)
 
+	unix := time.Now().Unix()
+	this.value.UpdateTime = unix
+
 	if this.GetDomainId() <= 0 {
-		unix := time.Now().Unix()
 		this.value.CreateTime = unix
-		this.value.UpdateTime = unix
+	}
+
+	if this.value.GoodsNo == "" {
+		cs := strconv.Itoa(this.value.CategoryId)
+		us := strconv.Itoa(int(unix))
+		l := len(cs)
+		this.value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
 	id, err := this.saleRep.SaveGoods(this.value)
@@ -88,6 +97,7 @@ func (this *Goods) GenerateSnapshot() (int, error) {
 		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
 		GoodsId:      this.GetDomainId(),
 		GoodsName:    v.Name,
+		GoodsNo:      v.GoodsNo,
 		SmallTitle:   v.SmallTitle,
 		CategoryName: cate.Name,
 		Image:        v.Image,

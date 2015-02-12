@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <title>HTTP 500 出错了！</title>
+    <link rel="Stylesheet" href="{{.static_serv}}/css/page.css" type="text/css" />
+    <style type="text/css">
+        body{margin:30px ;}
+        #form1 {
+            width: 400px;
+            opacity:0;filter:alpha(opacity=0)
+        }
+
+        .c1 {
+            border-bottom: solid 1px #e5e5e5;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            line-height: 25px;
+            color: #006699;
+        }
+
+        p {
+            margin: 5px 38px;
+            font-size: 14px;
+        }
+
+        .msg {
+            color: red;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>系统发生了一些故障，请稍后重试！</h1>
+    <div>
+        <strong>详细错误：</strong><br />
+        <div class="error">{{.error}}</div>
+        <p>
+            {{.statck}}
+        </p>
+    </div>
+</body>
+</html>

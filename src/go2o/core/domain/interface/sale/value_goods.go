@@ -13,6 +13,7 @@ type ValueGoods struct {
 	Id         int    `db:"id" auto:"yes" pk:"yes"`
 	CategoryId int    `db:"category_id"`
 	Name       string `db:"name"`
+	GoodsNo    string `db:"goods_no"`
 	SmallTitle string `db:"small_title"`
 	Image      string `db:"img"`
 	//成本价

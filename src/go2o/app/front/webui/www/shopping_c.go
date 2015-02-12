@@ -13,9 +13,10 @@ import (
 	"fmt"
 	"github.com/atnet/gof/app"
 	"github.com/atnet/gof/web"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
+	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"go2o/core/service/goclient"
 	"html/template"
 	"net/http"
@@ -27,6 +28,72 @@ type shoppingC struct {
 	app.Context
 }
 
+// 订单确认
+func (this *shoppingC) OrderConfirm(w http.ResponseWriter, r *http.Request,
+	p *partner.ValuePartner, m *member.ValueMember) {
+
+	if m == nil {
+		RedirectLoginPage(w, r.RequestURI)
+		return
+	}
+
+	if b, siteConf := GetSiteConf(w, p); b {
+		// 获取购物车
+		var cartKey string
+		ck, err := r.Cookie("_cart")
+		if err == nil {
+			cartKey = ck.Value
+		}
+		cart := goclient.Partner.GetShoppingCart(p.Id, m.Id, cartKey)
+		if cart.Items == nil || len(cart.Items) == 0 {
+			this.OrderEmpty(w, r, p, m, siteConf)
+			return
+		}
+
+		// 配送地址
+		var deliverId int
+		var paymentOpt int = 1
+		var deliverOpt int = 1
+		var settle *dto.SettleMeta = goclient.Partner.GetCartSettle(p.Id, m.Id, cart.CartKey)
+		if settle.Deliver != nil {
+			deliverId = settle.Deliver.Id
+			ph := settle.Deliver.Phone
+			if len(ph) == 11 {
+				settle.Deliver.Phone = strings.Replace(ph, ph[3:7], "****", 1)
+			}
+			if settle.PaymentOpt > 0 {
+				paymentOpt = settle.PaymentOpt
+			} else {
+				paymentOpt = 1
+			}
+
+			if settle.DeliverOpt > 0 {
+				deliverOpt = settle.DeliverOpt
+			} else {
+				deliverOpt = 1
+			}
+		}
+
+		this.Context.Template().Execute(w, func(mp *map[string]interface{}) {
+			(*mp)["partner"] = p
+			(*mp)["title"] = "订单确认-" + p.Name
+			(*mp)["member"] = m
+			(*mp)["cart"] = cart
+			(*mp)["cartDetails"] = template.HTML(format.CartDetails(cart))
+			(*mp)["promFee"] = cart.TotalFee - cart.OrderFee
+			(*mp)["summary"] = template.HTML(cart.Summary)
+			(*mp)["conf"] = siteConf
+			(*mp)["settle"] = settle
+			(*mp)["deliverId"] = deliverId
+			(*mp)["deliverOpt"] = deliverOpt
+			(*mp)["paymentOpt"] = paymentOpt
+		},
+			"views/web/www/order_confirm.html",
+			"views/web/www/inc/header.html",
+			"views/web/www/inc/footer.html")
+	}
+}
+
 func (this *shoppingC) GetDeliverAddrs(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner, m *member.ValueMember) {
 	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
@@ -34,9 +101,15 @@ func (this *shoppingC) GetDeliverAddrs(w http.ResponseWriter, r *http.Request,
 		w.Write([]byte(err.Error()))
 		return
 	}
+	var selId int
+	if sel := r.URL.Query().Get("sel"); sel != "" {
+		selId, _ = strconv.Atoi(sel)
+	}
+
 	js, _ := json.Marshal(addrs)
 	this.Context.Template().Execute(w, func(md *map[string]interface{}) {
 		(*md)["addrs"] = template.JS(js)
+		(*md)["sel"] = selId
 	}, "views/web/www/profile/deliver_address.html")
 }
 
@@ -76,32 +149,6 @@ func (this *shoppingC) ApplyCoupon_post(w http.ResponseWriter, r *http.Request,
 
 }
 
-func (this *shoppingC) Ship(w http.ResponseWriter, r *http.Request,
-	p *partner.ValuePartner, mm *member.ValueMember) {
-	if b, siteConf := GetSiteConf(w, p); b {
-		cart := goclient.Partner.GetShoppingCart(p.Id, mm.Id, "")
-		if cart.Items == nil || len(cart.Items) == 0 {
-			this.OrderEmpty(w, r, p, mm, siteConf)
-			return
-		}
-
-		cart.Summary = strings.Replace(cart.Summary, "\n", "<br />", -1)
-
-		this.Context.Template().Execute(w, func(m *map[string]interface{}) {
-			(*m)["partner"] = p
-			(*m)["title"] = "订单确认-" + p.Name
-			(*m)["member"] = mm
-			(*m)["cart"] = cart
-			(*m)["promFee"] = cart.TotalFee - cart.OrderFee
-			(*m)["summary"] = template.HTML(cart.Summary)
-			(*m)["conf"] = siteConf
-		},
-			"views/web/www/order_confirm.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
-	}
-}
-
 func (this *shoppingC) OrderEmpty(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner, mm *member.ValueMember, conf *partner.SiteConf) {
 	this.Context.Template().Execute(w, func(m *map[string]interface{}) {
@@ -126,12 +173,19 @@ func (this *shoppingC) OrderFinish(w http.ResponseWriter, r *http.Request,
 	//	}
 
 	if b, siteConf := GetSiteConf(w, p); b {
+		var payHtml string // 支付HTML
+
 		orderNo := r.URL.Query().Get("order_no")
 		order, err := goclient.Partner.GetOrderByNo(p.Id, p.Secret, orderNo)
 		if err != nil {
 			this.Context.Log().PrintErr(err)
 			this.OrderEmpty(w, r, p, mm, siteConf)
 			return
+		}
+
+		if order.PaymentOpt == 2 {
+			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+				order.OrderNo, "在线支付")
 		}
 
 		if b, siteConf := GetSiteConf(w, p); b {
@@ -141,11 +195,49 @@ func (this *shoppingC) OrderFinish(w http.ResponseWriter, r *http.Request,
 				(*m)["member"] = mm
 				(*m)["conf"] = siteConf
 				(*m)["order"] = order
+				(*m)["payHtml"] = template.HTML(payHtml)
 			},
 				"views/web/www/order_finish.html",
 				"views/web/www/inc/header.html",
 				"views/web/www/inc/footer.html")
 		}
+	}
+}
+
+func (this *shoppingC) OrderPersist_post(w http.ResponseWriter, r *http.Request,
+	p *partner.ValuePartner, m *member.ValueMember) {
+	var err error
+	r.ParseForm()
+
+	var deliverId int
+	var paymentOpt int
+	var deliverOpt int
+	var shopId int
+
+	deliverId, err = strconv.Atoi(r.FormValue("deliver_id"))
+	if err != nil {
+		goto rsp
+	}
+	paymentOpt, err = strconv.Atoi(r.FormValue("pay_opt"))
+	if err != nil {
+		goto rsp
+	}
+	deliverOpt, err = strconv.Atoi(r.FormValue("deliver_opt"))
+	if err != nil {
+		goto rsp
+	}
+	shopId, err = strconv.Atoi(r.FormValue("shop_id"))
+	if err != nil {
+		goto rsp
+	}
+
+	err = goclient.Partner.OrderPersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
+
+rsp:
+	if err != nil {
+		w.Write([]byte(fmt.Sprintf(`{"message":"%s"}`, err.Error())))
+	} else {
+		w.Write([]byte("{}"))
 	}
 }
 
@@ -156,15 +248,8 @@ func (this *shoppingC) SubmitOrder_post(w http.ResponseWriter, r *http.Request,
 		w.Write([]byte(`{"result":false,"tag":"101"}`)) //未登录
 		return
 	}
-	//	ck, err := r.Cookie("cart")
-	//	if err != nil || ck.Value == "" {
-	//		w.Write([]byte(`{"result":false,"tag":"102"}`)) //购物车为空
-	//		return
-	//	}
-	deliverAddrId, _ := strconv.Atoi(r.FormValue("AddrId"))
-	couponCode := r.FormValue("CouponCode")
-	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, mm.Id,
-		0, enum.PAY_OFFLINE, deliverAddrId, couponCode, r.FormValue("note"))
+	couponCode := r.FormValue("coupon_code")
+	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, mm.Id, couponCode)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
@@ -232,9 +317,12 @@ func (this *shoppingC) Cart_RemoveItem(w http.ResponseWriter, r *http.Request,
 
 func (this *shoppingC) Cart(w http.ResponseWriter, r *http.Request,
 	p *partner.ValuePartner) {
-	//
-	//w.Write([]byte("购物车"))
-	w.Header().Add("Location", "/buy/ship")
+	//todo: 需页面
+	if r.URL.Query().Get("edit") == "1" {
+		w.Header().Add("Location", "/list")
+	} else {
+		w.Header().Add("Location", "/buy/confirm")
+	}
 	w.WriteHeader(302)
 }
 
@@ -244,7 +332,7 @@ func (this *shoppingC) BuyRedirect(w http.ResponseWriter, r *http.Request,
 	if mm == nil {
 		RedirectLoginPage(w, r.RequestURI)
 	} else {
-		w.Header().Add("Location", "/buy/ship")
+		w.Header().Add("Location", "/buy/confirm")
 		w.WriteHeader(302)
 	}
 }

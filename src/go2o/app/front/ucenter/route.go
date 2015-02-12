@@ -26,8 +26,8 @@ var (
 )
 
 //处理请求
-func HandleRequest(w http.ResponseWriter, r *http.Request) {
-	routes.HandleRequest(w, r)
+func Handle(w http.ResponseWriter, r *http.Request) {
+	routes.Handle(w, r)
 }
 
 func redirect(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +43,7 @@ func RegisterRoutes(c app.Context) {
 
 	routes.Add("^/order/", func(w http.ResponseWriter, r *http.Request) {
 		if m, p, host := chkLogin(r); m != nil {
-			mvc.HandleRequest(oc, w, r, true, m, p, host)
+			mvc.Handle(oc, w, r, true, m, p, host)
 		} else {
 			redirect(w, r)
 		}
@@ -51,19 +51,19 @@ func RegisterRoutes(c app.Context) {
 
 	routes.Add("^/account/", func(w http.ResponseWriter, r *http.Request) {
 		if m, p, host := chkLogin(r); m != nil {
-			mvc.HandleRequest(ac, w, r, true, m, p, host)
+			mvc.Handle(ac, w, r, true, m, p, host)
 		} else {
 			redirect(w, r)
 		}
 	})
 
 	routes.Add("^/login", func(w http.ResponseWriter, r *http.Request) {
-		mvc.HandleRequest(lc, w, r, true)
+		mvc.Handle(lc, w, r, true)
 	})
 
 	routes.Add("/", func(w http.ResponseWriter, r *http.Request) {
 		if m, p, host := chkLogin(r); m != nil {
-			mvc.HandleRequest(mc, w, r, true, m, p, host)
+			mvc.Handle(mc, w, r, true, m, p, host)
 		} else {
 			redirect(w, r)
 		}

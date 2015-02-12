@@ -42,22 +42,22 @@ function initEvents(){
 
     };
     $JS.$('cb2').onclick=function(){
-        $JS.json.bind('ctl2',{DeliverOpt:window.sctJson.deliver_opt});
+        $JS.json.bind('ctl2',{deliver_opt:window.sctJson.deliver_opt});
     };
     $JS.$('cb2').onclick=function(){
         var data = $JS.json.toObject('ctl2');
-        window.sctJson.deliver_opt = parseInt(data.DeliverOpt);
+        window.sctJson.deliver_opt = parseInt(data.deliver_opt);
         dynamicContent('deliver');
         persistData();
     };
 
     $JS.$('el3').onclick=function(){
-        $JS.json.bind('ctl3',{PaymentOpt:window.payment_json.opt});
+        $JS.json.bind('ctl3',{pay_opt:window.sctJson.pay_opt});
     };
 
     $JS.$('cb3').onclick=function(){
         var data = $JS.json.toObject('ctl3');
-        window.sctJson.pay_opt = parseInt(data.PaymentOpt);
+        window.sctJson.pay_opt = parseInt(data.pay_opt);
         dynamicContent('payment');
         persistData();
     };
@@ -69,7 +69,7 @@ function dynamicContent(t) {
     var showAll = t == "" || t == null;
     // 显示动态支付信息
     if(showAll || t =='payment') {
-        var payOpt = window.sctJson.pay_opt;
+        var payOpt = parseInt(window.sctJson.pay_opt);
         var payOptEle = $JS.$('payment_opt_name');
 
         if (payOpt == 1) {
@@ -81,7 +81,7 @@ function dynamicContent(t) {
 
     // 显示动态配送信息
     if(showAll || t =='deliver') {
-        var dlOpt = window.sctJson.deliver_opt;
+        var dlOpt = parseInt(window.sctJson.deliver_opt);
         var dlOptEle = $JS.$('deliver_opt_name');
 
         if (dlOpt == 1) {

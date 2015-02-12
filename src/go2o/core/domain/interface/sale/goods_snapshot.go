@@ -14,6 +14,7 @@ type GoodsSnapshot struct {
 	Key          string `db:"snapshot_key"`
 	GoodsId      int    `db:"goods_id"`
 	GoodsName    string `db:"goods_name"`
+	GoodsNo      string `db:"goods_no"`
 	SmallTitle   string `db:"small_title"`
 	CategoryName string `db:"category_name"`
 	Image        string `db:"img"`

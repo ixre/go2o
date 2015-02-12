@@ -2,10 +2,11 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	<title>菜谱管理</title>	
-	<link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/default/easyui.css">
+	<title>商品管理</title>
+	<link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
 	<link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
-	<link href="{{.static_serv}}/css/sys_common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+	<link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 	<style type="text/css">
 		a.nodeSel span.float,a.node span.float{display:none;}
 		a.node:hover span.float{display:inherit;}
@@ -21,7 +22,7 @@
         <ul>
         	<li>
         		<a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
-        		<span class="icon"></span>新增菜谱</a>
+        		<span class="icon"></span>新增商品</a>
         	</li>
             <li>
                 <span class="title">状态：</span>
@@ -173,9 +174,10 @@ $(function () {
         url: expr.getDataUrl(),
         columns: [
             [
-                { field: 'name', title: '菜谱名称', align: 'center', width: 120 },
+                { field: 'name', title: '商品名称', align: 'center', width: 120 },
                 { field: 'img', title: '图片', align: 'center', width: 100,formatter:function(val){
-                    return '<img src="{{.img_serv}}/'+val+'" style="background:#fff;width:80px;height:80px;'+
+                    var url = val ==''?'{{.nopicUrl}}':'{{.img_serv}}'+val;
+                    return '<img src="'+url+'" style="background:#fff;width:80px;height:80px;'+
                             'border-radius:5px;border:solid 1px #888;padding:1px;margin:5px;"/>';
                 } },
                 { field: 'cost', title: '成本价',align: 'center'},
@@ -214,17 +216,17 @@ $(function () {
 $JS.$('btnAdd').onclick=addRecord;
 
 function addRecord(){
-    $JS.tab.open2('新增菜谱', 'pt/item/create', null, true);
+    $JS.tab.open2('新增商品', 'pt/goods/create', null, true);
 }
 
 function editRecord(id){
-    $JS.dialog.create2('修改项',true,true).open('pt/item/edit?id=' + id,600,520);
+    $JS.tab.open2('修改商品', 'pt/goods/edit?id=' + id, null, true);
 }
 
 function delRecord(id) {
     $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
         if (result) {
-            $JS.xhr.jsonPost('/pt/item/del', { id: id }, function(json) {
+            $JS.xhr.jsonPost('/pt/goods/del', { id: id }, function(json) {
                 if (json.result) {
                     expr.reload('gd');
                 }

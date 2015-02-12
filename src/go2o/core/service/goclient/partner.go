@@ -122,22 +122,14 @@ func (this *partnerClient) BuildOrder(partnerId int, secret string, memberId int
 }
 
 // 提交订单，并返回订单号
-func (this *partnerClient) SubmitOrder(partnerId int, secret string, memberId int,
-	shopId int, paymentMethod int, deliverAddrId int, couponCode string,
-	note string) (orderNo string, err error) {
+func (this *partnerClient) SubmitOrder(partnerId int, secret string, memberId int, couponCode string) (orderNo string, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
-		`{"partner_id":"%d","secret":"%s","member_id":"%d","shop_id":"%d",`+
-			`"pay_method":"%d","addr_id":"%d","coupon_code":"%s"`+
-			`,"note":"%s"}>>Partner.SubmitOrder`,
+		`{"partner_id":"%d","secret":"%s","member_id":"%d","coupon_code":"%s"}>>Partner.SubmitOrder`,
 		partnerId,
 		secret,
 		memberId,
-		shopId,
-		paymentMethod,
-		deliverAddrId,
-		couponCode,
-		note)), &result, 256)
+		couponCode)), &result, 256)
 	if err != nil {
 		return "", err
 	}
@@ -187,6 +179,26 @@ func (this *partnerClient) GetShoppingCart(partnerId int, memberId int, cartKey 
 		return nil
 	}
 	return result
+}
+
+func (this *partnerClient) GetCartSettle(partnerId int, memberId int, cartKey string) *dto.SettleMeta {
+	var result *dto.SettleMeta = new(dto.SettleMeta)
+	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
+		`{"partner_id":"%d","member_id":"%d","cart_key":"%s"}>>Partner.GetCartSettle`,
+		partnerId, memberId, cartKey)), &result, 1024)
+	if err != nil {
+		return nil
+	}
+	return result
+}
+
+// 订单持久
+func (this *partnerClient) OrderPersist(partnerId, memberId, shopId, paymentOpt, deliverOpt, deliverId int) error {
+	var dst []byte = make([]byte, 50)
+	err := this.conn.WriteAndRead([]byte(fmt.Sprintf(
+		`{"partner_id":"%d","member_id":"%d","shop_id":"%d","payment_opt":"%d","deliver_opt":"%d","deliver_id":"%d"}>>Partner.OrderPersist`,
+		partnerId, memberId, shopId, paymentOpt, deliverOpt, deliverId)), dst)
+	return err
 }
 
 func (this *partnerClient) AddCartItem(partnerId int, memberId int, cartKey string, goodsId, num int) (*dto.CartItem, error) {

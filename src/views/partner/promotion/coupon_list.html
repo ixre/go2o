@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>订单管理</title>
-    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
     <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
     <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
     <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
@@ -85,7 +85,7 @@
                             if(!r.allow_enable){
                                 html += '<span style="color:red">[停]</span>';
                             }
-                            if(r.over_time<new Date()){
+                            if(new Date(r.over_time*1000)<new Date()){
                                 html += '<span style="color:red">[过]</span>';
                             }
                             return html;
@@ -120,7 +120,7 @@
                         }},
                         {field:'allow_enable',title:'是否启用',width:50,sortable:true,align:'center',
                             formatter:function(val){
-                                return val == 1?'<span style="color:green">是</a>':"否";
+                                return val == 1?'<span style="color:green">是</a>':'<span style="color:red">否</span>';
                             }
                         },
                         {field:'need_bind',title:'通用',width:50,sortable:true,align:'center',
@@ -131,9 +131,8 @@
                         {field:'begin_time',title:'有效时间',width:110,align:'center',
                             formatter:function(v,r){
                                v = unix2str(v);
-                               r = unix2str(r);
-                            return v.substring(0,v.indexOf(" "))+" ~ "+
-                                    r.over_time.substring(0,r.over_time.indexOf(" "));
+                               r = unix2str(r.over_time);
+                            return v.substring(0,v.indexOf(" "))+" ~ "+ r.substring(0,r.indexOf(" "));
                         }},
                         {field:'id',title:'操作',width:80,align:'center',
                             formatter:function(v,r){

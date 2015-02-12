@@ -12,7 +12,7 @@ import (
 	"github.com/atnet/gof/db"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/log"
-	"go2o/core/share/variable"
+	"go2o/share/variable"
 	"regexp"
 )
 

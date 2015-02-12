@@ -13,7 +13,7 @@ import (
 	"github.com/atnet/gof/app"
 	"github.com/atnet/gof/web"
 	"go2o/app/front"
-	"go2o/core/ording/session"
+	"go2o/app/session"
 	"net/http"
 )
 

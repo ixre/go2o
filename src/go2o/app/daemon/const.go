@@ -10,5 +10,5 @@
 package daemon
 
 const (
-	CRON_ORDER_SETUP_MINUTE = 1
+	CRON_ORDER_SETUP_MINUTE = 3
 )

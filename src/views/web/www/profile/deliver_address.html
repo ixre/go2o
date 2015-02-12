@@ -41,8 +41,9 @@
 
 </div>
 
+<br />
 <div class="btn_newaddr" id="btn_newaddr">
-    <a href="javascript:;">+添加新的收货地址</a>
+    &nbsp;<a href="javascript:;">+添加新的收货地址</a>
 </div>
 <div id="new_panel"></div>
 
@@ -51,6 +52,7 @@
     var addrs = {{.addrs}};
     var addrTpl = $JS.$('addrTpl').innerHTML;
     var newPanel = $JS.$('new_panel');
+    var selId = {{.sel}};
 
     function toggleNewAdd(){
         $JS.animation.toggleHeight(newPanel,null,15);
@@ -77,23 +79,42 @@
             html += $JS.template(tpl,addrs[i]);
         }
         $JS.$('addr_panel').innerHTML = html;
-        $JS.json.bind('addr_panel',{AddrId:addrs[0].Id});
+        if(addrs.length != 0){
+            var addr = null;
+            if(selId > 0) {
+                addr = getSingleAddr(selId);
+            }
+            if(addr == null){
+                selId = addrs[0].Id;
+            }
+        }
+        $JS.json.bind('addr_panel', {AddrId: selId});
         newAddr();
     }else{
         newAddr();
         toggleNewAdd();
     }
 
+    function getSingleAddr(id){
+        if(typeof id != Number) {
+            id = parseInt(id);
+        }
+        for(var i=0;i<addrs.length;i++){
+            if(addrs[i].Id == id){
+               return addrs[i];
+                break;
+            }
+        }
+        return null;
+    }
 
 
     function editAddr(id){
-        for(var i=0;i<addrs.length;i++){
-            if(addrs[i].Id == id){
-                $JS.json.bind(newPanel,addrs[i]);
-                if(newPanel.offsetHeight == 0){
-                    toggleNewAdd();
-                }
-                break;
+        var addr =getSingleAddr(id);
+        if(addr!= null){
+            $JS.json.bind(newPanel,addr);
+            if(newPanel.offsetHeight == 0){
+                toggleNewAdd();
             }
         }
     }
@@ -111,6 +132,23 @@
         }
     }
 
+
+    $JS.$('cb1').onclick=function(){
+        var data = $JS.json.toObject('addr_panel');
+        var addrId = data.AddrId;
+        var addr = getSingleAddr(addrId);
+        if(addr != null){
+            $JS.json.bind('postForm',{
+                deliver_id:addrId,
+                deliver_person:addr.RealName,
+                deliver_phone:addr.Phone,
+                deliver_address:addr.Address
+            });
+            window.recoverFrom('postForm');
+            persistData();
+            window.dynamicContent('deliver');
+        }
+    };
 
 </script>
 

@@ -12,7 +12,7 @@ import (
 	"github.com/atnet/gof/app"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/core/ording/session"
+	"go2o/app/session"
 	"net/http"
 	"net/url"
 )
@@ -20,8 +20,8 @@ import (
 var routes *web.RouteMap = new(web.RouteMap)
 
 //处理请求
-func HandleRequest(w http.ResponseWriter, r *http.Request) {
-	routes.HandleRequest(w, r)
+func Handle(w http.ResponseWriter, r *http.Request) {
+	routes.Handle(w, r)
 }
 
 func chkLogin(r *http.Request) (b bool, partnerId int) {
@@ -48,13 +48,13 @@ func RegisterRoutes(context app.Context) {
 	prom_c := &promC{Context: context}
 
 	routes.Add("^/comm/", func(w http.ResponseWriter, r *http.Request) {
-		mvc.HandleRequest(cc, w, r, true)
+		mvc.Handle(cc, w, r, true)
 	})
 
 	routes.Add("^/pt/shop/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(sc, w, r, true, id)
+				mvc.Handle(sc, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
@@ -63,7 +63,7 @@ func RegisterRoutes(context app.Context) {
 	routes.Add("^/pt/category/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(cat_c, w, r, true, id)
+				mvc.Handle(cat_c, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
@@ -72,7 +72,7 @@ func RegisterRoutes(context app.Context) {
 	routes.Add("^/pt/order/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(oc, w, r, true, id)
+				mvc.Handle(oc, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
@@ -81,7 +81,7 @@ func RegisterRoutes(context app.Context) {
 	routes.Add("^/pt/goods/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(gc, w, r, true, id)
+				mvc.Handle(gc, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
@@ -90,7 +90,7 @@ func RegisterRoutes(context app.Context) {
 	routes.Add("^/pt/prom/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(prom_c, w, r, true, id)
+				mvc.Handle(prom_c, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
@@ -107,19 +107,19 @@ func RegisterRoutes(context app.Context) {
 	routes.Add("^/pt/conf/",
 		func(w http.ResponseWriter, r *http.Request) {
 			if b, id := chkLogin(r); b {
-				mvc.HandleRequest(conf_c, w, r, true, id)
+				mvc.Handle(conf_c, w, r, true, id)
 			} else {
 				redirect(w, r)
 			}
 		})
 
 	routes.Add("^/login$", func(w http.ResponseWriter, r *http.Request) {
-		mvc.HandleRequest(lc, w, r, true)
+		mvc.Handle(lc, w, r, true)
 	})
 
 	routes.Add("^/", func(w http.ResponseWriter, r *http.Request) {
 		if b, id := chkLogin(r); b {
-			mvc.HandleRequest(mc, w, r, true, id)
+			mvc.Handle(mc, w, r, true, id)
 		} else {
 			redirect(w, r)
 		}

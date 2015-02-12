@@ -12,7 +12,7 @@
     total_fee,
     fee,
     pay_fee,
-    pay_method,
+    payment_opt,
     is_paid,
     note,
     status,

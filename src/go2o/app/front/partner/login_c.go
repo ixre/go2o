@@ -10,7 +10,7 @@ package partner
 
 import (
 	"github.com/atnet/gof/app"
-	"go2o/core/ording/session"
+	"go2o/app/session"
 	"net/http"
 )
 

@@ -135,10 +135,18 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 func (this *Partner) GetShoppingCart(m *jsv.Args, r *dto.ShoppingCart) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-
 	var cartKey string = (*m)["cart_key"].(string)
 	cart := dps.ShoppingService.GetShoppingCart(partnerId, memberId, cartKey)
 	*r = *cart
+	return nil
+}
+
+func (this *Partner) GetCartSettle(m *jsv.Args, r *dto.SettleMeta) error {
+	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
+	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
+	var cartKey string = (*m)["cart_key"].(string)
+	settle := dps.ShoppingService.GetCartSettle(partnerId, memberId, cartKey)
+	*r = *settle
 	return nil
 }
 
@@ -197,31 +205,6 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 	return nil
 }
 
-// 需要传递配送地址
-func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
-	partnerId, err, _ := VerifyPartner(m)
-	if err != nil {
-		return err
-	}
-	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	shopId, _ := strconv.Atoi((*m)["shop_id"].(string))
-	pay_method, _ := strconv.Atoi((*m)["pay_method"].(string))
-	deliverAddrId, _ := strconv.Atoi((*m)["addr_id"].(string))
-	couponCode := (*m)["coupon_code"].(string)
-	note := (*m)["note"].(string)
-
-	orderNo, err := dps.ShoppingService.SubmitOrder(
-		partnerId, memberId, shopId, pay_method,
-		deliverAddrId, couponCode, note)
-	if err != nil {
-		return err
-	} else {
-		r.Result = true
-		r.Data = orderNo
-	}
-	return nil
-}
-
 func (this *Partner) GetOrderByNo(m *jsv.Args, r *shopping.ValueOrder) error {
 	partnerId, err, _ := VerifyPartner(m)
 	if err != nil {
@@ -272,4 +255,34 @@ func (this *Partner) SubCartItem(m *jsv.Args, r *jsv.Result) error {
 		memberId, cartKey, goodsId, num)
 	//r.Result = err == nil
 	return err
+}
+
+// 订单持久
+func (this *Partner) OrderPersist(m *jsv.Args, r *jsv.Result) error {
+	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
+	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
+	deliverId, _ := strconv.Atoi((*m)["deliver_id"].(string))
+	paymentOpt, _ := strconv.Atoi((*m)["payment_opt"].(string))
+	deliverOpt, _ := strconv.Atoi((*m)["deliver_opt"].(string))
+	shopId, _ := strconv.Atoi((*m)["shop_id"].(string))
+	return dps.ShoppingService.PrepareSettlePersist(partnerId, memberId, shopId, paymentOpt, deliverOpt, deliverId)
+}
+
+// 需要传递配送地址
+func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
+	partnerId, err, _ := VerifyPartner(m)
+	if err != nil {
+		return err
+	}
+	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
+	couponCode := (*m)["coupon_code"].(string)
+
+	orderNo, err := dps.ShoppingService.SubmitOrder(partnerId, memberId, couponCode)
+	if err != nil {
+		return err
+	} else {
+		r.Result = true
+		r.Data = orderNo
+	}
+	return nil
 }

@@ -17,7 +17,7 @@ import (
 	pt "go2o/core/domain/partner"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/log"
-	"go2o/core/share/variable"
+	"go2o/share/variable"
 )
 
 var _ partner.IPartnerRep = new(partnerRep)

@@ -178,6 +178,10 @@ padding:1% 5%;position:relative;clear:both;height:10em;}
 .order-confirm-panel .form{margin:20px 0;border-top:solid 1px #ddd;padding:10px;}
 .order-confirm-panel .form .fl div.in{margin-left:80px;}
 
+.cart_details_table{width:100%;border:solid 0px #ddd;}
+.cart_details_table td{padding:5px 15px;line-height:125%;}
+.cart_details_table thead td{background:#f0f0f0;border-bottom:solid 1px #ddd;line-height:150%;}
+.cart_details_table img.goods-thumb{float:left;width:30px;height:30px;margin-right:5px;}
 
 /* 餐盒 */
 .cart-panel {

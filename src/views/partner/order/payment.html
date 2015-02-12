@@ -39,21 +39,23 @@
 
 	<script type="text/javascript">
         $JS.$('btn_payment').onclick=function() {
-            var data ={orderNo:'{{.order.OrderNo}}'};
-            if(confirm('您确定要为订单：'+data.orderNo+'进行支付吗？')) {
+            var data = {orderNo: '{{.order.OrderNo}}'};
+            parent.$.messager.confirm('提示', '您确定要为订单：' + data.orderNo + '进行支付吗？', function (r) {
+                if(r){
                 $JS.xhr.jsonPost('Payment', data, function (json) {
                     if (json.result) {
-                        alert(json.message);
-                        var d = $JS.dialog.getDialog();
-                        if(d) {
-                            d.window.refresh();
-                            d.close();
-                        }
+                        parent.$.messager.alert('提示',json.message,'ok',function(){
+                            var d = $JS.dialog.getDialog();
+                            if (d) {
+                                d.window.refresh();
+                                d.close();
+                            }
+                        });
                     } else {
-                        alert(json.message);
+                        parent.$.messager.alert('提示',json.message,'error');
                     }
                 });
-            }
+            }});
         };
 	</script>
 </body>

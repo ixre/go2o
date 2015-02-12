@@ -70,7 +70,7 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart)
 //创建购物车
 // @buyerId 为购买会员ID,0表示匿名购物车
 func (this *Shopping) NewCart(buyerId int) shopping.ICart {
-	var cart shopping.ICart = newCart(this._saleRep,
+	var cart shopping.ICart = newCart(this._partnerRep, this._memberRep, this._saleRep,
 		this._rep, this._partnerId, buyerId)
 	cart.Save()
 	return cart
@@ -80,7 +80,7 @@ func (this *Shopping) NewCart(buyerId int) shopping.ICart {
 func (this *Shopping) GetCart(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)
 	if error == nil {
-		return createCart(this._saleRep,
+		return createCart(this._partnerRep, this._memberRep, this._saleRep,
 			this._rep, this._partnerId, cart), nil
 	}
 	return nil, error
@@ -90,7 +90,7 @@ func (this *Shopping) GetCart(key string) (shopping.ICart, error) {
 func (this *Shopping) GetNotBoughtCart(buyerId int) (shopping.ICart, error) {
 	cart, error := this._rep.GetNotBoughtCart(buyerId)
 	if error == nil {
-		return createCart(this._saleRep,
+		return createCart(this._partnerRep, this._memberRep, this._saleRep,
 			this._rep, this._partnerId, cart), nil
 	}
 	return nil, error
@@ -216,19 +216,18 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 	return order, cart, err
 }
 
-func (this *Shopping) SubmitOrder(memberId, shopId int, payMethod int,
-	deliverAddrId int, couponCode string, note string) (string, error) {
+func (this *Shopping) SubmitOrder(memberId int, couponCode string) (string, error) {
 	order, cart, err := this.BuildOrder(memberId, couponCode)
 	if err != nil {
 		order, cart, err = this.BuildOrder(memberId, "")
 	}
+	var cv = cart.GetValue()
 
 	if err == nil {
-		order.AddRemark(note)
-		err = order.SetShop(shopId)
+		err = order.SetShop(cv.ShopId)
 		if err == nil {
-			order.SetPayment(payMethod)
-			err = order.SetDeliver(deliverAddrId)
+			order.SetPayment(cv.PaymentOpt)
+			err = order.SetDeliver(cv.DeliverId)
 			if err == nil {
 				var orderNo string
 				orderNo, err = order.Submit()
@@ -291,14 +290,14 @@ func (this *Shopping) setupOrder(ctx app.Context, v *shopping.ValueOrder,
 	order := this.CreateOrder(v, nil)
 	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
 
-	if v.PayMethod == enum.PAY_ONLINE {
+	if v.PaymentOpt == enum.PAY_ONLINE {
 		if v.IsPaid == 0 && dur > time.Hour*order_timeout_hour {
 			order.Cancel("超时未付款，系统取消")
 			if ctx.Debug() {
 				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
 			}
 		}
-	} else if v.PayMethod == enum.PAY_OFFLINE {
+	} else if v.PaymentOpt == enum.PAY_OFFLINE {
 		switch v.Status + 1 {
 		case enum.ORDER_CONFIRMED:
 			if dur > time.Minute*order_confirm_minute {

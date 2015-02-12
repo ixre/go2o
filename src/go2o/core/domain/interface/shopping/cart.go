@@ -9,11 +9,22 @@
 
 package shopping
 
+import (
+	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/partner"
+)
+
 type ICart interface {
 	GetDomainId() int
 
 	// 获取购物车值
 	GetValue() ValueCart
+
+	// 结算数据持久化
+	SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error
+
+	// 获取结算数据
+	GetSettleData() (s partner.IShop,d member.IDeliver,paymentOpt,deliverOpt int)
 
 	// 设置购买会员
 	SetBuyer(buyerId int) error

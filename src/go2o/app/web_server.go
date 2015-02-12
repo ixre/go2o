@@ -14,16 +14,16 @@ import (
 	"fmt"
 	"github.com/atnet/gof/app"
 	"github.com/atnet/gof/web"
+	"go2o/app/apiserv"
 	"go2o/app/front/partner"
 	"go2o/app/front/ucenter"
 	"go2o/app/front/webui/mobi"
 	"go2o/app/front/webui/weixin"
 	"go2o/app/front/webui/www"
 	"go2o/core/infrastructure"
-	"go2o/core/ording/apiserv"
 	"go2o/core/service/goclient"
-	"go2o/core/share/glob"
-	"go2o/core/share/variable"
+	"go2o/share/glob"
+	"go2o/share/variable"
 	"net/http"
 	"os"
 	"strconv"
@@ -86,7 +86,7 @@ func getHttpProxy() *web.HttpHandleProxy {
 
 			//api端
 			if r.Host == API_DOMAIN {
-				apiserv.HandleRequest(w, r)
+				apiserv.Handle(w, r)
 				return false
 			}
 
@@ -94,11 +94,11 @@ func getHttpProxy() *web.HttpHandleProxy {
 
 			//供应商端
 			case f(r.Host, "partner."):
-				partner.HandleRequest(w, r)
+				partner.Handle(w, r)
 
 				//会员端
 			case f(r.Host, variable.DOMAIN_MEMBER_PREFIX):
-				ucenter.HandleRequest(w, r)
+				ucenter.Handle(w, r)
 
 				//静态资源
 			case f(host, "static."):
@@ -114,7 +114,7 @@ func getHttpProxy() *web.HttpHandleProxy {
 
 			default:
 				//mobi.HandleRequest(weixin, r)
-				www.HandleRequest(w, r)
+				www.Handle(w, r)
 			}
 
 			return true

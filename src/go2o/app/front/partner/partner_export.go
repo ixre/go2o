@@ -12,7 +12,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"github.com/atnet/gof/data/report"
-	"go2o/core/share/glob"
+	"go2o/share/glob"
 	"net/http"
 	"strconv"
 	"strings"

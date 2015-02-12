@@ -196,10 +196,12 @@ func (this *shoppingRep) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
 				if ok {
-					v.Price = gv.Price
-					v.SalePrice = gv.SalePrice
-					v.SmallTitle = gv.SmallTitle
 					v.Name = gv.Name
+					v.SmallTitle = gv.SmallTitle
+					v.Price = gv.Price
+					v.GoodsNo = gv.GoodsNo
+					v.Image = gv.Image
+					v.SalePrice = gv.SalePrice
 				}
 			}
 		}

@@ -6,57 +6,52 @@
     <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<form id="form1">
-    <input type="hidden" field="PtId" value="0"/>
-    <table cellpadding="0" cellspacing="1" class="ui-table">
-        <tr>
-            <td class="title" valign="top" width="100">标志Logo:</td>
-            <td valign="top" style="position: relative;height:70px;">
-                <img id="upload_img" value="{{.img_serv}}/resouce/item_nopic.gif"
-                     style="float:left;margin-right:10px;width:150px; height: 60px;border:solid 1px #aaa;padding:1px;" />
-                <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
-                <span id="upload_btn"><button>选择图片上传(150*60)</button></span>
-            </td>
-        </tr>
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
+        <div class="in" style="position: relative;height:70px;">
+            <input type="hidden" field="PtId" value="0"/>
+            <img id="upload_img" value="{{.img_serv}}/resouce/item_nopic.gif"
+                 style="float:left;margin-right:10px;width:150px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+            <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+            <span id="upload_btn"><button>选择图片上传(150*60)</button></span>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title" align="top">首页标题:</td>
-            <td>
-                <textarea class="ui-validate" field="IndexTitle"></textarea>
-            </td>
-        </tr>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>首页标题：</div>
+        <div class="in">
+            <textarea class="ui-validate" field="IndexTitle"></textarea>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title" valign="top">子标题:</td>
-            <td>
-                <textarea class="ui-validate" field="SubTitle"></textarea>
-            </td>
-        </tr>
-
-
-        <tr>
-            <td class="title" valign="top">站点状态:</td>
-            <td>
-                <input type="radio" class="radio" field="State" name="State" id="State1" value="1" checked="checked" /><label for="State1">打开</label>
-                <input type="radio" class="radio" field="State" name="State" id="State2" value="0" /><label for="State2">关闭</label>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>子标题：</div>
+        <div class="in">
+            <textarea class="ui-validate" field="SubTitle"></textarea>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>站点状态：</div>
+        <div class="in">
+            <input type="radio" class="radio" field="State" name="State" id="State1" value="1" checked="checked" /><label for="State1">打开</label>
+            <input type="radio" class="radio" field="State" name="State" id="State2" value="0" /><label for="State2">关闭</label>
                 <span id="statePanel" class="hidden" style="padding-left:20px">
 
                    <div> <strong>提醒内容：</strong></div>
                     <textarea field="StateHtml" id="note" style="width:300px"></textarea>
                 </span>
-            </td>
-        </tr>
+        </div>
+    </div>
 
 
-        <tr>
-            <td></td>
-            <td>
-                <input id="btn_save" type="button" value="提交" />
-            </td>
-        </tr>
-
-</table>
-</form>
+    <div class="fl">
+        <div class="label">&nbsp;</div>
+        <div class="in">
+            <input id="btn_save" type="button" value="提交" />
+        </div>
+    </div>
+</div>
 
 <script src="{{.static_serv}}/assets/js/core_full.js"></script>
 <script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
