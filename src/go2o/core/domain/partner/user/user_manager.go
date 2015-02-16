@@ -27,8 +27,8 @@ func NewUserManager(partnerId int, rep user.IUserRep) user.IUserManager {
 }
 
 // 获取单个用户
-func (this *UserManager) GetUser(id int) IUser {
-	v := this.rep.GetUserValue(id)
+func (this *UserManager) GetUser(id int) user.IUser {
+	v := this.rep.GetPersonValue(id)
 	if v != nil {
 		return newUser(v, this.rep)
 	}
@@ -36,9 +36,9 @@ func (this *UserManager) GetUser(id int) IUser {
 }
 
 // 获取所有配送员
-func (this *UserManager) GetDeliveryStaff() []IDeliveryStaff {
+func (this *UserManager) GetDeliveryStaff() []user.IDeliveryStaff {
 	list := this.rep.GetDeliveryStaffPersons(this.partnerId)
-	var staffs = make([]IDeliveryStaff, len(list))
+	var staffs = make([]user.IDeliveryStaff, len(list))
 	for i, v := range list {
 		staffs[i] = newUser(v, this.rep)
 	}

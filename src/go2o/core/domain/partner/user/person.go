@@ -9,6 +9,7 @@
 package user
 
 import (
+	"errors"
 	"go2o/core/domain/interface/partner/user"
 )
 

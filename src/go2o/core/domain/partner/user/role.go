@@ -9,6 +9,7 @@
 package user
 
 import (
+	"errors"
 	"go2o/core/domain/interface/partner/user"
 )
 
@@ -30,11 +31,11 @@ func (this *Role) GetDomainId() int {
 	return this.value.Id
 }
 
-func (this *Role) GetValue() CoverageValue {
+func (this *Role) GetValue() user.RoleValue {
 	return *this.value
 }
 
-func (this *Role) SetValue(v *CoverageValue) error {
+func (this *Role) SetValue(v *user.RoleValue) error {
 	if v.Id == this.value.Id && v.Id > 0 {
 		this.value = v
 		return nil

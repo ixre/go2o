@@ -29,18 +29,18 @@ func newUser(v *user.PersonValue, rep user.IUserRep) user.IUser {
 }
 
 // 获取人员信息
-func (this *User) GetPerson() IPerson {
+func (this *User) GetPerson() user.IPerson {
 	return this.person
 }
 
 // 获取凭据
-func (this *User) GetCredential(sign string) *CredentialValue {
+func (this *User) GetCredential(sign string) *user.CredentialValue {
 	//todo: not will used
 	return nil
 }
 
 // 保存凭据
-func (this *User) SaveCredential(v *CredentialValue) error {
+func (this *User) SaveCredential(v *user.CredentialValue) error {
 	_, err := this.rep.SaveCredential(v)
 	return err
 }
