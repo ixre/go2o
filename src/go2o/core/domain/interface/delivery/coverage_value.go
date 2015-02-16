@@ -16,5 +16,5 @@ type CoverageValue struct {
 	Lat     float32 `db:"lat"`
 	Radius  int     `db:"radius"`
 	Address string  `db:"address"`
-	AreaId	int		`db:"area_id"`
+	AreaId  int     `db:"area_id"`
 }

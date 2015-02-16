@@ -18,6 +18,10 @@ type MemberQuery struct {
 	db.Connector
 }
 
+func NewMemberQuery(c db.Connector) *MemberQuery {
+	return &MemberQuery{c}
+}
+
 // 获取返现记录
 func (this *MemberQuery) QueryIncomeLog(memberId, page, size int,
 	where, orderby string) (num int, rows []map[string]interface{}) {

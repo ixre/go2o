@@ -20,6 +20,10 @@ type PartnerQuery struct {
 	db.Connector
 }
 
+func NewPartnerQuery(c db.Connector) *PartnerQuery {
+	return &PartnerQuery{c}
+}
+
 /*
 
 
