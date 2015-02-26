@@ -10,6 +10,7 @@ package delivery
 
 import (
 	"go2o/core/domain/interface/delivery"
+    "errors"
 )
 
 var _ delivery.ICoverageArea = new(CoverageArea)
@@ -30,11 +31,11 @@ func (this *CoverageArea) GetDomainId() int {
 	return this.value.Id
 }
 
-func (this *CoverageArea) GetValue() CoverageValue {
+func (this *CoverageArea) GetValue() delivery.CoverageValue {
 	return *this.value
 }
 
-func (this *CoverageArea) SetValue(v *CoverageValue) error {
+func (this *CoverageArea) SetValue(v *delivery.CoverageValue) error {
 	if v.Id == this.value.Id && v.Id > 0 {
 		this.value = v
 		return nil
