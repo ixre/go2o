@@ -15,11 +15,11 @@ import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/ui/tree"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/infrastructure/format"
 	"go2o/core/service/dps"
 	"html/template"
 	"net/http"
 	"strconv"
-	"go2o/core/infrastructure/format"
 )
 
 type categoryC struct {
@@ -29,9 +29,9 @@ type categoryC struct {
 //分类树形功能
 func (this *categoryC) Category(w http.ResponseWriter, r *http.Request) {
 
-	this.Context.Template().Execute(w,func(m *map[string]interface {}){
-			(*m)["nopicUrl"] = format.GetGoodsImageUrl("")
-		}, "views/partner/category/category.html")
+	this.Context.Template().Execute(w, func(m *map[string]interface{}) {
+		(*m)["nopicUrl"] = format.GetGoodsImageUrl("")
+	}, "views/partner/category/category.html")
 }
 
 //分类Json数据

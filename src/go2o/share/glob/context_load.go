@@ -14,8 +14,10 @@ import (
 	"github.com/atnet/gof/db"
 	"github.com/atnet/gof/log"
 	"github.com/atnet/gof/web"
+	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
+	"go2o/core/domain/interface/partner/user"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
@@ -75,6 +77,15 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")
 	orm.CreateTableMap(promotion.ValueCouponBind{}, "pm_coupon_bind")
 	orm.CreateTableMap(promotion.ValueCouponTake{}, "pm_coupon_take")
+
+	/** 配送 **/
+	orm.CreateTableMap(delivery.AreaValue{}, "dlv_area")
+	orm.CreateTableMap(delivery.CoverageValue{}, "dlv_converage")
+
+	/** 用户 **/
+	orm.CreateTableMap(user.RoleValue{}, "usr_role")
+	orm.CreateTableMap(user.PersonValue{}, "usr_person")
+	orm.CreateTableMap(user.CredentialValue{}, "usr_credential")
 
 	return connector
 }

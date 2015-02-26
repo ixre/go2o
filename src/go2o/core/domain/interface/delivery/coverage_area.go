@@ -2,18 +2,18 @@
  * Copyright 2014 @ ops Inc.
  * name :
  * author : newmin
- * date : 2015-02-12 16:38
+ * date : 2014-02-12 16:38
  * description :
  * history :
  */
 package delivery
 
-type IConverageArea interface {
+type ICoverageArea interface {
 	GetDomainId() int
 
-	GetValue() ConverageValue
+	GetValue() CoverageValue
 
-	SetValue(*ConverageValue) error
+	SetValue(*CoverageValue) error
 
 	Save() (int, error)
 }
