@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <Query>
+    <![CDATA[
+        SELECT id,
+    order_no,
+    member_id,
+    pt_id,
+    shop_id,
+    replace(items_info,'\n','<br />') as items_info,
+    total_fee,
+    fee,
+    pay_fee,
+    payment_opt,
+    is_paid,
+    note,
+    status,
+    paid_time,
+    create_time,
+    deliver_time,
+    update_time
+    FROM pt_order WHERE pt_id={partnerId} AND ({status}>99  OR status={status})
+    ORDER BY update_time DESC,create_time desc LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[SELECT COUNT(0) FROM pt_order WHERE pt_id={partnerId} AND ({status}>99 OR status={status}) ]]>
+  </Total>
+</ExportItemConfig>

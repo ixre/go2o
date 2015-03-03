@@ -1,0 +1,116 @@
+/**
+ * Copyright 2014 @ ops Inc.
+ * name :
+ * author : newmin
+ * date : 2014-02-05 21:53
+ * description :
+ * history :
+ */
+ package master
+
+import (
+	"go2o/core/ording/logic"
+	"encoding/json"
+	"html/template"
+	"net/http"
+	"ops/mfw"
+	"ops/mfw/app"
+	"strconv"
+	"strings"
+	"ops/mfw/web"
+)
+
+type AdminC struct {
+	app.Context
+}
+
+func (c *AdminC) Index(w http.ResponseWriter, r *http.Request) {
+	locals := make(map[string]interface{})
+	web.RenderTemplate(w, "views/admin/index.html", locals)
+}
+
+func (c *AdminC) AddPartner(w http.ResponseWriter, r *http.Request) {
+	locals := make(map[string]interface{})
+	web.RenderTemplate(w, "views/admin/partner_add.html", locals)
+}
+
+func (c *AdminC) EditPartner(w http.ResponseWriter, r *http.Request) {
+	locals := make(map[string]interface{})
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err == nil {
+		partner := logic.Partner().GetPartnerById(id)
+		partner.Pwd = strings.Repeat("*", 10)
+		entity, err := json.Marshal(partner)
+		if err == nil {
+			locals["entity"] = template.JS(entity)
+		}
+	}
+	web.RenderTemplate(w, "views/admin/partner_edit.html", locals)
+}
+
+func (c *AdminC) SavePartner_post(w http.ResponseWriter, r *http.Request) {
+	var result mfw.JsonResult
+	r.ParseForm()
+
+	partner := entity.Partner{}
+	web.ParseFormToEntity(r.Form, &partner)
+
+	dt := time.Now()
+	anousPwd := strings.Repeat("*", 10) //匿名密码
+	if partner.Pwd != anousPwd {
+		partner.Pwd = crypto.EncodeUsrPwd(partner.User, partner.Pwd)
+	}
+
+	//更新
+	if partner.Id > 0 {
+		original := logic.Partner().GetPartnerById(partner.Id)
+		partner.JoinTime = original.JoinTime
+		partner.Expires = original.Expires
+		partner.UpdateTime = dt
+
+		if partner.Pwd == anousPwd {
+			partner.Pwd = original.Pwd
+		}
+	} else {
+		partner.JoinTime = dt
+		partner.Expires = dt.AddDate(10, 0, 0)
+		partner.UpdateTime = dt
+	}
+
+	id, err := logic.Partner().SavePartner(&partner)
+	if err != nil {
+		result = mfw.JsonResult{Result: true, Message: err.Error()}
+	} else {
+		result = mfw.JsonResult{Result: true, Message: "", Data: id}
+	}
+	w.Write(result.Marshal())
+}
+
+func (c *AdminC) PartnerList(w http.ResponseWriter, r *http.Request) {
+	locals := make(map[string]interface{})
+	web.RenderTemplate(w, "views/admin/partner_list.html", locals)
+}
+
+func (c *AdminC) DelPartner_post(w http.ResponseWriter, r *http.Request) {
+	var result mfw.JsonResult = mfw.JsonResult{}
+	r.ParseForm()
+	ptid, err := strconv.Atoi(r.Form.Get("id"))
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		err := logic.Partner().DelPartner(ptid)
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+	}
+	w.Write(result.Marshal())
+}
+
+//地区Json
+func (this *AdminC) ChinaJson(w http.ResponseWriter, r *http.Request) {
+	var node *tree.TreeNode = logic.GetChinaTree()
+	json, _ := json.Marshal(node)
+	w.Write(json)
+}

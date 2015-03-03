@@ -1,0 +1,150 @@
+{{template "header".}}
+
+<script>location.href='?go=buy';</script>
+<div class="shop_main_box">
+	<div class="crumb"></div>
+	<div class="shop_page w830 mt"> 
+		<div class="fl left_shop_box">
+			<div class="top_shop_info myclear">
+                          <div class="ti_shop_info fl">
+                                <h1>欢迎光临<span class="font_green">{{.partner.Name}}</span>订餐！</h1>
+                                
+                                <div id="leftInfo" class="lfet_bar_item">
+                                     <dl class="myclear shop_address">
+                                        <dt class="fl" >地址：</dt>
+                                        <dd class="fl">{{.partner.Address}}</dd>
+                                     </dl>
+                                     <dl class="myclear shop_tel">
+                                        <dt class="fl">服务电话：</dt>
+                                        <dd class="fl" id="left_tel">{{.partner.Tel}}</dd>
+                                     </dl>
+				</div>
+        </div>
+
+<div class="clearfix"></div>
+			<div class="t_yellow_tips mtt"><p>提示：由于物价变动，部分菜品、价格可能有变，详情请以电话确认为准。</p></div>
+<div id="menu">
+
+
+    <div id="fditems">
+
+        <div class="" style=" text-align:center; height:32px; padding:80px 0 0 150px">
+            <img src="http://img.wdian.net/shop/x1/images/loadingapple.gif"  class="fl"/>
+            <span  class="fl" style="padding:10px 10px; display:inline-block;color:#acacac;">加载中，请稍后…</span></div></div>
+        </div>
+
+							
+
+		</div><!--menu关闭-->
+
+		</div>
+		<div class="fr right_model" style="position:relative" id="sidecontainer">
+
+		
+		<div id="plcart">
+			<h3>我的餐盒</h3>
+			<div class="cart"></div>
+  			<div class="submit"><a class="green_btn" href="/order"><span>提交订单</span></a></div>
+		</div>
+
+
+				  <div class="rm_box r_map_box mb">
+                      <h4 class="rb_tit">地图位置</h4>
+                      <div id="pos_map" class="r_map_area mb" style="width:200px;height:200px">
+		     </div>
+                  </div>
+                  <div class="v_line3 myclear"></div>
+                  <div class="rm_box r_shop_box">
+                      <div class="nearly_shop mtt">
+			<p style="margin:15px 0 5px 0"><span class="font_green">提示：</span>您可以直接拨打下面分店的<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;电话订餐。
+							<br />
+
+						
+				</p>
+
+                      </div>
+                   </div>
+                  <div class="v_line3 myclear"></div>
+                  <div class="rm_box mb">
+                      <h4  class="rb_tit mt"><a href="javascript:;" class="fr" style="font-weight:normal;" class="fr" style="font-weight:normal; color:#888888;">清除</a>浏览历史</h4>
+                      <ul id="hisShopList" class="sr_h_shop">
+                      	                      </ul>
+                  </div>
+				  <div class="v_line3 myclear mbb"></div>
+                  <div id="AD2" class="rm_box mt" start="990" top="35">
+				  </div>			<div id="backToTop" class="to_top" title="回到顶部" href="##" style="position:fixed;display:none">↑回到顶部</div>
+		</div>
+		<div class="clearfix"></div>
+    </div>
+</div>
+
+
+        <div class="index-shops">
+           {{.shops}}
+        </div>
+
+<script type="text/javascript" src="http://img.$tpl.host/scripts/global.js"></script>
+<script type="text/javascript" src="http://img.$tpl.host/scripts/cart.js"></script>
+<script type="text/javascript" src="http://img.$tpl.host/shop/x1/js/common.js"></script>
+
+
+<script>
+    j.ajax.post('?','action=getitems',function(x){
+        j.$$('fditems').innerHTML=x;
+    },function(x){j.$$('fditems').innerHTML='加载失败';});
+
+	backToTop(990);
+	if(!window.XMLHttpRequest){tagFloat('cartHidden','bottom',35);
+		tagFloat('rightcart','bottom',340);
+		tagFloat('notNear','center');
+		tagFloat('feedback1','center');
+	}
+</script>
+
+
+$:tpl.footer(partner)
+
+<script type="text/javascript" src="http://api.go2map.com/maps/js/api_v2.5.js"></script>
+<script type="text/javascript">
+var myLatLng = new sogou.maps.Point(0,0);
+var myOptions = {
+  zoom: 15,
+  center: myLatLng,
+  mapControlType:5
+};
+var map = new sogou.maps.Map(document.getElementById("pos_map"), myOptions);
+function callback(a){//回调函数 标点
+     if(a.status=='ok'){
+         var geometry=a.data[0];
+         var marker= new sogou.maps.Marker({
+             map:map,
+             title:geometry.address,
+             position:geometry.location
+         });
+	map.setCenter(marker.getPosition());
+     }
+ 
+};
+var request={address:{addr:'$:partner['address']',city:'佛山'}}
+var geo=new sogou.maps.Geocoder();
+geo.geocode(request,callback);
+
+var plcart=document.getElementById('plcart');
+function fixCartBasket(){
+	setInterval(function(){
+	   if(document.documentElement.scrollTop>30){
+		document.getElementById('plcart').style.top='33px'
+	   }else{
+			if(plcart.style.display=='block'){
+				document.getElementById('sidecontainer').style.padding=(plcart.offsetHeight+10)+"px 0 0 0"
+			}
+		document.getElementById('plcart').style.top='63px'
+	   }
+	},5);
+}
+cart.init(plcart.id,false);
+fixCartBasket();
+</script>
+
+
+{{template "footer".}}
