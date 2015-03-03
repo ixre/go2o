@@ -14,7 +14,8 @@ import (
 	"fmt"
 	"github.com/atnet/gof/db"
 	"go2o/core/domain/interface/partner"
-	pt "go2o/core/domain/partner"
+	"go2o/core/domain/interface/partner/user"
+	partnerImpl "go2o/core/domain/partner"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/log"
 	"go2o/share/variable"
@@ -24,33 +25,35 @@ var _ partner.IPartnerRep = new(partnerRep)
 
 type partnerRep struct {
 	db.Connector
-	cache map[int]partner.IPartner
+	_cache   map[int]partner.IPartner
+	_userRep user.IUserRep
 }
 
-func NewPartnerRep(c db.Connector) partner.IPartnerRep {
+func NewPartnerRep(c db.Connector, userRep user.IUserRep) partner.IPartnerRep {
 	return &partnerRep{
 		Connector: c,
-		cache:     make(map[int]partner.IPartner),
+		_cache:    make(map[int]partner.IPartner),
+		_userRep:  userRep,
 	}
 }
 
 func (this *partnerRep) CreatePartner(v *partner.ValuePartner) (partner.IPartner, error) {
-	return pt.NewPartner(v, this)
+	return partnerImpl.NewPartner(v, this, this._userRep)
 }
 
 func (this *partnerRep) renew(partnerId int) {
-	delete(this.cache, partnerId)
+	delete(this._cache, partnerId)
 }
 
 func (this *partnerRep) GetPartner(id int) (partner.IPartner, error) {
-	v, ok := this.cache[id]
+	v, ok := this._cache[id]
 	var err error
 	if !ok {
 		e := new(partner.ValuePartner)
 		if this.Connector.GetOrm().Get(id, e) == nil {
-			v, err = pt.NewPartner(e, this)
+			v, err = partnerImpl.NewPartner(e, this, this._userRep)
 			if v != nil {
-				this.cache[id] = v
+				this._cache[id] = v
 			}
 		} else {
 			err = partner.ErrNoSuchPartner

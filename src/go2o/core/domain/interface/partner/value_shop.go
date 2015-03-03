@@ -18,12 +18,11 @@ type ValueShop struct {
 	Phone      string `db:"phone"`
 	OrderIndex int    `db:"order_index"`
 	State      int    `db:"state"`
-
-	// 位置(经度+"/"+纬度)
-	Location string `db:"location"`
-
-	// 配送最大半径(公里)
-	DeliverRadius int `db:"deliver_radius"`
-
 	CreateTime int64 `db:"create_time"`
+
+//    // 位置(经度+"/"+纬度)
+//    Location string `db:"location"`
+//
+//    // 配送最大半径(公里)
+//    DeliverRadius int `db:"deliver_radius"`
 }

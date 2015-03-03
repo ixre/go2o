@@ -18,18 +18,25 @@ import (
 )
 
 type partnerService struct {
-	partnerRep partner.IPartnerRep
-	Query      *query.PartnerQuery
+	_partnerRep partner.IPartnerRep
+	_query      *query.PartnerQuery
+}
+
+func NewPartnerService(r partner.IPartnerRep, q *query.PartnerQuery) *partnerService {
+	return &partnerService{
+		_partnerRep: r,
+		_query:      q,
+	}
 }
 
 // 验证用户密码并返回编号
 func (this *partnerService) Verify(usr, pwd string) int {
 	ep := domain.EncodePartnerPwd(usr, pwd)
-	return this.Query.Verify(usr, ep)
+	return this._query.Verify(usr, ep)
 }
 
 func (this *partnerService) GetPartner(partnerId int) (*partner.ValuePartner, error) {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 
 	if pt != nil {
 		v := pt.GetValue()
@@ -44,14 +51,14 @@ func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) 
 	v.Id = partnerId
 
 	if partnerId > 0 {
-		pt, _ = this.partnerRep.GetPartner(partnerId)
+		pt, _ = this._partnerRep.GetPartner(partnerId)
 		if pt == nil {
 			err = errors.New("no such partner")
 		} else {
 			err = pt.SetValue(v)
 		}
 	} else {
-		pt, err = this.partnerRep.CreatePartner(v)
+		pt, err = this._partnerRep.CreatePartner(v)
 	}
 
 	if err != nil {
@@ -63,12 +70,12 @@ func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) 
 
 // 根据主机查询商户编号
 func (this *partnerService) GetPartnerIdByHost(host string) int {
-	return this.Query.QueryPartnerIdByHost(host)
+	return this._query.QueryPartnerIdByHost(host)
 }
 
 // 获取商户的域名
 func (this *partnerService) GetPartnerMajorHost(partnerId int) string {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -77,15 +84,15 @@ func (this *partnerService) GetPartnerMajorHost(partnerId int) string {
 
 func (this *partnerService) SaveSaleConf(partnerId int, v *partner.SaleConf) error {
 	v.PartnerId = partnerId
-	return this.partnerRep.SaveSaleConf(v)
+	return this._partnerRep.SaveSaleConf(v)
 }
 
 func (this *partnerService) SaveSiteConf(partnerId int, v *partner.SiteConf) error {
 	v.PartnerId = partnerId
-	return this.partnerRep.SaveSiteConf(v)
+	return this._partnerRep.SaveSiteConf(v)
 }
 func (this *partnerService) GetSaleConf(partnerId int) *partner.SaleConf {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -94,7 +101,7 @@ func (this *partnerService) GetSaleConf(partnerId int) *partner.SaleConf {
 }
 
 func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -103,7 +110,7 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 }
 
 func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -117,7 +124,7 @@ func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueSho
 }
 
 func (this *partnerService) GetShopValueById(partnerId, shopId int) *partner.ValueShop {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -126,7 +133,7 @@ func (this *partnerService) GetShopValueById(partnerId, shopId int) *partner.Val
 }
 
 func (this *partnerService) SaveShop(partnerId int, v *partner.ValueShop) (int, error) {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 		return 0, err
@@ -148,7 +155,7 @@ func (this *partnerService) SaveShop(partnerId int, v *partner.ValueShop) (int, 
 }
 
 func (this *partnerService) DeleteShop(partnerId, shopId int) error {
-	pt, err := this.partnerRep.GetPartner(partnerId)
+	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -156,5 +163,5 @@ func (this *partnerService) DeleteShop(partnerId, shopId int) error {
 }
 
 func (this *partnerService) GetPartnersId() []int {
-	return this.partnerRep.GetPartnersId()
+	return this._partnerRep.GetPartnersId()
 }

@@ -12,7 +12,7 @@ type IPerson interface {
 	//获取领域对象编号
 	GetDomainId() int
 
-	GetValue() *PersonValue
+	GetValue() PersonValue
 
 	SetValue(*PersonValue) error
 

@@ -13,13 +13,19 @@ import (
 	"fmt"
 	"github.com/atnet/gof/db"
 	"go2o/core/domain/interface/member"
-	mb "go2o/core/domain/member"
+	memberImpl "go2o/core/domain/member"
 )
 
 var _ member.IMemberRep = new(MemberRep)
 
 type MemberRep struct {
 	db.Connector
+}
+
+func NewMemberRep(c db.Connector) member.IMemberRep {
+	return &MemberRep{
+		Connector: c,
+	}
 }
 
 // 根据用户名获取会员
@@ -38,12 +44,12 @@ func (this *MemberRep) GetMember(memberId int) (member.IMember, error) {
 	if err != nil {
 		return nil, err
 	}
-	return mb.NewMember(e, this), err
+	return memberImpl.NewMember(e, this), err
 }
 
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
-	return mb.NewMember(v, this)
+	return memberImpl.NewMember(v, this)
 }
 
 func (this *MemberRep) GetLevel(levelVal int) *member.MemberLevel {

@@ -12,13 +12,14 @@ package repository
 import (
 	"errors"
 	"github.com/atnet/gof/db"
+	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
-	sp "go2o/core/domain/shopping"
+	shoppingImpl "go2o/core/domain/shopping"
 	"go2o/core/infrastructure/domain"
 )
 
@@ -30,18 +31,20 @@ type shoppingRep struct {
 	promRep    promotion.IPromotionRep
 	memberRep  member.IMemberRep
 	partnerRep partner.IPartnerRep
+	deliverRep delivery.IDeliveryRep
 	cache      map[int]shopping.IShopping
 }
 
 func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
 	saleRep sale.ISaleRep, promRep promotion.IPromotionRep,
-	memRep member.IMemberRep) shopping.IShoppingRep {
+	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
 	return (&shoppingRep{
 		Connector:  c,
 		saleRep:    saleRep,
 		promRep:    promRep,
 		memberRep:  memRep,
 		partnerRep: ptRep,
+		deliverRep: deliverRep,
 	}).init()
 }
 
@@ -56,8 +59,8 @@ func (this *shoppingRep) GetShopping(partnerId int) shopping.IShopping {
 	}
 	v, ok := this.cache[partnerId]
 	if !ok {
-		v = sp.NewShopping(partnerId, this.partnerRep,
-			this, this.saleRep, this.promRep, this.memberRep)
+		v = shoppingImpl.NewShopping(partnerId, this.partnerRep,
+			this, this.saleRep, this.promRep, this.memberRep, this.deliverRep)
 		this.cache[partnerId] = v
 	}
 	return v

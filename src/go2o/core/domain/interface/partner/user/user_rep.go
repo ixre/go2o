@@ -13,8 +13,14 @@ type IUserRep interface {
 	SaveRole(*RoleValue) (int, error)
 
 	// 保存人员
-	SavePerson(*RoleValue) (int, error)
+	SavePerson(*PersonValue) (int, error)
 
 	// 保存凭据
 	SaveCredential(*CredentialValue) (int, error)
+
+	// 获取人员
+	GetPersonValue(int) *PersonValue
+
+	// 获取配送人员
+	GetDeliveryStaffPersons(partnerId int) []*PersonValue
 }

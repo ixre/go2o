@@ -18,18 +18,24 @@ import (
 )
 
 type saleService struct {
-	saleRep sale.ISaleRep
+	_rep sale.ISaleRep
+}
+
+func NewSaleService(r sale.ISaleRep) *saleService {
+	return &saleService{
+		_rep: r,
+	}
 }
 
 func (this *saleService) GetValueGoods(partnerId, goodsId int) *sale.ValueGoods {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	pro := sl.GetGoods(goodsId)
 	v := pro.GetValue()
 	return &v
 }
 
 func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, error) {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	var pro sale.IGoods
 	if v.Id > 0 {
 		pro = sl.GetGoods(v.Id)
@@ -46,7 +52,7 @@ func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, erro
 }
 
 func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, cid, num int) []*dto.ListGoods {
-	var goods = this.saleRep.GetOnShelvesGoodsByCategoryId(partnerId, cid, num)
+	var goods = this._rep.GetOnShelvesGoodsByCategoryId(partnerId, cid, num)
 	var listGoods []*dto.ListGoods = make([]*dto.ListGoods, len(goods))
 	for i, v := range goods {
 		listGoods[i] = &dto.ListGoods{
@@ -62,12 +68,12 @@ func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, cid, num int) 
 }
 
 func (this *saleService) DeleteGoods(partnerId, goodsId int) error {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	return sl.DeleteGoods(goodsId)
 }
 
 func (this *saleService) GetCategory(partnerId, id int) *sale.ValueCategory {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	c := sl.GetCategory(id)
 	if c != nil {
 		cv := c.GetValue()
@@ -77,12 +83,12 @@ func (this *saleService) GetCategory(partnerId, id int) *sale.ValueCategory {
 }
 
 func (this *saleService) DeleteCategory(partnerId, id int) error {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	return sl.DeleteCategory(id)
 }
 
 func (this *saleService) SaveCategory(partnerId int, v *sale.ValueCategory) (int, error) {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	var ca sale.ICategory
 	if v.Id > 0 {
 		ca = sl.GetCategory(v.Id)
@@ -97,7 +103,7 @@ func (this *saleService) SaveCategory(partnerId int, v *sale.ValueCategory) (int
 }
 
 func (this *saleService) GetCategoryTreeNode(partnerId int) *tree.TreeNode {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	cats := sl.GetCategories()
 	rootNode := &tree.TreeNode{
 		Text:   "根节点",
@@ -129,7 +135,7 @@ func (this *saleService) iterCategoryTree(node *tree.TreeNode, pid int, categori
 }
 
 func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
-	sl := this.saleRep.GetSale(partnerId)
+	sl := this._rep.GetSale(partnerId)
 	cats := sl.GetCategories()
 	var list []*sale.ValueCategory = make([]*sale.ValueCategory, len(cats))
 	for i, v := range cats {

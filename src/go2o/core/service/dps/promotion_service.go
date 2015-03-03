@@ -15,16 +15,22 @@ import (
 )
 
 type promotionService struct {
-	promRep promotion.IPromotionRep
+	_rep promotion.IPromotionRep
+}
+
+func NewPromotionService(r promotion.IPromotionRep) *promotionService {
+	return &promotionService{
+		_rep: r,
+	}
 }
 
 func (this *promotionService) GetCoupon(partnerId int, id int) promotion.ICoupon {
-	_prom := this.promRep.GetPromotion(partnerId)
+	_prom := this._rep.GetPromotion(partnerId)
 	return _prom.GetCoupon(id)
 }
 
 func (this *promotionService) SaveCoupon(partnerId int, e *promotion.ValueCoupon) (int, error) {
-	prom := this.promRep.GetPromotion(partnerId)
+	prom := this._rep.GetPromotion(partnerId)
 	var coupon promotion.ICoupon
 	if e.Id > 0 {
 		coupon = prom.GetCoupon(e.Id)

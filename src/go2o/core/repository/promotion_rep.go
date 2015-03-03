@@ -15,18 +15,27 @@ import (
 	"github.com/atnet/gof/db"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	prom "go2o/core/domain/promotion"
+	promImpl "go2o/core/domain/promotion"
 	"go2o/core/infrastructure/log"
 	"time"
 )
 
+var _ promotion.IPromotionRep = new(PromotionRep)
+
 type PromotionRep struct {
 	db.Connector
-	MemberRep member.IMemberRep
+	_memberRep member.IMemberRep
+}
+
+func NewPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.IPromotionRep {
+	return &PromotionRep{
+		Connector:  c,
+		_memberRep: memberRep,
+	}
 }
 
 func (this *PromotionRep) GetPromotion(partnerId int) promotion.IPromotion {
-	return prom.NewPromotion(partnerId, this, this.MemberRep)
+	return promImpl.NewPromotion(partnerId, this, this._memberRep)
 }
 
 func (this *PromotionRep) GetCoupon(id int) *promotion.ValueCoupon {

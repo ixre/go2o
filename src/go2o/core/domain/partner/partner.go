@@ -13,6 +13,8 @@ import (
 	"errors"
 	"fmt"
 	"go2o/core/domain/interface/partner"
+	"go2o/core/domain/interface/partner/user"
+	userImpl "go2o/core/domain/partner/user"
 	"go2o/core/infrastructure"
 	"go2o/share/variable"
 	"time"
@@ -21,15 +23,17 @@ import (
 var _ partner.IPartner = new(Partner)
 
 type Partner struct {
-	value    *partner.ValuePartner
-	saleConf *partner.SaleConf
-	siteConf *partner.SiteConf
-	rep      partner.IPartnerRep
-	shops    []partner.IShop
-	host     string
+	value        *partner.ValuePartner
+	saleConf     *partner.SaleConf
+	siteConf     *partner.SiteConf
+	rep          partner.IPartnerRep
+	shops        []partner.IShop
+	host         string
+	_userManager user.IUserManager
+	_userRep     user.IUserRep
 }
 
-func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep) (partner.IPartner, error) {
+func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep) (partner.IPartner, error) {
 
 	var err error
 
@@ -43,8 +47,9 @@ func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep) (partner.IPart
 	}
 
 	return &Partner{
-		value: v,
-		rep:   rep,
+		value:    v,
+		rep:      rep,
+		_userRep: userRep,
 	}, err
 }
 
@@ -191,4 +196,14 @@ func (this *Partner) GetShop(shopId int) partner.IShop {
 func (this *Partner) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
 	return this.rep.DeleteShop(this.GetAggregateRootId(), shopId)
+}
+
+// 返回用户服务
+func (this *Partner) UserManager() user.IUserManager {
+	if this._userManager == nil {
+		this._userManager = userImpl.NewUserManager(
+			this.GetAggregateRootId(),
+			this._userRep)
+	}
+	return this._userManager
 }

@@ -16,16 +16,16 @@ type IShop interface {
 
 	SetValue(*ValueShop) error
 
-	// 获取经维度
-	GetLngLat() (float64, float64)
-
-	// 是否可以配送
-	// 返回是否可以配送，以及距离(米)
-	CanDeliver(lng, lat float64) (bool, int)
-
-	// 是否可以配送
-	// 返回是否可以配送，以及距离(米)
-	CanDeliverTo(address string) (bool, int)
+//	// 获取经维度
+//	GetLngLat() (float64, float64)
+//
+//	// 是否可以配送
+//	// 返回是否可以配送，以及距离(米)
+//	CanDeliver(lng, lat float64) (bool, int)
+//
+//	// 是否可以配送
+//	// 返回是否可以配送，以及距离(米)
+//	CanDeliverTo(address string) (bool, int)
 
 	Save() (int, error)
 }

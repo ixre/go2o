@@ -17,24 +17,30 @@ import (
 )
 
 type shoppingService struct {
-	spRep shopping.IShoppingRep
+	_rep shopping.IShoppingRep
+}
+
+func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
+	return &shoppingService{
+		_rep: r,
+	}
 }
 
 func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 	cartKey string, couponCode string) (shopping.IOrder, shopping.ICart, error) {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	return sp.BuildOrder(memberId, couponCode)
 }
 
 func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string) (
 	orderNo string, err error) {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	return sp.SubmitOrder(memberId, couponCode)
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
 	shopId int) error {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.SetShop(shopId)
@@ -47,7 +53,7 @@ func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
 }
 
 func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		b := order.IsOver()
@@ -74,7 +80,7 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 
 func (this *shoppingService) GetOrderByNo(partnerId int,
 	orderNo string) *shopping.ValueOrder {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err != nil {
 		Context.Log().PrintErr(err)
@@ -85,7 +91,7 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 }
 
 func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason string) error {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.Cancel(reason)
@@ -95,7 +101,7 @@ func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason s
 
 //  获取购物车
 func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKey string) shopping.ICart {
-	sp := this.spRep.GetShopping(partnerId)
+	sp := this._rep.GetShopping(partnerId)
 	var c shopping.ICart
 	var mc shopping.ICart
 
@@ -222,7 +228,7 @@ func (this *shoppingService) PrepareSettlePersist(partnerId, memberId, shopId, p
 
 func (this *shoppingService) GetCartSettle(partnerId, memberId int, cartKey string) *dto.SettleMeta {
 	var cart = this.getShoppingCart(partnerId, memberId, cartKey)
-	shop, deliver,payOpt,dlvOpt := cart.GetSettleData()
+	shop, deliver, payOpt, dlvOpt := cart.GetSettleData()
 	var st *dto.SettleMeta = new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
 	st.DeliverOpt = dlvOpt
@@ -250,12 +256,12 @@ func (this *shoppingService) GetCartSettle(partnerId, memberId int, cartKey stri
 }
 
 func (this *shoppingService) OrderAutoSetup(partnerId int, f func(error)) {
-	sp := this.spRep.GetShopping(partnerId)
+	sp := this._rep.GetShopping(partnerId)
 	sp.OrderAutoSetup(f)
 }
 
 func (this *shoppingService) PayForOrder(partnerId int, orderNo string) error {
-	var sp shopping.IShopping = this.spRep.GetShopping(partnerId)
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.SignPaid()

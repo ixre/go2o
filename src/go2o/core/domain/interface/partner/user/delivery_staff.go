@@ -1,6 +1,6 @@
 /**
  * Copyright 2014 @ ops Inc.
- * name : 
+ * name :
  * author : newmin
  * date : 2014-02-14 16:41
  * description :
@@ -9,5 +9,4 @@
 package user
 
 type IDeliveryStaff interface {
-
 }

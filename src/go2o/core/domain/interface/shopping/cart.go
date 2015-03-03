@@ -24,7 +24,7 @@ type ICart interface {
 	SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error
 
 	// 获取结算数据
-	GetSettleData() (s partner.IShop,d member.IDeliver,paymentOpt,deliverOpt int)
+	GetSettleData() (s partner.IShop, d member.IDeliver, paymentOpt, deliverOpt int)
 
 	// 设置购买会员
 	SetBuyer(buyerId int) error

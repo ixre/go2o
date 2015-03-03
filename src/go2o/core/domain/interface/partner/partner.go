@@ -9,6 +9,10 @@
 
 package partner
 
+import (
+	"go2o/core/domain/interface/partner/user"
+)
+
 type IPartner interface {
 	GetAggregateRootId() int
 
@@ -45,4 +49,7 @@ type IPartner interface {
 
 	// 删除门店
 	DeleteShop(shopId int) error
+
+	// 返回用户服务
+	UserManager() user.IUserManager
 }

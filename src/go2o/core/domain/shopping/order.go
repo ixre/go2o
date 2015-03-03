@@ -36,6 +36,7 @@ type Order struct {
 	memberRep   member.IMemberRep
 	shoppingRep shopping.IShoppingRep
 	partnerRep  partner.IPartnerRep
+    _internalSuspend bool
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,

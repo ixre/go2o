@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"github.com/atnet/gof/db"
 	"go2o/core/domain/interface/sale"
-	sl "go2o/core/domain/sale"
+	saleImpl "go2o/core/domain/sale"
 	"go2o/core/infrastructure/log"
 	"strconv"
 	"strings"
@@ -41,7 +41,7 @@ func (this *saleRep) init() sale.ISaleRep {
 func (this *saleRep) GetSale(partnerId int) sale.ISale {
 	v, ok := this.cache[partnerId]
 	if !ok {
-		v = sl.NewSale(partnerId, this)
+		v = saleImpl.NewSale(partnerId, this)
 		this.cache[partnerId] = v
 	}
 	return v

@@ -1,6 +1,6 @@
 /**
  * Copyright 2014 @ ops Inc.
- * name : 
+ * name :
  * author : newmin
  * date : 2014-02-14 16:44
  * description :
@@ -12,9 +12,9 @@ type IRole interface {
 	//获取领域对象编号
 	GetDomainId() int
 
-	GetValue()*RoleValue
+	GetValue() RoleValue
 
-	SetValue(*RoleValue)error
+	SetValue(*RoleValue) error
 
-	Save()(int,error)
+	Save() (int, error)
 }

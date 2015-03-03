@@ -52,10 +52,11 @@ func (t OrderState) String() string {
 }
 
 const (
-	//线上付款
-	PAY_ONLINE = 1
 	//线下付款
-	PAY_OFFLINE = 2
+	PAY_OFFLINE = 1
+
+    //线上付款
+    PAY_ONLINE = 2
 )
 
 const (

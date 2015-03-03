@@ -27,18 +27,24 @@ var (
 func Init(ctx app.Context) {
 	Context := ctx
 	db := Context.Db()
-	partnerRep := repository.NewPartnerRep(db)
-	memberRep := &repository.MemberRep{Connector: db}
-	promRep := &repository.PromotionRep{Connector: db, MemberRep: memberRep}
+
+	/** Repository **/
+	userRep := repository.NewUserRep(db)
+	partnerRep := repository.NewPartnerRep(db, userRep)
+	memberRep := repository.NewMemberRep(db)
+	promRep := repository.NewPromotionRep(db, memberRep)
 	saleRep := repository.NewSaleRep(db)
-	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, promRep, memberRep)
+	deliveryRep := repository.NewDeliverRep(db)
+	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, promRep, memberRep,deliveryRep)
 
-	mq := &query.MemberQuery{Connector: db}
-	pq := &query.PartnerQuery{Connector: db}
+	/** Query **/
+	mq := query.NewMemberQuery(db)
+	pq := query.NewPartnerQuery(db)
 
-	PromService = &promotionService{promRep: promRep}
-	ShoppingService = &shoppingService{spRep: spRep}
-	MemberService = &memberService{memberRep: memberRep, Query: mq}
-	PartnerService = &partnerService{partnerRep: partnerRep, Query: pq}
-	SaleService = &saleService{saleRep: saleRep}
+	/** Service **/
+	PromService = NewPromotionService(promRep)
+	ShoppingService = NewShoppingService(spRep)
+	MemberService = NewMemberService(memberRep, mq)
+	PartnerService = NewPartnerService(partnerRep, pq)
+	SaleService = NewSaleService(saleRep)
 }

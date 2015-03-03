@@ -187,7 +187,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 }
 
 // 获取结算数据
-func (this *Cart) GetSettleData() (s partner.IShop,d member.IDeliver,paymentOpt,deliverOpt int) {
+func (this *Cart) GetSettleData() (s partner.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
 	var err error
 	if this.value.ShopId > 0 && this._shop == nil {
 		var pt partner.IPartner
@@ -203,7 +203,7 @@ func (this *Cart) GetSettleData() (s partner.IShop,d member.IDeliver,paymentOpt,
 			this._deliver = m.GetDeliver(this.value.DeliverId)
 		}
 	}
-	return this._shop, this._deliver,this.value.PaymentOpt,this.value.DeliverOpt
+	return this._shop, this._deliver, this.value.PaymentOpt, this.value.DeliverOpt
 }
 
 // 保存购物车

@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/atnet/gof/app"
+	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/partner"
@@ -32,30 +33,32 @@ var (
 )
 
 type Shopping struct {
-	_rep        shopping.IShoppingRep
-	_saleRep    sale.ISaleRep
-	_promRep    promotion.IPromotionRep
-	_memberRep  member.IMemberRep
-	_partnerRep partner.IPartnerRep
-	_partnerId  int
-	_partner    partner.IPartner
+	_rep         shopping.IShoppingRep
+	_saleRep     sale.ISaleRep
+	_promRep     promotion.IPromotionRep
+	_memberRep   member.IMemberRep
+	_partnerRep  partner.IPartnerRep
+	_deliveryRep delivery.IDeliveryRep
+	_partnerId   int
+	_partner     partner.IPartner
 }
 
 func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	promRep promotion.IPromotionRep,
-	memberRep member.IMemberRep) shopping.IShopping {
+	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
+	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
 	pt, _ := partnerRep.GetPartner(partnerId)
 
 	return &Shopping{
-		_rep:        rep,
-		_saleRep:    saleRep,
-		_promRep:    promRep,
-		_memberRep:  memberRep,
-		_partnerId:  partnerId,
-		_partnerRep: partnerRep,
-		_partner:    pt,
+		_rep:         rep,
+		_saleRep:     saleRep,
+		_promRep:     promRep,
+		_memberRep:   memberRep,
+		_partnerId:   partnerId,
+		_partnerRep:  partnerRep,
+		_deliveryRep: deliveryRep,
+		_partner:     pt,
 	}
 }
 
@@ -145,33 +148,17 @@ func (this *Shopping) GetFreeOrderNo() string {
 
 // 智能选择门店
 func (this *Shopping) SmartChoiceShop(address string) (partner.IShop, error) {
-	var shop partner.IShop
-	var distance int
-	shops := this._partner.GetShops()
-	if len(shops) == 0 {
-		return nil, errors.New(fmt.Sprintf("not have shops!",
-			this._partner.GetAggregateRootId(),
-			this._partner.GetValue().Name))
-	}
-
-	lng, lat, err := lbs.GetLocation(address)
-	if err != nil {
-		return nil, errors.New("无法识别的地址：" + address)
-	}
-
-	// 获取最近的门店
-	for _, v := range shops {
-		if b, d := v.CanDeliver(lng, lat); b {
-			return v, nil
-		} else {
-			if d < distance || distance == 0 {
-				d = distance
-				shop = v
-			}
-		}
-	}
-
-	return shop, nil
+    dly := this._deliveryRep.GetDelivery(this.GetAggregateRootId())
+    lng, lat, err := lbs.GetLocation(address)
+    if err != nil {
+        return nil, errors.New("无法识别的地址：" + address)
+    }
+    var cov delivery.ICoverageArea = dly.GetNearestCoverage(lng, lat)
+    if cov == nil {
+        return nil, delivery.ErrNotCoveragedArea
+    }
+    shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
+    return this._partner.GetShop(shopId),err
 }
 
 // 生成订单
@@ -298,7 +285,7 @@ func (this *Shopping) setupOrder(ctx app.Context, v *shopping.ValueOrder,
 			}
 		}
 	} else if v.PaymentOpt == enum.PAY_OFFLINE {
-		switch v.Status + 1 {
+        switch v.Status + 1 {
 		case enum.ORDER_CONFIRMED:
 			if dur > time.Minute*order_confirm_minute {
 				err = order.Confirm()
