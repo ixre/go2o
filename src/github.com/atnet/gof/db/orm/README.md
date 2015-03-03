@@ -1,1 +1,0 @@
-mysql中不要使用bit,golang database/sql无法检测到该类型,用tinyint(1)代替bit
