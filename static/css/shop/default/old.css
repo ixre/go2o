@@ -1,0 +1,167 @@
+body {
+	font-size: 12px;
+}
+
+#header {
+	width: 100px;
+}
+
+#container {
+	width: 900px;
+	margin: 0 auto;
+	padding: 0 5px;
+	overflow: hidden;
+	border: solid 1px #e5e5e5;
+}
+
+#container div.side {
+	float: right;
+	width: 300px;
+	margin-left: -301px;
+	border-left: solid 1px #006699;
+}
+
+#container div.main {
+	width: auto;
+	margin: 0 301px 0 0;
+	float: left;
+}
+
+#container div.side,#container div.main {
+	padding-bottom: 3000px;
+	margin-bottom: -3000px;
+}
+
+.subs {
+	margin: 0px;
+	padding: 0;
+	list-style: none;
+	line-height: 25px;
+	border-top: solid 1px #e5e5e5;
+}
+
+.subs li {
+	padding: 0;
+	border-bottom: dotted 1px #e5e5e5;
+	color: #aaa;
+	font-size: 12px;
+}
+
+.subs li strong {
+	width: 140px;
+	float: left;
+	display: block;
+	color: #3EAF0E;
+}
+
+.subs li .green {
+	color: #3EAF0E;
+}
+
+.subs p {
+	font-size: 10px;
+}
+
+.bggreen {
+	backgroud: #3EAF0E;
+}
+
+/* 餐盒 */
+#plcart {
+	position: fixed;
+	top: 63px;
+	z-index: 10000000;
+	width: 236px;
+	background: white;
+	display: none;
+	border: solid 1px green;
+	padding: 1px;
+}
+
+#plcart h3 {
+	background: #3EAF0E;
+	margin: 0;
+	padding: 5px;
+	color: white;
+}
+
+#plcart p {
+	background: #f0f0f0;
+	text-align: center;
+}
+
+#plcart .submit {
+	text-align: center;
+	padding: 8px 0 5px 0;
+}
+
+.cart table {
+	background: white;
+	width: 100%;
+}
+
+.cart table th {
+	background: #f0f0f0;
+}
+
+.cart table td {
+	text-align: center;
+}
+
+.cart table td input {
+	border: solid 1px #e0e0e0;
+	font-size: 10px;
+	height: 15px;
+}
+
+.cart table td a {
+	margin: 0 2px;
+}
+
+.cart table .cart_q {
+	width: 15px;
+	text-align: center;
+}
+
+.fd_items {
+	clear: both;
+	background: url(dline.jpg) left center repeat-x;
+	position: relative;
+	line-height: 20px;
+}
+
+.fd_items h3 {
+	background: white;
+	float: left;
+	margin: 0;
+	padding: 0 5px 0 0;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+.fd_items h3 em {
+	font-size: 12px;
+	font-style: normal;
+	color: #666;
+}
+
+.fd_items .price {
+	position: absolute;
+	right: 67px;
+	background: white;
+	padding-left: 5px;
+	color: #666;
+}
+
+.fd_items .add {
+	position: absolute;
+	right: 0;
+	width: 62px;
+	background: white url(green_btn.gif) right center no-repeat;
+	padding-left: 5px;
+}
+
+.fd_items .add:hover {
+	text-decoration: none;
+}
+

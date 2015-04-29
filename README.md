@@ -4,11 +4,10 @@ Go2o
 Golang combine simple o2o DDD domain-driven design realization,
 including multi-channel (businesses), multi-store, multi-member commodity,
 Promotions, orders, coupons implementation also includes a micro framework
-in package "ops/cf", providing ORM, Reporting, Web Framework,Rpc Framework.
+in package "gof", providing ORM, Reporting, Web Framework,Rpc Framework.
 
 Golang 结合DDD领域驱动设计的简单o2o实现，包含多渠道(商家),多门店,多会员.商品，
-促销，订单，优惠券的实现，同时包含一个微型框架gof,提供ORM,报表,Web Framework,Rpc Framework.
-gof已经独立为一个代码仓库，托管在：https://github.com/newmin/gof
+促销，订单，优惠券的实现，同时包含一个微型框架ops/cf,提供ORM,报表,Web Framework,Rpc Framework.
 
 # Deploy #
 
@@ -32,7 +31,7 @@ gof已经独立为一个代码仓库，托管在：https://github.com/newmin/gof
               listen          80;
               server_name     *.ts.com;
               location / {
-                 proxy_pass   http://localhost:1001;
+                 proxy_pass   http://localhost:1002;
                  proxy_set_header Host $host;
               }
         }
@@ -56,3 +55,14 @@ wly.ts.com
 
 you can add host to table "pt_host" use MySql Workbench.
 
+
+3. code template
+
+/**
+ * Copyright 2014 @ S1N1 Team.
+ * name : ${NAME}
+ * author : newmin
+ * date : ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
+ * description :
+ * history :
+ */

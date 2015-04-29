@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>订单管理</title>
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
+    <link  rel="stylesheet" type="text/css" href="{{.static_serv}}/css/partner/partner.css"/>
+</head>
+<body>
+    <div id="gd"></div>
+    <div class="toolBar">
+        <div class="searchBar padding2" id="searchbar">
+            <ul>
+                <li>
+                    <span class="title">订单状态：</span>
+                    <select field="status">
+                        <option value="100">一所有状态一</option>
+                        <option value="1">待确认</option>
+                        <option value="2">已确认</option>
+                        <option value="3">处理中</option>
+                        <option value="4">配送中</option>
+                        <option value="5">已收货</option>
+                        <option value="6" style="color:green">已完成</option>
+                        <option value="0" style="color:#ff0000">已作废</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">关键字：</span>
+                    <input type="text" field="keyword" />
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                        <span class="icon"></span>搜索</a>
+                </li>
+                <li>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-reload'" id="btnRefresh">
+                    <span class="icon"></span>刷新</a> (自动刷新时间：60秒)
+                </li>
+
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/export.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+
+<script>
+        var shops = {{.shops}};
+        expr.ele = 'searchbar';
+
+        $JS.json.bind(expr.ele, {status: decodeURIComponent($JS.request('status')) });
+
+        expr.portal = 'Partner.OrderList'; //配置导出的入口
+        expr.checkParams = function (data) {
+            return true;
+        };
+
+        var refresh = function () { expr.reload('gd'); };
+
+        $JS.$('gd').style.height = $JS.screen.height() + 'px';
+
+        $(function () {
+
+            //导出
+            $('#btnExport').click(
+                function () {
+                    expr.showExportDialog();
+                });
+
+            $('#btnSearch').click(
+                function () {
+                    expr.search('gd');
+                });
+            $('#btnRefresh').click(refresh);
+
+            //加载数据
+            $('#gd').datagrid({
+                toolbar: '.toolBar',
+                singleSelect: !false,
+                pagination: true,
+                rownumbers: true,
+                fitColumns: true,
+                url: expr.getDataUrl(),
+                columns: [
+                    [
+                        {field:'order_no',title:'订单号',width:130,align:'center'},
+                        {field:'items_info',title:'菜单',width:150,align:'center',formatter:function(value,rec){
+                            return '<p style="margin:0;padding:10px 0;">'+value+'</p>';
+                        }},
+                        {field:'pt_shopid',title:'配送店',width:60,align:'center',
+                            formatter:function(val,rec){
+                                if(val!=0){
+                                    for(var i=0;i<shops.length;i++){
+                                        if(shops[i].id==val){return shops[i].name;}
+                                    }
+                                }
+                                return '-';
+                            }
+                        },
+                        {field:'total_fee',title:'订单总金额',width:60,sortable:true,align:'center',  formatter:function(val){
+                                    return '￥'+$JS.float(val);
+                            }},
+                        {field:'fee',title:'订单金额',width:60,sortable:true,align:'center',
+                            sorter:function(a,b){
+                                return (a>b?1:-1);
+                            },
+                            formatter:function(val){
+                                return '￥'+$JS.float(val);
+                            }
+                        },
+                        {field:'paymethod',title:'支付方式',width:60,sortable:true,align:'center',
+                            formatter:function(val){
+                              return val=='1'?'餐到付款':'网上支付'
+                            }
+                        },
+
+                        {field:'pay_fee',title:'订单金额',width:60,sortable:true,align:'center',
+                            formatter:function(val){
+                                    return '￥'+$JS.float(val);
+                            }
+                        },
+                        {field:'is_paid',title:'是否支付',width:60,sortable:true,align:'center',
+                            formatter:function(val){
+                                return val=='1'?'<span style="color:green">是</a>':"否";
+                            }
+                        },
+                        {field:'note',title:'备注',width:40,align:'center',formatter:function(val){
+                            return val==''?'-':'<a href="javascript:;">查看</a>';
+                        }
+                        },
+                        {field:'sendtime',title:'送餐时间',width:150,align:'center',
+                            formatter:function(v,r){
+                            return '创建时间:<br />'+unix2str(r.create_time)+
+                            '<br />送餐时间：<br />'+unix2str(r.deliver_time);
+                        }},
+                        {field:'id1',title:'操作',width:80,align:'center',
+                            formatter:function(v,r){
+                                var html='';
+                                if(r.status==0 || r.status == 6) {
+                                    html='-';
+                                }else{
+                                    if(r.is_paid == '0'){
+                                        html += '<a href="javascript:;" onclick="payment(\''+r.order_no+'\')">人工付款</a> <br /> ';
+                                    }
+                                    html+='<a href="javascript:editRecord(\''+r.order_no+'\')">处理</a> | ';
+                                    html+='<a href="javascript:signDel(\''+r.order_no+'\')">取消</a>';
+                                }
+                                return html;
+                            }
+                        }
+                    ]
+                ]
+            });
+        });
+
+
+        function editRecord(id){
+            $JS.dialog.create2('订单操作',true,true).open('/pt/order/view?order_no=' + id, 600,400);
+        }
+
+        function payment(id){
+            $JS.dialog.create2('人工付款',true,true).open('/pt/order/payment?order_no=' + id, 600,400);
+        }
+
+
+
+        function signDel(id){
+           $JS.dialog.create2('订单取消',true,true).open('/pt/order/cancel?order_no=' + id, 600,400);
+		}
+
+        setInterval(refresh,60000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+	<title>人工付款</title>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="padding:30px;">
+
+<div id="form1">
+	<div class="item">
+        <p class="details">
+            <b>订单详情：</b><br />
+            <ul>
+                <li>订单号：{{.order.OrderNo}}</li>
+                <li>配送分店：{{.shopName}}</li>
+                <li>订单总额：￥{{.order.TotalFee}}</li>
+                <li>订单金额：￥{{.order.Fee}}</li>
+                <li>优惠金额：￥{{.order.DiscountFee}}</li>
+                <li>优惠金额：￥{{.order.PayFee}}</li>
+            </ul>
+        </p>
+
+        <p style="border:solid 1px #e5e5e5;padding:5px;background:#f8f8f8">
+            <b>配送信息：</b><br/>
+            姓名:<span field="deliverName">{{.order.DeliverName}}</span><br/>
+            电话:<span field="deliverPhone">{{.order.DeliverPhone}}</span><br />
+            送餐地址：<span field="deliverAddress">{{.order.DeliverAddress}}</span><br />
+        </p>
+
+
+        <br />
+        <input type="button" value="付款" id="btn_payment"/>
+
+</div>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+	<script type="text/javascript">
+        $JS.$('btn_payment').onclick=function() {
+            var data = {orderNo: '{{.order.OrderNo}}'};
+            parent.$.messager.confirm('提示', '您确定要为订单：' + data.orderNo + '进行支付吗？', function (r) {
+                if(r){
+                $JS.xhr.jsonPost('Payment', data, function (json) {
+                    if (json.result) {
+                        parent.$.messager.alert('提示',json.message,'ok',function(){
+                            var d = $JS.dialog.getDialog();
+                            if (d) {
+                                d.window.refresh();
+                                d.close();
+                            }
+                        });
+                    } else {
+                        parent.$.messager.alert('提示',json.message,'error');
+                    }
+                });
+            }});
+        };
+	</script>
+</body>
+</html>

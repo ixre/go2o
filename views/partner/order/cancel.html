@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+	<title>取消订单</title>
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{.static_serv}}/assets/easyui/themes/icon.css">
+    <link  rel="stylesheet" type="text/css" href="{{.static_serv}}/css/partner/partner.css"/>
+</head>
+<body>
+<div id="form1" class="form">
+    <div class="fl">
+        <div class="label">原因模板：</div>
+        <div class="in">
+            <select id="tpl">
+                <option value="">一一</option>
+                <option>会员申请取消</option>
+                <option>无法联系送达</option>
+                <option>22:00-08:00不供应</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label">取消原因：</div>
+        <div class="in">
+            <textarea class="ui-validate" id="reason" field="reason"
+             required="true" length="[5,100]" summary="{length:'必须为5-100字'}"></textarea>
+            (5-100字)
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <input type="button" value="确认" onclick="submitCancel()"/>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="{{.static_serv}}/assets/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript"  src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+
+	<script type="text/javascript">
+        $JS.$('tpl').onchange=function(){
+          if(this.value !=''){
+            $JS.$('reason').value = this.value
+          }
+        };
+    function submitCancel() {
+        $.messager.confirm('操作提示', '您确定要将此订单作废吗？',function(r) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost(location.href, data, function (json) {
+                if (json.result) {
+
+                    var dg = $JS.dialog.getDialog();
+                    $.messager.alert("提示",'订单已取消','ok',function(){
+                        dg.close();
+                    });
+                    if (dg.window.refresh) {
+                        dg.window.refresh();
+                    }
+
+                } else {
+                    $.messager.alert("提示",json.message);
+                }
+            });
+        });
+    }
+	</script>
+
+</body>
+</html>

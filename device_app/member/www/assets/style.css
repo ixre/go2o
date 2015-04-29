@@ -1,0 +1,21 @@
+.tabs {
+    background-image: linear-gradient(90deg, #0d680d, #329632);
+    background-image: -webkit-linear-gradient(90deg, #0d680d, #329632);
+    background-size: auto 100%;
+    color:#fff;
+    border-top:0;
+}
+.right{float:right;}
+.tabs a.tab-item-active{
+	background:#fff;color:green;
+	background-image: linear-gradient(90deg, #ddd, #fff);
+    background-image: -webkit-linear-gradient(90deg, #ddd, #fff);
+}
+
+.category-panel ul{margin:0;padding:0;}
+.category-panel li{float:left;margin:0 10px;line-height: 30px}
+
+.shopping-items{}
+.shopping-items div{width:100%;}
+.shopping-items div.icon{font-size:250%;margin-top:20%;}
+.shopping-items div.wait{font-size:125%;padding:0;text-align:center;width:100%;}

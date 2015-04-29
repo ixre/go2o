@@ -1,0 +1,82 @@
+{{define "header"}}
+<!doctype html>
+<html>
+<head>
+    <title>{{.title}}</title>
+    <link rel="Stylesheet" href="{{.static_serv}}/css/page.css" type="text/css" />
+    <link rel="Stylesheet" href="{{.static_serv}}/css/shop/default/style.css" type="text/css" />
+</head>
+<body>
+
+<div id="top-container">
+<div class="page-top">
+    <div class="panel">
+        <span class="left">
+
+        </span>
+        <span class="right links">
+             <div class="usr">
+                {{if .member}}
+                     欢迎您：
+                     <span id="usrinfo">{{.member.Name}}</span>
+                     &nbsp;[
+                     <a target="_member" href="/member">会员中心</a>
+                     ]
+                     &nbsp;[
+                     <a href="/logout">退出</a>
+                     ]
+                 {{else}}
+
+                     <a class="m_r_link" href="/login">登录</a>
+                     <a href="/register" class="m_r_link">快速注册</a>
+
+                 {{end}}
+             </div>
+        </span>
+        <div class="clearfix"></div>
+        <div class="top-attach hidden"></div>
+    </div>
+</div>
+
+
+<div class="page-header">
+    <div class="panel">
+        <a href="javascript:;" class="logo">
+            <img src="{{.img_serv}}/{{.conf.Logo}}" alt="{{.partner.Name}}" />
+            <h1>{{.partner.Name}}</h1>
+        </a>
+        <span class="right">
+        </span>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+
+</div>
+<div id="navigator" class="page-navigator">
+    <div class="left"></div>
+    <div class="right"></div>
+    <div class="navs">
+        <!--<div class="current hidden"></div>-->
+        <ul>
+            <li>
+                <a href="/index.html" title="首页">首页</a>
+            </li>
+            <li>
+                <a href="/?go=buy">在线订餐</a>
+            </li>
+            <li>
+                <a href="javascript:;">账户充值</a>
+            </li>
+            <li>
+                <a href="javascript:;">积分兑换</a>
+            </li>
+            <li>
+                <a href="javascript:;">客户服务</a>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+</div>
+
+{{end}}
