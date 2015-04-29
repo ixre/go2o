@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name : delivery
- * author : newmin
+ * author : jarryliu
  * date : 2014-10-06 14:21 :
  * description :
  * history :

@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
@@ -97,7 +97,7 @@ func testPartner() {
 }
 
 func testMemberLogin() {
-	b, t, err := goclient.Member.Login("newmin", "123000")
+	b, t, err := goclient.Member.Login("jarryliu", "123000")
 	if b {
 		jsv.Println("[Login]:Sucessfull.", t)
 		arr := strings.Split(t, "$")

@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
@@ -46,7 +46,6 @@ func RegisterRoutes() {
 	routes.RegisterController("category", &categoryC{})
 	routes.RegisterController("conf",&configC{})
 	routes.RegisterController("prom", &promC{})
-
 
 	routes.Add("^/export/getExportData$", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx.Request); b {

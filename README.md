@@ -7,14 +7,14 @@ Promotions, orders, coupons implementation also includes a micro framework
 in package "gof", providing ORM, Reporting, Web Framework,Rpc Framework.
 
 Golang 结合DDD领域驱动设计的简单o2o实现，包含多渠道(商家),多门店,多会员.商品，
-促销，订单，优惠券的实现，同时包含一个微型框架ops/cf,提供ORM,报表,Web Framework,Rpc Framework.
+促销，订单，优惠券的实现，依赖一个微型框架atnet/gof,提供ORM,报表,Web Framework,Rpc Framework.
 
 # Deploy #
 
 ## 1.Complied ##
-        git clone https://github.com/newmin/go2o.git /home/usr/go2o
-        export GOPATH=$GOPATH:/home/usr/go2o/
-        cd /home/usr/go2o
+        git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
+        export GOPATH=$GOPATH:/home/usr/go/
+        cd /home/usr/go
         go build server.go
 
 ## 2.Running Service ##
@@ -61,7 +61,7 @@ you can add host to table "pt_host" use MySql Workbench.
 /**
  * Copyright 2014 @ S1N1 Team.
  * name : ${NAME}
- * author : newmin
+ * author : jarryliu
  * date : ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
  * description :
  * history :

@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
@@ -27,7 +27,7 @@ func (this *websocketC) Login(ctx *web.Context) {
 
 func (this *websocketC) Test(ctx *web.Context) {
 	w := ctx.ResponseWriter
-	b, t, msg := goclient.Member.Login("newmin", "123000")
+	b, t, msg := goclient.Member.Login("jarryliu", "123000")
 	if b {
 		w.Write([]byte("[Login]:Sucessfull." + t))
 	} else {

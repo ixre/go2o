@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ S1N1 Team.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
@@ -12,8 +12,8 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/db"
 	"github.com/atnet/gof/log"
-	"github.com/garyburd/redigo/redis"
 	"github.com/atnet/gof/storage"
+	"github.com/garyburd/redigo/redis"
 )
 
 var _ gof.App = new(MainApp)
@@ -38,8 +38,8 @@ func (this *MainApp) Db() db.Connector {
 	return this._dbConnector
 }
 
-func (this *MainApp) Storage() gof.Storage{
-	if this._storage == nil{
+func (this *MainApp) Storage() gof.Storage {
+	if this._storage == nil {
 		this._storage = storage.NewRedisStorage(this.Redis())
 	}
 	return this._storage

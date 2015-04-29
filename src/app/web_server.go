@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2013-12-16 21:47
  * description :
  * history :
@@ -33,7 +33,7 @@ var (
 )
 
 //获取Http请求代理处理程序
-func getInterceptor(a gof.App)*web.Interceptor{
+func getInterceptor(a gof.App) *web.Interceptor {
 	var igor = web.NewInterceptor(a, getHttpExecFunc())
 	igor.Except = web.HandleDefaultHttpExcept
 	igor.Before = func(ctx *web.Context) bool {
@@ -92,14 +92,13 @@ func RunWeb(app gof.App, port int, debug, trace bool) {
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	goclient.Configure("tcp", app.Config().GetString(variable.ClientSocketServer), app)
 
-
 	var in = getInterceptor(app)
 
 	//注册路由
 	RegisterRoutes(app)
 
 	//启动服务
-	err :=http.ListenAndServe(":"+strconv.Itoa(port), in)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), in)
 
 	if err != nil {
 		app.Log().Fatalln("ListenAndServer ", err)

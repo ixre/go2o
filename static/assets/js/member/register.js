@@ -1,6 +1,6 @@
 ﻿/*
  * module : 用户注册
- * author : newmin
+ * author : jarryliu
  * date   : 2011/01/21
  */
 

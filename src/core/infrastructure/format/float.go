@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ Ops Inc.
  * name : float.go
- * author : newmin
+ * author : jarryliu
  * date : 2013-12-02 21:34
  * description :
  * history :

@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
@@ -66,7 +66,7 @@ func (this *mainC) Upload_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	ptid, _ := session.GetLSession().GetPartnerIdFromCookie(r)
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
-	for f, _ := range r.MultipartForm.File {
+	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", ptid)))
 		break
 	}

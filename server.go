@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2013-12-16 21:45
  * description :
  * history :
@@ -16,8 +16,8 @@ import (
 	"go2o/src/app/daemon"
 	"go2o/src/core"
 	"os"
-	"strings"
 	"runtime"
+	"strings"
 )
 
 func main() {

@@ -34,7 +34,7 @@ func main() {
 	if lhost := strings.ToLower(*host); lhost == "localhost" ||
 		lhost == "127.0.0.1" {
 		log.Println("[Warnning]:only access by localhost,if you want to access other please set --host [yourhost] ")
-	} else if strings.Index(lhost, "//") != -1 || lhost[len(lhost)-1:len(lhost)] == "/" {
+	} else if strings.Index(lhost, "//") != -1 || lhost[len(lhost)-1:] == "/" {
 		log.Println("[Error]: host example \"www.google.com\"")
 		return
 	}

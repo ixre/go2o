@@ -39,13 +39,13 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", redisHost, redisPort))
 			if err != nil {
 				log.Fatalf("FATAL: redis(%s:%d) initialize failed - %s",
-				redisHost, redisPort, err.Error())
+					redisHost, redisPort, err.Error())
 			}
 
 			if _, err := c.Do("select", redisDb); err != nil {
 				c.Close()
 				log.Fatalf("FATAL: redis(%s:%d) initialize failed - %s",
-				redisHost, redisPort, err.Error())
+					redisHost, redisPort, err.Error())
 			}
 
 			return c, err

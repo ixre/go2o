@@ -1,7 +1,7 @@
 /**
  * Copyright 2014 @ ops Inc.
  * name :
- * author : newmin
+ * author : jarryliu
  * date : 2014-02-11 22:09
  * description : alipay golang sdk in "github.com/ascoders/alipay"
  * history :
