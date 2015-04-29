@@ -162,17 +162,17 @@
 
 
         function editRecord(id){
-            $JS.dialog.create2('订单操作',true,true).open('/pt/order/view?order_no=' + id, 600,400);
+            $JS.dialog.create2('订单操作',true,true).open('/order/view?order_no=' + id, 600,400);
         }
 
         function payment(id){
-            $JS.dialog.create2('人工付款',true,true).open('/pt/order/payment?order_no=' + id, 600,400);
+            $JS.dialog.create2('人工付款',true,true).open('/order/payment?order_no=' + id, 600,400);
         }
 
 
 
         function signDel(id){
-           $JS.dialog.create2('订单取消',true,true).open('/pt/order/cancel?order_no=' + id, 600,400);
+           $JS.dialog.create2('订单取消',true,true).open('/order/cancel?order_no=' + id, 600,400);
 		}
 
         setInterval(refresh,60000);
