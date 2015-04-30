@@ -44,13 +44,13 @@ func RegisterRoutes(c gof.App) {
 
 	routes.RegisterController("buy",sp)
 
-
-	var httpFunc web.HttpContextFunc = func(ctx *web.Context) {
+	//处理错误
+	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
 			handleCustomError(ctx.ResponseWriter, c, err)
 		}
-	}
-	routes.Defer(httpFunc)
+	})
+
 
 	getPartner := func(r *http.Request) (*partner.ValuePartner, error, *member.ValueMember) {
 		var m *member.ValueMember
