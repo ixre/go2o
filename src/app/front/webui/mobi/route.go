@@ -39,7 +39,7 @@ func RegisterRoutes(c gof.App) {
 		return dps.PartnerService.GetPartner(partnerId)
 	}
 
-	routes.Add("^/$", func(ctx *web.Context) {
+	routes.Add("/", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		if p, err := getPartner(r); err == nil {
 			mvc.Handle(mc, ctx, true, p)

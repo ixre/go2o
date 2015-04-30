@@ -32,7 +32,7 @@ func RegisterRoutes(c gof.App) {
 		mvc.Handle(ws, ctx, false)
 	})
 
-	routes.Add("^/$", func(ctx *web.Context) {
+	routes.Add("/", func(ctx *web.Context) {
 		ctx.ResponseWriter.Write([]byte("page not found"))
 	})
 }

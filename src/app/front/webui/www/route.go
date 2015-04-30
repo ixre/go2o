@@ -166,7 +166,7 @@ func RegisterRoutes(c gof.App) {
 		mvc.Handle(pc, ctx, true)
 	})
 
-	routes.Add("^/$", func(ctx *web.Context) {
+	routes.Add("/", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		if p, err, m := getPartner(r); err == nil {
 			mvc.Handle(mc, ctx, true, p, m)
