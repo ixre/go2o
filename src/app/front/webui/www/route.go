@@ -38,9 +38,9 @@ func handleError(w http.ResponseWriter, err error) {
 
 //注册路由
 func RegisterRoutes(c gof.App) {
-	mc := &mainC{App: c}
-	sp := &shoppingC{App: c}
-	pc := &paymentC{App: c}
+	mc := &mainC{}
+	sp := &shoppingC{}
+	pc := &paymentC{}
 
 	routes.RegisterController("buy",sp)
 
@@ -85,6 +85,11 @@ func RegisterRoutes(c gof.App) {
 		}
 	})
 
+
+	routes.Add("^/(list|getList|login|register|validUser|PostRegistInfo)/*$", func(ctx *web.Context) {
+		mvc.Handle(mc, ctx, true)
+	})
+
 	routes.Add("^/cart/*", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		if p, err, _ := getPartner(r); err == nil {
@@ -95,14 +100,14 @@ func RegisterRoutes(c gof.App) {
 	})
 
 	// 购买跳转
-	routes.Add("^/buy/*$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			sp.BuyRedirect(ctx, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
+	//	routes.Add("^/buy/*$", func(ctx *web.Context) {
+	//		r, w := ctx.Request, ctx.ResponseWriter
+	//		if p, err, m := getPartner(r); err == nil {
+	//			sp.BuyRedirect(ctx, p, m)
+	//		} else {
+	//			handleError(w, err)
+	//		}
+	//	})
 
 	routes.Add("^/buy/confirm$", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
@@ -168,7 +173,7 @@ func RegisterRoutes(c gof.App) {
 		mvc.Handle(pc, ctx, true)
 	})
 
-	routes.Add("/", func(ctx *web.Context) {
+	routes.Add("^/$", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		if p, err, m := getPartner(r); err == nil {
 			mvc.Handle(mc, ctx, true, p, m)

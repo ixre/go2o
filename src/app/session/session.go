@@ -32,7 +32,7 @@ type loginSession struct {
 
 func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, pwd string) bool {
 	loginTokenResult := domain.EncodePartnerPwd(usr, pwd)
-	loginResult := loginTokenResult == this.App.Config().GetString("master_token")
+	loginResult := loginTokenResult == ctx.App.Config().GetString("master_token")
 
 	if loginResult {
 
@@ -51,7 +51,7 @@ func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, 
 
 func (this *loginSession) IsAdministrator(r *http.Request) bool {
 	cookie, _ := r.Cookie("mtkey")
-	if cookie == nil || cookie.Value != this.App.Config().GetString("master_token") {
+	if cookie == nil || cookie.Value != ctx.App.Config().GetString("master_token") {
 		return false
 	}
 	return true

@@ -27,7 +27,7 @@ type orderC struct {
 }
 
 func (this *orderC) Complete(ctx *web.Context, memberId int) {
-	this.App.Template().Render(ctx.ResponseWriter,
+	ctx.App.Template().Render(ctx.ResponseWriter,
 		"views/ucenter/order/complete.html",
 		func(m *map[string]interface{}) {
 
@@ -36,7 +36,7 @@ func (this *orderC) Complete(ctx *web.Context, memberId int) {
 
 func (this *orderC) Orders(ctx *web.Context, m *member.ValueMember,
 	p *partner.ValuePartner, conf *partner.SiteConf) {
-	this.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
 			v["partner"] = p
@@ -52,7 +52,7 @@ func (this *orderC) Orders(ctx *web.Context, m *member.ValueMember,
 func (this *orderC) Completed(ctx *web.Context, m *member.ValueMember,
 	p *partner.ValuePartner, conf *partner.SiteConf) {
 
-	this.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
 			v["partner"] = p
@@ -70,7 +70,7 @@ func (this *orderC) Completed(ctx *web.Context, m *member.ValueMember,
 func (this *orderC) Canceled(ctx *web.Context, m *member.ValueMember,
 	p *partner.ValuePartner, conf *partner.SiteConf) {
 
-	this.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
 			v["partner"] = p

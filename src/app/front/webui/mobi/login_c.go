@@ -23,7 +23,7 @@ type loginC struct {
 //登陆
 func (this *loginC) Login(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
-	this.App.Template().Render(w, "views/ucenter/login.html", nil)
+	ctx.App.Template().Render(w, "views/ucenter/login.html", nil)
 }
 func (this *loginC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter

@@ -11,7 +11,6 @@ package www
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -22,10 +21,11 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"go2o/src/app/front"
 )
 
 type shoppingC struct {
-	gof.App
+	front.WebC
 }
 
 // 订单确认
@@ -74,7 +74,7 @@ func (this *shoppingC) OrderConfirm(ctx *web.Context,
 			}
 		}
 
-		this.App.Template().Execute(w, func(mp *map[string]interface{}) {
+		ctx.App.Template().Execute(w, func(mp *map[string]interface{}) {
 			(*mp)["partner"] = p
 			(*mp)["title"] = "订单确认-" + p.Name
 			(*mp)["member"] = m
@@ -108,7 +108,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context,
 	}
 
 	js, _ := json.Marshal(addrs)
-	this.App.Template().Execute(w, func(md *map[string]interface{}) {
+	ctx.App.Template().Execute(w, func(md *map[string]interface{}) {
 		(*md)["addrs"] = template.JS(js)
 		(*md)["sel"] = selId
 	}, "views/web/www/profile/deliver_address.html")
@@ -152,7 +152,7 @@ func (this *shoppingC) ApplyCoupon_post(ctx *web.Context,
 
 func (this *shoppingC) OrderEmpty(ctx *web.Context,
 	p *partner.ValuePartner, mm *member.ValueMember, conf *partner.SiteConf) {
-	this.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		(*m)["partner"] = p
 		(*m)["title"] = "订单确认-" + p.Name
 		(*m)["member"] = mm
@@ -180,7 +180,7 @@ func (this *shoppingC) OrderFinish(ctx *web.Context,
 		orderNo := r.URL.Query().Get("order_no")
 		order, err := goclient.Partner.GetOrderByNo(p.Id, p.Secret, orderNo)
 		if err != nil {
-			this.App.Log().PrintErr(err)
+			ctx.App.Log().PrintErr(err)
 			this.OrderEmpty(ctx, p, mm, siteConf)
 			return
 		}
@@ -191,7 +191,7 @@ func (this *shoppingC) OrderFinish(ctx *web.Context,
 		}
 
 		if b, siteConf := GetSiteConf(w, p); b {
-			this.App.Template().Execute(w, func(m *map[string]interface{}) {
+			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 				(*m)["partner"] = p
 				(*m)["title"] = "订单成功-" + p.Name
 				(*m)["member"] = mm
@@ -335,9 +335,9 @@ func (this *shoppingC) Cart(ctx *web.Context,
 }
 
 // 购买中转
-func (this *shoppingC) BuyRedirect(ctx *web.Context,
-	p *partner.ValuePartner, mm *member.ValueMember) {
+func (this *shoppingC) Index(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	var mm = this.WebC.GetMember(ctx)
 	if mm == nil {
 		RedirectLoginPage(w, r.RequestURI)
 	} else {
