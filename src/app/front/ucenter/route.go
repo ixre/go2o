@@ -61,7 +61,7 @@ func RegisterRoutes(c gof.App) {
 		mvc.Handle(lc, ctx, true)
 	})
 
-	routes.Add("/", func(ctx *web.Context) {
+	routes.Add("^/$", func(ctx *web.Context) {
 		if m, p, host := chkLogin(ctx.Request); m != nil {
 			mvc.Handle(mc, ctx, true, m, p, host)
 		} else {
