@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>分店管理</title>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0" />
+            <input type="text" field="Name" class="ui-validate" required="true" />
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店地址：</div>
+        <div class="in">
+            <input field="Address" class="ui-validate" required="true" style="width:300px"/>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店电话：</div>
+        <div class="in">
+            <input class="ui-validate" field="Phone" required="true" style="width:300px"/>*多个电话用“，”隔开
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label">状态：</div>
+        <div class="in">
+            <input type="radio" name="State" field="State" value="1" id="State1" checked="checked"/><label for="State1">启用</label>
+            <input type="radio" name="State" field="State" value="0" id="State2"/><label for="State2">停用</label>
+            <input type="radio" name="State" field="State" value="2" id="State3"/><label for="State3">暂停营业</label>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>配送范围：</div>
+        <div class="in">
+            <input class="ui-validate" field="DeliverRadius" required="true" isnumber="true" style="width:30px" value="3"/>&nbsp;公里以内
+            <div class="note">系统会根据配送方圆公里自动匹配门店</div>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>排序：</div>
+        <div class="in">
+            <input class="ui-validate" field="OrderIndex" required="true" isnumber="true" style="width:30px" value="0"/>
+            * 排序数字，越小排列越靠前
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <input type="button" value=" 保存 " id="btn_save" />
+            <input type="reset" value=" 重置 " />
+        </div>
+    </div>
+</div>
+
+    <script src="{{.static_serv}}/assets/js/core_full.js"></script>
+    <script src="{{.static_serv}}/assets/js/export.js"></script>
+    <script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+    
+    <script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('SaveShop', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    $JS.tab.closeAndReresh( '门店管理');
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+    </script>
+</body>
+</html>

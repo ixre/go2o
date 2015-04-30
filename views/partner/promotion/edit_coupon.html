@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>添加优惠券</title>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>优惠券编码：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0" />
+            <input field="Code" value="" class="ui-validate" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>数量：</div>
+        <div class="in">
+            <input class="ui-validate" field="TotalAmount" required="true"
+                   isnumber="true" style="width:30px" value="10"/>&nbsp;张
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>优惠金额(整数)：</div>
+        <div class="in">
+            <input class="ui-validate" field="Fee" required="true"
+                   isnumber="true" style="width:30px" value="0"/>&nbsp;元
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>赠送积分(整数)：</div>
+        <div class="in">
+            <input class="ui-validate" field="Integral" required="true"
+                   isnumber="true" style="width:30px" value="0"/>&nbsp;元
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>折扣(数值)：</div>
+        <div class="in">
+            <input class="ui-validate" field="Discount" required="true"
+                   isnumber="true" style="width:30px" value="100"/>&nbsp;<br />
+            如：9折填写90,不打折填100
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>等级要求：</div>
+        <div class="in">
+            <select field="MinLevel" required="true">
+                <option value="0">一无限制一</option>
+                {{.levelDr}}
+            </select>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>金额限制：</div>
+        <div class="in">
+            <input class="ui-validate" field="MinFee" required="true"
+                   isnumber="true" style="width:30px" value="0"/>&nbsp;元<br />
+            至少达到设置的金额才能使用优惠券。
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>生效日期：</div>
+        <div class="in">
+            <input class="ui-validate" field="BeginTime" id="beginTime" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>过期日期：</div>
+        <div class="in">
+            <input class="ui-validate" field="OverTime" id="overTime" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
+        <div class="in">
+            <input type="radio" name="AllowEnable" field="AllowEnable" value="1" id="state1" checked="checked"/><label for="state1">启用</label>
+            <input type="radio" name="AllowEnable" field="AllowEnable" value="0" id="state2"/><label for="state2">停用</label>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>使用方式：</div>
+        <div class="in">
+            <input type="radio" name="NeedBind" field="NeedBind" value="1" id="NeedBind1" checked="checked"/><label for="NeedBind1">会员绑定</label>
+            <input type="radio" name="NeedBind" field="NeedBind" value="0" id="NeedBind2"/><label for="NeedBind2">自由使用</label>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>描述(50字内)：</div>
+        <div class="in">
+            <textarea field="Description" class="ui-validate tb_normal" length="[0,50]"></textarea>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label">&nbsp;</div>
+        <div class="in">
+            <input type="button" value=" 保存 " id="btn_save" />
+            <input type="reset" value=" 重置 " />
+        </div>
+    </div>
+</div>
+
+    <script src="{{.static_serv}}/assets/js/core_full.js"></script>
+    <script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+    
+    <script>
+    var entity ={{.entity}}||{};
+    entity.BeginTime = unix2str(entity.BeginTime);
+    entity.OverTime = unix2str(entity.OverTime);
+    entity.BeginTime = entity.BeginTime.substring(0,entity.BeginTime.indexOf(' '));
+    entity.OverTime = entity.OverTime.substring(0,entity.OverTime.indexOf(' '));
+    $JS.json.bind('form1', entity);
+
+    var bt= $JS.$('beginTime');
+    var ot = $JS.$('overTime');
+    $JS.calender(bt);
+    $JS.calender(ot);
+    bt.onchange=bt.onblur;
+    ot.onchange= ot.onblur;
+
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            data.BeginTime += ' 00:00:00';
+            data.OverTime += ' 00:00:00';
+            $JS.xhr.jsonPost('SaveCoupon', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    $JS.tab.closeAndReresh('优惠券管理');
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+
+    
+    </script>
+</body>
+</html>
