@@ -33,8 +33,8 @@ func main() {
 	)
 
 	newApp = &core.MainApp{}
-	flag.IntVar(&httpPort, "port", 1002, "web server port")
-	flag.IntVar(&socketPort, "port2", 1001, "socket server port")
+	flag.IntVar(&httpPort, "port", 8091, "web server port")
+	flag.IntVar(&socketPort, "port2", 8003, "socket server port")
 	flag.StringVar(&mode, "mode", "sh", "boot mode.'h'- boot http service,'s'- boot socket service")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
