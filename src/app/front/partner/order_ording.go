@@ -33,7 +33,8 @@ func (this *orderC) setShop(ctx *web.Context,
 		}, "views/partner/order/order_setup_setshop.html")
 }
 
-func (this *orderC) SetShop_post(ctx *web.Context, partnerId int) {
+func (this *orderC) SetShop_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 

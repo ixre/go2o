@@ -10,11 +10,22 @@ package partner
 
 import (
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/front"
 )
 
+var _ mvc.Filter = new(commC)
+
 type commC struct {
+	Base *baseC
 	*front.WebCgi
+}
+
+func (this *commC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *commC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
 }
 
 func (this *mainC) GeoLocation(ctx *web.Context) {

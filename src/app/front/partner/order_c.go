@@ -12,6 +12,7 @@ package partner
 import (
 	"encoding/json"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
@@ -19,10 +20,21 @@ import (
 	"strings"
 )
 
+var _ mvc.Filter = new(orderC)
+
 type orderC struct {
+	Base *baseC
 }
 
-func (this *orderC) List(ctx *web.Context, partnerId int) {
+func (this *orderC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *orderC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
+}
+
+func (this *orderC) List(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(m *map[string]interface{}) {
@@ -30,12 +42,14 @@ func (this *orderC) List(ctx *web.Context, partnerId int) {
 		}, "views/partner/order/order_list.html")
 }
 
-func (this *orderC) Cancel(ctx *web.Context, partnerId int) {
+func (this *orderC) Cancel(ctx *web.Context) {
+	//partnerId := this.Base.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/order/cancel.html")
 
 }
 
-func (this *orderC) Cancel_post(ctx *web.Context, partnerId int) {
+func (this *orderC) Cancel_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	reason := r.FormValue("reason")
@@ -49,7 +63,8 @@ func (this *orderC) Cancel_post(ctx *web.Context, partnerId int) {
 	}
 }
 
-func (this *orderC) View(ctx *web.Context, partnerId int) {
+func (this *orderC) View(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -93,7 +108,8 @@ func (this *orderC) View(ctx *web.Context, partnerId int) {
 		}, "views/partner/order/order_view.html")
 }
 
-func (this *orderC) Setup(ctx *web.Context, partnerId int) {
+func (this *orderC) Setup(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -109,7 +125,8 @@ func (this *orderC) Setup(ctx *web.Context, partnerId int) {
 	}
 }
 
-func (this *orderC) OrderSetup_post(ctx *web.Context, partnerId int) {
+func (this *orderC) OrderSetup_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
@@ -120,7 +137,8 @@ func (this *orderC) OrderSetup_post(ctx *web.Context, partnerId int) {
 	}
 }
 
-func (this *orderC) Payment(ctx *web.Context, partnerId int) {
+func (this *orderC) Payment(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -144,7 +162,8 @@ func (this *orderC) Payment(ctx *web.Context, partnerId int) {
 	}
 }
 
-func (this *orderC) Payment_post(ctx *web.Context, partnerId int) {
+func (this *orderC) Payment_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")

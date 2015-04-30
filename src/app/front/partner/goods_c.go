@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
@@ -19,8 +20,17 @@ import (
 	"strconv"
 )
 
+var _ mvc.Filter = new(goodsC)
+
 type goodsC struct {
-	gof.App
+	Base *baseC
+}
+
+func (this *goodsC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *goodsC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
 }
 
 //食物列表
@@ -42,9 +52,10 @@ func (this *goodsC) List(ctx *web.Context) {
 		nil)
 }
 
-func (this *goodsC) Create(ctx *web.Context, ptId int) {
-	shopChks := cache.GetShopCheckboxs(ptId, "")
-	cateOpts := cache.GetDropOptionsOfCategory(ptId)
+func (this *goodsC) Create(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
+	shopChks := cache.GetShopCheckboxs(partnerId, "")
+	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
 	ctx.App.Template().Render(ctx.ResponseWriter,
 		"views/partner/goods/create_goods.html",
@@ -54,7 +65,8 @@ func (this *goodsC) Create(ctx *web.Context, ptId int) {
 		})
 }
 
-func (this *goodsC) Edit(ctx *web.Context, partnerId int) {
+func (this *goodsC) Edit(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var e *sale.ValueGoods
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -77,7 +89,8 @@ func (this *goodsC) Edit(ctx *web.Context, partnerId int) {
 		})
 }
 
-func (this *goodsC) SaveItem_post(ctx *web.Context, partnerId int) {
+func (this *goodsC) SaveItem_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -95,7 +108,8 @@ func (this *goodsC) SaveItem_post(ctx *web.Context, partnerId int) {
 	w.Write(result.Marshal())
 }
 
-func (this *goodsC) Del_post(ctx *web.Context, partnerId int) {
+func (this *goodsC) Del_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 

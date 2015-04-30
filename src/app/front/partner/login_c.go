@@ -11,7 +11,8 @@ package partner
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/app/session"
+	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/service/dps"
 )
 
 type loginC struct {
@@ -25,5 +26,39 @@ func (this *loginC) Login(ctx *web.Context) {
 func (this *loginC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
-	session.GetLSession().WebValidLogin(w, r.Form.Get("uid"), r.Form.Get("pwd"))
+	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
+	pt, result, message := this.ValidLogin(usr, pwd)
+
+	if result {
+		ctx.Session().Set("partner_id", pt.Id)
+		if err := ctx.Session().Save(); err != nil {
+			result = false
+			message = err.Error()
+		}
+	}
+	web.Seria2json(w, result, message, nil)
+}
+
+//验证登陆
+func (pb *loginC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool, string) {
+	var message string
+	var result bool
+	var pt *partner.ValuePartner
+	var err error
+
+	id := dps.PartnerService.Verify(usr, pwd)
+
+	if id == -1 {
+		result = false
+		message = "用户或密码不正确！"
+	} else {
+		pt, err = dps.PartnerService.GetPartner(id)
+		if err != nil {
+			message = err.Error()
+			result = false
+		} else {
+			result = true
+		}
+	}
+	return pt, result, message
 }

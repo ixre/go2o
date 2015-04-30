@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/service/dps"
 	"html/template"
@@ -20,18 +21,29 @@ import (
 	"time"
 )
 
+var _ mvc.Filter = new(promC)
+
 type promC struct {
-	gof.App
+	Base *baseC
 }
 
-func (this *promC) CreateCoupon(ctx *web.Context, partnerId int) {
+func (this *promC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *promC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
+}
+
+func (this *promC) CreateCoupon(ctx *web.Context) {
+	//partnerId := this.Base.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(m *map[string]interface{}) {
 		},
 		"views/partner/promotion/create_coupon.html")
 }
 
-func (this *promC) EditCoupon(ctx *web.Context, partnerId int) {
+func (this *promC) EditCoupon(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
@@ -45,7 +57,8 @@ func (this *promC) EditCoupon(ctx *web.Context, partnerId int) {
 }
 
 //　绑定优惠券操作页
-func (this *promC) BindCoupon(ctx *web.Context, partnerId int) {
+func (this *promC) BindCoupon(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
@@ -56,7 +69,8 @@ func (this *promC) BindCoupon(ctx *web.Context, partnerId int) {
 		"views/partner/promotion/bind_coupon.html")
 }
 
-func (this *promC) BindCoupon_post(ctx *web.Context, partnerId int) {
+func (this *promC) BindCoupon_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -79,7 +93,8 @@ func (this *promC) BindCoupon_post(ctx *web.Context, partnerId int) {
 	w.Write(result.Marshal())
 }
 
-func (this *promC) SaveCoupon_post(ctx *web.Context, partnerId int) {
+func (this *promC) SaveCoupon_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 
 	var result gof.JsonResult
@@ -103,7 +118,8 @@ func (this *promC) SaveCoupon_post(ctx *web.Context, partnerId int) {
 	w.Write(result.Marshal())
 }
 
-func (this *promC) Coupon(ctx *web.Context, partnerId int) {
+func (this *promC) Coupon(ctx *web.Context) {
+	//partnerId := this.Base.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(m *map[string]interface{}) {
 

@@ -31,7 +31,7 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 //================== 导出控制器 ==============//
 
 // 获取导出数据
-func GetExportData(ctx *web.Context, ptId int) {
+func GetExportData(ctx *web.Context, partnerId int) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	query := r.URL.Query()
 	r.ParseForm()
@@ -44,7 +44,7 @@ func GetExportData(ctx *web.Context, ptId int) {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
 
-		parameter.Parameters["partnerId"] = strconv.Itoa(ptId)
+		parameter.Parameters["partnerId"] = strconv.Itoa(partnerId)
 
 		if page != "" {
 			parameter.Parameters["pageIndex"] = page

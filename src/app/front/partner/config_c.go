@@ -10,19 +10,33 @@ package partner
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"time"
 )
 
+var _ mvc.Filter = new(configC)
+
 type configC struct {
+	Base *baseC
+}
+
+func (this *configC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *configC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
 }
 
 //资料配置
-func (this *configC) Profile(ctx *web.Context, partnerId int) {
+func (this *configC) Profile(ctx *web.Context) {
+
+	partnerId := this.Base.GetPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
 	p.Secret = ""
@@ -37,7 +51,8 @@ func (this *configC) Profile(ctx *web.Context, partnerId int) {
 		"views/partner/conf/profile.html")
 }
 
-func (this *configC) Profile_post(ctx *web.Context, partnerId int) {
+func (this *configC) Profile_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -67,7 +82,9 @@ func (this *configC) Profile_post(ctx *web.Context, partnerId int) {
 }
 
 //站点配置
-func (this *configC) SiteConf(ctx *web.Context, partnerId int) {
+func (this *configC) SiteConf(ctx *web.Context) {
+	fmt.Println("-----------")
+	partnerId := this.Base.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
 
@@ -78,7 +95,8 @@ func (this *configC) SiteConf(ctx *web.Context, partnerId int) {
 		"views/partner/conf/site_conf.html")
 }
 
-func (this *configC) SiteConf_post(ctx *web.Context, partnerId int) {
+func (this *configC) SiteConf_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -102,7 +120,8 @@ func (this *configC) SiteConf_post(ctx *web.Context, partnerId int) {
 }
 
 //销售配置
-func (this *configC) SaleConf(ctx *web.Context, partnerId int) {
+func (this *configC) SaleConf(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
 
@@ -113,7 +132,8 @@ func (this *configC) SaleConf(ctx *web.Context, partnerId int) {
 		"views/partner/conf/sale_conf.html")
 }
 
-func (this *configC) SaleConf_post(ctx *web.Context, partnerId int) {
+func (this *configC) SaleConf_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()

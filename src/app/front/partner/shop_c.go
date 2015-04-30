@@ -15,15 +15,24 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
 )
 
-//==========================  后台逻辑 =============================//
+var _ mvc.Filter = new(shopC)
+
 type shopC struct {
-	gof.App
+	Base *baseC
+}
+
+func (this *shopC) Requesting(ctx *web.Context) bool {
+	return this.Base.Requesting(ctx)
+}
+func (this *shopC) RequestEnd(ctx *web.Context) {
+	this.Base.RequestEnd(ctx)
 }
 
 func (this *shopC) ShopList(ctx *web.Context) {
@@ -40,7 +49,8 @@ func (this *shopC) Create(ctx *web.Context) {
 }
 
 //修改门店信息
-func (this *shopC) Modify(ctx *web.Context, partnerId int) {
+func (this *shopC) Modify(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
@@ -54,7 +64,8 @@ func (this *shopC) Modify(ctx *web.Context, partnerId int) {
 }
 
 //修改门店信息
-func (this *shopC) SaveShop_post(ctx *web.Context, partnerId int) {
+func (this *shopC) SaveShop_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -72,7 +83,8 @@ func (this *shopC) SaveShop_post(ctx *web.Context, partnerId int) {
 	w.Write(result.Marshal())
 }
 
-func (this *shopC) Del_post(ctx *web.Context, partnerId int) {
+func (this *shopC) Del_post(ctx *web.Context) {
+	partnerId := this.Base.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))
