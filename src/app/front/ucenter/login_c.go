@@ -23,27 +23,24 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Login(ctx *web.Context) {
-    fmt.Println("???????KKKKKKK")
 	ctx.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
 }
 func (this *loginC) Login_post(ctx *web.Context) {
-    fmt.Println("*******");
-	r, w := ctx.Request, ctx.ResponseWriter
-	r.ParseForm()
-	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b, t, msg := goclient.Member.Login(usr, pwd)
-	if !b {
-		w.Write([]byte("{result:false,message:'" + msg + "'}"))
-	} else {
-		cookie := &http.Cookie{
-			Name:    "ms_token",
-			Expires: time.Now().Add(time.Hour * 48),
-			Value:   t,
-			Path:    "/",
+		r, w := ctx.Request, ctx.ResponseWriter
+		r.ParseForm()
+		usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
+		result,_ := goclient.Member.Login(usr, pwd)
+		if !result.Result {
+			w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
+		} else {
+			cookie := &http.Cookie{
+				Name:    "ms_token",
+				Expires: time.Now().Add(time.Hour * 48),
+				Value:   result.Token,
+			}
+			http.SetCookie(w, cookie)
+			w.Write([]byte("{result:true}"))
 		}
-		http.SetCookie(w, cookie)
-		w.Write([]byte("{result:true}"))
-	}
 }
 
 //从partner登录过来的信息

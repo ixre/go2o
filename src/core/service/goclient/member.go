@@ -14,28 +14,19 @@ import (
 	"github.com/atnet/gof/net/jsv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 )
 
 type memberClient struct {
 	conn *jsv.TCPConn
 }
 
-func (this *memberClient) Login(usr, pwd string) (b bool, token string, msg string) {
-	var result jsv.Result
+func (this *memberClient) Login(usr, pwd string)(*dto.MemberLoginResult,error) {
+	var result = new(dto.MemberLoginResult)
 	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"usr":"%s","pwd":"%s"}>>Member.Login`,
 		usr, pwd)), &result, 128)
-	if err != nil {
-		return false, "", err.Error()
-	}
-
-	jsv.Println(result.Data)
-	if result.Result {
-		return result.Result, result.Data.(string), result.Message
-	} else {
-		return result.Result, "", result.Message
-		return result.Result, "", result.Message
-	}
+	return result,err
 }
 
 func (this *memberClient) Verify(memberId int, token string) (r jsv.Result) {

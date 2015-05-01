@@ -27,11 +27,12 @@ func (this *websocketC) Login(ctx *web.Context) {
 
 func (this *websocketC) Test(ctx *web.Context) {
 	w := ctx.ResponseWriter
-	b, t, msg := goclient.Member.Login("jarryliu", "123000")
-	if b {
-		w.Write([]byte("[Login]:Sucessfull." + t))
+	result,_ :=  goclient.Member.Login("jarryliu", "123000")
+
+	if result.Result {
+		w.Write([]byte("[Login]:Sucessfull." + result.Token))
 	} else {
-		w.Write([]byte("[Login]:Failed." + msg))
+		w.Write([]byte("[Login]:Failed." + result.Message))
 	}
 }
 

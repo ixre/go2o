@@ -92,28 +92,14 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b, t, msg := goclient.Member.Login(usr, pwd)
-	if !b {
-		w.Write([]byte("{result:false,message:'" + msg + "'}"))
-	} else {
-
-		//todo: refactor memberId and token string.
-		arr := strings.Split(t, "$")
-		id, _ := strconv.Atoi(arr[0])
-		if m,err := goclient.Member.GetMember(id,t);err == nil {
-			ctx.Session().Set("member", m)
-			ctx.Session().Save()
-		}
-
-		cookie := &http.Cookie{
-			Name:    "ms_token",
-			Expires: time.Now().Add(time.Hour * 48),
-			Path:    "/",
-			Value:   t,
-		}
-		http.SetCookie(w, cookie)
+	result,_ := goclient.Member.Login(usr, pwd)
+	if result.Result {
+		ctx.Session().Set("member", result.Member)
+		ctx.Session().Save()
+		fmt.Println("+=====",result.Member)
 		w.Write([]byte("{result:true}"))
 	}
+	w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
 }
 
 func (this *mainC) Register(ctx *web.Context, p *partner.ValuePartner) {
