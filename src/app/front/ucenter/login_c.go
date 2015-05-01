@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/service/goclient"
 	"net/http"
 	"time"
+    "fmt"
 )
 
 type loginC struct {
@@ -22,9 +23,11 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Login(ctx *web.Context) {
+    fmt.Println("???????KKKKKKK")
 	ctx.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
 }
 func (this *loginC) Login_post(ctx *web.Context) {
+    fmt.Println("*******");
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
@@ -45,6 +48,7 @@ func (this *loginC) Login_post(ctx *web.Context) {
 
 //从partner登录过来的信息
 func (this *loginC) Partner_connect(ctx *web.Context) {
+    fmt.Println("***22****");
 	r, w := ctx.Request, ctx.ResponseWriter
 	token := r.URL.Query().Get("token")
 

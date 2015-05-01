@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	routes *web.RouteMap = new(web.RouteMap)
+	routes *mvc.Route = mvc.NewRoute(nil)
 )
 
 //处理请求
@@ -41,33 +41,39 @@ func RegisterRoutes(c gof.App) {
 	ac := &accountC{App: c}
 	lc := &loginC{App: c}
 
-	routes.Add("^/order/", func(ctx *web.Context) {
-		if m, p, host := chkLogin(ctx.Request); m != nil {
-			mvc.Handle(oc, ctx, true, m, p, host)
-		} else {
-			redirect(ctx)
-		}
-	})
+    routes.RegisterController("^/order/",oc)
+    routes.RegisterController("^/account/",ac)
+    routes.RegisterController("^/login",lc)
+    routes.RegisterController("/",mc)
 
-	routes.Add("^/account/", func(ctx *web.Context) {
-		if m, p, host := chkLogin(ctx.Request); m != nil {
-			mvc.Handle(ac, ctx, true, m, p, host)
-		} else {
-			redirect(ctx)
-		}
-	})
 
-	routes.Add("^/login", func(ctx *web.Context) {
-		mvc.Handle(lc, ctx, true)
-	})
-
-	routes.Add("/", func(ctx *web.Context) {
-		if m, p, host := chkLogin(ctx.Request); m != nil {
-			mvc.Handle(mc, ctx, true, m, p, host)
-		} else {
-			redirect(ctx)
-		}
-	})
+//	routes.Add("^/order/", func(ctx *web.Context) {
+//		if m, p, host := chkLogin(ctx.Request); m != nil {
+//			mvc.Handle(oc, ctx, true, m, p, host)
+//		} else {
+//			redirect(ctx)
+//		}
+//	})
+//
+//	routes.Add("^/account/", func(ctx *web.Context) {
+//		if m, p, host := chkLogin(ctx.Request); m != nil {
+//			mvc.Handle(ac, ctx, true, m, p, host)
+//		} else {
+//			redirect(ctx)
+//		}
+//	})
+//
+//	routes.Add("^/login", func(ctx *web.Context) {
+//		mvc.Handle(lc, ctx, true)
+//	})
+//
+//	routes.Add("/", func(ctx *web.Context) {
+//		if m, p, host := chkLogin(ctx.Request); m != nil {
+//			mvc.Handle(mc, ctx, true, m, p, host)
+//		} else {
+//			redirect(ctx)
+//		}
+//	})
 }
 
 func chkLogin(r *http.Request) (m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
