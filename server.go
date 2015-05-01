@@ -18,11 +18,13 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"fmt"
 )
 
 func main() {
 	var (
 		ch         chan bool = make(chan bool)
+		confFile	string
 		httpPort   int
 		socketPort int
 		mode       string //启动模式: h开启http,s开启socket,a开启所有
@@ -32,13 +34,13 @@ func main() {
 		newApp     gof.App
 	)
 
-	newApp = &core.MainApp{}
-	flag.IntVar(&httpPort, "port", 8091, "web server port")
-	flag.IntVar(&socketPort, "port2", 8003, "socket server port")
+	flag.IntVar(&httpPort, "port", 10022, "web server port")
+	flag.IntVar(&socketPort, "port2", 1001, "socket server port")
 	flag.StringVar(&mode, "mode", "sh", "boot mode.'h'- boot http service,'s'- boot socket service")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
+	flag.StringVar(&confFile,"conf","app.conf","")
 	flag.Parse()
 
 	if help {
@@ -48,8 +50,17 @@ func main() {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	newApp = core.NewMainApp(confFile)
 	if gcx, ok := newApp.(*core.MainApp); !ok || !gcx.Init(debug, trace) {
 		os.Exit(1)
+	}
+
+	fmt.Println(newApp.Config().GetInt("server_port"),"------")
+	if v := newApp.Config().GetInt("server_port");v!= 0{
+		httpPort = v
+	}
+	if v := newApp.Config().GetInt("socket_post");v!= 0{
+		socketPort = v
 	}
 
 	core.SetGlobalApp(newApp)
