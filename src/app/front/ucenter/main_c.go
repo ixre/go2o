@@ -25,15 +25,18 @@ import (
 )
 
 type mainC struct {
-	gof.App
+	*baseC
 }
 
 func (this *mainC) Login(ctx *web.Context) {
 	ctx.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
 }
 
-func (this *mainC) Index(ctx *web.Context, mm *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *mainC) Index(ctx *web.Context) {
+	mm := this.baseC.GetMember(ctx)
+	p := this.baseC.GetPartner(ctx)
+	conf,_ := this.baseC.GetSiteConf(p.Id,p.Secret)
+
 	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
 	js, _ := json.Marshal(mm)
 	info := make(map[string]string)

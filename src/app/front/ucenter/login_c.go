@@ -15,6 +15,9 @@ import (
 	"net/http"
 	"time"
 	"strconv"
+	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
+	"fmt"
 )
 
 type loginC struct {
@@ -47,27 +50,35 @@ func (this *loginC) Login_post(ctx *web.Context) {
 func (this *loginC) Partner_connect(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	sessionId := r.URL.Query().Get("sessionId")
-
+	var m *member.ValueMember
+	var err error
 
 	if sessionId == "" {
 		// 第三方连接，传入memberId 和 token
 		memberId, err := strconv.Atoi(r.URL.Query().Get("mid"))
 		token := r.URL.Query().Get("token")
 		if err == nil && token != "" {
-			m, err := goclient.Member.GetMember(memberId, token)
-			if err == nil || m!= nil {
-				ctx.Session().Set("member", m)
-				ctx.Session().Save()
-			}
-			w.Write([]byte("<script>location.replace('/')</script>"))
+			m, err = goclient.Member.GetMember(memberId, token)
+			ctx.Session().Set("member", m)
 		}
 	}else{
 		// 从统一平台连接过来（标准版商户PC前端)
 		ctx.Session().UseInstead(sessionId)
-		w.Write([]byte("<script>location.replace('/')</script>"))
+		m = ctx.Session().Get("member").(*member.ValueMember)
 	}
 
-	w.Write([]byte("<script>location.replace('/login')</script>"))
+	if err == nil || m!= nil {
+		fmt.Println(m)
+		var p *partner.ValuePartner
+		p, err = goclient.Member.GetBindPartner(m.Id, m.LoginToken)
+		if err == nil {
+			ctx.Session().Set("member:rel_partner",p)
+			ctx.Session().Save()
+			w.Write([]byte("<script>location.replace('/')</script>"))
+		}
+	}else {
+		w.Write([]byte("<script>location.replace('/login')</script>"))
+	}
 }
 
 //从partner端退出

@@ -39,7 +39,7 @@ func (this *WebC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 	return dps.PartnerService.GetPartner(this.GetPartnerId(ctx))
 }
 
-//获取会员
+// 获取会员
 func (this *WebC) GetMember(ctx *web.Context) *member.ValueMember{
 	memberIdObj := ctx.Session().Get("member")
 	if memberIdObj != nil{
