@@ -29,7 +29,7 @@ type accountC struct {
 func (this *accountC) IncomeLog(ctx *web.Context,
 	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp
 		v["conf"] = conf
 		v["record"] = 15
@@ -71,7 +71,7 @@ func (this *accountC) ApplyCash(ctx *web.Context,
 	}
 
 	js, _ := json.Marshal(bank)
-	this.App.Template().Execute(w, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 		v := *m
 		v["conf"] = conf
 		v["record"] = 15
@@ -109,7 +109,7 @@ func (this *accountC) IntegralExchange(ctx *web.Context,
 
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.LoginToken)
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m
 		v["conf"] = conf
 		v["record"] = 15

@@ -28,7 +28,8 @@ func Verify(m *jsv.Args) (memberId int, err error) {
 	}
 	rds := Redis().Get()
 	defer rds.Close()
-	sessKey := fmt.Sprintf("member$%d_session_key", memberId)
+
+	sessKey := fmt.Sprintf("dps:session:m%d",memberId)
 	servToken, err := redis.String(rds.Do("GET", sessKey))
 	if err != nil {
 		return memberId, member.ErrInvalidSession

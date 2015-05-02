@@ -22,6 +22,7 @@ var _ gof.App = new(MainApp)
 // implement of web.Application
 type MainApp struct {
 	Loaded       bool
+	_confFilePath    string
 	_config      *gof.Config
 	_redis       *redis.Pool
 	_dbConnector db.Connector
@@ -29,6 +30,12 @@ type MainApp struct {
 	_template    *gof.Template
 	_logger      log.ILogger
 	_storage     gof.Storage
+}
+
+func NewMainApp(confPath string)*MainApp{
+	return &MainApp{
+		_confFilePath : confPath,
+	}
 }
 
 func (this *MainApp) Db() db.Connector {
@@ -54,7 +61,7 @@ func (this *MainApp) Template() *gof.Template {
 
 func (this *MainApp) Config() *gof.Config {
 	if this._config == nil {
-		if cfg, err := gof.LoadConfig("app.conf"); err == nil {
+		if cfg, err := gof.LoadConfig(this._confFilePath); err == nil {
 			this._config = cfg
 			cfg.Set("exp_fee_bit", float64(1.5))
 		} else {

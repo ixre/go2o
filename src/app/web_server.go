@@ -54,7 +54,7 @@ func getInterceptor(a gof.App) *web.Interceptor {
 }
 
 // 获取执行方法
-func getHttpExecFunc() web.HttpContextFunc {
+func getHttpExecFunc() web.ContextFunc {
 	return func(ctx *web.Context) {
 
 		r, _ := ctx.Request, ctx.ResponseWriter

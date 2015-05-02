@@ -41,14 +41,6 @@ func RegisterRoutes() {
 		}
 	})
 
-	//	register("shop")
-	//	register("goods")
-	//	register("comm")
-	//	register("order")
-	//	register("category")
-	//	register("conf")
-	//	register("prom")
-
 	routes.Add("^/login$", func(ctx *web.Context) {
 		mvc.Handle(lc, ctx, true)
 	})
@@ -62,14 +54,3 @@ func RegisterRoutes() {
 	})
 
 }
-
-//
-//func register(name string){
-//	routes.Add("^/"+name+"/*", func(ctx *web.Context) {
-//		if b, id := chkLogin(ctx.Request); b {
-//			mvc.Handle(routes.GetController(name), ctx, true, id)
-//		} else {
-//			redirect(ctx)
-//		}
-//	})
-//}

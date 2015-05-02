@@ -11,7 +11,6 @@ package www
 import (
 	"bytes"
 	"fmt"
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/app/cache/apicache"
 	"go2o/src/core/domain/interface/member"
@@ -20,14 +19,15 @@ import (
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"html/template"
-	"net/http"
 	"strconv"
 	"strings"
-	"time"
+	"go2o/src/app/front"
 )
 
+
+//todo: fiter valid partner is nil
 type mainC struct {
-	gof.App
+	front.WebC
 }
 
 // 处理跳转
@@ -42,18 +42,23 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 	return false
 }
 
-func (this *mainC) Index(ctx *web.Context, p *partner.ValuePartner) {
+func (this *mainC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
+	 p, err:= this.WebC.GetPartner(ctx)
+	 if err != nil{
+		ctx.ResponseWriter.Write([]byte(`<html><head><title></title></head>` +
+		`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
+		 return
+	}
 	if this.HandleIndexGo(ctx) {
 		return
 	}
-
 	if b, siteConf := GetSiteConf(w, p); b {
-		shops := apicache.GetShops(this.App, p.Id, p.Secret)
+		shops := apicache.GetShops(ctx.App, p.Id, p.Secret)
 		if shops == nil {
 			shops = []byte("{}")
 		}
-		this.App.Template().Execute(w, func(m *map[string]interface{}) {
+		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["conf"] = siteConf
 			(*m)["title"] = siteConf.IndexTitle
@@ -65,8 +70,9 @@ func (this *mainC) Index(ctx *web.Context, p *partner.ValuePartner) {
 	}
 }
 
-func (this *mainC) Login(ctx *web.Context, p *partner.ValuePartner, mm *member.ValueMember) {
+func (this *mainC) Login(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	p,_ := this.WebC.GetPartner(ctx)
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
 	if len(returnUrl) == 0 {
@@ -74,11 +80,10 @@ func (this *mainC) Login(ctx *web.Context, p *partner.ValuePartner, mm *member.V
 	}
 
 	if b, siteConf := GetSiteConf(w, p); b {
-		this.App.Template().Execute(w, func(m *map[string]interface{}) {
+		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			mv := *m
 			mv["partner"] = p
 			mv["title"] = "会员登录－" + siteConf.SubTitle
-			mv["member"] = mm
 			mv["conf"] = siteConf
 			mv["tipStyle"] = tipStyle
 		},
@@ -92,25 +97,21 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b, t, msg := goclient.Member.Login(usr, pwd)
-	if !b {
-		w.Write([]byte("{result:false,message:'" + msg + "'}"))
-	} else {
-		cookie := &http.Cookie{
-			Name:    "ms_token",
-			Expires: time.Now().Add(time.Hour * 48),
-			Path:    "/",
-			Value:   t,
-		}
-		http.SetCookie(w, cookie)
+	result,_ := goclient.Member.Login(usr, pwd)
+	if result.Result {
+		result.Member.LoginToken = result.Token
+		ctx.Session().Set("member", result.Member)
+		ctx.Session().Save()
 		w.Write([]byte("{result:true}"))
+		return
 	}
+	w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
 }
 
 func (this *mainC) Register(ctx *web.Context, p *partner.ValuePartner) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	if b, siteConf := GetSiteConf(w, p); b {
-		this.App.Template().Execute(w, func(m *map[string]interface{}) {
+		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["title"] = "会员注册－" + siteConf.SubTitle
 			(*m)["conf"] = siteConf
@@ -155,44 +156,43 @@ func (this *mainC) PostRegistInfo_post(ctx *web.Context, p *partner.ValuePartner
 }
 
 //跳转到会员中心
-func (this *mainC) Member(ctx *web.Context, p *partner.ValuePartner, mm *member.ValueMember) {
-	r, w := ctx.Request, ctx.ResponseWriter
+func (this *mainC) Member(ctx *web.Context) {
+	m := this.WebC.GetMember(ctx)
 	var location string
-	if mm == nil {
+	if m == nil {
 		location = "/login?return_url=/member"
 	} else {
-		cookie, _ := r.Cookie("ms_token")
-		location = fmt.Sprintf("http://%s.%s/login/partner_connect?token=%s",
+		location = fmt.Sprintf("http://%s.%s/login/partner_connect?sessionId=%s&mid=%d1&token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
-			this.App.Config().GetString(variable.ServerDomain),
-			cookie.Value,
+			ctx.App.Config().GetString(variable.ServerDomain),
+			ctx.Session().GetSessionId(),
+			m.Id,
+			m.LoginToken,
 		)
 	}
-	w.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
+	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
 }
 
 //退出
 func (this *mainC) Logout(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	cookie, err := r.Cookie("ms_token")
-	if err == nil {
-		cookie.Expires = time.Now().Add(time.Hour * -48)
-		http.SetCookie(w, cookie)
-	}
-	w.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.Session().Set("member",nil)
+	ctx.Session().Save()
+	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,
 		variable.DOMAIN_MEMBER_PREFIX,
-		this.App.Config().GetString(variable.ServerDomain),
+		ctx.App.Config().GetString(variable.ServerDomain),
 	)))
 }
 
-func (this *mainC) List(ctx *web.Context, p *partner.ValuePartner, mm *member.ValueMember) {
+func (this *mainC) List(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
+	p, _ := this.WebC.GetPartner(ctx)
+	mm := this.WebC.GetMember(ctx)
 	if b, siteConf := GetSiteConf(w, p); b {
-		categories := apicache.GetCategories(this.App, p.Id, p.Secret)
-		this.App.Template().Execute(w, func(m *map[string]interface{}) {
+		categories := apicache.GetCategories(ctx.App, p.Id, p.Secret)
+		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["title"] = "在线订餐-" + p.Name
 			(*m)["categories"] = template.HTML(categories)
@@ -205,8 +205,9 @@ func (this *mainC) List(ctx *web.Context, p *partner.ValuePartner, mm *member.Va
 	}
 }
 
-func (this *mainC) GetList(ctx *web.Context, p *partner.ValuePartner) {
+func (this *mainC) GetList(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	p, _ := this.WebC.GetPartner(ctx)
 	const getNum int = -1 //-1表示全部
 	categoryId, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {

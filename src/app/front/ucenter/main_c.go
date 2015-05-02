@@ -25,15 +25,18 @@ import (
 )
 
 type mainC struct {
-	gof.App
+	*baseC
 }
 
 func (this *mainC) Login(ctx *web.Context) {
-	this.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
+	ctx.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
 }
 
-func (this *mainC) Index(ctx *web.Context, mm *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *mainC) Index(ctx *web.Context) {
+	mm := this.baseC.GetMember(ctx)
+	p := this.baseC.GetPartner(ctx)
+	conf,_ := this.baseC.GetSiteConf(p.Id,p.Secret)
+
 	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
 	js, _ := json.Marshal(mm)
 	info := make(map[string]string)
@@ -45,7 +48,7 @@ func (this *mainC) Index(ctx *web.Context, mm *member.ValueMember,
 		nextLv = &lv
 	}
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		mv := *m
 		mv["level"] = lv
 		mv["nLevel"] = nextLv
@@ -84,7 +87,7 @@ func (this *mainC) Profile(ctx *web.Context, mm *member.ValueMember,
 	p *partner.ValuePartner, conf *partner.SiteConf) {
 	js, _ := json.Marshal(mm)
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m
 		v["partner"] = p
 		v["conf"] = conf
@@ -101,7 +104,7 @@ func (this *mainC) Profile(ctx *web.Context, mm *member.ValueMember,
 func (this *mainC) Pwd(ctx *web.Context, mm *member.ValueMember,
 	p *partner.ValuePartner, conf *partner.SiteConf) {
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m
 		v["partner"] = p
 		v["conf"] = conf
@@ -156,7 +159,7 @@ func (this *mainC) Profile_post(ctx *web.Context, mm *member.ValueMember) {
 func (this *mainC) Deliver(ctx *web.Context,
 	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
 
-	this.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp
 		v["partner"] = p
 		v["conf"] = conf

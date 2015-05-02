@@ -19,6 +19,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/src/core/dto"
 )
 
 type Member struct {
@@ -26,21 +27,24 @@ type Member struct {
 }
 
 //登录验证
-func (this *Member) Login(m *jsv.Args, r *jsv.Result) error {
+func (this *Member) Login(m *jsv.Args, r *dto.MemberLoginResult) error {
 	usr, pwd := (*m)["usr"].(string), (*m)["pwd"].(string)
 	b, e, err := dps.MemberService.Login(usr, pwd)
 	r.Result = b
-	if !b {
-		r.Message = err.Error()
-	} else {
+	if b {
 		md5 := strings.ToLower(crypto.Md5([]byte(time.Now().String())))
 		rds := Redis().Get()
-		rds.Do("SETEX", fmt.Sprintf("member$%d_session_key", e.Id), 3600*300, md5)
-		r.Data = fmt.Sprintf("%d$%s", e.Id, md5)
+		rds.Do("SETEX", fmt.Sprintf("dps:session:m%d", e.Id), 3600*3, md5)
+
 		if jsv.Context.Debug() {
 			jsv.Printf("[Member][Login]%d -- %s", e.Id, md5)
 		}
 		rds.Close()
+		r.Token = md5
+		r.Member = e
+	}
+	if err != nil {
+		r.Message = err.Error()
 	}
 	return nil
 }
@@ -57,15 +61,13 @@ func (this *Member) Verify(m *jsv.Args, r *jsv.Result) error {
 
 func (this *Member) GetMember(m *jsv.Args, r *member.ValueMember) error {
 	memberId, err := Verify(m)
-	if err != nil {
-		return err
+	if err == nil {
+		e := dps.MemberService.GetMember(memberId)
+		if e != nil {
+			*r = *e
+		}
 	}
-
-	e := dps.MemberService.GetMember(memberId)
-	if e != nil {
-		*r = *e
-	}
-	return nil
+	return err
 }
 
 func (this *Member) GetMemberAccount(m *jsv.Args, r *jsv.Result) error {
