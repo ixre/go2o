@@ -124,7 +124,7 @@
             var d = $JS.json.toObject('form-deliver');
             $JS.xhr.jsonPost('/shopping/saveDeliverAddr',d,function(json){
                if(json.result){
-                    loadDeliver('deliver-panel');
+                   selectDeliver();
                }else{
                   alert(json.message);
                }

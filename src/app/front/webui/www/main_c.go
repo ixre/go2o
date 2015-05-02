@@ -19,10 +19,8 @@ import (
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"html/template"
-	"net/http"
 	"strconv"
 	"strings"
-	"time"
 	"go2o/src/app/front"
 )
 
@@ -94,10 +92,12 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	result,_ := goclient.Member.Login(usr, pwd)
 	if result.Result {
+		result.Member.LoginToken = result.Token
+		fmt.Println(result.Token,"------")
 		ctx.Session().Set("member", result.Member)
 		ctx.Session().Save()
-		fmt.Println("+=====",result.Member)
 		w.Write([]byte("{result:true}"))
+		return
 	}
 	w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
 }
@@ -168,13 +168,9 @@ func (this *mainC) Member(ctx *web.Context, p *partner.ValuePartner, mm *member.
 
 //退出
 func (this *mainC) Logout(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	cookie, err := r.Cookie("ms_token")
-	if err == nil {
-		cookie.Expires = time.Now().Add(time.Hour * -48)
-		http.SetCookie(w, cookie)
-	}
-	w.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.Session().Set("member",nil)
+	ctx.Session().Save()
+	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,

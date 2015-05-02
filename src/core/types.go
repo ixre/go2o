@@ -1,0 +1,19 @@
+/**
+ * Copyright 2015 @ S1N1 Team.
+ * name : types.go
+ * author : jarryliu
+ * date : -- :
+ * description :
+ * history :
+ */
+package core
+
+import (
+    "encoding/gob"
+    "go2o/src/core/domain/interface/member"
+)
+
+// 注册序列号类型
+func RegisterTypes(){
+    gob.Register(&member.ValueMember{})
+}

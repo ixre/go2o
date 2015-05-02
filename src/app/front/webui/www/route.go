@@ -43,6 +43,7 @@ func RegisterRoutes(c gof.App) {
 	pc := &paymentC{}
 
 	routes.RegisterController("buy",sp)
+	routes.RegisterController("shopping",sp)
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
@@ -84,7 +85,7 @@ func RegisterRoutes(c gof.App) {
 	})
 
 
-	routes.Add("^/(list|getList|login|register|validUser|PostRegistInfo)/*$", func(ctx *web.Context) {
+	routes.Add("^/(list|getList|login|logout|register|validUser|PostRegistInfo)/*$", func(ctx *web.Context) {
 		mvc.Handle(mc, ctx, true)
 	})
 
@@ -107,36 +108,28 @@ func RegisterRoutes(c gof.App) {
 	//		}
 	//	})
 
-	routes.Add("^/buy/confirm$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			sp.OrderConfirm(ctx, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
 
-	routes.Add("^/buy/apply/coupon$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			if r.Method == "POST" {
-				sp.ApplyCoupon_post(ctx, p, m)
-			}
-		} else {
-			handleError(w, err)
-		}
-	})
+//	routes.Add("^/buy/appy_coupon$", func(ctx *web.Context) {
+//		r, w := ctx.Request, ctx.ResponseWriter
+//		if p, err, m := getPartner(r); err == nil {
+//			if r.Method == "POST" {
+//				sp.ApplyCoupon_post(ctx, p, m)
+//			}
+//		} else {
+//			handleError(w, err)
+//		}
+//	})
 
-	routes.Add("^/buy/order/persist", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			if r.Method == "POST" {
-				sp.OrderPersist_post(ctx, p, m)
-			}
-		} else {
-			handleError(w, err)
-		}
-	})
+//	routes.Add("^/buy/order/persist", func(ctx *web.Context) {
+//		r, w := ctx.Request, ctx.ResponseWriter
+//		if p, err, m := getPartner(r); err == nil {
+//			if r.Method == "POST" {
+//				sp.OrderPersist_post(ctx, p, m)
+//			}
+//		} else {
+//			handleError(w, err)
+//		}
+//	})
 
 	routes.Add("^/buy/order/submit_order$", func(ctx *web.Context) {
 		r, w := ctx.Request, ctx.ResponseWriter
@@ -158,14 +151,6 @@ func RegisterRoutes(c gof.App) {
 		}
 	})
 
-	routes.Add("/(shopping|buy)/", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			mvc.Handle(sp, ctx, true, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
 
 	routes.Add("^/pay/", func(ctx *web.Context) {
 		mvc.Handle(pc, ctx, true)

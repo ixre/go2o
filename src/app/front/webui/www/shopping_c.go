@@ -29,9 +29,10 @@ type shoppingC struct {
 }
 
 // 订单确认
-func (this *shoppingC) OrderConfirm(ctx *web.Context,
-	p *partner.ValuePartner, m *member.ValueMember) {
+func (this *shoppingC) Confirm(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	p,_  := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
 	if m == nil {
 		RedirectLoginPage(w, r.RequestURI)
 		return
@@ -94,9 +95,9 @@ func (this *shoppingC) OrderConfirm(ctx *web.Context,
 	}
 }
 
-func (this *shoppingC) GetDeliverAddrs(ctx *web.Context,
-	p *partner.ValuePartner, m *member.ValueMember) {
+func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	m := this.WebC.GetMember(ctx)
 	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
 	if err != nil {
 		w.Write([]byte(err.Error()))
@@ -114,8 +115,9 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context,
 	}, "views/web/www/profile/deliver_address.html")
 }
 
-func (this *shoppingC) SaveDeliverAddr_post(w http.ResponseWriter,
-	r *http.Request, p *partner.ValuePartner, m *member.ValueMember) {
+func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
+	m := this.WebC.GetMember(ctx)
+	r,w :=ctx.Request,ctx.ResponseWriter
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
@@ -206,9 +208,10 @@ func (this *shoppingC) OrderFinish(ctx *web.Context,
 	}
 }
 
-func (this *shoppingC) OrderPersist_post(ctx *web.Context,
-	p *partner.ValuePartner, m *member.ValueMember) {
+func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	p, _ := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
 	var err error
 	r.ParseForm()
 
@@ -238,9 +241,9 @@ func (this *shoppingC) OrderPersist_post(ctx *web.Context,
 
 rsp:
 	if err != nil {
-		w.Write([]byte(fmt.Sprintf(`{"message":"%s"}`, err.Error())))
+		w.Write([]byte(fmt.Sprintf(`{result:false,"message":"%s"}`, err.Error())))
 	} else {
-		w.Write([]byte("{}"))
+		w.Write([]byte("{result:true}"))
 	}
 }
 

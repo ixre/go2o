@@ -30,20 +30,21 @@ type Member struct {
 func (this *Member) Login(m *jsv.Args, r *dto.MemberLoginResult) error {
 	usr, pwd := (*m)["usr"].(string), (*m)["pwd"].(string)
 	b, e, err := dps.MemberService.Login(usr, pwd)
-	rv := *r
-	rv.Result = b
+	r.Result = b
 	if b {
 		md5 := strings.ToLower(crypto.Md5([]byte(time.Now().String())))
 		rds := Redis().Get()
-		rds.Do("SETEX", fmt.Sprintf("dps:session:m%d", e.Id), 3600*300, md5)
-		r.Token = md5
+		rds.Do("SETEX", fmt.Sprintf("dps:session:m%d", e.Id), 3600*3, md5)
+
 		if jsv.Context.Debug() {
 			jsv.Printf("[Member][Login]%d -- %s", e.Id, md5)
 		}
 		rds.Close()
+		r.Token = md5
+		r.Member = e
 	}
 	if err != nil {
-		rv.Message = err.Error()
+		r.Message = err.Error()
 	}
 	return nil
 }

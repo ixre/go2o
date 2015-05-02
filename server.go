@@ -65,6 +65,7 @@ func main() {
 
 	core.SetGlobalApp(newApp)
 	app.Init(newApp)
+	core.RegisterTypes()
 	daemon.Run(newApp)
 
 	var booted bool
