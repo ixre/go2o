@@ -95,119 +95,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 	}
 }
 
-func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	m := this.WebC.GetMember(ctx)
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
-	var selId int
-	if sel := r.URL.Query().Get("sel"); sel != "" {
-		selId, _ = strconv.Atoi(sel)
-	}
-
-	js, _ := json.Marshal(addrs)
-	ctx.App.Template().Execute(w, func(md *map[string]interface{}) {
-		(*md)["addrs"] = template.JS(js)
-		(*md)["sel"] = selId
-	}, "views/web/www/profile/deliver_address.html")
-}
-
-func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
-	m := this.WebC.GetMember(ctx)
-	r,w :=ctx.Request,ctx.ResponseWriter
-	r.ParseForm()
-	var e member.DeliverAddress
-	web.ParseFormToEntity(r.Form, &e)
-	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
-	if err == nil {
-		if b {
-			w.Write([]byte(`{"result":true}`))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
-	} else {
-		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
-	}
-}
-
-func (this *shoppingC) ApplyCoupon_post(ctx *web.Context,
-	p *partner.ValuePartner, m *member.ValueMember) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	r.ParseForm()
-	var message string = "购物车还是空的!"
-	code := r.FormValue("code")
-	json, err := goclient.Partner.BuildOrder(p.Id, p.Secret, m.Id, code)
-	if err != nil {
-		message = err.Error()
-	} else {
-		w.Write([]byte(json))
-		return
-	}
-
-	w.Write([]byte(`{"result":false,"message":"` + message + `"}`))
-
-}
-
-func (this *shoppingC) OrderEmpty(ctx *web.Context,
-	p *partner.ValuePartner, mm *member.ValueMember, conf *partner.SiteConf) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		(*m)["partner"] = p
-		(*m)["title"] = "订单确认-" + p.Name
-		(*m)["member"] = mm
-		(*m)["conf"] = conf
-	},
-		"views/web/www/order_empty.html",
-		"views/web/www/inc/header.html",
-		"views/web/www/inc/footer.html")
-}
-
-func (this *shoppingC) OrderFinish(ctx *web.Context,
-	p *partner.ValuePartner, mm *member.ValueMember) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	// 清除购物车
-	//	cookie, _ := r.Cookie("cart")
-	//	if cookie != nil {
-	//		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
-	//		cookie.Path = "/"
-	//		http.SetCookie(w, cookie)
-	//	}
-
-	if b, siteConf := GetSiteConf(w, p); b {
-		var payHtml string // 支付HTML
-
-		orderNo := r.URL.Query().Get("order_no")
-		order, err := goclient.Partner.GetOrderByNo(p.Id, p.Secret, orderNo)
-		if err != nil {
-			ctx.App.Log().PrintErr(err)
-			this.OrderEmpty(ctx, p, mm, siteConf)
-			return
-		}
-
-		if order.PaymentOpt == 2 {
-			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
-				order.OrderNo, "在线支付")
-		}
-
-		if b, siteConf := GetSiteConf(w, p); b {
-			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-				(*m)["partner"] = p
-				(*m)["title"] = "订单成功-" + p.Name
-				(*m)["member"] = mm
-				(*m)["conf"] = siteConf
-				(*m)["order"] = order
-				(*m)["payHtml"] = template.HTML(payHtml)
-			},
-				"views/web/www/order_finish.html",
-				"views/web/www/inc/header.html",
-				"views/web/www/inc/footer.html")
-		}
-	}
-}
-
+// 订单持久化
 func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p, _ := this.WebC.GetPartner(ctx)
@@ -239,7 +127,7 @@ func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 
 	err = goclient.Partner.OrderPersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
 
-rsp:
+	rsp:
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{result:false,"message":"%s"}`, err.Error())))
 	} else {
@@ -247,23 +135,146 @@ rsp:
 	}
 }
 
-func (this *shoppingC) SubmitOrder_post(ctx *web.Context,
-	p *partner.ValuePartner, mm *member.ValueMember) {
+// 配送地址管理
+func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	m := this.WebC.GetMember(ctx)
+	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+	var selId int
+	if sel := r.URL.Query().Get("sel"); sel != "" {
+		selId, _ = strconv.Atoi(sel)
+	}
+
+	js, _ := json.Marshal(addrs)
+	ctx.App.Template().Execute(w, func(md *map[string]interface{}) {
+		(*md)["addrs"] = template.JS(js)
+		(*md)["sel"] = selId
+	}, "views/web/www/profile/deliver_address.html")
+}
+func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
+	m := this.WebC.GetMember(ctx)
+	r,w :=ctx.Request,ctx.ResponseWriter
 	r.ParseForm()
-	if p == nil || mm == nil {
+	var e member.DeliverAddress
+	web.ParseFormToEntity(r.Form, &e)
+	e.MemberId = m.Id
+	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
+	if err == nil {
+		if b {
+			w.Write([]byte(`{"result":true}`))
+		} else {
+			w.Write([]byte(`{"result":false}`))
+		}
+	} else {
+		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+	}
+}
+
+// 应用卡券
+func (this *shoppingC) Apply_post(ctx *web.Context) {
+	r := ctx.Request
+	r.ParseForm()
+	if atype := r.URL.Query().Get("type");atype == "coupon" {
+		this.applyCoupon(ctx)
+	}
+}
+func (this *shoppingC) applyCoupon(ctx *web.Context){
+	p,_  := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
+	var message string = "购物车还是空的!"
+	code := ctx.Request.FormValue("code")
+	json, err := goclient.Partner.BuildOrder(p.Id, p.Secret, m.Id, code)
+	if err != nil {
+		message = err.Error()
+	} else {
+		ctx.ResponseWriter.Write([]byte(json))
+		return
+	}
+
+	ctx.ResponseWriter.Write([]byte(`{"result":false,"message":"` + message + `"}`))
+}
+
+
+// 提交订单
+func (this *shoppingC) Submit_0_post(ctx *web.Context) {
+	r, w := ctx.Request, ctx.ResponseWriter
+	p,_  := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
+	r.ParseForm()
+	if p == nil || m == nil {
 		w.Write([]byte(`{"result":false,"tag":"101"}`)) //未登录
 		return
 	}
 	couponCode := r.FormValue("coupon_code")
-	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, mm.Id, couponCode)
+	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, m.Id, couponCode)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
 	}
-
 	w.Write([]byte(`{"result":true,"data":"` + order_no + `"}`))
 }
+
+func (this *shoppingC) OrderEmpty(ctx *web.Context,p *partner.ValuePartner,
+	m *member.ValueMember,conf *partner.SiteConf) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+		(*m)["partner"] = p
+		(*m)["title"] = "订单确认-" + p.Name
+		(*m)["member"] = m
+		(*m)["conf"] = conf
+	},
+	"views/web/www/order_empty.html",
+	"views/web/www/inc/header.html",
+	"views/web/www/inc/footer.html")
+}
+
+func (this *shoppingC) Order_finish(ctx *web.Context) {
+	r, w := ctx.Request, ctx.ResponseWriter
+	// 清除购物车
+	//	cookie, _ := r.Cookie("cart")
+	//	if cookie != nil {
+	//		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
+	//		cookie.Path = "/"
+	//		http.SetCookie(w, cookie)
+	//	}
+
+	p,_  := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
+
+	if b, siteConf := GetSiteConf(w, p); b {
+		var payHtml string // 支付HTML
+
+		orderNo := r.URL.Query().Get("order_no")
+		order, err := goclient.Partner.GetOrderByNo(p.Id, p.Secret, orderNo)
+		if err != nil {
+			ctx.App.Log().PrintErr(err)
+			this.OrderEmpty(ctx, p, m, siteConf)
+			return
+		}
+
+		if order.PaymentOpt == 2 {
+			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+			order.OrderNo, "在线支付")
+		}
+
+			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
+				(*m)["partner"] = p
+				(*m)["title"] = "订单成功-" + p.Name
+				(*m)["member"] = m
+				(*m)["conf"] = siteConf
+				(*m)["order"] = order
+				(*m)["payHtml"] = template.HTML(payHtml)
+			},
+			"views/web/www/order_finish.html",
+			"views/web/www/inc/header.html",
+			"views/web/www/inc/footer.html")
+	}
+}
+
+
 
 // 购物车
 func (this *shoppingC) CartApi(ctx *web.Context,

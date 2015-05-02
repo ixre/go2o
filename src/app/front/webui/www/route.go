@@ -98,60 +98,6 @@ func RegisterRoutes(c gof.App) {
 		}
 	})
 
-	// 购买跳转
-	//	routes.Add("^/buy/*$", func(ctx *web.Context) {
-	//		r, w := ctx.Request, ctx.ResponseWriter
-	//		if p, err, m := getPartner(r); err == nil {
-	//			sp.BuyRedirect(ctx, p, m)
-	//		} else {
-	//			handleError(w, err)
-	//		}
-	//	})
-
-
-//	routes.Add("^/buy/appy_coupon$", func(ctx *web.Context) {
-//		r, w := ctx.Request, ctx.ResponseWriter
-//		if p, err, m := getPartner(r); err == nil {
-//			if r.Method == "POST" {
-//				sp.ApplyCoupon_post(ctx, p, m)
-//			}
-//		} else {
-//			handleError(w, err)
-//		}
-//	})
-
-//	routes.Add("^/buy/order/persist", func(ctx *web.Context) {
-//		r, w := ctx.Request, ctx.ResponseWriter
-//		if p, err, m := getPartner(r); err == nil {
-//			if r.Method == "POST" {
-//				sp.OrderPersist_post(ctx, p, m)
-//			}
-//		} else {
-//			handleError(w, err)
-//		}
-//	})
-
-	routes.Add("^/buy/order/submit_order$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			if r.Method == "POST" {
-				sp.SubmitOrder_post(ctx, p, m)
-			}
-		} else {
-			handleError(w, err)
-		}
-	})
-
-	routes.Add("^/buy/order/finish$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			sp.OrderFinish(ctx, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
-
-
 	routes.Add("^/pay/", func(ctx *web.Context) {
 		mvc.Handle(pc, ctx, true)
 	})
