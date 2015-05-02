@@ -24,6 +24,8 @@ import (
 	"go2o/src/app/front"
 )
 
+
+//todo: fiter valid partner is nil
 type mainC struct {
 	front.WebC
 }
@@ -40,12 +42,17 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 	return false
 }
 
-func (this *mainC) Index(ctx *web.Context, p *partner.ValuePartner) {
+func (this *mainC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
+	 p, err:= this.WebC.GetPartner(ctx)
+	 if err != nil{
+		ctx.ResponseWriter.Write([]byte(`<html><head><title></title></head>` +
+		`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
+		 return
+	}
 	if this.HandleIndexGo(ctx) {
 		return
 	}
-
 	if b, siteConf := GetSiteConf(w, p); b {
 		shops := apicache.GetShops(ctx.App, p.Id, p.Secret)
 		if shops == nil {

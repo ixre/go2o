@@ -277,9 +277,10 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 
 // 购物车
-func (this *shoppingC) CartApi(ctx *web.Context,
-	p *partner.ValuePartner, m *member.ValueMember) {
+func (this *shoppingC) cartApi(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+	p, _ := this.WebC.GetPartner(ctx)
+	m := this.WebC.GetMember(ctx)
 	r.ParseForm()
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")
@@ -290,22 +291,22 @@ func (this *shoppingC) CartApi(ctx *web.Context,
 
 	switch action {
 	case "get":
-		this.Cart_GetCart(w, p, memberId, cartKey)
+		this.cart_GetCart(w, p, memberId, cartKey)
 	case "add":
-		this.Cart_AddItem(ctx, p, memberId, cartKey)
+		this.cart_AddItem(ctx, p, memberId, cartKey)
 	case "remove":
-		this.Cart_RemoveItem(ctx, p, memberId, cartKey)
+		this.cart_RemoveItem(ctx, p, memberId, cartKey)
 	}
 }
 
-func (this *shoppingC) Cart_GetCart(w http.ResponseWriter,
+func (this *shoppingC) cart_GetCart(w http.ResponseWriter,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
 	d, _ := json.Marshal(cart)
 	w.Write(d)
 }
 
-func (this *shoppingC) Cart_AddItem(ctx *web.Context,
+func (this *shoppingC) cart_AddItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
@@ -323,7 +324,7 @@ func (this *shoppingC) Cart_AddItem(ctx *web.Context,
 	w.Write(d)
 }
 
-func (this *shoppingC) Cart_RemoveItem(ctx *web.Context,
+func (this *shoppingC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
@@ -336,8 +337,7 @@ func (this *shoppingC) Cart_RemoveItem(ctx *web.Context,
 	}
 }
 
-func (this *shoppingC) Cart(ctx *web.Context,
-	p *partner.ValuePartner) {
+func (this *shoppingC) cart(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	//todo: 需页面
 	if r.URL.Query().Get("edit") == "1" {

@@ -9,17 +9,10 @@
 package www
 
 import (
-	"errors"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/dps"
-	"go2o/src/core/service/goclient"
 	"net/http"
-	"strconv"
-	"strings"
 )
 
 var (
@@ -51,63 +44,16 @@ func RegisterRoutes(c gof.App) {
 		}
 	})
 
-	getPartner := func(r *http.Request) (*partner.ValuePartner, error, *member.ValueMember) {
-		var m *member.ValueMember
-		cookie, err := r.Cookie("ms_token")
-		if err == nil {
-			if len(cookie.Value) == 0 {
-				err = errors.New("empty cookie")
-			}
-
-			arr := strings.Split(cookie.Value, "$")
-			id, _ := strconv.Atoi(arr[0])
-			token := arr[1]
-
-			m, err = goclient.Member.GetMember(id, token)
-			if err == nil {
-				m.LoginToken = token
-			}
-		}
-
-		partnerId := dps.PartnerService.GetPartnerIdByHost(r.Host)
-		p, err := dps.PartnerService.GetPartner(partnerId)
-		return p, err, m
-	}
-
-	// 购物车
-	routes.Add("^/cart_api$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			sp.CartApi(ctx, p, m)
-		} else {
-			handleError(w, err)
-		}
-	})
-
-
-	routes.Add("^/(list|getList|login|logout|register|validUser|PostRegistInfo)/*$", func(ctx *web.Context) {
-		mvc.Handle(mc, ctx, true)
-	})
-
-	routes.Add("^/cart/*", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, _ := getPartner(r); err == nil {
-			sp.Cart(ctx, p)
-		} else {
-			handleError(w, err)
-		}
-	})
+	// 购物车接口
+	routes.Add("^/cart_api_v1$",sp.cartApi)
+	routes.Add("^/cart/*",sp.cart)
 
 	routes.Add("^/pay/", func(ctx *web.Context) {
 		mvc.Handle(pc, ctx, true)
 	})
 
-	routes.Add("^/$", func(ctx *web.Context) {
-		r, w := ctx.Request, ctx.ResponseWriter
-		if p, err, m := getPartner(r); err == nil {
-			mvc.Handle(mc, ctx, true, p, m)
-		} else {
-			handleError(w, err)
-		}
+	// add route for main controller
+	routes.Add("^/[^/]*$", func(ctx *web.Context) {
+		mvc.Handle(mc, ctx, true)
 	})
 }
