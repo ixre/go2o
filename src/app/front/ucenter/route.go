@@ -41,10 +41,13 @@ func RegisterRoutes(c gof.App) {
 	ac := &accountC{App: c}
 	lc := &loginC{App: c}
 
-    routes.RegisterController("^/order/",oc)
-    routes.RegisterController("^/account/",ac)
-    routes.RegisterController("^/login",lc)
-    routes.RegisterController("/",mc)
+    routes.RegisterController("order",oc)
+    routes.RegisterController("account",ac)
+	routes.RegisterController("login",lc)
+
+    routes.Add("^/[^/]*$",func(ctx *web.Context){
+		mvc.Handle(mc,ctx,true)
+	})
 
 
 //	routes.Add("^/order/", func(ctx *web.Context) {

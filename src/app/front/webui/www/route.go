@@ -12,7 +12,6 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"net/http"
 )
 
 var (
@@ -24,11 +23,6 @@ func Handle(ctx *web.Context) {
 	routes.Handle(ctx)
 }
 
-func handleError(w http.ResponseWriter, err error) {
-	w.Write([]byte(`<html><head><title></title></head>` +
-		`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
-}
-
 //注册路由
 func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
@@ -37,6 +31,7 @@ func RegisterRoutes(c gof.App) {
 
 	routes.RegisterController("buy",sp)
 	routes.RegisterController("shopping",sp)
+
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
@@ -48,6 +43,7 @@ func RegisterRoutes(c gof.App) {
 	routes.Add("^/cart_api_v1$",sp.cartApi)
 	routes.Add("^/cart/*",sp.cart)
 
+	// 支付
 	routes.Add("^/pay/", func(ctx *web.Context) {
 		mvc.Handle(pc, ctx, true)
 	})

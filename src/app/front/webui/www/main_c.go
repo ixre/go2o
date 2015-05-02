@@ -100,7 +100,6 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	result,_ := goclient.Member.Login(usr, pwd)
 	if result.Result {
 		result.Member.LoginToken = result.Token
-		fmt.Println(result.Token,"------")
 		ctx.Session().Set("member", result.Member)
 		ctx.Session().Save()
 		w.Write([]byte("{result:true}"))
@@ -157,20 +156,21 @@ func (this *mainC) PostRegistInfo_post(ctx *web.Context, p *partner.ValuePartner
 }
 
 //跳转到会员中心
-func (this *mainC) Member(ctx *web.Context, p *partner.ValuePartner, mm *member.ValueMember) {
-	r, w := ctx.Request, ctx.ResponseWriter
+func (this *mainC) Member(ctx *web.Context) {
+	m := this.WebC.GetMember(ctx)
 	var location string
-	if mm == nil {
+	if m == nil {
 		location = "/login?return_url=/member"
 	} else {
-		cookie, _ := r.Cookie("ms_token")
-		location = fmt.Sprintf("http://%s.%s/login/partner_connect?token=%s",
+		location = fmt.Sprintf("http://%s.%s/login/partner_connect?sessionId=%s&mid=%d1&token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
 			ctx.App.Config().GetString(variable.ServerDomain),
-			cookie.Value,
+			ctx.Session().GetSessionId(),
+			m.Id,
+			m.LoginToken,
 		)
 	}
-	w.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
+	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
 }
 
 //退出
