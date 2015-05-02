@@ -246,5 +246,5 @@ ShoppingCart.prototype.remove = function (goodsId, num) {
 };
 
 var cart = new ShoppingCart();
-cart.api = '/cart_api';
+cart.api = '/cart_api_v1';
 

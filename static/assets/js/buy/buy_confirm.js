@@ -99,7 +99,7 @@ function dynamicContent(t) {
 
 // 更新数据到服务器端
 function persistData() {
-    $JS.xhr.jsonPost('/buy/order/persist', window.sctJson, function (d) {
+    $JS.xhr.jsonPost('/buy/buyingPersist', window.sctJson, function (d) {
         if(d.message){
             alert(d.message);
         }
@@ -108,7 +108,7 @@ function persistData() {
 
 // 选择配送地址
 function selectDeliver(){
-    $JS.load('deliver-panel','/buy/getDeliverAddrs?sel='+window.sctJson.deliver_id);
+    $JS.load('deliver-panel','/buy/getDeliverAddrs?sel='+ window.sctJson.deliver_id);
 }
 
 // 从表单中恢复数据
@@ -127,7 +127,7 @@ function applyCouponCode(){
         couDes.className += 'hidden';
     }else{
         var t = this;
-        $JS.xhr.jsonPost('/buy/apply/coupon',{code:this.value},function(json){
+        $JS.xhr.jsonPost('/buy/apply?type=coupon',{code:this.value},function(json){
             if(json.result == false) {
                 $JS.validator.setTip(t,false,null,json.message);
                 couDes.className='coupon_desc hidden';
@@ -157,10 +157,10 @@ function submitOrder() {
             return false;
         }
         data.coupon_code = cp.CouponCode;
-        $JS.xhr.jsonPost('order/submit_order', data, function (j) {
+        $JS.xhr.jsonPost('submit_0', data, function (j) {
             if (j.result) {
                 var orderNo = j.data;
-                location.replace("order/finish?order_no=" + orderNo)
+                location.replace("order_finish?order_no=" + orderNo)
             } else {
                 alert(j.message);
             }
