@@ -28,7 +28,7 @@ func RegisterRoutes() {
 	routes.RegisterController("shop", &shopC{Base: bc})   //商家门店控制器
 	routes.RegisterController("goods", &goodsC{Base: bc}) //商品控制器
 	routes.RegisterController("comm", &commC{Base: bc})
-	routes.RegisterController("order", &orderC{Base: bc})
+	routes.RegisterController("order", &orderC{})
 	routes.RegisterController("category", &categoryC{Base: bc})
 	routes.RegisterController("conf", &configC{Base: bc})
 	routes.RegisterController("prom", &promC{Base: bc})

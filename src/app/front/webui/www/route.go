@@ -28,10 +28,14 @@ func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
 	sp := &shoppingC{}
 	pc := &paymentC{}
+	cc := &cartC{}
+	uc := &userC{}
 
 	routes.RegisterController("buy",sp)
 	routes.RegisterController("shopping",sp)
-
+	routes.RegisterController("list",&listC{})
+	routes.RegisterController("cart",cc)
+	routes.RegisterController("user",uc)
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
@@ -40,16 +44,10 @@ func RegisterRoutes(c gof.App) {
 	})
 
 	// 购物车接口
-	routes.Add("^/cart_api_v1$",sp.cartApi)
-	routes.Add("^/cart/*",sp.cart)
-
+	routes.Add("/cart_api_v1",cc.cartApi)
 	// 支付
-	routes.Add("^/pay/", func(ctx *web.Context) {
-		mvc.Handle(pc, ctx, true)
-	})
-
-	// add route for main controller
-	routes.Add("^/[^/]*$", func(ctx *web.Context) {
-		mvc.Handle(mc, ctx, true)
-	})
+	routes.Add("^/pay/create",pc.Create)
+	// 首页
+	routes.Add("/",mc.Index)
+	routes.Add("/user/g2m",uc.member)
 }

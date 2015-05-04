@@ -18,7 +18,6 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"fmt"
 )
 
 func main() {
@@ -55,7 +54,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(newApp.Config().GetInt("server_port"),"------")
 	if v := newApp.Config().GetInt("server_port");v!= 0{
 		httpPort = v
 	}

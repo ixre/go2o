@@ -17,7 +17,6 @@ import (
 	"strconv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
-	"fmt"
 )
 
 type loginC struct {
@@ -68,7 +67,6 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 	}
 
 	if err == nil || m!= nil {
-		fmt.Println(m)
 		var p *partner.ValuePartner
 		p, err = goclient.Member.GetBindPartner(m.Id, m.LoginToken)
 		if err == nil {
