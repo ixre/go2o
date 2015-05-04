@@ -14,7 +14,6 @@ import (
 	"html/template"
 )
 
-
 //todo: fiter valid partner is nil
 type mainC struct {
 	*baseC
@@ -34,11 +33,11 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 
 func (this *mainC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
-	 p, err:= this.GetPartner(ctx)
-	 if err != nil{
+	p, err := this.GetPartner(ctx)
+	if err != nil {
 		ctx.ResponseWriter.Write([]byte(`<html><head><title></title></head>` +
-		`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
-		 return
+			`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
+		return
 	}
 	if this.HandleIndexGo(ctx) {
 		return
@@ -59,5 +58,3 @@ func (this *mainC) Index(ctx *web.Context) {
 			"views/web/www/inc/footer.html")
 	}
 }
-
-

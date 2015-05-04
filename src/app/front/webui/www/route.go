@@ -31,11 +31,11 @@ func RegisterRoutes(c gof.App) {
 	cc := &cartC{}
 	uc := &userC{}
 
-	routes.RegisterController("buy",sp)
-	routes.RegisterController("shopping",sp)
-	routes.RegisterController("list",&listC{})
-	routes.RegisterController("cart",cc)
-	routes.RegisterController("user",uc)
+	routes.RegisterController("buy", sp)
+	routes.RegisterController("shopping", sp)
+	routes.RegisterController("list", &listC{})
+	routes.RegisterController("cart", cc)
+	routes.RegisterController("user", uc)
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
@@ -44,10 +44,10 @@ func RegisterRoutes(c gof.App) {
 	})
 
 	// 购物车接口
-	routes.Add("/cart_api_v1",cc.cartApi)
+	routes.Add("/cart_api_v1", cc.cartApi)
 	// 支付
-	routes.Add("^/pay/create",pc.Create)
+	routes.Add("^/pay/create", pc.Create)
 	// 首页
-	routes.Add("/",mc.Index)
-	routes.Add("/user/g2m",uc.member)
+	routes.Add("/", mc.Index)
+	routes.Add("/user/g2m", uc.member)
 }

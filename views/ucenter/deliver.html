@@ -141,7 +141,7 @@
     function saveDeliveAddr(){
         if($JS.validator.validate('form-deliver')){
             var d = $JS.json.toObject('form-deliver');
-            $JS.xhr.jsonPost('saveDeliver.html',d,function(json){
+            $JS.xhr.jsonPost('saveDeliver',d,function(json){
                 if(json.result){
                     loadDeliver('deliver-panel');
                 }else{
@@ -157,7 +157,7 @@
 
     function delAddr(id){
         if(confirm('确定要删除配送地址吗？')) {
-            $JS.xhr.jsonPost('deleteDeliver.html', {id: id}, function (json) {
+            $JS.xhr.jsonPost('deleteDeliver.htm', {id: id}, function (json) {
                 if (json.result) {
                     location.reload();
                 } else {

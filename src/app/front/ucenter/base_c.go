@@ -11,13 +11,13 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/core/domain/interface/partner"
-	"net/url"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/goclient"
+	"net/url"
 )
 
-func chkLogin(ctx *web.Context)bool {
+func chkLogin(ctx *web.Context) bool {
 	return ctx.Session().Get("member") != nil
 }
 func redirect(ctx *web.Context) {
@@ -43,15 +43,15 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 }
 
 // 获取商户
-func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner{
+func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	return ctx.Session().Get("member:rel_partner").(*partner.ValuePartner)
 }
 
 // 获取会员
-func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember{
+func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 	memberIdObj := ctx.Session().Get("member")
-	if memberIdObj != nil{
-		if o,ok := memberIdObj.(*member.ValueMember);ok{
+	if memberIdObj != nil {
+		if o, ok := memberIdObj.(*member.ValueMember); ok {
 			return o
 		}
 	}
@@ -59,6 +59,6 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember{
 }
 
 // 获取商户的站点设置
-func (this *baseC) GetSiteConf(partnerId int,secret string)(*partner.SiteConf,error){
+func (this *baseC) GetSiteConf(partnerId int, secret string) (*partner.SiteConf, error) {
 	return goclient.Partner.GetSiteConf(partnerId, secret)
 }

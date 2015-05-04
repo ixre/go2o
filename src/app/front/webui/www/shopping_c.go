@@ -29,7 +29,7 @@ type shoppingC struct {
 // 订单确认
 func (this *shoppingC) Confirm(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	p,_  := this.GetPartner(ctx)
+	p, _ := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	if m == nil {
 		RedirectLoginPage(w, r.RequestURI)
@@ -125,7 +125,7 @@ func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 
 	err = goclient.Partner.OrderPersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
 
-	rsp:
+rsp:
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{result:false,"message":"%s"}`, err.Error())))
 	} else {
@@ -155,7 +155,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	r,w :=ctx.Request,ctx.ResponseWriter
+	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
@@ -176,12 +176,12 @@ func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 func (this *shoppingC) Apply_post(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()
-	if atype := r.URL.Query().Get("type");atype == "coupon" {
+	if atype := r.URL.Query().Get("type"); atype == "coupon" {
 		this.applyCoupon(ctx)
 	}
 }
-func (this *shoppingC) applyCoupon(ctx *web.Context){
-	p,_  := this.GetPartner(ctx)
+func (this *shoppingC) applyCoupon(ctx *web.Context) {
+	p, _ := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	var message string = "购物车还是空的!"
 	code := ctx.Request.FormValue("code")
@@ -196,11 +196,10 @@ func (this *shoppingC) applyCoupon(ctx *web.Context){
 	ctx.ResponseWriter.Write([]byte(`{"result":false,"message":"` + message + `"}`))
 }
 
-
 // 提交订单
 func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	p,_  := this.GetPartner(ctx)
+	p, _ := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	if p == nil || m == nil {
@@ -216,17 +215,17 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 	w.Write([]byte(`{"result":true,"data":"` + order_no + `"}`))
 }
 
-func (this *shoppingC) OrderEmpty(ctx *web.Context,p *partner.ValuePartner,
-	m *member.ValueMember,conf *partner.SiteConf) {
+func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
+	m *member.ValueMember, conf *partner.SiteConf) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		(*m)["partner"] = p
 		(*m)["title"] = "订单确认-" + p.Name
 		(*m)["member"] = m
 		(*m)["conf"] = conf
 	},
-	"views/web/www/order_empty.html",
-	"views/web/www/inc/header.html",
-	"views/web/www/inc/footer.html")
+		"views/web/www/order_empty.html",
+		"views/web/www/inc/header.html",
+		"views/web/www/inc/footer.html")
 }
 
 func (this *shoppingC) Order_finish(ctx *web.Context) {
@@ -239,7 +238,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	//		http.SetCookie(w, cookie)
 	//	}
 
-	p,_  := this.GetPartner(ctx)
+	p, _ := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
 	if b, siteConf := GetSiteConf(w, p); b {
@@ -255,23 +254,22 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 		if order.PaymentOpt == 2 {
 			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
-			order.OrderNo, "在线支付")
+				order.OrderNo, "在线支付")
 		}
 
-			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-				(*m)["partner"] = p
-				(*m)["title"] = "订单成功-" + p.Name
-				(*m)["member"] = m
-				(*m)["conf"] = siteConf
-				(*m)["order"] = order
-				(*m)["payHtml"] = template.HTML(payHtml)
-			},
+		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
+			(*m)["partner"] = p
+			(*m)["title"] = "订单成功-" + p.Name
+			(*m)["member"] = m
+			(*m)["conf"] = siteConf
+			(*m)["order"] = order
+			(*m)["payHtml"] = template.HTML(payHtml)
+		},
 			"views/web/www/order_finish.html",
 			"views/web/www/inc/header.html",
 			"views/web/www/inc/footer.html")
 	}
 }
-
 
 // 购买中转
 func (this *shoppingC) Index(ctx *web.Context) {

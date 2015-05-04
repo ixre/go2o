@@ -13,7 +13,7 @@ window.funcs = {
     register:function(){
         if($JS.validator.result('regpanel')){
            var d = $JS.json.toObject('regpanel');
-           $JS.xhr.jsonPost('/postRegistInfo',d,function(json){
+           $JS.xhr.jsonPost('/user/postRegistInfo',d,function(json){
                if(json.result){
                    var returnUrl = $JS.request('return_url');
                    if(returnUrl!=''){

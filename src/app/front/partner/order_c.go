@@ -26,7 +26,6 @@ type orderC struct {
 	*baseC
 }
 
-
 func (this *orderC) List(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)

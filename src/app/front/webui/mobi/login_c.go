@@ -11,7 +11,6 @@ package mobi
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-
 )
 
 type loginC struct {
@@ -25,19 +24,19 @@ func (this *loginC) Login(ctx *web.Context) {
 }
 func (this *loginC) Login_post(ctx *web.Context) {
 	//todo:
-//	r, w := ctx.Request, ctx.ResponseWriter
-//	r.ParseForm()
-//	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-//	result,_ := goclient.Member.Login(usr, pwd)
-//	if !result.Result {
-//		w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
-//	} else {
-//		cookie := &http.Cookie{
-//			Name:    "ms_token",
-//			Expires: time.Now().Add(time.Hour * 48),
-//			Value:   result.Token,
-//		}
-//		http.SetCookie(w, cookie)
-//		w.Write([]byte("{result:true}"))
-//	}
+	//	r, w := ctx.Request, ctx.ResponseWriter
+	//	r.ParseForm()
+	//	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
+	//	result,_ := goclient.Member.Login(usr, pwd)
+	//	if !result.Result {
+	//		w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
+	//	} else {
+	//		cookie := &http.Cookie{
+	//			Name:    "ms_token",
+	//			Expires: time.Now().Add(time.Hour * 48),
+	//			Value:   result.Token,
+	//		}
+	//		http.SetCookie(w, cookie)
+	//		w.Write([]byte("{result:true}"))
+	//	}
 }

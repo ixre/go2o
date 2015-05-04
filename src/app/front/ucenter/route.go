@@ -23,14 +23,14 @@ func Handle(ctx *web.Context) {
 	routes.Handle(ctx)
 }
 
-
 func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
-    routes.RegisterController("order",&orderC{})
-    routes.RegisterController("account",&accountC{})
-	routes.RegisterController("login",&loginC{})
-
-	routes.Add("/logout",mc.Logout)
-    routes.Add("/",mc.Index)
+	bc := &basicC{}
+	routes.RegisterController("main", mc)
+	routes.RegisterController("basic", bc)
+	routes.RegisterController("order", &orderC{})
+	routes.RegisterController("account", &accountC{})
+	routes.RegisterController("login", &loginC{})
+	routes.Add("/logout", mc.Logout)
+	routes.Add("/", mc.Index)
 }
-

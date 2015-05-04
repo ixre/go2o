@@ -21,20 +21,20 @@ var _ gof.App = new(MainApp)
 // application context
 // implement of web.Application
 type MainApp struct {
-	Loaded       bool
-	_confFilePath    string
-	_config      *gof.Config
-	_redis       *redis.Pool
-	_dbConnector db.Connector
-	_debugMode   bool
-	_template    *gof.Template
-	_logger      log.ILogger
-	_storage     gof.Storage
+	Loaded        bool
+	_confFilePath string
+	_config       *gof.Config
+	_redis        *redis.Pool
+	_dbConnector  db.Connector
+	_debugMode    bool
+	_template     *gof.Template
+	_logger       log.ILogger
+	_storage      gof.Storage
 }
 
-func NewMainApp(confPath string)*MainApp{
+func NewMainApp(confPath string) *MainApp {
 	return &MainApp{
-		_confFilePath : confPath,
+		_confFilePath: confPath,
 	}
 }
 

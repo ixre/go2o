@@ -25,7 +25,7 @@ if(uname){
         else{
             var t=this;
              valid.setTip(t,false,null,'验证中...');
-            $JS.xhr.jsonPost('/ValidUsr',{usr:escape(t.value)},function(json){
+            $JS.xhr.jsonPost('/user/ValidUsr',{usr:escape(t.value)},function(json){
             	if(json.result){
             	    valid.setTip(t,true,null,'用户名可用');
             	}

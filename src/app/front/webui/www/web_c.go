@@ -10,9 +10,9 @@ package www
 
 import (
 	"github.com/atnet/gof/web"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
-	"go2o/src/core/domain/interface/member"
 )
 
 type baseC struct {
@@ -27,7 +27,7 @@ func (this *baseC) GetPartnerId(ctx *web.Context) int {
 		partnerId := dps.PartnerService.GetPartnerIdByHost(currHost)
 		if partnerId != -1 {
 			ctx.Session().Set("webui_host", currHost)
-			ctx.Session().Set("webui_pid",partnerId)
+			ctx.Session().Set("webui_pid", partnerId)
 			ctx.Session().Save()
 		}
 		return partnerId
@@ -40,10 +40,10 @@ func (this *baseC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 }
 
 // 获取会员
-func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember{
+func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 	memberIdObj := ctx.Session().Get("member")
-	if memberIdObj != nil{
-		if o,ok := memberIdObj.(*member.ValueMember);ok{
+	if memberIdObj != nil {
+		if o, ok := memberIdObj.(*member.ValueMember); ok {
 			return o
 		}
 	}
