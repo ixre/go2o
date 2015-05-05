@@ -18,13 +18,12 @@ import (
 	"os"
 	"runtime"
 	"strings"
-	"fmt"
 )
 
 func main() {
 	var (
 		ch         chan bool = make(chan bool)
-		confFile	string
+		confFile   string
 		httpPort   int
 		socketPort int
 		mode       string //启动模式: h开启http,s开启socket,a开启所有
@@ -40,7 +39,7 @@ func main() {
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
-	flag.StringVar(&confFile,"conf","app.conf","")
+	flag.StringVar(&confFile, "conf", "app.conf", "")
 	flag.Parse()
 
 	if help {
@@ -55,11 +54,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(newApp.Config().GetInt("server_port"),"------")
-	if v := newApp.Config().GetInt("server_port");v!= 0{
+	if v := newApp.Config().GetInt("server_port"); v != 0 {
 		httpPort = v
 	}
-	if v := newApp.Config().GetInt("socket_post");v!= 0{
+	if v := newApp.Config().GetInt("socket_post"); v != 0 {
 		socketPort = v
 	}
 

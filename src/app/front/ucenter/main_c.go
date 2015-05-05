@@ -10,17 +10,12 @@ package ucenter
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -28,14 +23,11 @@ type mainC struct {
 	*baseC
 }
 
-func (this *mainC) Login(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter, "views/ucenter/login.html", nil)
-}
-
+//todo:bug 当在ucenter登陆，会话会超时
 func (this *mainC) Index(ctx *web.Context) {
 	mm := this.baseC.GetMember(ctx)
 	p := this.baseC.GetPartner(ctx)
-	conf,_ := this.baseC.GetSiteConf(p.Id,p.Secret)
+	conf, _ := this.baseC.GetSiteConf(p.Id, p.Secret)
 
 	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
 	js, _ := json.Marshal(mm)
@@ -81,139 +73,4 @@ func (this *mainC) Logout(ctx *web.Context) {
 		http.SetCookie(w, cookie)
 	}
 	w.Write([]byte("<script>location.replace('/login')</script>"))
-}
-
-func (this *mainC) Profile(ctx *web.Context, mm *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
-	js, _ := json.Marshal(mm)
-
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		v := *m
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = mm
-		v["entity"] = template.JS(js)
-
-	}, "views/ucenter/profile.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
-}
-
-func (this *mainC) Pwd(ctx *web.Context, mm *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
-
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		v := *m
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = mm
-
-	}, "views/ucenter/pwd.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
-}
-
-func (this *mainC) Pwd_post(ctx *web.Context, m *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
-	r.ParseForm()
-	var oldPwd, newPwd, rePwd string
-	oldPwd = r.FormValue("OldPwd")
-	newPwd = r.FormValue("NewPwd")
-	rePwd = r.FormValue("RePwd")
-	var err error
-	if newPwd != rePwd {
-		err = errors.New("两次密码输入不一致")
-	} else {
-		err = dps.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
-	}
-	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
-	} else {
-		result = gof.JsonResult{Result: true}
-	}
-	w.Write(result.Marshal())
-}
-func (this *mainC) Profile_post(ctx *web.Context, mm *member.ValueMember) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
-	r.ParseForm()
-	clientM := new(member.ValueMember)
-	web.ParseFormToEntity(r.Form, clientM)
-	clientM.Id = mm.Id
-	_, err := goclient.Member.SaveMember(clientM, mm.LoginToken)
-
-	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
-	} else {
-		result = gof.JsonResult{Result: true}
-	}
-	w.Write(result.Marshal())
-}
-
-func (this *mainC) Deliver(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
-
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
-		v := *mp
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = m
-
-	}, "views/ucenter/deliver.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
-}
-
-func (this *mainC) Deliver_post(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
-	if err != nil {
-		ctx.ResponseWriter.Write([]byte("{error:'错误:" + err.Error() + "'}"))
-		return
-	}
-	js, _ := json.Marshal(addrs)
-	ctx.ResponseWriter.Write([]byte(`{"rows":` + string(js) + `}`))
-}
-
-func (this *mainC) SaveDeliver_post(w http.ResponseWriter,
-	r *http.Request, m *member.ValueMember, p *partner.ValuePartner) {
-	r.ParseForm()
-	var e member.DeliverAddress
-	web.ParseFormToEntity(r.Form, &e)
-	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
-	if err == nil {
-		if b {
-			w.Write([]byte(`{"result":true}`))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
-	} else {
-		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
-	}
-}
-
-func (this *mainC) DeleteDeliver_post(w http.ResponseWriter,
-	r *http.Request, m *member.ValueMember) {
-	r.ParseForm()
-	id, _ := strconv.Atoi(r.FormValue("id"))
-
-	b, err := goclient.Member.DeleteDeliverAddr(m.Id, m.LoginToken, id)
-	if err == nil {
-		if b {
-			w.Write([]byte(`{"result":true}`))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
-	} else {
-		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
-	}
 }

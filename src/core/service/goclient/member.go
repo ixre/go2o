@@ -21,12 +21,12 @@ type memberClient struct {
 	conn *jsv.TCPConn
 }
 
-func (this *memberClient) Login(usr, pwd string)(*dto.MemberLoginResult,error) {
+func (this *memberClient) Login(usr, pwd string) (*dto.MemberLoginResult, error) {
 	var result = new(dto.MemberLoginResult)
 	err := this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"usr":"%s","pwd":"%s"}>>Member.Login`,
 		usr, pwd)), &result, 1024)
-	return result,err
+	return result, err
 }
 
 func (this *memberClient) Verify(memberId int, token string) (r jsv.Result) {

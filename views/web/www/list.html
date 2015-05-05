@@ -78,7 +78,7 @@ function ordingInit(){
   function loadItemsByCate(id){
     toggleLoading();
     var dt = new Date() ;
-    $JS.xhr.get('getList?cid='+id,function(x){
+    $JS.xhr.get('../list/getList?cid='+id,function(x){
         var dur = new Date() -dt > 1000?0:1000;
         setTimeout(function(){
             if(!togIsLoad){

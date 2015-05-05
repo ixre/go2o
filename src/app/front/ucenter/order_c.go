@@ -11,22 +11,19 @@ package ucenter
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/enum"
-	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"strconv"
 )
 
 type orderC struct {
-	gof.App
+	*baseC
 }
 
-func (this *orderC) Complete(ctx *web.Context, memberId int) {
+func (this *orderC) Complete(ctx *web.Context) {
 	ctx.App.Template().Render(ctx.ResponseWriter,
 		"views/ucenter/order/complete.html",
 		func(m *map[string]interface{}) {
@@ -34,8 +31,10 @@ func (this *orderC) Complete(ctx *web.Context, memberId int) {
 		})
 }
 
-func (this *orderC) Orders(ctx *web.Context, m *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *orderC) Orders(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
@@ -49,9 +48,11 @@ func (this *orderC) Orders(ctx *web.Context, m *member.ValueMember,
 		"views/ucenter/inc/footer.html")
 }
 
-func (this *orderC) Completed(ctx *web.Context, m *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *orderC) Completed(ctx *web.Context) {
 
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
@@ -67,9 +68,11 @@ func (this *orderC) Completed(ctx *web.Context, m *member.ValueMember,
 		"views/ucenter/inc/footer.html")
 }
 
-func (this *orderC) Canceled(ctx *web.Context, m *member.ValueMember,
-	p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *orderC) Canceled(ctx *web.Context) {
 
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
 			v := *mp
@@ -85,7 +88,8 @@ func (this *orderC) Canceled(ctx *web.Context, m *member.ValueMember,
 		"views/ucenter/inc/footer.html")
 }
 
-func (this *orderC) Orders_post(ctx *web.Context, m *member.ValueMember) {
+func (this *orderC) Orders_post(ctx *web.Context) {
+	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))

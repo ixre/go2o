@@ -15,11 +15,11 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
 	"time"
-	"go2o/src/core/dto"
 )
 
 type Member struct {

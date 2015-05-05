@@ -15,7 +15,6 @@ import (
 	"github.com/atnet/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"html/template"
@@ -23,12 +22,13 @@ import (
 )
 
 type accountC struct {
-	gof.App
+	*baseC
 }
 
-func (this *accountC) IncomeLog(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
-
+func (this *accountC) IncomeLog(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp
 		v["conf"] = conf
@@ -41,8 +41,8 @@ func (this *accountC) IncomeLog(ctx *web.Context,
 		"views/ucenter/inc/footer.html")
 }
 
-func (this *accountC) IncomeLog_post(ctx *web.Context,
-	m *member.ValueMember) {
+func (this *accountC) IncomeLog_post(ctx *web.Context) {
+	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -58,9 +58,10 @@ func (this *accountC) IncomeLog_post(ctx *web.Context,
 	w.Write(js)
 }
 
-func (this *accountC) ApplyCash(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
-
+func (this *accountC) ApplyCash(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	_, w := ctx.Request, ctx.ResponseWriter
 	acc, err := goclient.Member.GetMemberAccount(m.Id, m.LoginToken)
 	bank, err := goclient.Member.GetBankInfo(m.Id, m.LoginToken)
@@ -71,8 +72,8 @@ func (this *accountC) ApplyCash(ctx *web.Context,
 	}
 
 	js, _ := json.Marshal(bank)
-	ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-		v := *m
+	ctx.App.Template().Execute(w, func(mp *map[string]interface{}) {
+		v := *mp
 		v["conf"] = conf
 		v["record"] = 15
 		v["partner"] = p
@@ -85,8 +86,8 @@ func (this *accountC) ApplyCash(ctx *web.Context,
 		"views/ucenter/inc/footer.html")
 }
 
-func (this *accountC) ApplyCash_post(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
+func (this *accountC) ApplyCash_post(ctx *web.Context) {
+	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -104,9 +105,10 @@ func (this *accountC) ApplyCash_post(ctx *web.Context,
 
 }
 
-func (this *accountC) IntegralExchange(ctx *web.Context,
-	m *member.ValueMember, p *partner.ValuePartner, conf *partner.SiteConf) {
-
+func (this *accountC) IntegralExchange(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	m := this.GetMember(ctx)
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.LoginToken)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
