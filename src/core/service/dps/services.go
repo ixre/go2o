@@ -22,6 +22,7 @@ var (
 	MemberService   *memberService
 	PartnerService  *partnerService
 	SaleService     *saleService
+    DeliveyService  *deliveryService
 )
 
 func Init(ctx gof.App) {
@@ -47,4 +48,5 @@ func Init(ctx gof.App) {
 	MemberService = NewMemberService(memberRep, mq)
 	PartnerService = NewPartnerService(partnerRep, pq)
 	SaleService = NewSaleService(saleRep)
+    DeliveyService = NewDeliveryService(deliveryRep)
 }

@@ -46,7 +46,7 @@ func (this *DeliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int, error
 	if v.Id <= 0 {
 		_, _, err := orm.Save(nil, v)
 		if err == nil {
-			this.Connector.ExecScalar(`SELECT MAX(id) FROM dlv_converage`, &v.Id)
+			this.Connector.ExecScalar(`SELECT MAX(id) FROM dlv_coverage`, &v.Id)
 		}
 		return v.Id, err
 	} else {

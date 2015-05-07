@@ -32,6 +32,7 @@ func RegisterRoutes() {
 	routes.RegisterController("category", &categoryC{Base: bc})
 	routes.RegisterController("conf", &configC{Base: bc})
 	routes.RegisterController("prom", &promC{Base: bc})
+    routes.RegisterController("delivery",&converageAreaC{Base: bc}) //配送区域控制器
 
 	routes.Add("^/export/getExportData$", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {
