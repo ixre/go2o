@@ -24,14 +24,7 @@ import (
 var _ mvc.Filter = new(categoryC)
 
 type categoryC struct {
-	Base *baseC
-}
-
-func (this *categoryC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *categoryC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
+	*baseC
 }
 
 //分类树形功能
@@ -43,7 +36,7 @@ func (this *categoryC) Category(ctx *web.Context) {
 
 //分类Json数据
 func (this *categoryC) CategoryJson(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
 	ctx.ResponseWriter.Write(json)
@@ -58,7 +51,7 @@ func (this *categoryC) CategorySelect(ctx *web.Context) {
 
 //分类Json数据
 func (this *categoryC) CreateCategory(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
@@ -72,7 +65,7 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 }
 
 func (this *categoryC) EditCategory(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
@@ -90,7 +83,7 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 
 //修改门店信息
 func (this *categoryC) SaveCategory_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -108,7 +101,7 @@ func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 }
 
 func (this *categoryC) DelCategory_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()

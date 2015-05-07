@@ -19,15 +19,8 @@ import (
 var _ mvc.Filter = new(mainC)
 
 type mainC struct {
-	Base *baseC
+	*baseC
 	*front.WebCgi
-}
-
-func (this *mainC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *mainC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
 }
 
 //入口
@@ -43,7 +36,7 @@ func (this *mainC) Logout(ctx *web.Context) {
 //商户首页
 func (this *mainC) Dashboard(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	pt, _ := this.Base.GetPartner(ctx)
+	pt, _ := this.GetPartner(ctx)
 
 	var mf gof.TemplateMapFunc = func(m *map[string]interface{}) {
 		(*m)["partner"] = pt
@@ -55,7 +48,7 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 //商户汇总页
 func (this *mainC) Summary(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	pt, _ := this.Base.GetPartner(ctx)
+	pt, _ := this.GetPartner(ctx)
 
 	ctx.App.Template().Render(w,
 		"views/partner/summary.html",
@@ -67,7 +60,7 @@ func (this *mainC) Summary(ctx *web.Context) {
 
 func (this *mainC) Upload_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))

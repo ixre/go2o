@@ -23,14 +23,7 @@ import (
 var _ mvc.Filter = new(goodsC)
 
 type goodsC struct {
-	Base *baseC
-}
-
-func (this *goodsC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *goodsC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
+	*baseC
 }
 
 //食物列表
@@ -53,7 +46,7 @@ func (this *goodsC) List(ctx *web.Context) {
 }
 
 func (this *goodsC) Create(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -66,7 +59,7 @@ func (this *goodsC) Create(ctx *web.Context) {
 }
 
 func (this *goodsC) Edit(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var e *sale.ValueGoods
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -90,7 +83,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 }
 
 func (this *goodsC) SaveItem_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -109,7 +102,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 }
 
 func (this *goodsC) Del_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 

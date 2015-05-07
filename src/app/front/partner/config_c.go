@@ -10,7 +10,6 @@ package partner
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
@@ -23,20 +22,13 @@ import (
 var _ mvc.Filter = new(configC)
 
 type configC struct {
-	Base *baseC
-}
-
-func (this *configC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *configC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
+	*baseC
 }
 
 //资料配置
 func (this *configC) Profile(ctx *web.Context) {
 
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
 	p.Secret = ""
@@ -52,7 +44,7 @@ func (this *configC) Profile(ctx *web.Context) {
 }
 
 func (this *configC) Profile_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -83,8 +75,7 @@ func (this *configC) Profile_post(ctx *web.Context) {
 
 //站点配置
 func (this *configC) SiteConf(ctx *web.Context) {
-	fmt.Println("-----------")
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
 
@@ -96,7 +87,7 @@ func (this *configC) SiteConf(ctx *web.Context) {
 }
 
 func (this *configC) SiteConf_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -121,7 +112,7 @@ func (this *configC) SiteConf_post(ctx *web.Context) {
 
 //销售配置
 func (this *configC) SaleConf(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
 
@@ -133,7 +124,7 @@ func (this *configC) SaleConf(ctx *web.Context) {
 }
 
 func (this *configC) SaleConf_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
