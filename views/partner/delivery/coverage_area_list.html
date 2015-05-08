@@ -82,12 +82,17 @@
             columns:[[
                 { field: 'name', title: '配送区域名称', align: 'center', width: 100 },
                 { field: 'radius', title: '配送范围(米)', align: 'center', width: 30 },
+<<<<<<< HEAD
                 { field: 'address', title: '地址', align: 'center', width: 100},
                 { field: 'area_id', title: '所属地区', align: 'center', width: 50 },
                 {field: 'id', title: '操作',align: 'center', width: 50,formatter:function(val,row){
                     return '<a href="javascript:;" onclick="editRecord('+row.id+')">修改</a>'+
                             ' | <a href="javascript:;" onclick="delRecord('+row.id+')">删除</a>'
                 } },
+=======
+                { field: 'address', title: '地址', align: 'center' },
+                { field: 'area_id', title: '所属地区', align: 'center', width: 120 },
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
             ]]
         });
     });

@@ -23,7 +23,11 @@ type userC struct {
 
 func (this *userC) Login(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+<<<<<<< HEAD
 	p := this.GetPartner(ctx)
+=======
+	p, _ := this.GetPartner(ctx)
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
 	if len(returnUrl) == 0 {
@@ -61,7 +65,11 @@ func (this *userC) Login_post(ctx *web.Context) {
 
 func (this *userC) Register(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
+<<<<<<< HEAD
 	p := this.GetPartner(ctx)
+=======
+	p, _ := this.GetPartner(ctx)
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	if b, siteConf := GetSiteConf(w, p); b {
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
@@ -76,7 +84,11 @@ func (this *userC) Register(ctx *web.Context) {
 
 func (this *userC) ValidUsr_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+<<<<<<< HEAD
 	p := this.GetPartner(ctx)
+=======
+	p, _ := this.GetPartner(ctx)
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	r.ParseForm()
 	usr := r.FormValue("usr")
 	b := goclient.Partner.UserIsExist(p.Id, p.Secret, usr)
@@ -89,7 +101,11 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 
 func (this *userC) PostRegistInfo_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
+<<<<<<< HEAD
 	p := this.GetPartner(ctx)
+=======
+	p, _ := this.GetPartner(ctx)
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	r.ParseForm()
 	var member member.ValueMember
 	web.ParseFormToEntity(r.Form, &member)

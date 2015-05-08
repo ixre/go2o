@@ -23,6 +23,7 @@ type cartC struct {
 
 // 购物车
 func (this *cartC) cartApi(ctx *web.Context) {
+<<<<<<< HEAD
 	if !this.Requesting(ctx) {
 		ctx.ResponseWriter.Write([]byte("invalid request"))
 		return
@@ -30,6 +31,10 @@ func (this *cartC) cartApi(ctx *web.Context) {
 
 	r, _ := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
+=======
+	r, _ := ctx.Request, ctx.ResponseWriter
+	p, _ := this.GetPartner(ctx)
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	var action = strings.ToLower(r.FormValue("action"))
@@ -47,18 +52,24 @@ func (this *cartC) cartApi(ctx *web.Context) {
 	case "remove":
 		this.cart_RemoveItem(ctx, p, memberId, cartKey)
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 }
 
 func (this *cartC) cart_GetCart(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
+<<<<<<< HEAD
 
 	// 如果已经购买，則创建新的购物车
 	if cart.IsBought == 1 {
 		cart = goclient.Partner.GetShoppingCart(p.Id, memberId, "")
 	}
 
+=======
+>>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)
 }
