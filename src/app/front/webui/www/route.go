@@ -31,11 +31,12 @@ func RegisterRoutes(c gof.App) {
 	cc := &cartC{}
 	uc := &userC{}
 
-	routes.RegisterController("buy", sp)
-	routes.RegisterController("shopping", sp)
-	routes.RegisterController("list", &listC{})
-	routes.RegisterController("cart", cc)
-	routes.RegisterController("user", uc)
+	routes.SingletonRegister("buy", sp)
+	routes.SingletonRegister("shopping", sp)
+	routes.Register("list", func()mvc.Controller{return &listC{}})
+	routes.SingletonRegister("cart", cc)
+	routes.SingletonRegister("user", uc)
+
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {

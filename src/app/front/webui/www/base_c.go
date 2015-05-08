@@ -16,6 +16,22 @@ import (
 )
 
 type baseC struct {
+	// 是否检查用户登陆状态
+	memberChk bool
+}
+
+func NewFilterImpl(memberChk bool)*baseC{
+	return &baseC{
+		memberChk : memberChk,
+	}
+}
+
+func (this *baseC) Requesting(*web.Context) bool{
+	//if(this.GetPartnerId())
+	return true
+}
+
+func (this *baseC) RequestEnd(*web.Context){
 }
 
 // 获取商户编号

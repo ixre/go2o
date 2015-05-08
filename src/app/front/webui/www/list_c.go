@@ -21,9 +21,15 @@ import (
 
 type listC struct {
 	*baseC
+	x int
 }
 
 func (this *listC) Index(ctx *web.Context) {
+	if(this.x==0){
+		this.x =1
+		ctx.ResponseWriter.Write([]byte("-----------"))
+	}
+	return
 	_, w := ctx.Request, ctx.ResponseWriter
 	p, _ := this.GetPartner(ctx)
 	mm := this.GetMember(ctx)
