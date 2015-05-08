@@ -26,15 +26,20 @@ type shoppingC struct {
 	*baseC
 }
 
+func (this *shoppingC) prepare(ctx *web.Context)bool{
+	return this.CheckMemberLogin(ctx)
+}
+
 // 订单确认
 func (this *shoppingC) Confirm(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
-	if m == nil {
-		RedirectLoginPage(w, r.RequestURI)
+
+	if !this.prepare(ctx){
 		return
 	}
+
+	r, w := ctx.Request, ctx.ResponseWriter
+	p := this.GetPartner(ctx)
+	m := this.GetMember(ctx)
 
 	if b, siteConf := GetSiteConf(w, p); b {
 		// 获取购物车
@@ -95,8 +100,11 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 
 // 订单持久化
 func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	r, w := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	var err error
 	r.ParseForm()
@@ -135,6 +143,9 @@ rsp:
 
 // 配送地址管理
 func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	r, w := ctx.Request, ctx.ResponseWriter
 	m := this.GetMember(ctx)
 	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
@@ -154,6 +165,9 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}, "views/web/www/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
@@ -181,7 +195,11 @@ func (this *shoppingC) Apply_post(ctx *web.Context) {
 	}
 }
 func (this *shoppingC) applyCoupon(ctx *web.Context) {
-	p, _ := this.GetPartner(ctx)
+	if !this.prepare(ctx){
+		return
+	}
+
+	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	var message string = "购物车还是空的!"
 	code := ctx.Request.FormValue("code")
@@ -198,8 +216,11 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 
 // 提交订单
 func (this *shoppingC) Submit_0_post(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	r, w := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	if p == nil || m == nil {
@@ -229,6 +250,9 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 }
 
 func (this *shoppingC) Order_finish(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	r, w := ctx.Request, ctx.ResponseWriter
 	// 清除购物车
 	//	cookie, _ := r.Cookie("cart")
@@ -238,7 +262,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	//		http.SetCookie(w, cookie)
 	//	}
 
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
 	if b, siteConf := GetSiteConf(w, p); b {
@@ -273,6 +297,9 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 // 购买中转
 func (this *shoppingC) Index(ctx *web.Context) {
+	if !this.prepare(ctx){
+		return
+	}
 	r, w := ctx.Request, ctx.ResponseWriter
 	var mm = this.GetMember(ctx)
 	if mm == nil {

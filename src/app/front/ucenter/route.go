@@ -26,11 +26,11 @@ func Handle(ctx *web.Context) {
 func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
 	bc := &basicC{}
-	routes.RegisterController("main", mc)
-	routes.RegisterController("basic", bc)
-	routes.RegisterController("order", &orderC{})
-	routes.RegisterController("account", &accountC{})
-	routes.RegisterController("login", &loginC{})
+	routes.SingletonRegister("main", mc)
+	routes.SingletonRegister("basic", bc)
+	routes.SingletonRegister("order", &orderC{})
+	routes.SingletonRegister("account", &accountC{})
+	routes.SingletonRegister("login", &loginC{})
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/", mc.Index)
 }

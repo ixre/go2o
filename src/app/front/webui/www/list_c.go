@@ -25,7 +25,7 @@ type listC struct {
 
 func (this *listC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	mm := this.GetMember(ctx)
 	if b, siteConf := GetSiteConf(w, p); b {
 		categories := apicache.GetCategories(ctx.App, p.Id, p.Secret)
@@ -44,7 +44,7 @@ func (this *listC) Index(ctx *web.Context) {
 
 func (this *listC) GetList(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	const getNum int = -1 //-1表示全部
 	categoryId, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {

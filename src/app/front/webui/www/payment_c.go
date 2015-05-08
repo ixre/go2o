@@ -9,13 +9,11 @@
 package www
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/infrastructure/alipay"
 )
 
 type paymentC struct {
-	gof.App
 }
 
 func (this *paymentC) Create(ctx *web.Context) {
@@ -38,6 +36,7 @@ func (this *paymentC) Create(ctx *web.Context) {
 func (this *paymentC) Return(ctx *web.Context) {
 	r, _ := ctx.Request, ctx.ResponseWriter
 	alipay.ReturnFunc(r, nil)
+	ctx.ResponseWriter.Write([]byte("支付完成"))
 }
 
 func (this *paymentC) Notify_post(ctx *web.Context) {
