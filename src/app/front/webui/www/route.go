@@ -33,11 +33,11 @@ func RegisterRoutes(c gof.App) {
 	uc := &userC{}
 	lc := &listC{}
 
-	routes.SingletonRegister("buy", sp)
-	routes.SingletonRegister("shopping",sp)
-	routes.SingletonRegister("list",lc)
-	routes.SingletonRegister("cart",cc)
-	routes.SingletonRegister("user", uc)
+	routes.Register("buy", sp)
+	routes.Register("shopping",sp)
+	routes.Register("list",lc)
+	routes.Register("cart",cc)
+	routes.Register("user", uc)
 
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
