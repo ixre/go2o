@@ -13,7 +13,7 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/app/cache"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
 	"html/template"

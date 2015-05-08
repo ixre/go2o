@@ -9,7 +9,6 @@
 package ucenter
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -20,7 +19,6 @@ import (
 )
 
 type loginC struct {
-	gof.App
 }
 
 //登陆
@@ -73,6 +71,8 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 			ctx.Session().Set("member:rel_partner", p)
 			ctx.Session().Save()
 			w.Write([]byte("<script>location.replace('/')</script>"))
+		}else{
+			w.Write([]byte(err.Error()))
 		}
 	} else {
 		w.Write([]byte("<script>location.replace('/login')</script>"))

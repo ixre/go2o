@@ -168,6 +168,7 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	cart.TotalFee = t
 	cart.OrderFee = f
 	cart.Summary = c.GetSummary()
+	cart.IsBought = v.IsBought
 
 	if v.Items != nil {
 		if l := len(v.Items); l != 0 {

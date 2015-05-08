@@ -26,16 +26,19 @@ func Handle(ctx *web.Context) {
 //注册路由
 func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
+
 	sp := &shoppingC{}
 	pc := &paymentC{}
 	cc := &cartC{}
 	uc := &userC{}
+	lc := &listC{}
 
-	routes.RegisterController("buy", sp)
-	routes.RegisterController("shopping", sp)
-	routes.RegisterController("list", &listC{})
-	routes.RegisterController("cart", cc)
-	routes.RegisterController("user", uc)
+	routes.Register("buy", sp)
+	routes.Register("shopping",sp)
+	routes.Register("list",lc)
+	routes.Register("cart",cc)
+	routes.Register("user", uc)
+
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {

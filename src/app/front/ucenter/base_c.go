@@ -15,16 +15,9 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/goclient"
 	"net/url"
+	"go2o/src/core/service/dps"
+	"go2o/src/cache"
 )
-
-func chkLogin(ctx *web.Context) bool {
-	return ctx.Session().Get("member") != nil
-}
-func redirect(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	w.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
-		url.QueryEscape(r.URL.String()) + "'</script>"))
-}
 
 var _ mvc.Filter = new(baseC)
 
@@ -33,29 +26,38 @@ type baseC struct {
 
 func (this *baseC) Requesting(ctx *web.Context) bool {
 	//验证是否登陆
-	if !chkLogin(ctx) {
-		redirect(ctx)
-		return false
+	s := ctx.Session().Get("member")
+	if s != nil {
+		if m := s.(*member.ValueMember); m != nil {
+			ctx.Items["member"] = m
+			ctx.Items["member_ptId"] = dps.MemberService.GetRelation(m.Id).Reg_PtId
+			return true
+		}
 	}
-	return true
+	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
+	url.QueryEscape(ctx.Request.URL.String()) + "'</script>"))
+	return false
 }
+
 func (this *baseC) RequestEnd(ctx *web.Context) {
 }
 
 // 获取商户
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
-	return ctx.Session().Get("member:rel_partner").(*partner.ValuePartner)
+	var partnerId int = ctx.Items["member_ptId"].(int)
+	pt := cache.GetValuePartnerCache(partnerId)
+	if pt == nil{
+		var err error
+		if pt,err = dps.PartnerService.GetPartner(partnerId);err == nil{
+			cache.SetValuePartnerCache(partnerId,pt)
+		}
+	}
+	return pt
 }
 
 // 获取会员
 func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
-	memberIdObj := ctx.Session().Get("member")
-	if memberIdObj != nil {
-		if o, ok := memberIdObj.(*member.ValueMember); ok {
-			return o
-		}
-	}
-	return nil
+	return ctx.Items["member"].(*member.ValueMember)
 }
 
 // 获取商户的站点设置

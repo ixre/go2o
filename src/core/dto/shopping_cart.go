@@ -18,6 +18,7 @@ type ShoppingCart struct {
 	Items      []*CartItem `json:"items"`
 	TotalFee   float32     `json:"total"`
 	OrderFee   float32     `json:"fee"`
+	IsBought	int 		`json:"isBought"`		//是否已经购买
 }
 
 type CartItem struct {

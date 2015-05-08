@@ -10,7 +10,7 @@ package www
 
 import (
 	"github.com/atnet/gof/web"
-	"go2o/src/app/cache/apicache"
+	"go2o/src/cache/apicache"
 	"html/template"
 )
 
@@ -32,29 +32,27 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 }
 
 func (this *mainC) Index(ctx *web.Context) {
-	_, w := ctx.Request, ctx.ResponseWriter
-	p, err := this.GetPartner(ctx)
-	if err != nil {
-		ctx.ResponseWriter.Write([]byte(`<html><head><title></title></head>` +
-			`<body><span style="color:red">` + err.Error() + `</span></body></html>`))
-		return
-	}
-	if this.HandleIndexGo(ctx) {
-		return
-	}
-	if b, siteConf := GetSiteConf(w, p); b {
-		shops := apicache.GetShops(ctx.App, p.Id, p.Secret)
-		if shops == nil {
-			shops = []byte("{}")
+	if this.Requesting(ctx) {
+		_, w := ctx.Request, ctx.ResponseWriter
+		p := this.GetPartner(ctx)
+
+		if this.HandleIndexGo(ctx) {
+			return
 		}
-		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-			(*m)["partner"] = p
-			(*m)["conf"] = siteConf
-			(*m)["title"] = siteConf.IndexTitle
-			(*m)["shops"] = template.HTML(shops)
-		},
-			"views/web/www/index.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+		if b, siteConf := GetSiteConf(w, p); b {
+			shops := apicache.GetShops(ctx.App, p.Id, p.Secret)
+			if shops == nil {
+				shops = []byte("{}")
+			}
+			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
+				(*m)["partner"] = p
+				(*m)["conf"] = siteConf
+				(*m)["title"] = siteConf.IndexTitle
+				(*m)["shops"] = template.HTML(shops)
+			},
+				"views/web/www/index.html",
+				"views/web/www/inc/header.html",
+				"views/web/www/inc/footer.html")
+		}
 	}
 }
