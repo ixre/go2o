@@ -17,15 +17,8 @@ import (
 var _ mvc.Filter = new(commC)
 
 type commC struct {
-	Base *baseC
+	*baseC
 	*front.WebCgi
-}
-
-func (this *commC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *commC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
 }
 
 func (this *mainC) GeoLocation(ctx *web.Context) {

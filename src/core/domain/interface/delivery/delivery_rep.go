@@ -22,7 +22,7 @@ type IDeliveryRep interface {
 	GetCoverageArea(areaId, id int) *CoverageValue
 
 	// 获取所有的覆盖区域
-	GetAllConverageAreas(areaId int) []*CoverageValue
+	GetAllCoverageAreas(areaId int) []*CoverageValue
 
 	// 获取配送绑定
 	GetDeliveryBind(partnerId, coverageId int) *PartnerDeliverBind

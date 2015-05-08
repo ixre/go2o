@@ -46,7 +46,7 @@ func (this *DeliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int, error
 	if v.Id <= 0 {
 		_, _, err := orm.Save(nil, v)
 		if err == nil {
-			this.Connector.ExecScalar(`SELECT MAX(id) FROM dlv_converage`, &v.Id)
+			this.Connector.ExecScalar(`SELECT MAX(id) FROM dlv_coverage`, &v.Id)
 		}
 		return v.Id, err
 	} else {
@@ -66,7 +66,7 @@ func (this *DeliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue
 }
 
 // 获取所有的覆盖区域
-func (this *DeliveryRep) GetAllConverageAreas(areaId int) []*delivery.CoverageValue {
+func (this *DeliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
 	err := this.Connector.GetOrm().Select(e, "area_id=?", areaId)
 	if err != nil {

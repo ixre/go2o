@@ -79,7 +79,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 
 	/** 配送 **/
 	orm.CreateTableMap(delivery.AreaValue{}, "dlv_area")
-	orm.CreateTableMap(delivery.CoverageValue{}, "dlv_converage")
+	orm.CreateTableMap(delivery.CoverageValue{}, "dlv_coverage")
 	orm.CreateTableMap(delivery.PartnerDeliverBind{}, "dlv_partner_bind")
 
 	/** 用户 **/

@@ -24,18 +24,11 @@ import (
 var _ mvc.Filter = new(promC)
 
 type promC struct {
-	Base *baseC
-}
-
-func (this *promC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *promC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
+	*baseC
 }
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
-	//partnerId := this.Base.GetPartnerId(ctx)
+	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(m *map[string]interface{}) {
 		},
@@ -43,7 +36,7 @@ func (this *promC) CreateCoupon(ctx *web.Context) {
 }
 
 func (this *promC) EditCoupon(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
@@ -58,7 +51,7 @@ func (this *promC) EditCoupon(ctx *web.Context) {
 
 //　绑定优惠券操作页
 func (this *promC) BindCoupon(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
@@ -70,7 +63,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 }
 
 func (this *promC) BindCoupon_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -94,7 +87,7 @@ func (this *promC) BindCoupon_post(ctx *web.Context) {
 }
 
 func (this *promC) SaveCoupon_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 
 	var result gof.JsonResult
@@ -119,7 +112,7 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 }
 
 func (this *promC) Coupon(ctx *web.Context) {
-	//partnerId := this.Base.GetPartnerId(ctx)
+	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(m *map[string]interface{}) {
 
