@@ -36,7 +36,7 @@ func (this *orderC) List(ctx *web.Context) {
 }
 
 func (this *orderC) Cancel(ctx *web.Context) {
-	//partnerId := this.Base.GetPartnerId(ctx)
+	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/order/cancel.html")
 
 }

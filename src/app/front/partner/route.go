@@ -22,18 +22,19 @@ func Handle(ctx *web.Context) {
 
 //注册路由
 func RegisterRoutes() {
-	bc := &baseC{}
-	mc := &mainC{Base: bc} //入口控制器
+	bc := new(baseC)
+	mc := &mainC{} //入口控制器
 	lc := &loginC{}
-	routes.RegisterController("shop", &shopC{Base: bc})   //商家门店控制器
-	routes.RegisterController("goods", &goodsC{Base: bc}) //商品控制器
-	routes.RegisterController("comm", &commC{Base: bc})
-	routes.RegisterController("order", &orderC{})
-	routes.RegisterController("category", &categoryC{Base: bc})
-	routes.RegisterController("conf", &configC{Base: bc})
-	routes.RegisterController("prom", &promC{Base: bc})
+	routes.RegisterController("shop", new(shopC))             //商家门店控制器
+	routes.RegisterController("goods", new(goodsC))           //商品控制器
+	routes.RegisterController("comm", new(commC))             // 通用控制器
+	routes.RegisterController("order", new(orderC))           // 订单控制器
+	routes.RegisterController("category", new(categoryC))     // 商品分类控制器
+	routes.RegisterController("conf", new(configC))           // 商户设置控制器
+	routes.RegisterController("prom", new(promC))             // 促销控制器
+	routes.RegisterController("delivery", new(coverageAreaC)) // 配送区域控制器
 
-	routes.Add("^/export/getExportData$", func(ctx *web.Context) {
+	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {
 			GetExportData(ctx, id)
 		} else {
@@ -41,16 +42,15 @@ func RegisterRoutes() {
 		}
 	})
 
-	routes.Add("^/login$", func(ctx *web.Context) {
+	routes.Add("/login", func(ctx *web.Context) {
 		mvc.Handle(lc, ctx, true)
 	})
 
 	routes.Add("^/[^/]*$", func(ctx *web.Context) {
-		if b, id := chkLogin(ctx); b {
-			mvc.Handle(mc, ctx, true, id)
-		} else {
-			redirect(ctx)
+		if bc.Requesting(ctx) {
+			mvc.Handle(mc, ctx, true)
 		}
+		bc.RequestEnd(ctx)
 	})
 
 }
