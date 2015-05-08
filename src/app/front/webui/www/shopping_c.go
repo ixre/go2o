@@ -20,6 +20,8 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"time"
+	"net/http"
 )
 
 type shoppingC struct {
@@ -233,8 +235,23 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
 	}
+
+	// 清空购物车
+	this.emptyShoppingCart(ctx)
+
 	w.Write([]byte(`{"result":true,"data":"` + order_no + `"}`))
 }
+
+// 清除购物车
+func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
+	cookie, _ := ctx.Request.Cookie("_cart")
+	if cookie != nil {
+		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
+		cookie.Path = "/"
+		http.SetCookie(ctx.ResponseWriter, cookie)
+	}
+}
+
 
 func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
@@ -254,13 +271,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
-	// 清除购物车
-	//	cookie, _ := r.Cookie("cart")
-	//	if cookie != nil {
-	//		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
-	//		cookie.Path = "/"
-	//		http.SetCookie(w, cookie)
-	//	}
+
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)

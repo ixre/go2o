@@ -21,6 +21,7 @@ import (
 )
 
 
+
 func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner) (bool, *partner.SiteConf) {
 	var conf = cache.GetPartnerSiteConf(p.Id)
 	if conf == nil {

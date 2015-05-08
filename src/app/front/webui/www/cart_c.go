@@ -53,6 +53,12 @@ func (this *cartC) cartApi(ctx *web.Context) {
 func (this *cartC) cart_GetCart(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
+
+	// 如果已经购买，則创建新的购物车
+	if cart.IsBought == 1 {
+		cart = goclient.Partner.GetShoppingCart(p.Id, memberId, "")
+	}
+
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)
 }

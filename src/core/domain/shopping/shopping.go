@@ -219,7 +219,7 @@ func (this *Shopping) SubmitOrder(memberId int, couponCode string) (string, erro
 				var orderNo string
 				orderNo, err = order.Submit()
 				if err == nil {
-					cart.BindOrder(orderNo)
+					err = cart.BindOrder(orderNo)
 				}
 				return orderNo, err
 			}
