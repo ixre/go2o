@@ -25,9 +25,9 @@ type mainC struct {
 
 //todo:bug 当在ucenter登陆，会话会超时
 func (this *mainC) Index(ctx *web.Context) {
-	mm := this.baseC.GetMember(ctx)
-	p := this.baseC.GetPartner(ctx)
-	conf, _ := this.baseC.GetSiteConf(p.Id, p.Secret)
+	mm := this.GetMember(ctx)
+	p := this.GetPartner(ctx)
+	conf, _ := this.GetSiteConf(p.Id, p.Secret)
 
 	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
 	js, _ := json.Marshal(mm)

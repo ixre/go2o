@@ -66,7 +66,7 @@ func (this *DeliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue
 }
 
 // 获取所有的覆盖区域
-func (this *DeliveryRep) GetAllConverageAreas(areaId int) []*delivery.CoverageValue {
+func (this *DeliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
 	err := this.Connector.GetOrm().Select(e, "area_id=?", areaId)
 	if err != nil {

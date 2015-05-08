@@ -25,14 +25,7 @@ import (
 var _ mvc.Filter = new(shopC)
 
 type shopC struct {
-	Base *baseC
-}
-
-func (this *shopC) Requesting(ctx *web.Context) bool {
-	return this.Base.Requesting(ctx)
-}
-func (this *shopC) RequestEnd(ctx *web.Context) {
-	this.Base.RequestEnd(ctx)
+	*baseC
 }
 
 func (this *shopC) ShopList(ctx *web.Context) {
@@ -50,7 +43,7 @@ func (this *shopC) Create(ctx *web.Context) {
 
 //修改门店信息
 func (this *shopC) Modify(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
@@ -65,7 +58,7 @@ func (this *shopC) Modify(ctx *web.Context) {
 
 //修改门店信息
 func (this *shopC) SaveShop_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.JsonResult
 	r.ParseForm()
@@ -84,7 +77,7 @@ func (this *shopC) SaveShop_post(ctx *web.Context) {
 }
 
 func (this *shopC) Del_post(ctx *web.Context) {
-	partnerId := this.Base.GetPartnerId(ctx)
+	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))

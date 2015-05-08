@@ -14,6 +14,6 @@ func NewDeliveryService(r delivery.IDeliveryRep) *deliveryService {
 	}
 }
 
-func (this *deliveryService) CreateConverageArea(c *delivery.CoverageValue) (int, error) {
+func (this *deliveryService) CreateCoverageArea(c *delivery.CoverageValue) (int, error) {
 	return this._rep.SaveCoverageArea(c)
 }
