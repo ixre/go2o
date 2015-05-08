@@ -26,14 +26,14 @@ type shoppingC struct {
 	*baseC
 }
 
-func (this *shoppingC) prepare(ctx *web.Context)bool{
+func (this *shoppingC) prepare(ctx *web.Context) bool {
 	return this.CheckMemberLogin(ctx)
 }
 
 // 订单确认
 func (this *shoppingC) Confirm(ctx *web.Context) {
 
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 
@@ -100,7 +100,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 
 // 订单持久化
 func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
@@ -143,7 +143,7 @@ rsp:
 
 // 配送地址管理
 func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
@@ -165,7 +165,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}, "views/web/www/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 	m := this.GetMember(ctx)
@@ -195,7 +195,7 @@ func (this *shoppingC) Apply_post(ctx *web.Context) {
 	}
 }
 func (this *shoppingC) applyCoupon(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 
@@ -216,7 +216,7 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 
 // 提交订单
 func (this *shoppingC) Submit_0_post(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
@@ -250,7 +250,7 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 }
 
 func (this *shoppingC) Order_finish(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
@@ -297,15 +297,10 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 // 购买中转
 func (this *shoppingC) Index(ctx *web.Context) {
-	if !this.prepare(ctx){
+	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
-	var mm = this.GetMember(ctx)
-	if mm == nil {
-		RedirectLoginPage(w, r.RequestURI)
-	} else {
-		w.Header().Add("Location", "/buy/confirm")
-		w.WriteHeader(302)
-	}
+	w := ctx.ResponseWriter
+	w.Header().Add("Location", "/buy/confirm")
+	w.WriteHeader(302)
 }

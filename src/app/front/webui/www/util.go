@@ -15,34 +15,32 @@ import (
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"net/http"
-	"net/url"
 	"runtime/debug"
 	"strings"
+	"go2o/src/cache"
 )
 
-// 跳转到登录页面
-func RedirectLoginPage(w http.ResponseWriter, returnUrl string) {
-	var header http.Header = w.Header()
-	header.Add("Location", "/login?return_url="+url.QueryEscape(returnUrl))
-	w.WriteHeader(302)
-}
 
 func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner) (bool, *partner.SiteConf) {
-	siteConf, _ := goclient.Partner.GetSiteConf(p.Id, p.Secret)
+	var conf = cache.GetPartnerSiteConf(p.Id)
+	if conf == nil {
+		conf, _ = goclient.Partner.GetSiteConf(p.Id, p.Secret)
 
-	if siteConf == nil {
-		w.Write([]byte("网站访问过程中出现了异常，请重试!"))
-		return false, nil
-	}
-
-	if siteConf.State == enum.PARTNER_SITE_CLOSED {
-		if strings.TrimSpace(siteConf.StateHtml) == "" {
-			siteConf.StateHtml = "网站暂停访问，请联系商家：" + p.Tel
+		if conf == nil {
+			w.Write([]byte("网站访问过程中出现了异常，请重试!"))
+			return false, nil
 		}
-		w.Write([]byte(siteConf.StateHtml))
-		return false, siteConf
+
+		if conf.State == enum.PARTNER_SITE_CLOSED {
+			if strings.TrimSpace(conf.StateHtml) == "" {
+				conf.StateHtml = "网站暂停访问，请联系商家：" + p.Tel
+			}
+			w.Write([]byte(conf.StateHtml))
+			return false, conf
+		}
+		cache.SetPartnerSiteConf(p.Id,conf)
 	}
-	return true, siteConf
+	return true, conf
 }
 
 // 处理自定义错误

@@ -25,44 +25,45 @@ type mainC struct {
 
 //todo:bug 当在ucenter登陆，会话会超时
 func (this *mainC) Index(ctx *web.Context) {
-	mm := this.GetMember(ctx)
-	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	if this.Requesting(ctx) {
+		mm := this.GetMember(ctx)
+		p := this.GetPartner(ctx)
+		conf, _ := this.GetSiteConf(p.Id, p.Secret)
 
-	acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
-	js, _ := json.Marshal(mm)
-	info := make(map[string]string)
-	info["memName"] = mm.Name
+		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
+		js, _ := json.Marshal(mm)
+		info := make(map[string]string)
+		info["memName"] = mm.Name
 
-	lv := dps.MemberService.GetLevelById(mm.Level)
-	nextLv := dps.MemberService.GetNextLevel(mm.Level)
-	if nextLv == nil {
-		nextLv = &lv
-	}
+		lv := dps.MemberService.GetLevelById(mm.Level)
+		nextLv := dps.MemberService.GetNextLevel(mm.Level)
+		if nextLv == nil {
+			nextLv = &lv
+		}
 
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		mv := *m
-		mv["level"] = lv
-		mv["nLevel"] = nextLv
-		mv["member"] = mm
-		mv["partner"] = p
-		mv["conf"] = conf
-		mv["partner_host"] = conf.Host
-		mv["json"] = template.JS(js)
-		mv["acc"] = acc
-		mv["regTime"] = time.Unix(mm.RegTime, 0).Format("2006-01-02")
-		mv["name"] = gof.BoolString(len(mm.Name) == 0,
+		ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
+			mv := *m
+			mv["level"] = lv
+			mv["nLevel"] = nextLv
+			mv["member"] = mm
+			mv["partner"] = p
+			mv["conf"] = conf
+			mv["partner_host"] = conf.Host
+			mv["json"] = template.JS(js)
+			mv["acc"] = acc
+			mv["regTime"] = time.Unix(mm.RegTime, 0).Format("2006-01-02")
+			mv["name"] = gof.BoolString(len(mm.Name) == 0,
 			`<span class="red">未填写</span>`,
 			mm.Name)
 
-		mv["sex"] = gof.BoolString(mm.Sex == 1, "先生",
+			mv["sex"] = gof.BoolString(mm.Sex == 1, "先生",
 			gof.BoolString(mm.Sex == 2, "女士", ""))
 
-	}, "views/ucenter/index.html",
+		}, "views/ucenter/index.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
 		"views/ucenter/inc/footer.html")
-
+	}
 }
 
 func (this *mainC) Logout(ctx *web.Context) {

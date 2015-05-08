@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
+	"go2o/src/cache"
 )
 
 type baseC struct {
@@ -37,7 +38,6 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	}
 	ctx.Items["partner_ins"] = pt
 
-	// 获取会员
 	return true
 }
 
@@ -99,5 +99,13 @@ func getPartnerId(ctx *web.Context) int {
 }
 func getPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 	//todo: 缓存，用Member对应的Partner编号来查询缓存
-	return dps.PartnerService.GetPartner(getPartnerId(ctx))
+	var partnerId int = ctx.GetItem("partner_id").(int)
+	var err error
+	var pt *partner.ValuePartner = cache.GetValuePartnerCache(partnerId)
+	if pt == nil {
+		if pt, err =  dps.PartnerService.GetPartner(getPartnerId(ctx));err == nil{
+			cache.SetValuePartnerCache(partnerId,pt)
+		}
+	}
+	return pt,err
 }
