@@ -26,15 +26,17 @@ func Handle(ctx *web.Context) {
 //注册路由
 func RegisterRoutes(c gof.App) {
 	mc := &mainC{}
+
 	sp := &shoppingC{}
 	pc := &paymentC{}
 	cc := &cartC{}
 	uc := &userC{}
+	lc := &listC{}
 
 	routes.SingletonRegister("buy", sp)
-	routes.SingletonRegister("shopping", sp)
-	routes.Register("list", func()mvc.Controller{return &listC{}})
-	routes.SingletonRegister("cart", cc)
+	routes.SingletonRegister("shopping",sp)
+	routes.SingletonRegister("list",lc)
+	routes.SingletonRegister("cart",cc)
 	routes.SingletonRegister("user", uc)
 
 	//处理错误

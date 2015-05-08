@@ -23,8 +23,13 @@ type cartC struct {
 
 // 购物车
 func (this *cartC) cartApi(ctx *web.Context) {
+	if !this.Requesting(ctx) {
+		ctx.ResponseWriter.Write([]byte("invalid request"))
+		return
+	}
+
 	r, _ := ctx.Request, ctx.ResponseWriter
-	p, _ := this.GetPartner(ctx)
+	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	var action = strings.ToLower(r.FormValue("action"))
@@ -42,6 +47,7 @@ func (this *cartC) cartApi(ctx *web.Context) {
 	case "remove":
 		this.cart_RemoveItem(ctx, p, memberId, cartKey)
 	}
+
 }
 
 func (this *cartC) cart_GetCart(ctx *web.Context,
