@@ -18,6 +18,8 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"go2o/src/cache"
+	"github.com/atnet/gof/storage"
 )
 
 func main() {
@@ -63,6 +65,7 @@ func main() {
 
 	core.SetGlobalApp(newApp)
 	app.Init(newApp)
+	cache.Initialize(storage.NewHashStorage())
 	core.RegisterTypes()
 	daemon.Run(newApp)
 

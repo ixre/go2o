@@ -10,7 +10,7 @@ package www
 
 import (
 	"github.com/atnet/gof/web"
-	"go2o/src/app/cache/apicache"
+	"go2o/src/cache/apicache"
 	"html/template"
 )
 

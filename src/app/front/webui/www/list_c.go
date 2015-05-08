@@ -12,7 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/atnet/gof/web"
-	"go2o/src/app/cache/apicache"
+	"go2o/src/cache/apicache"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/goclient"
 	"html/template"

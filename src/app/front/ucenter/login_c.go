@@ -9,7 +9,6 @@
 package ucenter
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -20,7 +19,6 @@ import (
 )
 
 type loginC struct {
-	gof.App
 }
 
 //登陆
