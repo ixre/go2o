@@ -12,11 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/atnet/gof/web"
-<<<<<<< HEAD
 	"go2o/src/cache/apicache"
-=======
-	"go2o/src/app/cache/apicache"
->>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/goclient"
 	"html/template"
@@ -29,11 +25,7 @@ type listC struct {
 
 func (this *listC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
-<<<<<<< HEAD
 	p := this.GetPartner(ctx)
-=======
-	p, _ := this.GetPartner(ctx)
->>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	mm := this.GetMember(ctx)
 	if b, siteConf := GetSiteConf(w, p); b {
 		categories := apicache.GetCategories(ctx.App, p.Id, p.Secret)
@@ -52,11 +44,7 @@ func (this *listC) Index(ctx *web.Context) {
 
 func (this *listC) GetList(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-<<<<<<< HEAD
 	p := this.GetPartner(ctx)
-=======
-	p, _ := this.GetPartner(ctx)
->>>>>>> 55b2cb6c58ebd6b2d1e8bbbd81858ff12b1b2eee
 	const getNum int = -1 //-1表示全部
 	categoryId, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {
