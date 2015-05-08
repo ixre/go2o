@@ -25,14 +25,14 @@ func RegisterRoutes() {
 	bc := new(baseC)
 	mc := &mainC{} //入口控制器
 	lc := &loginC{}
-	routes.SingletonRegister("shop", new(shopC))             //商家门店控制器
-	routes.SingletonRegister("goods", new(goodsC))           //商品控制器
-	routes.SingletonRegister("comm", new(commC))             // 通用控制器
-	routes.SingletonRegister("order", new(orderC))           // 订单控制器
-	routes.SingletonRegister("category", new(categoryC))     // 商品分类控制器
-	routes.SingletonRegister("conf", new(configC))           // 商户设置控制器
-	routes.SingletonRegister("prom", new(promC))             // 促销控制器
-	routes.SingletonRegister("delivery", new(coverageAreaC)) // 配送区域控制器
+	routes.Register("shop", new(shopC))             //商家门店控制器
+	routes.Register("goods", new(goodsC))           //商品控制器
+	routes.Register("comm", new(commC))             // 通用控制器
+	routes.Register("order", new(orderC))           // 订单控制器
+	routes.Register("category", new(categoryC))     // 商品分类控制器
+	routes.Register("conf", new(configC))           // 商户设置控制器
+	routes.Register("prom", new(promC))             // 促销控制器
+	routes.Register("delivery", new(coverageAreaC)) // 配送区域控制器
 
 	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {
