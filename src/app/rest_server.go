@@ -39,9 +39,6 @@ func RunRestApi(app gof.App, port int) {
         api.Handle(ctx)
     })
 
-    //注册路由
-    RegisterRoutes(app)
-
     //启动服务
     err := http.ListenAndServe(":"+strconv.Itoa(port), in)
 

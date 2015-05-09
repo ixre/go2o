@@ -47,7 +47,7 @@ func (this *baseC) RequestEnd(ctx *web.Context){
 // 输出Json
 func (this *baseC) jsonOutput(ctx *web.Context,v interface{}){
     b,err := json.Marshal(v)
-    if err == nil{
+    if err != nil{
        this.errorOutput(ctx,err.Error())
     }else{
         ctx.ResponseWriter.Write(b)

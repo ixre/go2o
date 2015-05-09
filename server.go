@@ -64,7 +64,7 @@ func main() {
 	if v := newApp.Config().GetInt("socket_post"); v != 0 {
 		socketPort = v
 	}
-	if v := newApp.Config().GetInt("rest_post"); v != 0 {
+	if v := newApp.Config().GetInt("api_service_port"); v != 0 {
 		restPort = v
 	}
 

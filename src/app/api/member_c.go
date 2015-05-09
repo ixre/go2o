@@ -83,22 +83,31 @@ func chkMemberToken(sto gof.Storage,memberId int,token string)bool{
     return b
 }
 
+// 处理请求
+func (this *memberC) handle(ctx *web.Context){
+    mvc.Handle(this,ctx,false)
+}
 
+// 登陆
 func (this *memberC) login(ctx *web.Context){
     r := ctx.Request
     var usr,pwd string = r.FormValue("usr"),r.FormValue("pwd")
-
     var result dto.MemberLoginResult;
-    b, e, err := dps.MemberService.Login(usr, pwd)
-    result.Result = b
 
-    if b {
-        // 生成令牌
-        result.Token = setMemberToken(ctx.App.Storage(),e.Id,e.Pwd)
-        result.Member = e
-    }
-    if err != nil {
-        result.Message = err.Error()
+    if len(usr) == 0 || len(pwd) == 0 {
+        result.Message = "会员不存在"
+    }else{
+        b, e, err := dps.MemberService.Login(usr, pwd)
+        result.Result = b
+
+        if b {
+            // 生成令牌
+            result.Token = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
+            result.Member = e
+        }
+        if err != nil {
+            result.Message = err.Error()
+        }
     }
 
     this.jsonOutput(ctx,result)

@@ -10,11 +10,10 @@ package api
 
 import (
 	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
 )
 
 var (
-	routes *mvc.Route = mvc.NewRoute(nil)
+	routes web.Route =new(web.RouteMap)
 )
 
 //处理请求
@@ -23,9 +22,9 @@ func Handle(ctx *web.Context) {
 }
 
 func init() {
-
-	pc := &partnerC{}
-	mc := &memberC{}
+	bc := new(baseC)
+	//pc := &partnerC{}
+	mc := &memberC{baseC:bc}
 
 //	ws := &websocketC{App: c}
 
@@ -39,9 +38,8 @@ func init() {
 //		ctx.ResponseWriter.Write([]byte("page not found"))
 //	})
 
-	routes.Register("partner",pc)
-	routes.Register("member",mc)
-	routes.Add("/mm_login",mc.login)   // 会员登陆接口
-	routes.Add("/",HandleApi)
 
+	routes.Add("/",HandleApi)
+	routes.Add("/go2o_api_v1/mm_login",mc.login)    // 会员登陆接口
+	routes.Add("^/go2o_api_v1/member/",mc.handle)	// 会员接口
 }
