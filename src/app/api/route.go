@@ -25,6 +25,7 @@ func Handle(ctx *web.Context) {
 func init() {
 
 	pc := &partnerC{}
+	mc := &memberC{}
 
 //	ws := &websocketC{App: c}
 
@@ -39,7 +40,8 @@ func init() {
 //	})
 
 	routes.Register("partner",pc)
-
+	routes.Register("member",mc)
+	routes.Add("/mm_login",mc.login)   // 会员登陆接口
 	routes.Add("/",HandleApi)
 
 }
