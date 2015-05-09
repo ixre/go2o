@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package apiserv
+package api
 
 import (
 	"encoding/json"
