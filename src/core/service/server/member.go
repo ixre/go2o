@@ -40,7 +40,7 @@ func (this *Member) Login(m *jsv.Args, r *dto.MemberLoginResult) error {
 			jsv.Printf("[Member][Login]%d -- %s", e.Id, md5)
 		}
 		rds.Close()
-		r.Token = md5
+		e.DynamicToken = md5
 		r.Member = e
 	}
 	if err != nil {

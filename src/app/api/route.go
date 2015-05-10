@@ -41,5 +41,6 @@ func init() {
 
 	routes.Add("/",HandleApi)
 	routes.Add("/go2o_api_v1/mm_login",mc.login)    // 会员登陆接口
+	routes.Add("/go2o_api_v1/mm_register",mc.register)    // 会员登陆接口
 	routes.Add("^/go2o_api_v1/member/",mc.handle)	// 会员接口
 }

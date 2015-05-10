@@ -30,7 +30,7 @@ func (this *mainC) Index(ctx *web.Context) {
 		p := this.GetPartner(ctx)
 		conf, _ := this.GetSiteConf(p.Id, p.Secret)
 
-		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
+		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.DynamicToken)
 		js, _ := json.Marshal(mm)
 		info := make(map[string]string)
 		info["memName"] = mm.Name

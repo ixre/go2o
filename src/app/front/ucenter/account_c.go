@@ -63,8 +63,8 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 	conf, _ := this.GetSiteConf(p.Id, p.Secret)
 	m := this.GetMember(ctx)
 	_, w := ctx.Request, ctx.ResponseWriter
-	acc, err := goclient.Member.GetMemberAccount(m.Id, m.LoginToken)
-	bank, err := goclient.Member.GetBankInfo(m.Id, m.LoginToken)
+	acc, err := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
+	bank, err := goclient.Member.GetBankInfo(m.Id, m.DynamicToken)
 
 	if err != nil {
 		w.Write([]byte("error:" + err.Error()))
@@ -94,7 +94,7 @@ func (this *accountC) ApplyCash_post(ctx *web.Context) {
 	e := new(member.BankInfo)
 	web.ParseFormToEntity(r.Form, e)
 	e.MemberId = m.Id
-	err := goclient.Member.SaveBankInfo(m.Id, m.LoginToken, e)
+	err := goclient.Member.SaveBankInfo(m.Id, m.DynamicToken, e)
 
 	if err != nil {
 		result = gof.JsonResult{Result: false, Message: err.Error()}
@@ -109,7 +109,7 @@ func (this *accountC) IntegralExchange(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf, _ := this.GetSiteConf(p.Id, p.Secret)
 	m := this.GetMember(ctx)
-	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.LoginToken)
+	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m

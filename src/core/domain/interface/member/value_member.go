@@ -28,11 +28,11 @@ type ValueMember struct {
 	Email    string `db:"email"`
 	RegIp    string `db:"reg_ip"`
 	State    int    `db:"state"`
-	//登录密钥
-	LoginToken string `db:"-"`
-
 	RegTime       int64 `db:"reg_time"`
 	LastLoginTime int64 `db:"last_login_time"`
+
+	//动态令牌，用于登陆或API调用
+	DynamicToken string `db:"-"`
 }
 
 type BankInfo struct {

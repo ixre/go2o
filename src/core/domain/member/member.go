@@ -194,7 +194,7 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	m.Level = 1
 	m.Avatar = "share/noavatar.gif"
 	m.Birthday = "1970-01-01"
-	m.LoginToken = m.Pwd
+	m.DynamicToken = m.Pwd
 	m.Exp = 0
 
 	id, err := this.rep.SaveMember(m)

@@ -50,7 +50,6 @@ func (this *userC) Login_post(ctx *web.Context) {
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	result, _ := goclient.Member.Login(usr, pwd)
 	if result.Result {
-		result.Member.LoginToken = result.Token
 		ctx.Session().Set("member", result.Member)
 		ctx.Session().Save()
 		w.Write([]byte("{result:true}"))
@@ -122,7 +121,7 @@ func (this *userC) member(ctx *web.Context) {
 			ctx.App.Config().GetString(variable.ServerDomain),
 			ctx.Session().GetSessionId(),
 			m.Id,
-			m.LoginToken,
+			m.DynamicToken,
 		)
 	}
 	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))

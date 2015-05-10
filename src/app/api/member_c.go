@@ -24,6 +24,7 @@ type memberC struct{
     *baseC
 }
 
+// 会员登陆后才能调用接口
 func (this *memberC) Requesting(ctx *web.Context)bool {
     if this.baseC != nil && this.baseC.Requesting(ctx) {
         r := ctx.Request
@@ -102,7 +103,32 @@ func (this *memberC) login(ctx *web.Context){
 
         if b {
             // 生成令牌
-            result.Token = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
+            e.DynamicToken = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
+            result.Member = e
+        }
+        if err != nil {
+            result.Message = err.Error()
+        }
+    }
+
+    this.jsonOutput(ctx,result)
+}
+
+// 注册
+func (this *memberC) register(ctx *web.Context){
+    r := ctx.Request
+    var usr,pwd string = r.FormValue("usr"),r.FormValue("pwd")
+    var result dto.MemberLoginResult;
+
+    if len(usr) == 0 || len(pwd) == 0 {
+        result.Message = "会员不存在"
+    }else{
+        b, e, err := dps.MemberService.Login(usr, pwd)
+        result.Result = b
+
+        if b {
+            // 生成令牌
+            e.DynamicToken = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
             result.Member = e
         }
         if err != nil {

@@ -150,7 +150,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
 	m := this.GetMember(ctx)
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
+	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.DynamicToken)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
@@ -176,7 +176,7 @@ func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
+	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.DynamicToken, &e)
 	if err == nil {
 		if b {
 			w.Write([]byte(`{"result":true}`))
