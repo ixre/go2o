@@ -91,50 +91,58 @@ func (this *memberC) handle(ctx *web.Context){
 
 // 登陆
 func (this *memberC) login(ctx *web.Context){
-    r := ctx.Request
-    var usr,pwd string = r.FormValue("usr"),r.FormValue("pwd")
-    var result dto.MemberLoginResult;
+    if this.baseC.Requesting(ctx) {
 
-    if len(usr) == 0 || len(pwd) == 0 {
-        result.Message = "会员不存在"
-    }else{
-        b, e, err := dps.MemberService.Login(usr, pwd)
-        result.Result = b
+        r := ctx.Request
+        var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
+        var result dto.MemberLoginResult;
 
-        if b {
-            // 生成令牌
-            e.DynamicToken = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
-            result.Member = e
+        if len(usr) == 0 || len(pwd) == 0 {
+            result.Message = "会员不存在"
+        }else {
+            b, e, err := dps.MemberService.Login(usr, pwd)
+            result.Result = b
+
+            if b {
+                // 生成令牌
+                e.DynamicToken = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
+                result.Member = e
+            }
+            if err != nil {
+                result.Message = err.Error()
+            }
         }
-        if err != nil {
-            result.Message = err.Error()
-        }
+
+        this.jsonOutput(ctx, result)
     }
-
-    this.jsonOutput(ctx,result)
 }
 
 // 注册
 func (this *memberC) register(ctx *web.Context){
-    r := ctx.Request
-    var usr,pwd string = r.FormValue("usr"),r.FormValue("pwd")
-    var result dto.MemberLoginResult;
+    if this.baseC.Requesting(ctx) {
+        var result = dto.MessageResult{}
 
-    if len(usr) == 0 || len(pwd) == 0 {
-        result.Message = "会员不存在"
-    }else{
-        b, e, err := dps.MemberService.Login(usr, pwd)
-        result.Result = b
-
-        if b {
-            // 生成令牌
-            e.DynamicToken = setMemberToken(ctx.App.Storage(), e.Id, e.Pwd)
-            result.Member = e
-        }
-        if err != nil {
-            result.Message = err.Error()
-        }
+        //        r, w := ctx.Request, ctx.ResponseWriter
+        //        p := this.GetPartner(ctx)
+        //        r.ParseForm()
+        //        var member member.ValueMember
+        //        web.ParseFormToEntity(r.Form, &member)
+        //        if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
+        //            member.RegIp = r.RemoteAddr[:i]
+        //        }
+        //        b, err := goclient.Partner.RegisterMember(&member, p.Id, 0, "")
+        //        if b {
+        //            w.Write([]byte(`{"result":true}`))
+        //        } else {
+        //            if err != nil {
+        //                w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+        //            } else {
+        //                w.Write([]byte(`{"result":false}`))
+        //            }
+        //
+        //        }
+        //
+        //
+        this.jsonOutput(ctx, result)
     }
-
-    this.jsonOutput(ctx,result)
 }
