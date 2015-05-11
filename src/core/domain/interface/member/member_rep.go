@@ -19,6 +19,18 @@ type IMemberRep interface {
 	// 创建会员
 	CreateMember(*ValueMember) IMember
 
+	// 保存
+	SaveMember(v *ValueMember) (int, error)
+
+	// 根据邀请码获取会员编号
+	GetMemberIdByInvitationCode(string)int
+
+	// 用户名是否存在
+	CheckUsrExist(string) bool
+
+	// 保存绑定
+	SaveRelation(*MemberRelation) error
+
 	// 获取等级
 	GetLevel(levelVal int) *MemberLevel
 
@@ -49,14 +61,7 @@ type IMemberRep interface {
 	// 获取经验值对应的等级
 	GetLevelByExp(exp int) int
 
-	// 保存
-	SaveMember(v *ValueMember) (int, error)
 
-	// 用户名是否存在
-	CheckUsrExist(string) bool
-
-	// 保存绑定
-	SaveRelation(*MemberRelation) error
 
 	// 保存地址
 	SaveDeliver(*DeliverAddress) (int, error)

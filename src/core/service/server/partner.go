@@ -120,6 +120,7 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 	if cardId == "" {
 		cardId = time.Now().Format("200601021504")
 	}
+	e.RegFrom = "WEB"
 
 	e.Pwd = domain.EncodeMemberPwd(e.Usr, e.Pwd)
 	id, err := dps.MemberService.SaveMember(&e)

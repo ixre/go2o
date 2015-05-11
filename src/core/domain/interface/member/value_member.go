@@ -26,6 +26,9 @@ type ValueMember struct {
 	Address       string `db:"address"`
 	Qq            string `db:"qq"`
 	Email         string `db:"email"`
+	// 邀请码
+	InvitationCode	string `db:"invitation_code"`
+	RegFrom		  string `db:"reg_from"`
 	RegIp         string `db:"reg_ip"`
 	State         int    `db:"state"`
 	RegTime       int64  `db:"reg_time"`

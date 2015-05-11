@@ -10,11 +10,11 @@ package member
 
 //会员关联表
 type MemberRelation struct {
-	MemberId int `db:"member_id" pk:"yes"`
+	MemberId 	int 		`db:"member_id" pk:"yes"`
 	//会员卡号
-	CardId string `db:"card_id"`
-	//推荐人
-	TgId int `db:"tg_id"`
+	CardId 		string 		`db:"card_id"`
+	//推荐人（会员）
+	InvitationMemberId int 	`db:"invi_member_id"`
 	//注册关联商家编号
-	Reg_PtId int `db:"reg_ptid"`
+	RegisterPartnerId int 	`db:"reg_partner_id"`
 }

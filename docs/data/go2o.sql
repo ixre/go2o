@@ -24,9 +24,9 @@ DROP TABLE IF EXISTS `conf_integral_type`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `conf_integral_type` (
   `id` int(11) NOT NULL,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,12 +48,12 @@ DROP TABLE IF EXISTS `conf_member_level`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `conf_member_level` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
   `value` int(11) DEFAULT '1' COMMENT '等级值',
   `require_exp` int(11) DEFAULT NULL COMMENT '要求积分',
   `enabled` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,13 +159,13 @@ CREATE TABLE `gs_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) DEFAULT NULL COMMENT '父分类',
   `partner_id` int(11) DEFAULT NULL COMMENT '商家ID(pattern ID);如果为空，则表示模式分类',
-  `name` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
   `enabled` bit(1) DEFAULT NULL COMMENT '是否可用',
-  `description` varchar(255) COLLATE utf8_general_ci DEFAULT NULL COMMENT '描述',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
   `order_index` int(11) DEFAULT '0' COMMENT '序号',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='food categories';
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='food categories';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,22 +188,22 @@ DROP TABLE IF EXISTS `gs_goods`;
 CREATE TABLE `gs_goods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) DEFAULT NULL COMMENT '分类',
-  `goods_no` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `small_title` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `goods_no` varchar(45) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `small_title` varchar(100) DEFAULT NULL,
   `on_shelves` tinyint(4) DEFAULT NULL COMMENT '是否上架',
-  `img` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `img` varchar(100) DEFAULT NULL,
   `cost` decimal(5,2) DEFAULT '0.00' COMMENT ' 成本价',
   `price` decimal(5,2) DEFAULT '0.00' COMMENT '售价(市场价)',
   `sale_price` decimal(5,2) DEFAULT NULL COMMENT '实际销售价',
-  `apply_subs` varchar(200) COLLATE utf8_general_ci DEFAULT NULL COMMENT '供应分店,用'',''隔开',
-  `note` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '备注，如新菜色，特价优惠等',
-  `description` varchar(500) COLLATE utf8_general_ci DEFAULT NULL,
+  `apply_subs` varchar(200) DEFAULT NULL COMMENT '供应分店,用'',''隔开',
+  `note` varchar(45) DEFAULT NULL COMMENT '备注，如新菜色，特价优惠等',
+  `description` varchar(500) DEFAULT NULL,
   `state` int(11) DEFAULT '1',
   `create_time` int(11) DEFAULT NULL COMMENT '商品货号',
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='食物项';
+) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8 COMMENT='食物项';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,19 +225,19 @@ DROP TABLE IF EXISTS `gs_snapshot`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gs_snapshot` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `snapshot_key` varchar(32) COLLATE utf8_general_ci DEFAULT NULL,
+  `snapshot_key` varchar(32) DEFAULT NULL,
   `goods_id` int(11) DEFAULT NULL,
-  `goods_no` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `goods_name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `small_title` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
-  `category_name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `img` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `goods_no` varchar(45) DEFAULT NULL,
+  `goods_name` varchar(45) DEFAULT NULL,
+  `small_title` varchar(100) DEFAULT NULL,
+  `category_name` varchar(45) DEFAULT NULL,
+  `img` varchar(100) DEFAULT NULL,
   `cost` decimal(5,2) DEFAULT '0.00' COMMENT ' 成本价',
   `price` decimal(5,2) DEFAULT '0.00' COMMENT '售价(市场价)',
   `sale_price` decimal(5,2) DEFAULT NULL COMMENT '实际销售价',
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='食物项';
+) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='食物项';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,7 +267,7 @@ CREATE TABLE `mm_account` (
   `total_pay` float(8,2) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL COMMENT '积分',
   PRIMARY KEY (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -289,14 +289,14 @@ DROP TABLE IF EXISTS `mm_bank`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mm_bank` (
   `member_id` int(11) NOT NULL,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '银行名称',
-  `account` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '银行账号',
-  `account_name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '银行户名',
-  `network` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '银行网点',
+  `name` varchar(45) DEFAULT NULL COMMENT '银行名称',
+  `account` varchar(45) DEFAULT NULL COMMENT '银行账号',
+  `account_name` varchar(45) DEFAULT NULL COMMENT '银行户名',
+  `network` varchar(45) DEFAULT NULL COMMENT '银行网点',
   `state` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -305,7 +305,7 @@ CREATE TABLE `mm_bank` (
 
 LOCK TABLES `mm_bank` WRITE;
 /*!40000 ALTER TABLE `mm_bank` DISABLE KEYS */;
-INSERT INTO `mm_bank` VALUES (1,'中国工商银行','513701198801105317','张三 ','上海分行漕溪路支行 ',0,2012),(28,'中国邮政储蓄银行','123486855651',NULL,NULL,1,2012),(29,NULL,NULL,NULL,NULL,1,0);
+INSERT INTO `mm_bank` VALUES (1,'中国工商银行','513701198801105317','张三 ','上海分行漕溪路支行 ',0,2012),(28,'中国邮政储蓄银行','123486855651',NULL,NULL,1,2012),(29,NULL,NULL,NULL,NULL,1,0),(30,NULL,NULL,NULL,NULL,1,0),(31,NULL,NULL,NULL,NULL,1,0),(32,NULL,NULL,NULL,NULL,1,0);
 /*!40000 ALTER TABLE `mm_bank` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -319,12 +319,12 @@ DROP TABLE IF EXISTS `mm_deliver_addr`;
 CREATE TABLE `mm_deliver_addr` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11) DEFAULT NULL,
-  `real_name` varchar(10) COLLATE utf8_general_ci DEFAULT NULL,
-  `phone` varchar(11) COLLATE utf8_general_ci DEFAULT NULL,
-  `address` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `real_name` varchar(10) DEFAULT NULL,
+  `phone` varchar(11) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   `is_default` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -348,13 +348,13 @@ CREATE TABLE `mm_income_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_id` int(11) DEFAULT NULL,
   `member_id` int(11) DEFAULT NULL,
-  `type` varchar(10) COLLATE utf8_general_ci DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
   `fee` float(6,2) DEFAULT NULL,
-  `log` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `log` varchar(100) DEFAULT NULL,
   `record_time` int(11) DEFAULT NULL,
   `state` int(11) DEFAULT NULL COMMENT '状态(如：无效），默认为1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='进账日志';
+) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8 COMMENT='进账日志';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -380,10 +380,10 @@ CREATE TABLE `mm_integral_log` (
   `member_id` int(11) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `integral` int(11) DEFAULT NULL,
-  `log` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `log` varchar(100) DEFAULT NULL,
   `record_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -405,24 +405,26 @@ DROP TABLE IF EXISTS `mm_member`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mm_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usr` varchar(20) COLLATE utf8_general_ci DEFAULT NULL COMMENT '用户名',
-  `pwd` varchar(32) COLLATE utf8_general_ci DEFAULT NULL COMMENT '密码',
-  `name` varchar(20) COLLATE utf8_general_ci DEFAULT NULL COMMENT '名字',
+  `usr` varchar(20) DEFAULT NULL COMMENT '用户名',
+  `pwd` varchar(32) DEFAULT NULL COMMENT '密码',
+  `name` varchar(20) DEFAULT NULL COMMENT '名字',
   `exp` int(11) unsigned DEFAULT '0',
   `level` int(11) DEFAULT '1',
+  `invitation_code` varchar(10) DEFAULT NULL COMMENT '邀请码',
   `sex` int(1) DEFAULT NULL COMMENT '性别(0: 未知,1:男,2：女)',
-  `avatar` varchar(80) COLLATE utf8_general_ci DEFAULT NULL,
-  `birthday` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
-  `phone` varchar(15) COLLATE utf8_general_ci DEFAULT NULL,
-  `address` varchar(100) COLLATE utf8_general_ci DEFAULT NULL COMMENT '送餐地址',
-  `qq` varchar(15) COLLATE utf8_general_ci DEFAULT NULL,
-  `email` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
+  `avatar` varchar(80) DEFAULT NULL,
+  `birthday` varchar(20) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL COMMENT '送餐地址',
+  `qq` varchar(15) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `reg_ip` varchar(20) DEFAULT NULL,
+  `reg_from` varchar(20) DEFAULT NULL,
   `reg_time` int(11) DEFAULT NULL,
-  `reg_ip` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
   `last_login_time` int(11) DEFAULT NULL COMMENT '最后登录时间',
   `state` int(1) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -431,7 +433,7 @@ CREATE TABLE `mm_member` (
 
 LOCK TABLES `mm_member` WRITE;
 /*!40000 ALTER TABLE `mm_member` DISABLE KEYS */;
-INSERT INTO `mm_member` VALUES (1,'newmin','768dd5c54e40bcd412f7277cbe77423e','刘铭',8134,5,1,'','2012-09-05','18616999822','上海市徐汇区江安路15号1','18867761','q121276@26.com',2012,'112.65.35.191',1431305083,1),(2,'lin','22c5b45021a538af170f330bf6d6e46c','林德意',NULL,1,0,'','1970.05。29','13924886758','佛山禅城人民路99号',NULL,NULL,2012,'61.145.69.27',2012,1),(3,'hshx','c99425b0a379ac6621adbc0ce4170af5','黄升鑫',NULL,1,0,'','1979-12-01','15602817110','广东省佛山市禅城区人民路鹤园路81号','809987822','809987822@qq.com',2012,'27.36.72.124',1,1),(4,'lindeyi','0f167fd9c5f48d81820b544e312e8592','林德意',NULL,1,0,'','1970-05-29','13924886758','佛山市禅城区人民路99号','569101942','lindeyi158@yahoo.com.cn',2012,'183.27.197.170',1,1),(5,'sumian','4397d538520a9a645aa456e60744c1e0','',NULL,1,0,'','','13924886758','福建省海天大夏二栋201','','',2012,'14.157.18.39',1,1),(6,'linsu','464bf5d58f4e8818671d525cf1530459','',NULL,1,0,'','','13924886758','广州市黄埔去电子大夏3楼301室','','',2012,'14.157.18.39',1,1),(7,'sonven','b99831c5e69ac900fdfcfd4c7d0bf89e','',NULL,1,0,'','','18616999822','上海市浦东新区浦电路123弄','','',2012,'183.250.3.128',1,1),(8,'yangbo','1df2ee43288507769a15da6cb1cf0dba','',NULL,1,0,'','','18616888888','佛山市禅城区汾江中路20号','','',2012,'183.250.3.128',1,1),(9,'xiaoyuan','db5896d7e1951418a6fe0de4ea86b45b','',NULL,1,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','',2013,'218.85.143.146',1,1),(10,'liuming','06f267d8e85c3478e00a8b9d2bae5df4','',NULL,1,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','',2013,'218.85.143.146',1,1),(11,'xiaoyuanyaun','dda4f29b5f09313383fcfc02c0ce2753','',NULL,1,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','',2013,'218.85.143.146',1,1),(12,'liuxiaoyuan','b201ab396944544760bd6b19d356cc8f','',NULL,1,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','',2013,'218.85.143.146',1,1),(13,'yuan','86ad59c09a3f4fe980b67b9dedea7329','',NULL,1,0,'','','13728501775','佛山市禅城区张槎四路东大街3号5楼','','',2013,'183.27.195.23',1,1),(14,'yuanyuan','40c39d9211d17d1e6732059427c9ee76','',NULL,1,0,'','','13728501775','佛山禅城区张槎四路岗头东大街3号5楼','','',2013,'183.27.199.29',1,1),(15,'13924886758','c545e63671045c96669b814901bf0d37','',NULL,1,0,'','','13924886758','佛山市禅城区人民路99号','','',2013,'183.28.79.121',1,1),(16,'13728501775','9f86434fc3c081f7548e633c7ccdc5d2','',NULL,1,0,'','','13728501775','佛山市禅城区张槎四路（东海明珠后方）岗头东大街3号5楼','','',2013,'183.27.46.207',1,1),(25,'sa','123','刘铭',NULL,1,2,NULL,'1970-11-20','18616999822',NULL,NULL,NULL,2014,'127.0.0.1',2014,1),(26,'test','a50f4d2b5d08eca0ff83448fc346dbd6','测试员',NULL,1,1,NULL,'1988-11-09','18616999822',NULL,NULL,NULL,2014,'127.0.0.1',2014,1),(27,'test001','4dca21a567d5ae25316f9e8d37d8df1b','刘大炮',NULL,1,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,2014,'127.0.0.1',2014,1),(28,'newmin123','9315871be89146db634ef0d0e5e181f9','刘大也',27,1,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,2014,'127.0.0.1',2014,1),(29,'jarry','91af2911b516d3dd6eaf234cef238fd4','家锐',0,1,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,NULL,'192.168.31.129',NULL,1);
+INSERT INTO `mm_member` VALUES (1,'newmin','768dd5c54e40bcd412f7277cbe77423e','刘铭',8134,5,NULL,1,'','2012-09-05','18616999822','上海市徐汇区江安路15号1','18867761','q121276@26.com','112.65.35.191',NULL,2012,1431324468,1),(2,'lin','22c5b45021a538af170f330bf6d6e46c','林德意',NULL,1,NULL,0,'','1970.05。29','13924886758','佛山禅城人民路99号',NULL,NULL,'61.145.69.27',NULL,2012,2012,1),(3,'hshx','c99425b0a379ac6621adbc0ce4170af5','黄升鑫',NULL,1,NULL,0,'','1979-12-01','15602817110','广东省佛山市禅城区人民路鹤园路81号','809987822','809987822@qq.com','27.36.72.124',NULL,2012,1,1),(4,'lindeyi','0f167fd9c5f48d81820b544e312e8592','林德意',NULL,1,NULL,0,'','1970-05-29','13924886758','佛山市禅城区人民路99号','569101942','lindeyi158@yahoo.com.cn','183.27.197.170',NULL,2012,1,1),(5,'sumian','4397d538520a9a645aa456e60744c1e0','',NULL,1,NULL,0,'','','13924886758','福建省海天大夏二栋201','','','14.157.18.39',NULL,2012,1,1),(6,'linsu','464bf5d58f4e8818671d525cf1530459','',NULL,1,NULL,0,'','','13924886758','广州市黄埔去电子大夏3楼301室','','','14.157.18.39',NULL,2012,1,1),(7,'sonven','b99831c5e69ac900fdfcfd4c7d0bf89e','',NULL,1,NULL,0,'','','18616999822','上海市浦东新区浦电路123弄','','','183.250.3.128',NULL,2012,1,1),(8,'yangbo','1df2ee43288507769a15da6cb1cf0dba','',NULL,1,NULL,0,'','','18616888888','佛山市禅城区汾江中路20号','','','183.250.3.128',NULL,2012,1,1),(9,'xiaoyuan','db5896d7e1951418a6fe0de4ea86b45b','',NULL,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,1),(10,'liuming','06f267d8e85c3478e00a8b9d2bae5df4','',NULL,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,1),(11,'xiaoyuanyaun','dda4f29b5f09313383fcfc02c0ce2753','',NULL,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,1),(12,'liuxiaoyuan','b201ab396944544760bd6b19d356cc8f','',NULL,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,1),(13,'yuan','86ad59c09a3f4fe980b67b9dedea7329','',NULL,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路东大街3号5楼','','','183.27.195.23',NULL,2013,1,1),(14,'yuanyuan','40c39d9211d17d1e6732059427c9ee76','',NULL,1,NULL,0,'','','13728501775','佛山禅城区张槎四路岗头东大街3号5楼','','','183.27.199.29',NULL,2013,1,1),(15,'13924886758','c545e63671045c96669b814901bf0d37','',NULL,1,NULL,0,'','','13924886758','佛山市禅城区人民路99号','','','183.28.79.121',NULL,2013,1,1),(16,'13728501775','9f86434fc3c081f7548e633c7ccdc5d2','',NULL,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路（东海明珠后方）岗头东大街3号5楼','','','183.27.46.207',NULL,2013,1,1),(25,'sa','123','刘铭',NULL,1,NULL,2,NULL,'1970-11-20','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,1),(26,'test','a50f4d2b5d08eca0ff83448fc346dbd6','测试员',NULL,1,NULL,1,NULL,'1988-11-09','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,1),(27,'test001','4dca21a567d5ae25316f9e8d37d8df1b','刘大炮',NULL,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,1),(28,'newmin123','9315871be89146db634ef0d0e5e181f9','刘大也',27,1,'aaaaaa',0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,1),(29,'jarry','91af2911b516d3dd6eaf234cef238fd4','家锐',0,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'192.168.31.129',NULL,NULL,NULL,1),(30,'u100','123456',NULL,0,1,'5daf22',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335389,1431335389,1),(31,'u1001','123456',NULL,0,1,'a4fa87',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335618,1431335618,1),(32,'u1002','ef94f4f5d07931bb4b62cfe367acd344',NULL,0,1,'5c9182',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','APP-ANDROID',1431336759,1431336803,1);
 /*!40000 ALTER TABLE `mm_member` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -444,11 +446,11 @@ DROP TABLE IF EXISTS `mm_relation`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mm_relation` (
   `member_id` int(11) NOT NULL,
-  `card_id` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
-  `tg_id` int(11) DEFAULT NULL COMMENT '推广会员ID',
-  `reg_ptid` int(11) DEFAULT NULL,
+  `card_id` varchar(20) DEFAULT NULL,
+  `invi_member_id` int(11) DEFAULT NULL COMMENT '邀请人的会员ID',
+  `reg_partner_id` int(11) DEFAULT NULL COMMENT '注册商户编号',
   PRIMARY KEY (`member_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -457,7 +459,7 @@ CREATE TABLE `mm_relation` (
 
 LOCK TABLES `mm_relation` WRITE;
 /*!40000 ALTER TABLE `mm_relation` DISABLE KEYS */;
-INSERT INTO `mm_relation` VALUES (1,'',0,101),(2,'',0,101),(28,'201412191655',0,101),(29,'201505041739',0,101),(30,'',29,101),(31,'',2,101),(32,'',2,101),(33,'',2,101),(34,'',2,101),(35,'',2,101),(36,'',2,101),(37,'',2,101),(38,'',2,101),(39,'',2,101),(40,'',2,101),(41,'',39,101);
+INSERT INTO `mm_relation` VALUES (1,'',0,101),(2,'',0,101),(28,'201412191655',0,101),(29,'201505041739',0,101),(30,'-',0,101),(31,'-',0,101),(32,'-',28,101),(33,'',2,101),(34,'',2,101),(35,'',2,101),(36,'',2,101),(37,'',2,101),(38,'',2,101),(39,'',2,101),(40,'',2,101),(41,'',39,101);
 /*!40000 ALTER TABLE `mm_relation` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -471,8 +473,8 @@ DROP TABLE IF EXISTS `pm_coupon`;
 CREATE TABLE `pm_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pt_id` int(11) DEFAULT NULL,
-  `code` varchar(10) COLLATE utf8_general_ci DEFAULT NULL COMMENT '优惠码',
-  `description` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
+  `code` varchar(10) DEFAULT NULL COMMENT '优惠码',
+  `description` varchar(50) DEFAULT NULL,
   `amount` int(11) DEFAULT NULL COMMENT '优惠码可用数量',
   `total_amount` int(11) DEFAULT NULL,
   `fee` int(11) DEFAULT NULL COMMENT '包含金额',
@@ -487,7 +489,7 @@ CREATE TABLE `pm_coupon` (
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL COMMENT '共计数量',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -515,7 +517,7 @@ CREATE TABLE `pm_coupon_bind` (
   `bind_time` int(11) DEFAULT NULL COMMENT '绑定时间',
   `use_time` int(11) DEFAULT NULL COMMENT '使用时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -543,7 +545,7 @@ CREATE TABLE `pm_coupon_take` (
   `extra_time` int(11) DEFAULT NULL COMMENT '释放时间,超过该时间，优惠券释放',
   `apply_time` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -579,7 +581,7 @@ CREATE TABLE `pt_api` (
 
 LOCK TABLES `pt_api` WRITE;
 /*!40000 ALTER TABLE `pt_api` DISABLE KEYS */;
-INSERT INTO `pt_api` VALUES (101,'6800123456','abede5odskew',1,'*');
+INSERT INTO `pt_api` VALUES (101,'6600123456','abede5odskew',1,'*');
 /*!40000 ALTER TABLE `pt_api` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -592,11 +594,11 @@ DROP TABLE IF EXISTS `pt_order`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `order_no` varchar(15) COLLATE utf8_general_ci NOT NULL,
+  `order_no` varchar(15) NOT NULL,
   `member_id` int(11) DEFAULT NULL COMMENT '-1代表游客订餐',
   `pt_id` int(11) DEFAULT NULL COMMENT '商家ID',
-  `shop_id` varchar(45) COLLATE utf8_general_ci DEFAULT NULL COMMENT '商家分店ID, 0为未指定，需管理指定',
-  `items_info` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `shop_id` varchar(45) DEFAULT NULL COMMENT '商家分店ID, 0为未指定，需管理指定',
+  `items_info` varchar(100) DEFAULT NULL,
   `total_fee` decimal(10,2) DEFAULT NULL COMMENT '订单总额',
   `fee` decimal(10,2) DEFAULT NULL COMMENT '订单实际金额',
   `discount_fee` decimal(10,2) DEFAULT NULL COMMENT '优惠金额',
@@ -605,18 +607,18 @@ CREATE TABLE `pt_order` (
   `payment_opt` int(11) DEFAULT NULL COMMENT '1:餐到付款 2:网上支付  ',
   `is_suspend` tinyint(4) DEFAULT '0',
   `is_paid` int(11) DEFAULT NULL COMMENT '是否支付(0:未支付 ，1：已支付)',
-  `note` varchar(150) COLLATE utf8_general_ci DEFAULT NULL,
-  `remark` varchar(100) COLLATE utf8_general_ci DEFAULT NULL COMMENT '订单备注(可为取消理由)',
-  `deliver_name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `deliver_phone` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `deliver_address` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `note` varchar(150) DEFAULT NULL,
+  `remark` varchar(100) DEFAULT NULL COMMENT '订单备注(可为取消理由)',
+  `deliver_name` varchar(45) DEFAULT NULL,
+  `deliver_phone` varchar(45) DEFAULT NULL,
+  `deliver_address` varchar(100) DEFAULT NULL,
   `deliver_time` int(11) DEFAULT NULL COMMENT '送餐时间',
   `paid_time` int(11) DEFAULT NULL COMMENT '支付时间',
   `status` tinyint(4) DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=232 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=232 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -640,12 +642,12 @@ CREATE TABLE `pt_order_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_id` int(11) DEFAULT NULL,
   `coupon_id` int(11) DEFAULT NULL,
-  `coupon_code` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
+  `coupon_code` varchar(20) DEFAULT NULL,
   `coupon_fee` decimal(10,2) DEFAULT NULL,
-  `coupon_describe` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `coupon_describe` varchar(100) DEFAULT NULL,
   `send_integral` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -696,11 +698,11 @@ CREATE TABLE `pt_order_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_id` int(11) DEFAULT NULL,
   `type` tinyint(1) DEFAULT '1' COMMENT '类型，１:流程,2:调价',
-  `message` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
+  `message` varchar(50) DEFAULT NULL,
   `is_system` tinyint(4) DEFAULT NULL,
   `record_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=269 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=269 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -722,12 +724,12 @@ DROP TABLE IF EXISTS `pt_page`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pt_id` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `type` varchar(10) COLLATE utf8_general_ci DEFAULT NULL,
-  `content` varchar(5000) COLLATE utf8_general_ci DEFAULT NULL,
+  `pt_id` varchar(45) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `content` varchar(5000) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='合作商页面';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='合作商页面';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -749,20 +751,20 @@ DROP TABLE IF EXISTS `pt_partner`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_partner` (
   `id` int(11) NOT NULL,
-  `usr` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
-  `pwd` varchar(32) COLLATE utf8_general_ci DEFAULT NULL,
-  `name` varchar(20) COLLATE utf8_general_ci DEFAULT NULL,
-  `logo` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
-  `tel` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
-  `phone` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
-  `address` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
+  `usr` varchar(20) DEFAULT NULL,
+  `pwd` varchar(32) DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `logo` varchar(50) DEFAULT NULL,
+  `tel` varchar(50) DEFAULT NULL,
+  `phone` varchar(50) DEFAULT NULL,
+  `address` varchar(50) DEFAULT NULL,
   `join_time` int(11) DEFAULT NULL,
   `expires_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   `login_time` int(11) DEFAULT NULL,
   `last_login_time` int(11) DEFAULT NULL COMMENT '标志',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -785,10 +787,10 @@ DROP TABLE IF EXISTS `pt_positions`;
 CREATE TABLE `pt_positions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `psid` int(11) DEFAULT NULL COMMENT '分店ID',
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `address` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -818,7 +820,7 @@ CREATE TABLE `pt_saleconf` (
   `ib_extra` int(11) DEFAULT NULL COMMENT '额外赠送积分',
   `auto_setup_order` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`pt_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -841,16 +843,16 @@ DROP TABLE IF EXISTS `pt_shop`;
 CREATE TABLE `pt_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `pt_id` int(11) DEFAULT NULL,
-  `name` varchar(50) COLLATE utf8_general_ci DEFAULT NULL,
-  `address` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
-  `phone` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `location` varchar(50) COLLATE utf8_general_ci DEFAULT NULL COMMENT '坐标',
+  `name` varchar(50) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `phone` varchar(45) DEFAULT NULL,
+  `location` varchar(50) DEFAULT NULL COMMENT '坐标',
   `deliver_radius` int(11) DEFAULT NULL COMMENT '配送范围',
   `order_index` int(11) DEFAULT '0',
   `state` int(11) DEFAULT NULL COMMENT '0:表示禁用   1:表示正常',
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -872,14 +874,14 @@ DROP TABLE IF EXISTS `pt_siteconf`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_siteconf` (
   `pt_id` int(11) NOT NULL,
-  `host` varchar(45) COLLATE utf8_general_ci NOT NULL,
-  `logo` varchar(100) COLLATE utf8_general_ci DEFAULT NULL,
-  `index_title` varchar(100) COLLATE utf8_general_ci DEFAULT NULL COMMENT '首页标题',
-  `sub_title` varchar(100) COLLATE utf8_general_ci DEFAULT NULL COMMENT '子页面标题',
+  `host` varchar(45) NOT NULL,
+  `logo` varchar(100) DEFAULT NULL,
+  `index_title` varchar(100) DEFAULT NULL COMMENT '首页标题',
+  `sub_title` varchar(100) DEFAULT NULL COMMENT '子页面标题',
   `state` int(11) DEFAULT NULL COMMENT '状态: 0:暂停  1：正常',
-  `state_html` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `state_html` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`pt_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='合作商域名绑定';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='合作商域名绑定';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -901,9 +903,9 @@ DROP TABLE IF EXISTS `sale_cart`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sale_cart` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `cart_key` varchar(32) COLLATE utf8_general_ci DEFAULT NULL,
+  `cart_key` varchar(32) DEFAULT NULL,
   `buyer_id` int(11) DEFAULT NULL,
-  `order_no` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `order_no` varchar(45) DEFAULT NULL,
   `is_bought` tinyint(1) DEFAULT NULL COMMENT '是否已经购买',
   `shop_id` int(11) DEFAULT NULL,
   `deliver_id` int(11) DEFAULT NULL,
@@ -912,7 +914,7 @@ CREATE TABLE `sale_cart` (
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -921,7 +923,7 @@ CREATE TABLE `sale_cart` (
 
 LOCK TABLES `sale_cart` WRITE;
 /*!40000 ALTER TABLE `sale_cart` DISABLE KEYS */;
-INSERT INTO `sale_cart` VALUES (1,'07c7bf8890b48b68',1,'688519535',1,0,1,1,1,1423471445,1423565906),(2,'48e32bf49c2077bf',1,'681612930',1,0,1,1,1,1423566482,1423567496),(3,'b9b589d134159faf',1,'682154439',1,0,5,1,1,1423567499,1423568140),(4,'df5e6a52d994b9dc',1,'688774632',1,0,1,1,1,1423568146,1423568186),(5,'4c3afaf71e6a4bc3',1,'688997312',1,0,1,1,1,1423568202,1423704793),(6,'e78c0805a0a57c39',1,'689966046',1,0,1,1,2,1423704800,1423706425),(7,'2ffa6638f1040036',1,'685910540',1,0,1,1,1,1423712649,1423712662),(8,'f3500a7714116925',0,NULL,0,0,0,1,1,1424078505,1424078508),(9,'81b94c9b709df145',0,NULL,0,0,0,1,1,1425087589,1425087589),(10,'0bf3b6d967fa8c42',1,'681016189',1,0,1,1,1,1426938085,1426938159),(11,'a09adb0cb41d137f',1,'686232296',1,0,1,1,1,1429970508,1429970668),(12,'79468b6e91e705c3',1,'682060665',1,0,1,1,1,1430114905,1430115026),(13,'c642fecfba3bd846',1,'689248677',1,0,6,1,1,1430115051,1430534112),(14,'cc5f16af2b979833',0,NULL,0,0,0,1,1,1430302017,1430302017),(15,'023f0a4d5c8905f1',1,'683472292',1,0,6,1,1,1430314002,1430535538),(16,'cb735f2b9486e34d',1,'685456727',1,0,1,1,1,1430404923,1430707884),(17,'2afd6b6eb7c73ab0',1,'682729378',1,0,1,1,1,1430534694,1430730660),(18,'53d2a914b9f62082',1,'689464630',1,0,1,1,2,1430539581,1430730690),(19,'ac7f82e3b33a491c',1,'686647065',1,0,1,1,2,1430707868,1430730765),(20,'e9ebedba65f37eab',1,'683185629',1,0,6,1,1,1430731298,1431098487),(21,'e102d5febc95670c',29,'681940816',1,0,7,1,2,1430732809,1430732848),(22,'221168d01e8c752a',0,NULL,0,0,0,1,1,1431052194,1431052212),(23,'b671c2940106a2dc',0,NULL,0,0,0,1,1,1431074202,1431074202),(24,'7ce02e733aab8e5a',1,'686614244',1,0,1,1,1,1431074214,1431098664),(25,'6a04aa55a06c25a0',1,'684693753',1,0,6,1,1,1431098677,1431314630),(26,'ed81f394e4d63244',1,'688887237',1,0,1,1,1,1431256926,1431314644),(27,'ac61aa7ede0fbd0f',1,NULL,0,0,0,1,1,1431314646,1431314646);
+INSERT INTO `sale_cart` VALUES (1,'07c7bf8890b48b68',1,'688519535',1,0,1,1,1,1423471445,1423565906),(2,'48e32bf49c2077bf',1,'681612930',1,0,1,1,1,1423566482,1423567496),(3,'b9b589d134159faf',1,'682154439',1,0,5,1,1,1423567499,1423568140),(4,'df5e6a52d994b9dc',1,'688774632',1,0,1,1,1,1423568146,1423568186),(5,'4c3afaf71e6a4bc3',1,'688997312',1,0,1,1,1,1423568202,1423704793),(6,'e78c0805a0a57c39',1,'689966046',1,0,1,1,2,1423704800,1423706425),(7,'2ffa6638f1040036',1,'685910540',1,0,1,1,1,1423712649,1423712662),(8,'f3500a7714116925',0,NULL,0,0,0,1,1,1424078505,1424078508),(9,'81b94c9b709df145',0,NULL,0,0,0,1,1,1425087589,1425087589),(10,'0bf3b6d967fa8c42',1,'681016189',1,0,1,1,1,1426938085,1426938159),(11,'a09adb0cb41d137f',1,'686232296',1,0,1,1,1,1429970508,1429970668),(12,'79468b6e91e705c3',1,'682060665',1,0,1,1,1,1430114905,1430115026),(13,'c642fecfba3bd846',1,'689248677',1,0,6,1,1,1430115051,1430534112),(14,'cc5f16af2b979833',0,NULL,0,0,0,1,1,1430302017,1430302017),(15,'023f0a4d5c8905f1',1,'683472292',1,0,6,1,1,1430314002,1430535538),(16,'cb735f2b9486e34d',1,'685456727',1,0,1,1,1,1430404923,1430707884),(17,'2afd6b6eb7c73ab0',1,'682729378',1,0,1,1,1,1430534694,1430730660),(18,'53d2a914b9f62082',1,'689464630',1,0,1,1,2,1430539581,1430730690),(19,'ac7f82e3b33a491c',1,'686647065',1,0,1,1,2,1430707868,1430730765),(20,'e9ebedba65f37eab',1,'683185629',1,0,6,1,1,1430731298,1431098487),(21,'e102d5febc95670c',29,'681940816',1,0,7,1,2,1430732809,1430732848),(22,'221168d01e8c752a',0,NULL,0,0,0,1,1,1431052194,1431052212),(23,'b671c2940106a2dc',0,NULL,0,0,0,1,1,1431074202,1431074202),(24,'7ce02e733aab8e5a',1,'686614244',1,0,1,1,1,1431074214,1431098664),(25,'6a04aa55a06c25a0',1,'684693753',1,0,6,1,1,1431098677,1431314630),(26,'ed81f394e4d63244',1,'688887237',1,0,1,1,1,1431256926,1431314644),(27,'ac61aa7ede0fbd0f',1,NULL,0,0,0,1,1,1431314646,1431318763),(28,'3cc817563b225a8e',1,NULL,0,0,0,1,1,1431315830,1431315842);
 /*!40000 ALTER TABLE `sale_cart` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -938,7 +940,7 @@ CREATE TABLE `sale_cart_item` (
   `goods_id` int(11) DEFAULT NULL COMMENT '商品快照编号',
   `num` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -947,7 +949,7 @@ CREATE TABLE `sale_cart_item` (
 
 LOCK TABLES `sale_cart_item` WRITE;
 /*!40000 ALTER TABLE `sale_cart_item` DISABLE KEYS */;
-INSERT INTO `sale_cart_item` VALUES (1,1,2,1),(2,2,2,2),(3,2,3,1),(4,3,3,1),(5,4,7,1),(6,4,4,1),(7,4,2,1),(8,5,2,3),(9,5,3,3),(10,5,4,1),(11,5,6,1),(12,5,7,2),(13,6,3,1),(14,6,4,2),(15,6,5,1),(16,6,6,1),(17,7,2,1),(18,7,3,1),(19,8,2,3),(20,10,2,1),(21,11,2,2),(22,12,2,1),(23,16,2,5),(24,16,3,1),(25,13,2,10),(26,13,3,1),(27,17,2,5),(28,15,2,2),(29,15,3,1),(30,19,2,5),(31,18,2,5),(32,20,2,35),(33,20,4,1),(34,20,3,12),(35,21,2,4),(36,21,4,2),(37,21,3,2),(38,22,2,1),(39,22,3,1),(40,23,2,1),(41,24,2,38),(42,24,3,13),(43,24,4,1),(44,26,2,2),(45,25,2,4),(46,25,3,1);
+INSERT INTO `sale_cart_item` VALUES (1,1,2,1),(2,2,2,2),(3,2,3,1),(4,3,3,1),(5,4,7,1),(6,4,4,1),(7,4,2,1),(8,5,2,3),(9,5,3,3),(10,5,4,1),(11,5,6,1),(12,5,7,2),(13,6,3,1),(14,6,4,2),(15,6,5,1),(16,6,6,1),(17,7,2,1),(18,7,3,1),(19,8,2,3),(20,10,2,1),(21,11,2,2),(22,12,2,1),(23,16,2,5),(24,16,3,1),(25,13,2,10),(26,13,3,1),(27,17,2,5),(28,15,2,2),(29,15,3,1),(30,19,2,5),(31,18,2,5),(32,20,2,35),(33,20,4,1),(34,20,3,12),(35,21,2,4),(36,21,4,2),(37,21,3,2),(38,22,2,1),(39,22,3,1),(40,23,2,1),(41,24,2,38),(42,24,3,13),(43,24,4,1),(44,26,2,2),(45,25,2,4),(46,25,3,1),(47,28,2,1),(48,27,2,1);
 /*!40000 ALTER TABLE `sale_cart_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -959,8 +961,8 @@ DROP TABLE IF EXISTS `t_ips`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `t_ips` (
-  `ip` varchar(45) COLLATE utf8_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ip` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -981,8 +983,8 @@ DROP TABLE IF EXISTS `t_members`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `t_members` (
-  `member` varchar(45) COLLATE utf8_general_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `member` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1003,12 +1005,12 @@ DROP TABLE IF EXISTS `t_usrcount`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `t_usrcount` (
   `id` int(11) NOT NULL,
-  `viewcount` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `member` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `guest` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `updatetime` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `viewcount` varchar(45) DEFAULT NULL,
+  `member` varchar(45) DEFAULT NULL,
+  `guest` varchar(45) DEFAULT NULL,
+  `updatetime` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1057,14 +1059,14 @@ DROP TABLE IF EXISTS `usr_person`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `usr_person` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `real_name` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
-  `phone` varchar(45) COLLATE utf8_general_ci DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `real_name` varchar(45) DEFAULT NULL,
+  `phone` varchar(45) DEFAULT NULL,
   `sex` tinyint(4) DEFAULT NULL,
   `birth_day` int(11) DEFAULT NULL,
   `enabled` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1089,7 +1091,7 @@ CREATE TABLE `usr_role` (
   `flag` int(11) DEFAULT NULL,
   `enabled` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1111,4 +1113,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-11 11:31:08
+-- Dump completed on 2015-05-11 17:36:29

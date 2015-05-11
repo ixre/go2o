@@ -18,6 +18,9 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"strconv"
+	"strings"
+	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/infrastructure/domain"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -47,6 +50,7 @@ func chkStorage(sto gof.Storage) {
 		panic(errors.New("[ Api] - api token storage is null !"))
 	}
 }
+
 func getMemberTokenKey(memberId int) string {
 	return fmt.Sprintf("api:member:token:%d", memberId)
 }
@@ -123,29 +127,48 @@ func (this *memberC) login(ctx *web.Context) {
 // 注册
 func (this *memberC) register(ctx *web.Context) {
 	if this.baseC.Requesting(ctx) {
-		var result = dto.MessageResult{}
+		r := ctx.Request
+		var result dto.MessageResult
 
-		//        r, w := ctx.Request, ctx.ResponseWriter
-		//        p := this.GetPartner(ctx)
-		//        r.ParseForm()
-		//        var member member.ValueMember
-		//        web.ParseFormToEntity(r.Form, &member)
-		//        if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
-		//            member.RegIp = r.RemoteAddr[:i]
-		//        }
-		//        b, err := goclient.Partner.RegisterMember(&member, p.Id, 0, "")
-		//        if b {
-		//            w.Write([]byte(`{"result":true}`))
-		//        } else {
-		//            if err != nil {
-		//                w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
-		//            } else {
-		//                w.Write([]byte(`{"result":false}`))
-		//            }
-		//
-		//        }
-		//
-		//
+		var partnerId int = this.GetPartnerId(ctx)
+		var invMemberId int                                            // 邀请人
+		var usr string = r.FormValue("usr")
+		var pwd string = r.FormValue("pwd")
+		var registerFrom string = r.FormValue("reg_from")            // 注册来源
+		var invitationCode string = r.FormValue("invitation_code")    // 推荐码
+		var regIp string
+		if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
+			regIp = r.RemoteAddr[:i]
+		}
+
+		fmt.Println(usr,pwd,"REGFROM:",registerFrom,"INVICODE:",invitationCode)
+
+		// 检验
+		if len(invitationCode) != 0 {
+			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode);
+			if invMemberId == 0 {
+				result.Message = "推荐/邀请人不存在！"
+				this.jsonOutput(ctx, result)
+				return
+			}
+		}
+
+		var member member.ValueMember
+		member.Usr = usr
+		member.Pwd = domain.EncodeMemberPwd(usr,pwd)
+		member.RegIp = regIp
+		member.RegFrom = registerFrom
+
+		memberId, err := dps.MemberService.SaveMember(&member)
+		if err == nil {
+			result.Result = true
+			err = dps.MemberService.SaveRelation(memberId, "-", invMemberId, partnerId)
+		}
+
+		if err != nil{
+			result.Message = err.Error()
+		}
+
 		this.jsonOutput(ctx, result)
 	}
 }

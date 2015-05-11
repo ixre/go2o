@@ -20,13 +20,13 @@ func ApiTest(ctx *web.Context) {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) bool {
+func CheckApiPermission(apiId string, secret string)(ok bool,partnerId int) {
 	if len(apiId) != 0 && len(secret) != 0 {
 		var partnerId int = cache.GetPartnerIdByApiId(apiId)
 		var apiInfo *dto.PartnerApiInfo = cache.GetPartnerApiInfo(partnerId)
 		if apiInfo != nil {
-			return apiInfo.ApiSecret == secret
+			return apiInfo.ApiSecret == secret,partnerId
 		}
 	}
-	return false
+	return false,partnerId
 }

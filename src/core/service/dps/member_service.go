@@ -39,6 +39,11 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
+
+func (this *memberService) GetMemberIdByInvitationCode(code string)int{
+	return this._memberRep.GetMemberIdByInvitationCode(code)
+}
+
 func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		return this.updateMember(v)
@@ -76,16 +81,15 @@ func (this *memberService) createMember(v *member.ValueMember) (int, error) {
 	return m.Save()
 }
 
-func (this *memberService) SaveRelation(memberId int, cardId string, tgId, partnerId int) error {
+func (this *memberService) SaveRelation(memberId int, cardId string, invitationId, partnerId int) error {
 	m, err := this._memberRep.GetMember(memberId)
 	if err != nil {
-		log.PrintErr(err)
 		return errors.New("no such member")
 	}
 
 	rl := m.GetRelation()
-	rl.TgId = tgId
-	rl.Reg_PtId = partnerId
+	rl.InvitationMemberId = invitationId
+	rl.RegisterPartnerId = partnerId
 	rl.CardId = cardId
 
 	return m.SaveRelation(rl)

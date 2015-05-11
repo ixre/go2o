@@ -29,7 +29,7 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	if s != nil {
 		if m := s.(*member.ValueMember); m != nil {
 			ctx.Items["member"] = m
-			ctx.Items["member_ptId"] = dps.MemberService.GetRelation(m.Id).Reg_PtId
+			ctx.Items["member_ptId"] = dps.MemberService.GetRelation(m.Id).RegisterPartnerId
 			return true
 		}
 	}
