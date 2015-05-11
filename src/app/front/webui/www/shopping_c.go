@@ -18,10 +18,10 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/goclient"
 	"html/template"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"net/http"
 )
 
 type shoppingC struct {
@@ -42,8 +42,9 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
+	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p); b {
+	if b, siteConf := GetSiteConf(w, p,pa); b {
 		// 获取购物车
 		var cartKey string
 		ck, err := r.Cookie("_cart")
@@ -203,9 +204,11 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
+	pa := this.GetPartnerApi(ctx)
+
 	var message string = "购物车还是空的!"
 	code := ctx.Request.FormValue("code")
-	json, err := goclient.Partner.BuildOrder(p.Id, p.Secret, m.Id, code)
+	json, err := goclient.Partner.BuildOrder(p.Id, pa.ApiSecret, m.Id, code)
 	if err != nil {
 		message = err.Error()
 	} else {
@@ -224,13 +227,15 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
+	pa := this.GetPartnerApi(ctx)
+
 	r.ParseForm()
 	if p == nil || m == nil {
 		w.Write([]byte(`{"result":false,"tag":"101"}`)) //未登录
 		return
 	}
 	couponCode := r.FormValue("coupon_code")
-	order_no, err := goclient.Partner.SubmitOrder(p.Id, p.Secret, m.Id, couponCode)
+	order_no, err := goclient.Partner.SubmitOrder(p.Id, pa.ApiSecret, m.Id, couponCode)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
@@ -252,7 +257,6 @@ func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
 	}
 }
 
-
 func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
@@ -272,15 +276,15 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
 
-
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
+	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p); b {
+	if b, siteConf := GetSiteConf(w, p,pa); b {
 		var payHtml string // 支付HTML
 
 		orderNo := r.URL.Query().Get("order_no")
-		order, err := goclient.Partner.GetOrderByNo(p.Id, p.Secret, orderNo)
+		order, err := goclient.Partner.GetOrderByNo(p.Id, pa.ApiSecret, orderNo)
 		if err != nil {
 			ctx.App.Log().PrintErr(err)
 			this.OrderEmpty(ctx, p, m, siteConf)

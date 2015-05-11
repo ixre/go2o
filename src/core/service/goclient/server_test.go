@@ -44,7 +44,7 @@ func main() {
 	context.DebugMode = true
 	jsv.Configure(context)
 
-	//fmt.Println(ording.NewSecret(666888))
+	//fmt.Println(ording.NewSecret(101))
 
 	go testRegister()
 	go testPartner()
@@ -71,7 +71,7 @@ func testRegister() {
 		Email:    "",
 		RegIp:    "127.0.0.1",
 	}
-	b, err := goclient.Member.Register(&m, 666888, 0, "")
+	b, err := goclient.Member.Register(&m, 101, 0, "")
 	if err != nil {
 		jsv.LogErr(err)
 
@@ -88,7 +88,7 @@ func testRegister() {
 }
 
 func testPartner() {
-	p, err := goclient.Partner.GetPartner(666888, "d435a520e50e960b")
+	p, err := goclient.Partner.GetPartner(101, "d435a520e50e960b")
 	if err != nil {
 		jsv.LogErr(err)
 	} else {
@@ -122,7 +122,7 @@ func testMemberLogin() {
 
 func testSubmitOrder() {
 	items := "2*1|3*2|4*1"
-	orderNo, err := goclient.Partner.SubmitOrder(666888, "d435a520e50e960b",
+	orderNo, err := goclient.Partner.SubmitOrder(101, "d435a520e50e960b",
 		1, 0, 1, items, "")
 	if err != nil {
 		jsv.LogErr(err)

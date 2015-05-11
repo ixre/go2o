@@ -30,7 +30,9 @@ func (this *userC) Login(ctx *web.Context) {
 		tipStyle = " hidden"
 	}
 
-	if b, siteConf := GetSiteConf(w, p); b {
+	pa := this.GetPartnerApi(ctx)
+
+	if b, siteConf := GetSiteConf(w, p,pa); b {
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			mv := *m
 			mv["partner"] = p
@@ -61,7 +63,8 @@ func (this *userC) Login_post(ctx *web.Context) {
 func (this *userC) Register(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
-	if b, siteConf := GetSiteConf(w, p); b {
+	pa := this.GetPartnerApi(ctx)
+	if b, siteConf := GetSiteConf(w, p,pa); b {
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["title"] = "会员注册－" + siteConf.SubTitle
@@ -76,9 +79,10 @@ func (this *userC) Register(ctx *web.Context) {
 func (this *userC) ValidUsr_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
+	pa := this.GetPartnerApi(ctx)
 	r.ParseForm()
 	usr := r.FormValue("usr")
-	b := goclient.Partner.UserIsExist(p.Id, p.Secret, usr)
+	b := goclient.Partner.UserIsExist(p.Id, pa.ApiSecret, usr)
 	if !b {
 		w.Write([]byte(`{"result":true}`))
 	} else {

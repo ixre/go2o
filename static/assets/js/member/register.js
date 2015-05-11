@@ -124,7 +124,7 @@ if(phone!=null){
 //	tguser.onblur=function(){
 //		//valid.displayRight(this);
 //		//return true;
-//		if(this.value==''&&location.href.indexOf('partnerid=666888')!=-1){
+//		if(this.value==''&&location.href.indexOf('partnerid=101')!=-1){
 //			valid.setError(this,1);
 //		}else{
 //

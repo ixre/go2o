@@ -21,11 +21,18 @@ import (
 
 func Verify(m *jsv.Args) (memberId int, err error) {
 	member_id, token := (*m)["member_id"].(string), (*m)["token"].(string)
+
+
+
 	if memberId, err = strconv.Atoi(member_id); err != nil || token == "" {
 
 		jsv.Println(err)
 		return memberId, errors.New("invalid parameter")
+	}else{
+		//todo:  用户令牌更改，需修改。
+		return memberId,nil
 	}
+
 	rds := Redis().Get()
 	defer rds.Close()
 
@@ -59,7 +66,8 @@ func VerifyPartner(m *jsv.Args) (partnerId int, err error, p *partner.ValuePartn
 		return partnerId, errors.New("no such partner"), nil
 	}
 
-	if p.Secret != postSecret {
+	pa := dps.PartnerService.GetApiInfo(partnerId)
+	if pa.ApiSecret != postSecret {
 		return partnerId, errors.New("not authorized"), nil
 	}
 

@@ -7,15 +7,14 @@
  * history :
  */
 package api
+
 import (
-    "github.com/atnet/gof/web"
-    "go2o/src/core/service/dps"
+	"github.com/atnet/gof/web"
 )
 
-type partnerC struct{
+type partnerC struct {
 }
 
-func (this *partnerC) Index(ctx *web.Context){
-    dps.PartnerService.GetPartner(666888)
-    ctx.ResponseWriter.Write([]byte("it's working!"))
+func (this *partnerC) Index(ctx *web.Context) {
+	ctx.ResponseWriter.Write([]byte("it's working!"))
 }

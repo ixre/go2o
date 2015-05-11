@@ -7,9 +7,10 @@
  * history :
  */
 package api
+
 import "github.com/atnet/gof/web"
 
-func HandleApi(ctx *web.Context){
-    //r := ctx.Request
-    ctx.ResponseWriter.Write([]byte("It's working!"))
+func HandleApi(ctx *web.Context) {
+	//r := ctx.Request
+	ctx.ResponseWriter.Write([]byte("It's working!"))
 }

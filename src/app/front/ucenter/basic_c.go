@@ -30,7 +30,7 @@ type basicC struct {
 
 func (this *basicC) Profile(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	js, _ := json.Marshal(mm)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
@@ -49,7 +49,7 @@ func (this *basicC) Profile(ctx *web.Context) {
 
 func (this *basicC) Pwd(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m
@@ -107,7 +107,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 
 func (this *basicC) Deliver(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp

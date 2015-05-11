@@ -7,7 +7,7 @@
        SELECT b.coupon_id ,m.*
 FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
 LEFT JOIN pm_coupon_bind b ON b.member_id = m.id
-WHERE  r.reg_ptid = 666888
+WHERE  r.reg_ptid = {partnerId}
 
             lv.name as limit_levelName
             FROM pm_coupon c LEFT JOIN conf_member_level lv

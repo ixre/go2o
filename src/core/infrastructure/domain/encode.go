@@ -27,7 +27,7 @@ func EncodeMemberPwd(usr, pwd string) string {
 
 //加密合作商密码
 func EncodePartnerPwd(usr, pwd string) string {
-	return crypto.Md5([]byte(strings.Join([]string{usr, "$OPSoft$", pwd}, "")))
+	return crypto.Md5([]byte(strings.Join([]string{usr, "go2o@S1N1.COM", pwd}, "")))
 }
 
 //创建密钥

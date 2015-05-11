@@ -11,12 +11,11 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/goclient"
-	"net/url"
 	"go2o/src/core/service/dps"
-	"go2o/src/cache"
+	"net/url"
 )
 
 var _ mvc.Filter = new(baseC)
@@ -35,7 +34,7 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 		}
 	}
 	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
-	url.QueryEscape(ctx.Request.URL.String()) + "'</script>"))
+		url.QueryEscape(ctx.Request.URL.String()) + "'</script>"))
 	return false
 }
 
@@ -46,10 +45,10 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	var partnerId int = ctx.Items["member_ptId"].(int)
 	pt := cache.GetValuePartnerCache(partnerId)
-	if pt == nil{
+	if pt == nil {
 		var err error
-		if pt,err = dps.PartnerService.GetPartner(partnerId);err == nil{
-			cache.SetValuePartnerCache(partnerId,pt)
+		if pt, err = dps.PartnerService.GetPartner(partnerId); err == nil {
+			cache.SetValuePartnerCache(partnerId, pt)
 		}
 	}
 	return pt
@@ -61,6 +60,6 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 }
 
 // 获取商户的站点设置
-func (this *baseC) GetSiteConf(partnerId int, secret string) (*partner.SiteConf, error) {
-	return goclient.Partner.GetSiteConf(partnerId, secret)
+func (this *baseC) GetSiteConf(partnerId int) *partner.SiteConf {
+	return dps.PartnerService.GetSiteConf(partnerId)
 }

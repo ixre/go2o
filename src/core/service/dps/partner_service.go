@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"go2o/src/core/dto"
 )
 
 type partnerService struct {
@@ -164,4 +165,14 @@ func (this *partnerService) DeleteShop(partnerId, shopId int) error {
 
 func (this *partnerService) GetPartnersId() []int {
 	return this._partnerRep.GetPartnersId()
+}
+
+// 保存API信息
+func (this *partnerService) SaveApiInfo(partnerId int,d *dto.PartnerApiInfo)error{
+	return this._query.SaveApiInfo(partnerId,d)
+}
+
+// 获取API接口
+func (this *partnerService) GetApiInfo(partnerId int)*dto.PartnerApiInfo{
+	return this._query.GetApiInfo(partnerId)
 }

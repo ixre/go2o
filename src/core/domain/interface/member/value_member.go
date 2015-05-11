@@ -19,17 +19,17 @@ type ValueMember struct {
 	// 等级
 	Level int `db:"level"`
 
-	Sex      int    `db:"sex"`
-	Avatar   string `db:"avatar"`
-	Birthday string `db:"birthday"`
-	Phone    string `db:"phone"`
-	Address  string `db:"address"`
-	Qq       string `db:"qq"`
-	Email    string `db:"email"`
-	RegIp    string `db:"reg_ip"`
-	State    int    `db:"state"`
-	RegTime       int64 `db:"reg_time"`
-	LastLoginTime int64 `db:"last_login_time"`
+	Sex           int    `db:"sex"`
+	Avatar        string `db:"avatar"`
+	Birthday      string `db:"birthday"`
+	Phone         string `db:"phone"`
+	Address       string `db:"address"`
+	Qq            string `db:"qq"`
+	Email         string `db:"email"`
+	RegIp         string `db:"reg_ip"`
+	State         int    `db:"state"`
+	RegTime       int64  `db:"reg_time"`
+	LastLoginTime int64  `db:"last_login_time"`
 
 	//动态令牌，用于登陆或API调用
 	DynamicToken string `db:"-"`

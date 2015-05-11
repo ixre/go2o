@@ -27,7 +27,7 @@ type accountC struct {
 
 func (this *accountC) IncomeLog(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp
@@ -60,7 +60,7 @@ func (this *accountC) IncomeLog_post(ctx *web.Context) {
 
 func (this *accountC) ApplyCash(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	_, w := ctx.Request, ctx.ResponseWriter
 	acc, err := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
@@ -107,7 +107,7 @@ func (this *accountC) ApplyCash_post(ctx *web.Context) {
 
 func (this *accountC) IntegralExchange(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
 

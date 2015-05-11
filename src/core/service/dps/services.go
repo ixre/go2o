@@ -40,7 +40,7 @@ func Init(ctx gof.App) {
 
 	/** Query **/
 	mq := query.NewMemberQuery(db)
-	pq := query.NewPartnerQuery(db)
+	pq := query.NewPartnerQuery(ctx)
 
 	/** Service **/
 	PromService = NewPromotionService(promRep)

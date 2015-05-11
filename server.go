@@ -12,14 +12,14 @@ package main
 import (
 	"flag"
 	"github.com/atnet/gof"
+	"github.com/atnet/gof/storage"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
+	"go2o/src/cache"
 	"go2o/src/core"
 	"os"
 	"runtime"
 	"strings"
-	"go2o/src/cache"
-	"github.com/atnet/gof/storage"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 		confFile   string
 		httpPort   int
 		socketPort int
-		restPort	int
+		restPort   int
 		mode       string //启动模式: h开启http,s开启socket,a开启所有
 		debug      bool
 		trace      bool
@@ -85,9 +85,9 @@ func main() {
 		go app.RunWeb(newApp, httpPort, debug, trace)
 	}
 
-	if strings.Contains(mode,"r"){
+	if strings.Contains(mode, "r") {
 		booted = true
-		go app.RunRestApi(newApp,restPort)
+		go app.RunRestApi(newApp, restPort)
 	}
 
 	if booted {

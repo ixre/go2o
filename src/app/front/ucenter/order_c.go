@@ -33,7 +33,7 @@ func (this *orderC) Complete(ctx *web.Context) {
 
 func (this *orderC) Orders(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
@@ -51,7 +51,7 @@ func (this *orderC) Orders(ctx *web.Context) {
 func (this *orderC) Completed(ctx *web.Context) {
 
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {
@@ -71,7 +71,7 @@ func (this *orderC) Completed(ctx *web.Context) {
 func (this *orderC) Canceled(ctx *web.Context) {
 
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		func(mp *map[string]interface{}) {

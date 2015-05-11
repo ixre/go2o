@@ -14,7 +14,6 @@ type ValuePartner struct {
 	Id            int    `db:"id" pk:"yes" auto:"yes"`
 	Usr           string `db:"usr"`
 	Pwd           string `db:"pwd"`
-	Secret        string `db:"secret"`
 	Name          string `db:"name"`
 	Logo          string `db:"logo"`
 	Tel           string `db:"tel"`

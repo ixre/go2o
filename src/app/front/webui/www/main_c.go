@@ -39,8 +39,11 @@ func (this *mainC) Index(ctx *web.Context) {
 		if this.HandleIndexGo(ctx) {
 			return
 		}
-		if b, siteConf := GetSiteConf(w, p); b {
-			shops := apicache.GetShops(ctx.App, p.Id, p.Secret)
+
+		pa := this.GetPartnerApi(ctx)
+
+		if b, siteConf := GetSiteConf(w, p,pa); b {
+			shops := apicache.GetShops(ctx.App, p.Id, pa.ApiSecret)
 			if shops == nil {
 				shops = []byte("{}")
 			}
