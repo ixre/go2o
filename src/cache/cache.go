@@ -11,6 +11,7 @@ package cache
 import (
 	"errors"
 	"github.com/atnet/gof"
+	"github.com/atnet/gof/storage"
 )
 
 /** this package is manage system cache. **/
@@ -26,5 +27,9 @@ func GetKVS() gof.Storage {
 }
 
 func Initialize(kvStorage gof.Storage) {
-	_kvCacheStorage = kvStorage
+	if kvStorage.Driver() == storage.DriveRedisStorage {
+		_kvCacheStorage = kvStorage
+	} else {
+		panic(errors.New("only support redis storage now."))
+	}
 }

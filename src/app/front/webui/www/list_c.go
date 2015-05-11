@@ -29,7 +29,7 @@ func (this *listC) Index(ctx *web.Context) {
 	mm := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p,pa); b {
+	if b, siteConf := GetSiteConf(w, p, pa); b {
 		categories := apicache.GetCategories(ctx.App, p.Id, pa.ApiSecret)
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p

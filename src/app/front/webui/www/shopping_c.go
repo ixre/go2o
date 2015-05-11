@@ -44,7 +44,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p,pa); b {
+	if b, siteConf := GetSiteConf(w, p, pa); b {
 		// 获取购物车
 		var cartKey string
 		ck, err := r.Cookie("_cart")
@@ -280,7 +280,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p,pa); b {
+	if b, siteConf := GetSiteConf(w, p, pa); b {
 		var payHtml string // 支付HTML
 
 		orderNo := r.URL.Query().Get("order_no")

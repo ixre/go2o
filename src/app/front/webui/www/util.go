@@ -13,15 +13,15 @@ import (
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"net/http"
 	"runtime/debug"
 	"strings"
-	"go2o/src/core/dto"
 )
 
-func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner,api *dto.PartnerApiInfo) (bool, *partner.SiteConf) {
+func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner, api *dto.PartnerApiInfo) (bool, *partner.SiteConf) {
 	var conf = cache.GetPartnerSiteConf(p.Id)
 	if conf == nil {
 		conf, _ = goclient.Partner.GetSiteConf(p.Id, api.ApiSecret)

@@ -14,17 +14,15 @@ import (
 	"github.com/atnet/gof/web/mvc"
 )
 
-var apiSecret string
-
 // 检查是否有权限调用接口(商户)
 func chkApiSecret(ctx *web.Context) bool {
-	return true
-	if len(apiSecret) == 0 {
-		apiSecret = ctx.App.Config().GetString("api_secret")
+	apiId := ctx.Request.FormValue("partner_id")
+	apiSecret := ctx.Request.FormValue("secret")
+
+	if len(apiId) != 0 && len(apiSecret) != 0 {
+
 	}
-	//partnerIdStr := ctx.Request.FormValue("partner_id")
-	inSecret := ctx.Request.FormValue("secret")
-	return len(inSecret) != 0 && inSecret == apiSecret
+	return false
 }
 
 var _ mvc.Filter = new(baseC)

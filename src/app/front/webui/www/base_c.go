@@ -14,9 +14,9 @@ import (
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"net/url"
-	"go2o/src/core/dto"
 )
 
 type baseC struct {
@@ -54,7 +54,7 @@ func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 }
 
 // 获取商户API信息
-func (this *baseC) GetPartnerApi(ctx *web.Context)*dto.PartnerApiInfo{
+func (this *baseC) GetPartnerApi(ctx *web.Context) *dto.PartnerApiInfo {
 	return dps.PartnerService.GetApiInfo(getPartnerId(ctx))
 }
 

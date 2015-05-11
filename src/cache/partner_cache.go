@@ -13,8 +13,11 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/storage"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
+	"go2o/src/core/service/dps"
 )
 
+// 获取商户信息缓存
 func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	var v *partner.ValuePartner
 	var sto gof.Storage = GetKVS()
@@ -31,10 +34,12 @@ func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	return v
 }
 
+// 设置商户信息缓存
 func SetValuePartnerCache(partnerId int, v *partner.ValuePartner) {
 	GetKVS().Set(fmt.Sprintf("cache:partner:value:%d", partnerId), v)
 }
 
+// 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var v *partner.SiteConf
 	var sto gof.Storage = GetKVS()
@@ -50,6 +55,33 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	return v
 }
 
+// 设置商户站点配置
 func SetPartnerSiteConf(partnerId int, v *partner.SiteConf) {
 	GetKVS().Set(fmt.Sprintf("cache:partner:siteconf:%d", partnerId), v)
+}
+
+// 根据API ID获取商户ID
+func GetPartnerIdByApiId(apiId string) int {
+	var partnerId int = -2
+	kvs := GetKVS()
+	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
+	kvs.Get(key, &partnerId)
+	if partnerId == -2 {
+		partnerId = dps.PartnerService.GetPartnerIdByApiId(apiId)
+		kvs.Set(key, partnerId)
+	}
+	return partnerId
+}
+
+// 获取API 信息
+func GetPartnerApiInfo(partnerId int) *dto.PartnerApiInfo {
+	var d *dto.PartnerApiInfo = new(dto.PartnerApiInfo)
+	kvs := GetKVS()
+	key := fmt.Sprintf("cache:partner:api:info-%d", partnerId)
+	err := kvs.Get(key, &d)
+	if err != nil {
+		d = dps.PartnerService.GetApiInfo(partnerId)
+		kvs.Set(key, d)
+	}
+	return d
 }

@@ -12,10 +12,10 @@ package dps
 import (
 	"errors"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
-	"go2o/src/core/dto"
 )
 
 type partnerService struct {
@@ -168,11 +168,16 @@ func (this *partnerService) GetPartnersId() []int {
 }
 
 // 保存API信息
-func (this *partnerService) SaveApiInfo(partnerId int,d *dto.PartnerApiInfo)error{
-	return this._query.SaveApiInfo(partnerId,d)
+func (this *partnerService) SaveApiInfo(partnerId int, d *dto.PartnerApiInfo) error {
+	return this._query.SaveApiInfo(partnerId, d)
 }
 
 // 获取API接口
-func (this *partnerService) GetApiInfo(partnerId int)*dto.PartnerApiInfo{
+func (this *partnerService) GetApiInfo(partnerId int) *dto.PartnerApiInfo {
 	return this._query.GetApiInfo(partnerId)
+}
+
+// 根据API ID获取PartnerId
+func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
+	return this._query.GetPartnerIdByApiId(apiId)
 }

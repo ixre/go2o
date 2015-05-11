@@ -22,15 +22,13 @@ import (
 func Verify(m *jsv.Args) (memberId int, err error) {
 	member_id, token := (*m)["member_id"].(string), (*m)["token"].(string)
 
-
-
 	if memberId, err = strconv.Atoi(member_id); err != nil || token == "" {
 
 		jsv.Println(err)
 		return memberId, errors.New("invalid parameter")
-	}else{
+	} else {
 		//todo:  用户令牌更改，需修改。
-		return memberId,nil
+		return memberId, nil
 	}
 
 	rds := Redis().Get()

@@ -32,7 +32,7 @@ func (this *userC) Login(ctx *web.Context) {
 
 	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p,pa); b {
+	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			mv := *m
 			mv["partner"] = p
@@ -64,7 +64,7 @@ func (this *userC) Register(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	pa := this.GetPartnerApi(ctx)
-	if b, siteConf := GetSiteConf(w, p,pa); b {
+	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["title"] = "会员注册－" + siteConf.SubTitle

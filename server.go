@@ -11,7 +11,6 @@ package main
 
 import (
 	"flag"
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/storage"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
@@ -33,7 +32,7 @@ func main() {
 		debug      bool
 		trace      bool
 		help       bool
-		newApp     gof.App
+		newApp     *core.MainApp
 	)
 
 	flag.IntVar(&socketPort, "port2", 1001, "socket server port")
@@ -54,7 +53,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	newApp = core.NewMainApp(confFile)
-	if gcx, ok := newApp.(*core.MainApp); !ok || !gcx.Init(debug, trace) {
+	if !newApp.Init(debug, trace) {
 		os.Exit(1)
 	}
 
@@ -70,7 +69,7 @@ func main() {
 
 	core.SetGlobalApp(newApp)
 	app.Init(newApp)
-	cache.Initialize(storage.NewHashStorage())
+	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 	daemon.Run(newApp)
 
