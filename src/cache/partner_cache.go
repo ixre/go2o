@@ -62,13 +62,15 @@ func SetPartnerSiteConf(partnerId int, v *partner.SiteConf) {
 
 // 根据API ID获取商户ID
 func GetPartnerIdByApiId(apiId string) int {
-	var partnerId int = -2
+	var partnerId int
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &partnerId)
-	if partnerId == -2 {
+	if partnerId == 0 {
 		partnerId = dps.PartnerService.GetPartnerIdByApiId(apiId)
-		kvs.Set(key, partnerId)
+		if partnerId != 0 {
+			kvs.Set(key, partnerId)
+		}
 	}
 	return partnerId
 }
@@ -80,8 +82,9 @@ func GetPartnerApiInfo(partnerId int) *dto.PartnerApiInfo {
 	key := fmt.Sprintf("cache:partner:api:info-%d", partnerId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		d = dps.PartnerService.GetApiInfo(partnerId)
-		kvs.Set(key, d)
+		if d = dps.PartnerService.GetApiInfo(partnerId); d != nil {
+			kvs.Set(key, d)
+		}
 	}
 	return d
 }

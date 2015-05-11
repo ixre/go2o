@@ -18,11 +18,7 @@ import (
 func chkApiSecret(ctx *web.Context) bool {
 	apiId := ctx.Request.FormValue("partner_id")
 	apiSecret := ctx.Request.FormValue("secret")
-
-	if len(apiId) != 0 && len(apiSecret) != 0 {
-
-	}
-	return false
+	return CheckApiPermission(apiId,apiSecret)
 }
 
 var _ mvc.Filter = new(baseC)
@@ -55,5 +51,5 @@ func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 }
 
 func (this *baseC) errorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:'" + err + "'}"))
+	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
 }
