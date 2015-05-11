@@ -31,7 +31,6 @@ func (this *configC) Profile(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
-	p.Secret = ""
 	p.ExpiresTime = time.Now().Unix()
 
 	js, _ := json.Marshal(p)
@@ -55,7 +54,6 @@ func (this *configC) Profile_post(ctx *web.Context) {
 	//更新
 	origin, _ := dps.PartnerService.GetPartner(partnerId)
 	e.ExpiresTime = origin.ExpiresTime
-	e.Secret = origin.Secret
 	e.JoinTime = origin.JoinTime
 	e.LastLoginTime = origin.LastLoginTime
 	e.LoginTime = origin.LoginTime

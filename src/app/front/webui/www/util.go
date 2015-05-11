@@ -10,22 +10,21 @@ package www
 
 import (
 	"github.com/atnet/gof"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"net/http"
 	"runtime/debug"
 	"strings"
-	"go2o/src/cache"
 )
 
-
-
-func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner) (bool, *partner.SiteConf) {
+func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner, api *dto.PartnerApiInfo) (bool, *partner.SiteConf) {
 	var conf = cache.GetPartnerSiteConf(p.Id)
 	if conf == nil {
-		conf, _ = goclient.Partner.GetSiteConf(p.Id, p.Secret)
+		conf, _ = goclient.Partner.GetSiteConf(p.Id, api.ApiSecret)
 
 		if conf == nil {
 			w.Write([]byte("网站访问过程中出现了异常，请重试!"))
@@ -39,7 +38,7 @@ func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner) (bool, *partner
 			w.Write([]byte(conf.StateHtml))
 			return false, conf
 		}
-		cache.SetPartnerSiteConf(p.Id,conf)
+		cache.SetPartnerSiteConf(p.Id, conf)
 	}
 	return true, conf
 }

@@ -28,9 +28,9 @@ func (this *mainC) Index(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		mm := this.GetMember(ctx)
 		p := this.GetPartner(ctx)
-		conf, _ := this.GetSiteConf(p.Id, p.Secret)
+		conf := this.GetSiteConf(p.Id)
 
-		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.LoginToken)
+		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.DynamicToken)
 		js, _ := json.Marshal(mm)
 		info := make(map[string]string)
 		info["memName"] = mm.Name
@@ -53,16 +53,16 @@ func (this *mainC) Index(ctx *web.Context) {
 			mv["acc"] = acc
 			mv["regTime"] = time.Unix(mm.RegTime, 0).Format("2006-01-02")
 			mv["name"] = gof.BoolString(len(mm.Name) == 0,
-			`<span class="red">未填写</span>`,
-			mm.Name)
+				`<span class="red">未填写</span>`,
+				mm.Name)
 
 			mv["sex"] = gof.BoolString(mm.Sex == 1, "先生",
-			gof.BoolString(mm.Sex == 2, "女士", ""))
+				gof.BoolString(mm.Sex == 2, "女士", ""))
 
 		}, "views/ucenter/index.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+			"views/ucenter/inc/header.html",
+			"views/ucenter/inc/menu.html",
+			"views/ucenter/inc/footer.html")
 	}
 }
 

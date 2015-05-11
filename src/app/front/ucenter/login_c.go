@@ -36,7 +36,7 @@ func (this *loginC) Index_post(ctx *web.Context) {
 		cookie := &http.Cookie{
 			Name:    "ms_token",
 			Expires: time.Now().Add(time.Hour * 48),
-			Value:   result.Token,
+			Value:   result.Member.DynamicToken,
 		}
 		http.SetCookie(w, cookie)
 		w.Write([]byte("{result:true}"))
@@ -66,12 +66,12 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 
 	if err == nil || m != nil {
 		var p *partner.ValuePartner
-		p, err = goclient.Member.GetBindPartner(m.Id, m.LoginToken)
+		p, err = goclient.Member.GetBindPartner(m.Id, m.DynamicToken)
 		if err == nil {
 			ctx.Session().Set("member:rel_partner", p)
 			ctx.Session().Save()
 			w.Write([]byte("<script>location.replace('/')</script>"))
-		}else{
+		} else {
 			w.Write([]byte(err.Error()))
 		}
 	} else {

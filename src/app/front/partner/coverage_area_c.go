@@ -34,7 +34,7 @@ func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
 	coverageArea := delivery.CoverageValue{}
 	web.ParseFormToEntity(r.Form, &coverageArea)
 
-	id, err := dps.DeliveyService.CreateCoverageArea(&coverageArea)
+	id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
 	fmt.Println(id, "=====\n ERROR:", err)
 	if err != nil {
 		result = gof.JsonResult{Result: true, Message: err.Error()}

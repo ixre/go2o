@@ -81,7 +81,6 @@ func (this *Partner) SetValue(v *partner.ValuePartner) error {
 		}
 		tv.Phone = v.Phone
 		tv.Pwd = v.Pwd
-		tv.Secret = v.Secret
 		tv.UpdateTime = time.Now().Unix()
 
 		fmt.Printf("------------%#v\n", this.value)

@@ -11,11 +11,12 @@ package www
 import (
 	"fmt"
 	"github.com/atnet/gof/web"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"net/url"
-	"go2o/src/cache"
 )
 
 type baseC struct {
@@ -50,6 +51,11 @@ func (this *baseC) GetPartnerId(ctx *web.Context) int {
 }
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	return ctx.GetItem("partner_ins").(*partner.ValuePartner)
+}
+
+// 获取商户API信息
+func (this *baseC) GetPartnerApi(ctx *web.Context) *dto.PartnerApiInfo {
+	return dps.PartnerService.GetApiInfo(getPartnerId(ctx))
 }
 
 // 获取会员
@@ -103,9 +109,9 @@ func getPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 	var err error
 	var pt *partner.ValuePartner = cache.GetValuePartnerCache(partnerId)
 	if pt == nil {
-		if pt, err =  dps.PartnerService.GetPartner(getPartnerId(ctx));err == nil{
-			cache.SetValuePartnerCache(partnerId,pt)
+		if pt, err = dps.PartnerService.GetPartner(getPartnerId(ctx)); err == nil {
+			cache.SetValuePartnerCache(partnerId, pt)
 		}
 	}
-	return pt,err
+	return pt, err
 }

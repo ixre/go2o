@@ -30,7 +30,7 @@ type basicC struct {
 
 func (this *basicC) Profile(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	js, _ := json.Marshal(mm)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
@@ -49,7 +49,7 @@ func (this *basicC) Profile(ctx *web.Context) {
 
 func (this *basicC) Pwd(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
 		v := *m
@@ -95,7 +95,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	clientM := new(member.ValueMember)
 	web.ParseFormToEntity(r.Form, clientM)
 	clientM.Id = mm.Id
-	_, err := goclient.Member.SaveMember(clientM, mm.LoginToken)
+	_, err := goclient.Member.SaveMember(clientM, mm.DynamicToken)
 
 	if err != nil {
 		result = gof.JsonResult{Result: false, Message: err.Error()}
@@ -107,7 +107,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 
 func (this *basicC) Deliver(ctx *web.Context) {
 	p := this.GetPartner(ctx)
-	conf, _ := this.GetSiteConf(p.Id, p.Secret)
+	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		v := *mp
@@ -124,7 +124,7 @@ func (this *basicC) Deliver(ctx *web.Context) {
 
 func (this *basicC) Deliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.LoginToken)
+	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.DynamicToken)
 	if err != nil {
 		ctx.ResponseWriter.Write([]byte("{error:'错误:" + err.Error() + "'}"))
 		return
@@ -140,7 +140,7 @@ func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.LoginToken, &e)
+	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.DynamicToken, &e)
 	if err == nil {
 		if b {
 			w.Write([]byte(`{"result":true}`))
@@ -158,7 +158,7 @@ func (this *basicC) DeleteDeliver_post(ctx *web.Context) {
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
 
-	b, err := goclient.Member.DeleteDeliverAddr(m.Id, m.LoginToken, id)
+	b, err := goclient.Member.DeleteDeliverAddr(m.Id, m.DynamicToken, id)
 	if err == nil {
 		if b {
 			w.Write([]byte(`{"result":true}`))

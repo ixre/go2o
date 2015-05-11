@@ -22,7 +22,7 @@ var (
 	MemberService   *memberService
 	PartnerService  *partnerService
 	SaleService     *saleService
-	DeliveyService  *deliveryService
+	DeliverService  *deliveryService
 )
 
 func Init(ctx gof.App) {
@@ -40,7 +40,7 @@ func Init(ctx gof.App) {
 
 	/** Query **/
 	mq := query.NewMemberQuery(db)
-	pq := query.NewPartnerQuery(db)
+	pq := query.NewPartnerQuery(ctx)
 
 	/** Service **/
 	PromService = NewPromotionService(promRep)
@@ -48,5 +48,5 @@ func Init(ctx gof.App) {
 	MemberService = NewMemberService(memberRep, mq)
 	PartnerService = NewPartnerService(partnerRep, pq)
 	SaleService = NewSaleService(saleRep)
-	DeliveyService = NewDeliveryService(deliveryRep)
+	DeliverService = NewDeliveryService(deliveryRep)
 }

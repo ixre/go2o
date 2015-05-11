@@ -34,9 +34,9 @@ func RegisterRoutes(c gof.App) {
 	lc := &listC{}
 
 	routes.Register("buy", sp)
-	routes.Register("shopping",sp)
-	routes.Register("list",lc)
-	routes.Register("cart",cc)
+	routes.Register("shopping", sp)
+	routes.Register("list", lc)
+	routes.Register("cart", cc)
 	routes.Register("user", uc)
 
 	//处理错误

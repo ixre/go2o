@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/app/apiserv"
 	"go2o/src/app/front/partner"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/app/front/webui/mobi"
@@ -60,14 +59,15 @@ func getHttpExecFunc() web.RequestHandler {
 		r, _ := ctx.Request, ctx.ResponseWriter
 
 		switch host, f := r.Host, strings.HasPrefix; {
-		case host == API_DOMAIN:
-			apiserv.Handle(ctx)
+		//case host == API_DOMAIN:
+		//	apiserv.Handle(ctx)
+
 		//供应商端
-		case f(r.Host, "partner."):
+		case f(host, "partner."):
 			partner.Handle(ctx)
 
 		//会员端
-		case f(r.Host, variable.DOMAIN_MEMBER_PREFIX):
+		case f(host, variable.DOMAIN_MEMBER_PREFIX):
 			ucenter.Handle(ctx)
 
 		default:
@@ -111,5 +111,4 @@ func RegisterRoutes(context gof.App) {
 	www.RegisterRoutes(context)
 	mobi.RegisterRoutes(context)
 	weixin.RegisterRoutes(context)
-	apiserv.RegisterRoutes(context)
 }

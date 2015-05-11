@@ -27,8 +27,10 @@ func (this *listC) Index(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	mm := this.GetMember(ctx)
-	if b, siteConf := GetSiteConf(w, p); b {
-		categories := apicache.GetCategories(ctx.App, p.Id, p.Secret)
+	pa := this.GetPartnerApi(ctx)
+
+	if b, siteConf := GetSiteConf(w, p, pa); b {
+		categories := apicache.GetCategories(ctx.App, p.Id, pa.ApiSecret)
 		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
 			(*m)["partner"] = p
 			(*m)["title"] = "在线订餐-" + p.Name
@@ -45,13 +47,15 @@ func (this *listC) Index(ctx *web.Context) {
 func (this *listC) GetList(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
+	pa := this.GetPartnerApi(ctx)
+
 	const getNum int = -1 //-1表示全部
 	categoryId, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {
 		w.Write([]byte(`{"error":"yes"}`))
 		return
 	}
-	items, err := goclient.Partner.GetItems(p.Id, p.Secret, categoryId, getNum)
+	items, err := goclient.Partner.GetItems(p.Id, pa.ApiSecret, categoryId, getNum)
 	if err != nil {
 		w.Write([]byte(`{"error":"` + err.Error() + `"}`))
 		return
