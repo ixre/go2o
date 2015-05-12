@@ -446,7 +446,7 @@ CREATE TABLE `mm_relation` (
   `member_id` int(11) NOT NULL,
   `card_id` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   `tg_id` int(11) DEFAULT NULL COMMENT '推广会员ID',
-  `reg_ptid` int(11) DEFAULT NULL,
+  `reg_partner_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

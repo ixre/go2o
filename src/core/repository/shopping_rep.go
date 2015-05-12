@@ -91,7 +91,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	} else {
 		//验证Partner和Member是否有绑定关系
 		var num int
-		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_ptid=?`,
+		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_partner_id=?`,
 			&num, v.MemberId, v.PartnerId); num != 1 {
 			return v.Id, errors.New("error partner and member.")
 		}
