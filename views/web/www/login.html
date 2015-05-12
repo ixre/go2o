@@ -41,7 +41,7 @@
             <div class="fl">
                 <div class="label"></div>
                 <div class="in">
-                    <input value="登录" id="login" onclick="return login()" type="button" />
+                    <input value="登录" id="btn_login" onclick="return login()" type="button" />
                     <!--<input value="忘记密码" id="btn" type="button" />-->
                 </div>
             </div>
@@ -85,15 +85,15 @@
                     if (json.message.indexOf('验证码') != -1) {
                         refreshImage();
                     }
-                    tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
+                    tip.innerHTML = '<span style="color:red">' + json.message + '</span>';
                 }
             }, function (x) {
-                tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';
+                tip.innerHTML = '<span style="color:red">登陆服务器失败请重试!</span>';
             });
         }
     }
 
-    $JS.$('login').onclick=login;
+    $JS.$('btn_login').onclick=login;
 </script>
 
 {{template "footer".}}

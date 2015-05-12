@@ -23,7 +23,7 @@ window.funcs = {
                    }
                }else{
                    //注册其他
-                   alert('注册失败!');
+                   alert(json.message);
                }
            },function(){
                    alert('注册失败!');
