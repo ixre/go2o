@@ -15,12 +15,12 @@ import (
 	"github.com/atnet/gof/crypto"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
-	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/infrastructure/domain"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -131,21 +131,21 @@ func (this *memberC) register(ctx *web.Context) {
 		var result dto.MessageResult
 
 		var partnerId int = this.GetPartnerId(ctx)
-		var invMemberId int                                            // 邀请人
+		var invMemberId int // 邀请人
 		var usr string = r.FormValue("usr")
 		var pwd string = r.FormValue("pwd")
-		var registerFrom string = r.FormValue("reg_from")            // 注册来源
-		var invitationCode string = r.FormValue("invitation_code")    // 推荐码
+		var registerFrom string = r.FormValue("reg_from")          // 注册来源
+		var invitationCode string = r.FormValue("invitation_code") // 推荐码
 		var regIp string
 		if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 			regIp = r.RemoteAddr[:i]
 		}
 
-		fmt.Println(usr,pwd,"REGFROM:",registerFrom,"INVICODE:",invitationCode)
+		fmt.Println(usr, pwd, "REGFROM:", registerFrom, "INVICODE:", invitationCode)
 
 		// 检验
 		if len(invitationCode) != 0 {
-			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode);
+			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
 			if invMemberId == 0 {
 				result.Message = "推荐/邀请人不存在！"
 				this.jsonOutput(ctx, result)
@@ -155,7 +155,7 @@ func (this *memberC) register(ctx *web.Context) {
 
 		var member member.ValueMember
 		member.Usr = usr
-		member.Pwd = domain.EncodeMemberPwd(usr,pwd)
+		member.Pwd = domain.EncodeMemberPwd(usr, pwd)
 		member.RegIp = regIp
 		member.RegFrom = registerFrom
 
@@ -165,7 +165,7 @@ func (this *memberC) register(ctx *web.Context) {
 			err = dps.MemberService.SaveRelation(memberId, "-", invMemberId, partnerId)
 		}
 
-		if err != nil{
+		if err != nil {
 			result.Message = err.Error()
 		}
 

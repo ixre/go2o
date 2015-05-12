@@ -67,7 +67,7 @@ func (this *basicC) Pwd(ctx *web.Context) {
 func (this *basicC) Pwd_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	m := this.GetMember(ctx)
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	var oldPwd, newPwd, rePwd string
 	oldPwd = r.FormValue("OldPwd")
@@ -80,9 +80,9 @@ func (this *basicC) Pwd_post(ctx *web.Context) {
 		err = dps.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
 	}
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true}
+		result = gof.Message{Result: true}
 	}
 	w.Write(result.Marshal())
 }
@@ -90,7 +90,7 @@ func (this *basicC) Pwd_post(ctx *web.Context) {
 func (this *basicC) Profile_post(ctx *web.Context) {
 	mm := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	clientM := new(member.ValueMember)
 	web.ParseFormToEntity(r.Form, clientM)
@@ -98,9 +98,9 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	_, err := goclient.Member.SaveMember(clientM, mm.DynamicToken)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true}
+		result = gof.Message{Result: true}
 	}
 	w.Write(result.Marshal())
 }

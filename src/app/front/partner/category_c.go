@@ -85,7 +85,7 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	e := sale.ValueCategory{}
@@ -93,9 +93,9 @@ func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 
 	id, err := dps.SaleService.SaveCategory(partnerId, &e)
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
@@ -103,7 +103,7 @@ func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 func (this *categoryC) DelCategory_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	categoryId, _ := strconv.Atoi(r.Form.Get("id"))
 
@@ -112,9 +112,9 @@ func (this *categoryC) DelCategory_post(ctx *web.Context) {
 
 	//id, err := dao.SaveCategory(&entity)
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: ""}
+		result = gof.Message{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

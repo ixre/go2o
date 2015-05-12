@@ -39,8 +39,7 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
-
-func (this *memberService) GetMemberIdByInvitationCode(code string)int{
+func (this *memberService) GetMemberIdByInvitationCode(code string) int {
 	return this._memberRep.GetMemberIdByInvitationCode(code)
 }
 

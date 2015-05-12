@@ -10,11 +10,11 @@ package domain
 
 import (
 	"fmt"
+	"github.com/atnet/gof/crypto"
+	"github.com/atnet/gof/util"
 	"math/rand"
 	"strconv"
 	"time"
-	"github.com/atnet/gof/util"
-	"github.com/atnet/gof/crypto"
 )
 
 const (
@@ -32,8 +32,8 @@ func NewOrderNo(partnerId int) string {
 }
 
 // 创建邀请码(6位)
-func GenerateInvitationCode() string{
-	var seed string = fmt.Sprintf("%d%s",time.Now().Unix(),util.RandString(6))
+func GenerateInvitationCode() string {
+	var seed string = fmt.Sprintf("%d%s", time.Now().Unix(), util.RandString(6))
 	var md5 = crypto.Md5([]byte(seed))
 	return md5[8:14]
 }

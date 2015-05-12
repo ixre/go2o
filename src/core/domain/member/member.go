@@ -53,7 +53,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Sex = v.Sex
 	this._value.RegFrom = v.RegFrom
 	if len(this._value.InvitationCode) == 0 {
-		this._value.InvitationCode = v.InvitationCode;
+		this._value.InvitationCode = v.InvitationCode
 	}
 	return nil
 }
@@ -207,10 +207,10 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	}
 
 	// 如果昵称为空，则跟用户名相同
-	if len(m.Name) == 0{
+	if len(m.Name) == 0 {
 		m.Name = m.Usr
 	}
-	m.InvitationCode = this.generateInvitationCode()	// 创建一个邀请码
+	m.InvitationCode = this.generateInvitationCode() // 创建一个邀请码
 
 	id, err := this._rep.SaveMember(m)
 	if id != 0 {
@@ -220,11 +220,11 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 }
 
 // 创建邀请码
-func (this *Member) generateInvitationCode()string{
+func (this *Member) generateInvitationCode() string {
 	var code string
-	for{
+	for {
 		code = domain.GenerateInvitationCode()
-		if memberId := this._rep.GetMemberIdByInvitationCode(code);memberId == 0{
+		if memberId := this._rep.GetMemberIdByInvitationCode(code); memberId == 0 {
 			break
 		}
 	}

@@ -52,11 +52,10 @@ func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
 	return memberImpl.NewMember(v, this)
 }
 
-
 // 根据邀请码获取会员编号
-func (this *MemberRep) GetMemberIdByInvitationCode(code string)int{
+func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 	var memberId int
-	this.ExecScalar("SELECT id FROM mm_member WHERE invitation_code=?",&memberId,code)
+	this.ExecScalar("SELECT id FROM mm_member WHERE invitation_code=?", &memberId, code)
 	return memberId
 }
 
@@ -193,10 +192,10 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 	})
 
 	orm.Save(nil, &member.MemberRelation{
-		MemberId: id,
-		CardId:   "",
-		InvitationMemberId:     0,
-		RegisterPartnerId: 0,
+		MemberId:           id,
+		CardId:             "",
+		InvitationMemberId: 0,
+		RegisterPartnerId:  0,
 	})
 }
 

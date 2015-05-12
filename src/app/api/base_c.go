@@ -18,8 +18,8 @@ import (
 func chkApiSecret(ctx *web.Context) bool {
 	apiId := ctx.Request.FormValue("partner_id")
 	apiSecret := ctx.Request.FormValue("secret")
-	ok,partnerId := CheckApiPermission(apiId,apiSecret)
-	if ok{
+	ok, partnerId := CheckApiPermission(apiId, apiSecret)
+	if ok {
 		ctx.Items["partner_id"] = partnerId
 	}
 	return ok
@@ -59,6 +59,6 @@ func (this *baseC) errorOutput(ctx *web.Context, err string) {
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context)int{
+func (this *baseC) GetPartnerId(ctx *web.Context) int {
 	return ctx.Items["partner_id"].(int)
 }
