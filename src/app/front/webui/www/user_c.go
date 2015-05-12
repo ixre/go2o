@@ -90,7 +90,7 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 	}
 }
 
-func (this *userC) PostRegistInfo_post(ctx *web.Context) {
+func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	r.ParseForm()
