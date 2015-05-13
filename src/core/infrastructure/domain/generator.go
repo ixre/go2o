@@ -15,6 +15,7 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+	"strings"
 )
 
 const (
@@ -36,4 +37,17 @@ func GenerateInvitationCode() string {
 	var seed string = fmt.Sprintf("%d%s", time.Now().Unix(), util.RandString(6))
 	var md5 = crypto.Md5([]byte(seed))
 	return md5[8:14]
+}
+
+
+// 创建API编号(10位)
+func NewApiId(id int)string{
+	var offset = id *360 + id % 2
+	return fmt.Sprintf("60%s%d",strings.Repeat("0",8 - len(strconv.Itoa(offset))),offset)
+}
+
+//创建密钥(16位)
+func NewSecret(hex int) string {
+	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).Unix())
+	return crypto.Md5([]byte(str))[8:24]
 }

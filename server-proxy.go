@@ -10,7 +10,6 @@ import (
 	"net/http/cookiejar"
 	"os"
 	"strings"
-)
 
 func main() {
 	log.SetOutput(os.Stdout)
@@ -24,6 +23,7 @@ func main() {
 	proxyURL = flag.String("proxy", "", "proxy url")
 
 	flag.Parse()
+
 
 	if *proxyURL == "" {
 		log.Println("[Error]: proxy url example \"http://www.google.com:80\"")

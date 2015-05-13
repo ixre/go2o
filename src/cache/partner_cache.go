@@ -13,7 +13,6 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/storage"
 	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 )
 
@@ -76,8 +75,8 @@ func GetPartnerIdByApiId(apiId string) int {
 }
 
 // 获取API 信息
-func GetPartnerApiInfo(partnerId int) *dto.PartnerApiInfo {
-	var d *dto.PartnerApiInfo = new(dto.PartnerApiInfo)
+func GetPartnerApiInfo(partnerId int) *partner.ApiInfo {
+	var d *partner.ApiInfo = new(partner.ApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", partnerId)
 	err := kvs.Get(key, &d)

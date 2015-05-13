@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>更新项</title>
+    <title>商户编辑</title>
     <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
     <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
@@ -65,7 +65,7 @@
     $JS.upload({
         id: 'upload_btn',
         debug: !true,
-        url: '/pt/upload.cgi',
+        url: '/upload.cgi?type=101',
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {

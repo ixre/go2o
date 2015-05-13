@@ -581,7 +581,7 @@ CREATE TABLE `pt_api` (
 
 LOCK TABLES `pt_api` WRITE;
 /*!40000 ALTER TABLE `pt_api` DISABLE KEYS */;
-INSERT INTO `pt_api` VALUES (101,'6600123456','abede5odskew',1,'*');
+INSERT INTO `pt_api` VALUES (101,'6600123456','abede5odskew',1,'*'),(104,'6000037440','0befdb52f387cc93',1,'*'),(105,'6000037801','2acd94afae1f5fca',1,'*');
 /*!40000 ALTER TABLE `pt_api` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -750,7 +750,7 @@ DROP TABLE IF EXISTS `pt_partner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_partner` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `usr` varchar(20) DEFAULT NULL,
   `pwd` varchar(32) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
@@ -764,7 +764,7 @@ CREATE TABLE `pt_partner` (
   `login_time` int(11) DEFAULT NULL,
   `last_login_time` int(11) DEFAULT NULL COMMENT '标志',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=106 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -773,7 +773,7 @@ CREATE TABLE `pt_partner` (
 
 LOCK TABLES `pt_partner` WRITE;
 /*!40000 ALTER TABLE `pt_partner` DISABLE KEYS */;
-INSERT INTO `pt_partner` VALUES (101,'go2o','5f618b90a86a41d7faf4dfd46c3f07d0','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499);
+INSERT INTO `pt_partner` VALUES (101,'go2o','5f618b90a86a41d7faf4dfd46c3f07d0','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499),(104,'zs','95d73c1c5a056499a8e3ebc5d148a8ad','朝首','master/item_pic/20150513221019.png','0757-22332233','18512345678','佛山市南海区海八路20号',1431526823,1747146023,1431526823,0,0),(105,'wzo2o','89a3b5c0336e0f6f66a7658f90500c53','万州O2O','master/item_pic/20150513221025.png','0592-2231232','18850001234','重庆市江北区小桥路123号',1431527146,1747146346,1431527146,0,0);
 /*!40000 ALTER TABLE `pt_partner` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -829,7 +829,7 @@ CREATE TABLE `pt_saleconf` (
 
 LOCK TABLES `pt_saleconf` WRITE;
 /*!40000 ALTER TABLE `pt_saleconf` DISABLE KEYS */;
-INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,1);
+INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,1),(104,0.00,0.00,0.00,0.00,0,0,1),(105,0.00,0.00,0.00,0.00,0,0,1);
 /*!40000 ALTER TABLE `pt_saleconf` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -890,7 +890,7 @@ CREATE TABLE `pt_siteconf` (
 
 LOCK TABLES `pt_siteconf` WRITE;
 /*!40000 ALTER TABLE `pt_siteconf` DISABLE KEYS */;
-INSERT INTO `pt_siteconf` VALUES (101,'wly.ts.com','101/item_pic/20150211130151.gif','味道美 & 美味到_网上订餐系统',NULL,1,'技术故障，正在抢修');
+INSERT INTO `pt_siteconf` VALUES (101,'wly.ts.com','101/item_pic/20150211130151.gif','味道美 & 美味到_网上订餐系统',NULL,1,'技术故障，正在抢修'),(104,'','master/item_pic/20150513221019.png','线上商店-朝首','线上商店-朝首',1,NULL),(105,'','master/item_pic/20150513221025.png','线上商店-万州O2O','线上商店-万州O2O',1,NULL);
 /*!40000 ALTER TABLE `pt_siteconf` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1113,4 +1113,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-13 18:49:48
+-- Dump completed on 2015-05-13 22:32:33

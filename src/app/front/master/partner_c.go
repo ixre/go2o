@@ -34,23 +34,8 @@ func (c *partnerC) CreatePartner(ctx *web.Context) {
 	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil, "views/master/partner/partner_create.html")
 }
 
-func (c *partnerC) EditPartner(ctx *web.Context) {
-	var entityJson template.JS
-	id, err := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	if err == nil {
-		partner, err := dps.PartnerService.GetPartner(id)
-		if err == nil && partner != nil {
-			partner.Pwd = strings.Repeat("*", 10)
-			entity, _ := json.Marshal(partner)
-			entityJson = template.JS(entity)
-		}
-	}
-	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, func(mp *map[string]interface{}) {
-		(*mp)["entity"] = entityJson
-	}, "views/master/partner/partner_edit.html")
-}
-
-func (c *partnerC) CreatePartner_post(w http.ResponseWriter, r *http.Request) {
+func (c *partnerC) CreatePartner_post(ctx *web.Context) {
+	r,w :=ctx.Request,ctx.ResponseWriter
 	var result gof.Message
 	r.ParseForm()
 
@@ -59,7 +44,7 @@ func (c *partnerC) CreatePartner_post(w http.ResponseWriter, r *http.Request) {
 
 	dt := time.Now()
 	anousPwd := strings.Repeat("*", 10) //匿名密码
-	if partner.Pwd != anousPwd {
+	if len(partner.Pwd) != 0 && partner.Pwd != anousPwd {
 		partner.Pwd = domain.EncodePartnerPwd(partner.Usr, partner.Pwd)
 	}
 
@@ -89,6 +74,30 @@ func (c *partnerC) CreatePartner_post(w http.ResponseWriter, r *http.Request) {
 	w.Write(result.Marshal())
 }
 
+// 商户配置管理
+func (this *partnerC) PartnerConf(ctx *web.Context) {
+	var partnerId int
+	partnerId, _ = strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, func(m *map[string]interface{}) {
+		(*m)["partnerId"] = partnerId
+	}, "views/master/partner/partner_create.html")
+}
+
+func (c *partnerC) EditPartner(ctx *web.Context) {
+	var entityJson template.JS
+	id, err := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	if err == nil {
+		partner, err := dps.PartnerService.GetPartner(id)
+		if err == nil && partner != nil {
+			partner.Pwd = strings.Repeat("*", 10)
+			entity, _ := json.Marshal(partner)
+			entityJson = template.JS(entity)
+		}
+	}
+	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, func(mp *map[string]interface{}) {
+		(*mp)["entity"] = entityJson
+	}, "views/master/partner/partner_edit.html")
+}
 func (c *partnerC) List(ctx *web.Context) {
 	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil,
 	"views/master/partner/partner_list.html")

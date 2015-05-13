@@ -11,7 +11,7 @@ package api
 import (
 	"github.com/atnet/gof/web"
 	"go2o/src/cache"
-	"go2o/src/core/dto"
+	"go2o/src/core/domain/interface/partner"
 )
 
 func ApiTest(ctx *web.Context) {
@@ -23,7 +23,7 @@ func ApiTest(ctx *web.Context) {
 func CheckApiPermission(apiId string, secret string) (ok bool, partnerId int) {
 	if len(apiId) != 0 && len(secret) != 0 {
 		var partnerId int = cache.GetPartnerIdByApiId(apiId)
-		var apiInfo *dto.PartnerApiInfo = cache.GetPartnerApiInfo(partnerId)
+		var apiInfo *partner.ApiInfo = cache.GetPartnerApiInfo(partnerId)
 		if apiInfo != nil {
 			return apiInfo.ApiSecret == secret, partnerId
 		}

@@ -37,5 +37,6 @@ func registerRoutes() {
 	routes.Add("/dashboard",mc.Dashboard)
 	routes.Add("/login",mc.Login)
 	routes.Add("/logout",mc.Logout)
+	routes.Add("/upload.cgi",mc.Upload_post)
 
 }

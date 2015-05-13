@@ -6,10 +6,10 @@
  * description :
  * history :
  */
-package dto
+package partner
 
 // 商户接口信息
-type PartnerApiInfo struct {
+type ApiInfo struct {
 	// 商户编号
 	PartnerId int `db:"partner_id" pk:"yes" auto:"no"`
 	// 商户接口编号(10位数字)
