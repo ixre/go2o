@@ -59,36 +59,48 @@ Go2o使用领域驱动设计对业务深度抽象，理论上支持大部分行�
 > Database backup file is here : [https://github.com/atnet/go2o/blob/master/docs/data/go2o.sql]go2o.sql
 
 ### 1.Complied ###
-        git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
-        export GOPATH=$GOPATH:/home/usr/go/
-        cd /home/usr/go
-        go build server.go
+> git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
+
+> export GOPATH=$GOPATH:/home/usr/go/
+
+> cd /home/usr/go
+
+> go build server.go
 
 ### 2.Running Service ###
-        Usage of ./server:
-          -debug=false: enable debug
-          -help=false: command usage
-          -mode="sh": boot mode.'h'- boot http service,'s'- boot socket service
-          -port=1001: web server port
-          -port2=1002: socket server port
+> Usage of ./server:
+
+>  -debug=false: enable debug
+
+>  -help=false: command usage
+
+>  -mode="sh": boot mode.'h'- boot http service,'s'- boot socket service
+
+>  -port=1001: web server port
+
+>  -port2=1002: socket server port
 
 ### 3.Add http proxy by nginx ###
+> server {
 
-        server {
-              listen          80;
-              server_name     *.ts.com;
-              location / {
-                 proxy_pass   http://localhost:1002;
-                 proxy_set_header Host $host;
-              }
-        }
+>      listen          80;
+
+>      server_name     *.ts.com;
+
+>      location / {
+
+>         proxy_pass   http://localhost:1002;
+
+>         proxy_set_header Host $host;
+
+>      }
+
+>}
+
 
 
 ### 4.Add test hosts ###
-        vi /etc/hosts
-        127.0.0.1   go2o.ts.com static.ts.com img.ts.com partner.ts.com
-        member.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com
-
+> echo  127.0.0.1   go2o.ts.com static.ts.com img.ts.com partner.ts.com member.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com >> /etc/hosts
 
 ## Access Entry ##
 
@@ -110,14 +122,3 @@ wly.ts.com
 
 you can add host to table "pt_host" use MySql Workbench.
 
-
-3. code template
-
-/**
- * Copyright 2014 @ S1N1 Team.
- * name : ${NAME}
- * author : jarryliu
- * date : ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}
- * description :
- * history :
- */
