@@ -6,24 +6,19 @@
  * description :
  * history :
  */
-package partner
+package master
 
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/dps"
 	"net/url"
 	"fmt"
 	"github.com/atnet/gof"
 	"encoding/json"
 )
 
-func chkLogin(ctx *web.Context) (b bool, partnerId int) {
-	//todo:仅仅做了id的检测，没有判断有效性
-	// i, err := session.GetLSession().GetPartnerIdFromCookie(ctx.Request)
-	// return err == nil, i
-	v := ctx.Session().Get("partner_id")
+func chkLogin(ctx *web.Context) (b bool, partnerId int){
+	v := ctx.Session().Get("master_id")
 	if v == nil {
 		return false, -1
 	}
@@ -52,17 +47,13 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context) int {
-	v := ctx.Session().Get("partner_id")
+func (this *baseC) GetMasterId(ctx *web.Context) int {
+	v := ctx.Session().Get("master_id")
 	if v == nil {
 		this.Requesting(ctx)
 		return -1
 	}
 	return v.(int)
-}
-
-func (this *baseC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
-	return dps.PartnerService.GetPartner(this.GetPartnerId(ctx))
 }
 
 

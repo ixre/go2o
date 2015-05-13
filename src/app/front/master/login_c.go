@@ -9,34 +9,37 @@
 package master
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/infrastructure/domain"
+	"github.com/atnet/gof"
 )
 
 type loginC struct {
-	gof.App
 }
 
 //登陆
-func (this *loginC) Login(ctx *web.Context) {
+func (this *loginC) Index(ctx *web.Context) {
 	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil,"views/master/login.html")
 }
-func (this *loginC) Login_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+func (this *loginC) Index_post(ctx *web.Context) {
+	r := ctx.Request
+	var msg gof.Message
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
-	pt, result, message := this.ValidLogin(usr, pwd)
 
-	if result {
-		ctx.Session().Set("partner_id", pt.Id)
+	if domain.Md5Pwd(pwd,usr) == ctx.App.Config().GetString("webmaster_valid_md5") {
+		ctx.Session().Set("master_id", 1)
 		if err := ctx.Session().Save(); err != nil {
-			result = false
-			message = err.Error()
+			msg.Message = err.Error()
+		}else{
+			msg.Result =true
 		}
+	}else{
+		msg.Message = "用户或密码不正确！"
 	}
-	web.Seria2json(w, result, message, nil)
+	ctx.ResponseWriter.Write(msg.Marshal())
 }
 
 //验证登陆

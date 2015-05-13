@@ -87,10 +87,16 @@ Go2o使用领域驱动设计对业务深度抽象，理论上支持大部分行�
 
 
 ## Access Entry ##
+
+### WebMaster ##
+webmaster.ts.com
+
+account: go2o / 123456
+
 ### Partner Management ###
 partner.ts.com
 
-account: go2o/123456
+account: go2o / 123456
 
 ### Member Center ###
 member.ts.com

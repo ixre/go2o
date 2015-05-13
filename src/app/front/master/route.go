@@ -28,6 +28,9 @@ func registerRoutes() {
 	//bc := new(baseC)
 	//mc := &mainC{} //入口控制器
 	lc := &loginC{}
+	routes.Register("login",lc)
+	routes.Register("partner",&partnerC{})
+
 	//routes.Register("shop", new(shopC))             //商家门店控制器
 
 //	routes.Add("/export/getExportData", func(ctx *web.Context) {
@@ -37,6 +40,4 @@ func registerRoutes() {
 //			redirect(ctx)
 //		}
 //	})
-
-	routes.Add("/login",lc.Login)
 }
