@@ -376,7 +376,7 @@ DROP TABLE IF EXISTS `mm_integral_log`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mm_integral_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pt_id` int(11) DEFAULT NULL,
+  `partner_id` int(11) DEFAULT NULL,
   `member_id` int(11) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `integral` int(11) DEFAULT NULL,
@@ -470,7 +470,7 @@ DROP TABLE IF EXISTS `pm_coupon`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pm_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pt_id` int(11) DEFAULT NULL,
+  `partner_id` int(11) DEFAULT NULL,
   `code` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '优惠码',
   `description` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `amount` int(11) DEFAULT NULL COMMENT '优惠码可用数量',
@@ -594,7 +594,7 @@ CREATE TABLE `pt_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   `member_id` int(11) DEFAULT NULL COMMENT '-1代表游客订餐',
-  `pt_id` int(11) DEFAULT NULL COMMENT '商家ID',
+  `partner_id` int(11) DEFAULT NULL COMMENT '商家ID',
   `shop_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '商家分店ID, 0为未指定，需管理指定',
   `items_info` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `total_fee` decimal(10,2) DEFAULT NULL COMMENT '订单总额',
@@ -722,7 +722,7 @@ DROP TABLE IF EXISTS `pt_page`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pt_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `partner_id` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
   `type` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
   `content` varchar(5000) COLLATE utf8_unicode_ci DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
@@ -809,7 +809,7 @@ DROP TABLE IF EXISTS `pt_saleconf`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_saleconf` (
-  `pt_id` int(11) NOT NULL,
+  `partner_id` int(11) NOT NULL,
   `cb_percent` float(4,2) DEFAULT NULL COMMENT '反现比例,0则不返现',
   `cb_tg1_percent` float(4,2) DEFAULT NULL COMMENT '一级比例',
   `cb_tg2_percent` float(4,2) DEFAULT NULL COMMENT '二级比例',
@@ -817,7 +817,7 @@ CREATE TABLE `pt_saleconf` (
   `ib_num` int(11) DEFAULT NULL COMMENT '每一元返多少积分',
   `ib_extra` int(11) DEFAULT NULL COMMENT '额外赠送积分',
   `auto_setup_order` tinyint(4) DEFAULT '0',
-  PRIMARY KEY (`pt_id`)
+  PRIMARY KEY (`partner_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -840,7 +840,7 @@ DROP TABLE IF EXISTS `pt_shop`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `pt_id` int(11) DEFAULT NULL,
+  `partner_id` int(11) DEFAULT NULL,
   `name` varchar(50) COLLATE utf8_unicode_ci DEFAULT NULL,
   `address` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `phone` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -871,14 +871,14 @@ DROP TABLE IF EXISTS `pt_siteconf`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_siteconf` (
-  `pt_id` int(11) NOT NULL,
+  `partner_id` int(11) NOT NULL,
   `host` varchar(45) COLLATE utf8_unicode_ci NOT NULL,
   `logo` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `index_title` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '首页标题',
   `sub_title` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT '子页面标题',
   `state` int(11) DEFAULT NULL COMMENT '状态: 0:暂停  1：正常',
   `state_html` varchar(45) COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`pt_id`)
+  PRIMARY KEY (`partner_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='合作商域名绑定';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

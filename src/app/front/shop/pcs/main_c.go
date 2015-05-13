@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package www
+package pcs
 
 import (
 	"github.com/atnet/gof/web"

@@ -66,7 +66,7 @@ func (this *partnerRep) GetPartner(id int) (partner.IPartner, error) {
 func (this *partnerRep) GetPartnerMajorHost(partnerId int) string {
 	//todo:
 	var host string
-	this.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE pt_id=? LIMIT 0,1`,
+	this.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE partner_id=? LIMIT 0,1`,
 		&host, partnerId)
 	return host
 }
@@ -180,7 +180,7 @@ func (this *partnerRep) GetValueShop(partnerId, shopId int) *partner.ValueShop {
 func (this *partnerRep) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 	shops := []*partner.ValueShop{}
 	err := this.Connector.GetOrm().SelectByQuery(&shops,
-		"SELECT * FROM pt_shop WHERE pt_id=?", partnerId)
+		"SELECT * FROM pt_shop WHERE partner_id=?", partnerId)
 
 	if err != nil {
 		log.PrintErr(err)
@@ -193,6 +193,6 @@ func (this *partnerRep) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 	defer this.renew(partnerId)
 	_, err := this.Connector.GetOrm().Delete(partner.ValueShop{},
-		"pt_id=? AND id=?", partnerId, shopId)
+		"partner_id=? AND id=?", partnerId, shopId)
 	return err
 }

@@ -16,6 +16,9 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
+	"fmt"
+	"github.com/atnet/gof"
+	"encoding/json"
 )
 
 var _ mvc.Filter = new(baseC)
@@ -62,4 +65,27 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 // 获取商户的站点设置
 func (this *baseC) GetSiteConf(partnerId int) *partner.SiteConf {
 	return dps.PartnerService.GetSiteConf(partnerId)
+}
+
+
+
+// 输出Json
+func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		this.errorOutput(ctx, err.Error())
+	} else {
+		ctx.ResponseWriter.Write(b)
+	}
+}
+
+// 输出错误信息
+func (this *baseC) errorOutput(ctx *web.Context, err string) {
+	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+}
+
+// 输出错误信息
+func (this *baseC) resultOutput(ctx *web.Context,result gof.Message) {
+	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	"{result:%v,code:%d,message:\"%s\"}", result.Result,result.Code, result.Message)))
 }
