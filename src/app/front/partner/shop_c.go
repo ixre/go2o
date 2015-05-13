@@ -60,7 +60,7 @@ func (this *shopC) Modify(ctx *web.Context) {
 func (this *shopC) SaveShop_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	shop := partner.ValueShop{}
@@ -69,9 +69,9 @@ func (this *shopC) SaveShop_post(ctx *web.Context) {
 	id, err := dps.PartnerService.SaveShop(partnerId, &shop)
 
 	if err != nil {
-		result = gof.JsonResult{Result: true, Message: err.Error()}
+		result = gof.Message{Result: true, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
