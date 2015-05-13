@@ -12,7 +12,7 @@ package tool
 //todo: 新浪ip接口，http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js&ip=110.110.110.110
 
 import (
-	"code.google.com/p/go.text/encoding/simplifiedchinese"
+	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
 	"net/http"
 	"regexp"
