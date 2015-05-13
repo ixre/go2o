@@ -53,12 +53,16 @@ Go2o使用领域驱动设计对业务深度抽象，理论上支持大部分行�
 
 
 ## Deploy ##
+### 1. Import database ###
+> Create new mysql db instance named "go2o"
+> and import data use mysql utility.
+> Database backup file is here : [https://github.com/atnet/go2o/blob/master/docs/data/go2o.sql]go2o.sql
 
 ### 1.Complied ###
-                git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
-                export GOPATH=$GOPATH:/home/usr/go/
-                cd /home/usr/go
-                go build server.go
+        git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
+        export GOPATH=$GOPATH:/home/usr/go/
+        cd /home/usr/go
+        go build server.go
 
 ### 2.Running Service ###
         Usage of ./server:
