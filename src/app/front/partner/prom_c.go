@@ -65,7 +65,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 func (this *promC) BindCoupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
@@ -90,7 +90,7 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	var e promotion.ValueCoupon
 	web.ParseFormToEntity(r.Form, &e)
@@ -104,9 +104,9 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 	_, err := dps.PromService.SaveCoupon(partnerId, &e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: ""}
+		result = gof.Message{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

@@ -89,7 +89,7 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 func (this *accountC) ApplyCash_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 	e := new(member.BankInfo)
 	web.ParseFormToEntity(r.Form, e)
@@ -97,9 +97,9 @@ func (this *accountC) ApplyCash_post(ctx *web.Context) {
 	err := goclient.Member.SaveBankInfo(m.Id, m.DynamicToken, e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true}
+		result = gof.Message{Result: true}
 	}
 	w.Write(result.Marshal())
 

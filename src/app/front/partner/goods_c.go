@@ -85,7 +85,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	e := sale.ValueGoods{}
@@ -94,9 +94,9 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	id, err := dps.SaleService.SaveGoods(partnerId, &e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: true, Message: err.Error()}
+		result = gof.Message{Result: true, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
@@ -104,16 +104,16 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 func (this *goodsC) Del_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
 	err := dps.SaleService.DeleteGoods(partnerId, id)
 
 	if err != nil {
-		result = gof.JsonResult{Result: true, Message: err.Error()}
+		result = gof.Message{Result: true, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }

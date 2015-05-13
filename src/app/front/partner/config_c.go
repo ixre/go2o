@@ -45,7 +45,7 @@ func (this *configC) Profile(ctx *web.Context) {
 func (this *configC) Profile_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	e := partner.ValuePartner{}
@@ -64,9 +64,9 @@ func (this *configC) Profile_post(ctx *web.Context) {
 	id, err := dps.PartnerService.SavePartner(partnerId, &e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
@@ -87,7 +87,7 @@ func (this *configC) SiteConf(ctx *web.Context) {
 func (this *configC) SiteConf_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	e := partner.SiteConf{}
@@ -101,9 +101,9 @@ func (this *configC) SiteConf_post(ctx *web.Context) {
 	err := dps.PartnerService.SaveSiteConf(partnerId, &e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: ""}
+		result = gof.Message{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }
@@ -124,7 +124,7 @@ func (this *configC) SaleConf(ctx *web.Context) {
 func (this *configC) SaleConf_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	e := partner.SaleConf{}
@@ -135,9 +135,9 @@ func (this *configC) SaleConf_post(ctx *web.Context) {
 	err := dps.PartnerService.SaveSaleConf(partnerId, &e)
 
 	if err != nil {
-		result = gof.JsonResult{Result: false, Message: err.Error()}
+		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: ""}
+		result = gof.Message{Result: true, Message: ""}
 	}
 	w.Write(result.Marshal())
 }

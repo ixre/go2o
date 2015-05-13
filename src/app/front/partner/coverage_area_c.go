@@ -28,7 +28,7 @@ func (this *coverageAreaC) Create(ctx *web.Context) {
 
 func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	var result gof.JsonResult
+	var result gof.Message
 	r.ParseForm()
 
 	coverageArea := delivery.CoverageValue{}
@@ -37,9 +37,9 @@ func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
 	id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
 	fmt.Println(id, "=====\n ERROR:", err)
 	if err != nil {
-		result = gof.JsonResult{Result: true, Message: err.Error()}
+		result = gof.Message{Result: true, Message: err.Error()}
 	} else {
-		result = gof.JsonResult{Result: true, Message: "", Data: id}
+		result = gof.Message{Result: true, Message: "", Data: id}
 	}
 	w.Write(result.Marshal())
 }
