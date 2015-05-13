@@ -26,18 +26,16 @@ func init(){
 //注册路由
 func registerRoutes() {
 	//bc := new(baseC)
-	//mc := &mainC{} //入口控制器
-	lc := &loginC{}
-	routes.Register("login",lc)
+	mc := &mainC{} //入口控制器
 	routes.Register("partner",&partnerC{})
 
 	//routes.Register("shop", new(shopC))             //商家门店控制器
 
-//	routes.Add("/export/getExportData", func(ctx *web.Context) {
-//		if b, id := chkLogin(ctx); b {
-//			GetExportData(ctx, id)
-//		} else {
-//			redirect(ctx)
-//		}
-//	})
+	routes.Add("/export/getExportData",mc.exportData)
+
+
+	routes.Add("/dashboard",mc.Dashboard)
+	routes.Add("/login",mc.Login)
+	routes.Add("/logout",mc.Logout)
+
 }

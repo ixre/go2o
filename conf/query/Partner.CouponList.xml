@@ -4,7 +4,7 @@
   <Query>
     <![CDATA[
         SELECT c.id,
-        c.`pt_id`,
+        c.`partner_id`,
         c.`code`,
         c.`description`,
         c.`amount`,
@@ -21,13 +21,13 @@
             lv.name as limit_levelName
             FROM pm_coupon c LEFT JOIN conf_member_level lv
              ON c.min_level = lv.id
-             WHERE c.pt_id={partnerId} AND code LIKE '%{keyword}%'
+             WHERE c.partner_id={partnerId} AND code LIKE '%{keyword}%'
             ORDER BY c.update_time DESC,c.create_time desc LIMIT {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
     <![CDATA[SELECT COUNT(0) FROM pm_coupon
-    WHERE pt_id={partnerId}  AND code LIKE '%{keyword}%']]>
+    WHERE partner_id={partnerId}  AND code LIKE '%{keyword}%']]>
   </Total>
 </ExportItemConfig>

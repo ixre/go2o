@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>管理中心-商户版</title>
+<title>GO2O - 平台管理中心</title>
 	<link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
 	<link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
@@ -34,7 +34,7 @@ p {
 	<div id="form1" class="shadow">
 		<div class="content" style="padding: 50px">
 			<div class="center c1">
-				<strong>商户登录</strong>
+				<strong>平台管理中心</strong>
 			</div>
 			<div class="msg" id="tip">&nbsp;</div>
 
@@ -81,17 +81,17 @@ p {
 	            if (J.validator.validate('form1')){
 	            		
 	                $JS.xhr.jsonPost(location.href, formData, function (json) {
-	                    if (json.Result) {
+	                    if (json.result) {
 	                        tip.innerHTML = '<span style="color:green">登录成功,正在进入管理中心...</span>';
 	                        setTimeout(function () {
 	                            window.parent.location.replace('dashboard');
 	                        }, 1000);
 	                    }
 	                    else {
-	                        if (json.Message.indexOf('验证码') != -1) {
+	                        if (json.message.indexOf('验证码') != -1) {
 	                            refreshImage();
 	                        }
-	                        tip.innerHTML = '<span style="color:red">提示：' + json.Message + '</span>';
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
 	                    }
 	                }, function (x) {
 	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';

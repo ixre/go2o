@@ -89,7 +89,7 @@ func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
 	} else {
 		err = this.Connector.ExecScalar(
 			`SELECT id FROM pt_partner INNER JOIN pt_siteconf
-					 ON pt_siteconf.pt_id = pt_partner.id
+					 ON pt_siteconf.partner_id = pt_partner.id
 					 WHERE host=?`, &partnerId, host)
 	}
 

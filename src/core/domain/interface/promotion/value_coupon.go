@@ -12,7 +12,7 @@ package promotion
 type ValueCoupon struct {
 	Id int `db:"id" auto:"yes" pk:"yes"`
 	//合作商编号
-	PartnerId int `db:"pt_id"`
+	PartnerId int `db:"partner_id"`
 	//优惠码
 	Code string `db:"code"`
 

@@ -14,6 +14,10 @@ import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/front"
+	"go2o/src/core/service/dps"
+
+	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/domain"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -35,23 +39,33 @@ func (this *mainC) Logout(ctx *web.Context) {
 
 //商户首页
 func (this *mainC) Dashboard(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-
-	var mf gof.TemplateMapFunc = func(m *map[string]interface{}) {
-		(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
+	if this.Requesting(ctx) {
+		r, w := ctx.Request, ctx.ResponseWriter
+		var mf gof.TemplateMapFunc = func(m *map[string]interface{}) {
+			(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
+		}
+		ctx.App.Template().ExecuteIncludeErr(w, mf, "views/master/dashboard.html")
 	}
-	ctx.App.Template().Render(w, "views/master/dashboard.html", mf)
 }
 
 //商户汇总页
 func (this *mainC) Summary(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	if this.Requesting(ctx) {
+		r, w := ctx.Request, ctx.ResponseWriter
 
-	ctx.App.Template().Render(w,
+		ctx.App.Template().Render(w,
 		"views/master/summary.html",
 		func(m *map[string]interface{}) {
 			(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
 		})
+	}
+}
+
+// 导出数据
+func (this *mainC) exportData(ctx *web.Context){
+	if this.Requesting(ctx){
+		GetExportData(ctx)
+	}
 }
 
 func (this *mainC) Upload_post(ctx *web.Context) {
@@ -62,3 +76,57 @@ func (this *mainC) Upload_post(ctx *web.Context) {
 		break
 	}
 }
+
+
+
+//登陆
+func (this *mainC) Login(ctx *web.Context) {
+	if ctx.Request.Method == "POST"{
+		this.Login_post(ctx)
+	}else {
+		ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, nil, "views/master/login.html")
+	}
+}
+func (this *mainC) Login_post(ctx *web.Context) {
+	r := ctx.Request
+	var msg gof.Message
+	r.ParseForm()
+	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
+
+	if domain.Md5Pwd(pwd,usr) == ctx.App.Config().GetString("webmaster_valid_md5") {
+		ctx.Session().Set("master_id", 1)
+		if err := ctx.Session().Save(); err != nil {
+			msg.Message = err.Error()
+		}else{
+			msg.Result =true
+		}
+	}else{
+		msg.Message = "用户或密码不正确！"
+	}
+	ctx.ResponseWriter.Write(msg.Marshal())
+}
+
+//验证登陆
+func (pb *mainC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool, string) {
+	var message string
+	var result bool
+	var pt *partner.ValuePartner
+	var err error
+
+	id := dps.PartnerService.Verify(usr, pwd)
+
+	if id == -1 {
+		result = false
+		message = "用户或密码不正确！"
+	} else {
+		pt, err = dps.PartnerService.GetPartner(id)
+		if err != nil {
+			message = err.Error()
+			result = false
+		} else {
+			result = true
+		}
+	}
+	return pt, result, message
+}
+

@@ -27,11 +27,11 @@ type partnerC struct {
 }
 
 func (c *partnerC) Index(ctx *web.Context) {
-	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil,"views/master/partner_index.html")
+	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil,"views/master/partner_partner_index.html")
 }
 
-func (c *partnerC) AddPartner(ctx *web.Context) {
-	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil, "views/master/partner_add.html")
+func (c *partnerC) CreatePartner(ctx *web.Context) {
+	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil, "views/master/partner/partner_create.html")
 }
 
 func (c *partnerC) EditPartner(ctx *web.Context) {
@@ -47,10 +47,10 @@ func (c *partnerC) EditPartner(ctx *web.Context) {
 	}
 	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, func(mp *map[string]interface{}) {
 		(*mp)["entity"] = entityJson
-	}, "views/admin/partner_edit.html")
+	}, "views/master/partner/partner_edit.html")
 }
 
-func (c *partnerC) SavePartner_post(w http.ResponseWriter, r *http.Request) {
+func (c *partnerC) CreatePartner_post(w http.ResponseWriter, r *http.Request) {
 	var result gof.Message
 	r.ParseForm()
 
@@ -89,9 +89,9 @@ func (c *partnerC) SavePartner_post(w http.ResponseWriter, r *http.Request) {
 	w.Write(result.Marshal())
 }
 
-func (c *partnerC) PartnerList(ctx *web.Context) {
+func (c *partnerC) List(ctx *web.Context) {
 	ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter,nil,
-	"views/admin/partner_list.html")
+	"views/master/partner/partner_list.html")
 }
 
 func (c *partnerC) DelPartner_post(w http.ResponseWriter, r *http.Request) {
