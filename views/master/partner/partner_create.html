@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商户编辑</title>
+    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0"/>
+            <input class="ui-validate" type="text" field="Name" required="true" />
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
+        <div class="in" style="position: relative;height:70px;">
+            <img id="upload_img" value="{{.img_serv}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+            <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+            <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系电话：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Tel" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系手机：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Phone" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>地址：</div>
+        <div class="in">
+            <input class="ui-validate" type="text" field="Address" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <input id="btn_save" type="button" value="提交" />
+        </div>
+    </div>
+</div>
+
+<script src="{{.static_serv}}/assets/js/core_full.js"></script>
+<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form1', entity);
+    cms.$('upload_img').src = '{{.img_serv}}/'+ entity.Logo;
+
+    //上传缩略图
+    $JS.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/upload.cgi?type=101',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    },function (result, data) {
+        if (result) {
+            cms.$('upload_path').value = data.url;
+            cms.$('upload_img').src = '{{.img_serv}}/'+ data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '商户创建成功，请继续为商户配置其他信息！' : json.message,
+                        "ok",function(){
+                            $JS.tab.closeAndReresh('商户管理');
+                        }
+                );
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

@@ -15,11 +15,12 @@ import (
 	"github.com/atnet/gof/crypto"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
-	"go2o/src/core/domain/interface/member"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -49,6 +50,7 @@ func chkStorage(sto gof.Storage) {
 		panic(errors.New("[ Api] - api token storage is null !"))
 	}
 }
+
 func getMemberTokenKey(memberId int) string {
 	return fmt.Sprintf("api:member:token:%d", memberId)
 }
@@ -126,26 +128,45 @@ func (this *memberC) login(ctx *web.Context) {
 func (this *memberC) register(ctx *web.Context) {
 	if this.baseC.Requesting(ctx) {
 		r := ctx.Request
-		var partnerId int =this.GetPartnerId(ctx)
-		var usr string  = r.FormValue("usr")
+		var result dto.MessageResult
+
+		var partnerId int = this.GetPartnerId(ctx)
+		var invMemberId int // 邀请人
+		var usr string = r.FormValue("usr")
 		var pwd string = r.FormValue("pwd")
-		//var registerFrom string = r.FormValue("reg_from")			// 注册来源
-		//var recommendCode string = r.FormValue("rec_code")			// 推荐码
+		var registerFrom string = r.FormValue("reg_from")          // 注册来源
+		var invitationCode string = r.FormValue("invitation_code") // 推荐码
 		var regIp string
 		if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 			regIp = r.RemoteAddr[:i]
 		}
 
-		var result dto.MessageResult
+		fmt.Println(usr, pwd, "REGFROM:", registerFrom, "INVICODE:", invitationCode)
+
+		// 检验
+		if len(invitationCode) != 0 {
+			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
+			if invMemberId == 0 {
+				result.Message = "推荐/邀请人不存在！"
+				this.jsonOutput(ctx, result)
+				return
+			}
+		}
+
 		var member member.ValueMember
 		member.Usr = usr
-		member.Pwd = pwd
+		member.Pwd = domain.EncodeMemberPwd(usr, pwd)
 		member.RegIp = regIp
-		//member.RegFrom = registerFrom
+		member.RegFrom = registerFrom
 
 		memberId, err := dps.MemberService.SaveMember(&member)
 		if err == nil {
-			err = dps.MemberService.SaveRelation(memberId, "", 1, partnerId)
+			result.Result = true
+			err = dps.MemberService.SaveRelation(memberId, "-", invMemberId, partnerId)
+		}
+
+		if err != nil {
+			result.Message = err.Error()
 		}
 
 		this.jsonOutput(ctx, result)

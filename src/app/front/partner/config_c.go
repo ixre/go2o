@@ -64,9 +64,10 @@ func (this *configC) Profile_post(ctx *web.Context) {
 	id, err := dps.PartnerService.SavePartner(partnerId, &e)
 
 	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
+		result.Message = err.Error()
 	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		result.Result = true
+		result.Data = id
 	}
 	w.Write(result.Marshal())
 }

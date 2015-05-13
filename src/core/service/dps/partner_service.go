@@ -12,7 +12,6 @@ package dps
 import (
 	"errors"
 	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
@@ -83,15 +82,16 @@ func (this *partnerService) GetPartnerMajorHost(partnerId int) string {
 	return pt.GetMajorHost()
 }
 
-func (this *partnerService) SaveSaleConf(partnerId int, v *partner.SaleConf) error {
-	v.PartnerId = partnerId
-	return this._partnerRep.SaveSaleConf(v)
+func (this *partnerService) SaveSiteConf(partnerId int, v *partner.SiteConf) error {
+	pt,_ := this._partnerRep.GetPartner(partnerId)
+	return pt.SaveSiteConf(v)
 }
 
-func (this *partnerService) SaveSiteConf(partnerId int, v *partner.SiteConf) error {
-	v.PartnerId = partnerId
-	return this._partnerRep.SaveSiteConf(v)
+func (this *partnerService) SaveSaleConf(partnerId int, v *partner.SaleConf) error {
+	pt,_ := this._partnerRep.GetPartner(partnerId)
+	return pt.SaveSaleConf(v)
 }
+
 func (this *partnerService) GetSaleConf(partnerId int) *partner.SaleConf {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
@@ -168,16 +168,19 @@ func (this *partnerService) GetPartnersId() []int {
 }
 
 // 保存API信息
-func (this *partnerService) SaveApiInfo(partnerId int, d *dto.PartnerApiInfo) error {
-	return this._query.SaveApiInfo(partnerId, d)
+func (this *partnerService) SaveApiInfo(partnerId int, d *partner.ApiInfo) error {
+	pt,_ := this._partnerRep.GetPartner(partnerId)
+	return pt.SaveApiInfo(d)
 }
 
 // 获取API接口
-func (this *partnerService) GetApiInfo(partnerId int) *dto.PartnerApiInfo {
-	return this._query.GetApiInfo(partnerId)
+func (this *partnerService) GetApiInfo(partnerId int) *partner.ApiInfo {
+	pt,_ := this._partnerRep.GetPartner(partnerId)
+	v := pt.GetApiInfo();
+	return &v
 }
 
 // 根据API ID获取PartnerId
 func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
-	return this._query.GetPartnerIdByApiId(apiId)
+	return this._partnerRep.GetPartnerIdByApiId(apiId)
 }

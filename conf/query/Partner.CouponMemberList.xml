@@ -25,13 +25,13 @@
 
 FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
 INNER JOIN conf_member_level lv ON lv.id = m.level
-WHERE  r.reg_ptid = {partnerId}
+WHERE  r.reg_partner_id = {partnerId}
             ORDER BY m.last_login_time DESC,m.id ASC LIMIT {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
     <![CDATA[SELECT COUNT(0) FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
-WHERE  r.reg_ptid = {partnerId}]]>
+WHERE  r.reg_partner_id = {partnerId}]]>
   </Total>
 </ExportItemConfig>

@@ -14,6 +14,9 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
+	"fmt"
+	"github.com/atnet/gof"
+	"encoding/json"
 )
 
 func chkLogin(ctx *web.Context) (b bool, partnerId int) {
@@ -61,3 +64,26 @@ func (this *baseC) GetPartnerId(ctx *web.Context) int {
 func (this *baseC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 	return dps.PartnerService.GetPartner(this.GetPartnerId(ctx))
 }
+
+
+// 输出Json
+func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		this.errorOutput(ctx, err.Error())
+	} else {
+		ctx.ResponseWriter.Write(b)
+	}
+}
+
+// 输出错误信息
+func (this *baseC) errorOutput(ctx *web.Context, err string) {
+	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+}
+
+// 输出错误信息
+func (this *baseC) resultOutput(ctx *web.Context,result gof.Message) {
+	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	"{result:%v,code:%d,message:\"%s\"}", result.Result,result.Code, result.Message)))
+}
+

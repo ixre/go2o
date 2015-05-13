@@ -13,21 +13,25 @@ window.funcs = {
     register:function(){
         if($JS.validator.result('regpanel')){
            var d = $JS.json.toObject('regpanel');
-           $JS.xhr.jsonPost('/user/postRegistInfo',d,function(json){
-               if(json.result){
-                   var returnUrl = $JS.request('return_url');
-                   if(returnUrl!=''){
-                       location.replace(returnUrl);
-                   }else{
-                       location.replace('/');
-                   }
-               }else{
-                   //注册其他
-                   alert('注册失败!');
-               }
-           },function(){
-                   alert('注册失败!');
-           });
+            if(d.remember != 'on'){
+                alert('请同意注册条款')
+            }else {
+                $JS.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
+                    if (json.result) {
+                        var returnUrl = $JS.request('return_url');
+                        if (returnUrl != '') {
+                            location.replace(returnUrl);
+                        } else {
+                            location.replace('/');
+                        }
+                    } else {
+                        //注册其他
+                        alert(json.message);
+                    }
+                }, function () {
+                    alert('注册失败!');
+                });
+            }
        }
     },
     toggleTop:function() {

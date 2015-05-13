@@ -91,13 +91,13 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	} else {
 		//验证Partner和Member是否有绑定关系
 		var num int
-		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_ptid=?`,
+		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_partner_id=?`,
 			&num, v.MemberId, v.PartnerId); num != 1 {
 			return v.Id, errors.New("error partner and member.")
 		}
 		_, _, err = d.GetOrm().Save(nil, v)
 		if err == nil {
-			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE pt_id=? AND member_id=?`, &v.Id,
+			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
 			return v.Id, err
 		}
@@ -115,7 +115,7 @@ func (this *shoppingRep) SaveOrderCouponBind(val *shopping.OrderCoupon) error {
 func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 	*shopping.ValueOrder, error) {
 	var v = new(shopping.ValueOrder)
-	err := this.Connector.GetOrm().GetBy(v, "pt_id=? AND order_no=?", partnerId, orderNo)
+	err := this.Connector.GetOrm().GetBy(v, "partner_id=? AND order_no=?", partnerId, orderNo)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 func (this *shoppingRep) GetWaitingSetupOrders(partnerId int) ([]*shopping.ValueOrder, error) {
 	dst := []*shopping.ValueOrder{}
 	err := this.Connector.GetOrm().Select(&dst,
-		"pt_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
+		"partner_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
 		partnerId)
 	if err != nil {
 		return nil, err

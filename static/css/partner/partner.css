@@ -140,7 +140,7 @@ a.l-btn span span.l-btn-icon-left{padding-left:0px;}
 .opt2{text-indent: 1em}
 
 /************新样式 ************/
-.login-page{background:#e6e6e6 url(../../assets/images/bg_image.jpg) center top no-repeat;}
+.login-page{background:#f0f0f0 url(../login/login_bg.gif) center center no-repeat;height:80%;}
 
 
 

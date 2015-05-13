@@ -66,7 +66,7 @@ func (this *partnerRep) GetPartner(id int) (partner.IPartner, error) {
 func (this *partnerRep) GetPartnerMajorHost(partnerId int) string {
 	//todo:
 	var host string
-	this.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE pt_id=? LIMIT 0,1`,
+	this.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE partner_id=? LIMIT 0,1`,
 		&host, partnerId)
 	return host
 }
@@ -85,12 +85,6 @@ func (this *partnerRep) SavePartner(v *partner.ValuePartner) (int, error) {
 		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
 	}
 	return v.Id, err
-}
-
-// 初始化商户
-func (this *partnerRep) InitPartner(partnerId int) error {
-	//todo: init partner
-	return nil
 }
 
 // 获取商户的编号
@@ -121,9 +115,15 @@ func (this *partnerRep) GetSaleConf(partnerId int) *partner.SaleConf {
 	return nil
 }
 
-func (this *partnerRep) SaveSaleConf(v *partner.SaleConf) error {
+func (this *partnerRep) SaveSaleConf(partnerId int,v *partner.SaleConf) error {
 	defer this.renew(v.PartnerId)
-	_, _, err := this.Connector.GetOrm().Save(v.PartnerId, v)
+	var err error
+	if v.PartnerId > 0 {
+		_, _, err = this.Connector.GetOrm().Save(v.PartnerId, v)
+	}else{
+		v.PartnerId = partnerId
+		_,_,err = this.Connector.GetOrm().Save(nil,v)
+	}
 	return err
 }
 
@@ -145,11 +145,50 @@ func (this *partnerRep) GetSiteConf(partnerId int) *partner.SiteConf {
 	return nil
 }
 
-func (this *partnerRep) SaveSiteConf(v *partner.SiteConf) error {
+func (this *partnerRep) SaveSiteConf(partnerId int,v *partner.SiteConf) error {
 	defer this.renew(v.PartnerId)
-	_, _, err := this.Connector.GetOrm().Save(v.PartnerId, v)
+
+	var err error
+	if v.PartnerId > 0 {
+		_, _, err = this.Connector.GetOrm().Save(v.PartnerId, v)
+	}else{
+		v.PartnerId = partnerId
+		_,_,err = this.Connector.GetOrm().Save(nil,v)
+	}
 	return err
 }
+
+
+// 保存API信息
+func (this *partnerRep) SaveApiInfo(partnerId int, d *partner.ApiInfo) error{
+	var err error
+	orm := this.GetOrm()
+	if d.PartnerId == 0 { //实体未传递partnerId时新增
+		d.PartnerId = partnerId
+		_, _, err = orm.Save(nil, d)
+	} else {
+		d.PartnerId = partnerId
+		_, _, err = orm.Save(partnerId, d)
+	}
+	return err
+}
+
+// 获取API信息
+func (this *partnerRep) GetApiInfo(partnerId int) *partner.ApiInfo {
+	var d *partner.ApiInfo = new(partner.ApiInfo)
+	if err := this.GetOrm().Get(partnerId, d); err == nil {
+		return d
+	}
+	return nil
+}
+
+// 根据API编号获取商户编号
+func (this *partnerRep) GetPartnerIdByApiId(apiId string) int{
+	var partnerId int
+	this.ExecScalar("SELECT partner_id FROM pt_api WHERE api_id=?", &partnerId, apiId)
+	return partnerId
+}
+
 
 func (this *partnerRep) SaveShop(v *partner.ValueShop) (int, error) {
 	defer this.renew(v.PartnerId)
@@ -180,7 +219,7 @@ func (this *partnerRep) GetValueShop(partnerId, shopId int) *partner.ValueShop {
 func (this *partnerRep) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 	shops := []*partner.ValueShop{}
 	err := this.Connector.GetOrm().SelectByQuery(&shops,
-		"SELECT * FROM pt_shop WHERE pt_id=?", partnerId)
+		"SELECT * FROM pt_shop WHERE partner_id=?", partnerId)
 
 	if err != nil {
 		log.PrintErr(err)
@@ -193,6 +232,6 @@ func (this *partnerRep) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 	defer this.renew(partnerId)
 	_, err := this.Connector.GetOrm().Delete(partner.ValueShop{},
-		"pt_id=? AND id=?", partnerId, shopId)
+		"partner_id=? AND id=?", partnerId, shopId)
 	return err
 }

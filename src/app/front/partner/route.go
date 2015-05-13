@@ -46,6 +46,9 @@ func RegisterRoutes() {
 		mvc.Handle(lc, ctx, true)
 	})
 
+
+	routes.Add("/upload.cgi",mc.Upload_post)
+
 	routes.Add("^/[^/]*$", func(ctx *web.Context) {
 		if bc.Requesting(ctx) {
 			mvc.Handle(mc, ctx, true)

@@ -10,10 +10,8 @@
 package domain
 
 import (
-	"fmt"
 	"github.com/atnet/gof/crypto"
 	"strings"
-	"time"
 )
 
 func ChkPwdRight(pwd string) (bool, error) {
@@ -27,11 +25,10 @@ func EncodeMemberPwd(usr, pwd string) string {
 
 //加密合作商密码
 func EncodePartnerPwd(usr, pwd string) string {
-	return crypto.Md5([]byte(strings.Join([]string{usr, "go2o@S1N1.COM", pwd}, "")))
+	return Md5Pwd(pwd,usr)
 }
 
-//创建密钥
-func NewSecret(hex int) string {
-	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).Unix())
-	return crypto.Md5([]byte(str))[8:24]
+func Md5Pwd(pwd,offset string)string{
+	return crypto.Md5([]byte(strings.Join([]string{offset, "go2o@S1N1.COM", pwd}, "")))
 }
+

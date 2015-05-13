@@ -11,7 +11,6 @@ package query
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/db"
-	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
@@ -89,7 +88,7 @@ func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
 	} else {
 		err = this.Connector.ExecScalar(
 			`SELECT id FROM pt_partner INNER JOIN pt_siteconf
-					 ON pt_siteconf.pt_id = pt_partner.id
+					 ON pt_siteconf.partner_id = pt_partner.id
 					 WHERE host=?`, &partnerId, host)
 	}
 
@@ -104,34 +103,4 @@ func (this *PartnerQuery) Verify(usr, pwd string) int {
 	var id int = -1
 	this.Connector.ExecScalar("SELECT id FROM pt_partner WHERE usr=? AND pwd=?", &id, usr, pwd)
 	return id
-}
-
-// 保存API信息
-func (this *PartnerQuery) SaveApiInfo(partnerId int, d *dto.PartnerApiInfo) error {
-	var err error
-	orm := this.GetOrm()
-	if d.PartnerId == 0 { //实体未传递partnerId时新增
-		d.PartnerId = partnerId
-		_, _, err = orm.Save(nil, d)
-	} else {
-		d.PartnerId = partnerId
-		_, _, err = orm.Save(partnerId, d)
-	}
-	return err
-}
-
-// 获取API接口
-func (this *PartnerQuery) GetApiInfo(partnerId int) *dto.PartnerApiInfo {
-	var d *dto.PartnerApiInfo = new(dto.PartnerApiInfo)
-	if err := this.GetOrm().Get(partnerId, d); err == nil {
-		return d
-	}
-	return nil
-}
-
-// 根据API ID获取PartnerId
-func (this *PartnerQuery) GetPartnerIdByApiId(apiId string) int {
-	var partnerId int
-	this.ExecScalar("SELECT partner_id FROM pt_api WHERE api_id=?", &partnerId, apiId)
-	return partnerId
 }

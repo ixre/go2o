@@ -11,7 +11,7 @@ package partner
 
 type SaleConf struct {
 	//合作商编号
-	PartnerId int `db:"pt_id" auto:"no" pk:"yes"`
+	PartnerId int `db:"partner_id" auto:"no" pk:"yes"`
 
 	//反现比例,0则不返现
 	CashBackPercent float32 `db:"cb_percent"`

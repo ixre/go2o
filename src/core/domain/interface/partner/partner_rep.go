@@ -23,18 +23,25 @@ type IPartnerRep interface {
 	// 保存
 	SavePartner(*ValuePartner) (int, error)
 
-	// 初始化商户
-	InitPartner(partnerId int) error
-
 	// 获取销售配置
 	GetSaleConf(int) *SaleConf
 
-	SaveSaleConf(*SaleConf) error
+	SaveSaleConf(partnerId int,v *SaleConf) error
 
 	// 获取站点配置
 	GetSiteConf(int) *SiteConf
 
-	SaveSiteConf(*SiteConf) error
+	SaveSiteConf(partnerId int,v *SiteConf) error
+
+	// 保存API信息
+	SaveApiInfo(partnerId int, d *ApiInfo) error
+
+	// 获取API信息
+	GetApiInfo(partnerId int) *ApiInfo
+
+	// 根据API编号获取商户编号
+	GetPartnerIdByApiId(apiId string) int
+
 
 	SaveShop(*ValueShop) (int, error)
 

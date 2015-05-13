@@ -158,7 +158,7 @@ func (this *PromotionRep) GetCouponByCode(partnerId int, couponCode string) (
 	promotion.ICoupon, error) {
 	var e promotion.ValueCoupon
 	err := this.Connector.GetOrm().GetByQuery(&e,
-		fmt.Sprintf(`SELECT * FROM pm_coupon WHERE pt_id=%d AND code='%s'`,
+		fmt.Sprintf(`SELECT * FROM pm_coupon WHERE partner_id=%d AND code='%s'`,
 			partnerId, couponCode))
 
 	if err == nil {

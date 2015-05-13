@@ -12,7 +12,7 @@ package partner
 //门店
 type ValueShop struct {
 	Id         int    `db:"id" pk:"yes" auto:"yes"`
-	PartnerId  int    `db:"pt_id"`
+	PartnerId  int    `db:"partner_id"`
 	Name       string `db:"name"`
 	Address    string `db:"address"`
 	Phone      string `db:"phone"`

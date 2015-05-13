@@ -38,6 +38,12 @@ type IPartner interface {
 	// 保存站点配置
 	SaveSiteConf(*SiteConf) error
 
+	// 获取API信息
+	GetApiInfo() ApiInfo
+
+	// 保存API信息
+	SaveApiInfo(*ApiInfo)error
+
 	// 新建商店
 	CreateShop(*ValueShop) IShop
 

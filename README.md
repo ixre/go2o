@@ -82,13 +82,21 @@ Go2o使用领域驱动设计对业务深度抽象，理论上支持大部分行�
 
 ### 4.Add test hosts ###
         vi /etc/hosts
-        127.0.0.1   wly.ts.com static.ts.com img.ts.com partner.ts.com
-        member.ts.com www.ts1.com www.ts2.com api.ts.com wsapi.ts.com
+        127.0.0.1   go2o.ts.com static.ts.com img.ts.com partner.ts.com
+        member.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com
 
 
 ## Access Entry ##
+
+### WebMaster ##
+webmaster.ts.com
+
+account: go2o / 123456
+
 ### Partner Management ###
 partner.ts.com
+
+account: go2o / 123456
 
 ### Member Center ###
 member.ts.com

@@ -125,7 +125,7 @@ func (this *Member) GetBindPartner(m *jsv.Args, r *partner.ValuePartner) error {
 		return err
 	}
 	re := dps.MemberService.GetRelation(memberId)
-	e, err := dps.PartnerService.GetPartner(re.Reg_PtId)
+	e, err := dps.PartnerService.GetPartner(re.RegisterPartnerId)
 	if err != nil {
 		return err
 	}
