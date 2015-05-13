@@ -75,7 +75,7 @@ func getHttpExecFunc() web.RequestHandler {
 
 		//线上商店
 		default:
-			pcshop.Handle(ctx)
+			pcs.Handle(ctx)
 		}
 	}
 }
@@ -112,7 +112,7 @@ func RunWeb(app gof.App, port int, debug, trace bool) {
 func RegisterRoutes(context gof.App) {
 	partner.RegisterRoutes()
 	ucenter.RegisterRoutes(context)
-	pcshop.RegisterRoutes(context)
+	pcs.RegisterRoutes(context)
 	//mos.RegisterRoutes(context)
 	//wxs.RegisterRoutes(context)
 }

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcshop
+package pcs
 
 import (
 	"github.com/atnet/gof"

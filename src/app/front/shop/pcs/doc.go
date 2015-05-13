@@ -6,6 +6,6 @@
  * description :
  * history :
  */
-package pcshop
+package pcs
 
 // PC SHOP

@@ -20,13 +20,16 @@ func Handle(ctx *web.Context) {
 	routes.Handle(ctx)
 }
 
+func init(){
+	registerRoutes()
+}
 //注册路由
-func RegisterRoutes() {
-//	bc := new(baseC)
-//	mc := &mainC{} //入口控制器
-//	lc := &loginC{}
-//	routes.Register("shop", new(shopC))             //商家门店控制器
-//
+func registerRoutes() {
+	//bc := new(baseC)
+	//mc := &mainC{} //入口控制器
+	lc := &loginC{}
+	//routes.Register("shop", new(shopC))             //商家门店控制器
+
 //	routes.Add("/export/getExportData", func(ctx *web.Context) {
 //		if b, id := chkLogin(ctx); b {
 //			GetExportData(ctx, id)
@@ -34,16 +37,6 @@ func RegisterRoutes() {
 //			redirect(ctx)
 //		}
 //	})
-//
-//	routes.Add("/login", func(ctx *web.Context) {
-//		mvc.Handle(lc, ctx, true)
-//	})
-//
-//	routes.Add("^/[^/]*$", func(ctx *web.Context) {
-//		if bc.Requesting(ctx) {
-//			mvc.Handle(mc, ctx, true)
-//		}
-//		bc.RequestEnd(ctx)
-//	})
 
+	routes.Add("/login",lc.Login)
 }
