@@ -15,9 +15,6 @@ import (
 	"github.com/atnet/gof/web"
 	"go2o/src/app/front/partner"
 	"go2o/src/app/front/ucenter"
-	"go2o/src/app/front/webui/mobi"
-	"go2o/src/app/front/webui/weixin"
-	"go2o/src/app/front/webui/www"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
@@ -25,6 +22,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/src/app/front/master"
+	"go2o/src/app/front/shop/pcs"
 )
 
 var (
@@ -70,8 +69,13 @@ func getHttpExecFunc() web.RequestHandler {
 		case f(host, variable.DOMAIN_MEMBER_PREFIX):
 			ucenter.Handle(ctx)
 
+		//管理中心
+		case f(host,"webmaster."):
+			master.Handle(ctx)
+
+		//线上商店
 		default:
-			www.Handle(ctx)
+			pcshop.Handle(ctx)
 		}
 	}
 }
@@ -108,7 +112,7 @@ func RunWeb(app gof.App, port int, debug, trace bool) {
 func RegisterRoutes(context gof.App) {
 	partner.RegisterRoutes()
 	ucenter.RegisterRoutes(context)
-	www.RegisterRoutes(context)
-	mobi.RegisterRoutes(context)
-	weixin.RegisterRoutes(context)
+	pcshop.RegisterRoutes(context)
+	//mos.RegisterRoutes(context)
+	//wxs.RegisterRoutes(context)
 }

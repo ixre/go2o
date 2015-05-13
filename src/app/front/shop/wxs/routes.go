@@ -23,7 +23,7 @@ var (
 func RegisterRoutes(context gof.App) {
 	//	var mc *MainController //= &MainController{Context: context} //入口控制器
 	//
-	//	routes.Add("^/", func(weixin http.ResponseWriter, r *http.Request) {
-	//			mvc.HandleRequest(mc, weixin, r)
+	//	routes.Add("^/", func(wxs http.ResponseWriter, r *http.Request) {
+	//			mvc.HandleRequest(mc, wxs, r)
 	//		})
 }

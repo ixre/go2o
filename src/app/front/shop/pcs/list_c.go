@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package www
+package pcshop
 
 import (
 	"bytes"
