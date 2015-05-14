@@ -122,6 +122,7 @@ func (this *Sale) GetCategories() []sale.ICategory {
 
 // 删除分类
 func (this *Sale) DeleteCategory(id int) error {
+	//todo: 删除应放到这里来处理
 	return this.saleRep.DeleteCategory(this.GetAggregateRootId(), id)
 }
 

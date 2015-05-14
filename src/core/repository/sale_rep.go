@@ -134,19 +134,18 @@ func (this *saleRep) SaveCategory(v *sale.ValueCategory) (int, error) {
 		}
 		return v.Id, err
 	} else {
-
-		_, _, err := orm.Save(nil, v)
+		_, _, err := orm.Save(v.Id, v)
 		return v.Id, err
 	}
 }
 
 func (this *saleRep) DeleteCategory(partnerId, id int) error {
 	//删除子类
-	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND pid=?",
+	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND parent_id=?",
 		partnerId, id)
 
 	//删除分类
-	this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND id=?",
+	_,_,err = this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND id=?",
 		partnerId, id)
 
 	//清理项

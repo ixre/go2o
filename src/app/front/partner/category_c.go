@@ -109,8 +109,6 @@ func (this *categoryC) DelCategory_post(ctx *web.Context) {
 
 	//删除分类
 	err := dps.SaleService.DeleteCategory(partnerId, categoryId)
-
-	//id, err := dao.SaveCategory(&entity)
 	if err != nil {
 		result = gof.Message{Result: false, Message: err.Error()}
 	} else {

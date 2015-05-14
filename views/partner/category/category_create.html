@@ -7,55 +7,51 @@
 </head>
 <body>
 
-<form id="form1">
-    <table cellpadding="0" cellspacing="1" class="ui-table">
-        <tr>
-            <td class="title" width="120">分类名称：</td>
-            <td>
+<div class="form margin30" id="form1">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>分类名称：</div>
+        <div class="in">
                 <input type="hidden" field="Id" value="0" />
                 <input type="text" field="Name" class="ui-validate" required="true" />
-            </td>
-        </tr>
+        </div>
+    </div>
 
-        <tr>
-            <td class="title" width="120">选择上级分类：</td>
-            <td>
-                [<a href="javascript:;" id="btnSelectCategory">选择分类</a>]
-                <input type="hidden" field="ParentId" value="0"/>
-                <label id="category_name"></label>
-            </td>
-        </tr>
-
-        <tr>
-            <td class="title" width="120">是否启用：</td>
-            <td>
-                <input type="radio" name="Enabled" field="Enabled" value="true" id="State1" checked="checked"/><label for="State1">启用</label>
-                <input type="radio" name="Enabled" field="Enabled" value="false" id="State2"/><label for="State2">停用</label>
-            </td>
-        </tr>
-        <tr>
-            <td class="title" width="120">排序：</td>
-            <td>
-                <input class="ui-validate" field="OrderIndex" required="true" isnumber="true" style="width:30px" value="0"/>
-                * 排序数字，越小排列越靠前
-
-            </td>
-        </tr>
-        <tr>
-            <td class="title" width="120" valign="top">分类描述：</td>
-            <td>
-                <textarea field="Description" class="ui-validate tb_normal" length="[0,150]" style="height:80px"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td>
-                <input type="button" value=" 保存 " id="btn_save" />
-                <input type="reset" value=" 重置 " />
-            </td>
-        </tr>
-    </table>
-</form>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>选择上级分类：</div>
+        <div class="in">
+            [<a href="javascript:;" id="btnSelectCategory">选择分类</a>]
+            <input type="hidden" field="ParentId" value="0"/>
+            <label id="category_name"></label>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
+        <div class="in">
+            <input type="radio" name="Enabled" field="Enabled" value="true" id="State1" checked="checked"/><label for="State1">启用</label>
+            <input type="radio" name="Enabled" field="Enabled" value="false" id="State2"/><label for="State2">停用</label>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>排序：</div>
+        <div class="in">
+            <input class="ui-validate" field="OrderIndex" required="true" isnumber="true" style="width:30px" value="0"/>
+            * 排序数字，越小排列越靠前
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>分类描述：</div>
+        <div class="in">
+            <textarea field="Description" class="ui-validate tb_normal" length="[0,150]" style="height:80px"></textarea>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label">&nbsp;</div>
+        <div class="in">
+            <input type="button" value=" 保存 " id="btn_save" />
+            <input type="reset" value=" 重置 " />
+        </div>
+    </div>
+</div>
 
     <script src="{{.static_serv}}/assets/js/core_full.js"></script>
     <script src="{{.static_serv}}/assets/js/export.js"></script>
@@ -80,8 +76,8 @@
     }
     
     $JS.$('btnSelectCategory').onclick = function(){
-    	var d = $JS.dialog('选择分类',true,true);
-    	d.open('shop/categorySelect');
+    	var d = $JS.dialog.create2('选择分类',true,true);
+    	d.open('category/categorySelect');
     };
     
     function nodeSelected(val,text){
