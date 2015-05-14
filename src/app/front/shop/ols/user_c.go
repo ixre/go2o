@@ -51,6 +51,7 @@ func (this *userC) Login_post(ctx *web.Context) {
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	result, _ := goclient.Member.Login(usr, pwd)
+
 	if result.Result {
 		ctx.Session().Set("member", result.Member)
 		ctx.Session().Save()
