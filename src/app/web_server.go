@@ -26,9 +26,7 @@ import (
 	"go2o/src/app/front/shop/pcs"
 )
 
-var (
-	API_DOMAIN string
-)
+
 
 //获取Http请求代理处理程序
 func getInterceptor(a gof.App) *web.Interceptor {

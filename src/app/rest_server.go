@@ -19,7 +19,10 @@ import (
 	"strconv"
 	"time"
 )
-
+var (
+	API_DOMAIN string
+	API_HOST_CHK bool = false		// 必须匹配Host
+)
 func RunRestApi(app gof.App, port int) {
 	fmt.Println("[Started]:Api server running on port [" + strconv.Itoa(port) + "]:")
 
@@ -31,11 +34,10 @@ func RunRestApi(app gof.App, port int) {
 	var in *web.Interceptor = web.NewInterceptor(app, func(ctx *web.Context) {
 		host := ctx.Request.URL.Host
 		// todo: path compare
-		if host == API_DOMAIN {
-			http.Error(ctx.ResponseWriter, "", http.StatusNotFound)
+		if API_HOST_CHK && host != API_DOMAIN {
+			http.Error(ctx.ResponseWriter, "no such file", http.StatusNotFound)
 			return
 		}
-		//api.HandleApi(ctx)
 		api.Handle(ctx)
 	})
 
