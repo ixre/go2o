@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
 import (
 	"encoding/json"
@@ -95,9 +95,9 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 			(*mp)["deliverOpt"] = deliverOpt
 			(*mp)["paymentOpt"] = paymentOpt
 		},
-			"views/web/www/order_confirm.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+			"views/shop/ols/order_confirm.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 	}
 }
 
@@ -165,7 +165,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	ctx.App.Template().Execute(w, func(md *map[string]interface{}) {
 		(*md)["addrs"] = template.JS(js)
 		(*md)["sel"] = selId
-	}, "views/web/www/profile/deliver_address.html")
+	}, "views/shop/ols/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
@@ -265,9 +265,9 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 		(*m)["member"] = m
 		(*m)["conf"] = conf
 	},
-		"views/web/www/order_empty.html",
-		"views/web/www/inc/header.html",
-		"views/web/www/inc/footer.html")
+		"views/shop/ols/order_empty.html",
+		"views/shop/ols/inc/header.html",
+		"views/shop/ols/inc/footer.html")
 }
 
 func (this *shoppingC) Order_finish(ctx *web.Context) {
@@ -304,9 +304,9 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 			(*m)["order"] = order
 			(*m)["payHtml"] = template.HTML(payHtml)
 		},
-			"views/web/www/order_finish.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+			"views/shop/ols/order_finish.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 	}
 }
 

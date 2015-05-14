@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
 import (
 	"fmt"
@@ -40,9 +40,9 @@ func (this *userC) Login(ctx *web.Context) {
 			mv["conf"] = siteConf
 			mv["tipStyle"] = tipStyle
 		},
-			"views/web/www/login.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+			"views/shop/ols/login.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 	}
 }
 
@@ -70,9 +70,9 @@ func (this *userC) Register(ctx *web.Context) {
 			(*m)["title"] = "会员注册－" + siteConf.SubTitle
 			(*m)["conf"] = siteConf
 		},
-			"views/web/www/register.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+			"views/shop/ols/register.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 	}
 }
 

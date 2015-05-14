@@ -6,6 +6,6 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
-// PC SHOP
+// Online Shop

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
 import (
 	"github.com/atnet/gof"
@@ -49,6 +49,6 @@ func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
 			(*m)["error"] = err.Error()
 			(*m)["statck"] = template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1))
 		},
-			"views/web/www/error.html")
+			"views/shop/ols/error.html")
 	}
 }

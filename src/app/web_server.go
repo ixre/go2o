@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 	"go2o/src/app/front/master"
-	"go2o/src/app/front/shop/pcs"
+	"go2o/src/app/front/shop/ols"
 )
 
 
@@ -73,7 +73,7 @@ func getHttpExecFunc() web.RequestHandler {
 
 		//线上商店
 		default:
-			pcs.Handle(ctx)
+			ols.Handle(ctx)
 		}
 	}
 }
@@ -110,7 +110,7 @@ func RunWeb(app gof.App, port int, debug, trace bool) {
 func RegisterRoutes(context gof.App) {
 	partner.RegisterRoutes()
 	ucenter.RegisterRoutes(context)
-	pcs.RegisterRoutes(context)
+	ols.RegisterRoutes(context)
 	//mos.RegisterRoutes(context)
 	//wxs.RegisterRoutes(context)
 }

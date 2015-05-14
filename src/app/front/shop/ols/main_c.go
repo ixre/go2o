@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
 import (
 	"github.com/atnet/gof/web"
@@ -53,9 +53,9 @@ func (this *mainC) Index(ctx *web.Context) {
 				(*m)["title"] = siteConf.IndexTitle
 				(*m)["shops"] = template.HTML(shops)
 			},
-				"views/web/www/index.html",
-				"views/web/www/inc/header.html",
-				"views/web/www/inc/footer.html")
+				"views/shop/ols/index.html",
+				"views/shop/ols/inc/header.html",
+				"views/shop/ols/inc/footer.html")
 		}
 	}
 }

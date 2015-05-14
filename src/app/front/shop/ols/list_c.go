@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pcs
+package ols
 
 import (
 	"bytes"
@@ -38,9 +38,9 @@ func (this *listC) Index(ctx *web.Context) {
 			(*m)["member"] = mm
 			(*m)["conf"] = siteConf
 		},
-			"views/web/www/list.html",
-			"views/web/www/inc/header.html",
-			"views/web/www/inc/footer.html")
+			"views/shop/ols/list.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 	}
 }
 
