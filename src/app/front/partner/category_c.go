@@ -29,8 +29,8 @@ type categoryC struct {
 
 //分类树形功能
 func (this *categoryC) Category(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		(*m)["nopicUrl"] = format.GetGoodsImageUrl("")
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"nopicUrl" :format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")
 }
 
@@ -44,9 +44,8 @@ func (this *categoryC) CategoryJson(ctx *web.Context) {
 
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter,
-		"views/partner/category/category_select.html",
-		nil)
+	ctx.App.Template().Execute(ctx.ResponseWriter,nil,
+		"views/partner/category/category_select.html")
 }
 
 //分类Json数据
@@ -56,12 +55,11 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
 
-	ctx.App.Template().Render(ctx.ResponseWriter,
-		"views/partner/category/category_create.html",
-		func(m *map[string]interface{}) {
-			(*m)["treeJson"] = template.JS(json)
-		})
-
+	ctx.App.Template().Execute(ctx.ResponseWriter,
+	gof.TemplateDataMap{
+		"treeJson": template.JS(json),
+	},
+	"views/partner/category/category_create.html")
 }
 
 func (this *categoryC) EditCategory(ctx *web.Context) {
@@ -73,12 +71,11 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 	//fmt.Println(category)
 	json, _ := json.Marshal(category)
 
-	ctx.App.Template().Render(w,
-		"views/partner/category/category_edit.html",
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(json)
-		})
-
+	ctx.App.Template().Execute(w,
+	gof.TemplateDataMap{
+		"entity" : template.JS(json),
+	},
+		"views/partner/category/category_edit.html")
 }
 
 //修改门店信息

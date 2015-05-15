@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strings"
+	"github.com/atnet/gof"
 )
 
 var _ mvc.Filter = new(orderC)
@@ -30,8 +31,8 @@ func (this *orderC) List(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["shops"] = template.JS(shopsJson)
+		gof.TemplateDataMap{
+			"shops":template.JS(shopsJson),
 		}, "views/partner/order/order_list.html")
 }
 
@@ -91,12 +92,12 @@ func (this *orderC) View(ctx *web.Context) {
 	orderStateText = enum.OrderState(e.Status).String()
 
 	ctx.App.Template().Execute(w,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
-			(*m)["member"] = member
-			(*m)["shopName"] = shopName
-			(*m)["payment"] = payment
-			(*m)["state"] = orderStateText
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
+			"member": member,
+			"shopName": shopName,
+			"payment": payment,
+			"state": orderStateText,
 
 		}, "views/partner/order/order_view.html")
 }
@@ -147,10 +148,9 @@ func (this *orderC) Payment(ctx *web.Context) {
 			shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 		}
 
-		ctx.App.Template().Execute(w, func(mp *map[string]interface{}) {
-			mv := *mp
-			mv["shopName"] = shopName
-			mv["order"] = *e
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"shopName": shopName,
+			"order": *e,
 		}, "views/partner/order/payment.html")
 	}
 }

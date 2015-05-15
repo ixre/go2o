@@ -12,9 +12,10 @@ import (
 	"github.com/atnet/gof/web"
 	"go2o/src/cache/apicache"
 	"html/template"
+	"github.com/atnet/gof"
 )
 
-//todo: fiter valid partner is nil
+//todo: filter valid partner is nil
 type mainC struct {
 	*baseC
 }
@@ -47,15 +48,15 @@ func (this *mainC) Index(ctx *web.Context) {
 			if shops == nil {
 				shops = []byte("{}")
 			}
-			ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-				(*m)["partner"] = p
-				(*m)["conf"] = siteConf
-				(*m)["title"] = siteConf.IndexTitle
-				(*m)["shops"] = template.HTML(shops)
+			ctx.App.Template().Execute(w, gof.TemplateDataMap{
+				"partner": p,
+				"conf": siteConf,
+				"title": siteConf.IndexTitle,
+				"shops": template.HTML(shops),
 			},
-				"views/shop/ols/index.html",
-				"views/shop/ols/inc/header.html",
-				"views/shop/ols/inc/footer.html")
+			"views/shop/ols/index.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 		}
 	}
 }

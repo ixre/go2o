@@ -45,9 +45,9 @@ func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner, api *partner.Ap
 // 处理自定义错误
 func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
 	if err != nil {
-		ctx.Template().Execute(w, func(m *map[string]interface{}) {
-			(*m)["error"] = err.Error()
-			(*m)["statck"] = template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1))
+		ctx.Template().Execute(w, gof.TemplateDataMap{
+			"error":err.Error(),
+			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
 			"views/shop/ols/error.html")
 	}

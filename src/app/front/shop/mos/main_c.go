@@ -20,7 +20,7 @@ type mainC struct {
 
 func (this *mainC) Login(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
-	ctx.App.Template().Render(w, "views/ucenter/login.html", nil)
+	ctx.App.Template().Execute(w, "views/ucenter/login.html", nil)
 }
 
 func (this *mainC) Index(ctx *web.Context, p *partner.ValuePartner) {

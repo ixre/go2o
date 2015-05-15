@@ -36,8 +36,8 @@ func (this *configC) Profile(ctx *web.Context) {
 	js, _ := json.Marshal(p)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
 		},
 		"views/partner/conf/profile.html")
 }
@@ -79,8 +79,8 @@ func (this *configC) SiteConf(ctx *web.Context) {
 	js, _ := json.Marshal(conf)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
 		},
 		"views/partner/conf/site_conf.html")
 }
@@ -116,8 +116,8 @@ func (this *configC) SaleConf(ctx *web.Context) {
 	js, _ := json.Marshal(conf)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
 		},
 		"views/partner/conf/sale_conf.html")
 }

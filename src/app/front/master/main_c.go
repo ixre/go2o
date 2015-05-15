@@ -41,10 +41,10 @@ func (this *mainC) Logout(ctx *web.Context) {
 func (this *mainC) Dashboard(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		r, w := ctx.Request, ctx.ResponseWriter
-		var mf gof.TemplateMapFunc = func(m *map[string]interface{}) {
-			(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
+		d := gof.TemplateDataMap{
+			"loginIp":r.Header.Get("USER_ADDRESS"),
 		}
-		ctx.App.Template().ExecuteIncludeErr(w, mf, "views/master/dashboard.html")
+		ctx.App.Template().Execute(w, d, "views/master/dashboard.html")
 	}
 }
 
@@ -52,12 +52,10 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 func (this *mainC) Summary(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		r, w := ctx.Request, ctx.ResponseWriter
-
-		ctx.App.Template().Render(w,
-		"views/master/summary.html",
-		func(m *map[string]interface{}) {
-			(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
-		})
+		d := gof.TemplateDataMap{
+			"loginIp":r.Header.Get("USER_ADDRESS"),
+		}
+		ctx.App.Template().Execute(w,d,"views/master/summary.html")
 	}
 }
 
@@ -84,7 +82,7 @@ func (this *mainC) Login(ctx *web.Context) {
 	if ctx.Request.Method == "POST"{
 		this.Login_post(ctx)
 	}else {
-		ctx.App.Template().ExecuteIncludeErr(ctx.ResponseWriter, nil, "views/master/login.html")
+		ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/login.html")
 	}
 }
 func (this *mainC) Login_post(ctx *web.Context) {

@@ -40,9 +40,7 @@ func (this *goodsC) List(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	//cid,_:= strconv.Atoi(r.FormValue("cid"))
-	ctx.App.Template().Render(w,
-		"views/partner/goods/list.html",
-		nil)
+	ctx.App.Template().Execute(w,nil,"views/partner/goods/list.html")
 }
 
 func (this *goodsC) Create(ctx *web.Context) {
@@ -50,12 +48,11 @@ func (this *goodsC) Create(ctx *web.Context) {
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	ctx.App.Template().Render(ctx.ResponseWriter,
-		"views/partner/goods/create_goods.html",
-		func(m *map[string]interface{}) {
-			(*m)["shop_chk"] = template.HTML(shopChks)
-			(*m)["cate_opts"] = template.HTML(cateOpts)
-		})
+	ctx.App.Template().Execute(ctx.ResponseWriter,gof.TemplateDataMap{
+		"shop_chk": template.HTML(shopChks),
+		"cate_opts": template.HTML(cateOpts),
+	},
+		"views/partner/goods/create_goods.html")
 }
 
 func (this *goodsC) Edit(ctx *web.Context) {
@@ -73,13 +70,13 @@ func (this *goodsC) Edit(ctx *web.Context) {
 	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	ctx.App.Template().Render(w,
-		"views/partner/goods/update_goods.html",
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
-			(*m)["shop_chk"] = template.HTML(shopChks)
-			(*m)["cate_opts"] = template.HTML(cateOpts)
-		})
+	ctx.App.Template().Execute(w,
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
+			"shop_chk": template.HTML(shopChks),
+			"cate_opts": template.HTML(cateOpts),
+		},
+	"views/partner/goods/update_goods.html")
 }
 
 func (this *goodsC) SaveItem_post(ctx *web.Context) {

@@ -20,7 +20,7 @@ import (
 )
 
 func Verify(m *jsv.Args) (memberId int, err error) {
-	member_id, token := (*m)["member_id"].(string), (*m)["token"].(string)
+	member_id, token :=(*m)["member_id"].(string),(*m)["token"].(string)
 
 	if memberId, err = strconv.Atoi(member_id); err != nil || token == "" {
 
@@ -54,7 +54,7 @@ func Verify(m *jsv.Args) (memberId int, err error) {
 
 func VerifyPartner(m *jsv.Args) (partnerId int, err error, p *partner.ValuePartner) {
 	partnerId, err = strconv.Atoi((*m)["partner_id"].(string))
-	postSecret := (*m)["secret"].(string)
+	postSecret :=(*m)["secret"].(string)
 	if postSecret == "" {
 		return partnerId, errors.New("missing token secret!"), nil
 	}

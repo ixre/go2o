@@ -29,12 +29,11 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
-		v := *mp
-		v["conf"] = conf
-		v["record"] = 15
-		v["partner"] = p
-		v["member"] = m
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"conf": conf,
+		"record": 15,
+		"partner": p,
+		"member": m,
 	}, "views/ucenter/account/income_log.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -72,14 +71,13 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 	}
 
 	js, _ := json.Marshal(bank)
-	ctx.App.Template().Execute(w, func(mp *map[string]interface{}) {
-		v := *mp
-		v["conf"] = conf
-		v["record"] = 15
-		v["partner"] = p
-		v["member"] = m
-		v["account"] = acc
-		v["entity"] = template.JS(js)
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"conf": conf,
+		"record": 15,
+		"partner": p,
+		"member": m,
+		"account": acc,
+		"entity": template.JS(js),
 	}, "views/ucenter/account/apply_cash.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -111,13 +109,12 @@ func (this *accountC) IntegralExchange(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		v := *m
-		v["conf"] = conf
-		v["record"] = 15
-		v["partner"] = p
-		v["member"] = m
-		v["account"] = acc
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"conf": conf,
+		"record": 15,
+		"partner": p,
+		"member":m,
+		"account": acc,
 	}, "views/ucenter/account/integral_exchange.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",

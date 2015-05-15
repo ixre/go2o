@@ -29,16 +29,16 @@ type shopC struct {
 }
 
 func (this *shopC) ShopList(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter, "views/partner/shop/shop_list.html", nil)
+	ctx.App.Template().Execute(ctx.ResponseWriter,nil, "views/partner/shop/shop_list.html")
 }
 
 //修改门店信息
 func (this *shopC) Create(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter,
-		"views/partner/shop/create.html",
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS("{}")
-		})
+	ctx.App.Template().Execute(ctx.ResponseWriter,
+		gof.TemplateDataMap{
+			"entity": template.JS("{}"),
+		},
+	"views/partner/shop/create.html")
 }
 
 //修改门店信息
@@ -49,11 +49,11 @@ func (this *shopC) Modify(ctx *web.Context) {
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
 	entity, _ := json.Marshal(shop)
 
-	ctx.App.Template().Render(w,
-		"views/partner/shop/modify.html",
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(entity)
-		})
+	ctx.App.Template().Execute(w,
+		gof.TemplateDataMap{
+			"entity": template.JS(entity),
+		},
+	"views/partner/shop/modify.html")
 }
 
 //修改门店信息

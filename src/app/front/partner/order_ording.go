@@ -16,6 +16,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"github.com/atnet/gof"
 )
 
 func (this *orderC) setShop(ctx *web.Context,
@@ -25,10 +26,10 @@ func (this *orderC) setShop(ctx *web.Context,
 	isNoShop := len(shopDr) == 0
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["shopDr"] = template.HTML(shopDr)
-			(*m)["noShop"] = isNoShop
-			(*m)["orderNo"] = order.OrderNo
+		gof.TemplateDataMap{
+			"shopDr": template.HTML(shopDr),
+			"noShop": isNoShop,
+			"orderNo": order.OrderNo,
 
 		}, "views/partner/order/order_setup_setshop.html")
 }
@@ -80,9 +81,9 @@ func (this *orderC) setState(ctx *web.Context,
 	}
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
-			(*m)["button"] = template.HTML(button)
-			(*m)["descript"] = template.HTML(descript)
-			(*m)["order_no"] = order.OrderNo
+		gof.TemplateDataMap{
+			"button": template.HTML(button),
+			"descript": template.HTML(descript),
+			"order_no": order.OrderNo,
 		}, "views/partner/order/order_setup_setstate.html")
 }

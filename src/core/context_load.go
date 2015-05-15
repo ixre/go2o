@@ -93,7 +93,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 
 func initTemplate(c *gof.Config) *gof.Template {
 	return &gof.Template{
-		Init: func(m *map[string]interface{}) {
+		Init: func(m *gof.TemplateDataMap) {
 			v := *m
 			v["static_serv"] = c.GetString(variable.StaticServer)
 			v["img_serv"] = c.GetString(variable.ImageServer)

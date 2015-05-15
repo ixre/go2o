@@ -33,14 +33,12 @@ func (this *basicC) Profile(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	js, _ := json.Marshal(mm)
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		v := *m
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = mm
-		v["entity"] = template.JS(js)
-
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"partner": p,
+		"conf": conf,
+		"partner_host": conf.Host,
+		"member": mm,
+		"entity": template.JS(js),
 	}, "views/ucenter/profile.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -51,12 +49,11 @@ func (this *basicC) Pwd(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		v := *m
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = mm
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"partner": p,
+		"conf": conf,
+		"partner_host": conf.Host,
+		"member": mm,
 
 	}, "views/ucenter/pwd.html",
 		"views/ucenter/inc/header.html",
@@ -109,12 +106,11 @@ func (this *basicC) Deliver(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(mp *map[string]interface{}) {
-		v := *mp
-		v["partner"] = p
-		v["conf"] = conf
-		v["partner_host"] = conf.Host
-		v["member"] = m
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"partner": p,
+		"conf": conf,
+		"partner_host": conf.Host,
+		"member": m,
 
 	}, "views/ucenter/deliver.html",
 		"views/ucenter/inc/header.html",

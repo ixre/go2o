@@ -38,11 +38,11 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	pt, _ := this.GetPartner(ctx)
 
-	var mf gof.TemplateMapFunc = func(m *map[string]interface{}) {
-		(*m)["partner"] = pt
-		(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
+	var mf gof.TemplateDataMap = gof.TemplateDataMap{
+		"partner": pt,
+		"loginIp": r.Header.Get("USER_ADDRESS"),
 	}
-	ctx.App.Template().Render(w, "views/partner/dashboard.html", mf)
+	ctx.App.Template().Execute(w,mf, "views/partner/dashboard.html")
 }
 
 //商户汇总页
@@ -50,12 +50,12 @@ func (this *mainC) Summary(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	pt, _ := this.GetPartner(ctx)
 
-	ctx.App.Template().Render(w,
-		"views/partner/summary.html",
-		func(m *map[string]interface{}) {
-			(*m)["partner"] = pt
-			(*m)["loginIp"] = r.Header.Get("USER_ADDRESS")
-		})
+	ctx.App.Template().Execute(w,
+		gof.TemplateDataMap{
+			"partner": pt,
+			"loginIp": r.Header.Get("USER_ADDRESS"),
+		},
+	"views/partner/summary.html")
 }
 
 func (this *mainC) Upload_post(ctx *web.Context) {

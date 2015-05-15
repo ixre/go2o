@@ -30,7 +30,7 @@ type promC struct {
 func (this *promC) CreateCoupon(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
+		gof.TemplateDataMap{
 		},
 		"views/partner/promotion/create_coupon.html")
 }
@@ -43,8 +43,8 @@ func (this *promC) EditCoupon(ctx *web.Context) {
 	js, _ := json.Marshal(e)
 
 	ctx.App.Template().Execute(w,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = template.JS(js)
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
 		},
 		"views/partner/promotion/edit_coupon.html")
 }
@@ -56,8 +56,8 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
 	ctx.App.Template().Execute(w,
-		func(m *map[string]interface{}) {
-			(*m)["entity"] = e
+		gof.TemplateDataMap{
+			"entity": e,
 		},
 		"views/partner/promotion/bind_coupon.html")
 }
@@ -114,7 +114,7 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 func (this *promC) Coupon(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(m *map[string]interface{}) {
+		gof.TemplateDataMap{
 
 		}, "views/partner/promotion/coupon_list.html")
 }

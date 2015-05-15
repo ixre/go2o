@@ -22,6 +22,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/atnet/gof"
 )
 
 type shoppingC struct {
@@ -81,19 +82,19 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 			}
 		}
 
-		ctx.App.Template().Execute(w, func(mp *map[string]interface{}) {
-			(*mp)["partner"] = p
-			(*mp)["title"] = "订单确认-" + p.Name
-			(*mp)["member"] = m
-			(*mp)["cart"] = cart
-			(*mp)["cartDetails"] = template.HTML(format.CartDetails(cart))
-			(*mp)["promFee"] = cart.TotalFee - cart.OrderFee
-			(*mp)["summary"] = template.HTML(cart.Summary)
-			(*mp)["conf"] = siteConf
-			(*mp)["settle"] = settle
-			(*mp)["deliverId"] = deliverId
-			(*mp)["deliverOpt"] = deliverOpt
-			(*mp)["paymentOpt"] = paymentOpt
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"title": "订单确认-" + p.Name,
+			"member": m,
+			"cart": cart,
+			"cartDetails": template.HTML(format.CartDetails(cart)),
+			"promFee": cart.TotalFee - cart.OrderFee,
+			"summary": template.HTML(cart.Summary),
+			"conf": siteConf,
+			"settle": settle,
+			"deliverId": deliverId,
+			"deliverOpt": deliverOpt,
+			"paymentOpt": paymentOpt,
 		},
 			"views/shop/ols/order_confirm.html",
 			"views/shop/ols/inc/header.html",
@@ -162,9 +163,9 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}
 
 	js, _ := json.Marshal(addrs)
-	ctx.App.Template().Execute(w, func(md *map[string]interface{}) {
-		(*md)["addrs"] = template.JS(js)
-		(*md)["sel"] = selId
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"addrs": template.JS(js),
+		"sel": selId,
 	}, "views/shop/ols/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
@@ -259,11 +260,11 @@ func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
 
 func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, func(m *map[string]interface{}) {
-		(*m)["partner"] = p
-		(*m)["title"] = "订单确认-" + p.Name
-		(*m)["member"] = m
-		(*m)["conf"] = conf
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"partner": p,
+		"title": "订单确认-" + p.Name,
+		"member": m,
+		"conf": conf,
 	},
 		"views/shop/ols/order_empty.html",
 		"views/shop/ols/inc/header.html",
@@ -296,13 +297,13 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 				order.OrderNo, "在线支付")
 		}
 
-		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-			(*m)["partner"] = p
-			(*m)["title"] = "订单成功-" + p.Name
-			(*m)["member"] = m
-			(*m)["conf"] = siteConf
-			(*m)["order"] = order
-			(*m)["payHtml"] = template.HTML(payHtml)
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"title": "订单成功-" + p.Name,
+			"member": m,
+			"conf": siteConf,
+			"order": order,
+			"payHtml": template.HTML(payHtml),
 		},
 			"views/shop/ols/order_finish.html",
 			"views/shop/ols/inc/header.html",

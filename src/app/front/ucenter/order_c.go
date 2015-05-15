@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
 	"strconv"
+	"github.com/atnet/gof"
 )
 
 type orderC struct {
@@ -24,11 +25,8 @@ type orderC struct {
 }
 
 func (this *orderC) Complete(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter,
-		"views/ucenter/order/complete.html",
-		func(m *map[string]interface{}) {
-
-		})
+	ctx.App.Template().Execute(ctx.ResponseWriter,nil,
+		"views/ucenter/order/complete.html")
 }
 
 func (this *orderC) Orders(ctx *web.Context) {
@@ -36,12 +34,11 @@ func (this *orderC) Orders(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(mp *map[string]interface{}) {
-			v := *mp
-			v["partner"] = p
-			v["conf"] = conf
-			v["partner_host"] = conf.Host
-			v["member"] = m
+		gof.TemplateDataMap{
+			"partner": p,
+			"conf": conf,
+			"partner_host": conf.Host,
+			"member": m,
 		}, "views/ucenter/order/order_list.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -54,13 +51,12 @@ func (this *orderC) Completed(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(mp *map[string]interface{}) {
-			v := *mp
-			v["partner"] = p
-			v["conf"] = conf
-			v["partner_host"] = conf.Host
-			v["member"] = m
-			v["state"] = enum.ORDER_COMPLETED
+		gof.TemplateDataMap{
+			"partner": p,
+			"conf": conf,
+			"partner_host": conf.Host,
+			"member": m,
+			"state": enum.ORDER_COMPLETED,
 		},
 		"views/ucenter/order/order_completed.html",
 		"views/ucenter/inc/header.html",
@@ -74,13 +70,12 @@ func (this *orderC) Canceled(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		func(mp *map[string]interface{}) {
-			v := *mp
-			v["partner"] = p
-			v["conf"] = conf
-			v["partner_host"] = conf.Host
-			v["member"] = m
-			v["state"] = enum.ORDER_CANCEL
+		gof.TemplateDataMap{
+			"partner": p,
+			"conf": conf,
+			"partner_host": conf.Host,
+			"member": m,
+			"state": enum.ORDER_CANCEL,
 		},
 		"views/ucenter/order/order_cancel.html",
 		"views/ucenter/inc/header.html",

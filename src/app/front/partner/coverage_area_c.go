@@ -1,7 +1,6 @@
 package partner
 
 import (
-	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
@@ -17,13 +16,13 @@ type coverageAreaC struct {
 }
 
 func (this *coverageAreaC) CoverageAreList(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter, "views/partner/delivery/coverage_area_list.html", nil)
+	ctx.App.Template().Execute(ctx.ResponseWriter,nil, "views/partner/delivery/coverage_area_list.html")
 }
 
 func (this *coverageAreaC) Create(ctx *web.Context) {
-	ctx.App.Template().Render(ctx.ResponseWriter, "views/partner/delivery/create.html", func(m *map[string]interface{}) {
-		(*m)["entity"] = template.JS("{}")
-	})
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"entity": template.JS("{}"),
+	}, "views/partner/delivery/create.html")
 }
 
 func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
@@ -35,7 +34,7 @@ func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
 	web.ParseFormToEntity(r.Form, &coverageArea)
 
 	id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
-	fmt.Println(id, "=====\n ERROR:", err)
+
 	if err != nil {
 		result = gof.Message{Result: true, Message: err.Error()}
 	} else {

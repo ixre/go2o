@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"strings"
+	"github.com/atnet/gof"
 )
 
 type userC struct {
@@ -33,12 +34,11 @@ func (this *userC) Login(ctx *web.Context) {
 	pa := this.GetPartnerApi(ctx)
 
 	if b, siteConf := GetSiteConf(w, p, pa); b {
-		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-			mv := *m
-			mv["partner"] = p
-			mv["title"] = "会员登录－" + siteConf.SubTitle
-			mv["conf"] = siteConf
-			mv["tipStyle"] = tipStyle
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"title": "会员登录－" + siteConf.SubTitle,
+			"conf": siteConf,
+			"tipStyle": tipStyle,
 		},
 			"views/shop/ols/login.html",
 			"views/shop/ols/inc/header.html",
@@ -66,10 +66,10 @@ func (this *userC) Register(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	pa := this.GetPartnerApi(ctx)
 	if b, siteConf := GetSiteConf(w, p, pa); b {
-		ctx.App.Template().Execute(w, func(m *map[string]interface{}) {
-			(*m)["partner"] = p
-			(*m)["title"] = "会员注册－" + siteConf.SubTitle
-			(*m)["conf"] = siteConf
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"title": "会员注册－" + siteConf.SubTitle,
+			"conf": siteConf,
 		},
 			"views/shop/ols/register.html",
 			"views/shop/ols/inc/header.html",

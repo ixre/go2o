@@ -112,7 +112,7 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 	var tgId int
 	var partnerId int
 
-	cardId = (*m)["card_id"].(string)
+	cardId =(*m)["card_id"].(string)
 	tgId, _ = strconv.Atoi((*m)["tg_id"].(string))
 	partnerId, _ = strconv.Atoi((*m)["partner_id"].(string))
 
@@ -136,7 +136,7 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 func (this *Partner) GetShoppingCart(m *jsv.Args, r *dto.ShoppingCart) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	var cartKey string = (*m)["cart_key"].(string)
+	var cartKey string = (*m)[ "cart_key"].(string)
 	cart := dps.ShoppingService.GetShoppingCart(partnerId, memberId, cartKey)
 	*r = *cart
 	return nil
@@ -145,7 +145,7 @@ func (this *Partner) GetShoppingCart(m *jsv.Args, r *dto.ShoppingCart) error {
 func (this *Partner) GetCartSettle(m *jsv.Args, r *dto.SettleMeta) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	var cartKey string = (*m)["cart_key"].(string)
+	var cartKey string =(*m)["cart_key"].(string)
 	settle := dps.ShoppingService.GetCartSettle(partnerId, memberId, cartKey)
 	*r = *settle
 	return nil
@@ -158,7 +158,7 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 	}
 
 	memberId, err := strconv.Atoi((*m)["member_id"].(string))
-	couponCode := (*m)["coupon_code"].(string)
+	couponCode :=(*m)["coupon_code"].(string)
 	if err != nil {
 		return err
 	}
@@ -211,8 +211,7 @@ func (this *Partner) GetOrderByNo(m *jsv.Args, r *shopping.ValueOrder) error {
 	if err != nil {
 		return err
 	}
-	order := dps.ShoppingService.GetOrderByNo(partnerId,
-		(*m)["order_no"].(string))
+	order := dps.ShoppingService.GetOrderByNo(partnerId,(*m)["order_no"].(string))
 	if order != nil {
 		*r = *order
 	}
@@ -232,7 +231,7 @@ func (this *Partner) CheckUsrExist(m *jsv.Args, r *jsv.Result) error {
 func (this *Partner) AddCartItem(m *jsv.Args, item *dto.CartItem) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	cartKey := (*m)["cart_key"].(string)
+	cartKey :=(*m)["cart_key"].(string)
 	goodsId, _ := strconv.Atoi((*m)["goods_id"].(string))
 	num, _ := strconv.Atoi((*m)["num"].(string))
 
@@ -249,7 +248,7 @@ func (this *Partner) AddCartItem(m *jsv.Args, item *dto.CartItem) error {
 func (this *Partner) SubCartItem(m *jsv.Args, r *jsv.Result) error {
 	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	cartKey := (*m)["cart_key"].(string)
+	cartKey :=(*m)["cart_key"].(string)
 	goodsId, _ := strconv.Atoi((*m)["goods_id"].(string))
 	num, _ := strconv.Atoi((*m)["num"].(string))
 	err := dps.ShoppingService.SubCartItem(partnerId,
@@ -276,7 +275,7 @@ func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
-	couponCode := (*m)["coupon_code"].(string)
+	couponCode :=(*m)["coupon_code"].(string)
 
 	orderNo, err := dps.ShoppingService.SubmitOrder(partnerId, memberId, couponCode)
 	if err != nil {
