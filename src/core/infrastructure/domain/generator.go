@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -14,8 +14,8 @@ import (
 	"github.com/atnet/gof/util"
 	"math/rand"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 )
 
 const (
@@ -39,11 +39,10 @@ func GenerateInvitationCode() string {
 	return md5[8:14]
 }
 
-
 // 创建API编号(10位)
-func NewApiId(id int)string{
-	var offset = id *360 + id % 2
-	return fmt.Sprintf("60%s%d",strings.Repeat("0",8 - len(strconv.Itoa(offset))),offset)
+func NewApiId(id int) string {
+	var offset = id*360 + id%2
+	return fmt.Sprintf("60%s%d", strings.Repeat("0", 8-len(strconv.Itoa(offset))), offset)
 }
 
 //创建密钥(16位)

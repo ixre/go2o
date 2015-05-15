@@ -11,6 +11,7 @@ package ols
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -22,7 +23,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/atnet/gof"
 )
 
 type shoppingC struct {
@@ -83,18 +83,18 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 		}
 
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner": p,
-			"title": "订单确认-" + p.Name,
-			"member": m,
-			"cart": cart,
+			"partner":     p,
+			"title":       "订单确认-" + p.Name,
+			"member":      m,
+			"cart":        cart,
 			"cartDetails": template.HTML(format.CartDetails(cart)),
-			"promFee": cart.TotalFee - cart.OrderFee,
-			"summary": template.HTML(cart.Summary),
-			"conf": siteConf,
-			"settle": settle,
-			"deliverId": deliverId,
-			"deliverOpt": deliverOpt,
-			"paymentOpt": paymentOpt,
+			"promFee":     cart.TotalFee - cart.OrderFee,
+			"summary":     template.HTML(cart.Summary),
+			"conf":        siteConf,
+			"settle":      settle,
+			"deliverId":   deliverId,
+			"deliverOpt":  deliverOpt,
+			"paymentOpt":  paymentOpt,
 		},
 			"views/shop/ols/order_confirm.html",
 			"views/shop/ols/inc/header.html",
@@ -165,7 +165,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	js, _ := json.Marshal(addrs)
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
 		"addrs": template.JS(js),
-		"sel": selId,
+		"sel":   selId,
 	}, "views/shop/ols/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
@@ -262,9 +262,9 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 		"partner": p,
-		"title": "订单确认-" + p.Name,
-		"member": m,
-		"conf": conf,
+		"title":   "订单确认-" + p.Name,
+		"member":  m,
+		"conf":    conf,
 	},
 		"views/shop/ols/order_empty.html",
 		"views/shop/ols/inc/header.html",
@@ -299,10 +299,10 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
-			"title": "订单成功-" + p.Name,
-			"member": m,
-			"conf": siteConf,
-			"order": order,
+			"title":   "订单成功-" + p.Name,
+			"member":  m,
+			"conf":    siteConf,
+			"order":   order,
 			"payHtml": template.HTML(payHtml),
 		},
 			"views/shop/ols/order_finish.html",

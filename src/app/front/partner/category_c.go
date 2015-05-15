@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -30,7 +30,7 @@ type categoryC struct {
 //分类树形功能
 func (this *categoryC) Category(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"nopicUrl" :format.GetGoodsImageUrl(""),
+		"nopicUrl": format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")
 }
 
@@ -44,7 +44,7 @@ func (this *categoryC) CategoryJson(ctx *web.Context) {
 
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil,
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
 		"views/partner/category/category_select.html")
 }
 
@@ -56,10 +56,10 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 	json, _ := json.Marshal(node)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-	gof.TemplateDataMap{
-		"treeJson": template.JS(json),
-	},
-	"views/partner/category/category_create.html")
+		gof.TemplateDataMap{
+			"treeJson": template.JS(json),
+		},
+		"views/partner/category/category_create.html")
 }
 
 func (this *categoryC) EditCategory(ctx *web.Context) {
@@ -72,9 +72,9 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 	json, _ := json.Marshal(category)
 
 	ctx.App.Template().Execute(w,
-	gof.TemplateDataMap{
-		"entity" : template.JS(json),
-	},
+		gof.TemplateDataMap{
+			"entity": template.JS(json),
+		},
 		"views/partner/category/category_edit.html")
 }
 

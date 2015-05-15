@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-19 22:49
@@ -83,12 +83,12 @@ func (this *partnerService) GetPartnerMajorHost(partnerId int) string {
 }
 
 func (this *partnerService) SaveSiteConf(partnerId int, v *partner.SiteConf) error {
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.SaveSiteConf(v)
 }
 
 func (this *partnerService) SaveSaleConf(partnerId int, v *partner.SaleConf) error {
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.SaveSaleConf(v)
 }
 
@@ -169,14 +169,14 @@ func (this *partnerService) GetPartnersId() []int {
 
 // 保存API信息
 func (this *partnerService) SaveApiInfo(partnerId int, d *partner.ApiInfo) error {
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.SaveApiInfo(d)
 }
 
 // 获取API接口
 func (this *partnerService) GetApiInfo(partnerId int) *partner.ApiInfo {
-	pt,_ := this._partnerRep.GetPartner(partnerId)
-	v := pt.GetApiInfo();
+	pt, _ := this._partnerRep.GetPartner(partnerId)
+	v := pt.GetApiInfo()
 	return &v
 }
 

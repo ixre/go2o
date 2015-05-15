@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-12 16:55
@@ -11,6 +11,7 @@ package partner
 
 import (
 	"encoding/json"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
@@ -18,7 +19,6 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strings"
-	"github.com/atnet/gof"
 )
 
 var _ mvc.Filter = new(orderC)
@@ -32,7 +32,7 @@ func (this *orderC) List(ctx *web.Context) {
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"shops":template.JS(shopsJson),
+			"shops": template.JS(shopsJson),
 		}, "views/partner/order/order_list.html")
 }
 
@@ -93,12 +93,11 @@ func (this *orderC) View(ctx *web.Context) {
 
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
-			"entity": template.JS(js),
-			"member": member,
+			"entity":   template.JS(js),
+			"member":   member,
 			"shopName": shopName,
-			"payment": payment,
-			"state": orderStateText,
-
+			"payment":  payment,
+			"state":    orderStateText,
 		}, "views/partner/order/order_view.html")
 }
 
@@ -150,7 +149,7 @@ func (this *orderC) Payment(ctx *web.Context) {
 
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"shopName": shopName,
-			"order": *e,
+			"order":    *e,
 		}, "views/partner/order/payment.html")
 	}
 }

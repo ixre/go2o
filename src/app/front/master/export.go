@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -40,7 +40,6 @@ func GetExportData(ctx *web.Context) {
 	if exportItm != nil {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
-
 
 		if page != "" {
 			parameter.Parameters["pageIndex"] = page

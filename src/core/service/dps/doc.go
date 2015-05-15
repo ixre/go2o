@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ Ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-11-08 21:08

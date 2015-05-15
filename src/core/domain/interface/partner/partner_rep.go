@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-12 16:52
@@ -26,12 +26,12 @@ type IPartnerRep interface {
 	// 获取销售配置
 	GetSaleConf(int) *SaleConf
 
-	SaveSaleConf(partnerId int,v *SaleConf) error
+	SaveSaleConf(partnerId int, v *SaleConf) error
 
 	// 获取站点配置
 	GetSiteConf(int) *SiteConf
 
-	SaveSiteConf(partnerId int,v *SiteConf) error
+	SaveSiteConf(partnerId int, v *SiteConf) error
 
 	// 保存API信息
 	SaveApiInfo(partnerId int, d *ApiInfo) error
@@ -41,7 +41,6 @@ type IPartnerRep interface {
 
 	// 根据API编号获取商户编号
 	GetPartnerIdByApiId(apiId string) int
-
 
 	SaveShop(*ValueShop) (int, error)
 

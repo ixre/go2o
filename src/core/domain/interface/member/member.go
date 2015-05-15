@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-09 09:49
@@ -13,6 +13,9 @@ type IMember interface {
 	GetAggregateRootId() int
 
 	GetValue() ValueMember
+
+	// 邀请管理
+	Invitation() IInvitationManager
 
 	SetValue(*ValueMember) error
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 @ ops Inc.
+ * Copyright 2013 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-02-04 20:13
@@ -9,10 +9,10 @@
 package ols
 
 import (
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/cache/apicache"
 	"html/template"
-	"github.com/atnet/gof"
 )
 
 //todo: filter valid partner is nil
@@ -50,13 +50,13 @@ func (this *mainC) Index(ctx *web.Context) {
 			}
 			ctx.App.Template().Execute(w, gof.TemplateDataMap{
 				"partner": p,
-				"conf": siteConf,
-				"title": siteConf.IndexTitle,
-				"shops": template.HTML(shops),
+				"conf":    siteConf,
+				"title":   siteConf.IndexTitle,
+				"shops":   template.HTML(shops),
 			},
-			"views/shop/ols/index.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+				"views/shop/ols/index.html",
+				"views/shop/ols/inc/header.html",
+				"views/shop/ols/inc/footer.html")
 		}
 	}
 }

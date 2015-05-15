@@ -7,16 +7,17 @@
  * history :
  */
 package main
+
 import (
-    "go2o/src/core/infrastructure/domain"
-    "fmt"
+	"fmt"
+	"go2o/src/core/infrastructure/domain"
 )
 
-func main(){
+func main() {
 
-    fmt.Println(domain.EncodePartnerPwd("wzo2o","12345"))
+	fmt.Println(domain.EncodePartnerPwd("wzo2o", "12345"))
 
-    fmt.Println(domain.NewApiId(105))
-    fmt.Println(domain.EncodeMemberPwd("u1000","123456"))
+	fmt.Println(domain.NewApiId(105))
+	fmt.Println(domain.EncodeMemberPwd("u1000", "123456"))
 
 }

@@ -1,25 +1,25 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
  * description :
  * history :
  */
- package master
+package master
 
 import (
 	"encoding/json"
+	"github.com/atnet/gof"
+	"github.com/atnet/gof/web"
+	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/domain"
+	"go2o/src/core/service/dps"
 	"html/template"
 	"net/http"
 	"strconv"
 	"strings"
-	"github.com/atnet/gof/web"
-	"go2o/src/core/service/dps"
-	"github.com/atnet/gof"
-	"go2o/src/core/domain/interface/partner"
 	"time"
-	"go2o/src/core/infrastructure/domain"
 )
 
 type partnerC struct {
@@ -27,15 +27,15 @@ type partnerC struct {
 }
 
 func (c *partnerC) Index(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil,"views/master/partner_partner_index.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/partner_partner_index.html")
 }
 
 func (c *partnerC) CreatePartner(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil, "views/master/partner/partner_create.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/partner/partner_create.html")
 }
 
 func (c *partnerC) CreatePartner_post(ctx *web.Context) {
-	r,w :=ctx.Request,ctx.ResponseWriter
+	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.Message
 	r.ParseForm()
 
@@ -50,7 +50,7 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 
 	//更新
 	if partner.Id > 0 {
-		original,_ := dps.PartnerService.GetPartner(partner.Id)
+		original, _ := dps.PartnerService.GetPartner(partner.Id)
 		partner.JoinTime = original.JoinTime
 		partner.ExpiresTime = original.ExpiresTime
 		partner.UpdateTime = dt.Unix()
@@ -64,7 +64,7 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 		partner.UpdateTime = dt.Unix()
 	}
 
-	id, err := dps.PartnerService.SavePartner(partner.Id,&partner)
+	id, err := dps.PartnerService.SavePartner(partner.Id, &partner)
 	if err != nil {
 		result.Message = err.Error()
 	} else {
@@ -99,30 +99,30 @@ func (c *partnerC) EditPartner(ctx *web.Context) {
 	}, "views/master/partner/partner_edit.html")
 }
 func (c *partnerC) List(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil,
-	"views/master/partner/partner_list.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
+		"views/master/partner/partner_list.html")
 }
 
 func (c *partnerC) DelPartner_post(w http.ResponseWriter, r *http.Request) {
-//	var result gof.Message
-//	r.ParseForm()
-//	ptid, err := strconv.Atoi(r.Form.Get("id"))
-//	if err != nil {
-//		result.Message = err.Error()
-//	} else {
-////		err := dps.PartnerService.DeletePartner(ptid)
-////		if err != nil {
-////			result.Message = err.Error()
-////		} else {
-////			result.Result = true
-////		}
-//	}
-//	w.Write(result.Marshal())
+	//	var result gof.Message
+	//	r.ParseForm()
+	//	ptid, err := strconv.Atoi(r.Form.Get("id"))
+	//	if err != nil {
+	//		result.Message = err.Error()
+	//	} else {
+	////		err := dps.PartnerService.DeletePartner(ptid)
+	////		if err != nil {
+	////			result.Message = err.Error()
+	////		} else {
+	////			result.Result = true
+	////		}
+	//	}
+	//	w.Write(result.Marshal())
 }
 
 //地区Json
 func (this *partnerC) ChinaJson(w http.ResponseWriter, r *http.Request) {
-//	var node *tree.TreeNode = logic.GetChinaTree()
-//	json, _ := json.Marshal(node)
-//	w.Write(json)
+	//	var node *tree.TreeNode = logic.GetChinaTree()
+	//	json, _ := json.Marshal(node)
+	//	w.Write(json)
 }

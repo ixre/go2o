@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -42,7 +42,7 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 		"partner": pt,
 		"loginIp": r.Header.Get("USER_ADDRESS"),
 	}
-	ctx.App.Template().Execute(w,mf, "views/partner/dashboard.html")
+	ctx.App.Template().Execute(w, mf, "views/partner/dashboard.html")
 }
 
 //商户汇总页
@@ -55,7 +55,7 @@ func (this *mainC) Summary(ctx *web.Context) {
 			"partner": pt,
 			"loginIp": r.Header.Get("USER_ADDRESS"),
 		},
-	"views/partner/summary.html")
+		"views/partner/summary.html")
 }
 
 func (this *mainC) Upload_post(ctx *web.Context) {

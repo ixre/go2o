@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-12 16:53
@@ -42,7 +42,7 @@ type IPartner interface {
 	GetApiInfo() ApiInfo
 
 	// 保存API信息
-	SaveApiInfo(*ApiInfo)error
+	SaveApiInfo(*ApiInfo) error
 
 	// 新建商店
 	CreateShop(*ValueShop) IShop

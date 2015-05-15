@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:13
@@ -12,6 +12,7 @@ package repository
 import (
 	"fmt"
 	"github.com/atnet/gof/db"
+	"github.com/atnet/gof/log"
 	"go2o/src/core/domain/interface/member"
 	memberImpl "go2o/src/core/domain/member"
 )
@@ -248,4 +249,27 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
 		memberId, deliverId)
 	return err
+}
+
+// 邀请
+func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
+	arr := []*member.ValueMember{}
+	err := this.Connector.GetOrm().SelectByQuery(&arr,
+		"SELECT * FROM mm_relation WHERE invi_member_id=?", memberId)
+	if err != nil {
+		log.PrintErr(err)
+		return nil
+	}
+
+	return arr
+}
+
+// 获取下级会员数量
+func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
+	return nil
+}
+
+// 获取推荐我的人
+func (this *MemberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
+	return nil
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -42,7 +42,7 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		d := gof.TemplateDataMap{
-			"loginIp":r.Header.Get("USER_ADDRESS"),
+			"loginIp": r.Header.Get("USER_ADDRESS"),
 		}
 		ctx.App.Template().Execute(w, d, "views/master/dashboard.html")
 	}
@@ -53,15 +53,15 @@ func (this *mainC) Summary(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		r, w := ctx.Request, ctx.ResponseWriter
 		d := gof.TemplateDataMap{
-			"loginIp":r.Header.Get("USER_ADDRESS"),
+			"loginIp": r.Header.Get("USER_ADDRESS"),
 		}
-		ctx.App.Template().Execute(w,d,"views/master/summary.html")
+		ctx.App.Template().Execute(w, d, "views/master/summary.html")
 	}
 }
 
 // 导出数据
-func (this *mainC) exportData(ctx *web.Context){
-	if this.Requesting(ctx){
+func (this *mainC) exportData(ctx *web.Context) {
+	if this.Requesting(ctx) {
 		GetExportData(ctx)
 	}
 }
@@ -75,13 +75,11 @@ func (this *mainC) Upload_post(ctx *web.Context) {
 	}
 }
 
-
-
 //登陆
 func (this *mainC) Login(ctx *web.Context) {
-	if ctx.Request.Method == "POST"{
+	if ctx.Request.Method == "POST" {
 		this.Login_post(ctx)
-	}else {
+	} else {
 		ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/login.html")
 	}
 }
@@ -91,14 +89,14 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
 
-	if domain.Md5Pwd(pwd,usr) == ctx.App.Config().GetString("webmaster_valid_md5") {
+	if domain.Md5Pwd(pwd, usr) == ctx.App.Config().GetString("webmaster_valid_md5") {
 		ctx.Session().Set("master_id", 1)
 		if err := ctx.Session().Save(); err != nil {
 			msg.Message = err.Error()
-		}else{
-			msg.Result =true
+		} else {
+			msg.Result = true
 		}
-	}else{
+	} else {
 		msg.Message = "用户或密码不正确！"
 	}
 	ctx.ResponseWriter.Write(msg.Marshal())
@@ -127,4 +125,3 @@ func (pb *mainC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool
 	}
 	return pt, result, message
 }
-

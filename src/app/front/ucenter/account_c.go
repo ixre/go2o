@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -30,10 +30,10 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"conf": conf,
-		"record": 15,
+		"conf":    conf,
+		"record":  15,
 		"partner": p,
-		"member": m,
+		"member":  m,
 	}, "views/ucenter/account/income_log.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -72,12 +72,12 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 
 	js, _ := json.Marshal(bank)
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
-		"conf": conf,
-		"record": 15,
+		"conf":    conf,
+		"record":  15,
 		"partner": p,
-		"member": m,
+		"member":  m,
 		"account": acc,
-		"entity": template.JS(js),
+		"entity":  template.JS(js),
 	}, "views/ucenter/account/apply_cash.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -110,10 +110,10 @@ func (this *accountC) IntegralExchange(ctx *web.Context) {
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"conf": conf,
-		"record": 15,
+		"conf":    conf,
+		"record":  15,
 		"partner": p,
-		"member":m,
+		"member":  m,
 		"account": acc,
 	}, "views/ucenter/account/integral_exchange.html",
 		"views/ucenter/inc/header.html",

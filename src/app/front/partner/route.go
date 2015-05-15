@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -46,8 +46,7 @@ func RegisterRoutes() {
 		mvc.Handle(lc, ctx, true)
 	})
 
-
-	routes.Add("/upload.cgi",mc.Upload_post)
+	routes.Add("/upload.cgi", mc.Upload_post)
 
 	routes.Add("^/[^/]*$", func(ctx *web.Context) {
 		if bc.Requesting(ctx) {

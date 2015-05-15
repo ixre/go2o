@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -9,6 +9,7 @@
 package partner
 
 import (
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
@@ -16,7 +17,6 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
-	"github.com/atnet/gof"
 )
 
 func (this *orderC) setShop(ctx *web.Context,
@@ -27,10 +27,9 @@ func (this *orderC) setShop(ctx *web.Context,
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"shopDr": template.HTML(shopDr),
-			"noShop": isNoShop,
+			"shopDr":  template.HTML(shopDr),
+			"noShop":  isNoShop,
 			"orderNo": order.OrderNo,
-
 		}, "views/partner/order/order_setup_setshop.html")
 }
 
@@ -82,7 +81,7 @@ func (this *orderC) setState(ctx *web.Context,
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"button": template.HTML(button),
+			"button":   template.HTML(button),
 			"descript": template.HTML(descript),
 			"order_no": order.OrderNo,
 		}, "views/partner/order/order_setup_setstate.html")

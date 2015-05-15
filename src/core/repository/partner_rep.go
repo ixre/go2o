@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-12 17:16
@@ -115,14 +115,14 @@ func (this *partnerRep) GetSaleConf(partnerId int) *partner.SaleConf {
 	return nil
 }
 
-func (this *partnerRep) SaveSaleConf(partnerId int,v *partner.SaleConf) error {
+func (this *partnerRep) SaveSaleConf(partnerId int, v *partner.SaleConf) error {
 	defer this.renew(v.PartnerId)
 	var err error
 	if v.PartnerId > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.PartnerId, v)
-	}else{
+	} else {
 		v.PartnerId = partnerId
-		_,_,err = this.Connector.GetOrm().Save(nil,v)
+		_, _, err = this.Connector.GetOrm().Save(nil, v)
 	}
 	return err
 }
@@ -145,22 +145,21 @@ func (this *partnerRep) GetSiteConf(partnerId int) *partner.SiteConf {
 	return nil
 }
 
-func (this *partnerRep) SaveSiteConf(partnerId int,v *partner.SiteConf) error {
+func (this *partnerRep) SaveSiteConf(partnerId int, v *partner.SiteConf) error {
 	defer this.renew(v.PartnerId)
 
 	var err error
 	if v.PartnerId > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.PartnerId, v)
-	}else{
+	} else {
 		v.PartnerId = partnerId
-		_,_,err = this.Connector.GetOrm().Save(nil,v)
+		_, _, err = this.Connector.GetOrm().Save(nil, v)
 	}
 	return err
 }
 
-
 // 保存API信息
-func (this *partnerRep) SaveApiInfo(partnerId int, d *partner.ApiInfo) error{
+func (this *partnerRep) SaveApiInfo(partnerId int, d *partner.ApiInfo) error {
 	var err error
 	orm := this.GetOrm()
 	if d.PartnerId == 0 { //实体未传递partnerId时新增
@@ -183,12 +182,11 @@ func (this *partnerRep) GetApiInfo(partnerId int) *partner.ApiInfo {
 }
 
 // 根据API编号获取商户编号
-func (this *partnerRep) GetPartnerIdByApiId(apiId string) int{
+func (this *partnerRep) GetPartnerIdByApiId(apiId string) int {
 	var partnerId int
 	this.ExecScalar("SELECT partner_id FROM pt_api WHERE api_id=?", &partnerId, apiId)
 	return partnerId
 }
-
 
 func (this *partnerRep) SaveShop(v *partner.ValueShop) (int, error) {
 	defer this.renew(v.PartnerId)

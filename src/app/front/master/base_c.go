@@ -9,15 +9,15 @@
 package master
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"net/url"
-	"fmt"
-	"github.com/atnet/gof"
-	"encoding/json"
 )
 
-func chkLogin(ctx *web.Context) (b bool, partnerId int){
+func chkLogin(ctx *web.Context) (b bool, partnerId int) {
 	v := ctx.Session().Get("master_id")
 	if v == nil {
 		return false, -1
@@ -56,7 +56,6 @@ func (this *baseC) GetMasterId(ctx *web.Context) int {
 	return v.(int)
 }
 
-
 // 输出Json
 func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 	b, err := json.Marshal(v)
@@ -73,8 +72,7 @@ func (this *baseC) errorOutput(ctx *web.Context, err string) {
 }
 
 // 输出错误信息
-func (this *baseC) resultOutput(ctx *web.Context,result gof.Message) {
+func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
 	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
-	"{result:%v,code:%d,message:\"%s\"}", result.Result,result.Code, result.Message)))
+		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
-

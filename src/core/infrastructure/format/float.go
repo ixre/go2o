@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ Ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name : float.go
  * author : jarryliu
  * date : 2013-12-02 21:34

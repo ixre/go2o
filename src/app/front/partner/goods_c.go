@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -40,7 +40,7 @@ func (this *goodsC) List(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	//cid,_:= strconv.Atoi(r.FormValue("cid"))
-	ctx.App.Template().Execute(w,nil,"views/partner/goods/list.html")
+	ctx.App.Template().Execute(w, nil, "views/partner/goods/list.html")
 }
 
 func (this *goodsC) Create(ctx *web.Context) {
@@ -48,8 +48,8 @@ func (this *goodsC) Create(ctx *web.Context) {
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,gof.TemplateDataMap{
-		"shop_chk": template.HTML(shopChks),
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
 	},
 		"views/partner/goods/create_goods.html")
@@ -72,11 +72,11 @@ func (this *goodsC) Edit(ctx *web.Context) {
 
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
-			"entity": template.JS(js),
-			"shop_chk": template.HTML(shopChks),
+			"entity":    template.JS(js),
+			"shop_chk":  template.HTML(shopChks),
 			"cate_opts": template.HTML(cateOpts),
 		},
-	"views/partner/goods/update_goods.html")
+		"views/partner/goods/update_goods.html")
 }
 
 func (this *goodsC) SaveItem_post(ctx *web.Context) {

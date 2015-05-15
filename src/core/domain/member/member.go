@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-09 10:12
@@ -19,11 +19,12 @@ import (
 var _ member.IMember = new(Member)
 
 type Member struct {
-	_value    *member.ValueMember
-	_account  *member.Account
-	_bank     *member.BankInfo
-	_rep      member.IMemberRep
-	_relation *member.MemberRelation
+	_value      *member.ValueMember
+	_account    *member.Account
+	_bank       *member.BankInfo
+	_rep        member.IMemberRep
+	_relation   *member.MemberRelation
+	_invitation member.IInvitationManager
 }
 
 func NewMember(val *member.ValueMember, rep member.IMemberRep) member.IMember {
@@ -56,6 +57,16 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.InvitationCode = v.InvitationCode
 	}
 	return nil
+}
+
+// 邀请管理
+func (this *Member) Invitation() member.IInvitationManager {
+	if this._invitation == nil {
+		this._invitation = &invitationManager{
+			_member: this,
+		}
+	}
+	return this._invitation
 }
 
 func (this *Member) GetAccount() *member.Account {

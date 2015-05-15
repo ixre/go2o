@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -23,7 +23,7 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Index(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil,"views/ucenter/login.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/ucenter/login.html")
 }
 func (this *loginC) Index_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter

@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-12 16:55
@@ -16,21 +16,21 @@ import (
 	"go2o/src/core/domain/interface/partner/user"
 	userImpl "go2o/src/core/domain/partner/user"
 	"go2o/src/core/infrastructure"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/variable"
 	"time"
-	"go2o/src/core/infrastructure/domain"
 )
 
 var _ partner.IPartner = new(Partner)
 
 type Partner struct {
-	_value        *partner.ValuePartner
-	_saleConf     *partner.SaleConf
-	_siteConf     *partner.SiteConf
-	_apiInfo	*partner.ApiInfo
-	_rep          partner.IPartnerRep
-	_shops        []partner.IShop
-	_host         string
+	_value       *partner.ValuePartner
+	_saleConf    *partner.SaleConf
+	_siteConf    *partner.SiteConf
+	_apiInfo     *partner.ApiInfo
+	_rep         partner.IPartnerRep
+	_shops       []partner.IShop
+	_host        string
 	_userManager user.IUserManager
 	_userRep     user.IUserRep
 }
@@ -49,8 +49,8 @@ func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.I
 	}
 
 	return &Partner{
-		_value:    v,
-		_rep:      rep,
+		_value:   v,
+		_rep:     rep,
 		_userRep: userRep,
 	}, err
 }
@@ -100,8 +100,8 @@ func (this *Partner) Save() (int, error) {
 }
 
 // 创建商户
-func (this *Partner) createPartner()(int,error) {
-	if id := this.GetAggregateRootId(); id>0 {
+func (this *Partner) createPartner() (int, error) {
+	if id := this.GetAggregateRootId(); id > 0 {
 		return id, nil
 	}
 
@@ -118,32 +118,31 @@ func (this *Partner) createPartner()(int,error) {
 
 	// SiteConf
 	this._siteConf = &partner.SiteConf{
-		IndexTitle :"线上商店-"+ v.Name,
-		SubTitle:"线上商店-"+ v.Name,
-		Logo: v.Logo,
-		State :1,
-		StateHtml : "",
+		IndexTitle: "线上商店-" + v.Name,
+		SubTitle:   "线上商店-" + v.Name,
+		Logo:       v.Logo,
+		State:      1,
+		StateHtml:  "",
 	}
-	err = this._rep.SaveSiteConf(id,this._siteConf)
+	err = this._rep.SaveSiteConf(id, this._siteConf)
 	this._siteConf.PartnerId = id
 
 	// SaleConf
 	this._saleConf = &partner.SaleConf{
-		AutoSetupOrder :1,
-		IntegralBackNum :0,
+		AutoSetupOrder:  1,
+		IntegralBackNum: 0,
 	}
-	err = this._rep.SaveSaleConf(id,this._saleConf)
+	err = this._rep.SaveSaleConf(id, this._saleConf)
 	this._saleConf.PartnerId = id
 
 	// 创建API
 	this._apiInfo = &partner.ApiInfo{
-		ApiId :domain.NewApiId(id),
-		ApiSecret:domain.NewSecret(id),
-		WhiteList :"*",
-		Enabled:1,
+		ApiId:     domain.NewApiId(id),
+		ApiSecret: domain.NewSecret(id),
+		WhiteList: "*",
+		Enabled:   1,
 	}
-	err = this._rep.SaveApiInfo(id,this._apiInfo)
-
+	err = this._rep.SaveApiInfo(id, this._apiInfo)
 
 	return id, err
 }
@@ -181,7 +180,7 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 	this._saleConf = v
 	this._saleConf.PartnerId = this._value.Id
-	return this._rep.SaveSaleConf(this.GetAggregateRootId(),this._saleConf)
+	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
 }
 
 // 获取站点配置
@@ -196,12 +195,11 @@ func (this *Partner) GetSiteConf() partner.SiteConf {
 func (this *Partner) SaveSiteConf(v *partner.SiteConf) error {
 	this._siteConf = v
 	this._siteConf.PartnerId = this._value.Id
-	return this._rep.SaveSiteConf(this.GetAggregateRootId(),this._siteConf)
+	return this._rep.SaveSiteConf(this.GetAggregateRootId(), this._siteConf)
 }
 
-
 // 获取API信息
-func (this *Partner) GetApiInfo()partner.ApiInfo {
+func (this *Partner) GetApiInfo() partner.ApiInfo {
 	if this._apiInfo == nil {
 		this._apiInfo = this._rep.GetApiInfo(this.GetAggregateRootId())
 	}
@@ -209,13 +207,11 @@ func (this *Partner) GetApiInfo()partner.ApiInfo {
 }
 
 // 保存API信息
-func (this *Partner) SaveApiInfo(v *partner.ApiInfo)error{
+func (this *Partner) SaveApiInfo(v *partner.ApiInfo) error {
 	this._apiInfo = v
 	this._apiInfo.PartnerId = this._value.Id
-	return this._rep.SaveApiInfo(this.GetAggregateRootId(),this._apiInfo)
+	return this._rep.SaveApiInfo(this.GetAggregateRootId(), this._apiInfo)
 }
-
-
 
 // 新建商店
 func (this *Partner) CreateShop(v *partner.ValueShop) partner.IShop {

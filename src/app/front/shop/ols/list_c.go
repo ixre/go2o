@@ -11,13 +11,13 @@ package ols
 import (
 	"bytes"
 	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/cache/apicache"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"strconv"
-	"github.com/atnet/gof"
 )
 
 type listC struct {
@@ -33,11 +33,11 @@ func (this *listC) Index(ctx *web.Context) {
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		categories := apicache.GetCategories(ctx.App, p.Id, pa.ApiSecret)
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner": p,
-			"title": "在线订餐-" + p.Name,
+			"partner":    p,
+			"title":      "在线订餐-" + p.Name,
 			"categories": template.HTML(categories),
-			"member": mm,
-			"conf": siteConf,
+			"member":     mm,
+			"conf":       siteConf,
 		},
 			"views/shop/ols/list.html",
 			"views/shop/ols/inc/header.html",

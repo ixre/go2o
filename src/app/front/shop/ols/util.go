@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 @ ops Inc.
+ * Copyright 2013 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-03 23:18
@@ -46,7 +46,7 @@ func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner, api *partner.Ap
 func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
 	if err != nil {
 		ctx.Template().Execute(w, gof.TemplateDataMap{
-			"error":err.Error(),
+			"error":  err.Error(),
 			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
 			"views/shop/ols/error.html")

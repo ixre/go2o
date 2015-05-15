@@ -30,8 +30,7 @@ type promC struct {
 func (this *promC) CreateCoupon(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		gof.TemplateDataMap{
-		},
+		gof.TemplateDataMap{},
 		"views/partner/promotion/create_coupon.html")
 }
 
@@ -114,7 +113,5 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 func (this *promC) Coupon(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		gof.TemplateDataMap{
-
-		}, "views/partner/promotion/coupon_list.html")
+		gof.TemplateDataMap{}, "views/partner/promotion/coupon_list.html")
 }

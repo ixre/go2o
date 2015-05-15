@@ -10,12 +10,12 @@ package ols
 
 import (
 	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"strings"
-	"github.com/atnet/gof"
 )
 
 type userC struct {
@@ -35,9 +35,9 @@ func (this *userC) Login(ctx *web.Context) {
 
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner": p,
-			"title": "会员登录－" + siteConf.SubTitle,
-			"conf": siteConf,
+			"partner":  p,
+			"title":    "会员登录－" + siteConf.SubTitle,
+			"conf":     siteConf,
 			"tipStyle": tipStyle,
 		},
 			"views/shop/ols/login.html",
@@ -68,8 +68,8 @@ func (this *userC) Register(ctx *web.Context) {
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
-			"title": "会员注册－" + siteConf.SubTitle,
-			"conf": siteConf,
+			"title":   "会员注册－" + siteConf.SubTitle,
+			"conf":    siteConf,
 		},
 			"views/shop/ols/register.html",
 			"views/shop/ols/inc/header.html",

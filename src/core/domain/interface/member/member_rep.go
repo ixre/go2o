@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-09 09:50
@@ -72,4 +72,13 @@ type IMemberRep interface {
 
 	// 删除配送地址
 	DeleteDeliver(memberId, deliverId int) error
+
+	// 邀请
+	GetMyInvitationMembers(memberId int) []*ValueMember
+
+	// 获取下级会员数量
+	GetSubInvitationNum(memberIds string) map[int]int
+
+	// 获取推荐我的人
+	GetInvitationMeMember(memberId int) *ValueMember
 }

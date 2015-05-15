@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2014-02-05 21:53
@@ -11,13 +11,13 @@ package ucenter
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
 	"strconv"
-	"github.com/atnet/gof"
 )
 
 type orderC struct {
@@ -25,7 +25,7 @@ type orderC struct {
 }
 
 func (this *orderC) Complete(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil,
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
 		"views/ucenter/order/complete.html")
 }
 
@@ -35,10 +35,10 @@ func (this *orderC) Orders(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"partner": p,
-			"conf": conf,
+			"partner":      p,
+			"conf":         conf,
 			"partner_host": conf.Host,
-			"member": m,
+			"member":       m,
 		}, "views/ucenter/order/order_list.html",
 		"views/ucenter/inc/header.html",
 		"views/ucenter/inc/menu.html",
@@ -52,11 +52,11 @@ func (this *orderC) Completed(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"partner": p,
-			"conf": conf,
+			"partner":      p,
+			"conf":         conf,
 			"partner_host": conf.Host,
-			"member": m,
-			"state": enum.ORDER_COMPLETED,
+			"member":       m,
+			"state":        enum.ORDER_COMPLETED,
 		},
 		"views/ucenter/order/order_completed.html",
 		"views/ucenter/inc/header.html",
@@ -71,11 +71,11 @@ func (this *orderC) Canceled(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"partner": p,
-			"conf": conf,
+			"partner":      p,
+			"conf":         conf,
 			"partner_host": conf.Host,
-			"member": m,
-			"state": enum.ORDER_CANCEL,
+			"member":       m,
+			"state":        enum.ORDER_CANCEL,
 		},
 		"views/ucenter/order/order_cancel.html",
 		"views/ucenter/inc/header.html",

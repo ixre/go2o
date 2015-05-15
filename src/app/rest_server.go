@@ -19,10 +19,12 @@ import (
 	"strconv"
 	"time"
 )
+
 var (
-	API_DOMAIN string
-	API_HOST_CHK bool = false		// 必须匹配Host
+	API_DOMAIN   string
+	API_HOST_CHK bool = false // 必须匹配Host
 )
+
 func RunRestApi(app gof.App, port int) {
 	fmt.Println("[Started]:Api server running on port [" + strconv.Itoa(port) + "]:")
 

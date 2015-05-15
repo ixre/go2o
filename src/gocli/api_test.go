@@ -7,22 +7,23 @@
  * history :
  */
 package gocli
+
 import (
-    "testing"
-    "net/url"
+	"net/url"
+	"testing"
 )
 
-func ApiCall_test(t *testing.T){
-   cli := &NewApiClient("http://localhost:1003/go2o_api_v1","partner_id","partner_secret")
-    v := url.Values{
-        "usr":{"user"},
-        "pwd":{"pwd"},
-    }
-    if msg,err := cli.GetMessage("mm_login",v);err != nil{
-        t.Error(err)
-    }else if !msg.Result{
-        t.Fail()
-        t.Error(msg.Message)
-    }
+func ApiCall_test(t *testing.T) {
+	cli := &NewApiClient("http://localhost:1003/go2o_api_v1", "partner_id", "partner_secret")
+	v := url.Values{
+		"usr": {"user"},
+		"pwd": {"pwd"},
+	}
+	if msg, err := cli.GetMessage("mm_login", v); err != nil {
+		t.Error(err)
+	} else if !msg.Result {
+		t.Fail()
+		t.Error(msg.Message)
+	}
 
 }

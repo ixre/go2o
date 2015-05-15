@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-16 21:47
@@ -13,7 +13,9 @@ import (
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"go2o/src/app/front/master"
 	"go2o/src/app/front/partner"
+	"go2o/src/app/front/shop/ols"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/service/goclient"
@@ -22,11 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"go2o/src/app/front/master"
-	"go2o/src/app/front/shop/ols"
 )
-
-
 
 //获取Http请求代理处理程序
 func getInterceptor(a gof.App) *web.Interceptor {
@@ -68,7 +66,7 @@ func getHttpExecFunc() web.RequestHandler {
 			ucenter.Handle(ctx)
 
 		//管理中心
-		case f(host,"webmaster."):
+		case f(host, "webmaster."):
 			master.Handle(ctx)
 
 		//线上商店

@@ -9,6 +9,9 @@
 package ucenter
 
 import (
+	"encoding/json"
+	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
@@ -16,9 +19,6 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
-	"fmt"
-	"github.com/atnet/gof"
-	"encoding/json"
 )
 
 var _ mvc.Filter = new(baseC)
@@ -67,8 +67,6 @@ func (this *baseC) GetSiteConf(partnerId int) *partner.SiteConf {
 	return dps.PartnerService.GetSiteConf(partnerId)
 }
 
-
-
 // 输出Json
 func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 	b, err := json.Marshal(v)
@@ -85,7 +83,7 @@ func (this *baseC) errorOutput(ctx *web.Context, err string) {
 }
 
 // 输出错误信息
-func (this *baseC) resultOutput(ctx *web.Context,result gof.Message) {
+func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
 	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
-	"{result:%v,code:%d,message:\"%s\"}", result.Result,result.Code, result.Message)))
+		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }

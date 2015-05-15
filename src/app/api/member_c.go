@@ -12,13 +12,13 @@ import (
 	"fmt"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
-	"go2o/src/app/util"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -40,8 +40,6 @@ func (this *MemberC) Requesting(ctx *web.Context) bool {
 	}
 	return false
 }
-
-
 
 // 处理请求
 func (this *MemberC) handle(ctx *web.Context) {

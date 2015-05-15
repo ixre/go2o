@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 @ ops Inc.
+ * Copyright 2014 @ S1N1 Team.
  * name :
  * author : jarryliu
  * date : 2013-12-08 11:09
@@ -145,7 +145,7 @@ func (this *saleRep) DeleteCategory(partnerId, id int) error {
 		partnerId, id)
 
 	//删除分类
-	_,_,err = this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND id=?",
+	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND id=?",
 		partnerId, id)
 
 	//清理项
