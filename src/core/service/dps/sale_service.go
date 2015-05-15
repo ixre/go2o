@@ -116,11 +116,11 @@ func (this *saleService) GetCategoryTreeNode(partnerId int) *tree.TreeNode {
 	return rootNode
 }
 
-func (this *saleService) iterCategoryTree(node *tree.TreeNode, pid int, categories []sale.ICategory) {
+func (this *saleService) iterCategoryTree(node *tree.TreeNode, parentId int, categories []sale.ICategory) {
 	node.Childs = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
-		if cate.ParentId == pid {
+		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
 				Text:   cate.Name,
 				Value:  strconv.Itoa(cate.Id),

@@ -82,7 +82,7 @@
     
     function nodeSelected(val,text){
     	$JS.$('category_name').innerHTML ='<span style="color:green">'+ text+'</span>';
-        $JS.json.bind('form1', {Pid:val});
+        $JS.json.bind('form1', {ParentId:val});
         return true;
     }
     

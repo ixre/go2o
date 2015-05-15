@@ -110,13 +110,13 @@ func (this *Sale) GetCategory(id int) sale.ICategory {
 
 // 获取所有分类
 func (this *Sale) GetCategories() []sale.ICategory {
-	if this.categories == nil {
-		list := this.saleRep.GetCategories(this.GetAggregateRootId())
-		this.categories = make([]sale.ICategory, len(list))
-		for i, v := range list {
-			this.categories[i] = this.CreateCategory(v)
-		}
+	//if this.categories == nil {
+	list := this.saleRep.GetCategories(this.GetAggregateRootId())
+	this.categories = make([]sale.ICategory, len(list))
+	for i, v := range list {
+		this.categories[i] = this.CreateCategory(v)
 	}
+	//}
 	return this.categories
 }
 
