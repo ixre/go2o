@@ -15,6 +15,7 @@ import (
 	"github.com/atnet/gof/log"
 	"go2o/src/core/domain/interface/member"
 	memberImpl "go2o/src/core/domain/member"
+	"database/sql"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -255,7 +256,7 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
 	arr := []*member.ValueMember{}
 	err := this.Connector.GetOrm().SelectByQuery(&arr,
-		"SELECT * FROM mm_relation WHERE invi_member_id=?", memberId)
+		"SELECT * FROM mm_member WHERE id IN (SELECT id FROM mm_relation WHERE invi_member_id=?)", memberId)
 	if err != nil {
 		log.PrintErr(err)
 		return nil
@@ -266,10 +267,29 @@ func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMembe
 
 // 获取下级会员数量
 func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
-	return nil
+	var d map[int]int = make(map[int]int)
+	this.Connector.Query(fmt.Sprintf("SELECT r1.id,"+
+	"(SELECT SUM(0) FROM mm_relation r2 WHERE r2.parent_id=r1.id) as num FROM mm_relation r1 WHERE r1.id IN(%s)", memberIds),
+	func(rows *sql.Rows) {
+		var id, num int
+		for rows.Next() {
+			rows.Scan(&id, &num)
+			d[id] = num
+		}
+		rows.Close()
+	})
+	return d
 }
 
 // 获取推荐我的人
 func (this *MemberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
-	return nil
+	var  d *member.ValueMember  = new(member.ValueMember)
+	err := this.Connector.GetOrm().GetByQuery(d,
+		"SELECT * FROM mm_member WHERE id =(SELECT invi_member_id FROM mm_relation  WHERE id=?)",
+		memberId)
+
+	if err != nil{
+		return nil
+	}
+	return d
 }

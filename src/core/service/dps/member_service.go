@@ -198,3 +198,9 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 	m, _ := this._memberRep.GetMember(memberId)
 	return m.ModifyPassword(newPwd, oldPwd)
 }
+
+// 获取我邀请的会员及会员邀请的人数
+func (this *memberService) GetMyInvitationMembers(memberId int)([]*member.ValueMember,map[int]int){
+	iv := this._memberRep.CreateMember(&member.ValueMember{Id:memberId}).Invitation()
+	return iv.GetMyInvitationMembers(),iv.GetSubInvitationNum()
+}

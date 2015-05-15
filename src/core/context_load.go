@@ -41,7 +41,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 		c.GetString(variable.DbName),
 		dbCharset,
 	)
-	connector := db.NewBasicConnector(driver, connStr, l, 30)
+	connector := db.NewSimpleConnector(driver, connStr, l, 30)
 
 	//table mapping
 	orm := connector.GetOrm()
