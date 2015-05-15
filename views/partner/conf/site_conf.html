@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>更新项</title>
-    <link href="{{.static_serv}}/css/partner/common.css" rel="stylesheet" type="text/css" />
-    <link href="{{.static_serv}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="form1" class="form margin30">
@@ -11,7 +11,7 @@
         <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
         <div class="in" style="position: relative;height:70px;">
             <input type="hidden" field="PtId" value="0"/>
-            <img id="upload_img" value="{{.img_serv}}/resouce/item_nopic.gif"
+            <img id="upload_img" value="{{.img_serve}}/resouce/item_nopic.gif"
                  style="float:left;margin-right:10px;width:150px; height: 60px;border:solid 1px #aaa;padding:1px;" />
             <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
             <span id="upload_btn"><button>选择图片上传(150*60)</button></span>
@@ -53,13 +53,13 @@
     </div>
 </div>
 
-<script src="{{.static_serv}}/assets/js/core_full.js"></script>
-<script src="{{.static_serv}}/assets/js/plugins/sys.js"></script>
+<script src="{{.static_serve}}/assets/js/core_full.js"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
 
 <script>
     var entity ={{.entity}} ||{};
     $JS.json.bind('form1', entity);
-    cms.$('upload_img').src = '{{.img_serv}}/'+ entity.Logo;
+    cms.$('upload_img').src = '{{.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
     $JS.upload({
@@ -70,7 +70,7 @@
     },function (result, data) {
         if (result) {
             cms.$('upload_path').value = data.url;
-            cms.$('upload_img').src = '{{.img_serv}}/'+ data.url;
+            cms.$('upload_img').src = '{{.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }

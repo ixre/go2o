@@ -95,8 +95,8 @@ func initTemplate(c *gof.Config) *gof.Template {
 	return &gof.Template{
 		Init: func(m *gof.TemplateDataMap) {
 			v := *m
-			v["static_serv"] = c.GetString(variable.StaticServer)
-			v["img_serv"] = c.GetString(variable.ImageServer)
+			v["static_serve"] = c.GetString(variable.StaticServer)
+			v["img_serve"] = c.GetString(variable.ImageServer)
 			v["domain"] = c.GetString(variable.ServerDomain)
 			v["version"] = c.GetString(variable.Version)
 		},
