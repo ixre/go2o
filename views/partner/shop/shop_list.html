@@ -122,11 +122,11 @@
         $JS.$('btnAdd').onclick=addRecord;
         
         function addRecord(){
-            $JS.tab.open2('新增门店', 'shop/create', null, true);
+            $JS.tab.open('新增门店', 'shop/create',  true);
         }
         
         function editRecord(id){
-            $JS.tab.open2('修改门店信息', 'shop/modify?id=' + id, null, true);
+            $JS.tab.open('修改门店信息', 'shop/modify?id=' + id, true);
         }
         
         function delRecord(id) {

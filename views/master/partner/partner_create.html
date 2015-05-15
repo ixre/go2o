@@ -82,7 +82,7 @@
             $JS.xhr.jsonPost('', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '商户创建成功，请继续为商户配置其他信息！' : json.message,
                         "ok",function(){
-                            $JS.tab.closeAndReresh('商户管理');
+                            $JS.tab.closeAndRefresh('商户管理');
                         }
                 );
             }, function(e) {

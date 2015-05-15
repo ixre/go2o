@@ -68,9 +68,9 @@
 
 <script type="text/javascript">
     var treeObj = null;
-    var treeEle = $JS.$('menu_tree');
+    var treePanel = $JS.$('menu_tree');
     function treeHandler(src,value,text){
-        var nodeLinks = $JS.getElementsByClassName(treeEle, 'node');
+        var nodeLinks = $JS.getElementsByClassName(treePanel, 'node');
         $JS.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 e.style.backgroundColor='';
@@ -82,26 +82,56 @@
     };
 
     function loadTree(json){
-        treeObj = cms.tree.load('menu_tree',json,'{{.static_serv}}/assets/js/tree/',treeHandler);
-
-        var nodeLinks = $JS.getElementsByClassName(treeEle, 'node');
+        //加载栏目树
+        var treeObj = $JS.tree.load('menu_tree',json,'{{.static_serv}}/assets/js/tree/',treeHandler);
+        var nodeLinks = $JS.getElementsByClassName(treePanel, 'node');
         $JS.each(nodeLinks, function(i, e) {
-            if (e.nodeName == 'A') {
-                var v = e.getAttribute('node-value');
-                e.innerHTML = e.innerHTML
-                        +'<span style="padding-left:30px" class="float"><'
-                        +'<a onclick="return tree_edit(event,'+ v +')">修改</a> | <a onclick="return tree_del(event,'
-                        + v +')">删除</a>></span>';
+            if (e.nodeName == 'DIV') {
+                var v =$JS.$(e,'A',{className:'node'});
+                if(v.length==0)return;
+                v = v[0].getAttribute('node-value');
+                var html = "";
+                var span  = document.createElement('SPAN');
+                span.style.cssText  = 'padding-left:5px';
+                span.className='hidden';
+
+                var isTop = v=="0";
+                if(v.indexOf("-")==-1){
+                    html +='<a onclick="return tree_edit(event,\''+ v +'\')">修改</a>';
+                    if(!isTop){
+                        html += " |";
+                    }
+                }
+
+                if(!isTop) {
+                    html +='<a onclick="return tree_del(event,\''+ v +'\')">删除</a>';
+                }
+
+                span.innerHTML = html;
+                e.appendChild(span);
+
+                $JS.hover(e,
+                        (function(e){
+                            return function(){
+                                e.className='';
+                            };
+                        })(span),
+                        (function(e){
+                            return function(){
+                                e.className='hidden';
+                            };
+                        })(span)
+                );
             }
         });
     }
 
     function tree_add(){
-        $JS.tab.open2('添加分类', 'category/CreateCategory' , null, true);
+        $JS.tab.open('添加分类', 'category/CreateCategory' , true);
     }
 
     function tree_edit(e,id){
-        $JS.tab.open2('修改分类', 'category/EditCategory?id='+id , null, true);
+        $JS.tab.open('修改分类', 'category/EditCategory?id='+id , true);
         $JS.event.stopBubble(e||window.event);
     }
 
@@ -216,11 +246,11 @@
     $JS.$('btnAdd').onclick=addRecord;
 
     function addRecord(){
-        $JS.tab.open2('新增商品', 'goods/create', null, true);
+        $JS.tab.open('新增商品', 'goods/create', true);
     }
 
     function editRecord(id){
-        $JS.tab.open2('修改商品', 'goods/edit?id=' + id, null, true);
+        $JS.tab.open('修改商品', 'goods/edit?id=' + id,  true);
     }
 
     function delRecord(id) {

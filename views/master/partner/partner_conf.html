@@ -69,7 +69,7 @@
             var data = $JS.json.toObject('form1');
             $JS.xhr.jsonPost('SavePartner', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    //$JS.tab.closeAndReresh(function() {}, '员工管理');
+                    //$JS.tab.closeAndRefresh(function() {}, '员工管理');
                    var d = $JS.dialog.getDialog();
                    d.close(function(){
                        if(d.window.refresh){

@@ -116,11 +116,11 @@ $(function () {
 $JS.$('btnAdd').onclick=addRecord;
 
 function addRecord(){
-    $JS.tab.open2('创建商户', 'partner/createPartner', null, true);
+    $JS.tab.open('创建商户', 'partner/createPartner', true);
 }
 
 function editRecord(id){
-    $JS.tab.open2('商户配置', 'partner/PartnerConf?id='+id, null, true);
+    $JS.tab.open('商户配置', 'partner/PartnerConf?id='+id, true);
 }
 
 function delRecord(id) {

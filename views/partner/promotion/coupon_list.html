@@ -155,11 +155,11 @@
         $JS.$('btnAdd').onclick=addRecord;
 
         function addRecord(){
-            $JS.tab.open2('新增优惠券', 'prom/createCoupon', null, true);
+            $JS.tab.open('新增优惠券', 'prom/createCoupon',true);
         }
 
         function editRecord(id){
-            $JS.tab.open2('修改优惠券', 'prom/editCoupon?id=' + id, null, true);
+            $JS.tab.open('修改优惠券', 'prom/editCoupon?id=' + id,true);
         }
 
         function bindCoupon(id,code){

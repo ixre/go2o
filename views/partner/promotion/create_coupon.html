@@ -135,7 +135,7 @@
             data.OverTime += ' 00:00:00';
             $JS.xhr.jsonPost('SaveCoupon', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    $JS.tab.closeAndReresh('优惠券管理');
+                    $JS.tab.closeAndRefresh('优惠券管理');
                 });
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

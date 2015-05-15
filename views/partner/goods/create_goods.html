@@ -131,7 +131,7 @@
             var data = $JS.json.toObject('form1');
             $JS.xhr.jsonPost('SaveItem', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
-                    $JS.tab.closeAndReresh('商品管理');
+                    $JS.tab.closeAndRefresh('商品管理');
                 });
             }, function (e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
