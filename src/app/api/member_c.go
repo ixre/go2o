@@ -21,15 +21,15 @@ import (
 	"go2o/src/app/util"
 )
 
-var _ mvc.Filter = new(memberC)
+var _ mvc.Filter = new(MemberC)
 
-type memberC struct {
-	*baseC
+type MemberC struct {
+	*BaseC
 }
 
 // 会员登陆后才能调用接口
-func (this *memberC) Requesting(ctx *web.Context) bool {
-	if this.baseC != nil && this.baseC.Requesting(ctx) {
+func (this *MemberC) Requesting(ctx *web.Context) bool {
+	if this.BaseC != nil && this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		memberId, _ := strconv.Atoi(r.FormValue("member_id"))
 		token := r.FormValue("token")
@@ -44,13 +44,13 @@ func (this *memberC) Requesting(ctx *web.Context) bool {
 
 
 // 处理请求
-func (this *memberC) handle(ctx *web.Context) {
+func (this *MemberC) handle(ctx *web.Context) {
 	mvc.Handle(this, ctx, false)
 }
 
 // 登陆
-func (this *memberC) login(ctx *web.Context) {
-	if this.baseC.Requesting(ctx) {
+func (this *MemberC) login(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
 
 		r := ctx.Request
 		var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
@@ -77,8 +77,8 @@ func (this *memberC) login(ctx *web.Context) {
 }
 
 // 注册
-func (this *memberC) register(ctx *web.Context) {
-	if this.baseC.Requesting(ctx) {
+func (this *MemberC) register(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		var result dto.MessageResult
 

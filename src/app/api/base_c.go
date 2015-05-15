@@ -25,12 +25,12 @@ func chkApiSecret(ctx *web.Context) bool {
 	return ok
 }
 
-var _ mvc.Filter = new(baseC)
+var _ mvc.Filter = new(BaseC)
 
-type baseC struct {
+type BaseC struct {
 }
 
-func (this *baseC) Requesting(ctx *web.Context) bool {
+func (this *BaseC) Requesting(ctx *web.Context) bool {
 	ctx.Request.ParseForm()
 	if !chkApiSecret(ctx) {
 		this.errorOutput(ctx, "secret incorrent!")
@@ -39,12 +39,12 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	return true
 }
 
-func (this *baseC) RequestEnd(ctx *web.Context) {
+func (this *BaseC) RequestEnd(ctx *web.Context) {
 
 }
 
 // 输出Json
-func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
+func (this *BaseC) jsonOutput(ctx *web.Context, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
 		this.errorOutput(ctx, err.Error())
@@ -54,11 +54,11 @@ func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 }
 
 // 输出错误信息
-func (this *baseC) errorOutput(ctx *web.Context, err string) {
+func (this *BaseC) errorOutput(ctx *web.Context, err string) {
 	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context) int {
+func (this *BaseC) GetPartnerId(ctx *web.Context) int {
 	return ctx.Items["partner_id"].(int)
 }
