@@ -71,7 +71,7 @@ func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 
 // 会员Http请求会话链接
 func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
-
+	//return true,30
 	// 如果传递会话参数正确，能存储到Session
 	if param := ctx.Request.URL.Query().Get("member_id"); len(param) != 0 {
 		memberId, _ = strconv.Atoi(param)
@@ -90,8 +90,8 @@ func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
 		}
 	}
 
-	//    util.SetMemberApiToken(ctx.App.Storage(),30,"369a661b13134a8c0997ca7f0a5372bf")
-	//    fmt.Println( util.GetMemberApiToken(ctx.App.Storage(),30))
+	   // SetMemberApiToken(ctx.App.Storage(),30,"369a661b13134a8c0997ca7f0a5372bf")
+	   // fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
 
 	return false, memberId
 }
