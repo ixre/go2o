@@ -17,7 +17,6 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
-	"strconv"
 	"strings"
 )
 
@@ -29,16 +28,8 @@ type MemberC struct {
 
 // 会员登陆后才能调用接口
 func (this *MemberC) Requesting(ctx *web.Context) bool {
-	if this.BaseC != nil && this.BaseC.Requesting(ctx) {
-		r := ctx.Request
-		memberId, _ := strconv.Atoi(r.FormValue("member_id"))
-		token := r.FormValue("token")
-		if util.CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
-			return true
-		}
-		this.errorOutput(ctx, "invalid request!")
-	}
-	return false
+	return this.BaseC != nil && this.BaseC.Requesting(ctx) &&
+	this.BaseC.CheckMemberToken(ctx)
 }
 
 // 处理请求
@@ -70,7 +61,7 @@ func (this *MemberC) login(ctx *web.Context) {
 			}
 		}
 
-		this.jsonOutput(ctx, result)
+		this.JsonOutput(ctx, result)
 	}
 }
 
@@ -98,7 +89,7 @@ func (this *MemberC) register(ctx *web.Context) {
 			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
 			if invMemberId == 0 {
 				result.Message = "推荐/邀请人不存在！"
-				this.jsonOutput(ctx, result)
+				this.JsonOutput(ctx, result)
 				return
 			}
 		}
@@ -119,6 +110,6 @@ func (this *MemberC) register(ctx *web.Context) {
 			result.Message = err.Error()
 		}
 
-		this.jsonOutput(ctx, result)
+		this.JsonOutput(ctx, result)
 	}
 }

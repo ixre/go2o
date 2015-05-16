@@ -24,7 +24,7 @@ func Handle(ctx *web.Context) {
 func init() {
 	bc := new(BaseC)
 	//pc := &partnerC{}
-	mc := &MemberC{BaseC: bc}
+	mc := &MemberC{bc}
 
 	//	ws := &websocketC{App: c}
 

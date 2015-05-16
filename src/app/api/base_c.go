@@ -12,6 +12,8 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"strconv"
+	"go2o/src/app/util"
 )
 
 // 检查是否有权限调用接口(商户)
@@ -33,7 +35,7 @@ type BaseC struct {
 func (this *BaseC) Requesting(ctx *web.Context) bool {
 	ctx.Request.ParseForm()
 	if !chkApiSecret(ctx) {
-		this.errorOutput(ctx, "secret incorrent!")
+		this.ErrorOutput(ctx, "secret incorrent!")
 		return false
 	}
 	return true
@@ -43,22 +45,44 @@ func (this *BaseC) RequestEnd(ctx *web.Context) {
 
 }
 
+// 检查会员令牌信息
+func (this *BaseC) CheckMemberToken(ctx *web.Context)bool {
+	r := ctx.Request
+	memberId, _ := strconv.Atoi(r.FormValue("member_id"))
+	token := r.FormValue("member_token")
+
+	if util.CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
+		ctx.Items["member_id"] = memberId
+		return true
+	}
+	this.ErrorOutput(ctx, "invalid request!")
+	return false
+}
+
 // 输出Json
-func (this *BaseC) jsonOutput(ctx *web.Context, v interface{}) {
+func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
-		this.errorOutput(ctx, err.Error())
+		this.ErrorOutput(ctx, err.Error())
 	} else {
 		ctx.ResponseWriter.Write(b)
 	}
 }
 
 // 输出错误信息
-func (this *BaseC) errorOutput(ctx *web.Context, err string) {
+func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
 	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 获取商户编号
 func (this *BaseC) GetPartnerId(ctx *web.Context) int {
 	return ctx.Items["partner_id"].(int)
+}
+
+// 获取会员编号
+func (this *BaseC) GetMemberId(ctx *web.Context)int{
+	if v ,ok := ctx.Items["member_id"].(int);ok{
+		return v
+	}
+	return 0
 }
