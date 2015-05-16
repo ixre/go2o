@@ -21,6 +21,16 @@ type invitationManager struct {
 	_myInvMembers []*member.ValueMember
 }
 
+
+// 判断是否推荐了某个会员
+func (this *invitationManager) InvitationBy(memberId int)bool{
+	rl := this._member.GetRelation()
+	if rl != nil{
+		return rl.InvitationMemberId == memberId
+	}
+	return false
+}
+
 // 获取我邀请的会员
 func (this *invitationManager) GetMyInvitationMembers() []*member.ValueMember {
 	this._myInvMembers = this._member._rep.GetMyInvitationMembers(this._member.GetAggregateRootId())
@@ -38,12 +48,16 @@ func (this *invitationManager) GetSubInvitationNum() map[int]int {
 		this._myInvMembers = this.GetMyInvitationMembers()
 	}
 
-	var ids []string = make([]string, len(this._myInvMembers))
-	for i, v := range this._myInvMembers {
-		ids[i] = strconv.Itoa(v.Id)
-	}
+	if i := len(this._myInvMembers);i== 0 {
+		return make(map[int]int)
+	}else {
 
-	return this._member._rep.GetSubInvitationNum(strings.Join(ids, ","))
+		var ids []string = make([]string,i)
+		for i, v := range this._myInvMembers {
+			ids[i] = strconv.Itoa(v.Id)
+		}
+		return this._member._rep.GetSubInvitationNum(strings.Join(ids, ","))
+	}
 }
 
 // 获取邀请要的会员

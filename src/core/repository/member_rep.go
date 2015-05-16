@@ -256,7 +256,7 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
 	arr := []*member.ValueMember{}
 	err := this.Connector.GetOrm().SelectByQuery(&arr,
-		"SELECT * FROM mm_member WHERE id IN (SELECT id FROM mm_relation WHERE invi_member_id=?)", memberId)
+		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?)", memberId)
 	if err != nil {
 		log.PrintErr(err)
 		return nil
@@ -268,8 +268,9 @@ func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMembe
 // 获取下级会员数量
 func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 	var d map[int]int = make(map[int]int)
-	this.Connector.Query(fmt.Sprintf("SELECT r1.id,"+
-	"(SELECT SUM(0) FROM mm_relation r2 WHERE r2.parent_id=r1.id) as num FROM mm_relation r1 WHERE r1.id IN(%s)", memberIds),
+	err := this.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
+	"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
+	"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 	func(rows *sql.Rows) {
 		var id, num int
 		for rows.Next() {
@@ -278,6 +279,10 @@ func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 		}
 		rows.Close()
 	})
+
+	if err != nil{
+		log.PrintErr(err)
+	}
 	return d
 }
 

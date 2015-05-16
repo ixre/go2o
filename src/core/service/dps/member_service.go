@@ -199,8 +199,15 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 	return m.ModifyPassword(newPwd, oldPwd)
 }
 
+//判断会员是否由指定会员邀请推荐的
+func (this *memberService) IsInvitation(memberId int,invitationMemberId int)bool{
+	m := this._memberRep.CreateMember(&member.ValueMember{Id:memberId})
+	return m.Invitation().InvitationBy(invitationMemberId)
+}
+
 // 获取我邀请的会员及会员邀请的人数
 func (this *memberService) GetMyInvitationMembers(memberId int)([]*member.ValueMember,map[int]int){
 	iv := this._memberRep.CreateMember(&member.ValueMember{Id:memberId}).Invitation()
 	return iv.GetMyInvitationMembers(),iv.GetSubInvitationNum()
 }
+

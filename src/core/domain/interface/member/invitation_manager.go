@@ -9,6 +9,9 @@
 package member
 
 type IInvitationManager interface {
+	// 判断是否由会员邀请
+	InvitationBy(memberId int)bool
+
 	// 获取我邀请的会员
 	GetMyInvitationMembers() []*ValueMember
 
