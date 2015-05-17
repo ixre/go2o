@@ -37,7 +37,7 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 由 #刘铭#, #大鹏# （全职开发,无收入 -_- )，
 
 ------------------------
-贡献代码请看： [todo list](https://github.com/atnet/go2o/tree/master/docs/dev/todo.md)
+贡献代码请看： [todo list](https://github.com/atnet/go2o/tree/master/docs/dev/todo.md) |
 [bug list](https://github.com/atnet/go2o/tree/master/docs/dev/bug.md)
 
 代码保证每周更新2-5次(___因为项目本身，希望你能接受不定时可能较为频繁的代码改动和DB结构调整___ )
