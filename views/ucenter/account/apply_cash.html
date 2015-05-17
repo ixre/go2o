@@ -1,5 +1,13 @@
-{{define "title"}}申请提现{{end}}
+<!DOCTYPE html>
+<head>
+	<title>申请提现_{{.partner.Name}}-网上订餐|网上外卖平台</title>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/usrcent/usrcent.css?v={{.version}}"/>
+</head>
+<body>
+
 {{template "header"$}}
+
 <div class="panel page-main">
 	<div class="side">
 		{{template "menu"}}
@@ -12,7 +20,7 @@
 
 		您的账户余额:　<b>￥{{.account.Balance}}</b>，需满100元方可提现！<br /><br />
 
-		<a class="button" href="IncomeLog.html">查看返现记录</a>
+		<a class="button" href="IncomeLog.htm">查看返现记录</a>
 
 		<div class="clearfix"><br /><br /></div>
 
@@ -92,5 +100,7 @@
 
 		</div>
 </div>
-
 {{template "footer"$}}
+
+</body>
+</html>

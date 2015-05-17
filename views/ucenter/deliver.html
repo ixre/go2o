@@ -1,4 +1,11 @@
-{{define "title"}}配送地址{{end}}
+<!DOCTYPE html>
+<head>
+    <title>配送地址_{{.partner.Name}}-网上订餐|网上外卖平台</title>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/usrcent/usrcent.css?v={{.version}}"/>
+</head>
+<body>
+
 {{template "header"$}}
 
 <div class="panel page-main">
@@ -170,3 +177,6 @@
 </script>
 
 {{template "footer"$}}
+
+</body>
+</html>

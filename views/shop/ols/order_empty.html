@@ -1,13 +1,25 @@
+<!doctype html>
+<html>
+<head>
+    <title>购物车-{{.partner.Name}}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="Stylesheet" href="{{.static_serve}}/css/page.css" type="text/css"/>
+    <link rel="Stylesheet" href="{{.static_serve}}/css/shop/default/style.css" type="text/css"/>
+</head>
+<body>
 {{template "header"$}}
 
 <div id="main" class="shopping-confirm">
     <div class="panel">
 
         <p class="shopping-error">
-            您的餐盒还是空的！您要吃啥，快点吧！? <br /><br />
-            <a href="/?go=buy">点击这里开始订餐</a>
+            您的购物车里没有商品！ <br/><br/>
         </p>
     </div>
 </div>
 
 {{template "footer".}}
+
+</body>
+</html>
