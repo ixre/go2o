@@ -37,13 +37,13 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 由 #刘铭#, #大鹏# （全职开发,无收入 -_- )，
 
 ------------------------
+贡献代码请看： [todo list](https://github.com/atnet/go2o/tree/master/docs/dev/todo.md)
+[bug list](https://github.com/atnet/go2o/tree/master/docs/dev/bug.md)
 
 代码保证每周更新2-5次(___因为项目本身，希望你能接受不定时可能较为频繁的代码改动和DB结构调整___ )
 同时也欢迎朋友加入我们（___代码可能写的不好，但我们会改进，请大牛不要鄙视，开源需要支持和鼓励___）。
 
 请支持开源，不做伸手党，不拿来主意！
-
-**链接:** [TODO列表](https://github.com/atnet/go2o/tree/master/docs/dev/TODO.md)
 
 ========================================
 
