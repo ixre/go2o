@@ -19,6 +19,8 @@ import (
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
+	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/infrastructure/domain"
 )
 
 var _ partner.IPartnerRep = new(partnerRep)
@@ -87,8 +89,22 @@ func (this *partnerRep) SavePartner(v *partner.ValuePartner) (int, error) {
 	return v.Id, err
 }
 
+func (this *partnerRep) doSomething(){
+	ms := []*member.ValueMember{}
+	orm := this.Connector.GetOrm()
+	orm.Select(&ms,"1=1")
+
+	for _,v := range ms{
+		v.Pwd = domain.Md5MemberPwd(v.Usr,"123456")
+		orm.Save(v.Id,v)
+	}
+}
+
 // 获取商户的编号
 func (this *partnerRep) GetPartnersId() []int {
+
+	//this.doSomething()
+
 	dst := []int{}
 	var i int
 

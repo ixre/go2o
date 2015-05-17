@@ -31,7 +31,7 @@ type loginSession struct {
 }
 
 func (this *loginSession) AdministratorLogin(w http.ResponseWriter, usr string, pwd string) bool {
-	loginTokenResult := domain.EncodePartnerPwd(usr, pwd)
+	loginTokenResult := domain.Md5PartnerPwd(usr, pwd)
 	loginResult := loginTokenResult == ctx.App.Config().GetString("master_token")
 
 	if loginResult {

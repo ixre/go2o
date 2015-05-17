@@ -122,7 +122,7 @@ func (this *Partner) RegisterMember(m *jsv.Args, r *jsv.Result) error {
 	}
 	e.RegFrom = "WEB"
 
-	e.Pwd = domain.EncodeMemberPwd(e.Usr, e.Pwd)
+	e.Pwd = domain.Md5MemberPwd(e.Usr, e.Pwd)
 	id, err := dps.MemberService.SaveMember(&e)
 
 	if err == nil {

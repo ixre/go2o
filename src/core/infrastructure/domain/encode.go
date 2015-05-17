@@ -19,15 +19,16 @@ func ChkPwdRight(pwd string) (bool, error) {
 }
 
 //加密会员密码
-func EncodeMemberPwd(usr, pwd string) string {
-	return crypto.Md5([]byte(strings.Join([]string{usr, "$OPSoft$", pwd}, "")))
+func Md5MemberPwd(usr, pwd string) string {
+	return Md5Pwd(pwd,"member_"+usr)
 }
 
 //加密合作商密码
-func EncodePartnerPwd(usr, pwd string) string {
+func Md5PartnerPwd(usr, pwd string) string {
 	return Md5Pwd(pwd, usr)
 }
 
+// 密码Md5加密
 func Md5Pwd(pwd, offset string) string {
 	return crypto.Md5([]byte(strings.Join([]string{offset, "go2o@S1N1.COM", pwd}, "")))
 }

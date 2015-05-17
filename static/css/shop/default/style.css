@@ -3,6 +3,8 @@
 /********* NEW STYLE *******/
 body{font-family:'微软雅黑',sans-serif; }
 
+
+
 .link{cursor: pointer;}
 div.line{margin:5px 0;}
 .panel{margin:0 5%;font-size:120%;}
@@ -19,6 +21,7 @@ div.line{margin:5px 0;}
 .page-header .logo{display:inherit;text-indent: 0;}
 .page-header .logo h1{text-indent: -999em;}
 .page-header .search{top:60px;left:600px;}
+
 
 
 
@@ -89,7 +92,7 @@ height:22px;overflow: hidden;margin-left:6px;}
     padding:0 10%;
 }
 .login-left h1{font-size:150%;}
-.login-tip{border:solid 1px orange;background:#ffffcc;padding:5px;}
+.tip-panel{border:solid 1px orange;background:#ffffcc;padding:5px;}
 .login-right{width:45%;float:right;}
 .login-left-note{padding-left:90px;padding-top:20px;font-size:125%;}
 
@@ -98,10 +101,10 @@ height:22px;overflow: hidden;margin-left:6px;}
 
 /* REGISTER PAGE */
 .reg-panel{width:50%;border-right: solid 1px #ddd;}
-.reg-panel .rp-i{padding:10px 0;margin:0;}
-.reg-panel .rp-i div.label{width:140px;text-align: right;float:left;font-size:120%;}
-.reg-panel .rp-i div.in{margin-left:140px;}
-.reg-panel .rp-i div.in div{margin:5px 0;font-size:100%;color:#666;}
+.reg-panel .pl{padding:10px 0;margin:0;}
+.reg-panel .pl div.label{width:140px;text-align: right;float:left;font-size:120%;}
+.reg-panel .pl div.in{margin-left:140px;}
+.reg-panel .pl div.in div{margin:5px 0;font-size:100%;color:#666;}
 
 /* ORDING PANEL */
 

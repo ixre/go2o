@@ -16,6 +16,9 @@ import (
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"strings"
+	"go2o/src/core/service/dps"
+	"errors"
+	"go2o/src/core/infrastructure/domain"
 )
 
 type userC struct {
@@ -91,25 +94,45 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 	}
 }
 
-func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-	r.ParseForm()
-	var member member.ValueMember
-	web.ParseFormToEntity(r.Form, &member)
-	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
-		member.RegIp = r.RemoteAddr[:i]
-	}
-	b, err := goclient.Partner.RegisterMember(&member, p.Id, 0, "")
-	if b {
-		w.Write([]byte(`{"result":true}`))
-	} else {
-		if err != nil {
-			w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
+func (this *userC) Valid_invitation_post(ctx *web.Context){
+	ctx.Request.ParseForm()
+ 	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
 
+	var message string
+	isOk := memberId != 0
+
+	if !isOk{
+		message ="推荐人无效"
+	}
+	this.ResultOutput(ctx,gof.Message{Result:isOk,Message:message})
+}
+
+func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	var member member.ValueMember
+	web.ParseFormToEntity(ctx.Request.Form, &member)
+	if i := strings.Index(ctx.Request.RemoteAddr, ":"); i != -1 {
+		member.RegIp = ctx.Request.RemoteAddr[:i]
+	}
+
+	var memberId int
+	var err error
+
+	if len(member.Usr) == 0 || len(member.Pwd) == 0 {
+		err = errors.New("注册信息不完整")
+	}else {
+		member.Pwd = domain.Md5MemberPwd(member.Usr,member.Pwd)
+		memberId, err = dps.MemberService.SaveMember(&member)
+		if err == nil {
+			inviId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("inviCode"))
+			err = dps.MemberService.SaveRelation(memberId, "", inviId, this.GetPartnerId(ctx))
+		}
+	}
+
+	if err != nil{
+		this.ResultOutput(ctx,gof.Message{Message:"注册失败！错误："+err.Error()})
+	}else{
+		this.ResultOutput(ctx,gof.Message{Result:true})
 	}
 }
 

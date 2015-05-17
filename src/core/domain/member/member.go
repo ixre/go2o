@@ -185,13 +185,13 @@ func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 	}
 
 	if len(oldPwd) != 0 {
-		dyp := domain.EncodeMemberPwd(this._value.Usr, oldPwd)
+		dyp := domain.Md5MemberPwd(this._value.Usr, oldPwd)
 		if dyp != this._value.Pwd {
 			return errors.New("原密码不正确")
 		}
 	}
 
-	this._value.Pwd = domain.EncodeMemberPwd(this._value.Usr, newPwd)
+	this._value.Pwd = domain.Md5MemberPwd(this._value.Usr, newPwd)
 	_, err = this.Save()
 
 	return err

@@ -45,7 +45,7 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 	dt := time.Now()
 	anousPwd := strings.Repeat("*", 10) //匿名密码
 	if len(partner.Pwd) != 0 && partner.Pwd != anousPwd {
-		partner.Pwd = domain.EncodePartnerPwd(partner.Usr, partner.Pwd)
+		partner.Pwd = domain.Md5PartnerPwd(partner.Usr, partner.Pwd)
 	}
 
 	//更新

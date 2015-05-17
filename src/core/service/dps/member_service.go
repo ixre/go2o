@@ -116,7 +116,7 @@ func (this *memberService) Login(usr, pwd string) (bool, *member.ValueMember, er
 		return false, nil, errors.New("会员不存在")
 	}
 
-	if val.Pwd != domain.EncodeMemberPwd(usr, pwd) {
+	if val.Pwd != domain.Md5MemberPwd(usr, pwd) {
 		return false, nil, errors.New("会员用户或密码不正确")
 	}
 

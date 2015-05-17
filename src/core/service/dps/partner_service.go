@@ -31,7 +31,7 @@ func NewPartnerService(r partner.IPartnerRep, q *query.PartnerQuery) *partnerSer
 
 // 验证用户密码并返回编号
 func (this *partnerService) Verify(usr, pwd string) int {
-	ep := domain.EncodePartnerPwd(usr, pwd)
+	ep := domain.Md5PartnerPwd(usr, pwd)
 	return this._query.Verify(usr, ep)
 }
 

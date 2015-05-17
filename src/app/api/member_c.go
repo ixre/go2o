@@ -96,7 +96,7 @@ func (this *MemberC) register(ctx *web.Context) {
 
 		var member member.ValueMember
 		member.Usr = usr
-		member.Pwd = domain.EncodeMemberPwd(usr, pwd)
+		member.Pwd = domain.Md5MemberPwd(usr, pwd)
 		member.RegIp = regIp
 		member.RegFrom = registerFrom
 

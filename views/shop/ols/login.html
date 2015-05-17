@@ -16,7 +16,7 @@
 				会员登录
 			</h1>
 
-            <div class="login-tip{{.tipStyle}}" id="tip">
+            <div class="tip-panel{{.tipStyle}}" id="tip">
                 您必须登录后才能继续操作!
             </div>
 
@@ -84,11 +84,11 @@
                     if (json.message.indexOf('验证码') != -1) {
                         refreshImage();
                     }
-                    tip.className= 'login-tip';
+                    tip.className= 'tip-panel';
                     tip.innerHTML = '<span style="color:red">' + json.message + '</span>';
                 }
             }, function (x) {
-                tip.className= 'login-tip';
+                tip.className= 'tip-panel';
                 tip.innerHTML = '<span style="color:red">登陆服务器失败请重试!</span>';
             });
         }
