@@ -10,12 +10,12 @@ package ols
 
 import (
 	"encoding/json"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
-	"go2o/src/core/service/dps"
-	"github.com/atnet/gof"
 )
 
 type cartC struct {
@@ -51,7 +51,7 @@ func (this *cartC) cartApi(ctx *web.Context) {
 
 }
 
-func (this *cartC) cart_GetCart(ctx *web.Context,p *partner.ValuePartner,
+func (this *cartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	memberId int, cartKey string) {
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
@@ -71,19 +71,19 @@ func (this *cartC) cart_AddItem(ctx *web.Context,
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	item := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
 
-	var d map[string]interface{}
-	if item == nil{
+	var d map[string]interface{} = make(map[string]interface{})
+	if item == nil {
 		d["error"] = "商品不存在"
-	}else {
+	} else {
 		d["item"] = item
 	}
-	this.JsonOutput(ctx,d)
+	this.JsonOutput(ctx, d)
 }
 
 func (this *cartC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	var msg gof.Message
-	r:= ctx.Request
+	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
@@ -92,7 +92,7 @@ func (this *cartC) cart_RemoveItem(ctx *web.Context,
 	} else {
 		msg.Result = true
 	}
-	this.ResultOutput(ctx,msg)
+	this.ResultOutput(ctx, msg)
 }
 
 func (this *cartC) cart(ctx *web.Context) {

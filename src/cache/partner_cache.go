@@ -31,20 +31,22 @@ func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	}
 
 	if v == nil {
-		if v, err := dps.PartnerService.GetPartner(partnerId); err == nil {
+		var err error
+		if v, err = dps.PartnerService.GetPartner(partnerId); err == nil {
 			sto.Set(key, v)
 		}
+
 	}
 	return v
 }
 
 // 设置商户信息缓存
-func GetValuePartnerCacheCK(partnerId int)string {
+func GetValuePartnerCacheCK(partnerId int) string {
 	return fmt.Sprintf("cache:partner:value:%d", partnerId)
 }
 
 // 设置商户站点配置
-func GetPartnerSiteConfCK(partnerId int)string {
+func GetPartnerSiteConfCK(partnerId int) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", partnerId)
 }
 
@@ -69,7 +71,6 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	}
 	return v
 }
-
 
 // 根据API ID获取商户ID
 func GetPartnerIdByApiId(apiId string) int {

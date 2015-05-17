@@ -33,17 +33,16 @@ func (this *userC) Login(ctx *web.Context) {
 		tipStyle = " hidden"
 	}
 
-
 	siteConf := this.GetSiteConf(ctx)
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner":  p,
-			"title":    "会员登录－" + siteConf.SubTitle,
-			"conf":     siteConf,
-			"tipStyle": tipStyle,
-		},
-			"views/shop/ols/login.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"partner":  p,
+		"title":    "会员登录－" + siteConf.SubTitle,
+		"conf":     siteConf,
+		"tipStyle": tipStyle,
+	},
+		"views/shop/ols/login.html",
+		"views/shop/ols/inc/header.html",
+		"views/shop/ols/inc/footer.html")
 
 }
 
@@ -51,10 +50,10 @@ func (this *userC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b,m , err := dps.MemberService.Login(usr, pwd)
+	b, m, err := dps.MemberService.Login(usr, pwd)
 
 	if b {
-		ctx.Session().Set("member",m)
+		ctx.Session().Set("member", m)
 		ctx.Session().Save()
 		w.Write([]byte("{result:true}"))
 		return
@@ -67,14 +66,14 @@ func (this *userC) Register(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 
 	siteConf := this.GetSiteConf(ctx)
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner": p,
-			"title":   "会员注册－" + siteConf.SubTitle,
-			"conf":    siteConf,
-		},
-			"views/shop/ols/register.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"partner": p,
+		"title":   "会员注册－" + siteConf.SubTitle,
+		"conf":    siteConf,
+	},
+		"views/shop/ols/register.html",
+		"views/shop/ols/inc/header.html",
+		"views/shop/ols/inc/footer.html")
 
 }
 

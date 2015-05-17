@@ -44,61 +44,60 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
-
 	siteConf := this.GetSiteConf(ctx)
-		// 获取购物车
-		var cartKey string
-		ck, err := r.Cookie("_cart")
-		if err == nil {
-			cartKey = ck.Value
-		}
-		cart := dps.ShoppingService.GetShoppingCart(p.Id, m.Id, cartKey)
-		if cart.Items == nil || len(cart.Items) == 0 {
-			this.OrderEmpty(ctx, p, m, siteConf)
-			return
-		}
+	// 获取购物车
+	var cartKey string
+	ck, err := r.Cookie("_cart")
+	if err == nil {
+		cartKey = ck.Value
+	}
+	cart := dps.ShoppingService.GetShoppingCart(p.Id, m.Id, cartKey)
+	if cart.Items == nil || len(cart.Items) == 0 {
+		this.OrderEmpty(ctx, p, m, siteConf)
+		return
+	}
 
-		// 配送地址
-		var deliverId int
-		var paymentOpt int = 1
-		var deliverOpt int = 1
-		var settle *dto.SettleMeta = dps.ShoppingService.GetCartSettle(p.Id, m.Id, cart.CartKey)
-		if settle.Deliver != nil {
-			deliverId = settle.Deliver.Id
-			ph := settle.Deliver.Phone
-			if len(ph) == 11 {
-				settle.Deliver.Phone = strings.Replace(ph, ph[3:7], "****", 1)
-			}
-			if settle.PaymentOpt > 0 {
-				paymentOpt = settle.PaymentOpt
-			} else {
-				paymentOpt = 1
-			}
-
-			if settle.DeliverOpt > 0 {
-				deliverOpt = settle.DeliverOpt
-			} else {
-				deliverOpt = 1
-			}
+	// 配送地址
+	var deliverId int
+	var paymentOpt int = 1
+	var deliverOpt int = 1
+	var settle *dto.SettleMeta = dps.ShoppingService.GetCartSettle(p.Id, m.Id, cart.CartKey)
+	if settle.Deliver != nil {
+		deliverId = settle.Deliver.Id
+		ph := settle.Deliver.Phone
+		if len(ph) == 11 {
+			settle.Deliver.Phone = strings.Replace(ph, ph[3:7], "****", 1)
+		}
+		if settle.PaymentOpt > 0 {
+			paymentOpt = settle.PaymentOpt
+		} else {
+			paymentOpt = 1
 		}
 
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner":     p,
-			"title":       "订单确认-" + p.Name,
-			"member":      m,
-			"cart":        cart,
-			"cartDetails": template.HTML(format.CartDetails(cart)),
-			"promFee":     cart.TotalFee - cart.OrderFee,
-			"summary":     template.HTML(cart.Summary),
-			"conf":        siteConf,
-			"settle":      settle,
-			"deliverId":   deliverId,
-			"deliverOpt":  deliverOpt,
-			"paymentOpt":  paymentOpt,
-		},
-			"views/shop/ols/order_confirm.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+		if settle.DeliverOpt > 0 {
+			deliverOpt = settle.DeliverOpt
+		} else {
+			deliverOpt = 1
+		}
+	}
+
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"partner":     p,
+		"title":       "订单确认-" + p.Name,
+		"member":      m,
+		"cart":        cart,
+		"cartDetails": template.HTML(format.CartDetails(cart)),
+		"promFee":     cart.TotalFee - cart.OrderFee,
+		"summary":     template.HTML(cart.Summary),
+		"conf":        siteConf,
+		"settle":      settle,
+		"deliverId":   deliverId,
+		"deliverOpt":  deliverOpt,
+		"paymentOpt":  paymentOpt,
+	},
+		"views/shop/ols/order_confirm.html",
+		"views/shop/ols/inc/header.html",
+		"views/shop/ols/inc/footer.html")
 
 }
 
@@ -204,11 +203,11 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 
 	var message string = "购物车还是空的!"
 	code := ctx.Request.FormValue("code")
-	order, _,err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "",code)
+	order, _, err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "", code)
 	if err != nil {
 		message = err.Error()
 	} else {
-		d,_ := json.Marshal(order)
+		d, _ := json.Marshal(order)
 		ctx.ResponseWriter.Write(d)
 		return
 	}
@@ -275,34 +274,31 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
-
 	siteConf := this.GetSiteConf(ctx)
-		var payHtml string // 支付HTML
+	var payHtml string // 支付HTML
 
-		orderNo := r.URL.Query().Get("order_no")
-		order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
-		if order != nil {
-			this.OrderEmpty(ctx, p, m, siteConf)
-
-			if order.PaymentOpt == 2 {
-				payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+	orderNo := r.URL.Query().Get("order_no")
+	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
+	if order != nil {
+		if order.PaymentOpt == 2 {
+			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
 				order.OrderNo, "在线支付")
-			}
+		}
 
-			ctx.App.Template().Execute(w, gof.TemplateDataMap{
-				"partner": p,
-				"title":   "订单成功-" + p.Name,
-				"member":  m,
-				"conf":    siteConf,
-				"order":   order,
-				"payHtml": template.HTML(payHtml),
-			},
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"title":   "订单成功-" + p.Name,
+			"member":  m,
+			"conf":    siteConf,
+			"order":   order,
+			"payHtml": template.HTML(payHtml),
+		},
 			"views/shop/ols/order_finish.html",
 			"views/shop/ols/inc/header.html",
 			"views/shop/ols/inc/footer.html")
-		}else{
-			this.OrderEmpty(ctx,p,m,siteConf)
-		}
+	} else {
+		this.OrderEmpty(ctx, p, m, siteConf)
+	}
 
 }
 

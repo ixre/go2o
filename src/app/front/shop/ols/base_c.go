@@ -14,11 +14,11 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/cache"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
-	"go2o/src/core/domain/interface/enum"
 	"strings"
 )
 
@@ -53,6 +53,9 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 		renderError(ctx, true, conf.StateHtml)
 		return false
 	}
+
+	ctx.Items["partner_siteconf"] = conf
+
 	return true
 }
 
@@ -67,7 +70,7 @@ func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	return ctx.GetItem("partner_ins").(*partner.ValuePartner)
 }
 
-func (this *baseC) GetSiteConf(ctx *web.Context)*partner.SiteConf{
+func (this *baseC) GetSiteConf(ctx *web.Context) *partner.SiteConf {
 	return ctx.GetItem("partner_siteconf").(*partner.SiteConf)
 }
 

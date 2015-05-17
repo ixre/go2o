@@ -40,22 +40,20 @@ func (this *mainC) Index(ctx *web.Context) {
 			return
 		}
 
-
-
 		siteConf := this.GetSiteConf(ctx)
 
-			shops := GetShops(ctx.App, p.Id)
-			if shops == nil {
-				shops = []byte("{}")
-			}
-			ctx.App.Template().Execute(w, gof.TemplateDataMap{
-				"partner": p,
-				"conf":    siteConf,
-				"shops":   template.HTML(shops),
-			},
-				"views/shop/ols/index.html",
-				"views/shop/ols/inc/header.html",
-				"views/shop/ols/inc/footer.html")
+		shops := GetShops(ctx.App, p.Id)
+		if shops == nil {
+			shops = []byte("{}")
+		}
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+			"partner": p,
+			"conf":    siteConf,
+			"shops":   template.HTML(shops),
+		},
+			"views/shop/ols/index.html",
+			"views/shop/ols/inc/header.html",
+			"views/shop/ols/inc/footer.html")
 
 	}
 }
