@@ -29,7 +29,7 @@ type MemberC struct {
 // 会员登陆后才能调用接口
 func (this *MemberC) Requesting(ctx *web.Context) bool {
 	return this.BaseC != nil && this.BaseC.Requesting(ctx) &&
-	this.BaseC.CheckMemberToken(ctx)
+		this.BaseC.CheckMemberToken(ctx)
 }
 
 // 处理请求

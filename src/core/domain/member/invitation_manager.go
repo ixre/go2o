@@ -21,11 +21,10 @@ type invitationManager struct {
 	_myInvMembers []*member.ValueMember
 }
 
-
 // 判断是否推荐了某个会员
-func (this *invitationManager) InvitationBy(memberId int)bool{
+func (this *invitationManager) InvitationBy(memberId int) bool {
 	rl := this._member.GetRelation()
-	if rl != nil{
+	if rl != nil {
 		return rl.InvitationMemberId == memberId
 	}
 	return false
@@ -48,11 +47,11 @@ func (this *invitationManager) GetSubInvitationNum() map[int]int {
 		this._myInvMembers = this.GetMyInvitationMembers()
 	}
 
-	if i := len(this._myInvMembers);i== 0 {
+	if i := len(this._myInvMembers); i == 0 {
 		return make(map[int]int)
-	}else {
+	} else {
 
-		var ids []string = make([]string,i)
+		var ids []string = make([]string, i)
 		for i, v := range this._myInvMembers {
 			ids[i] = strconv.Itoa(v.Id)
 		}

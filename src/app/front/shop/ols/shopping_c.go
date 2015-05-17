@@ -17,7 +17,7 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/format"
-	"go2o/src/core/service/goclient"
+	"go2o/src/core/service/dps"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -43,16 +43,16 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
-	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p, pa); b {
+
+	siteConf := this.GetSiteConf(ctx)
 		// 获取购物车
 		var cartKey string
 		ck, err := r.Cookie("_cart")
 		if err == nil {
 			cartKey = ck.Value
 		}
-		cart := goclient.Partner.GetShoppingCart(p.Id, m.Id, cartKey)
+		cart := dps.ShoppingService.GetShoppingCart(p.Id, m.Id, cartKey)
 		if cart.Items == nil || len(cart.Items) == 0 {
 			this.OrderEmpty(ctx, p, m, siteConf)
 			return
@@ -62,7 +62,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 		var deliverId int
 		var paymentOpt int = 1
 		var deliverOpt int = 1
-		var settle *dto.SettleMeta = goclient.Partner.GetCartSettle(p.Id, m.Id, cart.CartKey)
+		var settle *dto.SettleMeta = dps.ShoppingService.GetCartSettle(p.Id, m.Id, cart.CartKey)
 		if settle.Deliver != nil {
 			deliverId = settle.Deliver.Id
 			ph := settle.Deliver.Phone
@@ -99,7 +99,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 			"views/shop/ols/order_confirm.html",
 			"views/shop/ols/inc/header.html",
 			"views/shop/ols/inc/footer.html")
-	}
+
 }
 
 // 订单持久化
@@ -135,7 +135,7 @@ func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 		goto rsp
 	}
 
-	err = goclient.Partner.OrderPersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
+	err = dps.ShoppingService.PrepareSettlePersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
 
 rsp:
 	if err != nil {
@@ -152,11 +152,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
 	m := this.GetMember(ctx)
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.DynamicToken)
-	if err != nil {
-		w.Write([]byte(err.Error()))
-		return
-	}
+	addrs := dps.MemberService.GetDeliverAddrs(m.Id)
 	var selId int
 	if sel := r.URL.Query().Get("sel"); sel != "" {
 		selId, _ = strconv.Atoi(sel)
@@ -178,9 +174,9 @@ func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.DynamicToken, &e)
+	b, err := dps.MemberService.SaveDeliverAddr(m.Id, &e)
 	if err == nil {
-		if b {
+		if b > 0 {
 			w.Write([]byte(`{"result":true}`))
 		} else {
 			w.Write([]byte(`{"result":false}`))
@@ -205,15 +201,15 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
-	pa := this.GetPartnerApi(ctx)
 
 	var message string = "购物车还是空的!"
 	code := ctx.Request.FormValue("code")
-	json, err := goclient.Partner.BuildOrder(p.Id, pa.ApiSecret, m.Id, code)
+	order, _,err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "",code)
 	if err != nil {
 		message = err.Error()
 	} else {
-		ctx.ResponseWriter.Write([]byte(json))
+		d,_ := json.Marshal(order)
+		ctx.ResponseWriter.Write(d)
 		return
 	}
 
@@ -228,7 +224,6 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
-	pa := this.GetPartnerApi(ctx)
 
 	r.ParseForm()
 	if p == nil || m == nil {
@@ -236,7 +231,7 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 		return
 	}
 	couponCode := r.FormValue("coupon_code")
-	order_no, err := goclient.Partner.SubmitOrder(p.Id, pa.ApiSecret, m.Id, couponCode)
+	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 		return
@@ -279,36 +274,36 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
-	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p, pa); b {
+
+	siteConf := this.GetSiteConf(ctx)
 		var payHtml string // 支付HTML
 
 		orderNo := r.URL.Query().Get("order_no")
-		order, err := goclient.Partner.GetOrderByNo(p.Id, pa.ApiSecret, orderNo)
-		if err != nil {
-			ctx.App.Log().PrintErr(err)
+		order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
+		if order != nil {
 			this.OrderEmpty(ctx, p, m, siteConf)
-			return
-		}
 
-		if order.PaymentOpt == 2 {
-			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+			if order.PaymentOpt == 2 {
+				payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
 				order.OrderNo, "在线支付")
-		}
+			}
 
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"partner": p,
-			"title":   "订单成功-" + p.Name,
-			"member":  m,
-			"conf":    siteConf,
-			"order":   order,
-			"payHtml": template.HTML(payHtml),
-		},
+			ctx.App.Template().Execute(w, gof.TemplateDataMap{
+				"partner": p,
+				"title":   "订单成功-" + p.Name,
+				"member":  m,
+				"conf":    siteConf,
+				"order":   order,
+				"payHtml": template.HTML(payHtml),
+			},
 			"views/shop/ols/order_finish.html",
 			"views/shop/ols/inc/header.html",
 			"views/shop/ols/inc/footer.html")
-	}
+		}else{
+			this.OrderEmpty(ctx,p,m,siteConf)
+		}
+
 }
 
 // 购买中转

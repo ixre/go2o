@@ -12,9 +12,10 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/goclient"
 	"strconv"
 	"strings"
+	"go2o/src/core/service/dps"
+	"github.com/atnet/gof"
 )
 
 type cartC struct {
@@ -50,13 +51,13 @@ func (this *cartC) cartApi(ctx *web.Context) {
 
 }
 
-func (this *cartC) cart_GetCart(ctx *web.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) {
-	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
+func (this *cartC) cart_GetCart(ctx *web.Context,p *partner.ValuePartner,
+	memberId int, cartKey string) {
+	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
 	// 如果已经购买，則创建新的购物车
 	if cart.IsBought == 1 {
-		cart = goclient.Partner.GetShoppingCart(p.Id, memberId, "")
+		cart = dps.ShoppingService.GetShoppingCart(p.Id, memberId, "")
 	}
 
 	d, _ := json.Marshal(cart)
@@ -65,33 +66,33 @@ func (this *cartC) cart_GetCart(ctx *web.Context,
 
 func (this *cartC) cart_AddItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	item, err := goclient.Partner.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
+	item := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
 
-	var result = make(map[string]interface{}, 2)
-	if err != nil {
-		result["message"] = err.Error()
-	} else {
-		result["message"] = ""
-		result["item"] = item
+	var d map[string]interface{}
+	if item == nil{
+		d["error"] = "商品不存在"
+	}else {
+		d["item"] = item
 	}
-	d, _ := json.Marshal(result)
-	w.Write(d)
+	this.JsonOutput(ctx,d)
 }
 
 func (this *cartC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	var msg gof.Message
+	r:= ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	err := goclient.Partner.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
+	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
 	if err != nil {
-		w.Write([]byte(`{error:'` + err.Error() + `'}`))
+		msg.Message = err.Error()
 	} else {
-		w.Write([]byte("{}"))
+		msg.Result = true
 	}
+	this.ResultOutput(ctx,msg)
 }
 
 func (this *cartC) cart(ctx *web.Context) {

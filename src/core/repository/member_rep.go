@@ -10,12 +10,12 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/atnet/gof/db"
 	"github.com/atnet/gof/log"
 	"go2o/src/core/domain/interface/member"
 	memberImpl "go2o/src/core/domain/member"
-	"database/sql"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -227,8 +227,8 @@ func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 }
 
 // 获取全部配送地址
-func (this *MemberRep) GetDeliverAddrs(memberId int) []member.DeliverAddress {
-	addresses := []member.DeliverAddress{}
+func (this *MemberRep) GetDeliverAddrs(memberId int) []*member.DeliverAddress {
+	addresses := []*member.DeliverAddress{}
 	this.Connector.GetOrm().Select(&addresses, "member_id=?", memberId)
 	return addresses
 }
@@ -269,18 +269,18 @@ func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMembe
 func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 	var d map[int]int = make(map[int]int)
 	err := this.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
-	"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
-	"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
-	func(rows *sql.Rows) {
-		var id, num int
-		for rows.Next() {
-			rows.Scan(&id, &num)
-			d[id] = num
-		}
-		rows.Close()
-	})
+		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
+		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
+		func(rows *sql.Rows) {
+			var id, num int
+			for rows.Next() {
+				rows.Scan(&id, &num)
+				d[id] = num
+			}
+			rows.Close()
+		})
 
-	if err != nil{
+	if err != nil {
 		log.PrintErr(err)
 	}
 	return d
@@ -288,12 +288,12 @@ func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 
 // 获取推荐我的人
 func (this *MemberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
-	var  d *member.ValueMember  = new(member.ValueMember)
+	var d *member.ValueMember = new(member.ValueMember)
 	err := this.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT invi_member_id FROM mm_relation  WHERE id=?)",
 		memberId)
 
-	if err != nil{
+	if err != nil {
 		return nil
 	}
 	return d

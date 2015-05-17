@@ -9,38 +9,16 @@
 package ols
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/atnet/gof"
-	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/goclient"
+	"go2o/src/core/service/dps"
 	"html/template"
 	"net/http"
 	"runtime/debug"
 	"strings"
 )
-
-func GetSiteConf(w http.ResponseWriter, p *partner.ValuePartner, api *partner.ApiInfo) (bool, *partner.SiteConf) {
-	var conf = cache.GetPartnerSiteConf(p.Id)
-	if conf == nil {
-		conf, _ = goclient.Partner.GetSiteConf(p.Id, api.ApiSecret)
-
-		if conf == nil {
-			w.Write([]byte("网站访问过程中出现了异常，请重试!"))
-			return false, nil
-		}
-
-		if conf.State == enum.PARTNER_SITE_CLOSED {
-			if strings.TrimSpace(conf.StateHtml) == "" {
-				conf.StateHtml = "网站暂停访问，请联系商家：" + p.Tel
-			}
-			w.Write([]byte(conf.StateHtml))
-			return false, conf
-		}
-		cache.SetPartnerSiteConf(p.Id, conf)
-	}
-	return true, conf
-}
 
 // 处理自定义错误
 func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
@@ -51,4 +29,43 @@ func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
 		},
 			"views/shop/ols/error.html")
 	}
+}
+
+func GetShops(c gof.App, partnerId int) []byte {
+	//分店
+	var buf *bytes.Buffer = bytes.NewBufferString("")
+
+	shops := dps.PartnerService.GetShopsOfPartner(partnerId)
+	if len(shops) == 0 {
+		return []byte("<div class=\"nodata noshop\">还未添加分店</div>")
+	}
+	buf.WriteString("<ul class=\"shops\">")
+	for i, v := range shops {
+		buf.WriteString(fmt.Sprintf(`<li class="s%d">
+			<div class="name"><span><strong>%s</strong></div>
+			<span class="shop-state shopstate%d">%s</span>
+			<div class="phone">%s</div>
+			<div class="address">%s</div>
+			</li>`, i+1, v.Name, v.State, enum.GetFrontShopStateName(v.State), v.Phone, v.Address))
+	}
+	buf.WriteString("</ul>")
+	return buf.Bytes()
+}
+
+func GetCategories(c gof.App, partnerId int, secret string) []byte {
+	var buf *bytes.Buffer = bytes.NewBufferString("")
+	categories := dps.SaleService.GetCategories(partnerId)
+
+	buf.WriteString(`<ul class="categories">
+		<li class="s0 current" val="0">
+			<div class="name"><span><strong>全部</strong></div>
+		</li>
+	`)
+	for i, v := range categories {
+		buf.WriteString(fmt.Sprintf(`<li class="s%d" val="%d">
+			<div class="name"><span><strong>%s</strong></div>
+			</li>`, i+1, v.Id, v.Name))
+	}
+	buf.WriteString("</ul>")
+	return buf.Bytes()
 }

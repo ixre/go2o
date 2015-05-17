@@ -20,7 +20,7 @@ func ChkPwdRight(pwd string) (bool, error) {
 
 //加密会员密码
 func Md5MemberPwd(usr, pwd string) string {
-	return Md5Pwd(pwd,"member_"+usr)
+	return Md5Pwd(pwd, "member_"+usr)
 }
 
 //加密合作商密码

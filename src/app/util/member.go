@@ -90,8 +90,8 @@ func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
 		}
 	}
 
-	   // SetMemberApiToken(ctx.App.Storage(),30,"369a661b13134a8c0997ca7f0a5372bf")
-	   // fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
+	// SetMemberApiToken(ctx.App.Storage(),30,"369a661b13134a8c0997ca7f0a5372bf")
+	// fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
 
 	return false, memberId
 }

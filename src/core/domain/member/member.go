@@ -261,11 +261,11 @@ func (this *Member) CreateDeliver(v *member.DeliverAddress) member.IDeliver {
 
 // 获取配送地址
 func (this *Member) GetDeliverAddrs() []member.IDeliver {
-	var vls []member.DeliverAddress
+	var vls []*member.DeliverAddress
 	vls = this._rep.GetDeliverAddrs(this.GetAggregateRootId())
 	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
 	for i, v := range vls {
-		arr[i] = this.CreateDeliver(&v)
+		arr[i] = this.CreateDeliver(v)
 	}
 	return arr
 }

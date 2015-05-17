@@ -20,7 +20,7 @@ import (
 func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	var v *partner.ValuePartner
 	var sto gof.Storage = GetKVS()
-	var key string = fmt.Sprintf("cache:partner:value:%d", partnerId)
+	var key string = GetValuePartnerCacheCK(partnerId)
 
 	if sto.Driver() == storage.DriveHashStorage {
 		if obj, err := GetKVS().GetRaw(key); err != nil {
@@ -30,19 +30,29 @@ func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 		sto.Get(key, &v)
 	}
 
+	if v == nil {
+		if v, err := dps.PartnerService.GetPartner(partnerId); err == nil {
+			sto.Set(key, v)
+		}
+	}
 	return v
 }
 
 // 设置商户信息缓存
-func SetValuePartnerCache(partnerId int, v *partner.ValuePartner) {
-	GetKVS().Set(fmt.Sprintf("cache:partner:value:%d", partnerId), v)
+func GetValuePartnerCacheCK(partnerId int)string {
+	return fmt.Sprintf("cache:partner:value:%d", partnerId)
+}
+
+// 设置商户站点配置
+func GetPartnerSiteConfCK(partnerId int)string {
+	return fmt.Sprintf("cache:partner:siteconf:%d", partnerId)
 }
 
 // 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var v *partner.SiteConf
 	var sto gof.Storage = GetKVS()
-	var key string = fmt.Sprintf("cache:partner:siteconf:%d", partnerId)
+	var key string = GetPartnerSiteConfCK(partnerId)
 
 	if sto.Driver() == storage.DriveHashStorage {
 		if obj, err := GetKVS().GetRaw(key); err != nil {
@@ -51,13 +61,15 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	} else if sto.Driver() == storage.DriveRedisStorage {
 		sto.Get(key, &v)
 	}
+
+	if v == nil {
+		if v = dps.PartnerService.GetSiteConf(partnerId); v != nil {
+			sto.Set(key, v)
+		}
+	}
 	return v
 }
 
-// 设置商户站点配置
-func SetPartnerSiteConf(partnerId int, v *partner.SiteConf) {
-	GetKVS().Set(fmt.Sprintf("cache:partner:siteconf:%d", partnerId), v)
-}
 
 // 根据API ID获取商户ID
 func GetPartnerIdByApiId(apiId string) int {

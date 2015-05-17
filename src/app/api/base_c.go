@@ -12,8 +12,8 @@ import (
 	"encoding/json"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"strconv"
 	"go2o/src/app/util"
+	"strconv"
 )
 
 // 检查是否有权限调用接口(商户)
@@ -46,7 +46,7 @@ func (this *BaseC) RequestEnd(ctx *web.Context) {
 }
 
 // 检查会员令牌信息
-func (this *BaseC) CheckMemberToken(ctx *web.Context)bool {
+func (this *BaseC) CheckMemberToken(ctx *web.Context) bool {
 	r := ctx.Request
 	memberId, _ := strconv.Atoi(r.FormValue("member_id"))
 	token := r.FormValue("member_token")
@@ -80,8 +80,8 @@ func (this *BaseC) GetPartnerId(ctx *web.Context) int {
 }
 
 // 获取会员编号
-func (this *BaseC) GetMemberId(ctx *web.Context)int{
-	if v ,ok := ctx.Items["member_id"].(int);ok{
+func (this *BaseC) GetMemberId(ctx *web.Context) int {
+	if v, ok := ctx.Items["member_id"].(int); ok {
 		return v
 	}
 	return 0

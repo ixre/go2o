@@ -47,14 +47,7 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 // 获取商户
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	var partnerId int = ctx.Items["member_ptId"].(int)
-	pt := cache.GetValuePartnerCache(partnerId)
-	if pt == nil {
-		var err error
-		if pt, err = dps.PartnerService.GetPartner(partnerId); err == nil {
-			cache.SetValuePartnerCache(partnerId, pt)
-		}
-	}
-	return pt
+	return cache.GetValuePartnerCache(partnerId)
 }
 
 // 获取会员

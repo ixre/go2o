@@ -9,16 +9,15 @@
 package ols
 
 import (
+	"errors"
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/service/goclient"
+	"go2o/src/core/infrastructure/domain"
+	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"strings"
-	"go2o/src/core/service/dps"
-	"errors"
-	"go2o/src/core/infrastructure/domain"
 )
 
 type userC struct {
@@ -34,9 +33,8 @@ func (this *userC) Login(ctx *web.Context) {
 		tipStyle = " hidden"
 	}
 
-	pa := this.GetPartnerApi(ctx)
 
-	if b, siteConf := GetSiteConf(w, p, pa); b {
+	siteConf := this.GetSiteConf(ctx)
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner":  p,
 			"title":    "会员登录－" + siteConf.SubTitle,
@@ -46,29 +44,29 @@ func (this *userC) Login(ctx *web.Context) {
 			"views/shop/ols/login.html",
 			"views/shop/ols/inc/header.html",
 			"views/shop/ols/inc/footer.html")
-	}
+
 }
 
 func (this *userC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	result, _ := goclient.Member.Login(usr, pwd)
+	b,m , err := dps.MemberService.Login(usr, pwd)
 
-	if result.Result {
-		ctx.Session().Set("member", result.Member)
+	if b {
+		ctx.Session().Set("member",m)
 		ctx.Session().Save()
 		w.Write([]byte("{result:true}"))
 		return
 	}
-	w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
+	w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
 }
 
 func (this *userC) Register(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
-	pa := this.GetPartnerApi(ctx)
-	if b, siteConf := GetSiteConf(w, p, pa); b {
+
+	siteConf := this.GetSiteConf(ctx)
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
 			"title":   "会员注册－" + siteConf.SubTitle,
@@ -77,16 +75,14 @@ func (this *userC) Register(ctx *web.Context) {
 			"views/shop/ols/register.html",
 			"views/shop/ols/inc/header.html",
 			"views/shop/ols/inc/footer.html")
-	}
+
 }
 
 func (this *userC) ValidUsr_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-	pa := this.GetPartnerApi(ctx)
 	r.ParseForm()
 	usr := r.FormValue("usr")
-	b := goclient.Partner.UserIsExist(p.Id, pa.ApiSecret, usr)
+	b := dps.MemberService.CheckUsrExist(usr)
 	if !b {
 		w.Write([]byte(`{"result":true}`))
 	} else {
@@ -94,17 +90,17 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 	}
 }
 
-func (this *userC) Valid_invitation_post(ctx *web.Context){
+func (this *userC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
- 	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
+	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
 
 	var message string
 	isOk := memberId != 0
 
-	if !isOk{
-		message ="推荐人无效"
+	if !isOk {
+		message = "推荐人无效"
 	}
-	this.ResultOutput(ctx,gof.Message{Result:isOk,Message:message})
+	this.ResultOutput(ctx, gof.Message{Result: isOk, Message: message})
 }
 
 func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
@@ -120,8 +116,8 @@ func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
 
 	if len(member.Usr) == 0 || len(member.Pwd) == 0 {
 		err = errors.New("注册信息不完整")
-	}else {
-		member.Pwd = domain.Md5MemberPwd(member.Usr,member.Pwd)
+	} else {
+		member.Pwd = domain.Md5MemberPwd(member.Usr, member.Pwd)
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
 			inviId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("inviCode"))
@@ -129,10 +125,10 @@ func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
 		}
 	}
 
-	if err != nil{
-		this.ResultOutput(ctx,gof.Message{Message:"注册失败！错误："+err.Error()})
-	}else{
-		this.ResultOutput(ctx,gof.Message{Result:true})
+	if err != nil {
+		this.ResultOutput(ctx, gof.Message{Message: "注册失败！错误：" + err.Error()})
+	} else {
+		this.ResultOutput(ctx, gof.Message{Result: true})
 	}
 }
 

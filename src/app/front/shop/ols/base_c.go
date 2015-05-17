@@ -18,6 +18,8 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"
+	"go2o/src/core/domain/interface/enum"
+	"strings"
 )
 
 type baseC struct {
@@ -30,16 +32,27 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 		renderError(ctx, true, "No such partner.")
 		return false
 	}
+
 	ctx.Items["partner_id"] = partnerId // 缓存PartnerId
 
 	// 校验商户并缓存
-	pt, err := getPartner(ctx)
-	if err != nil {
-		renderError(ctx, true, err.Error())
-		return false
-	}
+	pt := cache.GetValuePartnerCache(partnerId)
 	ctx.Items["partner_ins"] = pt
 
+	// 判断线上商店开通情况
+	var conf = cache.GetPartnerSiteConf(partnerId)
+	if conf == nil {
+		renderError(ctx, true, "线上商店未开通")
+		return false
+	}
+
+	if conf.State == enum.PARTNER_SITE_CLOSED {
+		if strings.TrimSpace(conf.StateHtml) == "" {
+			conf.StateHtml = "网站暂停访问，请联系商家：" + pt.Tel
+		}
+		renderError(ctx, true, conf.StateHtml)
+		return false
+	}
 	return true
 }
 
@@ -52,6 +65,10 @@ func (this *baseC) GetPartnerId(ctx *web.Context) int {
 }
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	return ctx.GetItem("partner_ins").(*partner.ValuePartner)
+}
+
+func (this *baseC) GetSiteConf(ctx *web.Context)*partner.SiteConf{
+	return ctx.GetItem("partner_siteconf").(*partner.SiteConf)
 }
 
 // 获取商户API信息
@@ -103,18 +120,6 @@ func getPartnerId(ctx *web.Context) int {
 		return partnerId
 	}
 	return pid.(int)
-}
-func getPartner(ctx *web.Context) (*partner.ValuePartner, error) {
-	//todo: 缓存，用Member对应的Partner编号来查询缓存
-	var partnerId int = ctx.GetItem("partner_id").(int)
-	var err error
-	var pt *partner.ValuePartner = cache.GetValuePartnerCache(partnerId)
-	if pt == nil {
-		if pt, err = dps.PartnerService.GetPartner(getPartnerId(ctx)); err == nil {
-			cache.SetValuePartnerCache(partnerId, pt)
-		}
-	}
-	return pt, err
 }
 
 // 输出Json

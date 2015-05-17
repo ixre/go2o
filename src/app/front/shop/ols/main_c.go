@@ -11,7 +11,6 @@ package ols
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/cache/apicache"
 	"html/template"
 )
 
@@ -41,22 +40,22 @@ func (this *mainC) Index(ctx *web.Context) {
 			return
 		}
 
-		pa := this.GetPartnerApi(ctx)
 
-		if b, siteConf := GetSiteConf(w, p, pa); b {
-			shops := apicache.GetShops(ctx.App, p.Id, pa.ApiSecret)
+
+		siteConf := this.GetSiteConf(ctx)
+
+			shops := GetShops(ctx.App, p.Id)
 			if shops == nil {
 				shops = []byte("{}")
 			}
 			ctx.App.Template().Execute(w, gof.TemplateDataMap{
 				"partner": p,
 				"conf":    siteConf,
-				"title":   siteConf.IndexTitle,
 				"shops":   template.HTML(shops),
 			},
 				"views/shop/ols/index.html",
 				"views/shop/ols/inc/header.html",
 				"views/shop/ols/inc/footer.html")
-		}
+
 	}
 }
