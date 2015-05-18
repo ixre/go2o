@@ -11,12 +11,12 @@ package sale
 type  ISaleTag interface{
     GetDomainId() int
 
-    GetValue()
+    GetValue()*ValueSaleTag
 
     SetValue(v *ValueSaleTag)error
 
     Save() (int, error)
 
     // 获取标签下的商品
-    GetGoods(begin,end int)[]*ValueGoods
+    GetValueGoods(begin,end int)[]*ValueGoods
 }

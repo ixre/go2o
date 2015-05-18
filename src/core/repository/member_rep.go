@@ -290,13 +290,8 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 // 邀请
 func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
 	arr := []*member.ValueMember{}
-	err := this.Connector.GetOrm().SelectByQuery(&arr,
+	this.Connector.GetOrm().SelectByQuery(&arr,
 		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?)", memberId)
-	if err != nil {
-		log.PrintErr(err)
-		return nil
-	}
-
 	return arr
 }
 
