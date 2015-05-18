@@ -154,7 +154,7 @@ func (this *Member) GetLevel()*valueobject.MemberLevel{
 func (this *Member) AddIntegral(partnerId int, backType int,
 	integral int, log string) error {
 
-	inteLog := &member.IntegralLog{
+	inLog := &member.IntegralLog{
 		PartnerId:  partnerId,
 		MemberId:   this._value.Id,
 		Type:       backType,
@@ -163,7 +163,7 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 		RecordTime: time.Now().Unix(),
 	}
 
-	err := this._rep.SaveIntegralLog(inteLog)
+	err := this._rep.SaveIntegralLog(inLog)
 	if err == nil {
 		acc := this.GetAccount()
 		acc.Integral = acc.Integral + integral
@@ -175,7 +175,7 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 
 // 检查升级
 func (this *Member) checkUpLevel() {
-	levelId := this._rep.GetLevelByExp(this._value.Exp)
+	levelId := this.getLevelManager().GetLevelValueByExp(this._value.Exp)
 	if levelId != 0 && this._value.Level < levelId {
 		this._value.Level = levelId
 		this.Save()

@@ -102,13 +102,6 @@ func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
 	return nil
 }
 
-func (this *memberService) GetLevelById(levelValue int) *valueobject.MemberLevel {
-	return this._memberRep.GetLevel(levelValue)
-}
-func (this *memberService) GetNextLevel(levelValue int) *valueobject.MemberLevel {
-	return this._memberRep.GetNextLevel(levelValue)
-}
-
 func (this *memberService) GetRelation(memberId int) member.MemberRelation {
 	return *this._memberRep.GetRelation(memberId)
 }

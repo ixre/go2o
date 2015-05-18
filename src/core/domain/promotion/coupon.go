@@ -133,7 +133,7 @@ func (this *Coupon) GetDescribe() string {
 	v := this.value
 
 	if v.MinLevel != 0 {
-		level := this.memberRep.GetLevel(v.MinLevel)
+		level := this.memberRep.GetLevel(this.value.PartnerId,v.MinLevel)
 		buf.WriteString("[*" + level.Name + "]")
 	}
 

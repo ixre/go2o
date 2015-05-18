@@ -34,10 +34,10 @@ type IMemberRep interface {
 
 
 	// 获取等级
-	GetLevel(levelVal int) *valueobject.MemberLevel
+	GetLevel(partnerId,levelValue int) *valueobject.MemberLevel
 
 	// 获取下一个等级
-	GetNextLevel(levelVal int) *valueobject.MemberLevel
+	GetNextLevel(partnerId,levelVal int) *valueobject.MemberLevel
 
 	// 获取会员等级
 	GetMemberLevels(partnerId int)[]*valueobject.MemberLevel
@@ -71,7 +71,7 @@ type IMemberRep interface {
 	GetRelation(memberId int) *MemberRelation
 
 	// 获取经验值对应的等级
-	GetLevelByExp(exp int) int
+	GetLevelValueByExp(exp int) int
 
 	// 保存地址
 	SaveDeliver(*DeliverAddress) (int, error)

@@ -19,6 +19,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"bytes"
+	"fmt"
 )
 
 var _ mvc.Filter = new(promC)
@@ -28,9 +30,14 @@ type promC struct {
 }
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
-	//partnerId := this.GetPartnerId(ctx)
+
+	levelDr := this.getLevelDropDownList(ctx)
+
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		gof.TemplateDataMap{},
+		gof.TemplateDataMap{
+			"entity":"{}",
+			"levelDr":template.HTML(levelDr),
+		},
 		"views/partner/promotion/create_coupon.html")
 }
 
@@ -41,11 +48,26 @@ func (this *promC) EditCoupon(ctx *web.Context) {
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
 	js, _ := json.Marshal(e)
 
+	levelDr := this.getLevelDropDownList(ctx)
+
+
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
+			"levelDr":template.HTML(levelDr),
 		},
 		"views/partner/promotion/edit_coupon.html")
+}
+
+func (this *promC) getLevelDropDownList(ctx *web.Context)string{
+	buf := bytes.NewBufferString("")
+	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
+	for _,v := range lvs{
+		if v.Enabled == 1 {
+			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
+		}
+	}
+	return buf.String()
 }
 
 //　绑定优惠券操作页

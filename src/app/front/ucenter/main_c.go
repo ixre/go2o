@@ -34,8 +34,8 @@ func (this *mainC) Index(ctx *web.Context) {
 		info := make(map[string]string)
 		info["memName"] = mm.Name
 
-		lv := dps.MemberService.GetLevel(mm.Id)
-		nextLv := dps.MemberService.GetNextLevel(mm.Level)
+		lv := dps.PartnerService.GetLevel(p.Id,mm.Level)
+		nextLv := dps.PartnerService.GetNextLevel(p.Id,mm.Level)
 		if nextLv == nil {
 			nextLv = lv
 		}

@@ -97,7 +97,6 @@ func (this *LevelManager) GetLevelById(id int)*valueobject.MemberLevel{
     return nil
 }
 
-
 // 根据等级值获取等级
 func (this *LevelManager)  GetLevelByValue(value int)*valueobject.MemberLevel {
     for _, v := range this.GetLevelSet() {
@@ -108,6 +107,10 @@ func (this *LevelManager)  GetLevelByValue(value int)*valueobject.MemberLevel {
     return nil
 }
 
+// 获取下一个等级
+func (this *LevelManager)  GetNextLevel(value int)*valueobject.MemberLevel{
+    return this._rep.GetNextLevel(this._partnerId,value)
+}
 
 // 删除等级
 func (this *LevelManager) DeleteLevel(id int)error{
@@ -149,4 +152,10 @@ func (this *LevelManager) getMaxLevelValue()int{
         }
     }
     return k
+}
+
+
+// 根据经验值获取等级
+func (this *LevelManager) GetLevelValueByExp(exp int)int{
+    return this._rep.GetLevelValueByExp(exp)
 }
