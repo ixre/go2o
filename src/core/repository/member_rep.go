@@ -65,7 +65,7 @@ func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 
 func (this *MemberRep) GetLevel(partnerId,levelValue int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, fmt.Sprintf("partner_id=? AND value = %d", partnerId, levelValue))
+	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value = ?", partnerId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -75,7 +75,7 @@ func (this *MemberRep) GetLevel(partnerId,levelValue int) *valueobject.MemberLev
 // 获取下一个等级
 func (this *MemberRep) GetNextLevel(partnerId,levelVal int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, fmt.Sprintf("partner_id=? AND value>%d LIMIT 0,1", partnerId,levelVal))
+	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value>? LIMIT 0,1", partnerId,levelVal)
 	if err != nil {
 		return nil
 	}

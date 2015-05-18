@@ -36,6 +36,7 @@ func (this *mainC) Index(ctx *web.Context) {
 
 		lv := dps.PartnerService.GetLevel(p.Id,mm.Level)
 		nextLv := dps.PartnerService.GetNextLevel(p.Id,mm.Level)
+
 		if nextLv == nil {
 			nextLv = lv
 		}
