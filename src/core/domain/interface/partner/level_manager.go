@@ -16,6 +16,9 @@ type ILevelManager interface {
     // 获取等级
     GetLevelById(id int)*valueobject.MemberLevel
 
+    // 根据等级值获取等级
+    GetLevelByValue(value int)*valueobject.MemberLevel
+
     // 删除等级
     DeleteLevel(id int)error
 

@@ -96,12 +96,14 @@ func (this *memberService) SaveRelation(memberId int, cardId string, invitationI
 }
 
 func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
-	//todo:
+	if m,err := this._memberRep.GetMember(memberId);err == nil {
+		return m.GetLevel()
+	}
 	return nil
 }
 
-func (this *memberService) GetLevelById(levelValue int) valueobject.MemberLevel {
-	return *this._memberRep.GetLevel(levelValue)
+func (this *memberService) GetLevelById(levelValue int) *valueobject.MemberLevel {
+	return this._memberRep.GetLevel(levelValue)
 }
 func (this *memberService) GetNextLevel(levelValue int) *valueobject.MemberLevel {
 	return this._memberRep.GetNextLevel(levelValue)

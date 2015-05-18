@@ -97,6 +97,18 @@ func (this *LevelManager) GetLevelById(id int)*valueobject.MemberLevel{
     return nil
 }
 
+
+// 根据等级值获取等级
+func (this *LevelManager)  GetLevelByValue(value int)*valueobject.MemberLevel {
+    for _, v := range this.GetLevelSet() {
+        if v.Value ==value {
+            return v
+        }
+    }
+    return nil
+}
+
+
 // 删除等级
 func (this *LevelManager) DeleteLevel(id int)error{
     var exists bool = true

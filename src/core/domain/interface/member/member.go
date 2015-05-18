@@ -8,6 +8,7 @@
  */
 
 package member
+import "go2o/src/core/domain/interface/valueobject"
 
 type IMember interface {
 	GetAggregateRootId() int
@@ -39,6 +40,9 @@ type IMember interface {
 
 	// 增加经验值
 	AddExp(exp int) error
+
+	// 获取等级
+	GetLevel()*valueobject.MemberLevel
 
 	//　增加积分
 	// todo:partnerId 不需要

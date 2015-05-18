@@ -14,6 +14,9 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"time"
+	"go2o/src/core/domain/interface/valueobject"
+	"go2o/src/core/domain/interface/partner"
+	partnerImpl "go2o/src/core/domain/partner"
 )
 
 var _ member.IMember = new(Member)
@@ -22,9 +25,11 @@ type Member struct {
 	_value      *member.ValueMember
 	_account    *member.Account
 	_bank       *member.BankInfo
+	_level 		*valueobject.MemberLevel
 	_rep        member.IMemberRep
 	_relation   *member.MemberRelation
 	_invitation member.IInvitationManager
+	_levelManager partner.ILevelManager
 }
 
 func NewMember(val *member.ValueMember, rep member.IMemberRep) member.IMember {
@@ -121,9 +126,27 @@ func (this *Member) AddExp(exp int) error {
 	_, err := this.Save()
 
 	//判断是否升级
-	this.checkLevel()
+	this.checkUpLevel()
 
 	return err
+}
+
+func (this *Member) getLevelManager()partner.ILevelManager{
+	if this._levelManager == nil {
+		rl := this.GetRelation()
+		parterId := rl.RegisterPartnerId
+		this._levelManager = partnerImpl.NewLevelManager(parterId,this._rep)
+	}
+	return this._levelManager
+
+}
+
+// 获取等级
+func (this *Member) GetLevel()*valueobject.MemberLevel{
+	if this._level == nil{
+		this._level = this.getLevelManager().GetLevelByValue(this._value.Level)
+	}
+	return this._level
 }
 
 //　增加积分
@@ -150,11 +173,13 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 	return err
 }
 
-func (this *Member) checkLevel() {
+// 检查升级
+func (this *Member) checkUpLevel() {
 	levelId := this._rep.GetLevelByExp(this._value.Exp)
 	if levelId != 0 && this._value.Level < levelId {
 		this._value.Level = levelId
 		this.Save()
+		this._level = nil
 	}
 }
 

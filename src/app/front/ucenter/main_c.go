@@ -13,7 +13,6 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/service/dps"
-	"go2o/src/core/service/goclient"
 	"html/template"
 	"net/http"
 	"time"
@@ -30,15 +29,15 @@ func (this *mainC) Index(ctx *web.Context) {
 		p := this.GetPartner(ctx)
 		conf := this.GetSiteConf(p.Id)
 
-		acc, _ := goclient.Member.GetMemberAccount(mm.Id, mm.DynamicToken)
+		acc := dps.MemberService.GetAccount(mm.Id)
 		js, _ := json.Marshal(mm)
 		info := make(map[string]string)
 		info["memName"] = mm.Name
 
-		lv := dps.MemberService.GetLevelById(mm.Level)
+		lv := dps.MemberService.GetLevel(mm.Id)
 		nextLv := dps.MemberService.GetNextLevel(mm.Level)
 		if nextLv == nil {
-			nextLv = &lv
+			nextLv = lv
 		}
 
 		ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
@@ -51,9 +50,8 @@ func (this *mainC) Index(ctx *web.Context) {
 			"json":         template.JS(js),
 			"acc":          acc,
 			"regTime":      time.Unix(mm.RegTime, 0).Format("2006-01-02"),
-			"name": gof.BoolString(len(mm.Name) == 0,
-				`<span class="red">未填写</span>`,
-				mm.Name),
+			"name": template.HTML(gof.BoolString(len(mm.Name) == 0,`<span class="red">未填写</span>`,
+				mm.Name)),
 
 			"sex": gof.BoolString(mm.Sex == 1, "先生",
 				gof.BoolString(mm.Sex == 2, "女士", "")),
