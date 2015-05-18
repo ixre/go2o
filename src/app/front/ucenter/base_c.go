@@ -32,7 +32,6 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	if s != nil {
 		if m := s.(*member.ValueMember); m != nil {
 			ctx.Items["member"] = m
-			ctx.Items["member_ptId"] = dps.MemberService.GetRelation(m.Id).RegisterPartnerId
 			return true
 		}
 	}
@@ -46,8 +45,11 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 
 // 获取商户
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
-	var partnerId int = ctx.Items["member_ptId"].(int)
-	return cache.GetValuePartnerCache(partnerId)
+	val := ctx.Session().Get("member:rel_partner")
+	if val != nil{
+		return cache.GetValuePartnerCache(val.(int))
+	}
+	return nil
 }
 
 // 获取会员

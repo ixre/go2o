@@ -48,14 +48,10 @@ func (this *listC) GetList(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 
 	const getNum int = -1 //-1表示全部
-	categoryId, err := strconv.Atoi(r.URL.Query().Get("cid"))
-	if err != nil {
-		w.Write([]byte(`{"error":"yes"}`))
-		return
-	}
+	categoryId, _ := strconv.Atoi(r.URL.Query().Get("cid"))
 	items := dps.SaleService.GetOnShelvesGoodsByCategoryId(p.Id, categoryId, getNum)
 	if len(items) == 0 {
-		w.Write([]byte(`{"error":"无商品"}`))
+		w.Write([]byte(`无商品`))
 		return
 	}
 	buf := bytes.NewBufferString("<ul>")

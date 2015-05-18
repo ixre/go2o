@@ -105,7 +105,7 @@ $(function () {
                     return unix2str(v);
                 } },
                 { field: 'Id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                	return '<a href="javascript:;" onclick="editRecord('+row.id+')">配置</a>'+
+                	return '<a href="javascript:;" onclick="editRec('+row.id+')">配置</a>'+
                             ' | <a href="javascript:;" onclick="void('+row.id+')" title="查看登陆时间。等">详情</a>';
                 } },
             ]
@@ -113,17 +113,17 @@ $(function () {
     });
 });
 
-$JS.$('btnAdd').onclick=addRecord;
+$JS.$('btnAdd').onclick=addRec;
 
-function addRecord(){
+function addRec(){
     $JS.tab.open('创建商户', 'partner/createPartner', true);
 }
 
-function editRecord(id){
+function editRec(id){
     $JS.tab.open('商户配置', 'partner/PartnerConf?id='+id, true);
 }
 
-function delRecord(id) {
+function delRec(id) {
     $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
         if (result) {
             $JS.xhr.jsonPost('/a/DelPartner', { id: id }, function(json) {

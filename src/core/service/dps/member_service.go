@@ -16,6 +16,7 @@ import (
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 	"time"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type memberService struct {
@@ -94,15 +95,15 @@ func (this *memberService) SaveRelation(memberId int, cardId string, invitationI
 	return m.SaveRelation(rl)
 }
 
-func (this *memberService) GetLevel(memberId int) *member.MemberLevel {
+func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
 	//todo:
 	return nil
 }
 
-func (this *memberService) GetLevelById(levelValue int) member.MemberLevel {
+func (this *memberService) GetLevelById(levelValue int) valueobject.MemberLevel {
 	return *this._memberRep.GetLevel(levelValue)
 }
-func (this *memberService) GetNextLevel(levelValue int) *member.MemberLevel {
+func (this *memberService) GetNextLevel(levelValue int) *valueobject.MemberLevel {
 	return this._memberRep.GetNextLevel(levelValue)
 }
 

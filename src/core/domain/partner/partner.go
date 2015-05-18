@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/variable"
 	"time"
+	"go2o/src/core/domain/interface/member"
 )
 
 var _ partner.IPartner = new(Partner)
@@ -32,15 +33,18 @@ type Partner struct {
 	_shops       []partner.IShop
 	_host        string
 	_userManager user.IUserManager
+	_confManager partner.IConfManager
+	_levelManager partner.ILevelManager
 	_userRep     user.IUserRep
+	_memberRep   member.IMemberRep
 }
 
-func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep) (partner.IPartner, error) {
+func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep,
+	memberRep member.IMemberRep) (partner.IPartner, error) {
 
 	var err error
 
 	if v == nil {
-		fmt.Println("-----------", v)
 		err = errors.New("101:no such partner")
 		return nil, err
 	}
@@ -52,6 +56,7 @@ func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.I
 		_value:   v,
 		_rep:     rep,
 		_userRep: userRep,
+		_memberRep :memberRep,
 	}, err
 }
 
@@ -264,4 +269,24 @@ func (this *Partner) UserManager() user.IUserManager {
 			this._userRep)
 	}
 	return this._userManager
+}
+
+
+// 返回设置服务
+func (this *Partner) ConfManager()partner.IConfManager {
+	if this._confManager == nil{
+		this._confManager = &ConfManager{
+			_partnerId : this.GetAggregateRootId(),
+			_rep : this._rep,
+		}
+	}
+	return this._confManager
+}
+
+// 获取会员管理服务
+func (this *Partner) LevelManager()partner.ILevelManager {
+	if this._levelManager == nil{
+		this._levelManager = NewLevelManager(this.GetAggregateRootId(),this._memberRep)
+	}
+	return this._levelManager
 }

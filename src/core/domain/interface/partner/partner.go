@@ -58,4 +58,10 @@ type IPartner interface {
 
 	// 返回用户服务
 	UserManager() user.IUserManager
+
+	// 返回设置服务
+	ConfManager()IConfManager
+
+	// 获取会员等级服务
+	LevelManager() ILevelManager
 }

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>等级管理</title>
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/icon.css">
+    <link  rel="stylesheet" type="text/css" href="{{.static_serve}}/css/partner/partner.css"/>
+</head>
+<body>
+    <div id="gd"></div>
+    <div class="toolBar">
+        <div class="searchBar padding2" id="searchbar">
+            <ul>
+                <li>
+                <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
+                    <span class="icon"></span>新增会员等级</a>
+                </li>
+                <li>
+                    <select field="enabled">
+                        <option value="-1">一所有状态一</option>
+                        <option value="1">已启用</option>
+                        <option value="2">已停用</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">关键字：</span>
+                    <input type="text" field="keyword" />
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                        <span class="icon"></span>搜索</a>
+                </li>
+                <li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+<script type="text/javascript"  src="{{.static_serve}}/assets/js/core_full.js"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript"  src="{{.static_serve}}/assets/js/export.js"></script>
+<script type="text/javascript"  src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
+
+
+<script>
+        var shops = {{.shops}};
+        expr.ele = 'searchbar';
+
+        $JS.json.bind(expr.ele, {status: decodeURIComponent($JS.request('status')) });
+
+        expr.portal = 'Partner.LevelList';
+        expr.checkParams = function (data) {
+            return true;
+        };
+
+        var refresh = function () { expr.reload('gd'); };
+
+        $JS.$('gd').style.height = $JS.screen.height() + 'px';
+
+        $(function () {
+
+            //导出
+            $('#btnExport').click(
+                function () {
+                    expr.showExportDialog();
+                });
+
+            $('#btnSearch').click(
+                function () {
+                    expr.search('gd');
+                });
+            $('#btnRefresh').click(refresh);
+
+            //加载数据
+            $('#gd').datagrid({
+                toolbar: '.toolBar',
+                singleSelect: !false,
+                pagination: true,
+                rownumbers: true,
+                fitColumns: true,
+                url: expr.getDataUrl(),
+                columns: [
+                    [
+                        {field:'name',title:'名称',width:130,align:'center'},
+                        {field:'value',title:'等级值',width:150,align:'center'},
+                        {field:'require_exp',title:'经验值上限',width:150,align:'center'},
+                        {field:'enabled',title:'是否启用',width:60,sortable:true,align:'center',
+                            formatter:function(val){
+                              return val=='1'?'<span class="green">是</span>':'<span class="red">停用</span>'
+                            }
+                        },
+
+                        {field:'id1',title:'操作',width:80,align:'center',
+                            formatter:function(v,r){
+                                return '<a href="javascript:editRec(\''+r.id+'\')">编辑</a> | '
+                                    +'<a href="javascript:delRec(\''+r.id+'\')">删除</a>';
+                            }
+                        }
+                    ]
+                ]
+            });
+        });
+
+
+
+        $JS.$('btnAdd').onclick=addRec;
+        function addRec(){
+            $JS.dialog.create2('添加会员等级',true,true).open('/member/createMLevel?id=' + id, 600,400);
+        }
+
+
+        function editRec(id){
+            $JS.dialog.create2('编辑会员等级',true,true).open('/member/editMLevel?id=' + id, 600,400);
+        }
+
+
+        function delRec(id) {
+            $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+                if (result) {
+                    $JS.xhr.jsonPost('delMLevel', { id: id }, function(json) {
+                        if (json.result) {
+                            expr.reload('gd');
+                        }else{
+                            alert(json.message);
+                        }
+                    });
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>

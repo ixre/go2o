@@ -235,25 +235,25 @@
                         }
                     },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" onclick="editRecord('+row.id+')">修改</a>'+
-                                ' | <a href="javascript:;" onclick="delRecord('+row.id+')">删除</a>'
+                        return '<a href="javascript:;" onclick="editRec('+row.id+')">修改</a>'+
+                                ' | <a href="javascript:;" onclick="delRec('+row.id+')">删除</a>'
                     } },
                 ]
             ]
         });
     });
 
-    $JS.$('btnAdd').onclick=addRecord;
+    $JS.$('btnAdd').onclick=addRec;
 
-    function addRecord(){
+    function addRec(){
         $JS.tab.open('新增商品', 'goods/create', true);
     }
 
-    function editRecord(id){
+    function editRec(id){
         $JS.tab.open('修改商品', 'goods/edit?id=' + id,  true);
     }
 
-    function delRecord(id) {
+    function delRec(id) {
         $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
                 $JS.xhr.jsonPost('/goods/del', { id: id }, function(json) {

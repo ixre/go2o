@@ -16,6 +16,7 @@ import (
 	"github.com/atnet/gof/log"
 	"go2o/src/core/domain/interface/member"
 	memberImpl "go2o/src/core/domain/member"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -61,21 +62,51 @@ func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 	return memberId
 }
 
-func (this *MemberRep) GetLevel(levelVal int) *member.MemberLevel {
-	var m member.MemberLevel
-	this.Connector.GetOrm().Get(levelVal, &m)
-	return &m
+func (this *MemberRep) GetLevel(levelVal int) *valueobject.MemberLevel{
+	//todo: MemberLevel的值应为  1,2,4,8,16,32,会员存储的值应为 partner_id * LevelValue
+	// Member
+	return nil
 }
 
 // 获取下一个等级
-func (this *MemberRep) GetNextLevel(levelVal int) *member.MemberLevel {
-	var m member.MemberLevel
+func (this *MemberRep) GetNextLevel(levelVal int) *valueobject.MemberLevel {
+	var m valueobject.MemberLevel
 	err := this.Connector.GetOrm().GetBy(&m, fmt.Sprintf("value>%d LIMIT 0,1", levelVal))
 	if err != nil {
 		return nil
 	}
 	return &m
 }
+
+
+// 获取会员等级
+func (this *MemberRep) GetMemberLevels(partnerId int)[]*valueobject.MemberLevel {
+	list := []*valueobject.MemberLevel{}
+	this.Connector.GetOrm().Select(&list,
+	"partner_id=?", partnerId)
+	return list
+}
+
+// 删除会员等级
+func (this *MemberRep) DeleteMemberLevel(partnerId,id int)error{
+	_,err := this.Connector.GetOrm().Delete(&valueobject.MemberLevel{},
+	"id=? AND partner_id=?",id,partnerId)
+	return err
+}
+
+// 保存等级
+func (this *MemberRep) SaveMemberLevel(partnerId int,v *valueobject.MemberLevel)(int,error) {
+	orm := this.Connector.GetOrm()
+	var err  error
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar(`SELECT MAX(id) FROM pt_member_level`, &v.Id)
+	}
+	return v.Id,err
+}
+
 
 // 获取账户
 func (this *MemberRep) GetAccount(memberId int) *member.Account {

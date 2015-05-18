@@ -8,6 +8,7 @@
  */
 
 package member
+import "go2o/src/core/domain/interface/valueobject"
 
 type IMemberRep interface {
 
@@ -31,11 +32,22 @@ type IMemberRep interface {
 	// 保存绑定
 	SaveRelation(*MemberRelation) error
 
+
 	// 获取等级
-	GetLevel(levelVal int) *MemberLevel
+	GetLevel(levelVal int) *valueobject.MemberLevel
 
 	// 获取下一个等级
-	GetNextLevel(levelVal int) *MemberLevel
+	GetNextLevel(levelVal int) *valueobject.MemberLevel
+
+	// 获取会员等级
+	GetMemberLevels(partnerId int)[]*valueobject.MemberLevel
+
+	// 删除会员等级
+	DeleteMemberLevel(partnerId,id int)error
+
+	// 保存等级
+	SaveMemberLevel(partnerId int,v *valueobject.MemberLevel)(int,error)
+
 
 	// 获取账户
 	GetAccount(memberId int) *Account

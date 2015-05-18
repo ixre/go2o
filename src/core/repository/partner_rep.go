@@ -29,18 +29,20 @@ type partnerRep struct {
 	db.Connector
 	_cache   map[int]partner.IPartner
 	_userRep user.IUserRep
+	_memberRep member.IMemberRep
 }
 
-func NewPartnerRep(c db.Connector, userRep user.IUserRep) partner.IPartnerRep {
+func NewPartnerRep(c db.Connector, userRep user.IUserRep,memberRep member.IMemberRep) partner.IPartnerRep {
 	return &partnerRep{
 		Connector: c,
 		_cache:    make(map[int]partner.IPartner),
 		_userRep:  userRep,
+		_memberRep : memberRep,
 	}
 }
 
 func (this *partnerRep) CreatePartner(v *partner.ValuePartner) (partner.IPartner, error) {
-	return partnerImpl.NewPartner(v, this, this._userRep)
+	return partnerImpl.NewPartner(v, this, this._userRep,this._memberRep)
 }
 
 func (this *partnerRep) renew(partnerId int) {
@@ -53,7 +55,7 @@ func (this *partnerRep) GetPartner(id int) (partner.IPartner, error) {
 	if !ok {
 		e := new(partner.ValuePartner)
 		if this.Connector.GetOrm().Get(id, e) == nil {
-			v, err = partnerImpl.NewPartner(e, this, this._userRep)
+			v, err = partnerImpl.NewPartner(e, this, this._userRep,this._memberRep)
 			if v != nil {
 				this._cache[id] = v
 			}
@@ -249,3 +251,4 @@ func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 		"partner_id=? AND id=?", partnerId, shopId)
 	return err
 }
+

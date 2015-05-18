@@ -149,7 +149,7 @@
                                     if(r.is_paid == '0'){
                                         html += '<a href="javascript:;" onclick="payment(\''+r.order_no+'\')">人工付款</a> <br /> ';
                                     }
-                                    html+='<a href="javascript:editRecord(\''+r.order_no+'\')">处理</a> | ';
+                                    html+='<a href="javascript:editRec(\''+r.order_no+'\')">处理</a> | ';
                                     html+='<a href="javascript:signDel(\''+r.order_no+'\')">取消</a>';
                                 }
                                 return html;
@@ -161,7 +161,7 @@
         });
 
 
-        function editRecord(id){
+        function editRec(id){
             $JS.dialog.create2('订单操作',true,true).open('/order/view?order_no=' + id, 600,400);
         }
 

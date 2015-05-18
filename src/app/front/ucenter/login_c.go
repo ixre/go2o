@@ -11,11 +11,11 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/goclient"
 	"net/http"
 	"strconv"
 	"time"
+	"go2o/src/core/service/dps"
 )
 
 type loginC struct {
@@ -65,18 +65,15 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 	}
 
 	if err == nil || m != nil {
-		var p *partner.ValuePartner
-		p, err = goclient.Member.GetBindPartner(m.Id, m.DynamicToken)
-		if err == nil {
-			ctx.Session().Set("member:rel_partner", p)
+		rl := dps.MemberService.GetRelation(m.Id)
+		if rl.RegisterPartnerId > 0 {
+			ctx.Session().Set("member:rel_partner", rl.RegisterPartnerId)
 			ctx.Session().Save()
 			w.Write([]byte("<script>location.replace('/')</script>"))
-		} else {
-			w.Write([]byte(err.Error()))
+			return
 		}
-	} else {
-		w.Write([]byte("<script>location.replace('/login')</script>"))
 	}
+	w.Write([]byte("<script>location.replace('/login')</script>"))
 }
 
 //从partner端退出

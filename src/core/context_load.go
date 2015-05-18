@@ -22,6 +22,7 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 func getDb(c *gof.Config, l log.ILogger) db.Connector {
@@ -51,7 +52,6 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(member.IncomeLog{}, "mm_income_log")
 	orm.CreateTableMap(member.IntegralLog{}, "mm_integral_log")
 	orm.CreateTableMap(member.Account{}, "mm_account")
-	orm.CreateTableMap(member.MemberLevel{}, "conf_member_level")
 	orm.CreateTableMap(member.DeliverAddress{}, "mm_deliver_addr")
 	orm.CreateTableMap(member.MemberRelation{}, "mm_relation")
 
@@ -67,11 +67,13 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(sale.ValueCategory{}, "gs_category")
 	orm.CreateTableMap(sale.GoodsSnapshot{}, "gs_snapshot")
 
+	/** 商户 **/
 	orm.CreateTableMap(partner.ValuePartner{}, "pt_partner")
 	orm.CreateTableMap(partner.ApiInfo{}, "pt_api")
 	orm.CreateTableMap(partner.SiteConf{}, "pt_siteconf")
 	orm.CreateTableMap(partner.ValueShop{}, "pt_shop")
 	orm.CreateTableMap(partner.SaleConf{}, "pt_saleconf")
+	orm.CreateTableMap(valueobject.MemberLevel{}, "pt_member_level")
 
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")

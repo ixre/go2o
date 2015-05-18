@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type partnerService struct {
@@ -183,4 +184,22 @@ func (this *partnerService) GetApiInfo(partnerId int) *partner.ApiInfo {
 // 根据API ID获取PartnerId
 func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 	return this._partnerRep.GetPartnerIdByApiId(apiId)
+}
+
+// 根据编号获取会员等级信息
+func (this *partnerService) GetMemberLevelById(partnerId,id int)*valueobject.MemberLevel{
+	pt,_ := this._partnerRep.GetPartner(partnerId)
+	return pt.LevelManager().GetLevelById(id)
+}
+
+// 保存会员等级信息
+func (this *partnerService)  SaveMemberLevel(partnerId int,v *valueobject.MemberLevel)(int,error){
+	pt,_ :=this._partnerRep.GetPartner(partnerId)
+	return pt.LevelManager().SaveLevel(v)
+}
+
+// 删除会员等级
+func (this *partnerService) DelMemberLevel(partnerId,levelId int)error{
+	pt,_ :=this._partnerRep.GetPartner(partnerId)
+	return pt.LevelManager().DeleteLevel(levelId)
 }
