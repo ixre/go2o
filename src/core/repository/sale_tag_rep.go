@@ -114,7 +114,7 @@ func (this *SaleTagRep) SaveGoodsSaleTags(goodsId int, tagIds []int) error {
 	}
 
 	for _, v := range tagIds {
-		_, err = this.ExecNonQuery("INSERT INTO gs_goods (goods_id,sale_tag_id) VALUES(?,?)",
+		_, err = this.ExecNonQuery("INSERT INTO gs_goods_tag (goods_id,sale_tag_id) VALUES(?,?)",
 			goodsId, v)
 	}
 

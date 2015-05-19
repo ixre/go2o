@@ -131,6 +131,7 @@
                     },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
                         return '<a href="javascript:;" onclick="editRec('+row.id+')">修改</a>'+
+                                ' | <a href="javascript:;" onclick="setSaleTag('+row.id+')">标签设置</a>'+
                                 ' | <a href="javascript:;" onclick="delRec('+row.id+')">删除</a>'
                     } },
                 ]
@@ -142,6 +143,10 @@
 
     function addRec(){
         $JS.tab.open('新增商品', 'goods/create', true);
+    }
+
+    function setSaleTag(id){
+        $JS.dialog.create2('设置商品销售标签',true,true).open('goods/setSaleTag?id=' + id,400,300);
     }
 
     function editRec(id){

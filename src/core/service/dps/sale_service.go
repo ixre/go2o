@@ -151,6 +151,17 @@ func (this *saleService) InitSaleTags(partnerId int) error {
 	return sl.InitSaleTags()
 }
 
+func (this *saleService) GetAllSaleTags(partnerId int)[]*sale.ValueSaleTag{
+	sl := this._rep.GetSale(partnerId)
+	tags := sl.GetAllSaleTags()
+
+	var vtags []*sale.ValueSaleTag = make([]*sale.ValueSaleTag,len(tags))
+	for i,v := range tags{
+		vtags[i] = v.GetValue()
+	}
+	return vtags
+}
+
 // 获取销售标签
 func (this *saleService) GetSaleTag(partnerId, id int) *sale.ValueSaleTag {
 	sl := this._rep.GetSale(partnerId)
@@ -169,4 +180,26 @@ func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, 
 		return tag.Save()
 	}
 	return sl.CreateSaleTag(v).Save()
+}
+
+// 获取商品的销售标签
+func (this *saleService) GetGoodsSaleTags(partnerId,goodsId int)[]*sale.ValueSaleTag{
+	var list = make([]*sale.ValueSaleTag,0)
+	sl := this._rep.GetSale(partnerId)
+	if goods := sl.GetGoods(goodsId);goods!= nil{
+		list = goods.GetSaleTags()
+	}
+	return list
+}
+
+// 保存商品的销售标签
+func (this *saleService) SaveGoodsSaleTags(partnerId,goodsId int,tagIds []int)error{
+	var err error
+	sl := this._rep.GetSale(partnerId)
+	if goods := sl.GetGoods(goodsId);goods != nil{
+		err = goods.SaveSaleTags(tagIds)
+	}else{
+		err = errors.New("商品不存在")
+	}
+	return err
 }
