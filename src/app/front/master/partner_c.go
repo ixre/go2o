@@ -37,6 +37,7 @@ func (c *partnerC) CreatePartner(ctx *web.Context) {
 func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	var result gof.Message
+	var isCreate bool
 	r.ParseForm()
 
 	partner := partner.ValuePartner{}
@@ -62,6 +63,7 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 		partner.JoinTime = dt.Unix()
 		partner.ExpiresTime = dt.AddDate(10, 0, 0).Unix()
 		partner.UpdateTime = dt.Unix()
+		isCreate =true
 	}
 
 	id, err := dps.PartnerService.SavePartner(partner.Id, &partner)
@@ -70,6 +72,11 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 	} else {
 		result.Data = id
 		result.Result = true
+		if isCreate{
+			// 初始化商户信息
+			dps.PartnerService.InitDefaultLevels(id)  // 初始化等级
+			dps.SaleService.InitSaleTags(id)		  // 初始化销售标签
+		}
 	}
 	w.Write(result.Marshal())
 }

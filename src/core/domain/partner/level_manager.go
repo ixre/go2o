@@ -32,7 +32,12 @@ func NewLevelManager(partnerId int, rep member.IMemberRep) partner.ILevelManager
 	}
 }
 
-func (this *LevelManager) insertDefaultLevels() []*valueobject.MemberLevel {
+// 初始化默认等级
+func (this *LevelManager) InitDefaultLevels()error{
+	if len(this.GetLevelSet())!= 0 {
+
+		return errors.New("已经存在数据，无法初始化!")
+	}
 	var arr []*valueobject.MemberLevel = []*valueobject.MemberLevel{
 		&valueobject.MemberLevel{
 			PartnerId:  this._partnerId,
@@ -74,16 +79,13 @@ func (this *LevelManager) insertDefaultLevels() []*valueobject.MemberLevel {
 	for _, v := range arr {
 		v.Id, _ = this.SaveLevel(v)
 	}
-	return arr
+	return nil
 }
 
 // 获取等级设置
 func (this *LevelManager) GetLevelSet() []*valueobject.MemberLevel {
 	if this._levelSet == nil {
 		this._levelSet = this._rep.GetMemberLevels(this._partnerId)
-		if len(this._levelSet) == 0 {
-			this._levelSet = this.insertDefaultLevels()
-		}
 	}
 	return this._levelSet
 }

@@ -12,6 +12,9 @@ type ISaleTagRep interface {
 	// 创建销售标签
 	CreateSaleTag(v *ValueSaleTag) ISaleTag
 
+	// 获取所有的销售标签
+	GetAllValueSaleTags(partnerId int)[]*ValueSaleTag
+
 	// 获取销售标签值
 	GetValueSaleTag(partnerId int, tagId int) *ValueSaleTag
 

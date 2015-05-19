@@ -145,6 +145,12 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	return list
 }
 
+// 初始化销售标签
+func (this *saleService) InitSaleTags(partnerId int)error{
+	sl := this._rep.GetSale(partnerId)
+	return sl.InitSaleTags()
+}
+
 // 获取销售标签
 func (this *saleService) GetSaleTag(partnerId, id int)*sale.ValueSaleTag{
 	sl := this._rep.GetSale(partnerId)

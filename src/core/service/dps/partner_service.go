@@ -186,6 +186,13 @@ func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 	return this._partnerRep.GetPartnerIdByApiId(apiId)
 }
 
+// 初始化默认等级
+func (this *partnerService) InitDefaultLevels(partnerId int)error{
+	pt, _ := this._partnerRep.GetPartner(partnerId)
+	return pt.LevelManager().InitDefaultLevels()
+}
+
+// 获取所有会员等级
 func (this *partnerService) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
 	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetLevelSet()

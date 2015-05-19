@@ -30,6 +30,15 @@ func (this *SaleTagRep) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 	return nil
 }
 
+
+// 获取所有的销售标签
+func (this *SaleTagRep) GetAllValueSaleTags(partnerId int)[]*sale.ValueSaleTag{
+	arr := []*sale.ValueSaleTag{}
+	this.Connector.GetOrm().Select(&arr,"partner_id=?",partnerId)
+	return arr
+}
+
+
 // 获取销售标签值
 func (this *SaleTagRep) GetValueSaleTag(partnerId int, tagId int) *sale.ValueSaleTag {
 	var v *sale.ValueSaleTag =new(sale.ValueSaleTag)

@@ -29,6 +29,12 @@ type ISale interface {
 	// 删除分类
 	DeleteCategory(int) error
 
+	// 获取所有的销售标签
+	GetAllSaleTags()[]ISaleTag
+
+// 初始化销售标签
+ InitSaleTags()error
+
 	// 获取销售标签
 	GetSaleTag(id int) ISaleTag
 

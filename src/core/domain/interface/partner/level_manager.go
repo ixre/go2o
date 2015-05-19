@@ -31,4 +31,7 @@ type ILevelManager interface {
 
 	// 根据经验值获取等级值
 	GetLevelValueByExp(exp int) int
+
+	// 初始化默认等级
+    InitDefaultLevels()error
 }
