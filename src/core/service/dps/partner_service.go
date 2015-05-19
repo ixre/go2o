@@ -187,7 +187,7 @@ func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 }
 
 // 初始化默认等级
-func (this *partnerService) InitDefaultLevels(partnerId int)error{
+func (this *partnerService) InitDefaultLevels(partnerId int) error {
 	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().InitDefaultLevels()
 }

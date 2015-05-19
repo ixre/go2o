@@ -10,9 +10,9 @@
 package sale
 
 import (
+	"errors"
 	"go2o/src/core/domain/interface/sale"
 	"time"
-	"errors"
 )
 
 var _ sale.ISale = new(Sale)
@@ -65,7 +65,7 @@ func (this *Sale) CreateGoods(v *sale.ValueGoods) sale.IGoods {
 
 	//todo: 判断category
 
-	return newGoods(this, v, this._saleRep)
+	return newGoods(this, v, this._saleRep,this._saleTagRep)
 }
 
 // 根据产品编号获取产品
@@ -130,50 +130,50 @@ func (this *Sale) DeleteCategory(id int) error {
 }
 
 // 初始化销售标签
-func (this *Sale) InitSaleTags()error{
-	if len(this.GetAllSaleTags()) != 0{
+func (this *Sale) InitSaleTags() error {
+	if len(this.GetAllSaleTags()) != 0 {
 		return errors.New("已经存在数据，无法初始化!")
 	}
 
 	arr := []sale.ValueSaleTag{
 		sale.ValueSaleTag{
-			TagName:"新品上架",
-			TagCode :"new-goods",
+			TagName: "新品上架",
+			TagCode: "new-goods",
 		},
 		sale.ValueSaleTag{
-			TagName:"热销商品",
-			TagCode :"hot-sales",
+			TagName: "热销商品",
+			TagCode: "hot-sales",
 		},
 		sale.ValueSaleTag{
-			TagName:"特色商品",
-			TagCode :"special-goods",
+			TagName: "特色商品",
+			TagCode: "special-goods",
 		},
 		sale.ValueSaleTag{
-			TagName:"优惠促销",
-			TagCode :"prom-sales",
+			TagName: "优惠促销",
+			TagCode: "prom-sales",
 		},
 		sale.ValueSaleTag{
-			TagName:"尾品清仓",
-			TagCode :"clean-goods",
+			TagName: "尾品清仓",
+			TagCode: "clean-goods",
 		},
 	}
 
 	var err error
-	for _,v := range arr{
+	for _, v := range arr {
 		v.Enabled = 1
 		v.PartnerId = this._partnerId
-		_,err = this.CreateSaleTag(&v).Save()
+		_, err = this.CreateSaleTag(&v).Save()
 	}
 
 	return err
 }
 
 // 获取所有的销售标签
-func (this *Sale) GetAllSaleTags()[]sale.ISaleTag{
+func (this *Sale) GetAllSaleTags() []sale.ISaleTag {
 	arr := this._saleTagRep.GetAllValueSaleTags(this._partnerId)
-	var tags = make([]sale.ISaleTag,len(arr))
+	var tags = make([]sale.ISaleTag, len(arr))
 
-	for i,v := range arr{
+	for i, v := range arr {
 		tags[i] = this.CreateSaleTag(v)
 	}
 	return tags

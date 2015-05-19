@@ -30,10 +30,10 @@ type ISale interface {
 	DeleteCategory(int) error
 
 	// 获取所有的销售标签
-	GetAllSaleTags()[]ISaleTag
+	GetAllSaleTags() []ISaleTag
 
-// 初始化销售标签
- InitSaleTags()error
+	// 初始化销售标签
+	InitSaleTags() error
 
 	// 获取销售标签
 	GetSaleTag(id int) ISaleTag

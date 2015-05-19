@@ -13,7 +13,7 @@ type ISaleTagRep interface {
 	CreateSaleTag(v *ValueSaleTag) ISaleTag
 
 	// 获取所有的销售标签
-	GetAllValueSaleTags(partnerId int)[]*ValueSaleTag
+	GetAllValueSaleTags(partnerId int) []*ValueSaleTag
 
 	// 获取销售标签值
 	GetValueSaleTag(partnerId int, tagId int) *ValueSaleTag
@@ -32,4 +32,13 @@ type ISaleTagRep interface {
 
 	// 获取商品
 	GetValueGoods(partnerId, tagId, begin, end int) []*ValueGoods
+
+	// 获取商品的销售标签
+	GetGoodsSaleTags(goodsId int) []*ValueSaleTag
+
+	// 清理商品的销售标签
+	CleanGoodsSaleTags(goodsId int) error
+
+	// 保存商品的销售标签
+	SaveGoodsSaleTags(goodsId int, tagIds []int) error
 }

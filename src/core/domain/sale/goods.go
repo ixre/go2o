@@ -19,59 +19,81 @@ import (
 var _ sale.IGoods = new(Goods)
 
 type Goods struct {
-	value          *sale.ValueGoods
-	saleRep        sale.ISaleRep
-	sale           *Sale
-	latestSnapshot *sale.GoodsSnapshot
+	_value          *sale.ValueGoods
+	_saleRep        sale.ISaleRep
+	_saleTagRep     sale.ISaleTagRep
+	_sale           *Sale
+	_saleTags       []*sale.ValueSaleTag
+	_latestSnapshot *sale.GoodsSnapshot
 }
 
-func newGoods(sale *Sale, v *sale.ValueGoods, saleRep sale.ISaleRep) sale.IGoods {
-	return &Goods{value: v,
-		saleRep: saleRep,
-		sale:    sale,
+func newGoods(sale *Sale, v *sale.ValueGoods, saleRep sale.ISaleRep, saleTagRep sale.ISaleTagRep) sale.IGoods {
+	return &Goods{
+		_value:      v,
+		_saleRep:    saleRep,
+		_saleTagRep: saleTagRep,
+		_sale:       sale,
 	}
 }
 
 func (this *Goods) GetDomainId() int {
-	return this.value.Id
+	return this._value.Id
 }
 
 func (this *Goods) GetValue() sale.ValueGoods {
-	return *this.value
+	return *this._value
 }
 
 func (this *Goods) SetValue(v *sale.ValueGoods) error {
-	if v.Id == this.value.Id {
-		v.CreateTime = this.value.CreateTime
-		this.value = v
+	if v.Id == this._value.Id {
+		v.CreateTime = this._value.CreateTime
+		this._value = v
 	}
-	this.value.UpdateTime = time.Now().Unix()
+	this._value.UpdateTime = time.Now().Unix()
 	return nil
 }
 
 // 是否上架
 func (this *Goods) IsOnShelves() bool {
-	return this.value.OnShelves == 1
+	return this._value.OnShelves == 1
 }
 
+// 获取商品的销售标签
+func (this *Goods) GetSaleTags() []*sale.ValueSaleTag {
+	if this._saleTags == nil {
+		this._saleTags = this._saleTagRep.GetGoodsSaleTags(this.GetDomainId())
+	}
+	return this._saleTags
+}
+
+// 保存销售标签
+func (this *Goods) SaveSaleTags(tagIds []int) error {
+	err := this._saleTagRep.CleanGoodsSaleTags(this.GetDomainId())
+	if err == nil {
+		err = this._saleTagRep.SaveGoodsSaleTags(this.GetDomainId(), tagIds)
+	}
+	return err
+}
+
+// 保存
 func (this *Goods) Save() (int, error) {
-	this.sale.clearCache(this.value.Id)
+	this._sale.clearCache(this._value.Id)
 
 	unix := time.Now().Unix()
-	this.value.UpdateTime = unix
+	this._value.UpdateTime = unix
 
 	if this.GetDomainId() <= 0 {
-		this.value.CreateTime = unix
+		this._value.CreateTime = unix
 	}
 
-	if this.value.GoodsNo == "" {
-		cs := strconv.Itoa(this.value.CategoryId)
+	if this._value.GoodsNo == "" {
+		cs := strconv.Itoa(this._value.CategoryId)
 		us := strconv.Itoa(int(unix))
 		l := len(cs)
-		this.value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
+		this._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
-	id, err := this.saleRep.SaveGoods(this.value)
+	id, err := this._saleRep.SaveGoods(this._value)
 	if err == nil {
 		// 创建快照
 		_, err = this.GenerateSnapshot()
@@ -81,7 +103,7 @@ func (this *Goods) Save() (int, error) {
 
 // 生成快照
 func (this *Goods) GenerateSnapshot() (int, error) {
-	v := this.value
+	v := this._value
 	if v.Id <= 0 {
 		return 0, sale.ErrNoSuchGoods
 	}
@@ -90,9 +112,9 @@ func (this *Goods) GenerateSnapshot() (int, error) {
 		return 0, sale.ErrNotOnShelves
 	}
 
-	partnerId := this.sale.GetAggregateRootId()
+	partnerId := this._sale.GetAggregateRootId()
 	unix := time.Now().Unix()
-	cate := this.saleRep.GetCategory(partnerId, v.CategoryId)
+	cate := this._saleRep.GetCategory(partnerId, v.CategoryId)
 	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
 		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
 		GoodsId:      this.GetDomainId(),
@@ -108,8 +130,8 @@ func (this *Goods) GenerateSnapshot() (int, error) {
 	}
 
 	if this.isNewSnapshot(gsn) {
-		this.latestSnapshot = gsn
-		return this.saleRep.SaveSnapshot(gsn)
+		this._latestSnapshot = gsn
+		return this._saleRep.SaveSnapshot(gsn)
 	}
 	return 0, sale.ErrLatestSnapshot
 }
@@ -131,8 +153,8 @@ func (this *Goods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
 
 // 获取最新的快照
 func (this *Goods) GetLatestSnapshot() *sale.GoodsSnapshot {
-	if this.latestSnapshot == nil {
-		this.latestSnapshot = this.saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
+	if this._latestSnapshot == nil {
+		this._latestSnapshot = this._saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
 	}
-	return this.latestSnapshot
+	return this._latestSnapshot
 }

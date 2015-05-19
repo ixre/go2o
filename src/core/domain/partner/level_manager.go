@@ -33,8 +33,8 @@ func NewLevelManager(partnerId int, rep member.IMemberRep) partner.ILevelManager
 }
 
 // 初始化默认等级
-func (this *LevelManager) InitDefaultLevels()error{
-	if len(this.GetLevelSet())!= 0 {
+func (this *LevelManager) InitDefaultLevels() error {
+	if len(this.GetLevelSet()) != 0 {
 
 		return errors.New("已经存在数据，无法初始化!")
 	}

@@ -33,5 +33,5 @@ type ILevelManager interface {
 	GetLevelValueByExp(exp int) int
 
 	// 初始化默认等级
-    InitDefaultLevels()error
+	InitDefaultLevels() error
 }
