@@ -71,6 +71,7 @@ func (this *Goods) SaveSaleTags(tagIds []int) error {
 	err := this._saleTagRep.CleanGoodsSaleTags(this.GetDomainId())
 	if err == nil {
 		err = this._saleTagRep.SaveGoodsSaleTags(this.GetDomainId(), tagIds)
+		this._saleTags = nil
 	}
 	return err
 }
