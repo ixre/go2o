@@ -34,8 +34,8 @@ func (this *mainC) Index(ctx *web.Context) {
 		info := make(map[string]string)
 		info["memName"] = mm.Name
 
-		lv := dps.PartnerService.GetLevel(p.Id,mm.Level)
-		nextLv := dps.PartnerService.GetNextLevel(p.Id,mm.Level)
+		lv := dps.PartnerService.GetLevel(p.Id, mm.Level)
+		nextLv := dps.PartnerService.GetNextLevel(p.Id, mm.Level)
 
 		if nextLv == nil {
 			nextLv = lv
@@ -51,7 +51,7 @@ func (this *mainC) Index(ctx *web.Context) {
 			"json":         template.JS(js),
 			"acc":          acc,
 			"regTime":      time.Unix(mm.RegTime, 0).Format("2006-01-02"),
-			"name": template.HTML(gof.BoolString(len(mm.Name) == 0,`<span class="red">未填写</span>`,
+			"name": template.HTML(gof.BoolString(len(mm.Name) == 0, `<span class="red">未填写</span>`,
 				mm.Name)),
 
 			"sex": gof.BoolString(mm.Sex == 1, "先生",

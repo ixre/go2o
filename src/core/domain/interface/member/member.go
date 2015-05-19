@@ -8,6 +8,7 @@
  */
 
 package member
+
 import "go2o/src/core/domain/interface/valueobject"
 
 type IMember interface {
@@ -42,7 +43,7 @@ type IMember interface {
 	AddExp(exp int) error
 
 	// 获取等级
-	GetLevel()*valueobject.MemberLevel
+	GetLevel() *valueobject.MemberLevel
 
 	//　增加积分
 	// todo:partnerId 不需要

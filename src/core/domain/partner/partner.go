@@ -12,6 +12,7 @@ package partner
 import (
 	"errors"
 	"fmt"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/user"
 	userImpl "go2o/src/core/domain/partner/user"
@@ -19,24 +20,23 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/variable"
 	"time"
-	"go2o/src/core/domain/interface/member"
 )
 
 var _ partner.IPartner = new(Partner)
 
 type Partner struct {
-	_value       *partner.ValuePartner
-	_saleConf    *partner.SaleConf
-	_siteConf    *partner.SiteConf
-	_apiInfo     *partner.ApiInfo
-	_rep         partner.IPartnerRep
-	_shops       []partner.IShop
-	_host        string
-	_userManager user.IUserManager
-	_confManager partner.IConfManager
+	_value        *partner.ValuePartner
+	_saleConf     *partner.SaleConf
+	_siteConf     *partner.SiteConf
+	_apiInfo      *partner.ApiInfo
+	_rep          partner.IPartnerRep
+	_shops        []partner.IShop
+	_host         string
+	_userManager  user.IUserManager
+	_confManager  partner.IConfManager
 	_levelManager partner.ILevelManager
-	_userRep     user.IUserRep
-	_memberRep   member.IMemberRep
+	_userRep      user.IUserRep
+	_memberRep    member.IMemberRep
 }
 
 func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep,
@@ -53,10 +53,10 @@ func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.I
 	}
 
 	return &Partner{
-		_value:   v,
-		_rep:     rep,
-		_userRep: userRep,
-		_memberRep :memberRep,
+		_value:     v,
+		_rep:       rep,
+		_userRep:   userRep,
+		_memberRep: memberRep,
 	}, err
 }
 
@@ -271,22 +271,21 @@ func (this *Partner) UserManager() user.IUserManager {
 	return this._userManager
 }
 
-
 // 返回设置服务
-func (this *Partner) ConfManager()partner.IConfManager {
-	if this._confManager == nil{
+func (this *Partner) ConfManager() partner.IConfManager {
+	if this._confManager == nil {
 		this._confManager = &ConfManager{
-			_partnerId : this.GetAggregateRootId(),
-			_rep : this._rep,
+			_partnerId: this.GetAggregateRootId(),
+			_rep:       this._rep,
 		}
 	}
 	return this._confManager
 }
 
 // 获取会员管理服务
-func (this *Partner) LevelManager()partner.ILevelManager {
-	if this._levelManager == nil{
-		this._levelManager = NewLevelManager(this.GetAggregateRootId(),this._memberRep)
+func (this *Partner) LevelManager() partner.ILevelManager {
+	if this._levelManager == nil {
+		this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
 	}
 	return this._levelManager
 }

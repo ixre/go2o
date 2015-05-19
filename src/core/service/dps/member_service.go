@@ -12,11 +12,11 @@ package dps
 import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 	"time"
-	"go2o/src/core/domain/interface/valueobject"
 )
 
 type memberService struct {
@@ -96,7 +96,7 @@ func (this *memberService) SaveRelation(memberId int, cardId string, invitationI
 }
 
 func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
-	if m,err := this._memberRep.GetMember(memberId);err == nil {
+	if m, err := this._memberRep.GetMember(memberId); err == nil {
 		return m.GetLevel()
 	}
 	return nil

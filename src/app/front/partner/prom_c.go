@@ -9,7 +9,9 @@
 package partner
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
@@ -19,8 +21,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"bytes"
-	"fmt"
 )
 
 var _ mvc.Filter = new(promC)
@@ -35,8 +35,8 @@ func (this *promC) CreateCoupon(ctx *web.Context) {
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"entity":"{}",
-			"levelDr":template.HTML(levelDr),
+			"entity":  "{}",
+			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/create_coupon.html")
 }
@@ -50,19 +50,18 @@ func (this *promC) EditCoupon(ctx *web.Context) {
 
 	levelDr := this.getLevelDropDownList(ctx)
 
-
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
-			"entity": template.JS(js),
-			"levelDr":template.HTML(levelDr),
+			"entity":  template.JS(js),
+			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/edit_coupon.html")
 }
 
-func (this *promC) getLevelDropDownList(ctx *web.Context)string{
+func (this *promC) getLevelDropDownList(ctx *web.Context) string {
 	buf := bytes.NewBufferString("")
 	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
-	for _,v := range lvs{
+	for _, v := range lvs {
 		if v.Enabled == 1 {
 			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
 		}

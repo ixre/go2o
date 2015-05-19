@@ -8,15 +8,15 @@
  */
 package sale
 
-type  ISaleTag interface{
-    GetDomainId() int
+type ISaleTag interface {
+	GetDomainId() int
 
-    GetValue()*ValueSaleTag
+	GetValue() *ValueSaleTag
 
-    SetValue(v *ValueSaleTag)error
+	SetValue(v *ValueSaleTag) error
 
-    Save() (int, error)
+	Save() (int, error)
 
-    // 获取标签下的商品
-    GetValueGoods(begin,end int)[]*ValueGoods
+	// 获取标签下的商品
+	GetValueGoods(begin, end int) []*ValueGoods
 }

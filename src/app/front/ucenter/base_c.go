@@ -46,7 +46,7 @@ func (this *baseC) RequestEnd(ctx *web.Context) {
 // 获取商户
 func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	val := ctx.Session().Get("member:rel_partner")
-	if val != nil{
+	if val != nil {
 		return cache.GetValuePartnerCache(val.(int))
 	}
 	return nil

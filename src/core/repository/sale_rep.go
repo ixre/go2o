@@ -24,12 +24,14 @@ var _ sale.ISaleRep = new(saleRep)
 
 type saleRep struct {
 	db.Connector
-	cache map[int]sale.ISale
+	cache   map[int]sale.ISale
+	_tagRep sale.ISaleTagRep
 }
 
-func NewSaleRep(c db.Connector) sale.ISaleRep {
+func NewSaleRep(c db.Connector, saleTagRep sale.ISaleTagRep) sale.ISaleRep {
 	return (&saleRep{
 		Connector: c,
+		_tagRep:   saleTagRep,
 	}).init()
 }
 
@@ -41,7 +43,7 @@ func (this *saleRep) init() sale.ISaleRep {
 func (this *saleRep) GetSale(partnerId int) sale.ISale {
 	v, ok := this.cache[partnerId]
 	if !ok {
-		v = saleImpl.NewSale(partnerId, this)
+		v = saleImpl.NewSale(partnerId, this, this._tagRep)
 		this.cache[partnerId] = v
 	}
 	return v

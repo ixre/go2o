@@ -60,7 +60,7 @@ type IPartner interface {
 	UserManager() user.IUserManager
 
 	// 返回设置服务
-	ConfManager()IConfManager
+	ConfManager() IConfManager
 
 	// 获取会员等级服务
 	LevelManager() ILevelManager

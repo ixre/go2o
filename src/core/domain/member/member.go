@@ -12,23 +12,23 @@ package member
 import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/valueobject"
+	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure/domain"
 	"time"
-	"go2o/src/core/domain/interface/valueobject"
-	"go2o/src/core/domain/interface/partner"
-	partnerImpl "go2o/src/core/domain/partner"
 )
 
 var _ member.IMember = new(Member)
 
 type Member struct {
-	_value      *member.ValueMember
-	_account    *member.Account
-	_bank       *member.BankInfo
-	_level 		*valueobject.MemberLevel
-	_rep        member.IMemberRep
-	_relation   *member.MemberRelation
-	_invitation member.IInvitationManager
+	_value        *member.ValueMember
+	_account      *member.Account
+	_bank         *member.BankInfo
+	_level        *valueobject.MemberLevel
+	_rep          member.IMemberRep
+	_relation     *member.MemberRelation
+	_invitation   member.IInvitationManager
 	_levelManager partner.ILevelManager
 }
 
@@ -131,19 +131,19 @@ func (this *Member) AddExp(exp int) error {
 	return err
 }
 
-func (this *Member) getLevelManager()partner.ILevelManager{
+func (this *Member) getLevelManager() partner.ILevelManager {
 	if this._levelManager == nil {
 		rl := this.GetRelation()
 		parterId := rl.RegisterPartnerId
-		this._levelManager = partnerImpl.NewLevelManager(parterId,this._rep)
+		this._levelManager = partnerImpl.NewLevelManager(parterId, this._rep)
 	}
 	return this._levelManager
 
 }
 
 // 获取等级
-func (this *Member) GetLevel()*valueobject.MemberLevel{
-	if this._level == nil{
+func (this *Member) GetLevel() *valueobject.MemberLevel {
+	if this._level == nil {
 		this._level = this.getLevelManager().GetLevelByValue(this._value.Level)
 	}
 	return this._level

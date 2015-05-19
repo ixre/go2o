@@ -16,11 +16,11 @@ import (
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
+	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/service/dps"
 	"html/template"
-	"strings"
 	"strconv"
-	"go2o/src/core/domain/interface/valueobject"
+	"strings"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -29,8 +29,8 @@ type memberC struct {
 	*baseC
 }
 
-func (this *memberC) LevelList(ctx *web.Context){
-	ctx.App.Template().Execute(ctx.ResponseWriter,nil, "views/partner/member/level_list.html")
+func (this *memberC) LevelList(ctx *web.Context) {
+	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/member/level_list.html")
 }
 
 //修改门店信息
@@ -42,21 +42,21 @@ func (this *memberC) EditMLevel(ctx *web.Context) {
 	bys, _ := json.Marshal(entity)
 
 	ctx.App.Template().Execute(w,
-	gof.TemplateDataMap{
-		"entity": template.JS(bys),
-	},
-	"views/partner/member/edit_level.html")
+		gof.TemplateDataMap{
+			"entity": template.JS(bys),
+		},
+		"views/partner/member/edit_level.html")
 }
 
 func (this *memberC) CreateMLevel(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-	gof.TemplateDataMap{
-		"entity": "{}",
-	},
-	"views/partner/member/create_level.html")
+		gof.TemplateDataMap{
+			"entity": "{}",
+		},
+		"views/partner/member/create_level.html")
 }
 
-func (this *memberC) SaveMLevel_post(ctx *web.Context){
+func (this *memberC) SaveMLevel_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
@@ -71,13 +71,13 @@ func (this *memberC) SaveMLevel_post(ctx *web.Context){
 	if err != nil {
 		result.Message = err.Error()
 	} else {
-		result.Result=true
+		result.Result = true
 		result.Data = id
 	}
-	this.JsonOutput(ctx,result)
+	this.JsonOutput(ctx, result)
 }
 
-func (this *memberC) DelMLevel(ctx *web.Context){
+func (this *memberC) DelMLevel(ctx *web.Context) {
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
@@ -88,13 +88,12 @@ func (this *memberC) DelMLevel(ctx *web.Context){
 	}
 
 	if err != nil {
-		result.Message=err.Error()
+		result.Message = err.Error()
 	} else {
 		result.Result = true
 	}
-	this.ResultOutput(ctx,result)
+	this.ResultOutput(ctx, result)
 }
-
 
 func (this *memberC) List(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)

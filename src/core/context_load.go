@@ -20,9 +20,9 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
+	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
-	"go2o/src/core/domain/interface/valueobject"
 )
 
 func getDb(c *gof.Config, l log.ILogger) db.Connector {
@@ -63,9 +63,11 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(shopping.ValueCart{}, "sale_cart")
 	orm.CreateTableMap(shopping.ValueCartItem{}, "sale_cart_item")
 
+	/** 销售 **/
 	orm.CreateTableMap(sale.ValueGoods{}, "gs_goods")
 	orm.CreateTableMap(sale.ValueCategory{}, "gs_category")
 	orm.CreateTableMap(sale.GoodsSnapshot{}, "gs_snapshot")
+	orm.CreateTableMap(sale.ValueSaleTag{}, "gs_sale_tag")
 
 	/** 商户 **/
 	orm.CreateTableMap(partner.ValuePartner{}, "pt_partner")

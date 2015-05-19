@@ -13,7 +13,7 @@
             <ul>
                 <li>
                 <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
-                    <span class="icon"></span>新增会员等级</a>
+                    <span class="icon"></span>新增销售标签</a>
                 </li>
                 <li>
                     <select field="enabled">
@@ -51,7 +51,7 @@
 
         $JS.json.bind(expr.ele, {status: decodeURIComponent($JS.request('status')) });
 
-        expr.portal = 'Partner.LevelList';
+        expr.portal = 'Partner.SaleTagList';
         expr.checkParams = function (data) {
             return true;
         };
@@ -84,9 +84,11 @@
                 url: expr.getDataUrl(),
                 columns: [
                     [
-                        {field:'name',title:'名称',width:130,align:'center'},
-                        {field:'value',title:'等级值',width:150,align:'center'},
-                        {field:'require_exp',title:'经验值上限',width:150,align:'center'},
+                        {field:'tag_name',title:'标签名称',width:130,align:'center'},
+                        {field:'tag_code',title:'标签代码',width:150,align:'center'},
+                        {field:'goods_image',title:'标识图片',width:150,align:'center',formatter:function(v){
+                            return v.length == 0?'-':'<img src="{{.img_serve}}/'+v+'" style="margin-top:5px;width:100px;height:40px"/>';
+                        }},
                         {field:'enabled',title:'是否启用',width:60,sortable:true,align:'center',
                             formatter:function(val){
                               return val=='1'?'<span class="green">是</span>':'<span class="red">停用</span>'
@@ -108,12 +110,12 @@
 
         $JS.$('btnAdd').onclick=addRec;
         function addRec(){
-            $JS.dialog.create2('添加会员等级',true,true).open('/member/createMLevel', 600,400);
+            $JS.dialog.create2('添加销售标签',true,true).open('/sale/createSTag', 600,400);
         }
 
 
         function editRec(id){
-            $JS.dialog.create2('编辑会员等级',true,true).open('/member/editMLevel?id=' + id, 600,400);
+            $JS.dialog.create2('编辑销售标签',true,true).open('/sale/editSTag?id=' + id, 600,400);
         }
 
 

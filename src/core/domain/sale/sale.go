@@ -21,14 +21,16 @@ const MAX_CACHE_SIZE int = 1000
 type Sale struct {
 	partnerId  int
 	saleRep    sale.ISaleRep
+	saleTagRep sale.ISaleTagRep
 	proCache   map[int]sale.IGoods
 	categories []sale.ICategory
 }
 
-func NewSale(partnerId int, saleRep sale.ISaleRep) sale.ISale {
+func NewSale(partnerId int, saleRep sale.ISaleRep, tagRep sale.ISaleTagRep) sale.ISale {
 	return (&Sale{
-		partnerId: partnerId,
-		saleRep:   saleRep,
+		partnerId:  partnerId,
+		saleRep:    saleRep,
+		saleTagRep: tagRep,
 	}).init()
 }
 
@@ -124,6 +126,30 @@ func (this *Sale) GetCategories() []sale.ICategory {
 func (this *Sale) DeleteCategory(id int) error {
 	//todo: 删除应放到这里来处理
 	return this.saleRep.DeleteCategory(this.GetAggregateRootId(), id)
+}
+
+// 获取销售标签
+func (this *Sale) GetSaleTag(id int) sale.ISaleTag {
+	return this.saleTagRep.GetSaleTag(this.partnerId, id)
+}
+
+// 根据Code获取销售标签
+func (this *Sale) GetSaleTagByCode(code string) sale.ISaleTag {
+	v := this.saleTagRep.GetSaleTagByCode(this.partnerId, code)
+	return this.CreateSaleTag(v)
+}
+
+// 创建销售标签
+func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
+	if v == nil {
+		return nil
+	}
+	return this.saleTagRep.CreateSaleTag(v)
+}
+
+// 删除销售标签
+func (this *Sale) DeleteSaleTag(id int) error {
+	return this.saleTagRep.DeleteSaleTag(this.partnerId, id)
 }
 
 // 获取指定的商品快照

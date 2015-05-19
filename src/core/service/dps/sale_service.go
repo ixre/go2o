@@ -144,3 +144,24 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	}
 	return list
 }
+
+// 获取销售标签
+func (this *saleService) GetSaleTag(partnerId, id int)*sale.ValueSaleTag{
+	sl := this._rep.GetSale(partnerId)
+	if tag := sl.GetSaleTag(id);tag!= nil{
+		return tag.GetValue()
+	}
+	return nil
+}
+
+
+// 保存销售标签
+func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, error) {
+	sl := this._rep.GetSale(partnerId)
+	if v.Id > 0 {
+		tag := sl.GetSaleTag(v.Id)
+		tag.SetValue(v)
+		return tag.Save()
+	}
+	return sl.CreateSaleTag(v).Save()
+}

@@ -9,7 +9,6 @@
 
 package partner
 
-
 type IPartnerRep interface {
 	CreatePartner(*ValuePartner) (IPartner, error)
 
@@ -50,6 +49,4 @@ type IPartnerRep interface {
 	GetShopsOfPartner(partnerId int) []*ValueShop
 
 	DeleteShop(partnerId, shopId int) error
-
-
 }

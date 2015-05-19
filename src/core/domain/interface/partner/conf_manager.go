@@ -8,6 +8,5 @@
  */
 package partner
 
-
 type IConfManager interface {
 }

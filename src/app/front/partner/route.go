@@ -33,7 +33,8 @@ func RegisterRoutes() {
 	routes.Register("conf", new(configC))           // 商户设置控制器
 	routes.Register("prom", new(promC))             // 促销控制器
 	routes.Register("delivery", new(coverageAreaC)) // 配送区域控制器
-	routes.Register("member",new(memberC))
+	routes.Register("member", new(memberC))
+	routes.Register("sale", new(saleC))
 
 	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {

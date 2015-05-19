@@ -19,5 +19,5 @@ func main() {
 
 	fmt.Println(domain.NewApiId(105))
 	fmt.Println(domain.Md5MemberPwd("u1000", "123456"))
-		fmt.Println(1<<2)
+	fmt.Println(1 << 2)
 }

@@ -12,10 +12,10 @@ package dps
 import (
 	"errors"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
-	"go2o/src/core/domain/interface/valueobject"
 )
 
 type partnerService struct {
@@ -186,37 +186,37 @@ func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 	return this._partnerRep.GetPartnerIdByApiId(apiId)
 }
 
-func (this *partnerService) GetMemberLevels(partnerId int)[]*valueobject.MemberLevel{
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetLevelSet()
 }
 
 // 根据编号获取会员等级信息
-func (this *partnerService) GetMemberLevelById(partnerId,id int)*valueobject.MemberLevel{
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) GetMemberLevelById(partnerId, id int) *valueobject.MemberLevel {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetLevelById(id)
 }
 
 // 保存会员等级信息
-func (this *partnerService)  SaveMemberLevel(partnerId int,v *valueobject.MemberLevel)(int,error){
-	pt,_ :=this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error) {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().SaveLevel(v)
 }
 
 // 删除会员等级
-func (this *partnerService) DelMemberLevel(partnerId,levelId int)error{
-	pt,_ :=this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) DelMemberLevel(partnerId, levelId int) error {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().DeleteLevel(levelId)
 }
 
 // 获取等级
-func (this *partnerService) GetLevel(partnerId,levelId int)*valueobject.MemberLevel{
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) GetLevel(partnerId, levelId int) *valueobject.MemberLevel {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetLevelById(levelId)
 }
 
 // 获取下一个等级
-func (this *partnerService) GetNextLevel(partnerId,levelValue int) *valueobject.MemberLevel {
-	pt,_ := this._partnerRep.GetPartner(partnerId)
+func (this *partnerService) GetNextLevel(partnerId, levelValue int) *valueobject.MemberLevel {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetNextLevel(levelValue)
 }

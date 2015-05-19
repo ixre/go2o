@@ -29,6 +29,18 @@ type ISale interface {
 	// 删除分类
 	DeleteCategory(int) error
 
+	// 获取销售标签
+	GetSaleTag(id int) ISaleTag
+
+	// 根据Code获取销售标签
+	GetSaleTagByCode(code string) ISaleTag
+
+	// 创建销售标签
+	CreateSaleTag(v *ValueSaleTag) ISaleTag
+
+	// 删除销售标签
+	DeleteSaleTag(id int) error
+
 	// 删除商品
 	DeleteGoods(int) error
 

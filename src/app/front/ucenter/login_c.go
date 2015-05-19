@@ -11,11 +11,11 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"net/http"
 	"strconv"
 	"time"
-	"go2o/src/core/service/dps"
 )
 
 type loginC struct {
