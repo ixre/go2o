@@ -24,12 +24,15 @@ func NewTagSaleRep(c db.Connector) sale.ISaleTagRep {
 
 // 创建销售标签
 func (this *SaleTagRep) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
-	return saleImpl.NewSaleTag(v.PartnerId, v, this)
+	if v != nil {
+		return saleImpl.NewSaleTag(v.PartnerId, v, this)
+	}
+	return nil
 }
 
 // 获取销售标签值
 func (this *SaleTagRep) GetValueSaleTag(partnerId int, tagId int) *sale.ValueSaleTag {
-	var v *sale.ValueSaleTag
+	var v *sale.ValueSaleTag =new(sale.ValueSaleTag)
 	err := this.Connector.GetOrm().GetBy(v, "partner_id=? AND id=?", partnerId, tagId)
 	if err == nil {
 		return v
@@ -38,8 +41,8 @@ func (this *SaleTagRep) GetValueSaleTag(partnerId int, tagId int) *sale.ValueSal
 }
 
 // 获取销售标签
-func (this *SaleTagRep) GetSaleTag(partnerId int, tagId int) sale.ISaleTag {
-	return this.CreateSaleTag(this.GetValueSaleTag(partnerId, tagId))
+func (this *SaleTagRep) GetSaleTag(partnerId int, id int) sale.ISaleTag {
+	return this.CreateSaleTag(this.GetValueSaleTag(partnerId, id))
 }
 
 // 保存销售标签

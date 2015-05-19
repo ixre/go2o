@@ -42,7 +42,7 @@ func (this *saleC) EditSTag(ctx *web.Context) {
 		gof.TemplateDataMap{
 			"entity": template.JS(bys),
 		},
-		"views/partner/member/edit_sale_tag.html")
+		"views/partner/sale/edit_sale_tag.html")
 }
 
 func (this *saleC) CreateSTag(ctx *web.Context) {
