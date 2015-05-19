@@ -24,7 +24,7 @@ type mainC struct {
 }
 
 //入口
-func (this *mainC) Index(ctx *web.Context) {
+func (this *mainC) Index(ctx *web.Context) {≈
 	ctx.ResponseWriter.Write([]byte("<script>location.replace('/dashboard')</script>"))
 }
 
