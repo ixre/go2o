@@ -28,19 +28,13 @@ type goodsC struct {
 
 //食物列表
 func (this *goodsC) List(ctx *web.Context) {
-	/*
-		'''
-		菜单列表
-		'''
-		req=web.input(cid=-1,returnUri='')
-		_dataurl='index?m=food&act=foods&ajax=1&cid=%s'%(req.category_id)
-
-		return render.foods(dataurl=_dataurl)
-	*/
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
-	//cid,_:= strconv.Atoi(r.FormValue("cid"))
-	ctx.App.Template().Execute(w, nil, "views/partner/goods/list.html")
+
+	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"cate_opts":template.HTML(cateOpts),
+	}, "views/partner/goods/goods_list.html")
 }
 
 func (this *goodsC) Create(ctx *web.Context) {
