@@ -7,7 +7,7 @@ body{font-family:'微软雅黑',sans-serif; }
 
 .link{cursor: pointer;}
 div.line{margin:5px 0;}
-.panel{margin:0 5%;font-size:120%;}
+.panel{width:1190px;margin:0 auto;font-size:120%;}
 .page-top{background:#f5f5f5;color:#333;opacity:1;filter:alpha(opacity=100);width:100%;font-size:100%;font-size:100%;border-bottom: solid 1px #ddd;line-height:25px;}
 .page-top .panel{}
 .page-top .panel ul{margin:0;list-style: none;}
@@ -26,7 +26,7 @@ div.line{margin:5px 0;}
 
 
 /* å¯¼èˆª */
-.page-navigator{margin:0 auto;background:green;height:45px;font-size:125%;border-top:solid 1px #fff;border-bottom:solid 0px #fff;}
+.page-navigator{margin:0 auto;width:1190px;background:green;height:45px;font-size:125%;border-top:solid 1px #fff;border-bottom:solid 0px #fff;}
 .page-navigator .navs,.page-navigator .left,.page-navigator .right{padding-bottom:0px;margin-bottom:-0px;}
 /*.page-navigator .left{background:url(navigator_lft.gif) left top no-repeat;}
 .page-navigator .right{background:url(navigator_rgt.gif) right top no-repeat;}
@@ -74,6 +74,17 @@ height:22px;overflow: hidden;margin-left:6px;}
 .page-footer .social .icon-linkedin{background-position: -30px center}
 .page-footer .social .icon-weibo{background-position: -60px center}
 .page-footer .social .icon-qq{background-position: -90px center}
+
+/* PAGE INDEX **/
+.page-index{margin:30px 0;}
+.page-index h2{color:#333;border-bottom:solid 2px #ddd;line-height: 2.5em;font-size: 1.4em;color:#FF6600;margin-bottom:0;}
+.page-index .goods-list{border-left:solid 1px #ddd;}
+.page-index .goods{width:16.6%;float:left;}
+.page-index .goods .item{border-right: solid 1px #ddd;border-bottom: solid 1px #ddd;padding:30px;}
+.page-index .goods .thumbnail img{width:130px;height:130px;display:block;background: #f5f5f5;}
+.page-index .goods .item .name{font-size:1.4em;line-height: 200%;}
+.page-index .goods .item .price{color:#c20000;font-size:1.4em;}
+.page-index .goods .item .price .val{color:green;font-size:1.2em;}
 
 /* VALIDATE */
 .validator{font-size:120%;margin-left:1em;}

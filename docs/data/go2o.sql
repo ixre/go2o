@@ -185,8 +185,33 @@ CREATE TABLE `gs_goods` (
 
 LOCK TABLES `gs_goods` WRITE;
 /*!40000 ALTER TABLE `gs_goods` DISABLE KEYS */;
-INSERT INTO `gs_goods` VALUES (1,18,'000001','韭黄炒蛋饭-2-2',NULL,1,'101/item_pic/20141022090923.png',15.00,20.00,18.00,'1','1','2',1,1421419030,1421419030),(2,15,'000002','鱼香茄子饭','1',1,NULL,15.00,20.00,18.00,'1,7,10,11',NULL,NULL,1,1421419031,1421419031),(3,15,'000003','尖椒回锅肉',NULL,1,NULL,15.00,20.00,18.00,NULL,NULL,NULL,1,1421419032,1421419032),(4,15,'000004','香菇焖鸡饭',NULL,1,NULL,15.00,20.00,18.00,NULL,NULL,NULL,1,1421419033,1421419033),(5,15,'000005','野山椒炒肉',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419034,1421419034),(6,15,'000006','极品红烧肉',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419035,1421419035),(7,15,'000007','花生猪手饭',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419036,1421419036),(8,15,'000008','红烧鱼腩饭',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419037,1421419037),(9,15,'000009','香卤鸡腿饭',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419038,1421419038),(10,15,'154934','酸甜排骨饭',NULL,1,NULL,1.00,0.00,1.00,NULL,NULL,NULL,1,1421419039,1423894934),(29,18,'189040','营养套餐B',NULL,1,'101/item_pic/20141023090944.png',10.00,20.00,18.00,'1',NULL,NULL,1,1421419058,1423719040),(28,18,'000028','营养套餐A','鸡蛋＋香肠双拼',1,'101/item_pic/20141022090951.png',5.00,15.00,12.00,'1,7,10,11',NULL,'d',1,1421419057,1423030454);
+INSERT INTO `gs_goods` VALUES (1,18,'000001','韭黄炒蛋饭-2-2',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,'1','1','2',1,1421419030,1421419030),(2,15,'000002','鱼香茄子饭','1',1,'101/image/goods/goods.png',15.00,30.00,18.00,'1,7,10,11',NULL,NULL,1,1421419031,1421419031),(3,15,'000003','尖椒回锅肉',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419032,1421419032),(4,15,'000004','香菇焖鸡饭',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419033,1421419033),(5,15,'000005','野山椒炒肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,15.00,NULL,NULL,NULL,1,1421419034,1421419034),(6,15,'000006','极品红烧肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,16.00,NULL,NULL,NULL,1,1421419035,1421419035),(7,15,'000007','花生猪手饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,17.00,NULL,NULL,NULL,1,1421419036,1421419036),(8,15,'000008','红烧鱼腩饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,18.00,NULL,NULL,NULL,1,1421419037,1421419037),(9,15,'000009','香卤鸡腿饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,19.00,NULL,NULL,NULL,1,1421419038,1421419038),(10,15,'154934','酸甜排骨饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,10.00,NULL,NULL,NULL,1,1421419039,1423894934),(29,18,'189600','营养套餐B',NULL,1,'101/image/goods/goods.png',10.00,30.00,18.00,'1,7,10',NULL,NULL,1,1421419058,1432019600),(28,18,'000028','营养套餐A','鸡蛋＋香肠双拼',1,'101/image/goods/goods.png',5.00,30.00,12.00,'1,7,10,11',NULL,'d',1,1421419057,1423030454);
 /*!40000 ALTER TABLE `gs_goods` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `gs_goods_tag`
+--
+
+DROP TABLE IF EXISTS `gs_goods_tag`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gs_goods_tag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goods_id` int(11) DEFAULT NULL,
+  `sale_tag_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gs_goods_tag`
+--
+
+LOCK TABLES `gs_goods_tag` WRITE;
+/*!40000 ALTER TABLE `gs_goods_tag` DISABLE KEYS */;
+INSERT INTO `gs_goods_tag` VALUES (18,9,2),(19,9,3),(20,9,5),(21,8,2),(22,8,3),(23,8,5),(24,7,2),(25,7,3),(26,7,5),(27,6,2),(28,6,3),(29,6,5),(30,5,2),(31,5,3),(32,5,5),(33,4,2),(34,4,3),(35,4,5),(36,3,2),(37,3,3),(38,3,5),(39,1,2),(40,1,3),(41,1,5),(42,2,2),(43,2,3),(44,2,5),(54,29,2),(55,29,3),(56,29,4),(57,29,5),(58,28,2),(59,28,3),(60,28,4),(61,28,5),(62,28,6),(63,10,2),(64,10,3),(65,10,5);
+/*!40000 ALTER TABLE `gs_goods_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -204,7 +229,7 @@ CREATE TABLE `gs_sale_tag` (
   `goods_image` varchar(100) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -213,7 +238,7 @@ CREATE TABLE `gs_sale_tag` (
 
 LOCK TABLES `gs_sale_tag` WRITE;
 /*!40000 ALTER TABLE `gs_sale_tag` DISABLE KEYS */;
-INSERT INTO `gs_sale_tag` VALUES (1,101,'host-sales','热销商品',NULL,1);
+INSERT INTO `gs_sale_tag` VALUES (1,102,'host-sales','热销商品',NULL,1),(2,101,'new-goods','新品上架',NULL,1),(3,101,'hot-sales','热销商品',NULL,1),(4,101,'special-goods','特色商品',NULL,1),(5,101,'prom-sales','优惠促销',NULL,1),(6,101,'clean-goods','尾品清仓',NULL,1);
 /*!40000 ALTER TABLE `gs_sale_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1142,4 +1167,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-19 10:48:49
+-- Dump completed on 2015-05-19 21:10:36

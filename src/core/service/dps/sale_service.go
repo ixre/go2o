@@ -203,3 +203,12 @@ func (this *saleService) SaveGoodsSaleTags(partnerId,goodsId int,tagIds []int)er
 	}
 	return err
 }
+
+// 根据销售标签获取指定数目的商品
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int,code string,begin int,end int)[]*sale.ValueGoods{
+	sl := this._rep.GetSale(partnerId)
+	if tag := sl.GetSaleTagByCode(code);tag != nil{
+		return tag.GetValueGoods(begin,end)
+	}
+	return make([]*sale.ValueGoods,0)
+}

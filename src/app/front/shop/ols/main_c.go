@@ -11,10 +11,10 @@ package ols
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"html/template"
+	"go2o/src/core/service/dps"
 )
 
-//todo: filter valid partner is nil
+
 type mainC struct {
 	*baseC
 }
@@ -41,19 +41,18 @@ func (this *mainC) Index(ctx *web.Context) {
 		}
 
 		siteConf := this.GetSiteConf(ctx)
+		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"new-goods",0,12)
+		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"hot-sales",0,12)
 
-		shops := GetShops(ctx.App, p.Id)
-		if shops == nil {
-			shops = []byte("{}")
-		}
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
 			"conf":    siteConf,
-			"shops":   template.HTML(shops),
+			"newGoods" :newGoods,
+			"hotSales" : hotSales,
 		},
-			"views/shop/ols/index.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+		"views/shop/ols/index.html",
+		"views/shop/ols/inc/header.html",
+		"views/shop/ols/inc/footer.html")
 
 	}
 }
