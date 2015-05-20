@@ -9,7 +9,6 @@
 package ucenter
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 )
@@ -23,7 +22,7 @@ func Handle(ctx *web.Context) {
 	routes.Handle(ctx)
 }
 
-func RegisterRoutes(c gof.App) {
+func registerRoutes() {
 	mc := &mainC{}
 	bc := &basicC{}
 	routes.Register("main", mc)
@@ -33,4 +32,8 @@ func RegisterRoutes(c gof.App) {
 	routes.Register("login", &loginC{})
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/", mc.Index)
+}
+
+func init(){
+	registerRoutes()
 }

@@ -11,6 +11,7 @@ package main
 import (
 	"fmt"
 	"go2o/src/core/infrastructure/domain"
+	"github.com/atnet/gof/util"
 )
 
 func main() {
@@ -20,4 +21,5 @@ func main() {
 	fmt.Println(domain.NewApiId(105))
 	fmt.Println(domain.Md5MemberPwd("u1000", "123456"))
 	fmt.Println(1 << 2)
+	fmt.Println(util.IsMobileAgent("Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"))
 }

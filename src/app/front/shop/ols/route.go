@@ -9,9 +9,10 @@
 package ols
 
 import (
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"github.com/atnet/gof/util"
+	"go2o/src/app/front/shop/ols/mos"
 )
 
 var (
@@ -20,11 +21,17 @@ var (
 
 //处理请求
 func Handle(ctx *web.Context) {
-	routes.Handle(ctx)
+//	mos.Handle(ctx)
+//	return
+	if util.IsMobileAgent(ctx.Request.UserAgent()){
+		mos.Handle(ctx)
+	}else {
+		routes.Handle(ctx)
+	}
 }
 
 //注册路由
-func RegisterRoutes(c gof.App) {
+func registerRoutes() {
 	mc := &mainC{}
 
 	sp := &shoppingC{}
@@ -42,7 +49,7 @@ func RegisterRoutes(c gof.App) {
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
-			handleCustomError(ctx.ResponseWriter, c, err)
+			handleCustomError(ctx.ResponseWriter, ctx, err)
 		}
 	})
 
@@ -53,4 +60,9 @@ func RegisterRoutes(c gof.App) {
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/user/g2m", uc.member)
+}
+
+
+func init(){
+	registerRoutes()
 }

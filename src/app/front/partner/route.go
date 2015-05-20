@@ -21,7 +21,7 @@ func Handle(ctx *web.Context) {
 }
 
 //注册路由
-func RegisterRoutes() {
+func registerRoutes() {
 	bc := new(baseC)
 	mc := &mainC{} //入口控制器
 	lc := &loginC{}
@@ -57,4 +57,9 @@ func RegisterRoutes() {
 		bc.RequestEnd(ctx)
 	})
 
+}
+
+
+func init(){
+	registerRoutes()
 }

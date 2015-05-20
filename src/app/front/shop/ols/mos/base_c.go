@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package ols
+package mos
 
 import (
 	"encoding/json"
@@ -23,7 +23,6 @@ import (
 )
 
 type baseC struct {
-	*baseC
 }
 
 func (this *baseC) Requesting(ctx *web.Context) bool {

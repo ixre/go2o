@@ -94,21 +94,10 @@ func RunWeb(app gof.App, port int, debug, trace bool) {
 
 	var in = getInterceptor(app)
 
-	//注册路由
-	RegisterRoutes(app)
-
 	//启动服务
 	err := http.ListenAndServe(":"+strconv.Itoa(port), in)
 
 	if err != nil {
 		app.Log().Fatalln("ListenAndServer ", err)
 	}
-}
-
-func RegisterRoutes(context gof.App) {
-	partner.RegisterRoutes()
-	ucenter.RegisterRoutes(context)
-	ols.RegisterRoutes(context)
-	//mos.RegisterRoutes(context)
-	//wxs.RegisterRoutes(context)
 }

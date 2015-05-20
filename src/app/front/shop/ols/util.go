@@ -18,12 +18,13 @@ import (
 	"net/http"
 	"runtime/debug"
 	"strings"
+	"github.com/atnet/gof/web"
 )
 
 // 处理自定义错误
-func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
+func handleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 	if err != nil {
-		ctx.Template().Execute(w, gof.TemplateDataMap{
+		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"error":  err.Error(),
 			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
