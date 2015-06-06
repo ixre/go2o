@@ -24,14 +24,13 @@ type ListC struct {
 }
 
 func (this *ListC) Index(ctx *web.Context) {
-	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	mm := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
 
 	siteConf := this.GetSiteConf(ctx)
 	categories := GetCategories(ctx.App, p.Id, pa.ApiSecret)
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
 		"partner":    p,
 		"title":      "在线订餐-" + p.Name,
 		"categories": template.HTML(categories),

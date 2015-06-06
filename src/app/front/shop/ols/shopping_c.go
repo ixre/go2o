@@ -40,7 +40,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		return
 	}
 
-	r, w := ctx.Request, ctx.ResponseWriter
+	r:= ctx.Request
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
@@ -81,7 +81,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		}
 	}
 
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
 		"partner":     p,
 		"title":       "订单确认-" + p.Name,
 		"member":      m,
@@ -149,7 +149,7 @@ func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	m := this.GetMember(ctx)
 	addrs := dps.MemberService.GetDeliverAddrs(m.Id)
 	var selId int
@@ -158,7 +158,7 @@ func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}
 
 	js, _ := json.Marshal(addrs)
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"addrs": template.JS(js),
 		"sel":   selId,
 	}, "views/shop/{device}/profile/deliver_address.html")
@@ -254,7 +254,7 @@ func (this *ShoppingC) emptyShoppingCart(ctx *web.Context) {
 
 func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"title":   "订单确认-" + p.Name,
 		"member":  m,
@@ -269,7 +269,7 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r:= ctx.Request
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
@@ -285,7 +285,7 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 				order.OrderNo, "在线支付")
 		}
 
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"partner": p,
 			"title":   "订单成功-" + p.Name,
 			"member":  m,

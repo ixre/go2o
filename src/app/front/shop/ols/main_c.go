@@ -33,7 +33,6 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 
 func (this *mainC) Index(ctx *web.Context) {
 	if this.Requesting(ctx) {
-		_, w := ctx.Request, ctx.ResponseWriter
 		p := this.GetPartner(ctx)
 		m := this.GetMember(ctx)
 
@@ -45,7 +44,7 @@ func (this *mainC) Index(ctx *web.Context) {
 		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"new-goods",0,12)
 		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"hot-sales",0,12)
 
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"partner": p,
 			"conf":    siteConf,
 			"newGoods" :newGoods,
@@ -55,6 +54,5 @@ func (this *mainC) Index(ctx *web.Context) {
 		"views/shop/{device}/index.html",
 		"views/shop/{device}/inc/header.html",
 		"views/shop/{device}/inc/footer.html")
-
 	}
 }

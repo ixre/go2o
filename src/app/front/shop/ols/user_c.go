@@ -25,8 +25,8 @@ type UserC struct {
 }
 
 func (this *UserC) Login(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
+	r := ctx.Request
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
 	if len(returnUrl) == 0 {
@@ -34,7 +34,7 @@ func (this *UserC) Login(ctx *web.Context) {
 	}
 
 	siteConf := this.GetSiteConf(ctx)
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
 		"partner":  p,
 		"title":    "会员登录－" + siteConf.SubTitle,
 		"conf":     siteConf,
@@ -62,11 +62,10 @@ func (this *UserC) Login_post(ctx *web.Context) {
 }
 
 func (this *UserC) Register(ctx *web.Context) {
-	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 
 	siteConf := this.GetSiteConf(ctx)
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"title":   "会员注册－" + siteConf.SubTitle,
 		"conf":    siteConf,
@@ -134,10 +133,11 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 // 跳转到会员中心
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *web.Context) {
+	w := ctx.ResponseWriter
 	m := this.GetMember(ctx)
 	var location string
 	if m == nil {
-		location = "/login?return_url=/member"
+		location = "/user/login?return_url=/user/jump_m"
 	} else {
 		location = fmt.Sprintf("http://%s.%s/login/partner_connect?sessionId=%s&mid=%d&token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
@@ -147,7 +147,8 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 			m.DynamicToken,
 		)
 	}
-	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
+	w.Header().Add("Location",location)
+	w.WriteHeader(302)
 }
 
 // 退出
