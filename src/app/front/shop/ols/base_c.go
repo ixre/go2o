@@ -22,11 +22,11 @@ import (
 	"strings"
 )
 
-type baseC struct {
-	*baseC
+type BaseC struct {
+	*BaseC
 }
 
-func (this *baseC) Requesting(ctx *web.Context) bool {
+func (this *BaseC) Requesting(ctx *web.Context) bool {
 	// 商户不存在
 	partnerId := getPartnerId(ctx)
 	if partnerId <= 0 {
@@ -60,28 +60,28 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	return true
 }
 
-func (this *baseC) RequestEnd(*web.Context) {
+func (this *BaseC) RequestEnd(*web.Context) {
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context) int {
+func (this *BaseC) GetPartnerId(ctx *web.Context) int {
 	return ctx.GetItem("partner_id").(int)
 }
-func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
+func (this *BaseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	return ctx.GetItem("partner_ins").(*partner.ValuePartner)
 }
 
-func (this *baseC) GetSiteConf(ctx *web.Context) *partner.SiteConf {
+func (this *BaseC) GetSiteConf(ctx *web.Context) *partner.SiteConf {
 	return ctx.GetItem("partner_siteconf").(*partner.SiteConf)
 }
 
 // 获取商户API信息
-func (this *baseC) GetPartnerApi(ctx *web.Context) *partner.ApiInfo {
+func (this *BaseC) GetPartnerApi(ctx *web.Context) *partner.ApiInfo {
 	return dps.PartnerService.GetApiInfo(getPartnerId(ctx))
 }
 
 // 获取会员
-func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
+func (this *BaseC) GetMember(ctx *web.Context) *member.ValueMember {
 	memberIdObj := ctx.Session().Get("member")
 	if memberIdObj != nil {
 		if o, ok := memberIdObj.(*member.ValueMember); ok {
@@ -92,7 +92,7 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 }
 
 // 检查会员是否登陆
-func (this *baseC) CheckMemberLogin(ctx *web.Context) bool {
+func (this *BaseC) CheckMemberLogin(ctx *web.Context) bool {
 	if ctx.Session().Get("member") == nil {
 		ctx.ResponseWriter.Header().Add("Location", "/user/login?return_url="+
 			url.QueryEscape(ctx.Request.RequestURI))
@@ -127,7 +127,7 @@ func getPartnerId(ctx *web.Context) int {
 }
 
 // 输出Json
-func (this *baseC) JsonOutput(ctx *web.Context, v interface{}) {
+func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
 		this.ErrorOutput(ctx, err.Error())
@@ -137,12 +137,21 @@ func (this *baseC) JsonOutput(ctx *web.Context, v interface{}) {
 }
 
 // 输出错误信息
-func (this *baseC) ErrorOutput(ctx *web.Context, err string) {
+func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
 	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 输出错误信息
-func (this *baseC) ResultOutput(ctx *web.Context, result gof.Message) {
+func (this *BaseC) ResultOutput(ctx *web.Context, result gof.Message) {
 	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
+}
+
+// 执行模板
+func (this *BaseC) ExecuteTemplate(ctx *web.Context,d gof.TemplateDataMap,files ...string) {
+	newFiles := make([]string, len(files))
+	for i, v := range files {
+		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
+	}
+	ctx.App.Template().Execute(ctx.ResponseWriter, d, newFiles...)
 }

@@ -25,16 +25,16 @@ import (
 	"time"
 )
 
-type shoppingC struct {
-	*baseC
+type ShoppingC struct {
+	*BaseC
 }
 
-func (this *shoppingC) prepare(ctx *web.Context) bool {
+func (this *ShoppingC) prepare(ctx *web.Context) bool {
 	return this.CheckMemberLogin(ctx)
 }
 
 // 订单确认
-func (this *shoppingC) Confirm(ctx *web.Context) {
+func (this *ShoppingC) Confirm(ctx *web.Context) {
 
 	if !this.prepare(ctx) {
 		return
@@ -95,14 +95,14 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 		"deliverOpt":  deliverOpt,
 		"paymentOpt":  paymentOpt,
 	},
-		"views/shop/ols/order_confirm.html",
-		"views/shop/ols/inc/header.html",
-		"views/shop/ols/inc/footer.html")
+		"views/shop/{device}/order_confirm.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 
 }
 
 // 订单持久化
-func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
+func (this *ShoppingC) BuyingPersist_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -145,7 +145,7 @@ rsp:
 }
 
 // 配送地址管理
-func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
+func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -161,9 +161,9 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
 		"addrs": template.JS(js),
 		"sel":   selId,
-	}, "views/shop/ols/profile/deliver_address.html")
+	}, "views/shop/{device}/profile/deliver_address.html")
 }
-func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
+func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -186,14 +186,14 @@ func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 }
 
 // 应用卡券
-func (this *shoppingC) Apply_post(ctx *web.Context) {
+func (this *ShoppingC) Apply_post(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()
 	if atype := r.URL.Query().Get("type"); atype == "coupon" {
 		this.applyCoupon(ctx)
 	}
 }
-func (this *shoppingC) applyCoupon(ctx *web.Context) {
+func (this *ShoppingC) applyCoupon(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -216,7 +216,7 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 }
 
 // 提交订单
-func (this *shoppingC) Submit_0_post(ctx *web.Context) {
+func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -243,7 +243,7 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 }
 
 // 清除购物车
-func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
+func (this *ShoppingC) emptyShoppingCart(ctx *web.Context) {
 	cookie, _ := ctx.Request.Cookie("_cart")
 	if cookie != nil {
 		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
@@ -252,7 +252,7 @@ func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
 	}
 }
 
-func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
+func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 		"partner": p,
@@ -260,12 +260,12 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 		"member":  m,
 		"conf":    conf,
 	},
-		"views/shop/ols/order_empty.html",
-		"views/shop/ols/inc/header.html",
-		"views/shop/ols/inc/footer.html")
+		"views/shop/{device}/order_empty.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 }
 
-func (this *shoppingC) Order_finish(ctx *web.Context) {
+func (this *ShoppingC) Order_finish(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -293,9 +293,9 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 			"order":   order,
 			"payHtml": template.HTML(payHtml),
 		},
-			"views/shop/ols/order_finish.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+			"views/shop/{device}/order_finish.html",
+			"views/shop/{device}/inc/header.html",
+			"views/shop/{device}/inc/footer.html")
 	} else {
 		this.OrderEmpty(ctx, p, m, siteConf)
 	}
@@ -303,7 +303,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 }
 
 // 购买中转
-func (this *shoppingC) Index(ctx *web.Context) {
+func (this *ShoppingC) Index(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}

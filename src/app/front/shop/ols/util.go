@@ -19,16 +19,19 @@ import (
 	"runtime/debug"
 	"strings"
 	"github.com/atnet/gof/web"
+	"go2o/src/app/front/shop"
+	"time"
+	gutil "github.com/atnet/gof/util"
 )
 
 // 处理自定义错误
-func handleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
+func HandleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 	if err != nil {
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"error":  err.Error(),
 			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
-			"views/shop/ols/error.html")
+			"views/shop/{device}/error.html")
 	}
 }
 
@@ -69,4 +72,54 @@ func GetCategories(c gof.App, partnerId int, secret string) []byte {
 	}
 	buf.WriteString("</ul>")
 	return buf.Bytes()
+}
+
+
+const(
+	clientDeviceTypeCookieId string="client_device_type"
+)
+// 获取浏览设备
+func GetBrownerDevice(ctx *web.Context)string {
+	ck,err := ctx.Request.Cookie(clientDeviceTypeCookieId)
+	if err == nil && ck != nil {
+		switch ck.Value {
+			case "1":
+			return shop.DevicePC
+			case "2":
+			return shop.DeviceMobile
+			case "3":
+			return shop.DeviceTouchPad
+		}
+	}
+	if gutil.IsMobileAgent(ctx.Request.UserAgent()){
+		return shop.DeviceMobile
+	}
+	return shop.DevicePC
+}
+
+// 设置浏览设备
+func SetBrownerDevice(ctx *web.Context,deviceType string){
+	ck ,err := ctx.Request.Cookie(clientDeviceTypeCookieId)
+	isDefaultDevice := deviceType == "" || deviceType == "1"
+	if err == nil && ck != nil{
+		if isDefaultDevice{
+			ck.Value = deviceType
+			ck.Expires = time.Now().Add(-time.Hour*48)
+		}else{
+			ck.Value = deviceType
+			ck.Expires = time.Now().Add(time.Hour*24)
+		}
+	}else if !isDefaultDevice {
+		ck = &http.Cookie{
+			Name:clientDeviceTypeCookieId,
+			Value : deviceType,
+			Expires : time.Now().Add(time.Hour*24),
+		}
+	}
+
+	if ck != nil{
+		ck.HttpOnly = false
+		ck.Path = "/"
+		http.SetCookie(ctx.ResponseWriter,ck)
+	}
 }

@@ -40,9 +40,9 @@ func (this *userC) Login(ctx *web.Context) {
 			"conf":     siteConf,
 			"tipStyle": tipStyle,
 		},
-			"views/shop/ols/login.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+			"views/shop/{device}/login.html",
+			"views/shop/{device}/inc/header.html",
+			"views/shop/{device}/inc/footer.html")
 	}
 }
 
@@ -71,9 +71,9 @@ func (this *userC) Register(ctx *web.Context) {
 			"title":   "会员注册－" + siteConf.SubTitle,
 			"conf":    siteConf,
 		},
-			"views/shop/ols/register.html",
-			"views/shop/ols/inc/header.html",
-			"views/shop/ols/inc/footer.html")
+			"views/shop/{device}/register.html",
+			"views/shop/{device}/inc/header.html",
+			"views/shop/{device}/inc/footer.html")
 	}
 }
 
@@ -114,7 +114,7 @@ func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
 }
 
 //跳转到会员中心
-// url : /user/g2m
+// url : /user/jump_m
 func (this *userC) member(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	var location string

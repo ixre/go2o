@@ -52,5 +52,5 @@ func RegisterRoutes(c gof.App) {
 	routes.Add("^/pay/create", pc.Create)
 	// 首页
 	routes.Add("/", mc.Index)
-	routes.Add("/user/g2m", uc.member)
+	routes.Add("/user/jump_m", uc.member)
 }

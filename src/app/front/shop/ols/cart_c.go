@@ -18,12 +18,12 @@ import (
 	"strings"
 )
 
-type cartC struct {
-	*baseC
+type CartC struct {
+	*BaseC
 }
 
 // 购物车
-func (this *cartC) cartApi(ctx *web.Context) {
+func (this *CartC) CartApiHandle(ctx *web.Context) {
 	if !this.Requesting(ctx) {
 		ctx.ResponseWriter.Write([]byte("invalid request"))
 		return
@@ -51,7 +51,7 @@ func (this *cartC) cartApi(ctx *web.Context) {
 
 }
 
-func (this *cartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
+func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	memberId int, cartKey string) {
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
@@ -64,7 +64,7 @@ func (this *cartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	ctx.ResponseWriter.Write(d)
 }
 
-func (this *cartC) cart_AddItem(ctx *web.Context,
+func (this *CartC) cart_AddItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
@@ -80,7 +80,7 @@ func (this *cartC) cart_AddItem(ctx *web.Context,
 	this.JsonOutput(ctx, d)
 }
 
-func (this *cartC) cart_RemoveItem(ctx *web.Context,
+func (this *CartC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
 	var msg gof.Message
 	r := ctx.Request
@@ -95,7 +95,7 @@ func (this *cartC) cart_RemoveItem(ctx *web.Context,
 	this.ResultOutput(ctx, msg)
 }
 
-func (this *cartC) cart(ctx *web.Context) {
+func (this *CartC) cart(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	//todo: 需页面
 	if r.URL.Query().Get("edit") == "1" {

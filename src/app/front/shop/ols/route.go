@@ -11,8 +11,8 @@ package ols
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"github.com/atnet/gof/util"
 	"go2o/src/app/front/shop/ols/mos"
+	"go2o/src/app/front/shop"
 )
 
 var (
@@ -21,12 +21,14 @@ var (
 
 //处理请求
 func Handle(ctx *web.Context) {
-//	mos.Handle(ctx)
-//	return
-	if util.IsMobileAgent(ctx.Request.UserAgent()){
-		mos.Handle(ctx)
-	}else {
+	switch GetBrownerDevice(ctx) {
+		default:
+		case shop.DevicePC:
+		ctx.Items["device_view_dir"] = "ols"
 		routes.Handle(ctx)
+		case shop.DeviceTouchPad, shop.DeviceMobile:
+		ctx.Items["device_view_dir"] = "mos"
+		mos.Handle(ctx)
 	}
 }
 
@@ -34,11 +36,11 @@ func Handle(ctx *web.Context) {
 func registerRoutes() {
 	mc := &mainC{}
 
-	sp := &shoppingC{}
-	pc := &paymentC{}
-	cc := &cartC{}
-	uc := &userC{}
-	lc := &listC{}
+	sp := &ShoppingC{}
+	pc := &PaymentC{}
+	cc := &CartC{}
+	uc := &UserC{}
+	lc := &ListC{}
 
 	routes.Register("buy", sp)
 	routes.Register("shopping", sp)
@@ -49,17 +51,17 @@ func registerRoutes() {
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
-			handleCustomError(ctx.ResponseWriter, ctx, err)
+			HandleCustomError(ctx.ResponseWriter, ctx, err)
 		}
 	})
 
 	// 购物车接口
-	routes.Add("/cart_api_v1", cc.cartApi)
+	routes.Add("/cart_api_v1", cc.CartApiHandle)
 	// 支付
 	routes.Add("^/pay/create", pc.Create)
 	// 首页
 	routes.Add("/", mc.Index)
-	routes.Add("/user/g2m", uc.member)
+	routes.Add("/user/jump_m", uc.JumpToMCenter)
 }
 
 

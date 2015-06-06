@@ -90,7 +90,7 @@
         if ($JS.validator.validate('form1')){
             $JS.xhr.jsonPost(location.href, data, function (json) {
                 if (json.result) {
-                   window.parent.location.replace(decodeURIComponent($JS.request('return_url')||'/'));
+                    window.parent.location.replace(decodeURIComponent($JS.request('return_url')||'/'));
                 }else {
                     if (json.message.indexOf('验证码') != -1) {
                         refreshImage();

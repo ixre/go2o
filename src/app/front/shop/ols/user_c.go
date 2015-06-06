@@ -20,11 +20,11 @@ import (
 	"strings"
 )
 
-type userC struct {
-	*baseC
+type UserC struct {
+	*BaseC
 }
 
-func (this *userC) Login(ctx *web.Context) {
+func (this *UserC) Login(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 	var tipStyle string
@@ -40,13 +40,13 @@ func (this *userC) Login(ctx *web.Context) {
 		"conf":     siteConf,
 		"tipStyle": tipStyle,
 	},
-		"views/shop/ols/login.html",
-		"views/shop/ols/inc/header.html",
-		"views/shop/ols/inc/footer.html")
+		"views/shop/{device}/login.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 
 }
 
-func (this *userC) Login_post(ctx *web.Context) {
+func (this *UserC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
@@ -61,7 +61,7 @@ func (this *userC) Login_post(ctx *web.Context) {
 	w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
 }
 
-func (this *userC) Register(ctx *web.Context) {
+func (this *UserC) Register(ctx *web.Context) {
 	_, w := ctx.Request, ctx.ResponseWriter
 	p := this.GetPartner(ctx)
 
@@ -71,13 +71,13 @@ func (this *userC) Register(ctx *web.Context) {
 		"title":   "会员注册－" + siteConf.SubTitle,
 		"conf":    siteConf,
 	},
-		"views/shop/ols/register.html",
-		"views/shop/ols/inc/header.html",
-		"views/shop/ols/inc/footer.html")
+		"views/shop/{device}/register.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 
 }
 
-func (this *userC) ValidUsr_post(ctx *web.Context) {
+func (this *UserC) ValidUsr_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 	usr := r.FormValue("usr")
@@ -89,7 +89,7 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 	}
 }
 
-func (this *userC) Valid_invitation_post(ctx *web.Context) {
+func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
 
@@ -102,7 +102,7 @@ func (this *userC) Valid_invitation_post(ctx *web.Context) {
 	this.ResultOutput(ctx, gof.Message{Result: isOk, Message: message})
 }
 
-func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
+func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var member member.ValueMember
 	web.ParseFormToEntity(ctx.Request.Form, &member)
@@ -131,9 +131,9 @@ func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
 	}
 }
 
-//跳转到会员中心
-// url : /user/g2m
-func (this *userC) member(ctx *web.Context) {
+// 跳转到会员中心
+// url : /user/jump_m
+func (this *UserC) JumpToMCenter(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	var location string
 	if m == nil {
@@ -150,8 +150,8 @@ func (this *userC) member(ctx *web.Context) {
 	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
 }
 
-//退出
-func (this *userC) Logout(ctx *web.Context) {
+// 退出
+func (this *UserC) Logout(ctx *web.Context) {
 	ctx.Session().Set("member", nil)
 	ctx.Session().Save()
 	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
@@ -161,4 +161,16 @@ func (this *userC) Logout(ctx *web.Context) {
 		variable.DOMAIN_MEMBER_PREFIX,
 		ctx.App.Config().GetString(variable.ServerDomain),
 	)))
+}
+
+// 更换访问设备
+func (this *UserC) ChangeDevice(ctx *web.Context){
+	deviceType := ctx.Request.URL.Query().Get("device_type")
+	SetBrownerDevice(ctx,deviceType)
+	urlReferer := ctx.Request.Referer()
+	if len(urlReferer) == 0{
+		urlReferer = "/"
+	}
+	ctx.ResponseWriter.Header().Add("Location",urlReferer)
+	ctx.ResponseWriter.WriteHeader(302)
 }

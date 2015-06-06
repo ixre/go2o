@@ -13,10 +13,10 @@ import (
 	"go2o/src/core/infrastructure/alipay"
 )
 
-type paymentC struct {
+type PaymentC struct {
 }
 
-func (this *paymentC) Create(ctx *web.Context) {
+func (this *PaymentC) Create(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	qs := r.URL.Query()
 	orderNo := qs.Get("order_no")
@@ -33,13 +33,13 @@ func (this *paymentC) Create(ctx *web.Context) {
 	w.Write([]byte("订单不存在"))
 }
 
-func (this *paymentC) Return(ctx *web.Context) {
+func (this *PaymentC) Return(ctx *web.Context) {
 	r, _ := ctx.Request, ctx.ResponseWriter
 	alipay.ReturnFunc(r, nil)
 	ctx.ResponseWriter.Write([]byte("支付完成"))
 }
 
-func (this *paymentC) Notify_post(ctx *web.Context) {
+func (this *PaymentC) Notify_post(ctx *web.Context) {
 	r, _ := ctx.Request, ctx.ResponseWriter
 	alipay.NotifyFunc(r, nil)
 }

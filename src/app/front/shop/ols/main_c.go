@@ -16,7 +16,7 @@ import (
 
 
 type mainC struct {
-	*baseC
+	*BaseC
 }
 
 // 处理跳转
@@ -35,6 +35,7 @@ func (this *mainC) Index(ctx *web.Context) {
 	if this.Requesting(ctx) {
 		_, w := ctx.Request, ctx.ResponseWriter
 		p := this.GetPartner(ctx)
+		m := this.GetMember(ctx)
 
 		if this.HandleIndexGo(ctx) {
 			return
@@ -49,10 +50,11 @@ func (this *mainC) Index(ctx *web.Context) {
 			"conf":    siteConf,
 			"newGoods" :newGoods,
 			"hotSales" : hotSales,
+			"member":m,
 		},
-		"views/shop/ols/index.html",
-		"views/shop/ols/inc/header.html",
-		"views/shop/ols/inc/footer.html")
+		"views/shop/{device}/index.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 
 	}
 }
