@@ -101,7 +101,7 @@
                 [
                     { field: 'name', title: '商品名称', align: 'center', width: 120 },
                     { field: 'img', title: '图片', align: 'center', width: 100,formatter:function(val){
-                        var url = val ==''?'{{.nopicUrl}}':'{{.img_serve}}/'+val;
+                        var url = val ==''?'{{.no_pic_url}}':'{{.img_serve}}/'+val;
                         return '<img src="'+url+'" style="background:#fff;width:80px;height:80px;'+
                                 'border-radius:5px;border:solid 1px #888;padding:1px;margin:5px;"/>';
                     } },

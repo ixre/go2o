@@ -19,6 +19,7 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"go2o/src/core/infrastructure/format"
 )
 
 var _ mvc.Filter = new(goodsC)
@@ -35,6 +36,7 @@ func (this *goodsC) List(ctx *web.Context) {
 	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
 		"cate_opts":template.HTML(cateOpts),
+		"no_pic_url":format.GetGoodsImageUrl(""),
 	}, "views/partner/goods/goods_list.html")
 }
 
