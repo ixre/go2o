@@ -13,37 +13,30 @@ import (
 	"fmt"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/infrastructure/domain/util"
+	"github.com/atnet/gof/algorithm/iterator"
 )
 
-type CategoryFormatFunc func(buf *bytes.Buffer, c *sale.ValueCategory, level int)
 
 func readToCategoryDropList(partnerId int) []byte {
 	categories := dps.SaleService.GetCategories(partnerId)
 	buf := bytes.NewBuffer([]byte{})
-	var f CategoryFormatFunc = func(buf *bytes.Buffer, c *sale.ValueCategory, level int) {
-		buf.WriteString(fmt.Sprintf(
+	var f iterator.WalkFunc = func(v1 interface{}, level int) {
+		c := v1.(*sale.ValueCategory)
+		if c.Id != 0 {
+			buf.WriteString(fmt.Sprintf(
 			`<option class="opt%d" value="%d">%s</option>`,
 			level,
 			c.Id,
 			c.Name,
-		))
+			))
+		}
 	}
-	itrCategory(buf, categories, &sale.ValueCategory{Id: 0}, f, 0)
+	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f,nil)
 
 	return buf.Bytes()
 }
 
-func itrCategory(buf *bytes.Buffer, categorys []*sale.ValueCategory, c *sale.ValueCategory, f CategoryFormatFunc, level int) {
-	if c.Id != 0 {
-		f(buf, c, level)
-	}
-
-	for _, k := range categorys {
-		if k.ParentId == c.Id {
-			itrCategory(buf, categorys, k, f, level+1)
-		}
-	}
-}
 
 // 获取分类下拉选项
 func GetDropOptionsOfCategory(partnerId int) []byte {
