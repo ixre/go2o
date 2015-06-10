@@ -29,9 +29,9 @@ func handleError(w http.ResponseWriter, err error) {
 //注册路由
 func registerRoutes() {
 	mc := new(mainC)
-	routes.Add("/",mc.Index)
+	routes.Add("/", mc.Index)
 }
 
-func init(){
+func init() {
 	registerRoutes()
 }

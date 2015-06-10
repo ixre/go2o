@@ -17,8 +17,9 @@ type ValueCategory struct {
 	//供应商编号
 	PartnerId int `db:"partner_id"`
 	//名称
-	Name        string
+	Name        string `db:"name"`
 	OrderIndex  int    `db:"order_index"`
+	Url         string `db:"url"`
 	CreateTime  int64  `db:"create_time"`
 	Enabled     int    `db:"enabled`
 	Description string `db:"description"`

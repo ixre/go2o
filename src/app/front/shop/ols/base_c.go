@@ -148,7 +148,7 @@ func (this *BaseC) ResultOutput(ctx *web.Context, result gof.Message) {
 }
 
 // 执行模板
-func (this *BaseC) ExecuteTemplate(ctx *web.Context,d gof.TemplateDataMap,files ...string) {
+func (this *BaseC) ExecuteTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
 	newFiles := make([]string, len(files))
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)

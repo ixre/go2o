@@ -8,12 +8,11 @@
  */
 package shop
 
-const(
-    // PC设备
-    DevicePC string = "1"
-    // 手持设备
-    DeviceMobile  string = "2"
-    // 触摸设备
-    DeviceTouchPad string = "3"
+const (
+	// PC设备
+	DevicePC string = "1"
+	// 手持设备
+	DeviceMobile string = "2"
+	// 触摸设备
+	DeviceTouchPad string = "3"
 )
-

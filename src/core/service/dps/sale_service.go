@@ -151,12 +151,12 @@ func (this *saleService) InitSaleTags(partnerId int) error {
 	return sl.InitSaleTags()
 }
 
-func (this *saleService) GetAllSaleTags(partnerId int)[]*sale.ValueSaleTag{
+func (this *saleService) GetAllSaleTags(partnerId int) []*sale.ValueSaleTag {
 	sl := this._rep.GetSale(partnerId)
 	tags := sl.GetAllSaleTags()
 
-	var vtags []*sale.ValueSaleTag = make([]*sale.ValueSaleTag,len(tags))
-	for i,v := range tags{
+	var vtags []*sale.ValueSaleTag = make([]*sale.ValueSaleTag, len(tags))
+	for i, v := range tags {
 		vtags[i] = v.GetValue()
 	}
 	return vtags
@@ -183,32 +183,32 @@ func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, 
 }
 
 // 获取商品的销售标签
-func (this *saleService) GetGoodsSaleTags(partnerId,goodsId int)[]*sale.ValueSaleTag{
-	var list = make([]*sale.ValueSaleTag,0)
+func (this *saleService) GetGoodsSaleTags(partnerId, goodsId int) []*sale.ValueSaleTag {
+	var list = make([]*sale.ValueSaleTag, 0)
 	sl := this._rep.GetSale(partnerId)
-	if goods := sl.GetGoods(goodsId);goods!= nil{
+	if goods := sl.GetGoods(goodsId); goods != nil {
 		list = goods.GetSaleTags()
 	}
 	return list
 }
 
 // 保存商品的销售标签
-func (this *saleService) SaveGoodsSaleTags(partnerId,goodsId int,tagIds []int)error{
+func (this *saleService) SaveGoodsSaleTags(partnerId, goodsId int, tagIds []int) error {
 	var err error
 	sl := this._rep.GetSale(partnerId)
-	if goods := sl.GetGoods(goodsId);goods != nil{
+	if goods := sl.GetGoods(goodsId); goods != nil {
 		err = goods.SaveSaleTags(tagIds)
-	}else{
+	} else {
 		err = errors.New("商品不存在")
 	}
 	return err
 }
 
 // 根据销售标签获取指定数目的商品
-func (this *saleService) GetValueGoodsBySaleTag(partnerId int,code string,begin int,end int)[]*sale.ValueGoods{
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*sale.ValueGoods {
 	sl := this._rep.GetSale(partnerId)
-	if tag := sl.GetSaleTagByCode(code);tag != nil{
-		return tag.GetValueGoods(begin,end)
+	if tag := sl.GetSaleTagByCode(code); tag != nil {
+		return tag.GetValueGoods(begin, end)
 	}
-	return make([]*sale.ValueGoods,0)
+	return make([]*sale.ValueGoods, 0)
 }

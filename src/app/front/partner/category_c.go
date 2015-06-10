@@ -10,14 +10,17 @@ package partner
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"github.com/atnet/gof/web/ui/tree"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"html/template"
+	"regexp"
 	"strconv"
 )
 
@@ -30,7 +33,7 @@ type categoryC struct {
 //分类树形功能
 func (this *categoryC) Category(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"no_pic_url":format.GetGoodsImageUrl(""),
+		"no_pic_url": format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")
 }
 
@@ -68,12 +71,15 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
-	//fmt.Println(category)
 	json, _ := json.Marshal(category)
+
+	re := regexp.MustCompile(fmt.Sprintf("<option value=\"%d\">[^>]+>", id))
+	cateOpts := re.ReplaceAll(cache.GetDropOptionsOfCategory(partnerId), nil)
 
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
-			"entity": template.JS(json),
+			"entity":    template.JS(json),
+			"cate_opts": template.HTML(cateOpts),
 		},
 		"views/partner/category/category_edit.html")
 }

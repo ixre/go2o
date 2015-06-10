@@ -18,7 +18,7 @@ import (
 type CategoryFormatFunc func(buf *bytes.Buffer, c *sale.ValueCategory, level int)
 
 func readToCategoryDropList(partnerId int) []byte {
-	categorys := dps.SaleService.GetCategories(partnerId)
+	categories := dps.SaleService.GetCategories(partnerId)
 	buf := bytes.NewBuffer([]byte{})
 	var f CategoryFormatFunc = func(buf *bytes.Buffer, c *sale.ValueCategory, level int) {
 		buf.WriteString(fmt.Sprintf(
@@ -28,7 +28,7 @@ func readToCategoryDropList(partnerId int) []byte {
 			c.Name,
 		))
 	}
-	itrCategory(buf, categorys, &sale.ValueCategory{Id: 0}, f, 0)
+	itrCategory(buf, categories, &sale.ValueCategory{Id: 0}, f, 0)
 
 	return buf.Bytes()
 }

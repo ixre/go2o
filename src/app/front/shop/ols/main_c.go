@@ -14,7 +14,6 @@ import (
 	"go2o/src/core/service/dps"
 )
 
-
 type mainC struct {
 	*BaseC
 }
@@ -41,18 +40,18 @@ func (this *mainC) Index(ctx *web.Context) {
 		}
 
 		siteConf := this.GetSiteConf(ctx)
-		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"new-goods",0,12)
-		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id,"hot-sales",0,12)
+		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
+		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
 
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"partner": p,
-			"conf":    siteConf,
-			"newGoods" :newGoods,
-			"hotSales" : hotSales,
-			"member":m,
+			"partner":  p,
+			"conf":     siteConf,
+			"newGoods": newGoods,
+			"hotSales": hotSales,
+			"member":   m,
 		},
-		"views/shop/{device}/index.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+			"views/shop/{device}/index.html",
+			"views/shop/{device}/inc/header.html",
+			"views/shop/{device}/inc/footer.html")
 	}
 }

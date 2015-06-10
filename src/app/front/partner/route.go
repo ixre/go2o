@@ -59,7 +59,6 @@ func registerRoutes() {
 
 }
 
-
-func init(){
+func init() {
 	registerRoutes()
 }

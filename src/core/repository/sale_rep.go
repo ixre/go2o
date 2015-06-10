@@ -181,6 +181,34 @@ func (this *saleRep) GetCategories(partnerId int) []*sale.ValueCategory {
 	return e
 }
 
+// 获取与栏目相关的栏目
+func (this *saleRep) GetRelationCategories(partnerId, categoryId int) []*sale.ValueCategory {
+	var all []*sale.ValueCategory = this.GetCategories(partnerId)
+	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
+	var isMatch bool
+	var pid int
+	var l int = len(all)
+
+	for i := 0; i < l; i++ {
+		if !isMatch && all[i].Id == categoryId {
+			isMatch = true
+			pid = all[i].ParentId
+			newArr = append(newArr, all[i])
+			i = 0
+		} else {
+			if all[i].Id == pid {
+				newArr = append(newArr, all[i])
+				i = 0
+				pid = all[i].ParentId
+				if pid == 0 {
+					break
+				}
+			}
+		}
+	}
+	return newArr
+}
+
 // 保存快照
 func (this *saleRep) SaveSnapshot(v *sale.GoodsSnapshot) (int, error) {
 	var id int

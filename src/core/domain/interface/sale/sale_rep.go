@@ -32,6 +32,9 @@ type ISaleRep interface {
 
 	GetCategories(partnerId int) []*ValueCategory
 
+	// 获取与栏目相关的栏目
+	GetRelationCategories(partnerId, categoryId int) []*ValueCategory
+
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)
 

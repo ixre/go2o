@@ -34,7 +34,7 @@ func (this *UserC) Login(ctx *web.Context) {
 	}
 
 	siteConf := this.GetSiteConf(ctx)
-	this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":  p,
 		"title":    "会员登录－" + siteConf.SubTitle,
 		"conf":     siteConf,
@@ -147,7 +147,7 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 			m.DynamicToken,
 		)
 	}
-	w.Header().Add("Location",location)
+	w.Header().Add("Location", location)
 	w.WriteHeader(302)
 }
 
@@ -165,13 +165,13 @@ func (this *UserC) Logout(ctx *web.Context) {
 }
 
 // 更换访问设备
-func (this *UserC) ChangeDevice(ctx *web.Context){
+func (this *UserC) ChangeDevice(ctx *web.Context) {
 	deviceType := ctx.Request.URL.Query().Get("device_type")
-	SetBrownerDevice(ctx,deviceType)
+	SetBrownerDevice(ctx, deviceType)
 	urlReferer := ctx.Request.Referer()
-	if len(urlReferer) == 0{
+	if len(urlReferer) == 0 {
 		urlReferer = "/"
 	}
-	ctx.ResponseWriter.Header().Add("Location",urlReferer)
+	ctx.ResponseWriter.Header().Add("Location", urlReferer)
 	ctx.ResponseWriter.WriteHeader(302)
 }

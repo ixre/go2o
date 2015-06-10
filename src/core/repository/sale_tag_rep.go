@@ -85,9 +85,9 @@ func (this *SaleTagRep) DeleteSaleTag(partnerId int, id int) error {
 // 获取商品
 func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*sale.ValueGoods {
 	arr := []*sale.ValueGoods{}
-		this.Connector.GetOrm().SelectByQuery(&arr,`SELECT * FROM gs_goods WHERE id IN (
+	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods WHERE id IN (
 			SELECT g.goods_id FROM gs_goods_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
-			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`,partnerId, tagId, begin, end)
+			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`, partnerId, tagId, begin, end)
 	return arr
 }
 

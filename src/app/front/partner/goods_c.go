@@ -15,11 +15,11 @@ import (
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
 	"strings"
-	"go2o/src/core/infrastructure/format"
 )
 
 var _ mvc.Filter = new(goodsC)
@@ -35,8 +35,8 @@ func (this *goodsC) List(ctx *web.Context) {
 
 	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
-		"cate_opts":template.HTML(cateOpts),
-		"no_pic_url":format.GetGoodsImageUrl(""),
+		"cate_opts":  template.HTML(cateOpts),
+		"no_pic_url": format.GetGoodsImageUrl(""),
 	}, "views/partner/goods/goods_list.html")
 }
 
@@ -112,37 +112,34 @@ func (this *goodsC) Del_post(ctx *web.Context) {
 	w.Write(result.Marshal())
 }
 
-
-func (this *goodsC) SetSaleTag(ctx *web.Context){
+func (this *goodsC) SetSaleTag(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()
 	partnerId := this.GetPartnerId(ctx)
-	goodsId,_ := strconv.Atoi(r.URL.Query().Get("id"))
+	goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
 
 	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
 	tagsHtml := getSaleTagsCheckBoxHtml(tags)
 
-
-	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetGoodsSaleTags(partnerId,goodsId)
-	strArr := make([]string,len(chkTags))
-	for i,v := range chkTags{
+	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetGoodsSaleTags(partnerId, goodsId)
+	strArr := make([]string, len(chkTags))
+	for i, v := range chkTags {
 		strArr[i] = strconv.Itoa(v.Id)
 	}
 
-	tagVal := strings.Join(strArr,",")
+	tagVal := strings.Join(strArr, ",")
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,gof.TemplateDataMap{
-		"goodsId":goodsId,
-		"tagsHtml":template.HTML(tagsHtml),
-		"tagValue":tagVal,
-	},"views/partner/goods/set_sale_tag.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"goodsId":  goodsId,
+		"tagsHtml": template.HTML(tagsHtml),
+		"tagValue": tagVal,
+	}, "views/partner/goods/set_sale_tag.html")
 }
 
-
-func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context){
+func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context) {
 	r := ctx.Request
 	var msg gof.Message
-	goodsId,err := strconv.Atoi(r.FormValue("GoodsId"))
+	goodsId, err := strconv.Atoi(r.FormValue("GoodsId"))
 	if err == nil {
 		tags := strings.Split(r.FormValue("SaleTags"), ",")
 		var ids []int = []int{}
@@ -153,13 +150,13 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context){
 		}
 
 		partnerId := this.GetPartnerId(ctx)
-		err = dps.SaleService.SaveGoodsSaleTags(partnerId,goodsId,ids)
+		err = dps.SaleService.SaveGoodsSaleTags(partnerId, goodsId, ids)
 	}
 
-	if err != nil{
+	if err != nil {
 		msg.Message = err.Error()
-	}else{
-		msg.Result=true
+	} else {
+		msg.Result = true
 	}
-	this.ResultOutput(ctx,msg)
+	this.ResultOutput(ctx, msg)
 }

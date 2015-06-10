@@ -10,8 +10,8 @@ package main
 
 import (
 	"fmt"
-	"go2o/src/core/infrastructure/domain"
 	"github.com/atnet/gof/util"
+	"go2o/src/core/infrastructure/domain"
 )
 
 func main() {

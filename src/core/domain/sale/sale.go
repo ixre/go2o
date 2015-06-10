@@ -65,7 +65,7 @@ func (this *Sale) CreateGoods(v *sale.ValueGoods) sale.IGoods {
 
 	//todo: 判断category
 
-	return newGoods(this, v, this._saleRep,this._saleTagRep)
+	return newGoods(this, v, this._saleRep, this._saleTagRep)
 }
 
 // 根据产品编号获取产品

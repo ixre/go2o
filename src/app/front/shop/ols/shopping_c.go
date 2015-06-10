@@ -40,7 +40,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		return
 	}
 
-	r:= ctx.Request
+	r := ctx.Request
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
@@ -81,7 +81,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		}
 	}
 
-	this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":     p,
 		"title":       "订单确认-" + p.Name,
 		"member":      m,
@@ -269,7 +269,7 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r:= ctx.Request
+	r := ctx.Request
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)

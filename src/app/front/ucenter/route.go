@@ -34,6 +34,6 @@ func registerRoutes() {
 	routes.Add("/", mc.Index)
 }
 
-func init(){
+func init() {
 	registerRoutes()
 }

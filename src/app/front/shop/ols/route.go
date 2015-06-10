@@ -11,8 +11,8 @@ package ols
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/app/front/shop/ols/mos"
 	"go2o/src/app/front/shop"
+	"go2o/src/app/front/shop/ols/mos"
 )
 
 var (
@@ -22,11 +22,11 @@ var (
 //处理请求
 func Handle(ctx *web.Context) {
 	switch GetBrownerDevice(ctx) {
-		default:
-		case shop.DevicePC:
+	default:
+	case shop.DevicePC:
 		ctx.Items["device_view_dir"] = "ols"
 		routes.Handle(ctx)
-		case shop.DeviceTouchPad, shop.DeviceMobile:
+	case shop.DeviceTouchPad, shop.DeviceMobile:
 		ctx.Items["device_view_dir"] = "mos"
 		mos.Handle(ctx)
 	}
@@ -40,7 +40,7 @@ func registerRoutes() {
 	pc := &PaymentC{}
 	cc := &CartC{}
 	uc := &UserC{}
-	lc := &ListC{}
+	lc := &CategoryC{}
 
 	routes.Register("buy", sp)
 	routes.Register("shopping", sp)
@@ -64,7 +64,6 @@ func registerRoutes() {
 	routes.Add("/user/jump_m", uc.JumpToMCenter)
 }
 
-
-func init(){
+func init() {
 	registerRoutes()
 }
