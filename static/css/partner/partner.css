@@ -137,7 +137,13 @@ a.l-btn span span.l-btn-icon-left{padding-left:0px;}
 .panel-header{border-left:none;border-right:none;}
 .icon{padding-left:20px;}
 
-.opt2{text-indent: 1em}
+.opt2{text-indent: 1em;}
+.opt3{text-indent:2em;}
+.opt4{text-indent:5em;}
+.opt5{text-indent:4em;}
+.opt6{text-indent:5em;}
+.opt7{text-indent:6em;}
+.opt8{text-indent:7em;}
 
 /************新样式 ************/
 .login-page{background:#f0f0f0 url(../login/login_bg.gif) center center no-repeat;height:80%;}

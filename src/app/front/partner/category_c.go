@@ -73,8 +73,10 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
 	json, _ := json.Marshal(category)
 
-	re := regexp.MustCompile(fmt.Sprintf("<option value=\"%d\">[^>]+>", id))
-	cateOpts := re.ReplaceAll(cache.GetDropOptionsOfCategory(partnerId), nil)
+	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))
+	originOpts := cache.GetDropOptionsOfCategory(partnerId)
+	cateOpts := re.ReplaceAll(originOpts,nil)
+
 
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{

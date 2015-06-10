@@ -174,7 +174,7 @@ func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
 
 func (this *saleRep) GetCategories(partnerId int) []*sale.ValueCategory {
 	var e []*sale.ValueCategory = []*sale.ValueCategory{}
-	err := this.Connector.GetOrm().Select(&e, "partner_id=?", partnerId)
+	err := this.Connector.GetOrm().Select(&e, "partner_id=? ORDER BY id ASC", partnerId)
 	if err != nil {
 		log.PrintErr(err)
 	}
@@ -194,12 +194,12 @@ func (this *saleRep) GetRelationCategories(partnerId, categoryId int) []*sale.Va
 			isMatch = true
 			pid = all[i].ParentId
 			newArr = append(newArr, all[i])
-			i = 0
+			i = -1
 		} else {
 			if all[i].Id == pid {
 				newArr = append(newArr, all[i])
-				i = 0
 				pid = all[i].ParentId
+				i = -1
 				if pid == 0 {
 					break
 				}

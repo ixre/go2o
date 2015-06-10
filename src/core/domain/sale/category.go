@@ -21,6 +21,7 @@ var _ sale.ICategory = new(Category)
 type Category struct {
 	value *sale.ValueCategory
 	rep   sale.ISaleRep
+	parentIdChanged bool
 }
 
 func newCategory(saleRep sale.ISaleRep, v *sale.ValueCategory) sale.ICategory {
@@ -45,9 +46,11 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 		val.Enabled = v.Enabled
 		val.Name = v.Name
 		val.OrderIndex = v.OrderIndex
-		val.ParentId = v.ParentId
-		if len(v.Url) == 0 || (strings.HasPrefix(val.Url, "/c-") && v.ParentId != val.ParentId) {
-			val.Url = this.getAutomaticUrl(val.PartnerId, v.Id)
+		if val.ParentId != v.ParentId{
+			this.parentIdChanged = true
+			val.ParentId = v.ParentId
+		}else{
+			this.parentIdChanged = false
 		}
 	}
 	return nil
@@ -55,10 +58,12 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 
 func (this *Category) Save() (int, error) {
 	id, err := this.rep.SaveCategory(this.value)
-	if err == nil && this.GetDomainId() == 0 {
+	if err == nil{
 		this.value.Id = id
-		if len(this.value.Url) == 0 {
+		if len(this.value.Url) == 0 || (this.parentIdChanged &&
+			strings.HasPrefix(this.value.Url, "/c-")) {
 			this.value.Url = this.getAutomaticUrl(this.value.PartnerId, id)
+			this.parentIdChanged = false
 			return this.Save()
 		}
 	}
@@ -70,7 +75,7 @@ func (this *Category) getAutomaticUrl(partnerId, id int) string {
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCategories)
 	for i := l; i > 0; i-- {
-		buf.WriteString(strconv.Itoa(relCategories[i-1].Id))
+		buf.WriteString("-"+strconv.Itoa(relCategories[i-1].Id))
 	}
 	buf.WriteString(".htm")
 	return buf.String()
