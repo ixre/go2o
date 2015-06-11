@@ -208,7 +208,7 @@ ShoppingCart.prototype.retrieval = function (cart) {
 };
 
 // 购物车添加项
-ShoppingCart.prototype.add = function (goodsId, num) {
+ShoppingCart.prototype.add = function (goodsId, num,callback) {
     this.xhr({action: 'add', 'cart.key': this.key, id: goodsId, num: num}, (function (t) {
         return function (obj) {
             if (obj) {
@@ -216,6 +216,7 @@ ShoppingCart.prototype.add = function (goodsId, num) {
                     t.notify(obj.message);
                 } else {
                     t.addItem(obj.item,num);
+                    if(callback)callback(obj);
                 }
             }
         };
