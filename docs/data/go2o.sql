@@ -167,9 +167,9 @@ CREATE TABLE `gs_goods` (
   `small_title` varchar(100) DEFAULT NULL,
   `on_shelves` tinyint(4) DEFAULT NULL COMMENT '是否上架',
   `img` varchar(100) DEFAULT NULL,
-  `cost` decimal(5,2) DEFAULT '0.00' COMMENT ' 成本价',
-  `price` decimal(5,2) DEFAULT '0.00' COMMENT '售价(市场价)',
-  `sale_price` decimal(5,2) DEFAULT NULL COMMENT '实际销售价',
+  `cost` decimal(8,2) DEFAULT '0.00' COMMENT ' 成本价',
+  `price` decimal(8,2) DEFAULT '0.00' COMMENT '售价(市场价)',
+  `sale_price` decimal(8,2) DEFAULT NULL COMMENT '实际销售价',
   `apply_subs` varchar(200) DEFAULT NULL COMMENT '供应分店,用'',''隔开',
   `note` varchar(45) DEFAULT NULL COMMENT '备注，如新菜色，特价优惠等',
   `description` varchar(500) DEFAULT NULL,
@@ -1168,4 +1168,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-10 17:24:21
+-- Dump completed on 2015-06-11 15:57:54

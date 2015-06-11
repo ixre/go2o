@@ -96,42 +96,43 @@ func (this *ListC) List_Index(ctx *web.Context) {
 
 		idArr := this.getIdArray(r.URL.Path)
 		page, _ := strconv.Atoi(r.FormValue("page"))
+		categoryId := idArr[len(idArr)-1]
+		cat := dps.SaleService.GetCategory(p.Id, categoryId)
 
-
-		items,total := dps.SaleService.GetOnShelvesGoodsByCategoryId(p.Id, idArr[len(idArr)-1], size)
-
-		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
+		total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId, size)
+		var pagerHtml string
+		if total != 0 {
+			pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
+			pager.RecordCount = total
+			pagerHtml = pager.PagerString()
+		}
 
 		buf := bytes.NewBufferString("")
 
 		if len(items) == 0 {
 			buf.WriteString("<div class=\"no_goods\">没有找到商品!</div>")
 		}else {
-			buf.WriteString("<ul>")
-
-
-
-			for _, v := range items {
+			for i, v := range items {
 				buf.WriteString(fmt.Sprintf(`
-			<li>
-				<div class="gs_goodss">
-                        <img src="%s" alt="%s"/>
+				<div class="item-block item-block%d">
+					<a href="/item-%d.htm" class="goods-link">
+                        <img class="goods-img" src="%s" alt="%s"/>
                         <h3 class="name">%s%s</h3>
-                        <span class="srice">原价:￥%s</span>
-                        <span class="sprice">优惠价:￥%s</span>
-                        <a href="javascript:cart.add(%d,1);" class="add">&nbsp;</a>
+                        <span class="sale-price">￥%s</span><br />
+                        <span class="market-price"><del>￥%s</del></span>
+					</a>
+                    <div class="clearfix"></div>
                 </div>
-             </li>
-		`, format.GetGoodsImageUrl(v.Image), v.Name, v.Name, v.SmallTitle, format.FormatFloat(v.Price),
-				format.FormatFloat(v.SalePrice),
-				v.Id))
+		`, i%2, v.Id, format.GetGoodsImageUrl(v.Image),
+				v.Name, v.Name, v.SmallTitle, format.FormatFloat(v.SalePrice),
+				format.FormatFloat(v.Price)))
 			}
-			buf.WriteString("</ul>")
 		}
 
-		this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"cat":cat,
 			"items":template.HTML(buf.Bytes()),
-			"pager":template.HTML(pager.PagerString()),
+			"pager":template.HTML(pagerHtml),
 		},
 		"views/shop/{device}/list.html",
 		"views/shop/{device}/inc/header.html",

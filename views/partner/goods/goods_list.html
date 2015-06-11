@@ -101,9 +101,13 @@
                 [
                     { field: 'name', title: '商品名称', align: 'center', width: 120 },
                     { field: 'img', title: '图片', align: 'center', width: 100,formatter:function(val){
-                        var url = val ==''?'{{.no_pic_url}}':'{{.img_serve}}/'+val;
-                        return '<img src="'+url+'" style="background:#fff;width:80px;height:80px;'+
-                                'border-radius:5px;border:solid 1px #888;padding:1px;margin:5px;"/>';
+                        if(val ==''){
+                            val = '{{.no_pic_url}}';
+                        }else if(val.indexOf("http://")!=0 && val.indexOf("https://")!=0){
+                            val = '{{.img_serve}}/'+val;
+                        }
+                        return '<img src="'+val+'" style="background:#fff;width:75px;height:75px;'+
+                                'border-radius:1px;border:solid 1px #ddd;margin:5px;"/>';
                     } },
                     { field: 'cost', title: '成本价',align: 'center'},
                     { field: 'price', title: '定价', align: 'center', width: 120 },

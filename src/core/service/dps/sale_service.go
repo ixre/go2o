@@ -51,7 +51,7 @@ func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, erro
 	return pro.Save()
 }
 
-func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, categoryId, num int) []*dto.ListGoods {
+func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, num int)(int,[]*dto.ListGoods){
 	var sl sale.ISale = this._rep.GetSale(partnerId)
 	var cate sale.ICategory = sl.GetCategory(categoryId)
 	var ids []int = cate.GetChildId()
@@ -59,7 +59,7 @@ func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, categoryId, nu
 
 	//todo: cache
 
-	var goods = this._rep.GetOnShelvesGoodsByCategoryId(partnerId, ids, num)
+	total,goods := this._rep.GetPagedOnShelvesGoods(partnerId, ids, num)
 	var listGoods []*dto.ListGoods = make([]*dto.ListGoods, len(goods))
 	for i, v := range goods {
 		listGoods[i] = &dto.ListGoods{
@@ -71,7 +71,7 @@ func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, categoryId, nu
 			SalePrice:  v.SalePrice,
 		}
 	}
-	return listGoods
+	return total,listGoods
 }
 
 func (this *saleService) DeleteGoods(partnerId, goodsId int) error {

@@ -82,7 +82,7 @@ func (this *saleRep) SaveGoods(v *sale.ValueGoods) (int, error) {
 	}
 }
 
-func (this *saleRep) GetOnShelvesGoodsByCategoryId(partnerId int, catIds []int, num int) (e []*sale.ValueGoods) {
+func (this *saleRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, num int) (total int,e []*sale.ValueGoods) {
 	var sql string
 	if num <= 0 {
 		num = 10
@@ -92,14 +92,13 @@ func (this *saleRep) GetOnShelvesGoodsByCategoryId(partnerId int, catIds []int, 
 	sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
 		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT 0,%d`, partnerId, catIdStr, num)
 
+	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
+		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, partnerId, catIdStr),&total)
 
 	e = []*sale.ValueGoods{}
-	err := this.Connector.GetOrm().SelectByQuery(&e, sql)
-	if err != nil {
-		log.PrintErr(err)
-		return nil
-	}
-	return e
+	this.Connector.GetOrm().SelectByQuery(&e, sql)
+
+	return total,e
 }
 
 func (this *saleRep) DeleteGoods(partnerId, goodsId int) error {

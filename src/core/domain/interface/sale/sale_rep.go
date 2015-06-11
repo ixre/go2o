@@ -20,7 +20,7 @@ type ISaleRep interface {
 	SaveGoods(*ValueGoods) (int, error)
 
 	// 获取在货架上的商品
-	GetOnShelvesGoodsByCategoryId(partnerId int, catIds []int, num int) []*ValueGoods
+	GetPagedOnShelvesGoods(partnerId int, catIds []int, num int)(total int,goods []*ValueGoods)
 
 	DeleteGoods(partnerId, goodsId int) error
 

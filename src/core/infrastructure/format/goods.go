@@ -42,7 +42,7 @@ func GetGoodsImageUrl(image string) string {
 		}
 		if len(noPicUrl) == 0 {
 			noPicUrl = ctx.Config().GetString(variable.StaticServer) +
-				"/" + ctx.Config().GetString(variable.NoPicPath)
+			"/" + ctx.Config().GetString(variable.NoPicPath)
 		}
 		picCfgLoaded = true
 	}
@@ -51,5 +51,8 @@ func GetGoodsImageUrl(image string) string {
 		return noPicUrl
 	}
 
+	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+		return image
+	}
 	return imageServe + "/" + image
 }
