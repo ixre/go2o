@@ -19,51 +19,64 @@ import (
 var _ sale.ICategory = new(Category)
 
 type Category struct {
-	value *sale.ValueCategory
-	rep   sale.ISaleRep
-	parentIdChanged bool
+	_value *sale.ValueCategory
+	_rep   sale.ISaleRep
+	_parentIdChanged bool
+	_childIdArr []int
 }
 
 func newCategory(saleRep sale.ISaleRep, v *sale.ValueCategory) sale.ICategory {
 	return &Category{
-		value: v,
-		rep:   saleRep,
+		_value: v,
+		_rep:   saleRep,
 	}
 }
 
 func (this *Category) GetDomainId() int {
-	return this.value.Id
+	return this._value.Id
 }
 
 func (this *Category) GetValue() sale.ValueCategory {
-	return *this.value
+	return *this._value
 }
 
 func (this *Category) SetValue(v *sale.ValueCategory) error {
-	val := this.value
+	val := this._value
 	if val.Id == v.Id {
 		val.Description = v.Description
 		val.Enabled = v.Enabled
 		val.Name = v.Name
 		val.OrderIndex = v.OrderIndex
 		if val.ParentId != v.ParentId{
-			this.parentIdChanged = true
+			this._parentIdChanged = true
 			val.ParentId = v.ParentId
 		}else{
-			this.parentIdChanged = false
+			this._parentIdChanged = false
 		}
 	}
 	return nil
 }
 
+// 获取子栏目的编号
+func (this *Category) GetChildId()[]int{
+	if this._childIdArr == nil{
+		childCats := this._rep.GetChildCategories(this._value.PartnerId,this.GetDomainId())
+		this._childIdArr = make([]int,len(childCats))
+		for i,v := range childCats{
+			this._childIdArr[i] = v.Id
+		}
+	}
+	return this._childIdArr
+}
+
 func (this *Category) Save() (int, error) {
-	id, err := this.rep.SaveCategory(this.value)
+	id, err := this._rep.SaveCategory(this._value)
 	if err == nil{
-		this.value.Id = id
-		if len(this.value.Url) == 0 || (this.parentIdChanged &&
-			strings.HasPrefix(this.value.Url, "/c-")) {
-			this.value.Url = this.getAutomaticUrl(this.value.PartnerId, id)
-			this.parentIdChanged = false
+		this._value.Id = id
+		if len(this._value.Url) == 0 || (this._parentIdChanged &&
+			strings.HasPrefix(this._value.Url, "/c-")) {
+			this._value.Url = this.getAutomaticUrl(this._value.PartnerId, id)
+			this._parentIdChanged = false
 			return this.Save()
 		}
 	}
@@ -71,7 +84,7 @@ func (this *Category) Save() (int, error) {
 }
 
 func (this *Category) getAutomaticUrl(partnerId, id int) string {
-	var relCategories []*sale.ValueCategory = this.rep.GetRelationCategories(partnerId, id)
+	var relCategories []*sale.ValueCategory = this._rep.GetRelationCategories(partnerId, id)
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCategories)
 	for i := l; i > 0; i-- {

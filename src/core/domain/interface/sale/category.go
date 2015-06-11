@@ -17,4 +17,7 @@ type ICategory interface {
 	SetValue(*ValueCategory) error
 
 	Save() (int, error)
+
+	// 获取子栏目的编号
+	GetChildId()[]int
 }

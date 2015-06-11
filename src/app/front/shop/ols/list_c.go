@@ -20,9 +20,11 @@ import (
 	"strconv"
 	"github.com/atnet/gof/algorithm/iterator"
 	"go2o/src/core/infrastructure/domain/util"
+	"strings"
+	"github.com/atnet/gof/web/pager"
 )
 
-type CategoryC struct {
+type ListC struct {
 	*BaseC
 }
 
@@ -55,7 +57,7 @@ func categoryWalk(buf *bytes.Buffer,cs []*sale.ValueCategory) {
 }
 
 // 类目，限移动端
-func (this *CategoryC) Index(ctx *web.Context) {
+func (this *ListC) AllCate(ctx *web.Context) {
 	p := this.BaseC.GetPartner(ctx)
 	mm := this.BaseC.GetMember(ctx)
 	siteConf := this.BaseC.GetSiteConf(ctx)
@@ -75,22 +77,42 @@ func (this *CategoryC) Index(ctx *web.Context) {
 		"views/shop/{device}/inc/footer.html")
 }
 
-func (this *CategoryC) GetList(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-
-	const getNum int = -1 //-1表示全部
-	categoryId, _ := strconv.Atoi(r.URL.Query().Get("cid"))
-	items := dps.SaleService.GetOnShelvesGoodsByCategoryId(p.Id, categoryId, getNum)
-	if len(items) == 0 {
-		w.Write([]byte(`无商品`))
-		return
+func (this *ListC) getIdArray(path string)[]int{
+	idStr := path[strings.Index(path,"-")+1:strings.LastIndex(path,".")]
+	strArr := strings.Split(idStr,"-")
+	intArr := make([]int,len(strArr))
+	for i,v := range strArr{
+		intArr[i],_ = strconv.Atoi(v)
 	}
-	buf := bytes.NewBufferString("<ul>")
+	return intArr
+}
 
-	for _, v := range items {
+func (this *ListC) List_Index(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
+		r := ctx.Request
+		p := this.BaseC.GetPartner(ctx)
 
-		buf.WriteString(fmt.Sprintf(`
+		const size int = 12 //-1表示全部
+
+		idArr := this.getIdArray(r.URL.Path)
+		page, _ := strconv.Atoi(r.FormValue("page"))
+
+
+		items,total := dps.SaleService.GetOnShelvesGoodsByCategoryId(p.Id, idArr[len(idArr)-1], size)
+
+		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
+
+		buf := bytes.NewBufferString("")
+
+		if len(items) == 0 {
+			buf.WriteString("<div class=\"no_goods\">没有找到商品!</div>")
+		}else {
+			buf.WriteString("<ul>")
+
+
+
+			for _, v := range items {
+				buf.WriteString(fmt.Sprintf(`
 			<li>
 				<div class="gs_goodss">
                         <img src="%s" alt="%s"/>
@@ -101,9 +123,18 @@ func (this *CategoryC) GetList(ctx *web.Context) {
                 </div>
              </li>
 		`, format.GetGoodsImageUrl(v.Image), v.Name, v.Name, v.SmallTitle, format.FormatFloat(v.Price),
-			format.FormatFloat(v.SalePrice),
-			v.Id))
+				format.FormatFloat(v.SalePrice),
+				v.Id))
+			}
+			buf.WriteString("</ul>")
+		}
+
+		this.BaseC.ExecuteTemplate(ctx,gof.TemplateDataMap{
+			"items":template.HTML(buf.Bytes()),
+			"pager":template.HTML(pager.PagerString()),
+		},
+		"views/shop/{device}/list.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 	}
-	buf.WriteString("</ul>")
-	w.Write(buf.Bytes())
 }

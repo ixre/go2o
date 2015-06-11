@@ -98,7 +98,7 @@ func (this *orderC) Orders_post(ctx *web.Context) {
 
 	n, rows := dps.MemberService.QueryPagerOrder(m.Id, page, size, where, "")
 
-	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.JavaScriptPagerGetter)
+	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
 
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
 

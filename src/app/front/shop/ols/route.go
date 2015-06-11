@@ -40,7 +40,7 @@ func registerRoutes() {
 	pc := &PaymentC{}
 	cc := &CartC{}
 	uc := &UserC{}
-	lc := &CategoryC{}
+	lc := &ListC{}
 
 	routes.Register("buy", sp)
 	routes.Register("shopping", sp)
@@ -62,6 +62,7 @@ func registerRoutes() {
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/user/jump_m", uc.JumpToMCenter)
+	routes.Add("^/c-[0-9-]+.htm",lc.List_Index)
 }
 
 func init() {

@@ -31,7 +31,7 @@ func HandleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 			"error":  err.Error(),
 			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
-			"views/shop/{device}/error.html")
+		strings.Replace("views/shop/{device}/error.html","{device}",ctx.Items["device_view_dir"].(string),-1))
 	}
 }
 

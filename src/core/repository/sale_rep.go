@@ -16,8 +16,8 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/infrastructure/log"
-	"strconv"
-	"strings"
+	"github.com/atnet/gof/algorithm/iterator"
+	"go2o/src/core/infrastructure/format"
 )
 
 var _ sale.ISaleRep = new(saleRep)
@@ -63,13 +63,10 @@ func (this *saleRep) GetValueGoods(partnerId, goodsId int) *sale.ValueGoods {
 func (this *saleRep) GetGoodsByIds(ids ...int) ([]*sale.ValueGoods, error) {
 	//todo: partnerId
 	var items []*sale.ValueGoods
-	var strIds []string = make([]string, len(ids))
-	for i, v := range ids {
-		strIds[i] = strconv.Itoa(v)
-	}
+
 	//todo:改成database/sql方式，不使用orm
 	err := this.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_goods WHERE id IN (`+strings.Join(strIds, ",")+`)`)
+		`SELECT * FROM gs_goods WHERE id IN (`+ format.GetCategoryIdStr(ids)+`)`)
 
 	return items, err
 }
@@ -85,15 +82,16 @@ func (this *saleRep) SaveGoods(v *sale.ValueGoods) (int, error) {
 	}
 }
 
-func (this *saleRep) GetOnShelvesGoodsByCategoryId(partnerId, categoryId, num int) (e []*sale.ValueGoods) {
+func (this *saleRep) GetOnShelvesGoodsByCategoryId(partnerId int, catIds []int, num int) (e []*sale.ValueGoods) {
 	var sql string
 	if num <= 0 {
-		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
-		WHERE partner_id=%d AND gs_category.id=%d AND on_shelves=1`, partnerId, categoryId)
-	} else {
-		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
-		WHERE partner_id=%d AND gs_category.id=%d AND on_shelves=1 LIMIT 0,%d`, partnerId, categoryId, num)
+		num = 10
 	}
+
+	var catIdStr string = format.GetCategoryIdStr(catIds)
+	sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
+		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT 0,%d`, partnerId, catIdStr, num)
+
 
 	e = []*sale.ValueGoods{}
 	err := this.Connector.GetOrm().SelectByQuery(&e, sql)
@@ -206,6 +204,33 @@ func (this *saleRep) GetRelationCategories(partnerId, categoryId int) []*sale.Va
 			}
 		}
 	}
+	return newArr
+}
+
+
+
+// 获取子栏目
+func (this *saleRep) GetChildCategories(partnerId,categoryId int)[]*sale.ValueCategory{
+	var all []*sale.ValueCategory = this.GetCategories(partnerId)
+	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
+
+	var cdt iterator.Condition = func(v,v1 interface{})bool{
+		return v1.(*sale.ValueCategory).ParentId == v.(*sale.ValueCategory).Id
+	}
+	var start iterator.WalkFunc = func(v interface{},level int){
+		c := v.(*sale.ValueCategory)
+		if c.Id != categoryId {
+			newArr = append(newArr, c)
+		}
+	}
+
+	var arr []interface{} = make([]interface{},len(all))
+	for i,_:= range arr{
+		arr[i] = all[i]
+	}
+
+	iterator.Walk(arr,&sale.ValueCategory{Id:categoryId},cdt,start,nil,1)
+
 	return newArr
 }
 

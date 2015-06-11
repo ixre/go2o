@@ -51,8 +51,15 @@ func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, erro
 	return pro.Save()
 }
 
-func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, cid, num int) []*dto.ListGoods {
-	var goods = this._rep.GetOnShelvesGoodsByCategoryId(partnerId, cid, num)
+func (this *saleService) GetOnShelvesGoodsByCategoryId(partnerId, categoryId, num int) []*dto.ListGoods {
+	var sl sale.ISale = this._rep.GetSale(partnerId)
+	var cate sale.ICategory = sl.GetCategory(categoryId)
+	var ids []int = cate.GetChildId()
+	ids = append(ids, categoryId)
+
+	//todo: cache
+
+	var goods = this._rep.GetOnShelvesGoodsByCategoryId(partnerId, ids, num)
 	var listGoods []*dto.ListGoods = make([]*dto.ListGoods, len(goods))
 	for i, v := range goods {
 		listGoods[i] = &dto.ListGoods{

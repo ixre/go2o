@@ -20,7 +20,7 @@ type ISaleRep interface {
 	SaveGoods(*ValueGoods) (int, error)
 
 	// 获取在货架上的商品
-	GetOnShelvesGoodsByCategoryId(partnerId, categoryId, num int) []*ValueGoods
+	GetOnShelvesGoodsByCategoryId(partnerId int, catIds []int, num int) []*ValueGoods
 
 	DeleteGoods(partnerId, goodsId int) error
 
@@ -34,6 +34,9 @@ type ISaleRep interface {
 
 	// 获取与栏目相关的栏目
 	GetRelationCategories(partnerId, categoryId int) []*ValueCategory
+
+	// 获取子栏目
+	GetChildCategories(partnerId,categoryId int)[]*ValueCategory
 
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)
