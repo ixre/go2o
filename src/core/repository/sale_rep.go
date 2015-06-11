@@ -82,15 +82,12 @@ func (this *saleRep) SaveGoods(v *sale.ValueGoods) (int, error) {
 	}
 }
 
-func (this *saleRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, num int) (total int,e []*sale.ValueGoods) {
+func (this *saleRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start,end int) (total int,e []*sale.ValueGoods) {
 	var sql string
-	if num <= 0 {
-		num = 10
-	}
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
-		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT 0,%d`, partnerId, catIdStr, num)
+		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, partnerId, catIdStr, start,(end-start))
 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_category ON gs_goods.category_id=gs_category.id
 		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, partnerId, catIdStr),&total)
