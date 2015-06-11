@@ -142,3 +142,21 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		"views/shop/{device}/inc/footer.html")
 	}
 }
+
+func (this *ListC) GoodsDetails(ctx *web.Context){
+	if this.BaseC.Requesting(ctx) {
+		r := ctx.Request
+		p := this.BaseC.GetPartner(ctx)
+		path := r.URL.Path
+		goodsId,_ := strconv.Atoi(path[strings.Index(path,"-")+1:strings.Index(path,".")])
+
+		goods := dps.SaleService.GetValueGoods(p.Id,goodsId)
+
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"goods":goods,
+		},
+		"views/shop/{device}/goods.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
+	}
+}
