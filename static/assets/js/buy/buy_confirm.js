@@ -75,7 +75,7 @@ function dynamicContent(t) {
         if (payOpt == 1) {
             payOptEle.innerHTML = '现金支付';
         } else if (payOpt == 2) {
-            payOptEle.innerHTML = '网银支付(支付包)';
+            payOptEle.innerHTML = '网银支付(支付宝)';
         }
     }
 

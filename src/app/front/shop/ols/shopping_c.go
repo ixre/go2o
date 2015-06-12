@@ -161,7 +161,7 @@ func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"addrs": template.JS(js),
 		"sel":   selId,
-	}, "views/shop/{device}/profile/deliver_address.html")
+	}, "views/shop/{device}/deliver_address.html")
 }
 func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
