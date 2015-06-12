@@ -158,7 +158,7 @@ shoppingCart.prototype.addItem = function (args) {
         tr.setAttribute('item-price', args.price);
         tr.setAttribute('item-name', args.name);
 
-        tr.apptd = function (html, className) {
+        tr.appTd = function (html, className) {
             var td = document.createElement("TD");
             if (className) {
                 td.className = className;
@@ -172,9 +172,9 @@ shoppingCart.prototype.addItem = function (args) {
         args.num = args.num || 1;
 
         //添加
-        tr.apptd(args.name).apptd('￥' + args.price).apptd('<a class="sub_btn" href="javascript:;" onclick="return cart.remove(\''
+        tr.appTd(args.name).appTd('￥' + args.price).appTd('<a class="sub_btn" href="javascript:;" onclick="return cart.remove(\''
             + args.id + '\',1)">-</a><input class="cart_q" value="' + args.num + '" type="text"/><a class="plus_btn" href="javascript:;" onclick="return cart.add(\''
-            + args.id + '\',1)">+</a>', 'cart_qpanel').apptd('<a class="remove_btn" href="javascript:void(0)" onclick="cart.remove(\'' + args.id + '\')" class="cart_remove">x</a>', 'center');
+            + args.id + '\',1)">+</a>', 'cart_qpanel').appTd('<a class="remove_btn" href="javascript:void(0)" onclick="cart.remove(\'' + args.id + '\')" class="cart_remove">x</a>', 'center');
 
         this.cp.getElementsByTagName('tbody')[0].appendChild(tr);
 

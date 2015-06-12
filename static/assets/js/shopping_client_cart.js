@@ -71,7 +71,7 @@ var cart = {
             tr.setAttribute('price', args.price);
             tr.setAttribute('itemname', args.name);
 
-            tr.apptd = function (html, className) {
+            tr.appTd = function (html, className) {
                 var td = document.createElement("TD");
                 if (className) { td.className = className; }
                 td.innerHTML = html;
@@ -83,9 +83,9 @@ var cart = {
             args.num = args.num || 1;
 
             //添加
-            tr.apptd(args.name).apptd('￥' + args.price).apptd('<a href="javascript:;" onclick="return cart.subqua(\''
+            tr.appTd(args.name).appTd('￥' + args.price).appTd('<a href="javascript:;" onclick="return cart.subqua(\''
             + args.id + '\')">-</a><input class="cart_q" value="' + args.num + '" type="text"/><a href="javascript:;" onclick="return cart.addqua(\''
-            + args.id + '\')">+</a>', 'cart_qpanel').apptd('<a href="javascript:cart.remove(\'' + args.id + '\')" class="cart_remove">x</a>', 'center');
+            + args.id + '\')">+</a>', 'cart_qpanel').appTd('<a href="javascript:cart.remove(\'' + args.id + '\')" class="cart_remove">x</a>', 'center');
       
             this.cp.getElementsByTagName('tbody')[0].appendChild(tr);
 

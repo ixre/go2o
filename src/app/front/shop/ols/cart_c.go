@@ -24,14 +24,14 @@ type CartC struct {
 
 // 购物车
 func (this *CartC) CartApiHandle(ctx *web.Context) {
-	if !this.Requesting(ctx) {
+	if !this.BaseC.Requesting(ctx) {
 		ctx.ResponseWriter.Write([]byte("invalid request"))
 		return
 	}
 
 	r, _ := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 	r.ParseForm()
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")
@@ -77,7 +77,7 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 	} else {
 		d["item"] = item
 	}
-	this.JsonOutput(ctx, d)
+	this.BaseC.JsonOutput(ctx, d)
 }
 
 func (this *CartC) cart_RemoveItem(ctx *web.Context,
@@ -92,16 +92,13 @@ func (this *CartC) cart_RemoveItem(ctx *web.Context,
 	} else {
 		msg.Result = true
 	}
-	this.ResultOutput(ctx, msg)
+	this.BaseC.ResultOutput(ctx, msg)
 }
 
-func (this *CartC) cart(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	//todo: 需页面
-	if r.URL.Query().Get("edit") == "1" {
-		w.Header().Add("Location", "/list")
-	} else {
-		w.Header().Add("Location", "/buy/confirm")
-	}
-	w.WriteHeader(302)
+func (this *CartC) Index(ctx *web.Context) {
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	},
+	"views/shop/{device}/cart.html",
+	"views/shop/{device}/inc/header.html",
+	"views/shop/{device}/inc/footer.html")
 }
