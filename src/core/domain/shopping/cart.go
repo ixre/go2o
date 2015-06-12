@@ -112,12 +112,12 @@ func (this *Cart) RemoveItem(goodsId, num int) error {
 	}
 
 	// 删除数量
-	for i, v := range this.value.Items {
+	for _, v := range this.value.Items {
 		if v.GoodsId == goodsId {
 			if newNum := v.Num - num; newNum <= 0 {
 				// 移出购物车
-				this.value.Items = append(this.value.Items[:i],
-					this.value.Items[i+1:]...)
+				//this.value.Items = append(this.value.Items[:i],this.value.Items[i+1:]...)
+				v.Num = 0
 			} else {
 				v.Num = newNum
 			}

@@ -226,7 +226,7 @@ func (this *shoppingRep) SaveShoppingCart(v *shopping.ValueCart) (int, error) {
 
 // 移出购物车项
 func (this *shoppingRep) RemoveCartItem(id int) error {
-	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{}, id)
+	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCartItem{}, id)
 }
 
 // 保存购物车项
