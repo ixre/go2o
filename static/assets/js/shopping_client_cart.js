@@ -127,7 +127,7 @@ var cart = {
         var trs = this.cp.getElementsByTagName('tr');
 
         this.total_fee = 0;
-        this.total_num = 0;
+        this.totalNum = 0;
         this.data = '';
 
         for (var i = 0; i < trs.length; i++) {
@@ -135,7 +135,7 @@ var cart = {
             if (t.id.indexOf('cr') != -1) {
                 //计算数量
                 var _q = parseInt(t.getElementsByTagName('INPUT')[0].value);
-                this.total_num += _q;
+                this.totalNum += _q;
                 //计算金额
                 var _f = parseFloat(t.getAttribute('price'));
                 this.total_fee += _f * _q;
@@ -148,7 +148,7 @@ var cart = {
 			tfs = document.getElementsByClassName('cart_fee');
 
         for (var i = 0; i < tqs.length; i++) {
-            tqs[i].innerHTML = this.total_num;
+            tqs[i].innerHTML = this.totalNum;
         } for (var i = 0; i < tfs.length; i++) {
             tfs[i].innerHTML = this.total_fee.toFixed(2);
         }

@@ -14,11 +14,12 @@ type ShoppingCart struct {
 	CartKey    string      `json:"key"`
 	BuyerId    int         `json:"buyer"`
 	Summary    string      `json:"summary"`
-	UpdateTime int64       `json:"updateTime"`
+	UpdateTime int64       `json:"update_time"`
 	Items      []*CartItem `json:"items"`
+	TotalNum   int		    `json:"total_num"`					// 总数量
 	TotalFee   float32     `json:"total"`
 	OrderFee   float32     `json:"fee"`
-	IsBought   int         `json:"isBought"` //是否已经购买
+	IsBought   int         `json:"is_bought"` 	//是否已经购买
 }
 
 type CartItem struct {
@@ -29,5 +30,5 @@ type CartItem struct {
 	GoodsImage string  `json:"image"`
 	Num        int     `json:"num"`
 	Price      float32 `json:"price"`
-	SalePrice  float32 `json:"salePrice"`
+	SalePrice  float32 `json:"sale_price"`
 }

@@ -184,6 +184,7 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 					Price:      v.Price,
 					SalePrice:  v.SalePrice,
 				}
+				cart.TotalNum += cart.Items[i].Num
 			}
 		}
 	}
