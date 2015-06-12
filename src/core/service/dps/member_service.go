@@ -106,7 +106,7 @@ func (this *memberService) GetRelation(memberId int) member.MemberRelation {
 	return *this._memberRep.GetRelation(memberId)
 }
 
-func (this *memberService) Login(usr, pwd string) (bool, *member.ValueMember, error) {
+func (this *memberService) Login(partnerId int,usr, pwd string) (bool, *member.ValueMember, error) {
 	val := this._memberRep.GetMemberValueByUsr(usr)
 	if val == nil {
 		return false, nil, errors.New("会员不存在")
@@ -118,6 +118,12 @@ func (this *memberService) Login(usr, pwd string) (bool, *member.ValueMember, er
 
 	if val.State == 0 {
 		return false, nil, errors.New("会员已停用")
+	}
+
+	m,_ := this._memberRep.GetMember(val.Id)
+	rl := m.GetRelation()
+	if rl.RegisterPartnerId != partnerId{
+		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
 	val.LastLoginTime = time.Now().Unix()

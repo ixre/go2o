@@ -43,12 +43,13 @@ func (this *MemberC) login(ctx *web.Context) {
 
 		r := ctx.Request
 		var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
+		partnerId := this.GetPartnerId(ctx)
 		var result dto.MemberLoginResult
 
 		if len(usr) == 0 || len(pwd) == 0 {
 			result.Message = "会员不存在"
 		} else {
-			b, e, err := dps.MemberService.Login(usr, pwd)
+			b, e, err := dps.MemberService.Login(partnerId,usr, pwd)
 			result.Result = b
 
 			if b {

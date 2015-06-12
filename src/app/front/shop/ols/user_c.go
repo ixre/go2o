@@ -18,8 +18,10 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"strings"
+	"github.com/atnet/gof/web/mvc"
 )
 
+var _ mvc.Filter = new(UserC)
 type UserC struct {
 	*BaseC
 }
@@ -49,8 +51,9 @@ func (this *UserC) Login(ctx *web.Context) {
 func (this *UserC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
+	partnerId := this.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b, m, err := dps.MemberService.Login(usr, pwd)
+	b, m, err := dps.MemberService.Login(partnerId,usr, pwd)
 
 	if b {
 		ctx.Session().Set("member", m)
@@ -62,9 +65,9 @@ func (this *UserC) Login_post(ctx *web.Context) {
 }
 
 func (this *UserC) Register(ctx *web.Context) {
-	p := this.GetPartner(ctx)
+	p := this.BaseC.GetPartner(ctx)
 
-	siteConf := this.GetSiteConf(ctx)
+	siteConf := this.BaseC.GetSiteConf(ctx)
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"title":   "会员注册－" + siteConf.SubTitle,
@@ -98,7 +101,7 @@ func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	if !isOk {
 		message = "推荐人无效"
 	}
-	this.ResultOutput(ctx, gof.Message{Result: isOk, Message: message})
+	this.BaseC.ResultOutput(ctx, gof.Message{Result: isOk, Message: message})
 }
 
 func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
@@ -124,9 +127,9 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	}
 
 	if err != nil {
-		this.ResultOutput(ctx, gof.Message{Message: "注册失败！错误：" + err.Error()})
+		this.BaseC.ResultOutput(ctx, gof.Message{Message: "注册失败！错误：" + err.Error()})
 	} else {
-		this.ResultOutput(ctx, gof.Message{Result: true})
+		this.BaseC.ResultOutput(ctx, gof.Message{Result: true})
 	}
 }
 
@@ -134,7 +137,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *web.Context) {
 	w := ctx.ResponseWriter
-	m := this.GetMember(ctx)
+	m := this.BaseC.GetMember(ctx)
 	var location string
 	if m == nil {
 		location = "/user/login?return_url=/user/jump_m"
