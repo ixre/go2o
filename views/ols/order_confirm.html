@@ -35,10 +35,8 @@
                 <div id="deliver-panel">
                     加载收货信息
                 </div>
-                <div class="tip" style="font-size:80%;"><br />温馨提示：您可以将送餐给您的朋友和小伙伴哦！</div>
                 <div>
-                    <br />
-                    <a id="cb1" class="confirm-button" href="javascript:void(0);">保存配送地址</a>
+                    <a id="cb1" class="btn confirm-button" href="javascript:void(0);">保存配送地址</a>
                 </div>
             </div>
         </div>
@@ -54,8 +52,8 @@
                 <input type="radio" field="deliver_opt" id="deliver_opt1" value="1" checked="checked"/><label for="deliver_opt1">智能配送(自动选择门店配送和快递配送)</label><br />
                 <!--<input type="radio" name="deliver_opt" id="deliver_opt２" value="１"/><label for="deliver_opt1">上门自提</label>-->
 
-                <div><br />
-                    <a id="cb2" class="confirm-button" href="javascript:void(0);">保存配送地址方式</a>
+                <div>
+                    <a id="cb2" class="btn confirm-button" href="javascript:void(0);">保存配送地址方式</a>
                 </div>
             </div>
         </div>
@@ -68,10 +66,11 @@
                 </p>
             </div>
             <div id="ctl3" class="item_ctrl">
-                <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt1" value="1"/><label for="payment_opt1">现金付款</label><br />
-                <input type="radio" field="pay_opt"  name="payment_opt" id="payment_opt２" value="2" checked="checked"/><label for="payment_opt２">网银支付(支付宝)</label>
-                <div><br />
-                    <a id="cb3" class="confirm-button" href="javascript:void(0);">保存支付方式</a>
+                <input type="radio" field="pay_opt"  name="payment_opt" id="payment_opt2" value="2" checked="checked"/><label for="payment_opt2">网银支付(支付宝)</label>
+                <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt1" value="1"/><label for="payment_opt1">货到付款</label><br />
+                <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt3" value="3"/><label for="payment_opt3">转账汇款</label><br />
+                <div>
+                    <a id="cb3" class="btn confirm-button" href="javascript:void(0);">保存支付方式</a>
                 </div>
             </div>
         </div>
@@ -84,22 +83,20 @@
                 {{.cartDetails}}
 
                 <br />
-                <div class="cash-panel" id="cash-panel">
-                    <p class="money">
-                        本次订餐总金额为：<span class="money">￥{{.cart.TotalFee}}</span> 元
-                        &nbsp;优惠￥<span field="PromFee">0</span>元&nbsp;
-                    </p>
-                    <div>
-                        实际需支付金额：￥<span field="OrderFee">0</span>元
-                    </div>
-                </div>
-
-
-                <h3 class="title">使用优惠券</h3>
+                <h2 class="title">使用优惠券</h2>
                 <div class="form" id="form_coupon">
-                    优惠券编码：<input type="text" field="CouponCode" id="coupon_code"/>
+                    优惠券编码：<input class="coupon-code" type="text" field="CouponCode" id="coupon_code"/>
                     <div id="coupon_describe" class="coupon_desc hidden"></div>
                 </div>
+
+                <div class="cash-panel" id="cash-panel">
+                    <ul>
+                        <li>订单金额：<b>￥<span class="money">{{.cart.TotalFee}}</span></b>元</li>
+                        <li>优惠：<b>￥<span field="PromFee">0</span></b>元</li>
+                        <li>需支付：<b>￥<span field="OrderFee">0</span></b>元</li>
+                    </ul>
+                </div>
+                
             </div>
             <div class="item_ctrl" >
             </div>

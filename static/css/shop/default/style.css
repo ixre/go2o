@@ -170,12 +170,19 @@ padding:1% 5%;position:relative;clear:both;height:10em;}
 .order-confirm-panel .active_item .item_ctrl{display:inherit;}
 .order-confirm-panel .active_item h2 span{display:none;}
 
-.order-confirm-panel .confirm-button{display:inline-block;padding:8px 15px;background:green;color:#fff;text-decoration: none;font-size:100%;}
-.order-confirm-panel .submit-panel{text-align: right;background:#ddd;padding:10px 30px;}
-.order-confirm-panel .submit-panel .final_fee{font-size:120%;color:red;font-weight: bold;padding:0 5px;}
 
-.order-confirm-panel .cash-panel{padding:2%;
-    border:solid 1px #ddd;background:#f0f0f0;}
+.order-confirm-panel .confirm-button{display:inline-block;text-decoration: none;font-size:100%;margin-top:1rem;background:#FF6600;linr-height:120%;
+color:#FFF;padding:10px 20px;
+}
+.order-confirm-panel .submit-panel{text-align: right;background:#f5f5f5;padding:10px 30px;border-bottom:solid 1px #ddd;}
+.order-confirm-panel .submit-panel .final_fee{font-size:120%;color:red;font-weight: bold;padding:0 5px;}
+.order-confirm-panel .submit-panel .btn_submit{color:#000;background:#EEE;line-height: 120%}
+
+.order-confirm-panel .cash-panel{border-top:solid 1px #ddd;padding:10px 0;}
+.order-confirm-panel .cash-panel ul{list-style: none;margin:0;padding;0;text-align:right;}
+.order-confirm-panel .cash-panel li{line-height:150%;}
+.order-confirm-panel .cash-panel b{color:#666;margin:0 5px;}
+
 .order-confirm-panel .main-panel{padding:3%;border:solid 2px #ddd;border-radius: 5px;}
 .order-confirm-panel .order-panel{}
 .order-confirm-panel .order-panel p.summary{padding:1%;background:#ddd;color:#000;

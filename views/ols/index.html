@@ -21,12 +21,14 @@
             {{range $i,$v := .newGoods}}
             <div class="goods first">
                 <div class="item">
-
+                    <a href="/item-{{$v.Id}}.htm">
                     <span class="thumbnail">
                         <img src="{{$img_serve}}/{{$v.Image}}" alt="{{$v.Name}}">
                     </span>
                     <div class="name">{{$v.Name}}</div>
-                    <span class="price">现价:<span class="val">￥{{$v.SalePrice}}</span></span>
+                    <span class="price">现价:<span class="val">￥{{$v.SalePrice }}</span></span>
+
+                    </a>
                 </div>
             </div>
             {{end}}
@@ -39,12 +41,13 @@
             {{range $i,$v := .hotSales}}
             <div class="goods first">
                 <div class="item">
-
-                    <span class="thumbnail">
-                        <img src="{{$img_serve}}/{{$v.Image}}" alt="鱼香茄子饭">
-                    </span>
-                    <div class="name">{{$v.Name}}</div>
-                    <span class="price">现价:<span class="val">￥{{$v.SalePrice}}</span></span>
+                    <a href="/item-{{$v.Id}}.htm">
+                        <span class="thumbnail">
+                            <img src="{{$img_serve}}/{{$v.Image}}" alt="鱼香茄子饭">
+                        </span>
+                        <div class="name">{{$v.Name}}</div>
+                        <span class="price">现价:<span class="val">￥{{$v.SalePrice}}</span></span>
+                    </a>
                 </div>
             </div>
             {{end}}

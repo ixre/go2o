@@ -23,14 +23,16 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/atnet/gof/web/mvc"
 )
 
+var _ mvc.Filter = new(ShoppingC)
 type ShoppingC struct {
 	*BaseC
 }
 
 func (this *ShoppingC) prepare(ctx *web.Context) bool {
-	return this.CheckMemberLogin(ctx)
+	return this.BaseC.CheckMemberLogin(ctx)
 }
 
 // 订单确认
@@ -41,10 +43,10 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 	}
 
 	r := ctx.Request
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 
-	siteConf := this.GetSiteConf(ctx)
+	siteConf := this.BaseC.GetSiteConf(ctx)
 	// 获取购物车
 	var cartKey string
 	ck, err := r.Cookie("_cart")
@@ -107,8 +109,8 @@ func (this *ShoppingC) BuyingPersist_post(ctx *web.Context) {
 		return
 	}
 	r, w := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 	var err error
 	r.ParseForm()
 
