@@ -51,4 +51,7 @@ type ValueOrder struct {
 	Status int `db:"status" json:"status"`
 
 	UpdateTime int64 `db:"update_time" json:"updateTime"`
+
+	// 订单项
+	Items []*OrderItem `db:"-"`
 }

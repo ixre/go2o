@@ -99,10 +99,21 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		if err == nil {
 			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
-			return v.Id, err
 		}
-		return -1, err
 	}
+
+	// 保存订单项
+	if err == nil && v.Items != nil{
+		orm := d.GetOrm()
+		for _,v1 := range v.Items{
+			if v1.Id > 0{
+				orm.Save(v1.Id,v1)
+			}else{
+				orm.Save(nil,v1)
+			}
+		}
+	}
+
 	return v.Id, err
 }
 

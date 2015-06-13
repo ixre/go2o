@@ -255,7 +255,7 @@ func (this *saleRep) GetLatestGoodsSnapshot(goodsId int) *sale.GoodsSnapshot {
 // 获取指定的商品快照
 func (this *saleRep) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
 	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
-	err := this.Connector.GetOrm().Get(e, id)
+	err := this.Connector.GetOrm().Get(id,e)
 	if err != nil {
 		log.PrintErr(err)
 		e = nil

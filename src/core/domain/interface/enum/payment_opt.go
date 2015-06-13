@@ -9,10 +9,10 @@
 package enum
 
 var(
-    PaymentOptionNames []string  =[]string{"货到付款","在线付款","转账汇款"}
+    PaymentOptionNames []string  =[]string{"在线付款","货到付款","转账汇款"}
 )
 const(
-    PaymentOfflineCashPay = 1  // 线下现金付款
-    PaymentOnlinePay int = 2   // 线上付款
+    PaymentOnlinePay int = 1   // 线上付款
+    PaymentOfflineCashPay = 2  // 线下现金付款
     PaymentRemit int = 3       // 转账汇款
 )

@@ -67,7 +67,7 @@ func (this *Shopping) GetAggregateRootId() int {
 }
 
 func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart) shopping.IOrder {
-	return newOrder(this, val, cart, this._partnerRep, this._rep, this._memberRep)
+	return newOrder(this, val, cart, this._partnerRep, this._rep,this._saleRep,this._memberRep)
 }
 
 //创建购物车

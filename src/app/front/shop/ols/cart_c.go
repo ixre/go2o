@@ -16,6 +16,7 @@ import (
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
+	"go2o/src/core/infrastructure/format"
 )
 
 type CartC struct {
@@ -58,6 +59,12 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	// 如果已经购买，則创建新的购物车
 	if cart.IsBought == 1 {
 		cart = dps.ShoppingService.GetShoppingCart(p.Id, memberId, "")
+	}
+
+	if cart.Items != nil {
+		for _, v := range cart.Items {
+			v.GoodsImage = format.GetGoodsImageUrl(v.GoodsImage)
+		}
 	}
 
 	d, _ := json.Marshal(cart)

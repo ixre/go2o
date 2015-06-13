@@ -22,6 +22,7 @@ import (
 	"go2o/src/core/variable"
 	"strings"
 	"time"
+	"go2o/src/core/domain/interface/sale"
 )
 
 var (
@@ -30,44 +31,46 @@ var (
 
 type Order struct {
 	_shopping        shopping.IShopping
-	value            *shopping.ValueOrder
-	cart             shopping.ICart
-	coupons          []promotion.ICoupon
-	memberRep        member.IMemberRep
-	shoppingRep      shopping.IShoppingRep
-	partnerRep       partner.IPartnerRep
+	_value            *shopping.ValueOrder
+	_cart             shopping.ICart
+	_coupons          []promotion.ICoupon
+	_memberRep        member.IMemberRep
+	_shoppingRep      shopping.IShoppingRep
+	_partnerRep       partner.IPartnerRep
+	_saleRep		 sale.ISaleRep
 	_internalSuspend bool // 是否为内部挂起
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
-	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep,
+	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep,saleRep sale.ISaleRep,
 	memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
 		_shopping:   shopping,
-		value:       value,
-		cart:        cart,
-		memberRep:   memberRep,
-		shoppingRep: shoppingRep,
-		partnerRep:  partnerRep,
+		_value:       value,
+		_cart:        cart,
+		_memberRep:   memberRep,
+		_shoppingRep: shoppingRep,
+		_partnerRep:  partnerRep,
+		_saleRep : saleRep,
 	}
 }
 
 func (this *Order) GetDomainId() int {
-	return this.value.Id
+	return this._value.Id
 }
 
 func (this *Order) GetValue() shopping.ValueOrder {
-	return *this.value
+	return *this._value
 }
 
 func (this *Order) ApplyCoupon(coupon promotion.ICoupon) error {
-	if this.coupons == nil {
-		this.coupons = []promotion.ICoupon{}
+	if this._coupons == nil {
+		this._coupons = []promotion.ICoupon{}
 	}
-	this.coupons = append(this.coupons, coupon)
+	this._coupons = append(this._coupons, coupon)
 
 	//val := coupon.GetValue()
-	v := this.value
+	v := this._value
 	//v.CouponCode = val.Code
 	//v.CouponDescribe = coupon.GetDescribe()
 	v.CouponFee = coupon.GetCouponFee(v.Fee)
@@ -78,44 +81,44 @@ func (this *Order) ApplyCoupon(coupon promotion.ICoupon) error {
 
 // 获取应用的优惠券
 func (this *Order) GetCoupons() []promotion.ICoupon {
-	if this.coupons == nil {
+	if this._coupons == nil {
 		return make([]promotion.ICoupon, 0)
 	}
-	return this.coupons
+	return this._coupons
 }
 
 // 添加备注
 func (this *Order) AddRemark(remark string) {
-	this.value.Note = remark
+	this._value.Note = remark
 }
 
 // 设置Shop
 func (this *Order) SetShop(shopId int) error {
 	//todo:验证Shop
-	this.value.ShopId = shopId
+	this._value.ShopId = shopId
 	return nil
 }
 
 // 设置支付方式
 func (this *Order) SetPayment(payment int) {
-	this.value.PaymentOpt = payment
+	this._value.PaymentOpt = payment
 }
 
 // 标记已支付
 func (this *Order) SignPaid() error {
 	unix := time.Now().Unix()
-	this.value.IsPaid = 1
-	this.value.UpdateTime = unix
-	this.value.PaidTime = unix
+	this._value.IsPaid = 1
+	this._value.UpdateTime = unix
+	this._value.PaidTime = unix
 	_, err := this.Save()
 	return err
 }
 
 // 设置配送地址
 func (this *Order) SetDeliver(deliverAddrId int) error {
-	d := this.memberRep.GetDeliverAddr(this.value.MemberId, deliverAddrId)
+	d := this._memberRep.GetDeliverAddr(this._value.MemberId, deliverAddrId)
 	if d != nil {
-		v := this.value
+		v := this._value
 		v.DeliverAddress = d.Address
 		v.DeliverName = d.RealName
 		v.DeliverPhone = d.Phone
@@ -131,14 +134,14 @@ func (this *Order) Submit() (string, error) {
 		return "", errors.New("订单不允许重复提交！")
 	}
 
-	if this.cart == nil || len(this.cart.GetValue().Items) == 0 {
+	if this._cart == nil || len(this._cart.GetValue().Items) == 0 {
 		return "", errors.New("购物车为空！")
 	}
 
-	v := this.value
+	v := this._value
 	v.CreateTime = time.Now().Unix()
 	v.UpdateTime = v.CreateTime
-	v.ItemsInfo = this.cart.GetSummary()
+	v.ItemsInfo = this._cart.GetSummary()
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
@@ -165,31 +168,57 @@ func (this *Order) Submit() (string, error) {
 	}
 
 	// 保存订单
-	id, err := this.shoppingRep.SaveOrder(this._shopping.GetAggregateRootId(), v)
+	id, err := this.saveOrderOnSubmit()
 	v.Id = id
 	if err == nil {
-		var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
-		for _, c := range this.GetCoupons() {
-			oc.Clone(c, v.Id, v.Fee)
-			this.shoppingRep.SaveOrderCouponBind(oc) // 绑定订单与优惠券
+		this.bindCouponOnSubmit()
+		this._cart.Destroy();	// 销毁购物车
+	}
+	return v.OrderNo, err
+}
+
+// 绑定订单与优惠券
+func (this *Order) bindCouponOnSubmit(){
+	var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
+	for _, c := range this.GetCoupons() {
+		oc.Clone(c, this.GetDomainId(), this._value.Fee)
+		this._shoppingRep.SaveOrderCouponBind(oc)
+	}
+}
+
+// 保存订单
+func (this *Order) saveOrderOnSubmit()(int,error) {
+	cartItems := this._cart.GetValue().Items
+	if this._value.Items == nil {
+		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
+	}
+	var sl sale.ISale = this._saleRep.GetSale(this._value.PartnerId)
+	for i, v := range cartItems {
+		snap := sl.GetGoods(cartItems[i].GoodsId).GetLatestSnapshot()
+
+		//todo: SKU
+		this._value.Items[i] = &shopping.OrderItem{
+			Id : 0,
+			SnapshotId : snap.Id,
+			Quantity : v.Num,
+			Sku : "",
+			Fee : v.SalePrice *  float32(v.Num),
 		}
-		this.cart.Destroy();	// 销毁购物车
 	}
 
-
-	return v.OrderNo, err
+	return this._shoppingRep.SaveOrder(this._shopping.GetAggregateRootId(), this._value)
 }
 
 // 保存订单
 func (this *Order) Save() (int, error) {
 	// 有操作后解除挂起状态
-	if this.value.IsSuspend == 1 && !this._internalSuspend {
-		this.value.IsSuspend = 0
+	if this._value.IsSuspend == 1 && !this._internalSuspend {
+		this._value.IsSuspend = 0
 	}
 
-	if this.value.Id > 0 {
-		return this.shoppingRep.SaveOrder(
-			this._shopping.GetAggregateRootId(), this.value)
+	if this._value.Id > 0 {
+		return this._shoppingRep.SaveOrder(
+			this._shopping.GetAggregateRootId(), this._value)
 	}
 	this._internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
@@ -215,20 +244,20 @@ func (this *Order) AppendLog(t enum.OrderLogType, system bool, message string) e
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return this.shoppingRep.SaveOrderLog(ol)
+	return this._shoppingRep.SaveOrderLog(ol)
 }
 
 // 订单是否已完成
 func (this *Order) IsOver() bool {
-	s := this.value.Status
+	s := this._value.Status
 	return s == enum.ORDER_CANCEL || s == enum.ORDER_COMPLETED
 }
 
 // 处理订单
 func (this *Order) Process() error {
 	dt := time.Now()
-	this.value.Status += 1
-	this.value.UpdateTime = dt.Unix()
+	this._value.Status += 1
+	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
 	if err == nil {
@@ -239,8 +268,8 @@ func (this *Order) Process() error {
 
 // 确认订单
 func (this *Order) Confirm() error {
-	this.value.Status = enum.ORDER_CONFIRMED
-	this.value.UpdateTime = time.Now().Unix()
+	this._value.Status = enum.ORDER_CONFIRMED
+	this._value.UpdateTime = time.Now().Unix()
 
 	_, err := this.Save()
 	if err == nil {
@@ -252,9 +281,9 @@ func (this *Order) Confirm() error {
 // 配送订单
 func (this *Order) Deliver() error {
 	dt := time.Now()
-	this.value.Status += 1
-	this.value.DeliverTime = dt.Unix()
-	this.value.UpdateTime = dt.Unix()
+	this._value.Status += 1
+	this._value.DeliverTime = dt.Unix()
+	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
 	if err == nil {
@@ -268,7 +297,7 @@ func (this *Order) Cancel(reason string) error {
 	if len(strings.TrimSpace(reason)) == 0 {
 		return errors.New("取消原因不能为空")
 	}
-	status := this.value.Status
+	status := this._value.Status
 	if status == enum.ORDER_COMPLETED {
 		return errors.New("订单已经完成!")
 	}
@@ -276,8 +305,8 @@ func (this *Order) Cancel(reason string) error {
 		return errors.New("订单已经被取消!")
 	}
 
-	this.value.Status = enum.ORDER_CANCEL
-	this.value.UpdateTime = time.Now().Unix()
+	this._value.Status = enum.ORDER_CANCEL
+	this._value.UpdateTime = time.Now().Unix()
 
 	_, err := this.Save()
 	if err == nil {
@@ -289,9 +318,9 @@ func (this *Order) Cancel(reason string) error {
 
 // 挂起
 func (this *Order) Suspend(reason string) error {
-	this.value.IsSuspend = 1
+	this._value.IsSuspend = 1
 	this._internalSuspend = true
-	this.value.UpdateTime = time.Now().Unix()
+	this._value.UpdateTime = time.Now().Unix()
 	_, err := this.Save()
 	if err == nil {
 		err = this.AppendLog(enum.ORDER_LOG_SETUP, true, "订单已锁定"+reason)
@@ -302,8 +331,8 @@ func (this *Order) Suspend(reason string) error {
 // 标记收货
 func (this *Order) SignReceived() error {
 	dt := time.Now()
-	this.value.Status = enum.ORDER_RECEIVED
-	this.value.UpdateTime = dt.Unix()
+	this._value.Status = enum.ORDER_RECEIVED
+	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
 	if err == nil {
@@ -315,11 +344,11 @@ func (this *Order) SignReceived() error {
 // 完成订单
 func (this *Order) Complete() error {
 	now := time.Now().Unix()
-	v := this.value
-	m, err := this.memberRep.GetMember(v.MemberId)
+	v := this._value
+	m, err := this._memberRep.GetMember(v.MemberId)
 	if err == nil {
 		var ptl partner.IPartner
-		ptl, err = this.partnerRep.GetPartner(v.PartnerId)
+		ptl, err = this._partnerRep.GetPartner(v.PartnerId)
 		if err != nil {
 			log.Println("供应商异常!", v.PartnerId)
 			log.PrintErr(err)
@@ -371,9 +400,9 @@ func (this *Order) Complete() error {
 		// 三级返现
 		this.backFor3R(ptl, m, back_fee, now)
 
-		this.value.Status = enum.ORDER_COMPLETED
-		this.value.IsSuspend = 0
-		this.value.UpdateTime = now
+		this._value.Status = enum.ORDER_COMPLETED
+		this._value.IsSuspend = 0
+		this._value.UpdateTime = now
 
 		_, err := this.Save()
 
@@ -394,15 +423,15 @@ func (this *Order) updateShoppingMemberAccount(pt partner.IPartner,
 	pv := pt.GetValue()
 	//更新账户
 	acc := m.GetAccount()
-	acc.TotalFee = acc.TotalFee + this.value.Fee
-	acc.TotalPay = acc.TotalPay + this.value.PayFee
+	acc.TotalFee = acc.TotalFee + this._value.Fee
+	acc.TotalPay = acc.TotalPay + this._value.PayFee
 	acc.PresentBalance = acc.PresentBalance + fee //更新赠送余额
 	acc.UpdateTime = unixTime
 	m.SaveAccount()
 
 	//给自己返现
 	icLog := &member.IncomeLog{
-		MemberId:   this.value.MemberId,
+		MemberId:   this._value.MemberId,
 		OrderId:    v.Id,
 		Type:       "backcash",
 		Fee:        fee,
@@ -430,7 +459,7 @@ func (this *Order) backFor3R(pt partner.IPartner, m member.IMember,
 			break
 		}
 
-		m, _ = this.memberRep.GetMember(rl.InvitationMemberId)
+		m, _ = this._memberRep.GetMember(rl.InvitationMemberId)
 		if m == nil {
 			break
 		}
@@ -459,11 +488,11 @@ func (this *Order) updateMemberAccount(m member.IMember,
 
 	//给自己返现
 	icLog := &member.IncomeLog{
-		MemberId: this.value.MemberId,
+		MemberId: this._value.MemberId,
 		Type:     "backcash",
 		Fee:      fee,
 		Log: fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元",
-			this.value.OrderNo, ptName, mName, fee),
+			this._value.OrderNo, ptName, mName, fee),
 		State:      1,
 		RecordTime: unixTime,
 	}

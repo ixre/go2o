@@ -135,10 +135,10 @@
                             return val==''?'-':'<a href="javascript:;">查看</a>';
                         }
                         },
-                        {field:'sendtime',title:'送餐时间',width:150,align:'center',
+                        {field:'deliver_time',title:'配送时间',width:150,align:'center',
                             formatter:function(v,r){
                             return '创建时间:<br />'+unix2str(r.create_time)+
-                            '<br />送餐时间：<br />'+unix2str(r.deliver_time);
+                            '<br />配送时间：<br />'+unix2str(r.deliver_time);
                         }},
                         {field:'id1',title:'操作',width:80,align:'center',
                             formatter:function(v,r){

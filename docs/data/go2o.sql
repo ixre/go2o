@@ -667,7 +667,7 @@ CREATE TABLE `pt_order` (
   `deliver_name` varchar(45) DEFAULT NULL,
   `deliver_phone` varchar(45) DEFAULT NULL,
   `deliver_address` varchar(100) DEFAULT NULL,
-  `deliver_time` int(11) DEFAULT NULL COMMENT '送餐时间',
+  `deliver_time` int(11) DEFAULT NULL COMMENT '配送时间',
   `paid_time` int(11) DEFAULT NULL COMMENT '支付时间',
   `status` tinyint(4) DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,

@@ -76,9 +76,9 @@ function dynamicContent(t) {
         var payOptEle = $JS.$('payment_opt_name');
 
         if (payOpt == 1) {
-            payOptEle.innerHTML = '货到付款';
-        } else if (payOpt == 2) {
             payOptEle.innerHTML = '网银支付(支付宝)';
+        } else if (payOpt == 2) {
+            payOptEle.innerHTML = '货到付款';
         }else if(payOpt == 3){
             payOptEle.innerHTML = '转账汇款';
         }

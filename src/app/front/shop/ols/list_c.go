@@ -92,7 +92,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		r := ctx.Request
 		p := this.BaseC.GetPartner(ctx)
 
-		const size int = 1 //-1表示全部
+		const size int = 20 //-1表示全部
 
 		idArr := this.getIdArray(r.URL.Path)
 		page, _ := strconv.Atoi(r.FormValue("page"))
@@ -104,7 +104,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 
 		total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,(page-1)*size,page*size)
 		var pagerHtml string
-		if total != 0 {
+		if total > size {
 			pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
 			pager.RecordCount = total
 			pagerHtml = pager.PagerString()
@@ -152,6 +152,7 @@ func (this *ListC) GoodsDetails(ctx *web.Context){
 
 		goods := dps.SaleService.GetValueGoods(p.Id,goodsId)
 
+		goods.Image = format.GetGoodsImageUrl(goods.Image)
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"goods":goods,
 		},
