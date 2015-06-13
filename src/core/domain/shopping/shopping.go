@@ -216,12 +216,11 @@ func (this *Shopping) SubmitOrder(memberId int, couponCode string) (string, erro
 			order.SetPayment(cv.PaymentOpt)
 			err = order.SetDeliver(cv.DeliverId)
 			if err == nil {
-				var orderNo string
-				orderNo, err = order.Submit()
-				if err == nil {
-					err = cart.BindOrder(orderNo)
-				}
-				return orderNo, err
+				return order.Submit()
+				//todo: 订单完成后，购物车应该销毁
+//				if err == nil {
+//					err = cart.BindOrder(orderNo)
+//				}
 			}
 		}
 	}

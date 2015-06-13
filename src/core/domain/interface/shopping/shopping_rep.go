@@ -11,10 +11,13 @@ package shopping
 
 type IShoppingRep interface {
 	GetShopping(partnerId int) IShopping
+
 	// 保存订单,返回订单编号
 	SaveOrder(partnerId int, v *ValueOrder) (int, error)
+
 	//　保存订单优惠券绑定
 	SaveOrderCouponBind(*OrderCoupon) error
+
 	// 获取可用的订单号
 	GetFreeOrderNo(partnerId int) string
 
@@ -41,4 +44,10 @@ type IShoppingRep interface {
 
 	// 保存购物车项
 	SaveCartItem(*ValueCartItem) (int, error)
+
+	// 清空购物车项
+	EmptyCartItems(id int)error
+
+	// 删除购物车
+	DeleteCart(id int)error
 }

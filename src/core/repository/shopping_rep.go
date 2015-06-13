@@ -242,3 +242,15 @@ func (this *shoppingRep) SaveCartItem(v *shopping.ValueCartItem) (int, error) {
 
 	return v.Id, err
 }
+
+
+// 清空购物车项
+func (this *shoppingRep) EmptyCartItems(id int)error{
+	_,err := this.Connector.GetOrm().Delete(shopping.ValueCartItem{},"cart_id=?",id)
+	return err
+}
+
+// 删除购物车
+func (this *shoppingRep) DeleteCart(id int)error{
+	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{},id)
+}

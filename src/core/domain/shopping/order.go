@@ -171,10 +171,11 @@ func (this *Order) Submit() (string, error) {
 		var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
 		for _, c := range this.GetCoupons() {
 			oc.Clone(c, v.Id, v.Fee)
-			// 绑定订单与优惠券
-			this.shoppingRep.SaveOrderCouponBind(oc)
+			this.shoppingRep.SaveOrderCouponBind(oc) // 绑定订单与优惠券
 		}
+		this.cart.Destroy();	// 销毁购物车
 	}
+
 
 	return v.OrderNo, err
 }

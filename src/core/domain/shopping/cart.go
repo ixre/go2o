@@ -12,13 +12,13 @@ import (
 )
 
 type Cart struct {
-	value       *shopping.ValueCart
-	saleRep     sale.ISaleRep
-	shoppingRep shopping.IShoppingRep
-	partnerRep  partner.IPartnerRep
-	memberRep   member.IMemberRep
-	partnerId   int
-	summary     string
+	_value       *shopping.ValueCart
+	_saleRep     sale.ISaleRep
+	_shoppingRep shopping.IShoppingRep
+	_partnerRep  partner.IPartnerRep
+	_memberRep   member.IMemberRep
+	_partnerId   int
+	_summary     string
 	_shop       partner.IShop
 	_deliver    member.IDeliver
 }
@@ -26,12 +26,12 @@ type Cart struct {
 func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
 	shoppingRep shopping.IShoppingRep, partnerId int, val *shopping.ValueCart) shopping.ICart {
 	return &Cart{
-		value:       val,
-		partnerId:   partnerId,
-		partnerRep:  partnerRep,
-		memberRep:   memberRep,
-		shoppingRep: shoppingRep,
-		saleRep:     saleRep,
+		_value:       val,
+		_partnerId:   partnerId,
+		_partnerRep:  partnerRep,
+		_memberRep:   memberRep,
+		_shoppingRep: shoppingRep,
+		_saleRep:     saleRep,
 	}
 }
 
@@ -54,31 +54,31 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 	}
 
 	return &Cart{
-		value:       value,
-		partnerRep:  partnerRep,
-		memberRep:   memberRep,
-		partnerId:   partnerId,
-		shoppingRep: shoppingRep,
-		saleRep:     saleRep,
+		_value:       value,
+		_partnerRep:  partnerRep,
+		_memberRep:   memberRep,
+		_partnerId:   partnerId,
+		_shoppingRep: shoppingRep,
+		_saleRep:     saleRep,
 	}
 }
 
 func (this *Cart) GetDomainId() int {
-	return this.value.Id
+	return this._value.Id
 }
 
 func (this *Cart) GetValue() shopping.ValueCart {
-	return *this.value
+	return *this._value
 }
 
 // 添加项
 func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
-	if this.value.Items == nil {
-		this.value.Items = []*shopping.ValueCartItem{}
+	if this._value.Items == nil {
+		this._value.Items = []*shopping.ValueCartItem{}
 	}
 
 	// 添加数量
-	for _, v := range this.value.Items {
+	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
 			v.Num = v.Num + num
 			return v
@@ -86,7 +86,7 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 	}
 
 	// 添加项
-	pro := this.saleRep.GetValueGoods(this.partnerId, goodsId)
+	pro := this._saleRep.GetValueGoods(this._partnerId, goodsId)
 	if pro != nil {
 		v := &shopping.ValueCartItem{
 			CartId:     this.GetDomainId(),
@@ -99,7 +99,7 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 			Price:      pro.Price,
 			SalePrice:  pro.SalePrice,
 		}
-		this.value.Items = append(this.value.Items, v)
+		this._value.Items = append(this._value.Items, v)
 		return v
 	}
 	return nil
@@ -107,12 +107,12 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 
 // 移出项
 func (this *Cart) RemoveItem(goodsId, num int) error {
-	if this.value.Items == nil {
+	if this._value.Items == nil {
 		return shopping.ErrEmptyShoppingCart
 	}
 
 	// 删除数量
-	for _, v := range this.value.Items {
+	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
 			if newNum := v.Num - num; newNum <= 0 {
 				// 移出购物车
@@ -139,10 +139,10 @@ func (this *Cart) Combine(c shopping.ICart) (shopping.ICart, error) {
 
 // 设置购买会员
 func (this *Cart) SetBuyer(buyerId int) error {
-	if this.value.BuyerId > 0 {
+	if this._value.BuyerId > 0 {
 		return shopping.ErrCartBuyerBinded
 	}
-	this.value.BuyerId = buyerId
+	this._value.BuyerId = buyerId
 	_, err := this.Save()
 	return err
 }
@@ -155,7 +155,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 
 	if shopId > 0 {
 		var pt partner.IPartner
-		pt, err = this.partnerRep.GetPartner(this.partnerId)
+		pt, err = this._partnerRep.GetPartner(this._partnerId)
 		if err != nil {
 			return err
 		}
@@ -164,12 +164,12 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 			return partner.ErrNoSuchShop
 		}
 		this._shop = shop
-		this.value.ShopId = shopId
+		this._value.ShopId = shopId
 	}
 
-	if this.value.BuyerId > 0 && deliverId > 0 {
+	if this._value.BuyerId > 0 && deliverId > 0 {
 		var m member.IMember
-		m, err = this.memberRep.GetMember(this.value.BuyerId)
+		m, err = this._memberRep.GetMember(this._value.BuyerId)
 		if err != nil {
 			return err
 		}
@@ -178,43 +178,43 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 			return member.ErrInvalidSession
 		}
 		this._deliver = deliver
-		this.value.DeliverId = deliverId
+		this._value.DeliverId = deliverId
 	}
 
-	this.value.PaymentOpt = paymentOpt
-	this.value.DeliverOpt = deliverOpt
+	this._value.PaymentOpt = paymentOpt
+	this._value.DeliverOpt = deliverOpt
 	return nil
 }
 
 // 获取结算数据
 func (this *Cart) GetSettleData() (s partner.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
 	var err error
-	if this.value.ShopId > 0 && this._shop == nil {
+	if this._value.ShopId > 0 && this._shop == nil {
 		var pt partner.IPartner
-		pt, err = this.partnerRep.GetPartner(this.partnerId)
+		pt, err = this._partnerRep.GetPartner(this._partnerId)
 		if err == nil {
-			this._shop = pt.GetShop(this.value.ShopId)
+			this._shop = pt.GetShop(this._value.ShopId)
 		}
 	}
-	if this.value.DeliverId > 0 && this._deliver == nil {
+	if this._value.DeliverId > 0 && this._deliver == nil {
 		var m member.IMember
-		m, err = this.memberRep.GetMember(this.value.BuyerId)
+		m, err = this._memberRep.GetMember(this._value.BuyerId)
 		if err == nil {
-			this._deliver = m.GetDeliver(this.value.DeliverId)
+			this._deliver = m.GetDeliver(this._value.DeliverId)
 		}
 	}
-	return this._shop, this._deliver, this.value.PaymentOpt, this.value.DeliverOpt
+	return this._shop, this._deliver, this._value.PaymentOpt, this._value.DeliverOpt
 }
 
 // 保存购物车
 func (this *Cart) Save() (int, error) {
-	rep := this.shoppingRep
-	this.value.UpdateTime = time.Now().Unix()
-	id, err := rep.SaveShoppingCart(this.value)
-	this.value.Id = id
+	rep := this._shoppingRep
+	this._value.UpdateTime = time.Now().Unix()
+	id, err := rep.SaveShoppingCart(this._value)
+	this._value.Id = id
 
-	if this.value.Items != nil {
-		for _, v := range this.value.Items {
+	if this._value.Items != nil {
+		for _, v := range this._value.Items {
 			if v.Num <= 0 {
 				rep.RemoveCartItem(v.Id)
 			} else {
@@ -229,27 +229,36 @@ func (this *Cart) Save() (int, error) {
 	return id, err
 }
 
+
+// 销毁购物车
+func (this *Cart) Destroy()(err error){
+	if err = this._shoppingRep.EmptyCartItems(this.GetDomainId()); err == nil {
+		return this._shoppingRep.DeleteCart(this.GetDomainId())
+	}
+	return err
+}
+
 // 绑定订单
 func (this *Cart) BindOrder(orderNo string) error {
-	if this.GetDomainId() <= 0 || len(this.value.OrderNo) != 0 {
+	if this.GetDomainId() <= 0 || len(this._value.OrderNo) != 0 {
 		return shopping.ErrDisallowBindForCart
 	}
-	this.value.OrderNo = orderNo
-	this.value.IsBought = 1
+	this._value.OrderNo = orderNo
+	this._value.IsBought = 1
 	_, err := this.Save()
 	return err
 }
 
 // 获取总览信息
 func (this *Cart) GetSummary() string {
-	if len(this.summary) != 0 {
-		return this.summary
+	if len(this._summary) != 0 {
+		return this._summary
 	}
 	buf := bytes.NewBufferString("")
-	length := len(this.value.Items)
+	length := len(this._value.Items)
 	var pro *sale.ValueGoods
-	for i, v := range this.value.Items {
-		pro = this.saleRep.GetValueGoods(this.partnerId, v.GoodsId)
+	for i, v := range this._value.Items {
+		pro = this._saleRep.GetValueGoods(this._partnerId, v.GoodsId)
 		if pro != nil {
 			buf.WriteString(pro.Name)
 			if len(pro.SmallTitle) != 0 {
@@ -268,7 +277,7 @@ func (this *Cart) GetSummary() string {
 // orderFee为实际订单的金额(扣去促销优惠等后的金额)
 func (this *Cart) GetFee() (totalFee float32, orderFee float32) {
 	var qua float32
-	for _, v := range this.value.Items {
+	for _, v := range this._value.Items {
 		qua = float32(v.Num)
 		totalFee = totalFee + v.Price*qua
 		orderFee = orderFee + v.SalePrice*qua

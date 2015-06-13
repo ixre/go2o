@@ -41,6 +41,9 @@ type ICart interface {
 	// 保存购物车
 	Save() (int, error)
 
+	// 销毁购物车
+	Destroy()(error)
+
 	// 绑定订单
 	BindOrder(orderNo string) error
 
