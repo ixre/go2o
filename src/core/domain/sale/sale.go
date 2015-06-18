@@ -23,7 +23,7 @@ type Sale struct {
 	_partnerId  int
 	_saleRep    sale.ISaleRep
 	_saleTagRep sale.ISaleTagRep
-	_proCache   map[int]sale.IGoods
+	_proCache   map[int]sale.IItem
 	_categories []sale.ICategory
 }
 
@@ -36,7 +36,7 @@ func NewSale(partnerId int, saleRep sale.ISaleRep, tagRep sale.ISaleTagRep) sale
 }
 
 func (this *Sale) init() sale.ISale {
-	this._proCache = make(map[int]sale.IGoods)
+	this._proCache = make(map[int]sale.IItem)
 	return this
 }
 
@@ -46,7 +46,7 @@ func (this *Sale) clearCache(goodsId int) {
 
 func (this *Sale) chkCache() {
 	if len(this._proCache) >= MAX_CACHE_SIZE {
-		this._proCache = make(map[int]sale.IGoods)
+		this._proCache = make(map[int]sale.IItem)
 	}
 }
 
@@ -54,7 +54,7 @@ func (this *Sale) GetAggregateRootId() int {
 	return this._partnerId
 }
 
-func (this *Sale) CreateGoods(v *sale.ValueGoods) sale.IGoods {
+func (this *Sale) CreateGoods(v *sale.ValueItem) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
@@ -65,15 +65,15 @@ func (this *Sale) CreateGoods(v *sale.ValueGoods) sale.IGoods {
 
 	//todo: 判断category
 
-	return newGoods(this, v, this._saleRep, this._saleTagRep)
+	return newItem(this, v, this._saleRep, this._saleTagRep)
 }
 
 // 根据产品编号获取产品
-func (this *Sale) GetGoods(goodsId int) sale.IGoods {
+func (this *Sale) GetGoods(goodsId int) sale.IItem {
 	p, ok := this._proCache[goodsId]
 	if !ok {
 		this.chkCache()
-		pv := this._saleRep.GetValueGoods(this.GetAggregateRootId(), goodsId)
+		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), goodsId)
 
 		if pv != nil {
 			p = this.CreateGoods(pv)
@@ -85,7 +85,7 @@ func (this *Sale) GetGoods(goodsId int) sale.IGoods {
 
 // 删除商品
 func (this *Sale) DeleteGoods(goodsId int) error {
-	err := this._saleRep.DeleteGoods(this.GetAggregateRootId(), goodsId)
+	err := this._saleRep.DeleteItem(this.GetAggregateRootId(), goodsId)
 	if err != nil {
 		this.clearCache(goodsId)
 	}

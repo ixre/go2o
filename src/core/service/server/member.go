@@ -29,8 +29,8 @@ type Member struct {
 //登录验证
 func (this *Member) Login(m *jsv.Args, r *dto.MemberLoginResult) error {
 	usr, pwd := (*m)["usr"].(string), (*m)["pwd"].(string)
-	partnerId,_ := strconv.Atoi((*m)["partner_id"].(string))
-	b, e, err := dps.MemberService.Login(partnerId,usr, pwd)
+	partnerId, _ := strconv.Atoi((*m)["partner_id"].(string))
+	b, e, err := dps.MemberService.Login(partnerId, usr, pwd)
 	r.Result = b
 	if b {
 		md5 := strings.ToLower(crypto.Md5([]byte(time.Now().String())))

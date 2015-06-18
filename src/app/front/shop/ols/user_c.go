@@ -13,15 +13,16 @@ import (
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"strings"
-	"github.com/atnet/gof/web/mvc"
 )
 
 var _ mvc.Filter = new(UserC)
+
 type UserC struct {
 	*BaseC
 }
@@ -53,7 +54,7 @@ func (this *UserC) Login_post(ctx *web.Context) {
 	r.ParseForm()
 	partnerId := this.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	b, m, err := dps.MemberService.Login(partnerId,usr, pwd)
+	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
 
 	if b {
 		ctx.Session().Set("member", m)

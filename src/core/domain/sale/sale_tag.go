@@ -55,7 +55,7 @@ func (this *SaleTag) Save() (int, error) {
 }
 
 // 获取标签下的商品
-func (this *SaleTag) GetValueGoods(begin, end int) []*sale.ValueGoods {
+func (this *SaleTag) GetValueGoods(begin, end int) []*sale.ValueItem {
 	if begin < 0 || begin > end {
 		begin = 0
 	}

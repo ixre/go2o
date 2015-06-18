@@ -160,7 +160,7 @@ function applyCouponCode() {
 
 function submitOrder() {
     var ele = this;
-    ele.disabled='disabled';
+    ele.disabled = 'disabled';
     if ($JS.validator.validate('form_coupon')) {
         var data = window.sctJson;
         var cp = $JS.json.toObject(form_coupon);
@@ -171,16 +171,18 @@ function submitOrder() {
         }
         data.coupon_code = cp.CouponCode;
 
-        $JS.xhr.jsonPost('submit_0', data,
-            function(j) {
-                ele.disabled='';
-                if (j.result) {
-                    var orderNo = j.data;
-                    location.replace("order_finish?order_no=" + orderNo)
-                } else {
-                    alert(j.message);
-                }
-            });
+        $JS.xhr.jsonPost('submit_0', data, function (j) {
+            ele.removeAttribute('disabled');
+            if (j.result) {
+                var orderNo = j.data;
+                location.replace("order_finish?order_no=" + orderNo)
+            } else {
+                alert(j.message);
+            }
+        }, function () {
+            ele.removeAttribute('disabled');
+            alert('订单提交失败!')
+        });
     }
 }
 

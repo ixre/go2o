@@ -15,22 +15,22 @@
 //
 
 /*
- function cartItem(){
- this.id = 0;
- this.salePrice = 0;
- this.price = 0;
- this.num = 0;
- this.title = '';
- this.image = '';
- }
+function cartItem(){
+    this.id = 0;
+    this.salePrice = 0;
+    this.price = 0;
+    this.num = 0;
+    this.title = '';
+    this.image = '';
+}
 
- function cartData(){
- this.total = 0;
- this.fee = 0;
- this.totalNum = 0;
- this.isBought = 0;
- this.items = new Array();
- }*/
+function cartData(){
+    this.total = 0;
+    this.fee = 0;
+    this.totalNum = 0;
+    this.isBought = 0;
+    this.items = new Array();
+}*/
 
 function shoppingCart() {
     this.key = null;
@@ -40,7 +40,7 @@ function shoppingCart() {
     this.totalNum = 0;                     //总件数
     this.data = '';                         //数据字符串
 
-    // this.cartData = new cartData();
+   // this.cartData = new cartData();
 
 
     this.addQua = function (goodsId) {
@@ -252,7 +252,7 @@ shoppingCart.prototype.add = function (goodsId, num,callback) {
         return function (obj) {
             if (obj) {
                 if (obj.item == null) {
-                    t.notify(obj.message);
+                    t.notify(obj.message || obj.error);
                 } else {
                     t.addItem(obj.item,num);
                     if(callback)callback(obj);
@@ -283,7 +283,7 @@ shoppingCart.prototype.remove = function (goodsId, num) {
                     t.notify(obj.message);
                 } else {
                     if (num >= totalNum) {
-                        t.removeAll(goodsId);
+                            t.removeAll(goodsId);
                     } else {
                         t.subQua(goodsId, num);
                     }

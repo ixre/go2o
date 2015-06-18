@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/dto"
@@ -23,10 +24,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/atnet/gof/web/mvc"
 )
 
 var _ mvc.Filter = new(ShoppingC)
+
 type ShoppingC struct {
 	*BaseC
 }

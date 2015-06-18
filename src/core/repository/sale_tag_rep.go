@@ -83,10 +83,10 @@ func (this *SaleTagRep) DeleteSaleTag(partnerId int, id int) error {
 }
 
 // 获取商品
-func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*sale.ValueGoods {
-	arr := []*sale.ValueGoods{}
-	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods WHERE id IN (
-			SELECT g.goods_id FROM gs_goods_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
+func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*sale.ValueItem {
+	arr := []*sale.ValueItem{}
+	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_item WHERE id IN (
+			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
 			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`, partnerId, tagId, begin, end)
 	return arr
 }
@@ -95,13 +95,13 @@ func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*sale.
 func (this *SaleTagRep) GetGoodsSaleTags(goodsId int) []*sale.ValueSaleTag {
 	arr := []*sale.ValueSaleTag{}
 	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_tag WHERE id IN
-	(SELECT sale_tag_id FROM gs_goods_tag WHERE goods_id=?) AND enabled=1`, goodsId)
+	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, goodsId)
 	return arr
 }
 
 // 清理商品的销售标签
 func (this *SaleTagRep) CleanGoodsSaleTags(goodsId int) error {
-	_, err := this.ExecNonQuery("DELETE FROM gs_goods_tag WHERE goods_id=?", goodsId)
+	_, err := this.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", goodsId)
 	return err
 }
 
@@ -113,7 +113,7 @@ func (this *SaleTagRep) SaveGoodsSaleTags(goodsId int, tagIds []int) error {
 	}
 
 	for _, v := range tagIds {
-		_, err = this.ExecNonQuery("INSERT INTO gs_goods_tag (goods_id,sale_tag_id) VALUES(?,?)",
+		_, err = this.ExecNonQuery("INSERT INTO gs_item_tag (item_id,sale_tag_id) VALUES(?,?)",
 			goodsId, v)
 	}
 

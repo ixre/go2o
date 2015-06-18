@@ -19,10 +19,10 @@ import (
 var _ sale.ICategory = new(Category)
 
 type Category struct {
-	_value *sale.ValueCategory
-	_rep   sale.ISaleRep
+	_value           *sale.ValueCategory
+	_rep             sale.ISaleRep
 	_parentIdChanged bool
-	_childIdArr []int
+	_childIdArr      []int
 }
 
 func newCategory(saleRep sale.ISaleRep, v *sale.ValueCategory) sale.ICategory {
@@ -47,10 +47,10 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 		val.Enabled = v.Enabled
 		val.Name = v.Name
 		val.OrderIndex = v.OrderIndex
-		if val.ParentId != v.ParentId{
+		if val.ParentId != v.ParentId {
 			this._parentIdChanged = true
 			val.ParentId = v.ParentId
-		}else{
+		} else {
 			this._parentIdChanged = false
 		}
 	}
@@ -58,11 +58,11 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 }
 
 // 获取子栏目的编号
-func (this *Category) GetChildId()[]int{
-	if this._childIdArr == nil{
-		childCats := this._rep.GetChildCategories(this._value.PartnerId,this.GetDomainId())
-		this._childIdArr = make([]int,len(childCats))
-		for i,v := range childCats{
+func (this *Category) GetChildId() []int {
+	if this._childIdArr == nil {
+		childCats := this._rep.GetChildCategories(this._value.PartnerId, this.GetDomainId())
+		this._childIdArr = make([]int, len(childCats))
+		for i, v := range childCats {
 			this._childIdArr[i] = v.Id
 		}
 	}
@@ -71,7 +71,7 @@ func (this *Category) GetChildId()[]int{
 
 func (this *Category) Save() (int, error) {
 	id, err := this._rep.SaveCategory(this._value)
-	if err == nil{
+	if err == nil {
 		this._value.Id = id
 		if len(this._value.Url) == 0 || (this._parentIdChanged &&
 			strings.HasPrefix(this._value.Url, "/c-")) {
@@ -88,7 +88,7 @@ func (this *Category) getAutomaticUrl(partnerId, id int) string {
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCategories)
 	for i := l; i > 0; i-- {
-		buf.WriteString("-"+strconv.Itoa(relCategories[i-1].Id))
+		buf.WriteString("-" + strconv.Itoa(relCategories[i-1].Id))
 	}
 	buf.WriteString(".htm")
 	return buf.String()

@@ -13,16 +13,24 @@ package sale
 type ISaleRep interface {
 	GetSale(partnerId int) ISale
 
-	GetValueGoods(partnerId, goodsId int) *ValueGoods
+	// 获取货品
+	GetValueItem(partnerId, itemId int) *ValueItem
 
-	GetGoodsByIds(ids ...int) ([]*ValueGoods, error)
+	GetItemByIds(ids ...int) ([]*ValueItem, error)
 
-	SaveGoods(*ValueGoods) (int, error)
+	SaveValueItem(*ValueItem) (int, error)
 
 	// 获取在货架上的商品
-	GetPagedOnShelvesGoods(partnerId int, catIds []int, start,end int)(total int,goods []*ValueGoods)
+	GetPagedOnShelvesItem(partnerId int, catIds []int, start, end int) (total int, goods []*ValueItem)
 
-	DeleteGoods(partnerId, goodsId int) error
+	DeleteItem(partnerId, goodsId int) error
+
+	/*********** GOODS ************/
+	// 获取商品
+	GetValueGoods(itemId int, sku int) *ValueGoods
+
+	// 保存商品
+	SaveValueGoods(*ValueGoods) (int, error)
 
 	SaveCategory(*ValueCategory) (int, error)
 
@@ -36,7 +44,7 @@ type ISaleRep interface {
 	GetRelationCategories(partnerId, categoryId int) []*ValueCategory
 
 	// 获取子栏目
-	GetChildCategories(partnerId,categoryId int)[]*ValueCategory
+	GetChildCategories(partnerId, categoryId int) []*ValueCategory
 
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)

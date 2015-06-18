@@ -19,8 +19,8 @@ type Cart struct {
 	_memberRep   member.IMemberRep
 	_partnerId   int
 	_summary     string
-	_shop       partner.IShop
-	_deliver    member.IDeliver
+	_shop        partner.IShop
+	_deliver     member.IDeliver
 }
 
 func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
@@ -70,25 +70,28 @@ func (this *Cart) GetValue() shopping.ValueCart {
 }
 
 // 添加项
-func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
+func (this *Cart) AddItem(snapshotId, num int) *shopping.ValueCartItem {
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
 
 	// 添加数量
 	for _, v := range this._value.Items {
-		if v.GoodsId == goodsId {
+		if v.SnapshotId == snapshotId {
 			v.Num = v.Num + num
 			return v
 		}
 	}
 
 	// 添加项
-	pro := this._saleRep.GetValueGoods(this._partnerId, goodsId)
+	snap := this._saleRep.GetGoodsSnapshot(snapshotId)
+	pro := this._saleRep.GetValueItem(this._partnerId, snap.GoodsId)
+
 	if pro != nil {
 		v := &shopping.ValueCartItem{
 			CartId:     this.GetDomainId(),
-			GoodsId:    goodsId,
+			SnapshotId: snapshotId,
+			GoodsId:    snap.GoodsId,
 			Num:        num,
 			Name:       pro.Name,
 			GoodsNo:    pro.GoodsNo,
@@ -104,14 +107,14 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 }
 
 // 移出项
-func (this *Cart) RemoveItem(goodsId, num int) error {
+func (this *Cart) RemoveItem(snapshotId, num int) error {
 	if this._value.Items == nil {
 		return shopping.ErrEmptyShoppingCart
 	}
 
 	// 删除数量
 	for _, v := range this._value.Items {
-		if v.GoodsId == goodsId {
+		if v.SnapshotId == snapshotId {
 			if newNum := v.Num - num; newNum <= 0 {
 				// 移出购物车
 				//this.value.Items = append(this.value.Items[:i],this.value.Items[i+1:]...)
@@ -129,7 +132,7 @@ func (this *Cart) RemoveItem(goodsId, num int) error {
 func (this *Cart) Combine(c shopping.ICart) (shopping.ICart, error) {
 	if c.GetDomainId() != this.GetDomainId() {
 		for _, v := range c.GetValue().Items {
-			this.AddItem(v.GoodsId, v.Num)
+			this.AddItem(v.SnapshotId, v.Num)
 		}
 	}
 	return this, nil
@@ -227,9 +230,8 @@ func (this *Cart) Save() (int, error) {
 	return id, err
 }
 
-
 // 销毁购物车
-func (this *Cart) Destroy()(err error){
+func (this *Cart) Destroy() (err error) {
 	if err = this._shoppingRep.EmptyCartItems(this.GetDomainId()); err == nil {
 		return this._shoppingRep.DeleteCart(this.GetDomainId())
 	}
@@ -254,13 +256,15 @@ func (this *Cart) GetSummary() string {
 	}
 	buf := bytes.NewBufferString("")
 	length := len(this._value.Items)
-	var pro *sale.ValueGoods
+
+	var snap *sale.GoodsSnapshot
 	for i, v := range this._value.Items {
-		pro = this._saleRep.GetValueGoods(this._partnerId, v.GoodsId)
-		if pro != nil {
-			buf.WriteString(pro.Name)
-			if len(pro.SmallTitle) != 0 {
-				buf.WriteString("(" + pro.SmallTitle + ")")
+
+		snap = this._saleRep.GetGoodsSnapshot(v.SnapshotId)
+		if snap != nil {
+			buf.WriteString(snap.GoodsName)
+			if len(snap.SmallTitle) != 0 {
+				buf.WriteString("(" + snap.SmallTitle + ")")
 			}
 			buf.WriteString("*" + strconv.Itoa(v.Num))
 			if i < length-1 {

@@ -92,7 +92,7 @@ func (this *Partner) GetItems(m *jsv.Args, r *jsv.Result) error {
 	cid, _ := strconv.Atoi((*m)["cid"].(string))
 	num, _ := strconv.Atoi((*m)["num"].(string))
 
-	_,items := dps.SaleService.GetPagedOnShelvesGoods(partnerId, cid,0, num)
+	_, items := dps.SaleService.GetPagedOnShelvesGoods(partnerId, cid, 0, num)
 	r.Result = true
 	r.Data = items
 

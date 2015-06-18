@@ -18,5 +18,5 @@ type ISaleTag interface {
 	Save() (int, error)
 
 	// 获取标签下的商品
-	GetValueGoods(begin, end int) []*ValueGoods
+	GetValueGoods(begin, end int) []*ValueItem
 }

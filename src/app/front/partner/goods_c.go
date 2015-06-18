@@ -55,7 +55,7 @@ func (this *goodsC) Create(ctx *web.Context) {
 func (this *goodsC) Edit(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
-	var e *sale.ValueGoods
+	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	e = dps.SaleService.GetValueGoods(partnerId, id)
 	if e == nil {
@@ -82,7 +82,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	var result gof.Message
 	r.ParseForm()
 
-	e := sale.ValueGoods{}
+	e := sale.ValueItem{}
 	web.ParseFormToEntity(r.Form, &e)
 
 	id, err := dps.SaleService.SaveGoods(partnerId, &e)

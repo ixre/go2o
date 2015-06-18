@@ -57,7 +57,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 
 	orm.CreateTableMap(member.BankInfo{}, "mm_bank")
 	orm.CreateTableMap(shopping.ValueOrder{}, "pt_order")
-	orm.CreateTableMap(shopping.OrderItem{},"pt_order_item")
+	orm.CreateTableMap(shopping.OrderItem{}, "pt_order_item")
 	orm.CreateTableMap(shopping.OrderCoupon{}, "pt_order_coupon")
 	orm.CreateTableMap(shopping.OrderCoupon{}, "pt_order_coupon")
 	orm.CreateTableMap(shopping.OrderLog{}, "pt_order_log")
@@ -65,6 +65,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(shopping.ValueCartItem{}, "sale_cart_item")
 
 	/** 销售 **/
+	orm.CreateTableMap(sale.ValueItem{}, "gs_item")
 	orm.CreateTableMap(sale.ValueGoods{}, "gs_goods")
 	orm.CreateTableMap(sale.ValueCategory{}, "gs_category")
 	orm.CreateTableMap(sale.GoodsSnapshot{}, "gs_snapshot")

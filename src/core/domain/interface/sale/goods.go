@@ -1,30 +1,25 @@
 /**
- * Copyright 2014 @ S1N1 Team.
- * name :
+ * Copyright 2015 @ S1N1 Team.
+ * name : sale_goods.go
  * author : jarryliu
- * date : 2013-12-08 10:49
+ * date : -- :
  * description :
  * history :
  */
-
 package sale
 
+// 商品
 type IGoods interface {
+	// 获取领域对象编号
 	GetDomainId() int
 
-	// 获取商品的值
-	GetValue() ValueGoods
+	// 获取货品
+	GetGoods() IItem
 
-	// 是否上架
-	IsOnShelves() bool
+	// 设置值
+	GetValue() *ValueGoods
 
-	// 获取销售标签
-	GetSaleTags() []*ValueSaleTag
-
-	// 保存销售标签
-	SaveSaleTags([]int) error
-
-	// 设置商品值
+	// 设置值
 	SetValue(*ValueGoods) error
 
 	// 保存

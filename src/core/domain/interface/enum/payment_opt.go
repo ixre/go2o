@@ -8,11 +8,12 @@
  */
 package enum
 
-var(
-    PaymentOptionNames []string  =[]string{"在线付款","货到付款","转账汇款"}
+var (
+	PaymentOptionNames []string = []string{"在线付款", "货到付款", "转账汇款"}
 )
-const(
-    PaymentOnlinePay int = 1   // 线上付款
-    PaymentOfflineCashPay = 2  // 线下现金付款
-    PaymentRemit int = 3       // 转账汇款
+
+const (
+	PaymentOnlinePay      int = 1 // 线上付款
+	PaymentOfflineCashPay     = 2 // 线下现金付款
+	PaymentRemit          int = 3 // 转账汇款
 )

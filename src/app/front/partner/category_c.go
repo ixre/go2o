@@ -75,8 +75,7 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 
 	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))
 	originOpts := cache.GetDropOptionsOfCategory(partnerId)
-	cateOpts := re.ReplaceAll(originOpts,nil)
-
+	cateOpts := re.ReplaceAll(originOpts, nil)
 
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{

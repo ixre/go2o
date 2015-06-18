@@ -12,10 +12,10 @@ package sale
 type ISale interface {
 	GetAggregateRootId() int
 
-	CreateGoods(*ValueGoods) IGoods
+	CreateGoods(*ValueItem) IItem
 
 	// 根据产品编号获取产品
-	GetGoods(int) IGoods
+	GetGoods(int) IItem
 
 	// 创建分类
 	CreateCategory(*ValueCategory) ICategory

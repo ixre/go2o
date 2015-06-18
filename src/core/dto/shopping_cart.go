@@ -16,7 +16,7 @@ type ShoppingCart struct {
 	Summary    string      `json:"summary"`
 	UpdateTime int64       `json:"update_time"`
 	Items      []*CartItem `json:"items"`
-	TotalNum   int		    `json:"total_num"`					// 总数量
+	TotalNum   int         `json:"total_num"` // 总数量
 	TotalFee   float32     `json:"total"`
 	OrderFee   float32     `json:"fee"`
 }

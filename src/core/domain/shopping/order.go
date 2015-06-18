@@ -16,13 +16,13 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/promotion"
+	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
 	"strings"
 	"time"
-	"go2o/src/core/domain/interface/sale"
 )
 
 var (
@@ -31,27 +31,27 @@ var (
 
 type Order struct {
 	_shopping        shopping.IShopping
-	_value            *shopping.ValueOrder
-	_cart             shopping.ICart
-	_coupons          []promotion.ICoupon
-	_memberRep        member.IMemberRep
-	_shoppingRep      shopping.IShoppingRep
-	_partnerRep       partner.IPartnerRep
-	_saleRep		 sale.ISaleRep
+	_value           *shopping.ValueOrder
+	_cart            shopping.ICart
+	_coupons         []promotion.ICoupon
+	_memberRep       member.IMemberRep
+	_shoppingRep     shopping.IShoppingRep
+	_partnerRep      partner.IPartnerRep
+	_saleRep         sale.ISaleRep
 	_internalSuspend bool // 是否为内部挂起
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
-	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep,saleRep sale.ISaleRep,
+	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
 	memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
-		_shopping:   shopping,
+		_shopping:    shopping,
 		_value:       value,
 		_cart:        cart,
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
 		_partnerRep:  partnerRep,
-		_saleRep : saleRep,
+		_saleRep:     saleRep,
 	}
 }
 
@@ -172,13 +172,13 @@ func (this *Order) Submit() (string, error) {
 	v.Id = id
 	if err == nil {
 		this.bindCouponOnSubmit()
-		this._cart.Destroy();	// 销毁购物车
+		this._cart.Destroy() // 销毁购物车
 	}
 	return v.OrderNo, err
 }
 
 // 绑定订单与优惠券
-func (this *Order) bindCouponOnSubmit(){
+func (this *Order) bindCouponOnSubmit() {
 	var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
 	for _, c := range this.GetCoupons() {
 		oc.Clone(c, this.GetDomainId(), this._value.Fee)
@@ -187,27 +187,26 @@ func (this *Order) bindCouponOnSubmit(){
 }
 
 // 保存订单
-func (this *Order) saveOrderOnSubmit()(int,error) {
+func (this *Order) saveOrderOnSubmit() (int, error) {
 	cartItems := this._cart.GetValue().Items
 	if this._value.Items == nil {
 		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
 	}
 	var sl sale.ISale = this._saleRep.GetSale(this._value.PartnerId)
-	var goods sale.IGoods
+	var goods sale.IItem
+	var snap *sale.GoodsSnapshot
 	for i, v := range cartItems {
-		goods = sl.GetGoods(cartItems[i].GoodsId)
-		snap := goods.GetLatestSnapshot()
-		if snap == nil{
-			return 0,errors.New("商品缺少快照："+goods.GetValue().Name)
+		snap = sl.GetGoodsSnapshot(cartItems[i].SnapshotId)
+		if snap == nil {
+			return 0, errors.New("商品缺少快照：" + goods.GetValue().Name)
 		}
 
-		//todo: SKU
 		this._value.Items[i] = &shopping.OrderItem{
-			Id : 0,
-			SnapshotId : snap.Id,
-			Quantity : v.Num,
-			Sku : "",
-			Fee : snap.SalePrice *  float32(v.Num),
+			Id:         0,
+			SnapshotId: snap.Id,
+			Quantity:   v.Num,
+			Sku:        "",
+			Fee:        snap.SalePrice * float32(v.Num),
 		}
 	}
 

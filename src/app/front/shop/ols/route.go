@@ -62,8 +62,8 @@ func registerRoutes() {
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/user/jump_m", uc.JumpToMCenter)
-	routes.Add("^/c-[0-9-]+.htm",lc.List_Index)
-	routes.Add("^/item-[0-9-]+.htm",lc.GoodsDetails)
+	routes.Add("^/c-[0-9-]+.htm", lc.List_Index)
+	routes.Add("^/item-[0-9-]+.htm", lc.GoodsDetails)
 }
 
 func init() {

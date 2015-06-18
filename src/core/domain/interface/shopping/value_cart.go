@@ -15,7 +15,7 @@ import (
 
 type ValueCart1 struct {
 	//购物车商品
-	Items []sale.IGoods
+	Items []sale.IItem
 	//购物车商品数量
 	Quantities map[int]int
 	//客户端计算的金额
@@ -23,9 +23,9 @@ type ValueCart1 struct {
 }
 
 type ValueCart struct {
-	Id         int              `db:"id" pk:"yes" auto:"yes"`
-	CartKey    string           `db:"cart_key"`
-	BuyerId    int              `db:"buyer_id"`
+	Id      int    `db:"id" pk:"yes" auto:"yes"`
+	CartKey string `db:"cart_key"`
+	BuyerId int    `db:"buyer_id"`
 	//OrderNo    string           `db:"order_no"`
 	//IsBought   int              `db:"is_bought"`
 	PaymentOpt int              `db:"payment_opt"`
@@ -41,7 +41,9 @@ type ValueCartItem struct {
 	Id         int     `db:"id" pk:"yes" auto:"yes"`
 	CartId     int     `db:"cart_id"`
 	GoodsId    int     `db:"goods_id"`
+	SnapshotId int     `db:"snap_id"`
 	Num        int     `db:"num"`
+	Sku        string  `db:"-"`
 	Price      float32 `db:"-"`
 	SalePrice  float32 `db:"-"`
 	Name       string  `db:"-"`

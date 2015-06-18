@@ -12,6 +12,7 @@ package sale
 type GoodsSnapshot struct {
 	Id           int    `db:"id" auto:"yes" pk:"yes"`
 	Key          string `db:"snapshot_key"`
+	ItemId		int `db:"item_id"`
 	GoodsId      int    `db:"goods_id"`
 	GoodsName    string `db:"goods_name"`
 	GoodsNo      string `db:"goods_no"`

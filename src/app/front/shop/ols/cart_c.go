@@ -13,10 +13,10 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
-	"go2o/src/core/infrastructure/format"
 )
 
 type CartC struct {
@@ -98,9 +98,8 @@ func (this *CartC) cart_RemoveItem(ctx *web.Context,
 }
 
 func (this *CartC) Index(ctx *web.Context) {
-	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-	},
-	"views/shop/{device}/cart.html",
-	"views/shop/{device}/inc/header.html",
-	"views/shop/{device}/inc/footer.html")
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{},
+		"views/shop/{device}/cart.html",
+		"views/shop/{device}/inc/header.html",
+		"views/shop/{device}/inc/footer.html")
 }

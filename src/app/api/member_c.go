@@ -49,7 +49,7 @@ func (this *MemberC) login(ctx *web.Context) {
 		if len(usr) == 0 || len(pwd) == 0 {
 			result.Message = "会员不存在"
 		} else {
-			b, e, err := dps.MemberService.Login(partnerId,usr, pwd)
+			b, e, err := dps.MemberService.Login(partnerId, usr, pwd)
 			result.Result = b
 
 			if b {

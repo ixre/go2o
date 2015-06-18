@@ -1,37 +1,37 @@
 /**
- * Copyright 2014 @ S1N1 Team.
- * name :
+ * Copyright 2015 @ S1N1 Team.
+ * name : value_sale_goods
  * author : jarryliu
- * date : 2013-12-08 10:47
+ * date : -- :
  * description :
  * history :
  */
-
 package sale
 
 type ValueGoods struct {
-	Id         int    `db:"id" auto:"yes" pk:"yes"`
-	CategoryId int    `db:"category_id"`
-	Name       string `db:"name"`
-	GoodsNo    string `db:"goods_no"`
-	SmallTitle string `db:"small_title"`
-	Image      string `db:"img"`
-	//成本价
-	Cost float32 `db:"cost"`
-	//定价
-	Price float32 `db:"price"`
-	//销售价
-	SalePrice float32 `db:"sale_price"`
-	ApplySubs string  `db:"apply_subs"`
+	Id int `db:"id" pk:"yes" auto:"yes"`
 
-	//简单备注,如:(限时促销)
-	Note        string `db:"note"`
-	Description string `db:"description"`
+	// 货品编号
+	ItemId int `db:"item_id"`
 
-	// 是否上架,1为上架
-	OnShelves int `db:"on_shelves"`
+	// 是否为赠品
+	IsPresent int `db:"is_present"`
 
-	State      int   `db:"state"`
-	CreateTime int64 `db:"create_time"`
-	UpdateTime int64 `db:"update_time"`
+	// 规格
+	SkuId int `db:"sku_id"`
+
+	// 促销标志
+	PromotionFlag int `db:"prom_flag"`
+
+	// 库存
+	StockNum int `db:"stock_num"`
+
+	// 已售件数
+	SaleNum int `db:"sale_num"`
+
+	// 销售价
+	SalePrice float32 `db:"-"`
+
+	// 实际价
+	Price float32 `db:"-"`
 }

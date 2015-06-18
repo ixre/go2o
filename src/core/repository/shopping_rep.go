@@ -103,13 +103,13 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	}
 
 	// 保存订单项
-	if err == nil && v.Items != nil{
+	if err == nil && v.Items != nil {
 		orm := d.GetOrm()
-		for _,v1 := range v.Items{
-			if v1.Id > 0{
-				orm.Save(v1.Id,v1)
-			}else{
-				orm.Save(nil,v1)
+		for _, v1 := range v.Items {
+			if v1.Id > 0 {
+				orm.Save(v1.Id, v1)
+			} else {
+				orm.Save(nil, v1)
 			}
 		}
 	}
@@ -200,9 +200,9 @@ func (this *shoppingRep) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 		}
 
 		// 设置附加的值
-		goods, err := this.saleRep.GetGoodsByIds(ids...)
+		goods, err := this.saleRep.GetItemByIds(ids...)
 		if err == nil {
-			var goodsMap = make(map[int]*sale.ValueGoods, len(goods))
+			var goodsMap = make(map[int]*sale.ValueItem, len(goods))
 			for _, v := range goods {
 				goodsMap[v.Id] = v
 			}
@@ -254,14 +254,13 @@ func (this *shoppingRep) SaveCartItem(v *shopping.ValueCartItem) (int, error) {
 	return v.Id, err
 }
 
-
 // 清空购物车项
-func (this *shoppingRep) EmptyCartItems(id int)error{
-	_,err := this.Connector.GetOrm().Delete(shopping.ValueCartItem{},"cart_id=?",id)
+func (this *shoppingRep) EmptyCartItems(id int) error {
+	_, err := this.Connector.GetOrm().Delete(shopping.ValueCartItem{}, "cart_id=?", id)
 	return err
 }
 
 // 删除购物车
-func (this *shoppingRep) DeleteCart(id int)error{
-	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{},id)
+func (this *shoppingRep) DeleteCart(id int) error {
+	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{}, id)
 }

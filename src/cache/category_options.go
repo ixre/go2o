@@ -11,12 +11,11 @@ package cache
 import (
 	"bytes"
 	"fmt"
-	"go2o/src/core/domain/interface/sale"
-	"go2o/src/core/service/dps"
-	"go2o/src/core/infrastructure/domain/util"
 	"github.com/atnet/gof/algorithm/iterator"
+	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/infrastructure/domain/util"
+	"go2o/src/core/service/dps"
 )
-
 
 func readToCategoryDropList(partnerId int) []byte {
 	categories := dps.SaleService.GetCategories(partnerId)
@@ -25,18 +24,17 @@ func readToCategoryDropList(partnerId int) []byte {
 		c := v1.(*sale.ValueCategory)
 		if c.Id != 0 {
 			buf.WriteString(fmt.Sprintf(
-			`<option class="opt%d" value="%d">%s</option>`,
-			level,
-			c.Id,
-			c.Name,
+				`<option class="opt%d" value="%d">%s</option>`,
+				level,
+				c.Id,
+				c.Name,
 			))
 		}
 	}
-	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f,nil)
+	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f, nil)
 
 	return buf.Bytes()
 }
-
 
 // 获取分类下拉选项
 func GetDropOptionsOfCategory(partnerId int) []byte {

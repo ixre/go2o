@@ -1,132 +1,116 @@
 /**
- * Copyright 2014 @ S1N1 Team.
- * name :
+ * Copyright 2015 @ S1N1 Team.
+ * name : sale_goods
  * author : jarryliu
- * date : 2013-12-08 10:53
+ * date : -- :
  * description :
  * history :
  */
-
 package sale
 
 import (
 	"fmt"
+	"go2o/src/core/domain"
 	"go2o/src/core/domain/interface/sale"
-	"strconv"
 	"time"
 )
 
-var _ sale.IGoods = new(Goods)
+var _ sale.IGoods = new(SaleGoods)
+var _ domain.IDomain = new(SaleGoods)
 
-type Goods struct {
-	_value          *sale.ValueGoods
-	_saleRep        sale.ISaleRep
-	_saleTagRep     sale.ISaleTagRep
-	_sale           *Sale
-	_saleTags       []*sale.ValueSaleTag
+type SaleGoods struct {
+	_goods   sale.IItem
+	_value   *sale.ValueGoods
+	_saleRep sale.ISaleRep
+	_sale    sale.ISale
+
 	_latestSnapshot *sale.GoodsSnapshot
 }
 
-func newGoods(sale *Sale, v *sale.ValueGoods, saleRep sale.ISaleRep, saleTagRep sale.ISaleTagRep) sale.IGoods {
-	return &Goods{
-		_value:      v,
-		_saleRep:    saleRep,
-		_saleTagRep: saleTagRep,
-		_sale:       sale,
+func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep) sale.IGoods {
+	v := &SaleGoods{
+		_goods:          goods,
+		_value:          value,
+		_saleRep:        rep,
+		_sale:           s,
+		_latestSnapshot: nil,
 	}
+	return v.init()
 }
 
-func (this *Goods) GetDomainId() int {
+func (this *SaleGoods) init() sale.IGoods {
+	this._value.SalePrice = this._goods.GetValue().SalePrice
+	this._value.Price = this._value.Price
+	return this
+}
+
+//获取领域对象编号
+func (this *SaleGoods) GetDomainId() int {
 	return this._value.Id
 }
 
-func (this *Goods) GetValue() sale.ValueGoods {
-	return *this._value
+// 获取货品
+func (this *SaleGoods) GetGoods() sale.IItem {
+	return this._goods
 }
 
-func (this *Goods) SetValue(v *sale.ValueGoods) error {
-	if v.Id == this._value.Id {
-		v.CreateTime = this._value.CreateTime
-		this._value = v
-	}
-	this._value.UpdateTime = time.Now().Unix()
+// 设置值
+func (this *SaleGoods) GetValue() *sale.ValueGoods {
+	return this._value
+}
+
+// 设置值
+func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
+	this._value.IsPresent = v.IsPresent
+	this._value.SaleNum = v.SaleNum
+	this._value.StockNum = v.StockNum
+	this._value.SkuId = v.SkuId
+	//this._value.PromotionFlag = v.PromotionFlag
 	return nil
 }
 
-// 是否上架
-func (this *Goods) IsOnShelves() bool {
-	return this._value.OnShelves == 1
-}
-
-// 获取商品的销售标签
-func (this *Goods) GetSaleTags() []*sale.ValueSaleTag {
-	if this._saleTags == nil {
-		this._saleTags = this._saleTagRep.GetGoodsSaleTags(this.GetDomainId())
-	}
-	return this._saleTags
-}
-
-// 保存销售标签
-func (this *Goods) SaveSaleTags(tagIds []int) error {
-	err := this._saleTagRep.CleanGoodsSaleTags(this.GetDomainId())
-	if err == nil {
-		err = this._saleTagRep.SaveGoodsSaleTags(this.GetDomainId(), tagIds)
-		this._saleTags = nil
-	}
-	return err
-}
-
 // 保存
-func (this *Goods) Save() (int, error) {
-	this._sale.clearCache(this._value.Id)
-
-	unix := time.Now().Unix()
-	this._value.UpdateTime = unix
-
-	if this.GetDomainId() <= 0 {
-		this._value.CreateTime = unix
+func (this *SaleGoods) Save() (int, error) {
+	id, err := this._saleRep.SaveValueGoods(this._value)
+	if err == nil{
+		_,err = this.GenerateSnapshot()
 	}
-
-	if this._value.GoodsNo == "" {
-		cs := strconv.Itoa(this._value.CategoryId)
-		us := strconv.Itoa(int(unix))
-		l := len(cs)
-		this._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
-	}
-
-	id, err := this._saleRep.SaveGoods(this._value)
-	if err == nil {
-		// 创建快照
-		_, err = this.GenerateSnapshot()
-	}
+	this._value.Id = id
 	return id, err
+
+	//todo: save promotion
+	// return id,err
 }
 
 // 生成快照
-func (this *Goods) GenerateSnapshot() (int, error) {
+func (this *SaleGoods) GenerateSnapshot() (int, error) {
 	v := this._value
+	gs := this.GetGoods()
+	gv := gs.GetValue()
+
 	if v.Id <= 0 {
-		return 0, sale.ErrNoSuchGoods
+		return -1, sale.ErrNoSuchGoods
 	}
 
-	if v.OnShelves == 0 {
-		return 0, sale.ErrNotOnShelves
+	if !gs.IsOnShelves() {
+		return -1, sale.ErrNotOnShelves
 	}
 
 	partnerId := this._sale.GetAggregateRootId()
 	unix := time.Now().Unix()
-	cate := this._saleRep.GetCategory(partnerId, v.CategoryId)
+	cate := this._saleRep.GetCategory(partnerId, gv.CategoryId)
 	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
 		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
+		ItemId : gv.Id,
 		GoodsId:      this.GetDomainId(),
-		GoodsName:    v.Name,
-		GoodsNo:      v.GoodsNo,
-		SmallTitle:   v.SmallTitle,
+		GoodsName:    gv.Name,
+		GoodsNo:      gv.GoodsNo,
+		SmallTitle:   gv.SmallTitle,
 		CategoryName: cate.Name,
-		Image:        v.Image,
-		Cost:         v.Cost,
-		Price:        v.Price,
-		SalePrice:    v.SalePrice,
+		Image:        gv.Image,
+		Cost:         gv.Cost,
+		SalePrice:    gv.SalePrice,
+		Price:        this._value.Price,
 		CreateTime:   unix,
 	}
 
@@ -138,7 +122,7 @@ func (this *Goods) GenerateSnapshot() (int, error) {
 }
 
 // 是否为新快照,与旧有快照进行数据对比
-func (this *Goods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
+func (this *SaleGoods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
 	latestGsn := this.GetLatestSnapshot()
 	if latestGsn != nil {
 		return latestGsn.GoodsName != gsn.GoodsName ||
@@ -153,7 +137,7 @@ func (this *Goods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
 }
 
 // 获取最新的快照
-func (this *Goods) GetLatestSnapshot() *sale.GoodsSnapshot {
+func (this *SaleGoods) GetLatestSnapshot() *sale.GoodsSnapshot {
 	if this._latestSnapshot == nil {
 		this._latestSnapshot = this._saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
 	}

@@ -27,16 +27,16 @@ func NewSaleService(r sale.ISaleRep) *saleService {
 	}
 }
 
-func (this *saleService) GetValueGoods(partnerId, goodsId int) *sale.ValueGoods {
+func (this *saleService) GetValueGoods(partnerId, goodsId int) *sale.ValueItem {
 	sl := this._rep.GetSale(partnerId)
 	pro := sl.GetGoods(goodsId)
 	v := pro.GetValue()
 	return &v
 }
 
-func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, error) {
+func (this *saleService) SaveGoods(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
-	var pro sale.IGoods
+	var pro sale.IItem
 	if v.Id > 0 {
 		pro = sl.GetGoods(v.Id)
 		if pro == nil {
@@ -51,7 +51,7 @@ func (this *saleService) SaveGoods(partnerId int, v *sale.ValueGoods) (int, erro
 	return pro.Save()
 }
 
-func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start,end int)(int,[]*dto.ListGoods){
+func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int) (int, []*dto.ListGoods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
 	var cate sale.ICategory = sl.GetCategory(categoryId)
 	var ids []int = cate.GetChildId()
@@ -59,7 +59,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start,end
 
 	//todo: cache
 
-	total,goods := this._rep.GetPagedOnShelvesGoods(partnerId, ids, start,end)
+	total, goods := this._rep.GetPagedOnShelvesItem(partnerId, ids, start, end)
 	var listGoods []*dto.ListGoods = make([]*dto.ListGoods, len(goods))
 	for i, v := range goods {
 		listGoods[i] = &dto.ListGoods{
@@ -71,7 +71,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start,end
 			SalePrice:  v.SalePrice,
 		}
 	}
-	return total,listGoods
+	return total, listGoods
 }
 
 func (this *saleService) DeleteGoods(partnerId, goodsId int) error {
@@ -212,10 +212,10 @@ func (this *saleService) SaveGoodsSaleTags(partnerId, goodsId int, tagIds []int)
 }
 
 // 根据销售标签获取指定数目的商品
-func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*sale.ValueGoods {
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*sale.ValueItem {
 	sl := this._rep.GetSale(partnerId)
 	if tag := sl.GetSaleTagByCode(code); tag != nil {
 		return tag.GetValueGoods(begin, end)
 	}
-	return make([]*sale.ValueGoods, 0)
+	return make([]*sale.ValueItem, 0)
 }

@@ -161,6 +161,34 @@ DROP TABLE IF EXISTS `gs_goods`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gs_goods` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) DEFAULT NULL,
+  `is_present` tinyint(1) DEFAULT NULL COMMENT '是否为赠品\n',
+  `sku_id` int(11) DEFAULT NULL,
+  `prom_flag` int(11) DEFAULT NULL COMMENT '促销标志',
+  `stock_num` int(11) DEFAULT NULL,
+  `sale_num` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gs_goods`
+--
+
+LOCK TABLES `gs_goods` WRITE;
+/*!40000 ALTER TABLE `gs_goods` DISABLE KEYS */;
+/*!40000 ALTER TABLE `gs_goods` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `gs_item`
+--
+
+DROP TABLE IF EXISTS `gs_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gs_item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `category_id` int(11) DEFAULT NULL COMMENT '分类',
   `goods_no` varchar(45) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
@@ -181,38 +209,38 @@ CREATE TABLE `gs_goods` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `gs_goods`
+-- Dumping data for table `gs_item`
 --
 
-LOCK TABLES `gs_goods` WRITE;
-/*!40000 ALTER TABLE `gs_goods` DISABLE KEYS */;
-INSERT INTO `gs_goods` VALUES (1,18,'000001','韭黄炒蛋饭-2-2',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,'1','1','2',1,1421419030,1421419030),(2,15,'000002','鱼香茄子饭','1',1,'101/image/goods/goods.png',15.00,30.00,18.00,'1,7,10,11',NULL,NULL,1,1421419031,1421419031),(3,15,'000003','尖椒回锅肉',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419032,1421419032),(4,15,'000004','香菇焖鸡饭',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419033,1421419033),(5,15,'000005','野山椒炒肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,15.00,NULL,NULL,NULL,1,1421419034,1421419034),(6,15,'000006','极品红烧肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,16.00,NULL,NULL,NULL,1,1421419035,1421419035),(7,15,'000007','花生猪手饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,17.00,NULL,NULL,NULL,1,1421419036,1421419036),(8,15,'000008','红烧鱼腩饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,18.00,NULL,NULL,NULL,1,1421419037,1421419037),(9,15,'000009','香卤鸡腿饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,19.00,NULL,NULL,NULL,1,1421419038,1421419038),(10,15,'154934','酸甜排骨饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,10.00,NULL,NULL,NULL,1,1421419039,1423894934),(29,18,'189600','营养套餐B',NULL,1,'101/image/goods/goods.png',10.00,30.00,18.00,'1,7,10',NULL,NULL,1,1421419058,1432019600),(28,18,'000028','营养套餐A','鸡蛋＋香肠双拼',1,'101/image/goods/goods.png',5.00,30.00,12.00,'1,7,10,11',NULL,'d',1,1421419057,1423030454);
-/*!40000 ALTER TABLE `gs_goods` ENABLE KEYS */;
+LOCK TABLES `gs_item` WRITE;
+/*!40000 ALTER TABLE `gs_item` DISABLE KEYS */;
+INSERT INTO `gs_item` VALUES (1,18,'000001','韭黄炒蛋饭-2-2',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,'1','1','2',1,1421419030,1421419030),(2,15,'000002','鱼香茄子饭','1',1,'101/image/goods/goods.png',15.00,30.00,18.00,'1,7,10,11',NULL,NULL,1,1421419031,1421419031),(3,15,'000003','尖椒回锅肉',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419032,1421419032),(4,15,'000004','香菇焖鸡饭',NULL,1,'101/image/goods/goods.png',15.00,30.00,18.00,NULL,NULL,NULL,1,1421419033,1421419033),(5,15,'000005','野山椒炒肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,15.00,NULL,NULL,NULL,1,1421419034,1421419034),(6,15,'000006','极品红烧肉',NULL,1,'101/image/goods/goods.png',1.00,30.00,16.00,NULL,NULL,NULL,1,1421419035,1421419035),(7,15,'000007','花生猪手饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,17.00,NULL,NULL,NULL,1,1421419036,1421419036),(8,15,'000008','红烧鱼腩饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,18.00,NULL,NULL,NULL,1,1421419037,1421419037),(9,15,'000009','香卤鸡腿饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,19.00,NULL,NULL,NULL,1,1421419038,1421419038),(10,15,'154934','酸甜排骨饭',NULL,1,'101/image/goods/goods.png',1.00,30.00,10.00,NULL,NULL,NULL,1,1421419039,1423894934),(29,18,'189600','营养套餐B',NULL,1,'101/image/goods/goods.png',10.00,30.00,18.00,'1,7,10',NULL,NULL,1,1421419058,1432019600),(28,18,'000028','营养套餐A','鸡蛋＋香肠双拼',1,'101/image/goods/goods.png',5.00,30.00,12.00,'1,7,10,11',NULL,'d',1,1421419057,1423030454);
+/*!40000 ALTER TABLE `gs_item` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `gs_goods_tag`
+-- Table structure for table `gs_item_tag`
 --
 
-DROP TABLE IF EXISTS `gs_goods_tag`;
+DROP TABLE IF EXISTS `gs_item_tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gs_goods_tag` (
+CREATE TABLE `gs_item_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `goods_id` int(11) DEFAULT NULL,
+  `item_id` int(11) DEFAULT NULL,
   `sale_tag_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `gs_goods_tag`
+-- Dumping data for table `gs_item_tag`
 --
 
-LOCK TABLES `gs_goods_tag` WRITE;
-/*!40000 ALTER TABLE `gs_goods_tag` DISABLE KEYS */;
-INSERT INTO `gs_goods_tag` VALUES (18,9,2),(19,9,3),(20,9,5),(21,8,2),(22,8,3),(23,8,5),(24,7,2),(25,7,3),(26,7,5),(27,6,2),(28,6,3),(29,6,5),(30,5,2),(31,5,3),(32,5,5),(33,4,2),(34,4,3),(35,4,5),(36,3,2),(37,3,3),(38,3,5),(39,1,2),(40,1,3),(41,1,5),(42,2,2),(43,2,3),(44,2,5),(54,29,2),(55,29,3),(56,29,4),(57,29,5),(58,28,2),(59,28,3),(60,28,4),(61,28,5),(62,28,6),(63,10,2),(64,10,3),(65,10,5);
-/*!40000 ALTER TABLE `gs_goods_tag` ENABLE KEYS */;
+LOCK TABLES `gs_item_tag` WRITE;
+/*!40000 ALTER TABLE `gs_item_tag` DISABLE KEYS */;
+INSERT INTO `gs_item_tag` VALUES (18,9,2),(19,9,3),(20,9,5),(21,8,2),(22,8,3),(23,8,5),(24,7,2),(25,7,3),(26,7,5),(27,6,2),(28,6,3),(29,6,5),(30,5,2),(31,5,3),(32,5,5),(33,4,2),(34,4,3),(35,4,5),(36,3,2),(37,3,3),(38,3,5),(39,1,2),(40,1,3),(41,1,5),(42,2,2),(43,2,3),(44,2,5),(54,29,2),(55,29,3),(56,29,4),(57,29,5),(58,28,2),(59,28,3),(60,28,4),(61,28,5),(62,28,6),(63,10,2),(64,10,3),(65,10,5);
+/*!40000 ALTER TABLE `gs_item_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -253,18 +281,19 @@ DROP TABLE IF EXISTS `gs_snapshot`;
 CREATE TABLE `gs_snapshot` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `snapshot_key` varchar(32) DEFAULT NULL,
+  `item_id` int(11) DEFAULT NULL,
   `goods_id` int(11) DEFAULT NULL,
   `goods_no` varchar(45) DEFAULT NULL,
   `goods_name` varchar(45) DEFAULT NULL,
   `small_title` varchar(100) DEFAULT NULL,
   `category_name` varchar(45) DEFAULT NULL,
   `img` varchar(100) DEFAULT NULL,
-  `cost` decimal(5,2) DEFAULT '0.00' COMMENT ' 成本价',
-  `price` decimal(5,2) DEFAULT '0.00' COMMENT '售价(市场价)',
-  `sale_price` decimal(5,2) DEFAULT NULL COMMENT '实际销售价',
+  `cost` decimal(8,2) DEFAULT '0.00' COMMENT ' 成本价',
+  `price` decimal(8,2) DEFAULT '0.00' COMMENT '售价(市场价)',
+  `sale_price` decimal(8,2) DEFAULT NULL COMMENT '实际销售价',
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COMMENT='食物项';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='食物项';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +302,6 @@ CREATE TABLE `gs_snapshot` (
 
 LOCK TABLES `gs_snapshot` WRITE;
 /*!40000 ALTER TABLE `gs_snapshot` DISABLE KEYS */;
-INSERT INTO `gs_snapshot` VALUES (31,'101-g4-1423022472',4,NULL,'香菇焖鸡饭',NULL,'套餐',NULL,15.00,20.00,18.00,1423022472),(32,'101-g28-1423028841',28,NULL,'营养套餐A','鸡蛋＋香肠双拼','营养套餐','101/item_pic/20141022090951.png',5.00,15.00,12.00,1423028841),(33,'101-g28-1423029098',28,NULL,'营养套餐A','-鸡蛋＋香肠双拼','营养套餐','101/item_pic/20141022090951.png',5.00,15.00,12.00,1423029098),(34,'101-g28-1423029140',28,NULL,'营养套餐A','鸡蛋＋香肠双拼','营养套餐','101/item_pic/20141022090951.png',5.00,15.00,12.00,1423029140),(35,'101-g29-1423719035',29,'189035','营养套餐B',NULL,'营养套餐','101/item_pic/20141023090944.png',10.00,20.00,18.00,1423719035),(36,'101-g10-1423894935',10,'154934','酸甜排骨饭',NULL,'套餐',NULL,1.00,0.00,1.00,1423894935);
 /*!40000 ALTER TABLE `gs_snapshot` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1164,4 +1192,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-18 14:51:02
+-- Dump completed on 2015-06-18 22:32:19
