@@ -90,8 +90,8 @@ func (this *Shopping) GetCart(key string) (shopping.ICart, error) {
 }
 
 // 获取没有结算的购物车
-func (this *Shopping) GetNotBoughtCart(buyerId int) (shopping.ICart, error) {
-	cart, error := this._rep.GetNotBoughtCart(buyerId)
+func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
+	cart, error := this._rep.GetLatestCart(buyerId)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
 			this._rep, this._partnerId, cart), nil
@@ -122,7 +122,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 		return nil, m, nil, member.ErrSessionTimeout
 	}
 
-	cart, err = this.GetNotBoughtCart(memberId)
+	cart, err = this.GetCurrentCart(memberId)
 	if err != nil || cart == nil || len(cart.GetValue().Items) == 0 {
 		return nil, m, cart, shopping.ErrEmptyShoppingCart
 	}
@@ -217,10 +217,6 @@ func (this *Shopping) SubmitOrder(memberId int, couponCode string) (string, erro
 			err = order.SetDeliver(cv.DeliverId)
 			if err == nil {
 				return order.Submit()
-				//todo: 订单完成后，购物车应该销毁
-//				if err == nil {
-//					err = cart.BindOrder(orderNo)
-//				}
 			}
 		}
 	}

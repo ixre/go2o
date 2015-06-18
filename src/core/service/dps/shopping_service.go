@@ -109,7 +109,7 @@ func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKe
 	var mmNotNil = memberId != 0
 
 	if mmNotNil {
-		mc, _ = sp.GetNotBoughtCart(memberId)
+		mc, _ = sp.GetCurrentCart(memberId)
 		if mc != nil && (skIsNil || mc.GetValue().CartKey == cartKey) {
 			return mc
 		}
@@ -143,9 +143,7 @@ func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKe
 			}
 
 			// 如果没有购买，则返回
-			if cv.IsBought == 0 {
-				return c
-			}
+			return c
 		}
 	}
 
@@ -168,7 +166,6 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	cart.TotalFee = t
 	cart.OrderFee = f
 	cart.Summary = c.GetSummary()
-	cart.IsBought = v.IsBought
 
 	if v.Items != nil {
 		if l := len(v.Items); l != 0 {

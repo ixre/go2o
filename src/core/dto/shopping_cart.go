@@ -19,7 +19,6 @@ type ShoppingCart struct {
 	TotalNum   int		    `json:"total_num"`					// 总数量
 	TotalFee   float32     `json:"total"`
 	OrderFee   float32     `json:"fee"`
-	IsBought   int         `json:"is_bought"` 	//是否已经购买
 }
 
 type CartItem struct {

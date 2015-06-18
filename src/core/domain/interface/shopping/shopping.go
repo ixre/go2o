@@ -36,7 +36,7 @@ type IShopping interface {
 	GetCart(key string) (ICart, error)
 
 	// 获取没有结算的购物车
-	GetNotBoughtCart(buyerId int) (ICart, error)
+	GetCurrentCart(buyerId int) (ICart, error)
 
 	// 绑定购物车会员编号
 	BindCartBuyer(cartKey string, buyerId int) error

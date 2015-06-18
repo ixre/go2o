@@ -45,7 +45,7 @@ type ICart interface {
 	Destroy()(error)
 
 	// 绑定订单
-	BindOrder(orderNo string) error
+	//BindOrder(orderNo string) error
 
 	// 获取汇总信息
 	GetSummary() string

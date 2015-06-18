@@ -193,8 +193,13 @@ func (this *Order) saveOrderOnSubmit()(int,error) {
 		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
 	}
 	var sl sale.ISale = this._saleRep.GetSale(this._value.PartnerId)
+	var goods sale.IGoods
 	for i, v := range cartItems {
-		snap := sl.GetGoods(cartItems[i].GoodsId).GetLatestSnapshot()
+		goods = sl.GetGoods(cartItems[i].GoodsId)
+		snap := goods.GetLatestSnapshot()
+		if snap == nil{
+			return 0,errors.New("商品缺少快照："+goods.GetValue().Name)
+		}
 
 		//todo: SKU
 		this._value.Items[i] = &shopping.OrderItem{
@@ -202,7 +207,7 @@ func (this *Order) saveOrderOnSubmit()(int,error) {
 			SnapshotId : snap.Id,
 			Quantity : v.Num,
 			Sku : "",
-			Fee : v.SalePrice *  float32(v.Num),
+			Fee : snap.SalePrice *  float32(v.Num),
 		}
 	}
 

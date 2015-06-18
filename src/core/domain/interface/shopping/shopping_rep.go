@@ -33,8 +33,8 @@ type IShoppingRep interface {
 	// 获取购物车
 	GetShoppingCart(key string) (*ValueCart, error)
 
-	// 获取未结算的购物车
-	GetNotBoughtCart(buyerId int) (*ValueCart, error)
+	// 获取最新的购物车
+	GetLatestCart(buyerId int) (*ValueCart, error)
 
 	// 保存购物车
 	SaveShoppingCart(*ValueCart) (int, error)

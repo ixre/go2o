@@ -170,10 +170,10 @@ func (this *shoppingRep) GetShoppingCart(key string) (*shopping.ValueCart, error
 	return v, err
 }
 
-// 获取未结算的购物车
-func (this *shoppingRep) GetNotBoughtCart(buyerId int) (*shopping.ValueCart, error) {
+// 获取最新的购物车
+func (this *shoppingRep) GetLatestCart(buyerId int) (*shopping.ValueCart, error) {
 	var v = new(shopping.ValueCart)
-	err := this.Connector.GetOrm().GetBy(v, "is_bought=0 AND buyer_id=?", buyerId)
+	err := this.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId)
 	if v == nil || err != nil {
 		return nil, err
 	}

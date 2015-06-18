@@ -26,8 +26,8 @@ type ValueCart struct {
 	Id         int              `db:"id" pk:"yes" auto:"yes"`
 	CartKey    string           `db:"cart_key"`
 	BuyerId    int              `db:"buyer_id"`
-	OrderNo    string           `db:"order_no"`
-	IsBought   int              `db:"is_bought"`
+	//OrderNo    string           `db:"order_no"`
+	//IsBought   int              `db:"is_bought"`
 	PaymentOpt int              `db:"payment_opt"`
 	DeliverOpt int              `db:"deliver_opt"`
 	DeliverId  int              `db:"deliver_id"`
