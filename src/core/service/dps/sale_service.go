@@ -42,6 +42,13 @@ func (this *saleService) GetValueGoods(partnerId,goodsId int)*valueobject.Goods{
 	return goods.GetPackedValue()
 }
 
+// 根据SKU获取商品
+func (this *saleService) GetGoodsBySku(partnerId int,itemId int,sku int)*valueobject.Goods{
+	sl := this._rep.GetSale(partnerId)
+	var goods sale.IGoods = sl.GetGoodsBySku(itemId,sku)
+	return goods.GetPackedValue()
+}
+
 // 保存产品
 func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
@@ -217,4 +224,13 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begi
 		return tag.GetValueGoods(begin, end)
 	}
 	return make([]*valueobject.Goods, 0)
+}
+
+// 获取商品的会员价
+func (this *saleService) GetGoodsLevelPrices(partnerId,goodsId int)[]*sale.MemberPrice{
+	sl := this._rep.GetSale(partnerId)
+	if goods := sl.GetGoods(goodsId);goods != nil{
+		return goods.GetLevelPrices()
+	}
+	return make([]*sale.MemberPrice,0)
 }

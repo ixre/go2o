@@ -249,6 +249,16 @@ func (this *saleRep) GetValueGoodsById(goodsId int)*sale.ValueGoods {
 }
 
 
+// 根据SKU获取商品
+func (this *saleRep) GetValueGoodsBySku(itemId,sku int)*sale.ValueGoods{
+	var e *sale.ValueGoods = new(sale.ValueGoods)
+	if this.Connector.GetOrm().GetBy(e,"item_id=? AND sku_id=?",itemId,sku) == nil {
+		return e
+	}
+	return nil
+}
+
+
 // 根据编号获取商品
 func (this *saleRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error){
 	var items []*valueobject.Goods

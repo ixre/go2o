@@ -24,6 +24,9 @@ type ISale interface {
 	// 根据产品编号获取商品
 	GetGoods(int) IGoods
 
+	// 根据产品SKU获取商品
+	GetGoodsBySku(itemId,sku int)IGoods
+
 	// 创建分类
 	CreateCategory(*ValueCategory) ICategory
 

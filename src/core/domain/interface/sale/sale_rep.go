@@ -34,6 +34,9 @@ type ISaleRep interface {
 	// 获取商品
 	GetValueGoodsById(goodsId int)*ValueGoods
 
+	// 根据SKU获取商品
+	GetValueGoodsBySku(itemId,sku int)*ValueGoods
+
 	// 保存商品
 	SaveValueGoods(*ValueGoods) (int, error)
 

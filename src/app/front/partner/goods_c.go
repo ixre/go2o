@@ -28,7 +28,7 @@ type goodsC struct {
 	*baseC
 }
 
-//食物列表
+//商品列表
 func (this *goodsC) List(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
@@ -56,7 +56,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.ResponseWriter
 	var e *sale.ValueItem
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
 	if e == nil {
 		w.Write([]byte("商品不存在"))
@@ -159,4 +159,28 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context) {
 		msg.Result = true
 	}
 	this.ResultOutput(ctx, msg)
+}
+
+
+func (this *goodsC) GoodsCtrl(ctx *web.Context){
+
+	itemId,_ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"item_id":  itemId,
+	}, "views/partner/goods/goods_ctrl.html")
+}
+
+func (this *goodsC) LvPrice(ctx *web.Context){
+	partnerId := this.GetPartnerId(ctx)
+	//todo: should be goodsId
+	itemId,_ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+	goods := dps.SaleService.GetGoodsBySku(partnerId,itemId,0)
+	lvs := dps.PartnerService.GetMemberLevels(partnerId)
+	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId,goods.GoodsId)
+
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"goods":  goods,
+		"levels": lvs,
+		"lvp": prices,
+	}, "views/partner/goods/level_price.html")
 }

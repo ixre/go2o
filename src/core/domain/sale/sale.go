@@ -95,6 +95,19 @@ func (this *Sale) GetGoods(goodsId int) sale.IGoods {
 	return nil
 }
 
+
+// 根据产品SKU获取商品
+func (this *Sale) GetGoodsBySku(itemId,sku int)sale.IGoods{
+	var v *sale.ValueGoods = this._saleRep.GetValueGoodsBySku(itemId,sku)
+	if v != nil {
+		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), v.ItemId)
+		if pv != nil {
+			return this.CreateGoods(this.CreateItem(pv), v)
+		}
+	}
+	return nil
+}
+
 // 删除商品
 func (this *Sale) DeleteGoods(goodsId int) error {
 	err := this._saleRep.DeleteItem(this.GetAggregateRootId(), goodsId)
