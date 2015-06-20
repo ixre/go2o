@@ -9,7 +9,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
-	"fmt"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type Cart struct {
@@ -26,14 +26,14 @@ type Cart struct {
 
 func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
 	shoppingRep shopping.IShoppingRep, partnerId int, val *shopping.ValueCart) shopping.ICart {
-	return &Cart{
+	return (&Cart{
 		_value:       val,
 		_partnerId:   partnerId,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
-	}
+	}).init()
 }
 
 //todo: partnerId 应去掉，可能在多个商家买东西
@@ -50,15 +50,58 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 		DeliverOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
+		Items:nil,
 	}
 
-	return &Cart{
+	return (&Cart{
 		_value:       value,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
 		_partnerId:   partnerId,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
+	}).init()
+}
+
+func (this *Cart) init()shopping.ICart{
+	// 初始化购物车的信息
+	if this._value != nil && this._value.Items != nil {
+		this.setAttachGoodsInfo(this._value.Items)
+	}
+	return this
+}
+
+
+func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
+	if items != nil {
+		l := len(items)
+		if l == 0 {
+			return
+		}
+		var ids []int = make([]int, l)
+		for i, v := range items {
+			ids[i] = v.GoodsId
+		}
+
+		// 设置附加的值
+		goods, err := this._saleRep.GetGoodsByIds(ids...)
+		if err == nil {
+			var goodsMap = make(map[int]*valueobject.Goods, len(goods))
+			for _, v := range goods {
+				goodsMap[v.GoodsId] = v
+			}
+
+			for _, v := range items {
+				gv, ok := goodsMap[v.GoodsId]
+				if ok {
+					v.Name = gv.Name
+					v.Price = gv.Price
+					v.GoodsNo = gv.GoodsNo
+					v.Image = gv.Image
+					v.SalePrice = gv.SalePrice
+				}
+			}
+		}
 	}
 }
 
@@ -71,36 +114,35 @@ func (this *Cart) GetValue() shopping.ValueCart {
 }
 
 // 添加项
-func (this *Cart) AddItem(snapshotId, num int) *shopping.ValueCartItem {
+func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
 
 	// 添加数量
 	for _, v := range this._value.Items {
-		if v.SnapshotId == snapshotId {
+		if v.GoodsId == goodsId {
 			v.Num = v.Num + num
 			return v
 		}
 	}
 
-	// 添加项
-	snap := this._saleRep.GetGoodsSnapshot(snapshotId)
-	fmt.Println(snap,"----",snapshotId)
-	pro := this._saleRep.GetValueItem(this._partnerId, snap.GoodsId)
+	sl := this._saleRep.GetSale(this._partnerId)
+	goods := sl.GetGoods(goodsId);
+	gv := goods.GetPackedValue()
+	snap := goods.GetLatestSnapshot()
 
-	if pro != nil {
+	if goods != nil {
 		v := &shopping.ValueCartItem{
 			CartId:     this.GetDomainId(),
-			SnapshotId: snapshotId,
-			GoodsId:    snap.GoodsId,
+			SnapshotId: snap.Id,
+			GoodsId:    goodsId,
 			Num:        num,
-			Name:       pro.Name,
-			GoodsNo:    pro.GoodsNo,
-			SmallTitle: pro.SmallTitle,
-			Image:      pro.Image,
-			Price:      pro.Price,
-			SalePrice:  pro.SalePrice,
+			Name:       gv.Name,
+			GoodsNo:    gv.GoodsNo,
+			Image:      gv.Image,
+			Price:      gv.Price,
+			SalePrice:  gv.SalePrice,
 		}
 		this._value.Items = append(this._value.Items, v)
 		return v
@@ -109,14 +151,14 @@ func (this *Cart) AddItem(snapshotId, num int) *shopping.ValueCartItem {
 }
 
 // 移出项
-func (this *Cart) RemoveItem(snapshotId, num int) error {
+func (this *Cart) RemoveItem(goodsId, num int) error {
 	if this._value.Items == nil {
 		return shopping.ErrEmptyShoppingCart
 	}
 
 	// 删除数量
 	for _, v := range this._value.Items {
-		if v.SnapshotId == snapshotId {
+		if v.GoodsId == goodsId {
 			if newNum := v.Num - num; newNum <= 0 {
 				// 移出购物车
 				//this.value.Items = append(this.value.Items[:i],this.value.Items[i+1:]...)
@@ -134,7 +176,7 @@ func (this *Cart) RemoveItem(snapshotId, num int) error {
 func (this *Cart) Combine(c shopping.ICart) (shopping.ICart, error) {
 	if c.GetDomainId() != this.GetDomainId() {
 		for _, v := range c.GetValue().Items {
-			this.AddItem(v.SnapshotId, v.Num)
+			this.AddItem(v.GoodsId, v.Num)
 		}
 	}
 	return this, nil

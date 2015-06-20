@@ -165,8 +165,6 @@ func (this *shoppingRep) GetShoppingCart(key string) (*shopping.ValueCart, error
 		v.Items = items
 	}
 
-	this.setAttachGoodsInfo(v.Items)
-
 	return v, err
 }
 
@@ -183,44 +181,9 @@ func (this *shoppingRep) GetLatestCart(buyerId int) (*shopping.ValueCart, error)
 	if err == nil {
 		v.Items = items
 	}
-	this.setAttachGoodsInfo(v.Items)
-
 	return v, err
 }
 
-func (this *shoppingRep) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
-	if items != nil {
-		l := len(items)
-		if l == 0 {
-			return
-		}
-		var ids []int = make([]int, l)
-		for i, v := range items {
-			ids[i] = v.GoodsId
-		}
-
-		// 设置附加的值
-		goods, err := this.saleRep.GetItemByIds(ids...)
-		if err == nil {
-			var goodsMap = make(map[int]*sale.ValueItem, len(goods))
-			for _, v := range goods {
-				goodsMap[v.Id] = v
-			}
-
-			for _, v := range items {
-				gv, ok := goodsMap[v.GoodsId]
-				if ok {
-					v.Name = gv.Name
-					v.SmallTitle = gv.SmallTitle
-					v.Price = gv.Price
-					v.GoodsNo = gv.GoodsNo
-					v.Image = gv.Image
-					v.SalePrice = gv.SalePrice
-				}
-			}
-		}
-	}
-}
 
 // 保存购物车
 func (this *shoppingRep) SaveShoppingCart(v *shopping.ValueCart) (int, error) {

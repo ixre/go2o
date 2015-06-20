@@ -248,6 +248,18 @@ func (this *saleRep) GetValueGoodsById(goodsId int)*sale.ValueGoods {
 	return nil
 }
 
+
+// 根据编号获取商品
+func (this *saleRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error){
+	var items []*valueobject.Goods
+	err := this.Connector.GetOrm().SelectByQuery(&items,
+	`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_goods.item_id=gs_item.id
+	 WHERE gs_goods.id IN (`+format.GetCategoryIdStr(ids)+`)`)
+
+	return items, err
+}
+
+
 // 保存商品
 func (this *saleRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 	if v.Id > 0 {

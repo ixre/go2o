@@ -17,6 +17,7 @@ type ISaleRep interface {
 	// 获取货品
 	GetValueItem(partnerId, itemId int) *ValueItem
 
+	// 根据id获取货品
 	GetItemByIds(ids ...int) ([]*ValueItem, error)
 
 	SaveValueItem(*ValueItem) (int, error)
@@ -39,8 +40,10 @@ type ISaleRep interface {
 	// 获取在货架上的商品
 	GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int) (total int, goods []*valueobject.Goods)
 
+	// 根据编号获取商品
+	GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error)
 
-
+	// 保存分类
 	SaveCategory(*ValueCategory) (int, error)
 
 	DeleteCategory(partnerId, id int) error

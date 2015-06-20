@@ -30,10 +30,10 @@ type ICart interface {
 	SetBuyer(buyerId int) error
 
 	// 添加项
-	AddItem(snapshotId, num int) *ValueCartItem
+	AddItem(goodsId, num int) *ValueCartItem
 
 	// 移出项
-	RemoveItem(snapshotId, num int) error
+	RemoveItem(goodsId, num int) error
 
 	// 合并购物车，并返回新的购物车
 	Combine(ICart) (ICart, error)

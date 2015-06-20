@@ -23,13 +23,7 @@ import (
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/lbs"
 	"go2o/src/core/infrastructure/log"
-	"regexp"
 	"time"
-)
-
-var (
-	//data example : 16*1|12*2|80
-	cartRegex = regexp.MustCompile("(\\d+)\\s*\\*\\s*(\\d+)")
 )
 
 type Shopping struct {
