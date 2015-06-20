@@ -100,55 +100,9 @@ func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason s
 }
 
 //  获取购物车
-func (this *shoppingService) getShoppingCart(partnerId int, memberId int, cartKey string) shopping.ICart {
+func (this *shoppingService) getShoppingCart(partnerId int, buyerId int, cartKey string) shopping.ICart {
 	sp := this._rep.GetShopping(partnerId)
-	var c shopping.ICart
-	var mc shopping.ICart
-
-	var skIsNil = len(cartKey) == 0
-	var mmNotNil = memberId != 0
-
-	if mmNotNil {
-		mc, _ = sp.GetCurrentCart(memberId)
-		if mc != nil && (skIsNil || mc.GetValue().CartKey == cartKey) {
-			return mc
-		}
-	}
-
-	if !skIsNil {
-		// 根据Key获取购物车
-		c, _ = sp.GetCart(cartKey)
-		if c == nil {
-			// 新的购物车不存在，直接返回会员的购物车
-			if mc != nil {
-				return mc
-			}
-		} else {
-
-			cv := c.GetValue()
-			//合并购物车
-			if cv.BuyerId <= 0 {
-				// 设置购买者
-				if mmNotNil {
-					c.SetBuyer(memberId)
-				}
-			} else if mc != nil {
-				// 合并购物车
-				nc, err := mc.Combine(c)
-				if err == nil {
-					nc.Save()
-					return nc
-				}
-				return mc
-			}
-
-			// 如果没有购买，则返回
-			return c
-		}
-	}
-
-	// 返回一个新的购物车
-	return sp.NewCart(memberId)
+	return sp.GetShoppingCart(buyerId,cartKey)
 }
 func (this *shoppingService) GetShoppingCart(partnerId int, memberId int, cartKey string) *dto.ShoppingCart {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)

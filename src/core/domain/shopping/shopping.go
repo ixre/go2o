@@ -74,7 +74,7 @@ func (this *Shopping) NewCart(buyerId int) shopping.ICart {
 }
 
 // 根据数据获取购物车
-func (this *Shopping) GetCart(key string) (shopping.ICart, error) {
+func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
@@ -82,6 +82,57 @@ func (this *Shopping) GetCart(key string) (shopping.ICart, error) {
 	}
 	return nil, error
 }
+
+func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
+	var c shopping.ICart
+	var mc shopping.ICart
+
+	var skIsNil = len(cartKey) == 0
+	var mmNotNil = buyerId != 0
+
+	if mmNotNil {
+		mc, _ = this.GetCurrentCart(buyerId)
+		if mc != nil && (skIsNil || mc.GetValue().CartKey == cartKey) {
+			return mc
+		}
+	}
+
+	if !skIsNil {
+		// 根据Key获取购物车
+		c, _ = this.GetCartByKey(cartKey)
+		if c == nil {
+			// 新的购物车不存在，直接返回会员的购物车
+			if mc != nil {
+				return mc
+			}
+		} else {
+
+			cv := c.GetValue()
+			//合并购物车
+			if cv.BuyerId <= 0 {
+				// 设置购买者
+				if mmNotNil {
+					c.SetBuyer(buyerId)
+				}
+			} else if mc != nil {
+				// 合并购物车
+				nc, err := mc.Combine(c)
+				if err == nil {
+					nc.Save()
+					return nc
+				}
+				return mc
+			}
+
+			// 如果没有购买，则返回
+			return c
+		}
+	}
+
+	// 返回一个新的购物车
+	return this.NewCart(buyerId)
+}
+
 
 // 获取没有结算的购物车
 func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
@@ -95,7 +146,7 @@ func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
 
 // 绑定购物车会员编号
 func (this *Shopping) BindCartBuyer(cartKey string, buyerId int) error {
-	cart, err := this.GetCart(cartKey)
+	cart, err := this.GetCartByKey(cartKey)
 	if err != nil {
 		return err
 	}
@@ -117,6 +168,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	}
 
 	cart, err = this.GetCurrentCart(memberId)
+	fmt.Println(err,"----",cart== nil,len(cart.GetValue().Items),cart.GetDomainId(),cart.GetValue().CartKey)
 	if err != nil || cart == nil || len(cart.GetValue().Items) == 0 {
 		return nil, m, cart, shopping.ErrEmptyShoppingCart
 	}

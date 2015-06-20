@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 type CartC struct {
@@ -56,6 +57,7 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	memberId int, cartKey string) {
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
+	fmt.Println("**************",memberId,"---",cart.Id,cart.CartKey,"=",cartKey)
 	if cart.Items != nil {
 		for _, v := range cart.Items {
 			v.GoodsImage = format.GetGoodsImageUrl(v.GoodsImage)

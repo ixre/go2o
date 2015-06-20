@@ -33,7 +33,10 @@ type IShopping interface {
 	//GetCart(key string,memberId int) (ICart, error)
 
 	// 根据数据获取购物车
-	GetCart(key string) (ICart, error)
+	GetCartByKey(key string) (ICart, error)
+
+	// 获取购物车
+	GetShoppingCart(buyerId int,cartKey string)ICart
 
 	// 获取没有结算的购物车
 	GetCurrentCart(buyerId int) (ICart, error)
