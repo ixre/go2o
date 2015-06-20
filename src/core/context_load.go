@@ -94,6 +94,8 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(user.PersonValue{}, "usr_person")
 	orm.CreateTableMap(user.CredentialValue{}, "usr_credential")
 
+	orm.CreateTableMap(valueobject.Goods{},"")
+
 	return connector
 }
 

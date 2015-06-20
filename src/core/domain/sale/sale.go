@@ -54,7 +54,7 @@ func (this *Sale) GetAggregateRootId() int {
 	return this._partnerId
 }
 
-func (this *Sale) CreateGoods(v *sale.ValueItem) sale.IItem {
+func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
@@ -69,18 +69,30 @@ func (this *Sale) CreateGoods(v *sale.ValueItem) sale.IItem {
 }
 
 // 根据产品编号获取产品
-func (this *Sale) GetGoods(goodsId int) sale.IItem {
-	p, ok := this._proCache[goodsId]
-	if !ok {
-		this.chkCache()
-		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), goodsId)
+func (this *Sale) GetItem(itemId int) sale.IItem {
+		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), itemId)
+		if pv != nil{
+			return this.CreateItem(pv)
+		}
+	return nil
+}
 
+
+// 创建商品
+func (this *Sale) CreateGoods(item sale.IItem, v *sale.ValueGoods) sale.IGoods{
+	return NewSaleGoods(this,item,v,this._saleRep)
+}
+
+// 根据产品编号获取商品
+func (this *Sale) GetGoods(goodsId int) sale.IGoods {
+	var v *sale.ValueGoods = this._saleRep.GetValueGoodsById(goodsId)
+	if v != nil {
+		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), v.ItemId)
 		if pv != nil {
-			p = this.CreateGoods(pv)
-			this._proCache[goodsId] = p
+			return this.CreateGoods(this.CreateItem(pv), v)
 		}
 	}
-	return p
+	return nil
 }
 
 // 删除商品

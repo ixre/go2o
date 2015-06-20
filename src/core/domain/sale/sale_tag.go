@@ -8,7 +8,10 @@
  */
 package sale
 
-import "go2o/src/core/domain/interface/sale"
+import (
+	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/domain/interface/valueobject"
+)
 
 var _ sale.ISaleTag = new(SaleTag)
 
@@ -55,7 +58,7 @@ func (this *SaleTag) Save() (int, error) {
 }
 
 // 获取标签下的商品
-func (this *SaleTag) GetValueGoods(begin, end int) []*sale.ValueItem {
+func (this *SaleTag) GetValueGoods(begin, end int) []*valueobject.Goods {
 	if begin < 0 || begin > end {
 		begin = 0
 	}

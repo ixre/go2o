@@ -61,16 +61,16 @@ func (this *Item) IsOnShelves() bool {
 // 获取商品的销售标签
 func (this *Item) GetSaleTags() []*sale.ValueSaleTag {
 	if this._saleTags == nil {
-		this._saleTags = this._saleTagRep.GetGoodsSaleTags(this.GetDomainId())
+		this._saleTags = this._saleTagRep.GetItemSaleTags(this.GetDomainId())
 	}
 	return this._saleTags
 }
 
 // 保存销售标签
 func (this *Item) SaveSaleTags(tagIds []int) error {
-	err := this._saleTagRep.CleanGoodsSaleTags(this.GetDomainId())
+	err := this._saleTagRep.CleanItemSaleTags(this.GetDomainId())
 	if err == nil {
-		err = this._saleTagRep.SaveGoodsSaleTags(this.GetDomainId(), tagIds)
+		err = this._saleTagRep.SaveItemSaleTags(this.GetDomainId(), tagIds)
 		this._saleTags = nil
 	}
 	return err

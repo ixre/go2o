@@ -9,6 +9,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 type Cart struct {
@@ -85,6 +86,7 @@ func (this *Cart) AddItem(snapshotId, num int) *shopping.ValueCartItem {
 
 	// 添加项
 	snap := this._saleRep.GetGoodsSnapshot(snapshotId)
+	fmt.Println(snap,"----",snapshotId)
 	pro := this._saleRep.GetValueItem(this._partnerId, snap.GoodsId)
 
 	if pro != nil {

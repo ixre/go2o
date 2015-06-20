@@ -120,15 +120,15 @@ func (this *ListC) List_Index(ctx *web.Context) {
 				<div class="item-block item-block%d">
 					<a href="/item-%d.htm" class="goods-link">
                         <img class="goods-img" src="%s" alt="%s"/>
-                        <h3 class="name">%s%s</h3>
+                        <h3 class="name">%s</h3>
                         <span class="sale-price">￥%s</span><br />
                         <span class="market-price"><del>￥%s</del></span>
 					</a>
                     <div class="clearfix"></div>
                 </div>
-		`, i%2, v.Id, format.GetGoodsImageUrl(v.Image),
-					v.Name, v.Name, v.SmallTitle, format.FormatFloat(v.SalePrice),
-					format.FormatFloat(v.Price)))
+		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
+				v.Name, v.Name, format.FormatFloat(v.SalePrice),
+				format.FormatFloat(v.Price)))
 			}
 		}
 
@@ -150,7 +150,7 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		path := r.URL.Path
 		goodsId, _ := strconv.Atoi(path[strings.Index(path, "-")+1 : strings.Index(path, ".")])
 
-		goods := dps.SaleService.GetValueGoods(p.Id, goodsId)
+		goods := dps.SaleService.GetValueItem(p.Id, goodsId)
 
 		goods.Image = format.GetGoodsImageUrl(goods.Image)
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{

@@ -13,6 +13,7 @@ import (
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/sale"
 	saleImpl "go2o/src/core/domain/sale"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type SaleTagRep struct {
@@ -83,30 +84,31 @@ func (this *SaleTagRep) DeleteSaleTag(partnerId int, id int) error {
 }
 
 // 获取商品
-func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*sale.ValueItem {
-	arr := []*sale.ValueItem{}
-	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_item WHERE id IN (
+func (this *SaleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*valueobject.Goods {
+	arr := []*valueobject.Goods{}
+	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
 			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`, partnerId, tagId, begin, end)
 	return arr
 }
 
 // 获取商品的销售标签
-func (this *SaleTagRep) GetGoodsSaleTags(goodsId int) []*sale.ValueSaleTag {
+func (this *SaleTagRep) GetItemSaleTags(itemId int) []*sale.ValueSaleTag {
 	arr := []*sale.ValueSaleTag{}
 	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_tag WHERE id IN
-	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, goodsId)
+	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, itemId)
 	return arr
 }
 
 // 清理商品的销售标签
-func (this *SaleTagRep) CleanGoodsSaleTags(goodsId int) error {
-	_, err := this.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", goodsId)
+func (this *SaleTagRep) CleanItemSaleTags(itemId int) error {
+	_, err := this.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", itemId)
 	return err
 }
 
 // 保存商品的销售标签
-func (this *SaleTagRep) SaveGoodsSaleTags(goodsId int, tagIds []int) error {
+func (this *SaleTagRep) SaveItemSaleTags(itemId int, tagIds []int) error {
 	var err error
 	if tagIds == nil {
 		return errors.New("SaleTag Ids can't be null.")
@@ -114,7 +116,7 @@ func (this *SaleTagRep) SaveGoodsSaleTags(goodsId int, tagIds []int) error {
 
 	for _, v := range tagIds {
 		_, err = this.ExecNonQuery("INSERT INTO gs_item_tag (item_id,sale_tag_id) VALUES(?,?)",
-			goodsId, v)
+		itemId, v)
 	}
 
 	return err

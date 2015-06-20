@@ -13,8 +13,8 @@ import (
 	"errors"
 	"github.com/atnet/gof/web/ui/tree"
 	"go2o/src/core/domain/interface/sale"
-	"go2o/src/core/dto"
 	"strconv"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type saleService struct {
@@ -27,18 +27,18 @@ func NewSaleService(r sale.ISaleRep) *saleService {
 	}
 }
 
-func (this *saleService) GetValueGoods(partnerId, goodsId int) *sale.ValueItem {
+func (this *saleService) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 	sl := this._rep.GetSale(partnerId)
-	pro := sl.GetGoods(goodsId)
+	pro := sl.GetItem(itemId)
 	v := pro.GetValue()
 	return &v
 }
 
-func (this *saleService) SaveGoods(partnerId int, v *sale.ValueItem) (int, error) {
+func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
 	var pro sale.IItem
 	if v.Id > 0 {
-		pro = sl.GetGoods(v.Id)
+		pro = sl.GetItem(v.Id)
 		if pro == nil {
 			return 0, errors.New("产品不存在")
 		}
@@ -46,32 +46,20 @@ func (this *saleService) SaveGoods(partnerId int, v *sale.ValueItem) (int, error
 			return 0, err
 		}
 	} else {
-		pro = sl.CreateGoods(v)
+		pro = sl.CreateItem(v)
 	}
 	return pro.Save()
 }
 
-func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int) (int, []*dto.ListGoods) {
+func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int) (int, []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
 	var cate sale.ICategory = sl.GetCategory(categoryId)
 	var ids []int = cate.GetChildId()
 	ids = append(ids, categoryId)
-
 	//todo: cache
 
-	total, goods := this._rep.GetPagedOnShelvesItem(partnerId, ids, start, end)
-	var listGoods []*dto.ListGoods = make([]*dto.ListGoods, len(goods))
-	for i, v := range goods {
-		listGoods[i] = &dto.ListGoods{
-			Id:         v.Id,
-			Name:       v.Name,
-			SmallTitle: v.SmallTitle,
-			Image:      v.Image,
-			Price:      v.Price,
-			SalePrice:  v.SalePrice,
-		}
-	}
-	return total, listGoods
+	return this._rep.GetPagedOnShelvesGoods(partnerId, ids, start, end)
+
 }
 
 func (this *saleService) DeleteGoods(partnerId, goodsId int) error {
@@ -190,20 +178,20 @@ func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, 
 }
 
 // 获取商品的销售标签
-func (this *saleService) GetGoodsSaleTags(partnerId, goodsId int) []*sale.ValueSaleTag {
+func (this *saleService) GetItemSaleTags(partnerId, itemId int) []*sale.ValueSaleTag {
 	var list = make([]*sale.ValueSaleTag, 0)
 	sl := this._rep.GetSale(partnerId)
-	if goods := sl.GetGoods(goodsId); goods != nil {
+	if goods := sl.GetItem(itemId); goods != nil {
 		list = goods.GetSaleTags()
 	}
 	return list
 }
 
 // 保存商品的销售标签
-func (this *saleService) SaveGoodsSaleTags(partnerId, goodsId int, tagIds []int) error {
+func (this *saleService) SaveItemSaleTags(partnerId, itemId int, tagIds []int) error {
 	var err error
 	sl := this._rep.GetSale(partnerId)
-	if goods := sl.GetGoods(goodsId); goods != nil {
+	if goods := sl.GetItem(itemId); goods != nil {
 		err = goods.SaveSaleTags(tagIds)
 	} else {
 		err = errors.New("商品不存在")
@@ -212,10 +200,10 @@ func (this *saleService) SaveGoodsSaleTags(partnerId, goodsId int, tagIds []int)
 }
 
 // 根据销售标签获取指定数目的商品
-func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*sale.ValueItem {
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	if tag := sl.GetSaleTagByCode(code); tag != nil {
 		return tag.GetValueGoods(begin, end)
 	}
-	return make([]*sale.ValueItem, 0)
+	return make([]*valueobject.Goods, 0)
 }

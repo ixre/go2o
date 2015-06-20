@@ -7,6 +7,7 @@
  * history :
  */
 package sale
+import "go2o/src/core/domain/interface/valueobject"
 
 type ISaleTag interface {
 	GetDomainId() int
@@ -18,5 +19,5 @@ type ISaleTag interface {
 	Save() (int, error)
 
 	// 获取标签下的商品
-	GetValueGoods(begin, end int) []*ValueItem
+	GetValueGoods(begin, end int) []*valueobject.Goods
 }

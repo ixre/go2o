@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/dto"
 	"strconv"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 type partnerClient struct {
@@ -66,7 +67,7 @@ func (this *partnerClient) GetShops(partnerId int, secret string) (a []partner.V
 }
 
 func (this *partnerClient) GetItems(partnerId int, secret string, categoryId int, getNum int) (
-	a []*dto.ListGoods, err error) {
+	a []*valueobject.Goods, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s","cid":"%d","num":"%d"}>>Partner.GetItems`,
@@ -74,7 +75,7 @@ func (this *partnerClient) GetItems(partnerId int, secret string, categoryId int
 	if err != nil {
 		return nil, err
 	}
-	a = []*dto.ListGoods{}
+	a = []*valueobject.Goods{}
 	err = jsv.UnmarshalMap(result.Data, &a)
 	return a, err
 }

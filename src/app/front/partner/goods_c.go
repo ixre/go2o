@@ -57,7 +57,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	e = dps.SaleService.GetValueGoods(partnerId, id)
+	e = dps.SaleService.GetValueItem(partnerId, id)
 	if e == nil {
 		w.Write([]byte("商品不存在"))
 		return
@@ -85,7 +85,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	e := sale.ValueItem{}
 	web.ParseFormToEntity(r.Form, &e)
 
-	id, err := dps.SaleService.SaveGoods(partnerId, &e)
+	id, err := dps.SaleService.SaveItem(partnerId, &e)
 
 	if err != nil {
 		result = gof.Message{Result: true, Message: err.Error()}
@@ -121,7 +121,7 @@ func (this *goodsC) SetSaleTag(ctx *web.Context) {
 	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
 	tagsHtml := getSaleTagsCheckBoxHtml(tags)
 
-	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetGoodsSaleTags(partnerId, goodsId)
+	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetItemSaleTags(partnerId, goodsId)
 	strArr := make([]string, len(chkTags))
 	for i, v := range chkTags {
 		strArr[i] = strconv.Itoa(v.Id)
@@ -150,7 +150,7 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context) {
 		}
 
 		partnerId := this.GetPartnerId(ctx)
-		err = dps.SaleService.SaveGoodsSaleTags(partnerId, goodsId, ids)
+		err = dps.SaleService.SaveItemSaleTags(partnerId, goodsId, ids)
 	}
 
 	if err != nil {

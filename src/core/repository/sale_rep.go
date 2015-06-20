@@ -18,6 +18,7 @@ import (
 	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/log"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 var _ sale.ISaleRep = new(saleRep)
@@ -237,6 +238,16 @@ func (this *saleRep) GetValueGoods(itemId int, skuId int) *sale.ValueGoods {
 	return nil
 }
 
+
+// 获取商品
+func (this *saleRep) GetValueGoodsById(goodsId int)*sale.ValueGoods {
+	var e *sale.ValueGoods = new(sale.ValueGoods)
+	if this.Connector.GetOrm().Get(goodsId, e) == nil {
+		return e
+	}
+	return nil
+}
+
 // 保存商品
 func (this *saleRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 	if v.Id > 0 {
@@ -250,6 +261,31 @@ func (this *saleRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 	}
 	return id, err
 
+}
+
+// 获取在货架上的商品
+func (this *saleRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int) (total int, e []*valueobject.Goods) {
+	var sql string
+
+	var catIdStr string = format.GetCategoryIdStr(catIds)
+
+
+	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
+		 WHERE gs_category.partner_id=? AND gs_category.id IN (%s) AND gs_item.state=1
+		 AND gs_item.on_shelves=1`, catIdStr), &total, partnerId)
+
+	e = []*valueobject.Goods{}
+	if total > 0 {
+		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
+		 WHERE gs_category.partner_id=? AND gs_category.id IN (%s) AND gs_item.state=1
+		 AND gs_item.on_shelves=1 LIMIT %d,%d`, catIdStr, start, (end - start))
+
+		this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId)
+	}
+
+	return total, e
 }
 
 // 保存快照

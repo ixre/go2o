@@ -8,6 +8,7 @@
  */
 
 package sale
+import "go2o/src/core/domain/interface/valueobject"
 
 // 销售仓库
 type ISaleRep interface {
@@ -29,8 +30,16 @@ type ISaleRep interface {
 	// 获取商品
 	GetValueGoods(itemId int, sku int) *ValueGoods
 
+	// 获取商品
+	GetValueGoodsById(goodsId int)*ValueGoods
+
 	// 保存商品
 	SaveValueGoods(*ValueGoods) (int, error)
+
+	// 获取在货架上的商品
+	GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int) (total int, goods []*valueobject.Goods)
+
+
 
 	SaveCategory(*ValueCategory) (int, error)
 

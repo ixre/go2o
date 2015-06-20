@@ -10,7 +10,7 @@ func PrintErr(err error) {
 	_, f, line, _ := runtime.Caller(1)
 	if err != nil && infrastructure.DebugMode {
 		infrastructure.GetApp().Log().Println(
-			fmt.Sprintf("[ERROR]:%s , File:%s line:%d", err.Error(), f, line))
+			fmt.Sprintf("[ ERROR]:%s , File:%s line:%d", err.Error(), f, line))
 	}
 }
 

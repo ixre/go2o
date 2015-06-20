@@ -42,7 +42,7 @@ func ServerListen(n, host string, c gof.App) {
 	for {
 		conn, err := lis.Accept()
 		if err != nil {
-			context.Log().Println("[Error]:", err.Error())
+			context.Log().Println("[ ERROR]:", err.Error())
 			continue
 		}
 		// set timeout
@@ -94,6 +94,6 @@ func receiveConn(conn net.Conn, serve *jsv.Server) {
 
 func checkErr(err error) {
 	if err != nil {
-		context.Log().Fatalf("[Error]:", err.Error())
+		context.Log().Fatalf("[ ERROR]:", err.Error())
 	}
 }

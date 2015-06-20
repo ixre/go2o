@@ -7,6 +7,7 @@
  * history :
  */
 package sale
+import "go2o/src/core/domain/interface/valueobject"
 
 type ISaleTagRep interface {
 	// 创建销售标签
@@ -31,14 +32,14 @@ type ISaleTagRep interface {
 	SaveSaleTag(partnerId int, v *ValueSaleTag) (int, error)
 
 	// 获取商品
-	GetValueGoods(partnerId, tagId, begin, end int) []*ValueItem
+	GetValueGoods(partnerId, tagId, begin, end int) []*valueobject.Goods
 
 	// 获取商品的销售标签
-	GetGoodsSaleTags(goodsId int) []*ValueSaleTag
+	GetItemSaleTags(itemId int) []*ValueSaleTag
 
 	// 清理商品的销售标签
-	CleanGoodsSaleTags(goodsId int) error
+	CleanItemSaleTags(itemId int) error
 
 	// 保存商品的销售标签
-	SaveGoodsSaleTags(goodsId int, tagIds []int) error
+	SaveItemSaleTags(itemId int, tagIds []int) error
 }
