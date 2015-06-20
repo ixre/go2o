@@ -106,7 +106,6 @@ func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
 				return mc
 			}
 		} else {
-
 			cv := c.GetValue()
 			//合并购物车
 			if cv.BuyerId <= 0 {
@@ -114,7 +113,7 @@ func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
 				if mmNotNil {
 					c.SetBuyer(buyerId)
 				}
-			} else if mc != nil {
+			} else if mc != nil && cv.BuyerId == buyerId {
 				// 合并购物车
 				nc, err := mc.Combine(c)
 				if err == nil {
@@ -125,7 +124,7 @@ func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
 			}
 
 			// 如果没有购买，则返回
-			return c
+			//return c
 		}
 	}
 
