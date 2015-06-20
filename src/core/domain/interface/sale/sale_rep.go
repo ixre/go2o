@@ -43,6 +43,14 @@ type ISaleRep interface {
 	// 根据编号获取商品
 	GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error)
 
+	// 获取会员价
+	GetGoodsLevelPrice(goodsId int)[]*MemberPrice
+
+	// 保存会员价
+	SaveGoodsLevelPrice(*MemberPrice)(int,error)
+
+
+
 	// 保存分类
 	SaveCategory(*ValueCategory) (int, error)
 

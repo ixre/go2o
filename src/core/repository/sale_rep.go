@@ -260,6 +260,32 @@ func (this *saleRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error){
 }
 
 
+// 获取会员价
+func (this *saleRep) GetGoodsLevelPrice(goodsId int)[]*sale.MemberPrice {
+	var items []*sale.MemberPrice
+	if this.Connector.GetOrm().SelectByQuery(&items,
+	`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
+		return items
+	}
+	return nil
+}
+
+// 保存会员价
+func (this *saleRep) SaveGoodsLevelPrice(v *sale.MemberPrice)(id int,err error){
+	if v.Id > 0 {
+		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
+		id = v.Id
+	} else {
+		_, _, err = this.Connector.GetOrm().Save(nil, v)
+		if err == nil {
+			err = this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=?`, &id, v.GoodsId)
+		}
+	}
+	return id, err
+}
+
+
+
 // 保存商品
 func (this *saleRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 	if v.Id > 0 {

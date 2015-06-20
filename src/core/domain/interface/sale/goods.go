@@ -23,6 +23,15 @@ type IGoods interface {
 	// 获取包装过的商品信息
 	GetPackedValue()*valueobject.Goods
 
+	// 获取销售价
+	GetSalePrice(level int)float32
+
+	// 获取会员价
+	GetLevelPrices()[]*MemberPrice
+
+	// 保存会员价
+	SaveLevelPrice(*MemberPrice)(int,error)
+
 	// 设置值
 	SetValue(*ValueGoods) error
 

@@ -24,8 +24,8 @@ type SaleGoods struct {
 	_value   *sale.ValueGoods
 	_saleRep sale.ISaleRep
 	_sale    sale.ISale
-
 	_latestSnapshot *sale.GoodsSnapshot
+	_levelPrices []*sale.MemberPrice
 }
 
 func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep) sale.IGoods {
@@ -82,6 +82,34 @@ func (this *SaleGoods) GetPackedValue()*valueobject.Goods{
 	}
 	return goods
 }
+
+
+
+// 获取销售价
+func (this *SaleGoods) GetSalePrice(level int)float32{
+	lvp := this.GetLevelPrices()
+	for _,v := range lvp {
+		if level == v.Level{
+			return v.Price
+		}
+	}
+	return this._value.SalePrice
+}
+
+// 获取会员价
+func (this *SaleGoods) GetLevelPrices()[]*sale.MemberPrice{
+	if this._levelPrices == nil{
+		this._levelPrices = this._saleRep.GetGoodsLevelPrice(this.GetDomainId())
+	}
+	return this._levelPrices
+}
+
+// 保存会员价
+func (this *SaleGoods)SaveLevelPrice(v *sale.MemberPrice)(int,error){
+	v.GoodsId = this.GetDomainId()
+	return this._saleRep.SaveGoodsLevelPrice(v)
+}
+
 
 // 设置值
 func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
