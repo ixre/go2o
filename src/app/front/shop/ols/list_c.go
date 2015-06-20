@@ -150,7 +150,7 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		path := r.URL.Path
 		goodsId, _ := strconv.Atoi(path[strings.Index(path, "-")+1 : strings.Index(path, ".")])
 
-		goods := dps.SaleService.GetValueItem(p.Id, goodsId)
+		goods := dps.SaleService.GetValueGoods(p.Id, goodsId)
 
 		goods.Image = format.GetGoodsImageUrl(goods.Image)
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{

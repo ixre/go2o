@@ -27,6 +27,7 @@ func NewSaleService(r sale.ISaleRep) *saleService {
 	}
 }
 
+// 获取产品值
 func (this *saleService) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 	sl := this._rep.GetSale(partnerId)
 	pro := sl.GetItem(itemId)
@@ -34,6 +35,14 @@ func (this *saleService) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 	return &v
 }
 
+// 获取商品值
+func (this *saleService) GetValueGoods(partnerId,goodsId int)*valueobject.Goods{
+	sl := this._rep.GetSale(partnerId)
+	var goods sale.IGoods = sl.GetGoods(goodsId)
+	return goods.GetPackedValue()
+}
+
+// 保存产品
 func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
 	var pro sale.IItem
@@ -51,6 +60,7 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 	return pro.Save()
 }
 
+// 获取分页上架的商品
 func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int) (int, []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
 	var cate sale.ICategory = sl.GetCategory(categoryId)
@@ -62,6 +72,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 
 }
 
+// 删除产品
 func (this *saleService) DeleteGoods(partnerId, goodsId int) error {
 	sl := this._rep.GetSale(partnerId)
 	return sl.DeleteGoods(goodsId)

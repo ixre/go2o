@@ -7,6 +7,7 @@
  * history :
  */
 package sale
+import "go2o/src/core/domain/interface/valueobject"
 
 // 商品
 type IGoods interface {
@@ -14,10 +15,13 @@ type IGoods interface {
 	GetDomainId() int
 
 	// 获取货品
-	GetGoods() IItem
+	GetItem() IItem
 
 	// 设置值
 	GetValue() *ValueGoods
+
+	// 获取包装过的商品信息
+	GetPackedValue()*valueobject.Goods
 
 	// 设置值
 	SetValue(*ValueGoods) error
