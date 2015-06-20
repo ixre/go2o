@@ -13,6 +13,7 @@ import (
 	"go2o/src/core/domain"
 	"go2o/src/core/domain/interface/sale"
 	"time"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 var _ sale.IGoods = new(SaleGoods)
@@ -50,13 +51,36 @@ func (this *SaleGoods) GetDomainId() int {
 }
 
 // 获取货品
-func (this *SaleGoods) GetGoods() sale.IItem {
+func (this *SaleGoods) GetItem() sale.IItem {
 	return this._goods
 }
 
 // 设置值
 func (this *SaleGoods) GetValue() *sale.ValueGoods {
 	return this._value
+}
+
+
+// 获取包装过的商品信息
+func (this *SaleGoods) GetPackedValue()*valueobject.Goods{
+	item := this.GetItem().GetValue()
+	gv := this.GetValue()
+	goods := &valueobject.Goods{
+		Item_Id :item.Id,
+		CategoryId:item.CategoryId,
+		Name :item.Name,
+		GoodsNo:item.GoodsNo,
+		Image:item.Image,
+		Price:item.Price,
+		SalePrice:item.SalePrice,
+		GoodsId :this.GetDomainId(),
+		SkuId:gv.SkuId,
+		IsPresent:gv.IsPresent,
+		PromotionFlag:gv.PromotionFlag,
+		StockNum:gv.StockNum,
+		SaleNum:gv.SaleNum,
+	}
+	return goods
 }
 
 // 设置值
@@ -85,14 +109,14 @@ func (this *SaleGoods) Save() (int, error) {
 // 生成快照
 func (this *SaleGoods) GenerateSnapshot() (int, error) {
 	v := this._value
-	gs := this.GetGoods()
-	gv := gs.GetValue()
+	gi := this.GetItem()
+	gv := gi.GetValue()
 
 	if v.Id <= 0 {
 		return -1, sale.ErrNoSuchGoods
 	}
 
-	if !gs.IsOnShelves() {
+	if !gi.IsOnShelves() {
 		return -1, sale.ErrNotOnShelves
 	}
 
