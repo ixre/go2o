@@ -24,6 +24,9 @@ type IGoods interface {
 	// 获取包装过的商品信息
 	GetPackedValue() *valueobject.Goods
 
+	// 获取促销价
+	GetPromotionPrice(level int)float32
+
 	// 获取会员价销价,返回是否有会原价及价格
 	GetLevelPrice(level int) (bool, float32)
 

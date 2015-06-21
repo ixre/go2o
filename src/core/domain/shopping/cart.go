@@ -71,6 +71,7 @@ func (this *Cart) init() shopping.ICart {
 	return this
 }
 
+// 设置附加的商品信息
 func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 	if items != nil {
 		l := len(items)
@@ -90,8 +91,30 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 				goodsMap[v.GoodsId] = v
 			}
 
+			var level int
+			var goods sale.IGoods
+			var sl sale.ISale
+
+			//  更新登陆后的优惠价
+			if this._value.BuyerId > 0 {
+				sl = this._saleRep.GetSale(this._partnerId)
+				m ,_ := this._memberRep.GetMember(this._value.BuyerId)
+				if m != nil{
+					level = m.GetValue().Level
+				}
+			}
+
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
+				if level > 0 {
+					goods = sl.CreateGoods(
+						sl.CreateItem(sale.ParseToPartialValueItem(gv)),
+						sale.ParseToValueGoods(gv),
+					)
+					if p := goods.GetPromotionPrice(level);p < gv.SalePrice{
+						gv.SalePrice = p
+					}
+				}
 				if ok {
 					v.Name = gv.Name
 					v.Price = gv.Price

@@ -193,20 +193,21 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
 	}
 	var sl sale.ISale = this._saleRep.GetSale(this._value.PartnerId)
-	var goods sale.IItem
+	var item sale.IItem
 	var snap *sale.GoodsSnapshot
 	for i, v := range cartItems {
 		snap = sl.GetGoodsSnapshot(cartItems[i].SnapshotId)
 		if snap == nil {
-			return 0, errors.New("商品缺少快照：" + goods.GetValue().Name)
+			return 0, errors.New("商品缺少快照：" + item.GetValue().Name)
 		}
+
 
 		this._value.Items[i] = &shopping.OrderItem{
 			Id:         0,
 			SnapshotId: snap.Id,
 			Quantity:   v.Num,
 			Sku:        "",
-			Fee:        snap.SalePrice * float32(v.Num),
+			Fee:        v.SalePrice * float32(v.Num),
 		}
 	}
 

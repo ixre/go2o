@@ -781,7 +781,7 @@ CREATE TABLE `pt_order_item` (
   `snapshot_id` int(11) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL,
   `sku` varchar(100) DEFAULT NULL,
-  `fee` decimal(10,0) DEFAULT NULL,
+  `fee` decimal(8,2) DEFAULT NULL,
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1218,4 +1218,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-21 11:27:31
+-- Dump completed on 2015-06-21 15:11:43
