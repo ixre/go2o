@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"strings"
+	"go2o/src/app/front"
 )
 
 var _ mvc.Filter = new(UserC)
@@ -28,7 +29,7 @@ type UserC struct {
 }
 
 func (this *UserC) Login(ctx *web.Context) {
-	p := this.GetPartner(ctx)
+	p := this.BaseC.GetPartner(ctx)
 	r := ctx.Request
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
@@ -52,7 +53,7 @@ func (this *UserC) Login(ctx *web.Context) {
 func (this *UserC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := this.BaseC.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
 
@@ -122,8 +123,9 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 		member.Pwd = domain.Md5MemberPwd(member.Usr, member.Pwd)
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
-			inviId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("inviCode"))
-			err = dps.MemberService.SaveRelation(memberId, "", inviId, this.GetPartnerId(ctx))
+			invId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("inviCode"))
+			err = dps.MemberService.SaveRelation(memberId, "", invId,
+				this.BaseC.GetPartnerId(ctx))
 		}
 	}
 
@@ -143,9 +145,10 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 	if m == nil {
 		location = "/user/login?return_url=/user/jump_m"
 	} else {
-		location = fmt.Sprintf("http://%s.%s/login/partner_connect?sessionId=%s&mid=%d&token=%s",
+		location = fmt.Sprintf("http://%s.%s/login/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
 			ctx.App.Config().GetString(variable.ServerDomain),
+			front.GetBrownerDevice(ctx),
 			ctx.Session().GetSessionId(),
 			m.Id,
 			m.DynamicToken,
@@ -171,11 +174,11 @@ func (this *UserC) Logout(ctx *web.Context) {
 // 更换访问设备
 func (this *UserC) ChangeDevice(ctx *web.Context) {
 	deviceType := ctx.Request.URL.Query().Get("device_type")
-	SetBrownerDevice(ctx, deviceType)
-	urlReferer := ctx.Request.Referer()
-	if len(urlReferer) == 0 {
-		urlReferer = "/"
+	front.SetBrownerDevice(ctx, deviceType)
+	urlRef := ctx.Request.Referer()
+	if len(urlRef) == 0 {
+		urlRef = "/"
 	}
-	ctx.ResponseWriter.Header().Add("Location", urlReferer)
+	ctx.ResponseWriter.Header().Add("Location", urlRef)
 	ctx.ResponseWriter.WriteHeader(302)
 }

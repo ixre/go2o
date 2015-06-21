@@ -11,8 +11,8 @@ package ols
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/app/front/shop"
 	"go2o/src/app/front/shop/ols/mos"
+	"go2o/src/app/front"
 )
 
 var (
@@ -21,12 +21,12 @@ var (
 
 //处理请求
 func Handle(ctx *web.Context) {
-	switch GetBrownerDevice(ctx) {
+	switch front.GetBrownerDevice(ctx) {
 	default:
-	case shop.DevicePC:
+	case front.DevicePC:
 		ctx.Items["device_view_dir"] = "ols"
 		routes.Handle(ctx)
-	case shop.DeviceTouchPad, shop.DeviceMobile:
+	case front.DeviceTouchPad, front.DeviceMobile:
 		ctx.Items["device_view_dir"] = "mos"
 		mos.Handle(ctx)
 	}
