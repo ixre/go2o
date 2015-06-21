@@ -12,8 +12,8 @@ import (
 	"errors"
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/sale"
-	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/domain/interface/valueobject"
+	saleImpl "go2o/src/core/domain/sale"
 )
 
 type SaleTagRep struct {
@@ -116,7 +116,7 @@ func (this *SaleTagRep) SaveItemSaleTags(itemId int, tagIds []int) error {
 
 	for _, v := range tagIds {
 		_, err = this.ExecNonQuery("INSERT INTO gs_item_tag (item_id,sale_tag_id) VALUES(?,?)",
-		itemId, v)
+			itemId, v)
 	}
 
 	return err

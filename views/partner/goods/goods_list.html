@@ -134,7 +134,7 @@
                         }
                     },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" onclick="editRec('+row.id+')">修改</a>'+
+                        return '<a href="javascript:;" onclick="editRec('+row.id+')">编辑</a>'+
                                 ' | <a href="javascript:;" onclick="setSaleTag('+row.id+')">标签设置</a>'+
                                 ' | <a href="javascript:;" onclick="delRec('+row.id+')">删除</a>'
                     } },
@@ -154,7 +154,7 @@
     }
 
     function editRec(id){
-        $JS.tab.open('修改商品', 'goods/edit?id=' + id,  true);
+        $JS.tab.open('修改商品', 'goods/goodsCtrl?item_id=' + id,  true);
     }
 
     function delRec(id) {

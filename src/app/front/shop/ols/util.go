@@ -29,7 +29,7 @@ func HandleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 	if err != nil {
 		w.WriteHeader(500)
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"error":  err.Error(),
+			"error": err.Error(),
 			"stack": template.HTML(debug.Stack()),
 		},
 			strings.Replace("views/shop/{device}/error.html", "{device}", ctx.Items["device_view_dir"].(string), -1))

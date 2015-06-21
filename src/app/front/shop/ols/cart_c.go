@@ -62,7 +62,6 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 		}
 	}
 
-
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)
 }

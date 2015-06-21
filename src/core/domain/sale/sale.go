@@ -70,17 +70,16 @@ func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 
 // 根据产品编号获取产品
 func (this *Sale) GetItem(itemId int) sale.IItem {
-		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), itemId)
-		if pv != nil{
-			return this.CreateItem(pv)
-		}
+	pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), itemId)
+	if pv != nil {
+		return this.CreateItem(pv)
+	}
 	return nil
 }
 
-
 // 创建商品
-func (this *Sale) CreateGoods(item sale.IItem, v *sale.ValueGoods) sale.IGoods{
-	return NewSaleGoods(this,item,v,this._saleRep)
+func (this *Sale) CreateGoods(item sale.IItem, v *sale.ValueGoods) sale.IGoods {
+	return NewSaleGoods(this, item, v, this._saleRep)
 }
 
 // 根据产品编号获取商品
@@ -95,10 +94,9 @@ func (this *Sale) GetGoods(goodsId int) sale.IGoods {
 	return nil
 }
 
-
 // 根据产品SKU获取商品
-func (this *Sale) GetGoodsBySku(itemId,sku int)sale.IGoods{
-	var v *sale.ValueGoods = this._saleRep.GetValueGoodsBySku(itemId,sku)
+func (this *Sale) GetGoodsBySku(itemId, sku int) sale.IGoods {
+	var v *sale.ValueGoods = this._saleRep.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), v.ItemId)
 		if pv != nil {

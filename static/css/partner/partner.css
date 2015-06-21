@@ -183,3 +183,22 @@ a.l-btn span span.l-btn-icon-left{padding-left:0px;}
 .control{background: none;}
 .green{color:green;}
 .red{color:#FF0000;}
+
+.ui-table{background:#ddd;}
+.ui-table tr td,.ui-table tr th{border:none;padding:10px;}
+.ui-table tr th{padding:5px 10px;}
+.ui-table .summary td{background:#006699;padding:5px 10px;line-height: 220%;color:#FFF;}
+.ui-table th{background:#F5f5f5;padding:5px 10px;}
+
+input.btn{padding: 5px 20px;
+				border-radius: 2px;cursor: pointer;
+				background: #E5E5E5 none repeat scroll 0% 0%;
+				box-shadow: 0px 0px 0px #EEE, 0px 10px 15px #EEE inset;
+				border: 1px solid #CCC;
+				font-size: 12px;color:#333;
+}
+input.btn:hover{
+				background: #FFF none repeat scroll 0% 0%;
+				box-shadow: 0px 0px 0px #EEE, 0px 10px 15px #EEE inset;
+	border-color:#ddd;
+}

@@ -127,8 +127,8 @@ func (this *ListC) List_Index(ctx *web.Context) {
                     <div class="clearfix"></div>
                 </div>
 		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
-				v.Name, v.Name, format.FormatFloat(v.SalePrice),
-				format.FormatFloat(v.Price)))
+					v.Name, v.Name, format.FormatFloat(v.SalePrice),
+					format.FormatFloat(v.Price)))
 			}
 		}
 

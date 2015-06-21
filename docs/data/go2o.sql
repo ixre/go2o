@@ -244,6 +244,32 @@ INSERT INTO `gs_item_tag` VALUES (18,9,2),(19,9,3),(20,9,5),(21,8,2),(22,8,3),(2
 UNLOCK TABLES;
 
 --
+-- Table structure for table `gs_member_price`
+--
+
+DROP TABLE IF EXISTS `gs_member_price`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gs_member_price` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goods_id` int(11) DEFAULT NULL,
+  `level` int(11) DEFAULT NULL,
+  `price` decimal(8,2) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `gs_member_price`
+--
+
+LOCK TABLES `gs_member_price` WRITE;
+/*!40000 ALTER TABLE `gs_member_price` DISABLE KEYS */;
+/*!40000 ALTER TABLE `gs_member_price` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `gs_sale_tag`
 --
 
@@ -1192,4 +1218,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-20 22:41:02
+-- Dump completed on 2015-06-21 11:27:31

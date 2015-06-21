@@ -32,6 +32,9 @@ type ValueGoods struct {
 	// 销售价
 	SalePrice float32 `db:"-"`
 
+	// 会员价
+	LevelPrice float32 `db:"-"`
+
 	// 实际价
 	Price float32 `db:"-"`
 }

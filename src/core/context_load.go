@@ -70,7 +70,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(sale.ValueCategory{}, "gs_category")
 	orm.CreateTableMap(sale.GoodsSnapshot{}, "gs_snapshot")
 	orm.CreateTableMap(sale.ValueSaleTag{}, "gs_sale_tag")
-	orm.CreateTableMap(sale.MemberPrice{},"gs_member_price")
+	orm.CreateTableMap(sale.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
 	orm.CreateTableMap(partner.ValuePartner{}, "pt_partner")
@@ -95,7 +95,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(user.PersonValue{}, "usr_person")
 	orm.CreateTableMap(user.CredentialValue{}, "usr_credential")
 
-	orm.CreateTableMap(valueobject.Goods{},"")
+	orm.CreateTableMap(valueobject.Goods{}, "")
 
 	return connector
 }

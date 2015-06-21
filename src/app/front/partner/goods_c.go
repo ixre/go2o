@@ -9,7 +9,9 @@
 package partner
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
@@ -18,6 +20,7 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"html/template"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -161,26 +164,101 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context) {
 	this.ResultOutput(ctx, msg)
 }
 
+func (this *goodsC) GoodsCtrl(ctx *web.Context) {
 
-func (this *goodsC) GoodsCtrl(ctx *web.Context){
-
-	itemId,_ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"item_id":  itemId,
+		"item_id": itemId,
 	}, "views/partner/goods/goods_ctrl.html")
 }
 
-func (this *goodsC) LvPrice(ctx *web.Context){
+func (this *goodsC) LvPrice(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	//todo: should be goodsId
-	itemId,_ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
-	goods := dps.SaleService.GetGoodsBySku(partnerId,itemId,0)
+	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
 	lvs := dps.PartnerService.GetMemberLevels(partnerId)
-	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId,goods.GoodsId)
+	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId, goods.GoodsId)
+
+	var buf *bytes.Buffer = bytes.NewBufferString("")
+
+	var fmtFunc = func(level int, levelName string, id int, price float32, enabled int) {
+		buf.WriteString(fmt.Sprintf(`
+		<tr>
+                <td><input type="hidden" field="Id_%d" value="%d"/>
+                    %s</td>
+                <td align="center"><input type="number" field="Price_%d" value="%s"/></td>
+                <td align="center"><input type="checkbox" field="Enabled_%d" %s/></td>
+            </tr>
+		`, level, id, levelName, level, format.FormatFloat(price), level,
+			gof.BoolString(enabled == 1, "checked=\"checked\"", "")))
+	}
+
+	var b bool
+	for _, v := range lvs {
+		b = false
+		for _, v1 := range prices {
+			if v.Value == v1.Level {
+				fmtFunc(v.Value, v.Name, v1.Id, v1.Price, v1.Enabled)
+				b = true
+				break
+			}
+		}
+		if !b {
+			fmtFunc(v.Value, v.Name, 0, goods.Price, 0)
+		}
+	}
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"goods":  goods,
-		"levels": lvs,
-		"lvp": prices,
+		"goods":   goods,
+		"setHtml": template.HTML(buf.String()),
 	}, "views/partner/goods/level_price.html")
+}
+
+func (this *goodsC) LvPrice_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	var form url.Values = ctx.Request.Form
+	goodsId, err := strconv.Atoi(form.Get("goodsId"))
+	if err != nil{
+		this.ResultOutput(ctx, gof.Message{Message: err.Error()})
+		return
+	}
+
+	var priceSet []*sale.MemberPrice = []*sale.MemberPrice{}
+	var id int
+	var price float64
+	var lv int
+	var enabled int
+
+	for k, _ := range form {
+		if strings.HasPrefix(k, "Id_") {
+			if lv, err = strconv.Atoi(k[3:]); err == nil {
+				id, _ = strconv.Atoi(form.Get(k))
+				price, _ = strconv.ParseFloat(ctx.Request.FormValue(fmt.Sprintf("Price_%d", lv)), 32)
+				if ctx.Request.FormValue(fmt.Sprintf("Enabled_%d", lv)) == "on" {
+					enabled = 1
+				} else {
+					enabled = 0
+				}
+				priceSet = append(priceSet, &sale.MemberPrice{
+					Id:      id,
+					Level:   lv,
+					GoodsId: goodsId,
+					Price:   float32(price),
+					Enabled: enabled,
+				})
+			} else {
+				this.ResultOutput(ctx, gof.Message{Message: err.Error()})
+				return
+			}
+		}
+	}
+
+	partnerId := this.GetPartnerId(ctx)
+	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
+	if err != nil {
+		this.ResultOutput(ctx, gof.Message{Message: err.Error()})
+	} else {
+		this.ResultOutput(ctx, gof.Message{Result: true})
+	}
 }

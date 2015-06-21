@@ -184,7 +184,6 @@ func (this *shoppingRep) GetLatestCart(buyerId int) (*shopping.ValueCart, error)
 	return v, err
 }
 
-
 // 保存购物车
 func (this *shoppingRep) SaveShoppingCart(v *shopping.ValueCart) (int, error) {
 	var err error

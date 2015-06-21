@@ -7,6 +7,7 @@
  * history :
  */
 package sale
+
 import "go2o/src/core/domain/interface/valueobject"
 
 type ISaleTagRep interface {

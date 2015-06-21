@@ -13,8 +13,8 @@ import (
 	"errors"
 	"github.com/atnet/gof/web/ui/tree"
 	"go2o/src/core/domain/interface/sale"
-	"strconv"
 	"go2o/src/core/domain/interface/valueobject"
+	"strconv"
 )
 
 type saleService struct {
@@ -36,16 +36,16 @@ func (this *saleService) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 }
 
 // 获取商品值
-func (this *saleService) GetValueGoods(partnerId,goodsId int)*valueobject.Goods{
+func (this *saleService) GetValueGoods(partnerId, goodsId int) *valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	var goods sale.IGoods = sl.GetGoods(goodsId)
 	return goods.GetPackedValue()
 }
 
 // 根据SKU获取商品
-func (this *saleService) GetGoodsBySku(partnerId int,itemId int,sku int)*valueobject.Goods{
+func (this *saleService) GetGoodsBySku(partnerId int, itemId int, sku int) *valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
-	var goods sale.IGoods = sl.GetGoodsBySku(itemId,sku)
+	var goods sale.IGoods = sl.GetGoodsBySku(itemId, sku)
 	return goods.GetPackedValue()
 }
 
@@ -227,10 +227,24 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begi
 }
 
 // 获取商品的会员价
-func (this *saleService) GetGoodsLevelPrices(partnerId,goodsId int)[]*sale.MemberPrice{
+func (this *saleService) GetGoodsLevelPrices(partnerId, goodsId int) []*sale.MemberPrice {
 	sl := this._rep.GetSale(partnerId)
-	if goods := sl.GetGoods(goodsId);goods != nil{
+	if goods := sl.GetGoods(goodsId); goods != nil {
 		return goods.GetLevelPrices()
 	}
-	return make([]*sale.MemberPrice,0)
+	return make([]*sale.MemberPrice, 0)
+}
+
+// 保存商品的会员价
+func (this *saleService) SaveMemberPrices(partnerId int, goodsId int, priceSet []*sale.MemberPrice) error {
+	sl := this._rep.GetSale(partnerId)
+	var err error
+	if goods := sl.GetGoods(goodsId); goods != nil {
+		for _, v := range priceSet {
+			if _, err = goods.SaveLevelPrice(v); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

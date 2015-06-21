@@ -83,7 +83,7 @@ func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	return nil, error
 }
 
-func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
+func (this *Shopping) GetShoppingCart(buyerId int, cartKey string) shopping.ICart {
 	var c shopping.ICart
 	var mc shopping.ICart
 
@@ -132,7 +132,6 @@ func (this *Shopping) GetShoppingCart(buyerId int,cartKey string)shopping.ICart{
 	return this.NewCart(buyerId)
 }
 
-
 // 获取没有结算的购物车
 func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
 	cart, error := this._rep.GetLatestCart(buyerId)
@@ -167,7 +166,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	}
 
 	cart, err = this.GetCurrentCart(memberId)
-	fmt.Println(err,"----",cart== nil,len(cart.GetValue().Items),cart.GetDomainId(),cart.GetValue().CartKey)
+	fmt.Println(err, "----", cart == nil, len(cart.GetValue().Items), cart.GetDomainId(), cart.GetValue().CartKey)
 	if err != nil || cart == nil || len(cart.GetValue().Items) == 0 {
 		return nil, m, cart, shopping.ErrEmptyShoppingCart
 	}

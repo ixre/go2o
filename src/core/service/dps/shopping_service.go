@@ -102,7 +102,7 @@ func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason s
 //  获取购物车
 func (this *shoppingService) getShoppingCart(partnerId int, buyerId int, cartKey string) shopping.ICart {
 	sp := this._rep.GetShopping(partnerId)
-	return sp.GetShoppingCart(buyerId,cartKey)
+	return sp.GetShoppingCart(buyerId, cartKey)
 }
 func (this *shoppingService) GetShoppingCart(partnerId int, memberId int, cartKey string) *dto.ShoppingCart {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)

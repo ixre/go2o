@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<div id="form1" class="form margin30">
+<div id="form1_goods" class="form margin30">
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>商品名称：</div>
         <div class="in">
@@ -99,7 +99,7 @@
     <div class="fl">
         <div class="label"></div>
         <div class="in">
-            <input id="btn_save" type="button" value="提交"/>
+            <input id="btn_save_goods" class="btn" type="button" value="提交"/>
         </div>
     </div>
 
@@ -110,7 +110,7 @@
 
 <script>
     var entity = {{.entity}}||{};
-    $JS.json.bind('form1', entity);
+    $JS.json.bind('form1_goods', entity);
     cms.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
         entity.Image:'{{.img_serve}}/' + entity.Image;
 
@@ -129,12 +129,12 @@
         }
     });
 
-    $JS.$('btn_save').onclick = function () {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
+    $JS.$('btn_save_goods').onclick = function () {
+        if ($JS.validator.validate('form1_goods')) {
+            var data = $JS.json.toObject('form1_goods');
             $JS.xhr.jsonPost('SaveItem', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
-                    $JS.tab.closeAndRefresh('商品管理');
+                   // $JS.tab.closeAndRefresh('商品管理');
                 });
             }, function (e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

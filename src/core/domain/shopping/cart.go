@@ -6,10 +6,10 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
+	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
-	"go2o/src/core/domain/interface/valueobject"
 )
 
 type Cart struct {
@@ -50,7 +50,7 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 		DeliverOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
-		Items:nil,
+		Items:      nil,
 	}
 
 	return (&Cart{
@@ -63,14 +63,13 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 	}).init()
 }
 
-func (this *Cart) init()shopping.ICart{
+func (this *Cart) init() shopping.ICart {
 	// 初始化购物车的信息
 	if this._value != nil && this._value.Items != nil {
 		this.setAttachGoodsInfo(this._value.Items)
 	}
 	return this
 }
-
 
 func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 	if items != nil {
@@ -128,7 +127,7 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 	}
 
 	sl := this._saleRep.GetSale(this._partnerId)
-	goods := sl.GetGoods(goodsId);
+	goods := sl.GetGoods(goodsId)
 	gv := goods.GetPackedValue()
 	snap := goods.GetLatestSnapshot()
 

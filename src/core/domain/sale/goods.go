@@ -12,20 +12,20 @@ import (
 	"fmt"
 	"go2o/src/core/domain"
 	"go2o/src/core/domain/interface/sale"
-	"time"
 	"go2o/src/core/domain/interface/valueobject"
+	"time"
 )
 
 var _ sale.IGoods = new(SaleGoods)
 var _ domain.IDomain = new(SaleGoods)
 
 type SaleGoods struct {
-	_goods   sale.IItem
-	_value   *sale.ValueGoods
-	_saleRep sale.ISaleRep
-	_sale    sale.ISale
+	_goods          sale.IItem
+	_value          *sale.ValueGoods
+	_saleRep        sale.ISaleRep
+	_sale           sale.ISale
 	_latestSnapshot *sale.GoodsSnapshot
-	_levelPrices []*sale.MemberPrice
+	_levelPrices    []*sale.MemberPrice
 }
 
 func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep) sale.IGoods {
@@ -40,8 +40,9 @@ func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sa
 }
 
 func (this *SaleGoods) init() sale.IGoods {
-	this._value.SalePrice = this._goods.GetValue().SalePrice
 	this._value.Price = this._value.Price
+	this._value.SalePrice = this._goods.GetValue().SalePrice
+	this._value.LevelPrice = this._goods.GetValue().SalePrice
 	return this
 }
 
@@ -60,56 +61,59 @@ func (this *SaleGoods) GetValue() *sale.ValueGoods {
 	return this._value
 }
 
-
 // 获取包装过的商品信息
-func (this *SaleGoods) GetPackedValue()*valueobject.Goods{
+func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
 	item := this.GetItem().GetValue()
 	gv := this.GetValue()
 	goods := &valueobject.Goods{
-		Item_Id :item.Id,
-		CategoryId:item.CategoryId,
-		Name :item.Name,
-		GoodsNo:item.GoodsNo,
-		Image:item.Image,
-		Price:item.Price,
-		SalePrice:item.SalePrice,
-		GoodsId :this.GetDomainId(),
-		SkuId:gv.SkuId,
-		IsPresent:gv.IsPresent,
-		PromotionFlag:gv.PromotionFlag,
-		StockNum:gv.StockNum,
-		SaleNum:gv.SaleNum,
+		Item_Id:       item.Id,
+		CategoryId:    item.CategoryId,
+		Name:          item.Name,
+		GoodsNo:       item.GoodsNo,
+		Image:         item.Image,
+		Price:         item.Price,
+		SalePrice:     item.SalePrice,
+		LevelPrice : item.SalePrice,
+		GoodsId:       this.GetDomainId(),
+		SkuId:         gv.SkuId,
+		IsPresent:     gv.IsPresent,
+		PromotionFlag: gv.PromotionFlag,
+		StockNum:      gv.StockNum,
+		SaleNum:       gv.SaleNum,
 	}
 	return goods
 }
 
-
-
-// 获取销售价
-func (this *SaleGoods) GetSalePrice(level int)float32{
+// 获取销售价及价格名称，如会员价
+func (this *SaleGoods) GetSalePrice(level int)(float32,string){
 	lvp := this.GetLevelPrices()
-	for _,v := range lvp {
-		if level == v.Level{
-			return v.Price
+	for _, v := range lvp {
+		if level == v.Level {
+			return v.Price, "会员价"
 		}
 	}
-	return this._value.SalePrice
+	return this._value.SalePrice,""
 }
 
 // 获取会员价
-func (this *SaleGoods) GetLevelPrices()[]*sale.MemberPrice{
-	if this._levelPrices == nil{
+func (this *SaleGoods) GetLevelPrices() []*sale.MemberPrice {
+	if this._levelPrices == nil {
 		this._levelPrices = this._saleRep.GetGoodsLevelPrice(this.GetDomainId())
 	}
 	return this._levelPrices
 }
 
 // 保存会员价
-func (this *SaleGoods)SaveLevelPrice(v *sale.MemberPrice)(int,error){
+func (this *SaleGoods) SaveLevelPrice(v *sale.MemberPrice) (int, error) {
 	v.GoodsId = this.GetDomainId()
+	if this._value.SalePrice == v.Price {
+		if v.Id > 0 {
+			this._saleRep.RemoveGoodsLevelPrice(v.Id)
+		}
+		return -1, nil
+	}
 	return this._saleRep.SaveGoodsLevelPrice(v)
 }
-
 
 // 设置值
 func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
@@ -124,8 +128,8 @@ func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
 // 保存
 func (this *SaleGoods) Save() (int, error) {
 	id, err := this._saleRep.SaveValueGoods(this._value)
-	if err == nil{
-		_,err = this.GenerateSnapshot()
+	if err == nil {
+		_, err = this.GenerateSnapshot()
 	}
 	this._value.Id = id
 	return id, err
@@ -153,7 +157,7 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 	cate := this._saleRep.GetCategory(partnerId, gv.CategoryId)
 	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
 		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
-		ItemId : gv.Id,
+		ItemId:       gv.Id,
 		GoodsId:      this.GetDomainId(),
 		GoodsName:    gv.Name,
 		GoodsNo:      gv.GoodsNo,

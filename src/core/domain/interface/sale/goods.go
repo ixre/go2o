@@ -7,6 +7,7 @@
  * history :
  */
 package sale
+
 import "go2o/src/core/domain/interface/valueobject"
 
 // 商品
@@ -21,16 +22,16 @@ type IGoods interface {
 	GetValue() *ValueGoods
 
 	// 获取包装过的商品信息
-	GetPackedValue()*valueobject.Goods
+	GetPackedValue() *valueobject.Goods
 
-	// 获取销售价
-	GetSalePrice(level int)float32
+	// 获取销售价及价格名称，如会员价
+	GetSalePrice(level int)(float32,string)
 
 	// 获取会员价
-	GetLevelPrices()[]*MemberPrice
+	GetLevelPrices() []*MemberPrice
 
 	// 保存会员价
-	SaveLevelPrice(*MemberPrice)(int,error)
+	SaveLevelPrice(*MemberPrice) (int, error)
 
 	// 设置值
 	SetValue(*ValueGoods) error

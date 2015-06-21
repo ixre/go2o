@@ -15,10 +15,10 @@ import (
 	"github.com/atnet/gof/algorithm/iterator"
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/domain/interface/valueobject"
 	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/log"
-	"go2o/src/core/domain/interface/valueobject"
 )
 
 var _ sale.ISaleRep = new(saleRep)
@@ -238,9 +238,8 @@ func (this *saleRep) GetValueGoods(itemId int, skuId int) *sale.ValueGoods {
 	return nil
 }
 
-
 // 获取商品
-func (this *saleRep) GetValueGoodsById(goodsId int)*sale.ValueGoods {
+func (this *saleRep) GetValueGoodsById(goodsId int) *sale.ValueGoods {
 	var e *sale.ValueGoods = new(sale.ValueGoods)
 	if this.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
@@ -248,40 +247,42 @@ func (this *saleRep) GetValueGoodsById(goodsId int)*sale.ValueGoods {
 	return nil
 }
 
-
 // 根据SKU获取商品
-func (this *saleRep) GetValueGoodsBySku(itemId,sku int)*sale.ValueGoods{
+func (this *saleRep) GetValueGoodsBySku(itemId, sku int) *sale.ValueGoods {
 	var e *sale.ValueGoods = new(sale.ValueGoods)
-	if this.Connector.GetOrm().GetBy(e,"item_id=? AND sku_id=?",itemId,sku) == nil {
+	if this.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
 	return nil
 }
 
-
 // 根据编号获取商品
-func (this *saleRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error){
+func (this *saleRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := this.Connector.GetOrm().SelectByQuery(&items,
-	`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_goods.item_id=gs_item.id
+		`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_goods.item_id=gs_item.id
 	 WHERE gs_goods.id IN (`+format.GetCategoryIdStr(ids)+`)`)
 
 	return items, err
 }
 
-
 // 获取会员价
-func (this *saleRep) GetGoodsLevelPrice(goodsId int)[]*sale.MemberPrice {
+func (this *saleRep) GetGoodsLevelPrice(goodsId int) []*sale.MemberPrice {
 	var items []*sale.MemberPrice
 	if this.Connector.GetOrm().SelectByQuery(&items,
-	`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
+		`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
 		return items
 	}
 	return nil
 }
 
 // 保存会员价
-func (this *saleRep) SaveGoodsLevelPrice(v *sale.MemberPrice)(id int,err error){
+func (this *saleRep) SaveGoodsLevelPrice(v *sale.MemberPrice) (id int, err error) {
+
+	if v.Id <= 0{
+		this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=?`,&v.Id,v.GoodsId)
+	}
+
 	if v.Id > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
 		id = v.Id
@@ -294,7 +295,10 @@ func (this *saleRep) SaveGoodsLevelPrice(v *sale.MemberPrice)(id int,err error){
 	return id, err
 }
 
-
+// 移除会员价
+func (this *saleRep) RemoveGoodsLevelPrice(id int) error {
+	return this.Connector.GetOrm().DeleteByPk(sale.MemberPrice{}, id)
+}
 
 // 保存商品
 func (this *saleRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
@@ -316,7 +320,6 @@ func (this *saleRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, 
 	var sql string
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
-
 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id

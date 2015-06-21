@@ -19,13 +19,13 @@ type ISale interface {
 	GetItem(int) IItem
 
 	// 创建商品
-	CreateGoods(IItem,*ValueGoods) IGoods
+	CreateGoods(IItem, *ValueGoods) IGoods
 
 	// 根据产品编号获取商品
 	GetGoods(int) IGoods
 
 	// 根据产品SKU获取商品
-	GetGoodsBySku(itemId,sku int)IGoods
+	GetGoodsBySku(itemId, sku int) IGoods
 
 	// 创建分类
 	CreateCategory(*ValueCategory) ICategory
