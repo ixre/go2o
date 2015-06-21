@@ -150,11 +150,40 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		path := r.URL.Path
 		goodsId, _ := strconv.Atoi(path[strings.Index(path, "-")+1 : strings.Index(path, ".")])
 
-		goods := dps.SaleService.GetValueGoods(p.Id, goodsId)
-
+		m := this.BaseC.GetMember(ctx)
+		var level int = 0
+		if m != nil {
+			level = m.Level
+		}
+		goods, proMap := dps.SaleService.GetGoodsDetails(p.Id, goodsId, level)
 		goods.Image = format.GetGoodsImageUrl(goods.Image)
+
+		// 促销价
+		var promPrice string
+		if goods.PromPrice < goods.SalePrice {
+			promPrice = fmt.Sprintf(`<span class="prom-price">
+                    <span class="bg_txt red">促销价:</span> ￥<b>%s</b>元
+                </span>`, format.FormatFloat(goods.PromPrice))
+		}
+
+		// 促销信息
+		var promDescribe string
+		if len(proMap) != 0 {
+			buf := bytes.NewBufferString("")
+			var i int = 0
+			for k, v := range proMap {
+				i++
+				buf.WriteString(fmt.Sprintf(`<div class="prom-box prom%d">
+					<span class="bg_txt red">%s</span>：<span class="describe">%s</span></div>`, i, k, v))
+			}
+			promDescribe = buf.String()
+		}
+
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"goods": goods,
+			"goods":        goods,
+			"promap":       proMap,
+			"promPrice":    template.HTML(promPrice),
+			"promDescribe": template.HTML(promDescribe),
 		},
 			"views/shop/{device}/goods.html",
 			"views/shop/{device}/inc/header.html",

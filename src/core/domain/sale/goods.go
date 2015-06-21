@@ -42,7 +42,7 @@ func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sa
 func (this *SaleGoods) init() sale.IGoods {
 	this._value.Price = this._value.Price
 	this._value.SalePrice = this._goods.GetValue().SalePrice
-	this._value.LevelPrice = this._goods.GetValue().SalePrice
+	this._value.PromPrice = this._goods.GetValue().SalePrice
 	return this
 }
 
@@ -73,7 +73,7 @@ func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
 		Image:         item.Image,
 		Price:         item.Price,
 		SalePrice:     item.SalePrice,
-		LevelPrice : item.SalePrice,
+		PromPrice:     item.SalePrice,
 		GoodsId:       this.GetDomainId(),
 		SkuId:         gv.SkuId,
 		IsPresent:     gv.IsPresent,
@@ -84,15 +84,20 @@ func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
 	return goods
 }
 
-// 获取销售价及价格名称，如会员价
-func (this *SaleGoods) GetSalePrice(level int)(float32,string){
+// 获取会员价销价
+func (this *SaleGoods) GetLevelPrice(level int) (bool, float32) {
 	lvp := this.GetLevelPrices()
 	for _, v := range lvp {
-		if level == v.Level {
-			return v.Price, "会员价"
+		if level == v.Level && v.Price < this._value.SalePrice {
+			return true, v.Price
 		}
 	}
-	return this._value.SalePrice,""
+	return false, this._value.SalePrice
+}
+
+// 获取促销描述
+func (this *SaleGoods) GetPromotionDescribe() map[string]string {
+	return make(map[string]string, 0)
 }
 
 // 获取会员价

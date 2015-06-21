@@ -141,7 +141,7 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 			GoodsNo:    gv.GoodsNo,
 			Image:      gv.Image,
 			Price:      gv.Price,
-			SalePrice:  gv.SalePrice,
+			SalePrice:  gv.PromPrice,	// 使用优惠价
 		}
 		this._value.Items = append(this._value.Items, v)
 		return v

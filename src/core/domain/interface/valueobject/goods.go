@@ -26,8 +26,8 @@ type Goods struct {
 	//销售价
 	SalePrice float32 `db:"gs_item.sale_price"`
 
-	// 会员价
-	LevelPrice float32 `db:"-"`
+	// 促销价
+	PromPrice float32 `db:"-"`
 
 	GoodsId   int `db:"gs_goods.id"`
 	SkuId     int `db:"gs_goods.sku_id"`

@@ -11,9 +11,11 @@ package dps
 
 import (
 	"errors"
+	"fmt"
 	"github.com/atnet/gof/web/ui/tree"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
+	"go2o/src/core/infrastructure/format"
 	"strconv"
 )
 
@@ -247,4 +249,17 @@ func (this *saleService) SaveMemberPrices(partnerId int, goodsId int, priceSet [
 		}
 	}
 	return nil
+}
+
+func (this *saleService) GetGoodsDetails(partnerId, goodsId, mLevel int) (*valueobject.Goods, map[string]string) {
+	sl := this._rep.GetSale(partnerId)
+	var goods sale.IGoods = sl.GetGoods(goodsId)
+	gv := goods.GetPackedValue()
+	proMap := goods.GetPromotionDescribe()
+	if b, price := goods.GetLevelPrice(mLevel); b {
+		gv.PromPrice = price
+		proMap["会员专享"] = fmt.Sprintf("会员优惠,仅需<b>￥%s</b>",
+			format.FormatFloat(price))
+	}
+	return gv, proMap
 }

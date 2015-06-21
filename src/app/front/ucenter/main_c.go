@@ -11,6 +11,7 @@ package ucenter
 import (
 	"encoding/json"
 	"github.com/atnet/gof"
+	gfmt "github.com/atnet/gof/util/fmt"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/service/dps"
 	"html/template"
@@ -51,11 +52,11 @@ func (this *mainC) Index(ctx *web.Context) {
 			"json":         template.JS(js),
 			"acc":          acc,
 			"regTime":      time.Unix(mm.RegTime, 0).Format("2006-01-02"),
-			"name": template.HTML(gof.BoolString(len(mm.Name) == 0, `<span class="red">未填写</span>`,
+			"name": template.HTML(gfmt.BoolString(len(mm.Name) == 0, `<span class="red">未填写</span>`,
 				mm.Name)),
 
-			"sex": gof.BoolString(mm.Sex == 1, "先生",
-				gof.BoolString(mm.Sex == 2, "女士", "")),
+			"sex": gfmt.BoolString(mm.Sex == 1, "先生",
+				gfmt.BoolString(mm.Sex == 2, "女士", "")),
 		}, "views/ucenter/index.html",
 			"views/ucenter/inc/header.html",
 			"views/ucenter/inc/menu.html",

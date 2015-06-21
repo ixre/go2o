@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/atnet/gof"
+	gfmt "github.com/atnet/gof/util/fmt"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
@@ -191,7 +192,7 @@ func (this *goodsC) LvPrice(ctx *web.Context) {
                 <td align="center"><input type="checkbox" field="Enabled_%d" %s/></td>
             </tr>
 		`, level, id, levelName, level, format.FormatFloat(price), level,
-			gof.BoolString(enabled == 1, "checked=\"checked\"", "")))
+			gfmt.BoolString(enabled == 1, "checked=\"checked\"", "")))
 	}
 
 	var b bool
@@ -219,7 +220,7 @@ func (this *goodsC) LvPrice_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var form url.Values = ctx.Request.Form
 	goodsId, err := strconv.Atoi(form.Get("goodsId"))
-	if err != nil{
+	if err != nil {
 		this.ResultOutput(ctx, gof.Message{Message: err.Error()})
 		return
 	}
