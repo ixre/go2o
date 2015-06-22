@@ -92,8 +92,7 @@ func executeTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, d, newFiles...)
 }
 
-
 // 执行模板
 func (this *baseC) ExecuteTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
-	executeTemplate(ctx,d,files...)
+	executeTemplate(ctx, d, files...)
 }

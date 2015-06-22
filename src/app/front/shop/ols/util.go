@@ -71,6 +71,3 @@ func GetCategories(c gof.App, partnerId int, secret string) []byte {
 	buf.WriteString("</ul>")
 	return buf.Bytes()
 }
-
-
-

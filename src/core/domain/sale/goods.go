@@ -96,9 +96,9 @@ func (this *SaleGoods) GetLevelPrice(level int) (bool, float32) {
 }
 
 // 获取促销价
-func (this *SaleGoods) GetPromotionPrice(level int)float32{
-	b,price := this.GetLevelPrice(level)
-	if b{
+func (this *SaleGoods) GetPromotionPrice(level int) float32 {
+	b, price := this.GetLevelPrice(level)
+	if b {
 		return price
 	}
 	return this._value.SalePrice

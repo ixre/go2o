@@ -14,12 +14,12 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"strings"
-	"go2o/src/app/front"
 )
 
 var _ mvc.Filter = new(UserC)

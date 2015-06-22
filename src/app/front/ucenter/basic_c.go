@@ -61,10 +61,9 @@ func (this *basicC) Pwd(ctx *web.Context) {
 }
 
 func (this *basicC) Pwd_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	m := this.GetMember(ctx)
-	var result gof.Message
+	r := ctx.Request
 	r.ParseForm()
+	m := this.GetMember(ctx)
 	var oldPwd, newPwd, rePwd string
 	oldPwd = r.FormValue("OldPwd")
 	newPwd = r.FormValue("NewPwd")
@@ -76,29 +75,28 @@ func (this *basicC) Pwd_post(ctx *web.Context) {
 		err = dps.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
 	}
 	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
+		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
 	} else {
-		result = gof.Message{Result: true}
+		this.resultOutput(ctx, gof.Message{Result: true})
 	}
-	w.Write(result.Marshal())
 }
 
 func (this *basicC) Profile_post(ctx *web.Context) {
 	mm := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
 	clientM := new(member.ValueMember)
 	web.ParseFormToEntity(r.Form, clientM)
 	clientM.Id = mm.Id
-	_, err := goclient.Member.SaveMember(clientM, mm.DynamicToken)
+	_, err := dps.MemberService.SaveMember(clientM)
 
 	if err != nil {
 		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
 		result = gof.Message{Result: true}
 	}
-	w.Write(result.Marshal())
+	this.resultOutput(ctx, result)
 }
 
 func (this *basicC) Deliver(ctx *web.Context) {
@@ -134,7 +132,7 @@ func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := goclient.Member.SaveDeliverAddr(m.Id, m.DynamicToken, &e)
+	b, err := dps.MemberService.SaveDeliverAddr(m.Id, &e)
 	if err == nil {
 		if b {
 			w.Write([]byte(`{"result":true}`))
@@ -152,7 +150,7 @@ func (this *basicC) DeleteDeliver_post(ctx *web.Context) {
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
 
-	b, err := goclient.Member.DeleteDeliverAddr(m.Id, m.DynamicToken, id)
+	b, err := dps.MemberService.DeleteDeliverAddr(m.Id, id)
 	if err == nil {
 		if b {
 			w.Write([]byte(`{"result":true}`))

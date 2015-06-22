@@ -69,7 +69,7 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 			leng += n
 		}
 
-		return []byte(fmt.Sprintf("{url:'%s',len:%d}",filePath,leng))
+		return []byte(fmt.Sprintf("{url:'%s',len:%d}", filePath, leng))
 	}
 	return []byte("{error:'" + err.Error() + "'}")
 }

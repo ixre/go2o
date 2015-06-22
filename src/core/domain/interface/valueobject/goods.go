@@ -42,4 +42,3 @@ type Goods struct {
 	// 已售件数
 	SaleNum int `db:"gs_goods.sale_num"`
 }
-

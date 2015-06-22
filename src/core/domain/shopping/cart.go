@@ -98,8 +98,8 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			//  更新登陆后的优惠价
 			if this._value.BuyerId > 0 {
 				sl = this._saleRep.GetSale(this._partnerId)
-				m ,_ := this._memberRep.GetMember(this._value.BuyerId)
-				if m != nil{
+				m, _ := this._memberRep.GetMember(this._value.BuyerId)
+				if m != nil {
 					level = m.GetValue().Level
 				}
 			}
@@ -111,7 +111,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 						sl.CreateItem(sale.ParseToPartialValueItem(gv)),
 						sale.ParseToValueGoods(gv),
 					)
-					if p := goods.GetPromotionPrice(level);p < gv.SalePrice{
+					if p := goods.GetPromotionPrice(level); p < gv.SalePrice {
 						gv.SalePrice = p
 					}
 				}
@@ -164,7 +164,7 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 			GoodsNo:    gv.GoodsNo,
 			Image:      gv.Image,
 			Price:      gv.Price,
-			SalePrice:  gv.PromPrice,	// 使用优惠价
+			SalePrice:  gv.PromPrice, // 使用优惠价
 		}
 		this._value.Items = append(this._value.Items, v)
 		return v

@@ -15,18 +15,18 @@ import (
 )
 
 var (
-	routes *mvc.Route = mvc.NewRoute(nil)
+	routes   *mvc.Route = mvc.NewRoute(nil)
 	moRoutes *mvc.Route = mvc.NewRoute(nil)
 )
 
 //处理请求
 func Handle(ctx *web.Context) {
 	switch front.GetBrownerDevice(ctx) {
-		default:
-		case front.DevicePC:
+	default:
+	case front.DevicePC:
 		ctx.Items["device_view_dir"] = "pc"
 		routes.Handle(ctx)
-		case front.DeviceTouchPad, front.DeviceMobile:
+	case front.DeviceTouchPad, front.DeviceMobile:
 		ctx.Items["device_view_dir"] = "touchpad"
 		moRoutes.Handle(ctx)
 	}
@@ -35,13 +35,13 @@ func Handle(ctx *web.Context) {
 func registerRoutes() {
 	mc := &mainC{}
 	bc := &basicC{}
-	oc :=  &orderC{}
-	ac :=  &accountC{}
+	oc := &orderC{}
+	ac := &accountC{}
 	lc := &loginC{}
 	routes.Register("main", mc)
 	routes.Register("basic", bc)
-	routes.Register("order",oc)
-	routes.Register("account",ac)
+	routes.Register("order", oc)
+	routes.Register("account", ac)
 	routes.Register("login", lc)
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/device", mc.changeDevice)
@@ -50,8 +50,8 @@ func registerRoutes() {
 	// 注册触屏版路由
 	moRoutes.Register("main", mc)
 	moRoutes.Register("basic", bc)
-	moRoutes.Register("order",oc)
-	moRoutes.Register("account",ac)
+	moRoutes.Register("order", oc)
+	moRoutes.Register("account", ac)
 	moRoutes.Register("login", lc)
 	moRoutes.Add("/logout", mc.Logout)
 	moRoutes.Add("/device", mc.changeDevice)

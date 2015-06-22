@@ -201,7 +201,6 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 			return 0, errors.New("商品缺少快照：" + item.GetValue().Name)
 		}
 
-
 		this._value.Items[i] = &shopping.OrderItem{
 			Id:         0,
 			SnapshotId: snap.Id,
