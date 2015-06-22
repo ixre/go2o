@@ -37,15 +37,15 @@ func (this *mainC) Index(ctx *web.Context) {
 		info["memName"] = mm.Name
 
 		lv := dps.PartnerService.GetLevel(p.Id, mm.Level)
-		nextLv := dps.PartnerService.GetNextLevel(p.Id, mm.Level)
+		//nextLv := dps.PartnerService.GetNextLevel(p.Id, mm.Level)
 
-		if nextLv == nil {
-			nextLv = lv
-		}
+//		if nextLv == nil {
+//			nextLv = lv
+//		}
 
 		this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"level":        lv,
-			"nLevel":       nextLv,
+			//"nLevel":       nextLv,
 			"member":       mm,
 			"partner":      p,
 			"conf":         conf,

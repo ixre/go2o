@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"go2o/src/app/front"
 )
 
 type loginC struct {
@@ -63,6 +64,9 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 		ctx.Session().UseInstead(sessionId)
 		m = ctx.Session().Get("member").(*member.ValueMember)
 	}
+
+	// 设置访问设备
+	front.SetBrownerDevice(ctx,ctx.Request.URL.Query().Get("device"))
 
 	if err == nil || m != nil {
 		rl := dps.MemberService.GetRelation(m.Id)
