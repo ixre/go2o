@@ -1,48 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>会员中心_{{.partner.Name}}-网上订餐|网上外卖平台</title>
+    <title>会员中心_{{.partner.Name}}</title>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/usrcent/usrcent.css?v={{.version}}"/>
-
-    <style type="text/css">
-        .red {
-            color: red;
-        }
-
-        .m20 {
-            margin-top: 30px;
-            border-top: dashed 1px #79959a;
-            padding-top: 30px
-        }
-
-        .local {
-            color: green;
-        }
-
-        .ip {
-            color: #666;
-        }
-
-        .profile {
-            position: absolute;
-            left: 200px;
-            top: 28px;
-            font-size: 11pt;
-        }
-
-        .profile p {
-            margin: 0;
-            padding: 0;
-            line-height: 23px;
-        }
-
-        .profile label {
-            width: 100px;
-            float: left;
-            display: block;
-        }
-    </style>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
 </head>
 <body>
 
@@ -58,7 +19,7 @@
         <div style="padding:30px 50px;position:relative;">
             <div class="avatar">
                 <!--<img src="{{.member.Avatar}}" alt="用户头像"/>-->
-                <img src="{{.static_serve}}/css/usrcent/noavatar.gif" alt="用户头像"/>
+                <img src="{{.static_serve}}/css/ucenter/noavatar.gif" alt="用户头像"/>
             </div>
 
             <div class="profile">
