@@ -39,10 +39,10 @@ func (this *basicC) Profile(ctx *web.Context) {
 		"partner_host": conf.Host,
 		"member":       mm,
 		"entity":       template.JS(js),
-	}, "views/ucenter/profile.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/profile.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }
 
 func (this *basicC) Pwd(ctx *web.Context) {
@@ -54,10 +54,10 @@ func (this *basicC) Pwd(ctx *web.Context) {
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
-	}, "views/ucenter/pwd.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/pwd.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }
 
 func (this *basicC) Pwd_post(ctx *web.Context) {
@@ -110,10 +110,10 @@ func (this *basicC) Deliver(ctx *web.Context) {
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
-	}, "views/ucenter/deliver.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/deliver.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }
 
 func (this *basicC) Deliver_post(ctx *web.Context) {

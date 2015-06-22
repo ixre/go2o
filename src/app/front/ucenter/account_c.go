@@ -34,10 +34,10 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 		"record":  15,
 		"partner": p,
 		"member":  m,
-	}, "views/ucenter/account/income_log.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/account/income_log.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }
 
 func (this *accountC) IncomeLog_post(ctx *web.Context) {
@@ -78,10 +78,10 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 		"member":  m,
 		"account": acc,
 		"entity":  template.JS(js),
-	}, "views/ucenter/account/apply_cash.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/account/apply_cash.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }
 
 func (this *accountC) ApplyCash_post(ctx *web.Context) {
@@ -115,8 +115,8 @@ func (this *accountC) IntegralExchange(ctx *web.Context) {
 		"partner": p,
 		"member":  m,
 		"account": acc,
-	}, "views/ucenter/account/integral_exchange.html",
-		"views/ucenter/inc/header.html",
-		"views/ucenter/inc/menu.html",
-		"views/ucenter/inc/footer.html")
+	}, "views/ucenter/pc/account/integral_exchange.html",
+		"views/ucenter/pc/inc/header.html",
+		"views/ucenter/pc/inc/menu.html",
+		"views/ucenter/pc/inc/footer.html")
 }

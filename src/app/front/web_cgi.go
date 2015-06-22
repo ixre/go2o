@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/infrastructure/tool"
+	"io"
 	"os"
 	"strings"
 	"time"
@@ -48,30 +49,35 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 			"</title></head></html>")
 	}
 
-	buf := bufio.NewWriter(f)
-	bufSize := 100
-	buffer := make([]byte, bufSize)
+	if err == nil {
+		buf := bufio.NewWriter(f)
+		bufSize := 100
+		buffer := make([]byte, bufSize)
+		var n int
+		var leng int
+		for {
+			if n, err = fi.Read(buffer); err == io.EOF {
+				break
+			}
 
-	for {
-		n, err := fi.Read(buffer)
-		if err != nil {
-			break
+			if n != bufSize {
+				buf.Write(buffer[:n])
+			} else {
+				buf.Write(buffer)
+			}
+
+			leng += n
 		}
-		if n != bufSize {
-			buf.Write(buffer[:n])
-		} else {
-			buf.Write(buffer)
-		}
+
+		return []byte(fmt.Sprintf("{url:'%s',len:%d}",filePath,leng))
 	}
-
-	return []byte("{url:'" + filePath + "'}")
-
+	return []byte("{error:'" + err.Error() + "'}")
 }
 
 //获取位置
 func (this *WebCgi) GeoLocation(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	ip := r.RemoteAddr[:strings.Index(r.RemoteAddr, ":")]
-	addr := tool.GetLocation(ip)
-	w.Write([]byte(fmt.Sprintf(`{"ip":"%s","addr":"%s"}`, ip, addr)))
+	add := tool.GetLocation(ip)
+	w.Write([]byte(fmt.Sprintf(`{"ip":"%s","addr":"%s"}`, ip, add)))
 }

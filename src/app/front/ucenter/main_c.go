@@ -57,10 +57,10 @@ func (this *mainC) Index(ctx *web.Context) {
 
 			"sex": gfmt.BoolString(mm.Sex == 1, "先生",
 				gfmt.BoolString(mm.Sex == 2, "女士", "")),
-		}, "views/ucenter/index.html",
-			"views/ucenter/inc/header.html",
-			"views/ucenter/inc/menu.html",
-			"views/ucenter/inc/footer.html")
+		}, "views/ucenter/pc/index.html",
+			"views/ucenter/pc/inc/header.html",
+			"views/ucenter/pc/inc/menu.html",
+			"views/ucenter/pc/inc/footer.html")
 	}
 }
 

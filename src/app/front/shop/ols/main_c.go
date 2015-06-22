@@ -31,15 +31,15 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 }
 
 func (this *mainC) Index(ctx *web.Context) {
-	if this.Requesting(ctx) {
-		p := this.GetPartner(ctx)
-		m := this.GetMember(ctx)
+	if this.BaseC.Requesting(ctx) {
+		p := this.BaseC.GetPartner(ctx)
+		m := this.BaseC.GetMember(ctx)
 
 		if this.HandleIndexGo(ctx) {
 			return
 		}
 
-		siteConf := this.GetSiteConf(ctx)
+		siteConf := this.BaseC.GetSiteConf(ctx)
 		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
 		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
 

@@ -217,9 +217,9 @@ func (this *partnerService) DelMemberLevel(partnerId, levelId int) error {
 }
 
 // 获取等级
-func (this *partnerService) GetLevel(partnerId, levelId int) *valueobject.MemberLevel {
+func (this *partnerService) GetLevel(partnerId, level int) *valueobject.MemberLevel {
 	pt, _ := this._partnerRep.GetPartner(partnerId)
-	return pt.LevelManager().GetLevelById(levelId)
+	return pt.LevelManager().GetLevelByValue(level)
 }
 
 // 获取下一个等级
