@@ -24,10 +24,10 @@ func Handle(ctx *web.Context) {
 	switch front.GetBrownerDevice(ctx) {
 	default:
 	case front.DevicePC:
-		ctx.Items["device_view_dir"] = "ols"
+		ctx.Items["device_view_dir"] = "pc"
 		routes.Handle(ctx)
 	case front.DeviceTouchPad, front.DeviceMobile:
-		ctx.Items["device_view_dir"] = "mos"
+		ctx.Items["device_view_dir"] = "touchpad"
 		mos.Handle(ctx)
 	}
 }

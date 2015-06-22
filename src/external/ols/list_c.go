@@ -39,9 +39,9 @@ func (this *listC) Index(ctx *web.Context) {
 			"member":     mm,
 			"conf":       siteConf,
 		},
-			"views/shop/{device}/list.html",
-			"views/shop/{device}/inc/header.html",
-			"views/shop/{device}/inc/footer.html")
+			"views/shop/ols/{device}/list.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
 	}
 }
 

@@ -24,10 +24,10 @@ func Handle(ctx *web.Context) {
 	switch front.GetBrownerDevice(ctx) {
 		default:
 		case front.DevicePC:
-		ctx.Items["device_view_dir"] = "ols"
+		ctx.Items["device_view_dir"] = "pc"
 		routes.Handle(ctx)
 		case front.DeviceTouchPad, front.DeviceMobile:
-		ctx.Items["device_view_dir"] = "mos"
+		ctx.Items["device_view_dir"] = "mo"
 		moRoutes.Handle(ctx)
 	}
 }
@@ -44,6 +44,7 @@ func registerRoutes() {
 	routes.Register("account",ac)
 	routes.Register("login", lc)
 	routes.Add("/logout", mc.Logout)
+	routes.Add("/device", mc.changeDevice)
 	routes.Add("/", mc.Index)
 
 	// 注册触屏版路由
@@ -53,6 +54,7 @@ func registerRoutes() {
 	moRoutes.Register("account",ac)
 	moRoutes.Register("login", lc)
 	moRoutes.Add("/logout", mc.Logout)
+	moRoutes.Add("/device", mc.changeDevice)
 	moRoutes.Add("/", mc.Index)
 }
 

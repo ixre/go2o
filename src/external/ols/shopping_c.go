@@ -96,9 +96,9 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 			"deliverOpt":  deliverOpt,
 			"paymentOpt":  paymentOpt,
 		},
-			"views/shop/{device}/order_confirm.html",
-			"views/shop/{device}/inc/header.html",
-			"views/shop/{device}/inc/footer.html")
+			"views/shop/ols/{device}/order_confirm.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
 	}
 }
 
@@ -166,7 +166,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
 		"addrs": template.JS(js),
 		"sel":   selId,
-	}, "views/shop/{device}/profile/deliver_address.html")
+	}, "views/shop/ols/{device}/profile/deliver_address.html")
 }
 func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
@@ -266,9 +266,9 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 		"member":  m,
 		"conf":    conf,
 	},
-		"views/shop/{device}/order_empty.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+		"views/shop/ols/{device}/order_empty.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 }
 
 func (this *shoppingC) Order_finish(ctx *web.Context) {
@@ -305,9 +305,9 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 			"order":   order,
 			"payHtml": template.HTML(payHtml),
 		},
-			"views/shop/{device}/order_finish.html",
-			"views/shop/{device}/inc/header.html",
-			"views/shop/{device}/inc/footer.html")
+			"views/shop/ols/{device}/order_finish.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
 	}
 }
 

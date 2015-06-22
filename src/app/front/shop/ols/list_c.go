@@ -72,9 +72,9 @@ func (this *ListC) AllCate(ctx *web.Context) {
 		"conf":      siteConf,
 		"cate_html": template.HTML(buf.String()),
 	},
-		"views/shop/{device}/category.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+		"views/shop/ols/{device}/category.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 }
 
 func (this *ListC) getIdArray(path string) []int {
@@ -137,9 +137,9 @@ func (this *ListC) List_Index(ctx *web.Context) {
 			"items": template.HTML(buf.Bytes()),
 			"pager": template.HTML(pagerHtml),
 		},
-			"views/shop/{device}/list.html",
-			"views/shop/{device}/inc/header.html",
-			"views/shop/{device}/inc/footer.html")
+			"views/shop/ols/{device}/list.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
 	}
 }
 
@@ -185,8 +185,8 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 			"promPrice":    template.HTML(promPrice),
 			"promDescribe": template.HTML(promDescribe),
 		},
-			"views/shop/{device}/goods.html",
-			"views/shop/{device}/inc/header.html",
-			"views/shop/{device}/inc/footer.html")
+			"views/shop/ols/{device}/goods.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
 	}
 }

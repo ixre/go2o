@@ -44,9 +44,9 @@ func (this *UserC) Login(ctx *web.Context) {
 		"conf":     siteConf,
 		"tipStyle": tipStyle,
 	},
-		"views/shop/{device}/login.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+		"views/shop/ols/{device}/login.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 
 }
 
@@ -75,9 +75,9 @@ func (this *UserC) Register(ctx *web.Context) {
 		"title":   "会员注册－" + siteConf.SubTitle,
 		"conf":    siteConf,
 	},
-		"views/shop/{device}/register.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+		"views/shop/ols/{device}/register.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 
 }
 

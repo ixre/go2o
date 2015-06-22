@@ -54,9 +54,9 @@ func (this *mainC) Index(ctx *web.Context) {
 				"title":   siteConf.IndexTitle,
 				"shops":   template.HTML(shops),
 			},
-				"views/shop/{device}/index.html",
-				"views/shop/{device}/inc/header.html",
-				"views/shop/{device}/inc/footer.html")
+				"views/shop/ols/{device}/index.html",
+				"views/shop/ols/{device}/inc/header.html",
+				"views/shop/ols/{device}/inc/footer.html")
 		}
 	}
 }

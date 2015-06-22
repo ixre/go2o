@@ -49,6 +49,6 @@ func handleCustomError(w http.ResponseWriter, ctx gof.App, err error) {
 			"error":  err.Error(),
 			"statck": template.HTML(strings.Replace(string(debug.Stack()), "\n", "<br />", -1)),
 		},
-			"views/shop/{device}/error.html")
+			"views/shop/ols/{device}/error.html")
 	}
 }

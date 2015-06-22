@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+    <title>Internal Server Error - Go2o</title>
+    <link rel="Stylesheet" href="{{.static_serve}}/css/page.css" type="text/css" />
+    <style type="text/css">
+        body{background:#FFF;font-size:100%;color:#333;margin:0 2%;}
+        h1{color:red;font-size:28px;border-bottom:solid 1px #ddd;line-height:80px;}
+        div.except-panel p{margin:20px 0;}
+        div.except-panel div.summary{}
+        div.except-panel p.message{font-size:24px;}
+        div.except-panel p.contact{color:#666;font-size:18px;}
+        div.except-panel p.stack{padding-top:30px;}
+        div.except-panel p.stack em{font-size:18px;font-style: normal;}
+        div.except-panel pre{font-family: Sans,Arail;
+            border:solid 1px #ddd;padding:20px;
+            font-size:16px;background:#F5F5F5;
+            line-height: 150%;color:#888;}
+        div.except-panel .hidden{display:none;}
+    </style>
+</head>
+<body>
+<h1>系统发生故障，请联系管理员解决！</h1>
+<div class="except-panel">
+    <div class="summary">
+        <p class="message">错误描述：{{.error}}</p>
+        <p class="contact">请联系管理员QQ:959398298  或 <a href="/">回到首页</a></p>
+    </div>
+    <p class="stack">
+        <em>堆栈信息：</em><br/>
+        <pre>
+            {{.stack}}
+        </pre>
+    </p>
+</div>
+</body>
+</html>

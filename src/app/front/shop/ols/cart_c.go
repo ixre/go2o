@@ -99,7 +99,7 @@ func (this *CartC) cart_RemoveItem(ctx *web.Context,
 
 func (this *CartC) Index(ctx *web.Context) {
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{},
-		"views/shop/{device}/cart.html",
-		"views/shop/{device}/inc/header.html",
-		"views/shop/{device}/inc/footer.html")
+		"views/shop/ols/{device}/cart.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 }
