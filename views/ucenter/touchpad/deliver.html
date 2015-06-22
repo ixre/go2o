@@ -59,13 +59,13 @@
             </div>
         </template>
 
-        <div id="addr_panel">
+        <div id="address_panel">
 
         </div>
 
         <div class="clearfix"></div>
 
-        <div class="btn_newaddr" id="btn_newaddr" style="margin:20px 8px;">
+        <div class="btn_new_address" id="btn_new_address" style="margin:20px 8px;">
             <a class="button" href="javascript:;">+添加新的收货地址</a>
         </div>
 
@@ -118,7 +118,7 @@
     function toggleNewAdd(){
         $JS.animation.toggleHeight(newPanel,null,25);
     }
-    $JS.$('btn_newaddr').onclick=function(){
+    $JS.$('btn_new_address').onclick=function(){
         $JS.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();

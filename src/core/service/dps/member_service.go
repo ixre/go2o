@@ -165,12 +165,12 @@ func (this *memberService) QueryPagerOrder(memberId, page, size int,
 }
 
 /*********** 收货地址 ***********/
-func (this *memberService) GetDeliverAddrs(memberId int) []*member.DeliverAddress {
+func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddress {
 	return this._memberRep.GetDeliverAddrs(memberId)
 }
 
 //获取配送地址
-func (this *memberService) GetDeliverAddrById(memberId,
+func (this *memberService) GetDeliverAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	v := m.GetDeliver(deliverId).GetValue()
@@ -178,7 +178,7 @@ func (this *memberService) GetDeliverAddrById(memberId,
 }
 
 //保存配送地址
-func (this *memberService) SaveDeliverAddr(memberId int, e *member.DeliverAddress) (int, error) {
+func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAddress) (int, error) {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	var v member.IDeliver
 	if e.Id > 0 {
@@ -191,7 +191,7 @@ func (this *memberService) SaveDeliverAddr(memberId int, e *member.DeliverAddres
 }
 
 //删除配送地址
-func (this *memberService) DeleteDeliverAddr(memberId int, deliverId int) error {
+func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	return m.DeleteDeliver(deliverId)
 }

@@ -11,13 +11,11 @@ package ucenter
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
-	"go2o/src/core/service/goclient"
 	"html/template"
 	"strconv"
 )
@@ -116,48 +114,36 @@ func (this *basicC) Deliver(ctx *web.Context) {
 
 func (this *basicC) Deliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.DynamicToken)
-	if err != nil {
-		ctx.ResponseWriter.Write([]byte("{error:'错误:" + err.Error() + "'}"))
-		return
-	}
-	js, _ := json.Marshal(addrs)
+	add := dps.MemberService.GetDeliverAddress(m.Id)
+	js, _ := json.Marshal(add)
 	ctx.ResponseWriter.Write([]byte(`{"rows":` + string(js) + `}`))
 }
 
 func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	w, r := ctx.ResponseWriter, ctx.Request
+	 r :=  ctx.Request
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := dps.MemberService.SaveDeliverAddr(m.Id, &e)
-	if err == nil {
-		if b {
-			w.Write([]byte(`{"result":true}`))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
+	_, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
+	if err != nil {
+		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
 	} else {
-		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+		this.resultOutput(ctx, gof.Message{Result: true})
 	}
 }
 
 func (this *basicC) DeleteDeliver_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
 
-	b, err := dps.MemberService.DeleteDeliverAddr(m.Id, id)
-	if err == nil {
-		if b {
-			w.Write([]byte(`{"result":true}`))
-		} else {
-			w.Write([]byte(`{"result":false}`))
-		}
+	err := dps.MemberService.DeleteDeliverAddress(m.Id, id)
+	if err != nil {
+		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
 	} else {
-		w.Write([]byte(fmt.Sprintf(`{"result":false,"message":"%s"}`, err.Error())))
+		this.resultOutput(ctx, gof.Message{Result: true})
 	}
 }

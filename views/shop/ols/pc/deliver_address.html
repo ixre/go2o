@@ -37,12 +37,12 @@
     </div>
 </template>
 
-<div id="addr_panel">
+<div id="address_panel">
 
 </div>
 
 <br />
-<div class="btn_newaddr" id="btn_newaddr">
+<div class="btn_new_address" id="btn_new_address">
     &nbsp;<a href="javascript:;">+添加新的收货地址</a>
 </div>
 <div id="new_panel"></div>
@@ -57,7 +57,7 @@
     function toggleNewAdd(){
         $JS.animation.toggleHeight(newPanel,null,15);
     }
-    $JS.$('btn_newaddr').onclick=function(){
+    $JS.$('btn_new_address').onclick=function(){
         $JS.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();
@@ -78,7 +78,7 @@
         for(var i=0;i<addrs.length;i++){
             html += $JS.template(tpl,addrs[i]);
         }
-        $JS.$('addr_panel').innerHTML = html;
+        $JS.$('address_panel').innerHTML = html;
         if(addrs.length != 0){
             var addr = null;
             if(selId > 0) {
@@ -88,7 +88,7 @@
                 selId = addrs[0].Id;
             }
         }
-        $JS.json.bind('addr_panel', {AddrId: selId});
+        $JS.json.bind('address_panel', {AddrId: selId});
         newAddr();
     }else{
         newAddr();
@@ -134,7 +134,7 @@
 
 
     $JS.$('cb1').onclick=function(){
-        var data = $JS.json.toObject('addr_panel');
+        var data = $JS.json.toObject('address_panel');
         var addrId = data.AddrId;
         var addr = getSingleAddr(addrId);
         if(addr != null){

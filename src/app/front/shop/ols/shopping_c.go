@@ -154,7 +154,7 @@ func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
 	}
 	r := ctx.Request
 	m := this.GetMember(ctx)
-	addrs := dps.MemberService.GetDeliverAddrs(m.Id)
+	addrs := dps.MemberService.GetDeliverAddress(m.Id)
 	var selId int
 	if sel := r.URL.Query().Get("sel"); sel != "" {
 		selId, _ = strconv.Atoi(sel)
@@ -176,7 +176,7 @@ func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
-	b, err := dps.MemberService.SaveDeliverAddr(m.Id, &e)
+	b, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 	if err == nil {
 		if b > 0 {
 			w.Write([]byte(`{"result":true}`))

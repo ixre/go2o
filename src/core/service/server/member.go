@@ -174,7 +174,7 @@ func (this *Member) GetDeliverAddrs(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	r.Result = true
-	r.Data = dps.MemberService.GetDeliverAddrs(memberId)
+	r.Data = dps.MemberService.GetDeliverAddress(memberId)
 	return nil
 }
 
@@ -188,7 +188,7 @@ func (this *Member) GetDeliverAddrById(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	r.Result = true
-	r.Data = dps.MemberService.GetDeliverAddrById(memberId, addrId)
+	r.Data = dps.MemberService.GetDeliverAddressById(memberId, addrId)
 	return nil
 }
 
@@ -205,7 +205,7 @@ func (this *Member) SaveDeliverAddr(m *jsv.Args, r *jsv.Result) error {
 	}
 	e.MemberId = memberId
 
-	_, err = dps.MemberService.SaveDeliverAddr(memberId, &e)
+	_, err = dps.MemberService.SaveDeliverAddress(memberId, &e)
 	if err != nil {
 		jsv.LogErr(err)
 		r.Message = err.Error()
@@ -225,7 +225,7 @@ func (this *Member) DeleteDeliverAddr(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	if err = dps.MemberService.DeleteDeliverAddr(memberId, addrId); err == nil {
+	if err = dps.MemberService.DeleteDeliverAddress(memberId, addrId); err == nil {
 		r.Result = true
 	} else {
 		r.Data = err.Error()
