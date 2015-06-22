@@ -84,12 +84,16 @@ func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
 
-
-// 执行模板
-func (this *baseC) ExecuteTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
+func executeTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
 	newFiles := make([]string, len(files))
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
 	ctx.App.Template().Execute(ctx.ResponseWriter, d, newFiles...)
+}
+
+
+// 执行模板
+func (this *baseC) ExecuteTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
+	executeTemplate(ctx,d,files...)
 }

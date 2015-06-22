@@ -25,24 +25,24 @@ type orderC struct {
 }
 
 func (this *orderC) Complete(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
-		"views/ucenter/pc/order/complete.html")
+	this.ExecuteTemplate(ctx, nil,
+		"views/ucenter/{device}/order/complete.html")
 }
 
 func (this *orderC) Orders(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	this.ExecuteTemplate(ctx,
 		gof.TemplateDataMap{
 			"partner":      p,
 			"conf":         conf,
 			"partner_host": conf.Host,
 			"member":       m,
-		}, "views/ucenter/pc/order/order_list.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+		}, "views/ucenter/{device}/order/order_list.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *orderC) Completed(ctx *web.Context) {
@@ -50,7 +50,7 @@ func (this *orderC) Completed(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	this.ExecuteTemplate(ctx,
 		gof.TemplateDataMap{
 			"partner":      p,
 			"conf":         conf,
@@ -58,10 +58,10 @@ func (this *orderC) Completed(ctx *web.Context) {
 			"member":       m,
 			"state":        enum.ORDER_COMPLETED,
 		},
-		"views/ucenter/pc/order/order_completed.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+		"views/ucenter/{device}/order/order_completed.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *orderC) Canceled(ctx *web.Context) {
@@ -69,7 +69,7 @@ func (this *orderC) Canceled(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	this.ExecuteTemplate(ctx,
 		gof.TemplateDataMap{
 			"partner":      p,
 			"conf":         conf,
@@ -77,10 +77,10 @@ func (this *orderC) Canceled(ctx *web.Context) {
 			"member":       m,
 			"state":        enum.ORDER_CANCEL,
 		},
-		"views/ucenter/pc/order/order_cancel.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+		"views/ucenter/{device}/order/order_cancel.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *orderC) Orders_post(ctx *web.Context) {

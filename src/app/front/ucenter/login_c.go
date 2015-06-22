@@ -24,7 +24,7 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Index(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/ucenter/pc/login.html")
+	executeTemplate(ctx, nil, "views/ucenter/{device}/login.html")
 }
 func (this *loginC) Index_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter

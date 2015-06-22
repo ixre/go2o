@@ -29,15 +29,15 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":    conf,
 		"record":  15,
 		"partner": p,
 		"member":  m,
-	}, "views/ucenter/pc/account/income_log.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/account/income_log.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *accountC) IncomeLog_post(ctx *web.Context) {
@@ -78,10 +78,10 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 		"member":  m,
 		"account": acc,
 		"entity":  template.JS(js),
-	}, "views/ucenter/pc/account/apply_cash.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/account/apply_cash.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *accountC) ApplyCash_post(ctx *web.Context) {
@@ -109,14 +109,14 @@ func (this *accountC) IntegralExchange(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":    conf,
 		"record":  15,
 		"partner": p,
 		"member":  m,
 		"account": acc,
-	}, "views/ucenter/pc/account/integral_exchange.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/account/integral_exchange.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }

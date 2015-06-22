@@ -33,31 +33,31 @@ func (this *basicC) Profile(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
 	js, _ := json.Marshal(mm)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":      p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
 		"entity":       template.JS(js),
-	}, "views/ucenter/pc/profile.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/profile.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *basicC) Pwd(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	mm := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":      p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
-	}, "views/ucenter/pc/pwd.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/pwd.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *basicC) Pwd_post(ctx *web.Context) {
@@ -105,15 +105,15 @@ func (this *basicC) Deliver(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":      p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
-	}, "views/ucenter/pc/deliver.html",
-		"views/ucenter/pc/inc/header.html",
-		"views/ucenter/pc/inc/menu.html",
-		"views/ucenter/pc/inc/footer.html")
+	}, "views/ucenter/{device}/deliver.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *basicC) Deliver_post(ctx *web.Context) {
