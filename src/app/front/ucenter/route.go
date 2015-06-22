@@ -27,7 +27,7 @@ func Handle(ctx *web.Context) {
 		ctx.Items["device_view_dir"] = "pc"
 		routes.Handle(ctx)
 		case front.DeviceTouchPad, front.DeviceMobile:
-		ctx.Items["device_view_dir"] = "mo"
+		ctx.Items["device_view_dir"] = "touchpad"
 		moRoutes.Handle(ctx)
 	}
 }

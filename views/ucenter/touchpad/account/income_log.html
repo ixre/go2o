@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<head>
+    <title>订单返现_{{.partner.Name}}-网上订餐|网上外卖平台</title>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/usrcent/usrcent.css?v={{.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+<div class="panel page-main">
+    <div class="side">
+        {{template "menu"}}
+    </div>
+
+
+<div class="main">
+
+
+    <h1>订单返现</h1>
+
+    <div class="line"></div>
+
+    {{if .record}}
+        <div id="dg" class="ui-table"></div><div id="pager"></div>
+
+        <script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
+        <script type="text/javascript">
+            var _dg = $JS.grid('dg', {
+                url: location.href,
+                data: {page:$JS.request('page')||1,size:10},
+                idField: 'id',
+                columns: [
+                    { field: 'record_time', title: '产生时间', width: 120},
+                    { field: 'fee', title: '收入金额', width: 80,align:'center'},
+                    {
+
+                        field: 'log', title: '详细', formatter: function (val, row, index) {
+                            return val.replace("\n","<br />");
+
+                    }
+                    }
+                ],
+                loaded: function (data) {
+                    var tables = document.getElementsByTagName('TABLE');
+                    J.table.dynamic(tables[1], false);
+                    tables[1].className= '';
+
+                    //加载分页
+                    this.panel.nextSibling.innerHTML = data.text;
+
+                }
+            });
+            _dg.resize();
+
+            function gp(p){
+                _dg.data.page = p;
+                _dg.reload();
+            }
+        </script>
+    {{else}}
+        <div>无收入记录</div>
+    {{end}}
+</div>
+</div>
+
+{{template "footer"$}}
+
+</body>
+</html>
