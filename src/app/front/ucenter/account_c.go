@@ -31,7 +31,6 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":    conf,
-		"record":  15,
 		"partner": p,
 		"member":  m,
 	}, "views/ucenter/{device}/account/income_log.html",
@@ -61,17 +60,11 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
-	_, w := ctx.Request, ctx.ResponseWriter
-	acc, err := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
-	bank, err := goclient.Member.GetBankInfo(m.Id, m.DynamicToken)
-
-	if err != nil {
-		w.Write([]byte("error:" + err.Error()))
-		return
-	}
+	acc := dps.MemberService.GetAccount(m.Id)
+	bank := dps.MemberService.GetBank(m.Id)
 
 	js, _ := json.Marshal(bank)
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":    conf,
 		"record":  15,
 		"partner": p,

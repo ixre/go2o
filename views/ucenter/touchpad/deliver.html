@@ -20,7 +20,7 @@
         <div id="dg" class="ui-table"></div>
 
 
-        <template id="addrTpl">
+        <template id="addressTpl">
             <div class="form" id="form-deliver">
                 <input type="hidden" field="Id" value="0"/>
                 <div class="fl">
@@ -112,7 +112,7 @@
     _dg.resize();
 
 
-    var addrTpl = $JS.$('addrTpl').innerHTML;
+    var addressTpl = $JS.$('addressTpl').innerHTML;
     var newPanel = $JS.$('new_panel');
 
     function toggleNewAdd(){
@@ -127,7 +127,7 @@
 
     function newAddr(show) {
         $JS.style(newPanel, {display: 'none'});
-        newPanel.innerHTML = addrTpl;
+        newPanel.innerHTML = addressTpl;
         $JS.validator.init();
     }
 

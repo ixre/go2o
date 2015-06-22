@@ -1,4 +1,4 @@
-<template id="addrTpl">
+<template id="addressTpl">
     <div class="form" id="form-deliver">
         <input type="hidden" field="Id" value="0"/>
         <div class="fl">
@@ -49,7 +49,7 @@
 
 <script type="text/javascript">
     var addrs = {{.addrs}};
-    var addrTpl = $JS.$('addrTpl').innerHTML;
+    var addressTpl = $JS.$('addressTpl').innerHTML;
     var newPanel = $JS.$('new_panel');
     var selId = {{.sel}};
 
@@ -65,7 +65,7 @@
 
     function newAddr(show){
         $JS.style(newPanel,{display:'none'});
-        newPanel.innerHTML=addrTpl;
+        newPanel.innerHTML=addressTpl;
         $JS.validator.init();
     }
 
