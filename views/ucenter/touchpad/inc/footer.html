@@ -1,32 +1,41 @@
 {{define "footer"}}
-    <div class="clearfix"></div>
     <div class="page-footer">
-        <div class="line" style="height:0"></div>
-        <div class="panel">
-            2014 &copy;{{.partner.Name}}&nbsp;版权所有
-
-            &nbsp;&nbsp;
-            <strong>
-                <a href="/device?device_type=1">电脑版</a>&nbsp;&nbsp;
-                <a href="/device?device_type=3">触屏版</a>
-            </strong>
+        <div class="items">
+            <ul>
+                <li>
+                    <a href="/"><i class="iconfont">&#xe600;</i>
+                    <span class="txt">首页</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/order/orders.htm"><i class="iconfont">&#xe607;</i>
+                        <span class="txt">订单</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/account/ApplyCash.htm"><i class="iconfont">&#xe606;</i>
+                        <span class="txt">账户</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/basic/profile.htm"><i class="iconfont">&#xe602;</i>
+                        <span class="txt">资料</span></a>
+                    <span class="split"></span>
+                </li>
+            </ul>
         </div>
     </div>
 
     <script type="text/javascript">
-      var menus = $JS.$('navs').getElementsByTagName('A');
-      for(var i=0;i<menus.length;i++){
-        var e = menus[i];
-        if(location.href.indexOf(e.href)!=-1){
-            e.parentNode.className='current';
-            for(var j=0;j<menus.length && j!= i;j++) {
-                e.parentNode.className = '';
-            }
+        var btnBack = document.getElementById('btn_back');
+     if(location.pathname=="/"){
+         btnBack.className='btn_button btn_back hidden';
+     }
+        btnBack.onclick=function(){
+          window.history.go(-1);
+        };
 
-            break;
-        }else{
-        }
-      }
-  </script>
+        document.getElementById('page-title').innerHTML=document.title;
+    </script>
 
 {{end}}

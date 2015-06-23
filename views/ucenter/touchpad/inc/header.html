@@ -2,57 +2,13 @@
 
 <div class="page-top">
     <div class="panel">
-        <span class="left">
-
+        <span id="btn_back" class="btn_button  btn_back left"><</span>
+        <span class="left" id="page-title">
+            会员中心
         </span>
         <span class="right links">
-             <div class="usr">
-            欢迎您：
-            <span id="usrinfo">{{.member.Name}}</span>
-            &nbsp;[
-            <a href="/logout">退出</a>
-            ]
-            </div>
+            <span id="btn_close" class="btn_button btn_close">X</span>
         </span>
-        <div class="clearfix"></div>
-        <div class="top-attach hidden"></div>
-    </div>
-</div>
-
-
-<div class="page-header">
-    <div class="panel">
-        <a href="javascript:;" class="logo">
-            <img src="{{.img_serve}}/{{.conf.Logo}}" alt="{{.partner.Name}}" />
-            <h1>{{.partner.Name}}</h1>
-        </a>
-        <span class="right">
-        </span>
-        <div class="clearfix"></div>
-    </div>
-</div>
-<div id="navigator" class="page-navigator">
-    <div class="left"></div>
-    <div class="right"></div>
-    <div class="navs">
-        <div class="current"></div>
-        <ul>
-            <li>
-                <a href="/" title="首页">首页</a>
-            </li>
-            <li>
-                <a href="http://{{.conf.Host}}/?go=buy" target="_blank">在线订餐</a>
-            </li>
-            <li>
-                <a href="javascript:;">账户充值</a>
-            </li>
-            <li>
-                <a href="http://member.{{.domain}}/account/IntegralExchange.htm">积分兑换</a>
-            </li>
-            <li>
-                <a href="http://{{.conf.Host}}/service.htm">客户服务</a>
-            </li>
-        </ul>
         <div class="clearfix"></div>
     </div>
 </div>

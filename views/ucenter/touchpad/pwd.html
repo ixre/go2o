@@ -1,44 +1,39 @@
 <!DOCTYPE html>
 <head>
     <title>修改密码_{{.partner.Name}}</title>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
 </head>
 <body>
 
 {{template "header"$}}
 
 <div class="panel page-main">
-    <div class="side">
-        {{template "menu"}}
-    </div>
-
-    <div class="main">
-
-        <h1>修改密码</h1>
-
-        <div class="line"></div>
+    <div class="page-main">
+        <div class="h10"></div>
         <div id="pl" class="summary"></div>
 
         <div id="form1" class="form">
             <div class="fl">
                 <div class="label">原密码：</div>
                 <div class="in">
-                    <input type="password" class="ui-validate" required="true" field="OldPwd"
+                    <input class="box" type="password" class="ui-validate" required="true" field="OldPwd"
                            summary="{required:'原密码不能为空'}"/><span class="tip"></span>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">新的密码：</div>
                 <div class="in">
-                    <input type="password" class="ui-validate" field="NewPwd" required="true"
+                    <input class="box" type="password" class="ui-validate" field="NewPwd" required="true"
                            summary="{required:'密码不能为空'}"/>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">重复密码：</div>
                 <div class="in">
-                    <input type="password" class="ui-validate" required="true" field="RePwd"
+                    <input class="box" type="password" class="ui-validate" required="true" field="RePwd"
                            summary="{required:'请再次输入密码!'}"/>
                 </div>
             </div>
@@ -46,7 +41,7 @@
             <div class="fl">
                 <div class="label"></div>
                 <div class="in">
-                    <input type="button" value="修改" onclick="saveData()"/>
+                    <input class="box" class="btn" type="button" value="修改" onclick="saveData()"/>
                 </div>
             </div>
 

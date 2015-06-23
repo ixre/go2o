@@ -57,7 +57,7 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 }
 
 // 类目，限移动端
-func (this *ListC) AllCate(ctx *web.Context) {
+func (this *ListC) All_cate(ctx *web.Context) {
 	p := this.BaseC.GetPartner(ctx)
 	mm := this.BaseC.GetMember(ctx)
 	siteConf := this.BaseC.GetSiteConf(ctx)

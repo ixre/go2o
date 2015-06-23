@@ -1,32 +1,38 @@
 <!DOCTYPE html>
 <head>
-    <title>配送地址_{{.partner.Name}}</title>
+    <title>收货地址</title>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
 </head>
 <body>
 
 {{template "header"$}}
 
 <div class="panel page-main">
-    <div class="side">
-        {{template "menu"}}
-    </div>
+    <div class="page-main">
+        <div class="h10"></div>
 
-    <div class="main">
-        <h1>个人资料</h1>
-        <div class="line"></div>
 
+        <div class="btn_new_address" id="btn_new_address" style="margin:0 8px;">
+            <a class="button" href="javascript:;">+添加新的收货地址</a>
+        </div>
+
+        <div class="clear-fix"></div>
+
+        <div id="new_panel"></div>
+
+        <div class="h10"></div>
         <div id="dg" class="ui-table"></div>
 
 
         <template id="addressTpl">
-            <div class="form" id="form-deliver">
+            <div class="form deliver-form" id="form-deliver">
                 <input type="hidden" field="Id" value="0"/>
                 <div class="fl">
                     <div class="label">姓名：</div>
                     <div class="in">
-                        <input class="input ui-validate" type="text" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
+                        <input class="box ui-validate" type="text" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
                                summary="{'regex':'姓名为2-4位中文'}" />
                     </div>
                 </div>
@@ -34,7 +40,7 @@
                 <div class="fl">
                     <div class="label">手机号码：</div>
                     <div class="in">
-                        <input class="input ui-validate" regex="^(13[0-9]|15[1|2|3|4|5|6|8|9]|18[0|6|7|8|9])(\d{8})$" field="Phone"
+                        <input class="box ui-validate" regex="^(13[0-9]|15[1|2|3|4|5|6|8|9]|18[0|6|7|8|9])(\d{8})$" field="Phone"
                                summary="{'regex':'手机号码不正确','required':'手机号码不能为空'}"/>
                         <div><span class="tip">请正确填写</span></div>
                     </div>
@@ -43,7 +49,7 @@
                 <div class="fl">
                     <div class="label">地址：</div>
                     <div class="in">
-                        <input class="input ui-validate" required="true" field="Address" style="width:300px"
+                        <input class="box ui-validate" required="true" field="Address" style="width:300px"
                                summary="{'0':'地址不能为空'}" />
                     </div>
                 </div>
@@ -51,8 +57,8 @@
                 <div class="fl">
                     <div class="label"></div>
                     <div class="in">
-                        <input type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
-                        <input type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
+                        <input class="btn" type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
+                        <input class="btn" type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
                     </div>
                 </div>
 
@@ -63,14 +69,6 @@
 
         </div>
 
-        <div class="clearfix"></div>
-
-        <div class="btn_new_address" id="btn_new_address" style="margin:20px 8px;">
-            <a class="button" href="javascript:;">+添加新的收货地址</a>
-        </div>
-
-
-        <div id="new_panel"></div>
 
     </div>
 </div>

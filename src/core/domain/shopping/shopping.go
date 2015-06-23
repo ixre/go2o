@@ -166,7 +166,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	}
 
 	cart, err = this.GetCurrentCart(memberId)
-	fmt.Println(err, "----", cart == nil, len(cart.GetValue().Items), cart.GetDomainId(), cart.GetValue().CartKey)
+
 	if err != nil || cart == nil || len(cart.GetValue().Items) == 0 {
 		return nil, m, cart, shopping.ErrEmptyShoppingCart
 	}

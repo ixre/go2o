@@ -21,10 +21,10 @@ func CartDetails(c *dto.ShoppingCart) string {
 		<table cellspacing="1" class="cart_details_table">
 			<thead>
 				<tr>
-					<td>商品</td>
-					<td>价格</td>
-					<td>数量</td>
-					<td>总价</td>
+					<td><span class="t">商品</span></td>
+					<td><span class="t">价格</span></td>
+					<td><span class="t">数量</span></td>
+					<td><span class="t">总价</span></td>
 				</tr>
 			</thead>
 		`)
