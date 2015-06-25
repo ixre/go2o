@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 	"time"
+	"fmt"
 )
 
 type memberService struct {
@@ -122,6 +123,8 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 
 	m, _ := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
+
+	fmt.Println("----------",rl.RegisterPartnerId,partnerId)
 	if rl.RegisterPartnerId != partnerId {
 		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}

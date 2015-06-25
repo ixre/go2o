@@ -62,7 +62,7 @@ func registerRoutes() {
 	// 购物车接口
 	routes.Add("/cart_api_v1", cc.CartApiHandle)
 	// 支付
-	routes.Add("^/pay/create", pc.Create)
+	routes.Add("/pay/create/*", pc.Create)
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/user/jump_m", uc.JumpToMCenter)

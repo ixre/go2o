@@ -15,22 +15,22 @@
 //
 
 /*
-function cartItem(){
-    this.id = 0;
-    this.salePrice = 0;
-    this.price = 0;
-    this.num = 0;
-    this.title = '';
-    this.image = '';
-}
+ function cartItem(){
+ this.id = 0;
+ this.salePrice = 0;
+ this.price = 0;
+ this.num = 0;
+ this.title = '';
+ this.image = '';
+ }
 
-function cartData(){
-    this.total = 0;
-    this.fee = 0;
-    this.totalNum = 0;
-    this.isBought = 0;
-    this.items = new Array();
-}*/
+ function cartData(){
+ this.total = 0;
+ this.fee = 0;
+ this.totalNum = 0;
+ this.isBought = 0;
+ this.items = new Array();
+ }*/
 
 function shoppingCart() {
     this.key = null;
@@ -41,7 +41,7 @@ function shoppingCart() {
     this.data = '';                         // 数据字符串
     this.cookieManaged = false;             // 自动管理cookie
 
-   // this.cartData = new cartData();
+    // this.cartData = new cartData();
 
 
     this.addQua = function (goodsId) {
@@ -186,10 +186,12 @@ shoppingCart.prototype.addItem = function (args) {
             + args.id + '\',1)">-</a><input class="cart_q" value="' + args.num + '" type="text"/><a class="plus_btn" href="javascript:;" onclick="return cart.add(\''
             + args.id + '\',1)">+</a></p>';
 
-        tr.appTd(nameTdHtml).appTd('￥' + args.price,'center').appTd('￥<span>' + args.price * args.num+'<span>','goods-fee center')
-            .appTd('<a class="remove_btn" href="javascript:void(0)" onclick="cart.remove(\'' + args.id + '\')" class="cart_remove">x</a>', 'center');
+        tr.appTd(nameTdHtml,"goods-title").appTd('￥' + args.price,'goods-price center')
+            .appTd('￥<span>' + args.price * args.num+'<span>','goods-fee center')
+            .appTd('<a class="remove_btn" href="javascript:void(0)" onclick="cart.remove(\''
+            + args.id + '\')" class="cart_remove">x</a>', 'goods-del center');
 
-        this.cp.getElementsByTagName('tbody')[0].appendChild(tr);
+        this.cp.getElementsByTagName('TBODY')[0].appendChild(tr);
 
         //触发事件
         this.totalMath();
@@ -285,7 +287,7 @@ shoppingCart.prototype.remove = function (goodsId, num) {
                     t.notify(obj.message);
                 } else {
                     if (num >= totalNum) {
-                            t.removeAll(goodsId);
+                        t.removeAll(goodsId);
                     } else {
                         t.subQua(goodsId, num);
                     }

@@ -159,5 +159,5 @@ func (this *LevelManager) getMaxLevelValue() int {
 
 // 根据经验值获取等级
 func (this *LevelManager) GetLevelValueByExp(exp int) int {
-	return this._rep.GetLevelValueByExp(exp)
+	return this._rep.GetLevelValueByExp(this._partnerId,exp)
 }

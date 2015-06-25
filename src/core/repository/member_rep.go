@@ -170,12 +170,12 @@ func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
 }
 
 // 获取积分对应的等级
-func (this *MemberRep) GetLevelValueByExp(exp int) int {
+func (this *MemberRep) GetLevelValueByExp(partnerId int,exp int) int {
 	var levelId int
-
-	this.Connector.ExecScalar(`SELECT conf_member_level.value FROM conf_member_level
-	 	where require_exp <= ? AND enabled=1 ORDER BY require_exp DESC LIMIT 0,1`,
-		&levelId, exp)
+	this.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
+	 	where lv.partner_id=? AND lv.require_exp <= ? AND lv.enabled=1
+	 	 ORDER BY lv.require_exp DESC LIMIT 0,1`,
+		&levelId,partnerId,exp)
 	return levelId
 
 }
