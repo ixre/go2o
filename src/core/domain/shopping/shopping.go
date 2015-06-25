@@ -84,52 +84,71 @@ func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 }
 
 func (this *Shopping) GetShoppingCart(buyerId int, cartKey string) shopping.ICart {
-	var c shopping.ICart
-	var mc shopping.ICart
 
-	var skIsNil = len(cartKey) == 0
-	var mmNotNil = buyerId != 0
 
-	if mmNotNil {
-		mc, _ = this.GetCurrentCart(buyerId)
-		if mc != nil && (skIsNil || mc.GetValue().CartKey == cartKey) {
-			return mc
+	var hasOutCart = len(cartKey) != 0
+	var hasBuyer = buyerId != 0
+
+	var memCart	shopping.ICart = nil    	// 消费者的购物车
+	var outCart shopping.ICart = nil		// 通过cartKey传入的购物车
+
+	if hasBuyer {
+		// 如果没有传递cartKey ，或者传递的cart和会员绑定的购物车相同，直接返回
+		if memCart, _ = this.GetCurrentCart(buyerId);memCart != nil{
+			if !hasOutCart || memCart.GetValue().CartKey == cartKey{
+				return memCart
+			}
+		}else{
+			memCart = this.NewCart(buyerId)
 		}
 	}
 
-	if !skIsNil {
-		// 根据Key获取购物车
-		c, _ = this.GetCartByKey(cartKey)
-		if c == nil {
-			// 新的购物车不存在，直接返回会员的购物车
-			if mc != nil {
-				return mc
-			}
-		} else {
-			cv := c.GetValue()
-			//合并购物车
-			if cv.BuyerId <= 0 {
-				// 设置购买者
-				if mmNotNil {
-					c.SetBuyer(buyerId)
-				}
-			} else if mc != nil && cv.BuyerId == buyerId {
-				// 合并购物车
-				nc, err := mc.Combine(c)
-				if err == nil {
-					nc.Save()
-					return nc
-				}
-				return mc
-			}
+	if hasOutCart {
+		outCart,_ = this.GetCartByKey(cartKey)
+	}
 
-			// 如果没有购买，则返回
-			return c
+	// 合并购物车
+	if outCart != nil {
+		if bid := outCart.GetValue().BuyerId; bid <= 0 || bid== buyerId {
+			memCart, _ = memCart.Combine(outCart)
+			outCart.Destroy()
+			memCart.Save()
 		}
 	}
+	return memCart
+
+
+//	if !hasOutCart {
+//		if c == nil {
+//			// 新的购物车不存在，直接返回会员的购物车
+//			if mc != nil {
+//				return mc
+//			}
+//		} else {
+//			cv := c.GetValue()
+//			//合并购物车
+//			if cv.BuyerId <= 0 {
+//				// 设置购买者
+//				if hasBuyer {
+//					c.SetBuyer(buyerId)
+//				}
+//			} else if mc != nil && cv.BuyerId == buyerId {
+//				// 合并购物车
+//				nc, err := mc.Combine(c)
+//				if err == nil {
+//					nc.Save()
+//					return nc
+//				}
+//				return mc
+//			}
+//
+//			// 如果没有购买，则返回
+//			return c
+//		}
+//	}
 
 	// 返回一个新的购物车
-	return this.NewCart(buyerId)
+//	return this.NewCart(buyerId)
 }
 
 // 获取没有结算的购物车
