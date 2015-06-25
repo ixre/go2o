@@ -17,6 +17,8 @@ import (
 	"go2o/src/core/service/dps"
 	"strconv"
 	"strings"
+	"net/http"
+	"time"
 )
 
 type CartC struct {
@@ -61,6 +63,18 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 			v.GoodsImage = format.GetGoodsImageUrl(v.GoodsImage)
 		}
 	}
+
+	// 持续保存cookie
+	ck,err := ctx.Request.Cookie("_cart");
+	if err != nil{
+		ck = &http.Cookie{
+			Name:"_cart",
+			Path:"/",
+		}
+	}
+	ck.Value = cart.CartKey
+	ck.Expires = time.Now().Add(time.Hour * 48)
+	http.SetCookie(ctx.ResponseWriter,ck)
 
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)

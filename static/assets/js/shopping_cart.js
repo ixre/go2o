@@ -36,9 +36,10 @@ function shoppingCart() {
     this.key = null;
     this.api = '/cart_api';
     this.cp = null;
-    this.totalFee = 0; 					//总金额
-    this.totalNum = 0;                     //总件数
-    this.data = '';                         //数据字符串
+    this.totalFee = 0; 					    // 总金额
+    this.totalNum = 0;                      // 总件数
+    this.data = '';                         // 数据字符串
+    this.cookieManaged = false;             // 自动管理cookie
 
    // this.cartData = new cartData();
 
@@ -69,12 +70,12 @@ function shoppingCart() {
 
     this.getNum = function (goodsId) {
         //获得数量输入框
-        return parseInt(this.getGoodsEle(goodsId).getElementsByTagName('input')[0].value);
+        return parseInt(this.getGoodsEle(goodsId).getElementsByTagName('INPUT')[0].value);
     };
 
     this.removeAll = function (goodsId) {
         var ele = this.getGoodsEle(goodsId);
-        this.cp.getElementsByTagName('tbody')[0].removeChild(ele);
+        this.cp.getElementsByTagName('TBODY')[0].removeChild(ele);
         //触发事件
         this.totalMath();
     };
@@ -86,7 +87,9 @@ shoppingCart.prototype.renewKey = function (newKey) {
     }
     if (newKey) {
         this.key = newKey;
-        $JS.cookie.write('_cart', this.key);
+        if(this.cookieManaged) {
+            $JS.cookie.write('_cart', this.key);
+        }
     }
     return this.key;
 };
@@ -112,7 +115,6 @@ shoppingCart.prototype.notify = function (msg) {
 };
 
 shoppingCart.prototype.loadCart = function (call) {
-    var t = this;
     this.renewKey();
     var caller = (function (t) {
         return function (obj) {
