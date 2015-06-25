@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strings"
+	"github.com/atnet/gof"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -33,12 +34,12 @@ func (this *MemberC) Requesting(ctx *web.Context) bool {
 }
 
 // 处理请求
-func (this *MemberC) handle(ctx *web.Context) {
+func (this *MemberC) Handle(ctx *web.Context) {
 	mvc.Handle(this, ctx, false)
 }
 
 // 登陆
-func (this *MemberC) login(ctx *web.Context) {
+func (this *MemberC) Login(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 
 		r := ctx.Request
@@ -67,7 +68,7 @@ func (this *MemberC) login(ctx *web.Context) {
 }
 
 // 注册
-func (this *MemberC) register(ctx *web.Context) {
+func (this *MemberC) Register(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		var result dto.MessageResult
@@ -113,4 +114,15 @@ func (this *MemberC) register(ctx *web.Context) {
 
 		this.JsonOutput(ctx, result)
 	}
+}
+
+// 断开
+func (this *MemberC) Disconnect(ctx *web.Context){
+	var result gof.Message
+	if util.MemberHttpSessionDisconnect(ctx){
+		result.Result =true
+	}else{
+		result.Message = "disconnect fail"
+	}
+	this.JsonOutput(ctx,result)
 }

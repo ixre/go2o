@@ -55,6 +55,19 @@ func GetMemberApiToken(sto gof.Storage, memberId int) (string, string) {
 	return srcToken, tokenBase
 }
 
+
+// 移除会员令牌
+func RemoveMemberApiToken(sto gof.Storage,memberId int,token string)bool{
+	srcToken, _ := GetMemberApiToken(sto, memberId)
+	if len(srcToken) == 0  && srcToken == token{
+		var key string = GetMemberApiTokenKey(memberId)
+		sto.Del(key)
+		sto.Del(key+"base")
+
+	}
+	return false
+}
+
 // 校验令牌
 func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 
@@ -73,10 +86,10 @@ func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
-	if param := ctx.Request.URL.Query().Get("member_id"); len(param) != 0 {
-		memberId, _ = strconv.Atoi(param)
 
-		var token string = ctx.Request.URL.Query().Get("token")
+	form := ctx.Request.URL.Query()
+	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
+		var token string = form.Get("token")
 		if CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
 			ctx.Session().Set("client_member_id", memberId)
 			ctx.Session().Save()
@@ -90,8 +103,21 @@ func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
 		}
 	}
 
-	// SetMemberApiToken(ctx.App.Storage(),30,"369a661b13134a8c0997ca7f0a5372bf")
-	// fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
+	//http://zs.ts.com/main/msc?device=1&return_url=/list/all_cate&member_id=30&token=25245e2640232df15db617473f59159c9d3d7c300ce349cb9a953b
+	 //SetMemberApiToken(ctx.App.Storage(),30,"f22e180335baf50c134ea5c1093de0a6")
+	 //fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
 
 	return false, memberId
 }
+
+// 会员Http请求会话链接
+func MemberHttpSessionDisconnect(ctx *web.Context)bool {
+	form := ctx.Request.URL.Query()
+	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
+		var token string = form.Get("token")
+		return RemoveMemberApiToken(ctx.App.Storage(), memberId, token)
+	}
+	return false
+}
+
+

@@ -15,7 +15,6 @@ import (
 )
 
 func ApiTest(ctx *web.Context) {
-	//r := ctx.Request
 	ctx.ResponseWriter.Write([]byte("It's working!"))
 }
 

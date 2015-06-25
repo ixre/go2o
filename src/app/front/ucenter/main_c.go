@@ -76,8 +76,8 @@ func (this *mainC) Logout(ctx *web.Context) {
 
 // 切换设备
 func (this *mainC) Change_device(ctx *web.Context) {
-	deviceType := ctx.Request.URL.Query().Get("device_type")
-	util.SetBrownerDevice(ctx, deviceType)
+	form := ctx.Request.URL.Query()
+	util.SetDeviceByUrlQuery(ctx,&form)
 	urlRef := ctx.Request.Referer()
 	if len(urlRef) == 0 {
 		urlRef = "/"

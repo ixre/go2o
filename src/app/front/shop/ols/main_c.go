@@ -15,12 +15,12 @@ import (
 	"go2o/src/app/util"
 )
 
-type mainC struct {
+type MainC struct {
 	*BaseC
 }
 
 // 处理跳转
-func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
+func (this *MainC) HandleIndexGo(ctx *web.Context) bool {
 	r, w := ctx.Request, ctx.ResponseWriter
 	g := r.URL.Query().Get("go")
 	if g == "buy" {
@@ -32,9 +32,10 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 }
 
 // 更换访问设备
-func (this *mainC) Change_device(ctx *web.Context) {
-	deviceType := ctx.Request.URL.Query().Get("device_type")
-	util.SetBrownerDevice(ctx, deviceType)
+func (this *MainC) Change_device(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	util.SetDeviceByUrlQuery(ctx,&form)
+
 	urlRef := ctx.Request.Referer()
 	if len(urlRef) == 0 {
 		urlRef = "/"
@@ -43,8 +44,8 @@ func (this *mainC) Change_device(ctx *web.Context) {
 	ctx.ResponseWriter.WriteHeader(302)
 }
 
-// Member Session Connect
-func (this *mainC) Msc(ctx *web.Context){
+// Member session connect
+func (this *MainC) Msc(ctx *web.Context){
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx,&form)
 
@@ -62,10 +63,20 @@ func (this *mainC) Msc(ctx *web.Context){
 	}
 }
 
+// Member session disconnect
+func (this *MainC) Msd(ctx *web.Context){
+	if util.MemberHttpSessionDisconnect(ctx){
+		ctx.Session().Set("member", nil)
+		ctx.Session().Save()
+		ctx.ResponseWriter.Write([]byte("disconnect success"))
+	}else{
+		ctx.ResponseWriter.Write([]byte("disconnect fail"))
+	}
+}
 
 
 
-func (this *mainC) Index(ctx *web.Context) {
+func (this *MainC) Index(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		p := this.BaseC.GetPartner(ctx)
 		m := this.BaseC.GetMember(ctx)

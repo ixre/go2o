@@ -34,7 +34,7 @@ func Handle(ctx *web.Context) {
 
 //注册路由
 func registerRoutes() {
-	mc := &mainC{}
+	mc := &MainC{}
 
 	sp := &ShoppingC{}
 	pc := &PaymentC{}
