@@ -12,8 +12,8 @@ import (
 	gutil "github.com/atnet/gof/util"
 	"github.com/atnet/gof/web"
 	"net/http"
-	"time"
 	"net/url"
+	"time"
 )
 
 const (
@@ -73,10 +73,10 @@ func SetBrownerDevice(ctx *web.Context, deviceType string) {
 	}
 }
 
-func SetDeviceByUrlQuery(ctx *web.Context,form *url.Values)bool{
+func SetDeviceByUrlQuery(ctx *web.Context, form *url.Values) bool {
 	dvType := form.Get("device")
-	if len(dvType) != 0{
-		SetBrownerDevice(ctx,dvType)
+	if len(dvType) != 0 {
+		SetBrownerDevice(ctx, dvType)
 		return true
 	}
 	return false

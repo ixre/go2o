@@ -14,11 +14,11 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
-	"go2o/src/app/util"
 	"strings"
 )
 
@@ -170,4 +170,3 @@ func (this *UserC) Logout(ctx *web.Context) {
 		ctx.App.Config().GetString(variable.ServerDomain),
 	)))
 }
-

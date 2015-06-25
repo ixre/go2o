@@ -121,7 +121,7 @@ func (this *basicC) Deliver_post(ctx *web.Context) {
 
 func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	 r :=  ctx.Request
+	r := ctx.Request
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)

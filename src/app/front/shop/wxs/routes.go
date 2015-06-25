@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package weixin
+package wxs
 
 import (
 	"github.com/atnet/gof"

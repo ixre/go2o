@@ -10,6 +10,7 @@ package api
 
 import (
 	"fmt"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/util"
@@ -18,7 +19,6 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strings"
-	"github.com/atnet/gof"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -117,12 +117,12 @@ func (this *MemberC) Register(ctx *web.Context) {
 }
 
 // 断开
-func (this *MemberC) Disconnect(ctx *web.Context){
+func (this *MemberC) Disconnect(ctx *web.Context) {
 	var result gof.Message
-	if util.MemberHttpSessionDisconnect(ctx){
-		result.Result =true
-	}else{
+	if util.MemberHttpSessionDisconnect(ctx) {
+		result.Result = true
+	} else {
 		result.Message = "disconnect fail"
 	}
-	this.JsonOutput(ctx,result)
+	this.JsonOutput(ctx, result)
 }

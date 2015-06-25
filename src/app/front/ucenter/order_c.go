@@ -51,17 +51,17 @@ func (this *orderC) WaitPayment(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	this.ExecuteTemplate(ctx,
-	gof.TemplateDataMap{
-		"partner":      p,
-		"conf":         conf,
-		"partner_host": conf.Host,
-		"member":       m,
-		"state":        enum.ORDER_CREATED,
-	},
-	"views/ucenter/{device}/order/order_wait_payment.html",
-	"views/ucenter/{device}/inc/header.html",
-	"views/ucenter/{device}/inc/menu.html",
-	"views/ucenter/{device}/inc/footer.html")
+		gof.TemplateDataMap{
+			"partner":      p,
+			"conf":         conf,
+			"partner_host": conf.Host,
+			"member":       m,
+			"state":        enum.ORDER_CREATED,
+		},
+		"views/ucenter/{device}/order/order_wait_payment.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
 }
 
 func (this *orderC) Completed(ctx *web.Context) {

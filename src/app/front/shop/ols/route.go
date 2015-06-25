@@ -42,7 +42,7 @@ func registerRoutes() {
 	uc := &UserC{}
 	lc := &ListC{}
 
-	routes.Register("main",mc)
+	routes.Register("main", mc)
 	routes.Register("buy", sp)
 	routes.Register("shopping", sp)
 	routes.Register("list", lc)

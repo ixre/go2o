@@ -11,8 +11,8 @@ package ols
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/core/service/dps"
 	"go2o/src/app/util"
+	"go2o/src/core/service/dps"
 )
 
 type MainC struct {
@@ -34,7 +34,7 @@ func (this *MainC) HandleIndexGo(ctx *web.Context) bool {
 // 更换访问设备
 func (this *MainC) Change_device(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
-	util.SetDeviceByUrlQuery(ctx,&form)
+	util.SetDeviceByUrlQuery(ctx, &form)
 
 	urlRef := ctx.Request.Referer()
 	if len(urlRef) == 0 {
@@ -45,36 +45,34 @@ func (this *MainC) Change_device(ctx *web.Context) {
 }
 
 // Member session connect
-func (this *MainC) Msc(ctx *web.Context){
+func (this *MainC) Msc(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
-	util.SetDeviceByUrlQuery(ctx,&form)
+	util.SetDeviceByUrlQuery(ctx, &form)
 
 	ok, memberId := util.MemberHttpSessionConnect(ctx)
 	if ok {
 		ctx.Items["client_member_id"] = memberId
 		rtu := form.Get("return_url")
-		if len(rtu) == 0{
+		if len(rtu) == 0 {
 			rtu = "/"
 		}
-		ctx.ResponseWriter.Header().Add("Location",rtu)
+		ctx.ResponseWriter.Header().Add("Location", rtu)
 		ctx.ResponseWriter.WriteHeader(302)
-	}else {
+	} else {
 		ctx.ResponseWriter.Write([]byte("not authorized!"))
 	}
 }
 
 // Member session disconnect
-func (this *MainC) Msd(ctx *web.Context){
-	if util.MemberHttpSessionDisconnect(ctx){
+func (this *MainC) Msd(ctx *web.Context) {
+	if util.MemberHttpSessionDisconnect(ctx) {
 		ctx.Session().Set("member", nil)
 		ctx.Session().Save()
 		ctx.ResponseWriter.Write([]byte("disconnect success"))
-	}else{
+	} else {
 		ctx.ResponseWriter.Write([]byte("disconnect fail"))
 	}
 }
-
-
 
 func (this *MainC) Index(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {

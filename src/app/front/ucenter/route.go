@@ -11,8 +11,8 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"net/http"
 	"go2o/src/app/util"
+	"net/http"
 )
 
 var (
@@ -20,7 +20,7 @@ var (
 	moRoutes *mvc.Route = mvc.NewRoute(nil)
 )
 
-func GetRouter()*mvc.Route{
+func GetRouter() *mvc.Route {
 	return moRoutes
 }
 
@@ -56,7 +56,7 @@ func registerRoutes() {
 	routes.Register("login", lc)
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/", mc.Index)
-	routes.Add("^/static/",sf)
+	routes.Add("/static/*", sf)
 
 	// 注册触屏版路由
 	moRoutes.Register("main", mc)
@@ -68,7 +68,7 @@ func registerRoutes() {
 	moRoutes.Add("/", mc.Index)
 
 	// 为了使用IconFont
-	moRoutes.Add("^/static/",sf)
+	moRoutes.Add("/static/*", sf)
 }
 
 func init() {
