@@ -31,9 +31,9 @@ func reqApi(url string) ([]byte, error) {
 	}
 }
 
-func GetLocation(addr string) (lng, lat float64, err error) {
+func GetLocation(address string) (lng, lat float64, err error) {
 	req := fmt.Sprintf("%s?ak=%s&output=json&address=%s&city=",
-		MAP_API, MAP_API_SECRET, addr)
+		MAP_API, MAP_API_SECRET, address)
 	d, err := reqApi(req)
 	if err != nil {
 		return 0, 0, err

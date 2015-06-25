@@ -77,6 +77,7 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 	if item == nil {
 		d["error"] = "商品不存在"
 	} else {
+		item.GoodsImage = format.GetGoodsImageUrl(item.GoodsImage)
 		d["item"] = item
 	}
 	this.BaseC.JsonOutput(ctx, d)

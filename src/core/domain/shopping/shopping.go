@@ -124,7 +124,7 @@ func (this *Shopping) GetShoppingCart(buyerId int, cartKey string) shopping.ICar
 			}
 
 			// 如果没有购买，则返回
-			//return c
+			return c
 		}
 	}
 
