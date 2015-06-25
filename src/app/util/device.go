@@ -6,13 +6,14 @@
  * description :
  * history :
  */
-package front
+package util
 
 import (
 	gutil "github.com/atnet/gof/util"
 	"github.com/atnet/gof/web"
 	"net/http"
 	"time"
+	"net/url"
 )
 
 const (
@@ -70,4 +71,13 @@ func SetBrownerDevice(ctx *web.Context, deviceType string) {
 		ck.Path = "/"
 		http.SetCookie(ctx.ResponseWriter, ck)
 	}
+}
+
+func SetDeviceByUrlQuery(ctx *web.Context,form *url.Values)bool{
+	dvType := form.Get("device")
+	if len(dvType) != 0{
+		SetBrownerDevice(ctx,dvType)
+		return true
+	}
+	return false
 }

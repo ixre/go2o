@@ -14,11 +14,11 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+	"go2o/src/app/util"
 	"strings"
 )
 
@@ -148,7 +148,7 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 		location = fmt.Sprintf("http://%s.%s/login/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
 			variable.DOMAIN_MEMBER_PREFIX,
 			ctx.App.Config().GetString(variable.ServerDomain),
-			front.GetBrownerDevice(ctx),
+			util.GetBrownerDevice(ctx),
 			ctx.Session().GetSessionId(),
 			m.Id,
 			m.DynamicToken,
@@ -171,14 +171,3 @@ func (this *UserC) Logout(ctx *web.Context) {
 	)))
 }
 
-// 更换访问设备
-func (this *UserC) ChangeDevice(ctx *web.Context) {
-	deviceType := ctx.Request.URL.Query().Get("device_type")
-	front.SetBrownerDevice(ctx, deviceType)
-	urlRef := ctx.Request.Referer()
-	if len(urlRef) == 0 {
-		urlRef = "/"
-	}
-	ctx.ResponseWriter.Header().Add("Location", urlRef)
-	ctx.ResponseWriter.WriteHeader(302)
-}

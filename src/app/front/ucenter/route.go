@@ -11,8 +11,8 @@ package ucenter
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/app/front"
 	"net/http"
+	"go2o/src/app/util"
 )
 
 var (
@@ -26,12 +26,12 @@ func GetRouter()*mvc.Route{
 
 //处理请求
 func Handle(ctx *web.Context) {
-	switch front.GetBrownerDevice(ctx) {
+	switch util.GetBrownerDevice(ctx) {
 	default:
-	case front.DevicePC:
+	case util.DevicePC:
 		ctx.Items["device_view_dir"] = "pc"
 		routes.Handle(ctx)
-	case front.DeviceTouchPad, front.DeviceMobile:
+	case util.DeviceTouchPad, util.DeviceMobile:
 		ctx.Items["device_view_dir"] = "touchpad"
 		moRoutes.Handle(ctx)
 	}
@@ -55,7 +55,6 @@ func registerRoutes() {
 	routes.Register("account", ac)
 	routes.Register("login", lc)
 	routes.Add("/logout", mc.Logout)
-	routes.Add("/device", mc.changeDevice)
 	routes.Add("/", mc.Index)
 	routes.Add("^/static/",sf)
 
@@ -66,7 +65,6 @@ func registerRoutes() {
 	moRoutes.Register("account", ac)
 	moRoutes.Register("login", lc)
 	moRoutes.Add("/logout", mc.Logout)
-	moRoutes.Add("/device", mc.changeDevice)
 	moRoutes.Add("/", mc.Index)
 
 	// 为了使用IconFont

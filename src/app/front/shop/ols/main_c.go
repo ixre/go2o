@@ -12,6 +12,7 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/service/dps"
+	"go2o/src/app/util"
 )
 
 type mainC struct {
@@ -29,6 +30,40 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 	}
 	return false
 }
+
+// 更换访问设备
+func (this *mainC) Change_device(ctx *web.Context) {
+	deviceType := ctx.Request.URL.Query().Get("device_type")
+	util.SetBrownerDevice(ctx, deviceType)
+	urlRef := ctx.Request.Referer()
+	if len(urlRef) == 0 {
+		urlRef = "/"
+	}
+	ctx.ResponseWriter.Header().Add("Location", urlRef)
+	ctx.ResponseWriter.WriteHeader(302)
+}
+
+// Member Session Connect
+func (this *mainC) Msc(ctx *web.Context){
+	form := ctx.Request.URL.Query()
+	util.SetDeviceByUrlQuery(ctx,&form)
+
+	ok, memberId := util.MemberHttpSessionConnect(ctx)
+	if ok {
+		ctx.Items["client_member_id"] = memberId
+		rtu := form.Get("return_url")
+		if len(rtu) == 0{
+			rtu = "/"
+		}
+		ctx.ResponseWriter.Header().Add("Location",rtu)
+		ctx.ResponseWriter.WriteHeader(302)
+	}else {
+		ctx.ResponseWriter.Write([]byte("not authorized!"))
+	}
+}
+
+
+
 
 func (this *mainC) Index(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {

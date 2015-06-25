@@ -10,13 +10,13 @@ package ucenter
 
 import (
 	"github.com/atnet/gof/web"
-	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"net/http"
 	"strconv"
 	"time"
+	"go2o/src/app/util"
 )
 
 type loginC struct {
@@ -66,7 +66,7 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 	}
 
 	// 设置访问设备
-	front.SetBrownerDevice(ctx, ctx.Request.URL.Query().Get("device"))
+	util.SetBrownerDevice(ctx, ctx.Request.URL.Query().Get("device"))
 
 	if err == nil || m != nil {
 		rl := dps.MemberService.GetRelation(m.Id)

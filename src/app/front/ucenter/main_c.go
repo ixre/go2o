@@ -13,7 +13,7 @@ import (
 	"github.com/atnet/gof"
 	gfmt "github.com/atnet/gof/util/fmt"
 	"github.com/atnet/gof/web"
-	"go2o/src/app/front"
+	"go2o/src/app/util"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"net/http"
@@ -75,9 +75,9 @@ func (this *mainC) Logout(ctx *web.Context) {
 }
 
 // 切换设备
-func (this *mainC) changeDevice(ctx *web.Context) {
+func (this *mainC) Change_device(ctx *web.Context) {
 	deviceType := ctx.Request.URL.Query().Get("device_type")
-	front.SetBrownerDevice(ctx, deviceType)
+	util.SetBrownerDevice(ctx, deviceType)
 	urlRef := ctx.Request.Referer()
 	if len(urlRef) == 0 {
 		urlRef = "/"
