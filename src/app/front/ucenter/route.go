@@ -12,7 +12,6 @@ import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/util"
-	"net/http"
 )
 
 var (
@@ -47,11 +46,6 @@ func registerRoutes() {
 	ac := &accountC{}
 	lc := &loginC{}
 
-	// 静态文件处理
-	sf := func(ctx *web.Context) {
-		http.ServeFile(ctx.ResponseWriter, ctx.Request, "."+ctx.Request.URL.Path)
-	}
-
 	routes.Register("main", mc)
 	routes.Register("basic", bc)
 	routes.Register("order", oc)
@@ -59,7 +53,7 @@ func registerRoutes() {
 	routes.Register("login", lc)
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/", mc.Index)
-	routes.Add("/static/*", sf)
+	routes.Add("/static/*", util.HttpStaticFileHandler)
 
 	// 注册触屏版路由
 	moRoutes.Register("main", mc)
@@ -71,7 +65,7 @@ func registerRoutes() {
 	moRoutes.Add("/", mc.Index)
 
 	// 为了使用IconFont
-	moRoutes.Add("/static/*", sf)
+	moRoutes.Add("/static/*", util.HttpStaticFileHandler)
 }
 
 func init() {

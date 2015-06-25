@@ -11,6 +11,7 @@ package partner
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/app/util"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
@@ -49,6 +50,9 @@ func registerRoutes() {
 	})
 
 	routes.Add("/upload.cgi", mc.Upload_post)
+
+	// 静态文件处理
+	routes.Add("/static/*", util.HttpStaticFileHandler)
 
 	routes.Add("^/[^/]*$", func(ctx *web.Context) {
 		if bc.Requesting(ctx) {

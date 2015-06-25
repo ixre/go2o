@@ -51,19 +51,24 @@ func (this *UserC) Login(ctx *web.Context) {
 }
 
 func (this *UserC) Login_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	r.ParseForm()
+	var result gof.Message
 	partnerId := this.BaseC.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
-
 	if b {
 		ctx.Session().Set("member", m)
 		ctx.Session().Save()
-		w.Write([]byte("{result:true}"))
-		return
+	}else{
+		result.Result = false
+		if err != nil{
+			result.Message = err.Error()
+		}else{
+			result.Message = "登陆失败"
+		}
 	}
-	w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
+	this.BaseC.ResultOutput(ctx,result)
 }
 
 func (this *UserC) Register(ctx *web.Context) {

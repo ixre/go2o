@@ -53,13 +53,20 @@ func (this *MainC) Msc(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
 
-	ok, memberId := util.MemberHttpSessionConnect(ctx)
+	ok, memberId := util.MemberHttpSessionConnect(ctx,func(memberId int){
+		if ctx.Session().Get("member") == nil {
+			m := dps.MemberService.GetMember(memberId)
+			ctx.Session().Set("member", m)
+		}
+	})
+
 	if ok {
 		ctx.Items["client_member_id"] = memberId
 		rtu := form.Get("return_url")
 		if len(rtu) == 0 {
 			rtu = "/"
 		}
+
 		ctx.ResponseWriter.Header().Add("Location", rtu)
 		ctx.ResponseWriter.WriteHeader(302)
 	} else {

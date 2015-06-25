@@ -14,9 +14,9 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
-	"net/http"
 	"strconv"
-	"time"
+	"github.com/atnet/gof"
+	"encoding/json"
 )
 
 type loginC struct {
@@ -27,21 +27,25 @@ func (this *loginC) Index(ctx *web.Context) {
 	executeTemplate(ctx, nil, "views/ucenter/{device}/login.html")
 }
 func (this *loginC) Index_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	r.ParseForm()
+var result gof.Message
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
-	result, _ := goclient.Member.Login(usr, pwd)
-	if !result.Result {
-		w.Write([]byte("{result:false,message:'" + result.Message + "'}"))
-	} else {
-		cookie := &http.Cookie{
-			Name:    "ms_token",
-			Expires: time.Now().Add(time.Hour * 48),
-			Value:   result.Member.DynamicToken,
+	b, m, err := dps.MemberService.Login(-1, usr, pwd)
+	if b {
+		ctx.Session().Set("member", m)
+		ctx.Session().Save()
+		result.Result = true
+	}else{
+		if err != nil{
+			result.Message = err.Error()
+		}else{
+			result.Message = "登陆失败"
 		}
-		http.SetCookie(w, cookie)
-		w.Write([]byte("{result:true}"))
 	}
+	js,_ := json.Marshal(result)
+	ctx.ResponseWriter.Write(js)
+
 }
 
 //从partner登录过来的信息

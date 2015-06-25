@@ -82,7 +82,7 @@ func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 }
 
 // 会员Http请求会话链接
-func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
+func MemberHttpSessionConnect(ctx *web.Context,call func(memberId int)) (ok bool, memberId int) {
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
 
@@ -90,6 +90,9 @@ func MemberHttpSessionConnect(ctx *web.Context) (ok bool, memberId int) {
 	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
 		var token string = form.Get("token")
 		if CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
+			if call != nil{
+				call(memberId)
+			}
 			ctx.Session().Set("client_member_id", memberId)
 			ctx.Session().Save()
 			return true, memberId

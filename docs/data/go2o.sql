@@ -496,7 +496,7 @@ CREATE TABLE `mm_member` (
   `avatar` varchar(80) DEFAULT NULL,
   `birthday` varchar(20) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `address` varchar(100) DEFAULT NULL COMMENT '送餐地址',
+  `address` varchar(100) DEFAULT NULL COMMENT '收货地址',
   `qq` varchar(15) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `reg_ip` varchar(20) DEFAULT NULL,

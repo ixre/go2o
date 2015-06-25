@@ -31,7 +31,7 @@ type categoryC struct {
 }
 
 //分类树形功能
-func (this *categoryC) Category(ctx *web.Context) {
+func (this *categoryC) All_category(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 		"no_pic_url": format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")

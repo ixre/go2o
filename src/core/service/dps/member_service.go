@@ -17,7 +17,6 @@ import (
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 	"time"
-	"fmt"
 )
 
 type memberService struct {
@@ -124,8 +123,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 	m, _ := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
-	fmt.Println("----------",rl.RegisterPartnerId,partnerId)
-	if rl.RegisterPartnerId != partnerId {
+	if partnerId != -1 && rl.RegisterPartnerId != partnerId {
 		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
@@ -157,14 +155,14 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 
 // 获取返现记录
 func (this *memberService) QueryIncomeLog(memberId, page, size int,
-	where, orderby string) (num int, rows []map[string]interface{}) {
-	return this._query.QueryIncomeLog(memberId, page, size, where, orderby)
+	where, orderBy string) (num int, rows []map[string]interface{}) {
+	return this._query.QueryIncomeLog(memberId, page, size, where, orderBy)
 }
 
 // 查询分页订单
 func (this *memberService) QueryPagerOrder(memberId, page, size int,
-	where, orderby string) (num int, rows []map[string]interface{}) {
-	return this._query.QueryPagerOrder(memberId, page, size, where, orderby)
+	where, orderBy string) (num int, rows []map[string]interface{}) {
+	return this._query.QueryPagerOrder(memberId, page, size, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
