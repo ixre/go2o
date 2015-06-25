@@ -34,6 +34,9 @@ func Handle(ctx *web.Context) {
 	case util.DeviceTouchPad, util.DeviceMobile:
 		ctx.Items["device_view_dir"] = "touchpad"
 		moRoutes.Handle(ctx)
+	case util.DeviceAppEmbed:
+		ctx.Items["device_view_dir"] = "app_embed"
+		routes.Handle(ctx)
 	}
 }
 

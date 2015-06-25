@@ -25,6 +25,8 @@ const (
 	DeviceMobile string = "2"
 	// 触摸设备
 	DeviceTouchPad string = "3"
+	// APP内嵌网页
+	DeviceAppEmbed string = "4"
 )
 
 // 获取浏览设备
@@ -38,6 +40,8 @@ func GetBrownerDevice(ctx *web.Context) string {
 			return DeviceMobile
 		case "3":
 			return DeviceTouchPad
+		case "4":
+			return DeviceAppEmbed
 		}
 	}
 	if gutil.IsMobileAgent(ctx.Request.UserAgent()) {

@@ -78,10 +78,45 @@ func (this *mainC) Logout(ctx *web.Context) {
 func (this *mainC) Change_device(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
-	urlRef := ctx.Request.Referer()
-	if len(urlRef) == 0 {
-		urlRef = "/"
+
+	toUrl := form.Get("return_url")
+	if len(toUrl) == 0 {
+		toUrl = ctx.Request.Referer()
+		if len(toUrl) == 0 {
+			toUrl = "/"
+		}
 	}
-	ctx.ResponseWriter.Header().Add("Location", urlRef)
+
+	ctx.ResponseWriter.Header().Add("Location", toUrl)
 	ctx.ResponseWriter.WriteHeader(302)
+}
+
+// Member session connect
+func (this *mainC) Msc(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	util.SetDeviceByUrlQuery(ctx, &form)
+
+	ok, memberId := util.MemberHttpSessionConnect(ctx)
+	if ok {
+		ctx.Items["client_member_id"] = memberId
+		rtu := form.Get("return_url")
+		if len(rtu) == 0 {
+			rtu = "/"
+		}
+		ctx.ResponseWriter.Header().Add("Location", rtu)
+		ctx.ResponseWriter.WriteHeader(302)
+	} else {
+		ctx.ResponseWriter.Write([]byte("not authorized!"))
+	}
+}
+
+// Member session disconnect
+func (this *mainC) Msd(ctx *web.Context) {
+	if util.MemberHttpSessionDisconnect(ctx) {
+		ctx.Session().Set("member", nil)
+		ctx.Session().Save()
+		ctx.ResponseWriter.Write([]byte("disconnect success"))
+	} else {
+		ctx.ResponseWriter.Write([]byte("disconnect fail"))
+	}
 }

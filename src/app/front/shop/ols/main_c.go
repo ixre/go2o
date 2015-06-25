@@ -36,11 +36,15 @@ func (this *MainC) Change_device(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
 
-	urlRef := ctx.Request.Referer()
-	if len(urlRef) == 0 {
-		urlRef = "/"
+	toUrl := form.Get("return_url")
+	if len(toUrl) == 0 {
+		toUrl = ctx.Request.Referer()
+		if len(toUrl) == 0 {
+			toUrl = "/"
+		}
 	}
-	ctx.ResponseWriter.Header().Add("Location", urlRef)
+
+	ctx.ResponseWriter.Header().Add("Location", toUrl)
 	ctx.ResponseWriter.WriteHeader(302)
 }
 

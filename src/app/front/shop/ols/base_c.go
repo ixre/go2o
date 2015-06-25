@@ -111,7 +111,7 @@ func renderError(ctx *web.Context, simpleError bool, message string) {
 	}
 }
 func getPartnerId(ctx *web.Context) int {
-	//return 104
+	return 104
 	currHost := ctx.Request.Host
 	host := ctx.Session().Get("webui_host")
 	pid := ctx.Session().Get("webui_pid")
