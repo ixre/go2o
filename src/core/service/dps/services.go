@@ -23,6 +23,7 @@ var (
 	PartnerService  *partnerService
 	SaleService     *saleService
 	DeliverService  *deliveryService
+	ContentService  *contentService
 )
 
 func Init(ctx gof.App) {
@@ -37,17 +38,20 @@ func Init(ctx gof.App) {
 	tagSaleRep := repository.NewTagSaleRep(db)
 	saleRep := repository.NewSaleRep(db, tagSaleRep)
 	deliveryRep := repository.NewDeliverRep(db)
+	contentRep := repository.NewContentRep(db)
 	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, promRep, memberRep, deliveryRep)
 
 	/** Query **/
-	mq := query.NewMemberQuery(db)
-	pq := query.NewPartnerQuery(ctx)
+	memberQue := query.NewMemberQuery(db)
+	partnerQue := query.NewPartnerQuery(ctx)
+	contentQue := query.NewContentQuery(db)
 
 	/** Service **/
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep)
-	MemberService = NewMemberService(memberRep, mq)
-	PartnerService = NewPartnerService(partnerRep, pq)
+	MemberService = NewMemberService(memberRep, memberQue)
+	PartnerService = NewPartnerService(partnerRep, partnerQue)
 	SaleService = NewSaleService(saleRep)
 	DeliverService = NewDeliveryService(deliveryRep)
+	ContentService = NewContentService(contentRep,contentQue)
 }

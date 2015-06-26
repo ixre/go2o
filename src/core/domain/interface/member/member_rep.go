@@ -76,10 +76,10 @@ type IMemberRep interface {
 	SaveDeliver(*DeliverAddress) (int, error)
 
 	// 获取全部配送地址
-	GetDeliverAddrs(memberId int) []*DeliverAddress
+	GetDeliverAddress(memberId int) []*DeliverAddress
 
 	// 获取配送地址
-	GetDeliverAddr(memberId, deliverId int) *DeliverAddress
+	GetSingleDeliverAddress(memberId, deliverId int) *DeliverAddress
 
 	// 删除配送地址
 	DeleteDeliver(memberId, deliverId int) error

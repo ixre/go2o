@@ -68,7 +68,7 @@ type IMember interface {
 	CreateDeliver(*DeliverAddress) IDeliver
 
 	// 获取配送地址
-	GetDeliverAddrs() []IDeliver
+	GetDeliverAddress() []IDeliver
 
 	// 获取配送地址
 	GetDeliver(int) IDeliver

@@ -285,9 +285,9 @@ func (this *Member) CreateDeliver(v *member.DeliverAddress) member.IDeliver {
 }
 
 // 获取配送地址
-func (this *Member) GetDeliverAddrs() []member.IDeliver {
+func (this *Member) GetDeliverAddress() []member.IDeliver {
 	var vls []*member.DeliverAddress
-	vls = this._rep.GetDeliverAddrs(this.GetAggregateRootId())
+	vls = this._rep.GetDeliverAddress(this.GetAggregateRootId())
 	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
 	for i, v := range vls {
 		arr[i] = this.CreateDeliver(v)
@@ -297,7 +297,7 @@ func (this *Member) GetDeliverAddrs() []member.IDeliver {
 
 // 获取配送地址
 func (this *Member) GetDeliver(deliverId int) member.IDeliver {
-	v := this._rep.GetDeliverAddr(this.GetAggregateRootId(), deliverId)
+	v := this._rep.GetSingleDeliverAddress(this.GetAggregateRootId(), deliverId)
 	if v != nil {
 		return this.CreateDeliver(v)
 	}

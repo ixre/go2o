@@ -32,7 +32,7 @@ type IContent interface{
 	GetArticle(id int)IArticle
 
 	// 获取文章列表
-	GetArticleList(categoryId int,start,over int)[]IPage
+	GetArticleList(categoryId int,start,over int)[]IArticle
 
 	// 删除文章
 	DeleteArticle(id int)error

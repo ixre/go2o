@@ -259,14 +259,14 @@ func (this *memberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 }
 
 // 获取全部配送地址
-func (this *memberRep) GetDeliverAddrs(memberId int) []*member.DeliverAddress {
+func (this *memberRep) GetDeliverAddress(memberId int) []*member.DeliverAddress {
 	addresses := []*member.DeliverAddress{}
 	this.Connector.GetOrm().Select(&addresses, "member_id=?", memberId)
 	return addresses
 }
 
 // 获取配送地址
-func (this *memberRep) GetDeliverAddr(memberId, deliverId int) *member.DeliverAddress {
+func (this *memberRep) GetSingleDeliverAddress(memberId, deliverId int) *member.DeliverAddress {
 	var addr member.DeliverAddress
 	err := this.Connector.GetOrm().Get(deliverId, &addr)
 

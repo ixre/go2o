@@ -116,7 +116,7 @@ func (this *Order) SignPaid() error {
 
 // 设置配送地址
 func (this *Order) SetDeliver(deliverAddrId int) error {
-	d := this._memberRep.GetDeliverAddr(this._value.MemberId, deliverAddrId)
+	d := this._memberRep.GetSingleDeliverAddress(this._value.MemberId, deliverAddrId)
 	if d != nil {
 		v := this._value
 		v.DeliverAddress = d.Address

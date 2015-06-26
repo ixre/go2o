@@ -167,7 +167,7 @@ func (this *memberService) QueryPagerOrder(memberId, page, size int,
 
 /*********** 收货地址 ***********/
 func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddress {
-	return this._memberRep.GetDeliverAddrs(memberId)
+	return this._memberRep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
