@@ -12,6 +12,7 @@ type ValueAdvertisement struct{
 	// 编号
 	Id int `db:"id" auto:"yes" pk:"yes"`
 
+	PartnerId int `db:"partner_id"`
 	// 名称
 	Name string `db:"name"`
 
