@@ -13,20 +13,20 @@ import (
 	"go2o/src/core/domain/interface/partner/user"
 )
 
-var _ user.IUserRep = new(UserRep)
+var _ user.IUserRep = new(userRep)
 
-type UserRep struct {
+type userRep struct {
 	db.Connector
 }
 
 func NewUserRep(c db.Connector) user.IUserRep {
-	return &UserRep{
+	return &userRep{
 		Connector: c,
 	}
 }
 
 // 保存角色
-func (this *UserRep) SaveRole(v *user.RoleValue) (int, error) {
+func (this *userRep) SaveRole(v *user.RoleValue) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -39,7 +39,7 @@ func (this *UserRep) SaveRole(v *user.RoleValue) (int, error) {
 }
 
 // 保存人员
-func (this *UserRep) SavePerson(v *user.PersonValue) (int, error) {
+func (this *userRep) SavePerson(v *user.PersonValue) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -52,7 +52,7 @@ func (this *UserRep) SavePerson(v *user.PersonValue) (int, error) {
 }
 
 // 保存凭据
-func (this *UserRep) SaveCredential(v *user.CredentialValue) (int, error) {
+func (this *userRep) SaveCredential(v *user.CredentialValue) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -65,7 +65,7 @@ func (this *UserRep) SaveCredential(v *user.CredentialValue) (int, error) {
 }
 
 // 获取人员
-func (this *UserRep) GetPersonValue(id int) *user.PersonValue {
+func (this *userRep) GetPersonValue(id int) *user.PersonValue {
 	e := new(user.PersonValue)
 	err := this.Connector.GetOrm().Get(e, id)
 	if err != nil {
@@ -75,7 +75,7 @@ func (this *UserRep) GetPersonValue(id int) *user.PersonValue {
 }
 
 // 获取配送人员
-func (this *UserRep) GetDeliveryStaffPersons(partnerId int) []*user.PersonValue {
+func (this *userRep) GetDeliveryStaffPersons(partnerId int) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
 	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
 	if err != nil {

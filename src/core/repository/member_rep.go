@@ -19,20 +19,20 @@ import (
 	memberImpl "go2o/src/core/domain/member"
 )
 
-var _ member.IMemberRep = new(MemberRep)
+var _ member.IMemberRep = new(memberRep)
 
-type MemberRep struct {
+type memberRep struct {
 	db.Connector
 }
 
 func NewMemberRep(c db.Connector) member.IMemberRep {
-	return &MemberRep{
+	return &memberRep{
 		Connector: c,
 	}
 }
 
 // 根据用户名获取会员
-func (this *MemberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
+func (this *memberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 	e := &member.ValueMember{}
 	err := this.Connector.GetOrm().GetBy(e, "usr='"+usr+"'")
 	if err != nil {
@@ -41,7 +41,7 @@ func (this *MemberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 	return e
 }
 
-func (this *MemberRep) GetMember(memberId int) (member.IMember, error) {
+func (this *memberRep) GetMember(memberId int) (member.IMember, error) {
 	e := &member.ValueMember{}
 	err := this.Connector.GetOrm().Get(memberId, e)
 	if err != nil {
@@ -51,18 +51,18 @@ func (this *MemberRep) GetMember(memberId int) (member.IMember, error) {
 }
 
 // 创建会员
-func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
+func (this *memberRep) CreateMember(v *member.ValueMember) member.IMember {
 	return memberImpl.NewMember(v, this)
 }
 
 // 根据邀请码获取会员编号
-func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
+func (this *memberRep) GetMemberIdByInvitationCode(code string) int {
 	var memberId int
 	this.ExecScalar("SELECT id FROM mm_member WHERE invitation_code=?", &memberId, code)
 	return memberId
 }
 
-func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLevel {
+func (this *memberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
 	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value = ?", partnerId, levelValue)
 	if err != nil {
@@ -72,7 +72,7 @@ func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLe
 }
 
 // 获取下一个等级
-func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.MemberLevel {
+func (this *memberRep) GetNextLevel(partnerId, levelVal int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
 	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value>? LIMIT 0,1", partnerId, levelVal)
 	if err != nil {
@@ -82,7 +82,7 @@ func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.Member
 }
 
 // 获取会员等级
-func (this *MemberRep) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
+func (this *memberRep) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
 	list := []*valueobject.MemberLevel{}
 	this.Connector.GetOrm().Select(&list,
 		"partner_id=?", partnerId)
@@ -90,14 +90,14 @@ func (this *MemberRep) GetMemberLevels(partnerId int) []*valueobject.MemberLevel
 }
 
 // 删除会员等级
-func (this *MemberRep) DeleteMemberLevel(partnerId, id int) error {
+func (this *memberRep) DeleteMemberLevel(partnerId, id int) error {
 	_, err := this.Connector.GetOrm().Delete(&valueobject.MemberLevel{},
 		"id=? AND partner_id=?", id, partnerId)
 	return err
 }
 
 // 保存等级
-func (this *MemberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error) {
+func (this *memberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -110,34 +110,34 @@ func (this *MemberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel
 }
 
 // 获取账户
-func (this *MemberRep) GetAccount(memberId int) *member.Account {
+func (this *memberRep) GetAccount(memberId int) *member.Account {
 	e := new(member.Account)
 	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存账户，传入会员编号
-func (this *MemberRep) SaveAccount(a *member.Account) error {
+func (this *memberRep) SaveAccount(a *member.Account) error {
 	_, _, err := this.Connector.GetOrm().Save(a.MemberId, a)
 	return err
 }
 
 // 获取银行信息
-func (this *MemberRep) GetBankInfo(memberId int) *member.BankInfo {
+func (this *memberRep) GetBankInfo(memberId int) *member.BankInfo {
 	e := new(member.BankInfo)
 	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存银行信息
-func (this *MemberRep) SaveBankInfo(v *member.BankInfo) error {
+func (this *memberRep) SaveBankInfo(v *member.BankInfo) error {
 	var err error
 	_, _, err = this.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
 
 // 保存返现记录
-func (this *MemberRep) SaveIncomeLog(l *member.IncomeLog) error {
+func (this *memberRep) SaveIncomeLog(l *member.IncomeLog) error {
 	orm := this.Connector.GetOrm()
 	var err error
 	if l.Id > 0 {
@@ -149,7 +149,7 @@ func (this *MemberRep) SaveIncomeLog(l *member.IncomeLog) error {
 }
 
 // 保存积分记录
-func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
+func (this *memberRep) SaveIntegralLog(l *member.IntegralLog) error {
 	orm := this.Connector.GetOrm()
 	var err error
 	if l.Id > 0 {
@@ -161,7 +161,7 @@ func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 }
 
 // 获取会员关联
-func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
+func (this *memberRep) GetRelation(memberId int) *member.MemberRelation {
 	e := new(member.MemberRelation)
 	if this.Connector.GetOrm().Get(memberId, e) != nil {
 		return nil
@@ -170,7 +170,7 @@ func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
 }
 
 // 获取积分对应的等级
-func (this *MemberRep) GetLevelValueByExp(partnerId int,exp int) int {
+func (this *memberRep) GetLevelValueByExp(partnerId int,exp int) int {
 	var levelId int
 	this.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.partner_id=? AND lv.require_exp <= ? AND lv.enabled=1
@@ -180,7 +180,7 @@ func (this *MemberRep) GetLevelValueByExp(partnerId int,exp int) int {
 
 }
 
-func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
+func (this *memberRep) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		return v.Id, err
@@ -188,7 +188,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	return this.createMember(v)
 }
 
-func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
+func (this *memberRep) createMember(v *member.ValueMember) (int, error) {
 
 	_, _, err := this.Connector.GetOrm().Save(nil, v)
 	if err != nil {
@@ -202,13 +202,13 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	return id, err
 }
 
-func (this *MemberRep) getLatestId() int {
+func (this *memberRep) getLatestId() int {
 	var id int
 	this.Connector.ExecScalar("SELECT MAX(id) FROM mm_member", &id)
 	return id
 }
 
-func (this *MemberRep) initMember(id int, v *member.ValueMember) {
+func (this *memberRep) initMember(id int, v *member.ValueMember) {
 
 	orm := this.Connector.GetOrm()
 	orm.Save(nil, &member.Account{
@@ -234,20 +234,20 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 }
 
 // 用户名是否存在
-func (this *MemberRep) CheckUsrExist(usr string) bool {
+func (this *memberRep) CheckUsrExist(usr string) bool {
 	var c int
 	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=?", &c, usr)
 	return c != 0
 }
 
 // 保存绑定
-func (this *MemberRep) SaveRelation(v *member.MemberRelation) error {
+func (this *memberRep) SaveRelation(v *member.MemberRelation) error {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
 
 // 保存地址
-func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
+func (this *memberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
 		_, id, err := orm.Save(nil, v)
@@ -259,14 +259,14 @@ func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 }
 
 // 获取全部配送地址
-func (this *MemberRep) GetDeliverAddrs(memberId int) []*member.DeliverAddress {
+func (this *memberRep) GetDeliverAddrs(memberId int) []*member.DeliverAddress {
 	addresses := []*member.DeliverAddress{}
 	this.Connector.GetOrm().Select(&addresses, "member_id=?", memberId)
 	return addresses
 }
 
 // 获取配送地址
-func (this *MemberRep) GetDeliverAddr(memberId, deliverId int) *member.DeliverAddress {
+func (this *memberRep) GetDeliverAddr(memberId, deliverId int) *member.DeliverAddress {
 	var addr member.DeliverAddress
 	err := this.Connector.GetOrm().Get(deliverId, &addr)
 
@@ -277,7 +277,7 @@ func (this *MemberRep) GetDeliverAddr(memberId, deliverId int) *member.DeliverAd
 }
 
 // 删除配送地址
-func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
+func (this *memberRep) DeleteDeliver(memberId, deliverId int) error {
 	_, err := this.Connector.ExecNonQuery(
 		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
 		memberId, deliverId)
@@ -285,7 +285,7 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 }
 
 // 邀请
-func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
+func (this *memberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
 	arr := []*member.ValueMember{}
 	this.Connector.GetOrm().SelectByQuery(&arr,
 		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?)", memberId)
@@ -293,7 +293,7 @@ func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMembe
 }
 
 // 获取下级会员数量
-func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
+func (this *memberRep) GetSubInvitationNum(memberIds string) map[int]int {
 	var d map[int]int = make(map[int]int)
 	err := this.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
@@ -314,7 +314,7 @@ func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 }
 
 // 获取推荐我的人
-func (this *MemberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
+func (this *memberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
 	var d *member.ValueMember = new(member.ValueMember)
 	err := this.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT invi_member_id FROM mm_relation  WHERE id=?)",
