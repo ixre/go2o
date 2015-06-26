@@ -50,7 +50,9 @@ func (this *contentC) Page_edit(ctx *web.Context) {
 
 // 保存页面
 func (this *contentC) Page_create(ctx *web.Context) {
-	e := content.ValuePage{}
+	e := content.ValuePage{
+		Enabled:true,
+	}
 
 	js, _ := json.Marshal(e)
 
@@ -58,7 +60,7 @@ func (this *contentC) Page_create(ctx *web.Context) {
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
-		"views/partner/content/page_create.html")
+		"views/partner/content/page_edit.html")
 }
 
 func (this *contentC) SavePage_post(ctx *web.Context) {

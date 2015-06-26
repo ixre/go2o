@@ -1,0 +1,318 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>修改文档</title>
+
+    $css()$js()
+    <script type="text/javascript" src="/framework/assets/editor/minpack.js"></script>
+    <script type="text/javascript" src="/framework/assets/editor/plugins/code/prettify.js"></script>
+
+</head>
+<body>
+    <form method="post" id="form1" action="" enctype="application/x-www-form-urlencoded">
+        <div class="tabarea">
+            <div class="tab_mini">
+                <a href="javascript:;" class="current">修改文档</a>
+            </div>
+            <div class="area">
+                
+                <div class="archive_edit form">
+                    <div class="title" style="margin-top: 0"><span class="icon icon1"></span>基本&nbsp;&nbsp;
+                        <span style="font-weight:normal">(<span class="star">*</span>为必填项,其他选填)</span></div>
+                    <input type="hidden" field="Id" value="0" />
+                    <dl>
+                        <dt><span class="star">*</span>栏目：</dt>
+                        <dd>
+                            <select field="CategoryId" class="tb_normal" required="true" summary="{required:'请选择栏目!'}">
+                                <option>一请选择栏目一</option>
+                                ${nodes}
+                            </select>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt><span class="star">*</span>标题：</dt>
+                        <dd>
+                            <input class="tb_normal ui-validate" required="true" length="[1,100]" summary="{required:'标题不能为空!',length:'标题长度1-100字!'}" type="text" field="Title" id="title" style="width: 500px"/>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt>子标题：</dt>
+                        <dd>
+                            <input class="tb_normal ui-validate" style="width: 340px;" length="[0,100]" summary="{length:' 子标题长度1-100字!'}" type="text" field="SmallTitle"/>
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt>别名：</dt>
+                        <dd>
+                            <input style="width: 340px;" tipin="alias_tipin" type="text" id="alias" field="Alias" class="tb_normal ui-validate" summary="{error:'别名为50位以下的数字,字母,连接符(-),下划线的组合'}" /><a style="margin-left: 5px" href="javascript:;">自动填写</a>&nbsp;&nbsp;
+                            <span id="alias_tipin"></span>
+                            <br/>
+                            <span style="padding-left:41px;line-height:30px">注：用于生成更又好的文档地址，比如：http://abc.com/about/contact.html。</span>
+                        </dd>
+
+                    </dl>
+
+                    <dl>
+                        <dt>重定向：</dt>
+                        <dd>
+                            <input type="radio" class="radio" field="IsRedirect" name="IsRedirect" id="IsRedirect1" value="0" checked="checked" /><label for="IsRedirect1">否</label>
+                            <input type="radio" class="radio" field="IsRedirect" name="IsRedirect" id="IsRedirect2" value="1" /><label for="IsRedirect1">是</label>
+
+                            <span id="redirectPanel" class="hidden" style="padding-left:20px">
+                                网址(URL)：<input class="tb_normal ui-validate" length="[0,150]" name="location" field="Location" />
+                            </span>
+                            <br /> <span class="desc" style="padding-left:60px">提示：重定向可以将文档页面跳转到指定的网址。</span>
+                        </dd>
+                    </dl>
+
+
+                    <dl>
+                        <dt>来源：</dt>
+                        <dd>
+                            <input class="tb_normal ui-validate" length="[0,10]" type="text" field="Source" style="width: 100px" />
+                            &nbsp;&nbsp;&nbsp;<strong>设置：</strong>
+                            <input type="checkbox" style="border: none" field="IsSpecial" title="以特殊的形式显示" id="ck_special" /><label for="ck_special">推荐</label>
+                            &nbsp;<input type="checkbox" style="border: none" field="IsSystem" title="用于系统使用的文档(系统页面不会在搜索和列表中出现)" id="ck_system" /><label for="ck_system">系统</label>
+                            &nbsp;<input type="checkbox" style="border: none" field="AsPage" title="单页，会以单页的URL地址显示" id="ck_single" /><label for="ck_single">页面</label>
+                            &nbsp;<input type="checkbox" style="border: none" field="IsNotVisible" title="只在后台显示，前台均不出现！" id="ck_visible" /><label for="ck_visible">隐藏</label>
+                        </dd>
+                    </dl>
+
+                    <!-- 960的宽度为标准,一般内容宽度为600左右 -->
+
+                    <div class="title"><span class="icon icon1"></span>内容编辑：</div>
+                    <div id="contentinfo" style="width: 620px;margin:0 auto 0 40px">
+                        <span>建议：使用一键排版功能可以快速生成有格式的内容。<br /><br /></span>
+                        <textarea id="editor" field="Content" style="overflow: hidden; width: 620px; height: 400px;"></textarea>
+                    </div>
+
+
+                    <div class="title"><span class="icon icon1"></span>显示</div>
+                
+
+                    <div class="clearfix"></div>
+                    <dl>
+                        <dt>摘要：&nbsp;</dt>
+                        <dd>
+                            <textarea class="ui-validate" length="[0,500]" field="Outline" rows="3" cols="5" style="width: 500px; font-size: 12px;"></textarea>
+                        </dd>
+                    </dl>
+                    <div class="clearfix"></div>
+                    <dl>
+                        <dt>缩略图：</dt>
+                        <dd style="position: relative; height: 100px; padding-left: 140px;">
+
+                            <img id="thumbnail_img" style="width: 80px; height: 80px; position: absolute; left: 45px; top: 0px;border:solid 1px #aaa;padding:1px;" />
+
+
+                            <input class="tb_normal ui-validate" length="[0,150]" type="hidden" field="Thumbnail" id="thumbnail" size="100" />
+
+                            <span id="upload_thumbnail"><button>选择图片上传</button></span>
+                            <br /><br />
+                            <button id="ipt_getImg" type="button" onclick="getImg();">获取编辑器图片</button>&nbsp;
+                            <select id="upimg" name="upimg" style="display: none">
+                                <option value="">选择图片</option>
+                            </select>&nbsp;
+                        </dd>
+                    </dl>
+
+                    <div class="clearfix"></div>
+
+
+
+                    <dl>
+                        <dt>视图：</dt>
+                        <dd>
+                            <select field="TemplatePath" id="TemplatePath" class="tb_normal">
+                                <option value="">一默认一</option>
+                                ${tpls}
+                            </select>&nbsp;&nbsp;设置文档的显示模板，通常使用“默认”即可。
+                        </dd>
+                    </dl>
+
+                    <dl>
+                        <dt>Tags：</dt>
+                        <dd>
+                            <textarea class="tb_normal ui-validate" length="[0,100]" type="text" field="Tags" rows="3" style="width:500px"></textarea>
+                            <br />
+                            <span style="padding-left:41px;line-height:30px"><input id="ck_autotag" type="checkbox" style="border: none" field="autotag" title="自动链接Tags" checked="checked" /><label for="ck_autotag">自动链接(自动生成tags链接，有利于seo)</label></span>
+                        </dd>
+                    </dl>
+                    
+                    <div id="extend_field" class="${extend_cls}">
+                        <div class="title"><span class="icon icon1"></span>扩展属性：</div>
+                        <div class="extinfo">
+                            ${extendFieldsHtml}
+                        </div>
+                    </div>
+
+                    <div class="submitbar clearfix">
+                        <br />
+                        <a href="javascript:;" class="btn" onclick="return submitForm();">提交</a>
+                        <a href="javascript:;" class="btn" style="margin-left:5px">重置</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script type="text/javascript">
+        var entity = ${json};
+        entity.IsRedirect = (entity.Location||'').length!=0;
+        cms.json.bind('form1',entity);
+
+        //var extData = ${ext_json};
+        //cms.json.bind('form1',extData);
+
+        //设置是否跳转显示
+        var redirectPanel = cms.$('redirectPanel');
+        cms.$('IsRedirect1').onchange = cms.$('IsRedirect2').onchange = function(){
+            if(this.checked){
+                if(this.value == '1'){
+                    redirectPanel.className = '';
+                }else {
+                    redirectPanel.className = 'hidden';
+                }
+            }
+        };
+        if(entity.IsRedirect)redirectPanel.className='';
+
+        
+        cms.$('thumbnail_img').src = entity.Thumbnail;
+        var thumbId= 'thumbnail', thumbImg = 'thumbnail_img';
+
+        //上传缩略图
+        var thumb_upload = cms.upload({
+            id: 'upload_thumbnail',
+            debug: !true,
+            url: '?module=upload&action=uploadimage&for=${thumbPrefix}&upload.id=thumb_upload',
+            exts: '*.gif;*.jpg;*.png;*.bmp'
+        },function (result, data) {
+            if (result) {
+                cms.$(thumbId).value = data.url;
+                cms.$(thumbImg).src = data.url;
+            } else {
+                alert('上传失败：' + data);
+            }
+        });
+
+        /*
+        KindEditor.ready(function (K) {
+            window.editor = K.create('#editor', {
+                cssPath: '/framework/assets/editor/plugins/code/prettify.css',
+                uploadJson: '/framework/assets/editor/handler/upload_json.ashx',
+                fileManagerJson: '/framework/assets/editor/handler/file_manager_json.ashx',
+                allowFileManager: true,
+                filterMode: false
+            });
+        });
+        */
+
+        function getImg() {
+            var content = editor.html();
+            var str_img = [];
+            var match = null; //三个是都要验证的。因为情况不同
+            var reg_html1 = /(?:]*src[\ ]*=[\ ]*(?:['"]?)(\S[^'"\ ]+)(?:['"]?\s[^>]*[>]{1}))/gi;
+            var reg_html2 = /(?:]*\s*o\:href=(?:['"]?)(\S[^'"\ ]+)(?:['"]?[^>]+>{1})(?:<\/v\:imagedata>))/gi;
+            var reg_html3 = /(?:]*src=(?:['"]?)(\S[^'"\ ]+)(?:['"]?[^>]+)(?:(?:(?:\/>){1})|(?:[>]{1})))/gi;
+            while ((match = reg_html1.exec(content)) != null) { //找到每个匹配进行操作。
+                str_img.push(match[1]);
+            }
+            while ((match = reg_html2.exec(content)) != null) { //找到每个匹配进行操作。
+                str_img.push(match[1]);
+            }
+            //这个循环验证会导致多余图片出现
+            //while ((match = reg_html3.exec(content)) != null) {//找到每个匹配进行操作。
+            //str_img.push(match[1]); 
+            //}
+
+
+            //多张图片赋值给下拉框
+            var dpimg = document.getElementById('upimg');
+            if (str_img.length > 0) {
+                dpimg.style.display = '';
+            }
+
+            var seindex = dpimg.selectedIndex;
+            dpimg.innerHTML = '<option>一请选择图片一</option>';
+
+
+            var strs = str_img.toString().split(','); //图片分割     
+            for (i = 0; i < strs.length; i++) {
+                var oOption = document.createElement("OPTION");
+                oOption.innerHTML = "Image" + (i + 1);
+                oOption.value = strs[i];
+                dpimg.options.add(oOption);
+            }
+
+            dpimg.onchange = function () {
+                var imgurl = this.options[this.selectedIndex].value;
+                if (imgurl != "") {
+                    cms.$(thumbId).value = imgurl;
+                    cms.$(thumbImg).src = imgurl;
+                }
+            };
+        }
+
+
+        function submitForm() {
+            if (cms.validator.validate()) {
+                var data = cms.json.toObject('form1');
+                data.Content = editor.html();
+                if(data.IsRedirect=='0')data.Location='';
+               /*
+                if (data.Content == '') {
+                    parent.M.alert('请填写内容！');
+                    return false;
+                }*/
+
+                cms.xhr.jsonPost('${url}', data, function (json) {
+                    if (json.result) {
+                        parent.M.alert('操作成功！');
+                        if(_dg)_dg.reload();
+                    } else {
+                        parent.M.alert(json.message);
+                    }
+                });
+            }
+            return false;
+        }
+        window.saveData = submitForm;
+
+        cms.$('alias').onblur = function () {
+            if (this.nodeName) {
+                var ele = this;
+                if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
+                    cms.validator.setTip(ele, false, 'error');
+                } else {
+                    cms.validator.removeTip(ele);
+                }
+            }
+        };
+
+        cms.$('alias').nextSibling.onclick = function () {
+
+            var e = this.previousSibling;
+            var _title = cms.val('title');
+            if (_title == '') {
+                cms.validator.setTip(e, false, null, '请先填写标题!');
+            } else {
+                cms.xhr.post('?', 'module=ajax&action=getspellword&word=' + encodeURIComponent(_title), function (result) {
+                    e.value = result.toLowerCase();
+                    e.onblur();
+                }, function () {
+                    cms.validator.setTip(e, false, null, '获取失败,请重试!');
+                });
+            }
+        };
+
+        cms.validator.init();
+
+
+    </script>
+</body>
+</html>
