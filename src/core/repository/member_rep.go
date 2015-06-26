@@ -267,11 +267,11 @@ func (this *memberRep) GetDeliverAddress(memberId int) []*member.DeliverAddress 
 
 // 获取配送地址
 func (this *memberRep) GetSingleDeliverAddress(memberId, deliverId int) *member.DeliverAddress {
-	var addr member.DeliverAddress
-	err := this.Connector.GetOrm().Get(deliverId, &addr)
+	var address member.DeliverAddress
+	err := this.Connector.GetOrm().Get(deliverId, &address)
 
-	if err == nil && addr.MemberId == memberId {
-		return &addr
+	if err == nil && address.MemberId == memberId {
+		return &address
 	}
 	return nil
 }

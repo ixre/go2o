@@ -17,7 +17,7 @@ type Page struct{
 }
 
 func NewPage(partnerId int, rep content.IContentRep,v *content.ValuePage) content.IPage {
-	return Page{
+	return &Page{
 		_contentRep: rep,
 		_partnerId:  partnerId,
 		_value:v,

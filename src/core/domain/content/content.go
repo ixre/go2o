@@ -18,7 +18,7 @@ type Content struct {
 }
 
 func NewContent(partnerId int, rep content.IContentRep) content.IContent {
-	return Content{
+	return &Content{
 		_contentRep: rep,
 		_partnerId:  partnerId,
 	}

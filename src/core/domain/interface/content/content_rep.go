@@ -9,6 +9,9 @@
 package content
 
 type IContentRep interface {
+	// 获取内容
+	GetContent(partnerId int)IContent
+	
 	// 根据编号获取页面
 	GetPageById(partnerId,id int)*ValuePage
 

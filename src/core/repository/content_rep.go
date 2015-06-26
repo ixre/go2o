@@ -10,6 +10,7 @@ package repository
 import (
 	"go2o/src/core/domain/interface/content"
 	"github.com/atnet/gof/db"
+	contentImpl "go2o/src/core/domain/content"
 )
 
 var _ content.IContentRep = new(contentRep)
@@ -23,6 +24,12 @@ func NewContentRep(c db.Connector) content.IContentRep {
 	return &contentRep{
 		Connector: c,
 	}
+}
+
+
+// 获取内容
+func (this *contentRep) GetContent(partnerId int)content.IContent{
+	return contentImpl.NewContent(partnerId,this)
 }
 
 // 根据编号获取页面
