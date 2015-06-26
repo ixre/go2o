@@ -24,4 +24,7 @@ type IAdvertisementRep interface{
 
 	// 根据名称获取广告
 	GetValueAdvertisementByName(partnerId int,name string)*ValueAdvertisement
+
+	// 获取轮播广告
+	GetValueGallery(advertisementId int)ValueGallery
 }

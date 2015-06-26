@@ -12,6 +12,9 @@ type IPartnerAdvertisement interface {
 	// 获取聚合根标识
 	GetAggregateRootId() int
 
+	// 初始化内置默认的广告
+	InitInternalAdvertisements()
+
 	// 根据编号获取广告
 	GetById(int)IAdvertisement
 

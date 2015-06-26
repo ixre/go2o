@@ -16,10 +16,12 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"go2o/src/core/domain/interface/ad"
 )
 
 type partnerService struct {
 	_partnerRep partner.IPartnerRep
+	_adRep ad.IAdvertisementRep
 	_query      *query.PartnerQuery
 }
 
@@ -49,6 +51,8 @@ func (this *partnerService) GetPartner(partnerId int) (*partner.ValuePartner, er
 func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) (int, error) {
 	var pt partner.IPartner
 	var err error
+	var isCreate bool
+
 	v.Id = partnerId
 
 	if partnerId > 0 {
@@ -59,6 +63,7 @@ func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) 
 			err = pt.SetValue(v)
 		}
 	} else {
+		isCreate = true
 		pt, err = this._partnerRep.CreatePartner(v)
 	}
 
@@ -66,7 +71,24 @@ func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) 
 		return 0, err
 	}
 
-	return pt.Save()
+
+	partnerId,err =  pt.Save()
+
+	if isCreate{
+		this.initializePartner(partnerId)
+	}
+
+	return partnerId,err
+}
+
+func (this *partnerService) initializePartner(partnerId int){
+
+	// 初始化广告
+	this._adRep.GetPartnerAdvertisement(partnerId).InitInternalAdvertisements()
+
+	// 初始化会员默认等级
+	pt, _ := this._partnerRep.GetPartner(partnerId)
+	pt.LevelManager().InitDefaultLevels()
 }
 
 // 根据主机查询商户编号

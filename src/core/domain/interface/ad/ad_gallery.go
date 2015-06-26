@@ -12,9 +12,6 @@ type IGalleryAd interface {
 	// 获取广告值
 	GetAdValue()ValueGallery
 
-	// 设置广告值
-	SetAdValue(ValueGallery)error
-
-	// 保存广告
-	Save()(int,error)
+	// 保存广告图片
+	SaveImage(v *ValueImage)(int,error)
 }

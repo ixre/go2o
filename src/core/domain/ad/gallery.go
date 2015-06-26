@@ -20,24 +20,19 @@ type GalleryAd struct{
 
 
 // 获取广告值
-func (this *GalleryAd) GetAdValue()ad.ValueGallery{
+func (this *GalleryAd) GetAdValue()ad.ValueGallery {
+	if this._adValue == nil {
+		if this.GetDomainId() > 0 {
+			this._adValue =  this.Rep.GetValueGallery(this.GetDomainId())
+		}else{
+			this._adValue = []*ad.ValueImage{}
+		}
+	}
 	return this._adValue
 }
 
-// 设置广告值
-func (this *GalleryAd) SetAdValue(v ad.ValueGallery)error{
-	this._adValue = v
-	return nil
-}
-
-// 保存广告
-func (this *GalleryAd) Save()(int,error){
-	id,err := this.Advertisement.Save()
-	if this._adValue != nil {
-		for _, v := range this._adValue {
-			v.AdvertisementId = this.GetDomainId()
-			this.Rep.SaveAdImageValue(v)
-		}
-	}
-	return id,err
+// 保存广告图片
+func (this *GalleryAd) SaveImage(v *ad.ValueImage)(int,error){
+	v.AdvertisementId = this.GetDomainId()
+	return this.Rep.SaveAdImageValue(v)
 }

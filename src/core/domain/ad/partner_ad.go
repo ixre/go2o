@@ -7,7 +7,10 @@
  * history :
  */
 package ad
-import "go2o/src/core/domain/interface/ad"
+import (
+	"go2o/src/core/domain/interface/ad"
+	"time"
+)
 
 var _ ad.IPartnerAdvertisement = new(PartnerAdvertisement)
 
@@ -20,6 +23,33 @@ func NewPartnerAdvertisement(partnerId int, rep ad.IAdvertisementRep) ad.IPartne
 	return &PartnerAdvertisement{
 		_rep: rep,
 		_partnerId:  partnerId,
+	}
+}
+
+// 初始化默认的广告位
+func (this *PartnerAdvertisement) InitInternalAdvertisements(){
+	partnerId := this.GetAggregateRootId()
+	unix := time.Now().Unix()
+
+	arr := []*ad.ValueAdvertisement{
+		&ad.ValueAdvertisement{
+			PartnerId:partnerId,
+			Name:"线上商店-首页轮播",
+			Type:ad.TypeGallery,
+			Enabled:1,
+		},
+		&ad.ValueAdvertisement{
+			PartnerId:partnerId,
+			Name:"APP入口轮播",
+			Type:ad.TypeGallery,
+			Enabled:1,
+		},
+	}
+
+	for _,v := range arr{
+		v.IsInternal = 1
+		v.UpdateTime = unix
+		this.CreateAdvertisement(v).Save()
 	}
 }
 
@@ -47,11 +77,20 @@ func (this *PartnerAdvertisement) GetByName(name string)ad.IAdvertisement{
 }
 
 // 创建广告对象
-func (t *PartnerAdvertisement) CreateAdvertisement(v *ad.ValueAdvertisement)ad.IAdvertisement{
-   if v.Type == ad.TypeGallery{
+func (this *PartnerAdvertisement) CreateAdvertisement(v *ad.ValueAdvertisement)ad.IAdvertisement {
+	adv := &Advertisement{
+		Rep:this._rep,
+		Value:v,
+	}
 
-   }
+	// 轮播广告
+	if v.Type == ad.TypeGallery {
+		return &GalleryAd{
+			Advertisement :adv,
+		}
+	}
+
 
 	//todo: other ad type
-	return nil
+	return adv
 }

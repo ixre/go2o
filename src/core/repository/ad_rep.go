@@ -74,3 +74,13 @@ func (this *advertisementRep) GetValueAdvertisementByName(partnerId int,name str
 	}
 	return nil
 }
+
+
+// 获取轮播广告
+func (this *advertisementRep) GetValueGallery(advertisementId int)ad.ValueGallery{
+	var list = []*ad.ValueImage{}
+	if err := this.Connector.GetOrm().Select(&list,"ad_id=?",advertisementId);err == nil {
+		return list
+	}
+	return nil
+}

@@ -41,7 +41,6 @@ func (this *Advertisement) Name()string{
 
 // 设置值
 func (this *Advertisement) SetValue(v *ad.ValueAdvertisement)error {
-
 	// 如果为系统内置广告，不能修改名称
 	if this.System() {
 		v.Name = this.Value.Name
