@@ -59,5 +59,9 @@ func (this *Advertisement)GetValue()*ad.ValueAdvertisement{
 
 // 保存广告
 func (this *Advertisement) Save()(int,error){
+	id := this.Rep.GetIdByName(this.Value.PartnerId,this.Value.Name)
+	if id > 0 && id != this.GetDomainId(){
+		return this.GetDomainId(),ad.ErrNameExists
+	}
 	return this.Rep.SaveAdvertisementValue(this.Value)
 }

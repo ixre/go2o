@@ -13,6 +13,9 @@ type IAdvertisementRep interface{
 	// 获取商户的广告管理
 	GetPartnerAdvertisement(partnerId int)IPartnerAdvertisement
 
+	// 根据名称获取广告编号
+	GetIdByName(partnerId int,name string)int
+
 	// 保存广告值
 	SaveAdvertisementValue(*ValueAdvertisement)(int,error)
 

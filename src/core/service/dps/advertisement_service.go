@@ -25,7 +25,6 @@ func NewAdvertisementService(rep ad.IAdvertisementRep) *advertisementService {
 
 func (this *advertisementService) GetAdvertisement(partnerId,id int)*ad.ValueAdvertisement{
 	pa := this._rep.GetPartnerAdvertisement(partnerId)
-	pa.InitInternalAdvertisements()
 	if adv := pa.GetById(id);adv != nil{
 		return adv.GetValue()
 	}

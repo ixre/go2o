@@ -81,14 +81,14 @@ p {
 	            if (J.validator.validate('form1')){
 	            		
 	                $JS.xhr.jsonPost(location.href, formData, function (json) {
-	                    if (json.Result) {
+	                    if (json.result) {
 	                        tip.innerHTML = '<span style="color:green">登录成功,正在进入管理中心...</span>';
 	                        setTimeout(function () {
-	                            window.parent.location.replace('dashboard');
+	                            window.parent.location.replace('/main/dashboard');
 	                        }, 1000);
 	                    }
 	                    else {
-	                        if (json.Message.indexOf('验证码') != -1) {
+	                        if (json.message.indexOf('验证码') != -1) {
 	                            refreshImage();
 	                        }
 	                        tip.innerHTML = '<span style="color:red">提示：' + json.Message + '</span>';

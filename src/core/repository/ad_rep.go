@@ -30,6 +30,14 @@ func (this *advertisementRep) GetPartnerAdvertisement(partnerId int)ad.IPartnerA
 	return adImpl.NewPartnerAdvertisement(partnerId,this)
 }
 
+
+// 根据名称获取广告编号
+func (this *advertisementRep) GetIdByName(partnerId int,name string)int{
+	var id int
+	this.Connector.ExecScalar("SELECT id FROM pt_ad WHERE partner_id=? AND name=?",&id,partnerId,name)
+	return id
+}
+
 // 保存广告值
 func (this *advertisementRep) SaveAdvertisementValue(v *ad.ValueAdvertisement)(int,error){
 	var err error

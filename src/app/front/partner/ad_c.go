@@ -28,14 +28,14 @@ type adC struct {
 }
 
 //广告列表
-func (this *contentC) List(ctx *web.Context) {
+func (this *adC) List(ctx *web.Context) {
 	dps.AdvertisementService.GetAdvertisement(this.GetPartnerId(ctx),0)
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 	}, "views/partner/ad/ad_list.html")
 }
 
 // 修改广告
-func (this *contentC) Edit(ctx *web.Context) {
+func (this *adC) Edit(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
@@ -51,7 +51,7 @@ func (this *contentC) Edit(ctx *web.Context) {
 }
 
 // 保存广告
-func (this *contentC) Create(ctx *web.Context) {
+func (this *adC) Create(ctx *web.Context) {
 	e := content.ValuePage{
 		Enabled:1,
 	}
@@ -65,7 +65,7 @@ func (this *contentC) Create(ctx *web.Context) {
 		"views/partner/ad/ad_edit.html")
 }
 
-func (this *contentC) SaveAd_post(ctx *web.Context) {
+func (this *adC) SaveAd_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
