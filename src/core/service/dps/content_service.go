@@ -47,6 +47,7 @@ func (this *contentService)  SavePage(partnerId int, v *content.ValuePage)(int,e
 
 	if v.Id > 0 {
 		page = c.GetPage(v.Id)
+		page.SetValue(v)
 	}else{
 		page = c.CreatePage(v)
 	}

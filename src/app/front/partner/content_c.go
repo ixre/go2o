@@ -72,7 +72,6 @@ func (this *contentC) SavePage_post(ctx *web.Context) {
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-
 	e.UpdateTime = time.Now().Unix()
 	e.PartnerId = partnerId
 

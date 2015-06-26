@@ -7,7 +7,10 @@
  * history :
  */
 package content
-import "go2o/src/core/domain/interface/content"
+import (
+	"go2o/src/core/domain/interface/content"
+	"time"
+)
 
 var _ content.IPage = new(Page)
 type Page struct{
@@ -44,5 +47,6 @@ func (this *Page) SetValue(v *content.ValuePage)error{
 
 // 保存
 func (this *Page) Save()(int,error){
+	this._value.UpdateTime = time.Now().Unix()
 	return this._contentRep.SavePage(this._partnerId,this._value)
 }
