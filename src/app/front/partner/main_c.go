@@ -25,7 +25,10 @@ type mainC struct {
 
 //入口
 func (this *mainC) Index(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte("<script>location.replace('/dashboard')</script>"))
+	if this.baseC.Requesting(ctx) {
+		ctx.ResponseWriter.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+	}
+	this.baseC.RequestEnd(ctx)
 }
 
 func (this *mainC) Logout(ctx *web.Context) {

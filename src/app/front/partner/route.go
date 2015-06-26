@@ -23,9 +23,10 @@ func Handle(ctx *web.Context) {
 
 //注册路由
 func registerRoutes() {
-	bc := new(baseC)
+	//bc := new(baseC)
 	mc := &mainC{} //入口控制器
 	lc := &loginC{}
+	routes.Register("main",new(mainC))
 	routes.Register("shop", new(shopC))             //商家门店控制器
 	routes.Register("goods", new(goodsC))           //商品控制器
 	routes.Register("comm", new(commC))             // 通用控制器
@@ -36,6 +37,7 @@ func registerRoutes() {
 	routes.Register("delivery", new(coverageAreaC)) // 配送区域控制器
 	routes.Register("member", new(memberC))
 	routes.Register("sale", new(saleC))
+	routes.Register("content",new(contentC))
 
 	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {
@@ -54,12 +56,8 @@ func registerRoutes() {
 	// 静态文件处理
 	routes.Add("/static/*", util.HttpStaticFileHandler)
 
-	routes.Add("^/[^/]*$", func(ctx *web.Context) {
-		if bc.Requesting(ctx) {
-			mvc.Handle(mc, ctx, true)
-		}
-		bc.RequestEnd(ctx)
-	})
+	// 首页
+	routes.Add("/", mc.Index)
 
 }
 
