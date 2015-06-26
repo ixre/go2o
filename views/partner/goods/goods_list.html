@@ -146,15 +146,15 @@
     $JS.$('btnAdd').onclick=addRec;
 
     function addRec(){
-        $JS.tab.open('新增商品', 'goods/create', true);
+        $JS.tab.open('新增商品', '/goods/create', true);
     }
 
     function setSaleTag(id){
-        $JS.dialog.create2('设置商品销售标签',true,true).open('goods/setSaleTag?id=' + id,400,300);
+        $JS.dialog.create2('设置商品销售标签',true,true).open('/goods/setSaleTag?id=' + id,400,300);
     }
 
     function editRec(id){
-        $JS.tab.open('修改商品', 'goods/goodsCtrl?item_id=' + id,  true);
+        $JS.tab.open('修改商品', '/goods/goodsCtrl?item_id=' + id,  true);
     }
 
     function delRec(id) {

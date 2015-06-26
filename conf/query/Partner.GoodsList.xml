@@ -20,7 +20,7 @@ on_shelves,
 f.`create_time`,
 f.`update_time`
 FROM `gs_item` f INNER JOIN gs_category c ON f.category_id = c.id
-WHERE c.partner_id={partnerId} AND ({state}<0 OR state={state})
+WHERE c.partner_id={partner_id} AND ({state}<0 OR state={state})
  AND ({cid}<0 OR f.category_id={cid})
  AND ('{keyword}'='' OR f.name Like '%{keyword}%')
  /*AND ('{cost1}'='' OR cost  */
@@ -32,7 +32,7 @@ WHERE c.partner_id={partnerId} AND ({state}<0 OR state={state})
   <Total>
     <![CDATA[
 		    SELECT COUNT(0) FROM `gs_item` f INNER JOIN gs_category c ON f.category_id = c.id
-            WHERE c.partner_id={partnerId} AND ({state}<0 OR state={state})
+            WHERE c.partner_id={partner_id} AND ({state}<0 OR state={state})
              AND ({cid}<= 0 OR f.category_id={cid})
              AND ('{keyword}'='' OR f.name Like '%{keyword}%')
              /*AND ('{cost1}'='' OR cost  */

@@ -44,7 +44,7 @@ func GetExportData(ctx *web.Context, partnerId int) {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
 
-		parameter.Parameters["partnerId"] = strconv.Itoa(partnerId)
+		parameter.Parameters["partner_id"] = strconv.Itoa(partnerId)
 
 		if page != "" {
 			parameter.Parameters["pageIndex"] = page

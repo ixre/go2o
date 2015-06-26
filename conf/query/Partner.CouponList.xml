@@ -21,7 +21,7 @@
             lv.name as limit_levelName
             FROM pm_coupon c LEFT JOIN pt_member_level lv
              ON c.min_level = lv.value
-             WHERE c.partner_id={partnerId} AND lv.partner_id={partnerId} AND code LIKE '%{keyword}%'
+             WHERE c.partner_id={partner_id} AND lv.partner_id={partner_id} AND code LIKE '%{keyword}%'
             ORDER BY c.update_time DESC,c.create_time desc LIMIT {page_start},{page_size}
      ]]>
   </Query>
@@ -29,7 +29,7 @@
   <Total>
     <![CDATA[SELECT COUNT(0) FROM pm_coupon c LEFT JOIN pt_member_level lv
              ON c.min_level = lv.value
-             WHERE c.partner_id={partnerId} AND lv.partner_id={partnerId}
+             WHERE c.partner_id={partner_id} AND lv.partner_id={partner_id}
                AND code LIKE '%{keyword}%']]>
   </Total>
 </ExportItemConfig>

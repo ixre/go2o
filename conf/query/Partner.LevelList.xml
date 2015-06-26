@@ -2,7 +2,7 @@
 <ExportItemConfig>
   <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
   <Query>
-    <![CDATA[SELECT * FROM pt_member_level WHERE partner_id={partnerId}
+    <![CDATA[SELECT * FROM pt_member_level WHERE partner_id={partner_id}
     AND ({enabled}<0 OR enabled={enabled}) AND name Like '%{keyword}%'
     ORDER BY `value`
      limit {page_start},{page_size}
@@ -10,7 +10,7 @@
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM pt_member_level WHERE partner_id={partnerId}
+    <![CDATA[SELECT COUNT(0) FROM pt_member_level WHERE partner_id={partner_id}
     AND ({enabled}<0 OR enabled={enabled}) AND name Like '%{keyword}%']]>
   </Total>
 </ExportItemConfig>

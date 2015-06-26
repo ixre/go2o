@@ -246,11 +246,11 @@
     $JS.$('btnAdd').onclick=addRec;
 
     function addRec(){
-        $JS.tab.open('新增商品', 'goods/create', true);
+        $JS.tab.open('新增商品', '/goods/create', true);
     }
 
     function editRec(id){
-        $JS.tab.open('修改商品', 'goods/edit?id=' + id,  true);
+        $JS.tab.open('修改商品', '/goods/edit?id=' + id,  true);
     }
 
     function delRec(id) {
