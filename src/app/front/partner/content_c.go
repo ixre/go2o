@@ -51,7 +51,7 @@ func (this *contentC) Page_edit(ctx *web.Context) {
 // 保存页面
 func (this *contentC) Page_create(ctx *web.Context) {
 	e := content.ValuePage{
-		Enabled:true,
+		Enabled:1,
 	}
 
 	js, _ := json.Marshal(e)

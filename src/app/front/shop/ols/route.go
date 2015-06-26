@@ -44,6 +44,7 @@ func registerRoutes() {
 	cc := &CartC{}
 	uc := &UserC{}
 	lc := &ListC{}
+	ctc := &ContentC{}
 
 	routes.Register("main", mc)
 	routes.Register("buy", sp)
@@ -51,6 +52,7 @@ func registerRoutes() {
 	routes.Register("list", lc)
 	routes.Register("cart", cc)
 	routes.Register("user", uc)
+	routes.Register("content",ctc)
 
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {

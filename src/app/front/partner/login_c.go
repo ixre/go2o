@@ -36,7 +36,12 @@ func (this *loginC) Login_post(ctx *web.Context) {
 			message = err.Error()
 		}
 	}
-	web.Seria2json(w, result, message, nil)
+
+	if result{
+		w.Write([]byte("{result:true}"))
+	}else{
+		w.Write([]byte("{result:false,message:'"+message+"'}"))
+	}
 }
 
 //验证登陆

@@ -20,6 +20,7 @@ import (
 	"go2o/src/core/service/dps"
 	"net/url"
 	"strings"
+	"html/template"
 )
 
 type BaseC struct {
@@ -149,10 +150,19 @@ func (this *BaseC) ResultOutput(ctx *web.Context, result gof.Message) {
 }
 
 // 执行模板
-func (this *BaseC) ExecuteTemplate(ctx *web.Context, d gof.TemplateDataMap, files ...string) {
+func (this *BaseC) ExecuteTemplate(ctx *web.Context, dataMap gof.TemplateDataMap, files ...string) {
 	newFiles := make([]string, len(files))
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
-	ctx.App.Template().Execute(ctx.ResponseWriter, d, newFiles...)
+	ctx.App.Template().Execute(ctx.ResponseWriter, dataMap, newFiles...)
+}
+
+func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context,funcMap template.FuncMap,
+	dataMap gof.TemplateDataMap, files ...string) {
+	newFiles := make([]string, len(files))
+	for i, v := range files {
+		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
+	}
+	ctx.App.Template().ExecuteWithFunc(ctx.ResponseWriter,funcMap, dataMap, newFiles...)
 }

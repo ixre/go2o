@@ -36,6 +36,16 @@ func (this *contentService) GetPage(partnerId,id int)*content.ValuePage{
 	return nil
 }
 
+// 根据标识获取页面
+func (this *contentService)GetPageByIndent(partnerId int,indent string)*content.ValuePage {
+	c := this._contentRep.GetContent(partnerId)
+	page := c.GetPageByStringIndent(indent)
+	if page != nil{
+		return page.GetValue()
+	}
+	return nil
+}
+
 // 保存页面
 func (this *contentService)  SavePage(partnerId int, v *content.ValuePage)(int,error){
 	c := this._contentRep.GetContent(partnerId)
