@@ -62,16 +62,15 @@ func (this *MainC) Msc(ctx *web.Context) {
 
 	if ok {
 		ctx.Items["client_member_id"] = memberId
-		rtu := form.Get("return_url")
-		if len(rtu) == 0 {
-			rtu = "/"
-		}
 
-		ctx.ResponseWriter.Header().Add("Location", rtu)
-		ctx.ResponseWriter.WriteHeader(302)
-	} else {
-		ctx.ResponseWriter.Write([]byte("not authorized!"))
 	}
+
+	rtu := form.Get("return_url")
+	if len(rtu) == 0 {
+		rtu = "/"
+	}
+	ctx.ResponseWriter.Header().Add("Location", rtu)
+	ctx.ResponseWriter.WriteHeader(302)
 }
 
 // Member session disconnect

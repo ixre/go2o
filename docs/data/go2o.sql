@@ -496,7 +496,7 @@ CREATE TABLE `mm_member` (
   `avatar` varchar(80) DEFAULT NULL,
   `birthday` varchar(20) DEFAULT NULL,
   `phone` varchar(15) DEFAULT NULL,
-  `address` varchar(100) DEFAULT NULL COMMENT '收货地址',
+  `address` varchar(100) DEFAULT NULL COMMENT '送餐地址',
   `qq` varchar(15) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `reg_ip` varchar(20) DEFAULT NULL,
@@ -833,12 +833,17 @@ DROP TABLE IF EXISTS `pt_page`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` varchar(45) DEFAULT NULL,
-  `type` varchar(10) DEFAULT NULL,
-  `content` varchar(5000) DEFAULT NULL,
+  `partner_id` int(11) DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `str_indent` varchar(50) DEFAULT NULL,
+  `keyword` varchar(100) DEFAULT NULL,
+  `description` varchar(150) DEFAULT NULL,
+  `css_path` varchar(100) DEFAULT NULL,
+  `body` text,
   `update_time` int(11) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='合作商页面';
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='合作商页面';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -847,7 +852,6 @@ CREATE TABLE `pt_page` (
 
 LOCK TABLES `pt_page` WRITE;
 /*!40000 ALTER TABLE `pt_page` DISABLE KEYS */;
-INSERT INTO `pt_page` VALUES (1,'101','notice','',2013);
 /*!40000 ALTER TABLE `pt_page` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1218,4 +1222,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-25 20:21:17
+-- Dump completed on 2015-06-26 17:06:13
