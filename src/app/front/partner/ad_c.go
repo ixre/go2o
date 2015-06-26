@@ -38,9 +38,12 @@ func (this *adC) List(ctx *web.Context) {
 func (this *adC) Ad_ctrl(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
+	partnerId := this.GetPartnerId(ctx)
+	e := dps.AdvertisementService.GetAdvertisement(partnerId,id)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 		"id":id,
+		"type":e.Type,
 	}, "views/partner/ad/ad_ctrl.html")
 }
 
