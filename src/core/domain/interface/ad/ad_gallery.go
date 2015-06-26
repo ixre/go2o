@@ -14,4 +14,7 @@ type IGalleryAd interface {
 
 	// 设置广告值
 	SetAdValue(*ValueGallery)error
+
+	// 保存广告
+	Save()(int,error)
 }

@@ -43,10 +43,9 @@ func (this *contentRep) GetPageById(partnerId,id int)*content.ValuePage {
 }
 
 // 根据标识获取页面
-func (this *contentRep) GetPageByStringIndent(partnerId int,indent string)*content.ValuePage{
+func (this *contentRep) GetPageByStringIndent(partnerId int,indent string)*content.ValuePage {
 	var e content.ValuePage
-	if err := this.Connector.GetOrm().GetBy(&e,"partner_id=? and str_indent=?",partnerId,indent);
-	err == nil && e.PartnerId == partnerId {
+	if err := this.Connector.GetOrm().GetBy(&e, "partner_id=? and str_indent=?", partnerId, indent); err == nil {
 		return &e
 	}
 	return nil

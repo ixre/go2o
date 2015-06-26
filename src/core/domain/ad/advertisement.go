@@ -12,47 +12,53 @@ import "go2o/src/core/domain/interface/ad"
 var _ ad.IAdvertisement = new(Advertisement)
 
 type Advertisement struct {
-	_rep ad.IAdvertisementRep
-	_value *ad.ValueAdvertisement
+	Rep ad.IAdvertisementRep
+	Value *ad.ValueAdvertisement
 }
 
 // 获取领域对象编号
 func (this *Advertisement) GetDomainId() int{
-	if this._value != nil {
-		return this._value.Id
+	if this.Value != nil {
+		return this.Value.Id
 	}
 	return 0
 }
 
 // 是否为系统内置的广告
 func (this *Advertisement) System()bool{
-	return this._value.IsInternal
+	return this.Value.IsInternal
 }
 
 // 广告类型
 func (this *Advertisement) Type()int{
-	return this._value.Type
+	return this.Value.Type
 }
 
 // 广告名称
 func (this *Advertisement) Name()string{
-	return this._value.Name
+	return this.Value.Name
 }
 
 // 设置值
-func (this *Advertisement) SetValue(v *ad.ValueAdvertisement)error{
-	if v != nil {
-		this._value = v
+func (this *Advertisement) SetValue(v *ad.ValueAdvertisement)error {
+
+	// 如果为系统内置广告，不能修改名称
+	if this.System() {
+		v.Name = this.Value.Name
+		v.Enabled = 1
+		v.IsInternal = 1
 	}
+	this.Value = v
+
 	return nil
 }
 
 // 获取值
 func (this *Advertisement)GetValue()*ad.ValueAdvertisement{
-	return this._value
+	return this.Value
 }
 
 // 保存广告
 func (this *Advertisement) Save()(int,error){
-	return this._rep.SaveAdvertisementValue(this._value)
+	return this.Rep.SaveAdvertisementValue(this.Value)
 }
