@@ -34,7 +34,7 @@ type ValuePage struct {
 	Body       string `db:"body"`
 
 	// 修改时间
-	UpdateTime int    `db:"update_time"`
+	UpdateTime int64    `db:"update_time"`
 
 	// 是否启用
 	Enabled    int    `db:"enabled"`
