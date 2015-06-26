@@ -10,10 +10,10 @@ package ad
 
 type IGalleryAd interface {
 	// 获取广告值
-	GetAdValue()*ValueGallery
+	GetAdValue()ValueGallery
 
 	// 设置广告值
-	SetAdValue(*ValueGallery)error
+	SetAdValue(ValueGallery)error
 
 	// 保存广告
 	Save()(int,error)

@@ -26,7 +26,7 @@ func (this *Advertisement) GetDomainId() int{
 
 // 是否为系统内置的广告
 func (this *Advertisement) System()bool{
-	return this.Value.IsInternal
+	return this.Value.IsInternal == 1
 }
 
 // 广告类型
