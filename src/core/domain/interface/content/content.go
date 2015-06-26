@@ -20,4 +20,20 @@ type IContent interface{
 
 	// 根据字符串标识获取页面
 	GetPageByStringIndent(indent string)IPage
+
+	// 删除页面
+	DeletePage(id int)error
+
+
+	// 创建文章
+	CreateArticle(*ValuePage)IArticle
+
+	// 获取文章
+	GetArticle(id int)IArticle
+
+	// 获取文章列表
+	GetArticleList(categoryId int,start,over int)[]IPage
+
+	// 删除文章
+	DeleteArticle(id int)error
 }
