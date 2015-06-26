@@ -34,6 +34,16 @@ func (this *adC) List(ctx *web.Context) {
 	}, "views/partner/ad/ad_list.html")
 }
 
+// 广告控制台
+func (this *adC) Ad_ctrl(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	id, _ := strconv.Atoi(form.Get("id"))
+
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"id":id,
+	}, "views/partner/ad/ad_ctrl.html")
+}
+
 // 修改广告
 func (this *adC) Edit(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
