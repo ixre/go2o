@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="form_adv1" class="form margin30">
+    <input type="hidden" field="Id" value="0"/>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>广告名称：</div>
+        <div class="in">
+            <input type="text" class="box ui-validate" required="true" field="Name"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>广告类型：</div>
+        <div class="in">
+            <select field="Type" required="true" class="ui-validate">
+                <option value="">一请选择一</option>
+                <option value="1">文本</option>
+                <option value="2">图片</option>
+                <option value="3">图片轮播</option>
+            </select>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
+        <div class="in">
+            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled" value="1" checked="checked" /><label for="Enabled1">启用</label>
+            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled2" value="0" /><label for="Enabled2">停用</label>
+        </div>
+    </div>
+
+
+    <div class="fl">
+        <div class="label">&nbsp;</div>
+        <div class="in">
+            <input class="btn" id="btn_save" type="button" value="提交" />
+        </div>
+    </div>
+</div>
+
+<script src="{{.static_serve}}/assets/js/core_full.js"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
+
+<script>
+    var entity ={{.entity}} ||{};
+    $JS.json.bind('form_adv1', entity);
+
+    $JS.$('btn_save').onclick = function() {
+        if ($JS.validator.validate('form_adv1')) {
+            var data = $JS.json.toObject('form_adv1');
+            $JS.xhr.jsonPost('SaveAd', data, function(json) {
+                if(json.result){
+                    window.parent.$.messager.alert('提示', '保存成功！',"ok",function(){
+                        $JS.tab.closeAndRefresh('广告管理');
+                    });
+                }else {
+                    window.parent.$.messager.alert('提示',  json.message);
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
