@@ -167,7 +167,7 @@ div.no_goods{text-align: center;color:#ff0000;margin:30px 0;}
 /** 订单确认 **/
 /* shopping_confirm */
 .shopping-confirm{}
-.shopping-confirm p.shopping-error{font-size:200%;text-align:center;color:#ff0000;}
+.shopping-confirm p.shopping-error{font-size:1rem;text-align:center;color:#ff0000;}
 
 .order-confirm-panel{position:relative;margin:10px 1rem;font-size:0.8rem;}
 .order-confirm-panel .item .item_ctrl{display:none;}
@@ -230,3 +230,4 @@ div.no_goods{text-align: center;color:#ff0000;margin:30px 0;}
 /** 单页 **/
 .page-layout{margin:1rem 2rem;font-size:0.8rem;line-height: 1.5rem;}
 .page-layout img{max-width: 100%;}
+

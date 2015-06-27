@@ -20,14 +20,17 @@ border-bottom:solid 1px #ddd;margin-bottom:15px;
 .page-header{top:26px;}
 .page-navigator{top:130px;}
 
-.page-top{background:#FFF;color:#000;opacity:1;filter:alpha(opacity=100);
+.page-top{color:#000;opacity:1;filter:alpha(opacity=100);
     font-size:100%;font-size:100%;border-bottom: solid 1px #AAA;
     line-height:3rem;padding:0 1%;font-size:1.2rem;height:3rem;
     position:fixed;top:0;left:0;width:98%;z-index: 100;
+    background:-webkit-linear-gradient(#F0F0F0,#E5E5E5);
+    background:-moz-linear-gradient(#F0F0F0,#E5E5E5);
+    background:linear-gradient(#F0F0F0,#E5E5E5);
 }
-.page-top .btn_button{border:solid 1px #333;font-size:1.5rem;line-height: 2rem;margin:0.3rem 0.5rem 0;
-    background: #FFF;border-radius:10rem;color:#333;cursor:pointer;padding:0.5rem 1rem;}
-.page-top .btn_close{border-color: #FF0000;color:#FF0000;border:none;padding:0;}
+.page-top .btn_button{border:solid 1px #333;font-size:18px;line-height: 26px;margin:0.5rem 0.5rem 0;
+    background:#FFF;border-radius:10rem;color:#333;cursor:pointer;width:26px;height:26px;text-align:center;}
+.page-top .btn_close{border:none;padding:0;background:none;}
 
 
 /* 首页 */
@@ -57,14 +60,18 @@ border-bottom:solid 1px #ddd;margin-bottom:15px;
 .page-uc .nav li span{border-right:solid 1px #FFF;float:right;height:1.2rem;position: absolute;top:0.3rem;right: 0;}
 .page-uc .nav li .iconfont{display:block;font-size:1.2rem;}
 
-.menu-bar{margin:1rem;border:solid 2px #888;border-radius:10px;}
-.menu-bar div.tit{line-height: 40px;background:#F5F5F5;border-radius:10px 10px 0 0;
-    border-bottom:solid 1px #aaa;font-size:1rem;color:#330000;padding:0 2rem;line-height: 4rem;}
-.menu-bar div.con{background:#FFF;}
-.menu-bar div.con ul{margin:0;padding:0;list-style: none;}
+.menu-bar{margin:1rem;border:solid 1px #DDD;border-radius:10px;background:#F5F5F5;}
+.menu-bar div.tit{border-radius:10px 10px 0 0;
+    border-bottom:solid 1px #DDD;font-size:1rem;color:#330000;padding:0 2rem;line-height:3.5rem;
+    background:-moz-linear-gradient(#FFF,#EEE);
+    background:-webkit-linear-gradient(#FFF,#EEE);
+    background:linear-gradient(#FFF,#EEE);
+}
+.menu-bar div.con{}
+.menu-bar div.con ul{margin:0;padding:0;list-style: none;padding-bottom:10px;}
 .menu-bar div.con li{padding:0.5rem 2rem;
     border-bottom:solid 1px #DDD;border-top:solid 1px #FFF;;
-    line-height: 2rem;background:#F7F7F7;}
+    line-height: 2rem;}
 .menu-bar div.con li:last-child{border-bottom:none;}
 .menu-bar div.con li a{color:#333;font-size:0.8rem;}
 
@@ -118,6 +125,7 @@ border-bottom:solid 1px #ddd;margin-bottom:15px;
 .ui-grid-table tr td.first{border-left:none;}
 .ui-gird-table-meta {border:solid 1px #ddd;border-top:0;width:98%;padding-right:2%;overflow:hidden;}
 
+.page-main .form{border:solid 1px #DDD;background:#F5F5F5;padding:10px 0;}
 .form{}
 .form .fl div.label{width:4rem;margin-right: -4rem;line-height:2rem;height:2rem;overflow:hidden;color:#000;}
 .form .fl div.in{margin-left:4.2rem;}
@@ -132,14 +140,18 @@ a.button{border:solid 1px #ddd;background: linear-gradient(to bottom, #F8F8F8 0p
 a.btn{border:solid 1px #ddd;display: inline-block;padding: 0 1.5rem;background:#f0f0f0;border-radius:5px;}
 a.btn-orange{background:#FF8C00;color:#FFF;border-color: #FF6600;}
 a.btn-orange:hover{background:#FFD700;border-color:#FFA500;}
-input.box{border:solid 1px #888;border-radius: 3px;line-height:1.8rem;height:1.8rem;padding:0 10px;margin:1px;}
+input.box{border:solid 1px #888;border-radius: 3px;line-height:1.5rem;height:1.5rem;padding:0 10px;margin:1px;}
 input.box:focus{border:solid 2px #0A0;margin:0;background:#FFFFCC;}
-input.btn{padding: 5px 20px;
-    border-radius: 2px;cursor: pointer;
-    background: #E5E5E5 none repeat scroll 0% 0%;
-    box-shadow: 0px 0px 0px #EEE, 0px 10px 15px #EEE inset;
+input.btn{padding: 0px 20px;
+    border-radius: 5px;cursor: pointer;
+    box-shadow: 0px 1px 1px #EEE;
     border: 1px solid #CCC;
     font-size: 12px;color:#333;
+		line-height:1.5;
+		background: -webkit-linear-gradient(#F5F5F5, #E5E5E5); /* Safari 5.1 - 6.0 */
+		background: -o-linear-gradient(#F5F5F5, #E5E5E5); /* Opera 11.1 - 12.0 */
+		background: -moz-linear-gradient(#F5F5F5, #E5E5E5); /* Firefox 3.6 - 15 */
+		background: linear-gradient(#F5F5F5, #E5E5E5); /* 标准的语法 */
 }
 input.btn:hover{
     background: #FFF none repeat scroll 0% 0%;
