@@ -23,23 +23,11 @@ func Handle(ctx *web.Context) {
 
 func init() {
 	bc := new(BaseC)
-	//pc := &partnerC{}
+	pc := &partnerC{bc}
 	mc := &MemberC{bc}
-
-	//	ws := &websocketC{App: c}
-
-	//	routes.Add("^/ws/", func(ctx *web.Context) {
-	//		//cross ajax request
-	//		ctx.ResponseWriter.Header().Add("Access-Control-Allow-Origin", "*")
-	//		mvc.Handle(ws, ctx, false)
-	//	})
-	//
-	//	routes.Add("/", func(ctx *web.Context) {
-	//		ctx.ResponseWriter.Write([]byte("page not found"))
-	//	})
-
 	Routes.Add("/", ApiTest)
 	Routes.Add("/go2o_api_v1/mm_login", mc.Login)       // 会员登陆接口
 	Routes.Add("/go2o_api_v1/mm_register", mc.Register) // 会员登陆接口
 	Routes.Add("/go2o_api_v1/member/*", mc.Handle)      // 会员接口
+	Routes.Add("/go2o_api_v1/partner/*", pc.handle)      // 会员接口
 }

@@ -32,6 +32,21 @@ func (this *advertisementService) GetAdvertisement(partnerId, id int) *ad.ValueA
 	return nil
 }
 
+// 获取广告及广告数据
+func (this *advertisementService) GetAdvertisementAndDataByName(partnerId int, name string)(*ad.ValueAdvertisement,interface{}) {
+	pa := this._rep.GetPartnerAdvertisement(partnerId)
+	if adv := pa.GetByName(name); adv != nil {
+		v := adv.GetValue()
+		switch adv.Type(){
+			case ad.TypeGallery:
+			return v,adv.(ad.IGalleryAd).GetAdValue()
+			//todo: 其他的广告类型
+		}
+		return v,nil
+	}
+	return nil,nil
+}
+
 // 保存广告
 func (this *advertisementService) SaveAdvertisement(partnerId int, v *ad.ValueAdvertisement) (int, error) {
 	pa := this._rep.GetPartnerAdvertisement(partnerId)
