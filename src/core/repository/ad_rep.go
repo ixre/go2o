@@ -59,7 +59,7 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage)(int,error){
 		_,_,err = orm.Save(v.Id,v)
 	}else{
 		_,_,err = orm.Save(nil,v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_ad_image WHERE ad_id=? AND ",&v.Id,v.AdvertisementId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_ad_image WHERE ad_id=?",&v.Id,v.AdvertisementId)
 	}
 	return v.Id,err
 }
