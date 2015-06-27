@@ -18,7 +18,7 @@ type GalleryAd struct {
 	_adValue ad.ValueGallery
 }
 
-// 获取广告值
+// 获取广告数据
 func (this *GalleryAd) GetAdValue() ad.ValueGallery {
 	if this._adValue == nil {
 		if this.GetDomainId() > 0 {
@@ -28,6 +28,18 @@ func (this *GalleryAd) GetAdValue() ad.ValueGallery {
 		}
 	}
 	return this._adValue
+}
+
+// 获取可用的广告数据
+func (this *GalleryAd) GetEnabledAdValue()ad.ValueGallery{
+	val := this.GetAdValue()
+	newVal := ad.ValueGallery{}
+	for _,v := range val{
+		if v.Enabled == 1 {
+			newVal = append(newVal, v)
+		}
+	}
+	return newVal
 }
 
 // 保存广告图片
