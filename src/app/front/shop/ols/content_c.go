@@ -11,12 +11,12 @@ package ols
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
-	"go2o/src/core/service/dps"
-	"strconv"
-	"regexp"
 	"go2o/src/core/domain/interface/content"
-	"net/http"
+	"go2o/src/core/service/dps"
 	"html/template"
+	"net/http"
+	"regexp"
+	"strconv"
 )
 
 type ContentC struct {
@@ -35,7 +35,7 @@ func (this *ContentC) Page(ctx *web.Context) {
 	if b, _ := regexp.MatchString("^\\d+$", idParam); b {
 		id, _ := strconv.Atoi(form.Get("id"))
 		page = dps.ContentService.GetPage(p.Id, id)
-	}else {
+	} else {
 		page = dps.ContentService.GetPageByIndent(p.Id, idParam)
 	}
 
@@ -46,11 +46,11 @@ func (this *ContentC) Page(ctx *web.Context) {
 
 	this.BaseC.ExecuteTemplate(ctx,
 		gof.TemplateDataMap{
-			"partner":   p,
-			"member":    mm,
-			"conf":      siteConf,
-			"page":page,
-			"rawBody":template.HTML(page.Body),
+			"partner": p,
+			"member":  mm,
+			"conf":    siteConf,
+			"page":    page,
+			"rawBody": template.HTML(page.Body),
 		},
 		"views/shop/ols/{device}/page.html",
 		"views/shop/ols/{device}/inc/header.html",

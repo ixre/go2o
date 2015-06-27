@@ -2,6 +2,7 @@ package shopping
 
 import (
 	"bytes"
+	"fmt"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/sale"
@@ -10,7 +11,6 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type Cart struct {
@@ -242,7 +242,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 			return err
 		}
 		deliver = m.GetDeliver(deliverId)
-		fmt.Println("-----",m.GetAggregateRootId(),deliverId)
+		fmt.Println("-----", m.GetAggregateRootId(), deliverId)
 		if deliver == nil {
 			return member.ErrInvalidSession
 		}

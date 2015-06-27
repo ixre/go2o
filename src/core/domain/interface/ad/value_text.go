@@ -10,17 +10,17 @@ package ad
 
 type ValueText struct {
 	// 编号
-	Id       int `db:"id" auto:"yes" pk:"true"`
+	Id int `db:"id" auto:"yes" pk:"true"`
 
 	// 广告编号
 	AdvertisementId int `db:"ad_id"`
 
 	// 标题
-	Title    string `db:"title"`
+	Title string `db:"title"`
 
 	// 链接
-	LinkUrl  string `db:"link_url"`
+	LinkUrl string `db:"link_url"`
 
 	// 是否启用
-	Enabled  int `db:"enabled"`
+	Enabled int `db:"enabled"`
 }

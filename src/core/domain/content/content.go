@@ -31,12 +31,12 @@ func (this *Content) GetAggregateRootId() int {
 
 // 创建页面
 func (this *Content) CreatePage(v *content.ValuePage) content.IPage {
-	return NewPage(this.GetAggregateRootId(),this._contentRep,v)
+	return NewPage(this.GetAggregateRootId(), this._contentRep, v)
 }
 
 // 获取页面
 func (this *Content) GetPage(id int) content.IPage {
-	v := this._contentRep.GetPageById(this.GetAggregateRootId(),id)
+	v := this._contentRep.GetPageById(this.GetAggregateRootId(), id)
 	if v != nil {
 		return this.CreatePage(v)
 	}
@@ -45,7 +45,7 @@ func (this *Content) GetPage(id int) content.IPage {
 
 // 根据字符串标识获取页面
 func (this *Content) GetPageByStringIndent(indent string) content.IPage {
-	v := this._contentRep.GetPageByStringIndent(this.GetAggregateRootId(),indent)
+	v := this._contentRep.GetPageByStringIndent(this.GetAggregateRootId(), indent)
 	if v != nil {
 		return this.CreatePage(v)
 	}
@@ -54,7 +54,7 @@ func (this *Content) GetPageByStringIndent(indent string) content.IPage {
 
 // 删除页面
 func (this *Content) DeletePage(id int) error {
-	return this._contentRep.DeletePage(this.GetAggregateRootId(),id)
+	return this._contentRep.DeletePage(this.GetAggregateRootId(), id)
 }
 
 // 创建文章

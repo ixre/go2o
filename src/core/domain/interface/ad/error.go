@@ -17,6 +17,6 @@ var (
 	ErrNameExists *domain.DomainError = domain.NewDomainError(
 		"name_exists", "已经存在相同的名称的广告")
 
-ErrInternalDisallow *domain.DomainError = domain.NewDomainError(
-	"err_internal_disallow", "不允许修改系统内置广告")
+	ErrInternalDisallow *domain.DomainError = domain.NewDomainError(
+		"err_internal_disallow", "不允许修改系统内置广告")
 )

@@ -13,11 +13,11 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/core/domain/interface/content"
 	"go2o/src/core/service/dps"
 	"html/template"
-	"time"
 	"strconv"
-	"go2o/src/core/domain/interface/content"
+	"time"
 )
 
 var _ mvc.Filter = new(contentC)
@@ -28,8 +28,7 @@ type contentC struct {
 
 //商品列表
 func (this *contentC) Page_list(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-	}, "views/partner/content/page_list.html")
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{}, "views/partner/content/page_list.html")
 }
 
 // 修改页面
@@ -37,7 +36,7 @@ func (this *contentC) Page_edit(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
-	e := dps.ContentService.GetPage(partnerId,id)
+	e := dps.ContentService.GetPage(partnerId, id)
 
 	js, _ := json.Marshal(e)
 
@@ -51,7 +50,7 @@ func (this *contentC) Page_edit(ctx *web.Context) {
 // 保存页面
 func (this *contentC) Page_create(ctx *web.Context) {
 	e := content.ValuePage{
-		Enabled:1,
+		Enabled: 1,
 	}
 
 	js, _ := json.Marshal(e)
@@ -85,5 +84,5 @@ func (this *contentC) SavePage_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.ResultOutput(ctx,result)
+	this.ResultOutput(ctx, result)
 }

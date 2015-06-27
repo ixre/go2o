@@ -10,14 +10,14 @@ package ad
 
 type IGalleryAd interface {
 	// 获取广告值
-	GetAdValue()ValueGallery
+	GetAdValue() ValueGallery
 
 	// 保存广告图片
-	SaveImage(v *ValueImage)(int,error)
+	SaveImage(v *ValueImage) (int, error)
 
 	// 获取图片项
-	GetImage(id int)*ValueImage
+	GetImage(id int) *ValueImage
 
 	// 删除图片项
-	DelImage(id int)error
+	DelImage(id int) error
 }

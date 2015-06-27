@@ -8,7 +8,7 @@
  */
 package ad
 
-const(
+const (
 	// 文字广告
 	TypeText = 1
 

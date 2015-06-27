@@ -18,9 +18,9 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"html/template"
 	"net/url"
 	"strings"
-	"html/template"
 )
 
 type BaseC struct {
@@ -158,11 +158,11 @@ func (this *BaseC) ExecuteTemplate(ctx *web.Context, dataMap gof.TemplateDataMap
 	ctx.App.Template().Execute(ctx.ResponseWriter, dataMap, newFiles...)
 }
 
-func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context,funcMap template.FuncMap,
+func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context, funcMap template.FuncMap,
 	dataMap gof.TemplateDataMap, files ...string) {
 	newFiles := make([]string, len(files))
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
-	ctx.App.Template().ExecuteWithFunc(ctx.ResponseWriter,funcMap, dataMap, newFiles...)
+	ctx.App.Template().ExecuteWithFunc(ctx.ResponseWriter, funcMap, dataMap, newFiles...)
 }

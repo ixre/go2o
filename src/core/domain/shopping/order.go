@@ -430,7 +430,7 @@ func (this *Order) updateShoppingMemberAccount(pt partner.IPartner,
 	acc.TotalFee = acc.TotalFee + this._value.Fee
 	acc.TotalPay = acc.TotalPay + this._value.PayFee
 	acc.PresentBalance = acc.PresentBalance + fee // 更新赠送余额
-	acc.Balance += fee							  // 更新账户余额
+	acc.Balance += fee                            // 更新账户余额
 	acc.UpdateTime = unixTime
 	m.SaveAccount()
 

@@ -15,9 +15,9 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"net/http"
 	"strconv"
 	"strings"
-	"net/http"
 	"time"
 )
 
@@ -65,16 +65,16 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	}
 
 	// 持续保存cookie
-	ck,err := ctx.Request.Cookie("_cart");
-	if err != nil{
+	ck, err := ctx.Request.Cookie("_cart")
+	if err != nil {
 		ck = &http.Cookie{
-			Name:"_cart",
-			Path:"/",
+			Name: "_cart",
+			Path: "/",
 		}
 	}
 	ck.Value = cart.CartKey
 	ck.Expires = time.Now().Add(time.Hour * 48)
-	http.SetCookie(ctx.ResponseWriter,ck)
+	http.SetCookie(ctx.ResponseWriter, ck)
 
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)

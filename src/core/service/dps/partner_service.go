@@ -11,17 +11,17 @@ package dps
 
 import (
 	"errors"
+	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
-	"go2o/src/core/domain/interface/ad"
 )
 
 type partnerService struct {
 	_partnerRep partner.IPartnerRep
-	_adRep ad.IAdvertisementRep
+	_adRep      ad.IAdvertisementRep
 	_query      *query.PartnerQuery
 }
 
@@ -71,17 +71,16 @@ func (this *partnerService) SavePartner(partnerId int, v *partner.ValuePartner) 
 		return 0, err
 	}
 
+	partnerId, err = pt.Save()
 
-	partnerId,err =  pt.Save()
-
-	if isCreate{
+	if isCreate {
 		this.initializePartner(partnerId)
 	}
 
-	return partnerId,err
+	return partnerId, err
 }
 
-func (this *partnerService) initializePartner(partnerId int){
+func (this *partnerService) initializePartner(partnerId int) {
 
 	// 初始化广告
 	this._adRep.GetPartnerAdvertisement(partnerId).InitInternalAdvertisements()

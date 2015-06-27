@@ -13,6 +13,8 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/db"
 	"github.com/atnet/gof/log"
+	"go2o/src/core/domain/interface/ad"
+	"go2o/src/core/domain/interface/content"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -23,8 +25,6 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
-	"go2o/src/core/domain/interface/content"
-	"go2o/src/core/domain/interface/ad"
 )
 
 func getDb(c *gof.Config, l log.ILogger) db.Connector {
@@ -81,9 +81,9 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(partner.ValueShop{}, "pt_shop")
 	orm.CreateTableMap(partner.SaleConf{}, "pt_saleconf")
 	orm.CreateTableMap(valueobject.MemberLevel{}, "pt_member_level")
-	orm.CreateTableMap(content.ValuePage{},"pt_page")
-	orm.CreateTableMap(ad.ValueAdvertisement{},"pt_ad")
-	orm.CreateTableMap(ad.ValueImage{},"pt_ad_image")
+	orm.CreateTableMap(content.ValuePage{}, "pt_page")
+	orm.CreateTableMap(ad.ValueAdvertisement{}, "pt_ad")
+	orm.CreateTableMap(ad.ValueImage{}, "pt_ad_image")
 
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")

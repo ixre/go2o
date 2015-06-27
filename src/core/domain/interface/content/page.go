@@ -13,11 +13,11 @@ type IPage interface {
 	GetDomainId() int
 
 	// 获取值
-	GetValue()*ValuePage
+	GetValue() *ValuePage
 
 	// 设置值
-	SetValue(*ValuePage)error
+	SetValue(*ValuePage) error
 
 	// 保存
-	Save()(int,error)
+	Save() (int, error)
 }

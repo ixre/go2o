@@ -9,7 +9,7 @@
 package ad
 
 // 广告图片
-type ValueImage struct{
+type ValueImage struct {
 	// 图片编号
 	Id int `db:"id" auto:"yes" pk:"true"`
 
@@ -26,7 +26,7 @@ type ValueImage struct{
 	ImageUrl string `db:"image_url"`
 
 	// 排列序号
-	SortNumber int 	`db:"sort_number"`
+	SortNumber int `db:"sort_number"`
 
 	// 是否启用
 	Enabled int `db:"enabled"`

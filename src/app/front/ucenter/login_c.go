@@ -9,14 +9,14 @@
 package ucenter
 
 import (
+	"encoding/json"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"strconv"
-	"github.com/atnet/gof"
-	"encoding/json"
 )
 
 type loginC struct {
@@ -24,26 +24,26 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Index(ctx *web.Context) {
-	executeTemplate(ctx,nil, nil, "views/ucenter/{device}/login.html")
+	executeTemplate(ctx, nil, nil, "views/ucenter/{device}/login.html")
 }
 func (this *loginC) Index_post(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()
-var result gof.Message
+	var result gof.Message
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	b, m, err := dps.MemberService.Login(-1, usr, pwd)
 	if b {
 		ctx.Session().Set("member", m)
 		ctx.Session().Save()
 		result.Result = true
-	}else{
-		if err != nil{
+	} else {
+		if err != nil {
 			result.Message = err.Error()
-		}else{
+		} else {
 			result.Message = "登陆失败"
 		}
 	}
-	js,_ := json.Marshal(result)
+	js, _ := json.Marshal(result)
 	ctx.ResponseWriter.Write(js)
 
 }

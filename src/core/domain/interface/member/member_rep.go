@@ -70,7 +70,7 @@ type IMemberRep interface {
 	GetRelation(memberId int) *MemberRelation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(partnerId int,exp int) int
+	GetLevelValueByExp(partnerId int, exp int) int
 
 	// 保存地址
 	SaveDeliver(*DeliverAddress) (int, error)

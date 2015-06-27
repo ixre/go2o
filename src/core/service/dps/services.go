@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	Context         gof.App
-	PromService     *promotionService
-	ShoppingService *shoppingService
-	MemberService   *memberService
-	PartnerService  *partnerService
-	SaleService     *saleService
-	DeliverService  *deliveryService
-	ContentService  *contentService
+	Context              gof.App
+	PromService          *promotionService
+	ShoppingService      *shoppingService
+	MemberService        *memberService
+	PartnerService       *partnerService
+	SaleService          *saleService
+	DeliverService       *deliveryService
+	ContentService       *contentService
 	AdvertisementService *advertisementService
 )
 
@@ -55,6 +55,6 @@ func Init(ctx gof.App) {
 	PartnerService = NewPartnerService(partnerRep, partnerQue)
 	SaleService = NewSaleService(saleRep)
 	DeliverService = NewDeliveryService(deliveryRep)
-	ContentService = NewContentService(contentRep,contentQue)
+	ContentService = NewContentService(contentRep, contentQue)
 	AdvertisementService = NewAdvertisementService(adRep)
 }

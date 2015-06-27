@@ -60,15 +60,15 @@ func (this *UserC) Login_post(ctx *web.Context) {
 	if b {
 		ctx.Session().Set("member", m)
 		ctx.Session().Save()
-	}else{
+	} else {
 		result.Result = false
-		if err != nil{
+		if err != nil {
 			result.Message = err.Error()
-		}else{
+		} else {
 			result.Message = "登陆失败"
 		}
 	}
-	this.BaseC.ResultOutput(ctx,result)
+	this.BaseC.ResultOutput(ctx, result)
 }
 
 func (this *UserC) Register(ctx *web.Context) {

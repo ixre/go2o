@@ -8,6 +8,5 @@
  */
 package content
 
-type ValueArticle struct{
-
+type ValueArticle struct {
 }

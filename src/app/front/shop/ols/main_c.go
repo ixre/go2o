@@ -53,7 +53,7 @@ func (this *MainC) Msc(ctx *web.Context) {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
 
-	ok, memberId := util.MemberHttpSessionConnect(ctx,func(memberId int){
+	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
 		if ctx.Session().Get("member") == nil {
 			m := dps.MemberService.GetMember(memberId)
 			ctx.Session().Set("member", m)

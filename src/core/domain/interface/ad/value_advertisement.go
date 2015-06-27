@@ -8,7 +8,7 @@
  */
 package ad
 
-type ValueAdvertisement struct{
+type ValueAdvertisement struct {
 	// 编号
 	Id int `db:"id" auto:"yes" pk:"yes"`
 

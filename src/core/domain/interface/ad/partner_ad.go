@@ -16,14 +16,14 @@ type IPartnerAdvertisement interface {
 	InitInternalAdvertisements()
 
 	// 删除广告
-	DeleteAdvertisement(advertisementId int)error
+	DeleteAdvertisement(advertisementId int) error
 
 	// 根据编号获取广告
-	GetById(int)IAdvertisement
+	GetById(int) IAdvertisement
 
 	// 根据名称获取广告
-	GetByName(string)IAdvertisement
+	GetByName(string) IAdvertisement
 
 	// 创建广告对象
-	CreateAdvertisement(*ValueAdvertisement)IAdvertisement
+	CreateAdvertisement(*ValueAdvertisement) IAdvertisement
 }

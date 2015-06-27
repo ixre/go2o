@@ -11,11 +11,11 @@ package lbs
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math"
 	"net/http"
-	"errors"
 )
 
 const (
@@ -42,11 +42,11 @@ func GetLocation(address string) (lng, lat float64, err error) {
 
 	var m map[string]interface{} = make(map[string]interface{})
 	err = json.Unmarshal(d, &m)
-	result :=  m["result"]
+	result := m["result"]
 	if result == nil {
-		return 0,0,errors.New("unknown location")
+		return 0, 0, errors.New("unknown location")
 	}
-	m =result.(map[string]interface{})["location"].(map[string]interface{})
+	m = result.(map[string]interface{})["location"].(map[string]interface{})
 	return m["lng"].(float64), m["lat"].(float64), err
 }
 

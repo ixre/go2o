@@ -37,10 +37,10 @@ func (this *loginC) Login_post(ctx *web.Context) {
 		}
 	}
 
-	if result{
+	if result {
 		w.Write([]byte("{result:true}"))
-	}else{
-		w.Write([]byte("{result:false,message:'"+message+"'}"))
+	} else {
+		w.Write([]byte("{result:false,message:'" + message + "'}"))
 	}
 }
 

@@ -8,27 +8,25 @@
  */
 package ad
 
-
 type IAdvertisement interface {
 	// 获取领域对象编号
 	GetDomainId() int
 
 	// 是否为系统内置的广告
-	System()bool
+	System() bool
 
 	// 广告类型
-	Type()int
+	Type() int
 
 	// 广告名称
-	Name()string
+	Name() string
 
 	// 设置值
-	SetValue(*ValueAdvertisement)error
+	SetValue(*ValueAdvertisement) error
 
 	// 获取值
-	GetValue()*ValueAdvertisement
+	GetValue() *ValueAdvertisement
 
 	// 保存广告
-	Save()(int,error)
+	Save() (int, error)
 }
-

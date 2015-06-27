@@ -38,10 +38,10 @@ type IAdvertisementRep interface {
 	DelAdImage(advertisementId, id int) error
 
 	// 删除广告
-	DelAdvertisement(partnerId, advertisementId int)error
+	DelAdvertisement(partnerId, advertisementId int) error
 
 	// 删除广告的图片数据
-	DelImageDataForAdvertisement(advertisementId int)error
+	DelImageDataForAdvertisement(advertisementId int) error
 
 	// 删除广告的文字数据
 	DelTextDataForAdvertisement(advertisementId int) error
