@@ -25,6 +25,9 @@ type ValueImage struct{
 	// 图片地址
 	ImageUrl string `db:"image_url"`
 
+	// 排列序号
+	SortNumber int 	`db:"sort_number"`
+
 	// 是否启用
 	Enabled int `db:"enabled"`
 }

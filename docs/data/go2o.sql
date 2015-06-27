@@ -640,6 +640,62 @@ INSERT INTO `pm_coupon_take` VALUES (1,1,1,0,1423548731,1423563131,1423545131),(
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pt_ad`
+--
+
+DROP TABLE IF EXISTS `pt_ad`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_ad` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `is_internal` tinyint(1) DEFAULT NULL,
+  `type_id` tinyint(1) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_ad`
+--
+
+LOCK TABLES `pt_ad` WRITE;
+/*!40000 ALTER TABLE `pt_ad` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_ad` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pt_ad_image`
+--
+
+DROP TABLE IF EXISTS `pt_ad_image`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_ad_image` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ad_id` int(11) DEFAULT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `link_url` varchar(100) DEFAULT NULL,
+  `image_url` varchar(150) DEFAULT NULL,
+  `sort_number` int(11) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_ad_image`
+--
+
+LOCK TABLES `pt_ad_image` WRITE;
+/*!40000 ALTER TABLE `pt_ad_image` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_ad_image` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pt_api`
 --
 
@@ -1222,4 +1278,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-26 17:06:13
+-- Dump completed on 2015-06-27 13:55:45

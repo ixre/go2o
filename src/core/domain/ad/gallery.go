@@ -36,3 +36,13 @@ func (this *GalleryAd) SaveImage(v *ad.ValueImage)(int,error){
 	v.AdvertisementId = this.GetDomainId()
 	return this.Rep.SaveAdImageValue(v)
 }
+
+// 获取图片项
+func (this *GalleryAd) GetImage(id int)*ad.ValueImage{
+	return this.Rep.GetValueAdImage(this.GetDomainId(),id)
+}
+
+// 删除图片项
+func (this *GalleryAd) DelImage(id int)error{
+	return this.Rep.DelAdImage(this.GetDomainId(),id)
+}

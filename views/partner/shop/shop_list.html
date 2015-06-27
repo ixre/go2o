@@ -130,7 +130,7 @@
         }
         
         function delRec(id) {
-            $.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+         window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
                 if (result) {
                     $JS.xhr.jsonPost('shop/del', { id: id }, function(json) {
                         if (json.result) {

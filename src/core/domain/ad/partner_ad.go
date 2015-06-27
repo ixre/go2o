@@ -67,6 +67,26 @@ func (this *PartnerAdvertisement) GetById(id int)ad.IAdvertisement{
 	return nil
 }
 
+
+// 删除广告
+func (this *PartnerAdvertisement) DeleteAdvertisement(advertisementId int)error{
+	adv := this.GetById(advertisementId)
+	if adv!= nil {
+
+		if adv.System() {
+			return ad.ErrInternalDisallow
+		}
+
+		err := this._rep.DelAdvertisement(this._partnerId, advertisementId)
+
+		this._rep.DelImageDataForAdvertisement(advertisementId)
+		this._rep.DelTextDataForAdvertisement(advertisementId)
+		return err
+
+	}
+	return nil
+}
+
 // 根据名称获取广告
 func (this *PartnerAdvertisement) GetByName(name string)ad.IAdvertisement{
 	v := this._rep.GetValueAdvertisementByName(this._partnerId,name)

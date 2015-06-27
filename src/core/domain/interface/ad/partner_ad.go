@@ -15,6 +15,9 @@ type IPartnerAdvertisement interface {
 	// 初始化内置默认的广告
 	InitInternalAdvertisements()
 
+	// 删除广告
+	DeleteAdvertisement(advertisementId int)error
+
 	// 根据编号获取广告
 	GetById(int)IAdvertisement
 

@@ -49,7 +49,7 @@
           }
         };
     function submitCancel() {
-        $.messager.confirm('操作提示', '您确定要将此订单作废吗？',function(r) {
+     window.parent.$.messager.confirm('操作提示', '您确定要将此订单作废吗？',function(r) {
             var data = $JS.json.toObject('form1');
             $JS.xhr.jsonPost(location.href, data, function (json) {
                 if (json.result) {

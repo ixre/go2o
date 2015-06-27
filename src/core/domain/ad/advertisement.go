@@ -7,7 +7,10 @@
  * history :
  */
 package ad
-import "go2o/src/core/domain/interface/ad"
+import (
+	"go2o/src/core/domain/interface/ad"
+	"time"
+)
 
 var _ ad.IAdvertisement = new(Advertisement)
 
@@ -42,13 +45,11 @@ func (this *Advertisement) Name()string{
 // 设置值
 func (this *Advertisement) SetValue(v *ad.ValueAdvertisement)error {
 	// 如果为系统内置广告，不能修改名称
-	if this.System() {
-		v.Name = this.Value.Name
-		v.Enabled = 1
-		v.IsInternal = 1
+	if !this.System() {
+		this.Value.Name = v.Name
+		this.Value.Enabled = v.Enabled
 	}
-	this.Value = v
-
+	this.Value.Type = v.Type
 	return nil
 }
 
@@ -63,5 +64,6 @@ func (this *Advertisement) Save()(int,error){
 	if id > 0 && id != this.GetDomainId(){
 		return this.GetDomainId(),ad.ErrNameExists
 	}
+	this.Value.UpdateTime = time.Now().Unix()
 	return this.Rep.SaveAdvertisementValue(this.Value)
 }

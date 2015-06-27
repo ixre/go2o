@@ -87,8 +87,41 @@ func (this *advertisementRep) GetValueAdvertisementByName(partnerId int,name str
 // 获取轮播广告
 func (this *advertisementRep) GetValueGallery(advertisementId int)ad.ValueGallery{
 	var list = []*ad.ValueImage{}
-	if err := this.Connector.GetOrm().Select(&list,"ad_id=?",advertisementId);err == nil {
+	if err := this.Connector.GetOrm().Select(&list,"ad_id=? ORDER BY sort_number ASC",advertisementId);err == nil {
 		return list
 	}
+	return nil
+}
+
+// 获取图片项
+func (this *advertisementRep)GetValueAdImage(advertisementId, id int) *ad.ValueImage{
+	var e ad.ValueImage
+	if err := this.Connector.GetOrm().GetBy(&e,"ad_id=? and id=?",advertisementId,id);err == nil {
+		return &e
+	}
+	return nil
+}
+
+// 删除图片项
+func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
+	_, err := this.Connector.GetOrm().Delete(ad.ValueImage{}, "ad_id=? and id=?", advertisementId, id)
+	return err
+}
+
+// 删除广告
+func (this *advertisementRep)DelAdvertisement(partnerId, advertisementId int)error{
+	_, err := this.Connector.GetOrm().Delete(ad.ValueAdvertisement{}, "partner_id=? AND id=?", partnerId,advertisementId)
+	return err
+}
+
+// 删除广告的图片数据
+func (this *advertisementRep)DelImageDataForAdvertisement(advertisementId int)error{
+	_, err := this.Connector.GetOrm().Delete(ad.ValueImage{}, "ad_id=?", advertisementId)
+	return err
+}
+
+// 删除广告的文字数据
+func (this *advertisementRep) DelTextDataForAdvertisement(advertisementId int) error{
+	//todo:
 	return nil
 }
