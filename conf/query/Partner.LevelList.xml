@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ExportItemConfig>
-  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <ColumnMappingString></ColumnMappingString>
   <Query>
     <![CDATA[SELECT * FROM pt_member_level WHERE partner_id={partner_id}
     AND ({enabled}<0 OR enabled={enabled}) AND name Like '%{keyword}%'
