@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<head>
+    <title>个人资料_{{.partner.Name}}</title>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
+</head>
+<body>
+{{template "header"$}}
+
+    <div class="page-main">
+        <div class="h10"></div>
+        <div id="pl" class="summary"></div>
+
+        <div id="form1" class="form">
+            <div class="fl">
+                <div class="label">姓名：</div>
+                <div class="in">
+                    <input class="box" class="box" type="text" class="ui-validate" required="true" field="Name"
+                           summary="{required:'姓名不能为空',regex:'必须为2-4位中文'}"/><span class="tip"></span>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">性别：</div>
+                <div class="in">
+                    <input class="box" type="radio" field="Sex" name="sex" value="1" id="sex1" checked="checked"/><label
+                        class="auto" for="sex1">先生</label>&nbsp;
+                    <input type="radio" field="Sex" name="sex" value="2" id="sex2"/><label class="auto"
+                                                                                           for="sex2">女士</label>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">手机号码：</div>
+                <div class="in">
+                    <input class="box" type="text" class="ui-validate" required="true" field="Phone"
+                           summary="{error:'不正确',used:'已被使用',required:'手机号码不能为空'}"/><span class="tip"></span>
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label">所在地址：</div>
+                <div class="in">
+                    <input class="box" type="text" class="ui-validate" required="true" field="Address"
+                           summary="{required:'地址不能为空',regex:'地址需详细到门牌号'}"/><span class="tip"></span>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">出生日期：</div>
+                <div class="in">
+                    <input class="box" type="text" class="ui-validate" id="birthday" field="Birthday"/><span class="tip"></span>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">QQ号码：</div>
+                <div class="in">
+                    <input class="box" type="text" class="ui-validate" regex="^(\d{0}|\d{5,11})$" Field="qq"
+                           err="{regex:'格式错误应为5-11位数字'}"/><span class="tip"></span>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">电子邮箱：</div>
+                <div class="in">
+                    <input class="box" type="text" class="ui-validate" length="[0,50]" Field="email"
+                           err="邮箱{regex:'格式不正确',length:'必须长度小于50'}"/><span class="tip">&nbsp;邮箱可用于找回密码</span>
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <input class="btn" type="button" value="保存" onclick="saveData()"/>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
+
+
+<script type="text/javascript">
+    var entity = {{.entity}}||{};
+    $JS.json.bind('form1', entity);
+    $JS.calender('birthday');
+    var pl = $JS.$('pl');
+
+    function saveData() {
+        if ($JS.validator.validate('form1')) {
+            var data = $JS.json.toObject('form1');
+            $JS.xhr.jsonPost('?', data, function (json) {
+                if (json.result) {
+                    pl.innerHTML = '<b>修改成功</b>';
+                    pl.className = 'green';
+                } else {
+                    pl.innerHTML = '<b>' + json.message + '</b>';
+                    pl.className = 'red';
+                }
+            });
+        }
+    }
+
+
+</script>
+
+{{template "footer"$}}
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+    <title>会员登录</title>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <link rel="Stylesheet" href="{{.static_serve}}/css/common.css" />
+    <link rel="Stylesheet" href="{{.static_serve}}/css/ucenter/touch/touch.css" />
+    <style type="text/css">
+        .shadow {
+            background: none repeat scroll 0 0 #d0d0d0;
+            /*padding: 3px;*/
+            box-shadow: 0px 1px 5px #888888;
+        }
+        .shadow .content {
+        /*margin: -5px 0 0 -5px;*/
+        background: none repeat scroll 0 0 white;
+        border: 1px solid #888;
+        line-height: 20px;
+        padding: 1px;
+        }
+        #form1 {
+            width: 400px;
+           opacity:0;filter:alpha(opacity=0)
+        }
+
+        .c1 {
+        border-bottom: solid 1px #e5e5e5;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        font-size: 20px;
+        line-height: 25px;
+        color: #006699;
+        }
+
+        p {
+        margin: 5px 38px;
+        font-size: 14px;
+        }
+
+        .msg {
+        color: red;
+        text-align: center;
+        }
+    </style>
+</head>
+<body class="login-page">
+<div id="form1" class="shadow">
+    <div class="content" style="padding: 50px">
+        <div class="center c1">
+            <strong>会员登录</strong>
+        </div>
+        <div class="msg" id="tip">&nbsp;</div>
+
+        <div>
+            <p>
+                用户：<input type="text" name="usr" field="usr" class="ui-validate"
+                          required="true" />
+            </p>
+
+            <p>
+                密码：<input type="password" name="pwd" field="pwd"
+                          class="ui-validate" required="true" />
+            </p>
+
+            <p style="text-align: right">
+                <input type="submit" class="btn" value="登录" id="login" />
+            </p>
+
+
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js"></script>
+<script type="text/javascript">
+        var d = $JS.$('form1');
+        $JS.style(d,{
+                position:'absolute',
+                left: ($JS.screen.width()- $JS.width(d) ) /2 +'px',
+                top: ($JS.screen.height() - $JS.height(d) - 40) /2 +'px'
+            })
+		   var tip = $JS.$('tip');
+		   document.body.onkeydown = function (e) {
+	            var event = window.event || e;
+	            if (event.keyCode == 13) {
+	                login();
+	            }
+	        };
+	        function login() {
+	            var data = $JS.json.toObject('form1');
+	            if ($JS.validator.validate('form1')){
+	                $JS.xhr.jsonPost(location.href, data, function (json) {
+	                    if (json.result) {
+	                      window.parent.location.replace($JS.request('return_url')||'/');
+	                    }
+	                    else {
+	                        if (json.message.indexOf('验证码') != -1) {
+	                            refreshImage();
+	                        }
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
+	                    }
+	                }, function (x) {
+	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';
+	                });
+	            }
+	        }
+	        
+	        $JS.$('login').onclick=login;
+            $JS.animation.show('form1',null,4);
+		</script>
+</body>
+</html>
