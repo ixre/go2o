@@ -121,9 +121,7 @@
                         $JS.tab.closeAndRefresh('页面管理');
                     });
                 } else {
-                    window.parent.$.messager.alert('提示',json.message, 'error', function () {
-                    $JS.tab.closeAndRefresh('页面管理');
-                });
+                    window.parent.$.messager.alert('提示',json.message, 'error');
                 }
             });
         }

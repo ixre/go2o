@@ -13,45 +13,46 @@
         a.nodeSel:hover span.float,a.node:hover span.float a{color:red;}
     </style>
 </head>
-    <div id="gd"></div>
-    <div class="toolBar">
-        <div class="searchBar padding2" id="searchbar">
-            <ul>
-                <li>
-                    <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
-                        <span class="icon"></span>新增页面</a>
-                </li>
-                <li>
-                    <span class="title">是否启用：</span>
-                    <select field="enabled">
-                        <option value="-1">一不限一</option>
-                        <option value="1">是</option>
-                        <option value="0">否</option>
-                    </select>
-                </li>
+<div id="gd"></div>
+<div class="toolBar">
+    <div class="searchBar padding2" id="searchbar">
+        <ul>
+            <li>
+                <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
+                    <span class="icon"></span>新增广告</a>
+            </li>
+            <li>
+                <span class="title">是否启用：</span>
+                <select field="enabled">
+                    <option value="-1">一不限一</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </li>
 
-                <li>
-                <span class="title">分类：</span>
-                    <select field="cid">
-                        <option value="-1">一不限一</option>
-                        {{.cate_opts}}
-                    </select>
-                </li>
+            <li>
+                <span class="title">系统内置：</span>
+                <select field="is_internal">
+                    <option value="-1">一不限一</option>
+                    <option value="1">是</option>
+                    <option value="0">否</option>
+                </select>
+            </li>
 
-                <li>
-                    <span class="title">关键字：</span>
-                    <input type="text" field="keyword" />
-                </li>
-                <li>
-                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
-                        <span class="icon"></span>搜索</a>
-                </li>
+            <li>
+                <span class="title">关键字：</span>
+                <input type="text" field="keyword" />
+            </li>
+            <li>
+                <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                    <span class="icon"></span>搜索</a>
+            </li>
 
-            </ul>
-            <div class="clearfix"></div>
-        </div>
+        </ul>
         <div class="clearfix"></div>
     </div>
+    <div class="clearfix"></div>
+</div>
 
 
 <script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js"></script>
@@ -100,8 +101,19 @@
             columns: [
                 [
                     { field: 'name', title: '广告名称', align: 'center', width: 120 },
+                    { field: 'type_id', title: '类型', align: 'center', width: 120,formatter:function(v){
+                        switch(v){
+                            case "1":
+                                return '文本广告';
+                            case "2":
+                                return '图片广告';
+                            case '3':
+                                return '轮播广告';
+                        }
+                        return '未知类型';
+                    } },
                     { field: 'is_internal', title: '系统内置', align: 'center', width: 120,formatter:function(v){
-                        return v == '1'?'<span style="color:#0A0">是</span>':'否'
+                    return v == '1'?'<span style="color:#0A0">是</span>':'否'
                     } },
                     {
                         field: 'enabled',
@@ -122,6 +134,7 @@
                     } },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
                         return '<a href="javascript:;" onclick="editRec('+row.id+')">编辑</a>'+
+                                ' | <a href="javascript:;" onclick="editData('+row.id+','+ row.type_id +')">广告数据</a>'+
                                 ' | <a href="javascript:;" onclick="delRec('+row.id+')">删除</a>'
                     } },
                 ]
@@ -133,19 +146,25 @@
 
 
     function addRec(){
-        $JS.tab.open('创建页面', '/content/page_create', true);
+        $JS.tab.open('创建广告', '/ad/create', true);
     }
 
     function editRec(id){
-        $JS.tab.open('编辑页面', '/content/page_edit?id=' + id,  true);
+        $JS.tab.open('编辑广告', '/ad/edit?id=' + id,  true);
+    }
+
+    function editData(id,type){
+        $JS.tab.open('广告数据', '/ad/ad_data'+ type+'?id=' + id,  true);
     }
 
     function delRec(id) {
-     window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+        window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                $JS.xhr.jsonPost('/content/page_del', { id: id }, function(json) {
+                $JS.xhr.jsonPost('/ad/del', { id: id }, function(json) {
                     if (json.result) {
                         expr.reload('gd');
+                    }else{
+                        window.parent.$.messager.alert('提示',  json.message,"error");
                     }
                 });
             }
