@@ -104,7 +104,8 @@ func (this *memberC) List(ctx *web.Context) {
 
 
 func (this *memberC) Lock_member_post(ctx *web.Context){
-	id,_ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	ctx.Request.ParseForm()
+	id,_ := strconv.Atoi(ctx.Request.FormValue("id"))
 	partnerId := this.GetPartnerId(ctx)
 	var result gof.Message
 	if  _,err := dps.MemberService.LockMember(partnerId,id);err != nil{
