@@ -55,7 +55,6 @@ func (this *goodsC) Goods_select(ctx *web.Context) {
 	}, "views/partner/goods/goods_select.html")
 }
 
-
 func (this *goodsC) Create(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	shopChks := cache.GetShopCheckboxs(partnerId, "")

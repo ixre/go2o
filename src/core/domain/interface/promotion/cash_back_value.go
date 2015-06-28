@@ -8,7 +8,7 @@
  */
 package promotion
 
-type ValueCashBack struct{
+type ValueCashBack struct {
 	// 编号
 	Id int `db:"id" pk:"yes"`
 

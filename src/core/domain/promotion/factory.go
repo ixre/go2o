@@ -7,25 +7,26 @@
  * history :
  */
 package promotion
+
 import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRep,saleRep sale.ISaleRep,
-	v *promotion.ValuePromotion)promotion.IPromotion{
-	prom := newPromotion(rep,saleRep,v)
+func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
+	v *promotion.ValuePromotion) promotion.IPromotion {
+	prom := newPromotion(rep, saleRep, v)
 
-	if prom.Type() == promotion.TypeFlagCashBack{
+	if prom.Type() == promotion.TypeFlagCashBack {
 		pv := rep.GetValueCashBack(prom.GetAggregateRootId())
-		if pv == nil{
+		if pv == nil {
 			pv = &promotion.ValueCashBack{
-				Id:prom.GetAggregateRootId(),
+				Id: prom.GetAggregateRootId(),
 			}
 		}
 		cp := &CashBackPromotion{
-			Promotion:prom,
-			_cashBackValue:pv,
+			Promotion:      prom,
+			_cashBackValue: pv,
 		}
 		return cp
 	}

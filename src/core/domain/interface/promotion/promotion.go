@@ -20,13 +20,13 @@ type IPromotion interface {
 	GetAggregateRootId() int
 
 	// 获取值
-	GetValue()*ValuePromotion
+	GetValue() *ValuePromotion
 
 	// 获取相关的值
-	GetRelationValue()interface{}
+	GetRelationValue() interface{}
 
 	// 设置值
-	SetValue(*ValuePromotion)error
+	SetValue(*ValuePromotion) error
 
 	// 应用类型
 	ApplyFor() int
@@ -35,9 +35,7 @@ type IPromotion interface {
 	Type() int
 
 	// 保存
-	Save()(int,error)
-
-
+	Save() (int, error)
 
 	// 获取优惠券
 	GetCoupon(id int) ICoupon

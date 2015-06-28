@@ -10,41 +10,40 @@
 package promotion
 
 import (
+	"errors"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/promotion"
-	"time"
-	"errors"
 	"go2o/src/core/domain/interface/sale"
+	"time"
 )
-
 
 var _ promotion.IPromotion = new(Promotion)
 
 type Promotion struct {
-	promRep   promotion.IOldPromotionRep
-	memberRep member.IMemberRep
+	promRep    promotion.IOldPromotionRep
+	memberRep  member.IMemberRep
 	_partnerId int
-	_promRep promotion.IPromotionRep
-	_value *promotion.ValuePromotion
-	_saleRep sale.ISaleRep
+	_promRep   promotion.IPromotionRep
+	_value     *promotion.ValuePromotion
+	_saleRep   sale.ISaleRep
 }
 
-func NewPromotion(partnerId int,promRep promotion.IOldPromotionRep,
+func NewPromotion(partnerId int, promRep promotion.IOldPromotionRep,
 	rep promotion.IPromotionRep,
 	memberRep member.IMemberRep) promotion.IPromotion {
 	return &Promotion{
-		_partnerId:  partnerId,
-		_promRep:rep,
-		promRep:   promRep,
-		memberRep: memberRep,
+		_partnerId: partnerId,
+		_promRep:   rep,
+		promRep:    promRep,
+		memberRep:  memberRep,
 	}
 }
 
-func newPromotion(rep promotion.IPromotionRep,saleRep sale.ISaleRep,v *promotion.ValuePromotion)*Promotion{
+func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep, v *promotion.ValuePromotion) *Promotion {
 	return &Promotion{
-		_promRep:rep,
-		_saleRep:saleRep,
-		_value :v,
+		_promRep: rep,
+		_saleRep: saleRep,
+		_value:   v,
 	}
 }
 
@@ -54,20 +53,19 @@ func (this *Promotion) GetAggregateRootId() int {
 }
 
 // 获取值
-func (this *Promotion)GetValue()*promotion.ValuePromotion{
+func (this *Promotion) GetValue() *promotion.ValuePromotion {
 	return this._value
 }
 
-
 // 获取相关的值
-func (this *Promotion) GetRelationValue()interface{}{
+func (this *Promotion) GetRelationValue() interface{} {
 	panic(errors.New("not implement!"))
 }
 
 // 设置值
-func (this *Promotion) SetValue(v *promotion.ValuePromotion)error{
-	if this.GetAggregateRootId() == 0{
-		if this._promRep.GetGoodsPromotionId(this._value.GoodsId,this._value.TypeFlag) > 0{
+func (this *Promotion) SetValue(v *promotion.ValuePromotion) error {
+	if this.GetAggregateRootId() == 0 {
+		if this._promRep.GetGoodsPromotionId(this._value.GoodsId, this._value.TypeFlag) > 0 {
 			return promotion.ErrExistsSamePromotionFlag
 		}
 	}
@@ -75,7 +73,6 @@ func (this *Promotion) SetValue(v *promotion.ValuePromotion)error{
 	this._value = v
 	return nil
 }
-
 
 // 应用类型
 func (this *Promotion) ApplyFor() int {
@@ -91,11 +88,10 @@ func (this *Promotion) Type() int {
 }
 
 // 保存
-func (this *Promotion) Save()(int,error){
+func (this *Promotion) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()
 	return this._promRep.SaveValuePromotion(this._value)
 }
-
 
 func (this *Promotion) GetCoupon(id int) promotion.ICoupon {
 	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)

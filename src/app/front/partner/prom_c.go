@@ -16,12 +16,12 @@ import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/promotion"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
 	"strings"
 	"time"
-	"go2o/src/core/infrastructure/format"
 )
 
 var _ mvc.Filter = new(promC)
@@ -30,32 +30,31 @@ type promC struct {
 	*baseC
 }
 
-
 func (this *promC) List(ctx *web.Context) {
 	var flag int
 	flag, _ = strconv.Atoi(ctx.Request.URL.Query().Get("flag"))
 
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
-		"flag":flag,
-	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag));
+		"flag": flag,
+	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag))
 }
 
 // 创建返现促销
-func (this *promC) Create_cb(ctx *web.Context){
+func (this *promC) Create_cb(ctx *web.Context) {
 	e := &promotion.ValuePromotion{
-		Enabled:1,
+		Enabled: 1,
 	}
 	e2 := &promotion.ValueCashBack{
-		BackType:1,
+		BackType: 1,
 	}
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"entity": template.JS(js),
-			"entity2":template.JS(js2),
-			"goods_cls":"hidden",
+			"entity":    template.JS(js),
+			"entity2":   template.JS(js2),
+			"goods_cls": "hidden",
 		},
 		"views/partner/promotion/cash_back.html")
 }
@@ -69,19 +68,18 @@ func (this *promC) Edit_cb(ctx *web.Context) {
 	js2, _ := json.Marshal(e2)
 
 	var goodsInfo string
-	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx),e.GoodsId)
-	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>",goods.Name,format.FormatFloat(goods.SalePrice))
+	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx), e.GoodsId)
+	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"entity": template.JS(js),
-			"entity2":template.JS(js2),
-			"goods_info":template.HTML(goodsInfo),
-			"goods_cls":"",
+			"entity":     template.JS(js),
+			"entity2":    template.JS(js2),
+			"goods_info": template.HTML(goodsInfo),
+			"goods_cls":  "",
 		},
 		"views/partner/promotion/cash_back.html")
 }
-
 
 func (this *promC) Save_cb_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
@@ -93,13 +91,12 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 	e := promotion.ValuePromotion{}
 	web.ParseFormToEntity(r.Form, &e)
 	e2 := promotion.ValueCashBack{}
-	web.ParseFormToEntity(r.Form,&e2)
+	web.ParseFormToEntity(r.Form, &e2)
 
 	e.PartnerId = partnerId
 	e.TypeFlag = promotion.TypeFlagCashBack
 
-
-	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e,&e2)
+	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
 
 	if err != nil {
 		result.Message = err.Error()
@@ -109,8 +106,6 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 	}
 	this.ResultOutput(ctx, result)
 }
-
-
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
 

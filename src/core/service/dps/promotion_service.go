@@ -11,60 +11,60 @@ package dps
 
 import (
 	"errors"
-	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/promotion"
 )
 
 type promotionService struct {
-	_rep promotion.IOldPromotionRep
+	_rep    promotion.IOldPromotionRep
 	_newRep promotion.IPromotionRep
 }
 
-func NewPromotionService(r promotion.IOldPromotionRep,rep promotion.IPromotionRep) *promotionService {
+func NewPromotionService(r promotion.IOldPromotionRep, rep promotion.IPromotionRep) *promotionService {
 	return &promotionService{
-		_rep: r,
-		_newRep:rep,
+		_rep:    r,
+		_newRep: rep,
 	}
 }
 
 // 获取促销
-func (this *promotionService) GetPromotion(id int)(*promotion.ValuePromotion,interface{}){
+func (this *promotionService) GetPromotion(id int) (*promotion.ValuePromotion, interface{}) {
 	var prom promotion.IPromotion = this._newRep.GetPromotion(id)
-	if prom != nil{
-		return prom.GetValue(),prom.GetRelationValue()
+	if prom != nil {
+		return prom.GetValue(), prom.GetRelationValue()
 	}
-	return nil,nil
+	return nil, nil
 }
 
 // 保存促销
-func (this *promotionService) SavePromotion(v *promotion.ValuePromotion)(int,error){
+func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, error) {
 	var prom promotion.IPromotion
-	if v.Id > 0{
+	if v.Id > 0 {
 		prom = this._newRep.GetPromotion(v.Id)
 		prom.SetValue(v)
-	}else{
+	} else {
 		prom = this._newRep.CreatePromotion(v)
 	}
 	return prom.Save()
 }
 
-func (this *promotionService) SaveCashBackPromotion(partnerId int,v *promotion.ValuePromotion,
-	v1 *promotion.ValueCashBack)(int,error){
+func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.ValuePromotion,
+	v1 *promotion.ValueCashBack) (int, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
 		prom = this._newRep.GetPromotion(v.Id)
-		if prom.GetValue().PartnerId != partnerId{
-			return -1,partner.ErrNotMatch
+		if prom.GetValue().PartnerId != partnerId {
+			return -1, partner.ErrNotMatch
 		}
 		prom.SetValue(v)
-	}else{
+	} else {
 		prom = this._newRep.CreatePromotion(v)
 	}
 
 	cb := prom.(promotion.ICashBackPromotion)
 
-	if err := cb.SetDetailsValue(v1);err != nil{
-		return v.Id,err
+	if err := cb.SetDetailsValue(v1); err != nil {
+		return v.Id, err
 	}
 
 	return prom.Save()

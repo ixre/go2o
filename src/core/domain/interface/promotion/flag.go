@@ -27,8 +27,7 @@ const (
 	ApplyForGoods = 2
 )
 
-
-const(
+const (
 	// 返现到账户余额
 	BackToBalance = 1
 

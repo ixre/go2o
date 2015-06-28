@@ -22,6 +22,6 @@ var (
 	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
 		"not_on_shelves", "商品未上架")
 
-ErrOutOfSalePrice *domain.DomainError = domain.NewDomainError(
-	"out_of_sale_price", "超出商品售价")
+	ErrOutOfSalePrice *domain.DomainError = domain.NewDomainError(
+		"out_of_sale_price", "超出商品售价")
 )
