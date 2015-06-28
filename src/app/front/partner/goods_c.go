@@ -33,7 +33,7 @@ type goodsC struct {
 }
 
 //商品列表
-func (this *goodsC) List(ctx *web.Context) {
+func (this *goodsC) ItemList(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 
@@ -41,7 +41,7 @@ func (this *goodsC) List(ctx *web.Context) {
 	ctx.App.Template().Execute(w, gof.TemplateDataMap{
 		"cate_opts":  template.HTML(cateOpts),
 		"no_pic_url": format.GetGoodsImageUrl(""),
-	}, "views/partner/goods/goods_list.html")
+	}, "views/partner/goods/item_list.html")
 }
 
 //商品选择
@@ -176,12 +176,12 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *web.Context) {
 	this.ResultOutput(ctx, msg)
 }
 
-func (this *goodsC) GoodsCtrl(ctx *web.Context) {
+func (this *goodsC) ItemCtrl(ctx *web.Context) {
 
 	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
 	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
 		"item_id": itemId,
-	}, "views/partner/goods/goods_ctrl.html")
+	}, "views/partner/goods/item_ctrl.html")
 }
 
 func (this *goodsC) LvPrice(ctx *web.Context) {

@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"time"
+	"fmt"
 )
 
 var _ promotion.IPromotion = new(Promotion)
@@ -64,6 +65,7 @@ func (this *Promotion) GetRelationValue() interface{} {
 
 // 设置值
 func (this *Promotion) SetValue(v *promotion.ValuePromotion) error {
+	fmt.Println(this.GetAggregateRootId(),this._promRep.GetGoodsPromotionId(this._value.GoodsId, this._value.TypeFlag))
 	if this.GetAggregateRootId() == 0 {
 		if this._promRep.GetGoodsPromotionId(this._value.GoodsId, this._value.TypeFlag) > 0 {
 			return promotion.ErrExistsSamePromotionFlag

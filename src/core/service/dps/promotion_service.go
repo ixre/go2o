@@ -51,19 +51,22 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.ValuePromotion,
 	v1 *promotion.ValueCashBack) (int, error) {
 	var prom promotion.IPromotion
+	var err error
 	if v.Id > 0 {
 		prom = this._newRep.GetPromotion(v.Id)
 		if prom.GetValue().PartnerId != partnerId {
 			return -1, partner.ErrNotMatch
 		}
-		prom.SetValue(v)
 	} else {
 		prom = this._newRep.CreatePromotion(v)
 	}
 
-	cb := prom.(promotion.ICashBackPromotion)
+	if err = prom.SetValue(v);err == nil {
+		cb := prom.(promotion.ICashBackPromotion)
+		err = cb.SetDetailsValue(v1);
+	}
 
-	if err := cb.SetDetailsValue(v1); err != nil {
+	if err != nil {
 		return v.Id, err
 	}
 
