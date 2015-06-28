@@ -107,14 +107,24 @@ func (this *Shopping) GetShoppingCart(buyerId int, cartKey string) shopping.ICar
 	}
 
 	// 合并购物车
-	if outCart != nil {
+	if outCart != nil && hasBuyer {
 		if bid := outCart.GetValue().BuyerId; bid <= 0 || bid == buyerId {
 			memCart, _ = memCart.Combine(outCart)
 			outCart.Destroy()
 			memCart.Save()
 		}
 	}
-	return memCart
+
+	if memCart != nil {
+		return memCart
+	}
+
+	if outCart != nil {
+		return outCart
+	}
+
+	return this.NewCart(buyerId)
+
 
 	//	if !hasOutCart {
 	//		if c == nil {

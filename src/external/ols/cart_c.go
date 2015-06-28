@@ -10,27 +10,31 @@ package ols
 
 import (
 	"encoding/json"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/goclient"
+	"go2o/src/core/infrastructure/format"
+	"go2o/src/core/service/dps"
+	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
-type cartC struct {
-	*baseC
+type CartC struct {
+	*BaseC
 }
 
 // 购物车
-func (this *cartC) cartApi(ctx *web.Context) {
-	if !this.Requesting(ctx) {
+func (this *CartC) CartApiHandle(ctx *web.Context) {
+	if !this.BaseC.Requesting(ctx) {
 		ctx.ResponseWriter.Write([]byte("invalid request"))
 		return
 	}
 
 	r, _ := ctx.Request, ctx.ResponseWriter
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 	r.ParseForm()
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")
@@ -50,57 +54,67 @@ func (this *cartC) cartApi(ctx *web.Context) {
 
 }
 
-func (this *cartC) cart_GetCart(ctx *web.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) {
-	cart := goclient.Partner.GetShoppingCart(p.Id, memberId, cartKey)
+func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
+	memberId int, cartKey string) {
+	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
-	// 如果已经购买，則创建新的购物车
-	if cart.IsBought == 1 {
-		cart = goclient.Partner.GetShoppingCart(p.Id, memberId, "")
+	if cart.Items != nil {
+		for _, v := range cart.Items {
+			v.GoodsImage = format.GetGoodsImageUrl(v.GoodsImage)
+		}
 	}
+
+	// 持续保存cookie
+	ck, err := ctx.Request.Cookie("_cart")
+	if err != nil {
+		ck = &http.Cookie{
+			Name: "_cart",
+			Path: "/",
+		}
+	}
+	ck.Value = cart.CartKey
+	ck.Expires = time.Now().Add(time.Hour * 48)
+	http.SetCookie(ctx.ResponseWriter, ck)
 
 	d, _ := json.Marshal(cart)
 	ctx.ResponseWriter.Write(d)
 }
 
-func (this *cartC) cart_AddItem(ctx *web.Context,
+func (this *CartC) cart_AddItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	item, err := goclient.Partner.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
+	item := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
 
-	var result = make(map[string]interface{}, 2)
-	if err != nil {
-		result["message"] = err.Error()
+	var d map[string]interface{} = make(map[string]interface{})
+	if item == nil {
+		d["error"] = "商品不存在"
 	} else {
-		result["message"] = ""
-		result["item"] = item
+		item.GoodsImage = format.GetGoodsImageUrl(item.GoodsImage)
+		d["item"] = item
 	}
-	d, _ := json.Marshal(result)
-	w.Write(d)
+	this.BaseC.JsonOutput(ctx, d)
 }
 
-func (this *cartC) cart_RemoveItem(ctx *web.Context,
+func (this *CartC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	var msg gof.Message
+	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	err := goclient.Partner.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
+	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
 	if err != nil {
-		w.Write([]byte(`{error:'` + err.Error() + `'}`))
+		msg.Message = err.Error()
 	} else {
-		w.Write([]byte("{}"))
+		msg.Result = true
 	}
+	this.BaseC.ResultOutput(ctx, msg)
 }
 
-func (this *cartC) cart(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
-	//todo: 需页面
-	if r.URL.Query().Get("edit") == "1" {
-		w.Header().Add("Location", "/list")
-	} else {
-		w.Header().Add("Location", "/buy/confirm")
-	}
-	w.WriteHeader(302)
+func (this *CartC) Index(ctx *web.Context) {
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{},
+		"views/shop/ols/{device}/cart.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 }
