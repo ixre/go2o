@@ -7,7 +7,7 @@
     <link  rel="stylesheet" type="text/css" href="{{.static_serve}}/css/partner/partner.css"/>
 </head>
 <body>
-    <div id="gd"></div>
+    <div id="dg"></div>
     <div class="toolBar">
         <div class="searchBar padding2" id="searchbar">
             <ul>
@@ -62,9 +62,9 @@
             return true;
         };
 
-        var refresh = function () { expr.reload('gd'); };
+        var refresh = function () { expr.reload('dg'); };
 
-        $JS.$('gd').style.height = $JS.screen.height() + 'px';
+        $JS.$('dg').style.height = $JS.screen.height() + 'px';
 
         $(function () {
 
@@ -76,12 +76,12 @@
 
             $('#btnSearch').click(
                 function () {
-                    expr.search('gd');
+                    expr.search('dg');
                 });
             $('#btnRefresh').click(refresh);
 
             //加载数据
-            $('#gd').datagrid({
+            $('#dg').datagrid({
                 toolbar: '.toolBar',
                 singleSelect: !false,
                 pagination: true,

@@ -15,7 +15,7 @@
 </head>
 <body class="easyui-layout">
 <div region="center">
-    <div id="gd"></div>
+    <div id="dg"></div>
     <div class="toolBar">
         <div class="searchBar padding2" id="searchbar">
             <ul>
@@ -66,13 +66,13 @@
         return true;
     };
 
-    var refresh = function () { expr.reload('gd'); };
+    var refresh = function () { expr.reload('dg'); };
 
-    $JS.$('gd').style.height = $JS.screen.height() + 'px';
+    $JS.$('dg').style.height = $JS.screen.height() + 'px';
 
     $(function () {
         //加载数据
-        $('#gd').datagrid({
+        $('#dg').datagrid({
             toolbar: '.toolBar',
             singleSelect: !false,
             pagination: true,

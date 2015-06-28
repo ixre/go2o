@@ -8,7 +8,7 @@
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <div id="gd"></div>
+    <div id="dg"></div>
     <div class="toolBar">
         <div class="searchBar padding2" id="searchbar">
             <input field="couponId" type="hidden" value="{{.entity.Id}}"/>
@@ -44,9 +44,9 @@
             return true;
         };
 
-        var refresh = function () { expr.reload('gd'); };
+        var refresh = function () { expr.reload('dg'); };
 
-        $JS.$('gd').style.height = $JS.screen.height() + 'px';
+        $JS.$('dg').style.height = $JS.screen.height() + 'px';
 
         $(function () {
 
@@ -58,12 +58,12 @@
 
             $('#btnSearch').click(
                 function () {
-                    expr.search('gd');
+                    expr.search('dg');
                 });
             $('#btnRefresh').click(refresh);
 
             //加载数据
-            $('#gd').datagrid({
+            $('#dg').datagrid({
                 toolbar: '.toolBar',
                 singleSelect: false,
                 pagination: true,
@@ -97,7 +97,7 @@
 
         var amount= {{.entity.Amount}};
         $JS.$('btnBind').onclick=function(){
-            var rows = $('#gd').datagrid('getSelections');
+            var rows = $('#dg').datagrid('getSelections');
             var len = rows.length;
             if (len == 0) {
                 $.messager.alert('提示', '请选择会员!');
@@ -113,7 +113,7 @@
                     if (json.result) {
                         $.messager.alert('提示', '发送成功!','',function(){
                             location.reload();
-                            //expr.reload('gd');
+                            //expr.reload('dg');
                         });
                     }else{
                         $.messager.alert('提示',json.message);
@@ -139,7 +139,7 @@
                 if (result) {
                     $JS.xhr.jsonPost('/prom/delCoupon', { id: id }, function(json) {
                         if (json.result) {
-                            expr.reload('gd');
+                            expr.reload('dg');
                         }
                     });
                 }

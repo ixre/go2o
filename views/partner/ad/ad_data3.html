@@ -13,7 +13,7 @@
         a.nodeSel:hover span.float,a.node:hover span.float a{color:red;}
     </style>
 </head>
-<div id="gd"></div>
+<div id="dg"></div>
 <div class="toolBar">
     <div class="searchBar padding2" id="searchbar">
         <ul>
@@ -62,10 +62,10 @@
     };
 
     window.refresh = function () {
-        expr.reload('gd');
+        expr.reload('dg');
     };
 
-    $JS.$('gd').style.height = $JS.screen.height() + 'px';
+    $JS.$('dg').style.height = $JS.screen.height() + 'px';
 
     $(function () {
 
@@ -76,12 +76,12 @@
                 });
 
         $JS.$('btnSearch').onclick=function () {
-            expr.search('gd');
+            expr.search('dg');
         };
 
 
         //加载数据
-        $('#gd').datagrid({
+        $('#dg').datagrid({
             toolbar: '.toolBar',
             singleSelect: !false,
             pagination: true,
@@ -138,7 +138,7 @@
             if (result) {
                 $JS.xhr.jsonPost('/ad/del_image', {ad_id:'{{.adId}}',id: id }, function(json) {
                     if (json.result) {
-                        expr.reload('gd');
+                        expr.reload('dg');
                     }else{
                         window.parent.$.messager.alert('提示',  json.message,"error");
                     }
