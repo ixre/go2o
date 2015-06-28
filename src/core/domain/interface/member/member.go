@@ -12,13 +12,16 @@ package member
 import "go2o/src/core/domain/interface/valueobject"
 
 type IMember interface {
+	// 获取聚合根编号
 	GetAggregateRootId() int
 
+	// 获取值
 	GetValue() ValueMember
 
 	// 邀请管理
 	Invitation() IInvitationManager
 
+	// 设置值
 	SetValue(*ValueMember) error
 
 	// 获取账户
@@ -26,6 +29,12 @@ type IMember interface {
 
 	// 保存账户
 	SaveAccount() error
+
+	// 锁定会员
+	Lock()error
+
+	// 解锁会员
+	Unlock()error
 
 	// 获取提现银行信息
 	GetBank() BankInfo

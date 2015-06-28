@@ -233,7 +233,7 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	m.LastLoginTime = t
 	m.Level = 1
 	m.Exp = 1
-	m.Avatar = "share/noavatar.gif"
+	m.Avatar = "resource/no_avatar.gif"
 	m.Birthday = "1970-01-01"
 	m.DynamicToken = m.Pwd
 	m.Exp = 0

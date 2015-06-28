@@ -14,7 +14,6 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/service/dps"
@@ -95,13 +94,25 @@ func (this *memberC) DelMLevel(ctx *web.Context) {
 	this.ResultOutput(ctx, result)
 }
 
+// 会员列表
 func (this *memberC) List(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	shopsJson := cache.GetShopsJson(partnerId)
+	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
-			"shops": template.JS(shopsJson),
-		}, "views/partner/order/order_list.html")
+		}, "views/partner/member/member_list.html")
+}
+
+
+func (this *memberC) Lock_member_post(ctx *web.Context){
+	id,_ := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+	partnerId := this.GetPartnerId(ctx)
+	var result gof.Message
+	if  _,err := dps.MemberService.LockMember(partnerId,id);err != nil{
+		result.Message = err.Error()
+	}else{
+		result.Result = true
+	}
+	this.ResultOutput(ctx,result)
 }
 
 func (this *memberC) Cancel(ctx *web.Context) {
