@@ -27,4 +27,7 @@ type IPromotionRep interface {
 
 	// 获取返现促销
 	GetValueCashBack(int)*ValueCashBack
+
+	// 获取商品的促销编号
+	GetGoodsPromotionId(goodsId int,promFlag int)int
 }

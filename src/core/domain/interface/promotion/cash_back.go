@@ -12,4 +12,7 @@ package promotion
 type ICashBackPromotion interface{
 	// 设置详细的促销信息
 	SetDetailsValue(*ValueCashBack)error
+
+	// 获取自定义数据
+	GetDataTag()map[string]string
 }

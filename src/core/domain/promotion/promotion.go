@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"time"
 	"errors"
+	"go2o/src/core/domain/interface/sale"
 )
 
 
@@ -25,6 +26,7 @@ type Promotion struct {
 	_partnerId int
 	_promRep promotion.IPromotionRep
 	_value *promotion.ValuePromotion
+	_saleRep sale.ISaleRep
 }
 
 func NewPromotion(partnerId int,promRep promotion.IOldPromotionRep,
@@ -38,16 +40,17 @@ func NewPromotion(partnerId int,promRep promotion.IOldPromotionRep,
 	}
 }
 
-func newPromotion(rep promotion.IPromotionRep,v *promotion.ValuePromotion)*Promotion{
+func newPromotion(rep promotion.IPromotionRep,saleRep sale.ISaleRep,v *promotion.ValuePromotion)*Promotion{
 	return &Promotion{
 		_promRep:rep,
+		_saleRep:saleRep,
 		_value :v,
 	}
 }
 
 // 获取聚合根编号
 func (this *Promotion) GetAggregateRootId() int {
-	return this._partnerId
+	return this._value.Id
 }
 
 // 获取值
@@ -63,6 +66,12 @@ func (this *Promotion) GetRelationValue()interface{}{
 
 // 设置值
 func (this *Promotion) SetValue(v *promotion.ValuePromotion)error{
+	if this.GetAggregateRootId() == 0{
+		if this._promRep.GetGoodsPromotionId(this._value.GoodsId,this._value.TypeFlag) > 0{
+			return promotion.ErrExistsSamePromotionFlag
+		}
+	}
+
 	this._value = v
 	return nil
 }

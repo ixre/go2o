@@ -93,7 +93,7 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 	e := promotion.ValuePromotion{}
 	web.ParseFormToEntity(r.Form, &e)
 	e2 := promotion.ValueCashBack{}
-	web.ParseFormToEntity(r.Form,&e)
+	web.ParseFormToEntity(r.Form,&e2)
 
 	e.PartnerId = partnerId
 	e.TypeFlag = promotion.TypeFlagCashBack

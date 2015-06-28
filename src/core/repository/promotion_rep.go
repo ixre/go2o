@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/promotion"
 	promImpl "go2o/src/core/domain/promotion"
+	"go2o/src/core/domain/interface/sale"
 )
 
 var _ promotion.IPromotionRep = new(promotionRep)
@@ -21,12 +22,14 @@ var _ promotion.IPromotionRep = new(promotionRep)
 type promotionRep struct {
 	db.Connector
 	_memberRep member.IMemberRep
+	_saleRep sale.ISaleRep
 }
 
-func NewPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.IPromotionRep {
+func NewPromotionRep(c db.Connector,saleRep sale.ISaleRep, memberRep member.IMemberRep) promotion.IPromotionRep {
 	return &promotionRep{
 		Connector:  c,
 		_memberRep: memberRep,
+		_saleRep :saleRep,
 	}
 }
 
@@ -51,7 +54,7 @@ func (this *promotionRep) GetPromotion(id int)promotion.IPromotion{
 
 // 获取促销
 func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion)promotion.IPromotion{
-	return promImpl.FactoryPromotion(this,v)
+	return promImpl.FactoryPromotion(this,this._saleRep,v)
 }
 
 // 保存促销
@@ -88,4 +91,12 @@ func (this *promotionRep)  GetValueCashBack(id int)*promotion.ValueCashBack{
 		return &e
 	}
 	return nil
+}
+
+
+// 获取商品的促销编号
+func (this *promotionRep)  GetGoodsPromotionId(goodsId int,promFlag int)int{
+	var id int
+	this.Connector.ExecScalar("SELECT id FROM pm_info WHERE goods_id=? AND type_flag=? AND enabled=1", &id,goodsId,promFlag)
+	return id
 }
