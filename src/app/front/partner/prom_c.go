@@ -21,6 +21,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/src/core/infrastructure/format"
 )
 
 var _ mvc.Filter = new(promC)
@@ -54,6 +55,7 @@ func (this *promC) Create_cb(ctx *web.Context){
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 			"entity2":template.JS(js2),
+			"goods_cls":"hidden",
 		},
 		"views/partner/promotion/cash_back.html")
 }
@@ -66,10 +68,16 @@ func (this *promC) Edit_cb(ctx *web.Context) {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
+	var goodsInfo string
+	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx),e.GoodsId)
+	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>",goods.Name,format.FormatFloat(goods.SalePrice))
+
 	ctx.App.Template().Execute(ctx.ResponseWriter,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 			"entity2":template.JS(js2),
+			"goods_info":template.HTML(goodsInfo),
+			"goods_cls":"",
 		},
 		"views/partner/promotion/cash_back.html")
 }
