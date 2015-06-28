@@ -33,11 +33,11 @@ func (this *CashBackPromotion) Save()(int,error){
 	this._value.TypeFlag = promotion.TypeFlagCashBack
 	id,err := this.Promotion.Save()
 	if err == nil {
+		this._value.Id = id
 		if this._cashBackValue == nil{
-			this._cashBackValue = &promotion.ValueCashBack{
-				Id:this.GetAggregateRootId(),
-			}
+			this._cashBackValue = new(promotion.ValueCashBack)
 		}
+		this._cashBackValue.Id = this.GetAggregateRootId()
 		_,err = this._promRep.SaveValueCashBack(this._cashBackValue,isCreate)
 	}
 	return id,err

@@ -12,6 +12,7 @@ package dps
 import (
 	"errors"
 	"go2o/src/core/domain/interface/promotion"
+	"go2o/src/core/domain/interface/partner"
 )
 
 type promotionService struct {
@@ -47,6 +48,24 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion)(int,err
 	return prom.Save()
 }
 
+func (this *promotionService) SaveCashBackPromotion(partnerId int,v *promotion.ValuePromotion,
+	v1 *promotion.ValueCashBack)(int,error){
+	var prom promotion.IPromotion
+	if v.Id > 0 {
+		prom = this._newRep.GetPromotion(v.Id)
+		if prom.GetValue().PartnerId != partnerId{
+			return -1,partner.ErrNotMatch
+		}
+		prom.SetValue(v)
+	}else{
+		prom = this._newRep.CreatePromotion(v)
+	}
+
+	cb := prom.(promotion.ICashBackPromotion)
+	cb.SetDetailsValue(v1)
+
+	return prom.Save()
+}
 
 /**************   Coupon ************/
 func (this *promotionService) GetCoupon(partnerId int, id int) promotion.ICoupon {

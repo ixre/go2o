@@ -45,7 +45,7 @@ func (this *promC) Create_cb(ctx *web.Context){
 		Enabled:1,
 	}
 	e2 := &promotion.ValueCashBack{
-
+		BackType:1,
 	}
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
@@ -74,6 +74,33 @@ func (this *promC) Edit_cb(ctx *web.Context) {
 		"views/partner/promotion/cash_back.html")
 }
 
+
+func (this *promC) Save_cb_post(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	r := ctx.Request
+	r.ParseForm()
+
+	var result gof.Message
+
+	e := promotion.ValuePromotion{}
+	web.ParseFormToEntity(r.Form, &e)
+	e2 := promotion.ValueCashBack{}
+	web.ParseFormToEntity(r.Form,&e)
+
+	e.PartnerId = partnerId
+	e.TypeFlag = promotion.TypeFlagCashBack
+
+
+	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e,&e2)
+
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		result.Result = true
+		result.Data = id
+	}
+	this.ResultOutput(ctx, result)
+}
 
 
 

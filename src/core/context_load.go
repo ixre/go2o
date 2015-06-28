@@ -89,6 +89,8 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")
 	orm.CreateTableMap(promotion.ValueCouponBind{}, "pm_coupon_bind")
 	orm.CreateTableMap(promotion.ValueCouponTake{}, "pm_coupon_take")
+	orm.CreateTableMap(promotion.ValuePromotion{},"pm_info")
+	orm.CreateTableMap(promotion.ValueCashBack{},"pm_cash_back")
 
 	/** 配送 **/
 	orm.CreateTableMap(delivery.AreaValue{}, "dlv_area")

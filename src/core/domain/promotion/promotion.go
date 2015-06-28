@@ -83,6 +83,7 @@ func (this *Promotion) Type() int {
 
 // 保存
 func (this *Promotion) Save()(int,error){
+	this._value.UpdateTime = time.Now().Unix()
 	return this._promRep.SaveValuePromotion(this._value)
 }
 
