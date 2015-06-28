@@ -50,6 +50,14 @@ func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
 	val := ctx.Session().Get("member:rel_partner")
 	if val != nil {
 		return cache.GetValuePartnerCache(val.(int))
+	}else{
+		m := this.GetMember(ctx)
+		if m != nil{
+			rel :=dps.MemberService.GetRelation(m.Id)
+			ctx.Session().Set("member:rel_partner",rel.RegisterPartnerId)
+			ctx.Session().Save()
+			return cache.GetValuePartnerCache(rel.RegisterPartnerId)
+		}
 	}
 	return nil
 }

@@ -57,11 +57,12 @@ func (this *UserC) Login_post(ctx *web.Context) {
 	partnerId := this.BaseC.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
+
 	if b {
 		ctx.Session().Set("member", m)
 		ctx.Session().Save()
+		result.Result = true
 	} else {
-		result.Result = false
 		if err != nil {
 			result.Message = err.Error()
 		} else {
