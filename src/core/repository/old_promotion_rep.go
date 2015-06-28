@@ -35,7 +35,7 @@ func NewOldPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.I
 }
 
 func (this *oldPromotionRep) GetPromotion(partnerId int) promotion.IPromotion {
-	return promImpl.NewPromotion(partnerId, this, this._memberRep)
+	return promImpl.NewPromotion(partnerId, this,nil,this._memberRep)
 }
 
 func (this *oldPromotionRep) GetCoupon(id int) *promotion.ValueCoupon {

@@ -13,38 +13,79 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/promotion"
 	"time"
+	"errors"
 )
+
+
+var _ promotion.IPromotion = new(Promotion)
 
 type Promotion struct {
 	promRep   promotion.IOldPromotionRep
 	memberRep member.IMemberRep
-	partnerId int
+	_partnerId int
+	_promRep promotion.IPromotionRep
+	_value *promotion.ValuePromotion
 }
 
-func NewPromotion(partnerId int, promRep promotion.IOldPromotionRep,
+func NewPromotion(partnerId int,promRep promotion.IOldPromotionRep,
+	rep promotion.IPromotionRep,
 	memberRep member.IMemberRep) promotion.IPromotion {
 	return &Promotion{
-		partnerId: partnerId,
+		_partnerId:  partnerId,
+		_promRep:rep,
 		promRep:   promRep,
 		memberRep: memberRep,
 	}
 }
 
-func (this *Promotion) GetAggregateRootId() int {
-	return this.partnerId
+func newPromotion(rep promotion.IPromotionRep,v *promotion.ValuePromotion)promotion.IPromotion{
+	return &Promotion{
+		_promRep:rep,
+		_value :v,
+	}
 }
+
+// 获取聚合根编号
+func (this *Promotion) GetAggregateRootId() int {
+	return this._partnerId
+}
+
+// 获取值
+func (this *Promotion)GetValue()*promotion.ValuePromotion{
+	return this._value
+}
+
+
+// 获取相关的值
+func (this *Promotion) GetRelationValue()interface{}{
+	panic(errors.New("not implement!"))
+}
+
+// 设置值
+func (this *Promotion) SetValue(v *promotion.ValuePromotion)error{
+	this._value = v
+	return nil
+}
+
 
 // 应用类型
 func (this *Promotion) ApplyFor() int {
-	//todo:
-	return promotion.ApplyForGoods
+	if this._value.GoodsId > 0 {
+		return promotion.ApplyForGoods
+	}
+	return promotion.ApplyForOrder
 }
 
 // 促销类型
 func (this *Promotion) Type() int {
-	//todo:
-	return promotion.TypeFlagCashBack
+	return this._value.TypeFlag
 }
+
+// 保存
+func (this *Promotion) Save()(int,error){
+	return this._promRep.SaveValuePromotion(this._value)
+}
+
 
 func (this *Promotion) GetCoupon(id int) promotion.ICoupon {
 	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)

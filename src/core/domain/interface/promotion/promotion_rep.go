@@ -10,4 +10,6 @@
 package promotion
 
 type IPromotionRep interface {
+	// 保存促销
+	SaveValuePromotion(*ValuePromotion)(int,error)
 }

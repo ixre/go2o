@@ -26,3 +26,12 @@ const (
 	// 应用商品
 	ApplyForGoods = 2
 )
+
+
+const(
+	// 返现到账户余额
+	BackToBalance = 1
+
+	// 返现直接抵扣订单
+	BackUseForOrder = 2
+)

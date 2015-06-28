@@ -28,3 +28,8 @@ func NewPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.IPro
 		_memberRep: memberRep,
 	}
 }
+
+// 保存促销
+func (this *promotionRep) SaveValuePromotion(v *promotion.ValuePromotion)(int,error){
+	return v.Id,nil
+}

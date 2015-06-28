@@ -19,11 +19,25 @@ type IPromotion interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int
 
+	// 获取值
+	GetValue()*ValuePromotion
+
+	// 获取相关的值
+	GetRelationValue()interface{}
+
+	// 设置值
+	SetValue(*ValuePromotion)error
+
 	// 应用类型
 	ApplyFor() int
 
 	// 促销类型
 	Type() int
+
+	// 保存
+	Save()(int,error)
+
+
 
 	// 获取优惠券
 	GetCoupon(id int) ICoupon

@@ -12,6 +12,9 @@ type ValuePromotion struct {
 	// 促销编号
 	Id int `db:"id" pk:"yes" auto:"yes"`
 
+	// 商户编号
+	PartnerId int `db:"partner_id"`
+
 	// 促销简称
 	ShortName string `db:"short_name"`
 
