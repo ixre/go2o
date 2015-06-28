@@ -36,12 +36,14 @@ func Init(ctx gof.App) {
 	memberRep := repository.NewMemberRep(db)
 	partnerRep := repository.NewPartnerRep(db, userRep, memberRep)
 	promRep := repository.NewPromotionRep(db, memberRep)
+	oldPromRep := repository.NewOldPromotionRep(db, memberRep)
+
 	tagSaleRep := repository.NewTagSaleRep(db)
 	saleRep := repository.NewSaleRep(db, tagSaleRep)
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)
 	adRep := repository.NewAdvertisementRep(db)
-	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, promRep, memberRep, deliveryRep)
+	spRep := repository.NewShoppingRep(db, partnerRep, saleRep, oldPromRep, memberRep, deliveryRep)
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -49,7 +51,7 @@ func Init(ctx gof.App) {
 	contentQue := query.NewContentQuery(db)
 
 	/** Service **/
-	PromService = NewPromotionService(promRep)
+	PromService = NewPromotionService(oldPromRep,promRep)
 	ShoppingService = NewShoppingService(spRep)
 	MemberService = NewMemberService(memberRep, memberQue)
 	PartnerService = NewPartnerService(partnerRep, partnerQue)
