@@ -86,7 +86,7 @@
                 { field: 'area_id', title: '所属地区', align: 'center', width: 50 },
                 {field: 'id', title: '操作',align: 'center', width: 50,formatter:function(val,row){
                     return '<a href="javascript:;" onclick="editRec('+row.id+')">修改</a>'+
-                            ' | <a href="javascript:;" onclick="delRec('+row.id+')">删除</a>'
+                            '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
                 } },
             ]]
         });
