@@ -33,7 +33,7 @@ type goodsC struct {
 }
 
 //商品列表
-func (this *goodsC) ItemList(ctx *web.Context) {
+func (this *goodsC) Item_list(ctx *web.Context) {
 	r, w := ctx.Request, ctx.ResponseWriter
 	r.ParseForm()
 

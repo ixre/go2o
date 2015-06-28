@@ -545,6 +545,31 @@ INSERT INTO `mm_relation` VALUES (1,'',0,101),(2,'',0,101),(28,'201412191655',0,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pm_cash_back`
+--
+
+DROP TABLE IF EXISTS `pm_cash_back`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pm_cash_back` (
+  `id` int(11) NOT NULL,
+  `back_fee` int(11) DEFAULT NULL,
+  `back_type` tinyint(1) DEFAULT NULL,
+  `data_tag` varchar(200) DEFAULT NULL COMMENT '自定义数据',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pm_cash_back`
+--
+
+LOCK TABLES `pm_cash_back` WRITE;
+/*!40000 ALTER TABLE `pm_cash_back` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pm_cash_back` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pm_coupon`
 --
 
@@ -637,6 +662,35 @@ LOCK TABLES `pm_coupon_take` WRITE;
 /*!40000 ALTER TABLE `pm_coupon_take` DISABLE KEYS */;
 INSERT INTO `pm_coupon_take` VALUES (1,1,1,0,1423548731,1423563131,1423545131),(2,1,1,1,1423565887,1423580287,1423565905),(3,1,1,1,1423566652,1423581052,1423568140),(4,1,1,0,1423632856,1423647256,1423629256),(5,1,1,1,1423704789,1423719189,1423704793),(6,1,1,1,1429970665,1429985065,1429970668);
 /*!40000 ALTER TABLE `pm_coupon_take` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pm_info`
+--
+
+DROP TABLE IF EXISTS `pm_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pm_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) DEFAULT NULL,
+  `short_name` varchar(45) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `type_flag` int(11) DEFAULT NULL,
+  `goods_id` int(11) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pm_info`
+--
+
+LOCK TABLES `pm_info` WRITE;
+/*!40000 ALTER TABLE `pm_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pm_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1278,4 +1332,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-27 13:55:45
+-- Dump completed on 2015-06-29  0:52:09
