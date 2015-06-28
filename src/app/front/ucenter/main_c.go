@@ -10,6 +10,7 @@ package ucenter
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	gfmt "github.com/atnet/gof/util/fmt"
 	"github.com/atnet/gof/web"
@@ -18,7 +19,6 @@ import (
 	"html/template"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 type mainC struct {
@@ -31,10 +31,8 @@ func (this *mainC) Index(ctx *web.Context) {
 		mm := this.GetMember(ctx)
 		p := this.GetPartner(ctx)
 
-
-		fmt.Printf("--%+v   --- %+v\n",mm,p)
+		fmt.Printf("--%+v   --- %+v\n", mm, p)
 		conf := this.GetSiteConf(p.Id)
-
 
 		acc := dps.MemberService.GetAccount(mm.Id)
 		js, _ := json.Marshal(mm)

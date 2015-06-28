@@ -29,7 +29,7 @@ import (
 // 是否允许绑定，如果不绑定。则可以任意使用.只要有绑定和使用后，就不允许修改此属性。
 type Coupon struct {
 	value        *promotion.ValueCoupon
-	promRep      promotion.IPromotionRep
+	promRep      promotion.IOldPromotionRep
 	memberRep    member.IMemberRep
 	takes        []promotion.ValueCouponTake
 	binds        []promotion.ValueCouponBind
@@ -37,7 +37,7 @@ type Coupon struct {
 	binds_loaded bool
 }
 
-func newCoupon(v *promotion.ValueCoupon, promRep promotion.IPromotionRep,
+func newCoupon(v *promotion.ValueCoupon, promRep promotion.IOldPromotionRep,
 	memberRep member.IMemberRep) promotion.ICoupon {
 
 	cp := &Coupon{value: v,

@@ -211,15 +211,14 @@ func (this *Member) Save() (int, error) {
 	return this.create(this._value)
 }
 
-
 // 锁定会员
-func (this *Member) Lock()error{
-	return this._rep.LockMember(this.GetAggregateRootId(),0)
+func (this *Member) Lock() error {
+	return this._rep.LockMember(this.GetAggregateRootId(), 0)
 }
 
 // 解锁会员
-func (this *Member) Unlock()error{
-	return this._rep.LockMember(this.GetAggregateRootId(),1)
+func (this *Member) Unlock() error {
+	return this._rep.LockMember(this.GetAggregateRootId(), 1)
 }
 
 // 修改密码,旧密码可为空

@@ -31,10 +31,10 @@ type IMember interface {
 	SaveAccount() error
 
 	// 锁定会员
-	Lock()error
+	Lock() error
 
 	// 解锁会员
-	Unlock()error
+	Unlock() error
 
 	// 获取提现银行信息
 	GetBank() BankInfo

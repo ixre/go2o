@@ -16,12 +16,12 @@ import (
 )
 
 type Promotion struct {
-	promRep   promotion.IPromotionRep
+	promRep   promotion.IOldPromotionRep
 	memberRep member.IMemberRep
 	partnerId int
 }
 
-func NewPromotion(partnerId int, promRep promotion.IPromotionRep,
+func NewPromotion(partnerId int, promRep promotion.IOldPromotionRep,
 	memberRep member.IMemberRep) promotion.IPromotion {
 	return &Promotion{
 		partnerId: partnerId,
@@ -32,6 +32,18 @@ func NewPromotion(partnerId int, promRep promotion.IPromotionRep,
 
 func (this *Promotion) GetAggregateRootId() int {
 	return this.partnerId
+}
+
+// 应用类型
+func (this *Promotion) ApplyFor() int {
+	//todo:
+	return promotion.ApplyForGoods
+}
+
+// 促销类型
+func (this *Promotion) Type() int {
+	//todo:
+	return promotion.TypeFlagCashBack
 }
 
 func (this *Promotion) GetCoupon(id int) promotion.ICoupon {

@@ -11,10 +11,10 @@ package api
 import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
-	"go2o/src/core/service/dps"
 	"go2o/src/core/domain/interface/ad"
-	"strings"
 	"go2o/src/core/infrastructure/format"
+	"go2o/src/core/service/dps"
+	"strings"
 )
 
 type partnerC struct {
@@ -31,27 +31,27 @@ func (this *partnerC) handle(ctx *web.Context) {
 }
 
 // 获取广告数据
-func (this *partnerC) GetAd(ctx *web.Context){
+func (this *partnerC) GetAd(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	adName := ctx.Request.FormValue("ad_name")
-	adv,data := dps.AdvertisementService.GetAdvertisementAndDataByName(partnerId,adName)
-	if data != nil{
+	adv, data := dps.AdvertisementService.GetAdvertisementAndDataByName(partnerId, adName)
+	if data != nil {
 
 		// 图片广告
-		if adv.Type == ad.TypeGallery{
+		if adv.Type == ad.TypeGallery {
 			gv := data.(ad.ValueGallery)
-			if gv!= nil{
-				for _,v := range gv{
-					if strings.Index(v.ImageUrl,"http://") == -1{
+			if gv != nil {
+				for _, v := range gv {
+					if strings.Index(v.ImageUrl, "http://") == -1 {
 						v.ImageUrl = format.GetGoodsImageUrl(v.ImageUrl)
 					}
 				}
 			}
-			this.JsonOutput(ctx,gv);
-			return;
+			this.JsonOutput(ctx, gv)
+			return
 		}
-		this.JsonOutput(ctx,data)
-	}else {
+		this.JsonOutput(ctx, data)
+	} else {
 		this.ErrorOutput(ctx, "没有广告数据")
 	}
 }

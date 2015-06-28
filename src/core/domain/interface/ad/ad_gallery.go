@@ -13,7 +13,7 @@ type IGalleryAd interface {
 	GetAdValue() ValueGallery
 
 	// 获取可用的广告数据
-	GetEnabledAdValue()ValueGallery
+	GetEnabledAdValue() ValueGallery
 
 	// 保存广告图片
 	SaveImage(v *ValueImage) (int, error)

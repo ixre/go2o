@@ -98,22 +98,20 @@ func (this *memberC) DelMLevel(ctx *web.Context) {
 func (this *memberC) List(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.ResponseWriter,
-		gof.TemplateDataMap{
-		}, "views/partner/member/member_list.html")
+		gof.TemplateDataMap{}, "views/partner/member/member_list.html")
 }
 
-
-func (this *memberC) Lock_member_post(ctx *web.Context){
+func (this *memberC) Lock_member_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	id,_ := strconv.Atoi(ctx.Request.FormValue("id"))
+	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
 	partnerId := this.GetPartnerId(ctx)
 	var result gof.Message
-	if  _,err := dps.MemberService.LockMember(partnerId,id);err != nil{
+	if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
 		result.Message = err.Error()
-	}else{
+	} else {
 		result.Result = true
 	}
-	this.ResultOutput(ctx,result)
+	this.ResultOutput(ctx, result)
 }
 
 func (this *memberC) Cancel(ctx *web.Context) {

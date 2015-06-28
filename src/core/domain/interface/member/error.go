@@ -22,7 +22,6 @@ var (
 	ErrNoSuchDeliverAddress *domain.DomainError = domain.NewDomainError(
 		"member_no_such_deliver_address", "配送地址错误")
 
-
 	ErrNoSuchMember *domain.DomainError = domain.NewDomainError(
 		"member_no_such_member", "会员不存在")
 )

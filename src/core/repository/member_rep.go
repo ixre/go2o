@@ -180,10 +180,9 @@ func (this *memberRep) GetLevelValueByExp(partnerId int, exp int) int {
 
 }
 
-
 // 锁定会员
-func (this *memberRep) LockMember(id int,state int)error{
-	_,err := this.Connector.ExecNonQuery("update mm_member set state=? WHERE id=?",state,id)
+func (this *memberRep) LockMember(id int, state int) error {
+	_, err := this.Connector.ExecNonQuery("update mm_member set state=? WHERE id=?", state, id)
 	return err
 }
 

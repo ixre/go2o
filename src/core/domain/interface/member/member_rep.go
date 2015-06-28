@@ -25,7 +25,7 @@ type IMemberRep interface {
 	SaveMember(v *ValueMember) (int, error)
 
 	// 锁定会员
-	LockMember(id int,state int)error;
+	LockMember(id int, state int) error
 
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int

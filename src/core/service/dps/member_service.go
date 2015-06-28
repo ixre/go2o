@@ -106,21 +106,21 @@ func (this *memberService) GetRelation(memberId int) member.MemberRelation {
 	return *this._memberRep.GetRelation(memberId)
 }
 
-func (this *memberService) LockMember(partnerId,id int)(bool,error){
-	m,err := this._memberRep.GetMember(id)
-	if err != nil{
-		return  false,err
+func (this *memberService) LockMember(partnerId, id int) (bool, error) {
+	m, err := this._memberRep.GetMember(id)
+	if err != nil {
+		return false, err
 	}
 
-	if m == nil{
-		return false,member.ErrNoSuchMember
+	if m == nil {
+		return false, member.ErrNoSuchMember
 	}
 
 	state := m.GetValue().State
 	if state == 1 {
-		return false,m.Lock()
+		return false, m.Lock()
 	}
-	return true,m.Unlock()
+	return true, m.Unlock()
 }
 
 // 登陆

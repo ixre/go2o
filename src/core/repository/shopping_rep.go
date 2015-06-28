@@ -28,7 +28,7 @@ var _ shopping.IShoppingRep = new(shoppingRep)
 type shoppingRep struct {
 	db.Connector
 	saleRep    sale.ISaleRep
-	promRep    promotion.IPromotionRep
+	promRep    promotion.IOldPromotionRep
 	memberRep  member.IMemberRep
 	partnerRep partner.IPartnerRep
 	deliverRep delivery.IDeliveryRep
@@ -36,7 +36,7 @@ type shoppingRep struct {
 }
 
 func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
-	saleRep sale.ISaleRep, promRep promotion.IPromotionRep,
+	saleRep sale.ISaleRep, promRep promotion.IOldPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
 	return (&shoppingRep{
 		Connector:  c,

@@ -16,7 +16,18 @@ package promotion
 
 // 促销聚合根
 type IPromotion interface {
+	// 获取聚合根编号
 	GetAggregateRootId() int
+
+	// 应用类型
+	ApplyFor() int
+
+	// 促销类型
+	Type() int
+
+	// 获取优惠券
 	GetCoupon(id int) ICoupon
+
+	// 创建优惠券
 	CreateCoupon(val *ValueCoupon) ICoupon
 }

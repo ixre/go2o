@@ -29,7 +29,7 @@ import (
 type Shopping struct {
 	_rep         shopping.IShoppingRep
 	_saleRep     sale.ISaleRep
-	_promRep     promotion.IPromotionRep
+	_promRep     promotion.IOldPromotionRep
 	_memberRep   member.IMemberRep
 	_partnerRep  partner.IPartnerRep
 	_deliveryRep delivery.IDeliveryRep
@@ -39,7 +39,7 @@ type Shopping struct {
 
 func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
+	promRep promotion.IOldPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
 	pt, _ := partnerRep.GetPartner(partnerId)
@@ -124,7 +124,6 @@ func (this *Shopping) GetShoppingCart(buyerId int, cartKey string) shopping.ICar
 	}
 
 	return this.NewCart(buyerId)
-
 
 	//	if !hasOutCart {
 	//		if c == nil {

@@ -15,10 +15,10 @@ import (
 )
 
 type promotionService struct {
-	_rep promotion.IPromotionRep
+	_rep promotion.IOldPromotionRep
 }
 
-func NewPromotionService(r promotion.IPromotionRep) *promotionService {
+func NewPromotionService(r promotion.IOldPromotionRep) *promotionService {
 	return &promotionService{
 		_rep: r,
 	}

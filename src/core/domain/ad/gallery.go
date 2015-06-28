@@ -31,10 +31,10 @@ func (this *GalleryAd) GetAdValue() ad.ValueGallery {
 }
 
 // 获取可用的广告数据
-func (this *GalleryAd) GetEnabledAdValue()ad.ValueGallery{
+func (this *GalleryAd) GetEnabledAdValue() ad.ValueGallery {
 	val := this.GetAdValue()
 	newVal := ad.ValueGallery{}
-	for _,v := range val{
+	for _, v := range val {
 		if v.Enabled == 1 {
 			newVal = append(newVal, v)
 		}
