@@ -31,5 +31,36 @@ func NewPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.IPro
 
 // 保存促销
 func (this *promotionRep) SaveValuePromotion(v *promotion.ValuePromotion)(int,error){
-	return v.Id,nil
+	var err error
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM pm_info WHERE partner_id=?", &v.Id, v.PartnerId)
+	}
+	return v.Id, err
+}
+
+
+// 保存返现促销
+func (this *promotionRep) SaveValueCashBack(v *promotion.ValueCashBack,create bool)(int,error){
+	var err error
+	var orm = this.Connector.GetOrm()
+	if !create {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+	}
+	return v.Id, err
+}
+
+
+// 获取返现促销
+func (this *promotionRep)  GetValueCashBack(id int)*promotion.ValueCashBack{
+	var e promotion.ValueCashBack
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
+		return &e
+	}
+	return nil
 }

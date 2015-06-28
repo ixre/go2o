@@ -12,4 +12,10 @@ package promotion
 type IPromotionRep interface {
 	// 保存促销
 	SaveValuePromotion(*ValuePromotion)(int,error)
+
+	// 保存返现促销
+	SaveValueCashBack(v *ValueCashBack,create bool)(int,error)
+
+	// 获取返现促销
+	GetValueCashBack(int)*ValueCashBack
 }
