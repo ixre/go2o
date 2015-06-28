@@ -39,14 +39,17 @@ func NewMember(val *member.ValueMember, rep member.IMemberRep) member.IMember {
 	}
 }
 
+// 获取聚合根编号
 func (this *Member) GetAggregateRootId() int {
 	return this._value.Id
 }
 
+// 获取值
 func (this *Member) GetValue() member.ValueMember {
 	return *this._value
 }
 
+// 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Avatar = v.Avatar
 	this._value.Address = v.Address
@@ -74,12 +77,15 @@ func (this *Member) Invitation() member.IInvitationManager {
 	return this._invitation
 }
 
+// 获取账户
 func (this *Member) GetAccount() *member.Account {
 	if this._account == nil {
 		this._account = this._rep.GetAccount(this._value.Id)
 	}
 	return this._account
 }
+
+// 保护账户
 func (this *Member) SaveAccount() error {
 	a := this.GetAccount()
 	a.MemberId = this._value.Id
@@ -111,10 +117,13 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 	return this._rep.SaveBankInfo(this._bank)
 }
 
+// 保存返现记录
 func (this *Member) SaveIncomeLog(l *member.IncomeLog) error {
 	l.MemberId = this._value.Id
 	return this._rep.SaveIncomeLog(l)
 }
+
+// 保存积分记录
 func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {
 	l.MemberId = this._value.Id
 	return this._rep.SaveIntegralLog(l)
@@ -131,6 +140,7 @@ func (this *Member) AddExp(exp int) error {
 	return err
 }
 
+// 获取等级管理
 func (this *Member) getLevelManager() partner.ILevelManager {
 	if this._levelManager == nil {
 		rl := this.GetRelation()
@@ -199,6 +209,17 @@ func (this *Member) Save() (int, error) {
 	}
 
 	return this.create(this._value)
+}
+
+
+// 锁定会员
+func (this *Member) Lock()error{
+	return this._rep.LockMember(this.GetAggregateRootId(),0)
+}
+
+// 解锁会员
+func (this *Member) Unlock()error{
+	return this._rep.LockMember(this.GetAggregateRootId(),1)
 }
 
 // 修改密码,旧密码可为空
