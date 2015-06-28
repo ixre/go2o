@@ -10,6 +10,15 @@
 package promotion
 
 type IPromotionRep interface {
+	// 获取促销
+	GetPromotion(id int)*IPromotion
+
+	// 获取促销
+	CreatePromotion(*ValuePromotion)*IPromotion
+
+	// 获取促销
+	GetValuePromotion(id int)*ValuePromotion
+
 	// 保存促销
 	SaveValuePromotion(*ValuePromotion)(int,error)
 

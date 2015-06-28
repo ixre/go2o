@@ -38,7 +38,7 @@ func NewPromotion(partnerId int,promRep promotion.IOldPromotionRep,
 	}
 }
 
-func newPromotion(rep promotion.IPromotionRep,v *promotion.ValuePromotion)promotion.IPromotion{
+func newPromotion(rep promotion.IPromotionRep,v *promotion.ValuePromotion)*Promotion{
 	return &Promotion{
 		_promRep:rep,
 		_value :v,

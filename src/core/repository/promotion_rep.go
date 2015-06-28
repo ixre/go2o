@@ -13,6 +13,7 @@ import (
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/promotion"
+	promImpl "go2o/src/core/domain/promotion"
 )
 
 var _ promotion.IPromotionRep = new(promotionRep)
@@ -27,6 +28,30 @@ func NewPromotionRep(c db.Connector, memberRep member.IMemberRep) promotion.IPro
 		Connector:  c,
 		_memberRep: memberRep,
 	}
+}
+
+// 获取促销
+func (this *promotionRep) GetValuePromotion(id int)*promotion.ValuePromotion{
+	var e promotion.ValuePromotion
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
+		return &e
+	}
+	return nil
+}
+
+
+// 获取促销
+func (this *promotionRep) GetPromotion(id int)*promotion.IPromotion{
+	v := this.GetValuePromotion(id)
+	if v!= nil{
+		return this.CreatePromotion(v)
+	}
+	return nil
+}
+
+// 获取促销
+func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion)*promotion.IPromotion{
+	return promImpl.FactoryPromotion(this,v)
 }
 
 // 保存促销
