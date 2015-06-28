@@ -40,9 +40,9 @@ func GetGoodsImageUrl(image string) string {
 		if len(imageServe) == 0 {
 			imageServe = ctx.Config().GetString(variable.ImageServer)
 		}
+
 		if len(noPicUrl) == 0 {
-			noPicUrl = ctx.Config().GetString(variable.StaticServer) +
-				"/" + ctx.Config().GetString(variable.NoPicPath)
+			noPicUrl = imageServe +	"/" + ctx.Config().GetString(variable.NoPicPath)
 		}
 		picCfgLoaded = true
 	}

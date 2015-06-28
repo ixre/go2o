@@ -127,11 +127,11 @@
     }
 
     function tree_add(){
-        $JS.tab.open('添加分类', 'category/CreateCategory' , true);
+        $JS.tab.open('添加分类', '/category/CreateCategory' , true);
     }
 
     function tree_edit(e,id){
-        $JS.tab.open('修改分类', 'category/EditCategory?id='+id , true);
+        $JS.tab.open('修改分类', '/category/EditCategory?id='+id , true);
         $JS.event.stopBubble(e||window.event);
     }
 

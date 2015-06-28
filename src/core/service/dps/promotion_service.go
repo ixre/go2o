@@ -26,6 +26,29 @@ func NewPromotionService(r promotion.IOldPromotionRep,rep promotion.IPromotionRe
 	}
 }
 
+// 获取促销
+func (this *promotionService) GetPromotion(id int)(*promotion.ValuePromotion,interface{}){
+	var prom promotion.IPromotion = this._newRep.GetPromotion(id)
+	if prom != nil{
+		return prom.GetValue(),prom.GetRelationValue()
+	}
+	return nil,nil
+}
+
+// 保存促销
+func (this *promotionService) SavePromotion(v *promotion.ValuePromotion)(int,error){
+	var prom promotion.IPromotion
+	if v.Id > 0{
+		prom = this._newRep.GetPromotion(v.Id)
+		prom.SetValue(v)
+	}else{
+		prom = this._newRep.CreatePromotion(v)
+	}
+	return prom.Save()
+}
+
+
+/**************   Coupon ************/
 func (this *promotionService) GetCoupon(partnerId int, id int) promotion.ICoupon {
 	_prom := this._rep.GetPromotion(partnerId)
 	return _prom.GetCoupon(id)

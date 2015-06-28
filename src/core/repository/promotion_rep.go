@@ -41,7 +41,7 @@ func (this *promotionRep) GetValuePromotion(id int)*promotion.ValuePromotion{
 
 
 // 获取促销
-func (this *promotionRep) GetPromotion(id int)*promotion.IPromotion{
+func (this *promotionRep) GetPromotion(id int)promotion.IPromotion{
 	v := this.GetValuePromotion(id)
 	if v!= nil{
 		return this.CreatePromotion(v)
@@ -50,7 +50,7 @@ func (this *promotionRep) GetPromotion(id int)*promotion.IPromotion{
 }
 
 // 获取促销
-func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion)*promotion.IPromotion{
+func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion)promotion.IPromotion{
 	return promImpl.FactoryPromotion(this,v)
 }
 

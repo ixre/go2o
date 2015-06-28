@@ -22,7 +22,6 @@ func (this *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack)error{
 	return nil
 }
 
-
 // 获取相关的值
 func (this *CashBackPromotion) GetRelationValue()interface{}{
 	return this._cashBackValue
@@ -34,6 +33,11 @@ func (this *CashBackPromotion) Save()(int,error){
 	this._value.TypeFlag = promotion.TypeFlagCashBack
 	id,err := this.Promotion.Save()
 	if err == nil {
+		if this._cashBackValue == nil{
+			this._cashBackValue = &promotion.ValueCashBack{
+				Id:this.GetAggregateRootId(),
+			}
+		}
 		_,err = this._promRep.SaveValueCashBack(this._cashBackValue,isCreate)
 	}
 	return id,err

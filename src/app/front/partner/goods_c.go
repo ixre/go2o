@@ -44,6 +44,18 @@ func (this *goodsC) List(ctx *web.Context) {
 	}, "views/partner/goods/goods_list.html")
 }
 
+//商品选择
+func (this *goodsC) Goods_select(ctx *web.Context) {
+	r, w := ctx.Request, ctx.ResponseWriter
+	r.ParseForm()
+	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"cate_opts":  template.HTML(cateOpts),
+		"no_pic_url": format.GetGoodsImageUrl(""),
+	}, "views/partner/goods/goods_select.html")
+}
+
+
 func (this *goodsC) Create(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	shopChks := cache.GetShopCheckboxs(partnerId, "")

@@ -29,6 +29,54 @@ type promC struct {
 	*baseC
 }
 
+
+func (this *promC) List(ctx *web.Context) {
+	var flag int
+	flag, _ = strconv.Atoi(ctx.Request.URL.Query().Get("flag"))
+
+	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+		"flag":flag,
+	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag));
+}
+
+// 创建返现促销
+func (this *promC) Create_cb(ctx *web.Context){
+	e := &promotion.ValuePromotion{
+		Enabled:1,
+	}
+	e2 := &promotion.ValueCashBack{
+
+	}
+	js, _ := json.Marshal(e)
+	js2, _ := json.Marshal(e2)
+
+	ctx.App.Template().Execute(ctx.ResponseWriter,
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
+			"entity2":template.JS(js2),
+		},
+		"views/partner/promotion/cash_back.html")
+}
+
+func (this *promC) Edit_cb(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	id, _ := strconv.Atoi(form.Get("id"))
+	e, e2 := dps.PromService.GetPromotion(id)
+
+	js, _ := json.Marshal(e)
+	js2, _ := json.Marshal(e2)
+
+	ctx.App.Template().Execute(ctx.ResponseWriter,
+		gof.TemplateDataMap{
+			"entity": template.JS(js),
+			"entity2":template.JS(js2),
+		},
+		"views/partner/promotion/cash_back.html")
+}
+
+
+
+
 func (this *promC) CreateCoupon(ctx *web.Context) {
 
 	levelDr := this.getLevelDropDownList(ctx)
