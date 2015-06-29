@@ -30,6 +30,18 @@ type promC struct {
 	*baseC
 }
 
+
+func (this *promC) getLevelDropDownList(ctx *web.Context) string {
+	buf := bytes.NewBufferString("")
+	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
+	for _, v := range lvs {
+		if v.Enabled == 1 {
+			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
+		}
+	}
+	return buf.String()
+}
+
 func (this *promC) List(ctx *web.Context) {
 	var flag int
 	flag, _ = strconv.Atoi(ctx.Request.URL.Query().Get("flag"))
@@ -131,17 +143,20 @@ func (this *promC) Create_coupon(ctx *web.Context) {
 	e := &promotion.ValuePromotion{
 		Enabled: 1,
 	}
-	e2 := &promotion.ValueCashBack{
-		BackType: 1,
+	e2 := &promotion.ValueCoupon{
+		AllowEnable: 1,
 	}
+
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
+	levelDr := this.getLevelDropDownList(ctx)
+
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
-			"entity":    template.JS(js),
-			"entity2":   template.JS(js2),
-			"goods_cls": "hidden",
+			"entity":     template.JS(js),
+			"entity2":    template.JS(js2),
+			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/coupon.html")
 }
@@ -151,19 +166,21 @@ func (this *promC) Edit_coupon(ctx *web.Context) {
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
+	if e.PartnerId != this.GetPartnerId(ctx){
+		this.ErrorOutput(ctx,promotion.ErrNoSuchPromotion.Error())
+		return
+	}
+
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	var goodsInfo string
-	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx), e.GoodsId)
-	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
+	levelDr := this.getLevelDropDownList(ctx)
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity":     template.JS(js),
 			"entity2":    template.JS(js2),
-			"goods_info": template.HTML(goodsInfo),
-			"goods_cls":  "",
+			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/coupon.html")
 }
@@ -178,13 +195,20 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 
 	e := promotion.ValuePromotion{}
 	web.ParseFormToEntity(r.Form, &e)
-	e2 := promotion.ValueCashBack{}
+	e2 := promotion.ValueCoupon{}
 	web.ParseFormToEntity(r.Form, &e2)
 
 	e.PartnerId = partnerId
-	e.TypeFlag = promotion.TypeFlagCashBack
+	e.TypeFlag = promotion.TypeFlagCoupon
 
-	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
+
+	const layout string = "2006-01-02 15:04:05"
+	bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
+	ot, _ := time.Parse(layout, r.FormValue("OverTime"))
+	e2.BeginTime = bt.Unix()
+	e2.OverTime = ot.Unix()
+
+	id, err := dps.PromService.SaveCoupon(partnerId, &e, &e2)
 
 	if err != nil {
 		result.Message = err.Error()
@@ -196,53 +220,15 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 }
 
 /************ NORMAL *******************/
-
-func (this *promC) CreateCoupon(ctx *web.Context) {
-
-	levelDr := this.getLevelDropDownList(ctx)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity":  "{}",
-			"levelDr": template.HTML(levelDr),
-		},
-		"views/partner/promotion/create_coupon.html")
-}
-
-func (this *promC) EditCoupon(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	e := dps.PromService.GetCoupon(partnerId, id).GetDetailsValue()
-	js, _ := json.Marshal(e)
-
-	levelDr := this.getLevelDropDownList(ctx)
-
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity":  template.JS(js),
-			"levelDr": template.HTML(levelDr),
-		},
-		"views/partner/promotion/edit_coupon.html")
-}
-
-func (this *promC) getLevelDropDownList(ctx *web.Context) string {
-	buf := bytes.NewBufferString("")
-	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
-	for _, v := range lvs {
-		if v.Enabled == 1 {
-			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
-		}
-	}
-	return buf.String()
-}
-
 //　绑定优惠券操作页
 func (this *promC) BindCoupon(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
-	e := dps.PromService.GetCoupon(partnerId, id).GetDetailsValue()
+	e,_ := dps.PromService.GetPromotion(id)
+	if e.PartnerId != this.GetPartnerId(ctx){
+		this.ErrorOutput(ctx,promotion.ErrNoSuchPromotion.Error())
+		return
+	}
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
 			"entity": e,
@@ -272,35 +258,4 @@ func (this *promC) BindCoupon_post(ctx *web.Context) {
 		result.Result = true
 	}
 	w.Write(result.Marshal())
-}
-
-func (this *promC) SaveCoupon_post(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
-
-	var result gof.Message
-	r.ParseForm()
-	var e promotion.ValueCoupon
-	web.ParseFormToEntity(r.Form, &e)
-
-	const layout string = "2006-01-02 15:04:05"
-	bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
-	ot, _ := time.Parse(layout, r.FormValue("OverTime"))
-	e.BeginTime = bt.Unix()
-	e.OverTime = ot.Unix()
-
-	_, err := dps.PromService.SaveCoupon(partnerId, &e)
-
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
-	}
-	w.Write(result.Marshal())
-}
-
-func (this *promC) Coupon(ctx *web.Context) {
-	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{}, "views/partner/promotion/coupon_list.html")
 }
