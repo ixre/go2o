@@ -21,13 +21,12 @@ import (
 var _ promotion.IPromotion = new(Promotion)
 
 type Promotion struct {
-	memberRep  member.IMemberRep
+	_memberRep member.IMemberRep
 	_partnerId int
 	_promRep   promotion.IPromotionRep
 	_value     *promotion.ValuePromotion
 	_saleRep   sale.ISaleRep
 }
-
 
 func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep, v *promotion.ValuePromotion) *Promotion {
 	return &Promotion{
@@ -80,21 +79,9 @@ func (this *Promotion) Type() int {
 
 // 保存
 func (this *Promotion) Save() (int, error) {
-	if this.GetRelationValue() == nil{
-		return this.GetAggregateRootId(),promotion.ErrCanNotApplied
+	if this.GetRelationValue() == nil {
+		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
 	}
 	this._value.UpdateTime = time.Now().Unix()
 	return this._promRep.SaveValuePromotion(this._value)
 }
-
-//func (this *Promotion) GetCoupon(id int) promotion.ICouponPromotion {
-//	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)
-//	return this.CreateCoupon(val)
-//}
-
-//func (this *Promotion) CreateCoupon(val *promotion.ValueCoupon) promotion.ICouponPromotion {
-//	val.PartnerId = this.GetAggregateRootId()
-//	val.CreateTime = time.Now().Unix()
-//	val.Amount = val.TotalAmount
-//	return newCoupon(val, this.promRep, this.memberRep)
-//}

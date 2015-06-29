@@ -39,7 +39,6 @@ func (this *promC) List(ctx *web.Context) {
 	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag))
 }
 
-
 // 删除促销
 func (this *promC) Del_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
@@ -48,7 +47,7 @@ func (this *promC) Del_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	promId, _ := strconv.Atoi(form.Get("id"))
 
-	err := dps.PromService.DelPromotion(partnerId,promId)
+	err := dps.PromService.DelPromotion(partnerId, promId)
 
 	if err != nil {
 		result.Message = err.Error()
@@ -57,7 +56,6 @@ func (this *promC) Del_post(ctx *web.Context) {
 	}
 	ctx.Response.JsonOutput(result)
 }
-
 
 // 创建返现促销
 func (this *promC) Create_cb(ctx *web.Context) {
@@ -128,7 +126,6 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-
 // 创建优惠券
 func (this *promC) Create_coupon(ctx *web.Context) {
 	e := &promotion.ValuePromotion{
@@ -198,10 +195,7 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-
-
 /************ NORMAL *******************/
-
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
 

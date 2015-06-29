@@ -28,7 +28,7 @@ type CashBackPromotion struct {
 }
 
 // 获取领域编号
-func (this *CashBackPromotion)  GetDomainId() int{
+func (this *CashBackPromotion) GetDomainId() int {
 	return this._cashBackValue.Id
 }
 

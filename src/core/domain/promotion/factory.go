@@ -71,7 +71,7 @@ func createCouponPromotion(p *Promotion, v interface{}) promotion.IPromotion {
 
 	pv.Amount = pv.TotalAmount
 
-	return newCoupon(p, pv, p.promRep, p.memberRep)
+	return newCoupon(p, pv, p._promRep, p._memberRep)
 }
 
 func DeletePromotion(p promotion.IPromotion) error {

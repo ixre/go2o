@@ -18,7 +18,7 @@ type ICouponPromotion interface {
 	GetDomainId() int
 
 	// 获取促销内容
-	GetDetailsValue()ValueCoupon
+	GetDetailsValue() ValueCoupon
 
 	// 设置促销内容
 	SetDetailsValue(*ValueCoupon) error

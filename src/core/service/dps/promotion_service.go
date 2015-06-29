@@ -50,12 +50,12 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 }
 
 // 删除促销
-func (this *promotionService) DelPromotion(partnerId int,promId int)error{
+func (this *promotionService) DelPromotion(partnerId int, promId int) error {
 	prom := this._newRep.GetPromotion(promId)
-	if prom == nil{
+	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
-	if prom.GetValue().PartnerId != partnerId{
+	if prom.GetValue().PartnerId != partnerId {
 		return partner.ErrNotMatch
 	}
 
