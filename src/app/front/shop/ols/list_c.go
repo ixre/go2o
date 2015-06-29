@@ -168,7 +168,9 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 
 		// 促销信息
 		var promDescribe string
+		var promCls string="hidden"
 		if len(proMap) != 0 {
+			promCls = ""
 			buf := bytes.NewBufferString("")
 			var i int = 0
 			for k, v := range proMap {
@@ -182,8 +184,9 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"goods":        goods,
 			"promap":       proMap,
-			"promPrice":    template.HTML(promPrice),
-			"promDescribe": template.HTML(promDescribe),
+			"prom_price":    template.HTML(promPrice),
+			"prom_describe": template.HTML(promDescribe),
+			"prom_cls":promCls,
 		},
 			"views/shop/ols/{device}/goods.html",
 			"views/shop/ols/{device}/inc/header.html",
