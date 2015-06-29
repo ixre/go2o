@@ -224,7 +224,7 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 func (this *promC) BindCoupon(ctx *web.Context) {
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
-	e, _ := dps.PromService.GetPromotion(id)
+	e,e2 := dps.PromService.GetPromotion(id)
 	if e.PartnerId != this.GetPartnerId(ctx) {
 		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
 		return
@@ -232,6 +232,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
 			"entity": e,
+			"entity2":e2,
 		},
 		"views/partner/promotion/bind_coupon.html")
 }
