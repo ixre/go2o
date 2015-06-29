@@ -123,6 +123,16 @@ func (this *promotionRep) GetPromotionOfGoods(goodsId int) []*promotion.ValuePro
 	return make([]*promotion.ValuePromotion, 0)
 }
 
+// 获取商户订单可用的促销
+func (this *promotionRep) GetPromotionOfPartnerOrder(partnerId int)[]*promotion.ValuePromotion{
+	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
+	err := this.Connector.GetOrm().Select(&arr, "partner_id=? AND goods_id=0 AND enabled=1 ORDER BY id", partnerId)
+	if err == nil {
+		return arr
+	}
+	return make([]*promotion.ValuePromotion, 0)
+}
+
 /*****   OLD ******/
 
 func (this *promotionRep) GetValueCoupon(id int) *promotion.ValueCoupon {

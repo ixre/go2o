@@ -37,8 +37,11 @@ type IPromotionRep interface {
 	// 获取商品的促销编号
 	GetGoodsPromotionId(goodsId int, promFlag int) int
 
-	// 获取商品的促销
+	// 获取商品可用的促销
 	GetPromotionOfGoods(goodsId int) []*ValuePromotion
+
+	// 获取商户订单可用的促销
+	GetPromotionOfPartnerOrder(partnerId int)[]*ValuePromotion
 
 	/** =======  优惠券 ==========**/
 

@@ -34,21 +34,24 @@ type Order struct {
 	_value           *shopping.ValueOrder
 	_cart            shopping.ICart
 	_coupons         []promotion.ICouponPromotion
+	_availPromotions []promotion.IPromotion
 	_memberRep       member.IMemberRep
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
 	_saleRep         sale.ISaleRep
+	_promRep		 promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
 	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	memberRep member.IMemberRep) shopping.IOrder {
+	promRep promotion.IPromotionRep,memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
 		_shopping:    shopping,
 		_value:       value,
 		_cart:        cart,
 		_memberRep:   memberRep,
+		_promRep:promRep,
 		_shoppingRep: shoppingRep,
 		_partnerRep:  partnerRep,
 		_saleRep:     saleRep,
@@ -63,6 +66,7 @@ func (this *Order) GetValue() shopping.ValueOrder {
 	return *this._value
 }
 
+// 应用优惠券
 func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	if this._coupons == nil {
 		this._coupons = []promotion.ICouponPromotion{}
@@ -85,6 +89,27 @@ func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 		return make([]promotion.ICouponPromotion, 0)
 	}
 	return this._coupons
+}
+
+// 获取可用的促销,不包含优惠券
+func (this *Order) GetAvailableOrderPromotions()[]promotion.IPromotion{
+	if this._availPromotions == nil{
+		partnerId := this._value.PartnerId
+		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfPartnerOrder(partnerId)
+		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
+		for i, v := range vp {
+			proms[i] = this._promRep.CreatePromotion(v)
+		}
+		return proms
+	}
+	return this._availPromotions
+}
+
+
+// 获取最省的促销
+func (this *Order)  GetBestSavePromotion()(p promotion.IPromotion,saveFee float32,integral int){
+	//todo: not implement
+	return nil,0,0
 }
 
 // 添加备注
@@ -115,8 +140,8 @@ func (this *Order) SignPaid() error {
 }
 
 // 设置配送地址
-func (this *Order) SetDeliver(deliverAddrId int) error {
-	d := this._memberRep.GetSingleDeliverAddress(this._value.MemberId, deliverAddrId)
+func (this *Order) SetDeliver(deliverAddressId int) error {
+	d := this._memberRep.GetSingleDeliverAddress(this._value.MemberId, deliverAddressId)
 	if d != nil {
 		v := this._value
 		v.DeliverAddress = d.Address
@@ -145,6 +170,96 @@ func (this *Order) Submit() (string, error) {
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
+	if err := this.applyCouponOnSubmit(v);err != nil{
+		return "",err
+	}
+
+	// 购物车商品
+	proms,fee := this.applyCartPromotionObSubmit(v,this._cart)
+	if len(proms) != 0 {
+		v.DiscountFee += float32(fee)
+		v.PayFee -= float32(fee)
+		if v.PayFee < 0 {
+			v.PayFee = 0
+		}
+	}
+
+	//todo:
+	//prom,fee,integral := this.GetBestSavePromotion()
+
+
+	// 保存订单
+	id, err := this.saveOrderOnSubmit()
+	v.Id = id
+	if err == nil {
+		// 绑定优惠券促销
+		this.bindCouponOnSubmit(v.OrderNo)
+		// 销毁购物车
+		this._cart.Destroy()
+		// 绑定购物车商品的促销
+		for _,p := range proms{
+			this.bindPromotionOnSubmit(v.OrderNo,p)
+		}
+	}
+	return v.OrderNo, err
+}
+
+func (this *Order) bindPromotionOnSubmit(orderNo string,prom promotion.IPromotion){
+
+}
+
+// 应用购物车内商品的促销
+func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder,cart shopping.ICart)([]promotion.IPromotion,int){
+	var proms []promotion.IPromotion=make([]promotion.IPromotion,0)
+	var prom promotion.IPromotion
+	var saveFee int
+	var totalSaveFee int
+	var intOrderFee = int(vo.Fee)
+
+	for _,v := range cart.GetCartGoods(){
+		prom = nil
+		saveFee = 0
+
+		// 判断商品的最省促销
+		for _,v1 := range v.GetPromotions(){
+
+			// 返现
+			if v1.Type() == promotion.TypeFlagCashBack{
+				vc := v1.GetRelationValue().(*promotion.ValueCashBack)
+				if vc.MinFee < intOrderFee {
+					if vc.BackFee > saveFee{
+						prom = v1
+						saveFee = vc.BackFee
+					}
+				}
+			}
+
+			//todo: 其他促销
+		}
+
+		if prom != nil{
+			proms = append(proms,prom)
+			totalSaveFee += saveFee
+		}
+	}
+
+	return proms,totalSaveFee
+}
+
+// 绑定订单与优惠券
+func (this *Order) bindCouponOnSubmit(orderNo string) {
+	var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
+	for _, c := range this.GetCoupons() {
+		oc.Clone(c, this.GetDomainId(), this._value.Fee)
+		this._shoppingRep.SaveOrderCouponBind(oc)
+
+		// 绑定促销
+		this.bindPromotionOnSubmit(orderNo,c.(promotion.IPromotion))
+	}
+}
+
+// 在提交订单时应用优惠券
+func (this *Order) applyCouponOnSubmit(v *shopping.ValueOrder)error{
 	var err error
 	var t *promotion.ValueCouponTake
 	var b *promotion.ValueCouponBind
@@ -161,29 +276,10 @@ func (this *Order) Submit() (string, error) {
 			}
 		}
 		if err != nil {
-			log.PrintErr(err)
-			err = errors.New("Code 105:优惠券使用失败")
-			return "", err
+			return errors.New("Code 105:优惠券使用失败,"+err.Error())
 		}
 	}
-
-	// 保存订单
-	id, err := this.saveOrderOnSubmit()
-	v.Id = id
-	if err == nil {
-		this.bindCouponOnSubmit()
-		this._cart.Destroy() // 销毁购物车
-	}
-	return v.OrderNo, err
-}
-
-// 绑定订单与优惠券
-func (this *Order) bindCouponOnSubmit() {
-	var oc *shopping.OrderCoupon = new(shopping.OrderCoupon)
-	for _, c := range this.GetCoupons() {
-		oc.Clone(c, this.GetDomainId(), this._value.Fee)
-		this._shoppingRep.SaveOrderCouponBind(oc)
-	}
+	return err
 }
 
 // 保存订单

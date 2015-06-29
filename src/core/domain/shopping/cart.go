@@ -140,6 +140,17 @@ func (this *Cart) GetValue() shopping.ValueCart {
 	return *this._value
 }
 
+
+// 获取购物车中的商品
+func (this *Cart) GetCartGoods()[]sale.IGoods{
+	sl := this._saleRep.GetSale(this._partnerId)
+	var gs []sale.IGoods = make([]sale.IGoods,len(this._value.Items))
+	for i,v := range this._value.Items{
+		gs[i] = sl.GetGoods(v.GoodsId)
+	}
+	return gs
+}
+
 // 添加项
 func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 	if this._value.Items == nil {

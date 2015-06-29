@@ -12,6 +12,7 @@ package shopping
 import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/sale"
 )
 
 type ICart interface {
@@ -19,6 +20,9 @@ type ICart interface {
 
 	// 获取购物车值
 	GetValue() ValueCart
+
+	// 获取购物车中的商品
+	GetCartGoods()[]sale.IGoods
 
 	// 结算数据持久化
 	SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error
