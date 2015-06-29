@@ -7,27 +7,27 @@
  * history :
  */
 package repository
+
 import (
-	"go2o/src/core/domain/interface/sale"
+	"fmt"
 	"github.com/atnet/gof/db"
+	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/format"
-	"fmt"
 )
 
 var _ sale.IGoodsRep = new(goodsRep)
-type goodsRep struct {
 
+type goodsRep struct {
 	db.Connector
 }
 
 // 商品仓储
-func NewGoodsRep(c db.Connector)sale.IGoodsRep{
+func NewGoodsRep(c db.Connector) sale.IGoodsRep {
 	return &goodsRep{
 		Connector: c,
 	}
 }
-
 
 // 获取商品
 func (this *goodsRep) GetValueGoods(itemId int, skuId int) *sale.ValueGoods {

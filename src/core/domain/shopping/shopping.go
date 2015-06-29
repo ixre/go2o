@@ -29,7 +29,7 @@ import (
 type Shopping struct {
 	_rep         shopping.IShoppingRep
 	_saleRep     sale.ISaleRep
-	_goodsRep	sale.IGoodsRep
+	_goodsRep    sale.IGoodsRep
 	_promRep     promotion.IPromotionRep
 	_memberRep   member.IMemberRep
 	_partnerRep  partner.IPartnerRep
@@ -39,7 +39,7 @@ type Shopping struct {
 }
 
 func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
-	rep shopping.IShoppingRep, saleRep sale.ISaleRep,goodsRep sale.IGoodsRep,
+	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
@@ -48,7 +48,7 @@ func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
 	return &Shopping{
 		_rep:         rep,
 		_saleRep:     saleRep,
-		_goodsRep:goodsRep,
+		_goodsRep:    goodsRep,
 		_promRep:     promRep,
 		_memberRep:   memberRep,
 		_partnerId:   partnerId,
@@ -70,7 +70,7 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart)
 // @buyerId 为购买会员ID,0表示匿名购物车
 func (this *Shopping) NewCart(buyerId int) shopping.ICart {
 	var cart shopping.ICart = newCart(this._partnerRep, this._memberRep, this._saleRep,
-		this._goodsRep,this._rep, this._partnerId, buyerId)
+		this._goodsRep, this._rep, this._partnerId, buyerId)
 	cart.Save()
 	return cart
 }
@@ -80,7 +80,7 @@ func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep,this._rep, this._partnerId, cart), nil
+			this._goodsRep, this._rep, this._partnerId, cart), nil
 	}
 	return nil, error
 }
@@ -165,7 +165,7 @@ func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
 	cart, error := this._rep.GetLatestCart(buyerId)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep,this._rep, this._partnerId, cart), nil
+			this._goodsRep, this._rep, this._partnerId, cart), nil
 	}
 	return nil, error
 }

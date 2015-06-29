@@ -11,9 +11,9 @@ package sale
 
 import (
 	"errors"
+	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"time"
-	"go2o/src/core/domain/interface/promotion"
 )
 
 var _ sale.ISale = new(Sale)
@@ -24,20 +24,20 @@ type Sale struct {
 	_partnerId  int
 	_saleRep    sale.ISaleRep
 	_saleTagRep sale.ISaleTagRep
-	_goodsRep	sale.IGoodsRep
-	_promRep	promotion.IPromotionRep
+	_goodsRep   sale.IGoodsRep
+	_promRep    promotion.IPromotionRep
 	_proCache   map[int]sale.IItem
 	_categories []sale.ICategory
 }
 
-func NewSale(partnerId int, saleRep sale.ISaleRep,goodsRep sale.IGoodsRep,
-	tagRep sale.ISaleTagRep,promRep promotion.IPromotionRep) sale.ISale {
+func NewSale(partnerId int, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+	tagRep sale.ISaleTagRep, promRep promotion.IPromotionRep) sale.ISale {
 	return (&Sale{
 		_partnerId:  partnerId,
 		_saleRep:    saleRep,
 		_saleTagRep: tagRep,
-		_goodsRep:goodsRep,
-		_promRep:promRep,
+		_goodsRep:   goodsRep,
+		_promRep:    promRep,
 	}).init()
 }
 
@@ -71,7 +71,7 @@ func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 
 	//todo: 判断category
 
-	return newItem(this, v, this._saleRep,this._saleTagRep, this._goodsRep,this._promRep)
+	return newItem(this, v, this._saleRep, this._saleTagRep, this._goodsRep, this._promRep)
 }
 
 // 根据产品编号获取产品
@@ -85,7 +85,7 @@ func (this *Sale) GetItem(itemId int) sale.IItem {
 
 // 创建商品
 func (this *Sale) CreateGoods(item sale.IItem, v *sale.ValueGoods) sale.IGoods {
-	return NewSaleGoods(this, item, v, this._saleRep,this._goodsRep,this._promRep)
+	return NewSaleGoods(this, item, v, this._saleRep, this._goodsRep, this._promRep)
 }
 
 // 根据产品编号获取商品

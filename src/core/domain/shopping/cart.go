@@ -27,7 +27,7 @@ type Cart struct {
 }
 
 func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep,shoppingRep shopping.IShoppingRep, partnerId int,
+	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int,
 	val *shopping.ValueCart) shopping.ICart {
 	return (&Cart{
 		_value:       val,
@@ -36,13 +36,13 @@ func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, sal
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
-		_goodsRep: goodsRep,
+		_goodsRep:    goodsRep,
 	}).init()
 }
 
 //todo: partnerId 应去掉，可能在多个商家买东西
 func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep,shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
+	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &shopping.ValueCart{
@@ -64,7 +64,7 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 		_partnerId:   partnerId,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
-		_goodsRep:goodsRep,
+		_goodsRep:    goodsRep,
 	}).init()
 }
 

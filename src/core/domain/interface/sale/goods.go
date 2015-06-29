@@ -9,8 +9,8 @@
 package sale
 
 import (
-	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/domain/interface/promotion"
+	"go2o/src/core/domain/interface/valueobject"
 )
 
 // 商品
@@ -28,7 +28,7 @@ type IGoods interface {
 	GetPackedValue() *valueobject.Goods
 
 	// 获取促销信息
-	GetPromotions()[]promotion.IPromotion
+	GetPromotions() []promotion.IPromotion
 
 	// 获取促销价
 	GetPromotionPrice(level int) float32

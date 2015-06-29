@@ -11,10 +11,10 @@ package sale
 import (
 	"fmt"
 	"go2o/src/core/domain"
+	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"time"
-	"go2o/src/core/domain/interface/promotion"
 )
 
 var _ sale.IGoods = new(SaleGoods)
@@ -24,22 +24,22 @@ type SaleGoods struct {
 	_goods          sale.IItem
 	_value          *sale.ValueGoods
 	_saleRep        sale.ISaleRep
-	_goodsRep		sale.IGoodsRep
-	_promRep       promotion.IPromotionRep
+	_goodsRep       sale.IGoodsRep
+	_promRep        promotion.IPromotionRep
 	_sale           sale.ISale
 	_latestSnapshot *sale.GoodsSnapshot
 	_levelPrices    []*sale.MemberPrice
-	_promDescribes map[string]string
+	_promDescribes  map[string]string
 }
 
 func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep,
-	goodsRep sale.IGoodsRep,promRep promotion.IPromotionRep) sale.IGoods {
+	goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
 	v := &SaleGoods{
 		_goods:          goods,
 		_value:          value,
 		_saleRep:        rep,
-		_goodsRep:goodsRep,
-		_promRep:promRep,
+		_goodsRep:       goodsRep,
+		_promRep:        promRep,
 		_sale:           s,
 		_latestSnapshot: nil,
 	}
@@ -91,12 +91,11 @@ func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
 	return goods
 }
 
-
 // 获取促销信息
-func (this *SaleGoods) GetPromotions()[]promotion.IPromotion{
+func (this *SaleGoods) GetPromotions() []promotion.IPromotion {
 	var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfGoods(this.GetDomainId())
-	var proms []promotion.IPromotion = make([]promotion.IPromotion,len(vp))
-	for i,v := range vp{
+	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
+	for i, v := range vp {
 		proms[i] = this._promRep.CreatePromotion(v)
 	}
 	return proms
@@ -124,18 +123,18 @@ func (this *SaleGoods) GetPromotionPrice(level int) float32 {
 
 // 获取促销描述
 func (this *SaleGoods) GetPromotionDescribe() map[string]string {
-	if this._promDescribes == nil{
+	if this._promDescribes == nil {
 		proms := this.GetPromotions()
-		this._promDescribes = make(map[string]string,len(proms))
-		for _,v := range proms{
-			if v.Type() == promotion.TypeFlagCashBack{
+		this._promDescribes = make(map[string]string, len(proms))
+		for _, v := range proms {
+			if v.Type() == promotion.TypeFlagCashBack {
 				key := "返现"
-				if txt, ok := this._promDescribes[key];!ok{
+				if txt, ok := this._promDescribes[key]; !ok {
 					this._promDescribes[key] = v.GetValue().ShortName
-				}else{
-					this._promDescribes[key] = txt +"；"+ v.GetValue().ShortName
+				} else {
+					this._promDescribes[key] = txt + "；" + v.GetValue().ShortName
 				}
-			}else if v.Type() == promotion.TypeFlagCoupon{
+			} else if v.Type() == promotion.TypeFlagCoupon {
 				//todo: other promotion implement
 			}
 		}

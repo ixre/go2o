@@ -26,7 +26,7 @@ var _ promotion.IPromotionRep = new(promotionRep)
 type promotionRep struct {
 	db.Connector
 	_memberRep member.IMemberRep
-	_goodsRep sale.IGoodsRep
+	_goodsRep  sale.IGoodsRep
 }
 
 func NewPromotionRep(c db.Connector, goodsRep sale.IGoodsRep,
@@ -34,7 +34,7 @@ func NewPromotionRep(c db.Connector, goodsRep sale.IGoodsRep,
 	return &promotionRep{
 		Connector:  c,
 		_memberRep: memberRep,
-		_goodsRep:   goodsRep,
+		_goodsRep:  goodsRep,
 	}
 }
 
@@ -112,16 +112,15 @@ func (this *promotionRep) GetGoodsPromotionId(goodsId int, promFlag int) int {
 	return id
 }
 
-
 // 获取商品的促销
-func (this *promotionRep) GetPromotionOfGoods(goodsId int)[]*promotion.ValuePromotion{
+func (this *promotionRep) GetPromotionOfGoods(goodsId int) []*promotion.ValuePromotion {
 	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
-	err := this.Connector.GetOrm().Select(&arr,"goods_id=? AND enabled=1 ORDER BY id",goodsId)
+	err := this.Connector.GetOrm().Select(&arr, "goods_id=? AND enabled=1 ORDER BY id", goodsId)
 	if err == nil {
 		return arr
 	}
 
-	return make([]*promotion.ValuePromotion,0)
+	return make([]*promotion.ValuePromotion, 0)
 }
 
 /*****   OLD ******/

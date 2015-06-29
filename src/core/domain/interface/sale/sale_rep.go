@@ -26,7 +26,6 @@ type ISaleRep interface {
 
 	DeleteItem(partnerId, goodsId int) error
 
-
 	/*********** Category ************/
 
 	// 保存分类

@@ -20,14 +20,14 @@ import (
 )
 
 type saleService struct {
-	_rep sale.ISaleRep
+	_rep      sale.ISaleRep
 	_goodsRep sale.IGoodsRep
 }
 
-func NewSaleService(r sale.ISaleRep,goodsRep sale.IGoodsRep) *saleService {
+func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep) *saleService {
 	return &saleService{
-		_rep: r,
-		_goodsRep:goodsRep,
+		_rep:      r,
+		_goodsRep: goodsRep,
 	}
 }
 

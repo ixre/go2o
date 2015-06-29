@@ -14,29 +14,29 @@ import (
 	"fmt"
 	"github.com/atnet/gof/algorithm/iterator"
 	"github.com/atnet/gof/db"
+	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/log"
-	"go2o/src/core/domain/interface/promotion"
 )
 
 var _ sale.ISaleRep = new(saleRep)
 
 type saleRep struct {
 	db.Connector
-	_cache map[int]sale.ISale
-	_tagRep sale.ISaleTagRep
-	_promRep promotion.IPromotionRep
+	_cache    map[int]sale.ISale
+	_tagRep   sale.ISaleTagRep
+	_promRep  promotion.IPromotionRep
 	_goodsRep sale.IGoodsRep
 }
 
-func NewSaleRep(c db.Connector, saleTagRep sale.ISaleTagRep,goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.ISaleRep {
+func NewSaleRep(c db.Connector, saleTagRep sale.ISaleTagRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.ISaleRep {
 	return (&saleRep{
 		Connector: c,
 		_tagRep:   saleTagRep,
-		_promRep:promRep,
-		_goodsRep:goodsRep,
+		_promRep:  promRep,
+		_goodsRep: goodsRep,
 	}).init()
 }
 
@@ -48,7 +48,7 @@ func (this *saleRep) init() sale.ISaleRep {
 func (this *saleRep) GetSale(partnerId int) sale.ISale {
 	v, ok := this._cache[partnerId]
 	if !ok {
-		v = saleImpl.NewSale(partnerId, this,this._goodsRep, this._tagRep,this._promRep)
+		v = saleImpl.NewSale(partnerId, this, this._goodsRep, this._tagRep, this._promRep)
 		this._cache[partnerId] = v
 	}
 	return v
@@ -232,7 +232,6 @@ func (this *saleRep) GetChildCategories(partnerId, categoryId int) []*sale.Value
 
 	return newArr
 }
-
 
 // 保存快照
 func (this *saleRep) SaveSnapshot(v *sale.GoodsSnapshot) (int, error) {
