@@ -21,7 +21,6 @@ import (
 var _ promotion.IPromotion = new(Promotion)
 
 type Promotion struct {
-	promRep    promotion.IOldPromotionRep
 	memberRep  member.IMemberRep
 	_partnerId int
 	_promRep   promotion.IPromotionRep
@@ -29,16 +28,6 @@ type Promotion struct {
 	_saleRep   sale.ISaleRep
 }
 
-func NewPromotion(partnerId int, promRep promotion.IOldPromotionRep,
-	rep promotion.IPromotionRep,
-	memberRep member.IMemberRep) promotion.IPromotion {
-	return &Promotion{
-		_partnerId: partnerId,
-		_promRep:   rep,
-		promRep:    promRep,
-		memberRep:  memberRep,
-	}
-}
 
 func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep, v *promotion.ValuePromotion) *Promotion {
 	return &Promotion{
