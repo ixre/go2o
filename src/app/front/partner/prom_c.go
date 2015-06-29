@@ -144,9 +144,9 @@ func (this *promC) Create_coupon(ctx *web.Context) {
 		Enabled: 1,
 	}
 	e2 := &promotion.ValueCoupon{
-		AllowEnable: 1,
 		BeginTime:time.Now().Unix(),
-		OverTime:time.Now().Add(time.Hour*24*10),
+		OverTime:time.Now().Add(time.Hour*24*30).Unix(),
+		Discount:100,
 	}
 
 	js, _ := json.Marshal(e)

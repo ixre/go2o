@@ -97,10 +97,8 @@ func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 	}
 
 	val.OverTime = v.OverTime
-	val.AllowEnable = v.AllowEnable
 	val.BeginTime = v.BeginTime
 	val.Code = v.Code
-	val.Description = v.Description
 	val.Discount = v.Discount
 	val.Fee = v.Fee
 	val.Integral = v.Integral
@@ -108,7 +106,6 @@ func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 	val.MinLevel = v.MinLevel
 	val.NeedBind = v.NeedBind
 	val.TotalAmount = v.TotalAmount
-	val.UpdateTime = time.Now().Unix()
 	return nil
 }
 
@@ -143,7 +140,7 @@ func (this *Coupon) GetDescribe() string {
 	v := this._detailsValue
 
 	if v.MinLevel != 0 {
-		level := this._memberRep.GetLevel(this._detailsValue.PartnerId, v.MinLevel)
+		level := this._memberRep.GetLevel(this._value.PartnerId, v.MinLevel)
 		buf.WriteString("[*" + level.Name + "]")
 	}
 
@@ -193,7 +190,7 @@ func (this *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 	mv := m.GetValue()
 	cv := this.GetDetailsValue()
 
-	if cv.AllowEnable == 0 {
+	if this._value.Enabled == 0 {
 		return false, errors.New("无效的优惠券")
 	}
 
