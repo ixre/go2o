@@ -28,12 +28,12 @@ type Promotion struct {
 }
 
 func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
-	memRep member.IMemberRep,v *promotion.ValuePromotion) *Promotion {
+	memRep member.IMemberRep, v *promotion.ValuePromotion) *Promotion {
 	return &Promotion{
-		_promRep: rep,
-		_memberRep:memRep,
-		_saleRep: saleRep,
-		_value : v,
+		_promRep:   rep,
+		_memberRep: memRep,
+		_saleRep:   saleRep,
+		_value:     v,
 	}
 }
 

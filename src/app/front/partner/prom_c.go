@@ -30,7 +30,6 @@ type promC struct {
 	*baseC
 }
 
-
 func (this *promC) getLevelDropDownList(ctx *web.Context) string {
 	buf := bytes.NewBufferString("")
 	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
@@ -144,9 +143,9 @@ func (this *promC) Create_coupon(ctx *web.Context) {
 		Enabled: 1,
 	}
 	e2 := &promotion.ValueCoupon{
-		BeginTime:time.Now().Unix(),
-		OverTime:time.Now().Add(time.Hour*24*30).Unix(),
-		Discount:100,
+		BeginTime: time.Now().Unix(),
+		OverTime:  time.Now().Add(time.Hour * 24 * 30).Unix(),
+		Discount:  100,
 	}
 
 	js, _ := json.Marshal(e)
@@ -156,8 +155,8 @@ func (this *promC) Create_coupon(ctx *web.Context) {
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
-			"entity":     template.JS(js),
-			"entity2":    template.JS(js2),
+			"entity":  template.JS(js),
+			"entity2": template.JS(js2),
 			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/coupon.html")
@@ -168,8 +167,8 @@ func (this *promC) Edit_coupon(ctx *web.Context) {
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
-	if e.PartnerId != this.GetPartnerId(ctx){
-		this.ErrorOutput(ctx,promotion.ErrNoSuchPromotion.Error())
+	if e.PartnerId != this.GetPartnerId(ctx) {
+		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
 		return
 	}
 
@@ -180,8 +179,8 @@ func (this *promC) Edit_coupon(ctx *web.Context) {
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
-			"entity":     template.JS(js),
-			"entity2":    template.JS(js2),
+			"entity":  template.JS(js),
+			"entity2": template.JS(js2),
 			"levelDr": template.HTML(levelDr),
 		},
 		"views/partner/promotion/coupon.html")
@@ -202,7 +201,6 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 
 	e.PartnerId = partnerId
 	e.TypeFlag = promotion.TypeFlagCoupon
-
 
 	const layout string = "2006-01-02 15:04:05"
 	bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
@@ -226,9 +224,9 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 func (this *promC) BindCoupon(ctx *web.Context) {
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
-	e,_ := dps.PromService.GetPromotion(id)
-	if e.PartnerId != this.GetPartnerId(ctx){
-		this.ErrorOutput(ctx,promotion.ErrNoSuchPromotion.Error())
+	e, _ := dps.PromService.GetPromotion(id)
+	if e.PartnerId != this.GetPartnerId(ctx) {
+		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
 		return
 	}
 	ctx.App.Template().Execute(w,

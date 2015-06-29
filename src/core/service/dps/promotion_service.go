@@ -16,7 +16,7 @@ import (
 )
 
 type promotionService struct {
-	_rep    promotion.IPromotionRep
+	_rep promotion.IPromotionRep
 }
 
 func NewPromotionService(rep promotion.IPromotionRep) *promotionService {
@@ -40,8 +40,8 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
 		err := prom.SetValue(v)
-		if err != nil{
-			return v.Id,err
+		if err != nil {
+			return v.Id, err
 		}
 	} else {
 		prom = this._rep.CreatePromotion(v)

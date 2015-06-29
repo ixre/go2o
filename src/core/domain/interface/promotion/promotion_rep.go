@@ -43,7 +43,10 @@ type IPromotionRep interface {
 	GetValueCoupon(id int) *ValueCoupon
 
 	// 保存优惠券值
-	SaveValueCoupon(v *ValueCoupon,isCreate bool) (id int, err error)
+	SaveValueCoupon(v *ValueCoupon, isCreate bool) (id int, err error)
+
+	// 删除优惠券
+	DeleteValueCoupon(id int) error
 
 	GetCouponTake(couponId, takeId int) *ValueCouponTake
 

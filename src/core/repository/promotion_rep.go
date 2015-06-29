@@ -58,7 +58,7 @@ func (this *promotionRep) GetPromotion(id int) promotion.IPromotion {
 
 // 获取促销
 func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion) promotion.IPromotion {
-	return promImpl.FactoryPromotion(this, this._saleRep,this._memberRep, v)
+	return promImpl.FactoryPromotion(this, this._saleRep, this._memberRep, v)
 }
 
 // 保存促销
@@ -122,7 +122,7 @@ func (this *promotionRep) GetValueCoupon(id int) *promotion.ValueCoupon {
 	return nil
 }
 
-func (this *promotionRep) SaveValueCoupon(v *promotion.ValueCoupon,isCreate bool) (id int, err error) {
+func (this *promotionRep) SaveValueCoupon(v *promotion.ValueCoupon, isCreate bool) (id int, err error) {
 	orm := this.Connector.GetOrm()
 	if isCreate {
 		_, _, err = orm.Save(nil, v)
@@ -130,6 +130,11 @@ func (this *promotionRep) SaveValueCoupon(v *promotion.ValueCoupon,isCreate bool
 		_, _, err = orm.Save(v.Id, v)
 	}
 	return v.Id, err
+}
+
+// 删除优惠券
+func (this *promotionRep) DeleteValueCoupon(id int) error {
+	return this.Connector.GetOrm().DeleteByPk(promotion.ValueCoupon{}, id)
 }
 
 func (this *promotionRep) GetCouponTake(couponId, takeId int) *promotion.ValueCouponTake {
@@ -247,7 +252,7 @@ func (this *promotionRep) GetCouponByCode(partnerId int, code string) promotion.
 	v := this.GetValueCouponByCode(partnerId, code)
 	if v != nil {
 		p := this.GetValuePromotion(v.Id)
-		prom :=  this.CreatePromotion(p)
+		prom := this.CreatePromotion(p)
 		cp := prom.(promotion.ICouponPromotion)
 		cp.SetDetailsValue(v)
 		return prom

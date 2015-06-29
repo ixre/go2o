@@ -40,7 +40,6 @@ type ValueCoupon struct {
 	BeginTime int64 `db:"begin_time"`
 	OverTime  int64 `db:"over_time"`
 
-
 	//是否需要绑定。反之可以直接使用
 	NeedBind int `db:"need_bind"`
 

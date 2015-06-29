@@ -45,7 +45,7 @@ func newCoupon(p *Promotion, v *promotion.ValueCoupon, promRep promotion.IPromot
 	memberRep member.IMemberRep) *Coupon {
 
 	cp := &Coupon{_detailsValue: v,
-		Promotion:p,
+		Promotion:  p,
 		_promRep:   promRep,
 		_memberRep: memberRep,
 	}
@@ -124,7 +124,7 @@ func (this *Coupon) GetTakes() []promotion.ValueCouponTake {
 	return this._takes
 }
 
-func (this *Coupon) Save() (int,error) {
+func (this *Coupon) Save() (int, error) {
 
 	if this.GetRelationValue() == nil {
 		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
@@ -132,7 +132,7 @@ func (this *Coupon) Save() (int,error) {
 
 	if this._detailsValue.Id > 0 {
 		if this._detailsValue.TotalAmount != this._detailsValue.Amount {
-			return this.GetAggregateRootId(),errors.New("优惠券已被绑定或使用，不允许修改。")
+			return this.GetAggregateRootId(), errors.New("优惠券已被绑定或使用，不允许修改。")
 		}
 	} else {
 		this._detailsValue.Amount = this._detailsValue.TotalAmount
@@ -140,14 +140,14 @@ func (this *Coupon) Save() (int,error) {
 
 	var isCreate bool = this.GetAggregateRootId() == 0
 
-	id,err := this.Promotion.Save()
+	id, err := this.Promotion.Save()
 	this._value.Id = id
 
 	if err == nil {
 		this._detailsValue.Id = this.GetAggregateRootId()
-		return this._promRep.SaveValueCoupon(this._detailsValue,isCreate)
+		return this._promRep.SaveValueCoupon(this._detailsValue, isCreate)
 	}
-	return id,err
+	return id, err
 }
 
 // 获取优惠券描述
