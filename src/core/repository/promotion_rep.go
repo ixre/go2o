@@ -51,14 +51,14 @@ func (this *promotionRep) GetValuePromotion(id int) *promotion.ValuePromotion {
 func (this *promotionRep) GetPromotion(id int) promotion.IPromotion {
 	v := this.GetValuePromotion(id)
 	if v != nil {
-		return this.CreatePromotion(v, nil)
+		return this.CreatePromotion(v)
 	}
 	return nil
 }
 
 // 获取促销
-func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion {
-	return promImpl.FactoryPromotion(this, this._saleRep, v, dv)
+func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion) promotion.IPromotion {
+	return promImpl.FactoryPromotion(this, this._saleRep,this._memberRep, v)
 }
 
 // 保存促销
@@ -247,7 +247,10 @@ func (this *promotionRep) GetCouponByCode(partnerId int, code string) promotion.
 	v := this.GetValueCouponByCode(partnerId, code)
 	if v != nil {
 		p := this.GetValuePromotion(v.Id)
-		return promImpl.FactoryPromotion(this, this._saleRep, p, v)
+		prom :=  this.CreatePromotion(p)
+		cp := prom.(promotion.ICouponPromotion)
+		cp.SetDetailsValue(v)
+		return prom
 	}
 	return nil
 }

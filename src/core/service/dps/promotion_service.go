@@ -44,7 +44,7 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 			return v.Id,err
 		}
 	} else {
-		prom = this._rep.CreatePromotion(v,nil)
+		prom = this._rep.CreatePromotion(v)
 	}
 	return prom.Save()
 }
@@ -72,7 +72,7 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 			return -1, partner.ErrNotMatch
 		}
 	} else {
-		prom = this._rep.CreatePromotion(v,nil)
+		prom = this._rep.CreatePromotion(v)
 	}
 
 	if err = prom.SetValue(v); err == nil {
@@ -97,7 +97,7 @@ func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromot
 			return -1, partner.ErrNotMatch
 		}
 	} else {
-		prom = this._rep.CreatePromotion(v,nil)
+		prom = this._rep.CreatePromotion(v)
 	}
 
 	if err = prom.SetValue(v); err == nil {

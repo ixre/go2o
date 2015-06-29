@@ -45,6 +45,7 @@ func newCoupon(p *Promotion, v *promotion.ValueCoupon, promRep promotion.IPromot
 	memberRep member.IMemberRep) *Coupon {
 
 	cp := &Coupon{_detailsValue: v,
+		Promotion:p,
 		_promRep:   promRep,
 		_memberRep: memberRep,
 	}
@@ -125,6 +126,10 @@ func (this *Coupon) GetTakes() []promotion.ValueCouponTake {
 
 func (this *Coupon) Save() (int,error) {
 
+	if this.GetRelationValue() == nil {
+		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
+	}
+
 	if this._detailsValue.Id > 0 {
 		if this._detailsValue.TotalAmount != this._detailsValue.Amount {
 			return this.GetAggregateRootId(),errors.New("优惠券已被绑定或使用，不允许修改。")
@@ -133,8 +138,9 @@ func (this *Coupon) Save() (int,error) {
 		this._detailsValue.Amount = this._detailsValue.TotalAmount
 	}
 
-	id,err := this.Promotion.Save()
 	var isCreate bool = this.GetAggregateRootId() == 0
+
+	id,err := this.Promotion.Save()
 	this._value.Id = id
 
 	if err == nil {

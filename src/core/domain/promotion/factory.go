@@ -12,40 +12,33 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"time"
+	"go2o/src/core/domain/interface/member"
 )
 
-func FactoryPromotionWithValue(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
-	v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion {
-	p := newPromotion(rep, saleRep, v)
+func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,memRep member.IMemberRep,
+	v *promotion.ValuePromotion) promotion.IPromotion {
+	p := newPromotion(rep, saleRep,memRep, v)
 
 	switch p.Type() {
 	case promotion.TypeFlagCashBack:
-		return createCashBackPromotion(p, v)
+		return createCashBackPromotion(p)
 	case promotion.TypeFlagCoupon:
-		return createCouponPromotion(p, v)
+		return createCouponPromotion(p)
 	}
 	//todo: other promotion
 	return p
 }
 
-func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
-v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion{
-	return FactoryPromotionWithValue(rep,saleRep,v,nil)
-}
 // 创建
-func createCashBackPromotion(p *Promotion, v interface{}) promotion.IPromotion {
+func createCashBackPromotion(p *Promotion) promotion.IPromotion {
 	var pv *promotion.ValueCashBack
 
-	if v != nil {
-		pv, _ = v.(*promotion.ValueCashBack)
-	}
-
-	if pv == nil {
+	if p.GetAggregateRootId() > 0 {
 		pv = p._promRep.GetValueCashBack(p.GetAggregateRootId())
-		if pv == nil {
-			pv = &promotion.ValueCashBack{
-				Id: p.GetAggregateRootId(),
-			}
+	}
+	if pv == nil {
+		pv = &promotion.ValueCashBack{
+			Id: p.GetAggregateRootId(),
 		}
 	}
 
@@ -55,21 +48,18 @@ func createCashBackPromotion(p *Promotion, v interface{}) promotion.IPromotion {
 	}
 }
 
-func createCouponPromotion(p *Promotion, v interface{}) promotion.IPromotion {
+func createCouponPromotion(p *Promotion) promotion.IPromotion {
 	var pv *promotion.ValueCoupon
 
-	if v != nil {
-		pv, _ = v.(*promotion.ValueCoupon)
-	}
-
-	if pv == nil {
+	if p.GetAggregateRootId()>0 {
 		pv = p._promRep.GetValueCoupon(p.GetAggregateRootId())
-		if pv == nil {
-			pv = &promotion.ValueCoupon{
-				Id:         p.GetAggregateRootId(),
-				CreateTime: time.Now().Unix(),
-			}
+	}
+	if pv == nil {
+		pv = &promotion.ValueCoupon{
+			Id:         p.GetAggregateRootId(),
+			CreateTime: time.Now().Unix(),
 		}
+
 	}
 
 	pv.Amount = pv.TotalAmount

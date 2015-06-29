@@ -76,6 +76,11 @@ func (this *CashBackPromotion) GetDataTag() map[string]string {
 
 // 保存
 func (this *CashBackPromotion) Save() (int, error) {
+
+	if this.GetRelationValue() == nil {
+		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
+	}
+
 	var isCreate bool = this.GetAggregateRootId() == 0
 	this._value.TypeFlag = promotion.TypeFlagCashBack
 	id, err := this.Promotion.Save()

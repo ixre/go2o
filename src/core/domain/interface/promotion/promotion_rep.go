@@ -14,7 +14,7 @@ type IPromotionRep interface {
 	GetPromotion(id int) IPromotion
 
 	// 获取促销
-	CreatePromotion(v *ValuePromotion, dv interface{}) IPromotion
+	CreatePromotion(v *ValuePromotion) IPromotion
 
 	// 获取促销
 	GetValuePromotion(id int) *ValuePromotion
