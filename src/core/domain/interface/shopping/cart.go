@@ -22,7 +22,7 @@ type ICart interface {
 	GetValue() ValueCart
 
 	// 获取购物车中的商品
-	GetCartGoods()[]sale.IGoods
+	GetCartGoods() []sale.IGoods
 
 	// 结算数据持久化
 	SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error

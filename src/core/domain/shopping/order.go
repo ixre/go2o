@@ -39,19 +39,19 @@ type Order struct {
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
 	_saleRep         sale.ISaleRep
-	_promRep		 promotion.IPromotionRep
+	_promRep         promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
 	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	promRep promotion.IPromotionRep,memberRep member.IMemberRep) shopping.IOrder {
+	promRep promotion.IPromotionRep, memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
 		_shopping:    shopping,
 		_value:       value,
 		_cart:        cart,
 		_memberRep:   memberRep,
-		_promRep:promRep,
+		_promRep:     promRep,
 		_shoppingRep: shoppingRep,
 		_partnerRep:  partnerRep,
 		_saleRep:     saleRep,
@@ -92,8 +92,8 @@ func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 }
 
 // 获取可用的促销,不包含优惠券
-func (this *Order) GetAvailableOrderPromotions()[]promotion.IPromotion{
-	if this._availPromotions == nil{
+func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
+	if this._availPromotions == nil {
 		partnerId := this._value.PartnerId
 		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfPartnerOrder(partnerId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
@@ -105,11 +105,10 @@ func (this *Order) GetAvailableOrderPromotions()[]promotion.IPromotion{
 	return this._availPromotions
 }
 
-
 // 获取最省的促销
-func (this *Order)  GetBestSavePromotion()(p promotion.IPromotion,saveFee float32,integral int){
+func (this *Order) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
 	//todo: not implement
-	return nil,0,0
+	return nil, 0, 0
 }
 
 // 添加备注
@@ -170,12 +169,12 @@ func (this *Order) Submit() (string, error) {
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
-	if err := this.applyCouponOnSubmit(v);err != nil{
-		return "",err
+	if err := this.applyCouponOnSubmit(v); err != nil {
+		return "", err
 	}
 
 	// 购物车商品
-	proms,fee := this.applyCartPromotionObSubmit(v,this._cart)
+	proms, fee := this.applyCartPromotionObSubmit(v, this._cart)
 	if len(proms) != 0 {
 		v.DiscountFee += float32(fee)
 		v.PayFee -= float32(fee)
@@ -187,7 +186,6 @@ func (this *Order) Submit() (string, error) {
 	//todo:
 	//prom,fee,integral := this.GetBestSavePromotion()
 
-
 	// 保存订单
 	id, err := this.saveOrderOnSubmit()
 	v.Id = id
@@ -197,37 +195,37 @@ func (this *Order) Submit() (string, error) {
 		// 销毁购物车
 		this._cart.Destroy()
 		// 绑定购物车商品的促销
-		for _,p := range proms{
-			this.bindPromotionOnSubmit(v.OrderNo,p)
+		for _, p := range proms {
+			this.bindPromotionOnSubmit(v.OrderNo, p)
 		}
 	}
 	return v.OrderNo, err
 }
 
-func (this *Order) bindPromotionOnSubmit(orderNo string,prom promotion.IPromotion){
+func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion) {
 
 }
 
 // 应用购物车内商品的促销
-func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder,cart shopping.ICart)([]promotion.IPromotion,int){
-	var proms []promotion.IPromotion=make([]promotion.IPromotion,0)
+func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shopping.ICart) ([]promotion.IPromotion, int) {
+	var proms []promotion.IPromotion = make([]promotion.IPromotion, 0)
 	var prom promotion.IPromotion
 	var saveFee int
 	var totalSaveFee int
 	var intOrderFee = int(vo.Fee)
 
-	for _,v := range cart.GetCartGoods(){
+	for _, v := range cart.GetCartGoods() {
 		prom = nil
 		saveFee = 0
 
 		// 判断商品的最省促销
-		for _,v1 := range v.GetPromotions(){
+		for _, v1 := range v.GetPromotions() {
 
 			// 返现
-			if v1.Type() == promotion.TypeFlagCashBack{
+			if v1.Type() == promotion.TypeFlagCashBack {
 				vc := v1.GetRelationValue().(*promotion.ValueCashBack)
 				if vc.MinFee < intOrderFee {
-					if vc.BackFee > saveFee{
+					if vc.BackFee > saveFee {
 						prom = v1
 						saveFee = vc.BackFee
 					}
@@ -237,13 +235,13 @@ func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder,cart shopp
 			//todo: 其他促销
 		}
 
-		if prom != nil{
-			proms = append(proms,prom)
+		if prom != nil {
+			proms = append(proms, prom)
 			totalSaveFee += saveFee
 		}
 	}
 
-	return proms,totalSaveFee
+	return proms, totalSaveFee
 }
 
 // 绑定订单与优惠券
@@ -254,12 +252,12 @@ func (this *Order) bindCouponOnSubmit(orderNo string) {
 		this._shoppingRep.SaveOrderCouponBind(oc)
 
 		// 绑定促销
-		this.bindPromotionOnSubmit(orderNo,c.(promotion.IPromotion))
+		this.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
 	}
 }
 
 // 在提交订单时应用优惠券
-func (this *Order) applyCouponOnSubmit(v *shopping.ValueOrder)error{
+func (this *Order) applyCouponOnSubmit(v *shopping.ValueOrder) error {
 	var err error
 	var t *promotion.ValueCouponTake
 	var b *promotion.ValueCouponBind
@@ -276,7 +274,7 @@ func (this *Order) applyCouponOnSubmit(v *shopping.ValueOrder)error{
 			}
 		}
 		if err != nil {
-			return errors.New("Code 105:优惠券使用失败,"+err.Error())
+			return errors.New("Code 105:优惠券使用失败," + err.Error())
 		}
 	}
 	return err

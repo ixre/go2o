@@ -27,10 +27,10 @@ type IOrder interface {
 	GetCoupons() []promotion.ICouponPromotion
 
 	// 获取可用的促销,不包含优惠券
-	GetAvailableOrderPromotions()[]promotion.IPromotion
+	GetAvailableOrderPromotions() []promotion.IPromotion
 
 	// 获取最省的促销
-	GetBestSavePromotion()(p promotion.IPromotion,saveFee float32,integral int)
+	GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int)
 
 	// 设置Shop,如果不需要记录日志，则remark传递空
 	SetShop(shopId int) error

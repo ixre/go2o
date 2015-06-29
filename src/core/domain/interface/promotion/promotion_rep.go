@@ -41,7 +41,7 @@ type IPromotionRep interface {
 	GetPromotionOfGoods(goodsId int) []*ValuePromotion
 
 	// 获取商户订单可用的促销
-	GetPromotionOfPartnerOrder(partnerId int)[]*ValuePromotion
+	GetPromotionOfPartnerOrder(partnerId int) []*ValuePromotion
 
 	/** =======  优惠券 ==========**/
 
