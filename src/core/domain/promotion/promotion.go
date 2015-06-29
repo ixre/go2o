@@ -91,18 +91,21 @@ func (this *Promotion) Type() int {
 
 // 保存
 func (this *Promotion) Save() (int, error) {
+	if this.GetRelationValue() == nil{
+		return this.GetAggregateRootId(),promotion.ErrCanNotApplied
+	}
 	this._value.UpdateTime = time.Now().Unix()
 	return this._promRep.SaveValuePromotion(this._value)
 }
 
-func (this *Promotion) GetCoupon(id int) promotion.ICoupon {
-	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)
-	return this.CreateCoupon(val)
-}
+//func (this *Promotion) GetCoupon(id int) promotion.ICouponPromotion {
+//	var val *promotion.ValueCoupon = this.promRep.GetCoupon(id)
+//	return this.CreateCoupon(val)
+//}
 
-func (this *Promotion) CreateCoupon(val *promotion.ValueCoupon) promotion.ICoupon {
-	val.PartnerId = this.GetAggregateRootId()
-	val.CreateTime = time.Now().Unix()
-	val.Amount = val.TotalAmount
-	return newCoupon(val, this.promRep, this.memberRep)
-}
+//func (this *Promotion) CreateCoupon(val *promotion.ValueCoupon) promotion.ICouponPromotion {
+//	val.PartnerId = this.GetAggregateRootId()
+//	val.CreateTime = time.Now().Unix()
+//	val.Amount = val.TotalAmount
+//	return newCoupon(val, this.promRep, this.memberRep)
+//}

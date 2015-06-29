@@ -33,7 +33,7 @@ type Order struct {
 	_shopping        shopping.IShopping
 	_value           *shopping.ValueOrder
 	_cart            shopping.ICart
-	_coupons         []promotion.ICoupon
+	_coupons         []promotion.ICouponPromotion
 	_memberRep       member.IMemberRep
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
@@ -63,9 +63,9 @@ func (this *Order) GetValue() shopping.ValueOrder {
 	return *this._value
 }
 
-func (this *Order) ApplyCoupon(coupon promotion.ICoupon) error {
+func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	if this._coupons == nil {
-		this._coupons = []promotion.ICoupon{}
+		this._coupons = []promotion.ICouponPromotion{}
 	}
 	this._coupons = append(this._coupons, coupon)
 
@@ -80,9 +80,9 @@ func (this *Order) ApplyCoupon(coupon promotion.ICoupon) error {
 }
 
 // 获取应用的优惠券
-func (this *Order) GetCoupons() []promotion.ICoupon {
+func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 	if this._coupons == nil {
-		return make([]promotion.ICoupon, 0)
+		return make([]promotion.ICouponPromotion, 0)
 	}
 	return this._coupons
 }

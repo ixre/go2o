@@ -13,13 +13,14 @@ import (
 	"go2o/src/core/domain/interface/member"
 )
 
-type ICoupon interface {
+// 优惠券促销
+type ICouponPromotion interface {
 	GetDomainId() int
 
-	GetValue() ValueCoupon
+	GetValue()ValueCoupon
 
 	// 设置值
-	SetValue(*ValueCoupon) error
+	SetDetailsValue(*ValueCoupon) error
 
 	// 获取绑定
 	GetBinds() []ValueCouponBind
@@ -42,19 +43,25 @@ type ICoupon interface {
 
 	// 是否允许占用
 	CanTake() bool
+
 	// 获取占用
 	GetTake(memberId int) (*ValueCouponTake, error)
+
 	//占用
 	Take(memberId int) error
+
 	// 应用到订单
 	ApplyTake(couponTakeId int) error
 
 	// 绑定
 	Bind(memberId int) error
+
 	//获取绑定
 	GetBind(memberId int) (*ValueCouponBind, error)
+
 	//绑定
 	Binds(memberIds []string) error
+
 	//使用优惠券
 	UseCoupon(couponBindId int) error
 }

@@ -11,7 +11,10 @@ package promotion
 
 type IOldPromotionRep interface {
 	GetPromotion(partnerId int) IPromotion
-	GetCoupon(id int) *ValueCoupon
+
+	// 获取优惠券
+	GetValueCoupon(id int) *ValueCoupon
+
 	SaveCoupon(ValueCoupon) (id int, err error)
 
 	GetCouponTake(couponId, takeId int) *ValueCouponTake
@@ -27,7 +30,7 @@ type IOldPromotionRep interface {
 	GetCouponBinds(couponId int) []ValueCouponBind
 
 	// 根据优惠券编号获取优惠券
-	GetCouponByCode(partnerId int, couponCode string) (ICoupon, error)
+	GetCouponByCode(partnerId int, couponCode string) (ICouponPromotion, error)
 
 	// 获取会员的优惠券绑定
 	GetCouponBindByMemberId(couponId, memberId int) (*ValueCouponBind, error)

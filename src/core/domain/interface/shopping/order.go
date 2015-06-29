@@ -21,10 +21,10 @@ type IOrder interface {
 	GetValue() ValueOrder
 
 	// 应用优惠券
-	ApplyCoupon(coupon promotion.ICoupon) error
+	ApplyCoupon(coupon promotion.ICouponPromotion) error
 
 	// 获取应用的优惠券
-	GetCoupons() []promotion.ICoupon
+	GetCoupons() []promotion.ICouponPromotion
 
 	// 设置Shop,如果不需要记录日志，则remark传递空
 	SetShop(shopId int) error

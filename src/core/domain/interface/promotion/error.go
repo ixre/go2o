@@ -22,4 +22,7 @@ var (
 
 	ErrNoSuchPromotion *domain.DomainError = domain.NewDomainError(
 		"no_such_promotion", "促销不存在")
+
+	ErrNoDetailsPromotion *domain.DomainError = domain.NewDomainError(
+		"no_details_promotion", "促销信息不完整")
 )

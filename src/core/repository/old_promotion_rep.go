@@ -155,7 +155,7 @@ func (this *oldPromotionRep) GetCouponTakeByMemberId(couponId, memberId int) (*p
 
 // 根据优惠券编号获取优惠券
 func (this *oldPromotionRep) GetCouponByCode(partnerId int, couponCode string) (
-	promotion.ICoupon, error) {
+	promotion.ICouponPromotion, error) {
 	var e promotion.ValueCoupon
 	err := this.Connector.GetOrm().GetByQuery(&e,
 		fmt.Sprintf(`SELECT * FROM pm_coupon WHERE partner_id=%d AND code='%s'`,

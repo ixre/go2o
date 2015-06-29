@@ -10,6 +10,9 @@ package promotion
 
 // 返现促销
 type ICashBackPromotion interface {
+	// 获取领域编号
+	GetDomainId() int
+
 	// 设置详细的促销信息
 	SetDetailsValue(*ValueCashBack) error
 

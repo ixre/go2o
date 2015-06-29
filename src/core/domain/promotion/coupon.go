@@ -21,6 +21,10 @@ import (
 	"time"
 )
 
+
+var _ promotion.IPromotion = new(Coupon)
+var _ promotion.ICouponPromotion = new(Coupon)
+
 // 优惠券,一张优惠券有数量，对应唯一的促销码。
 // 优惠内容包含：送金额，送积分,订单折扣。仅在消费时有效。
 // 使用需要达到最低金额和最低等级。
@@ -28,6 +32,7 @@ import (
 // 优惠券可以设置启用和停用
 // 是否允许绑定，如果不绑定。则可以任意使用.只要有绑定和使用后，就不允许修改此属性。
 type Coupon struct {
+	*Promotion
 	value        *promotion.ValueCoupon
 	promRep      promotion.IOldPromotionRep
 	memberRep    member.IMemberRep
@@ -37,8 +42,8 @@ type Coupon struct {
 	binds_loaded bool
 }
 
-func newCoupon(v *promotion.ValueCoupon, promRep promotion.IOldPromotionRep,
-	memberRep member.IMemberRep) promotion.ICoupon {
+func newCoupon(p *Promotion,v *promotion.ValueCoupon, promRep promotion.IOldPromotionRep,
+	memberRep member.IMemberRep) promotion.ICouponPromotion {
 
 	cp := &Coupon{value: v,
 		promRep:   promRep,
@@ -79,7 +84,7 @@ func (this *Coupon) GetValue() promotion.ValueCoupon {
 }
 
 // 设置值
-func (this *Coupon) SetValue(v *promotion.ValueCoupon) error {
+func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 
 	val := this.value
 	if v.TotalAmount < val.TotalAmount-val.Amount {

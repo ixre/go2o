@@ -27,6 +27,11 @@ type CashBackPromotion struct {
 	_dataTag       map[string]string
 }
 
+// 获取领域编号
+func (this *CashBackPromotion)  GetDomainId() int{
+	return this._cashBackValue.Id
+}
+
 // 设置详细的促销信息
 func (this *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
 	g := this._saleRep.GetValueGoodsById(this._value.GoodsId)

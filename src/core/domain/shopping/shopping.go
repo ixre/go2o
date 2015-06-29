@@ -239,7 +239,7 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 	}
 
 	if len(couponCode) != 0 {
-		var coupon promotion.ICoupon
+		var coupon promotion.ICouponPromotion
 		var result bool
 		var val = order.GetValue()
 		coupon, err = this._promRep.GetCouponByCode(
