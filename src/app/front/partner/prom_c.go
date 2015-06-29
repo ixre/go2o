@@ -219,9 +219,8 @@ func (this *promC) Save_coupon_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-/************ NORMAL *******************/
 //　绑定优惠券操作页
-func (this *promC) BindCoupon(ctx *web.Context) {
+func (this *promC) Bind_coupon(ctx *web.Context) {
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e,e2 := dps.PromService.GetPromotion(id)
@@ -237,7 +236,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 		"views/partner/promotion/bind_coupon.html")
 }
 
-func (this *promC) BindCoupon_post(ctx *web.Context) {
+func (this *promC) Bind_coupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message

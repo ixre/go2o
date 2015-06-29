@@ -62,7 +62,9 @@ func createCouponPromotion(p *Promotion) promotion.IPromotion {
 
 	}
 
-	pv.Amount = pv.TotalAmount
+	if p.GetAggregateRootId() <= 0 {
+		pv.Amount = pv.TotalAmount
+	}
 
 	return newCoupon(p, pv, p._promRep, p._memberRep)
 }
