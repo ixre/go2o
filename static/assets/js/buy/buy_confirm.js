@@ -112,7 +112,7 @@ function persistData() {
 
 // 选择配送地址
 function selectDeliver() {
-    $JS.load('deliver-panel', '/buy/getDeliverAddrs?sel=' + window.sctJson.deliver_id);
+    $JS.load('deliver-panel', '/buy/getDeliverAddress?sel=' + window.sctJson.deliver_id);
 }
 
 // 从表单中恢复数据

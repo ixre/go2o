@@ -148,29 +148,29 @@ rsp:
 }
 
 // 配送地址管理
-func (this *ShoppingC) GetDeliverAddrs(ctx *web.Context) {
+func (this *ShoppingC) GetDeliverAddress(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
 	r := ctx.Request
-	m := this.GetMember(ctx)
-	addrs := dps.MemberService.GetDeliverAddress(m.Id)
+	m := this.BaseC.GetMember(ctx)
+	address := dps.MemberService.GetDeliverAddress(m.Id)
 	var selId int
 	if sel := r.URL.Query().Get("sel"); sel != "" {
 		selId, _ = strconv.Atoi(sel)
 	}
 
-	js, _ := json.Marshal(addrs)
+	js, _ := json.Marshal(address)
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"addrs": template.JS(js),
 		"sel":   selId,
 	}, "views/shop/ols/{device}/deliver_address.html")
 }
-func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
+func (this *ShoppingC) SaveDeliverAddress_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	m := this.GetMember(ctx)
+	m := this.BaseC.GetMember(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	var e member.DeliverAddress
@@ -192,30 +192,30 @@ func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 func (this *ShoppingC) Apply_post(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()
-	if atype := r.URL.Query().Get("type"); atype == "coupon" {
+	if applyType := r.URL.Query().Get("type"); applyType == "coupon" {
 		this.applyCoupon(ctx)
 	}
 }
+
 func (this *ShoppingC) applyCoupon(ctx *web.Context) {
+	var result gof.Message
 	if !this.prepare(ctx) {
-		return
+		result.Message = "请先登陆"
+	}else {
+		p := this.BaseC.GetPartner(ctx)
+		m := this.BaseC.GetMember(ctx)
+
+		code := ctx.Request.FormValue("code")
+		data, err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "", code)
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			 ctx.Response.JsonOutput(data)
+			return
+		}
 	}
 
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
-
-	var message string = "购物车还是空的!"
-	code := ctx.Request.FormValue("code")
-	order, _, err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "", code)
-	if err != nil {
-		message = err.Error()
-	} else {
-		d, _ := json.Marshal(order)
-		ctx.Response.Write(d)
-		return
-	}
-
-	ctx.Response.Write([]byte(`{"result":false,"message":"` + message + `"}`))
+	ctx.Response.JsonOutput(result)
 }
 
 // 提交订单
@@ -224,8 +224,8 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 		return
 	}
 	r, w := ctx.Request, ctx.Response
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 
 	r.ParseForm()
 	if p == nil || m == nil {

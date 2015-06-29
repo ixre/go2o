@@ -9,8 +9,6 @@
 package server
 
 import (
-	"bytes"
-	"encoding/json"
 	"github.com/atnet/gof/net/jsv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/sale"
@@ -20,6 +18,7 @@ import (
 	"go2o/src/core/service/dps"
 	"strconv"
 	"time"
+	"encoding/json"
 )
 
 // 合作商户的接口
@@ -163,40 +162,9 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	order, _, err := dps.ShoppingService.BuildOrder(partnerId, memberId, "", couponCode)
+	data,err := dps.ShoppingService.BuildOrder(partnerId, memberId, "", couponCode)
 	if err != nil {
 		return err
-	}
-
-	v := order.GetValue()
-	buf := bytes.NewBufferString("")
-
-	for _, v := range order.GetCoupons() {
-		buf.WriteString(v.GetDescribe())
-		buf.WriteString("\n")
-	}
-
-	var data map[string]interface{}
-	data = make(map[string]interface{})
-	if couponCode != "" {
-		if v.CouponFee == 0 {
-			data["result"] = v.CouponFee != 0
-			data["message"] = "优惠券无效"
-		} else {
-			// 成功应用优惠券
-			data["totalFee"] = v.TotalFee
-			data["fee"] = v.Fee
-			data["payFee"] = v.PayFee
-			data["discountFee"] = v.DiscountFee
-			data["couponFee"] = v.CouponFee
-			data["couponDescribe"] = buf.String()
-		}
-	} else {
-		//　取消优惠券
-		data["totalFee"] = v.TotalFee
-		data["fee"] = v.Fee
-		data["payFee"] = v.PayFee
-		data["discountFee"] = v.DiscountFee
 	}
 
 	js, _ := json.Marshal(data)

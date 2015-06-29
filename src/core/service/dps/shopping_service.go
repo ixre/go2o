@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/dto"
+	"bytes"
 )
 
 type shoppingService struct {
@@ -27,9 +28,44 @@ func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
 }
 
 func (this *shoppingService) BuildOrder(partnerId int, memberId int,
-	cartKey string, couponCode string) (shopping.IOrder, shopping.ICart, error) {
+	cartKey string, couponCode string) (map[string]interface{}, error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
-	return sp.BuildOrder(memberId, couponCode)
+	order,_,err := sp.BuildOrder(memberId,couponCode)
+	if err != nil{
+		return nil,err
+	}
+
+	v := order.GetValue()
+	buf := bytes.NewBufferString("")
+
+	for _, v := range order.GetCoupons() {
+		buf.WriteString(v.GetDescribe())
+		buf.WriteString("\n")
+	}
+
+	var data map[string]interface{}
+	data = make(map[string]interface{})
+	if couponCode != "" {
+		if v.CouponFee == 0 {
+			data["result"] = v.CouponFee != 0
+			data["message"] = "优惠券无效"
+		} else {
+			// 成功应用优惠券
+			data["totalFee"] = v.TotalFee
+			data["fee"] = v.Fee
+			data["payFee"] = v.PayFee
+			data["discountFee"] = v.DiscountFee
+			data["couponFee"] = v.CouponFee
+			data["couponDescribe"] = buf.String()
+		}
+	} else {
+		//　取消优惠券
+		data["totalFee"] = v.TotalFee
+		data["fee"] = v.Fee
+		data["payFee"] = v.PayFee
+		data["discountFee"] = v.DiscountFee
+	}
+	return data,err
 }
 
 func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string) (

@@ -237,7 +237,7 @@ func (this *promotionRep) GetCouponTakeByMemberId(couponId, memberId int) (*prom
 func (this *promotionRep) GetValueCouponByCode(partnerId int, couponCode string) *promotion.ValueCoupon {
 	var e promotion.ValueCoupon
 	err := this.Connector.GetOrm().GetByQuery(&e,
-		fmt.Sprintf(`SELECT pm_coupon.* FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
+		fmt.Sprintf(`SELECT * FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
 		 		WHERE partner_id=%d AND code='%s'`,
 			partnerId, couponCode))
 

@@ -18,7 +18,7 @@ type IOrder interface {
 	GetDomainId() int
 
 	// 获生成值
-	GetValue() ValueOrder
+	GetValue()ValueOrder
 
 	// 应用优惠券
 	ApplyCoupon(coupon promotion.ICouponPromotion) error
