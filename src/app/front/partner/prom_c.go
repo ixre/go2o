@@ -219,7 +219,7 @@ func (this *promC) EditCoupon(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
+	e := dps.PromService.GetCoupon(partnerId, id).GetDetailsValue()
 	js, _ := json.Marshal(e)
 
 	levelDr := this.getLevelDropDownList(ctx)
@@ -248,7 +248,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
-	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
+	e := dps.PromService.GetCoupon(partnerId, id).GetDetailsValue()
 	ctx.App.Template().Execute(w,
 		gof.TemplateDataMap{
 			"entity": e,

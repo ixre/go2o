@@ -242,11 +242,11 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 		var coupon promotion.ICouponPromotion
 		var result bool
 		var val = order.GetValue()
-		coupon, err = this._promRep.GetCouponByCode(
+		coupon = this._promRep.GetCouponByCode(
 			this._partnerId, couponCode)
 
 		// 如果优惠券不存在
-		if err != nil || coupon == nil {
+		if coupon == nil {
 			log.PrintErr(err)
 			return order, cart, errors.New("优惠券无效")
 		}

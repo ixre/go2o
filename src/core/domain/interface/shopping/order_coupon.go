@@ -25,7 +25,7 @@ type OrderCoupon struct {
 
 func (this *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
 	orderId int, orderFee float32) *OrderCoupon {
-	v := coupon.GetValue()
+	v := coupon.GetDetailsValue()
 	this.CouponCode = v.Code
 	this.CouponId = v.Id
 	this.OrderId = orderId

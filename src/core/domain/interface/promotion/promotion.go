@@ -38,8 +38,8 @@ type IPromotion interface {
 	Save() (int, error)
 
 	// 获取优惠券
-	GetCoupon(id int) ICouponPromotion
+	//GetCoupon(id int) ICouponPromotion
 
 	// 创建优惠券
-	CreateCoupon(val *ValueCoupon) ICouponPromotion
+	//CreateCoupon(val *ValueCoupon) ICouponPromotion
 }

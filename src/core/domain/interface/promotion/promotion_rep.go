@@ -14,7 +14,7 @@ type IPromotionRep interface {
 	GetPromotion(id int) IPromotion
 
 	// 获取促销
-	CreatePromotion(*ValuePromotion) IPromotion
+	CreatePromotion(v *ValuePromotion,dv interface{}) IPromotion
 
 	// 获取促销
 	GetValuePromotion(id int) *ValuePromotion
@@ -36,4 +36,36 @@ type IPromotionRep interface {
 
 	// 获取商品的促销编号
 	GetGoodsPromotionId(goodsId int, promFlag int) int
+
+
+	/** =======  优惠券 ==========**/
+
+	// 获取优惠券
+	GetValueCoupon(id int) *ValueCoupon
+
+	SaveCoupon(ValueCoupon) (id int, err error)
+
+	GetCouponTake(couponId, takeId int) *ValueCouponTake
+
+	SaveCouponTake(*ValueCouponTake) error
+
+	GetCouponTakes(couponId int) []ValueCouponTake
+
+	GetCouponBind(couponId, bindId int) *ValueCouponBind
+
+	SaveCouponBind(*ValueCouponBind) error
+
+	GetCouponBinds(couponId int) []ValueCouponBind
+
+	// 根据优惠券代码获取优惠券
+	GetValueCouponByCode(partnerId int, couponCode string)*ValueCoupon
+
+	// 根据代码获取优惠券
+	GetCouponByCode(partnerId int,code string)IPromotion
+
+	// 获取会员的优惠券绑定
+	GetCouponBindByMemberId(couponId, memberId int) (*ValueCouponBind, error)
+
+	// 获取会员的优惠券占用
+	GetCouponTakeByMemberId(couponId, memberId int) (*ValueCouponTake, error)
 }

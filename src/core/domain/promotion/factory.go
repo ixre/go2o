@@ -15,14 +15,14 @@ import (
 )
 
 func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
-	v *promotion.ValuePromotion) promotion.IPromotion {
+	v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion {
 	p := newPromotion(rep, saleRep, v)
 
 	switch p.Type() {
 	case promotion.TypeFlagCashBack:
-		return createCashBackPromotion(p)
+		return createCashBackPromotion(p, v)
 	case promotion.TypeFlagCoupon:
-		return createCouponPromotion(p)
+		return createCouponPromotion(p, v)
 	}
 
 	//todo: other promotion
@@ -30,35 +30,48 @@ func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
 }
 
 // 创建
-func createCashBackPromotion(p *Promotion) promotion.IPromotion {
-	pv := p._promRep.GetValueCashBack(p.GetAggregateRootId())
+func createCashBackPromotion(p *Promotion, v interface{}) promotion.IPromotion {
+	var pv *promotion.ValueCashBack
+
+	if v != nil {
+		pv, _ = v.(*promotion.ValueCashBack)
+	}
+
 	if pv == nil {
-		pv = &promotion.ValueCashBack{
-			Id: p.GetAggregateRootId(),
+		pv = p._promRep.GetValueCashBack(p.GetAggregateRootId())
+		if pv == nil {
+			pv = &promotion.ValueCashBack{
+				Id: p.GetAggregateRootId(),
+			}
 		}
 	}
+
 	return &CashBackPromotion{
 		Promotion:      p,
 		_cashBackValue: pv,
 	}
 }
 
+func createCouponPromotion(p *Promotion, v interface{}) promotion.IPromotion {
+	var pv *promotion.ValueCoupon
 
+	if v != nil {
+		pv, _ = v.(*promotion.ValueCoupon)
+	}
 
-func createCouponPromotion(p *Promotion) promotion.IPromotion {
-	//	val.CreateTime = time.Now().Unix()
-	//	val.Amount = val.TotalAmount
-	//	return newCoupon(val, this.promRep, this.memberRep)
-
-	pv := p.promRep.GetValueCoupon(p.GetAggregateRootId())
 	if pv == nil {
-		pv = &promotion.ValueCoupon{
-			Id: p.GetAggregateRootId(),
-			Fee : pv.TotalAmount,
-			CreateTime:time.Now().Unix(),
+		pv = p._promRep.GetValueCoupon(p.GetAggregateRootId())
+		if pv == nil {
+			pv = &promotion.ValueCoupon{
+				Id:         p.GetAggregateRootId(),
+				CreateTime: time.Now().Unix(),
+			}
 		}
 	}
-	return newCoupon(p,pv,p.promRep,p.memberRep)
+
+	pv.Amount = pv.TotalAmount
+
+	return newCoupon(p, pv, p.promRep, p.memberRep)
 }
 
 func DeletePromotion(p promotion.IPromotion) error {

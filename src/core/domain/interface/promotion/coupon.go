@@ -17,9 +17,10 @@ import (
 type ICouponPromotion interface {
 	GetDomainId() int
 
-	GetValue()ValueCoupon
+	// 获取促销内容
+	GetDetailsValue()ValueCoupon
 
-	// 设置值
+	// 设置促销内容
 	SetDetailsValue(*ValueCoupon) error
 
 	// 获取绑定
