@@ -34,3 +34,16 @@ func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
 	//todo:
 	return prom
 }
+
+func DeletePromotion(p promotion.IPromotion)error{
+	var err error
+	var pi = p.(*Promotion)
+	if p.Type() == promotion.TypeFlagCashBack{
+		v := p.(*CashBackPromotion)
+		err = v._promRep.DeleteValueCashBack(v.GetAggregateRootId())
+	}
+	if err == nil{
+		err = pi._promRep.DeletePromotion(p.GetAggregateRootId())
+	}
+	return err
+}

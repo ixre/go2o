@@ -39,6 +39,26 @@ func (this *promC) List(ctx *web.Context) {
 	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag))
 }
 
+
+// 删除促销
+func (this *promC) Del_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	form := ctx.Request.Form
+	var result gof.Message
+	partnerId := this.GetPartnerId(ctx)
+	promId, _ := strconv.Atoi(form.Get("id"))
+
+	err := dps.PromService.DelPromotion(partnerId,promId)
+
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		result.Result = true
+	}
+	ctx.Response.JsonOutput(result)
+}
+
+
 // 创建返现促销
 func (this *promC) Create_cb(ctx *web.Context) {
 	e := &promotion.ValuePromotion{
@@ -108,23 +128,80 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-// 删除现金返现
-func (this *promC) Del_cb_post(ctx *web.Context) {
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
-	var result gof.Message
+
+// 创建优惠券
+func (this *promC) Create_coupon(ctx *web.Context) {
+	e := &promotion.ValuePromotion{
+		Enabled: 1,
+	}
+	e2 := &promotion.ValueCashBack{
+		BackType: 1,
+	}
+	js, _ := json.Marshal(e)
+	js2, _ := json.Marshal(e2)
+
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{
+			"entity":    template.JS(js),
+			"entity2":   template.JS(js2),
+			"goods_cls": "hidden",
+		},
+		"views/partner/promotion/coupon.html")
+}
+
+func (this *promC) Edit_coupon(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	id, _ := strconv.Atoi(form.Get("id"))
+	e, e2 := dps.PromService.GetPromotion(id)
+
+	js, _ := json.Marshal(e)
+	js2, _ := json.Marshal(e2)
+
+	var goodsInfo string
+	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx), e.GoodsId)
+	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
+
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{
+			"entity":     template.JS(js),
+			"entity2":    template.JS(js2),
+			"goods_info": template.HTML(goodsInfo),
+			"goods_cls":  "",
+		},
+		"views/partner/promotion/coupon.html")
+}
+
+// 保存优惠券
+func (this *promC) Save_coupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	adId, _ := strconv.Atoi(form.Get("ad_id"))
-	imgId, _ := strconv.Atoi(form.Get("id"))
-	err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
+	r := ctx.Request
+	r.ParseForm()
+
+	var result gof.Message
+
+	e := promotion.ValuePromotion{}
+	web.ParseFormToEntity(r.Form, &e)
+	e2 := promotion.ValueCashBack{}
+	web.ParseFormToEntity(r.Form, &e2)
+
+	e.PartnerId = partnerId
+	e.TypeFlag = promotion.TypeFlagCashBack
+
+	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
 
 	if err != nil {
 		result.Message = err.Error()
 	} else {
 		result.Result = true
+		result.Data = id
 	}
 	ctx.Response.JsonOutput(result)
 }
+
+
+
+/************ NORMAL *******************/
+
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
 

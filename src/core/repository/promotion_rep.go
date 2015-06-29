@@ -69,6 +69,11 @@ func (this *promotionRep) SaveValuePromotion(v *promotion.ValuePromotion) (int, 
 	return v.Id, err
 }
 
+// 删除促销
+func (this *promotionRep) DeletePromotion(id int)error{
+	return this.Connector.GetOrm().DeleteByPk(promotion.ValuePromotion{},id)
+}
+
 // 保存返现促销
 func (this *promotionRep) SaveValueCashBack(v *promotion.ValueCashBack, create bool) (int, error) {
 	var err error
@@ -88,6 +93,12 @@ func (this *promotionRep) GetValueCashBack(id int) *promotion.ValueCashBack {
 		return &e
 	}
 	return nil
+}
+
+
+// 删除返现促销
+func (this *promotionRep) DeleteValueCashBack(id int)error{
+	return this.Connector.GetOrm().DeleteByPk(promotion.ValueCashBack{},id)
 }
 
 // 获取商品的促销编号

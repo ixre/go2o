@@ -19,4 +19,7 @@ var (
 
 	ErrExistsSamePromotionFlag *domain.DomainError = domain.NewDomainError(
 		"exists_same_promotion_flag", "已存在相同的促销")
+
+	ErrNoSuchPromotion *domain.DomainError = domain.NewDomainError(
+		"no_such_promotion", "促销不存在")
 )

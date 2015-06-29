@@ -13,6 +13,7 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/promotion"
+	promImpl "go2o/src/core/domain/promotion"
 )
 
 type promotionService struct {
@@ -46,6 +47,19 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 		prom = this._newRep.CreatePromotion(v)
 	}
 	return prom.Save()
+}
+
+// 删除促销
+func (this *promotionService) DelPromotion(partnerId int,promId int)error{
+	prom := this._newRep.GetPromotion(promId)
+	if prom == nil{
+		return promotion.ErrNoSuchPromotion
+	}
+	if prom.GetValue().PartnerId != partnerId{
+		return partner.ErrNotMatch
+	}
+
+	return promImpl.DeletePromotion(prom)
 }
 
 func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.ValuePromotion,
