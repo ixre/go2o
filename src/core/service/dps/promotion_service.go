@@ -10,27 +10,24 @@
 package dps
 
 import (
-	"errors"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/promotion"
 	promImpl "go2o/src/core/domain/promotion"
 )
 
 type promotionService struct {
-	_rep    promotion.IOldPromotionRep
-	_newRep promotion.IPromotionRep
+	_rep    promotion.IPromotionRep
 }
 
-func NewPromotionService(r promotion.IOldPromotionRep, rep promotion.IPromotionRep) *promotionService {
+func NewPromotionService(rep promotion.IPromotionRep) *promotionService {
 	return &promotionService{
-		_rep:    r,
-		_newRep: rep,
+		_rep: rep,
 	}
 }
 
 // 获取促销
 func (this *promotionService) GetPromotion(id int) (*promotion.ValuePromotion, interface{}) {
-	var prom promotion.IPromotion = this._newRep.GetPromotion(id)
+	var prom promotion.IPromotion = this._rep.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
 	}
@@ -41,17 +38,20 @@ func (this *promotionService) GetPromotion(id int) (*promotion.ValuePromotion, i
 func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
-		prom = this._newRep.GetPromotion(v.Id)
-		prom.SetValue(v)
+		prom = this._rep.GetPromotion(v.Id)
+		err := prom.SetValue(v)
+		if err != nil{
+			return v.Id,err
+		}
 	} else {
-		prom = this._newRep.CreatePromotion(v)
+		prom = this._rep.CreatePromotion(v,nil)
 	}
 	return prom.Save()
 }
 
 // 删除促销
 func (this *promotionService) DelPromotion(partnerId int, promId int) error {
-	prom := this._newRep.GetPromotion(promId)
+	prom := this._rep.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
@@ -67,12 +67,12 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
-		prom = this._newRep.GetPromotion(v.Id)
+		prom = this._rep.GetPromotion(v.Id)
 		if prom.GetValue().PartnerId != partnerId {
 			return -1, partner.ErrNotMatch
 		}
 	} else {
-		prom = this._newRep.CreatePromotion(v)
+		prom = this._rep.CreatePromotion(v,nil)
 	}
 
 	if err = prom.SetValue(v); err == nil {
@@ -88,30 +88,31 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 }
 
 /**************   Coupon ************/
-func (this *promotionService) GetCoupon(partnerId int, id int) promotion.ICouponPromotion {
-	_prom := this._rep.GetPromotion(partnerId)
-	return _prom.GetCoupon(id)
-}
-
-func (this *promotionService) SaveCoupon(partnerId int, e *promotion.ValueCoupon) (int, error) {
-	prom := this._rep.GetPromotion(partnerId)
-	var coupon promotion.ICouponPromotion
-	if e.Id > 0 {
-		coupon = prom.GetCoupon(e.Id)
-		if coupon == nil {
-			return 0, errors.New("优惠券不存在")
-		}
-		err := coupon.SetDetailsValue(e)
-		if err != nil {
-			return 0, err
+func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromotion, v1 *promotion.ValueCoupon) (int, error) {
+	var prom promotion.IPromotion
+	var err error
+	if v.Id > 0 {
+		prom = this._rep.GetPromotion(v.Id)
+		if prom.GetValue().PartnerId != partnerId {
+			return -1, partner.ErrNotMatch
 		}
 	} else {
-		coupon = prom.CreateCoupon(e)
+		prom = this._rep.CreatePromotion(v,nil)
 	}
-	return coupon.Save()
+
+	if err = prom.SetValue(v); err == nil {
+		cb := prom.(promotion.ICouponPromotion)
+		err = cb.SetDetailsValue(v1)
+	}
+
+	if err != nil {
+		return v.Id, err
+	}
+
+	return prom.Save()
 }
 
 func (this *promotionService) BindCoupons(partnerId int, id int, members []string) error {
-	coupon := this.GetCoupon(partnerId, id)
+	coupon := this._rep.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

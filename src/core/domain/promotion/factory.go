@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
+func FactoryPromotionWithValue(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
 	v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion {
 	p := newPromotion(rep, saleRep, v)
 
@@ -24,11 +24,14 @@ func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
 	case promotion.TypeFlagCoupon:
 		return createCouponPromotion(p, v)
 	}
-
 	//todo: other promotion
 	return p
 }
 
+func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
+v *promotion.ValuePromotion, dv interface{}) promotion.IPromotion{
+	return FactoryPromotionWithValue(rep,saleRep,v,nil)
+}
 // 创建
 func createCashBackPromotion(p *Promotion, v interface{}) promotion.IPromotion {
 	var pv *promotion.ValueCashBack

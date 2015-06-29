@@ -27,41 +27,41 @@ var _ shopping.IShoppingRep = new(shoppingRep)
 
 type shoppingRep struct {
 	db.Connector
-	saleRep    sale.ISaleRep
-	promRep    promotion.IOldPromotionRep
-	memberRep  member.IMemberRep
-	partnerRep partner.IPartnerRep
-	deliverRep delivery.IDeliveryRep
-	cache      map[int]shopping.IShopping
+	_saleRep    sale.ISaleRep
+	_promRep    promotion.IPromotionRep
+	_memberRep  member.IMemberRep
+	_partnerRep partner.IPartnerRep
+	_deliverRep delivery.IDeliveryRep
+	_cache      map[int]shopping.IShopping
 }
 
 func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
-	saleRep sale.ISaleRep, promRep promotion.IOldPromotionRep,
+	saleRep sale.ISaleRep, promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
 	return (&shoppingRep{
-		Connector:  c,
-		saleRep:    saleRep,
-		promRep:    promRep,
-		memberRep:  memRep,
-		partnerRep: ptRep,
-		deliverRep: deliverRep,
+		Connector:   c,
+		_saleRep:    saleRep,
+		_promRep:    promRep,
+		_memberRep:  memRep,
+		_partnerRep: ptRep,
+		_deliverRep: deliverRep,
 	}).init()
 }
 
 func (this *shoppingRep) init() shopping.IShoppingRep {
-	this.cache = make(map[int]shopping.IShopping)
+	this._cache = make(map[int]shopping.IShopping)
 	return this
 }
 
 func (this *shoppingRep) GetShopping(partnerId int) shopping.IShopping {
-	if this.saleRep == nil {
+	if this._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
-	v, ok := this.cache[partnerId]
+	v, ok := this._cache[partnerId]
 	if !ok {
-		v = shoppingImpl.NewShopping(partnerId, this.partnerRep,
-			this, this.saleRep, this.promRep, this.memberRep, this.deliverRep)
-		this.cache[partnerId] = v
+		v = shoppingImpl.NewShopping(partnerId, this._partnerRep,
+			this, this._saleRep, this._promRep, this._memberRep, this._deliverRep)
+		this._cache[partnerId] = v
 	}
 	return v
 }

@@ -243,7 +243,7 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 		var result bool
 		var val = order.GetValue()
 		coupon = this._promRep.GetCouponByCode(
-			this._partnerId, couponCode)
+			this._partnerId, couponCode).(promotion.ICouponPromotion)
 
 		// 如果优惠券不存在
 		if coupon == nil {

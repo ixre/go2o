@@ -29,11 +29,14 @@ type Promotion struct {
 }
 
 func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep, v *promotion.ValuePromotion) *Promotion {
-	return &Promotion{
+	pro := &Promotion{
 		_promRep: rep,
 		_saleRep: saleRep,
-		_value:   v,
 	}
+	if v != nil {
+		pro.SetValue(v)
+	}
+	return pro
 }
 
 // 获取聚合根编号
