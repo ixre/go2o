@@ -46,9 +46,9 @@ func newCoupon(p *Promotion, v *promotion.ValueCoupon, promRep promotion.IPromot
 
 	cp := &Coupon{
 		_detailsValue: v,
-		Promotion:  p,
-		_promRep:   promRep,
-		_memberRep: memberRep,
+		Promotion:     p,
+		_promRep:      promRep,
+		_memberRep:    memberRep,
 	}
 
 	cp.releaseCoupon()
@@ -97,9 +97,9 @@ func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 	if v.TotalAmount < val.TotalAmount-val.Amount {
 		return errors.New("优惠券总数必须大于已使用张数")
 	}
-//	if this._detailsValue.TotalAmount != this._detailsValue.Amount {
-//		return this.GetAggregateRootId(), errors.New("优惠券已被绑定或使用，不允许修改数量。")
-//	}
+	//	if this._detailsValue.TotalAmount != this._detailsValue.Amount {
+	//		return this.GetAggregateRootId(), errors.New("优惠券已被绑定或使用，不允许修改数量。")
+	//	}
 
 	val.OverTime = v.OverTime
 	val.BeginTime = v.BeginTime
@@ -137,7 +137,6 @@ func (this *Coupon) Save() (int, error) {
 	if this._detailsValue.Id <= 0 {
 		this._detailsValue.Amount = this._detailsValue.TotalAmount
 	}
-
 
 	var isCreate bool = this.GetAggregateRootId() == 0
 
@@ -318,7 +317,7 @@ func (this *Coupon) Bind(memberId int) error {
 	err := this._promRep.SaveCouponBind(valBind)
 	if err == nil {
 		this._detailsValue.Amount -= 1
-		_,err = this.Save()
+		_, err = this.Save()
 	}
 	return err
 }

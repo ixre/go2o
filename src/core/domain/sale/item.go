@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"strconv"
 	"time"
+	"go2o/src/core/domain/interface/promotion"
 )
 
 var _ sale.IItem = new(Item)
@@ -22,11 +23,13 @@ type Item struct {
 	_value      *sale.ValueItem
 	_saleRep    sale.ISaleRep
 	_saleTagRep sale.ISaleTagRep
+	_promRep	promotion.IPromotionRep
 	_sale       *Sale
 	_saleTags   []*sale.ValueSaleTag
 }
 
-func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep, saleTagRep sale.ISaleTagRep) sale.IItem {
+func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep,
+	saleTagRep sale.ISaleTagRep,promRep promotion.IPromotionRep) sale.IItem {
 	return &Item{
 		_value:      v,
 		_saleRep:    saleRep,
@@ -119,7 +122,7 @@ func (this *Item) saveGoods() {
 			SaleNum:       100,
 		}
 	}
-	goods := NewSaleGoods(this._sale, this, val, this._saleRep)
+	goods := NewSaleGoods(this._sale, this, val, this._saleRep,this._promRep)
 	goods.Save()
 }
 

@@ -12,6 +12,9 @@ type ValueCashBack struct {
 	// 编号
 	Id int `db:"id" pk:"yes"`
 
+	// 最低金额要求
+	MinFee	int `db:"min_fee"`
+
 	// 返还金额
 	BackFee int `db:"back_fee"`
 

@@ -24,15 +24,15 @@ type Promotion struct {
 	_partnerId int
 	_promRep   promotion.IPromotionRep
 	_value     *promotion.ValuePromotion
-	_saleRep   sale.ISaleRep
+	_goodsRep sale.IGoodsRep
 }
 
-func newPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep,
+func newPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep,
 	memRep member.IMemberRep, v *promotion.ValuePromotion) *Promotion {
 	return &Promotion{
 		_promRep:   rep,
 		_memberRep: memRep,
-		_saleRep:   saleRep,
+		_goodsRep:   goodsRep,
 		_value:     v,
 	}
 }

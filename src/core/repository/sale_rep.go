@@ -19,33 +19,36 @@ import (
 	saleImpl "go2o/src/core/domain/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/log"
+	"go2o/src/core/domain/interface/promotion"
 )
 
 var _ sale.ISaleRep = new(saleRep)
 
 type saleRep struct {
 	db.Connector
-	cache   map[int]sale.ISale
+	_cache map[int]sale.ISale
 	_tagRep sale.ISaleTagRep
+	_promRep promotion.IPromotionRep
 }
 
-func NewSaleRep(c db.Connector, saleTagRep sale.ISaleTagRep) sale.ISaleRep {
+func NewSaleRep(c db.Connector, saleTagRep sale.ISaleTagRep,promRep promotion.IPromotionRep) sale.ISaleRep {
 	return (&saleRep{
 		Connector: c,
 		_tagRep:   saleTagRep,
+		_promRep:promRep,
 	}).init()
 }
 
 func (this *saleRep) init() sale.ISaleRep {
-	this.cache = make(map[int]sale.ISale)
+	this._cache = make(map[int]sale.ISale)
 	return this
 }
 
 func (this *saleRep) GetSale(partnerId int) sale.ISale {
-	v, ok := this.cache[partnerId]
+	v, ok := this._cache[partnerId]
 	if !ok {
 		v = saleImpl.NewSale(partnerId, this, this._tagRep)
-		this.cache[partnerId] = v
+		this._cache[partnerId] = v
 	}
 	return v
 }

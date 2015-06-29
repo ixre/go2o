@@ -26,15 +26,15 @@ var _ promotion.IPromotionRep = new(promotionRep)
 type promotionRep struct {
 	db.Connector
 	_memberRep member.IMemberRep
-	_saleRep   sale.ISaleRep
+	_goodsRep sale.IGoodsRep
 }
 
-func NewPromotionRep(c db.Connector, saleRep sale.ISaleRep,
+func NewPromotionRep(c db.Connector, goodsRep sale.IGoodsRep,
 	memberRep member.IMemberRep) promotion.IPromotionRep {
 	return &promotionRep{
 		Connector:  c,
 		_memberRep: memberRep,
-		_saleRep:   saleRep,
+		_goodsRep:   goodsRep,
 	}
 }
 
@@ -58,7 +58,7 @@ func (this *promotionRep) GetPromotion(id int) promotion.IPromotion {
 
 // 获取促销
 func (this *promotionRep) CreatePromotion(v *promotion.ValuePromotion) promotion.IPromotion {
-	return promImpl.FactoryPromotion(this, this._saleRep, this._memberRep, v)
+	return promImpl.FactoryPromotion(this, this._goodsRep, this._memberRep, v)
 }
 
 // 保存促销
@@ -110,6 +110,18 @@ func (this *promotionRep) GetGoodsPromotionId(goodsId int, promFlag int) int {
 	var id int
 	this.Connector.ExecScalar("SELECT id FROM pm_info WHERE goods_id=? AND type_flag=? AND enabled=1", &id, goodsId, promFlag)
 	return id
+}
+
+
+// 获取商品的促销
+func (this *promotionRep) GetPromotionOfGoods(goodsId int)[]*promotion.ValuePromotion{
+	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
+	err := this.Connector.GetOrm().Select(&arr,"goods_id=? AND enabled=1 ORDER BY min_fee,back_fee",goodsId)
+	if err == nil {
+		return arr
+	}
+
+	return make([]*promotion.ValuePromotion,0)
 }
 
 /*****   OLD ******/

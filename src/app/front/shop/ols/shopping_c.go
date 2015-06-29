@@ -201,7 +201,7 @@ func (this *ShoppingC) applyCoupon(ctx *web.Context) {
 	var result gof.Message
 	if !this.prepare(ctx) {
 		result.Message = "请先登陆"
-	}else {
+	} else {
 		p := this.BaseC.GetPartner(ctx)
 		m := this.BaseC.GetMember(ctx)
 
@@ -210,7 +210,7 @@ func (this *ShoppingC) applyCoupon(ctx *web.Context) {
 		if err != nil {
 			result.Message = err.Error()
 		} else {
-			 ctx.Response.JsonOutput(data)
+			ctx.Response.JsonOutput(data)
 			return
 		}
 	}

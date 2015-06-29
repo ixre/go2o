@@ -34,10 +34,11 @@ func Init(ctx gof.App) {
 	/** Repository **/
 	userRep := repository.NewUserRep(db)
 	memberRep := repository.NewMemberRep(db)
+	goodsRep := repository.NewGoodsRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	saleRep := repository.NewSaleRep(db, tagSaleRep)
 	partnerRep := repository.NewPartnerRep(db, userRep, memberRep)
-	promRep := repository.NewPromotionRep(db, saleRep, memberRep)
+	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
 
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)

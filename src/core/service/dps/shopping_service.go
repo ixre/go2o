@@ -10,11 +10,11 @@
 package dps
 
 import (
+	"bytes"
 	"errors"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/dto"
-	"bytes"
 )
 
 type shoppingService struct {
@@ -30,9 +30,9 @@ func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
 func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 	cartKey string, couponCode string) (map[string]interface{}, error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
-	order,_,err := sp.BuildOrder(memberId,couponCode)
-	if err != nil{
-		return nil,err
+	order, _, err := sp.BuildOrder(memberId, couponCode)
+	if err != nil {
+		return nil, err
 	}
 
 	v := order.GetValue()
@@ -65,7 +65,7 @@ func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 		data["payFee"] = v.PayFee
 		data["discountFee"] = v.DiscountFee
 	}
-	return data,err
+	return data, err
 }
 
 func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string) (

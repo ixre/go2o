@@ -9,6 +9,7 @@
 package server
 
 import (
+	"encoding/json"
 	"github.com/atnet/gof/net/jsv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/sale"
@@ -18,7 +19,6 @@ import (
 	"go2o/src/core/service/dps"
 	"strconv"
 	"time"
-	"encoding/json"
 )
 
 // 合作商户的接口
@@ -162,7 +162,7 @@ func (this *Partner) BuildOrder(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 
-	data,err := dps.ShoppingService.BuildOrder(partnerId, memberId, "", couponCode)
+	data, err := dps.ShoppingService.BuildOrder(partnerId, memberId, "", couponCode)
 	if err != nil {
 		return err
 	}

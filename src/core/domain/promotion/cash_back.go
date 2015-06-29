@@ -34,7 +34,7 @@ func (this *CashBackPromotion) GetDomainId() int {
 
 // 设置详细的促销信息
 func (this *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
-	g := this._saleRep.GetValueGoodsById(this._value.GoodsId)
+	g := this._goodsRep.GetValueGoodsById(this._value.GoodsId)
 	if g == nil {
 		return sale.ErrNoSuchGoods
 	}

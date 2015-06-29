@@ -15,9 +15,9 @@ import (
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRep, saleRep sale.ISaleRep, memRep member.IMemberRep,
+func FactoryPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep, memRep member.IMemberRep,
 	v *promotion.ValuePromotion) promotion.IPromotion {
-	p := newPromotion(rep, saleRep, memRep, v)
+	p := newPromotion(rep, goodsRep, memRep, v)
 
 	switch p.Type() {
 	case promotion.TypeFlagCashBack:
