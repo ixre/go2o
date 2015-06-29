@@ -9,8 +9,6 @@
 package ucenter
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
@@ -72,25 +70,9 @@ func (this *baseC) GetSiteConf(partnerId int) *partner.SiteConf {
 	return dps.PartnerService.GetSiteConf(partnerId)
 }
 
-// 输出Json
-func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		this.errorOutput(ctx, err.Error())
-	} else {
-		ctx.Response.Write(b)
-	}
-}
-
 // 输出错误信息
 func (this *baseC) errorOutput(ctx *web.Context, err string) {
 	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
-}
-
-// 输出错误信息
-func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
-	ctx.Response.Write([]byte(fmt.Sprintf(
-		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
 
 func executeTemplate(ctx *web.Context, funcMap template.FuncMap, dataMap gof.TemplateDataMap, files ...string) {

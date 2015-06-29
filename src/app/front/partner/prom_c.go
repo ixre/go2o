@@ -105,7 +105,7 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 // 删除现金返现
@@ -123,9 +123,8 @@ func (this *promC) Del_cb_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
-
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
 

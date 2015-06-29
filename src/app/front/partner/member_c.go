@@ -111,7 +111,7 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *memberC) Cancel(ctx *web.Context) {

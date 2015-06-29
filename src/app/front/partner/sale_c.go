@@ -89,5 +89,5 @@ func (this *saleC) DelMLevel(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }

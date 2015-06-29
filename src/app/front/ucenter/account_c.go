@@ -49,7 +49,7 @@ func (this *accountC) IncomeLog_post(ctx *web.Context) {
 	n, rows := dps.MemberService.QueryIncomeLog(m.Id, page, size, "", "record_time DESC")
 	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
-	this.jsonOutput(ctx, pager)
+	ctx.Response.JsonOutput(pager)
 }
 
 func (this *accountC) ApplyCash(ctx *web.Context) {

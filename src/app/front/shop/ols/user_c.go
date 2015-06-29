@@ -69,7 +69,7 @@ func (this *UserC) Login_post(ctx *web.Context) {
 			result.Message = "登陆失败"
 		}
 	}
-	this.BaseC.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *UserC) Register(ctx *web.Context) {
@@ -102,18 +102,19 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
+	var result gof.Message
+	result.Result = memberId == 0
 
-	var message string
-	isOk := memberId != 0
-
-	if !isOk {
-		message = "推荐人无效"
+	if !result.Result {
+		result.Message = "推荐人无效"
 	}
-	this.BaseC.ResultOutput(ctx, gof.Message{Result: isOk, Message: message})
+
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
+	var result gof.Message
 	var member member.ValueMember
 	web.ParseFormToEntity(ctx.Request.Form, &member)
 	if i := strings.Index(ctx.Request.RemoteAddr, ":"); i != -1 {
@@ -136,10 +137,11 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	}
 
 	if err != nil {
-		this.BaseC.ResultOutput(ctx, gof.Message{Message: "注册失败！错误：" + err.Error()})
+		result.Message = "注册失败！错误：" + err.Error()
 	} else {
-		this.BaseC.ResultOutput(ctx, gof.Message{Result: true})
+		result.Result = true
 	}
+	ctx.Response.JsonOutput(result)
 }
 
 // 跳转到会员中心

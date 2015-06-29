@@ -61,9 +61,9 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 		prom = this._newRep.CreatePromotion(v)
 	}
 
-	if err = prom.SetValue(v);err == nil {
+	if err = prom.SetValue(v); err == nil {
 		cb := prom.(promotion.ICashBackPromotion)
-		err = cb.SetDetailsValue(v1);
+		err = cb.SetDetailsValue(v1)
 	}
 
 	if err != nil {

@@ -94,22 +94,22 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 		item.GoodsImage = format.GetGoodsImageUrl(item.GoodsImage)
 		d["item"] = item
 	}
-	this.BaseC.JsonOutput(ctx, d)
+	ctx.Response.JsonOutput(d)
 }
 
 func (this *CartC) cart_RemoveItem(ctx *web.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) {
-	var msg gof.Message
+	var result gof.Message
 	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
 	if err != nil {
-		msg.Message = err.Error()
+		result.Message = err.Error()
 	} else {
-		msg.Result = true
+		result.Result = true
 	}
-	this.BaseC.ResultOutput(ctx, msg)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *CartC) Index(ctx *web.Context) {

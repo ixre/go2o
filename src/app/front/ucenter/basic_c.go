@@ -60,6 +60,7 @@ func (this *basicC) Pwd(ctx *web.Context) {
 
 func (this *basicC) Pwd_post(ctx *web.Context) {
 	r := ctx.Request
+	var result gof.Message
 	r.ParseForm()
 	m := this.GetMember(ctx)
 	var oldPwd, newPwd, rePwd string
@@ -73,10 +74,11 @@ func (this *basicC) Pwd_post(ctx *web.Context) {
 		err = dps.MemberService.ModifyPassword(m.Id, oldPwd, newPwd)
 	}
 	if err != nil {
-		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
+		result.Message = err.Error()
 	} else {
-		this.resultOutput(ctx, gof.Message{Result: true})
+		result.Result = true
 	}
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *basicC) Profile_post(ctx *web.Context) {
@@ -94,7 +96,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true}
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *basicC) Deliver(ctx *web.Context) {
@@ -121,6 +123,7 @@ func (this *basicC) Deliver_post(ctx *web.Context) {
 
 func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
+	var result gof.Message
 	r := ctx.Request
 	r.ParseForm()
 	var e member.DeliverAddress
@@ -128,22 +131,25 @@ func (this *basicC) SaveDeliver_post(ctx *web.Context) {
 	e.MemberId = m.Id
 	_, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 	if err != nil {
-		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
+		result.Message = err.Error()
 	} else {
-		this.resultOutput(ctx, gof.Message{Result: true})
+		result.Result = true
 	}
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *basicC) DeleteDeliver_post(ctx *web.Context) {
 	r := ctx.Request
+	var result gof.Message
 	m := this.GetMember(ctx)
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("id"))
 
 	err := dps.MemberService.DeleteDeliverAddress(m.Id, id)
 	if err != nil {
-		this.resultOutput(ctx, gof.Message{Result: false, Message: err.Error()})
+		result.Message = err.Error()
 	} else {
-		this.resultOutput(ctx, gof.Message{Result: true})
+		result.Result = true
 	}
+	ctx.Response.JsonOutput(result)
 }

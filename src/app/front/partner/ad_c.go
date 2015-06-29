@@ -79,7 +79,7 @@ func (this *adC) Del_post(ctx *web.Context) {
 		result.Result = true
 	}
 
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *adC) SaveAd_post(ctx *web.Context) {
@@ -103,7 +103,7 @@ func (this *adC) SaveAd_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *adC) Ad_data1(ctx *web.Context) {
@@ -178,7 +178,7 @@ func (this *adC) SaveImage_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *adC) Del_image_post(ctx *web.Context) {
@@ -196,5 +196,5 @@ func (this *adC) Del_image_post(ctx *web.Context) {
 		result.Result = true
 	}
 
-	ctx.Response.JsonOutput( result)
+	ctx.Response.JsonOutput(result)
 }

@@ -9,7 +9,6 @@
 package ols
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
@@ -128,25 +127,9 @@ func getPartnerId(ctx *web.Context) int {
 	return pid.(int)
 }
 
-// 输出Json
-func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		this.ErrorOutput(ctx, err.Error())
-	} else {
-		ctx.Response.Write(b)
-	}
-}
-
 // 输出错误信息
 func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
 	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
-}
-
-// 输出错误信息
-func (this *BaseC) ResultOutput(ctx *web.Context, result gof.Message) {
-	ctx.Response.Write([]byte(fmt.Sprintf(
-		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
 
 // 执行模板
