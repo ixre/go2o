@@ -28,6 +28,7 @@ var _ shopping.IShoppingRep = new(shoppingRep)
 type shoppingRep struct {
 	db.Connector
 	_saleRep    sale.ISaleRep
+	_goodsRep	sale.IGoodsRep
 	_promRep    promotion.IPromotionRep
 	_memberRep  member.IMemberRep
 	_partnerRep partner.IPartnerRep
@@ -36,11 +37,12 @@ type shoppingRep struct {
 }
 
 func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
-	saleRep sale.ISaleRep, promRep promotion.IPromotionRep,
+	saleRep sale.ISaleRep,goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
 	return (&shoppingRep{
 		Connector:   c,
 		_saleRep:    saleRep,
+		_goodsRep: goodsRep,
 		_promRep:    promRep,
 		_memberRep:  memRep,
 		_partnerRep: ptRep,
@@ -60,7 +62,7 @@ func (this *shoppingRep) GetShopping(partnerId int) shopping.IShopping {
 	v, ok := this._cache[partnerId]
 	if !ok {
 		v = shoppingImpl.NewShopping(partnerId, this._partnerRep,
-			this, this._saleRep, this._promRep, this._memberRep, this._deliverRep)
+			this, this._saleRep,this._goodsRep, this._promRep, this._memberRep, this._deliverRep)
 		this._cache[partnerId] = v
 	}
 	return v

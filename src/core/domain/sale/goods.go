@@ -24,6 +24,7 @@ type SaleGoods struct {
 	_goods          sale.IItem
 	_value          *sale.ValueGoods
 	_saleRep        sale.ISaleRep
+	_goodsRep		sale.IGoodsRep
 	_promRep       promotion.IPromotionRep
 	_sale           sale.ISale
 	_latestSnapshot *sale.GoodsSnapshot
@@ -31,11 +32,13 @@ type SaleGoods struct {
 	_promDescribes map[string]string
 }
 
-func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep,promRep promotion.IPromotionRep) sale.IGoods {
+func NewSaleGoods(s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep,
+	goodsRep sale.IGoodsRep,promRep promotion.IPromotionRep) sale.IGoods {
 	v := &SaleGoods{
 		_goods:          goods,
 		_value:          value,
 		_saleRep:        rep,
+		_goodsRep:goodsRep,
 		_promRep:promRep,
 		_sale:           s,
 		_latestSnapshot: nil,
@@ -130,7 +133,7 @@ func (this *SaleGoods) GetPromotionDescribe() map[string]string {
 				if txt, ok := this._promDescribes[key];!ok{
 					this._promDescribes[key] = v.GetValue().ShortName
 				}else{
-					this._promDescribes[key] = txt +"\n"+ v.GetValue().ShortName
+					this._promDescribes[key] = txt +"；"+ v.GetValue().ShortName
 				}
 			}else if v.Type() == promotion.TypeFlagCoupon{
 				//todo: other promotion implement
@@ -143,7 +146,7 @@ func (this *SaleGoods) GetPromotionDescribe() map[string]string {
 // 获取会员价
 func (this *SaleGoods) GetLevelPrices() []*sale.MemberPrice {
 	if this._levelPrices == nil {
-		this._levelPrices = this._saleRep.GetGoodsLevelPrice(this.GetDomainId())
+		this._levelPrices = this._goodsRep.GetGoodsLevelPrice(this.GetDomainId())
 	}
 	return this._levelPrices
 }
@@ -153,11 +156,11 @@ func (this *SaleGoods) SaveLevelPrice(v *sale.MemberPrice) (int, error) {
 	v.GoodsId = this.GetDomainId()
 	if this._value.SalePrice == v.Price {
 		if v.Id > 0 {
-			this._saleRep.RemoveGoodsLevelPrice(v.Id)
+			this._goodsRep.RemoveGoodsLevelPrice(v.Id)
 		}
 		return -1, nil
 	}
-	return this._saleRep.SaveGoodsLevelPrice(v)
+	return this._goodsRep.SaveGoodsLevelPrice(v)
 }
 
 // 设置值
@@ -172,7 +175,7 @@ func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
 
 // 保存
 func (this *SaleGoods) Save() (int, error) {
-	id, err := this._saleRep.SaveValueGoods(this._value)
+	id, err := this._goodsRep.SaveValueGoods(this._value)
 	if err == nil {
 		_, err = this.GenerateSnapshot()
 	}

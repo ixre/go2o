@@ -57,9 +57,14 @@ func (this *Promotion) GetRelationValue() interface{} {
 
 // 设置值
 func (this *Promotion) SetValue(v *promotion.ValuePromotion) error {
-	if this.GetAggregateRootId() == 0 && this._value.GoodsId > 0 {
-		if this._promRep.GetGoodsPromotionId(this._value.GoodsId, this._value.TypeFlag) > 0 {
-			return promotion.ErrExistsSamePromotionFlag
+
+	// 一种促销只能有一个?
+	//todo: 每个商户设置不一样
+	if false {
+		if this.GetAggregateRootId() == 0 && this._value.GoodsId > 0 {
+			if this._promRep.GetGoodsPromotionId(this._value.GoodsId, this._value.TypeFlag) > 0 {
+				return promotion.ErrExistsSamePromotionFlag
+			}
 		}
 	}
 

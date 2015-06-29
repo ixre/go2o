@@ -116,7 +116,7 @@ func (this *promotionRep) GetGoodsPromotionId(goodsId int, promFlag int) int {
 // 获取商品的促销
 func (this *promotionRep) GetPromotionOfGoods(goodsId int)[]*promotion.ValuePromotion{
 	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
-	err := this.Connector.GetOrm().Select(&arr,"goods_id=? AND enabled=1 ORDER BY min_fee,back_fee",goodsId)
+	err := this.Connector.GetOrm().Select(&arr,"goods_id=? AND enabled=1 ORDER BY id",goodsId)
 	if err == nil {
 		return arr
 	}

@@ -16,6 +16,7 @@ import (
 type Cart struct {
 	_value       *shopping.ValueCart
 	_saleRep     sale.ISaleRep
+	_goodsRep    sale.IGoodsRep
 	_shoppingRep shopping.IShoppingRep
 	_partnerRep  partner.IPartnerRep
 	_memberRep   member.IMemberRep
@@ -26,7 +27,8 @@ type Cart struct {
 }
 
 func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	shoppingRep shopping.IShoppingRep, partnerId int, val *shopping.ValueCart) shopping.ICart {
+	goodsRep sale.IGoodsRep,shoppingRep shopping.IShoppingRep, partnerId int,
+	val *shopping.ValueCart) shopping.ICart {
 	return (&Cart{
 		_value:       val,
 		_partnerId:   partnerId,
@@ -34,12 +36,13 @@ func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, sal
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
+		_goodsRep: goodsRep,
 	}).init()
 }
 
 //todo: partnerId 应去掉，可能在多个商家买东西
 func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
+	goodsRep sale.IGoodsRep,shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &shopping.ValueCart{
@@ -61,6 +64,7 @@ func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRe
 		_partnerId:   partnerId,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
+		_goodsRep:goodsRep,
 	}).init()
 }
 
@@ -85,7 +89,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 		}
 
 		// 设置附加的值
-		goods, err := this._saleRep.GetGoodsByIds(ids...)
+		goods, err := this._goodsRep.GetGoodsByIds(ids...)
 		if err == nil {
 			var goodsMap = make(map[int]*valueobject.Goods, len(goods))
 			for _, v := range goods {

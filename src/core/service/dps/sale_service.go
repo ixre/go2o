@@ -21,11 +21,13 @@ import (
 
 type saleService struct {
 	_rep sale.ISaleRep
+	_goodsRep sale.IGoodsRep
 }
 
-func NewSaleService(r sale.ISaleRep) *saleService {
+func NewSaleService(r sale.ISaleRep,goodsRep sale.IGoodsRep) *saleService {
 	return &saleService{
 		_rep: r,
+		_goodsRep:goodsRep,
 	}
 }
 
@@ -77,7 +79,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 	ids = append(ids, categoryId)
 	//todo: cache
 
-	return this._rep.GetPagedOnShelvesGoods(partnerId, ids, start, end)
+	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end)
 
 }
 
