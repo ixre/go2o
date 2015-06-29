@@ -203,7 +203,8 @@ func (this *Order) Submit() (string, error) {
 }
 
 func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion) {
-
+	fmt.Printf("--- %s ---%+v\n",orderNo,prom.GetRelationValue())
+	//todo:
 }
 
 // 应用购物车内商品的促销
@@ -213,10 +214,12 @@ func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shop
 	var saveFee int
 	var totalSaveFee int
 	var intOrderFee = int(vo.Fee)
+	var rightBack bool
 
 	for _, v := range cart.GetCartGoods() {
 		prom = nil
 		saveFee = 0
+		rightBack = false
 
 		// 判断商品的最省促销
 		for _, v1 := range v.GetPromotions() {
@@ -228,6 +231,7 @@ func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shop
 					if vc.BackFee > saveFee {
 						prom = v1
 						saveFee = vc.BackFee
+						rightBack = vc.BackType == promotion.BackUseForOrder  // 是否立即抵扣
 					}
 				}
 			}
@@ -237,7 +241,9 @@ func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shop
 
 		if prom != nil {
 			proms = append(proms, prom)
-			totalSaveFee += saveFee
+			if rightBack {
+				totalSaveFee += saveFee
+			}
 		}
 	}
 
