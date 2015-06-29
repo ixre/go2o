@@ -122,15 +122,14 @@ func (this *promotionRep) GetValueCoupon(id int) *promotion.ValueCoupon {
 	return nil
 }
 
-func (this *promotionRep) SaveCoupon(c promotion.ValueCoupon) (id int, err error) {
+func (this *promotionRep) SaveValueCoupon(v *promotion.ValueCoupon,isCreate bool) (id int, err error) {
 	orm := this.Connector.GetOrm()
-	var rowId int64
-	if c.Id > 0 {
-		_, rowId, err = orm.Save(c.Id, c)
+	if isCreate {
+		_, _, err = orm.Save(nil, v)
 	} else {
-		_, rowId, err = orm.Save(nil, c)
+		_, _, err = orm.Save(v.Id, v)
 	}
-	return int(rowId), err
+	return v.Id, err
 }
 
 func (this *promotionRep) GetCouponTake(couponId, takeId int) *promotion.ValueCouponTake {

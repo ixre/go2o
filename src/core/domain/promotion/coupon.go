@@ -123,15 +123,25 @@ func (this *Coupon) GetTakes() []promotion.ValueCouponTake {
 	return this._takes
 }
 
-func (this *Coupon) Save() (id int, err error) {
+func (this *Coupon) Save() (int,error) {
+
 	if this._detailsValue.Id > 0 {
 		if this._detailsValue.TotalAmount != this._detailsValue.Amount {
-			errors.New("优惠券已被绑定或使用，不允许修改。")
+			return this.GetAggregateRootId(),errors.New("优惠券已被绑定或使用，不允许修改。")
 		}
 	} else {
 		this._detailsValue.Amount = this._detailsValue.TotalAmount
 	}
-	return this._promRep.SaveCoupon(*this._detailsValue)
+
+	id,err := this.Promotion.Save()
+	var isCreate bool = this.GetAggregateRootId() == 0
+	this._value.Id = id
+
+	if err == nil {
+		this._detailsValue.Id = this.GetAggregateRootId()
+		return this._promRep.SaveValueCoupon(this._detailsValue,isCreate)
+	}
+	return id,err
 }
 
 // 获取优惠券描述
