@@ -9,9 +9,6 @@
 package partner
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
@@ -30,7 +27,7 @@ func chkLogin(ctx *web.Context) (b bool, partnerId int) {
 	return true, v.(int)
 }
 func redirect(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	w.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
 		url.QueryEscape(r.URL.String()) + "'</script>"))
 }
@@ -65,23 +62,7 @@ func (this *baseC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
 	return dps.PartnerService.GetPartner(this.GetPartnerId(ctx))
 }
 
-// 输出Json
-func (this *baseC) JsonOutput(ctx *web.Context, v interface{}) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		this.ErrorOutput(ctx, err.Error())
-	} else {
-		ctx.ResponseWriter.Write(b)
-	}
-}
-
 // 输出错误信息
 func (this *baseC) ErrorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
-}
-
-// 输出错误信息
-func (this *baseC) ResultOutput(ctx *web.Context, result gof.Message) {
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
-		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }

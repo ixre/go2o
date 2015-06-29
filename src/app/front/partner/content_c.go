@@ -28,7 +28,7 @@ type contentC struct {
 
 //商品列表
 func (this *contentC) Page_list(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{}, "views/partner/content/page_list.html")
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/content/page_list.html")
 }
 
 // 修改页面
@@ -40,7 +40,7 @@ func (this *contentC) Page_edit(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -55,7 +55,7 @@ func (this *contentC) Page_create(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -84,5 +84,5 @@ func (this *contentC) SavePage_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }

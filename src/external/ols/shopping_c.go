@@ -40,7 +40,7 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 		return
 	}
 
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
@@ -107,7 +107,7 @@ func (this *shoppingC) BuyingPersist_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	var err error
@@ -150,7 +150,7 @@ func (this *shoppingC) GetDeliverAddrs(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	m := this.GetMember(ctx)
 	addrs, err := goclient.Member.GetDeliverAddrs(m.Id, m.DynamicToken)
 	if err != nil {
@@ -173,7 +173,7 @@ func (this *shoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 		return
 	}
 	m := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
@@ -213,11 +213,11 @@ func (this *shoppingC) applyCoupon(ctx *web.Context) {
 	if err != nil {
 		message = err.Error()
 	} else {
-		ctx.ResponseWriter.Write([]byte(json))
+		ctx.Response.Write([]byte(json))
 		return
 	}
 
-	ctx.ResponseWriter.Write([]byte(`{"result":false,"message":"` + message + `"}`))
+	ctx.Response.Write([]byte(`{"result":false,"message":"` + message + `"}`))
 }
 
 // 提交订单
@@ -225,7 +225,7 @@ func (this *shoppingC) Submit_0_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
@@ -254,13 +254,13 @@ func (this *shoppingC) emptyShoppingCart(ctx *web.Context) {
 	if cookie != nil {
 		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
 		cookie.Path = "/"
-		http.SetCookie(ctx.ResponseWriter, cookie)
+		http.SetCookie(ctx.Response, cookie)
 	}
 }
 
 func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"partner": p,
 		"title":   "订单确认-" + p.Name,
 		"member":  m,
@@ -275,7 +275,7 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
@@ -316,7 +316,7 @@ func (this *shoppingC) Index(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	w := ctx.ResponseWriter
+	w := ctx.Response
 	w.Header().Add("Location", "/buy/confirm")
 	w.WriteHeader(302)
 }

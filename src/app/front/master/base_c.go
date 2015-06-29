@@ -25,7 +25,7 @@ func chkLogin(ctx *web.Context) (b bool, partnerId int) {
 	return true, v.(int)
 }
 func redirect(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	w.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
 		url.QueryEscape(r.URL.String()) + "'</script>"))
 }
@@ -62,17 +62,17 @@ func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 	if err != nil {
 		this.errorOutput(ctx, err.Error())
 	} else {
-		ctx.ResponseWriter.Write(b)
+		ctx.Response.Write(b)
 	}
 }
 
 // 输出错误信息
 func (this *baseC) errorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 输出错误信息
 func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	ctx.Response.Write([]byte(fmt.Sprintf(
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }

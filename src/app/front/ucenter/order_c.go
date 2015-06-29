@@ -104,7 +104,7 @@ func (this *orderC) Canceled(ctx *web.Context) {
 
 func (this *orderC) Orders_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))

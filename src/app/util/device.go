@@ -73,7 +73,7 @@ func SetBrownerDevice(ctx *web.Context, deviceType string) {
 	if ck != nil {
 		ck.HttpOnly = false
 		ck.Path = "/"
-		http.SetCookie(ctx.ResponseWriter, ck)
+		http.SetCookie(ctx.Response, ck)
 	}
 }
 

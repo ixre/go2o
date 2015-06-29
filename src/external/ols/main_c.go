@@ -22,7 +22,7 @@ type mainC struct {
 
 // 处理跳转
 func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	g := r.URL.Query().Get("go")
 	if g == "buy" {
 		w.Header().Add("Location", "/list")
@@ -34,7 +34,7 @@ func (this *mainC) HandleIndexGo(ctx *web.Context) bool {
 
 func (this *mainC) Index(ctx *web.Context) {
 	if this.Requesting(ctx) {
-		_, w := ctx.Request, ctx.ResponseWriter
+		_, w := ctx.Request, ctx.Response
 		p := this.GetPartner(ctx)
 
 		if this.HandleIndexGo(ctx) {

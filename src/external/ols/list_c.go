@@ -25,7 +25,7 @@ type listC struct {
 }
 
 func (this *listC) Index(ctx *web.Context) {
-	_, w := ctx.Request, ctx.ResponseWriter
+	_, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	mm := this.GetMember(ctx)
 	pa := this.GetPartnerApi(ctx)
@@ -46,7 +46,7 @@ func (this *listC) Index(ctx *web.Context) {
 }
 
 func (this *listC) GetList(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	pa := this.GetPartnerApi(ctx)
 

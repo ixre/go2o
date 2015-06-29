@@ -37,7 +37,7 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 			return true
 		}
 	}
-	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
+	ctx.Response.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
 		url.QueryEscape(ctx.Request.URL.String()) + "'</script>"))
 	return false
 }
@@ -78,18 +78,18 @@ func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 	if err != nil {
 		this.errorOutput(ctx, err.Error())
 	} else {
-		ctx.ResponseWriter.Write(b)
+		ctx.Response.Write(b)
 	}
 }
 
 // 输出错误信息
 func (this *baseC) errorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 输出错误信息
 func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	ctx.Response.Write([]byte(fmt.Sprintf(
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
 
@@ -99,9 +99,9 @@ func executeTemplate(ctx *web.Context, funcMap template.FuncMap, dataMap gof.Tem
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
 	if funcMap == nil {
-		ctx.App.Template().Execute(ctx.ResponseWriter, dataMap, newFiles...)
+		ctx.App.Template().Execute(ctx.Response, dataMap, newFiles...)
 	} else {
-		ctx.App.Template().ExecuteWithFunc(ctx.ResponseWriter, funcMap, dataMap, newFiles...)
+		ctx.App.Template().ExecuteWithFunc(ctx.Response, funcMap, dataMap, newFiles...)
 	}
 }
 

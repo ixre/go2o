@@ -35,10 +35,10 @@ func getInterceptor(a gof.App) *web.Interceptor {
 		r := ctx.Request
 		//静态资源
 		if strings.HasPrefix(r.Host, "static.") {
-			http.ServeFile(ctx.ResponseWriter, r, "./static"+r.URL.Path)
+			http.ServeFile(ctx.Response, r, "./static"+r.URL.Path)
 			return false
 		} else if strings.HasPrefix(r.Host, "img.") {
-			http.ServeFile(ctx.ResponseWriter, r, "./static/uploads/"+r.URL.Path)
+			http.ServeFile(ctx.Response, r, "./static/uploads/"+r.URL.Path)
 			return false
 		}
 		return true
@@ -51,7 +51,7 @@ func getInterceptor(a gof.App) *web.Interceptor {
 func getHttpExecFunc() web.RequestHandler {
 	return func(ctx *web.Context) {
 
-		r, _ := ctx.Request, ctx.ResponseWriter
+		r, _ := ctx.Request, ctx.Response
 
 		switch host, f := r.Host, strings.HasPrefix; {
 		//case host == API_DOMAIN:

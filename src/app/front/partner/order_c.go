@@ -30,7 +30,7 @@ type orderC struct {
 func (this *orderC) List(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"shops": template.JS(shopsJson),
 		}, "views/partner/order/order_list.html")
@@ -38,13 +38,13 @@ func (this *orderC) List(ctx *web.Context) {
 
 func (this *orderC) Cancel(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/order/cancel.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")
 
 }
 
 func (this *orderC) Cancel_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	reason := r.FormValue("reason")
 	err := dps.ShoppingService.CancelOrder(partnerId,
@@ -59,7 +59,7 @@ func (this *orderC) Cancel_post(ctx *web.Context) {
 
 func (this *orderC) View(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -103,7 +103,7 @@ func (this *orderC) View(ctx *web.Context) {
 
 func (this *orderC) Setup(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -120,7 +120,7 @@ func (this *orderC) Setup(ctx *web.Context) {
 
 func (this *orderC) OrderSetup_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
 	if err != nil {
@@ -132,7 +132,7 @@ func (this *orderC) OrderSetup_post(ctx *web.Context) {
 
 func (this *orderC) Payment(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -156,7 +156,7 @@ func (this *orderC) Payment(ctx *web.Context) {
 
 func (this *orderC) Payment_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 

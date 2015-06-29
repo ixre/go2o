@@ -21,7 +21,7 @@ type MainC struct {
 
 // 处理跳转
 func (this *MainC) HandleIndexGo(ctx *web.Context) bool {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	g := r.URL.Query().Get("go")
 	if g == "buy" {
 		w.Header().Add("Location", "/list")
@@ -44,8 +44,8 @@ func (this *MainC) Change_device(ctx *web.Context) {
 		}
 	}
 
-	ctx.ResponseWriter.Header().Add("Location", toUrl)
-	ctx.ResponseWriter.WriteHeader(302)
+	ctx.Response.Header().Add("Location", toUrl)
+	ctx.Response.WriteHeader(302)
 }
 
 // Member session connect
@@ -69,8 +69,8 @@ func (this *MainC) Msc(ctx *web.Context) {
 	if len(rtu) == 0 {
 		rtu = "/"
 	}
-	ctx.ResponseWriter.Header().Add("Location", rtu)
-	ctx.ResponseWriter.WriteHeader(302)
+	ctx.Response.Header().Add("Location", rtu)
+	ctx.Response.WriteHeader(302)
 }
 
 // Member session disconnect
@@ -78,9 +78,9 @@ func (this *MainC) Msd(ctx *web.Context) {
 	if util.MemberHttpSessionDisconnect(ctx) {
 		ctx.Session().Set("member", nil)
 		ctx.Session().Save()
-		ctx.ResponseWriter.Write([]byte("disconnect success"))
+		ctx.Response.Write([]byte("disconnect success"))
 	} else {
-		ctx.ResponseWriter.Write([]byte("disconnect fail"))
+		ctx.Response.Write([]byte("disconnect fail"))
 	}
 }
 

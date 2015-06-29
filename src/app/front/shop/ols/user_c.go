@@ -88,7 +88,7 @@ func (this *UserC) Register(ctx *web.Context) {
 }
 
 func (this *UserC) ValidUsr_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	usr := r.FormValue("usr")
 	b := dps.MemberService.CheckUsrExist(usr)
@@ -145,7 +145,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 // 跳转到会员中心
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *web.Context) {
-	w := ctx.ResponseWriter
+	w := ctx.Response
 	m := this.BaseC.GetMember(ctx)
 	var location string
 	if m == nil {
@@ -168,7 +168,7 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 func (this *UserC) Logout(ctx *web.Context) {
 	ctx.Session().Set("member", nil)
 	ctx.Session().Save()
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.Response.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,

@@ -95,9 +95,9 @@ func (this *BaseC) GetMember(ctx *web.Context) *member.ValueMember {
 // 检查会员是否登陆
 func (this *BaseC) CheckMemberLogin(ctx *web.Context) bool {
 	if ctx.Session().Get("member") == nil {
-		ctx.ResponseWriter.Header().Add("Location", "/user/login?return_url="+
+		ctx.Response.Header().Add("Location", "/user/login?return_url="+
 			url.QueryEscape(ctx.Request.RequestURI))
-		ctx.ResponseWriter.WriteHeader(302)
+		ctx.Response.WriteHeader(302)
 		return false
 	}
 	return true
@@ -106,7 +106,7 @@ func (this *BaseC) CheckMemberLogin(ctx *web.Context) bool {
 func renderError(ctx *web.Context, simpleError bool, message string) {
 	if simpleError {
 		const errTpl string = "<html><body><h1 style='color:red'>%s</h1></body></html>"
-		ctx.ResponseWriter.Write([]byte(fmt.Sprintf(errTpl, message)))
+		ctx.Response.Write([]byte(fmt.Sprintf(errTpl, message)))
 	} else {
 		//todo: 用模板显示错误
 	}
@@ -134,18 +134,18 @@ func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
 	if err != nil {
 		this.ErrorOutput(ctx, err.Error())
 	} else {
-		ctx.ResponseWriter.Write(b)
+		ctx.Response.Write(b)
 	}
 }
 
 // 输出错误信息
 func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 输出错误信息
 func (this *BaseC) ResultOutput(ctx *web.Context, result gof.Message) {
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	ctx.Response.Write([]byte(fmt.Sprintf(
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }
 
@@ -155,7 +155,7 @@ func (this *BaseC) ExecuteTemplate(ctx *web.Context, dataMap gof.TemplateDataMap
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
-	ctx.App.Template().Execute(ctx.ResponseWriter, dataMap, newFiles...)
+	ctx.App.Template().Execute(ctx.Response, dataMap, newFiles...)
 }
 
 func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context, funcMap template.FuncMap,
@@ -164,5 +164,5 @@ func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context, funcMap template.Fu
 	for i, v := range files {
 		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
 	}
-	ctx.App.Template().ExecuteWithFunc(ctx.ResponseWriter, funcMap, dataMap, newFiles...)
+	ctx.App.Template().ExecuteWithFunc(ctx.Response, funcMap, dataMap, newFiles...)
 }

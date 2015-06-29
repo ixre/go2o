@@ -75,7 +75,7 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 
 func (this *accountC) ApplyCash_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 	e := new(member.BankInfo)

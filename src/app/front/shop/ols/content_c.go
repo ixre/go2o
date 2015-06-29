@@ -40,7 +40,7 @@ func (this *ContentC) Page(ctx *web.Context) {
 	}
 
 	if page == nil {
-		http.Error(ctx.ResponseWriter, "404 page not found.", http.StatusNotFound)
+		http.Error(ctx.Response, "404 page not found.", http.StatusNotFound)
 		return
 	}
 

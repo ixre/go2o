@@ -68,7 +68,7 @@ func (this *mainC) Index(ctx *web.Context) {
 }
 
 func (this *mainC) Logout(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	cookie, err := r.Cookie("ms_token")
 	if err == nil {
 		cookie.Expires = time.Now().Add(time.Hour * -48)
@@ -90,8 +90,8 @@ func (this *mainC) Change_device(ctx *web.Context) {
 		}
 	}
 
-	ctx.ResponseWriter.Header().Add("Location", toUrl)
-	ctx.ResponseWriter.WriteHeader(302)
+	ctx.Response.Header().Add("Location", toUrl)
+	ctx.Response.WriteHeader(302)
 }
 
 // Member session connect
@@ -114,8 +114,8 @@ func (this *mainC) Msc(ctx *web.Context) {
 	if len(rtu) == 0 {
 		rtu = "/"
 	}
-	ctx.ResponseWriter.Header().Add("Location", rtu)
-	ctx.ResponseWriter.WriteHeader(302)
+	ctx.Response.Header().Add("Location", rtu)
+	ctx.Response.WriteHeader(302)
 }
 
 // Member session disconnect
@@ -123,8 +123,8 @@ func (this *mainC) Msd(ctx *web.Context) {
 	if util.MemberHttpSessionDisconnect(ctx) {
 		ctx.Session().Set("member", nil)
 		ctx.Session().Save()
-		ctx.ResponseWriter.Write([]byte("disconnect success"))
+		ctx.Response.Write([]byte("disconnect success"))
 	} else {
-		ctx.ResponseWriter.Write([]byte("disconnect fail"))
+		ctx.Response.Write([]byte("disconnect fail"))
 	}
 }

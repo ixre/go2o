@@ -37,7 +37,7 @@ func RunRestApi(app gof.App, port int) {
 		host := ctx.Request.URL.Host
 		// todo: path compare
 		if API_HOST_CHK && host != API_DOMAIN {
-			http.Error(ctx.ResponseWriter, "no such file", http.StatusNotFound)
+			http.Error(ctx.Response, "no such file", http.StatusNotFound)
 			return
 		}
 		api.Handle(ctx)

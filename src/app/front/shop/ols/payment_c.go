@@ -17,7 +17,7 @@ type PaymentC struct {
 }
 
 func (this *PaymentC) Create(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	qs := r.URL.Query()
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
@@ -34,12 +34,12 @@ func (this *PaymentC) Create(ctx *web.Context) {
 }
 
 func (this *PaymentC) Return(ctx *web.Context) {
-	r, _ := ctx.Request, ctx.ResponseWriter
+	r, _ := ctx.Request, ctx.Response
 	alipay.ReturnFunc(r, nil)
-	ctx.ResponseWriter.Write([]byte("支付完成"))
+	ctx.Response.Write([]byte("支付完成"))
 }
 
 func (this *PaymentC) Notify_post(ctx *web.Context) {
-	r, _ := ctx.Request, ctx.ResponseWriter
+	r, _ := ctx.Request, ctx.Response
 	alipay.NotifyFunc(r, nil)
 }

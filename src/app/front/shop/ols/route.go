@@ -57,7 +57,7 @@ func registerRoutes() {
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
-			HandleCustomError(ctx.ResponseWriter, ctx, err)
+			HandleCustomError(ctx.Response, ctx, err)
 		}
 	})
 

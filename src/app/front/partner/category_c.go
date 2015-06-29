@@ -32,7 +32,7 @@ type categoryC struct {
 
 //分类树形功能
 func (this *categoryC) All_category(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"no_pic_url": format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")
 }
@@ -42,12 +42,12 @@ func (this *categoryC) CategoryJson(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
-	ctx.ResponseWriter.Write(json)
+	ctx.Response.Write(json)
 }
 
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
+	ctx.App.Template().Execute(ctx.Response, nil,
 		"views/partner/category/category_select.html")
 }
 
@@ -58,7 +58,7 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"treeJson": template.JS(json),
 		},
@@ -67,7 +67,7 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 
 func (this *categoryC) EditCategory(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
@@ -88,7 +88,7 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 //修改门店信息
 func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 
@@ -106,7 +106,7 @@ func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 
 func (this *categoryC) DelCategory_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 	categoryId, _ := strconv.Atoi(r.Form.Get("id"))

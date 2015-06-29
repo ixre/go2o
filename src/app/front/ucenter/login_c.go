@@ -44,13 +44,13 @@ func (this *loginC) Index_post(ctx *web.Context) {
 		}
 	}
 	js, _ := json.Marshal(result)
-	ctx.ResponseWriter.Write(js)
+	ctx.Response.Write(js)
 
 }
 
 //从partner登录过来的信息
 func (this *loginC) Partner_connect(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	sessionId := r.URL.Query().Get("sessionId")
 	var m *member.ValueMember
 	var err error
@@ -87,5 +87,5 @@ func (this *loginC) Partner_connect(ctx *web.Context) {
 //从partner端退出
 func (this *loginC) Partner_disconnect(ctx *web.Context) {
 	ctx.Session().Destroy()
-	ctx.ResponseWriter.Write([]byte("{state:1}"))
+	ctx.Response.Write([]byte("{state:1}"))
 }

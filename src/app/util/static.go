@@ -15,5 +15,5 @@ import (
 
 // 处理静态文件
 var HttpStaticFileHandler = func(ctx *web.Context) {
-	http.ServeFile(ctx.ResponseWriter, ctx.Request, "."+ctx.Request.URL.Path)
+	http.ServeFile(ctx.Response, ctx.Request, "."+ctx.Request.URL.Path)
 }

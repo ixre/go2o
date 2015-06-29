@@ -27,13 +27,13 @@ type saleC struct {
 }
 
 func (this *saleC) TagList(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/sale/sale_tag_list.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/sale/sale_tag_list.html")
 }
 
 //修改门店信息
 func (this *saleC) EditSTag(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.SaleService.GetSaleTag(partnerId, id)
 	bys, _ := json.Marshal(entity)
@@ -46,7 +46,7 @@ func (this *saleC) EditSTag(ctx *web.Context) {
 }
 
 func (this *saleC) CreateSTag(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": "{}",
 		},
@@ -71,7 +71,7 @@ func (this *saleC) SaveSTag_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.JsonOutput(ctx, result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *saleC) DelMLevel(ctx *web.Context) {
@@ -89,5 +89,5 @@ func (this *saleC) DelMLevel(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }

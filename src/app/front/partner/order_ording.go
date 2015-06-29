@@ -25,7 +25,7 @@ func (this *orderC) setShop(ctx *web.Context,
 
 	isNoShop := len(shopDr) == 0
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"shopDr":  template.HTML(shopDr),
 			"noShop":  isNoShop,
@@ -35,7 +35,7 @@ func (this *orderC) setShop(ctx *web.Context,
 
 func (this *orderC) SetShop_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 
 	shopId, err := strconv.Atoi(r.FormValue("shopId"))
@@ -79,7 +79,7 @@ func (this *orderC) setState(ctx *web.Context,
 		}
 	}
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"button":   template.HTML(button),
 			"descript": template.HTML(descript),

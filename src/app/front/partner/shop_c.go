@@ -29,12 +29,12 @@ type shopC struct {
 }
 
 func (this *shopC) ShopList(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/shop/shop_list.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/shop/shop_list.html")
 }
 
 //修改门店信息
 func (this *shopC) Create(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS("{}"),
 		},
@@ -44,7 +44,7 @@ func (this *shopC) Create(ctx *web.Context) {
 //修改门店信息
 func (this *shopC) Modify(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
 	entity, _ := json.Marshal(shop)
@@ -59,7 +59,7 @@ func (this *shopC) Modify(ctx *web.Context) {
 //修改门店信息
 func (this *shopC) SaveShop_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 
@@ -78,7 +78,7 @@ func (this *shopC) SaveShop_post(ctx *web.Context) {
 
 func (this *shopC) Del_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {

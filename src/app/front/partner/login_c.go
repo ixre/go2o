@@ -21,10 +21,10 @@ type loginC struct {
 
 //登陆
 func (this *loginC) Login(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/login.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/login.html")
 }
 func (this *loginC) Login_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
 	pt, result, message := this.ValidLogin(usr, pwd)

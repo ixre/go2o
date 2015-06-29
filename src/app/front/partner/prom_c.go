@@ -34,7 +34,7 @@ func (this *promC) List(ctx *web.Context) {
 	var flag int
 	flag, _ = strconv.Atoi(ctx.Request.URL.Query().Get("flag"))
 
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"flag": flag,
 	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag))
 }
@@ -50,7 +50,7 @@ func (this *promC) Create_cb(ctx *web.Context) {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity":    template.JS(js),
 			"entity2":   template.JS(js2),
@@ -71,7 +71,7 @@ func (this *promC) Edit_cb(ctx *web.Context) {
 	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx), e.GoodsId)
 	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity":     template.JS(js),
 			"entity2":    template.JS(js2),
@@ -81,6 +81,7 @@ func (this *promC) Edit_cb(ctx *web.Context) {
 		"views/partner/promotion/cash_back.html")
 }
 
+// 保存现金返现
 func (this *promC) Save_cb_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
@@ -104,14 +105,33 @@ func (this *promC) Save_cb_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
+
+// 删除现金返现
+func (this *promC) Del_cb_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	form := ctx.Request.Form
+	var result gof.Message
+	partnerId := this.GetPartnerId(ctx)
+	adId, _ := strconv.Atoi(form.Get("ad_id"))
+	imgId, _ := strconv.Atoi(form.Get("id"))
+	err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
+
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		result.Result = true
+	}
+	ctx.Response.JsonOutput( result)
+}
+
 
 func (this *promC) CreateCoupon(ctx *web.Context) {
 
 	levelDr := this.getLevelDropDownList(ctx)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity":  "{}",
 			"levelDr": template.HTML(levelDr),
@@ -121,7 +141,7 @@ func (this *promC) CreateCoupon(ctx *web.Context) {
 
 func (this *promC) EditCoupon(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
 	js, _ := json.Marshal(e)
@@ -150,7 +170,7 @@ func (this *promC) getLevelDropDownList(ctx *web.Context) string {
 //　绑定优惠券操作页
 func (this *promC) BindCoupon(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e := dps.PromService.GetCoupon(partnerId, id).GetValue()
 	ctx.App.Template().Execute(w,
@@ -162,7 +182,7 @@ func (this *promC) BindCoupon(ctx *web.Context) {
 
 func (this *promC) BindCoupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))
@@ -186,7 +206,7 @@ func (this *promC) BindCoupon_post(ctx *web.Context) {
 
 func (this *promC) SaveCoupon_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 
 	var result gof.Message
 	r.ParseForm()
@@ -211,6 +231,6 @@ func (this *promC) SaveCoupon_post(ctx *web.Context) {
 
 func (this *promC) Coupon(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{}, "views/partner/promotion/coupon_list.html")
 }

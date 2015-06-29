@@ -35,7 +35,7 @@ func (this *configC) Profile(ctx *web.Context) {
 
 	js, _ := json.Marshal(p)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -44,7 +44,7 @@ func (this *configC) Profile(ctx *web.Context) {
 
 func (this *configC) Profile_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 
@@ -78,7 +78,7 @@ func (this *configC) SiteConf(ctx *web.Context) {
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -87,7 +87,7 @@ func (this *configC) SiteConf(ctx *web.Context) {
 
 func (this *configC) SiteConf_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 
@@ -115,7 +115,7 @@ func (this *configC) SaleConf(ctx *web.Context) {
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -124,7 +124,7 @@ func (this *configC) SaleConf(ctx *web.Context) {
 
 func (this *configC) SaleConf_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
 

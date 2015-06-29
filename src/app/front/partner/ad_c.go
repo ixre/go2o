@@ -30,7 +30,7 @@ type adC struct {
 //广告列表
 func (this *adC) List(ctx *web.Context) {
 	dps.AdvertisementService.GetAdvertisement(this.GetPartnerId(ctx), 0)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{}, "views/partner/ad/ad_list.html")
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/ad/ad_list.html")
 }
 
 // 修改广告
@@ -42,7 +42,7 @@ func (this *adC) Edit(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -57,7 +57,7 @@ func (this *adC) Create(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -79,7 +79,7 @@ func (this *adC) Del_post(ctx *web.Context) {
 		result.Result = true
 	}
 
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
 
 func (this *adC) SaveAd_post(ctx *web.Context) {
@@ -103,21 +103,21 @@ func (this *adC) SaveAd_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
 
 func (this *adC) Ad_data1(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte(`<span style="color:red">暂只支持轮播广告</span>`))
+	ctx.Response.Write([]byte(`<span style="color:red">暂只支持轮播广告</span>`))
 }
 
 func (this *adC) Ad_data2(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte(`<span style="color:red">暂只支持轮播广告</span>`))
+	ctx.Response.Write([]byte(`<span style="color:red">暂只支持轮播广告</span>`))
 }
 
 //轮播广告
 func (this *adC) Ad_data3(ctx *web.Context) {
 	dps.AdvertisementService.GetAdvertisement(this.GetPartnerId(ctx), 0)
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"adId": ctx.Request.URL.Query().Get("id"),
 	}, "views/partner/ad/ad_data3.html")
 }
@@ -135,7 +135,7 @@ func (this *adC) CreateAdImage(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -153,7 +153,7 @@ func (this *adC) EditAdImage(ctx *web.Context) {
 
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS(js),
 		},
@@ -178,7 +178,7 @@ func (this *adC) SaveImage_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
 
 func (this *adC) Del_image_post(ctx *web.Context) {
@@ -196,5 +196,5 @@ func (this *adC) Del_image_post(ctx *web.Context) {
 		result.Result = true
 	}
 
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }

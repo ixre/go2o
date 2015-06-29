@@ -22,7 +22,7 @@ type partnerC struct {
 }
 
 func (this *partnerC) Index(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte("it's working!"))
+	ctx.Response.Write([]byte("it's working!"))
 }
 
 // 处理请求

@@ -15,7 +15,7 @@ import (
 )
 
 func ApiTest(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte("It's working!"))
+	ctx.Response.Write([]byte("It's working!"))
 }
 
 // 检查是否有权限

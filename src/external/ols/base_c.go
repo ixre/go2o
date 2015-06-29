@@ -73,9 +73,9 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 // 检查会员是否登陆
 func (this *baseC) CheckMemberLogin(ctx *web.Context) bool {
 	if ctx.Session().Get("member") == nil {
-		ctx.ResponseWriter.Header().Add("Location", "/user/login?return_url="+
+		ctx.Response.Header().Add("Location", "/user/login?return_url="+
 			url.QueryEscape(ctx.Request.RequestURI))
-		ctx.ResponseWriter.WriteHeader(302)
+		ctx.Response.WriteHeader(302)
 		return false
 	}
 	return true
@@ -84,7 +84,7 @@ func (this *baseC) CheckMemberLogin(ctx *web.Context) bool {
 func renderError(ctx *web.Context, simpleError bool, message string) {
 	if simpleError {
 		const errTpl string = "<html><body><h1 style='color:red'>%s</h1></body></html>"
-		ctx.ResponseWriter.Write([]byte(fmt.Sprintf(errTpl, message)))
+		ctx.Response.Write([]byte(fmt.Sprintf(errTpl, message)))
 	} else {
 		//todo: 用模板显示错误
 	}
@@ -123,17 +123,17 @@ func (this *baseC) jsonOutput(ctx *web.Context, v interface{}) {
 	if err != nil {
 		this.errorOutput(ctx, err.Error())
 	} else {
-		ctx.ResponseWriter.Write(b)
+		ctx.Response.Write(b)
 	}
 }
 
 // 输出错误信息
 func (this *baseC) errorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 输出错误信息
 func (this *baseC) resultOutput(ctx *web.Context, result gof.Message) {
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(
+	ctx.Response.Write([]byte(fmt.Sprintf(
 		"{result:%v,code:%d,message:\"%s\"}", result.Result, result.Code, result.Message)))
 }

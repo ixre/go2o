@@ -26,19 +26,19 @@ type mainC struct {
 //入口
 func (this *mainC) Index(ctx *web.Context) {
 	if this.baseC.Requesting(ctx) {
-		ctx.ResponseWriter.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+		ctx.Response.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
 	}
 	this.baseC.RequestEnd(ctx)
 }
 
 func (this *mainC) Logout(ctx *web.Context) {
 	ctx.Session().Destroy()
-	ctx.ResponseWriter.Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.Response.Write([]byte("<script>location.replace('/login')</script>"))
 }
 
 //商户首页
 func (this *mainC) Dashboard(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	pt, _ := this.GetPartner(ctx)
 
 	var mf gof.TemplateDataMap = gof.TemplateDataMap{
@@ -50,7 +50,7 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 
 //商户汇总页
 func (this *mainC) Summary(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	pt, _ := this.GetPartner(ctx)
 
 	ctx.App.Template().Execute(w,
@@ -62,7 +62,7 @@ func (this *mainC) Summary(ctx *web.Context) {
 }
 
 func (this *mainC) Upload_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	partnerId := this.GetPartnerId(ctx)
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range r.MultipartForm.File {

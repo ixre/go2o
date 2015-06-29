@@ -109,7 +109,7 @@ func (this *ShoppingC) BuyingPersist_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.BaseC.GetPartner(ctx)
 	m := this.BaseC.GetMember(ctx)
 	var err error
@@ -171,7 +171,7 @@ func (this *ShoppingC) SaveDeliverAddr_post(ctx *web.Context) {
 		return
 	}
 	m := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
@@ -211,11 +211,11 @@ func (this *ShoppingC) applyCoupon(ctx *web.Context) {
 		message = err.Error()
 	} else {
 		d, _ := json.Marshal(order)
-		ctx.ResponseWriter.Write(d)
+		ctx.Response.Write(d)
 		return
 	}
 
-	ctx.ResponseWriter.Write([]byte(`{"result":false,"message":"` + message + `"}`))
+	ctx.Response.Write([]byte(`{"result":false,"message":"` + message + `"}`))
 }
 
 // 提交订单
@@ -223,7 +223,7 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	m := this.GetMember(ctx)
 
@@ -251,7 +251,7 @@ func (this *ShoppingC) emptyShoppingCart(ctx *web.Context) {
 	if cookie != nil {
 		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
 		cookie.Path = "/"
-		http.SetCookie(ctx.ResponseWriter, cookie)
+		http.SetCookie(ctx.Response, cookie)
 	}
 }
 
@@ -310,7 +310,7 @@ func (this *ShoppingC) Index(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
-	w := ctx.ResponseWriter
+	w := ctx.Response
 	w.Header().Add("Location", "/buy/confirm")
 	w.WriteHeader(302)
 }

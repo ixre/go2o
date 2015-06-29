@@ -29,13 +29,13 @@ type memberC struct {
 }
 
 func (this *memberC) LevelList(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/member/level_list.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/member/level_list.html")
 }
 
 //修改门店信息
 func (this *memberC) EditMLevel(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
 	bys, _ := json.Marshal(entity)
@@ -48,7 +48,7 @@ func (this *memberC) EditMLevel(ctx *web.Context) {
 }
 
 func (this *memberC) CreateMLevel(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": "{}",
 		},
@@ -73,7 +73,7 @@ func (this *memberC) SaveMLevel_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	this.JsonOutput(ctx, result)
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *memberC) DelMLevel(ctx *web.Context) {
@@ -91,13 +91,13 @@ func (this *memberC) DelMLevel(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput(result)
 }
 
 // 会员列表
 func (this *memberC) List(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter,
+	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{}, "views/partner/member/member_list.html")
 }
 
@@ -111,18 +111,18 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	this.ResultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
 
 func (this *memberC) Cancel(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/partner/order/cancel.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")
 
 }
 
 func (this *memberC) Cancel_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	reason := r.FormValue("reason")
 	err := dps.ShoppingService.CancelOrder(partnerId,
@@ -137,7 +137,7 @@ func (this *memberC) Cancel_post(ctx *web.Context) {
 
 func (this *memberC) View(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {

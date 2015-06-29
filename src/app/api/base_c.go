@@ -65,13 +65,13 @@ func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
 	if err != nil {
 		this.ErrorOutput(ctx, err.Error())
 	} else {
-		ctx.ResponseWriter.Write(b)
+		ctx.Response.Write(b)
 	}
 }
 
 // 输出错误信息
 func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
-	ctx.ResponseWriter.Write([]byte("{error:\"" + err + "\"}"))
+	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
 }
 
 // 获取商户编号

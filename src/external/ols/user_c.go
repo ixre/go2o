@@ -23,7 +23,7 @@ type userC struct {
 }
 
 func (this *userC) Login(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
@@ -47,7 +47,7 @@ func (this *userC) Login(ctx *web.Context) {
 }
 
 func (this *userC) Login_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
 	result, _ := goclient.Member.Login(usr, pwd)
@@ -62,7 +62,7 @@ func (this *userC) Login_post(ctx *web.Context) {
 }
 
 func (this *userC) Register(ctx *web.Context) {
-	_, w := ctx.Request, ctx.ResponseWriter
+	_, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	pa := this.GetPartnerApi(ctx)
 	if b, siteConf := GetSiteConf(w, p, pa); b {
@@ -78,7 +78,7 @@ func (this *userC) Register(ctx *web.Context) {
 }
 
 func (this *userC) ValidUsr_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	pa := this.GetPartnerApi(ctx)
 	r.ParseForm()
@@ -92,7 +92,7 @@ func (this *userC) ValidUsr_post(ctx *web.Context) {
 }
 
 func (this *userC) PostRegisterInfo_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	p := this.GetPartner(ctx)
 	r.ParseForm()
 	var member member.ValueMember
@@ -129,14 +129,14 @@ func (this *userC) member(ctx *web.Context) {
 			m.DynamicToken,
 		)
 	}
-	ctx.ResponseWriter.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
+	ctx.Response.Write([]byte("<script>window.parent.location.replace('" + location + "')</script>"))
 }
 
 //退出
 func (this *userC) Logout(ctx *web.Context) {
 	ctx.Session().Set("member", nil)
 	ctx.Session().Save()
-	ctx.ResponseWriter.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.Response.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,

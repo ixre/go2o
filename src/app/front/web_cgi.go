@@ -27,7 +27,7 @@ const (
 type WebCgi struct{}
 
 func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte {
-	r, _ := ctx.Request, ctx.ResponseWriter
+	r, _ := ctx.Request, ctx.Response
 	var ext string
 	var filePath string
 	var err error
@@ -76,7 +76,7 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 
 //获取位置
 func (this *WebCgi) GeoLocation(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	ip := r.RemoteAddr[:strings.Index(r.RemoteAddr, ":")]
 	add := tool.GetLocation(ip)
 	w.Write([]byte(fmt.Sprintf(`{"ip":"%s","addr":"%s"}`, ip, add)))

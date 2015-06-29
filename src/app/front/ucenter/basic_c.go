@@ -94,7 +94,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true}
 	}
-	this.resultOutput(ctx, result)
+	ctx.Response.JsonOutput( result)
 }
 
 func (this *basicC) Deliver(ctx *web.Context) {
@@ -116,7 +116,7 @@ func (this *basicC) Deliver_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	add := dps.MemberService.GetDeliverAddress(m.Id)
 	js, _ := json.Marshal(add)
-	ctx.ResponseWriter.Write([]byte(`{"rows":` + string(js) + `}`))
+	ctx.Response.Write([]byte(`{"rows":` + string(js) + `}`))
 }
 
 func (this *basicC) SaveDeliver_post(ctx *web.Context) {

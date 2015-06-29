@@ -29,18 +29,18 @@ type mainC struct {
 
 //入口
 func (this *mainC) Index(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte("<script>location.replace('/dashboard')</script>"))
+	ctx.Response.Write([]byte("<script>location.replace('/dashboard')</script>"))
 }
 
 func (this *mainC) Logout(ctx *web.Context) {
 	ctx.Session().Destroy()
-	ctx.ResponseWriter.Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.Response.Write([]byte("<script>location.replace('/login')</script>"))
 }
 
 //商户首页
 func (this *mainC) Dashboard(ctx *web.Context) {
 	if this.Requesting(ctx) {
-		r, w := ctx.Request, ctx.ResponseWriter
+		r, w := ctx.Request, ctx.Response
 		d := gof.TemplateDataMap{
 			"loginIp": r.Header.Get("USER_ADDRESS"),
 		}
@@ -51,7 +51,7 @@ func (this *mainC) Dashboard(ctx *web.Context) {
 //商户汇总页
 func (this *mainC) Summary(ctx *web.Context) {
 	if this.Requesting(ctx) {
-		r, w := ctx.Request, ctx.ResponseWriter
+		r, w := ctx.Request, ctx.Response
 		d := gof.TemplateDataMap{
 			"loginIp": r.Header.Get("USER_ADDRESS"),
 		}
@@ -67,7 +67,7 @@ func (this *mainC) exportData(ctx *web.Context) {
 }
 
 func (this *mainC) Upload_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("master/item_pic/")))
@@ -80,7 +80,7 @@ func (this *mainC) Login(ctx *web.Context) {
 	if ctx.Request.Method == "POST" {
 		this.Login_post(ctx)
 	} else {
-		ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/login.html")
+		ctx.App.Template().Execute(ctx.Response, nil, "views/master/login.html")
 	}
 }
 func (this *mainC) Login_post(ctx *web.Context) {
@@ -99,7 +99,7 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	} else {
 		msg.Message = "用户或密码不正确！"
 	}
-	ctx.ResponseWriter.Write(msg.Marshal())
+	ctx.Response.Write(msg.Marshal())
 }
 
 //验证登陆

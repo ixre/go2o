@@ -32,7 +32,7 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 
 // 获取导出数据
 func GetExportData(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	query := r.URL.Query()
 	r.ParseForm()
 	var exportItm report.IDataExportPortal = EXP_Manager.GetExportItem(query.Get("portal"))

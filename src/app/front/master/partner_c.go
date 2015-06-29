@@ -27,15 +27,15 @@ type partnerC struct {
 }
 
 func (c *partnerC) Index(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/partner_partner_index.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/master/partner_partner_index.html")
 }
 
 func (c *partnerC) CreatePartner(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil, "views/master/partner/partner_create.html")
+	ctx.App.Template().Execute(ctx.Response, nil, "views/master/partner/partner_create.html")
 }
 
 func (c *partnerC) CreatePartner_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	var isCreate bool
 	r.ParseForm()
@@ -85,7 +85,7 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 func (this *partnerC) PartnerConf(ctx *web.Context) {
 	var partnerId int
 	partnerId, _ = strconv.Atoi(ctx.Request.URL.Query().Get("id"))
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"partnerId": partnerId,
 	}, "views/master/partner/partner_create.html")
 }
@@ -101,12 +101,12 @@ func (c *partnerC) EditPartner(ctx *web.Context) {
 			entityJson = template.JS(entity)
 		}
 	}
-	ctx.App.Template().Execute(ctx.ResponseWriter, gof.TemplateDataMap{
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"entity": entityJson,
 	}, "views/master/partner/partner_edit.html")
 }
 func (c *partnerC) List(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.ResponseWriter, nil,
+	ctx.App.Template().Execute(ctx.Response, nil,
 		"views/master/partner/partner_list.html")
 }
 

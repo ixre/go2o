@@ -22,11 +22,11 @@ type websocketC struct {
 }
 
 func (this *websocketC) Login(ctx *web.Context) {
-	ctx.ResponseWriter.Write([]byte("ok"))
+	ctx.Response.Write([]byte("ok"))
 }
 
 func (this *websocketC) Test(ctx *web.Context) {
-	w := ctx.ResponseWriter
+	w := ctx.Response
 	result, _ := goclient.Member.Login("jarryliu", "123000")
 
 	if result.Result {
@@ -37,7 +37,7 @@ func (this *websocketC) Test(ctx *web.Context) {
 }
 
 func (this *websocketC) Partner(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	buffer := goclient.Redirect.Post([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.GetPartner`,
 		r.FormValue("partner_id"), r.FormValue("secret"))), 512)
@@ -45,7 +45,7 @@ func (this *websocketC) Partner(ctx *web.Context) {
 }
 
 func (this *websocketC) Category(ctx *web.Context) {
-	r, w := ctx.Request, ctx.ResponseWriter
+	r, w := ctx.Request, ctx.Response
 	buffer := goclient.Redirect.Post([]byte(fmt.Sprintf(
 		`{"partner_id":"%s","secret":"%s"}>>Partner.Category`,
 		r.FormValue("partner_id"), r.FormValue("secret"))), 2048)

@@ -42,7 +42,7 @@ func RegisterRoutes(c gof.App) {
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {
 		if err, ok := recover().(error); ok {
-			handleCustomError(ctx.ResponseWriter, c, err)
+			handleCustomError(ctx.Response, c, err)
 		}
 	})
 

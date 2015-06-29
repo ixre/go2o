@@ -28,11 +28,11 @@ type CartC struct {
 // 购物车
 func (this *CartC) CartApiHandle(ctx *web.Context) {
 	if !this.BaseC.Requesting(ctx) {
-		ctx.ResponseWriter.Write([]byte("invalid request"))
+		ctx.Response.Write([]byte("invalid request"))
 		return
 	}
 
-	r, _ := ctx.Request, ctx.ResponseWriter
+	r, _ := ctx.Request, ctx.Response
 	p := this.BaseC.GetPartner(ctx)
 	m := this.BaseC.GetMember(ctx)
 	r.ParseForm()
@@ -74,10 +74,10 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	}
 	ck.Value = cart.CartKey
 	ck.Expires = time.Now().Add(time.Hour * 48)
-	http.SetCookie(ctx.ResponseWriter, ck)
+	http.SetCookie(ctx.Response, ck)
 
 	d, _ := json.Marshal(cart)
-	ctx.ResponseWriter.Write(d)
+	ctx.Response.Write(d)
 }
 
 func (this *CartC) cart_AddItem(ctx *web.Context,
