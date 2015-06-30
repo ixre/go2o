@@ -101,7 +101,7 @@ func (this *Item) Save() (int, error) {
 
 	id, err := this._saleRep.SaveValueItem(this._value)
 	if err == nil {
-
+		this._value.Id = id
 		//todo: 保存商品
 		this.saveGoods()
 

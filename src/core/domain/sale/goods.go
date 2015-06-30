@@ -234,6 +234,7 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 		this._latestSnapshot = gsn
 		return this._saleRep.SaveSnapshot(gsn)
 	}
+
 	return 0, sale.ErrLatestSnapshot
 }
 

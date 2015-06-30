@@ -226,7 +226,7 @@ func (this *goodsC) LvPrice(ctx *web.Context) {
 			}
 		}
 		if !b {
-			fmtFunc(v.Value, v.Name, 0, goods.Price, 0)
+			fmtFunc(v.Value, v.Name, 0, goods.SalePrice, 0)
 		}
 	}
 
