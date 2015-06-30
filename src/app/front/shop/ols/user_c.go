@@ -77,9 +77,9 @@ func (this *UserC) Register(ctx *web.Context) {
 
 	siteConf := this.BaseC.GetSiteConf(ctx)
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-		"partner": p,
-		"conf":    siteConf,
-		"invi_code":inviCode,
+		"partner":   p,
+		"conf":      siteConf,
+		"invi_code": inviCode,
 	},
 		"views/shop/ols/{device}/register.html",
 		"views/shop/ols/{device}/inc/header.html",
@@ -137,7 +137,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	}
 
 	if err != nil {
-		result.Message = "注册失败," + err.Error()+"!"
+		result.Message = "注册失败," + err.Error() + "!"
 	} else {
 		result.Result = true
 	}

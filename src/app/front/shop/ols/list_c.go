@@ -164,7 +164,7 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 
 		if goods.PromPrice < goods.SalePrice {
 			promPrice = fmt.Sprintf(`<span class="prom-price">￥<b>%s</b></span>`, format.FormatFloat(goods.PromPrice))
-			salePrice = fmt.Sprintf("<del>%s</del>", format.FormatFloat(goods.SalePrice))
+			salePrice = fmt.Sprintf("<del>￥%s</del>", format.FormatFloat(goods.SalePrice))
 		} else {
 			salePrice = format.FormatFloat(goods.SalePrice)
 		}
