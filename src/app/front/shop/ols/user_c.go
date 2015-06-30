@@ -37,10 +37,9 @@ func (this *UserC) Login(ctx *web.Context) {
 		tipStyle = " hidden"
 	}
 
-	siteConf := this.GetSiteConf(ctx)
+	siteConf := this.BaseC.GetSiteConf(ctx)
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":  p,
-		"title":    "会员登录－" + siteConf.SubTitle,
 		"conf":     siteConf,
 		"tipStyle": tipStyle,
 	},
@@ -74,12 +73,13 @@ func (this *UserC) Login_post(ctx *web.Context) {
 
 func (this *UserC) Register(ctx *web.Context) {
 	p := this.BaseC.GetPartner(ctx)
+	inviCode := ctx.Request.URL.Query().Get("invi_code")
 
 	siteConf := this.BaseC.GetSiteConf(ctx)
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
-		"title":   "会员注册－" + siteConf.SubTitle,
 		"conf":    siteConf,
+		"invi_code":inviCode,
 	},
 		"views/shop/ols/{device}/register.html",
 		"views/shop/ols/{device}/inc/header.html",
@@ -101,9 +101,9 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("code"))
+	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("invi_code"))
 	var result gof.Message
-	result.Result = memberId == 0
+	result.Result = memberId != 0
 
 	if !result.Result {
 		result.Message = "推荐人无效"
@@ -130,14 +130,14 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 		member.Pwd = domain.Md5MemberPwd(member.Usr, member.Pwd)
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
-			invId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("inviCode"))
+			invId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("invi_code"))
 			err = dps.MemberService.SaveRelation(memberId, "", invId,
 				this.BaseC.GetPartnerId(ctx))
 		}
 	}
 
 	if err != nil {
-		result.Message = "注册失败！错误：" + err.Error()
+		result.Message = "注册失败," + err.Error()+"!"
 	} else {
 		result.Result = true
 	}
