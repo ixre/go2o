@@ -19,6 +19,9 @@ var (
 	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
 		"latest_snapshot", "已经是最新的快照")
 
+	ErrNoSuchSnapshot *domain.DomainError = domain.NewDomainError(
+		"no_such_snapshot", "商品快照不存在")
+
 	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
 		"not_on_shelves", "商品未上架")
 

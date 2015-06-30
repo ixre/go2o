@@ -169,8 +169,8 @@
         //cms.json.bind('form1',extData);
 
         //设置是否跳转显示
-        var redirectPanel = cms.$('redirectPanel');
-        cms.$('IsRedirect1').onchange = cms.$('IsRedirect2').onchange = function(){
+        var redirectPanel = $JS.$('redirectPanel');
+        $JS.$('IsRedirect1').onchange = $JS.$('IsRedirect2').onchange = function(){
             if(this.checked){
                 if(this.value == '1'){
                     redirectPanel.className = '';
@@ -182,7 +182,7 @@
         if(entity.IsRedirect)redirectPanel.className='';
 
         
-        cms.$('thumbnail_img').src = entity.Thumbnail;
+        $JS.$('thumbnail_img').src = entity.Thumbnail;
         var thumbId= 'thumbnail', thumbImg = 'thumbnail_img';
 
         //上传缩略图
@@ -283,7 +283,7 @@
         }
         window.saveData = submitForm;
 
-        cms.$('alias').onblur = function () {
+        $JS.$('alias').onblur = function () {
             if (this.nodeName) {
                 var ele = this;
                 if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
@@ -294,7 +294,7 @@
             }
         };
 
-        cms.$('alias').nextSibling.onclick = function () {
+        $JS.$('alias').nextSibling.onclick = function () {
 
             var e = this.previousSibling;
             var _title = cms.val('title');

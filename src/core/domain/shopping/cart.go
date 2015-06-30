@@ -151,7 +151,8 @@ func (this *Cart) GetCartGoods() []sale.IGoods {
 }
 
 // 添加项
-func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
+func (this *Cart) AddItem(goodsId, num int)(*shopping.ValueCartItem,error) {
+	var err error
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
@@ -160,31 +161,37 @@ func (this *Cart) AddItem(goodsId, num int) *shopping.ValueCartItem {
 	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
 			v.Num = v.Num + num
-			return v
+			return v, err
 		}
 	}
 
 	sl := this._saleRep.GetSale(this._partnerId)
 	goods := sl.GetGoods(goodsId)
+
+	if goods == nil {
+		return nil, sale.ErrNoSuchGoods
+	}
+
 	gv := goods.GetPackedValue()
 	snap := goods.GetLatestSnapshot()
 
-	if goods != nil {
-		v := &shopping.ValueCartItem{
-			CartId:     this.GetDomainId(),
-			SnapshotId: snap.Id,
-			GoodsId:    goodsId,
-			Num:        num,
-			Name:       gv.Name,
-			GoodsNo:    gv.GoodsNo,
-			Image:      gv.Image,
-			Price:      gv.Price,
-			SalePrice:  gv.PromPrice, // 使用优惠价
-		}
-		this._value.Items = append(this._value.Items, v)
-		return v
+	if snap == nil {
+		return nil, sale.ErrNoSuchSnapshot
 	}
-	return nil
+
+	v := &shopping.ValueCartItem{
+		CartId:     this.GetDomainId(),
+		SnapshotId: snap.Id,
+		GoodsId:    goodsId,
+		Num:        num,
+		Name:       gv.Name,
+		GoodsNo:    gv.GoodsNo,
+		Image:      gv.Image,
+		Price:      gv.Price,
+		SalePrice:  gv.PromPrice, // 使用优惠价
+	}
+	this._value.Items = append(this._value.Items, v)
+	return v, err
 }
 
 // 移出项

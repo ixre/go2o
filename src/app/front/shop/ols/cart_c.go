@@ -85,11 +85,11 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	item := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
+	item,err := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
 
 	var d map[string]interface{} = make(map[string]interface{})
-	if item == nil {
-		d["error"] = "商品不存在"
+	if err != nil {
+		d["error"] = err.Error()
 	} else {
 		item.GoodsImage = format.GetGoodsImageUrl(item.GoodsImage)
 		d["item"] = item

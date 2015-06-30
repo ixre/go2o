@@ -85,6 +85,7 @@ func (this *LevelManager) InitDefaultLevels() error {
 // 获取等级设置
 func (this *LevelManager) GetLevelSet() []*valueobject.MemberLevel {
 	if this._levelSet == nil {
+		// 已经排好序
 		this._levelSet = this._rep.GetMemberLevels(this._partnerId)
 	}
 	return this._levelSet
@@ -159,5 +160,13 @@ func (this *LevelManager) getMaxLevelValue() int {
 
 // 根据经验值获取等级
 func (this *LevelManager) GetLevelValueByExp(exp int) int {
-	return this._rep.GetLevelValueByExp(this._partnerId, exp)
+	var lv *valueobject.MemberLevel
+	for i := len(this.GetLevelSet());i > 0;i-- {
+		lv = this.GetLevelSet()[i-1]
+		if exp >= lv.RequireExp{
+			return lv.Value
+		}
+	}
+	return 1
+	//return this._rep.GetLevelValueByExp(this._partnerId, exp)
 }

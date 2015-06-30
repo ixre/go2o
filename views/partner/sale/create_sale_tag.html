@@ -67,8 +67,8 @@
         exts: '*.gif;*.jpg;*.png;*.bmp'
     }, function (result, data) {
         if (result) {
-            cms.$('upload_path').value = data.url;
-            cms.$('upload_img').src = '{{.img_serve}}/' + data.url;
+            $JS.$('upload_path').value = data.url;
+            $JS.$('upload_img').src = '{{.img_serve}}/' + data.url;
         } else {
             alert('上传失败：' + data);
         }

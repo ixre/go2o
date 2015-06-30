@@ -111,7 +111,7 @@
 <script>
     var entity = {{.entity}}||{};
     $JS.json.bind('form1_goods', entity);
-    cms.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
+    $JS.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
         entity.Image:'{{.img_serve}}/' + entity.Image;
 
     //上传缩略图
@@ -122,8 +122,8 @@
         exts: '*.gif;*.jpg;*.png;*.bmp'
     }, function (result, data) {
         if (result) {
-            cms.$('upload_path').value = data.url;
-            cms.$('upload_img').src = '{{.img_serve}}/' + data.url;
+            $JS.$('upload_path').value = data.url;
+            $JS.$('upload_img').src = '{{.img_serve}}/' + data.url;
         } else {
             alert('上传失败：' + data);
         }

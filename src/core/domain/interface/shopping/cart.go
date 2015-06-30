@@ -34,7 +34,7 @@ type ICart interface {
 	SetBuyer(buyerId int) error
 
 	// 添加项
-	AddItem(goodsId, num int) *ValueCartItem
+	AddItem(goodsId, num int) (*ValueCartItem,error)
 
 	// 移出项
 	RemoveItem(goodsId, num int) error

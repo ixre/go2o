@@ -59,7 +59,7 @@
 <script>
     var entity ={{.entity}} ||{};
     $JS.json.bind('form1', entity);
-    cms.$('upload_img').src = '{{.img_serve}}/'+ entity.Logo;
+    $JS.$('upload_img').src = '{{.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
     $JS.upload({
@@ -69,8 +69,8 @@
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {
-            cms.$('upload_path').value = data.url;
-            cms.$('upload_img').src = '{{.img_serve}}/'+ data.url;
+            $JS.$('upload_path').value = data.url;
+            $JS.$('upload_img').src = '{{.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }
@@ -78,8 +78,8 @@
 
 
     //设置是否跳转显示
-    var statePanel = cms.$('statePanel');
-    cms.$('State1').onchange = cms.$('State2').onchange = function(){
+    var statePanel = $JS.$('statePanel');
+    $JS.$('State1').onchange = $JS.$('State2').onchange = function(){
         if(this.checked){
             if(this.value == '0'){
                 statePanel.className = '';

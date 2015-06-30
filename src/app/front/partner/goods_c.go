@@ -24,6 +24,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"go2o/src/core/variable"
 )
 
 var _ mvc.Filter = new(goodsC)
@@ -60,7 +61,13 @@ func (this *goodsC) Create(ctx *web.Context) {
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
+	e := &sale.ValueItem{
+		Image: ctx.App.Config().GetString(variable.NoPicPath),
+	}
+	js, _ := json.Marshal(e)
+
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
 	},
@@ -99,6 +106,8 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 
 	e := sale.ValueItem{}
 	web.ParseFormToEntity(r.Form, &e)
+
+	e.State = 1  //todo: 暂时使用
 
 	id, err := dps.SaleService.SaveItem(partnerId, &e)
 
