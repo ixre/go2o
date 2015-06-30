@@ -203,7 +203,7 @@ func (this *Partner) AddCartItem(m *jsv.Args, item *dto.CartItem) error {
 	goodsId, _ := strconv.Atoi((*m)["goods_id"].(string))
 	num, _ := strconv.Atoi((*m)["num"].(string))
 
-	v,err := dps.ShoppingService.AddCartItem(partnerId,
+	v, err := dps.ShoppingService.AddCartItem(partnerId,
 		memberId, cartKey, goodsId, num)
 	if v == nil {
 		return sale.ErrNoSuchGoods

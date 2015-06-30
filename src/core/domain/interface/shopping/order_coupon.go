@@ -23,7 +23,6 @@ type OrderCoupon struct {
 	SendIntegral int     `db:"send_integral"`
 }
 
-
 func (this *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
 	orderId int, orderFee float32) *OrderCoupon {
 	v := coupon.GetDetailsValue()

@@ -63,7 +63,7 @@ func (this *MainApp) Config() *gof.Config {
 	if this._config == nil {
 		if cfg, err := gof.LoadConfig(this._confFilePath); err == nil {
 			this._config = cfg
-			cfg.Set("exp_fee_bit", float64(1.5))
+			cfg.Set("exp_fee_bit", float64(1))
 		} else {
 			log.Fatalln(err)
 		}

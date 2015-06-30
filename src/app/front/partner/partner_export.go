@@ -11,9 +11,9 @@ package partner
 import (
 	"database/sql"
 	"encoding/json"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/data/report"
 	"github.com/atnet/gof/web"
-	"go2o/src/core"
 	"strconv"
 	"strings"
 )
@@ -23,7 +23,7 @@ import (
 type PartnerDbGetter struct{}
 
 func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
-	return core.GlobalApp.Db().GetDb()
+	return gof.CurrentApp.Db().GetDb()
 }
 
 var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}

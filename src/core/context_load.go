@@ -85,7 +85,6 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(ad.ValueAdvertisement{}, "pt_ad")
 	orm.CreateTableMap(ad.ValueImage{}, "pt_ad_image")
 
-
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")
 	orm.CreateTableMap(promotion.ValueCouponBind{}, "pm_coupon_bind")

@@ -35,8 +35,7 @@ type IPromotion interface {
 	Type() int
 
 	// 获取类型名称
-	TypeName()string
-
+	TypeName() string
 
 	// 保存
 	Save() (int, error)

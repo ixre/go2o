@@ -85,7 +85,7 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 	r := ctx.Request
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
-	item,err := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
+	item, err := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
 
 	var d map[string]interface{} = make(map[string]interface{})
 	if err != nil {

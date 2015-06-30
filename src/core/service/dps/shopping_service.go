@@ -179,9 +179,9 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	return cart
 }
 
-func (this *shoppingService) AddCartItem(partnerId, memberId int, cartKey string, goodsId, num int)(*dto.CartItem,error) {
+func (this *shoppingService) AddCartItem(partnerId, memberId int, cartKey string, goodsId, num int) (*dto.CartItem, error) {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)
-	item ,err := cart.AddItem(goodsId, num)
+	item, err := cart.AddItem(goodsId, num)
 	if err == nil {
 		cart.Save()
 		return &dto.CartItem{
@@ -192,9 +192,9 @@ func (this *shoppingService) AddCartItem(partnerId, memberId int, cartKey string
 			Num:        num,
 			Price:      item.Price,
 			SalePrice:  item.SalePrice,
-		},nil
+		}, nil
 	}
-	return nil,err
+	return nil, err
 }
 func (this *shoppingService) SubCartItem(partnerId, memberId int, cartKey string, goodsId, num int) error {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)

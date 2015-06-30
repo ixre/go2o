@@ -33,7 +33,7 @@ type IOrder interface {
 	GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int)
 
 	// 获取促销绑定
-	GetPromotionBinds()[]*OrderPromotionBind
+	GetPromotionBinds() []*OrderPromotionBind
 
 	// 设置Shop,如果不需要记录日志，则remark传递空
 	SetShop(shopId int) error

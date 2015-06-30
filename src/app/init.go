@@ -16,4 +16,5 @@ import (
 
 func Init(app gof.App) {
 	dps.Init(app)
+	gof.CurrentApp = app
 }

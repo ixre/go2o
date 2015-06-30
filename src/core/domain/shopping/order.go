@@ -35,7 +35,7 @@ type Order struct {
 	_cart            shopping.ICart
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
-	_orderPbs		[]*shopping.OrderPromotionBind
+	_orderPbs        []*shopping.OrderPromotionBind
 	_memberRep       member.IMemberRep
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
@@ -107,8 +107,8 @@ func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
 }
 
 // 获取促销绑定
-func (this *Order) GetPromotionBinds()[]*shopping.OrderPromotionBind{
-	if this._orderPbs == nil{
+func (this *Order) GetPromotionBinds() []*shopping.OrderPromotionBind {
+	if this._orderPbs == nil {
 		this._orderPbs = this._shoppingRep.GetOrderPromotionBinds(this._value.OrderNo)
 	}
 	return this._orderPbs
@@ -211,26 +211,26 @@ func (this *Order) Submit() (string, error) {
 	return v.OrderNo, err
 }
 
-func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion)(int,error){
+func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion) (int, error) {
 	var title string
 	var integral int
 	var fee int
 
 	//todo: 需要重构,其他促销
-	if prom.Type() == promotion.TypeFlagCashBack{
+	if prom.Type() == promotion.TypeFlagCashBack {
 		fee = prom.GetRelationValue().(*promotion.ValueCashBack).BackFee
-		title = prom.TypeName()+":"+prom.GetValue().ShortName
+		title = prom.TypeName() + ":" + prom.GetValue().ShortName
 	}
 
 	v := &shopping.OrderPromotionBind{
-		PromotionId:prom.GetAggregateRootId(),
-		PromotionType:prom.Type(),
-		OrderNo:orderNo,
-		Title:title,
-		SaveFee:float32(fee),
-		PresentIntegral:integral,
-		IsConfirm:1,
-		IsApply:0,
+		PromotionId:     prom.GetAggregateRootId(),
+		PromotionType:   prom.Type(),
+		OrderNo:         orderNo,
+		Title:           title,
+		SaveFee:         float32(fee),
+		PresentIntegral: integral,
+		IsConfirm:       1,
+		IsApply:         0,
 	}
 	return this._shoppingRep.SavePromotionBindForOrder(v)
 }
@@ -259,7 +259,7 @@ func (this *Order) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shop
 					if vc.BackFee > saveFee {
 						prom = v1
 						saveFee = vc.BackFee
-						rightBack = vc.BackType == promotion.BackUseForOrder  // 是否立即抵扣
+						rightBack = vc.BackType == promotion.BackUseForOrder // 是否立即抵扣
 					}
 				}
 			}
@@ -529,7 +529,6 @@ func (this *Order) Complete() error {
 			return err
 		}
 
-
 		this._value.Status = enum.ORDER_COMPLETED
 		this._value.IsSuspend = 0
 		this._value.UpdateTime = now
@@ -539,7 +538,7 @@ func (this *Order) Complete() error {
 		if err == nil {
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
 			// 处理返现促销
-			this.handleCashBackPromotions(ptl,m)
+			this.handleCashBackPromotions(ptl, m)
 			// 三级返现
 			this.backFor3R(ptl, m, back_fee, now)
 		}
@@ -578,20 +577,20 @@ func (this *Order) updateShoppingMemberAccount(pt partner.IPartner,
 }
 
 // 处理返现促销
-func (this *Order) handleCashBackPromotions(pt partner.IPartner,m member.IMember)error{
+func (this *Order) handleCashBackPromotions(pt partner.IPartner, m member.IMember) error {
 	proms := this.GetPromotionBinds()
-	for _,v := range proms{
-		if v.PromotionType == promotion.TypeFlagCashBack{
+	for _, v := range proms {
+		if v.PromotionType == promotion.TypeFlagCashBack {
 			c := this._promRep.GetPromotion(v.PromotionId)
-			return this.handleCashBackPromotion(pt,m,v,c)
+			return this.handleCashBackPromotion(pt, m, v, c)
 		}
 	}
 	return nil
 }
 
 // 处理返现促销
-func (this *Order) handleCashBackPromotion(pt partner.IPartner,m member.IMember,
-	v *shopping.OrderPromotionBind,pm promotion.IPromotion)error{
+func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember,
+	v *shopping.OrderPromotionBind, pm promotion.IPromotion) error {
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
@@ -608,7 +607,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner,m member.IMember,
 
 		// 处理自定义返现
 		c := pm.(promotion.ICashBackPromotion)
-		HandleCashBackDataTag(m,this._value,c,this._memberRep)
+		HandleCashBackDataTag(m, this._value, c, this._memberRep)
 
 		//给自己返现
 		icLog := &member.IncomeLog{
@@ -616,7 +615,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner,m member.IMember,
 			OrderId:    this.GetDomainId(),
 			Type:       "backcash",
 			Fee:        float32(cpv.BackFee),
-			Log:        fmt.Sprintf("返现￥%.2f元,订单号:%s", cpv.BackFee,this._value.OrderNo),
+			Log:        fmt.Sprintf("返现￥%.2f元,订单号:%s", cpv.BackFee, this._value.OrderNo),
 			State:      1,
 			RecordTime: acc.UpdateTime,
 		}

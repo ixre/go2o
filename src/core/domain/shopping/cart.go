@@ -151,7 +151,7 @@ func (this *Cart) GetCartGoods() []sale.IGoods {
 }
 
 // 添加项
-func (this *Cart) AddItem(goodsId, num int)(*shopping.ValueCartItem,error) {
+func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 	var err error
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}

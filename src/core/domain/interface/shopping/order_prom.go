@@ -19,7 +19,7 @@ type OrderPromotionBind struct {
 	PromotionType int `db:"promotion_type"`
 
 	// 订单号
-	OrderNo string  `db:"order_no"`
+	OrderNo string `db:"order_no"`
 
 	// 标题
 	Title string `db:"title"`

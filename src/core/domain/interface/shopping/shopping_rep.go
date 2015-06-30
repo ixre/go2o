@@ -19,10 +19,10 @@ type IShoppingRep interface {
 	SaveOrderCouponBind(*OrderCoupon) error
 
 	// 获取订单的促销绑定
-	GetOrderPromotionBinds(orderNo string)[]*OrderPromotionBind
+	GetOrderPromotionBinds(orderNo string) []*OrderPromotionBind
 
 	// 保存订单的促销绑定
-	SavePromotionBindForOrder(*OrderPromotionBind)(int,error)
+	SavePromotionBindForOrder(*OrderPromotionBind) (int, error)
 
 	// 获取可用的订单号
 	GetFreeOrderNo(partnerId int) string

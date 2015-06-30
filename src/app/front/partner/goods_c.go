@@ -20,11 +20,11 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"html/template"
 	"net/url"
 	"strconv"
 	"strings"
-	"go2o/src/core/variable"
 )
 
 var _ mvc.Filter = new(goodsC)
@@ -107,7 +107,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	e := sale.ValueItem{}
 	web.ParseFormToEntity(r.Form, &e)
 
-	e.State = 1  //todo: 暂时使用
+	e.State = 1 //todo: 暂时使用
 
 	id, err := dps.SaleService.SaveItem(partnerId, &e)
 
