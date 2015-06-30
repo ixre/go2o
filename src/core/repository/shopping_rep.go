@@ -228,3 +228,28 @@ func (this *shoppingRep) EmptyCartItems(id int) error {
 func (this *shoppingRep) DeleteCart(id int) error {
 	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{}, id)
 }
+
+
+// 获取订单的促销绑定
+func (this *shoppingRep) GetOrderPromotionBinds(orderNo string)[]*shopping.OrderPromotionBind{
+	var arr []*shopping.OrderPromotionBind = []*shopping.OrderPromotionBind{}
+	err := this.Connector.GetOrm().Select(&arr, "order_no=?", orderNo)
+	if err == nil {
+		return arr
+	}
+	return make([]*shopping.OrderPromotionBind, 0)
+}
+
+// 保存订单的促销绑定
+func (this *shoppingRep) SavePromotionBindForOrder(v *shopping.OrderPromotionBind)(int,error) {
+	var err error
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_order_pb WHERE order_no=? AND promotion_id=?",
+			&v.Id, v.OrderNo, v.PromotionId)
+	}
+	return v.Id, err
+}

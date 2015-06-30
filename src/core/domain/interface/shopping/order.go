@@ -32,6 +32,9 @@ type IOrder interface {
 	// 获取最省的促销
 	GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int)
 
+	// 获取促销绑定
+	GetPromotionBinds()[]*OrderPromotionBind
+
 	// 设置Shop,如果不需要记录日志，则remark传递空
 	SetShop(shopId int) error
 
@@ -42,7 +45,7 @@ type IOrder interface {
 	SignPaid() error
 
 	// 设置配送地址
-	SetDeliver(deliverAddrId int) error
+	SetDeliver(deliverAddressId int) error
 
 	// 添加备注
 	AddRemark(string)

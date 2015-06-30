@@ -35,6 +35,7 @@ type Order struct {
 	_cart            shopping.ICart
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
+	_orderPbs		[]*shopping.OrderPromotionBind
 	_memberRep       member.IMemberRep
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
@@ -103,6 +104,14 @@ func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
 		return proms
 	}
 	return this._availPromotions
+}
+
+// 获取促销绑定
+func (this *Order) GetPromotionBinds()[]*shopping.OrderPromotionBind{
+	if this._orderPbs == nil{
+		this._orderPbs = this._shoppingRep.GetOrderPromotionBinds(this._value.OrderNo)
+	}
+	return this._orderPbs
 }
 
 // 获取最省的促销
@@ -202,9 +211,27 @@ func (this *Order) Submit() (string, error) {
 	return v.OrderNo, err
 }
 
-func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion) {
-	fmt.Printf("--- %s ---%+v\n",orderNo,prom.GetRelationValue())
-	//todo:
+func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromotion)(int,error){
+	var title string
+	var integral int
+	var fee int
+
+	//todo: 需要重构,其他促销
+	if prom.Type() == promotion.TypeFlagCashBack{
+		fee = prom.GetRelationValue().(*promotion.ValueCashBack).BackFee
+		title = prom.TypeName()+":"+prom.GetValue().ShortName
+	}
+
+	v := &shopping.OrderPromotionBind{
+		PromotionId:prom.GetAggregateRootId(),
+		OrderNo:orderNo,
+		Title:title,
+		SaveFee:float32(fee),
+		PresentIntegral:integral,
+		IsConfirm:1,
+		IsApply:0,
+	}
+	return this._shoppingRep.SavePromotionBindForOrder(v)
 }
 
 // 应用购物车内商品的促销
