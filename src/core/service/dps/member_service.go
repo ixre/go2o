@@ -156,9 +156,9 @@ func (this *memberService) CheckUsrExist(usr string) bool {
 }
 
 func (this *memberService) GetAccount(memberId int) *member.Account {
-	//m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
-	m, _ := this._memberRep.GetMember(memberId)
-	m.AddExp(300)
+	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	//m, _ := this._memberRep.GetMember(memberId)
+	//m.AddExp(300)
 	return m.GetAccount()
 }
 

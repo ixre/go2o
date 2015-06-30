@@ -244,15 +244,16 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 		var coupon promotion.ICouponPromotion
 		var result bool
 		var val = order.GetValue()
-		coupon = this._promRep.GetCouponByCode(
-			this._partnerId, couponCode).(promotion.ICouponPromotion)
+		cp := this._promRep.GetCouponByCode(
+			this._partnerId, couponCode)
 
 		// 如果优惠券不存在
-		if coupon == nil {
+		if cp == nil {
 			log.PrintErr(err)
 			return order, cart, errors.New("优惠券无效")
 		}
 
+		coupon = cp.(promotion.ICouponPromotion)
 		result, err = coupon.CanUse(m, val.Fee)
 		if result {
 			if coupon.CanTake() {
