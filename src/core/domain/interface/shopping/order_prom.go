@@ -15,6 +15,9 @@ type OrderPromotionBind struct {
 	// 促销编号
 	PromotionId int `db:"promotion_id"`
 
+	// 促销类型
+	PromotionType int `db:"promotion_type"`
+
 	// 订单号
 	OrderNo string  `db:"order_no"`
 

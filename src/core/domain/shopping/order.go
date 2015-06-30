@@ -224,6 +224,7 @@ func (this *Order) bindPromotionOnSubmit(orderNo string, prom promotion.IPromoti
 
 	v := &shopping.OrderPromotionBind{
 		PromotionId:prom.GetAggregateRootId(),
+		PromotionType:prom.Type(),
 		OrderNo:orderNo,
 		Title:title,
 		SaveFee:float32(fee),
@@ -528,8 +529,6 @@ func (this *Order) Complete() error {
 			return err
 		}
 
-		// 三级返现
-		this.backFor3R(ptl, m, back_fee, now)
 
 		this._value.Status = enum.ORDER_COMPLETED
 		this._value.IsSuspend = 0
@@ -539,6 +538,10 @@ func (this *Order) Complete() error {
 
 		if err == nil {
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
+			// 处理返现促销
+			this.handleCashBackPromotions(ptl,m)
+			// 三级返现
+			this.backFor3R(ptl, m, back_fee, now)
 		}
 	}
 	return err
@@ -572,6 +575,54 @@ func (this *Order) updateShoppingMemberAccount(pt partner.IPartner,
 		RecordTime: unixTime,
 	}
 	m.SaveIncomeLog(icLog)
+}
+
+// 处理返现促销
+func (this *Order) handleCashBackPromotions(pt partner.IPartner,m member.IMember)error{
+	proms := this.GetPromotionBinds()
+	for _,v := range proms{
+		if v.PromotionType == promotion.TypeFlagCashBack{
+			c := this._promRep.GetPromotion(v.PromotionId)
+			return this.handleCashBackPromotion(pt,m,v,c)
+		}
+	}
+	return nil
+}
+
+// 处理返现促销
+func (this *Order) handleCashBackPromotion(pt partner.IPartner,m member.IMember,
+	v *shopping.OrderPromotionBind,pm promotion.IPromotion)error{
+	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
+
+	//更新账户
+	acc := m.GetAccount()
+	acc.PresentBalance = acc.PresentBalance + float32(cpv.BackFee) // 更新赠送余额
+	acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
+	acc.UpdateTime = time.Now().Unix()
+	err := m.SaveAccount()
+
+	if err == nil {
+		// 优惠绑定生效
+		v.IsApply = 1
+		this._shoppingRep.SavePromotionBindForOrder(v)
+
+		// 处理自定义返现
+		c := pm.(promotion.ICashBackPromotion)
+		HandleCashBackDataTag(m,this._value,c,this._memberRep)
+
+		//给自己返现
+		icLog := &member.IncomeLog{
+			MemberId:   this._value.MemberId,
+			OrderId:    this.GetDomainId(),
+			Type:       "backcash",
+			Fee:        float32(cpv.BackFee),
+			Log:        fmt.Sprintf("返现￥%.2f元,订单号:%s", cpv.BackFee,this._value.OrderNo),
+			State:      1,
+			RecordTime: acc.UpdateTime,
+		}
+		err = m.SaveIncomeLog(icLog)
+	}
+	return err
 }
 
 // 三级返现
