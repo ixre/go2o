@@ -100,7 +100,7 @@ if (phone != null) {
     };
 }
 
-var inviCode = $JS.$('inviCode');
+var inviCode = $JS.$('invi_code');
 if (inviCode != null) {
     inviCode.onblur = function () {
         var val = this.value;
@@ -109,7 +109,7 @@ if (inviCode != null) {
         }else{
             var t = this;
             valid.setTip(this, false, null, '验证中...');
-            $JS.xhr.jsonPost('/user/valid_invitation', {code: val}, function (json) {
+            $JS.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
                 if (json.result) {
                     //valid.setTip(t, true, null, '邀请人为:'+json.data.Name);
                     $JS.validator.removeTip(t);
@@ -198,7 +198,7 @@ btnRegister.onclick = function () {
                     if (returnUrl != '') {
                         location.replace(returnUrl);
                     } else {
-                        location.replace('/');
+                        location.replace('/user/login?return_url=');
                     }
                 } else {
                     tip.className='tip-panel';

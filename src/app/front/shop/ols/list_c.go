@@ -158,12 +158,15 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		goods, proMap := dps.SaleService.GetGoodsDetails(p.Id, goodsId, level)
 		goods.Image = format.GetGoodsImageUrl(goods.Image)
 
-		// 促销价
+		// 促销价 & 销售价
 		var promPrice string
+		var salePrice string
+
 		if goods.PromPrice < goods.SalePrice {
-			promPrice = fmt.Sprintf(`<span class="prom-price">
-                    <span class="bg_txt red">促销价:</span> ￥<b>%s</b>元
-                </span>`, format.FormatFloat(goods.PromPrice))
+			promPrice = fmt.Sprintf(`<span class="prom-price">￥<b>%s</b></span>`, format.FormatFloat(goods.PromPrice))
+			salePrice = fmt.Sprintf("<del>%s</del>", format.FormatFloat(goods.SalePrice))
+		} else {
+			salePrice = format.FormatFloat(goods.SalePrice)
 		}
 
 		// 促销信息
@@ -185,6 +188,7 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 			"goods":         goods,
 			"promap":        proMap,
 			"prom_price":    template.HTML(promPrice),
+			"sale_price":    template.HTML(salePrice),
 			"prom_describe": template.HTML(promDescribe),
 			"prom_cls":      promCls,
 		},
