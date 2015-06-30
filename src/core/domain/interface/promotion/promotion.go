@@ -34,6 +34,10 @@ type IPromotion interface {
 	// 促销类型
 	Type() int
 
+	// 获取类型名称
+	TypeName()string
+
+
 	// 保存
 	Save() (int, error)
 

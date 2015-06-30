@@ -60,6 +60,11 @@ func (this *CashBackPromotion) GetRelationValue() interface{} {
 	return this._cashBackValue
 }
 
+// 促销类型
+func (this *CashBackPromotion) TypeName() string {
+	return "返现"
+}
+
 // 获取自定义数据
 func (this *CashBackPromotion) GetDataTag() map[string]string {
 	if this._dataTag == nil {

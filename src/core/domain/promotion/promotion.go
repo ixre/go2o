@@ -85,6 +85,11 @@ func (this *Promotion) Type() int {
 	return this._value.TypeFlag
 }
 
+// 促销类型
+func (this *Promotion) TypeName() string {
+	panic(errors.New("not implement"))
+}
+
 // 保存
 func (this *Promotion) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()

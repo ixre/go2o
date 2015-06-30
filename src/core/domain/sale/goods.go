@@ -127,16 +127,29 @@ func (this *SaleGoods) GetPromotionDescribe() map[string]string {
 		proms := this.GetPromotions()
 		this._promDescribes = make(map[string]string, len(proms))
 		for _, v := range proms {
-			if v.Type() == promotion.TypeFlagCashBack {
-				key := "返现"
-				if txt, ok := this._promDescribes[key]; !ok {
-					this._promDescribes[key] = v.GetValue().ShortName
-				} else {
-					this._promDescribes[key] = txt + "；" + v.GetValue().ShortName
-				}
-			} else if v.Type() == promotion.TypeFlagCoupon {
-				//todo: other promotion implement
+			key := v.TypeName()
+			if txt, ok := this._promDescribes[key]; !ok {
+				this._promDescribes[key] = v.GetValue().ShortName
+			} else {
+				this._promDescribes[key] = txt + "；" + v.GetValue().ShortName
 			}
+
+//			if v.Type() == promotion.TypeFlagCashBack {
+//				if txt, ok := this._promDescribes[key]; !ok {
+//					this._promDescribes[key] = v.GetValue().ShortName
+//				} else {
+//					this._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+//				}
+//			} else if v.Type() == promotion.TypeFlagCoupon {
+//				if txt, ok := this._promDescribes[key]; !ok {
+//					this._promDescribes[key] = v.GetValue().ShortName
+//				} else {
+//					this._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+//				}
+//			}
+
+
+			//todo: other promotion implement
 		}
 	}
 	return this._promDescribes

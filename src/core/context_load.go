@@ -61,7 +61,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(shopping.ValueOrder{}, "pt_order")
 	orm.CreateTableMap(shopping.OrderItem{}, "pt_order_item")
 	orm.CreateTableMap(shopping.OrderCoupon{}, "pt_order_coupon")
-	orm.CreateTableMap(shopping.OrderCoupon{}, "pt_order_coupon")
+	orm.CreateTableMap(shopping.OrderPromotionBind{}, "pt_order_pb")
 	orm.CreateTableMap(shopping.OrderLog{}, "pt_order_log")
 	orm.CreateTableMap(shopping.ValueCart{}, "sale_cart")
 	orm.CreateTableMap(shopping.ValueCartItem{}, "sale_cart_item")
@@ -84,6 +84,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 	orm.CreateTableMap(content.ValuePage{}, "pt_page")
 	orm.CreateTableMap(ad.ValueAdvertisement{}, "pt_ad")
 	orm.CreateTableMap(ad.ValueImage{}, "pt_ad_image")
+
 
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")

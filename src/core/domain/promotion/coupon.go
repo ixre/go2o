@@ -85,6 +85,12 @@ func (this *Coupon) GetRelationValue() interface{} {
 	return this._detailsValue
 }
 
+// 促销类型
+func (this *Coupon) TypeName() string {
+	return "优惠券"
+}
+
+
 // 获取促销内容
 func (this *Coupon) GetDetailsValue() promotion.ValueCoupon {
 	return *this._detailsValue
