@@ -11,6 +11,7 @@ package member
 
 import (
 	"errors"
+	"fmt"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
@@ -131,6 +132,7 @@ func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {
 
 // 增加经验值
 func (this *Member) AddExp(exp int) error {
+	fmt.Printf("---%+v - %d", this._value, exp)
 	this._value.Exp += exp
 	_, err := this.Save()
 
@@ -163,7 +165,6 @@ func (this *Member) GetLevel() *valueobject.MemberLevel {
 // todo:partnerId 不需要
 func (this *Member) AddIntegral(partnerId int, backType int,
 	integral int, log string) error {
-
 	inLog := &member.IntegralLog{
 		PartnerId:  partnerId,
 		MemberId:   this._value.Id,
@@ -179,18 +180,20 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 		acc.Integral = acc.Integral + integral
 		err = this.SaveAccount()
 	}
-
 	return err
 }
 
 // 检查升级
-func (this *Member) checkUpLevel() {
-	levelId := this.getLevelManager().GetLevelValueByExp(this._value.Exp)
-	if levelId != 0 && this._value.Level < levelId {
-		this._value.Level = levelId
+func (this *Member) checkUpLevel() bool {
+	levelValue := this.getLevelManager().GetLevelValueByExp(this._value.Exp)
+	fmt.Println("----", this._value.Exp, levelValue)
+	if levelValue != 0 && this._value.Level < levelValue {
+		this._value.Level = levelValue
 		this.Save()
 		this._level = nil
+		return true
 	}
+	return false
 }
 
 // 获取会员关联

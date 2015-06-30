@@ -615,7 +615,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 			OrderId:    this.GetDomainId(),
 			Type:       "backcash",
 			Fee:        float32(cpv.BackFee),
-			Log:        fmt.Sprintf("返现￥%.2f元,订单号:%s", cpv.BackFee, this._value.OrderNo),
+			Log:        fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, this._value.OrderNo),
 			State:      1,
 			RecordTime: acc.UpdateTime,
 		}

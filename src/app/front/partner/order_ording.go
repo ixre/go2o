@@ -63,19 +63,19 @@ func (this *orderC) setState(ctx *web.Context,
 		descript = `<span style="color:red">订单已经作废！</span>`
 	case enum.ORDER_CREATED:
 		descript = "确认订单无误后，点击按钮进行下一步.."
-		button = `<input type="button" id="btn2" value="确认订单"/>`
+		button = `<input class="btn" type="button" id="btn2" value="确认订单"/>`
 	case enum.ORDER_CONFIRMED:
-		button = `<input type="button" id="btn2" value="开始处理订单"/>`
+		button = `<input class="btn" type="button" id="btn2" value="开始处理订单"/>`
 	case enum.ORDER_PROCESSING:
-		button = `<input type="button" id="btn2" value="开始配送"/>`
+		button = `<input class="btn" type="button" id="btn2" value="开始配送"/>`
 	case enum.ORDER_SENDING:
-		button = `<input type="button" id="btn2" value="确认收货"/>`
+		button = `<input class="btn" type="button" id="btn2" value="确认收货"/>`
 	case enum.ORDER_RECEIVED:
 		if order.IsPaid == 0 {
 			descript = `<span style="color:red">订单尚未付款,如果已经付款，请人工手动付款！</span>`
 		} else {
 			descript = "如果已收货，点击按钮完成订单"
-			button = `<input type="button" id="btn2" value="完成订单"/>`
+			button = `<input class="btn" type="button" id="btn2" value="完成订单"/>`
 		}
 	}
 

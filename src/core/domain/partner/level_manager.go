@@ -161,12 +161,12 @@ func (this *LevelManager) getMaxLevelValue() int {
 // 根据经验值获取等级
 func (this *LevelManager) GetLevelValueByExp(exp int) int {
 	var lv *valueobject.MemberLevel
+	var levelVal int
 	for i := len(this.GetLevelSet()); i > 0; i-- {
 		lv = this.GetLevelSet()[i-1]
-		if exp >= lv.RequireExp {
-			return lv.Value
+		if exp >= lv.RequireExp && lv.Value > levelVal {
+			levelVal = lv.Value
 		}
 	}
-	return 1
-	//return this._rep.GetLevelValueByExp(this._partnerId, exp)
+	return levelVal
 }
