@@ -935,6 +935,36 @@ INSERT INTO `pt_order_log` VALUES (1,187,1,'订单已经确认',NULL,2015),(2,18
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pt_order_pb`
+--
+
+DROP TABLE IF EXISTS `pt_order_pb`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_order_pb` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `promotion_id` int(11) DEFAULT NULL,
+  `promotion_type` int(11) DEFAULT NULL,
+  `order_no` varchar(45) DEFAULT NULL,
+  `title` varchar(100) DEFAULT NULL,
+  `save_fee` float(8,2) DEFAULT NULL,
+  `present_integral` int(11) DEFAULT NULL,
+  `is_apply` tinyint(1) DEFAULT NULL,
+  `is_confirm` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_order_pb`
+--
+
+LOCK TABLES `pt_order_pb` WRITE;
+/*!40000 ALTER TABLE `pt_order_pb` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_order_pb` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pt_page`
 --
 
@@ -1332,4 +1362,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-29 17:29:14
+-- Dump completed on 2015-06-30 21:12:38
