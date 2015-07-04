@@ -78,6 +78,7 @@ var (
 	FRONT_SHOP_STATE_TEXTS = [3]string{"停用", "营业中", "暂停营业"}
 )
 
+// 获取支付方式名称
 func GetPaymentName(i int) string {
 	switch i {
 	case 1:

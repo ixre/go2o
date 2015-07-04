@@ -49,7 +49,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 				</td>
 			</tr>
 		`,
-			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName,v.GoodsNo,
+			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.GoodsNo,
 			FormatFloat(v.SalePrice), v.Num, FormatFloat(v.SalePrice*float32(v.Num)),
 		))
 	}

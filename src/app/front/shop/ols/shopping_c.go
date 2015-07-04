@@ -14,6 +14,7 @@ import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/dto"
@@ -273,27 +274,32 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 	}
 	r := ctx.Request
 
-	p := this.GetPartner(ctx)
-	m := this.GetMember(ctx)
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 
-	siteConf := this.GetSiteConf(ctx)
+	siteConf := this.BaseC.GetSiteConf(ctx)
 	var payHtml string // 支付HTML
+	var payOpt string
+	var payHelp string
 
 	orderNo := r.URL.Query().Get("order_no")
 	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
 	if order != nil {
-		if order.PaymentOpt == 2 {
-			payHtml = fmt.Sprintf(`<div class="payment_button"><a href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
-				order.OrderNo, "在线支付")
+		if order.PaymentOpt == enum.PaymentOnlinePay {
+			payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn" href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+				order.OrderNo, "立即支付")
 		}
+		payOpt = enum.GetPaymentName(order.PaymentOpt)
+		payHelp = enum.GetPaymentHelpContent(order.PaymentOpt)
 
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"partner": p,
-			"title":   "订单成功-" + p.Name,
-			"member":  m,
-			"conf":    siteConf,
-			"order":   order,
-			"payHtml": template.HTML(payHtml),
+			"partner":      p,
+			"member":       m,
+			"conf":         siteConf,
+			"order":        order,
+			"payment_opt":  payOpt,
+			"payment_html": template.HTML(payHtml),
+			"payment_help": template.HTML(payHelp),
 		},
 			"views/shop/ols/{device}/order_finish.html",
 			"views/shop/ols/{device}/inc/header.html",
