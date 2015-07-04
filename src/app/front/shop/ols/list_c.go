@@ -192,7 +192,7 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 			"items": template.HTML(buf.Bytes()),
 			"pager": template.HTML(pagerHtml),
 		},
-			"views/shop/ols/{device}/list.html",
+			"views/shop/ols/{device}/sale_tag.html",
 			"views/shop/ols/{device}/inc/header.html",
 			"views/shop/ols/{device}/inc/footer.html")
 	}
