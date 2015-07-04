@@ -223,6 +223,11 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
+
+	if !this.lockOrder(ctx){
+		return
+	}
+
 	r, w := ctx.Request, ctx.Response
 	p := this.BaseC.GetPartner(ctx)
 	m := this.BaseC.GetMember(ctx)
@@ -236,6 +241,8 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode)
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
+
+		this.releaseOrder(ctx);
 		return
 	}
 
@@ -243,6 +250,23 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	this.emptyShoppingCart(ctx)
 
 	w.Write([]byte(`{"result":true,"data":"` + order_no + `"}`))
+	this.releaseOrder(ctx);
+}
+
+// 锁定，防止重复下单，返回false,表示正在处理订单
+func (this *ShoppingC) lockOrder(ctx *web.Context)bool{
+	s := ctx.Session()
+	v := s.Get("shopping_lock")
+	if v != nil{
+		return false
+	}
+	s.Set("shopping_lock","1")
+	s.Save()
+	return true
+}
+func (this *ShoppingC) releaseOrder(ctx *web.Context){
+	ctx.Session().Remove("shopping_lock")
+	ctx.Session().Save()
 }
 
 // 清除购物车
