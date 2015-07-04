@@ -65,5 +65,16 @@ func (this *SaleTag) GetValueGoods(begin, end int) []*valueobject.Goods {
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetValueGoods(this._partnerId, this._value.Id, begin, end)
+	return this._rep.GetValueGoodsBySaleTag(this._partnerId, this._value.Id, begin, end)
+}
+
+// 获取标签下的分页商品
+func (this *SaleTag) GetPagedValueGoods(begin, end int) (int, []*valueobject.Goods) {
+	if begin < 0 || begin > end {
+		begin = 0
+	}
+	if end <= 0 {
+		end = 5
+	}
+	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId, this._value.Id, begin, end)
 }

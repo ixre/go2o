@@ -53,7 +53,7 @@ func registerRoutes() {
 	routes.Register("cart", cc)
 	routes.Register("user", uc)
 	routes.Register("content", ctc)
-	routes.Register("pay",pc)
+	routes.Register("pay", pc)
 
 	//处理错误
 	routes.DeferFunc(func(ctx *web.Context) {

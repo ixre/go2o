@@ -33,7 +33,10 @@ type ISaleTagRep interface {
 	SaveSaleTag(partnerId int, v *ValueSaleTag) (int, error)
 
 	// 获取商品
-	GetValueGoods(partnerId, tagId, begin, end int) []*valueobject.Goods
+	GetValueGoodsBySaleTag(partnerId, tagId, begin, end int) []*valueobject.Goods
+
+	// 获取分页商品
+	GetPagedValueGoodsBySaleTag(partnerId, tagId, begin, end int) (int, []*valueobject.Goods)
 
 	// 获取商品的销售标签
 	GetItemSaleTags(itemId int) []*ValueSaleTag

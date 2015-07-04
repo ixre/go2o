@@ -87,6 +87,7 @@ func (this *ListC) getIdArray(path string) []int {
 	return intArr
 }
 
+// 商品列表
 func (this *ListC) List_Index(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
@@ -143,6 +144,61 @@ func (this *ListC) List_Index(ctx *web.Context) {
 	}
 }
 
+// 销售标签列表
+func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
+		r := ctx.Request
+		p := this.BaseC.GetPartner(ctx)
+
+		const size int = 20
+		page, _ := strconv.Atoi(r.FormValue("page"))
+		if page < 1 {
+			page = 1
+		}
+		i := strings.LastIndex(r.URL.Path, "/")
+		tag := r.URL.Path[i+1:]
+
+		total, items := dps.SaleService.GetPagedValueGoodsBySaleTag(p.Id, tag, (page-1)*size, page*size)
+		var pagerHtml string
+		if total > size {
+			pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
+			pager.RecordCount = total
+			pagerHtml = pager.PagerString()
+		}
+
+		buf := bytes.NewBufferString("")
+
+		if len(items) == 0 {
+			buf.WriteString("<div class=\"no_goods\">没有找到商品!</div>")
+		} else {
+			for i, v := range items {
+				buf.WriteString(fmt.Sprintf(`
+				<div class="item-block item-block%d">
+					<a href="/item-%d.htm" class="goods-link">
+                        <img class="goods-img" src="%s" alt="%s"/>
+                        <h3 class="name">%s</h3>
+                        <span class="sale-price">￥%s</span><br />
+                        <span class="market-price"><del>￥%s</del></span>
+					</a>
+                    <div class="clearfix"></div>
+                </div>
+		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
+					v.Name, v.Name, format.FormatFloat(v.SalePrice),
+					format.FormatFloat(v.Price)))
+			}
+		}
+
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"items": template.HTML(buf.Bytes()),
+			"pager": template.HTML(pagerHtml),
+		},
+			"views/shop/ols/{device}/list.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
+	}
+}
+
+// 商品详情
 func (this *ListC) GoodsDetails(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request

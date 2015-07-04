@@ -10,6 +10,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
@@ -84,13 +85,30 @@ func (this *saleTagRep) DeleteSaleTag(partnerId int, id int) error {
 }
 
 // 获取商品
-func (this *saleTagRep) GetValueGoods(partnerId, tagId, begin, end int) []*valueobject.Goods {
+func (this *saleTagRep) GetValueGoodsBySaleTag(partnerId, tagId, begin, end int) []*valueobject.Goods {
 	arr := []*valueobject.Goods{}
 	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
 			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`, partnerId, tagId, begin, end)
 	return arr
+}
+
+// 获取商品
+func (this *saleTagRep) GetPagedValueGoodsBySaleTag(partnerId, tagId, begin, end int) (int, []*valueobject.Goods) {
+	var total int
+	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
+			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
+			WHERE t.partner_id=? AND t.id=?)`), &total, partnerId, tagId)
+	arr := []*valueobject.Goods{}
+	if total > 0 {
+		this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
+			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
+			WHERE t.partner_id=? AND t.id=?) LIMIT ?,?`, partnerId, tagId, begin, end)
+	}
+	return total, arr
 }
 
 // 获取商品的销售标签

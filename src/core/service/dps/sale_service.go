@@ -230,6 +230,15 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begi
 	return make([]*valueobject.Goods, 0)
 }
 
+// 根据分页销售标签获取指定数目的商品
+func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, code string, begin int, end int) (int, []*valueobject.Goods) {
+	sl := this._rep.GetSale(partnerId)
+	if tag := sl.GetSaleTagByCode(code); tag != nil {
+		return tag.GetPagedValueGoods(begin, end)
+	}
+	return 0, make([]*valueobject.Goods, 0)
+}
+
 // 获取商品的会员价
 func (this *saleService) GetGoodsLevelPrices(partnerId, goodsId int) []*sale.MemberPrice {
 	sl := this._rep.GetSale(partnerId)
