@@ -31,12 +31,11 @@ func CartDetails(c *dto.ShoppingCart) string {
 
 	for _, v := range c.Items {
 		byts.WriteString(fmt.Sprintf(`
-			<tr>
-				<td>
-				   <a target="_blank" href="/item-%d.htm">
-				   	<img src="%s" width="45" height="45" class="goods-thumb" />
-				   	%s <span class="small-title">%s</span></a><br />
-				   	商品编号：%s
+			<tr class="goods">
+				<td class="goods-info">
+				   <a target="_blank" href="/item-%d.htm"><img src="%s" class="goods-thumb" />
+				   	<span class="goods-title">%s</span></a>
+				   	<span class="goods-no">商品编号：<i>%s</i></span>
 				</td>
 
 				<td>
@@ -50,7 +49,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 				</td>
 			</tr>
 		`,
-			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.SmallTitle, v.GoodsNo,
+			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName,v.GoodsNo,
 			FormatFloat(v.SalePrice), v.Num, FormatFloat(v.SalePrice*float32(v.Num)),
 		))
 	}

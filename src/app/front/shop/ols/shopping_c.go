@@ -86,7 +86,6 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":     p,
-		"title":       "订单确认-" + p.Name,
 		"member":      m,
 		"cart":        cart,
 		"cartDetails": template.HTML(format.CartDetails(cart)),

@@ -251,12 +251,16 @@ shoppingCart.prototype.retrieval = function (cart,callback){
 };
 
 // 购物车添加项
-shoppingCart.prototype.add = function (goodsId, num,callback) {
+shoppingCart.prototype.add = function (goodsId, num,callback,notify) {
     this.xhr({action: 'add', 'cart.key': this.key, id: goodsId, num: num}, (function (t) {
         return function (obj) {
             if (obj) {
                 if (obj.item == null) {
-                    t.notify(obj.message || obj.error);
+                    if(notify){
+                        notify(obj.message || obj.error);
+                    }else {
+                        t.notify(obj.message || obj.error);
+                    }
                 } else {
                     t.addItem(obj.item,num);
                     if(callback)callback(obj);
