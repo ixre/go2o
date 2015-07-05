@@ -10,7 +10,6 @@ package api
 
 import (
 	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -25,13 +24,9 @@ func (this *partnerC) Index(ctx *web.Context) {
 	ctx.Response.Write([]byte("it's working!"))
 }
 
-// 处理请求
-func (this *partnerC) handle(ctx *web.Context) {
-	mvc.Handle(this, ctx, false)
-}
 
 // 获取广告数据
-func (this *partnerC) GetAd(ctx *web.Context) {
+func (this *partnerC) Get_ad(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	adName := ctx.Request.FormValue("ad_name")
 	adv, data := dps.AdvertisementService.GetAdvertisementAndDataByName(partnerId, adName)

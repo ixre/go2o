@@ -33,11 +33,6 @@ func (this *MemberC) Requesting(ctx *web.Context) bool {
 		this.BaseC.CheckMemberToken(ctx)
 }
 
-// 处理请求
-func (this *MemberC) Handle(ctx *web.Context) {
-	mvc.Handle(this, ctx, false)
-}
-
 // 登陆
 func (this *MemberC) Login(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
