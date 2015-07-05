@@ -224,6 +224,7 @@ func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 	if v == nil {
 		return nil
 	}
+	v.PartnerId = this.GetAggregateRootId()
 	return this._saleTagRep.CreateSaleTag(v)
 }
 

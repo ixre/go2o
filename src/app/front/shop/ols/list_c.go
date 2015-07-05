@@ -22,6 +22,7 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"net/http"
 )
 
 type ListC struct {
@@ -118,14 +119,16 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		} else {
 			for i, v := range items {
 				buf.WriteString(fmt.Sprintf(`
-				<div class="item-block item-block%d">
-					<a href="/item-%d.htm" class="goods-link">
-                        <img class="goods-img" src="%s" alt="%s"/>
-                        <h3 class="name">%s</h3>
-                        <span class="sale-price">￥%s</span><br />
-                        <span class="market-price"><del>￥%s</del></span>
-					</a>
-                    <div class="clearfix"></div>
+				<div class="item item-i%d">
+					<div class="block">
+						<a href="/item-%d.htm" class="goods-link">
+							<img class="goods-img" src="%s" alt="%s"/>
+							<h3 class="name">%s</h3>
+							<span class="sale-price">￥%s</span>
+							<span class="market-price"><del>￥%s</del></span>
+						</a>
+					</div>
+                    <div class="clear-fix"></div>
                 </div>
 		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
 					v.Name, v.Name, format.FormatFloat(v.SalePrice),
@@ -156,9 +159,17 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 			page = 1
 		}
 		i := strings.LastIndex(r.URL.Path, "/")
-		tag := r.URL.Path[i+1:]
+		tagCode := r.URL.Path[i+1:]
 
-		total, items := dps.SaleService.GetPagedValueGoodsBySaleTag(p.Id, tag, (page-1)*size, page*size)
+
+		saleTag := dps.SaleService.GetSaleTagByCode(p.Id, tagCode)
+		if saleTag == nil{
+			http.Error(ctx.Response.ResponseWriter,"404 file not found!",http.StatusNotFound)
+			ctx.Response.WriteHeader(404)
+			return
+		}
+
+		total, items := dps.SaleService.GetPagedValueGoodsBySaleTag(p.Id, saleTag.Id, (page-1)*size, page*size)
 		var pagerHtml string
 		if total > size {
 			pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
@@ -173,14 +184,16 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 		} else {
 			for i, v := range items {
 				buf.WriteString(fmt.Sprintf(`
-				<div class="item-block item-block%d">
-					<a href="/item-%d.htm" class="goods-link">
-                        <img class="goods-img" src="%s" alt="%s"/>
-                        <h3 class="name">%s</h3>
-                        <span class="sale-price">￥%s</span><br />
-                        <span class="market-price"><del>￥%s</del></span>
-					</a>
-                    <div class="clearfix"></div>
+				<div class="item item-i%d">
+					<div class="block">
+						<a href="/item-%d.htm" class="goods-link">
+							<img class="goods-img" src="%s" alt="%s"/>
+							<h3 class="name">%s</h3>
+							<span class="sale-price">￥%s</span>
+							<span class="market-price"><del>￥%s</del></span>
+						</a>
+					</div>
+                    <div class="clear-fix"></div>
                 </div>
 		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
 					v.Name, v.Name, format.FormatFloat(v.SalePrice),
@@ -189,6 +202,7 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 		}
 
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"sale_tag":saleTag,
 			"items": template.HTML(buf.Bytes()),
 			"pager": template.HTML(pagerHtml),
 		},

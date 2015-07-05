@@ -76,5 +76,5 @@ func (this *SaleTag) GetPagedValueGoods(begin, end int) (int, []*valueobject.Goo
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId, this._value.Id, begin, end)
+	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId, this.GetDomainId(), begin, end)
 }

@@ -129,11 +129,11 @@ func (this *saleService) GetCategoryTreeNode(partnerId int) *tree.TreeNode {
 		Icon:   "",
 		Open:   true,
 		Childs: nil}
-	this.iterCategoryTree(rootNode, 0, cats)
+	this.walkCategoryTree(rootNode, 0, cats)
 	return rootNode
 }
 
-func (this *saleService) iterCategoryTree(node *tree.TreeNode, parentId int, categories []sale.ICategory) {
+func (this *saleService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []sale.ICategory) {
 	node.Childs = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
@@ -146,7 +146,7 @@ func (this *saleService) iterCategoryTree(node *tree.TreeNode, parentId int, cat
 				Open:   true,
 				Childs: nil}
 			node.Childs = append(node.Childs, cNode)
-			this.iterCategoryTree(cNode, cate.Id, categories)
+			this.walkCategoryTree(cNode, cate.Id, categories)
 		}
 	}
 }
@@ -187,6 +187,16 @@ func (this *saleService) GetSaleTag(partnerId, id int) *sale.ValueSaleTag {
 	}
 	return nil
 }
+
+// 获取销售标签
+func (this *saleService) GetSaleTagByCode(partnerId int, code string) *sale.ValueSaleTag {
+	sl := this._rep.GetSale(partnerId)
+	if tag := sl.GetSaleTagByCode(code); tag != nil {
+		return tag.GetValue()
+	}
+	return nil
+}
+
 
 // 保存销售标签
 func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, error) {
@@ -231,12 +241,12 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begi
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, code string, begin int, end int) (int, []*valueobject.Goods) {
+func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, tagId int, begin int, end int) (int, []*valueobject.Goods) {
 	sl := this._rep.GetSale(partnerId)
-	if tag := sl.GetSaleTagByCode(code); tag != nil {
-		return tag.GetPagedValueGoods(begin, end)
-	}
-	return 0, make([]*valueobject.Goods, 0)
+	tag := sl.CreateSaleTag(&sale.ValueSaleTag{
+		Id:tagId,
+	})
+	return tag.GetPagedValueGoods(begin, end)
 }
 
 // 获取商品的会员价
