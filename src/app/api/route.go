@@ -24,7 +24,7 @@ func Handle(ctx *web.Context) {
 }
 
 // 处理请求
-func handleUrl(v interface{})func(*web.Context){
+func HandleUrlFunc(v interface{})func(*web.Context){
 	return func(ctx *web.Context){
 		mvc.HandlePath(v,ctx,splitPath(ctx),false)
 	}
@@ -45,9 +45,9 @@ func init() {
 	Routes.Add("/", ApiTest)
 	Routes.Add(PathPrefix+"/mm_login", mc.Login)       // 会员登陆接口
 	Routes.Add(PathPrefix+"/mm_register", mc.Register) // 会员登陆接口
-	Routes.Add(PathPrefix+"/member/*", handleUrl(mc))      // 会员接口
-	Routes.Add(PathPrefix+"/partner/*",handleUrl(pc))     // 会员接口
+	Routes.Add(PathPrefix+"/member/*", HandleUrlFunc(mc))      // 会员接口
+	Routes.Add(PathPrefix+"/partner/*", HandleUrlFunc(pc))     // 会员接口
 
 	// 会员接口
-	Routes.Add("/go2o_api_v1/get/*",handleUrl(gc))
+	Routes.Add("/go2o_api_v1/get/*", HandleUrlFunc(gc))
 }
