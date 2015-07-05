@@ -27,4 +27,7 @@ var (
 
 	ErrOutOfSalePrice *domain.DomainError = domain.NewDomainError(
 		"out_of_sale_price", "超出商品售价")
+
+	ErrInternalDisallow *domain.DomainError = domain.NewDomainError(
+		"err_internal_disallow", "不允许删除内置销售标签！")
 )

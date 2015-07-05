@@ -74,8 +74,6 @@ func (c *partnerC) CreatePartner_post(ctx *web.Context) {
 		result.Result = true
 		if isCreate {
 			// 初始化商户信息
-			dps.PartnerService.InitDefaultLevels(id) // 初始化等级
-			dps.SaleService.InitSaleTags(id)         // 初始化销售标签
 		}
 	}
 	w.Write(result.Marshal())

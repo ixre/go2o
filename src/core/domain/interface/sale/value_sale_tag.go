@@ -24,6 +24,9 @@ type ValueSaleTag struct {
 	// 商品的遮盖图
 	GoodsImage string `db:"goods_image"`
 
+	// 是否内部
+	IsInternal int `db:"is_internal"`
+
 	// 是否启用
 	Enabled int `db:"enabled"`
 }

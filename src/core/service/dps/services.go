@@ -54,7 +54,7 @@ func Init(ctx gof.App) {
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep)
 	MemberService = NewMemberService(memberRep, memberQue)
-	PartnerService = NewPartnerService(partnerRep, partnerQue)
+	PartnerService = NewPartnerService(partnerRep,saleRep,adRep, partnerQue)
 	SaleService = NewSaleService(saleRep, goodsRep)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)

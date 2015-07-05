@@ -17,18 +17,23 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"go2o/src/core/domain/interface/sale"
 )
 
 type partnerService struct {
 	_partnerRep partner.IPartnerRep
 	_adRep      ad.IAdvertisementRep
+	_saleRep    sale.ISaleRep
 	_query      *query.PartnerQuery
 }
 
-func NewPartnerService(r partner.IPartnerRep, q *query.PartnerQuery) *partnerService {
+func NewPartnerService(r partner.IPartnerRep,saleRep sale.ISaleRep,
+	adRep ad.IAdvertisementRep, q *query.PartnerQuery) *partnerService {
 	return &partnerService{
 		_partnerRep: r,
 		_query:      q,
+		_saleRep:saleRep,
+		_adRep:adRep,
 	}
 }
 
@@ -88,6 +93,9 @@ func (this *partnerService) initializePartner(partnerId int) {
 	// 初始化会员默认等级
 	pt, _ := this._partnerRep.GetPartner(partnerId)
 	pt.LevelManager().InitDefaultLevels()
+
+	// 初始化销售标签
+	this._saleRep.GetSale(partnerId).InitSaleTags()
 }
 
 // 根据主机查询商户编号
@@ -207,11 +215,6 @@ func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 	return this._partnerRep.GetPartnerIdByApiId(apiId)
 }
 
-// 初始化默认等级
-func (this *partnerService) InitDefaultLevels(partnerId int) error {
-	pt, _ := this._partnerRep.GetPartner(partnerId)
-	return pt.LevelManager().InitDefaultLevels()
-}
 
 // 获取所有会员等级
 func (this *partnerService) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {

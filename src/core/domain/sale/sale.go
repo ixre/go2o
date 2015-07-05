@@ -191,6 +191,7 @@ func (this *Sale) InitSaleTags() error {
 	for _, v := range arr {
 		v.Enabled = 1
 		v.PartnerId = this._partnerId
+		v.IsInternal = 1
 		_, err = this.CreateSaleTag(&v).Save()
 	}
 
@@ -230,7 +231,14 @@ func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 
 // 删除销售标签
 func (this *Sale) DeleteSaleTag(id int) error {
-	return this._saleTagRep.DeleteSaleTag(this._partnerId, id)
+	v := this.GetSaleTag(id)
+	if v != nil{
+		if v.System() {
+			return sale.ErrInternalDisallow
+		}
+		return this._saleTagRep.DeleteSaleTag(this._partnerId, id)
+	}
+	return nil
 }
 
 // 获取指定的商品快照

@@ -31,7 +31,7 @@ func (this *saleC) TagList(ctx *web.Context) {
 }
 
 //修改门店信息
-func (this *saleC) EditSTag(ctx *web.Context) {
+func (this *saleC) Edit_stag(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -45,7 +45,7 @@ func (this *saleC) EditSTag(ctx *web.Context) {
 		"views/partner/sale/edit_sale_tag.html")
 }
 
-func (this *saleC) CreateSTag(ctx *web.Context) {
+func (this *saleC) Create_stag(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": "{}",
@@ -53,7 +53,7 @@ func (this *saleC) CreateSTag(ctx *web.Context) {
 		"views/partner/sale/create_sale_tag.html")
 }
 
-func (this *saleC) SaveSTag_post(ctx *web.Context) {
+func (this *saleC) Save_stag_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
@@ -74,14 +74,14 @@ func (this *saleC) SaveSTag_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-func (this *saleC) DelMLevel(ctx *web.Context) {
+func (this *saleC) Del_stag_post(ctx *web.Context) {
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
 	partnerId := this.GetPartnerId(ctx)
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
-		err = dps.PartnerService.DelMemberLevel(partnerId, id)
+		err = dps.SaleService.DeleteSaleTag(partnerId, id)
 	}
 
 	if err != nil {

@@ -162,12 +162,6 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	return list
 }
 
-// 初始化销售标签
-func (this *saleService) InitSaleTags(partnerId int) error {
-	sl := this._rep.GetSale(partnerId)
-	return sl.InitSaleTags()
-}
-
 func (this *saleService) GetAllSaleTags(partnerId int) []*sale.ValueSaleTag {
 	sl := this._rep.GetSale(partnerId)
 	tags := sl.GetAllSaleTags()
@@ -247,6 +241,11 @@ func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, tagId int, b
 		Id:tagId,
 	})
 	return tag.GetPagedValueGoods(begin, end)
+}
+
+// 删除销售标签
+func (this *saleService) DeleteSaleTag(partnerId int, id int) error {
+	return this._rep.GetSale(partnerId).DeleteSaleTag(id)
 }
 
 // 获取商品的会员价

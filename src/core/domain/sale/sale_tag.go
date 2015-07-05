@@ -40,14 +40,24 @@ func (this *SaleTag) GetValue() *sale.ValueSaleTag {
 	return this._value
 }
 
+// 是否为系统内置
+func (this *SaleTag) System()bool{
+	return this._value.IsInternal == 1
+}
+
+// 设置值
 func (this *SaleTag) SetValue(v *sale.ValueSaleTag) error {
 	if v != nil {
-		this._value.Enabled = v.Enabled
+		// 如果为系统内置，不能修改名称
+		if !this.System() {
+			this._value.Enabled = v.Enabled
+			this._value.TagCode = v.TagCode
+		}
+		this._value.TagName = v.TagName
 		this._value.GoodsImage = v.GoodsImage
 		if len(v.TagCode) == 0 {
 			this._value.TagCode = v.TagCode
 		}
-		this._value.TagName = v.TagName
 	}
 	return nil
 }

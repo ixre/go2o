@@ -22,6 +22,9 @@ type ISaleTag interface {
 	// 保存
 	Save() (int, error)
 
+	// 是否为系统内置
+	System()bool
+
 	// 获取标签下的商品
 	GetValueGoods(begin, end int) []*valueobject.Goods
 
