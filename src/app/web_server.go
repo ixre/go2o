@@ -58,15 +58,15 @@ func getHttpExecFunc() web.RequestHandler {
 		//	apiserv.Handle(ctx)
 
 		//供应商端
-		case f(host, "partner."):
+		case f(host, variable.DOMAIN_PREFIX_PARTNER):
 			partner.Handle(ctx)
 
 		//会员端
-		case f(host, variable.DOMAIN_MEMBER_PREFIX):
+		case f(host, variable.DOMAIN_PREFIX_MEMBER):
 			ucenter.Handle(ctx)
 
 		//管理中心
-		case f(host, "webmaster."):
+		case f(host, variable.DOMAIN_PREFIX_WEBMASTER):
 			master.Handle(ctx)
 
 		//线上商店

@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	Routes web.Route = new(web.RouteMap)
-	PathPrefix = "/go2o_api_v1"
+	Routes     web.Route = new(web.RouteMap)
+	PathPrefix           = "/go2o_api_v1"
 )
 
 //处理请求
@@ -24,16 +24,15 @@ func Handle(ctx *web.Context) {
 }
 
 // 处理请求
-func HandleUrlFunc(v interface{})func(*web.Context){
-	return func(ctx *web.Context){
-		mvc.HandlePath(v,ctx,splitPath(ctx),false)
+func HandleUrlFunc(v interface{}) func(*web.Context) {
+	return func(ctx *web.Context) {
+		mvc.HandlePath(v, ctx, splitPath(ctx), false)
 	}
 }
 
-func splitPath(ctx *web.Context)string{
+func splitPath(ctx *web.Context) string {
 	return ctx.Request.URL.Path[len(PathPrefix):]
 }
-
 
 func init() {
 	bc := new(BaseC)
@@ -41,12 +40,11 @@ func init() {
 	mc := &MemberC{bc}
 	gc := &getC{bc}
 
-
 	Routes.Add("/", ApiTest)
-	Routes.Add(PathPrefix+"/mm_login", mc.Login)       // 会员登陆接口
-	Routes.Add(PathPrefix+"/mm_register", mc.Register) // 会员登陆接口
-	Routes.Add(PathPrefix+"/member/*", HandleUrlFunc(mc))      // 会员接口
-	Routes.Add(PathPrefix+"/partner/*", HandleUrlFunc(pc))     // 会员接口
+	Routes.Add(PathPrefix+"/mm_login", mc.Login)           // 会员登陆接口
+	Routes.Add(PathPrefix+"/mm_register", mc.Register)     // 会员登陆接口
+	Routes.Add(PathPrefix+"/member/*", HandleUrlFunc(mc))  // 会员接口
+	Routes.Add(PathPrefix+"/partner/*", HandleUrlFunc(pc)) // 会员接口
 
 	// 会员接口
 	Routes.Add("/go2o_api_v1/get/*", HandleUrlFunc(gc))

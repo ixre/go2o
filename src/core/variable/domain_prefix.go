@@ -10,5 +10,7 @@
 package variable
 
 const (
-	DOMAIN_MEMBER_PREFIX = "member"
+	DOMAIN_PREFIX_WEBMASTER = "webmaster."
+	DOMAIN_PREFIX_MEMBER    = "member."
+	DOMAIN_PREFIX_PARTNER   = "partner."
 )

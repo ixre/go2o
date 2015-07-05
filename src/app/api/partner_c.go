@@ -24,7 +24,6 @@ func (this *partnerC) Index(ctx *web.Context) {
 	ctx.Response.Write([]byte("it's working!"))
 }
 
-
 // 获取广告数据
 func (this *partnerC) Get_ad(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
