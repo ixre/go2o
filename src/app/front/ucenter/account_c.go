@@ -25,7 +25,7 @@ type accountC struct {
 	*baseC
 }
 
-func (this *accountC) IncomeLog(ctx *web.Context) {
+func (this *accountC) Income_log(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
@@ -39,7 +39,7 @@ func (this *accountC) IncomeLog(ctx *web.Context) {
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-func (this *accountC) IncomeLog_post(ctx *web.Context) {
+func (this *accountC) Income_log_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	r := ctx.Request
 	r.ParseForm()
@@ -52,7 +52,7 @@ func (this *accountC) IncomeLog_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(pager)
 }
 
-func (this *accountC) ApplyCash(ctx *web.Context) {
+func (this *accountC) Apply_cash(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
@@ -73,7 +73,7 @@ func (this *accountC) ApplyCash(ctx *web.Context) {
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-func (this *accountC) ApplyCash_post(ctx *web.Context) {
+func (this *accountC) Apply_cash_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
@@ -92,7 +92,7 @@ func (this *accountC) ApplyCash_post(ctx *web.Context) {
 
 }
 
-func (this *accountC) IntegralExchange(ctx *web.Context) {
+func (this *accountC) Integral_exchange(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
