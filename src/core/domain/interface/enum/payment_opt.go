@@ -13,7 +13,7 @@ var (
 	PaymentHelpContents []string = []string{
 		"<span style='color:red'>请完成最后一步，点击按钮在线支付订单。</span>",
 		"请您在收到商品时候，现金支付，或使用POS机刷卡(不同地区可能不支持).",
-		"请通过银行汇款至我们的银行账户后，并联系客服进行订单付款。详情点击<a target='_blank' href='/content/page?id=bank_transfer'>这里</a>查看。",
+		"请通过银行汇款至我们的银行账户后，并联系客服进行订单付款。详情点击<a target='_blank' href='/content/page?id=bank-transfer'>这里</a>查看。",
 	}
 )
 
