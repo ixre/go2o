@@ -36,7 +36,6 @@ func (this *partnerC) GetAd(ctx *web.Context) {
 	adName := ctx.Request.FormValue("ad_name")
 	adv, data := dps.AdvertisementService.GetAdvertisementAndDataByName(partnerId, adName)
 	if data != nil {
-
 		// 图片广告
 		if adv.Type == ad.TypeGallery {
 			gv := data.(ad.ValueGallery)
@@ -47,10 +46,10 @@ func (this *partnerC) GetAd(ctx *web.Context) {
 					}
 				}
 			}
-			this.JsonOutput(ctx, gv)
+			ctx.Response.JsonOutput(gv)
 			return
 		}
-		this.JsonOutput(ctx, data)
+		ctx.Response.JsonOutput(data)
 	} else {
 		this.ErrorOutput(ctx, "没有广告数据")
 	}

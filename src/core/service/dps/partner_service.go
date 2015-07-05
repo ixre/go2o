@@ -13,11 +13,11 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
-	"go2o/src/core/domain/interface/sale"
 )
 
 type partnerService struct {
@@ -27,13 +27,13 @@ type partnerService struct {
 	_query      *query.PartnerQuery
 }
 
-func NewPartnerService(r partner.IPartnerRep,saleRep sale.ISaleRep,
+func NewPartnerService(r partner.IPartnerRep, saleRep sale.ISaleRep,
 	adRep ad.IAdvertisementRep, q *query.PartnerQuery) *partnerService {
 	return &partnerService{
 		_partnerRep: r,
 		_query:      q,
-		_saleRep:saleRep,
-		_adRep:adRep,
+		_saleRep:    saleRep,
+		_adRep:      adRep,
 	}
 }
 
@@ -214,7 +214,6 @@ func (this *partnerService) GetApiInfo(partnerId int) *partner.ApiInfo {
 func (this *partnerService) GetPartnerIdByApiId(apiId string) int {
 	return this._partnerRep.GetPartnerIdByApiId(apiId)
 }
-
 
 // 获取所有会员等级
 func (this *partnerService) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {

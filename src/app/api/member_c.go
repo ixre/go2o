@@ -62,8 +62,7 @@ func (this *MemberC) Login(ctx *web.Context) {
 				result.Message = err.Error()
 			}
 		}
-
-		this.JsonOutput(ctx, result)
+		ctx.Response.JsonOutput(result)
 	}
 }
 
@@ -91,7 +90,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
 			if invMemberId == 0 {
 				result.Message = "推荐/邀请人不存在！"
-				this.JsonOutput(ctx, result)
+				ctx.Response.JsonOutput(result)
 				return
 			}
 		}
@@ -112,7 +111,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 			result.Message = err.Error()
 		}
 
-		this.JsonOutput(ctx, result)
+		ctx.Response.JsonOutput(result)
 	}
 }
 
@@ -124,5 +123,5 @@ func (this *MemberC) Disconnect(ctx *web.Context) {
 	} else {
 		result.Message = "disconnect fail"
 	}
-	this.JsonOutput(ctx, result)
+	ctx.Response.JsonOutput(result)
 }

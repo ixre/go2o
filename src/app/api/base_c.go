@@ -9,7 +9,6 @@
 package api
 
 import (
-	"encoding/json"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/app/util"
@@ -18,13 +17,25 @@ import (
 
 // 检查是否有权限调用接口(商户)
 func chkApiSecret(ctx *web.Context) bool {
-	apiId := ctx.Request.FormValue("partner_id")
-	apiSecret := ctx.Request.FormValue("secret")
+	apiId, apiSecret := getUserInfo(ctx)
 	ok, partnerId := CheckApiPermission(apiId, apiSecret)
 	if ok {
 		ctx.Items["partner_id"] = partnerId
 	}
 	return ok
+}
+
+func getUserInfo(ctx *web.Context) (string, string) {
+	apiId := ctx.Request.FormValue("partner_id")
+	apiSecret := ctx.Request.FormValue("secret")
+
+	if len(apiId) == 0 {
+		apiId = ctx.Request.URL.Query().Get("partner_id")
+	}
+	if len(apiSecret) == 0 {
+		apiSecret = ctx.Request.URL.Query().Get("secret")
+	}
+	return apiId, apiSecret
 }
 
 var _ mvc.Filter = new(BaseC)
@@ -57,16 +68,6 @@ func (this *BaseC) CheckMemberToken(ctx *web.Context) bool {
 	}
 	this.ErrorOutput(ctx, "invalid request!")
 	return false
-}
-
-// 输出Json
-func (this *BaseC) JsonOutput(ctx *web.Context, v interface{}) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		this.ErrorOutput(ctx, err.Error())
-	} else {
-		ctx.Response.Write(b)
-	}
 }
 
 // 输出错误信息

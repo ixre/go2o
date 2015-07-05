@@ -66,7 +66,7 @@ func registerRoutes() {
 	routes.Add("/cart_api_v1", cc.CartApiHandle)
 	// 首页
 	routes.Add("/", mc.Index)
-	routes.Add("/st/*",lc.SaleTagGoodsList)
+	routes.Add("/st/*", lc.SaleTagGoodsList)
 	routes.Add("/user/jump_m", uc.JumpToMCenter)
 	routes.Add("^/c-[0-9-]+.htm", lc.List_Index)
 	routes.Add("^/item-[0-9-]+.htm", lc.GoodsDetails)

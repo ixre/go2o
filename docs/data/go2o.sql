@@ -282,6 +282,7 @@ CREATE TABLE `gs_sale_tag` (
   `tag_code` varchar(45) DEFAULT NULL,
   `tag_name` varchar(45) DEFAULT NULL,
   `goods_image` varchar(100) DEFAULT NULL,
+  `is_internal` tinyint(1) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
@@ -293,7 +294,7 @@ CREATE TABLE `gs_sale_tag` (
 
 LOCK TABLES `gs_sale_tag` WRITE;
 /*!40000 ALTER TABLE `gs_sale_tag` DISABLE KEYS */;
-INSERT INTO `gs_sale_tag` VALUES (1,102,'host-sales','热销商品',NULL,1),(2,101,'new-goods','新品上架',NULL,1),(3,101,'hot-sales','热销商品',NULL,1),(4,101,'special-goods','特色商品',NULL,1),(5,101,'prom-sales','优惠促销',NULL,1),(6,101,'clean-goods','尾品清仓',NULL,1);
+INSERT INTO `gs_sale_tag` VALUES (1,102,'host-sales','热销商品',NULL,NULL,1),(2,101,'new-goods','新品上架',NULL,NULL,1),(3,101,'hot-sales','热销商品',NULL,NULL,1),(4,101,'special-goods','特色商品',NULL,NULL,1),(5,101,'prom-sales','优惠促销',NULL,NULL,1),(6,101,'clean-goods','尾品清仓',NULL,NULL,1);
 /*!40000 ALTER TABLE `gs_sale_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1362,4 +1363,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-06-30 21:12:38
+-- Dump completed on 2015-07-05 14:10:02

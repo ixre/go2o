@@ -232,7 +232,7 @@ func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 // 删除销售标签
 func (this *Sale) DeleteSaleTag(id int) error {
 	v := this.GetSaleTag(id)
-	if v != nil{
+	if v != nil {
 		if v.System() {
 			return sale.ErrInternalDisallow
 		}

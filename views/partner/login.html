@@ -91,7 +91,7 @@ p {
 	                        if (json.message.indexOf('验证码') != -1) {
 	                            refreshImage();
 	                        }
-	                        tip.innerHTML = '<span style="color:red">提示：' + json.Message + '</span>';
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
 	                    }
 	                }, function (x) {
 	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';

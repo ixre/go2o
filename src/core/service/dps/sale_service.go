@@ -191,7 +191,6 @@ func (this *saleService) GetSaleTagByCode(partnerId int, code string) *sale.Valu
 	return nil
 }
 
-
 // 保存销售标签
 func (this *saleService) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, error) {
 	sl := this._rep.GetSale(partnerId)
@@ -238,7 +237,7 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begi
 func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, tagId int, begin int, end int) (int, []*valueobject.Goods) {
 	sl := this._rep.GetSale(partnerId)
 	tag := sl.CreateSaleTag(&sale.ValueSaleTag{
-		Id:tagId,
+		Id: tagId,
 	})
 	return tag.GetPagedValueGoods(begin, end)
 }

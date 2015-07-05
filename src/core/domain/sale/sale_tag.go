@@ -41,7 +41,7 @@ func (this *SaleTag) GetValue() *sale.ValueSaleTag {
 }
 
 // 是否为系统内置
-func (this *SaleTag) System()bool{
+func (this *SaleTag) System() bool {
 	return this._value.IsInternal == 1
 }
 

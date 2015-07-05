@@ -20,9 +20,9 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"html/template"
+	"net/http"
 	"strconv"
 	"strings"
-	"net/http"
 )
 
 type ListC struct {
@@ -161,10 +161,9 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 		i := strings.LastIndex(r.URL.Path, "/")
 		tagCode := r.URL.Path[i+1:]
 
-
 		saleTag := dps.SaleService.GetSaleTagByCode(p.Id, tagCode)
-		if saleTag == nil{
-			http.Error(ctx.Response.ResponseWriter,"404 file not found!",http.StatusNotFound)
+		if saleTag == nil {
+			http.Error(ctx.Response.ResponseWriter, "404 file not found!", http.StatusNotFound)
 			ctx.Response.WriteHeader(404)
 			return
 		}
@@ -202,9 +201,9 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 		}
 
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"sale_tag":saleTag,
-			"items": template.HTML(buf.Bytes()),
-			"pager": template.HTML(pagerHtml),
+			"sale_tag": saleTag,
+			"items":    template.HTML(buf.Bytes()),
+			"pager":    template.HTML(pagerHtml),
 		},
 			"views/shop/ols/{device}/sale_tag.html",
 			"views/shop/ols/{device}/inc/header.html",

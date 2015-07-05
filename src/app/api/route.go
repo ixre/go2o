@@ -10,10 +10,12 @@ package api
 
 import (
 	"github.com/atnet/gof/web"
+	"github.com/atnet/gof/web/mvc"
 )
 
 var (
 	Routes web.Route = new(web.RouteMap)
+	PathPrefix = "/go2o_api_v1"
 )
 
 //处理请求
@@ -21,13 +23,25 @@ func Handle(ctx *web.Context) {
 	Routes.Handle(ctx)
 }
 
+func splitPath(ctx *web.Context)string{
+	return ctx.Request.URL.Path[len(PathPrefix):]
+}
+
 func init() {
 	bc := new(BaseC)
 	pc := &partnerC{bc}
 	mc := &MemberC{bc}
+	gc := &getC{bc}
+
+
 	Routes.Add("/", ApiTest)
-	Routes.Add("/go2o_api_v1/mm_login", mc.Login)       // 会员登陆接口
-	Routes.Add("/go2o_api_v1/mm_register", mc.Register) // 会员登陆接口
-	Routes.Add("/go2o_api_v1/member/*", mc.Handle)      // 会员接口
-	Routes.Add("/go2o_api_v1/partner/*", pc.handle)     // 会员接口
+	Routes.Add(PathPrefix+"/mm_login", mc.Login)       // 会员登陆接口
+	Routes.Add(PathPrefix+"/mm_register", mc.Register) // 会员登陆接口
+	Routes.Add(PathPrefix+"/member/*", mc.Handle)      // 会员接口
+	Routes.Add(PathPrefix+"/partner/*", pc.handle)     // 会员接口
+
+	// 会员接口
+	Routes.Add("/go2o_api_v1/get/*", func(ctx *web.Context) {
+		mvc.HandlePath(gc,ctx,splitPath(ctx),false)
+	})
 }
