@@ -29,7 +29,7 @@ func (this *orderC) Complete(ctx *web.Context) {
 		"views/ucenter/{device}/order/complete.html")
 }
 
-func (this *orderC) Orders(ctx *web.Context) {
+func (this *orderC) Order(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)

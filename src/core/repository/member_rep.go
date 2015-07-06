@@ -114,7 +114,7 @@ func (this *memberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel
 
 // 获取会员最后更新时间
 func (this *memberRep) GetMemberLatestUpdateTime(id int)int64{
-	var updateTime int
+	var updateTime int64
 	this.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`, &updateTime,id)
 	return updateTime
 }

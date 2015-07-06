@@ -47,7 +47,7 @@ func cashBack3R(m member.IMember, order *shopping.ValueOrder, c promotion.ICashB
 			break
 		}
 
-		cm, _ = memberRep.GetMember(rl.InvitationMemberId)
+		cm = memberRep.GetMember(rl.InvitationMemberId)
 		if m == nil {
 			break
 		}

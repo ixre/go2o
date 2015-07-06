@@ -477,71 +477,73 @@ func (this *Order) SignReceived() error {
 func (this *Order) Complete() error {
 	now := time.Now().Unix()
 	v := this._value
-	m, err := this._memberRep.GetMember(v.MemberId)
+	m := this._memberRep.GetMember(v.MemberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	var err error
+	var ptl partner.IPartner
+	ptl, err = this._partnerRep.GetPartner(v.PartnerId)
+	if err != nil {
+		log.Println("供应商异常!", v.PartnerId)
+		log.PrintErr(err)
+		return err
+	}
+
+	pv := ptl.GetValue()
+	if pv.ExpiresTime < time.Now().Unix() {
+		return errors.New("您的账户已经过期!")
+	}
+
+	//返现比例
+	saleConf := ptl.GetSaleConf()
+	back_fee := v.Fee * saleConf.CashBackPercent
+
+	//将此次消费记入会员账户
+	this.updateShoppingMemberAccount(ptl, m,
+		back_fee*saleConf.CashBackMemberPercent, now)
+
+	//todo: 增加阶梯的返积分,比如订单满30送100积分
+	backIntegral := int(v.Fee)*saleConf.IntegralBackNum +
+	saleConf.IntegralBackExtra
+
+	//判断是否满足升级条件
+	if backIntegral != 0 {
+		err = m.AddIntegral(v.PartnerId, enum.INTEGRAL_TYPE_ORDER,
+			backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
+		if err != nil {
+			return err
+		}
+	}
+
+	// 增加经验
+	if EXP_BIT == 0 {
+		fv := infrastructure.GetApp().
+		Config().GetFloat(variable.EXP_BIT)
+		EXP_BIT = float32(fv)
+	}
+
+	if EXP_BIT == 0 {
+		log.Println("[WANNING]:Exp_bit not set!")
+	}
+
+	err = m.AddExp(int(v.Fee * EXP_BIT))
+	if err != nil {
+		return err
+	}
+
+	this._value.Status = enum.ORDER_COMPLETED
+	this._value.IsSuspend = 0
+	this._value.UpdateTime = now
+
+	_, err = this.Save()
+
 	if err == nil {
-		var ptl partner.IPartner
-		ptl, err = this._partnerRep.GetPartner(v.PartnerId)
-		if err != nil {
-			log.Println("供应商异常!", v.PartnerId)
-			log.PrintErr(err)
-			return err
-		}
-
-		pv := ptl.GetValue()
-		if pv.ExpiresTime < time.Now().Unix() {
-			return errors.New("您的账户已经过期!")
-		}
-
-		//返现比例
-		saleConf := ptl.GetSaleConf()
-		back_fee := v.Fee * saleConf.CashBackPercent
-
-		//将此次消费记入会员账户
-		this.updateShoppingMemberAccount(ptl, m,
-			back_fee*saleConf.CashBackMemberPercent, now)
-
-		//todo: 增加阶梯的返积分,比如订单满30送100积分
-		backIntegral := int(v.Fee)*saleConf.IntegralBackNum +
-			saleConf.IntegralBackExtra
-
-		//判断是否满足升级条件
-		if backIntegral != 0 {
-			err = m.AddIntegral(v.PartnerId, enum.INTEGRAL_TYPE_ORDER,
-				backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
-			if err != nil {
-				return err
-			}
-		}
-
-		// 增加经验
-		if EXP_BIT == 0 {
-			fv := infrastructure.GetApp().
-				Config().GetFloat(variable.EXP_BIT)
-			EXP_BIT = float32(fv)
-		}
-
-		if EXP_BIT == 0 {
-			log.Println("[WANNING]:Exp_bit not set!")
-		}
-
-		err = m.AddExp(int(v.Fee * EXP_BIT))
-		if err != nil {
-			return err
-		}
-
-		this._value.Status = enum.ORDER_COMPLETED
-		this._value.IsSuspend = 0
-		this._value.UpdateTime = now
-
-		_, err := this.Save()
-
-		if err == nil {
-			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
-			// 处理返现促销
-			this.handleCashBackPromotions(ptl, m)
-			// 三级返现
-			this.backFor3R(ptl, m, back_fee, now)
-		}
+		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
+		// 处理返现促销
+		this.handleCashBackPromotions(ptl, m)
+		// 三级返现
+		this.backFor3R(ptl, m, back_fee, now)
 	}
 	return err
 }
@@ -641,7 +643,7 @@ func (this *Order) backFor3R(pt partner.IPartner, m member.IMember,
 			break
 		}
 
-		m, _ = this._memberRep.GetMember(rl.InvitationMemberId)
+		m = this._memberRep.GetMember(rl.InvitationMemberId)
 		if m == nil {
 			break
 		}

@@ -21,16 +21,16 @@ import (
 )
 
 type mainC struct {
-	*baseC
+	base *baseC
 }
 
 //todo:bug 当在UCenter登陆，会话会超时
 func (this *mainC) Index(ctx *web.Context) {
-	if this.Requesting(ctx) {
-		mm := this.GetMember(ctx)
-		p := this.GetPartner(ctx)
+	if this.base.Requesting(ctx) {
+		mm := this.base.GetMember(ctx)
+		p := this.base.GetPartner(ctx)
 
-		conf := this.GetSiteConf(p.Id)
+		conf := this.base.GetSiteConf(p.Id)
 
 		acc := dps.MemberService.GetAccount(mm.Id)
 		js, _ := json.Marshal(mm)
@@ -44,7 +44,7 @@ func (this *mainC) Index(ctx *web.Context) {
 		//			nextLv = lv
 		//		}
 
-		this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		this.base.ExecuteTemplate(ctx, gof.TemplateDataMap{
 			"level": lv,
 			//"nLevel":       nextLv,
 			"member":       mm,

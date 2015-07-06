@@ -102,7 +102,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			//  更新登陆后的优惠价
 			if this._value.BuyerId > 0 {
 				sl = this._saleRep.GetSale(this._partnerId)
-				m, _ := this._memberRep.GetMember(this._value.BuyerId)
+				m := this._memberRep.GetMember(this._value.BuyerId)
 				if m != nil {
 					level = m.GetValue().Level
 				}
@@ -256,10 +256,9 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 	}
 
 	if this._value.BuyerId > 0 && deliverId > 0 {
-		var m member.IMember
-		m, err = this._memberRep.GetMember(this._value.BuyerId)
-		if err != nil {
-			return err
+		var m member.IMember = this._memberRep.GetMember(this._value.BuyerId)
+		if m == nil {
+			return member.ErrNoSuchMember
 		}
 		deliver = m.GetDeliver(deliverId)
 		if deliver == nil {
@@ -286,8 +285,8 @@ func (this *Cart) GetSettleData() (s partner.IShop, d member.IDeliver, paymentOp
 	}
 	if this._value.DeliverId > 0 && this._deliver == nil {
 		var m member.IMember
-		m, err = this._memberRep.GetMember(this._value.BuyerId)
-		if err == nil {
+		m = this._memberRep.GetMember(this._value.BuyerId)
+		if m != nil{
 			this._deliver = m.GetDeliver(this._value.DeliverId)
 		}
 	}

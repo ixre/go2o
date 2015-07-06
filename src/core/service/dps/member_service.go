@@ -14,7 +14,6 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
-	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 	"time"
 	"go2o/src/core/dto"
@@ -33,8 +32,8 @@ func NewMemberService(rep member.IMemberRep, q *query.MemberQuery) *memberServic
 }
 
 func (this *memberService) GetMember(id int) *member.ValueMember {
-	v, err := this._memberRep.GetMember(id)
-	if err == nil {
+	v := this._memberRep.GetMember(id)
+	if v != nil {
 		nv := v.GetValue()
 		return &nv
 	}
@@ -53,10 +52,9 @@ func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 }
 
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
-	m, err := this._memberRep.GetMember(v.Id)
-	if err != nil {
-		log.PrintErr(err)
-		return -1, errors.New("no such member")
+	m := this._memberRep.GetMember(v.Id)
+	if m == nil {
+		return -1, member.ErrNoSuchMember
 	}
 	mv := m.GetValue()
 
@@ -83,9 +81,9 @@ func (this *memberService) createMember(v *member.ValueMember) (int, error) {
 }
 
 func (this *memberService) SaveRelation(memberId int, cardId string, invitationId, partnerId int) error {
-	m, err := this._memberRep.GetMember(memberId)
-	if err != nil {
-		return errors.New("no such member")
+	m := this._memberRep.GetMember(memberId)
+	if  m== nil {
+		return member.ErrNoSuchMember
 	}
 
 	rl := m.GetRelation()
@@ -97,7 +95,7 @@ func (this *memberService) SaveRelation(memberId int, cardId string, invitationI
 }
 
 func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
-	if m, err := this._memberRep.GetMember(memberId); err == nil {
+	if m := this._memberRep.GetMember(memberId); m != nil {
 		return m.GetLevel()
 	}
 	return nil
@@ -109,12 +107,8 @@ func (this *memberService) GetRelation(memberId int) member.MemberRelation {
 
 // 锁定/解锁会员
 func (this *memberService) LockMember(partnerId, id int) (bool, error) {
-	m, err := this._memberRep.GetMember(id)
-	if err != nil {
-		return false, err
-	}
-
-	if m == nil {
+	m  := this._memberRep.GetMember(id)
+	if  m == nil {
 		return false, member.ErrNoSuchMember
 	}
 
@@ -140,7 +134,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 		return false, nil, errors.New("会员已停用")
 	}
 
-	m, _ := this._memberRep.GetMember(val.Id)
+	m := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
 	if partnerId != -1 && rl.RegisterPartnerId != partnerId {
@@ -220,8 +214,11 @@ func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) err
 }
 
 func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
-	m, _ := this._memberRep.GetMember(memberId)
-	return m.ModifyPassword(newPwd, oldPwd)
+	m := this._memberRep.GetMember(memberId)
+	if m != nil {
+		return m.ModifyPassword(newPwd, oldPwd)
+	}
+	return member.ErrNoSuchMember
 }
 
 //判断会员是否由指定会员邀请推荐的
