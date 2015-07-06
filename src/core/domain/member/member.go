@@ -9,9 +9,10 @@
 
 package member
 
+//todo: 要注意UpdateTime的更新
+
 import (
 	"errors"
-	"fmt"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
@@ -114,7 +115,7 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 		this._bank.State = v.State
 	}
 	this._bank.UpdateTime = time.Now().Unix()
-	//this.bank.MemberId = this.value.Id
+	//this._bank.MemberId = this.value.Id
 	return this._rep.SaveBankInfo(this._bank)
 }
 
@@ -132,10 +133,8 @@ func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {
 
 // 增加经验值
 func (this *Member) AddExp(exp int) error {
-	fmt.Printf("---%+v - %d", this._value, exp)
 	this._value.Exp += exp
 	_, err := this.Save()
-
 	//判断是否升级
 	this.checkUpLevel()
 
@@ -146,8 +145,8 @@ func (this *Member) AddExp(exp int) error {
 func (this *Member) getLevelManager() partner.ILevelManager {
 	if this._levelManager == nil {
 		rl := this.GetRelation()
-		parterId := rl.RegisterPartnerId
-		this._levelManager = partnerImpl.NewLevelManager(parterId, this._rep)
+		partnerId := rl.RegisterPartnerId
+		this._levelManager = partnerImpl.NewLevelManager(partnerId, this._rep)
 	}
 	return this._levelManager
 
@@ -186,7 +185,6 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 // 检查升级
 func (this *Member) checkUpLevel() bool {
 	levelValue := this.getLevelManager().GetLevelValueByExp(this._value.Exp)
-	fmt.Println("----", this._value.Exp, levelValue)
 	if levelValue != 0 && this._value.Level < levelValue {
 		this._value.Level = levelValue
 		this.Save()
@@ -206,7 +204,7 @@ func (this *Member) GetRelation() *member.MemberRelation {
 
 // 保存
 func (this *Member) Save() (int, error) {
-
+	this._value = time.Now().Unix()	// 更新时间，数据以更新时间触发
 	if this._value.Id > 0 {
 		return this._rep.SaveMember(this._value)
 	}

@@ -41,13 +41,14 @@ func (this *memberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 	return e
 }
 
-func (this *memberRep) GetMember(memberId int) (member.IMember, error) {
+// 获取会员
+func (this *memberRep) GetMember(memberId int) (member.IMember) {
 	e := &member.ValueMember{}
 	err := this.Connector.GetOrm().Get(memberId, e)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		return memberImpl.NewMember(e, this)
 	}
-	return memberImpl.NewMember(e, this), err
+	return nil
 }
 
 // 创建会员
@@ -108,6 +109,16 @@ func (this *memberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel
 	}
 	return v.Id, err
 }
+
+
+
+// 获取会员最后更新时间
+func (this *memberRep) GetMemberLatestUpdateTime(id int)int64{
+	var updateTime int
+	this.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`, &updateTime,id)
+	return updateTime
+}
+
 
 // 获取账户
 func (this *memberRep) GetAccount(memberId int) *member.Account {

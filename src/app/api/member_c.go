@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strings"
+	"go2o/src/cache"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -119,4 +120,17 @@ func (this *MemberC) Disconnect(ctx *web.Context) {
 		result.Message = "disconnect fail"
 	}
 	ctx.Response.JsonOutput(result)
+}
+
+// 汇总信息
+func (this *MemberC) Summary(ctx *web.Context){
+	memberId := this.GetMemberId(ctx)
+	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
+	var v *dto.MemberSummary = new(dto.MemberSummary)
+	var key = fmt.Sprintf("cache:member:summary:%d",memberId)
+	if cache.GetKVS().Get(key,&v) != nil || v.UpdateTime < updateTime {
+		v = dps.MemberService.GetMemberSummary(memberId)
+		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
+	}
+	ctx.Response.JsonOutput(v)
 }

@@ -16,13 +16,17 @@ type IMemberRep interface {
 	// 根据用户名获取会员
 	GetMemberValueByUsr(usr string) *ValueMember
 
-	GetMember(memberId int) (IMember, error)
+	// 获取会员
+	GetMember(memberId int)IMember
 
 	// 创建会员
 	CreateMember(*ValueMember) IMember
 
 	// 保存
 	SaveMember(v *ValueMember) (int, error)
+
+	// 获取会员最后更新时间
+	GetMemberLatestUpdateTime(int)int64
 
 	// 锁定会员
 	LockMember(id int, state int) error

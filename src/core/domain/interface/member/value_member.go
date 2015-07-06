@@ -33,9 +33,13 @@ type ValueMember struct {
 	State          int    `db:"state"`
 	RegTime        int64  `db:"reg_time"`
 	LastLoginTime  int64  `db:"last_login_time"`
+	UpdateTime     int64  `db:"update_time"`
 
-	//动态令牌，用于登陆或API调用
+	// 动态令牌，用于登陆或API调用
 	DynamicToken string `db:"-"`
+
+	// 超时时间
+	TimeoutTime int64 `db:"-"`
 }
 
 type BankInfo struct {
