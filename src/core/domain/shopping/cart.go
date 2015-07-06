@@ -286,7 +286,7 @@ func (this *Cart) GetSettleData() (s partner.IShop, d member.IDeliver, paymentOp
 	if this._value.DeliverId > 0 && this._deliver == nil {
 		var m member.IMember
 		m = this._memberRep.GetMember(this._value.BuyerId)
-		if m != nil{
+		if m != nil {
 			this._deliver = m.GetDeliver(this._value.DeliverId)
 		}
 	}

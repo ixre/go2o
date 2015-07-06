@@ -204,7 +204,7 @@ func (this *Member) GetRelation() *member.MemberRelation {
 
 // 保存
 func (this *Member) Save() (int, error) {
-	this._value.UpdateTime = time.Now().Unix()	// 更新时间，数据以更新时间触发
+	this._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if this._value.Id > 0 {
 		return this._rep.SaveMember(this._value)
 	}

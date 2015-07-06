@@ -17,7 +17,7 @@ type IMemberRep interface {
 	GetMemberValueByUsr(usr string) *ValueMember
 
 	// 获取会员
-	GetMember(memberId int)IMember
+	GetMember(memberId int) IMember
 
 	// 创建会员
 	CreateMember(*ValueMember) IMember
@@ -26,7 +26,7 @@ type IMemberRep interface {
 	SaveMember(v *ValueMember) (int, error)
 
 	// 获取会员最后更新时间
-	GetMemberLatestUpdateTime(int)int64
+	GetMemberLatestUpdateTime(int) int64
 
 	// 锁定会员
 	LockMember(id int, state int) error

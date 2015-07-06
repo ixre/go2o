@@ -505,7 +505,7 @@ func (this *Order) Complete() error {
 
 	//todo: 增加阶梯的返积分,比如订单满30送100积分
 	backIntegral := int(v.Fee)*saleConf.IntegralBackNum +
-	saleConf.IntegralBackExtra
+		saleConf.IntegralBackExtra
 
 	//判断是否满足升级条件
 	if backIntegral != 0 {
@@ -519,7 +519,7 @@ func (this *Order) Complete() error {
 	// 增加经验
 	if EXP_BIT == 0 {
 		fv := infrastructure.GetApp().
-		Config().GetFloat(variable.EXP_BIT)
+			Config().GetFloat(variable.EXP_BIT)
 		EXP_BIT = float32(fv)
 	}
 

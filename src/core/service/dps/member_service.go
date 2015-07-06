@@ -13,10 +13,10 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/valueobject"
+	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/query"
 	"time"
-	"go2o/src/core/dto"
 )
 
 type memberService struct {
@@ -82,7 +82,7 @@ func (this *memberService) createMember(v *member.ValueMember) (int, error) {
 
 func (this *memberService) SaveRelation(memberId int, cardId string, invitationId, partnerId int) error {
 	m := this._memberRep.GetMember(memberId)
-	if  m== nil {
+	if m == nil {
 		return member.ErrNoSuchMember
 	}
 
@@ -107,8 +107,8 @@ func (this *memberService) GetRelation(memberId int) member.MemberRelation {
 
 // 锁定/解锁会员
 func (this *memberService) LockMember(partnerId, id int) (bool, error) {
-	m  := this._memberRep.GetMember(id)
-	if  m == nil {
+	m := this._memberRep.GetMember(id)
+	if m == nil {
 		return false, member.ErrNoSuchMember
 	}
 
@@ -171,13 +171,13 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 
 // 获取返现记录
 func (this *memberService) QueryIncomeLog(memberId, page, size int,
-where, orderBy string) (num int, rows []map[string]interface{}) {
+	where, orderBy string) (num int, rows []map[string]interface{}) {
 	return this._query.QueryIncomeLog(memberId, page, size, where, orderBy)
 }
 
 // 查询分页订单
 func (this *memberService) QueryPagerOrder(memberId, page, size int,
-where, orderBy string) (num int, rows []map[string]interface{}) {
+	where, orderBy string) (num int, rows []map[string]interface{}) {
 	return this._query.QueryPagerOrder(memberId, page, size, where, orderBy)
 }
 
@@ -188,7 +188,7 @@ func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddr
 
 //获取配送地址
 func (this *memberService) GetDeliverAddressById(memberId,
-deliverId int) *member.DeliverAddress {
+	deliverId int) *member.DeliverAddress {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	v := m.GetDeliver(deliverId).GetValue()
 	return &v
@@ -245,16 +245,16 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 		acc := m.GetAccount()
 		lv := m.GetLevel()
 		return &dto.MemberSummary{
-			Id :m.GetAggregateRootId(),
-			Usr:mv.Usr,
-			Name:mv.Name,
-			Exp:mv.Exp,
-			Level:mv.Level,
-			LevelName:lv.Name,
-			Integral:acc.Integral,
-			Balance:acc.Balance,
-			PresentBalance:acc.PresentBalance,
-			UpdateTime :mv.UpdateTime,
+			Id:             m.GetAggregateRootId(),
+			Usr:            mv.Usr,
+			Name:           mv.Name,
+			Exp:            mv.Exp,
+			Level:          mv.Level,
+			LevelName:      lv.Name,
+			Integral:       acc.Integral,
+			Balance:        acc.Balance,
+			PresentBalance: acc.PresentBalance,
+			UpdateTime:     mv.UpdateTime,
 		}
 	}
 	return nil

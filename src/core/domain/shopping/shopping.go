@@ -188,7 +188,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	var m member.IMember
 	var err error
 
-	m  = this._memberRep.GetMember(memberId)
+	m = this._memberRep.GetMember(memberId)
 	if m == nil {
 		return nil, m, nil, member.ErrSessionTimeout
 	}

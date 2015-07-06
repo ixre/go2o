@@ -42,7 +42,7 @@ func (this *memberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 }
 
 // 获取会员
-func (this *memberRep) GetMember(memberId int) (member.IMember) {
+func (this *memberRep) GetMember(memberId int) member.IMember {
 	e := &member.ValueMember{}
 	err := this.Connector.GetOrm().Get(memberId, e)
 	if err == nil {
@@ -110,15 +110,12 @@ func (this *memberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel
 	return v.Id, err
 }
 
-
-
 // 获取会员最后更新时间
-func (this *memberRep) GetMemberLatestUpdateTime(id int)int64{
+func (this *memberRep) GetMemberLatestUpdateTime(id int) int64 {
 	var updateTime int64
-	this.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`, &updateTime,id)
+	this.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`, &updateTime, id)
 	return updateTime
 }
-
 
 // 获取账户
 func (this *memberRep) GetAccount(memberId int) *member.Account {

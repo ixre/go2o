@@ -46,7 +46,6 @@ func (this *orderC) All(ctx *web.Context) {
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-
 func (this *orderC) All_post(ctx *web.Context) {
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.Response
@@ -69,7 +68,6 @@ func (this *orderC) All_post(ctx *web.Context) {
 	js, _ := json.Marshal(pager)
 	w.Write(js)
 }
-
 
 func (this *orderC) WaitPayment(ctx *web.Context) {
 
