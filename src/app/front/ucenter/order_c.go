@@ -29,7 +29,8 @@ func (this *orderC) Complete(ctx *web.Context) {
 		"views/ucenter/{device}/order/complete.html")
 }
 
-func (this *orderC) Order(ctx *web.Context) {
+// 所有订单
+func (this *orderC) All(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
@@ -44,6 +45,31 @@ func (this *orderC) Order(ctx *web.Context) {
 		"views/ucenter/{device}/inc/menu.html",
 		"views/ucenter/{device}/inc/footer.html")
 }
+
+
+func (this *orderC) All_post(ctx *web.Context) {
+	m := this.GetMember(ctx)
+	r, w := ctx.Request, ctx.Response
+	r.ParseForm()
+	page, _ := strconv.Atoi(r.FormValue("page"))
+	size, _ := strconv.Atoi(r.FormValue("size"))
+	state := r.FormValue("state")
+
+	var where string
+	if state != "" {
+		where = fmt.Sprintf("status IN (%s)", state)
+	}
+
+	n, rows := dps.MemberService.QueryPagerOrder(m.Id, page, size, where, "")
+
+	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
+
+	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
+
+	js, _ := json.Marshal(pager)
+	w.Write(js)
+}
+
 
 func (this *orderC) WaitPayment(ctx *web.Context) {
 
@@ -100,27 +126,4 @@ func (this *orderC) Canceled(ctx *web.Context) {
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
 		"views/ucenter/{device}/inc/footer.html")
-}
-
-func (this *orderC) Orders_post(ctx *web.Context) {
-	m := this.GetMember(ctx)
-	r, w := ctx.Request, ctx.Response
-	r.ParseForm()
-	page, _ := strconv.Atoi(r.FormValue("page"))
-	size, _ := strconv.Atoi(r.FormValue("size"))
-	state := r.FormValue("state")
-
-	var where string
-	if state != "" {
-		where = fmt.Sprintf("status IN (%s)", state)
-	}
-
-	n, rows := dps.MemberService.QueryPagerOrder(m.Id, page, size, where, "")
-
-	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
-
-	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
-
-	js, _ := json.Marshal(pager)
-	w.Write(js)
 }
