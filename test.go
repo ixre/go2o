@@ -19,7 +19,7 @@ func main() {
 	fmt.Println(domain.Md5PartnerPwd("wzo2o", "12345"))
 
 	fmt.Println(domain.NewApiId(105))
-	fmt.Println(domain.Md5MemberPwd("u1000", "123456"))
+	fmt.Println(domain.Md5MemberPwd("t100", "123456"))
 	fmt.Println(1 << 2)
 	fmt.Println(util.IsMobileAgent("Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"))
 }

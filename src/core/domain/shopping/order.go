@@ -556,12 +556,13 @@ func (this *Order) updateShoppingMemberAccount(pt partner.IPartner,
 	}
 	v := this.GetValue()
 	pv := pt.GetValue()
+
 	//更新账户
 	acc := m.GetAccount()
-	acc.TotalFee = acc.TotalFee + this._value.Fee
-	acc.TotalPay = acc.TotalPay + this._value.PayFee
-	acc.PresentBalance = acc.PresentBalance + fee // 更新赠送余额
-	acc.Balance += fee                            // 更新账户余额
+	acc.TotalFee += this._value.Fee
+	acc.TotalPay += this._value.PayFee
+	acc.PresentBalance += fee // 更新赠送余额
+	acc.TotalPresentFee += fee
 	acc.UpdateTime = unixTime
 	m.SaveAccount()
 
@@ -596,9 +597,13 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
+	bfee := float32(cpv.BackFee)
 	acc := m.GetAccount()
-	acc.PresentBalance = acc.PresentBalance + float32(cpv.BackFee) // 更新赠送余额
-	acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
+	acc.PresentBalance += bfee // 更新赠送余额
+	acc.TotalPresentFee += bfee
+	// 赠送金额，不应该计入到余额，可采取充值到余额
+	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
+
 	acc.UpdateTime = time.Now().Unix()
 	err := m.SaveAccount()
 
@@ -666,7 +671,8 @@ func (this *Order) updateMemberAccount(m member.IMember,
 
 	//更新账户
 	acc := m.GetAccount()
-	acc.PresentBalance = acc.PresentBalance + fee
+	acc.PresentBalance += fee
+	acc.TotalPresentFee += fee
 	acc.UpdateTime = unixTime
 	m.SaveAccount()
 

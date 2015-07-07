@@ -71,7 +71,6 @@ func backCashForMember(m member.IMember, order *shopping.ValueOrder, fee int, re
 	//更新账户
 	acc := m.GetAccount()
 	acc.PresentBalance = acc.PresentBalance + float32(fee) // 更新赠送余额
-	acc.Balance += float32(fee)                            // 更新账户余额
 	acc.UpdateTime = time.Now().Unix()
 	err := m.SaveAccount()
 
