@@ -36,7 +36,7 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 			return
 		}
 		if level == 1 {
-			buf.WriteString(fmt.Sprintf("<div class=\"cat_panel\"><div class=\"t1 t1_%d\"><a href=\"%s\"><strong>%s</strong></a></div>", c.Id, c.Url, c.Name))
+			buf.WriteString(fmt.Sprintf("<div class=\"cat_panel\"><div class=\"t1 t1_%d\"><span class=\"icon\"></span><a href=\"%s\"><strong>%s</strong></a></div>", c.Id, c.Url, c.Name))
 		} else if level == 2 {
 			buf.WriteString(fmt.Sprintf("<ul><li><a href=\"%s\"><b>%s</b></a></li>", c.Url, c.Name))
 		} else if level == 3 || level > 3 {
