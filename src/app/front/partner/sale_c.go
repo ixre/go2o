@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"go2o/src/core/variable"
 )
 
 var _ mvc.Filter = new(saleC)
@@ -42,15 +43,20 @@ func (this *saleC) Edit_stag(ctx *web.Context) {
 		gof.TemplateDataMap{
 			"entity": template.JS(bys),
 		},
-		"views/partner/sale/edit_sale_tag.html")
+		"views/partner/sale/sale_tag_form.html")
 }
 
 func (this *saleC) Create_stag(ctx *web.Context) {
+	entity := sale.ValueSaleTag{
+		GoodsImage:ctx.App.Config().GetString(variable.NoPicPath),
+	}
+	bys, _ := json.Marshal(entity)
+
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
-			"entity": "{}",
+			"entity": template.JS(bys),
 		},
-		"views/partner/sale/create_sale_tag.html")
+		"views/partner/sale/sale_tag_form.html")
 }
 
 func (this *saleC) Save_stag_post(ctx *web.Context) {
