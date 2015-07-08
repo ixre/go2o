@@ -10,17 +10,22 @@
 package domain
 
 import (
+	"errors"
 	"github.com/atnet/gof/crypto"
 	"strings"
 )
 
 func ChkPwdRight(pwd string) (bool, error) {
+	if len(pwd) < 6 {
+		return false, errors.New("密码必须大于6位")
+	}
 	return true, nil
 }
 
-//加密会员密码
-func Md5MemberPwd(usr, pwd string) string {
-	return Md5Pwd(pwd, "member_"+usr)
+// 加密会员密码,因为可能会使用手机号码登陆，
+// 所以密码不能依据用户名作为生成凭据
+func Md5MemberPwd(pwd string) string {
+	return Md5Pwd(pwd, pwd+"@member")
 }
 
 //加密合作商密码

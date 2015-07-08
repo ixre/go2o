@@ -118,11 +118,33 @@ func (this *orderC) Setup(ctx *web.Context) {
 	}
 }
 
+// 锁定，防止重复下单，返回false,表示正在处理订单
+func (this *orderC) lockOrder(ctx *web.Context) bool {
+	s := ctx.Session()
+	v := s.Get("pt_order_lock")
+	if v != nil {
+		return false
+	}
+	s.Set("pt_order_lock", "1")
+	s.Save()
+	return true
+}
+func (this *orderC) releaseOrder(ctx *web.Context) {
+	ctx.Session().Remove("pt_order_lock")
+	ctx.Session().Save()
+}
+
 func (this *orderC) OrderSetup_post(ctx *web.Context) {
+	if !this.lockOrder(ctx) {
+		return
+	}
+
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
+
+	this.releaseOrder(ctx)
 	if err != nil {
 		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
 	} else {

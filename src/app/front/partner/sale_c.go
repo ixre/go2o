@@ -16,9 +16,9 @@ import (
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"html/template"
 	"strconv"
-	"go2o/src/core/variable"
 )
 
 var _ mvc.Filter = new(saleC)
@@ -48,7 +48,7 @@ func (this *saleC) Edit_stag(ctx *web.Context) {
 
 func (this *saleC) Create_stag(ctx *web.Context) {
 	entity := sale.ValueSaleTag{
-		GoodsImage:ctx.App.Config().GetString(variable.NoPicPath),
+		GoodsImage: ctx.App.Config().GetString(variable.NoPicPath),
 	}
 	bys, _ := json.Marshal(entity)
 

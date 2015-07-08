@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	tagRegexp = regexp.MustCompile("^(\\s*([^:\\|]+):([^:\\|]+)\\s*\\|*)+$")
+	tagRegexp = regexp.MustCompile("\\s*([^:\\|]+):([^:\\|]+)\\s*\\|*")
 )
 
 var _ promotion.ICashBackPromotion = new(CashBackPromotion)
@@ -72,7 +72,7 @@ func (this *CashBackPromotion) GetDataTag() map[string]string {
 		if len(this._cashBackValue.DataTag) != 0 {
 			matches := tagRegexp.FindAllStringSubmatch(this._cashBackValue.DataTag, -1)
 			for i := 0; i < len(matches); i++ {
-				this._dataTag[matches[i][2]] = matches[i][3]
+				this._dataTag[matches[i][1]] = matches[i][2]
 			}
 		}
 	}

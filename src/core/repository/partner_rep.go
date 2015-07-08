@@ -97,7 +97,7 @@ func (this *partnerRep) doSomething() {
 	orm.Select(&ms, "1=1")
 
 	for _, v := range ms {
-		v.Pwd = domain.Md5MemberPwd(v.Usr, "123456")
+		v.Pwd = domain.Md5MemberPwd("123456")
 		orm.Save(v.Id, v)
 	}
 }

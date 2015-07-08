@@ -34,7 +34,17 @@ func NewMemberRep(c db.Connector) member.IMemberRep {
 // 根据用户名获取会员
 func (this *memberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 	e := &member.ValueMember{}
-	err := this.Connector.GetOrm().GetBy(e, "usr='"+usr+"'")
+	err := this.Connector.GetOrm().GetBy(e, "usr=?", usr)
+	if err != nil {
+		return nil
+	}
+	return e
+}
+
+// 根据手机号码获取会员
+func (this *memberRep) GetMemberValueByPhone(phone string) *member.ValueMember {
+	e := &member.ValueMember{}
+	err := this.Connector.GetOrm().GetBy(e, "phone=?", phone)
 	if err != nil {
 		return nil
 	}

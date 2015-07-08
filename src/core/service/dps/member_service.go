@@ -123,10 +123,13 @@ func (this *memberService) LockMember(partnerId, id int) (bool, error) {
 func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.ValueMember, error) {
 	val := this._memberRep.GetMemberValueByUsr(usr)
 	if val == nil {
+		val = this._memberRep.GetMemberValueByPhone(usr)
+	}
+	if val == nil {
 		return false, nil, errors.New("会员不存在")
 	}
 
-	if val.Pwd != domain.Md5MemberPwd(usr, pwd) {
+	if val.Pwd != domain.Md5MemberPwd(pwd) {
 		return false, nil, errors.New("会员用户或密码不正确")
 	}
 

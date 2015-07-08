@@ -85,7 +85,7 @@ func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 }
 
 // 获取支付金额
-func (this *Order) GetPaymentFee()float32{
+func (this *Order) GetPaymentFee() float32 {
 	return this._value.TotalFee - this._value.CouponFee
 }
 

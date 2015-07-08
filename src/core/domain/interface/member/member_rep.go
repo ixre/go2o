@@ -16,6 +16,9 @@ type IMemberRep interface {
 	// 根据用户名获取会员
 	GetMemberValueByUsr(usr string) *ValueMember
 
+	// 根据手机号码获取会员
+	GetMemberValueByPhone(phone string) *ValueMember
+
 	// 获取会员
 	GetMember(memberId int) IMember
 

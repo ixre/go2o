@@ -127,7 +127,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	if len(member.Usr) == 0 || len(member.Pwd) == 0 {
 		err = errors.New("注册信息不完整")
 	} else {
-		member.Pwd = domain.Md5MemberPwd(member.Usr, member.Pwd)
+		member.Pwd = domain.Md5MemberPwd(member.Pwd)
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
 			invId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("invi_code"))
