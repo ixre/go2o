@@ -77,6 +77,9 @@ type IOrder interface {
 	// 标记收货
 	SignReceived() error
 
+	// 获取支付金额
+	GetPaymentFee()float32
+
 	// 完成订单
 	Complete() error
 

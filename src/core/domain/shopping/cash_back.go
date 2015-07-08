@@ -70,7 +70,9 @@ func cashBack3R(m member.IMember, order *shopping.ValueOrder, c promotion.ICashB
 func backCashForMember(m member.IMember, order *shopping.ValueOrder, fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
-	acc.PresentBalance = acc.PresentBalance + float32(fee) // 更新赠送余额
+	bfee :=  float32(fee)
+	acc.PresentBalance += bfee // 更新赠送余额
+	acc.TotalPresentFee += bfee
 	acc.UpdateTime = time.Now().Unix()
 	err := m.SaveAccount()
 

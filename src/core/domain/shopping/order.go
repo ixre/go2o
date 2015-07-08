@@ -79,9 +79,14 @@ func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	//v.CouponCode = val.Code
 	//v.CouponDescribe = coupon.GetDescribe()
 	v.CouponFee = coupon.GetCouponFee(v.Fee)
-	v.PayFee = v.Fee - v.CouponFee
+	v.PayFee = this.GetPaymentFee()
 	v.DiscountFee = v.DiscountFee + v.CouponFee
 	return nil
+}
+
+// 获取支付金额
+func (this *Order) GetPaymentFee()float32{
+	return this._value.TotalFee - this._value.CouponFee
 }
 
 // 获取应用的优惠券
