@@ -37,6 +37,17 @@ func (this *deliver) GetValue() member.DeliverAddress {
 
 func (this *deliver) SetValue(v *member.DeliverAddress) error {
 	if this.value.MemberId == v.MemberId {
+		if len(v.Address)<6{
+			return member.ErrDeliverAddressLen
+		}
+
+		if len(v.RealName) == 0 {
+			return member.ErrDeliverRealNameIsNull
+		}
+
+		if len(v.Phone) == 0{
+			return member.ErrDeliverPhoneIsNull
+		}
 		this.value = v
 	}
 	return nil

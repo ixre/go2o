@@ -176,6 +176,8 @@ func (this *ShoppingC) SaveDeliverAddress_post(ctx *web.Context) {
 	var e member.DeliverAddress
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
+
+	fmt.Printf("----- %+v \n",e)
 	b, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 	if err == nil {
 		if b > 0 {

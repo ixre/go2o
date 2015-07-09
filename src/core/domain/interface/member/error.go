@@ -24,4 +24,13 @@ var (
 
 	ErrNoSuchMember *domain.DomainError = domain.NewDomainError(
 		"member_no_such_member", "会员不存在")
+
+	ErrDeliverAddressLen *domain.DomainError = domain.NewDomainError(
+		"err_deliver_address_len", "请填写详细的配送地址")
+
+	ErrDeliverRealNameIsNull *domain.DomainError = domain.NewDomainError(
+		"err_deliver_real_name_is_null", "收货人不能为空")
+
+	ErrDeliverPhoneIsNull *domain.DomainError = domain.NewDomainError(
+		"err_deliver_phone_is_null", "电话不能为空")
 )

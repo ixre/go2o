@@ -177,7 +177,7 @@ function submitOrder() {
                 var orderNo = j.data;
                 location.replace("order_finish?order_no=" + orderNo)
             } else {
-                alert(j.message);
+                window.cli.alert(j.message);
             }
         }, function () {
             ele.removeAttribute('disabled');
