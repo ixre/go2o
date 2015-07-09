@@ -14,11 +14,11 @@ import (
 	gfmt "github.com/atnet/gof/util/fmt"
 	"github.com/atnet/gof/web"
 	"go2o/src/app/util"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"net/http"
 	"time"
-	"go2o/src/core/domain/interface/member"
 )
 
 type mainC struct {
@@ -101,9 +101,9 @@ func (this *mainC) Msc(ctx *web.Context) {
 	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
 		v := ctx.Session().Get("member")
 		var m *member.ValueMember
-		if  v != nil {
+		if v != nil {
 			m = v.(*member.ValueMember)
-			if m.Id != memberId {		// 如果会话冲突
+			if m.Id != memberId { // 如果会话冲突
 				m = nil
 			}
 		}

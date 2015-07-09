@@ -479,7 +479,7 @@ func (this *Order) SignReceived() error {
 }
 
 // 更新账户
-func updateAccountForOrder(m member.IMember,order shopping.IOrder) {
+func updateAccountForOrder(m member.IMember, order shopping.IOrder) {
 	acc := m.GetAccount()
 	ov := order.GetValue()
 	acc.TotalFee += ov.Fee
@@ -487,7 +487,6 @@ func updateAccountForOrder(m member.IMember,order shopping.IOrder) {
 	acc.UpdateTime = time.Now().Unix()
 	m.SaveAccount()
 }
-
 
 // 完成订单
 func (this *Order) Complete() error {
@@ -511,8 +510,6 @@ func (this *Order) Complete() error {
 		return errors.New("您的账户已经过期!")
 	}
 
-
-
 	// 增加经验
 	if EXP_BIT == 0 {
 		fv := infrastructure.GetApp().Config().GetFloat(variable.EXP_BIT)
@@ -521,12 +518,12 @@ func (this *Order) Complete() error {
 		}
 		EXP_BIT = float32(fv)
 	}
-	if err = m.AddExp(int(v.Fee * EXP_BIT));err != nil {
+	if err = m.AddExp(int(v.Fee * EXP_BIT)); err != nil {
 		return err
 	}
 
 	// 更新账户
-	updateAccountForOrder(m,this)
+	updateAccountForOrder(m, this)
 
 	//******* 返现到账户  ************
 	var back_fee float32
@@ -540,7 +537,7 @@ func (this *Order) Complete() error {
 
 		//todo: 增加阶梯的返积分,比如订单满30送100积分
 		backIntegral := int(v.Fee)*saleConf.IntegralBackNum +
-		saleConf.IntegralBackExtra
+			saleConf.IntegralBackExtra
 
 		// 赠送积分
 		if backIntegral != 0 {
