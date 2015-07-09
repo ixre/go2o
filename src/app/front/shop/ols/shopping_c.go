@@ -177,7 +177,6 @@ func (this *ShoppingC) SaveDeliverAddress_post(ctx *web.Context) {
 	web.ParseFormToEntity(r.Form, &e)
 	e.MemberId = m.Id
 
-	fmt.Printf("----- %+v \n", e)
 	b, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
 	if err == nil {
 		if b > 0 {
@@ -226,10 +225,6 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 		return
 	}
 
-	if !this.lockOrder(ctx) {
-		return
-	}
-
 	r, w := ctx.Request, ctx.Response
 	p := this.BaseC.GetPartner(ctx)
 	m := this.BaseC.GetMember(ctx)
@@ -240,11 +235,25 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 		return
 	}
 	couponCode := r.FormValue("coupon_code")
+
+	//this.releaseOrder(ctx)
+	// 锁定订单提交
+	if !this.lockOrder(ctx) {
+		//fmt.Println("--- IS LOCKED")
+		ctx.Response.JsonOutput(gof.Message{Message: "请勿重复提交订单"})
+		return
+	}
+
+	// 提交订单
 	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode)
+
+	// 释放订单占用
+	this.releaseOrder(ctx)
+
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
 
-		this.releaseOrder(ctx)
+		//fmt.Println("--- IS ERROR",err.Error())
 		return
 	}
 
@@ -259,6 +268,8 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 func (this *ShoppingC) lockOrder(ctx *web.Context) bool {
 	s := ctx.Session()
 	v := s.Get("shopping_lock")
+
+	//fmt.Println(v)
 	if v != nil {
 		return false
 	}
@@ -267,8 +278,11 @@ func (this *ShoppingC) lockOrder(ctx *web.Context) bool {
 	return true
 }
 func (this *ShoppingC) releaseOrder(ctx *web.Context) {
-	ctx.Session().Remove("shopping_lock")
-	ctx.Session().Save()
+	s := ctx.Session()
+	s.Remove("shopping_lock")
+	s.Save()
+
+	//fmt.Println("REMOVED")
 }
 
 // 清除购物车
@@ -285,7 +299,6 @@ func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
-		"title":   "订单确认-" + p.Name,
 		"member":  m,
 		"conf":    conf,
 	},

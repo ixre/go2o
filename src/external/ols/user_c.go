@@ -36,7 +36,6 @@ func (this *userC) Login(ctx *web.Context) {
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner":  p,
-			"title":    "会员登录－" + siteConf.SubTitle,
 			"conf":     siteConf,
 			"tipStyle": tipStyle,
 		},
@@ -68,7 +67,6 @@ func (this *userC) Register(ctx *web.Context) {
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
-			"title":   "会员注册－" + siteConf.SubTitle,
 			"conf":    siteConf,
 		},
 			"views/shop/ols/{device}/register.html",

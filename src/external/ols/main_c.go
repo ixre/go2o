@@ -51,7 +51,6 @@ func (this *mainC) Index(ctx *web.Context) {
 			ctx.App.Template().Execute(w, gof.TemplateDataMap{
 				"partner": p,
 				"conf":    siteConf,
-				"title":   siteConf.IndexTitle,
 				"shops":   template.HTML(shops),
 			},
 				"views/shop/ols/{device}/index.html",

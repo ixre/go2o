@@ -84,7 +84,6 @@ func (this *shoppingC) Confirm(ctx *web.Context) {
 
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner":     p,
-			"title":       "订单确认-" + p.Name,
 			"member":      m,
 			"cart":        cart,
 			"cartDetails": template.HTML(format.CartDetails(cart)),
@@ -262,7 +261,6 @@ func (this *shoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 	m *member.ValueMember, conf *partner.SiteConf) {
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"partner": p,
-		"title":   "订单确认-" + p.Name,
 		"member":  m,
 		"conf":    conf,
 	},
@@ -299,7 +297,6 @@ func (this *shoppingC) Order_finish(ctx *web.Context) {
 
 		ctx.App.Template().Execute(w, gof.TemplateDataMap{
 			"partner": p,
-			"title":   "订单成功-" + p.Name,
 			"member":  m,
 			"conf":    siteConf,
 			"order":   order,

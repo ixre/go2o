@@ -279,7 +279,7 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 func (this *Shopping) SubmitOrder(memberId int, couponCode string) (string, error) {
 	order, cart, err := this.BuildOrder(memberId, couponCode)
 	if err != nil {
-		order, cart, err = this.BuildOrder(memberId, "")
+		return "", err
 	}
 	var cv = cart.GetValue()
 
