@@ -161,6 +161,13 @@ function applyCouponCode() {
 function submitOrder() {
     var ele = this;
     ele.disabled = 'disabled';
+    ele.className = ele.className.replace(' btn-orange','')
+
+    var unDis =function(){
+        ele.removeAttribute('disabled');
+        ele.className +=' btn-orange';
+    }
+
     if ($JS.validator.validate('form_coupon')) {
         var data = window.sctJson;
         var cp = $JS.json.toObject(form_coupon);
@@ -172,15 +179,15 @@ function submitOrder() {
         data.coupon_code = cp.CouponCode;
 
         $JS.xhr.jsonPost('submit_0', data, function (j) {
-            ele.removeAttribute('disabled');
             if (j.result) {
                 var orderNo = j.data;
                 location.replace("order_finish?order_no=" + orderNo)
             } else {
+                unDis();
                 window.cli.alert(j.message,"提示");
             }
         }, function () {
-            ele.removeAttribute('disabled');
+            unDis();
             window.cli.alert('订单提交失败!',"提示");
         });
     }
