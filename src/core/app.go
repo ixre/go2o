@@ -40,7 +40,7 @@ func NewMainApp(confPath string) *MainApp {
 
 func (this *MainApp) Db() db.Connector {
 	if this._dbConnector == nil {
-		this._dbConnector = getDb(this.Config(), this.Log())
+		this._dbConnector = getDb(this.Config(),this._debugMode, this.Log())
 	}
 	return this._dbConnector
 }

@@ -27,9 +27,9 @@ import (
 	"go2o/src/core/variable"
 )
 
-func getDb(c *gof.Config, l log.ILogger) db.Connector {
+func getDb(c *gof.Config,debug bool, l log.ILogger) db.Connector {
 	//数据库连接字符串
-	//root@tcp(127.0.0.1:3306)/foodording?charset=utf8
+	//root@tcp(127.0.0.1:3306)/db_name?charset=utf8
 	var connStr string
 	driver := c.GetString(variable.DbDriver)
 	dbCharset := c.GetString(variable.DbCharset)
@@ -44,7 +44,7 @@ func getDb(c *gof.Config, l log.ILogger) db.Connector {
 		c.GetString(variable.DbName),
 		dbCharset,
 	)
-	connector := db.NewSimpleConnector(driver, connStr, l, 30)
+	connector := db.NewSimpleConnector(driver, connStr, l,5000,debug)
 
 	//table mapping
 	orm := connector.GetOrm()

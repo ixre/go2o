@@ -14,6 +14,7 @@ import (
 	"go2o/src/app/util"
 	"go2o/src/core/service/dps"
 	"strings"
+	"go2o/src/core/domain/interface/member"
 )
 
 type MainC struct {
@@ -55,9 +56,19 @@ func (this *MainC) Msc(ctx *web.Context) {
 	util.SetDeviceByUrlQuery(ctx, &form)
 
 	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
-		if ctx.Session().Get("member") == nil {
-			m := dps.MemberService.GetMember(memberId)
+		v := ctx.Session().Get("member")
+		var m *member.ValueMember
+		if  v != nil {
+			m = v.(*member.ValueMember)
+			if m.Id != memberId {		// 如果会话冲突
+				m = nil
+			}
+		}
+
+		if m == nil {
+			m = dps.MemberService.GetMember(memberId)
 			ctx.Session().Set("member", m)
+			ctx.Session().Save()
 		}
 	})
 
