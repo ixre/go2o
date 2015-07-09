@@ -177,11 +177,11 @@ function submitOrder() {
                 var orderNo = j.data;
                 location.replace("order_finish?order_no=" + orderNo)
             } else {
-                window.cli.alert(j.message);
+                window.cli.alert(j.message,"提示");
             }
         }, function () {
             ele.removeAttribute('disabled');
-            alert('订单提交失败!')
+            window.cli.alert('订单提交失败!',"提示");
         });
     }
 }
