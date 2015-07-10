@@ -67,6 +67,8 @@ func (this *ListC) All_cate(ctx *web.Context) {
 	buf := bytes.NewBufferString("")
 	categoryWalk(buf, categories)
 
+	web.SetCacheHeader(ctx, 10)
+
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":   p,
 		"member":    mm,
@@ -76,6 +78,7 @@ func (this *ListC) All_cate(ctx *web.Context) {
 		"views/shop/ols/{device}/category.html",
 		"views/shop/ols/{device}/inc/header.html",
 		"views/shop/ols/{device}/inc/footer.html")
+
 }
 
 func (this *ListC) getIdArray(path string) []int {

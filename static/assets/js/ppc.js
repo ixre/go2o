@@ -1,6 +1,6 @@
 /*** PC Global Js **/
 $JS.event.add(window,'load',function(){
-   var btns = $JS.getElementsByClassName(document.body,'btn');
+   var btns = j6.dom.getsByClass(document.body,'btn');
     $JS.each(btns,function(i,e){
         var _do = e.getAttribute('do');
         if(_do && window.funcs[_do]){

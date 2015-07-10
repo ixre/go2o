@@ -56,6 +56,8 @@ func (this *CartC) CartApiHandle(ctx *web.Context) {
 
 func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	memberId int, cartKey string) {
+
+	//time.Sleep(time.Second*10)
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
 	if cart.Items != nil {

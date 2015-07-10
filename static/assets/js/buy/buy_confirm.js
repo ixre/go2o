@@ -8,9 +8,9 @@ function setHtm(id, h) {
     }
 }
 function initEvents() {
-    var items = $JS.getElementsByClassName(pl, 'item');
-    var editLinks = $JS.getElementsByClassName(pl, 'edit_link');
-    var confirmBtns = $JS.getElementsByClassName(pl, 'confirm-button');
+    var items = j6.dom.getsByClass(pl, 'item');
+    var editLinks = j6.dom.getsByClass(pl, 'edit_link');
+    var confirmBtns = j6.dom.getsByClass(pl, 'confirm-button');
 
     $JS.each(editLinks,
         function(i, e) {

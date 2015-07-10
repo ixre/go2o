@@ -15,7 +15,7 @@
 var treeObj = null;
 var treeEle = $JS.$('menu_tree');
 function treeHandler(src,value,text){
-	var nodeLinks = $JS.getElementsByClassName(treeEle, 'node');
+	var nodeLinks = j6.dom.getsByClass(treeEle, 'node');
 	$JS.each(nodeLinks, function(i, e) {
 	    if (e.nodeName == 'DIV') {
 	    	e.style.backgroundColor='';

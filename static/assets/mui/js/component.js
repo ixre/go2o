@@ -319,7 +319,7 @@ var FwTab = {
         if (t) {
             //传递指定的tab进行关闭
             if (t.nodeName == 'SPAN') {
-                var list = $JS.getElementsByClassName(this.tabs, 'tab-close');
+                var list = j6.dom.getsByClass(this.tabs, 'tab-close');
                 var noCloseBtnLen = this.tabs.getElementsByTagName('LI').length - list.length;
                 for (var i = 0; i < list.length; i++) {
                     if (list[i] == t) {
@@ -331,7 +331,7 @@ var FwTab = {
             }
             //根据标题来关闭
             else if (typeof (t) == 'string') {
-                var list = $JS.getElementsByClassName(this.tabs, 'tab-title');
+                var list = j6.dom.getsByClass(this.tabs, 'tab-title');
                 for (var i = 0; i < list.length; i++) {
                     if (t == list[i].innerHTML.replace(/<[^>]+>/g, '')) {
                         closeIndex = i;
@@ -392,7 +392,7 @@ var FwTab = {
     getWindow: function (t) {
         if (typeof (t) == 'string') {
             var frameIndex = -1;
-            var list = $JS.getElementsByClassName(this.tabs, 'tab-title');
+            var list = j6.dom.getsByClass(this.tabs, 'tab-title');
             for (var i = 0; i < list.length; i++) {
                 if (t == list[i].innerHTML.replace(/<[^>]+>/g, '')) {
                     frameIndex = i;

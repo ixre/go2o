@@ -70,7 +70,7 @@
     var treeObj = null;
     var treePanel = $JS.$('menu_tree');
     function treeHandler(src,value,text){
-        var nodeLinks = $JS.getElementsByClassName(treePanel, 'node');
+        var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
         $JS.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 e.style.backgroundColor='';
@@ -84,7 +84,7 @@
     function loadTree(json){
         //加载栏目树
         var treeObj = $JS.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
-        var nodeLinks = $JS.getElementsByClassName(treePanel, 'node');
+        var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
         $JS.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 var v =$JS.$(e,'A',{className:'node'});
