@@ -80,7 +80,8 @@ func (this *goodsRep) GetGoodsLevelPrice(goodsId int) []*sale.MemberPrice {
 func (this *goodsRep) SaveGoodsLevelPrice(v *sale.MemberPrice) (id int, err error) {
 
 	if v.Id <= 0 {
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=?`, &v.Id, v.GoodsId)
+		this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=? and level=?`,
+			&v.Id, v.GoodsId, v.Level)
 	}
 
 	if v.Id > 0 {

@@ -261,6 +261,7 @@ func (this *goodsC) LvPrice_post(ctx *web.Context) {
 				} else {
 					enabled = 0
 				}
+
 				priceSet = append(priceSet, &sale.MemberPrice{
 					Id:      id,
 					Level:   lv,
