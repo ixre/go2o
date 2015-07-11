@@ -184,11 +184,12 @@ function submitOrder() {
                 location.replace("order_finish?order_no=" + orderNo)
             } else {
                 unDis();
+
                 window.cli.alert(j.message,"提示");
             }
         }, function () {
             unDis();
-            window.cli.alert('订单提交失败!',"提示");
+            window.cli.alert('订单提交失败!');
         });
     }
 }
