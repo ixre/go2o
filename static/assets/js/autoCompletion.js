@@ -9,7 +9,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
     this.timer = null;
 
     if (!ele.nodeName) {
-        ele = $JS.$(ele);
+        ele = j6.$(ele);
     }
 
 
@@ -82,7 +82,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
                 t.lastChar = keyStr;
             }
 
-            $JS.xhr.request({
+            j6.xhr.request({
                 uri: url + (url.indexOf('?') == -1 ? "?" : '&') + 'key=' + encodeURIComponent(keyStr),
                 params: {}, method: 'GET', data: 'json'
             }, {
@@ -110,7 +110,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
                         pi.innerHTML = html;
 
                         var lis = pi.getElementsByTagName('LI');
-                        $JS.each(lis, function (i, li) {
+                        j6.each(lis, function (i, li) {
                             li.onmouseover = (function (_p, _lis) {
                                 return function () {
                                     for (var j = 0; j < _lis.length; j++) {
@@ -158,7 +158,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
     })(panel, this);
 
 
-    $JS.event.add(ele, 'focus', (function (t) {
+    j6.event.add(ele, 'focus', (function (t) {
         return function (event) {
             handler(event, true);
             //t.timer = setInterval(function() {
@@ -167,22 +167,22 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
         };
     })(this));
 
-    $JS.event.add(ele, 'keyup', handler);
+    j6.event.add(ele, 'keyup', handler);
 
-    //$JS.event.add(ele, 'blur', (function(t) {
+    //j6.event.add(ele, 'blur', (function(t) {
     //    return function() {
     //        clearInterval(t.timer);
     //    };
     //})(this));
 
     //绑定事件
-    $JS.event.add(document, 'click', closeHandler);
+    j6.event.add(document, 'click', closeHandler);
 
     return this;
 }
 
 
-$JS.extend({
+j6.extend({
     autoCompletion: function (ele, url, loadCallback, selectCallback, charMinLen) {
         return new autoCompletion(ele, url, loadCallback, selectCallback, charMinLen);
     }

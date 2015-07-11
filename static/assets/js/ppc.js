@@ -1,10 +1,10 @@
 /*** PC Global Js **/
-$JS.event.add(window,'load',function(){
+j6.event.add(window,'load',function(){
    var btns = j6.dom.getsByClass(document.body,'btn');
-    $JS.each(btns,function(i,e){
+    j6.each(btns,function(i,e){
         var _do = e.getAttribute('do');
         if(_do && window.funcs[_do]){
-           $JS.event.add(e,'click',window.funcs[_do]);
+           j6.event.add(e,'click',window.funcs[_do]);
         }
     });
 });
@@ -22,7 +22,7 @@ window.funcs = {
                 }
             };
         })(this);
-        $JS.animation.toggleHeight('top-container', f, 50);
+        j6.animation.toggleHeight('top-container', f, 50);
     }
 };
 

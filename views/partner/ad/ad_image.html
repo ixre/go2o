@@ -65,32 +65,32 @@
 
 <script>
     var entity ={{.entity}} ||{};
-    $JS.json.bind('form1', entity);
-    $JS.$('upload_img').src = '{{.img_serve}}/'+ entity.ImageUrl;
+    j6.json.bind('form1', entity);
+    j6.$('upload_img').src = '{{.img_serve}}/'+ entity.ImageUrl;
 
     //上传缩略图
-    $JS.upload({
+    j6.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {
-            $JS.$('upload_path').value = data.url;
-            $JS.$('upload_img').src = '{{.img_serve}}/'+ data.url;
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }
     });
 
 
-    $JS.$('btn_save').onclick = function() {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
-            $JS.xhr.jsonPost('SaveImage', data, function(json) {
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SaveImage', data, function(json) {
                 if(json.result){
                     window.parent.$.messager.alert('提示', '保存成功！',"ok",function(){
-                        $JS.tab.closeAndRefresh('广告数据');
+                        j6.tab.closeAndRefresh('广告数据');
                     });
                 }else {
                     window.parent.$.messager.alert('提示',  json.message,'error');

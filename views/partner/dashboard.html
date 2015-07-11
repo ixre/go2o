@@ -181,7 +181,7 @@
     };
     pageVar.dateStr = getDate();
     document.title = pageVar.sysName;
-    $JS.json.bind(document, pageVar);
+    j6.json.bind(document, pageVar);
 
     //绑定logo
     var logoEle = document.getElementsByClassName('logo')[0];
@@ -202,8 +202,8 @@
     }, 100);
 
 
-    $JS.event.add(window, 'load', function () {
-        $JS.event.add($JS.$('btn_logout'), 'click', function () {
+    j6.event.add(window, 'load', function () {
+        j6.event.add(j6.$('btn_logout'), 'click', function () {
             if (confirm('请确认您已经操作完毕并做好数据保存工作！确定继续吗？')) {
                 location.replace('/main/logout');
             }
@@ -213,9 +213,9 @@
 
         //下拉菜单事件注册
         var menuLis = document.getElementsByClassName('icon-ctrl')[0].getElementsByTagName('LI');
-        $JS.each(menuLis, function (i, e) {
+        j6.each(menuLis, function (i, e) {
             if (e.className.indexOf('drop') != -1) {
-                $JS.hover(e);
+                j6.hover(e);
             }
         });
 

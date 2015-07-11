@@ -35,12 +35,12 @@
 <script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
 
 <script>
-    $JS.$('btn_save_lv').onclick = function () {
-        if ($JS.validator.validate('form1_lv')) {
-            var data = $JS.json.toObject('form1_lv');
-            $JS.xhr.jsonPost('LvPrice', data, function (json) {
+    j6.$('btn_save_lv').onclick = function () {
+        if (j6.validator.validate('form1_lv')) {
+            var data = j6.json.toObject('form1_lv');
+            j6.xhr.jsonPost('LvPrice', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
-                    //$JS.tab.closeAndRefresh('商品管理');
+                    //j6.tab.closeAndRefresh('商品管理');
                 });
             }, function (e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

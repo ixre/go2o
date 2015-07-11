@@ -110,31 +110,31 @@
 
 <script>
     var entity = {{.entity}}||{};
-    $JS.json.bind('form1_goods', entity);
-    $JS.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
+    j6.json.bind('form1_goods', entity);
+    j6.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
         entity.Image:'{{.img_serve}}/' + entity.Image;
 
     //上传缩略图
-    $JS.upload({
+    j6.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
         exts: '*.gif;*.jpg;*.png;*.bmp'
     }, function (result, data) {
         if (result) {
-            $JS.$('upload_path').value = data.url;
-            $JS.$('upload_img').src = '{{.img_serve}}/' + data.url;
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.img_serve}}/' + data.url;
         } else {
             alert('上传失败：' + data);
         }
     });
 
-    $JS.$('btn_save_goods').onclick = function () {
-        if ($JS.validator.validate('form1_goods')) {
-            var data = $JS.json.toObject('form1_goods');
-            $JS.xhr.jsonPost('SaveItem', data, function (json) {
+    j6.$('btn_save_goods').onclick = function () {
+        if (j6.validator.validate('form1_goods')) {
+            var data = j6.json.toObject('form1_goods');
+            j6.xhr.jsonPost('SaveItem', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
-                   // $JS.tab.closeAndRefresh('商品管理');
+                   // j6.tab.closeAndRefresh('商品管理');
                 });
             }, function (e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

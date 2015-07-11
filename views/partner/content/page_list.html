@@ -64,7 +64,7 @@
         expr.reload('dg');
     };
 
-    $JS.$('dg').style.height = $JS.screen.height() + 'px';
+    j6.$('dg').style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -74,7 +74,7 @@
                     expr.showExportDialog();
                 });
 
-        $JS.$('btnSearch').onclick=function () {
+        j6.$('btnSearch').onclick=function () {
             expr.search('dg');
         };
 
@@ -121,21 +121,21 @@
         });
     });
 
-    $JS.$('btnAdd').onclick=addRec;
+    j6.$('btnAdd').onclick=addRec;
 
 
     function addRec(){
-        $JS.tab.open('创建页面', '/content/page_create', true);
+        j6.tab.open('创建页面', '/content/page_create', true);
     }
 
     function editRec(id){
-        $JS.tab.open('编辑页面', '/content/page_edit?id=' + id,  true);
+        j6.tab.open('编辑页面', '/content/page_edit?id=' + id,  true);
     }
 
     function delRec(id) {
      window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                $JS.xhr.jsonPost('/content/page_del', { id: id }, function(json) {
+                j6.xhr.jsonPost('/content/page_del', { id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }

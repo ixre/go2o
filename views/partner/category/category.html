@@ -68,26 +68,26 @@
 
 <script type="text/javascript">
     var treeObj = null;
-    var treePanel = $JS.$('menu_tree');
+    var treePanel = j6.$('menu_tree');
     function treeHandler(src,value,text){
         var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
-        $JS.each(nodeLinks, function(i, e) {
+        j6.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 e.style.backgroundColor='';
             }
         });
         src.parentNode.style.backgroundColor="#FBEC88";
-        $JS.json.bind(expr.ele,{cid:value});
-        $JS.$('btnSearch').onclick();
+        j6.json.bind(expr.ele,{cid:value});
+        j6.$('btnSearch').onclick();
     };
 
     function loadTree(json){
         //加载栏目树
-        var treeObj = $JS.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
+        var treeObj = j6.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
         var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
-        $JS.each(nodeLinks, function(i, e) {
+        j6.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
-                var v =$JS.$(e,'A',{className:'node'});
+                var v =j6.$(e,'A',{className:'node'});
                 if(v.length==0)return;
                 v = v[0].getAttribute('node-value');
                 var html = "";
@@ -110,7 +110,7 @@
                 span.innerHTML = html;
                 e.appendChild(span);
 
-                $JS.hover(e,
+                j6.hover(e,
                         (function(e){
                             return function(){
                                 e.className='';
@@ -127,19 +127,19 @@
     }
 
     function tree_add(){
-        $JS.tab.open('添加分类', '/category/CreateCategory' , true);
+        j6.tab.open('添加分类', '/category/CreateCategory' , true);
     }
 
     function tree_edit(e,id){
-        $JS.tab.open('修改分类', '/category/EditCategory?id='+id , true);
-        $JS.event.stopBubble(e||window.event);
+        j6.tab.open('修改分类', '/category/EditCategory?id='+id , true);
+        j6.event.stopBubble(e||window.event);
     }
 
     function tree_del(e,id){
-        $JS.event.stopBubble(e||window.event);
+        j6.event.stopBubble(e||window.event);
      window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                $JS.xhr.jsonPost('DelCategory', { id: id }, function(json) {
+                j6.xhr.jsonPost('DelCategory', { id: id }, function(json) {
                     if (json.result) {
                         window.refresh();
                     }
@@ -152,14 +152,14 @@
     function ajaxLoadTree(){
         //var data = {"text":"根节点","value":"","url":"","icon":"","open":true,"childs":[{"text":"小炒","value":"18","url":"","icon":"","open":true,"childs":[]}]};
         //loadTree(data);
-        $JS.xhr.get('categoryJson',function(result){
-            loadTree($JS.toJson(result));
+        j6.xhr.get('categoryJson',function(result){
+            loadTree(j6.toJson(result));
         });
     }
     ajaxLoadTree();
-    $JS.dom.fitHeight($JS.$('menu_tree').parentNode);
-    $JS.$('btnAddCategory').onclick = tree_add;
-    $JS.$('btnCollect').onclick = function(){
+    j6.dom.fitHeight(j6.$('menu_tree').parentNode);
+    j6.$('btnAddCategory').onclick = tree_add;
+    j6.$('btnCollect').onclick = function(){
         treeObj.oAll();
     }
 </script>
@@ -177,7 +177,7 @@
         expr.reload('dg');
     };
 
-    $JS.$('dg').style.height = $JS.screen.height() + 'px';
+    j6.$('dg').style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -187,7 +187,7 @@
                     expr.showExportDialog();
                 });
 
-        $JS.$('btnSearch').onclick=function () {
+        j6.$('btnSearch').onclick=function () {
             expr.search('dg');
         };
 
@@ -243,20 +243,20 @@
         });
     });
 
-    $JS.$('btnAdd').onclick=addRec;
+    j6.$('btnAdd').onclick=addRec;
 
     function addRec(){
-        $JS.tab.open('新增商品', '/goods/create', true);
+        j6.tab.open('新增商品', '/goods/create', true);
     }
 
     function editRec(id){
-        $JS.tab.open('修改商品', '/goods/edit?id=' + id,  true);
+        j6.tab.open('修改商品', '/goods/edit?id=' + id,  true);
     }
 
     function delRec(id) {
      window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                $JS.xhr.jsonPost('/goods/del', { id: id }, function(json) {
+                j6.xhr.jsonPost('/goods/del', { id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }

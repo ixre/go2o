@@ -50,24 +50,24 @@
 
 <script type="text/javascript">
     var addrs = {{.addrs}};
-    var addressTpl = $JS.$('addressTpl').innerHTML;
-    var newPanel = $JS.$('new_panel');
+    var addressTpl = j6.$('addressTpl').innerHTML;
+    var newPanel = j6.$('new_panel');
     var selId = {{.sel}};
 
     function toggleNewAdd(){
-        $JS.animation.toggleHeight(newPanel,null,15);
+        j6.animation.toggleHeight(newPanel,null,15);
     }
-    $JS.$('btn_new_address').onclick=function(){
-        $JS.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
+    j6.$('btn_new_address').onclick=function(){
+        j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();
         }
     }
 
     function newAddr(show){
-        $JS.style(newPanel,{display:'none'});
+        j6.style(newPanel,{display:'none'});
         newPanel.innerHTML=addressTpl;
-        $JS.validator.init();
+        j6.validator.init();
     }
 
     if(addrs.length!=0){
@@ -76,9 +76,9 @@
             '<label for="addr_{Id}"><strong>{RealName}</strong>({Phone},{Address})</label>&nbsp;&nbsp;'+
             '<a href="javascript:editAddr({Id})">修改</a></div>';
         for(var i=0;i<addrs.length;i++){
-            html += $JS.template(tpl,addrs[i]);
+            html += j6.template(tpl,addrs[i]);
         }
-        $JS.$('address_panel').innerHTML = html;
+        j6.$('address_panel').innerHTML = html;
         if(addrs.length != 0){
             var addr = null;
             if(selId > 0) {
@@ -88,7 +88,7 @@
                 selId = addrs[0].Id;
             }
         }
-        $JS.json.bind('address_panel', {AddrId: selId});
+        j6.json.bind('address_panel', {AddrId: selId});
         newAddr();
     }else{
         newAddr();
@@ -112,7 +112,7 @@
     function editAddr(id){
         var addr =getSingleAddr(id);
         if(addr!= null){
-            $JS.json.bind(newPanel,addr);
+            j6.json.bind(newPanel,addr);
             if(newPanel.offsetHeight == 0){
                 toggleNewAdd();
             }
@@ -120,9 +120,9 @@
     }
 
     function saveDeliveAddr(){
-        if($JS.validator.validate('form-deliver')){
-            var d = $JS.json.toObject('form-deliver');
-            $JS.xhr.jsonPost('/shopping/saveDeliverAddr',d,function(json){
+        if(j6.validator.validate('form-deliver')){
+            var d = j6.json.toObject('form-deliver');
+            j6.xhr.jsonPost('/shopping/saveDeliverAddr',d,function(json){
                if(json.result){
                    selectDeliver();
                }else{
@@ -133,12 +133,12 @@
     }
 
 
-    $JS.$('cb1').onclick=function(){
-        var data = $JS.json.toObject('address_panel');
+    j6.$('cb1').onclick=function(){
+        var data = j6.json.toObject('address_panel');
         var addrId = data.AddrId;
         var addr = getSingleAddr(addrId);
         if(addr != null){
-            $JS.json.bind('postForm',{
+            j6.json.bind('postForm',{
                 deliver_id:addrId,
                 deliver_person:addr.RealName,
                 deliver_phone:addr.Phone,

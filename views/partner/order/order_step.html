@@ -91,10 +91,10 @@
 
 	<script type="text/javascript">
           var entity ={{.entity}} ||{};
-          $JS.json.bind('form1', entity);
+          j6.json.bind('form1', entity);
 
         function doNext(){
-            $JS.load('pl','setup?order_no'+$JS.request('order_no'));
+            j6.load('pl','setup?order_no'+j6.request('order_no'));
         }
 
         doNext();

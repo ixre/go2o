@@ -77,13 +77,13 @@
 
 			<script type="text/javascript">
 				var entity = {{.entity}}||{};
-				$JS.json.bind('form1',entity);
-				var pl = $JS.$('pl');
+				j6.json.bind('form1',entity);
+				var pl = j6.$('pl');
 
 				function saveData(){
-					if($JS.validator.validate('form1')){
-						var data = $JS.json.toObject('form1');
-						$JS.xhr.jsonPost('?',data,function(json){
+					if(j6.validator.validate('form1')){
+						var data = j6.json.toObject('form1');
+						j6.xhr.jsonPost('?',data,function(json){
 							if(json.result){
 								pl.innerHTML='<b>修改成功</b>';
 								pl.className='green';

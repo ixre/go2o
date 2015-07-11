@@ -109,29 +109,29 @@
 
 <script>
     var entity = {{.entity}} ||{};
-    $JS.json.bind('form1', entity);
+    j6.json.bind('form1', entity);
 
     //上传缩略图
-    $JS.upload({
+    j6.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
         exts: '*.gif;*.jpg;*.png;*.bmp'
     }, function (result, data) {
         if (result) {
-            $JS.$('upload_path').value = data.url;
-            $JS.$('upload_img').src = '{{.img_serve}}/' + data.url;
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.img_serve}}/' + data.url;
         } else {
             alert('上传失败：' + data);
         }
     });
 
-    $JS.$('btn_save').onclick = function () {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
-            $JS.xhr.jsonPost('SaveItem', data, function (json) {
+    j6.$('btn_save').onclick = function () {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SaveItem', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
-                    $JS.tab.closeAndRefresh('商品管理');
+                    j6.tab.closeAndRefresh('商品管理');
                 });
             }, function (e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

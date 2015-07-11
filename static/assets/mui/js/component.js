@@ -9,7 +9,7 @@ if (window.menuData == undefined) {
     //    var ip, address, md, username;
     //    eval(x);
     //    window.menuData = md;
-    //    $JS.json.bind(document, { userName: username });
+    //    j6.json.bind(document, { userName: username });
     //});
     window.menuData = [];
 }
@@ -67,16 +67,16 @@ var FwMenu = {
         //获取所有的标题菜单
         this.menuTitles = this.getByCls('group-title');
         var t = this;
-        $JS.each(this.menuTitles, function (i, e) {
+        j6.each(this.menuTitles, function (i, e) {
             var groupName = e.getAttribute('group');
-            $JS.event.add(e, 'click', (function (_t, _e) {
+            j6.event.add(e, 'click', (function (_t, _e) {
                 return function () {
                     _t.show(_e);
                 };
             })(t, e));
 
-            $JS.each(e.nextSibling.getElementsByTagName('LI'), function (i2, e2) {
-                $JS.event.add(e2, 'click', (function (_this, _t, g) {
+            j6.each(e.nextSibling.getElementsByTagName('LI'), function (i2, e2) {
+                j6.event.add(e2, 'click', (function (_this, _t, g) {
                     return function () {
                         _t.set(groupName, _this);
                         var a = _this.childNodes[0];
@@ -106,7 +106,7 @@ var FwMenu = {
         var titleGroups = [];
         var _lis;
 
-        $JS.each(menuTitles, function (i, e) {
+        j6.each(menuTitles, function (i, e) {
             if (e.getAttribute('group') != groupName) {
                 e.className = 'group-title hidden';
                 e.nextSibling.className = 'panel hidden';
@@ -142,7 +142,7 @@ var FwMenu = {
     //查看菜单
     show: function (titleDiv) {
         var groupName = titleDiv.getAttribute('group');
-        $JS.each(this.menuTitles, function (i, e) {
+        j6.each(this.menuTitles, function (i, e) {
             if (e.getAttribute('group') == groupName) {
                 if (e != titleDiv) {
                     e.nextSibling.className = 'panel hidden';
@@ -153,9 +153,9 @@ var FwMenu = {
         });
     },
     set: function (groupName, ele) {
-        $JS.each(this.menuTitles, function (i, e) {
+        j6.each(this.menuTitles, function (i, e) {
             if (e.getAttribute('group') == groupName) {
-                $JS.each(e.nextSibling.getElementsByTagName('LI'), function (i, e2) {
+                j6.each(e.nextSibling.getElementsByTagName('LI'), function (i, e2) {
                     e2.className = ele == e2 ? 'current' : '';
                 });
             }
@@ -172,8 +172,8 @@ var FwTab = {
     loadEle: null,
     tabs: null,
     initialize: function () {
-        var framebox = $JS.$('pageframes');
-        this.tabs = $JS.$('pagetabs').getElementsByTagName('UL')[0];
+        var framebox = j6.$('pageframes');
+        this.tabs = j6.$('pagetabs').getElementsByTagName('UL')[0];
 
         var getByCls = function (cls) {
             return (framebox.getElementsByClassName ? framebox.getElementsByClassName(cls) : document.getElementsByClassName(cls, framebox))[0];
@@ -193,8 +193,8 @@ var FwTab = {
 
         //加载框位置
         if (this.loadEle) {
-            var fx1 = $JS.screen.offsetWidth(),
-                fy1 = $JS.screen.offsetHeight(),
+            var fx1 = j6.screen.offsetWidth(),
+                fy1 = j6.screen.offsetHeight(),
                 offset = 50;
 
             this.loadEle.style.left = (Math.floor((fx1 - this.loadEle.offsetWidth) / 2)
@@ -258,7 +258,7 @@ var FwTab = {
             frame.setAttribute('frameBorder', '0', 0);
             frame.setAttribute('indent', _cur_indents);
             frame.setAttribute('id', 'ifr_' + _cur_indents);
-            $JS.event.add(frame, 'load', _loadCall);
+            j6.event.add(frame, 'load', _loadCall);
 
 
 
@@ -540,7 +540,7 @@ function _resizeWin() {
     iconCtrlDiv.style.left = (iconCtrlDiv < 180 ? 180 : iconCtrlLeft) + 'px';
 }
 
-$JS.event.add(window, 'resize', _resizeWin);
+j6.event.add(window, 'resize', _resizeWin);
 
 //设置按键
 window.onload = function () {

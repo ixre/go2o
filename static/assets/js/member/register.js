@@ -9,9 +9,9 @@ var _vcode;//验证码
 //对每个输入进行验证
 
 //定义元素变量
-var phone = $JS.$('phone');
-var valid = $JS.validator;
-$JS.$('usr').onblur = function () {
+var phone = j6.$('phone');
+var valid = j6.validator;
+j6.$('usr').onblur = function () {
     if (this.value == undefined)return;
     if (this.value == '')valid.setTip(this, false, 0, '请输入用户名!');
     //else if(!/^(?=[A-Za-z])/.test(this.value))valid.setError(this,1);     //必须字符开头
@@ -20,7 +20,7 @@ $JS.$('usr').onblur = function () {
     else {
         var t = this;
         valid.setTip(t, false, null, '验证中...');
-        $JS.xhr.jsonPost('/user/ValidUsr', {usr: escape(t.value)}, function (json) {
+        j6.xhr.jsonPost('/user/ValidUsr', {usr: escape(t.value)}, function (json) {
             if (json.result) {
                 valid.setTip(t, true, null, '用户名可用');
             }
@@ -51,7 +51,7 @@ $JS.$('usr').onblur = function () {
  }
 
  */
-$JS.$('pwd').onblur = function () {
+j6.$('pwd').onblur = function () {
     if (/^(?=_)/.test(this.value) || this.value.indexOf('_') == this.value.length - 1)
         valid.setTip(this, false, '1');
     else if (!/^[A-Za-z0-9_]*$/.test(this.value)) {
@@ -65,15 +65,15 @@ $JS.$('pwd').onblur = function () {
     }
 };
 
-$JS.$('rePwd').onblur = function () {
-    if (this.value != $JS.$('pwd').value) {
-        $JS.validator.setTip(this, false, null, "两次密码输入不一致")
+j6.$('rePwd').onblur = function () {
+    if (this.value != j6.$('pwd').value) {
+        j6.validator.setTip(this, false, null, "两次密码输入不一致")
     } else {
-        $JS.validator.removeTip(this);
+        j6.validator.removeTip(this);
     }
 };
 
-var phone = $JS.$('phone');
+var phone = j6.$('phone');
 if (phone != null) {
     phone.onblur = function () {
         if (this.value == undefined)return;
@@ -100,22 +100,22 @@ if (phone != null) {
     };
 }
 
-var inviCode = $JS.$('invi_code');
+var inviCode = j6.$('invi_code');
 if (inviCode != null) {
     inviCode.onblur = function () {
         var val = this.value;
         if(val.length == 0) {
-            $JS.validator.removeTip(this);
+            j6.validator.removeTip(this);
         }else{
             var t = this;
             valid.setTip(this, false, null, '验证中...');
-            $JS.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
+            j6.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
                 if (json.result) {
                     //valid.setTip(t, true, null, '邀请人为:'+json.data.Name);
-                    $JS.validator.removeTip(t);
+                    j6.validator.removeTip(t);
                 }
                 else {
-                    $JS.validator.setTip(t, false, null, json.message);
+                    j6.validator.setTip(t, false, null, json.message);
                 }
             });
         }
@@ -181,20 +181,20 @@ if (inviCode != null) {
 //    };
 //}
 
-var btnRegister = $JS.$('btn_register');
+var btnRegister = j6.$('btn_register');
 btnRegister.disabled='';
 btnRegister.onclick = function () {
     var t = this;
-    if ($JS.validator.validate('reg_panel')) {
-        var d = $JS.json.toObject('reg_panel');
+    if (j6.validator.validate('reg_panel')) {
+        var d = j6.json.toObject('reg_panel');
         if (d.remember != 'on') {
             alert('请同意注册条款')
         } else {
-            var tip = $JS.$('tip');
+            var tip = j6.$('tip');
             t.disabled='disabled';
-            $JS.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
+            j6.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
                 if (json.result) {
-                    var returnUrl = $JS.request('return_url');
+                    var returnUrl = j6.request('return_url');
                     if (returnUrl != '') {
                         location.replace(returnUrl);
                     } else {

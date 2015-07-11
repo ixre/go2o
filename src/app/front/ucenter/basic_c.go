@@ -86,15 +86,19 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
-	clientM := new(member.ValueMember)
-	web.ParseFormToEntity(r.Form, clientM)
-	clientM.Id = mm.Id
-	_, err := dps.MemberService.SaveMember(clientM)
+	m := new(member.ValueMember)
+	web.ParseFormToEntity(r.Form, m)
+	m.Id = mm.Id
+	_, err := dps.MemberService.SaveMember(m)
 
 	if err != nil {
 		result = gof.Message{Result: false, Message: err.Error()}
 	} else {
 		result = gof.Message{Result: true}
+		m = dps.MemberService.GetMember(mm.Id)
+		ctx.Session().Set("member",m)
+		ctx.Session().Save()
+
 	}
 	ctx.Response.JsonOutput(result)
 }

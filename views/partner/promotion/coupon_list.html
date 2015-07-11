@@ -45,7 +45,7 @@
         var shops = {{.shops}};
         expr.ele = 'searchbar';
 
-        $JS.json.bind(expr.ele, {status: decodeURIComponent($JS.request('status')) });
+        j6.json.bind(expr.ele, {status: decodeURIComponent(j6.request('status')) });
 
         expr.portal = 'Partner.CouponList'; //配置导出的入口
         expr.checkParams = function (data) {
@@ -54,7 +54,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        $JS.$('dg').style.height = $JS.screen.height() + 'px';
+        j6.$('dg').style.height = j6.screen.height() + 'px';
 
         $(function () {
 
@@ -152,24 +152,24 @@
             });
         });
 
-        $JS.$('btnAdd').onclick=addRec;
+        j6.$('btnAdd').onclick=addRec;
 
         function addRec(){
-            $JS.tab.open('新增优惠券', '/prom/createCoupon',true);
+            j6.tab.open('新增优惠券', '/prom/createCoupon',true);
         }
 
         function editRec(id){
-            $JS.tab.open('修改优惠券', '/prom/editCoupon?id=' + id,true);
+            j6.tab.open('修改优惠券', '/prom/editCoupon?id=' + id,true);
         }
 
         function bindCoupon(id,code){
-             $JS.dialog.create2('发送优惠券：'+code,true,true).open('/prom/bindCoupon?coupon_id=' + id, 800,500);
+             j6.dialog.create2('发送优惠券：'+code,true,true).open('/prom/bindCoupon?coupon_id=' + id, 800,500);
         }
 
         function delRec(id) {
          window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
                 if (result) {
-                    $JS.xhr.jsonPost('/prom/delCoupon', { id: id }, function(json) {
+                    j6.xhr.jsonPost('/prom/delCoupon', { id: id }, function(json) {
                         if (json.result) {
                             expr.reload('dg');
                         }

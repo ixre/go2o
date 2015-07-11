@@ -59,7 +59,7 @@
 <script>
     expr.ele = 'searchbar';
 
-    $JS.json.bind(expr.ele, { keyword: decodeURIComponent($JS.request('keyword')) });
+    j6.json.bind(expr.ele, { keyword: decodeURIComponent(j6.request('keyword')) });
 
     expr.portal = 'Partner.CoverageAreList'; //配置导出的入口
     expr.checkParams = function (data) {
@@ -68,7 +68,7 @@
 
     var refresh = function () { expr.reload('dg'); };
 
-    $JS.$('dg').style.height = $JS.screen.height() + 'px';
+    j6.$('dg').style.height = j6.screen.height() + 'px';
 
     $(function () {
         //加载数据
@@ -93,8 +93,8 @@
     });
 
     function addRecore(){
-        $JS.tab.open('新增配送区域','delivery/create', true);
+        j6.tab.open('新增配送区域','delivery/create', true);
     }
 
-    $JS.$('btnAdd').onclick = addRecore;
+    j6.$('btnAdd').onclick = addRecore;
 </script>

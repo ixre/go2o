@@ -59,15 +59,15 @@
     
     <script>
     var entity ={{.entity}} ||{};
-    $JS.json.bind('form1', entity);
+    j6.json.bind('form1', entity);
 
 
-    $JS.$('btn_save').onclick = function() {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
-            $JS.xhr.jsonPost('SaveCategory', data, function(json) {
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SaveCategory', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    $JS.tab.closeAndRefresh('分类管理');
+                    j6.tab.closeAndRefresh('分类管理');
                 });
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
@@ -75,14 +75,14 @@
         }
     }
     
-    $JS.$('btnSelectCategory').onclick = function(){
-    	var d = $JS.dialog.create2('选择分类',true,true);
+    j6.$('btnSelectCategory').onclick = function(){
+    	var d = j6.dialog.create2('选择分类',true,true);
     	d.open('/category/categorySelect');
     };
     
     function nodeSelected(val,text){
-    	$JS.$('category_name').innerHTML ='<span style="color:green">'+ text+'</span>';
-        $JS.json.bind('form1', {ParentId:val});
+    	j6.$('category_name').innerHTML ='<span style="color:green">'+ text+'</span>';
+        j6.json.bind('form1', {ParentId:val});
         return true;
     }
     

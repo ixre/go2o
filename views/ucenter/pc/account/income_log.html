@@ -25,9 +25,9 @@
 
         <script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
         <script type="text/javascript">
-            var _dg = $JS.grid('dg', {
+            var _dg = j6.grid('dg', {
                 url: location.href,
-                data: {page:$JS.request('page')||1,size:10},
+                data: {page:j6.request('page')||1,size:10},
                 idField: 'id',
                 columns: [
                     { field: 'record_time', title: '产生时间', width: 120},

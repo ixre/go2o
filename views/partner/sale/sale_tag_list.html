@@ -49,7 +49,7 @@
         var shops = {{.shops}};
         expr.ele = 'searchbar';
 
-        $JS.json.bind(expr.ele, {status: decodeURIComponent($JS.request('status')) });
+        j6.json.bind(expr.ele, {status: decodeURIComponent(j6.request('status')) });
 
         expr.portal = 'Partner.SaleTagList';
         expr.checkParams = function (data) {
@@ -58,7 +58,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        $JS.$('dg').style.height = $JS.screen.height() + 'px';
+        j6.$('dg').style.height = j6.screen.height() + 'px';
 
         $(function () {
 
@@ -108,21 +108,21 @@
 
 
 
-        $JS.$('btnAdd').onclick=addRec;
+        j6.$('btnAdd').onclick=addRec;
         function addRec(){
-            $JS.dialog.create2('添加销售标签',true,true).open('/sale/createSTag', 600,400);
+            j6.dialog.create2('添加销售标签',true,true).open('/sale/createSTag', 600,400);
         }
 
 
         function editRec(id){
-            $JS.dialog.create2('编辑销售标签',true,true).open('/sale/editSTag?id=' + id, 600,400);
+            j6.dialog.create2('编辑销售标签',true,true).open('/sale/editSTag?id=' + id, 600,400);
         }
 
 
         function delRec(id) {
          window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
                 if (result) {
-                    $JS.xhr.jsonPost('delMLevel', { id: id }, function(json) {
+                    j6.xhr.jsonPost('delMLevel', { id: id }, function(json) {
                         if (json.result) {
                             expr.reload('dg');
                         }else{

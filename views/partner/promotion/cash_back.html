@@ -50,15 +50,15 @@
 
 <script>
     var entity ={{.entity}} ||{};
-    $JS.json.bind('form_adv1', entity);
+    j6.json.bind('form_adv1', entity);
 
-    $JS.$('btn_save').onclick = function() {
-        if ($JS.validator.validate('form_adv1')) {
-            var data = $JS.json.toObject('form_adv1');
-            $JS.xhr.jsonPost('SaveAd', data, function(json) {
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form_adv1')) {
+            var data = j6.json.toObject('form_adv1');
+            j6.xhr.jsonPost('SaveAd', data, function(json) {
                 if(json.result){
                     window.parent.$.messager.alert('提示', '保存成功！',"ok",function(){
-                        $JS.tab.closeAndRefresh('广告管理');
+                        j6.tab.closeAndRefresh('广告管理');
                     });
                 }else {
                     window.parent.$.messager.alert('提示',  json.message,'error');

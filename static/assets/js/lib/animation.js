@@ -1,4 +1,4 @@
-$JS.extend({
+j6.extend({
     animation: {
         timer: function (call, overCall, start, end, speed) {
             if (!call) return;
@@ -36,8 +36,8 @@ $JS.extend({
             }, _interval);
         },
         opacity: function (e, call, end, speed) {
-            var ele = $JS.$(e);
-            var s = $JS.style(ele);
+            var ele = j6.$(e);
+            var s = j6.style(ele);
             var start = s["opacity"];
 
             //获取ie的透明度
@@ -83,8 +83,8 @@ $JS.extend({
             this._toggle(e, 'h', call, speed);
         },
         _toggle: function (e,direction, call, speed) {
-            e = $JS.$(e);
-            var style = $JS.style(e);
+            e = j6.$(e);
+            var style = j6.style(e);
             var w = e.offsetWidth;
             var h = e.offsetHeight;
             var tw = parseInt(e.getAttribute("toggle-w") || 0);
@@ -92,8 +92,8 @@ $JS.extend({
 
             //init
             if (tw == 0 || th == 0) {
-                tw = $JS.clientWidth(e);
-                th = $JS.clientHeight(e);
+                tw = j6.clientWidth(e);
+                th = j6.clientHeight(e);
 
                 if (w == 0 || h == 0) {
                     w = tw;
@@ -114,7 +114,7 @@ $JS.extend({
                 if (direction.indexOf('h') != -1) {
                     css.height = '0px';
                 }
-                $JS.style(e,css);
+                j6.style(e,css);
                 this._toggleShow(e, direction,call, w, tw, h, th, speedX, speedY);
             } else {
                 e.style.overflow = 'hidden';

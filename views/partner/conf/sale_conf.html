@@ -70,14 +70,14 @@
 
 <script>
     var entity ={{.entity}} ||{};
-    $JS.json.bind('form1', entity);
+    j6.json.bind('form1', entity);
 
-    $JS.$('btn_save').onclick = function() {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
-            $JS.xhr.jsonPost('', data, function(json) {
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    var d = $JS.dialog.getDialog();
+                    var d = j6.dialog.getDialog();
                     if(d.window.refresh){
                         d.window.refresh();
                     }

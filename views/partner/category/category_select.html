@@ -13,10 +13,10 @@
 	
 <script type="text/javascript">
 var treeObj = null;
-var treeEle = $JS.$('menu_tree');
+var treeEle = j6.$('menu_tree');
 function treeHandler(src,value,text){
 	var nodeLinks = j6.dom.getsByClass(treeEle, 'node');
-	$JS.each(nodeLinks, function(i, e) {
+	j6.each(nodeLinks, function(i, e) {
 	    if (e.nodeName == 'DIV') {
 	    	e.style.backgroundColor='';
 	    }
@@ -36,8 +36,8 @@ function treeHandler(src,value,text){
 function ajaxLoadTree(){
 	//var data = {"text":"根节点","value":"","url":"","icon":"","open":true,"childs":[{"text":"小炒","value":"18","url":"","icon":"","open":true,"childs":[]}]};
 	//loadTree(data);
-	$JS.xhr.get('categoryJson',function(result){
-		var json = $JS.toJson(result);
+	j6.xhr.get('categoryJson',function(result){
+		var json = j6.toJson(result);
 		treeObj = cms.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
 		var title = treeEle.getElementsByTagName('B')[0];
 		title.style.cssText = 'color:#0066cc;cursor:pointer';
@@ -47,7 +47,7 @@ function ajaxLoadTree(){
 	});
 }
 ajaxLoadTree();
-$JS.dom.fitHeight($JS.$('menu_tree').parentNode);
+j6.dom.fitHeight(j6.$('menu_tree').parentNode);
 </script>
 </body>
 </html>

@@ -38,14 +38,14 @@
 <script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
 
 	<script type="text/javascript">
-        $JS.$('btn_payment').onclick=function() {
+        j6.$('btn_payment').onclick=function() {
             var data = {orderNo: '{{.order.OrderNo}}'};
             parent.$.messager.confirm('提示', '您确定要为订单：' + data.orderNo + '进行支付吗？', function (r) {
                 if(r){
-                $JS.xhr.jsonPost('Payment', data, function (json) {
+                j6.xhr.jsonPost('Payment', data, function (json) {
                     if (json.result) {
                         parent.$.messager.alert('提示',json.message,'ok',function(){
-                            var d = $JS.dialog.getDialog();
+                            var d = j6.dialog.getDialog();
                             if (d) {
                                 d.window.refresh();
                                 d.close();

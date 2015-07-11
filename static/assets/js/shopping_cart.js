@@ -83,19 +83,19 @@ function shoppingCart() {
 // 重置购物车KEY
 shoppingCart.prototype.renewKey = function (newKey) {
     if (this.key == null) {
-        this.key = $JS.cookie.read('_cart');
+        this.key = j6.cookie.read('_cart');
     }
     if (newKey) {
         this.key = newKey;
         if(this.cookieManaged) {
-            $JS.cookie.write('_cart', this.key);
+            j6.cookie.write('_cart', this.key);
         }
     }
     return this.key;
 };
 
 shoppingCart.prototype.xhr = function (data, call) {
-    $JS.xhr.jsonPost(this.api, data, function (obj) {
+    j6.xhr.jsonPost(this.api, data, function (obj) {
         if (call)call(obj);  // 回调处理购物车项
     });
 };

@@ -1,7 +1,7 @@
-﻿//$JS.__WORKPATH__ = '/assets/js/plugin/';
+﻿//j6.__WORKPATH__ = '/assets/js/plugin/';
 
 //
-//$JS.extend({
+//j6.extend({
 //    tab: {
 //        check:function(){
 //            if(window.parent.FwTab){
@@ -42,17 +42,17 @@
 //});
 
 /*
- $JS.extend({
+ j6.extend({
  repeater: function (ele, url, data, format, loaded) {
- $JS.lazyRun(function() {
- var dataLoader = $JS.dataLoader(ele, {
+ j6.lazyRun(function() {
+ var dataLoader = j6.dataLoader(ele, {
  url: url,
  data: data,
  loaded: function (json) {
  ele.innerHTML = '';
  var html = '<ul>';
  for (var i in json.rows) {
- html += '<li>' + $JS.template(format, json.rows[i]) + '</li>';
+ html += '<li>' + j6.template(format, json.rows[i]) + '</li>';
  }
  html += '</ul>';
  ele.innerHTML = html;
@@ -64,8 +64,8 @@
  });
  },
  completion: function (ele, url, loadCallback, selectCallback,minLen) {
- $JS.lazyRun(function () {
- $JS.autoCompletion(ele, url, loadCallback, selectCallback, minLen);
+ j6.lazyRun(function () {
+ j6.autoCompletion(ele, url, loadCallback, selectCallback, minLen);
  });
  }
  });
@@ -73,7 +73,7 @@
  */
 
 
-$JS.extend({
+j6.extend({
     float:function(val){
         return parseFloat(val);
     }

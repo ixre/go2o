@@ -16,9 +16,9 @@
     var btn2 = document.getElementById('btn2');
     if(btn2){
         btn2.onclick=function(){
-            var data = $JS.json.toObject('form2');
+            var data = j6.json.toObject('form2');
             if(data.shopId != ""){
-                $JS.xhr.jsonPost('OrderSetup',data,function(json){
+                j6.xhr.jsonPost('OrderSetup',data,function(json){
                     if(json.result){
                         location.reload();
                         refresh();
@@ -31,7 +31,7 @@
     }
 
     function closeDialog(){
-        var d = $JS.dialog.getDialog();
+        var d = j6.dialog.getDialog();
         if(d)d.close();
     }
 	</script>

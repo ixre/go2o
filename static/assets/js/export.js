@@ -26,7 +26,7 @@ var expr = {
     hanlderPrefix: '/export/',
     portal: '',
     _getParams: function () {
-        return encodeURIComponent($JS.json.toString(this.ele));
+        return encodeURIComponent(j6.json.toString(this.ele));
     },
 
     checkParams: function (data) {
@@ -69,8 +69,8 @@ var expr = {
             + 'getTotalView?portal=' + expr.portal
             + '&params=' + expr._getParams();
 
-        $JS.xhr.post(url, {}, function (json) {
-            $JS.json.bind(id || 'totalView', json);
+        j6.xhr.post(url, {}, function (json) {
+            j6.json.bind(id || 'totalView', json);
         });
     }
 };

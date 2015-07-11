@@ -58,7 +58,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Birthday = v.Birthday
 	this._value.Email = v.Email
 	this._value.LastLoginTime = v.LastLoginTime
-	this._value.Phone = v.Email
+	this._value.Phone = v.Phone
 	this._value.Pwd = v.Pwd
 	this._value.Name = v.Name
 	this._value.Sex = v.Sex

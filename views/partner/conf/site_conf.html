@@ -58,19 +58,19 @@
 
 <script>
     var entity ={{.entity}} ||{};
-    $JS.json.bind('form1', entity);
-    $JS.$('upload_img').src = '{{.img_serve}}/'+ entity.Logo;
+    j6.json.bind('form1', entity);
+    j6.$('upload_img').src = '{{.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
-    $JS.upload({
+    j6.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {
-            $JS.$('upload_path').value = data.url;
-            $JS.$('upload_img').src = '{{.img_serve}}/'+ data.url;
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }
@@ -78,8 +78,8 @@
 
 
     //设置是否跳转显示
-    var statePanel = $JS.$('statePanel');
-    $JS.$('State1').onchange = $JS.$('State2').onchange = function(){
+    var statePanel = j6.$('statePanel');
+    j6.$('State1').onchange = j6.$('State2').onchange = function(){
         if(this.checked){
             if(this.value == '0'){
                 statePanel.className = '';
@@ -90,10 +90,10 @@
     };
     if(entity.State == 0)statePanel.className='';
 
-    $JS.$('btn_save').onclick = function() {
-        if ($JS.validator.validate('form1')) {
-            var data = $JS.json.toObject('form1');
-            $JS.xhr.jsonPost('', data, function(json) {
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message);
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

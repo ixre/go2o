@@ -82,9 +82,9 @@
 <script type="text/javascript">
     var addrs = {};
     var numIdx = 0;
-    var _dg = $JS.grid('dg', {
+    var _dg = j6.grid('dg', {
         url: location.href,
-        data: {page:$JS.request('page')||1,size:10},
+        data: {page:j6.request('page')||1,size:10},
         idField: 'id',
         columns: [
             { field: 'Id', title: '编号', width: 30,align:'center',
@@ -112,23 +112,23 @@
     _dg.resize();
 
 
-    var addressTpl = $JS.$('addressTpl').innerHTML;
-    var newPanel = $JS.$('new_panel');
+    var addressTpl = j6.$('addressTpl').innerHTML;
+    var newPanel = j6.$('new_panel');
 
     function toggleNewAdd(){
-        $JS.animation.toggleHeight(newPanel,null,25);
+        j6.animation.toggleHeight(newPanel,null,25);
     }
-    $JS.$('btn_new_address').onclick=function(){
-        $JS.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
+    j6.$('btn_new_address').onclick=function(){
+        j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();
         }
     }
 
     function newAddr(show) {
-        $JS.style(newPanel, {display: 'none'});
+        j6.style(newPanel, {display: 'none'});
         newPanel.innerHTML = addressTpl;
-        $JS.validator.init();
+        j6.validator.init();
     }
 
     newAddr();
@@ -136,7 +136,7 @@
     function editAddr(id){
         for(var i=0;i<addrs.length;i++){
             if(addrs[i].Id == id){
-                $JS.json.bind(newPanel,addrs[i]);
+                j6.json.bind(newPanel,addrs[i]);
                 if(newPanel.offsetHeight == 0){
                     toggleNewAdd();
                 }
@@ -146,9 +146,9 @@
     }
 
     function saveDeliveAddr(){
-        if($JS.validator.validate('form-deliver')){
-            var d = $JS.json.toObject('form-deliver');
-            $JS.xhr.jsonPost('saveDeliver',d,function(json){
+        if(j6.validator.validate('form-deliver')){
+            var d = j6.json.toObject('form-deliver');
+            j6.xhr.jsonPost('saveDeliver',d,function(json){
                 if(json.result){
                     loadDeliver('deliver-panel');
                 }else{
@@ -164,7 +164,7 @@
 
     function delAddr(id){
         if(confirm('确定要删除配送地址吗？')) {
-            $JS.xhr.jsonPost('deleteDeliver.htm', {id: id}, function (json) {
+            j6.xhr.jsonPost('deleteDeliver.htm', {id: id}, function (json) {
                 if (json.result) {
                     location.reload();
                 } else {
