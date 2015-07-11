@@ -56,22 +56,7 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
-	mv := m.GetValue()
-
-	//更新
-	mv.Name = v.Name
-	mv.Address = v.Address
-	mv.Birthday = v.Birthday
-	mv.Email = v.Email
-	mv.Phone = v.Phone
-	mv.Sex = v.Sex
-	mv.Qq = v.Qq
-
-	if v.Avatar != "" {
-		mv.Avatar = v.Avatar
-	}
-
-	m.SetValue(&mv)
+	m.SetValue(v)
 	return m.Save()
 }
 

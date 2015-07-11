@@ -53,9 +53,9 @@ func (this *Member) GetValue() member.ValueMember {
 
 // 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
-	this._value.Avatar = v.Avatar
 	this._value.Address = v.Address
 	this._value.Birthday = v.Birthday
+	this._value.Qq = v.Qq
 	this._value.Email = v.Email
 	this._value.LastLoginTime = v.LastLoginTime
 	this._value.Phone = v.Phone
@@ -63,6 +63,9 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Name = v.Name
 	this._value.Sex = v.Sex
 	this._value.RegFrom = v.RegFrom
+	if v.Avatar != "" {
+		this._value.Avatar = v.Avatar
+	}
 	if len(this._value.InvitationCode) == 0 {
 		this._value.InvitationCode = v.InvitationCode
 	}
@@ -226,6 +229,10 @@ func (this *Member) Unlock() error {
 func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 	var err error
 
+	if newPwd == oldPwd {
+		return member.ErrPwdCannotSame
+	}
+
 	if b, err := domain.ChkPwdRight(newPwd); !b {
 		return err
 	}
@@ -233,7 +240,7 @@ func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 	if len(oldPwd) != 0 {
 		dyp := domain.Md5MemberPwd(oldPwd)
 		if dyp != this._value.Pwd {
-			return errors.New("原密码不正确")
+			return member.ErrPwdPldPwdNotRight
 		}
 	}
 

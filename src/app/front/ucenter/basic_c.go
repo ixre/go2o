@@ -96,7 +96,7 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true}
 		m = dps.MemberService.GetMember(mm.Id)
-		ctx.Session().Set("member",m)
+		ctx.Session().Set("member", m)
 		ctx.Session().Save()
 
 	}

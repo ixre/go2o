@@ -33,4 +33,10 @@ var (
 
 	ErrDeliverPhoneIsNull *domain.DomainError = domain.NewDomainError(
 		"err_deliver_phone_is_null", "电话不能为空")
+
+	ErrPwdCannotSame *domain.DomainError = domain.NewDomainError(
+		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
+
+	ErrPwdPldPwdNotRight *domain.DomainError = domain.NewDomainError(
+		"Err_Pwd_Pld_Pwd_Not_Right", "原密码不正确")
 )
