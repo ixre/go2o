@@ -243,3 +243,6 @@ a.btn-short{margin:0 1px;padding:0 8px;font-weight:normal;
 	background: -moz-linear-gradient(#FFFF00, #FFCC00);
 	background: linear-gradient(#F5F5F5, #E5E5E5);
 }
+.tip-box{border:solid 1px #ffcc00;margin:10px 30px;background:#ffc;padding:10px;font-size:0.8rem;line-height: 1.2rem;
+	color:#333;
+}

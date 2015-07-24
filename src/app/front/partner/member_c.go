@@ -137,12 +137,12 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 	}else {
 		rel := dps.MemberService.GetRelation(memberId)
 
-		if rel == nil || rel.RegisterPartnerId != this.GetPartnerId(ctx){
+		if rel.RegisterPartnerId != this.GetPartnerId(ctx){
 			msg.Message = "can not operate"
 		}
 
-		title := fmt.Sprintf("客服充值%d元",amount)
-		err := dps.MemberService.Charge(member.TypeBalanceServiceCharge,title,"", amount)
+		title := fmt.Sprintf("客服充值",amount)
+		err := dps.MemberService.Charge(memberId,member.TypeBalanceServiceCharge,title,"", float32(amount))
 
 		if err != nil {
 			msg.Message = err.Error()

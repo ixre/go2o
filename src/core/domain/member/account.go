@@ -85,7 +85,7 @@ func (this *Account) Charge(chargeType int,title string,tradeNo string,amount fl
 		}
 		return err
 	}
-	return "error charge type"
+	return errors.New("error charge type")
 }
 
 // 退款
