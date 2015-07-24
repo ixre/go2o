@@ -42,7 +42,7 @@ type Order struct {
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
-	_balancePay      bool // 余额支付
+	_balanceDiscount bool // 余额支付
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
@@ -169,7 +169,7 @@ func (this *Order) SetDeliver(deliverAddressId int) error {
 
 // 使用余额支付
 func (this *Order) UseBalanceDiscount() {
-	this._balancePay = true
+	this._balanceDiscount = true
 }
 
 // 提交订单，返回订单号。如有错误则返回
@@ -213,7 +213,7 @@ func (this *Order) Submit() (string, error) {
 	//prom,fee,integral := this.GetBestSavePromotion()
 
 	// 余额支付
-	if this._balancePay {
+	if this._balanceDiscount {
 		if fee := this.getBalanceDiscountFee(acc); fee > 0 {
 			v.PayFee -= fee
 			v.BalanceDiscount = fee
