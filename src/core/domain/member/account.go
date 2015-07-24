@@ -66,16 +66,26 @@ func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue)(int,error){
 // @amount 金额
 func (this *Account) Charge(chargeType int,title string,tradeNo string,amount float32)(error){
 	//todo: 客服充值需记录操作人
-	v := &member.BalanceInfoValue{
-		Kind:member.KindBalanceCharge,
-		Type:chargeType,
-		Title : title,
-		TradeNo:tradeNo,
-		Amount:amount,
-		State : 1,
+
+	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
+	chargeType == member.TypeBalanceServiceCharge {
+
+		v := &member.BalanceInfoValue{
+			Kind:member.KindBalanceCharge,
+			Type:chargeType,
+			Title : title,
+			TradeNo:tradeNo,
+			Amount:amount,
+			State : 1,
+		}
+		_, err := this.SaveBalanceInfo(v)
+		if err == nil {
+			this._value.Balance += amount
+			_, err = this.Save()
+		}
+		return err
 	}
-	_,err := this.SaveBalanceInfo(v)
-	return err
+	return "error charge type"
 }
 
 // 退款

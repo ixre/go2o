@@ -18,6 +18,8 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"go2o/src/core/domain/interface/member"
+	"fmt"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -124,3 +126,30 @@ func (this *memberC) Charge(ctx *web.Context) {
 			}, "views/partner/member/charge.html")
 	}
 }
+
+func (this *memberC) Charge_post(ctx *web.Context) {
+	var msg gof.Message
+	ctx.Request.ParseForm()
+	memberId, _ := strconv.Atoi(ctx.Request.FormValue("MemberId"))
+	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	if amount < 0 {
+		msg.Message="error amount"
+	}else {
+		rel := dps.MemberService.GetRelation(memberId)
+
+		if rel == nil || rel.RegisterPartnerId != this.GetPartnerId(ctx){
+			msg.Message = "can not operate"
+		}
+
+		title := fmt.Sprintf("客服充值%d元",amount)
+		err := dps.MemberService.Charge(member.TypeBalanceServiceCharge,title,"", amount)
+
+		if err != nil {
+			msg.Message = err.Error()
+		} else {
+			msg.Result = true
+		}
+	}
+	ctx.Response.JsonOutput(msg)
+}
+
