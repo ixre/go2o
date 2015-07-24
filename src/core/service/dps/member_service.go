@@ -226,6 +226,7 @@ func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 	return this._memberRep.GetMemberLatestUpdateTime(memberId)
 }
 
+// 获取会员汇总信息
 func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 	var m member.IMember = this._memberRep.GetMember(memberId)
 	if m != nil {
