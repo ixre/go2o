@@ -24,6 +24,10 @@ type ValueOrder struct {
 	PayFee float32 `db:"pay_fee" json:"payFee"`
 	//减免金额(包含优惠券金额)
 	DiscountFee float32 `db:"discount_fee" json:"discountFee"`
+
+	// 余额抵扣
+	BalanceDiscount float32 `db:"balance_discount" json:"balaceDiscount"`
+
 	//优惠券优惠金额
 	CouponFee float32 `db:"coupon_fee" json:"couponFee"`
 

@@ -56,7 +56,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.CreateTableMap(member.AccountValue{}, "mm_account")
 	orm.CreateTableMap(member.DeliverAddress{}, "mm_deliver_addr")
 	orm.CreateTableMap(member.MemberRelation{}, "mm_relation")
-	orm.CreateTableMap(member.BalanceInfoValue{},"mm_balance_info")
+	orm.CreateTableMap(member.BalanceInfoValue{}, "mm_balance_info")
 
 	orm.CreateTableMap(member.BankInfo{}, "mm_bank")
 	orm.CreateTableMap(shopping.ValueOrder{}, "pt_order")

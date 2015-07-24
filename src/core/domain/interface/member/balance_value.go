@@ -11,8 +11,8 @@ package member
 // 余额变动信息
 type BalanceInfoValue struct {
 	Id         int     `db:"id" auto:"yes" pk:"yes"`
-	MemberId int `db:"member_id"`
-	TradeNo  string  `db:"trade_no"`
+	MemberId   int     `db:"member_id"`
+	TradeNo    string  `db:"trade_no"`
 	Kind       int     `db:"kind"`
 	Type       int     `db:"type"`
 	Title      string  `db:"title"`

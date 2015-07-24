@@ -94,7 +94,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		"cart":        cart,
 		"cartDetails": template.HTML(format.CartDetails(cart)),
 		"promFee":     cart.TotalFee - cart.OrderFee,
-		"balance":acc.Balance,
+		"balance":     acc.Balance,
 		"summary":     template.HTML(cart.Summary),
 		"conf":        siteConf,
 		"settle":      settle,
@@ -143,7 +143,7 @@ func (this *ShoppingC) BuyingPersist_post(ctx *web.Context) {
 
 	err = dps.ShoppingService.PrepareSettlePersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
 
-	rsp:
+rsp:
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{result:false,"message":"%s"}`, err.Error())))
 	} else {
@@ -248,8 +248,11 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 		return
 	}
 
+	// 是否余额支付
+	var useBalancePay bool = ctx.Request.FormValue("UseBalance") == "1"
+
 	// 提交订单
-	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode)
+	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode, useBalancePay)
 
 	// 释放订单占用
 	this.releaseOrder(ctx)
@@ -300,7 +303,7 @@ func (this *ShoppingC) emptyShoppingCart(ctx *web.Context) {
 }
 
 func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
-m *member.ValueMember, conf *partner.SiteConf) {
+	m *member.ValueMember, conf *partner.SiteConf) {
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"member":  m,

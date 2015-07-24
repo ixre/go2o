@@ -42,6 +42,7 @@ type Order struct {
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
+	_balancePay      bool // 余额支付
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
@@ -166,6 +167,11 @@ func (this *Order) SetDeliver(deliverAddressId int) error {
 	return errors.New("Deliver address not exist!")
 }
 
+// 使用余额支付
+func (this *Order) UseBalancePay() {
+	this._balancePay = true
+}
+
 // 提交订单，返回订单号。如有错误则返回
 func (this *Order) Submit() (string, error) {
 	if this.GetDomainId() != 0 {
@@ -176,6 +182,12 @@ func (this *Order) Submit() (string, error) {
 		return "", errors.New("购物车为空！")
 	}
 
+	mem := this._memberRep.GetMember(this._value.MemberId)
+	if mem == nil {
+		return "", member.ErrNoSuchMember
+	}
+	acc := mem.GetAccount()
+
 	v := this._value
 	v.CreateTime = time.Now().Unix()
 	v.UpdateTime = v.CreateTime
@@ -183,7 +195,7 @@ func (this *Order) Submit() (string, error) {
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
-	if err := this.applyCouponOnSubmit(v); err != nil {
+	if err := this.applyCouponOnSubmit(mem.GetAccount()); err != nil {
 		return "", err
 	}
 
@@ -200,6 +212,14 @@ func (this *Order) Submit() (string, error) {
 	//todo:
 	//prom,fee,integral := this.GetBestSavePromotion()
 
+	// 余额支付
+	if this._balancePay {
+		if fee := this.getBalanceDiscountFee(acc); fee > 0 {
+			v.PayFee -= fee
+			v.BalanceDiscount = fee
+		}
+	}
+
 	// 保存订单
 	id, err := this.saveOrderOnSubmit()
 	v.Id = id
@@ -211,6 +231,11 @@ func (this *Order) Submit() (string, error) {
 		// 绑定购物车商品的促销
 		for _, p := range proms {
 			this.bindPromotionOnSubmit(v.OrderNo, p)
+		}
+
+		// 记录余额支付记录
+		if v.BalanceDiscount > 0 {
+			err = acc.OrderDiscount(v.OrderNo, v.BalanceDiscount)
 		}
 	}
 	return v.OrderNo, err
@@ -317,6 +342,20 @@ func (this *Order) applyCouponOnSubmit(v *shopping.ValueOrder) error {
 		}
 	}
 	return err
+}
+
+// 应用余额支付
+func (this *Order) getBalanceDiscountFee(acc member.IAccount) float32 {
+	if this._value.PayFee <= 0 {
+		return 0
+	}
+	acv := acc.GetValue()
+	if acv.Balance >= this._value.PayFee {
+		return this._value.PayFee
+	} else {
+		return acv.Balance
+	}
+	return 0
 }
 
 // 保存订单

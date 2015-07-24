@@ -249,13 +249,12 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 	return nil
 }
 
-
 // 充值
-func (this *memberService) Charge(memberId int,chargeType int,title,tradeNo string,amount float32)error{
+func (this *memberService) Charge(memberId int, chargeType int, title, tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
-	if m == nil{
+	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
-	return acc.Charge(chargeType,title,tradeNo,amount)
+	return acc.Charge(chargeType, title, tradeNo, amount)
 }

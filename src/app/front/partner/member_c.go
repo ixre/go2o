@@ -11,15 +11,15 @@ package partner
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
-	"go2o/src/core/domain/interface/member"
-	"fmt"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -117,12 +117,12 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 func (this *memberC) Charge(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
-	if mem == nil{
+	if mem == nil {
 		ctx.Response.Write([]byte("no such member"))
-	}else {
+	} else {
 		ctx.App.Template().Execute(ctx.Response,
 			gof.TemplateDataMap{
-				"m":mem,
+				"m": mem,
 			}, "views/partner/member/charge.html")
 	}
 }
@@ -133,16 +133,16 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
 	if amount < 0 {
-		msg.Message="error amount"
-	}else {
+		msg.Message = "error amount"
+	} else {
 		rel := dps.MemberService.GetRelation(memberId)
 
-		if rel.RegisterPartnerId != this.GetPartnerId(ctx){
+		if rel.RegisterPartnerId != this.GetPartnerId(ctx) {
 			msg.Message = "can not operate"
 		}
 
-		title := fmt.Sprintf("客服充值",amount)
-		err := dps.MemberService.Charge(memberId,member.TypeBalanceServiceCharge,title,"", float32(amount))
+		title := fmt.Sprintf("客服充值", amount)
+		err := dps.MemberService.Charge(memberId, member.TypeBalanceServiceCharge, title, "", float32(amount))
 
 		if err != nil {
 			msg.Message = err.Error()
@@ -152,4 +152,3 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 	}
 	ctx.Response.JsonOutput(msg)
 }
-

@@ -9,9 +9,9 @@
 package member
 
 import (
+	"errors"
 	"go2o/src/core/domain/interface/member"
 	"time"
-	"errors"
 )
 
 var _ member.IAccount = new(Account)
@@ -44,17 +44,17 @@ func (this *Account) Save() (int, error) {
 }
 
 // 根据编号获取余额变动信息
-func (this *Account) GetBalanceInfo(id int) *member.BalanceInfoValue{
+func (this *Account) GetBalanceInfo(id int) *member.BalanceInfoValue {
 	return this._rep.GetBalanceInfo(id)
 }
 
 // 根据号码获取余额变动信息
-func (this *Account) GetBalanceInfoByNo(no string) *member.BalanceInfoValue{
+func (this *Account) GetBalanceInfoByNo(no string) *member.BalanceInfoValue {
 	return this._rep.GetBalanceInfoByNo(no)
 }
 
 // 保存余额变动信息
-func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue)(int,error){
+func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
 	v.MemberId = this.GetDomainId()
 	v.UpdateTime = time.Now().Unix()
 	return this._rep.SaveBalanceInfo(v)
@@ -64,19 +64,19 @@ func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue)(int,error){
 // @title 充值标题说明
 // @no    充值订单编号
 // @amount 金额
-func (this *Account) Charge(chargeType int,title string,tradeNo string,amount float32)(error){
+func (this *Account) Charge(chargeType int, title string, tradeNo string, amount float32) error {
 	//todo: 客服充值需记录操作人
 
 	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
-	chargeType == member.TypeBalanceServiceCharge {
+		chargeType == member.TypeBalanceServiceCharge {
 
 		v := &member.BalanceInfoValue{
-			Kind:member.KindBalanceCharge,
-			Type:chargeType,
-			Title : title,
-			TradeNo:tradeNo,
-			Amount:amount,
-			State : 1,
+			Kind:    member.KindBalanceCharge,
+			Type:    chargeType,
+			Title:   title,
+			TradeNo: tradeNo,
+			Amount:  amount,
+			State:   1,
 		}
 		_, err := this.SaveBalanceInfo(v)
 		if err == nil {
@@ -88,63 +88,104 @@ func (this *Account) Charge(chargeType int,title string,tradeNo string,amount fl
 	return errors.New("error charge type")
 }
 
-// 退款
-func (this *Account) RequestBackBalance(backType int,title string,amount float32)(error){
-	v := &member.BalanceInfoValue{
-		Kind:member.KindBalanceBack,
-		Type:backType,
-		Title : title,
-		Amount:amount,
-		State : 0,
+// 订单抵扣消费
+func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
+	if amount < 0 || len(tradeNo) == 0 {
+		return errors.New("amount error or missing trade no")
 	}
-	_,err := this.SaveBalanceInfo(v)
+
+	if amount > this._value.Balance {
+		return member.ErrBalanceAmount
+	}
+
+	v := &member.BalanceInfoValue{
+		Kind:    member.KindBalanceShopping,
+		Type:    1,
+		Title:   "订单抵扣",
+		TradeNo: tradeNo,
+		Amount:  amount,
+		State:   1,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.Balance -= amount
+		_, err = this.Save()
+	}
+	return err
+}
+
+// 退款
+func (this *Account) RequestBackBalance(backType int, title string, amount float32) error {
+
+	if amount > this._value.Balance {
+		return member.ErrBalanceAmount
+	}
+
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceBack,
+		Type:   backType,
+		Title:  title,
+		Amount: amount,
+		State:  0,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.Balance -= amount
+		_, err = this.Save()
+	}
 	return err
 }
 
 // 完成退款
-func (this *Account) FinishBackBalance(id int,tradeNo string)(error){
+func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 	v := this.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceBack{
+	if v.Kind == member.KindBalanceBack {
 		v.TradeNo = tradeNo
 		v.State = 1
-		_,err := this.SaveBalanceInfo(v)
+		_, err := this.SaveBalanceInfo(v)
 		return err
 	}
 	return errors.New("kind not match")
 }
 
 // 请求提现
-func (this *Account) RequestApplyCash(applyType int,title string,amount float32)(error){
-	v := &member.BalanceInfoValue{
-		Kind:member.KindBalanceBack,
-		Type:applyType,
-		Title : title,
-		Amount:amount,
-		State : 0,
+func (this *Account) RequestApplyCash(applyType int, title string, amount float32) error {
+	if amount > this._value.PresentBalance {
+		return member.ErrBalanceAmount
 	}
-	_,err := this.SaveBalanceInfo(v)
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceBack,
+		Type:   applyType,
+		Title:  title,
+		Amount: amount,
+		State:  0,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.PresentBalance -= amount
+		_, err = this.Save()
+	}
 	return err
 }
 
-
 // 确认提现
-func (this *Account) ConfirmApplyCash(id int)(error){
+func (this *Account) ConfirmApplyCash(id int) error {
 	v := this.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceApplyCash{
+	if v.Kind == member.KindBalanceApplyCash {
 		v.State = 1
-		_,err := this.SaveBalanceInfo(v)
+		_, err := this.SaveBalanceInfo(v)
 		return err
 	}
 	return errors.New("kind not match")
 }
 
 // 完成提现
-func (this *Account) FinishApplyCash(id int,tradeNo string)(error){
+func (this *Account) FinishApplyCash(id int, tradeNo string) error {
 	v := this.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceApplyCash{
+	if v.Kind == member.KindBalanceApplyCash {
 		v.TradeNo = tradeNo
 		v.State = 2
-		_,err := this.SaveBalanceInfo(v)
+		_, err := this.SaveBalanceInfo(v)
 		return err
 	}
 	return errors.New("kind not match")

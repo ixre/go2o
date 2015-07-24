@@ -352,25 +352,25 @@ func (this *memberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
 }
 
 // 根据编号获取余额变动信息
-func (this *memberRep) GetBalanceInfo(id int) *member.BalanceInfoValue{
+func (this *memberRep) GetBalanceInfo(id int) *member.BalanceInfoValue {
 	var e member.BalanceInfoValue
-	if err := this.Connector.GetOrm().Get(id, &e);err == nil {
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
 	return nil
 }
 
 // 根据号码获取余额变动信息
-func (this *memberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfoValue{
+func (this *memberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfoValue {
 	var e member.BalanceInfoValue
-	if err := this.Connector.GetOrm().GetBy(&e,"trade_no=?",tradeNo);err == nil {
+	if err := this.Connector.GetOrm().GetBy(&e, "trade_no=?", tradeNo); err == nil {
 		return &e
 	}
 	return nil
 }
 
 // 保存余额变动信息
-func (this *memberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error){
+func (this *memberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
 	var err error
 	var orm = this.Connector.GetOrm()
 	if v.Id > 0 {

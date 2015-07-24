@@ -63,6 +63,9 @@ type IAccount interface {
 	// @amount 金额
 	Charge(chargeType int, title string, tradeNo string, amount float32) error
 
+	// 订单抵扣消费
+	OrderDiscount(tradeNo string, amount float32) error
+
 	// 退款
 	RequestBackBalance(backType int, title string, amount float32) error
 

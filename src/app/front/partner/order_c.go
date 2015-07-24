@@ -16,10 +16,10 @@ import (
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strings"
-	"go2o/src/core/domain/interface/member"
 )
 
 var _ mvc.Filter = new(orderC)
@@ -183,9 +183,9 @@ func (this *orderC) Payment_post(ctx *web.Context) {
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 
-	order := dps.ShoppingService.GetOrderByNo(partnerId,orderNo)
+	order := dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 
-	err := dps.MemberService.Charge(order.MemberId,member.TypeBalanceSystemCharge,"系统充值","",order.PayFee)
+	err := dps.MemberService.Charge(order.MemberId, member.TypeBalanceSystemCharge, "系统充值", "", order.PayFee)
 	if err != nil {
 		err = dps.ShoppingService.PayForOrder(partnerId, orderNo)
 	}

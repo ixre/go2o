@@ -51,7 +51,7 @@ type IShopping interface {
 	BuildOrder(memberId int, couponCode string) (IOrder, ICart, error)
 
 	// 提交订单
-	SubmitOrder(memberId int, couponCode string) (string, error)
+	SubmitOrder(memberId int, couponCode string, useBalancePay bool) (string, error)
 
 	// 获取可用的订单号
 	GetFreeOrderNo() string
