@@ -68,10 +68,10 @@ func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 	return data, err
 }
 
-func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string, useBalancePay bool) (
+func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string, useBalanceDiscount bool) (
 	orderNo string, err error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
-	return sp.SubmitOrder(memberId, couponCode, useBalancePay)
+	return sp.SubmitOrder(memberId, couponCode, useBalanceDiscount)
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,

@@ -168,7 +168,7 @@ func (this *Order) SetDeliver(deliverAddressId int) error {
 }
 
 // 使用余额支付
-func (this *Order) UseBalancePay() {
+func (this *Order) UseBalanceDiscount() {
 	this._balancePay = true
 }
 
@@ -195,7 +195,7 @@ func (this *Order) Submit() (string, error) {
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
-	if err := this.applyCouponOnSubmit(mem.GetAccount()); err != nil {
+	if err := this.applyCouponOnSubmit(v); err != nil {
 		return "", err
 	}
 
@@ -218,6 +218,11 @@ func (this *Order) Submit() (string, error) {
 			v.PayFee -= fee
 			v.BalanceDiscount = fee
 		}
+	}
+
+	// 校验是否支付
+	if v.PayFee == 0 {
+		v.IsPaid = 1
 	}
 
 	// 保存订单

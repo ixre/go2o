@@ -249,10 +249,10 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 	}
 
 	// 是否余额支付
-	var useBalancePay bool = ctx.Request.FormValue("UseBalance") == "1"
+	var useBalanceDiscount bool = ctx.Request.FormValue("UseBalance") == "1"
 
 	// 提交订单
-	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode, useBalancePay)
+	order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode, useBalanceDiscount)
 
 	// 释放订单占用
 	this.releaseOrder(ctx)

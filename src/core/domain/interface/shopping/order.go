@@ -51,7 +51,7 @@ type IOrder interface {
 	AddRemark(string)
 
 	// 应用余额支付
-	UseBalancePay()
+	UseBalanceDiscount()
 
 	// 提交订单，返回订单号。如有错误则返回
 	Submit() (string, error)

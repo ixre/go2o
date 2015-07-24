@@ -276,7 +276,7 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 	return order, cart, err
 }
 
-func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalancePay bool) (string, error) {
+func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalanceDiscount bool) (string, error) {
 	order, cart, err := this.BuildOrder(memberId, couponCode)
 	if err != nil {
 		return "", err
@@ -288,8 +288,8 @@ func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalancePay
 		if err == nil {
 			order.SetPayment(cv.PaymentOpt)
 			err = order.SetDeliver(cv.DeliverId)
-			if useBalancePay {
-				order.UseBalancePay()
+			if useBalanceDiscount {
+				order.UseBalanceDiscount()
 			}
 			if err == nil {
 				return order.Submit()
