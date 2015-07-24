@@ -25,10 +25,7 @@ type IMember interface {
 	SetValue(*ValueMember) error
 
 	// 获取账户
-	GetAccount() *Account
-
-	// 保存账户
-	SaveAccount() error
+	GetAccount() IAccount
 
 	// 锁定会员
 	Lock() error

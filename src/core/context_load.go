@@ -53,7 +53,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.CreateTableMap(member.ValueMember{}, "mm_member")
 	orm.CreateTableMap(member.IncomeLog{}, "mm_income_log")
 	orm.CreateTableMap(member.IntegralLog{}, "mm_integral_log")
-	orm.CreateTableMap(member.Account{}, "mm_account")
+	orm.CreateTableMap(member.AccountValue{}, "mm_account")
 	orm.CreateTableMap(member.DeliverAddress{}, "mm_deliver_addr")
 	orm.CreateTableMap(member.MemberRelation{}, "mm_relation")
 

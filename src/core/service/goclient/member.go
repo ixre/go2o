@@ -53,7 +53,7 @@ func (this *memberClient) GetMember(memberId int, token string) (a *member.Value
 }
 
 func (this *memberClient) GetMemberAccount(memberId int, token string) (
-	a *member.Account, err error) {
+	a *member.AccountValue, err error) {
 	var result jsv.Result
 	err = this.conn.WriteAndDecode([]byte(fmt.Sprintf(
 		`{"member_id":"%d","token":"%s"}>>Member.GetMemberAccount`,
@@ -61,7 +61,7 @@ func (this *memberClient) GetMemberAccount(memberId int, token string) (
 	if err != nil {
 		return nil, err
 	}
-	a = &member.Account{}
+	a = &member.AccountValue{}
 	err = jsv.UnmarshalMap(result.Data, a)
 	return a, err
 }

@@ -59,10 +59,10 @@ type IMemberRep interface {
 	SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error)
 
 	// 获取账户
-	GetAccount(memberId int) *Account
+	GetAccount(memberId int) *AccountValue
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) error
+	SaveAccount(*AccountValue) (int, error)
 
 	// 获取银行信息
 	GetBankInfo(int) *BankInfo

@@ -482,10 +482,11 @@ func (this *Order) SignReceived() error {
 func updateAccountForOrder(m member.IMember, order shopping.IOrder) {
 	acc := m.GetAccount()
 	ov := order.GetValue()
-	acc.TotalFee += ov.Fee
-	acc.TotalPay += ov.PayFee
-	acc.UpdateTime = time.Now().Unix()
-	m.SaveAccount()
+	acv := acc.GetValue()
+	acv.TotalFee += ov.Fee
+	acv.TotalPay += ov.PayFee
+	acv.UpdateTime = time.Now().Unix()
+	acc.Save()
 }
 
 // 完成订单
@@ -578,12 +579,13 @@ func (this *Order) updateShoppingMemberBackFee(pt partner.IPartner,
 
 	//更新账户
 	acc := m.GetAccount()
+	acv := acc.GetValue()
 	//acc.TotalFee += this._value.Fee
 	//acc.TotalPay += this._value.PayFee
-	acc.PresentBalance += fee // 更新赠送余额
-	acc.TotalPresentFee += fee
-	acc.UpdateTime = unixTime
-	m.SaveAccount()
+	acv.PresentBalance += fee // 更新赠送余额
+	acv.TotalPresentFee += fee
+	acv.UpdateTime = unixTime
+	acc.Save()
 
 	//给自己返现
 	icLog := &member.IncomeLog{
@@ -616,15 +618,16 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
 	//更新账户
-	bfee := float32(cpv.BackFee)
+	bFee := float32(cpv.BackFee)
 	acc := m.GetAccount()
-	acc.PresentBalance += bfee // 更新赠送余额
-	acc.TotalPresentFee += bfee
+	acv := acc.GetValue()
+	acv.PresentBalance += bFee // 更新赠送余额
+	acv.TotalPresentFee += bFee
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
 
-	acc.UpdateTime = time.Now().Unix()
-	err := m.SaveAccount()
+	acv.UpdateTime = time.Now().Unix()
+	_, err := acc.Save()
 
 	if err == nil {
 		// 优惠绑定生效
@@ -643,7 +646,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 			Fee:        float32(cpv.BackFee),
 			Log:        fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, this._value.OrderNo),
 			State:      1,
-			RecordTime: acc.UpdateTime,
+			RecordTime: acv.UpdateTime,
 		}
 		err = m.SaveIncomeLog(icLog)
 	}
@@ -690,10 +693,11 @@ func (this *Order) updateMemberAccount(m member.IMember,
 
 	//更新账户
 	acc := m.GetAccount()
-	acc.PresentBalance += fee
-	acc.TotalPresentFee += fee
-	acc.UpdateTime = unixTime
-	m.SaveAccount()
+	acv := acc.GetValue()
+	acv.PresentBalance += fee
+	acv.TotalPresentFee += fee
+	acv.UpdateTime = unixTime
+	acc.Save()
 
 	//给自己返现
 	icLog := &member.IncomeLog{

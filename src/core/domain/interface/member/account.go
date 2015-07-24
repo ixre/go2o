@@ -1,38 +1,26 @@
 /**
- * Copyright 2014 @ S1N1 Team.
- * name :
+ * Copyright 2015 @ S1N1 Team.
+ * name : account
  * author : jarryliu
- * date : 2013-12-15 13:58
+ * date : 2015-07-24 08:48
  * description :
  * history :
  */
-
 package member
 
-type Account struct {
-	MemberId int `db:"member_id" pk:"yes" json:"memberId"`
+type IAccount interface {
+	// 获取领域对象编号
+	GetDomainId() int
 
-	// 积分
-	Integral int `db:"integral"`
+	// 获取账户值
+	GetValue() *AccountValue
 
-	// 余额
-	Balance float32 `db:"balance" json:"balance"`
+	// 保存
+	Save() (int, error)
 
-	// 赠送余额
-	PresentBalance float32 `db:"present_balance" json:"presentBalance"`
+	// 根据编号获取余额变动信息
+	GetBalanceInfo(id int) *BalanceInfoValue
 
-	// 总赠送金额
-	TotalPresentFee float32 `db:"total_present_fee" json:"totalPresentFee"`
-
-	// 总消费额
-	TotalFee float32 `db:"total_fee" json:"totalFee"`
-
-	// 总充值额
-	TotalCharge float32 `db:"total_charge" json:"totalCharge"`
-
-	// 总支付额
-	TotalPay float32 `db:"total_pay" json:"totalPay"`
-
-	// 更新时间
-	UpdateTime int64 `db:"update_time" json:"updateTime"`
+	// 根据号码获取余额变动信息
+	GetBalanceInfoByNo(no string) *BalanceInfoValue
 }

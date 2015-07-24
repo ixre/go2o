@@ -25,7 +25,7 @@ var _ member.IMember = new(Member)
 
 type Member struct {
 	_value        *member.ValueMember
-	_account      *member.Account
+	_account      member.IAccount
 	_bank         *member.BankInfo
 	_level        *valueobject.MemberLevel
 	_rep          member.IMemberRep
@@ -83,18 +83,12 @@ func (this *Member) Invitation() member.IInvitationManager {
 }
 
 // 获取账户
-func (this *Member) GetAccount() *member.Account {
+func (this *Member) GetAccount() member.IAccount {
 	if this._account == nil {
-		this._account = this._rep.GetAccount(this._value.Id)
+		v := this._rep.GetAccount(this._value.Id)
+		return NewAccount(v, this._rep)
 	}
 	return this._account
-}
-
-// 保护账户
-func (this *Member) SaveAccount() error {
-	a := this.GetAccount()
-	a.MemberId = this._value.Id
-	return this._rep.SaveAccount(a)
 }
 
 // 获取提现银行信息
@@ -179,8 +173,9 @@ func (this *Member) AddIntegral(partnerId int, backType int,
 	err := this._rep.SaveIntegralLog(inLog)
 	if err == nil {
 		acc := this.GetAccount()
-		acc.Integral = acc.Integral + integral
-		err = this.SaveAccount()
+		acv := acc.GetValue()
+		acv.Integral += integral
+		_, err = acc.Save()
 	}
 	return err
 }

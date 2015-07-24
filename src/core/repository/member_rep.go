@@ -128,16 +128,16 @@ func (this *memberRep) GetMemberLatestUpdateTime(id int) int64 {
 }
 
 // 获取账户
-func (this *memberRep) GetAccount(memberId int) *member.Account {
-	e := new(member.Account)
+func (this *memberRep) GetAccount(memberId int) *member.AccountValue {
+	e := new(member.AccountValue)
 	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存账户，传入会员编号
-func (this *memberRep) SaveAccount(a *member.Account) error {
+func (this *memberRep) SaveAccount(a *member.AccountValue) (int, error) {
 	_, _, err := this.Connector.GetOrm().Save(a.MemberId, a)
-	return err
+	return a.MemberId, err
 }
 
 // 获取银行信息
@@ -236,7 +236,7 @@ func (this *memberRep) getLatestId() int {
 func (this *memberRep) initMember(id int, v *member.ValueMember) {
 
 	orm := this.Connector.GetOrm()
-	orm.Save(nil, &member.Account{
+	orm.Save(nil, &member.AccountValue{
 		MemberId:    id,
 		Balance:     0,
 		TotalFee:    0,

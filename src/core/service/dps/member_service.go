@@ -139,11 +139,11 @@ func (this *memberService) CheckUsrExist(usr string) bool {
 	return this._memberRep.CheckUsrExist(usr)
 }
 
-func (this *memberService) GetAccount(memberId int) *member.Account {
+func (this *memberService) GetAccount(memberId int) *member.AccountValue {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	//m, _ := this._memberRep.GetMember(memberId)
 	//m.AddExp(300)
-	return m.GetAccount()
+	return m.GetAccount().GetValue()
 }
 
 func (this *memberService) GetBank(memberId int) *member.BankInfo {
@@ -230,7 +230,7 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 	var m member.IMember = this._memberRep.GetMember(memberId)
 	if m != nil {
 		mv := m.GetValue()
-		acc := m.GetAccount()
+		acv := m.GetAccount().GetValue()
 		lv := m.GetLevel()
 		return &dto.MemberSummary{
 			Id:             m.GetAggregateRootId(),
@@ -239,9 +239,9 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			Exp:            mv.Exp,
 			Level:          mv.Level,
 			LevelName:      lv.Name,
-			Integral:       acc.Integral,
-			Balance:        acc.Balance,
-			PresentBalance: acc.PresentBalance,
+			Integral:       acv.Integral,
+			Balance:        acv.Balance,
+			PresentBalance: acv.PresentBalance,
 			UpdateTime:     mv.UpdateTime,
 		}
 	}
