@@ -364,6 +364,36 @@ INSERT INTO `mm_account` VALUES (1,65660,11.42,597.28,7477.42,NULL,0.00,7376.60,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `mm_balance_info`
+--
+
+DROP TABLE IF EXISTS `mm_balance_info`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mm_balance_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) DEFAULT NULL,
+  `kind` int(11) DEFAULT NULL COMMENT '种类，如充值/提现/支付',
+  `type` int(11) DEFAULT NULL COMMENT '类型，如：客服充值/网银充值等',
+  `title` varchar(45) DEFAULT NULL COMMENT '标题',
+  `trade_no` varchar(45) DEFAULT NULL,
+  `amount` float(8,2) DEFAULT NULL COMMENT '金额',
+  `state` tinyint(1) DEFAULT NULL COMMENT '状态，比如提现需要申请，确认等',
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mm_balance_info`
+--
+
+LOCK TABLES `mm_balance_info` WRITE;
+/*!40000 ALTER TABLE `mm_balance_info` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mm_balance_info` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mm_bank`
 --
 
@@ -1365,4 +1395,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-07 22:15:00
+-- Dump completed on 2015-07-24 13:08:33

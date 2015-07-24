@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strings"
+	"go2o/src/core/domain/interface/member"
 )
 
 var _ mvc.Filter = new(orderC)
@@ -182,7 +183,13 @@ func (this *orderC) Payment_post(ctx *web.Context) {
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 
-	err := dps.ShoppingService.PayForOrder(partnerId, orderNo)
+	order := dps.ShoppingService.GetOrderByNo(partnerId,orderNo)
+
+	err := dps.MemberService.Charge(order.MemberId,member.TypeBalanceSystemCharge,"系统充值","",order.PayFee)
+	if err != nil {
+		err = dps.ShoppingService.PayForOrder(partnerId, orderNo)
+	}
+
 	if err != nil {
 		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
 	} else {
