@@ -82,12 +82,12 @@ var (
 func GetPaymentName(i int) string {
 	switch i {
 	case 1:
-		return "网上支付"
+		return "在线支付"
 	case 2:
-		return "现金支付"
+		return "货到付款"
 	default:
 	case 3:
-		return "银行转账"
+		return "转账汇款"
 	}
 	return ""
 }

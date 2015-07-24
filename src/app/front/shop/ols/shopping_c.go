@@ -49,6 +49,7 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 	m := this.BaseC.GetMember(ctx)
 
 	siteConf := this.BaseC.GetSiteConf(ctx)
+
 	// 获取购物车
 	var cartKey string
 	ck, err := r.Cookie("_cart")
@@ -85,12 +86,15 @@ func (this *ShoppingC) Confirm(ctx *web.Context) {
 		}
 	}
 
+	acc := dps.MemberService.GetAccount(m.Id)
+
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner":     p,
 		"member":      m,
 		"cart":        cart,
 		"cartDetails": template.HTML(format.CartDetails(cart)),
 		"promFee":     cart.TotalFee - cart.OrderFee,
+		"balance":acc.Balance,
 		"summary":     template.HTML(cart.Summary),
 		"conf":        siteConf,
 		"settle":      settle,
@@ -139,7 +143,7 @@ func (this *ShoppingC) BuyingPersist_post(ctx *web.Context) {
 
 	err = dps.ShoppingService.PrepareSettlePersist(p.Id, m.Id, shopId, paymentOpt, deliverOpt, deliverId)
 
-rsp:
+	rsp:
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{result:false,"message":"%s"}`, err.Error())))
 	} else {
@@ -296,7 +300,7 @@ func (this *ShoppingC) emptyShoppingCart(ctx *web.Context) {
 }
 
 func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
-	m *member.ValueMember, conf *partner.SiteConf) {
+m *member.ValueMember, conf *partner.SiteConf) {
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"member":  m,

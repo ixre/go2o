@@ -76,7 +76,7 @@ function dynamicContent(t) {
         var payOptEle = j6.$('payment_opt_name');
 
         if (payOpt == 1) {
-            payOptEle.innerHTML = '网银支付(支付宝)';
+            payOptEle.innerHTML = '在线支付';
         } else if (payOpt == 2) {
             payOptEle.innerHTML = '货到付款';
         }else if(payOpt == 3){
