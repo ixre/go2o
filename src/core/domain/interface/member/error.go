@@ -39,4 +39,7 @@ var (
 
 	ErrPwdPldPwdNotRight *domain.DomainError = domain.NewDomainError(
 		"Err_Pwd_Pld_Pwd_Not_Right", "原密码不正确")
+
+	ErrBalanceAmount *domain.DomainError = domain.NewDomainError(
+		"err_balance_amount","金额错误")
 )

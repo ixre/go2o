@@ -11,13 +11,32 @@ package member
 
 const(
 	// 退款
-	TypeBalanceChargeBack = 0
+	KindBalanceBack = 0
+	// 消费
+	KindBalanceShopping = 1
+	// 充值
+	KindBalanceCharge = 2
+	// 提现
+	KindBalanceApplyCash = 3
+
 	// 系统充值
 	TypeBalanceSystemCharge = 1
 	// 网银充值
 	TypeBalanceNetPayCharge = 2
 	// 客服充值
 	TypeBalanceServiceCharge = 3
+
+	// 提现并充值到余额
+	TypeApplyCashToCharge = 1
+	// 提现到银行卡
+	TypeApplyCashToBank = 2
+	// 提现到第三方服务提供商（如：Paypal,支付宝等)
+	TypeApplyCashToServiceProvider = 3
+
+	// 退款到银行卡
+	TypeBackToBank = 1
+	// 退款到第三方
+	TypeBackToServiceProvider = 2
 )
 
 type IAccount interface {
@@ -43,17 +62,20 @@ type IAccount interface {
 	// @title 充值标题说明
 	// @no    充值订单编号
 	// @amount 金额
-	Charge(chargeType int,title string,no string,amount float32)(error)
+	Charge(chargeType int,title string,tradeNo string,amount float32)(error)
 
 	// 退款
-	ChargeBack(title string,no string,amount float32)(error)
+	RequestBackBalance(backType int,title string,tradeNo string,amount float32)(error)
+
+	// 完成退款
+	FinishBackBalance(id int,tradeNo string)
 
 	// 请求提现
-	RequestApplyCash(amount float32)(error)
+	RequestApplyCash(applyType int,title string,amount float32)(error)
 
 	// 确认提现
 	ConfirmApplyCash(id int)(error)
 
 	// 完成提现
-	FinishApplyCash(id int)(error)
+	FinishApplyCash(id int,tradeNo string)(error)
 }
