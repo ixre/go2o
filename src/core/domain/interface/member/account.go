@@ -8,8 +8,7 @@
  */
 package member
 
-
-const(
+const (
 	// 退款
 	KindBalanceBack = 0
 	// 消费
@@ -56,26 +55,26 @@ type IAccount interface {
 	GetBalanceInfoByNo(no string) *BalanceInfoValue
 
 	// 保存余额变动信息
-	SaveBalanceInfo(*BalanceInfoValue)(int,error)
+	SaveBalanceInfo(*BalanceInfoValue) (int, error)
 
 	// 充值
 	// @title 充值标题说明
 	// @no    充值订单编号
 	// @amount 金额
-	Charge(chargeType int,title string,tradeNo string,amount float32)(error)
+	Charge(chargeType int, title string, tradeNo string, amount float32) error
 
 	// 退款
-	RequestBackBalance(backType int,title string,tradeNo string,amount float32)(error)
+	RequestBackBalance(backType int, title string, amount float32) error
 
 	// 完成退款
-	FinishBackBalance(id int,tradeNo string)
+	FinishBackBalance(id int, tradeNo string) error
 
 	// 请求提现
-	RequestApplyCash(applyType int,title string,amount float32)(error)
+	RequestApplyCash(applyType int, title string, amount float32) error
 
 	// 确认提现
-	ConfirmApplyCash(id int)(error)
+	ConfirmApplyCash(id int) error
 
 	// 完成提现
-	FinishApplyCash(id int,tradeNo string)(error)
+	FinishApplyCash(id int, tradeNo string) error
 }

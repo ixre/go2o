@@ -102,4 +102,13 @@ type IMemberRep interface {
 
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int) *ValueMember
+
+	// 根据编号获取余额变动信息
+	GetBalanceInfo(id int) *BalanceInfoValue
+
+	// 根据号码获取余额变动信息
+	GetBalanceInfoByNo(tradeNo string) *BalanceInfoValue
+
+	// 保存余额变动信息
+	SaveBalanceInfo(v *BalanceInfoValue) (int, error)
 }
