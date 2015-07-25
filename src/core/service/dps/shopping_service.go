@@ -253,7 +253,7 @@ func (this *shoppingService) PayForOrder(partnerId int, orderNo string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
-		err = order.SignPaid()
+		err = order.PaymentWithBalance()
 	}
 	return err
 }

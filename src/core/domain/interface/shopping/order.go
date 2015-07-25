@@ -41,8 +41,8 @@ type IOrder interface {
 	// 设置支付方式
 	SetPayment(payment int)
 
-	// 标记已支付
-	SignPaid() error
+	// 使用余额支付
+	PaymentWithBalance() error
 
 	// 设置配送地址
 	SetDeliver(deliverAddressId int) error

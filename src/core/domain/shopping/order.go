@@ -143,12 +143,29 @@ func (this *Order) SetPayment(payment int) {
 	this._value.PaymentOpt = payment
 }
 
-// 标记已支付
-func (this *Order) SignPaid() error {
+// 使用余额支付
+func (this *Order) PaymentWithBalance() error {
+	if this._value.IsPaid == 1{
+		return shopping.ErrOrderPayed
+	}
+	acc := this._memberRep.GetMember(this._value.MemberId).GetAccount()
+	if fee := this.getBalanceDiscountFee(acc);fee == 0{
+		return shopping.ErrBalanceNotEnough
+	}else {
+		this._value.BalanceDiscount = fee
+		this._value.PayFee -= fee
+		err := acc.OrderDiscount(this._value.OrderNo,fee)
+		if err != nil {
+			return err
+		}
+	}
 	unix := time.Now().Unix()
-	this._value.IsPaid = 1
+	if this._value.PayFee == 0 {
+		this._value.IsPaid = 1
+	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
+
 	_, err := this.Save()
 	return err
 }

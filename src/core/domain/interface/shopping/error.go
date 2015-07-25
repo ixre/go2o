@@ -21,4 +21,10 @@ var (
 
 	ErrDisallowBindForCart *domain.DomainError = domain.NewDomainError(
 		"cart_disallow_bind ", "无法为购物车绑定订单")
+
+	ErrBalanceNotEnough *domain.DomainError = domain.NewDomainError(
+		"rtt_balance_not_enough ", "余额不足")
+
+	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
+		"err_order_payed ", "订单已支付")
 )
