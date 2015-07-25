@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/src/core/domain/interface/shopping"
 )
 
 var _ mvc.Filter = new(ShoppingC)
@@ -259,8 +260,6 @@ func (this *ShoppingC) Submit_0_post(ctx *web.Context) {
 
 	if err != nil {
 		w.Write([]byte(fmt.Sprintf(`{"result":false,"tag":"109","message":"%s"}`, err.Error())))
-
-		//fmt.Println("--- IS ERROR",err.Error())
 		return
 	}
 
@@ -314,7 +313,7 @@ func (this *ShoppingC) OrderEmpty(ctx *web.Context, p *partner.ValuePartner,
 		"views/shop/ols/{device}/inc/footer.html")
 }
 
-func (this *ShoppingC) Order_finish(ctx *web.Context) {
+func (this *ShoppingC) Payment(ctx *web.Context) {
 	if !this.prepare(ctx) {
 		return
 	}
@@ -330,9 +329,17 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 
 	orderNo := r.URL.Query().Get("order_no")
 	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
+
+	// 已经支付成功
+	if order.IsPaid == 1{
+		this.orderFinish(ctx,p,m,siteConf,order)
+		return
+	}
+
 	if order != nil {
 		if order.PaymentOpt == enum.PaymentOnlinePay {
-			payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn" href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+			payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn"
+				href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
 				order.OrderNo, "立即支付")
 		}
 		payOpt = enum.GetPaymentName(order.PaymentOpt)
@@ -344,6 +351,53 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 			"conf":         siteConf,
 			"order":        order,
 			"payment_opt":  payOpt,
+			"payment_html": template.HTML(payHtml),
+			"payment_help": template.HTML(payHelp),
+		},
+			"views/shop/ols/{device}/order_payment.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
+	} else {
+		this.OrderEmpty(ctx, p, m, siteConf)
+	}
+}
+
+func (this *ShoppingC) Order_finish(ctx *web.Context) {
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
+	siteConf := this.BaseC.GetSiteConf(ctx)
+
+
+	orderNo := ctx.Request.URL.Query().Get("order_no")
+	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
+
+	this.orderFinish(ctx,p,m,siteConf,order)
+}
+
+
+func (this *ShoppingC) orderFinish(ctx *web.Context,p *partner.ValuePartner,
+		m *member.ValueMember,siteConf *partner.SiteConf,order *shopping.ValueOrder){
+	if !this.prepare(ctx) {
+		return
+	}
+
+	var payHtml string // 支付HTML
+	var payHelp string
+
+	if order != nil {
+		if order.IsPaid == 0 {
+			if order.PaymentOpt == enum.PaymentOnlinePay {
+				payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn"
+					href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
+					order.OrderNo, "继续支付")
+			}
+		}
+
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"partner":      p,
+			"member":       m,
+			"conf":         siteConf,
+			"order":        order,
 			"payment_html": template.HTML(payHtml),
 			"payment_help": template.HTML(payHelp),
 		},
