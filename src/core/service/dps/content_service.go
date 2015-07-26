@@ -52,7 +52,7 @@ func (this *contentService) SavePage(partnerId int, v *content.ValuePage) (int, 
 	var page content.IPage
 
 	if v.PartnerId != partnerId {
-		return -1, partner.ErrNotMatch
+		return -1, partner.ErrPartnerNotMatch
 	}
 
 	if v.Id > 0 {

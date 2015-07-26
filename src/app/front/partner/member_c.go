@@ -16,6 +16,7 @@ import (
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/service/dps"
 	"html/template"
@@ -133,7 +134,9 @@ func (this *memberC) Charge(ctx *web.Context) {
 
 func (this *memberC) Charge_post(ctx *web.Context) {
 	var msg gof.Message
+	var err error
 	ctx.Request.ParseForm()
+	partnerId := this.GetPartnerId(ctx)
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
 	if amount < 0 {
@@ -142,12 +145,11 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 		rel := dps.MemberService.GetRelation(memberId)
 
 		if rel.RegisterPartnerId != this.GetPartnerId(ctx) {
-			msg.Message = "can not operate"
+			err = partner.ErrPartnerNotMatch
+		} else {
+			title := fmt.Sprintf("客服充值", amount)
+			err = dps.MemberService.Charge(partnerId, memberId, member.TypeBalanceServiceCharge, title, "", float32(amount))
 		}
-
-		title := fmt.Sprintf("客服充值", amount)
-		err := dps.MemberService.Charge(memberId, member.TypeBalanceServiceCharge, title, "", float32(amount))
-
 		if err != nil {
 			msg.Message = err.Error()
 		} else {
@@ -163,4 +165,22 @@ func (this *memberC) ApplyRequestList(ctx *web.Context) {
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
 	}, "views/partner/member/apply_request_list.html")
+}
+
+func (this *memberC) Pass_apply_req_post(ctx *web.Context) {
+	var msg gof.Message
+	ctx.Request.ParseForm()
+	partnerId := this.GetPartnerId(ctx)
+	passed := ctx.Request.FormValue("pass") == "1"
+	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
+	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
+
+	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
+
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	ctx.Response.JsonOutput(msg)
 }

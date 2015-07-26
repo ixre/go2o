@@ -11,10 +11,13 @@ package dps
 
 import (
 	"errors"
+	"fmt"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
 	"time"
 )
@@ -38,6 +41,17 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 		return &nv
 	}
 	return nil
+}
+
+func (this *memberService) getMember(partnerId, memberId int) (member.IMember, error) {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return m, member.ErrNoSuchMember
+	}
+	if m.GetRelation().RegisterPartnerId != partnerId {
+		return m, partner.ErrPartnerNotMatch
+	}
+	return m, nil
 }
 
 func (this *memberService) GetMemberIdByInvitationCode(code string) int {
@@ -250,20 +264,19 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 }
 
 // 充值
-func (this *memberService) Charge(memberId int, chargeType int, title, tradeNo string, amount float32) error {
-	m := this._memberRep.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
+func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tradeNo string, amount float32) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
 	}
-	acc := m.GetAccount()
-	return acc.Charge(chargeType, title, tradeNo, amount)
+	return m.GetAccount().Charge(chargeType, title, tradeNo, amount)
 }
 
 // 提现
-func (this *memberService) SubmitApplyCash(memberId int, applyType int, applyAmount float32) error {
-	m := this._memberRep.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
+func (this *memberService) SubmitApplyCash(partnerId, memberId, applyType int, applyAmount float32) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
 	}
 	acc := m.GetAccount()
 	var title string
@@ -276,4 +289,42 @@ func (this *memberService) SubmitApplyCash(memberId int, applyType int, applyAmo
 		title = "充值到第三方账户"
 	}
 	return acc.RequestApplyCash(applyType, title, applyAmount)
+}
+
+// 获取最近的提现
+func (this *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfoValue {
+	return this._query.GetLatestBalanceInfoByKind(memberId, member.KindBalanceApplyCash)
+}
+
+// 获取最近的提现描述
+func (this *memberService) GetLatestApplyCashText(memberId int) string {
+	var latestInfo string
+	latestApplyInfo := this.GetLatestApplyCash(memberId)
+	if latestApplyInfo != nil {
+		var sText string
+		switch latestApplyInfo.State {
+		case 0:
+			sText = "已提交"
+		case 1:
+			sText = "已审核"
+		case 2:
+			sText = "被退回"
+		case 3:
+			sText = "已完成"
+		}
+		latestInfo = fmt.Sprintf("您于%s申请提现%s,%s。",
+			time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04:05"),
+			format.FormatFloat(latestApplyInfo.Amount),
+			sText)
+	}
+	return latestInfo
+}
+
+// 确认提现
+func (this *memberService) ConfirmApplyCash(partnerId int, memberId int, infoId int, pass bool, remark string) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().ConfirmApplyCash(infoId, pass, remark)
 }

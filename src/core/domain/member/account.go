@@ -57,6 +57,9 @@ func (this *Account) GetBalanceInfoByNo(no string) *member.BalanceInfoValue {
 func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
 	v.MemberId = this.GetDomainId()
 	v.UpdateTime = time.Now().Unix()
+	if v.CreateTime == 0 {
+		v.CreateTime = v.UpdateTime
+	}
 	return this._rep.SaveBalanceInfo(v)
 }
 
@@ -180,7 +183,8 @@ func (this *Account) RequestApplyCash(applyType int, title string, amount float3
 }
 
 // 确认提现
-func (this *Account) ConfirmApplyCash(id int, pass bool) error {
+func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
+	//todo: remark
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
 		if pass {

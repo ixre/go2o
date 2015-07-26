@@ -56,7 +56,7 @@ func (this *promotionService) DelPromotion(partnerId int, promId int) error {
 		return promotion.ErrNoSuchPromotion
 	}
 	if prom.GetValue().PartnerId != partnerId {
-		return partner.ErrNotMatch
+		return partner.ErrPartnerNotMatch
 	}
 
 	return promImpl.DeletePromotion(prom)
@@ -69,7 +69,7 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
 		if prom.GetValue().PartnerId != partnerId {
-			return -1, partner.ErrNotMatch
+			return -1, partner.ErrPartnerNotMatch
 		}
 	} else {
 		prom = this._rep.CreatePromotion(v)
@@ -94,7 +94,7 @@ func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromot
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
 		if prom.GetValue().PartnerId != partnerId {
-			return -1, partner.ErrNotMatch
+			return -1, partner.ErrPartnerNotMatch
 		}
 	} else {
 		prom = this._rep.CreatePromotion(v)

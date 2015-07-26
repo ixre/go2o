@@ -18,5 +18,6 @@ type BalanceInfoValue struct {
 	Title      string  `db:"title"`
 	Amount     float32 `db:"amount"`
 	State      int     `db:"state"`
+	CreateTime int64   `db:"create_time"`
 	UpdateTime int64   `db:"update_time"`
 }
