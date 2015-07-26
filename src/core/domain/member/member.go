@@ -110,6 +110,7 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 		this._bank.AccountName = v.AccountName
 		this._bank.Network = v.Network
 		this._bank.State = v.State
+		this._bank.Name = v.Name
 	}
 	this._bank.UpdateTime = time.Now().Unix()
 	//this._bank.MemberId = this.value.Id
