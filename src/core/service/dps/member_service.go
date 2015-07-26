@@ -263,6 +263,15 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 	return nil
 }
 
+// 获取余额变动信息
+func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.BalanceInfoValue {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return nil
+	}
+	return m.GetAccount().GetBalanceInfo(infoId)
+}
+
 // 充值
 func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tradeNo string, amount float32) error {
 	m, err := this.getMember(partnerId, memberId)
@@ -327,4 +336,13 @@ func (this *memberService) ConfirmApplyCash(partnerId int, memberId int, infoId 
 		return err
 	}
 	return m.GetAccount().ConfirmApplyCash(infoId, pass, remark)
+}
+
+// 完成提现
+func (this *memberService) FinishApplyCash(partnerId, memberId, id int, tradeNo string) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().FinishApplyCash(id, tradeNo)
 }

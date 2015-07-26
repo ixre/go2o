@@ -190,11 +190,10 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 		if pass {
 			v.State = member.StateApplyConfirmed
 		} else {
-			if v.State == member.StateApplyNotPass {
-				this._value.PresentBalance += v.Amount
-				if _, err := this.Save(); err != nil {
-					return err
-				}
+			v.State = member.StateApplyNotPass
+			this._value.PresentBalance += v.Amount
+			if _, err := this.Save(); err != nil {
+				return err
 			}
 		}
 		_, err := this.SaveBalanceInfo(v)

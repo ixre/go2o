@@ -11,6 +11,7 @@ package partner
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
@@ -21,6 +22,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"time"
 )
 
 var _ mvc.Filter = new(memberC)
@@ -167,6 +169,7 @@ func (this *memberC) ApplyRequestList(ctx *web.Context) {
 	}, "views/partner/member/apply_request_list.html")
 }
 
+// 审核提现请求
 func (this *memberC) Pass_apply_req_post(ctx *web.Context) {
 	var msg gof.Message
 	ctx.Request.ParseForm()
@@ -177,6 +180,81 @@ func (this *memberC) Pass_apply_req_post(ctx *web.Context) {
 
 	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
 
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	ctx.Response.JsonOutput(msg)
+}
+
+// 退回提现请求
+func (this *memberC) Back_apply_req(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	memberId, _ := strconv.Atoi(form.Get("member_id"))
+	id, _ := strconv.Atoi(form.Get("id"))
+
+	info := dps.MemberService.GetBalanceInfoById(memberId, id)
+
+	if info != nil {
+		ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+			"info":      info,
+			"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
+		}, "views/partner/member/back_apply_req.html")
+	}
+}
+
+func (this *memberC) Back_apply_req_post(ctx *web.Context) {
+	var msg gof.Message
+	ctx.Request.ParseForm()
+	form := ctx.Request.Form
+	partnerId := this.GetPartnerId(ctx)
+	memberId, _ := strconv.Atoi(form.Get("MemberId"))
+	id, _ := strconv.Atoi(form.Get("Id"))
+
+	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, false, "")
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	ctx.Response.JsonOutput(msg)
+}
+
+// 提现打款
+func (this *memberC) Handle_apply_req(ctx *web.Context) {
+	form := ctx.Request.URL.Query()
+	memberId, _ := strconv.Atoi(form.Get("member_id"))
+	id, _ := strconv.Atoi(form.Get("id"))
+
+	info := dps.MemberService.GetBalanceInfoById(memberId, id)
+
+	if info != nil {
+		bank := dps.MemberService.GetBank(memberId)
+		ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+			"info":      info,
+			"bank":      bank,
+			"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
+		}, "views/partner/member/handle_apply_req.html")
+	}
+}
+
+func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
+	var msg gof.Message
+	var err error
+	ctx.Request.ParseForm()
+	form := ctx.Request.Form
+	partnerId := this.GetPartnerId(ctx)
+	memberId, _ := strconv.Atoi(form.Get("MemberId"))
+	id, _ := strconv.Atoi(form.Get("Id"))
+	agree := form.Get("Agree") == "on"
+	tradeNo := form.Get("TradeNo")
+
+	if !agree {
+		err = errors.New("请同意已知晓并打款选项")
+	} else {
+		err = dps.MemberService.FinishApplyCash(partnerId, memberId, id, tradeNo)
+	}
 	if err != nil {
 		msg.Message = err.Error()
 	} else {
