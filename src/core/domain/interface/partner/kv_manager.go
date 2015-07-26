@@ -8,15 +8,15 @@
  */
 package partner
 
-type IKvManager interface{
+type IKvManager interface {
 	// 获取
-	Get(k string)string
+	Get(k string) string
 
 	// 设置
-	Set(k,v string)
+	Set(k, v string)
 
 	// 获取多项
-	Gets(k []string)map[string]string
+	Gets(k []string) map[string]string
 
 	// 设置多项
 	Sets(map[string]string)

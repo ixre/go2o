@@ -11,14 +11,14 @@ package mss
 // Message send manager
 type IMssManager interface {
 	// 发送消息
-	Send(IMsgTemplate,MsgData)error
+	Send(IMsgTemplate, MsgData) error
 
 	// 获取邮箱模板
-	GetMailTemplate(int)*MailTemplate
+	GetMailTemplate(int) *MailTemplate
 
 	// 保存邮箱模版
-	SaveMailTemplate(*MailTemplate)error
+	SaveMailTemplate(*MailTemplate) error
 
 	// 获取所有的邮箱模版
-	GetMailTemplates()[]*MailTemplate
+	GetMailTemplates() []*MailTemplate
 }

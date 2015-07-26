@@ -811,6 +811,60 @@ INSERT INTO `pt_api` VALUES (101,'6600123456','abede5odskew',1,'*'),(104,'600003
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pt_kvset`
+--
+
+DROP TABLE IF EXISTS `pt_kvset`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_kvset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) DEFAULT NULL,
+  `key` varchar(45) DEFAULT NULL,
+  `value` varchar(100) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_kvset`
+--
+
+LOCK TABLES `pt_kvset` WRITE;
+/*!40000 ALTER TABLE `pt_kvset` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_kvset` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pt_mail_template`
+--
+
+DROP TABLE IF EXISTS `pt_mail_template`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_mail_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) DEFAULT NULL,
+  `name` varchar(45) DEFAULT NULL,
+  `subject` varchar(100) DEFAULT NULL,
+  `body` varchar(1000) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_mail_template`
+--
+
+LOCK TABLES `pt_mail_template` WRITE;
+/*!40000 ALTER TABLE `pt_mail_template` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_mail_template` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pt_member_level`
 --
 
@@ -1397,4 +1451,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-26 16:57:14
+-- Dump completed on 2015-07-26 22:14:32

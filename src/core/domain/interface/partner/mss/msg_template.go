@@ -9,5 +9,4 @@
 package mss
 
 type IMsgTemplate interface {
-
 }
