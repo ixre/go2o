@@ -258,3 +258,8 @@ func (this *memberService) Charge(memberId int, chargeType int, title, tradeNo s
 	acc := m.GetAccount()
 	return acc.Charge(chargeType, title, tradeNo, amount)
 }
+
+// 提现
+func (this *memberService) SubmitApplyCash(memberId int,applyAmount float32)error{
+
+}
