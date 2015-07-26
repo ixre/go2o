@@ -245,7 +245,7 @@ func (this *Partner) SubmitOrder(m *jsv.Args, r *jsv.Result) error {
 	memberId, _ := strconv.Atoi((*m)["member_id"].(string))
 	couponCode := (*m)["coupon_code"].(string)
 
-	orderNo, err := dps.ShoppingService.SubmitOrder(partnerId, memberId, couponCode,true)
+	orderNo, err := dps.ShoppingService.SubmitOrder(partnerId, memberId, couponCode, true)
 	if err != nil {
 		return err
 	} else {

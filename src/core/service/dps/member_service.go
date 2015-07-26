@@ -260,6 +260,20 @@ func (this *memberService) Charge(memberId int, chargeType int, title, tradeNo s
 }
 
 // 提现
-func (this *memberService) SubmitApplyCash(memberId int,applyAmount float32)error{
-
+func (this *memberService) SubmitApplyCash(memberId int, applyType int, applyAmount float32) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := m.GetAccount()
+	var title string
+	switch applyType {
+	case member.TypeApplyCashToBank:
+		title = "提现到银行卡"
+	case member.TypeApplyCashToCharge:
+		title = "充值账户"
+	case member.TypeApplyCashToServiceProvider:
+		title = "充值到第三方账户"
+	}
+	return acc.RequestApplyCash(applyType, title, applyAmount)
 }

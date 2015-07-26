@@ -145,16 +145,16 @@ func (this *Order) SetPayment(payment int) {
 
 // 使用余额支付
 func (this *Order) PaymentWithBalance() error {
-	if this._value.IsPaid == 1{
+	if this._value.IsPaid == 1 {
 		return shopping.ErrOrderPayed
 	}
 	acc := this._memberRep.GetMember(this._value.MemberId).GetAccount()
-	if fee := this.getBalanceDiscountFee(acc);fee == 0{
+	if fee := this.getBalanceDiscountFee(acc); fee == 0 {
 		return shopping.ErrBalanceNotEnough
-	}else {
+	} else {
 		this._value.BalanceDiscount = fee
 		this._value.PayFee -= fee
-		err := acc.OrderDiscount(this._value.OrderNo,fee)
+		err := acc.OrderDiscount(this._value.OrderNo, fee)
 		if err != nil {
 			return err
 		}

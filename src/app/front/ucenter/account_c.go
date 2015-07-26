@@ -19,7 +19,12 @@ import (
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"strconv"
+	"errors"
+	"fmt"
+	"go2o/src/core/infrastructure/format"
 )
+
+const minAmount float64  =50
 
 type accountC struct {
 	*baseC
@@ -62,6 +67,7 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		"conf":    conf,
 		"partner": p,
 		"member":  m,
+		"minAmount":format.FormatFloat(float32(minAmount)),
 		"account": acc,
 	}, "views/ucenter/{device}/account/apply_cash.html",
 		"views/ucenter/{device}/inc/header.html",
@@ -69,14 +75,21 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-func (this *accountC) Apply_cash_post(ctx *web.Context){
-	ctx.Request.ParseForm()
-	amount,_:= strconv.ParseFloat(ctx.Request.FormValue("Amount"),32)
-	m := this.GetMember(ctx)
+func (this *accountC) Apply_cash_post(ctx *web.Context) {
 	var msg gof.Message
-	err := dps.MemberService.SubmitApplyCash(m.Id,amount)
+	var err error
+	ctx.Request.ParseForm()
+	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	if amount < minAmount {
+		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
+			format.FormatFloat(float32(minAmount))))
+	}else {
+		m := this.GetMember(ctx)
+		err = dps.MemberService.SubmitApplyCash(m.Id, member.TypeApplyCashToBank, float32(amount))
+	}
+
 	if err != nil {
-		msg.Message =err.Error()
+		msg.Message = err.Error()
 	} else {
 		msg.Result = true
 	}
@@ -111,7 +124,7 @@ func (this *accountC) Bank_info_post(ctx *web.Context) {
 	err := dps.MemberService.SaveBankInfo(e)
 
 	if err != nil {
-		msg.Message =err.Error()
+		msg.Message = err.Error()
 	} else {
 		msg.Result = true
 	}

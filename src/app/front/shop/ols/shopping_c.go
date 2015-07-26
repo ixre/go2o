@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -25,7 +26,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"go2o/src/core/domain/interface/shopping"
 )
 
 var _ mvc.Filter = new(ShoppingC)
@@ -331,8 +331,8 @@ func (this *ShoppingC) Payment(ctx *web.Context) {
 	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
 
 	// 已经支付成功
-	if order.IsPaid == 1{
-		this.orderFinish(ctx,p,m,siteConf,order)
+	if order.IsPaid == 1 {
+		this.orderFinish(ctx, p, m, siteConf, order)
 		return
 	}
 
@@ -367,16 +367,14 @@ func (this *ShoppingC) Order_finish(ctx *web.Context) {
 	m := this.BaseC.GetMember(ctx)
 	siteConf := this.BaseC.GetSiteConf(ctx)
 
-
 	orderNo := ctx.Request.URL.Query().Get("order_no")
 	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
 
-	this.orderFinish(ctx,p,m,siteConf,order)
+	this.orderFinish(ctx, p, m, siteConf, order)
 }
 
-
-func (this *ShoppingC) orderFinish(ctx *web.Context,p *partner.ValuePartner,
-		m *member.ValueMember,siteConf *partner.SiteConf,order *shopping.ValueOrder){
+func (this *ShoppingC) orderFinish(ctx *web.Context, p *partner.ValuePartner,
+	m *member.ValueMember, siteConf *partner.SiteConf, order *shopping.ValueOrder) {
 	if !this.prepare(ctx) {
 		return
 	}
