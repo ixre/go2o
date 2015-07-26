@@ -49,4 +49,11 @@ const (
 	Alipay_Partner = "payment_alipay_partner"
 	Alipay_Key     = "payment_alipay_key"
 	Alipay_Seller  = "payment_alipay_seller"
+
+	// 邮箱
+	SmtpHost    = "smtp_host"
+	SmtpPort    = "smtp_port"
+	SmtpCreUser = "smtp_user"
+	SmtpCrePwd  = "smtp_pwd"
+	SmtpFrom    = "smtp_from"
 )
