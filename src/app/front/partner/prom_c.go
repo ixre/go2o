@@ -9,7 +9,6 @@
 package partner
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/atnet/gof"
@@ -28,17 +27,6 @@ var _ mvc.Filter = new(promC)
 
 type promC struct {
 	*baseC
-}
-
-func (this *promC) getLevelDropDownList(ctx *web.Context) string {
-	buf := bytes.NewBufferString("")
-	lvs := dps.PartnerService.GetMemberLevels(this.GetPartnerId(ctx))
-	for _, v := range lvs {
-		if v.Enabled == 1 {
-			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
-		}
-	}
-	return buf.String()
 }
 
 func (this *promC) List(ctx *web.Context) {
@@ -151,7 +139,7 @@ func (this *promC) Create_coupon(ctx *web.Context) {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := this.getLevelDropDownList(ctx)
+	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
@@ -175,7 +163,7 @@ func (this *promC) Edit_coupon(ctx *web.Context) {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := this.getLevelDropDownList(ctx)
+	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{

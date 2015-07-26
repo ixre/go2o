@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/service/dps"
 )
 
 func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
@@ -24,5 +25,17 @@ func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
             <label for="sale_tag%d">%s</label></li>`, i, i, v.Id, i, v.TagName))
 	}
 	buf.WriteString("</ul>")
+	return buf.String()
+}
+
+// 获取等级下拉选项列表
+func getLevelDropDownList(partnerId int) string {
+	buf := bytes.NewBufferString("")
+	lvs := dps.PartnerService.GetMemberLevels(partnerId)
+	for _, v := range lvs {
+		if v.Enabled == 1 {
+			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
+		}
+	}
 	return buf.String()
 }

@@ -10,21 +10,21 @@ package ucenter
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"strconv"
-	"errors"
-	"fmt"
-	"go2o/src/core/infrastructure/format"
 )
 
-const minAmount float64  =50
+const minAmount float64 = 50
 
 type accountC struct {
 	*baseC
@@ -64,11 +64,11 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
-		"conf":    conf,
-		"partner": p,
-		"member":  m,
-		"minAmount":format.FormatFloat(float32(minAmount)),
-		"account": acc,
+		"conf":      conf,
+		"partner":   p,
+		"member":    m,
+		"minAmount": format.FormatFloat(float32(minAmount)),
+		"account":   acc,
 	}, "views/ucenter/{device}/account/apply_cash.html",
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
@@ -83,7 +83,7 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 	if amount < minAmount {
 		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
 			format.FormatFloat(float32(minAmount))))
-	}else {
+	} else {
 		m := this.GetMember(ctx)
 		err = dps.MemberService.SubmitApplyCash(m.Id, member.TypeApplyCashToBank, float32(amount))
 	}

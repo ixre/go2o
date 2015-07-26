@@ -29,7 +29,8 @@ type memberC struct {
 }
 
 func (this *memberC) LevelList(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/member/level_list.html")
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{},
+		"views/partner/member/level_list.html")
 }
 
 //修改门店信息
@@ -96,9 +97,10 @@ func (this *memberC) DelMLevel(ctx *web.Context) {
 
 // 会员列表
 func (this *memberC) List(ctx *web.Context) {
-	//partnerId := this.GetPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{}, "views/partner/member/member_list.html")
+	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+		"levelDr": template.HTML(levelDr),
+	}, "views/partner/member/member_list.html")
 }
 
 // 锁定会员
@@ -157,6 +159,8 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 
 // 提现列表
 func (this *memberC) ApplyRequestList(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{}, "views/partner/member/apply_request_list.html")
+	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+		"levelDr": template.HTML(levelDr),
+	}, "views/partner/member/apply_request_list.html")
 }

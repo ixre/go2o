@@ -180,16 +180,17 @@ func (this *Account) RequestApplyCash(applyType int, title string, amount float3
 }
 
 // 确认提现
-func (this *Account) ConfirmApplyCash(id int,pass bool) error {
+func (this *Account) ConfirmApplyCash(id int, pass bool) error {
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
 		if pass {
 			v.State = member.StateApplyConfirmed
-		}else{
-			v.State == member.StateApplyNotPass
-			this._value.PresentBalance += v.Amount
-			if _,err := this.Save();err != nil{
-				return err
+		} else {
+			if v.State == member.StateApplyNotPass {
+				this._value.PresentBalance += v.Amount
+				if _, err := this.Save(); err != nil {
+					return err
+				}
 			}
 		}
 		_, err := this.SaveBalanceInfo(v)

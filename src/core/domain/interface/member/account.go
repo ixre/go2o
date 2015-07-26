@@ -85,7 +85,7 @@ type IAccount interface {
 	RequestApplyCash(applyType int, title string, amount float32) error
 
 	// 确认提现
-	ConfirmApplyCash(id int,pass bool) error
+	ConfirmApplyCash(id int, pass bool) error
 
 	// 完成提现
 	FinishApplyCash(id int, tradeNo string) error
