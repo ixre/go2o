@@ -11,7 +11,7 @@
 <div region="center">
 	<div id="dg"></div>
 	<div class="toolBar">
-    <div class="searchBar padding2" id="searchbar">
+    <div class="search_bar padding2" id="search_bar">
         <ul>
         	<li>
         		<a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
@@ -53,7 +53,7 @@
     <script src="{{.static_serve}}/assets/js/export.js"></script>
     <script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
     <script>
-        expr.ele = 'searchbar';
+        expr.ele = 'search_bar';
 
         j6.json.bind(expr.ele, { keyword: decodeURIComponent(j6.request('CarNo')) });
 

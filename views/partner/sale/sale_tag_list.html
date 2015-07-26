@@ -9,7 +9,7 @@
 <body>
     <div id="dg"></div>
     <div class="toolBar">
-        <div class="searchBar padding2" id="searchbar">
+        <div class="search_bar padding2" id="search_bar">
             <ul>
                 <li>
                 <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
@@ -47,7 +47,7 @@
 
 <script>
         var shops = {{.shops}};
-        expr.ele = 'searchbar';
+        expr.ele = 'search_bar';
 
         j6.json.bind(expr.ele, {status: decodeURIComponent(j6.request('status')) });
 

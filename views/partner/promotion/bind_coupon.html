@@ -10,7 +10,7 @@
 <body>
     <div id="dg"></div>
     <div class="toolBar">
-        <div class="searchBar padding2" id="searchbar">
+        <div class="search_bar padding2" id="search_bar">
             <input field="couponId" type="hidden" value="{{.entity.Id}}"/>
             <ul>
                 <li>
@@ -37,7 +37,7 @@
 
 <script>
         var shops = {{.shops}};
-        expr.ele = 'searchbar';
+        expr.ele = 'search_bar';
 
         expr.portal = 'Partner.CouponMemberList'; //配置导出的入口
         expr.checkParams = function (data) {

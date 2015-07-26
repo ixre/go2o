@@ -158,17 +158,17 @@ func (this *Account) RequestApplyCash(applyType int, title string, amount float3
 	}
 
 	v := &member.BalanceInfoValue{
-		Kind:   member.KindBalanceBack,
+		Kind:   member.KindBalanceApplyCash,
 		Type:   applyType,
 		Title:  title,
 		Amount: amount,
-		State:  0,
+		State:  member.StateApplySubmitted,
 	}
 
 	// 提现至余额
 	if applyType == member.TypeApplyCashToCharge {
 		this._value.Balance += amount
-		v.State = 2
+		v.State = member.StateApplyOver
 	}
 
 	_, err := this.SaveBalanceInfo(v)
@@ -180,10 +180,18 @@ func (this *Account) RequestApplyCash(applyType int, title string, amount float3
 }
 
 // 确认提现
-func (this *Account) ConfirmApplyCash(id int) error {
+func (this *Account) ConfirmApplyCash(id int,pass bool) error {
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
-		v.State = 1
+		if pass {
+			v.State = member.StateApplyConfirmed
+		}else{
+			v.State == member.StateApplyNotPass
+			this._value.PresentBalance += v.Amount
+			if _,err := this.Save();err != nil{
+				return err
+			}
+		}
 		_, err := this.SaveBalanceInfo(v)
 		return err
 	}
@@ -195,7 +203,7 @@ func (this *Account) FinishApplyCash(id int, tradeNo string) error {
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
 		v.TradeNo = tradeNo
-		v.State = 2
+		v.State = member.StateApplyOver
 		_, err := this.SaveBalanceInfo(v)
 		return err
 	}

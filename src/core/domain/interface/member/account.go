@@ -36,6 +36,15 @@ const (
 	TypeBackToBank = 1
 	// 退款到第三方
 	TypeBackToServiceProvider = 2
+
+	// 提现请求已提交
+	StateApplySubmitted = 0
+	// 提现已经确认
+	StateApplyConfirmed = 1
+	// 提现未通过
+	StateApplyNotPass = 2
+	// 提现完成
+	StateApplyOver = 3
 )
 
 type IAccount interface {
@@ -76,7 +85,7 @@ type IAccount interface {
 	RequestApplyCash(applyType int, title string, amount float32) error
 
 	// 确认提现
-	ConfirmApplyCash(id int) error
+	ConfirmApplyCash(id int,pass bool) error
 
 	// 完成提现
 	FinishApplyCash(id int, tradeNo string) error

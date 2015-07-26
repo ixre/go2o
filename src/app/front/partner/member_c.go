@@ -101,6 +101,7 @@ func (this *memberC) List(ctx *web.Context) {
 		gof.TemplateDataMap{}, "views/partner/member/member_list.html")
 }
 
+// 锁定会员
 func (this *memberC) Lock_member_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
@@ -114,6 +115,7 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
+// 客服充值
 func (this *memberC) Charge(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
@@ -151,4 +153,10 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 		}
 	}
 	ctx.Response.JsonOutput(msg)
+}
+
+// 提现列表
+func (this *memberC) ApplyRequestList(ctx *web.Context) {
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{}, "views/partner/member/apply_request_list.html")
 }
