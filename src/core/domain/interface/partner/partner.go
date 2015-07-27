@@ -64,4 +64,7 @@ type IPartner interface {
 
 	// 获取会员等级服务
 	LevelManager() ILevelManager
+
+	// 获取键值管理器
+	KvManager()IKvManager
 }

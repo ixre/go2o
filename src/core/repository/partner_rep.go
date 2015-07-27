@@ -21,6 +21,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
+	"strings"
 )
 
 var _ partner.IPartnerRep = new(partnerRep)
@@ -250,4 +251,30 @@ func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 	_, err := this.Connector.GetOrm().Delete(partner.ValueShop{},
 		"partner_id=? AND id=?", partnerId, shopId)
 	return err
+}
+
+// 获取键值
+func (this *partnerRep) GetKeyValue(partnerId int,k string)string{
+	var v string
+	this.Connector.ExecScalar("SELECT value FROM pt_kvset WHERE partner_id=? AND key=?",
+		&v,partnerId,k)
+	return v
+}
+// 设置键值
+func (this *partnerRep) SaveKeyValue(partnerId int,k,v string)error{
+	_,err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND key=?",v,partnerId,k)
+	return err
+}
+// 获取多个键值
+func (this *partnerRep) GetKeyMap(partnerId int,k []string)map[string]string {
+	m := make(map[string]string)
+	var k1, v1 string
+	this.Connector.Query("SELECT key,value FROM pt_kvset WHERE partner_id=? AND key IN (?)",
+		func(rows *sql.Rows) {
+			for rows.Next() {
+				rows.Scan(&k1, &v1)
+				m[k1] = v1
+			}
+		}, partnerId, strings.Join(k, ","))
+	return m
 }

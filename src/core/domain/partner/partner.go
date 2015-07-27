@@ -35,6 +35,7 @@ type Partner struct {
 	_userManager  user.IUserManager
 	_confManager  partner.IConfManager
 	_levelManager partner.ILevelManager
+	_kvManager partner.IKvManager
 	_userRep      user.IUserRep
 	_memberRep    member.IMemberRep
 }
@@ -288,4 +289,13 @@ func (this *Partner) LevelManager() partner.ILevelManager {
 		this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
 	}
 	return this._levelManager
+}
+
+
+// 获取键值管理器
+func (this *Partner) KvManager()partner.IKvManager{
+	if this._kvManager == nil{
+		this._kvManager = newKvManager(this)
+	}
+	return this._kvManager
 }
