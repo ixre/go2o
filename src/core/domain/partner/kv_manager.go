@@ -11,6 +11,7 @@ package partner
 import (
 	"go2o/src/core/domain/interface/partner"
 	"strconv"
+	"time"
 )
 
 var _ partner.IKvManager = new(KvManager)
@@ -40,7 +41,7 @@ func (this *KvManager) GetInt(k string) int {
 
 // 设置
 func (this *KvManager) Set(k, v string) {
-	this._partner._rep.SaveKeyValue(this._partnerId, k, v)
+	this._partner._rep.SaveKeyValue(this._partnerId, k, v, time.Now().Unix())
 }
 
 // 获取多项
@@ -49,8 +50,14 @@ func (this *KvManager) Gets(k []string) map[string]string {
 }
 
 // 设置多项
-func (this *KvManager) Sets(v map[string]string) {
+func (this *KvManager) Sets(v map[string]string) error {
 	for k, v := range v {
 		this.Set(k, v)
 	}
+	return nil
+}
+
+// 根据关键字获取字典
+func (this *KvManager) GetsByChar(keyword string) map[string]string {
+	return this._partner._rep.GetKeyMapByChar(this._partnerId, keyword)
 }

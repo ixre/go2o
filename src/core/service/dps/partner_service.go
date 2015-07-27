@@ -252,6 +252,21 @@ func (this *partnerService) GetNextLevel(partnerId, levelValue int) *valueobject
 	return pt.LevelManager().GetNextLevel(levelValue)
 }
 
+// 获取键值字典
+func (this *partnerService) GetKeyMapsByKeyword(partnerId int, keyword string) map[string]string {
+	pt, _ := this._partnerRep.GetPartner(partnerId)
+	return pt.KvManager().GetsByChar(keyword)
+}
+
+// 保存键值字典
+func (this *partnerService) SaveKeyMaps(partnerId int, data map[string]string) error {
+	pt, err := this._partnerRep.GetPartner(partnerId)
+	if err != nil {
+		return err
+	}
+	return pt.KvManager().Sets(data)
+}
+
 // 获取邮件模版
 func (this *partnerService) GetMailTemplate(partnerId int, id int) (*mss.MailTemplate, error) {
 	pt, err := this._partnerRep.GetPartner(partnerId)
@@ -273,8 +288,17 @@ func (this *partnerService) SaveMailTemplate(partnerId int, v *mss.MailTemplate)
 	return pt.MssManager().SaveMailTemplate(v)
 }
 
+// 获取邮件模板
+func (this *partnerService) GetMailTemplates(partnerId int) []*mss.MailTemplate {
+	pt, err := this._partnerRep.GetPartner(partnerId)
+	if err != nil {
+		return nil
+	}
+	return pt.MssManager().GetMailTemplates()
+}
+
 // 删除邮件模板
-func (this *partnerService) DeleteMailTemplate(partnerId int, id int)error{
+func (this *partnerService) DeleteMailTemplate(partnerId int, id int) error {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
 		return err

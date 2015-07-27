@@ -23,7 +23,7 @@ type IMssManager interface {
 	GetMailTemplates() []*MailTemplate
 
 	// 删除邮件模板
-	DeleteMailTemplate(int)error
+	DeleteMailTemplate(int) error
 
 	// 创建消息模版对象
 	CreateMsgTemplate(v interface{}) (IMsgTemplate, error)

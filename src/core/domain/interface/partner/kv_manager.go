@@ -9,7 +9,7 @@
 package partner
 
 const (
-	KeyTplIdOfProfileComplete string = "TplIdOfProfileComplete"
+	KeyMssTplIdOfProfileComplete string = "mss_profile_complete_mail_tpl"
 )
 
 type IKvManager interface {
@@ -22,5 +22,7 @@ type IKvManager interface {
 	// 获取多项
 	Gets(k []string) map[string]string
 	// 设置多项
-	Sets(map[string]string)
+	Sets(map[string]string) error
+	// 根据关键字获取字典
+	GetsByChar(keyword string) map[string]string
 }

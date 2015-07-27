@@ -53,9 +53,11 @@ type IPartnerRep interface {
 	// 获取键值
 	GetKeyValue(partnerId int, k string) string
 	// 设置键值
-	SaveKeyValue(partnerId int, k, v string) error
+	SaveKeyValue(partnerId int, k, v string, updateTime int64) error
 	// 获取多个键值
 	GetKeyMap(partnerId int, k []string) map[string]string
 	// 检查是否包含值的键数量,keyStr为键模糊匹配
-	CheckKvContainValue(partnerId int,value string,keyStr string)int
+	CheckKvContainValue(partnerId int, value string, keyStr string) int
+	// 根据关键字获取字典
+	GetKeyMapByChar(partnerId int, keyword string) map[string]string
 }

@@ -266,10 +266,12 @@ func (this *partnerRep) GetKeyValue(partnerId int, k string) string {
 }
 
 // 设置键值
-func (this *partnerRep) SaveKeyValue(partnerId int, k, v string) error {
-	i, err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND `key`=?", v, partnerId, k)
-	if i!= 0 {
-		_, err = this.Connector.ExecNonQuery("INSERT INTO pt_kvset(partner_id,`key`,value)VALUES(?,?,?)",partnerId,k,v)
+func (this *partnerRep) SaveKeyValue(partnerId int, k, v string, updateTime int64) error {
+	i, err := this.Connector.ExecNonQuery("UPDATE pt_kvset SET value=?,update_time=? WHERE partner_id=? AND `key`=?",
+		v, updateTime, partnerId, k)
+	if i == 0 {
+		_, err = this.Connector.ExecNonQuery("INSERT INTO pt_kvset(partner_id,`key`,value,update_time)VALUES(?,?,?,?)",
+			partnerId, k, v, updateTime)
 	}
 	return err
 }
@@ -278,7 +280,7 @@ func (this *partnerRep) SaveKeyValue(partnerId int, k, v string) error {
 func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 	m := make(map[string]string)
 	var k1, v1 string
-	this.Connector.Query("SELECT key,value FROM pt_kvset WHERE partner_id=? AND `key` IN (?)",
+	this.Connector.Query("SELECT `key`,value FROM pt_kvset WHERE partner_id=? AND `key` IN (?)",
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&k1, &v1)
@@ -288,14 +290,27 @@ func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 	return m
 }
 
-
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (this *partnerRep) CheckKvContainValue(partnerId int,value string,keyStr string)int {
+func (this *partnerRep) CheckKvContainValue(partnerId int, value string, keyStr string) int {
 	var i int
-	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_kvset WHERE partner_id=? AND value=? AND `key` LIKE '%?%'",
-		&i, partnerId, value, keyStr)
+	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_kvset WHERE partner_id=? AND value=? AND `key` LIKE '%"+
+		keyStr+"%'", &i, partnerId, value)
 	if err != nil {
 		return 999
 	}
 	return i
+}
+
+// 根据关键字获取字典
+func (this *partnerRep) GetKeyMapByChar(partnerId int, keyword string) map[string]string {
+	m := make(map[string]string)
+	var k1, v1 string
+	this.Connector.Query("SELECT `key`,value FROM pt_kvset WHERE partner_id=? AND `key` LIKE '%"+keyword+"%'",
+		func(rows *sql.Rows) {
+			for rows.Next() {
+				rows.Scan(&k1, &v1)
+				m[k1] = v1
+			}
+		}, partnerId)
+	return m
 }

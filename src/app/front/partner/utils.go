@@ -39,3 +39,15 @@ func getLevelDropDownList(partnerId int) string {
 	}
 	return buf.String()
 }
+
+// 获取邮件模板选项
+func getMailTemplateOpts(partnerId int) string {
+	buf := bytes.NewBufferString("")
+	list := dps.PartnerService.GetMailTemplates(partnerId)
+	for _, v := range list {
+		if v.Enabled == 1 {
+			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Id, v.Name))
+		}
+	}
+	return buf.String()
+}

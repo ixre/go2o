@@ -16,7 +16,7 @@ type IMssRep interface {
 	// 获取所有的邮箱模版
 	GetMailTemplates(partnerId int) []*MailTemplate
 	// 删除邮件模板
-	DeleteMailTemplate(partnerId,id int)error
+	DeleteMailTemplate(partnerId, id int) error
 	// 加入到发送对列
 	JoinMailTaskToQueen(*MailTask) error
 }

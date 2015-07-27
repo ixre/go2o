@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"strings"
 )
 
 var _ mvc.Filter = new(adC)
@@ -50,7 +51,7 @@ func (this *mssC) Edit_mail_tpl(ctx *web.Context) {
 // 创建邮箱模板
 func (this *mssC) Create_mail_tpl(ctx *web.Context) {
 	e := mss.MailTemplate{
-		Enabled:1,
+		Enabled: 1,
 	}
 	js, _ := json.Marshal(e)
 
@@ -61,7 +62,7 @@ func (this *mssC) Create_mail_tpl(ctx *web.Context) {
 		"views/partner/mss/edit_mail_tpl.html")
 }
 
-// 删除广告
+// 删除邮件模板
 func (this *mssC) Del_mail_tpl_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
@@ -79,6 +80,7 @@ func (this *mssC) Del_mail_tpl_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
+// 保存邮件模板
 func (this *mssC) Save_mail_tpl_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
@@ -99,6 +101,46 @@ func (this *mssC) Save_mail_tpl_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 		result.Data = id
+	}
+	ctx.Response.JsonOutput(result)
+}
+
+func (this *mssC) getMailTemplateOpts(partnerId int) string {
+	return getMailTemplateOpts(partnerId)
+}
+
+// 设置
+func (this *mssC) Mss_setting(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
+	js, _ := json.Marshal(e)
+
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{
+			"mailTplOpt": template.HTML(this.getMailTemplateOpts(partnerId)),
+			"entity":     template.JS(js),
+		},
+		"views/partner/mss/mss_setting.html")
+}
+
+// 保存设置
+func (this *mssC) Mss_setting_post(ctx *web.Context) {
+	var result gof.Message
+	partnerId := this.GetPartnerId(ctx)
+	ctx.Request.ParseForm()
+	var data map[string]string = make(map[string]string, 0)
+	for k, v := range ctx.Request.Form {
+		if strings.HasPrefix(k, "mss_") {
+			data[k] = v[0]
+		}
+	}
+
+	err := dps.PartnerService.SaveKeyMaps(partnerId, data)
+
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		result.Result = true
 	}
 	ctx.Response.JsonOutput(result)
 }
