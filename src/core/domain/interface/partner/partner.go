@@ -69,7 +69,6 @@ type IPartner interface {
 	// 获取键值管理器
 	KvManager() IKvManager
 
-
 	// 获取会员键值管理器
 	MemberKvManager() IKvManager
 

@@ -15,9 +15,9 @@ import (
 	"github.com/atnet/gof/db"
 	"github.com/atnet/gof/log"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	memberImpl "go2o/src/core/domain/member"
-	"go2o/src/core/domain/interface/partner"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -27,14 +27,14 @@ type MemberRep struct {
 	_partnerRep partner.IPartnerRep
 }
 
-func NewMemberRep(c db.Connector)*MemberRep {
+func NewMemberRep(c db.Connector) *MemberRep {
 	return &MemberRep{
 		Connector: c,
 	}
 }
 
-func (this *MemberRep) SetPartnerRep(partnerRep partner.IPartnerRep){
-	this._partnerRep =partnerRep
+func (this *MemberRep) SetPartnerRep(partnerRep partner.IPartnerRep) {
+	this._partnerRep = partnerRep
 }
 
 // 根据用户名获取会员
@@ -69,7 +69,7 @@ func (this *MemberRep) GetMember(memberId int) member.IMember {
 
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
-	return memberImpl.NewMember(v, this,this._partnerRep)
+	return memberImpl.NewMember(v, this, this._partnerRep)
 }
 
 // 根据邀请码获取会员编号

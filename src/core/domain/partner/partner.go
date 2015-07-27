@@ -38,13 +38,13 @@ type Partner struct {
 	_userRep   user.IUserRep
 	_memberRep member.IMemberRep
 
-	_userManager  user.IUserManager
-	_confManager  partner.IConfManager
-	_levelManager partner.ILevelManager
-	_kvManager    partner.IKvManager
+	_userManager     user.IUserManager
+	_confManager     partner.IConfManager
+	_levelManager    partner.ILevelManager
+	_kvManager       partner.IKvManager
 	_memberKvManager partner.IKvManager
-	_mssManager   mss.IMssManager
-	_mssRep       mss.IMssRep
+	_mssManager      mss.IMssManager
+	_mssRep          mss.IMssRep
 }
 
 func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep,
@@ -302,7 +302,7 @@ func (this *Partner) LevelManager() partner.ILevelManager {
 // 获取键值管理器
 func (this *Partner) KvManager() partner.IKvManager {
 	if this._kvManager == nil {
-		this._kvManager = newKvManager(this,"kvset")
+		this._kvManager = newKvManager(this, "kvset")
 	}
 	return this._kvManager
 }
@@ -310,7 +310,7 @@ func (this *Partner) KvManager() partner.IKvManager {
 // 获取用户键值管理器
 func (this *Partner) MemberKvManager() partner.IKvManager {
 	if this._memberKvManager == nil {
-		this._memberKvManager = newKvManager(this,"kvset_member")
+		this._memberKvManager = newKvManager(this, "kvset_member")
 	}
 	return this._memberKvManager
 }

@@ -51,13 +51,13 @@ type IPartnerRep interface {
 	DeleteShop(partnerId, shopId int) error
 
 	// 获取键值
-	GetKeyValue(partnerId int,indent string, k string) string
+	GetKeyValue(partnerId int, indent string, k string) string
 	// 设置键值
-	SaveKeyValue(partnerId int,indent string, k, v string, updateTime int64) error
+	SaveKeyValue(partnerId int, indent string, k, v string, updateTime int64) error
 	// 获取多个键值
-	GetKeyMap(partnerId int,indent string, k []string) map[string]string
+	GetKeyMap(partnerId int, indent string, k []string) map[string]string
 	// 检查是否包含值的键数量,keyStr为键模糊匹配
-	CheckKvContainValue(partnerId int, indent string,value string, keyStr string) int
+	CheckKvContainValue(partnerId int, indent string, value string, keyStr string) int
 	// 根据关键字获取字典
-	GetKeyMapByChar(partnerId int,indent string,keyword string) map[string]string
+	GetKeyMapByChar(partnerId int, indent string, keyword string) map[string]string
 }

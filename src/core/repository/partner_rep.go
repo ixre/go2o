@@ -258,32 +258,32 @@ func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 }
 
 // 获取键值
-func (this *partnerRep) GetKeyValue(partnerId int,indent string, k string) string {
+func (this *partnerRep) GetKeyValue(partnerId int, indent string, k string) string {
 	var v string
 	this.Connector.ExecScalar(
-		fmt.Sprintf("SELECT value FROM pt_%s WHERE partner_id=? AND `key`=?",indent),
+		fmt.Sprintf("SELECT value FROM pt_%s WHERE partner_id=? AND `key`=?", indent),
 		&v, partnerId, k)
 	return v
 }
 
 // 设置键值
-func (this *partnerRep) SaveKeyValue(partnerId int,indent string, k, v string, updateTime int64) error {
+func (this *partnerRep) SaveKeyValue(partnerId int, indent string, k, v string, updateTime int64) error {
 	i, err := this.Connector.ExecNonQuery(
-		fmt.Sprintf("UPDATE pt_%s SET value=?,update_time=? WHERE partner_id=? AND `key`=?",indent),
+		fmt.Sprintf("UPDATE pt_%s SET value=?,update_time=? WHERE partner_id=? AND `key`=?", indent),
 		v, updateTime, partnerId, k)
 	if i == 0 {
 		_, err = this.Connector.ExecNonQuery(
-			fmt.Sprintf("INSERT INTO pt_%s(partner_id,`key`,value,update_time)VALUES(?,?,?,?)",indent),
+			fmt.Sprintf("INSERT INTO pt_%s(partner_id,`key`,value,update_time)VALUES(?,?,?,?)", indent),
 			partnerId, k, v, updateTime)
 	}
 	return err
 }
 
 // 获取多个键值
-func (this *partnerRep) GetKeyMap(partnerId int,indent string, k []string) map[string]string {
+func (this *partnerRep) GetKeyMap(partnerId int, indent string, k []string) map[string]string {
 	m := make(map[string]string)
 	var k1, v1 string
-	this.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE partner_id=? AND `key` IN (?)",indent),
+	this.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE partner_id=? AND `key` IN (?)", indent),
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&k1, &v1)
@@ -294,9 +294,9 @@ func (this *partnerRep) GetKeyMap(partnerId int,indent string, k []string) map[s
 }
 
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (this *partnerRep) CheckKvContainValue(partnerId int,indent string, value string, keyStr string) int {
+func (this *partnerRep) CheckKvContainValue(partnerId int, indent string, value string, keyStr string) int {
 	var i int
-	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+ indent +
+	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
 		" WHERE partner_id=? AND value=? AND `key` LIKE '%"+
 		keyStr+"%'", &i, partnerId, value)
 	if err != nil {
@@ -306,10 +306,10 @@ func (this *partnerRep) CheckKvContainValue(partnerId int,indent string, value s
 }
 
 // 根据关键字获取字典
-func (this *partnerRep) GetKeyMapByChar(partnerId int,indent string, keyword string) map[string]string {
+func (this *partnerRep) GetKeyMapByChar(partnerId int, indent string, keyword string) map[string]string {
 	m := make(map[string]string)
 	var k1, v1 string
-	this.Connector.Query("SELECT `key`,value FROM pt_"+ indent +
+	this.Connector.Query("SELECT `key`,value FROM pt_"+indent+
 		" WHERE partner_id=? AND `key` LIKE '%"+keyword+"%'",
 		func(rows *sql.Rows) {
 			for rows.Next() {
