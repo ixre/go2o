@@ -170,6 +170,21 @@ func (this *Order) PaymentWithBalance() error {
 	return err
 }
 
+
+// 在线交易支付
+func (this *Order) PaymentOnlineTrade(serverProvider string,tradeNo string)error{
+	if this._value.IsPaid == 1 {
+		return shopping.ErrOrderPayed
+	}
+	unix := time.Now().Unix()
+	this._value.IsPaid = 1
+	this._value.UpdateTime = unix
+	this._value.PaidTime = unix
+
+	_, err := this.Save()
+	return err
+}
+
 // 设置配送地址
 func (this *Order) SetDeliver(deliverAddressId int) error {
 	d := this._memberRep.GetSingleDeliverAddress(this._value.MemberId, deliverAddressId)

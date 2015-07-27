@@ -249,11 +249,22 @@ func (this *shoppingService) OrderAutoSetup(partnerId int, f func(error)) {
 	sp.OrderAutoSetup(f)
 }
 
-func (this *shoppingService) PayForOrder(partnerId int, orderNo string) error {
+// 使用余额为订单付款
+func (this *shoppingService) PayForOrderWithBalance(partnerId int, orderNo string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.PaymentWithBalance()
+	}
+	return err
+}
+
+// 确认付款
+func (this *shoppingService) PayForOrderOnlineTrade(partnerId int,orderNo string,spName string,tradeNo string)error{
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil {
+		err = order.PaymentOnlineTrade(spName,tradeNo)
 	}
 	return err
 }

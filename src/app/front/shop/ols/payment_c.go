@@ -60,28 +60,34 @@ func (this *PaymentC) Create(ctx *web.Context) {
 }
 
 func (this *PaymentC) Return(ctx *web.Context) {
-	result := aliPayObj.Return(ctx.Request)
-	if result.Status == payment.StatusTradeSuccess {
-		if err := this.handleOrder(ctx, &result); err == nil {
-			this.paymentSuccess(ctx, &result)
-			return
+	paymentOpt := ctx.Request.URL.Query().Get("pay_opt")
+	if paymentOpt == "alipay" {
+		result := aliPayObj.Return(ctx.Request)
+		if result.Status == payment.StatusTradeSuccess {
+			if err := this.handleOrder(ctx, "alipay", &result); err == nil {
+				this.paymentSuccess(ctx, &result)
+				return
+			}
 		}
+		this.paymentFail(ctx, &result)
 	}
-	this.paymentFail(ctx, &result)
 }
 
 func (this *PaymentC) Notify_post(ctx *web.Context) {
-	result := aliPayObj.Notify(ctx.Request)
-	if result.Status == payment.StatusTradeSuccess {
-		if err := this.handleOrder(ctx, &result); err == nil {
-			ctx.Response.Write([]byte("success"))
-			return
+	paymentOpt := ctx.Request.URL.Query().Get("pay_opt")
+	if paymentOpt == "alipay" {
+		result := aliPayObj.Notify(ctx.Request)
+		if result.Status == payment.StatusTradeSuccess {
+			if err := this.handleOrder(ctx, "alipay", &result); err == nil {
+				ctx.Response.Write([]byte("success"))
+				return
+			}
 		}
 	}
 	ctx.Response.Write([]byte("fail"))
 }
 
-func (this *PaymentC) handleOrder(ctx *web.Context, result *payment.Result) error {
+func (this *PaymentC) handleOrder(ctx *web.Context,sp string, result *payment.Result) error {
 	partnerId := this.GetPartnerId(ctx)
 	order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 	if order != nil {
@@ -91,7 +97,7 @@ func (this *PaymentC) handleOrder(ctx *web.Context, result *payment.Result) erro
 		if order.IsPaid == 1 {
 			return errors.New("order has paid")
 		}
-		return dps.ShoppingService.PayForOrder(partnerId, order.OrderNo)
+		return dps.ShoppingService.PayForOrderOnlineTrade(partnerId, order.OrderNo,sp,result.TradeNo)
 	}
 	return errors.New("no such order")
 }

@@ -187,7 +187,7 @@ func (this *orderC) Payment_post(ctx *web.Context) {
 
 	err := dps.MemberService.Charge(partnerId, order.MemberId, member.TypeBalanceSystemCharge, "系统充值", "", order.PayFee)
 	if err == nil {
-		err = dps.ShoppingService.PayForOrder(partnerId, orderNo)
+		err = dps.ShoppingService.PayForOrderWithBalance(partnerId, orderNo)
 	}
 
 	if err != nil {
