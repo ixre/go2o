@@ -25,6 +25,7 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
+	"go2o/src/core/domain/interface/partner/mss"
 )
 
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
@@ -85,6 +86,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.CreateTableMap(content.ValuePage{}, "pt_page")
 	orm.CreateTableMap(ad.ValueAdvertisement{}, "pt_ad")
 	orm.CreateTableMap(ad.ValueImage{}, "pt_ad_image")
+	orm.CreateTableMap(mss.MailTemplate{}, "pt_mail_template")
+	orm.CreateTableMap(mss.MailTask{}, "pt_mail_queen")
 
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")
