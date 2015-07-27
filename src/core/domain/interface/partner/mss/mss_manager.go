@@ -11,7 +11,7 @@ package mss
 // Message send manager
 type IMssManager interface {
 	// 发送消息
-	Send(IMsgTemplate, MsgData, to []string) error
+	Send(tpl IMsgTemplate, d MsgData,to []string) error
 
 	// 获取邮箱模板
 	GetMailTemplate(int) *MailTemplate

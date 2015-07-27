@@ -33,7 +33,7 @@ func NewMssManager(p partner.IPartner, rep mss.IMssRep) mss.IMssManager {
 func (this *MssManager) CreateMsgTemplate(v interface{}) (mss.IMsgTemplate, error) {
 	//todo: other message type
 	partnerId := this._partner.GetAggregateRootId()
-	switch v.(Type) {
+	switch v.(type) {
 	case *mss.MailTemplate:
 		return newMailTemplate(partnerId, this._mssRep, v.(*mss.MailTemplate)), nil
 	}
