@@ -260,11 +260,11 @@ func (this *shoppingService) PayForOrderWithBalance(partnerId int, orderNo strin
 }
 
 // 确认付款
-func (this *shoppingService) PayForOrderOnlineTrade(partnerId int,orderNo string,spName string,tradeNo string)error{
+func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo string, spName string, tradeNo string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
-		err = order.PaymentOnlineTrade(spName,tradeNo)
+		err = order.PaymentOnlineTrade(spName, tradeNo)
 	}
 	return err
 }

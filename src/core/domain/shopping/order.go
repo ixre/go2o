@@ -170,9 +170,8 @@ func (this *Order) PaymentWithBalance() error {
 	return err
 }
 
-
 // 在线交易支付
-func (this *Order) PaymentOnlineTrade(serverProvider string,tradeNo string)error{
+func (this *Order) PaymentOnlineTrade(serverProvider string, tradeNo string) error {
 	if this._value.IsPaid == 1 {
 		return shopping.ErrOrderPayed
 	}

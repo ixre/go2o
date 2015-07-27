@@ -64,6 +64,10 @@ func registerRoutes() {
 
 	// 购物车接口
 	routes.Add("/cart_api_v1", cc.CartApiHandle)
+
+	// 支付异步提醒
+	routes.Add("/pay/notify/*", pc.Notify_post)
+
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/st/*", lc.SaleTagGoodsList)

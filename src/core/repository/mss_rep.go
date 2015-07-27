@@ -52,7 +52,7 @@ func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 // 获取所有的邮箱模版
 func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	this._conn.GetOrm().Select(&list, " partner_id=?", partnerId)
+	this._conn.GetOrm().Select(&list, "partner_id=?", partnerId)
 	return list
 }
 

@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-type AlipayParameters struct {
+type AliPayParameters struct {
 	InputCharset string  `json:"_input_charset"` //网站编码
 	Body         string  `json:"body"`           //订单描述
 	NotifyUrl    string  `json:"notify_url"`     //异步通知页面
@@ -94,7 +94,7 @@ func (this *AliPay) Sign(param interface{}) string {
 func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
 	body, notifyUrl, returnUrl string) string {
 	//实例化参数
-	param := &AlipayParameters{}
+	param := &AliPayParameters{}
 	param.InputCharset = "utf-8"
 	param.NotifyUrl = url.QueryEscape(notifyUrl)
 	param.OutTradeNo = orderNo
@@ -199,6 +199,7 @@ func (this *AliPay) Return(r *http.Request) Result {
 		result.Status = -5
 	}
 
+	Debug(" [ Return]- OrderNo: %s, Status:%d , sign:%s/%s", result.OrderNo, result.Status, sign, param["sign"])
 	return result
 }
 
@@ -310,5 +311,8 @@ func (this *AliPay) Notify(r *http.Request) Result {
 		//签名不符，错误代码-1
 		result.Status = -1
 	}
+
+	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s/%s", result.OrderNo, result.Status, sign, paramSign)
+
 	return result
 }

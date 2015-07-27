@@ -45,7 +45,7 @@ type IOrder interface {
 	PaymentWithBalance() error
 
 	// 在线交易支付
-	PaymentOnlineTrade(serverProvider string,tradeNo string)error
+	PaymentOnlineTrade(serverProvider string, tradeNo string) error
 
 	// 设置配送地址
 	SetDeliver(deliverAddressId int) error
