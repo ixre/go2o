@@ -19,6 +19,7 @@ import (
 	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure/domain"
 	"time"
+	"fmt"
 )
 
 var _ member.IMember = new(Member)
@@ -29,15 +30,17 @@ type Member struct {
 	_bank         *member.BankInfo
 	_level        *valueobject.MemberLevel
 	_rep          member.IMemberRep
+	_partnerRep   partner.IPartnerRep
 	_relation     *member.MemberRelation
 	_invitation   member.IInvitationManager
 	_levelManager partner.ILevelManager
 }
 
-func NewMember(val *member.ValueMember, rep member.IMemberRep) member.IMember {
+func NewMember(val *member.ValueMember, rep member.IMemberRep,partnerRep partner.IPartnerRep) member.IMember {
 	return &Member{
 		_value: val,
 		_rep:   rep,
+		_partnerRep:partnerRep,
 	}
 }
 
@@ -69,7 +72,50 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	if len(this._value.InvitationCode) == 0 {
 		this._value.InvitationCode = v.InvitationCode
 	}
+
+	if len(this._value.Qq) != 0 && len(this._value.Email)!= 0 &&
+	    len(this._value.Birthday) != 0 && len(this._value.Address) != 0 &&
+		len(this._value.Phone) != 0 && len(this._value.Avatar) !=0 &&
+		this._value.Sex != 0 {
+		this.notifyOnProfileComplete()
+	}
+
 	return nil
+}
+
+func (this *Member) notifyOnProfileComplete(){
+	rl := this.GetRelation()
+	pt,err := this._partnerRep.GetPartner(rl.RegisterPartnerId)
+	if err != nil{
+		key := fmt.Sprintf("profile:complete:$%d",this.GetAggregateRootId())
+		if pt.MemberKvManager().GetInt(key) == 0{
+			if this.sendNotifyMail(pt) == nil {
+				pt.MemberKvManager().Set(key, "1")
+			}
+		}
+	}
+}
+
+func (this *Member) sendNotifyMail(pt partner.IPartner)error{
+	tplId := pt.KvManager().GetInt(partner.KeyMssTplIdOfProfileComplete)
+	if tplId > 0 {
+		mailTpl := pt.MssManager().GetMailTemplate(tplId)
+		if mailTpl != nil {
+			tpl, err := pt.MssManager().CreateMsgTemplate(mailTpl)
+			if err != nil {
+				return err
+			}
+
+			//todo:?? data
+			var data = map[string]string{
+				"Name":this._value.Name,
+				"InvitationCode":this._value.InvitationCode,
+			}
+
+			return pt.MssManager().Send(tpl, data, []string{this._value.Email})
+		}
+	}
+	return errors.New("no such email template")
 }
 
 // 邀请管理
