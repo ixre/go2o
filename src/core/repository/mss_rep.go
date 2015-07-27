@@ -53,3 +53,9 @@ func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
 	this._conn.GetOrm().Select(&list, " partner_id=?", partnerId)
 	return list
 }
+
+// 加入到发送对列
+func (this *MssRep)  JoinMailTaskToQueen(v *mss.MailTask)error{
+	_,_,err := this._conn.GetOrm().Save(nil,v)
+	return err
+}

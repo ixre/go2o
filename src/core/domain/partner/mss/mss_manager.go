@@ -11,6 +11,7 @@ package mss
 import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"
+	"errors"
 )
 
 var _ mss.IMssManager = new(MssManager)
@@ -28,10 +29,25 @@ func NewMssManager(p partner.IPartner, rep mss.IMssRep) mss.IMssManager {
 	}
 }
 
+
+// 创建消息模版对象
+func (this *MssManager) CreateMsgTemplate(v interface{})(mss.IMsgTemplate,error) {
+	//todo: other message type
+	partnerId := this._partner.GetAggregateRootId()
+	switch v.(Type) {
+	case *mss.MailTemplate:
+		return newMailTemplate(partnerId, this._mssRep,v.(*mss.MailTemplate)), nil
+	}
+	return nil,mss.ErrNotSupportMessageType
+}
+
 // 发送消息
-func (this *MssManager) Send(tpl mss.IMsgTemplate, data mss.MsgData) error {
-	//todo:
-	return nil
+func (this *MssManager) Send(tpl mss.IMsgTemplate, data mss.MsgData,to []string) error {
+	if tpl != nil{
+		tpl.ApplyData(data)
+		return tpl.JoinQueen(to)
+	}
+	return errors.New("template is nil")
 }
 
 // 获取邮箱模板
