@@ -16,5 +16,5 @@ type IMssRep interface {
 	// 获取所有的邮箱模版
 	GetMailTemplates(partnerId int) []*MailTemplate
 	// 加入到发送对列
-	JoinMailTaskToQueen(*MailTask)error
+	JoinMailTaskToQueen(*MailTask) error
 }

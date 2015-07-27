@@ -55,7 +55,7 @@ func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
 }
 
 // 加入到发送对列
-func (this *MssRep)  JoinMailTaskToQueen(v *mss.MailTask)error{
-	_,_,err := this._conn.GetOrm().Save(nil,v)
+func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
+	_, _, err := this._conn.GetOrm().Save(nil, v)
 	return err
 }

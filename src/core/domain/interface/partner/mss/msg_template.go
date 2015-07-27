@@ -12,5 +12,5 @@ type IMsgTemplate interface {
 	// 应用数据
 	ApplyData(MsgData)
 	// 加入到发送对列
-	JoinQueen(to []string)error
+	JoinQueen(to []string) error
 }

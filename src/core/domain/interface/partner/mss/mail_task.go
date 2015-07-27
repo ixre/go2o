@@ -8,7 +8,7 @@
  */
 package mss
 
-type MailTask struct{
+type MailTask struct {
 	// 编号
 	Id int `db:"id" pk:"yes" auto:"yes"`
 	// 任务编号,无任务为0
