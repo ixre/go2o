@@ -74,7 +74,6 @@ func main() {
 
 	var booted bool
 
-
 	go daemon.Run(newApp)
 
 	if strings.Contains(mode, "s") {

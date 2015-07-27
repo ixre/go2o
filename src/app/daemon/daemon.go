@@ -11,53 +11,17 @@ package daemon
 
 import (
 	"github.com/atnet/gof"
-	"time"
-	"runtime"
-	"go2o/src/core/domain/interface/partner/mss"
-	mssIns "go2o/src/core/infrastructure/mss"
-	"go2o/src/core/variable"
 )
 
 var (
-	gCTX gof.App
+	gCTX     gof.App
 	mailChan chan int
 )
 
 func Run(ctx gof.App) {
 	gCTX = ctx
-	runtime.GOMAXPROCS(runtime.NumCPU())
 	//daemon()
-	mailDaemon()
-}
-
-func mailDaemon(){
-	if i,_ := gCTX.Storage().GetInt(variable.KvNewMailTask);i > 0 {
-		var list = []*mss.MailTask{}
-		gCTX.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
-		mailChan = make(chan int, len(list))
-		for _, v := range list {
-			go func(ch chan int, t *mss.MailTask) {
-				err := mssIns.SendMailWithDefaultConfig(t.Subject, []string{t.SendTo}, []byte(t.Body))
-				if err != nil {
-					gCTX.Log().PrintErr(err)
-					t.IsFailed = 1
-					t.IsSend = 1
-				}else {
-					t.IsSend = 1
-					t.IsFailed = 0
-				}
-				t.SendTime = time.Now().Unix()
-				gCTX.Db().GetOrm().Save(t.Id, t)
-				mailChan <- 0
-			}(mailChan, v)
-			<-mailChan
-		}
-		gCTX.Storage().Set(variable.KvNewMailTask,0)
-	}
-
-	time.Sleep(time.Second * 15)
-
-	mailDaemon()
+	startMailQueue()
 }
 
 func daemon() {
@@ -71,15 +35,4 @@ func recoverDaemon() {
 
 func partnerDaemon() {
 	defer recoverDaemon()
-}
-
-func orderDaemon() {
-	defer recoverDaemon()
-	for {
-		ids := getPartners()
-		for _, v := range ids {
-			autoSetOrder(v)
-		}
-		time.Sleep(time.Minute * CRON_ORDER_SETUP_MINUTE)
-	}
 }

@@ -8,6 +8,6 @@
  */
 package variable
 
-const(
+const (
 	KvNewMailTask = "sys:mss:"
 )

@@ -73,7 +73,6 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.InvitationCode = v.InvitationCode
 	}
 
-
 	if len(this._value.Qq) != 0 && len(this._value.Email) != 0 &&
 		len(this._value.Birthday) != 0 && len(this._value.Address) != 0 &&
 		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
@@ -90,9 +89,9 @@ func (this *Member) notifyOnProfileComplete() {
 	if err == nil {
 		key := fmt.Sprintf("profile:complete:$%d", this.GetAggregateRootId())
 		if pt.MemberKvManager().GetInt(key) == 0 {
-			if err := this.sendNotifyMail(pt);err == nil {
+			if err := this.sendNotifyMail(pt); err == nil {
 				pt.MemberKvManager().Set(key, "1")
-			}else{
+			} else {
 				fmt.Println(err.Error())
 			}
 		}

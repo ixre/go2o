@@ -11,6 +11,7 @@ package daemon
 
 import (
 	"go2o/src/core/service/dps"
+	"time"
 )
 
 var (
@@ -22,4 +23,15 @@ func getPartners() []int {
 		partnerIds = dps.PartnerService.GetPartnersId()
 	}
 	return partnerIds
+}
+
+func orderDaemon() {
+	defer recoverDaemon()
+	for {
+		ids := getPartners()
+		for _, v := range ids {
+			autoSetOrder(v)
+		}
+		time.Sleep(time.Minute * CRON_ORDER_SETUP_MINUTE)
+	}
 }
