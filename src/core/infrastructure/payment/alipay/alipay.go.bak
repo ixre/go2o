@@ -1,24 +1,46 @@
 /**
  * Copyright 2015 @ S1N1 Team.
- * name : new
+ * name : alipay.go
  * author : jarryliu
- * date : 2015-07-27 20:22
- * description :
+ * date : 2015-07-27 18:08
+ * description : https://github.com/ascoders/alipay
  * history :
  */
-package payment
+package alipay
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"regexp"
+	_"net/url"
+	_"regexp"
 	"strconv"
 	"strings"
+	"errors"
 )
+
+var (
+	AlipayPartner  string //合作者ID
+	AlipayKey      string //合作者私钥
+	WebReturnUrl   string //网站同步返回地址
+	WebNotifyUrl   string //网站异步返回地址
+	WebSellerEmail string //网站卖家邮箱地址
+)
+
+// 配置接口
+func Configure(partner, key, seller string) error {
+	if partner == "" || key == "" || seller == "" {
+		return errors.New("miss some profile.")
+	}
+
+	AlipayPartner = partner
+	AlipayKey = key
+	WebSellerEmail = seller
+	WebReturnUrl ="http://zs.ts.com"
+	WebNotifyUrl = "http://zs.ts.com"
+	return nil
+}
+
 
 type AlipayParameters struct {
 	InputCharset string  `json:"_input_charset"` //网站编码
@@ -36,14 +58,9 @@ type AlipayParameters struct {
 	SignType     string  `json:"sign_type"`      //签名类型，生成签名时忽略
 }
 
-type AliPay struct {
-	Partner string //合作者ID
-	Key     string //合作者私钥
-	Seller  string //网站卖家邮箱地址
-}
 
 /* 按照支付宝规则生成sign */
-func (this *AliPay) Sign(param interface{}) string {
+func alipaySign(param interface{}) string {
 	//解析为字节数组
 	paramBytes, err := json.Marshal(param)
 	if err != nil {
@@ -82,7 +99,7 @@ func (this *AliPay) Sign(param interface{}) string {
 	}
 
 	//追加密钥
-	sign += this.Key
+	sign += AlipayKey
 
 	//md5加密
 	m := md5.New()
@@ -91,24 +108,30 @@ func (this *AliPay) Sign(param interface{}) string {
 	return sign
 }
 
-func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
-	body, notifyUrl, returnUrl string) string {
+/* 生成支付宝即时到帐的表单参数
+ * @params string 订单唯一id
+ * @params int 价格
+ * @params int 获得代金券的数量
+ * @params string 充值账户的名称
+ * @params string 充值描述
+ */
+func CreateAlipaySign(orderId string, fee float32, nickname string, subject string) string {
 	//实例化参数
 	param := &AlipayParameters{}
 	param.InputCharset = "utf-8"
-	param.NotifyUrl = url.QueryEscape(notifyUrl)
-	param.OutTradeNo = orderNo
-	param.Partner = this.Partner
+	param.Body = "为" + nickname + "充值" + strconv.FormatFloat(float64(fee), 'f', 2, 32) + "元"
+	param.NotifyUrl = WebNotifyUrl
+	param.OutTradeNo = orderId
+	param.Partner = AlipayPartner
 	param.PaymentType = 1
-	param.ReturnUrl = url.QueryEscape(returnUrl)
-	param.SellerEmail = this.Seller
+	param.ReturnUrl = WebReturnUrl
+	param.SellerEmail = WebSellerEmail
 	param.Service = "create_direct_pay_by_user"
 	param.Subject = subject
-	param.Body = body
 	param.TotalFee = fee
 
 	//生成签名
-	sign := this.Sign(param)
+	sign := alipaySign(param)
 
 	//追加参数
 	param.Sign = sign
@@ -138,78 +161,66 @@ func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
 }
 
 /* 被动接收支付宝同步跳转的页面 */
-func (this *AliPay) Return(r *http.Request) Result {
-	var result Result
-
-	//实例化参数
-	param := map[string]string{
-		"body":         "", //描述
-		"buyer_email":  "", //买家账号
-		"buyer_id":     "", //买家ID
-		"exterface":    "",
-		"is_success":   "", //交易是否成功
-		"notify_id":    "", //通知校验id
-		"notify_time":  "", //校验时间
-		"notify_type":  "", //校验类型
-		"out_trade_no": "", //在网站中唯一id
-		"payment_type": "", //支付类型
-		"seller_email": "", //卖家账号
-		"seller_id":    "", //卖家id
-		"subject":      "", //商品名称
-		"total_fee":    "", //总价
-		"trade_no":     "", //支付宝交易号
-		"trade_status": "", //交易状态 TRADE_FINISHED或TRADE_SUCCESS表示交易成功
-		"sign":         "", //签名
-		"sign_type":    "", //签名类型
+func AlipayReturn() (int, string, string, string) {
+	//列举全部传参
+	type Params struct {
+		Body        string `form:"body" json:"body"`                 //描述
+		BuyerEmail  string `form:"buyer_email" json:"buyer_email"`   //买家账号
+		BuyerId     string `form:"buyer_id" json:"buyer_id"`         //买家ID
+		Exterface   string `form:"exterface" json:"exterface"`       //接口名称
+		IsSuccess   string `form:"is_success" json:"is_success"`     //交易是否成功
+		NotifyId    string `form:"notify_id" json:"notify_id"`       //通知校验id
+		NotifyTime  string `form:"notify_time" json:"notify_time"`   //校验时间
+		NotifyType  string `form:"notify_type" json:"notify_type"`   //校验类型
+		OutTradeNo  string `form:"out_trade_no" json:"out_trade_no"` //在网站中唯一id
+		PaymentType uint8  `form:"payment_type" json:"payment_type"` //支付类型
+		SellerEmail string `form:"seller_email" json:"seller_email"` //卖家账号
+		SellerId    string `form:"seller_id" json:"seller_id"`       //卖家id
+		Subject     string `form:"subject" json:"subject"`           //商品名称
+		TotalFee    string `form:"total_fee" json:"total_fee"`       //总价
+		TradeNo     string `form:"trade_no" json:"trade_no"`         //支付宝交易号
+		TradeStatus string `form:"trade_status" json:"trade_status"` //交易状态 TRADE_FINISHED或TRADE_SUCCESS表示交易成功
+		Sign        string `form:"sign" json:"sign"`                 //签名
+		SignType    string `form:"sign_type" json:"sign_type"`       //签名类型
 	}
+	/*
+		//实例化参数
+		param := &Params{}
 
-	//解析表单内容，失败返回错误代码-3
-	form := r.URL.Query()
-	for k, _ := range param {
-		param[k] = form.Get(k)
-	}
 
-	result.OrderNo = param["out_trade_no"]
-	result.TradeNo = param["trade_no"]
-	fee, _ := strconv.ParseFloat(param["total_fee"], 32)
-	result.Fee = float32(fee)
-
-	//如果最基本的网站交易号为空，返回错误代码-1
-	if result.OrderNo == "" { //不存在交易号
-		result.Status = -1
-		return result
-	}
-	//生成签名
-	sign := this.Sign(param)
-	//对比签名是否相同
-	if sign == param["sign"] { //只有相同才说明该订单成功了
-		//判断订单是否已完成
-		tradeStatus := param["trade_status"]
-		if tradeStatus == "TRADE_FINISHED" || tradeStatus == "TRADE_SUCCESS" { //交易成功
-			result.Status = StatusTradeSuccess
-		} else { //交易未完成，返回错误代码-4
-			result.Status = -4
+		//解析表单内容，失败返回错误代码-3
+		if err := contro.ParseForm(param); err != nil {
+			return -3, "", "", ""
 		}
-	} else { //签名认证失败，返回错误代码-2
-		result.Status = -2
+		//如果最基本的网站交易号为空，返回错误代码-1
+		if param.OutTradeNo == "" { //不存在交易号
+			return -1, "", "", ""
+		} else {
+			//生成签名
+			sign := alipaySign(param)
+
+			//对比签名是否相同
+			if sign == param.Sign { //只有相同才说明该订单成功了
+				//判断订单是否已完成
+				if param.TradeStatus == "TRADE_FINISHED" || param.TradeStatus == "TRADE_SUCCESS" { //交易成功
+					return 1, param.OutTradeNo, param.BuyerEmail, param.TradeNo
+				} else { //交易未完成，返回错误代码-4
+					return -4, "", "", ""
+				}
+			} else { //签名认证失败，返回错误代码-2
+				return -2, "", "", ""
+			}
+		}
+	*/
+		//位置错误类型-5
+		return -5, "", "", ""
 	}
 
-	//位置错误类型-5
-	if result.Status == 0 {
-		result.Status = -5
-	}
 
-	return result
-}
-
-/* 被动接收支付宝异步通知 */
-func (this *AliPay) Notify(r *http.Request) Result {
-	var result Result
-	body, _ := ioutil.ReadAll(r.Body)
-	bodyStr := string(body)
-
+	/* 被动接收支付宝异步通知 */
+func AlipayNotify() (int, string, string, string) {/*
 	//从body里读取参数，用&切割
-	postArray := strings.Split(bodyStr, "&")
+	postArray := strings.Split(string(contro.Ctx.Input.CopyBody()), "&")
 
 	//实例化url
 	urls := &url.Values{}
@@ -218,8 +229,9 @@ func (this *AliPay) Notify(r *http.Request) Result {
 	var paramSign string
 	var sign string
 
+
 	//如果字符串中包含sec_id说明是手机端的异步通知
-	if strings.Index(bodyStr, `alipay.wap.trade.create.direct`) == -1 { //快捷支付
+	if strings.Index(string(contro.Ctx.Input.CopyBody()), `alipay.wap.trade.create.direct`) == -1 { //快捷支付
 		for _, v := range postArray {
 			detail := strings.Split(v, "=")
 
@@ -289,26 +301,25 @@ func (this *AliPay) Notify(r *http.Request) Result {
 		urls.Add("trade_no", trade_no)
 	}
 	//追加密钥
-	sign += this.Key
+	sign += AlipayKey
 
 	//md5加密
 	m := md5.New()
 	m.Write([]byte(sign))
 	sign = hex.EncodeToString(m.Sum(nil))
-
-	result.OrderNo = urls.Get("out_trade_no")
-	result.TradeNo = urls.Get("trade_no")
-	//fee ,_ := strconv.ParseFloat(urls.Get("total_fee"),32)
-	//payResult.Fee = float32(fee)
-
 	if paramSign == sign { //传进的签名等于计算出的签名，说明请求合法
 		//判断订单是否已完成
 		if urls.Get("trade_status") == "TRADE_FINISHED" || urls.Get("trade_status") == "TRADE_SUCCESS" { //交易成功
-			result.Status = StatusTradeSuccess
+			contro.Ctx.WriteString("success")
+			return 1, urls.Get("out_trade_no"), urls.Get("buyer_email"), urls.Get("trade_no")
+		} else {
+			contro.Ctx.WriteString("error")
 		}
 	} else {
+		contro.Ctx.WriteString("error")
 		//签名不符，错误代码-1
-		result.Status = -1
-	}
-	return result
+		return -1, "", "", ""
+	}*/
+	//未知错误-2
+	return -2, "", "", ""
 }

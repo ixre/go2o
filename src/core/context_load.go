@@ -121,4 +121,3 @@ func initTemplate(c *gof.Config) *gof.Template {
 		},
 	}
 }
-

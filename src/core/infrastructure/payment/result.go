@@ -8,7 +8,7 @@
  */
 package payment
 
-type Result struct{
+type Result struct {
 	// 状态
 	Status int
 	// 订单号
