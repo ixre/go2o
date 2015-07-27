@@ -837,6 +837,63 @@ LOCK TABLES `pt_kvset` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pt_kvset_member`
+--
+
+DROP TABLE IF EXISTS `pt_kvset_member`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_kvset_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `partner_id` int(11) DEFAULT NULL,
+  `key` varchar(45) DEFAULT NULL,
+  `value` varchar(100) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_kvset_member`
+--
+
+LOCK TABLES `pt_kvset_member` WRITE;
+/*!40000 ALTER TABLE `pt_kvset_member` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_kvset_member` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pt_mail_queue`
+--
+
+DROP TABLE IF EXISTS `pt_mail_queue`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pt_mail_queue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) DEFAULT NULL,
+  `partner_id` int(11) DEFAULT NULL,
+  `send_to` varchar(100) DEFAULT NULL,
+  `subject` varchar(100) DEFAULT NULL,
+  `body` varchar(1000) DEFAULT NULL,
+  `is_send` tinyint(1) DEFAULT NULL,
+  `is_failed` tinyint(1) DEFAULT NULL,
+  `create_time` int(11) DEFAULT NULL,
+  `send_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pt_mail_queue`
+--
+
+LOCK TABLES `pt_mail_queue` WRITE;
+/*!40000 ALTER TABLE `pt_mail_queue` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pt_mail_queue` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `pt_mail_template`
 --
 
@@ -849,6 +906,7 @@ CREATE TABLE `pt_mail_template` (
   `name` varchar(45) DEFAULT NULL,
   `subject` varchar(100) DEFAULT NULL,
   `body` varchar(1000) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -1451,4 +1509,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-26 22:14:32
+-- Dump completed on 2015-07-27 17:15:36
