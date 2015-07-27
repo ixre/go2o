@@ -284,3 +284,15 @@ func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 		}, partnerId, strings.Join(k, ","))
 	return m
 }
+
+
+// 检查是否包含值的键数量,keyStr为键模糊匹配
+func (this *partnerRep) CheckKvContainValue(partnerId string,value string,keyStr string)int {
+	var i int
+	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_kvset WHERE partner_id=? AND value=? AND key LIKE '%?%'",
+		&i, partnerId, value, keyStr)
+	if err != nil {
+		return 999
+	}
+	return i
+}

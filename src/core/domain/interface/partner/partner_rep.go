@@ -56,4 +56,6 @@ type IPartnerRep interface {
 	SaveKeyValue(partnerId int, k, v string) error
 	// 获取多个键值
 	GetKeyMap(partnerId int, k []string) map[string]string
+	// 检查是否包含值的键数量,keyStr为键模糊匹配
+	CheckKvContainValue(partnerId string,value string,keyStr string)int
 }

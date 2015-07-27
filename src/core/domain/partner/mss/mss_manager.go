@@ -13,6 +13,7 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"
 	"time"
+	"strconv"
 )
 
 var _ mss.IMssManager = new(MssManager)
@@ -20,13 +21,15 @@ var _ mss.IMssManager = new(MssManager)
 type MssManager struct {
 	_partner       partner.IPartner
 	_mssRep        mss.IMssRep
+	_partnerRep    partner.IPartnerRep
 	_mailTemplates []*mss.MailTemplate
 }
 
-func NewMssManager(p partner.IPartner, rep mss.IMssRep) mss.IMssManager {
+func NewMssManager(p partner.IPartner, rep mss.IMssRep,partnerRep partner.IPartnerRep) mss.IMssManager {
 	return &MssManager{
 		_partner: p,
 		_mssRep:  rep,
+		_partnerRep :partnerRep,
 	}
 }
 
@@ -68,6 +71,15 @@ func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 		v.CreateTime = v.UpdateTime
 	}
 	return this._mssRep.SaveMailTemplate(v)
+}
+
+// 删除邮件模板
+func (this *MssManager) DeleteMailTemplate(id int)error{
+	partnerId := this._partner.GetAggregateRootId()
+	if this._partnerRep.CheckKvContainValue(partnerId,strconv.Itoa(id),"mail") > 0 {
+		return mss.ErrTemplateUsed
+	}
+	return this._mssRep.DeleteMailTemplate(partnerId,id)
 }
 
 // 获取所有的邮箱模版

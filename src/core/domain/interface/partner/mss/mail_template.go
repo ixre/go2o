@@ -27,5 +27,5 @@ type MailTemplate struct {
 	// 创建时间
 	CreateTime int64 `db:"create_time"`
 	// 更新时间
-	UpdateTime int64 `db:"update_time`
+	UpdateTime int64 `db:"update_time"`
 }

@@ -32,7 +32,7 @@ func (this *mssC) Mail_template_list(ctx *web.Context) {
 }
 
 // 修改广告
-func (this *mssC) Edit(ctx *web.Context) {
+func (this *mssC) Edit_mail_tpl(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
@@ -49,7 +49,9 @@ func (this *mssC) Edit(ctx *web.Context) {
 
 // 创建邮箱模板
 func (this *mssC) Create_mail_tpl(ctx *web.Context) {
-	e := mss.MailTemplate{}
+	e := mss.MailTemplate{
+		Enabled:1,
+	}
 	js, _ := json.Marshal(e)
 
 	ctx.App.Template().Execute(ctx.Response,
@@ -60,13 +62,13 @@ func (this *mssC) Create_mail_tpl(ctx *web.Context) {
 }
 
 // 删除广告
-func (this *mssC) Del_post(ctx *web.Context) {
+func (this *mssC) Del_mail_tpl_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
 	partnerId := this.GetPartnerId(ctx)
 	adId, _ := strconv.Atoi(form.Get("id"))
-	err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
+	err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
 
 	if err != nil {
 		result.Message = err.Error()

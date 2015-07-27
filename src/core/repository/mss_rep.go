@@ -54,6 +54,13 @@ func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
 	return list
 }
 
+
+// 删除邮件模板
+func (this *MssRep) DeleteMailTemplate(partnerId,id int)error{
+	_,err := this._conn.GetOrm().Delete(mss.MailTemplate{},"partner_id=? AND id=?",partnerId,id)
+	return err
+}
+
 // 加入到发送对列
 func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 	_, _, err := this._conn.GetOrm().Save(nil, v)
