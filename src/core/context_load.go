@@ -87,7 +87,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.CreateTableMap(ad.ValueAdvertisement{}, "pt_ad")
 	orm.CreateTableMap(ad.ValueImage{}, "pt_ad_image")
 	orm.CreateTableMap(mss.MailTemplate{}, "pt_mail_template")
-	orm.CreateTableMap(mss.MailTask{}, "pt_mail_queen")
+	orm.CreateTableMap(mss.MailTask{}, "pt_mail_queue")
 
 	/** 促销 **/
 	orm.CreateTableMap(promotion.ValueCoupon{}, "pm_coupon")

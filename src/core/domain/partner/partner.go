@@ -42,6 +42,7 @@ type Partner struct {
 	_confManager  partner.IConfManager
 	_levelManager partner.ILevelManager
 	_kvManager    partner.IKvManager
+	_memberKvManager partner.IKvManager
 	_mssManager   mss.IMssManager
 	_mssRep       mss.IMssRep
 }
@@ -301,9 +302,17 @@ func (this *Partner) LevelManager() partner.ILevelManager {
 // 获取键值管理器
 func (this *Partner) KvManager() partner.IKvManager {
 	if this._kvManager == nil {
-		this._kvManager = newKvManager(this)
+		this._kvManager = newKvManager(this,"kvset")
 	}
 	return this._kvManager
+}
+
+// 获取用户键值管理器
+func (this *Partner) MemberKvManager() partner.IKvManager {
+	if this._memberKvManager == nil {
+		this._memberKvManager = newKvManager(this,"kvset_member")
+	}
+	return this._memberKvManager
 }
 
 // 消息系统管理器

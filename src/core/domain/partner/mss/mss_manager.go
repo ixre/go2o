@@ -76,7 +76,7 @@ func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 // 删除邮件模板
 func (this *MssManager) DeleteMailTemplate(id int) error {
 	partnerId := this._partner.GetAggregateRootId()
-	if this._partnerRep.CheckKvContainValue(partnerId, strconv.Itoa(id), "mail") > 0 {
+	if this._partnerRep.CheckKvContainValue(partnerId, "kvset",strconv.Itoa(id), "mail") > 0 {
 		return mss.ErrTemplateUsed
 	}
 	return this._mssRep.DeleteMailTemplate(partnerId, id)
