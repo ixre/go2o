@@ -15,6 +15,7 @@ import (
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/partner/user"
 	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure"
@@ -31,19 +32,22 @@ type partnerRep struct {
 	_cache     map[int]partner.IPartner
 	_userRep   user.IUserRep
 	_memberRep member.IMemberRep
+	_mssRep    mss.IMssRep
 }
 
-func NewPartnerRep(c db.Connector, userRep user.IUserRep, memberRep member.IMemberRep) partner.IPartnerRep {
+func NewPartnerRep(c db.Connector, userRep user.IUserRep, memberRep member.IMemberRep,
+	mssRep mss.IMssRep) partner.IPartnerRep {
 	return &partnerRep{
 		Connector:  c,
 		_cache:     make(map[int]partner.IPartner),
 		_userRep:   userRep,
 		_memberRep: memberRep,
+		_mssRep:    mssRep,
 	}
 }
 
 func (this *partnerRep) CreatePartner(v *partner.ValuePartner) (partner.IPartner, error) {
-	return partnerImpl.NewPartner(v, this, this._userRep, this._memberRep)
+	return partnerImpl.NewPartner(v, this, this._userRep, this._memberRep, this._mssRep)
 }
 
 func (this *partnerRep) renew(partnerId int) {
@@ -56,7 +60,7 @@ func (this *partnerRep) GetPartner(id int) (partner.IPartner, error) {
 	if !ok {
 		e := new(partner.ValuePartner)
 		if this.Connector.GetOrm().Get(id, e) == nil {
-			v, err = partnerImpl.NewPartner(e, this, this._userRep, this._memberRep)
+			v, err = this.CreatePartner(e)
 			if v != nil {
 				this._cache[id] = v
 			}
@@ -254,19 +258,21 @@ func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 }
 
 // 获取键值
-func (this *partnerRep) GetKeyValue(partnerId int,k string)string{
+func (this *partnerRep) GetKeyValue(partnerId int, k string) string {
 	var v string
 	this.Connector.ExecScalar("SELECT value FROM pt_kvset WHERE partner_id=? AND key=?",
-		&v,partnerId,k)
+		&v, partnerId, k)
 	return v
 }
+
 // 设置键值
-func (this *partnerRep) SaveKeyValue(partnerId int,k,v string)error{
-	_,err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND key=?",v,partnerId,k)
+func (this *partnerRep) SaveKeyValue(partnerId int, k, v string) error {
+	_, err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND key=?", v, partnerId, k)
 	return err
 }
+
 // 获取多个键值
-func (this *partnerRep) GetKeyMap(partnerId int,k []string)map[string]string {
+func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 	m := make(map[string]string)
 	var k1, v1 string
 	this.Connector.Query("SELECT key,value FROM pt_kvset WHERE partner_id=? AND key IN (?)",

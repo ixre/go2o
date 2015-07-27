@@ -51,10 +51,9 @@ type IPartnerRep interface {
 	DeleteShop(partnerId, shopId int) error
 
 	// 获取键值
-	GetKeyValue(partnerId int,k string)string
+	GetKeyValue(partnerId int, k string) string
 	// 设置键值
-	SaveKeyValue(partnerId int,k,v string)error
+	SaveKeyValue(partnerId int, k, v string) error
 	// 获取多个键值
-	GetKeyMap(partnerId int,k []string)map[string]string
-
+	GetKeyMap(partnerId int, k []string) map[string]string
 }

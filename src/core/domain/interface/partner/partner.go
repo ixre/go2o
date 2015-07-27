@@ -10,6 +10,7 @@
 package partner
 
 import (
+	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/partner/user"
 )
 
@@ -66,5 +67,8 @@ type IPartner interface {
 	LevelManager() ILevelManager
 
 	// 获取键值管理器
-	KvManager()IKvManager
+	KvManager() IKvManager
+
+	// 消息系统管理器
+	MssManager() mss.IMssManager
 }

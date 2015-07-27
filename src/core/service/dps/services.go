@@ -38,7 +38,8 @@ func Init(ctx gof.App) {
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
 	saleRep := repository.NewSaleRep(db, tagSaleRep, goodsRep, promRep)
-	partnerRep := repository.NewPartnerRep(db, userRep, memberRep)
+	mssRep := repository.NewMssRep(db)
+	partnerRep := repository.NewPartnerRep(db, userRep, memberRep, mssRep)
 
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)

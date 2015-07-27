@@ -14,7 +14,9 @@ import (
 	"fmt"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/partner/user"
+	mssImpl "go2o/src/core/domain/partner/mss"
 	userImpl "go2o/src/core/domain/partner/user"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/domain"
@@ -25,23 +27,27 @@ import (
 var _ partner.IPartner = new(Partner)
 
 type Partner struct {
-	_value        *partner.ValuePartner
-	_saleConf     *partner.SaleConf
-	_siteConf     *partner.SiteConf
-	_apiInfo      *partner.ApiInfo
-	_rep          partner.IPartnerRep
-	_shops        []partner.IShop
-	_host         string
+	_value    *partner.ValuePartner
+	_saleConf *partner.SaleConf
+	_siteConf *partner.SiteConf
+	_apiInfo  *partner.ApiInfo
+	_shops    []partner.IShop
+	_host     string
+
+	_rep       partner.IPartnerRep
+	_userRep   user.IUserRep
+	_memberRep member.IMemberRep
+
 	_userManager  user.IUserManager
 	_confManager  partner.IConfManager
 	_levelManager partner.ILevelManager
-	_kvManager partner.IKvManager
-	_userRep      user.IUserRep
-	_memberRep    member.IMemberRep
+	_kvManager    partner.IKvManager
+	_mssManager   mss.IMssManager
+	_mssRep       mss.IMssRep
 }
 
 func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.IUserRep,
-	memberRep member.IMemberRep) (partner.IPartner, error) {
+	memberRep member.IMemberRep, mssRep mss.IMssRep) (partner.IPartner, error) {
 
 	var err error
 
@@ -58,6 +64,7 @@ func NewPartner(v *partner.ValuePartner, rep partner.IPartnerRep, userRep user.I
 		_rep:       rep,
 		_userRep:   userRep,
 		_memberRep: memberRep,
+		_mssRep:    mssRep,
 	}, err
 }
 
@@ -291,11 +298,18 @@ func (this *Partner) LevelManager() partner.ILevelManager {
 	return this._levelManager
 }
 
-
 // 获取键值管理器
-func (this *Partner) KvManager()partner.IKvManager{
-	if this._kvManager == nil{
+func (this *Partner) KvManager() partner.IKvManager {
+	if this._kvManager == nil {
 		this._kvManager = newKvManager(this)
 	}
 	return this._kvManager
+}
+
+// 消息系统管理器
+func (this *Partner) MssManager() mss.IMssManager {
+	if this._mssManager == nil {
+		this._mssManager = mssImpl.NewMssManager(this, this._mssRep)
+	}
+	return this._mssManager
 }
