@@ -20,6 +20,10 @@ type MailTemplate struct {
 	Subject string `db:"subject"`
 	// 内容
 	Body string `db:"body"`
+
+	// 是否启用
+	Enabled int `db:"enabled"`
+
 	// 创建时间
 	CreateTime int64 `db:"create_time"`
 	// 更新时间

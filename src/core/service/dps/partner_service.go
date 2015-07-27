@@ -13,6 +13,7 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
@@ -249,4 +250,25 @@ func (this *partnerService) GetLevel(partnerId, level int) *valueobject.MemberLe
 func (this *partnerService) GetNextLevel(partnerId, levelValue int) *valueobject.MemberLevel {
 	pt, _ := this._partnerRep.GetPartner(partnerId)
 	return pt.LevelManager().GetNextLevel(levelValue)
+}
+
+// 获取邮件模版
+func (this *partnerService) GetMailTemplate(partnerId int, id int) (*mss.MailTemplate, error) {
+	pt, err := this._partnerRep.GetPartner(partnerId)
+	if err != nil {
+		return nil, err
+	}
+	return pt.MssManager().GetMailTemplate(id),nil
+}
+
+// 保存邮件模板
+func (this *partnerService) SaveMailTemplate(partnerId int, v *mss.MailTemplate) (int, error) {
+	if v.PartnerId != partnerId {
+		return 0, partner.ErrPartnerNotMatch
+	}
+	pt, err := this._partnerRep.GetPartner(partnerId)
+	if err != nil {
+		return 0, err
+	}
+	return pt.MssManager().SaveMailTemplate(v)
 }

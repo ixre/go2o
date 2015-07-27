@@ -39,6 +39,7 @@ func registerRoutes() {
 	routes.Register("sale", new(saleC))
 	routes.Register("content", new(contentC))
 	routes.Register("ad", new(adC))
+	routes.Register("mss", new(mssC))
 
 	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {

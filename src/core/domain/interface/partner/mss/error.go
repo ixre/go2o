@@ -13,4 +13,6 @@ import "go2o/src/core/infrastructure/domain"
 var (
 	ErrNotSupportMessageType *domain.DomainError = domain.NewDomainError(
 		"err_not_support_message_type", "不支持的消息类型")
+	ErrNotEnabled *domain.DomainError = domain.NewDomainError(
+		"err_template_not_enabled", "模板未启用")
 )

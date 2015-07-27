@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/partner/user"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
@@ -25,7 +26,6 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
-	"go2o/src/core/domain/interface/partner/mss"
 )
 
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {

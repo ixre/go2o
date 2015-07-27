@@ -12,6 +12,7 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"
+	"time"
 )
 
 var _ mss.IMssManager = new(MssManager)
@@ -32,10 +33,15 @@ func NewMssManager(p partner.IPartner, rep mss.IMssRep) mss.IMssManager {
 // 创建消息模版对象
 func (this *MssManager) CreateMsgTemplate(v interface{}) (mss.IMsgTemplate, error) {
 	//todo: other message type
+	var err error
 	partnerId := this._partner.GetAggregateRootId()
 	switch v.(type) {
 	case *mss.MailTemplate:
-		return newMailTemplate(partnerId, this._mssRep, v.(*mss.MailTemplate)), nil
+		tpl :=  v.(*mss.MailTemplate)
+		if tpl.Enabled == 0 {
+			err = mss.ErrNotEnabled
+		}
+		return newMailTemplate(partnerId, this._mssRep, tpl), err
 	}
 	return nil, mss.ErrNotSupportMessageType
 }
@@ -55,10 +61,13 @@ func (this *MssManager) GetMailTemplate(id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) error {
+func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 	v.PartnerId = this._partner.GetAggregateRootId()
-	_, err := this._mssRep.SaveMailTemplate(v)
-	return err
+	v.UpdateTime = time.Now().Unix()
+	if v.CreateTime == 0{
+		v.CreateTime = v.UpdateTime
+	}
+	return this._mssRep.SaveMailTemplate(v)
 }
 
 // 获取所有的邮箱模版

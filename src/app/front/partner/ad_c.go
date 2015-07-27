@@ -29,7 +29,6 @@ type adC struct {
 
 //广告列表
 func (this *adC) List(ctx *web.Context) {
-	dps.AdvertisementService.GetAdvertisement(this.GetPartnerId(ctx), 0)
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/ad/ad_list.html")
 }
 
