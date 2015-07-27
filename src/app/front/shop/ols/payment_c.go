@@ -10,21 +10,46 @@ package ols
 
 import (
 	"github.com/atnet/gof/web"
-	"go2o/src/core/infrastructure/alipay"
+	"go2o/src/core/infrastructure/payment"
+	"net/http"
+	"fmt"
+	"github.com/atnet/gof"
+	"go2o/src/core/service/dps"
 )
 
-type PaymentC struct {
+var aliPayObj *payment.AliPay = &payment.AliPay{
+	Partner:"2088021187655650",
+	Key:"2b0y8466t9mh82s5ajptub2p3wgjzwmh",
+	Seller:"1515827759@qq.com",
 }
 
+type PaymentC struct {
+	*BaseC
+}
+
+func getDomain(r *http.Request)string{
+	var proto string
+	if r.Proto == "HTTPS"{
+		proto = "https://"
+	}else{
+		proto = "http://"
+	}
+	return proto+ r.Host
+}
 func (this *PaymentC) Create(ctx *web.Context) {
 	r, w := ctx.Request, ctx.Response
 	qs := r.URL.Query()
+	partnerId := this.GetPartnerId(ctx)
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
 
 	if len(orderNo) != 0 {
 		if paymentOpt == "alipay" {
-			html := "<html><body>" + alipay.CreatePaymentGateWay(orderNo, 0.01, "订单"+orderNo, "", "", "") + "</body></html>"
+			domain := getDomain(ctx.Request)
+			returnUrl := fmt.Sprintf("%s/pay/return?pay_opt=alipay&partner_id=%d",domain,partnerId)
+			notifyUrl := fmt.Sprintf("%s/pay/return?pay_opt=alipay&partner_id=%d",domain,partnerId)
+			gateway :=  aliPayObj.CreateGateway(orderNo, 0.01,"在线支付订单","订单号："+orderNo,notifyUrl,returnUrl)
+			html := "<html><head><meta charset=\"utf-8\"/></head><body>" +gateway + "</body></html>"
 			w.Write([]byte(html))
 			return
 		}
@@ -34,12 +59,55 @@ func (this *PaymentC) Create(ctx *web.Context) {
 }
 
 func (this *PaymentC) Return(ctx *web.Context) {
-	r, _ := ctx.Request, ctx.Response
-	alipay.ReturnFunc(r, nil)
-	ctx.Response.Write([]byte("支付完成"))
+	result := aliPayObj.Return(ctx.Request)
+	if result.Status == payment.StatusTradeSuccess {
+		this.handleOrder(ctx,&result)
+		this.paymentSuccess(ctx,&result)
+	}else{
+		this.paymentFail(ctx,&result)
+	}
 }
 
 func (this *PaymentC) Notify_post(ctx *web.Context) {
-	r, _ := ctx.Request, ctx.Response
-	alipay.NotifyFunc(r, nil)
+	//r, _ := ctx.Request, ctx.Response
+	//alipay.NotifyFunc(r, nil)
 }
+
+func (this *PaymentC) handleOrder(ctx *web.Context,result *payment.Result){
+	partnerId := this.GetPartnerId(ctx)
+	order := dps.ShoppingService.GetOrderByNo(partnerId,result.OrderNo)
+	if order != nil && order.PayFee == result.Fee{
+
+	}
+}
+
+
+func (this *PaymentC) paymentSuccess(ctx *web.Context,result *payment.Result){
+	p := this.GetPartner(ctx)
+	siteConf := this.GetSiteConf(ctx)
+
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner":  p,
+		"conf":     siteConf,
+	},
+		"views/shop/ols/{device}/payment_success.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
+}
+
+func (this *PaymentC) paymentFail(ctx *web.Context,result *payment.Result){
+	p := this.GetPartner(ctx)
+	siteConf := this.GetSiteConf(ctx)
+
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner":  p,
+		"conf":     siteConf,
+	},
+		"views/shop/ols/{device}/payment_fail.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
+}
+
+
+
+

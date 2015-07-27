@@ -24,7 +24,6 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/domain/interface/valueobject"
-	"go2o/src/core/infrastructure/alipay"
 	"go2o/src/core/variable"
 )
 
@@ -123,19 +122,3 @@ func initTemplate(c *gof.Config) *gof.Template {
 	}
 }
 
-func paymentCfg(c *gof.Config) {
-	alipay.Configure(c.GetString(variable.Alipay_Partner),
-		c.GetString(variable.Alipay_Key),
-		c.GetString(variable.Alipay_Seller))
-}
-
-//	MasterToken: crypto.EncodeUsrPwd("master", "123456"),
-//		deviceDir := filepath.Dir(options.DevicePatchDir)
-//		fi,err := os.Stat(options.DevicePatchDir)
-//
-//		if fi == nil || err == os.ErrNotExist {
-//			os.MkdirAll(deviceDir,os.ModePerm)
-//		}else if !fi.IsDir() {
-//			os.Remove(options.DevicePatchDir)
-//			os.MkdirAll(deviceDir,os.ModePerm)
-//}

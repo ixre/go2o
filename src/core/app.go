@@ -99,8 +99,7 @@ func (this *MainApp) Redis() *redis.Pool {
 
 func (this *MainApp) Init(debug, trace bool) bool {
 	this._debugMode = debug
-	// 初始化支付数据
-	paymentCfg(this.Config())
+
 	if trace {
 		this.Db().GetOrm().SetTrace(this._debugMode)
 	}
