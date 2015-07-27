@@ -37,7 +37,7 @@ func (this *MssManager) CreateMsgTemplate(v interface{}) (mss.IMsgTemplate, erro
 	partnerId := this._partner.GetAggregateRootId()
 	switch v.(type) {
 	case *mss.MailTemplate:
-		tpl :=  v.(*mss.MailTemplate)
+		tpl := v.(*mss.MailTemplate)
 		if tpl.Enabled == 0 {
 			err = mss.ErrNotEnabled
 		}
@@ -64,7 +64,7 @@ func (this *MssManager) GetMailTemplate(id int) *mss.MailTemplate {
 func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 	v.PartnerId = this._partner.GetAggregateRootId()
 	v.UpdateTime = time.Now().Unix()
-	if v.CreateTime == 0{
+	if v.CreateTime == 0 {
 		v.CreateTime = v.UpdateTime
 	}
 	return this._mssRep.SaveMailTemplate(v)

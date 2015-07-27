@@ -258,7 +258,7 @@ func (this *partnerService) GetMailTemplate(partnerId int, id int) (*mss.MailTem
 	if err != nil {
 		return nil, err
 	}
-	return pt.MssManager().GetMailTemplate(id),nil
+	return pt.MssManager().GetMailTemplate(id), nil
 }
 
 // 保存邮件模板
