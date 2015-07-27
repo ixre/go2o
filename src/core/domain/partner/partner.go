@@ -309,7 +309,7 @@ func (this *Partner) KvManager() partner.IKvManager {
 // 消息系统管理器
 func (this *Partner) MssManager() mss.IMssManager {
 	if this._mssManager == nil {
-		this._mssManager = mssImpl.NewMssManager(this, this._mssRep)
+		this._mssManager = mssImpl.NewMssManager(this, this._mssRep,this._rep)
 	}
 	return this._mssManager
 }

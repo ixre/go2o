@@ -273,10 +273,11 @@ func (this *partnerService) SaveMailTemplate(partnerId int, v *mss.MailTemplate)
 	return pt.MssManager().SaveMailTemplate(v)
 }
 
+// 删除邮件模板
 func (this *partnerService) DeleteMailTemplate(partnerId int, id int)error{
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	return pt.MssManager().DeleteMailTemplate(id)
 }

@@ -260,14 +260,17 @@ func (this *partnerRep) DeleteShop(partnerId, shopId int) error {
 // 获取键值
 func (this *partnerRep) GetKeyValue(partnerId int, k string) string {
 	var v string
-	this.Connector.ExecScalar("SELECT value FROM pt_kvset WHERE partner_id=? AND key=?",
+	this.Connector.ExecScalar("SELECT value FROM pt_kvset WHERE partner_id=? AND `key`=?",
 		&v, partnerId, k)
 	return v
 }
 
 // 设置键值
 func (this *partnerRep) SaveKeyValue(partnerId int, k, v string) error {
-	_, err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND key=?", v, partnerId, k)
+	i, err := this.Connector.ExecNonQuery("UPDATE pt_kvset value=? WHERE partner_id=? AND `key`=?", v, partnerId, k)
+	if i!= 0 {
+		_, err = this.Connector.ExecNonQuery("INSERT INTO pt_kvset(partner_id,`key`,value)VALUES(?,?,?)",partnerId,k,v)
+	}
 	return err
 }
 
@@ -275,7 +278,7 @@ func (this *partnerRep) SaveKeyValue(partnerId int, k, v string) error {
 func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 	m := make(map[string]string)
 	var k1, v1 string
-	this.Connector.Query("SELECT key,value FROM pt_kvset WHERE partner_id=? AND key IN (?)",
+	this.Connector.Query("SELECT key,value FROM pt_kvset WHERE partner_id=? AND `key` IN (?)",
 		func(rows *sql.Rows) {
 			for rows.Next() {
 				rows.Scan(&k1, &v1)
@@ -287,9 +290,9 @@ func (this *partnerRep) GetKeyMap(partnerId int, k []string) map[string]string {
 
 
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (this *partnerRep) CheckKvContainValue(partnerId string,value string,keyStr string)int {
+func (this *partnerRep) CheckKvContainValue(partnerId int,value string,keyStr string)int {
 	var i int
-	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_kvset WHERE partner_id=? AND value=? AND key LIKE '%?%'",
+	err := this.Connector.ExecScalar("SELECT COUNT(0) FROM pt_kvset WHERE partner_id=? AND value=? AND `key` LIKE '%?%'",
 		&i, partnerId, value, keyStr)
 	if err != nil {
 		return 999
