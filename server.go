@@ -71,9 +71,12 @@ func main() {
 	app.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
-	daemon.Run(newApp)
 
 	var booted bool
+
+
+	go daemon.Run(newApp)
+
 	if strings.Contains(mode, "s") {
 		booted = true
 		go app.RunSocket(newApp, socketPort, debug, trace)

@@ -44,7 +44,7 @@ func (this *mailTemplate) JoinQueen(to []string) error {
 			PartnerId:  this._partnerId,
 			Subject:    mssIns.Transplate(this._tpl.Subject, this._data),
 			Body:       mssIns.Transplate(this._tpl.Body, this._data),
-			To:         t,
+			SendTo:         t,
 			CreateTime: unix,
 		}
 		this._rep.JoinMailTaskToQueen(task)

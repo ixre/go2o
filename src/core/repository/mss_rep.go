@@ -11,6 +11,8 @@ package repository
 import (
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/partner/mss"
+	"github.com/atnet/gof"
+	"go2o/src/core/variable"
 )
 
 var _ mss.IMssRep = new(MssRep)
@@ -62,6 +64,9 @@ func (this *MssRep) DeleteMailTemplate(partnerId, id int) error {
 
 // 加入到发送对列
 func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
-	_, _, err := this._conn.GetOrm().Save(nil, v)
-	return err
+	if _, _, err := this._conn.GetOrm().Save(nil, v);err != nil {
+		return err
+	}
+	gof.CurrentApp.Storage().Set(variable.KvNewMailTask,1)
+	return nil
 }

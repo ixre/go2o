@@ -27,7 +27,6 @@ var (
 )
 
 func SendMail(server, host, usr, pwd, from string, subject string, to []string, body []byte) error {
-	fmt.Println(server, host, usr, pwd, from)
 	auth := smtp.PlainAuth("", usr, pwd, host)
 	header := make(map[string]string)
 	header["From"] = from

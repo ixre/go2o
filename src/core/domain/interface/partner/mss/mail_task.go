@@ -16,7 +16,7 @@ type MailTask struct {
 	// 商户编号
 	PartnerId int `db:"partner_id"`
 	// 发送至
-	To string `db:"to"`
+	SendTo string `db:"send_to"`
 	// 主题
 	Subject string `db:"subject"`
 	// 内容
