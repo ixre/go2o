@@ -25,6 +25,6 @@ func init() {
 	//logF = log.NewLogger(fi, "payment", log.LOpen)
 }
 
-func Debug(format string, data ...interface{}) {参
+func Debug(format string, data ...interface{}) {
 	//logF.Printf(format+"\n\n", data...)
 }

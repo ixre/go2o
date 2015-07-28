@@ -31,7 +31,7 @@ func NewOrderNo(partnerId int) string {
 	rd := minRand + rand.Intn(maxRand-minRand) //minRand - maxRand中间的随机数
 	timeStr := time.Now().Format("0601")
 	ptStr := strconv.Itoa(partnerId)
-	return fmt.Sprintf("%s%s%s%d",timeStr,ptStr[:1], ptStr[len(ptStr)-1:], rd)
+	return fmt.Sprintf("%s%s%s%d", timeStr, ptStr[:1], ptStr[len(ptStr)-1:], rd)
 }
 
 // 创建邀请码(6位)

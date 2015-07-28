@@ -94,7 +94,7 @@ func (this *AliPay) Sign(param interface{}) string {
 func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
 	body, notifyUrl, returnUrl string) string {
 
-	if strings.Index(returnUrl,"?") != -1 || strings.Index(notifyUrl,"?") != -1{
+	if strings.Index(returnUrl, "?") != -1 || strings.Index(notifyUrl, "?") != -1 {
 		panic("return_url and notify_url can not contains '?'")
 	}
 
@@ -216,14 +216,13 @@ func (this *AliPay) Notify(r *http.Request) Result {
 	body, _ := ioutil.ReadAll(r.Body)
 	bodyStr := string(body)
 
-	if bodyStr == ""{
-		if len(r.URL.RawPath)!=0 {
+	if bodyStr == "" {
+		if len(r.URL.RawPath) != 0 {
 			bodyStr = r.URL.RawQuery[1:]
 		}
 		result.Status = -4
 		return result
 	}
-
 
 	//从body里读取参数，用&切割
 	postArray := strings.Split(bodyStr, "&")
