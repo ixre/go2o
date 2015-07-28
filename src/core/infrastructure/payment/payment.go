@@ -10,7 +10,7 @@ package payment
 
 import (
 	"github.com/atnet/gof/log"
-	"os"
+	_"os"
 )
 
 // 交易成功
