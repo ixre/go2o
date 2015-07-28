@@ -36,6 +36,8 @@ type AliPayParameters struct {
 	SignType     string  `json:"sign_type"`      //签名类型，生成签名时忽略
 }
 
+var _ IPayment = new(AliPay)
+
 type AliPay struct {
 	Partner string //合作者ID
 	Key     string //合作者私钥

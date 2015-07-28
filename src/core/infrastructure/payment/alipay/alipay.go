@@ -50,7 +50,6 @@ type AliPayParameters struct {
 	SignType     string  `json:"sign_type"`      //签名类型，生成签名时忽略
 }
 
-
 func Debug(format string, data ...interface{}) {
 	//log.Printf(format+"\n\n", data...)
 }
