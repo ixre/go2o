@@ -48,10 +48,10 @@ func (this *orderC) All(ctx *web.Context) {
 
 func (this *orderC) All_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	this.responseList(ctx,"")
+	this.responseList(ctx, "")
 }
 
-func (this *orderC) responseList(ctx *web.Context,where string){
+func (this *orderC) responseList(ctx *web.Context, where string) {
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.Response
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -87,7 +87,7 @@ func (this *orderC) Wait_payment(ctx *web.Context) {
 
 func (this *orderC) Wait_payment_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	this.responseList(ctx,fmt.Sprintf("is_paid=0 AND status <> %d", enum.ORDER_CANCEL))
+	this.responseList(ctx, fmt.Sprintf("is_paid=0 AND status <> %d", enum.ORDER_CANCEL))
 }
 
 func (this *orderC) Wait_deliver(ctx *web.Context) {
@@ -110,7 +110,7 @@ func (this *orderC) Wait_deliver(ctx *web.Context) {
 func (this *orderC) Wait_deliver_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_PROCESSING)
-	this.responseList(ctx,where)
+	this.responseList(ctx, where)
 }
 
 func (this *orderC) Completed(ctx *web.Context) {

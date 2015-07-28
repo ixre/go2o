@@ -65,7 +65,7 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 
 	var latestInfo string = dps.MemberService.GetLatestApplyCashText(m.Id)
 	if len(latestInfo) != 0 {
-		latestInfo = "<div class=\"info\">"+latestInfo+"</div>"
+		latestInfo = "<div class=\"info\">" + latestInfo + "</div>"
 	}
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":       conf,
