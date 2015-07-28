@@ -47,17 +47,15 @@ func (this *orderC) All(ctx *web.Context) {
 }
 
 func (this *orderC) All_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	this.responseList(ctx,"")
+}
+
+func (this *orderC) responseList(ctx *web.Context,where string){
 	m := this.GetMember(ctx)
 	r, w := ctx.Request, ctx.Response
-	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
-	state := r.FormValue("state")
-
-	var where string
-	if state != "" {
-		where = fmt.Sprintf("status IN (%s)", state)
-	}
 
 	n, rows := dps.MemberService.QueryPagerOrder(m.Id, page, size, where, "")
 
@@ -69,8 +67,7 @@ func (this *orderC) All_post(ctx *web.Context) {
 	w.Write(js)
 }
 
-func (this *orderC) WaitPayment(ctx *web.Context) {
-
+func (this *orderC) Wait_payment(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
@@ -86,6 +83,34 @@ func (this *orderC) WaitPayment(ctx *web.Context) {
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
 		"views/ucenter/{device}/inc/footer.html")
+}
+
+func (this *orderC) Wait_payment_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	this.responseList(ctx,fmt.Sprintf("is_paid=0 AND status <> %d", enum.ORDER_CANCEL))
+}
+
+func (this *orderC) Wait_deliver(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf := this.GetSiteConf(p.Id)
+	m := this.GetMember(ctx)
+	this.ExecuteTemplate(ctx,
+		gof.TemplateDataMap{
+			"partner":      p,
+			"conf":         conf,
+			"partner_host": conf.Host,
+			"member":       m,
+		},
+		"views/ucenter/{device}/order/order_wait_deliver.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
+}
+
+func (this *orderC) Wait_deliver_post(ctx *web.Context) {
+	ctx.Request.ParseForm()
+	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_PROCESSING)
+	this.responseList(ctx,where)
 }
 
 func (this *orderC) Completed(ctx *web.Context) {

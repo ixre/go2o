@@ -70,7 +70,7 @@ func (this *MemberQuery) QueryPagerOrder(memberId, page, size int,
 	}
 
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pt_order WHERE
-	 		shop_id=? %s`, where), &num, memberId)
+	 		member_id=? %s`, where), &num, memberId)
 
 	d.Query(fmt.Sprintf(` SELECT id,
 			order_no,
