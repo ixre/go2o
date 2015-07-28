@@ -9,18 +9,6 @@
 
 package shopping
 
-import (
-	"go2o/src/core/domain/interface/sale"
-)
-
-type ValueCart1 struct {
-	//购物车商品
-	Items []sale.IItem
-	//购物车商品数量
-	Quantities map[int]int
-	//客户端计算的金额
-	ClientFee float32
-}
 
 type ValueCart struct {
 	Id      int    `db:"id" pk:"yes" auto:"yes"`
