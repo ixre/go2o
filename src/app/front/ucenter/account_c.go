@@ -64,14 +64,16 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	var latestInfo string = dps.MemberService.GetLatestApplyCashText(m.Id)
-
+	if len(latestInfo) != 0 {
+		latestInfo = "<div class=\"info\">"+latestInfo+"</div>"
+	}
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":       conf,
 		"partner":    p,
 		"member":     m,
 		"minAmount":  format.FormatFloat(float32(minAmount)),
 		"account":    acc,
-		"latestInfo": latestInfo,
+		"latestInfo": template.HTML(latestInfo),
 	}, "views/ucenter/{device}/account/apply_cash.html",
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
