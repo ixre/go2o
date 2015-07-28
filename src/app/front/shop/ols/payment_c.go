@@ -65,6 +65,8 @@ func (this *PaymentC) Create(ctx *web.Context) {
 }
 
 func (this *PaymentC) Return_alipay(ctx *web.Context) {
+	//this.paymentFail(ctx,nil)
+	//return
 	result := aliPayObj.Return(ctx.Request)
 	if result.Status == payment.StatusTradeSuccess {
 		this.handleOrder(this.GetPartnerId(ctx), "alipay", &result)
