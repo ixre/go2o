@@ -67,10 +67,9 @@ func (this *PaymentC) Create(ctx *web.Context) {
 func (this *PaymentC) Return_alipay(ctx *web.Context) {
 	result := aliPayObj.Return(ctx.Request)
 	if result.Status == payment.StatusTradeSuccess {
-		if err := this.handleOrder(this.GetPartnerId(ctx), "alipay", &result); err == nil {
-			this.paymentSuccess(ctx, &result)
-			return
-		}
+		this.handleOrder(this.GetPartnerId(ctx), "alipay", &result)
+		this.paymentSuccess(ctx, &result)
+		return
 	}
 	this.paymentFail(ctx, &result)
 }
@@ -86,13 +85,10 @@ func (this *PaymentC) Notify_post(ctx *web.Context) {
 	if paymentOpt == "alipay" {
 		result := aliPayObj.Notify(ctx.Request)
 		if result.Status == payment.StatusTradeSuccess {
-			err := this.handleOrder(partnerId, "alipay", &result)
-			if err == nil {
-				payment.Debug("payment ok")
-				ctx.Response.Write([]byte("success"))
-				return
-			}
-			payment.Debug(" payment fail, %s", err.Error())
+			this.handleOrder(partnerId, "alipay", &result)
+			payment.Debug("payment ok")
+			ctx.Response.Write([]byte("success"))
+			return
 		}
 	}
 	ctx.Response.Write([]byte("fail"))

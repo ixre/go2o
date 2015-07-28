@@ -13,10 +13,12 @@ import (
 	"github.com/atnet/gof/util"
 	"go2o/src/core/infrastructure/domain"
 	"regexp"
+	"time"
 )
 
 func main() {
 
+	fmt.Println(time.Now().Format("2006"))
 	fmt.Println(domain.Md5PartnerPwd("wzo2o", "12345"))
 
 	fmt.Println(domain.NewApiId(105))

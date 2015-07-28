@@ -93,14 +93,19 @@ func (this *AliPay) Sign(param interface{}) string {
 
 func (this *AliPay) CreateGateway(orderNo string, fee float32, subject,
 	body, notifyUrl, returnUrl string) string {
+
+	if strings.Index(returnUrl,"?") != -1 || strings.Index(notifyUrl,"?") != -1{
+		panic("return_url and notify_url can not contains '?'")
+	}
+
 	//实例化参数
 	param := &AliPayParameters{}
 	param.InputCharset = "utf-8"
-	param.NotifyUrl = url.QueryEscape(notifyUrl)
+	param.NotifyUrl = notifyUrl
 	param.OutTradeNo = orderNo
 	param.Partner = this.Partner
 	param.PaymentType = 1
-	param.ReturnUrl = url.QueryEscape(returnUrl)
+	param.ReturnUrl = returnUrl
 	param.SellerEmail = this.Seller
 	param.Service = "create_direct_pay_by_user"
 	param.Subject = subject
@@ -205,9 +210,20 @@ func (this *AliPay) Return(r *http.Request) Result {
 
 /* 被动接收支付宝异步通知 */
 func (this *AliPay) Notify(r *http.Request) Result {
+
+	// /pay/notify/104_alipay?discount=0.00&payment_type=1&subject=%E5%9C%A8%E7%BA%BF%E6%94%AF%E4%BB%98%E8%AE%A2%E5%8D%95&trade_no=2015072800001000810060741985&buyer_email=***&gmt_create=2015-07-28%2001:24:19%C2%ACify_type=trade_status_sync&quantity=1&out_trade_no=146842585&seller_id=2088021187655650%C2%ACify_time=2015-07-28%2001:24:29&body=%E8%AE%A2%E5%8D%95%E5%8F%B7%EF%BC%9A146842585&trade_status=TRADE_SUCCESS&is_total_fee_adjust=N&total_fee=0.01&gmt_payment=2015-07-28%2001:24:29&seller_email=***&price=0.01&buyer_id=2088302384317810%C2%ACify_id=75e570fcc802c637d8cf1fdaa8677d046i&use_coupon=N&sign_type=MD5&sign=***
 	var result Result
 	body, _ := ioutil.ReadAll(r.Body)
 	bodyStr := string(body)
+
+	if bodyStr == ""{
+		if len(r.URL.RawPath)!=0 {
+			bodyStr = r.URL.RawQuery[1:]
+		}
+		result.Status = -4
+		return result
+	}
+
 
 	//从body里读取参数，用&切割
 	postArray := strings.Split(bodyStr, "&")
@@ -312,7 +328,7 @@ func (this *AliPay) Notify(r *http.Request) Result {
 		result.Status = -1
 	}
 
-	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s/%s", result.OrderNo, result.Status, sign, paramSign)
+	Debug(" [ Notify]- OrderNo: %s, Status:%d , sign:%s %s", result.OrderNo, result.Status, sign, paramSign)
 
 	return result
 }

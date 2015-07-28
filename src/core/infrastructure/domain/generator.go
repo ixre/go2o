@@ -19,17 +19,19 @@ import (
 )
 
 const (
-	minRand int = 1000000
-	maxRand int = 9999999
+	minRand int = 100000
+	maxRand int = 999900
 )
 
 //新订单号
 func NewOrderNo(partnerId int) string {
 	//PartnerId的首位和末尾再加7位随机数
-	rand.Seed(time.Now().Unix())
+	unix := time.Now().Unix()
+	rand.Seed(unix)
 	rd := minRand + rand.Intn(maxRand-minRand) //minRand - maxRand中间的随机数
-	ptstr := strconv.Itoa(partnerId)
-	return fmt.Sprintf("%s%s%d", ptstr[:1], ptstr[len(ptstr)-1:], rd)
+	timeStr := time.Now().Format("0601")
+	ptStr := strconv.Itoa(partnerId)
+	return fmt.Sprintf("%s%s%s%d",timeStr,ptStr[:1], ptStr[len(ptStr)-1:], rd)
 }
 
 // 创建邀请码(6位)

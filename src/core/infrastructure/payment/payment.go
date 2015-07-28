@@ -21,10 +21,10 @@ var (
 )
 
 func init() {
-	fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
-	logF = log.NewLogger(fi, "payment", log.LOpen)
+	//fi, _ := os.OpenFile("pay.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, os.ModePerm)
+	//logF = log.NewLogger(fi, "payment", log.LOpen)
 }
 
-func Debug(format string, data ...interface{}) {
-	logF.Printf(format+"\n\n", data)
+func Debug(format string, data ...interface{}) {参
+	//logF.Printf(format+"\n\n", data...)
 }
