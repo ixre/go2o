@@ -59,7 +59,6 @@ func getUniqueID() string {
 	return fmt.Sprintf("%s%03d", time.Now().Format("20060102150405"), nID)
 }
 
-
 //支付宝请求-------------------
 //创建一个交易请求，得到交易token，输入订单好，订单标题，总金额
 func getToken(sTrade_no string, sSubject string, sTotalFee string) string {
@@ -175,7 +174,6 @@ func AlipayHandler_Wap(w http.ResponseWriter, r *http.Request) {
 	html := alipayRequest_Wap(getUniqueID(), sSubject, sFee)
 	w.Write([]byte(html))
 }
-
 
 //发起退款请求
 func alipayRefundRequest(sTrade_no string, sDesc string, sFee string) string {

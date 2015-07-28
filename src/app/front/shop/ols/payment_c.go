@@ -14,12 +14,12 @@ import (
 	"github.com/atnet/gof"
 	guitl "github.com/atnet/gof/util"
 	"github.com/atnet/gof/web"
+	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"
 	"net/http"
 	"strconv"
 	"strings"
-	"go2o/src/core/domain/interface/shopping"
 )
 
 type PaymentC struct {
@@ -103,13 +103,13 @@ func (this *PaymentC) Return_alipay(ctx *web.Context) {
 	aliPayObj := this.getAliPayment(ctx)
 	result := aliPayObj.Return(ctx.Request)
 	partnerId := this.GetPartnerId(ctx)
-	order := dps.ShoppingService.GetOrderByNo(partnerId,result.OrderNo)
+	order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 	if result.Status == payment.StatusTradeSuccess {
-		this.handleOrder(order,"alipay", &result)
-		this.paymentSuccess(ctx,order, &result)
+		this.handleOrder(order, "alipay", &result)
+		this.paymentSuccess(ctx, order, &result)
 		return
 	}
-	this.paymentFail(ctx,order, &result)
+	this.paymentFail(ctx, order, &result)
 }
 
 func (this *PaymentC) Notify_post(ctx *web.Context) {
@@ -122,7 +122,7 @@ func (this *PaymentC) Notify_post(ctx *web.Context) {
 	if paymentOpt == "alipay" {
 		aliPayObj := this.getAliPayment(ctx)
 		result := aliPayObj.Notify(ctx.Request)
-		order := dps.ShoppingService.GetOrderByNo(partnerId,result.OrderNo)
+		order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 		if result.Status == payment.StatusTradeSuccess {
 			this.handleOrder(order, "alipay", &result)
 			payment.Debug("payment ok")
@@ -133,13 +133,13 @@ func (this *PaymentC) Notify_post(ctx *web.Context) {
 	ctx.Response.Write([]byte("fail"))
 }
 
-func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result *payment.Result)(error) {
+func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result *payment.Result) error {
 	if order != nil {
 		//		if order.PayFee != result.Fee{
 		//			return errors.New(fmt.Sprintf("error order fee %f / %f",order.PayFee,result.Fee))
 		//		}
 		if order.IsPaid == 1 {
-			return  errors.New("order has paid")
+			return errors.New("order has paid")
 		}
 		return dps.ShoppingService.PayForOrderOnlineTrade(order.PartnerId, order.OrderNo, sp, result.TradeNo)
 	}
@@ -154,7 +154,7 @@ func (this *PaymentC) paymentSuccess(ctx *web.Context,
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"conf":    siteConf,
-		"order":order,
+		"order":   order,
 	},
 		"views/shop/ols/{device}/payment_success.html",
 		"views/shop/ols/{device}/inc/header.html",
@@ -169,7 +169,7 @@ func (this *PaymentC) paymentFail(ctx *web.Context,
 	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"partner": p,
 		"conf":    siteConf,
-		"order":order,
+		"order":   order,
 	},
 		"views/shop/ols/{device}/payment_fail.html",
 		"views/shop/ols/{device}/inc/header.html",

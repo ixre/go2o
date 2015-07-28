@@ -11,23 +11,23 @@ package payment
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
-	"fmt"
-	"encoding/xml"
-	"strconv"
 )
 
 var _ IPayment = new(AliPayWap)
 
-const(
-	cVersion = "2.0"
-	cFormat = "xml"
-	cCharset = "utf-8"
-	cSignType = "MD5"
+const (
+	cVersion    = "2.0"
+	cFormat     = "xml"
+	cCharset    = "utf-8"
+	cSignType   = "MD5"
 	cWapGateway = "http://wappaygw.alipay.com/service/rest.htm?"
 )
 
@@ -59,19 +59,18 @@ type notifyResult struct {
 	Use_coupon          string   `xml:"use_coupon"`
 }
 
-
 type AliPayWap struct {
-	Partner    string //合作者ID
-	Key        string //合作者私钥
-	Seller     string //网站卖家邮箱地址
-	PrivateKey string
+	Partner     string //合作者ID
+	Key         string //合作者私钥
+	Seller      string //网站卖家邮箱地址
+	PrivateKey  string
 	MerchantUrl string
 }
 
 /* 按照支付宝规则生成sign */
 func (this *AliPayWap) sign(param interface{}) string {
-	sign, err	:=url.QueryUnescape(param.(string))
-	if(err != nil){
+	sign, err := url.QueryUnescape(param.(string))
+	if err != nil {
 		return ""
 	}
 	//追加密钥
@@ -86,13 +85,13 @@ func (this *AliPayWap) sign(param interface{}) string {
 
 // 获取Token
 func (this *AliPayWap) getToken(orderNo string, subject string,
-	fee float32,notifyUrl,callBackUrl string) string {
+	fee float32, notifyUrl, callBackUrl string) string {
 	sReq_dataToken := "<direct_trade_create_req><notify_url>" + notifyUrl
 	sReq_dataToken += "</notify_url><call_back_url>" + notifyUrl
 	sReq_dataToken += "</call_back_url><seller_account_name>" + this.Seller
 	sReq_dataToken += "</seller_account_name><out_trade_no>" + orderNo
 	sReq_dataToken += "</out_trade_no><subject>" + subject
-	sReq_dataToken += "</subject><total_fee>" +fmt.Sprintf("%f",fee)
+	sReq_dataToken += "</subject><total_fee>" + fmt.Sprintf("%f", fee)
 	sReq_dataToken += "</total_fee><merchant_url>" + this.MerchantUrl
 	sReq_dataToken += "</merchant_url></direct_trade_create_req>"
 
@@ -100,16 +99,16 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 	urls.Set("service", "alipay.wap.trade.create.direct")
 	urls.Set("partner", this.Partner)
 	urls.Set("_input_charset", cCharset)
-	urls.Set("sec_id","MD5")
+	urls.Set("sec_id", "MD5")
 	urls.Set("format", cFormat)
 	urls.Set("v", cVersion)
-	urls.Set("req_id",fmt.Sprintf("%d%d",time.Now().Unix(),time.Now().Nanosecond()))
+	urls.Set("req_id", fmt.Sprintf("%d%d", time.Now().Unix(), time.Now().Nanosecond()))
 	urls.Set("req_data", sReq_dataToken)
 	urls.Set("sign", this.sign(urls.Encode()))
 
 	client := &http.Client{Timeout: 20 * time.Second}
 	fmt.Println(cWapGateway + urls.Encode())
-	req, err := http.NewRequest("GET", cWapGateway + urls.Encode(), nil)
+	req, err := http.NewRequest("GET", cWapGateway+urls.Encode(), nil)
 	if err != nil {
 		return ""
 	}
@@ -152,7 +151,6 @@ func (this *AliPayWap) getNotifyFromXml(sXml string) *notifyResult {
 	return &v
 }
 
-
 func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 	body, notifyUrl, returnUrl string) string {
 
@@ -162,7 +160,7 @@ func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 		panic("return_url and notify_url can not contains '?'")
 	}
 
-	sToken := this.getToken(orderNo, subject, fee,notifyUrl,returnUrl)
+	sToken := this.getToken(orderNo, subject, fee, notifyUrl, returnUrl)
 	if sToken == "" {
 		return ""
 	}
@@ -172,7 +170,7 @@ func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 	urls := &url.Values{}
 	urls.Set("service", STR_SERVICE)
 	urls.Set("partner", this.Partner)
-	urls.Set("_input_charset",cCharset)
+	urls.Set("_input_charset", cCharset)
 	urls.Set("sec_id", cSignType)
 	urls.Set("format", cFormat)
 	urls.Set("v", cVersion)
@@ -252,12 +250,12 @@ func (this *AliPayWap) Notify(r *http.Request) Result {
 	//	notify.Price, notify.Buyer_id, notify.Notify_id, notify.Use_coupon, notify.Trade_status)
 
 	result.OrderNo = notify.Out_trade_no
-	fee, _ := strconv.ParseFloat(notify.Total_fee,32)
+	fee, _ := strconv.ParseFloat(notify.Total_fee, 32)
 	result.Fee = float32(fee)
 	result.TradeNo = notify.Trade_no
 	if notify.Trade_status == "TRADE_FINISHED" || notify.Trade_status == "TRADE_SUCCESS" { //交易成功
 		result.Status = StatusTradeSuccess
-	}else{
+	} else {
 		result.Status = -1
 	}
 
