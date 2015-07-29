@@ -103,7 +103,8 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	memberId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("invi_code"))
+	memberId := dps.MemberService.GetMemberIdByInvitationCode(
+		ctx.Request.FormValue("invi_code"))
 	var result gof.Message
 	result.Result = memberId != 0
 

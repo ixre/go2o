@@ -69,7 +69,7 @@ func (this *MemberRep) GetMember(memberId int) member.IMember {
 
 func (this *MemberRep) GetMemberIdByUser(user string) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM mm_member WHERE user = ?", &id, user)
+	this.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
 }
 

@@ -150,7 +150,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 }
 
 func (this *memberService) CheckUsr(usr string, memberId int) error {
-	if len(usr) < 5 {
+	if len(usr) < 6 {
 		return member.ErrUserLength
 	}
 	var id int = this._memberRep.GetMemberIdByUser(usr)
@@ -159,6 +159,7 @@ func (this *memberService) CheckUsr(usr string, memberId int) error {
 	} else if memberId != 0 && id == memberId {
 		return nil
 	}
+
 	return errors.New("用户名已被使用")
 }
 
