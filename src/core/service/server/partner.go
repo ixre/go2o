@@ -192,7 +192,7 @@ func (this *Partner) CheckUsrExist(m *jsv.Args, r *jsv.Result) error {
 		return err
 	}
 	r.Result = true
-	r.Data = dps.MemberService.CheckUsrExist((*m)["usr"].(string))
+	r.Data = dps.MemberService.CheckUsr((*m)["usr"].(string), 0)
 	return nil
 }
 

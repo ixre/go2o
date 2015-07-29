@@ -88,15 +88,17 @@ func (this *UserC) Register(ctx *web.Context) {
 }
 
 func (this *UserC) ValidUsr_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request
+	var msg gof.Message
 	r.ParseForm()
 	usr := r.FormValue("usr")
-	b := dps.MemberService.CheckUsrExist(usr)
-	if !b {
-		w.Write([]byte(`{"result":true}`))
+	err := dps.MemberService.CheckUsr(usr, 0)
+	if err == nil {
+		msg.Result = true
 	} else {
-		w.Write([]byte(`{"result":false}`))
+		msg.Message = err.Error()
 	}
+	ctx.Response.JsonOutput(msg)
 }
 
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {

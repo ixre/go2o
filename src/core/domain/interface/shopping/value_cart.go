@@ -9,7 +9,6 @@
 
 package shopping
 
-
 type ValueCart struct {
 	Id      int    `db:"id" pk:"yes" auto:"yes"`
 	CartKey string `db:"cart_key"`

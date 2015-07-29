@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/atnet/gof/util"
 	"go2o/src/core/infrastructure/domain"
+	"net/url"
 	"regexp"
 	"time"
 )
@@ -31,4 +32,7 @@ func main() {
 	for i := 0; i < len(matches); i++ {
 		fmt.Println(i, "---", matches[i][1], matches[i][2])
 	}
+
+	fmt.Println("/main/change_device?device=3&return_url=/main/t/123" +
+		url.QueryEscape("?return_url=/app"))
 }

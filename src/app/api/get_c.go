@@ -12,6 +12,7 @@ import (
 	"github.com/atnet/gof/web"
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
+	"net/url"
 	"strconv"
 )
 
@@ -26,7 +27,8 @@ func (this *getC) Invite_qr(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(form.Get("member_id"))
 	m := dps.MemberService.GetMember(memberId)
 	if m != nil {
-		var url string = domain + "/main/change_device?device=3&return_url=/main/t/" + m.InvitationCode
+		var url string = domain + "/main/change_device?device=3&return_url=/main/t/" + m.InvitationCode +
+			url.QueryEscape("?return_url=/app")
 		var qrBytes []byte = gen.BuildQrCodeForUrl(url)
 		ctx.Response.Header().Add("Content-Type", "Image/Jpeg")
 		ctx.Response.Write(qrBytes)

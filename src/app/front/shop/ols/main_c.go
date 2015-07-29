@@ -100,7 +100,7 @@ func (this *MainC) T(ctx *web.Context) {
 	path := ctx.Request.URL.Path
 	var i int = strings.LastIndex(path, "/")
 	ivCode := path[i+1:]
-	ctx.Response.Header().Add("Location", "/user/register.htm?invi_code="+ivCode)
+	ctx.Response.Header().Add("Location", "/user/register.htm?invi_code="+ivCode+ctx.Request.URL.RawQuery)
 	ctx.Response.WriteHeader(302)
 }
 

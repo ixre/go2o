@@ -37,6 +37,9 @@ type IMemberRep interface {
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int
 
+	// 获取会员编号
+	GetMemberIdByUser(string string) int
+
 	// 用户名是否存在
 	CheckUsrExist(string) bool
 

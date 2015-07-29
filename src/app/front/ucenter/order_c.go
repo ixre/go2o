@@ -90,7 +90,7 @@ func (this *orderC) Wait_payment_post(ctx *web.Context) {
 	this.responseList(ctx, fmt.Sprintf("is_paid=0 AND status <> %d", enum.ORDER_CANCEL))
 }
 
-func (this *orderC) Wait_deliver(ctx *web.Context) {
+func (this *orderC) Wait_delivery(ctx *web.Context) {
 	p := this.GetPartner(ctx)
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
@@ -101,13 +101,13 @@ func (this *orderC) Wait_deliver(ctx *web.Context) {
 			"partner_host": conf.Host,
 			"member":       m,
 		},
-		"views/ucenter/{device}/order/order_wait_deliver.html",
+		"views/ucenter/{device}/order/order_wait_delivery.html",
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-func (this *orderC) Wait_deliver_post(ctx *web.Context) {
+func (this *orderC) Wait_delive_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_PROCESSING)
 	this.responseList(ctx, where)

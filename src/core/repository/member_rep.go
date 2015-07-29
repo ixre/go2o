@@ -67,6 +67,12 @@ func (this *MemberRep) GetMember(memberId int) member.IMember {
 	return nil
 }
 
+func (this *MemberRep) GetMemberIdByUser(user string) int {
+	var id int
+	this.Connector.ExecScalar("SELECT id FROM mm_member WHERE user = ?", &id, user)
+	return id
+}
+
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
 	return memberImpl.NewMember(v, this, this._partnerRep)
