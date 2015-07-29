@@ -28,7 +28,7 @@ func (this *getC) Invite_qr(ctx *web.Context) {
 	m := dps.MemberService.GetMember(memberId)
 	if m != nil {
 		var url string = domain + "/main/change_device?device=3&return_url=/main/t/" + m.InvitationCode +
-			url.QueryEscape("?return_url=/app")
+			url.QueryEscape("?return_url=/main/app")
 		var qrBytes []byte = gen.BuildQrCodeForUrl(url)
 		ctx.Response.Header().Add("Content-Type", "Image/Jpeg")
 		ctx.Response.Write(qrBytes)

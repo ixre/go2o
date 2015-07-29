@@ -129,3 +129,21 @@ func (this *MainC) Index(ctx *web.Context) {
 			"views/shop/ols/{device}/inc/footer.html")
 	}
 }
+
+
+func (this *MainC) App(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
+		p := this.BaseC.GetPartner(ctx)
+		m := this.BaseC.GetMember(ctx)
+		siteConf := this.BaseC.GetSiteConf(ctx)
+
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"partner":  p,
+			"conf":     siteConf,
+			"member":   m,
+		},
+			"views/shop/ols/{device}/app.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
+	}
+}
