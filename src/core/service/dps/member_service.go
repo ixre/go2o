@@ -70,7 +70,9 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
-	m.SetValue(v)
+	if err := m.SetValue(v);err != nil{
+		return m.GetAggregateRootId(),err
+	}
 	return m.Save()
 }
 

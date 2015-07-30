@@ -85,6 +85,7 @@ func (this *Member) validate(v *member.ValueMember)error{
 
 // 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
+	v.Usr = this._value.Usr
 	if err := this.validate(v);err != nil{
 		return err
 	}
@@ -111,7 +112,6 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.Sex != 0 {
 		this.notifyOnProfileComplete()
 	}
-
 	return nil
 }
 
