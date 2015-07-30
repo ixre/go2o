@@ -49,4 +49,16 @@ var (
 	ErrUserLength *domain.DomainError = domain.NewDomainError(
 		"err_user_length", "用户名必须大于6位",
 	)
+
+	ErrUserValidErr *domain.DomainError = domain.NewDomainError(
+	"err_user_valid_err", "用户名为6位以上字符和数字的组合")
+
+	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
+	"err_email_valid_err", "邮箱不正确")
+
+	ErrPhoneValidErr *domain.DomainError = domain.NewDomainError(
+		"err_phone_valid_err", "手机号码不正确")
+
+	ErrQqValidErr *domain.DomainError = domain.NewDomainError(
+		"err_qq_valid_err", "QQ号码不正确")
 )

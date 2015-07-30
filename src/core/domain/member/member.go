@@ -20,6 +20,7 @@ import (
 	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure/domain"
 	"time"
+	"regexp"
 )
 
 var _ member.IMember = new(Member)
@@ -49,13 +50,44 @@ func (this *Member) GetAggregateRootId() int {
 	return this._value.Id
 }
 
+
 // 获取值
 func (this *Member) GetValue() member.ValueMember {
 	return *this._value
 }
 
+
+var(
+	userRegex = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
+	emailRegex = regexp.MustCompile("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*")
+	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\\d{8})$")
+	qqRegex = regexp.MustCompile("^\\d{5,12}$")
+)
+
+func (this *Member) validate(v *member.ValueMember)error{
+	if len(v.Usr) < 6 {
+		return member.ErrUserLength
+	}
+	if !userRegex.MatchString(v.Usr){
+		return member.ErrUserValidErr
+	}
+	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email){
+		return member.ErrEmailValidErr
+	}
+	if len(v.Phone) != 0 && ! phoneRegex.MatchString(v.Phone){
+		return member.ErrPhoneValidErr
+	}
+	if len(v.Qq) != 0 && ! qqRegex.MatchString(v.Qq){
+		return member.ErrQqValidErr
+	}
+	return nil
+}
+
 // 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
+	if err := this.validate(v);err != nil{
+		return err
+	}
 	this._value.Address = v.Address
 	this._value.Birthday = v.Birthday
 	this._value.Qq = v.Qq
@@ -256,6 +288,9 @@ func (this *Member) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
+	if err := this.validate(this._value);err != nil{
+		return this.GetAggregateRootId(),err
+	}
 	return this.create(this._value)
 }
 

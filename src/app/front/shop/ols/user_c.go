@@ -140,7 +140,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	}
 
 	if err != nil {
-		result.Message = "注册失败," + err.Error() + "!"
+		result.Message = err.Error()
 	} else {
 		result.Result = true
 	}
