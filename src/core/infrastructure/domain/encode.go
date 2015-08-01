@@ -29,8 +29,8 @@ func MemberSha1Pwd(pwd string) string {
 }
 
 //加密合作商密码
-func Md5PartnerPwd(usr, pwd string) string {
-	return Md5Pwd(pwd, usr)
+func PartnerSha1Pwd(usr, pwd string) string {
+	return crypto.Sha1([]byte(ShaPwd(pwd, usr+":")))
 }
 
 // 密码Md5加密
@@ -40,5 +40,5 @@ func Md5Pwd(pwd, offset string) string {
 
 // 密码SHA1加密
 func ShaPwd(pwd, offset string) string {
-	return crypto.Sha1([]byte(strings.Join([]string{offset, "h3f", pwd, ".net"}, "")))
+	return crypto.Sha1([]byte(strings.Join([]string{offset,pwd,"@h3f.net"}, "")))
 }

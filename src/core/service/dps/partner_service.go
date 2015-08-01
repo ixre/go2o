@@ -16,7 +16,6 @@ import (
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
-	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
 )
@@ -40,13 +39,11 @@ func NewPartnerService(r partner.IPartnerRep, saleRep sale.ISaleRep,
 
 // 验证用户密码并返回编号
 func (this *partnerService) Verify(usr, pwd string) int {
-	ep := domain.Md5PartnerPwd(usr, pwd)
-	return this._query.Verify(usr, ep)
+	return this._query.Verify(usr, pwd)
 }
 
 func (this *partnerService) GetPartner(partnerId int) (*partner.ValuePartner, error) {
 	pt, err := this._partnerRep.GetPartner(partnerId)
-
 	if pt != nil {
 		v := pt.GetValue()
 		return &v, err
