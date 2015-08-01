@@ -79,7 +79,7 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	paymentOpt := qs.Get("pay_opt")
 
 	if len(orderNo) != 0 {
-		ctx.Session().Set("current_payment",orderNo)
+		ctx.Session().Set("current_payment", orderNo)
 		ctx.Session().Save()
 
 		if paymentOpt == "alipay" {
