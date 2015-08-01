@@ -269,7 +269,7 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 				log.PrintErr(err)
 				return order, cart, errors.New("优惠券无效")
 			}
-			order.ApplyCoupon(coupon) //应用优惠券
+			err = order.ApplyCoupon(coupon) //应用优惠券
 		}
 	}
 

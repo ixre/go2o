@@ -16,7 +16,6 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/dto"
-	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
 	"time"
@@ -130,7 +129,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 		return false, nil, errors.New("会员不存在")
 	}
 
-	if val.Pwd != domain.MemberSha1Pwd(pwd) {
+	if val.Pwd != pwd {
 		return false, nil, errors.New("会员用户或密码不正确")
 	}
 
@@ -145,8 +144,12 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
-	val.LastLoginTime = time.Now().Unix()
-	this._memberRep.SaveMember(val)
+	unix := time.Now().Unix()
+	val.LastLoginTime = unix
+	val.UpdateTime = unix
+
+	m.SetValue(val)
+	m.Save()
 
 	return true, val, nil
 }
