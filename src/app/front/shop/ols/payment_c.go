@@ -79,6 +79,9 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	paymentOpt := qs.Get("pay_opt")
 
 	if len(orderNo) != 0 {
+		ctx.Session().Set("current_payment",orderNo)
+		ctx.Session().Save()
+
 		if paymentOpt == "alipay" {
 			aliPayObj := this.getAliPayment(ctx)
 			domain := getDomain(ctx.Request)
@@ -103,12 +106,16 @@ func (this *PaymentC) Return_alipay(ctx *web.Context) {
 	aliPayObj := this.getAliPayment(ctx)
 	result := aliPayObj.Return(ctx.Request)
 	partnerId := this.GetPartnerId(ctx)
+	if len(result.OrderNo) == 0 {
+		result.OrderNo = ctx.Session().Get("current_payment").(string)
+	}
 	order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 	if result.Status == payment.StatusTradeSuccess {
 		this.handleOrder(order, "alipay", &result)
 		this.paymentSuccess(ctx, order, &result)
 		return
 	}
+
 	this.paymentFail(ctx, order, &result)
 }
 

@@ -171,7 +171,7 @@ func (this *Coupon) GetDescribe() string {
 		buf.WriteString(fmt.Sprintf("订单满%f", v.MinFee))
 	}
 
-	if v.Discount != 0 && v.Discount != 100{
+	if v.Discount != 0 && v.Discount != 100 {
 		dis := format.ToDiscountStr(v.Discount)
 		buf.WriteString(fmt.Sprintf(",%s折优惠", dis))
 		if v.Fee != 0 {

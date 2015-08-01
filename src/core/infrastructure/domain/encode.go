@@ -40,5 +40,5 @@ func Md5Pwd(pwd, offset string) string {
 
 // 密码SHA1加密
 func ShaPwd(pwd, offset string) string {
-	return crypto.Sha1([]byte(strings.Join([]string{offset,pwd,"@h3f.net"}, "")))
+	return crypto.Sha1([]byte(strings.Join([]string{offset, pwd, "@h3f.net"}, "")))
 }

@@ -87,7 +87,7 @@ func (this *AliPayWap) sign(param interface{}) string {
 func (this *AliPayWap) getToken(orderNo string, subject string,
 	fee float32, notifyUrl, callBackUrl string) string {
 	sReq_dataToken := "<direct_trade_create_req><notify_url>" + notifyUrl
-	sReq_dataToken += "</notify_url><call_back_url>" + notifyUrl
+	sReq_dataToken += "</notify_url><call_back_url>" + callBackUrl
 	sReq_dataToken += "</call_back_url><seller_account_name>" + this.Seller
 	sReq_dataToken += "</seller_account_name><out_trade_no>" + orderNo
 	sReq_dataToken += "</out_trade_no><subject>" + subject
@@ -107,7 +107,8 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 	urls.Set("sign", this.sign(urls.Encode()))
 
 	client := &http.Client{Timeout: 20 * time.Second}
-	fmt.Println(cWapGateway + urls.Encode())
+	Debug(cWapGateway + urls.Encode())
+
 	req, err := http.NewRequest("GET", cWapGateway+urls.Encode(), nil)
 	if err != nil {
 		return ""
@@ -121,14 +122,13 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 	if err != nil {
 		return ""
 	}
-	fmt.Println(url.QueryUnescape(string(reply)))
+	Debug(url.QueryUnescape(string(reply)))
 
 	urlV, err := url.ParseQuery(string(reply))
 	if err != nil {
 		return ""
 	}
 	sStr := urlV.Get("res_data")
-	fmt.Print(sStr)
 	sStr = this.getTokenFromXml(sStr)
 	return sStr
 }

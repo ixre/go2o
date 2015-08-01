@@ -1,12 +1,17 @@
 var pl = j6.$('order-confirm-panel');
 var cashPl = j6.$('cash-panel');
 var couDes = j6.$('coupon_describe');
+var lbBalance = j6.$('lb_balance');
+var ckBalance = j6.$('ck_useBalance');
+var tbCouponCode = j6.$('coupon_code');
+var coupon_fee = 0;
 
 function setHtm(id, h) {
     if (h.length != 0) {
         j6.$(id).innerHTML = h;
     }
 }
+
 function initEvents() {
     var items = j6.dom.getsByClass(pl, 'item');
     var editLinks = j6.dom.getsByClass(pl, 'edit_link');
@@ -67,6 +72,31 @@ function initEvents() {
 
 }
 
+// 页面初始化
+function pageInit(){
+    initEvents();
+
+    if(tbCouponCode){
+        j6.event.add(tbCouponCode,'blur',applyCouponCode);
+        if(tbCouponCode.value.replace(/\\s+/ig,'').length > 0 ){
+            applyCouponCode.apply(tbCouponCode);
+        }
+    }
+
+    if(lbBalance){
+        lbBalance.innerHTML = acc_balance;
+    }
+    j6.event.add(ckBalance,'click',reloadFee);
+
+    if(acc_balance>0){
+        ckBalance.setAttribute('checked','checked');
+        ckBalance.removeAttribute('disabled');
+    }else{
+        ckBalance.removeAttribute('checked');
+        ckBalance.setAttribute('disabled','disabled');
+    }
+}
+
 // 显示动态信息
 function dynamicContent(t) {
     var showAll = t == "" || t == null;
@@ -105,7 +135,7 @@ function dynamicContent(t) {
 function persistData() {
     j6.xhr.jsonPost('/buy/buyingPersist', window.sctJson, function (d) {
         if (d.message) {
-            alert(d.message);
+            window.cli.alert(d.message);
         }
     });
 }
@@ -131,6 +161,7 @@ function applyCouponCode() {
         if (couDes.indexOf(' hidden') == -1) {
             couDes.className += ' hidden';
         }
+        coupon_fee = 0;
     } else {
         var t = this;
         j6.xhr.jsonPost('/buy/apply?type=coupon', {
@@ -140,6 +171,7 @@ function applyCouponCode() {
                 if (json.result == false) {
                     j6.validator.setTip(t, false, null, json.message);
                     couDes.className = 'coupon_desc hidden';
+                    coupon_fee = 0;
                     reloadFee();
                 } else {
                     j6.validator.removeTip(t);
@@ -148,11 +180,8 @@ function applyCouponCode() {
                         couDes.innerHTML = '优惠内容：' + json.couponDescribe +
                             '<br /><em>使用该优惠券总节省：￥' + json.couponFee + '元</em>';
                     }
-                    j6.json.bind(cashPl, {
-                        PromFee: json.discountFee,
-                        OrderFee: json.payFee
-                    });
-                    j6.$('final_fee').innerHTML = json.payFee;
+                    coupon_fee = json.couponFee;
+                    reloadFee();
                 }
             });
     }
@@ -160,8 +189,6 @@ function applyCouponCode() {
 
 function submitOrder() {
     var ele = this;
-    ele.disabled = 'disabled';
-    ele.className = ele.className.replace(' btn-orange','')
 
     var unDis =function(){
         ele.removeAttribute('disabled');
@@ -169,35 +196,51 @@ function submitOrder() {
     }
 
     if (j6.validator.validate('form_coupon')) {
+
         var data = window.sctJson;
         var cp = j6.json.toObject(form_coupon);
         if (data.deliver_id <= 0) {
             var e = j6.$('item1');
             e.className += ' active_item';
+            window.cli.alert("请选择配送地址");
             return false;
         }
+
+        ele.disabled = 'disabled';
+        ele.className = ele.className.replace(' btn-orange','')
+
         data.coupon_code = cp.CouponCode;
+
+        data.balance_discount = ckBalance.checked?'1':'0';
 
         j6.xhr.jsonPost('submit_0', data, function (j) {
             if (j.result) {
                 var orderNo = j.data;
-                location.replace("order_finish?order_no=" + orderNo)
+                location.replace("payment?order_no=" + orderNo)
             } else {
                 unDis();
-
-                window.cli.alert(j.message,"提示");
+                window.cli.alert(j.message);
             }
-        }, function () {
+        }, function (x) {
             unDis();
-            window.cli.alert('订单提交失败!');
+            window.cli.alert('订单提交失败');
         });
     }
 }
 
-function reloadFee() {
+function reloadFee(promFee,payFee) {
+    var balancePay = 0;
+    var _payFee = payFee || order_fee - coupon_fee;
+    var _promFee = promFee || prom_fee + coupon_fee;
+
+    if(ckBalance.checked && acc_balance > 0 ){
+        balancePay = acc_balance > _payFee ?_payFee:acc_balance;
+        _payFee -= balancePay;
+    }
     j6.json.bind(cashPl, {
-        PromFee: prom_fee,
-        OrderFee: order_fee
+        PromFee: _promFee,
+        BalanceFee :balancePay,
+        OrderFee: _payFee,
     });
-    j6.$('final_fee').innerHTML = order_fee;
+    j6.$('final_fee').innerHTML = _payFee;
 }
