@@ -37,7 +37,7 @@ var (
 	ErrPwdCannotSame *domain.DomainError = domain.NewDomainError(
 		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
 
-	ErrPwdPldPwdNotRight *domain.DomainError = domain.NewDomainError(
+	ErrPwdOldPwdNotRight *domain.DomainError = domain.NewDomainError(
 		"Err_Pwd_Pld_Pwd_Not_Right", "原密码不正确")
 
 	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
@@ -51,14 +51,20 @@ var (
 	)
 
 	ErrUserValidErr *domain.DomainError = domain.NewDomainError(
-	"err_user_valid_err", "用户名为6位以上字符和数字的组合")
+		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
 
 	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
-	"err_email_valid_err", "邮箱不正确")
+		"err_email_valid_err", "邮箱不正确")
 
 	ErrPhoneValidErr *domain.DomainError = domain.NewDomainError(
 		"err_phone_valid_err", "手机号码不正确")
 
 	ErrQqValidErr *domain.DomainError = domain.NewDomainError(
 		"err_qq_valid_err", "QQ号码不正确")
+
+	ErrNotSetTradePwd *domain.DomainError = domain.NewDomainError(
+		"err_not_set_tarde_pwd", "交易密码未设置")
+
+	ErrIncorrectTradePwd *domain.DomainError = domain.NewDomainError(
+		"err_incorrect_tarde_pwd", "交易密码错误")
 )

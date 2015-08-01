@@ -10,20 +10,19 @@ package main
 
 import (
 	"fmt"
+	"github.com/atnet/gof/crypto"
 	"github.com/atnet/gof/util"
 	"go2o/src/core/infrastructure/domain"
 	"net/url"
 	"regexp"
-	"time"
 )
 
 func main() {
-
-	fmt.Println(time.Now().Format("2006"))
+	fmt.Println(crypto.Sha1([]byte("123456")))
 	fmt.Println(domain.Md5PartnerPwd("wzo2o", "12345"))
 
 	fmt.Println(domain.NewApiId(105))
-	fmt.Println(domain.Md5MemberPwd("123456"))
+	fmt.Println(domain.MemberSha1Pwd("123456"))
 	fmt.Println(1 << 2)
 	fmt.Println(util.IsMobileAgent("Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"))
 

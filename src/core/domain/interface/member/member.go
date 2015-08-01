@@ -67,6 +67,9 @@ type IMember interface {
 	// 修改密码,旧密码可为空
 	ModifyPassword(newPwd, oldPwd string) error
 
+	// 修改交易密码，旧密码可为空
+	ModifyTradePassword(newPwd, oldPwd string) error
+
 	// 用户是否已经存在
 	UsrIsExist() bool
 

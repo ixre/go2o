@@ -65,6 +65,13 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 	return ctx.Items["member"].(*member.ValueMember)
 }
 
+// 重新缓存会员
+func (this *baseC) ReCacheMember(ctx *web.Context, memberId int) {
+	v := dps.MemberService.GetMember(memberId)
+	ctx.Session().Set("member", v)
+	ctx.Session().Save()
+}
+
 // 获取商户的站点设置
 func (this *baseC) GetSiteConf(partnerId int) *partner.SiteConf {
 	return dps.PartnerService.GetSiteConf(partnerId)

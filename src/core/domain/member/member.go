@@ -19,8 +19,8 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure/domain"
-	"time"
 	"regexp"
+	"time"
 )
 
 var _ member.IMember = new(Member)
@@ -50,34 +50,32 @@ func (this *Member) GetAggregateRootId() int {
 	return this._value.Id
 }
 
-
 // 获取值
 func (this *Member) GetValue() member.ValueMember {
 	return *this._value
 }
 
-
-var(
-	userRegex = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
+var (
+	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
 	emailRegex = regexp.MustCompile("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*")
 	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\\d{8})$")
-	qqRegex = regexp.MustCompile("^\\d{5,12}$")
+	qqRegex    = regexp.MustCompile("^\\d{5,12}$")
 )
 
-func (this *Member) validate(v *member.ValueMember)error{
+func (this *Member) validate(v *member.ValueMember) error {
 	if len(v.Usr) < 6 {
 		return member.ErrUserLength
 	}
-	if !userRegex.MatchString(v.Usr){
+	if !userRegex.MatchString(v.Usr) {
 		return member.ErrUserValidErr
 	}
-	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email){
+	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
 		return member.ErrEmailValidErr
 	}
-	if len(v.Phone) != 0 && ! phoneRegex.MatchString(v.Phone){
+	if len(v.Phone) != 0 && !phoneRegex.MatchString(v.Phone) {
 		return member.ErrPhoneValidErr
 	}
-	if len(v.Qq) != 0 && ! qqRegex.MatchString(v.Qq){
+	if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {
 		return member.ErrQqValidErr
 	}
 	return nil
@@ -86,7 +84,7 @@ func (this *Member) validate(v *member.ValueMember)error{
 // 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
 	v.Usr = this._value.Usr
-	if err := this.validate(v);err != nil{
+	if err := this.validate(v); err != nil {
 		return err
 	}
 	this._value.Address = v.Address
@@ -104,6 +102,10 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	}
 	if len(this._value.InvitationCode) == 0 {
 		this._value.InvitationCode = v.InvitationCode
+	}
+
+	if len(v.TradePwd) == 0 {
+		this._value.TradePwd = v.TradePwd
 	}
 
 	if len(this._value.Qq) != 0 && len(this._value.Email) != 0 &&
@@ -288,8 +290,8 @@ func (this *Member) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
-	if err := this.validate(this._value);err != nil{
-		return this.GetAggregateRootId(),err
+	if err := this.validate(this._value); err != nil {
+		return this.GetAggregateRootId(), err
 	}
 	return this.create(this._value)
 }
@@ -307,7 +309,6 @@ func (this *Member) Unlock() error {
 // 修改密码,旧密码可为空
 func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 	var err error
-
 	if newPwd == oldPwd {
 		return member.ErrPwdCannotSame
 	}
@@ -316,14 +317,34 @@ func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 		return err
 	}
 
-	if len(oldPwd) != 0 {
-		dyp := domain.Md5MemberPwd(oldPwd)
-		if dyp != this._value.Pwd {
-			return member.ErrPwdPldPwdNotRight
-		}
+	if len(oldPwd) != 0 && oldPwd != this._value.Pwd {
+		return member.ErrPwdOldPwdNotRight
+
 	}
 
-	this._value.Pwd = domain.Md5MemberPwd(newPwd)
+	this._value.Pwd = newPwd
+	_, err = this.Save()
+
+	return err
+}
+
+// 修改交易密码，旧密码可为空
+func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
+	var err error
+	if newPwd == oldPwd {
+		return member.ErrPwdCannotSame
+	}
+
+	if b, err := domain.ChkPwdRight(newPwd); !b {
+		return err
+	}
+
+	// 已经设置过旧密码
+	if len(this._value.TradePwd) != 0 && this._value.TradePwd != oldPwd {
+		return member.ErrPwdOldPwdNotRight
+	}
+
+	this._value.TradePwd = newPwd
 	_, err = this.Save()
 
 	return err

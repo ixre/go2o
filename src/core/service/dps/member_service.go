@@ -70,8 +70,8 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
-	if err := m.SetValue(v);err != nil{
-		return m.GetAggregateRootId(),err
+	if err := m.SetValue(v); err != nil {
+		return m.GetAggregateRootId(), err
 	}
 	return m.Save()
 }
@@ -130,7 +130,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 		return false, nil, errors.New("会员不存在")
 	}
 
-	if val.Pwd != domain.Md5MemberPwd(pwd) {
+	if val.Pwd != domain.MemberSha1Pwd(pwd) {
 		return false, nil, errors.New("会员用户或密码不正确")
 	}
 
@@ -235,6 +235,14 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 	return member.ErrNoSuchMember
 }
 
+func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
+	m := this._memberRep.GetMember(memberId)
+	if m != nil {
+		return m.ModifyTradePassword(newPwd, oldPwd)
+	}
+	return member.ErrNoSuchMember
+}
+
 //判断会员是否由指定会员邀请推荐的
 func (this *memberService) IsInvitation(memberId int, invitationMemberId int) bool {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
@@ -294,11 +302,22 @@ func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tr
 }
 
 // 提现
-func (this *memberService) SubmitApplyCash(partnerId, memberId, applyType int, applyAmount float32) error {
+func (this *memberService) SubmitApplyCash(partnerId, memberId int, outTradePwd string,
+	applyType int, applyAmount float32) error {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
 		return err
 	}
+
+	tradePwd := m.GetValue().TradePwd
+	if len(tradePwd) == 0 {
+		return member.ErrNotSetTradePwd
+	}
+
+	if tradePwd != outTradePwd {
+		return member.ErrIncorrectTradePwd
+	}
+
 	acc := m.GetAccount()
 	var title string
 	switch applyType {

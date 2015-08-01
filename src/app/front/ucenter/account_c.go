@@ -68,12 +68,13 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		latestInfo = "<div class=\"info\">" + latestInfo + "</div>"
 	}
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
-		"conf":       conf,
-		"partner":    p,
-		"member":     m,
-		"minAmount":  format.FormatFloat(float32(minAmount)),
-		"account":    acc,
-		"latestInfo": template.HTML(latestInfo),
+		"conf":           conf,
+		"partner":        p,
+		"member":         m,
+		"minAmount":      format.FormatFloat(float32(minAmount)),
+		"account":        acc,
+		"latestInfo":     template.HTML(latestInfo),
+		"notSetTradePwd": len(m.TradePwd) == 0,
 	}, "views/ucenter/{device}/account/apply_cash.html",
 		"views/ucenter/{device}/inc/header.html",
 		"views/ucenter/{device}/inc/menu.html",
@@ -86,12 +87,13 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	partnerId := this.GetPartner(ctx).Id
 	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	tradePwd := ctx.Request.FormValue("TradePwd")
 	if amount < minAmount {
 		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
 			format.FormatFloat(float32(minAmount))))
 	} else {
 		m := this.GetMember(ctx)
-		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id, member.TypeApplyCashToBank, float32(amount))
+		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id, tradePwd, member.TypeApplyCashToBank, float32(amount))
 	}
 
 	if err != nil {

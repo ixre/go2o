@@ -10,9 +10,12 @@
 package member
 
 type ValueMember struct {
-	Id   int    `db:"id" auto:"yes" pk:"yes"`
-	Usr  string `db:"usr"`
-	Pwd  string `db:"Pwd"`
+	Id  int    `db:"id" auto:"yes" pk:"yes"`
+	Usr string `db:"usr"`
+	Pwd string `db:"Pwd"`
+	// 交易密码
+	TradePwd string `db:"trade_pwd"`
+	// 姓名
 	Name string `db:"name"`
 	// 经验值
 	Exp int `db:"exp"`

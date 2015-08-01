@@ -24,8 +24,8 @@ func ChkPwdRight(pwd string) (bool, error) {
 
 // 加密会员密码,因为可能会使用手机号码登陆，
 // 所以密码不能依据用户名作为生成凭据
-func Md5MemberPwd(pwd string) string {
-	return Md5Pwd(pwd, pwd+"@member")
+func MemberSha1Pwd(pwd string) string {
+	return crypto.Sha1([]byte(ShaPwd(pwd, "")))
 }
 
 //加密合作商密码
@@ -36,4 +36,9 @@ func Md5PartnerPwd(usr, pwd string) string {
 // 密码Md5加密
 func Md5Pwd(pwd, offset string) string {
 	return crypto.Md5([]byte(strings.Join([]string{offset, "go2o@S1N1.COM", pwd}, "")))
+}
+
+// 密码SHA1加密
+func ShaPwd(pwd, offset string) string {
+	return crypto.Sha1([]byte(strings.Join([]string{offset, "h3f", pwd, ".net"}, "")))
 }

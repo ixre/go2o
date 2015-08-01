@@ -77,6 +77,48 @@ func (this *basicC) Pwd_post(ctx *web.Context) {
 		result.Message = err.Error()
 	} else {
 		result.Result = true
+		this.ReCacheMember(ctx, m.Id)
+	}
+	ctx.Response.JsonOutput(result)
+}
+
+// 交易密码
+func (this *basicC) Trade_pwd(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf := this.GetSiteConf(p.Id)
+	mm := this.GetMember(ctx)
+
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner":      p,
+		"conf":         conf,
+		"partner_host": conf.Host,
+		"member":       mm,
+		"notFirstSet":  len(mm.TradePwd) != 0,
+	}, "views/ucenter/{device}/trade_pwd.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
+}
+func (this *basicC) Trade_pwd_post(ctx *web.Context) {
+	r := ctx.Request
+	var result gof.Message
+	r.ParseForm()
+	m := this.GetMember(ctx)
+	var oldPwd, newPwd, rePwd string
+	oldPwd = r.FormValue("OldPwd")
+	newPwd = r.FormValue("NewPwd")
+	rePwd = r.FormValue("RePwd")
+	var err error
+	if newPwd != rePwd {
+		err = errors.New("两次密码输入不一致")
+	} else {
+		err = dps.MemberService.ModifyTradePassword(m.Id, oldPwd, newPwd)
+	}
+	if err != nil {
+		result.Message = err.Error()
+	} else {
+		result.Result = true
+		this.ReCacheMember(ctx, m.Id)
 	}
 	ctx.Response.JsonOutput(result)
 }
@@ -92,13 +134,10 @@ func (this *basicC) Profile_post(ctx *web.Context) {
 	_, err := dps.MemberService.SaveMember(m)
 
 	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
+		result.Message = err.Error()
 	} else {
-		result = gof.Message{Result: true}
-		m = dps.MemberService.GetMember(mm.Id)
-		ctx.Session().Set("member", m)
-		ctx.Session().Save()
-
+		result.Result = true
+		this.ReCacheMember(ctx, m.Id)
 	}
 	ctx.Response.JsonOutput(result)
 }
