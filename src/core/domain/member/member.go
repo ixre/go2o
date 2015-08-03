@@ -121,7 +121,7 @@ func (this *Member) notifyOnProfileComplete() {
 	rl := this.GetRelation()
 	pt, err := this._partnerRep.GetPartner(rl.RegisterPartnerId)
 	if err == nil {
-		key := fmt.Sprintf("profile:complete:$%d", this.GetAggregateRootId())
+		key := fmt.Sprintf("profile:complete:id_%d", this.GetAggregateRootId())
 		if pt.MemberKvManager().GetInt(key) == 0 {
 			if err := this.sendNotifyMail(pt); err == nil {
 				pt.MemberKvManager().Set(key, "1")
