@@ -15,24 +15,28 @@ import (
 	"time"
 )
 
+var (
+	mailChan chan int
+)
+
 func startMailQueue() {
-	if i, _ := gCTX.Storage().GetInt(variable.KvNewMailTask); i > 0 {
+	if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i > 0 {
 		sendQueue()
-		gCTX.Storage().Set(variable.KvNewMailTask, 0)
+		appCtx.Storage().Set(variable.KvNewMailTask, 0)
 	}
 	time.Sleep(time.Second * 5)
 	startMailQueue()
 }
 
-func sendQueue(){
+func sendQueue() {
 	var list = []*mss.MailTask{}
-	gCTX.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
+	appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
 	mailChan = make(chan int, len(list))
 	for _, v := range list {
 		go func(ch chan int, t *mss.MailTask) {
 			err := mssIns.SendMailWithDefaultConfig(t.Subject, []string{t.SendTo}, []byte(t.Body))
 			if err != nil {
-				gCTX.Log().PrintErr(err)
+				appCtx.Log().PrintErr(err)
 				t.IsFailed = 1
 				t.IsSend = 1
 			} else {
@@ -40,7 +44,7 @@ func sendQueue(){
 				t.IsFailed = 0
 			}
 			t.SendTime = time.Now().Unix()
-			gCTX.Db().GetOrm().Save(t.Id, t)
+			appCtx.Db().GetOrm().Save(t.Id, t)
 			mailChan <- 0
 		}(mailChan, v)
 		<-mailChan

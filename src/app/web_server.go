@@ -18,7 +18,6 @@ import (
 	"go2o/src/app/front/shop/ols"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/infrastructure"
-	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"net/http"
 	"strconv"
@@ -80,17 +79,16 @@ func getHttpExecFunc() web.RequestHandler {
 func RunWeb(app gof.App, port int, debug, trace bool) {
 
 	if debug {
-		fmt.Println("[Started]:Web server (with debug) running on port [" +
-			strconv.Itoa(port) + "]:")
+		fmt.Println("[ Go2o][ Web][ Booted] - Web server (with debug) running on port " +
+			strconv.Itoa(port))
 		infrastructure.DebugMode = true
 	} else {
-		fmt.Println("[Started]:Web server running on port [" + strconv.Itoa(port) + "]:")
+		fmt.Println("[ Go2o][ Web][ Booted] - Web server running on port " + strconv.Itoa(port))
 	}
 
 	//socket client
 	time.Sleep(time.Second * 2) //等待启动Socket
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
-	goclient.Configure("tcp", app.Config().GetString(variable.ClientSocketServer), app)
 
 	var in = getInterceptor(app)
 

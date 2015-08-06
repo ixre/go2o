@@ -11,6 +11,7 @@ package main
 
 import (
 	"flag"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/storage"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
@@ -31,6 +32,7 @@ func main() {
 		mode       string //启动模式: h开启http,s开启socket,a开启所有
 		debug      bool
 		trace      bool
+		runDaemon  bool // 运行daemon
 		help       bool
 		newApp     *core.MainApp
 	)
@@ -43,6 +45,7 @@ func main() {
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
 	flag.StringVar(&confFile, "conf", "app.conf", "")
+	flag.BoolVar(&runDaemon, "d", false, "run daemon")
 	flag.Parse()
 
 	if help {
@@ -67,14 +70,16 @@ func main() {
 		restPort = v
 	}
 
-	core.SetGlobalApp(newApp)
+	gof.CurrentApp = newApp
 	app.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 
 	var booted bool
 
-	go daemon.Run(newApp)
+	if runDaemon {
+		go daemon.Run(newApp)
+	}
 
 	if strings.Contains(mode, "s") {
 		booted = true

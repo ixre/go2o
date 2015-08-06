@@ -7,8 +7,9 @@
  * history :
  */
 package main
+
 import "go2o/src/app/daemon"
 
-func main(){
-	daemon.Run(nil)
+func main() {
+	daemon.FlagRun()
 }

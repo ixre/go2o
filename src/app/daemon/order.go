@@ -15,7 +15,7 @@ import (
 
 func autoSetOrder(partnerId int) {
 	f := func(err error) {
-		gCTX.Log().PrintErr(err)
+		appCtx.Log().PrintErr(err)
 	}
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }

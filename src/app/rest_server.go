@@ -26,7 +26,7 @@ var (
 )
 
 func RunRestApi(app gof.App, port int) {
-	fmt.Println("[Started]:Api server running on port [" + strconv.Itoa(port) + "]:")
+	fmt.Println("[ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
 
 	//socket client
 	time.Sleep(time.Second * 2) //等待启动Socket
