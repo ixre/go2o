@@ -74,20 +74,7 @@ func bootService(arr []string){
 			go startMailQueue()
 		case ServeOrder:
 			fmt.Println("[ Go2o][ Daemon][ Booted] - order daemon running")
+			go orderDaemon()
 		}
 	}
-}
-
-
-func daemon() {
-	go partnerDaemon()
-	go orderDaemon()
-}
-
-func recoverDaemon() {
-
-}
-
-func partnerDaemon() {
-	defer recoverDaemon()
 }
