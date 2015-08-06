@@ -72,15 +72,20 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 	git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
 	export GOPATH=$GOPATH:/home/usr/go/
 	cd /home/usr/go
-	go build server.go
+	go build go2o-server.go
+	go build go2o-daemon.go
 
 ### 2.Running Service ###
-	Usage of ./server:
+	Usage of ./go2o-server:
 		-debug=false: enable debug
 		-help=false: command usage
 		-mode="sha": boot mode.'h'- boot http service,'s'- boot socket service
 	    -port=1001: web server port
 		-port2=1002: socket server port
+		-d = false : running daemon service
+
+	Usage of ./go2o-daemon:
+		-debug = false : enable debug
 
 ### 3.Add http proxy by nginx ###
 	server {
