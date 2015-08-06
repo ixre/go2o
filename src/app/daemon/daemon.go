@@ -78,3 +78,9 @@ func bootService(arr []string){
 		}
 	}
 }
+
+
+
+func recoverDaemon() {
+
+}
