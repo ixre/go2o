@@ -21,6 +21,8 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	shoppingImpl "go2o/src/core/domain/shopping"
 	"go2o/src/core/infrastructure/domain"
+	"github.com/atnet/gof"
+	"go2o/src/core/variable"
 )
 
 var _ shopping.IShoppingRep = new(shoppingRep)
@@ -102,6 +104,9 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
 		}
+
+		// Sign new order
+		gof.CurrentApp.Storage().Set(variable.KvHaveNewOrder, 1)
 	}
 
 	// 保存订单项

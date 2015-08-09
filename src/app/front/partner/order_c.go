@@ -37,6 +37,15 @@ func (this *orderC) List(ctx *web.Context) {
 		}, "views/partner/order/order_list.html")
 }
 
+func (this *orderC) WaitPaymentList(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	shopsJson := cache.GetShopsJson(partnerId)
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{
+			"shops": template.JS(shopsJson),
+		}, "views/partner/order/order_waitpay_list.html")
+}
+
 func (this *orderC) Cancel(ctx *web.Context) {
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")

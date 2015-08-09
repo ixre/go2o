@@ -970,7 +970,7 @@ CREATE TABLE `pt_order` (
   `coupon_fee` decimal(10,2) DEFAULT NULL COMMENT '优惠券优惠金额',
   `balance_discount` float(8,2) DEFAULT NULL,
   `pay_fee` decimal(10,2) DEFAULT '0.00' COMMENT '支付金额',
-  `payment_opt` int(11) DEFAULT NULL COMMENT '1:餐到付款 2:网上支付  ',
+  `payment_opt` int(11) DEFAULT NULL COMMENT '1:现金支付 2:在线支付  ',
   `is_suspend` tinyint(4) DEFAULT '0',
   `is_paid` int(11) DEFAULT NULL COMMENT '是否支付(0:未支付 ，1：已支付)',
   `note` varchar(150) DEFAULT NULL,

@@ -480,8 +480,16 @@ func (this *Order) Process() error {
 
 // 确认订单
 func (this *Order) Confirm() error {
-	this._value.Status = enum.ORDER_CONFIRMED
-	this._value.UpdateTime = time.Now().Unix()
+	if this._value.PaymentOpt == enum.PaymentOnlinePay && !this._value.IsPaid{
+		return shopping.ErrOrderNotPayed
+	}
+	if this._value.IsPaid || this._value.PaymentOpt == enum.PaymentOfflineCashPay ||
+		this._value.PaymentOpt == enum.PaymentRemit {
+		this._value.Status = enum.ORDER_CONFIRMED
+		this._value.UpdateTime = time.Now().Unix()
+	}
+	//if this._value.PaymentOpt == enum.PaymentOfflineCashPay ||
+
 
 	_, err := this.Save()
 	if err == nil {

@@ -27,4 +27,7 @@ var (
 
 	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_payed ", "订单已支付")
+
+	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
+		"err_order_not_payed ", "订单未支付")
 )
