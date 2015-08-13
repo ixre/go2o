@@ -268,3 +268,13 @@ func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo strin
 	}
 	return err
 }
+
+// 确定订单
+func (this *shoppingService) ConfirmOrder(partnerId int, orderNo string)error {
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil {
+		err = order.Confirm()
+	}
+	return err
+}

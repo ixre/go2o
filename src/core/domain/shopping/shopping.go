@@ -304,7 +304,6 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 	val, err := this._rep.GetOrderByNo(this._partnerId, orderNo)
 
 	if err != nil {
-		log.PrintErr(err)
 		return nil, errors.New("订单不存在")
 	}
 	return this.CreateOrder(val, nil), err

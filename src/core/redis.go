@@ -11,7 +11,7 @@ package core
 import (
 	"fmt"
 	"github.com/atnet/gof"
-	"github.com/atnet/gof/log"
+	"log"
 	"github.com/garyburd/redigo/redis"
 	"time"
 )
@@ -36,10 +36,15 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 		MaxIdle:     redisMaxIdle,
 		IdleTimeout: time.Duration(redisIdleTimeout) * time.Second,
 		Dial: func() (redis.Conn, error) {
+			dial:
 			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", redisHost, redisPort))
 			if err != nil {
-				log.Fatalf("FATAL: redis(%s:%d) initialize failed - %s",
-					redisHost, redisPort, err.Error())
+				for {
+					log.Printf("FATAL: redis(%s:%d) initialize failed - %s , Redial after 5 seconds\n",
+						redisHost, redisPort, err.Error())
+					time.Sleep(time.Second * 5)
+					goto dial
+				}
 			}
 
 			if _, err := c.Do("select", redisDb); err != nil {

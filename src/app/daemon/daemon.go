@@ -15,6 +15,7 @@ import (
 	"github.com/atnet/gof"
 	"go2o/src/core"
 	"strings"
+	"go2o/src/core/service/dps"
 )
 
 const(
@@ -52,6 +53,8 @@ func FlagRun() {
 
 	appCtx = getAppCtx(conf)
 	appCtx.Init(debug,trace)
+	dps.Init(appCtx)
+
 	if service == "all" {
 		serviceArr = allService
 	}else {
