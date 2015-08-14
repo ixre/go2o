@@ -40,11 +40,12 @@ func autoSetOrder(partnerId int) {
 
 func confirmNewOrder(){
 	for {
-		if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i > 0 {
+		if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i == enum.FALSE {
+			appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin confirm")
 			confirmOrderQueue()
-			appCtx.Storage().Set(variable.KvHaveNewOrder, 0)
+			appCtx.Storage().Set(variable.KvHaveNewOrder,enum.TRUE)
 		}
-		time.Sleep(time.Second * 5
+		time.Sleep(time.Second * 5)
 	}
 }
 
@@ -59,7 +60,7 @@ func confirmOrderQueue(){
 	for _,v := range list{
 		err := dps.ShoppingService.ConfirmOrder(v.PartnerId,v.OrderNo)
 		if err != nil{
-			appCtx.Log().Printf("[ DAEMON][ ERROR] - %s\n",err.Error())
+			appCtx.Log().Printf("[ DAEMON][ ORDER][ ERROR] - %s\n",err.Error())
 		}
 	}
 }

@@ -34,7 +34,7 @@ func Run(ctx gof.App) {
 	} else {
 		appCtx = getAppCtx("app.conf")
 	}
-	bootService(allService)
+	bootService(allService,false)
 }
 
 // 自定义参数运行
@@ -61,14 +61,14 @@ func FlagRun() {
 		serviceArr = strings.Split(service, ",")
 	}
 
-	bootService(serviceArr)
+	bootService(serviceArr,true)
 }
 
 func getAppCtx(conf string) *core.MainApp {
 	return core.NewMainApp(conf)
 }
 
-func bootService(arr []string){
+func bootService(arr []string,standOne bool){
 	fmt.Println("[ Go2o][ Daemon][ Booted] - Daemon service is running.")
 	for _,v := range arr {
 		switch v {
@@ -79,6 +79,10 @@ func bootService(arr []string){
 			fmt.Println("[ Go2o][ Daemon][ Booted] - order daemon running")
 			go orderDaemon()
 		}
+	}
+	if standOne {
+		var ch chan int = make(chan int)
+		<- ch
 	}
 }
 

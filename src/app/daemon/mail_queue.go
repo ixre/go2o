@@ -13,6 +13,7 @@ import (
 	mssIns "go2o/src/core/infrastructure/mss"
 	"go2o/src/core/variable"
 	"time"
+	"go2o/src/core/domain/interface/enum"
 )
 
 var (
@@ -20,12 +21,13 @@ var (
 )
 
 func startMailQueue() {
-	if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i > 0 {
-		sendQueue()
-		appCtx.Storage().Set(variable.KvNewMailTask, 0)
+	for {
+		if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
+			sendQueue()
+			appCtx.Storage().Set(variable.KvNewMailTask, enum.TRUE)
+		}
+		time.Sleep(time.Second * 5)
 	}
-	time.Sleep(time.Second * 5)
-	startMailQueue()
 }
 
 func sendQueue() {

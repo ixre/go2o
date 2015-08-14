@@ -106,7 +106,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		}
 
 		// Sign new order
-		gof.CurrentApp.Storage().Set(variable.KvHaveNewOrder, 1)
+		gof.CurrentApp.Storage().Set(variable.KvHaveNewOrder, enum.FALSE)
 	}
 
 	// 保存订单项
