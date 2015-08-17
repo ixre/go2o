@@ -85,16 +85,16 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 	switch sortQuery {
 	case "price_0":
 		where = ""
-		orderBy = ""
+		orderBy = "gs_item.sale_price ASC"
 	case "price_1":
 		where = ""
-		orderBy = ""
+		orderBy = "gs_item.sale_price DESC"
 	case "sale_0":
 		where = ""
-		orderBy = ""
+		orderBy = "gs_goods.sale_num ASC"
 	case "sale_1":
 		where=""
-		orderBy = ""
+		orderBy = "gs_goods.sale_num DESC"
 	case "rate_0":
 		//todo:
 	case "rate_1":

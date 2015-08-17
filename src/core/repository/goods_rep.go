@@ -132,7 +132,7 @@ func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start,
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.partner_id=? AND gs_category.id IN (%s) AND gs_item.state=1
-		 AND gs_item.on_shelves=1 %s`, catIdStr), &total, partnerId,where)
+		 AND gs_item.on_shelves=1 %s`, catIdStr,where), &total, partnerId)
 
 	e = []*valueobject.Goods{}
 	if total > 0 {
