@@ -57,7 +57,7 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 			}
 			if _, err = c.Do("SELECT", redisDb); err != nil {
 				c.Close()
-				log.Fatalf("FATAL: redis(%s:%d) initialize failed - %s",
+				log.Fatalf("[ Redis][ SELECT] - redis(%s:%d) select db failed - %s",
 					redisHost, redisPort, err.Error())
 			}
 
