@@ -53,6 +53,8 @@ func FlagRun() {
 
 	appCtx = getAppCtx(conf)
 	appCtx.Init(debug,trace)
+	gof.CurrentApp = appCtx
+
 	dps.Init(appCtx)
 
 	if service == "all" {
