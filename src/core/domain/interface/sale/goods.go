@@ -51,6 +51,9 @@ type IGoods interface {
 	// 保存
 	Save() (int, error)
 
+	// 更新销售数量
+	UpgradeSaleNum(saleNum int)error
+
 	// 生成快照
 	GenerateSnapshot() (int, error)
 
