@@ -20,6 +20,8 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 	redisHost := c.GetString("redis_host")
 	redisDb := c.GetString("redis_db")
 	redisPort := c.GetInt("redis_port")
+	redisAuth := c.GetString("redis_auth")
+
 	if redisPort <= 0 {
 		redisPort = 6379
 	}
@@ -40,14 +42,20 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", redisHost, redisPort))
 			if err != nil {
 				for {
-					log.Printf("FATAL: redis(%s:%d) initialize failed - %s , Redial after 5 seconds\n",
+					log.Printf("[ Redis] - redis(%s:%d) dial failed - %s , Redial after 5 seconds\n",
 						redisHost, redisPort, err.Error())
 					time.Sleep(time.Second * 5)
 					goto dial
 				}
 			}
 
-			if _, err := c.Do("select", redisDb); err != nil {
+			if len(redisAuth) != 0 {
+				if _,err := c.Do("AUTH",redisAuth);err != nil{
+					c.Close()
+					log.Fatalf("[ Redis][ AUTH] - %s\n",err.Error())
+				}
+			}
+			if _, err = c.Do("SELECT", redisDb); err != nil {
 				c.Close()
 				log.Fatalf("FATAL: redis(%s:%d) initialize failed - %s",
 					redisHost, redisPort, err.Error())
