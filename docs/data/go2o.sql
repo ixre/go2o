@@ -257,7 +257,7 @@ CREATE TABLE `gs_member_price` (
   `price` decimal(8,2) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -382,7 +382,7 @@ CREATE TABLE `mm_balance_info` (
   `create_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -520,7 +520,8 @@ DROP TABLE IF EXISTS `mm_member`;
 CREATE TABLE `mm_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `usr` varchar(20) DEFAULT NULL COMMENT '用户名',
-  `pwd` varchar(32) DEFAULT NULL COMMENT '密码',
+  `pwd` varchar(45) DEFAULT NULL COMMENT '密码',
+  `trade_pwd` varchar(45) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL COMMENT '名字',
   `exp` int(11) unsigned DEFAULT '0',
   `level` int(11) DEFAULT '1',
@@ -548,7 +549,7 @@ CREATE TABLE `mm_member` (
 
 LOCK TABLES `mm_member` WRITE;
 /*!40000 ALTER TABLE `mm_member` DISABLE KEYS */;
-INSERT INTO `mm_member` VALUES (1,'newmin','299cfb04ac15bcb36009f67270d7e302','刘铭',8161,5,NULL,1,'','2012-09-05','18616999822','上海市徐汇区江安路15号1','18867761','q121276@26.com','112.65.35.191',NULL,2012,1433592859,NULL,1),(2,'lin','5c37d8c108c0f1dbcdb75e9090d7877a','林德意',0,1,NULL,0,'','1970.05。29','13924886758','佛山禅城人民路99号',NULL,NULL,'61.145.69.27',NULL,2012,2012,NULL,1),(3,'hshx','04dfafbaa77f39f7baeae545e672173d','黄升鑫',0,1,NULL,0,'','1979-12-01','15602817110','广东省佛山市禅城区人民路鹤园路81号','809987822','809987822@qq.com','27.36.72.124',NULL,2012,1,NULL,1),(4,'lindeyi','3125b0ba32ec1938bf666254b0b98ea2','林德意',0,1,NULL,0,'','1970-05-29','13924886758','佛山市禅城区人民路99号','569101942','lindeyi158@yahoo.com.cn','183.27.197.170',NULL,2012,1,NULL,1),(5,'sumian','f573300c92332b119412ff20c637f12c','',0,1,NULL,0,'','','13924886758','福建省海天大夏二栋201','','','14.157.18.39',NULL,2012,1,NULL,1),(6,'linsu','33738453ed0a710bf9f7fdabdd85747b','',0,1,NULL,0,'','','13924886758','广州市黄埔去电子大夏3楼301室','','','14.157.18.39',NULL,2012,1,NULL,1),(7,'sonven','2bfba80a9fa1797100e5f822763262b0','',0,1,NULL,0,'','','18616999822','上海市浦东新区浦电路123弄','','','183.250.3.128',NULL,2012,1,NULL,1),(8,'yangbo','939663a18f9316b0164dccf716c8b2c6','',0,1,NULL,0,'','','18616888888','佛山市禅城区汾江中路20号','','','183.250.3.128',NULL,2012,1,NULL,1),(9,'xiaoyuan','9949cde26501d4d78c0e98f00fc2fca0','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(10,'liuming','7d42ae6bc8010260b1b2588a695bc87d','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(11,'xiaoyuanyaun','da162e57fe4cb7b158d25b3c338e7775','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(12,'liuxiaoyuan','024e59360c238bbd3e4b077871cb7b73','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(13,'yuan','69532b68ff7b154e3a36da699080e121','',0,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路东大街3号5楼','','','183.27.195.23',NULL,2013,1,NULL,1),(14,'yuanyuan','f131c685a84cae07202b3141a89c653a','',0,1,NULL,0,'','','13728501775','佛山禅城区张槎四路岗头东大街3号5楼','','','183.27.199.29',NULL,2013,1,NULL,1),(15,'13924886758','990beab6c88213f64e4b77eea0adfcb3','',0,1,NULL,0,'','','13924886758','佛山市禅城区人民路99号','','','183.28.79.121',NULL,2013,1,NULL,1),(16,'13728501775','1499fcf72e7b3e76d1cb3d89a447a075','',0,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路（东海明珠后方）岗头东大街3号5楼','','','183.27.46.207',NULL,2013,1,NULL,1),(25,'sa','1d29a68d4b43f68f551e240947965e29','刘铭',0,1,NULL,2,NULL,'1970-11-20','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(26,'test','d9a52759304917ddc5128a90177f9287','测试员',0,1,NULL,1,NULL,'1988-11-09','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(27,'test001','a25efbc2a481f4084e415794ec834a83','刘大炮',0,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(28,'newmin123','114d350d14dbeee6cbcb841fe2746c49','刘大也',27,1,'aaaaaa',0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(29,'jarry','445ef6185c7e0076a4f07ff97fb4abc3','家锐',0,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'192.168.31.129',NULL,0,0,NULL,1),(30,'u1000','53b4a466a0883dd4d1a002caef1c65de',NULL,0,1,'5daf22',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335389,1431953647,NULL,1),(31,'u1001','c43e587df5a87911418055e38e5e0923',NULL,0,1,'a4fa87',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335618,1431335618,NULL,1),(32,'u1002','dad1ac0b86a782fa0ecd61e3bda9b4bc',NULL,0,1,'5c9182',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','APP-ANDROID',1431336759,1431336803,NULL,1),(33,'u1003','473fb3efa20ba61a931149a25009738f',NULL,0,1,'2ba7a3',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.31.129','WEB',1431601168,1431601168,NULL,1),(34,'u1004','f8e18784ff1ebfafa80757368761febe',NULL,0,1,'7781cf',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.31.129','WEB',1431601177,1431601177,NULL,1),(35,'u1005','5abf05d05febeeb2afdb6be2a38a4c23','u1005',0,1,'c5c5b3',0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'192.168.31.129','API-INTERNAL',1431845902,1431845902,NULL,1);
+INSERT INTO `mm_member` VALUES (1,'newmin','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','刘铭',8161,5,NULL,1,'','2012-09-05','18616999822','上海市徐汇区江安路15号1','18867761','q121276@26.com','112.65.35.191',NULL,2012,1433592859,NULL,1),(2,'lin','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','林德意',0,1,NULL,0,'','1970.05。29','13924886758','佛山禅城人民路99号',NULL,NULL,'61.145.69.27',NULL,2012,2012,NULL,1),(3,'hshx','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','黄升鑫',0,1,NULL,0,'','1979-12-01','15602817110','广东省佛山市禅城区人民路鹤园路81号','809987822','809987822@qq.com','27.36.72.124',NULL,2012,1,NULL,1),(4,'lindeyi','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','林德意',0,1,NULL,0,'','1970-05-29','13924886758','佛山市禅城区人民路99号','569101942','lindeyi158@yahoo.com.cn','183.27.197.170',NULL,2012,1,NULL,1),(5,'sumian','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13924886758','福建省海天大夏二栋201','','','14.157.18.39',NULL,2012,1,NULL,1),(6,'linsu','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13924886758','广州市黄埔去电子大夏3楼301室','','','14.157.18.39',NULL,2012,1,NULL,1),(7,'sonven','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616999822','上海市浦东新区浦电路123弄','','','183.250.3.128',NULL,2012,1,NULL,1),(8,'yangbo','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616888888','佛山市禅城区汾江中路20号','','','183.250.3.128',NULL,2012,1,NULL,1),(9,'xiaoyuan','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(10,'liuming','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(11,'xiaoyuanyaun','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(12,'liuxiaoyuan','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','18616999822','上海市徐汇区飞掉国际大厦','','','218.85.143.146',NULL,2013,1,NULL,1),(13,'yuan','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路东大街3号5楼','','','183.27.195.23',NULL,2013,1,NULL,1),(14,'yuanyuan','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13728501775','佛山禅城区张槎四路岗头东大街3号5楼','','','183.27.199.29',NULL,2013,1,NULL,1),(15,'13924886758','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13924886758','佛山市禅城区人民路99号','','','183.28.79.121',NULL,2013,1,NULL,1),(16,'13728501775','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','',0,1,NULL,0,'','','13728501775','佛山市禅城区张槎四路（东海明珠后方）岗头东大街3号5楼','','','183.27.46.207',NULL,2013,1,NULL,1),(25,'sa','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','刘铭',0,1,NULL,2,NULL,'1970-11-20','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(26,'test','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','测试员',0,1,NULL,1,NULL,'1988-11-09','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(27,'test001','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','刘大炮',0,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(28,'newmin123','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','刘大也',27,1,'aaaaaa',0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'127.0.0.1',NULL,2014,2014,NULL,1),(29,'jarry','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','家锐',0,1,NULL,0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'192.168.31.129',NULL,0,0,NULL,1),(30,'u1000','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51',NULL,0,1,'5daf22',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335389,1431953647,NULL,1),(31,'u1001','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51',NULL,0,1,'a4fa87',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','API-INTERNAL',1431335618,1431335618,NULL,1),(32,'u1002','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51',NULL,0,1,'5c9182',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.1.7','APP-ANDROID',1431336759,1431336803,NULL,1),(33,'u1003','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51',NULL,0,1,'2ba7a3',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.31.129','WEB',1431601168,1431601168,NULL,1),(34,'u1004','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51',NULL,0,1,'7781cf',0,'share/noavatar.gif','1970-01-01',NULL,NULL,NULL,NULL,'192.168.31.129','WEB',1431601177,1431601177,NULL,1),(35,'u1005','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','b7d9d29b9dce272b25934b2b2331b4d36c19bc51','u1005',0,1,'c5c5b3',0,'share/noavatar.gif','1970-01-01','18616999822',NULL,NULL,NULL,'192.168.31.129','API-INTERNAL',1431845902,1431845902,NULL,1);
 /*!40000 ALTER TABLE `mm_member` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -715,7 +716,7 @@ CREATE TABLE `pm_info` (
   `enabled` tinyint(1) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -743,7 +744,7 @@ CREATE TABLE `pt_ad` (
   `enabled` tinyint(1) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -771,7 +772,7 @@ CREATE TABLE `pt_ad_image` (
   `sort_number` int(11) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -850,7 +851,7 @@ CREATE TABLE `pt_kvset_member` (
   `value` varchar(100) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -970,7 +971,7 @@ CREATE TABLE `pt_order` (
   `coupon_fee` decimal(10,2) DEFAULT NULL COMMENT '优惠券优惠金额',
   `balance_discount` float(8,2) DEFAULT NULL,
   `pay_fee` decimal(10,2) DEFAULT '0.00' COMMENT '支付金额',
-  `payment_opt` int(11) DEFAULT NULL COMMENT '1:现金支付 2:在线支付  ',
+  `payment_opt` int(11) DEFAULT NULL COMMENT '1:餐到付款 2:网上支付  ',
   `is_suspend` tinyint(4) DEFAULT '0',
   `is_paid` int(11) DEFAULT NULL COMMENT '是否支付(0:未支付 ，1：已支付)',
   `note` varchar(150) DEFAULT NULL,
@@ -1035,6 +1036,7 @@ DROP TABLE IF EXISTS `pt_order_item`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_order_item` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) DEFAULT NULL,
   `snapshot_id` int(11) DEFAULT NULL,
   `quantity` int(11) DEFAULT NULL,
   `sku` varchar(100) DEFAULT NULL,
@@ -1099,7 +1101,7 @@ CREATE TABLE `pt_order_pb` (
   `is_apply` tinyint(1) DEFAULT NULL,
   `is_confirm` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1130,7 +1132,7 @@ CREATE TABLE `pt_page` (
   `update_time` int(11) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='合作商页面';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='合作商页面';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1152,7 +1154,7 @@ DROP TABLE IF EXISTS `pt_partner`;
 CREATE TABLE `pt_partner` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `usr` varchar(20) DEFAULT NULL,
-  `pwd` varchar(32) DEFAULT NULL,
+  `pwd` varchar(45) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
   `logo` varchar(50) DEFAULT NULL,
   `tel` varchar(50) DEFAULT NULL,
@@ -1173,7 +1175,7 @@ CREATE TABLE `pt_partner` (
 
 LOCK TABLES `pt_partner` WRITE;
 /*!40000 ALTER TABLE `pt_partner` DISABLE KEYS */;
-INSERT INTO `pt_partner` VALUES (101,'go2o','5f618b90a86a41d7faf4dfd46c3f07d0','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499),(104,'zs','95d73c1c5a056499a8e3ebc5d148a8ad','朝首','master/item_pic/20150513221019.png','0757-22332233','18512345678','佛山市南海区海八路20号',1431526823,1747146023,1431526823,0,0),(105,'wzo2o','89a3b5c0336e0f6f66a7658f90500c53','万州O2O','master/item_pic/20150513221025.png','0592-2231232','18850001234','重庆市江北区小桥路123号',1431527146,1747146346,1431527146,0,0);
+INSERT INTO `pt_partner` VALUES (101,'go2o','5f618b90a86a41d7faf4dfd46c3f07d0','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499),(104,'zs','89a2143339120174160e70f65993f74cc1a8b7a0','朝首','master/item_pic/20150513221019.png','0757-22332233','18512345678','佛山市南海区海八路20号',1431526823,1747146023,1431526823,0,0),(105,'wzo2o','89a3b5c0336e0f6f66a7658f90500c53','万州O2O','master/item_pic/20150513221025.png','0592-2231232','18850001234','重庆市江北区小桥路123号',1431527146,1747146346,1431527146,0,0);
 /*!40000 ALTER TABLE `pt_partner` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1509,4 +1511,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-27 17:15:36
+-- Dump completed on 2015-08-17 22:14:33

@@ -85,6 +85,14 @@ func (this *shoppingRep) GetFreeOrderNo(partnerId int) string {
 	}
 	return order_no
 }
+
+// 获取订单项
+func (this *shoppingRep) GetOrderItems(orderId int)[]*shopping.OrderItem{
+	var items = []*shopping.OrderItem{}
+	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
+	return items
+}
+
 func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, error) {
 	var err error
 	d := this.Connector
@@ -113,6 +121,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	if err == nil && v.Items != nil {
 		orm := d.GetOrm()
 		for _, v1 := range v.Items {
+			v1.OrderId = v.Id
 			if v1.Id > 0 {
 				orm.Save(v1.Id, v1)
 			} else {
@@ -120,7 +129,6 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 			}
 		}
 	}
-
 	return v.Id, err
 }
 

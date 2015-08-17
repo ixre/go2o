@@ -302,10 +302,12 @@ func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalanceDis
 
 func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 	val, err := this._rep.GetOrderByNo(this._partnerId, orderNo)
-
 	if err != nil {
 		return nil, errors.New("订单不存在")
 	}
+
+	val.Items = this._rep.GetOrderItems(val.Id)
+	fmt.Println("[ ORDER][ TEST]------",len(val.Items))
 	return this.CreateOrder(val, nil), err
 }
 

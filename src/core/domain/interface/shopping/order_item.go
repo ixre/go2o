@@ -11,6 +11,7 @@ package shopping
 // 订单商品项
 type OrderItem struct {
 	Id         int     `db:"id" pk:"yes" auto:"yes" json:"id"`
+	OrderId    int     `db:"order_id"`
 	SnapshotId int     `db:"snapshot_id"`
 	Quantity   int     `db:"quantity"`
 	Sku        string  `db:"sku"`

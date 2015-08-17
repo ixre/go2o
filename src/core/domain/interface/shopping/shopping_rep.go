@@ -33,6 +33,9 @@ type IShoppingRep interface {
 	// 获取等待处理的订单
 	GetWaitingSetupOrders(partnerId int) ([]*ValueOrder, error)
 
+	// 获取订单项
+	GetOrderItems(orderId int)[]*OrderItem
+
 	// 保存订单日志
 	SaveOrderLog(*OrderLog) error
 

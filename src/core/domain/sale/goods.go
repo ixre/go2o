@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"time"
+	"errors"
 )
 
 var _ sale.IGoods = new(SaleGoods)
@@ -235,6 +236,20 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 	}
 
 	return 0, sale.ErrLatestSnapshot
+}
+
+
+// 更新销售数量
+func (this *SaleGoods) AddSaleNum(quantity int)error {
+	// 减去库存
+	if quantity > 0 {
+		this._value.StockNum -= quantity
+	}else {
+		return errors.New("sale num less than now num")
+	}
+	this._value.SaleNum += quantity
+	_, err := this.Save()
+	return err
 }
 
 // 是否为新快照,与旧有快照进行数据对比

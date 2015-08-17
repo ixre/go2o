@@ -52,7 +52,7 @@ type IGoods interface {
 	Save() (int, error)
 
 	// 更新销售数量
-	UpgradeSaleNum(saleNum int)error
+	AddSaleNum(quantity int)error
 
 	// 生成快照
 	GenerateSnapshot() (int, error)

@@ -40,7 +40,6 @@ type Order struct {
 	_shoppingRep     shopping.IShoppingRep
 	_partnerRep      partner.IPartnerRep
 	_saleRep         sale.ISaleRep
-	_goodsRep 		 sale.IGoodsRep
 	_promRep         promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
 	_balanceDiscount bool // 余额支付
@@ -48,8 +47,7 @@ type Order struct {
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
 	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep,promRep promotion.IPromotionRep,
-	memberRep member.IMemberRep) shopping.IOrder {
+	promRep promotion.IPromotionRep,memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
 		_shopping:    shopping,
 		_value:       value,
@@ -59,7 +57,6 @@ func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shop
 		_shoppingRep: shoppingRep,
 		_partnerRep:  partnerRep,
 		_saleRep:     saleRep,
-		_goodsRep:goodsRep,
 	}
 }
 
@@ -491,12 +488,12 @@ func (this *Order) Confirm() error {
 		this._value.Status = enum.ORDER_CONFIRMED
 		this._value.UpdateTime = time.Now().Unix()
 
-
-
 		_, err := this.Save()
 		if err == nil {
 			for _,v := range this._value.Items{
-				this.addGoodsSaleNum(v.SnapshotId,1)
+				if err = this.addGoodsSaleNum(v.SnapshotId,v.Quantity);err == nil{
+					fmt.Println("-------",err.Error())
+				}
 			}
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
 		}
@@ -506,7 +503,7 @@ func (this *Order) Confirm() error {
 }
 
 // 添加商品销售数量
-func (this *Order) addGoodsSaleNum(snapshotId int,num int)error{
+func (this *Order) addGoodsSaleNum(snapshotId int,quantity int)error{
 	snapshot := this._saleRep.GetGoodsSnapshot(snapshotId)
 	if snapshot == nil{
 		return sale.ErrNoSuchSnapshot
@@ -517,7 +514,7 @@ func (this *Order) addGoodsSaleNum(snapshotId int,num int)error{
 	if goods == nil{
 		return sale.ErrNoSuchGoods
 	}
-	return goods.UpgradeSaleNum(goods.GetValue().SaleNum + num)
+	return goods.AddSaleNum(quantity)
 }
 
 // 配送订单
