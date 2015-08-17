@@ -16,25 +16,27 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"strconv"
 	"time"
+	"strings"
 )
 
 func HandleCashBackDataTag(m member.IMember, order *shopping.ValueOrder,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 	data := c.GetDataTag()
-	if _, ok := data["G1"]; ok {
-		cashBack3R(m, order, c, memberRep)
+	var level int = 0
+	for k, _ := range data {
+		if strings.HasPrefix(k, "G") {
+			if l, err := strconv.Atoi(k[1:]); err == nil && l > level {
+				level = l
+			}
+		}
 	}
-	// fmt.Println("---------[ xxx ]",len(data),data)
+	//log.Println("[ Back][ Level] - ",level)
+	cashBack3R(level, m, order, c, memberRep)
 }
 
-func cashBack3R(m member.IMember, order *shopping.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
-
-	var fee1 int
-	var fee2 int
+func cashBack3R(level int,m member.IMember, order *shopping.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 
 	dt := c.GetDataTag()
-	fee1, _ = strconv.Atoi(dt["G1"])
-	fee2, _ = strconv.Atoi(dt["G2"])
 
 	var cm member.IMember = m
 	var pm member.IMember = m
@@ -60,16 +62,16 @@ func cashBack3R(m member.IMember, order *shopping.ValueOrder, c promotion.ICashB
 			break
 		}
 
-		if i == 0 {
-			backFunc(cm, pm, fee2)
-		} else if i == 1 {
-			backFunc(cm, pm, fee1)
+		if fee, err := strconv.Atoi(dt[fmt.Sprintf("G%d",i)]);err == nil {
+			//log.Println("[ Back][ Cash] - ",i," back ",fee)
+			backFunc(cm, pm, fee)
 		}
+
 
 		pm = cm
 
 		i++
-		if i > 1 {
+		if i >= level {
 			break
 		}
 	}

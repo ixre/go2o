@@ -16,4 +16,5 @@ type OrderItem struct {
 	Quantity   int     `db:"quantity"`
 	Sku        string  `db:"sku"`
 	Fee        float32 `db:"fee"`
+	UpdateTime int64   `db:"update_time"`
 }

@@ -307,7 +307,6 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 	}
 
 	val.Items = this._rep.GetOrderItems(val.Id)
-	fmt.Println("[ ORDER][ TEST]------",len(val.Items))
 	return this.CreateOrder(val, nil), err
 }
 

@@ -114,7 +114,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		cat := dps.SaleService.GetCategory(p.Id, categoryId)
 
 		total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,
-			(page-1)*size, page*size,sortQuery)
+			(page-1)*size, page*size, sortQuery)
 
 		var pagerHtml string
 		if total > size {

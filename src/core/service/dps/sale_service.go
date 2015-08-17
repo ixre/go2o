@@ -93,7 +93,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		where = ""
 		orderBy = "gs_goods.sale_num ASC"
 	case "sale_1":
-		where=""
+		where = ""
 		orderBy = "gs_goods.sale_num DESC"
 	case "rate_0":
 		//todo:
@@ -101,7 +101,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		//todo:
 	}
 
-	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end,where,orderBy)
+	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, where, orderBy)
 
 }
 

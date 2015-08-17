@@ -23,6 +23,7 @@ import (
 	shoppingImpl "go2o/src/core/domain/shopping"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/variable"
+	"time"
 )
 
 var _ shopping.IShoppingRep = new(shoppingRep)
@@ -87,7 +88,7 @@ func (this *shoppingRep) GetFreeOrderNo(partnerId int) string {
 }
 
 // 获取订单项
-func (this *shoppingRep) GetOrderItems(orderId int)[]*shopping.OrderItem{
+func (this *shoppingRep) GetOrderItems(orderId int) []*shopping.OrderItem {
 	var items = []*shopping.OrderItem{}
 	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items
@@ -118,10 +119,12 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	}
 
 	// 保存订单项
+	unix := time.Now().Unix()
 	if err == nil && v.Items != nil {
 		orm := d.GetOrm()
 		for _, v1 := range v.Items {
 			v1.OrderId = v.Id
+			v1.UpdateTime = unix
 			if v1.Id > 0 {
 				orm.Save(v1.Id, v1)
 			} else {
