@@ -10,11 +10,11 @@
 package daemon
 
 import (
-	"go2o/src/core/service/dps"
-	"time"
-	"go2o/src/core/variable"
-	"go2o/src/core/domain/interface/enum"
 	"fmt"
+	"go2o/src/core/domain/interface/enum"
+	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
+	"time"
 )
 
 func orderDaemon() {
@@ -38,29 +38,30 @@ func autoSetOrder(partnerId int) {
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }
 
-func confirmNewOrder(){
+func confirmNewOrder() {
 	for {
 		if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i == enum.FALSE {
 			appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin confirm")
 			confirmOrderQueue()
-			appCtx.Storage().Set(variable.KvHaveNewOrder,enum.TRUE)
+			appCtx.Storage().Set(variable.KvHaveNewOrder, enum.TRUE)
 		}
 		time.Sleep(time.Second * 5)
 	}
 }
 
-type orderInfo struct{
+type orderInfo struct {
 	PartnerId int
-	OrderNo string
+	OrderNo   string
 }
-func confirmOrderQueue(){
+
+func confirmOrderQueue() {
 	var list []*orderInfo = []*orderInfo{}
-	appCtx.Db().GetOrm().SelectByQuery(&list,fmt.Sprintf("SELECT partner_id,order_no FROM pt_order WHERE status=%d",
+	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT partner_id,order_no FROM pt_order WHERE status=%d",
 		enum.ORDER_CREATED))
-	for _,v := range list{
-		err := dps.ShoppingService.ConfirmOrder(v.PartnerId,v.OrderNo)
-		if err != nil{
-			appCtx.Log().Printf("[ DAEMON][ ORDER][ ERROR] - %s\n",err.Error())
+	for _, v := range list {
+		err := dps.ShoppingService.ConfirmOrder(v.PartnerId, v.OrderNo)
+		if err != nil {
+			appCtx.Log().Printf("[ DAEMON][ ORDER][ ERROR] - %s\n", err.Error())
 		}
 	}
 }

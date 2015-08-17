@@ -8,7 +8,7 @@
  */
 package enum
 
-const(
-	TRUE int = 1
+const (
+	TRUE  int = 1
 	FALSE int = 0
 )

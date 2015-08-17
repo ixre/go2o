@@ -270,7 +270,7 @@ func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo strin
 }
 
 // 确定订单
-func (this *shoppingService) ConfirmOrder(partnerId int, orderNo string)error {
+func (this *shoppingService) ConfirmOrder(partnerId int, orderNo string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {

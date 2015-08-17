@@ -23,5 +23,3 @@ func getPartners() []int {
 	}
 	return partnerIds
 }
-
-

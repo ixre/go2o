@@ -11,9 +11,9 @@ package repository
 import (
 	"github.com/atnet/gof"
 	"github.com/atnet/gof/db"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/variable"
-	"go2o/src/core/domain/interface/enum"
 )
 
 var _ mss.IMssRep = new(MssRep)
@@ -68,6 +68,6 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 	if _, _, err := this._conn.GetOrm().Save(nil, v); err != nil {
 		return err
 	}
-	gof.CurrentApp.Storage().Set(variable.KvNewMailTask,enum.FALSE)
+	gof.CurrentApp.Storage().Set(variable.KvNewMailTask, enum.FALSE)
 	return nil
 }

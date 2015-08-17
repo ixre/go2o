@@ -11,8 +11,8 @@ package core
 import (
 	"fmt"
 	"github.com/atnet/gof"
-	"log"
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"time"
 )
 
@@ -38,7 +38,7 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 		MaxIdle:     redisMaxIdle,
 		IdleTimeout: time.Duration(redisIdleTimeout) * time.Second,
 		Dial: func() (redis.Conn, error) {
-			dial:
+		dial:
 			c, err := redis.Dial("tcp", fmt.Sprintf("%s:%d", redisHost, redisPort))
 			if err != nil {
 				for {
@@ -50,9 +50,9 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 			}
 
 			if len(redisAuth) != 0 {
-				if _,err := c.Do("AUTH",redisAuth);err != nil{
+				if _, err := c.Do("AUTH", redisAuth); err != nil {
 					c.Close()
-					log.Fatalf("[ Redis][ AUTH] - %s\n",err.Error())
+					log.Fatalf("[ Redis][ AUTH] - %s\n", err.Error())
 				}
 			}
 			if _, err = c.Do("SELECT", redisDb); err != nil {

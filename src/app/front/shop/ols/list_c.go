@@ -15,6 +15,7 @@ import (
 	"github.com/atnet/gof/algorithm/iterator"
 	"github.com/atnet/gof/web"
 	"github.com/atnet/gof/web/pager"
+	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/domain/util"
 	"go2o/src/core/infrastructure/format"
@@ -91,6 +92,10 @@ func (this *ListC) getIdArray(path string) []int {
 	return intArr
 }
 
+func (this *ListC) GetSorter(ctx *web.Context) {
+
+}
+
 // 商品列表
 func (this *ListC) List_Index(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
@@ -139,10 +144,15 @@ func (this *ListC) List_Index(ctx *web.Context) {
 			}
 		}
 
+		sortBar := front.GetSorterHtml(front.GoodsListSortItems,
+			ctx.Request.URL.Query().Get("sort"),
+			ctx.Request.URL.RequestURI())
+
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"cat":   cat,
-			"items": template.HTML(buf.Bytes()),
-			"pager": template.HTML(pagerHtml),
+			"cat":      cat,
+			"sort_bar": template.HTML(sortBar),
+			"items":    template.HTML(buf.Bytes()),
+			"pager":    template.HTML(pagerHtml),
 		},
 			"views/shop/ols/{device}/list.html",
 			"views/shop/ols/{device}/inc/header.html",

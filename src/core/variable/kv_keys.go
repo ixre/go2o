@@ -9,6 +9,6 @@
 package variable
 
 const (
-	KvNewMailTask = "sys:mss:"
+	KvNewMailTask  = "sys:mss:"
 	KvHaveNewOrder = "sys:queue:have_new_order"
 )

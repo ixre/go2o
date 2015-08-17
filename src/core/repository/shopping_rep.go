@@ -11,6 +11,7 @@ package repository
 
 import (
 	"errors"
+	"github.com/atnet/gof"
 	"github.com/atnet/gof/db"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
@@ -21,7 +22,6 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	shoppingImpl "go2o/src/core/domain/shopping"
 	"go2o/src/core/infrastructure/domain"
-	"github.com/atnet/gof"
 	"go2o/src/core/variable"
 )
 
