@@ -72,14 +72,36 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 }
 
 // 获取分页上架的商品
-func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int) (int, []*valueobject.Goods) {
+func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int,
+	sortQuery string) (int, []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
 	var cate sale.ICategory = sl.GetCategory(categoryId)
 	var ids []int = cate.GetChildId()
 	ids = append(ids, categoryId)
 	//todo: cache
 
-	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end)
+	var where string
+	var orderBy string
+	switch sortQuery {
+	case "price_0":
+		where = ""
+		orderBy = ""
+	case "price_1":
+		where = ""
+		orderBy = ""
+	case "sale_0":
+		where = ""
+		orderBy = ""
+	case "sale_1":
+		where=""
+		orderBy = ""
+	case "rate_0":
+		//todo:
+	case "rate_1":
+		//todo:
+	}
+
+	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end,where,orderBy)
 
 }
 

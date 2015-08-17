@@ -117,22 +117,30 @@ func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 }
 
 // 获取在货架上的商品
-func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int) (total int, e []*valueobject.Goods) {
+func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int,where,orderBy string) (total int, e []*valueobject.Goods) {
 	var sql string
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
 
+	if len(where)!= 0 {
+		where = " AND "+where
+	}
+	if len(orderBy) != 0 {
+		orderBy += ","
+	}
+
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.partner_id=? AND gs_category.id IN (%s) AND gs_item.state=1
-		 AND gs_item.on_shelves=1`, catIdStr), &total, partnerId)
+		 AND gs_item.on_shelves=1 %s`, catIdStr), &total, partnerId,where)
 
 	e = []*valueobject.Goods{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.partner_id=? AND gs_category.id IN (%s) AND gs_item.state=1
-		 AND gs_item.on_shelves=1 ORDER BY update_time DESC LIMIT %d,%d`, catIdStr, start, (end - start))
+		 AND gs_item.on_shelves=1 %s ORDER BY %s update_time DESC LIMIT %d,%d`, catIdStr,
+			where,orderBy,start,(end - start))
 
 		this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId)
 	}

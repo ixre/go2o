@@ -104,6 +104,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 
 		const size int = 20 //-1表示全部
 
+		sortQuery := ctx.Request.URL.Query().Get("sort")
 		idArr := this.getIdArray(r.URL.Path)
 		page, _ := strconv.Atoi(r.FormValue("page"))
 		if page < 1 {
@@ -112,7 +113,9 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		categoryId := idArr[len(idArr)-1]
 		cat := dps.SaleService.GetCategory(p.Id, categoryId)
 
-		total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId, (page-1)*size, page*size)
+		total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,
+			(page-1)*size, page*size,sortQuery)
+
 		var pagerHtml string
 		if total > size {
 			pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
@@ -145,7 +148,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		}
 
 		sortBar := front.GetSorterHtml(front.GoodsListSortItems,
-			ctx.Request.URL.Query().Get("sort"),
+			sortQuery,
 			ctx.Request.URL.RequestURI())
 
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{

@@ -26,7 +26,8 @@ type IGoodsRep interface {
 	SaveValueGoods(*ValueGoods) (int, error)
 
 	// 获取在货架上的商品
-	GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int) (total int, goods []*valueobject.Goods)
+	GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int,
+		where,orderBy string) (total int, goods []*valueobject.Goods)
 
 	// 根据编号获取商品
 	GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error)
