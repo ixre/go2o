@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ S1N1 Team.
+ * Copyright 2015 @ z3q.net.
  * name : defined.go
  * author : jarryliu
  * date : 2015-08-13 08:55

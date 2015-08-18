@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ S1N1 Team.
+ * Copyright 2015 @ z3q.net.
  * name : api_test.go
  * author : jarryliu
  * date : -- :

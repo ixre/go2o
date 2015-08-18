@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ S1N1 Team.
+ * Copyright 2015 @ z3q.net.
  * name : simple_goods.go
  * author : jarryliu
  * date : 2015-08-18 09:24

@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 @ S1N1 Team.
+ * Copyright 2015 @ z3q.net.
  * name : alipay.go
  * author : jarryliu
  * date : 2015-07-28 17:21
