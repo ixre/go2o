@@ -293,6 +293,7 @@ type editorC struct {
 	*baseC
 }
 
+
 func (this *editorC) File_manager(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	d, err := fileManager(ctx.Request,
