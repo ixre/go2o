@@ -1,5 +1,5 @@
 
-![Go2o](https://raw.githubusercontent.com/atnet/go2o/master/docs/mark.gif "GO2O")
+![Go2o](https://raw.githubusercontent.com/jrsix/go2o/master/docs/mark.gif "GO2O")
 
 ## What's Go2o? ##
 
@@ -37,7 +37,7 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 由 #刘铭#, #大鹏# （全职开发,无收入 -_- )，
 
 ------------------------
-贡献代码请看： [todo list](https://github.com/atnet/go2o/tree/master/docs/dev/todo.md) |
+贡献代码请看： [todo list](https://github.com/jrsix/go2o/tree/master/docs/dev/todo.md) |
 [bug list](https://github.com/atnet/go2o/tree/master/docs/dev/bug.md)
 
 代码保证每周更新2-5次(___因为项目本身，希望你能接受不定时可能较为频繁的代码改动和DB结构调整___ )
@@ -47,7 +47,7 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 
 ========================================
 
-捐赠支付宝:newmin.net@gmail.com (金额随意)
+捐赠支付宝:jarrysix@gmail.com (金额随意)
 **如有定制需求可邮件联系< lm#s1n1.com >。**
 
 
@@ -66,7 +66,7 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"
  and import data use mysql utility.
- Database backup file is here : [go2o.sql](https://github.com/atnet/go2o/blob/master/docs/data/go2o.sql)
+ Database backup file is here : [go2o.sql](https://github.com/jrsix/go2o/blob/master/docs/data/go2o.sql)
 
 ### 2.Complied ###
 	git clone https://github.com/atnet/go2o.git /home/usr/go/src/go2o
