@@ -256,6 +256,14 @@ func (this *Order) Submit() (string, error) {
 		v.IsPaid = 1
 	}
 
+	// 设置订单状态
+	if v.IsPaid == 1 || v.PaymentOpt == enum.PaymentOfflineCashPay ||
+		v.PaymentOpt == enum.PaymentRemit {
+		v.Status = enum.ORDER_WAIT_CONFIRM
+	}else{
+		v.Status = enum.ORDER_WAIT_PAYMENT
+	}
+
 	// 保存订单
 	id, err := this.saveOrderOnSubmit()
 	v.Id = id
@@ -413,7 +421,7 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 			Id:         0,
 			SnapshotId: snap.Id,
 			Quantity:   v.Quantity,
-			Sku:        "",
+			Sku:        "", //todo
 			Fee:        v.SalePrice * float32(v.Quantity),
 		}
 	}
@@ -472,9 +480,6 @@ func (this *Order) Process() error {
 	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
-//	if err == nil {
-//		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单")
-//	}
 	return err
 }
 
@@ -483,8 +488,8 @@ func (this *Order) Confirm() error {
 	if this._value.PaymentOpt == enum.PaymentOnlinePay && this._value.IsPaid != enum.TRUE {
 		return shopping.ErrOrderNotPayed
 	}
-	if this._value.IsPaid == enum.TRUE || this._value.PaymentOpt == enum.PaymentOfflineCashPay ||
-		this._value.PaymentOpt == enum.PaymentRemit {
+
+	if this._value.Status == enum.ORDER_WAIT_CONFIRM  {
 		this._value.Status = enum.ORDER_WAIT_DELIVERY
 		this._value.UpdateTime = time.Now().Unix()
 
