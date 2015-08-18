@@ -15,6 +15,10 @@ import (
 	"os"
 	"io/ioutil"
 	"sort"
+	"encoding/json"
+	"github.com/jrsix/gof/web"
+	"fmt"
+	"gobx/share/variable"
 )
 
 var _ sort.Interface = new(SorterFiles)
@@ -29,7 +33,16 @@ func (this *SorterFiles) Len() int{
 // Less reports whether the element with
 // index i should sort before the element with index j.
 func (this *SorterFiles) Less(i, j int) bool{
-
+	switch this.sortBy {
+	case "size":
+		return this.files[i].Size() < this.files[j].Size()
+	case "name":
+		return this.files[i].Name() < this.files[j].Name()
+	case "type":
+		iN,jN := this.files[i].Name(),this.files[j].Name()
+		return iN[strings.Index(iN,".")+1:] < jN[strings.Index(jN,".")+1:]
+	}
+	return true
 }
 // Swap swaps the elements with indexes i and j.
 func (this *SorterFiles) Swap(i, j int) {
@@ -362,50 +375,36 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 	result["current_dir_path"] = currentDirPath
 	result["current_url"] = currentUrl;
 	result["total_count"] = dirList.Len() + fileList.Len()
-	var dirFileList = make(map[string]interface{})
+	var dirFileList = []map[string]interface{}{}
 	for i := 0; i < dirList.Len(); i++ {
-	DirectoryInfo dir = new DirectoryInfo(dirList[i]);
-	Hashtable hash = new Hashtable();
-	hash["is_dir"] = true;
-	hash["has_file"] = (dir.GetFileSystemInfos().Length > 0);
-	hash["filesize"] = 0;
-	hash["is_photo"] = false;
-	hash["filetype"] = "";
-	hash["filename"] = dir.Name;
-	hash["datetime"] = dir.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
-	dirFileList.Add(hash);
-	}
-	for (int i = 0; i < fileList.Length; i++)
-	{
-	FileInfo file = new FileInfo(fileList[i]);
-	Hashtable hash = new Hashtable();
-	hash["is_dir"] = false;
-	hash["has_file"] = false;
-	hash["filesize"] = file.Length;
-	hash["is_photo"] = (Array.IndexOf(fileTypes.Split(','), file.Extension.Substring(1).ToLower()) >= 0);
-	hash["filetype"] = file.Extension.Substring(1);
-	hash["filename"] = file.Name;
-	hash["datetime"] = file.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
-	dirFileList.Add(hash);
+		hash := make(map[string]interface{})
+		fs, _ := ioutil.ReadDir(currentDirPath+"/"+dirList.files[i].Name())
+		hash["is_dir"] = true
+		hash["has_file"] = len(fs) > 0
+		hash["is_photo"] = false
+		hash["filetype"] = ""
+		hash["filename"] = dirList.files[i].Name()
+		hash["datetime"] = dirList.files[i].ModTime().Format("2006-01-02 15:04:05")
+		dirFileList = append(dirFileList, hash)
 	}
 
-	string files = String.Empty;
-	int j = 0;
-	foreach (Hashtable h in dirFileList)
-	{
-	files += JsonAnalyzer.ToJson(h);
-	if (++j < dirFileList.Count)
-	{
-	files += ",";
+	var fN,ext string
+	for i := 0; i < fileList.Len(); i++ {
+		hash := make(map[string]interface{})
+		fN = fileList.files[i].Name()
+		ext = fN[strings.Index(fN,".")+1:]
+		hash["is_dir"] = false;
+		hash["has_file"] = false;
+		hash["filesize"] = fileList.files[i].Size();
+		hash["is_photo"] = strings.Index(fileTypes,ext)
+		hash["filetype"] = ext
+		hash["filename"] = fN
+		hash["datetime"] = fileList.files[i].ModTime().Format("2006-01-02 15:04:05")
+		dirFileList = append(dirFileList, hash)
 	}
-	}
-	result["file_list"] = "[" + files + "]";
-	context.Response.AddHeader("Content-Type", "application/json; charset=UTF-8");
-	context.Response.Write(JsonAnalyzer.ToJson(result));
-	context.Response.End();
 
-	return nil, nil
-
+	result["file_list"] =  dirFileList
+	return json.Marshal(result)
 }
 
 
@@ -414,7 +413,19 @@ type editorC struct{
 	*baseC
 }
 
-
+func (this *editorC) File_manager(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	d, err := fileManager(ctx.Request,
+		fmt.Sprintf("./static/uploads/%d/", partnerId),
+		fmt.Sprintf("%s/%d/", ctx.App.Storage().GetString(variable.StaticServer), partnerId),
+	)
+	ctx.Response.Header().Add("Content-Type","application/json")
+	if err != nil {
+		ctx.Response.Write([]byte("{error:'"+strings.Replace(err.Error(), "'", "\\'", -1)+"'}"))
+	}else {
+		ctx.Response.Write(d)
+	}
+}
 
 
 
