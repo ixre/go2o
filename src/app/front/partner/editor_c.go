@@ -282,7 +282,7 @@ func (this *SorterFiles) Swap(i, j int) {
  */
 
 //图片扩展名
-var fileTypes string = "gif,jpg,jpeg,png,bmp"
+var imgFileTypes string = "gif,jpg,jpeg,png,bmp"
 
 //
 // @rootDir : 根目录路径，相对路径
@@ -291,7 +291,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 	var currentPath = ""
 	var currentUrl = ""
 	var currentDirPath = ""
-	var moveupDirPath = ""
+	var moveUpDirPath = ""
 	var dirPath string = rootDir
 
 	urlQuery := r.URL.Query()
@@ -318,13 +318,13 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 		currentPath = dirPath
 		currentUrl = rootUrl
 		currentDirPath = ""
-		moveupDirPath = ""
+		moveUpDirPath = ""
 	}else {
 		currentPath = dirPath + path
 		currentUrl = rootUrl + path
 		currentDirPath = path
 		//reg := regexp.MustCompile("(.*?)[^\\/]+\\/$")
-		moveupDirPath = currentDirPath[:strings.LastIndex(currentDirPath, "\\")]
+		moveUpDirPath = currentDirPath[:strings.LastIndex(currentDirPath, "\\")]
 	}
 
 
@@ -341,7 +341,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 	//目录不存在或不是目录
 	dir, err := os.Stat(currentPath);
 	if os.IsNotExist(err) || !dir.IsDir() {
-		return nil, errors.New("no such directory or file not directory")
+		return nil, errors.New("no such directory or file not directory,path:"+currentPath)
 	}
 
 	//排序形式，name or size or type
@@ -349,16 +349,16 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 
 	//遍历目录取得文件信息
 
-	var dirList SorterFiles = &SorterFiles{
+	var dirList *SorterFiles = &SorterFiles{
 		files:[]os.FileInfo{},
 		sortBy:order,
 	}
-	var fileList SorterFiles = &SorterFiles{
+	var fileList *SorterFiles = &SorterFiles{
 		files:[]os.FileInfo{},
 		sortBy:order,
 	}
 
-	files, err := ioutil.ReadDir(currentDirPath)
+	files, err := ioutil.ReadDir(currentPath)
 	if err != nil {
 		return nil, err
 	}
@@ -371,7 +371,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 	}
 
 	var result = make(map[string]interface{})
-	result["moveup_dir_path"] = moveupDirPath
+	result["moveup_dir_path"] = moveUpDirPath
 	result["current_dir_path"] = currentDirPath
 	result["current_url"] = currentUrl;
 	result["total_count"] = dirList.Len() + fileList.Len()
@@ -396,7 +396,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 		hash["is_dir"] = false;
 		hash["has_file"] = false;
 		hash["filesize"] = fileList.files[i].Size();
-		hash["is_photo"] = strings.Index(fileTypes,ext)
+		hash["is_photo"] = strings.Index(imgFileTypes,ext)
 		hash["filetype"] = ext
 		hash["filename"] = fN
 		hash["datetime"] = fileList.files[i].ModTime().Format("2006-01-02 15:04:05")
@@ -416,8 +416,8 @@ type editorC struct{
 func (this *editorC) File_manager(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	d, err := fileManager(ctx.Request,
-		fmt.Sprintf("./static/uploads/%d/", partnerId),
-		fmt.Sprintf("%s/%d/", ctx.App.Storage().GetString(variable.StaticServer), partnerId),
+		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.StaticServer), partnerId),
 	)
 	ctx.Response.Header().Add("Content-Type","application/json")
 	if err != nil {
