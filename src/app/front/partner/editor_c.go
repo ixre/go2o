@@ -25,9 +25,11 @@ import (
     "bufio"
     "io"
 	"math/rand"
+	"regexp"
 )
 
 var _ sort.Interface = new(SorterFiles)
+
 
 type SorterFiles struct {
 	files  []os.FileInfo
@@ -41,7 +43,7 @@ func (this *SorterFiles) Len() int {
 // Less reports whether the element with
 // index i should sort before the element with index j.
 func (this *SorterFiles) Less(i, j int) bool {
-	switch this.sortBy {
+	switch strings.ToLower(this.sortBy) {
 	case "size":
 		return this.files[i].Size() < this.files[j].Size()
 	case "name":
@@ -62,6 +64,9 @@ func (this *SorterFiles) Swap(i, j int) {
 
 //图片扩展名
 var imgFileTypes string = "gif,jpg,jpeg,png,bmp"
+var (
+	moveUpRegexp *regexp.Regexp = regexp.MustCompile("(.*?)[^\\/]+\\/$")
+)
 
 // 文件管理
 // @rootDir : 根目录路径，相对路径
@@ -100,8 +105,7 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 		currentPath = dirPath + path
 		currentUrl = rootUrl + path
 		currentDirPath = path
-		//reg := regexp.MustCompile("(.*?)[^\\/]+\\/$")
-		moveUpDirPath = currentDirPath[:strings.LastIndex(currentDirPath, "\\")]
+		moveUpDirPath = moveUpRegexp.ReplaceAllString(currentDirPath,"$1")
 	}
 
 	//不允许使用..移动到上一级目录
@@ -123,7 +127,6 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 	var order string = strings.ToLower(urlQuery.Get("order"))
 
 	//遍历目录取得文件信息
-
 	var dirList *SorterFiles = &SorterFiles{
 		files:  []os.FileInfo{},
 		sortBy: order,
@@ -133,6 +136,7 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 		sortBy: order,
 	}
 
+	// 遍历目录获取子目录和文件
 	files, err := ioutil.ReadDir(currentPath)
 	if err != nil {
 		return nil, err
@@ -145,6 +149,10 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 		}
 	}
 
+	// 排序
+	sort.Sort(dirList)
+	sort.Sort(fileList)
+
 	var result = make(map[string]interface{})
 	result["moveup_dir_path"] = moveUpDirPath
 	result["current_dir_path"] = currentDirPath
@@ -153,7 +161,8 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 	var dirFileList = []map[string]interface{}{}
 	for i := 0; i < dirList.Len(); i++ {
 		hash := make(map[string]interface{})
-		fs, _ := ioutil.ReadDir(currentDirPath + "/" + dirList.files[i].Name())
+		fs, _ := ioutil.ReadDir(currentPath + "/" + dirList.files[i].Name())
+		fmt.Println("----",currentPath + "/" + dirList.files[i].Name())
 		hash["is_dir"] = true
 		hash["has_file"] = len(fs) > 0
 		hash["is_photo"] = false
