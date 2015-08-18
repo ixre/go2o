@@ -64,8 +64,6 @@ func (this *orderC) setState(ctx *web.Context,
 	case enum.ORDER_WAIT_CONFIRM:
 		descript = "确认订单无误后，点击按钮进行下一步.."
 		button = `<input class="btn" type="button" id="btn2" value="确认订单"/>`
-	case enum.ORDER_CONFIRMED:
-		button = `<input class="btn" type="button" id="btn2" value="开始处理订单"/>`
 	case enum.ORDER_WAIT_DELIVERY:
 		button = `<input class="btn" type="button" id="btn2" value="开始配送"/>`
 	case enum.ORDER_WAIT_RECEIVE:
