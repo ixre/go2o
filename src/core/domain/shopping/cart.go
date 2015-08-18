@@ -324,16 +324,6 @@ func (this *Cart) Destroy() (err error) {
 	return err
 }
 
-// 绑定订单
-//func (this *Cart) BindOrder(orderNo string) error {
-//	if this.GetDomainId() <= 0 || len(this._value.OrderNo) != 0 {
-//		return shopping.ErrDisallowBindForCart
-//	}
-//	this._value.OrderNo = orderNo
-//	this._value.IsBought = 1
-//	_, err := this.Save()
-//	return err
-//}
 
 // 获取总览信息
 func (this *Cart) GetSummary() string {
@@ -359,6 +349,11 @@ func (this *Cart) GetSummary() string {
 		}
 	}
 	return buf.String()
+}
+
+// 获取Json格式的商品数据
+func (this *Cart) GetJsonItems() []byte{
+
 }
 
 // 获取订单金额,返回totalFee为总额，

@@ -48,11 +48,11 @@ type ICart interface {
 	// 销毁购物车
 	Destroy() error
 
-	// 绑定订单
-	//BindOrder(orderNo string) error
-
 	// 获取汇总信息
 	GetSummary() string
+
+	// 获取Json格式的商品数据
+	GetJsonItems() []byte
 
 	// 获取金额
 	GetFee() (totalFee float32, orderFee float32)

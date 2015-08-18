@@ -18,3 +18,12 @@ type OrderItem struct {
 	Fee        float32 `db:"fee"`
 	UpdateTime int64   `db:"update_time"`
 }
+
+
+// 简单商品信息
+type OrderGoods struct{
+	GoodsId  int 	`json:"id"`
+	GoodsImage string `json:"img"`
+	Name string  `json:"name"`
+	Quantity string `json:"qty"`
+}
