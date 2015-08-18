@@ -18,7 +18,7 @@ const (
 	ORDER_CREATED = 1
 	// 订单已确认
 	ORDER_CONFIRMED = 2
-	// 订单处理中
+	// 订单待发货
 	ORDER_PROCESSING = 3
 	// 订单发货中
 	ORDER_SENDING = 4
@@ -40,7 +40,7 @@ func (t OrderState) String() string {
 	case ORDER_CONFIRMED:
 		return "已确认"
 	case ORDER_PROCESSING:
-		return "处理中"
+		return "待发货"
 	case ORDER_SENDING:
 		return "配送中"
 	case ORDER_RECEIVED:

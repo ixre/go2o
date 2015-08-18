@@ -107,7 +107,7 @@ func (this *orderC) Wait_delivery(ctx *web.Context) {
 		"views/ucenter/{device}/inc/footer.html")
 }
 
-func (this *orderC) Wait_delive_post(ctx *web.Context) {
+func (this *orderC) Wait_delivery_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_PROCESSING)
 	this.responseList(ctx, where)

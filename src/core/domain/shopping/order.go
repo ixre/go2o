@@ -472,9 +472,9 @@ func (this *Order) Process() error {
 	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
-	if err == nil {
-		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单处理中")
-	}
+//	if err == nil {
+//		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单")
+//	}
 	return err
 }
 

@@ -67,7 +67,6 @@ func cashBack3R(level int,m member.IMember, order *shopping.ValueOrder, c promot
 			backFunc(cm, pm, fee)
 		}
 
-
 		pm = cm
 
 		i++
