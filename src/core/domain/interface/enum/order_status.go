@@ -14,14 +14,14 @@ type OrderState int
 const (
 	// 已作废
 	ORDER_CANCEL = 0
-	// 订单已创建
-	ORDER_CREATED = 1
-	// 订单已确认
-	ORDER_CONFIRMED = 2
+	// 订单待支付
+	ORDER_WAIT_PAYMENT = 1
+	// 订单待确认
+	ORDER_WAIT_CONFIRM = 2
 	// 订单待发货
-	ORDER_PROCESSING = 3
-	// 订单发货中
-	ORDER_SENDING = 4
+	ORDER_WAIT_DELIVERY = 3
+	// 订单配送中,等待收货
+	ORDER_WAIT_RECEIVE = 4
 	// 已收货
 	ORDER_RECEIVED = 5
 	// 订单完成
@@ -35,13 +35,13 @@ func (t OrderState) String() string {
 	switch t {
 	case ORDER_CANCEL:
 		return "已取消"
-	case ORDER_CREATED:
+	case ORDER_WAIT_PAYMENT:
+		return "待付款"
+	case ORDER_WAIT_CONFIRM:
 		return "待确认"
-	case ORDER_CONFIRMED:
-		return "已确认"
-	case ORDER_PROCESSING:
+	case ORDER_WAIT_DELIVERY:
 		return "待发货"
-	case ORDER_SENDING:
+	case ORDER_WAIT_RECEIVE:
 		return "配送中"
 	case ORDER_RECEIVED:
 		return "已收货"

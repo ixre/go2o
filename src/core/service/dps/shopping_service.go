@@ -99,11 +99,11 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 
 		status := order.GetValue().Status
 		switch status + 1 {
-		case enum.ORDER_CONFIRMED:
+		case enum.ORDER_WAIT_CONFIRM:
 			err = order.Confirm()
-		case enum.ORDER_PROCESSING:
+		case enum.ORDER_WAIT_DELIVERY:
 			err = order.Process()
-		case enum.ORDER_SENDING:
+		case enum.ORDER_WAIT_RECEIVE:
 			err = order.Deliver()
 		case enum.ORDER_RECEIVED:
 			err = order.SignReceived()

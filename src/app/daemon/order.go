@@ -57,7 +57,7 @@ type orderInfo struct {
 func confirmOrderQueue() {
 	var list []*orderInfo = []*orderInfo{}
 	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT partner_id,order_no FROM pt_order WHERE status=%d",
-		enum.ORDER_CREATED))
+		enum.ORDER_WAIT_CONFIRM))
 	for _, v := range list {
 		err := dps.ShoppingService.ConfirmOrder(v.PartnerId, v.OrderNo)
 		if err != nil {

@@ -77,7 +77,7 @@ func (this *orderC) Wait_payment(ctx *web.Context) {
 			"conf":         conf,
 			"partner_host": conf.Host,
 			"member":       m,
-			"state":        enum.ORDER_CREATED,
+			"state":        enum.ORDER_WAIT_CONFIRM,
 		},
 		"views/ucenter/{device}/order/order_wait_payment.html",
 		"views/ucenter/{device}/inc/header.html",
@@ -109,7 +109,7 @@ func (this *orderC) Wait_delivery(ctx *web.Context) {
 
 func (this *orderC) Wait_delivery_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
-	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_PROCESSING)
+	var where string = fmt.Sprintf("is_paid=1 AND deliver_time < create_time AND status =  %d", enum.ORDER_WAIT_DELIVERY)
 	this.responseList(ctx, where)
 }
 

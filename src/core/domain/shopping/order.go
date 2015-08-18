@@ -485,7 +485,7 @@ func (this *Order) Confirm() error {
 	}
 	if this._value.IsPaid == enum.TRUE || this._value.PaymentOpt == enum.PaymentOfflineCashPay ||
 		this._value.PaymentOpt == enum.PaymentRemit {
-		this._value.Status = enum.ORDER_CONFIRMED
+		this._value.Status = enum.ORDER_WAIT_DELIVERY
 		this._value.UpdateTime = time.Now().Unix()
 
 		_, err := this.Save()

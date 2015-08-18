@@ -357,7 +357,7 @@ func (this *Shopping) setupOrder(ctx gof.App, v *shopping.ValueOrder,
 		}
 	} else if v.PaymentOpt == enum.PAY_OFFLINE {
 		switch v.Status + 1 {
-		case enum.ORDER_CONFIRMED:
+		case enum.ORDER_WAIT_CONFIRM:
 			if dur > time.Minute*order_confirm_minute {
 				err = order.Confirm()
 				if ctx.Debug() {
@@ -375,7 +375,7 @@ func (this *Shopping) setupOrder(ctx gof.App, v *shopping.ValueOrder,
 						"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
 				}
 			}
-		case enum.ORDER_PROCESSING:
+		case enum.ORDER_WAIT_DELIVERY:
 			if dur > time.Minute*order_process_minute {
 				err = order.Process()
 				if ctx.Debug() {
@@ -383,7 +383,7 @@ func (this *Shopping) setupOrder(ctx gof.App, v *shopping.ValueOrder,
 				}
 			}
 
-		case enum.ORDER_SENDING:
+		case enum.ORDER_WAIT_RECEIVE:
 			if dur > time.Minute*order_sending_minute {
 				err = order.Deliver()
 				if ctx.Debug() {
