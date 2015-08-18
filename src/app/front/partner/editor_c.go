@@ -21,6 +21,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+    "time"
+    "bufio"
+    "io"
+	"math/rand"
 )
 
 var _ sort.Interface = new(SorterFiles)
@@ -179,86 +183,99 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 }
 
 // 文件上传
-func fileUpload(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
+func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string,err error) {
 
-	//定义允许上传的文件扩展名
-	var extTable map[string]string = map[string]string{
-		"image": "gif,jpg,jpeg,png,bmp",
-		"flash": "swf,flv",
-		"media": "swf,flv,mp3,wav,wma,wmv,mid,avi,mpg,asf,rm,rmvb",
-		"file":  "doc,docx,xls,xlsx,ppt,htm,html,txt,zip,rar,gz,bz2,7z,pdf",
-	}
+    //定义允许上传的文件扩展名
+    var extTable map[string]string = map[string]string{
+        "image": "gif,jpg,jpeg,png,bmp",
+        "flash": "swf,flv",
+        "media": "swf,flv,mp3,wav,wma,wmv,mid,avi,mpg,asf,rm,rmvb",
+        "file":  "doc,docx,xls,xlsx,ppt,htm,html,txt,zip,rar,gz,bz2,7z,pdf",
+    }
 
-	//最大文件大小
-	const maxSize int = 1000000
+    //最大文件大小
+    const maxSize int64 = 1000000
 
-	// 取得上传文件
-	r.ParseMultipartForm(maxSize)
-	f, header, err := r.FormFile("imgFile")
-	if f == nil {
-		return nil, errors.New("no such upload file")
-	}
-	if err != nil {
-		return nil, err
-	}
+    // 取得上传文件
+    r.ParseMultipartForm(maxSize)
+    f, header, err := r.FormFile("imgFile")
+    if f == nil {
+        return "", errors.New("no such upload file")
+    }
+    if err != nil {
+        return "", err
+    }
 
-	var fileName string = header.Filename
-	var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
+    var fileName string = header.Filename
+    var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
 
-	// 检查上传目录
-	var dirPath string = rootDir
-	var dirName string = r.URL.Query().Get("dir")
-	if len(dirName) == 0 {
-		dirName = "image"
-	}
-	if _, ok := extTable[dirName]; !ok {
-		return nil, errors.New("incorrent file type")
-	}
+    // 检查上传目录
+    var dirPath string = rootPath
+    var dirName string = r.URL.Query().Get("dir")
+    if len(dirName) == 0 {
+        dirName = "image"
+    }
+    if _, ok := extTable[dirName]; !ok {
+        return "", errors.New("incorrent file type")
+    }
 
-	// 检查扩展名
-	if strings.Index(extTable[dirName], fileExt) == -1 &&
-		!strings.HasSuffix(extTable[dirName], fileExt) {
-		return nil, errors.New("上传文件扩展名是不允许的扩展名。\n只允许" + extTable[dirName] + "格式。")
-	}
+    // 检查扩展名
+    if strings.Index(extTable[dirName], fileExt) == -1 &&
+    !strings.HasSuffix(extTable[dirName], fileExt) {
+        return "", errors.New("上传文件扩展名是不允许的扩展名。\n只允许" + extTable[dirName] + "格式。")
+    }
 
-	// 检查上传超出文件大小
-	if i, _ := strconv.Atoi(header.Header.Get("Content-Length")); i > maxSize {
-		return nil, errors.New("上传文件大小超过限制。")
-	}
-
-	/*
-	   //创建文件夹
-	   dirPath += dirName + "/";
-	   saveUrl += dirName + "/";
-	   if (!Directory.Exists(dirPath))
-	   {
-	       Directory.CreateDirectory(dirPath).Create();
-	   }
-	   String ymd = DateTime.Now.ToString("yyyyMM", DateTimeFormatInfo.InvariantInfo);
-	   dirPath += ymd + "/";
-	   saveUrl += ymd + "/";
-	   if (!Directory.Exists(dirPath))
-	   {
-	       Directory.CreateDirectory(dirPath);
-	   }
-
-	   String newFileName = DateTime.Now.ToString("yyyyMMddHHmmss_ffff", DateTimeFormatInfo.InvariantInfo) +
-	                        fileExt;
-	   String filePath = dirPath + newFileName;
-
-	   imgFile.SaveAs(filePath);
-
-	   String fileUrl = saveUrl + newFileName;
-
-	   Hashtable hash = new Hashtable();
-	   hash["error"] = 0;
-	   hash["url"] = fileUrl;
-	   context.Response.AddHeader("Content-Type", "text/html; charset=UTF-8");
+    // 检查上传超出文件大小
+    if i, _ := strconv.Atoi(header.Header.Get("Content-Length")); int64(i) > maxSize {
+        return "", errors.New("上传文件大小超过限制。")
+    }
 
 
-	   context.Response.Write(JsonAnalyzer.ToJson(hash));
-	   context.Response.End();
-	*/
+    //创建文件夹
+    dirPath += dirName + "/";
+    savePath += dirName + "/";
+
+    var now = time.Now()
+    var ymd string = now.Format("200601")
+    dirPath += ymd + "/";
+    savePath += ymd + "/";
+
+    if _,err := os.Stat(savePath);os.IsNotExist(err){
+        os.MkdirAll(savePath,os.ModePerm)
+    }
+
+    var newFileName string = fmt.Sprintf("%d_%d.%s", now.Unix(),
+		100+rand.Intn(899), fileExt)
+    var filePath string = savePath + newFileName;
+
+
+
+    fi, err := os.OpenFile(filePath,
+        os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+        os.ModePerm)
+
+    if err == nil {
+        buf := bufio.NewWriter(fi)
+        bufSize := 100
+        buffer := make([]byte, bufSize)
+        var n int
+        var leng int
+        for {
+            if n, err = f.Read(buffer); err == io.EOF {
+                break
+            }
+
+            if n != bufSize {
+                buf.Write(buffer[:n])
+            } else {
+                buf.Write(buffer)
+            }
+
+            leng += n
+        }
+    }
+
+    return dirPath + newFileName, nil
 }
 
 var _ mvc.Filter = new(editorC)
@@ -271,7 +288,7 @@ func (this *editorC) File_manager(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	d, err := fileManager(ctx.Request,
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
-		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.StaticServer), partnerId),
+		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	ctx.Response.Header().Add("Content-Type", "application/json")
 	if err != nil {
@@ -281,16 +298,21 @@ func (this *editorC) File_manager(ctx *web.Context) {
 	}
 }
 
-func (this *editorC) File_upload(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	d, err := fileUpload(ctx.Request,
-		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
-		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.StaticServer), partnerId),
-	)
-	ctx.Response.Header().Add("Content-Type", "application/json")
-	if err != nil {
-		ctx.Response.Write([]byte("{error:'" + strings.Replace(err.Error(), "'", "\\'", -1) + "'}"))
-	} else {
-		ctx.Response.Write(d)
-	}
+func (this *editorC) File_upload_post(ctx *web.Context) {
+    partnerId := this.GetPartnerId(ctx)
+    fileUrl, err := fileUpload(ctx.Request,
+        fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+        fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
+    )
+    var hash map[string]interface{} = make(map[string]interface{})
+    if err == nil {
+        hash["error"] = 0;
+        hash["url"] = fileUrl;
+    }else {
+        hash["error"] = 1
+        hash["message"] = err.Error()
+    }
+    ctx.Response.Header().Add("Content-Type", "application/json")
+    d, _ := json.Marshal(hash)
+    ctx.Response.Write(d)
 }
