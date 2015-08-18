@@ -25,5 +25,5 @@ type OrderGoods struct{
 	GoodsId  int 	`json:"id"`
 	GoodsImage string `json:"img"`
 	Name string  `json:"name"`
-	Quantity string `json:"qty"`
+	Quantity int `json:"qty"`
 }

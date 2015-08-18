@@ -222,7 +222,7 @@ func (this *Order) Submit() (string, error) {
 	v := this._value
 	v.CreateTime = time.Now().Unix()
 	v.UpdateTime = v.CreateTime
-	v.ItemsInfo = this._cart.GetSummary()
+	v.ItemsInfo = string(this._cart.GetJsonItems())
 	v.OrderNo = this._shopping.GetFreeOrderNo()
 
 	// 应用优惠券
