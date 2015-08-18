@@ -13,8 +13,6 @@ import (
 	"strings"
 	"errors"
 	"os"
-	"regexp"
-	"path/filepath"
 	"io/ioutil"
 	"sort"
 )
@@ -25,6 +23,20 @@ type SorterFiles struct{
 	sortBy string
 }
 
+func (this *SorterFiles) Len() int{
+	return len(this.files)
+}
+// Less reports whether the element with
+// index i should sort before the element with index j.
+func (this *SorterFiles) Less(i, j int) bool{
+
+}
+// Swap swaps the elements with indexes i and j.
+func (this *SorterFiles) Swap(i, j int) {
+	tmp := this.files[i]
+	this.files[i] = this.files[j]
+	this.files[j] = tmp
+}
 
 
 
@@ -315,7 +327,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 	}
 	//目录不存在或不是目录
 	dir, err := os.Stat(currentPath);
-	if  os.IsNotExist(err) || !dir.IsDir() {
+	if os.IsNotExist(err) || !dir.IsDir() {
 		return nil, errors.New("no such directory or file not directory")
 	}
 
@@ -324,7 +336,7 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 
 	//遍历目录取得文件信息
 
-	var dirList SorterFiles= &SorterFiles{
+	var dirList SorterFiles = &SorterFiles{
 		files:[]os.FileInfo{},
 		sortBy:order,
 	}
@@ -333,11 +345,11 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 		sortBy:order,
 	}
 
-	files,err := ioutil.ReadDir(currentDirPath)
-	if err != nil{
-		return nil,err
+	files, err := ioutil.ReadDir(currentDirPath)
+	if err != nil {
+		return nil, err
 	}
-	for _,v := range files {
+	for _, v := range files {
 		if v.IsDir() {
 			dirList.files = append(dirList.files, v)
 		}else {
@@ -345,12 +357,54 @@ func fileManager(r *http.Request,rootDir,rootUrl string)([]byte,error) {
 		}
 	}
 
+	var result = make(map[string]interface{})
+	result["moveup_dir_path"] = moveupDirPath
+	result["current_dir_path"] = currentDirPath
+	result["current_url"] = currentUrl;
+	result["total_count"] = dirList.Len() + fileList.Len()
+	var dirFileList = make(map[string]interface{})
+	for i := 0; i < dirList.Len(); i++ {
+	DirectoryInfo dir = new DirectoryInfo(dirList[i]);
+	Hashtable hash = new Hashtable();
+	hash["is_dir"] = true;
+	hash["has_file"] = (dir.GetFileSystemInfos().Length > 0);
+	hash["filesize"] = 0;
+	hash["is_photo"] = false;
+	hash["filetype"] = "";
+	hash["filename"] = dir.Name;
+	hash["datetime"] = dir.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+	dirFileList.Add(hash);
+	}
+	for (int i = 0; i < fileList.Length; i++)
+	{
+	FileInfo file = new FileInfo(fileList[i]);
+	Hashtable hash = new Hashtable();
+	hash["is_dir"] = false;
+	hash["has_file"] = false;
+	hash["filesize"] = file.Length;
+	hash["is_photo"] = (Array.IndexOf(fileTypes.Split(','), file.Extension.Substring(1).ToLower()) >= 0);
+	hash["filetype"] = file.Extension.Substring(1);
+	hash["filename"] = file.Name;
+	hash["datetime"] = file.LastWriteTime.ToString("yyyy-MM-dd HH:mm:ss");
+	dirFileList.Add(hash);
+	}
 
+	string files = String.Empty;
+	int j = 0;
+	foreach (Hashtable h in dirFileList)
+	{
+	files += JsonAnalyzer.ToJson(h);
+	if (++j < dirFileList.Count)
+	{
+	files += ",";
+	}
+	}
+	result["file_list"] = "[" + files + "]";
+	context.Response.AddHeader("Content-Type", "application/json; charset=UTF-8");
+	context.Response.Write(JsonAnalyzer.ToJson(result));
+	context.Response.End();
 
-
-
-
-return nil, nil
+	return nil, nil
 
 }
 
