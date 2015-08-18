@@ -412,9 +412,9 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 		this._value.Items[i] = &shopping.OrderItem{
 			Id:         0,
 			SnapshotId: snap.Id,
-			Quantity:   v.Num,
+			Quantity:   v.Quantity,
 			Sku:        "",
-			Fee:        v.SalePrice * float32(v.Num),
+			Fee:        v.SalePrice * float32(v.Quantity),
 		}
 	}
 

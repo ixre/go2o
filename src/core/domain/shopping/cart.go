@@ -10,6 +10,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
+	"encoding/json"
 )
 
 type Cart struct {
@@ -159,7 +160,7 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 	// 添加数量
 	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
-			v.Num = v.Num + num
+			v.Quantity = v.Quantity + num
 			return v, err
 		}
 	}
@@ -182,7 +183,7 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 		CartId:     this.GetDomainId(),
 		SnapshotId: snap.Id,
 		GoodsId:    goodsId,
-		Num:        num,
+		Quantity:        num,
 		Name:       gv.Name,
 		GoodsNo:    gv.GoodsNo,
 		Image:      gv.Image,
@@ -202,12 +203,12 @@ func (this *Cart) RemoveItem(goodsId, num int) error {
 	// 删除数量
 	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
-			if newNum := v.Num - num; newNum <= 0 {
+			if newNum := v.Quantity - num; newNum <= 0 {
 				// 移出购物车
 				//this.value.Items = append(this.value.Items[:i],this.value.Items[i+1:]...)
-				v.Num = 0
+				v.Quantity = 0
 			} else {
-				v.Num = newNum
+				v.Quantity = newNum
 			}
 			break
 		}
@@ -219,7 +220,7 @@ func (this *Cart) RemoveItem(goodsId, num int) error {
 func (this *Cart) Combine(c shopping.ICart) (shopping.ICart, error) {
 	if c.GetDomainId() != this.GetDomainId() {
 		for _, v := range c.GetValue().Items {
-			this.AddItem(v.GoodsId, v.Num)
+			this.AddItem(v.GoodsId, v.Quantity)
 		}
 	}
 	return this, nil
@@ -302,7 +303,7 @@ func (this *Cart) Save() (int, error) {
 
 	if this._value.Items != nil {
 		for _, v := range this._value.Items {
-			if v.Num <= 0 {
+			if v.Quantity <= 0 {
 				rep.RemoveCartItem(v.Id)
 			} else {
 				i, err := rep.SaveCartItem(v)
@@ -342,7 +343,7 @@ func (this *Cart) GetSummary() string {
 			if len(snap.SmallTitle) != 0 {
 				buf.WriteString("(" + snap.SmallTitle + ")")
 			}
-			buf.WriteString("*" + strconv.Itoa(v.Num))
+			buf.WriteString("*" + strconv.Itoa(v.Quantity))
 			if i < length-1 {
 				buf.WriteString("\n")
 			}
@@ -353,7 +354,17 @@ func (this *Cart) GetSummary() string {
 
 // 获取Json格式的商品数据
 func (this *Cart) GetJsonItems() []byte{
-
+	var goods []*shopping.OrderGoods = make([]*shopping.OrderGoods,len(this._value.Items))
+	for i,v := range this._value.Items{
+		goods[i] = &shopping.OrderGoods{
+			GoodsId:v.GoodsId,
+			GoodsImage:v.Image,
+			Quantity:v.Quantity,
+			Name:v.Name,
+		}
+	}
+	d,_ := json.Marshal(goods)
+	return d
 }
 
 // 获取订单金额,返回totalFee为总额，
@@ -361,7 +372,7 @@ func (this *Cart) GetJsonItems() []byte{
 func (this *Cart) GetFee() (totalFee float32, orderFee float32) {
 	var qua float32
 	for _, v := range this._value.Items {
-		qua = float32(v.Num)
+		qua = float32(v.Quantity)
 		totalFee = totalFee + v.Price*qua
 		orderFee = orderFee + v.SalePrice*qua
 	}

@@ -167,7 +167,7 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 					GoodsNo:    v.GoodsNo,
 					SmallTitle: v.SmallTitle,
 					GoodsImage: v.Image,
-					Num:        v.Num,
+					Num:        v.Quantity,
 					Price:      v.Price,
 					SalePrice:  v.SalePrice,
 				}
