@@ -9,7 +9,7 @@
 package goclient
 
 import (
-	"github.com/atnet/gof/net/jsv"
+	"github.com/jrsix/gof/net/jsv"
 )
 
 type redirectClient struct {

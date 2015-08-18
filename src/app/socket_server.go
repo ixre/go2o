@@ -11,7 +11,7 @@ package app
 
 import (
 	"fmt"
-	"github.com/atnet/gof"
+	"github.com/jrsix/gof"
 	"go2o/src/core"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/service"

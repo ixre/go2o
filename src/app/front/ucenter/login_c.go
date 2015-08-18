@@ -10,8 +10,8 @@ package ucenter
 
 import (
 	"encoding/json"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"

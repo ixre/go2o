@@ -9,8 +9,8 @@
 package util
 
 import (
-	gutil "github.com/atnet/gof/util"
-	"github.com/atnet/gof/web"
+	gutil "github.com/jrsix/gof/util"
+	"github.com/jrsix/gof/web"
 	"net/http"
 	"net/url"
 	"time"

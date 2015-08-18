@@ -9,8 +9,8 @@
 package master
 
 import (
-	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
+	"github.com/jrsix/gof/web"
+	"github.com/jrsix/gof/web/mvc"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)

@@ -9,8 +9,8 @@
 package repository
 
 import (
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/variable"

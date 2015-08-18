@@ -9,7 +9,7 @@
 package query
 
 import (
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/db"
 )
 
 type ContentQuery struct {

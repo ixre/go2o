@@ -9,7 +9,7 @@
 package server
 
 import (
-	"github.com/atnet/gof/net/jsv"
+	"github.com/jrsix/gof/net/jsv"
 	"github.com/garyburd/redigo/redis"
 	"go2o/src/core"
 )

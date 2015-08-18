@@ -10,8 +10,8 @@ package ols
 
 import (
 	"encoding/json"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"

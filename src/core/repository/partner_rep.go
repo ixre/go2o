@@ -12,7 +12,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"

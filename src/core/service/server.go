@@ -9,8 +9,8 @@
 package service
 
 import (
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/net/jsv"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/net/jsv"
 	"go2o/src/core/service/server"
 	"io"
 	"net"

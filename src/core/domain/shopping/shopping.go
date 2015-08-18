@@ -12,7 +12,7 @@ package shopping
 import (
 	"errors"
 	"fmt"
-	"github.com/atnet/gof"
+	"github.com/jrsix/gof"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"

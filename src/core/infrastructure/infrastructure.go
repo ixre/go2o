@@ -10,7 +10,7 @@
 package infrastructure
 
 import (
-	"github.com/atnet/gof"
+	"github.com/jrsix/gof"
 )
 
 //todo:....

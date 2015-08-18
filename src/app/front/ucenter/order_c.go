@@ -11,9 +11,9 @@ package ucenter
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/pager"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
+	"github.com/jrsix/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"

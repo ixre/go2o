@@ -9,10 +9,10 @@
 package core
 
 import (
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/db"
-	"github.com/atnet/gof/log"
-	"github.com/atnet/gof/storage"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/db"
+	"github.com/jrsix/gof/log"
+	"github.com/jrsix/gof/storage"
 	"github.com/garyburd/redigo/redis"
 )
 

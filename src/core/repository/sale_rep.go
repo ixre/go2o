@@ -12,8 +12,8 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/atnet/gof/algorithm/iterator"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/algorithm/iterator"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	saleImpl "go2o/src/core/domain/sale"

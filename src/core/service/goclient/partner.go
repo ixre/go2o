@@ -10,7 +10,7 @@ package goclient
 
 import (
 	"fmt"
-	"github.com/atnet/gof/net/jsv"
+	"github.com/jrsix/gof/net/jsv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/sale"

@@ -11,7 +11,7 @@ package domain
 
 import (
 	"errors"
-	"github.com/atnet/gof/crypto"
+	"github.com/jrsix/gof/crypto"
 	"strings"
 )
 

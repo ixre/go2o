@@ -11,9 +11,9 @@ package ols
 import (
 	"errors"
 	"fmt"
-	"github.com/atnet/gof"
-	guitl "github.com/atnet/gof/util"
-	"github.com/atnet/gof/web"
+	"github.com/jrsix/gof"
+	guitl "github.com/jrsix/gof/util"
+	"github.com/jrsix/gof/web"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"

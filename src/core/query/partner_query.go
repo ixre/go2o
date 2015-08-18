@@ -9,8 +9,8 @@
 package query
 
 import (
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"

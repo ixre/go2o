@@ -10,8 +10,8 @@ package cache
 
 import (
 	"errors"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/storage"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/storage"
 )
 
 /** this package is manage system cache. **/

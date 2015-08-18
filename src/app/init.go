@@ -10,7 +10,7 @@
 package app
 
 import (
-	"github.com/atnet/gof"
+	"github.com/jrsix/gof"
 	"go2o/src/core/service/dps"
 )
 

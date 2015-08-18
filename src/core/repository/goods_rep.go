@@ -10,7 +10,7 @@ package repository
 
 import (
 	"fmt"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/format"

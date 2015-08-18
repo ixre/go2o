@@ -11,9 +11,9 @@ package master
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
+	"github.com/jrsix/gof/web/mvc"
 	"net/url"
 )
 

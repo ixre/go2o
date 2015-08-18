@@ -10,8 +10,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/atnet/gof/crypto"
-	"github.com/atnet/gof/util"
+	"github.com/jrsix/gof/crypto"
+	"github.com/jrsix/gof/util"
 	"go2o/src/core/infrastructure/domain"
 	"net/url"
 	"regexp"

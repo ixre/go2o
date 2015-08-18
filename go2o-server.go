@@ -11,8 +11,8 @@ package main
 
 import (
 	"flag"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/storage"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/storage"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
 	"go2o/src/cache"

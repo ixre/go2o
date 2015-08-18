@@ -10,7 +10,7 @@ package core
 
 import (
 	"fmt"
-	"github.com/atnet/gof"
+	"github.com/jrsix/gof"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"time"

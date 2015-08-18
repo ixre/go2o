@@ -11,8 +11,8 @@ package ols
 import (
 	"bytes"
 	"fmt"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
 	"go2o/src/cache/apicache"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/goclient"

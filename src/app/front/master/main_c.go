@@ -10,9 +10,9 @@ package master
 
 import (
 	"fmt"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/web"
+	"github.com/jrsix/gof/web/mvc"
 	"go2o/src/app/front"
 	"go2o/src/core/service/dps"
 

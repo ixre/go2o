@@ -9,7 +9,7 @@
 package util
 
 import (
-	"github.com/atnet/gof/algorithm/iterator"
+	"github.com/jrsix/gof/algorithm/iterator"
 	"go2o/src/core/domain/interface/sale"
 )
 

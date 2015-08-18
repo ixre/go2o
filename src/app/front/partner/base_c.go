@@ -9,8 +9,8 @@
 package partner
 
 import (
-	"github.com/atnet/gof/web"
-	"github.com/atnet/gof/web/mvc"
+	"github.com/jrsix/gof/web"
+	"github.com/jrsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"net/url"

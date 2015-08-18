@@ -11,7 +11,7 @@ package repository
 import (
 	"errors"
 	"fmt"
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/db"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	saleImpl "go2o/src/core/domain/sale"

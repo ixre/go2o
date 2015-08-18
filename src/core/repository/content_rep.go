@@ -9,7 +9,7 @@
 package repository
 
 import (
-	"github.com/atnet/gof/db"
+	"github.com/jrsix/gof/db"
 	contentImpl "go2o/src/core/domain/content"
 	"go2o/src/core/domain/interface/content"
 )

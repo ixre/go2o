@@ -13,7 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/atnet/gof/math"
+	"github.com/jrsix/gof/math"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/infrastructure/format"

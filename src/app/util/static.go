@@ -9,7 +9,7 @@
 package util
 
 import (
-	"github.com/atnet/gof/web"
+	"github.com/jrsix/gof/web"
 	"net/http"
 )
 

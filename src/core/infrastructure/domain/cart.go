@@ -12,7 +12,7 @@ package domain
 import (
 	"bytes"
 	"fmt"
-	"github.com/atnet/gof/crypto"
+	"github.com/jrsix/gof/crypto"
 	"regexp"
 )
 

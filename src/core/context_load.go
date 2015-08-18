@@ -10,9 +10,9 @@ package core
 
 import (
 	"fmt"
-	"github.com/atnet/gof"
-	"github.com/atnet/gof/db"
-	"github.com/atnet/gof/log"
+	"github.com/jrsix/gof"
+	"github.com/jrsix/gof/db"
+	"github.com/jrsix/gof/log"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/domain/interface/content"
 	"go2o/src/core/domain/interface/delivery"
