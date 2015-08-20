@@ -162,6 +162,9 @@ func (this *Order) PaymentWithBalance() error {
 	unix := time.Now().Unix()
 	if this._value.PayFee == 0 {
 		this._value.IsPaid = 1
+		if this._value.Status == enum.ORDER_WAIT_PAYMENT {
+			this._value.Status = enum.ORDER_WAIT_CONFIRM
+		}
 	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
