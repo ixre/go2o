@@ -11,29 +11,31 @@ function deviceCallProvider(providerName) {
     this.defined = function(funcName){
         return eval('window'+this.joinStr()+' && window'+this.joinStr()+'.'+funcName+'!= undefined');
     }
-    this.call = function (funcName,arg1,arg2,arg3,arg4,arg5,arg6) {
-        return eval('window' +this.joinStr()+"." + funcName + '(arg1,arg2,arg3,arg4,arg5,arg6)');
+    this.call = function (funcName,arg) {
+        return eval('window' +this.joinStr()+"." + funcName + '(arg)');
     };
 }
 
-window.cli = {
-    pds :[new deviceCallProvider("android"),
-        new deviceCallProvider("ios"),
-        new deviceCallProvider(null)],
-    alert:function(arg1,arg2,arg3,arg4,arg5,arg6){
-        var arr = new Array(arguments.length+1);
-        var i = 0;
-        for(var i=0;i< arguments.length;i++){
-            arr[i+1] = arguments[i];
-        }
+window.pc = window;
+var dpList= [new deviceCallProvider("android"),
+    new deviceCallProvider("ios"),
+    new deviceCallProvider("pc")];
 
-        for(var i=0;i< this.pds.length;i++) {
-            var p = this.pds[i];
-            if (p.providerName && !p.defined('alert')) {
-                continue;
-            }
-            p.call("alert",arg1,arg2,arg3,arg4,arg5,arg6);
+function loopCall(func,arg){
+    for(var i=0;i< dpList.length;i++) {
+        var p = dpList[i];
+        if (p.providerName && p.defined(func)) {
+            p.call(func,arg);
             break;
         }
     }
+}
+
+window.cli = {
+    alert:function(arg){
+        loopCall('alert',arg);
+    },
+    login:function(arg){
+        loopCall('login',arg);
+    },
 };

@@ -242,5 +242,6 @@ function reloadFee(promFee,payFee) {
         BalanceFee :balancePay,
         OrderFee: _payFee,
     });
+    _payFee= _payFee.toFixed(2)*100/100
     j6.$('final_fee').innerHTML = _payFee;
 }

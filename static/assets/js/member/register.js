@@ -9,23 +9,21 @@ var _vcode;//验证码
 //对每个输入进行验证
 
 //定义元素变量
-var phone = j6.$('phone');
-var valid = j6.validator;
+
 j6.$('usr').onblur = function () {
     if (this.value == undefined)return;
-    if (this.value == '')valid.setTip(this, false, 0, '请输入用户名!');
+    if (this.value == '')j6.validator.setTip(this, false, 0, '请输入用户名!');
     //else if(!/^(?=[A-Za-z])/.test(this.value))valid.setError(this,1);     //必须字符开头
-    else if (!/^[A-Za-z0-9]+$/.test(this.value))valid.setTip(this, false, '3', '');
-    else if (this.value.length < 4 || this.value.length > 15)valid.setTip(this, false, '2', '');
+    else if (!/^[A-Za-z0-9]+$/.test(this.value))j6.validator.setTip(this, false,'3','');
     else {
         var t = this;
-        valid.setTip(t, false, null, '验证中...');
+        j6.validator.setTip(t, false, null, '验证中...');
         j6.xhr.jsonPost('/user/ValidUsr', {usr: escape(t.value)}, function (json) {
             if (json.result) {
-                valid.setTip(t, true, null, '用户名可用');
+                j6.validator.setTip(t, true, null, '用户名可用');
             }
             else {
-                valid.setTip(t, false, '4');
+                j6.validator.setTip(t, false,null,json.message);
             }
         });
     }
@@ -53,15 +51,15 @@ j6.$('usr').onblur = function () {
  */
 j6.$('pwd').onblur = function () {
     if (/^(?=_)/.test(this.value) || this.value.indexOf('_') == this.value.length - 1)
-        valid.setTip(this, false, '1');
+        j6.validator.setTip(this, false, '1');
     else if (!/^[A-Za-z0-9_]*$/.test(this.value)) {
-        valid.setTip(this, false, '3');
+        j6.validator.setTip(this, false, '3');
     }
     else if (this.value.length < 6 || this.value.length > 12) {
-        valid.setTip(this, false, '2');
+        j6.validator.setTip(this, false, '2');
     }
     else {
-        valid.setTip(this, true, null, '');
+        j6.validator.setTip(this, true, null, '');
     }
 };
 
@@ -77,13 +75,13 @@ var phone = j6.$('phone');
 if (phone != null) {
     phone.onblur = function () {
         if (this.value == undefined)return;
-        if (this.value != '' && !/^(13[0-9]|15[1|2|3|4|5|6|8|9]|18[0|6|7|8|9])(\d{8})$/.test(this.value)) {
-            valid.setTip(this, false, '0');
+        if (this.value != '' && !/^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$/.test(this.value)) {
+            j6.validator.setTip(this, false, '0');
         } else {
             if (this.value != '') {
-                valid.setTip(this, true, null, '填写正确');
+                j6.validator.removeTip(this);
             } else {
-                valid.setTip(this, false, '2');
+                j6.validator.setTip(this, false, '2');
             }
             /*
              if (this.value != ''){
@@ -108,7 +106,7 @@ if (inviCode != null) {
             j6.validator.removeTip(this);
         }else{
             var t = this;
-            valid.setTip(this, false, null, '验证中...');
+            j6.validator.setTip(this, false, null, '验证中...');
             j6.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
                 if (json.result) {
                     //valid.setTip(t, true, null, '邀请人为:'+json.data.Name);
@@ -202,7 +200,7 @@ btnRegister.onclick = function () {
                     }
                 } else {
                     tip.className='tip-panel';
-                    tip.innerHTML = json.message;
+                    tip.innerHTML = "注册失败："+json.message;
                     t.disabled='';
                 }
             }, function () {

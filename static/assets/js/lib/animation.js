@@ -1,4 +1,4 @@
-j6.extend({
+﻿j6.extend({
     animation: {
         timer: function (call, overCall, start, end, speed) {
             if (!call) return;
@@ -94,7 +94,6 @@ j6.extend({
             if (tw == 0 || th == 0) {
                 tw = j6.clientWidth(e);
                 th = j6.clientHeight(e);
-
                 if (w == 0 || h == 0) {
                     w = tw;
                     h = th;
@@ -105,6 +104,7 @@ j6.extend({
 
             var speedX = speed == null ? 2 : speed;
             var speedY = speedX * (th / tw);
+
 
             if (style["display"] == 'none') {
                 var css = { overflow: 'hidden', display: 'inherit'};
