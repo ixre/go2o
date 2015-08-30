@@ -28,9 +28,9 @@
     </div>
 
     <div class="fl">
-        <div class="label">图片标题：</div>
+        <div class="label"><span class="red">*&nbsp;</span>图片标题：</div>
         <div class="in">
-            <input type="text" class="box ui-validate" field="Title"/>
+            <input type="text" class="box ui-validate" required="true" field="Title"/>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
 
 
     <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
+        <div class="label">是否启用：</div>
         <div class="in">
             <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled" value="1" checked="checked" /><label for="Enabled1">启用</label>
             <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled2" value="0" /><label for="Enabled2">停用</label>
@@ -66,7 +66,8 @@
 <script>
     var entity ={{.entity}} ||{};
     j6.json.bind('form1', entity);
-    j6.$('upload_img').src = '{{.img_serve}}/'+ entity.ImageUrl;
+    var imgUrl =  entity.ImageUrl.indexOf('http://')!=-1 ? entity.ImageUrl: '{{.img_serve}}/'+ entity.ImageUrl;
+    j6.$('upload_img').src = imgUrl;
 
     //上传缩略图
     j6.upload({

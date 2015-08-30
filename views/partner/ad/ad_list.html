@@ -112,7 +112,7 @@
                         }
                         return '未知类型';
                     } },
-                    { field: 'is_internal', title: '系统内置', align: 'center', width: 120,formatter:function(v){
+                    { field: 'is_internal', title: '系统内置', align: 'center',formatter:function(v){
                     return v == '1'?'<span style="color:#0A0">是</span>':'否'
                     } },
                     {
@@ -133,7 +133,7 @@
                         return unix2str(v);
                     } },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" onclick="editRec('+row.id+')">编辑</a>'+
+                        return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">编辑</a>'+
                                 '<a href="javascript:;" class="btn btn-short" onclick="editData('+row.id+','+ row.type_id +')">广告数据</a>'+
                                 '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
                     } },
