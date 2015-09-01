@@ -129,9 +129,9 @@ func (this *goodsC) Del_post(ctx *web.Context) {
 	err := dps.SaleService.DeleteGoods(partnerId, id)
 
 	if err != nil {
-		result = gof.Message{Result: true, Message: err.Error()}
+		result.Message = err.Error()
 	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		result.Result = true
 	}
 	ctx.Response.JsonOutput(result)
 }
@@ -146,9 +146,9 @@ func (this *goodsC) Del_item_post(ctx *web.Context) {
 	err := dps.SaleService.DeleteItem(partnerId, id)
 
 	if err != nil {
-		result = gof.Message{Result: true, Message: err.Error()}
+		result.Message = err.Error()
 	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		result.Result = true
 	}
 	ctx.Response.JsonOutput(result)
 }

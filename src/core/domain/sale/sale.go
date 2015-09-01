@@ -79,7 +79,7 @@ func (this *Sale) DeleteItem(id int) error {
 	var err error
 	num := this._saleRep.GetItemSaleNum(this.GetAggregateRootId(), id)
 
-	if num > 0 {
+	if num == 0 {
 		err = this._saleRep.DeleteItem(this.GetAggregateRootId(), id)
 		if err != nil {
 			this.clearCache(id)

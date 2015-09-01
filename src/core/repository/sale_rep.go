@@ -10,7 +10,6 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/jrsix/gof/algorithm/iterator"
 	"github.com/jrsix/gof/db"
@@ -112,25 +111,10 @@ func (this *saleRep) GetItemSaleNum(partnerId int, id int) int {
 
 func (this *saleRep) DeleteItem(partnerId, itemId int) error {
 	_, _, err := this.Connector.Exec(`
-		DELETE f,f2 FROM gs_item AS f
+		DELETE f FROM gs_item AS f
 		INNER JOIN gs_category AS c ON f.category_id=c.id
-		INNER JOIN gs_itemprop as f2 ON f2.id=f.id
 		WHERE f.id=? AND c.partner_id=?`, itemId, partnerId)
 	return err
-}
-
-//获取食物数量
-//todo: 还未使用
-func (this *saleRep) FoodItemsCount(partnerId, cid int) (count int) {
-	this.Connector.QueryRow(`
-		SELECT COUNT(0) FROM gs_item f
-	INNER JOIN gs_category c ON f.category_id = c.id
-	 where c.partner_id = ?
-	AND (cid == -1 OR cid = ?)
-	`, func(r *sql.Row) {
-		r.Scan(count)
-	}, partnerId, cid)
-	return count
 }
 
 func (this *saleRep) SaveCategory(v *sale.ValueCategory) (int, error) {
