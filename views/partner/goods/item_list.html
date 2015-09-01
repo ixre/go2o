@@ -63,7 +63,7 @@
 
 <script type="text/javascript">
     expr.ele = 'search_bar';
-    expr.portal = 'Partner.GoodsList';
+    expr.portal = 'Partner.ItemList';
     expr.checkParams = function (data) {
         return true;
     };
@@ -92,15 +92,14 @@
             toolbar: '.toolBar',
             singleSelect: !false,
             pagination: true,
-            rownumbers: true,
+            rownumbers: !true,
             fitColumns: true,
             pageList:[5,10,15],
             pageSize:5,
             url: expr.getDataUrl(),
             columns: [
                 [
-                    { field: 'name', title: '商品名称', align: 'center', width: 120 },
-                    { field: 'img', title: '图片', align: 'center', width: 100,formatter:function(val){
+                    { field: 'img', title: '', align: 'center', width: 100,formatter:function(val){
                         if(val ==''){
                             val = '{{.no_pic_url}}';
                         }else if(val.indexOf("http://")!=0 && val.indexOf("https://")!=0){
@@ -109,10 +108,11 @@
                         return '<img src="'+val+'" style="background:#fff;width:75px;height:75px;'+
                                 'border-radius:1px;border:solid 1px #ddd;margin:5px;"/>';
                     } },
-                    { field: 'cost', title: '成本价',align: 'center'},
-                    { field: 'price', title: '定价', align: 'center', width: 120 },
-                    { field: 'sale_price', title: '销售价',align: 'center', width: 120 },
-                    { field: 'sale_fee', title: '优惠(元)',align: 'center', width: 120,formatter:function(val,row){
+                    { field: 'name', title: '商品名称', align: 'center', width: 200 },
+                    { field: 'cost', title: '成本价',align: 'center',width: 80 },
+                    { field: 'price', title: '定价', align: 'center', width: 80 },
+                    { field: 'sale_price', title: '销售价',align: 'center', width: 80 },
+                    { field: 'sale_fee', title: '优惠(元)',align: 'center', width: 80,formatter:function(val,row){
                         var sale_fee = row.price - row.sale_price;
                         if(sale_fee!=0){
                             return sale_fee;
@@ -120,23 +120,23 @@
                         return "-";
                     } },
                     {
-                        field: 'state',
+                        field: 'on_shelves',
                         title: '状态',
                         sortable: true,
                         align: 'center',
                         width: 100,
                         formatter: function (val) {
                             if (val == 1) {
-                                return '<span style="color:green">可订</span>';
+                                return '<span style="color:green">已上架</span>';
                             } else if(val == 0){
-                                return '<span style="color:darkorange">不可订</span>';
+                                return '<span style="color:darkorange">已下架</span>';
                             }
                         }
                     },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" onclick="editRec('+row.id+')">编辑</a>'+
-                                '<a href="javascript:;" class="btn btn-short" onclick="setSaleTag('+row.id+')">标签设置</a>'+
-                                '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
+                        return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">编辑</a>'+
+                                '<a href="javascript:;" class="btn btn-short" onclick="setSaleTag('+row.id+')">标签设置</a>';
+                                //'<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
                     } },
                 ]
             ]
@@ -154,7 +154,7 @@
     }
 
     function editRec(id){
-        j6.tab.open('修改商品', '/goods/goodsCtrl?item_id=' + id,  true);
+        j6.tab.open('修改商品', '/goods/itemCtrl?item_id=' + id,  true);
     }
 
     function delRec(id) {
