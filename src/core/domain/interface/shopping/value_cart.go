@@ -29,7 +29,7 @@ type ValueCartItem struct {
 	CartId     int     `db:"cart_id"`
 	GoodsId    int     `db:"goods_id"`
 	SnapshotId int     `db:"snap_id"`
-	Quantity int     `db:"quantity"`
+	Quantity   int     `db:"quantity"`
 	Sku        string  `db:"-"`
 	Price      float32 `db:"-"`
 	SalePrice  float32 `db:"-"`

@@ -263,7 +263,7 @@ func (this *Order) Submit() (string, error) {
 	if v.IsPaid == 1 || v.PaymentOpt == enum.PaymentOfflineCashPay ||
 		v.PaymentOpt == enum.PaymentRemit {
 		v.Status = enum.ORDER_WAIT_CONFIRM
-	}else{
+	} else {
 		v.Status = enum.ORDER_WAIT_PAYMENT
 	}
 
@@ -492,14 +492,14 @@ func (this *Order) Confirm() error {
 		return shopping.ErrOrderNotPayed
 	}
 
-	if this._value.Status == enum.ORDER_WAIT_CONFIRM  {
+	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
 		this._value.Status = enum.ORDER_WAIT_DELIVERY
 		this._value.UpdateTime = time.Now().Unix()
 
 		_, err := this.Save()
 		if err == nil {
 			for _, v := range this._value.Items {
-				 this.addGoodsSaleNum(v.SnapshotId, v.Quantity)
+				this.addGoodsSaleNum(v.SnapshotId, v.Quantity)
 			}
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
 		}

@@ -71,7 +71,8 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 	return pro.Save()
 }
 
-func (this *saleService) DeleteItem(partnerId int, id int) (int, error) {
+// 删除货品
+func (this *saleService) DeleteItem(partnerId int, id int) error {
 	sl := this._rep.GetSale(partnerId)
 	return sl.DeleteItem(id)
 }

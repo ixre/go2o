@@ -10,8 +10,8 @@ package core
 
 import (
 	"fmt"
-	"github.com/jrsix/gof"
 	"github.com/garyburd/redigo/redis"
+	"github.com/jrsix/gof"
 	"log"
 	"time"
 )

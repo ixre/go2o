@@ -9,9 +9,9 @@
 package sale
 
 // 简单商品信息
-type SimpleGoods struct{
-	GoodsId  int 	`json:"id"`
+type SimpleGoods struct {
+	GoodsId    int    `json:"id"`
 	GoodsImage string `json:"img"`
-	Name string  `json:"name"`
-	Quantity string `json:"qty"`
+	Name       string `json:"name"`
+	Quantity   string `json:"qty"`
 }

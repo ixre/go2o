@@ -2,6 +2,7 @@ package shopping
 
 import (
 	"bytes"
+	"encoding/json"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/sale"
@@ -10,7 +11,6 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"strconv"
 	"time"
-	"encoding/json"
 )
 
 type Cart struct {
@@ -183,7 +183,7 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 		CartId:     this.GetDomainId(),
 		SnapshotId: snap.Id,
 		GoodsId:    goodsId,
-		Quantity:        num,
+		Quantity:   num,
 		Name:       gv.Name,
 		GoodsNo:    gv.GoodsNo,
 		Image:      gv.Image,
@@ -325,7 +325,6 @@ func (this *Cart) Destroy() (err error) {
 	return err
 }
 
-
 // 获取总览信息
 func (this *Cart) GetSummary() string {
 	if len(this._summary) != 0 {
@@ -353,17 +352,17 @@ func (this *Cart) GetSummary() string {
 }
 
 // 获取Json格式的商品数据
-func (this *Cart) GetJsonItems() []byte{
-	var goods []*shopping.OrderGoods = make([]*shopping.OrderGoods,len(this._value.Items))
-	for i,v := range this._value.Items{
+func (this *Cart) GetJsonItems() []byte {
+	var goods []*shopping.OrderGoods = make([]*shopping.OrderGoods, len(this._value.Items))
+	for i, v := range this._value.Items {
 		goods[i] = &shopping.OrderGoods{
-			GoodsId:v.GoodsId,
-			GoodsImage:v.Image,
-			Quantity:v.Quantity,
-			Name:v.Name,
+			GoodsId:    v.GoodsId,
+			GoodsImage: v.Image,
+			Quantity:   v.Quantity,
+			Name:       v.Name,
 		}
 	}
-	d,_ := json.Marshal(goods)
+	d, _ := json.Marshal(goods)
 	return d
 }
 

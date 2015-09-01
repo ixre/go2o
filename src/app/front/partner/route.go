@@ -40,7 +40,7 @@ func registerRoutes() {
 	routes.Register("content", new(contentC))
 	routes.Register("ad", new(adC))
 	routes.Register("mss", new(mssC))
-	routes.Register("editor",new(editorC))
+	routes.Register("editor", new(editorC))
 
 	routes.Add("/export/getExportData", func(ctx *web.Context) {
 		if b, id := chkLogin(ctx); b {

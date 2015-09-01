@@ -74,19 +74,17 @@ func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 	return newItem(this, v, this._saleRep, this._saleTagRep, this._goodsRep, this._promRep)
 }
 
-
-
 // 删除货品
-func (this *Sale) DeleteItem(id int)error{
+func (this *Sale) DeleteItem(id int) error {
 	var err error
-	num := this._saleRep.GetItemSaleNum(this.GetAggregateRootId(),id)
+	num := this._saleRep.GetItemSaleNum(this.GetAggregateRootId(), id)
 
-	if num >0 {
+	if num > 0 {
 		err = this._saleRep.DeleteItem(this.GetAggregateRootId(), id)
 		if err != nil {
 			this.clearCache(id)
 		}
-	}else{
+	} else {
 		err = sale.ErrCanNotDeleteItem
 	}
 	return err
@@ -129,8 +127,6 @@ func (this *Sale) GetGoodsBySku(itemId, sku int) sale.IGoods {
 	}
 	return nil
 }
-
-
 
 // 删除商品
 func (this *Sale) DeleteGoods(goodsId int) error {

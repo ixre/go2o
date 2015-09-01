@@ -104,9 +104,9 @@ func (this *saleRep) GetPagedOnShelvesItem(partnerId int, catIds []int, start, e
 }
 
 // 获取货品销售总数
-func (this *saleRep) GetItemSaleNum(partnerId int,id int)int{
+func (this *saleRep) GetItemSaleNum(partnerId int, id int) int {
 	var num int
-	this.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,&num,id)
+	this.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`, &num, id)
 	return num
 }
 

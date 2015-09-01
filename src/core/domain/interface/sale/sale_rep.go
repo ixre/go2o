@@ -25,7 +25,7 @@ type ISaleRep interface {
 	GetPagedOnShelvesItem(partnerId int, catIds []int, start, end int) (total int, goods []*ValueItem)
 
 	// 获取货品销售总数
-	GetItemSaleNum(partnerId int,id int)int
+	GetItemSaleNum(partnerId int, id int) int
 
 	// 删除货品
 	DeleteItem(partnerId, goodsId int) error

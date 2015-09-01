@@ -19,7 +19,7 @@ type ISale interface {
 	GetItem(int) IItem
 
 	// 删除货品
-	DeleteItem(int)error
+	DeleteItem(int) error
 
 	// 创建商品
 	CreateGoods(IItem, *ValueGoods) IGoods

@@ -15,8 +15,8 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/format"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 )
 
 func HandleCashBackDataTag(m member.IMember, order *shopping.ValueOrder,
@@ -34,7 +34,7 @@ func HandleCashBackDataTag(m member.IMember, order *shopping.ValueOrder,
 	cashBack3R(level, m, order, c, memberRep)
 }
 
-func cashBack3R(level int,m member.IMember, order *shopping.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
+func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 
 	dt := c.GetDataTag()
 
@@ -62,7 +62,7 @@ func cashBack3R(level int,m member.IMember, order *shopping.ValueOrder, c promot
 			break
 		}
 
-		if fee, err := strconv.Atoi(dt[fmt.Sprintf("G%d",i)]);err == nil {
+		if fee, err := strconv.Atoi(dt[fmt.Sprintf("G%d", i)]); err == nil {
 			//log.Println("[ Back][ Cash] - ",i," back ",fee)
 			backFunc(cm, pm, fee)
 		}

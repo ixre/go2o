@@ -9,27 +9,26 @@
 package partner
 
 import (
+	"bufio"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/jrsix/gof/web"
 	"github.com/jrsix/gof/web/mvc"
 	"gobx/share/variable"
+	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-    "time"
-    "bufio"
-    "io"
-	"math/rand"
-	"regexp"
+	"time"
 )
 
 var _ sort.Interface = new(SorterFiles)
-
 
 type SorterFiles struct {
 	files  []os.FileInfo
@@ -105,7 +104,7 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 		currentPath = dirPath + path
 		currentUrl = rootUrl + path
 		currentDirPath = path
-		moveUpDirPath = moveUpRegexp.ReplaceAllString(currentDirPath,"$1")
+		moveUpDirPath = moveUpRegexp.ReplaceAllString(currentDirPath, "$1")
 	}
 
 	//不允许使用..移动到上一级目录
@@ -162,7 +161,7 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 	for i := 0; i < dirList.Len(); i++ {
 		hash := make(map[string]interface{})
 		fs, _ := ioutil.ReadDir(currentPath + "/" + dirList.files[i].Name())
-		fmt.Println("----",currentPath + "/" + dirList.files[i].Name())
+		fmt.Println("----", currentPath+"/"+dirList.files[i].Name())
 		hash["is_dir"] = true
 		hash["has_file"] = len(fs) > 0
 		hash["is_photo"] = false
@@ -192,101 +191,98 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 }
 
 // 文件上传
-func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string,err error) {
+func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err error) {
 
-    //定义允许上传的文件扩展名
-    var extTable map[string]string = map[string]string{
-        "image": "gif,jpg,jpeg,png,bmp",
-        "flash": "swf,flv",
-        "media": "swf,flv,mp3,wav,wma,wmv,mid,avi,mpg,asf,rm,rmvb",
-        "file":  "doc,docx,xls,xlsx,ppt,htm,html,txt,zip,rar,gz,bz2,7z,pdf",
-    }
+	//定义允许上传的文件扩展名
+	var extTable map[string]string = map[string]string{
+		"image": "gif,jpg,jpeg,png,bmp",
+		"flash": "swf,flv",
+		"media": "swf,flv,mp3,wav,wma,wmv,mid,avi,mpg,asf,rm,rmvb",
+		"file":  "doc,docx,xls,xlsx,ppt,htm,html,txt,zip,rar,gz,bz2,7z,pdf",
+	}
 
-    //最大文件大小
-    const maxSize int64 = 1000000
+	//最大文件大小
+	const maxSize int64 = 1000000
 
-    // 取得上传文件
-    r.ParseMultipartForm(maxSize)
-    f, header, err := r.FormFile("imgFile")
-    if f == nil {
-        return "", errors.New("no such upload file")
-    }
-    if err != nil {
-        return "", err
-    }
+	// 取得上传文件
+	r.ParseMultipartForm(maxSize)
+	f, header, err := r.FormFile("imgFile")
+	if f == nil {
+		return "", errors.New("no such upload file")
+	}
+	if err != nil {
+		return "", err
+	}
 
-    var fileName string = header.Filename
-    var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
+	var fileName string = header.Filename
+	var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
 
-    // 检查上传目录
-    var dirPath string = rootPath
-    var dirName string = r.URL.Query().Get("dir")
-    if len(dirName) == 0 {
-        dirName = "image"
-    }
-    if _, ok := extTable[dirName]; !ok {
-        return "", errors.New("incorrent file type")
-    }
+	// 检查上传目录
+	var dirPath string = rootPath
+	var dirName string = r.URL.Query().Get("dir")
+	if len(dirName) == 0 {
+		dirName = "image"
+	}
+	if _, ok := extTable[dirName]; !ok {
+		return "", errors.New("incorrent file type")
+	}
 
-    // 检查扩展名
-    if strings.Index(extTable[dirName], fileExt) == -1 &&
-    !strings.HasSuffix(extTable[dirName], fileExt) {
-        return "", errors.New("上传文件扩展名是不允许的扩展名。\n只允许" + extTable[dirName] + "格式。")
-    }
+	// 检查扩展名
+	if strings.Index(extTable[dirName], fileExt) == -1 &&
+		!strings.HasSuffix(extTable[dirName], fileExt) {
+		return "", errors.New("上传文件扩展名是不允许的扩展名。\n只允许" + extTable[dirName] + "格式。")
+	}
 
-    // 检查上传超出文件大小
-    if i, _ := strconv.Atoi(header.Header.Get("Content-Length")); int64(i) > maxSize {
-        return "", errors.New("上传文件大小超过限制。")
-    }
+	// 检查上传超出文件大小
+	if i, _ := strconv.Atoi(header.Header.Get("Content-Length")); int64(i) > maxSize {
+		return "", errors.New("上传文件大小超过限制。")
+	}
 
+	//创建文件夹
+	dirPath += dirName + "/"
+	savePath += dirName + "/"
 
-    //创建文件夹
-    dirPath += dirName + "/";
-    savePath += dirName + "/";
+	var now = time.Now()
+	var ymd string = now.Format("200601")
+	dirPath += ymd + "/"
+	savePath += ymd + "/"
 
-    var now = time.Now()
-    var ymd string = now.Format("200601")
-    dirPath += ymd + "/";
-    savePath += ymd + "/";
+	if _, err := os.Stat(savePath); os.IsNotExist(err) {
+		os.MkdirAll(savePath, os.ModePerm)
+	}
 
-    if _,err := os.Stat(savePath);os.IsNotExist(err){
-        os.MkdirAll(savePath,os.ModePerm)
-    }
-
-    var newFileName string = fmt.Sprintf("%d_%d.%s", now.Unix(),
+	var newFileName string = fmt.Sprintf("%d_%d.%s", now.Unix(),
 		100+rand.Intn(899), fileExt)
-    var filePath string = savePath + newFileName;
+	var filePath string = savePath + newFileName
 
+	fi, err := os.OpenFile(filePath,
+		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+		os.ModePerm)
 
-
-    fi, err := os.OpenFile(filePath,
-        os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
-        os.ModePerm)
-
-    if err == nil {
+	if err == nil {
 		defer fi.Close()
-        buf := bufio.NewWriter(fi)
-        bufSize := 100
-        buffer := make([]byte, bufSize)
-        var n int
-        var leng int
-        for {
-            if n, err = f.Read(buffer); err == io.EOF {
-                break
-            }
+		buf := bufio.NewWriter(fi)
+		bufSize := 100
+		buffer := make([]byte, bufSize)
+		var n int
+		var leng int
+		for {
+			if n, err = f.Read(buffer); err == io.EOF {
+				break
+			}
 
-            if n != bufSize {
-                buf.Write(buffer[:n])
-            } else {
-                buf.Write(buffer)
-            }
+			if n != bufSize {
+				buf.Write(buffer[:n])
+			} else {
+				buf.Write(buffer)
+			}
 
-            leng += n
-        }
+			leng += n
+		}
 		buf.Flush()
-    }
+	}
 
-    return dirPath + newFileName, nil
+	return dirPath + newFileName, nil
 }
 
 var _ mvc.Filter = new(editorC)
@@ -294,7 +290,6 @@ var _ mvc.Filter = new(editorC)
 type editorC struct {
 	*baseC
 }
-
 
 func (this *editorC) File_manager(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
@@ -311,20 +306,20 @@ func (this *editorC) File_manager(ctx *web.Context) {
 }
 
 func (this *editorC) File_upload_post(ctx *web.Context) {
-    partnerId := this.GetPartnerId(ctx)
-    fileUrl, err := fileUpload(ctx.Request,
-        fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
-        fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
-    )
-    var hash map[string]interface{} = make(map[string]interface{})
-    if err == nil {
-        hash["error"] = 0;
-        hash["url"] = fileUrl;
-    }else {
-        hash["error"] = 1
-        hash["message"] = err.Error()
-    }
-    ctx.Response.Header().Add("Content-Type", "application/json")
-    d, _ := json.Marshal(hash)
-    ctx.Response.Write(d)
+	partnerId := this.GetPartnerId(ctx)
+	fileUrl, err := fileUpload(ctx.Request,
+		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
+	)
+	var hash map[string]interface{} = make(map[string]interface{})
+	if err == nil {
+		hash["error"] = 0
+		hash["url"] = fileUrl
+	} else {
+		hash["error"] = 1
+		hash["message"] = err.Error()
+	}
+	ctx.Response.Header().Add("Content-Type", "application/json")
+	d, _ := json.Marshal(hash)
+	ctx.Response.Write(d)
 }

@@ -153,7 +153,6 @@ func (this *goodsC) Del_item_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-
 func (this *goodsC) SetSaleTag(ctx *web.Context) {
 	r := ctx.Request
 	r.ParseForm()

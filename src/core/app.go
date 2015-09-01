@@ -9,11 +9,11 @@
 package core
 
 import (
+	"github.com/garyburd/redigo/redis"
 	"github.com/jrsix/gof"
 	"github.com/jrsix/gof/db"
 	"github.com/jrsix/gof/log"
 	"github.com/jrsix/gof/storage"
-	"github.com/garyburd/redigo/redis"
 )
 
 var _ gof.App = new(MainApp)

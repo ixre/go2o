@@ -49,7 +49,6 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 			"</title></head></html>")
 	}
 
-
 	defer f.Close()
 
 	if err == nil {
