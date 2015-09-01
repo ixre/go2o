@@ -62,6 +62,7 @@
 <script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
 
 <script type="text/javascript">
+    var id = 'dg';
     expr.ele = 'search_bar';
     expr.portal = 'Partner.ItemList';
     expr.checkParams = function (data) {
@@ -69,10 +70,10 @@
     };
 
     window.refresh = function () {
-        expr.reload('dg');
+        expr.reload(id);
     };
 
-    j6.$('dg').style.height = j6.screen.height() + 'px';
+    j6.$(id).style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -88,7 +89,7 @@
 
 
         //加载数据
-        $('#dg').datagrid({
+        $('#'+id).datagrid({
             toolbar: '.toolBar',
             singleSelect: !false,
             pagination: true,
@@ -134,9 +135,9 @@
                         }
                     },
                     { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">编辑</a>'+
-                                '<a href="javascript:;" class="btn btn-short" onclick="setSaleTag('+row.id+')">标签设置</a>';
-                                //'<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
+                        return j6.template('<a href="javascript:;" class="btn btn-short" onclick="editRec({id})">编辑</a>'+
+                                '<a href="javascript:;" class="btn btn-short" onclick="setSaleTag({id})">标签</a>'+
+                                '<a href="javascript:;" class="btn btn-short" onclick="delRec({id})">删除</a>',row);
                     } },
                 ]
             ]
@@ -145,24 +146,29 @@
 
     j6.$('btnAdd').onclick=addRec;
 
+
     function addRec(){
         j6.tab.open('新增商品', '/goods/create', true);
     }
 
     function setSaleTag(id){
-        j6.dialog.create2('设置商品销售标签',true,true).open('/goods/setSaleTag?id=' + id,400,300);
+        j6.dialog.create2('设置商品销售标签',true,true).open('/goods/setSaleTag?id=' +id,400,300);
     }
 
     function editRec(id){
-        j6.tab.open('修改商品', '/goods/itemCtrl?item_id=' + id,  true);
+        j6.tab.open('修改商品', '/goods/itemCtrl?item_id=' +id,  true);
     }
 
     function delRec(id) {
-     window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+        window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('/goods/del', { id: id }, function(json) {
+                j6.xhr.jsonPost('/goods/del_item', { id: id }, function(json) {
                     if (json.result) {
-                        expr.reload('dg');
+                        window.parent.$.messager.alert('提示','删除成功','ok',function(){
+                            window.refresh();
+                        });
+                    }else{
+                        window.parent.$.messager.alert('提示',json.message,'error');
                     }
                 });
             }
