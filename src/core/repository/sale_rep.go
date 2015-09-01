@@ -103,6 +103,13 @@ func (this *saleRep) GetPagedOnShelvesItem(partnerId int, catIds []int, start, e
 	return total, e
 }
 
+// 获取货品销售总数
+func (this *saleRep) GetItemSaleNum(partnerId int,id int)int{
+	var num int
+	this.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,&num,id)
+	return num
+}
+
 func (this *saleRep) DeleteItem(partnerId, itemId int) error {
 	_, _, err := this.Connector.Exec(`
 		DELETE f,f2 FROM gs_item AS f

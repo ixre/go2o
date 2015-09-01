@@ -29,5 +29,8 @@ var (
 		"out_of_sale_price", "超出商品售价")
 
 	ErrInternalDisallow *domain.DomainError = domain.NewDomainError(
-		"err_internal_disallow", "不允许删除内置销售标签！")
+		"err_sale_tag_internal_disallow", "不允许删除内置销售标签！")
+
+	ErrCanNotDeleteItem *domain.DomainError = domain.NewDomainError(
+		"err_goods_can_not_delete_item", "已售出货品只允许下架。")
 )

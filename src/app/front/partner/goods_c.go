@@ -121,7 +121,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 
 func (this *goodsC) Del_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request
 	var result gof.Message
 
 	r.ParseForm()
@@ -133,8 +133,26 @@ func (this *goodsC) Del_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true, Message: "", Data: id}
 	}
-	w.Write(result.Marshal())
+	ctx.Response.JsonOutput(result)
 }
+
+func (this *goodsC) Del_item_post(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	r := ctx.Request
+	var result gof.Message
+
+	r.ParseForm()
+	id, _ := strconv.Atoi(r.FormValue("id"))
+	err := dps.SaleService.DeleteItem(partnerId, id)
+
+	if err != nil {
+		result = gof.Message{Result: true, Message: err.Error()}
+	} else {
+		result = gof.Message{Result: true, Message: "", Data: id}
+	}
+	ctx.Response.JsonOutput(result)
+}
+
 
 func (this *goodsC) SetSaleTag(ctx *web.Context) {
 	r := ctx.Request

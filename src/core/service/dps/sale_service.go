@@ -71,6 +71,11 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 	return pro.Save()
 }
 
+func (this *saleService) DeleteItem(partnerId int, id int) (int, error) {
+	sl := this._rep.GetSale(partnerId)
+	return sl.DeleteItem(id)
+}
+
 // 获取分页上架的商品
 func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int,
 	sortQuery string) (int, []*valueobject.Goods) {

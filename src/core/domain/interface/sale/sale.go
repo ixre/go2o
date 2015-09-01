@@ -15,8 +15,11 @@ type ISale interface {
 	// 创建产品
 	CreateItem(*ValueItem) IItem
 
-	// 根据产品编号获取产品
+	// 根据产品编号获取货品
 	GetItem(int) IItem
+
+	// 删除货品
+	DeleteItem(int)error
 
 	// 创建商品
 	CreateGoods(IItem, *ValueGoods) IGoods
