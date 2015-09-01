@@ -78,16 +78,23 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
 
-	if len(orderNo) != 0 {
+	var order *shopping.ValueOrder
+	if len(orderNo)> 0 {
+		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
+	}
+
+	if order != nil {
 		ctx.Session().Set("current_payment", orderNo)
 		ctx.Session().Save()
+
+		//order.PayFee = 0.01
 
 		if paymentOpt == "alipay" {
 			aliPayObj := this.getAliPayment(ctx)
 			domain := getDomain(ctx.Request)
 			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
 			notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
-			gateway := aliPayObj.CreateGateway(orderNo, 0.01, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
+			gateway := aliPayObj.CreateGateway(orderNo,order.PayFee, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
 			html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
 			w.Write([]byte(html))
 
