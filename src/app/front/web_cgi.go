@@ -49,12 +49,15 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 			"</title></head></html>")
 	}
 
+
+	defer f.Close()
+
 	if err == nil {
 		buf := bufio.NewWriter(f)
 		bufSize := 100
 		buffer := make([]byte, bufSize)
 		var n int
-		var leng int
+		var totalLen int
 		for {
 			if n, err = fi.Read(buffer); err == io.EOF {
 				break
@@ -66,10 +69,11 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 				buf.Write(buffer)
 			}
 
-			leng += n
+			totalLen += n
 		}
+		buf.Flush()
 
-		return []byte(fmt.Sprintf("{url:'%s',len:%d}", filePath, leng))
+		return []byte(fmt.Sprintf("{url:'%s',len:%d}", filePath, totalLen))
 	}
 	return []byte("{error:'" + err.Error() + "'}")
 }

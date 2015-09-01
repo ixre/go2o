@@ -264,6 +264,7 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string,err 
         os.ModePerm)
 
     if err == nil {
+		defer fi.Close()
         buf := bufio.NewWriter(fi)
         bufSize := 100
         buffer := make([]byte, bufSize)
@@ -282,6 +283,7 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string,err 
 
             leng += n
         }
+		buf.Flush()
     }
 
     return dirPath + newFileName, nil
