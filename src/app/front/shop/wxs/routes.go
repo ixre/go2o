@@ -9,9 +9,9 @@
 package wxs
 
 import (
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/web"
-	_ "github.com/jrsix/gof/web/mvc"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/web"
+	_ "github.com/jsix/gof/web/mvc"
 	_ "net/http"
 )
 

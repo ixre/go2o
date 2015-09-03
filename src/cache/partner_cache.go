@@ -10,8 +10,8 @@ package cache
 
 import (
 	"fmt"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/storage"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 )

@@ -10,7 +10,7 @@
 package infrastructure
 
 import (
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 )
 
 //todo:....

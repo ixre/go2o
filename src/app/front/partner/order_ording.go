@@ -9,8 +9,8 @@
 package partner
 
 import (
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/web"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"

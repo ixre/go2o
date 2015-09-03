@@ -9,7 +9,7 @@
 package payment
 
 import (
-	"github.com/jrsix/gof/log"
+	"github.com/jsix/gof/log"
 	"net/http"
 	_ "os"
 )

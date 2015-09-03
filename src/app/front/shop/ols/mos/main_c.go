@@ -9,7 +9,7 @@
 package mos
 
 import (
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof/web"
 )
 
 type mainC struct {

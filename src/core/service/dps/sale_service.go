@@ -12,7 +12,7 @@ package dps
 import (
 	"errors"
 	"fmt"
-	"github.com/jrsix/gof/web/ui/tree"
+	"github.com/jsix/gof/web/ui/tree"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/format"

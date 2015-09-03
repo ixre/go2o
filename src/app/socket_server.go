@@ -11,7 +11,7 @@ package app
 
 import (
 	"fmt"
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"go2o/src/core"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/service"

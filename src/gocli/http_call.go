@@ -10,7 +10,7 @@ package gocli
 
 import (
 	"encoding/json"
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"

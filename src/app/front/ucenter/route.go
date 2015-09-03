@@ -9,8 +9,8 @@
 package ucenter
 
 import (
-	"github.com/jrsix/gof/web"
-	"github.com/jrsix/gof/web/mvc"
+	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/mvc"
 	"go2o/src/app/util"
 )
 

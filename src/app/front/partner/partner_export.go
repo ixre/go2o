@@ -11,9 +11,9 @@ package partner
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/data/report"
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/data/report"
+	"github.com/jsix/gof/web"
 	"strconv"
 	"strings"
 )

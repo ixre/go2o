@@ -9,7 +9,7 @@
 package ols
 
 import (
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner"

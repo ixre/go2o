@@ -11,9 +11,9 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/net/jsv"
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/net/jsv"
+	"github.com/jsix/gof/web"
 	"go2o/src/core/service/goclient"
 )
 

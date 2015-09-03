@@ -11,9 +11,9 @@ package util
 import (
 	"errors"
 	"fmt"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/crypto"
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/crypto"
+	"github.com/jsix/gof/web"
 	"strconv"
 )
 

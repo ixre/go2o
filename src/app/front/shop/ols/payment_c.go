@@ -11,9 +11,9 @@ package ols
 import (
 	"errors"
 	"fmt"
-	"github.com/jrsix/gof"
-	guitl "github.com/jrsix/gof/util"
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof"
+	guitl "github.com/jsix/gof/util"
+	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"
@@ -79,7 +79,7 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	paymentOpt := qs.Get("pay_opt")
 
 	var order *shopping.ValueOrder
-	if len(orderNo)> 0 {
+	if len(orderNo) > 0 {
 		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 	}
 
@@ -94,7 +94,7 @@ func (this *PaymentC) Create(ctx *web.Context) {
 			domain := getDomain(ctx.Request)
 			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
 			notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
-			gateway := aliPayObj.CreateGateway(orderNo,order.PayFee, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
+			gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
 			html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
 			w.Write([]byte(html))
 

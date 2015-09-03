@@ -12,7 +12,7 @@ package gocli
 import (
 	"errors"
 	"fmt"
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"net/url"
 	"strings"
 )

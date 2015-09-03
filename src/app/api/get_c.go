@@ -9,7 +9,7 @@
 package api
 
 import (
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof/web"
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
 	"net/url"

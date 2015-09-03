@@ -10,7 +10,7 @@
 package dps
 
 import (
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"go2o/src/core/query"
 	"go2o/src/core/repository"
 )

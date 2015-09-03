@@ -12,7 +12,7 @@ package daemon
 import (
 	"flag"
 	"fmt"
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"strings"

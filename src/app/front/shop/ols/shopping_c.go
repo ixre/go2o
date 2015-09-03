@@ -11,9 +11,9 @@ package ols
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/web"
-	"github.com/jrsix/gof/web/mvc"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"

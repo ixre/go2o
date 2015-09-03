@@ -10,8 +10,8 @@ package dao
 
 import (
 	"database/sql"
-	"github.com/jrsix/gof/db"
-	"github.com/jrsix/gof/web/ui/tree"
+	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/web/ui/tree"
 	"go2o/src/core/ording/dao/entity"
 )
 

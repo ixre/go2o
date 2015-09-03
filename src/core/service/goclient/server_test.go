@@ -10,8 +10,8 @@ package goclient
 
 import (
 	"fmt"
-	"github.com/jrsix/gof/net/jsv"
-	"github.com/jrsix/gof/web/pager"
+	"github.com/jsix/gof/net/jsv"
+	"github.com/jsix/gof/web/pager"
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/ording/entity"

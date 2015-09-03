@@ -11,8 +11,8 @@ package repository
 
 import (
 	"errors"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/db"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/db"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"

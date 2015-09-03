@@ -9,7 +9,7 @@
 package ols
 
 import (
-	"github.com/jrsix/gof/web"
+	"github.com/jsix/gof/web"
 	"go2o/src/core/infrastructure/alipay"
 )
 

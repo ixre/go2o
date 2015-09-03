@@ -11,7 +11,7 @@ package query
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jrsix/gof/db"
+	"github.com/jsix/gof/db"
 	"go2o/src/core/domain/interface/member"
 )
 

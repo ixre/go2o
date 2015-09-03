@@ -11,9 +11,9 @@ package master
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/web"
-	"github.com/jrsix/gof/web/mvc"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/mvc"
 	"net/url"
 )
 

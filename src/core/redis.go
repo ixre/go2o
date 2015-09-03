@@ -11,7 +11,7 @@ package core
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"log"
 	"time"
 )

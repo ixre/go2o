@@ -9,7 +9,7 @@
 package query
 
 import (
-	"github.com/jrsix/gof/db"
+	"github.com/jsix/gof/db"
 )
 
 type ContentQuery struct {

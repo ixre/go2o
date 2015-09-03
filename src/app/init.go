@@ -10,7 +10,7 @@
 package app
 
 import (
-	"github.com/jrsix/gof"
+	"github.com/jsix/gof"
 	"go2o/src/core/service/dps"
 )
 

@@ -10,8 +10,8 @@ package domain
 
 import (
 	"fmt"
-	"github.com/jrsix/gof/crypto"
-	"github.com/jrsix/gof/util"
+	"github.com/jsix/gof/crypto"
+	"github.com/jsix/gof/util"
 	"math/rand"
 	"strconv"
 	"strings"

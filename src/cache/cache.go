@@ -10,8 +10,8 @@ package cache
 
 import (
 	"errors"
-	"github.com/jrsix/gof"
-	"github.com/jrsix/gof/storage"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 )
 
 /** this package is manage system cache. **/

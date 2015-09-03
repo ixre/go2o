@@ -10,7 +10,7 @@ package server
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/jrsix/gof/net/jsv"
+	"github.com/jsix/gof/net/jsv"
 	"go2o/src/core"
 )
 

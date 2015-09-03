@@ -11,8 +11,8 @@ package server
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/jrsix/gof/crypto"
-	"github.com/jrsix/gof/net/jsv"
+	"github.com/jsix/gof/crypto"
+	"github.com/jsix/gof/net/jsv"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/dto"
