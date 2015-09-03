@@ -17,7 +17,7 @@
                 <li>订单总额：￥{{.order.TotalFee}}</li>
                 <li>订单金额：￥{{.order.Fee}}</li>
                 <li>优惠金额：￥{{.order.DiscountFee}}</li>
-                <li>支付金额：￥{{.order.PayFee}}</li>
+                <li>优惠金额：￥{{.order.PayFee}}</li>
             </ul>
         </p>
 
@@ -32,8 +32,8 @@
         <br />
         <div class="tip-box" style="color:#FF0000;">
             您即将为会员充值￥<b>{{.order.PayFee}}</b>元，并使用余额完成支付。
-        </div>
-        <input type="button" value="确定支付" id="btn_payment"/>
+        </div><br/>
+        <input class="btn" type="button" value="确定支付" id="btn_payment"/>
 
 </div>
 

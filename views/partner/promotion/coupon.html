@@ -4,46 +4,60 @@
 	<title>添加优惠券</title>
     <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .form .fl div.label{width:90px;margin-right:-90px;}
+        .form .fl div.in{margin-left:90px;}
+    </style>
 </head>
 <body>
+
 <div id="form1" class="form margin30">
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>促销标题：</div>
+        <div class="in">
+            <input type="text" class="box ui-validate" required="true" length="[,45]" field="ShortName"/>
+            标题尽量简短或留空由系统自动生成
+        </div>
+    </div>
+
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>优惠券编码：</div>
         <div class="in">
             <input type="hidden" field="Id" value="0" />
-            <input field="Code" value="" class="ui-validate" required="true"/>
+            <input class="box ui-validate" field="Code" value="" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>数量：</div>
         <div class="in">
-            <input class="ui-validate" field="TotalAmount" required="true"
+            <input class="box ui-validate" field="TotalAmount" required="true"
                    isnumber="true" style="width:30px" value="10"/>&nbsp;张
         </div>
     </div>
 
     <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>优惠金额(整数)：</div>
+        <div class="label"><span class="red">*&nbsp;</span>优惠金额：</div>
         <div class="in">
-            <input class="ui-validate" field="Fee" required="true"
+            <input class="box ui-validate" field="Fee" required="true"
                    isnumber="true" style="width:30px" value="0"/>&nbsp;元
         </div>
     </div>
 
     <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>赠送积分(整数)：</div>
+        <div class="label"><span class="red">*&nbsp;</span>赠送积分：</div>
         <div class="in">
-            <input class="ui-validate" field="Integral" required="true"
-                   isnumber="true" style="width:30px" value="0"/>&nbsp;元
+            <input class="box ui-validate" field="Integral" required="true"
+                   isnumber="true" style="width:30px" value="0"/>&nbsp;个
         </div>
     </div>
 
     <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>折扣(数值)：</div>
+        <div class="label"><span class="red">*&nbsp;</span>折扣：</div>
         <div class="in">
-            <input class="ui-validate" field="Discount" required="true"
-                   isnumber="true" style="width:30px" value="100"/>&nbsp;<br />
+            <input class="box ui-validate" field="Discount" required="true"
+                   isnumber="true" style="width:30px" value="100"/>/100&nbsp;<br />
             如：9折填写90,不打折填100
         </div>
     </div>
@@ -51,8 +65,8 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>等级要求：</div>
         <div class="in">
-            <select field="MinLevel" required="true">
-                <option value="0">一无限制一</option>
+            <select class="box" field="MinLevel" required="true">
+                <option value="0">一无要求一</option>
                 {{.levelDr}}
             </select>
         </div>
@@ -61,7 +75,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>金额限制：</div>
         <div class="in">
-            <input class="ui-validate" field="MinFee" required="true"
+            <input class="box ui-validate" field="MinFee" required="true"
                    isnumber="true" style="width:30px" value="0"/>&nbsp;元<br />
             至少达到设置的金额才能使用优惠券。
         </div>
@@ -70,22 +84,22 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>生效日期：</div>
         <div class="in">
-            <input class="ui-validate" field="BeginTime" id="beginTime" required="true"/>
+            <input class="box ui-validate" field="BeginTime" id="beginTime" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>过期日期：</div>
         <div class="in">
-            <input class="ui-validate" field="OverTime" id="overTime" required="true"/>
+            <input class="box ui-validate" field="OverTime" id="overTime" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
         <div class="in">
-            <input type="radio" name="AllowEnable" field="AllowEnable" value="1" id="state1" checked="checked"/><label for="state1">启用</label>
-            <input type="radio" name="AllowEnable" field="AllowEnable" value="0" id="state2"/><label for="state2">停用</label>
+            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled1" value="1" checked="checked" /><label for="Enabled1">启用</label>
+            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled2" value="0" /><label for="Enabled2">停用</label>
         </div>
     </div>
 
@@ -98,17 +112,17 @@
     </div>
 
     <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>描述(50字内)：</div>
+        <div class="label"><span class="red">*&nbsp;</span>描述(200字内)：</div>
         <div class="in">
-            <textarea field="Description" class="ui-validate tb_normal" length="[0,50]"></textarea>
+            <textarea class="box ui-validate" field="Description" length="[0,200]"></textarea>
         </div>
     </div>
 
     <div class="fl">
         <div class="label">&nbsp;</div>
         <div class="in">
-            <input type="button" value=" 保存 " id="btn_save" />
-            <input type="reset" value=" 重置 " />
+            <input class="btn" type="button" value="保存" id="btn_save" />
+            <input class="btn" type="reset" value="重置" />
         </div>
     </div>
 </div>
@@ -118,7 +132,13 @@
     
     <script>
     var entity ={{.entity}}||{};
+    var entity2 ={{.entity2}}||{};
+    entity2.BeginTime = unix2str(entity2.BeginTime);
+    entity2.OverTime = unix2str(entity2.OverTime);
+    entity2.BeginTime = entity2.BeginTime.substring(0,entity2.BeginTime.indexOf(' '));
+    entity2.OverTime = entity2.OverTime.substring(0,entity2.OverTime.indexOf(' '));
     j6.json.bind('form1', entity);
+    j6.json.bind('form1', entity2);
 
     var bt= j6.$('beginTime');
     var ot = j6.$('overTime');
@@ -133,7 +153,7 @@
             var data = j6.json.toObject('form1');
             data.BeginTime += ' 00:00:00';
             data.OverTime += ' 00:00:00';
-            j6.xhr.jsonPost('SaveCoupon', data, function(json) {
+            j6.xhr.jsonPost('Save_coupon', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
                     j6.tab.closeAndRefresh('优惠券管理');
                 });

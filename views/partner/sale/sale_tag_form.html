@@ -26,7 +26,7 @@
     <div class="fl">
         <div class="label">标识图片：</div>
         <div class="in" style="position: relative;height:100px;">
-            <img id="upload_img" src="{{.img_serve}}/resouce/item_nopic.gif"
+            <img id="upload_img"
                  style="float:left;margin-right:10px;width: 80px; height: 80px;border:solid 1px #aaa;padding:1px;"/>
             <input class="ui-validate" length="[0,150]" type="hidden" field="GoodsImage" id="upload_path"/>
             <span id="upload_btn"><button>选择图片上传</button></span>
@@ -57,29 +57,14 @@
 
 <script>
     var entity = {{.entity}}||{};
+    var imgUrl =  entity.GoodsImage.indexOf('http://')!=-1 ? entity.GoodsImage: '{{.img_serve}}/'+ entity.GoodsImage;
+    j6.$('upload_img').src = imgUrl;
     j6.json.bind('form1', entity);
-
-    //上传缩略图
-    j6.upload({
-        id: 'upload_btn',
-        debug: !true,
-        url: '/upload.cgi?type=101',
-        exts: '*.gif;*.jpg;*.png;*.bmp'
-    }, function (result, data) {
-        if (result) {
-            j6.$('upload_path').value = data.url;
-            j6.$('upload_img').src = '{{.img_serve}}/' + data.url;
-        } else {
-            alert('上传失败：' + data);
-        }
-    });
-
 
     j6.$('btn_save').onclick = function () {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
-            if(data.GoodsImage==undefined)data.GoodsImage='';
-            j6.xhr.jsonPost('SaveSTag', data, function (json) {
+            j6.xhr.jsonPost('Save_stag', data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
                     var d = j6.dialog.getDialog();
                     if(d.window.refresh) {

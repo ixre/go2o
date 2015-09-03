@@ -7,9 +7,9 @@
 	<style type="text/css">
         body{margin:10px;}
 		div.metainfo{position:relative;}
-		div.metainfo p{border-bottom:dotted 1px #e0e0e0;width:200px;}
+		div.metainfo p{width:200px;}
 		div.metainfo .item{position:absolute;top:0;right:10px;z-index:10;padding:5px 10px;}
-        div.metainfo .details{border:solid 1px #FFCC33;background:#FFFFDD;}
+        div.metainfo .details{border:solid 1px #FFCC33;background:#FFFFDD;padding:5px;}
 		p span.label{width:100px;display:block;float:left;}
         dl{clear:both;line-height:22px;border-bottom:solid 1px #ddd;margin:0;border-top:solid 1px #f5f5f5;}
         dl dt{width:100px;float:left;}
@@ -104,6 +104,7 @@
 
 	<script type="text/javascript">
           var entity ={{.entity}} ||{};
+          entity.itemsInfo = itemFmt(j6.toJson(entity.itemsInfo));
           j6.json.bind('form1', entity);
           j6.load('pl','setup?order_no='+j6.request('order_no'));
           function refresh(){
@@ -111,6 +112,18 @@
             if(d){
                 d.window.refresh();
             }
+          }
+
+          function itemFmt(items){
+              var html = "";
+              var tpl = '<img src="{img}" width="40" height="40" style="border:solid 1px #ddd;padding:1px;margin-right:3px;" title="{name} x {qty}"/>';
+              for(var i=0;i<items.length;i++){
+                  if(items[i].img.indexOf("http") != 0){
+                      items[i].img = "{{.img_serve}}/"+items[i].img;
+                  }
+                  html += j6.template(tpl,items[i]);
+              }
+              return html;
           }
 	</script>
 </body>

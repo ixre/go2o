@@ -89,6 +89,9 @@
                         {field:'goods_image',title:'标识图片',width:150,align:'center',formatter:function(v){
                             return v.length == 0?'-':'<img src="{{.img_serve}}/'+v+'" style="margin-top:5px;width:100px;height:40px"/>';
                         }},
+                        { field: 'is_internal', title: '系统内置', align: 'center', formatter:function(v){
+                        return v == '1'?'<span style="color:#0A0">是</span>':'否'
+                        } },
                         {field:'enabled',title:'是否启用',width:60,sortable:true,align:'center',
                             formatter:function(val){
                               return val=='1'?'<span class="green">是</span>':'<span class="red">停用</span>'
@@ -97,8 +100,8 @@
 
                         {field:'id1',title:'操作',width:80,align:'center',
                             formatter:function(v,r){
-                                return '<a href="javascript:editRec(\''+r.id+'\')">编辑</a> | '
-                                    +'<a href="javascript:delRec(\''+r.id+'\')">删除</a>';
+                                return '<a href="javascript:;" class="btn btn-short" onclick="editRec(\''+r.id+'\')">编辑</a>'
+                                    +'<a href="javascript:;" class="btn btn-short" onclick="delRec(\''+r.id+'\')">删除</a>';
                             }
                         }
                     ]
@@ -110,23 +113,23 @@
 
         j6.$('btnAdd').onclick=addRec;
         function addRec(){
-            j6.dialog.create2('添加销售标签',true,true).open('/sale/createSTag', 600,400);
+            j6.dialog.create2('添加销售标签',true,true).open('/sale/create_stag', 600,400);
         }
 
 
         function editRec(id){
-            j6.dialog.create2('编辑销售标签',true,true).open('/sale/editSTag?id=' + id, 600,400);
+            j6.dialog.create2('编辑销售标签',true,true).open('/sale/edit_stag?id=' + id, 600,400);
         }
 
 
         function delRec(id) {
          window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
                 if (result) {
-                    j6.xhr.jsonPost('delMLevel', { id: id }, function(json) {
+                    j6.xhr.jsonPost('del_stag', { id: id }, function(json) {
                         if (json.result) {
                             expr.reload('dg');
                         }else{
-                            alert(json.message);
+                            window.parent.$.messager.alert('提示',  json.message,"error");
                         }
                     });
                 }
