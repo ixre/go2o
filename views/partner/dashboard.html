@@ -105,7 +105,7 @@
 
 <script type="text/javascript">
     var pageVar = {
-        sysName: ':: 合作商管理中心! v 0.1 ::',
+        sysName: '{{.partner.Name}} :: 商户后台管理中心',
         sysLogo: '',
         dateStr: '2013-10-15',
         firstTabName: '欢迎首页',
@@ -129,23 +129,32 @@
                         {text: '会员列表', uri: '/member/list'},
                     ]},
                     {text: '销售管理', uri: '', childs: [
-                        {text: '分类管理', uri: '/category/Category'},
-                        {text: '商品管理', uri: '/goods/list'},
+                        {text: '分类管理', uri: '/category/all_category'},
+                        {text: '商品管理', uri: '/goods/item_list'},
                         {text: '销售标签管理', uri: '/sale/tagList'}
+                    ]},
+                    {text: '财务管理', uri: '', childs: [
+                        {text: '订单付款', uri: '/order/waitPaymentList'},
+                        {text: '提现申请', uri: '/member/applyRequestList'},
+                    ]},
+                    {text: '消息系统', uri: '', childs: [
+                        {text: '邮件模板', uri: '/mss/mail_template_list'},
+                        {text: '消息设置', uri: '/mss/mss_setting'},
                     ]},
 
                     {text: '订单管理', uri: '', childs: [
                         {text: '所有订单', uri: '/order/list?status=100'},
                         {text: '待确认订单', uri: '/order/list?status=1'},
-                        {text: '已确认订单', uri: '/order/list?status=2'},
-                        {text: '待发货订单', uri: '/order/list?status=3'},
-                        {text: '配送中订单', uri: '/order/list?status=4'},
-                        {text: '已收货订单', uri: '/order/list?status=5'},
+                        {text: '待配送订单', uri: '/order/list?status=2'},
+                        {text: '待收货订单', uri: '/order/list?status=4'},
+                        //{text: '待发货订单', uri: '/order/list?status=3'},gof
+                        //{text: '配送中订单', uri: '/order/list?status=4'},
+                        //{text: '已收货订单', uri: '/order/list?status=5'},
                         {text: '已完成订单', uri: '/order/list?status=6'},
                         {text: '已作废订单', uri: '/order/list?status=0'}
                     ]},
                     {text: '优惠促销', uri: '', childs: [
-                        {text: '优惠券管理', uri: '/prom/coupon'},
+                        {text: '优惠券管理', uri: '/prom/list?flag=1'},
                         {text: '商品返现', uri: '/prom/list?flag=2'}
                     ]},
                     {text: '内容管理', uri: '', childs: [
@@ -226,6 +235,7 @@
 
 <script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js"></script>
 <script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js"></script>
 
 </body>
 </html>
