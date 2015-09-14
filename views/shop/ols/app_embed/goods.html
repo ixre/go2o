@@ -1,0 +1,114 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>商品详情</title>
+    <meta name="Cache-Control" content="no-cache"/>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css"/>
+</head>
+<body>
+
+    {{template "header" $}}
+
+
+
+   <div class="item-details">
+       <p class="gallery">
+           <img src="{{.goods.Image}}" alt="{{.goods.Name}}" width="320"/>
+       </p>
+       <div class="line"></div>
+       <p class="line price">
+           <span class="sale-price">
+               {{.sale_price}}
+           </span>
+           {{.prom_price}}
+       </p>
+       <div class="prom-panel {{.prom_cls}}">
+            <table cellspacing="0">
+                <tr>
+                    <td class="txt">促<br />销</td>
+                    <td class="list">
+                    {{.prom_describe}}</td>
+                </tr>
+            </table>
+        </div>
+       <p class="title">
+          {{.goods.Name}}
+       </p>
+
+
+
+       <div class="stock">
+           购买<input id="buyNum" type="text" class="box buyNum" datatype="number" value="1"/>&nbsp;件
+           / <b>库存：</b>{{.goods.StockNum}}&nbsp;件
+        </div>
+
+
+       <div class="control">
+           <div class="buy_panel">
+               <input class="btn btn-orange btn_add_cart" type="button" id="btn_view_buy" goods-id="{{.goods.GoodsId}}" value="立即购买"/>
+               <input class="btn btn-green btn_view_cart" type="button" id="btn_add_cart" goods-id="{{.goods.GoodsId}}" value="加入购物车"/>
+               <a class="cart-num" href="/cart"><i id="cart-num">0</i></a>
+           </div>
+       </div>
+   </div>
+
+    <div class="ording-summary hidden">
+        <div id="cart-panel" class="cart-panel">
+            <h3>我的购物车</h3>
+            <div class="cart"></div>
+            <div class="submit">
+                <a class="green_btn" href="/buy/"><span>提交订单</span></a>
+            </div>
+        </div>
+    </div>
+
+
+    {{template "footer" $}}
+
+
+    <script src="{{.static_serve}}/assets/js/mobi/core.js"></script>
+    <script src="{{.static_serve}}/assets/js/mobi/device.js"></script>
+    <script src="{{.static_serve}}/assets/js/shopping_cart.min.js"></script>
+
+    <script type="text/javascript">
+        var cartNum = j6.$('cart-num');
+        window.onload = function() {
+            window.cart.init('cart-panel', function (c) {
+                cartNum.innerHTML = c.total_num;
+            });
+            function addToCart(t,tip,call){
+                var num = parseInt(j6.$('buyNum').value);
+                var goodsId = parseInt(t.getAttribute("goods-id"));
+                window.cart.add(goodsId, num, function (c) {
+                    if(tip) {
+                        showMsg('加入购物车成功',500);
+                    }
+                    cartNum.innerHTML = window.cart.totalNum;
+                    if(call!= null){
+                        call(c);
+                    }
+                },function(msg){
+                    window.cli.alert(msg,'购物车');
+                });
+            }
+            j6.$('btn_add_cart').onclick = function () {
+                addToCart(this,true);
+            };
+            j6.$('btn_view_buy').onclick = function () {
+                addToCart(this,false,function(){
+                    setTimeout(function(){
+                        location.href = '/buy/confirm?t='+new Date().getSeconds();
+                    },200);
+                });
+            };
+        };
+
+
+    </script>
+</body>
+</html>
