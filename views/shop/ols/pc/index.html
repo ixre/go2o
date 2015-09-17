@@ -1,0 +1,63 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>{{.partner.Name}}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="Stylesheet" href="{{.static_serve}}/css/page.css" type="text/css"/>
+    <link rel="Stylesheet" href="{{.static_serve}}/css/shop/default/style.css" type="text/css"/>
+</head>
+<body>
+
+{{template "header".}}
+
+<div class="page-index">
+    <div class="panel">
+
+        <h2>新品上市</h2>
+        <div class="new-goods goods-list">
+
+            {{range $i,$v := .newGoods}}
+            <div class="goods first">
+                <div class="item">
+                    <a href="/item-{{$v.GoodsId}}.htm">
+                    <span class="thumbnail">
+                        <img src="{{$img_serve}}/{{$v.Image}}" alt="{{$v.Name}}">
+                    </span>
+                    <div class="name">{{$v.Name}}</div>
+                    <span class="price">现价:<span class="val">￥{{$v.SalePrice }}</span></span>
+
+                    </a>
+                </div>
+            </div>
+            {{end}}
+            <div class="clearfix"></div>
+        </div>
+
+        <h2>热销商品</h2>
+        <div class="new-goods goods-list">
+            {{range $i,$v := .hotSales}}
+            <div class="goods first">
+                <div class="item">
+                    <a href="/item-{{$v.GoodsId}}.htm">
+                        <span class="thumbnail">
+                            <img src="{{$img_serve}}/{{$v.Image}}" alt="{{$v.Name}}">
+                        </span>
+                        <div class="name">{{$v.Name}}</div>
+                        <span class="price">现价:<span class="val">￥{{$v.SalePrice}}</span></span>
+                    </a>
+                </div>
+            </div>
+            {{end}}
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>
+
+
+{{template "footer".}}
+
+</body>
+</html>

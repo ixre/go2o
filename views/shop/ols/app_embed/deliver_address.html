@@ -1,0 +1,158 @@
+<template id="addressTpl" class="hidden">
+    <div class="form" id="form-deliver-1">
+        <input type="hidden" field="Id" value="0"/>
+        <div class="fl">
+            <div class="label">收货人：</div>
+            <div class="in">
+                <input class="box ui-validate" type="text" tipin="tip_name" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
+                       summary="{'regex':'姓名2-4位中文'}" />
+                <span class="fv" id="tip_name"></span>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">电话：</div>
+            <div class="in">
+                <input class="box ui-validate" tipin="tip_phone"  regex="^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$" field="Phone"
+                       summary="{regex:'手机号码错误'}"/>
+                <span class="fv" id="tip_phone"></span>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">地址：</div>
+            <div class="in">
+                <input class="box ui-validate"  tipin="tip_address" required="true" field="Address"
+                       summary="{required:'地址不能为空'}" />
+                <span class="fv" id="tip_address"></span>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label"></div>
+            <div class="in">
+                <input class="btn" type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
+                <input class="btn" type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
+            </div>
+        </div>
+
+    </div>
+</template>
+
+<div id="address_panel">
+
+</div>
+
+<div class="btn_new_address" id="btn_new_address">
+    &nbsp;<a href="javascript:;">+添加新的收货地址</a>
+</div>
+<div id="new_panel"></div>
+
+
+<script type="text/javascript">
+    var addrs = {{.addrs}};
+    var addressTpl = j6.$('addressTpl').innerHTML;
+    var newPanel = j6.$('new_panel');
+    var selId = {{.sel}};
+
+    function toggleNewAdd(){
+        j6.animation.toggleHeight(newPanel,null,15);
+    }
+    j6.$('btn_new_address').onclick=function(){
+        j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
+        if(newPanel.offsetHeight == 0){
+            toggleNewAdd();
+        }
+    }
+
+    function newAddr(show){
+        j6.style(newPanel,{display:'none'});
+        newPanel.innerHTML=addressTpl;
+        j6.validator.init();
+    }
+
+    if(addrs.length!=0){
+        var html ="";
+        var tpl ='<div class="addr_item"><input type="radio" id="addr_{Id}" field="AddrId" value="{Id}"/>'+
+            '<label for="addr_{Id}"><strong>{RealName}</strong><span class="phone">{Phone}</span>'+
+            '<span class="address">{Address}</span></label>' +
+                '<span class="modify"><a href="javascript:editAddr({Id})">修改</a></span></div>';
+        for(var i=0;i<addrs.length;i++){
+            html += j6.template(tpl,addrs[i]);
+        }
+        j6.$('address_panel').innerHTML = html;
+        if(addrs.length != 0){
+            var addr = null;
+            if(selId > 0) {
+                addr = getSingleAddr(selId);
+            }
+            if(addr == null){
+                selId = addrs[0].Id;
+            }
+        }
+        j6.json.bind('address_panel', {AddrId: selId});
+        newAddr();
+    }else{
+        newAddr();
+        toggleNewAdd();
+    }
+
+    function getSingleAddr(id){
+        if(typeof id != Number) {
+            id = parseInt(id);
+        }
+        for(var i=0;i<addrs.length;i++){
+            if(addrs[i].Id == id){
+               return addrs[i];
+                break;
+            }
+        }
+        return null;
+    }
+
+
+    function editAddr(id){
+        var addr =getSingleAddr(id);
+        if(addr!= null){
+            j6.json.bind(newPanel,addr);
+            if(newPanel.offsetHeight == 0){
+                toggleNewAdd();
+            }
+        }
+    }
+
+    function saveDeliveAddr(){
+        var d = j6.json.toObject('deliver-panel');
+        if(j6.validator.validate('deliver-panel')){
+            j6.xhr.jsonPost('/shopping/saveDeliverAddress',d,function(json){
+               if(json.result){
+                   selectDeliver();
+               }else{
+                   window.cli.alert(json.message);
+               }
+            },function(){});
+        }else{
+            window.cli.alert("配送地址填写错误","提示");
+        }
+    }
+
+
+    j6.$('cb1').onclick=function(){
+        var data = j6.json.toObject('address_panel');
+        var addrId = data.AddrId;
+        var addr = getSingleAddr(addrId);
+        if(addr != null){
+            j6.json.bind('postForm',{
+                deliver_id:addrId,
+                deliver_person:addr.RealName,
+                deliver_phone:addr.Phone,
+                deliver_address:addr.Address
+            });
+            window.recoverFrom('postForm');
+            persistData();
+            window.dynamicContent('deliver');
+        }
+    };
+
+</script>
+

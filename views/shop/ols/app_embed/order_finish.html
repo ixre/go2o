@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+<head>
+    <title>订单提交成功</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1"/>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css"/>
+
+</head>
+<body>
+
+    {{template "header" $}}
+
+
+    <div class="main panel order-result order-finish">
+        <h1>订单支付成功</h1>
+        <div class="meta">
+            <ul>
+                <li>
+                    <label>订&nbsp;单&nbsp;号&nbsp;：</label>
+                    {{.order.OrderNo}}
+                </li>
+                <li>
+                    <label>金额总计：</label>
+                    ￥{{.order.Fee}}
+                </li>
+                <li>
+                    <label>收&nbsp;货&nbsp;人&nbsp;：</label>
+                    {{.order.DeliverName}} <span>(联系人电话：{{.order.DeliverPhone}})</span>
+                </li>
+                <li>
+                    <label>收货地址：</label>
+                    {{.order.DeliverAddress}}
+                </li>
+            </ul>
+            <div class="clear_fix"></div>
+            <div style="margin:10px 3rem">
+                <input type="button" class="btn_submit btn" onclick="location.href='/';" value="继续购物"/>
+            </div>
+
+            {{.payment_html}}
+
+        </div>
+    </div>
+
+
+    {{template "footer" $}}
+</body>
+</html>

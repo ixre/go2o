@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+<head>
+    <title>会员注册-{{.partner.Name}}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="Stylesheet" href="{{.static_serve}}/css/page.css" type="text/css"/>
+    <link rel="Stylesheet" href="{{.static_serve}}/css/shop/default/style.css" type="text/css"/>
+</head>
+<body>
+{{template "header".}}
+<style type="text/css">
+body{overflow: hidden}
+</style>
+<div class="loading-gate" id="loading-gate">
+  <div class="gate"></div><div class="box">数据加载中...</div>
+</div>
+
+
+
+<div class="ording-wrap">
+  <div class="ording-panel">
+    <div class="category-panel left" id="category-panel">
+        <a class="btn link" do="toggleTop" id="toggleTop">显示导航</a>
+      {{.categories}}
+    </div>
+
+    <div class="items-panel left" id="items-panel" style="opacity:0;filter:alpha(opacity=0)"></div>
+  </div>
+
+  <div class="ording-summary">
+      <div id="plcart" class="cart-panel">
+      <h3>我的餐盒</h3>
+      <div class="cart"></div>
+        <div class="submit">
+                <a class="green_btn" href="/buy/"><span>提交订单</span></a>
+            </div>
+    </div>
+  </div>
+
+</div>
+<!-- 提示：由于物价变动，部分菜品、价格可能有变，详情请以电话确认为准。 -->
+<script type="text/javascript" src="{{.static_serve}}/assets/js/core.js?hover=navi&amp;{{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?e=pc&amp;{{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/lib/animation.js?{{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/shopping_cart.js"></script>
+
+<script type="text/javascript">
+  var sw = j6.screen.width();    //page width
+  var sh = j6.screen.height();   //page height
+  var tog = j6.$('toggleTop');   //toggle navigator
+  var togIsLoad = false;        
+  var ldgate = j6.$('loading-gate');
+  var ldbox = ldgate.getElementsByTagName('DIV')[1];
+
+  var ordPanel = j6.dom.getsByClass(document.body,'ording-panel')[0];
+  var catePl = j6.$('category-panel');
+  var itemPl = j6.$('items-panel');
+
+
+
+function toggleLoading(){
+   if(j6.style(ldgate)['display'] == 'none'){
+      j6.style(ldgate,{height:sh+'px',width:sw+'px',display:'block'});
+      j6.style(ldbox,{top:(sh-ldbox.offsetHeight)/2+'px',left:(sw-ldbox.offsetWidth)/2+'px'});
+   }else{
+      j6.style(ldgate,{height:'0',width:'0',display:'none'});
+   }
+}
+
+function ordingInit(){
+  loadItemsByCate(15)
+  j6.style(ordPanel,{height:(sh-30)+'px',margin:'0'});
+  var lis = catePl.getElementsByTagName('LI');
+  j6.each(lis,function(i,e){
+    j6.event.add(e,'click',(function(lis,t){
+      return function(){
+        var id= parseInt(t.getAttribute('val'));
+        loadItemsByCate(id);
+        j6.each(lis,function(i,e){
+          e.className = t == e ?'current':'';
+        });
+      };
+    })(lis,e));
+  });
+}
+
+  function loadItemsByCate(id){
+    toggleLoading();
+    var dt = new Date() ;
+    j6.xhr.get('../list/getList?cid='+id,function(x){
+        var dur = new Date() -dt > 1000?0:1000;
+        setTimeout(function(){
+            if(!togIsLoad){
+              togIsLoad=true;
+               // window.funcs.toggleTop.apply(tog);
+            }
+            j6.style(itemPl,{opacity:0,filter:"alpha(opacity=0)"});
+            if(x.length<10){
+              itemPl.innerHTML='<p style="font-size:200%;color:#FF0000;margin:0 auto;padding:20% 0;text-align:center;">没有商品</p>';
+            }else{
+              itemPl.innerHTML=x;
+            }
+            toggleLoading();
+           j6.animation.show(itemPl,null,4);
+
+        },dur);
+    },function(x){j6.$('fditems').innerHTML='加载失败';});
+  }
+
+
+	//backToTop(990);
+	if(!window.XMLHttpRequest){tagFloat('cartHidden','bottom',35);
+		tagFloat('rightcart','bottom',340);
+		tagFloat('notNear','center');
+		tagFloat('feedback1','center');
+	}
+  ordingInit();
+</script>
+
+
+
+<script type="text/javascript">
+var plcart=document.getElementById('plcart');
+cart.init(plcart.id,false);
+</script>
+
+
+
+</body>
+</html>

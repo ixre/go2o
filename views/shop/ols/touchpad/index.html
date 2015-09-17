@@ -1,0 +1,308 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>{{.partner.Name}}</title>
+    <meta charset="utf-8">
+    <meta name="keywords" content="朝首,朝首官方网站,朝首商城" />
+    <meta name="description" content="买鞋子哪个网站好，当然首选朝首!中国最早成立的正品鞋子购物网站,国内最大的品牌鞋子销售广场。所售鞋子100%厂家授权,全国包邮,货到付款,提供最完美的购物体验！" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="bookmark" href="favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
+    <!--离线应用的另一个技巧-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <!--指定的iphone中safari顶端的状态条的样式-->
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <!--告诉设备忽略将页面中的数字识别为电话号码-->
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css"/>
+    <script>var PX_HELP_DATA=['','uo74au74aqpc8801g3htt5l2v7',['touch','home','index'],'2014/04/09 09:12:46',0,false]; var DOMIN = {MAIN:"../m.paixie.com/",HELP:"../help.paixie.net/",TUAN:"../tuan.paixie.net/",WAP:"../wap.paixie.net/",UNION:"../union.paixie.net/",VIPSHOP:"../v.paixie.net/"};</script>
+    <script src="http://ued.paixie.net/scripts/public/jquery.js"></script>
+    <script src="{{.static_serve}}/css/mos/default/js/com/com.js"></script>
+    <script src="http://ued.paixie.net/scripts/public/px-verify.js"></script>
+    <script src="{{.static_serve}}/css/mos/default/js/com/template.js"></script>
+</head>
+<body>
+
+<div class="com-content">
+    {{template "header" $}}
+
+
+    <div class="page-index" style="display: none;">
+        <div class="panel">
+
+            <h2>新品上市</h2>
+            <div class="new-goods goods-list">
+
+                {{range $i,$v := .newGoods}}
+                <div class="goods first">
+                    <div class="item">
+
+                    <span class="thumbnail">
+                        <img src="{{$img_serve}}/{{$v.Image}}" alt="{{$v.Name}}">
+                    </span>
+                        <div class="name">{{$v.Name}}</div>
+                        <span class="price">现价:<span class="val">￥{{$v.SalePrice }}</span></span>
+                    </div>
+                </div>
+                {{end}}
+                <div class="clearfix"></div>
+            </div>
+
+            <h2>热销商品</h2>
+            <div class="new-goods goods-list">
+
+                {{range $i,$v := .hotSales}}
+                <div class="goods first">
+                    <div class="item">
+
+                    <span class="thumbnail">
+                        <img src="{{$img_serve}}/{{$v.Image}}" alt="鱼香茄子饭">
+                    </span>
+                        <div class="name">{{$v.Name}}</div>
+                        <span class="price">现价:<span class="val">￥{{$v.SalePrice}}</span></span>
+                    </div>
+                </div>
+                {{end}}
+                <div class="clearfix"></div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="com-content-area" id="js-com-content-area">
+        <!--content-->
+        <script type="text/javascript">
+            $(function(){
+                $('.pxui-show-more').first().find('a').click();
+                $('.pxui-show-more').last().find('a').click();
+            });
+        </script>
+        <div class="page-role home-page">
+            <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/home/index.css"/>
+            <script src="{{.static_serve}}/css/mos/default/js/com/jquery.touchslider.min.js"></script>
+            <script src="{{.static_serve}}/css/mos/default/js/home/index.js"></script>
+            <script>
+                jQuery(function($) {
+                    $(window).resize(function(){
+                        var width=$('#js-com-header-area').width();
+                        $('.touchslider-item a').css('width',width);
+                        $('.touchslider-viewport').css('height',300*(width/640));
+                    }).resize();
+                    $(".touchslider").touchSlider({mouseTouch: true, autoplay: true});
+                });
+            </script>
+
+
+
+            <div class="pxui-tab pxui-tab-nav pxui-tab-no-top">
+                <a class="selected"><i></i>首页<span></span></a>
+                <a href="list/all_cate"><i></i>分类<span></span></a>
+                <a href="#"><i></i>品牌<span></span></a>
+                <a href="#"><i></i>团购<span></span></a>
+                <a href="#"><i></i>查看物流<span></span></a>
+            </div>
+            <div class="tags">
+                <table border="0" cellspacing="5" cellpadding="0">
+                    <tr>
+                        <td colspan="2"><a href="help/app.html"><i></i>朝首APP<br/>总能找到你的至爱</a></td>
+                        <td><a href="topic/612.html"><i></i>3折封顶</a></td>
+                        <td rowspan="2"><a href="topic/612.html"><i></i>限<br/>时<br/>促<br/>销</a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="topic/612.html"><b>最新</b><br/>上架</a></td>
+                        <td colspan="2"><a href="help/weixin.html">朝首微信<br/>你的随身好帮手<i></i></a></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="pxui-area styles">
+                <h2  style="background-color:#ffaf51 ;" ><a href="#" style="color:#FFFFFF;">课程</a></h2>
+                <a class="max" href="p-anta__1.html@page=5"><img src="http://img-cdn2.paixie.net/newspic/20140408/1396917342e17426.jpg" width="120" height="140"/></a>
+                <div>
+                    <p>
+                        <a href="/search_谭一博.html" style="margin-right:3px; " >谭一博</a>
+                        <a href="/search_陈安之.html" style="margin-right:3px;background-color: #ffaf51; color:#FFFFFF;border: 1px solid #ffaf51; " >陈安之</a>
+                        <a href="/search_鬼谷子.html" style="margin-right:3px; " >鬼谷子</a>
+                        <a href="/category/course" class="more" >更多<del><i class="arrow-right"></i></del></a>
+                    </p>
+                </div>
+            </div>
+            <div class="pxui-area styles">
+                <div>
+                    <p>
+                        <a href="moolecole/default.htm" style="margin-left:3px;margin-right:0px; " >莫蕾蔻蕾</a>
+                        <a href="mingdian/default.htm" style="margin-left:3px;margin-right:0px;background-color: #ff8080; color:#FFFFFF;border: 1px solid #ff8080; " >名典</a>
+                        <a href="p-daphne__1.html@special=1&asc=id" style="margin-left:3px;margin-right:0px;background-color: #ff8080; color:#FFFFFF;border: 1px solid #ff8080; " >达芙妮新品开抢</a>
+                        <a href="forbid/p-__25E5_258D_2595_25E9_259E_258B__1.html" style="margin-left:3px;margin-right:0px; " >单鞋</a>
+                        <a href="forbid/p-__25E9_25AB_2598_25E8_25B7_259F_25E9_259E_258B__1.html" style="margin-left:3px;margin-right:0px; " >高跟鞋</a>
+                        <a href="p-m0003s0080_1.html" style="margin-left:3px;margin-right:0px; " >平底鞋</a>
+                        <a href="p-_m0003s0003_.html" class="more" >更多<del><i class="arrow-right"></i></del></a>
+                    </p>
+                </div>
+                <a class="max" href="moolecole/@page=5"><img src="http://img-cdn2.paixie.net/newspic/20140408/13969173357d0aa6.jpg" width="120" height="140"/></a>
+                <h2 style="background-color: #ff8080" ><a href="p-_m0003s0003_.html"  style="color:#FFFFFF;"  >票务</a></h2>
+            </div>
+            <div class="pxui-area styles">
+                <h2  style="background-color: #688fd0 ; " ><a href="p-_m0002s0002_.html"  style="color:#FFFFFF;"  >书籍</a></h2>
+                <a class="max" href="playboy/default.htm"><img src="http://img-cdn2.paixie.net/newspic/20140408/13969173291cedd8.jpg" width="120" height="140"/></a>
+                <div>
+                    <p>
+                        <a href="longpai/default.htm" style="margin-right:3px; " >龙派</a>
+                        <a href="playboy/default.htm" style="margin-right:3px;background-color: #688fd0; color:#FFFFFF;border: 1px solid #688fd0; " >花花公子</a>
+                        <a href="fgn/default.htm" style="margin-right:3px;background-color: #688fd0; color:#FFFFFF;border: 1px solid #688fd0; " >富贵鸟</a>
+                        <a href="yearcon/default.htm" style="margin-right:3px; " >意尔康</a>
+                        <a href="p-m0002s0119_id;1.html" style="margin-right:3px; " >潮男鞋</a>
+                        <a href="p-m0002s0159_1.html" style="margin-right:3px; " >商务鞋</a>
+                        <a href="forbid/p-__m000206068_1.html" style="margin-right:3px;background-color: #688fd0; color:#FFFFFF;border: 1px solid #688fd0; " >清仓</a>
+                        <a href="p-_m0002s0002_.html" class="more" >更多<del><i class="arrow-right"></i></del></a>
+                    </p>
+                </div>
+            </div>
+            <div class="pxui-area styles">
+                <div>
+                    <p>
+                        <a href="forbid/p-__25E6_25B5_25B7_25E6_25B3_25B0_25E5_25AE_25A2__1.html" style="margin-left:3px;margin-right:0px; " >海泰客</a>
+                        <a href="forbid/p-__25E5_25A7_258B_25E7_25A5_2596_25E9_25B8_259F__1.html" style="margin-left:3px;margin-right:0px;background-color: #c49741; color:#FFFFFF;border: 1px solid #c49741; " >始祖鸟</a>
+                        <a href="baopiao/default.htm" style="margin-left:3px;margin-right:0px;background-color: #c49741; color:#FFFFFF;border: 1px solid #c49741; " >宝飘</a>
+                        <a href="addnice/default.htm" style="margin-left:3px;margin-right:0px; " >艾迪耐斯</a>
+                        <a href="p-m0290s0319_1.html" style="margin-left:3px;margin-right:0px;background-color: #c49741; color:#FFFFFF;border: 1px solid #c49741; " >户外套装</a>
+                        <a href="forbid/p-__25E8_2583_258C_25E5_258C_2585__1.html" style="margin-left:3px;margin-right:0px; " >背包</a>
+                        <a href="p-m0006s0046_1.html" style="margin-left:3px;margin-right:0px; " >户外鞋</a>
+                        <a href="p-_m0006s0006_.html" class="more" >更多<del><i class="arrow-right"></i></del></a>
+                    </p>
+                </div>
+                <a class="max" href="baopiao/default.htm"><img src="http://img-cdn2.paixie.net/newspic/20140408/1396917323bc9d22.jpg" width="120" height="140"/></a>
+                <h2 style="background-color: #c49741" ><a href="p-_m0006s0006_.html"  style="color:#FFFFFF;"  >百货</a></h2>
+            </div>
+
+            <div class="pxui-area">
+                <h3><b>Hot</b> 爆款推荐</h3>
+                <div class="pxui-tab pxui-tab-style pxui-tab-no-top" id="js-tab-style">
+                    <a class="selected">运动鞋</a>
+                    <a>女鞋</a>
+                    <a>户外鞋</a>
+                    <a>童鞋</a>
+                    <a>服装</a>
+                </div>
+                <div class="pxui-shoes" id="js-home-tab-0">
+                    <div>
+
+                    </div>
+                </div>
+                <div class="pxui-show-more" lastid="1" template="#js-bk-template" srcProperty="goodsrc" container="#js-home-tab-0 > div" url="/home/ajax?act=bk_more">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a>显示更多 <i class="arrow2-bottom"></i></a>
+                </div>
+                <div class="pxui-shoes" id="js-home-tab-1" style="display:none;">
+                    <div>
+                    </div>
+                </div>
+                <div class="pxui-show-more" style="display:none;" lastid="1" template="#js-bk-template" srcProperty="goodsrc" container="#js-home-tab-1 > div" url="/home/ajax?act=bk_more&sid=94">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a>显示更多 <i class="arrow2-bottom"></i></a>
+                </div>
+                <div class="pxui-shoes" id="js-home-tab-2" style="display:none;">
+                    <div>
+                    </div>
+                </div>
+                <div class="pxui-show-more" style="display:none;" lastid="1" template="#js-bk-template" srcProperty="goodsrc" container="#js-home-tab-2 > div"  url="/home/ajax?act=bk_more&sid=95">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a>显示更多 <i class="arrow2-bottom"></i></a>
+                </div>
+                <div class="pxui-shoes" id="js-home-tab-3" style="display:none;">
+                    <div>
+                    </div>
+                </div>
+                <div class="pxui-show-more" style="display:none;" lastid="1" template="#js-bk-template" srcProperty="goodsrc" container="#js-home-tab-3 > div"  url="/home/ajax?act=bk_more&sid=96">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a>显示更多 <i class="arrow2-bottom"></i></a>
+                </div>
+                <div class="pxui-shoes" id="js-home-tab-4" style="display:none;">
+                    <div>
+                    </div>
+                </div>
+                <div class="pxui-show-more" style="display:none;" lastid="1" template="#js-bk-template" srcProperty="goodsrc" container="#js-home-tab-4 > div"  url="/home/ajax?act=bk_more&sid=97">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a>显示更多 <i class="arrow2-bottom"></i></a>
+                </div>
+            </div>
+            <div class="pxui-area">
+                <h3><b>Top5</b> 热销推荐<a class="pxui-button" href="topic/594.html"><span>+</span> 更多 &gt;&gt;</a></h3>
+                <div class="pxui-shoes">
+                    <div>
+                        <a href="shoe-361sport-7212220-500798.html">
+
+                            <div class="img160"><dfn></dfn><img src="http://img-cdn2.paixie.net/images/empty.gif" truesrc="http://img12.paixie.net/361sport/201209/05/paixienet-461516-20120905-080851-p_thumb_160160.jpg"/></div>
+                            <span class="name">361度 男跑步鞋 蓝/浅灰 7212220</span>
+                            <span class="price">￥159.00</span>
+                            <del class="price">￥339.00</del>
+                            <span class="tag">1</span>
+                        </a>
+                        <a href="shoe-anta-91315588-1-541341.html">
+
+                            <div class="img160"><dfn></dfn><img src="http://img-cdn2.paixie.net/images/empty.gif" truesrc="http://img9.paixie.net/anta/201305/22/c5d2e5dd32_thumb_160160.jpg"/></div>
+                            <span class="name">安踏  男跑步鞋 安踏白/钢灰/钻石蓝/黑 91315588-1</span>
+                            <span class="price">￥169.00</span>
+                            <del class="price">￥259.00</del>
+                            <span class="tag">2</span>
+                        </a>
+
+                    </div>
+                </div>
+                <div class="pxui-list">
+                    <a href="shoe-josiny-141114130-590823.html"><span class="pxui-bg-blue pxui-color-white">3</span><p>卓诗尼 休闲色拼接粗跟圆头通勤 女单鞋 绿色 141114130</p><b>￥179.00</b></a>
+                    <a href="shoe-361sport-7214418-503835.html"><span class="pxui-bg-blue pxui-color-white">4</span><p>361度 男跑步鞋 黑/浅黄 7214418</p><b>￥99.00</b></a>
+                    <a href="shoe-adidas-G97666-548556.html"><span class="pxui-bg-blue pxui-color-white">5</span><p>阿迪达斯 Crazy cool m 男跑步鞋 完美蓝/夜色蓝 G97666</p><b>￥499.00</b></a>
+                </div>
+            </div>
+            <div class="pxui-area">
+                <h3><b>Brand</b> 品牌推荐</h3>
+                <div class="brands">
+                    <div id="js-brand-list">
+
+                    </div>
+                </div>
+                <div class="pxui-show-more" id="js-show-more-btand" lastid="1" template="#js-brand-template" srcProperty="truesrc" container="#js-brand-list" url="/home/ajax?act=brand_more">
+                    <img src="template/images/public/loading.gif" width="24" height="24"/>
+                    <a tourl="/brand/">显示更多<i class="arrow2-bottom"></i></a>
+                </div>
+            </div>
+        </div>
+        <script type="text/tcl" id="js-bk-template">
+				<a href="<%=data.link%>">
+					<div class="img160"><dfn></dfn><img src="http://img-cdn2.paixie.net/images/empty.gif" goodsrc="<%=data.img%>"/></div>
+					<span class="name"><%=data.title%></span>
+					<span class="price">￥<%=data.price%></span>
+					<del class="price">￥<%=data.market_price%></del>
+                                        <%if(data.tag == ''){%>
+					<img class="tag" src="http://img-cdn2.paixie.net/images/empty.gif" goodsrc="<%=data.tag%>"/>
+                                        <%}%>
+				</a>
+</script>
+        <script type="text/tcl" id="js-brand-template">
+    <a href="<%=data.mlink%>"><i><img src="template/images/public/empty-2X1.gif" truesrc="<%=data.logo%>" alt="<%=data.alt%>" width="100" height="50"/></i></a>
+</script>
+        <!--content-end-->
+    </div>
+
+    {{template "footer" $}}
+</div>
+
+<script type="text/tcl" id="js-good-template">
+<a href="<%=data.link;%>">
+	<div class="img160"><dfn></dfn><img src="http://img-cdn2.paixie.net/images/empty.gif" goodsrc="<%=data.img;%>"/></div>
+	<span class="name"><%=data.name;%></span>
+	<span class="price">￥<%=data.price;%></span>
+	<del class="price">￥<%=data.oldprice;%></del>
+	<%if(data.tag){%>
+	<img class="tag" src="http://img-cdn2.paixie.net/images/empty.gif" truesrc="<%=data.tag;%>"/>
+	<%}%>
+</a>
+</script>
+
+</body>
+</html>
