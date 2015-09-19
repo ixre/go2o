@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-	"gobx/share/variable"
+	"go2o/src/core/variable"
 	"io"
 	"io/ioutil"
 	"math/rand"
