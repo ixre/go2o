@@ -1,16 +1,10 @@
-if (!window._path) {
+﻿if (!window._path) {
     window._path = 'admin';
 }
 window.sites = [];
 window.groupname = null;
 
 if (window.menuData == undefined) {
-    //cms.xhr.get(window._path + '?module=ajax&action=appinit', function (x) {
-    //    var ip, address, md, username;
-    //    eval(x);
-    //    window.menuData = md;
-    //    j6.json.bind(document, { userName: username });
-    //});
     window.menuData = [];
 }
 
@@ -55,8 +49,8 @@ var FwMenu = {
                         url = md[i1].childs[i2].childs[i3].uri;
                         // html += (i3 != 0 && i3 % 4 == 0 ? '<div class="clearfix"></div>' : '') +
                         html += '<li' + (i2 == 0 && i3 == 0 ? ' class="current"' : '') + '><a class="fn" style="cursor:pointer;" url="' + url + '"' +
-                            //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
-                            '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linktext + '</a></li>';
+                       //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
+                       '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linktext + '</a></li>';
                     }
                     html += '</ul></div>';
                 }
@@ -225,7 +219,7 @@ var FwTab = {
         var _cur_indents = url;
         var _li = null;
 
-        cms.each(_tabs, function (i, obj) {
+        j6.each(_tabs, function (i, obj) {
             _indent = obj.getAttribute('indent');
             if (_indent == _cur_indents) {
                 _exits = true;
@@ -295,7 +289,7 @@ var FwTab = {
         var li = t.nodeName != 'LI' ? t.parentNode.parentNode : t;
         var _frames = this.frames.getElementsByTagName('DIV');
         var _lis = this.tabs.getElementsByTagName('LI');
-        cms.each(_lis, function (i, obj) {
+        j6.each(_lis, function (i, obj) {
             if (obj == li) {
                 obj.className = 'current';
                 _frames[i].className = 'current';
@@ -329,7 +323,7 @@ var FwTab = {
                     }
                 }
             }
-            //根据标题来关闭
+                //根据标题来关闭
             else if (typeof (t) == 'string') {
                 var list = j6.dom.getsByClass(this.tabs, 'tab-title');
                 for (var i = 0; i < list.length; i++) {
@@ -419,14 +413,14 @@ var FwTab = {
 //加载app
 function loadApps() {
     var ele;
-    J.each(document.getElementsByTagName('H2'), function (i, e) {
+    j6.each(document.getElementsByTagName('H2'), function (i, e) {
         if (e.innerHTML == 'APPS') {
             ele = e.parentNode.getElementsByTagName('DIV')[0];
         }
     });
     if (ele) {
         ele.id = 'ribbon-apps';
-        J.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
+        j6.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
     }
 }
 
@@ -436,13 +430,13 @@ window.M = {
         newDialog(id, title, url, isAjax, width, height, closeCall);
     },
     alert: function (html, func) {
-        cms.tipbox.show(html, false, 100, 2000, 'up');
+        j6.tipbox.show(html, false, 100, 2000, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
     },
     msgtip: function (arg, func) {
-        cms.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
+        j6.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
@@ -455,9 +449,9 @@ window.M = {
     },
     clearCache: function (t) {
         window.M.msgtip({ html: '清除中....' });
-        cms.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
+        j6.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
             window.M.msgtip({ html: '缓存清除完成!', autoClose: true });
-            cms.xhr.get('/');
+            j6.xhr.get('/');
         }, function (x) { });
     },
     addFavorite: function () {
@@ -504,8 +498,8 @@ var mainDiv = document.getElementsByClassName('page-main')[0];
 function getDivByCls(cls, ele) {
     var e = ele || mainDiv;
     return (e.getElementsByClassName ?
-        e.getElementsByClassName(cls) :
-        document.getElementsByClassName(cls, e))[0];
+    e.getElementsByClassName(cls) :
+    document.getElementsByClassName(cls, e))[0];
 }
 
 //左栏div
@@ -518,15 +512,14 @@ var frameDiv = getDivByCls('page-frames');
 var splitDiv = getDivByCls('page-main-split');
 //框架遮盖层
 var frameShadowDiv = getDivByCls('page-frame-shadow');
-//图标操作栏
-var iconCtrlDiv = getDivByCls('icon-ctrl', document.body);
+
 //用户操作栏
 var userDiv = getDivByCls('page-user', document.body);
 
 //重置窗口尺寸
 function _resizeWin() {
     var height = document.documentElement.clientHeight;
-    var width = document.documentElement.clientWidth;
+    var width =j6.screen.width();
 
     mainDiv.style.height = (height - mainDiv.offsetTop) + 'px';
     frameDiv.style.height = (mainDiv.offsetHeight - frameDiv.offsetTop) + 'px';
@@ -534,10 +527,6 @@ function _resizeWin() {
     //设置右栏的宽度
     rightDiv.style.width = (width - leftDiv.offsetWidth - splitDiv.offsetWidth + 1) + 'px';
 
-    //设置图标操作栏居中显示
-    //iconCtrlDiv.className = 'icon-ctrl';
-    var iconCtrlLeft = Math.floor((width - iconCtrlDiv.offsetWidth - userDiv.offsetWidth) / 2);
-    iconCtrlDiv.style.left = (iconCtrlDiv < 180 ? 180 : iconCtrlLeft) + 'px';
 }
 
 j6.event.add(window, 'resize', _resizeWin);
@@ -582,30 +571,30 @@ window.onload = function () {
 
     //添加左右栏改变大小功能
     new drag(splitDiv, window).custom(null, 'w-resize', (function (ld, rd, sd, minWidth, maxWidth) {
-            return function (event) {
-                //显示遮罩层以支持drag
-                frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
-
-                var e = event || window.event;
-                window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
-                if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
-                var mx = e.clientX;
-                if (mx > minWidth && mx < maxWidth) {
-                    sd.style.left = mx + 'px';
-                    ld.style.width = mx + 'px';
-                    ld.style.marginRight = -mx + 'px';
-                    rd.style.marginLeft = (mx + 5) + 'px';
-                    _resizeWin();
-                }
-            };
-        })(leftDiv,
-            rightDiv,
-            splitDiv,
-            splitDiv.getAttribute('min'),
-            splitDiv.getAttribute('max')),
+        return function (event) {
+            //显示遮罩层以支持drag
+            frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
+            var e = event || window.event;
+            window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+            if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
+            var mx = e.clientX;
+            if (mx > minWidth && mx < maxWidth) {
+                sd.style.left = mx + 'px';
+                ld.style.width = mx + 'px';
+                ld.style.marginRight = -mx + 'px';
+                rd.style.marginLeft = (mx + 5) + 'px';
+                _resizeWin();
+            }
+        };
+    })(leftDiv,
+        rightDiv,
+        splitDiv,
+        splitDiv.getAttribute('min'),
+        splitDiv.getAttribute('max')),
         function () {
             frameShadowDiv.className += ' hidden';
         });
 
 };
+
 

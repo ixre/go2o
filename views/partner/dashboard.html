@@ -10,58 +10,46 @@
 </head>
 <body>
 <div class="page-top">
+    <div class="top"></div>
     <a href="javascript:;" class="logo hidden">
         <h1 field="sysName">-</h1>
     </a>
     <div class="page-user">
-        <img field="userAvatar" class="avatar" />
+        <img field="userAvatar" class="avatar"/>
         <div class="text">
-            <span field="dateStr"></span><br />
-            欢迎您：<span class="username" field="userName"></span>
-            【<a href="javascript:;" id="btn_logout" title="安全退出系统">退出</a>】
+            <span field="dateStr"></span><br/>
+            欢迎您：<span class="username" field="userName"></span>&nbsp;&nbsp; |&nbsp;&nbsp;
+            <a href="javascript:void(0)" onclick="FwTab.show('修改用户资料', '?module=user&amp;action=saveProfile', true);">修改密码</a>&nbsp;|&nbsp;
+            <a href="javascript:;" id="btn_logout" title="安全退出系统">退出</a>
         </div>
     </div>
 
-    <ul class="icon-ctrl hidden">
-        <li class="first">
-            <a class="title" href="javascript:FwMenu.change('home');">
-                <img class="icon" src="{{.static_serve}}/assets/mui/css/latest/icon_user.png" height="20" />我的首页
-            </a>
-        </li>
-        <li class="drop">
-            <a class="title">
-                <img class="icon" src="{{.static_serve}}/assets/mui/css/latest/icon_server.png" height="20" />网站管理
-            </a>
-            <div class="menu" style="width:200px;">
-                <a class="block" href="javascript:;" onclick="FwMenu.change('site');">
-                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest/icon_secret.png" style="height:15px" />
-                    <b>基本管理</b>
+    <div class="top-ctrl hidden">
+        <div class="site_selector hidden" id="site_selector">
+            <select>
+                <option value="">一选择站点一</option>
+            </select>
+        </div>
+        <ul class="icon-ctrl">
+            <li class="first">
+                <a class="title" href="javascript:FwMenu.change('site');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_user.png" height="20"/>网站管理
                 </a>
-                <a class="block" href="javascript:;" onclick="FwMenu.change('content');">
-                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest/icon_chart.png" style="height:15px" />
-                    <b>内容管理</b>
+            </li>
+
+            <li>
+                <a class="title" href="javascript:FwMenu.change('content');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_chart.png" height="20"/>内容管理
                 </a>
-                <div class="hr"></div>
-                <strong>选择并管理其他站点：</strong>
-                <div id="sites">
-                    <div class="list">
-                    </div>
-                </div>
-                <div class="clearfix"></div>
-                <em>注:管理其他站点需要重新加载页面。</em>
-            </div>
-        </li>
+            </li>
 
-        <li>
-            <a class="title" href="javascript:FwMenu.change('system');">
-                <img class="icon" src="{{.static_serve}}/assets/mui/css/latest/icon_config.png" height="20" />系统管理
-            </a>
-        </li>
-        <!--
-        <li><a href="javascript:;" class="drop"><img class="icon" src="/framework/mui/css/latest/icon_config.png" height="20" />权限管理</a></li>
-        <li><a href="javascript:;" class="drop"><img class="icon" src="/framework/mui/css/latest/icon_user.png" height="20" />人员管理</a></li>-->
-    </ul>
-
+            <li>
+                <a class="title" href="javascript:FwMenu.change('system');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_config.png" height="20"/>系统管理
+                </a>
+            </li>
+        </ul>
+    </div>
 
 
     <div class="clearfix"></div>
