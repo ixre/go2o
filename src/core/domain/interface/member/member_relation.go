@@ -14,7 +14,7 @@ type MemberRelation struct {
 	//会员卡号
 	CardId string `db:"card_id"`
 	//推荐人（会员）
-	InvitationMemberId int `db:"invi_member_id"`
+	RefereesId int `db:"invi_member_id"`
 	//注册关联商家编号
 	RegisterPartnerId int `db:"reg_partner_id"`
 }

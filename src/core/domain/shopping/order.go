@@ -774,11 +774,11 @@ func (this *Order) backFor3R(pt partner.IPartner, m member.IMember,
 	percent := saleConf.CashBackTg2Percent
 	for i < 2 {
 		rl := m.GetRelation()
-		if rl == nil || rl.InvitationMemberId == 0 {
+		if rl == nil || rl.RefereesId == 0 {
 			break
 		}
 
-		m = this._memberRep.GetMember(rl.InvitationMemberId)
+		m = this._memberRep.GetMember(rl.RefereesId)
 		if m == nil {
 			break
 		}

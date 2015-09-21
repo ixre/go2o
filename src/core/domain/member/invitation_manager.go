@@ -25,7 +25,7 @@ type invitationManager struct {
 func (this *invitationManager) InvitationBy(memberId int) bool {
 	rl := this._member.GetRelation()
 	if rl != nil {
-		return rl.InvitationMemberId == memberId
+		return rl.RefereesId == memberId
 	}
 	return false
 }

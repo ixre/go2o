@@ -87,7 +87,7 @@ func (this *memberService) SaveRelation(memberId int, cardId string, invitationI
 	}
 
 	rl := m.GetRelation()
-	rl.InvitationMemberId = invitationId
+	rl.RefereesId = invitationId
 	rl.RegisterPartnerId = partnerId
 	rl.CardId = cardId
 

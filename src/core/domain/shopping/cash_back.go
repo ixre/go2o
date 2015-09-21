@@ -51,11 +51,11 @@ func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promo
 	for true {
 		rl := cm.GetRelation()
 		// fmt.Println("-------- BACK - ID - ",rl.InvitationMemberId)
-		if rl == nil || rl.InvitationMemberId == 0 {
+		if rl == nil || rl.RefereesId == 0 {
 			break
 		}
 
-		cm = memberRep.GetMember(rl.InvitationMemberId)
+		cm = memberRep.GetMember(rl.RefereesId)
 
 		// fmt.Println("-------- BACK ",cm == nil)
 		if m == nil {
