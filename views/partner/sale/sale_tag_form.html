@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>更新项</title>
-    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -12,14 +12,14 @@
         <div class="label"><span class="red">*&nbsp;</span>标签名称：</div>
         <div class="in">
             <input type="hidden" field="Id" value="0"/>
-            <input class="ui-validate" type="text" field="TagName" required="true"/>
+            <input class="ui-validate ui-box" type="text" field="TagName" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>标签代码：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="TagCode" required="true"/>* 标签的唯一标识
+            <input class="ui-validate ui-box" type="text" field="TagCode" required="true"/>* 标签的唯一标识
         </div>
     </div>
 
@@ -28,7 +28,7 @@
         <div class="in" style="position: relative;height:100px;">
             <img id="upload_img"
                  style="float:left;margin-right:10px;width: 80px; height: 80px;border:solid 1px #aaa;padding:1px;"/>
-            <input class="ui-validate" length="[0,150]" type="hidden" field="GoodsImage" id="upload_path"/>
+            <input class="ui-validate ui-box" length="[0,150]" type="hidden" field="GoodsImage" id="upload_path"/>
             <span id="upload_btn"><button>选择图片上传</button></span>
         </div>
     </div>
@@ -46,7 +46,7 @@
     <div class="fl">
         <div class="label"></div>
         <div class="in">
-            <input class="btn" id="btn_save" class="btn" type="button" value="提交"/>
+            <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">提交</span><a href="javascript:;"></a></span></span>
         </div>
     </div>
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>商户编辑</title>
-    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -11,7 +11,7 @@
         <div class="label"><span class="red">*&nbsp;</span>名称：</div>
         <div class="in">
             <input type="hidden" field="Id" value="0"/>
-            <input class="ui-validate" type="text" field="Name" required="true" />
+            <input class="ui-validate ui-box" type="text" field="Name" required="true" />
         </div>
     </div>
 
@@ -19,7 +19,7 @@
         <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
         <div class="in" style="position: relative;height:70px;">
             <img id="upload_img" src="{{.img_serve}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
-            <input class="ui-validate" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+            <input class="ui-validate ui-box" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
             <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
         </div>
     </div>
@@ -27,21 +27,21 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>联系电话：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="Tel" required="true"/>
+            <input class="ui-validate ui-box" type="text" field="Tel" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>联系手机：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="Phone" required="true"/>
+            <input class="ui-validate ui-box" type="text" field="Phone" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>地址：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="Address" required="true"/>
+            <input class="ui-validate ui-box" type="text" field="Address" required="true"/>
         </div>
     </div>
 

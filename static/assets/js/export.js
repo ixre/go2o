@@ -18,7 +18,7 @@
 //
 
 
-if (!window.$JS) { alert('请加载json4html.js文件!'); }
+if (!window.j6) { alert('请加载json4html.js文件!'); }
 
 var expr = {
     ele: '',

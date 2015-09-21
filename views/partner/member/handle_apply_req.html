@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>退回提现申请</title>
-    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -24,7 +24,7 @@
         <div class="in">
             <input type="hidden" field="Id" value="{{.info.Id}}"/>
             <input type="hidden" field="MemberId" value="{{.info.MemberId}}"/>
-            <input class="ui-validate" type="text" field="TradeNo" required="true" summary="{required:'请填写转账交易号'}"/>
+            <input class="ui-validate ui-box" type="text" field="TradeNo" required="true" summary="{required:'请填写转账交易号'}"/>
         </div>
     </div>
 
@@ -33,7 +33,7 @@
         <div class="in">
             <input type="checkbox" field="Agree" id="ck_agree"/>
             <label for="ck_agree">我已确认完成汇款并同意完成提现</label><br/><br/>
-            <input class="btn" id="btn_save" class="btn" type="button" value="确认汇款"/>
+            <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">确认汇款</span><a href="javascript:;"></a></span></span>
             <br />
         </div>
     </div>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>客服充值</title>
-    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -16,14 +16,14 @@
         <div class="label"><span class="red">*&nbsp;</span>充值金额：</div>
         <div class="in">
             <input type="hidden" field="MemberId" value="{{.m.Id}}"/>
-            <input id="tb_amount" class="ui-validate" isnumber="true" type="text" value="" field="Amount" style="width:50px"/>元
+            <input id="tb_amount" class="ui-validate ui-box" isnumber="true" type="text" value="" field="Amount" style="width:50px"/>元
         </div>
     </div>
 
     <div class="fl">
         <div class="label"></div>
         <div class="in">
-            <input class="btn" id="btn_save" class="btn" type="button" value=" 充值 "/>
+            <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt"> 充值 </span><a href="javascript:;"></a></span></span>
         </div>
     </div>
 

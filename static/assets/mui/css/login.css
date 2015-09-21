@@ -18,7 +18,7 @@ a{text-decoration:none;outline:none;color:#006699;}
 .login-panel p{margin:0;padding:6px 0;}
 .login-panel .panel{border:solid 1px #BBB;background:#E5E5E5;padding:0;box-shadow: 0 0 10px #DDD;}
 .login-panel .panel .panel_con{background:#FFF;padding:20px 40px;box-shadow:0 1px 0 #EEE inset}
-.login-panel #tip{padding-left:15px;border-bottom:dashed 1px #ddd;padding-bottom:10px;line-height:30px;font-size:12px;margin-bottom:20px;}
+.login-panel #tip{border-bottom:dashed 1px #ddd;padding-bottom:10px;line-height:30px;font-size:12px;margin-bottom:20px;}
 
 
 /*居中*/

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>更新项</title>
-    <link href="{{.static_serve}}/css/partner/common.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -20,40 +20,40 @@
         <div class="label"><span class="red">*&nbsp;</span>订单返现比例：</div>
         <div class="in">
             <input type="hidden" field="PartnerId" value="0"/>
-            <input class="ui-validate" type="text" field="CashBackPercent" required="true" />
+            <input class="ui-validate ui-box" type="text" field="CashBackPercent" required="true" />
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>一级返现比例：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="CashBackTg1Percent" style="width:50px"/>
+            <input class="ui-validate ui-box" type="text" field="CashBackTg1Percent" style="width:50px"/>
         </div>
     </div>
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>二级返现比例：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="CashBackTg2Percent" style="width:50px"/>
+            <input class="ui-validate ui-box" type="text" field="CashBackTg2Percent" style="width:50px"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>会员返现比例：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="CashBackMemberPercent" style="width:50px"/>
+            <input class="ui-validate ui-box" type="text" field="CashBackMemberPercent" style="width:50px"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>订单返积分：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="IntegralBackNum" isnumber="true" style="width:50px"/>个/元
+            <input class="ui-validate ui-box" type="text" field="IntegralBackNum" isnumber="true" style="width:50px"/>个/元
         </div>
     </div>
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>订单额外赠送积分：</div>
         <div class="in">
-            <input class="ui-validate" type="text" field="IntegralBackExtra" isnumber="true" style="width:50px"/>个
+            <input class="ui-validate ui-box" type="text" field="IntegralBackExtra" isnumber="true" style="width:50px"/>个
         </div>
     </div>
 
