@@ -12,12 +12,14 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	memberImpl "go2o/src/core/domain/member"
+	"go2o/src/core/variable"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -128,6 +130,7 @@ func (this *MemberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel
 	} else {
 		_, _, err = orm.Save(nil, v)
 		this.Connector.ExecScalar(`SELECT MAX(id) FROM pt_member_level`, &v.Id)
+
 	}
 	return v.Id, err
 }
@@ -231,10 +234,13 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-
 	id := this.getLatestId()
-
 	this.initMember(id, v)
+
+	// 更新会员数
+	var total = 0
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member", &total)
+	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
 
 	return id, err
 }

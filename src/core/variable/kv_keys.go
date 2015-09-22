@@ -12,4 +12,5 @@ const (
 	KvNewMailTask   = "sys:mss:"
 	KvHaveNewOrder  = "sys:queue:have_new_order"
 	KvHaveNewMember = "sys:queue:have_new_member"
+	KvTotalMembers  = "sys:total_members"
 )

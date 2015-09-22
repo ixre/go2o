@@ -101,8 +101,8 @@ func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
 	return nil
 }
 
-func (this *memberService) GetRelation(memberId int) member.MemberRelation {
-	return *this._memberRep.GetRelation(memberId)
+func (this *memberService) GetRelation(memberId int) *member.MemberRelation {
+	return this._memberRep.GetRelation(memberId)
 }
 
 // 锁定/解锁会员
