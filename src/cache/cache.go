@@ -27,7 +27,7 @@ func GetKVS() gof.Storage {
 }
 
 func Initialize(kvStorage gof.Storage) {
-	if kvStorage.Driver() == storage.DriveRedisStorage {
+	if kvStorage.DriverName() == storage.DriveRedisStorage {
 		_kvCacheStorage = kvStorage
 	} else {
 		panic(errors.New("only support redis storage now."))

@@ -154,7 +154,7 @@ dTree.prototype.bind = function (json,completeFunc) {
 
     var load = function (j, pid) {
         var childs = j.childs;
-        J.each(childs, function (i, e) {
+        j6.each(childs, function (i, e) {
             //e.id = ++id;
             //e.pid = pid;
 

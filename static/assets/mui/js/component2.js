@@ -419,14 +419,14 @@ var FwTab = {
 //加载app
 function loadApps() {
     var ele;
-    J.each(document.getElementsByTagName('H2'), function (i, e) {
+    j6.each(document.getElementsByTagName('H2'), function (i, e) {
         if (e.innerHTML == 'APPS') {
             ele = e.parentNode.getElementsByTagName('DIV')[0];
         }
     });
     if (ele) {
         ele.id = 'ribbon-apps';
-        J.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
+        j6.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
     }
 }
 

@@ -22,11 +22,11 @@ func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
 	var sto gof.Storage = GetKVS()
 	var key string = GetValuePartnerCacheCK(partnerId)
 
-	if sto.Driver() == storage.DriveHashStorage {
+	if sto.DriverName() == storage.DriveHashStorage {
 		if obj, err := GetKVS().GetRaw(key); err != nil {
 			v = obj.(*partner.ValuePartner)
 		}
-	} else if sto.Driver() == storage.DriveRedisStorage {
+	} else if sto.DriverName() == storage.DriveRedisStorage {
 		sto.Get(key, &v)
 	}
 
@@ -56,11 +56,11 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var sto gof.Storage = GetKVS()
 	var key string = GetPartnerSiteConfCK(partnerId)
 
-	if sto.Driver() == storage.DriveHashStorage {
+	if sto.DriverName() == storage.DriveHashStorage {
 		if obj, err := GetKVS().GetRaw(key); err != nil {
 			v = obj.(*partner.SiteConf)
 		}
-	} else if sto.Driver() == storage.DriveRedisStorage {
+	} else if sto.DriverName() == storage.DriveRedisStorage {
 		sto.Get(key, &v)
 	}
 
