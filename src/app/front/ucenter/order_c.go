@@ -61,6 +61,7 @@ func (this *orderC) responseList(ctx *web.Context, where string) {
 
 	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
 
+	p.RecordCount = n
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
 
 	js, _ := json.Marshal(pager)
