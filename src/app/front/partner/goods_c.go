@@ -84,6 +84,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 		w.Write([]byte("商品不存在"))
 		return
 	}
+	e.Description = ""
 	js, _ := json.Marshal(e)
 
 	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
@@ -98,9 +99,47 @@ func (this *goodsC) Edit(ctx *web.Context) {
 		"views/partner/goods/update_goods.html")
 }
 
-func (this *goodsC) SaveItem_post(ctx *web.Context) {
+// 保存商品描述
+func (this *goodsC) Item_info(ctx *web.Context){
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
+	var e *sale.ValueItem
+	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
+	e = dps.SaleService.GetValueItem(partnerId, id)
+	if e == nil {
+		w.Write([]byte("商品不存在"))
+		return
+	}
+	ctx.App.Template().Execute(w,gof.TemplateDataMap{
+		"item_id":e.Id,
+		"item_info": template.HTML(e.Description),
+	},"views/partner/goods/item_info.html")
+}
+
+func (this *goodsC) Save_item_info_post(ctx *web.Context){
+	partnerId := this.GetPartnerId(ctx)
+	r  := ctx.Request
+	r.ParseForm()
+	id, _ := strconv.Atoi(r.FormValue("ItemId"))
+	info := r.FormValue("Info")
+
+	var result gof.Message
+	err := dps.SaleService.SaveItemInfo(partnerId,id,info)
+
+	if err != nil {
+		result.Message= err.Error()
+	} else {
+		result.Result = true
+	}
+
+	ctx.Response.JsonOutput(result)
+}
+
+
+
+func (this *goodsC) SaveItem_post(ctx *web.Context) {
+	partnerId := this.GetPartnerId(ctx)
+	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
 
@@ -112,11 +151,12 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	id, err := dps.SaleService.SaveItem(partnerId, &e)
 
 	if err != nil {
-		result = gof.Message{Result: true, Message: err.Error()}
+		result.Message= err.Error()
 	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		result.Result = true
+		result.Data = id
 	}
-	w.Write(result.Marshal())
+	ctx.Response.JsonOutput(result)
 }
 
 func (this *goodsC) Del_post(ctx *web.Context) {

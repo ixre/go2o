@@ -58,6 +58,7 @@ func registerRoutes() {
 
 	// 静态文件处理
 	routes.Add("/static/*", util.HttpStaticFileHandler)
+	routes.Add("/img/*",util.HttpImageFileHandler)
 
 	// 首页
 	routes.Add("/", mc.Index)

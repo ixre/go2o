@@ -62,6 +62,10 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 		if pro == nil {
 			return 0, errors.New("产品不存在")
 		}
+
+		// 修改货品时，不会修改详情
+		v.Description = pro.GetValue().Description
+
 		if err := pro.SetValue(v); err != nil {
 			return 0, err
 		}
@@ -71,6 +75,21 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 	return pro.Save()
 }
 
+// 保存货品描述
+func (this *saleService) SaveItemInfo(partnerId int,itemId int,info string)error {
+	var err error
+	sl := this._rep.GetSale(partnerId)
+	pro := sl.GetItem(itemId)
+	if pro == nil {
+		err = errors.New("产品不存在")
+	}else {
+		v := pro.GetValue()
+		v.Description = info
+		pro.SetValue(&v)
+	}
+	_,err = pro.Save()
+	return err
+}
 // 删除货品
 func (this *saleService) DeleteItem(partnerId int, id int) error {
 	sl := this._rep.GetSale(partnerId)
