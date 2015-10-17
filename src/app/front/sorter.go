@@ -20,10 +20,11 @@ type SortItem struct {
 	Option bool
 }
 
+//todo: 条件需要加上
 var GoodsListSortItems []*SortItem = []*SortItem{
 	{Name: "price", Text: "价格", Option: true},
 	{Name: "sale", Text: "销量", Option: true},
-	{Name: "rate", Text: "评价", Option: true},
+	//{Name: "rate", Text: "评价", Option: true},
 }
 
 func GetSorterHtml(items []*SortItem, selected string, urlPath string) string {
