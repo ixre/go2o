@@ -21,6 +21,7 @@ j6.event.add(window, 'load', function () { j6.each(document.getElementsByClassNa
 /***  AJAX ***/
 function showMsg(msg, callback, second,notMask) {
     var win = window.parent || window;
+    second = second || 2000;
     if (!win.xhrCt) {
         win.xhrCt = document.createElement("DIV");
         win.xhrCt.className = 'xhr-container hidden';
