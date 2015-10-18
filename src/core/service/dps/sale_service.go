@@ -317,6 +317,7 @@ func (this *saleService) SaveMemberPrices(partnerId int, goodsId int, priceSet [
 	return nil
 }
 
+// 获取商品详情
 func (this *saleService) GetGoodsDetails(partnerId, goodsId, mLevel int) (*valueobject.Goods, map[string]string) {
 	sl := this._rep.GetSale(partnerId)
 	var goods sale.IGoods = sl.GetGoods(goodsId)
@@ -328,4 +329,11 @@ func (this *saleService) GetGoodsDetails(partnerId, goodsId, mLevel int) (*value
 			format.FormatFloat(price))
 	}
 	return gv, proMap
+}
+
+// 获取货品描述
+func (this *saleService) GetItemDescriptionByGoodsId(partnerId,goodsId int)string{
+	sl := this._rep.GetSale(partnerId)
+	var goods sale.IGoods = sl.GetGoods(goodsId)
+	return goods.GetItem().GetValue().Description
 }

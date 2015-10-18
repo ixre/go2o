@@ -33,7 +33,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 		byts.WriteString(fmt.Sprintf(`
 			<tr class="goods">
 				<td class="goods-info">
-				   <a target="_blank" href="/item-%d.htm"><img src="%s" class="goods-thumb" />
+				   <a target="_blank" href="/goods-%d.htm"><img src="%s" class="goods-thumb" />
 				   	<span class="goods-title">%s</span></a>
 				   	<span class="goods-no">商品编号：<i>%s</i></span>
 				</td>

@@ -132,7 +132,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 				buf.WriteString(fmt.Sprintf(`
 				<div class="item item-i%d">
 					<div class="block">
-						<a href="/item-%d.htm" class="goods-link">
+						<a href="/goods-%d.htm" class="goods-link">
 							<img class="goods-img" src="%s" alt="%s"/>
 							<h3 class="name">%s</h3>
 							<span class="sale-price">￥%s</span>
@@ -201,7 +201,7 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 				buf.WriteString(fmt.Sprintf(`
 				<div class="item item-i%d">
 					<div class="block">
-						<a href="/item-%d.htm" class="goods-link">
+						<a href="/goods-%d.htm" class="goods-link">
 							<img class="goods-img" src="%s" alt="%s"/>
 							<h3 class="name">%s</h3>
 							<span class="sale-price">￥%s</span>
@@ -228,12 +228,12 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 }
 
 // 商品详情
-func (this *ListC) GoodsDetails(ctx *web.Context) {
+func (this *ListC) GoodsView(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		p := this.BaseC.GetPartner(ctx)
 		path := r.URL.Path
-		goodsId, _ := strconv.Atoi(path[strings.Index(path, "-")+1 : strings.Index(path, ".")])
+		goodsId, _ := strconv.Atoi(path[strings.LastIndex(path, "-")+1 : strings.Index(path, ".")])
 
 		m := this.BaseC.GetMember(ctx)
 		var level int = 0
@@ -278,6 +278,21 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 			"prom_cls":      promCls,
 		},
 			"views/shop/ols/{device}/goods.html",
+			"views/shop/ols/{device}/inc/header.html",
+			"views/shop/ols/{device}/inc/footer.html")
+	}
+}
+
+func (this *ListC) GoodsDetails(ctx *web.Context) {
+	if this.BaseC.Requesting(ctx) {
+		r := ctx.Request
+		goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
+		describe := dps.SaleService.GetItemDescriptionByGoodsId(this.GetPartnerId(ctx), goodsId)
+
+		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+			"describe":      template.HTML(describe),
+		},
+			"views/shop/ols/{device}/goods-describe.html",
 			"views/shop/ols/{device}/inc/header.html",
 			"views/shop/ols/{device}/inc/footer.html")
 	}

@@ -1,0 +1,26 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>商品详情</title>
+    <meta name="Cache-Control" content="no-cache"/>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css"/>
+</head>
+<body>
+    {{template "header" $}}
+    <div class="page-goods-des">
+        <div class="top" onclick="window.history.back()">
+            返回购买
+        </div>
+        <div class="con">
+         {{.describe}}
+        </div>
+    </div>
+
+    {{template "footer" $}}
+</body>
+</html>

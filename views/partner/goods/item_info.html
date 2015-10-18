@@ -1,72 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>编辑页面</title>
+    <title>编辑商品详情</title>
     <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
     <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<div id="form1" class="form" style="margin:30px;">
-
-    <div class="fl">
-        <div class="label">页面编号：</div>
-        <div class="in">
-            <input type="hidden" field="Id" value="0" />
-            <span id="page_id" style="font-weight: bold;color:#0A0">0</span>
-        </div>
-    </div>
-
-    <div class="fl">
-        <div class="label"><span class="star">*</span>页面标题：</div>
-        <div class="in">
-            <input class="tb_normal ui-validate" required="true" length="[1,100]" summary="{required:'标题不能为空!',length:'标题长度1-100字!'}" type="text" field="Title" id="title" style="width: 500px"/>
-        </div>
-    </div>
-
-    <div class="fl">
-        <div class="label">字符串标识：</div>
-        <div class="in">
-            <input style="width: 340px;" tipin="alias_tipin" type="text" id="alias" field="StrIndent" class="tb_normal ui-validate" summary="{error:'别名为50位以下的数字,字母,连接符(-),下划线的组合'}" />
-
-            <span id="alias_tipin"></span>
-            <br/>
-            <span style="line-height:30px">注：用于生成更又好的文档地址，比如：关于我们，填写"about-us",
-                可使用http://abc.com/content/page?id=about-us访问。</span>
-
-        </div>
-    </div>
-
-
-
-
+<div id="form1_2" class="form" style="margin:30px;">
     <div class="fl">
         <div class="label">页面内容：</div>
         <div class="in">
+            <input type="hidden" field="ItemId" value="{{.item_id}}"/>
             <!-- 960的宽度为标准,一般内容宽度为600左右 -->
             <div id="content_info" style="width: 620px;">
                 <span>建议：使用一键排版功能可以快速生成有格式的内容。<br /><br /></span>
-                <textarea id="editor" field="Body" style="overflow: hidden; width: 620px; height: 400px;"></textarea>
+                <textarea id="editor" field="Info" style="overflow: hidden; width: 620px; height: 400px;">{{.item_info}}</textarea>
             </div>
         </div>
     </div>
-
-    <div class="fl hidden">
-        <div class="label">页面描述：</div>
-        <div class="in">
-            <textarea class="ui-validate ui-box" length="[0,500]" field="Description" rows="3" cols="5" style="width: 500px; font-size: 12px;"></textarea>
-        </div>
-    </div>
-
-    <div class="fl">
-        <div class="label"><span class="red">*&nbsp;</span>是否启用：</div>
-        <div class="in">
-            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled1" value="1"
-                   checked="checked"/><label for="Enabled1">打开</label>
-            <input type="radio" class="radio" field="Enabled" name="Enabled" id="Enabled2" value="0"/>
-            <label for="Enabled2">关闭</label>
-        </div>
-    </div>
-
 
     <div class="fl">
         <div class="label">&nbsp;</div>
@@ -88,8 +39,8 @@
     function initEditor(id) {
         editor = KindEditor.create('#'+id, {
             cssPath: '{{.static_serve}}/assets/editor/plugins/code/prettify.css',
-            uploadJson: '{{.static_serve}}/assets/editor/handler/upload_json.ashx',
-            fileManagerJson: '{{.static_serve}}/assets/editor/handler/file_manager_json.ashx',
+            uploadJson: '/editor/file_upload',
+            fileManagerJson: '/editor/file_manager',
             allowFileManager: true,
             filterMode: false
         });
@@ -106,20 +57,14 @@
 </script>
 
 <script type="text/javascript">
-    var entity = {{.entity}};
-    j6.json.bind('form1',entity);
-    j6.$('page_id').innerHTML=entity.Id;
-
     initEditor('editor');
     function submitForm() {
         if (j6.validator.validate()) {
-            var data = j6.json.toObject('form1');
-            data.Body = editor.html();
-            j6.xhr.jsonPost('SavePage', data, function (json) {
+            var data = j6.json.toObject('form1_2');
+            data.Info = editor.html();
+            j6.xhr.jsonPost('save_item_info', data, function (json) {
                 if (json.result) {
-                    window.parent.$.messager.alert('提示', '保存成功！', 'ok', function () {
-                        j6.tab.closeAndRefresh('页面管理');
-                    });
+                    window.parent.$.messager.alert('提示', '保存成功！', 'ok');
                 } else {
                     window.parent.$.messager.alert('提示',json.message, 'error');
                 }
@@ -128,22 +73,6 @@
         return false;
     }
     window.saveData = submitForm;
-
-    j6.$('alias').onblur = function () {
-        if (this.nodeName) {
-            var ele = this;
-            if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
-                j6.validator.setTip(ele, false, 'error');
-            } else {
-                j6.validator.removeTip(ele);
-            }
-        }
-    };
-
-
-    j6.validator.init();
-
-
 </script>
 </body>
 </html>
