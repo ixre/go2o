@@ -18,7 +18,6 @@ import (
 )
 
 func orderDaemon() {
-
 	confirmNewOrder()
 
 	defer recoverDaemon()

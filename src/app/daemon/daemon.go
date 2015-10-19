@@ -11,21 +11,22 @@ package daemon
 
 import (
 	"flag"
-	"fmt"
 	"github.com/jsix/gof"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"strings"
+	"log"
 )
 
-const (
-	ServeMail  string = "mail"
-	ServeOrder string = "order"
+// 守护进程服务
+type DaemonService func()
+
+var(
+	services map[string]DaemonService = map[string]DaemonService{}
 )
 
 var (
 	appCtx     *core.MainApp
-	allService = []string{ServeMail, ServeOrder}
 )
 
 // 运行
@@ -35,7 +36,8 @@ func Run(ctx gof.App) {
 	} else {
 		appCtx = getAppCtx("app.conf")
 	}
-	bootService(allService, false)
+	RegisterByName([]string{"mail","order"})
+	Start()
 }
 
 // 自定义参数运行
@@ -44,11 +46,12 @@ func FlagRun() {
 	var debug bool
 	var trace bool
 	var service string
-	var serviceArr []string
+	var serviceArr []string = []string{"mail","order"}
+	var ch chan bool = make(chan bool)
 	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.BoolVar(&debug, "debug", true, "")
 	flag.BoolVar(&trace, "trace", true, "")
-	flag.StringVar(&service, "service", strings.Join(allService, ","), "")
+	flag.StringVar(&service, "service",strings.Join(serviceArr,","), "")
 
 	flag.Parse()
 
@@ -58,36 +61,46 @@ func FlagRun() {
 
 	dps.Init(appCtx)
 
-	if service == "all" {
-		serviceArr = allService
-	} else {
+	if service != "all" {
 		serviceArr = strings.Split(service, ",")
 	}
 
-	bootService(serviceArr, true)
+	RegisterByName(serviceArr)
+	Start()
+
+	<-ch
 }
 
 func getAppCtx(conf string) *core.MainApp {
 	return core.NewMainApp(conf)
 }
 
-func bootService(arr []string, standOne bool) {
-	fmt.Println("[ Go2o][ Daemon][ Booted] - Daemon service is running.")
+func RegisterService(name string,service DaemonService){
+	if _,ok := services[name];ok{
+		panic("service named "+name+" is registed!")
+	}
+	services[name] = service
+}
+
+func RegisterByName(arr []string) {
 	for _, v := range arr {
 		switch v {
-		case ServeMail:
-			fmt.Println("[ Go2o][ Daemon][ Booted] - mail daemon running")
-			go startMailQueue()
-		case ServeOrder:
-			fmt.Println("[ Go2o][ Daemon][ Booted] - order daemon running")
-			go orderDaemon()
+		case "mail":
+			RegisterService("mail",startMailQueue)
+		case "order":
+			RegisterService("order",orderDaemon)
 		}
 	}
-	if standOne {
-		var ch chan int = make(chan int)
-		<-ch
+}
+
+func Start(){
+	//log.Println("[ Go2o][ Daemon][ Booted] - Daemon service is running.")
+	for name,s := range services{
+		log.Println("[ Go2o][ Daemon][ Booted] - ",name," daemon running")
+		go s()
 	}
 }
+
 
 func recoverDaemon() {
 
