@@ -20,6 +20,6 @@ var HttpStaticFileHandler = func(ctx *web.Context) {
 }
 
 var HttpImageFileHandler = func(ctx *web.Context) {
-	path := strings.Replace(ctx.Request.URL.Path,"/img/","",1)
+	path := strings.Replace(ctx.Request.URL.Path, "/img/", "", 1)
 	http.ServeFile(ctx.Response, ctx.Request, "./static/uploads/"+path)
 }

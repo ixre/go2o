@@ -10,7 +10,6 @@
 package app
 
 import (
-	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"go2o/src/app/front/master"
@@ -19,6 +18,7 @@ import (
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/infrastructure"
 	"go2o/src/core/variable"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -79,11 +79,11 @@ func getHttpExecFunc() web.RequestHandler {
 func RunWeb(app gof.App, port int, debug, trace bool) {
 
 	if debug {
-		fmt.Println("[ Go2o][ Web][ Booted] - Web server (with debug) running on port " +
+		log.Println("[ Go2o][ Web][ Booted] - Web server (with debug) running on port " +
 			strconv.Itoa(port))
 		infrastructure.DebugMode = true
 	} else {
-		fmt.Println("[ Go2o][ Web][ Booted] - Web server running on port " + strconv.Itoa(port))
+		log.Println("[ Go2o][ Web][ Booted] - Web server running on port " + strconv.Itoa(port))
 	}
 
 	//socket client

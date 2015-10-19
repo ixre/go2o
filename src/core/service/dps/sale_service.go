@@ -76,20 +76,21 @@ func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error)
 }
 
 // 保存货品描述
-func (this *saleService) SaveItemInfo(partnerId int,itemId int,info string)error {
+func (this *saleService) SaveItemInfo(partnerId int, itemId int, info string) error {
 	var err error
 	sl := this._rep.GetSale(partnerId)
 	pro := sl.GetItem(itemId)
 	if pro == nil {
 		err = errors.New("产品不存在")
-	}else {
+	} else {
 		v := pro.GetValue()
 		v.Description = info
 		pro.SetValue(&v)
 	}
-	_,err = pro.Save()
+	_, err = pro.Save()
 	return err
 }
+
 // 删除货品
 func (this *saleService) DeleteItem(partnerId int, id int) error {
 	sl := this._rep.GetSale(partnerId)
@@ -332,7 +333,7 @@ func (this *saleService) GetGoodsDetails(partnerId, goodsId, mLevel int) (*value
 }
 
 // 获取货品描述
-func (this *saleService) GetItemDescriptionByGoodsId(partnerId,goodsId int)string{
+func (this *saleService) GetItemDescriptionByGoodsId(partnerId, goodsId int) string {
 	sl := this._rep.GetSale(partnerId)
 	var goods sale.IGoods = sl.GetGoods(goodsId)
 	return goods.GetItem().GetValue().Description

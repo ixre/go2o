@@ -289,11 +289,11 @@ func (this *ListC) GoodsDetails(ctx *web.Context) {
 		goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
 		describe := dps.SaleService.GetItemDescriptionByGoodsId(this.GetPartnerId(ctx), goodsId)
 
-		if len(describe) == 0{
+		if len(describe) == 0 {
 			describe = "<div style=\"text-align:center;color:#F00\">商品暂无描述</div>"
 		}
 		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"describe":      template.HTML(describe),
+			"describe": template.HTML(describe),
 		},
 			"views/shop/ols/{device}/goods-describe.html",
 			"views/shop/ols/{device}/inc/header.html",

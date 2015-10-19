@@ -100,7 +100,7 @@ func (this *goodsC) Edit(ctx *web.Context) {
 }
 
 // 保存商品描述
-func (this *goodsC) Item_info(ctx *web.Context){
+func (this *goodsC) Item_info(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var e *sale.ValueItem
@@ -110,32 +110,30 @@ func (this *goodsC) Item_info(ctx *web.Context){
 		w.Write([]byte("商品不存在"))
 		return
 	}
-	ctx.App.Template().Execute(w,gof.TemplateDataMap{
-		"item_id":e.Id,
+	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		"item_id":   e.Id,
 		"item_info": template.HTML(e.Description),
-	},"views/partner/goods/item_info.html")
+	}, "views/partner/goods/item_info.html")
 }
 
-func (this *goodsC) Save_item_info_post(ctx *web.Context){
+func (this *goodsC) Save_item_info_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
-	r  := ctx.Request
+	r := ctx.Request
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("ItemId"))
 	info := r.FormValue("Info")
 
 	var result gof.Message
-	err := dps.SaleService.SaveItemInfo(partnerId,id,info)
+	err := dps.SaleService.SaveItemInfo(partnerId, id, info)
 
 	if err != nil {
-		result.Message= err.Error()
+		result.Message = err.Error()
 	} else {
 		result.Result = true
 	}
 
 	ctx.Response.JsonOutput(result)
 }
-
-
 
 func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
@@ -151,7 +149,7 @@ func (this *goodsC) SaveItem_post(ctx *web.Context) {
 	id, err := dps.SaleService.SaveItem(partnerId, &e)
 
 	if err != nil {
-		result.Message= err.Error()
+		result.Message = err.Error()
 	} else {
 		result.Result = true
 		result.Data = id

@@ -9,12 +9,12 @@
 package app
 
 import (
-	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"go2o/src/app/api"
 	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -26,7 +26,7 @@ var (
 )
 
 func RunRestApi(app gof.App, port int) {
-	fmt.Println("[ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
+	log.Println("[ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
 
 	//socket client
 	time.Sleep(time.Second * 2) //等待启动Socket
