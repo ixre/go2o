@@ -14,13 +14,14 @@ import (
 	mssIns "go2o/src/core/infrastructure/mss"
 	"go2o/src/core/variable"
 	"time"
+	"github.com/jsix/gof"
 )
 
 var (
 	mailChan chan int
 )
 
-func startMailQueue() {
+func startMailQueue(app gof.App) {
 	for {
 		if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
 			sendQueue()

@@ -19,7 +19,7 @@ import (
 )
 
 // 守护进程服务
-type DaemonService func()
+type DaemonService func(gof.App)
 
 var (
 	services map[string]DaemonService = map[string]DaemonService{}
@@ -97,7 +97,7 @@ func Start() {
 	//log.Println("[ Go2o][ Daemon][ Booted] - Daemon service is running.")
 	for name, s := range services {
 		log.Println("[ Go2o][ Daemon][ Booted] - ", name, " daemon running")
-		go s()
+		go s(appCtx)
 	}
 }
 

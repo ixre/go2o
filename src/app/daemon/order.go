@@ -15,9 +15,10 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"time"
+	"github.com/jsix/gof"
 )
 
-func orderDaemon() {
+func orderDaemon(app gof.App) {
 	confirmNewOrder()
 
 	defer recoverDaemon()
