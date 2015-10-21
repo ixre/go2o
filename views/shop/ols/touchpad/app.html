@@ -8,48 +8,42 @@
     <meta content="telephone=no" name="format-detection" />
     <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css"/>
     <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/touchpad/stand.css"/>
+    <style type="text/css">
+        .wx-dl{height:100%;background:#333;color:#FFF;}
+    </style>
 </head>
 <body>
 
-<div class="com-content">
-    {{template "header" $}}
-
-    <javascript type="text/template" id="tpl_con_wx" style="display:none">
-        <div class="tip-box">
-            请在右上方点击菜单<br /><em>【<b>在浏览器中打开</b>】</em>
-            <br />系统将自动跳转下载APP
-        </div>
-    </javascript>
-
-    <javascript type="text/template" id="tpl_con_pc" style="display:none">
-            请使用手机浏览器输入以下网址下载
-            <div class="block">
-                <strong>安卓版</strong><br/>
-                <a href="http://app.gcy8.com/android">gcy8.com/a</a>
-            </div>
-            <div class="block">
-                <strong>苹果版</strong><br/>
-                <a href="javascript:;">敬请期待</a>
-            </div>
-    </javascript>
-
-
-    <div class="page-main page-app">
-        <h1>欢迎您注册{{.partner.Name}}</h1>
-        <div class="app-url" id="app_dl">
-            请稍等，即将自动下载APP<br />如果无法下载请点击以下链接<br />
-            <div class="block">
-                <strong>安卓版</strong><br/>
-                <a href="http://app.gcy8.com/android">gcy8.com/a</a>
-            </div>
-            <div class="block">
-                <strong>苹果版</strong><br/>
-                <a href="javascript:;">敬请期待</a>
-            </div>
-        </div>
+<div  id="body" class="page-app">
+    <div class="com-content">
+        {{template "header" $}}
     </div>
+
+    <div id="wx-show" class="wx hidden">
+        <div class="gate"></div>
+        <div class="img-tip"></div>
+    </div>
+
+        <div class="main">
+            <div class="name">
+                <strong>{{.partner.Name}}APP<br /><em>版本：1.0.7</em></strong>
+            </div>
+            <div class="app-url" id="app_dl">
+
+
+
+                <div class="block">
+                    <a href="http://app.gcy8.com/android">安卓版</a>
+                    <a href="javascript:;" class="ios">苹果版(暂不支持)</a>
+                </div>
+            </div>
+        </div>
 </div>
 <script type="text/javascript">
+
+    document.getElementById('body').style.height =  document.documentElement.clientHeight +'px';
+
+
     var appResURI = {
         apk: "http://app.gcy8.com/a",
         wxApk:null,
@@ -73,7 +67,9 @@
                 isWx = /MicroMessenger/i.test(userAgent);
 
         if(isWx){
-            appDP.innerHTML=document.getElementById('tpl_con_wx').innerHTML;
+           var wx = document.getElementById('wx-show');
+            wx.className='wx';
+            return;
         }
 
         if (ios) {
