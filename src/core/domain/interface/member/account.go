@@ -89,4 +89,16 @@ type IAccount interface {
 
 	// 完成提现
 	FinishApplyCash(id int, tradeNo string) error
+
+	// 冻结余额
+	Freezes(fee float32)error
+
+	// 解冻金额
+	Unfreezes(fee float32)error
+
+	// 冻结赠送金额
+	FreezesPresent(fee float32)error
+
+	// 解冻赠送金额
+	UnfreezesPresent(fee float32)error
 }
