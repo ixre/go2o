@@ -43,7 +43,10 @@ func (this *saleService) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 func (this *saleService) GetValueGoods(partnerId, goodsId int) *valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	var goods sale.IGoods = sl.GetGoods(goodsId)
-	return goods.GetPackedValue()
+	if goods != nil {
+		return goods.GetPackedValue()
+	}
+	return nil
 }
 
 // 根据SKU获取商品

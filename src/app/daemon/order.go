@@ -19,8 +19,6 @@ import (
 )
 
 func orderDaemon(app gof.App) {
-	confirmNewOrder()
-
 	defer recoverDaemon()
 	for {
 		ids := getPartners()
@@ -38,14 +36,17 @@ func autoSetOrder(partnerId int) {
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }
 
-func confirmNewOrder() {
-	for {
-		if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i == enum.FALSE {
-			appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin confirm")
-			confirmOrderQueue()
-			appCtx.Storage().Set(variable.KvHaveNewOrder, enum.TRUE)
+func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
+	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i == enum.FALSE {
+		appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin confirm")
+		if dfs == nil || len(dfs) == 0 {
+			confirmOrderQueue(app)
+		} else {
+			for _, v := range dfs {
+				v(app)
+			}
 		}
-		time.Sleep(time.Second * 5)
+		appCtx.Storage().Set(variable.KvHaveNewOrder, enum.TRUE)
 	}
 }
 
@@ -54,7 +55,7 @@ type orderInfo struct {
 	OrderNo   string
 }
 
-func confirmOrderQueue() {
+func confirmOrderQueue(app gof.App) {
 	var list []*orderInfo = []*orderInfo{}
 	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT partner_id,order_no FROM pt_order WHERE status=%d",
 		enum.ORDER_WAIT_CONFIRM))

@@ -16,18 +16,28 @@ import (
 	"go2o/src/core/service/dps"
 	"log"
 	"strings"
+	"time"
 )
 
 // 守护进程服务
 type DaemonService func(gof.App)
+type DaemonFunc func(gof.App)
 
 var (
-	services map[string]DaemonService = map[string]DaemonService{}
+	appCtx           *core.MainApp
+	services         map[string]DaemonService = map[string]DaemonService{}
+	tickerDuration                            = 5 * time.Second // 间隔5秒执行
+	tickerInvokeFunc []DaemonFunc             = []DaemonFunc{}
+	newOrderObserver []DaemonFunc             = []DaemonFunc{confirmOrderQueue}
+	//newMemberObserver []DaemonFunc = []DaemonFunc{orderDaemon}
 )
 
-var (
-	appCtx *core.MainApp
-)
+func RegisterService(name string, service DaemonService) {
+	if _, ok := services[name]; ok {
+		panic("service named " + name + " is registed!")
+	}
+	services[name] = service
+}
 
 // 运行
 func Run(ctx gof.App) {
@@ -75,11 +85,22 @@ func getAppCtx(conf string) *core.MainApp {
 	return core.NewMainApp(conf)
 }
 
-func RegisterService(name string, service DaemonService) {
-	if _, ok := services[name]; ok {
-		panic("service named " + name + " is registed!")
-	}
-	services[name] = service
+// 添加定时执行任务(默认5秒)
+func AddTickerFunc(f DaemonFunc) {
+	tickerInvokeFunc = append(tickerInvokeFunc, f)
+}
+
+// 获取订单处理函数
+func orderDaemonService(app gof.App) {
+	AddTickerFunc(func(app gof.App) {
+		confirmNewOrder(app, newOrderObserver)
+	})
+	orderDaemon(app)
+}
+
+// 添加新的订单处理函数
+func AddNewOrderFunc(f DaemonFunc) {
+	newOrderObserver = append(newOrderObserver, f)
 }
 
 func RegisterByName(arr []string) {
@@ -88,16 +109,29 @@ func RegisterByName(arr []string) {
 		case "mail":
 			RegisterService("mail", startMailQueue)
 		case "order":
-			RegisterService("order", orderDaemon)
+			RegisterService("order", orderDaemonService)
 		}
 	}
 }
 
 func Start() {
-	//log.Println("[ Go2o][ Daemon][ Booted] - Daemon service is running.")
+	tk := time.NewTicker(tickerDuration)
+	defer func() {
+		tk.Stop()
+	}()
+
 	for name, s := range services {
 		log.Println("[ Go2o][ Daemon][ Booted] - ", name, " daemon running")
 		go s(appCtx)
+	}
+
+	for {
+		select {
+		case <-tk.C:
+			for _, f := range tickerInvokeFunc {
+				f(appCtx)
+			}
+		}
 	}
 }
 
