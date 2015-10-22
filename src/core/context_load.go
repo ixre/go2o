@@ -11,6 +11,7 @@ package core
 import (
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
 	"go2o/src/core/domain/interface/ad"
@@ -25,6 +26,8 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/variable"
+	"strconv"
+	"time"
 )
 
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
@@ -111,6 +114,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 }
 
 func initTemplate(c *gof.Config) *gof.Template {
+	spam := crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	return &gof.Template{
 		Init: func(m *gof.TemplateDataMap) {
 			v := *m
@@ -118,6 +122,7 @@ func initTemplate(c *gof.Config) *gof.Template {
 			v["img_serve"] = c.GetString(variable.ImageServer)
 			v["domain"] = c.GetString(variable.ServerDomain)
 			v["version"] = c.GetString(variable.Version)
+			v["spam"] = spam
 		},
 	}
 }

@@ -3,7 +3,7 @@
 <head>
     <title>返现促销</title>
     <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
-    <link href="{{.static_serve}}/css/partner/partner.css" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 <div id="form1" class="form margin30">
@@ -91,8 +91,8 @@
     </div>
 </div>
 
-<script src="{{.static_serve}}/assets/js/core_full.js"></script>
-<script src="{{.static_serve}}/assets/js/plugins/sys.js"></script>
+<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
 
 <script>
     var entity ={{.entity}} ||{};

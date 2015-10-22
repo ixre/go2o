@@ -8,7 +8,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css"/>
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
 </head>
 <body>
 
@@ -77,9 +77,9 @@
     {{template "footer" $}}
 
 
-    <script src="{{.static_serve}}/assets/js/mobi/core.js"></script>
-    <script src="{{.static_serve}}/assets/js/mobi/device.js"></script>
-    <script src="{{.static_serve}}/assets/js/shopping_cart.min.js"></script>
+    <script src="{{.static_serve}}/assets/js/mobi/core.js?spam={{.spam}}"></script>
+    <script src="{{.static_serve}}/assets/js/mobi/device.js?spam={{.spam}}"></script>
+    <script src="{{.static_serve}}/assets/js/shopping_cart.min.js?spam={{.spam}}"></script>
 
     <script type="text/javascript">
         var cartNum = j6.$('cart-num');
