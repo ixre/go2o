@@ -149,7 +149,7 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 		if rel.RegisterPartnerId != this.GetPartnerId(ctx) {
 			err = partner.ErrPartnerNotMatch
 		} else {
-			title := fmt.Sprintf("客服充值", amount)
+			title := fmt.Sprintf("客服充值%f", amount)
 			err = dps.MemberService.Charge(partnerId, memberId, member.TypeBalanceServiceCharge, title, "", float32(amount))
 		}
 		if err != nil {
