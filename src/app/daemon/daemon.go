@@ -24,12 +24,14 @@ type DaemonService func(gof.App)
 type DaemonFunc func(gof.App)
 
 var (
-	appCtx           *core.MainApp
-	services         map[string]DaemonService = map[string]DaemonService{}
-	tickerDuration                            = 5 * time.Second // 间隔5秒执行
-	tickerInvokeFunc []DaemonFunc             = []DaemonFunc{}
-	newOrderObserver []DaemonFunc             = []DaemonFunc{confirmOrderQueue}
-	//newMemberObserver []DaemonFunc = []DaemonFunc{orderDaemon}
+	appCtx                 *core.MainApp
+	services               map[string]DaemonService = map[string]DaemonService{}
+	tickerDuration                                  = 5 * time.Second // 间隔5秒执行
+	tickerInvokeFunc       []DaemonFunc             = []DaemonFunc{}
+	newOrderObserver       []DaemonFunc             = []DaemonFunc{confirmOrderQueue}
+	completedOrderObserver []DaemonFunc             = []DaemonFunc{}
+
+//newMemberObserver []DaemonFunc = []DaemonFunc{orderDaemon}
 )
 
 func RegisterService(name string, service DaemonService) {
@@ -94,6 +96,10 @@ func AddTickerFunc(f DaemonFunc) {
 func orderDaemonService(app gof.App) {
 	AddTickerFunc(func(app gof.App) {
 		confirmNewOrder(app, newOrderObserver)
+
+		if completedOrderObserver != nil && len(completedOrderObserver) != 0 {
+			completedOrderObs(app, completedOrderObserver)
+		}
 	})
 	orderDaemon(app)
 }
@@ -103,11 +109,18 @@ func AddNewOrderFunc(f DaemonFunc) {
 	newOrderObserver = append(newOrderObserver, f)
 }
 
+// 添加已完成订单处理函数
+func AddCompletedOrderFunc(f DaemonFunc) {
+	completedOrderObserver = append(completedOrderObserver, f)
+}
+
 func RegisterByName(arr []string) {
 	for _, v := range arr {
 		switch v {
 		case "mail":
-			RegisterService("mail", startMailQueue)
+			RegisterService("mail", func(app gof.App) {
+				AddTickerFunc(startMailQueue)
+			})
 		case "order":
 			RegisterService("order", orderDaemonService)
 		}

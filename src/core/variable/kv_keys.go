@@ -9,8 +9,9 @@
 package variable
 
 const (
-	KvNewMailTask   = "sys:mss:"
-	KvHaveNewOrder  = "sys:queue:have_new_order"
-	KvHaveNewMember = "sys:queue:have_new_member"
-	KvTotalMembers  = "sys:total_members"
+	KvNewMailTask           = "sys:mss:"
+	KvHaveNewCreatedOrder   = "sys:queue:have_new_create_order"
+	KvHaveNewCompletedOrder = "sys:queue:have_new_completed_order"
+	KvHaveNewMember         = "sys:queue:have_new_member"
+	KvTotalMembers          = "sys:total_members"
 )

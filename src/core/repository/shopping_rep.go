@@ -101,6 +101,9 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 
 	if v.Id > 0 {
 		_, _, err = d.GetOrm().Save(v.Id, v)
+		if v.Status == enum.ORDER_COMPLETED {
+			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
+		}
 	} else {
 		//验证Partner和Member是否有绑定关系
 		var num int
@@ -115,7 +118,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		}
 
 		// Sign new order
-		gof.CurrentApp.Storage().Set(variable.KvHaveNewOrder, enum.FALSE)
+		gof.CurrentApp.Storage().Set(variable.KvHaveNewCreatedOrder, enum.TRUE)
 	}
 
 	// 保存订单项

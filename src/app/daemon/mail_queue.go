@@ -22,12 +22,9 @@ var (
 )
 
 func startMailQueue(app gof.App) {
-	for {
-		if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
-			sendQueue()
-			appCtx.Storage().Set(variable.KvNewMailTask, enum.TRUE)
-		}
-		time.Sleep(time.Second * 5)
+	if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
+		sendQueue()
+		appCtx.Storage().Set(variable.KvNewMailTask, enum.TRUE)
 	}
 }
 

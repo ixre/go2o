@@ -37,8 +37,8 @@ func autoSetOrder(partnerId int) {
 }
 
 func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
-	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewOrder); i == enum.FALSE {
-		appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin confirm")
+	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCreatedOrder); i == enum.TRUE {
+		appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin invoke confirm handler.")
 		if dfs == nil || len(dfs) == 0 {
 			confirmOrderQueue(app)
 		} else {
@@ -46,7 +46,17 @@ func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
 				v(app)
 			}
 		}
-		appCtx.Storage().Set(variable.KvHaveNewOrder, enum.TRUE)
+		appCtx.Storage().Set(variable.KvHaveNewCreatedOrder, enum.FALSE)
+	}
+}
+
+func completedOrderObs(app gof.App, dfs []DaemonFunc) {
+	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCompletedOrder); i == enum.TRUE {
+		appCtx.Log().Printf("[ DAEMON][ ORDER][ FINISHED] - begin invoke finish handler.")
+		for _, v := range dfs {
+			v(app)
+		}
+		appCtx.Storage().Set(variable.KvHaveNewCompletedOrder, enum.FALSE)
 	}
 }
 
