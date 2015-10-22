@@ -380,3 +380,39 @@ func (this *memberService) FinishApplyCash(partnerId, memberId, id int, tradeNo 
 	}
 	return m.GetAccount().FinishApplyCash(id, tradeNo)
 }
+
+// 冻结余额
+func (this *memberService) Freezes(memberId int, amount float32) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().Freezes(amount)
+}
+
+// 解冻金额
+func (this *memberService) Unfreezes(memberId int, amount float32) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().Unfreezes(amount)
+}
+
+// 冻结赠送金额
+func (this *memberService) FreezesPresent(memberId int, amount float32) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().FreezesPresent(amount)
+}
+
+// 解冻赠送金额
+func (this *memberService) UnfreezesPresent(memberId int, amount float32) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().UnfreezesPresent(amount)
+}
