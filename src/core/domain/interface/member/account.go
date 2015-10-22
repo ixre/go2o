@@ -17,6 +17,14 @@ const (
 	KindBalanceCharge = 2
 	// 提现
 	KindBalanceApplyCash = 3
+	// 冻结
+	KindBalanceFreezes = 6
+	// 解冻
+	KindBalanceUnfreezes = 7
+	// 冻结赠款
+	KindBalanceFreezesPresent = 8
+	// 解冻赠款
+	KindBalanceUnfreezesPresent = 9
 
 	// 系统充值
 	TypeBalanceSystemCharge = 1
@@ -45,6 +53,9 @@ const (
 	StateApplyNotPass = 2
 	// 提现完成
 	StateApplyOver = 3
+
+	StatusNormal = 0
+	StatusOK     = 1
 )
 
 type IAccount interface {
@@ -81,7 +92,7 @@ type IAccount interface {
 	// 完成退款
 	FinishBackBalance(id int, tradeNo string) error
 
-	// 请求提现
+	// 请求提现,applyType：提现方式
 	RequestApplyCash(applyType int, title string, amount float32) error
 
 	// 确认提现
@@ -91,14 +102,14 @@ type IAccount interface {
 	FinishApplyCash(id int, tradeNo string) error
 
 	// 冻结余额
-	Freezes(fee float32)error
+	Freezes(amount float32) error
 
 	// 解冻金额
-	Unfreezes(fee float32)error
+	Unfreezes(amount float32) error
 
 	// 冻结赠送金额
-	FreezesPresent(fee float32)error
+	FreezesPresent(amount float32) error
 
 	// 解冻赠送金额
-	UnfreezesPresent(fee float32)error
+	UnfreezesPresent(amount float32) error
 }

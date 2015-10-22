@@ -11,11 +11,11 @@ package daemon
 
 import (
 	"fmt"
+	"github.com/jsix/gof"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"time"
-	"github.com/jsix/gof"
 )
 
 func orderDaemon(app gof.App) {

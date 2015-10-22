@@ -94,7 +94,8 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 			format.FormatFloat(float32(minAmount))))
 	} else {
 		m := this.GetMember(ctx)
-		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id, tradePwd, member.TypeApplyCashToBank, float32(amount))
+		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id,
+			tradePwd, member.TypeApplyCashToBank, float32(amount))
 	}
 
 	if err != nil {

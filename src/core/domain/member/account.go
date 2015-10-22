@@ -213,3 +213,84 @@ func (this *Account) FinishApplyCash(id int, tradeNo string) error {
 	}
 	return errors.New("kind not match")
 }
+
+// 冻结余额
+func (this *Account) Freezes(amount float32) error {
+	if this._value.Balance < amount {
+		return member.ErrNotEnoughAmount
+	}
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceFreezes,
+		Title:  "资金冻结",
+		Amount: amount,
+		State:  member.StatusOK,
+	}
+	this._value.Balance -= amount
+	this._value.FreezesFee += amount
+	_, err := this.Save()
+	if err == nil {
+		_, err = this.SaveBalanceInfo(v)
+	}
+	return err
+}
+
+// 解冻金额
+func (this *Account) Unfreezes(amount float32) error {
+	if this._value.FreezesFee < amount {
+		return member.ErrNotEnoughAmount
+	}
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceUnfreezes,
+		Title:  "资金解结",
+		Amount: amount,
+		State:  member.StatusOK,
+	}
+	this._value.Balance += amount
+	this._value.FreezesFee -= amount
+	_, err := this.Save()
+	if err == nil {
+		_, err = this.SaveBalanceInfo(v)
+	}
+	return err
+
+}
+
+// 冻结赠送金额
+func (this *Account) FreezesPresent(amount float32) error {
+	if this._value.PresentBalance < amount {
+		return member.ErrNotEnoughAmount
+	}
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceFreezesPresent,
+		Title:  "(赠送)资金冻结",
+		Amount: amount,
+		State:  member.StatusOK,
+	}
+	this._value.PresentBalance -= amount
+	this._value.FreezesPresent += amount
+	_, err := this.Save()
+	if err == nil {
+		_, err = this.SaveBalanceInfo(v)
+	}
+	return err
+}
+
+// 解冻赠送金额
+func (this *Account) UnfreezesPresent(amount float32) error {
+	if this._value.FreezesPresent < amount {
+		return member.ErrNotEnoughAmount
+	}
+	v := &member.BalanceInfoValue{
+		Kind:   member.KindBalanceUnfreezesPresent,
+		Title:  "(赠送)资金解冻",
+		Amount: amount,
+		State:  member.StatusOK,
+	}
+	this._value.PresentBalance += amount
+	this._value.FreezesPresent -= amount
+	_, err := this.Save()
+	if err == nil {
+		_, err = this.SaveBalanceInfo(v)
+	}
+	return err
+}

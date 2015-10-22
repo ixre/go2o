@@ -67,4 +67,7 @@ var (
 
 	ErrIncorrectTradePwd *domain.DomainError = domain.NewDomainError(
 		"err_incorrect_tarde_pwd", "交易密码错误")
+
+	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
+		"err_not_enough_amount", "金额不足")
 )

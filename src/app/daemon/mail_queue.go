@@ -9,12 +9,12 @@
 package daemon
 
 import (
+	"github.com/jsix/gof"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner/mss"
 	mssIns "go2o/src/core/infrastructure/mss"
 	"go2o/src/core/variable"
 	"time"
-	"github.com/jsix/gof"
 )
 
 var (
