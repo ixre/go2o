@@ -79,11 +79,11 @@ func getHttpExecFunc() web.RequestHandler {
 func RunWeb(app gof.App, port int, debug, trace bool) {
 
 	if debug {
-		log.Println("[ Go2o][ Web][ Booted] - Web server (with debug) running on port " +
+		log.Println("** [ Go2o][ Web][ Booted] - Web server (with debug) running on port " +
 			strconv.Itoa(port))
 		infrastructure.DebugMode = true
 	} else {
-		log.Println("[ Go2o][ Web][ Booted] - Web server running on port " + strconv.Itoa(port))
+		log.Println("** [ Go2o][ Web][ Booted] - Web server running on port " + strconv.Itoa(port))
 	}
 
 	//socket client

@@ -134,7 +134,7 @@ func Start() {
 	}()
 
 	for name, s := range services {
-		log.Println("[ Go2o][ Daemon][ Booted] - ", name, " daemon running")
+		log.Println("** [ Go2o][ Daemon][ Booted] - ", name, " daemon running")
 		go s(appCtx)
 	}
 
