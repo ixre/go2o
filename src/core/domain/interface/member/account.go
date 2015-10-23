@@ -114,14 +114,14 @@ type IAccount interface {
 	FinishApplyCash(id int, tradeNo string) error
 
 	// 冻结余额
-	Freezes(amount float32) error
+	Freezes(title string,tradeNo string,amount float32) error
 
 	// 解冻金额
-	Unfreezes(amount float32) error
+	Unfreezes(title string,tradeNo string,amount float32) error
 
 	// 冻结赠送金额
-	FreezesPresent(amount float32) error
+	FreezesPresent(title string,tradeNo string,amount float32) error
 
 	// 解冻赠送金额
-	UnfreezesPresent(amount float32) error
+	UnfreezesPresent(title string,tradeNo string,amount float32) error
 }

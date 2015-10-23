@@ -12,7 +12,6 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
 	"time"
-"fmt"
 )
 
 var _ member.IAccount = new(Account)
@@ -98,7 +97,7 @@ func (this *Account)PresentBalance(title string, tradeNo string, amount float32)
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	if len(title) {
+	if len(title) == 0 {
 		title = "赠送账户入账"
 	}
 	v := &member.BalanceInfoValue{
@@ -111,6 +110,9 @@ func (this *Account)PresentBalance(title string, tradeNo string, amount float32)
 	_, err := this.SaveBalanceInfo(v)
 	if err == nil {
 		this._value.PresentBalance += amount
+		if amount > 0 {
+			this._value.TotalPresentFee += amount
+		}
 		_, err = this.Save()
 	}
 	return err
@@ -121,13 +123,13 @@ func (this *Account)PresentBalance(title string, tradeNo string, amount float32)
 func (this *Account) ChargeFlowBalance(title string,tradeNo string,amount float32)error {
 	if len(title) == 0{
 		if amount >0 {
-			title = "流通账户入账"
+			title = "流动账户入账"
 		}else{
-			title = "流通账户出账"
+			title = "流动账户出账"
 		}
 	}
 	v := &member.BalanceInfoValue{
-		Kind:    member.KindBalancePresent,
+		Kind:    member.KindBalanceFlow,
 		Title:   title,
 		TradeNo: tradeNo,
 		Amount:  amount,
@@ -265,14 +267,18 @@ func (this *Account) FinishApplyCash(id int, tradeNo string) error {
 }
 
 // 冻结余额
-func (this *Account) Freezes(amount float32) error {
+func (this *Account) Freezes(title string,tradeNo string,amount float32) error {
 	if this._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
+	if len(title) == 0{
+		title = "资金冻结"
+	}
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceFreezes,
-		Title:  "资金冻结",
+		Title:  title,
 		Amount: amount,
+		TradeNo:tradeNo,
 		State:  member.StatusOK,
 	}
 	this._value.Balance -= amount
@@ -285,14 +291,18 @@ func (this *Account) Freezes(amount float32) error {
 }
 
 // 解冻金额
-func (this *Account) Unfreezes(amount float32) error {
+func (this *Account) Unfreezes(title string,tradeNo string,amount float32) error {
 	if this._value.FreezesFee < amount {
 		return member.ErrNotEnoughAmount
 	}
+	if len(title) == 0{
+		title = "资金解结"
+	}
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceUnfreezes,
-		Title:  "资金解结",
+		Title:  title,
 		Amount: amount,
+		TradeNo:tradeNo,
 		State:  member.StatusOK,
 	}
 	this._value.Balance += amount
@@ -306,14 +316,18 @@ func (this *Account) Unfreezes(amount float32) error {
 }
 
 // 冻结赠送金额
-func (this *Account) FreezesPresent(amount float32) error {
+func (this *Account) FreezesPresent(title string,tradeNo string,amount float32) error {
 	if this._value.PresentBalance < amount {
 		return member.ErrNotEnoughAmount
 	}
+	if len(title) == 0{
+		title = "(赠送)资金冻结"
+	}
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceFreezesPresent,
-		Title:  "(赠送)资金冻结",
+		Title:  title,
 		Amount: amount,
+		TradeNo:tradeNo,
 		State:  member.StatusOK,
 	}
 	this._value.PresentBalance -= amount
@@ -326,14 +340,18 @@ func (this *Account) FreezesPresent(amount float32) error {
 }
 
 // 解冻赠送金额
-func (this *Account) UnfreezesPresent(amount float32) error {
+func (this *Account) UnfreezesPresent(title string,tradeNo string,amount float32) error {
 	if this._value.FreezesPresent < amount {
 		return member.ErrNotEnoughAmount
 	}
+	if len(title) == 0{
+		title = "(赠送)资金解冻"
+	}
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceUnfreezesPresent,
-		Title:  "(赠送)资金解冻",
+		Title: title,
 		Amount: amount,
+		TradeNo:tradeNo,
 		State:  member.StatusOK,
 	}
 	this._value.PresentBalance += amount

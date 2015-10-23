@@ -400,37 +400,41 @@ func (this *memberService) FinishApplyCash(partnerId, memberId, id int, tradeNo 
 }
 
 // 冻结余额
-func (this *memberService) Freezes(memberId int, amount float32) error {
+func (this *memberService) Freezes(memberId int,title string,
+	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Freezes(amount)
+	return m.GetAccount().Freezes(title,tradeNo,amount)
 }
 
 // 解冻金额
-func (this *memberService) Unfreezes(memberId int, amount float32) error {
+func (this *memberService) Unfreezes(memberId int,title string,
+	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Unfreezes(amount)
+	return m.GetAccount().Unfreezes(title,tradeNo,amount)
 }
 
 // 冻结赠送金额
-func (this *memberService) FreezesPresent(memberId int, amount float32) error {
+func (this *memberService) FreezesPresent(memberId int,title string,
+	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().FreezesPresent(amount)
+	return m.GetAccount().FreezesPresent(title,tradeNo,amount)
 }
 
 // 解冻赠送金额
-func (this *memberService) UnfreezesPresent(memberId int, amount float32) error {
+func (this *memberService) UnfreezesPresent(memberId int,title string,
+	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().UnfreezesPresent(amount)
+	return m.GetAccount().UnfreezesPresent(title,tradeNo,amount)
 }
