@@ -52,7 +52,7 @@ func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
 
 func completedOrderObs(app gof.App, dfs []DaemonFunc) {
 	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCompletedOrder); i == enum.TRUE {
-		appCtx.Log().Printf("[ DAEMON][ ORDER][ FINISHED] - begin invoke finish handler.")
+		appCtx.Log().Printf("[ DAEMON][ ORDER][ FINISHED] - begin invoke finish handler.\n")
 		for _, v := range dfs {
 			v(app)
 		}

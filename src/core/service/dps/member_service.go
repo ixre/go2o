@@ -301,7 +301,16 @@ func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tr
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().Charge(chargeType, title, tradeNo, amount)
+	return m.GetAccount().ChargeBalance(chargeType, title, tradeNo, amount)
+}
+
+// 赠送金额充值
+func (this *memberService) PresentBalance(partnerId,memberId int,title string,tradeNo string,amount float32)error{
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().PresentBalance(title, tradeNo, amount)
 }
 
 // 提现

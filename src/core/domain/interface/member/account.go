@@ -15,8 +15,12 @@ const (
 	KindBalanceShopping = 1
 	// 充值
 	KindBalanceCharge = 2
+	// 赠送
+	KindBalancePresent = 3
 	// 提现
-	KindBalanceApplyCash = 3
+	KindBalanceApplyCash = 4
+	// 转账
+	KindBalanceTransfer = 5
 	// 冻结
 	KindBalanceFreezes = 6
 	// 解冻
@@ -81,7 +85,10 @@ type IAccount interface {
 	// @title 充值标题说明
 	// @no    充值订单编号
 	// @amount 金额
-	Charge(chargeType int, title string, tradeNo string, amount float32) error
+	ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error
+
+	// 赠送金额
+	PresentBalance(title string, tradeNo string, amount float32)error
 
 	// 订单抵扣消费
 	OrderDiscount(tradeNo string, amount float32) error
