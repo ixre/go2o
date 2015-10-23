@@ -17,18 +17,20 @@ const (
 	KindBalanceCharge = 2
 	// 赠送
 	KindBalancePresent = 3
+	// 账户流通
+	KindBalanceFlow = 4
 	// 提现
-	KindBalanceApplyCash = 4
+	KindBalanceApplyCash = 5
 	// 转账
-	KindBalanceTransfer = 5
+	KindBalanceTransfer = 6
 	// 冻结
-	KindBalanceFreezes = 6
+	KindBalanceFreezes = 7
 	// 解冻
-	KindBalanceUnfreezes = 7
+	KindBalanceUnfreezes = 8
 	// 冻结赠款
-	KindBalanceFreezesPresent = 8
+	KindBalanceFreezesPresent = 9
 	// 解冻赠款
-	KindBalanceUnfreezesPresent = 9
+	KindBalanceUnfreezesPresent = 10
 
 	// 系统充值
 	TypeBalanceSystemCharge = 1
@@ -89,6 +91,9 @@ type IAccount interface {
 
 	// 赠送金额
 	PresentBalance(title string, tradeNo string, amount float32)error
+
+	// 流通账户余额变动，如扣除,amount传入负数金额
+	ChargeFlowBalance(title string,tradeNo string,amount float32)error
 
 	// 订单抵扣消费
 	OrderDiscount(tradeNo string, amount float32) error

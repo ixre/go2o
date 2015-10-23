@@ -313,6 +313,15 @@ func (this *memberService) PresentBalance(partnerId,memberId int,title string,tr
 	return m.GetAccount().PresentBalance(title, tradeNo, amount)
 }
 
+// 流通账户
+func (this *memberService) ChargeFlowBalance(partnerId,memberId int,title string,tradeNo string,amount float32)error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().ChargeFlowBalance(title, tradeNo, amount)
+}
+
 // 提现
 func (this *memberService) SubmitApplyCash(partnerId, memberId int, outTradePwd string,
 	applyType int, applyAmount float32) error {

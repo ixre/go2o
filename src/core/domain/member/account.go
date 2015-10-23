@@ -12,6 +12,7 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
 	"time"
+"fmt"
 )
 
 var _ member.IAccount = new(Account)
@@ -92,23 +93,53 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 }
 
 // 赠送金额
-func (this *Account)PresentBalance(title string, tradeNo string, amount float32)error{
-
-		v := &member.BalanceInfoValue{
-			Kind:    member.KindBalancePresent,
-			Title:   title,
-			TradeNo: tradeNo,
-			Amount:  amount,
-			State:   1,
-		}
-		_, err := this.SaveBalanceInfo(v)
-		if err == nil {
-			this._value.PresentBalance += amount
-			_, err = this.Save()
-		}
-		return err
+func (this *Account)PresentBalance(title string, tradeNo string, amount float32)error {
+	//todo:??客服调整
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if len(title) {
+		title = "赠送账户入账"
+	}
+	v := &member.BalanceInfoValue{
+		Kind:    member.KindBalancePresent,
+		Title:   title,
+		TradeNo: tradeNo,
+		Amount:  amount,
+		State:   1,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.PresentBalance += amount
+		_, err = this.Save()
+	}
+	return err
 }
 
+
+// 流通账户余额充值，如扣除,amount传入负数金额
+func (this *Account) ChargeFlowBalance(title string,tradeNo string,amount float32)error {
+	if len(title) == 0{
+		if amount >0 {
+			title = "流通账户入账"
+		}else{
+			title = "流通账户出账"
+		}
+	}
+	v := &member.BalanceInfoValue{
+		Kind:    member.KindBalancePresent,
+		Title:   title,
+		TradeNo: tradeNo,
+		Amount:  amount,
+		State:   1,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.FlowBalance += amount
+		_, err = this.Save()
+	}
+	return err
+}
 
 // 订单抵扣消费
 func (this *Account) OrderDiscount(tradeNo string, amount float32) error {

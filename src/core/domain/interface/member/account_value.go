@@ -14,10 +14,12 @@ type AccountValue struct {
 	MemberId int `db:"member_id" pk:"yes" json:"memberId"`
 	// 积分
 	Integral int `db:"integral"`
-	// 余额
+	// 账户余额
 	Balance float32 `db:"balance" json:"balance"`
-	// 赠送余额
+	// 奖金账户余额
 	PresentBalance float32 `db:"present_balance" json:"presentBalance"`
+	// 流动账户余额
+	FlowBalance float32 `db:"flow_balance" json:"flowBalance"`
 	// 冻结金额
 	FreezesFee float32 `db:"freezes_fee" json:"freezesFee"`
 	// 冻结赠送额
