@@ -102,16 +102,16 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 }
 
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {
+	var result gof.Message = gof.Message{Result:true}
 	ctx.Request.ParseForm()
-	memberId := dps.MemberService.GetMemberIdByInvitationCode(
-		ctx.Request.FormValue("invi_code"))
-	var result gof.Message
-	result.Result = memberId != 0
-
-	if !result.Result {
-		result.Message = "推荐人无效"
+	code := ctx.Request.FormValue("invi_code")
+	if len(code) > 0 {
+		memberId := dps.MemberService.GetMemberIdByInvitationCode(code)
+		if memberId >0  {
+			result.Result = false
+			result.Message = "推荐人无效"
+		}
 	}
-
 	ctx.Response.JsonOutput(result)
 }
 
@@ -133,9 +133,12 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 		member.Pwd = domain.MemberSha1Pwd(member.Pwd)
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
-			invId := dps.MemberService.GetMemberIdByInvitationCode(ctx.Request.FormValue("invi_code"))
-			err = dps.MemberService.SaveRelation(memberId, "", invId,
-				this.BaseC.GetPartnerId(ctx))
+			code := ctx.Request.FormValue("invi_code")
+			if len(code) >0 {
+				invId := dps.MemberService.GetMemberIdByInvitationCode(code)
+				err = dps.MemberService.SaveRelation(memberId, "", invId,
+					this.BaseC.GetPartnerId(ctx))
+			}
 		}
 	}
 

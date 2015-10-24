@@ -104,6 +104,14 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.InvitationCode = v.InvitationCode
 	}
 
+	if v.Exp != 0 {
+		this._value.Exp = v.Exp
+	}
+
+	if v.Level > 0 {
+		this._value.Level = v.Level
+	}
+
 	if len(v.TradePwd) == 0 {
 		this._value.TradePwd = v.TradePwd
 	}
