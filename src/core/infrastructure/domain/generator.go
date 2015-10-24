@@ -31,17 +31,17 @@ func NewOrderNo(partnerId int) string {
 	rd := minRand + rand.Intn(maxRand-minRand) //minRand - maxRand中间的随机数
 	timeStr := time.Now().Format("0601")
 	ptStr := strconv.Itoa(partnerId)
-	return fmt.Sprintf("%s%s%s%d", ptStr[:1],timeStr,ptStr[len(ptStr)-1:], rd)
+	return fmt.Sprintf("%s%s%s%d", ptStr[:1], timeStr, ptStr[len(ptStr)-1:], rd)
 }
 
 // 新交易号(12位)
-func NewTradeNo(partnerId int)string{
+func NewTradeNo(partnerId int) string {
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
 	rd := 10000 + rand.Intn(9999-1000)
 	timeStr := time.Now().Format("0602")
 	ptStr := strconv.Itoa(partnerId)
-	return fmt.Sprintf("%s%s%d",ptStr, timeStr,rd)
+	return fmt.Sprintf("%s%s%d", ptStr, timeStr, rd)
 }
 
 // 创建邀请码(6位)

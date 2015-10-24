@@ -90,10 +90,10 @@ type IAccount interface {
 	ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error
 
 	// 赠送金额
-	PresentBalance(title string, tradeNo string, amount float32)error
+	PresentBalance(title string, tradeNo string, amount float32) error
 
 	// 流通账户余额变动，如扣除,amount传入负数金额
-	ChargeFlowBalance(title string,tradeNo string,amount float32)error
+	ChargeFlowBalance(title string, tradeNo string, amount float32) error
 
 	// 订单抵扣消费
 	OrderDiscount(tradeNo string, amount float32) error
@@ -114,14 +114,14 @@ type IAccount interface {
 	FinishApplyCash(id int, tradeNo string) error
 
 	// 冻结余额
-	Freezes(title string,tradeNo string,amount float32) error
+	Freezes(title string, tradeNo string, amount float32) error
 
 	// 解冻金额
-	Unfreezes(title string,tradeNo string,amount float32) error
+	Unfreezes(title string, tradeNo string, amount float32) error
 
 	// 冻结赠送金额
-	FreezesPresent(title string,tradeNo string,amount float32) error
+	FreezesPresent(title string, tradeNo string, amount float32) error
 
 	// 解冻赠送金额
-	UnfreezesPresent(title string,tradeNo string,amount float32) error
+	UnfreezesPresent(title string, tradeNo string, amount float32) error
 }

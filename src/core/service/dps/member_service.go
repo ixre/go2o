@@ -305,7 +305,7 @@ func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tr
 }
 
 // 赠送金额充值
-func (this *memberService) PresentBalance(partnerId,memberId int,title string,tradeNo string,amount float32)error{
+func (this *memberService) PresentBalance(partnerId, memberId int, title string, tradeNo string, amount float32) error {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
 		return err
@@ -314,7 +314,7 @@ func (this *memberService) PresentBalance(partnerId,memberId int,title string,tr
 }
 
 // 流通账户
-func (this *memberService) ChargeFlowBalance(partnerId,memberId int,title string,tradeNo string,amount float32)error {
+func (this *memberService) ChargeFlowBalance(partnerId, memberId int, title string, tradeNo string, amount float32) error {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
 		return err
@@ -400,41 +400,41 @@ func (this *memberService) FinishApplyCash(partnerId, memberId, id int, tradeNo 
 }
 
 // 冻结余额
-func (this *memberService) Freezes(memberId int,title string,
+func (this *memberService) Freezes(memberId int, title string,
 	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Freezes(title,tradeNo,amount)
+	return m.GetAccount().Freezes(title, tradeNo, amount)
 }
 
 // 解冻金额
-func (this *memberService) Unfreezes(memberId int,title string,
+func (this *memberService) Unfreezes(memberId int, title string,
 	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Unfreezes(title,tradeNo,amount)
+	return m.GetAccount().Unfreezes(title, tradeNo, amount)
 }
 
 // 冻结赠送金额
-func (this *memberService) FreezesPresent(memberId int,title string,
+func (this *memberService) FreezesPresent(memberId int, title string,
 	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().FreezesPresent(title,tradeNo,amount)
+	return m.GetAccount().FreezesPresent(title, tradeNo, amount)
 }
 
 // 解冻赠送金额
-func (this *memberService) UnfreezesPresent(memberId int,title string,
+func (this *memberService) UnfreezesPresent(memberId int, title string,
 	tradeNo string, amount float32) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().UnfreezesPresent(title,tradeNo,amount)
+	return m.GetAccount().UnfreezesPresent(title, tradeNo, amount)
 }
