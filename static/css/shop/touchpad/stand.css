@@ -2,7 +2,7 @@ body{
 	font-size:0.8rem;
 	font-family:"华文细黑","microsoft yahei",Verdana,Arial,Helvetica,sans-serif;
 	margin:0;
-} 
+}
 *:required { /* insert your own styles for invalid form input */ -moz-box-shadow: none;box-shadow: none; }
 a:link,a:visited{color:#666;text-decoration: none;outline:none;}
 a:hover{color:#000;}
@@ -411,16 +411,16 @@ div.no_goods{text-align: center;color:#ff0000;margin:30px 0;}
 
 /** 会员注册 **/
 
-.page-register{background:#FFF;}
+.page-register{background:#FFF;font-size:0.9rem}
 .page-register h1{color:#FFF;background:#0a0;line-height:3em;font-size:1.2rem;padding:0 2rem;}
 .page-register .tip-panel{text-align:center;color:#FF0000;font-size:0.8rem;background:#FFE;
 	margin:1em 0;border:solid 1px #FC0;}
-.page-register .form{padding:2rem 0;width:250px;overflow:hidden;margin:0 auto;}
+.page-register .form{padding:2rem 0;width:270px;overflow:hidden;margin:0 auto;}
 .page-register .form .fl{padding:0 0 5px 0;}
-.page-register .form .fl div.label{width:60px;float:left;font-weight:bold;text-align:left;width:74px;
+.page-register .form .fl div.label{width:60px;float:left;font-weight:bold;text-align:left;width:80px;
 	color:#0a0;background:#F0F0F0;padding:0 0 0 6px;line-height:24px;overflow:hidden;margin-top:3.5px;}
-.page-register .form .fl div.in{margin-left:80px;}
-.page-register .form input.box{border:solid 1px #DDD;border-radius:0;padding:0 10px;margin:1px;}
+.page-register .form .fl div.in{margin-left:86px;}
+.page-register .form input.box{border:solid 1px #DDD;border-radius:0;padding:0 10px;margin:1px;width:155px;}
 .page-register .form input.box:focus{border:solid 1px #FC0;background:#FFE;}
 .page-register .form .valid-error{background:#FFF;border:none;padding:0;}
-.page-register .form .tip{color:#777;}
+.page-register .form .tip{color:#777;font-size:0.8rem;}
