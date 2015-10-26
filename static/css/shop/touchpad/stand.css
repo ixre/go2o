@@ -9,6 +9,24 @@ a:hover{color:#000;}
 .page-top{display:none;}
 .clear-fix{clear:both;zoom:1;after:"."}
 
+
+/*按钮*/
+.ui-button{border:solid 1px #FFF;border-color: #ADB1B8 #A2A6AC #8D9096;border-radius:3px;display: inline-block;vertical-align:middle;}
+.ui-button .button-inner{display:block;position: relative;background:#F0F0F0;border-radius:2px;
+	background:transparent linear-gradient(to bottom, #F7F8FA, #E7E9EC);height:100%;
+	box-shadow:0px 1px 0px rgba(255, 255, 255, 0.6) inset;}
+.ui-button:hover .button-inner{background:transparent linear-gradient(to bottom, #E7E8EA, #D7D9DC)}
+.ui-button .button-txt{padding:0 5px;display:block;line-height: 29px;text-align:center;color:#111;}
+.ui-button a,.ui-button input{display:block;position: absolute;left:0;top:0;width:100%;height:100%;opacity:0.01;filter: alpha(opacity=1);cursor: pointer;}
+.small-button .button-txt{line-height:18px;padding:0 5px;}
+.middle-button .button-txt{ line-height: 24px;overflow: hidden;}
+/* 输入框 */
+.ui-box{border:solid 1px #888;border-radius: 2px;line-height:1.5rem;padding:0 10px;margin:1px;font-size: 1em;
+	box-shadow: 0px 1px 0px #DDD inset; background:#F7F8F9;border-color: #AAA #A0A0A5 #AAA;}
+.ui-box:focus{border:solid 1px #0a0;margin:1px;}
+input.ui-box,select.ui-box{ height: auto;height:1.5rem;}
+
+
 input.box{border:solid 1px #888;border-radius: 3px;line-height:1.5rem;height:1.5rem;padding:0 10px;margin:1px;}
 input.box:focus{border:solid 2px #0A0;margin:0;background:#FFFFCC;}
 input.btn{padding: 0px 20px;
@@ -393,12 +411,16 @@ div.no_goods{text-align: center;color:#ff0000;margin:30px 0;}
 
 /** 会员注册 **/
 
-.page-register{border:solid 1px #0A0;border-radius:5px;
-	margin:2rem auto;background:#FFF;width:320px;box-shadow: 0 0 5px #DDD;}
-.page-register h1{color:#FFF;margin:0 0 30px 0;padding:15px 0;text-align:center;background:#0a0;
-	border-radius: 5px 5px 0 0;
-}
-.page-register .tip-panel{text-align:center;color:#FF0000;font-size:0.8rem;}
-.page-register .form{padding:0 30px;}
-.page-register .form .fl div.label{width:60px;text-align: right;float:left;font-weight:bold;}
-.page-register .form .fl div.in{margin-left:70px;}
+.page-register{background:#FFF;}
+.page-register h1{color:#FFF;background:#0a0;line-height:3em;font-size:1.2rem;padding:0 2rem;}
+.page-register .tip-panel{text-align:center;color:#FF0000;font-size:0.8rem;background:#FFE;
+	margin:1em 0;border:solid 1px #FC0;}
+.page-register .form{padding:2rem 0;width:250px;overflow:hidden;margin:0 auto;}
+.page-register .form .fl{padding:0 0 5px 0;}
+.page-register .form .fl div.label{width:60px;float:left;font-weight:bold;text-align:left;width:74px;
+	color:#0a0;background:#F0F0F0;padding:0 0 0 6px;line-height:24px;overflow:hidden;margin-top:3.5px;}
+.page-register .form .fl div.in{margin-left:80px;}
+.page-register .form input.box{border:solid 1px #DDD;border-radius:0;padding:0 10px;margin:1px;}
+.page-register .form input.box:focus{border:solid 1px #FC0;background:#FFE;}
+.page-register .form .valid-error{background:#FFF;border:none;padding:0;}
+.page-register .form .tip{color:#777;}
