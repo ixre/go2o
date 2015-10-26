@@ -696,16 +696,8 @@ func (this *Order) updateShoppingMemberBackFee(pt partner.IPartner,
 	acc.Save()
 
 	//给自己返现
-	icLog := &member.IncomeLog{
-		MemberId:   this._value.MemberId,
-		OrderId:    v.Id,
-		Type:       "backcash",
-		Fee:        fee,
-		Log:        fmt.Sprintf("订单:%s(商家:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee),
-		State:      1,
-		RecordTime: unixTime,
-	}
-	m.SaveIncomeLog(icLog)
+	tit := fmt.Sprintf("订单:%s(商家:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
+	 acc.PresentBalance(tit,v.OrderNo,float32(fee))
 }
 
 // 处理返现促销
@@ -747,16 +739,8 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 		HandleCashBackDataTag(m, this._value, c, this._memberRep)
 
 		//给自己返现
-		icLog := &member.IncomeLog{
-			MemberId:   this._value.MemberId,
-			OrderId:    this.GetDomainId(),
-			Type:       "backcash",
-			Fee:        float32(cpv.BackFee),
-			Log:        fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, this._value.OrderNo),
-			State:      1,
-			RecordTime: acv.UpdateTime,
-		}
-		err = m.SaveIncomeLog(icLog)
+		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, this._value.OrderNo)
+		err = acc.PresentBalance(tit,v.OrderNo,float32(cpv.BackFee))
 	}
 	return err
 }
@@ -808,14 +792,7 @@ func (this *Order) updateMemberAccount(m member.IMember,
 	acc.Save()
 
 	//给自己返现
-	icLog := &member.IncomeLog{
-		MemberId: this._value.MemberId,
-		Type:     "backcash",
-		Fee:      fee,
-		Log: fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元",
-			this._value.OrderNo, ptName, mName, fee),
-		State:      1,
-		RecordTime: unixTime,
-	}
-	m.SaveIncomeLog(icLog)
+	tit := fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元",
+		this._value.OrderNo, ptName, mName, fee)
+	acc.PresentBalance(tit,this._value.OrderNo,fee)
 }

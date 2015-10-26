@@ -8,7 +8,7 @@
  */
 package member
 
-type IncomeLog struct {
+type IncomeLog2 struct {
 	Id         int     `db:"id" pk:"yes" auto:"yes"`
 	OrderId    int     `db:"order_id"`
 	MemberId   int     `db:"member_id"`

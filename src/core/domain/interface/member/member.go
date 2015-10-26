@@ -39,9 +39,6 @@ type IMember interface {
 	// 保存提现银行信息
 	SaveBank(*BankInfo) error
 
-	// 保存返现记录
-	SaveIncomeLog(*IncomeLog) error
-
 	//　保存积分记录
 	SaveIntegralLog(*IntegralLog) error
 

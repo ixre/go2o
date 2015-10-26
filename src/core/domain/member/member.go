@@ -207,11 +207,6 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 	return this._rep.SaveBankInfo(this._bank)
 }
 
-// 保存返现记录
-func (this *Member) SaveIncomeLog(l *member.IncomeLog) error {
-	l.MemberId = this._value.Id
-	return this._rep.SaveIncomeLog(l)
-}
 
 // 保存积分记录
 func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {

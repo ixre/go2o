@@ -76,7 +76,8 @@ func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promo
 	}
 }
 
-func backCashForMember(m member.IMember, order *shopping.ValueOrder, fee int, refName string) error {
+func backCashForMember(m member.IMember, order *shopping.ValueOrder,
+	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
@@ -87,17 +88,9 @@ func backCashForMember(m member.IMember, order *shopping.ValueOrder, fee int, re
 	_, err := acc.Save()
 
 	if err == nil {
-		//给自己返现
-		icLog := &member.IncomeLog{
-			MemberId:   m.GetAggregateRootId(),
-			OrderId:    order.Id,
-			Type:       "backcash",
-			Fee:        float32(fee),
-			Log:        fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s", format.FormatFloat(bFee), order.OrderNo, refName),
-			State:      1,
-			RecordTime: acv.UpdateTime,
-		}
-		err = m.SaveIncomeLog(icLog)
+		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
+			format.FormatFloat(bFee), order.OrderNo, refName)
+		err = acc.PresentBalance(tit,order.OrderNo,float32(fee))
 	}
 	return err
 }
