@@ -35,14 +35,12 @@ func (this *MemberQuery) QueryIncomeLog(memberId, page, size int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0)
-			FROM mm_income_log l INNER JOIN mm_member m ON m.id=l.member_id
-			WHERE member_id=? %s`, where), &num, memberId)
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_info bi
+	 	INNER JOIN mm_member m ON m.id=bi.member_id
+			WHERE bi.member_id=? %s`, where), &num, memberId)
 
-	sqlLine := fmt.Sprintf(`SELECT l.*,
-			record_time,
-			convert(l.fee,CHAR(10)) as fee
-			FROM mm_income_log l INNER JOIN mm_member m ON m.id=l.member_id
+	sqlLine := fmt.Sprintf(`SELECT bi.*,create_time,convert(bi.amount,CHAR(10)) as fee
+			FROM mm_balance_info bi INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id=? %s %s LIMIT ?,?`,
 		where, orderBy)
 
