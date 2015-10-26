@@ -17,6 +17,7 @@ type BalanceInfoValue struct {
 	Type       int     `db:"type"`
 	Title      string  `db:"title"`
 	Amount     float32 `db:"amount"`
+	RefId      int     `db:"ref_id"` // 引用编号
 	State      int     `db:"state"`
 	CreateTime int64   `db:"create_time"`
 	UpdateTime int64   `db:"update_time"`

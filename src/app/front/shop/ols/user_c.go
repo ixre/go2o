@@ -102,12 +102,12 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 }
 
 func (this *UserC) Valid_invitation_post(ctx *web.Context) {
-	var result gof.Message = gof.Message{Result:true}
+	var result gof.Message = gof.Message{Result: true}
 	ctx.Request.ParseForm()
 	code := ctx.Request.FormValue("invi_code")
 	if len(code) > 0 {
 		memberId := dps.MemberService.GetMemberIdByInvitationCode(code)
-		if memberId >0  {
+		if memberId <= 0 {
 			result.Result = false
 			result.Message = "推荐人无效"
 		}
@@ -134,7 +134,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 		memberId, err = dps.MemberService.SaveMember(&member)
 		if err == nil {
 			code := ctx.Request.FormValue("invi_code")
-			if len(code) >0 {
+			if len(code) > 0 {
 				invId := dps.MemberService.GetMemberIdByInvitationCode(code)
 				err = dps.MemberService.SaveRelation(memberId, "", invId,
 					this.BaseC.GetPartnerId(ctx))
