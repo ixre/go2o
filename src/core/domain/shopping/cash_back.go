@@ -90,7 +90,7 @@ func backCashForMember(m member.IMember, order *shopping.ValueOrder,
 	if err == nil {
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatFloat(bFee), order.OrderNo, refName)
-		err = acc.PresentBalance(tit,order.OrderNo,float32(fee))
+		err = acc.PresentBalance(tit, order.OrderNo, float32(fee))
 	}
 	return err
 }

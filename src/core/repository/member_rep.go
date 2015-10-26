@@ -169,7 +169,6 @@ func (this *MemberRep) SaveBankInfo(v *member.BankInfo) error {
 	return err
 }
 
-
 // 保存积分记录
 func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 	orm := this.Connector.GetOrm()

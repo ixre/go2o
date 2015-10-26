@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof"
 	guitl "github.com/jsix/gof/util"
 	"github.com/jsix/gof/web"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"
@@ -84,6 +85,11 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	}
 
 	if order != nil {
+		if order.IsPaid == enum.TRUE {
+			ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", order.OrderNo))
+			ctx.Response.WriteHeader(302)
+			return
+		}
 		ctx.Session().Set("current_payment", orderNo)
 		ctx.Session().Save()
 

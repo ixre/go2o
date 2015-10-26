@@ -697,7 +697,7 @@ func (this *Order) updateShoppingMemberBackFee(pt partner.IPartner,
 
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商家:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
-	 acc.PresentBalance(tit,v.OrderNo,float32(fee))
+	acc.PresentBalance(tit, v.OrderNo, float32(fee))
 }
 
 // 处理返现促销
@@ -740,7 +740,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, this._value.OrderNo)
-		err = acc.PresentBalance(tit,v.OrderNo,float32(cpv.BackFee))
+		err = acc.PresentBalance(tit, v.OrderNo, float32(cpv.BackFee))
 	}
 	return err
 }
@@ -794,5 +794,5 @@ func (this *Order) updateMemberAccount(m member.IMember,
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元",
 		this._value.OrderNo, ptName, mName, fee)
-	acc.PresentBalance(tit,this._value.OrderNo,fee)
+	acc.PresentBalance(tit, this._value.OrderNo, fee)
 }

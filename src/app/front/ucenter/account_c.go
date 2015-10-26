@@ -22,9 +22,14 @@ import (
 	"go2o/src/core/service/goclient"
 	"html/template"
 	"strconv"
+	"strings"
 )
 
 const minAmount float64 = 50
+
+var (
+	bonusKindStr string
+)
 
 type accountC struct {
 	*baseC
@@ -51,7 +56,16 @@ func (this *accountC) Income_log_post(ctx *web.Context) {
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
 
-	n, rows := dps.MemberService.QueryIncomeLog(m.Id, page, size, "", "create_time DESC")
+	if len(bonusKindStr) == 0 {
+		bonusKindStr = strings.Join([]string{
+			strconv.Itoa(member.KindBalanceTransfer),
+			strconv.Itoa(member.KindBalancePresent),
+			strconv.Itoa(member.KindBalanceFlow),
+		}, ",")
+	}
+
+	n, rows := dps.MemberService.QueryIncomeLog(m.Id, page, size,
+		" AND kind IN ("+bonusKindStr+")", "create_time DESC")
 	p := pager.NewUrlPager(pager.TotalPage(n, size), page, pager.GetterJavaScriptPager)
 
 	p.RecordCount = n

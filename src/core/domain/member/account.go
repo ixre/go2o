@@ -94,12 +94,17 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 // 赠送金额
 func (this *Account) PresentBalance(title string, tradeNo string, amount float32) error {
 	//todo:??客服调整
-	if amount <= 0 {
+	if amount == 0 {
 		return member.ErrIncorrectAmount
 	}
 	if len(title) == 0 {
-		title = "赠送账户入账"
+		if amount < 0 {
+			title = "赠送账户出账"
+		} else {
+			title = "赠送账户入账"
+		}
 	}
+
 	v := &member.BalanceInfoValue{
 		Kind:    member.KindBalancePresent,
 		Title:   title,

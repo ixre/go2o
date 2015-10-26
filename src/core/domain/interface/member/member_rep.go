@@ -73,7 +73,6 @@ type IMemberRep interface {
 	// 保存银行信息
 	SaveBankInfo(*BankInfo) error
 
-
 	// 保存积分记录
 	SaveIntegralLog(*IntegralLog) error
 

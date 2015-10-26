@@ -11,6 +11,7 @@ package format
 
 import (
 	"fmt"
+	"github.com/jsix/gof/math"
 	"strconv"
 	"strings"
 )
@@ -34,4 +35,8 @@ func ToDiscountStr(discount int) string {
 		return s[:1]
 	}
 	return s[:1] + "." + s[1:]
+}
+
+func RoundAmount(amount float32) float32 {
+	return math.Round32(amount, 2)
 }
