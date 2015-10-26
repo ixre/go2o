@@ -193,14 +193,16 @@ btnRegister.onclick = function () {
             j6.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
                 if (json.result) {
                     var returnUrl = j6.request('return_url');
-                    showRegTip('<span style="font-size:1.2em">注册成功</span><br />请等待页面跳转');
+                    tip.className='tip-panel';
+                    tip.innerHTML = '<span style="color:#0a0">注册成功，请等待页面跳转</span>';
+
                     setTimeout(function(){
                         if (returnUrl != '') {
                             location.replace(returnUrl);
                         } else {
                             location.replace('/user/login?return_url=');
                         }
-                    },5000);
+                    },3000);
 
                 } else {
                     tip.className='tip-panel';
@@ -216,23 +218,20 @@ btnRegister.onclick = function () {
     }
 }
 
-function showRegTip(msg){
+function showRegTip(msg) {
     var win = window.parent || window;
-    if (!win.xhrCt) {
-        win.xhrCt = document.createElement("DIV");
-        win.xhrCt.className = 'xhr-container hidden';
-        win.xhrCt.innerHTML = j6.template('<div class="gate" style="width:100%;height:{h}px;opacity:0.5;filter:alpha(opacity=50);background:#FFF;"'+
-            'id="xhr_gate_layout"></div><div class="msg" id="xhr_msg_layout"></div>', {
-            h: j6.screen.height()
-        });
-        win.document.body.appendChild(win.xhrCt);
-        win.xhrGate = win.document.getElementById('xhr_gate_layout');
-        win.xhrMsg = win.document.getElementById('xhr_msg_layout');
-        win.xhrMsg.style.cssText += "top:200px;border:solid 1px #FC0;background:#FFE;border-radius:5px;color:#F00;font-weight:bold;";
-    }
 
-    win.xhrMsg.innerHTML = msg;
-    win.xhrGate.className = 'gate';
+    win.xhrCt1 = document.createElement("DIV");
+    win.xhrCt1.className = 'xhr1-container hidden';
+    win.xhrCt1.style.cssText = 'position:absolute;left:0;top:0;';
+    win.xhrCt1.innerHTML = j6.template('<div class="gate" style="width:100%;height:{h}px;opacity:0.7;filter:alpha(opacity=70);background:#FFF;position:fixed;"' +
+        'id="xhr1_gate_layout"></div><div class="msg" id="xhr1_msg_layout"></div>', {
+        h: j6.screen.height()
+    });
+    win.document.body.appendChild(win.xhrCt1);
+    win.xhrGate1 = win.document.getElementById('xhr1_gate_layout');
+    win.xhrMsg1 = win.document.getElementById('xhr1_msg_layout');
+    win.xhrMsg1.style.cssText += "position:fixed;top:200px;border:solid 1px #FC0;background:#FFE;border-radius:5px;color:#F00;font-weight:bold;z-index:200;width:40%;margin:0 auto;left:30%;text-align:center;padding:0.5em 0;line-height:1.5em;";
 
-    win.xhrCt.className = 'xhr-container';
+    win.xhrMsg1.innerHTL = msg;
 }
