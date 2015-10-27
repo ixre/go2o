@@ -189,7 +189,7 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 // 获取返现记录
 func (this *memberService) QueryIncomeLog(memberId, page, size int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
-	return this._query.QueryIncomeLog(memberId, page, size, where, orderBy)
+	return this._query.QueryBalanceLog(memberId, page, size, where, orderBy)
 }
 
 // 查询分页订单

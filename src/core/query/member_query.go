@@ -24,14 +24,11 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取返现记录
-func (this *MemberQuery) QueryIncomeLog(memberId, page, size int,
+func (this *MemberQuery) QueryBalanceLog(memberId, page, size int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
 	d := this.Connector
 
-	if where != "" {
-		where = "WHERE " + where
-	}
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
 	}
