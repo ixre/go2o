@@ -95,7 +95,7 @@ func (this *PaymentC) Create(ctx *web.Context) {
 
 		//order.PayFee = 0.01
 
-		if paymentOpt == "alipay" {
+		if paymentOpt == "alipay" || paymentOpt == strconv.Itoa(enum.PaymentOnlinePay) {
 			aliPayObj := this.getAliPayment(ctx)
 			domain := getDomain(ctx.Request)
 			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
