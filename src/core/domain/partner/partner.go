@@ -169,7 +169,6 @@ func (this *Partner) GetMajorHost() string {
 			host = fmt.Sprintf("%s.%s", this._value.Usr, infrastructure.GetApp().
 				Config().GetString(variable.ServerDomain))
 		}
-
 		this._host = host
 	}
 	return this._host
@@ -178,12 +177,10 @@ func (this *Partner) GetMajorHost() string {
 // 获取销售配置
 func (this *Partner) GetSaleConf() partner.SaleConf {
 	if this._saleConf == nil {
-
 		//10%分成
 		//0.2,         #上级
 		//0.1,         #上上级
 		//0.8          #消费者自己
-
 		this._saleConf = this._rep.GetSaleConf(
 			this.GetAggregateRootId())
 	}

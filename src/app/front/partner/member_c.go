@@ -166,6 +166,7 @@ func (this *memberC) ApplyRequestList(ctx *web.Context) {
 	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
+		"kind":    member.KindBalanceApplyCash,
 	}, "views/partner/member/apply_request_list.html")
 }
 

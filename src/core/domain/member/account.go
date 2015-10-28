@@ -370,3 +370,179 @@ func (this *Account) UnfreezesPresent(title string, tradeNo string, amount float
 	}
 	return err
 }
+
+// 转账余额到其他账户
+func (this *Account) TransferBalance(kind int, amount float32,
+	tradeNo string, toTitle, fromTitle string) error {
+	var err error
+	if kind == member.KindBalanceFlow {
+		if this._value.Balance < amount {
+			return member.ErrNotEnoughAmount
+		}
+		this._value.Balance -= amount
+		this._value.FlowBalance += amount
+		if _, err = this.Save(); err == nil {
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    member.KindBalanceTransfer,
+				Title:   toTitle,
+				Amount:  -amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    member.KindBalanceTransfer,
+				Title:   fromTitle,
+				Amount:  amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+		}
+		return err
+	}
+	return member.ErrNotSupportTransfer
+}
+
+// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
+// commission手续费
+func (this *Account) TransferPresent(kind int, amount float32,
+	commission float32, tradeNo string, toTitle string, fromTitle string,
+	commissionTitle string) error {
+	var err error
+	if kind == member.KindBalanceFlow {
+		if this._value.Balance < amount {
+			return member.ErrNotEnoughAmount
+		}
+		this._value.Balance -= amount
+		this._value.FlowBalance += amount
+		if _, err = this.Save(); err == nil {
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    member.KindBalanceTransfer,
+				Title:   toTitle,
+				Amount:  -amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    kind,
+				Title:   fromTitle,
+				Amount:  amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+		}
+		return err
+	}
+	return member.ErrNotSupportTransfer
+}
+
+// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
+// commission手续费
+func (this *Account) TransferFlow(kind int, amount float32,
+	commission float32, tradeNo string, toTitle string, fromTitle string,
+	commissionTitle string) error {
+	var err error
+
+	csnFee := commission * amount
+	finalFee := amount + csnFee
+
+	if kind == member.KindBalancePresent {
+		if this._value.Balance < finalFee {
+			return member.ErrNotEnoughAmount
+		}
+
+		this._value.Balance -= finalFee
+		this._value.FlowBalance += amount
+
+		if _, err = this.Save(); err == nil {
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    member.KindBalanceTransfer,
+				Title:   toTitle,
+				Amount:  -amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+
+			if csnFee > 0 {
+				this.SaveBalanceInfo(&member.BalanceInfoValue{
+					Kind:    member.KindBalanceTransfer,
+					Title:   commissionTitle,
+					Amount:  -csnFee,
+					TradeNo: tradeNo,
+					State:   member.StatusOK,
+				})
+			}
+
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    kind,
+				Title:   fromTitle,
+				Amount:  amount,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+		}
+		return err
+	}
+
+	return member.ErrNotSupportTransfer
+}
+
+// 将活动金转给其他人
+func (this *Account) TransferFlowTo(kind int, memberId int,
+	amount float32, commission float32, tradeNo string,
+	toTitle string, fromTitle string, commissionTitle string) error {
+
+	var err error
+	csnFee := commission * amount
+	finalFee := amount + csnFee
+
+	m := this._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	acc2 := m.GetAccount()
+
+	if kind == member.KindBalanceFlow {
+		if this._value.Balance < finalFee {
+			return member.ErrNotEnoughAmount
+		}
+
+		this._value.FlowBalance -= finalFee
+		acc2.GetValue().FlowBalance += amount
+
+		if _, err = this.Save(); err == nil {
+			this.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    member.KindBalanceTransfer,
+				Title:   toTitle,
+				Amount:  -amount,
+				RefId:   memberId,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+
+			if csnFee > 0 {
+				this.SaveBalanceInfo(&member.BalanceInfoValue{
+					Kind:    member.KindBalanceTransfer,
+					Title:   commissionTitle,
+					Amount:  -csnFee,
+					RefId:   memberId,
+					TradeNo: tradeNo,
+					State:   member.StatusOK,
+				})
+			}
+
+			acc2.SaveBalanceInfo(&member.BalanceInfoValue{
+				Kind:    kind,
+				Title:   fromTitle,
+				Amount:  amount,
+				RefId:   this._value.MemberId,
+				TradeNo: tradeNo,
+				State:   member.StatusOK,
+			})
+		}
+		return err
+	}
+
+	return member.ErrNotSupportTransfer
+}

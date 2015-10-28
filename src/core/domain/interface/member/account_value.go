@@ -18,8 +18,8 @@ type AccountValue struct {
 	Balance float32 `db:"balance" json:"balance"`
 	// 奖金账户余额
 	PresentBalance float32 `db:"present_balance" json:"presentBalance"`
-	// 流动账户余额
-	FlowBalance float32 `db:"flow_balance" json:"flowBalance"`
+	FlowBalance    float32 `db:"flow_balance" json:"flowBalance"` // 流动账户余额
+	GrowAmount     float32 `db:"grow_amount" json:"growAmount"`   // 增利账户金额
 	// 冻结金额
 	FreezesFee float32 `db:"freezes_fee" json:"freezesFee"`
 	// 冻结赠送额

@@ -17,20 +17,21 @@ const (
 	KindBalanceCharge = 2
 	// 赠送
 	KindBalancePresent = 3
-	// 账户流通
-	KindBalanceFlow = 4
+
+	KindBalanceFlow = 4 // 账户流通
+	KindGrow        = 5 // 增利
 	// 提现
-	KindBalanceApplyCash = 5
+	KindBalanceApplyCash = 11
 	// 转账
-	KindBalanceTransfer = 6
+	KindBalanceTransfer = 12
 	// 冻结
-	KindBalanceFreezes = 7
+	KindBalanceFreezes = 13
 	// 解冻
-	KindBalanceUnfreezes = 8
+	KindBalanceUnfreezes = 14
 	// 冻结赠款
-	KindBalanceFreezesPresent = 9
+	KindBalanceFreezesPresent = 15
 	// 解冻赠款
-	KindBalanceUnfreezesPresent = 10
+	KindBalanceUnfreezesPresent = 16
 
 	// 系统充值
 	TypeBalanceSystemCharge = 1
@@ -124,4 +125,21 @@ type IAccount interface {
 
 	// 解冻赠送金额
 	UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error
+
+	// 转账余额到其他账户
+	TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
+
+	// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
+	// commission手续费
+	TransferPresent(kind int, amount float32, commission float32, tradeNo string,
+		toTitle string, fromTitle string, commissionTitle string) error
+
+	// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
+	// commission手续费
+	TransferFlow(kind int, amount float32, commission float32, tradeNo string,
+		toTitle string, fromTitle string, commissionTitle string) error
+
+	// 将活动金转给其他人
+	TransferFlowTo(kind int, memberId int, amount float32, commission float32,
+		tradeNo string, toTitle string, fromTitle string, commissionTitle string) error
 }

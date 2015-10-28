@@ -70,4 +70,7 @@ var (
 
 	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_not_enough_amount", "金额不足")
+
+	ErrNotSupportTransfer *domain.DomainError = domain.NewDomainError(
+		"err_not_support_transfer", "不支持的转账方式")
 )

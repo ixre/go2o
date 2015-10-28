@@ -10,22 +10,13 @@
 package partner
 
 type SaleConf struct {
-	//合作商编号
-	PartnerId int `db:"partner_id" auto:"no" pk:"yes"`
-
-	//反现比例,0则不返现
-	CashBackPercent float32 `db:"cb_percent"`
-	//一级比例
-	CashBackTg1Percent float32 `db:"cb_tg1_percent"`
-	//二级比例
-	CashBackTg2Percent float32 `db:"cb_tg2_percent"`
-	//会员比例
-	CashBackMemberPercent float32 `db:"cb_member_percent"`
-	//每一元返多少积分
-	IntegralBackNum int `db:"ib_num"`
-	//每单额外赠送
-	IntegralBackExtra int `db:"ib_extra"`
-
-	// 自动设置订单
-	AutoSetupOrder int `db:"auto_setup_order"`
+	PartnerId             int     `db:"partner_id" auto:"no" pk:"yes"` //合作商编号
+	CashBackPercent       float32 `db:"cb_percent"`                    //返现比例,0则不返现
+	CashBackTg1Percent    float32 `db:"cb_tg1_percent"`                //一级比例
+	CashBackTg2Percent    float32 `db:"cb_tg2_percent"`                //二级比例
+	CashBackMemberPercent float32 `db:"cb_member_percent"`             //会员比例
+	IntegralBackNum       int     `db:"ib_num"`                        //每一元返多少积分
+	IntegralBackExtra     int     `db:"ib_extra"`                      //每单额外赠送
+	AutoSetupOrder        int     `db:"auto_setup_order"`              // 自动设置订单
+	TransCsn              float32 `db:"trans_csn"`                     // 转账手续费
 }
