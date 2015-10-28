@@ -373,8 +373,8 @@ func (this *memberService) GetLatestApplyCashText(memberId int) string {
 		case 3:
 			sText = "已完成"
 		}
-		latestInfo = fmt.Sprintf("您于%s申请提现%s,%s。",
-			time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04:05"),
+		latestInfo = fmt.Sprintf(`<b>最近提现：</b>%s&nbsp;申请提现%s,&nbsp;状态：<span class="status">%s</span>。`,
+			time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04"),
 			format.FormatFloat(latestApplyInfo.Amount),
 			sText)
 	}

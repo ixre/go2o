@@ -83,11 +83,20 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 	if len(latestInfo) != 0 {
 		latestInfo = "<div class=\"info\">" + latestInfo + "</div>"
 	}
+
+	var maxApplyAmount int
+	if acc.PresentBalance < float32(minAmount) {
+		maxApplyAmount = 0
+	} else {
+		maxApplyAmount = int(acc.PresentBalance)
+	}
+
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":           conf,
 		"partner":        p,
 		"member":         m,
 		"minAmount":      format.FormatFloat(float32(minAmount)),
+		"maxApplyAmount": maxApplyAmount,
 		"account":        acc,
 		"latestInfo":     template.HTML(latestInfo),
 		"notSetTradePwd": len(m.TradePwd) == 0,
