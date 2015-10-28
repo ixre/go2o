@@ -446,7 +446,7 @@ func (this *memberService) TransferBalance(memberId int, kind int, amount float3
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferBalance(kind, amount, tradeNo, amount, toTitle, fromTitle)
+	return m.GetAccount().TransferBalance(kind, amount,tradeNo,toTitle, fromTitle)
 }
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
@@ -457,7 +457,8 @@ func (this *memberService) TransferPresent(memberId int, kind int, amount float3
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferPresent(kind, amount, tradeNo, amount, toTitle, fromTitle)
+	return m.GetAccount().TransferPresent(kind, amount,commission,
+		tradeNo, toTitle, fromTitle,commissionTitle)
 }
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
@@ -469,7 +470,8 @@ func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferFlow(kind, amount, tradeNo, amount, toTitle, fromTitle)
+	return m.GetAccount().TransferFlow(kind, amount,commission,tradeNo,
+		 toTitle, fromTitle,commissionTitle)
 }
 
 // 将活动金转给其他人
@@ -481,5 +483,6 @@ func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferFlowTo(toMemberId, kind, amount, tradeNo, amount, toTitle, fromTitle)
+	return m.GetAccount().TransferFlowTo(toMemberId, kind, amount,
+		commission, tradeNo, toTitle, fromTitle,commissionTitle)
 }
