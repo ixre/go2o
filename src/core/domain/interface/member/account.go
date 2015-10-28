@@ -140,6 +140,6 @@ type IAccount interface {
 		toTitle string, fromTitle string, commissionTitle string) error
 
 	// 将活动金转给其他人
-	TransferFlowTo(kind int, memberId int, amount float32, commission float32,
+	TransferFlowTo(memberId int, kind int, amount float32, commission float32,
 		tradeNo string, toTitle string, fromTitle string, commissionTitle string) error
 }

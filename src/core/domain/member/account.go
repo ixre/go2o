@@ -489,7 +489,7 @@ func (this *Account) TransferFlow(kind int, amount float32,
 }
 
 // 将活动金转给其他人
-func (this *Account) TransferFlowTo(kind int, memberId int,
+func (this *Account) TransferFlowTo(memberId int, kind int,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string, commissionTitle string) error {
 

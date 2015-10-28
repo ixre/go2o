@@ -438,3 +438,48 @@ func (this *memberService) UnfreezesPresent(memberId int, title string,
 	}
 	return m.GetAccount().UnfreezesPresent(title, tradeNo, amount, referId)
 }
+
+// 转账余额到其他账户
+func (this *memberService) TransferBalance(memberId int, kind int, amount float32, tradeNo string,
+	toTitle, fromTitle string) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().TransferBalance(kind, amount, tradeNo, amount, toTitle, fromTitle)
+}
+
+// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
+// commission手续费
+func (this *memberService) TransferPresent(memberId int, kind int, amount float32, commission float32,
+	tradeNo string, toTitle string, fromTitle string, commissionTitle string) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().TransferPresent(kind, amount, tradeNo, amount, toTitle, fromTitle)
+}
+
+// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
+// commission手续费
+func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
+	commission float32, tradeNo string, toTitle string, fromTitle string,
+	commissionTitle string) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().TransferFlow(kind, amount, tradeNo, amount, toTitle, fromTitle)
+}
+
+// 将活动金转给其他人
+func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int,
+	amount float32, commission float32, tradeNo string, toTitle string,
+	fromTitle string, commissionTitle string) error {
+
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().TransferFlowTo(toMemberId, kind, amount, tradeNo, amount, toTitle, fromTitle)
+}
