@@ -208,7 +208,7 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 }
 
 // 请求提现
-func (this *Account) RequestApplyCash(applyType int, title string, amount float32) error {
+func (this *Account) RequestApplyCash(applyType int, title string, amount float32,commission float32) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -216,11 +216,14 @@ func (this *Account) RequestApplyCash(applyType int, title string, amount float3
 		return member.ErrOutOfBalance
 	}
 
+	csnAmount := amount * commission
+	finalAmount := amount - csnAmount
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceApplyCash,
 		Type:   applyType,
 		Title:  title,
-		Amount: amount,
+		Amount: finalAmount,
+		CsnAmount:csnAmount,
 		State:  member.StateApplySubmitted,
 	}
 
@@ -405,9 +408,8 @@ func (this *Account) TransferBalance(kind int, amount float32,
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (this *Account) TransferPresent(kind int, amount float32,
-	commission float32, tradeNo string, toTitle string, fromTitle string,
-	commissionTitle string) error {
+func (this *Account) TransferPresent(kind int, amount float32,commission float32,
+	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
 		if this._value.Balance < amount {
@@ -439,20 +441,19 @@ func (this *Account) TransferPresent(kind int, amount float32,
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (this *Account) TransferFlow(kind int, amount float32,
-	commission float32, tradeNo string, toTitle string, fromTitle string,
-	commissionTitle string) error {
+func (this *Account) TransferFlow(kind int, amount float32,commission float32,
+	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 
-	csnFee := commission * amount
-	finalFee := amount + csnFee
+	csnAmount := commission * amount
+	finalAmount := amount + csnAmount
 
 	if kind == member.KindBalancePresent {
-		if this._value.FlowBalance < finalFee {
+		if this._value.FlowBalance < finalAmount {
 			return member.ErrNotEnoughAmount
 		}
 
-		this._value.FlowBalance -= finalFee
+		this._value.FlowBalance -= finalAmount
 		this._value.PresentBalance += amount
 
 		if _, err = this.Save(); err == nil {
@@ -461,18 +462,10 @@ func (this *Account) TransferFlow(kind int, amount float32,
 				Title:   toTitle,
 				Amount:  -amount,
 				TradeNo: tradeNo,
+				CsnAmount:csnAmount,
 				State:   member.StatusOK,
 			})
 
-			if csnFee >= 0.01{
-				this.SaveBalanceInfo(&member.BalanceInfoValue{
-					Kind:    member.KindCommission,
-					Title:   commissionTitle,
-					Amount:  -csnFee,
-					TradeNo: tradeNo,
-					State:   member.StatusOK,
-				})
-			}
 
 			this.SaveBalanceInfo(&member.BalanceInfoValue{
 				Kind:    kind,
@@ -491,11 +484,11 @@ func (this *Account) TransferFlow(kind int, amount float32,
 // 将活动金转给其他人
 func (this *Account) TransferFlowTo(memberId int, kind int,
 	amount float32, commission float32, tradeNo string,
-	toTitle string, fromTitle string, commissionTitle string) error {
+	toTitle string, fromTitle string) error {
 
 	var err error
-	csnFee := commission * amount
-	finalFee := amount + csnFee
+	csnAmount := commission * amount
+	finalAmount := amount - csnAmount
 
 	m := this._rep.GetMember(memberId)
 	if m == nil {
@@ -504,11 +497,11 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 	acc2 := m.GetAccount()
 
 	if kind == member.KindBalanceFlow {
-		if this._value.Balance < finalFee {
+		if this._value.Balance < finalAmount {
 			return member.ErrNotEnoughAmount
 		}
 
-		this._value.FlowBalance -= finalFee
+		this._value.FlowBalance -= finalAmount
 		acc2.GetValue().FlowBalance += amount
 
 		if _, err = this.Save(); err == nil {
@@ -516,21 +509,11 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 				Kind:    member.KindBalanceTransfer,
 				Title:   toTitle,
 				Amount:  -amount,
+				CsnAmount:csnAmount,
 				RefId:   memberId,
 				TradeNo: tradeNo,
 				State:   member.StatusOK,
 			})
-
-			if csnFee >= 0.01 {
-				this.SaveBalanceInfo(&member.BalanceInfoValue{
-					Kind:    member.KindCommission,
-					Title:   commissionTitle,
-					Amount:  -csnFee,
-					RefId:   memberId,
-					TradeNo: tradeNo,
-					State:   member.StatusOK,
-				})
-			}
 
 			acc2.SaveBalanceInfo(&member.BalanceInfoValue{
 				Kind:    kind,

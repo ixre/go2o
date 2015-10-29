@@ -109,7 +109,7 @@ type IAccount interface {
 	FinishBackBalance(id int, tradeNo string) error
 
 	// 请求提现,applyType：提现方式
-	RequestApplyCash(applyType int, title string, amount float32) error
+	RequestApplyCash(applyType int, title string, amount float32,commission float32) error
 
 	// 确认提现
 	ConfirmApplyCash(id int, pass bool, remark string) error
@@ -135,14 +135,14 @@ type IAccount interface {
 	// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 	// commission手续费
 	TransferPresent(kind int, amount float32, commission float32, tradeNo string,
-		toTitle string, fromTitle string, commissionTitle string) error
+		toTitle string, fromTitle string) error
 
 	// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 	// commission手续费
 	TransferFlow(kind int, amount float32, commission float32, tradeNo string,
-		toTitle string, fromTitle string, commissionTitle string) error
+		toTitle string, fromTitle string) error
 
 	// 将活动金转给其他人
 	TransferFlowTo(memberId int, kind int, amount float32, commission float32,
-		tradeNo string, toTitle string, fromTitle string, commissionTitle string) error
+		tradeNo string, toTitle string, fromTitle string) error
 }

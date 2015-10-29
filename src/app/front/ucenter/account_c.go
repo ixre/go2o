@@ -136,7 +136,7 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 				format.FormatFloat(float32(minAmount))))
 		} else {
 			m := this.GetMember(ctx)
-			err = dps.MemberService.SubmitApplyCash(partnerId, m.Id,
+			err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
 				member.TypeApplyCashToBank, float32(amount),saleConf.ApplyCsn)
 		}
 	}
@@ -196,8 +196,7 @@ func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 		err = dps.MemberService.TransferFlow(memberId, member.KindBalancePresent,
 			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
 			fmt.Sprintf("%s转换", variable.FlowAccountAlias),
-			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias),
-			variable.CommissionAlias)
+			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias))
 	}
 
 	if err != nil {
@@ -207,6 +206,65 @@ func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 	}
 	ctx.Response.JsonOutput(msg)
 }
+
+
+// 转换活动金到提现账户
+func (this *accountC) Transfer_f2m(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf := this.GetSiteConf(p.Id)
+	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	m := this.GetMember(ctx)
+	acc := dps.MemberService.GetAccount(m.Id)
+
+	var commissionStr string
+	if saleConf.FlowConvertCsn == 0 {
+		commissionStr = "不收取手续费"
+	} else {
+		commissionStr = fmt.Sprintf("收取<i>%s%s</i>手续费",
+			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
+	}
+
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"conf":           conf,
+		"partner":        p,
+		"member":         m,
+		"account":        acc,
+		"commissionStr":  template.HTML(commissionStr),
+		"flowAlias":	  variable.FlowAccountAlias,
+		"cns":            saleConf.TransCsn,
+		"notSetTradePwd": len(m.TradePwd) == 0,
+	}, "views/ucenter/{device}/account/transfer_f2m.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
+}
+
+func (this *accountC) Transfer_f2p_post(ctx *web.Context) {
+	var msg gof.Message
+	var err error
+	ctx.Request.ParseForm()
+	partnerId := this.GetPartner(ctx).Id
+	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	tradePwd := ctx.Request.FormValue("TradePwd")
+	saleConf := dps.PartnerService.GetSaleConf(partnerId)
+
+	memberId := this.GetMember(ctx).Id
+
+	if _,err = dps.MemberService.VerifyTradePwd(memberId,tradePwd);err == nil {
+		err = dps.MemberService.TransferFlow(memberId, member.KindBalancePresent,
+			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
+			fmt.Sprintf("%s转换", variable.FlowAccountAlias),
+			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias))
+	}
+
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	ctx.Response.JsonOutput(msg)
+}
+
 
 func (this *accountC) Bank_info(ctx *web.Context) {
 	p := this.GetPartner(ctx)

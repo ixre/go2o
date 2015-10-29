@@ -335,7 +335,7 @@ func (this *memberService) VerifyTradePwd(memberId int,tradePwd string)(bool,err
 }
 
 // 提现
-func (this *memberService) SubmitApplyCash(partnerId, memberId int,applyType int,
+func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int,applyType int,
 	applyAmount float32,commission float32) error {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
@@ -352,7 +352,7 @@ func (this *memberService) SubmitApplyCash(partnerId, memberId int,applyType int
 	case member.TypeApplyCashToServiceProvider:
 		title = "充值到第三方账户"
 	}
-	return acc.RequestApplyCash(applyType, title, applyAmount)
+	return acc.RequestApplyCash(applyType, title, applyAmount,commission)
 }
 
 // 获取最近的提现
@@ -455,37 +455,40 @@ func (this *memberService) TransferBalance(memberId int, kind int, amount float3
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
 func (this *memberService) TransferPresent(memberId int, kind int, amount float32, commission float32,
-	tradeNo string, toTitle string, fromTitle string, commissionTitle string) error {
+	tradeNo string, toTitle string, fromTitle string) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	return m.GetAccount().TransferPresent(kind, amount, commission,
-		tradeNo, toTitle, fromTitle, commissionTitle)
+		tradeNo, toTitle, fromTitle)
 }
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
 func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
-	commission float32, tradeNo string, toTitle string, fromTitle string,
-	commissionTitle string) error {
+	commission float32, tradeNo string, toTitle string, fromTitle string) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	return m.GetAccount().TransferFlow(kind, amount, commission, tradeNo,
-		toTitle, fromTitle, commissionTitle)
+		toTitle, fromTitle)
 }
 
 // 将活动金转给其他人
 func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int,
-	amount float32, commission float32, tradeNo string, toTitle string,
-	fromTitle string, commissionTitle string) error {
+	amount float32, commission float32, tradeNo string, toTitle string,fromTitle string) error {
 
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	return m.GetAccount().TransferFlowTo(toMemberId, kind, amount,
-		commission, tradeNo, toTitle, fromTitle, commissionTitle)
+		commission, tradeNo, toTitle, fromTitle)
+}
+
+// 根据用户或手机筛选会员
+func (this *memberService) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dto.SimpleMember{
+	return this._query.FilterMemberByUsrOrPhone(partnerId,key)
 }

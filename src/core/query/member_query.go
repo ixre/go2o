@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/dto"
 )
 
 type MemberQuery struct {
@@ -102,4 +103,26 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 		return info
 	}
 	return nil
+}
+
+// 筛选会员根据用户或者手机
+func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dto.SimpleMember {
+	qp := "%" + key + "%"
+	var list []*dto.SimpleMember = make([]*dto.SimpleMember,0)
+	var id int
+	var usr, name, phone string
+	this.Query(`SELECT id,usr,name,phone FROM mm_member INNER JOIN mm_relation ON
+		mm_relation.member_id = mm_member.id WHERE mm_relation.reg_partner_id=?
+		AND user LIKE ? OR name LIKE ?`, func(rows *sql.Rows) {
+		for rows.Next() {
+			rows.Scan(&id, &usr, &name, &phone)
+			list = append(list, &dto.SimpleMember{
+				Id :id,
+				User:usr,
+				Name:name,
+				Phone:phone,
+			})
+		}
+	}, partnerId, qp, qp)
+	return list
 }
