@@ -250,7 +250,7 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 			v.State = member.StateApplyConfirmed
 		} else {
 			v.State = member.StateApplyNotPass
-			this._value.PresentBalance += v.Amount
+			this._value.PresentBalance += v.Amount + v.CsnAmount
 			if _, err := this.Save(); err != nil {
 				return err
 			}

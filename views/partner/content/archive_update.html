@@ -163,10 +163,10 @@
     <script type="text/javascript">
         var entity = ${json};
         entity.IsRedirect = (entity.Location||'').length!=0;
-        cms.json.bind('form1',entity);
+        j6.json.bind('form1',entity);
 
         //var extData = ${ext_json};
-        //cms.json.bind('form1',extData);
+        //j6.json.bind('form1',extData);
 
         //设置是否跳转显示
         var redirectPanel = j6.$('redirectPanel');
@@ -186,15 +186,15 @@
         var thumbId= 'thumbnail', thumbImg = 'thumbnail_img';
 
         //上传缩略图
-        var thumb_upload = cms.upload({
+        var thumb_upload = j6.upload({
             id: 'upload_thumbnail',
             debug: !true,
             url: '?module=upload&action=uploadimage&for=${thumbPrefix}&upload.id=thumb_upload',
             exts: '*.gif;*.jpg;*.png;*.bmp'
         },function (result, data) {
             if (result) {
-                cms.$(thumbId).value = data.url;
-                cms.$(thumbImg).src = data.url;
+                j6.$(thumbId).value = data.url;
+                j6.$(thumbImg).src = data.url;
             } else {
                 alert('上传失败：' + data);
             }
@@ -252,16 +252,16 @@
             dpimg.onchange = function () {
                 var imgurl = this.options[this.selectedIndex].value;
                 if (imgurl != "") {
-                    cms.$(thumbId).value = imgurl;
-                    cms.$(thumbImg).src = imgurl;
+                    j6.$(thumbId).value = imgurl;
+                    j6.$(thumbImg).src = imgurl;
                 }
             };
         }
 
 
         function submitForm() {
-            if (cms.validator.validate()) {
-                var data = cms.json.toObject('form1');
+            if (j6.validator.validate()) {
+                var data = j6.json.toObject('form1');
                 data.Content = editor.html();
                 if(data.IsRedirect=='0')data.Location='';
                /*
@@ -270,7 +270,7 @@
                     return false;
                 }*/
 
-                cms.xhr.jsonPost('${url}', data, function (json) {
+                j6.xhr.jsonPost('${url}', data, function (json) {
                     if (json.result) {
                         parent.M.alert('操作成功！');
                         if(_dg)_dg.reload();
@@ -287,9 +287,9 @@
             if (this.nodeName) {
                 var ele = this;
                 if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
-                    cms.validator.setTip(ele, false, 'error');
+                    j6.validator.setTip(ele, false, 'error');
                 } else {
-                    cms.validator.removeTip(ele);
+                    j6.validator.removeTip(ele);
                 }
             }
         };
@@ -297,20 +297,20 @@
         j6.$('alias').nextSibling.onclick = function () {
 
             var e = this.previousSibling;
-            var _title = cms.val('title');
+            var _title = j6.val('title');
             if (_title == '') {
-                cms.validator.setTip(e, false, null, '请先填写标题!');
+                j6.validator.setTip(e, false, null, '请先填写标题!');
             } else {
-                cms.xhr.post('?', 'module=ajax&action=getspellword&word=' + encodeURIComponent(_title), function (result) {
+                j6.xhr.post('?', 'module=ajax&action=getspellword&word=' + encodeURIComponent(_title), function (result) {
                     e.value = result.toLowerCase();
                     e.onblur();
                 }, function () {
-                    cms.validator.setTip(e, false, null, '获取失败,请重试!');
+                    j6.validator.setTip(e, false, null, '获取失败,请重试!');
                 });
             }
         };
 
-        cms.validator.init();
+        j6.validator.init();
 
 
     </script>

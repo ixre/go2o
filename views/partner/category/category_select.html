@@ -38,7 +38,7 @@ function ajaxLoadTree(){
 	//loadTree(data);
 	j6.xhr.get('categoryJson',function(result){
 		var json = j6.toJson(result);
-		treeObj = cms.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
+		treeObj = j6.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
 		var title = treeEle.getElementsByTagName('B')[0];
 		title.style.cssText = 'color:#0066cc;cursor:pointer';
 		title.onclick=function(){

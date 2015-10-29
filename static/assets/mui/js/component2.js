@@ -5,7 +5,7 @@ window.sites = [];
 window.groupname = null;
 
 if (window.menuData == undefined) {
-    //cms.xhr.get(window._path + '?module=ajax&action=appinit', function (x) {
+    //j6.xhr.get(window._path + '?module=ajax&action=appinit', function (x) {
     //    var ip, address, md, username;
     //    eval(x);
     //    window.menuData = md;
@@ -225,7 +225,7 @@ var FwTab = {
         var _cur_indents = url;
         var _li = null;
 
-        cms.each(_tabs, function (i, obj) {
+        j6.each(_tabs, function (i, obj) {
             _indent = obj.getAttribute('indent');
             if (_indent == _cur_indents) {
                 _exits = true;
@@ -295,7 +295,7 @@ var FwTab = {
         var li = t.nodeName != 'LI' ? t.parentNode.parentNode : t;
         var _frames = this.frames.getElementsByTagName('DIV');
         var _lis = this.tabs.getElementsByTagName('LI');
-        cms.each(_lis, function (i, obj) {
+        j6.each(_lis, function (i, obj) {
             if (obj == li) {
                 obj.className = 'current';
                 _frames[i].className = 'current';
@@ -436,13 +436,13 @@ window.M = {
         newDialog(id, title, url, isAjax, width, height, closeCall);
     },
     alert: function (html, func) {
-        cms.tipbox.show(html, false, 100, 2000, 'up');
+        j6.tipbox.show(html, false, 100, 2000, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
     },
     msgtip: function (arg, func) {
-        cms.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
+        j6.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
@@ -455,9 +455,9 @@ window.M = {
     },
     clearCache: function (t) {
         window.M.msgtip({ html: '清除中....' });
-        cms.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
+        j6.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
             window.M.msgtip({ html: '缓存清除完成!', autoClose: true });
-            cms.xhr.get('/');
+            j6.xhr.get('/');
         }, function (x) { });
     },
     addFavorite: function () {
