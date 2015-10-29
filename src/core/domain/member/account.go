@@ -464,7 +464,7 @@ func (this *Account) TransferFlow(kind int, amount float32,
 				State:   member.StatusOK,
 			})
 
-			if csnFee > 0 {
+			if csnFee >= 0.01{
 				this.SaveBalanceInfo(&member.BalanceInfoValue{
 					Kind:    member.KindCommission,
 					Title:   commissionTitle,
@@ -521,7 +521,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 				State:   member.StatusOK,
 			})
 
-			if csnFee > 0 {
+			if csnFee >= 0.01 {
 				this.SaveBalanceInfo(&member.BalanceInfoValue{
 					Kind:    member.KindCommission,
 					Title:   commissionTitle,

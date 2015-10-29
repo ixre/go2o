@@ -17,14 +17,14 @@ import (
 	"github.com/jsix/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
+	"go2o/src/core/variable"
 	"html/template"
 	"strconv"
 	"strings"
-	"go2o/src/core/infrastructure/domain"
-	"go2o/src/core/variable"
 )
 
 const minAmount float64 = 50
@@ -80,6 +80,7 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 	conf := this.GetSiteConf(p.Id)
 	m := this.GetMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
+	saleConf := dps.PartnerService.GetSaleConf(p.Id)
 
 	var latestInfo string = dps.MemberService.GetLatestApplyCashText(m.Id)
 	if len(latestInfo) != 0 {
@@ -93,6 +94,14 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		maxApplyAmount = int(acc.PresentBalance)
 	}
 
+	var commissionStr string
+	if saleConf.ApplyCsn == 0 {
+		commissionStr = "不收取手续费"
+	} else {
+		commissionStr = fmt.Sprintf("收取<i>%s%s</i>手续费",
+			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
+	}
+
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
 		"conf":           conf,
 		"partner":        p,
@@ -101,6 +110,9 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		"maxApplyAmount": maxApplyAmount,
 		"account":        acc,
 		"latestInfo":     template.HTML(latestInfo),
+		"commissionStr":  template.HTML(commissionStr),
+		"presentAlias":		variable.FlowAccountAlias,
+		"cns":            saleConf.ApplyCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
 	}, "views/ucenter/{device}/account/apply_cash.html",
 		"views/ucenter/{device}/inc/header.html",
@@ -115,13 +127,18 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 	partnerId := this.GetPartner(ctx).Id
 	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
 	tradePwd := ctx.Request.FormValue("TradePwd")
-	if amount < minAmount {
-		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
-			format.FormatFloat(float32(minAmount))))
-	} else {
-		m := this.GetMember(ctx)
-		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id,
-			tradePwd, member.TypeApplyCashToBank, float32(amount))
+	memberId := this.GetMember(ctx).Id
+	saleConf := dps.PartnerService.GetSaleConf(partnerId)
+
+	if _,err = dps.MemberService.VerifyTradePwd(memberId,tradePwd);err == nil {
+		if amount < minAmount {
+			err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
+				format.FormatFloat(float32(minAmount))))
+		} else {
+			m := this.GetMember(ctx)
+			err = dps.MemberService.SubmitApplyCash(partnerId, m.Id,
+				member.TypeApplyCashToBank, float32(amount),saleConf.ApplyCsn)
+		}
 	}
 
 	if err != nil {
@@ -154,6 +171,8 @@ func (this *accountC) Convert_f2p(ctx *web.Context) {
 		"member":         m,
 		"account":        acc,
 		"commissionStr":  template.HTML(commissionStr),
+		"flowAlias":variable.FlowAccountAlias,
+		"flowConvertSlogan":variable.FlowConvertSlogan,
 		"cns":            saleConf.FlowConvertCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
 	}, "views/ucenter/{device}/account/convert_f2p.html",
@@ -161,7 +180,6 @@ func (this *accountC) Convert_f2p(ctx *web.Context) {
 		"views/ucenter/{device}/inc/menu.html",
 		"views/ucenter/{device}/inc/footer.html")
 }
-
 
 func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 	var msg gof.Message
@@ -172,12 +190,11 @@ func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 	tradePwd := ctx.Request.FormValue("TradePwd")
 	saleConf := dps.PartnerService.GetSaleConf(partnerId)
 
-	m := this.GetMember(ctx)
-	if m.TradePwd != tradePwd {
-		err = member.ErrIncorrectTradePwd
-	}else {
-		err = dps.MemberService.TransferFlow(m.Id,member.KindBalancePresent,
-			float32(amount),saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
+	memberId := this.GetMember(ctx).Id
+
+	if _,err = dps.MemberService.VerifyTradePwd(memberId,tradePwd);err == nil {
+		err = dps.MemberService.TransferFlow(memberId, member.KindBalancePresent,
+			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
 			fmt.Sprintf("%s转换", variable.FlowAccountAlias),
 			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias),
 			variable.CommissionAlias)
