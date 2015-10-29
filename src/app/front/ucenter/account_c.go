@@ -100,7 +100,7 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		commissionStr = "不收取手续费"
 	} else {
 		commissionStr = fmt.Sprintf("收取<i>%s%s</i>手续费",
-			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
+			format.FormatFloat(saleConf.ApplyCsn*100), "%")
 	}
 
 	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
