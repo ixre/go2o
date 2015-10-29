@@ -18,8 +18,12 @@ const (
 	// 赠送
 	KindBalancePresent = 3
 
-	KindBalanceFlow = 4 // 账户流通
-	KindGrow        = 5 // 增利
+	KindBalanceFlow = 4 	// 账户流通
+	KindGrow        = 5 	// 增利
+
+
+	KindCommission  = 9 	// 手续费
+
 	// 提现
 	KindBalanceApplyCash = 11
 	// 转账

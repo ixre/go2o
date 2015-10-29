@@ -448,12 +448,12 @@ func (this *Account) TransferFlow(kind int, amount float32,
 	finalFee := amount + csnFee
 
 	if kind == member.KindBalancePresent {
-		if this._value.Balance < finalFee {
+		if this._value.FlowBalance < finalFee {
 			return member.ErrNotEnoughAmount
 		}
 
-		this._value.Balance -= finalFee
-		this._value.FlowBalance += amount
+		this._value.FlowBalance -= finalFee
+		this._value.PresentBalance += amount
 
 		if _, err = this.Save(); err == nil {
 			this.SaveBalanceInfo(&member.BalanceInfoValue{
@@ -466,7 +466,7 @@ func (this *Account) TransferFlow(kind int, amount float32,
 
 			if csnFee > 0 {
 				this.SaveBalanceInfo(&member.BalanceInfoValue{
-					Kind:    member.KindBalanceTransfer,
+					Kind:    member.KindCommission,
 					Title:   commissionTitle,
 					Amount:  -csnFee,
 					TradeNo: tradeNo,
@@ -523,7 +523,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 
 			if csnFee > 0 {
 				this.SaveBalanceInfo(&member.BalanceInfoValue{
-					Kind:    member.KindBalanceTransfer,
+					Kind:    member.KindCommission,
 					Title:   commissionTitle,
 					Amount:  -csnFee,
 					RefId:   memberId,

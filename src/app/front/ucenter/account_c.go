@@ -23,6 +23,8 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"go2o/src/core/infrastructure/domain"
+	"go2o/src/core/variable"
 )
 
 const minAmount float64 = 50
@@ -120,6 +122,65 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 		m := this.GetMember(ctx)
 		err = dps.MemberService.SubmitApplyCash(partnerId, m.Id,
 			tradePwd, member.TypeApplyCashToBank, float32(amount))
+	}
+
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	ctx.Response.JsonOutput(msg)
+}
+
+// 转换活动金到提现账户
+func (this *accountC) Convert_f2p(ctx *web.Context) {
+	p := this.GetPartner(ctx)
+	conf := this.GetSiteConf(p.Id)
+	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	m := this.GetMember(ctx)
+	acc := dps.MemberService.GetAccount(m.Id)
+
+	var commissionStr string
+	if saleConf.FlowConvertCsn == 0 {
+		commissionStr = "不收取手续费"
+	} else {
+		commissionStr = fmt.Sprintf("收取<i>%s%s</i>手续费",
+			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
+	}
+
+	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"conf":           conf,
+		"partner":        p,
+		"member":         m,
+		"account":        acc,
+		"commissionStr":  template.HTML(commissionStr),
+		"cns":            saleConf.FlowConvertCsn,
+		"notSetTradePwd": len(m.TradePwd) == 0,
+	}, "views/ucenter/{device}/account/convert_f2p.html",
+		"views/ucenter/{device}/inc/header.html",
+		"views/ucenter/{device}/inc/menu.html",
+		"views/ucenter/{device}/inc/footer.html")
+}
+
+
+func (this *accountC) Convert_f2p_post(ctx *web.Context) {
+	var msg gof.Message
+	var err error
+	ctx.Request.ParseForm()
+	partnerId := this.GetPartner(ctx).Id
+	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	tradePwd := ctx.Request.FormValue("TradePwd")
+	saleConf := dps.PartnerService.GetSaleConf(partnerId)
+
+	m := this.GetMember(ctx)
+	if m.TradePwd != tradePwd {
+		err = member.ErrIncorrectTradePwd
+	}else {
+		err = dps.MemberService.TransferFlow(m.Id,member.KindBalancePresent,
+			float32(amount),saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
+			fmt.Sprintf("%s转换", variable.FlowAccountAlias),
+			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias),
+			variable.CommissionAlias)
 	}
 
 	if err != nil {

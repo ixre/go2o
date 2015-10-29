@@ -254,7 +254,7 @@ func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
 	if !agree {
 		err = errors.New("请同意已知晓并打款选项")
 	} else {
-		err = dps.MemberService.FinishApplyCash(partnerId, memberId, id, tradeNo)
+		err = dps.MemberService.FinishApplyCash(partnerId,memberId,id,tradeNo)
 	}
 	if err != nil {
 		msg.Message = err.Error()
@@ -263,3 +263,5 @@ func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
 	}
 	ctx.Response.JsonOutput(msg)
 }
+
+

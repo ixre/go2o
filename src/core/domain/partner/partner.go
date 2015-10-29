@@ -190,6 +190,12 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 // 保存销售配置
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 	this._saleConf = v
+	if v.FlowConvertCsn > 0 {
+		this._saleConf.FlowConvertCsn = v.FlowConvertCsn
+	}
+	if v.PresentConvertCsn > 0 {
+		this._saleConf.PresentConvertCsn = v.PresentConvertCsn
+	}
 	this._saleConf.PartnerId = this._value.Id
 	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
 }
