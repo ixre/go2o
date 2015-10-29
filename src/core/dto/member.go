@@ -10,9 +10,9 @@ package dto
 
 type(
 	SimpleMember struct{
-		Id int `db:"id"`
-		Name string `db:"name"`
-		User string `db:"user"`
-		Phone string `db:"phone"`
+		Id int `json:"id"`
+		Name string `json:"name"`
+		User string `json:"user"`
+		Phone string `json:"phone"`
 	}
 )

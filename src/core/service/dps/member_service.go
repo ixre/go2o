@@ -479,7 +479,6 @@ func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
 // 将活动金转给其他人
 func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int,
 	amount float32, commission float32, tradeNo string, toTitle string,fromTitle string) error {
-
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember

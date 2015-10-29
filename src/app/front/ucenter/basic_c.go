@@ -203,7 +203,7 @@ func (this *basicC) Member_cln_filter(ctx *web.Context){
 	key :=  r.URL.Query().Get("key")
 
 
-	if len(key) < 4{
+	if len(key) < 3{
 		ctx.Response.JsonOutput(gof.Message{
 			Message:"length less more",
 		})
@@ -212,8 +212,6 @@ func (this *basicC) Member_cln_filter(ctx *web.Context){
 
 	var list []*dto.SimpleMember
 	partnerId := this.GetPartner(ctx).Id
-
 	list = dps.MemberService.FilterMemberByUsrOrPhone(partnerId,key)
-
 	ctx.Response.JsonOutput(list)
 }

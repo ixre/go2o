@@ -113,7 +113,7 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dt
 	var usr, name, phone string
 	this.Query(`SELECT id,usr,name,phone FROM mm_member INNER JOIN mm_relation ON
 		mm_relation.member_id = mm_member.id WHERE mm_relation.reg_partner_id=?
-		AND user LIKE ? OR name LIKE ?`, func(rows *sql.Rows) {
+		AND usr LIKE ? OR name LIKE ?`, func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone)
 			list = append(list, &dto.SimpleMember{

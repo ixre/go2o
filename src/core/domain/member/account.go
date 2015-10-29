@@ -488,7 +488,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 
 	var err error
 	csnAmount := commission * amount
-	finalAmount := amount - csnAmount
+	finalAmount := amount + csnAmount  // 转账方付手续费
 
 	m := this._rep.GetMember(memberId)
 	if m == nil {
@@ -497,7 +497,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 	acc2 := m.GetAccount()
 
 	if kind == member.KindBalanceFlow {
-		if this._value.Balance < finalAmount {
+		if this._value.FlowBalance < finalAmount {
 			return member.ErrNotEnoughAmount
 		}
 
@@ -505,24 +505,27 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 		acc2.GetValue().FlowBalance += amount
 
 		if _, err = this.Save(); err == nil {
+
 			this.SaveBalanceInfo(&member.BalanceInfoValue{
 				Kind:    member.KindBalanceTransfer,
 				Title:   toTitle,
-				Amount:  -amount,
+				Amount:  -finalAmount,
 				CsnAmount:csnAmount,
 				RefId:   memberId,
 				TradeNo: tradeNo,
 				State:   member.StatusOK,
 			})
 
-			acc2.SaveBalanceInfo(&member.BalanceInfoValue{
-				Kind:    kind,
-				Title:   fromTitle,
-				Amount:  amount,
-				RefId:   this._value.MemberId,
-				TradeNo: tradeNo,
-				State:   member.StatusOK,
-			})
+			if _,err = acc2.Save();err == nil {
+				acc2.SaveBalanceInfo(&member.BalanceInfoValue{
+					Kind:    kind,
+					Title:   fromTitle,
+					Amount:  amount,
+					RefId:   this._value.MemberId,
+					TradeNo: tradeNo,
+					State:   member.StatusOK,
+				})
+			}
 		}
 		return err
 	}
