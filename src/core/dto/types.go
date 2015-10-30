@@ -8,10 +8,10 @@
  */
 package dto
 
-type(
+type (
 	TextObject struct {
 		Text  string `json:"text"`
-		Value int `json:"value"`
+		Value int    `json:"value"`
 		Title string `json:"title"`
 	}
 )

@@ -265,9 +265,16 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 }
 
 // 用户名是否存在
-func (this *MemberRep) CheckUsrExist(usr string) bool {
+func (this *MemberRep) CheckUsrExist(usr string, memberId int) bool {
 	var c int
-	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=?", &c, usr)
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=? AND id<>?", &c, usr, memberId)
+	return c != 0
+}
+
+// 手机号码是否使用
+func (this *MemberRep) CheckPhoneBind(phone string, memberId int) bool {
+	var c int
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE phone=? AND id<>?", &c, phone, memberId)
 	return c != 0
 }
 

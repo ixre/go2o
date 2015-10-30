@@ -41,7 +41,10 @@ type IMemberRep interface {
 	GetMemberIdByUser(string string) int
 
 	// 用户名是否存在
-	CheckUsrExist(string) bool
+	CheckUsrExist(usr string, memberId int) bool
+
+	// 手机号码是否使用
+	CheckPhoneBind(phone string, memberId int) bool
 
 	// 保存绑定
 	SaveRelation(*MemberRelation) error

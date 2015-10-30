@@ -323,20 +323,20 @@ func (this *memberService) ChargeFlowBalance(partnerId, memberId int, title stri
 }
 
 // 验证交易密码
-func (this *memberService) VerifyTradePwd(memberId int,tradePwd string)(bool,error){
+func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, error) {
 	m := this.GetMember(memberId)
 	if len(m.TradePwd) == 0 {
-		return false,member.ErrNotSetTradePwd
+		return false, member.ErrNotSetTradePwd
 	}
-	if  m.TradePwd != tradePwd{
-		return false,member.ErrIncorrectTradePwd
+	if m.TradePwd != tradePwd {
+		return false, member.ErrIncorrectTradePwd
 	}
-	return true,nil
+	return true, nil
 }
 
 // 提现
-func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int,applyType int,
-	applyAmount float32,commission float32) error {
+func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
+	applyAmount float32, commission float32) error {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
 		return err
@@ -352,7 +352,7 @@ func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int,app
 	case member.TypeApplyCashToServiceProvider:
 		title = "充值到第三方账户"
 	}
-	return acc.RequestApplyCash(applyType, title, applyAmount,commission)
+	return acc.RequestApplyCash(applyType, title, applyAmount, commission)
 }
 
 // 获取最近的提现
@@ -478,7 +478,7 @@ func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
 
 // 将活动金转给其他人
 func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int,
-	amount float32, commission float32, tradeNo string, toTitle string,fromTitle string) error {
+	amount float32, commission float32, tradeNo string, toTitle string, fromTitle string) error {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -488,6 +488,6 @@ func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int
 }
 
 // 根据用户或手机筛选会员
-func (this *memberService) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dto.SimpleMember{
-	return this._query.FilterMemberByUsrOrPhone(partnerId,key)
+func (this *memberService) FilterMemberByUsrOrPhone(partnerId int, key string) []*dto.SimpleMember {
+	return this._query.FilterMemberByUsrOrPhone(partnerId, key)
 }

@@ -59,6 +59,9 @@ var (
 	ErrPhoneValidErr *domain.DomainError = domain.NewDomainError(
 		"err_phone_valid_err", "手机号码不正确")
 
+	ErrPhoneHasBind *domain.DomainError = domain.NewDomainError(
+		"err_phone_has_bind", "手机号码已经绑定")
+
 	ErrQqValidErr *domain.DomainError = domain.NewDomainError(
 		"err_qq_valid_err", "QQ号码不正确")
 

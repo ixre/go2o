@@ -109,7 +109,7 @@ type IAccount interface {
 	FinishBackBalance(id int, tradeNo string) error
 
 	// 请求提现,applyType：提现方式
-	RequestApplyCash(applyType int, title string, amount float32,commission float32) error
+	RequestApplyCash(applyType int, title string, amount float32, commission float32) error
 
 	// 确认提现
 	ConfirmApplyCash(id int, pass bool, remark string) error

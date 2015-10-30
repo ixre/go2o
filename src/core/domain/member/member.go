@@ -357,6 +357,9 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	if this.UsrIsExist() {
 		return -1, errors.New("用户名已经被使用")
 	}
+	if len(m.Phone) >0 && this.PhoneIsExist(m.Phone) {
+		return -1, member.ErrPhoneHasBind
+	}
 	t := time.Now().Unix()
 	m.State = 1
 	m.RegTime = t
@@ -399,7 +402,12 @@ func (this *Member) generateInvitationCode() string {
 
 // 用户是否已经存在
 func (this *Member) UsrIsExist() bool {
-	return this._rep.CheckUsrExist(this._value.Usr)
+	return this._rep.CheckUsrExist(this._value.Usr, this.GetAggregateRootId())
+}
+
+// 手机号码是否占用
+func (this *Member) PhoneIsExist(phone string) bool {
+	return this._rep.CheckPhoneBind(this._value.Usr, this.GetAggregateRootId())
 }
 
 // 创建并初始化

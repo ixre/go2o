@@ -106,9 +106,9 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 }
 
 // 筛选会员根据用户或者手机
-func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dto.SimpleMember {
+func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int, key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
-	var list []*dto.SimpleMember = make([]*dto.SimpleMember,0)
+	var list []*dto.SimpleMember = make([]*dto.SimpleMember, 0)
 	var id int
 	var usr, name, phone string
 	this.Query(`SELECT id,usr,name,phone FROM mm_member INNER JOIN mm_relation ON
@@ -117,10 +117,10 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int,key string)[]*dt
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone)
 			list = append(list, &dto.SimpleMember{
-				Id :id,
-				User:usr,
-				Name:name,
-				Phone:phone,
+				Id:    id,
+				User:  usr,
+				Name:  name,
+				Phone: phone,
 			})
 		}
 	}, partnerId, qp, qp)

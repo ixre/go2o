@@ -13,5 +13,5 @@ var (
 	FlowAccountAlias    string = "流通金"
 	PresentAccountAlias string = "奖金"
 	GrowAccountAlias    string = "增利金"
-	FlowConvertSlogan string = "流通金作为可以转让的虚拟货币"
+	FlowConvertSlogan   string = "流通金作为可以转让的虚拟货币"
 )

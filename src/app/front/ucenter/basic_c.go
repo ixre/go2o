@@ -15,10 +15,10 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
-	"go2o/src/core/dto"
 )
 
 var _ mvc.Filter = new(baseC)
@@ -198,20 +198,19 @@ func (this *basicC) DeleteDeliver_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-func (this *basicC) Member_cln_filter(ctx *web.Context){
+func (this *basicC) Member_cln_filter(ctx *web.Context) {
 	r := ctx.Request
-	key :=  r.URL.Query().Get("key")
+	key := r.URL.Query().Get("key")
 
-
-	if len(key) < 3{
+	if len(key) < 3 {
 		ctx.Response.JsonOutput(gof.Message{
-			Message:"length less more",
+			Message: "length less more",
 		})
 		return
 	}
 
 	var list []*dto.SimpleMember
 	partnerId := this.GetPartner(ctx).Id
-	list = dps.MemberService.FilterMemberByUsrOrPhone(partnerId,key)
+	list = dps.MemberService.FilterMemberByUsrOrPhone(partnerId, key)
 	ctx.Response.JsonOutput(list)
 }

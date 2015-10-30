@@ -16,9 +16,9 @@ type BalanceInfoValue struct {
 	Kind       int     `db:"kind"`
 	Type       int     `db:"type"`
 	Title      string  `db:"title"`
-	Amount     float32 `db:"amount"` 		// 金额
-	CsnAmount  float32 `db:"csn_amount"` 	// 手续费
-	RefId      int     `db:"ref_id"` 		// 引用编号
+	Amount     float32 `db:"amount"`     // 金额
+	CsnAmount  float32 `db:"csn_amount"` // 手续费
+	RefId      int     `db:"ref_id"`     // 引用编号
 	State      int     `db:"state"`
 	CreateTime int64   `db:"create_time"`
 	UpdateTime int64   `db:"update_time"`

@@ -8,11 +8,11 @@
  */
 package dto
 
-type(
-	SimpleMember struct{
-		Id int `json:"id"`
-		Name string `json:"name"`
-		User string `json:"user"`
+type (
+	SimpleMember struct {
+		Id    int    `json:"id"`
+		Name  string `json:"name"`
+		User  string `json:"user"`
 		Phone string `json:"phone"`
 	}
 )

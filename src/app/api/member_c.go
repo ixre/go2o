@@ -73,6 +73,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 		var invMemberId int // 邀请人
 		var usr string = r.FormValue("usr")
 		var pwd string = r.FormValue("pwd")
+		var phone string = r.FormValue("phone")
 		var registerFrom string = r.FormValue("reg_from")          // 注册来源
 		var invitationCode string = r.FormValue("invitation_code") // 推荐码
 		var regIp string
@@ -86,7 +87,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 		if len(invitationCode) != 0 {
 			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
 			if invMemberId == 0 {
-				result.Message = "推荐/邀请人不存在！"
+				result.Message = "推荐码错误"
 				ctx.Response.JsonOutput(result)
 				return
 			}
@@ -96,6 +97,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 		member.Usr = usr
 		member.Pwd = domain.MemberSha1Pwd(pwd)
 		member.RegIp = regIp
+		member.Phone = phone
 		member.RegFrom = registerFrom
 
 		memberId, err := dps.MemberService.SaveMember(&member)
