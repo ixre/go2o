@@ -78,6 +78,8 @@ func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 	if len(srcToken) == 0 || len(tokenBase) == 0 {
 		return false
 	}
+
+	//fmt.Println("-----",srcToken," IN:",token , " equals:",srcToken==token, len(srcToken),len(token))
 	return srcToken == token
 }
 

@@ -66,7 +66,7 @@ func (this *BaseC) CheckMemberToken(ctx *web.Context) bool {
 		ctx.Items["member_id"] = memberId
 		return true
 	}
-	this.ErrorOutput(ctx, "invalid request!")
+	this.ErrorOutput(ctx, "incorrect session")
 	return false
 }
 

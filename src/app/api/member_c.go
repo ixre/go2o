@@ -20,6 +20,9 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"strings"
+	"log"
+	"strconv"
+"go2o/src/core/variable"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -30,8 +33,12 @@ type MemberC struct {
 
 // 会员登陆后才能调用接口
 func (this *MemberC) Requesting(ctx *web.Context) bool {
-	return this.BaseC != nil && this.BaseC.Requesting(ctx) &&
-		this.BaseC.CheckMemberToken(ctx)
+	if  this.BaseC == nil || !this.BaseC.Requesting(ctx){
+		return false
+	}
+	rlt := this.BaseC.CheckMemberToken(ctx)
+	//fmt.Printf("%#v\n",ctx.Request.Form)
+	return rlt
 }
 
 // 登陆
@@ -112,6 +119,38 @@ func (this *MemberC) Register(ctx *web.Context) {
 
 		ctx.Response.JsonOutput(result)
 	}
+}
+
+func (this *MemberC) Ping(ctx *web.Context){
+
+	log.Println("---",ctx.Request.FormValue("member_id"),ctx.Request.FormValue("member_token"))
+	ctx.Response.Write([]byte("pang"))
+}
+
+// 同步
+func (this *MemberC) Async(ctx *web.Context){
+	var rlt AsyncResult
+	var mut int
+	memberId := this.GetMemberId(ctx)
+	var kvMut int
+	mutKey := fmt.Sprintf("%s%d",variable.KvMemberUpdateTime,memberId)
+	mut,_ = strconv.Atoi(ctx.Request.FormValue("member_update_time"))
+	ctx.App.Storage().Get(mutKey,&kvMut)
+	if(kvMut == 0){
+		m := dps.MemberService.GetMember(memberId)
+		kvMut = int(m.UpdateTime)
+		ctx.App.Storage().Set(mutKey,kvMut)
+	}
+	rlt.MemberUpdated = kvMut == mut
+	ctx.Response.JsonOutput(rlt)
+}
+
+// 获取最新的会员信息
+func (this *MemberC) Get(ctx *web.Context) {
+	memberId := this.GetMemberId(ctx)
+	m := dps.MemberService.GetMember(memberId)
+	m.DynamicToken,_ = util.GetMemberApiToken(ctx.App.Storage(),memberId)
+	ctx.Response.JsonOutput(m)
 }
 
 // 断开

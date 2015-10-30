@@ -14,4 +14,5 @@ const (
 	KvHaveNewCompletedOrder = "sys:queue:have_new_completed_order"
 	KvHaveNewMember         = "sys:queue:have_new_member"
 	KvTotalMembers          = "sys:total_members"
+	KvMemberUpdateTime		= "member:update_time_"
 )
