@@ -20,7 +20,6 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -122,8 +121,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 }
 
 func (this *MemberC) Ping(ctx *web.Context) {
-
-	log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
+	//log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
 	ctx.Response.Write([]byte("pang"))
 }
 
@@ -145,10 +143,10 @@ func (this *MemberC) Async(ctx *web.Context) {
 		ctx.App.Storage().Set(mutKey, kvMut)
 	}
 	//kvAut = 0
-	if kvMut == 0 {
+	if kvAut == 0 {
 		acc := dps.MemberService.GetAccount(memberId)
 		kvAut = int(acc.UpdateTime)
-		ctx.App.Storage().Set(autKey, kvMut)
+		ctx.App.Storage().Set(autKey,kvAut)
 	}
 	rlt.MemberId = memberId
 	rlt.MemberUpdated = kvMut != mut
