@@ -19,10 +19,10 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
-	"strings"
+	"go2o/src/core/variable"
 	"log"
 	"strconv"
-"go2o/src/core/variable"
+	"strings"
 )
 
 var _ mvc.Filter = new(MemberC)
@@ -33,7 +33,7 @@ type MemberC struct {
 
 // 会员登陆后才能调用接口
 func (this *MemberC) Requesting(ctx *web.Context) bool {
-	if  this.BaseC == nil || !this.BaseC.Requesting(ctx){
+	if this.BaseC == nil || !this.BaseC.Requesting(ctx) {
 		return false
 	}
 	rlt := this.BaseC.CheckMemberToken(ctx)
@@ -121,27 +121,38 @@ func (this *MemberC) Register(ctx *web.Context) {
 	}
 }
 
-func (this *MemberC) Ping(ctx *web.Context){
+func (this *MemberC) Ping(ctx *web.Context) {
 
-	log.Println("---",ctx.Request.FormValue("member_id"),ctx.Request.FormValue("member_token"))
+	log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
 	ctx.Response.Write([]byte("pang"))
 }
 
 // 同步
-func (this *MemberC) Async(ctx *web.Context){
+func (this *MemberC) Async(ctx *web.Context) {
 	var rlt AsyncResult
-	var mut int
+	var form = ctx.Request.Form
+	var mut, aut, kvMut, kvAut int
 	memberId := this.GetMemberId(ctx)
-	var kvMut int
-	mutKey := fmt.Sprintf("%s%d",variable.KvMemberUpdateTime,memberId)
-	mut,_ = strconv.Atoi(ctx.Request.FormValue("member_update_time"))
-	ctx.App.Storage().Get(mutKey,&kvMut)
-	if(kvMut == 0){
+	mut, _ = strconv.Atoi(form.Get("member_update_time"))
+	aut, _ = strconv.Atoi(form.Get("account_update_time"))
+	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
+	ctx.App.Storage().Get(mutKey, &kvMut)
+	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
+	ctx.App.Storage().Get(autKey, &kvAut)
+	if kvMut == 0 {
 		m := dps.MemberService.GetMember(memberId)
 		kvMut = int(m.UpdateTime)
-		ctx.App.Storage().Set(mutKey,kvMut)
+		ctx.App.Storage().Set(mutKey, kvMut)
 	}
-	rlt.MemberUpdated = kvMut == mut
+	//kvAut = 0
+	if kvMut == 0 {
+		acc := dps.MemberService.GetAccount(memberId)
+		kvAut = int(acc.UpdateTime)
+		ctx.App.Storage().Set(autKey, kvMut)
+	}
+	rlt.MemberId = memberId
+	rlt.MemberUpdated = kvMut != mut
+	rlt.AccountUpdated = kvAut != aut
 	ctx.Response.JsonOutput(rlt)
 }
 
@@ -149,19 +160,8 @@ func (this *MemberC) Async(ctx *web.Context){
 func (this *MemberC) Get(ctx *web.Context) {
 	memberId := this.GetMemberId(ctx)
 	m := dps.MemberService.GetMember(memberId)
-	m.DynamicToken,_ = util.GetMemberApiToken(ctx.App.Storage(),memberId)
+	m.DynamicToken, _ = util.GetMemberApiToken(ctx.App.Storage(), memberId)
 	ctx.Response.JsonOutput(m)
-}
-
-// 断开
-func (this *MemberC) Disconnect(ctx *web.Context) {
-	var result gof.Message
-	if util.MemberHttpSessionDisconnect(ctx) {
-		result.Result = true
-	} else {
-		result.Message = "disconnect fail"
-	}
-	ctx.Response.JsonOutput(result)
 }
 
 // 汇总信息
@@ -175,4 +175,22 @@ func (this *MemberC) Summary(ctx *web.Context) {
 		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
 	}
 	ctx.Response.JsonOutput(v)
+}
+
+// 获取最新的会员账户信息
+func (this *MemberC) Account(ctx *web.Context) {
+	memberId := this.GetMemberId(ctx)
+	m := dps.MemberService.GetAccount(memberId)
+	ctx.Response.JsonOutput(m)
+}
+
+// 断开
+func (this *MemberC) Disconnect(ctx *web.Context) {
+	var result gof.Message
+	if util.MemberHttpSessionDisconnect(ctx) {
+		result.Result = true
+	} else {
+		result.Message = "disconnect fail"
+	}
+	ctx.Response.JsonOutput(result)
 }

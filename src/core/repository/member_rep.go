@@ -150,9 +150,11 @@ func (this *MemberRep) GetAccount(memberId int) *member.AccountValue {
 }
 
 // 保存账户，传入会员编号
-func (this *MemberRep) SaveAccount(a *member.AccountValue) (int, error) {
-	_, _, err := this.Connector.GetOrm().Save(a.MemberId, a)
-	return a.MemberId, err
+func (this *MemberRep) SaveAccount(v *member.AccountValue) (int, error) {
+	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
+	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, v.MemberId)
+	gof.CurrentApp.Storage().Set(mutKey, v.UpdateTime) // 保存最后更新时间
+	return v.MemberId, err
 }
 
 // 获取银行信息
@@ -211,8 +213,8 @@ func (this *MemberRep) LockMember(id int, state int) error {
 func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		// 保存最后更新时间
-		mutKey := fmt.Sprintf("%s%d",variable.KvMemberUpdateTime,v.Id)
-		gof.CurrentApp.Storage().Set(mutKey,v.UpdateTime)
+		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
+		gof.CurrentApp.Storage().Set(mutKey, v.UpdateTime)
 		// 保存会员信息
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		return v.Id, err

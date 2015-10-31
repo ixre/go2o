@@ -174,12 +174,11 @@ func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
 }
 
 // 退款
-func (this *Account) RequestBackBalance(backType int, title string, amount float32) error {
-
+func (this *Account) RequestBackBalance(backType int, title string,
+	amount float32) error {
 	if amount > this._value.Balance {
 		return member.ErrOutOfBalance
 	}
-
 	v := &member.BalanceInfoValue{
 		Kind:   member.KindBalanceBack,
 		Type:   backType,
@@ -208,7 +207,8 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 }
 
 // 请求提现
-func (this *Account) RequestApplyCash(applyType int, title string, amount float32, commission float32) error {
+func (this *Account) RequestApplyCash(applyType int, title string,
+	amount float32, commission float32) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -455,6 +455,7 @@ func (this *Account) TransferFlow(kind int, amount float32, commission float32,
 
 		this._value.FlowBalance -= finalAmount
 		this._value.PresentBalance += amount
+		this._value.TotalPresentFee += amount
 
 		if _, err = this.Save(); err == nil {
 			this.SaveBalanceInfo(&member.BalanceInfoValue{

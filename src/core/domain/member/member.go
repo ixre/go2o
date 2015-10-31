@@ -357,7 +357,7 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	if this.UsrIsExist() {
 		return -1, errors.New("用户名已经被使用")
 	}
-	if len(m.Phone) >0 && this.PhoneIsExist(m.Phone) {
+	if len(m.Phone) > 0 && this.PhoneIsExist(m.Phone) {
 		return -1, member.ErrPhoneHasBind
 	}
 	t := time.Now().Unix()

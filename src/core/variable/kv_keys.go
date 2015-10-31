@@ -9,10 +9,11 @@
 package variable
 
 const (
-	KvNewMailTask           = "sys:mss:"
-	KvHaveNewCreatedOrder   = "sys:queue:have_new_create_order"
-	KvHaveNewCompletedOrder = "sys:queue:have_new_completed_order"
-	KvHaveNewMember         = "sys:queue:have_new_member"
-	KvTotalMembers          = "sys:total_members"
-	KvMemberUpdateTime		= "member:update_time_"
+	KvNewMailTask           = "go2o:sys:mss:"
+	KvHaveNewCreatedOrder   = "go2o:sys:queue:have_new_create_order"
+	KvHaveNewCompletedOrder = "go2o:sys:queue:have_new_completed_order"
+	KvHaveNewMember         = "go2o:sys:queue:have_new_member"
+	KvTotalMembers          = "go2o:sys:total_members"
+	KvMemberUpdateTime      = "go2o:member:update_time_"
+	KvAccountUpdateTime     = "go2o:account:update_time_"
 )
