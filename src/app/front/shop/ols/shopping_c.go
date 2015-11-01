@@ -338,7 +338,7 @@ func (this *ShoppingC) Payment(ctx *web.Context) {
 
 	if order != nil {
 		if order.PaymentOpt == enum.PaymentOnlinePay {
-			payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn"
+			payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn btn-m"
 				href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
 				order.OrderNo, "立即支付")
 		}
@@ -385,7 +385,7 @@ func (this *ShoppingC) orderFinish(ctx *web.Context, p *partner.ValuePartner,
 	if order != nil {
 		if order.IsPaid == 0 {
 			if order.PaymentOpt == enum.PaymentOnlinePay {
-				payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn"
+				payHtml = fmt.Sprintf(`<div class="btn_payment"><a class="btn btn-m"
 					href="/pay/create?pay_opt=alipay&order_no=%s" target="_blank">%s</a></div>`,
 					order.OrderNo, "继续支付")
 			}
