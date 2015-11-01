@@ -189,14 +189,25 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 
 // 保存销售配置
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
+
+	if v.RegisterMode == partner.ModeRegisterNormal ||
+	v.RegisterMode == partner.ModeRegisterMustInvitation ||
+	v.RegisterMode == partner.ModeRegisterMustRedirect{
+		this._saleConf.RegisterMode = v.RegisterMode
+	}else{
+		return partner.ErrRegisterMode
+	}
+
+	if v.FlowConvertCsn < 0 || v.PresentConvertCsn < 0 ||
+		v.ApplyCsn <0 || v.TransCsn <0 ||
+		v.FlowConvertCsn > 1 || v.PresentConvertCsn > 1 ||
+		v.ApplyCsn >1 || v.TransCsn >1 {
+		return partner.ErrSalesPercent
+	}
+
 	this._saleConf = v
-	if v.FlowConvertCsn > 0 {
-		this._saleConf.FlowConvertCsn = v.FlowConvertCsn
-	}
-	if v.PresentConvertCsn > 0 {
-		this._saleConf.PresentConvertCsn = v.PresentConvertCsn
-	}
 	this._saleConf.PartnerId = this._value.Id
+
 	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
 }
 

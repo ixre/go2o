@@ -9,7 +9,6 @@
 package ols
 
 import (
-	"errors"
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
@@ -119,27 +118,45 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 	ctx.Request.ParseForm()
 	var result gof.Message
 	var member member.ValueMember
+
 	web.ParseFormToEntity(ctx.Request.Form, &member)
+	code := ctx.Request.FormValue("invi_code")
+
 	if i := strings.Index(ctx.Request.RemoteAddr, ":"); i != -1 {
 		member.RegIp = ctx.Request.RemoteAddr[:i]
 	}
 
 	var memberId int
+	var partnerId int
 	var err error
 
+	partnerId = this.GetPartnerId(ctx)
 	if len(member.Usr) == 0 || len(member.Pwd) == 0 {
-		err = errors.New("注册信息不完整")
-	} else {
-		member.Pwd = domain.MemberSha1Pwd(member.Pwd)
-		memberId, err = dps.MemberService.SaveMember(&member)
-		if err == nil {
-			code := ctx.Request.FormValue("invi_code")
-			if len(code) > 0 {
-				invId := dps.MemberService.GetMemberIdByInvitationCode(code)
-				err = dps.MemberService.SaveRelation(memberId, "", invId,
-					this.BaseC.GetPartnerId(ctx))
-			}
+		result.Message = "1000:注册信息不完整"
+		ctx.Response.JsonOutput(result)
+		return
+	}
+
+	if err = dps.PartnerService.CheckRegisterMode(partnerId, code); err != nil {
+		result.Message = err.Error()
+		ctx.Response.JsonOutput(result)
+		return
+	}
+
+	var invId int
+	if len(code) > 0 {
+		invId = dps.MemberService.GetMemberIdByInvitationCode(code)
+		if invId <= 0 {
+			result.Message = "1011：推荐码不正确"
+			ctx.Response.JsonOutput(result)
+			return
 		}
+	}
+
+	member.Pwd = domain.MemberSha1Pwd(member.Pwd)
+	memberId, err = dps.MemberService.SaveMember(&member)
+	if err == nil {
+		err = dps.MemberService.SaveRelation(memberId, "", invId, partnerId)
 	}
 
 	if err != nil {

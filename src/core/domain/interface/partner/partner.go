@@ -14,6 +14,12 @@ import (
 	"go2o/src/core/domain/interface/partner/user"
 )
 
+const(
+	ModeRegisterNormal = 0				// 正常注册
+	ModeRegisterMustInvitation = 1		// 必须邀请注册
+	ModeRegisterMustRedirect =  2		// 必须直接注册
+)
+
 type IPartner interface {
 	GetAggregateRootId() int
 

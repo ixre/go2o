@@ -138,6 +138,18 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 	return &conf
 }
 
+// 检查注册
+func (this *partnerService) CheckRegisterMode(partnerId int,code string)error{
+	conf := this.GetSaleConf(partnerId)
+	if conf.RegisterMode == 1 && len(code) == 0{
+		return errors.New("1011:必须使用推荐码注册")
+	}
+	if conf.RegisterMode == 2 && len(code) > 0 {
+		return errors.New("1011:推荐注册功能暂不开放")
+	}
+	return nil
+}
+
 func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
@@ -302,3 +314,4 @@ func (this *partnerService) DeleteMailTemplate(partnerId int, id int) error {
 	}
 	return pt.MssManager().DeleteMailTemplate(id)
 }
+

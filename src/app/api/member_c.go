@@ -74,6 +74,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		var result dto.MessageResult
+		var err error
 
 		var partnerId int = this.GetPartnerId(ctx)
 		var invMemberId int // 邀请人
@@ -87,13 +88,19 @@ func (this *MemberC) Register(ctx *web.Context) {
 			regIp = r.RemoteAddr[:i]
 		}
 
-		fmt.Println(usr, pwd, "REGFROM:", registerFrom, "INVICODE:", invitationCode)
+		if err = dps.PartnerService.CheckRegisterMode(partnerId,invitationCode);err!= nil{
+			result.Message = err.Error()
+			ctx.Response.JsonOutput(result)
+			return
+		}
+
+		//fmt.Println(usr, pwd, "REGFROM:", registerFrom, "INVICODE:", invitationCode)
 
 		// 检验
 		if len(invitationCode) != 0 {
 			invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
 			if invMemberId == 0 {
-				result.Message = "推荐码错误"
+				result.Message = "1011:推荐码错误"
 				ctx.Response.JsonOutput(result)
 				return
 			}

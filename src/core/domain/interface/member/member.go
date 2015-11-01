@@ -11,6 +11,9 @@ package member
 
 import "go2o/src/core/domain/interface/valueobject"
 
+
+
+
 type IMember interface {
 	// 获取聚合根编号
 	GetAggregateRootId() int

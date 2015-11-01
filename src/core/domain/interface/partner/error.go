@@ -22,4 +22,11 @@ var (
 
 	ErrPartnerNotMatch *domain.DomainError = domain.NewDomainError(
 		"not_match", "商家不匹配")
+
+	ErrRegisterMode *domain.DomainError = domain.NewDomainError(
+		"err_register_mode", "注册模式异常")
+
+ErrSalesPercent *domain.DomainError = domain.NewDomainError(
+	"err_sales_percent", "销售比例错误")
+
 )
