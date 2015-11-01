@@ -191,17 +191,17 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 
 	if v.RegisterMode == partner.ModeRegisterNormal ||
-	v.RegisterMode == partner.ModeRegisterMustInvitation ||
-	v.RegisterMode == partner.ModeRegisterMustRedirect{
+		v.RegisterMode == partner.ModeRegisterMustInvitation ||
+		v.RegisterMode == partner.ModeRegisterMustRedirect {
 		this._saleConf.RegisterMode = v.RegisterMode
-	}else{
+	} else {
 		return partner.ErrRegisterMode
 	}
 
 	if v.FlowConvertCsn < 0 || v.PresentConvertCsn < 0 ||
-		v.ApplyCsn <0 || v.TransCsn <0 ||
+		v.ApplyCsn < 0 || v.TransCsn < 0 ||
 		v.FlowConvertCsn > 1 || v.PresentConvertCsn > 1 ||
-		v.ApplyCsn >1 || v.TransCsn >1 {
+		v.ApplyCsn > 1 || v.TransCsn > 1 {
 		return partner.ErrSalesPercent
 	}
 

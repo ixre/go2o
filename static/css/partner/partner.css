@@ -184,6 +184,10 @@ a.l-btn span span.l-btn-icon-left{padding-left:0px;}
 .green{color:green;}
 .red{color:#FF0000;}
 
+
+.form div.fl .in .sel_result{color:red;margin:10px 0;}
+.form div.fl .in .sel_result #goods_info{color:#0A0;}
+
 .ui-table{background:#ddd;}
 .ui-table tr td,.ui-table tr th{border:none;padding:10px;}
 .ui-table tr th{padding:5px 10px;}
@@ -213,7 +217,7 @@ input.btn:hover{
 
 
 a.btn{border:solid 1px #ddd;display: inline-block;padding: 0 1.5rem;
-	border-radius:5px;
+	border-radius:5px;text-decoration:none;
 	background: -webkit-linear-gradient(#F5F5F5, #E5E5E5);
 	background: -o-linear-gradient(#F5F5F5, #E5E5E5);
 	background: -moz-linear-gradient(#F5F5F5, #E5E5E5);
@@ -243,6 +247,13 @@ a.btn-short{margin:0 1px;padding:0 8px;font-weight:normal;
 	background: -moz-linear-gradient(#FFFF00, #FFCC00);
 	background: linear-gradient(#F5F5F5, #E5E5E5);
 }
-.tip-box{border:solid 1px #ffcc00;margin:10px 30px;background:#ffc;padding:10px;font-size:0.8rem;line-height: 1.2rem;
+.bg_txt{background:#FFEE00;padding:0 2px;border:solid 1px #FFCC00;
+	font-size:10px;margin-right:2px;color:#333;}
+
+.xhr-container{position: absolute;width:100%;height:100%;}
+.xhr-container .gate{z-index:1;position: fixed;top:0;right:0;background:#888;opacity:0.1;width:100%;height:100%;}
+.xhr-container .msg{position:fixed;right:0;top:0;margin:0 34%;width:30%;padding:5px 1%;
+	background:#0a0;color:#FFF;z-index:100;text-align:center;}
+.tip-box{border:solid 1px #ffcc00;background:#ffc;padding:10px;font-size:0.8rem;line-height: 1.2rem;
 	color:#333;
 }

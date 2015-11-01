@@ -19,9 +19,9 @@ type SaleConf struct {
 	IntegralBackExtra     int     `db:"ib_extra"`                      // 每单额外赠送
 	AutoSetupOrder        int     `db:"auto_setup_order"`              // 自动设置订单
 
-	RegisterMode int 		`db:"register_mode"`					   // 必须注册模式
-	ApplyCsn              float32 `db:"apply_csn"`                     // 提现手续费费率
-	TransCsn              float32 `db:"trans_csn"`                     // 转账手续费费率
-	FlowConvertCsn        float32 `db:"flow_convert_csn"`              // 活动账户转为赠送可提现奖金手续费费率
-	PresentConvertCsn     float32 `db:"present_convert_csn"`           // 赠送账户转换手续费费率
+	RegisterMode      int     `db:"register_mode"`       // 必须注册模式
+	ApplyCsn          float32 `db:"apply_csn"`           // 提现手续费费率
+	TransCsn          float32 `db:"trans_csn"`           // 转账手续费费率
+	FlowConvertCsn    float32 `db:"flow_convert_csn"`    // 活动账户转为赠送可提现奖金手续费费率
+	PresentConvertCsn float32 `db:"present_convert_csn"` // 赠送账户转换手续费费率
 }

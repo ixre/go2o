@@ -139,9 +139,9 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 }
 
 // 检查注册
-func (this *partnerService) CheckRegisterMode(partnerId int,code string)error{
+func (this *partnerService) CheckRegisterMode(partnerId int, code string) error {
 	conf := this.GetSaleConf(partnerId)
-	if conf.RegisterMode == 1 && len(code) == 0{
+	if conf.RegisterMode == 1 && len(code) == 0 {
 		return errors.New("1011:必须使用推荐码注册")
 	}
 	if conf.RegisterMode == 2 && len(code) > 0 {
@@ -314,4 +314,3 @@ func (this *partnerService) DeleteMailTemplate(partnerId int, id int) error {
 	}
 	return pt.MssManager().DeleteMailTemplate(id)
 }
-

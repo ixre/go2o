@@ -1,12 +1,13 @@
 ﻿//自动完成插件
-function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
 
+function autoCompletion(ele, url, loadCallback, selectCallback,errCallback, charMinLen) {
     var panel;
     var panelInner;
-    this.charMinLen = (charMinLen == 0 ? 0 : 1);
+    this.charMinLen = charMinLen || 1;
     this.lastChar = '';
     this.isOnFocus = false;
     this.timer = null;
+    this.url = url;
 
     if (!ele.nodeName) {
         ele = j6.$(ele);
@@ -18,17 +19,17 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
         if (!panel || panel.nodeName != 'DIV' || panel.className != 'ui-autocompletion-panel') {
 
             //为父元素设为绝对定位
-            if (ele.parentNode.offsetLeft>ele.offsetLeft) {
-                ele.parentNode.style.cssText += 'position:relative;';
+            if (ele.parentNode.offsetLeft > ele.offsetLeft) {
+                ele.parentNode.style.cssText += 'position:relative';
             }
+
 
             panel = document.createElement('DIV');
             panel.className = 'ui-autocompletion-panel';
-            panel.style.cssText = 'curcor:default;zoom:1;position:absolute;left:' + (ele.offsetLeft)+ 'px;top:'
+            panel.style.cssText = 'curcor:default;z-index:102;position:absolute;left:' + ele.offsetLeft + 'px;top:'
                 + (ele.offsetTop + ele.offsetHeight) + 'px;width:' + ele.offsetWidth + 'px;overflow:hidden;display:none';
             ele.parentNode.insertBefore(panel, ele);
 
-           
 
             panelInner = document.createElement('DIV');
             panelInner.className = 'inner';
@@ -42,19 +43,8 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
 
     attachBox();
 
-    var setZindex = function (p, index) {
-        p = p.parentNode;
-        var reg = /z-index:\s*(\d+);/igm;
-        var style = 'z-index:' + (index <= 0 ? 0 : index) + ';';
-        if (reg.test(p.style.cssText)) {
-            p.style.cssText = p.style.cssText.replace(/z-index:\s*(\d+);/igm,style);
-        } else {
-            p.style.cssText += ';'+style;
-        }
-    };
-
     //筛选框
-    var handler = (function (e, p, pi, lc, sc, t) {
+    var handler = (function (e, p, pi, lc, sc,ec, t) {
         return function (event, isOnfocus) {
 
             if (isOnfocus) t.isOnFocus = true;
@@ -71,9 +61,6 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
 
             if (keyStr.length < t.charMinLen) return;
 
-            //将位置置于最高层
-            setZindex(p, 102);
-
             //document.getElementById('t1').innerHTML = t.lastChar + '/' + keyStr + ((t.lastChar != '' && t.lastChar == keyStr));
             //判断是否和上次一样
             if (t.lastChar != '' && t.lastChar == keyStr) {
@@ -83,7 +70,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
             }
 
             j6.xhr.request({
-                uri: url + (url.indexOf('?') == -1 ? "?" : '&') + 'key=' + encodeURIComponent(keyStr),
+                uri: t.url + (t.url.indexOf('?') == -1 ? "?" : '&') + 'key=' + encodeURIComponent(keyStr),
                 params: {}, method: 'GET', data: 'json'
             }, {
                 success: function (json) {
@@ -103,7 +90,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
                             if (json[i].text == keyStr && sc) {
                                 if (e.onblur) e.onblur();
                                 sc(json[i]);
-                            } 
+                            }
                         }
                         html += '</ul>';
 
@@ -124,10 +111,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
                                 return function () {
                                     e.value = j.text;
                                     _p.style.display = 'none';
-
-                                    setZindex(_p, -1);  //设置位置
-
-                                    if(e.onblur)e.onblur();
+                                    if (e.onblur) e.onblur();
                                     if (sc) sc(j);
                                 };
                             })(json[i], p);
@@ -135,24 +119,25 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
                     } else {
                         //隐藏输入框
                         p.style.display = 'none';
-                        setZindex(p, -1);
                     }
 
                     //temp
                     setTimeout(function () {
                         t.isOnFocus = false;
                     }, 500);
+                },
+                error:function() {
+                    if (ec && ec instanceof Function)ec();
                 }
             });
         };
 
-    })(ele, panel, panelInner, loadCallback, selectCallback, this);
+    })(ele, panel, panelInner, loadCallback, selectCallback, errCallback,this);
 
     var closeHandler = (function (p, t) {
         return function (event) {
             if (!t.isOnFocus) {
                 p.style.display = 'none';
-                setZindex(p, -1);
             }
         };
     })(panel, this);
@@ -183,7 +168,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback, charMinLen) {
 
 
 j6.extend({
-    autoCompletion: function (ele, url, loadCallback, selectCallback, charMinLen) {
-        return new autoCompletion(ele, url, loadCallback, selectCallback, charMinLen);
+    autoCompletion: function (ele, url, loadCallback, selectCallback,errCallback, charMinLen) {
+        return new autoCompletion(ele, url, loadCallback, selectCallback, errCallback,charMinLen);
     }
 });

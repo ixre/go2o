@@ -112,8 +112,8 @@ div.form dl dt{float:left;width:80px;text-align:right;font-weight:bold;padding-r
 .form2 .fl div.in{margin-left:100px;}
 
 .form .title{color:#006699;margin:20px 10px 10px 10px;padding:0 20px 20px 8px;margin-left:10px;
-    font-weight:bold;background:url(/framework/mui/css/latest/panel_item_line.gif) left bottom no-repeat;}
-.form .title span.icon{padding:0 10px;line-height:16px;background:url(/framework/assets/icons/admin/protected.gif) left 0px no-repeat;}
+    font-weight:bold;background:url(images/panel_item_line.gif) left bottom no-repeat;}
+.form .title span.icon{padding:0 10px;line-height:16px;background:url(images/protected.gif) left 0px no-repeat;}
 
 
 ul.centform{margin:100px auto;}

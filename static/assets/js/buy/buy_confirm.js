@@ -89,11 +89,11 @@ function pageInit(){
     j6.event.add(ckBalance,'click',reloadFee);
 
     if(acc_balance>0){
-        ckBalance.setAttribute('checked','checked');
-        ckBalance.removeAttribute('disabled');
+        ckBalance.checked= true;
+        ckBalance.disabled = false;
     }else{
-        ckBalance.removeAttribute('checked');
-        ckBalance.setAttribute('disabled','disabled');
+        ckBalance.checked = false;
+        ckBalance.disabled = true;
     }
 }
 
@@ -191,8 +191,8 @@ function submitOrder() {
     var ele = this;
 
     var unDis =function(){
-        ele.removeAttribute('disabled');
-        ele.className +=' btn-orange';
+        ele.disabled = false;
+        ele.className +=' btn-m';
     }
 
     if (j6.validator.validate('form_coupon')) {
@@ -206,8 +206,8 @@ function submitOrder() {
             return false;
         }
 
-        ele.disabled = 'disabled';
-        ele.className = ele.className.replace(' btn-orange','')
+        ele.disabled = true;
+        ele.className = ele.className.replace(' btn-m','')
 
         data.coupon_code = cp.CouponCode;
 

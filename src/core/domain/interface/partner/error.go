@@ -26,7 +26,6 @@ var (
 	ErrRegisterMode *domain.DomainError = domain.NewDomainError(
 		"err_register_mode", "注册模式异常")
 
-ErrSalesPercent *domain.DomainError = domain.NewDomainError(
-	"err_sales_percent", "销售比例错误")
-
+	ErrSalesPercent *domain.DomainError = domain.NewDomainError(
+		"err_sales_percent", "销售比例错误")
 )

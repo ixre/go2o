@@ -1,0 +1,9 @@
+.weixin-page img{display:block;width:100%;margin:10px auto;}
+.weixin-page h3{font-weight:normal;line-height:32px;border-bottom:2px solid #c7d0e2;}
+.weixin-page .weixin{background:#192e41;margin:-12px;margin-bottom:10px;height:165px;}
+.weixin-page .weixin h2{font-size:16px;padding-top:5px;}
+.weixin-page .weixin p{display:inline-block;height:20px;line-height:20px;padding:0 8px;font-size:12px;background:#0082ca;}
+.weixin-page .weixin p.one{background:#fc7557;}
+.weixin-page .weixin p.two{background:#167c80;}
+.weixin-page .weixin div{max-width:420px;margin:0 auto;position:relative;color:#fff;padding:0 10px;}
+.weixin-page .weixin a{width:110px;height:113px;position:absolute;top:19px;right:10px;background:url(../../images/help/weixin.jpg);background-size:110px 113px;}

@@ -1,0 +1,17 @@
+.app-page .pxui-tab-nav i{background-image:url(../../images/home/index.gif@11);background-size:260px 134px;}
+
+.app-page .pxui-tab-style{margin:0 12px;border-radius: 0;background:#F0EEEE;}
+.app-page .pxui-tab-style a{background:#F0EEEE;border-right: 1px solid #F0EEEE;height:35px;overflow:hidden;}
+.app-page .pxui-tab-style a.selected{background:#fff;border-right: 1px solid #fff;line-height:36px;height:36px;}
+
+.app-page .pxui-tab-nav{background:#fff;padding:10px 0;line-height:18px;height:auto;overflow:hidden;}
+.app-page .pxui-tab-nav a.selected span{position:absolute;border-bottom: 2px solid #fd5744;border-left: 1px solid transparent;border-right: 1px solid transparent;height: 0;bottom: -10PX;left: 50%;margin-left: -45%;width:90%;}
+.app-page .pxui-tab-nav a{height:auto;position:relative;}
+.app-page .pxui-tab-nav a.selected{background:#fff;line-height:18px;}
+.app-page .pxui-tab-nav i{width:24px;height:21px;display:block;margin:auto;background-position:-62px 0;}
+.app-page .pxui-tab-nav a.selected:nth-child(1) i{background-position:-33px 0;}
+.app-page .pxui-tab-nav a:nth-child(2) i{background-position:-120px 0;}
+.app-page .pxui-tab-nav a.selected:nth-child(2) i{background-position:-91px 0;}
+.app-page .pxui-tab-nav a:nth-child(3) i{background-position:-149px 0;}
+.app-page .pxui-tab-nav a:nth-child(4) i{background-position:-178px 0;}
+.app-page img{margin:3px auto;display:block;width:100%;}

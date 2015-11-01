@@ -189,7 +189,7 @@ btnRegister.onclick = function () {
             alert('请同意注册条款')
         } else {
             var tip = j6.$('tip');
-            t.disabled='disabled';
+            t.disabled=true;
             j6.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
                 if (json.result) {
                     var returnUrl = j6.request('return_url');
@@ -203,16 +203,18 @@ btnRegister.onclick = function () {
                             location.replace('/user/login?return_url=');
                         }
                     },3000);
-
                 } else {
                     tip.className='tip-panel';
-                    tip.innerHTML = "注册失败："+json.message;
-                    t.disabled='';
+                    tip.innerHTML = json.message;
+                    t.disabled=false;
+                }
+                if(window.registerCallback){
+                    window.registerCallback(json);
                 }
             }, function () {
                 tip.className='tip-panel';
                 tip.innerHTML = '注册失败，请重试';
-                t.disabled='';
+                t.disabled=false;
             });
         }
     }

@@ -47,7 +47,7 @@ var (
 		"err_out_of_balance", "超出金额")
 
 	ErrUserLength *domain.DomainError = domain.NewDomainError(
-		"err_user_length", "用户名必须大于6位",
+		"err_user_length", "用户名至少6位",
 	)
 
 	ErrUserValidErr *domain.DomainError = domain.NewDomainError(

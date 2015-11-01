@@ -88,7 +88,7 @@ func (this *MemberC) Register(ctx *web.Context) {
 			regIp = r.RemoteAddr[:i]
 		}
 
-		if err = dps.PartnerService.CheckRegisterMode(partnerId,invitationCode);err!= nil{
+		if err = dps.PartnerService.CheckRegisterMode(partnerId, invitationCode); err != nil {
 			result.Message = err.Error()
 			ctx.Response.JsonOutput(result)
 			return
@@ -153,7 +153,7 @@ func (this *MemberC) Async(ctx *web.Context) {
 	if kvAut == 0 {
 		acc := dps.MemberService.GetAccount(memberId)
 		kvAut = int(acc.UpdateTime)
-		ctx.App.Storage().Set(autKey,kvAut)
+		ctx.App.Storage().Set(autKey, kvAut)
 	}
 	rlt.MemberId = memberId
 	rlt.MemberUpdated = kvMut != mut
