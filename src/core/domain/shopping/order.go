@@ -144,7 +144,7 @@ func (this *Order) SetPayment(payment int) {
 }
 
 // 使用余额支付
-func (this *Order) PaymentWithBalance() error {
+func (this *Order) paymentWithBalance(buyerType int) error {
 	if this._value.IsPaid == 1 {
 		return shopping.ErrOrderPayed
 	}
@@ -162,6 +162,7 @@ func (this *Order) PaymentWithBalance() error {
 	unix := time.Now().Unix()
 	if this._value.PayFee == 0 {
 		this._value.IsPaid = 1
+		this._value.PaymentSign = buyerType
 		if this._value.Status == enum.ORDER_WAIT_PAYMENT {
 			this._value.Status = enum.ORDER_WAIT_CONFIRM
 		}
@@ -173,16 +174,29 @@ func (this *Order) PaymentWithBalance() error {
 	return err
 }
 
+// 使用余额支付
+func (this *Order) PaymentWithBalance() error {
+	return this.paymentWithBalance(shopping.PaymentByBuyer)
+}
+
+// 客服使用余额支付
+func (this *Order) CmPaymentWithBalance() error {
+	return this.paymentWithBalance(shopping.PaymentByCM)
+}
+
 // 在线交易支付
-func (this *Order) PaymentOnlineTrade(serverProvider string, tradeNo string) error {
+func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) error {
 	if this._value.IsPaid == 1 {
 		return shopping.ErrOrderPayed
 	}
 	unix := time.Now().Unix()
 	this._value.IsPaid = 1
+	this._value.PaymentSign = shopping.PaymentByBuyer
+	if this._value.Status == enum.ORDER_WAIT_PAYMENT {
+		this._value.Status = enum.ORDER_WAIT_DELIVERY // 设置为待配送状态
+	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
-
 	_, err := this.Save()
 	return err
 }
@@ -257,11 +271,13 @@ func (this *Order) Submit() (string, error) {
 	// 校验是否支付
 	if v.PayFee == 0 {
 		v.IsPaid = 1
+		v.PaymentSign = shopping.PaymentByBuyer
 	}
 
 	// 设置订单状态
 	if v.IsPaid == 1 || v.PaymentOpt == enum.PaymentOfflineCashPay ||
 		v.PaymentOpt == enum.PaymentRemit {
+		v.PaymentSign = 1
 		v.Status = enum.ORDER_WAIT_CONFIRM
 	} else {
 		v.Status = enum.ORDER_WAIT_PAYMENT
@@ -488,7 +504,8 @@ func (this *Order) Process() error {
 
 // 确认订单
 func (this *Order) Confirm() error {
-	if this._value.PaymentOpt == enum.PaymentOnlinePay && this._value.IsPaid != enum.TRUE {
+	if this._value.PaymentOpt == enum.PaymentOnlinePay &&
+		this._value.IsPaid != enum.TRUE {
 		return shopping.ErrOrderNotPayed
 	}
 

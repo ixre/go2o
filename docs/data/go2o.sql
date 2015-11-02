@@ -382,6 +382,7 @@ CREATE TABLE `mm_balance_info` (
   `title` varchar(45) DEFAULT NULL COMMENT '标题',
   `trade_no` varchar(45) DEFAULT NULL,
   `amount` float(8,2) DEFAULT NULL COMMENT '金额',
+  `csn_amount` float(4,2) NOT NULL DEFAULT '0.00' COMMENT '手续费',
   `ref_id` int(11) DEFAULT NULL COMMENT '引用编号',
   `state` tinyint(1) DEFAULT NULL COMMENT '状态，比如提现需要申请，确认等',
   `create_time` int(11) DEFAULT NULL,
@@ -979,6 +980,7 @@ CREATE TABLE `pt_order` (
   `payment_opt` int(11) DEFAULT NULL COMMENT '1:餐到付款 2:网上支付  ',
   `is_suspend` tinyint(4) DEFAULT '0',
   `is_paid` int(11) DEFAULT NULL COMMENT '是否支付(0:未支付 ，1：已支付)',
+  `payment_sign` int(11) DEFAULT NULL COMMENT '0:未付款,1: 顾客付款  2: 客服付款',
   `note` varchar(150) DEFAULT NULL,
   `remark` varchar(100) DEFAULT NULL COMMENT '订单备注(可为取消理由)',
   `deliver_name` varchar(45) DEFAULT NULL,
@@ -1224,7 +1226,11 @@ CREATE TABLE `pt_saleconf` (
   `ib_num` int(11) DEFAULT NULL COMMENT '每一元返多少积分',
   `ib_extra` int(11) DEFAULT NULL COMMENT '额外赠送积分',
   `auto_setup_order` tinyint(4) DEFAULT '0',
-  `trans_csn` float(4,4) NOT NULL DEFAULT '0.0000' COMMENT 'transfer commission',
+  `register_mode` int(11) DEFAULT NULL,
+  `trans_csn` float(6,4) NOT NULL DEFAULT '0.0000' COMMENT 'transfer commission',
+  `flow_convert_csn` float(6,4) DEFAULT '0.0000',
+  `present_convert_csn` float(6,4) DEFAULT '0.0000',
+  `apply_csn` float(6,4) DEFAULT '0.0000',
   PRIMARY KEY (`partner_id`,`trans_csn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1235,7 +1241,7 @@ CREATE TABLE `pt_saleconf` (
 
 LOCK TABLES `pt_saleconf` WRITE;
 /*!40000 ALTER TABLE `pt_saleconf` DISABLE KEYS */;
-INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,1,0.0000),(104,0.00,0.00,0.00,0.00,0,0,1,0.0000),(105,0.00,0.00,0.00,0.00,0,0,1,0.0000);
+INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,1,NULL,0.0000,NULL,NULL,0.0000),(104,0.00,0.00,0.00,0.00,0,0,1,NULL,0.0000,NULL,NULL,0.0000),(105,0.00,0.00,0.00,0.00,0,0,1,NULL,0.0000,NULL,NULL,0.0000);
 /*!40000 ALTER TABLE `pt_saleconf` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1515,4 +1521,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-10-28 15:32:35
+-- Dump completed on 2015-11-02 18:10:27

@@ -259,12 +259,22 @@ func (this *shoppingService) PayForOrderWithBalance(partnerId int, orderNo strin
 	return err
 }
 
+// 人工付款
+func (this *shoppingService) PayForOrderByManager(partnerId int, orderNo string) error {
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil {
+		err = order.CmPaymentWithBalance()
+	}
+	return err
+}
+
 // 确认付款
 func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo string, spName string, tradeNo string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
-		err = order.PaymentOnlineTrade(spName, tradeNo)
+		err = order.PaymentForOnlineTrade(spName, tradeNo)
 	}
 	return err
 }

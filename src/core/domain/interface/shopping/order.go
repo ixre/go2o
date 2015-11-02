@@ -14,6 +14,12 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 )
 
+const (
+	PaymentNotYet  = 0 // 订单尚未支付
+	PaymentByBuyer = 1 // 购买者支付
+	PaymentByCM    = 2 // 客服人工支付
+)
+
 type IOrder interface {
 	GetDomainId() int
 
@@ -44,8 +50,11 @@ type IOrder interface {
 	// 使用余额支付
 	PaymentWithBalance() error
 
+	// 客服使用余额支付
+	CmPaymentWithBalance() error
+
 	// 在线交易支付
-	PaymentOnlineTrade(serverProvider string, tradeNo string) error
+	PaymentForOnlineTrade(serverProvider string, tradeNo string) error
 
 	// 设置配送地址
 	SetDeliver(deliverAddressId int) error

@@ -81,6 +81,10 @@ func (this *PaymentC) Create(ctx *web.Context) {
 
 	var order *shopping.ValueOrder
 	if len(orderNo) > 0 {
+		//		dps.ShoppingService.PayForOrderOnlineTrade(partnerId,orderNo,"alipay","")
+		//		ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", orderNo))
+		//		ctx.Response.WriteHeader(302)
+		//		return
 		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 	}
 
@@ -161,7 +165,8 @@ func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result 
 		if order.IsPaid == 1 {
 			return errors.New("order has paid")
 		}
-		return dps.ShoppingService.PayForOrderOnlineTrade(order.PartnerId, order.OrderNo, sp, result.TradeNo)
+		return dps.ShoppingService.PayForOrderOnlineTrade(order.PartnerId,
+			order.OrderNo, sp, result.TradeNo)
 	}
 	return errors.New("no such order")
 }

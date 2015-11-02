@@ -35,6 +35,9 @@ type ValueOrder struct {
 
 	IsPaid int `db:"is_paid" json:"isPaid"`
 
+	// 是否为顾客付款
+	PaymentSign int `db:"payment_sign" json:"paymentSign"`
+
 	// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 	IsSuspend int `db:"is_suspend" json:"is_suspend"`
 
