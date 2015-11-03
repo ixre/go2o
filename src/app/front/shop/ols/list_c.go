@@ -129,6 +129,10 @@ func (this *ListC) List_Index(ctx *web.Context) {
 			buf.WriteString("<div class=\"no_goods\">没有找到商品!</div>")
 		} else {
 			for i, v := range items {
+				var hasDisCls string = ""
+				if v.SalePrice == v.Price{
+					hasDisCls = "no-disc"
+				}
 				buf.WriteString(fmt.Sprintf(`
 				<div class="item item-i%d">
 					<div class="block">
@@ -136,14 +140,14 @@ func (this *ListC) List_Index(ctx *web.Context) {
 							<img class="goods-img" src="%s" alt="%s"/>
 							<h3 class="name">%s</h3>
 							<span class="sale-price">￥%s</span>
-							<span class="market-price"><del>￥%s</del></span>
+							<span class="market-price %s"><del>￥%s</del></span>
 						</a>
 					</div>
                     <div class="clear-fix"></div>
                 </div>
 		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
 					v.Name, v.Name, format.FormatFloat(v.SalePrice),
-					format.FormatFloat(v.Price)))
+					hasDisCls,format.FormatFloat(v.Price)))
 			}
 		}
 
