@@ -75,6 +75,29 @@ func (this *Shopping) NewCart(buyerId int) shopping.ICart {
 	return cart
 }
 
+// 检查购物车
+func (this *Shopping) CheckCart(cart shopping.ICart) error {
+	if cart == nil || len(cart.GetValue().Items) == 0 {
+		return shopping.ErrEmptyShoppingCart
+	}
+
+	sl := this._saleRep.GetSale(this._partnerId)
+	for _, v := range cart.GetValue().Items {
+		goods := sl.GetGoods(v.GoodsId)
+		if goods == nil {
+			return sale.ErrNoSuchGoods // 没有商品
+		}
+		stockNum := goods.GetValue().StockNum
+		if stockNum == 0 {
+			return sale.ErrFullOfStock // 已经卖完了
+		}
+		if stockNum < v.Quantity {
+			return sale.ErrOutOfStock // 超出库存
+		}
+	}
+	return nil
+}
+
 // 根据数据获取购物车
 func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)

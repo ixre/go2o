@@ -130,7 +130,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 		} else {
 			for i, v := range items {
 				var hasDisCls string = ""
-				if v.SalePrice == v.Price{
+				if v.SalePrice == v.Price {
 					hasDisCls = "no-disc"
 				}
 				buf.WriteString(fmt.Sprintf(`
@@ -147,7 +147,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
                 </div>
 		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
 					v.Name, v.Name, format.FormatFloat(v.SalePrice),
-					hasDisCls,format.FormatFloat(v.Price)))
+					hasDisCls, format.FormatFloat(v.Price)))
 			}
 		}
 

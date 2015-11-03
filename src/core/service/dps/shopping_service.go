@@ -121,7 +121,7 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 	if err != nil {
 		return nil
 	}
-	if order == nil{
+	if order == nil {
 		return nil
 	}
 	v := order.GetValue()

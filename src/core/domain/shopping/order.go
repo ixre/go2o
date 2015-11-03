@@ -75,7 +75,6 @@ func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	}
 	this._coupons = append(this._coupons, coupon)
 
-	//val := coupon.GetValue()
 	v := this._value
 	//v.CouponCode = val.Code
 	//v.CouponDescribe = coupon.GetDescribe()
@@ -226,8 +225,8 @@ func (this *Order) Submit() (string, error) {
 		return "", errors.New("订单不允许重复提交！")
 	}
 
-	if this._cart == nil || len(this._cart.GetValue().Items) == 0 {
-		return "", errors.New("购物车为空！")
+	if err := this._shopping.CheckCart(this._cart); err != nil {
+		return "", err
 	}
 
 	mem := this._memberRep.GetMember(this._value.MemberId)
@@ -289,13 +288,14 @@ func (this *Order) Submit() (string, error) {
 	if err == nil {
 		// 绑定优惠券促销
 		this.bindCouponOnSubmit(v.OrderNo)
+		// 扣除库存
+		//this.applyGoodsNum()
 		// 销毁购物车
 		this._cart.Destroy()
 		// 绑定购物车商品的促销
 		for _, p := range proms {
 			this.bindPromotionOnSubmit(v.OrderNo, p)
 		}
-
 		// 记录余额支付记录
 		if v.BalanceDiscount > 0 {
 			err = acc.OrderDiscount(v.OrderNo, v.BalanceDiscount)
@@ -461,6 +461,19 @@ func (this *Order) Save() (int, error) {
 	}
 	this._internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
+}
+
+// 扣除库存
+func (this *Order) applyGoodsNum() {
+	if this._cart != nil {
+		sl := this._saleRep.GetSale(this._shopping.GetAggregateRootId())
+		for _, v := range this._cart.GetValue().Items {
+			if goods := sl.GetGoods(v.GoodsId); goods != nil {
+				goods.AddSaleNum(v.Quantity)
+				goods.Save()
+			}
+		}
+	}
 }
 
 // 添加日志

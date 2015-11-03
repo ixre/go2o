@@ -51,7 +51,7 @@ type IGoods interface {
 	// 保存
 	Save() (int, error)
 
-	// 更新销售数量
+	// 更新销售数量,扣减库存
 	AddSaleNum(quantity int) error
 
 	// 生成快照

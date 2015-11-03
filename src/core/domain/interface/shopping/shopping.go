@@ -26,6 +26,9 @@ type IShopping interface {
 	// @buyerId 为购买会员ID,0表示匿名购物车
 	NewCart(buyerId int) ICart
 
+	// 检查购物车
+	CheckCart(cart ICart) error
+
 	// 根据数据获取购物车,
 	// 如果member的cart与key不一致，则合并购物车；
 	// 如果会员没有购物车，则绑定为key的购物车

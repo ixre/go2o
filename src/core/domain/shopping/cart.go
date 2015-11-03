@@ -156,20 +156,26 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
+	sl := this._saleRep.GetSale(this._partnerId)
+	goods := sl.GetGoods(goodsId)
+	if goods == nil {
+		return nil, sale.ErrNoSuchGoods // 没有商品
+	}
+
+	stockNum := goods.GetValue().StockNum
+	if stockNum == 0 {
+		return nil, sale.ErrFullOfStock // 已经卖完了
+	}
 
 	// 添加数量
 	for _, v := range this._value.Items {
 		if v.GoodsId == goodsId {
-			v.Quantity = v.Quantity + num
+			if v.Quantity+num > stockNum {
+				return v, sale.ErrOutOfStock // 库存不足
+			}
+			v.Quantity += num
 			return v, err
 		}
-	}
-
-	sl := this._saleRep.GetSale(this._partnerId)
-	goods := sl.GetGoods(goodsId)
-
-	if goods == nil {
-		return nil, sale.ErrNoSuchGoods
 	}
 
 	gv := goods.GetPackedValue()

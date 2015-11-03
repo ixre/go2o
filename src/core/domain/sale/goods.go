@@ -9,7 +9,6 @@
 package sale
 
 import (
-	"errors"
 	"fmt"
 	"go2o/src/core/domain"
 	"go2o/src/core/domain/interface/promotion"
@@ -242,13 +241,15 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 func (this *SaleGoods) AddSaleNum(quantity int) error {
 	// 减去库存
 	if quantity > 0 {
+		if quantity > this._value.StockNum {
+			return sale.ErrOutOfStock
+		}
 		this._value.StockNum -= quantity
-	} else {
-		return errors.New("sale num less than now num")
+		this._value.SaleNum += quantity
+		_, err := this.Save()
+		return err
 	}
-	this._value.SaleNum += quantity
-	_, err := this.Save()
-	return err
+	return sale.ErrGoodsNum
 }
 
 // 是否为新快照,与旧有快照进行数据对比
