@@ -252,6 +252,18 @@ func (this *SaleGoods) AddSaleNum(quantity int) error {
 	return sale.ErrGoodsNum
 }
 
+// 取消销售
+func (this *SaleGoods) CancelSale(quantity int, orderNo string) error {
+	// 减去库存
+	if quantity > 0 {
+		this._value.StockNum += quantity
+		this._value.SaleNum -= quantity
+		_, err := this.Save()
+		return err
+	}
+	return sale.ErrGoodsNum
+}
+
 // 是否为新快照,与旧有快照进行数据对比
 func (this *SaleGoods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
 	latestGsn := this.GetLatestSnapshot()

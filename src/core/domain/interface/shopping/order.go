@@ -23,6 +23,9 @@ const (
 type IOrder interface {
 	GetDomainId() int
 
+	// 获取订单号
+	GetOrderNo() string
+
 	// 获生成值
 	GetValue() ValueOrder
 

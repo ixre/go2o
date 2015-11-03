@@ -79,11 +79,9 @@ func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
-		err = order.SetShop(shopId)
-	}
-	err = order.SetShop(shopId)
-	if err == nil {
-		_, err = order.Save()
+		if err = order.SetShop(shopId); err == nil {
+			_, err = order.Save()
+		}
 	}
 	return err
 }

@@ -134,6 +134,9 @@ func (this *Order) AddRemark(remark string) {
 func (this *Order) SetShop(shopId int) error {
 	//todo:验证Shop
 	this._value.ShopId = shopId
+	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
+		this.Confirm()
+	}
 	return nil
 }
 
@@ -289,7 +292,7 @@ func (this *Order) Submit() (string, error) {
 		// 绑定优惠券促销
 		this.bindCouponOnSubmit(v.OrderNo)
 		// 扣除库存
-		//this.applyGoodsNum()
+		this.applyGoodsNum()
 		// 销毁购物车
 		this._cart.Destroy()
 		// 绑定购物车商品的促销
@@ -465,14 +468,8 @@ func (this *Order) Save() (int, error) {
 
 // 扣除库存
 func (this *Order) applyGoodsNum() {
-	if this._cart != nil {
-		sl := this._saleRep.GetSale(this._shopping.GetAggregateRootId())
-		for _, v := range this._cart.GetValue().Items {
-			if goods := sl.GetGoods(v.GoodsId); goods != nil {
-				goods.AddSaleNum(v.Quantity)
-				goods.Save()
-			}
-		}
+	for _, v := range this._value.Items {
+		this.addGoodsSaleNum(v.SnapshotId, v.Quantity)
 	}
 }
 
@@ -518,7 +515,7 @@ func (this *Order) Process() error {
 // 确认订单
 func (this *Order) Confirm() error {
 	if this._value.PaymentOpt == enum.PaymentOnlinePay &&
-		this._value.IsPaid != enum.TRUE {
+		this._value.IsPaid == enum.FALSE {
 		return shopping.ErrOrderNotPayed
 	}
 
@@ -528,9 +525,6 @@ func (this *Order) Confirm() error {
 
 		_, err := this.Save()
 		if err == nil {
-			for _, v := range this._value.Items {
-				this.addGoodsSaleNum(v.SnapshotId, v.Quantity)
-			}
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
 		}
 		return err
@@ -583,12 +577,35 @@ func (this *Order) Cancel(reason string) error {
 	this._value.Status = enum.ORDER_CANCEL
 	this._value.UpdateTime = time.Now().Unix()
 
+	this.cancelGoods()
+
 	_, err := this.Save()
 	if err == nil {
 		err = this.AppendLog(enum.ORDER_LOG_SETUP, true, "订单已取消,原因："+reason)
 	}
 
 	return err
+}
+
+// 获取订单号
+func (this *Order) GetOrderNo() string {
+	return this.GetValue().OrderNo
+}
+
+// 取消商品
+func (this *Order) cancelGoods() error {
+	for _, v := range this._value.Items {
+		snapshot := this._saleRep.GetGoodsSnapshot(v.SnapshotId)
+		if snapshot == nil {
+			return sale.ErrNoSuchSnapshot
+		}
+		var goods sale.IGoods = this._saleRep.GetSale(this._value.PartnerId).
+			GetGoods(snapshot.GoodsId)
+		if goods != nil {
+			goods.CancelSale(v.Quantity, this.GetOrderNo())
+		}
+	}
+	return nil
 }
 
 // 挂起

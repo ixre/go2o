@@ -54,6 +54,9 @@ type IGoods interface {
 	// 更新销售数量,扣减库存
 	AddSaleNum(quantity int) error
 
+	// 取消销售
+	CancelSale(quantity int, orderNo string) error
+
 	// 生成快照
 	GenerateSnapshot() (int, error)
 
