@@ -119,7 +119,9 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err != nil {
-		Context.Log().PrintErr(err)
+		return nil
+	}
+	if order == nil{
 		return nil
 	}
 	v := order.GetValue()
