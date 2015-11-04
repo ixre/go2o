@@ -49,7 +49,6 @@ func (this *MemberC) Login(ctx *web.Context) {
 		partnerId := this.GetPartnerId(ctx)
 		var result dto.MemberLoginResult
 
-		fmt.Println("---", usr, pwd)
 		if len(usr) == 0 || len(pwd) == 0 {
 			result.Message = "会员不存在"
 		} else {
