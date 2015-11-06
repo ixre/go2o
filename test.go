@@ -18,11 +18,11 @@ import (
 )
 
 func main() {
-	fmt.Println(crypto.Sha1([]byte("123456")))
+	fmt.Println(crypto.Sha1([]byte("rskd3p")))
 	fmt.Println(domain.PartnerSha1Pwd("zs", "gcY!zs1654320s"))
 
 	fmt.Println(domain.NewApiId(105))
-	fmt.Println(domain.MemberSha1Pwd("123456"))
+	fmt.Println(domain.MemberSha1Pwd("rskd3p"))
 	fmt.Println(1 << 2)
 	fmt.Println(util.IsMobileAgent("Mozilla/5.0 (Linux; U; Android 2.3.7; en-us; Nexus One Build/FRF91) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1"))
 
