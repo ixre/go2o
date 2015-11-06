@@ -28,7 +28,7 @@ const (
 	ORDER_COMPLETED = 6
 
 	// 可进行流程的状态
-	ORDER_SETUP_STATE = "1,2,3,4,5"
+	ORDER_SETUP_STATE = "2,4"
 )
 
 func (t OrderState) String() string {

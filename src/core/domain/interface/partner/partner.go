@@ -58,6 +58,9 @@ type IPartner interface {
 	// 获取所有商店
 	GetShops() []IShop
 
+	// 获取营业中的商店
+	GetBusinessInShops() []IShop
+
 	// 获取商店
 	GetShop(int) IShop
 

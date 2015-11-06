@@ -12,6 +12,7 @@ package partner
 import (
 	"errors"
 	"fmt"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"
@@ -193,7 +194,7 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 
 	if v.RegisterMode == partner.ModeRegisterClosed ||
-	    v.RegisterMode == partner.ModeRegisterNormal ||
+		v.RegisterMode == partner.ModeRegisterNormal ||
 		v.RegisterMode == partner.ModeRegisterMustInvitation ||
 		v.RegisterMode == partner.ModeRegisterMustRedirect {
 		this._saleConf.RegisterMode = v.RegisterMode
@@ -279,6 +280,17 @@ func (this *Partner) GetShops() []partner.IShop {
 	}
 
 	return this._shops
+}
+
+// 获取营业中的商店
+func (this *Partner) GetBusinessInShops() []partner.IShop {
+	var list []partner.IShop = make([]partner.IShop, 0)
+	for _, v := range this._shops {
+		if v.GetValue().State == enum.ShopBusinessIn {
+			list = append(list, v)
+		}
+	}
+	return list
 }
 
 // 获取商店

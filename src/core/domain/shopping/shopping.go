@@ -12,7 +12,6 @@ package shopping
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
@@ -20,7 +19,6 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
-	"go2o/src/core/infrastructure"
 	"go2o/src/core/infrastructure/lbs"
 	"go2o/src/core/infrastructure/log"
 	"time"
@@ -39,9 +37,9 @@ type Shopping struct {
 }
 
 func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
-rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
-promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-deliveryRep delivery.IDeliveryRep) shopping.IShopping {
+	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
+	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
 	pt, _ := partnerRep.GetPartner(partnerId)
 
@@ -204,7 +202,7 @@ func (this *Shopping) BindCartBuyer(cartKey string, buyerId int) error {
 
 // 将购物车转换为订单
 func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
-member.IMember, shopping.ICart, error) {
+	member.IMember, shopping.ICart, error) {
 	var order shopping.IOrder
 	var val shopping.ValueOrder
 	var cart shopping.ICart
@@ -244,6 +242,7 @@ func (this *Shopping) GetFreeOrderNo() string {
 // 智能选择门店
 func (this *Shopping) SmartChoiceShop(address string) (partner.IShop, error) {
 	dly := this._deliveryRep.GetDelivery(this.GetAggregateRootId())
+
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
 		return nil, errors.New("无法识别的地址：" + address)
@@ -342,7 +341,6 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 
 	saleConf := this._partner.GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
-		ctx := infrastructure.GetApp()
 		orders, err = this._rep.GetWaitingSetupOrders(this._partnerId)
 		if err != nil {
 			f(err)
@@ -351,54 +349,63 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 
 		dt := time.Now()
 		for _, v := range orders {
-			this.setupOrder(ctx, v, &saleConf, dt, f)
+			this.setupOrder(v, &saleConf, dt, f)
 		}
 	}
 }
 
 const (
-	order_timeout_hour = 24
+	order_timeout_hour   = 24
 	order_confirm_minute = 4
 	order_process_minute = 11
 	order_sending_minute = 31
-	order_receive_hour = 5
-	order_complete_hour = 11
+	order_receive_hour   = 5
+	order_complete_hour  = 11
 )
 
-func (this *Shopping) setupOrder(ctx gof.App, v *shopping.ValueOrder,
-conf *partner.SaleConf, t time.Time, f func(error)) {
+func (this *Shopping) setupOrder(v *shopping.ValueOrder,
+	conf *partner.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)
-	dur := time.Duration(t.Unix() - v.CreateTime) * time.Second
+	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
 
-
+	var biShops []partner.IShop
 	switch v.Status {
 	case enum.ORDER_WAIT_PAYMENT:
-		if v.IsPaid == 0 && dur > time.Minute * time.Duration(conf.OrderTimeOutMinute) {
+		if v.IsPaid == 0 && dur > time.Minute*time.Duration(conf.OrderTimeOutMinute) {
 			order.Cancel("超时未付款，系统取消")
-			if ctx.Debug() {
-				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
-			}
+			log.Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
 		}
 
 	case enum.ORDER_WAIT_CONFIRM:
-		if dur > time.Minute * time.Duration(conf.OrderConfirmAfterMinute) {
-			err = order.Confirm()
-			if ctx.Debug() {
-				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
+		if dur > time.Minute*time.Duration(conf.OrderConfirmAfterMinute) {
+			log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
+			var shop partner.IShop
+			if biShops == nil {
+				biShops = this._partner.GetBusinessInShops()
+			}
+			if len(biShops) == 1 {
+				shop = biShops[0]
+			} else {
+				shop, err = this.SmartChoiceShop(v.DeliverAddress)
+				if err != nil {
+					log.Println(err)
+					order.Suspend("智能分配门店失败！原因：" + err.Error())
+					break
+				}
 			}
 
-			shop, err := this.SmartChoiceShop(v.DeliverAddress)
-			if err != nil {
-				log.Println(err)
-				order.Suspend("智能分配门店失败！原因：" + err.Error())
-			} else {
+			if shop != nil {
+
 				sv := shop.GetValue()
 				order.SetShop(shop.GetDomainId())
-				err = order.Process()
+				err = order.Confirm()
+				//err = order.Process()
+
 				order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
 					"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
 			}
+
 		}
 
 	//		case enum.ORDER_WAIT_DELIVERY:
@@ -417,30 +424,24 @@ conf *partner.SaleConf, t time.Time, f func(error)) {
 	//				}
 	//			}
 	case enum.ORDER_WAIT_RECEIVE:
-		if dur > time.Hour * time.Duration(conf.OrderTimeOutReceiveHour) {
+		if dur > time.Hour*time.Duration(conf.OrderTimeOutReceiveHour) {
 			err = order.SignReceived()
 
-			if ctx.Debug() {
-				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Received \n", v.OrderNo)
-			}
-
+			log.Printf("[ AUTO][OrderSetup]:%s - Received \n", v.OrderNo)
 			if err == nil {
 				err = order.Complete()
-				if ctx.Debug() {
-					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
-				}
+				log.Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
 			}
 		}
 
-	//		case enum.ORDER_COMPLETED:
-	//			if dur > time.Hour*order_complete_hour {
-	//				err = order.Complete()
-	//				if ctx.Debug() {
-	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
-	//				}
-	//			}
+		//		case enum.ORDER_COMPLETED:
+		//			if dur > time.Hour*order_complete_hour {
+		//				err = order.Complete()
+		//				if ctx.Debug() {
+		//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
+		//				}
+		//			}
 	}
-
 
 	if err != nil {
 		f(err)

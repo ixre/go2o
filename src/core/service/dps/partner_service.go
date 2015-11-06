@@ -92,6 +92,18 @@ func (this *partnerService) initializePartner(partnerId int) {
 	pt, _ := this._partnerRep.GetPartner(partnerId)
 	pt.LevelManager().InitDefaultLevels()
 
+	// 保存站点设置
+	pt.SaveSiteConf(&partner.SiteConf{
+		PartnerId:  pt.GetAggregateRootId(),
+		IndexTitle: pt.GetValue().Name,
+	})
+
+	// 保存销售设置
+	pt.SaveSaleConf(&partner.SaleConf{
+		PartnerId:    pt.GetAggregateRootId(),
+		RegisterMode: partner.ModeRegisterNormal,
+	})
+
 	// 初始化销售标签
 	this._saleRep.GetSale(partnerId).InitSaleTags()
 }
@@ -141,7 +153,7 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 // 检查注册
 func (this *partnerService) CheckRegisterMode(partnerId int, code string) error {
 	conf := this.GetSaleConf(partnerId)
-	if conf.RegisterMode == partner.ModeRegisterClosed{
+	if conf.RegisterMode == partner.ModeRegisterClosed {
 		return errors.New("1011:系统暂不开放注册")
 	}
 	if conf.RegisterMode == partner.ModeRegisterMustInvitation && len(code) == 0 {

@@ -34,7 +34,7 @@ func (this *deliveryRep) GetDelivery(id int) delivery.IDelivery {
 // 根据区名获取区域
 func (this *deliveryRep) GetAreaByArea(name string) []*delivery.AreaValue {
 	arr := make([]*delivery.AreaValue, 0)
-	if err := this.Connector.GetOrm().Select(arr, "name LIKE '%?%'", name); err == nil {
+	if err := this.Connector.GetOrm().Select(&arr, "name LIKE '%?%'", name); err == nil {
 		return arr
 	}
 	return nil
@@ -68,7 +68,7 @@ func (this *deliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue
 // 获取所有的覆盖区域
 func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
-	err := this.Connector.GetOrm().Select(e, "area_id=?", areaId)
+	err := this.Connector.GetOrm().Select(&e, "area_id=?", areaId)
 	if err != nil {
 		return nil
 	}
