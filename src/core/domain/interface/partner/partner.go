@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	ModeRegisterNormal         = 0 // 正常注册
-	ModeRegisterMustInvitation = 1 // 必须邀请注册
-	ModeRegisterMustRedirect   = 2 // 必须直接注册
+	ModeRegisterClosed         = 0 // 关闭注册
+	ModeRegisterNormal         = 1 // 正常注册
+	ModeRegisterMustInvitation = 2 // 必须邀请注册
+	ModeRegisterMustRedirect   = 3 // 必须直接注册
 )
 
 type IPartner interface {

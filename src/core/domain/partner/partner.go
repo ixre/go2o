@@ -183,6 +183,8 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 		//0.8          #消费者自己
 		this._saleConf = this._rep.GetSaleConf(
 			this.GetAggregateRootId())
+
+		this.verifySaleConf(this._saleConf)
 	}
 	return *this._saleConf
 }
@@ -190,7 +192,8 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 // 保存销售配置
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 
-	if v.RegisterMode == partner.ModeRegisterNormal ||
+	if v.RegisterMode == partner.ModeRegisterClosed ||
+	    v.RegisterMode == partner.ModeRegisterNormal ||
 		v.RegisterMode == partner.ModeRegisterMustInvitation ||
 		v.RegisterMode == partner.ModeRegisterMustRedirect {
 		this._saleConf.RegisterMode = v.RegisterMode
@@ -205,10 +208,27 @@ func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 		return partner.ErrSalesPercent
 	}
 
+	this.verifySaleConf(v)
+
 	this._saleConf = v
 	this._saleConf.PartnerId = this._value.Id
 
 	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
+}
+
+// 验证销售设置
+func (this *Partner) verifySaleConf(v *partner.SaleConf) {
+	if v.OrderTimeOutMinute <= 0 {
+		v.OrderTimeOutMinute = 1440 // 一天
+	}
+
+	if v.OrderConfirmAfterMinute <= 0 {
+		v.OrderConfirmAfterMinute = 60 // 一小时后自动确认
+	}
+
+	if v.OrderTimeOutReceiveHour <= 0 {
+		v.OrderTimeOutReceiveHour = 7 * 24 // 7天后自动确认
+	}
 }
 
 // 获取站点配置

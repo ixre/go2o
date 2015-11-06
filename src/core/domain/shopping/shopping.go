@@ -39,9 +39,9 @@ type Shopping struct {
 }
 
 func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
-	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
-	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
+rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+promRep promotion.IPromotionRep, memberRep member.IMemberRep,
+deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
 	pt, _ := partnerRep.GetPartner(partnerId)
 
@@ -204,7 +204,7 @@ func (this *Shopping) BindCartBuyer(cartKey string, buyerId int) error {
 
 // 将购物车转换为订单
 func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
-	member.IMember, shopping.ICart, error) {
+member.IMember, shopping.ICart, error) {
 	var order shopping.IOrder
 	var val shopping.ValueOrder
 	var cart shopping.ICart
@@ -357,78 +357,90 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 }
 
 const (
-	order_timeout_hour   = 24
+	order_timeout_hour = 24
 	order_confirm_minute = 4
 	order_process_minute = 11
 	order_sending_minute = 31
-	order_receive_hour   = 5
-	order_complete_hour  = 11
+	order_receive_hour = 5
+	order_complete_hour = 11
 )
 
 func (this *Shopping) setupOrder(ctx gof.App, v *shopping.ValueOrder,
-	conf *partner.SaleConf, t time.Time, f func(error)) {
+conf *partner.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)
-	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
+	dur := time.Duration(t.Unix() - v.CreateTime) * time.Second
 
-	if v.PaymentOpt == enum.PAY_ONLINE {
-		if v.IsPaid == 0 && dur > time.Hour*order_timeout_hour {
+
+	switch v.Status {
+	case enum.ORDER_WAIT_PAYMENT:
+		if v.IsPaid == 0 && dur > time.Minute * time.Duration(conf.OrderTimeOutMinute) {
 			order.Cancel("超时未付款，系统取消")
 			if ctx.Debug() {
 				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
 			}
 		}
-	} else if v.PaymentOpt == enum.PAY_OFFLINE {
-		switch v.Status + 1 {
-		case enum.ORDER_WAIT_CONFIRM:
-			if dur > time.Minute*order_confirm_minute {
-				err = order.Confirm()
-				if ctx.Debug() {
-					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-				}
 
-				shop, err := this.SmartChoiceShop(v.DeliverAddress)
-				if err != nil {
-					log.Println(err)
-					order.Suspend("智能分配门店失败！原因：" + err.Error())
-				} else {
-					sv := shop.GetValue()
-					order.SetShop(shop.GetDomainId())
-					order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
-						"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
-				}
+	case enum.ORDER_WAIT_CONFIRM:
+		if dur > time.Minute * time.Duration(conf.OrderConfirmAfterMinute) {
+			err = order.Confirm()
+			if ctx.Debug() {
+				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
 			}
-		case enum.ORDER_WAIT_DELIVERY:
-			if dur > time.Minute*order_process_minute {
+
+			shop, err := this.SmartChoiceShop(v.DeliverAddress)
+			if err != nil {
+				log.Println(err)
+				order.Suspend("智能分配门店失败！原因：" + err.Error())
+			} else {
+				sv := shop.GetValue()
+				order.SetShop(shop.GetDomainId())
 				err = order.Process()
-				if ctx.Debug() {
-					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Processing \n", v.OrderNo)
-				}
+				order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
+					"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
+			}
+		}
+
+	//		case enum.ORDER_WAIT_DELIVERY:
+	//			if dur > time.Minute*order_process_minute {
+	//				err = order.Process()
+	//				if ctx.Debug() {
+	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Processing \n", v.OrderNo)
+	//				}
+	//			}
+
+	//		case enum.ORDER_WAIT_RECEIVE:
+	//			if dur > time.Hour * conf.OrderTimeOutReceiveHour {
+	//				err = order.Deliver()
+	//				if ctx.Debug() {
+	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Sending \n", v.OrderNo)
+	//				}
+	//			}
+	case enum.ORDER_WAIT_RECEIVE:
+		if dur > time.Hour * time.Duration(conf.OrderTimeOutReceiveHour) {
+			err = order.SignReceived()
+
+			if ctx.Debug() {
+				ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Received \n", v.OrderNo)
 			}
 
-		case enum.ORDER_WAIT_RECEIVE:
-			if dur > time.Minute*order_sending_minute {
-				err = order.Deliver()
-				if ctx.Debug() {
-					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Sending \n", v.OrderNo)
-				}
-			}
-		case enum.ORDER_RECEIVED:
-			if dur > time.Hour*order_receive_hour {
-				err = order.SignReceived()
-				if ctx.Debug() {
-					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Received \n", v.OrderNo)
-				}
-			}
-		case enum.ORDER_COMPLETED:
-			if dur > time.Hour*order_complete_hour {
+			if err == nil {
 				err = order.Complete()
 				if ctx.Debug() {
 					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
 				}
 			}
 		}
+
+	//		case enum.ORDER_COMPLETED:
+	//			if dur > time.Hour*order_complete_hour {
+	//				err = order.Complete()
+	//				if ctx.Debug() {
+	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
+	//				}
+	//			}
 	}
+
 
 	if err != nil {
 		f(err)
