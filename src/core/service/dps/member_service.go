@@ -16,6 +16,7 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/dto"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
 	"strings"
@@ -118,6 +119,19 @@ func (this *memberService) LockMember(partnerId, id int) (bool, error) {
 		return false, m.Lock()
 	}
 	return true, m.Unlock()
+}
+
+// 重置密码
+func (this *memberService) ResetPassword(memberId int) string {
+	m := this._memberRep.GetMember(memberId)
+	if m != nil {
+		newPwd := domain.GenerateRandomPwd(6)
+		newEncPwd := domain.MemberSha1Pwd(newPwd)
+		if m.ModifyPassword(newEncPwd, "") == nil {
+			return newPwd
+		}
+	}
+	return ""
 }
 
 // 登陆

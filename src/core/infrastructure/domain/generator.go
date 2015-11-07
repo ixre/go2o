@@ -62,3 +62,8 @@ func NewSecret(hex int) string {
 	str := fmt.Sprintf("%d$%d", hex, time.Now().Add(time.Hour*24*365).Unix())
 	return crypto.Md5([]byte(str))[8:24]
 }
+
+// 创建随机密码
+func GenerateRandomPwd(len int) string {
+	return util.RandString(len)
+}

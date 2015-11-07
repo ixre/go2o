@@ -332,7 +332,6 @@ func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 
 	if len(oldPwd) != 0 && oldPwd != this._value.Pwd {
 		return member.ErrPwdOldPwdNotRight
-
 	}
 
 	this._value.Pwd = newPwd

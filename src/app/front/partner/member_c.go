@@ -20,7 +20,9 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"html/template"
 	"strconv"
 	"time"
@@ -130,6 +132,7 @@ func (this *memberC) Member_details(ctx *web.Context) {
 		}, "views/partner/member/member_details.html")
 }
 
+// 会员基本信息
 func (this *memberC) Member_basic(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	m := dps.MemberService.GetMember(memberId)
@@ -144,9 +147,46 @@ func (this *memberC) Member_basic(ctx *web.Context) {
 				"m":  m,
 				"lv": lv,
 				"sexName": gfmt.BoolString(m.Sex == 1, "先生",
-					gfmt.BoolString(m.Sex == 2, "女士", "未设置")),
+					gfmt.BoolString(m.Sex == 2, "女士", "-")),
+				"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),
+				"regTime":       format.HanUnixDateTime(m.RegTime),
 			}, "views/partner/member/basic_info.html")
 	}
+}
+
+// 会员账户信息
+func (this *memberC) Member_account(ctx *web.Context) {
+	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	acc := dps.MemberService.GetAccount(memberId)
+	if acc != nil {
+
+		ctx.App.Template().Execute(ctx.Response,
+			gof.TemplateDataMap{
+				"acc": acc,
+				"balanceAccountAlias": variable.AliasBalanceAccount,
+				"presentAccountAlias": variable.AliasPresentAccount,
+				"flowAccountAlias":    variable.AliasFlowAccount,
+				"growAccountAlias":    variable.AliasGrowAccount,
+				"integralAlias":       variable.AliasIntegral,
+				"updateTime":          format.HanUnixDateTime(acc.UpdateTime),
+			}, "views/partner/member/account_info.html")
+	}
+}
+
+func (this *memberC) Reset_pwd_post(ctx *web.Context) {
+	var result gof.Message
+	ctx.Request.ParseForm()
+	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
+	rl := dps.MemberService.GetRelation(memberId)
+	partnerId := this.GetPartnerId(ctx)
+	if rl == nil || rl.RegisterPartnerId != partnerId {
+		result.Message = "无权进行当前操作"
+	} else {
+		newPwd := dps.MemberService.ResetPassword(memberId)
+		result.Result = true
+		result.Message = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
+	}
+	ctx.Response.JsonOutput(result)
 }
 
 // 客服充值

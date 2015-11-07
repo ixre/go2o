@@ -16,12 +16,13 @@ type AccountValue struct {
 	Integral int `db:"integral"`
 	// 账户余额
 	Balance float32 `db:"balance" json:"balance"`
+	// 冻结金额
+	FreezesFee float32 `db:"freezes_fee" json:"freezesFee"`
 	// 奖金账户余额
 	PresentBalance float32 `db:"present_balance" json:"presentBalance"`
 	FlowBalance    float32 `db:"flow_balance" json:"flowBalance"` // 流动账户余额
 	GrowAmount     float32 `db:"grow_amount" json:"growAmount"`   // 增利账户金额
-	// 冻结金额
-	FreezesFee float32 `db:"freezes_fee" json:"freezesFee"`
+
 	// 冻结赠送额
 	FreezesPresent float32 `db:"freezes_present" json:"freezesPresent"`
 	// 总赠送金额

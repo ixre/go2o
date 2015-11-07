@@ -16,7 +16,6 @@ import (
 )
 
 var (
-	Context              gof.App
 	PromService          *promotionService
 	ShoppingService      *shoppingService
 	MemberService        *memberService

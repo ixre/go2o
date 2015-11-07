@@ -112,7 +112,7 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		"account":        acc,
 		"latestInfo":     template.HTML(latestInfo),
 		"commissionStr":  template.HTML(commissionStr),
-		"presentAlias":   variable.FlowAccountAlias,
+		"presentAlias":   variable.AliasFlowAccount,
 		"cns":            saleConf.ApplyCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
 	}, "views/ucenter/{device}/account/apply_cash.html",
@@ -182,7 +182,7 @@ func (this *accountC) Convert_f2p(ctx *web.Context) {
 		"member":            m,
 		"account":           acc,
 		"commissionStr":     template.HTML(commissionStr),
-		"flowAlias":         variable.FlowAccountAlias,
+		"flowAlias":         variable.AliasFlowAccount,
 		"flowConvertSlogan": variable.FlowConvertSlogan,
 		"cns":               saleConf.FlowConvertCsn,
 		"notSetTradePwd":    len(m.TradePwd) == 0,
@@ -206,8 +206,8 @@ func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 	if _, err = dps.MemberService.VerifyTradePwd(memberId, tradePwd); err == nil {
 		err = dps.MemberService.TransferFlow(memberId, member.KindBalancePresent,
 			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
-			fmt.Sprintf("%s转换", variable.FlowAccountAlias),
-			fmt.Sprintf("%s转换%s", variable.FlowAccountAlias, variable.PresentAccountAlias))
+			fmt.Sprintf("%s转换", variable.AliasFlowAccount),
+			fmt.Sprintf("%s转换%s", variable.AliasFlowAccount, variable.AliasPresentAccount))
 	}
 
 	if err != nil {
@@ -240,7 +240,7 @@ func (this *accountC) Transfer_f2m(ctx *web.Context) {
 		"member":         m,
 		"account":        acc,
 		"commissionStr":  template.HTML(commissionStr),
-		"flowAlias":      variable.FlowAccountAlias,
+		"flowAlias":      variable.AliasFlowAccount,
 		"cns":            saleConf.TransCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
 	}, "views/ucenter/{device}/account/transfer_f2m.html",
@@ -267,7 +267,7 @@ func (this *accountC) Transfer_f2m_post(ctx *web.Context) {
 		if _, err = dps.MemberService.VerifyTradePwd(memberId, tradePwd); err == nil {
 			err = dps.MemberService.TransferFlowTo(memberId, toMemberId, member.KindBalanceFlow,
 				float32(amount), saleConf.TransCsn, domain.NewTradeNo(partnerId),
-				variable.FlowAccountAlias+"转账", "转入"+variable.FlowAccountAlias)
+				variable.AliasFlowAccount+"转账", "转入"+variable.AliasFlowAccount)
 		}
 	}
 
@@ -294,7 +294,7 @@ func (this *accountC) Transfer_success(ctx *web.Context) {
 		btnText = "继续转账"
 	case "convert_f2p":
 		title = "转换成功"
-		subTitle = variable.FlowAccountAlias + "转换成功！"
+		subTitle = variable.AliasFlowAccount + "转换成功！"
 		btnText = "继续转换"
 	case "apply_p2b":
 		title = "申请成功"
