@@ -69,14 +69,14 @@ func (this *Member) validate(v *member.ValueMember) error {
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
 	v.Phone = strings.TrimSpace(v.Phone)
 
-	if len(v.Usr) < 6 {
+	if len([]rune(v.Usr)) < 6 {
 		return member.ErrUserLength
 	}
 	if !userRegex.MatchString(v.Usr) {
 		return member.ErrUserValidErr
 	}
 
-	if len(v.Name) < 2 {
+	if len([]rune(v.Name)) < 2 {
 		return member.ErrPersonName
 	}
 
@@ -429,7 +429,7 @@ func (this *Member) SaveRelation(r *member.MemberRelation) error {
 }
 
 // 创建配送地址
-func (this *Member) CreateDeliver(v *member.DeliverAddress) member.IDeliver {
+func (this *Member) CreateDeliver(v *member.DeliverAddress)(member.IDeliver,error) {
 	return newDeliver(v, this._rep)
 }
 
@@ -439,7 +439,7 @@ func (this *Member) GetDeliverAddress() []member.IDeliver {
 	vls = this._rep.GetDeliverAddress(this.GetAggregateRootId())
 	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
 	for i, v := range vls {
-		arr[i] = this.CreateDeliver(v)
+		arr[i],_  = this.CreateDeliver(v)
 	}
 	return arr
 }
@@ -448,7 +448,8 @@ func (this *Member) GetDeliverAddress() []member.IDeliver {
 func (this *Member) GetDeliver(deliverId int) member.IDeliver {
 	v := this._rep.GetSingleDeliverAddress(this.GetAggregateRootId(), deliverId)
 	if v != nil {
-		return this.CreateDeliver(v)
+		d,_ := this.CreateDeliver(v)
+		return d
 	}
 	return nil
 }

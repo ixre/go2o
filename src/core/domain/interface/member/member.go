@@ -71,7 +71,7 @@ type IMember interface {
 	UsrIsExist() bool
 
 	// 创建配送地址
-	CreateDeliver(*DeliverAddress) IDeliver
+	CreateDeliver(*DeliverAddress) (IDeliver,error)
 
 	// 获取配送地址
 	GetDeliverAddress() []IDeliver

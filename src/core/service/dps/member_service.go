@@ -218,11 +218,15 @@ func (this *memberService) GetDeliverAddressById(memberId,
 func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAddress) (int, error) {
 	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	var v member.IDeliver
+	var err error
 	if e.Id > 0 {
 		v = m.GetDeliver(e.Id)
-		v.SetValue(e)
+		err = v.SetValue(e)
 	} else {
-		v = m.CreateDeliver(e)
+		v,err = m.CreateDeliver(e)
+	}
+	if err != nil{
+		return -1,err
 	}
 	return v.Save()
 }
