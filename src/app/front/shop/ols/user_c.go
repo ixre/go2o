@@ -54,6 +54,9 @@ func (this *UserC) Login_post(ctx *web.Context) {
 	var result gof.Message
 	partnerId := this.BaseC.GetPartnerId(ctx)
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
+
+	pwd = strings.TrimSpace(pwd)
+
 	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
 
 	if b {

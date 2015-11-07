@@ -63,17 +63,37 @@ func (this *orderC) setState(ctx *web.Context,
 		descript = `<span style="color:red">订单已经作废！</span>`
 	case enum.ORDER_WAIT_CONFIRM:
 		descript = "确认订单无误后，点击按钮进行下一步.."
-		button = `<input class="btn" type="button" id="btn2" value="确认订单"/>`
+		button = `<span class="ui-button w80 small-button">
+                <span class="button-inner">
+                    <span class="button-txt">确认订单</span>
+                    <input id="btn2"/>
+                </span>
+            </span>`
 	case enum.ORDER_WAIT_DELIVERY:
-		button = `<input class="btn" type="button" id="btn2" value="开始配送"/>`
+		button = `<span class="ui-button w80 small-button">
+				<span class="button-inner">
+				<span class="button-txt">开始配送</span>
+				<input id="btn2"/>
+				</span>
+				</span>`
 	case enum.ORDER_WAIT_RECEIVE:
-		button = `<input class="btn" type="button" id="btn2" value="确认收货"/>`
+		button = `<span class="ui-button w80 small-button">
+					<span class="button-inner">
+					<span class="button-txt">确认收货</span>
+					<input id="btn2"/>
+					</span>
+					</span>`
 	case enum.ORDER_RECEIVED:
 		if order.IsPaid == 0 {
 			descript = `<span style="color:red">订单尚未付款,如果已经付款，请人工手动付款！</span>`
 		} else {
 			descript = "如果已收货，点击按钮完成订单"
-			button = `<input class="btn" type="button" id="btn2" value="完成订单"/>`
+			button = `<span class="ui-button w80 small-button">
+                <span class="button-inner">
+                    <span class="button-txt">完成订单</span>
+                    <input id="btn2"/>
+                </span>
+            </span>`
 		}
 	}
 

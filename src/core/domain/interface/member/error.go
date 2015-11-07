@@ -28,11 +28,11 @@ var (
 	ErrDeliverAddressLen *domain.DomainError = domain.NewDomainError(
 		"err_deliver_address_len", "请填写详细的配送地址")
 
-	ErrDeliverRealNameIsNull *domain.DomainError = domain.NewDomainError(
-		"err_deliver_real_name_is_null", "收货人不能为空")
+	ErrDeliverContactPersonName *domain.DomainError = domain.NewDomainError(
+		"err_deliver_contact_person_name", "收货人不正确")
 
-	ErrDeliverPhoneIsNull *domain.DomainError = domain.NewDomainError(
-		"err_deliver_phone_is_null", "电话不能为空")
+	ErrDeliverContactPhone *domain.DomainError = domain.NewDomainError(
+		"err_deliver_phone_is_null", "联系人电话有误")
 
 	ErrPwdCannotSame *domain.DomainError = domain.NewDomainError(
 		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
@@ -52,6 +52,9 @@ var (
 
 	ErrUserValidErr *domain.DomainError = domain.NewDomainError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
+
+	ErrPersonName *domain.DomainError = domain.NewDomainError(
+		"err_person_name", "姓名不正确")
 
 	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
 		"err_email_valid_err", "邮箱不正确")

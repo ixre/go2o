@@ -20,6 +20,7 @@ import (
 	partnerImpl "go2o/src/core/domain/partner"
 	"go2o/src/core/infrastructure/domain"
 	"regexp"
+	"strings"
 	"time"
 )
 
@@ -63,12 +64,22 @@ var (
 )
 
 func (this *Member) validate(v *member.ValueMember) error {
+	v.Usr = strings.ToLower(strings.TrimSpace(v.Usr)) // 小写并删除空格
+	v.Name = strings.TrimSpace(v.Name)
+	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
+	v.Phone = strings.TrimSpace(v.Phone)
+
 	if len(v.Usr) < 6 {
 		return member.ErrUserLength
 	}
 	if !userRegex.MatchString(v.Usr) {
 		return member.ErrUserValidErr
 	}
+
+	if len(v.Name) < 2 {
+		return member.ErrPersonName
+	}
+
 	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
 		return member.ErrEmailValidErr
 	}

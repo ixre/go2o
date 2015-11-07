@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
 	"strconv"
+	"strings"
 )
 
 type loginC struct {
@@ -31,6 +32,9 @@ func (this *loginC) Index_post(ctx *web.Context) {
 	r.ParseForm()
 	var result gof.Message
 	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
+
+	pwd = strings.TrimSpace(pwd)
+
 	b, m, err := dps.MemberService.Login(-1, usr, pwd)
 	if b {
 		ctx.Session().Set("member", m)

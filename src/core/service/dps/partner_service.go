@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"strings"
 )
 
 type partnerService struct {
@@ -39,6 +40,7 @@ func NewPartnerService(r partner.IPartnerRep, saleRep sale.ISaleRep,
 
 // 验证用户密码并返回编号
 func (this *partnerService) Verify(usr, pwd string) int {
+	usr = strings.ToLower(strings.TrimSpace(usr))
 	return this._query.Verify(usr, pwd)
 }
 

@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
+	"strings"
 	"time"
 )
 
@@ -121,6 +122,8 @@ func (this *memberService) LockMember(partnerId, id int) (bool, error) {
 
 // 登陆
 func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.ValueMember, error) {
+	usr = strings.ToLower(strings.TrimSpace(usr))
+
 	val := this._memberRep.GetMemberValueByUsr(usr)
 	if val == nil {
 		val = this._memberRep.GetMemberValueByPhone(usr)

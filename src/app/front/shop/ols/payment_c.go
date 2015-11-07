@@ -81,10 +81,10 @@ func (this *PaymentC) Create(ctx *web.Context) {
 
 	var order *shopping.ValueOrder
 	if len(orderNo) > 0 {
-//	dps.ShoppingService.PayForOrderOnlineTrade(partnerId,orderNo,"alipay","")
-//	ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", orderNo))
-//	ctx.Response.WriteHeader(302)
-//	return
+		//	dps.ShoppingService.PayForOrderOnlineTrade(partnerId,orderNo,"alipay","")
+		//	ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", orderNo))
+		//	ctx.Response.WriteHeader(302)
+		//	return
 		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 	}
 

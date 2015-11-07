@@ -11,6 +11,7 @@ package member
 
 import (
 	"go2o/src/core/domain/interface/member"
+	"strings"
 )
 
 var _ member.IDeliver = new(deliver)
@@ -37,18 +38,30 @@ func (this *deliver) GetValue() member.DeliverAddress {
 
 func (this *deliver) SetValue(v *member.DeliverAddress) error {
 	if this.value.MemberId == v.MemberId {
-		if len(v.Address) < 6 {
-			return member.ErrDeliverAddressLen
+		v.Address = strings.TrimSpace(v.Address)
+		v.RealName = strings.TrimSpace(v.RealName)
+		v.Phone = strings.TrimSpace(v.Phone)
+
+		if err := this.checkValue(v); err != nil {
+			return err
 		}
 
-		if len(v.RealName) == 0 {
-			return member.ErrDeliverRealNameIsNull
-		}
-
-		if len(v.Phone) == 0 {
-			return member.ErrDeliverPhoneIsNull
-		}
 		this.value = v
+	}
+	return nil
+}
+
+func (this *deliver) checkValue(v *member.DeliverAddress) error {
+	if len(v.Address) < 6 {
+		return member.ErrDeliverAddressLen
+	}
+
+	if len(v.RealName) < 2 {
+		return member.ErrDeliverContactPersonName
+	}
+
+	if !phoneRegex.MatchString(v.Phone) {
+		return member.ErrDeliverContactPhone
 	}
 	return nil
 }

@@ -201,7 +201,7 @@ func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) 
 	this._value.PaidTime = unix
 	_, err := this.Save()
 
-	this._shopping.SmartConfirmOrder(this)	// 确认订单
+	this._shopping.SmartConfirmOrder(this) // 确认订单
 
 	return err
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"strings"
 )
 
 type loginC struct {
@@ -27,6 +28,8 @@ func (this *loginC) Login_post(ctx *web.Context) {
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
+
+	pwd = strings.TrimSpace(pwd)
 	pt, result, message := this.ValidLogin(usr, pwd)
 
 	if result {

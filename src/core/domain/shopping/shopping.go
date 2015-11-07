@@ -21,8 +21,8 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/lbs"
 	"go2o/src/core/infrastructure/log"
-	"time"
 	"sync"
+	"time"
 )
 
 type Shopping struct {
@@ -333,7 +333,7 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 	return this.CreateOrder(val, nil), err
 }
 
-var(
+var (
 	shopLocker sync.Mutex
 	biShops    []partner.IShop
 )
@@ -344,7 +344,7 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 	var err error
 
 	shopLocker.Lock()
-	defer func(){
+	defer func() {
 		shopLocker.Unlock()
 	}()
 	biShops = nil
@@ -374,7 +374,7 @@ const (
 	order_complete_hour  = 11
 )
 
-func (this *Shopping) SmartConfirmOrder(order shopping.IOrder)error{
+func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)

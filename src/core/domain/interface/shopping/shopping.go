@@ -69,5 +69,5 @@ type IShopping interface {
 	SmartChoiceShop(address string) (partner.IShop, error)
 
 	// 智能确定订单
-	SmartConfirmOrder(order IOrder)error
+	SmartConfirmOrder(order IOrder) error
 }
