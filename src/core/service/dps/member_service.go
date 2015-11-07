@@ -223,10 +223,10 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 		v = m.GetDeliver(e.Id)
 		err = v.SetValue(e)
 	} else {
-		v,err = m.CreateDeliver(e)
+		v, err = m.CreateDeliver(e)
 	}
-	if err != nil{
-		return -1,err
+	if err != nil {
+		return -1, err
 	}
 	return v.Save()
 }

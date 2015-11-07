@@ -120,6 +120,28 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
+func (this *memberC) Member_Details(ctx *web.Context) {
+	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+
+	ctx.App.Template().Execute(ctx.Response,
+		gof.TemplateDataMap{
+			"memberId": memberId,
+		}, "views/partner/member/member_details.html")
+}
+
+func (this *memberC) Member_basic(ctx *web.Context) {
+	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	mem := dps.MemberService.GetMemberSummary(memberId)
+	if mem == nil {
+		ctx.Response.Write([]byte("no such member"))
+	} else {
+		ctx.App.Template().Execute(ctx.Response,
+			gof.TemplateDataMap{
+				"m": mem,
+			}, "views/partner/member/basic_info.html")
+	}
+}
+
 // 客服充值
 func (this *memberC) Charge(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))

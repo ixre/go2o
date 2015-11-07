@@ -21,12 +21,12 @@ type deliver struct {
 	memberRep member.IMemberRep
 }
 
-func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep)(member.IDeliver,error) {
-	d :=  &deliver{
+func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep) (member.IDeliver, error) {
+	d := &deliver{
 		value:     v,
 		memberRep: memberRep,
 	}
-	return d,d.checkValue(v)
+	return d, d.checkValue(v)
 }
 
 func (this *deliver) GetDomainId() int {
@@ -53,7 +53,7 @@ func (this *deliver) checkValue(v *member.DeliverAddress) error {
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.Phone = strings.TrimSpace(v.Phone)
 
-	if len([]rune(v.Address)) < 6 {				// 判断字符长度
+	if len([]rune(v.Address)) < 6 { // 判断字符长度
 		return member.ErrDeliverAddressLen
 	}
 

@@ -429,7 +429,7 @@ func (this *Member) SaveRelation(r *member.MemberRelation) error {
 }
 
 // 创建配送地址
-func (this *Member) CreateDeliver(v *member.DeliverAddress)(member.IDeliver,error) {
+func (this *Member) CreateDeliver(v *member.DeliverAddress) (member.IDeliver, error) {
 	return newDeliver(v, this._rep)
 }
 
@@ -439,7 +439,7 @@ func (this *Member) GetDeliverAddress() []member.IDeliver {
 	vls = this._rep.GetDeliverAddress(this.GetAggregateRootId())
 	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
 	for i, v := range vls {
-		arr[i],_  = this.CreateDeliver(v)
+		arr[i], _ = this.CreateDeliver(v)
 	}
 	return arr
 }
@@ -448,7 +448,7 @@ func (this *Member) GetDeliverAddress() []member.IDeliver {
 func (this *Member) GetDeliver(deliverId int) member.IDeliver {
 	v := this._rep.GetSingleDeliverAddress(this.GetAggregateRootId(), deliverId)
 	if v != nil {
-		d,_ := this.CreateDeliver(v)
+		d, _ := this.CreateDeliver(v)
 		return d
 	}
 	return nil
