@@ -24,7 +24,7 @@ type ValueMember struct {
 
 	Sex      int    `db:"sex"`
 	Avatar   string `db:"avatar"`
-	Birthday string `db:"birthday"`
+	BirthDay string `db:"birthday"`
 	Phone    string `db:"phone"`
 	Address  string `db:"address"`
 	Qq       string `db:"qq"`

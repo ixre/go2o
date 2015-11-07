@@ -99,7 +99,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		return err
 	}
 	this._value.Address = v.Address
-	this._value.Birthday = v.Birthday
+	this._value.BirthDay = v.BirthDay
 	this._value.Qq = v.Qq
 	this._value.Email = v.Email
 	this._value.LastLoginTime = v.LastLoginTime
@@ -128,7 +128,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	}
 
 	if len(this._value.Qq) != 0 && len(this._value.Email) != 0 &&
-		len(this._value.Birthday) != 0 && len(this._value.Address) != 0 &&
+		len(this._value.BirthDay) != 0 && len(this._value.Address) != 0 &&
 		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
 		this._value.Sex != 0 {
 		this.notifyOnProfileComplete()
@@ -378,7 +378,7 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	m.Level = 1
 	m.Exp = 1
 	m.Avatar = "resource/no_avatar.gif"
-	m.Birthday = "1970-01-01"
+	m.BirthDay = "1970-01-01"
 	m.DynamicToken = m.Pwd
 	m.Exp = 0
 

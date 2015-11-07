@@ -64,7 +64,7 @@ func testRegister() {
 		Name:     "测试员",
 		Sex:      1,
 		Avatar:   "",
-		Birthday: "1988-11-09",
+		BirthDay: "1988-11-09",
 		Phone:    "18616999822",
 		Address:  "",
 		Qq:       "",

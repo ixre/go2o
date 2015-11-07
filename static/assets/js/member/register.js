@@ -156,12 +156,12 @@ if (inviCode != null) {
 // if(!/^\d{17}(\d|x)$/i.test(sId)) return "&nbsp;";
 // sId=sId.replace(/x$/i,"a");
 // if(aCity[parseInt(sId.substr(0,2))]==null) return "&nbsp;";
-// sBirthday=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));
-// var d=new Date(sBirthday.replace(/-/g,"/")) ;
-// if(sBirthday!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "&nbsp;";
+// sBirthDay=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));
+// var d=new Date(sBirthDay.replace(/-/g,"/")) ;
+// if(sBirthDay!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "&nbsp;";
 // for(var i = 17;i>=0;i --) iSum += (Math.pow(2,i) % 11) * parseInt(sId.charAt(17 - i),11) ;
 // if(iSum%11!=1) return "&nbsp;";
-// return true;//aCity[parseInt(sId.substr(0,2))]+","+sBirthday+","+ (sId.substr(16,1)%2?"男":"女")
+// return true;//aCity[parseInt(sId.substr(0,2))]+","+sBirthDay+","+ (sId.substr(16,1)%2?"男":"女")
 //}
 
 

@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
@@ -120,7 +121,7 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-func (this *memberC) Member_Details(ctx *web.Context) {
+func (this *memberC) Member_details(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 
 	ctx.App.Template().Execute(ctx.Response,
@@ -131,13 +132,19 @@ func (this *memberC) Member_Details(ctx *web.Context) {
 
 func (this *memberC) Member_basic(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
-	mem := dps.MemberService.GetMemberSummary(memberId)
-	if mem == nil {
+	m := dps.MemberService.GetMember(memberId)
+	if m == nil {
 		ctx.Response.Write([]byte("no such member"))
 	} else {
+
+		lv := dps.PartnerService.GetLevel(this.GetPartnerId(ctx), m.Level)
+
 		ctx.App.Template().Execute(ctx.Response,
 			gof.TemplateDataMap{
-				"m": mem,
+				"m":  m,
+				"lv": lv,
+				"sexName": gfmt.BoolString(m.Sex == 1, "先生",
+					gfmt.BoolString(m.Sex == 2, "女士", "未设置")),
 			}, "views/partner/member/basic_info.html")
 	}
 }
