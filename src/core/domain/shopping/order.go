@@ -195,11 +195,14 @@ func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) 
 	this._value.IsPaid = 1
 	this._value.PaymentSign = shopping.PaymentByBuyer
 	if this._value.Status == enum.ORDER_WAIT_PAYMENT {
-		this._value.Status = enum.ORDER_WAIT_DELIVERY // 设置为待配送状态
+		this._value.Status = enum.ORDER_WAIT_CONFIRM // 设置为待确认状态
 	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
 	_, err := this.Save()
+
+	this._shopping.SmartConfirmOrder(this)	// 确认订单
+
 	return err
 }
 

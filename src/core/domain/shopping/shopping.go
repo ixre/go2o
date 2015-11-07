@@ -22,6 +22,7 @@ import (
 	"go2o/src/core/infrastructure/lbs"
 	"go2o/src/core/infrastructure/log"
 	"time"
+	"sync"
 )
 
 type Shopping struct {
@@ -332,11 +333,21 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 	return this.CreateOrder(val, nil), err
 }
 
+var(
+	shopLocker sync.Mutex
+	biShops    []partner.IShop
+)
+
 // 自动设置订单
 func (this *Shopping) OrderAutoSetup(f func(error)) {
 	var orders []*shopping.ValueOrder
 	var err error
 
+	shopLocker.Lock()
+	defer func(){
+		shopLocker.Unlock()
+	}()
+	biShops = nil
 	log.Println("[SETUP] start auto setup")
 
 	saleConf := this._partner.GetSaleConf()
@@ -363,13 +374,46 @@ const (
 	order_complete_hour  = 11
 )
 
+func (this *Shopping) SmartConfirmOrder(order shopping.IOrder)error{
+	var err error
+	v := order.GetValue()
+	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
+	var shop partner.IShop
+
+	if biShops == nil {
+		biShops = this._partner.GetBusinessInShops()
+	}
+
+	if len(biShops) == 1 {
+		shop = biShops[0]
+	} else {
+		shop, err = this.SmartChoiceShop(v.DeliverAddress)
+		if err != nil {
+			log.Println(err)
+			order.Suspend("智能分配门店失败！原因：" + err.Error())
+			return err
+		}
+	}
+
+	if shop != nil {
+
+		sv := shop.GetValue()
+		order.SetShop(shop.GetDomainId())
+		err = order.Confirm()
+		//err = order.Process()
+
+		order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
+			"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
+	}
+	return err
+}
+
 func (this *Shopping) setupOrder(v *shopping.ValueOrder,
 	conf *partner.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)
 	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
 
-	var biShops []partner.IShop
 	switch v.Status {
 	case enum.ORDER_WAIT_PAYMENT:
 		if v.IsPaid == 0 && dur > time.Minute*time.Duration(conf.OrderTimeOutMinute) {
@@ -379,33 +423,7 @@ func (this *Shopping) setupOrder(v *shopping.ValueOrder,
 
 	case enum.ORDER_WAIT_CONFIRM:
 		if dur > time.Minute*time.Duration(conf.OrderConfirmAfterMinute) {
-			log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-			var shop partner.IShop
-			if biShops == nil {
-				biShops = this._partner.GetBusinessInShops()
-			}
-			if len(biShops) == 1 {
-				shop = biShops[0]
-			} else {
-				shop, err = this.SmartChoiceShop(v.DeliverAddress)
-				if err != nil {
-					log.Println(err)
-					order.Suspend("智能分配门店失败！原因：" + err.Error())
-					break
-				}
-			}
-
-			if shop != nil {
-
-				sv := shop.GetValue()
-				order.SetShop(shop.GetDomainId())
-				err = order.Confirm()
-				//err = order.Process()
-
-				order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
-					"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
-			}
-
+			err = this.SmartConfirmOrder(order)
 		}
 
 	//		case enum.ORDER_WAIT_DELIVERY:

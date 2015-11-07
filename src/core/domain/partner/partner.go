@@ -193,6 +193,8 @@ func (this *Partner) GetSaleConf() partner.SaleConf {
 // 保存销售配置
 func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 
+	this.GetSaleConf()
+
 	if v.RegisterMode == partner.ModeRegisterClosed ||
 		v.RegisterMode == partner.ModeRegisterNormal ||
 		v.RegisterMode == partner.ModeRegisterMustInvitation ||
