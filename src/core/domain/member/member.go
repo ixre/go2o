@@ -76,7 +76,7 @@ func (this *Member) validate(v *member.ValueMember) error {
 		return member.ErrUserValidErr
 	}
 
-	if len([]rune(v.Name)) < 2 {
+	if this.GetAggregateRootId() != 0 && len([]rune(v.Name)) < 2 {
 		return member.ErrPersonName
 	}
 

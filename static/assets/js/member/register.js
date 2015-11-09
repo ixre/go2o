@@ -75,7 +75,7 @@ var phone = j6.$('phone');
 if (phone != null) {
     phone.onblur = function () {
         if (this.value == undefined)return;
-        if (this.value != '' && !/^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$/.test(this.value)) {
+        if (this.value != '' && !/^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8])(\d{8})$/.test(this.value)) {
             j6.validator.setTip(this, false, '0');
         } else {
             if (this.value != '') {
