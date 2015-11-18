@@ -512,3 +512,9 @@ func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int
 func (this *memberService) FilterMemberByUsrOrPhone(partnerId int, key string) []*dto.SimpleMember {
 	return this._query.FilterMemberByUsrOrPhone(partnerId, key)
 }
+
+// 会员推广排名
+func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelComp string, level int,
+	startTime int64, endTime int64, num int) []*dto.RankMember {
+	return this._query.GetMemberInviRank(partnerId, allTeam, levelComp, level, startTime, endTime, num)
+}

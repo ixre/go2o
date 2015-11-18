@@ -335,5 +335,9 @@ func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
 
 // 团队排名列表
 func (this *memberC) Team_rank(ctx *web.Context) {
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/member/team_rank.html")
+
+	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+		"levelDr": template.HTML(levelDr),
+	}, "views/partner/member/team_rank.html")
 }
