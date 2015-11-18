@@ -332,3 +332,8 @@ func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
 	}
 	ctx.Response.JsonOutput(msg)
 }
+
+// 团队排名列表
+func (this *memberC) Team_rank(ctx *web.Context) {
+	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/member/team_rank.html")
+}
