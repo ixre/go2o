@@ -147,18 +147,20 @@ func (this *MemberQuery) GetMemberInviRank(partnerId int, allTeam bool, levelCom
 	this.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id) as invi_num,
+	AND r.reg_partner_id=rl.reg_partner_id  AND m1.reg_time BETWEEN
+  ? AND ? ) as invi_num,
 	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id)+
+	AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+  ? AND ? )+
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND invi_member_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id =
-    m.id AND r.reg_partner_id=rl.reg_partner_id))) as all_num
+    m.id AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+  ? AND ? ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_partner_id = ? AND state= ? AND m.reg_time BETWEEN
-  ? AND ? ) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_partner_id = ? AND state= ?) t ORDER BY %s,t.reg_time asc
  LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)
@@ -173,22 +175,7 @@ func (this *MemberQuery) GetMemberInviRank(partnerId int, allTeam bool, levelCom
 				RegTime:  regTime,
 			})
 		}
-	}, partnerId, 1, startTime, endTime, num)
+	}, startTime, endTime, startTime, endTime, startTime, endTime, partnerId, 1, num)
 
-	fmt.Println(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
- (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id) as invi_num,
-	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id)+
- (SELECT COUNT(0) FROM mm_relation WHERE invi_member_id IN
-	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id =
-    m.id AND r.reg_partner_id=rl.reg_partner_id))) as all_num
- FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_partner_id = ? AND state= ? AND m.reg_time BETWEEN
-  ? AND ? ) t ORDER BY %s,t.reg_time asc
- LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, sortField))
 	return list
 }
