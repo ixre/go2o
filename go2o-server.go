@@ -20,6 +20,9 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"os/signal"
+	"syscall"
+	"log"
 )
 
 func main() {
@@ -60,6 +63,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	go handleSignal(ch)
+
 	if v := newApp.Config().GetInt("server_port"); v != 0 {
 		httpPort = v
 	}
@@ -98,5 +103,21 @@ func main() {
 
 	if booted {
 		<-ch
+	}
+}
+
+func handleSignal(srcCh chan bool){
+	ch := make(chan os.Signal)
+	signal.Notify(ch,syscall.SIGHUP,syscall.SIGINT,syscall.SIGTERM)
+	for{
+		sig := <- ch
+		switch sig {
+		case syscall.SIGHUP:
+		//log.Println("[ OS][ TERM] - go2o sighup ...")
+		case syscall.SIGINT:
+		case syscall.SIGTERM:	// 退出时
+			log.Println("[ OS][ TERM] - go2o server has exit !")
+			close(srcCh)
+		}
 	}
 }
