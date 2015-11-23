@@ -17,12 +17,12 @@ import (
 	"go2o/src/app/daemon"
 	"go2o/src/cache"
 	"go2o/src/core"
+	"log"
 	"os"
+	"os/signal"
 	"runtime"
 	"strings"
-	"os/signal"
 	"syscall"
-	"log"
 )
 
 func main() {
@@ -106,15 +106,15 @@ func main() {
 	}
 }
 
-func handleSignal(srcCh chan bool){
+func handleSignal(srcCh chan bool) {
 	ch := make(chan os.Signal)
-	signal.Notify(ch,syscall.SIGHUP,]syscall.SIGTERM)
-	for{
-		sig := <- ch
+	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM)
+	for {
+		sig := <-ch
 		switch sig {
 		case syscall.SIGHUP:
 		//log.Println("[ OS][ TERM] - go2o sighup ...")
-		case syscall.SIGTERM:	// 退出时
+		case syscall.SIGTERM: // 退出时
 			log.Println("[ OS][ TERM] - go2o server has exit !")
 			close(srcCh)
 		}

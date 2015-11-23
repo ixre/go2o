@@ -7,41 +7,41 @@
  * history :
  */
 package main
+
 import (
+	"flag"
+	"fmt"
+	"github.com/jsix/gof"
+	"go2o/src/core"
+	"go2o/src/core/service/dps"
 	"go2o/src/tcpserve"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"log"
-	"flag"
-	"fmt"
-	"go2o/src/core"
-	"github.com/jsix/gof"
-	"go2o/src/core/service/dps"
 )
 
-func main(){
-	var(
+func main() {
+	var (
 		port int
-		ch chan bool = make(chan bool)
+		ch   chan bool = make(chan bool)
 		conf string
 	)
 
-	flag.IntVar(&port,"port",1005,"")
-	flag.StringVar(&conf,"conf","app.conf","")
+	flag.IntVar(&port, "port", 1005, "")
+	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.Parse()
 
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
 
-
-	go tcpserve.ListenTcp(fmt.Sprintf(":%d",port))
-	go func(mainCh chan bool){
+	go tcpserve.ListenTcp(fmt.Sprintf(":%d", port))
+	go func(mainCh chan bool) {
 		ch := make(chan os.Signal)
-		signal.Notify(ch,syscall.SIGTERM,syscall.SIGKILL)
-		for{
-			switch <- ch {
-			case syscall.SIGKILL,syscall.SIGTERM:
+		signal.Notify(ch, syscall.SIGTERM, syscall.SIGKILL)
+		for {
+			switch <-ch {
+			case syscall.SIGKILL, syscall.SIGTERM:
 				log.Println("[ Tcp][ Term] - tcp serve has term!")
 				close(mainCh)
 			}
@@ -50,5 +50,5 @@ func main(){
 
 	log.Println("[ TCP][ SERVE] - socket is served ... ")
 
-	<- ch
+	<-ch
 }
