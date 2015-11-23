@@ -12,11 +12,11 @@ import (
 	"bufio"
 	"io"
 	"log"
-	"github.com/jsix/gof/util"
 	"time"
 	"strings"
 	"errors"
 	"go2o/src/core/service/dps"
+	"fmt"
 )
 
 func printf(format string,args ...interface{}){
@@ -37,23 +37,27 @@ func listen(addr string,rc TcpReceiveCaller){
 	listen,err := net.ListenTCP("tcp",serveAddr)
 	for{
 		if conn,err := listen.AcceptTCP();err == nil{
-			printf("[ CONNECT][ NEW] - %s",conn.RemoteAddr().String())
+			printf("[ CLIENT][ CONNECT] - new client connection IP: %s ; active clients : %d",
+				conn.RemoteAddr().String(),len(clients)+1)
 			go receiveTcpConn(conn,rc)
 		}
 	}
 }
 
 func receiveTcpConn(conn *net.TCPConn,rc TcpReceiveCaller){
-	for{
+	for {
 		buf := bufio.NewReader(conn)
-		line,err := buf.ReadBytes('\n')
-		if err == io.EOF{
-			printf("[ DISCONNECT]- IP %s disconnect!",conn.RemoteAddr().String())
+		line, err := buf.ReadBytes('\n')
+		if err == io.EOF {
+			delete(clients,conn.RemoteAddr().String())
+			printf("[ CLIENT][ DISCONN] - IP : %s disconnect!active clients : %d",
+				conn.RemoteAddr().String(),len(clients))
 			break
 		}
-		if d,err := rc(conn,line);err != nil{
-			conn.Write([]byte("error$"+err.Error()))
-		}else{
+
+		if d, err := rc(conn, line);err != nil{
+			conn.Write([]byte("error$" + err.Error()))
+		}else {
 			conn.Write(d)
 		}
 	}
@@ -73,54 +77,46 @@ type(
 	}
 )
 
-// generate client id
-func genClientId()string{
-	for {
-		id := util.RandString(5)
-		if _,ok := clients[id];!ok{
-			return id
-		}
-	}
-}
-
 func ListenTcp(addr string){
-	listen(addr, myTcpReceive)
+	listen(addr,func(conn net.Conn,b []byte)([]byte,error){
+		id,ok := clients[conn.RemoteAddr().String()]
+		// auth
+		if !ok{
+			if err := createConnection(conn,string(b));err != nil{
+				return nil,err
+			}
+		}
+		//
+		return []byte(fmt.Sprintf("message send by %d",id.Id)),nil
+	})
 }
 
-func myTcpReceive(conn net.Conn,b []byte)([]byte,error) {
-	line := string(b)
-	if !strings.HasPrefix(line, "CID:") {
-		return chkClientPerm(conn, line)
-	}
-	splitPos := strings.Index(line,"$")
-	cid := line[4:splitPos]
-	return handleSocketCmd(cid,line[splitPos+1:])
-}
 
 
-// check client has own permission
-func chkClientPerm (conn net.Conn,line string)([]byte,error) {
-	arr := strings.Split(line, "&")    // API_ID&SECRET
-	if len(arr) == 2 {
-		partnerId := dps.PartnerService.GetPartnerIdByApiId(arr[0])
-		apiInfo := dps.PartnerService.GetApiInfo(partnerId)
-		if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
-			if apiInfo.Enabled == 0 {
-				return nil, errors.New("api has exipres")
+// create partner connection
+func createConnection (conn net.Conn,line string)(error) {
+	if strings.HasPrefix(line,"AUTH:") {
+		arr := strings.Split(line[5:], " ")    // AUTH:API_ID SECRET
+		if len(arr) == 2 {
+			partnerId := dps.PartnerService.GetPartnerIdByApiId(arr[0])
+			apiInfo := dps.PartnerService.GetApiInfo(partnerId)
+			if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
+				if apiInfo.Enabled == 0 {
+					return errors.New("api has exipres")
+				}
+				now := time.Now()
+				cli := &ClientIdentity{
+					Id:partnerId,
+					Addr:conn.RemoteAddr(),
+					ConnectTime:now,
+					LastConnectTime:now,
+				}
+				clients[conn.RemoteAddr().String()] = cli
+				return nil
 			}
-			now := time.Now()
-			clientId := genClientId()
-			cli := &ClientIdentity{
-				Id:partnerId,
-				Addr:conn.RemoteAddr(),
-				ConnectTime:now,
-				LastConnectTime:now,
-			}
-			clients[clientId] = cli
-			return []byte(clientId), nil    // return client id
 		}
 	}
-	return nil, errors.New("conn reject")
+	return errors.New("conn reject")
 }
 
 

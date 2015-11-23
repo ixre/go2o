@@ -13,6 +13,7 @@ import (
 	"net"
 	"time"
 	"fmt"
+	"log"
 )
 
 func TestConn(t *testing.T){
@@ -32,9 +33,10 @@ func TestConn(t *testing.T){
 	for i:=0;i<10;i++{
 		//b,_ := encodeContent(time.Now().Format("2006年01月02日 15时04分05秒"))
 		cli.Write([]byte(time.Now().Format("2006年01月02日 15时04分05秒\n")))
-		cli.Read(buffer)
+		n,_ := cli.Read(buffer)
+		log.Println("<",string(buffer[:n]),">",n)
 		time.Sleep(time.Second * 1)
 	}
 
-	cli.Close()
+	//cli.Close()
 }

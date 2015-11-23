@@ -29,7 +29,7 @@ func main(){
 
 	flag.IntVar(&port,"port",1005,"")
 	flag.StringVar(&conf,"conf","app.conf","")
-
+	flag.Parse()
 
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
@@ -47,5 +47,8 @@ func main(){
 			}
 		}
 	}(ch)
+
+	log.Println("[ TCP][ SERVE] - socket is served ... ")
+
 	<- ch
 }
