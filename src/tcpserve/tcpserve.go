@@ -95,7 +95,7 @@ type (
 )
 
 func ListenTcp(addr string) {
-	go serveLoop()
+	serveLoop()	// server loop,send some message to client
 	listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
 		cmd := string(b)
 		id, ok := clients[conn.RemoteAddr().String()]
@@ -150,6 +150,8 @@ func handleSocketCmd(id *ClientIdentity, cmd string) ([]byte, error) {
 		return cliMAuth(id, plan)
 	case "PRINT":
 		return cliPrint(id, plan)
+	case "PING":
+		return []byte("PONG"),nil
 
 	}
 	return []byte(cmd), nil
@@ -157,12 +159,24 @@ func handleSocketCmd(id *ClientIdentity, cmd string) ([]byte, error) {
 
 func serveLoop() {
 	conn := core.GetRedisConn()
+	go notifyMup(conn)
+}
+
+func notifyMup(conn redis.Conn){
 	for {
 		mid, err := redis.Int(conn.Do("LPOP", variable.KvMemberUpdateTcpNotifyQueue))
 		if err == nil {
-			if ide, ok := clients[users[mid]]; ok && ide.Conn != nil {
-				pushMemberSummary(ide.Conn, mid)
+			arr := strings.Split(users[mid],"$")
+			var connList []net.Conn = make([]net.Conn,0)
+			for _,v := range arr{
+				if ide, ok := clients[v]; ok && ide.Conn != nil {
+					connList = append(connList,ide.Conn)
+				}
 			}
+			if len(connList) > 0 {
+				pushMemberSummary(connList, mid)
+			}
+
 		}
 	}
 }
@@ -177,7 +191,12 @@ func cliMAuth(id *ClientIdentity, param string) ([]byte, error) {
 		b = true
 		if b { // auth success
 			id.UserId = memberId
-			users[id.UserId] = id.Addr.String()
+			// bind user activated clients
+			if v,ok := users[id.UserId];ok{
+				users[id.UserId] = v +"$" + id.Addr.String()
+			}else{
+				users[id.UserId] = id.Addr.String()
+			}
 			return []byte("ok"), nil
 		}
 	}

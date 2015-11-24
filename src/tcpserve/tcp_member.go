@@ -29,12 +29,14 @@ func GetMemberSummary(memberId int, dbGet bool) *dto.MemberSummary {
 }
 
 // push member summary to tcp client
-func pushMemberSummary(conn net.Conn, memberId int) {
+func pushMemberSummary(connList []net.Conn, memberId int) {
 	printf(false, "[ TCP][ NOTIFY] - notify member update - %d", memberId)
 	sm := GetMemberSummary(memberId, true)
 	if d, err := json.Marshal(sm); err == nil {
 		d = append([]byte("MUP:"), d...)
-		conn.Write(d)
-		conn.Write([]byte("\n"))
+		for _,conn := range connList{
+			conn.Write(d)
+			conn.Write([]byte("\n"))
+		}
 	}
 }
