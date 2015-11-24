@@ -9,16 +9,21 @@
 package tcpserve
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
+	"sync"
 	"testing"
-	"time"
 )
 
+var mux sync.Mutex
+
 func TestConn(t *testing.T) {
+	var ch chan bool = make(chan bool)
 	fmt.Println("---beigin test ---")
-	raddr, err := net.ResolveTCPAddr("tcp", ":1005")
+	raddr, err := net.ResolveTCPAddr("tcp", ":1425")
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -32,33 +37,40 @@ func TestConn(t *testing.T) {
 
 	var buffer []byte = make([]byte, 6048)
 
-	cli.Write([]byte("AUTH:6000037440#0befdb52f387cc93\n"))
-	n,_ := cli.Read(buffer)
+	cli.Write([]byte("AUTH:6000037440#0befdb52f387cc93#1.0\n"))
+	n, _ := cli.Read(buffer)
 	line := string(buffer[:n])
-	if line != "ok" {
+	if line != "ok\n" {
 		log.Println(line)
 		return
 	}
 
 	log.Println("partner auth success")
 	cli.Write([]byte("MAUTH:1#123456\n"))
-	n,_ = cli.Read(buffer)
+	n, _ = cli.Read(buffer)
 	line = string(buffer[:n])
-	if line != "ok" {
+	if line != "ok\n" {
 		log.Println(line)
 		return
 	}
 
 	log.Println("member auth success")
 
+	go listenTcp(cli)
 
-	for i := 0; i < 10; i++ {
-		//b,_ := encodeContent(time.Now().Format("2006年01月02日 15时04分05秒"))
-		cli.Write([]byte(time.Now().Format("PRINT:2006年01月02日 15时04分05秒\n")))
-		n, _ = cli.Read(buffer)
-		log.Println("<", string(buffer[:n]), ">", n)
-		time.Sleep(time.Second * 1)
+	<-ch
+
+}
+
+func listenTcp(conn net.Conn) {
+	for {
+		mux.Lock()
+		buf := bufio.NewReader(conn)
+		line, err := buf.ReadString('\n')
+		mux.Unlock()
+		if err == io.EOF {
+			break
+		}
+		log.Println(line)
 	}
-
-	//cli.Close()
 }

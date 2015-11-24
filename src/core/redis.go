@@ -9,12 +9,12 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
 	"log"
 	"time"
-	"errors"
 )
 
 func createRedisPool(c *gof.Config) *redis.Pool {
@@ -71,11 +71,10 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 	}
 }
 
-
 // 获取Redis连接
 func GetRedisConn() redis.Conn {
-	app := gof.CurrentApp;
-	if app == nil{
+	app := gof.CurrentApp
+	if app == nil {
 		panic(errors.New("gobal app not initialize!"))
 	}
 	conn, ok := app.Storage().Driver().(redis.Conn)

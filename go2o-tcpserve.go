@@ -12,6 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jsix/gof"
+	"go2o/src/cache"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"go2o/src/tcpserve"
@@ -34,6 +35,7 @@ func main() {
 
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
+	cache.Initialize(gof.CurrentApp.Storage())
 
 	go tcpserve.ListenTcp(fmt.Sprintf(":%d", port))
 	go func(mainCh chan bool) {

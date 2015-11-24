@@ -15,12 +15,12 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
+	"go2o/src/core"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
 	memberImpl "go2o/src/core/domain/member"
 	"go2o/src/core/variable"
-	"go2o/src/core"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -216,8 +216,8 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		rc := core.GetRedisConn()
 		// 保存最后更新时间
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
-		rc.Do("SET",mutKey, v.UpdateTime)
-		rc.Do("LPUSH",variable.KvMemberUpdateTcpNotifyQueue,v.Id) // push to tcp notify queue
+		rc.Do("SET", mutKey, v.UpdateTime)
+		rc.Do("LPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
