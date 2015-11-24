@@ -11,13 +11,15 @@ package tcpserve
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"go2o/src/core/service/dps"
 	"io"
 	"log"
 	"net"
 	"strings"
 	"time"
+	"go2o/src/app/util"
+	"github.com/jsix/gof"
+	"strconv"
 )
 
 func printf(format string, args ...interface{}) {
@@ -48,28 +50,35 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 		buf := bufio.NewReader(conn)
 		line, err := buf.ReadBytes('\n')
 		if err == io.EOF {
-			delete(clients, conn.RemoteAddr().String())
+			// remove client
+			addr :=  conn.RemoteAddr().String()
+			uid := clients[addr].UserId
+			delete(clients,addr)
+			delete(users,uid)
 			printf("[ CLIENT][ DISCONN] - IP : %s disconnect!active clients : %d",
 				conn.RemoteAddr().String(), len(clients))
 			break
 		}
 
-		if d, err := rc(conn, line[:len(line)-1]); err != nil {
+		if d, err := rc(conn, line[:len(line)-1]); err != nil {  // remove '\n'
 			conn.Write([]byte("error$" + err.Error()))
 		} else if d != nil {
 			conn.Write(d)
 		}
+		conn.SetDeadline(time.Now().Add(time.Second * 300))  // dead after 5m
 	}
 }
 
 var (
 	clients map[string]*ClientIdentity = make(map[string]*ClientIdentity)
+	users map[int]string = make(map[int]string)
 )
 
 type (
 	// the identity of client
 	ClientIdentity struct {
-		Id              int
+		Id              int		  // client id
+		UserId          int       // user id
 		Addr            net.Addr
 		ConnectTime     time.Time
 		LastConnectTime time.Time
@@ -77,18 +86,18 @@ type (
 )
 
 func ListenTcp(addr string) {
+	go serveLoop()
 	listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
+		cmd := string(b)
 		id, ok := clients[conn.RemoteAddr().String()]
-		// auth
-
-		if !ok {
-			if err := createConnection(conn, string(b)); err != nil {
+		if !ok { // auth
+			if err := createConnection(conn, cmd); err != nil {
 				return nil, err
 			}
-			return nil, nil
+			return []byte("ok"), nil
 		}
-		//
-		return []byte(fmt.Sprintf("message send by %d", id.Id)), nil
+		printf("message send by %d , content:%s", id.Id,cmd)
+		return handleSocketCmd(id,cmd)
 	})
 }
 
@@ -119,6 +128,44 @@ func createConnection(conn net.Conn, line string) error {
 	return errors.New("conn reject")
 }
 
-func handleSocketCmd(cid string, cmd string) ([]byte, error) {
+func handleSocketCmd(id *ClientIdentity, cmd string) ([]byte, error) {
+	i := strings.Index(cmd,":")
+	if i == -1{
+		return nil,errors.New("unknown command!")
+	}
+	plan := cmd[i+1:]
+	switch cmd[:i] {
+	case "MAUTH":
+		return cliMAuth(id,plan)
+	case "PRINT":
+		return cliPrint(id,plan)
+
+	}
 	return []byte(cmd), nil
+}
+
+func serveLoop(){
+	//redis := gof.CurrentApp.(*core.MainApp).Redis()
+}
+
+// member auth,command like 'MAUTH:jarrysix#3234234242342342'
+func cliMAuth(id *ClientIdentity,param string)([]byte,error){
+	arr := strings.Split(param,"#")
+	if len(arr) == 2{
+		memberId,_ := strconv.Atoi(arr[0])
+		b := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
+			memberId,arr[1])
+		b = true
+		if b{ // auth success
+			id.UserId = memberId
+			users[id.UserId] = id.Addr.String()
+			return []byte("ok"),nil
+		}
+	}
+	return nil,errors.New("auth fail")
+}
+
+// print text by client sending.
+func cliPrint(id *ClientIdentity,params string)([]byte,error){
+	return []byte(params),nil
 }

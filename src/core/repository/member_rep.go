@@ -20,6 +20,7 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	memberImpl "go2o/src/core/domain/member"
 	"go2o/src/core/variable"
+	"go2o/src/core"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -212,9 +213,12 @@ func (this *MemberRep) LockMember(id int, state int) error {
 // 保存会员
 func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
+		rc := core.GetRedisConn()
 		// 保存最后更新时间
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
-		gof.CurrentApp.Storage().Set(mutKey, v.UpdateTime)
+		rc.Do("SET",mutKey, v.UpdateTime)
+		rc.Do("LPUSH",variable.KvMemberUpdateTcpNotifyQueue,v.Id) // push to tcp notify queue
+
 		// 保存会员信息
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		return v.Id, err

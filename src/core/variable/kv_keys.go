@@ -16,4 +16,5 @@ const (
 	KvTotalMembers          = "go2o:sys:total_members"
 	KvMemberUpdateTime      = "go2o:member:update_time_"
 	KvAccountUpdateTime     = "go2o:account:update_time_"
+	KvMemberUpdateTcpNotifyQueue  = "go2o:member:queue:tcp_update_notify"
 )

@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof"
 	"log"
 	"time"
+	"errors"
 )
 
 func createRedisPool(c *gof.Config) *redis.Pool {
@@ -68,4 +69,18 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 			return err
 		},
 	}
+}
+
+
+// 获取Redis连接
+func GetRedisConn() redis.Conn {
+	app := gof.CurrentApp;
+	if app == nil{
+		panic(errors.New("gobal app not initialize!"))
+	}
+	conn, ok := app.Storage().Driver().(redis.Conn)
+	if !ok {
+		panic(errors.New("storage drive not base redis"))
+	}
+	return conn
 }
