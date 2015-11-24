@@ -17,7 +17,6 @@ import (
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
-	"io"
 	"log"
 	"net"
 	"strconv"
@@ -52,28 +51,31 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 	for {
 		buf := bufio.NewReader(conn)
 		line, err := buf.ReadBytes('\n')
-		if err == io.EOF {
+		if err != nil {
 			// remove client
 			addr := conn.RemoteAddr().String()
 			if v, ok := clients[addr]; ok {
 				uid := v.UserId
 				delete(clients, addr)
-				delete(users, uid)
+				addr2 := users[uid]
+				if strings.Index(addr2,"$") == -1{
+					delete(users, uid)
+				}else{
+					users[uid] = strings.Replace(strings.Replace(addr2,addr,"",1),"$$","$",-1)
+				}
 			}
 			printf(true, "[ CLIENT][ DISCONN] - IP : %s disconnect!active clients : %d",
 				conn.RemoteAddr().String(), len(clients))
 			break
-		}
 
-		if err == nil {
-			if d, err := rc(conn, line[:len(line)-1]); err != nil { // remove '\n'
-				conn.Write([]byte("error$" + err.Error()))
-			} else if d != nil {
-				conn.Write(d)
-				conn.Write([]byte("\n"))
-			}
-			conn.SetDeadline(time.Now().Add(time.Second * 60)) // dead after 5m
 		}
+		if d, err := rc(conn, line[:len(line) - 1]); err != nil { // remove '\n'
+			conn.Write([]byte("error$" + err.Error()))
+		} else if d != nil {
+			conn.Write(d)
+			conn.Write([]byte("\n"))
+		}
+		conn.SetReadDeadline(time.Now().Add(time.Second * 60)) // discount after 5m
 	}
 }
 
@@ -105,7 +107,9 @@ func ListenTcp(addr string) {
 			}
 			return []byte("ok"), nil
 		}
-		printf(false, "message send by %d , content:%s", id.Id, cmd)
+		if(!strings.HasPrefix(cmd,"PING")) {
+			printf(false, "[ CLIENT][ MESSAGE] - send by %d ; %s", id.Id, cmd)
+		}
 		return handleSocketCmd(id, cmd)
 	})
 }
@@ -164,7 +168,8 @@ func serveLoop() {
 
 func notifyMup(conn redis.Conn){
 	for {
-		mid, err := redis.Int(conn.Do("LPOP", variable.KvMemberUpdateTcpNotifyQueue))
+		mid, err := redis.Int(conn.Do("LPOP",
+			variable.KvMemberUpdateTcpNotifyQueue))
 		if err == nil {
 			arr := strings.Split(users[mid],"$")
 			var connList []net.Conn = make([]net.Conn,0)
@@ -176,7 +181,8 @@ func notifyMup(conn redis.Conn){
 			if len(connList) > 0 {
 				pushMemberSummary(connList, mid)
 			}
-
+		}else{
+			time.Sleep(time.Second * 1) //阻塞,避免轮询占用CPU
 		}
 	}
 }
