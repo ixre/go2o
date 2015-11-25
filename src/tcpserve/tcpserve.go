@@ -24,13 +24,38 @@ import (
 	"time"
 )
 
-func printf(force bool, format string, args ...interface{}) {
-	log.Printf(format+"\n", args...)
-}
+
+
 
 type (
 	TcpReceiveCaller func(conn net.Conn, read []byte) ([]byte, error)
+	SocketCmdHandler func(ci *ClientIdentity,plan string)([]byte,error)
+	// the identity of client
+	ClientIdentity struct {
+		Id              int // client id
+		UserId          int // user id
+		Addr            net.Addr
+		Conn            net.Conn
+		ConnectTime     time.Time
+		LastConnectTime time.Time
+	}
 )
+
+var (
+	clients map[string]*ClientIdentity = make(map[string]*ClientIdentity)
+	users   map[int]string             = make(map[int]string)
+	handlers map[string]SocketCmdHandler = map[string]SocketCmdHandler{
+		"MAUTH":cliMAuth,
+		"PRINT":cliPrint,
+		"MGET":cliMGet,
+		"PING":cliPing,
+	}
+)
+
+
+func printf(force bool, format string, args ...interface{}) {
+	log.Printf(format+"\n", args...)
+}
 
 func listen(addr string, rc TcpReceiveCaller) {
 	serveAddr, err := net.ResolveTCPAddr("tcp", addr)
@@ -79,22 +104,6 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 	}
 }
 
-var (
-	clients map[string]*ClientIdentity = make(map[string]*ClientIdentity)
-	users   map[int]string             = make(map[int]string)
-)
-
-type (
-	// the identity of client
-	ClientIdentity struct {
-		Id              int // client id
-		UserId          int // user id
-		Addr            net.Addr
-		Conn            net.Conn
-		ConnectTime     time.Time
-		LastConnectTime time.Time
-	}
-)
 
 func ListenTcp(addr string) {
 	serveLoop()	// server loop,send some message to client
@@ -112,6 +121,11 @@ func ListenTcp(addr string) {
 		}
 		return handleSocketCmd(id, cmd)
 	})
+}
+
+// register socket command handler
+func AddHandler(cmd string,handler SocketCmdHandler){
+	handlers[cmd] = handler
 }
 
 // create partner connection
@@ -143,24 +157,15 @@ func createConnection(conn net.Conn, line string) error {
 	return errors.New("conn reject")
 }
 
-func handleSocketCmd(id *ClientIdentity, cmd string) ([]byte, error) {
+func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
 	i := strings.Index(cmd, ":")
-	if i == -1 {
-		return nil, errors.New("unknown command!")
+	if i != -1 {
+		plan := cmd[i + 1:]
+		if v, ok := handlers[cmd[:i]]; ok {
+			return v(ci, plan)
+		}
 	}
-	plan := cmd[i+1:]
-	switch cmd[:i] {
-	case "MAUTH":
-		return cliMAuth(id, plan)
-	case "PRINT":
-		return cliPrint(id, plan)
-	case "PING":
-		return []byte("PONG"),nil
-	case "MGET":
-		return cliMGet(id,plan)
-
-	}
-	return []byte(cmd), nil
+	return nil,errors.New("unknown command")
 }
 
 func serveLoop() {
@@ -214,4 +219,8 @@ func cliMAuth(id *ClientIdentity, param string) ([]byte, error) {
 // print text by client sending.
 func cliPrint(id *ClientIdentity, params string) ([]byte, error) {
 	return []byte(params), nil
+}
+
+func cliPing(id *ClientIdentity,plan string)([]byte,error){
+	return []byte("PONG"),nil
 }

@@ -17,10 +17,12 @@ import (
 	"net"
 	"go2o/src/core/domain/interface/member"
 	"errors"
+	"strings"
+	"strconv"
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int, dbGet bool) *dto.MemberSummary {
+func GetMemberSummary(memberId int, dbGet bool,updateTime int) *dto.MemberSummary {
 	var v *dto.MemberSummary = new(dto.MemberSummary)
 	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
 	if dbGet || cache.GetKVS().Get(key, &v) != nil {
@@ -30,7 +32,7 @@ func GetMemberSummary(memberId int, dbGet bool) *dto.MemberSummary {
 	return v
 }
 
-func getMemberAccount(memberId int, dbGet bool) *member.AccountValue {
+func getMemberAccount(memberId int, dbGet bool,updateTime int) *member.AccountValue {
 	return dps.MemberService.GetAccount(memberId)
 //	var v *dto.MemberSummary = new(dto.MemberSummary)
 //	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
@@ -58,12 +60,16 @@ func pushMemberSummary(connList []net.Conn, memberId int) {
 func cliMGet(ci *ClientIdentity,plan string)([]byte,error){
 	var obj interface{} = nil
 	var d []byte =[]byte{}
+
+	i := strings.Index(plan,":")
+	ut,_ := strconv.Atoi(plan[i+1:])
+
 	switch plan {
 	case "SUMMARY":
-		obj = GetMemberSummary(ci.UserId,false)
+		obj = GetMemberSummary(ci.UserId,true,ut)
 		d = []byte("MSUM:")
 	case "ACCOUNt":
-		obj = getMemberAccount(ci.UserId,true)
+		obj = getMemberAccount(ci.UserId,true,ut)
 		d = []byte("MACC:")
 	}
 	if obj != nil{
