@@ -10,22 +10,22 @@ package tcpserve
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/garyburd/redigo/redis"
+	"github.com/jsix/gof"
 	"go2o/src/cache"
+	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
-	"net"
-	"go2o/src/core/domain/interface/member"
-	"errors"
-	"strings"
-	"strconv"
 	"go2o/src/core/variable"
-	"github.com/jsix/gof"
-	"github.com/garyburd/redigo/redis"
+	"net"
+	"strconv"
+	"strings"
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int,updateTime int) *dto.MemberSummary {
+func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 	sto := gof.CurrentApp.Storage()
 	var kvMut int
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -39,8 +39,8 @@ func GetMemberSummary(memberId int,updateTime int) *dto.MemberSummary {
 		}
 	}
 	v = dps.MemberService.GetMemberSummary(memberId)
-	sto.SetExpire(key, v, 3600 * 360) // cache 15 hours
-	sto.SetExpire(mutKey, v.UpdateTime, 3600 * 400)
+	sto.SetExpire(key, v, 3600*360) // cache 15 hours
+	sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
 	return v
 }
 
@@ -58,8 +58,8 @@ func getMemberAccount(memberId int, updateTime int) *member.AccountValue {
 		}
 	}
 	v = dps.MemberService.GetAccount(memberId)
-	sto.SetExpire(key, v, 3600 * 360) // cache 15 hours
-	sto.SetExpire(autKey, v.UpdateTime, 3600 * 400)
+	sto.SetExpire(key, v, 3600*360) // cache 15 hours
+	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
 	return v
 
 }
@@ -67,10 +67,10 @@ func getMemberAccount(memberId int, updateTime int) *member.AccountValue {
 // push member summary to tcp client
 func pushMemberSummary(connList []net.Conn, memberId int) {
 	printf(false, "[ TCP][ NOTIFY] - notify member update - %d", memberId)
-	sm := GetMemberSummary(memberId,0)
+	sm := GetMemberSummary(memberId, 0)
 	if d, err := json.Marshal(sm); err == nil {
-		d = append([]byte("MUP:"), d...)
-		for _,conn := range connList{
+		d = append([]byte("MSUM:"), d...)
+		for _, conn := range connList {
 			conn.Write(d)
 			conn.Write([]byte("\n"))
 		}
@@ -80,10 +80,10 @@ func pushMemberSummary(connList []net.Conn, memberId int) {
 // push member summary to tcp client
 func pushMemberAccount(connList []net.Conn, memberId int) {
 	printf(false, "[ TCP][ NOTIFY] - notify account update - %d", memberId)
-	sm := getMemberAccount(memberId,0)
+	sm := getMemberAccount(memberId, 0)
 	if d, err := json.Marshal(sm); err == nil {
 		d = append([]byte("MACC:"), d...)
-		for _,conn := range connList{
+		for _, conn := range connList {
 			conn.Write(d)
 			conn.Write([]byte("\n"))
 		}
@@ -91,37 +91,37 @@ func pushMemberAccount(connList []net.Conn, memberId int) {
 }
 
 // get profile of member
-func cliMGet(ci *ClientIdentity,plan string)([]byte,error){
+func cliMGet(ci *ClientIdentity, plan string) ([]byte, error) {
 	var obj interface{} = nil
-	var d []byte =[]byte{}
+	var d []byte = []byte{}
 
-	i := strings.Index(plan,":")
-	ut,_ := strconv.Atoi(plan[i+1:])
+	i := strings.Index(plan, ":")
+	ut, _ := strconv.Atoi(plan[i+1:])
 
 	switch plan {
 	case "SUMMARY":
-		obj = GetMemberSummary(ci.UserId,ut)
+		obj = GetMemberSummary(ci.UserId, ut)
 		d = []byte("MSUM:")
 	case "ACCOUNt":
-		obj = getMemberAccount(ci.UserId,ut)
+		obj = getMemberAccount(ci.UserId, ut)
 		d = []byte("MACC:")
 	}
-	if obj != nil{
-		d1,err := json.Marshal(obj)
-		return append(d,d1...),err
+	if obj != nil {
+		d1, err := json.Marshal(obj)
+		return append(d, d1...), err
 
 	}
-	return nil,errors.New("unknown type")
+	return nil, errors.New("unknown type")
 }
 
-func mmSummaryNotify(conn redis.Conn)error{
-	mid, err := redis.Int(conn.Do("LPOP",variable.KvMemberUpdateTcpNotifyQueue))
+func mmSummaryNotify(conn redis.Conn) error {
+	mid, err := redis.Int(conn.Do("LPOP", variable.KvMemberUpdateTcpNotifyQueue))
 	if err == nil {
-		arr := strings.Split(users[mid],"$")
-		var connList []net.Conn = make([]net.Conn,0)
-		for _,v := range arr{
+		arr := strings.Split(users[mid], "$")
+		var connList []net.Conn = make([]net.Conn, 0)
+		for _, v := range arr {
 			if ide, ok := clients[v]; ok && ide.Conn != nil {
-				connList = append(connList,ide.Conn)
+				connList = append(connList, ide.Conn)
 			}
 		}
 		if len(connList) > 0 {
@@ -131,14 +131,14 @@ func mmSummaryNotify(conn redis.Conn)error{
 	return err
 }
 
-func mmAccountNotify(conn redis.Conn)error{
-	mid, err := redis.Int(conn.Do("LPOP",variable.KvAccountUpdateTcpNotifyQueue))
+func mmAccountNotify(conn redis.Conn) error {
+	mid, err := redis.Int(conn.Do("LPOP", variable.KvAccountUpdateTcpNotifyQueue))
 	if err == nil {
-		arr := strings.Split(users[mid],"$")
-		var connList []net.Conn = make([]net.Conn,0)
-		for _,v := range arr{
+		arr := strings.Split(users[mid], "$")
+		var connList []net.Conn = make([]net.Conn, 0)
+		for _, v := range arr {
 			if ide, ok := clients[v]; ok && ide.Conn != nil {
-				connList = append(connList,ide.Conn)
+				connList = append(connList, ide.Conn)
 			}
 		}
 		if len(connList) > 0 {

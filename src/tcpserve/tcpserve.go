@@ -16,7 +16,6 @@ import (
 	"go2o/src/app/util"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
-	"go2o/src/core/variable"
 	"log"
 	"net"
 	"strconv"
@@ -24,12 +23,9 @@ import (
 	"time"
 )
 
-
-
-
 type (
 	TcpReceiveCaller func(conn net.Conn, read []byte) ([]byte, error)
-	SocketCmdHandler func(ci *ClientIdentity,plan string)([]byte,error)
+	SocketCmdHandler func(ci *ClientIdentity, plan string) ([]byte, error)
 	// the identity of client
 	ClientIdentity struct {
 		Id              int // client id
@@ -42,16 +38,15 @@ type (
 )
 
 var (
-	clients map[string]*ClientIdentity = make(map[string]*ClientIdentity)
-	users   map[int]string             = make(map[int]string)
+	clients  map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
+	users    map[int]string              = make(map[int]string)
 	handlers map[string]SocketCmdHandler = map[string]SocketCmdHandler{
-		"MAUTH":cliMAuth,
-		"PRINT":cliPrint,
-		"MGET":cliMGet,
-		"PING":cliPing,
+		"MAUTH": cliMAuth,
+		"PRINT": cliPrint,
+		"MGET":  cliMGet,
+		"PING":  cliPing,
 	}
 )
-
 
 func printf(force bool, format string, args ...interface{}) {
 	log.Printf(format+"\n", args...)
@@ -83,10 +78,10 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 				uid := v.UserId
 				delete(clients, addr)
 				addr2 := users[uid]
-				if strings.Index(addr2,"$") == -1{
+				if strings.Index(addr2, "$") == -1 {
 					delete(users, uid)
-				}else{
-					users[uid] = strings.Replace(strings.Replace(addr2,addr,"",1),"$$","$",-1)
+				} else {
+					users[uid] = strings.Replace(strings.Replace(addr2, addr, "", 1), "$$", "$", -1)
 				}
 			}
 			printf(true, "[ CLIENT][ DISCONN] - IP : %s disconnect!active clients : %d",
@@ -94,7 +89,7 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 			break
 
 		}
-		if d, err := rc(conn, line[:len(line) - 1]); err != nil { // remove '\n'
+		if d, err := rc(conn, line[:len(line)-1]); err != nil { // remove '\n'
 			conn.Write([]byte("error$" + err.Error()))
 		} else if d != nil {
 			conn.Write(d)
@@ -104,9 +99,8 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 	}
 }
 
-
 func ListenTcp(addr string) {
-	serveLoop()	// server loop,send some message to client
+	serveLoop() // server loop,send some message to client
 	listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
 		cmd := string(b)
 		id, ok := clients[conn.RemoteAddr().String()]
@@ -116,7 +110,7 @@ func ListenTcp(addr string) {
 			}
 			return []byte("ok"), nil
 		}
-		if(!strings.HasPrefix(cmd,"PING")) {
+		if !strings.HasPrefix(cmd, "PING") {
 			printf(false, "[ CLIENT][ MESSAGE] - send by %d ; %s", id.Id, cmd)
 		}
 		return handleSocketCmd(id, cmd)
@@ -124,7 +118,7 @@ func ListenTcp(addr string) {
 }
 
 // register socket command handler
-func AddHandler(cmd string,handler SocketCmdHandler){
+func AddHandler(cmd string, handler SocketCmdHandler) {
 	handlers[cmd] = handler
 }
 
@@ -160,12 +154,12 @@ func createConnection(conn net.Conn, line string) error {
 func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
 	i := strings.Index(cmd, ":")
 	if i != -1 {
-		plan := cmd[i + 1:]
+		plan := cmd[i+1:]
 		if v, ok := handlers[cmd[:i]]; ok {
 			return v(ci, plan)
 		}
 	}
-	return nil,errors.New("unknown command")
+	return nil, errors.New("unknown command")
 }
 
 func serveLoop() {
@@ -173,7 +167,7 @@ func serveLoop() {
 	go notifyMup(conn)
 }
 
-func notifyMup(conn redis.Conn){
+func notifyMup(conn redis.Conn) {
 	for {
 		err := mmSummaryNotify(conn)
 		err = mmAccountNotify(conn)
@@ -194,9 +188,9 @@ func cliMAuth(id *ClientIdentity, param string) ([]byte, error) {
 		if b { // auth success
 			id.UserId = memberId
 			// bind user activated clients
-			if v,ok := users[id.UserId];ok{
-				users[id.UserId] = v +"$" + id.Addr.String()
-			}else{
+			if v, ok := users[id.UserId]; ok {
+				users[id.UserId] = v + "$" + id.Addr.String()
+			} else {
 				users[id.UserId] = id.Addr.String()
 			}
 			return []byte("ok"), nil
@@ -210,6 +204,6 @@ func cliPrint(id *ClientIdentity, params string) ([]byte, error) {
 	return []byte(params), nil
 }
 
-func cliPing(id *ClientIdentity,plan string)([]byte,error){
-	return []byte("PONG"),nil
+func cliPing(id *ClientIdentity, plan string) ([]byte, error) {
+	return []byte("PONG"), nil
 }
