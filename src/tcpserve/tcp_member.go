@@ -15,6 +15,8 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"net"
+	"go2o/src/core/domain/interface/member"
+	"errors"
 )
 
 // get summary of member,if dbGet will get summary from database.
@@ -28,6 +30,17 @@ func GetMemberSummary(memberId int, dbGet bool) *dto.MemberSummary {
 	return v
 }
 
+func getMemberAccount(memberId int, dbGet bool) *member.AccountValue {
+	return dps.MemberService.GetAccount(memberId)
+//	var v *dto.MemberSummary = new(dto.MemberSummary)
+//	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
+//	if dbGet || cache.GetKVS().Get(key, &v) != nil {
+//		v = dps.MemberService.GetMemberSummary(memberId)
+//		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
+//	}
+//	return v
+}
+
 // push member summary to tcp client
 func pushMemberSummary(connList []net.Conn, memberId int) {
 	printf(false, "[ TCP][ NOTIFY] - notify member update - %d", memberId)
@@ -39,4 +52,24 @@ func pushMemberSummary(connList []net.Conn, memberId int) {
 			conn.Write([]byte("\n"))
 		}
 	}
+}
+
+// get profile of member
+func cliMGet(ci *ClientIdentity,plan string)([]byte,error){
+	var obj interface{} = nil
+	var d []byte =[]byte{}
+	switch plan {
+	case "SUMMARY":
+		obj = GetMemberSummary(ci.UserId,false)
+		d = []byte("MSUM:")
+	case "ACCOUNt":
+		obj = getMemberAccount(ci.UserId,true)
+		d = []byte("MACC:")
+	}
+	if obj != nil{
+		d1,err := json.Marshal(obj)
+		return append(d,d1...),err
+
+	}
+	return nil,errors.New("unknown type")
 }

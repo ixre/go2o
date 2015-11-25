@@ -156,6 +156,8 @@ func handleSocketCmd(id *ClientIdentity, cmd string) ([]byte, error) {
 		return cliPrint(id, plan)
 	case "PING":
 		return []byte("PONG"),nil
+	case "MGET":
+		return cliMGet(id,plan)
 
 	}
 	return []byte(cmd), nil
