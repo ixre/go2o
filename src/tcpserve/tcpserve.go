@@ -175,20 +175,9 @@ func serveLoop() {
 
 func notifyMup(conn redis.Conn){
 	for {
-		mid, err := redis.Int(conn.Do("LPOP",
-			variable.KvMemberUpdateTcpNotifyQueue))
-		if err == nil {
-			arr := strings.Split(users[mid],"$")
-			var connList []net.Conn = make([]net.Conn,0)
-			for _,v := range arr{
-				if ide, ok := clients[v]; ok && ide.Conn != nil {
-					connList = append(connList,ide.Conn)
-				}
-			}
-			if len(connList) > 0 {
-				pushMemberSummary(connList, mid)
-			}
-		}else{
+		err := mmSummaryNotify(conn)
+		err = mmAccountNotify(conn)
+		if err != nil {
 			time.Sleep(time.Second * 1) //阻塞,避免轮询占用CPU
 		}
 	}

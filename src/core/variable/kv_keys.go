@@ -14,7 +14,8 @@ const (
 	KvHaveNewCompletedOrder      = "go2o:sys:queue:have_new_completed_order"
 	KvHaveNewMember              = "go2o:sys:queue:have_new_member"
 	KvTotalMembers               = "go2o:sys:total_members"
-	KvMemberUpdateTime           = "go2o:member:update_time_"
-	KvAccountUpdateTime          = "go2o:account:update_time_"
-	KvMemberUpdateTcpNotifyQueue = "go2o:member:queue:tcp_update_notify"
+	KvMemberUpdateTime           = "go2o:mm:uptime_"
+	KvAccountUpdateTime          = "go2o:acc:uptime_"
+	KvMemberUpdateTcpNotifyQueue = "go2o:mm:queue:t_up_notify"
+	KvAccountUpdateTcpNotifyQueue = "go2o:mm:queue:t_acc_notify"
 )

@@ -19,36 +19,70 @@ import (
 	"errors"
 	"strings"
 	"strconv"
+	"go2o/src/core/variable"
+	"github.com/jsix/gof"
+	"github.com/garyburd/redigo/redis"
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int, dbGet bool,updateTime int) *dto.MemberSummary {
+func GetMemberSummary(memberId int,updateTime int) *dto.MemberSummary {
+	sto := gof.CurrentApp.Storage()
+	var kvMut int
+	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
+	sto.Get(mutKey, &kvMut)
+	//get from redis
 	var v *dto.MemberSummary = new(dto.MemberSummary)
-	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
-	if dbGet || cache.GetKVS().Get(key, &v) != nil {
-		v = dps.MemberService.GetMemberSummary(memberId)
-		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
+	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
+	if kvMut != 0 && kvMut == updateTime {
+		if cache.GetKVS().Get(key, &v) == nil {
+			return v
+		}
 	}
+	v = dps.MemberService.GetMemberSummary(memberId)
+	sto.SetExpire(key, v, 3600 * 360) // cache 15 hours
+	sto.SetExpire(mutKey, v.UpdateTime, 3600 * 400)
 	return v
 }
 
-func getMemberAccount(memberId int, dbGet bool,updateTime int) *member.AccountValue {
-	return dps.MemberService.GetAccount(memberId)
-//	var v *dto.MemberSummary = new(dto.MemberSummary)
-//	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
-//	if dbGet || cache.GetKVS().Get(key, &v) != nil {
-//		v = dps.MemberService.GetMemberSummary(memberId)
-//		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
-//	}
-//	return v
+func getMemberAccount(memberId int, updateTime int) *member.AccountValue {
+	sto := gof.CurrentApp.Storage()
+	var kvAut int
+	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
+	sto.Get(autKey, &kvAut)
+	//get from redis
+	var v *member.AccountValue = new(member.AccountValue)
+	var key = fmt.Sprintf("cac:mm:acc:%d", memberId)
+	if kvAut != 0 && kvAut == updateTime {
+		if cache.GetKVS().Get(key, &v) == nil {
+			return v
+		}
+	}
+	v = dps.MemberService.GetAccount(memberId)
+	sto.SetExpire(key, v, 3600 * 360) // cache 15 hours
+	sto.SetExpire(autKey, v.UpdateTime, 3600 * 400)
+	return v
+
 }
 
 // push member summary to tcp client
 func pushMemberSummary(connList []net.Conn, memberId int) {
 	printf(false, "[ TCP][ NOTIFY] - notify member update - %d", memberId)
-	sm := GetMemberSummary(memberId, true)
+	sm := GetMemberSummary(memberId,0)
 	if d, err := json.Marshal(sm); err == nil {
 		d = append([]byte("MUP:"), d...)
+		for _,conn := range connList{
+			conn.Write(d)
+			conn.Write([]byte("\n"))
+		}
+	}
+}
+
+// push member summary to tcp client
+func pushMemberAccount(connList []net.Conn, memberId int) {
+	printf(false, "[ TCP][ NOTIFY] - notify account update - %d", memberId)
+	sm := getMemberAccount(memberId,0)
+	if d, err := json.Marshal(sm); err == nil {
+		d = append([]byte("MACC:"), d...)
 		for _,conn := range connList{
 			conn.Write(d)
 			conn.Write([]byte("\n"))
@@ -66,10 +100,10 @@ func cliMGet(ci *ClientIdentity,plan string)([]byte,error){
 
 	switch plan {
 	case "SUMMARY":
-		obj = GetMemberSummary(ci.UserId,true,ut)
+		obj = GetMemberSummary(ci.UserId,ut)
 		d = []byte("MSUM:")
 	case "ACCOUNt":
-		obj = getMemberAccount(ci.UserId,true,ut)
+		obj = getMemberAccount(ci.UserId,ut)
 		d = []byte("MACC:")
 	}
 	if obj != nil{
@@ -78,4 +112,38 @@ func cliMGet(ci *ClientIdentity,plan string)([]byte,error){
 
 	}
 	return nil,errors.New("unknown type")
+}
+
+func mmSummaryNotify(conn redis.Conn)error{
+	mid, err := redis.Int(conn.Do("LPOP",variable.KvMemberUpdateTcpNotifyQueue))
+	if err == nil {
+		arr := strings.Split(users[mid],"$")
+		var connList []net.Conn = make([]net.Conn,0)
+		for _,v := range arr{
+			if ide, ok := clients[v]; ok && ide.Conn != nil {
+				connList = append(connList,ide.Conn)
+			}
+		}
+		if len(connList) > 0 {
+			pushMemberSummary(connList, mid)
+		}
+	}
+	return err
+}
+
+func mmAccountNotify(conn redis.Conn)error{
+	mid, err := redis.Int(conn.Do("LPOP",variable.KvAccountUpdateTcpNotifyQueue))
+	if err == nil {
+		arr := strings.Split(users[mid],"$")
+		var connList []net.Conn = make([]net.Conn,0)
+		for _,v := range arr{
+			if ide, ok := clients[v]; ok && ide.Conn != nil {
+				connList = append(connList,ide.Conn)
+			}
+		}
+		if len(connList) > 0 {
+			pushMemberAccount(connList, mid)
+		}
+	}
+	return err
 }

@@ -153,8 +153,15 @@ func (this *MemberRep) GetAccount(memberId int) *member.AccountValue {
 // 保存账户，传入会员编号
 func (this *MemberRep) SaveAccount(v *member.AccountValue) (int, error) {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
+
+	rc := core.GetRedisConn()
+	// 保存最后更新时间
 	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, v.MemberId)
-	gof.CurrentApp.Storage().Set(mutKey, v.UpdateTime) // 保存最后更新时间
+	rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
+	rc.Do("LPUSH", variable.KvAccountUpdateTcpNotifyQueue, v.MemberId) // push to tcp notify queue
+
+	// 保存会员信息
+
 	return v.MemberId, err
 }
 
@@ -216,7 +223,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		rc := core.GetRedisConn()
 		// 保存最后更新时间
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
-		rc.Do("SET", mutKey, v.UpdateTime)
+		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
 		rc.Do("LPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息

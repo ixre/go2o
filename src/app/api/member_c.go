@@ -176,7 +176,7 @@ func (this *MemberC) Summary(ctx *web.Context) {
 	memberId := this.GetMemberId(ctx)
 	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
 	var v *dto.MemberSummary = new(dto.MemberSummary)
-	var key = fmt.Sprintf("cache:member:summary:%d", memberId)
+	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
 	if cache.GetKVS().Get(key, &v) != nil || v.UpdateTime < updateTime {
 		v = dps.MemberService.GetMemberSummary(memberId)
 		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
