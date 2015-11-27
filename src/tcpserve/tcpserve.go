@@ -159,7 +159,7 @@ func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
 			return v(ci, plan)
 		}
 	}
-	return nil, errors.New("unknown command:"+cmd)
+	return nil, errors.New("unknown command:" + cmd)
 }
 
 func serveLoop() {
