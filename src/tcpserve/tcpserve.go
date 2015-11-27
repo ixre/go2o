@@ -38,11 +38,11 @@ type (
 )
 
 var (
-	DebugOn  bool = false
-ReadDeadLine time.Duration  = time.Second * 300
-	clients  map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
-	users    map[int]string              = make(map[int]string)
-	handlers map[string]SocketCmdHandler = map[string]SocketCmdHandler{
+	DebugOn      bool                        = false
+	ReadDeadLine time.Duration               = time.Second * 300
+	clients      map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
+	users        map[int]string              = make(map[int]string)
+	handlers     map[string]SocketCmdHandler = map[string]SocketCmdHandler{
 		"MAUTH": cliMAuth,
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
@@ -52,7 +52,7 @@ ReadDeadLine time.Duration  = time.Second * 300
 
 func printf(force bool, format string, args ...interface{}) {
 	if DebugOn {
-		log.Printf(format + "\n", args...)
+		log.Printf(format+"\n", args...)
 	}
 }
 
