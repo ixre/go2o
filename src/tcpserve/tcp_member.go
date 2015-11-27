@@ -102,7 +102,7 @@ func cliMGet(ci *ClientIdentity, plan string) ([]byte, error) {
 	case "SUMMARY":
 		obj = GetMemberSummary(ci.UserId, ut)
 		d = []byte("MSUM:")
-	case "ACCOUNt":
+	case "ACCOUNT":
 		obj = getMemberAccount(ci.UserId, ut)
 		d = []byte("MACC:")
 	}

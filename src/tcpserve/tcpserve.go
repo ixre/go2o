@@ -93,8 +93,8 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 			conn.Write([]byte("error$" + err.Error()))
 		} else if d != nil {
 			conn.Write(d)
-			conn.Write([]byte("\n"))
 		}
+		conn.Write([]byte("\n"))
 		conn.SetReadDeadline(time.Now().Add(time.Second * 60)) // discount after 5m
 	}
 }
@@ -159,7 +159,7 @@ func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
 			return v(ci, plan)
 		}
 	}
-	return nil, errors.New("unknown command")
+	return nil, errors.New("unknown command:"+cmd)
 }
 
 func serveLoop() {
@@ -170,8 +170,8 @@ func serveLoop() {
 func notifyMup(conn redis.Conn) {
 	for {
 		err := mmSummaryNotify(conn)
-		err = mmAccountNotify(conn)
-		if err != nil {
+		err1 := mmAccountNotify(conn)
+		if err != nil || err1 != nil {
 			time.Sleep(time.Second * 1) //阻塞,避免轮询占用CPU
 		}
 	}
