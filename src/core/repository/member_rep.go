@@ -227,6 +227,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		rc.Do("LPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
+
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		return v.Id, err
 	}

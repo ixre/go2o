@@ -19,7 +19,6 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
-	"log"
 	"net"
 	"strconv"
 	"strings"
@@ -61,8 +60,6 @@ func getMemberAccount(memberId int, updateTime int) *member.AccountValue {
 	v = dps.MemberService.GetAccount(memberId)
 	sto.SetExpire(key, v, 3600*360) // cache 15 hours
 	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
-
-	log.Println(fmt.Sprintf("%d/%d/%d/%#v", kvAut, updateTime, v.UpdateTime))
 
 	return v
 
@@ -119,7 +116,6 @@ func cliMGet(ci *ClientIdentity, plan string) ([]byte, error) {
 func mmSummaryNotify(conn redis.Conn) error {
 	mid, err := redis.Int(conn.Do("LPOP", variable.KvMemberUpdateTcpNotifyQueue))
 	if err == nil {
-		println("-------%d\n", mid)
 		arr := strings.Split(users[mid], "$")
 		var connList []net.Conn = make([]net.Conn, 0)
 		for _, v := range arr {

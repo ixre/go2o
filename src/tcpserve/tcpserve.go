@@ -38,6 +38,7 @@ type (
 )
 
 var (
+	DebugOn  bool = false
 	clients  map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
 	users    map[int]string              = make(map[int]string)
 	handlers map[string]SocketCmdHandler = map[string]SocketCmdHandler{
@@ -49,7 +50,9 @@ var (
 )
 
 func printf(force bool, format string, args ...interface{}) {
-	log.Printf(format+"\n", args...)
+	if DebugOn {
+		log.Printf(format + "\n", args...)
+	}
 }
 
 func listen(addr string, rc TcpReceiveCaller) {

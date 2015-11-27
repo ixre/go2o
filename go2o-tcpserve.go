@@ -36,7 +36,7 @@ func main() {
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
 	cache.Initialize(gof.CurrentApp.Storage())
-
+	tcpserve.DebugOn = true
 	go tcpserve.ListenTcp(fmt.Sprintf(":%d", port))
 	go func(mainCh chan bool) {
 		ch := make(chan os.Signal)
