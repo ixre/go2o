@@ -39,6 +39,7 @@ type (
 
 var (
 	DebugOn  bool = false
+ReadDeadLine time.Duration  = time.Second * 300
 	clients  map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
 	users    map[int]string              = make(map[int]string)
 	handlers map[string]SocketCmdHandler = map[string]SocketCmdHandler{
@@ -98,7 +99,7 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 			conn.Write(d)
 		}
 		conn.Write([]byte("\n"))
-		conn.SetReadDeadline(time.Now().Add(time.Second * 60)) // discount after 5m
+		conn.SetReadDeadline(time.Now().Add(ReadDeadLine)) // discount after 5m
 	}
 }
 
