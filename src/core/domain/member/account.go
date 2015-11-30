@@ -40,6 +40,7 @@ func (this *Account) GetValue() *member.AccountValue {
 
 // 保存
 func (this *Account) Save() (int, error) {
+	this._value.UpdateTime = time.Now().Unix()
 	return this._rep.SaveAccount(this._value)
 }
 
