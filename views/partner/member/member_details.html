@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员详情</title>
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1" class="form margin30 page-member-details">
+
+    <div class="border basic">
+        <div class="tit"><div>基本信息</div></div>
+        <div class="con" id="member-basic"></div>
+        <div class="clear-fix"></div>
+    </div>
+
+    <div class="border account">
+        <div class="tit"><div>账户信息</div></div>
+        <div class="con" id="member-account"></div>
+        <div class="clear-fix"></div>
+    </div>
+
+    <div class="border bank">
+        <div class="tit"><div>银行卡信息</div></div>
+        <div class="con" id="member-bank"></div>
+        <div class="clear-fix"></div>
+    </div>
+
+    <div class="clear-fix"></div>
+    <div class="tip-box hidden" id="tipBox" style="font-weight:bold">
+    </div>
+<br />
+    <div class="clear-fix"></div>
+    <div class="border" style="border:0">
+        <div class="con" style="background:#E9E9E9">
+            <span class="ui-button w50 middle-button" id="btn_lock">
+                <span class="button-inner">
+                    <span class="button-txt">-</span>
+                    <input type="button"/>
+                </span>
+            </span>
+
+            <span class="ui-button w50 middle-button" id="btn_charge">
+                <span class="button-inner">
+                    <span class="button-txt">充值</span>
+                    <input type="button"/>
+                </span>
+            </span>
+
+             <span class="ui-button w80 middle-button" id="btn_resetPwd">
+                <span class="button-inner">
+                    <span class="button-txt">重置密码</span>
+                    <input type="button"/>
+                </span>
+            </span>
+
+        </div>
+    </div>
+</div>
+
+<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+
+<script>
+    var memberId = {{.memberId}};
+    var tipBox = j6.$('tipBox');
+    function setTxt(p,b) {
+        var t = j6.dom.getsByClass(p,'button-txt')[0];
+        if (b == 0 || t.innerHTML.replace(/<[^>]+>/gm,'') == '停用') {
+            t.innerHTML = '<span style="color:green">启用</span>';
+        } else {
+            t.innerHTML = '<span style="color:red">停用</span>';
+        }
+    };
+
+    function setMST(i){
+        setTxt(j6.$('btn_lock'),parseInt(i));
+    }
+
+    window.onload=function(){
+        j6.load('member-basic','member_basic?member_id='+memberId);
+        j6.load('member-account','member_account?member_id='+memberId);
+        j6.load('member-bank','member_curr_bank?member_id='+memberId);
+
+        j6.$('btn_lock').onclick=function(){
+            var t =this;
+            j6.xhr.jsonPost('/member/lock_member', {id: memberId }, function(json) {
+                if (json.result) {
+                    setTxt(t);
+                }else{
+                    window.parent.$.messager.alert('提示',  json.message,"error");
+                }
+            });
+        };
+
+        j6.$('btn_charge').onclick=function(){
+            j6.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + memberId,400,300);
+        };
+
+        j6.$('btn_resetPwd').onclick=function(){
+            window.parent.$.messager.confirm('提示',"重置密码后,旧密码将不可用!<br />确定要重置吗?",function(r){
+               if(r){
+                   j6.xhr.jsonPost('/member/reset_pwd',{member_id:memberId},function(r){
+                     if(r.result){
+                        tipBox.innerHTML = r.message;
+                         tipBox.className = tipBox.className.replace(' hidden','');
+                     }else{
+                         window.parent.$.messager.alert('提示', r.message,'error');
+                     }
+                   });
+               }
+            });
+        };
+    };
+
+</script>
+</body>
+</html>

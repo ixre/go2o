@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<title>管理中心-商户版</title>
+	<link href="{{.static_serve}}/assets/mui/css/login.css?v={{.version}}" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+	<div class="container login-panel" id="login-panel">
+		<div class="panel">
+			<div class="panel_con login" id="loginForm">
+
+			<div class="center c1">
+				<strong>商户登录</strong>
+			</div>
+			<div class="msg" id="tip">&nbsp;</div>
+
+			<div>
+				<p>
+					<span class="txt"><span style="margin-right: 14px">用</span>户：</span><input field="uid" name="username" type="text" class="ui-box"/>
+				</p>
+				<p>
+					<span class="txt"><span style="margin-right: 14px">密</span>码：</span><input id="tb_pwd" field="pwd" name="password" type="password" class="ui-box" onfocus="this.value = '';"/>
+				</p>
+				<p class="verify-panel" style="display:none">
+					<span class="txt">验证码：</span><input id="vcode" field="code" name="verifycode" class="ui-box box2 left"/>
+					<span class="verify" id="vimg" onclick=" refreshImage() " title="验证码不区分大小写，点击刷新验证码">&nbsp;</span>
+				</p>
+				<p style="margin-top: 10px">
+
+					<span class="txt">&nbsp;</span>
+
+                            <span class="ui-button w100 middle-button" id="btn_login">
+                                <span class="button-inner">
+                                    <span class="button-txt">登录</span>
+                                    <a href="javascript:;"></a>
+                                </span>
+                            </span>
+				</p>
+			</div>
+			</div>
+		</div>
+</div>
+
+	<script type="text/javascript" src="{{.static_serve}}/assets/js/j6/core.js?v={{.version}}"></script>
+	<script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?v={{.version}}"></script>
+	<script type="text/javascript">
+		j6.xhr.filter = null;
+	 	var d = j6.$('login-panel');
+        j6.style(d,{
+                position:'absolute',
+                left: (j6.screen.width()- j6.width(d) ) /2 +'px',
+                top: (j6.screen.height() - j6.height(d) - 40) /2 +'px'
+            })
+        
+		   var tip = j6.$('tip');
+		   document.body.onkeydown = function (e) {
+	            var event = window.event || e;
+	            if (event.keyCode == 13) {
+	                login();
+	            }
+	        };
+	        function login() {
+	            var formData = j6.json.toObject(d.id);
+				formData.pwd = sha1(formData.uid+":"+formData.pwd);
+				j6.json.bind(d.id,formData);
+	            if (j6.validator.validate(d.id)){
+	                j6.xhr.jsonPost(location.href, formData, function (json) {
+	                    if (json.result) {
+	                        tip.innerHTML = '<span style="color:green">登录成功,正在进入管理中心...</span>';
+							window.parent.location.replace('/main/dashboard');
+	                    }
+	                    else {
+	                        if (json.message.indexOf('验证码') != -1) {
+	                            refreshImage();
+	                        }
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
+	                    }
+	                }, function (x) {
+	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';
+	                });
+	            }
+	        }
+	        
+	        j6.$('btn_login').onclick=login;
+           j6.animation.show(d.id,null,4);
+		</script>
+</body>
+</html>

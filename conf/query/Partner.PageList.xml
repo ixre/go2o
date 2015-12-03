@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString></ColumnMappingString>
+  <Query>
+    <![CDATA[SELECT * FROM pt_page WHERE partner_id={partner_id}
+    AND ({enabled}<0 OR enabled={enabled}) AND title LIKE '%{keyword}%'
+    ORDER BY id limit {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[SELECT COUNT(0) FROM pt_page WHERE partner_id={partner_id}
+    AND ({enabled}<0 OR enabled={enabled}) AND title LIKE '%{keyword}%']]>
+  </Total>
+</ExportItemConfig>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <Query>
+    <![CDATA[
+        SELECT pt_order.id,
+    order_no,
+    member_id,
+    mm_member.name as member_name,
+    mm_member.usr as member_user,
+    partner_id,
+    shop_id,
+    replace(items_info,'\n','<br />') as items_info,
+    total_fee,
+    fee,
+    pay_fee,
+    payment_opt,
+    is_paid,
+    payment_sign,
+    note,
+    status,
+    paid_time,
+    create_time,
+    deliver_time,
+    pt_order.update_time
+    FROM pt_order INNER JOIN mm_member ON mm_member.id=pt_order.member_id
+     WHERE partner_id={partner_id} AND ({is_paid} = -1 OR is_paid={is_paid})
+      AND ({status}>99  OR status={status})
+     AND (items_info LIKE '%{keyword}%' OR mm_member.name LIKE '%{keyword}%'
+     OR mm_member.usr LIKE '%{keyword}%' OR pt_order.order_no LIKE '%{keyword}%')
+     ORDER BY create_time DESC LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[SELECT COUNT(0) FROM pt_order INNER JOIN mm_member ON mm_member.id=pt_order.member_id
+     WHERE partner_id={partner_id} AND ({is_paid} = -1 OR is_paid={is_paid})
+     AND ({status}>99 OR status={status})
+     AND (items_info LIKE '%{keyword}%' OR mm_member.name LIKE '%{keyword}%'
+     OR mm_member.usr LIKE '%{keyword}%' OR pt_order.order_no LIKE '%{keyword}%')  ]]>
+  </Total>
+</ExportItemConfig>

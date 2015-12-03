@@ -1,0 +1,167 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>订单确认</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+
+</head>
+<body>
+
+    {{template "header" $}}
+
+
+    <div id="order-confirm-panel" class="order-confirm-panel panel">
+        <div id="item1" class="item first_item">
+            <h2 class="title">配送地址<span class="edit_link">[<a id="el1" href="javascript:void(0);" onclick="selectDeliver()">修改</a>]</span></h2>
+            <div class="item_info">
+                {{if .settle.Deliver}}
+                <p>
+                    <span id="deliver_rn">{{.settle.Deliver.PersonName}}</span>&nbsp;
+                    <span id="deliver_ph">{{.settle.Deliver.Phone}}</span><br />
+                    <span id="deliver_addr">{{.settle.Deliver.Address}}</span>
+                </p>
+                {{else}}
+                <p>
+                    <span id="deliver_rn"></span>&nbsp;
+                    <span id="deliver_ph"></span><br />
+                    <span id="deliver_addr"></span>
+                </p>
+                {{end}}
+            </div>
+            <div id="ctl1"  class="item_ctrl">
+                <div id="deliver-panel">
+                    加载收货信息
+                </div>
+                <div id="delivery-confirm-panel">
+                    <input id="cb1" type="button" class="btn confirm-button btn-m" value="保存配送地址"/>
+                </div>
+            </div>
+        </div>
+
+        <div id="item2" class="item">
+            <h2 class="title">配送方式<span class="edit_link">[<a id="el2" href="javascript:void(0);">修改</a>]</span></h2>
+            <div class="item_info">
+                <p>
+                    <span id="deliver_opt_name">-</span>
+                </p>
+            </div>
+            <div id="ctl2"  class="item_ctrl">
+                <input type="radio" field="deliver_opt" id="deliver_opt1" value="1" checked="checked"/><label for="deliver_opt1">智能配送(自动选择门店配送和快递配送)</label><br />
+                <!--<input type="radio" field="deliver_opt" id="deliver_opt２" value="１"/><label for="deliver_opt1">上门自提</label>-->
+
+                <div>
+                    <input id="cb2" type="button" class="btn confirm-button btn-m" value="保存配送地址方式"/>
+                </div>
+            </div>
+        </div>
+
+        <div id="item3" class="item">
+            <h2 class="title">支付方式<span class="edit_link">[<a id="el3" href="javascript:void(0);">修改</a>]</span></h2>
+            <div class="item_info">
+                <p>
+                    <span id="payment_opt_name"></span>
+                </p>
+            </div>
+            <div id="ctl3" class="item_ctrl">
+                <input type="radio" field="pay_opt"  name="payment_opt" id="payment_opt1" value="1" checked="checked"/><label for="payment_opt1">在线支付</label><br />
+               <!-- <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt2" value="2"/><label for="payment_opt2">货到付款</label><br />-->
+                <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt3" value="3"/><label for="payment_opt3">转账汇款</label><br />
+                <div>
+                    <input id="cb3" type="button" class="btn confirm-button btn-m" value="保存支付方式"/>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="item">
+            <h2 class="title" style="position: relative">商品清单<span class="back-cart" style="position: absolute;right:0;top:0px;">
+                <a href="/cart?edit=1">&gt;&gt;返回修改订单</a></span></h2>
+            <div class="item_info">
+
+                {{.cartDetails}}
+            </div>
+        </div>
+
+        <div class="item">
+                <br />
+                <h2 class="title">使用优惠券</h2>
+                <div class="form" id="form_coupon">
+                    优惠券编码：<input class="box coupon-code" tipin="pm_tip" type="text" field="CouponCode" id="coupon_code"/>
+                    <span id="pm_tip"></span>
+                    <div id="coupon_describe" class="coupon_desc hidden"></div>
+                </div>
+
+                <div class="balance_pay" id="balance_pay">
+                    <input type="checkbox" field="UseBalanceDiscount" value="1" id="ck_useBalance"/>
+                    <label for="ck_useBalance">使用余额(账户当前余额：<span id="lb_balance">-</span>元)</label>
+                </div>
+            <br />
+
+            <br />
+
+            <div class="cash-panel" id="cash-panel">
+                    <ul>
+                        <li class="total"><label>商品总价：</label><em>￥<span class="money">{{.cart.TotalFee}}</span></em></li>
+                        <li class="prom"><label>优惠金额：</label><em>-￥<span field="PromFee">0</span></em></li>
+                        <li class="balance"><label>账户支付：</label><em>-￥<span field="BalanceFee">0</span></em></li>
+                        <li class="fee"><label>需支付：</label><em>￥<span field="OrderFee">0</span></em></li>
+                    </ul>
+                <div class="clear-fix"></div>
+            </div>
+
+        </div>
+
+
+        <div class="submit-panel">
+            共需支付￥<span class="final_fee" id="final_fee">-</span>元&nbsp;
+            <input type="button" class="btn btn-m" id="btn_submit_order" value="提交订单"/>
+        </div>
+        <br />
+    </div>
+
+    <form id="postForm">
+        <input type="hidden" name="shop_id" field="shop_id" value="0"/>
+        <input type="hidden" name="pay_opt" field="pay_opt" value="{{.paymentOpt}}"/>
+        <input type="hidden" name="deliver_opt" field="deliver_opt" value="{{.deliverOpt}}"/>
+        <input type="hidden" name="deliver_id" field="deliver_id" value="{{.deliverId}}"/>
+        <input type="hidden" name="deliver_person" field="deliver_person" value=""/>
+        <input type="hidden" name="deliver_phone" field="deliver_phone" value=""/>
+        <input type="hidden" name="deliver_address" field="deliver_address" value=""/>
+    </form>
+
+    <script type="text/javascript">
+        var total_fee = {{.cart.TotalFee}};
+        var prom_fee = {{.promFee}};
+        var order_fee = {{.cart.OrderFee}};
+        var acc_balance = {{.balance}};
+        var sctJson = {pay_opt:1,deliver_opt:1,deliver_id:0,shop_id:0,deliver_person:'',deliver_phone:'',deliver_address:''};
+    </script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/form.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/animation.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/device.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/buy/buy_confirm.js?{{.version}}"></script>
+    <script type="text/javascript">
+        pageInit();
+        recoverFrom('postForm');
+        dynamicContent();
+        reloadFee();
+        j6.$('btn_submit_order').onclick=submitOrder;
+        j6.$('btn_submit_order').removeAttribute('disabled');
+        window.toggleDelivery = function(b){
+            var pl = j6.$('delivery-confirm-panel');
+            pl.className = b ?'':'hidden';
+        };
+    </script>
+
+
+    {{template "footer" $}}
+</body>
+</html>

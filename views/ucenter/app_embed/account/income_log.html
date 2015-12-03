@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+    <title>订单返现</title>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+
+<div class="page-main page-income dg1">
+   <div id="dg" class="ui-table">加载中...</div><div id="pager"></div>
+</div>
+
+<script type="text/template" id="list_tpl">
+    <div class="item">
+        <div class="tit">
+            <span class="fee">
+                {title}  &nbsp;
+            </span>
+        </div>
+
+        <div class="control">
+            <div>
+                <b>金额</b>：<span class="price">{amount}</span>
+                <span style="float:right"><b>产生时间</b>：<span class="time">{submit_time}</span></span>
+            </div>
+            <div class="buttons">
+                <input class="btn btn-orange hidden" href="location.href='view?order_no={order_no}';" value="查看订单"/>
+            </div>
+            <div class="clear-fix"></div>
+        </div>
+    </div>
+</script>
+
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?ver={{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?ver={{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/dg.js?ver={{.version}}"></script>
+    <script type="text/javascript">
+        var htmTpl = j6.$('list_tpl').innerHTML;
+        window.onload=function() {
+            var _dg = j6.grid('dg', {
+                url: location.href,
+                data: {page: j6.request('page') || 1, size:15},
+                idField: 'id',
+                columns: [
+                    {
+                        field: 'record_time', title: '产生时间', width: 120, formatter: function (v, r) {
+                        return j6.template(htmTpl, {
+                            amount:parseFloat(r.amount).toFixed(2),
+                            title: r.title,
+                            submit_time: unix2str(r.create_time).substring(0,16),
+                        });
+                    }
+                    }
+                ],
+                loaded: function (data) {
+                    var e = j6.$('dg')
+                    if (data.rows == null || data.rows.length == 0) {
+                        e.innerHTML = '<div class="no-row">没有返现记录！</div>';
+                        e.className = '';
+                        return;
+                    }
+                    e.className = 'ui-table';
+                    var tables = document.getElementsByTagName('TABLE');
+                    //j6.table.dynamic(tables[1], false);
+                    tables[1].className = '';
+                    //加载分页
+                    this.panel.nextSibling.innerHTML = data.text;
+
+                }
+            });
+            _dg.resize();
+        };
+        function gp(p){
+            _dg.data.page = p;
+            _dg.reload();
+        }
+    </script>
+
+{{template "footer"$}}
+
+</body>
+</html>

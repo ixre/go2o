@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+    <style>
+        .sale_tags{margin:0;list-style:none;padding:0;width:100%;}
+        .sale_tags li{display:inline-block;background:#F8F8F8;margin:5px;border:solid 1px #ddd;padding:0 5px;}
+    </style>
+</head>
+<body>
+
+<div id="form1" class="form margin30">
+
+    <div class="fl">
+        <input type="hidden" field="GoodsId" value="{{.goodsId}}"/>
+        {{.tagsHtml}}
+    </div>
+
+    <div class="fl">
+            <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">提交</span><a href="javascript:;"></a></span></span>
+    </div>
+
+</div>
+
+<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+
+<script>
+    var entity = {"SaleTags":'{{.tagValue}}'.split(',')};
+    j6.json.bind('form1', entity);
+    j6.$('btn_save').onclick = function () {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SaveGoodsSTag', data, function (json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
+                    if(json.result) {
+                        var d = j6.dialog.getDialog();
+                        d.close();
+                    }
+                });
+            }, function (e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

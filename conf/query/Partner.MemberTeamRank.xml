@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <Query>
+    <![CDATA[
+    SELECT * FROM ( SELECT m.*,
+ (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
+  ({level_value}=-1 OR m1.level{level_comp}{level_value}) AND r.invi_member_id = m.id
+	AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+  UNIX_TIMESTAMP('{start_time}') AND UNIX_TIMESTAMP('{end_time}')) as invi_num,
+	((SELECT COUNT(0) FROM mm_relation r  INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
+  ({level_value}=-1 OR m1.level{level_comp}{level_value}) AND r.invi_member_id = m.id
+	AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+  UNIX_TIMESTAMP('{start_time}') AND UNIX_TIMESTAMP('{end_time}'))+
+ (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
+  ON m1.id = r.member_id WHERE ({level_value}=-1 OR m1.level{level_comp}{level_value}) AND invi_member_id IN
+	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
+  ({level_value}=-1 OR m1.level{level_comp}{level_value}) AND r.invi_member_id =
+    m.id AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+  UNIX_TIMESTAMP('{start_time}') AND UNIX_TIMESTAMP('{end_time}')))) as all_num
+ FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
+ WHERE rl.reg_partner_id = {partner_id} AND state={state}
+ ) t ORDER BY t.{sort_field},t.reg_time asc
+ LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[ SELECT COUNT(0) FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
+    WHERE rl.reg_partner_id = {partner_id} AND state={state} AND m.reg_time BETWEEN UNIX_TIMESTAMP('{start_time}')
+     AND UNIX_TIMESTAMP('{end_time}')
+ ]]>
+  </Total>
+</ExportItemConfig>

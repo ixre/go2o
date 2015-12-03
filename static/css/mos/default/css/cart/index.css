@@ -1,0 +1,89 @@
+.payed-page h2 i,
+.cart-page .goodlist .del,
+.cart-trolly-page .paytype .selected i{background-image:url(../../images/cart/index.gif);background-size:50px 49px;}
+.payed-page .pxui-area{padding:20px;}
+.payed-page h2{font-weight:normal;font-size:20px;color:#4b981d;margin-bottom:30px;text-align:center;margin-top:10px;}
+.payed-page h2 i{display:inline-block;vertical-align:top;width:28px;height:25px;margin-right:5px;}
+.payed-page strong{font-size:16px;}
+.payed-page a.pxui-light-button,
+.payed-page a.pxui-blue-button{display:inline-block;padding: 6px 12px 5px 12px;vertical-align: middle;margin:6px 12px 12px 0;}
+.payed-page input.pxui-light-button{width:100%;display:block;margin:20px 0;}
+
+.cart-page .goodlist{padding:5px;}
+.cart-page .goodlist h2{line-height:38px;border-bottom:1px solid #cbcbcb;font-size:16px;font-weight:normal;}
+.cart-page .goodlist li{border-bottom:1px dashed #cbcbcb;overflow:hidden;}
+.cart-page .goodlist li:last-child{border-bottom:1px solid #cbcbcb;}
+.cart-page .goodlist li div{width:100%;display:block;margin-right:-120px;float:right;}
+.cart-page .goodlist li p{line-height:24px;margin:10px 120px 10px 0;}
+.cart-page .goodlist li.end{opacity:0.5;}
+.cart-page .goodlist strong{font-size:16px;font-weight:normal;}
+.cart-page .goodlist input{vertical-align:middle;}
+.cart-page .goodlist .name{display:block;height:24px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+.cart-page .goodlist .name span{display:inline-block;margin:4px 0;padding:0 4px;background:#090;color:#fff;line-height:18px;margin-right:5px;}
+.cart-page .goodlist .select{display:inline-block;padding:2px 8px;color:#fff;line-height:20px;margin-left:5px;margin-top:5px;}
+.cart-page .goodlist .img80{display:inline-block;border:1px solid #cbcbcb;margin:10px 0;}
+.cart-page .goodlist .red{display:block;color:red;}
+.cart-page .goodlist .pxui-select{margin:3px 0;padding:3px;}
+.cart-page .goodlist .pxui-select i{margin-left: 8px;margin-top: -4px;margin-right: 3px;}
+.cart-page .goodlist .pxui-select select{height:27px;}
+.cart-page .goodlist .del{display:inline-block;vertical-align:middle;width:17px;height:21px;background-position:-33px 0;float:right;margin-right:10px;margin-top:7px;}
+
+.cart-index-page .total{text-align:right;margin:10px;}
+.cart-index-page .total strong{font-size:20px;}
+.cart-index-page .total input{width:100%;display:block;margin:10px auto;border-radius:3px;}
+.cart-index-page .total .pxui-show-more{float:right;margin-top:10px;}
+
+.cart-trolly-page .goodlist{padding:0 10px;margin-bottom:10px;}
+.cart-trolly-page .goodlist h2{padding-left:5px;}
+.cart-trolly-page .goodlist .img80{margin-left:5px;}
+.cart-trolly-page .goodlist li div{margin-right:-100px;}
+.cart-trolly-page .goodlist li p{margin:10px 100px 10px 0;}
+.cart-trolly-page .goodlist div.offer{text-align:right;margin-top:5px;border-bottom:1px solid #cdcdcd;padding-bottom:10px;}
+.cart-trolly-page .goodlist div.offer span{display:inline-block;vertical-align:middle;width:120px;text-align:left;padding: 4px;padding-top:0;}
+.cart-trolly-page .goodlist div.offer strong{font-size:18px;}
+.cart-trolly-page .goodlist div.offer span.pxui-select{padding:3px;}
+.cart-trolly-page .goodlist div.offer span span{width:78%;padding:0;line-height:20px;margin-top:-6px;height:20px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+.cart-trolly-page .goodlist div.offer b{font-weight:normal;display:inline-block;vertical-align:middle;width:50px;}
+.cart-trolly-page h1{font-size:16px;border:1px solid #cdcdcd;border-left:0;border-right:0;line-height:33px;text-indent:5px;margin:0 5px;clear:both;}
+.cart-trolly-page h1:first-child{border-top:0;margin-top:10px;}
+.cart-trolly-page .address{padding:5px 15px;}
+.cart-trolly-page .address b{font-size:18px;}
+.cart-trolly-page .offer a,
+.cart-trolly-page .paytype a{line-height:34px;border-bottom:1px dotted #cdcdcd;display:block;margin:0 10px;padding-left:5px;position:relative;}
+.cart-trolly-page .offer a:last-child,
+.cart-trolly-page .paytype a:last-child{border-bottom:0;}
+.cart-trolly-page .paytype .selected i{position:absolute;width:23px;height:19px;background-position:0 -30px;right:6px;top:7px;}
+.cart-trolly-page .offer a i{position:absolute;right:5px;background:#6d9fd9;top:20px;}
+.cart-trolly-page .offer a i::before{background:#6d9fd9;}
+.cart-trolly-page .message{margin:10px 20px;}
+.cart-trolly-page .message textarea{width:100%;margin-left:-5px;}
+.cart-trolly-page .total{padding:0 15px;}
+.cart-trolly-page .total span,
+.cart-trolly-page .total b{float:right;}
+.cart-trolly-page .total strong{font-size:20px;}
+.cart-trolly-page .total input{width:100%;margin:10px 0 10px 0;font-size:16px;border-radius:3px;}
+.cart-trolly-page .error-msg{display:block;margin:5px;color:#fb4e3a;}
+.cart-trolly-page .pxui-form-info{margin:0 15px 5px 15px;padding:0;}
+.cart-trolly-page .pxui-form-info p span{padding-bottom:0;}
+#js-trolly-loading {padding: 150px 0;line-height: 30px;text-align: center;}
+#js-trolly-loading img{display:block;margin:auto;}
+#js-trolly{display:none;}
+#js-get-pxgold{float:none;}
+.sizes{margin-top:10px;}
+.sizes a{display:inline-block;border:1px solid #d7d7d7;margin:5px;padding:0 8px;}
+.sizes a.selected,
+.sizes a:hover{color:red;border-color:red;}
+.showloading{position:fixed;width:100%;height:100%;left:0;top:0;}
+.showloading div{position:fixed;top:50%;left:50%;width: 110px;text-align: center;margin-left:-55px;margin-top:-43px;color:#fff;}
+.showloading::before{content: "";width:100%;height:100%;position:fixed;background:#000;opacity:0.5;}
+
+.alloffer p{text-align:right;border-bottom:1px dotted #CDCDCD;padding-bottom:3px; margin:5px 10px 0 10px;}
+.alloffer span{display:inline-block;vertical-align:middle;width:120px;text-align:left;padding: 4px;padding-top:0;}
+.alloffer strong{font-size:18px;}
+.alloffer span.pxui-select{padding:3px;}
+.alloffer span span{width:78%;padding:0;line-height:20px;margin-top:-6px;height:20px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+.alloffer b{font-weight:normal;display:inline-block;vertical-align:middle;width:50px;}
+
+
+.alloffer p{ margin:0 10px;}
+.alloffer .pxui-select select{ max-width:65%;}
