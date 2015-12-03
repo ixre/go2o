@@ -14,11 +14,10 @@ dd,dt{margin:0;}
 .hr{border-top:solid 1px #fff;border-bottom:solid 1px #ddd;}
 
 .page-top{background:#06c url(top_bg.gif) center -1000px repeat-x;
-    border-bottom:solid 0px #00356a;font-size: 1.2em;height:6em;}
+    border-bottom:solid 1px #1C60A5;font-size: 1.2em;height:6em;}
 .page-top .top{background:url(top_bg.gif) center 1px repeat-x;height:2px;}
-.page-top a.logo{display:inline-block;float:left;/*width:238px;*/width:400px;height:49px;
-    background:url(logo.gif) 0 bottom no-repeat;text-indent:-999em;margin-left:20px;
-    margin:15px 0 0 1em;
+.page-top a.logo{display:block;float:left;width:400px;height:95%;
+    background:url(logo.gif) 0 center no-repeat;text-indent:-999em;
 }
 .page-top a.logo h1{margin:0;padding:0;}
 
@@ -75,7 +74,7 @@ dd,dt{margin:0;}
 .page-left-menu ul li a{background:url(columns.png) 20px center no-repeat;padding-left:40px;}
 
 /*** tab ***/
-.page-tabs {height:27px;border-bottom:solid 1px #cacaca;padding-top:3px;}
+.page-tabs {height:27px;border-bottom:solid 1px #D5D5D5;padding-top:2px;}
 .page-tabs ul{list-style:none;padding:0;margin:0;}
 .page-tabs li{float:left;position:relative;line-height:26px;margin-right:1px;border:solid 1px #cacaca;
                 background:url(tab_bg.gif) center bottom repeat-x;color:#333;font-weight:bold;}
