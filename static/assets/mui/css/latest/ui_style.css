@@ -67,7 +67,7 @@ dd,dt{margin:0;}
 /* menu */
 .page-left-menu{border:solid 0px #d0d0d0;border-left:none;border-bottom:none;margin-top:2px;height:100%;background:#F8F8F8;
     border-right:solid 1px #ddd;}
-.page-left-menu .group{border:solid 1px #D0D0D0;margin:0 5px 3px 5px;background:#E9E9E9;}
+.page-left-menu .group{border:solid 1px #D0D0D0;margin:0 5px 5px 5px;background:#E9E9E9;}
 .page-left-menu ul{margin:0 2px 2px 2px;padding:0px;list-style:none;border:solid 1px #E5E5E5;}
 .page-left-menu .group-title{background:url(menu_bar_bg.gif) center bottom repeat-x;line-height:30px;
     font-weight:bold;padding-left:15px;color:#333;border-top:solid 1px #FFF;}

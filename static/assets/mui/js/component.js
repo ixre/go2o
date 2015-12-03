@@ -36,21 +36,20 @@ var FwMenu = {
         var menuEle = this.ele;
 
         menuEle.innerHTML = '';
-        var title, html, linktext, url;
+        var html, linkText, url;
         for (var i1 = 0; i1 < md.length; i1++) {
-            title = md[i1].text;
             html = '';
             for (var i2 = 0; i2 < md[i1].childs.length; i2++) {
                 if (md[i1].childs[i2].childs.length > 0) {
-                    html += '<div class="group"><div class="group-title" group="' + md[i1].id + '" style="cursor:pointer" title="点击展开操作菜单"><span>' + md[i1].childs[i2].text + '</span></div>';
+                    html += '<div class="group hidden"><div class="group-title" group="' + md[i1].id + '" style="cursor:pointer" title="点击展开操作菜单"><span>' + md[i1].childs[i2].text + '</span></div>';
                     html += '<div class="panel hidden"><ul id="fns_' + i2 + '">';
                     for (var i3 = 0; i3 < md[i1].childs[i2].childs.length; i3++) {
-                        linktext = md[i1].childs[i2].childs[i3].text;
+                        linkText = md[i1].childs[i2].childs[i3].text;
                         url = md[i1].childs[i2].childs[i3].uri;
                         // html += (i3 != 0 && i3 % 4 == 0 ? '<div class="clearfix"></div>' : '') +
                         html += '<li' + (i2 == 0 && i3 == 0 ? ' class="current"' : '') + '><a class="fn" style="cursor:pointer;" url="' + url + '"' +
-                       //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
-                       '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linktext + '</a></li>';
+                                //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
+                            '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linkText + '</a></li>';
                     }
                     html += '</ul></div></div>';
                 }
@@ -69,6 +68,7 @@ var FwMenu = {
                 };
             })(t, e));
 
+            //设置打开
             j6.each(e.nextSibling.getElementsByTagName('LI'), function (i2, e2) {
                 j6.event.add(e2, 'click', (function (_this, _t, g) {
                     return function () {
@@ -81,7 +81,6 @@ var FwMenu = {
                 })(e2, t, groupName));
             });
         });
-
     },
     //设置第几组显示
     change: function (id) {
@@ -102,12 +101,10 @@ var FwMenu = {
 
         j6.each(menuTitles, function (i, e) {
             if (e.getAttribute('group') != groupName) {
-                e.className = 'group-title hidden';
-                e.nextSibling.className = 'panel hidden';
+                e.parentNode.className = 'group hidden';
             } else {
                 titleGroups.push(e);
-                e.className = 'group-title';
-
+                e.parentNode.className = 'group';
                 //第一个panel
                 if (firstPanel == null) {
                     firstPanel = e.nextSibling;
