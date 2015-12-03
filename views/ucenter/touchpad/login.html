@@ -72,7 +72,10 @@
     </div>
 </div>
 
-<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/mobi/core.js?version={{.version}}"></script>
+<script src="{{.static_serve}}/assets/js/mobi/device.js?version={{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?version={{.version}}"></script>
+
 <script type="text/javascript">
         var d = j6.$('form1');
         j6.style(d,{
@@ -89,6 +92,8 @@
 	        };
 	        function login() {
 	            var data = j6.json.toObject('form1');
+                data.pwd = sha1(data.pwd);
+                j6.json.bind('form1',data);
 	            if (j6.validator.validate('form1')){
 	                j6.xhr.jsonPost(location.href, data, function (json) {
 	                    if (json.result) {

@@ -21,6 +21,12 @@
         <div class="clear-fix"></div>
     </div>
 
+    <div class="border bank">
+        <div class="tit"><div>银行卡信息</div></div>
+        <div class="con" id="member-bank"></div>
+        <div class="clear-fix"></div>
+    </div>
+
     <div class="clear-fix"></div>
     <div class="tip-box hidden" id="tipBox" style="font-weight:bold">
     </div>
@@ -75,6 +81,7 @@
     window.onload=function(){
         j6.load('member-basic','member_basic?member_id='+memberId);
         j6.load('member-account','member_account?member_id='+memberId);
+        j6.load('member-bank','member_curr_bank?member_id='+memberId);
 
         j6.$('btn_lock').onclick=function(){
             var t =this;

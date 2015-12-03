@@ -33,7 +33,13 @@
         <div class="tip-box" style="color:#FF0000;">
             您即将为会员充值￥<b>{{.order.PayFee}}</b>元，并使用余额完成支付。
         </div><br/>
-        <input class="btn" type="button" value="确定支付" id="btn_payment"/>
+
+         <span class="ui-button w150">
+                <span class="button-inner">
+                    <span class="button-txt">确定支付</span>
+                    <input onclick="setShop()" id="btn_payment"/>
+                </span>
+         </span>
 
 </div>
 

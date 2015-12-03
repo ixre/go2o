@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-    <title>修改密码</title>
+    <title>修改交易密码</title>
     <meta content="width=device-width,initial-scale=1" name="viewport" />
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
@@ -10,25 +10,40 @@
 {{template "header"$}}
 
 <div class="page-main page-profile page-pwd">
+    <div class="fixed hidden">
+        <div class="tip-box">
+            <span style="color:red">交易密码是体。<br />请牢记并妥善保管!
+            如需找回密码请联系
+            </span>
+            <br />客服电话：{{.partner.Tel}}
+        </div>
+        <div class="line hidden"></div>
+    </div>
+
     <div class="tab">
         <ul>
-            <li class="current"><a href="pwd.htm">登陆密码</a></li>
-            <li><a href="trade_pwd.htm">交易密码</a></li>
+            <li><a href="pwd.htm">登陆密码</a></li>
+            <li class="current"><a href="trade_pwd.htm">交易密码</a></li>
         </ul>
         <div class="clear-fix"></div>
     </div>
 
     <div id="form1" class="form form2">
 
-
+        <div class="tip-box">
+            <span style="color:red">*</span>交易密码是交易或提现的凭据，请牢记并妥善保管!
+        </div>
+            <br />
+            {{if .notFirstSet}}
             <div class="fl">
                 <div class="label">原密码：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="password" required="true" tipin="tip_old_pwd" field="OldPwd"
+                    <input class="box ui-validate" type="password" tipin="tip_old_pwd" field="OldPwd"
                            summary="{required:'请填写原密码'}" onfocus="this.value=''"/>
                     <span class="fv" id="tip_old_pwd"></span>
                 </div>
             </div>
+            {{end}}
             <div class="fl">
                 <div class="label">新的密码：</div>
                 <div class="in">
@@ -70,6 +85,7 @@
                 showErr('新密码不能与原密码相同',2000);
                 return false;
             }
+
             data.OldPwd = sha1(data.OldPwd);
             data.NewPwd = sha1(data.NewPwd);
             data.RePwd = sha1(data.RePwd);

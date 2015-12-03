@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>申请提现</title>
+	<title>{{.flowAlias}}转换</title>
 	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
 	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
 	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
@@ -11,37 +11,26 @@
 	<div class="page-main page-apply-cash">
 		<div class="head-box">
 			<div class="account">
-
-				账户余额:&nbsp;<b><span id="lb_balance">{{.account.PresentBalance}}</span></b>
-
-				<span class="total">返现总额:&nbsp;<b>{{.account.TotalPresentFee}}</b></span>
+				{{.flowAlias}}余额:&nbsp;<b id="lb_balance">￥{{.account.FlowBalance}}</b><br />
 			</div>
 
-			<div class="control1">
-				<a class="btn btn-m" href="bank_info.htm">收款银行设置</a>&nbsp;
-				<a class="btn" href="income_log.htm">历史返现</a>
-			</div>
-			<div class="clear-fix"></div>
+		</div>
+
+		<div class="tip-box">
+			{{.flowConvertSlogan}}
 		</div>
 
 		<div id="form1" class="form form2">
-
-			<div class="latest_rec">
-				{{.latestInfo}}
-			</div>
-
-
-
 			<div class="apply-panel">
-				<h3>提现金额：</h3>
+				<h3>转换金额(整数)：</h3>
 				<input id="tb_amount" type="text" class="box ui-validate" isfloat="true" required="true" field="Amount"
-					   summary="{required:'请输入金额'}"/>&nbsp;&nbsp;
-				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.maxApplyAmount}}&nbsp;元</span>
+						summary="{required:'请输入金额'}"/><!-- &nbsp;&nbsp;
+				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.maxApplyAmount}}&nbsp;元</span> -->
 
 
 
 				<h3>交易密码：</h3>
-				<input type="password" class="box ui-validate" required="true" field="TradePwd"
+				<input type="password" class="box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
 					   summary="{required:'交易密码不能为空'}" onfocus="this.value=''"/>
 
 					{{if .notSetTradePwd}}
@@ -56,21 +45,20 @@
 						实际到账：<span id="finalAmount">0</span>&nbsp;(手续费：<span id="cnsAmount">0</span>)
 					</div>
 
+
 					<div class="control">
-						<input class="btn btn-m" type="button" value="申请提现" onclick="saveData()"/>
+						<input class="btn btn-m" type="button" value="确定转换" onclick="saveData()"/>
 						<div class="tip-msg" id="tip_msg"></div>
 						<div class="clear-fix"></div>
 					</div>
 
 				</div>
-
 			</div>
 
 
 		<div class="apply-setup">
 			<b><span class="red">*</span>&nbsp;说明：</b><br />
-			按平台政策，暂{{.commissionStr}}。<br />
-			提现流程：&nbsp;提交申请 -> 客服审核 -> 打款 -> 完成提现。
+			按平台政策，暂{{.commissionStr}}，资金即时到账。
 		</div>
 
 	</div>
@@ -83,7 +71,7 @@
 
 			<script type="text/javascript">
 				var tipMsg = j6.$('tip_msg');
-				var balance = {{.account.PresentBalance}};
+				var balance = {{.account.FlowBalance}};
 				var cns = {{.cns}};
 				var finalAmount,cnsAmount;
 
@@ -120,11 +108,11 @@
 							tipMsg.className= 'tip-msg red';
 							return false;
 						}
-						j6.xhr.jsonPost('apply_cash.htm',data,function(json){
+						j6.xhr.jsonPost('convert_f2p.htm',data,function(json){
 							if(json.result){
 								balance -= data.Amount;
 								j6.$('lb_balance').innerHTML = balance;
-								location.href = 'transfer_success.htm?src=apply_p2b';
+								location.href = 'transfer_success.htm?src=convert_f2p';
 							}else {
 								tipMsg.innerHTML = json.message;
 								tipMsg.className= 'tip-msg red';

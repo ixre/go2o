@@ -16,38 +16,7 @@
 <body class="easyui-layout">
 
 <div region="center">
-    <div id="dg"></div>
-    <div class="toolBar">
-        <div class="search_bar padding2" id="search_bar">
-            <ul>
-                <li>
-                    <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
-                        <span class="icon"></span>新增商品</a>
-                </li>
-                <li>
-                    <span class="title">状态：</span>
-                    <select field="state">
-                        <option value="-100">一所有一</option>
-                        <option value="1">正常</option>
-                        <option value="0">停用</option>
-                        <option value="2">暂停营业</option>
-                    </select>
-                </li>
-                <li>
-                    <span class="title">关键字：</span>
-                    <input type="text" field="keyword" />
-                    <input type="hidden" field="cid" value="0"/>
-                </li>
-                <li>
-                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
-                        <span class="icon"></span>搜索</a>
-                </li>
-
-            </ul>
-            <div class="clearfix"></div>
-        </div>
-        <div class="clearfix"></div>
-    </div>
+    <div id="dg" class="hidden"></div>
 </div>
 <div region="west" class="west" title="分类树" style="width:250px;">
     <div style="padding:10px">
@@ -174,96 +143,9 @@
 
     window.refresh = function () {
         ajaxLoadTree();
-        expr.reload('dg');
     };
 
-    j6.$('dg').style.height = j6.screen.height() + 'px';
 
-    $(function () {
-
-        //导出
-        $('#btnExport').click(
-                function () {
-                    expr.showExportDialog();
-                });
-
-        j6.$('btnSearch').onclick=function () {
-            expr.search('dg');
-        };
-
-
-        //加载数据
-        $('#dg').datagrid({
-            toolbar: '.toolBar',
-            singleSelect: !false,
-            pagination: true,
-            rownumbers: true,
-            fitColumns: true,
-            pageList:[5,10,15],
-            pageSize:5,
-            url: expr.getDataUrl(),
-            columns: [
-                [
-                    { field: 'name', title: '商品名称', align: 'center', width: 120 },
-                    { field: 'img', title: '图片', align: 'center', width: 100,formatter:function(val){
-                        var url = val ==''?'{{.no_pic_url}}':'{{.img_serve}}'+val;
-                        return '<img src="'+url+'" style="background:#fff;width:80px;height:80px;'+
-                                'border-radius:5px;border:solid 1px #888;padding:1px;margin:5px;"/>';
-                    } },
-                    { field: 'cost', title: '成本价',align: 'center'},
-                    { field: 'price', title: '定价', align: 'center', width: 120 },
-                    { field: 'sale_price', title: '销售价',align: 'center', width: 120 },
-                    { field: 'sale_fee', title: '优惠(元)',align: 'center', width: 120,formatter:function(val,row){
-                        var sale_fee = row.price - row.sale_price;
-                        if(sale_fee!=0){
-                            return sale_fee;
-                        }
-                        return "-";
-                    } },
-                    {
-                        field: 'state',
-                        title: '状态',
-                        sortable: true,
-                        align: 'center',
-                        width: 100,
-                        formatter: function (val) {
-                            if (val == 1) {
-                                return '<span style="color:green">可订</span>';
-                            } else if(val == 0){
-                                return '<span style="color:darkorange">不可订</span>';
-                            }
-                        }
-                    },
-                    { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                        return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">修改</a>'+
-                                '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
-                    } },
-                ]
-            ]
-        });
-    });
-
-    j6.$('btnAdd').onclick=addRec;
-
-    function addRec(){
-        j6.tab.open('新增商品', '/goods/create', true);
-    }
-
-    function editRec(id){
-        j6.tab.open('修改商品', '/goods/edit?id=' + id,  true);
-    }
-
-    function delRec(id) {
-     window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
-            if (result) {
-                j6.xhr.jsonPost('/goods/del', { id: id }, function(json) {
-                    if (json.result) {
-                        expr.reload('dg');
-                    }
-                });
-            }
-        });
-    }
 </script>
 
 </body>

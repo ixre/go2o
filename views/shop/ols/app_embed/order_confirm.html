@@ -38,8 +38,8 @@
                 <div id="deliver-panel">
                     加载收货信息
                 </div>
-                <div>
-                    <a id="cb1" class="btn confirm-button btn-orange" href="javascript:void(0);">保存配送地址</a>
+                <div id="delivery-confirm-panel">
+                    <input id="cb1" type="button" class="btn confirm-button btn-m" value="保存配送地址"/>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
                 <!--<input type="radio" field="deliver_opt" id="deliver_opt２" value="１"/><label for="deliver_opt1">上门自提</label>-->
 
                 <div>
-                    <a id="cb2" class="btn confirm-button btn-orange" href="javascript:void(0);">保存配送地址方式</a>
+                    <input id="cb2" type="button" class="btn confirm-button btn-m" value="保存配送地址方式"/>
                 </div>
             </div>
         </div>
@@ -70,18 +70,18 @@
             </div>
             <div id="ctl3" class="item_ctrl">
                 <input type="radio" field="pay_opt"  name="payment_opt" id="payment_opt1" value="1" checked="checked"/><label for="payment_opt1">在线支付</label><br />
-                <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt2" value="2"/><label for="payment_opt2">货到付款</label><br />
+               <!-- <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt2" value="2"/><label for="payment_opt2">货到付款</label><br />-->
                 <input type="radio" field="pay_opt" name="payment_opt" id="payment_opt3" value="3"/><label for="payment_opt3">转账汇款</label><br />
                 <div>
-                    <a id="cb3" class="btn confirm-button btn-orange" href="javascript:void(0);">保存支付方式</a>
+                    <input id="cb3" type="button" class="btn confirm-button btn-m" value="保存支付方式"/>
                 </div>
             </div>
         </div>
 
 
         <div class="item">
-            <h2 class="title" style="position: relative">商品清单<span style="position: absolute;right:0;top:0px;">
-                <a href="/cart?edit=1" style="color:#FF6600;">&gt;&gt;返回修改订单</a></span></h2>
+            <h2 class="title" style="position: relative">商品清单<span class="back-cart" style="position: absolute;right:0;top:0px;">
+                <a href="/cart?edit=1">&gt;&gt;返回修改订单</a></span></h2>
             <div class="item_info">
 
                 {{.cartDetails}}
@@ -120,7 +120,7 @@
 
         <div class="submit-panel">
             共需支付￥<span class="final_fee" id="final_fee">-</span>元&nbsp;
-            <input type="button" class="btn_submit btn btn-orange" id="btn_submit_order" value="提交订单"/>
+            <input type="button" class="btn btn-m" id="btn_submit_order" value="提交订单"/>
         </div>
         <br />
     </div>
@@ -155,6 +155,10 @@
         reloadFee();
         j6.$('btn_submit_order').onclick=submitOrder;
         j6.$('btn_submit_order').removeAttribute('disabled');
+        window.toggleDelivery = function(b){
+            var pl = j6.$('delivery-confirm-panel');
+            pl.className = b ?'':'hidden';
+        };
     </script>
 
 

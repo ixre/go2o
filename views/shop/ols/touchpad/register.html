@@ -8,10 +8,7 @@
     <meta content="telephone=no" name="format-detection" />
     <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
     <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/touchpad/stand.css?spam={{.spam}}"/>
-    <style type="text/css">
-        body{background:#FFE;}
-        .label{font-weight: bold;}
-    </style>
+
 </head>
 <body>
 
@@ -25,11 +22,11 @@
             <div class="tip-panel hidden" id="tip">
             </div>
 
-            <div class="fl">
-                <div class="label">用户名：</div>
+        <div class="fl">
+                <div class="label"><span class="red">*</span>用户名：</div>
                 <div class="in">
                     <input class="box ui-validate" type="text" length="[6,15]" tipin="tip_usr" field="Usr" id="usr" required="true"
-                           summary="{required:'请输入用户名','1':'必须以字母开头','length':'用户名长度为6-15位','3':'必须为字母或数字的组合','4':'用户名已被占用'}"/>
+                           summary="{required:'请输入用户名','1':'必须以字母开头','length':'用户名为6-15位字母数字的组合','3':'必须为字母或数字的组合','4':'用户名已被占用'}"/>
 
                     <span class="tip" id="tip_usr"><br />6-15位数字和字母组合</span>
 
@@ -41,16 +38,16 @@
             </div>
 
             <div class="fl">
-                <div class="label">密码：</div>
+                <div class="label"><span class="red">*</span>密码：</div>
                 <div class="in">
                     <input class="box ui-validate" length="[6,]" type="password" field="Pwd" id="pwd" required="true"
                            tipin="tip_pwd" summary="{required:'请输入密码','1':'首尾不能为下划线','2':'密码长度为6-12位','3':'格式输入有误'}"/>
-                    <span class="tip" id="tip_pwd"><br />密码最少6位</span>
+                    <span class="tip" id="tip_pwd"><br />密码至少6位</span>
                 </div>
             </div>
 
             <div class="fl">
-                <div class="label">重复密码：</div>
+                <div class="label"><span class="red">*</span>重复密码：</div>
                 <div class="in">
                     <input class="box ui-validate" type="password" id="rePwd" tipin="tip_repwd" required="true"
                            summary="{required:'请再次输入密码'}"/>
@@ -59,7 +56,7 @@
             </div>
 
             <div class="fl">
-                <div class="label">手机号码：</div>
+                <div class="label"><span class="red">*</span>手机号码：</div>
                 <div class="in">
                     <input class="box ui-validate" type="text" id="phone" field="Phone" tipin="tip_phone"
                            summary="{'0':'手机号码不正确','1':'手机号码已被使用','2':'手机号码不能为空'}"/>
@@ -79,28 +76,30 @@
                 </div>
             </div>
 
-            <div class="fl">
+            <div class="fl hidden" id="invi-panel">
                 <div class="label">推荐码：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" field="invi_code" id="invi_code" value="{{.invi_code}}" tipIn="tip_iv" style="width:40px"/>
-                    <span class="tip" id="tip_iv">没有推荐码可留空</span>
+                    <input class="box ui-validate" type="text" field="invi_code" id="invi_code" value="{{.invi_code}}" tipIn="tip_iv" style="width:60px"/>
+                    <span class="tip" id="tip_iv" style="display:inline">没有可留空</span>
                 </div>
             </div>
 
-            <div class="fl">
-                <div class="label"></div>
-                <div class="in">
-                    <input field="remember" type="checkbox" id="remember1"><label for="remember1">我已阅读并同意《服务条款》</label>
-                </div>
+            <div class="fl" style="margin:1em 0">
+
+                    <input field="remember" type="checkbox" id="remember1" checked="checked"><label for="remember1">我已阅读并同意相关服务条款</label>
+
             </div>
 
 
             <div class="fl">
-                <div class="label"></div>
-                <div class="in">
-                    <input class="btn" type="button" value="&nbsp;注册&nbsp;" id="btn_register"/>&nbsp;
-                    <input class="btn" type="reset" value="&nbsp;重置&nbsp;"/>
-                </div>
+
+
+                <span class="ui-button w150" style="width:268px">
+                    <span class="button-inner">
+                        <span class="button-txt"><b>&nbsp;注册&nbsp;</b></span>
+                        <input type="button" id="btn_register"/>
+                    </span>
+                </span>
             </div>
         <br />
     </div>
@@ -110,6 +109,20 @@
         <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?{{.version}}"></script>
         <script type="text/javascript" src="{{.static_serve}}/assets/js/member/register.js?{{.version}}"></script>
         <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
+<script type="text/javascript">
+    var inviCode = j6.request('invi_code');
+    if(inviCode == undefined || inviCode.length == 0){
+        showInviPanel();
+    }
+    function showInviPanel(){
+        j6.$('invi-panel').className = j6.$('invi-panel').className.replace(' hidden','');
+    }
+    window.registerCallback =function(json){
+      if(json.message.indexOf("1011") == 0){
+          showInviPanel();
+      }
+    };
+</script>
 
 </body>
 </html>

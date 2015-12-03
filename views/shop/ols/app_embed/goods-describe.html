@@ -13,8 +13,15 @@
 <body>
     {{template "header" $}}
     <div class="page-goods-des">
-        <div class="top" onclick="window.history.back()">
-            返回购买
+        <div class="top">
+            <span class="ui-button w50 back-button middle-button">
+                    <span class="button-inner">
+                        <span class="button-txt"><b>返回</b></span>
+                        <input onclick="window.history.back()" type="button"/>
+                    </span>
+            </span>
+
+            商品详情
         </div>
         <div class="con">
          {{.describe}}

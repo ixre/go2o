@@ -1,49 +1,67 @@
 <!DOCTYPE html>
 <head>
     <title>我的订单</title>
-    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
 </head>
 <body>
 
 {{template "header".}}
 
-    <div class="page-main">
-        <div class="h10"></div>
+    <div class="page-main page-orders dg1">
         <div id="dg" class="ui-table"></div><div id="pager"></div>
     </div>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
+    <script type="text/template" id="list_tpl">
+        <div class="item">
+            <div class="split"></div>
+            <div class="orderNo tit">订单号:{order_no}
+                <span class="right">
+                    状态：<span class="status">{status}</span>
+                </span>
+            </div>
+            <div class="con">
+                <div class="goods">{goods}</div>
+                <div class="left fee">
+                    订单金额：<span class="price">{fee}</span><br />
+                    下单时间：<span class="time">{submit_time}</span>
+                </div>
+                <div class="buttons">
+                    <input class="btn btn-m hidden" type="button" onclick="location.href='view?order_no={order_no}';" value="详情"/>&nbsp;
+                    <input class="btn btn-m {show_payment}" type="button" onclick="location.href='http://{domain}/pay/create?pay_opt={payment}&order_no={order_no}';" value="在线支付"/>
+                </div>
+                <div class="clear-fix"></div>
+            </div>
+        </div>
+    </script>
+        <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?ver={{.version}}"></script>
+        <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?ver={{.version}}"></script>
+        <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/dg.js?ver={{.version}}"></script>
+
         <script type="text/javascript">
             var ORDER_STATE_TEXTS = new Array("已作废", "待确认","已确认", "待发货", "配送中","已收货","已完成");
+            var htmTpl = j6.$('list_tpl').innerHTML;
+            var domain = '{{.partner_host}}';
             var _dg = j6.grid('dg', {
                 url: location.href,
-                data: {page:1,size:10},
+                data: {page:j6.request('page')||1,size:15},
                 idField: 'id',
                 columns: [
-                    { field: 'order_no', title: '订单号', width: 100,align:'center'},
-                    { field: 'items_info', title: '商品'},
-                    { field: 'fee', title: '金额', width: 200,align:'center',formatter:function(val){
-                        return '￥'+val;
-                    }},
-
-                    { field: 'create_time', title: '时间',align:'center', width: 120,formatter:function(v){
-                        return unix2str(v);
-                    }
-                    },
-                    { field: 'status', title: '状态',align:'center', width: 100,formatter:function(val){
-                        return ORDER_STATE_TEXTS[parseInt(val)];
+                    { field: 'order_no', title: '订单',formatter:function(v,r){
+                        return j6.template(htmTpl,{
+                            order_no:v,
+                            fee: '￥'+r.fee,
+                            domain : domain,
+                            payment : r.payment_opt,
+                            show_payment: r.is_paid == '1'?'hidden':'',
+                            goods: itemFmt(j6.toJson(r.items_info)),
+                            submit_time:unix2str(r.create_time).substring(0,16),
+                            status:r.is_paid == '0'?'待支付':ORDER_STATE_TEXTS[parseInt(r.status)],
+                        });
                     }}
                 ],
                 loaded: function (data) {
-                    var tables = document.getElementsByTagName('TABLE');
-                    j6.table.dynamic(tables[1], false);
-                    tables[1].className= '';
-
-                    //加载分页
                     this.panel.nextSibling.innerHTML = data.text;
-
                 }
             });
 
@@ -51,6 +69,18 @@
             function gp(p){
                 _dg.data.page = p;
                 _dg.reload();
+            }
+
+            function itemFmt(items){
+                var html = "";
+                var tpl = '<img src="{img}" width="50" height="50" style="border:solid 1px #ddd;padding:1px;margin-right:3px;" title="{name} x {qty}"/>';
+                for(var i=0;i<items.length;i++){
+                    if(items[i].img.indexOf("http") != 0){
+                        items[i].img = "{{.img_serve}}/"+items[i].img;
+                    }
+                    html += j6.template(tpl,items[i]);
+                }
+                return html;
             }
         </script>
 

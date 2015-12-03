@@ -1,69 +1,29 @@
 <!DOCTYPE html>
 <head>
     <title>收货地址</title>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
 </head>
 <body>
 
 {{template "header"$}}
 
-<div class="panel page-main">
-    <div class="page-main">
-        <div class="h10"></div>
+    <div class="page-main dg1 page-deliver">
 
 
-        <div class="btn_new_address" id="btn_new_address" style="margin:0 8px;">
-            <a class="button" href="javascript:;">+添加新的收货地址</a>
+        <div class="btn_new_address" id="btn_new_address">
+            <a class="btn btn-create" href="javascript:void(0);"><b>添加新的收货地址</b></a>
         </div>
 
         <div class="clear-fix"></div>
 
         <div id="new_panel"></div>
 
-        <div class="h10"></div>
         <div id="dg" class="ui-table"></div>
 
 
-        <template id="addressTpl">
-            <div class="form deliver-form" id="form-deliver">
-                <input type="hidden" field="Id" value="0"/>
-                <div class="fl">
-                    <div class="label">收货人：</div>
-                    <div class="in">
-                        <input class="box ui-validate" type="text" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
-                               summary="{'regex':'姓名为2-4位中文'}" />
-                    </div>
-                </div>
 
-                <div class="fl">
-                    <div class="label">电话：</div>
-                    <div class="in">
-                        <input class="box ui-validate" regex="^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$" field="Phone"
-                               summary="{'regex':'手机号码不正确','required':'手机号码不能为空'}"/>
-                        <div><span class="tip">请正确填写</span></div>
-                    </div>
-                </div>
-
-                <div class="fl">
-                    <div class="label">地址：</div>
-                    <div class="in">
-                        <input class="box ui-validate" required="true" field="Address" style="width:300px"
-                               summary="{'0':'地址不能为空'}" />
-                    </div>
-                </div>
-
-                <div class="fl">
-                    <div class="label"></div>
-                    <div class="in">
-                        <input class="btn" type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
-                        <input class="btn" type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
-                    </div>
-                </div>
-
-            </div>
-        </template>
 
         <div id="address_panel">
 
@@ -71,40 +31,104 @@
 
 
     </div>
-</div>
 
 
-<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
+<script type="text/template" id="addressTpl">
+    <div class="form deliver-form" id="form-deliver">
+        <input type="hidden" field="Id" value="0"/>
+        <div class="fl">
+            <div class="label">收货人：</div>
+            <div class="in">
+                <input class="box ui-validate" type="text" regex="^[\u4e00-\u9fa5]{2,4}$" field="RealName"
+                       summary="{'regex':'姓名为2-4位中文'}" style="width:70%"/>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">电话：</div>
+            <div class="in">
+                <input class="box ui-validate" regex="^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$" field="Phone"
+                       summary="{'regex':'手机号码不正确','required':'手机号码不能为空'}" style="width:70%"/>
+                <div><span class="tip">请正确填写</span></div>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label">地址：</div>
+            <div class="in">
+                <input class="box ui-validate" required="true" field="Address"
+                       summary="{'0':'地址不能为空'}"  style="width:70%"/>
+            </div>
+        </div>
+
+        <div class="fl">
+            <div class="label"></div>
+            <div class="in">
+                <input class="btn btn-m" type="button" value="&nbsp;确定&nbsp;" onclick="saveDeliveAddr()"/>&nbsp;
+                <input class="btn" type="reset" value="&nbsp;取消&nbsp;" onclick="toggleNewAdd()"/>
+            </div>
+        </div>
+
+    </div>
+</script>
+
+
+
+<script type="text/template" id="deliver_tpl">
+    <div class="item">
+        <div class="tit">
+            <span class="name">{real_name}</span><span class="phone"><span>{phone}</span></span>
+
+            <div class="cont"><b>收货地址：</b><span>{address}</span></div>
+        </div>
+        <div class="control">
+            <input class="btn btn-m" type="button" onclick="editAddr({id})" value="修改"/>
+            <input class="btn" type="button" onclick="delAddr({id})" value="删除"/>
+        </div>
+        <div class="split"></div>
+    </div>
+</script>
+
+<script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?ver={{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?ver={{.version}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/dg.js?ver={{.version}}"></script>
 
 
 <script type="text/javascript">
     var addrs = {};
     var numIdx = 0;
+    var htmTpl = j6.$('deliver_tpl').innerHTML;
+
     var _dg = j6.grid('dg', {
         url: location.href,
         data: {page:j6.request('page')||1,size:10},
         idField: 'id',
         columns: [
-            { field: 'Id', title: '编号', width: 30,align:'center',
-                formatter:function(){
-                return ++numIdx;
+            { field: 'Id', title: '收货地址',formatter:function(v,r){
+                    return j6.template(htmTpl,{
+                        num:++numIdx,
+                        id: r.Id,
+                        real_name: r.RealName,
+                        phone: r.Phone,
+                        address: r.Address,
+                    });
             }},
-            { field: 'RealName', title: '收货人', width: 80,align:'center'},
-            { field: 'Phone', title: '联系电话', width: 120,align:'center'},
-            { field: 'Address', title: '送货地址',align:'center'},
-            {
-                field: 'Id', title: '', width: 80, align: 'center',
-                formatter: function (val, row, index) {
-                    return '<a href="javascript:editAddr('+val+')">编辑</a> | '+
-                            '<a href="javascript:delAddr('+val+')">删除</a>'
-                }
-            }
+//            { field: 'RealName', title: '收货人', width: 80,align:'center'},
+//            { field: 'Phone', title: '联系电话', width: 120,align:'center'},
+//            { field: 'Address', title: '送货地址',align:'center'},
+//            {
+//                field: 'Id', title: '', width: 80, align: 'center',
+//                formatter: function (val, row, index) {
+//                    return '<a href="javascript:editAddr('+val+')">编辑</a> | '+
+//                            '<a href="javascript:delAddr('+val+')">删除</a>'
+//                }
+//            }
         ],
         loaded: function (data) {
             addrs = data.rows;
-            var tables = document.getElementsByTagName('TABLE');
-            j6.table.dynamic(tables[1], false);
-            tables[1].className= '';
+            //var tables = document.getElementsByTagName('TABLE');
+            //j6.table.dynamic(tables[1], false);
+            //tables[1].className= '';
         }
     });
     _dg.resize();
@@ -149,6 +173,7 @@
             j6.xhr.jsonPost('saveDeliver',d,function(json){
                 if(json.result){
                     loadDeliver('deliver-panel');
+                    showMsg('保存成功',2000)
                 }else{
                     alert(json.message);
                 }
