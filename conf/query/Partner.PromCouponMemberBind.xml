@@ -17,21 +17,25 @@
         m.`email`,
         m.`reg_time`,
         m.`reg_ip`,
-        m.`last_login_time`,
+        last_login_time,
+        reg_time,
         m.`state`,
         lv.name as level_name,
         (SELECT COUNT(0) FROM pm_coupon_bind b WHERE b.member_id=m.id
         AND b.coupon_id={couponId}) as bind_num
 
 FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
-INNER JOIN conf_member_level lv ON lv.id = m.level
+INNER JOIN pt_member_level lv ON lv.value = m.level AND lv.partner_id=r.reg_partner_id
 WHERE  r.reg_partner_id = {partner_id}
             ORDER BY m.last_login_time DESC,m.id ASC LIMIT {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
+    <![CDATA[SELECT COUNT(0) FROM mm_member m
+    INNER JOIN  mm_relation r ON m.id = r.member_id
+INNER JOIN pt_member_level lv ON lv.value = m.level
+ AND lv.partner_id=r.reg_partner_id
 WHERE  r.reg_partner_id = {partner_id}]]>
   </Total>
 </ExportItemConfig>

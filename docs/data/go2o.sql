@@ -1225,11 +1225,14 @@ CREATE TABLE `pt_saleconf` (
   `cb_member_percent` float(4,2) DEFAULT NULL COMMENT '会员比例',
   `ib_num` int(11) DEFAULT NULL COMMENT '每一元返多少积分',
   `ib_extra` int(11) DEFAULT NULL COMMENT '额外赠送积分',
-  `auto_setup_order` tinyint(4) DEFAULT '0',
   `register_mode` int(11) DEFAULT NULL,
   `trans_csn` float(6,4) NOT NULL DEFAULT '0.0000' COMMENT 'transfer commission',
   `flow_convert_csn` float(6,4) DEFAULT '0.0000',
   `present_convert_csn` float(6,4) DEFAULT '0.0000',
+  `oa_open` tinyint(1) DEFAULT '0' COMMENT '开启自动设置订单',
+  `oa_timeout_minute` int(11) DEFAULT NULL COMMENT '订单超时取消（分钟）',
+  `oa_confirm_minute` int(11) DEFAULT NULL COMMENT '订单自动确认（分钟）',
+  `oa_receive_hour` int(11) DEFAULT NULL COMMENT '超时自动收货（小时）',
   `apply_csn` float(6,4) DEFAULT '0.0000',
   PRIMARY KEY (`partner_id`,`trans_csn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1241,7 +1244,7 @@ CREATE TABLE `pt_saleconf` (
 
 LOCK TABLES `pt_saleconf` WRITE;
 /*!40000 ALTER TABLE `pt_saleconf` DISABLE KEYS */;
-INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,1,NULL,0.0000,NULL,NULL,0.0000),(104,0.00,0.00,0.00,0.00,0,0,1,NULL,0.0000,NULL,NULL,0.0000),(105,0.00,0.00,0.00,0.00,0,0,1,NULL,0.0000,NULL,NULL,0.0000);
+INSERT INTO `pt_saleconf` VALUES (101,0.10,0.10,0.20,0.80,10,0,NULL,0.0000,NULL,NULL,1,NULL,NULL,NULL,0.0000),(104,0.00,0.00,0.00,0.00,0,0,NULL,0.0000,NULL,NULL,1,NULL,NULL,NULL,0.0000),(105,0.00,0.00,0.00,0.00,0,0,NULL,0.0000,NULL,NULL,1,NULL,NULL,NULL,0.0000);
 /*!40000 ALTER TABLE `pt_saleconf` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1521,4 +1524,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-02 18:10:27
+-- Dump completed on 2015-12-03  9:35:38

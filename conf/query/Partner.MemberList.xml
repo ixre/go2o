@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ExportItemConfig>
-  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <ColumnMappingString></ColumnMappingString>
   <Query>
     <![CDATA[
-        SELECT c.id,
-       SELECT b.coupon_id ,m.*
-FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
-LEFT JOIN pm_coupon_bind b ON b.member_id = m.id
-WHERE  r.reg_partner_id = {partner_id}
-
-            lv.name as limit_levelName
-            FROM pm_coupon c LEFT JOIN conf_member_level lv
-             ON c.min_level = lv.id
-             WHERE c.partner_id={partner_id} AND code LIKE '%{keyword}%'
-            ORDER BY c.update_time DESC,c.create_time desc LIMIT {page_start},{page_size}
+        SELECT m.id,m.name,m.usr,m.exp,m.avatar,m.sex,m.birthday,
+m.phone,lv.name as level_name,m.level,m.state,ac.integral,ac.balance,ac.total_pay,
+ac.present_balance,m.reg_time,m.last_login_time
+ FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
+INNER JOIN pt_member_level lv ON lv.value = m.level
+INNER JOIN mm_account ac ON m.id = ac.member_id
+ WHERE lv.partner_id={partner_id}
+ AND (m.name LIKE '%{keyword}%' OR m.usr LIKE '%{keyword}%'
+ OR m.phone LIKE '%{keyword}%')
+ AND ({level_value}<0 OR m.level={level_value})
+ AND ({state} <0 OR m.state={state})
+ORDER BY m.reg_time DESC
+ LIMIT {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM pm_coupon
-    WHERE partner_id={partner_id}  AND code LIKE '%{keyword}%']]>
+    <![CDATA[ SELECT COUNT(0) FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
+INNER JOIN pt_member_level lv ON lv.value = m.level
+INNER JOIN mm_account ac ON m.id = ac.member_id
+ WHERE lv.partner_id={partner_id}
+ AND (m.name LIKE '%{keyword}%' OR m.usr LIKE '%{keyword}%'
+ OR m.phone LIKE '%{keyword}%')
+ AND ({level_value}<0 OR m.level={level_value})
+ AND ({state} <0 OR m.state={state})
+ ]]>
   </Total>
 </ExportItemConfig>

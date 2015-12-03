@@ -31,10 +31,9 @@ Go2o使用领域驱动设计对业务深度抽象，理论上支持大部分行�
 
 ## 项目说明 ##
 
+__项目最新版本: v 0.9__
 
-__项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
-
-由 #刘铭#, #大鹏# （全职开发,无收入 -_- )，
+由 #刘铭#, #大鹏# 开发.
 
 ------------------------
 贡献代码请看： [todo list](https://github.com/jsix/go2o/tree/master/docs/dev/todo.md) |
@@ -48,16 +47,18 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 ========================================
 
 捐赠支付宝:jarrysix@gmail.com (金额随意)
-**如有定制需求可邮件联系< lm#s1n1.com >。**
+**如有定制需求可邮件联系< jarrysix@gmail.com >。**
 
 
 感谢以下哥们和匿名捐助的朋友：
-*巍 zhu***@126.com  职业码农  奋斗富三代
 
-
+*巍
+zhu***@126.com
+职业码农
+奋斗富三代
 
 ## 演示地址 ##
-********* (目前还不完善，暂不提供)
+
 
 珠三Go技术群：**102629585** (___珠三是珠三角 , 是QQ群，不是其他群___)
 
@@ -78,6 +79,7 @@ __项目最新版本: v 0.2__ （因为要求高，v1.0还有距离)
 ### 2.Running Service ###
 	Usage of ./go2o-server:
 		-debug=false: enable debug
+		-conf=app.conf:config file
 		-help=false: command usage
 		-mode="sha": boot mode.'h'- boot http service,'s'- boot socket service
 	    -port=1001: web server port

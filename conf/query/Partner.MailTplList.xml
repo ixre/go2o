@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString></ColumnMappingString>
+  <Query>
+    <![CDATA[SELECT * FROM pt_mail_template WHERE partner_id={partner_id}
+    AND ({enabled}<0 OR enabled={enabled})
+     AND (name LIKE '%{keyword}%' OR body LIKE  '%{keyword}%')
+    ORDER BY id limit {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[SELECT COUNT(0) FROM pt_mail_template WHERE partner_id={partner_id}
+    AND ({enabled}<0 OR enabled={enabled})
+     AND (name LIKE '%{keyword}%' OR body LIKE  '%{keyword}%')]]>
+  </Total>
+</ExportItemConfig>
