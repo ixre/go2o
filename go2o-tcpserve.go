@@ -29,7 +29,7 @@ func main() {
 		conf string
 	)
 
-	flag.IntVar(&port, "port", 1005, "")
+	flag.IntVar(&port, "port", 14197, "")
 	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.Parse()
 

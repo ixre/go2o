@@ -11,6 +11,7 @@ package master
 import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
+	"github.com/labstack/echo"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
@@ -39,4 +40,9 @@ func registerRoutes() {
 	routes.Add("/logout", mc.Logout)
 	routes.Add("/upload.cgi", mc.Upload_post)
 
+}
+
+func GetServe()*echo.Echo{
+	s := echo.New()
+	return s
 }

@@ -23,6 +23,8 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"fmt"
+
 )
 
 func main() {
@@ -40,9 +42,9 @@ func main() {
 		newApp     *core.MainApp
 	)
 
-	flag.IntVar(&socketPort, "port2", 1001, "socket server port")
-	flag.IntVar(&httpPort, "port", 1002, "web server port")
-	flag.IntVar(&restPort, "port3", 1003, "rest api port")
+	flag.IntVar(&restPort, "port3", 14198, "rest api port")
+	flag.IntVar(&socketPort, "port2", 14199, "socket server port")
+	flag.IntVar(&httpPort, "port", 14190, "web server port")
 	flag.StringVar(&mode, "mode", "shr", "boot mode.'h'- boot http service,'s'- boot socket service")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
@@ -80,6 +82,7 @@ func main() {
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 
+
 	var booted bool
 
 	if runDaemon {
@@ -93,7 +96,7 @@ func main() {
 
 	if strings.Contains(mode, "h") {
 		booted = true
-		go app.RunWeb(newApp, httpPort, debug, trace)
+		go app.Run(ch,newApp,fmt.Sprintf(":%d",httpPort))
 	}
 
 	if strings.Contains(mode, "r") {
@@ -104,6 +107,8 @@ func main() {
 	if booted {
 		<-ch
 	}
+
+	os.Exit(1) // 退出
 }
 
 func handleSignal(srcCh chan bool) {

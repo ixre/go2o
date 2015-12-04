@@ -12,7 +12,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"go2o/src/app/api"
-	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"log"
 	"net/http"
@@ -31,7 +30,7 @@ func RunRestApi(app gof.App, port int) {
 	//socket client
 	time.Sleep(time.Second * 2) //等待启动Socket
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
-	goclient.Configure("tcp", app.Config().GetString(variable.ClientSocketServer), app)
+	//goclient.Configure("tcp", app.Config().GetString(variable.ClientSocketServer), app)
 
 	var in *web.Interceptor = web.NewInterceptor(app, func(ctx *web.Context) {
 		host := ctx.Request.URL.Host

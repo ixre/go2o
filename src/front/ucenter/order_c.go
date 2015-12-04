@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/pager"
-	"go2o/src/app/front"
+	"go2o/src/front"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
 	"strconv"

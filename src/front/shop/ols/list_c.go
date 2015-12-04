@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof/algorithm/iterator"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/pager"
-	"go2o/src/app/front"
+	"go2o/src/front"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/domain/util"
 	"go2o/src/core/infrastructure/format"

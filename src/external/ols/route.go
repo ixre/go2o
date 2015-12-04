@@ -12,6 +12,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
+	"github.com/labstack/echo"
 )
 
 var (
@@ -53,4 +54,9 @@ func RegisterRoutes(c gof.App) {
 	// 首页
 	routes.Add("/", mc.Index)
 	routes.Add("/user/jump_m", uc.member)
+}
+
+func GetServe()*echo.Echo{
+	s := echo.New()
+	return s
 }

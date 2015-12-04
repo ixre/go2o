@@ -71,3 +71,9 @@ func registerRoutes() {
 func init() {
 	registerRoutes()
 }
+
+
+func GetServe()*echo.Echo{
+	s := echo.New()
+	return s
+}

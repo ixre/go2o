@@ -32,7 +32,7 @@ func (this *listC) Index(ctx *web.Context) {
 
 	if b, siteConf := GetSiteConf(w, p, pa); b {
 		categories := apicache.GetCategories(ctx.App, p.Id, pa.ApiSecret)
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
+		ctx.App.Template().Exellcute(w, gof.TemplateDataMap{
 			"partner":    p,
 			"categories": template.HTML(categories),
 			"member":     mm,

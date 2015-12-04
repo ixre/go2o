@@ -11,7 +11,7 @@ package partner
 import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-	"go2o/src/app/front"
+	"go2o/src/front"
 )
 
 var _ mvc.Filter = new(commC)
