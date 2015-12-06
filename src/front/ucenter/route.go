@@ -12,6 +12,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/app/util"
+	"github.com/labstack/echo"
 )
 
 var (
@@ -73,7 +74,8 @@ func init() {
 }
 
 
-func GetServe()*echo.Echo{
+func GetServe(r *echo.Renderer)*echo.Echo{
 	s := echo.New()
+	s.SetRenderer(r)
 	return s
 }
