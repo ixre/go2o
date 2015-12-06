@@ -11,6 +11,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
 	"go2o/src/app"
@@ -23,8 +24,6 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
-	"fmt"
-
 )
 
 func main() {
@@ -82,7 +81,6 @@ func main() {
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 
-
 	var booted bool
 
 	if runDaemon {
@@ -96,7 +94,7 @@ func main() {
 
 	if strings.Contains(mode, "h") {
 		booted = true
-		go app.Run(ch,newApp,fmt.Sprintf(":%d",httpPort))
+		go app.Run(ch, newApp, fmt.Sprintf(":%d", httpPort))
 	}
 
 	if strings.Contains(mode, "r") {

@@ -11,9 +11,9 @@ package partner
 import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-	"go2o/src/app/util"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
+	"go2o/src/app/util"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
@@ -71,8 +71,7 @@ func init() {
 	//registerRoutes()
 }
 
-
-func GetServe(r *echo.Renderer)*echo.Echo{
+func GetServe(r *echo.Renderer) *echo.Echo {
 	mc := &mainC{} //入口控制器
 	//lc := &loginC{}
 	routes.Register("main", new(mainC))
@@ -91,10 +90,9 @@ func GetServe(r *echo.Renderer)*echo.Echo{
 	routes.Register("mss", new(mssC))
 	routes.Register("editor", new(editorC))
 
-
 	s := echo.New()
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
-	s.Get("/",mc.Index)
+	s.Get("/", mc.Index)
 	return s
 }

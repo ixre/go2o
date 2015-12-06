@@ -177,13 +177,13 @@ func (this *memberC) Member_account(ctx *web.Context) {
 func (this *memberC) Member_curr_bank(ctx *web.Context) {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	e := dps.MemberService.GetBank(memberId)
-	if e != nil && len(e.Account) >0 && len(e.AccountName) >0 &&
-		len(e.Name) >0 && len(e.Network) >0  {
+	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
+		len(e.Name) > 0 && len(e.Network) > 0 {
 		ctx.App.Template().Execute(ctx.Response,
 			gof.TemplateDataMap{
 				"bank": e,
 			}, "views/partner/member/member_curr_bank.html")
-	}else{
+	} else {
 		ctx.Response.Write([]byte("<span class=\"red\">尚未完善</span>"))
 	}
 }

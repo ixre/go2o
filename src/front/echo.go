@@ -7,31 +7,32 @@
  * history :
  */
 package front
+
 import (
-	"net/http"
-	"strings"
-	"github.com/labstack/echo"
-"html/template"
 	"container/list"
-	"os"
 	"errors"
-	"path/filepath"
+	"github.com/labstack/echo"
 	"gopkg.in/fsnotify.v1"
+	"html/template"
+	"io"
 	"log"
-"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type HttpHosts map[string]http.Handler
 
 func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	subName := r.Host[:strings.Index(r.Host,".")]
-	 if h,ok := this[subName];ok{
-		 h.ServeHTTP(w,r)
-	 }else if h,ok = this["*"];ok{
-		 h.ServeHTTP(w,r)
-	 }else{
-		 http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	 }
+	subName := r.Host[:strings.Index(r.Host, ".")]
+	if h, ok := this[subName]; ok {
+		h.ServeHTTP(w, r)
+	} else if h, ok = this["*"]; ok {
+		h.ServeHTTP(w, r)
+	} else {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
 }
 
 type InterceptorFunc func(*echo.Context) bool

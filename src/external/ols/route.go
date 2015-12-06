@@ -56,7 +56,7 @@ func RegisterRoutes(c gof.App) {
 	routes.Add("/user/jump_m", uc.member)
 }
 
-func GetServe()*echo.Echo{
+func GetServe() *echo.Echo {
 	s := echo.New()
 	return s
 }

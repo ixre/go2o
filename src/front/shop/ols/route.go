@@ -11,9 +11,9 @@ package ols
 import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-	"go2o/src/front/shop/ols/mos"
-	"go2o/src/app/util"
 	"github.com/labstack/echo"
+	"go2o/src/app/util"
+	"go2o/src/front/shop/ols/mos"
 )
 
 var (
@@ -82,8 +82,7 @@ func init() {
 	registerRoutes()
 }
 
-
-func GetServe(r *echo.Renderer)*echo.Echo{
+func GetServe(r *echo.Renderer) *echo.Echo {
 	s := echo.New()
 	s.SetRenderer(r)
 	return s

@@ -42,8 +42,7 @@ func registerRoutes() {
 
 }
 
-
-func GetServe(r *echo.Renderer)*echo.Echo{
+func GetServe(r *echo.Renderer) *echo.Echo {
 	s := echo.New()
 	s.SetRenderer(r)
 	return s

@@ -13,6 +13,6 @@ const (
 	DOMAIN_PREFIX_WEBMASTER = "webmaster."
 	DOMAIN_PREFIX_MEMBER    = "member."
 	DOMAIN_PREFIX_PARTNER   = "partner."
-	DOMAIN_PREFIX_STATIC = "static."
-	DOMAIN_PREFIX_IMAGE = "img."
+	DOMAIN_PREFIX_STATIC    = "static."
+	DOMAIN_PREFIX_IMAGE     = "img."
 )
