@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package front
+package echo
 
 import (
 	"container/list"
@@ -54,7 +54,10 @@ func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
 
 func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
 	dirs = new(list.List)
-	fi, _ := os.Lstat(dir)
+	fi, err := os.Lstat(dir)
+	if err != nil{
+		panic(err)
+	}
 	if !fi.IsDir() {
 		panic(errors.New("path must be direction"))
 	}
@@ -73,7 +76,7 @@ func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
 
 func NewGoTemplateForEcho(dir string) echo.Renderer {
 	g := &GoTemplateForEcho{
-		pattern:       "*.html",
+		pattern:       "*.*",
 		fileDirectory: dir,
 	}
 	return g.init()

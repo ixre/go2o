@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/core/variable"
-	"go2o/src/front"
 	"go2o/src/front/master"
 	"go2o/src/front/partner"
 	"go2o/src/front/shop/ols"
@@ -22,6 +21,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"go2o/src/front/echo"
 )
 
 // 静态文件
@@ -59,15 +59,13 @@ func Run(ch chan bool, app gof.App, addr string) {
 		"version":      c.GetString(variable.Version),
 		"spam":         crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14],
 	}
+	echo.SetGlobRendData(m)
 
-	render := front.NewGoTemplateForEcho("public/views/")
-	front.SetGlobRendData(m)
-
-	hosts := make(front.HttpHosts)
-	hosts["*"] = ols.GetServe(render)
-	hosts[variable.DOMAIN_PREFIX_MEMBER] = ucenter.GetServe(render)
-	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe(render)
-	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe(render)
+	hosts := make(echo.HttpHosts)
+	hosts["*"] = ols.GetServe()
+	hosts[variable.DOMAIN_PREFIX_MEMBER] = ucenter.GetServe()
+	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
+	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = new(ImageFileHandler)
 
