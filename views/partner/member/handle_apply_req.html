@@ -148,7 +148,7 @@
     function passRequest(r) {
         var reason = j6.$('tb_reason').value;
         var tit = r ? '申请通过' : '申请被退回';
-        j6.xhr.jsonPost('pass_apply_req', {id: id, member_id: memberId, pass: r, reason: escape(reason)},
+        j6.xhr.jsonPost('pass_apply_req', {id: id, member_id: memberId, pass: r?1:0, reason: escape(reason)},
                 function (json) {
                     if (json.result) {
                         window.parent.$.messager.alert('提示', tit, 'ok', function () {
