@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>请稍后</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/mui/css/latest/ui_style.css?spam={{.spam}}" />
-    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.spam}}" />
-    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/icon.css?spam={{.spam}}" />
+    <link rel="stylesheet" type="text/css" href="{{.Map.static_serve}}/assets/mui/css/latest/ui_style.css?spam={{.Map.spam}}" />
+    <link rel="stylesheet" type="text/css" href="{{.Map.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Map.spam}}" />
+    <link rel="stylesheet" type="text/css" href="{{.Map.static_serve}}/assets/easyui/themes/icon.css?spam={{.Map.spam}}" />
 </head>
 <body>
 <div class="page-top">
@@ -33,19 +33,19 @@
         <ul class="icon-ctrl">
             <li class="first">
                 <a class="title" href="javascript:FwMenu.change('site');">
-                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_user.png" height="20"/>网站管理
+                    <img class="icon" src="{{.Map.static_serve}}/assets/mui/css/latest//icon_user.png" height="20"/>网站管理
                 </a>
             </li>
 
             <li>
                 <a class="title" href="javascript:FwMenu.change('content');">
-                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_chart.png" height="20"/>内容管理
+                    <img class="icon" src="{{.Map.static_serve}}/assets/mui/css/latest//icon_chart.png" height="20"/>内容管理
                 </a>
             </li>
 
             <li>
                 <a class="title" href="javascript:FwMenu.change('system');">
-                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_config.png" height="20"/>系统管理
+                    <img class="icon" src="{{.Map.static_serve}}/assets/mui/css/latest//icon_config.png" height="20"/>系统管理
                 </a>
             </li>
         </ul>
@@ -88,18 +88,18 @@
     <div id="page-main-split" class="page-main-split" min="120" max="600"></div>
 </div>
 <script type="text/javascript"> window._path = location.path;</script>
-<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/mui/js/component.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.Map.static_serve}}/assets/js/core_full.js?spam={{.Map.spam}}"></script>
+<script type="text/javascript" src="{{.Map.static_serve}}/assets/mui/js/component.js?spam={{.Map.spam}}"></script>
 
 <script type="text/javascript">
     var pageVar = {
-        sysName: '{{.partner.Name}} :: 商户后台管理中心',
+        sysName: '{{.Data.partner.Name}} :: 商户后台管理中心',
         sysLogo: '',
         dateStr: '2013-10-15',
         firstTabName: '欢迎首页',
         firstIframeUrl: '/main/summary',
         userName: '管理员',
-        userAvatar: '{{.static_serve}}/assets/mui/css/latest/avatar.gif'
+        userAvatar: '{{.Map.static_serve}}/assets/mui/css/latest/avatar.gif'
     };
 
     window.menuHandler = function (data) {
@@ -222,9 +222,9 @@
 
 </script>
 
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.Map.static_serve}}/assets/easyui/jquery.min.js?spam={{.Map.spam}}"></script>
+<script type="text/javascript" src="{{.Map.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Map.spam}}"></script>
+<script type="text/javascript" src="{{.Map.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Map.spam}}"></script>
 
 </body>
 </html>

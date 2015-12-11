@@ -96,6 +96,15 @@ func GetServe() *echo.Echo {
 	r := ec.NewGoTemplateForEcho("public/views/partner")
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
+	s.Use(partnerLogonCheck)
+	s.Static("/static/","./public/static/")
 	s.Get("/", mc.Index)
+	s.Get("/main/dashboard",mc.Dashboard)
 	return s
+}
+
+func partnerLogonCheck(ctx *echo.Context)error {
+	err := ctx.String(200, "hi")
+	ctx.Done()
+	return err
 }

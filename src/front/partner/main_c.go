@@ -15,6 +15,8 @@ import (
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/front"
 	"github.com/labstack/echo"
+	"go2o/src/core/service/dps"
+	ec "go2o/src/front/echo"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -43,15 +45,15 @@ func (this *mainC) Logout(ctx *web.Context) {
 }
 
 //商户首页
-func (this *mainC) Dashboard(ctx *web.Context) {
-	r, w := ctx.Request, ctx.Response
-	pt, _ := this.GetPartner(ctx)
+func (this *mainC) Dashboard(ctx *echo.Context)error {
+	pt, _ := dps.PartnerService.GetPartner(104)
 
-	var mf gof.TemplateDataMap = gof.TemplateDataMap{
+	dm := ec.NewRendData()
+	dm.Data = gof.TemplateDataMap{
 		"partner": pt,
-		"loginIp": r.Header.Get("USER_ADDRESS"),
+		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
 	}
-	ctx.App.Template().Execute(w, mf, "views/partner/dashboard.html")
+	return ctx.Render(200,"dashboard.html",dm)
 }
 
 //商户汇总页
