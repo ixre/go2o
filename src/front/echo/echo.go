@@ -25,7 +25,7 @@ import (
 type HttpHosts map[string]http.Handler
 
 func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	subName := r.Host[:strings.Index(r.Host, ".")]
+	subName := r.Host[:strings.Index(r.Host, ".")+1]
 	if h, ok := this[subName]; ok {
 		h.ServeHTTP(w, r)
 	} else if h, ok = this["*"]; ok {
@@ -76,7 +76,7 @@ func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
 
 func NewGoTemplateForEcho(dir string) echo.Renderer {
 	g := &GoTemplateForEcho{
-		pattern:       "*.*",
+		pattern:       "*.html",
 		fileDirectory: dir,
 	}
 	return g.init()

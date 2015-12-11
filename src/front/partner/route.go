@@ -64,7 +64,7 @@ func registerRoutes() {
 	routes.Add("/img/*", util.HttpImageFileHandler)
 
 	// 首页
-	routes.Add("/", mc.Index)
+	//routes.Add("/", mc.Index)
 
 }
 
@@ -93,7 +93,7 @@ func GetServe() *echo.Echo {
 
 	s := echo.New()
 
-	r := ec.NewGoTemplateForEcho("public/views/")
+	r := ec.NewGoTemplateForEcho("public/views/partner")
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
 	s.Get("/", mc.Index)

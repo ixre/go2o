@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/front"
+	"github.com/labstack/echo"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -24,11 +25,16 @@ type mainC struct {
 }
 
 //入口
-func (this *mainC) Index(ctx *web.Context) {
-	if this.baseC.Requesting(ctx) {
-		ctx.Response.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
-	}
-	this.baseC.RequestEnd(ctx)
+func (this *mainC) Index(ctx *echo.Context)(err error) {
+
+	_,err = ctx.Response().Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+
+	//todo:??
+//	if this.baseC.Requesting(ctx) {
+//		ctx.Response.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+//	}
+//	this.baseC.RequestEnd(ctx)
+	return err
 }
 
 func (this *mainC) Logout(ctx *web.Context) {

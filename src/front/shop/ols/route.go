@@ -12,7 +12,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"github.com/labstack/echo"
-	ec "go2o/src/front/echo"
+	//ec "go2o/src/front/echo"
 	"go2o/src/app/util"
 	"go2o/src/front/shop/ols/mos"
 )
@@ -85,7 +85,7 @@ func init() {
 
 func GetServe() *echo.Echo {
 	s := echo.New()
-	r := ec.NewGoTemplateForEcho("public/views/")
-	s.SetRenderer(r)
+	//r := ec.NewGoTemplateForEcho("public/views/shop")
+	//s.SetRenderer(r)
 	return s
 }
