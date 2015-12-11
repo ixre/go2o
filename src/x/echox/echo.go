@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package echo
+package echox
 
 import (
 	"container/list"

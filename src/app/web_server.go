@@ -21,7 +21,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"go2o/src/front/echo"
+	"go2o/src/x/echox"
 )
 
 // 静态文件
@@ -59,9 +59,9 @@ func Run(ch chan bool, app gof.App, addr string) {
 		"version":      c.GetString(variable.Version),
 		"spam":         crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14],
 	}
-	echo.SetGlobRendData(m)
+	echox.SetGlobRendData(m)
 
-	hosts := make(echo.HttpHosts)
+	hosts := make(echox.HttpHosts)
 	hosts["*"] = ols.GetServe()
 	hosts[variable.DOMAIN_PREFIX_MEMBER] = ucenter.GetServe()
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()

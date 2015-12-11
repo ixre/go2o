@@ -24,6 +24,7 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+	"github.com/jsix/gof/web/session"
 )
 
 func main() {
@@ -80,6 +81,7 @@ func main() {
 	app.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
+	session.SetStorage(newApp.Storage())
 
 	var booted bool
 

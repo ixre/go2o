@@ -12,7 +12,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"github.com/labstack/echo"
-	ec "go2o/src/front/echo"
+	"go2o/src/x/echox"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
@@ -45,7 +45,7 @@ func registerRoutes() {
 
 func GetServe() *echo.Echo {
 	s := echo.New()
-	r := ec.NewGoTemplateForEcho("public/views/master")
+	r := echox.NewGoTemplateForEcho("public/views/master")
 	s.SetRenderer(r)
 	return s
 }

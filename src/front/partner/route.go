@@ -13,11 +13,22 @@ import (
 	"github.com/jsix/gof/web/mvc"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
-	ec "go2o/src/front/echo"
+	"go2o/src/x/echox"
 	"go2o/src/app/util"
+	"net/url"
+	"github.com/jsix/gof/web/session"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
+
+type(
+	// 商户上下文
+	PartnerContext struct{
+		Echo *echo.Context
+		PartnerId int
+	}
+	PartnerHandler func(*PartnerContext)error
+)
 
 //处理请求
 func Handle(ctx *web.Context) {
@@ -93,18 +104,40 @@ func GetServe() *echo.Echo {
 
 	s := echo.New()
 
-	r := ec.NewGoTemplateForEcho("public/views/partner")
+	r := echox.NewGoTemplateForEcho("public/views/partner")
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
 	s.Use(partnerLogonCheck)
 	s.Static("/static/","./public/static/")
 	s.Get("/", mc.Index)
-	s.Get("/main/dashboard",mc.Dashboard)
+	s.Get("/main/dashboard",partnerHandler(mc.Dashboard))
+	s.Get("/main/logout",partnerHandler(mc.Logout))
 	return s
 }
 
 func partnerLogonCheck(ctx *echo.Context)error {
-	err := ctx.String(200, "hi")
+	if ctx.Path() == "/login"{
+		return nil
+	}
+	session := session.Default(ctx.Response(),ctx.Request())
+	id := session.Get("partner_id")
+	if id != nil{
+		ctx.Set("partner_id",id.(int))
+		return nil
+	}
+	ctx.Response().Header().Set("Location","/login?return_url=" +
+		url.QueryEscape(ctx.Request().URL.String()))
+	ctx.Response().WriteHeader(302)
 	ctx.Done()
-	return err
+	return nil
+}
+
+func partnerHandler(h PartnerHandler)func(ctx *echo.Context)error{
+	return func(ctx *echo.Context)error{
+		partnerId := ctx.Get("partner_id").(int)
+		return h(&PartnerContext{
+			Echo:ctx,
+			PartnerId:partnerId,
+		})
+	}
 }

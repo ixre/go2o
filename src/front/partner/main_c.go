@@ -16,7 +16,7 @@ import (
 	"go2o/src/front"
 	"github.com/labstack/echo"
 	"go2o/src/core/service/dps"
-	ec "go2o/src/front/echo"
+	"go2o/src/x/echox"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -39,21 +39,22 @@ func (this *mainC) Index(ctx *echo.Context)(err error) {
 	return err
 }
 
-func (this *mainC) Logout(ctx *web.Context) {
-	ctx.Session().Destroy()
-	ctx.Response.Write([]byte("<script>location.replace('/login')</script>"))
+func (this *mainC) Logout(ctx *PartnerContext)error {
+//	ctx.Session().Destroy()
+//	ctx.Response.Write([]byte("<script>location.replace('/login')</script>"))
+	return nil
 }
 
 //商户首页
-func (this *mainC) Dashboard(ctx *echo.Context)error {
-	pt, _ := dps.PartnerService.GetPartner(104)
+func (this *mainC) Dashboard(ctx *PartnerContext)error {
+	pt, _ := dps.PartnerService.GetPartner(ctx.PartnerId)
 
-	dm := ec.NewRendData()
+	dm := echox.NewRendData()
 	dm.Data = gof.TemplateDataMap{
 		"partner": pt,
-		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
+		"loginIp": ctx.Echo.Request().Header.Get("USER_ADDRESS"),
 	}
-	return ctx.Render(200,"dashboard.html",dm)
+	return ctx.Echo.Render(200,"dashboard.html",dm)
 }
 
 //商户汇总页
