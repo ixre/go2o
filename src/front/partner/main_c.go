@@ -44,12 +44,15 @@ func (this *mainC) Index(ctx *echo.Context)(err error) {
 
 //登陆
 func (this *mainC) Login(ctx *echox.Context)error {
+	if ctx.Request().Method == "POST"{
+		return this.Login_post(ctx)
+	}
 	d := echox.NewRenderData()
 	return ctx.Render(http.StatusOK,"login.html",d)
 }
 
-func (this *mainC) Login_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.Response
+func (this *mainC) Login_post(ctx *echox.Context)error {
+	r, w := ctx.Request(), ctx.Response()
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
 
@@ -57,8 +60,8 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	pt, result, message := this.ValidLogin(usr, pwd)
 
 	if result {
-		ctx.Session().Set("partner_id", pt.Id)
-		if err := ctx.Session().Save(); err != nil {
+		ctx.Session.Set("partner_id", pt.Id)
+		if err := ctx.Session.Save(); err != nil {
 			result = false
 			message = err.Error()
 		}
@@ -69,6 +72,7 @@ func (this *mainC) Login_post(ctx *web.Context) {
 	} else {
 		w.Write([]byte("{result:false,message:'" + message + "'}"))
 	}
+	return nil
 }
 
 //验证登陆

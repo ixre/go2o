@@ -75,7 +75,7 @@ func (this *Echo) Getx(path string, h Handler) {
 }
 
 // 注册自定义的GET/POST处理程序
-func (this *Echo) Anyx(path string,h Handler){
+func (this *Echo)     Anyx(path string,h Handler){
 	this.Any(path,this.parseHandler(h))
 }
 
@@ -104,9 +104,9 @@ func (this *Echo) Danyx(path string,v interface{}){
 // get handler by reflect
 func getHandler(v interface{},action string)(Handler,bool){
 	t := reflect.ValueOf(v)
-	method := t.MethodByName(action)
+	method := t.MethodByName(strings.Title(action))
 	if method.IsValid() {
-		v,ok := method.Interface().(Handler)
+		v,ok := method.Interface().(func(*Context)error)
 		return v,ok
 	}
 	return nil,false

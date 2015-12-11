@@ -95,8 +95,6 @@ func GetServe() *echox.Echo {
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
 	s.Static("/static/","./public/static/")
 	s.Get("/", mc.Index)
-	s.Getx("/main/dashboard",mc.Dashboard)
-	s.Getx("/main/logout",mc.Logout)
 	s.Anyx("/login",mc.Login)
 	s.Danyx("/main/:action",mc)
 	return s
