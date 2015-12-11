@@ -29,7 +29,7 @@ type StaticHandler struct {
 }
 
 func (s *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./static"+r.URL.Path)
+	http.ServeFile(w, r, "./public/static"+r.URL.Path)
 }
 
 // 图片处理
@@ -37,7 +37,7 @@ type ImageFileHandler struct {
 }
 
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./static/uploads/"+r.URL.Path)
+	http.ServeFile(w, r, "./public/static/uploads/"+r.URL.Path)
 }
 
 // 运行网页

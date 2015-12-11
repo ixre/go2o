@@ -17,6 +17,7 @@ import (
 	"go2o/src/app/util"
 	"net/url"
 	"github.com/jsix/gof/web/session"
+	"strings"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
@@ -96,12 +97,14 @@ func GetServe() *echox.Echo {
 	s.Get("/", mc.Index)
 	s.Getx("/main/dashboard",mc.Dashboard)
 	s.Getx("/main/logout",mc.Logout)
-	s.Getx("/login",mc.Login)
+	s.Anyx("/login",mc.Login)
+	s.Danyx("/main/:action",mc)
 	return s
 }
 
 func partnerLogonCheck(ctx *echo.Context)error {
-	if ctx.Request().URL.Path == "/login"{
+	path := ctx.Request().URL.Path
+	if  path == "/login" || strings.HasPrefix(path,"/static/"){
 		return nil
 	}
 	session := session.Default(ctx.Response(),ctx.Request())

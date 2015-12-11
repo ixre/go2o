@@ -44,7 +44,7 @@ func (this *mainC) Index(ctx *echo.Context)(err error) {
 
 //登陆
 func (this *mainC) Login(ctx *echox.Context)error {
-	d := echox.NewRendData()
+	d := echox.NewRenderData()
 	return ctx.Render(http.StatusOK,"login.html",d)
 }
 
@@ -105,7 +105,7 @@ func (this *mainC) Logout(ctx *echox.Context)error {
 func (this *mainC) Dashboard(ctx *echox.Context)error {
 	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
 
-	dm := echox.NewRendData()
+	dm := echox.NewRenderData()
 	dm.Data = gof.TemplateDataMap{
 		"partner": pt,
 		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),

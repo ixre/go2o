@@ -14,6 +14,8 @@ import (
 	"strings"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
+	"reflect"
+	"errors"
 )
 
 var (
@@ -25,6 +27,7 @@ type(
 	Echo struct {
 		*echo.Echo
 		app gof.App
+		dynamicHandlers map[string]Handler // 动态处理程序
 	}
 	Context struct {
 		*echo.Context
@@ -50,6 +53,7 @@ func New() *Echo {
 	return &Echo{
 		Echo:echo.New(),
 		app:globalApp,
+		dynamicHandlers:make(map[string]Handler),
 	}
 }
 
@@ -65,10 +69,48 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	}
 }
 
+// 注册自定义的GET处理程序
 func (this *Echo) Getx(path string, h Handler) {
 	this.Get(path, this.parseHandler(h))
 }
 
+// 注册自定义的GET/POST处理程序
+func (this *Echo) Anyx(path string,h Handler){
+	this.Any(path,this.parseHandler(h))
+}
+
+// 注册自定义的GET/POST处理程序
+func (this *Echo) Postx(path string,h Handler){
+	this.Post(path,this.parseHandler(h))
+}
+
+// 注册动态获取处理程序
+func (this *Echo) Danyx(path string,v interface{}){
+	h := func(ctx *Context)error{
+		a := ctx.Param("action")
+		k := path + a
+		if v,ok := this.dynamicHandlers[k];ok{
+			return v(ctx)
+		}
+		if v,ok := getHandler(v,a);ok{
+			this.dynamicHandlers[k] = v
+			return v(ctx)
+		}
+		return errors.New("no such action named : "+a)
+	}
+	this.Any(path,this.parseHandler(h))
+}
+
+// get handler by reflect
+func getHandler(v interface{},action string)(Handler,bool){
+	t := reflect.ValueOf(v)
+	method := t.MethodByName(action)
+	if method.IsValid() {
+		v,ok := method.Interface().(Handler)
+		return v,ok
+	}
+	return nil,false
+}
 
 func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	subName := r.Host[:strings.Index(r.Host, ".") + 1]
@@ -88,7 +130,7 @@ func SetGlobRendData(m map[string]interface{}) {
 	_globTemplateData = m
 }
 
-func NewRendData() *TemplateData {
+func NewRenderData() *TemplateData {
 	return &TemplateData{
 		Var: _globTemplateData,
 		Map:make(map[string]interface{}),
