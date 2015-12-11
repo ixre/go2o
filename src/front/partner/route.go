@@ -21,14 +21,6 @@ import (
 
 var routes *mvc.Route = mvc.NewRoute(nil)
 
-type(
-	// 商户上下文
-	PartnerContext struct{
-		Echo *echo.Context
-		PartnerId int
-	}
-	PartnerHandler func(*PartnerContext)error
-)
 
 //处理请求
 func Handle(ctx *web.Context) {
@@ -39,7 +31,6 @@ func Handle(ctx *web.Context) {
 func registerRoutes() {
 	//bc := new(baseC)
 	mc := &mainC{} //入口控制器
-	lc := &loginC{}
 	routes.Register("main", new(mainC))
 	routes.Register("shop", new(shopC))             //商家门店控制器
 	routes.Register("goods", new(goodsC))           //商品控制器
@@ -64,9 +55,7 @@ func registerRoutes() {
 		}
 	})
 
-	routes.Add("/login", func(ctx *web.Context) {
-		mvc.Handle(lc, ctx, true)
-	})
+
 
 	routes.Add("/upload.cgi", mc.Upload_post)
 
@@ -79,13 +68,9 @@ func registerRoutes() {
 
 }
 
-func init() {
-	//registerRoutes()
-}
 
-func GetServe() *echo.Echo {
+func GetServe() *echox.Echo {
 	mc := &mainC{} //入口控制器
-	//lc := &loginC{}
 	routes.Register("main", new(mainC))
 	routes.Register("shop", new(shopC))             //商家门店控制器
 	routes.Register("goods", new(goodsC))           //商品控制器
@@ -102,21 +87,21 @@ func GetServe() *echo.Echo {
 	routes.Register("mss", new(mssC))
 	routes.Register("editor", new(editorC))
 
-	s := echo.New()
-
+	s := echox.New()
 	r := echox.NewGoTemplateForEcho("public/views/partner")
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
-	s.Use(partnerLogonCheck)
+	s.Use(partnerLogonCheck) // 判断商户登陆状态
 	s.Static("/static/","./public/static/")
 	s.Get("/", mc.Index)
-	s.Get("/main/dashboard",partnerHandler(mc.Dashboard))
-	s.Get("/main/logout",partnerHandler(mc.Logout))
+	s.Getx("/main/dashboard",mc.Dashboard)
+	s.Getx("/main/logout",mc.Logout)
+	s.Getx("/login",mc.Login)
 	return s
 }
 
 func partnerLogonCheck(ctx *echo.Context)error {
-	if ctx.Path() == "/login"{
+	if ctx.Request().URL.Path == "/login"{
 		return nil
 	}
 	session := session.Default(ctx.Response(),ctx.Request())
@@ -130,14 +115,4 @@ func partnerLogonCheck(ctx *echo.Context)error {
 	ctx.Response().WriteHeader(302)
 	ctx.Done()
 	return nil
-}
-
-func partnerHandler(h PartnerHandler)func(ctx *echo.Context)error{
-	return func(ctx *echo.Context)error{
-		partnerId := ctx.Get("partner_id").(int)
-		return h(&PartnerContext{
-			Echo:ctx,
-			PartnerId:partnerId,
-		})
-	}
 }

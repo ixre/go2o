@@ -17,6 +17,9 @@ import (
 	"github.com/labstack/echo"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
+	"strings"
+"go2o/src/core/domain/interface/partner"
+	"net/http"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -39,22 +42,75 @@ func (this *mainC) Index(ctx *echo.Context)(err error) {
 	return err
 }
 
-func (this *mainC) Logout(ctx *PartnerContext)error {
-//	ctx.Session().Destroy()
-//	ctx.Response.Write([]byte("<script>location.replace('/login')</script>"))
+//登陆
+func (this *mainC) Login(ctx *echox.Context)error {
+	d := echox.NewRendData()
+	return ctx.Render(http.StatusOK,"login.html",d)
+}
+
+func (this *mainC) Login_post(ctx *web.Context) {
+	r, w := ctx.Request, ctx.Response
+	r.ParseForm()
+	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
+
+	pwd = strings.TrimSpace(pwd)
+	pt, result, message := this.ValidLogin(usr, pwd)
+
+	if result {
+		ctx.Session().Set("partner_id", pt.Id)
+		if err := ctx.Session().Save(); err != nil {
+			result = false
+			message = err.Error()
+		}
+	}
+
+	if result {
+		w.Write([]byte("{result:true}"))
+	} else {
+		w.Write([]byte("{result:false,message:'" + message + "'}"))
+	}
+}
+
+//验证登陆
+func (pb *mainC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool, string) {
+	var message string
+	var result bool
+	var pt *partner.ValuePartner
+	var err error
+
+	id := dps.PartnerService.Verify(usr, pwd)
+
+	if id == -1 {
+		result = false
+		message = "用户或密码不正确！"
+	} else {
+		pt, err = dps.PartnerService.GetPartner(id)
+		if err != nil {
+			message = err.Error()
+			result = false
+		} else {
+			result = true
+		}
+	}
+	return pt, result, message
+}
+
+func (this *mainC) Logout(ctx *echox.Context)error {
+	ctx.Session.Destroy()
+	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
 //商户首页
-func (this *mainC) Dashboard(ctx *PartnerContext)error {
-	pt, _ := dps.PartnerService.GetPartner(ctx.PartnerId)
+func (this *mainC) Dashboard(ctx *echox.Context)error {
+	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
 
 	dm := echox.NewRendData()
 	dm.Data = gof.TemplateDataMap{
 		"partner": pt,
-		"loginIp": ctx.Echo.Request().Header.Get("USER_ADDRESS"),
+		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
 	}
-	return ctx.Echo.Render(200,"dashboard.html",dm)
+	return ctx.Render(200,"dashboard.html",dm)
 }
 
 //商户汇总页

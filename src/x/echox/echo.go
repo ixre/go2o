@@ -9,23 +9,69 @@
 package echox
 
 import (
-	"container/list"
-	"errors"
 	"github.com/labstack/echo"
-	"gopkg.in/fsnotify.v1"
-	"html/template"
-	"io"
-	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/web/session"
 )
 
-type HttpHosts map[string]http.Handler
+var (
+	globalApp gof.App
+	_globTemplateData map[string]interface{} = nil
+)
+
+type(
+	Echo struct {
+		*echo.Echo
+		app gof.App
+	}
+	Context struct {
+		*echo.Context
+		App     gof.App
+		Session *session.Session
+	}
+	TemplateData struct {
+		Var  map[string]interface{}
+		Map  map[string]interface{}
+		Data interface{}
+	}
+	Handler func(*Context) error
+	HttpHosts map[string]http.Handler
+)
+
+
+
+// new echo instance
+func New() *Echo {
+	if globalApp == nil {
+		globalApp = gof.CurrentApp
+	}
+	return &Echo{
+		Echo:echo.New(),
+		app:globalApp,
+	}
+}
+
+
+func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
+	return func(ctx *echo.Context) error {
+		s := session.Default(ctx.Response(), ctx.Request())
+		return h(&Context{
+			Context:ctx,
+			Session:s,
+			App:this.app,
+		})
+	}
+}
+
+func (this *Echo) Getx(path string, h Handler) {
+	this.Get(path, this.parseHandler(h))
+}
+
 
 func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	subName := r.Host[:strings.Index(r.Host, ".")+1]
+	subName := r.Host[:strings.Index(r.Host, ".") + 1]
 	if h, ok := this[subName]; ok {
 		h.ServeHTTP(w, r)
 	} else if h, ok = this["*"]; ok {
@@ -35,12 +81,23 @@ func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-type InterceptorFunc func(*echo.Context) bool
 
-var (
-	_                 echo.Renderer          = new(GoTemplateForEcho)
-	_globTemplateData map[string]interface{} = nil
-)
+
+
+func SetGlobRendData(m map[string]interface{}) {
+	_globTemplateData = m
+}
+
+func NewRendData() *TemplateData {
+	return &TemplateData{
+		Var: _globTemplateData,
+		Map:make(map[string]interface{}),
+		Data:nil,
+	}
+}
+
+
+type InterceptorFunc func(*echo.Context) bool
 
 // 拦截器
 func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
@@ -49,105 +106,5 @@ func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
 			return fn(c)
 		}
 		return nil
-	}
-}
-
-func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
-	dirs = new(list.List)
-	fi, err := os.Lstat(dir)
-	if err != nil{
-		panic(err)
-	}
-	if !fi.IsDir() {
-		panic(errors.New("path must be direction"))
-	}
-	t = template.Must(template.ParseGlob(dir + "/" + pattern))
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			dirs.PushBack(path)
-			if path != dir {
-				t.ParseGlob(path + "/" + pattern)
-			}
-		}
-		return nil
-	})
-	return t, dirs
-}
-
-func NewGoTemplateForEcho(dir string) echo.Renderer {
-	g := &GoTemplateForEcho{
-		pattern:       "*.html",
-		fileDirectory: dir,
-	}
-	return g.init()
-}
-
-type GoTemplateForEcho struct {
-	fileDirectory string
-	pattern       string
-	templates     *template.Template
-}
-
-func (g *GoTemplateForEcho) init() *GoTemplateForEcho {
-	var l *list.List
-	g.templates, l = getTemplate(g.fileDirectory, g.pattern)
-	go g.fsNotify(l)
-	return g
-}
-
-func (g *GoTemplateForEcho) fsNotify(l *list.List) {
-	w, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer w.Close()
-
-	var ch chan bool = make(chan bool)
-	go func(g *GoTemplateForEcho) {
-		for {
-			select {
-			case event := <-w.Events:
-				log.Println(event)
-				if event.Op&fsnotify.Write != 0 || event.Op&fsnotify.Create != 0 {
-					if strings.HasSuffix(event.Name, ".html") {
-						log.Println("[ Template][ Update]: file - ", event.Name)
-						g.init()
-						break
-					}
-				}
-			case err := <-w.Errors:
-				log.Println(err)
-				log.Println("Error:", err)
-			}
-		}
-	}(g)
-
-	for itr := l.Front(); itr != nil; itr = itr.Next() {
-		err = w.Add(itr.Value.(string))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	<-ch
-
-}
-
-func (g *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
-	return g.templates.ExecuteTemplate(w, name, data)
-}
-
-type TemplateData struct {
-	Map  map[string]interface{}
-	Data interface{}
-}
-
-func SetGlobRendData(m map[string]interface{}) {
-	_globTemplateData = m
-}
-
-func NewRendData() *TemplateData {
-	return &TemplateData{
-		Map: _globTemplateData,
 	}
 }
