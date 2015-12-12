@@ -16,7 +16,7 @@
                 <span class="title">会员等级：</span>
                 <select field="level_value">
                     <option value="-1">一不限一</option>
-                    {{.levelDr}}
+                    {{.Map.levelDr}}
                 </select>
             </li>
 
@@ -27,7 +27,7 @@
 
             <li>
                 <span class="title">状态：</span>
-                <input type="hidden" field="kind" value="{{.kind}}"/>
+                <input type="hidden" field="kind" value="{{.Map.kind}}"/>
                 <select field="state">
                     <option value="-1">一不限一</option>
                     <option value="0">未审核</option>

@@ -9,12 +9,12 @@
 <body>
 
 <div id="form1_lv" class="form margin30">
-    <input type="hidden" field="goodsId" value="{{.goods.GoodsId}}"/>
+    <input type="hidden" field="goodsId" value="{{.Map.goods.GoodsId}}"/>
     <table cellspacing="1" class="ui-table">
         <tr class="summary">
             <td colspan="3">
-                商品:<span class="goods-name">{{.goods.Name}}</span>&nbsp;
-                参考售价：<span class="goods-price">{{.goods.SalePrice}}</span>
+                商品:<span class="goods-name">{{.Map.goods.Name}}</span>&nbsp;
+                参考售价：<span class="goods-price">{{.Map.goods.SalePrice}}</span>
             </td>
         </tr>
         <tr>
@@ -23,7 +23,7 @@
             <th>是否启用</th>
         </tr>
 
-        {{.setHtml}}
+        {{.Map.setHtml}}
     </table>
 
     <div class="margin30" style="margin-left:0">

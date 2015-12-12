@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>{{.flowAlias}}转账</title>
+	<title>{{.Map.flowAlias}}转账</title>
 	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.spam}}"/>
@@ -11,13 +11,13 @@
 	<div class="page-main page-apply-cash">
 		<div class="head-box">
 			<div class="account">
-				{{.flowAlias}}余额:&nbsp;<b id="lb_balance">￥{{.account.FlowBalance}}</b><br />
+				{{.Map.flowAlias}}余额:&nbsp;<b id="lb_balance">￥{{.Map.account.FlowBalance}}</b><br />
 			</div>
 
 		</div>
 
 		<div class="tip-box">
-			平台仅提供{{.flowAlias}}转账功能，请尽量当面交易以降低风险！
+			平台仅提供{{.Map.flowAlias}}转账功能，请尽量当面交易以降低风险！
 		</div>
 
 		<div id="form1" class="form form2">
@@ -30,7 +30,7 @@
 				<h3>转账金额：</h3>
 				<input id="tb_amount" type="text" class="box ui-validate" isfloat="true" required="true" field="Amount"
 						summary="{required:'请输入金额'}"/><!-- &nbsp;&nbsp;
-				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.maxApplyAmount}}&nbsp;元</span> -->
+				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.Map.maxApplyAmount}}&nbsp;元</span> -->
 
 				<h3>交易密码：</h3>
 				<input type="password" class="box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
@@ -61,7 +61,7 @@
 
 		<div class="apply-setup">
 			<b><span class="red">*</span>&nbsp;说明：</b><br />
-			按平台政策，暂{{.commissionStr}}，资金即时到账。
+			按平台政策，暂{{.Map.commissionStr}}，资金即时到账。
 		</div>
 
 	</div>
@@ -77,8 +77,8 @@
 <script type="text/javascript">
 				var tipMsg = j6.$('tip_msg');
 				var toId = j6.$('toId');
-				var balance = {{.account.FlowBalance}};
-				var cns = {{.cns}};
+				var balance = {{.Map.account.FlowBalance}};
+				var cns = {{.Map.cns}};
 				var finalAmount,cnsAmount;
 				j6.xhr.filter = null;
 

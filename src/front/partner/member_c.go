@@ -213,7 +213,7 @@ func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 
 // 客服充值
 func (this *memberC) Charge(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST"{
+	if ctx.Request().Method == "POST" {
 		return this.charge_post(ctx)
 	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
@@ -289,7 +289,7 @@ func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 
 // 退回提现请求
 func (this *memberC) Back_apply_req(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST"{
+	if ctx.Request().Method == "POST" {
 		return this.back_apply_req_post(ctx)
 	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
@@ -326,7 +326,7 @@ func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 
 // 提现打款
 func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST"{
+	if ctx.Request().Method == "POST" {
 		return this.handle_apply_req_post(ctx)
 	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))

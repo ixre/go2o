@@ -67,7 +67,7 @@
         <div class="in">
             <select class="box" field="MinLevel" required="true">
                 <option value="0">一无要求一</option>
-                {{.levelDr}}
+                {{.Map.levelDr}}
             </select>
         </div>
     </div>
@@ -132,7 +132,7 @@
     
     <script>
     var entity ={{.Map.entity}}||{};
-    var entity2 ={{.entity2}}||{};
+    var entity2 ={{.Map.entity2}}||{};
     entity2.BeginTime = unix2str(entity2.BeginTime);
     entity2.OverTime = unix2str(entity2.OverTime);
     entity2.BeginTime = entity2.BeginTime.substring(0,entity2.BeginTime.indexOf(' '));

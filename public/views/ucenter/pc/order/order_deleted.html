@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>我的订单_{{.partner.Name}}</title>
+	<title>我的订单_{{.Map.partner.Name}}</title>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?v={{.Var.version}}"/>
 </head>
@@ -24,7 +24,7 @@
 			var ORDER_STATE_TEXTS = new Array("已作废", "待确认","已确认", "待发货", "配送中", "已完成");
 			var _dg = j6.grid('dg', {
 				url: "Orders",
-				data: {page:1,size:20,state:'{{.state}}'},
+				data: {page:1,size:20,state:'{{.Map.state}}'},
 				idField: 'id',
 				columns: [
 					{ field: 'order_no', title: '订单号', width: 100,align:'center'},

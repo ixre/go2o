@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>{{.title}}</title>
+	<title>{{.Map.title}}</title>
 	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.spam}}"/>
@@ -11,13 +11,13 @@
 	<div class="page-main page-apply-cash">
 		<div class="head-box">
 			<div class="account">
-				{{.subTitle}}
+				{{.Map.subTitle}}
 			</div>
 
 		</div>
 
 		<div class="back-box">
-			<input class="btn btn-m" type="button" value="{{.btnText}}" onclick="continueTrans()"/>
+			<input class="btn btn-m" type="button" value="{{.Map.btnText}}" onclick="continueTrans()"/>
 			<input class="btn" type="button" value="关闭" onclick="closeWin()"/>
 		</div>
 	</div>
@@ -31,7 +31,7 @@
 					window.cli.close();
 				}
 				function continueTrans(){
-					location.replace('{{.referer}}');
+					location.replace('{{.Map.referer}}');
 				}
 		</script>
 

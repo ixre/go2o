@@ -21,27 +21,27 @@
         <ul>
             <li>
                 <label>订单号：</label>
-                {{.order.OrderNo}}
+                {{.Map.order.OrderNo}}
             </li>
             <li>
                 <label>金额总计：</label>
-                ￥{{.order.Fee}}元
+                ￥{{.Map.order.Fee}}元
             </li>
             <li>
                 <label>支付金额：</label>
-                ￥{{.order.PayFee}}元
+                ￥{{.Map.order.PayFee}}元
             </li>
             <li>
                 <label>支付方式：</label>
-                {{.payment_opt}}
+                {{.Map.payment_opt}}
             </li>
         </ul>
         <div class="clear_fix"></div>
 
-        {{.payment_html}}
+        {{.Map.payment_html}}
 
         <div class="pay-help">
-            {{.payment_help}}
+            {{.Map.payment_help}}
         </div>
     </div>
 </div>

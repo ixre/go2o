@@ -8,17 +8,17 @@
 <body>
 
 <div class="tip-box">
-    提现时间：{{.applyTime}}<br />
-    提现金额：{{.info.Amount}}<br />
-    提现说明：{{.info.Title}}
+    提现时间：{{.Map.applyTime}}<br />
+    提现金额：{{.Map.info.Amount}}<br />
+    提现说明：{{.Map.info.Title}}
 </div>
 
 <div id="form1" class="form margin30">
     <div class="fl hidden">
         <div class="label"><span class="red">*&nbsp;</span>等级名称：</div>
         <div class="in">
-            <input type="hidden" field="Id" value="{{.info.Id}}"/>
-            <input type="hidden" field="MemberId" value="{{.info.MemberId}}"/>
+            <input type="hidden" field="Id" value="{{.Map.info.Id}}"/>
+            <input type="hidden" field="MemberId" value="{{.Map.info.MemberId}}"/>
             <input class="ui-validate ui-box" type="text" field="Name" required="true"/>
         </div>
     </div>

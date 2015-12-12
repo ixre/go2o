@@ -63,7 +63,7 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 <script>
-    var memberId = {{.memberId}};
+    var memberId = {{.Map.memberId}};
     var tipBox = j6.$('tipBox');
     function setTxt(p,b) {
         var t = j6.dom.getsByClass(p,'button-txt')[0];

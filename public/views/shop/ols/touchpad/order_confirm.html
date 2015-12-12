@@ -26,9 +26,9 @@
             <div class="item_info">
                 {{if .settle.Deliver}}
                 <p>
-                    <span id="deliver_rn">{{.settle.Deliver.PersonName}}</span>&nbsp;
-                    <span id="deliver_ph">{{.settle.Deliver.Phone}}</span><br />
-                    <span id="deliver_addr">{{.settle.Deliver.Address}}</span>
+                    <span id="deliver_rn">{{.Map.settle.Deliver.PersonName}}</span>&nbsp;
+                    <span id="deliver_ph">{{.Map.settle.Deliver.Phone}}</span><br />
+                    <span id="deliver_addr">{{.Map.settle.Deliver.Address}}</span>
                 </p>
                 {{else}}
                 <p>
@@ -88,7 +88,7 @@
                 <a href="/cart?edit=1" style="color:#FF6600;">&gt;&gt;返回修改订单</a></span></h2>
             <div class="item_info">
 
-                {{.cartDetails}}
+                {{.Map.cartDetails}}
 
 
                 <br />
@@ -101,7 +101,7 @@
 
                 <div class="cash-panel" id="cash-panel">
                     <ul>
-                        <li class="total">订单金额：<b>￥<span class="money">{{.cart.TotalFee}}</span></b>元</li>
+                        <li class="total">订单金额：<b>￥<span class="money">{{.Map.cart.TotalFee}}</span></b>元</li>
                         <li class="prom">优惠：<b>￥<span field="PromFee">0</span></b>元</li>
                         <li class="fee">需支付：<b>￥<span field="OrderFee">0</span></b>元</li>
                     </ul>
@@ -122,18 +122,18 @@
 
     <form id="postForm">
         <input type="hidden" name="shop_id" field="shop_id" value="0"/>
-        <input type="hidden" name="pay_opt" field="pay_opt" value="{{.paymentOpt}}"/>
-        <input type="hidden" name="deliver_opt" field="deliver_opt" value="{{.deliverOpt}}"/>
-        <input type="hidden" name="deliver_id" field="deliver_id" value="{{.deliverId}}"/>
+        <input type="hidden" name="pay_opt" field="pay_opt" value="{{.Map.paymentOpt}}"/>
+        <input type="hidden" name="deliver_opt" field="deliver_opt" value="{{.Map.deliverOpt}}"/>
+        <input type="hidden" name="deliver_id" field="deliver_id" value="{{.Map.deliverId}}"/>
         <input type="hidden" name="deliver_person" field="deliver_person" value=""/>
         <input type="hidden" name="deliver_phone" field="deliver_phone" value=""/>
         <input type="hidden" name="deliver_address" field="deliver_address" value=""/>
     </form>
 
     <script type="text/javascript">
-        var total_fee = {{.cart.TotalFee}};
-        var prom_fee = {{.promFee}};
-        var order_fee = {{.cart.OrderFee}};
+        var total_fee = {{.Map.cart.TotalFee}};
+        var prom_fee = {{.Map.promFee}};
+        var order_fee = {{.Map.cart.OrderFee}};
         var sctJson = {pay_opt:1,deliver_opt:1,deliver_id:0,shop_id:0,deliver_person:'',deliver_phone:'',deliver_address:''};
     </script>
     <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core.js?{{.Var.version}}"></script>

@@ -36,8 +36,8 @@
         <div class="in">
             <input type="hidden" class="box ui-validate" disabled="disabled" field="GoodsId" style="width:40px"/>
             <a href="javascript:;" class="btn" id="btn_sel_goods">选择商品</a>
-            <div class="sel_result {{.goods_cls}}">
-                选择的商品为:<label id="goods_info">{{.goods_info}}</label>
+            <div class="sel_result {{.Map.goods_cls}}">
+                选择的商品为:<label id="goods_info">{{.Map.goods_info}}</label>
             </div>
         </div>
     </div>
@@ -96,7 +96,7 @@
 
 <script>
     var entity ={{.Map.entity}} ||{};
-    var e2 = {{.entity2}} || {}
+    var e2 = {{.Map.entity2}} || {}
     j6.json.bind('form1', entity);
     j6.json.bind('form1', e2);
 

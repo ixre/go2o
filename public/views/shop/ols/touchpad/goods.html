@@ -19,33 +19,33 @@
 
     <div class="item-details">
         <p class="gallery">
-            <img src="{{.goods.Image}}" alt="{{.goods.Name}}" width="320"/>
+            <img src="{{.Map.goods.Image}}" alt="{{.Map.goods.Name}}" width="320"/>
         </p>
         <div class="line"></div>
         <p class="line price">
            <span class="sale-price">
-               {{.sale_price}}
+               {{.Map.sale_price}}
            </span>
-            {{.prom_price}}
+            {{.Map.prom_price}}
         </p>
-        <div class="prom-panel {{.prom_cls}}">
+        <div class="prom-panel {{.Map.prom_cls}}">
             <table cellspacing="0">
                 <tr>
                     <td class="txt">促<br />销</td>
                     <td class="list">
-                        {{.prom_describe}}</td>
+                        {{.Map.prom_describe}}</td>
                 </tr>
             </table>
         </div>
         <p class="title">
-            {{.goods.Name}}
+            {{.Map.goods.Name}}
         </p>
 
 
 
        <div class="control">
            购买<input id="buyNum" type="text" class="box buyNum" datatype="number" value="1" style="width:30px"/>&nbsp;件
-           / <b>库存：</b>{{.goods.StockNum}}&nbsp;件
+           / <b>库存：</b>{{.Map.goods.StockNum}}&nbsp;件
            <br />
            <div class="buy_panel">
                <a class="btn btn-orange btn_add_cart" href="javascript:;" id="btn_add_cart">加入购物车</a>
@@ -80,7 +80,7 @@
         });
         $('#btn_add_cart').click(function(){
             var num = parseInt($('#buyNum').val());
-            var goodsId = {{.goods.GoodsId}};
+            var goodsId = {{.Map.goods.GoodsId}};
             window.cart.add(goodsId,num,function(c){
                 j6.tipbox.show("加入购物车成功!",100, 3000, 'up',0.8);
                 $('#header-cart-num').html(window.cart.totalNum);

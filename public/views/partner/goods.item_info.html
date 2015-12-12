@@ -10,11 +10,11 @@
     <div class="fl">
         <div class="label">页面内容：</div>
         <div class="in">
-            <input type="hidden" field="ItemId" value="{{.item_id}}"/>
+            <input type="hidden" field="ItemId" value="{{.Map.item_id}}"/>
             <!-- 960的宽度为标准,一般内容宽度为600左右 -->
             <div id="content_info" style="width: 620px;">
                 <span>建议：使用一键排版功能可以快速生成有格式的内容。<br /><br /></span>
-                <textarea id="editor" field="Info" style="overflow: hidden; width: 620px; height: 400px;">{{.item_info}}</textarea>
+                <textarea id="editor" field="Info" style="overflow: hidden; width: 620px; height: 400px;">{{.Map.item_info}}</textarea>
             </div>
         </div>
     </div>
@@ -32,8 +32,8 @@
 <script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 <!-- 编辑器 -->
-<!--<script type="text/javascript" src="{{.Var.static_serve}}/assets/editor/minpack.js"></script>-->
-<!--<script type="text/javascript" src="{{.Var.static_serve}}/assets/editor/plugins/code/prettify.js"></script>-->
+<!--<script type="text/javascript" src="{{.Map.Var.static_serve}}/assets/editor/minpack.js"></script>-->
+<!--<script type="text/javascript" src="{{.Map.Var.static_serve}}/assets/editor/plugins/code/prettify.js"></script>-->
 <script type="text/javascript">
     var editor = null;
     function initEditor(id) {

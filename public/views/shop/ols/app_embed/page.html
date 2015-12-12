@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>{{.page.Title}}</title>
+    <title>{{.Map.page.Title}}</title>
     <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
@@ -10,13 +10,13 @@
     <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 
     {{if .page.CssPath}}
-        <link rel="Stylesheet" href="{{.page.CssPath}}" type="text/css" />
+        <link rel="Stylesheet" href="{{.Map.page.CssPath}}" type="text/css" />
     {{end}}
 </head>
 <body>
     {{template "header".}}
     <div class="panel page-layout">
-        {{.rawBody}}
+        {{.Map.rawBody}}
     </div>
 
     {{template "footer".}}

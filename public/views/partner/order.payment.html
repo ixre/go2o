@@ -12,26 +12,26 @@
         <p class="details">
             <b>订单详情：</b><br />
             <ul>
-                <li>订单号：{{.order.OrderNo}}</li>
-                <li>配送分店：{{.shopName}}</li>
-                <li>订单总额：￥{{.order.TotalFee}}</li>
-                <li>订单金额：￥{{.order.Fee}}</li>
-                <li>优惠金额：￥{{.order.DiscountFee}}</li>
-                <li>优惠金额：￥{{.order.PayFee}}</li>
+                <li>订单号：{{.Map.order.OrderNo}}</li>
+                <li>配送分店：{{.Map.shopName}}</li>
+                <li>订单总额：￥{{.Map.order.TotalFee}}</li>
+                <li>订单金额：￥{{.Map.order.Fee}}</li>
+                <li>优惠金额：￥{{.Map.order.DiscountFee}}</li>
+                <li>优惠金额：￥{{.Map.order.PayFee}}</li>
             </ul>
         </p>
 
         <p style="border:solid 1px #e5e5e5;padding:5px;background:#f8f8f8">
             <b>配送信息：</b><br/>
-            姓名:<span field="deliverName">{{.order.DeliverName}}</span><br/>
-            电话:<span field="deliverPhone">{{.order.DeliverPhone}}</span><br />
-            收货地址：<span field="deliverAddress">{{.order.DeliverAddress}}</span><br />
+            姓名:<span field="deliverName">{{.Map.order.DeliverName}}</span><br/>
+            电话:<span field="deliverPhone">{{.Map.order.DeliverPhone}}</span><br />
+            收货地址：<span field="deliverAddress">{{.Map.order.DeliverAddress}}</span><br />
         </p>
 
 
         <br />
         <div class="tip-box" style="color:#FF0000;">
-            您即将为会员充值￥<b>{{.order.PayFee}}</b>元，并使用余额完成支付。
+            您即将为会员充值￥<b>{{.Map.order.PayFee}}</b>元，并使用余额完成支付。
         </div><br/>
 
          <span class="ui-button w150">
@@ -48,7 +48,7 @@
 
 	<script type="text/javascript">
         j6.$('btn_payment').onclick=function() {
-            var data = {orderNo: '{{.order.OrderNo}}'};
+            var data = {orderNo: '{{.Map.order.OrderNo}}'};
             parent.$.messager.confirm('提示', '您确定要为订单：' + data.orderNo + '进行支付吗？', function (r) {
                 if(r){
                 j6.xhr.jsonPost('Payment', data, function (json) {

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>会员中心_{{.partner.Name}}</title>
+    <title>会员中心_{{.Map.partner.Name}}</title>
     <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
     <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?v={{.Var.version}}"/>
 
@@ -57,26 +57,26 @@
 
         <div style="padding:30px 50px;position:relative;">
             <div class="avatar">
-                <!--<img src="{{.member.Avatar}}" alt="用户头像"/>-->
+                <!--<img src="{{.Map.member.Avatar}}" alt="用户头像"/>-->
                 <img src="{{.Var.static_serve}}/css/ucenter/noavatar.gif" alt="用户头像"/>
             </div>
 
             <div class="profile">
                 <p><label>真实姓名：</label>
-                    {{.name}}&nbsp;{{.sex}}
+                    {{.Map.name}}&nbsp;{{.Map.sex}}
                 </p>
 
-                <p>等级：{{.level.Name}}&nbsp;{{.member.Exp}}/{{.nLevel.RequireExp}}</p>
+                <p>等级：{{.Map.level.Name}}&nbsp;{{.Map.member.Exp}}/{{.Map.nLevel.RequireExp}}</p>
 
-                <p><label>联系电话：</label>{{.member.Phone}}</p>
+                <p><label>联系电话：</label>{{.Map.member.Phone}}</p>
 
-                <p><label>联系地址：</label>{{.member.Address}}</p>
+                <p><label>联系地址：</label>{{.Map.member.Address}}</p>
 
-                <p><label>Q&nbsp;Q号码：</label>{{.member.Qq}}&nbsp;</p>
+                <p><label>Q&nbsp;Q号码：</label>{{.Map.member.Qq}}&nbsp;</p>
 
-                <p><label>电子邮箱：</label>{{.member.Email}}&nbsp;</p>
+                <p><label>电子邮箱：</label>{{.Map.member.Email}}&nbsp;</p>
 
-                <p><label>注册时间：</label>{{.regTime}}</p>
+                <p><label>注册时间：</label>{{.Map.regTime}}</p>
             </div>
 
             <div class="m20">
@@ -85,9 +85,9 @@
             </div>
 
             <div class="m20">
-                登录地址：{{.loginAddr}}<br>
-                共支付金额：￥{{.acc.TotalPay}}元
-                &nbsp;账户余额：{{.acc.Balance}} 元
+                登录地址：{{.Map.loginAddr}}<br>
+                共支付金额：￥{{.Map.acc.TotalPay}}元
+                &nbsp;账户余额：{{.Map.acc.Balance}} 元
             </div>
 
         </div>

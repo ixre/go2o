@@ -11,11 +11,11 @@
     <div id="dg"></div>
     <div class="toolBar">
         <div class="search_bar padding2" id="search_bar">
-            <input field="couponId" type="hidden" value="{{.entity.Id}}"/>
+            <input field="couponId" type="hidden" value="{{.Map.entity.Id}}"/>
             <ul>
                 <li>
-                    优惠券可绑数量：<span style="color:green">{{.entity2.Amount}}</span>
-                    /{{.entity2.TotalAmount}}
+                    优惠券可绑数量：<span style="color:green">{{.Map.entity2.Amount}}</span>
+                    /{{.Map.entity2.TotalAmount}}
                 </li>
                 <li>
                     <a class="easyui-linkbutton" iconcls="icon-add" id="btnBind">
@@ -36,7 +36,7 @@
 
 
 <script>
-        var shops = {{.shops}};
+        var shops = {{.Map.shops}};
         expr.ele = 'search_bar';
 
         expr.portal = 'Partner.PromCouponMemberBind'; //配置导出的入口
@@ -93,7 +93,7 @@
             });
         });
 
-        var amount= {{.entity2.Amount}};
+        var amount= {{.Map.entity2.Amount}};
         j6.$('btnBind').onclick=function(){
             var rows = $('#dg').datagrid('getSelections');
             var len = rows.length;
@@ -107,7 +107,7 @@
                     if (i != 0) data += ',';
                     data += rows[i].id;
                 }
-                j6.xhr.jsonPost('/prom/bind_coupon', {id:{{.entity2.Id}},member_ids: data }, function(json) {
+                j6.xhr.jsonPost('/prom/bind_coupon', {id:{{.Map.entity2.Id}},member_ids: data }, function(json) {
                     if (json.result) {
                         $.messager.alert('提示', '发送成功!','',function(){
                             location.reload();

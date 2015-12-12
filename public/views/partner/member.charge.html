@@ -9,13 +9,13 @@
 
 <div id="form1" class="form margin30">
     <div class="tip-box">
-        待充值会员：<b style="color:#0a0">{{.m.Name}}</b><br />当前余额为：<b style="color:#0a0"><span id="lb_balance">{{.m.Balance}}</span>元</b>
+        待充值会员：<b style="color:#0a0">{{.Map.m.Name}}</b><br />当前余额为：<b style="color:#0a0"><span id="lb_balance">{{.Map.m.Balance}}</span>元</b>
     </div>
     <br />
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>充值金额：</div>
         <div class="in">
-            <input type="hidden" field="MemberId" value="{{.m.Id}}"/>
+            <input type="hidden" field="MemberId" value="{{.Map.m.Id}}"/>
             <input id="tb_amount" class="ui-validate ui-box" isnumber="true" type="text" value="" field="Amount" style="width:50px"/>元
         </div>
     </div>

@@ -14,8 +14,8 @@
 <div id="form1" class="form margin30">
 
     <div class="fl">
-        <input type="hidden" field="GoodsId" value="{{.goodsId}}"/>
-        {{.tagsHtml}}
+        <input type="hidden" field="GoodsId" value="{{.Map.goodsId}}"/>
+        {{.Map.tagsHtml}}
     </div>
 
     <div class="fl">
@@ -28,7 +28,7 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 <script>
-    var entity = {"SaleTags":'{{.tagValue}}'.split(',')};
+    var entity = {"SaleTags":'{{.Map.tagValue}}'.split(',')};
     j6.json.bind('form1', entity);
     j6.$('btn_save').onclick = function () {
         if (j6.validator.validate('form1')) {

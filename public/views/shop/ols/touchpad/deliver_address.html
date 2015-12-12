@@ -50,10 +50,10 @@
 
 
 <script type="text/javascript">
-    var addrs = {{.addrs}};
+    var addrs = {{.Map.addrs}};
     var addressTpl = j6.$('addressTpl').innerHTML;
     var newPanel = j6.$('new_panel');
-    var selId = {{.sel}};
+    var selId = {{.Map.sel}};
 
     function toggleNewAdd(){
         j6.animation.toggleHeight(newPanel,null,15);

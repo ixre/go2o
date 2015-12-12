@@ -12,9 +12,9 @@
 		<div class="head-box">
 			<div class="account">
 
-				账户余额:&nbsp;<b><span id="lb_balance">{{.account.PresentBalance}}</span></b>
+				账户余额:&nbsp;<b><span id="lb_balance">{{.Map.account.PresentBalance}}</span></b>
 
-				<span class="total">返现总额:&nbsp;<b>{{.account.TotalPresentFee}}</b></span>
+				<span class="total">返现总额:&nbsp;<b>{{.Map.account.TotalPresentFee}}</b></span>
 			</div>
 
 			<div class="control1">
@@ -27,7 +27,7 @@
 		<div id="form1" class="form form2">
 
 			<div class="latest_rec">
-				{{.latestInfo}}
+				{{.Map.latestInfo}}
 			</div>
 
 
@@ -36,7 +36,7 @@
 				<h3>提现金额：</h3>
 				<input id="tb_amount" type="text" class="box ui-validate" isfloat="true" required="true" field="Amount"
 					   summary="{required:'请输入金额'}"/>&nbsp;&nbsp;
-				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.maxApplyAmount}}&nbsp;元</span>
+				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.Map.maxApplyAmount}}&nbsp;元</span>
 
 
 
@@ -69,7 +69,7 @@
 
 		<div class="apply-setup">
 			<b><span class="red">*</span>&nbsp;说明：</b><br />
-			按平台政策，暂{{.commissionStr}}。<br />
+			按平台政策，暂{{.Map.commissionStr}}。<br />
 			提现流程：&nbsp;提交申请 -> 客服审核 -> 打款 -> 完成提现。
 		</div>
 
@@ -83,8 +83,8 @@
 
 			<script type="text/javascript">
 				var tipMsg = j6.$('tip_msg');
-				var balance = {{.account.PresentBalance}};
-				var cns = {{.cns}};
+				var balance = {{.Map.account.PresentBalance}};
+				var cns = {{.Map.cns}};
 				var finalAmount,cnsAmount;
 
 				window.onload = function() {

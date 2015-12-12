@@ -23,13 +23,13 @@
 <h1>系统发生故障，请联系管理员解决！</h1>
 <div class="except-panel">
     <div class="summary">
-        <p class="message">错误描述：{{.error}}</p>
+        <p class="message">错误描述：{{.Map.error}}</p>
         <p class="contact">请联系管理员QQ:959398298  或 <a href="/">回到首页</a></p>
     </div>
     <p class="stack">
         <em>堆栈信息：</em><br/>
         <pre>
-            {{.stack}}
+            {{.Map.stack}}
         </pre>
     </p>
 </div>

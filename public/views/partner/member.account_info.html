@@ -9,21 +9,21 @@
 
 <div id="form1" class="member-profile">
     <ul>
-        <li class="item"><label>{{.integralAlias}}：</label>{{.acc.Integral}}</li>
-        <li class="item"><label>{{.balanceAccountAlias}}：</label>{{.acc.Balance}}
-            &nbsp;(冻结:{{.acc.FreezesFee}})</li>
+        <li class="item"><label>{{.Map.integralAlias}}：</label>{{.Map.acc.Integral}}</li>
+        <li class="item"><label>{{.Map.balanceAccountAlias}}：</label>{{.Map.acc.Balance}}
+            &nbsp;(冻结:{{.Map.acc.FreezesFee}})</li>
 
-        <li class="item"><label>{{.presentAccountAlias}}：</label>{{.acc.PresentBalance}}
-            &nbsp;(冻结:{{.acc.FreezesPresent}})</li>
+        <li class="item"><label>{{.Map.presentAccountAlias}}：</label>{{.Map.acc.PresentBalance}}
+            &nbsp;(冻结:{{.Map.acc.FreezesPresent}})</li>
 
-        <li class="item"><label>{{.flowAccountAlias}}：</label>{{.acc.FlowBalance}}</li>
-        <li class="item"><label>{{.growAccountAlias}}：</label>{{.acc.GrowAmount}}</li>
-        <li class="item"><label>总消费(元)：</label>{{.acc.TotalFee}}</li>
-        <li class="item"><label>总充值(元)：</label>{{.acc.TotalCharge}}</li>
-        <li class="item"><label>共支付(元)：</label>{{.acc.TotalPay}}</li>
+        <li class="item"><label>{{.Map.flowAccountAlias}}：</label>{{.Map.acc.FlowBalance}}</li>
+        <li class="item"><label>{{.Map.growAccountAlias}}：</label>{{.Map.acc.GrowAmount}}</li>
+        <li class="item"><label>总消费(元)：</label>{{.Map.acc.TotalFee}}</li>
+        <li class="item"><label>总充值(元)：</label>{{.Map.acc.TotalCharge}}</li>
+        <li class="item"><label>共支付(元)：</label>{{.Map.acc.TotalPay}}</li>
 
 
-        <li class="item" style="width:100%"><label>更新时间：</label>{{.updateTime}}</li>
+        <li class="item" style="width:100%"><label>更新时间：</label>{{.Map.updateTime}}</li>
     </ul>
 
     <div class="clear-fix"></div>

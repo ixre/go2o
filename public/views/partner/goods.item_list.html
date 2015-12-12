@@ -34,7 +34,7 @@
                 <span class="title">分类：</span>
                     <select field="cid">
                         <option value="-1">一不限一</option>
-                        {{.cate_opts}}
+                        {{.Map.cate_opts}}
                     </select>
                 </li>
 
@@ -102,7 +102,7 @@
                 [
                     { field: 'img', title: '', align: 'center', width: 100,formatter:function(val){
                         if(val ==''){
-                            val = '{{.no_pic_url}}';
+                            val = '{{.Map.no_pic_url}}';
                         }else if(val.indexOf("http://")!=0 && val.indexOf("https://")!=0){
                             val = '{{.Var.img_serve}}/'+val;
                         }

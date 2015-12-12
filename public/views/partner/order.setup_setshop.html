@@ -11,10 +11,10 @@
 
 
     <div id="form2">
-        <input type="hidden" field="order_no" value="{{.orderNo}}"/>
+        <input type="hidden" field="order_no" value="{{.Map.orderNo}}"/>
         选择分店配送：<select field="shopId" class="ui-box">
             <option value="">一请选择一</option>
-            {{.shopDr}}
+            {{.Map.shopDr}}
         </select>
             <span class="ui-button w80 small-button">
                 <span class="button-inner">

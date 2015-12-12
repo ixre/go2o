@@ -30,10 +30,10 @@
 
         <p style="border:solid 1px #e5e5e5;padding:5px;background:#f8f8f8">
             <b>会员信息：</b><br/>
-            姓名:{{.member.Name}}
-            (帐号：{{.member.Usr}})<br/>
-            电话:{{.member.Phone}}<br />
-            收货地址：{{.member.Address}}<br />
+            姓名:{{.Map.member.Name}}
+            (帐号：{{.Map.member.Usr}})<br/>
+            电话:{{.Map.member.Phone}}<br />
+            收货地址：{{.Map.member.Address}}<br />
         </p>
 
         <p style="border:solid 1px #e5e5e5;padding:5px;background:#f8f8f8">
@@ -74,17 +74,17 @@
 
         <dl>
             <dt>付款方式：</dt>
-            <dd>{{.payment}}</dd>
+            <dd>{{.Map.payment}}</dd>
         </dl>
 
         <dl>
             <dt>订单状态：</dt>
-            <dd>{{.state}}</dd>
+            <dd>{{.Map.state}}</dd>
         </dl>
 
         <dl>
             <dt>配送分店：</dt>
-            <dd>{{.shopName}}</dd>
+            <dd>{{.Map.shopName}}</dd>
         </dl>
 
 

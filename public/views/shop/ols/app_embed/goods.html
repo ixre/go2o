@@ -18,26 +18,26 @@
 
    <div class="item-details">
        <p class="gallery">
-           <img src="{{.goods.Image}}" alt="{{.goods.Name}}" width="320"/>
+           <img src="{{.Map.goods.Image}}" alt="{{.Map.goods.Name}}" width="320"/>
        </p>
        <div class="line"></div>
        <p class="line price">
            <span class="sale-price">
-               {{.sale_price}}
+               {{.Map.sale_price}}
            </span>
-           {{.prom_price}}
+           {{.Map.prom_price}}
        </p>
-       <div class="prom-panel {{.prom_cls}}">
+       <div class="prom-panel {{.Map.prom_cls}}">
             <table cellspacing="0">
                 <tr>
                     <td class="txt">促<br />销</td>
                     <td class="list">
-                    {{.prom_describe}}</td>
+                    {{.Map.prom_describe}}</td>
                 </tr>
             </table>
         </div>
        <p class="title">
-          {{.goods.Name}}
+          {{.Map.goods.Name}}
        </p>
 
 
@@ -45,21 +45,21 @@
 
        <div class="detail-link">
            <span class="details"></span>
-           <a href="goods-describe?id={{.goods.GoodsId}}">
+           <a href="goods-describe?id={{.Map.goods.GoodsId}}">
            商品详情<span class="arrow"></span>
            </a>
        </div>
 
        <div class="stock">
            购买<input id="buyNum" type="text" class="box buyNum" datatype="number" value="1"/>&nbsp;件
-           / <b>库存：</b>{{.goods.StockNum}}&nbsp;件
+           / <b>库存：</b>{{.Map.goods.StockNum}}&nbsp;件
        </div>
 
 
        <div class="control">
            <div class="buy_panel">
-               <input class="btn btn-m btn_add_cart" type="button" id="btn_view_buy" goods-id="{{.goods.GoodsId}}" value="立即购买"/>
-               <input class="btn btn-green btn_view_cart" type="button" id="btn_add_cart" goods-id="{{.goods.GoodsId}}" value="加入购物车"/>
+               <input class="btn btn-m btn_add_cart" type="button" id="btn_view_buy" goods-id="{{.Map.goods.GoodsId}}" value="立即购买"/>
+               <input class="btn btn-green btn_view_cart" type="button" id="btn_add_cart" goods-id="{{.Map.goods.GoodsId}}" value="加入购物车"/>
                <a class="cart-num" href="/cart"><i id="cart-num">0</i></a>
            </div>
        </div>
