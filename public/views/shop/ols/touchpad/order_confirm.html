@@ -11,8 +11,8 @@
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <!--告诉设备忽略将页面中的数字识别为电话号码-->
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 
 </head>
 <body>
@@ -136,11 +136,11 @@
         var order_fee = {{.cart.OrderFee}};
         var sctJson = {pay_opt:1,deliver_opt:1,deliver_id:0,shop_id:0,deliver_person:'',deliver_phone:'',deliver_address:''};
     </script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/core.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/form.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/animation.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/buy/buy_confirm.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/form.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/animation.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/buy/buy_confirm.js?{{.Var.version}}"></script>
     <script type="text/javascript">
         initEvents();
         recoverFrom('postForm');

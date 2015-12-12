@@ -8,7 +8,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
@@ -36,7 +36,7 @@
 
     {{template "footer" $}}
 
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?{{.Var.version}}"></script>
     <script type="text/javascript">
         j6.each(j6.$('sort-bar').getElementsByTagName('A'),function(i,e){
             e.onclick=function() {

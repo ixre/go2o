@@ -2,8 +2,8 @@
 <html>
 <head>
 <title>GO2O - 平台管理中心</title>
-	<link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
-	<link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+	<link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+	<link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
 <style type="text/css">
 #form1 {
 	width: 400px;
@@ -59,7 +59,7 @@ p {
 		</div>
 	</div>
 
-	<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+	<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
 	<script type="text/javascript">
 	 var d = j6.$('form1');
         j6.style(d,{

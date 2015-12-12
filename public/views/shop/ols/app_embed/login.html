@@ -5,7 +5,7 @@
     <title>会员登陆</title>
     <meta charset="utf-8">
     <meta content="width=device-width,initial-scale=1" name="viewport" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body class="hidden">
     {{template "header" $}}
@@ -52,9 +52,9 @@
     {{template "footer" $}}
 
 
-    <script src="{{.static_serve}}/assets/js/mobi/core.js?version={{.version}}"></script>
-    <script src="{{.static_serve}}/assets/js/mobi/device.js?version={{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?version={{.version}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/mobi/core.js?version={{.Var.version}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/mobi/device.js?version={{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?version={{.Var.version}}"></script>
 
     <script type="text/javascript">
         window.pc.login = null;

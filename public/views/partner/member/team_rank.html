@@ -3,19 +3,19 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>会员列表</title>
-    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.spam}}">
-    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/icon.css?spam={{.spam}}">
-    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
-    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Var.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}">
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
 
-    <link href="{{.static_serve}}/assets/libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" media="all" href="{{.static_serve}}/assets/wigets/daterangepicker/daterangepicker.css" />
+    <link href="{{.Var.static_serve}}/assets/libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="all" href="{{.Var.static_serve}}/assets/wigets/daterangepicker/daterangepicker.css" />
 
-    <link href="{{.static_serve}}/assets/libs/conflict/bootstrap_jquery.css" rel="stylesheet">
+    <link href="{{.Var.static_serve}}/assets/libs/conflict/bootstrap_jquery.css" rel="stylesheet">
 
     <!--[if lt IE 9]>
-    <script src="{{.static_serve}}/assets/libs/html5shiv.js"></script>
-    <script src="{{.static_serve}}/assets/libs/respond.min.js"></script>
+    <script src="{{.Var.static_serve}}/assets/libs/html5shiv.js"></script>
+    <script src="{{.Var.static_serve}}/assets/libs/respond.min.js"></script>
     <![endif]-->
     <style type="text/css">
         .level_1{color:#888;}
@@ -84,17 +84,17 @@
 </div>
 
 
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.spam}}"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
-<script src="{{.static_serve}}/assets/js/export.js?spam={{.spam}}"></script>
-<script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/export.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
-<script type="text/javascript" src="{{.static_serve}}/assets/wigets/daterangepicker/moment.js"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/wigets/daterangepicker/daterangepicker.js"></script>
-<script type="text/javascript" src="{{.static_serve}}/assets/wigets/daterangepicker/locale_han.js"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/wigets/daterangepicker/moment.js"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/wigets/daterangepicker/daterangepicker.js"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/wigets/daterangepicker/locale_han.js"></script>
 
 
 <script type="text/javascript">
@@ -136,7 +136,7 @@
             columns: [
                 [
                     { field: 'avatar', title: '头像', align: 'center', width: 70,formatter:function(v){
-                        var url = v.indexOf('http://') != -1?v:'{{.img_serve}}/'+v;
+                        var url = v.indexOf('http://') != -1?v:'{{.Var.img_serve}}/'+v;
                         return '<img style="width:40px;height:40px;border:solid 2px #eee;margin:5px 0;border-radius:80px;" src="'+url+'"/>';
                     } },
                     { field: 'name', title: '姓名', align: 'center', width: 60 },

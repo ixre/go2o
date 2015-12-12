@@ -3,9 +3,9 @@
 <head>
     <title>会员中心</title>
     <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.Var.version}}"/>
 </head>
 <body>
 
@@ -16,7 +16,7 @@
     <div class="col1 profile">
         <div class="basic">
             <div class="avatar">
-                <img src="{{.static_serve}}/css/ucenter/touch/default_avatar.gif" alt="用户头像"/>
+                <img src="{{.Var.static_serve}}/css/ucenter/touch/default_avatar.gif" alt="用户头像"/>
             </div>
             <div class="member">
                 <div class="nick-name">
@@ -71,7 +71,7 @@
 
 </div>
 
-<script type="text/javascript" src="{{.static_serve}}/assets/js/core.js?ver={{.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core.js?ver={{.Var.version}}"></script>
 
 {{template "footer"$}}
 

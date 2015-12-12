@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>会员中心_{{.partner.Name}}</title>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/pc/ucenter.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?v={{.Var.version}}"/>
 
     <style type="text/css">
         .red {
@@ -58,7 +58,7 @@
         <div style="padding:30px 50px;position:relative;">
             <div class="avatar">
                 <!--<img src="{{.member.Avatar}}" alt="用户头像"/>-->
-                <img src="{{.static_serve}}/css/ucenter/noavatar.gif" alt="用户头像"/>
+                <img src="{{.Var.static_serve}}/css/ucenter/noavatar.gif" alt="用户头像"/>
             </div>
 
             <div class="profile">
@@ -97,7 +97,7 @@
 
 </div>
 
-<script type="text/javascript" src="{{.static_serve}}/assets/js/core.js?ver={{.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core.js?ver={{.Var.version}}"></script>
 
 {{template "footer"$}}
 

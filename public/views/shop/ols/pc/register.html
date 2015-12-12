@@ -4,8 +4,8 @@
     <title>会员注册-{{.partner.Name}}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="Stylesheet" href="{{.static_serve}}/css/page.css?spam={{.spam}}" type="text/css"/>
-    <link rel="Stylesheet" href="{{.static_serve}}/css/shop/default/style.css?spam={{.spam}}" type="text/css"/>
+    <link rel="Stylesheet" href="{{.Var.static_serve}}/css/page.css?spam={{.Var.spam}}" type="text/css"/>
+    <link rel="Stylesheet" href="{{.Var.static_serve}}/css/shop/default/style.css?spam={{.Var.spam}}" type="text/css"/>
 </head>
 <body>
 
@@ -103,10 +103,10 @@
         </div>
 
         <script type="text/javascript"
-                src="{{.static_serve}}/assets/js/core.js?hover=navi&amp;ver={{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/form.js?{{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/member/register.js?{{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
+                src="{{.Var.static_serve}}/assets/js/core.js?hover=navi&amp;ver={{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/form.js?{{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/member/register.js?{{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
 
     </div>
 </div>

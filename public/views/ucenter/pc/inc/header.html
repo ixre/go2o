@@ -23,7 +23,7 @@
 <div class="page-header">
     <div class="panel">
         <a href="javascript:;" class="logo">
-            <img src="{{.img_serve}}/{{.conf.Logo}}" alt="{{.partner.Name}}" />
+            <img src="{{.Var.img_serve}}/{{.conf.Logo}}" alt="{{.partner.Name}}" />
             <h1>{{.partner.Name}}</h1>
         </a>
         <span class="right">
@@ -47,7 +47,7 @@
                 <a href="javascript:;">账户充值</a>
             </li>
             <li>
-                <a href="http://member.{{.domain}}/account/integral_exchange.htm">积分兑换</a>
+                <a href="http://member.{{.Var.domain}}/account/integral_exchange.htm">积分兑换</a>
             </li>
             <li>
                 <a href="http://{{.conf.Host}}/service.htm">客户服务</a>

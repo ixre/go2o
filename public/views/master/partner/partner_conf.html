@@ -2,8 +2,8 @@
 <html>
 <head>
 	<title>分类管理</title>
-    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
-    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
@@ -56,8 +56,8 @@
     </table>
 </form>
 
-    <script src="/static/assets/js/core_full.js?spam={{.spam}}"></script>
-    <script src="/static/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+    <script src="/static/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+    <script src="/static/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
     
     <script>
     var entity ={{.entity}} ||{};

@@ -12,7 +12,7 @@
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <!--告诉设备忽略将页面中的数字识别为电话号码-->
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
     <script>location.href='/list/all_cate';</script>
 </head>
 <body style="display:none">
@@ -73,9 +73,9 @@
             });
         </script>
         <div class="page-role home-page">
-            <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/home/index.css?spam={{.spam}}"/>
-            <script src="{{.static_serve}}/css/mos/default/js/com/jquery.touchslider.min.js?spam={{.spam}}"></script>
-            <script src="{{.static_serve}}/css/mos/default/js/home/index.js?spam={{.spam}}"></script>
+            <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/home/index.css?spam={{.Var.spam}}"/>
+            <script src="{{.Var.static_serve}}/css/mos/default/js/com/jquery.touchslider.min.js?spam={{.Var.spam}}"></script>
+            <script src="{{.Var.static_serve}}/css/mos/default/js/home/index.js?spam={{.Var.spam}}"></script>
             <script>
                 jQuery(function($) {
                     $(window).resize(function(){

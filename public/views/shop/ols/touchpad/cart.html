@@ -11,8 +11,8 @@
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <!--告诉设备忽略将页面中的数字识别为电话号码-->
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/touchpad/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
@@ -35,11 +35,11 @@
 
     {{template "footer" $}}
 
-    <script src="{{.static_serve}}/css/mos/default/js/jquery.js?spam={{.spam}}"></script>
-    <script src="{{.static_serve}}/css/mos/default/js/com/com.js?spam={{.spam}}"></script>
-    <script src="{{.static_serve}}/css/mos/default/js/com/template.js?spam={{.spam}}"></script>
-    <script src="{{.static_serve}}/assets/js/core.js?spam={{.spam}}"></script>
-    <script src="{{.static_serve}}/assets/js/shopping_cart.js?spam={{.spam}}"></script>
+    <script src="{{.Var.static_serve}}/css/mos/default/js/jquery.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/css/mos/default/js/com/com.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/css/mos/default/js/com/template.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.js?spam={{.Var.spam}}"></script>
 
     <script type="text/javascript">
         window.cart.init('cart-panel', function (c) {

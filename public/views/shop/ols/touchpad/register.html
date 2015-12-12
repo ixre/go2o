@@ -6,8 +6,8 @@
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/touchpad/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
 
 </head>
 <body>
@@ -105,10 +105,10 @@
     </div>
 </div>
 
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?hover=navi&amp;ver={{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?{{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/member/register.js?{{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?hover=navi&amp;ver={{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?{{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/member/register.js?{{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
 <script type="text/javascript">
     var inviCode = j6.request('invi_code');
     if(inviCode == undefined || inviCode.length == 0){

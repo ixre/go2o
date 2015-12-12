@@ -2,8 +2,8 @@
 <head>
     <title>我的订单</title>
     <meta content="width=device-width,initial-scale=1" name="viewport" />
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
-    <link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.version}}"/>
 </head>
 <body>
 
@@ -34,9 +34,9 @@
             </div>
         </div>
     </script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?ver={{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?ver={{.version}}"></script>
-        <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/dg.js?ver={{.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?ver={{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/dg.js?ver={{.Var.version}}"></script>
 
         <script type="text/javascript">
             var ORDER_STATE_TEXTS = new Array("已作废", "待确认","已确认", "待发货", "配送中","已收货","已完成");
@@ -76,7 +76,7 @@
                 var tpl = '<img src="{img}" width="50" height="50" style="border:solid 1px #ddd;padding:1px;margin-right:3px;" title="{name} x {qty}"/>';
                 for(var i=0;i<items.length;i++){
                     if(items[i].img.indexOf("http") != 0){
-                        items[i].img = "{{.img_serve}}/"+items[i].img;
+                        items[i].img = "{{.Var.img_serve}}/"+items[i].img;
                     }
                     html += j6.template(tpl,items[i]);
                 }

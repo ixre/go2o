@@ -8,7 +8,7 @@
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 
 </head>
 <body>
@@ -142,12 +142,12 @@
         var acc_balance = {{.balance}};
         var sctJson = {pay_opt:1,deliver_opt:1,deliver_id:0,shop_id:0,deliver_person:'',deliver_phone:'',deliver_address:''};
     </script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/form.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/lib/animation.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/ppc.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/device.js?{{.version}}"></script>
-    <script type="text/javascript" src="{{.static_serve}}/assets/js/buy/buy_confirm.js?{{.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/form.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/animation.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/device.js?{{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/buy/buy_confirm.js?{{.Var.version}}"></script>
     <script type="text/javascript">
         pageInit();
         recoverFrom('postForm');
