@@ -16,7 +16,6 @@ import (
 	"github.com/jsix/gof"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/valueobject"
@@ -26,40 +25,33 @@ import (
 	"html/template"
 	"strconv"
 	"time"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
-var _ mvc.Filter = new(memberC)
-
 type memberC struct {
-	*baseC
 }
 
 func (this *memberC) LevelList(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{},
-		"views/partner/member/level_list.html")
+	d := echox.NewRenderData()
+	return ctx.Render(http.StatusOK, "member/level_list.html", d)
 }
 
 //修改门店信息
 func (this *memberC) EditMLevel(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
-	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
-	bys, _ := json.Marshal(entity)
-
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity": template.JS(bys),
-		},
-		"views/partner/member/edit_level.html")
+	js, _ := json.Marshal(entity)
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK, "member/edit_level.html", d)
 }
 
 func (this *memberC) CreateMLevel(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": "{}",
-		},
-		"views/partner/member/create_level.html")
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS("{}")
+	return ctx.Render(http.StatusOK, "member/create_level.html", d)
 }
 
 func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
@@ -104,9 +96,9 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 // 会员列表
 func (this *memberC) List(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"levelDr": template.HTML(levelDr),
-	}, "views/partner/member/member_list.html")
+	d := echox.NewRenderData()
+	d.Map["levelDr"] = template.HTML(levelDr)
+	return ctx.Render(http.StatusOK, "member/member_list.html", d)
 }
 
 // 锁定会员
@@ -126,10 +118,9 @@ func (this *memberC) Lock_member_post(ctx *echox.Context) error {
 func (this *memberC) Member_details(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"memberId": memberId,
-		}, "views/partner/member/member_details.html")
+	d := echox.NewRenderData()
+	d.Map["memberId"] = memberId
+	return ctx.Render(http.StatusOK, "member/member_details.html", d)
 }
 
 // 会员基本信息
@@ -137,31 +128,32 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	m := dps.MemberService.GetMember(memberId)
 	if m == nil {
-		ctx.Response.Write([]byte("no such member"))
-	} else {
-
-		lv := dps.PartnerService.GetLevel(getPartnerId(ctx), m.Level)
-
-		ctx.App.Template().Execute(ctx.Response,
-			gof.TemplateDataMap{
-				"m":  m,
-				"lv": lv,
-				"sexName": gfmt.BoolString(m.Sex == 1, "先生",
-					gfmt.BoolString(m.Sex == 2, "女士", "-")),
-				"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),
-				"regTime":       format.HanUnixDateTime(m.RegTime),
-			}, "views/partner/member/basic_info.html")
+		return ctx.String(http.StatusOK, "no such member")
 	}
+	lv := dps.PartnerService.GetLevel(getPartnerId(ctx), m.Level)
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"m":  m,
+		"lv": lv,
+		"sexName": gfmt.BoolString(m.Sex == 1, "先生",
+			gfmt.BoolString(m.Sex == 2, "女士", "-")),
+		"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),
+		"regTime":       format.HanUnixDateTime(m.RegTime),
+	}
+
+	return ctx.Render(http.StatusOK, "member/basic_info.html", d)
 }
 
 // 会员账户信息
 func (this *memberC) Member_account(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	acc := dps.MemberService.GetAccount(memberId)
-	if acc != nil {
+	if acc == nil {
+		return ctx.String(http.StatusOK,"no such account")
+	}
 
-		ctx.App.Template().Execute(ctx.Response,
-			gof.TemplateDataMap{
+		d := echox.NewRenderData()
+		d.Map = map[string]interface{}{
 				"acc": acc,
 				"balanceAccountAlias": variable.AliasBalanceAccount,
 				"presentAccountAlias": variable.AliasPresentAccount,
@@ -169,8 +161,10 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 				"growAccountAlias":    variable.AliasGrowAccount,
 				"integralAlias":       variable.AliasIntegral,
 				"updateTime":          format.HanUnixDateTime(acc.UpdateTime),
-			}, "views/partner/member/account_info.html")
-	}
+			}
+		return ctx.Render(http.StatusOK,"member/account_info.html",d)
+
+
 }
 
 // 会员收款银行信息
@@ -178,14 +172,12 @@ func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
-		len(e.Name) > 0 && len(e.Network) > 0 {
-		ctx.App.Template().Execute(ctx.Response,
-			gof.TemplateDataMap{
-				"bank": e,
-			}, "views/partner/member/member_curr_bank.html")
-	} else {
-		ctx.Response.Write([]byte("<span class=\"red\">尚未完善</span>"))
+	len(e.Name) > 0 && len(e.Network) > 0 {
+		d := echox.NewRenderData()
+		d.Map["bank"] = e
+		return ctx.Render(http.StatusOK, "member/member_curr_bank.html", d)
 	}
+	return ctx.String(http.StatusOK, "<span class=\"red\">尚未完善</span>")
 }
 
 func (this *memberC) Reset_pwd_post(ctx *echox.Context) error {
@@ -209,13 +201,12 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
 	if mem == nil {
-		ctx.Response.Write([]byte("no such member"))
-	} else {
-		ctx.App.Template().Execute(ctx.Response,
-			gof.TemplateDataMap{
-				"m": mem,
-			}, "views/partner/member/charge.html")
+		return ctx.String(http.StatusOK, "no such member")
 	}
+	d := echox.NewRenderData()
+	d.Map["m"] = mem
+	return ctx.Render(http.StatusOK, "member/charge.html", d)
+
 }
 
 func (this *memberC) Charge_post(ctx *echox.Context) error {
@@ -248,10 +239,11 @@ func (this *memberC) Charge_post(ctx *echox.Context) error {
 // 提现列表
 func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"levelDr": template.HTML(levelDr),
-		"kind":    member.KindBalanceApplyCash,
-	}, "views/partner/member/apply_request_list.html")
+
+	d := echox.NewRenderData()
+	d.Map["levelDr"] = template.HTML(levelDr)
+	d.Map["kind"] =  member.KindBalanceApplyCash
+	return ctx.Render(http.StatusOK, "member/apply_request_list.html", d)
 }
 
 // 审核提现请求
@@ -281,13 +273,16 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 
 	info := dps.MemberService.GetBalanceInfoById(memberId, id)
 
-	if info != nil {
-		ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-			"info":      info,
-			"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
-		}, "views/partner/member/back_apply_req.html")
+	if info == nil {
+		return ctx.String(http.StatusOK, "no such request")
 	}
+
+	d := echox.NewRenderData()
+	d.Map["info"] = info
+	d.Map["applyTime"] = time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05")
+	return ctx.Render(http.StatusOK, "member/back_apply_req.html", d)
 }
+
 
 func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
@@ -314,14 +309,18 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 
 	info := dps.MemberService.GetBalanceInfoById(memberId, id)
 
-	if info != nil {
-		bank := dps.MemberService.GetBank(memberId)
-		ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-			"info":      info,
-			"bank":      bank,
-			"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
-		}, "views/partner/member/handle_apply_req.html")
+	if info == nil {
+		return ctx.String(http.StatusOK, "no such info")
 	}
+
+	d := echox.NewRenderData()
+	bank := dps.MemberService.GetBank(memberId)
+	d.Map = map[string]interface{}{
+		"info":      info,
+		"bank":      bank,
+		"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
+	}
+	return ctx.Render(http.StatusOK, "member/handle_apply_req.html", d)
 }
 
 func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {

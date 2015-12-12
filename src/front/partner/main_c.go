@@ -25,7 +25,6 @@ import (
 var _ mvc.Filter = new(mainC)
 
 type mainC struct {
-	*baseC
 	*front.WebCgi
 }
 
@@ -119,15 +118,13 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 
 //商户汇总页
 func (this *mainC) Summary(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
-	pt, _ := this.GetPartner(ctx)
+	r := ctx.Request()
+	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
+    d := echox.NewRenderData()
+	d.Map["partner"]=  pt
+	d.Map["loginIp"]= r.Header.Get("USER_ADDRESS")
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"partner": pt,
-			"loginIp": r.Header.Get("USER_ADDRESS"),
-		},
-		"views/partner/summary.html")
+	return ctx.Render(http.StatusOK,"summary.html",d)
 }
 
 func (this *mainC) Upload_post(ctx *echox.Context) error {
@@ -136,6 +133,7 @@ func (this *mainC) Upload_post(ctx *echox.Context) error {
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
-		break
+		return nil
 	}
+	return nil
 }
