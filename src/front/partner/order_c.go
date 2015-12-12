@@ -30,7 +30,7 @@ func (this *orderC) List(ctx *echox.Context) error {
 	shopsJson := cache.GetShopsJson(partnerId)
 	d := echox.NewRenderData()
 	d.Map["shops"] = template.JS(shopsJson)
-	return ctx.Render(http.StatusOK, "order/order_list.html", d)
+	return ctx.Render(http.StatusOK, "order.list.html", d)
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
@@ -39,15 +39,18 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["shops"] = template.JS(shopsJson)
-	return ctx.Render(http.StatusOK, "order/order_waitpay_list.html", d)
+	return ctx.Render(http.StatusOK, "order.waitpay_list.html", d)
 }
 
 func (this *orderC) Cancel(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST"{
+		return this.cancel_post(ctx)
+	}
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "order/cancel.html", d)
+	return ctx.Render(http.StatusOK, "order.cancel.html", d)
 }
 
-func (this *orderC) Cancel_post(ctx *echox.Context) error {
+func (this *orderC) cancel_post(ctx *echox.Context) error {
 	result := gof.Message{}
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
@@ -104,7 +107,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 		"payment":  payment,
 		"state":    orderStateText,
 	}
-	return ctx.Render(http.StatusOK, "order/order_view.html", d)
+	return ctx.Render(http.StatusOK, "order.view.html", d)
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
@@ -138,7 +141,8 @@ func (this *orderC) releaseOrder(ctx *echox.Context) {
 	ctx.Session.Save()
 }
 
-func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
+// 订单流程(POST)
+func (this *orderC) OrderSetup(ctx *echox.Context) error {
 	if !this.lockOrder(ctx) {
 		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
@@ -146,21 +150,26 @@ func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
-	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
+	if r.Method == "POST" {
+		r.ParseForm()
+		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
 
-	this.releaseOrder(ctx)
-	if err != nil {
-		msg.Message = err.Error()
+		this.releaseOrder(ctx)
+		if err != nil {
+			msg.Message = err.Error()
 
-	} else {
-		msg.Result = true
+		} else {
+			msg.Result = true
+		}
+		return ctx.JSON(http.StatusOK, msg)
 	}
-	return ctx.JSON(http.StatusOK, msg)
-
+	return nil
 }
 
 func (this *orderC) Payment(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST"{
+		return this.payment_post(ctx)
+	}
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	r.ParseForm()
@@ -181,11 +190,11 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["shopName"] = shopName
 	d.Map["order"] = *e
-	return ctx.Render(http.StatusOK, "order/payment.html", d)
+	return ctx.Render(http.StatusOK, "order.payment.html", d)
 
 }
 
-func (this *orderC) Payment_post(ctx *echox.Context) error {
+func (this *orderC) payment_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	r.ParseForm()

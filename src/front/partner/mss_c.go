@@ -121,7 +121,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 	d.Map["mailTplOpt"] = template.HTML(this.getMailTemplateOpts(partnerId))
 	d.Map["entity"] = template.JS(js)
 
-	return ctx.Render(http.StatusOK, "mss/mss_setting.html", d)
+	return ctx.Render(http.StatusOK, "mss.setting.html", d)
 }
 
 // 保存设置
