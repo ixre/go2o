@@ -38,7 +38,6 @@ func GetServe() *echox.Echo {
 	s.Danyx("/main/:action", mc)
 	s.Danyx("/shop/:action", new(shopC))             //商家门店控制器
 	s.Danyx("/goods/:action", new(goodsC))           //商品控制器
-	s.Danyx("/comm/:action", new(commC))             // 通用控制器
 	s.Danyx("/order/:action", new(orderC))           // 订单控制器
 	s.Danyx("/category/:action", new(categoryC))     // 商品分类控制器
 	s.Danyx("/conf/:action", new(configC))           // 商户设置控制器

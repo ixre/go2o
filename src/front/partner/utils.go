@@ -14,7 +14,6 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
-	"net/http"
 )
 
 func getPartnerId(ctx *echox.Context) int {

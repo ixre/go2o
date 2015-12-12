@@ -132,3 +132,16 @@ func (this *mainC) Upload_post(ctx *echox.Context) error {
 	}
 	return nil
 }
+
+
+func (this *mainC) GeoLocation(ctx *echox.Context) error {
+	this.WebCgi.GeoLocation(ctx)
+	return nil
+}
+
+//地区Json
+//func (this *mainC) ChinaJson(ctx *echox.Context)error{
+//	var node *tree.TreeNode = dao.Common().GetChinaTree()
+//	json, _ := json.Marshal(node)
+//	w.Write(json)
+//}

@@ -9,7 +9,6 @@
 package echox
 
 import (
-	"container/list"
 	"errors"
 	"github.com/labstack/echo"
 	"gopkg.in/fsnotify.v1"
@@ -17,7 +16,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -25,8 +23,7 @@ var (
 	_ echo.Renderer = new(GoTemplateForEcho)
 )
 
-func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
-	dirs = new(list.List)
+func getTemplate(dir, pattern string) (t *template.Template) {
 	fi, err := os.Lstat(dir)
 	if err != nil {
 		panic(err)
@@ -35,15 +32,6 @@ func getTemplate(dir, pattern string) (t *template.Template, dirs *list.List) {
 		panic(errors.New("path must be directory"))
 	}
 	t = template.Must(template.ParseGlob(dir + "/" + pattern))
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
-			dirs.PushBack(path)
-			if path != dir {
-				t.ParseGlob(path + "/" + pattern)
-			}
-		}
-		return nil
-	})
 	return t, dirs
 }
 
@@ -62,13 +50,12 @@ type GoTemplateForEcho struct {
 }
 
 func (g *GoTemplateForEcho) init() *GoTemplateForEcho {
-	var l *list.List
-	g.templates, l = getTemplate(g.fileDirectory, g.pattern)
-	go g.fsNotify(l)
+	g.templates = getTemplate(g.fileDirectory, g.pattern)
+	go g.fsNotify()
 	return g
 }
 
-func (g *GoTemplateForEcho) fsNotify(l *list.List) {
+func (g *GoTemplateForEcho) fsNotify() {
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -89,21 +76,16 @@ func (g *GoTemplateForEcho) fsNotify(l *list.List) {
 					}
 				}
 			case err := <-w.Errors:
-				log.Println(err)
 				log.Println("Error:", err)
 			}
 		}
 	}(g)
 
-	for itr := l.Front(); itr != nil; itr = itr.Next() {
-		err = w.Add(itr.Value.(string))
-		if err != nil {
-			log.Fatal(err)
-		}
+	err = w.Add(g.fileDirectory)
+	if err != nil {
+		log.Fatal(err)
 	}
-
 	<-ch
-
 }
 
 func (g *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
