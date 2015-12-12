@@ -173,7 +173,7 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 		"integralAlias":       variable.AliasIntegral,
 		"updateTime":          format.HanUnixDateTime(acc.UpdateTime),
 	}
-	return ctx.Render(http.StatusOK, "member/account_info.html", d)
+	return ctx.Render(http.StatusOK, "member.account_info.html", d)
 
 }
 
