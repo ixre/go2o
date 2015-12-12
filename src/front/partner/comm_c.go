@@ -22,7 +22,7 @@ type commC struct {
 	*front.WebCgi
 }
 
-func (this *mainC) GeoLocation(ctx *echox.Context)error{
+func (this *mainC) GeoLocation(ctx *echox.Context) error {
 	//this.WebCgi.GeoLocation(ctx)
 	//todo:???
 	return nil

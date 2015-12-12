@@ -291,7 +291,7 @@ type editorC struct {
 	*baseC
 }
 
-func (this *editorC) File_manager(ctx *echox.Context)error{
+func (this *editorC) File_manager(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	d, err := fileManager(ctx.Request,
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
@@ -305,7 +305,7 @@ func (this *editorC) File_manager(ctx *echox.Context)error{
 	}
 }
 
-func (this *editorC) File_upload_post(ctx *echox.Context)error{
+func (this *editorC) File_upload_post(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	fileUrl, err := fileUpload(ctx.Request,
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),

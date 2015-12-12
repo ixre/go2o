@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
+	"github.com/jsix/gof/web/session"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
 	"go2o/src/cache"
@@ -24,7 +25,6 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
-	"github.com/jsix/gof/web/session"
 )
 
 func main() {

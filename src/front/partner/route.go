@@ -11,20 +11,19 @@ package partner
 import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
+	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
-	"go2o/src/x/echox"
 	"go2o/src/app/util"
+	"go2o/src/x/echox"
 	"net/url"
-	"github.com/jsix/gof/web/session"
 	"strings"
 )
 
 var routes *mvc.Route = mvc.NewRoute(nil)
 
-
 //处理请求
-func Handle(ctx *echox.Context)error{
+func Handle(ctx *echox.Context) error {
 	routes.Handle(ctx)
 }
 
@@ -48,15 +47,13 @@ func registerRoutes() {
 	routes.Register("mss", new(mssC))
 	routes.Register("editor", new(editorC))
 
-	routes.Add("/export/getExportData", func(ctx *echox.Context)error{
+	routes.Add("/export/getExportData", func(ctx *echox.Context) error {
 		if b, id := chkLogin(ctx); b {
 			GetExportData(ctx, id)
 		} else {
 			redirect(ctx)
 		}
 	})
-
-
 
 	routes.Add("/upload.cgi", mc.Upload_post)
 
@@ -68,7 +65,6 @@ func registerRoutes() {
 	//routes.Add("/", mc.Index)
 
 }
-
 
 func GetServe() *echox.Echo {
 	mc := &mainC{} //入口控制器
@@ -93,25 +89,25 @@ func GetServe() *echox.Echo {
 	s.SetRenderer(r)
 	s.Use(mw.Recover())
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
-	s.Static("/static/","./public/static/")
+	s.Static("/static/", "./public/static/")
 	s.Get("/", mc.Index)
-	s.Anyx("/login",mc.Login)
-	s.Danyx("/main/:action",mc)
+	s.Anyx("/login", mc.Login)
+	s.Danyx("/main/:action", mc)
 	return s
 }
 
-func partnerLogonCheck(ctx *echo.Context)error {
+func partnerLogonCheck(ctx *echo.Context) error {
 	path := ctx.Request().URL.Path
-	if  path == "/login" || strings.HasPrefix(path,"/static/"){
+	if path == "/login" || strings.HasPrefix(path, "/static/") {
 		return nil
 	}
-	session := session.Default(ctx.Response(),ctx.Request())
+	session := session.Default(ctx.Response(), ctx.Request())
 	id := session.Get("partner_id")
-	if id != nil{
-		ctx.Set("partner_id",id.(int))
+	if id != nil {
+		ctx.Set("partner_id", id.(int))
 		return nil
 	}
-	ctx.Response().Header().Set("Location","/login?return_url=" +
+	ctx.Response().Header().Set("Location", "/login?return_url="+
 		url.QueryEscape(ctx.Request().URL.String()))
 	ctx.Response().WriteHeader(302)
 	ctx.Done()

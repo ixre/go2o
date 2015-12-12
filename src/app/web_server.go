@@ -17,11 +17,11 @@ import (
 	"go2o/src/front/partner"
 	"go2o/src/front/shop/ols"
 	"go2o/src/front/ucenter"
+	"go2o/src/x/echox"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
-	"go2o/src/x/echox"
 )
 
 // 静态文件

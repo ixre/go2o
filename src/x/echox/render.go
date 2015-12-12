@@ -7,17 +7,18 @@
  * history :
  */
 package echox
+
 import (
-	"github.com/labstack/echo"
-	"html/template"
 	"container/list"
+	"errors"
+	"github.com/labstack/echo"
+	"gopkg.in/fsnotify.v1"
+	"html/template"
+	"io"
+	"log"
 	"os"
 	"path/filepath"
-	"errors"
-	"gopkg.in/fsnotify.v1"
-	"log"
 	"strings"
-	"io"
 )
 
 var (
@@ -80,7 +81,7 @@ func (g *GoTemplateForEcho) fsNotify(l *list.List) {
 			select {
 			case event := <-w.Events:
 				log.Println(event)
-				if event.Op & fsnotify.Write != 0 || event.Op & fsnotify.Create != 0 {
+				if event.Op&fsnotify.Write != 0 || event.Op&fsnotify.Create != 0 {
 					if strings.HasSuffix(event.Name, ".html") {
 						log.Println("[ Template][ Update]: file - ", event.Name)
 						g.init()
@@ -108,5 +109,3 @@ func (g *GoTemplateForEcho) fsNotify(l *list.List) {
 func (g *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
 	return g.templates.ExecuteTemplate(w, name, data)
 }
-
-

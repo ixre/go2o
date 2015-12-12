@@ -13,13 +13,13 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-	"go2o/src/front"
 	"github.com/labstack/echo"
+	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/front"
 	"go2o/src/x/echox"
-	"strings"
-"go2o/src/core/domain/interface/partner"
 	"net/http"
+	"strings"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -30,28 +30,28 @@ type mainC struct {
 }
 
 //入口
-func (this *mainC) Index(ctx *echo.Context)(err error) {
+func (this *mainC) Index(ctx *echo.Context) (err error) {
 
-	_,err = ctx.Response().Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+	_, err = ctx.Response().Write([]byte("<script>location.replace('/main/dashboard')</script>"))
 
 	//todo:??
-//	if this.baseC.Requesting(ctx) {
-//		ctx.Response.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
-//	}
-//	this.baseC.RequestEnd(ctx)
+	//	if this.baseC.Requesting(ctx) {
+	//		ctx.Response.Write([]byte("<script>location.replace('/main/dashboard')</script>"))
+	//	}
+	//	this.baseC.RequestEnd(ctx)
 	return err
 }
 
 //登陆
-func (this *mainC) Login(ctx *echox.Context)error {
-	if ctx.Request().Method == "POST"{
+func (this *mainC) Login(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
 		return this.Login_post(ctx)
 	}
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK,"login.html",d)
+	return ctx.Render(http.StatusOK, "login.html", d)
 }
 
-func (this *mainC) Login_post(ctx *echox.Context)error {
+func (this *mainC) Login_post(ctx *echox.Context) error {
 	r, w := ctx.Request(), ctx.Response()
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
@@ -99,14 +99,14 @@ func (pb *mainC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool
 	return pt, result, message
 }
 
-func (this *mainC) Logout(ctx *echox.Context)error {
+func (this *mainC) Logout(ctx *echox.Context) error {
 	ctx.Session.Destroy()
 	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
 //商户首页
-func (this *mainC) Dashboard(ctx *echox.Context)error {
+func (this *mainC) Dashboard(ctx *echox.Context) error {
 	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
 
 	dm := echox.NewRenderData()
@@ -114,11 +114,11 @@ func (this *mainC) Dashboard(ctx *echox.Context)error {
 		"partner": pt,
 		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
 	}
-	return ctx.Render(200,"dashboard.html",dm)
+	return ctx.Render(200, "dashboard.html", dm)
 }
 
 //商户汇总页
-func (this *mainC) Summary(ctx *echox.Context)error{
+func (this *mainC) Summary(ctx *echox.Context) error {
 	r, w := ctx.Request, ctx.Response
 	pt, _ := this.GetPartner(ctx)
 
@@ -130,7 +130,7 @@ func (this *mainC) Summary(ctx *echox.Context)error{
 		"views/partner/summary.html")
 }
 
-func (this *mainC) Upload_post(ctx *echox.Context)error{
+func (this *mainC) Upload_post(ctx *echox.Context) error {
 	r, w := ctx.Request, ctx.Response
 	partnerId := this.GetPartnerId(ctx)
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M

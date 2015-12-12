@@ -16,10 +16,9 @@ import (
 	"go2o/src/x/echox"
 )
 
-
-func getPartnerId(ctx *echox.Context)int{
+func getPartnerId(ctx *echox.Context) int {
 	obj := ctx.Session.Get("partner_id")
-	if obj != nil{
+	if obj != nil {
 		return obj.(int)
 	}
 	return 0

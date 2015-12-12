@@ -28,12 +28,12 @@ type shopC struct {
 	*baseC
 }
 
-func (this *shopC) ShopList(ctx *echox.Context)error{
+func (this *shopC) ShopList(ctx *echox.Context) error {
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/shop/shop_list.html")
 }
 
 //修改门店信息
-func (this *shopC) Create(ctx *echox.Context)error{
+func (this *shopC) Create(ctx *echox.Context) error {
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": template.JS("{}"),
@@ -42,7 +42,7 @@ func (this *shopC) Create(ctx *echox.Context)error{
 }
 
 //修改门店信息
-func (this *shopC) Modify(ctx *echox.Context)error{
+func (this *shopC) Modify(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -57,7 +57,7 @@ func (this *shopC) Modify(ctx *echox.Context)error{
 }
 
 //修改门店信息
-func (this *shopC) SaveShop_post(ctx *echox.Context)error{
+func (this *shopC) SaveShop_post(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
@@ -76,7 +76,7 @@ func (this *shopC) SaveShop_post(ctx *echox.Context)error{
 	w.Write(result.Marshal())
 }
 
-func (this *shopC) Del_post(ctx *echox.Context)error{
+func (this *shopC) Del_post(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()

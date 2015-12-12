@@ -9,24 +9,24 @@
 package echox
 
 import (
-	"github.com/labstack/echo"
-	"net/http"
-	"strings"
+	"errors"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
+	"github.com/labstack/echo"
+	"net/http"
 	"reflect"
-	"errors"
+	"strings"
 )
 
 var (
-	globalApp gof.App
+	globalApp         gof.App
 	_globTemplateData map[string]interface{} = nil
 )
 
-type(
+type (
 	Echo struct {
 		*echo.Echo
-		app gof.App
+		app             gof.App
 		dynamicHandlers map[string]Handler // 动态处理程序
 	}
 	Context struct {
@@ -39,11 +39,9 @@ type(
 		Map  map[string]interface{}
 		Data interface{}
 	}
-	Handler func(*Context) error
+	Handler   func(*Context) error
 	HttpHosts map[string]http.Handler
 )
-
-
 
 // new echo instance
 func New() *Echo {
@@ -51,20 +49,19 @@ func New() *Echo {
 		globalApp = gof.CurrentApp
 	}
 	return &Echo{
-		Echo:echo.New(),
-		app:globalApp,
-		dynamicHandlers:make(map[string]Handler),
+		Echo:            echo.New(),
+		app:             globalApp,
+		dynamicHandlers: make(map[string]Handler),
 	}
 }
-
 
 func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	return func(ctx *echo.Context) error {
 		s := session.Default(ctx.Response(), ctx.Request())
 		return h(&Context{
-			Context:ctx,
-			Session:s,
-			App:this.app,
+			Context: ctx,
+			Session: s,
+			App:     this.app,
 		})
 	}
 }
@@ -75,45 +72,45 @@ func (this *Echo) Getx(path string, h Handler) {
 }
 
 // 注册自定义的GET/POST处理程序
-func (this *Echo)     Anyx(path string,h Handler){
-	this.Any(path,this.parseHandler(h))
+func (this *Echo) Anyx(path string, h Handler) {
+	this.Any(path, this.parseHandler(h))
 }
 
 // 注册自定义的GET/POST处理程序
-func (this *Echo) Postx(path string,h Handler){
-	this.Post(path,this.parseHandler(h))
+func (this *Echo) Postx(path string, h Handler) {
+	this.Post(path, this.parseHandler(h))
 }
 
 // 注册动态获取处理程序
-func (this *Echo) Danyx(path string,v interface{}){
-	h := func(ctx *Context)error{
+func (this *Echo) Danyx(path string, v interface{}) {
+	h := func(ctx *Context) error {
 		a := ctx.Param("action")
 		k := path + a
-		if v,ok := this.dynamicHandlers[k];ok{
+		if v, ok := this.dynamicHandlers[k]; ok {
 			return v(ctx)
 		}
-		if v,ok := getHandler(v,a);ok{
+		if v, ok := getHandler(v, a); ok {
 			this.dynamicHandlers[k] = v
 			return v(ctx)
 		}
-		return errors.New("no such action named : "+a)
+		return errors.New("no such action named : " + a)
 	}
-	this.Any(path,this.parseHandler(h))
+	this.Any(path, this.parseHandler(h))
 }
 
 // get handler by reflect
-func getHandler(v interface{},action string)(Handler,bool){
+func getHandler(v interface{}, action string) (Handler, bool) {
 	t := reflect.ValueOf(v)
 	method := t.MethodByName(strings.Title(action))
 	if method.IsValid() {
-		v,ok := method.Interface().(func(*Context)error)
-		return v,ok
+		v, ok := method.Interface().(func(*Context) error)
+		return v, ok
 	}
-	return nil,false
+	return nil, false
 }
 
 func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	subName := r.Host[:strings.Index(r.Host, ".") + 1]
+	subName := r.Host[:strings.Index(r.Host, ".")+1]
 	if h, ok := this[subName]; ok {
 		h.ServeHTTP(w, r)
 	} else if h, ok = this["*"]; ok {
@@ -123,21 +120,17 @@ func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
-
 func SetGlobRendData(m map[string]interface{}) {
 	_globTemplateData = m
 }
 
 func NewRenderData() *TemplateData {
 	return &TemplateData{
-		Var: _globTemplateData,
-		Map:make(map[string]interface{}),
-		Data:nil,
+		Var:  _globTemplateData,
+		Map:  make(map[string]interface{}),
+		Data: nil,
 	}
 }
-
 
 type InterceptorFunc func(*echo.Context) bool
 
