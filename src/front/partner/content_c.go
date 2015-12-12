@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/content"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -21,8 +20,6 @@ import (
 	"strconv"
 	"time"
 )
-
-var _ mvc.Filter = new(contentC)
 
 type contentC struct {
 }
@@ -37,8 +34,7 @@ func (this *contentC) Page_list(ctx *echox.Context) error {
 // 修改页面
 func (this *contentC) Page_edit(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	form := ctx.Request.URL.Query()
-	id, _ := strconv.Atoi(form.Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	e := dps.ContentService.GetPage(partnerId, id)
 
 	js, _ := json.Marshal(e)
@@ -61,7 +57,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 
 func (this *contentC) SavePage_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 
 	var result gof.Message

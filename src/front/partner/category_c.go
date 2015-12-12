@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
@@ -26,10 +25,8 @@ import (
 	"strconv"
 )
 
-var _ mvc.Filter = new(categoryC)
 
 type categoryC struct {
-	*baseC
 }
 
 //分类树形功能
@@ -105,10 +102,10 @@ func (this *categoryC) SaveCategory_post(ctx *echox.Context) error {
 
 func (this *categoryC) DelCategory_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
-	categoryId, _ := strconv.Atoi(ctx.Form("id"))
+	categoryId, _ := strconv.Atoi(r.FormValue("id"))
 
 	//删除分类
 	err := dps.SaleService.DeleteCategory(partnerId, categoryId)

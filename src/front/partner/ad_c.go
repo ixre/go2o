@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
@@ -34,8 +33,7 @@ func (this *adC) List(ctx *echox.Context) error {
 // 修改广告
 func (this *adC) Edit(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	form := ctx.Request.URL.Query()
-	id, _ := strconv.Atoi(form.Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	e := dps.AdvertisementService.GetAdvertisement(partnerId, id)
 
 	js, _ := json.Marshal(e)
@@ -57,11 +55,11 @@ func (this *adC) Create(ctx *echox.Context) error {
 
 // 删除广告
 func (this *adC) Del_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	adId, _ := strconv.Atoi(form.Get("id"))
+	adId, _ := strconv.Atoi(req.FormValue("id"))
 	err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
 
 	if err != nil {
@@ -75,13 +73,13 @@ func (this *adC) Del_post(ctx *echox.Context) error {
 
 func (this *adC) SaveAd_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
-	r.ParseForm()
+	req := ctx.Request()
+	req.ParseForm()
 
 	var result gof.Message
 
 	e := ad.ValueAdvertisement{}
-	web.ParseFormToEntity(r.Form, &e)
+	web.ParseFormToEntity(req.Form, &e)
 
 	//更新
 	e.PartnerId = partnerId
@@ -144,7 +142,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 
 func (this *adC) SaveImage_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 
 	var result gof.Message
@@ -164,12 +162,12 @@ func (this *adC) SaveImage_post(ctx *echox.Context) error {
 }
 
 func (this *adC) Del_image_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	adId, _ := strconv.Atoi(form.Get("ad_id"))
-	imgId, _ := strconv.Atoi(form.Get("id"))
+	adId, _ := strconv.Atoi(req.FormValue("ad_id"))
+	imgId, _ := strconv.Atoi(req.FormValue("id"))
 	err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
 
 	if err != nil {

@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -20,8 +19,6 @@ import (
 	"net/http"
 	"time"
 )
-
-var _ mvc.Filter = new(configC)
 
 type configC struct {
 }
@@ -81,7 +78,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 
 func (this *configC) SiteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 

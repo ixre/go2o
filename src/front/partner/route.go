@@ -9,7 +9,6 @@
 package partner
 
 import (
-	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"

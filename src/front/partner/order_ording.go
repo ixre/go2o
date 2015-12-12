@@ -9,15 +9,12 @@
 package partner
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
-	"net/http"
 	"strconv"
 )
 

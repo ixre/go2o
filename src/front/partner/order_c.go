@@ -12,8 +12,6 @@ package partner
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"

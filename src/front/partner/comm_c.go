@@ -9,13 +9,10 @@
 package partner
 
 import (
-	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/front"
 	"go2o/src/x/echox"
 )
 
-var _ mvc.Filter = new(commC)
 
 type commC struct {
 	*front.WebCgi

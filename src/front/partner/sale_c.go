@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"

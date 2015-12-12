@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/data/report"
-	"github.com/jsix/gof/web"
 	"go2o/src/x/echox"
 	"strconv"
 	"strings"

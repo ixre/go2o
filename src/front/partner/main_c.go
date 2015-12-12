@@ -11,8 +11,6 @@ package partner
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"github.com/labstack/echo"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
@@ -21,8 +19,6 @@ import (
 	"net/http"
 	"strings"
 )
-
-var _ mvc.Filter = new(mainC)
 
 type mainC struct {
 	*front.WebCgi
