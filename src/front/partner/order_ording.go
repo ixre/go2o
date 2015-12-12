@@ -30,24 +30,27 @@ func (this *orderC) setShop(ctx *echox.Context,
 		"noShop":  isNoShop,
 		"orderNo": order.OrderNo,
 	}
-	return ctx.RenderOK("order/order_setup_setshop.html", d)
+	return ctx.RenderOK("order.setup_setshop.html", d)
 }
 
-func (this *orderC) SetShop_post(ctx *echox.Context) error {
+// 设置门店(POST)
+func (this *orderC) SetShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
+	if r.Method == "POST" {
+		r.ParseForm()
 
-	shopId, err := strconv.Atoi(r.FormValue("shopId"))
-	if err == nil {
-		err = dps.ShoppingService.SetDeliverShop(partnerId,
-			r.FormValue("order_no"), shopId)
+		shopId, err := strconv.Atoi(r.FormValue("shopId"))
+		if err == nil {
+			err = dps.ShoppingService.SetDeliverShop(partnerId,
+				r.FormValue("order_no"), shopId)
+		}
+		if err != nil {
+			return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")
+		}
+		return ctx.StringOK("{result:true}")
 	}
-	if err != nil {
-		return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")
-	}
-	return ctx.StringOK("{result:true}")
-
+	return nil
 }
 
 func (this *orderC) setState(ctx *echox.Context,
@@ -104,5 +107,5 @@ func (this *orderC) setState(ctx *echox.Context,
 		"descript": template.HTML(descript),
 		"order_no": order.OrderNo,
 	}
-	return ctx.RenderOK("order/order_setup_setstate.html", d)
+	return ctx.RenderOK("order.setup_setstate.html", d)
 }

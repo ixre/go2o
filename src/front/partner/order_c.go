@@ -43,7 +43,7 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 }
 
 func (this *orderC) Cancel(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST"{
+	if ctx.Request().Method == "POST" {
 		return this.cancel_post(ctx)
 	}
 	d := echox.NewRenderData()
@@ -167,7 +167,7 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 }
 
 func (this *orderC) Payment(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST"{
+	if ctx.Request().Method == "POST" {
 		return this.payment_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)

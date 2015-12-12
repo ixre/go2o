@@ -27,7 +27,7 @@ type saleC struct {
 
 func (this *saleC) TagList(ctx *echox.Context) error {
 	d := ctx.NewData()
-	return ctx.RenderOK("sale/sale_tag_list.html", d)
+	return ctx.RenderOK("sale.tag_list.html", d)
 }
 
 //修改门店信息
@@ -40,7 +40,7 @@ func (this *saleC) Edit_stag(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(bys)
-	return ctx.RenderOK("sale/sale_tag_form.html", d)
+	return ctx.RenderOK("sale.tag_form.html", d)
 }
 
 func (this *saleC) Create_stag(ctx *echox.Context) error {
@@ -51,44 +51,52 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(bys)
-	return ctx.RenderOK("sale/sale_tag_form.html", d)
+	return ctx.RenderOK("sale.tag_form.html", d)
 }
 
-func (this *saleC) Save_stag_post(ctx *echox.Context) error {
+// 保存销售标签(POST)
+func (this *saleC) Save_stag(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
 
-	e := sale.ValueSaleTag{}
-	web.ParseFormToEntity(r.Form, &e)
-	e.PartnerId = getPartnerId(ctx)
+		e := sale.ValueSaleTag{}
+		web.ParseFormToEntity(r.Form, &e)
+		e.PartnerId = getPartnerId(ctx)
 
-	id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
+		id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
-func (this *saleC) Del_stag_post(ctx *echox.Context) error {
+// 删除销售标签(POST)
+func (this *saleC) Del_stag(ctx *echox.Context) error {
 	r := ctx.Request()
 	var result gof.Message
-	r.ParseForm()
-	partnerId := getPartnerId(ctx)
-	id, err := strconv.Atoi(r.FormValue("id"))
-	if err == nil {
-		err = dps.SaleService.DeleteSaleTag(partnerId, id)
-	}
+	if r.Method == "POST" {
+		r.ParseForm()
+		partnerId := getPartnerId(ctx)
+		id, err := strconv.Atoi(r.FormValue("id"))
+		if err == nil {
+			err = dps.SaleService.DeleteSaleTag(partnerId, id)
+		}
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }

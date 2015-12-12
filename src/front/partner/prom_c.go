@@ -31,25 +31,28 @@ func (this *promC) List(ctx *echox.Context) error {
 	flag, _ := strconv.Atoi(ctx.Query("flag"))
 	d := ctx.NewData()
 	d.Map["flag"] = flag
-	return ctx.RenderOK(fmt.Sprintf("promotion/p%d_list.html", flag), d)
+	return ctx.RenderOK(fmt.Sprintf("prom.p%d_list.html", flag), d)
 }
 
-// 删除促销
-func (this *promC) Del_post(ctx *echox.Context) error {
+// 删除促销(POST)
+func (this *promC) Del(ctx *echox.Context) error {
 	req := ctx.Request()
-	req.ParseForm()
-	var result gof.Message
-	partnerId := getPartnerId(ctx)
-	promId, _ := strconv.Atoi(req.FormValue("id"))
+	if req.Method == "POST" {
+		req.ParseForm()
+		var result gof.Message
+		partnerId := getPartnerId(ctx)
+		promId, _ := strconv.Atoi(req.FormValue("id"))
 
-	err := dps.PromService.DelPromotion(partnerId, promId)
+		err := dps.PromService.DelPromotion(partnerId, promId)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 // 创建返现促销
@@ -70,7 +73,7 @@ func (this *promC) Create_cb(ctx *echox.Context) error {
 		"goods_cls": "hidden",
 	}
 
-	return ctx.RenderOK("promotion/cash_back.html", d)
+	return ctx.RenderOK("prom.cash_back.html", d)
 }
 
 func (this *promC) Edit_cb(ctx *echox.Context) error {
@@ -93,34 +96,37 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 		"goods_cls":  "",
 	}
 
-	return ctx.RenderOK("promotion/cash_back.html", d)
+	return ctx.RenderOK("prom.cash_back.html", d)
 }
 
-// 保存现金返现
-func (this *promC) Save_cb_post(ctx *echox.Context) error {
+// 保存现金返现(POST)
+func (this *promC) Save_cb(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
+	if r.Method == "POST" {
+		r.ParseForm()
 
-	var result gof.Message
+		var result gof.Message
 
-	e := promotion.ValuePromotion{}
-	web.ParseFormToEntity(r.Form, &e)
-	e2 := promotion.ValueCashBack{}
-	web.ParseFormToEntity(r.Form, &e2)
+		e := promotion.ValuePromotion{}
+		web.ParseFormToEntity(r.Form, &e)
+		e2 := promotion.ValueCashBack{}
+		web.ParseFormToEntity(r.Form, &e2)
 
-	e.PartnerId = partnerId
-	e.TypeFlag = promotion.TypeFlagCashBack
+		e.PartnerId = partnerId
+		e.TypeFlag = promotion.TypeFlagCashBack
 
-	id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
+		id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 // 创建优惠券
@@ -146,7 +152,7 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 		"levelDr": template.HTML(levelDr),
 	}
 
-	return ctx.RenderOK("promotion/coupon.html", d)
+	return ctx.RenderOK("prom.coupon.html", d)
 }
 
 func (this *promC) Edit_coupon(ctx *echox.Context) error {
@@ -169,44 +175,50 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 		"levelDr": template.HTML(levelDr),
 	}
 
-	return ctx.RenderOK("promotion/coupon.html", d)
+	return ctx.RenderOK("prom.coupon.html", d)
 }
 
-// 保存优惠券
-func (this *promC) Save_coupon_post(ctx *echox.Context) error {
+// 保存优惠券(POST)
+func (this *promC) Save_coupon(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
+	if r.Method == "POST" {
+		r.ParseForm()
 
-	var result gof.Message
+		var result gof.Message
 
-	e := promotion.ValuePromotion{}
-	web.ParseFormToEntity(r.Form, &e)
-	e2 := promotion.ValueCoupon{}
-	web.ParseFormToEntity(r.Form, &e2)
+		e := promotion.ValuePromotion{}
+		web.ParseFormToEntity(r.Form, &e)
+		e2 := promotion.ValueCoupon{}
+		web.ParseFormToEntity(r.Form, &e2)
 
-	e.PartnerId = partnerId
-	e.TypeFlag = promotion.TypeFlagCoupon
+		e.PartnerId = partnerId
+		e.TypeFlag = promotion.TypeFlagCoupon
 
-	const layout string = "2006-01-02 15:04:05"
-	bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
-	ot, _ := time.Parse(layout, r.FormValue("OverTime"))
-	e2.BeginTime = bt.Unix()
-	e2.OverTime = ot.Unix()
+		const layout string = "2006-01-02 15:04:05"
+		bt, _ := time.Parse(layout, r.FormValue("BeginTime"))
+		ot, _ := time.Parse(layout, r.FormValue("OverTime"))
+		e2.BeginTime = bt.Unix()
+		e2.OverTime = ot.Unix()
 
-	id, err := dps.PromService.SaveCoupon(partnerId, &e, &e2)
+		id, err := dps.PromService.SaveCoupon(partnerId, &e, &e2)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 //　绑定优惠券操作页
 func (this *promC) Bind_coupon(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.bind_coupon_post(ctx)
+	}
 	id, _ := strconv.Atoi(ctx.Query("coupon_id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 	if e.PartnerId != getPartnerId(ctx) {
@@ -220,10 +232,10 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 		"entity2": e2,
 	}
 
-	return ctx.RenderOK("promotion/bind_coupon.html", d)
+	return ctx.RenderOK("prom.bind_coupon.html", d)
 }
 
-func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
+func (this *promC) bind_coupon_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	var result gof.Message
