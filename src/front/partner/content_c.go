@@ -28,7 +28,7 @@ type contentC struct {
 func (this *contentC) Page_list(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
-	return ctx.RenderOK("content/page_list.html", d)
+	return ctx.RenderOK("content.page_list.html", d)
 }
 
 // 修改页面
@@ -40,7 +40,7 @@ func (this *contentC) Page_edit(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("content/page_edit.html", d)
+	return ctx.RenderOK("content.page_edit.html", d)
 }
 
 // 保存页面
@@ -52,30 +52,34 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("content/page_edit.html", d)
+	return ctx.RenderOK("content.page_edit.html", d)
 }
 
-func (this *contentC) SavePage_post(ctx *echox.Context) error {
+func (this *contentC) SavePage(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
+	if r.Method == "POST" {
 
-	var result gof.Message
+		r.ParseForm()
 
-	e := content.ValuePage{}
-	web.ParseFormToEntity(r.Form, &e)
+		var result gof.Message
 
-	//更新
-	e.UpdateTime = time.Now().Unix()
-	e.PartnerId = partnerId
+		e := content.ValuePage{}
+		web.ParseFormToEntity(r.Form, &e)
 
-	id, err := dps.ContentService.SavePage(partnerId, &e)
+		//更新
+		e.UpdateTime = time.Now().Unix()
+		e.PartnerId = partnerId
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		id, err := dps.ContentService.SavePage(partnerId, &e)
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }

@@ -25,6 +25,9 @@ type configC struct {
 
 //资料配置
 func (this *configC) Profile(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.profile_post(ctx)
+	}
 	partnerId := getPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
@@ -33,10 +36,10 @@ func (this *configC) Profile(ctx *echox.Context) error {
 	js, _ := json.Marshal(p)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("conf/profile.html", d)
+	return ctx.RenderOK("conf.profile.html", d)
 }
 
-func (this *configC) Profile_post(ctx *echox.Context) error {
+func (this *configC) profile_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	var result gof.Message
@@ -68,15 +71,18 @@ func (this *configC) Profile_post(ctx *echox.Context) error {
 
 //站点配置
 func (this *configC) SiteConf(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.saleConf_post(ctx)
+	}
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("conf/site_conf.html", d)
+	return ctx.RenderOK("conf.site_conf.html", d)
 }
 
-func (this *configC) SiteConf_post(ctx *echox.Context) error {
+func (this *configC) siteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	var result gof.Message
@@ -102,15 +108,18 @@ func (this *configC) SiteConf_post(ctx *echox.Context) error {
 
 //销售配置
 func (this *configC) SaleConf(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.saleConf_post(ctx)
+	}
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("conf/sale_conf.html", d)
+	return ctx.RenderOK("conf.sale_conf.html", d)
 }
 
-func (this *configC) SaleConf_post(ctx *echox.Context) error {
+func (this *configC) saleConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	var result gof.Message
