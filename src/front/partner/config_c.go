@@ -26,7 +26,7 @@ type configC struct {
 }
 
 //资料配置
-func (this *configC) Profile(ctx *web.Context) {
+func (this *configC) Profile(ctx *echox.Context)error{
 
 	partnerId := this.GetPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
@@ -42,7 +42,7 @@ func (this *configC) Profile(ctx *web.Context) {
 		"views/partner/conf/profile.html")
 }
 
-func (this *configC) Profile_post(ctx *web.Context) {
+func (this *configC) Profile_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
@@ -73,7 +73,7 @@ func (this *configC) Profile_post(ctx *web.Context) {
 }
 
 //站点配置
-func (this *configC) SiteConf(ctx *web.Context) {
+func (this *configC) SiteConf(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
@@ -85,7 +85,7 @@ func (this *configC) SiteConf(ctx *web.Context) {
 		"views/partner/conf/site_conf.html")
 }
 
-func (this *configC) SiteConf_post(ctx *web.Context) {
+func (this *configC) SiteConf_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
@@ -110,7 +110,7 @@ func (this *configC) SiteConf_post(ctx *web.Context) {
 }
 
 //销售配置
-func (this *configC) SaleConf(ctx *web.Context) {
+func (this *configC) SaleConf(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
@@ -122,7 +122,7 @@ func (this *configC) SaleConf(ctx *web.Context) {
 		"views/partner/conf/sale_conf.html")
 }
 
-func (this *configC) SaleConf_post(ctx *web.Context) {
+func (this *configC) SaleConf_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message

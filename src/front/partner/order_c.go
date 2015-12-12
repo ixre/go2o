@@ -28,7 +28,7 @@ type orderC struct {
 	*baseC
 }
 
-func (this *orderC) List(ctx *web.Context) {
+func (this *orderC) List(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.Response,
@@ -37,7 +37,7 @@ func (this *orderC) List(ctx *web.Context) {
 		}, "views/partner/order/order_list.html")
 }
 
-func (this *orderC) WaitPaymentList(ctx *web.Context) {
+func (this *orderC) WaitPaymentList(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.Response,
@@ -46,13 +46,13 @@ func (this *orderC) WaitPaymentList(ctx *web.Context) {
 		}, "views/partner/order/order_waitpay_list.html")
 }
 
-func (this *orderC) Cancel(ctx *web.Context) {
+func (this *orderC) Cancel(ctx *echox.Context)error{
 	//partnerId := this.GetPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")
 
 }
 
-func (this *orderC) Cancel_post(ctx *web.Context) {
+func (this *orderC) Cancel_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
@@ -67,7 +67,7 @@ func (this *orderC) Cancel_post(ctx *web.Context) {
 	}
 }
 
-func (this *orderC) View(ctx *web.Context) {
+func (this *orderC) View(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
@@ -111,7 +111,7 @@ func (this *orderC) View(ctx *web.Context) {
 		}, "views/partner/order/order_view.html")
 }
 
-func (this *orderC) Setup(ctx *web.Context) {
+func (this *orderC) Setup(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
@@ -129,7 +129,7 @@ func (this *orderC) Setup(ctx *web.Context) {
 }
 
 // 锁定，防止重复下单，返回false,表示正在处理订单
-func (this *orderC) lockOrder(ctx *web.Context) bool {
+func (this *orderC) lockOrder(ctx *echox.Context)errorbool {
 	s := ctx.Session()
 	v := s.Get("pt_order_lock")
 	if v != nil {
@@ -139,12 +139,12 @@ func (this *orderC) lockOrder(ctx *web.Context) bool {
 	s.Save()
 	return true
 }
-func (this *orderC) releaseOrder(ctx *web.Context) {
+func (this *orderC) releaseOrder(ctx *echox.Context)error{
 	ctx.Session().Remove("pt_order_lock")
 	ctx.Session().Save()
 }
 
-func (this *orderC) OrderSetup_post(ctx *web.Context) {
+func (this *orderC) OrderSetup_post(ctx *echox.Context)error{
 	if !this.lockOrder(ctx) {
 		return
 	}
@@ -162,7 +162,7 @@ func (this *orderC) OrderSetup_post(ctx *web.Context) {
 	}
 }
 
-func (this *orderC) Payment(ctx *web.Context) {
+func (this *orderC) Payment(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
@@ -186,7 +186,7 @@ func (this *orderC) Payment(ctx *web.Context) {
 	}
 }
 
-func (this *orderC) Payment_post(ctx *web.Context) {
+func (this *orderC) Payment_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()

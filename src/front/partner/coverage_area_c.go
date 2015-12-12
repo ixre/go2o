@@ -15,17 +15,17 @@ type coverageAreaC struct {
 	*baseC
 }
 
-func (this *coverageAreaC) CoverageAreList(ctx *web.Context) {
+func (this *coverageAreaC) CoverageAreList(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/delivery/coverage_area_list.html")
 }
 
-func (this *coverageAreaC) Create(ctx *web.Context) {
+func (this *coverageAreaC) Create(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"entity": template.JS("{}"),
 	}, "views/partner/delivery/create.html")
 }
 
-func (this *coverageAreaC) SaveArea_post(ctx *web.Context) {
+func (this *coverageAreaC) SaveArea_post(ctx *echox.Context)error{
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()

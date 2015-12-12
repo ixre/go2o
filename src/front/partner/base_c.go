@@ -16,7 +16,7 @@ import (
 	"net/url"
 )
 
-func chkLogin(ctx *web.Context) (b bool, partnerId int) {
+func chkLogin(ctx *echox.Context)error(b bool, partnerId int) {
 	//todo:仅仅做了id的检测，没有判断有效性
 	// i, err := session.GetLSession().GetPartnerIdFromCookie(ctx.Request)
 	// return err == nil, i
@@ -26,7 +26,7 @@ func chkLogin(ctx *web.Context) (b bool, partnerId int) {
 	}
 	return true, v.(int)
 }
-func redirect(ctx *web.Context) {
+func redirect(ctx *echox.Context)error{
 	r, w := ctx.Request, ctx.Response
 	w.Write([]byte("<script>window.parent.location.href='/login?return_url=" +
 		url.QueryEscape(r.URL.String()) + "'</script>"))
@@ -37,7 +37,7 @@ var _ mvc.Filter = new(baseC)
 type baseC struct {
 }
 
-func (this *baseC) Requesting(ctx *web.Context) bool {
+func (this *baseC) Requesting(ctx *echox.Context)errorbool {
 	//验证是否登陆
 	if b, _ := chkLogin(ctx); !b {
 		redirect(ctx)
@@ -45,11 +45,11 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 	}
 	return true
 }
-func (this *baseC) RequestEnd(ctx *web.Context) {
+func (this *baseC) RequestEnd(ctx *echox.Context)error{
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context) int {
+func (this *baseC) GetPartnerId(ctx *echox.Context)errorint {
 	v := ctx.Session().Get("partner_id")
 	if v == nil {
 		this.Requesting(ctx)
@@ -58,7 +58,7 @@ func (this *baseC) GetPartnerId(ctx *web.Context) int {
 	return v.(int)
 }
 
-func (this *baseC) GetPartner(ctx *web.Context) (*partner.ValuePartner, error) {
+func (this *baseC) GetPartner(ctx *echox.Context)error(*partner.ValuePartner, error) {
 	return dps.PartnerService.GetPartner(this.GetPartnerId(ctx))
 }
 

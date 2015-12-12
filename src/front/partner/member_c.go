@@ -34,13 +34,13 @@ type memberC struct {
 	*baseC
 }
 
-func (this *memberC) LevelList(ctx *web.Context) {
+func (this *memberC) LevelList(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{},
 		"views/partner/member/level_list.html")
 }
 
 //修改门店信息
-func (this *memberC) EditMLevel(ctx *web.Context) {
+func (this *memberC) EditMLevel(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -54,7 +54,7 @@ func (this *memberC) EditMLevel(ctx *web.Context) {
 		"views/partner/member/edit_level.html")
 }
 
-func (this *memberC) CreateMLevel(ctx *web.Context) {
+func (this *memberC) CreateMLevel(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"entity": "{}",
@@ -62,7 +62,7 @@ func (this *memberC) CreateMLevel(ctx *web.Context) {
 		"views/partner/member/create_level.html")
 }
 
-func (this *memberC) SaveMLevel_post(ctx *web.Context) {
+func (this *memberC) SaveMLevel_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
@@ -80,10 +80,10 @@ func (this *memberC) SaveMLevel_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
-func (this *memberC) DelMLevel(ctx *web.Context) {
+func (this *memberC) DelMLevel(ctx *echox.Context)error{
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
@@ -98,11 +98,11 @@ func (this *memberC) DelMLevel(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
 // 会员列表
-func (this *memberC) List(ctx *web.Context) {
+func (this *memberC) List(ctx *echox.Context)error{
 	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
@@ -110,7 +110,7 @@ func (this *memberC) List(ctx *web.Context) {
 }
 
 // 锁定会员
-func (this *memberC) Lock_member_post(ctx *web.Context) {
+func (this *memberC) Lock_member_post(ctx *echox.Context)error{
 	ctx.Request.ParseForm()
 	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
 	partnerId := this.GetPartnerId(ctx)
@@ -120,10 +120,10 @@ func (this *memberC) Lock_member_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
-func (this *memberC) Member_details(ctx *web.Context) {
+func (this *memberC) Member_details(ctx *echox.Context)error{
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 
 	ctx.App.Template().Execute(ctx.Response,
@@ -133,7 +133,7 @@ func (this *memberC) Member_details(ctx *web.Context) {
 }
 
 // 会员基本信息
-func (this *memberC) Member_basic(ctx *web.Context) {
+func (this *memberC) Member_basic(ctx *echox.Context)error{
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	m := dps.MemberService.GetMember(memberId)
 	if m == nil {
@@ -155,7 +155,7 @@ func (this *memberC) Member_basic(ctx *web.Context) {
 }
 
 // 会员账户信息
-func (this *memberC) Member_account(ctx *web.Context) {
+func (this *memberC) Member_account(ctx *echox.Context)error{
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	acc := dps.MemberService.GetAccount(memberId)
 	if acc != nil {
@@ -174,7 +174,7 @@ func (this *memberC) Member_account(ctx *web.Context) {
 }
 
 // 会员收款银行信息
-func (this *memberC) Member_curr_bank(ctx *web.Context) {
+func (this *memberC) Member_curr_bank(ctx *echox.Context)error{
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
@@ -188,7 +188,7 @@ func (this *memberC) Member_curr_bank(ctx *web.Context) {
 	}
 }
 
-func (this *memberC) Reset_pwd_post(ctx *web.Context) {
+func (this *memberC) Reset_pwd_post(ctx *echox.Context)error{
 	var result gof.Message
 	ctx.Request.ParseForm()
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
@@ -201,11 +201,11 @@ func (this *memberC) Reset_pwd_post(ctx *web.Context) {
 		result.Result = true
 		result.Message = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
 // 客服充值
-func (this *memberC) Charge(ctx *web.Context) {
+func (this *memberC) Charge(ctx *echox.Context)error{
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
 	if mem == nil {
@@ -218,7 +218,7 @@ func (this *memberC) Charge(ctx *web.Context) {
 	}
 }
 
-func (this *memberC) Charge_post(ctx *web.Context) {
+func (this *memberC) Charge_post(ctx *echox.Context)error{
 	var msg gof.Message
 	var err error
 	ctx.Request.ParseForm()
@@ -242,11 +242,11 @@ func (this *memberC) Charge_post(ctx *web.Context) {
 			msg.Result = true
 		}
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK,msg)
 }
 
 // 提现列表
-func (this *memberC) ApplyRequestList(ctx *web.Context) {
+func (this *memberC) ApplyRequestList(ctx *echox.Context)error{
 	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
@@ -255,7 +255,7 @@ func (this *memberC) ApplyRequestList(ctx *web.Context) {
 }
 
 // 审核提现请求
-func (this *memberC) Pass_apply_req_post(ctx *web.Context) {
+func (this *memberC) Pass_apply_req_post(ctx *echox.Context)error{
 	var msg gof.Message
 	ctx.Request.ParseForm()
 	partnerId := this.GetPartnerId(ctx)
@@ -270,11 +270,11 @@ func (this *memberC) Pass_apply_req_post(ctx *web.Context) {
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK,msg)
 }
 
 // 退回提现请求
-func (this *memberC) Back_apply_req(ctx *web.Context) {
+func (this *memberC) Back_apply_req(ctx *echox.Context)error{
 	form := ctx.Request.URL.Query()
 	memberId, _ := strconv.Atoi(form.Get("member_id"))
 	id, _ := strconv.Atoi(form.Get("id"))
@@ -289,7 +289,7 @@ func (this *memberC) Back_apply_req(ctx *web.Context) {
 	}
 }
 
-func (this *memberC) Back_apply_req_post(ctx *web.Context) {
+func (this *memberC) Back_apply_req_post(ctx *echox.Context)error{
 	var msg gof.Message
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
@@ -303,11 +303,11 @@ func (this *memberC) Back_apply_req_post(ctx *web.Context) {
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK,msg)
 }
 
 // 提现打款
-func (this *memberC) Handle_apply_req(ctx *web.Context) {
+func (this *memberC) Handle_apply_req(ctx *echox.Context)error{
 	form := ctx.Request.URL.Query()
 	memberId, _ := strconv.Atoi(form.Get("member_id"))
 	id, _ := strconv.Atoi(form.Get("id"))
@@ -324,7 +324,7 @@ func (this *memberC) Handle_apply_req(ctx *web.Context) {
 	}
 }
 
-func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
+func (this *memberC) Handle_apply_req_post(ctx *echox.Context)error{
 	var msg gof.Message
 	var err error
 	ctx.Request.ParseForm()
@@ -345,11 +345,11 @@ func (this *memberC) Handle_apply_req_post(ctx *web.Context) {
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK,msg)
 }
 
 // 团队排名列表
-func (this *memberC) Team_rank(ctx *web.Context) {
+func (this *memberC) Team_rank(ctx *echox.Context)error{
 
 	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{

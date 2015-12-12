@@ -28,42 +28,32 @@ type mssC struct {
 }
 
 //邮件模板列表
-func (this *mssC) Mail_template_list(ctx *web.Context) {
+func (this *mssC) Mail_template_list(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/mss/mail_tpl_list.html")
 }
 
 // 修改广告
-func (this *mssC) Edit_mail_tpl(ctx *web.Context) {
+func (this *mssC) Edit_mail_tpl(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
 
-	js, _ := json.Marshal(e)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
+	js, _ := json.Marshal(e) 	d := echox.NewRenderData() 	d.Map["entity"] = template.JS(js)
 		"views/partner/mss/edit_mail_tpl.html")
 }
 
 // 创建邮箱模板
-func (this *mssC) Create_mail_tpl(ctx *web.Context) {
+func (this *mssC) Create_mail_tpl(ctx *echox.Context)error{
 	e := mss.MailTemplate{
 		Enabled: 1,
 	}
-	js, _ := json.Marshal(e)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
+	js, _ := json.Marshal(e) 	d := echox.NewRenderData() 	d.Map["entity"] = template.JS(js)
 		"views/partner/mss/edit_mail_tpl.html")
 }
 
 // 删除邮件模板
-func (this *mssC) Del_mail_tpl_post(ctx *web.Context) {
+func (this *mssC) Del_mail_tpl_post(ctx *echox.Context)error{
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
@@ -77,11 +67,11 @@ func (this *mssC) Del_mail_tpl_post(ctx *web.Context) {
 		result.Result = true
 	}
 
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
 // 保存邮件模板
-func (this *mssC) Save_mail_tpl_post(ctx *web.Context) {
+func (this *mssC) Save_mail_tpl_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
@@ -102,7 +92,7 @@ func (this *mssC) Save_mail_tpl_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
 func (this *mssC) getMailTemplateOpts(partnerId int) string {
@@ -110,7 +100,7 @@ func (this *mssC) getMailTemplateOpts(partnerId int) string {
 }
 
 // 设置
-func (this *mssC) Mss_setting(ctx *web.Context) {
+func (this *mssC) Mss_setting(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
 	js, _ := json.Marshal(e)
@@ -124,7 +114,7 @@ func (this *mssC) Mss_setting(ctx *web.Context) {
 }
 
 // 保存设置
-func (this *mssC) Mss_setting_post(ctx *web.Context) {
+func (this *mssC) Mss_setting_post(ctx *echox.Context)error{
 	var result gof.Message
 	partnerId := this.GetPartnerId(ctx)
 	ctx.Request.ParseForm()
@@ -142,5 +132,5 @@ func (this *mssC) Mss_setting_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }

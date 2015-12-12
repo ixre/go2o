@@ -27,12 +27,12 @@ type saleC struct {
 	*baseC
 }
 
-func (this *saleC) TagList(ctx *web.Context) {
+func (this *saleC) TagList(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/sale/sale_tag_list.html")
 }
 
 //修改门店信息
-func (this *saleC) Edit_stag(ctx *web.Context) {
+func (this *saleC) Edit_stag(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -46,7 +46,7 @@ func (this *saleC) Edit_stag(ctx *web.Context) {
 		"views/partner/sale/sale_tag_form.html")
 }
 
-func (this *saleC) Create_stag(ctx *web.Context) {
+func (this *saleC) Create_stag(ctx *echox.Context)error{
 	entity := sale.ValueSaleTag{
 		GoodsImage: ctx.App.Config().GetString(variable.NoPicPath),
 	}
@@ -59,7 +59,7 @@ func (this *saleC) Create_stag(ctx *web.Context) {
 		"views/partner/sale/sale_tag_form.html")
 }
 
-func (this *saleC) Save_stag_post(ctx *web.Context) {
+func (this *saleC) Save_stag_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
@@ -77,10 +77,10 @@ func (this *saleC) Save_stag_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }
 
-func (this *saleC) Del_stag_post(ctx *web.Context) {
+func (this *saleC) Del_stag_post(ctx *echox.Context)error{
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
@@ -95,5 +95,5 @@ func (this *saleC) Del_stag_post(ctx *web.Context) {
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK,result)
 }

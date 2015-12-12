@@ -31,14 +31,14 @@ type categoryC struct {
 }
 
 //分类树形功能
-func (this *categoryC) All_category(ctx *web.Context) {
+func (this *categoryC) All_category(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"no_pic_url": format.GetGoodsImageUrl(""),
 	}, "views/partner/category/category.html")
 }
 
 //分类Json数据
-func (this *categoryC) CategoryJson(ctx *web.Context) {
+func (this *categoryC) CategoryJson(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
@@ -46,13 +46,13 @@ func (this *categoryC) CategoryJson(ctx *web.Context) {
 }
 
 //分类树形功能
-func (this *categoryC) CategorySelect(ctx *web.Context) {
+func (this *categoryC) CategorySelect(ctx *echox.Context)error{
 	ctx.App.Template().Execute(ctx.Response, nil,
 		"views/partner/category/category_select.html")
 }
 
 //分类Json数据
-func (this *categoryC) CreateCategory(ctx *web.Context) {
+func (this *categoryC) CreateCategory(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
@@ -65,7 +65,7 @@ func (this *categoryC) CreateCategory(ctx *web.Context) {
 		"views/partner/category/category_create.html")
 }
 
-func (this *categoryC) EditCategory(ctx *web.Context) {
+func (this *categoryC) EditCategory(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
@@ -86,7 +86,7 @@ func (this *categoryC) EditCategory(ctx *web.Context) {
 }
 
 //修改门店信息
-func (this *categoryC) SaveCategory_post(ctx *web.Context) {
+func (this *categoryC) SaveCategory_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
@@ -104,7 +104,7 @@ func (this *categoryC) SaveCategory_post(ctx *web.Context) {
 	w.Write(result.Marshal())
 }
 
-func (this *categoryC) DelCategory_post(ctx *web.Context) {
+func (this *categoryC) DelCategory_post(ctx *echox.Context)error{
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message

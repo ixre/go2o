@@ -118,7 +118,7 @@ func (this *mainC) Dashboard(ctx *echox.Context)error {
 }
 
 //商户汇总页
-func (this *mainC) Summary(ctx *web.Context) {
+func (this *mainC) Summary(ctx *echox.Context)error{
 	r, w := ctx.Request, ctx.Response
 	pt, _ := this.GetPartner(ctx)
 
@@ -130,7 +130,7 @@ func (this *mainC) Summary(ctx *web.Context) {
 		"views/partner/summary.html")
 }
 
-func (this *mainC) Upload_post(ctx *web.Context) {
+func (this *mainC) Upload_post(ctx *echox.Context)error{
 	r, w := ctx.Request, ctx.Response
 	partnerId := this.GetPartnerId(ctx)
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M

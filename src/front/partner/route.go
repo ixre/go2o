@@ -24,7 +24,7 @@ var routes *mvc.Route = mvc.NewRoute(nil)
 
 
 //处理请求
-func Handle(ctx *web.Context) {
+func Handle(ctx *echox.Context)error{
 	routes.Handle(ctx)
 }
 
@@ -48,7 +48,7 @@ func registerRoutes() {
 	routes.Register("mss", new(mssC))
 	routes.Register("editor", new(editorC))
 
-	routes.Add("/export/getExportData", func(ctx *web.Context) {
+	routes.Add("/export/getExportData", func(ctx *echox.Context)error{
 		if b, id := chkLogin(ctx); b {
 			GetExportData(ctx, id)
 		} else {
