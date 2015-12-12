@@ -124,12 +124,11 @@ func (this *mainC) Summary(ctx *echox.Context) error {
 }
 
 func (this *mainC) Upload_post(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
+	req := ctx.Request()
 	partnerId := getPartnerId(ctx)
-	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
-	for f := range r.MultipartForm.File {
-		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
-		return nil
+	req.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
+	for f := range req.MultipartForm.File {
+		ctx.Response().Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
 	}
 	return nil
 }

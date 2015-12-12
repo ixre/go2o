@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/core/variable"
-	"go2o/src/front/master"
 	"go2o/src/front/partner"
 	"go2o/src/front/shop/ols"
 	"go2o/src/front/ucenter"
@@ -64,7 +63,7 @@ func Run(ch chan bool, app gof.App, addr string) {
 	hosts := make(echox.HttpHosts)
 	hosts["*"] = ols.GetServe()
 	hosts[variable.DOMAIN_PREFIX_MEMBER] = ucenter.GetServe()
-	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
+	//hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = new(ImageFileHandler)

@@ -56,7 +56,7 @@ func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 
 func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -76,7 +76,7 @@ func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
 }
 
 func (this *memberC) DelMLevel(ctx *echox.Context) error {
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 	partnerId := getPartnerId(ctx)
@@ -103,8 +103,9 @@ func (this *memberC) List(ctx *echox.Context) error {
 
 // 锁定会员
 func (this *memberC) Lock_member_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
+	req := ctx.Request()
+	req.ParseForm()
+	id, _ := strconv.Atoi(req.FormValue("id"))
 	partnerId := getPartnerId(ctx)
 	var result gof.Message
 	if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
@@ -116,7 +117,7 @@ func (this *memberC) Lock_member_post(ctx *echox.Context) error {
 }
 
 func (this *memberC) Member_details(ctx *echox.Context) error {
-	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 
 	d := echox.NewRenderData()
 	d.Map["memberId"] = memberId
@@ -125,7 +126,7 @@ func (this *memberC) Member_details(ctx *echox.Context) error {
 
 // 会员基本信息
 func (this *memberC) Member_basic(ctx *echox.Context) error {
-	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	m := dps.MemberService.GetMember(memberId)
 	if m == nil {
 		return ctx.String(http.StatusOK, "no such member")
@@ -146,7 +147,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 
 // 会员账户信息
 func (this *memberC) Member_account(ctx *echox.Context) error {
-	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	acc := dps.MemberService.GetAccount(memberId)
 	if acc == nil {
 		return ctx.String(http.StatusOK, "no such account")
@@ -168,7 +169,7 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 
 // 会员收款银行信息
 func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
-	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
 		len(e.Name) > 0 && len(e.Network) > 0 {
@@ -181,8 +182,9 @@ func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
 
 func (this *memberC) Reset_pwd_post(ctx *echox.Context) error {
 	var result gof.Message
-	ctx.Request.ParseForm()
-	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
+	req := ctx.Request()
+	req.ParseForm()
+	memberId, _ := strconv.Atoi(req.FormValue("member_id"))
 	rl := dps.MemberService.GetRelation(memberId)
 	partnerId := getPartnerId(ctx)
 	if rl == nil || rl.RegisterPartnerId != partnerId {
@@ -197,7 +199,7 @@ func (this *memberC) Reset_pwd_post(ctx *echox.Context) error {
 
 // 客服充值
 func (this *memberC) Charge(ctx *echox.Context) error {
-	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
 	if mem == nil {
 		return ctx.String(http.StatusOK, "no such member")
@@ -211,10 +213,11 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 func (this *memberC) Charge_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	ctx.Request.ParseForm()
+	req := ctx.Request()
+	req.ParseForm()
 	partnerId := getPartnerId(ctx)
-	memberId, _ := strconv.Atoi(ctx.Request.FormValue("MemberId"))
-	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
+	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
+	amount, _ := strconv.ParseFloat(req.FormValue("Amount"), 32)
 	if amount < 0 {
 		msg.Message = "error amount"
 	} else {
@@ -224,7 +227,8 @@ func (this *memberC) Charge_post(ctx *echox.Context) error {
 			err = partner.ErrPartnerNotMatch
 		} else {
 			title := fmt.Sprintf("客服充值%f", amount)
-			err = dps.MemberService.Charge(partnerId, memberId, member.TypeBalanceServiceCharge, title, "", float32(amount))
+			err = dps.MemberService.Charge(partnerId, memberId,
+				member.TypeBalanceServiceCharge, title, "", float32(amount))
 		}
 		if err != nil {
 			msg.Message = err.Error()
@@ -248,11 +252,12 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 // 审核提现请求
 func (this *memberC) Pass_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
-	ctx.Request.ParseForm()
+	req := ctx.Request()
+	req.ParseForm()
 	partnerId := getPartnerId(ctx)
-	passed := ctx.Request.FormValue("pass") == "1"
-	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
-	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
+	passed := req.FormValue("pass") == "1"
+	memberId, _ := strconv.Atoi(req.FormValue("member_id"))
+	id, _ := strconv.Atoi(req.FormValue("id"))
 
 	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
 
@@ -266,9 +271,9 @@ func (this *memberC) Pass_apply_req_post(ctx *echox.Context) error {
 
 // 退回提现请求
 func (this *memberC) Back_apply_req(ctx *echox.Context) error {
-	form := ctx.Request.URL.Query()
-	memberId, _ := strconv.Atoi(form.Get("member_id"))
-	id, _ := strconv.Atoi(form.Get("id"))
+
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 
 	info := dps.MemberService.GetBalanceInfoById(memberId, id)
 
@@ -284,11 +289,11 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 
 func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	partnerId := getPartnerId(ctx)
-	memberId, _ := strconv.Atoi(form.Get("MemberId"))
-	id, _ := strconv.Atoi(form.Get("Id"))
+	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
+	id, _ := strconv.Atoi(req.FormValue("Id"))
 
 	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, false, "")
 	if err != nil {
@@ -301,9 +306,8 @@ func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 
 // 提现打款
 func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
-	form := ctx.Request.URL.Query()
-	memberId, _ := strconv.Atoi(form.Get("member_id"))
-	id, _ := strconv.Atoi(form.Get("id"))
+	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 
 	info := dps.MemberService.GetBalanceInfoById(memberId, id)
 
@@ -324,13 +328,13 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	partnerId := getPartnerId(ctx)
-	memberId, _ := strconv.Atoi(form.Get("MemberId"))
-	id, _ := strconv.Atoi(form.Get("Id"))
-	agree := form.Get("Agree") == "on"
-	tradeNo := form.Get("TradeNo")
+	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
+	id, _ := strconv.Atoi(req.FormValue("Id"))
+	agree := req.FormValue("Agree") == "on"
+	tradeNo := req.FormValue("TradeNo")
 
 	if !agree {
 		err = errors.New("请同意已知晓并打款选项")

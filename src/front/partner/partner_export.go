@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/data/report"
-	"go2o/src/x/echox"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -31,8 +31,7 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 //================== 导出控制器 ==============//
 
 // 获取导出数据
-func GetExportData(ctx *echox.Context, partnerId int) {
-	r, w := ctx.Request, ctx.Response
+func GetExportData(r *http.Request, partnerId int) []byte {
 	query := r.URL.Query()
 	r.ParseForm()
 	var exportItm report.IDataExportPortal = EXP_Manager.GetExportItem(query.Get("portal"))
@@ -53,17 +52,15 @@ func GetExportData(ctx *echox.Context, partnerId int) {
 			parameter.Parameters["pageSize"] = rows
 		}
 
-		w.Header().Add("Content-Type", "application/json")
-
 		_rows, total, err := exportItm.GetSchemaAndData(parameter.Parameters)
 		if err == nil {
 			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
 			json, _ := json.Marshal(_rows)
 			arr[3] = string(json)
-			return ctx.StringOK(strings.Join(arr, ""))
+			return []byte(strings.Join(arr, ""))
 		}
-
-		return ctx.StringOK(`{"error":"` + err.Error() + `"}`)
-
+		return []byte(`{"error":"` + err.Error() + `"}`)
 	}
+
+	return []byte(`{"error":"no such export item"}`)
 }

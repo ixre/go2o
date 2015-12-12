@@ -36,11 +36,11 @@ func (this *promC) List(ctx *echox.Context) error {
 
 // 删除促销
 func (this *promC) Del_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	promId, _ := strconv.Atoi(form.Get("id"))
+	promId, _ := strconv.Atoi(req.FormValue("id"))
 
 	err := dps.PromService.DelPromotion(partnerId, promId)
 
@@ -74,8 +74,7 @@ func (this *promC) Create_cb(ctx *echox.Context) error {
 }
 
 func (this *promC) Edit_cb(ctx *echox.Context) error {
-	form := ctx.Request.URL.Query()
-	id, _ := strconv.Atoi(form.Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
 	js, _ := json.Marshal(e)
@@ -100,7 +99,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 // 保存现金返现
 func (this *promC) Save_cb_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 
 	var result gof.Message
@@ -151,8 +150,7 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 }
 
 func (this *promC) Edit_coupon(ctx *echox.Context) error {
-	form := ctx.Request.URL.Query()
-	id, _ := strconv.Atoi(form.Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
 	if e.PartnerId != getPartnerId(ctx) {
@@ -177,7 +175,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 // 保存优惠券
 func (this *promC) Save_coupon_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 
 	var result gof.Message
@@ -209,8 +207,7 @@ func (this *promC) Save_coupon_post(ctx *echox.Context) error {
 
 //　绑定优惠券操作页
 func (this *promC) Bind_coupon(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
-	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
+	id, _ := strconv.Atoi(ctx.Query("coupon_id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 	if e.PartnerId != getPartnerId(ctx) {
 		return ctx.StringOK(promotion.ErrNoSuchPromotion.Error())

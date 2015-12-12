@@ -13,14 +13,12 @@ import (
 	"go2o/src/x/echox"
 )
 
-
 type commC struct {
 	*front.WebCgi
 }
 
 func (this *mainC) GeoLocation(ctx *echox.Context) error {
-	//this.WebCgi.GeoLocation(ctx)
-	//todo:???
+	this.WebCgi.GeoLocation(ctx)
 	return nil
 }
 

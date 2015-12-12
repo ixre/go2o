@@ -13,7 +13,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/web/mvc"
+	"github.com/jsix/gof"
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"io"
@@ -285,8 +285,6 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err
 	return dirPath + newFileName, nil
 }
 
-var _ mvc.Filter = new(editorC)
-
 type editorC struct {
 }
 
@@ -296,18 +294,15 @@ func (this *editorC) File_manager(ctx *echox.Context) error {
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
-	ctx.Response.Header().Add("Content-Type", "application/json")
 	if err != nil {
-		ctx.Response.Write([]byte("{error:'" + strings.Replace(err.Error(), "'", "\\'", -1) + "'}"))
-	} else {
-		return ctx.JSON(http.StatusOK, d)
+		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
 	}
-	return nil
+	return ctx.JSON(http.StatusOK, d)
 }
 
 func (this *editorC) File_upload_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	fileUrl, err := fileUpload(ctx.Request,
+	fileUrl, err := fileUpload(ctx.Request(),
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)

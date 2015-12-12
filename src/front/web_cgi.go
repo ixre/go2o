@@ -11,8 +11,8 @@ package front
 import (
 	"bufio"
 	"fmt"
-	"github.com/jsix/gof/web"
 	"go2o/src/core/infrastructure/tool"
+	"go2o/src/x/echox"
 	"io"
 	"os"
 	"strings"
@@ -26,8 +26,8 @@ const (
 // Web同一网关接口
 type WebCgi struct{}
 
-func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte {
-	r, _ := ctx.Request, ctx.Response
+func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byte {
+	r := ctx.Request()
 	var ext string
 	var filePath string
 	var err error
@@ -78,8 +78,8 @@ func (this *WebCgi) Upload(key string, ctx *web.Context, savedir string) []byte 
 }
 
 //获取位置
-func (this *WebCgi) GeoLocation(ctx *web.Context) {
-	r, w := ctx.Request, ctx.Response
+func (this *WebCgi) GeoLocation(ctx *echox.Context) {
+	r, w := ctx.Request(), ctx.Response()
 	ip := r.RemoteAddr[:strings.Index(r.RemoteAddr, ":")]
 	add := tool.GetLocation(ip)
 	w.Write([]byte(fmt.Sprintf(`{"ip":"%s","addr":"%s"}`, ip, add)))

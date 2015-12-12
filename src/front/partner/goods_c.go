@@ -23,7 +23,6 @@ import (
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 )
@@ -71,13 +70,11 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 
 func (this *goodsC) Edit(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
 	var e *sale.ValueItem
-	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
+	id, _ := strconv.Atoi(ctx.Query("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
 	if e == nil {
-		w.Write([]byte("商品不存在"))
-		return
+		return ctx.StringOK("商品不存在")
 	}
 	e.Description = ""
 	js, _ := json.Marshal(e)
@@ -115,7 +112,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 
 func (this *goodsC) Save_item_info_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("ItemId"))
 	info := r.FormValue("Info")
@@ -134,7 +131,7 @@ func (this *goodsC) Save_item_info_post(ctx *echox.Context) error {
 
 func (this *goodsC) SaveItem_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -156,7 +153,7 @@ func (this *goodsC) SaveItem_post(ctx *echox.Context) error {
 
 func (this *goodsC) Del_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 
 	r.ParseForm()
@@ -173,7 +170,7 @@ func (this *goodsC) Del_post(ctx *echox.Context) error {
 
 func (this *goodsC) Del_item_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 
 	r.ParseForm()
@@ -189,7 +186,7 @@ func (this *goodsC) Del_item_post(ctx *echox.Context) error {
 }
 
 func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 	partnerId := getPartnerId(ctx)
 	goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
@@ -215,7 +212,7 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 }
 
 func (this *goodsC) SaveGoodsSTag_post(ctx *echox.Context) error {
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	goodsId, err := strconv.Atoi(r.FormValue("GoodsId"))
 	if err == nil {
@@ -251,7 +248,7 @@ func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
 func (this *goodsC) LvPrice(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	//todo: should be goodsId
-	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
 	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
 	lvs := dps.PartnerService.GetMemberLevels(partnerId)
 	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId, goods.GoodsId)
@@ -294,12 +291,11 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 }
 
 func (this *goodsC) LvPrice_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	var form url.Values = ctx.Request.Form
-	goodsId, err := strconv.Atoi(form.Get("goodsId"))
+	req := ctx.Request()
+	req.ParseForm()
+	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
 	if err != nil {
 		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
-		return
 	}
 
 	var priceSet []*sale.MemberPrice = []*sale.MemberPrice{}
@@ -308,12 +304,12 @@ func (this *goodsC) LvPrice_post(ctx *echox.Context) error {
 	var lv int
 	var enabled int
 
-	for k, _ := range form {
+	for k, _ := range req.Form {
 		if strings.HasPrefix(k, "Id_") {
 			if lv, err = strconv.Atoi(k[3:]); err == nil {
-				id, _ = strconv.Atoi(form.Get(k))
-				price, _ = strconv.ParseFloat(ctx.Request.FormValue(fmt.Sprintf("Price_%d", lv)), 32)
-				if ctx.Request.FormValue(fmt.Sprintf("Enabled_%d", lv)) == "on" {
+				id, _ = strconv.Atoi(req.Form.Get(k))
+				price, _ = strconv.ParseFloat(req.FormValue(fmt.Sprintf("Price_%d", lv)), 32)
+				if req.FormValue(fmt.Sprintf("Enabled_%d", lv)) == "on" {
 					enabled = 1
 				} else {
 					enabled = 0

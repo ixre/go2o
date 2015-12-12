@@ -18,6 +18,7 @@ import (
 
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/domain"
+	"go2o/src/x/echox"
 )
 
 var _ mvc.Filter = new(mainC)
@@ -60,19 +61,21 @@ func (this *mainC) Summary(ctx *web.Context) {
 }
 
 // 导出数据
-func (this *mainC) exportData(ctx *web.Context) {
+func (this *mainC) exportData(ctx *echox.Context) error {
 	if this.Requesting(ctx) {
 		GetExportData(ctx)
 	}
+	return nil
 }
 
-func (this *mainC) Upload_post(ctx *web.Context) {
-	r, w := ctx.Request, ctx.Response
+func (this *mainC) Upload_post(ctx *echox.Context) error {
+	r, w := ctx.Request(), ctx.Response()
 	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("master/item_pic/")))
 		break
 	}
+	return nil
 }
 
 //登陆

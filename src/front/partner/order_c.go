@@ -124,7 +124,7 @@ func (this *orderC) Setup(ctx *echox.Context) error {
 
 // 锁定，防止重复下单，返回false,表示正在处理订单
 func (this *orderC) lockOrder(ctx *echox.Context) bool {
-	s := ctx.Session()
+	s := ctx.Session
 	v := s.Get("pt_order_lock")
 	if v != nil {
 		return false
@@ -134,8 +134,8 @@ func (this *orderC) lockOrder(ctx *echox.Context) bool {
 	return true
 }
 func (this *orderC) releaseOrder(ctx *echox.Context) {
-	ctx.Session().Remove("pt_order_lock")
-	ctx.Session().Save()
+	ctx.Session.Remove("pt_order_lock")
+	ctx.Session.Save()
 }
 
 func (this *orderC) OrderSetup_post(ctx *echox.Context) error {

@@ -56,7 +56,7 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 
 func (this *saleC) Save_stag_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -76,7 +76,7 @@ func (this *saleC) Save_stag_post(ctx *echox.Context) error {
 }
 
 func (this *saleC) Del_stag_post(ctx *echox.Context) error {
-	r := ctx.Request
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 	partnerId := getPartnerId(ctx)

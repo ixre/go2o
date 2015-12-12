@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -21,8 +20,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-var _ mvc.Filter = new(adC)
 
 // 消息发送控制器
 type mssC struct {
@@ -37,8 +34,7 @@ func (this *mssC) Mail_template_list(ctx *echox.Context) error {
 // 修改广告
 func (this *mssC) Edit_mail_tpl(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	form := ctx.Request.URL.Query()
-	id, _ := strconv.Atoi(form.Get("id"))
+	id, _ := strconv.Atoi(ctx.Query("id"))
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
 
 	js, _ := json.Marshal(e)
@@ -60,11 +56,11 @@ func (this *mssC) Create_mail_tpl(ctx *echox.Context) error {
 
 // 删除邮件模板
 func (this *mssC) Del_mail_tpl_post(ctx *echox.Context) error {
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
+	req := ctx.Request()
+	req.ParseForm()
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	adId, _ := strconv.Atoi(form.Get("id"))
+	adId, _ := strconv.Atoi(req.FormValue("id"))
 	err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
 
 	if err != nil {
@@ -79,7 +75,7 @@ func (this *mssC) Del_mail_tpl_post(ctx *echox.Context) error {
 // 保存邮件模板
 func (this *mssC) Save_mail_tpl_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request
+	r := ctx.Request()
 	r.ParseForm()
 
 	var result gof.Message
@@ -122,9 +118,10 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 func (this *mssC) Mss_setting_post(ctx *echox.Context) error {
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	ctx.Request.ParseForm()
+	req := ctx.Request()
+	req.ParseForm()
 	var data map[string]string = make(map[string]string, 0)
-	for k, v := range ctx.Request.Form {
+	for k, v := range req.Form {
 		if strings.HasPrefix(k, "mss_") {
 			data[k] = v[0]
 		}
