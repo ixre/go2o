@@ -64,8 +64,8 @@ func partnerLogonCheck(ctx *echo.Context) error {
 		ctx.Set("partner_id", id.(int))
 		return nil
 	}
-	ctx.Response().Header().Set("Location", "/login?return_url="+
-		url.QueryEscape(ctx.Request().URL.String()))
+	ctx.Response().Header().Set("Location", "/login?return_url=" +
+	url.QueryEscape(ctx.Request().URL.String()))
 	ctx.Response().WriteHeader(302)
 	ctx.Done()
 	return nil

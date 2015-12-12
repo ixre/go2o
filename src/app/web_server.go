@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"go2o/src/front/master"
 )
 
 // 静态文件
@@ -73,7 +74,7 @@ func Run(ch chan bool, app gof.App, addr string) {
 	hosts := make(echox.HttpHosts)
 	hosts["*"] = ols.GetServe()
 	hosts[variable.DOMAIN_PREFIX_MEMBER] = ucenter.GetServe()
-	//hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
+	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
