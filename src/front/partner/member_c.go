@@ -351,7 +351,7 @@ func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
 func (this *memberC) Team_rank(ctx *echox.Context) error {
 
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"levelDr": template.HTML(levelDr),
-	}, "views/partner/member/team_rank.html")
+	d := echox.NewRenderData()
+	d.Map["levelDr"] = template.HTML(levelDr)
+	return ctx.Render(http.StatusOK, "member/team_rank.html", d)
 }
