@@ -92,7 +92,7 @@ func (this *contentC) Page_del(ctx *echox.Context) error {
 
 		var result gof.Message
 		id, _ := strconv.Atoi(r.FormValue("id"))
-		err := dps.ContentService.DeletePage(partnerId,id)
+		err := dps.ContentService.DeletePage(partnerId, id)
 
 		if err != nil {
 			result.Message = err.Error()

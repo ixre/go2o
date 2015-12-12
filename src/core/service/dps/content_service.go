@@ -65,9 +65,8 @@ func (this *contentService) SavePage(partnerId int, v *content.ValuePage) (int, 
 	return page.Save()
 }
 
-
 // 删除页面
-func (this *contentService) DeletePage(partnerId int,pageId int)error{
+func (this *contentService) DeletePage(partnerId int, pageId int) error {
 	c := this._contentRep.GetContent(partnerId)
 	return c.DeletePage(pageId)
 }

@@ -12,16 +12,21 @@ import (
 	"bufio"
 	"fmt"
 	"go2o/src/core/infrastructure/tool"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"io"
 	"os"
 	"strings"
 	"time"
-	"go2o/src/core/variable"
+)
+
+var (
+	uploadSaveDir string
 )
 
 // Web同一网关接口
-type WebCgi struct{}
+type WebCgi struct {
+}
 
 func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byte {
 	r := ctx.Request()
@@ -34,13 +39,15 @@ func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byt
 			"</title></head></html>")
 	}
 
-	var upSaveDir string = ctx.App.Config().Get(variable.UploadSaveDir) // 上传存放目录
+	if len(uploadSaveDir) == 0 {
+		uploadSaveDir = ctx.App.Config().GetString(variable.UploadSaveDir) // 上传存放目录
+	}
 
 	ext = h.Filename[strings.LastIndex(h.Filename, "."):]
 	filePath = strings.Join([]string{savedir, time.Now().Format("20060102150304"), ext}, "")
-	os.MkdirAll(upSaveDir+savedir, os.ModePerm)
+	os.MkdirAll(uploadSaveDir+savedir, os.ModePerm)
 
-	f, err := os.OpenFile(upSaveDir+filePath,
+	f, err := os.OpenFile(uploadSaveDir+filePath,
 		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
 		os.ModePerm)
 

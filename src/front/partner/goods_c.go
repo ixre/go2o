@@ -64,6 +64,7 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
+		"nopic":     format.GetGoodsImageUrl(""),
 	}
 	return ctx.RenderOK("goods.create_goods.html", d)
 }

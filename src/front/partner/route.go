@@ -18,7 +18,6 @@ import (
 )
 
 func GetServe() *echox.Echo {
-	mc := &mainC{} //入口控制器
 
 	s := echox.New()
 	r := echox.NewGoTemplateForEcho("public/views/partner")
@@ -27,14 +26,16 @@ func GetServe() *echox.Echo {
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
 
 	s.Static("/static/", "./public/static/") //静态资源
-	s.Postx("/upload.cgi", mc.Upload_post)   //上传文件
 	s.Postx("/export/getExportData", func(ctx *echox.Context) error {
 		ctx.Response().Header().Set("Content-Type", "application/json")
 		ctx.Response().Write(GetExportData(ctx.Request(), getPartnerId(ctx)))
 		return nil
 	}) //数据导出
+
+	mc := new(mainC) //入口控制器
 	s.Get("/", mc.Index)
 	s.Anyx("/login", mc.Login)
+	s.Postx("/upload.cgi", mc.Upload_post) //上传文件
 	s.Danyx("/main/:action", mc)
 	s.Danyx("/shop/:action", new(shopC))             //商家门店控制器
 	s.Danyx("/goods/:action", new(goodsC))           //商品控制器

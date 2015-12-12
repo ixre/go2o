@@ -33,10 +33,20 @@ func (s *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // 图片处理
 type ImageFileHandler struct {
+	app       gof.App
+	upSaveDir string
 }
 
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./public/static/uploads/"+r.URL.Path)
+	path := r.URL.Path
+	if path[1:4] == "res" {
+		http.ServeFile(w, r, "public/static"+r.URL.Path)
+	} else {
+		if len(i.upSaveDir) == 0 {
+			i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
+		}
+		http.ServeFile(w, r, i.upSaveDir+r.URL.Path)
+	}
 }
 
 // 运行网页
@@ -66,7 +76,7 @@ func Run(ch chan bool, app gof.App, addr string) {
 	//hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
-	hosts[variable.DOMAIN_PREFIX_IMAGE] = new(ImageFileHandler)
+	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
 
 	http.ListenAndServe(addr, hosts)
 }
