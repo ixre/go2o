@@ -131,7 +131,7 @@
     <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
     
     <script>
-    var entity ={{.entity}}||{};
+    var entity ={{.Map.entity}}||{};
     var entity2 ={{.entity2}}||{};
     entity2.BeginTime = unix2str(entity2.BeginTime);
     entity2.OverTime = unix2str(entity2.OverTime);

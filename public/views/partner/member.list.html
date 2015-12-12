@@ -28,7 +28,7 @@
                 <span class="title">会员等级：</span>
                 <select field="level_value">
                     <option value="-1">一不限一</option>
-                    {{.levelDr}}
+                    {{.Map.levelDr}}
                 </select>
             </li>
 
@@ -164,7 +164,7 @@
     function delRec(id) {
         window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('/ad/del_image', {ad_id:'{{.adId}}',id: id }, function(json) {
+                j6.xhr.jsonPost('/member/del_member', {id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }else{

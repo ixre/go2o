@@ -17,6 +17,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"path/filepath"
 )
 
 var (
@@ -80,10 +81,11 @@ func (g *GoTemplateForEcho) fsNotify() {
 		}
 	}(g)
 
-	err = w.Add(g.fileDirectory)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//w.Add(g.fileDirectory)
+	filepath.Walk(g.fileDirectory,func(path string, info os.FileInfo, err error) error{
+		return w.Add(path)
+	})
+
 	<-ch
 }
 

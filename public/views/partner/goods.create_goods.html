@@ -108,7 +108,7 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 <script>
-    var entity = {{.entity}}||{};
+    var entity = {{.Map.entity}}||{};
     j6.json.bind('form1_goods', entity);
     j6.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
             entity.Image:'{{.Var.img_serve}}/' + entity.Image;

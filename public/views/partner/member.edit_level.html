@@ -48,7 +48,7 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 <script>
-    var entity = {{.entity}}||{};
+    var entity = {{.Map.entity}}||{};
     j6.json.bind('form1', entity);
 
     j6.$('btn_save').onclick = function () {

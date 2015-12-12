@@ -28,14 +28,14 @@ type shopC struct {
 
 func (this *shopC) ShopList(ctx *echox.Context) error {
 	d := ctx.NewData()
-	return ctx.RenderOK("shop/shop_list.html", d)
+	return ctx.RenderOK("shop.list.html", d)
 }
 
 //修改门店信息
 func (this *shopC) Create(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS("{}")
-	return ctx.RenderOK("shop/create.html", d)
+	return ctx.RenderOK("shop.create.html", d)
 }
 
 //修改门店信息
@@ -47,43 +47,50 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(entity)
-	return ctx.RenderOK("shop/modify.html", d)
+	return ctx.RenderOK("shop.modify.html", d)
 }
 
-//修改门店信息
-func (this *shopC) SaveShop_post(ctx *echox.Context) error {
+//保存门店信息(POST)
+func (this *shopC) SaveShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
 
-	shop := partner.ValueShop{}
-	web.ParseFormToEntity(r.Form, &shop)
+		shop := partner.ValueShop{}
+		web.ParseFormToEntity(r.Form, &shop)
 
-	id, err := dps.PartnerService.SaveShop(partnerId, &shop)
+		id, err := dps.PartnerService.SaveShop(partnerId, &shop)
 
-	if err != nil {
-		result = gof.Message{Result: true, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		if err != nil {
+			result = gof.Message{Result: true, Message: err.Error()}
+		} else {
+			result = gof.Message{Result: true, Message: "", Data: id}
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
-func (this *shopC) Del_post(ctx *echox.Context) error {
+// 删除商店(POST)
+func (this *shopC) Del(ctx *echox.Context) error {
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
-	shopId, err := strconv.Atoi(r.FormValue("id"))
-	if err == nil {
-		err = dps.PartnerService.DeleteShop(partnerId, shopId)
-	}
+	if r.Method == "POST" {
+		r.ParseForm()
+		shopId, err := strconv.Atoi(r.FormValue("id"))
+		if err == nil {
+			err = dps.PartnerService.DeleteShop(partnerId, shopId)
+		}
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }

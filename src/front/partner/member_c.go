@@ -34,7 +34,7 @@ type memberC struct {
 
 func (this *memberC) LevelList(ctx *echox.Context) error {
 	d := echox.NewRenderData()
-	return ctx.RenderOK("member/level_list.html", d)
+	return ctx.RenderOK("member.level_list.html", d)
 }
 
 //修改门店信息
@@ -45,52 +45,59 @@ func (this *memberC) EditMLevel(ctx *echox.Context) error {
 	js, _ := json.Marshal(entity)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("member/edit_level.html", d)
+	return ctx.RenderOK("member.edit_level.html", d)
 }
 
 func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS("{}")
-	return ctx.RenderOK("member/create_level.html", d)
+	return ctx.RenderOK("member.create_level.html", d)
 }
 
-func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
+// 保存会员等级(POST)
+func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
 
-	e := valueobject.MemberLevel{}
-	web.ParseFormToEntity(r.Form, &e)
-	e.PartnerId = getPartnerId(ctx)
+		e := valueobject.MemberLevel{}
+		web.ParseFormToEntity(r.Form, &e)
+		e.PartnerId = getPartnerId(ctx)
 
-	id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
+		id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 func (this *memberC) DelMLevel(ctx *echox.Context) error {
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
-	partnerId := getPartnerId(ctx)
-	id, err := strconv.Atoi(r.FormValue("id"))
-	if err == nil {
-		err = dps.PartnerService.DelMemberLevel(partnerId, id)
-	}
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
+		partnerId := getPartnerId(ctx)
+		id, err := strconv.Atoi(r.FormValue("id"))
+		if err == nil {
+			err = dps.PartnerService.DelMemberLevel(partnerId, id)
+		}
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 // 会员列表
@@ -98,22 +105,25 @@ func (this *memberC) List(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
-	return ctx.RenderOK("member/member_list.html", d)
+	return ctx.RenderOK("member.list.html", d)
 }
 
 // 锁定会员
-func (this *memberC) Lock_member_post(ctx *echox.Context) error {
+func (this *memberC) Lock_member(ctx *echox.Context) error {
 	req := ctx.Request()
-	req.ParseForm()
-	id, _ := strconv.Atoi(req.FormValue("id"))
-	partnerId := getPartnerId(ctx)
-	var result gof.Message
-	if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+	if req.Method == "POST" {
+		req.ParseForm()
+		id, _ := strconv.Atoi(req.FormValue("id"))
+		partnerId := getPartnerId(ctx)
+		var result gof.Message
+		if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 func (this *memberC) Member_details(ctx *echox.Context) error {
@@ -121,7 +131,7 @@ func (this *memberC) Member_details(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["memberId"] = memberId
-	return ctx.RenderOK("member/member_details.html", d)
+	return ctx.RenderOK("member.details.html", d)
 }
 
 // 会员基本信息
@@ -142,7 +152,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 		"regTime":       format.HanUnixDateTime(m.RegTime),
 	}
 
-	return ctx.RenderOK("member/basic_info.html", d)
+	return ctx.RenderOK("member.basic_info.html", d)
 }
 
 // 会员账户信息
@@ -175,30 +185,37 @@ func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
 		len(e.Name) > 0 && len(e.Network) > 0 {
 		d := echox.NewRenderData()
 		d.Map["bank"] = e
-		return ctx.RenderOK("member/member_curr_bank.html", d)
+		return ctx.RenderOK("member.curr_bank.html", d)
 	}
 	return ctx.String(http.StatusOK, "<span class=\"red\">尚未完善</span>")
 }
 
-func (this *memberC) Reset_pwd_post(ctx *echox.Context) error {
+// 重置密码(POST)
+func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 	var result gof.Message
 	req := ctx.Request()
-	req.ParseForm()
-	memberId, _ := strconv.Atoi(req.FormValue("member_id"))
-	rl := dps.MemberService.GetRelation(memberId)
-	partnerId := getPartnerId(ctx)
-	if rl == nil || rl.RegisterPartnerId != partnerId {
-		result.Message = "无权进行当前操作"
-	} else {
-		newPwd := dps.MemberService.ResetPassword(memberId)
-		result.Result = true
-		result.Message = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
+	if req.Method == "POST" {
+		req.ParseForm()
+		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
+		rl := dps.MemberService.GetRelation(memberId)
+		partnerId := getPartnerId(ctx)
+		if rl == nil || rl.RegisterPartnerId != partnerId {
+			result.Message = "无权进行当前操作"
+		} else {
+			newPwd := dps.MemberService.ResetPassword(memberId)
+			result.Result = true
+			result.Message = fmt.Sprintf("重置成功,新密码为: %s", newPwd)
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 // 客服充值
 func (this *memberC) Charge(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST"{
+		return this.charge_post(ctx)
+	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	mem := dps.MemberService.GetMemberSummary(memberId)
 	if mem == nil {
@@ -206,11 +223,9 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 	}
 	d := echox.NewRenderData()
 	d.Map["m"] = mem
-	return ctx.RenderOK("member/charge.html", d)
-
+	return ctx.RenderOK("member.charge.html", d)
 }
-
-func (this *memberC) Charge_post(ctx *echox.Context) error {
+func (this *memberC) charge_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
 	req := ctx.Request()
@@ -246,32 +261,37 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	d.Map["kind"] = member.KindBalanceApplyCash
-	return ctx.RenderOK("member/apply_request_list.html", d)
+	return ctx.RenderOK("member.apply_request_list.html", d)
 }
 
 // 审核提现请求
-func (this *memberC) Pass_apply_req_post(ctx *echox.Context) error {
+func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 	var msg gof.Message
 	req := ctx.Request()
-	req.ParseForm()
-	partnerId := getPartnerId(ctx)
-	passed := req.FormValue("pass") == "1"
-	memberId, _ := strconv.Atoi(req.FormValue("member_id"))
-	id, _ := strconv.Atoi(req.FormValue("id"))
+	if req.Method == "POST" {
+		req.ParseForm()
+		partnerId := getPartnerId(ctx)
+		passed := req.FormValue("pass") == "1"
+		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
+		id, _ := strconv.Atoi(req.FormValue("id"))
 
-	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
+		err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
 
-	if err != nil {
-		msg.Message = err.Error()
-	} else {
-		msg.Result = true
+		if err != nil {
+			msg.Message = err.Error()
+		} else {
+			msg.Result = true
+		}
+		return ctx.JSON(http.StatusOK, msg)
 	}
-	return ctx.JSON(http.StatusOK, msg)
+	return nil
 }
 
 // 退回提现请求
 func (this *memberC) Back_apply_req(ctx *echox.Context) error {
-
+	if ctx.Request().Method == "POST"{
+		return this.back_apply_req_post(ctx)
+	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	id, _ := strconv.Atoi(ctx.Query("id"))
 
@@ -284,10 +304,10 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["info"] = info
 	d.Map["applyTime"] = time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05")
-	return ctx.RenderOK("member/back_apply_req.html", d)
+	return ctx.RenderOK("member.back_apply_req.html", d)
 }
 
-func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
+func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	req := ctx.Request()
 	req.ParseForm()
@@ -306,6 +326,9 @@ func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 
 // 提现打款
 func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST"{
+		return this.handle_apply_req_post(ctx)
+	}
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	id, _ := strconv.Atoi(ctx.Query("id"))
 
@@ -322,10 +345,10 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 		"bank":      bank,
 		"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
 	}
-	return ctx.RenderOK("member/handle_apply_req.html", d)
+	return ctx.RenderOK("member.handle_apply_req.html", d)
 }
 
-func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
+func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
 	req := ctx.Request()
@@ -351,9 +374,8 @@ func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
 
 // 团队排名列表
 func (this *memberC) Team_rank(ctx *echox.Context) error {
-
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
-	return ctx.RenderOK("member/team_rank.html", d)
+	return ctx.RenderOK("member.team_rank.html", d)
 }
