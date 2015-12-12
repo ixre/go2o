@@ -18,18 +18,20 @@ import (
 	"html/template"
 	"strconv"
 	"strings"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
 var _ mvc.Filter = new(adC)
 
 // 消息发送控制器
 type mssC struct {
-	*baseC
 }
 
 //邮件模板列表
 func (this *mssC) Mail_template_list(ctx *echox.Context)error{
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{}, "views/partner/mss/mail_tpl_list.html")
+	d := echox.NewRenderData()
+	return ctx.Render(http.StatusOK, "mss/mail_tpl_list.html", d)
 }
 
 // 修改广告
@@ -39,8 +41,10 @@ func (this *mssC) Edit_mail_tpl(ctx *echox.Context)error{
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
 
-	js, _ := json.Marshal(e) 	d := echox.NewRenderData() 	d.Map["entity"] = template.JS(js)
-		"views/partner/mss/edit_mail_tpl.html")
+	js, _ := json.Marshal(e)
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK,"mss/edit_mail_tpl.html",d)
 }
 
 // 创建邮箱模板
@@ -48,8 +52,10 @@ func (this *mssC) Create_mail_tpl(ctx *echox.Context)error{
 	e := mss.MailTemplate{
 		Enabled: 1,
 	}
-	js, _ := json.Marshal(e) 	d := echox.NewRenderData() 	d.Map["entity"] = template.JS(js)
-		"views/partner/mss/edit_mail_tpl.html")
+	js, _ := json.Marshal(e)
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK,"mss/edit_mail_tpl.html",d)
 }
 
 // 删除邮件模板
@@ -105,12 +111,11 @@ func (this *mssC) Mss_setting(ctx *echox.Context)error{
 	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"mailTplOpt": template.HTML(this.getMailTemplateOpts(partnerId)),
-			"entity":     template.JS(js),
-		},
-		"views/partner/mss/mss_setting.html")
+	d := echox.NewRenderData()
+	d.Map["mailTplOpt"] = template.HTML(this.getMailTemplateOpts(partnerId))
+	d.Map["entity"]= template.JS(js)
+
+	return ctx.Render(http.StatusOK,"mss/mss_setting.html",d)
 }
 
 // 保存设置

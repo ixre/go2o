@@ -20,51 +20,50 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strings"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
-var _ mvc.Filter = new(orderC)
-
 type orderC struct {
-	*baseC
 }
 
 func (this *orderC) List(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"shops": template.JS(shopsJson),
-		}, "views/partner/order/order_list.html")
+	d := echox.NewRenderData()
+	d.Map["shops"] = template.JS(shopsJson)
+	return ctx.Render(http.StatusOK,"order/order_list.html",d)
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"shops": template.JS(shopsJson),
-		}, "views/partner/order/order_waitpay_list.html")
+
+	d := echox.NewRenderData()
+	d.Map["shops"] = template.JS(shopsJson)
+	return ctx.Render(http.StatusOK,"order/order_waitpay_list.html",d)
 }
 
 func (this *orderC) Cancel(ctx *echox.Context) error {
-	//partnerId := getPartnerId(ctx)
-	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")
-
+	d := echox.NewRenderData()
+	return ctx.Render(http.StatusOK,"order/cancel.html",d)
 }
 
 func (this *orderC) Cancel_post(ctx *echox.Context) error {
+	result := gof.Message{}
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	reason := r.FormValue("reason")
 	err := dps.ShoppingService.CancelOrder(partnerId,
 		r.FormValue("order_no"), reason)
 
 	if err == nil {
-		w.Write([]byte("{result:true}"))
+		result.Result =true
 	} else {
-		w.Write([]byte(`{result:false,message:"` + err.Error() + `"}`))
+		result.Message = err.Error()
 	}
+	return ctx.JSON(http.StatusOK,result)
 }
 
 func (this *orderC) View(ctx *echox.Context) error {
@@ -73,14 +72,12 @@ func (this *orderC) View(ctx *echox.Context) error {
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		w.Write([]byte("无效订单"))
-		return
+		return ctx.String(http.StatusOK,"无效订单")
 	}
 
 	member := dps.MemberService.GetMember(e.MemberId)
 	if member == nil {
-		w.Write([]byte("无效订单"))
-		return
+		return ctx.String(http.StatusOK,"无效订单")
 	}
 
 	e.ItemsInfo = strings.Replace(e.ItemsInfo, "\n", "<br />", -1)
@@ -101,35 +98,34 @@ func (this *orderC) View(ctx *echox.Context) error {
 	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity":   template.JS(js),
-			"member":   member,
-			"shopName": shopName,
-			"payment":  payment,
-			"state":    orderStateText,
-		}, "views/partner/order/order_view.html")
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"entity":   template.JS(js),
+		"member":   member,
+		"shopName": shopName,
+		"payment":  payment,
+		"state":    orderStateText,
+	}
+	return ctx.Render(http.StatusOK,"order/order_view.html",d)
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		w.Write([]byte("无效订单"))
-		return
+		return ctx.String(http.StatusOK,"无效订单")
 	}
 
 	if e.ShopId == 0 {
-		this.setShop(ctx, partnerId, e)
-	} else {
-		this.setState(ctx, partnerId, e)
+		return this.setShop(ctx, partnerId, e)
 	}
+		return this.setState(ctx, partnerId, e)
 }
 
 // 锁定，防止重复下单，返回false,表示正在处理订单
-func (this *orderC) lockOrder(ctx *echox.Context) errorbool {
+func (this *orderC) lockOrder(ctx *echox.Context) bool {
 	s := ctx.Session()
 	v := s.Get("pt_order_lock")
 	if v != nil {
@@ -139,27 +135,27 @@ func (this *orderC) lockOrder(ctx *echox.Context) errorbool {
 	s.Save()
 	return true
 }
-func (this *orderC) releaseOrder(ctx *echox.Context) error {
+func (this *orderC) releaseOrder(ctx *echox.Context) {
 	ctx.Session().Remove("pt_order_lock")
 	ctx.Session().Save()
 }
 
 func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 	if !this.lockOrder(ctx) {
-		return
+		return ctx.String(http.StatusOK,"请勿频繁操作")
 	}
 
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
 
 	this.releaseOrder(ctx)
 	if err != nil {
-		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
-	} else {
-		w.Write([]byte("{result:true}"))
+		return ctx.String(http.StatusOK,"{result:false,message:'" + err.Error() + "'}"))
 	}
+		return ctx.String(http.StatusOK,"{result:true}")
+
 }
 
 func (this *orderC) Payment(ctx *echox.Context) error {
@@ -168,10 +164,11 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		w.Write([]byte("无效订单"))
+		return ctx.String(http.StatusOK,"无效订单")
 	} else if e.IsPaid == 1 {
-		w.Write([]byte("订单已付款"))
-	} else {
+		return ctx.String(http.StatusOK,"订单已付款")
+	}
+
 		var shopName string
 		if e.ShopId == 0 {
 			shopName = "未指定"
@@ -179,16 +176,16 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 			shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 		}
 
-		ctx.App.Template().Execute(w, gof.TemplateDataMap{
-			"shopName": shopName,
-			"order":    *e,
-		}, "views/partner/order/payment.html")
-	}
+	d:= echox.NewRenderData()
+	d.Map["shopName"] = shopName
+	d.Map["order"] = *e
+	return ctx.Render(http.StatusOK,"order/payment.html",d)
+
 }
 
 func (this *orderC) Payment_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 
@@ -200,8 +197,8 @@ func (this *orderC) Payment_post(ctx *echox.Context) error {
 	}
 
 	if err != nil {
-		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
+		return ctx.String(http.StatusOK,"{result:false,message:'" + err.Error() + "'}")
 	} else {
-		w.Write([]byte("{result:true,message:'付款成功'}"))
+		return ctx.String(http.StatusOK,"{result:true,message:'付款成功'}")
 	}
 }

@@ -20,7 +20,7 @@ import (
 )
 
 func (this *orderC) setShop(ctx *web.Context,
-	partnerId int, order *shopping.ValueOrder) {
+	partnerId int, order *shopping.ValueOrder)error {
 	shopDr := cache.GetShopDropList(partnerId, -1)
 
 	isNoShop := len(shopDr) == 0
@@ -51,7 +51,7 @@ func (this *orderC) SetShop_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) setState(ctx *web.Context,
-	partnerId int, order *shopping.ValueOrder) {
+	partnerId int, order *shopping.ValueOrder)error {
 
 	var descript string
 	var button string
