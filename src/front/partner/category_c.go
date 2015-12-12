@@ -62,7 +62,7 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request(), ctx.Response()
+	r := ctx.Request()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)

@@ -25,11 +25,6 @@ func getPartnerId(ctx *echox.Context) int {
 	return 0
 }
 
-// 输出错误信息
-func errorOutput(ctx *echox.Context, err string) {
-	return ctx.String(http.StatusOK, "{error:\""+err+"\"}")
-}
-
 func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
 	if len(tags) == 0 || tags == nil {
 		return `<div style="color:red">没有找到任何销售标签!</div>`
