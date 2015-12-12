@@ -22,6 +22,8 @@ import (
 	"html/template"
 	"regexp"
 	"strconv"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
 var _ mvc.Filter = new(categoryC)
@@ -32,23 +34,22 @@ type categoryC struct {
 
 //分类树形功能
 func (this *categoryC) All_category(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"no_pic_url": format.GetGoodsImageUrl(""),
-	}, "views/partner/category/category.html")
+	d := echox.NewRenderData()
+	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
+	return ctx.Render(http.StatusOK,"category/category.html",d)
 }
 
 //分类Json数据
 func (this *categoryC) CategoryJson(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
-	json, _ := json.Marshal(node)
-	ctx.Response.Write(json)
+	return ctx.JSON(http.StatusOK,node)
 }
 
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, nil,
-		"views/partner/category/category_select.html")
+	d := echox.NewRenderData()
+	return ctx.Render(http.StatusOK,"category/category_select.html",d)
 }
 
 //分类Json数据
@@ -58,16 +59,14 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	json, _ := json.Marshal(node)
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"treeJson": template.JS(json),
-		},
-		"views/partner/category/category_create.html")
+	d := echox.NewRenderData()
+	d.Map["treeJson"] =  template.JS(json)
+	return ctx.Render(http.StatusOK,"category/category_create.html",d)
 }
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r, w := ctx.Request(), ctx.Response()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
@@ -77,18 +76,18 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	originOpts := cache.GetDropOptionsOfCategory(partnerId)
 	cateOpts := re.ReplaceAll(originOpts, nil)
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity":    template.JS(json),
-			"cate_opts": template.HTML(cateOpts),
-		},
-		"views/partner/category/category_edit.html")
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"entity":    template.JS(json),
+		"cate_opts": template.HTML(cateOpts),
+	}
+	return ctx.Render(http.StatusOK,"category/category_edit.html",d)
 }
 
 //修改门店信息
 func (this *categoryC) SaveCategory_post(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -101,15 +100,15 @@ func (this *categoryC) SaveCategory_post(ctx *echox.Context) error {
 	} else {
 		result = gof.Message{Result: true, Message: "", Data: id}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK,result)
 }
 
 func (this *categoryC) DelCategory_post(ctx *echox.Context) error {
 	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
-	categoryId, _ := strconv.Atoi(r.Form.Get("id"))
+	categoryId, _ := strconv.Atoi(ctx.Form("id"))
 
 	//删除分类
 	err := dps.SaleService.DeleteCategory(partnerId, categoryId)
@@ -118,5 +117,5 @@ func (this *categoryC) DelCategory_post(ctx *echox.Context) error {
 	} else {
 		result = gof.Message{Result: true, Message: ""}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK,result)
 }
