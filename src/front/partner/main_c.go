@@ -133,7 +133,6 @@ func (this *mainC) Upload_post(ctx *echox.Context) error {
 	return nil
 }
 
-
 func (this *mainC) GeoLocation(ctx *echox.Context) error {
 	this.WebCgi.GeoLocation(ctx)
 	return nil

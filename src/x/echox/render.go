@@ -31,8 +31,7 @@ func getTemplate(dir, pattern string) (t *template.Template) {
 	if !fi.IsDir() {
 		panic(errors.New("path must be directory"))
 	}
-	t = template.Must(template.ParseGlob(dir + "/" + pattern))
-	return t, dirs
+	return template.Must(template.ParseGlob(dir + "/" + pattern))
 }
 
 func NewGoTemplateForEcho(dir string) echo.Renderer {
