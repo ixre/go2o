@@ -47,7 +47,7 @@ func (this *mainC) Login(ctx *echox.Context) error {
 		return this.Login_post(ctx)
 	}
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "login.html", d)
+	return ctx.RenderOK("login.html", d)
 }
 
 func (this *mainC) Login_post(ctx *echox.Context) error {

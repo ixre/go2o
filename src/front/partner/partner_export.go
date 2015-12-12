@@ -16,6 +16,7 @@ import (
 	"github.com/jsix/gof/web"
 	"strconv"
 	"strings"
+	"go2o/src/x/echox"
 )
 
 //==================  数据导出 ===============//
@@ -31,7 +32,7 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 //================== 导出控制器 ==============//
 
 // 获取导出数据
-func GetExportData(ctx *web.Context, partnerId int) {
+func GetExportData(ctx *echox.Context, partnerId int) {
 	r, w := ctx.Request, ctx.Response
 	query := r.URL.Query()
 	r.ParseForm()
@@ -60,9 +61,10 @@ func GetExportData(ctx *web.Context, partnerId int) {
 			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
 			json, _ := json.Marshal(_rows)
 			arr[3] = string(json)
-			w.Write([]byte(strings.Join(arr, "")))
-		} else {
-			w.Write([]byte(`{"error":"` + err.Error() + `"}`))
+			return ctx.StringOK(strings.Join(arr, ""))
 		}
+
+		return ctx.StringOK(`{"error":"` + err.Error() + `"}`)
+
 	}
 }

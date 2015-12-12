@@ -34,7 +34,7 @@ type memberC struct {
 
 func (this *memberC) LevelList(ctx *echox.Context) error {
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "member/level_list.html", d)
+	return ctx.RenderOK("member/level_list.html", d)
 }
 
 //修改门店信息
@@ -45,13 +45,13 @@ func (this *memberC) EditMLevel(ctx *echox.Context) error {
 	js, _ := json.Marshal(entity)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "member/edit_level.html", d)
+	return ctx.RenderOK("member/edit_level.html", d)
 }
 
 func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS("{}")
-	return ctx.Render(http.StatusOK, "member/create_level.html", d)
+	return ctx.RenderOK("member/create_level.html", d)
 }
 
 func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
@@ -98,7 +98,7 @@ func (this *memberC) List(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
-	return ctx.Render(http.StatusOK, "member/member_list.html", d)
+	return ctx.RenderOK("member/member_list.html", d)
 }
 
 // 锁定会员
@@ -120,7 +120,7 @@ func (this *memberC) Member_details(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["memberId"] = memberId
-	return ctx.Render(http.StatusOK, "member/member_details.html", d)
+	return ctx.RenderOK("member/member_details.html", d)
 }
 
 // 会员基本信息
@@ -141,7 +141,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 		"regTime":       format.HanUnixDateTime(m.RegTime),
 	}
 
-	return ctx.Render(http.StatusOK, "member/basic_info.html", d)
+	return ctx.RenderOK("member/basic_info.html", d)
 }
 
 // 会员账户信息
@@ -175,7 +175,7 @@ func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
 	len(e.Name) > 0 && len(e.Network) > 0 {
 		d := echox.NewRenderData()
 		d.Map["bank"] = e
-		return ctx.Render(http.StatusOK, "member/member_curr_bank.html", d)
+		return ctx.RenderOK("member/member_curr_bank.html", d)
 	}
 	return ctx.String(http.StatusOK, "<span class=\"red\">尚未完善</span>")
 }
@@ -205,7 +205,7 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 	}
 	d := echox.NewRenderData()
 	d.Map["m"] = mem
-	return ctx.Render(http.StatusOK, "member/charge.html", d)
+	return ctx.RenderOK("member/charge.html", d)
 
 }
 
@@ -243,7 +243,7 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	d.Map["kind"] =  member.KindBalanceApplyCash
-	return ctx.Render(http.StatusOK, "member/apply_request_list.html", d)
+	return ctx.RenderOK("member/apply_request_list.html", d)
 }
 
 // 审核提现请求
@@ -280,7 +280,7 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["info"] = info
 	d.Map["applyTime"] = time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05")
-	return ctx.Render(http.StatusOK, "member/back_apply_req.html", d)
+	return ctx.RenderOK("member/back_apply_req.html", d)
 }
 
 
@@ -320,7 +320,7 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 		"bank":      bank,
 		"applyTime": time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05"),
 	}
-	return ctx.Render(http.StatusOK, "member/handle_apply_req.html", d)
+	return ctx.RenderOK("member/handle_apply_req.html", d)
 }
 
 func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
@@ -353,5 +353,5 @@ func (this *memberC) Team_rank(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
-	return ctx.Render(http.StatusOK, "member/team_rank.html", d)
+	return ctx.RenderOK("member/team_rank.html", d)
 }

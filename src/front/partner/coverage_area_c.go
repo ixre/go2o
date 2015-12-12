@@ -17,14 +17,14 @@ type coverageAreaC struct {
 
 func (this *coverageAreaC) CoverageAreList(ctx *echox.Context) error {
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "delivery/coverage_area_list.html", d)
+	return ctx.RenderOK("delivery/coverage_area_list.html", d)
 }
 
 func (this *coverageAreaC) Create(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS("{}")
-	return ctx.Render(http.StatusOK, "delivery/create.html", d)
+	return ctx.RenderOK("delivery/create.html", d)
 }
 
 func (this *coverageAreaC) SaveArea_post(ctx *echox.Context) error {

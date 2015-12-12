@@ -22,16 +22,14 @@ import (
 	"strconv"
 )
 
-var _ mvc.Filter = new(adC)
 
 // 广告控制器
 type adC struct {
-	*baseC
 }
 
 //广告列表
 func (this *adC) List(ctx *echox.Context) error {
-	return ctx.Render(http.StatusOK, "ad/ad_list.html", echox.NewRenderData())
+	return ctx.RenderOK("ad/ad_list.html", echox.NewRenderData())
 }
 
 // 修改广告
@@ -44,7 +42,7 @@ func (this *adC) Edit(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "ad/ad_edit.html", d)
+	return ctx.RenderOK("ad/ad_edit.html", d)
 }
 
 // 保存广告
@@ -55,7 +53,7 @@ func (this *adC) Create(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "ad/ad_edit.html", d)
+	return ctx.RenderOK("ad/ad_edit.html", d)
 }
 
 // 删除广告
@@ -112,7 +110,7 @@ func (this *adC) Ad_data2(ctx *echox.Context) error {
 func (this *adC) Ad_data3(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["adId"] = ctx.Query("id")
-	return ctx.Render(http.StatusOK, "ad/ad_data3.html", d)
+	return ctx.RenderOK("ad/ad_data3.html", d)
 }
 
 // 创建广告图片
@@ -128,7 +126,7 @@ func (this *adC) CreateAdImage(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "ad/ad_image.html", d)
+	return ctx.RenderOK("ad/ad_image.html", d)
 }
 
 // 保存广告
@@ -142,7 +140,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "ad/ad_image.html", d)
+	return ctx.RenderOK("ad/ad_image.html", d)
 }
 
 func (this *adC) SaveImage_post(ctx *echox.Context) error {

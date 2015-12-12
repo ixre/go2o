@@ -38,7 +38,7 @@ func (this *goodsC) Item_list(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
-	return ctx.Render(http.StatusOK, "goods/item_list.html", d)
+	return ctx.RenderOK("goods/item_list.html", d)
 }
 
 //货品选择
@@ -47,7 +47,7 @@ func (this *goodsC) Goods_select(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
-	return ctx.Render(http.StatusOK, "goods/goods_select.html", d)
+	return ctx.RenderOK("goods/goods_select.html", d)
 }
 
 func (this *goodsC) Create(ctx *echox.Context) error {
@@ -66,7 +66,7 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
 	}
-	return ctx.Render(http.StatusOK, "goods/create_goods.html", d)
+	return ctx.RenderOK("goods/create_goods.html", d)
 }
 
 func (this *goodsC) Edit(ctx *echox.Context) error {
@@ -91,7 +91,7 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
 	}
-	return ctx.Render(http.StatusOK, "goods/update_goods.html", d)
+	return ctx.RenderOK("goods/update_goods.html", d)
 }
 
 // 保存商品描述
@@ -110,7 +110,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 		"item_id":   e.Id,
 		"item_info": template.HTML(e.Description),
 	}
-	return ctx.Render(http.StatusOK, "goods/item_info.html", d)
+	return ctx.RenderOK("goods/item_info.html", d)
 }
 
 func (this *goodsC) Save_item_info_post(ctx *echox.Context) error {
@@ -211,7 +211,7 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 		"tagsHtml": template.HTML(tagsHtml),
 		"tagValue": tagVal,
 	}
-	return ctx.Render(http.StatusOK, "goods/set_sale_tag.html", d)
+	return ctx.RenderOK("goods/set_sale_tag.html", d)
 }
 
 func (this *goodsC) SaveGoodsSTag_post(ctx *echox.Context) error {
@@ -245,7 +245,7 @@ func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["item_id"] = itemId
-	return ctx.Render(http.StatusOK, "goods/item_ctrl.html", d)
+	return ctx.RenderOK("goods/item_ctrl.html", d)
 }
 
 func (this *goodsC) LvPrice(ctx *echox.Context) error {
@@ -290,7 +290,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 		"goods":   goods,
 		"setHtml": template.HTML(buf.String()),
 	}
-	return ctx.Render(http.StatusOK, "goods/level_price.html", d)
+	return ctx.RenderOK("goods/level_price.html", d)
 }
 
 func (this *goodsC) LvPrice_post(ctx *echox.Context) error {

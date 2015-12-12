@@ -17,25 +17,28 @@ import (
 	"go2o/src/core/service/dps"
 	"html/template"
 	"strconv"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
-func (this *orderC) setShop(ctx *web.Context,
+func (this *orderC) setShop(ctx *echox.Context,
 	partnerId int, order *shopping.ValueOrder)error {
 	shopDr := cache.GetShopDropList(partnerId, -1)
 
 	isNoShop := len(shopDr) == 0
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
 			"shopDr":  template.HTML(shopDr),
 			"noShop":  isNoShop,
 			"orderNo": order.OrderNo,
-		}, "views/partner/order/order_setup_setshop.html")
+		}
+	return ctx.RenderOK("order/order_setup_setshop.html",d)
 }
 
 func (this *orderC) SetShop_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 
 	shopId, err := strconv.Atoi(r.FormValue("shopId"))
@@ -44,13 +47,13 @@ func (this *orderC) SetShop_post(ctx *echox.Context) error {
 			r.FormValue("order_no"), shopId)
 	}
 	if err != nil {
-		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
-	} else {
-		w.Write([]byte("{result:true}"))
+		return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")
 	}
+	return ctx.StringOK("{result:true}")
+
 }
 
-func (this *orderC) setState(ctx *web.Context,
+func (this *orderC) setState(ctx *echox.Context,
 	partnerId int, order *shopping.ValueOrder)error {
 
 	var descript string
@@ -97,10 +100,12 @@ func (this *orderC) setState(ctx *web.Context,
 		}
 	}
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"button":   template.HTML(button),
-			"descript": template.HTML(descript),
-			"order_no": order.OrderNo,
-		}, "views/partner/order/order_setup_setstate.html")
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+
+		"button":   template.HTML(button),
+		"descript": template.HTML(descript),
+		"order_no": order.OrderNo,
+	}
+	return ctx.RenderOK("order/order_setup_setstate.html", d)
 }

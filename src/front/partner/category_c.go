@@ -36,7 +36,7 @@ type categoryC struct {
 func (this *categoryC) All_category(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
-	return ctx.Render(http.StatusOK, "category/category.html", d)
+	return ctx.RenderOK("category/category.html", d)
 }
 
 //分类Json数据
@@ -49,7 +49,7 @@ func (this *categoryC) CategoryJson(ctx *echox.Context) error {
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *echox.Context) error {
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "category/category_select.html", d)
+	return ctx.RenderOK("category/category_select.html", d)
 }
 
 //分类Json数据
@@ -61,7 +61,7 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["treeJson"] = template.JS(json)
-	return ctx.Render(http.StatusOK, "category/category_create.html", d)
+	return ctx.RenderOK("category/category_create.html", d)
 }
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
@@ -81,7 +81,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 		"entity":    template.JS(json),
 		"cate_opts": template.HTML(cateOpts),
 	}
-	return ctx.Render(http.StatusOK, "category/category_edit.html", d)
+	return ctx.RenderOK("category/category_edit.html", d)
 }
 
 //修改门店信息

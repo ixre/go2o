@@ -31,7 +31,7 @@ type mssC struct {
 //邮件模板列表
 func (this *mssC) Mail_template_list(ctx *echox.Context)error{
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "mss/mail_tpl_list.html", d)
+	return ctx.RenderOK("mss/mail_tpl_list.html", d)
 }
 
 // 修改广告

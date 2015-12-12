@@ -31,7 +31,7 @@ type contentC struct {
 func (this *contentC) Page_list(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK, "content/page_list.html", d)
+	return ctx.RenderOK("content/page_list.html", d)
 }
 
 // 修改页面
@@ -44,7 +44,7 @@ func (this *contentC) Page_edit(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "content/page_edit.html", d)
+	return ctx.RenderOK("content/page_edit.html", d)
 }
 
 // 保存页面
@@ -56,7 +56,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.Render(http.StatusOK, "content/page_edit.html", d)
+	return ctx.RenderOK("content/page_edit.html", d)
 }
 
 func (this *contentC) SavePage_post(ctx *echox.Context) error {

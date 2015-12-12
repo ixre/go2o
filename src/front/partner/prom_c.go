@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -21,21 +20,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
-var _ mvc.Filter = new(promC)
 
 type promC struct {
-	*baseC
 }
 
 func (this *promC) List(ctx *echox.Context) error {
-	var flag int
-	flag, _ = strconv.Atoi(ctx.Request.URL.Query().Get("flag"))
-
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"flag": flag,
-	}, fmt.Sprintf("views/partner/promotion/p%d_list.html", flag))
+	flag, _ := strconv.Atoi(ctx.Query("flag"))
+	d := ctx.NewData()
+	d.Map["flag"] = flag
+	return ctx.RenderOK(fmt.Sprintf("promotion/p%d_list.html", flag),d)
 }
 
 // 删除促销
@@ -67,13 +64,14 @@ func (this *promC) Create_cb(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 			"entity":    template.JS(js),
 			"entity2":   template.JS(js2),
 			"goods_cls": "hidden",
-		},
-		"views/partner/promotion/cash_back.html")
+		}
+
+	return ctx.RenderOK("promotion/cash_back.html",d)
 }
 
 func (this *promC) Edit_cb(ctx *echox.Context) error {
@@ -88,14 +86,16 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 	goods := dps.SaleService.GetValueGoods(getPartnerId(ctx), e.GoodsId)
 	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
+	d:= ctx.NewData()
+
+	d.Map = gof.TemplateDataMap{
 			"entity":     template.JS(js),
 			"entity2":    template.JS(js2),
 			"goods_info": template.HTML(goodsInfo),
 			"goods_cls":  "",
-		},
-		"views/partner/promotion/cash_back.html")
+		}
+
+	return ctx.RenderOK("promotion/cash_back.html",d)
 }
 
 // 保存现金返现
@@ -141,13 +141,14 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map =  gof.TemplateDataMap{
 			"entity":  template.JS(js),
 			"entity2": template.JS(js2),
 			"levelDr": template.HTML(levelDr),
-		},
-		"views/partner/promotion/coupon.html")
+		}
+
+	return ctx.RenderOK("promotion/coupon.html",d)
 }
 
 func (this *promC) Edit_coupon(ctx *echox.Context) error {
@@ -156,8 +157,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 	e, e2 := dps.PromService.GetPromotion(id)
 
 	if e.PartnerId != getPartnerId(ctx) {
-		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
-		return
+		return ctx.StringOK(promotion.ErrNoSuchPromotion.Error())
 	}
 
 	js, _ := json.Marshal(e)
@@ -165,13 +165,14 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 			"entity":  template.JS(js),
 			"entity2": template.JS(js2),
 			"levelDr": template.HTML(levelDr),
-		},
-		"views/partner/promotion/coupon.html")
+		}
+
+	return ctx.RenderOK("promotion/coupon.html",d)
 }
 
 // 保存优惠券
@@ -213,20 +214,22 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 	if e.PartnerId != getPartnerId(ctx) {
-		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
-		return
+		return ctx.StringOK(promotion.ErrNoSuchPromotion.Error())
+
 	}
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
+
+	d := ctx.NewData()
+	d.Map =  gof.TemplateDataMap{
 			"entity":  e,
 			"entity2": e2,
-		},
-		"views/partner/promotion/bind_coupon.html")
+		}
+
+	return ctx.RenderOK("promotion/bind_coupon.html",d)
 }
 
 func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))
@@ -240,10 +243,10 @@ func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
 		}
 	}
 	if err != nil {
-		result.Result = false
 		result.Message = err.Error()
 	} else {
 		result.Result = true
 	}
-	w.Write(result.Marshal())
+
+	return ctx.JSON(http.StatusOK,result)
 }
