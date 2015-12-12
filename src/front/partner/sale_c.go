@@ -17,33 +17,31 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"strconv"
 )
 
-var _ mvc.Filter = new(saleC)
-
 type saleC struct {
-	*baseC
 }
 
 func (this *saleC) TagList(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/sale/sale_tag_list.html")
+	d := ctx.NewData()
+	return ctx.RenderOK("sale/sale_tag_list.html", d)
 }
 
 //修改门店信息
 func (this *saleC) Edit_stag(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.SaleService.GetSaleTag(partnerId, id)
 	bys, _ := json.Marshal(entity)
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity": template.JS(bys),
-		},
-		"views/partner/sale/sale_tag_form.html")
+	d := ctx.NewData()
+	d.Map["entity"] = template.JS(bys)
+	return ctx.RenderOK("sale/sale_tag_form.html", d)
 }
 
 func (this *saleC) Create_stag(ctx *echox.Context) error {
@@ -52,11 +50,9 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 	}
 	bys, _ := json.Marshal(entity)
 
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(bys),
-		},
-		"views/partner/sale/sale_tag_form.html")
+	d := ctx.NewData()
+	d.Map["entity"] = template.JS(bys)
+	return ctx.RenderOK("sale/sale_tag_form.html", d)
 }
 
 func (this *saleC) Save_stag_post(ctx *echox.Context) error {

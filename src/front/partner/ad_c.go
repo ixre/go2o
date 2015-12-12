@@ -22,7 +22,6 @@ import (
 	"strconv"
 )
 
-
 // 广告控制器
 type adC struct {
 }

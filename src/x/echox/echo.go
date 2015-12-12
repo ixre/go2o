@@ -98,16 +98,15 @@ func (this *Echo) Danyx(path string, v interface{}) {
 	this.Any(path, this.parseHandler(h))
 }
 
-
-func (this *Context) StringOK(s string)error{
-	return this.String(http.StatusOK,s)
+func (this *Context) StringOK(s string) error {
+	return this.String(http.StatusOK, s)
 }
 
-func (this *Context) RenderOK(name string,data interface{})error{
-	return this.Render(http.StatusOK,name,data)
+func (this *Context) RenderOK(name string, data interface{}) error {
+	return this.Render(http.StatusOK, name, data)
 }
 
-func (this *Context) NewData()*TemplateData{
+func (this *Context) NewData() *TemplateData {
 	return &TemplateData{
 		Var:  _globTemplateData,
 		Map:  make(map[string]interface{}),

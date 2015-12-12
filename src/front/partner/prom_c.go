@@ -16,14 +16,13 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"go2o/src/x/echox"
-	"net/http"
 )
-
 
 type promC struct {
 }
@@ -32,7 +31,7 @@ func (this *promC) List(ctx *echox.Context) error {
 	flag, _ := strconv.Atoi(ctx.Query("flag"))
 	d := ctx.NewData()
 	d.Map["flag"] = flag
-	return ctx.RenderOK(fmt.Sprintf("promotion/p%d_list.html", flag),d)
+	return ctx.RenderOK(fmt.Sprintf("promotion/p%d_list.html", flag), d)
 }
 
 // 删除促销
@@ -66,12 +65,12 @@ func (this *promC) Create_cb(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-			"entity":    template.JS(js),
-			"entity2":   template.JS(js2),
-			"goods_cls": "hidden",
-		}
+		"entity":    template.JS(js),
+		"entity2":   template.JS(js2),
+		"goods_cls": "hidden",
+	}
 
-	return ctx.RenderOK("promotion/cash_back.html",d)
+	return ctx.RenderOK("promotion/cash_back.html", d)
 }
 
 func (this *promC) Edit_cb(ctx *echox.Context) error {
@@ -86,16 +85,16 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 	goods := dps.SaleService.GetValueGoods(getPartnerId(ctx), e.GoodsId)
 	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
-	d:= ctx.NewData()
+	d := ctx.NewData()
 
 	d.Map = gof.TemplateDataMap{
-			"entity":     template.JS(js),
-			"entity2":    template.JS(js2),
-			"goods_info": template.HTML(goodsInfo),
-			"goods_cls":  "",
-		}
+		"entity":     template.JS(js),
+		"entity2":    template.JS(js2),
+		"goods_info": template.HTML(goodsInfo),
+		"goods_cls":  "",
+	}
 
-	return ctx.RenderOK("promotion/cash_back.html",d)
+	return ctx.RenderOK("promotion/cash_back.html", d)
 }
 
 // 保存现金返现
@@ -142,13 +141,13 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
 	d := ctx.NewData()
-	d.Map =  gof.TemplateDataMap{
-			"entity":  template.JS(js),
-			"entity2": template.JS(js2),
-			"levelDr": template.HTML(levelDr),
-		}
+	d.Map = gof.TemplateDataMap{
+		"entity":  template.JS(js),
+		"entity2": template.JS(js2),
+		"levelDr": template.HTML(levelDr),
+	}
 
-	return ctx.RenderOK("promotion/coupon.html",d)
+	return ctx.RenderOK("promotion/coupon.html", d)
 }
 
 func (this *promC) Edit_coupon(ctx *echox.Context) error {
@@ -167,12 +166,12 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-			"entity":  template.JS(js),
-			"entity2": template.JS(js2),
-			"levelDr": template.HTML(levelDr),
-		}
+		"entity":  template.JS(js),
+		"entity2": template.JS(js2),
+		"levelDr": template.HTML(levelDr),
+	}
 
-	return ctx.RenderOK("promotion/coupon.html",d)
+	return ctx.RenderOK("promotion/coupon.html", d)
 }
 
 // 保存优惠券
@@ -219,12 +218,12 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 	}
 
 	d := ctx.NewData()
-	d.Map =  gof.TemplateDataMap{
-			"entity":  e,
-			"entity2": e2,
-		}
+	d.Map = gof.TemplateDataMap{
+		"entity":  e,
+		"entity2": e2,
+	}
 
-	return ctx.RenderOK("promotion/bind_coupon.html",d)
+	return ctx.RenderOK("promotion/bind_coupon.html", d)
 }
 
 func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
@@ -248,5 +247,5 @@ func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
 		result.Result = true
 	}
 
-	return ctx.JSON(http.StatusOK,result)
+	return ctx.JSON(http.StatusOK, result)
 }

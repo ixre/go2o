@@ -15,25 +15,25 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
-	"html/template"
-	"strconv"
 	"go2o/src/x/echox"
+	"html/template"
 	"net/http"
+	"strconv"
 )
 
 func (this *orderC) setShop(ctx *echox.Context,
-	partnerId int, order *shopping.ValueOrder)error {
+	partnerId int, order *shopping.ValueOrder) error {
 	shopDr := cache.GetShopDropList(partnerId, -1)
 
 	isNoShop := len(shopDr) == 0
 
 	d := echox.NewRenderData()
 	d.Map = map[string]interface{}{
-			"shopDr":  template.HTML(shopDr),
-			"noShop":  isNoShop,
-			"orderNo": order.OrderNo,
-		}
-	return ctx.RenderOK("order/order_setup_setshop.html",d)
+		"shopDr":  template.HTML(shopDr),
+		"noShop":  isNoShop,
+		"orderNo": order.OrderNo,
+	}
+	return ctx.RenderOK("order/order_setup_setshop.html", d)
 }
 
 func (this *orderC) SetShop_post(ctx *echox.Context) error {
@@ -54,7 +54,7 @@ func (this *orderC) SetShop_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) setState(ctx *echox.Context,
-	partnerId int, order *shopping.ValueOrder)error {
+	partnerId int, order *shopping.ValueOrder) error {
 
 	var descript string
 	var button string

@@ -18,27 +18,25 @@ import (
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"strconv"
 )
 
-var _ mvc.Filter = new(shopC)
-
 type shopC struct {
-	*baseC
 }
 
 func (this *shopC) ShopList(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/shop/shop_list.html")
+	d := ctx.NewData()
+	return ctx.RenderOK("shop/shop_list.html", d)
 }
 
 //修改门店信息
 func (this *shopC) Create(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS("{}"),
-		},
-		"views/partner/shop/create.html")
+	d := ctx.NewData()
+	d.Map["entity"] = template.JS("{}")
+	return ctx.RenderOK("shop/create.html", d)
 }
 
 //修改门店信息
@@ -49,17 +47,15 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
 	entity, _ := json.Marshal(shop)
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity": template.JS(entity),
-		},
-		"views/partner/shop/modify.html")
+	d := ctx.NewData()
+	d.Map["entity"] = template.JS(entity)
+	return ctx.RenderOK("shop/modify.html", d)
 }
 
 //修改门店信息
 func (this *shopC) SaveShop_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -73,12 +69,13 @@ func (this *shopC) SaveShop_post(ctx *echox.Context) error {
 	} else {
 		result = gof.Message{Result: true, Message: "", Data: id}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK, result)
 }
 
 func (this *shopC) Del_post(ctx *echox.Context) error {
+	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
@@ -86,8 +83,9 @@ func (this *shopC) Del_post(ctx *echox.Context) error {
 	}
 
 	if err != nil {
-		w.Write([]byte("{result:false,message:'" + err.Error() + "'}"))
+		result.Message = err.Error()
 	} else {
-		w.Write([]byte("{result:true}"))
+		result.Result = true
 	}
+	return ctx.JSON(http.StatusOK, result)
 }

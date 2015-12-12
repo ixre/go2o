@@ -22,11 +22,11 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"strconv"
 	"time"
-	"go2o/src/x/echox"
-	"net/http"
 )
 
 type memberC struct {
@@ -149,21 +149,20 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	acc := dps.MemberService.GetAccount(memberId)
 	if acc == nil {
-		return ctx.String(http.StatusOK,"no such account")
+		return ctx.String(http.StatusOK, "no such account")
 	}
 
-		d := echox.NewRenderData()
-		d.Map = map[string]interface{}{
-				"acc": acc,
-				"balanceAccountAlias": variable.AliasBalanceAccount,
-				"presentAccountAlias": variable.AliasPresentAccount,
-				"flowAccountAlias":    variable.AliasFlowAccount,
-				"growAccountAlias":    variable.AliasGrowAccount,
-				"integralAlias":       variable.AliasIntegral,
-				"updateTime":          format.HanUnixDateTime(acc.UpdateTime),
-			}
-		return ctx.Render(http.StatusOK,"member/account_info.html",d)
-
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"acc": acc,
+		"balanceAccountAlias": variable.AliasBalanceAccount,
+		"presentAccountAlias": variable.AliasPresentAccount,
+		"flowAccountAlias":    variable.AliasFlowAccount,
+		"growAccountAlias":    variable.AliasGrowAccount,
+		"integralAlias":       variable.AliasIntegral,
+		"updateTime":          format.HanUnixDateTime(acc.UpdateTime),
+	}
+	return ctx.Render(http.StatusOK, "member/account_info.html", d)
 
 }
 
@@ -172,7 +171,7 @@ func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("member_id"))
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
-	len(e.Name) > 0 && len(e.Network) > 0 {
+		len(e.Name) > 0 && len(e.Network) > 0 {
 		d := echox.NewRenderData()
 		d.Map["bank"] = e
 		return ctx.RenderOK("member/member_curr_bank.html", d)
@@ -242,7 +241,7 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
-	d.Map["kind"] =  member.KindBalanceApplyCash
+	d.Map["kind"] = member.KindBalanceApplyCash
 	return ctx.RenderOK("member/apply_request_list.html", d)
 }
 
@@ -282,7 +281,6 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 	d.Map["applyTime"] = time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05")
 	return ctx.RenderOK("member/back_apply_req.html", d)
 }
-
 
 func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message

@@ -27,7 +27,7 @@ func getPartnerId(ctx *echox.Context) int {
 
 // 输出错误信息
 func errorOutput(ctx *echox.Context, err string) {
-	return ctx.String(http.StatusOK,"{error:\"" + err + "\"}"))
+	return ctx.String(http.StatusOK, "{error:\""+err+"\"}")
 }
 
 func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {

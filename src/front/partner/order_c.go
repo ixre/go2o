@@ -18,10 +18,10 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
-	"html/template"
-	"strings"
 	"go2o/src/x/echox"
+	"html/template"
 	"net/http"
+	"strings"
 )
 
 type orderC struct {
@@ -32,7 +32,7 @@ func (this *orderC) List(ctx *echox.Context) error {
 	shopsJson := cache.GetShopsJson(partnerId)
 	d := echox.NewRenderData()
 	d.Map["shops"] = template.JS(shopsJson)
-	return ctx.Render(http.StatusOK,"order/order_list.html",d)
+	return ctx.Render(http.StatusOK, "order/order_list.html", d)
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
@@ -41,12 +41,12 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["shops"] = template.JS(shopsJson)
-	return ctx.Render(http.StatusOK,"order/order_waitpay_list.html",d)
+	return ctx.Render(http.StatusOK, "order/order_waitpay_list.html", d)
 }
 
 func (this *orderC) Cancel(ctx *echox.Context) error {
 	d := echox.NewRenderData()
-	return ctx.Render(http.StatusOK,"order/cancel.html",d)
+	return ctx.Render(http.StatusOK, "order/cancel.html", d)
 }
 
 func (this *orderC) Cancel_post(ctx *echox.Context) error {
@@ -59,25 +59,25 @@ func (this *orderC) Cancel_post(ctx *echox.Context) error {
 		r.FormValue("order_no"), reason)
 
 	if err == nil {
-		result.Result =true
+		result.Result = true
 	} else {
 		result.Message = err.Error()
 	}
-	return ctx.JSON(http.StatusOK,result)
+	return ctx.JSON(http.StatusOK, result)
 }
 
 func (this *orderC) View(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		return ctx.String(http.StatusOK,"无效订单")
+		return ctx.String(http.StatusOK, "无效订单")
 	}
 
 	member := dps.MemberService.GetMember(e.MemberId)
 	if member == nil {
-		return ctx.String(http.StatusOK,"无效订单")
+		return ctx.StringOK("无效订单")
 	}
 
 	e.ItemsInfo = strings.Replace(e.ItemsInfo, "\n", "<br />", -1)
@@ -106,7 +106,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 		"payment":  payment,
 		"state":    orderStateText,
 	}
-	return ctx.Render(http.StatusOK,"order/order_view.html",d)
+	return ctx.Render(http.StatusOK, "order/order_view.html", d)
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
@@ -115,13 +115,13 @@ func (this *orderC) Setup(ctx *echox.Context) error {
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		return ctx.String(http.StatusOK,"无效订单")
+		return ctx.String(http.StatusOK, "无效订单")
 	}
 
 	if e.ShopId == 0 {
 		return this.setShop(ctx, partnerId, e)
 	}
-		return this.setState(ctx, partnerId, e)
+	return this.setState(ctx, partnerId, e)
 }
 
 // 锁定，防止重复下单，返回false,表示正在处理订单
@@ -142,8 +142,9 @@ func (this *orderC) releaseOrder(ctx *echox.Context) {
 
 func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 	if !this.lockOrder(ctx) {
-		return ctx.String(http.StatusOK,"请勿频繁操作")
+		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
+	var msg gof.Message
 
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
@@ -152,34 +153,37 @@ func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 
 	this.releaseOrder(ctx)
 	if err != nil {
-		return ctx.String(http.StatusOK,"{result:false,message:'" + err.Error() + "'}"))
+		msg.Message = err.Error()
+
+	} else {
+		msg.Result = true
 	}
-		return ctx.String(http.StatusOK,"{result:true}")
+	return ctx.JSON(http.StatusOK, msg)
 
 }
 
 func (this *orderC) Payment(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
-		return ctx.String(http.StatusOK,"无效订单")
+		return ctx.String(http.StatusOK, "无效订单")
 	} else if e.IsPaid == 1 {
-		return ctx.String(http.StatusOK,"订单已付款")
+		return ctx.String(http.StatusOK, "订单已付款")
 	}
 
-		var shopName string
-		if e.ShopId == 0 {
-			shopName = "未指定"
-		} else {
-			shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
-		}
+	var shopName string
+	if e.ShopId == 0 {
+		shopName = "未指定"
+	} else {
+		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
+	}
 
-	d:= echox.NewRenderData()
+	d := echox.NewRenderData()
 	d.Map["shopName"] = shopName
 	d.Map["order"] = *e
-	return ctx.Render(http.StatusOK,"order/payment.html",d)
+	return ctx.Render(http.StatusOK, "order/payment.html", d)
 
 }
 
@@ -197,8 +201,8 @@ func (this *orderC) Payment_post(ctx *echox.Context) error {
 	}
 
 	if err != nil {
-		return ctx.String(http.StatusOK,"{result:false,message:'" + err.Error() + "'}")
+		return ctx.String(http.StatusOK, "{result:false,message:'"+err.Error()+"'}")
 	} else {
-		return ctx.String(http.StatusOK,"{result:true,message:'付款成功'}")
+		return ctx.String(http.StatusOK, "{result:true,message:'付款成功'}")
 	}
 }
