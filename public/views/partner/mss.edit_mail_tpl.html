@@ -11,14 +11,14 @@
         <div class="label"><span class="star">*</span>模板名称：</div>
         <div class="in">
             <input type="hidden" field="Id" value="0" />
-            <input class="tb_normal ui-validate" required="true" length="[1,40]" summary="{required:'模板名称不能为空!',length:'模板名称长度1-40字!'}" type="text" field="Name" style="width: 500px"/>
+            <input class="ui-box ui-validate" required="true" length="[1,40]" summary="{required:'模板名称不能为空!',length:'模板名称长度1-40字!'}" type="text" field="Name" style="width: 500px"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="star">*</span>邮件主题：</div>
         <div class="in">
-            <input class="tb_normal ui-validate" required="true" length="[1,100]" summary="{required:'主题不能为空!',length:'主题长度1-100字!'}" type="text" field="Subject" id="title" style="width: 500px"/>
+            <input class="ui-box ui-validate" required="true" length="[1,100]" summary="{required:'主题不能为空!',length:'主题长度1-100字!'}" type="text" field="Subject" id="title" style="width: 500px"/>
         </div>
     </div>
 
@@ -48,8 +48,11 @@
     <div class="fl">
         <div class="label">&nbsp;</div>
         <div class="in">
-            <input class="btn" type="button" value="提交" onclick="return submitForm();"/>
-            <input class="btn" type="reset" value="重置"/>
+            <span class="ui-button w150" id="btn_save">
+                <span class="button-inner">
+                <span class="button-txt">保存</span>
+                <input type="button"></span>
+            </span>
         </div>
     </div>
 
@@ -104,7 +107,7 @@
         return false;
     }
     window.saveData = submitForm;
-
+    j6.$('btn_save').onclick = submitForm;
     j6.$('alias').onblur = function () {
         if (this.nodeName) {
             var ele = this;

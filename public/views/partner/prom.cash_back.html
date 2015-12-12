@@ -12,7 +12,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>促销标题：</div>
         <div class="in">
-            <input type="text" class="box ui-validate" required="true" length="[,45]" field="ShortName"/>
+            <input type="text" class="ui-box ui-validate" required="true" length="[,45]" field="ShortName"/>
             标题尽量简短或留空由系统自动生成
         </div>
     </div>
@@ -34,7 +34,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>商品编号：</div>
         <div class="in">
-            <input type="hidden" class="box ui-validate" disabled="disabled" field="GoodsId" style="width:40px"/>
+            <input type="hidden" class="ui-box ui-validate" disabled="disabled" field="GoodsId" style="width:40px"/>
             <a href="javascript:;" class="btn" id="btn_sel_goods">选择商品</a>
             <div class="sel_result {{.Map.goods_cls}}">
                 选择的商品为:<label id="goods_info">{{.Map.goods_info}}</label>
@@ -45,14 +45,14 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>金额要求：</div>
         <div class="in">
-            <input type="text" class="box ui-validate" required="true" isnumber="true" value="0" field="MinFee" style="width:60px"/>
+            <input type="text" class="ui-box ui-validate" required="true" isnumber="true" value="0" field="MinFee" style="width:60px"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>返现金额：</div>
         <div class="in">
-            <input type="text" class="box ui-validate" required="true" isnumber="true" value="0" field="BackFee" style="width:60px"/>
+            <input type="text" class="ui-box ui-validate" required="true" isnumber="true" value="0" field="BackFee" style="width:60px"/>
             金额为整数
         </div>
     </div>
@@ -60,7 +60,7 @@
     <div class="fl">
         <div class="label">自定义数据：</div>
         <div class="in">
-            <textarea rows="3" class="box ui-validate" field="DataTag"></textarea>
+            <textarea rows="3" class="ui-box ui-validate" field="DataTag"></textarea>
             <div class="note">
                 数据用于业务开发中的数据支持，默认留空。格式可参考：键:值|键:值
             </div>
@@ -70,7 +70,7 @@
     <div class="fl">
         <div class="label">详细描述：</div>
         <div class="in">
-            <textarea rows="3" class="box ui-validate" length="[,200]" field="Description"></textarea>
+            <textarea rows="3" class="ui-box ui-validate" length="[,200]" field="Description"></textarea>
         </div>
     </div>
 

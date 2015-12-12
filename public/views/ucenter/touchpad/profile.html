@@ -17,14 +17,14 @@
             <div class="fl">
                 <div class="label">姓名：</div>
                 <div class="in">
-                    <input class="box" class="box" type="text" class="ui-validate ui-box" required="true" field="Name"
+                    <input class="ui-box" class="ui-box" type="text" class="ui-validate ui-box" required="true" field="Name"
                            summary="{required:'姓名不能为空',regex:'必须为2-4位中文'}"/><span class="tip"></span>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">性别：</div>
                 <div class="in">
-                    <input class="box" type="radio" field="Sex" name="sex" value="1" id="sex1" checked="checked"/><label
+                    <input class="ui-box" type="radio" field="Sex" name="sex" value="1" id="sex1" checked="checked"/><label
                         class="auto" for="sex1">先生</label>&nbsp;
                     <input type="radio" field="Sex" name="sex" value="2" id="sex2"/><label class="auto"
                                                                                            for="sex2">女士</label>
@@ -33,7 +33,7 @@
             <div class="fl">
                 <div class="label">手机号码：</div>
                 <div class="in">
-                    <input class="box" type="text" class="ui-validate ui-box" required="true" field="Phone"
+                    <input class="ui-box" type="text" class="ui-validate ui-box" required="true" field="Phone"
                            summary="{error:'不正确',used:'已被使用',required:'手机号码不能为空'}"/><span class="tip"></span>
                 </div>
             </div>
@@ -41,27 +41,27 @@
             <div class="fl">
                 <div class="label">所在地址：</div>
                 <div class="in">
-                    <input class="box" type="text" class="ui-validate ui-box" required="true" field="Address"
+                    <input class="ui-box" type="text" class="ui-validate ui-box" required="true" field="Address"
                            summary="{required:'地址不能为空',regex:'地址需详细到门牌号'}"/><span class="tip"></span>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">出生日期：</div>
                 <div class="in">
-                    <input class="box" type="text" class="ui-validate ui-box" id="birthday" field="BirthDay"/><span class="tip"></span>
+                    <input class="ui-box" type="text" class="ui-validate ui-box" id="birthday" field="BirthDay"/><span class="tip"></span>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">QQ号码：</div>
                 <div class="in">
-                    <input class="box" type="text" class="ui-validate ui-box" regex="^(\d{0}|\d{5,11})$" Field="qq"
+                    <input class="ui-box" type="text" class="ui-validate ui-box" regex="^(\d{0}|\d{5,11})$" Field="qq"
                            err="{regex:'格式错误应为5-11位数字'}"/><span class="tip"></span>
                 </div>
             </div>
             <div class="fl">
                 <div class="label">电子邮箱：</div>
                 <div class="in">
-                    <input class="box" type="text" class="ui-validate ui-box" length="[0,50]" Field="email"
+                    <input class="ui-box" type="text" class="ui-validate ui-box" length="[0,50]" Field="email"
                            err="邮箱{regex:'格式不正确',length:'必须长度小于50'}"/><span class="tip">&nbsp;邮箱可用于找回密码</span>
                 </div>
             </div>

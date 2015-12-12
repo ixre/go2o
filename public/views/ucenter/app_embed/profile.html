@@ -18,7 +18,7 @@
             <div class="fl">
                 <div class="label">姓名：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" required="true" tipin="tip_name" field="Name"
+                    <input class="ui-box ui-validate" type="text" required="true" tipin="tip_name" field="Name"
                            summary="{required:'请填写您的姓名',regex:'必须为2-4位中文'}" style="width:75%"/>
                     <span class="fv" id="tip_name"></span>
                 </div>
@@ -26,7 +26,7 @@
             <div class="fl">
                 <div class="label">性别：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="radio" field="Sex" name="sex" value="1" id="sex1" checked="checked"/><label
+                    <input class="ui-box ui-validate" type="radio" field="Sex" name="sex" value="1" id="sex1" checked="checked"/><label
                         class="auto" for="sex1">先生</label>&nbsp;
                     <input type="radio" field="Sex" name="sex" value="2" id="sex2"/><label class="auto"
                                                                                            for="sex2">女士</label>
@@ -35,7 +35,7 @@
             <div class="fl">
                 <div class="label">手机号码：</div>
                 <div class="in">
-                    <input class="box ui-validate" regex="^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$" required="true" tipin="tip_phone" field="Phone"
+                    <input class="ui-box ui-validate" regex="^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6])(\d{8})$" required="true" tipin="tip_phone" field="Phone"
                            summary="{used:'已被使用',regex:'请填写正确的手机号码'}" style="width:75%"/>
                     <span class="fv" id="tip_phone"></span>
                 </div>
@@ -44,7 +44,7 @@
             <div class="fl">
                 <div class="label">所在地址：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" required="true" tipin="tip_address" field="Address"
+                    <input class="ui-box ui-validate" type="text" required="true" tipin="tip_address" field="Address"
                            summary="{required:'请填写地址',regex:'地址需详细到门牌号'}" style="width:75%"/>
                     <span class="fv" id="tip_address"></span>
                 </div>
@@ -52,7 +52,7 @@
             <div class="fl">
                 <div class="label">出生日期：</div>
                 <div class="in">
-                    <input class="box ui-validate" regex="^\d{4}-\d{2}-\d{2}$" id="birthday" tipin="tip_birthday" field="BirthDay"
+                    <input class="ui-box ui-validate" regex="^\d{4}-\d{2}-\d{2}$" id="birthday" tipin="tip_birthday" field="BirthDay"
                             summary="{regex:'请正确填写生日'}" style="width:75%"/>
                     <span class="fv" id="tip_birthday"></span>
                 </div>
@@ -60,7 +60,7 @@
             <div class="fl">
                 <div class="label">QQ号码：</div>
                 <div class="in">
-                    <input class="box ui-validate" regex="^(\d{5,11})$" tipin="tip_qq" Field="Qq"
+                    <input class="ui-box ui-validate" regex="^(\d{5,11})$" tipin="tip_qq" Field="Qq"
                            summary="{regex:'请正确填写QQ号码'}" style="width:75%"/>
                     <span class="fv" id="tip_qq"></span>
                 </div>
@@ -68,7 +68,7 @@
             <div class="fl">
                 <div class="label">电子邮箱：</div>
                 <div class="in">
-                    <input class="box ui-validate" regex="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
+                    <input class="ui-box ui-validate" regex="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
                            tipin="tip_mail" Field="Email" summary="{regex:'请正确填写邮箱'}" style="width:75%"/>
                     <span class="fv" id="tip_mail"><br />邮箱可用于找回密码</span>
                 </div>

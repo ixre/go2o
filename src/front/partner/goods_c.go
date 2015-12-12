@@ -46,7 +46,7 @@ func (this *goodsC) Goods_select(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
-	return ctx.RenderOK("goods.goods_select.html", d)
+	return ctx.RenderOK("goods.select.html", d)
 }
 
 func (this *goodsC) Create(ctx *echox.Context) error {
@@ -261,7 +261,7 @@ func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	d.Map["item_id"] = itemId
-	return ctx.RenderOK("goods/item_ctrl.html", d)
+	return ctx.RenderOK("goods.item_ctrl.html", d)
 }
 
 func (this *goodsC) LvPrice(ctx *echox.Context) error {

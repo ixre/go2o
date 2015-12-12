@@ -16,7 +16,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>邮件模板：</div>
         <div class="in">
-            <select class="box" field="mss_profile_complete_mail_tpl" required="true">
+            <select class="ui-box" field="mss_profile_complete_mail_tpl" required="true">
                 <option value="0">一请选择一</option>
                 {{.Map.mailTplOpt}}
             </select>
@@ -26,8 +26,11 @@
     <div class="fl">
         <div class="label">&nbsp;</div>
         <div class="in">
-            <input class="btn" type="button" value="保存" id="btn_save" />
-            <input class="btn" type="reset" value="重置" />
+            <span class="ui-button w150" id="btn_save">
+                <span class="button-inner">
+                <span class="button-txt">保存</span>
+                <input type="button"></span>
+            </span>
         </div>
     </div>
 

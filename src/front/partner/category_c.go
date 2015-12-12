@@ -81,37 +81,43 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 }
 
 //修改门店信息
-func (this *categoryC) SaveCategory_post(ctx *echox.Context) error {
+func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
 
-	e := sale.ValueCategory{}
-	web.ParseFormToEntity(r.Form, &e)
+		e := sale.ValueCategory{}
+		web.ParseFormToEntity(r.Form, &e)
 
-	id, err := dps.SaleService.SaveCategory(partnerId, &e)
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: "", Data: id}
+		id, err := dps.SaleService.SaveCategory(partnerId, &e)
+		if err != nil {
+			result = gof.Message{Result: false, Message: err.Error()}
+		} else {
+			result = gof.Message{Result: true, Message: "", Data: id}
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
-func (this *categoryC) DelCategory_post(ctx *echox.Context) error {
+func (this *categoryC) DelCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	var result gof.Message
-	r.ParseForm()
-	categoryId, _ := strconv.Atoi(r.FormValue("id"))
+	if r.Method == "POST" {
+		var result gof.Message
+		r.ParseForm()
+		categoryId, _ := strconv.Atoi(r.FormValue("id"))
 
-	//删除分类
-	err := dps.SaleService.DeleteCategory(partnerId, categoryId)
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
+		//删除分类
+		err := dps.SaleService.DeleteCategory(partnerId, categoryId)
+		if err != nil {
+			result = gof.Message{Result: false, Message: err.Error()}
+		} else {
+			result = gof.Message{Result: true, Message: ""}
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }

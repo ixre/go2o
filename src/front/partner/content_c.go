@@ -83,3 +83,23 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 	}
 	return nil
 }
+
+func (this *contentC) Page_del(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		var result gof.Message
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		err := dps.ContentService.DeletePage(partnerId,id)
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}

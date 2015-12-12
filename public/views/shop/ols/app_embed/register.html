@@ -27,7 +27,7 @@
             <div class="pl">
                 <div class="label">用户名：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" tipin="tip_usr" field="Usr" id="usr" required="true"
+                    <input class="ui-box ui-validate" type="text" tipin="tip_usr" field="Usr" id="usr" required="true"
                            summary="{required:'请输入用户名','1':'必须以字母开头','2':'用户名长度为6-15位','3':'必须为字母或数字的组合','4':'用户名已被占用'}"/>
 
                     <span class="tip" id="tip_usr">6-15位数字和字母组合</span>
@@ -42,7 +42,7 @@
             <div class="pl">
                 <div class="label">密码：</div>
                 <div class="in">
-                    <input class="box ui-validate" length="[6,]" type="password" field="Pwd" id="pwd" required="true"
+                    <input class="ui-box ui-validate" length="[6,]" type="password" field="Pwd" id="pwd" required="true"
                            tipin="tip_pwd" summary="{required:'请输入密码','1':'首尾不能为下划线','2':'密码长度为6-12位','3':'格式输入有误'}"/>
                     <span class="tip" id="tip_pwd">密码最少6位</span>
                 </div>
@@ -51,7 +51,7 @@
             <div class="pl">
                 <div class="label">重复密码：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="password" id="rePwd" required="true"
+                    <input class="ui-box ui-validate" type="password" id="rePwd" required="true"
                            summary="{required:'请再次输入密码'}"/>
                 </div>
             </div>
@@ -59,7 +59,7 @@
             <div class="pl">
                 <div class="label">手机号码：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" id="phone" field="Phone" tipin="tip_phone"
+                    <input class="ui-box ui-validate" type="text" id="phone" field="Phone" tipin="tip_phone"
                            summary="{'0':'手机号码不正确','1':'手机号码已被使用','2':'手机号码不能为空'}"/>
                     <span class="tip" id="tip_phone"></span>
                 </div>
@@ -68,7 +68,7 @@
             <div class="pl hidden">
                 <div class="label">地址：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" id="address" field="Address"
+                    <input class="ui-box ui-validate" type="text" id="address" field="Address"
                            summary="{'0':'地址不能为空'}"/>
 
                     <div>
@@ -80,7 +80,7 @@
             <div class="pl">
                 <div class="label">推荐码：</div>
                 <div class="in">
-                    <input class="box ui-validate" type="text" field="invi_code" id="invi_code" value="{{.Map.invi_code}}" tipIn="tip_iv" style="width:40px"/>
+                    <input class="ui-box ui-validate" type="text" field="invi_code" id="invi_code" value="{{.Map.invi_code}}" tipIn="tip_iv" style="width:40px"/>
                     <span class="tip" id="tip_iv">没有推荐码可留空</span>
                 </div>
             </div>

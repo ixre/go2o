@@ -19,14 +19,14 @@
     <div class="fl">
         <div class="label"><span class="star">*</span>页面标题：</div>
         <div class="in">
-            <input class="tb_normal ui-validate" required="true" length="[1,100]" summary="{required:'标题不能为空!',length:'标题长度1-100字!'}" type="text" field="Title" id="title" style="width: 500px"/>
+            <input class="ui-box ui-validate" required="true" length="[1,100]" summary="{required:'标题不能为空!',length:'标题长度1-100字!'}" type="text" field="Title" id="title" style="width: 500px"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label">字符串标识：</div>
         <div class="in">
-            <input style="width: 340px;" tipin="alias_tipin" type="text" id="alias" field="StrIndent" class="tb_normal ui-validate" summary="{error:'别名为50位以下的数字,字母,连接符(-),下划线的组合'}" />
+            <input style="width: 340px;" tipin="alias_tipin" type="text" id="alias" field="StrIndent" class="ui-box ui-validate" summary="{error:'别名为50位以下的数字,字母,连接符(-),下划线的组合'}" />
 
             <span id="alias_tipin"></span>
             <br/>
@@ -71,8 +71,11 @@
     <div class="fl">
         <div class="label">&nbsp;</div>
         <div class="in">
-            <input class="btn" type="button" value="提交" onclick="return submitForm();"/>
-            <input class="btn" type="reset" value="重置"/>
+            <span class="ui-button w150" id="btn_save">
+                <span class="button-inner">
+                <span class="button-txt">保存</span>
+                <input type="button"></span>
+            </span>
         </div>
     </div>
 
@@ -129,7 +132,7 @@
         return false;
     }
     window.saveData = submitForm;
-
+    j6.$('btn_save').onclick=submitForm;
     j6.$('alias').onblur = function () {
         if (this.nodeName) {
             var ele = this;

@@ -16,7 +16,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>促销标题：</div>
         <div class="in">
-            <input type="text" class="box ui-validate" required="true" length="[,45]" field="ShortName"/>
+            <input type="text" class="ui-box ui-validate" required="true" length="[,45]" field="ShortName"/>
             标题尽量简短或留空由系统自动生成
         </div>
     </div>
@@ -25,14 +25,14 @@
         <div class="label"><span class="red">*&nbsp;</span>优惠券编码：</div>
         <div class="in">
             <input type="hidden" field="Id" value="0" />
-            <input class="box ui-validate" field="Code" value="" required="true"/>
+            <input class="ui-box ui-validate" field="Code" value="" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>数量：</div>
         <div class="in">
-            <input class="box ui-validate" field="TotalAmount" required="true"
+            <input class="ui-box ui-validate" field="TotalAmount" required="true"
                    isnumber="true" style="width:30px" value="10"/>&nbsp;张
         </div>
     </div>
@@ -40,7 +40,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>优惠金额：</div>
         <div class="in">
-            <input class="box ui-validate" field="Fee" required="true"
+            <input class="ui-box ui-validate" field="Fee" required="true"
                    isnumber="true" style="width:30px" value="0"/>&nbsp;元
         </div>
     </div>
@@ -48,7 +48,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>赠送积分：</div>
         <div class="in">
-            <input class="box ui-validate" field="Integral" required="true"
+            <input class="ui-box ui-validate" field="Integral" required="true"
                    isnumber="true" style="width:30px" value="0"/>&nbsp;个
         </div>
     </div>
@@ -56,7 +56,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>折扣：</div>
         <div class="in">
-            <input class="box ui-validate" field="Discount" required="true"
+            <input class="ui-box ui-validate" field="Discount" required="true"
                    isnumber="true" style="width:30px" value="100"/>/100&nbsp;<br />
             如：9折填写90,不打折填100
         </div>
@@ -65,7 +65,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>等级要求：</div>
         <div class="in">
-            <select class="box" field="MinLevel" required="true">
+            <select class="ui-box" field="MinLevel" required="true">
                 <option value="0">一无要求一</option>
                 {{.Map.levelDr}}
             </select>
@@ -75,7 +75,7 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>金额限制：</div>
         <div class="in">
-            <input class="box ui-validate" field="MinFee" required="true"
+            <input class="ui-box ui-validate" field="MinFee" required="true"
                    isnumber="true" style="width:30px" value="0"/>&nbsp;元<br />
             至少达到设置的金额才能使用优惠券。
         </div>
@@ -84,14 +84,14 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>生效日期：</div>
         <div class="in">
-            <input class="box ui-validate" field="BeginTime" id="beginTime" required="true"/>
+            <input class="ui-box ui-validate" field="BeginTime" id="beginTime" required="true"/>
         </div>
     </div>
 
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>过期日期：</div>
         <div class="in">
-            <input class="box ui-validate" field="OverTime" id="overTime" required="true"/>
+            <input class="ui-box ui-validate" field="OverTime" id="overTime" required="true"/>
         </div>
     </div>
 
@@ -114,15 +114,19 @@
     <div class="fl">
         <div class="label"><span class="red">*&nbsp;</span>描述(200字内)：</div>
         <div class="in">
-            <textarea class="box ui-validate" field="Description" length="[0,200]"></textarea>
+            <textarea class="ui-box ui-validate" field="Description" length="[0,200]"></textarea>
         </div>
     </div>
 
     <div class="fl">
         <div class="label">&nbsp;</div>
         <div class="in">
-            <input class="btn" type="button" value="保存" id="btn_save" />
-            <input class="btn" type="reset" value="重置" />
+            <span class="ui-button w150" id="btn_save">
+                <span class="button-inner">
+                    <span class="button-txt">保存</span>
+                    <input type="button"/>
+                </span>
+            </span>
         </div>
     </div>
 </div>

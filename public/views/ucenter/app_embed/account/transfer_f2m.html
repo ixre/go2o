@@ -24,16 +24,16 @@
 			<div class="apply-panel">
 				<h3>会员名/手机：</h3>
 				<input type="hidden" field="ToId" id="toId" value="0"/>
-				<input id="tb_usr" type="text" class="box ui-validate" isfloat="true" field="UserName" required="true"
+				<input id="tb_usr" type="text" class="ui-box ui-validate" isfloat="true" field="UserName" required="true"
 					   summary="{required:'选择会员'}"/>
 
 				<h3>转账金额：</h3>
-				<input id="tb_amount" type="text" class="box ui-validate" isfloat="true" required="true" field="Amount"
+				<input id="tb_amount" type="text" class="ui-box ui-validate" isfloat="true" required="true" field="Amount"
 						summary="{required:'请输入金额'}"/><!-- &nbsp;&nbsp;
 				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.Map.maxApplyAmount}}&nbsp;元</span> -->
 
 				<h3>交易密码：</h3>
-				<input type="password" class="box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
+				<input type="password" class="ui-box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
 					   summary="{required:'交易密码不能为空'}" onfocus="this.value=''"/>
 
 					{{if .notSetTradePwd}}

@@ -160,7 +160,7 @@
     function delRec(id) {
         window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('/ad/del', { id: id }, function(json) {
+                j6.xhr.jsonPost('/ad/delete_ad', { id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }else{

@@ -27,7 +27,7 @@ type adC struct {
 
 //广告列表
 func (this *adC) List(ctx *echox.Context) error {
-	return ctx.RenderOK("ad_list.html", echox.NewRenderData())
+	return ctx.RenderOK("ad.list.html", echox.NewRenderData())
 }
 
 // 修改广告
@@ -39,7 +39,7 @@ func (this *adC) Edit(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("ad_edit.html", d)
+	return ctx.RenderOK("ad.edit.html", d)
 }
 
 // 保存广告
@@ -50,49 +50,56 @@ func (this *adC) Create(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("ad_edit.html", d)
+	return ctx.RenderOK("ad.edit.html", d)
 }
 
-// 删除广告
-func (this *adC) Del_post(ctx *echox.Context) error {
+// 删除广告(POST)
+func (this *adC) Delete_ad(ctx *echox.Context) error {
 	req := ctx.Request()
-	req.ParseForm()
-	var result gof.Message
-	partnerId := getPartnerId(ctx)
-	adId, _ := strconv.Atoi(req.FormValue("id"))
-	err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
+	if req.Method == "POST" {
+		req.ParseForm()
+		var result gof.Message
+		partnerId := getPartnerId(ctx)
+		adId, _ := strconv.Atoi(req.FormValue("id"))
+		err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+
+		return ctx.JSON(http.StatusOK, result)
 	}
-
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
-func (this *adC) SaveAd_post(ctx *echox.Context) error {
+// 保存广告(POST)
+func (this *adC) SaveAd(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	req := ctx.Request()
-	req.ParseForm()
+	if req.Method == "POST" {
+		req.ParseForm()
 
-	var result gof.Message
+		var result gof.Message
 
-	e := ad.ValueAdvertisement{}
-	web.ParseFormToEntity(req.Form, &e)
+		e := ad.ValueAdvertisement{}
+		web.ParseFormToEntity(req.Form, &e)
 
-	//更新
-	e.PartnerId = partnerId
+		//更新
+		e.PartnerId = partnerId
 
-	id, err := dps.AdvertisementService.SaveAdvertisement(partnerId, &e)
+		id, err := dps.AdvertisementService.SaveAdvertisement(partnerId, &e)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
 func (this *adC) Ad_data1(ctx *echox.Context) error {
@@ -107,7 +114,7 @@ func (this *adC) Ad_data2(ctx *echox.Context) error {
 func (this *adC) Ad_data3(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["adId"] = ctx.Query("id")
-	return ctx.RenderOK("ad/ad_data3.html", d)
+	return ctx.RenderOK("ad.data3.html", d)
 }
 
 // 创建广告图片
@@ -123,7 +130,7 @@ func (this *adC) CreateAdImage(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("ad_image.html", d)
+	return ctx.RenderOK("ad.image.html", d)
 }
 
 // 保存广告
@@ -137,44 +144,52 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
-	return ctx.RenderOK("ad_image.html", d)
+	return ctx.RenderOK("ad.image.html", d)
 }
 
-func (this *adC) SaveImage_post(ctx *echox.Context) error {
+// 保存图片(POST)
+func (this *adC) SaveImage(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
+	if r.Method == "POST" {
+		r.ParseForm()
 
-	var result gof.Message
+		var result gof.Message
 
-	e := ad.ValueImage{}
-	web.ParseFormToEntity(r.Form, &e)
+		e := ad.ValueImage{}
+		web.ParseFormToEntity(r.Form, &e)
 
-	id, err := dps.AdvertisementService.SaveImage(partnerId, e.AdvertisementId, &e)
+		id, err := dps.AdvertisementService.SaveImage(partnerId, e.AdvertisementId, &e)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
-		result.Data = id
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
 
-func (this *adC) Del_image_post(ctx *echox.Context) error {
+// 删除广告图片(POST)
+func (this *adC) Delete_image(ctx *echox.Context) error {
 	req := ctx.Request()
-	req.ParseForm()
-	var result gof.Message
-	partnerId := getPartnerId(ctx)
-	adId, _ := strconv.Atoi(req.FormValue("ad_id"))
-	imgId, _ := strconv.Atoi(req.FormValue("id"))
-	err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
+	if req.Method == "POST" {
+		req.ParseForm()
+		var result gof.Message
+		partnerId := getPartnerId(ctx)
+		adId, _ := strconv.Atoi(req.FormValue("ad_id"))
+		imgId, _ := strconv.Atoi(req.FormValue("id"))
+		err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
 
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+
+		return ctx.JSON(http.StatusOK, result)
 	}
-
-	return ctx.JSON(http.StatusOK, result)
+	return nil
 }
