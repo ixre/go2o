@@ -43,7 +43,7 @@ func (this *promC) Del_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	promId, _ := strconv.Atoi(form.Get("id"))
 
 	err := dps.PromService.DelPromotion(partnerId, promId)
@@ -85,7 +85,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 	js2, _ := json.Marshal(e2)
 
 	var goodsInfo string
-	goods := dps.SaleService.GetValueGoods(this.GetPartnerId(ctx), e.GoodsId)
+	goods := dps.SaleService.GetValueGoods(getPartnerId(ctx), e.GoodsId)
 	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
 	ctx.App.Template().Execute(ctx.Response,
@@ -100,7 +100,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 
 // 保存现金返现
 func (this *promC) Save_cb_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 
@@ -139,7 +139,7 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
@@ -155,7 +155,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
-	if e.PartnerId != this.GetPartnerId(ctx) {
+	if e.PartnerId != getPartnerId(ctx) {
 		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
 		return
 	}
@@ -163,7 +163,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
@@ -176,7 +176,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 
 // 保存优惠券
 func (this *promC) Save_coupon_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 
@@ -212,7 +212,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("coupon_id"))
 	e, e2 := dps.PromService.GetPromotion(id)
-	if e.PartnerId != this.GetPartnerId(ctx) {
+	if e.PartnerId != getPartnerId(ctx) {
 		this.ErrorOutput(ctx, promotion.ErrNoSuchPromotion.Error())
 		return
 	}
@@ -225,7 +225,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 }
 
 func (this *promC) Bind_coupon_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()

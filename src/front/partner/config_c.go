@@ -15,36 +15,33 @@ import (
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"time"
 )
 
 var _ mvc.Filter = new(configC)
 
 type configC struct {
-	*baseC
 }
 
 //资料配置
 func (this *configC) Profile(ctx *echox.Context) error {
-
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
 	p.ExpiresTime = time.Now().Unix()
 
 	js, _ := json.Marshal(p)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/profile.html")
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK, "conf/profile.html", d)
 }
 
 func (this *configC) Profile_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -69,24 +66,21 @@ func (this *configC) Profile_post(ctx *echox.Context) error {
 		result.Result = true
 		result.Data = id
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK, result)
 }
 
 //站点配置
 func (this *configC) SiteConf(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/site_conf.html")
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK, "conf/site_conf.html", d)
 }
 
 func (this *configC) SiteConf_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
@@ -106,25 +100,22 @@ func (this *configC) SiteConf_post(ctx *echox.Context) error {
 	} else {
 		result = gof.Message{Result: true, Message: ""}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK, result)
 }
 
 //销售配置
 func (this *configC) SaleConf(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/sale_conf.html")
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS(js)
+	return ctx.Render(http.StatusOK, "conf/sale_conf.html", d)
 }
 
 func (this *configC) SaleConf_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -140,5 +131,5 @@ func (this *configC) SaleConf_post(ctx *echox.Context) error {
 	} else {
 		result = gof.Message{Result: true, Message: ""}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK, result)
 }

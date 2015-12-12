@@ -18,7 +18,6 @@ import (
 var _ mvc.Filter = new(commC)
 
 type commC struct {
-	*baseC
 	*front.WebCgi
 }
 

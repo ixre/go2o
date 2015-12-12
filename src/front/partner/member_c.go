@@ -41,7 +41,7 @@ func (this *memberC) LevelList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *memberC) EditMLevel(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
@@ -63,14 +63,14 @@ func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 }
 
 func (this *memberC) SaveMLevel_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
 
 	e := valueobject.MemberLevel{}
 	web.ParseFormToEntity(r.Form, &e)
-	e.PartnerId = this.GetPartnerId(ctx)
+	e.PartnerId = getPartnerId(ctx)
 
 	id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
 
@@ -87,7 +87,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
 		err = dps.PartnerService.DelMemberLevel(partnerId, id)
@@ -103,7 +103,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 
 // 会员列表
 func (this *memberC) List(ctx *echox.Context) error {
-	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
 	}, "views/partner/member/member_list.html")
@@ -113,7 +113,7 @@ func (this *memberC) List(ctx *echox.Context) error {
 func (this *memberC) Lock_member_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	var result gof.Message
 	if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
 		result.Message = err.Error()
@@ -140,7 +140,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 		ctx.Response.Write([]byte("no such member"))
 	} else {
 
-		lv := dps.PartnerService.GetLevel(this.GetPartnerId(ctx), m.Level)
+		lv := dps.PartnerService.GetLevel(getPartnerId(ctx), m.Level)
 
 		ctx.App.Template().Execute(ctx.Response,
 			gof.TemplateDataMap{
@@ -193,7 +193,7 @@ func (this *memberC) Reset_pwd_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
 	rl := dps.MemberService.GetRelation(memberId)
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	if rl == nil || rl.RegisterPartnerId != partnerId {
 		result.Message = "无权进行当前操作"
 	} else {
@@ -222,7 +222,7 @@ func (this *memberC) Charge_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
 	ctx.Request.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
 	if amount < 0 {
@@ -230,7 +230,7 @@ func (this *memberC) Charge_post(ctx *echox.Context) error {
 	} else {
 		rel := dps.MemberService.GetRelation(memberId)
 
-		if rel.RegisterPartnerId != this.GetPartnerId(ctx) {
+		if rel.RegisterPartnerId != getPartnerId(ctx) {
 			err = partner.ErrPartnerNotMatch
 		} else {
 			title := fmt.Sprintf("客服充值%f", amount)
@@ -247,7 +247,7 @@ func (this *memberC) Charge_post(ctx *echox.Context) error {
 
 // 提现列表
 func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
-	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
 		"kind":    member.KindBalanceApplyCash,
@@ -258,7 +258,7 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 func (this *memberC) Pass_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	ctx.Request.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	passed := ctx.Request.FormValue("pass") == "1"
 	memberId, _ := strconv.Atoi(ctx.Request.FormValue("member_id"))
 	id, _ := strconv.Atoi(ctx.Request.FormValue("id"))
@@ -293,7 +293,7 @@ func (this *memberC) Back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(form.Get("MemberId"))
 	id, _ := strconv.Atoi(form.Get("Id"))
 
@@ -329,7 +329,7 @@ func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
 	var err error
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(form.Get("MemberId"))
 	id, _ := strconv.Atoi(form.Get("Id"))
 	agree := form.Get("Agree") == "on"
@@ -351,7 +351,7 @@ func (this *memberC) Handle_apply_req_post(ctx *echox.Context) error {
 // 团队排名列表
 func (this *memberC) Team_rank(ctx *echox.Context) error {
 
-	levelDr := getLevelDropDownList(this.GetPartnerId(ctx))
+	levelDr := getLevelDropDownList(getPartnerId(ctx))
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"levelDr": template.HTML(levelDr),
 	}, "views/partner/member/team_rank.html")

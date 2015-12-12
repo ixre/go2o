@@ -34,7 +34,7 @@ func (this *orderC) setShop(ctx *web.Context,
 }
 
 func (this *orderC) SetShop_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 

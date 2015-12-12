@@ -36,7 +36,7 @@ func (this *adC) List(ctx *echox.Context) error {
 
 // 修改广告
 func (this *adC) Edit(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
 	e := dps.AdvertisementService.GetAdvertisement(partnerId, id)
@@ -63,7 +63,7 @@ func (this *adC) Del_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	adId, _ := strconv.Atoi(form.Get("id"))
 	err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
 
@@ -77,7 +77,7 @@ func (this *adC) Del_post(ctx *echox.Context) error {
 }
 
 func (this *adC) SaveAd_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 
@@ -133,7 +133,7 @@ func (this *adC) CreateAdImage(ctx *echox.Context) error {
 
 // 保存广告
 func (this *adC) EditAdImage(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	adId, _ := strconv.Atoi(ctx.Query("ad_id"))
 	imgId, _ := strconv.Atoi(ctx.Query("id"))
 
@@ -146,7 +146,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 }
 
 func (this *adC) SaveImage_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 
@@ -170,7 +170,7 @@ func (this *adC) Del_image_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	adId, _ := strconv.Atoi(form.Get("ad_id"))
 	imgId, _ := strconv.Atoi(form.Get("id"))
 	err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)

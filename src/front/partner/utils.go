@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
+	"net/http"
 )
 
 func getPartnerId(ctx *echox.Context) int {
@@ -22,6 +23,11 @@ func getPartnerId(ctx *echox.Context) int {
 		return obj.(int)
 	}
 	return 0
+}
+
+// 输出错误信息
+func errorOutput(ctx *echox.Context, err string) {
+	return ctx.String(http.StatusOK,"{error:\"" + err + "\"}"))
 }
 
 func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {

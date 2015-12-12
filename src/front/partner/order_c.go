@@ -29,7 +29,7 @@ type orderC struct {
 }
 
 func (this *orderC) List(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
@@ -38,7 +38,7 @@ func (this *orderC) List(ctx *echox.Context) error {
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
@@ -47,13 +47,13 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 }
 
 func (this *orderC) Cancel(ctx *echox.Context) error {
-	//partnerId := this.GetPartnerId(ctx)
+	//partnerId := getPartnerId(ctx)
 	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/order/cancel.html")
 
 }
 
 func (this *orderC) Cancel_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	reason := r.FormValue("reason")
@@ -68,7 +68,7 @@ func (this *orderC) Cancel_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) View(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -112,7 +112,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -149,7 +149,7 @@ func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 		return
 	}
 
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
@@ -163,7 +163,7 @@ func (this *orderC) OrderSetup_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) Payment(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -187,7 +187,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 }
 
 func (this *orderC) Payment_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")

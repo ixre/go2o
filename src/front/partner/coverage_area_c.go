@@ -1,32 +1,34 @@
 package partner
 
 import (
+	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/service/dps"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 )
 
-var _ mvc.Filter = new(coverageAreaC)
-
 type coverageAreaC struct {
-	*baseC
 }
 
 func (this *coverageAreaC) CoverageAreList(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, nil, "views/partner/delivery/coverage_area_list.html")
+	d := echox.NewRenderData()
+	return ctx.Render(http.StatusOK, "delivery/coverage_area_list.html", d)
 }
 
 func (this *coverageAreaC) Create(ctx *echox.Context) error {
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"entity": template.JS("{}"),
-	}, "views/partner/delivery/create.html")
+
+	d := echox.NewRenderData()
+	d.Map["entity"] = template.JS("{}")
+	return ctx.Render(http.StatusOK, "delivery/create.html", d)
 }
 
 func (this *coverageAreaC) SaveArea_post(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
+	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
 
@@ -36,9 +38,9 @@ func (this *coverageAreaC) SaveArea_post(ctx *echox.Context) error {
 	id, err := dps.DeliverService.CreateCoverageArea(&coverageArea)
 
 	if err != nil {
-		result = gof.Message{Result: true, Message: err.Error()}
+		result = gof.Message{Message: err.Error()}
 	} else {
 		result = gof.Message{Result: true, Message: "", Data: id}
 	}
-	w.Write(result.Marshal())
+	return ctx.JSON(http.StatusOK, result)
 }

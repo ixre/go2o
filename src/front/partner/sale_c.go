@@ -33,7 +33,7 @@ func (this *saleC) TagList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *saleC) Edit_stag(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.SaleService.GetSaleTag(partnerId, id)
@@ -60,14 +60,14 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 }
 
 func (this *saleC) Save_stag_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
 
 	e := sale.ValueSaleTag{}
 	web.ParseFormToEntity(r.Form, &e)
-	e.PartnerId = this.GetPartnerId(ctx)
+	e.PartnerId = getPartnerId(ctx)
 
 	id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
 
@@ -84,7 +84,7 @@ func (this *saleC) Del_stag_post(ctx *echox.Context) error {
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	id, err := strconv.Atoi(r.FormValue("id"))
 	if err == nil {
 		err = dps.SaleService.DeleteSaleTag(partnerId, id)

@@ -13,9 +13,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/variable"
+	"go2o/src/x/echox"
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -161,7 +161,7 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 	for i := 0; i < dirList.Len(); i++ {
 		hash := make(map[string]interface{})
 		fs, _ := ioutil.ReadDir(currentPath + "/" + dirList.files[i].Name())
-		fmt.Println("----", currentPath+"/"+dirList.files[i].Name())
+		//fmt.Println("----", currentPath+"/"+dirList.files[i].Name())
 		hash["is_dir"] = true
 		hash["has_file"] = len(fs) > 0
 		hash["is_photo"] = false
@@ -288,12 +288,11 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err
 var _ mvc.Filter = new(editorC)
 
 type editorC struct {
-	*baseC
 }
 
 func (this *editorC) File_manager(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
-	d, err := fileManager(ctx.Request,
+	partnerId := getPartnerId(ctx)
+	d, err := fileManager(ctx.Request(),
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
@@ -301,12 +300,13 @@ func (this *editorC) File_manager(ctx *echox.Context) error {
 	if err != nil {
 		ctx.Response.Write([]byte("{error:'" + strings.Replace(err.Error(), "'", "\\'", -1) + "'}"))
 	} else {
-		ctx.Response.Write(d)
+		return ctx.JSON(http.StatusOK, d)
 	}
+	return nil
 }
 
 func (this *editorC) File_upload_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	fileUrl, err := fileUpload(ctx.Request,
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
@@ -319,7 +319,5 @@ func (this *editorC) File_upload_post(ctx *echox.Context) error {
 		hash["error"] = 1
 		hash["message"] = err.Error()
 	}
-	ctx.Response.Header().Add("Content-Type", "application/json")
-	d, _ := json.Marshal(hash)
-	ctx.Response.Write(d)
+	return ctx.JSON(http.StatusOK, hash)
 }

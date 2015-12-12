@@ -15,49 +15,43 @@ import (
 	"github.com/jsix/gof"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 )
 
-var _ mvc.Filter = new(goodsC)
-
 type goodsC struct {
-	*baseC
 }
 
-//商品列表
+//货品列表
 func (this *goodsC) Item_list(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
-	r.ParseForm()
+	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
 
-	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
-		"cate_opts":  template.HTML(cateOpts),
-		"no_pic_url": format.GetGoodsImageUrl(""),
-	}, "views/partner/goods/item_list.html")
+	d := echox.NewRenderData()
+	d.Map["cate_opts"] = template.HTML(cateOpts)
+	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
+	return ctx.Render(http.StatusOK, "goods/item_list.html", d)
 }
 
-//商品选择
+//货品选择
 func (this *goodsC) Goods_select(ctx *echox.Context) error {
-	r, w := ctx.Request, ctx.Response
-	r.ParseForm()
-	cateOpts := cache.GetDropOptionsOfCategory(this.GetPartnerId(ctx))
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
-		"cate_opts":  template.HTML(cateOpts),
-		"no_pic_url": format.GetGoodsImageUrl(""),
-	}, "views/partner/goods/goods_select.html")
+	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
+	d := echox.NewRenderData()
+	d.Map["cate_opts"] = template.HTML(cateOpts)
+	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
+	return ctx.Render(http.StatusOK, "goods/goods_select.html", d)
 }
 
 func (this *goodsC) Create(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -66,16 +60,17 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 	}
 	js, _ := json.Marshal(e)
 
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
-	},
-		"views/partner/goods/create_goods.html")
+	}
+	return ctx.Render(http.StatusOK, "goods/create_goods.html", d)
 }
 
 func (this *goodsC) Edit(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
@@ -90,34 +85,36 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	ctx.App.Template().Execute(w,
-		gof.TemplateDataMap{
-			"entity":    template.JS(js),
-			"shop_chk":  template.HTML(shopChks),
-			"cate_opts": template.HTML(cateOpts),
-		},
-		"views/partner/goods/update_goods.html")
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"entity":    template.JS(js),
+		"shop_chk":  template.HTML(shopChks),
+		"cate_opts": template.HTML(cateOpts),
+	}
+	return ctx.Render(http.StatusOK, "goods/update_goods.html", d)
 }
 
 // 保存商品描述
 func (this *goodsC) Item_info(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
 	if e == nil {
-		w.Write([]byte("商品不存在"))
-		return
+		return ctx.String(http.StatusOK, "商品不存在")
 	}
-	ctx.App.Template().Execute(w, gof.TemplateDataMap{
+
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
 		"item_id":   e.Id,
 		"item_info": template.HTML(e.Description),
-	}, "views/partner/goods/item_info.html")
+	}
+	return ctx.Render(http.StatusOK, "goods/item_info.html", d)
 }
 
 func (this *goodsC) Save_item_info_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.FormValue("ItemId"))
@@ -136,7 +133,7 @@ func (this *goodsC) Save_item_info_post(ctx *echox.Context) error {
 }
 
 func (this *goodsC) SaveItem_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
 	r.ParseForm()
@@ -158,7 +155,7 @@ func (this *goodsC) SaveItem_post(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Del_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
 
@@ -175,7 +172,7 @@ func (this *goodsC) Del_post(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Del_item_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	var result gof.Message
 
@@ -194,7 +191,7 @@ func (this *goodsC) Del_item_post(ctx *echox.Context) error {
 func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 	r := ctx.Request
 	r.ParseForm()
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
 
 	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
@@ -208,11 +205,13 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 
 	tagVal := strings.Join(strArr, ",")
 
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
 		"goodsId":  goodsId,
 		"tagsHtml": template.HTML(tagsHtml),
 		"tagValue": tagVal,
-	}, "views/partner/goods/set_sale_tag.html")
+	}
+	return ctx.Render(http.StatusOK, "goods/set_sale_tag.html", d)
 }
 
 func (this *goodsC) SaveGoodsSTag_post(ctx *echox.Context) error {
@@ -228,7 +227,7 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *echox.Context) error {
 			}
 		}
 
-		partnerId := this.GetPartnerId(ctx)
+		partnerId := getPartnerId(ctx)
 		err = dps.SaleService.SaveItemSaleTags(partnerId, goodsId, ids)
 	}
 
@@ -242,14 +241,15 @@ func (this *goodsC) SaveGoodsSTag_post(ctx *echox.Context) error {
 
 func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
 
-	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
-		"item_id": itemId,
-	}, "views/partner/goods/item_ctrl.html")
+	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
+
+	d := echox.NewRenderData()
+	d.Map["item_id"] = itemId
+	return ctx.Render(http.StatusOK, "goods/item_ctrl.html", d)
 }
 
 func (this *goodsC) LvPrice(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	//todo: should be goodsId
 	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
 	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
@@ -285,10 +285,12 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 		}
 	}
 
-	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
 		"goods":   goods,
 		"setHtml": template.HTML(buf.String()),
-	}, "views/partner/goods/level_price.html")
+	}
+	return ctx.Render(http.StatusOK, "goods/level_price.html", d)
 }
 
 func (this *goodsC) LvPrice_post(ctx *echox.Context) error {
@@ -326,12 +328,11 @@ func (this *goodsC) LvPrice_post(ctx *echox.Context) error {
 				})
 			} else {
 				return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
-				return
 			}
 		}
 	}
 
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
 	if err != nil {
 		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})

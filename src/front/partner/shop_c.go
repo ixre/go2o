@@ -43,7 +43,7 @@ func (this *shopC) Create(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *shopC) Modify(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
@@ -58,7 +58,7 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *shopC) SaveShop_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	var result gof.Message
 	r.ParseForm()
@@ -77,7 +77,7 @@ func (this *shopC) SaveShop_post(ctx *echox.Context) error {
 }
 
 func (this *shopC) Del_post(ctx *echox.Context) error {
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
 	r.ParseForm()
 	shopId, err := strconv.Atoi(r.FormValue("id"))

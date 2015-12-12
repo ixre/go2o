@@ -34,7 +34,7 @@ func (this *mssC) Mail_template_list(ctx *echox.Context)error{
 
 // 修改广告
 func (this *mssC) Edit_mail_tpl(ctx *echox.Context)error{
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	form := ctx.Request.URL.Query()
 	id, _ := strconv.Atoi(form.Get("id"))
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
@@ -57,7 +57,7 @@ func (this *mssC) Del_mail_tpl_post(ctx *echox.Context)error{
 	ctx.Request.ParseForm()
 	form := ctx.Request.Form
 	var result gof.Message
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	adId, _ := strconv.Atoi(form.Get("id"))
 	err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
 
@@ -72,7 +72,7 @@ func (this *mssC) Del_mail_tpl_post(ctx *echox.Context)error{
 
 // 保存邮件模板
 func (this *mssC) Save_mail_tpl_post(ctx *echox.Context)error{
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	r := ctx.Request
 	r.ParseForm()
 
@@ -101,7 +101,7 @@ func (this *mssC) getMailTemplateOpts(partnerId int) string {
 
 // 设置
 func (this *mssC) Mss_setting(ctx *echox.Context)error{
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
 	js, _ := json.Marshal(e)
 
@@ -116,7 +116,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context)error{
 // 保存设置
 func (this *mssC) Mss_setting_post(ctx *echox.Context)error{
 	var result gof.Message
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	ctx.Request.ParseForm()
 	var data map[string]string = make(map[string]string, 0)
 	for k, v := range ctx.Request.Form {
