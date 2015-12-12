@@ -17,10 +17,7 @@ import (
 	"os"
 	"strings"
 	"time"
-)
-
-const (
-	UPLOAD_DIR = "static/uploads/"
+	"go2o/src/core/variable"
 )
 
 // Web同一网关接口
@@ -36,11 +33,14 @@ func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byt
 		return []byte("<html><head><title>" + err.Error() +
 			"</title></head></html>")
 	}
+
+	var upSaveDir string = ctx.App.Config().Get(variable.UploadSaveDir) // 上传存放目录
+
 	ext = h.Filename[strings.LastIndex(h.Filename, "."):]
 	filePath = strings.Join([]string{savedir, time.Now().Format("20060102150304"), ext}, "")
-	os.MkdirAll(UPLOAD_DIR+savedir, os.ModePerm)
+	os.MkdirAll(upSaveDir+savedir, os.ModePerm)
 
-	f, err := os.OpenFile(UPLOAD_DIR+filePath,
+	f, err := os.OpenFile(upSaveDir+filePath,
 		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
 		os.ModePerm)
 

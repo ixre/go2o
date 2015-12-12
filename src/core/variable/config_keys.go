@@ -45,6 +45,9 @@ const (
 	//其他配置
 	NoPicPath = "no_pic_path"
 
+	// 上传保存目录
+	UploadSaveDir = "upload_save_dir"
+
 	// 支付
 	Alipay_Partner = "payment_alipay_partner"
 	Alipay_Key     = "payment_alipay_key"
