@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package ucenter
+package pc
 
 /*
  * 包括会员中心

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package ucenter
+package pc
 
 import (
 	"github.com/jsix/gof"
@@ -43,22 +43,6 @@ func (this *baseC) Requesting(ctx *web.Context) bool {
 func (this *baseC) RequestEnd(ctx *web.Context) {
 }
 
-// 获取商户
-func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
-	val := ctx.Session().Get("member:rel_partner")
-	if val != nil {
-		return cache.GetValuePartnerCache(val.(int))
-	} else {
-		m := this.GetMember(ctx)
-		if m != nil {
-			rel := dps.MemberService.GetRelation(m.Id)
-			ctx.Session().Set("member:rel_partner", rel.RegisterPartnerId)
-			ctx.Session().Save()
-			return cache.GetValuePartnerCache(rel.RegisterPartnerId)
-		}
-	}
-	return nil
-}
 
 // 获取会员
 func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {

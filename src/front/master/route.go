@@ -31,7 +31,7 @@ func registerRoutes(s *echox.Echo) {
 
 func GetServe() *echox.Echo {
 	s := echox.New()
-	s.SetRenderer(echox.NewGoTemplateForEcho("public/views/master"))
+	s.SetTemplateRender("public/views/master")
 	s.Use(mw.Recover())
 	s.Use(masterLogonCheck) // 判断商户登陆状态
 	registerRoutes(s)

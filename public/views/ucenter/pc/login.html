@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>会员登录2</title>
+    <title>会员登录</title>
     <link rel="Stylesheet" href="{{.Var.static_serve}}/css/common.css?spam={{.Var.spam}}" />
     <link rel="Stylesheet" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?spam={{.Var.spam}}" />
     <style type="text/css">
@@ -97,7 +97,7 @@
 	            if (j6.validator.validate('form1')){
 	                j6.xhr.jsonPost(location.href, data, function (json) {
 	                    if (json.result) {
-	                      window.parent.location.replace(j6.request('return_url')||'/');
+	                      window.parent.location.replace(unescape(j6.request('return_url')||'/'));
 	                    }
 	                    else {
 	                        if (json.message.indexOf('验证码') != -1) {

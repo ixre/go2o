@@ -35,7 +35,7 @@ func getTemplate(dir, pattern string) (t *template.Template) {
 	return template.Must(template.ParseGlob(dir + "/" + pattern))
 }
 
-func NewGoTemplateForEcho(dir string) echo.Renderer {
+func newGoTemplateForEcho(dir string) echo.Renderer {
 	g := &GoTemplateForEcho{
 		pattern:       "*.html",
 		fileDirectory: dir,

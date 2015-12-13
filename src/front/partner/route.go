@@ -20,8 +20,7 @@ import (
 func GetServe() *echox.Echo {
 
 	s := echox.New()
-	r := echox.NewGoTemplateForEcho("public/views/partner")
-	s.SetRenderer(r)
+	s.SetTemplateRender("public/views/partner")
 	s.Use(mw.Recover())
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
 

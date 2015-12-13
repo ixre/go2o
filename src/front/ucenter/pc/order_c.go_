@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package ucenter
+package pc
 
 import (
 	"encoding/json"

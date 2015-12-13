@@ -102,7 +102,7 @@ zhu***@126.com
 
 
 ### 4.Add test hosts ###
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com partner.ts.com member.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com >> /etc/hosts
+> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com partner.ts.com mu.ts.com u.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com  >> /etc/hosts
 
 ## Access Entry ##
 

@@ -6,16 +6,17 @@
  * description :
  * history :
  */
-package ucenter
+package pc
 
 import (
-	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/service/goclient"
+	"go2o/src/x/echox"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -24,21 +25,24 @@ type loginC struct {
 }
 
 //登陆
-func (this *loginC) Index(ctx *web.Context) {
-	executeTemplate(ctx, nil, nil, "views/ucenter/{device}/login.html")
+func (this *loginC) Index(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.index_post(ctx)
+	}
+	return ctx.RenderOK("login.html", ctx.NewData())
 }
-func (this *loginC) Index_post(ctx *web.Context) {
-	r := ctx.Request
+func (this *loginC) index_post(ctx *echox.Context) error {
+	r := ctx.Request()
 	r.ParseForm()
 	var result gof.Message
-	usr, pwd := r.Form.Get("usr"), r.Form.Get("pwd")
+	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
 
 	b, m, err := dps.MemberService.Login(-1, usr, pwd)
 	if b {
-		ctx.Session().Set("member", m)
-		ctx.Session().Save()
+		ctx.Session.Set("member", m)
+		ctx.Session.Save()
 		result.Result = true
 	} else {
 		if err != nil {
@@ -47,8 +51,7 @@ func (this *loginC) Index_post(ctx *web.Context) {
 			result.Message = "登陆失败"
 		}
 	}
-	js, _ := json.Marshal(result)
-	ctx.Response.Write(js)
+	return ctx.JSON(http.StatusOK, result)
 
 }
 

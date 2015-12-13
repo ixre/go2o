@@ -66,6 +66,11 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	}
 }
 
+// 设置模板
+func (this *Echo) SetTemplateRender(path string) {
+	this.SetRenderer(newGoTemplateForEcho(path))
+}
+
 // 注册自定义的GET处理程序
 func (this *Echo) Getx(path string, h Handler) {
 	this.Get(path, this.parseHandler(h))
