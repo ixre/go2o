@@ -10,15 +10,12 @@ package util
 
 import (
 	gutil "github.com/jsix/gof/util"
-	"github.com/jsix/gof/web"
 	"net/http"
-	"net/url"
 	"time"
 )
 
 const (
 	clientDeviceTypeCookieId string = "client_device_type"
-
 	// PC设备
 	DevicePC string = "1"
 	// 手持设备
@@ -30,8 +27,8 @@ const (
 )
 
 // 获取浏览设备
-func GetBrownerDevice(ctx *web.Context) string {
-	ck, err := ctx.Request.Cookie(clientDeviceTypeCookieId)
+func GetBrownerDevice(r *http.Request) string {
+	ck, err := r.Cookie(clientDeviceTypeCookieId)
 	if err == nil && ck != nil {
 		switch ck.Value {
 		case "1":
@@ -44,15 +41,15 @@ func GetBrownerDevice(ctx *web.Context) string {
 			return DeviceAppEmbed
 		}
 	}
-	if gutil.IsMobileAgent(ctx.Request.UserAgent()) {
+	if gutil.IsMobileAgent(r.UserAgent()) {
 		return DeviceMobile
 	}
 	return DevicePC
 }
 
 // 设置浏览设备
-func SetBrownerDevice(ctx *web.Context, deviceType string) {
-	ck, err := ctx.Request.Cookie(clientDeviceTypeCookieId)
+func SetBrownerDevice(w http.ResponseWriter, r *http.Request, deviceType string) {
+	ck, err := r.Cookie(clientDeviceTypeCookieId)
 	isDefaultDevice := deviceType == "" || deviceType == "1"
 	if err == nil && ck != nil {
 		if isDefaultDevice {
@@ -69,18 +66,17 @@ func SetBrownerDevice(ctx *web.Context, deviceType string) {
 			Expires: time.Now().Add(time.Hour * 24),
 		}
 	}
-
 	if ck != nil {
 		ck.HttpOnly = false
 		ck.Path = "/"
-		http.SetCookie(ctx.Response, ck)
+		http.SetCookie(w, ck)
 	}
 }
 
-func SetDeviceByUrlQuery(ctx *web.Context, form *url.Values) bool {
-	dvType := form.Get("device")
+func SetDeviceByUrlQuery(w http.ResponseWriter, r *http.Request) bool {
+	dvType := r.URL.Query().Get("device")
 	if len(dvType) != 0 {
-		SetBrownerDevice(ctx, dvType)
+		SetBrownerDevice(w, r, dvType)
 		return true
 	}
 	return false

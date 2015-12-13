@@ -11,7 +11,6 @@ package ucenter
 import (
 	"encoding/json"
 	gfmt "github.com/jsix/gof/util/fmt"
-	"github.com/jsix/gof/web"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
@@ -74,29 +73,27 @@ func (this *mainC) Logout(ctx *echox.Context) error {
 }
 
 // 切换设备
-func (this *mainC) Change_device(ctx *web.Context) {
-	form := ctx.Request.URL.Query()
-	util.SetDeviceByUrlQuery(ctx, &form)
-
+func (this *mainC) Change_device(ctx *echox.Context) error {
+	form := ctx.Request().URL.Query()
+	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
 	toUrl := form.Get("return_url")
 	if len(toUrl) == 0 {
-		toUrl = ctx.Request.Referer()
+		toUrl = ctx.Request().Referer()
 		if len(toUrl) == 0 {
 			toUrl = "/"
 		}
 	}
-
-	ctx.Response.Header().Add("Location", toUrl)
-	ctx.Response.WriteHeader(302)
+	ctx.Response().Header().Add("Location", toUrl)
+	ctx.Response().WriteHeader(302)
+	return nil
 }
 
 // Member session connect
-func (this *mainC) Msc(ctx *web.Context) {
-	form := ctx.Request.URL.Query()
-	util.SetDeviceByUrlQuery(ctx, &form)
-
+func (this *mainC) Msc(ctx *echox.Context) error {
+	form := ctx.Request().URL.Query()
+	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
 	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
-		v := ctx.Session().Get("member")
+		v := ctx.Session.Get("member")
 		var m *member.ValueMember
 		if v != nil {
 			m = v.(*member.ValueMember)
@@ -104,33 +101,31 @@ func (this *mainC) Msc(ctx *web.Context) {
 				m = nil
 			}
 		}
-
 		if m == nil {
 			m = dps.MemberService.GetMember(memberId)
-			ctx.Session().Set("member", m)
-			ctx.Session().Save()
+			ctx.Session.Set("member", m)
+			ctx.Session.Save()
 		}
 	})
-
 	if ok {
-		ctx.Items["client_member_id"] = memberId
+		ctx.Session.Set("client_member_id", memberId)
+		ctx.Session.Save()
 	}
-
 	rtu := form.Get("return_url")
 	if len(rtu) == 0 {
 		rtu = "/"
 	}
-	ctx.Response.Header().Add("Location", rtu)
-	ctx.Response.WriteHeader(302)
+	ctx.Response().Header().Add("Location", rtu)
+	ctx.Response().WriteHeader(302)
+	return nil
 }
 
 // Member session disconnect
-func (this *mainC) Msd(ctx *web.Context) {
+func (this *mainC) Msd(ctx *echox.Context) error {
 	if util.MemberHttpSessionDisconnect(ctx) {
-		ctx.Session().Set("member", nil)
-		ctx.Session().Save()
-		ctx.Response.Write([]byte("disconnect success"))
-	} else {
-		ctx.Response.Write([]byte("disconnect fail"))
+		ctx.Session.Set("member", nil)
+		ctx.Session.Save()
+		return ctx.StringOK("disconnect success")
 	}
+	return ctx.StringOK("disconnect fail")
 }

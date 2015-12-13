@@ -10,6 +10,7 @@ package ucenter
 
 import (
 	mw "github.com/labstack/echo/middleware"
+	"go2o/src/app/util"
 	"go2o/src/x/echox"
 	"net/http"
 )
@@ -41,7 +42,11 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/", mc.Index)
 	s.Getx("/logout", mc.Logout)
 	s.Anyx("/login", lc.Index)
-	//	s.Danyx("/main/:action",mc)
+	s.Getx("/change_device", mc.Change_device)
+	s.Getx("/msc", mc.Msc)
+	s.Getx("/msd", mc.Msd)
+	s.Getx("/partner_connect", lc.Partner_connect)
+	s.Getx("/partner_disconnect", lc.Partner_disconnect)
 	s.Danyx("/basic/:action", bc)
 	s.Danyx("/order/:action", oc)
 	s.Danyx("/account/:action", ac)
@@ -70,5 +75,13 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		embedServe = getServe("public/views/ucenter/app_embed")
 		waitInit = true
 	}
-	pcServe.ServeHTTP(w, r)
+	switch util.GetBrownerDevice(r) {
+	default:
+	case util.DevicePC:
+		pcServe.ServeHTTP(w, r)
+	case util.DeviceTouchPad, util.DeviceMobile:
+		mobiServe.ServeHTTP(w, r)
+	case util.DeviceAppEmbed:
+		embedServe.ServeHTTP(w, r)
+	}
 }

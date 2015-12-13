@@ -50,7 +50,7 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 		"partner": p,
 		"member":  m,
 	}
-	return ctx.RenderOK("acccount.income_log.html", d)
+	return ctx.RenderOK("account.income_log.html", d)
 }
 
 func (this *accountC) income_log_post(ctx *echox.Context) error {

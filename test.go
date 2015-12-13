@@ -32,6 +32,6 @@ func main() {
 		fmt.Println(i, "---", matches[i][1], matches[i][2])
 	}
 
-	fmt.Println("/main/change_device?device=3&return_url=/main/t/123" +
+	fmt.Println("/change_device?device=3&return_url=/main/t/123" +
 		url.QueryEscape("?return_url=/app"))
 }

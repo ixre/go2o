@@ -20,6 +20,8 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+	"go2o/src/x/echox"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -192,12 +194,12 @@ func (this *MemberC) Account(ctx *web.Context) {
 }
 
 // 断开
-func (this *MemberC) Disconnect(ctx *web.Context) {
+func (this *MemberC) Disconnect(ctx *echox.Context) error {
 	var result gof.Message
 	if util.MemberHttpSessionDisconnect(ctx) {
 		result.Result = true
 	} else {
 		result.Message = "disconnect fail"
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK, result)
 }

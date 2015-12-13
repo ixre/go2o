@@ -101,7 +101,7 @@ func main() {
 
 	if strings.Contains(mode, "r") {
 		booted = true
-		go app.RunRestApi(newApp, restPort)
+		//go app.RunRestApi(newApp, restPort)
 	}
 
 	if booted {
