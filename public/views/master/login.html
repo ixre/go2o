@@ -78,7 +78,7 @@ p {
 	        function login() {
 	            var formData = j6.json.toObject('form1');
 
-	            if (J.validator.validate('form1')){
+	            if (j6.validator.validate('form1')){
 	            		
 	                j6.xhr.jsonPost(location.href, formData, function (json) {
 	                    if (json.result) {

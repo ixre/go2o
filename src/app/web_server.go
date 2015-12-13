@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/core/variable"
+	"go2o/src/front/master"
 	"go2o/src/front/partner"
 	"go2o/src/front/shop/ols"
 	"go2o/src/front/ucenter"
@@ -21,7 +22,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	"go2o/src/front/master"
 )
 
 // 静态文件

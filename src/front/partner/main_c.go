@@ -123,6 +123,13 @@ func (this *mainC) Summary(ctx *echox.Context) error {
 	return ctx.Render(http.StatusOK, "summary.html", d)
 }
 
+// 导出数据
+func (this *mainC) exportData(ctx *echox.Context) error {
+	ctx.Response().Header().Set("Content-Type", "application/json")
+	ctx.Response().Write(GetExportData(ctx.Request(), getPartnerId(ctx)))
+	return nil
+}
+
 func (this *mainC) Upload_post(ctx *echox.Context) error {
 	req := ctx.Request()
 	partnerId := getPartnerId(ctx)

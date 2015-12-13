@@ -20,7 +20,7 @@ import (
 func main() {
 	fmt.Println(crypto.Sha1([]byte("rskd3p")))
 	fmt.Println(domain.PartnerSha1Pwd("zs", "gcY!zs1654320s"))
-
+	fmt.Println(domain.Md5Pwd("123000", "master"))
 	fmt.Println(domain.NewApiId(105))
 	fmt.Println(domain.MemberSha1Pwd("jumy257"))
 	fmt.Println(1 << 2)

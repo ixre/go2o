@@ -105,7 +105,7 @@ $(function () {
                     return unix2str(v);
                 } },
                 { field: 'Id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
-                	return '<a href="javascript:;" onclick="editRec('+row.id+')">配置</a>'+
+                	return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">配置</a>'+
                             '<a href="javascript:;" class="btn btn-short" onclick="void('+row.id+')" title="查看登陆时间。等">详情</a>';
                 } },
             ]
