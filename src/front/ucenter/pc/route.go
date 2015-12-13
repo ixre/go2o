@@ -32,7 +32,7 @@ import (
 
 func registerRoutes(s *echox.Echo) {
 	mc := &mainC{}
-	//	bc := &basicC{}
+	bc := &basicC{}
 	//	oc := &orderC{}
 	//	ac := &accountC{}
 	lc := &loginC{}
@@ -42,7 +42,7 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/logout", mc.Logout)
 	s.Anyx("/login", lc.Index)
 	//	s.Danyx("/main/:action",mc)
-	//	s.Danyx("/basic/:action",bc)
+	s.Danyx("/basic/:action", bc)
 	//	s.Danyx("/order/:action",oc)
 	//	s.Danyx("/account/:action",ac)
 }
