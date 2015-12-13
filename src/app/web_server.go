@@ -71,24 +71,26 @@ func Run(ch chan bool, app gof.App, addr string) {
 	}
 	echox.SetGlobRendData(m)
 
-	hosts := make(echox.HttpHosts)
+	hosts := make(MyHttpHosts)
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
 
-	http.ListenAndServe(addr, func(w http.ResponseWriter, r *http.Request) {
-		subName := r.Host[:strings.Index(r.Host, ".")+1]
-		if subName == variable.DOMAIN_PREFIX_MEMBER {
-			ucenter.ServeHTTP(w, r)
-			return
-		}
-		if h, ok := hosts[subName]; ok {
-			h.ServeHTTP(w, r)
-		} else if h, ok = hosts["*"]; ok {
-			h.ServeHTTP(w, r)
-		} else {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		}
-	})
+	http.ListenAndServe(addr, hosts)
+}
+
+type MyHttpHosts echox.HttpHosts
+
+func (this MyHttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	subName := r.Host[:strings.Index(r.Host, ".")+1]
+	if subName == variable.DOMAIN_PREFIX_MEMBER {
+		ucenter.ServeHTTP(w, r)
+	} else if h, ok := this[subName]; ok {
+		h.ServeHTTP(w, r)
+	} else if h, ok = this["*"]; ok {
+		h.ServeHTTP(w, r)
+	} else {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+	}
 }
