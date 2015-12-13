@@ -19,10 +19,12 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
-	"go2o/src/core/service/goclient"
 	"go2o/src/core/variable"
 	"go2o/src/front"
+	"go2o/src/front/ucenter"
+	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -34,26 +36,27 @@ var (
 )
 
 type accountC struct {
-	*baseC
 }
 
-func (this *accountC) Income_log(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
-	m := this.GetMember(ctx)
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+func (this *accountC) Income_log(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.income_log_post(ctx)
+	}
+	m := ucenter.GetMember(ctx)
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
 		"partner": p,
 		"member":  m,
-	}, "views/ucenter/{device}/account/income_log.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("acccount.income_log.html", d)
 }
 
-func (this *accountC) Income_log_post(ctx *web.Context) {
-	m := this.GetMember(ctx)
-	r := ctx.Request
+func (this *accountC) income_log_post(ctx *echox.Context) error {
+	m := ucenter.GetMember(ctx)
+	r := ctx.Request()
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -72,14 +75,17 @@ func (this *accountC) Income_log_post(ctx *web.Context) {
 
 	p.RecordCount = n
 	pager := &front.Pager{Total: n, Rows: rows, Text: p.PagerString()}
-	ctx.Response.JsonOutput(pager)
+	return ctx.JSON(http.StatusOK, pager)
 }
 
 // 提现申请
-func (this *accountC) Apply_cash(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
-	m := this.GetMember(ctx)
+func (this *accountC) Apply_cash(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.apply_cash_post(ctx)
+	}
+	m := ucenter.GetMember(ctx)
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
 	acc := dps.MemberService.GetAccount(m.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
 
@@ -103,7 +109,8 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 			format.FormatFloat(saleConf.ApplyCsn*100), "%")
 	}
 
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":           conf,
 		"partner":        p,
 		"member":         m,
@@ -115,20 +122,19 @@ func (this *accountC) Apply_cash(ctx *web.Context) {
 		"presentAlias":   variable.AliasFlowAccount,
 		"cns":            saleConf.ApplyCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
-	}, "views/ucenter/{device}/account/apply_cash.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("account.apply_cash.html", d)
 }
 
-func (this *accountC) Apply_cash_post(ctx *web.Context) {
+func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	ctx.Request.ParseForm()
-	partnerId := this.GetPartner(ctx).Id
-	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
-	tradePwd := ctx.Request.FormValue("TradePwd")
-	memberId := this.GetMember(ctx).Id
+	r := ctx.Request()
+	r.ParseForm()
+	partnerId := ucenter.GetPartner(ctx).Id
+	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
+	tradePwd := r.FormValue("TradePwd")
+	memberId := ucenter.GetMember(ctx).Id
 	saleConf := dps.PartnerService.GetSaleConf(partnerId)
 	bank := dps.MemberService.GetBank(memberId)
 
@@ -146,7 +152,7 @@ func (this *accountC) Apply_cash_post(ctx *web.Context) {
 		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
 			format.FormatFloat(float32(minAmount))))
 	} else {
-		m := this.GetMember(ctx)
+		m := ucenter.GetMember(ctx)
 		err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
 			member.TypeApplyCashToBank, float32(amount), saleConf.ApplyCsn)
 	}
@@ -157,15 +163,19 @@ toErr:
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+
+	return ctx.JSON(http.StatusOK, msg)
 }
 
 // 转换活动金到提现账户
-func (this *accountC) Convert_f2p(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
+func (this *accountC) Convert_f2p(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.convert_f2p_post(ctx)
+	}
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
-	m := this.GetMember(ctx)
+	m := ucenter.GetMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	var commissionStr string
@@ -176,7 +186,8 @@ func (this *accountC) Convert_f2p(ctx *web.Context) {
 			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
 	}
 
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":              conf,
 		"partner":           p,
 		"member":            m,
@@ -186,26 +197,25 @@ func (this *accountC) Convert_f2p(ctx *web.Context) {
 		"flowConvertSlogan": variable.FlowConvertSlogan,
 		"cns":               saleConf.FlowConvertCsn,
 		"notSetTradePwd":    len(m.TradePwd) == 0,
-	}, "views/ucenter/{device}/account/convert_f2p.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("account.convert_f2p.html", d)
 }
 
-func (this *accountC) Convert_f2p_post(ctx *web.Context) {
+func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	ctx.Request.ParseForm()
-	partnerId := this.GetPartner(ctx).Id
-	amount, _ := strconv.ParseFloat(ctx.Request.FormValue("Amount"), 32)
-	tradePwd := ctx.Request.FormValue("TradePwd")
-	saleConf := dps.PartnerService.GetSaleConf(partnerId)
+	r := ctx.Request()
+	r.ParseForm()
+	pt := ucenter.GetPartner(ctx)
+	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
+	tradePwd := r.FormValue("TradePwd")
+	saleConf := dps.PartnerService.GetSaleConf(pt.Id)
 
-	memberId := this.GetMember(ctx).Id
+	m := ucenter.GetMember(ctx)
 
-	if _, err = dps.MemberService.VerifyTradePwd(memberId, tradePwd); err == nil {
-		err = dps.MemberService.TransferFlow(memberId, member.KindBalancePresent,
-			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(partnerId),
+	if _, err = dps.MemberService.VerifyTradePwd(m.Id, tradePwd); err == nil {
+		err = dps.MemberService.TransferFlow(m.Id, member.KindBalancePresent,
+			float32(amount), saleConf.FlowConvertCsn, domain.NewTradeNo(pt.Id),
 			fmt.Sprintf("%s转换", variable.AliasFlowAccount),
 			fmt.Sprintf("%s转换%s", variable.AliasFlowAccount, variable.AliasPresentAccount))
 	}
@@ -215,15 +225,18 @@ func (this *accountC) Convert_f2p_post(ctx *web.Context) {
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK, msg)
 }
 
 // 转换活动金到提现账户
-func (this *accountC) Transfer_f2m(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
+func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.transfer_f2m_post(ctx)
+	}
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
-	m := this.GetMember(ctx)
+	m := ucenter.GetMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	var commissionStr string
@@ -234,7 +247,8 @@ func (this *accountC) Transfer_f2m(ctx *web.Context) {
 			format.FormatFloat(saleConf.FlowConvertCsn*100), "%")
 	}
 
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":           conf,
 		"partner":        p,
 		"member":         m,
@@ -243,48 +257,46 @@ func (this *accountC) Transfer_f2m(ctx *web.Context) {
 		"flowAlias":      variable.AliasFlowAccount,
 		"cns":            saleConf.TransCsn,
 		"notSetTradePwd": len(m.TradePwd) == 0,
-	}, "views/ucenter/{device}/account/transfer_f2m.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+
+	return ctx.RenderOK("account.transfer_f2m.html", d)
 }
 
-func (this *accountC) Transfer_f2m_post(ctx *web.Context) {
+func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	ctx.Request.ParseForm()
-	form := ctx.Request.Form
-	partnerId := this.GetPartner(ctx).Id
-	toMemberId, _ := strconv.Atoi(form.Get("ToId"))
-	amount, _ := strconv.ParseFloat(form.Get("Amount"), 32)
-	tradePwd := form.Get("TradePwd")
-	saleConf := dps.PartnerService.GetSaleConf(partnerId)
-	memberId := this.GetMember(ctx).Id
+	r := ctx.Request()
+	r.ParseForm()
+	p := ucenter.GetPartner(ctx)
+	toMemberId, _ := strconv.Atoi(r.FormValue("ToId"))
+	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
+	tradePwd := r.FormValue("TradePwd")
+	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	m := ucenter.GetMember(ctx)
 
-	if toMemberId == memberId {
+	if toMemberId == m.Id {
 		err = errors.New("无法转账到自己账号")
 	} else {
-		if _, err = dps.MemberService.VerifyTradePwd(memberId, tradePwd); err == nil {
-			err = dps.MemberService.TransferFlowTo(memberId, toMemberId, member.KindBalanceFlow,
-				float32(amount), saleConf.TransCsn, domain.NewTradeNo(partnerId),
+		if _, err = dps.MemberService.VerifyTradePwd(m.Id, tradePwd); err == nil {
+			err = dps.MemberService.TransferFlowTo(m.Id, toMemberId, member.KindBalanceFlow,
+				float32(amount), saleConf.TransCsn, domain.NewTradeNo(p.Id),
 				variable.AliasFlowAccount+"转账", "转入"+variable.AliasFlowAccount)
 		}
 	}
-
 	if err != nil {
 		msg.Message = err.Error()
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK, msg)
 }
 
 // 转账成功提示页面
-func (this *accountC) Transfer_success(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
+func (this *accountC) Transfer_success(ctx *echox.Context) error {
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
 
-	src := ctx.Request.URL.Query().Get("src")
+	src := ctx.Query("src")
 	var title, subTitle, btnText string
 
 	switch src {
@@ -302,39 +314,40 @@ func (this *accountC) Transfer_success(ctx *web.Context) {
 		btnText = "继续提现"
 	}
 
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":     conf,
 		"partner":  p,
 		"title":    title,
 		"subTitle": subTitle,
 		"btnText":  btnText,
-		"referer":  ctx.Request.Referer(),
-	}, "views/ucenter/{device}/account/transfer_success.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+		"referer":  ctx.Request().Referer(),
+	}
+	return ctx.RenderOK("account.transfer_success.html", d)
 }
 
-func (this *accountC) Bank_info(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
-	m := this.GetMember(ctx)
+func (this *accountC) Bank_info(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.bank_info_post(ctx)
+	}
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
+	m := ucenter.GetMember(ctx)
 	bank := dps.MemberService.GetBank(m.Id)
 
 	js, _ := json.Marshal(bank)
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
 		"partner": p,
 		"entity":  template.JS(js),
-	}, "views/ucenter/{device}/account/bank_info.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("account.bank_info.html", d)
 }
 
-func (this *accountC) Bank_info_post(ctx *web.Context) {
-	m := this.GetMember(ctx)
-	r := ctx.Request
+func (this *accountC) bank_info_post(ctx *echox.Context) error {
+	m := ucenter.GetMember(ctx)
+	r := ctx.Request()
 	var msg gof.Message
 	r.ParseForm()
 	e := new(member.BankInfo)
@@ -347,23 +360,22 @@ func (this *accountC) Bank_info_post(ctx *web.Context) {
 	} else {
 		msg.Result = true
 	}
-	ctx.Response.JsonOutput(msg)
+	return ctx.JSON(http.StatusOK, msg)
 }
 
-func (this *accountC) Integral_exchange(ctx *web.Context) {
-	p := this.GetPartner(ctx)
-	conf := this.GetSiteConf(p.Id)
-	m := this.GetMember(ctx)
-	acc, _ := goclient.Member.GetMemberAccount(m.Id, m.DynamicToken)
+func (this *accountC) Integral_exchange(ctx *echox.Context) error {
+	p := ucenter.GetPartner(ctx)
+	conf := ucenter.GetSiteConf(p.Id)
+	m := ucenter.GetMember(ctx)
+	acc := dps.MemberService.GetAccount(m.Id)
 
-	this.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
 		"record":  15,
 		"partner": p,
 		"member":  m,
 		"account": acc,
-	}, "views/ucenter/{device}/account/integral_exchange.html",
-		"views/ucenter/{device}/inc/header.html",
-		"views/ucenter/{device}/inc/menu.html",
-		"views/ucenter/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("account.integral_exchange.html", d)
 }

@@ -33,8 +33,8 @@ import (
 func registerRoutes(s *echox.Echo) {
 	mc := &mainC{}
 	bc := &basicC{}
-	//	oc := &orderC{}
-	//	ac := &accountC{}
+	oc := &orderC{}
+	ac := &accountC{}
 	lc := &loginC{}
 
 	s.Static("/static/", "./public/static/") //静态资源
@@ -43,8 +43,8 @@ func registerRoutes(s *echox.Echo) {
 	s.Anyx("/login", lc.Index)
 	//	s.Danyx("/main/:action",mc)
 	s.Danyx("/basic/:action", bc)
-	//	s.Danyx("/order/:action",oc)
-	//	s.Danyx("/account/:action",ac)
+	s.Danyx("/order/:action", oc)
+	s.Danyx("/account/:action", ac)
 }
 
 func GetServe() *echox.Echo {

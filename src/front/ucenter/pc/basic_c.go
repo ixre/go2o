@@ -110,7 +110,7 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.trade_pwd_post(ctx)
 	}
-	mm := ucenter.GetMember(ctx)
+	m := ucenter.GetMember(ctx)
 	p := ucenter.GetPartner(ctx)
 	conf := ucenter.GetSiteConf(p.Id)
 	d := ctx.NewData()
@@ -118,8 +118,8 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 		"partner":      p,
 		"conf":         conf,
 		"partner_host": conf.Host,
-		"member":       mm,
-		"notFirstSet":  len(mm.TradePwd) != 0,
+		"member":       m,
+		"notFirstSet":  len(m.TradePwd) != 0,
 	}
 	return ctx.RenderOK("trade_pwd.html", d)
 }
