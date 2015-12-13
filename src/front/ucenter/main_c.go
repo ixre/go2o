@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	"encoding/json"
@@ -15,7 +15,6 @@ import (
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
-	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"html/template"
 	"time"
@@ -26,9 +25,9 @@ type mainC struct {
 
 //todo:bug 当在UCenter登陆，会话会超时
 func (this *mainC) Index(ctx *echox.Context) error {
-	mm := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	mm := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 
 	acc := dps.MemberService.GetAccount(mm.Id)
 	js, _ := json.Marshal(mm)

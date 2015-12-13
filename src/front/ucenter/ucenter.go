@@ -26,7 +26,7 @@ var (
 )
 
 // 会员登陆检查
-func MemberLogonCheck(ctx *echo.Context) error {
+func memberLogonCheck(ctx *echo.Context) error {
 	path := ctx.Request().URL.Path
 	if path == "/login" || strings.HasPrefix(path, "/static/") {
 		return nil
@@ -53,7 +53,7 @@ func GetSessionMemberId(ctx *echox.Context) int {
 }
 
 // 获取会员
-func GetMember(ctx *echox.Context) *member.ValueMember {
+func getMember(ctx *echox.Context) *member.ValueMember {
 	s := ctx.Session.Get("member")
 	if s != nil {
 		return s.(*member.ValueMember)
@@ -62,7 +62,7 @@ func GetMember(ctx *echox.Context) *member.ValueMember {
 }
 
 // 重新缓存会员
-func ReCacheMember(ctx *echox.Context, memberId int) *member.ValueMember {
+func reCacheMember(ctx *echox.Context, memberId int) *member.ValueMember {
 	v := dps.MemberService.GetMember(memberId)
 	ctx.Session.Set("member", v)
 	ctx.Session.Save()
@@ -70,12 +70,12 @@ func ReCacheMember(ctx *echox.Context, memberId int) *member.ValueMember {
 }
 
 // 获取商户
-func GetPartner(ctx *echox.Context) *partner.ValuePartner {
+func getPartner(ctx *echox.Context) *partner.ValuePartner {
 	val := ctx.Session.Get("member:rel_partner")
 	if val != nil {
 		return cache.GetValuePartnerCache(val.(int))
 	} else {
-		m := GetMember(ctx)
+		m := getMember(ctx)
 		if m != nil {
 			rel := dps.MemberService.GetRelation(m.Id)
 			ctx.Session.Set("member:rel_partner", rel.RegisterPartnerId)
@@ -87,6 +87,6 @@ func GetPartner(ctx *echox.Context) *partner.ValuePartner {
 }
 
 // 获取商户的站点设置
-func GetSiteConf(partnerId int) *partner.SiteConf {
+func getSiteConf(partnerId int) *partner.SiteConf {
 	return cache.GetPartnerSiteConf(partnerId)
 }

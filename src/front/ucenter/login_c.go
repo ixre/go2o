@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	"github.com/jsix/gof"

@@ -15,12 +15,12 @@ import (
 	"go2o/src/core/variable"
 	"go2o/src/front/master"
 	"go2o/src/front/partner"
-	"go2o/src/front/shop/ols"
-	upc "go2o/src/front/ucenter/pc"
+	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -72,12 +72,23 @@ func Run(ch chan bool, app gof.App, addr string) {
 	echox.SetGlobRendData(m)
 
 	hosts := make(echox.HttpHosts)
-	hosts["*"] = ols.GetServe()
-	hosts[variable.DOMAIN_PREFIX_MEMBER_PC] = upc.GetServe()
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
 
-	http.ListenAndServe(addr, hosts)
+	http.ListenAndServe(addr, func(w http.ResponseWriter, r *http.Request) {
+		subName := r.Host[:strings.Index(r.Host, ".")+1]
+		if subName == variable.DOMAIN_PREFIX_MEMBER {
+			ucenter.ServeHTTP(w, r)
+			return
+		}
+		if h, ok := hosts[subName]; ok {
+			h.ServeHTTP(w, r)
+		} else if h, ok = hosts["*"]; ok {
+			h.ServeHTTP(w, r)
+		} else {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		}
+	})
 }

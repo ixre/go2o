@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	"encoding/json"
@@ -16,7 +16,6 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
-	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
@@ -30,9 +29,9 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.profile_post(ctx)
 	}
-	mm := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	mm := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	js, _ := json.Marshal(mm)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
@@ -46,7 +45,7 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 }
 
 func (this *basicC) profile_post(ctx *echox.Context) error {
-	mm := ucenter.GetMember(ctx)
+	mm := getMember(ctx)
 	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
@@ -59,7 +58,7 @@ func (this *basicC) profile_post(ctx *echox.Context) error {
 		result.Message = err.Error()
 	} else {
 		result.Result = true
-		ucenter.ReCacheMember(ctx, m.Id)
+		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -68,9 +67,9 @@ func (this *basicC) Pwd(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.pwd_post(ctx)
 	}
-	mm := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	mm := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -85,7 +84,7 @@ func (this *basicC) pwd_post(ctx *echox.Context) error {
 	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	var oldPwd, newPwd, rePwd string
 	oldPwd = r.FormValue("OldPwd")
 	newPwd = r.FormValue("NewPwd")
@@ -100,7 +99,7 @@ func (this *basicC) pwd_post(ctx *echox.Context) error {
 		result.Message = err.Error()
 	} else {
 		result.Result = true
-		ucenter.ReCacheMember(ctx, m.Id)
+		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -110,9 +109,9 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.trade_pwd_post(ctx)
 	}
-	m := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	m := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -127,7 +126,7 @@ func (this *basicC) trade_pwd_post(ctx *echox.Context) error {
 	r := ctx.Request()
 	var result gof.Message
 	r.ParseForm()
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	var oldPwd, newPwd, rePwd string
 	oldPwd = r.FormValue("OldPwd")
 	newPwd = r.FormValue("NewPwd")
@@ -142,7 +141,7 @@ func (this *basicC) trade_pwd_post(ctx *echox.Context) error {
 		result.Message = err.Error()
 	} else {
 		result.Result = true
-		ucenter.ReCacheMember(ctx, m.Id)
+		reCacheMember(ctx, m.Id)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -151,9 +150,9 @@ func (this *basicC) Deliver(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.deliver_post(ctx)
 	}
-	m := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	m := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -165,7 +164,7 @@ func (this *basicC) Deliver(ctx *echox.Context) error {
 }
 
 func (this *basicC) deliver_post(ctx *echox.Context) error {
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	add := dps.MemberService.GetDeliverAddress(m.Id)
 	js, _ := json.Marshal(add)
 	ctx.Response().Write([]byte(`{"rows":` + string(js) + `}`))
@@ -175,7 +174,7 @@ func (this *basicC) deliver_post(ctx *echox.Context) error {
 func (this *basicC) SaveDeliver(ctx *echox.Context) error {
 	r := ctx.Request()
 	if r.Method == "POST" {
-		m := ucenter.GetMember(ctx)
+		m := getMember(ctx)
 		var result gof.Message
 		r.ParseForm()
 		var e member.DeliverAddress
@@ -196,7 +195,7 @@ func (this *basicC) DeleteDeliver(ctx *echox.Context) error {
 	r := ctx.Request()
 	if r.Method == "POST" {
 		var result gof.Message
-		m := ucenter.GetMember(ctx)
+		m := getMember(ctx)
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
 
@@ -219,7 +218,7 @@ func (this *basicC) Member_cln_filter(ctx *echox.Context) error {
 		})
 	}
 	var list []*dto.SimpleMember
-	partnerId := ucenter.GetPartner(ctx).Id
+	partnerId := getPartner(ctx).Id
 	list = dps.MemberService.FilterMemberByUsrOrPhone(partnerId, key)
 	return ctx.JSON(http.StatusOK, list)
 }

@@ -10,10 +10,9 @@
 package variable
 
 const (
-	DOMAIN_PREFIX_WEBMASTER   = "webmaster."
-	DOMAIN_PREFIX_MEMBER_PC   = "u."
-	DOMAIN_PREFIX_MEMBER_MOBI = "mu."
-	DOMAIN_PREFIX_PARTNER     = "partner."
-	DOMAIN_PREFIX_STATIC      = "static."
-	DOMAIN_PREFIX_IMAGE       = "img."
+	DOMAIN_PREFIX_WEBMASTER = "webmaster."
+	DOMAIN_PREFIX_MEMBER    = "u."
+	DOMAIN_PREFIX_PARTNER   = "partner."
+	DOMAIN_PREFIX_STATIC    = "static."
+	DOMAIN_PREFIX_IMAGE     = "img."
 )

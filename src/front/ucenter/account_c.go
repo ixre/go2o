@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	"encoding/json"
@@ -21,7 +21,6 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"go2o/src/front"
-	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
@@ -42,9 +41,9 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.income_log_post(ctx)
 	}
-	m := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	m := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
@@ -55,7 +54,7 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 }
 
 func (this *accountC) income_log_post(ctx *echox.Context) error {
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	r := ctx.Request()
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -83,9 +82,9 @@ func (this *accountC) Apply_cash(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.apply_cash_post(ctx)
 	}
-	m := ucenter.GetMember(ctx)
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	m := getMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	acc := dps.MemberService.GetAccount(m.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
 
@@ -131,10 +130,10 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.Request()
 	r.ParseForm()
-	partnerId := ucenter.GetPartner(ctx).Id
+	partnerId := getPartner(ctx).Id
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	tradePwd := r.FormValue("TradePwd")
-	memberId := ucenter.GetMember(ctx).Id
+	memberId := getMember(ctx).Id
 	saleConf := dps.PartnerService.GetSaleConf(partnerId)
 	bank := dps.MemberService.GetBank(memberId)
 
@@ -152,7 +151,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 		err = errors.New(fmt.Sprintf("必须达到最低提现金额:%s元",
 			format.FormatFloat(float32(minAmount))))
 	} else {
-		m := ucenter.GetMember(ctx)
+		m := getMember(ctx)
 		err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
 			member.TypeApplyCashToBank, float32(amount), saleConf.ApplyCsn)
 	}
@@ -172,10 +171,10 @@ func (this *accountC) Convert_f2p(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.convert_f2p_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	var commissionStr string
@@ -206,12 +205,12 @@ func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.Request()
 	r.ParseForm()
-	pt := ucenter.GetPartner(ctx)
+	pt := getPartner(ctx)
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	tradePwd := r.FormValue("TradePwd")
 	saleConf := dps.PartnerService.GetSaleConf(pt.Id)
 
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 
 	if _, err = dps.MemberService.VerifyTradePwd(m.Id, tradePwd); err == nil {
 		err = dps.MemberService.TransferFlow(m.Id, member.KindBalancePresent,
@@ -233,10 +232,10 @@ func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.transfer_f2m_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	var commissionStr string
@@ -267,12 +266,12 @@ func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.Request()
 	r.ParseForm()
-	p := ucenter.GetPartner(ctx)
+	p := getPartner(ctx)
 	toMemberId, _ := strconv.Atoi(r.FormValue("ToId"))
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	tradePwd := r.FormValue("TradePwd")
 	saleConf := dps.PartnerService.GetSaleConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 
 	if toMemberId == m.Id {
 		err = errors.New("无法转账到自己账号")
@@ -293,8 +292,8 @@ func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 
 // 转账成功提示页面
 func (this *accountC) Transfer_success(ctx *echox.Context) error {
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
 
 	src := ctx.Query("src")
 	var title, subTitle, btnText string
@@ -330,9 +329,9 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.bank_info_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	bank := dps.MemberService.GetBank(m.Id)
 
 	js, _ := json.Marshal(bank)
@@ -346,7 +345,7 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 }
 
 func (this *accountC) bank_info_post(ctx *echox.Context) error {
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	r := ctx.Request()
 	var msg gof.Message
 	r.ParseForm()
@@ -364,9 +363,9 @@ func (this *accountC) bank_info_post(ctx *echox.Context) error {
 }
 
 func (this *accountC) Integral_exchange(ctx *echox.Context) error {
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
 	d := ctx.NewData()

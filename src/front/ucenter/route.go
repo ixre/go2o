@@ -6,12 +6,12 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	mw "github.com/labstack/echo/middleware"
-	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
+	"net/http"
 )
 
 //处理请求
@@ -47,11 +47,28 @@ func registerRoutes(s *echox.Echo) {
 	s.Danyx("/account/:action", ac)
 }
 
-func GetServe() *echox.Echo {
+var (
+	waitInit   bool = true
+	pcServe    *echox.Echo
+	mobiServe  *echox.Echo
+	embedServe *echox.Echo
+)
+
+func getServe(path string) *echox.Echo {
 	s := echox.New()
-	s.SetTemplateRender("public/views/ucenter/pc")
+	s.SetTemplateRender(path)
 	s.Use(mw.Recover())
-	s.Use(ucenter.MemberLogonCheck)
+	s.Use(memberLogonCheck)
 	registerRoutes(s)
 	return s
+}
+
+func ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if waitInit {
+		pcServe = getServe("public/views/ucenter/pc")
+		mobiServe = getServe("public/views/ucenter/mobi")
+		embedServe = getServe("public/views/ucenter/app_embed")
+		waitInit = true
+	}
+	pcServe.ServeHTTP(w, r)
 }

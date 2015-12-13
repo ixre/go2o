@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package pc
+package ucenter
 
 import (
 	"fmt"
@@ -15,7 +15,6 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/service/dps"
 	"go2o/src/front"
-	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"net/http"
 	"strconv"
@@ -33,9 +32,9 @@ func (this *orderC) All(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.all_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -51,7 +50,7 @@ func (this *orderC) all_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) responseList(ctx *echox.Context, where string) error {
-	m := ucenter.GetMember(ctx)
+	m := getMember(ctx)
 	r := ctx.Request()
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
@@ -71,9 +70,9 @@ func (this *orderC) Wait_payment(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.wait_payment_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -93,9 +92,9 @@ func (this *orderC) Wait_delivery(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.wait_payment_post(ctx)
 	}
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -113,9 +112,9 @@ func (this *orderC) wait_delivery_post(ctx *echox.Context) error {
 
 func (this *orderC) Completed(ctx *echox.Context) error {
 
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
@@ -128,9 +127,9 @@ func (this *orderC) Completed(ctx *echox.Context) error {
 }
 
 func (this *orderC) Canceled(ctx *echox.Context) error {
-	p := ucenter.GetPartner(ctx)
-	conf := ucenter.GetSiteConf(p.Id)
-	m := ucenter.GetMember(ctx)
+	p := getPartner(ctx)
+	conf := getSiteConf(p.Id)
+	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
