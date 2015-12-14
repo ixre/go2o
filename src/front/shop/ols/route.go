@@ -9,6 +9,8 @@
 package ols
 
 import (
+	"github.com/jsix/gof/web/session"
+	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
 	"go2o/src/app/util"
 	"go2o/src/cache"
@@ -87,11 +89,12 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func shopCheck(ctx *echox.Context) error {
+func shopCheck(ctx *echo.Context) error {
 	// 商户不存在
-	partnerId := getPartnerId(ctx)
+	s := session.Default(ctx.Response(), ctx.Request())
+	partnerId := getPartnerId(ctx.Request(), s)
 	if partnerId <= 0 {
-		err := ctx.StringOK("No such partner.")
+		err := ctx.String(http.StatusOK, "No such partner.")
 		ctx.Done()
 		return err
 	}
@@ -101,7 +104,7 @@ func shopCheck(ctx *echox.Context) error {
 	// 判断线上商店开通情况
 	var conf = cache.GetPartnerSiteConf(partnerId)
 	if conf == nil {
-		err := ctx.StringOK("线上商店未开通")
+		err := ctx.String(http.StatusOK, "线上商店未开通")
 		ctx.Done()
 		return err
 	}
@@ -110,7 +113,7 @@ func shopCheck(ctx *echox.Context) error {
 		if strings.TrimSpace(conf.StateHtml) == "" {
 			conf.StateHtml = "网站暂停访问"
 		}
-		err := ctx.StringOK(conf.StateHtml)
+		err := ctx.String(http.StatusOK, conf.StateHtml)
 		ctx.Done()
 		return err
 	}

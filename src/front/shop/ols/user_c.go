@@ -52,7 +52,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	r := ctx.Request()
 	r.ParseForm()
 	var result gof.Message
-	partnerId := getPartnerId(ctx)
+	partnerId := getPartnerId(r, ctx.Session)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)

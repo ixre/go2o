@@ -11,12 +11,14 @@ package ols
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
+	"github.com/jsix/gof/web/session"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
+	"net/http"
 	"net/url"
 	"strings"
 )
@@ -68,17 +70,17 @@ func checkMemberLogin(ctx *echox.Context) bool {
 }
 
 // 获取商户编号
-func getPartnerId(ctx *echox.Context) int {
+func getPartnerId(r *http.Request, s *session.Session) int {
 	return 104
-	currHost := ctx.Request().Host
-	host := ctx.Session.Get("webui_host")
-	pid := ctx.Session.Get("webui_pid")
+	currHost := r.Host
+	host := s.Get("webui_host")
+	pid := s.Get("webui_pid")
 	if host == nil || pid == nil || host != currHost {
 		partnerId := dps.PartnerService.GetPartnerIdByHost(currHost)
 		if partnerId != -1 {
-			ctx.Session.Set("webui_host", currHost)
-			ctx.Session.Set("webui_pid", partnerId)
-			ctx.Session.Save()
+			s.Set("webui_host", currHost)
+			s.Set("webui_pid", partnerId)
+			s.Save()
 		}
 		return partnerId
 	}
