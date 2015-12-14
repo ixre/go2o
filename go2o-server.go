@@ -29,21 +29,19 @@ import (
 
 func main() {
 	var (
-		ch         chan bool = make(chan bool)
-		confFile   string
-		httpPort   int
-		socketPort int
-		restPort   int
-		mode       string //启动模式: h开启http,s开启socket,a开启所有
-		debug      bool
-		trace      bool
-		runDaemon  bool // 运行daemon
-		help       bool
-		newApp     *core.MainApp
+		ch        chan bool = make(chan bool)
+		confFile  string
+		httpPort  int
+		restPort  int
+		mode      string //启动模式: h开启http,s开启socket,a开启所有
+		debug     bool
+		trace     bool
+		runDaemon bool // 运行daemon
+		help      bool
+		newApp    *core.MainApp
 	)
 
-	flag.IntVar(&restPort, "port3", 14198, "rest api port")
-	flag.IntVar(&socketPort, "port2", 14199, "socket server port")
+	flag.IntVar(&restPort, "port3", 14191, "rest api port")
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
 	flag.StringVar(&mode, "mode", "hr", "boot mode.'h'- boot http service,'s'- boot socket service")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
@@ -69,9 +67,6 @@ func main() {
 
 	if v := newApp.Config().GetInt("server_port"); v != 0 {
 		httpPort = v
-	}
-	if v := newApp.Config().GetInt("socket_port"); v != 0 {
-		socketPort = v
 	}
 	if v := newApp.Config().GetInt("api_service_port"); v != 0 {
 		restPort = v
