@@ -20,6 +20,7 @@ import (
 	"go2o/src/app/restapi"
 	"go2o/src/cache"
 	"go2o/src/core"
+	"go2o/src/core/service/dps"
 	"log"
 	"os"
 	"os/signal"
@@ -74,7 +75,7 @@ func main() {
 	}
 
 	gof.CurrentApp = newApp
-	app.Init(newApp)
+	dps.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
 	session.SetStorage(newApp.Storage())
