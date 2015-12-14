@@ -12,10 +12,12 @@ import (
 	"github.com/jsix/gof/web"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/x/echox"
+	"net/http"
 )
 
-func ApiTest(ctx *web.Context) {
-	ctx.Response.Write([]byte("It's working!"))
+func ApiTest(ctx *echox.Context) error {
+	return ctx.String(http.StatusOK, "It's working!")
 }
 
 // 检查是否有权限
