@@ -17,6 +17,7 @@ import (
 	"github.com/jsix/gof/web/session"
 	"go2o/src/app"
 	"go2o/src/app/daemon"
+	"go2o/src/app/restapi"
 	"go2o/src/cache"
 	"go2o/src/core"
 	"log"
@@ -91,7 +92,7 @@ func main() {
 
 	if strings.Contains(mode, "r") {
 		booted = true
-		go app.RunRestApi(newApp, restPort)
+		go restapi.Run(newApp, restPort)
 	}
 
 	if booted {

@@ -11,7 +11,6 @@ package restapi
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
 	"github.com/labstack/echo"
 	"go2o/src/app/util"
 	"go2o/src/cache"
@@ -26,24 +25,15 @@ import (
 	"strings"
 )
 
-type MemberC struct {
-}
-
 // 会员登陆后才能调用接口
-func (this *MemberC) Requesting(ctx *web.Context) bool {
-	if this.BaseC == nil || !this.BaseC.Requesting(ctx) {
-		return false
-	}
-	rlt := this.BaseC.CheckMemberToken(ctx)
-	//fmt.Printf("%#v\n",ctx.Request.Form)
-	return rlt
+type MemberC struct {
 }
 
 // 登陆
 func (this *MemberC) Login(ctx *echo.Context) error {
 	r := ctx.Request()
 	var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
-	partnerId := this.GetPartnerId(ctx)
+	partnerId := getPartnerId(ctx)
 	var result dto.MemberLoginResult
 
 	pwd = strings.TrimSpace(pwd)
@@ -57,7 +47,7 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 
 		if b {
 			// 生成令牌
-			e.DynamicToken = util.SetMemberApiToken(ctx.App.Storage(), e.Id, e.Pwd)
+			e.DynamicToken = util.SetMemberApiToken(sto, e.Id, e.Pwd)
 			result.Member = e
 		}
 		if err != nil {
@@ -70,12 +60,10 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 
 // 注册
 func (this *MemberC) Register(ctx *echo.Context) error {
-
 	r := ctx.Request()
 	var result dto.MessageResult
 	var err error
-
-	var partnerId int = this.GetPartnerId(ctx)
+	var partnerId int = getPartnerId(ctx)
 	var invMemberId int // 邀请人
 	var usr string = r.FormValue("usr")
 	var pwd string = r.FormValue("pwd")
@@ -132,9 +120,8 @@ func (this *MemberC) Ping(ctx *echo.Context) error {
 func (this *MemberC) Async(ctx *echo.Context) error {
 	var rlt AsyncResult
 	var form = ctx.Request().Form
-	sto := gof.CurrentApp.Storage()
 	var mut, aut, kvMut, kvAut int
-	memberId := this.GetMemberId(ctx)
+	memberId := getMemberId(ctx)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -160,8 +147,7 @@ func (this *MemberC) Async(ctx *echo.Context) error {
 
 // 获取最新的会员信息
 func (this *MemberC) Get(ctx *echo.Context) error {
-	sto := gof.CurrentApp.Storage()
-	memberId := this.GetMemberId(ctx)
+	memberId := getMemberId(ctx)
 	m := dps.MemberService.GetMember(memberId)
 	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
 	return ctx.JSON(http.StatusOK, m)
@@ -169,7 +155,7 @@ func (this *MemberC) Get(ctx *echo.Context) error {
 
 // 汇总信息
 func (this *MemberC) Summary(ctx *echo.Context) error {
-	memberId := this.GetMemberId(ctx)
+	memberId := getMemberId(ctx)
 	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
 	var v *dto.MemberSummary = new(dto.MemberSummary)
 	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
@@ -182,7 +168,7 @@ func (this *MemberC) Summary(ctx *echo.Context) error {
 
 // 获取最新的会员账户信息
 func (this *MemberC) Account(ctx *echo.Context) error {
-	memberId := this.GetMemberId(ctx)
+	memberId := getMemberId(ctx)
 	m := dps.MemberService.GetAccount(memberId)
 	return ctx.JSON(http.StatusOK, m)
 }

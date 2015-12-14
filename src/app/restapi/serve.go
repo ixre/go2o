@@ -16,20 +16,23 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 var (
 	API_DOMAIN   string
 	API_HOST_CHK bool = false // 必须匹配Host
 	PathPrefix        = "/go2o_api_v1"
+	sto          gof.Storage
 )
 
-func RunRestApi(app gof.App, port int) {
+func Run(app gof.App, port int) {
 	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
+	sto = app.Storage()
 	s := echo.New()
 	s.Use(mw.Recover())
-	s.Use(beforeRequest)
+	s.Use(beforeRequest())
 	s.Hook(splitPath) // 获取新的路径,在请求之前发生
 	registerRoutes(s)
 	s.Run(":" + strconv.Itoa(port)) //启动服务
@@ -48,16 +51,36 @@ func registerRoutes(s *echo.Echo) {
 	//s.Post("/member/*",mc)  // 会员接口
 }
 
-func beforeRequest(ctx *echo.Context) error {
-	host := ctx.Request.URL.Host
-	// todo: path compare
-	if API_HOST_CHK && host != API_DOMAIN {
-		http.Error(ctx.Response, "no such file", http.StatusNotFound)
-		ctx.Done()
+func beforeRequest() echo.MiddlewareFunc {
+	return func(h echo.HandlerFunc) echo.HandlerFunc {
+		return func(ctx *echo.Context) error {
+			host := ctx.Request().URL.Host
+			path := ctx.Request().URL.Path
+			// todo: path compare
+			if API_HOST_CHK && host != API_DOMAIN {
+				return ctx.String(http.StatusNotFound, "no such file")
+			}
+
+			if path != "/" {
+				//检查商户接口权限
+				ctx.Request().ParseForm()
+				if !chkPartnerApiSecret(ctx) {
+					return ctx.String(http.StatusOK, "{error:'secret incorrent'}")
+				}
+				//检查会员会话
+				if strings.HasPrefix(path, "/member") && !checkMemberToken(ctx) {
+					return ctx.String(http.StatusOK, "{error:'incorrent session'}")
+				}
+			}
+
+			return h(ctx)
+		}
 	}
-	return nil
 }
 
 func splitPath(w http.ResponseWriter, r *http.Request) {
-	r.URL.Path = r.URL.Path[len(PathPrefix):]
+	preLen := len(PathPrefix)
+	if len(r.URL.Path) > preLen {
+		r.URL.Path = r.URL.Path[preLen:]
+	}
 }

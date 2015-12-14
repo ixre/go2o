@@ -9,9 +9,9 @@
 package restapi
 
 import (
+	"github.com/labstack/echo"
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
-	"go2o/src/x/echox"
 	"net/url"
 	"strconv"
 )
@@ -20,7 +20,7 @@ type getC struct {
 }
 
 // 下载邀请二维码
-func (this *getC) Invite_qr(ctx *echox.Context) error {
+func (this *getC) Invite_qr(ctx *echo.Context) error {
 	domain := ctx.Query("domain")                       //域名
 	memberId, _ := strconv.Atoi(ctx.Query("member_id")) //会员编号
 	targetUrl := ctx.Query("target_url")                //目标跳转地址
