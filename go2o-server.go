@@ -45,7 +45,7 @@ func main() {
 	flag.IntVar(&restPort, "port3", 14198, "rest api port")
 	flag.IntVar(&socketPort, "port2", 14199, "socket server port")
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
-	flag.StringVar(&mode, "mode", "shr", "boot mode.'h'- boot http service,'s'- boot socket service")
+	flag.StringVar(&mode, "mode", "hr", "boot mode.'h'- boot http service,'s'- boot socket service")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
@@ -89,11 +89,6 @@ func main() {
 		go daemon.Run(newApp)
 	}
 
-	if strings.Contains(mode, "s") {
-		booted = true
-		go app.RunSocket(newApp, socketPort, debug, trace)
-	}
-
 	if strings.Contains(mode, "h") {
 		booted = true
 		go app.Run(ch, newApp, fmt.Sprintf(":%d", httpPort))
@@ -101,7 +96,7 @@ func main() {
 
 	if strings.Contains(mode, "r") {
 		booted = true
-		//go app.RunRestApi(newApp, restPort)
+		go app.RunRestApi(newApp, restPort)
 	}
 
 	if booted {
