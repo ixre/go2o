@@ -63,7 +63,7 @@ func CheckMemberLogin(ctx *echox.Context) bool {
 
 // 获取商户编号
 func GetPartnerId(r *http.Request, s *session.Session) int {
-	return 104
+	//return 104
 	currHost := r.Host
 	host := s.Get("webui_host")
 	pid := s.Get("webui_pid")

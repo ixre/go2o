@@ -26,23 +26,22 @@ var (
 )
 
 // 会员登陆检查
-func memberLogonCheck(ctx *echo.Context) error {
-	path := ctx.Request().URL.Path
-	if path == "/login" || path == "/partner_connect" ||
-		path == "/partner_disconnect" || strings.HasPrefix(path, "/static/") {
+func memberLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		path := ctx.Request().URL.Path
+		if path == "/login" || path == "/partner_connect" ||
+			path == "/partner_disconnect" || strings.HasPrefix(path, "/static/") {
+			return h(ctx)
+		}
+		session := session.Default(ctx.Response(), ctx.Request())
+		if m := session.Get("member"); m != nil {
+			return h(ctx)
+		}
+		ctx.Response().Header().Set("Location", "/login?return_url="+
+			url.QueryEscape(ctx.Request().URL.String()))
+		ctx.Response().WriteHeader(302)
 		return nil
 	}
-	session := session.Default(ctx.Response(), ctx.Request())
-	if m := session.Get("member"); m != nil {
-		return nil
-	}
-	ctx.Response().Header().Set("Location", "/login?return_url="+
-		url.QueryEscape(ctx.Request().URL.String()))
-	ctx.Response().WriteHeader(302)
-	mux.Lock()
-	defer mux.Unlock()
-	ctx.Done()
-	return nil
 }
 
 // 获取会员编号

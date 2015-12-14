@@ -38,17 +38,19 @@ func GetServe() *echox.Echo {
 	return s
 }
 
-func masterLogonCheck(ctx *echo.Context) error {
-	path := ctx.Request().URL.Path
-	if path == "/login" {
-		return nil
-	}
-	session := session.Default(ctx.Response(), ctx.Request())
-	if id := session.Get("is_master"); id == nil {
+func masterLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		path := ctx.Request().URL.Path
+		if path == "/login" {
+			return h(ctx)
+		}
+		session := session.Default(ctx.Response(), ctx.Request())
+		if id := session.Get("is_master"); id != nil {
+			return h(ctx)
+		}
 		ctx.Response().Header().Set("Location", "/login?return_url="+
 			url.QueryEscape(ctx.Request().URL.String()))
 		ctx.Response().WriteHeader(302)
-		ctx.Done()
+		return nil
 	}
-	return nil
 }

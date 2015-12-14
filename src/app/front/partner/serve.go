@@ -48,20 +48,20 @@ func GetServe() *echox.Echo {
 	return s
 }
 
-func partnerLogonCheck(ctx *echo.Context) error {
-	path := ctx.Request().URL.Path
-	if path == "/login" || strings.HasPrefix(path, "/static/") {
+func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		path := ctx.Request().URL.Path
+		if path == "/login" || strings.HasPrefix(path, "/static/") {
+			return h(ctx)
+		}
+		session := session.Default(ctx.Response(), ctx.Request())
+		if id := session.Get("partner_id"); id != nil {
+			ctx.Set("partner_id", id.(int))
+			return h(ctx)
+		}
+		ctx.Response().Header().Set("Location", "/login?return_url="+
+			url.QueryEscape(ctx.Request().URL.String()))
+		ctx.Response().WriteHeader(302)
 		return nil
 	}
-	session := session.Default(ctx.Response(), ctx.Request())
-	id := session.Get("partner_id")
-	if id != nil {
-		ctx.Set("partner_id", id.(int))
-		return nil
-	}
-	ctx.Response().Header().Set("Location", "/login?return_url="+
-		url.QueryEscape(ctx.Request().URL.String()))
-	ctx.Response().WriteHeader(302)
-	ctx.Done()
-	return nil
 }

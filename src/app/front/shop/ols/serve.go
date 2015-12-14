@@ -98,33 +98,29 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func shopCheck(ctx *echo.Context) error {
-	// 商户不存在
-	s := session.Default(ctx.Response(), ctx.Request())
-	partnerId := GetPartnerId(ctx.Request(), s)
-	if partnerId <= 0 {
-		err := ctx.String(http.StatusOK, "No such partner.")
-		ctx.Done()
-		return err
-	}
-
-	ctx.Set("partner_id", partnerId) // 缓存PartnerId
-
-	// 判断线上商店开通情况
-	var conf = cache.GetPartnerSiteConf(partnerId)
-	if conf == nil {
-		err := ctx.String(http.StatusOK, "线上商店未开通")
-		ctx.Done()
-		return err
-	}
-
-	if conf.State == enum.PARTNER_SITE_CLOSED {
-		if strings.TrimSpace(conf.StateHtml) == "" {
-			conf.StateHtml = "网站暂停访问"
+func shopCheck(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		// 商户不存在
+		s := session.Default(ctx.Response(), ctx.Request())
+		partnerId := GetPartnerId(ctx.Request(), s)
+		if partnerId <= 0 {
+			return ctx.String(http.StatusOK, "No such partner")
 		}
-		err := ctx.String(http.StatusOK, conf.StateHtml)
-		ctx.Done()
-		return err
+
+		ctx.Set("partner_id", partnerId) // 缓存PartnerId
+
+		// 判断线上商店开通情况
+		var conf = cache.GetPartnerSiteConf(partnerId)
+		if conf == nil {
+			return ctx.String(http.StatusOK, "线上商店未开通")
+		}
+
+		if conf.State == enum.PARTNER_SITE_CLOSED {
+			if strings.TrimSpace(conf.StateHtml) == "" {
+				conf.StateHtml = "网站暂停访问"
+			}
+			return ctx.String(http.StatusOK, conf.StateHtml)
+		}
+		return h(ctx)
 	}
-	return nil
 }
