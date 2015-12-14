@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
@@ -29,10 +28,7 @@ import (
 	"time"
 )
 
-var _ mvc.Filter = new(ShoppingC)
-
 type ShoppingC struct {
-	*BaseC
 }
 
 func (this *ShoppingC) prepare(ctx *echox.Context) bool {
@@ -44,7 +40,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
 		return nil
 	}
-	r := ctx.Request
+	r := ctx.Request()
 	p := getPartner(ctx)
 	m := getMember(ctx)
 	siteConf := getSiteConf(ctx)
@@ -57,8 +53,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 	}
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, m.Id, cartKey)
 	if cart.Items == nil || len(cart.Items) == 0 {
-		this.OrderEmpty(ctx, p, m, siteConf)
-		return
+		return this.OrderEmpty(ctx, p, m, siteConf)
 	}
 
 	// 配送地址
@@ -150,12 +145,13 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 		}
 		return ctx.JSON(http.StatusOK, msg)
 	}
+	return nil
 }
 
 // 配送地址管理
 func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
-		return
+		return nil
 	}
 	r := ctx.Request()
 	m := getMember(ctx)
@@ -201,7 +197,7 @@ func (this *ShoppingC) Apply(ctx *echox.Context) error {
 	if this.prepare(ctx) && r.Method == "POST" {
 		r.ParseForm()
 		applyType := r.URL.Query().Get("type")
-		if pplyType == "coupon" {
+		if applyType == "coupon" {
 			this.applyCoupon(ctx)
 		}
 	}
@@ -209,7 +205,7 @@ func (this *ShoppingC) Apply(ctx *echox.Context) error {
 }
 
 func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
-	msg := gof.Message
+	msg := gof.Message{}
 	p := getPartner(ctx)
 	m := getMember(ctx)
 

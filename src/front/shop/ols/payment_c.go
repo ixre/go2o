@@ -39,7 +39,7 @@ func getDomain(r *http.Request) string {
 func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	var p payment.IPayment
 
-	if guitl.IsMobileAgent(ctx.Request.UserAgent()) {
+	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
 		p = &payment.AliPayWap{
 			Partner: "2088021187655650",
 			Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
@@ -91,7 +91,7 @@ func (this *PaymentC) Create(ctx *echox.Context) error {
 		if order.IsPaid == enum.TRUE {
 			w.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", order.OrderNo))
 			w.WriteHeader(302)
-			return
+			return nil
 		}
 		ctx.Session.Set("current_payment", orderNo)
 		ctx.Session.Save()
@@ -144,7 +144,7 @@ func (this *PaymentC) Notify_post(ctx *echox.Context) error {
 
 	if paymentOpt == "alipay" {
 		aliPayObj := this.getAliPayment(ctx)
-		result := aliPayObj.Notify(ctx.Request)
+		result := aliPayObj.Notify(ctx.Request())
 		order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 		if result.Status == payment.StatusTradeSuccess {
 			this.handleOrder(order, "alipay", &result)

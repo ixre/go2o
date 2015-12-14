@@ -39,7 +39,7 @@ func (this *ContentC) Page(ctx *echox.Context) error {
 	}
 
 	if page == nil {
-		http.Error(ctx.Response, "404 page not found.", http.StatusNotFound)
+		http.Error(ctx.Response(), "404 page not found.", http.StatusNotFound)
 		return nil
 	}
 

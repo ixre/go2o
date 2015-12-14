@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"github.com/jsix/gof/web/mvc"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
@@ -129,15 +128,15 @@ func (this *UserC) Valid_invitation(ctx *echox.Context) error {
 func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 	r := ctx.Request()
 	if r.Method == "POST" {
-		ctx.Request.ParseForm()
+		r.ParseForm()
 		var result gof.Message
 		var member member.ValueMember
 
-		web.ParseFormToEntity(ctx.Request.Form, &member)
-		code := ctx.Request.FormValue("invi_code")
+		web.ParseFormToEntity(r.Form, &member)
+		code := r.FormValue("invi_code")
 
-		if i := strings.Index(ctx.Request.RemoteAddr, ":"); i != -1 {
-			member.RegIp = ctx.Request.RemoteAddr[:i]
+		if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
+			member.RegIp = r.RemoteAddr[:i]
 		}
 
 		var memberId int
@@ -191,7 +190,7 @@ func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 		location = fmt.Sprintf("http://%s.%s/login/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
 			variable.DOMAIN_PREFIX_MEMBER,
 			ctx.App.Config().GetString(variable.ServerDomain),
-			util.GetBrownerDevice(ctx),
+			util.GetBrownerDevice(ctx.Request()),
 			ctx.Session.GetSessionId(),
 			m.Id,
 			m.DynamicToken,
@@ -204,7 +203,7 @@ func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 func (this *UserC) Logout(ctx *echox.Context) error {
 	ctx.Session.Set("member", nil)
 	ctx.Session.Save()
-	ctx.Response.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.Response().Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,

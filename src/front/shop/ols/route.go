@@ -114,6 +114,5 @@ func shopCheck(ctx *echox.Context) error {
 		ctx.Done()
 		return err
 	}
-
-	return true
+	return nil
 }
