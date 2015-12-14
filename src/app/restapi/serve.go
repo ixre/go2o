@@ -26,7 +26,7 @@ var (
 	sto          gof.Storage
 )
 
-func NewServe(app gof.App)*echo.Echo{
+func NewServe(app gof.App) *echo.Echo {
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	sto = app.Storage()
 	serve := echo.New()

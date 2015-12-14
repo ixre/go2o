@@ -74,15 +74,15 @@ func getServe(path string) *echox.Echo {
 }
 
 // 初始化
-func init(){
+func init() {
 	pcServe = getServe("public/views/shop/ols/pc")
 	mobiServe = getServe("public/views/shop/ols/mobi")
 	embedServe = getServe("public/views/shop/ols/app_embed")
 }
 
 // 获取所有服务
-func GetServes()(sPc *echox.Echo,sMobi *echox.Echo,sApp *echox.Echo){
-	return pcServe,mobiServe,embedServe
+func GetServes() (sPc *echox.Echo, sMobi *echox.Echo, sApp *echox.Echo) {
+	return pcServe, mobiServe, embedServe
 }
 
 // 处理服务

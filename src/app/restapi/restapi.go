@@ -19,10 +19,9 @@ import (
 )
 
 // 获取存储
-func GetStorage()gof.Storage{
+func GetStorage() gof.Storage {
 	return sto
 }
-
 
 // 获取传入的商户接口编号和密钥
 func getUserInfo(ctx *echo.Context) (string, string) {
@@ -71,7 +70,6 @@ func getPartnerId(ctx *echo.Context) int {
 func GetMemberId(ctx *echo.Context) int {
 	return ctx.Get("member_id").(int)
 }
-
 
 func ApiTest(ctx *echo.Context) error {
 	return ctx.String(http.StatusOK, "It's working!")
