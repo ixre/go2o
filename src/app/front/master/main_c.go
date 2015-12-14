@@ -11,8 +11,8 @@ package master
 import (
 	"fmt"
 	"github.com/jsix/gof"
+	"go2o/src/app/front"
 	"go2o/src/core/infrastructure/domain"
-	"go2o/src/front"
 	"go2o/src/x/echox"
 	"net/http"
 )

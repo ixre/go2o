@@ -11,7 +11,7 @@ package app
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"go2o/src/app/api"
+	"go2o/src/app/restapi"
 	"go2o/src/core/variable"
 	"log"
 	"net/http"
@@ -39,7 +39,7 @@ func RunRestApi(app gof.App, port int) {
 			http.Error(ctx.Response, "no such file", http.StatusNotFound)
 			return
 		}
-		api.Handle(ctx)
+		restapi.Handle(ctx)
 	})
 
 	//启动服务

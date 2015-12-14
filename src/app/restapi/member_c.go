@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package api
+package restapi
 
 import (
 	"fmt"
