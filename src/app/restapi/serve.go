@@ -26,16 +26,20 @@ var (
 	sto          gof.Storage
 )
 
-func Run(app gof.App, port int) {
-	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
+func NewServe(app gof.App)*echo.Echo{
 	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
 	sto = app.Storage()
-	s := echo.New()
-	s.Use(mw.Recover())
-	s.Use(beforeRequest())
-	s.Hook(splitPath) // 获取新的路径,在请求之前发生
-	registerRoutes(s)
-	s.Run(":" + strconv.Itoa(port)) //启动服务
+	serve := echo.New()
+	serve.Use(mw.Recover())
+	serve.Use(beforeRequest())
+	serve.Hook(splitPath) // 获取新的路径,在请求之前发生
+	registerRoutes(serve)
+	return serve
+}
+
+func Run(app gof.App, port int) {
+	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
+	NewServe(app).Run(":" + strconv.Itoa(port)) //启动服务
 }
 
 func registerRoutes(s *echo.Echo) {

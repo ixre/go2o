@@ -31,7 +31,7 @@ func (this *CartC) CartApiHandle(ctx *echox.Context) error {
 	}
 	r.ParseForm()
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")
 	var memberId int

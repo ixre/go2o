@@ -61,7 +61,7 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 // 类目，限移动端
 func (this *ListC) All_cate(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	mm := getMember(ctx)
+	mm := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 
 	categories := dps.SaleService.GetCategories(p.Id)
@@ -226,7 +226,7 @@ func (this *ListC) GoodsView(ctx *echox.Context) error {
 	path := r.URL.Path
 	goodsId, _ := strconv.Atoi(path[strings.LastIndex(path, "-")+1 : strings.Index(path, ".")])
 
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	var level int = 0
 	if m != nil {
 		level = m.Level

@@ -73,13 +73,20 @@ func getServe(path string) *echox.Echo {
 	return s
 }
 
+// 初始化
+func init(){
+	pcServe = getServe("public/views/shop/ols/pc")
+	mobiServe = getServe("public/views/shop/ols/mobi")
+	embedServe = getServe("public/views/shop/ols/app_embed")
+}
+
+// 获取所有服务
+func GetServes()(sPc *echox.Echo,sMobi *echox.Echo,sApp *echox.Echo){
+	return pcServe,mobiServe,embedServe
+}
+
+// 处理服务
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if waitInit {
-		pcServe = getServe("public/views/shop/ols/pc")
-		mobiServe = getServe("public/views/shop/ols/mobi")
-		embedServe = getServe("public/views/shop/ols/app_embed")
-		waitInit = true
-	}
 	switch util.GetBrownerDevice(r) {
 	default:
 	case util.DevicePC:
@@ -94,7 +101,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func shopCheck(ctx *echo.Context) error {
 	// 商户不存在
 	s := session.Default(ctx.Response(), ctx.Request())
-	partnerId := getPartnerId(ctx.Request(), s)
+	partnerId := GetPartnerId(ctx.Request(), s)
 	if partnerId <= 0 {
 		err := ctx.String(http.StatusOK, "No such partner.")
 		ctx.Done()

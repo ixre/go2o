@@ -96,7 +96,7 @@ func (this *MainC) T(ctx *echox.Context) error {
 
 func (this *MainC) Index(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 
 	if this.HandleIndexGo(ctx) {
 		return nil
@@ -119,7 +119,7 @@ func (this *MainC) Index(ctx *echox.Context) error {
 
 func (this *MainC) App(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{

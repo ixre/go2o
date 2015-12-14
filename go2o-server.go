@@ -59,7 +59,6 @@ func main() {
 	}
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	newApp = core.NewMainApp(confFile)
 	if !newApp.Init(debug, trace) {
 		os.Exit(1)

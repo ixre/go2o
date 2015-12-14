@@ -9,23 +9,15 @@
 package ols
 
 import (
-	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/session"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
-	"html/template"
 	"net/http"
 	"net/url"
-	"strings"
 )
-
-type BaseC struct {
-	*BaseC
-}
 
 // 获取商户编号
 func GetSessionPartnerId(ctx *echox.Context) int {
@@ -48,7 +40,7 @@ func getSiteConf(ctx *echox.Context) *partner.SiteConf {
 }
 
 // 获取会员
-func getMember(ctx *echox.Context) *member.ValueMember {
+func GetMember(ctx *echox.Context) *member.ValueMember {
 	memberIdObj := ctx.Session.Get("member")
 	if memberIdObj != nil {
 		if o, ok := memberIdObj.(*member.ValueMember); ok {
@@ -59,7 +51,7 @@ func getMember(ctx *echox.Context) *member.ValueMember {
 }
 
 // 检查会员是否登陆
-func checkMemberLogin(ctx *echox.Context) bool {
+func CheckMemberLogin(ctx *echox.Context) bool {
 	if ctx.Session.Get("member") == nil {
 		ctx.Response().Header().Add("Location", "/user/login?return_url="+
 			url.QueryEscape(ctx.Request().RequestURI))
@@ -70,7 +62,7 @@ func checkMemberLogin(ctx *echox.Context) bool {
 }
 
 // 获取商户编号
-func getPartnerId(r *http.Request, s *session.Session) int {
+func GetPartnerId(r *http.Request, s *session.Session) int {
 	return 104
 	currHost := r.Host
 	host := s.Get("webui_host")
@@ -85,27 +77,4 @@ func getPartnerId(r *http.Request, s *session.Session) int {
 		return partnerId
 	}
 	return pid.(int)
-}
-
-// 输出错误信息
-func (this *BaseC) ErrorOutput(ctx *web.Context, err string) {
-	ctx.Response.Write([]byte("{error:\"" + err + "\"}"))
-}
-
-// 执行模板
-func (this *BaseC) ExecuteTemplate(ctx *web.Context, dataMap gof.TemplateDataMap, files ...string) {
-	newFiles := make([]string, len(files))
-	for i, v := range files {
-		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
-	}
-	ctx.App.Template().Execute(ctx.Response, dataMap, newFiles...)
-}
-
-func (this *BaseC) ExecuteTemplateWithFunc(ctx *web.Context, funcMap template.FuncMap,
-	dataMap gof.TemplateDataMap, files ...string) {
-	newFiles := make([]string, len(files))
-	for i, v := range files {
-		newFiles[i] = strings.Replace(v, "{device}", ctx.Items["device_view_dir"].(string), -1)
-	}
-	ctx.App.Template().ExecuteWithFunc(ctx.Response, funcMap, dataMap, newFiles...)
 }

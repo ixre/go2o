@@ -25,7 +25,7 @@ type ContentC struct {
 // 自定义页面
 func (this *ContentC) Page(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	mm := getMember(ctx)
+	mm := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	form := ctx.Request().URL.Query()
 

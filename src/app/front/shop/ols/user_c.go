@@ -52,7 +52,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	r := ctx.Request()
 	r.ParseForm()
 	var result gof.Message
-	partnerId := getPartnerId(r, ctx.Session)
+	partnerId := GetPartnerId(r, ctx.Session)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
@@ -182,7 +182,7 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 // 跳转到会员中心
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	var location string
 	if m == nil {
 		location = "/user/login?return_url=/user/jump_m"

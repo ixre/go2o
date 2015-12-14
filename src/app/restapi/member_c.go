@@ -121,7 +121,7 @@ func (this *MemberC) Async(ctx *echo.Context) error {
 	var rlt AsyncResult
 	var form = ctx.Request().Form
 	var mut, aut, kvMut, kvAut int
-	memberId := getMemberId(ctx)
+	memberId := GetMemberId(ctx)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -147,7 +147,7 @@ func (this *MemberC) Async(ctx *echo.Context) error {
 
 // 获取最新的会员信息
 func (this *MemberC) Get(ctx *echo.Context) error {
-	memberId := getMemberId(ctx)
+	memberId := GetMemberId(ctx)
 	m := dps.MemberService.GetMember(memberId)
 	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
 	return ctx.JSON(http.StatusOK, m)
@@ -155,7 +155,7 @@ func (this *MemberC) Get(ctx *echo.Context) error {
 
 // 汇总信息
 func (this *MemberC) Summary(ctx *echo.Context) error {
-	memberId := getMemberId(ctx)
+	memberId := GetMemberId(ctx)
 	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
 	var v *dto.MemberSummary = new(dto.MemberSummary)
 	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
@@ -168,7 +168,7 @@ func (this *MemberC) Summary(ctx *echo.Context) error {
 
 // 获取最新的会员账户信息
 func (this *MemberC) Account(ctx *echo.Context) error {
-	memberId := getMemberId(ctx)
+	memberId := GetMemberId(ctx)
 	m := dps.MemberService.GetAccount(memberId)
 	return ctx.JSON(http.StatusOK, m)
 }

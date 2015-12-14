@@ -32,7 +32,7 @@ type ShoppingC struct {
 }
 
 func (this *ShoppingC) prepare(ctx *echox.Context) bool {
-	return checkMemberLogin(ctx)
+	return CheckMemberLogin(ctx)
 }
 
 // 订单确认
@@ -42,7 +42,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 	}
 	r := ctx.Request()
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 
 	// 获取购物车
@@ -108,7 +108,7 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 	r := ctx.Request()
 	if r.Method == "POST" {
 		p := getPartner(ctx)
-		m := getMember(ctx)
+		m := GetMember(ctx)
 		msg := gof.Message{}
 		var err error
 		r.ParseForm()
@@ -154,7 +154,7 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 		return nil
 	}
 	r := ctx.Request()
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	address := dps.MemberService.GetDeliverAddress(m.Id)
 	var selId int
 	if sel := r.URL.Query().Get("sel"); sel != "" {
@@ -175,7 +175,7 @@ func (this *ShoppingC) SaveDeliverAddress(ctx *echox.Context) error {
 	r := ctx.Request()
 	if this.prepare(ctx) && r.Method == "POST" {
 		msg := gof.Message{}
-		m := getMember(ctx)
+		m := GetMember(ctx)
 		r.ParseForm()
 		var e member.DeliverAddress
 		web.ParseFormToEntity(r.Form, &e)
@@ -207,7 +207,7 @@ func (this *ShoppingC) Apply(ctx *echox.Context) error {
 func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 	msg := gof.Message{}
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 
 	code := ctx.Request().FormValue("code")
 	data, err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "", code)
@@ -224,7 +224,7 @@ func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 	r := ctx.Request()
 	if this.prepare(ctx) && r.Method == "POST" {
 		p := getPartner(ctx)
-		m := getMember(ctx)
+		m := GetMember(ctx)
 
 		r.ParseForm()
 		if p == nil || m == nil {
@@ -310,7 +310,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 	r := ctx.Request()
 
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	var payHtml string // 支付HTML
 	var payOpt string
@@ -350,7 +350,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 
 func (this *ShoppingC) Order_finish(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	m := getMember(ctx)
+	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	orderNo := ctx.Query("order_no")
 	order := dps.ShoppingService.GetOrderByNo(p.Id, orderNo)
