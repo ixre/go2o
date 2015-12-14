@@ -61,7 +61,7 @@ func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
 	}
 
 	// 持续保存cookie
-	ck, err := ctx.Request.Cookie("_cart")
+	ck, err := ctx.Request().Cookie("_cart")
 	if err != nil {
 		ck = &http.Cookie{
 			Name: "_cart",
@@ -70,7 +70,7 @@ func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
 	}
 	ck.Value = cart.CartKey
 	ck.Expires = time.Now().Add(time.Hour * 48)
-	http.SetCookie(ctx.Response, ck)
+	http.SetCookie(ctx.Response(), ck)
 	return ctx.JSON(http.StatusOK, cart)
 }
 

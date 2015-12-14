@@ -20,6 +20,7 @@ import (
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/front"
+	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -27,7 +28,6 @@ import (
 )
 
 type ListC struct {
-	*BaseC
 }
 
 func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
@@ -60,25 +60,22 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 
 // 类目，限移动端
 func (this *ListC) All_cate(ctx *echox.Context) error {
-	p := this.BaseC.GetPartner(ctx)
-	mm := this.BaseC.GetMember(ctx)
-	siteConf := this.BaseC.GetSiteConf(ctx)
+	p := getPartner(ctx)
+	mm := getMember(ctx)
+	siteConf := getSiteConf(ctx)
 
 	categories := dps.SaleService.GetCategories(p.Id)
 	buf := bytes.NewBufferString("")
 	categoryWalk(buf, categories)
-
 	web.SetCacheHeader(ctx, 10)
-
-	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
 		"partner":   p,
 		"member":    mm,
 		"conf":      siteConf,
 		"cate_html": template.HTML(buf.String()),
-	},
-		"views/shop/ols/{device}/category.html",
-		"views/shop/ols/{device}/inc/header.html",
-		"views/shop/ols/{device}/inc/footer.html")
+	}
+	return ctx.RenderOK("category.html", d)
 
 }
 
@@ -93,7 +90,7 @@ func (this *ListC) getIdArray(path string) []int {
 }
 
 func (this *ListC) GetSorter(ctx *echox.Context) error {
-
+	return nil
 }
 
 // 商品列表
