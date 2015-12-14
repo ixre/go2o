@@ -15,7 +15,7 @@ import (
 	"go2o/src/cache"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
-	"go2o/src/tcpserve"
+	"go2o/src/app/tcpserve"
 	"log"
 	"os"
 	"os/signal"
