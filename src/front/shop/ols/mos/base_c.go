@@ -25,7 +25,7 @@ import (
 type baseC struct {
 }
 
-func (this *baseC) Requesting(ctx *web.Context) bool {
+func (this *baseC) Requesting(ctx *echox.Context)error bool {
 	// 商户不存在
 	partnerId := getPartnerId(ctx)
 	if partnerId <= 0 {
@@ -63,24 +63,24 @@ func (this *baseC) RequestEnd(*web.Context) {
 }
 
 // 获取商户编号
-func (this *baseC) GetPartnerId(ctx *web.Context) int {
+func (this *baseC) GetPartnerId(ctx *echox.Context)error int {
 	return ctx.GetItem("partner_id").(int)
 }
-func (this *baseC) GetPartner(ctx *web.Context) *partner.ValuePartner {
+func (this *baseC) GetPartner(ctx *echox.Context)error *partner.ValuePartner {
 	return ctx.GetItem("partner_ins").(*partner.ValuePartner)
 }
 
-func (this *baseC) GetSiteConf(ctx *web.Context) *partner.SiteConf {
+func (this *baseC) GetSiteConf(ctx *echox.Context)error *partner.SiteConf {
 	return ctx.GetItem("partner_siteconf").(*partner.SiteConf)
 }
 
 // 获取商户API信息
-func (this *baseC) GetPartnerApi(ctx *web.Context) *partner.ApiInfo {
+func (this *baseC) GetPartnerApi(ctx *echox.Context)error *partner.ApiInfo {
 	return dps.PartnerService.GetApiInfo(getPartnerId(ctx))
 }
 
 // 获取会员
-func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
+func (this *baseC) GetMember(ctx *echox.Context)error *member.ValueMember {
 	memberIdObj := ctx.Session().Get("member")
 	if memberIdObj != nil {
 		if o, ok := memberIdObj.(*member.ValueMember); ok {
@@ -91,7 +91,7 @@ func (this *baseC) GetMember(ctx *web.Context) *member.ValueMember {
 }
 
 // 检查会员是否登陆
-func (this *baseC) CheckMemberLogin(ctx *web.Context) bool {
+func (this *baseC) CheckMemberLogin(ctx *echox.Context)error bool {
 	if ctx.Session().Get("member") == nil {
 		ctx.Response.Header().Add("Location", "/user/login?return_url="+
 			url.QueryEscape(ctx.Request.RequestURI))
@@ -109,7 +109,7 @@ func renderError(ctx *web.Context, simpleError bool, message string) {
 		//todo: 用模板显示错误
 	}
 }
-func getPartnerId(ctx *web.Context) int {
+func getPartnerId(ctx *echox.Context)error int {
 	currHost := ctx.Request.Host
 	host := ctx.Session().Get("webui_host")
 	pid := ctx.Session().Get("webui_pid")

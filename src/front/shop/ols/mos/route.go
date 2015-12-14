@@ -18,7 +18,7 @@ var (
 )
 
 //处理请求
-func Handle(ctx *web.Context) {
+func Handle(ctx *echox.Context) error {
 	routes.Handle(ctx)
 }
 

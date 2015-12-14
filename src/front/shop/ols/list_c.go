@@ -59,7 +59,7 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 }
 
 // 类目，限移动端
-func (this *ListC) All_cate(ctx *web.Context) {
+func (this *ListC) All_cate(ctx *echox.Context) error {
 	p := this.BaseC.GetPartner(ctx)
 	mm := this.BaseC.GetMember(ctx)
 	siteConf := this.BaseC.GetSiteConf(ctx)
@@ -92,12 +92,12 @@ func (this *ListC) getIdArray(path string) []int {
 	return intArr
 }
 
-func (this *ListC) GetSorter(ctx *web.Context) {
+func (this *ListC) GetSorter(ctx *echox.Context) error {
 
 }
 
 // 商品列表
-func (this *ListC) List_Index(ctx *web.Context) {
+func (this *ListC) List_Index(ctx *echox.Context) error {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		p := this.BaseC.GetPartner(ctx)
@@ -168,7 +168,7 @@ func (this *ListC) List_Index(ctx *web.Context) {
 }
 
 // 销售标签列表
-func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
+func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		p := this.BaseC.GetPartner(ctx)
@@ -232,7 +232,7 @@ func (this *ListC) SaleTagGoodsList(ctx *web.Context) {
 }
 
 // 商品详情
-func (this *ListC) GoodsView(ctx *web.Context) {
+func (this *ListC) GoodsView(ctx *echox.Context) error {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		p := this.BaseC.GetPartner(ctx)
@@ -287,7 +287,7 @@ func (this *ListC) GoodsView(ctx *web.Context) {
 	}
 }
 
-func (this *ListC) GoodsDetails(ctx *web.Context) {
+func (this *ListC) GoodsDetails(ctx *echox.Context) error {
 	if this.BaseC.Requesting(ctx) {
 		r := ctx.Request
 		goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))

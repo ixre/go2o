@@ -24,7 +24,7 @@ type ContentC struct {
 }
 
 // 自定义页面
-func (this *ContentC) Page(ctx *web.Context) {
+func (this *ContentC) Page(ctx *echox.Context) error {
 	p := this.BaseC.GetPartner(ctx)
 	mm := this.BaseC.GetMember(ctx)
 	siteConf := this.BaseC.GetSiteConf(ctx)

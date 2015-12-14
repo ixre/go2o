@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
 	"strings"
+	"go2o/src/x/echox"
 )
 
 type MainC struct {
@@ -22,7 +23,7 @@ type MainC struct {
 }
 
 // 处理跳转
-func (this *MainC) HandleIndexGo(ctx *web.Context) bool {
+func (this *MainC) HandleIndexGo(ctx *echox.Context)error bool {
 	r, w := ctx.Request, ctx.Response
 	g := r.URL.Query().Get("go")
 	if g == "buy" {
@@ -34,7 +35,7 @@ func (this *MainC) HandleIndexGo(ctx *web.Context) bool {
 }
 
 // 更换访问设备
-func (this *MainC) Change_device(ctx *web.Context) {
+func (this *MainC) Change_device(ctx *echox.Context)error {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
 
@@ -51,7 +52,7 @@ func (this *MainC) Change_device(ctx *web.Context) {
 }
 
 // Member session connect
-func (this *MainC) Msc(ctx *web.Context) {
+func (this *MainC) Msc(ctx *echox.Context)error {
 	form := ctx.Request.URL.Query()
 	util.SetDeviceByUrlQuery(ctx, &form)
 
@@ -86,7 +87,7 @@ func (this *MainC) Msc(ctx *web.Context) {
 }
 
 // Member session disconnect
-func (this *MainC) Msd(ctx *web.Context) {
+func (this *MainC) Msd(ctx *echox.Context)error {
 	if util.MemberHttpSessionDisconnect(ctx) {
 		ctx.Session().Set("member", nil)
 		ctx.Session().Save()
@@ -96,7 +97,7 @@ func (this *MainC) Msd(ctx *web.Context) {
 	}
 }
 
-func (this *MainC) T(ctx *web.Context) {
+func (this *MainC) T(ctx *echox.Context)error {
 	path := ctx.Request.URL.Path
 	var i int = strings.LastIndex(path, "/")
 	ivCode := path[i+1:]
@@ -104,33 +105,31 @@ func (this *MainC) T(ctx *web.Context) {
 	ctx.Response.WriteHeader(302)
 }
 
-func (this *MainC) Index(ctx *web.Context) {
-	if this.BaseC.Requesting(ctx) {
-		p := this.BaseC.GetPartner(ctx)
-		m := this.BaseC.GetMember(ctx)
+func (this *MainC) Index(ctx *echox.Context)error {
+	p := this.BaseC.GetPartner(ctx)
+	m := this.BaseC.GetMember(ctx)
 
-		if this.HandleIndexGo(ctx) {
-			return
-		}
-
-		siteConf := this.BaseC.GetSiteConf(ctx)
-		newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
-		hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
-
-		this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
-			"partner":  p,
-			"conf":     siteConf,
-			"newGoods": newGoods,
-			"hotSales": hotSales,
-			"member":   m,
-		},
-			"views/shop/ols/{device}/index.html",
-			"views/shop/ols/{device}/inc/header.html",
-			"views/shop/ols/{device}/inc/footer.html")
+	if this.HandleIndexGo(ctx) {
+		return
 	}
+
+	siteConf := this.BaseC.GetSiteConf(ctx)
+	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
+	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
+
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner":  p,
+		"conf":     siteConf,
+		"newGoods": newGoods,
+		"hotSales": hotSales,
+		"member":   m,
+	},
+		"views/shop/ols/{device}/index.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
 }
 
-func (this *MainC) App(ctx *web.Context) {
+func (this *MainC) App(ctx *echox.Context)error {
 	if this.BaseC.Requesting(ctx) {
 		p := this.BaseC.GetPartner(ctx)
 		m := this.BaseC.GetMember(ctx)

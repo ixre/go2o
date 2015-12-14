@@ -37,7 +37,7 @@ func getDomain(r *http.Request) string {
 	return proto + r.Host
 }
 
-func (this *PaymentC) getAliPayment(ctx *web.Context) payment.IPayment {
+func (this *PaymentC) getAliPayment(ctx *echox.Context)error payment.IPayment {
 	var p payment.IPayment
 
 	if guitl.IsMobileAgent(ctx.Request.UserAgent()) {
@@ -72,7 +72,7 @@ func (this *PaymentC) getAliPayment(ctx *web.Context) payment.IPayment {
 	}
 	return p
 }
-func (this *PaymentC) Create(ctx *web.Context) {
+func (this *PaymentC) Create(ctx *echox.Context)error {
 	r, w := ctx.Request, ctx.Response
 	qs := r.URL.Query()
 	partnerId := this.GetPartnerId(ctx)
@@ -117,7 +117,7 @@ func (this *PaymentC) Create(ctx *web.Context) {
 	w.Write([]byte("订单不存在"))
 }
 
-func (this *PaymentC) Return_alipay(ctx *web.Context) {
+func (this *PaymentC) Return_alipay(ctx *echox.Context)error {
 	//this.paymentFail(ctx,nil)
 	//return
 	aliPayObj := this.getAliPayment(ctx)
@@ -136,7 +136,7 @@ func (this *PaymentC) Return_alipay(ctx *web.Context) {
 	this.paymentFail(ctx, order, &result)
 }
 
-func (this *PaymentC) Notify_post(ctx *web.Context) {
+func (this *PaymentC) Notify_post(ctx *echox.Context)error {
 	path := ctx.Request.URL.Path
 	lastSeg := strings.Split(path[strings.LastIndex(path, "/")+1:], "_")
 	paymentOpt := lastSeg[1]

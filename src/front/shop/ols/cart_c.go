@@ -9,12 +9,11 @@
 package ols
 
 import (
-	"encoding/json"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/x/echox"
 	"net/http"
 	"strconv"
 	"strings"
@@ -22,20 +21,17 @@ import (
 )
 
 type CartC struct {
-	*BaseC
 }
 
-// 购物车
-func (this *CartC) CartApiHandle(ctx *web.Context) {
-	if !this.BaseC.Requesting(ctx) {
-		ctx.Response.Write([]byte("invalid request"))
-		return
+// 购物车API(POST)
+func (this *CartC) CartApiHandle(ctx *echox.Context) error {
+	r := ctx.Request()
+	if r.Method != "POST" {
+		return nil
 	}
-
-	r, _ := ctx.Request, ctx.Response
-	p := this.BaseC.GetPartner(ctx)
-	m := this.BaseC.GetMember(ctx)
 	r.ParseForm()
+	p := getPartner(ctx)
+	m := getMember(ctx)
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")
 	var memberId int
@@ -45,19 +41,17 @@ func (this *CartC) CartApiHandle(ctx *web.Context) {
 
 	switch action {
 	case "get":
-		this.cart_GetCart(ctx, p, memberId, cartKey)
+		return this.cart_GetCart(ctx, p, memberId, cartKey)
 	case "add":
-		this.cart_AddItem(ctx, p, memberId, cartKey)
+		return this.cart_AddItem(ctx, p, memberId, cartKey)
 	case "remove":
-		this.cart_RemoveItem(ctx, p, memberId, cartKey)
+		return this.cart_RemoveItem(ctx, p, memberId, cartKey)
 	}
-
+	return nil
 }
 
-func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
-	memberId int, cartKey string) {
-
-	//time.Sleep(time.Second*10)
+func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
+	memberId int, cartKey string) error {
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
 	if cart.Items != nil {
@@ -77,14 +71,12 @@ func (this *CartC) cart_GetCart(ctx *web.Context, p *partner.ValuePartner,
 	ck.Value = cart.CartKey
 	ck.Expires = time.Now().Add(time.Hour * 48)
 	http.SetCookie(ctx.Response, ck)
-
-	d, _ := json.Marshal(cart)
-	ctx.Response.Write(d)
+	return ctx.JSON(http.StatusOK, cart)
 }
 
-func (this *CartC) cart_AddItem(ctx *web.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) {
-	r := ctx.Request
+func (this *CartC) cart_AddItem(ctx *echox.Context,
+	p *partner.ValuePartner, memberId int, cartKey string) error {
+	r := ctx.Request()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	item, err := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
@@ -96,13 +88,13 @@ func (this *CartC) cart_AddItem(ctx *web.Context,
 		item.GoodsImage = format.GetGoodsImageUrl(item.GoodsImage)
 		d["item"] = item
 	}
-	ctx.Response.JsonOutput(d)
+	return ctx.JSON(http.StatusOK, d)
 }
 
-func (this *CartC) cart_RemoveItem(ctx *web.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) {
+func (this *CartC) cart_RemoveItem(ctx *echox.Context,
+	p *partner.ValuePartner, memberId int, cartKey string) error {
 	var result gof.Message
-	r := ctx.Request
+	r := ctx.Request()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)
@@ -111,12 +103,9 @@ func (this *CartC) cart_RemoveItem(ctx *web.Context,
 	} else {
 		result.Result = true
 	}
-	ctx.Response.JsonOutput(result)
+	return ctx.JSON(http.StatusOK, result)
 }
 
-func (this *CartC) Index(ctx *web.Context) {
-	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{},
-		"views/shop/ols/{device}/cart.html",
-		"views/shop/ols/{device}/inc/header.html",
-		"views/shop/ols/{device}/inc/footer.html")
+func (this *CartC) Index(ctx *echox.Context) error {
+	return ctx.RenderOK("cart.html", ctx.NewData())
 }

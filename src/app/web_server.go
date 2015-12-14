@@ -15,6 +15,7 @@ import (
 	"go2o/src/core/variable"
 	"go2o/src/front/master"
 	"go2o/src/front/partner"
+	"go2o/src/front/shop/ols"
 	"go2o/src/front/ucenter"
 	"go2o/src/x/echox"
 	"log"
@@ -88,9 +89,7 @@ func (this MyHttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ucenter.ServeHTTP(w, r)
 	} else if h, ok := this[subName]; ok {
 		h.ServeHTTP(w, r)
-	} else if h, ok = this["*"]; ok {
-		h.ServeHTTP(w, r)
 	} else {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		ols.ServeHTTP(w, r)
 	}
 }

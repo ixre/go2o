@@ -16,12 +16,12 @@ type mainC struct {
 	*baseC
 }
 
-func (this *mainC) Login(ctx *web.Context) {
+func (this *mainC) Login(ctx *echox.Context) error {
 	_, w := ctx.Request, ctx.Response
 	ctx.App.Template().Execute(w, nil, "views/ucenter/{device}/login.html")
 }
 
-func (this *mainC) Index(ctx *web.Context) {
+func (this *mainC) Index(ctx *echox.Context) error {
 	if this.Requesting(ctx) {
 		_, w := ctx.Request, ctx.Response
 		p := this.GetPartner(ctx)

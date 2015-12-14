@@ -21,14 +21,11 @@ import (
 	"strings"
 )
 
-var _ mvc.Filter = new(UserC)
-
 type UserC struct {
-	*BaseC
 }
 
-func (this *UserC) Login(ctx *web.Context) {
-	p := this.BaseC.GetPartner(ctx)
+func (this *UserC) Login(ctx *echox.Context) error {
+	p := getPartner(ctx)
 	r := ctx.Request
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
@@ -48,7 +45,7 @@ func (this *UserC) Login(ctx *web.Context) {
 
 }
 
-func (this *UserC) Login_post(ctx *web.Context) {
+func (this *UserC) Login_post(ctx *echox.Context) error {
 	r := ctx.Request
 	r.ParseForm()
 	var result gof.Message
@@ -73,7 +70,7 @@ func (this *UserC) Login_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-func (this *UserC) Register(ctx *web.Context) {
+func (this *UserC) Register(ctx *echox.Context) error {
 	p := this.BaseC.GetPartner(ctx)
 	inviCode := ctx.Request.URL.Query().Get("invi_code")
 
@@ -89,7 +86,7 @@ func (this *UserC) Register(ctx *web.Context) {
 
 }
 
-func (this *UserC) ValidUsr_post(ctx *web.Context) {
+func (this *UserC) ValidUsr_post(ctx *echox.Context) error {
 	r := ctx.Request
 	var msg gof.Message
 	r.ParseForm()
@@ -103,7 +100,7 @@ func (this *UserC) ValidUsr_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(msg)
 }
 
-func (this *UserC) Valid_invitation_post(ctx *web.Context) {
+func (this *UserC) Valid_invitation_post(ctx *echox.Context) error {
 	var result gof.Message = gof.Message{Result: true}
 	ctx.Request.ParseForm()
 	code := ctx.Request.FormValue("invi_code")
@@ -117,7 +114,7 @@ func (this *UserC) Valid_invitation_post(ctx *web.Context) {
 	ctx.Response.JsonOutput(result)
 }
 
-func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
+func (this *UserC) PostRegisterInfo_post(ctx *echox.Context) error {
 	ctx.Request.ParseForm()
 	var result gof.Message
 	var member member.ValueMember
@@ -172,7 +169,7 @@ func (this *UserC) PostRegisterInfo_post(ctx *web.Context) {
 
 // 跳转到会员中心
 // url : /user/jump_m
-func (this *UserC) JumpToMCenter(ctx *web.Context) {
+func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 	w := ctx.Response
 	m := this.BaseC.GetMember(ctx)
 	var location string
@@ -193,7 +190,7 @@ func (this *UserC) JumpToMCenter(ctx *web.Context) {
 }
 
 // 退出
-func (this *UserC) Logout(ctx *web.Context) {
+func (this *UserC) Logout(ctx *echox.Context) error {
 	ctx.Session().Set("member", nil)
 	ctx.Session().Save()
 	ctx.Response.Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
