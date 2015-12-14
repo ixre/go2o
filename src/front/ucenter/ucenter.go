@@ -28,7 +28,8 @@ var (
 // 会员登陆检查
 func memberLogonCheck(ctx *echo.Context) error {
 	path := ctx.Request().URL.Path
-	if path == "/login" || strings.HasPrefix(path, "/static/") {
+	if path == "/login" || path == "/partner_connect" ||
+		path == "/partner_disconnect" || strings.HasPrefix(path, "/static/") {
 		return nil
 	}
 	session := session.Default(ctx.Response(), ctx.Request())

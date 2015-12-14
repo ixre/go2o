@@ -1,4 +1,4 @@
-{{$img_serve:=.img_serve}}
+{{$img_serve:=.Map.img_serve}}
 <!doctype html>
 <html>
 <head>
@@ -20,7 +20,7 @@
         <div id="item1" class="item first_item">
             <h2 class="title">配送地址<span class="edit_link">[<a id="el1" href="javascript:void(0);" onclick="selectDeliver()">修改</a>]</span></h2>
             <div class="item_info">
-                {{if .settle.Deliver}}
+                {{if .Map.settle.Deliver}}
                 <p>
                     <span id="deliver_rn">{{.Map.settle.Deliver.PersonName}}</span>&nbsp;
                     <span id="deliver_ph">{{.Map.settle.Deliver.Phone}}</span><br />

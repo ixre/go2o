@@ -37,6 +37,9 @@ func registerRoutes(s *echox.Echo) {
 	lc := &ListC{}
 	ctc := &ContentC{}
 
+	s.Getx("/", mc.Index)
+	s.Getx("/cart", cc.Index)
+	s.Getx("/change_device", mc.change_device)
 	s.Danyx("/main/:action", mc)
 	s.Danyx("/buy/:action", sp)
 
@@ -54,12 +57,11 @@ func registerRoutes(s *echox.Echo) {
 	s.Postx("/pay/notify/*", pc.Notify_post)
 
 	// 首页
-	s.Getx("/", mc.Index)
 	s.Getx("/goods-describe", lc.GoodsDetails)
 	s.Getx("/st/*", lc.SaleTagGoodsList)
 	s.Getx("/user/jump_m", uc.JumpToMCenter)
-	s.Getx("^/c-*.htm", lc.List_Index)
-	s.Getx("^/goods-*.htm", lc.GoodsView)
+	s.Getx("/c-*.htm", lc.List_Index)
+	s.Getx("/goods-*.htm", lc.GoodsView)
 }
 
 func getServe(path string) *echox.Echo {

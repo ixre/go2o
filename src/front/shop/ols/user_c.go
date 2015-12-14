@@ -187,7 +187,7 @@ func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 	if m == nil {
 		location = "/user/login?return_url=/user/jump_m"
 	} else {
-		location = fmt.Sprintf("http://%s.%s/login/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
+		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
 			variable.DOMAIN_PREFIX_MEMBER,
 			ctx.App.Config().GetString(variable.ServerDomain),
 			util.GetBrownerDevice(ctx.Request()),
@@ -205,7 +205,7 @@ func (this *UserC) Logout(ctx *echox.Context) error {
 	ctx.Session.Save()
 	ctx.Response().Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
-			<iframe src="http://%s.%s/login/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
+			<iframe src="http://%s%s/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,
 		variable.DOMAIN_PREFIX_MEMBER,
 		ctx.App.Config().GetString(variable.ServerDomain),

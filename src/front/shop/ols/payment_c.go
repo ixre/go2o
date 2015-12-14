@@ -179,7 +179,7 @@ func (this *PaymentC) paymentSuccess(ctx *echox.Context,
 		"conf":    siteConf,
 		"order":   order,
 	}
-	return ctx.RenderOK("payment.success.html", d)
+	return ctx.RenderOK("payment_success.html", d)
 }
 
 func (this *PaymentC) paymentFail(ctx *echox.Context,
@@ -192,5 +192,5 @@ func (this *PaymentC) paymentFail(ctx *echox.Context,
 		"conf":    siteConf,
 		"order":   order,
 	}
-	return ctx.RenderOK("payment.fail.html", d)
+	return ctx.RenderOK("payment_fail.html", d)
 }

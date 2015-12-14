@@ -33,7 +33,7 @@ func (this *MainC) HandleIndexGo(ctx *echox.Context) bool {
 }
 
 // 更换访问设备
-func (this *MainC) Change_device(ctx *echox.Context) error {
+func (this *MainC) change_device(ctx *echox.Context) error {
 	r := ctx.Request()
 	util.SetDeviceByUrlQuery(ctx.Response(), r)
 	toUrl := r.URL.Query().Get("return_url")

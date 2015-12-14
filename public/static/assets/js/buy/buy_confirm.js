@@ -158,7 +158,7 @@ function applyCouponCode() {
     if (this.value == '') {
         j6.validator.removeTip(this);
         couDes.innerHTML = '';
-        if (couDes.indexOf(' hidden') == -1) {
+        if (couDes.className.indexOf(' hidden') == -1) {
             couDes.className += ' hidden';
         }
         coupon_fee = 0;

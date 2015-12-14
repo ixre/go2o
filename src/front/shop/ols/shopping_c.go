@@ -167,7 +167,7 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 		"addrs": template.JS(js),
 		"sel":   selId,
 	}
-	return ctx.RenderOK("deliver.address.html", d)
+	return ctx.RenderOK("deliver_address.html", d)
 }
 
 // 保存配送地址(POST)
@@ -220,7 +220,7 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 }
 
 // 提交订单
-func (this *ShoppingC) Submit_0_post(ctx *echox.Context) error {
+func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 	r := ctx.Request()
 	if this.prepare(ctx) && r.Method == "POST" {
 		p := getPartner(ctx)
@@ -300,7 +300,7 @@ func (this *ShoppingC) OrderEmpty(ctx *echox.Context, p *partner.ValuePartner,
 		"member":  m,
 		"conf":    conf,
 	}
-	return ctx.RenderOK("order.empty.html", d)
+	return ctx.RenderOK("order_empty.html", d)
 }
 
 func (this *ShoppingC) Payment(ctx *echox.Context) error {
@@ -343,7 +343,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 			"payment_html": template.HTML(payHtml),
 			"payment_help": template.HTML(payHelp),
 		}
-		return ctx.RenderOK("order.payment.html", d)
+		return ctx.RenderOK("order_payment.html", d)
 	}
 	return this.OrderEmpty(ctx, p, m, siteConf)
 }
@@ -381,7 +381,7 @@ func (this *ShoppingC) orderFinish(ctx *echox.Context, p *partner.ValuePartner,
 			"payment_html": template.HTML(payHtml),
 			"payment_help": template.HTML(payHelp),
 		}
-		return ctx.RenderOK("order.finish.html", d)
+		return ctx.RenderOK("order_finish.html", d)
 	}
 	return this.OrderEmpty(ctx, p, m, siteConf)
 }
