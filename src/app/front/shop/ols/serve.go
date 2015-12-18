@@ -37,6 +37,7 @@ func registerRoutes(s *echox.Echo) {
 	lc := &ListC{}
 	ctc := &ContentC{}
 
+	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
 	s.Getx("/cart", cc.Index)
 	s.Getx("/change_device", mc.change_device)
