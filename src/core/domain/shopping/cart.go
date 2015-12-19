@@ -162,6 +162,10 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 		return nil, sale.ErrNoSuchGoods // 没有商品
 	}
 
+	if !goods.GetItem().IsOnShelves(){
+		return nil,sale.ErrNotOnShelves //未上架
+	}
+
 	stockNum := goods.GetValue().StockNum
 	if stockNum == 0 {
 		return nil, sale.ErrFullOfStock // 已经卖完了

@@ -140,8 +140,16 @@ func (this *shoppingService) getShoppingCart(partnerId int, buyerId int, cartKey
 	sp := this._rep.GetShopping(partnerId)
 	return sp.GetShoppingCart(buyerId, cartKey)
 }
+
+// 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 func (this *shoppingService) GetShoppingCart(partnerId int, memberId int, cartKey string) *dto.ShoppingCart {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)
+	return this.parseDtoCart(cart)
+}
+
+// 创建一个新的购物车
+func (this *shoppingService) CreateShoppingCart(partnerId int,memberId int)*dto.ShoppingCart{
+	cart := this._rep.GetShopping(partnerId).NewCart(memberId)
 	return this.parseDtoCart(cart)
 }
 

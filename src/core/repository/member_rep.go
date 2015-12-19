@@ -306,8 +306,9 @@ func (this *MemberRep) SaveRelation(v *member.MemberRelation) error {
 func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
-		_, id, err := orm.Save(nil, v)
-		return int(id), err
+		_, _, err := orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM mm_delivery_addr", &v.Id)
+		return v.Id, err
 	} else {
 		_, _, err := orm.Save(v.Id, v)
 		return v.Id, err

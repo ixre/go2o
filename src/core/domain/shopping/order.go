@@ -217,7 +217,7 @@ func (this *Order) SetDeliver(deliverAddressId int) error {
 		v.DeliverTime = time.Now().Add(-time.Hour).Unix()
 		return nil
 	}
-	return errors.New("Deliver address not exist!")
+	return member.ErrNoSuchDeliverAddress
 }
 
 // 使用余额支付
