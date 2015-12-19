@@ -12,6 +12,7 @@ package app
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
+	"github.com/labstack/echo"
 	"go2o/src/app/front/master"
 	"go2o/src/app/front/partner"
 	"go2o/src/app/front/shop/ols"
@@ -70,7 +71,11 @@ func Run(ch chan bool, app gof.App, addr string) {
 		"version":      c.GetString(variable.Version),
 		"spam":         crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14],
 	}
-	echox.SetGlobRendData(m)
+	w := func(e echo.Renderer) { //当改动文件时,自动创建spam
+		m := echox.GetGlobTemplateVars()
+		m["spam"] = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+	}
+	echox.GlobSet(m, w)
 
 	hosts := make(MyHttpHosts)
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()

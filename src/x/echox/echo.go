@@ -19,8 +19,9 @@ import (
 )
 
 var (
-	globalApp         gof.App
-	_globTemplateData map[string]interface{} = nil
+	_globApp         gof.App
+	_globTemplateVar map[string]interface{} = nil
+	_globRenderWatch RenderWatchFunc
 )
 
 type (
@@ -45,12 +46,12 @@ type (
 
 // new echo instance
 func New() *Echo {
-	if globalApp == nil {
-		globalApp = gof.CurrentApp
+	if _globApp == nil {
+		_globApp = gof.CurrentApp
 	}
 	return &Echo{
 		Echo:            echo.New(),
-		app:             globalApp,
+		app:             _globApp,
 		dynamicHandlers: make(map[string]Handler),
 	}
 }
@@ -68,7 +69,7 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 
 // 设置模板
 func (this *Echo) SetTemplateRender(path string) {
-	this.SetRenderer(newGoTemplateForEcho(path))
+	this.SetRenderer(newGoTemplateForEcho(path, _globRenderWatch))
 }
 
 // 注册自定义的GET处理程序
@@ -113,7 +114,7 @@ func (this *Context) RenderOK(name string, data interface{}) error {
 
 func (this *Context) NewData() *TemplateData {
 	return &TemplateData{
-		Var:  _globTemplateData,
+		Var:  _globTemplateVar,
 		Map:  make(map[string]interface{}),
 		Data: nil,
 	}
@@ -141,13 +142,20 @@ func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func SetGlobRendData(m map[string]interface{}) {
-	_globTemplateData = m
+// 全局设定ECHO参数
+func GlobSet(globVars map[string]interface{}, w RenderWatchFunc) {
+	_globTemplateVar = globVars
+	_globRenderWatch = w
+}
+
+// 获取全局模版变量
+func GetGlobTemplateVars() map[string]interface{} {
+	return _globTemplateVar
 }
 
 func NewRenderData() *TemplateData {
 	return &TemplateData{
-		Var:  _globTemplateData,
+		Var:  _globTemplateVar,
 		Map:  make(map[string]interface{}),
 		Data: nil,
 	}

@@ -181,19 +181,6 @@ var FwTab = {
             this.maskEle.style.width = fx + 'px';
             this.maskEle.style.height = fy + 'px';
         }
-
-        //加载框位置
-        if (this.loadEle) {
-            var fx1 = j6.screen.offsetWidth(),
-                fy1 = j6.screen.offsetHeight(),
-                offset = 50;
-
-            this.loadEle.style.left = (Math.floor((fx1 - this.loadEle.offsetWidth) / 2)
-                - framebox.parentNode.offsetLeft) + 'px';
-
-            this.loadEle.style.top = (Math.floor((fy1 - this.loadEle.offsetHeight) / 2)
-                - framebox.parentNode.parentNode.offsetTop - offset) + 'px';
-        }
     },
     pageBeforeLoad: function () {
         this.showLoadBar();
@@ -204,10 +191,12 @@ var FwTab = {
     showLoadBar: function () {
         this.loadEle.className = 'loading';
         this.maskEle.className = 'mask';
+        this.loadEle.style.display = 'inline-block';
+        this.loadEle.style.cssText = 'position:fixed;left:50%;top:40%;margin-left:-'+Math.floor(this.loadEle.offsetWidth/2) + 'px';
     },
     hiddenLoadBar: function () {
-        this.loadEle.className = 'loading hidden';
         this.maskEle.className = 'mask hidden';
+        this.loadEle.style.display = 'none';
     },
     show: function (text, url, closeable) {
         var _tabs = this.tabs.getElementsByTagName('LI');

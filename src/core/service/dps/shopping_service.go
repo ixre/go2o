@@ -148,7 +148,7 @@ func (this *shoppingService) GetShoppingCart(partnerId int, memberId int, cartKe
 }
 
 // 创建一个新的购物车
-func (this *shoppingService) CreateShoppingCart(partnerId int,memberId int)*dto.ShoppingCart{
+func (this *shoppingService) CreateShoppingCart(partnerId int, memberId int) *dto.ShoppingCart {
 	cart := this._rep.GetShopping(partnerId).NewCart(memberId)
 	return this.parseDtoCart(cart)
 }

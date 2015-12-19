@@ -24,6 +24,8 @@ var (
 	_ echo.Renderer = new(GoTemplateForEcho)
 )
 
+type RenderWatchFunc func(echo.Renderer)
+
 func getTemplate(dir, pattern string) (t *template.Template) {
 	fi, err := os.Lstat(dir)
 	if err != nil {
@@ -35,10 +37,11 @@ func getTemplate(dir, pattern string) (t *template.Template) {
 	return template.Must(template.ParseGlob(dir + "/" + pattern))
 }
 
-func newGoTemplateForEcho(dir string) echo.Renderer {
+func newGoTemplateForEcho(dir string, onWatch RenderWatchFunc) echo.Renderer {
 	g := &GoTemplateForEcho{
 		pattern:       "*.html",
 		fileDirectory: dir,
+		onWatch:       onWatch,
 	}
 	return g.init()
 }
@@ -47,6 +50,7 @@ type GoTemplateForEcho struct {
 	fileDirectory string
 	pattern       string
 	templates     *template.Template
+	onWatch       RenderWatchFunc
 }
 
 func (g *GoTemplateForEcho) init() *GoTemplateForEcho {
@@ -72,6 +76,9 @@ func (g *GoTemplateForEcho) fsNotify() {
 					if strings.HasSuffix(event.Name, ".html") {
 						log.Println("[ Template][ Update]: file - ", event.Name)
 						g.init()
+						if g.onWatch != nil {
+							g.onWatch(g)
+						}
 						break
 					}
 				}
