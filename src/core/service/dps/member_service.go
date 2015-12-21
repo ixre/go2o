@@ -181,18 +181,15 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 	return true, val, nil
 }
 
+// 检查与现有用户不同的用户是否存在,如存在则返回错误
 func (this *memberService) CheckUsr(usr string, memberId int) error {
 	if len(usr) < 6 {
 		return member.ErrUsrLength
 	}
-	var id int = this._memberRep.GetMemberIdByUser(usr)
-	if id == 0 {
-		return nil
-	} else if memberId != 0 && id == memberId {
-		return nil
+	if this._memberRep.CheckUsrExist(usr, memberId) {
+		return member.ErrUsrExist
 	}
-
-	return errors.New("用户名已被使用")
+	return nil
 }
 
 func (this *memberService) GetAccount(memberId int) *member.AccountValue {
