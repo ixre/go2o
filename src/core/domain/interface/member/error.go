@@ -46,12 +46,18 @@ var (
 	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
 		"err_out_of_balance", "超出金额")
 
-	ErrUserLength *domain.DomainError = domain.NewDomainError(
+	ErrUsrLength *domain.DomainError = domain.NewDomainError(
 		"err_user_length", "用户名至少6位",
 	)
 
-	ErrUserValidErr *domain.DomainError = domain.NewDomainError(
+	ErrUsrValidErr *domain.DomainError = domain.NewDomainError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
+
+	ErrSameUsr *domain.DomainError = domain.NewDomainError(
+		"err_same_usr", "用户名与原来相同")
+
+	ErrUsrExist *domain.DomainError = domain.NewDomainError(
+		"err_usr_exist", "用户名已存在")
 
 	ErrPersonName *domain.DomainError = domain.NewDomainError(
 		"err_person_name", "姓名不正确")

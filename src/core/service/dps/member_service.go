@@ -59,6 +59,16 @@ func (this *memberService) GetMemberIdByInvitationCode(code string) int {
 	return this._memberRep.GetMemberIdByInvitationCode(code)
 }
 
+// 更改会员用户名
+func (this *memberService) ChangeUsr(id int, usr string) error {
+	m := this._memberRep.GetMember(id)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.ChangeUsr(usr)
+}
+
+// 保存用户
 func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		return this.updateMember(v)
@@ -173,7 +183,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 
 func (this *memberService) CheckUsr(usr string, memberId int) error {
 	if len(usr) < 6 {
-		return member.ErrUserLength
+		return member.ErrUsrLength
 	}
 	var id int = this._memberRep.GetMemberIdByUser(usr)
 	if id == 0 {

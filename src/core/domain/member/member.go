@@ -70,10 +70,10 @@ func (this *Member) validate(v *member.ValueMember) error {
 	v.Phone = strings.TrimSpace(v.Phone)
 
 	if len([]rune(v.Usr)) < 6 {
-		return member.ErrUserLength
+		return member.ErrUsrLength
 	}
 	if !userRegex.MatchString(v.Usr) {
-		return member.ErrUserValidErr
+		return member.ErrUsrValidErr
 	}
 
 	if this.GetAggregateRootId() != 0 && len([]rune(v.Name)) < 2 {
@@ -296,6 +296,19 @@ func (this *Member) GetRelation() *member.MemberRelation {
 	return this._relation
 }
 
+// 更换用户名
+func (this *Member) ChangeUsr(usr string) error {
+	if usr == this._value.Usr {
+		return member.ErrSameUsr
+	}
+	if this.usrIsExist(usr) {
+		return member.ErrUsrExist
+	}
+	this._value.Usr = usr
+	_, err := this.Save()
+	return err
+}
+
 // 保存
 func (this *Member) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
@@ -364,8 +377,8 @@ func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
 
 // 创建会员
 func (this *Member) create(m *member.ValueMember) (int, error) {
-	if this.UsrIsExist() {
-		return -1, errors.New("用户名已经被使用")
+	if this.usrIsExist(m.Usr) {
+		return -1, member.ErrUsrExist
 	}
 	if len(m.Phone) > 0 && this.PhoneIsExist(m.Phone) {
 		return -1, member.ErrPhoneHasBind
@@ -411,8 +424,8 @@ func (this *Member) generateInvitationCode() string {
 }
 
 // 用户是否已经存在
-func (this *Member) UsrIsExist() bool {
-	return this._rep.CheckUsrExist(this._value.Usr, this.GetAggregateRootId())
+func (this *Member) usrIsExist(usr string) bool {
+	return this._rep.CheckUsrExist(usr, this.GetAggregateRootId())
 }
 
 // 手机号码是否占用
