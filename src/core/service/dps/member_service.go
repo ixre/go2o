@@ -364,10 +364,10 @@ func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, 
 
 // 提现
 func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
-	applyAmount float32, commission float32) error {
+	applyAmount float32, commission float32) (int, error) {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	acc := m.GetAccount()

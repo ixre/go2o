@@ -19,7 +19,6 @@ import (
 )
 
 var (
-	_globApp         gof.App
 	_globTemplateVar map[string]interface{} = nil
 	_globRenderWatch RenderWatchFunc
 )
@@ -46,18 +45,24 @@ type (
 
 // new echo instance
 func New() *Echo {
-	if _globApp == nil {
-		_globApp = gof.CurrentApp
-	}
 	return &Echo{
 		Echo:            echo.New(),
-		app:             _globApp,
 		dynamicHandlers: make(map[string]Handler),
+	}
+}
+
+func (this *Echo) chkApp() {
+	if this.app == nil {
+		if gof.CurrentApp == nil {
+			panic(errors.New("not register or no global app instance for echox!"))
+		}
+		this.app = gof.CurrentApp
 	}
 }
 
 func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	return func(ctx *echo.Context) error {
+		this.chkApp()
 		s := session.Default(ctx.Response(), ctx.Request())
 		return h(&Context{
 			Context: ctx,

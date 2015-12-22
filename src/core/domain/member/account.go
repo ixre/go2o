@@ -207,14 +207,14 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 	return errors.New("kind not match")
 }
 
-// 请求提现
+// 请求提现,返回info_id 及错误
 func (this *Account) RequestApplyCash(applyType int, title string,
-	amount float32, commission float32) error {
+	amount float32, commission float32) (int, error) {
 	if amount <= 0 {
-		return member.ErrIncorrectAmount
+		return 0, member.ErrIncorrectAmount
 	}
 	if this._value.PresentBalance < amount {
-		return member.ErrOutOfBalance
+		return 0, member.ErrOutOfBalance
 	}
 
 	csnAmount := amount * commission
@@ -234,12 +234,12 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 		v.State = member.StateApplyOver
 	}
 
-	_, err := this.SaveBalanceInfo(v)
+	id, err := this.SaveBalanceInfo(v)
 	if err == nil {
 		this._value.PresentBalance -= amount
 		_, err = this.Save()
 	}
-	return err
+	return id, err
 }
 
 // 确认提现
