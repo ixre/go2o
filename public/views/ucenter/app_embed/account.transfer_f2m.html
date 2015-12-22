@@ -36,7 +36,7 @@
 				<input type="password" class="ui-box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
 					   summary="{required:'交易密码不能为空'}" onfocus="this.value=''"/>
 
-					{{if .notSetTradePwd}}
+					{{if .Map.notSetTradePwd}}
 					<div>
 						<span class="icon-err"></span>请先点击
 						<a href="/basic/trade_pwd" style="color:#FF0000;">这里</a>设置交易密码后，再进行提现。
@@ -61,7 +61,7 @@
 
 		<div class="apply-setup">
 			<b><span class="red">*</span>&nbsp;说明：</b><br />
-			按平台政策，暂{{.Map.commissionStr}}，资金即时到账。
+			按平台政策，暂{{.Map.Map.commissionStr}}，资金即时到账。
 		</div>
 
 	</div>
