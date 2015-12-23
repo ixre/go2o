@@ -208,9 +208,11 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 	msg := gof.Message{}
 	p := getPartner(ctx)
 	m := GetMember(ctx)
+	r := ctx.Request()
 
-	code := ctx.Request().FormValue("code")
-	data, err := dps.ShoppingService.BuildOrder(p.Id, m.Id, "", code)
+	code := r.FormValue("code")
+	subject := r.FormValue("subject") // not necessary
+	data, err := dps.ShoppingService.BuildOrder(p.Id, subject, m.Id, "", code)
 	if err != nil {
 		msg.Message = err.Error()
 	} else {
@@ -231,6 +233,7 @@ func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 			return ctx.StringOK(`{"result":false,"tag":"101"}`) //未登录
 		}
 		couponCode := r.FormValue("coupon_code")
+		subject := r.FormValue("subject") // not necessary
 
 		//this.releaseOrder(ctx)
 		// 锁定订单提交
@@ -243,7 +246,8 @@ func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 		var useBalanceDiscount bool = r.FormValue("balance_discount") == "1"
 
 		// 提交订单
-		order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id, couponCode, useBalanceDiscount)
+		order_no, err := dps.ShoppingService.SubmitOrder(p.Id, m.Id,
+			subject, couponCode, useBalanceDiscount)
 
 		// 释放订单占用
 		this.releaseOrder(ctx)

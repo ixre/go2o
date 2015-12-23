@@ -152,7 +152,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 			format.FormatFloat(float32(minAmount))))
 	} else {
 		m := getMember(ctx)
-		_, err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
+		_, _, err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
 			member.TypeApplyCashToBank, float32(amount), saleConf.ApplyCsn)
 	}
 

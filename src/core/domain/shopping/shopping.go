@@ -257,16 +257,20 @@ func (this *Shopping) SmartChoiceShop(address string) (partner.IShop, error) {
 }
 
 // 生成订单
-func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrder, shopping.ICart, error) {
+func (this *Shopping) BuildOrder(memberId int, subject string, couponCode string) (shopping.IOrder, shopping.ICart, error) {
 	order, m, cart, err := this.ParseShoppingCart(memberId)
 	if err != nil {
 		return order, cart, err
+	}
+	var val = order.GetValue()
+	if len(subject) > 0 {
+		val.Subject = subject
+		order.SetValue(&val)
 	}
 
 	if len(couponCode) != 0 {
 		var coupon promotion.ICouponPromotion
 		var result bool
-		var val = order.GetValue()
 		cp := this._promRep.GetCouponByCode(
 			this._partnerId, couponCode)
 
@@ -299,13 +303,12 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 	return order, cart, err
 }
 
-func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalanceDiscount bool) (string, error) {
-	order, cart, err := this.BuildOrder(memberId, couponCode)
+func (this *Shopping) SubmitOrder(memberId int, subject string, couponCode string, useBalanceDiscount bool) (string, error) {
+	order, cart, err := this.BuildOrder(memberId, subject, couponCode)
 	if err != nil {
 		return "", err
 	}
 	var cv = cart.GetValue()
-
 	if err == nil {
 		err = order.SetShop(cv.ShopId)
 		if err == nil {

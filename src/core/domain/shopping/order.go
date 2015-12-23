@@ -68,6 +68,13 @@ func (this *Order) GetValue() shopping.ValueOrder {
 	return *this._value
 }
 
+// 设置订单值
+func (this *Order) SetValue(v *shopping.ValueOrder) error {
+	v.Id = this.GetDomainId()
+	this._value = v
+	return nil
+}
+
 // 应用优惠券
 func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	if this._coupons == nil {

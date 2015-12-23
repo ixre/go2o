@@ -29,6 +29,9 @@ type IOrder interface {
 	// 获生成值
 	GetValue() ValueOrder
 
+	// 设置订单值
+	SetValue(*ValueOrder) error
+
 	// 应用优惠券
 	ApplyCoupon(coupon promotion.ICouponPromotion) error
 

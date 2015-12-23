@@ -27,10 +27,10 @@ func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
 	}
 }
 
-func (this *shoppingService) BuildOrder(partnerId int, memberId int,
+func (this *shoppingService) BuildOrder(partnerId int, subject string, memberId int,
 	cartKey string, couponCode string) (map[string]interface{}, error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
-	order, _, err := sp.BuildOrder(memberId, couponCode)
+	order, _, err := sp.BuildOrder(memberId, subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
@@ -68,10 +68,10 @@ func (this *shoppingService) BuildOrder(partnerId int, memberId int,
 	return data, err
 }
 
-func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string, useBalanceDiscount bool) (
+func (this *shoppingService) SubmitOrder(partnerId, memberId int, subject string, couponCode string, useBalanceDiscount bool) (
 	orderNo string, err error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
-	return sp.SubmitOrder(memberId, couponCode, useBalanceDiscount)
+	return sp.SubmitOrder(memberId, subject, couponCode, useBalanceDiscount)
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,

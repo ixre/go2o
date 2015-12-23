@@ -103,7 +103,10 @@ func (this *PaymentC) Create(ctx *echox.Context) error {
 			domain := getDomain(r)
 			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
 			notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
-			gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
+			if len(order.Subject) == 0 {
+				order.Subject = "在线支付订单"
+			}
+			gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, order.Subject, "订单号："+orderNo, notifyUrl, returnUrl)
 			html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
 			w.Write([]byte(html))
 
