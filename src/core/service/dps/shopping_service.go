@@ -102,7 +102,7 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 		case enum.ORDER_WAIT_DELIVERY:
 			err = order.Process()
 		case enum.ORDER_WAIT_RECEIVE:
-			err = order.Deliver()
+			err = order.Deliver(0, "")
 		case enum.ORDER_RECEIVED:
 			err = order.SignReceived()
 		case enum.ORDER_COMPLETED:
@@ -289,10 +289,42 @@ func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo strin
 
 // 确定订单
 func (this *shoppingService) ConfirmOrder(partnerId int, orderNo string) error {
-	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	var sp = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.Confirm()
+	}
+	return err
+}
+
+// 配送订单,并记录配送服务商编号及单号
+func (this *shoppingService) DeliveryOrder(partnerId int, orderNo string,
+	deliverySpId int, deliverySpNo string) error {
+	//todo:配送订单,并记录配送服务商编号及单号
+	var sp = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil && order.GetValue().Status == enum.ORDER_WAIT_DELIVERY {
+		err = order.Deliver(deliverySpId, deliverySpNo)
+	}
+	return err
+}
+
+// 标记订单已经收货
+func (this *shoppingService) SignOrderReceived(partnerId int, orderNo string) error {
+	var sp = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil && order.GetValue().Status == enum.ORDER_WAIT_RECEIVE {
+		err = order.SignReceived()
+	}
+	return err
+}
+
+// 标记订单已经完成
+func (this *shoppingService) SignOrderCompleted(partnerId int, orderNo string) error {
+	var sp = this._rep.GetShopping(partnerId)
+	order, err := sp.GetOrderByNo(orderNo)
+	if err == nil && order.GetValue().Status == enum.ORDER_RECEIVED {
+		err = order.Complete()
 	}
 	return err
 }

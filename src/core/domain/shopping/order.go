@@ -28,6 +28,7 @@ import (
 var (
 	EXP_BIT float32
 )
+var _ shopping.IOrder = new(Order)
 
 type Order struct {
 	_shopping        shopping.IShopping
@@ -558,7 +559,8 @@ func (this *Order) addGoodsSaleNum(snapshotId int, quantity int) error {
 }
 
 // 配送订单
-func (this *Order) Deliver() error {
+func (this *Order) Deliver(spId int, spNo string) error {
+	//todo: 记录快递配送信息
 	dt := time.Now()
 	this._value.Status += 1
 	this._value.DeliverTime = dt.Unix()

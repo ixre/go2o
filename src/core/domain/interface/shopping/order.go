@@ -89,8 +89,8 @@ type IOrder interface {
 	// 确认订单
 	Confirm() error
 
-	// 配送订单
-	Deliver() error
+	// 配送订单,并记录配送服务商编号及单号
+	Deliver(spId int, spNo string) error
 
 	// 挂起
 	Suspend(reason string) error
