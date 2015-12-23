@@ -362,12 +362,12 @@ func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, 
 	return true, nil
 }
 
-// 提现
+// 提现并返回提现编号,交易号以及错误信息
 func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
-	applyAmount float32, commission float32) (int, error) {
+	applyAmount float32, commission float32) (int, string, error) {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
-		return 0, err
+		return 0, "", err
 	}
 
 	acc := m.GetAccount()

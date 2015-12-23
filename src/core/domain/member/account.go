@@ -11,6 +11,7 @@ package member
 import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/infrastructure/domain"
 	"time"
 )
 
@@ -207,15 +208,17 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 	return errors.New("kind not match")
 }
 
-// 请求提现,返回info_id 及错误
+// 请求提现,返回info_id,交易号及错误
 func (this *Account) RequestApplyCash(applyType int, title string,
-	amount float32, commission float32) (int, error) {
+	amount float32, commission float32) (int, string, error) {
 	if amount <= 0 {
-		return 0, member.ErrIncorrectAmount
+		return 0, "", member.ErrIncorrectAmount
 	}
 	if this._value.PresentBalance < amount {
-		return 0, member.ErrOutOfBalance
+		return 0, "", member.ErrOutOfBalance
 	}
+
+	tradeNo := domain.NewTradeNo(00000)
 
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount
@@ -223,6 +226,7 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 		Kind:      member.KindBalanceApplyCash,
 		Type:      applyType,
 		Title:     title,
+		TradeNo:   tradeNo,
 		Amount:    finalAmount,
 		CsnAmount: csnAmount,
 		State:     member.StateApplySubmitted,
@@ -239,7 +243,7 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 		this._value.PresentBalance -= amount
 		_, err = this.Save()
 	}
-	return id, err
+	return id, tradeNo, err
 }
 
 // 确认提现
