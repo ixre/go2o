@@ -22,7 +22,7 @@ import (
 func superviseOrder(ss []Service) {
 	con := (*core.MainApp)(appCtx).Redis().Get()
 	for {
-		id, err := redis.Int(con.Do("RPOP", variable.KvOrderCreatedQueue))
+		id, err := redis.Int(con.Do("RPOP", variable.KvOrderBusinessQueue))
 		if err != nil {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ NEW-ORDER] -", err.Error())
 			continue
