@@ -96,7 +96,6 @@ func AddTickerFunc(f DaemonFunc) {
 func orderDaemonService(app gof.App) {
 	AddTickerFunc(func(app gof.App) {
 		confirmNewOrder(app, newOrderObserver)
-
 		if completedOrderObserver != nil && len(completedOrderObserver) != 0 {
 			completedOrderObs(app, completedOrderObserver)
 		}
