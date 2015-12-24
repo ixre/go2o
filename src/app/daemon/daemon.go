@@ -104,6 +104,15 @@ type defaultService struct {
 	sMail   bool
 }
 
+// 注册系统服务
+func (this *defaultService) register() {
+	if len(services) == 0 {
+		RegisterService(this)
+	} else {
+		services = append([]Service{this}, services...)
+	}
+}
+
 // 服务名称
 func (this *defaultService) Name() string {
 	return "sys"
@@ -166,11 +175,12 @@ func Run(ctx gof.App) {
 	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
-	RegisterService(&defaultService{
+	s := &defaultService{
 		sMember: true,
 		sOrder:  true,
 		sMail:   sMail,
-	})
+	}
+	s.register()
 	Start()
 }
 
@@ -201,11 +211,12 @@ func FlagRun() {
 	//	}
 	// RegisterByName(serviceArr)
 
-	RegisterService(&defaultService{
+	s := &defaultService{
 		sMember: true,
 		sOrder:  true,
 		sMail:   true,
-	})
+	}
+	s.register()
 	Start()
 
 	<-ch
