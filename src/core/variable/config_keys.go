@@ -59,4 +59,6 @@ const (
 	SmtpCreUser = "smtp_user"
 	SmtpCrePwd  = "smtp_pwd"
 	SmtpFrom    = "smtp_from"
+	//是否关闭系统发送邮件队列
+	SystemMailQueueOff = "sys_mail_queue_off"
 )

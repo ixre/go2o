@@ -112,6 +112,11 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 	return err
 }
 
+// 根据编号获取订单
+func (this *shoppingService) GetOrderById(id int) *shopping.ValueOrder {
+	return this._rep.GetOrderById(id)
+}
+
 func (this *shoppingService) GetOrderByNo(partnerId int,
 	orderNo string) *shopping.ValueOrder {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)

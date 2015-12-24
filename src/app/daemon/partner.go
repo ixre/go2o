@@ -10,6 +10,7 @@
 package daemon
 
 import (
+	"github.com/jsix/gof"
 	"go2o/src/core/service/dps"
 )
 
@@ -22,4 +23,22 @@ func getPartners() []int {
 		partnerIds = dps.PartnerService.GetPartnersId()
 	}
 	return partnerIds
+}
+
+/***** OLD CODE *****/
+// todo: 等待重构
+
+func orderDaemon(app gof.App) {
+	defer recoverDaemon()
+	ids := getPartners()
+	for _, v := range ids {
+		autoSetOrder(v)
+	}
+}
+
+func autoSetOrder(partnerId int) {
+	f := func(err error) {
+		appCtx.Log().PrintErr(err)
+	}
+	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }

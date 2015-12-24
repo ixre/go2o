@@ -13,38 +13,58 @@ import (
 	"flag"
 	"github.com/jsix/gof"
 	"go2o/src/core"
+	"go2o/src/core/domain/interface/enum"
+	"go2o/src/core/domain/interface/member"
+	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"log"
 	"strings"
 	"time"
 )
 
-// 守护进程服务
-type Service func(gof.App)
-
 // 守护进程执行的函数
 type Func func(gof.App)
 
-var (
-	appCtx                 *core.MainApp
-	services               map[string]Service = map[string]Service{}
-	tickerDuration                            = 5 * time.Second // 间隔5秒执行
-	tickerInvokeFunc       []Func             = []Func{}
-	orderCreatedObserver   []Func             = []Func{confirmOrderQueue} //订单提交通知
-	orderCompletedObserver []Func             = []Func{}                  //订单完成通知
+// 守护进程服务
+type Service interface {
+	// 服务名称
+	Name() string
+	// 设置APP上下文
+	SetApp(gof.App)
+	// 启动服务
+	Start()
+	// 处理订单,需根据订单不同的状态,作不同的业务
+	// 返回布尔值,如果返回false,则不继续执行
+	OrderObs(*shopping.ValueOrder) bool
+	// 监视会员修改,@create:是否为新注册会员
+	// 返回布尔值,如果返回false,则不继续执行
+	MemberObs(m *member.ValueMember, create bool) bool
+	// 处理邮件队列
+	// 返回布尔值,如果返回false,则不继续执行
+	HandleMailQueue([]*mss.MailTask) bool
+}
 
-	//newMemberObserver []DaemonFunc = []DaemonFunc{orderDaemon}
+var (
+	appCtx           *core.MainApp
+	services         []Service      = make([]Service, 0)
+	serviceNames     map[string]int = make(map[string]int)
+	tickerDuration                  = 5 * time.Second // 间隔5秒执行
+	tickerInvokeFunc []Func         = []Func{}
 )
 
 // 注册服务
-func RegisterService(name string, service Service) {
-	if service == nil {
+func RegisterService(s Service) {
+	if s == nil {
 		panic("service is nil")
 	}
-	if _, ok := services[name]; ok {
+	name := s.Name()
+	if _, ok := serviceNames[name]; ok {
 		panic("service named " + name + " is registed!")
 	}
-	services[name] = service
+	serviceNames[name] = len(services)
+	services = append(services, s)
 }
 
 // 添加定时执行任务(默认5秒)
@@ -52,24 +72,13 @@ func AddTickerFunc(f Func) {
 	tickerInvokeFunc = append(tickerInvokeFunc, f)
 }
 
-// 添加新的订单处理函数
-func AppendOrderCreatedObserver(f Func) {
-	orderCreatedObserver = append(orderCreatedObserver, f)
-}
-
-// 添加已完成订单处理函数
-func AppendOrderCompletedObserver(f Func) {
-	orderCompletedObserver = append(orderCompletedObserver, f)
-}
-
 // 启动守护进程
 func Start() {
-	loadNesTasks()
-	for name, s := range services { //运行自定义服务
-		log.Println("** [ Go2o][ Daemon][ Booted] - ", name, " daemon running")
-		go s(appCtx)
+	for i, s := range services { //运行自定义服务
+		log.Println("** [ Go2o][ Daemon] - (", i, ")", s.Name(), "daemon running")
+		s.SetApp(appCtx)
+		go s.Start()
 	}
-
 	tk := time.NewTicker(tickerDuration)
 	defer func() {
 		tk.Stop()
@@ -88,29 +97,62 @@ func recoverDaemon() {
 
 }
 
-func loadNesTasks() {
-	AddTickerFunc(orderDaemon)
+type defaultService struct {
+	app     gof.App
+	sOrder  bool
+	sMember bool
+	sMail   bool
 }
 
-// 获取订单处理函数
-func orderService(app gof.App) {
-	AddTickerFunc(func(app gof.App) {
-		confirmNewOrder(app, orderCreatedObserver)     //确认新订单
-		completedOrderObs(app, orderCompletedObserver) //通知完成的订单
-	})
+// 服务名称
+func (this *defaultService) Name() string {
+	return "sys"
 }
 
-func RegisterByName(arr []string) {
-	for _, v := range arr {
-		switch v {
-		case "mail":
-			RegisterService("mail", func(app gof.App) {
-				AddTickerFunc(startMailQueue)
-			})
-		case "order":
-			RegisterService("order", orderService)
-		}
+// 设置APP上下文
+func (this *defaultService) SetApp(a gof.App) {
+	this.app = a
+}
+
+// 启动服务
+func (this *defaultService) Start() {
+	AddTickerFunc(orderDaemon) //订单自动进行流程
+	go superviseMemberUpdate(services)
+	go superviseOrder(services)
+	go startMailQueue(services)
+	//	RegisterService("mail", func(app gof.App) {
+	//		AddTickerFunc(startMailQueue)
+	//	})
+}
+
+// 处理订单,需根据订单不同的状态,作不同的业务
+// 返回布尔值,如果返回false,则不继续执行
+func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
+	if !this.sOrder {
+		return true
 	}
+	if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
+		dps.ShoppingService.ConfirmOrder(o.PartnerId, o.OrderNo)
+	}
+	return true
+}
+
+// 监视会员修改,@create:是否为新注册会员
+// 返回布尔值,如果返回false,则不继续执行
+func (this *defaultService) MemberObs(m *member.ValueMember, create bool) bool {
+	if !this.sMember {
+		return true
+	}
+	return true
+}
+
+// 处理邮件队列
+// 返回布尔值,如果返回false,则不继续执行
+func (this *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
+	if !this.sMail {
+		handleMailQueue(list)
+	}
+	return true
 }
 
 // 运行
@@ -120,7 +162,15 @@ func Run(ctx gof.App) {
 	} else {
 		appCtx = core.NewMainApp("app.conf")
 	}
-	RegisterByName([]string{"mail", "order"})
+
+	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
+	//sMail := cnf.GetString(variable.)
+
+	RegisterService(&defaultService{
+		sMember: true,
+		sOrder:  true,
+		sMail:   sMail,
+	})
 	Start()
 }
 
@@ -145,11 +195,17 @@ func FlagRun() {
 
 	dps.Init(appCtx)
 
-	if service != "all" {
-		serviceArr = strings.Split(service, ",")
-	}
+	//todo:???
+	//	if service != "all" {
+	//		serviceArr = strings.Split(service, ",")
+	//	}
+	// RegisterByName(serviceArr)
 
-	RegisterByName(serviceArr)
+	RegisterService(&defaultService{
+		sMember: true,
+		sOrder:  true,
+		sMail:   true,
+	})
 	Start()
 
 	<-ch

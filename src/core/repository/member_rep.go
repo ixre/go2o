@@ -221,13 +221,18 @@ func (this *MemberRep) LockMember(id int, state int) error {
 func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		rc := core.GetRedisConn()
-		// 保存最后更新时间
+		// 保存最后更新时间 todo:
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
 		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
 		rc.Do("LPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
+		if err == nil {
+			rc := core.GetRedisConn()
+			rc.Do("LPUSH", variable.KvMemberUpdateQueue,
+				fmt.Sprintf("%d-update", v.Id)) // push to queue
+		}
 		return v.Id, err
 	}
 	return this.createMember(v)
@@ -243,7 +248,8 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	this.initMember(v)
 
 	rc := core.GetRedisConn()
-	rc.Do("LPUSH", variable.KvMemberNewJoinQueue, v.Id) // push to queue
+	rc.Do("LPUSH", variable.KvMemberUpdateQueue,
+		fmt.Sprintf("%d-create", v.Id)) // push to queue
 
 	// 更新会员数 todo: 考虑去掉
 	var total = 0

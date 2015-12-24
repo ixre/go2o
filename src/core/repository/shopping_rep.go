@@ -97,15 +97,17 @@ func (this *shoppingRep) GetOrderItems(orderId int) []*shopping.OrderItem {
 
 func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, error) {
 	var err error
+	var statusIsChanged bool //业务状态是否改变
 	d := this.Connector
 	v.PartnerId = partnerId
 
 	if v.Id > 0 {
+		var oriStatus int
+		d.ExecScalar("SELECT status FROM pt_order WHERE id=?", &oriStatus, v.Id)
+		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
+
 		_, _, err = d.GetOrm().Save(v.Id, v)
 		if v.Status == enum.ORDER_COMPLETED {
-			rc := core.GetRedisConn()
-			rc.Do("LPUSH", variable.KvOrderCompletedQueue, v.Id) // push to queue
-
 			//todo:将去掉下行
 			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
 		}
@@ -121,9 +123,12 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
 		}
+		statusIsChanged = true
+	}
 
-		// Sign new order
-		gof.CurrentApp.Storage().Set(variable.KvHaveNewCreatedOrder, enum.TRUE)
+	if statusIsChanged { //如果业务状态已经发生改变,则提交到队列
+		rc := core.GetRedisConn()
+		rc.Do("LPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue
 	}
 
 	// 保存订单项
@@ -147,6 +152,15 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 func (this *shoppingRep) SaveOrderCouponBind(val *shopping.OrderCoupon) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, val)
 	return err
+}
+
+// 根据编号获取订单
+func (this *shoppingRep) GetOrderById(id int) *shopping.ValueOrder {
+	var v = new(shopping.ValueOrder)
+	if err := this.Connector.GetOrm().GetBy(v, "id=?", id); err == nil {
+		return v
+	}
+	return nil
 }
 
 func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (

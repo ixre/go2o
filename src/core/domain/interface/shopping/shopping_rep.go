@@ -27,6 +27,9 @@ type IShoppingRep interface {
 	// 获取可用的订单号
 	GetFreeOrderNo(partnerId int) string
 
+	// 根据编号获取订单
+	GetOrderById(id int) *ValueOrder
+
 	// 根据订单号获取订单
 	GetOrderByNo(partnerId int, orderNo string) (*ValueOrder, error)
 

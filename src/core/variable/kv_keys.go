@@ -18,6 +18,8 @@ const (
 	KvAccountUpdateTime           = "go2o:acc:uptime_"
 	KvMemberUpdateTcpNotifyQueue  = "go2o:mm:queue:t_up_notify"
 	KvAccountUpdateTcpNotifyQueue = "go2o:mm:queue:t_acc_notify"
-	KvMemberNewJoinQueue          = "go2o:mm:q:new_join"   //新加入会员队列
-	KvOrderCompletedQueue         = "go2o:sa:q:order_comp" //已完成订单队列
+	KvMemberUpdateQueue           = "go2o:q:mm_update"     //新加入会员队列
+	KvOrderCreatedQueue           = "go2o:sa:q:order_new"  //新订单队列
+	KvOrderBusinessQueue          = "go2o:q:sa_order_busi" //订单业务队列(如已创建,已完成等只执行一次)
+
 )
