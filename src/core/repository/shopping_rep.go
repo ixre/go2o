@@ -13,6 +13,7 @@ import (
 	"errors"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"go2o/src/core"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
@@ -102,6 +103,10 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	if v.Id > 0 {
 		_, _, err = d.GetOrm().Save(v.Id, v)
 		if v.Status == enum.ORDER_COMPLETED {
+			rc := core.GetRedisConn()
+			rc.Do("LPUSH", variable.KvOrderCompletedQueue, v.Id) // push to queue
+
+			//todo:将去掉下行
 			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
 		}
 	} else {

@@ -227,7 +227,6 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		rc.Do("LPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
 
 		// 保存会员信息
-
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		return v.Id, err
 	}
@@ -240,28 +239,25 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	id := this.getLatestId()
-	this.initMember(id, v)
+	this.Connector.ExecScalar("SELECT MAX(id) FROM mm_member", &v.Id)
+	this.initMember(v)
 
-	// 更新会员数
+	rc := core.GetRedisConn()
+	rc.Do("LPUSH", variable.KvMemberNewJoinQueue, v.Id) // push to queue
+
+	// 更新会员数 todo: 考虑去掉
 	var total = 0
 	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member", &total)
 	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
 
-	return id, err
+	return v.Id, err
 }
 
-func (this *MemberRep) getLatestId() int {
-	var id int
-	this.Connector.ExecScalar("SELECT MAX(id) FROM mm_member", &id)
-	return id
-}
-
-func (this *MemberRep) initMember(id int, v *member.ValueMember) {
+func (this *MemberRep) initMember(v *member.ValueMember) {
 
 	orm := this.Connector.GetOrm()
 	orm.Save(nil, &member.AccountValue{
-		MemberId:    id,
+		MemberId:    v.Id,
 		Balance:     0,
 		TotalFee:    0,
 		TotalCharge: 0,
@@ -270,12 +266,12 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 	})
 
 	orm.Save(nil, &member.BankInfo{
-		MemberId: id,
+		MemberId: v.Id,
 		State:    1,
 	})
 
 	orm.Save(nil, &member.MemberRelation{
-		MemberId:          id,
+		MemberId:          v.Id,
 		CardId:            "",
 		RefereesId:        0,
 		RegisterPartnerId: 0,

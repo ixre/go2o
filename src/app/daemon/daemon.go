@@ -53,12 +53,12 @@ func AddTickerFunc(f Func) {
 }
 
 // 添加新的订单处理函数
-func AppendNewOrderFunc(f Func) {
+func AppendOrderCreatedObserver(f Func) {
 	orderCreatedObserver = append(orderCreatedObserver, f)
 }
 
 // 添加已完成订单处理函数
-func AppendCompletedOrderFunc(f Func) {
+func AppendOrderCompletedObserver(f Func) {
 	orderCompletedObserver = append(orderCompletedObserver, f)
 }
 
