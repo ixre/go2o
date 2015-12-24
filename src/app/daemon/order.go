@@ -36,7 +36,10 @@ func autoSetOrder(partnerId int) {
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }
 
-func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
+func confirmNewOrder(app gof.App, dfs []Func) {
+	if len(dfs) < 0 {
+		return
+	}
 	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCreatedOrder); i == enum.TRUE {
 		appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin invoke confirm handler.")
 		if dfs == nil || len(dfs) == 0 {
@@ -50,7 +53,10 @@ func confirmNewOrder(app gof.App, dfs []DaemonFunc) {
 	}
 }
 
-func completedOrderObs(app gof.App, dfs []DaemonFunc) {
+func completedOrderObs(app gof.App, dfs []Func) {
+	if len(dfs) < 0 {
+		return
+	}
 	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCompletedOrder); i == enum.TRUE {
 		appCtx.Log().Printf("[ DAEMON][ ORDER][ FINISHED] - begin invoke finish handler.\n")
 		for _, v := range dfs {

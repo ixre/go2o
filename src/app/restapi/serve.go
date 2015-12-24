@@ -24,11 +24,14 @@ var (
 	API_HOST_CHK bool = false // 必须匹配Host
 	PathPrefix        = "/go2o_api_v1"
 	sto          gof.Storage
+	serve        *echo.Echo
 )
 
-func NewServe(app gof.App) *echo.Echo {
-	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
-	sto = app.Storage()
+func init() {
+	serve = newServe()
+}
+
+func newServe() *echo.Echo {
 	serve := echo.New()
 	serve.Use(mw.Recover())
 	serve.Use(beforeRequest())
@@ -37,9 +40,17 @@ func NewServe(app gof.App) *echo.Echo {
 	return serve
 }
 
+// 获取服务实例
+func GetServe() *echo.Echo {
+	return serve
+}
+
 func Run(app gof.App, port int) {
-	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " + strconv.Itoa(port))
-	NewServe(app).Run(":" + strconv.Itoa(port)) //启动服务
+	sto = app.Storage()
+	API_DOMAIN = app.Config().GetString(variable.ApiDomain)
+	log.Println("** [ Go2o][ API][ Booted] - Api server running on port " +
+		strconv.Itoa(port))
+	serve.Run(":" + strconv.Itoa(port)) //启动服务
 }
 
 func registerRoutes(s *echo.Echo) {
