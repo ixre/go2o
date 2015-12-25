@@ -77,7 +77,7 @@ func main() {
 	dps.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	core.RegisterTypes()
-	session.Set(newApp.Storage(),"")
+	session.Set(newApp.Storage(), "")
 
 	var booted bool
 
