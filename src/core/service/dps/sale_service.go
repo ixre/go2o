@@ -56,6 +56,15 @@ func (this *saleService) GetGoodsBySku(partnerId int, itemId int, sku int) *valu
 	return goods.GetPackedValue()
 }
 
+// 根据快照编号获取商品
+func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *sale.ValueGoods {
+	snap := this._rep.GetGoodsSnapshot(snapshotId)
+	if snap != nil {
+		return this._goodsRep.GetValueGoodsById(snap.GoodsId)
+	}
+	return nil
+}
+
 // 保存产品
 func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
