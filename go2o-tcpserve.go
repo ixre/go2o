@@ -50,7 +50,7 @@ func main() {
 		}
 	}(ch)
 
-	log.Println("[ TCP][ SERVE] - socket is served ... ")
+	log.Println("[ TCP][ SERVE] - socket is serve on port :", port)
 
 	<-ch
 }

@@ -73,7 +73,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		pcServe = getServe("public/views/ucenter/pc")
 		mobiServe = getServe("public/views/ucenter/mobi")
 		embedServe = getServe("public/views/ucenter/app_embed")
-		waitInit = true
+		waitInit = false
 	}
 	switch util.GetBrownerDevice(r) {
 	default:
