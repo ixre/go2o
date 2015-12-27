@@ -72,9 +72,10 @@ func listen(addr string, rc TcpReceiveCaller) {
 }
 
 func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
+	const delim byte = '\n'
 	for {
 		buf := bufio.NewReader(conn)
-		line, err := buf.ReadBytes('\n')
+		line, err := buf.ReadBytes(delim)
 		if err != nil {
 			// remove client
 			addr := conn.RemoteAddr().String()
@@ -93,12 +94,15 @@ func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
 			break
 
 		}
-		if d, err := rc(conn, line[:len(line)-1]); err != nil { // remove '\n'
+
+		if d, err := rc(conn, line[:len(line)-1]); err != nil {
+			// remove '\n'
 			conn.Write([]byte("error$" + err.Error()))
 		} else if d != nil {
 			conn.Write(d)
 		}
-		conn.Write([]byte("\n"))
+
+		conn.Write([]byte{delim})
 		conn.SetReadDeadline(time.Now().Add(ReadDeadLine)) // discount after 5m
 	}
 }
