@@ -9,157 +9,110 @@
 package tcpserve
 
 import (
-	"bufio"
 	"errors"
 	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/net/nc"
 	"go2o/src/app/util"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
-	"log"
 	"net"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type (
-	TcpReceiveCaller func(conn net.Conn, read []byte) ([]byte, error)
-	SocketCmdHandler func(ci *ClientIdentity, plan string) ([]byte, error)
-	// the identity of client
-	ClientIdentity struct {
-		Id              int // client id
-		UserId          int // user id
-		Addr            net.Addr
-		Conn            net.Conn
-		ConnectTime     time.Time
-		LastConnectTime time.Time
-	}
-)
-
 var (
-	DebugOn      bool                        = false
-	ReadDeadLine time.Duration               = time.Second * 300
-	clients      map[string]*ClientIdentity  = make(map[string]*ClientIdentity)
-	users        map[int]string              = make(map[int]string)
-	handlers     map[string]SocketCmdHandler = map[string]SocketCmdHandler{
-		"MAUTH": cliMAuth,
+	s        *nc.SocketServer
+	handlers map[string]nc.CmdFunc = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
 		"PING":  cliPing,
 	}
 )
 
-func printf(force bool, format string, args ...interface{}) {
-	if DebugOn {
-		log.Printf(format+"\n", args...)
-	}
-}
-
-func listen(addr string, rc TcpReceiveCaller) {
-	serveAddr, err := net.ResolveTCPAddr("tcp", addr)
-	if err != nil {
-		panic(err)
-	}
-	listen, err := net.ListenTCP("tcp", serveAddr)
-	for {
-		if conn, err := listen.AcceptTCP(); err == nil {
-			printf(true, "[ CLIENT][ CONNECT] - new client connection IP: %s ; active clients : %d",
-				conn.RemoteAddr().String(), len(clients)+1)
-			go receiveTcpConn(conn, rc)
-		}
-	}
-}
-
-func receiveTcpConn(conn *net.TCPConn, rc TcpReceiveCaller) {
-	const delim byte = '\n'
-	for {
-		buf := bufio.NewReader(conn)
-		line, err := buf.ReadBytes(delim)
-		if err != nil {
-			// remove client
-			addr := conn.RemoteAddr().String()
-			if v, ok := clients[addr]; ok {
-				uid := v.UserId
-				delete(clients, addr)
-				addr2 := users[uid]
-				if strings.Index(addr2, "$") == -1 {
-					delete(users, uid)
-				} else {
-					users[uid] = strings.Replace(strings.Replace(addr2, addr, "", 1), "$$", "$", -1)
-				}
-			}
-			printf(true, "[ CLIENT][ DISCONN] - IP : %s disconnect!active clients : %d",
-				conn.RemoteAddr().String(), len(clients))
-			break
-
-		}
-
-		if d, err := rc(conn, line[:len(line)-1]); err != nil {
-			// remove '\n'
-			conn.Write([]byte("error$" + err.Error()))
-		} else if d != nil {
-			conn.Write(d)
-		}
-
-		conn.Write([]byte{delim})
-		conn.SetReadDeadline(time.Now().Add(ReadDeadLine)) // discount after 5m
-	}
-}
-
 func ListenTcp(addr string) {
-	serveLoop() // server loop,send some message to client
-	listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
+	s = nc.NewSocketServer()
+	s.ReadDeadLine = time.Minute * 5
+	serveLoop(s) // server loop,send some message to client
+	//s.OutputOff()
+	s.Listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
 		cmd := string(b)
-		id, ok := clients[conn.RemoteAddr().String()]
-		if !ok { // auth
-			if err := createConnection(conn, cmd); err != nil {
+		id, ok := s.GetCli(conn)
+		if !ok { // not join,auth first!
+			if err := connAuth(s, conn, cmd); err != nil {
 				return nil, err
 			}
 			return []byte("ok"), nil
 		}
-		if !strings.HasPrefix(cmd, "PING") {
-			printf(false, "[ CLIENT][ MESSAGE] - send by %d ; %s", id.Id, cmd)
+		if strings.HasPrefix(cmd, "MAUTH:") { //auth member
+			return memberAuth(s, id, cmd[6:])
 		}
-		return handleSocketCmd(id, cmd)
+		if !strings.HasPrefix(cmd, "PING") {
+			s.Print("[ CLIENT][ MESSAGE] - send by %d ; %s", id.Source, cmd)
+		}
+		return handleCommand(id, cmd)
 	})
 }
 
-// register socket command handler
-func AddHandler(cmd string, handler SocketCmdHandler) {
+// Add socket command handler
+func Handle(cmd string, handler nc.CmdFunc) {
 	handlers[cmd] = handler
 }
 
-// create partner connection
-func createConnection(conn net.Conn, line string) error {
+// auth connection
+func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 	if strings.HasPrefix(line, "AUTH:") {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
-			partnerId := dps.PartnerService.GetPartnerIdByApiId(arr[0])
-			apiInfo := dps.PartnerService.GetApiInfo(partnerId)
-
-			if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
-				if apiInfo.Enabled == 0 {
-					return errors.New("api has exipres")
+			var af nc.AuthFunc = func() (int, error) {
+				partnerId := dps.PartnerService.GetPartnerIdByApiId(arr[0])
+				apiInfo := dps.PartnerService.GetApiInfo(partnerId)
+				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
+					if apiInfo.Enabled == 0 {
+						return partnerId, errors.New("api has exipres")
+					}
 				}
-				now := time.Now()
-				cli := &ClientIdentity{
-					Id:              partnerId,
-					Addr:            conn.RemoteAddr(),
-					Conn:            conn,
-					ConnectTime:     now,
-					LastConnectTime: now,
-				}
-				clients[conn.RemoteAddr().String()] = cli
-				printf(true, "[ CLIENT][ AUTH] - auth success! client id = %d ; version = %s", partnerId, arr[2])
-				return nil
+				return partnerId, nil
 			}
+
+			if err := s.Auth(conn, af); err != nil {
+				return err
+			}
+
+			s.Print("[ CLIENT] - Version = %s", arr[2])
+			return nil
 		}
 	}
 	return errors.New("conn reject")
 }
 
-func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
+// member auth,command like 'MAUTH:jarrysix#3234234242342342'
+func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error) {
+	var err error
+	arr := strings.Split(param, "#")
+	if len(arr) == 2 {
+
+		f := func() (int, error) {
+			memberId, _ := strconv.Atoi(arr[0])
+			authOk := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
+				memberId, arr[1])
+			if !authOk {
+				return memberId, errors.New("auth fail")
+			}
+			return memberId, nil
+		}
+
+		if err = s.UAuth(id.Conn, f); err == nil { //验证成功
+			return []byte("ok"), nil
+		}
+	}
+	return nil, err
+}
+
+// Handle command of client sending.
+func handleCommand(ci *nc.Client, cmd string) ([]byte, error) {
+	ci.LatestConnectTime = time.Now()
 	i := strings.Index(cmd, ":")
 	if i != -1 {
 		plan := cmd[i+1:]
@@ -170,48 +123,27 @@ func handleSocketCmd(ci *ClientIdentity, cmd string) ([]byte, error) {
 	return nil, errors.New("unknown command:" + cmd)
 }
 
-func serveLoop() {
+func serveLoop(s *nc.SocketServer) {
 	conn := core.GetRedisConn()
-	go notifyMup(conn)
+	go notifyMup(s, conn)
 }
 
-func notifyMup(conn redis.Conn) {
+func notifyMup(s *nc.SocketServer, conn redis.Conn) {
+	time.Sleep(time.Second * 10) // 等待监听服务
 	for {
-		err := mmSummaryNotify(conn)
-		err1 := mmAccountNotify(conn)
+		err := mmSummaryNotify(s, conn)
+		err1 := mmAccountNotify(s, conn)
 		if err != nil || err1 != nil {
 			time.Sleep(time.Second * 1) //阻塞,避免轮询占用CPU
 		}
 	}
 }
 
-// member auth,command like 'MAUTH:jarrysix#3234234242342342'
-func cliMAuth(id *ClientIdentity, param string) ([]byte, error) {
-	arr := strings.Split(param, "#")
-	if len(arr) == 2 {
-		memberId, _ := strconv.Atoi(arr[0])
-		b := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
-			memberId, arr[1])
-		b = true
-		if b { // auth success
-			id.UserId = memberId
-			// bind user activated clients
-			if v, ok := users[id.UserId]; ok {
-				users[id.UserId] = v + "$" + id.Addr.String()
-			} else {
-				users[id.UserId] = id.Addr.String()
-			}
-			return []byte("ok"), nil
-		}
-	}
-	return nil, errors.New("auth fail")
-}
-
 // print text by client sending.
-func cliPrint(id *ClientIdentity, params string) ([]byte, error) {
+func cliPrint(id *nc.Client, params string) ([]byte, error) {
 	return []byte(params), nil
 }
 
-func cliPing(id *ClientIdentity, plan string) ([]byte, error) {
+func cliPing(id *nc.Client, plan string) ([]byte, error) {
 	return []byte("PONG"), nil
 }
