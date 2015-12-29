@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<head>
+	<title>{{.Map.flowAlias}}转账</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.spam}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+	<div class="page-main page-apply-cash">
+		<div class="head-box">
+			<div class="account">
+				{{.Map.flowAlias}}余额:&nbsp;<b id="lb_balance">￥{{.Map.account.FlowBalance}}</b><br />
+			</div>
+
+		</div>
+
+		<div class="tip-box">
+			平台仅提供{{.Map.flowAlias}}转账功能，请尽量当面交易以降低风险！
+		</div>
+
+		<div id="form1" class="form form2">
+			<div class="apply-panel">
+				<h3>会员名/手机：</h3>
+				<input type="hidden" field="ToId" id="toId" value="0"/>
+				<input id="tb_usr" type="text" class="ui-box ui-validate" isfloat="true" field="UserName" required="true"
+					   summary="{required:'选择会员'}"/>
+
+				<h3>转账金额：</h3>
+				<input id="tb_amount" type="text" class="ui-box ui-validate" isfloat="true" required="true" field="Amount"
+						summary="{required:'请输入金额'}"/><!-- &nbsp;&nbsp;
+				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.Map.maxApplyAmount}}&nbsp;元</span> -->
+
+				<h3>交易密码：</h3>
+				<input type="password" class="ui-box ui-validate" tipin="tip_msg" required="true" field="TradePwd"
+					   summary="{required:'交易密码不能为空'}" onfocus="this.value=''"/>
+
+					{{if .Map.notSetTradePwd}}
+					<div>
+						<span class="icon-err"></span>请先点击
+						<a href="/basic/trade_pwd" style="color:#FF0000;">这里</a>设置交易密码后，再进行提现。
+					</div>
+					{{end}}
+
+
+					<div id="cns-panel" class="cns-panel hidden">
+						共需支付：<span id="finalAmount">0</span>&nbsp;(包含手续费：<span id="cnsAmount">0</span>)
+					</div>
+
+
+					<div class="control">
+						<input class="btn btn-m" type="button" value="确定转账" onclick="saveData()"/>
+						<div class="tip-msg" id="tip_msg"></div>
+						<div class="clear-fix"></div>
+					</div>
+
+				</div>
+			</div>
+
+
+		<div class="apply-setup">
+			<b><span class="red">*</span>&nbsp;说明：</b><br />
+			按平台政策，暂{{.Map.Map.commissionStr}}，资金即时到账。
+		</div>
+
+	</div>
+
+
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.spam}}"></script>
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/device.js?ver={{.Var.spam}}"></script>
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?ver={{.Var.spam}}"></script>
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/autoCompletion.js?ver={{.Var.spam}}"></script>
+
+
+
+<script type="text/javascript">
+				var tipMsg = j6.$('tip_msg');
+				var toId = j6.$('toId');
+				var balance = {{.Map.account.FlowBalance}};
+				var cns = {{.Map.cns}};
+				var finalAmount,cnsAmount;
+				j6.xhr.filter = null;
+
+				window.onload = function() {
+					finalAmount = j6.$('finalAmount');
+					cnsAmount = j6.$('cnsAmount');
+					j6.$('tb_amount').onblur = function () {
+						var amount = parseFloat(this.value);
+						if(amount) {
+							var cnsAmt = amount * cns;
+							var flAmount =  (amount + cnsAmt).toFixed(2);
+							cnsAmount.innerHTML = cnsAmt.toFixed(2);
+							finalAmount.innerHTML = flAmount;
+							if(flAmount == amount){
+								cnsAmt = 0;
+							}
+							j6.$('cns-panel').className = cnsAmt == 0 ? 'cns-panel hidden' : 'cns-panel';
+							tipMsg.className= 'tip-msg hidden';
+						}else{
+							tipMsg.innerHTML = '金额错误';
+							tipMsg.className= 'tip-msg red';
+						}
+					};
+
+					var tbUsr = j6.$('tb_usr');
+					tbUsr.onfocus = function(){
+						this.value = '';
+						toId.value = '0';
+					};
+
+					j6.autoCompletion(tbUsr, '../basic/member_cln_filter.htm', function (data) {
+						toId.value = '0';
+						for (var j = 0; j < data.length; j++) {
+							data[j].text = data[j].name + (data[j].phone.length >0 ?'(手机:'+data[j].phone+')':'');
+						}
+					}, function (data) {
+						toId.value = data.id;
+					},function() {
+					},3);
+				}
+
+				function saveData(){
+					j6.$('tb_amount').onblur();
+					if(j6.validator.validate('form1')){
+						var data = j6.json.toObject('form1');
+						data.Amount = parseFloat(data.Amount);
+						data.TradePwd = sha1(data.TradePwd);
+						if(parseInt(data.ToId) <= 0 || data.UserName.length == 0){
+							tipMsg.innerHTML = '请输入转账账号';
+							tipMsg.className= 'tip-msg red';
+							return false;
+						}else if(data.Amount <= 0){
+							tipMsg.innerHTML = '提现金额错误';
+							tipMsg.className= 'tip-msg red';
+							return false;
+						}else if(data.Amount > balance){
+							tipMsg.innerHTML = '提现金额超出余额';
+							tipMsg.className= 'tip-msg red';
+							return false;
+						}
+						j6.xhr.jsonPost('transfer_f2m.htm',data,function(json){
+							if(json.result){
+								balance -= data.Amount;
+								j6.$('lb_balance').innerHTML = balance;
+								location.href = 'transfer_success.htm?src=trans_f2m';
+							}else {
+								tipMsg.innerHTML = json.message;
+								tipMsg.className= 'tip-msg red';
+							}
+						});
+					}
+				}
+			</script>
+
+
+{{template "footer"$}}
+
+</body>
+</html>
