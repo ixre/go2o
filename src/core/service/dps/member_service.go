@@ -302,6 +302,7 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			Id:             m.GetAggregateRootId(),
 			Usr:            mv.Usr,
 			Name:           mv.Name,
+			Avatar:         format.GetResUrl(mv.Avatar),
 			Exp:            mv.Exp,
 			Level:          mv.Level,
 			LevelName:      lv.Name,

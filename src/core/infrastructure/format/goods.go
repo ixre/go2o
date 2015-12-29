@@ -56,3 +56,28 @@ func GetGoodsImageUrl(image string) string {
 	}
 	return imageServe + "/" + image
 }
+
+
+// 获取资源地址
+func GetResUrl(image string) string {
+	if !picCfgLoaded {
+		ctx := infrastructure.GetApp()
+		if len(imageServe) == 0 {
+			imageServe = ctx.Config().GetString(variable.ImageServer)
+		}
+
+		if len(noPicUrl) == 0 {
+			noPicUrl = imageServe + "/" + ctx.Config().GetString(variable.NoPicPath)
+		}
+		picCfgLoaded = true
+	}
+
+	if len(image) == 0 {
+		return noPicUrl
+	}
+
+	if strings.HasPrefix(image, "http://") || strings.HasPrefix(image, "https://") {
+		return image
+	}
+	return imageServe + "/" + image
+}

@@ -32,7 +32,6 @@ func readToCategoryDropList(partnerId int) []byte {
 		}
 	}
 	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f, nil)
-
 	return buf.Bytes()
 }
 
