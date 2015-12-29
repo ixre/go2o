@@ -29,8 +29,9 @@ var (
 func memberLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx *echo.Context) error {
 		path := ctx.Request().URL.Path
-		if path == "/login" || path == "/partner_connect" ||
-			path == "/partner_disconnect" || strings.HasPrefix(path, "/static/") {
+
+		const ignore string = "/login|/partner_connect|/msc|/msd|/partner_disconnect|"
+		if strings.Index(ignore, path+"|") != -1 || strings.HasPrefix(path, "/static/") {
 			return h(ctx)
 		}
 		session := session.Default(ctx.Response(), ctx.Request())

@@ -4,35 +4,29 @@
 <head>
     <title>{{.Map.cat.Name}}</title>
     <meta charset="utf-8">
-    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
-    <!--离线应用的另一个技巧-->
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta content="yes" name="apple-mobile-web-app-capable" />
-    <!--指定的iphone中safari顶端的状态条的样式-->
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
-    <!--告诉设备忽略将页面中的数字识别为电话号码-->
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
-<div class="com-content">
     {{template "header" $}}
 
+    <div class="page-category">
+        <div class="sort-bar" id="sort-bar">
+            {{.Map.sort_bar}}
+        </div>
 
-    <div class="sort-bar">
-        <ul>
-            <li><a href="?sort=price_0">价格</a><span class="d"></span><span class="split"></span></li>
-            <li><a href="?sort=sale_0">销量</a><span class="d"></span><span class="split"></span></li>
-            <li><a href="?sort=rate_0">评价</a><span class="d"></span></li>
-        </ul>
+       <div class="item-list items-ver">
+           {{.Map.items}}
+       </div>
+
+        {{.Map.pager}}
+
     </div>
 
-   <div class="items-hor">
-       {{.Map.items}}
-   </div>
-
-    {{.Map.pager}}
 
     <div class="hidden">
     <div id="cart-panel">
@@ -42,16 +36,13 @@
 
     {{template "footer" $}}
 
-    <script src="{{.Var.static_serve}}/css/mos/default/js/jquery.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/com.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/template.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.js?spam={{.Var.spam}}"></script>
-
-
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?{{.Var.version}}"></script>
     <script type="text/javascript">
-        window.cart.init('cart-panel',function(c){
-            $('#header-cart-num').html(c.total_num);
+        j6.each(j6.$('sort-bar').getElementsByTagName('A'),function(i,e){
+            e.onclick=function() {
+                window.location.replace(this.href);
+                return false;
+            };
         });
     </script>
 </body>

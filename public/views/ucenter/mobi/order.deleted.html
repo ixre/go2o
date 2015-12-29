@@ -56,6 +56,18 @@
 				_dg.data.page = p;
 				_dg.reload();
 			}
+
+			function itemFmt(items){
+				var html = "";
+				var tpl = '<img src="{img}" width="50" height="50" style="border:solid 1px #ddd;padding:1px;margin-right:1px;" title="{name} x {qty}"/>';
+				for(var i=0;i<items.length;i++){
+					if(items[i].img.indexOf("http") != 0){
+						items[i].img = "{{.Var.img_serve}}/"+items[i].img;
+					}
+					html += j6.template(tpl,items[i]);
+				}
+				return html;
+			}
 		</script>
 	</div>
 </div>

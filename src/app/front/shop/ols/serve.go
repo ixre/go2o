@@ -42,6 +42,8 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/cart", cc.Index)
 	s.Getx("/change_device", mc.change_device)
 	s.Danyx("/main/:action", mc)
+	s.Getx("/msc", mc.Msc)
+	s.Getx("/msd", mc.Msd)
 	s.Danyx("/buy/:action", sp)
 
 	s.Danyx("/shopping/:action", sp)

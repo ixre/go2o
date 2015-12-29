@@ -5,10 +5,6 @@
     <title>{{.Map.partner.Name}}</title>
     <meta charset="utf-8">
     <meta name="keywords" content="朝首,朝首官方网站,朝首商城" />
-    <meta name="description" content="买鞋子哪个网站好，当然首选朝首!中国最早成立的正品鞋子购物网站,国内最大的品牌鞋子销售广场。所售鞋子100%厂家授权,全国包邮,货到付款,提供最完美的购物体验！" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-    <link rel="bookmark" href="favicon.ico" type="image/x-icon" />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
     <!--离线应用的另一个技巧-->
     <meta content="yes" name="apple-mobile-web-app-capable" />
@@ -17,14 +13,9 @@
     <!--告诉设备忽略将页面中的数字识别为电话号码-->
     <meta content="telephone=no" name="format-detection" />
     <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
-    <script>var PX_HELP_DATA=['','uo74au74aqpc8801g3htt5l2v7',['touch','home','index'],'2014/04/09 09:12:46',0,false]; var DOMIN = {MAIN:"../m.paixie.com/",HELP:"../help.paixie.net/",TUAN:"../tuan.paixie.net/",WAP:"../wap.paixie.net/",UNION:"../union.paixie.net/",VIPSHOP:"../v.paixie.net/"};</script>
-    <script src="http://ued.paixie.net/scripts/public/jquery.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/com.js?spam={{.Var.spam}}"></script>
-    <script src="http://ued.paixie.net/scripts/public/px-verify.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/template.js?spam={{.Var.spam}}"></script>
+    <script>location.href='/list/all_cate';</script>
 </head>
-<body>
-
+<body style="display:none">
 <div class="com-content">
     {{template "header" $}}
 
@@ -102,7 +93,7 @@
                 <a class="selected"><i></i>首页<span></span></a>
                 <a href="list/all_cate"><i></i>分类<span></span></a>
                 <a href="#"><i></i>品牌<span></span></a>
-                <a href="#"><i></i>团购<span></span></a>
+                <a href="/st/hot-sales"><i></i>热销商品<span></span></a>
                 <a href="#"><i></i>查看物流<span></span></a>
             </div>
             <div class="tags">

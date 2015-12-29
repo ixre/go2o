@@ -3,13 +3,12 @@
 <html>
 <head>
     <title>商品详情</title>
-    <meta charset="utf-8">
+    <meta name="Cache-Control" content="no-cache"/>
     <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
@@ -17,42 +16,53 @@
 
 
 
-    <div class="item-details">
-        <p class="gallery">
-            <img src="{{.Map.goods.Image}}" alt="{{.Map.goods.Name}}" width="320"/>
-        </p>
-        <div class="line"></div>
-        <p class="line price">
+   <div class="item-details">
+       <p class="gallery">
+           <img src="{{.Map.goods.Image}}" alt="{{.Map.goods.Name}}" width="320"/>
+       </p>
+       <div class="line"></div>
+       <p class="line price">
            <span class="sale-price">
                {{.Map.sale_price}}
            </span>
-            {{.Map.prom_price}}
-        </p>
-        <div class="prom-panel {{.Map.prom_cls}}">
+           {{.Map.prom_price}}
+       </p>
+       <div class="prom-panel {{.Map.prom_cls}}">
             <table cellspacing="0">
                 <tr>
                     <td class="txt">促<br />销</td>
                     <td class="list">
-                        {{.Map.prom_describe}}</td>
+                    {{.Map.prom_describe}}</td>
                 </tr>
             </table>
         </div>
-        <p class="title">
-            {{.Map.goods.Name}}
-        </p>
+       <p class="title">
+          {{.Map.goods.Name}}
+       </p>
 
+
+
+
+       <div class="detail-link">
+           <span class="details"></span>
+           <a href="goods-describe?id={{.Map.goods.GoodsId}}">
+           商品详情<span class="arrow"></span>
+           </a>
+       </div>
+
+       <div class="stock">
+           购买<input id="buyNum" type="text" class="ui-box buyNum" datatype="number" value="1"/>&nbsp;件
+           / <b>库存：</b>{{.Map.goods.StockNum}}&nbsp;件
+       </div>
 
 
        <div class="control">
-           购买<input id="buyNum" type="text" class="ui-box buyNum" datatype="number" value="1" style="width:30px"/>&nbsp;件
-           / <b>库存：</b>{{.Map.goods.StockNum}}&nbsp;件
-           <br />
            <div class="buy_panel">
-               <a class="btn btn-orange btn_add_cart" href="javascript:;" id="btn_add_cart">加入购物车</a>
-               <a class="btn btn-green btn_view_cart" href="/cart" id="btn_view_cart">查看购物车</a>
+               <input class="btn btn-m btn_add_cart" type="button" id="btn_view_buy" goods-id="{{.Map.goods.GoodsId}}" value="立即购买"/>
+               <input class="btn btn-green btn_view_cart" type="button" id="btn_add_cart" goods-id="{{.Map.goods.GoodsId}}" value="加入购物车"/>
+               <a class="cart-num" href="/cart"><i id="cart-num">0</i></a>
            </div>
        </div>
-
    </div>
 
     <div class="ording-summary hidden">
@@ -65,27 +75,48 @@
         </div>
     </div>
 
+
     {{template "footer" $}}
 
 
-    <script src="{{.Var.static_serve}}/css/mos/default/js/jquery.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/com.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/template.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/mobi/core.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/mobi/device.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.min.js?spam={{.Var.spam}}"></script>
 
     <script type="text/javascript">
-        window.cart.init('cart-panel',function(c){
-            $('#header-cart-num').html(c.total_num);
-        });
-        $('#btn_add_cart').click(function(){
-            var num = parseInt($('#buyNum').val());
-            var goodsId = {{.Map.goods.GoodsId}};
-            window.cart.add(goodsId,num,function(c){
-                j6.tipbox.show("加入购物车成功!",100, 3000, 'up',0.8);
-                $('#header-cart-num').html(window.cart.totalNum);
+        var cartNum = j6.$('cart-num');
+        window.onload = function() {
+            window.cart.init('cart-panel', function (c) {
+                cartNum.innerHTML = c.total_num;
             });
-        });
+            function addToCart(t,tip,call){
+                var num = parseInt(j6.$('buyNum').value);
+                var goodsId = parseInt(t.getAttribute("goods-id"));
+                window.cart.add(goodsId, num, function (c) {
+                    if(tip) {
+                        showMsg('加入购物车成功',500);
+                    }
+                    cartNum.innerHTML = window.cart.totalNum;
+                    if(call!= null){
+                        call(c);
+                    }
+                },function(msg){
+                    window.cli.alert(msg,'购物车');
+                });
+            }
+            j6.$('btn_add_cart').onclick = function () {
+                addToCart(this,true);
+            };
+            j6.$('btn_view_buy').onclick = function () {
+                addToCart(this,false,function(){
+                    setTimeout(function(){
+                        location.href = '/buy/confirm?t='+new Date().getSeconds();
+                    },200);
+                });
+            };
+        };
+
+
     </script>
 </body>
 </html>

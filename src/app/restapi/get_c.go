@@ -9,9 +9,12 @@
 package restapi
 
 import (
+	"crypto/sha1"
+	"fmt"
 	"github.com/labstack/echo"
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
+	"io"
 	"net/url"
 	"strconv"
 )
@@ -33,7 +36,22 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 			url.QueryEscape("?return_url="+targetUrl)
 		qrBytes := gen.BuildQrCodeForUrl(url)
 		ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
+		ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%d.jpg", memberId))
 		ctx.Response().Write(qrBytes)
 	}
+	return nil
+}
+
+// 创建二维码
+func (this *getC) GenQr(ctx *echo.Context) error {
+	link := ctx.Query("url")
+	qrBytes := gen.BuildQrCodeForUrl(link)
+	t := sha1.New()
+	io.WriteString(t, link)
+	hash := string(t.Sum(nil))
+	ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
+	ctx.Response().Header().Set("Content-Disposition",
+		fmt.Sprintf("attachment;filename=%s.jpg", hash))
+	ctx.Response().Write(qrBytes)
 	return nil
 }

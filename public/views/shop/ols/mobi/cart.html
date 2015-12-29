@@ -4,28 +4,24 @@
 <head>
     <title>购物车</title>
     <meta charset="utf-8">
-    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
-    <!--离线应用的另一个技巧-->
-    <meta content="yes" name="apple-mobile-web-app-capable" />
-    <!--指定的iphone中safari顶端的状态条的样式-->
-    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
-    <!--告诉设备忽略将页面中的数字识别为电话号码-->
-    <meta content="telephone=no" name="format-detection" />
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/mos/default/css/com/com.css?spam={{.Var.spam}}"/>
-    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
+    <meta content="width=device-width,initial-scale=1"/>
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
     {{template "header" $}}
 
 
+    <div>
+        <span></span>
+    </div>
     <div class="cart-summary">
         <div id="cart-panel" class="cart-panel">
             <div class="cart"></div>
             <div class="submit">
+                <a href="javascript:void(0)" class="btn" id="btn_back">继续购物</a>
                 <a class="btn btn-orange" href="javascript:;" id="btn_settle">结算订单</a>
             </div>
-            <div class="clearfix"></div>
         </div>
 
 
@@ -35,20 +31,22 @@
 
     {{template "footer" $}}
 
-    <script src="{{.Var.static_serve}}/css/mos/default/js/jquery.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/com.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/css/mos/default/js/com/template.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/mobi/core.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.min.js?spam={{.Var.spam}}"></script>
 
     <script type="text/javascript">
-        window.cart.init('cart-panel', function (c) {
-
-        });
-        setInterval(function(){$('#header-cart-num').html(cart.totalNum);},500)
-
-        j6.$('btn_settle').onclick=function(){
-            location.href='/buy/confirm';
+        window.cart.init('cart-panel', function (c) { });
+        window.onload=function() {
+            j6.$('btn_settle').onclick = function () {
+                location.href = '/buy/confirm';
+            }
+            j6.$('btn_back').onclick = function () {
+                if(document.referrer) {
+                   window.history.go(-1);
+                }else{
+                    location.href='/list/all_cate';
+                }
+            }
         }
     </script>
 </body>
