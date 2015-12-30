@@ -51,6 +51,7 @@ var (
 	services         []Service      = make([]Service, 0)
 	serviceNames     map[string]int = make(map[string]int)
 	tickerDuration                  = 5 * time.Second // 间隔5秒执行
+	RedisTimeout     int            = 120             //2分钟超时
 	tickerInvokeFunc []Func         = []Func{}
 )
 
@@ -129,9 +130,6 @@ func (this *defaultService) Start() {
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)
 	go startMailQueue(services)
-	//	RegisterService("mail", func(app gof.App) {
-	//		AddTickerFunc(startMailQueue)
-	//	})
 }
 
 // 处理订单,需根据订单不同的状态,作不同的业务

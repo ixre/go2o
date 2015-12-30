@@ -20,9 +20,9 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
-	con := (*core.MainApp)(appCtx).Redis().Get()
 	for {
-		id, err := redis.Int(con.Do("RPOP", variable.KvOrderBusinessQueue))
+		id, err := redis.Int(core.GetRedisConn().Do("BLPOP",
+			variable.KvOrderBusinessQueue, RedisTimeout))
 		if err != nil {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ NEW-ORDER] -", err.Error())
 			continue
@@ -33,19 +33,19 @@ func superviseOrder(ss []Service) {
 				break
 			}
 		}
+		break
 	}
 }
 
 // 监视新订单
 func superviseMemberUpdate(ss []Service) {
-	con := (*core.MainApp)(appCtx).Redis().Get()
 	for {
-		s, err := redis.String(con.Do("RPOP", variable.KvMemberUpdateQueue))
+		s, err := redis.String(core.GetRedisConn().Do("BLPOP",
+			variable.KvMemberUpdateQueue, RedisTimeout))
 		if err != nil {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ MEMBER] -", err.Error())
 			continue
 		}
-
 		arr := strings.Split(s, "-")
 		id, err := strconv.Atoi(arr[0])
 		if err == nil {

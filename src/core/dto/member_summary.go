@@ -13,7 +13,7 @@ type MemberSummary struct {
 	Id             int    `db:"id" auto:"yes" pk:"yes"`
 	Usr            string `db:"usr"`
 	Name           string `db:"name"`
-	Avatar		   string  `db:"-"`
+	Avatar         string `db:"-"`
 	Exp            int    `db:"exp"`
 	Level          int    `db:"level"`
 	LevelName      string

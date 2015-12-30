@@ -57,7 +57,6 @@ func GetGoodsImageUrl(image string) string {
 	return imageServe + "/" + image
 }
 
-
 // 获取资源地址
 func GetResUrl(image string) string {
 	if !picCfgLoaded {

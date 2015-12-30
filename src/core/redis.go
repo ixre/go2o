@@ -17,6 +17,10 @@ import (
 	"time"
 )
 
+var (
+	shareConn redis.Conn
+)
+
 func createRedisPool(c *gof.Config) *redis.Pool {
 	redisHost := c.GetString("redis_host")
 	redisDb := c.GetString("redis_db")
@@ -73,13 +77,16 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 
 // 获取Redis连接
 func GetRedisConn() redis.Conn {
-	app := gof.CurrentApp
-	if app == nil {
-		panic(errors.New("gobal app not initialize!"))
+	if shareConn == nil {
+		app := gof.CurrentApp
+		if app == nil {
+			panic(errors.New("gobal app not initialize!"))
+		}
+		var ok bool
+		shareConn, ok = app.Storage().Driver().(redis.Conn)
+		if !ok {
+			panic(errors.New("storage drive not base redis"))
+		}
 	}
-	conn, ok := app.Storage().Driver().(redis.Conn)
-	if !ok {
-		panic(errors.New("storage drive not base redis"))
-	}
-	return conn
+	return shareConn
 }

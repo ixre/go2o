@@ -36,8 +36,8 @@ func startMailQueue(ss []Service) {
 					}
 				}
 			}
-			time.Sleep(tickerDuration)
 		}
+		time.Sleep(tickerDuration)
 	}
 }
 
