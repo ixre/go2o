@@ -124,7 +124,7 @@ func handleCommand(ci *nc.Client, cmd string) ([]byte, error) {
 }
 
 func serveLoop(s *nc.SocketServer) {
-	conn := core.GetRedisPool()
+	conn := core.GetRedisConn()
 	go notifyMup(s, conn)
 }
 
