@@ -16,6 +16,7 @@ import (
 	"go2o/src/core/variable"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // 监视新订单
@@ -25,6 +26,9 @@ func superviseOrder(ss []Service) {
 			variable.KvOrderBusinessQueue, RedisTimeout))
 		if err != nil {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ NEW-ORDER] -", err.Error())
+			if strings.Index(err.Error(), "nil") == -1 {
+				time.Sleep(tickerDuration * 10)
+			}
 			continue
 		}
 		order := dps.ShoppingService.GetOrderById(id)
@@ -44,6 +48,9 @@ func superviseMemberUpdate(ss []Service) {
 			variable.KvMemberUpdateQueue, RedisTimeout))
 		if err != nil {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ MEMBER] -", err.Error())
+			if strings.Index(err.Error(), "nil") == -1 {
+				time.Sleep(tickerDuration * 10)
+			}
 			continue
 		}
 		arr := strings.Split(s, "-")

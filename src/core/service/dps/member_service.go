@@ -152,6 +152,7 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 	if val == nil {
 		val = this._memberRep.GetMemberValueByPhone(usr)
 	}
+
 	if val == nil {
 		return false, nil, errors.New("会员不存在")
 	}
@@ -174,8 +175,6 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 	unix := time.Now().Unix()
 	val.LastLoginTime = unix
 	val.UpdateTime = unix
-
-	m.SetValue(val)
 	m.Save()
 
 	return true, val, nil

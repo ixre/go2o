@@ -50,8 +50,8 @@ var (
 	appCtx           *core.MainApp
 	services         []Service      = make([]Service, 0)
 	serviceNames     map[string]int = make(map[string]int)
-	tickerDuration                  = 5 * time.Second // 间隔5秒执行
-	RedisTimeout     int            = 120             //2分钟超时
+	tickerDuration   time.Duration  = 5 * time.Second // 间隔5秒执行
+	RedisTimeout     int            = 1440000         // 1天超时
 	tickerInvokeFunc []Func         = []Func{}
 )
 

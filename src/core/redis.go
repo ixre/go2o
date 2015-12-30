@@ -18,7 +18,8 @@ import (
 )
 
 var (
-	shareConn redis.Conn
+	hasGet   bool = false
+	globPool *redis.Pool
 )
 
 func createRedisPool(c *gof.Config) *redis.Pool {
@@ -75,18 +76,24 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 	}
 }
 
-// 获取Redis连接
-func GetRedisConn() redis.Conn {
-	if shareConn == nil {
+// 获取Redis连接池
+func GetRedisPool() *redis.Pool {
+	if !hasGet {
 		app := gof.CurrentApp
 		if app == nil {
 			panic(errors.New("gobal app not initialize!"))
 		}
 		var ok bool
-		shareConn, ok = app.Storage().Driver().(redis.Conn)
+		globPool, ok = app.Storage().Driver().(*redis.Pool)
 		if !ok {
 			panic(errors.New("storage drive not base redis"))
 		}
+		hasGet = true
 	}
-	return shareConn
+	return globPool
+}
+
+// 获取Redis连接
+func GetRedisConn() redis.Conn {
+	return GetRedisPool().Get()
 }

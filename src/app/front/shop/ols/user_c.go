@@ -50,7 +50,8 @@ func (this *UserC) Login(ctx *echox.Context) error {
 
 func (this *UserC) login_post(ctx *echox.Context) error {
 	r := ctx.Request()
-	r.ParseForm()
+	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
+	//r.ParseForm()
 	var result gof.Message
 	partnerId := GetPartnerId(r, ctx.Session)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
@@ -60,9 +61,9 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
 
 	if b {
+		result.Result = true
 		ctx.Session.Set("member", m)
 		ctx.Session.Save()
-		result.Result = true
 	} else {
 		if err != nil {
 			result.Message = err.Error()

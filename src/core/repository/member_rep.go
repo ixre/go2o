@@ -229,9 +229,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		// 保存会员信息
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
 		if err == nil {
-			rc := core.GetRedisConn()
-			rc.Do("LPUSH", variable.KvMemberUpdateQueue,
-				fmt.Sprintf("%d-update", v.Id)) // push to queue
+			rc.Do("LPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id)) // push to queue
 		}
 		return v.Id, err
 	}

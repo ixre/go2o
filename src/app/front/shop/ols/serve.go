@@ -21,7 +21,6 @@ import (
 )
 
 var (
-	waitInit   bool = true
 	pcServe    *echox.Echo
 	mobiServe  *echox.Echo
 	embedServe *echox.Echo
