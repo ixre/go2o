@@ -144,8 +144,9 @@ func (this *memberService) ResetPassword(memberId int) string {
 	return ""
 }
 
-// 登陆
-func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.ValueMember, error) {
+// 检查凭据, update:是否更新登陆时间
+func (this *memberService) TryLogin(partnerId int, usr,
+	pwd string, update bool) (*member.ValueMember, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
 	val := this._memberRep.GetMemberValueByUsr(usr)
@@ -154,30 +155,32 @@ func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.
 	}
 
 	if val == nil {
-		return false, nil, errors.New("会员不存在")
+		return nil, errors.New("会员不存在")
 	}
 
 	if val.Pwd != pwd {
-		return false, nil, errors.New("会员用户或密码不正确")
+		return nil, errors.New("会员用户或密码不正确")
 	}
 
 	if val.State == 0 {
-		return false, nil, errors.New("会员已停用")
+		return nil, errors.New("会员已停用")
 	}
 
 	m := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
 	if partnerId != -1 && rl.RegisterPartnerId != partnerId {
-		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
+		return nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
-	unix := time.Now().Unix()
-	val.LastLoginTime = unix
-	val.UpdateTime = unix
-	m.Save()
+	if update {
+		unix := time.Now().Unix()
+		val.LastLoginTime = unix
+		val.UpdateTime = unix
+		m.Save()
+	}
 
-	return true, val, nil
+	return val, nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误

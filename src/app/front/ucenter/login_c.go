@@ -37,8 +37,8 @@ func (this *loginC) index_post(ctx *echox.Context) error {
 
 	pwd = strings.TrimSpace(pwd)
 
-	b, m, err := dps.MemberService.Login(-1, usr, pwd)
-	if b {
+	m, err := dps.MemberService.TryLogin(-1, usr, pwd, true)
+	if err == nil {
 		ctx.Session.Set("member", m)
 		ctx.Session.Save()
 		result.Result = true

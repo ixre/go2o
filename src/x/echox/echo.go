@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -74,6 +75,7 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 
 // 设置模板
 func (this *Echo) SetTemplateRender(path string) {
+	log.Println("---", path)
 	this.SetRenderer(newGoTemplateForEcho(path, _globRenderWatch))
 }
 
@@ -166,14 +168,15 @@ func NewRenderData() *TemplateData {
 	}
 }
 
-type InterceptorFunc func(*echo.Context) bool
-
-// 拦截器
-func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
-	return func(c *echo.Context) error {
-		if ifn(c) {
-			return fn(c)
-		}
-		return nil
-	}
-}
+//
+//type InterceptorFunc func(*echo.Context) bool
+//
+//// 拦截器
+//func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
+//	return func(c *echo.Context) error {
+//		if ifn(c) {
+//			return fn(c)
+//		}
+//		return nil
+//	}
+//}

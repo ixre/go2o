@@ -21,46 +21,55 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	var id int
 	for {
-		id, err := redis.Int(core.GetRedisConn().Do("BLPOP",
-			variable.KvOrderBusinessQueue, RedisTimeout))
-		if err != nil {
+		arr, err := redis.Values(conn.Do("BLPOP",
+			variable.KvOrderBusinessQueue, 0))
+		if err == nil {
+			id, err = strconv.Atoi(string(arr[1].([]byte)))
+			if err == nil { //通知订单更新
+				order := dps.ShoppingService.GetOrderById(id)
+				for _, v := range ss {
+					if !v.OrderObs(order) {
+						break
+					}
+				}
+			}
+		} else {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ NEW-ORDER] -", err.Error())
 			if strings.Index(err.Error(), "nil") == -1 {
 				time.Sleep(tickerDuration * 10)
 			}
-			continue
 		}
-		order := dps.ShoppingService.GetOrderById(id)
-		for _, v := range ss {
-			if !v.OrderObs(order) {
-				break
-			}
-		}
-		break
 	}
 }
 
 // 监视新订单
 func superviseMemberUpdate(ss []Service) {
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	var id int
 	for {
-		s, err := redis.String(core.GetRedisConn().Do("BLPOP",
-			variable.KvMemberUpdateQueue, RedisTimeout))
-		if err != nil {
+		arr, err := redis.Values(core.GetRedisConn().Do("BLPOP",
+			variable.KvMemberUpdateQueue, 0))
+		if err == nil { //通知会员修改,格式如: 1-[create|update]
+			s := string(arr[1].([]byte))
+			mArr := strings.Split(s, "-")
+			id, err = strconv.Atoi(mArr[0])
+			if err == nil {
+				m := dps.MemberService.GetMember(id)
+				for _, v := range ss {
+					if !v.MemberObs(m, mArr[1] == "create") {
+						break
+					}
+				}
+			}
+		} else {
 			appCtx.Log().Println("[ DAEMON][ QUEUE][ MEMBER] -", err.Error())
 			if strings.Index(err.Error(), "nil") == -1 {
 				time.Sleep(tickerDuration * 10)
-			}
-			continue
-		}
-		arr := strings.Split(s, "-")
-		id, err := strconv.Atoi(arr[0])
-		if err == nil {
-			m := dps.MemberService.GetMember(id)
-			for _, v := range ss {
-				if !v.MemberObs(m, arr[1] == "create") {
-					break
-				}
 			}
 		}
 	}

@@ -128,7 +128,9 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 
 	if statusIsChanged { //如果业务状态已经发生改变,则提交到队列
 		rc := core.GetRedisConn()
-		rc.Do("LPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue
+		defer rc.Close()
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue
+		//log.Println("-- PUSH - ",v.Id,err)
 	}
 
 	// 保存订单项

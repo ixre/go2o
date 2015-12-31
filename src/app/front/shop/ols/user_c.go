@@ -57,10 +57,8 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
-
-	b, m, err := dps.MemberService.Login(partnerId, usr, pwd)
-
-	if b {
+	m, err := dps.MemberService.TryLogin(partnerId, usr, pwd, true)
+	if err == nil {
 		result.Result = true
 		ctx.Session.Set("member", m)
 		ctx.Session.Save()
@@ -71,7 +69,6 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 			result.Message = "登陆失败"
 		}
 	}
-
 	return ctx.JSON(http.StatusOK, result)
 }
 

@@ -42,16 +42,16 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		b, e, err := dps.MemberService.Login(partnerId, usr, encodePwd)
-		result.Result = b
+		e, err := dps.MemberService.TryLogin(partnerId, usr, encodePwd, true)
 
-		if b {
+		if err == nil {
 			// 生成令牌
 			e.DynamicToken = util.SetMemberApiToken(sto, e.Id, e.Pwd)
 			result.Member = e
-		}
-		if err != nil {
+			result.Result = true
+		} else {
 			result.Message = err.Error()
+			result.Result = false
 		}
 	}
 	return ctx.JSON(http.StatusOK, result)
