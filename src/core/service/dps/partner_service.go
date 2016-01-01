@@ -152,19 +152,23 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 	return &conf
 }
 
-// 检查注册
-func (this *partnerService) CheckRegisterMode(partnerId int, code string) error {
-	conf := this.GetSaleConf(partnerId)
-	if conf.RegisterMode == partner.ModeRegisterClosed {
-		return errors.New("1011:系统暂不开放注册")
+// 检查注册权限
+func (this *partnerService) CheckRegisterPerm(partnerId int, isInvitation bool) error {
+	//	if conf.RegisterMode == partner.ModeRegisterClosed {
+	//		return errors.New("1011:系统暂不开放注册")
+	//	}
+	//	if conf.RegisterMode == partner.ModeRegisterMustInvitation && len(code) == 0 {
+	//		return errors.New("1011:必须使用推荐码注册")
+	//	}
+	//	if conf.RegisterMode == partner.ModeRegisterMustRedirect && len(code) > 0 {
+	//		return errors.New("1011:系统暂不开放推荐注册")
+	//	}
+
+	pt, err := this._partnerRep.GetPartner(partnerId)
+	if err == nil {
+		err = pt.RegisterPerm(isInvitation)
 	}
-	if conf.RegisterMode == partner.ModeRegisterMustInvitation && len(code) == 0 {
-		return errors.New("1011:必须使用推荐码注册")
-	}
-	if conf.RegisterMode == partner.ModeRegisterMustRedirect && len(code) > 0 {
-		return errors.New("1011:系统暂不开放推荐注册")
-	}
-	return nil
+	return err
 }
 
 func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueShop {

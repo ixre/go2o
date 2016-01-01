@@ -219,6 +219,21 @@ func (this *Partner) SaveSaleConf(v *partner.SaleConf) error {
 	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
 }
 
+// 注册权限验证,如果没有权限注册,返回错误
+func (this *Partner) RegisterPerm(isInvitation bool) error {
+	conf := this.GetSaleConf()
+	if conf.RegisterMode == partner.ModeRegisterClosed {
+		return partner.ErrRegOff
+	}
+	if conf.RegisterMode == partner.ModeRegisterMustInvitation && !isInvitation {
+		return partner.ErrRegMustInvitation
+	}
+	if conf.RegisterMode == partner.ModeRegisterMustRedirect && isInvitation {
+		return partner.ErrRegOffInvitation
+	}
+	return nil
+}
+
 // 验证销售设置
 func (this *Partner) verifySaleConf(v *partner.SaleConf) {
 	if v.OrderTimeOutMinute <= 0 {

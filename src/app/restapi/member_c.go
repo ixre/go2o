@@ -64,31 +64,14 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 	var result dto.MessageResult
 	var err error
 	var partnerId int = getPartnerId(ctx)
-	var invMemberId int // 邀请人
 	var usr string = r.FormValue("usr")
 	var pwd string = r.FormValue("pwd")
 	var phone string = r.FormValue("phone")
 	var registerFrom string = r.FormValue("reg_from")          // 注册来源
-	var invitationCode string = r.FormValue("invitation_code") // 推荐码
+	var invitationCode string = r.FormValue("invitation_code") // 邀请码
 	var regIp string
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
-	}
-
-	if err = dps.PartnerService.CheckRegisterMode(partnerId, invitationCode); err != nil {
-		result.Message = err.Error()
-		return ctx.JSON(http.StatusOK, result)
-	}
-
-	//fmt.Println(usr, pwd, "REGFROM:", registerFrom, "INVICODE:", invitationCode)
-
-	// 检验
-	if len(invitationCode) != 0 {
-		invMemberId = dps.MemberService.GetMemberIdByInvitationCode(invitationCode)
-		if invMemberId == 0 {
-			result.Message = "1011:推荐码错误"
-			return ctx.JSON(http.StatusOK, result)
-		}
 	}
 
 	var member member.ValueMember
@@ -98,22 +81,18 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 	member.Phone = phone
 	member.RegFrom = registerFrom
 
-	memberId, err := dps.MemberService.SaveMember(&member)
+	_, err = dps.MemberService.RegisterMember(partnerId, &member, "", invitationCode)
 	if err == nil {
 		result.Result = true
-		err = dps.MemberService.SaveRelation(memberId, "-", invMemberId, partnerId)
-	}
-
-	if err != nil {
+	} else {
 		result.Message = err.Error()
 	}
-
 	return ctx.JSON(http.StatusOK, result)
 }
 
 func (this *MemberC) Ping(ctx *echo.Context) error {
 	//log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
-	return ctx.String(http.StatusOK, "pang")
+	return ctx.String(http.StatusOK, "PONG")
 }
 
 // 同步

@@ -301,6 +301,15 @@ func (this *Member) ChangeUsr(usr string) error {
 	if usr == this._value.Usr {
 		return member.ErrSameUsr
 	}
+
+	if len([]rune(usr)) < 6 {
+		return member.ErrUsrLength
+	}
+	if !userRegex.MatchString(usr) {
+		return member.ErrUsrValidErr
+	}
+
+	println("---", usr)
 	if this.usrIsExist(usr) {
 		return member.ErrUsrExist
 	}

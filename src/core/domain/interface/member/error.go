@@ -13,6 +13,9 @@ import (
 )
 
 var (
+	ErrInvitationCode *domain.DomainError = domain.NewDomainError(
+		"member_err_invation_code", "CODE:1011,邀请码错误")
+
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 

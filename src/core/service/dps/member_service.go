@@ -24,14 +24,17 @@ import (
 )
 
 type memberService struct {
-	_memberRep member.IMemberRep
-	_query     *query.MemberQuery
+	_memberRep      member.IMemberRep
+	_partnerService *partnerService
+	_query          *query.MemberQuery
 }
 
-func NewMemberService(rep member.IMemberRep, q *query.MemberQuery) *memberService {
+func NewMemberService(partnerService *partnerService, rep member.IMemberRep,
+	q *query.MemberQuery) *memberService {
 	return &memberService{
-		_memberRep: rep,
-		_query:     q,
+		_memberRep:      rep,
+		_query:          q,
+		_partnerService: partnerService,
 	}
 }
 
@@ -44,7 +47,8 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
-func (this *memberService) getMember(partnerId, memberId int) (member.IMember, error) {
+func (this *memberService) getMember(partnerId, memberId int) (
+	member.IMember, error) {
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
@@ -73,7 +77,7 @@ func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		return this.updateMember(v)
 	}
-	return this.createMember(v)
+	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
@@ -87,23 +91,34 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	return m.Save()
 }
 
-func (this *memberService) createMember(v *member.ValueMember) (int, error) {
-	m := this._memberRep.CreateMember(v)
-	return m.Save()
-}
-
-func (this *memberService) SaveRelation(memberId int, cardId string, invitationId, partnerId int) error {
-	m := this._memberRep.GetMember(memberId)
-	if m == nil {
-		return member.ErrNoSuchMember
+// 注册会员
+func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
+	cardId string, invitationCode string) (int, error) {
+	if partnerId != -1 {
+		err := this._partnerService.CheckRegisterPerm(partnerId, len(invitationCode) > 0)
+		if err != nil {
+			return -1, err
+		}
 	}
-
-	rl := m.GetRelation()
-	rl.RefereesId = invitationId
-	rl.RegisterPartnerId = partnerId
-	rl.CardId = cardId
-
-	return m.SaveRelation(rl)
+	var invitationId int = 0
+	if len(invitationCode) > 0 { //判断邀请码是否正确
+		invitationId = this.GetMemberIdByInvitationCode(invitationCode)
+		if invitationId <= 0 {
+			return -1, member.ErrInvitationCode
+		}
+	}
+	m := this._memberRep.CreateMember(v) //创建会员
+	id, err := m.Save()
+	if err == nil {
+		// 保存关联信息
+		m := this._memberRep.GetMember(id)
+		rl := m.GetRelation()
+		rl.RefereesId = invitationId
+		rl.RegisterPartnerId = partnerId
+		rl.CardId = cardId
+		return id, m.SaveRelation(rl)
+	}
+	return id, err
 }
 
 func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {

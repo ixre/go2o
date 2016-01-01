@@ -147,30 +147,13 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 			return ctx.JSON(http.StatusOK, result)
 		}
 
-		if err = dps.PartnerService.CheckRegisterMode(partnerId, code); err != nil {
-			result.Message = err.Error()
-			return ctx.JSON(http.StatusOK, result)
-		}
-
-		var invId int
-		if len(code) > 0 {
-			invId = dps.MemberService.GetMemberIdByInvitationCode(code)
-			if invId <= 0 {
-				result.Message = "1011：推荐码不正确"
-				return ctx.JSON(http.StatusOK, result)
-			}
-		}
-
 		member.Pwd = domain.MemberSha1Pwd(member.Pwd)
-		memberId, err = dps.MemberService.SaveMember(&member)
-		if err == nil {
-			err = dps.MemberService.SaveRelation(memberId, "", invId, partnerId)
-		}
-
+		memberId, err = dps.MemberService.RegisterMember(partnerId, &member, "", code)
 		if err != nil {
 			result.Message = err.Error()
 		} else {
 			result.Result = true
+			result.Data = memberId
 		}
 		return ctx.JSON(http.StatusOK, result)
 	}
