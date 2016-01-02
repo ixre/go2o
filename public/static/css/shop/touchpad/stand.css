@@ -386,8 +386,9 @@ div.no_goods{text-align: center;color:#ff0000;margin:30px 0;}
 .order-fail h1{color:#FF0000;background-image:url(../../images/red_err_64.png);}
 
 /** 单页 **/
-.page-layout{margin:1rem 2rem;font-size:0.8rem;line-height: 1.5rem;}
+.page-layout{margin:0rem;font-size:0.8rem;line-height: 1.5rem;}
 .page-layout img{max-width: 100%;}
+.page-layout p{margin:0.5em 0.8em;}
 
 /** APP **/
 .page-app{background:#F0F0F0;}

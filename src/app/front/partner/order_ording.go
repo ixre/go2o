@@ -42,8 +42,10 @@ func (this *orderC) SetShop(ctx *echox.Context) error {
 
 		shopId, err := strconv.Atoi(r.FormValue("shopId"))
 		if err == nil {
+			orderNo := r.FormValue("order_no")
 			err = dps.ShoppingService.SetDeliverShop(partnerId,
-				r.FormValue("order_no"), shopId)
+				orderNo, shopId)
+			dps.ShoppingService.ConfirmOrder(partnerId, orderNo)
 		}
 		if err != nil {
 			return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")

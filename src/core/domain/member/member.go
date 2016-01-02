@@ -301,15 +301,12 @@ func (this *Member) ChangeUsr(usr string) error {
 	if usr == this._value.Usr {
 		return member.ErrSameUsr
 	}
-
 	if len([]rune(usr)) < 6 {
 		return member.ErrUsrLength
 	}
 	if !userRegex.MatchString(usr) {
 		return member.ErrUsrValidErr
 	}
-
-	println("---", usr)
 	if this.usrIsExist(usr) {
 		return member.ErrUsrExist
 	}
@@ -368,19 +365,15 @@ func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
 	if newPwd == oldPwd {
 		return member.ErrPwdCannotSame
 	}
-
 	if b, err := domain.ChkPwdRight(newPwd); !b {
 		return err
 	}
-
 	// 已经设置过旧密码
 	if len(this._value.TradePwd) != 0 && this._value.TradePwd != oldPwd {
 		return member.ErrPwdOldPwdNotRight
 	}
-
 	this._value.TradePwd = newPwd
 	_, err = this.Save()
-
 	return err
 }
 
@@ -402,17 +395,14 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	m.BirthDay = "1970-01-01"
 	m.DynamicToken = m.Pwd
 	m.Exp = 0
-
 	if len(m.RegFrom) == 0 {
 		m.RegFrom = "API-INTERNAL"
 	}
-
 	// 如果昵称为空，则跟用户名相同
 	if len(m.Name) == 0 {
 		m.Name = m.Usr
 	}
 	m.InvitationCode = this.generateInvitationCode() // 创建一个邀请码
-
 	id, err := this._rep.SaveMember(m)
 	if id != 0 {
 		this._value.Id = id

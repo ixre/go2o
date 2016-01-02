@@ -194,11 +194,11 @@ func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 
 // 获取会员关联
 func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
-	e := new(member.MemberRelation)
-	if this.Connector.GetOrm().Get(memberId, e) != nil {
+	var e member.MemberRelation
+	if this.Connector.GetOrm().Get(memberId, &e) != nil {
 		return nil
 	}
-	return e
+	return &e
 }
 
 // 获取积分对应的等级

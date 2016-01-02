@@ -283,6 +283,7 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 	return member.ErrNoSuchMember
 }
 
+//修改密码
 func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
 	m := this._memberRep.GetMember(memberId)
 	if m != nil {

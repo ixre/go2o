@@ -23,27 +23,24 @@ type ContentC struct {
 }
 
 // 自定义页面
-func (this *ContentC) Page(ctx *echox.Context) error {
-	p := getPartner(ctx)
-	mm := GetMember(ctx)
-	siteConf := getSiteConf(ctx)
-	form := ctx.Request().URL.Query()
-
+func (this *ContentC) Page(c *echox.Context) error {
+	p := getPartner(c)
+	mm := GetMember(c)
+	siteConf := getSiteConf(c)
 	var page *content.ValuePage
-	idParam := form.Get("id")
+	idParam := c.P(0)
 	if b, _ := regexp.MatchString("^\\d+$", idParam); b {
-		id, _ := strconv.Atoi(form.Get("id"))
+		id, _ := strconv.Atoi(idParam)
 		page = dps.ContentService.GetPage(p.Id, id)
 	} else {
 		page = dps.ContentService.GetPageByIndent(p.Id, idParam)
 	}
 
 	if page == nil {
-		http.Error(ctx.Response(), "404 page not found.", http.StatusNotFound)
-		return nil
+		return c.HTML(http.StatusNotFound, "Not found")
 	}
 
-	d := ctx.NewData()
+	d := c.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner": p,
 		"member":  mm,
@@ -51,5 +48,5 @@ func (this *ContentC) Page(ctx *echox.Context) error {
 		"page":    page,
 		"rawBody": template.HTML(page.Body),
 	}
-	return ctx.RenderOK("page.html", d)
+	return c.RenderOK("page.html", d)
 }
