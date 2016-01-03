@@ -23,8 +23,10 @@ import (
 )
 
 var (
-	s        *nc.SocketServer
-	handlers map[string]nc.CmdFunc = map[string]nc.CmdFunc{
+	s                  *nc.SocketServer
+	disconnectDuration                       = time.Second * 60
+	readDeadLine                             = time.Second * 40
+	handlers           map[string]nc.CmdFunc = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
 		"PING":  cliPing,
@@ -33,7 +35,7 @@ var (
 
 func ListenTcp(addr string) {
 	s = nc.NewSocketServer()
-	s.ReadDeadLine = time.Minute * 5
+	s.ReadDeadLine = readDeadLine
 	serveLoop(s) // server loop,send some message to client
 	//s.OutputOff()
 	s.Listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
@@ -47,9 +49,6 @@ func ListenTcp(addr string) {
 		}
 		if strings.HasPrefix(cmd, "MAUTH:") { //auth member
 			return memberAuth(s, id, cmd[6:])
-		}
-		if !strings.HasPrefix(cmd, "PING") {
-			s.Print("[ CLIENT][ MESSAGE] - send by %d ; %s", id.Source, cmd)
 		}
 		return handleCommand(id, cmd)
 	})
@@ -112,7 +111,15 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 
 // Handle command of client sending.
 func handleCommand(ci *nc.Client, cmd string) ([]byte, error) {
-	ci.LatestConnectTime = time.Now()
+	if time.Now().Sub(ci.LatestConnectTime) > disconnectDuration { //主动关闭没有活动的连接
+		//s.Print("--disconnect ---",ci.Addr.String())
+		ci.Conn.Close()
+		return nil, nil
+	}
+	if !strings.HasPrefix(cmd, "PING") {
+		s.Print("[ CLIENT][ MESSAGE] - send by %d ; %s", ci.Source, cmd)
+		ci.LatestConnectTime = time.Now()
+	}
 	i := strings.Index(cmd, ":")
 	if i != -1 {
 		plan := cmd[i+1:]
