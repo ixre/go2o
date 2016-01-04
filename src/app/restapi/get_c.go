@@ -34,7 +34,7 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 	if m != nil {
 		var url string = domain + "/change_device?device=3&return_url=/main/t/" + m.InvitationCode +
 			url.QueryEscape("?return_url="+targetUrl)
-		qrBytes := gen.BuildQrCodeForUrl(url)
+		qrBytes := gen.BuildQrCodeForUrl(url, 10)
 		ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
 		ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%d.jpg", memberId))
 		ctx.Response().Write(qrBytes)
@@ -45,7 +45,7 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 // 创建二维码
 func (this *getC) GenQr(ctx *echo.Context) error {
 	link := ctx.Query("url")
-	qrBytes := gen.BuildQrCodeForUrl(link)
+	qrBytes := gen.BuildQrCodeForUrl(link, 10)
 	t := sha1.New()
 	io.WriteString(t, link)
 	hash := string(t.Sum(nil))

@@ -234,7 +234,10 @@ KindEditor.plugin('multiimage', function(K) {
 				}
 			},
 			beforeRemove : function() {
-				swfupload.remove();
+				// IE9 bugfix: https://github.com/kindsoft/kindeditor/issues/72
+				if (!K.IE || K.V <= 8) {
+					swfupload.remove();
+				}
 			}
 		}),
 		div = dialog.div;
@@ -311,10 +314,6 @@ KindEditor.plugin('multiimage', function(K) {
 
 (function() {
 
-if (window.SWFUpload) {
-	return;
-}
-
 window.SWFUpload = function (settings) {
 	this.initSWFUpload(settings);
 };
@@ -324,7 +323,7 @@ SWFUpload.prototype.initSWFUpload = function (settings) {
 		this.customSettings = {};	// A container where developers can place their own settings associated with this instance.
 		this.settings = settings;
 		this.eventQueue = [];
-		this.movieName = "SWFUpload_" + SWFUpload.movieCount++;
+		this.movieName = "KindEditor_SWFUpload_" + SWFUpload.movieCount++;
 		this.movieElement = null;
 
 
@@ -525,7 +524,13 @@ SWFUpload.prototype.loadFlash = function () {
 // Private: getFlashHTML generates the object tag needed to embed the flash in to the document
 SWFUpload.prototype.getFlashHTML = function () {
 	// Flash Satay object syntax: http://www.alistapart.com/articles/flashsatay
-	return ['<object id="', this.movieName, '" type="application/x-shockwave-flash" data="', this.settings.flash_url, '" width="', this.settings.button_width, '" height="', this.settings.button_height, '" class="swfupload">',
+	// Fix bug for IE9
+	// http://www.kindsoft.net/view.php?bbsid=7&postid=5825&pagenum=1
+	var classid = '';
+	if (KindEditor.IE && KindEditor.V > 8) {
+		classid = ' classid = "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"';
+	}
+	return ['<object id="', this.movieName, '"' + classid + ' type="application/x-shockwave-flash" data="', this.settings.flash_url, '" width="', this.settings.button_width, '" height="', this.settings.button_height, '" class="swfupload">',
 				'<param name="wmode" value="', this.settings.button_window_mode, '" />',
 				'<param name="movie" value="', this.settings.flash_url, '" />',
 				'<param name="quality" value="high" />',
@@ -1275,6 +1280,9 @@ SWFUpload.Console.writeLine = function (message) {
 	}
 };
 
+})();
+
+(function() {
 /*
 	Queue Plug-in
 

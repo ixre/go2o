@@ -1,10 +1,10 @@
 html{overflow:auto; /*关闭IE6的右侧*/}
 body{
-   font-size:12px;
-   margin:0px;font-size:62.5%;
-   background:#F5F5F5;
-   overflow:hidden;
-   font-family:'微软雅黑',sans-serif,arial;
+    margin:0px;
+    background:#eee;
+    overflow:hidden;
+    font: 12px/1.4 Helvetica,arial,sans-serif;
+    height:100%;
 }
 img{border:none;}
 .clearfix,.clear-fix{clear:both;}
@@ -13,33 +13,45 @@ a{outline:none;}
 dd,dt{margin:0;}
 .hr{border-top:solid 1px #fff;border-bottom:solid 1px #ddd;}
 
-.page-top{background:#06c url(top_bg.gif) center -1000px repeat-x;
-    border-bottom:solid 1px #1C60A5;font-size: 1.2em;height:6em;}
+.page-top{background:#0066cc url(/top_bg.gif) center bottom repeat-x;
+    border-bottom:solid 1px #1C60A5;height:6em;}
 .page-top .top{background:url(top_bg.gif) center 1px repeat-x;height:2px;}
-.page-top a.logo{display:block;float:left;width:400px;height:95%;
-    background:url(logo.gif) 0 center no-repeat;text-indent:-999em;
+.page-top a.logo{display:inline-block;float:left;/*width:238px;*/width:400px;height:49px;
+    background:url(logo.gif) 0 bottom no-repeat;text-indent:-999em;margin-left:20px;
+    margin:15px 0 0 1em;
 }
 .page-top a.logo h1{margin:0;padding:0;}
 
 .page-user{position:absolute;right:10px;top:1.5em;color:#fff;width:300px;max-width:400px;overflow:hidden;}
 .page-user .avatar{float:left;background:#FFF;padding:2px;box-shadow:0 0 5px #000;margin-right:1em;}
-.page-user .text{margin:2px 6px 0 0;line-height:18px;}
+.page-user .text{margin:2px 6px 0 0;}
 .page-user .text a{color:#FFF;text-decoration:none;}
 
-.page-top .top-ctrl{position:absolute;top:2em;left:50%;right:0;margin:0 auto;width:600px;z-index:0;margin-left:-300px;/*兼容IE6 Position居中*/}
-.page-top .top-ctrl .site_selector{float:left;background:url(site_sel_bg.gif) center bottom no-repeat;padding:12px 2em 8px 2em;}
-.page-top .top-ctrl .site_selector select{width:100px;border:none;background:transparent;font-size:12px;overflow:hidden;}
-.page-top .top-ctrl .site_selector select option{background:#FFF;}
+.page-top .top-ctrl{position:absolute;top:2.5em;left:50%;right:0;margin:0 auto;width:600px;z-index:0;margin-left:-300px;/*兼容IE6 Position居中*/}
+.page-top .top-ctrl .site_selector{float:left;line-height:2em;margin:3px 1.5em 0 0;
+    box-shadow: 0 1px 0 rgba(255,255, 255,0.15), inset 0 1px 0 rgba(255, 255, 255,0.5);}
+.page-top .top-ctrl .site_selector select{border:none;background:transparent;font-size:12px;overflow:hidden;color:#06c;font-weight:bold;}
+.page-top .top-ctrl .site_selector select option{background:#FFF;color:#000;font-weight:normal}
 .page-top ul.icon-ctrl{margin:2px 0 0 0;padding:0;list-style:none;height:100%;vertical-align:middle;height:34px;}
-.page-top ul.icon-ctrl li{float:left;padding:5px;margin-right:15px;text-align:center;position:relative;border:solid 1px transparent;}
+.page-top ul.icon-ctrl li{float:left;margin-right:1.5em;text-align:center;position:relative;border:solid 1px transparent;}
 .page-top ul.icon-ctrl li.first{/*background:none;*/}
-.page-top ul.icon-ctrl a.title{color:#FFF;font-size:1.1em;font-weight:bold;text-decoration:none;line-height:30px;overflow:hidden;}
+.page-top ul.icon-ctrl li span.icon-wrap,.page-top .site_selector{
+    border:solid 1px #000;padding:0 10px;border-radius:3px;
+    background:#FC0;
+    box-shadow: 0 1px 0 rgba(255,255, 255,0.15), inset 0 1px 0 rgba(255, 255, 255,0.3);
+    background-image:linear-gradient(to top,#fc0,#Fd0);
+}
+.page-top ul.icon-ctrl li span.icon-wrap{
+    box-shadow: 0 1px 0 rgba(255,255, 255,0.15), inset 0 1px 0 rgba(255, 255, 255,0.2);
+    background-image:linear-gradient(to top,#06C,#06D);
+}
+.page-top ul.icon-ctrl a.title{color:#FFF;font-weight:bold;text-decoration:none;line-height:2.2em;overflow:hidden;}
 .page-top ul.icon-ctrl a:hover{color:#ffd;}
 .page-top ul.icon-ctrl li.drop a.title{background:url(drop_arraw.gif) right center no-repeat;padding-right:15px;}
-.page-top ul.icon-ctrl a img.icon{height:20px;float:left;margin:5px 5px 0 0;vertical-align:middle;}
+.page-top ul.icon-ctrl a img.icon{height:20px;width:20px;float:left;margin:4px 5px 0 0;vertical-align:middle;}
 .icon-ctrl li.hover,.icon-ctrl li.drop:hover{background:#1174ef;border:solid 1px #00356a;border-bottom:none;}
 .icon-ctrl li.drop div.menu{position:absolute;top:40px;left:-1px;z-index:900;background:#1174ef;
-         border:solid 1px #00356a;border-top:none;color:#fff;display:none;text-align:left;padding:5px;line-height:22px;}
+    border:solid 1px #00356a;border-top:none;color:#fff;display:none;text-align:left;padding:5px;line-height:22px;}
 .icon-ctrl li.drop:hover div.menu,.icon-ctrl li.hover div.menu{display:block;}
 .icon-ctrl li.drop div.menu div.hr{border-top:solid 1px #0066cc;border-bottom:solid 1px #00356a;margin:5px 0;height:0;overflow:hidden;}
 .icon-ctrl li.drop div.menu em{font-size:9pt;}
@@ -52,13 +64,14 @@ dd,dt{margin:0;}
 .xhr-container{font-size:1.2em}
 .xhr-container .gate{z-index:1;position: fixed;top:0;right:0;background:#FFF;filter:alpha(opacity=1);opacity: 0.1;}
 .xhr-container .msg{position:fixed;left:0;right: 0;top:0;background:#ffd700;color:#FFB;border-top:0;border-radius: 0 0 5px 5px;
-                    z-index:100;text-align:center;padding: 2px 10px;line-height: 20px;margin: 0 auto;}
+    z-index:100;text-align:center;padding: 2px 10px;line-height: 20px;margin: 0 auto;}
 .xhr-container .error{ color: #ff0000;}
 
+
 .page-main{overflow:hidden;position:relative;}
-.page-main-left{float:left;width:180px;margin-right:-180px;background:#f0f0f0;overflow:hidden;}
-.page-main-right{float:right;margin-left:185px;width:auto;}
-.page-main-left,.page-main-right{padding-bottom:3000px;margin-bottom:-3000px;height:100%;font-size:1.2em;}
+.page-main-left{float:left;width:180px;margin-right:180px;background:#f0f0f0;overflow:hidden;}
+.page-main-right{float:right;margin-left:-185px;width:auto;}
+.page-main-left,.page-main-right{padding-bottom:3000px;margin-bottom:-3000px;height:100%;}
 
 .page-main-split{border-right:solid 1px #d0d0d0;position:absolute;left:190px;left:180px;top:2px;width:3px;height:100%;cursor:w-resize;
     background:#EEE;}
@@ -77,16 +90,20 @@ dd,dt{margin:0;}
 .page-left-menu ul li:last-child{margin-bottom:0;}
 .page-left-menu ul li.current{background:url(left_menu_current.gif) 0 center no-repeat;}
 .page-left-menu ul li a{background:url(columns.png) 20px center no-repeat;padding-left:40px;}
+.loading-gate{background:#fff;height:100%;width:100%;position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;z-index:100;
+    opacity:0.1;filter:alpha(opacity=10);}
+.loading-bar{width:212px;height:150px;position:absolute;z-index:300;top:0;bottom:0;left:0;right:0;margin:auto;}
+.loading-bar span{display:block;height:13px;background:#FFF url(loading-bar.gif) no-repeat;}
 
 /*** tab ***/
 .page-tabs {height:27px;border-bottom:solid 1px #D5D5D5;padding-top:2px;}
 .page-tabs ul{list-style:none;padding:0;margin:0;}
 .page-tabs li{float:left;position:relative;line-height:26px;margin-right:1px;border:solid 1px #cacaca;
-                background:url(tab_bg.gif) center bottom repeat-x;color:#666;font-weight:bold;}
+    background:url(tab_bg.gif) center bottom repeat-x;color:#666;font-weight:bold;}
 .page-tabs li.current{background:#f9f9f9 url(tab_bg_hover.gif) 0 -40px repeat-x;color:#006699;border-bottom:solid 1px #f9f9f9;}
 .page-tabs li span.link{cursor:pointer;}
 .page-tabs li .tab-close{cursor:pointer;position:absolute;right:0;top:0;font-family:Arial;color:#000;padding:0 12px;font-size:16px;
-                            background:url(tab_close.gif) center center no-repeat;text-indent:-99em;
+    background:url(tab_close.gif) center center no-repeat;text-indent:-99em;
 }
 .page-tabs li .tab-title{display:block;float:left;padding:0 20px 0 15px;line-height:26px; vertical-align:central;cursor:default;}
 .page-tabs li span.rgt{/*background-position:-234px -130px; display: block;height: 26px;*/width: 5px;float:left;}
@@ -94,7 +111,7 @@ dd,dt{margin:0;}
 
 /* frame (ie6,7下loading宽度不正常，解决办法设固定宽度) */
 .page-frames{position:relative;background:#fff;}
-.page-frames iframe{width:100%;height:100%;}
+.page-frames iframe{width:100%;height:100%;background:#F8F8F8;}
 .page-frames .mask{position:absolute;left:1px;top:0;background:#f5f5f5;opacity:0.7;filter:alpha(opacity=70);z-index:898;}
 .loading{z-index:899;border:solid 1.5px #FA0;background:#FEA;}
 .loading .lft{}
@@ -125,25 +142,14 @@ dd,dt{margin:0;}
     zoom: 1; filter: progid:DXImageTransform.Microsoft.DropShadow(OffX=5, OffY=0, Color=#bbb); /* ie6,ie7,ie8 */
 }
 .ui-dialog .box .title{padding-top:10px;font-size:14px;font-weight:bold;color:#006699;background:#F0F0F0;padding:0 10px;line-height:30px;
-                       background:#f9f9f9 url(title_bg.gif) 0 5px repeat-x;
-/*border-bottom:solid 2px #FFF;*/}
+    background:#f9f9f9 url(title_bg.gif) 0 5px repeat-x;
+    /*border-bottom:solid 2px #FFF;*/}
 .ui-dialog .box .title .txt{padding-left:25px;background:url(blocks.gif) left center no-repeat;}
 .ui-dialog .box .close{cursor:pointer;position:absolute;right:0;top:0;font-family:Arial;color:#000;padding:0 12px;font-size:16px;
-                            background:url(tab_close.gif) center center no-repeat;text-indent:-99em}
+    background:url(tab_close.gif) center center no-repeat;text-indent:-99em}
 .ui-dialog .box .boxcontent{margin:0 5px 5px 5px;background:#fff;border:solid 1px #d0d0d0}
 .ui-dialog .box .bottom{display:none;}
 
 /* tipbox */
 .ui-tipbox { border: solid 3px #ff3300;background: #ffffcc; z-index: 3000; }
 .ui-tipbox .ui-tipbox-container{padding:8px 35px 5px 38px;font-size:14px;font-weight:bold;color:#000;}
-
-/*
-.page-site #sites{position:absolute;left:186px;top:26px;line-height:20px;cursor:pointer;color:#000;text-align:center;}
-.page-site .list{background:#fff;display:none;position:absolute;top:22px;left:-1px;border:solid 1px #006699;border-top:none;z-index:98;width:120px;}
-.page-site .list ul{list-style:none;margin:0;padding:0;}
-.page-site .list a{display:block;text-decoration:none}
-.page-site .list a:hover{background:#006699;color:#fff;}
-.page-site .list a{line-height:30px;color:#000;}
-.page-site #sites:hover .list,.page-site .hover .list{display:block;}
-.page-site .selectbtn{background:#fff;padding:3px 5px;}
-    */

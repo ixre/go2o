@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}" />
 </head>
 <body>
+<div class="loading-gate hidden"></div>
+<div class="loading-bar hidden"><span></span></div>
 <div class="page-top">
     <div class="top"></div>
     <a href="javascript:;" class="logo hidden">
@@ -198,8 +200,8 @@
             FwMenu.change();
         }
     }, 100);
-
-
+    FwTab.showLoadBar = showGate;
+    FwTab.hiddenLoadBar = cancelGate;
     j6.event.add(window, 'load', function () {
         j6.event.add(j6.$('btn_logout'), 'click', function () {
             if (confirm('请确认您已经操作完毕并做好数据保存工作！确定继续吗？')) {

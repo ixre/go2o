@@ -10,6 +10,7 @@
 KindEditor.plugin('image', function(K) {
 	var self = this, name = 'image',
 		allowImageUpload = K.undef(self.allowImageUpload, true),
+		allowImageRemote = K.undef(self.allowImageRemote, true),
 		formatUploadUrl = K.undef(self.formatUploadUrl, true),
 		allowFileManager = K.undef(self.allowFileManager, false),
 		uploadJson = K.undef(self.uploadJson, self.basePath + 'php/upload_json.php'),
@@ -184,7 +185,6 @@ KindEditor.plugin('image', function(K) {
 		var uploadbutton = K.uploadbutton({
 			button : K('.ke-upload-button', div)[0],
 			fieldName : filePostName,
-			url : K.addParam(uploadJson, 'dir=image'),
 			form : K('.ke-form', div),
 			target : target,
 			width: 60,
@@ -277,7 +277,7 @@ KindEditor.plugin('image', function(K) {
 				return false;
 			}
 		});
-		if (tabIndex === 0) {
+		if (showRemote && tabIndex === 0) {
 			urlBox[0].focus();
 			urlBox[0].select();
 		}
@@ -292,11 +292,21 @@ KindEditor.plugin('image', function(K) {
 				imageHeight : img ? img.height() : '',
 				imageTitle : img ? img.attr('title') : '',
 				imageAlign : img ? img.attr('align') : '',
-				showRemote : true,
+				showRemote : allowImageRemote,
 				showLocal : allowImageUpload,
 				tabIndex: img ? 0 : imageTabIndex,
 				clickFn : function(url, title, width, height, border, align) {
-					self.exec('insertimage', url, title, width, height, border, align);
+					if (img) {
+						img.attr('src', url);
+						img.attr('data-ke-src', url);
+						img.attr('width', width);
+						img.attr('height', height);
+						img.attr('title', title);
+						img.attr('align', align);
+						img.attr('alt', title);
+					} else {
+						self.exec('insertimage', url, title, width, height, border, align);
+					}
 					// Bugfix: [Firefox] 上传图片后，总是出现正在加载的样式，需要延迟执行hideDialog
 					setTimeout(function() {
 						self.hideDialog().focus();
@@ -310,6 +320,8 @@ KindEditor.plugin('image', function(K) {
 				target = target.parent();
 			}
 			target.remove();
+			// [IE] 删除图片后立即点击图片按钮出错
+			self.addBookmark();
 		}
 	};
 	self.clickToolbar(name, self.plugin.image.edit);

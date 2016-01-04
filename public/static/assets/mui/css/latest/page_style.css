@@ -1,5 +1,5 @@
 /*
-// 后台管理样式
+// J6-CMS 后台管理样式
 // By Newmin @ 2011/02/06
 // Copyright 2011 OPSoft
 */
@@ -50,10 +50,11 @@ div,input,span,select,textarea,label,img,b,a{ vertical-align: middle;}
 .small-button .button-txt{line-height:18px;padding:0 5px;}
 .middle-button .button-txt{ line-height: 24px;overflow: hidden;}
 /* 输入框 */
-.ui-box{border:solid 1px #DDD;border-radius: 2px;line-height:1.5rem;padding:0 10px;margin:1px;font-size: 1em;
-    box-shadow: 0px 0px 0px #DDD inset; background:#F7F8F9;border-color: #AAA #A0A0A5 #AAA;}
-.ui-box:focus{border:solid 1px #A4CFE3;margin:1px;background:#F6F9FC;}
-input.ui-box,select.ui-box{ height: auto;height:1.5rem;}
+.ui-box{border:solid 1px #DDD;border-radius: 0px;line-height:1.5rem;padding:0 4px;margin:1px;font-size:1em;
+    box-shadow: 0px 0px 0px #DDD inset; background-color:#F7F8F9;border-color: #AAA #A0A0A5 #AAA;}
+.ui-box:focus{border:solid 1px #A4CFE3;margin:1px;background-color:#F6F9FC;box-shadow:0 0 1px #ddd;}
+input.ui-box,select.ui-box{background-image:url(text_bg.gif);}
+input.ruler{background-image:url(rule.gif);background-position:2px bottom;font-size:12px;}
 
 /* 智能提示 */
 .ui-autocompletion-panel{ border: solid 1px #ddd;border-top: 0px;color:#000000}
@@ -100,7 +101,7 @@ select.ui-box .level_2{background:#FFF;color:#666;border-bottom:none;}
 
 /*======================== 布局 ==========================*/
 .layout{overflow:hidden;height:100%;background:#f9f9f9;}
-.layout .left{float:left;background:#f5f5f5 url(/framework/mui/css/latest/layout_left_bg.gif) right top repeat-y;padding-right:10px;}
+.layout .left{float:left;background:#f5f5f5 url(layout_left_bg.gif) right top repeat-y;padding-right:10px;}
 .layout .right{float:left;width:auto;}
 .layout .left,.layout .right{padding-bottom:1500px;margin-bottom:-1500px;}
 .formPanel{background:#fff;border:solid 1px #ddd;}
@@ -131,11 +132,11 @@ select.ui-box .level_2{background:#FFF;color:#666;border-bottom:none;}
 
 
 .list-menu{display:inline-block;float:left;height:100%;margin-right:2em;cursor:pointer;position:relative;}
-.list-menu span.icon{display: inline-block;float:left;padding:0 10px;height:100%;background:url(/framework/mui/css/latest/icon-menu.png) left center no-repeat;}
+.list-menu span.icon{display: inline-block;float:left;padding:0 10px;height:100%;background:url(icon-menu.png) left center no-repeat;}
 .list-menu .drop{display:none;position:fixed;left:0;top: 30px;z-index:100;border:solid 1px #D0D0D0;background:#FFF;
     box-shadow: 2px 2px 2px #EEE;border-left: 0;}
 .list-menu:hover .drop,.hover .drop{display:block;}
-.list-menu a.item{padding:0 3em 0 1em;border-bottom:dashed 1px #ddd;line-height: 2.5em;background: url(/framework/mui/css/latest/td_bg.gif)  0 -170px repeat-x;}
+.list-menu a.item{padding:0 3em 0 1em;border-bottom:dashed 1px #ddd;line-height: 2.5em;background: url(td_bg.gif)  0 -170px repeat-x;}
 .list-menu a.last{ border-bottom: 0;}
 .list-menu a.item img.icon{ margin-right: 5px;}
 
@@ -168,6 +169,7 @@ div.form .btn{}
 div.form p.note{border:solid 1px #e0e0e0;background:#f5f5f5;padding:10px;color:#555;margin-left:40px;line-height:20px;}
 div.form dl{margin:5px 0;padding:5px 0;}
 div.form dl dt{float:left;width:80px;text-align:right;font-weight:bold;padding-right:5px;}
+div.form .descript{padding-left:1em;color:#666}
 
 .list-panel .item{margin:0 10px 10px 10px;border:solid 1px #ddd;background:#FFF;box-shadow:0 2px 2px #DDD;}
 .list-panel .item .tit{line-height:350%;margin: 0 15px;padding:0 10px;border-bottom:dashed 1px #EEE;}
@@ -191,7 +193,7 @@ div.form dl dt{float:left;width:80px;text-align:right;font-weight:bold;padding-r
 
 .form .title{color:#006699;margin:20px 10px 10px 10px;padding:0 20px 20px 8px;margin-left:10px;
     font-weight:bold;background:url(panel_item_line.gif) left bottom no-repeat;}
-.form .title span.icon{padding:0 10px;line-height:16px;background:url(protected.gif) left 0px no-repeat;}
+.form .title span.icon{padding:0 10px;line-height:16px;background:url(/framework/assets/icons/admin/protected.gif) left 0px no-repeat;}
 
 
 ul.centform{margin:100px auto;}
@@ -204,19 +206,22 @@ ul.centform{margin:100px auto;}
 /* 表格列表 */
 
 .ui-table{width:100%;color:#666;}
-.ui-table th{background:#edf7fe;border-bottom:solid 1px #e5e5e5;
-    text-align:center;color:#336699;font-weight:normal;position:relative;}
+.ui-table th{background:#edf7fe;border-bottom:solid 1px #E5E5E5;
+    text-align:center;color:#06c;font-weight:normal;position:relative;
+    line-height:3em;background-image:linear-gradient(to top,#F7F8FE,#FFF);
+    border-right: solid 1px #DDD;
+}
 .ui-table .th-split{border-right: solid 1px #ddd;padding:5px 1px 0px 0px;position:relative;right:3px;top:0;}
-.ui-table tr td{line-height:18px;background:#fff;border-bottom:solid 1px #f2f2f2;}
-.ui-table tr.selected td{background:#ffffcc;}
+.ui-table tr td{line-height:1.2em;height:2.5em;background:#fff;border-bottom:solid 1px #f2f2f2;}
+.ui-table tr.selected td{background:#ffc;}
 
 
 .ui-table-list{width:100%;color:#666;}
-.ui-table-list .index{background:url(/framework/mui/css/latest/item_circle.gif) center top no-repeat;padding:0 6px;color:#fff;margin-right:5px;color:#333;}
+.ui-table-list .index{background:url(item_circle.gif) center top no-repeat;padding:0 6px;color:#fff;margin-right:5px;color:#333;}
 .ui-table-list th{background:#edf7fe url(../old/sys_themes/default/bg.gif) -0px 0 repeat-x;
     line-height:20px;height:20px;overflow:hidden;border-bottom:solid 1px #e5e5e5;
     text-align:center;color:#336699;font-weight:normal;position:relative;}
-.ui-table-list tr td,.ui-table-list tr.hover td{background:#fff url(/framework/mui/css/latest/td_bg.gif) 0 -160px repeat-x;border-bottom:solid 1px #eee;color:#222;}
+.ui-table-list tr td,.ui-table-list tr.hover td{background:#fff url(td_bg.gif) 0 -160px repeat-x;border-bottom:solid 1px #eee;color:#222;}
 
 .ui-table-low tr td{background-position:0 -180px;}
 .ui-table-low tr.hover td{background:#fff;}
@@ -246,7 +251,7 @@ ul.centform{margin:100px auto;}
 
 /* 右键 */
 .ui-contextmenu{border:1px solid #b0b0b0;border-top:0px;width:120px;padding:0;
-    background:#fff url(/framework/mui/css/latest/context_menu.gif) repeat-y;display:none;
+    background:#fff url(context_menu.gif) repeat-y;display:none;
     -webkit-box-shadow: 2px 2px 1px #ddd;
     -moz-box-shadow:2px 2px 1px #aaa;
     box-shadow: 2px 2px 1px #aaa;
@@ -266,11 +271,11 @@ ul.centform{margin:100px auto;}
     zoom: 1; filter: progid:DXImageTransform.Microsoft.DropShadow(OffX=10, OffY=2, Color=#bbb); /* ie6,ie7,ie8 */
 }
 .ui-dialog .box .title{padding-top:10px;font-size:14px;font-weight:bold;color:#006699;background:#F0F0F0;padding:0 10px;line-height:30px;
-    background:#f9f9f9 url(/framework/mui/css/latest/title_bg.gif) 0 5px repeat-x;
+    background:#f9f9f9 url(title_bg.gif) 0 5px repeat-x;
     /*border-bottom:solid 2px #FFF;*/}
-.ui-dialog .box .title .txt{padding-left:25px;background:url(/framework/mui/css/latest/blocks.gif) left center no-repeat;}
+.ui-dialog .box .title .txt{padding-left:25px;background:url(blocks.gif) left center no-repeat;}
 .ui-dialog .box .close{cursor:pointer;position:absolute;right:0;top:0;font-family:Arial;color:#000;padding:0 12px;font-size:16px;
-    background:url(/framework/mui/css/latest/tab_close.gif) center center no-repeat;text-indent:-99em}
+    background:url(tab_close.gif) center center no-repeat;text-indent:-99em}
 .ui-dialog .box .boxcontent{margin:0 5px 5px 5px;background:#fff;border:solid 1px #d0d0d0}
 .ui-dialog .box .bottom{display:none;}
 
