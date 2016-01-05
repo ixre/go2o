@@ -1,1 +1,0 @@
-﻿<%@ webhandler Language="C#" class="AtNet.Cms.Handler.EditorFileManager" %>
