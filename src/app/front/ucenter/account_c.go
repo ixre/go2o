@@ -28,7 +28,7 @@ import (
 	"strings"
 )
 
-const minAmount float64 = 50
+const minAmount float64 = 0.01
 
 var (
 	bonusKindStr string

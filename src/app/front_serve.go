@@ -76,7 +76,6 @@ func Run(ch chan bool, app gof.App, addr string) {
 		m["spam"] = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	}
 	echox.GlobSet(m, w)
-
 	hosts := make(MyHttpHosts)
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()

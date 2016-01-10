@@ -51,7 +51,6 @@ var (
 	services         []Service      = make([]Service, 0)
 	serviceNames     map[string]int = make(map[string]int)
 	tickerDuration   time.Duration  = 5 * time.Second // 间隔5秒执行
-	RedisTimeout     int            = 100             // 1天超时
 	tickerInvokeFunc []Func         = []Func{}
 )
 
@@ -135,6 +134,7 @@ func (this *defaultService) Start() {
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
 func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
+	defer Recover()
 	if this.sOrder {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.PartnerId, o.OrderNo)
@@ -146,6 +146,7 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
 func (this *defaultService) MemberObs(m *member.ValueMember, create bool) bool {
+	defer Recover()
 	if this.sMember {
 		//todo: 执行会员逻辑
 	}
@@ -155,6 +156,7 @@ func (this *defaultService) MemberObs(m *member.ValueMember, create bool) bool {
 // 处理邮件队列
 // 返回布尔值,如果返回false,则不继续执行
 func (this *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
+	defer Recover()
 	if !this.sMail {
 		handleMailQueue(list)
 	}

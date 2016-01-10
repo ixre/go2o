@@ -109,7 +109,7 @@
 						toId.value = '0';
 					};
 
-					j6.autoCompletion(tbUsr, '../basic/member_cln_filter.htm', function (data) {
+					j6.autoCompletion(tbUsr, '../basic/member_cln_filter', function (data) {
 						toId.value = '0';
 						for (var j = 0; j < data.length; j++) {
 							data[j].text = data[j].name + (data[j].phone.length >0 ?'(手机:'+data[j].phone+')':'');
@@ -139,11 +139,11 @@
 							tipMsg.className= 'tip-msg red';
 							return false;
 						}
-						j6.xhr.jsonPost('transfer_f2m.htm',data,function(json){
+						j6.xhr.jsonPost('transfer_f2m',data,function(json){
 							if(json.result){
 								balance -= data.Amount;
 								j6.$('lb_balance').innerHTML = balance;
-								location.href = 'transfer_success.htm?src=trans_f2m';
+								location.href = 'transfer_success?src=trans_f2m';
 							}else {
 								tipMsg.innerHTML = json.message;
 								tipMsg.className= 'tip-msg red';

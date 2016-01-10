@@ -1,0 +1,75 @@
+/**
+ * Copyright 2015 @ z3q.net.
+ * name : finance_c.go
+ * author : jarryliu
+ * date : 2016-01-07 21:36
+ * description :
+ * history :
+ */
+package partner
+import(
+	"go2o/src/x/echox"
+    "strconv"
+	"go2o/src/core/service/dps"
+	"github.com/jsix/gof"
+	"net/http"
+	"strings"
+	"go2o/src/core/variable"
+	"go2o/src/core/domain/interface/member"
+	"fmt"
+)
+
+type financeC struct{
+
+}
+
+func (t *financeC) Balance_info(c *echox.Context)error {
+	memberId, _ := strconv.Atoi(c.Query("member_id"))
+	m := dps.MemberService.GetMember(memberId)
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"memberId":memberId,
+		"member":m,
+	}
+	return c.RenderOK("finance.balance_info.html", d)
+}
+
+func (t *financeC) New_balance_ticket(c *echox.Context)error{
+	if c.Request().Method == "POST" {
+		return t.new_balance_ticket_post(c)
+	}
+	memberId, _ := strconv.Atoi(c.Query("member_id"))
+	m := dps.MemberService.GetMember(memberId)
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"member":m,
+		"bpName":variable.AliasPresentAccount,
+		"bpKt":fmt.Sprintf("%d-1",member.KindBalancePresent),
+	}
+	return c.RenderOK("finance.member_newticket.html", d)
+}
+
+func (t *financeC) new_balance_ticket_post(c *echox.Context)error{
+	var msg =gof.Message{Result:true}
+	partnerId := getPartnerId(c)
+	memberId,_ := strconv.Atoi(c.Form("member_id"))
+	kt := strings.Split(c.Form("kt"),"-")
+	if len(kt) < 2{
+		return c.JSON(http.StatusOK,gof.Message{Message:"参数错误"})
+	}
+	kind ,_:= strconv.Atoi(kt[0])
+	ktype, _ := strconv.Atoi(kt[1])
+	oper := c.Form("oper")
+	remark := c.Form("remark")
+	amtStr := c.Form("amount")
+	amount,err := strconv.ParseFloat(oper + amtStr,32)
+	if err == nil {
+		_, err = dps.MemberService.NewBalanceTicket(partnerId,memberId, kind, ktype, remark, float32(amount))
+	}
+	if err != nil{
+		msg.Message = err.Error()
+		msg.Result = false
+	}
+	return c.JSON(http.StatusOK,msg)
+}
+

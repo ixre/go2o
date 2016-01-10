@@ -108,11 +108,11 @@
 							tipMsg.className= 'tip-msg red';
 							return false;
 						}
-						j6.xhr.jsonPost('convert_f2p.htm',data,function(json){
+						j6.xhr.jsonPost('convert_f2p',data,function(json){
 							if(json.result){
 								balance -= data.Amount;
 								j6.$('lb_balance').innerHTML = balance;
-								location.href = 'transfer_success.htm?src=convert_f2p';
+								location.href = 'transfer_success?src=convert_f2p';
 							}else {
 								tipMsg.innerHTML = json.message;
 								tipMsg.className= 'tip-msg red';

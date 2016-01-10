@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -75,7 +74,6 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 
 // 设置模板
 func (this *Echo) SetTemplateRender(path string) {
-	log.Println("---", path)
 	this.SetRenderer(newGoTemplateForEcho(path, _globRenderWatch))
 }
 

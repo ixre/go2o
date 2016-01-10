@@ -19,6 +19,10 @@
         <div class="tit"><div>账户信息</div></div>
         <div class="con" id="member-account"></div>
         <div class="clear-fix"></div>
+        <div class="buttons">
+            <input class="btn btn-flat" type="button" id="btn_refresh_acc" value="刷新"/>
+            <input class="btn btn-flat" type="button" id="btn_finance_info" value="财务明细"/>
+        </div>
     </div>
 
     <div class="border bank">
@@ -94,6 +98,10 @@
             });
         };
 
+        j6.$('btn_refresh_acc').onclick=function(){
+            j6.load('member-account','member_account?member_id='+memberId);
+        };
+
         j6.$('btn_charge').onclick=function(){
             j6.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + memberId,400,300);
         };
@@ -111,6 +119,10 @@
                    });
                }
             });
+        };
+
+        j6.$('btn_finance_info').onclick=function(){
+           j6.tab.open('会员财务明细', '/finance/balance_info?member_id='+memberId, true);
         };
     };
 

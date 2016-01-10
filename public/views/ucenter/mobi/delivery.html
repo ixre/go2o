@@ -187,7 +187,7 @@
 
     function delAddr(id){
         if(confirm('确定要删除配送地址吗？')) {
-            j6.xhr.jsonPost('deleteDeliver.htm', {id: id}, function (json) {
+            j6.xhr.jsonPost('deleteDeliver', {id: id}, function (json) {
                 if (json.result) {
                     location.reload();
                 } else {

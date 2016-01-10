@@ -21,6 +21,7 @@ import (
 	"go2o/src/core/query"
 	"strings"
 	"time"
+	"go2o/src/core/variable"
 )
 
 type memberService struct {
@@ -543,4 +544,25 @@ func (this *memberService) FilterMemberByUsrOrPhone(partnerId int, key string) [
 func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	return this._query.GetMemberInviRank(partnerId, allTeam, levelComp, level, startTime, endTime, num)
+}
+
+// 生成会员账户人工单据
+func (this *memberService)NewBalanceTicket(partnerId int,memberId int,kind int,
+	kType int,tit string,amount float32)(string,error) {
+	var err error
+	var tradeNo string
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return "", member.ErrNoSuchMember
+	}
+
+	if kind == member.KindBalancePresent {
+		tit2 := "[KF]客服调整-" + variable.AliasPresentAccount
+		if len(tit) > 0 {
+			tit2 = tit2 + "(" + tit + ")"
+		}
+		tradeNo = domain.NewTradeNo(partnerId)
+		err = m.GetAccount().PresentBalance(tit2, tradeNo, amount)
+	}
+	return tradeNo, err
 }

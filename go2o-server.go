@@ -58,6 +58,9 @@ func main() {
 		return
 	}
 
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
+
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	newApp = core.NewMainApp(confFile)
 	if !newApp.Init(debug, trace) {

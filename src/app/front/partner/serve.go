@@ -45,6 +45,7 @@ func GetServe() *echox.Echo {
 	s.Danyx("/ad/:action", new(adC))
 	s.Danyx("/mss/:action", new(mssC))
 	s.Danyx("/editor/:action", new(editorC))
+	s.Danyx("/finance/:action",new(financeC))
 	return s
 }
 

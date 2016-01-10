@@ -33,6 +33,9 @@ func main() {
 	flag.StringVar(&conf, "conf", "app.conf", "")
 	flag.Parse()
 
+	log.SetOutput(os.Stdout)
+	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
+
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
 	cache.Initialize(gof.CurrentApp.Storage())
