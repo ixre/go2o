@@ -19,9 +19,9 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
+	"go2o/src/core/variable"
 	"strings"
 	"time"
-	"go2o/src/core/variable"
 )
 
 type memberService struct {
@@ -547,8 +547,8 @@ func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelC
 }
 
 // 生成会员账户人工单据
-func (this *memberService)NewBalanceTicket(partnerId int,memberId int,kind int,
-	kType int,tit string,amount float32)(string,error) {
+func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind int,
+	kType int, tit string, amount float32) (string, error) {
 	var err error
 	var tradeNo string
 	m := this._memberRep.GetMember(memberId)

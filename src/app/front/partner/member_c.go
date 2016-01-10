@@ -142,10 +142,18 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "no such member")
 	}
 	lv := dps.PartnerService.GetLevel(getPartnerId(ctx), m.Level)
+	rl := dps.MemberService.GetRelation(m.Id)
+	var invName string = "无"
+	if rl.RefereesId > 0 {
+		rlm := dps.MemberService.GetMember(rl.RefereesId)
+		invName = rlm.Name + "(" + rlm.Usr + ")"
+	}
 	d := echox.NewRenderData()
 	d.Map = map[string]interface{}{
-		"m":  m,
-		"lv": lv,
+		"m":       m,
+		"lv":      lv,
+		"invId":   rl.RefereesId,
+		"invName": invName,
 		"sexName": gfmt.BoolString(m.Sex == 1, "先生",
 			gfmt.BoolString(m.Sex == 2, "女士", "-")),
 		"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),

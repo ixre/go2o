@@ -7,13 +7,14 @@
  * history :
  */
 package daemon
+
 import (
 	"log"
 	"runtime/debug"
 )
 
-func Recover(){
-	if r := recover();r != nil {
+func Recover() {
+	if r := recover(); r != nil {
 		log.Println("[ Daemon][ Recover]-", r, "\n", string(debug.Stack()))
 	}
 }

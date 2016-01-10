@@ -76,7 +76,7 @@ func (this *Member) validate(v *member.ValueMember) error {
 		return member.ErrUsrValidErr
 	}
 
-	if this.GetAggregateRootId() != 0 && len([]rune(v.Name)) < 2 {
+	if len([]rune(v.Name)) < 2 {
 		return member.ErrPersonName
 	}
 
@@ -322,6 +322,9 @@ func (this *Member) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
+	if len(this._value.Name) == 0 {
+		this._value.Name = this._value.Usr
+	}
 	if err := this.validate(this._value); err != nil {
 		return this.GetAggregateRootId(), err
 	}
