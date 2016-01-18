@@ -215,7 +215,11 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err
 	}
 
 	var fileName string = header.Filename
-	var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
+	var extIdx = strings.LastIndex(fileName, ".")
+	if extIdx == -1 {
+		return "", errors.New("Unkown file type")
+	}
+	var fileExt string = strings.ToLower(fileName[extIdx+1:])
 
 	// 检查上传目录
 	var dirPath string = rootPath
@@ -290,8 +294,9 @@ type editorC struct {
 
 func (this *editorC) File_manager(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
+	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
 	d, err := fileManager(ctx.Request(),
-		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	if err != nil {
@@ -300,10 +305,14 @@ func (this *editorC) File_manager(ctx *echox.Context) error {
 	return ctx.JSON(http.StatusOK, d)
 }
 
-func (this *editorC) File_upload_post(ctx *echox.Context) error {
+func (this *editorC) File_upload(ctx *echox.Context) error {
+	if ctx.Request().Method != "POST" {
+		return errors.New("error request method")
+	}
 	partnerId := getPartnerId(ctx)
+	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
 	fileUrl, err := fileUpload(ctx.Request(),
-		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	var hash map[string]interface{} = make(map[string]interface{})

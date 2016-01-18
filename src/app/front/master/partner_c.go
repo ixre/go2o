@@ -111,7 +111,7 @@ func (c *partnerC) List(ctx *echox.Context) error {
 	return ctx.RenderOK("partner.list.html", ctx.NewData())
 }
 
-func (c *partnerC) DelPartner_post(w http.ResponseWriter, r *http.Request) {
+func (c *partnerC) DelPartner(w http.ResponseWriter, r *http.Request) {
 	//	var result gof.Message
 	//	r.ParseForm()
 	//	ptid, err := strconv.Atoi(r.Form.Get("id"))

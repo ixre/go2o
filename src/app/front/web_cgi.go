@@ -28,7 +28,7 @@ var (
 type WebCgi struct {
 }
 
-func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byte {
+func (this *WebCgi) Upload(key string, ctx *echox.Context, saveDir string) []byte {
 	r := ctx.Request()
 	var ext string
 	var filePath string
@@ -44,8 +44,8 @@ func (this *WebCgi) Upload(key string, ctx *echox.Context, savedir string) []byt
 	}
 
 	ext = h.Filename[strings.LastIndex(h.Filename, "."):]
-	filePath = strings.Join([]string{savedir, time.Now().Format("20060102150304"), ext}, "")
-	os.MkdirAll(uploadSaveDir+savedir, os.ModePerm)
+	filePath = strings.Join([]string{saveDir, time.Now().Format("20060102150304"), ext}, "")
+	os.MkdirAll(uploadSaveDir+saveDir, os.ModePerm)
 
 	f, err := os.OpenFile(uploadSaveDir+filePath,
 		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
