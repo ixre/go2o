@@ -87,35 +87,42 @@ func (this *PaymentC) Create(ctx *echox.Context) error {
 		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 	}
 
-	if order != nil {
-		if order.IsPaid == enum.TRUE {
-			w.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", order.OrderNo))
-			w.WriteHeader(302)
-			return nil
-		}
-		ctx.Session.Set("current_payment", orderNo)
-		ctx.Session.Save()
-
-		//order.PayFee = 0.01
-
-		if paymentOpt == "alipay" || paymentOpt == strconv.Itoa(enum.PaymentOnlinePay) {
-			aliPayObj := this.getAliPayment(ctx)
-			domain := getDomain(r)
-			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
-			notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
-			if len(order.Subject) == 0 {
-				order.Subject = "在线支付订单"
-			}
-			gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, order.Subject, "订单号："+orderNo, notifyUrl, returnUrl)
-			html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
-			w.Write([]byte(html))
-
-			payment.Debug(" [ Submit] - %s - %s", orderNo, notifyUrl)
-			return nil
-		}
+	//todo:?需要优化
+	if order == nil {
+		w.Write([]byte("订单不存在"))
+		return nil
+	}
+	if order.Status == enum.ORDER_CANCEL {
+		w.Write([]byte("订单已被取消"))
+		return nil
+	}
+	if order.IsPaid == enum.TRUE {
+		w.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", order.OrderNo))
+		w.WriteHeader(302)
+		return nil
 	}
 
-	w.Write([]byte("订单不存在"))
+	ctx.Session.Set("current_payment", orderNo)
+	ctx.Session.Save()
+
+	//order.PayFee = 0.01
+
+	//支付宝付款
+	if paymentOpt == "alipay" || paymentOpt == strconv.Itoa(enum.PaymentOnlinePay) {
+		aliPayObj := this.getAliPayment(ctx)
+		domain := getDomain(r)
+		returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
+		notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
+		if len(order.Subject) == 0 {
+			order.Subject = "在线支付订单"
+		}
+		gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, order.Subject, "订单号："+orderNo, notifyUrl, returnUrl)
+		html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
+		w.Write([]byte(html))
+
+		payment.Debug(" [ Submit] - %s - %s", orderNo, notifyUrl)
+
+	}
 	return nil
 }
 

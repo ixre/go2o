@@ -21,5 +21,5 @@ const (
 	KvMemberUpdateQueue           = "go2o:q:mm_update"     //新加入会员队列
 	KvOrderCreatedQueue           = "go2o:sa:q:order_new"  //新订单队列
 	KvOrderBusinessQueue          = "go2o:q:sa_order_busi" //订单业务队列(如已创建,已完成等只执行一次)
-
+	KvOrderExpiresTime            = "go2o:o:expires:"      //订单过期时间
 )

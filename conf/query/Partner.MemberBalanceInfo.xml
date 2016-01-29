@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString></ColumnMappingString>
+  <Query>
+    <![CDATA[
+        SELECT id,kind,title,trade_no,amount,csn_amount,create_time
+from mm_balance_info INNER JOIN mm_account ON mm_balance_info.member_id
+= mm_account.member_id INNER JOIN mm_relation ON mm_relation.member_id =
+mm_balance_info.member_id WHERE mm_balance_info.member_id = {member_id}
+AND mm_relation.reg_partner_id = {partner_id} AND title LIKE '%{title}%'
+AND (trade_no IS NULL OR trade_no LIKE '%{trade_no}%') ORDER BY mm_balance_info.create_time DESC
+LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[ SELECT COUNT(0) from mm_balance_info INNER JOIN mm_account ON mm_balance_info.member_id
+= mm_account.member_id INNER JOIN mm_relation ON mm_relation.member_id =
+mm_balance_info.member_id WHERE mm_balance_info.member_id = {member_id}
+AND mm_relation.reg_partner_id = {partner_id} AND title LIKE '%{title}%' AND
+ (trade_no IS NULL OR trade_no LIKE '%{trade_no}%')
+ ]]>
+  </Total>
+</ExportItemConfig>

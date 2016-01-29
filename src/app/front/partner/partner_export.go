@@ -26,7 +26,7 @@ func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
 	return gof.CurrentApp.Db().GetDb()
 }
 
-var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}
+var ExpManager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}
 
 //================== 导出控制器 ==============//
 
@@ -34,12 +34,12 @@ var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: 
 func GetExportData(r *http.Request, partnerId int) []byte {
 	query := r.URL.Query()
 	r.ParseForm()
-	var exportItm report.IDataExportPortal = EXP_Manager.GetExportItem(query.Get("portal"))
+	var exportItem report.IDataExportPortal = ExpManager.GetExportItem(query.Get("portal"))
 	//var exportItm *ExportItem = GetExportItem(query.Get("portal"))
 
 	//fmt.Println(">>>"+strconv.FormatBool(exportItm != nil))
 
-	if exportItm != nil {
+	if exportItem != nil {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
 
@@ -52,7 +52,7 @@ func GetExportData(r *http.Request, partnerId int) []byte {
 			parameter.Parameters["pageSize"] = rows
 		}
 
-		_rows, total, err := exportItm.GetSchemaAndData(parameter.Parameters)
+		_rows, total, err := exportItem.GetSchemaAndData(parameter.Parameters)
 		if err == nil {
 			var arr []string = []string{"{\"total\":", strconv.Itoa(total), ",\"rows\":", "", "}"}
 			json, _ := json.Marshal(_rows)

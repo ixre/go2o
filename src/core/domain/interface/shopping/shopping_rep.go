@@ -33,6 +33,9 @@ type IShoppingRep interface {
 	// 根据订单号获取订单
 	GetOrderByNo(partnerId int, orderNo string) (*ValueOrder, error)
 
+	// 根据订单号获取订单
+	GetValueOrderByNo(orderNo string) *ValueOrder
+
 	// 获取等待处理的订单
 	GetWaitingSetupOrders(partnerId int) ([]*ValueOrder, error)
 

@@ -64,14 +64,15 @@ func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-
 	if v.UpdateTime == 0 {
 		v.UpdateTime = v.CreateTime
-	}
-
-	//todo: 判断category
-
+	} //todo: 判断category
 	return newItem(this, v, this._saleRep, this._saleTagRep, this._goodsRep, this._promRep)
+}
+
+// 创建商品
+func (this *Sale) CreateGoods(s *sale.ValueGoods) sale.IGoods {
+	return NewSaleGoods(this, nil, s, this._saleRep, this._goodsRep, this._promRep)
 }
 
 // 删除货品
@@ -100,7 +101,7 @@ func (this *Sale) GetItem(itemId int) sale.IItem {
 }
 
 // 创建商品
-func (this *Sale) CreateGoods(item sale.IItem, v *sale.ValueGoods) sale.IGoods {
+func (this *Sale) CreateGoodsByItem(item sale.IItem, v *sale.ValueGoods) sale.IGoods {
 	return NewSaleGoods(this, item, v, this._saleRep, this._goodsRep, this._promRep)
 }
 
@@ -110,7 +111,7 @@ func (this *Sale) GetGoods(goodsId int) sale.IGoods {
 	if v != nil {
 		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), v.ItemId)
 		if pv != nil {
-			return this.CreateGoods(this.CreateItem(pv), v)
+			return this.CreateGoodsByItem(this.CreateItem(pv), v)
 		}
 	}
 	return nil
@@ -122,7 +123,7 @@ func (this *Sale) GetGoodsBySku(itemId, sku int) sale.IGoods {
 	if v != nil {
 		pv := this._saleRep.GetValueItem(this.GetAggregateRootId(), v.ItemId)
 		if pv != nil {
-			return this.CreateGoods(this.CreateItem(pv), v)
+			return this.CreateGoodsByItem(this.CreateItem(pv), v)
 		}
 	}
 	return nil

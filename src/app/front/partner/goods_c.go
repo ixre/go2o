@@ -72,14 +72,15 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 func (this *goodsC) Edit(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	var e *sale.ValueItem
+	ss := dps.SaleService
 	id, _ := strconv.Atoi(ctx.Query("item_id"))
-	e = dps.SaleService.GetValueItem(partnerId, id)
+	e = ss.GetValueItem(partnerId, id)
 	if e == nil {
 		return ctx.StringOK("商品不存在")
 	}
 	e.Description = ""
 	js, _ := json.Marshal(e)
-
+	gs := ss.GetGoodsBySku(partnerId, e.Id, 0) //todo:???
 	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -88,6 +89,7 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
+		"gs":        gs,
 	}
 	return ctx.RenderOK("goods.update_goods.html", d)
 }
@@ -139,19 +141,22 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	if r.Method == "POST" {
+		ss := dps.SaleService
 		var result gof.Message
 		r.ParseForm()
-
 		e := sale.ValueItem{}
 		web.ParseFormToEntity(r.Form, &e)
-
 		e.State = 1 //todo: 暂时使用
-
-		id, err := dps.SaleService.SaveItem(partnerId, &e)
-
+		id, err := ss.SaveItem(partnerId, &e)
 		if err != nil {
 			result.Message = err.Error()
 		} else {
+			gs := ss.GetValueGoodsBySku(partnerId, id, 0) //todo: ??? SKU
+			gs.StockNum, _ = strconv.Atoi(r.FormValue("StockNum"))
+			gs.SaleNum, _ = strconv.Atoi(r.FormValue("SaleNum"))
+			price, _ := strconv.ParseFloat(r.FormValue("SalePrice"), 32)
+			gs.SalePrice = float32(price)
+			ss.SaveGoods(partnerId, gs)
 			result.Result = true
 			result.Data = id
 		}

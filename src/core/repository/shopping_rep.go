@@ -175,6 +175,16 @@ func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 	return v, err
 }
 
+// 根据订单号获取订单
+func (this *shoppingRep) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
+	var v = new(shopping.ValueOrder)
+	err := this.Connector.GetOrm().GetBy(v, "order_no=?", orderNo)
+	if err == nil {
+		return v
+	}
+	return nil
+}
+
 // 获取等待处理的订单
 func (this *shoppingRep) GetWaitingSetupOrders(partnerId int) ([]*shopping.ValueOrder, error) {
 	dst := []*shopping.ValueOrder{}

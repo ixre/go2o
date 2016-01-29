@@ -249,9 +249,9 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 		if rel.RegisterPartnerId != getPartnerId(ctx) {
 			err = partner.ErrPartnerNotMatch
 		} else {
-			title := fmt.Sprintf("[KF]客服充值%f", amount)
+			title := fmt.Sprintf("[KF]客服充值%s", format.FormatFloat(float32(amount)))
 			err = dps.MemberService.Charge(partnerId, memberId,
-				member.TypeBalanceServiceCharge, title, "", float32(amount))
+				member.TypeBalanceServiceCharge, title, "-", float32(amount))
 		}
 		if err != nil {
 			msg.Message = err.Error()

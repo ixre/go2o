@@ -11,6 +11,8 @@ package daemon
 
 import (
 	"flag"
+	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/enum"
@@ -125,7 +127,8 @@ func (this *defaultService) SetApp(a gof.App) {
 
 // 启动服务
 func (this *defaultService) Start() {
-	AddTickerFunc(orderDaemon) //订单自动进行流程
+	//AddTickerFunc(orderDaemon) //订单自动进行流程
+	AddTickerFunc(detectOrderExpires) //检查订单过期
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)
 	go startMailQueue(services)
@@ -135,12 +138,32 @@ func (this *defaultService) Start() {
 // 返回布尔值,如果返回false,则不继续执行
 func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 	defer Recover()
+
+	conn := core.GetRedisConn()
+	this.setOrderExpires(conn, o) //检查订单过期
+
 	if this.sOrder {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.PartnerId, o.OrderNo)
 		}
 	}
 	return true
+}
+
+//设置过期时间
+func (this *defaultService) setOrderExpires(conn redis.Conn, o *shopping.ValueOrder) {
+	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
+		ss := dps.PartnerService.GetSaleConf(o.PartnerId)
+		t := int64(ss.OrderTimeOutMinute) * 60
+		unix := o.CreateTime + t
+		conn.Do("SET", this.getExpiresKey(o), unix)
+	} else if o.IsPaid == 1 { //删除过期时间
+		conn.Do("DEL", this.getExpiresKey(o))
+	}
+}
+
+func (this *defaultService) getExpiresKey(o *shopping.ValueOrder) string {
+	return fmt.Sprintf("%s%d_%s", variable.KvOrderExpiresTime, o.PartnerId, o.OrderNo)
 }
 
 // 监视会员修改,@create:是否为新注册会员

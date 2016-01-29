@@ -56,6 +56,16 @@ func (this *saleService) GetGoodsBySku(partnerId int, itemId int, sku int) *valu
 	return goods.GetPackedValue()
 }
 
+// 根据SKU获取商品
+func (this *saleService) GetValueGoodsBySku(partnerId int, itemId int, sku int) *sale.ValueGoods {
+	sl := this._rep.GetSale(partnerId)
+	gs := sl.GetGoodsBySku(itemId, sku)
+	if gs != nil {
+		return gs.GetValue()
+	}
+	return nil
+}
+
 // 根据快照编号获取商品
 func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *sale.ValueGoods {
 	snap := this._rep.GetGoodsSnapshot(snapshotId)
@@ -101,6 +111,18 @@ func (this *saleService) SaveItemInfo(partnerId int, itemId int, info string) er
 	}
 	_, err = pro.Save()
 	return err
+}
+
+// 保存商品
+func (this *saleService) SaveGoods(partnerId int, gs *sale.ValueGoods) (int, error) {
+	sl := this._rep.GetSale(partnerId)
+	if gs.Id > 0 {
+		g := sl.GetGoods(gs.Id)
+		g.SetValue(gs)
+		return g.Save()
+	}
+	g := sl.CreateGoods(gs)
+	return g.Save()
 }
 
 // 删除货品

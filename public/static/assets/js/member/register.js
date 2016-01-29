@@ -98,7 +98,7 @@ if (phone != null) {
     };
 }
 
-var inviCode = j6.$('invi_code');
+var inviCode = j6.$('inviCode');
 if (inviCode != null) {
     inviCode.onblur = function () {
         var val = this.value;

@@ -135,6 +135,11 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 	return &v
 }
 
+// 根据订单号获取订单
+func (this *shoppingService) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
+	return this._rep.GetValueOrderByNo(orderNo)
+}
+
 func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)

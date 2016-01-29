@@ -12,6 +12,7 @@ package daemon
 import (
 	"github.com/jsix/gof"
 	"go2o/src/core/service/dps"
+	"log"
 )
 
 var (
@@ -32,6 +33,7 @@ func orderDaemon(app gof.App) {
 	defer recoverDaemon()
 	ids := getPartners()
 	for _, v := range ids {
+		log.Println("--", v)
 		autoSetOrder(v)
 	}
 }

@@ -174,16 +174,15 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 func (this *ShoppingC) SaveDeliverAddress(ctx *echox.Context) error {
 	r := ctx.Request()
 	if this.prepare(ctx) && r.Method == "POST" {
-		msg := gof.Message{}
+		msg := gof.Message{Result: true}
 		m := GetMember(ctx)
 		r.ParseForm()
 		var e member.DeliverAddress
 		web.ParseFormToEntity(r.Form, &e)
 		e.MemberId = m.Id
-		b, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
-		if err == nil {
-			msg.Result = b > 0
-		} else {
+		_, err := dps.MemberService.SaveDeliverAddress(m.Id, &e)
+		if err != nil {
+			msg.Result = false
 			msg.Message = err.Error()
 		}
 		return ctx.JSON(http.StatusOK, msg)

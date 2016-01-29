@@ -112,7 +112,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
 				if level > 0 {
-					goods = sl.CreateGoods(
+					goods = sl.CreateGoodsByItem(
 						sl.CreateItem(sale.ParseToPartialValueItem(gv)),
 						sale.ParseToValueGoods(gv),
 					)

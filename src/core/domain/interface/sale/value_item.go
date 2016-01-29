@@ -23,7 +23,7 @@ type ValueItem struct {
 	Cost float32 `db:"cost"`
 	//定价
 	Price float32 `db:"price"`
-	//销售价
+	//参考销售价
 	SalePrice float32 `db:"sale_price"`
 	ApplySubs string  `db:"apply_subs"`
 
