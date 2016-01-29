@@ -36,8 +36,8 @@ func (this *Category) GetDomainId() int {
 	return this._value.Id
 }
 
-func (this *Category) GetValue() sale.ValueCategory {
-	return *this._value
+func (this *Category) GetValue() *sale.ValueCategory {
+	return this._value
 }
 
 func (this *Category) SetValue(v *sale.ValueCategory) error {

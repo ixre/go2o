@@ -62,7 +62,7 @@ $(document).ready(function(e) {
 				p.prev().remove();
 				p.remove();
 			}else{
-				p.parent().html('<div style="text-align:center;padding: 50px 0;font-size: 16px;">您当前购物车空荡荡的，赶快去添加吧！<br /> <a href="../default.htm">返回首页</a></div>');
+				p.parent().html('<div style="text-align:center;padding: 50px 0;font-size: 16px;">您当前购物车空荡荡的，赶快去添加吧！<br /> <a href="../default">返回首页</a></div>');
 			}
 		}
 		var _select = $(this).find('select');

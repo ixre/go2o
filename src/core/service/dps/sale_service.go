@@ -156,7 +156,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		where = ""
 		orderBy = "gs_goods.sale_num DESC"
 	case "rate_0":
-		//todo:
+	//todo:
 	case "rate_1":
 		//todo:
 	}
@@ -175,8 +175,7 @@ func (this *saleService) GetCategory(partnerId, id int) *sale.ValueCategory {
 	sl := this._rep.GetSale(partnerId)
 	c := sl.GetCategory(id)
 	if c != nil {
-		cv := c.GetValue()
-		return &cv
+		return c.GetValue()
 	}
 	return nil
 }
@@ -239,7 +238,7 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	var list []*sale.ValueCategory = make([]*sale.ValueCategory, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
-		list[i] = &vv
+		list[i] = vv
 	}
 	return list
 }

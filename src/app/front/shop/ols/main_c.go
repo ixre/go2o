@@ -88,7 +88,7 @@ func (this *MainC) T(ctx *echox.Context) error {
 	path := ctx.Request().URL.Path
 	var i int = strings.LastIndex(path, "/")
 	ivCode := path[i+1:]
-	ctx.Response().Header().Add("Location", "/user/register.htm?invi_code="+
+	ctx.Response().Header().Add("Location", "/user/register?invi_code="+
 		ivCode+"&"+ctx.Request().URL.RawQuery)
 	ctx.Response().WriteHeader(302)
 	return nil

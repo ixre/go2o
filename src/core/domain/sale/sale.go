@@ -150,7 +150,6 @@ func (this *Sale) CreateCategory(v *sale.ValueCategory) sale.ICategory {
 		v.CreateTime = time.Now().Unix()
 	}
 	v.PartnerId = this.GetAggregateRootId()
-
 	return newCategory(this._saleRep, v)
 }
 

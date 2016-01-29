@@ -20,6 +20,7 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -66,6 +67,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
+	log.Println("---", category)
 	json, _ := json.Marshal(category)
 
 	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))

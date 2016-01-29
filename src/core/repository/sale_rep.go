@@ -150,25 +150,20 @@ func (this *saleRep) DeleteCategory(partnerId, id int) error {
 func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
 	var e *sale.ValueCategory = new(sale.ValueCategory)
 	err := this.Connector.GetOrm().Get(id, e)
-	if err != nil {
-		log.PrintErr(err)
-		return nil
+	log.Println("--", e)
+	if err == nil && e.PartnerId == partnerId {
+		return e
 	}
-
-	if e.PartnerId != partnerId {
-		return nil
-	}
-
-	return e
+	return nil
 }
 
 func (this *saleRep) GetCategories(partnerId int) []*sale.ValueCategory {
 	var e []*sale.ValueCategory = []*sale.ValueCategory{}
 	err := this.Connector.GetOrm().Select(&e, "partner_id=? ORDER BY id ASC", partnerId)
-	if err != nil {
-		log.PrintErr(err)
+	if err == nil {
+		return e
 	}
-	return e
+	return nil
 }
 
 // 获取与栏目相关的栏目

@@ -16,6 +16,7 @@ import (
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/pager"
 	"go2o/src/app/front"
+	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/domain/util"
 	"go2o/src/core/infrastructure/format"
@@ -33,7 +34,7 @@ type ListC struct {
 func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 	var start iterator.WalkFunc = func(v interface{}, level int) {
 		c := v.(*sale.ValueCategory)
-		if c.Id == 0 {
+		if c.Id == 0 || c.Enabled == enum.FALSE {
 			return
 		}
 		if level == 1 {
