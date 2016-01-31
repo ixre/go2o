@@ -197,7 +197,7 @@ func (this *Order) CmPaymentWithBalance() error {
 // 在线交易支付
 func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) error {
 	if this._value.IsPaid == 1 {
-		return shopping.ErrOrderPayed
+		//return shopping.ErrOrderPayed
 	}
 	unix := time.Now().Unix()
 	this._value.IsPaid = 1

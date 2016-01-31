@@ -113,7 +113,6 @@ func (this *orderC) View(ctx *echox.Context) error {
 func (this *orderC) Setup(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
@@ -147,17 +146,14 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
 	var msg gof.Message
-
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
 	if r.Method == "POST" {
 		r.ParseForm()
 		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
-
 		this.releaseOrder(ctx)
 		if err != nil {
 			msg.Message = err.Error()
-
 		} else {
 			msg.Result = true
 		}

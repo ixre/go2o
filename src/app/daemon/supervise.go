@@ -78,6 +78,7 @@ func superviseMemberUpdate(ss []Service) {
 
 func detectOrderExpires(a gof.App) {
 	conn := core.GetRedisConn()
+	defer conn.Close()
 	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*"))
 	ss := dps.ShoppingService
 	for _, v := range list {

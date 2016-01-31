@@ -222,6 +222,9 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount
+	if finalAmount > 0 {
+		finalAmount = -finalAmount
+	}
 	v := &member.BalanceInfoValue{
 		Kind:      member.KindBalanceApplyCash,
 		Type:      applyType,
@@ -255,7 +258,10 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 			v.State = member.StateApplyConfirmed
 		} else {
 			v.State = member.StateApplyNotPass
-			this._value.PresentBalance += v.Amount + v.CsnAmount
+			if v.Amount < 0{
+				v.Amount = -v.Amount
+			}
+			this._value.PresentBalance +=  v.Amount + v.CsnAmount
 			if _, err := this.Save(); err != nil {
 				return err
 			}
