@@ -132,15 +132,15 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	r.ParseForm()
 	partnerId := getPartner(ctx).Id
 	strAmount := strings.TrimSpace(r.FormValue("Amount"))
-	if len(strAmount) ==0 || strAmount == "NaN"{
+	if len(strAmount) == 0 || strAmount == "NaN" {
 		msg.Message = "提现金额错误"
-		return ctx.JSON(http.StatusOK,msg)
+		return ctx.JSON(http.StatusOK, msg)
 	}
 
 	amount, err := strconv.ParseFloat(r.FormValue("Amount"), 32)
-	if err != nil{
+	if err != nil {
 		msg.Message = err.Error()
-		return ctx.JSON(http.StatusOK,msg)
+		return ctx.JSON(http.StatusOK, msg)
 	}
 
 	tradePwd := r.FormValue("TradePwd")

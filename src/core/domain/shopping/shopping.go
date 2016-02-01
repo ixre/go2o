@@ -382,29 +382,24 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
 	var shop partner.IShop
-
 	if biShops == nil {
 		biShops = this._partner.GetBusinessInShops()
 	}
-
 	if len(biShops) == 1 {
 		shop = biShops[0]
 	} else {
 		shop, err = this.SmartChoiceShop(v.DeliverAddress)
 		if err != nil {
-			log.Println(err)
 			order.Suspend("智能分配门店失败！原因：" + err.Error())
 			return err
 		}
 	}
 
 	if shop != nil {
-
 		sv := shop.GetValue()
 		order.SetShop(shop.GetDomainId())
 		err = order.Confirm()
 		//err = order.Process()
-
 		order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
 			"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
 	}

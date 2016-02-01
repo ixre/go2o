@@ -19,8 +19,8 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure"
-	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
+	"log"
 	"strings"
 	"time"
 )
@@ -197,7 +197,7 @@ func (this *Order) CmPaymentWithBalance() error {
 // 在线交易支付
 func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) error {
 	if this._value.IsPaid == 1 {
-		//return shopping.ErrOrderPayed
+		return shopping.ErrOrderPayed
 	}
 	unix := time.Now().Unix()
 	this._value.IsPaid = 1
@@ -207,10 +207,8 @@ func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) 
 	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
-	_, err := this.Save()
-
 	this._shopping.SmartConfirmOrder(this) // 确认订单
-
+	_, err := this.Save()
 	return err
 }
 
@@ -529,11 +527,9 @@ func (this *Order) Confirm() error {
 		this._value.IsPaid == enum.FALSE {
 		return shopping.ErrOrderNotPayed
 	}
-
 	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
 		this._value.Status = enum.ORDER_WAIT_DELIVERY
 		this._value.UpdateTime = time.Now().Unix()
-
 		_, err := this.Save()
 		if err == nil {
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
@@ -669,7 +665,6 @@ func (this *Order) Complete() error {
 	ptl, err = this._partnerRep.GetPartner(v.PartnerId)
 	if err != nil {
 		log.Println("供应商异常!", v.PartnerId)
-		log.PrintErr(err)
 		return err
 	}
 

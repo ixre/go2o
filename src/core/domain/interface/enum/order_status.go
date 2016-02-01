@@ -52,14 +52,6 @@ func (t OrderState) String() string {
 }
 
 const (
-	//线下付款
-	PAY_OFFLINE = 1
-
-	//线上付款
-	PAY_ONLINE = 2
-)
-
-const (
 	/****** 站点状态 *********/
 	//合作商网站关闭
 	PARTNER_SITE_CLOSED = 0

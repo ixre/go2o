@@ -140,7 +140,6 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 	defer Recover()
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	//this.setOrderExpires(conn, o) //检查订单过期
 	if this.sOrder {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.PartnerId, o.OrderNo)

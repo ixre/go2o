@@ -105,7 +105,6 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		var oriStatus int
 		d.ExecScalar("SELECT status FROM pt_order WHERE id=?", &oriStatus, v.Id)
 		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
-
 		_, _, err = d.GetOrm().Save(v.Id, v)
 		if v.Status == enum.ORDER_COMPLETED {
 			//todo:将去掉下行
