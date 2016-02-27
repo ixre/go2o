@@ -258,7 +258,7 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 		if pass {
 			v.State = member.StateApplyConfirmed
 		} else {
-			if v.State != member.StateApplyNotPass {
+			if v.State == member.StateApplyNotPass {
 				return dm.ErrState
 			}
 			v.State = member.StateApplyNotPass
