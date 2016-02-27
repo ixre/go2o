@@ -61,7 +61,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	if err == nil {
 		result.Result = true
 		ctx.Session.Set("member", m)
-		ctx.Session.Save()
+		err = ctx.Session.Save()
 	} else {
 		if err != nil {
 			result.Message = err.Error()
