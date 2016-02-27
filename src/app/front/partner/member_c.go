@@ -348,6 +348,9 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 
 	d := echox.NewRenderData()
 	bank := dps.MemberService.GetBank(memberId)
+	if info.Amount < 0 {
+		info.Amount = -info.Amount
+	}
 	d.Map = map[string]interface{}{
 		"info":      info,
 		"bank":      bank,

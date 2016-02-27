@@ -10,6 +10,7 @@ package member
 
 import (
 	"errors"
+	dm "go2o/src/core/domain"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
 	"time"
@@ -257,11 +258,11 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 		if pass {
 			v.State = member.StateApplyConfirmed
 		} else {
-			v.State = member.StateApplyNotPass
-			if v.Amount < 0 {
-				v.Amount = -v.Amount
+			if v.State != member.StateApplyNotPass {
+				return dm.ErrState
 			}
-			this._value.PresentBalance += v.Amount + v.CsnAmount
+			v.State = member.StateApplyNotPass
+			this._value.PresentBalance += v.CsnAmount + (-v.Amount)
 			if _, err := this.Save(); err != nil {
 				return err
 			}
