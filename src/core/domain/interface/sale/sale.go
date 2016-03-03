@@ -22,10 +22,14 @@ type ISale interface {
 	DeleteItem(int) error
 
 	// 创建商品
+<<<<<<< HEAD
 	CreateGoodsByItem(IItem, *ValueGoods) IGoods
 
 	// 创建商品
 	CreateGoods(*ValueGoods) IGoods
+=======
+	CreateGoods(IItem, *ValueGoods) IGoods
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 根据产品编号获取商品
 	GetGoods(int) IGoods

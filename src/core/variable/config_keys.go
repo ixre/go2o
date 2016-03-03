@@ -45,9 +45,12 @@ const (
 	//其他配置
 	NoPicPath = "no_pic_path"
 
+<<<<<<< HEAD
 	// 上传保存目录
 	UploadSaveDir = "upload_save_dir"
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 支付
 	Alipay_Partner = "payment_alipay_partner"
 	Alipay_Key     = "payment_alipay_key"
@@ -59,6 +62,9 @@ const (
 	SmtpCreUser = "smtp_user"
 	SmtpCrePwd  = "smtp_pwd"
 	SmtpFrom    = "smtp_from"
+<<<<<<< HEAD
 	//是否关闭系统发送邮件队列
 	SystemMailQueueOff = "sys_mail_queue_off"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )

@@ -58,9 +58,12 @@ type IMember interface {
 	// 更新会员绑定
 	SaveRelation(r *MemberRelation) error
 
+<<<<<<< HEAD
 	// 更换用户名
 	ChangeUsr(string) error
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 保存
 	Save() (int, error)
 
@@ -70,6 +73,12 @@ type IMember interface {
 	// 修改交易密码，旧密码可为空
 	ModifyTradePassword(newPwd, oldPwd string) error
 
+<<<<<<< HEAD
+=======
+	// 用户是否已经存在
+	UsrIsExist() bool
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 创建配送地址
 	CreateDeliver(*DeliverAddress) (IDeliver, error)
 

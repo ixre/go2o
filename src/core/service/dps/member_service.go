@@ -19,12 +19,16 @@ import (
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
+<<<<<<< HEAD
 	"go2o/src/core/variable"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"strings"
 	"time"
 )
 
 type memberService struct {
+<<<<<<< HEAD
 	_memberRep      member.IMemberRep
 	_partnerService *partnerService
 	_query          *query.MemberQuery
@@ -36,6 +40,16 @@ func NewMemberService(partnerService *partnerService, rep member.IMemberRep,
 		_memberRep:      rep,
 		_query:          q,
 		_partnerService: partnerService,
+=======
+	_memberRep member.IMemberRep
+	_query     *query.MemberQuery
+}
+
+func NewMemberService(rep member.IMemberRep, q *query.MemberQuery) *memberService {
+	return &memberService{
+		_memberRep: rep,
+		_query:     q,
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 }
 
@@ -48,8 +62,12 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
+<<<<<<< HEAD
 func (this *memberService) getMember(partnerId, memberId int) (
 	member.IMember, error) {
+=======
+func (this *memberService) getMember(partnerId, memberId int) (member.IMember, error) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
@@ -64,6 +82,7 @@ func (this *memberService) GetMemberIdByInvitationCode(code string) int {
 	return this._memberRep.GetMemberIdByInvitationCode(code)
 }
 
+<<<<<<< HEAD
 // 更改会员用户名
 func (this *memberService) ChangeUsr(id int, usr string) error {
 	m := this._memberRep.GetMember(id)
@@ -74,11 +93,17 @@ func (this *memberService) ChangeUsr(id int, usr string) error {
 }
 
 // 保存用户
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		return this.updateMember(v)
 	}
+<<<<<<< HEAD
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
+=======
+	return this.createMember(v)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
@@ -92,6 +117,7 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	return m.Save()
 }
 
+<<<<<<< HEAD
 // 注册会员
 func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
 	cardId string, invitationCode string) (int, error) {
@@ -120,6 +146,25 @@ func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
 		return id, m.SaveRelation(rl)
 	}
 	return id, err
+=======
+func (this *memberService) createMember(v *member.ValueMember) (int, error) {
+	m := this._memberRep.CreateMember(v)
+	return m.Save()
+}
+
+func (this *memberService) SaveRelation(memberId int, cardId string, invitationId, partnerId int) error {
+	m := this._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+
+	rl := m.GetRelation()
+	rl.RefereesId = invitationId
+	rl.RegisterPartnerId = partnerId
+	rl.CardId = cardId
+
+	return m.SaveRelation(rl)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
@@ -160,15 +205,21 @@ func (this *memberService) ResetPassword(memberId int) string {
 	return ""
 }
 
+<<<<<<< HEAD
 // 检查凭据, update:是否更新登陆时间
 func (this *memberService) TryLogin(partnerId int, usr,
 	pwd string, update bool) (*member.ValueMember, error) {
+=======
+// 登陆
+func (this *memberService) Login(partnerId int, usr, pwd string) (bool, *member.ValueMember, error) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
 	val := this._memberRep.GetMemberValueByUsr(usr)
 	if val == nil {
 		val = this._memberRep.GetMemberValueByPhone(usr)
 	}
+<<<<<<< HEAD
 
 	if val == nil {
 		return nil, errors.New("会员不存在")
@@ -180,12 +231,25 @@ func (this *memberService) TryLogin(partnerId int, usr,
 
 	if val.State == 0 {
 		return nil, errors.New("会员已停用")
+=======
+	if val == nil {
+		return false, nil, errors.New("会员不存在")
+	}
+
+	if val.Pwd != pwd {
+		return false, nil, errors.New("会员用户或密码不正确")
+	}
+
+	if val.State == 0 {
+		return false, nil, errors.New("会员已停用")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 
 	m := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
 	if partnerId != -1 && rl.RegisterPartnerId != partnerId {
+<<<<<<< HEAD
 		return nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
@@ -208,6 +272,33 @@ func (this *memberService) CheckUsr(usr string, memberId int) error {
 		return member.ErrUsrExist
 	}
 	return nil
+=======
+		return false, nil, errors.New("无法登陆:NOT MATCH PARTNER!")
+	}
+
+	unix := time.Now().Unix()
+	val.LastLoginTime = unix
+	val.UpdateTime = unix
+
+	m.SetValue(val)
+	m.Save()
+
+	return true, val, nil
+}
+
+func (this *memberService) CheckUsr(usr string, memberId int) error {
+	if len(usr) < 6 {
+		return member.ErrUserLength
+	}
+	var id int = this._memberRep.GetMemberIdByUser(usr)
+	if id == 0 {
+		return nil
+	} else if memberId != 0 && id == memberId {
+		return nil
+	}
+
+	return errors.New("用户名已被使用")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *memberService) GetAccount(memberId int) *member.AccountValue {
@@ -284,7 +375,10 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 	return member.ErrNoSuchMember
 }
 
+<<<<<<< HEAD
 //修改密码
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
 	m := this._memberRep.GetMember(memberId)
 	if m != nil {
@@ -321,7 +415,10 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			Id:             m.GetAggregateRootId(),
 			Usr:            mv.Usr,
 			Name:           mv.Name,
+<<<<<<< HEAD
 			Avatar:         format.GetResUrl(mv.Avatar),
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 			Exp:            mv.Exp,
 			Level:          mv.Level,
 			LevelName:      lv.Name,
@@ -382,12 +479,21 @@ func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, 
 	return true, nil
 }
 
+<<<<<<< HEAD
 // 提现并返回提现编号,交易号以及错误信息
 func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
 	m, err := this.getMember(partnerId, memberId)
 	if err != nil {
 		return 0, "", err
+=======
+// 提现
+func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
+	applyAmount float32, commission float32) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 
 	acc := m.GetAccount()
@@ -424,9 +530,12 @@ func (this *memberService) GetLatestApplyCashText(memberId int) string {
 		case 3:
 			sText = "已完成"
 		}
+<<<<<<< HEAD
 		if latestApplyInfo.Amount < 0 {
 			latestApplyInfo.Amount = -latestApplyInfo.Amount
 		}
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		latestInfo = fmt.Sprintf(`<b>最近提现：</b>%s&nbsp;申请提现%s ，状态：<span class="status">%s</span>。`,
 			time.Unix(latestApplyInfo.CreateTime, 0).Format("2006-01-02 15:04"),
 			format.FormatFloat(latestApplyInfo.Amount),
@@ -548,6 +657,7 @@ func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelC
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	return this._query.GetMemberInviRank(partnerId, allTeam, levelComp, level, startTime, endTime, num)
 }
+<<<<<<< HEAD
 
 // 生成会员账户人工单据
 func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind int,
@@ -569,3 +679,5 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	}
 	return tradeNo, err
 }
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d

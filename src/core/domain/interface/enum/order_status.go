@@ -52,17 +52,38 @@ func (t OrderState) String() string {
 }
 
 const (
+<<<<<<< HEAD
+=======
+	//线下付款
+	PAY_OFFLINE = 1
+
+	//线上付款
+	PAY_ONLINE = 2
+)
+
+const (
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	/****** 站点状态 *********/
 	//合作商网站关闭
 	PARTNER_SITE_CLOSED = 0
 	//合作商网站正常
 	PARTNER_SITE_NORMAL = 1
+<<<<<<< HEAD
 	/****** 积分返回类型 *********/
 	INTEGRAL_TYPE_SYSTEM_PRESENT = 1
 	INTEGRAL_TYPE_LOGIN_PRESENT  = 2
 	INTEGRAL_TYPE_ORDER          = 3
 	INTEGRAL_TYPE_BACK           = 4
 	INTEGRAL_TYPE_EXCHANGE       = 12
+=======
+
+	/****** 积分返回类型 *********/
+	INTEGRAL_TYPE_SYSTEMSEND = 1
+	INTEGRAL_TYPE_LOGINSEND  = 2
+	INTEGRAL_TYPE_ORDER      = 3
+	INTEGRAL_TYPE_BACK       = 4
+	INTEGRAL_TYPE_EXCHANGE   = 12
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )
 
 var (

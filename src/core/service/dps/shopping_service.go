@@ -27,10 +27,17 @@ func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
 	}
 }
 
+<<<<<<< HEAD
 func (this *shoppingService) BuildOrder(partnerId int, subject string, memberId int,
 	cartKey string, couponCode string) (map[string]interface{}, error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, _, err := sp.BuildOrder(memberId, subject, couponCode)
+=======
+func (this *shoppingService) BuildOrder(partnerId int, memberId int,
+	cartKey string, couponCode string) (map[string]interface{}, error) {
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	order, _, err := sp.BuildOrder(memberId, couponCode)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err != nil {
 		return nil, err
 	}
@@ -68,10 +75,17 @@ func (this *shoppingService) BuildOrder(partnerId int, subject string, memberId 
 	return data, err
 }
 
+<<<<<<< HEAD
 func (this *shoppingService) SubmitOrder(partnerId, memberId int, subject string, couponCode string, useBalanceDiscount bool) (
 	orderNo string, err error) {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	return sp.SubmitOrder(memberId, subject, couponCode, useBalanceDiscount)
+=======
+func (this *shoppingService) SubmitOrder(partnerId, memberId int, couponCode string, useBalanceDiscount bool) (
+	orderNo string, err error) {
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+	return sp.SubmitOrder(memberId, couponCode, useBalanceDiscount)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *shoppingService) SetDeliverShop(partnerId int, orderNo string,
@@ -102,7 +116,11 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 		case enum.ORDER_WAIT_DELIVERY:
 			err = order.Process()
 		case enum.ORDER_WAIT_RECEIVE:
+<<<<<<< HEAD
 			err = order.Deliver(0, "")
+=======
+			err = order.Deliver()
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		case enum.ORDER_RECEIVED:
 			err = order.SignReceived()
 		case enum.ORDER_COMPLETED:
@@ -112,6 +130,7 @@ func (this *shoppingService) HandleOrder(partnerId int, orderNo string) error {
 	return err
 }
 
+<<<<<<< HEAD
 // 根据编号获取订单
 func (this *shoppingService) GetOrderById(id int) *shopping.ValueOrder {
 	v := this._rep.GetOrderById(id)
@@ -121,6 +140,8 @@ func (this *shoppingService) GetOrderById(id int) *shopping.ValueOrder {
 	return v
 }
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *shoppingService) GetOrderByNo(partnerId int,
 	orderNo string) *shopping.ValueOrder {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
@@ -135,11 +156,14 @@ func (this *shoppingService) GetOrderByNo(partnerId int,
 	return &v
 }
 
+<<<<<<< HEAD
 // 根据订单号获取订单
 func (this *shoppingService) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
 	return this._rep.GetValueOrderByNo(orderNo)
 }
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *shoppingService) CancelOrder(partnerId int, orderNo string, reason string) error {
 	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
 	order, err := sp.GetOrderByNo(orderNo)
@@ -154,19 +178,25 @@ func (this *shoppingService) getShoppingCart(partnerId int, buyerId int, cartKey
 	sp := this._rep.GetShopping(partnerId)
 	return sp.GetShoppingCart(buyerId, cartKey)
 }
+<<<<<<< HEAD
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *shoppingService) GetShoppingCart(partnerId int, memberId int, cartKey string) *dto.ShoppingCart {
 	cart := this.getShoppingCart(partnerId, memberId, cartKey)
 	return this.parseDtoCart(cart)
 }
 
+<<<<<<< HEAD
 // 创建一个新的购物车
 func (this *shoppingService) CreateShoppingCart(partnerId int, memberId int) *dto.ShoppingCart {
 	cart := this._rep.GetShopping(partnerId).NewCart(memberId)
 	return this.parseDtoCart(cart)
 }
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	var cart = new(dto.ShoppingCart)
 	v := c.GetValue()
@@ -303,13 +333,18 @@ func (this *shoppingService) PayForOrderOnlineTrade(partnerId int, orderNo strin
 
 // 确定订单
 func (this *shoppingService) ConfirmOrder(partnerId int, orderNo string) error {
+<<<<<<< HEAD
 	var sp = this._rep.GetShopping(partnerId)
+=======
+	var sp shopping.IShopping = this._rep.GetShopping(partnerId)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	order, err := sp.GetOrderByNo(orderNo)
 	if err == nil {
 		err = order.Confirm()
 	}
 	return err
 }
+<<<<<<< HEAD
 
 // 配送订单,并记录配送服务商编号及单号
 func (this *shoppingService) DeliveryOrder(partnerId int, orderNo string,
@@ -342,3 +377,5 @@ func (this *shoppingService) SignOrderCompleted(partnerId int, orderNo string) e
 	}
 	return err
 }
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d

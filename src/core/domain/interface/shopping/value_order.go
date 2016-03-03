@@ -14,8 +14,11 @@ type ValueOrder struct {
 	OrderNo   string `db:"order_no" json:"orderNo"`
 	MemberId  int    `db:"member_id" json:"memberId"`
 	PartnerId int    `db:"partner_id" json:"partnerId"`
+<<<<<<< HEAD
 	// 订单标题
 	Subject   string `db:"subject" json:"subject"`
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	ShopId    int    `db:"shop_id" json:"shopId"`
 	ItemsInfo string `db:"items_info" json:"itemsInfo"`
 	// 总金额
@@ -24,6 +27,7 @@ type ValueOrder struct {
 	Fee float32 `db:"fee" json:"fee"`
 	// 支付金额
 	PayFee float32 `db:"pay_fee" json:"payFee"`
+<<<<<<< HEAD
 	// 减免金额(包含优惠券金额)
 	DiscountFee float32 `db:"discount_fee" json:"discountFee"`
 	// 余额抵扣
@@ -31,6 +35,17 @@ type ValueOrder struct {
 	// 优惠券优惠金额
 	CouponFee float32 `db:"coupon_fee" json:"couponFee"`
 	// 支付方式
+=======
+	//减免金额(包含优惠券金额)
+	DiscountFee float32 `db:"discount_fee" json:"discountFee"`
+
+	// 余额抵扣
+	BalanceDiscount float32 `db:"balance_discount" json:"balaceDiscount"`
+
+	//优惠券优惠金额
+	CouponFee float32 `db:"coupon_fee" json:"couponFee"`
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	PaymentOpt int `db:"payment_opt" json:"payMethod"`
 
 	IsPaid int `db:"is_paid" json:"isPaid"`

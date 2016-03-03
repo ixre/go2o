@@ -59,7 +59,11 @@ func (this *Member) GetValue() member.ValueMember {
 var (
 	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
 	emailRegex = regexp.MustCompile("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*")
+<<<<<<< HEAD
 	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8]|14[7])(\\d{8})$")
+=======
+	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8])(\\d{8})$")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	qqRegex    = regexp.MustCompile("^\\d{5,12}$")
 )
 
@@ -70,6 +74,7 @@ func (this *Member) validate(v *member.ValueMember) error {
 	v.Phone = strings.TrimSpace(v.Phone)
 
 	if len([]rune(v.Usr)) < 6 {
+<<<<<<< HEAD
 		return member.ErrUsrLength
 	}
 	if !userRegex.MatchString(v.Usr) {
@@ -77,6 +82,15 @@ func (this *Member) validate(v *member.ValueMember) error {
 	}
 
 	if len([]rune(v.Name)) < 2 {
+=======
+		return member.ErrUserLength
+	}
+	if !userRegex.MatchString(v.Usr) {
+		return member.ErrUserValidErr
+	}
+
+	if this.GetAggregateRootId() != 0 && len([]rune(v.Name)) < 2 {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		return member.ErrPersonName
 	}
 
@@ -296,6 +310,7 @@ func (this *Member) GetRelation() *member.MemberRelation {
 	return this._relation
 }
 
+<<<<<<< HEAD
 // 更换用户名
 func (this *Member) ChangeUsr(usr string) error {
 	if usr == this._value.Usr {
@@ -315,6 +330,8 @@ func (this *Member) ChangeUsr(usr string) error {
 	return err
 }
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 // 保存
 func (this *Member) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
@@ -322,9 +339,12 @@ func (this *Member) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
+<<<<<<< HEAD
 	if len(this._value.Name) == 0 {
 		this._value.Name = this._value.Usr
 	}
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err := this.validate(this._value); err != nil {
 		return this.GetAggregateRootId(), err
 	}
@@ -368,22 +388,42 @@ func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
 	if newPwd == oldPwd {
 		return member.ErrPwdCannotSame
 	}
+<<<<<<< HEAD
 	if b, err := domain.ChkPwdRight(newPwd); !b {
 		return err
 	}
+=======
+
+	if b, err := domain.ChkPwdRight(newPwd); !b {
+		return err
+	}
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 已经设置过旧密码
 	if len(this._value.TradePwd) != 0 && this._value.TradePwd != oldPwd {
 		return member.ErrPwdOldPwdNotRight
 	}
+<<<<<<< HEAD
 	this._value.TradePwd = newPwd
 	_, err = this.Save()
+=======
+
+	this._value.TradePwd = newPwd
+	_, err = this.Save()
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	return err
 }
 
 // 创建会员
 func (this *Member) create(m *member.ValueMember) (int, error) {
+<<<<<<< HEAD
 	if this.usrIsExist(m.Usr) {
 		return -1, member.ErrUsrExist
+=======
+	if this.UsrIsExist() {
+		return -1, errors.New("用户名已经被使用")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 	if len(m.Phone) > 0 && this.PhoneIsExist(m.Phone) {
 		return -1, member.ErrPhoneHasBind
@@ -398,14 +438,26 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 	m.BirthDay = "1970-01-01"
 	m.DynamicToken = m.Pwd
 	m.Exp = 0
+<<<<<<< HEAD
 	if len(m.RegFrom) == 0 {
 		m.RegFrom = "API-INTERNAL"
 	}
+=======
+
+	if len(m.RegFrom) == 0 {
+		m.RegFrom = "API-INTERNAL"
+	}
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 如果昵称为空，则跟用户名相同
 	if len(m.Name) == 0 {
 		m.Name = m.Usr
 	}
 	m.InvitationCode = this.generateInvitationCode() // 创建一个邀请码
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	id, err := this._rep.SaveMember(m)
 	if id != 0 {
 		this._value.Id = id
@@ -426,8 +478,13 @@ func (this *Member) generateInvitationCode() string {
 }
 
 // 用户是否已经存在
+<<<<<<< HEAD
 func (this *Member) usrIsExist(usr string) bool {
 	return this._rep.CheckUsrExist(usr, this.GetAggregateRootId())
+=======
+func (this *Member) UsrIsExist() bool {
+	return this._rep.CheckUsrExist(this._value.Usr, this.GetAggregateRootId())
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 // 手机号码是否占用

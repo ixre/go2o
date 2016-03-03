@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>树形选择</title>
+	<link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
+	<link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+	<div class="tree" id="menu_tree" style="margin:0 0 15px 20px"></div>
+	<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+    <script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+	
+<script type="text/javascript">
+var treeObj = null;
+var treeEle = j6.$('menu_tree');
+function treeHandler(src,value,text){
+	var nodeLinks = j6.dom.getsByClass(treeEle, 'node');
+	j6.each(nodeLinks, function(i, e) {
+	    if (e.nodeName == 'DIV') {
+	    	e.style.backgroundColor='';
+	    }
+	});
+	src.parentNode.style.backgroundColor="#FBEC88";
+	var dialog = SimpleDialog.getDialog();
+	var win = dialog.window;
+	if(win.nodeSelected){
+		if(win.nodeSelected(value,text) != false){
+			dialog.close();
+		}
+	}else{
+		alert('未定义nodeSelected函数');
+	}
+};
+
+function ajaxLoadTree(){
+	//var data = {"text":"根节点","value":"","url":"","icon":"","open":true,"childs":[{"text":"小炒","value":"18","url":"","icon":"","open":true,"childs":[]}]};
+	//loadTree(data);
+	j6.xhr.get('categoryJson',function(result){
+		var json = j6.toJson(result);
+		treeObj = j6.tree.load('menu_tree',json,'{{.static_serve}}/assets/js/tree/',treeHandler);
+		var title = treeEle.getElementsByTagName('B')[0];
+		title.style.cssText = 'color:#0066cc;cursor:pointer';
+		title.onclick=function(){
+			treeHandler(this,0,title.innerHTML);
+		};
+	});
+}
+ajaxLoadTree();
+j6.dom.fitHeight(j6.$('menu_tree').parentNode);
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+.idea/
+platforms/
+bin
+pkg
+.a
+*.swp
+*.exe
+.DS_Store
+.idea
+app_*.conf
+*.psd
+*.zip
+uploads/102
+uploads/103

@@ -13,17 +13,28 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	guitl "github.com/jsix/gof/util"
+<<<<<<< HEAD
+=======
+	"github.com/jsix/gof/web"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"
+<<<<<<< HEAD
 	"go2o/src/x/echox"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"net/http"
 	"strconv"
 	"strings"
 )
 
 type PaymentC struct {
+<<<<<<< HEAD
+=======
+	*BaseC
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func getDomain(r *http.Request) string {
@@ -36,10 +47,17 @@ func getDomain(r *http.Request) string {
 	return proto + r.Host
 }
 
+<<<<<<< HEAD
 func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	var p payment.IPayment
 
 	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
+=======
+func (this *PaymentC) getAliPayment(ctx *web.Context) payment.IPayment {
+	var p payment.IPayment
+
+	if guitl.IsMobileAgent(ctx.Request.UserAgent()) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		p = &payment.AliPayWap{
 			Partner: "2088021187655650",
 			Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
@@ -71,10 +89,17 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	}
 	return p
 }
+<<<<<<< HEAD
 func (this *PaymentC) Create(ctx *echox.Context) error {
 	r, w := ctx.Request(), ctx.Response()
 	qs := r.URL.Query()
 	partnerId := GetSessionPartnerId(ctx)
+=======
+func (this *PaymentC) Create(ctx *web.Context) {
+	r, w := ctx.Request, ctx.Response
+	qs := r.URL.Query()
+	partnerId := this.GetPartnerId(ctx)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
 
@@ -87,6 +112,7 @@ func (this *PaymentC) Create(ctx *echox.Context) error {
 		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 	}
 
+<<<<<<< HEAD
 	//todo:?需要优化
 	if order == nil {
 		w.Write([]byte("订单不存在"))
@@ -134,10 +160,50 @@ func (this *PaymentC) Return_alipay(ctx *echox.Context) error {
 	partnerId := GetSessionPartnerId(ctx)
 	if len(result.OrderNo) == 0 {
 		result.OrderNo = ctx.Session.Get("current_payment").(string)
+=======
+	if order != nil {
+		if order.IsPaid == enum.TRUE {
+			ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", order.OrderNo))
+			ctx.Response.WriteHeader(302)
+			return
+		}
+		ctx.Session().Set("current_payment", orderNo)
+		ctx.Session().Save()
+
+		//order.PayFee = 0.01
+
+		if paymentOpt == "alipay" || paymentOpt == strconv.Itoa(enum.PaymentOnlinePay) {
+			aliPayObj := this.getAliPayment(ctx)
+			domain := getDomain(ctx.Request)
+			returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
+			notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
+			gateway := aliPayObj.CreateGateway(orderNo, order.PayFee, "在线支付订单", "订单号："+orderNo, notifyUrl, returnUrl)
+			html := "<html><head><meta charset=\"utf-8\"/></head><body>" + gateway + "</body></html>"
+			w.Write([]byte(html))
+
+			payment.Debug(" [ Submit] - %s - %s", orderNo, notifyUrl)
+
+			return
+		}
+	}
+
+	w.Write([]byte("订单不存在"))
+}
+
+func (this *PaymentC) Return_alipay(ctx *web.Context) {
+	//this.paymentFail(ctx,nil)
+	//return
+	aliPayObj := this.getAliPayment(ctx)
+	result := aliPayObj.Return(ctx.Request)
+	partnerId := this.GetPartnerId(ctx)
+	if len(result.OrderNo) == 0 {
+		result.OrderNo = ctx.Session().Get("current_payment").(string)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 	order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 	if result.Status == payment.StatusTradeSuccess {
 		this.handleOrder(order, "alipay", &result)
+<<<<<<< HEAD
 		return this.paymentSuccess(ctx, order, &result)
 	}
 
@@ -155,14 +221,41 @@ func (this *PaymentC) Notify_post(ctx *echox.Context) error {
 	if paymentOpt == "alipay" {
 		aliPayObj := this.getAliPayment(ctx)
 		result := aliPayObj.Notify(ctx.Request())
+=======
+		this.paymentSuccess(ctx, order, &result)
+		return
+	}
+
+	this.paymentFail(ctx, order, &result)
+}
+
+func (this *PaymentC) Notify_post(ctx *web.Context) {
+	path := ctx.Request.URL.Path
+	lastSeg := strings.Split(path[strings.LastIndex(path, "/")+1:], "_")
+	paymentOpt := lastSeg[1]
+	partnerId, _ := strconv.Atoi(lastSeg[0])
+	payment.Debug(" [ Notify] - URL - %s - %d -  %s", ctx.Request.RequestURI, partnerId, paymentOpt)
+
+	if paymentOpt == "alipay" {
+		aliPayObj := this.getAliPayment(ctx)
+		result := aliPayObj.Notify(ctx.Request)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 		if result.Status == payment.StatusTradeSuccess {
 			this.handleOrder(order, "alipay", &result)
 			payment.Debug("payment ok")
+<<<<<<< HEAD
 			return ctx.StringOK("success")
 		}
 	}
 	return ctx.StringOK("fail")
+=======
+			ctx.Response.Write([]byte("success"))
+			return
+		}
+	}
+	ctx.Response.Write([]byte("fail"))
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result *payment.Result) error {
@@ -179,6 +272,7 @@ func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result 
 	return errors.New("no such order")
 }
 
+<<<<<<< HEAD
 func (this *PaymentC) paymentSuccess(ctx *echox.Context,
 	order *shopping.ValueOrder, result *payment.Result) error {
 	p := getPartner(ctx)
@@ -203,4 +297,34 @@ func (this *PaymentC) paymentFail(ctx *echox.Context,
 		"order":   order,
 	}
 	return ctx.RenderOK("payment_fail.html", d)
+=======
+func (this *PaymentC) paymentSuccess(ctx *web.Context,
+	order *shopping.ValueOrder, result *payment.Result) {
+	p := this.GetPartner(ctx)
+	siteConf := this.GetSiteConf(ctx)
+
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner": p,
+		"conf":    siteConf,
+		"order":   order,
+	},
+		"views/shop/ols/{device}/payment_success.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
+}
+
+func (this *PaymentC) paymentFail(ctx *web.Context,
+	order *shopping.ValueOrder, result *payment.Result) {
+	p := this.GetPartner(ctx)
+	siteConf := this.GetSiteConf(ctx)
+
+	this.BaseC.ExecuteTemplate(ctx, gof.TemplateDataMap{
+		"partner": p,
+		"conf":    siteConf,
+		"order":   order,
+	},
+		"views/shop/ols/{device}/payment_fail.html",
+		"views/shop/ols/{device}/inc/header.html",
+		"views/shop/ols/{device}/inc/footer.html")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }

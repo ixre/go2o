@@ -1,0 +1,13 @@
+.login-page .pxui-form-info p .pxui-gray-button,
+.login-page .pxui-form-info p input.pxui-light-button{width:auto;padding:9px 12px 8px 12px;display:inline-block;margin:0;border:0;vertical-align:middle;margin-bottom:12px;}
+.login-page .pxui-form-info p input.pxui-light-button{width:50%;}
+.login-page .pxui-form-info p .pxui-gray-button{line-height:20px;width:45%;text-align:center;padding:9px 0 8px 0;float:right;}
+.login-page h3{text-align:center;border:1px solid #b4bdd0;border-left:0;border-right:0;line-height:36px;font-weight:normal;font-size:14px;}
+.login-page div.pxui-form-info{margin-top:20px;}
+.login-page div.pxui-other-login{margin-top:0;}
+.login-page div.pxui-form-info a{width:100%;padding-left:0;padding-right:0;margin:10px 0 0 0;text-indent:98px;position:relative;line-height:22px;}
+.login-page div.pxui-form-info i{background-image:url(../../images/login/index.gif@1);background-size:89px 167px;width:89px;height:39px;display:inline-block;position:absolute;left:0;top:0;}
+.login-page div.pxui-form-info a:nth-child(2) i{background-position:0 -44px;}
+.login-page div.pxui-form-info a:nth-child(3) i{background-position:0 -88px;}
+.login-page div.pxui-form-info a:nth-child(4) i{background-position:0 -127px;}
+.error-msg, .pxui-form-info p.error-msg{padding-left:26px;}

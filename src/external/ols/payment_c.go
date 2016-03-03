@@ -11,7 +11,10 @@ package ols
 import (
 	"github.com/jsix/gof/web"
 	"go2o/src/core/infrastructure/alipay"
+<<<<<<< HEAD
 	"go2o/src/core/infrastructure/payment/alipay"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )
 
 type paymentC struct {

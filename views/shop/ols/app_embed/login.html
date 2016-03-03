@@ -1,0 +1,101 @@
+{{$img_serve:=.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>会员登陆</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+</head>
+<body class="hidden">
+    {{template "header" $}}
+    <div class="panel login-panel form" id="form1">
+
+
+                <div class="tip-panel{{.tipStyle}}" id="tip">
+                    请登录后继续操作!
+                </div>
+
+                <div class="fl">
+                    <div class="label">用户名：</div>
+                    <div class="in">
+                        <input field="usr" id="username" type="text" class="box ui-validate"
+                               required="true" summary="{required:'请输入用户名'}" />
+                    </div>
+                </div>
+
+                <div class="fl">
+                    <div class="label">密码：</div>
+                    <div class="in">
+                        <input field="pwd" type="password" class="box ui-validate"
+                               required="true" summary="{required:'请输入密码'}" onfocus="this.value=''"/>
+                    </div>
+                </div>
+
+                <div class="fl">
+                    <div class="label"></div>
+                    <div class="in">
+                        <a href="javascript:;" class="btn btn-orange" id="btn_login">登陆</a>
+                        <a href="javascript:;" class="btn btn-orange" id="btn_forget" onclick="alert('请拨打客服电话联系重置密码')">忘记密码</a>
+                    </div>
+                </div>
+
+
+
+            <div class="clearfix"></div>
+            <div class="login-left-note">还没有账号？点击<a href="/user/register.htm">这里</a>进行注册！</div>
+
+
+        </div>
+
+
+    {{template "footer" $}}
+
+
+    <script src="{{.static_serve}}/assets/js/mobi/core.js?version={{.version}}"></script>
+    <script src="{{.static_serve}}/assets/js/mobi/device.js?version={{.version}}"></script>
+    <script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?version={{.version}}"></script>
+
+    <script type="text/javascript">
+        window.pc.login = null;
+        window.cli.login(j6.request('return_url'));
+        if(window.android || window.ios) {
+            window.history.go(-1);
+        }else{
+            document.body.className='';
+        }
+
+        var tip = j6.$('tip');
+        document.body.onkeydown = function (e) {
+            var event = window.event || e;
+            if (event.keyCode == 13) {
+                subLogin();
+            }
+        };
+        function subLogin() {
+            var data = j6.json.toObject('form1');
+            if (j6.validator.validate('form1')){
+                data.pwd = sha1(data.pwd);
+                j6.json.bind('form1',data);
+
+                j6.xhr.jsonPost(location.href, data, function (json) {
+                    if (json.result) {
+                        window.parent.location.replace(decodeURIComponent(j6.request('return_url')||'/'));
+                    }else {
+                        if (json.message.indexOf('验证码') != -1) {
+                            refreshImage();
+                        }
+                        tip.className= 'tip-panel';
+                        tip.innerHTML = '<span style="color:red">' + json.message + '</span>';
+                    }
+                }, function (x) {
+                    tip.className= 'tip-panel';
+                    tip.innerHTML = '<span style="color:red">登陆服务器失败请重试!</span>';
+                });
+            }
+        }
+
+        j6.$('btn_login').onclick=subLogin;
+    </script>
+</body>
+</html>

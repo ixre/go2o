@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<head>
+	<title>申请提现</title>
+	<meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+
+
+	<div class="page-main">
+		<h1>订单返现</h1>
+		<div class="h10"></div>
+
+		您的账户余额:　<b>￥{{.account.Balance}}</b>，需满100元方可提现！<br /><br />
+
+		<a class="button" href="income_log.htm">查看返现记录</a>
+
+		<div class="clear-fix"><br /></div>
+
+
+		<h1>收款银行帐号</h1>
+		<div class="h10"></div>
+
+		<div id="form1" class="form">
+			<div id="pl" class="summary"></div>
+			<div class="fl">
+				<div class="label">开户银行：</div>
+				<div class="in">
+					<select class="ui-validate ui-box" field="Name" required="true">
+						<option>－请选择－</option>
+						<option value="中国工商银行">中国工商银行</option>
+						<option value="中国农业银行">中国农业银行</option>
+						<option value="中国建设银行">中国建设银行</option>
+						<option value="中国交通银行">中国交通银行</option>
+						<option value="中国邮政储蓄银行">中国邮政储蓄银行</option>
+					</select>
+				</div>
+
+				<div class="fl">
+					<div class="label">分行网点：</div>
+					<div class="in">
+						<input type="text" class="ui-validate ui-box" required="true" field="Network"/>
+						如：上海分行漕溪路支行
+					</div>
+				</div>
+
+				<div class="fl">
+					<div class="label">户名：</div>
+					<div class="in">
+						<input type="text" class="ui-validate ui-box" required="true" field="AccountName"/>
+						填写银行户名，如：张三
+					</div>
+				</div>
+
+				<div class="fl">
+					<div class="label">银行帐号：</div>
+					<div class="in">
+						<input type="text" class="ui-validate ui-box" required="true" field="Account"/>
+					</div>
+				</div>
+				<div class="fl">
+					<div class="label"></div>
+					<div class="in">
+						<input class="btn" type="button" value="保存" onclick="saveData()"/>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+			<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?ver={{.version}}"></script>
+
+
+			<script type="text/javascript">
+				var entity = {{.entity}}||{};
+				j6.json.bind('form1',entity);
+				var pl = j6.$('pl');
+
+				function saveData(){
+					if(j6.validator.validate('form1')){
+						var data = j6.json.toObject('form1');
+						j6.xhr.jsonPost('?',data,function(json){
+							if(json.result){
+								pl.innerHTML='<b>修改成功</b>';
+								pl.className='green';
+							}else{
+								pl.innerHTML='<b>'+ json.message +'</b>';
+								pl.className='red';
+							}
+						});
+					}
+				}
+			</script>
+
+
+{{template "footer"$}}
+
+</body>
+</html>

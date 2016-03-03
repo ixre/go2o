@@ -1,0 +1,41 @@
+{{define "footer"}}
+    <div class="page-footer">
+        <div class="items">
+            <ul>
+                <li>
+                    <a href="/"><i class="iconfont">&#xe600;</i>
+                    <span class="txt">首页</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/order/all.htm"><i class="iconfont">&#xe607;</i>
+                        <span class="txt">订单</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/account/apply_cash.htm"><i class="iconfont">&#xe606;</i>
+                        <span class="txt">账户</span></a>
+                    <span class="split"></span>
+                </li>
+                <li>
+                    <a href="/basic/profile.htm"><i class="iconfont">&#xe602;</i>
+                        <span class="txt">资料</span></a>
+                    <span class="split"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var btnBack = document.getElementById('btn_back');
+     if(location.pathname=="/"){
+         btnBack.className='btn_button btn_back hidden';
+     }
+        btnBack.onclick=function(){
+          window.history.go(-1);
+        };
+
+        document.getElementById('page-title').innerHTML=document.title;
+    </script>
+
+{{end}}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <title>购物车</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <!--离线应用的另一个技巧-->
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <!--指定的iphone中safari顶端的状态条的样式-->
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <!--告诉设备忽略将页面中的数字识别为电话号码-->
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/mos/default/css/com/com.css?spam={{.spam}}"/>
+    <link type="text/css" rel="stylesheet" href="{{.static_serve}}/css/shop/app_embed/stand.css?spam={{.spam}}"/>
+</head>
+<body>
+{{template "header"$}}
+
+<div id="main" class="shopping-confirm">
+    <div class="panel">
+
+        <p class="shopping-error">
+            您的购物车里没有商品！ <br/><br/>
+        </p>
+    </div>
+</div>
+
+{{template "footer".}}
+
+</body>
+</html>

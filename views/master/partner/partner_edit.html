@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>分类管理</title>
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<form id="form1">
+    <table cellpadding="0" cellspacing="1" class="ui-table">
+        <tr>
+            <td class="title" width="120">姓名：</td>
+            <td>
+                <input type="hidden" field="Id" value="0" />
+                <input type="text" field="Name" class="ui-validate ui-box" required="true" />
+            </td>
+        </tr>
+		<tr>
+			<td class="title" width="120">住址：</td>
+			<td>
+                <input type="text" field="Address" class="ui-validate ui-box" required="true" />
+            </td>
+		</tr>
+        <tr>
+            <td class="title" width="120" valign="top">电话：</td>
+            <td>
+				 <input type="text" field="Tel" class="ui-validate ui-box" required="true" />
+			</td>
+        </tr>
+       <tr>
+            <td class="title" width="120">个人目标：</td>
+            <td>
+                <input type="text" field="ObjectNum" class="ui-validate ui-box" isnumber="true" required="true" value="10"/>
+	    </td>
+        </tr>
+        <tr>
+            <td class="title" width="120">用户名：</td>
+            <td>
+                <input type="text" field="User" class="ui-validate ui-box" required="true" />
+			 </td>
+        </tr>
+        <tr>
+            <td class="title" width="120">密码：</td>
+            <td>
+                <input type="password" field="Pwd" class="ui-validate ui-box" required="true" />
+			 </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">保存</span><a href="javascript:;"></a></span></span>
+                <span class="ui-button w150"><span class="button-inner"><span class="button-txt">重置</span><input type="reset" value="reset" /></span></span>
+            </td>
+        </tr>
+    </table>
+</form>
+
+    <script src="/static/assets/js/core_full.js?spam={{.spam}}"></script>
+    <script src="/static/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+    
+    <script>
+    var entity ={{.entity}} ||{};
+    j6.json.bind('form1', entity);
+
+
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SavePartner', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    //j6.tab.closeAndRefresh(function() {}, '员工管理');
+                   var d = j6.dialog.getDialog();
+                   d.close(function(){
+                       if(d.window.refresh){
+                       	 d.window.refresh();
+                       }
+                   });
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+    </script>
+</body>
+</html>

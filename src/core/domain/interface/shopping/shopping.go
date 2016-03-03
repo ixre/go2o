@@ -51,10 +51,17 @@ type IShopping interface {
 	ParseShoppingCart(memberId int) (IOrder, member.IMember, ICart, error)
 
 	// 组装订单
+<<<<<<< HEAD
 	BuildOrder(memberId int, subject string, couponCode string) (IOrder, ICart, error)
 
 	// 提交订单
 	SubmitOrder(memberId int, subject string, couponCode string, useBalanceDiscount bool) (string, error)
+=======
+	BuildOrder(memberId int, couponCode string) (IOrder, ICart, error)
+
+	// 提交订单
+	SubmitOrder(memberId int, couponCode string, useBalanceDiscount bool) (string, error)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 获取可用的订单号
 	GetFreeOrderNo() string

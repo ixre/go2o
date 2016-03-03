@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>退回提现申请</title>
+    <link href="{{.static_serve}}/assets/mui/css/latest/page_style.css?v={{.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.static_serve}}/css/partner/partner.css?spam={{.spam}}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/icon.css?spam={{.spam}}">
+</head>
+<body>
+
+<div class="tip-box">
+    提现时间：{{.applyTime}}<br />
+    提现金额：{{.info.Amount}}<br />
+    提现说明：{{.info.Title}}<br />
+    收款银行：{{.bank.Name}}<br />
+    支行名称：{{.bank.Network}}<br />
+    户名：{{.bank.AccountName}}<br />
+    银行账号：{{.bank.Account}}<br />
+</div>
+
+
+<div class="easyui-tabs">
+
+    <div title="审核通过">
+        <div id="form3" class="form margin30">
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <span class="ui-button w150" id="btn_pass">
+                        <span class="button-inner">
+                            <span class="button-txt">审核通过</span>
+                            <a href="javascript:;"></a></span>
+                        </span>
+                    <br />
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div title="退回提现">
+
+        <div id="form2" class="form margin30">
+            <div class="fl">
+                <div class="label"><span class="red">*&nbsp;</span>退回原因：</div>
+                <div class="in">
+                    <select id="dr_reason" onchange="quickReason(this)">
+                        <option value="">一选择常见原因一</option>
+                        <option>银行卡号填写错误</option>
+                        <option>开户行有误</option>
+                    </select><br /><br />
+                    <textarea class="ui-box" id="tb_reason" field="Reason"></textarea>
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <span class="ui-button w150" id="btn_back">
+                        <span class="button-inner">
+                            <span class="button-txt">退回申请</span>
+                            <a href="javascript:;"></a></span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div title="确认汇款">
+        <div id="form1" class="form margin30">
+            <div style="background:#FFC;padding:3px 40px;"><span class="red">*</span>请先通过银行转账汇后，继续进行操作。</div>
+            <div class="fl">
+                <div class="label"><span class="red">*&nbsp;</span>交易号：</div>
+                <div class="in">
+                    <input type="hidden" field="Id" value="{{.info.Id}}"/>
+                    <input type="hidden" field="MemberId" value="{{.info.MemberId}}"/>
+                    <input class="ui-validate ui-box" type="text" field="TradeNo" required="true" summary="{required:'请填写转账交易号'}"/>
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <input type="checkbox" field="Agree" id="ck_agree"/>
+                    <label for="ck_agree">我已确认完成汇款并同意完成提现</label><br/><br/>
+                    <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">确认汇款</span><a href="javascript:;"></a></span></span>
+                    <br />
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script src="{{.static_serve}}/assets/js/plugins/sys.js?spam={{.spam}}"></script>
+
+<script>
+    var id = {{.info.Id}};
+    var memberId = {{.info.MemberId}};
+    j6.$('btn_save').onclick = function () {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost(location.href, data, function (json) {
+                if(json.result) {
+                    window.parent.$.messager.alert('提示', '操作成功', 'ok', function () {
+                        var d = j6.dialog.getDialog();
+                        if (d.window.refresh) {
+                            d.window.refresh();
+                        }
+                        d.close();
+                    });
+                }else{
+                    window.parent.$.messager.alert('提示', json.message, 'error');
+                }
+            }, function (e) {
+                window.parent.$.messager.alert('提示', " 操作失败！ ", 'error');
+            });
+        }
+    }
+
+
+    j6.$('btn_back').onclick = function () {
+        passRequest(false);
+    };
+
+    j6.$('btn_pass').onclick = function () {
+       passRequest(true);
+    };
+
+
+    function passRequest(r) {
+        var reason = j6.$('tb_reason').value;
+        var tit = r ? '申请通过' : '申请被退回';
+        j6.xhr.jsonPost('pass_apply_req', {id: id, member_id: memberId, pass: r?1:0, reason: escape(reason)},
+                function (json) {
+                    if (json.result) {
+                        window.parent.$.messager.alert('提示', tit, 'ok', function () {
+                            var d = j6.dialog.getDialog();
+                            if (d.window.refresh) {
+                                d.window.refresh();
+                            }
+                            d.close();
+                        });
+                    } else {
+                        window.parent.$.messager.alert('提示', json.message, 'error');
+                    }
+                }, function (e) {
+                    window.parent.$.messager.alert('提示', "操作失败！ ", 'error');
+                });
+    }
+
+
+    function quickReason(t){
+        j6.$('tb_reason').value = t.value;
+    }
+</script>
+</body>
+</html>

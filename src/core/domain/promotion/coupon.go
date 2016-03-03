@@ -168,7 +168,11 @@ func (this *Coupon) GetDescribe() string {
 	if v.MinFee == 0 {
 		buf.WriteString("任意订单")
 	} else {
+<<<<<<< HEAD
 		buf.WriteString(fmt.Sprintf("订单满%d", v.MinFee))
+=======
+		buf.WriteString(fmt.Sprintf("订单满%f", v.MinFee))
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 
 	if v.Discount != 0 && v.Discount != 100 {

@@ -10,9 +10,13 @@
 package daemon
 
 import (
+<<<<<<< HEAD
 	"github.com/jsix/gof"
 	"go2o/src/core/service/dps"
 	"log"
+=======
+	"go2o/src/core/service/dps"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )
 
 var (
@@ -25,6 +29,7 @@ func getPartners() []int {
 	}
 	return partnerIds
 }
+<<<<<<< HEAD
 
 /***** OLD CODE *****/
 // todo: 等待重构
@@ -44,3 +49,5 @@ func autoSetOrder(partnerId int) {
 	}
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d

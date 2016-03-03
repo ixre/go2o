@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<head>
+	<title>申请提现</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/page.css?v={{.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.static_serve}}/css/ucenter/touch/touch.css?v={{.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+	<div class="page-main page-apply-cash">
+		<div class="head-box">
+			<div class="account">
+
+				账户余额:&nbsp;<b><span id="lb_balance">{{.account.PresentBalance}}</span></b>
+
+				<span class="total">返现总额:&nbsp;<b>{{.account.TotalPresentFee}}</b></span>
+			</div>
+
+			<div class="control1">
+				<a class="btn btn-m" href="bank_info.htm">收款银行设置</a>&nbsp;
+				<a class="btn" href="income_log.htm">历史返现</a>
+			</div>
+			<div class="clear-fix"></div>
+		</div>
+
+		<div id="form1" class="form form2">
+
+			<div class="latest_rec">
+				{{.latestInfo}}
+			</div>
+
+
+
+			<div class="apply-panel">
+				<h3>提现金额：</h3>
+				<input id="tb_amount" type="text" class="box ui-validate" isfloat="true" required="true" field="Amount"
+					   summary="{required:'请输入金额'}"/>&nbsp;&nbsp;
+				<span class="tip" id="tip_amount">最多可提取&nbsp;￥{{.maxApplyAmount}}&nbsp;元</span>
+
+
+
+				<h3>交易密码：</h3>
+				<input type="password" class="box ui-validate" required="true" field="TradePwd"
+					   summary="{required:'交易密码不能为空'}" onfocus="this.value=''"/>
+
+					{{if .notSetTradePwd}}
+					<div>
+						<span class="icon-err"></span>请先点击
+						<a href="/basic/trade_pwd.htm" style="color:#FF0000;">这里</a>设置交易密码后，再进行提现。
+					</div>
+					{{end}}
+
+
+					<div id="cns-panel" class="cns-panel hidden">
+						实际到账：<span id="finalAmount">0</span>&nbsp;(手续费：<span id="cnsAmount">0</span>)
+					</div>
+
+					<div class="control">
+						<input class="btn btn-m" type="button" value="申请提现" onclick="saveData()"/>
+						<div class="tip-msg" id="tip_msg"></div>
+						<div class="clear-fix"></div>
+					</div>
+
+				</div>
+
+			</div>
+
+
+		<div class="apply-setup">
+			<b><span class="red">*</span>&nbsp;说明：</b><br />
+			按平台政策，暂{{.commissionStr}}。<br />
+			提现流程：&nbsp;提交申请 -> 客服审核 -> 打款 -> 完成提现。
+		</div>
+
+	</div>
+
+
+		<script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/core.js?ver={{.version}}"></script>
+		<script type="text/javascript" src="{{.static_serve}}/assets/js/mobi/device.js?ver={{.version}}"></script>
+		<script type="text/javascript" src="{{.static_serve}}/assets/js/j6/ui.min.js?ver={{.version}}"></script>
+
+
+			<script type="text/javascript">
+				var tipMsg = j6.$('tip_msg');
+				var balance = {{.account.PresentBalance}};
+				var cns = {{.cns}};
+				var finalAmount,cnsAmount;
+
+				window.onload = function() {
+					finalAmount = j6.$('finalAmount');
+					cnsAmount = j6.$('cnsAmount');
+					j6.$('tb_amount').onblur = function () {
+						var amount = parseFloat(this.value);
+						if(amount) {
+							var cnsAmt = amount * cns;
+							cnsAmount.innerHTML = cnsAmt.toFixed(2);
+							finalAmount.innerHTML = (amount - cnsAmt).toFixed(2);
+							j6.$('cns-panel').className = cnsAmt == 0 ? 'cns-panel hidden' : 'cns-panel';
+							tipMsg.className= 'tip-msg hidden';
+						}else{
+							tipMsg.innerHTML = '金额错误';
+							tipMsg.className= 'tip-msg red';
+						}
+					};
+				}
+
+				function saveData(){
+					j6.$('tb_amount').onblur();
+					if(j6.validator.validate('form1')){
+						var data = j6.json.toObject('form1');
+						data.Amount = parseFloat(data.Amount);
+						data.TradePwd = sha1(data.TradePwd);
+						if(data.Amount <= 0){
+							tipMsg.innerHTML = '提现金额错误';
+							tipMsg.className= 'tip-msg red';
+							return false;
+						}else if(data.Amount > balance){
+							tipMsg.innerHTML = '提现金额超出余额';
+							tipMsg.className= 'tip-msg red';
+							return false;
+						}
+						j6.xhr.jsonPost('apply_cash.htm',data,function(json){
+							if(json.result){
+								balance -= data.Amount;
+								j6.$('lb_balance').innerHTML = balance;
+								location.href = 'transfer_success.htm?src=apply_p2b';
+							}else {
+								tipMsg.innerHTML = json.message;
+								tipMsg.className= 'tip-msg red';
+							}
+						});
+					}
+				}
+			</script>
+
+
+{{template "footer"$}}
+
+</body>
+</html>

@@ -46,9 +46,12 @@ type IPartner interface {
 	// 保存站点配置
 	SaveSiteConf(*SiteConf) error
 
+<<<<<<< HEAD
 	// 注册权限验证,如果没有权限注册,返回错误
 	RegisterPerm(isInvitation bool) error
 
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 获取API信息
 	GetApiInfo() ApiInfo
 

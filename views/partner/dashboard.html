@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>请稍后</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/mui/css/latest/ui_style.css?spam={{.spam}}" />
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.spam}}" />
+    <link rel="stylesheet" type="text/css" href="{{.static_serve}}/assets/easyui/themes/icon.css?spam={{.spam}}" />
+</head>
+<body>
+<div class="page-top">
+    <div class="top"></div>
+    <a href="javascript:;" class="logo hidden">
+        <h1 field="sysName">-</h1>
+    </a>
+    <div class="page-user">
+        <img field="userAvatar" class="avatar"/>
+        <div class="text">
+            <span field="dateStr"></span><br/>
+            欢迎您：<span class="username" field="userName"></span>&nbsp;&nbsp; |&nbsp;&nbsp;
+            <a href="javascript:void(0)" onclick="FwTab.show('修改用户资料', '?module=user&amp;action=saveProfile', true);">修改密码</a>&nbsp;|&nbsp;
+            <a href="javascript:;" id="btn_logout" title="安全退出系统">退出</a>
+        </div>
+    </div>
+
+    <div class="top-ctrl hidden">
+        <div class="site_selector hidden" id="site_selector">
+            <select>
+                <option value="">一选择站点一</option>
+            </select>
+        </div>
+        <ul class="icon-ctrl">
+            <li class="first">
+                <a class="title" href="javascript:FwMenu.change('site');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_user.png" height="20"/>网站管理
+                </a>
+            </li>
+
+            <li>
+                <a class="title" href="javascript:FwMenu.change('content');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_chart.png" height="20"/>内容管理
+                </a>
+            </li>
+
+            <li>
+                <a class="title" href="javascript:FwMenu.change('system');">
+                    <img class="icon" src="{{.static_serve}}/assets/mui/css/latest//icon_config.png" height="20"/>系统管理
+                </a>
+            </li>
+        </ul>
+    </div>
+
+
+    <div class="clearfix"></div>
+</div>
+
+<div class="page-main">
+    <div class="page-main-right" id="page-main-right">
+        <div id="pagetabs" class="page-tabs">
+            <ul> </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div style="height:0px;overflow:hidden;clear:both;display:none;">针对IE7优化</div>
+        <div class="page-frames" id="pageframes">
+            <div class="mask hidden"></div>
+            <div class="loading hidden" style="width:200px"><div><span class="lft"><span class="main"><span class="text">加载中 ...</span></span></span></div></div>
+            <div class="frames"></div>
+            <div class="page-frame-shadow hidden">这是为支持分列右侧拖动</div>
+        </div>
+    </div>
+
+    <div class="page-main-left" id="page-main-left">
+        <div class="page-left-menu">
+            <!--
+            <div class="title" group="home"><span>车辆管理</span></div>
+            <ul class="current">
+                <li>
+                    <a url="/admin/car/AddCarProfile">
+                        车辆录入
+                    </a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>-->
+        </div>
+    </div>
+
+    <div id="page-main-split" class="page-main-split" min="120" max="600"></div>
+</div>
+<script type="text/javascript"> window._path = location.path;</script>
+<script type="text/javascript" src="{{.static_serve}}/assets/js/core_full.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/mui/js/component.js?spam={{.spam}}"></script>
+
+<script type="text/javascript">
+    var pageVar = {
+        sysName: '{{.partner.Name}} :: 商户后台管理中心',
+        sysLogo: '',
+        dateStr: '2013-10-15',
+        firstTabName: '欢迎首页',
+        firstIframeUrl: '/main/summary',
+        userName: '管理员',
+        userAvatar: '{{.static_serve}}/assets/mui/css/latest/avatar.gif'
+    };
+
+    window.menuHandler = function (data) {
+        data.push(
+                {id: 'home', text: '我的首页', uri: '', childs: [
+                    {text: '欢迎使用', uri: '', childs: [
+                        {text: '欢迎首页', uri: '/summary'}
+                    ]},
+                    {text: 'O2O配置', uri: '', childs: [
+                        {text: '门店管理', uri: '/shop/ShopList'},
+                        {text: '配送区域', uri: '/delivery/CoverageAreList'},
+                    ]},
+                    {text: '会员管理', uri: '', childs: [
+                        {text: '会员等级管理', uri: '/member/levelList'},
+                        {text: '会员列表', uri: '/member/list'},
+                        {text: '会员推广排行', uri: '/member/team_rank'},
+                    ]},
+                    {text: '销售管理', uri: '', childs: [
+                        {text: '分类管理', uri: '/category/all_category'},
+                        {text: '商品管理', uri: '/goods/item_list'},
+                        {text: '销售标签管理', uri: '/sale/tagList'}
+                    ]},
+                    {text: '财务管理', uri: '', childs: [
+                        {text: '订单付款', uri: '/order/waitPaymentList'},
+                        {text: '提现申请', uri: '/member/applyRequestList'},
+                    ]},
+                    {text: '消息系统', uri: '', childs: [
+                        {text: '邮件模板', uri: '/mss/mail_template_list'},
+                        {text: '消息设置', uri: '/mss/mss_setting'},
+                    ]},
+
+                    {text: '订单管理', uri: '', childs: [
+                        {text: '所有订单', uri: '/order/list?status=100'},
+                        {text: '待确认订单', uri: '/order/list?status=1'},
+                        {text: '待配送订单', uri: '/order/list?status=2'},
+                        {text: '待收货订单', uri: '/order/list?status=4'},
+                        //{text: '待发货订单', uri: '/order/list?status=3'},gof
+                        //{text: '配送中订单', uri: '/order/list?status=4'},
+                        //{text: '已收货订单', uri: '/order/list?status=5'},
+                        {text: '已完成订单', uri: '/order/list?status=6'},
+                        {text: '已作废订单', uri: '/order/list?status=0'}
+                    ]},
+                    {text: '优惠促销', uri: '', childs: [
+                        {text: '优惠券管理', uri: '/prom/list?flag=1'},
+                        {text: '商品返现', uri: '/prom/list?flag=2'}
+                    ]},
+                    {text: '内容管理', uri: '', childs: [
+                        {text: '页面管理', uri: '/content/page_list'},
+                        {text: '广告管理', uri: '/ad/list'}
+                    ]},
+                    {text: '商家设置', uri: '', childs: [
+                        {text: '资料修改', uri: '/conf/profile'},
+                        {text: '站点设置', uri: '/conf/siteConf'},
+                        {text: '销售设置', uri: '/conf/saleConf'}
+                    ]}
+                    /*,
+                     {text: '信息设置', uri: '', childs: [
+                     {text: '设置公告', uri: 'pt/page/update?type=notice'},
+                     {text: '修改商家介绍', uri: 'pt/page/update?type=about'}
+                     ]}*/
+                ]
+                });
+    }
+
+    /** 获取时间 **/
+    var cmath = function (v) {
+        return v < 10 ? '0' + v : v;
+    };
+    function getDate(dt) {
+        if (!dt) {
+            dt = new Date();
+        }
+        var chWeekNames = ['日', '一', '二', '三', '四', '五', '六'];
+        return cmath(dt.getFullYear()) + '年' + cmath(dt.getMonth() + 1) + '月' + cmath(dt.getDate()) + '日&nbsp;/&nbsp;周' +
+                chWeekNames[dt.getDay()];
+        /*+ '&nbsp;' + cmath(dt.getHours()) + ':' + cmath(dt.getMinutes()) + ':' + cmath(dt.getSeconds());*/
+    };
+    pageVar.dateStr = getDate();
+    document.title = pageVar.sysName;
+    j6.json.bind(document, pageVar);
+
+    //绑定logo
+    var logoEle = document.getElementsByClassName('logo')[0];
+    if (pageVar.sysLogo && pageVar.sysLogo.length > 0) {
+        logoEle.style.background = 'url(' + pageVar.sysLogo + ')';
+    }
+    logoEle.className = 'logo';
+
+
+
+    //初始化站点
+    var timer = setInterval(function () {
+        if (window.menuData != null) {
+            clearInterval(timer);
+            FwMenu.init(window.menuData, window.menuHandler);
+            FwMenu.change();
+        }
+    }, 100);
+
+
+    j6.event.add(window, 'load', function () {
+        j6.event.add(j6.$('btn_logout'), 'click', function () {
+            if (confirm('请确认您已经操作完毕并做好数据保存工作！确定继续吗？')) {
+                location.replace('/main/logout');
+            }
+        });
+
+        FwTab.show(pageVar.firstTabName, pageVar.firstIframeUrl, false);
+
+        //下拉菜单事件注册
+        var menuLis = document.getElementsByClassName('icon-ctrl')[0].getElementsByTagName('LI');
+        j6.each(menuLis, function (i, e) {
+            if (e.className.indexOf('drop') != -1) {
+                j6.hover(e);
+            }
+        });
+
+        _resizeWin();
+    });
+
+</script>
+
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.min.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.spam}}"></script>
+<script type="text/javascript" src="{{.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.spam}}"></script>
+
+</body>
+</html>

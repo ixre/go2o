@@ -56,6 +56,7 @@ func GetGoodsImageUrl(image string) string {
 	}
 	return imageServe + "/" + image
 }
+<<<<<<< HEAD
 
 // 获取资源地址
 func GetResUrl(image string) string {
@@ -80,3 +81,5 @@ func GetResUrl(image string) string {
 	}
 	return imageServe + "/" + image
 }
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
