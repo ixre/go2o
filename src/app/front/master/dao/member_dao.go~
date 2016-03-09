@@ -1,0 +1,213 @@
+package dao
+
+import (
+	"com/ording"
+	"com/ording/entity"
+	"errors"
+	"fmt"
+	"ops/cf/db"
+	"time"
+)
+
+type memberDao struct {
+	db.Connector
+}
+
+//检查用户名是否可以注册
+func (this *memberDao) CheckUsrName(username string) bool {
+	var c int
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=?", &c, username)
+	return c == 0
+}
+
+func (this *memberDao) GetByUsrName(username string) *entity.Member {
+	e := &entity.Member{}
+	this.Connector.GetOrm().GetBy(e, "usr='"+username+"'")
+	return e
+}
+
+func (this *memberDao) GetMemberById(id int) *entity.Member {
+	e := &entity.Member{}
+	if err := this.Connector.GetOrm().Get(e, id); err != nil {
+		fmt.Println(err, id)
+		return nil
+	}
+	return e
+}
+
+//todo:@depared
+func (this *memberDao) GetRelation(memberid int) *entity.MemberRelation {
+	e := new(entity.MemberRelation)
+	this.Connector.GetOrm().Get(e, memberid)
+	return e
+}
+
+//def chktg(username):
+//'根据用户名获取ID'
+//row= newdb().fetchone('SELECT id FROM members WHERE username=%(user)s',{'user':username})
+//return row!=None
+
+func (this *memberDao) Save(m *entity.Member) (err error) {
+	_, _, err = this.Connector.GetOrm().Save(m.Id, m)
+	return err
+}
+
+/*
+//dao.Member().Create(&entity.Member{
+//Usr:"sa",
+//Pwd:"123",
+//Name:"刘铭",
+//Sex:2,
+//Avatar:"",
+//Birthday:"1970-11-20",
+//Phone:"18616999822",
+//Address:"",
+//Qq:"",
+//Email:"",
+//RegTime:time.Now(),
+//RegIp:"127.0.0.1",
+//LastLoginTime:time.Now(),
+//State:1,
+//},666888,1,"12356")
+*/
+
+//创建会员,并初始化数据
+func (this *memberDao) Create(m *entity.Member, ptid int, tgid int, cardId string) (err error) {
+	d := this.Connector
+	orm := d.GetOrm()
+
+	if len(m.Usr) == 0 || !this.CheckUsrName(m.Usr) {
+		return errors.New("用户名已存在")
+	}
+
+	t := time.Now()
+	m.State = 1
+	m.RegTime = t
+	m.LastLoginTime = t
+	m.Level = 1
+	m.Avatar = "share/noavatar.gif"
+	m.Birthday = "1970-01-01"
+	m.LoginToken = m.Pwd
+
+	_, _, err = orm.Save(nil, m)
+	m = this.GetByUsrName(m.Usr)
+	if m == nil {
+		return errors.New("member not exist")
+	}
+
+	orm.Save(m.Id, &entity.MemberAccount{
+		MemberId:    m.Id,
+		Balance:     0,
+		TotalFee:    0,
+		TotalCharge: 0,
+		TotalPay:    0,
+		UpdateTime:  t,
+	})
+
+	orm.Save(m.Id, &entity.MemberRelation{
+		MemberId: m.Id,
+		CardId:   cardId,
+		TgId:     tgid,
+		Reg_PtId: ptid,
+	})
+
+	return err
+}
+
+//验证用户密码
+func (this *memberDao) Verify(usr, pwd string) bool {
+	var id int
+	encPwd := ording.EncodeMemberPwd(usr, pwd)
+	if err := this.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr=? AND pwd=?", &id, usr, encPwd); err != nil {
+		return false
+	}
+	return id != 0
+}
+
+//登录并更新
+func (this *memberDao) Login(usr, pwd string) (bool, *entity.Member) {
+	r := this.Verify(usr, pwd)
+	if r {
+		m := this.GetByUsrName(usr)
+		m.LastLoginTime = time.Now()
+		this.Connector.GetOrm().Save(m.Id, m)
+		return true, m
+	}
+	return r, nil
+}
+
+//增加积分
+func (this *memberDao) AddIntegral(memberId int, partnerId int,
+	backType int, integral int, log string) {
+	inteLog := &entity.IntegralLog{
+		PtId:       partnerId,
+		MemberId:   memberId,
+		Type:       backType,
+		Integral:   integral,
+		Log:        log,
+		RecordTime: time.Now(),
+	}
+	this.Connector.GetOrm().Save(nil, inteLog)
+
+	acc := Account().GetAccount(memberId)
+	acc.Integral = acc.Integral + integral
+	this.Connector.GetOrm().Save(acc.MemberId, acc)
+
+	//判断是否升级
+	this.checkLevel(memberId)
+}
+
+//判断是否升级，如果是则升级并返回true
+func (this *memberDao) checkLevel(memberId int) bool {
+	var levelId int
+	m := this.GetMemberById(memberId)
+	acc := Account().GetAccount(memberId)
+
+	this.Connector.ExecScalar(`SELECT id FROM conf_member_level
+	 	where require_exp<=? AND enabled=1 ORDER BY require_exp DESC LIMIT 0,1`,
+		&levelId, acc.Integral)
+
+	if levelId != 0 && m.Level < levelId {
+		m.Level = levelId
+		this.Save(m)
+		return true
+	}
+	return false
+}
+
+/*********** 收货地址 ***********/
+func (this *memberDao) GetDeliverAddrs(memberId int) []entity.DeliverAddress {
+	addresses := []entity.DeliverAddress{}
+	this.Connector.GetOrm().Select(&addresses, entity.DeliverAddress{}, fmt.Sprintf("member_id=%d", memberId))
+	return addresses
+}
+
+//获取配送地址
+func (this *memberDao) GetDeliverAddrById(memberId, deliverId int) *entity.DeliverAddress {
+	addr := new(entity.DeliverAddress)
+	if this.Connector.GetOrm().Get(addr, deliverId) == nil && addr.Mid == memberId {
+		return addr
+	}
+	return nil
+}
+
+//保存配送地址
+func (this *memberDao) SaveDeliverAddr(e *entity.DeliverAddress) (int, error) {
+	orm := this.Connector.GetOrm()
+	if e.Id <= 0 {
+		//多行字符用
+		_, id, err := orm.Save(nil, e)
+		return int(id), err
+	} else {
+		_, _, err := orm.Save(e.Id, e)
+		return e.Id, err
+	}
+}
+
+//删除配送地址
+func (this *memberDao) DeleteDeliverAddr(memberId int, deliverAddrId int) error {
+	_, err := this.Connector.ExecNonQuery(
+		"DELETE FROM mm_deliver_addr WHERE mid=? AND id=?",
+		memberId, deliverAddrId)
+	return err
+}
