@@ -86,9 +86,9 @@ func (this *Member) validate(v *member.ValueMember) error {
 	if len(v.Phone) != 0 && !phoneRegex.MatchString(v.Phone) {
 		return member.ErrPhoneValidErr
 	}
-	if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {
-		return member.ErrQqValidErr
-	}
+	//if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {
+	//	return member.ErrQqValidErr
+	//}
 	return nil
 }
 
@@ -100,7 +100,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	}
 	this._value.Address = v.Address
 	this._value.BirthDay = v.BirthDay
-	this._value.Qq = v.Qq
+	this._value.Im = v.Im
 	this._value.Email = v.Email
 	this._value.LastLoginTime = v.LastLoginTime
 	this._value.Phone = v.Phone
@@ -108,6 +108,12 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Name = v.Name
 	this._value.Sex = v.Sex
 	this._value.RegFrom = v.RegFrom
+	this._value.Ext1 = v.Ext1
+	this._value.Ext2 = v.Ext2
+	this._value.Ext3 = v.Ext3
+	this._value.Ext4 = v.Ext4
+	this._value.Ext5 = v.Ext5
+	this._value.Ext6 = v.Ext6
 	if v.Avatar != "" {
 		this._value.Avatar = v.Avatar
 	}
@@ -127,7 +133,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.TradePwd = v.TradePwd
 	}
 
-	if len(this._value.Qq) != 0 && len(this._value.Email) != 0 &&
+	if len(this._value.Im) != 0 && len(this._value.Email) != 0 &&
 		len(this._value.BirthDay) != 0 && len(this._value.Address) != 0 &&
 		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
 		this._value.Sex != 0 {

@@ -58,11 +58,10 @@
                 </div>
             </div>
             <div class="fl">
-                <div class="label">QQ号码：</div>
+                <div class="label">{{.Map.aliasIM}}：</div>
                 <div class="in">
-                    <input class="ui-box ui-validate" regex="^(\d{5,11})$" tipin="tip_qq" Field="Qq"
-                           summary="{regex:'请正确填写QQ号码'}" style="width:75%"/>
-                    <span class="fv" id="tip_qq"></span>
+                    <input class="ui-box ui-validate" tipin="tip_im" style="width:75%"/>
+                    <span class="fv" id="tip_im"></span>
                 </div>
             </div>
             <div class="fl">

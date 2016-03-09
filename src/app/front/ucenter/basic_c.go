@@ -20,6 +20,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"go2o/src/core/variable"
 )
 
 type basicC struct {
@@ -40,6 +41,13 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 		"partner_host": conf.Host,
 		"member":       mm,
 		"entity":       template.JS(js),
+		"aliasIm":      variable.AliasMemberIM,
+        "aliasExt1":variable.AliasMemberExt1,
+        "aliasExt2":variable.AliasMemberExt2,
+        "aliasExt3":variable.AliasMemberExt3,
+        "aliasExt4":variable.AliasMemberExt4,
+        "aliasExt5":variable.AliasMemberExt5,
+        "aliasExt6":variable.AliasMemberExt6,
 	}
 	return ctx.RenderOK("profile.html", d)
 }
