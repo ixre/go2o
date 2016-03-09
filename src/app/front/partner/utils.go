@@ -13,8 +13,22 @@ import (
 	"fmt"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/service/dps"
+<<<<<<< HEAD
+	"go2o/src/x/echox"
 )
 
+func getPartnerId(ctx *echox.Context) int {
+	obj := ctx.Session.Get("partner_id")
+	if obj != nil {
+		return obj.(int)
+	}
+	return 0
+}
+
+=======
+)
+
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
 	if len(tags) == 0 || tags == nil {
 		return `<div style="color:red">没有找到任何销售标签!</div>`

@@ -56,6 +56,28 @@ func (this *saleService) GetGoodsBySku(partnerId int, itemId int, sku int) *valu
 	return goods.GetPackedValue()
 }
 
+<<<<<<< HEAD
+// 根据SKU获取商品
+func (this *saleService) GetValueGoodsBySku(partnerId int, itemId int, sku int) *sale.ValueGoods {
+	sl := this._rep.GetSale(partnerId)
+	gs := sl.GetGoodsBySku(itemId, sku)
+	if gs != nil {
+		return gs.GetValue()
+	}
+	return nil
+}
+
+// 根据快照编号获取商品
+func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *sale.ValueGoods {
+	snap := this._rep.GetGoodsSnapshot(snapshotId)
+	if snap != nil {
+		return this._goodsRep.GetValueGoodsById(snap.GoodsId)
+	}
+	return nil
+}
+
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 // 保存产品
 func (this *saleService) SaveItem(partnerId int, v *sale.ValueItem) (int, error) {
 	sl := this._rep.GetSale(partnerId)
@@ -94,6 +116,21 @@ func (this *saleService) SaveItemInfo(partnerId int, itemId int, info string) er
 	return err
 }
 
+<<<<<<< HEAD
+// 保存商品
+func (this *saleService) SaveGoods(partnerId int, gs *sale.ValueGoods) (int, error) {
+	sl := this._rep.GetSale(partnerId)
+	if gs.Id > 0 {
+		g := sl.GetGoods(gs.Id)
+		g.SetValue(gs)
+		return g.Save()
+	}
+	g := sl.CreateGoods(gs)
+	return g.Save()
+}
+
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 // 删除货品
 func (this *saleService) DeleteItem(partnerId int, id int) error {
 	sl := this._rep.GetSale(partnerId)
@@ -125,7 +162,11 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		where = ""
 		orderBy = "gs_goods.sale_num DESC"
 	case "rate_0":
+<<<<<<< HEAD
+	//todo:
+=======
 		//todo:
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	case "rate_1":
 		//todo:
 	}
@@ -144,8 +185,12 @@ func (this *saleService) GetCategory(partnerId, id int) *sale.ValueCategory {
 	sl := this._rep.GetSale(partnerId)
 	c := sl.GetCategory(id)
 	if c != nil {
+<<<<<<< HEAD
+		return c.GetValue()
+=======
 		cv := c.GetValue()
 		return &cv
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 	return nil
 }
@@ -208,7 +253,11 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	var list []*sale.ValueCategory = make([]*sale.ValueCategory, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
+<<<<<<< HEAD
+		list[i] = vv
+=======
 		list[i] = &vv
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 	return list
 }

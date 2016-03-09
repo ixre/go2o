@@ -13,6 +13,12 @@ import (
 )
 
 var (
+<<<<<<< HEAD
+	ErrInvitationCode *domain.DomainError = domain.NewDomainError(
+		"member_err_invation_code", "CODE:1011,邀请码错误")
+
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 
@@ -46,6 +52,21 @@ var (
 	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
 		"err_out_of_balance", "超出金额")
 
+<<<<<<< HEAD
+	ErrUsrLength *domain.DomainError = domain.NewDomainError(
+		"err_user_length", "用户名至少6位",
+	)
+
+	ErrUsrValidErr *domain.DomainError = domain.NewDomainError(
+		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
+
+	ErrSameUsr *domain.DomainError = domain.NewDomainError(
+		"err_same_usr", "用户名与原来相同")
+
+	ErrUsrExist *domain.DomainError = domain.NewDomainError(
+		"err_usr_exist", "用户名已存在")
+
+=======
 	ErrUserLength *domain.DomainError = domain.NewDomainError(
 		"err_user_length", "用户名至少6位",
 	)
@@ -53,6 +74,7 @@ var (
 	ErrUserValidErr *domain.DomainError = domain.NewDomainError(
 		"err_user_valid_err", "用户名为6位以上字符和数字的组合")
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	ErrPersonName *domain.DomainError = domain.NewDomainError(
 		"err_person_name", "姓名不正确")
 

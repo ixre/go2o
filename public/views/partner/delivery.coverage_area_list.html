@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>配送区域管理</title>
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Var.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}">
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+    <script src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.min.js?spam={{.Var.spam}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Var.spam}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/export.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+</head>
+<body class="easyui-layout">
+<div region="center">
+    <div id="dg"></div>
+    <div class="toolBar">
+        <div class="search_bar padding2" id="search_bar">
+            <ul>
+                <li>
+                    <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
+                        <span class="icon"></span>新增配送区域</a>
+                </li>
+                <li>
+                    <span class="title">省：</span>
+                    <select field="state">
+                        <option value="-100">一所有一</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">市：</span>
+                    <select field="state">
+                        <option value="-100">一所有一</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">区：</span>
+                    <select field="state">
+                        <option value="-100">一所有一</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">配送区域关键字：</span>
+                    <input type="text" field="keyword" />
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                        <span class="icon"></span>搜索</a>
+                </li>
+
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<script>
+    expr.ele = 'search_bar';
+
+    j6.json.bind(expr.ele, { keyword: decodeURIComponent(j6.request('keyword')) });
+
+    expr.portal = 'Partner.CoverageAreList'; //配置导出的入口
+    expr.checkParams = function (data) {
+        return true;
+    };
+
+    var refresh = function () { expr.reload('dg'); };
+
+    j6.$('dg').style.height = j6.screen.height() + 'px';
+
+    $(function () {
+        //加载数据
+        $('#dg').datagrid({
+            toolbar: '.toolBar',
+            singleSelect: !false,
+            pagination: true,
+            rownumbers: true,
+            fitColumns: true,
+            url: expr.getDataUrl(),
+            columns:[[
+                { field: 'name', title: '配送区域名称', align: 'center', width: 100 },
+                { field: 'radius', title: '配送范围(米)', align: 'center', width: 30 },
+                { field: 'address', title: '地址', align: 'center', width: 100},
+                { field: 'area_id', title: '所属地区', align: 'center', width: 50 },
+                {field: 'id', title: '操作',align: 'center', width: 50,formatter:function(val,row){
+                    return '<a href="javascript:;" onclick="editRec('+row.id+')">修改</a>'+
+                            '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
+                } },
+            ]]
+        });
+    });
+
+    function addRecore(){
+        j6.tab.open('新增配送区域','delivery/create', true);
+    }
+
+    j6.$('btnAdd').onclick = addRecore;
+</script>

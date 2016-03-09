@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>页面列表</title>
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Var.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}">
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        a.nodeSel span.float,a.node span.float{display:none;}
+        a.node:hover span.float{display:inherit;}
+        a.nodeSel:hover span.float,a.node:hover span.float a{color:red;}
+    </style>
+</head>
+    <div id="dg"></div>
+    <div class="toolBar">
+        <div class="search_bar padding2" id="search_bar">
+            <ul>
+                <li>
+                    <a class="easyui-linkbutton" iconcls="icon-add" id="btnAdd">
+                        <span class="icon"></span>新增页面</a>
+                </li>
+                <li>
+                    <span class="title">是否启用：</span>
+                    <select field="enabled">
+                        <option value="-1">一不限一</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+                </li>
+
+                <li>
+                    <span class="title">关键字：</span>
+                    <input type="text" field="keyword" />
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                        <span class="icon"></span>搜索</a>
+                </li>
+
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/export.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script type="text/javascript">
+    expr.ele = 'search_bar';
+    expr.portal = 'Partner.PageList';
+    expr.checkParams = function (data) {
+        return true;
+    };
+
+    window.refresh = function () {
+        expr.reload('dg');
+    };
+
+    j6.$('dg').style.height = j6.screen.height() + 'px';
+
+    $(function () {
+
+        //导出
+        $('#btnExport').click(
+                function () {
+                    expr.showExportDialog();
+                });
+
+        j6.$('btnSearch').onclick=function () {
+            expr.search('dg');
+        };
+
+
+        //加载数据
+        $('#dg').datagrid({
+            toolbar: '.toolBar',
+            singleSelect: !false,
+            pagination: true,
+            rownumbers: true,
+            fitColumns: true,
+            pageList:[5,10,15],
+            pageSize:15,
+            url: expr.getDataUrl(),
+            columns: [
+                [
+                    { field: 'title', title: '页面标题', align: 'center', width: 120 },
+                    { field: 'str_indent', title: '标识', align: 'center', width: 120,formatter:function(v){
+                        return v.length == 0?'-':v;
+                    } },
+                    {
+                        field: 'enabled',
+                        title: '状态',
+                        sortable: true,
+                        align: 'center',
+                        width: 100,
+                        formatter: function (val) {
+                            if (val == 1) {
+                                return '<span style="color:green">启用</span>';
+                            } else if(val == 0){
+                                return '<span style="color:red">停用</span>';
+                            }
+                        }
+                    },
+                    { field: 'update_time', title: '修改时间', align: 'center', width: 120,formatter:function(v){
+                        return unix2str(v);
+                    } },
+                    { field: 'id', title: '操作',align: 'center', width: 120,formatter:function(val,row){
+                        return '<a href="javascript:;" class="btn btn-short" onclick="editRec('+row.id+')">编辑</a>'+
+                                '<a href="javascript:;" class="btn btn-short" onclick="delRec('+row.id+')">删除</a>'
+                    } },
+                ]
+            ]
+        });
+    });
+
+    j6.$('btnAdd').onclick=addRec;
+
+
+    function addRec(){
+        j6.tab.open('创建页面', '/content/page_create', true);
+    }
+
+    function editRec(id){
+        j6.tab.open('编辑页面', '/content/page_edit?id=' + id,  true);
+    }
+
+    function delRec(id) {
+     window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
+            if (result) {
+                j6.xhr.jsonPost('/content/page_del', { id: id }, function(json) {
+                    if (json.result) {
+                        expr.reload('dg');
+                    }
+                });
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+	<title>查看订单</title>
+</head>
+<body>
+
+{{if .Map.noShop}}
+    <div style="color:red">没有分店，请先添加！</div>
+{{else}}
+
+
+    <div id="form2">
+        <input type="hidden" field="order_no" value="{{.Map.orderNo}}"/>
+        选择分店配送：<select field="shopId" class="ui-box">
+            <option value="">一请选择一</option>
+            {{.Map.shopDr}}
+        </select>
+            <span class="ui-button w80 small-button">
+                <span class="button-inner">
+                    <span class="button-txt">确定</span>
+                    <input onclick="setShop()"/>
+                </span>
+            </span>
+    </div>
+
+
+	<script type="text/javascript">
+    function setShop(){
+        var data = j6.json.toObject('form2');
+        if(data.shopId != ""){
+            j6.xhr.jsonPost('setShop',data,function(json){
+                if(json.result){
+                    location.reload();
+                }else{
+                    alert(json.message);
+                }
+            });
+        }
+    }
+	</script>
+
+{{end}}
+
+</body>
+</html>

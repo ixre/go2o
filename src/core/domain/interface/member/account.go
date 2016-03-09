@@ -108,8 +108,13 @@ type IAccount interface {
 	// 完成退款
 	FinishBackBalance(id int, tradeNo string) error
 
+<<<<<<< HEAD
+	// 请求提现,applyType：提现方式,返回info_id,交易号 及错误
+	RequestApplyCash(applyType int, title string, amount float32, commission float32) (int, string, error)
+=======
 	// 请求提现,applyType：提现方式
 	RequestApplyCash(applyType int, title string, amount float32, commission float32) error
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 确认提现
 	ConfirmApplyCash(id int, pass bool, remark string) error

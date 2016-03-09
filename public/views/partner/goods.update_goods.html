@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更新项</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1_goods" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>商品名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0"/>
+            <input type="hidden" field="State" value="1"/>
+            <input class="ui-validate ui-box" type="text" field="Name" required="true" style="width:400px"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label">子标题：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="SmallTitle"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>商品分类：</div>
+        <div class="in">
+            <select class="ui-validate ui-box" field="CategoryId">
+                {{.Map.cate_opts}}
+            </select>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>商品图片：</div>
+        <div class="in" style="position: relative;height:100px;">
+            <img id="upload_img" src="{{.Var.img_serve}}/resouce/item_nopic.gif"
+                 style="float:left;margin-right:10px;width: 75px; height: 75px;border:solid 1px #aaa;"/>
+            <input class="ui-validate ui-box" length="[0,150]" type="hidden" field="Image" id="upload_path"/>
+            <span id="upload_btn"><button>选择图片上传</button></span>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>成本价：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="Cost" style="width:50px"/>元
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>市场价：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="Price" style="width:50px"/>元
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>销售价：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="SalePrice" value="{{.Map.gs.SaleNum}}" required="true" style="width:50px"/>元
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>库存数量：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="StockNum" isfloat="true" value="{{.Map.gs.StockNum}}" style="width:50px"/>件
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>销售数量：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="SaleNum" required="true" style="width:50px" value="{{.Map.gs.SaleNum}}"/>件
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>是否上架：</div>
+        <div class="in">
+            <input type="radio" class="radio" field="OnShelves" name="OnShelves" id="OnShelves1" value="1"
+                   checked="checked"/><label for="OnShelves1">是</label>
+            <input type="radio" class="radio" field="OnShelves" name="OnShelves" id="OnShelves2" value="0"/>
+            <label for="OnShelves2">否 (商品下架)</label>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>供应商店：</div>
+        <div class="in">
+            {{.Map.shop_chk}}
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label">备注：</div>
+        <div class="in">
+            <input type="text" class="ui-validate ui-box" field="Note" id="note" style="width:250px"/>&nbsp;如："优惠仅限3日",20字内
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label">描述：</div>
+        <div class="in">
+            <textarea class="ui-validate ui-box" field="Description" id="desc" style="height:60px;"></textarea>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <span class="ui-button w150" id="btn_save_goods"><span class="button-inner"><span class="button-txt">提交</span><a href="javascript:;"></a></span></span>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script>
+    var entity = {{.Map.entity}}||{};
+    j6.json.bind('form1_goods', entity);
+    j6.$('upload_img').src = entity.Image.indexOf('http://') == 0 || entity.Image.indexOf('https://')==0?
+        entity.Image:'{{.Var.img_serve}}/' + entity.Image;
+
+    //上传缩略图
+    j6.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/upload.cgi?type=101',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    }, function (result, data) {
+        if (result) {
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.Var.img_serve}}/' + data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+    j6.$('btn_save_goods').onclick = function () {
+        if (j6.validator.validate('form1_goods')) {
+            var data = j6.json.toObject('form1_goods');
+            j6.xhr.jsonPost('SaveItem', data, function (json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
+                   // j6.tab.closeAndRefresh('商品管理');
+                });
+            }, function (e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

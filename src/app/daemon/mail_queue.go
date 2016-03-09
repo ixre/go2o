@@ -9,7 +9,10 @@
 package daemon
 
 import (
+<<<<<<< HEAD
+=======
 	"github.com/jsix/gof"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/partner/mss"
 	mssIns "go2o/src/core/infrastructure/mss"
@@ -21,6 +24,30 @@ var (
 	mailChan chan int
 )
 
+<<<<<<< HEAD
+// 邮件队列
+func startMailQueue(ss []Service) {
+	for {
+		if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
+			defer func() {
+				appCtx.Storage().Set(variable.KvNewMailTask, enum.TRUE)
+			}()
+			var list = []*mss.MailTask{}
+			err := appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
+			if err == nil && len(list) > 0 {
+				for _, s := range ss {
+					if !s.HandleMailQueue(list) {
+						break
+					}
+				}
+			}
+		}
+		time.Sleep(tickerDuration)
+	}
+}
+
+func handleMailQueue(list []*mss.MailTask) {
+=======
 func startMailQueue(app gof.App) {
 	if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
 		sendQueue()
@@ -31,6 +58,7 @@ func startMailQueue(app gof.App) {
 func sendQueue() {
 	var list = []*mss.MailTask{}
 	appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	mailChan = make(chan int, len(list))
 	for _, v := range list {
 		go func(ch chan int, t *mss.MailTask) {

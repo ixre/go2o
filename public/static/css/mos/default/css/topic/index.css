@@ -1,0 +1,12 @@
+.topic-page .pxui-area h3,
+.topic-page .pxui-area p{padding:0 10px;}
+.topic-page .pxui-area p{padding-bottom:10px;}
+
+/*以下是品牌*/
+.topic-page .pxui-area{margin-top:10px;}
+.topic-page h3{line-height:36px;border-bottom:1px solid #666666;margin:0 12px;font-size:14px;font-weight:normal;}
+.topic-page .brands{overflow:hidden;margin:0 12px;}
+.topic-page .brands div{margin-left:-1px;}
+.topic-page .brands a{float:left;border-bottom:1px dashed #d7d7d7;padding:5px 0;width:25%;}
+.topic-page .brands img{display:block;border:0;max-width:100px;width:100%;height:auto;}
+.topic-page .brands i{display:block;border-left:1px dashed #d7d7d7;padding:10px;}

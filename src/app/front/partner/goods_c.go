@@ -15,18 +15,53 @@ import (
 	"github.com/jsix/gof"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
+<<<<<<< HEAD
+=======
 	"github.com/jsix/gof/web/mvc"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
+<<<<<<< HEAD
+	"go2o/src/x/echox"
+	"html/template"
+	"net/http"
+=======
 	"html/template"
 	"net/url"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"strconv"
 	"strings"
 )
 
+<<<<<<< HEAD
+type goodsC struct {
+}
+
+//货品列表
+func (this *goodsC) Item_list(ctx *echox.Context) error {
+	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
+
+	d := echox.NewRenderData()
+	d.Map["cate_opts"] = template.HTML(cateOpts)
+	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
+	return ctx.RenderOK("goods.item_list.html", d)
+}
+
+//货品选择
+func (this *goodsC) Goods_select(ctx *echox.Context) error {
+	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
+	d := echox.NewRenderData()
+	d.Map["cate_opts"] = template.HTML(cateOpts)
+	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
+	return ctx.RenderOK("goods.select.html", d)
+}
+
+func (this *goodsC) Create(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+=======
 var _ mvc.Filter = new(goodsC)
 
 type goodsC struct {
@@ -58,6 +93,7 @@ func (this *goodsC) Goods_select(ctx *web.Context) {
 
 func (this *goodsC) Create(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -66,6 +102,47 @@ func (this *goodsC) Create(ctx *web.Context) {
 	}
 	js, _ := json.Marshal(e)
 
+<<<<<<< HEAD
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"entity":    template.JS(js),
+		"shop_chk":  template.HTML(shopChks),
+		"cate_opts": template.HTML(cateOpts),
+		"nopic":     format.GetGoodsImageUrl(""),
+	}
+	return ctx.RenderOK("goods.create_goods.html", d)
+}
+
+func (this *goodsC) Edit(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	var e *sale.ValueItem
+	ss := dps.SaleService
+	id, _ := strconv.Atoi(ctx.Query("item_id"))
+	e = ss.GetValueItem(partnerId, id)
+	if e == nil {
+		return ctx.StringOK("商品不存在")
+	}
+	e.Description = ""
+	js, _ := json.Marshal(e)
+	gs := ss.GetGoodsBySku(partnerId, e.Id, 0) //todo:???
+	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
+	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
+
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"entity":    template.JS(js),
+		"shop_chk":  template.HTML(shopChks),
+		"cate_opts": template.HTML(cateOpts),
+		"gs":        gs,
+	}
+	return ctx.RenderOK("goods.update_goods.html", d)
+}
+
+// 保存商品描述
+func (this *goodsC) Item_info(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+=======
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
@@ -103,10 +180,121 @@ func (this *goodsC) Edit(ctx *web.Context) {
 func (this *goodsC) Item_info(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	r, w := ctx.Request, ctx.Response
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
 	if e == nil {
+<<<<<<< HEAD
+		return ctx.String(http.StatusOK, "商品不存在")
+	}
+
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"item_id":   e.Id,
+		"item_info": template.HTML(e.Description),
+	}
+	return ctx.RenderOK("goods.item_info.html", d)
+}
+
+// 保存货品描述信息(POST)
+func (this *goodsC) Save_item_info(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	if r.Method == "POST" {
+		r.ParseForm()
+		id, _ := strconv.Atoi(r.FormValue("ItemId"))
+		info := r.FormValue("Info")
+
+		var result gof.Message
+		err := dps.SaleService.SaveItemInfo(partnerId, id, info)
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+// 保存货品信息(POST)
+func (this *goodsC) SaveItem(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	if r.Method == "POST" {
+		ss := dps.SaleService
+		var result gof.Message
+		r.ParseForm()
+		e := sale.ValueItem{}
+		web.ParseFormToEntity(r.Form, &e)
+		e.State = 1 //todo: 暂时使用
+		id, err := ss.SaveItem(partnerId, &e)
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			gs := ss.GetValueGoodsBySku(partnerId, id, 0) //todo: ??? SKU
+			gs.StockNum, _ = strconv.Atoi(r.FormValue("StockNum"))
+			gs.SaleNum, _ = strconv.Atoi(r.FormValue("SaleNum"))
+			price, _ := strconv.ParseFloat(r.FormValue("SalePrice"), 32)
+			gs.SalePrice = float32(price)
+			ss.SaveGoods(partnerId, gs)
+			result.Result = true
+			result.Data = id
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+// 删除商品信息(POST)
+func (this *goodsC) Del_goods(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	var result gof.Message
+	if r.Method == "POST" {
+		r.ParseForm()
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		err := dps.SaleService.DeleteGoods(partnerId, id)
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+// 删除货品信息(POST)
+func (this *goodsC) Del_item(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	if r.Method == "POST" {
+		var result gof.Message
+
+		r.ParseForm()
+		id, _ := strconv.Atoi(r.FormValue("id"))
+		err := dps.SaleService.DeleteItem(partnerId, id)
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+// 设置销售标签
+func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	goodsId, _ := strconv.Atoi(ctx.Query("id"))
+=======
 		w.Write([]byte("商品不存在"))
 		return
 	}
@@ -196,6 +384,7 @@ func (this *goodsC) SetSaleTag(ctx *web.Context) {
 	r.ParseForm()
 	partnerId := this.GetPartnerId(ctx)
 	goodsId, _ := strconv.Atoi(r.URL.Query().Get("id"))
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
 	tagsHtml := getSaleTagsCheckBoxHtml(tags)
@@ -208,6 +397,63 @@ func (this *goodsC) SetSaleTag(ctx *web.Context) {
 
 	tagVal := strings.Join(strArr, ",")
 
+<<<<<<< HEAD
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"goodsId":  goodsId,
+		"tagsHtml": template.HTML(tagsHtml),
+		"tagValue": tagVal,
+	}
+	return ctx.RenderOK("goods.set_sale_tag.html", d)
+}
+
+// 保存销售标签(POST)
+func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
+	r := ctx.Request()
+	if r.Method == "POST" {
+		r.ParseForm()
+		var result gof.Message
+		goodsId, err := strconv.Atoi(r.FormValue("GoodsId"))
+		if err == nil {
+			tags := strings.Split(r.FormValue("SaleTags"), ",")
+			var ids []int = []int{}
+			for _, v := range tags {
+				if i, err := strconv.Atoi(v); err == nil {
+					ids = append(ids, i)
+				}
+			}
+
+			partnerId := getPartnerId(ctx)
+			err = dps.SaleService.SaveItemSaleTags(partnerId, goodsId, ids)
+		}
+
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Result = true
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
+
+	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
+
+	d := echox.NewRenderData()
+	d.Map["item_id"] = itemId
+	return ctx.RenderOK("goods.item_ctrl.html", d)
+}
+
+func (this *goodsC) LvPrice(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		return this.lvPrice_post(ctx)
+	}
+	partnerId := getPartnerId(ctx)
+	//todo: should be goodsId
+	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
+=======
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"goodsId":  goodsId,
 		"tagsHtml": template.HTML(tagsHtml),
@@ -252,6 +498,7 @@ func (this *goodsC) LvPrice(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	//todo: should be goodsId
 	itemId, _ := strconv.Atoi(ctx.Request.URL.Query().Get("item_id"))
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
 	lvs := dps.PartnerService.GetMemberLevels(partnerId)
 	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId, goods.GoodsId)
@@ -285,6 +532,22 @@ func (this *goodsC) LvPrice(ctx *web.Context) {
 		}
 	}
 
+<<<<<<< HEAD
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"goods":   goods,
+		"setHtml": template.HTML(buf.String()),
+	}
+	return ctx.RenderOK("goods.level_price.html", d)
+}
+
+func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
+	req := ctx.Request()
+	req.ParseForm()
+	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
+	if err != nil {
+		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+=======
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"goods":   goods,
 		"setHtml": template.HTML(buf.String()),
@@ -298,6 +561,7 @@ func (this *goodsC) LvPrice_post(ctx *web.Context) {
 	if err != nil {
 		ctx.Response.JsonOutput(gof.Message{Message: err.Error()})
 		return
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 
 	var priceSet []*sale.MemberPrice = []*sale.MemberPrice{}
@@ -306,12 +570,21 @@ func (this *goodsC) LvPrice_post(ctx *web.Context) {
 	var lv int
 	var enabled int
 
+<<<<<<< HEAD
+	for k, _ := range req.Form {
+		if strings.HasPrefix(k, "Id_") {
+			if lv, err = strconv.Atoi(k[3:]); err == nil {
+				id, _ = strconv.Atoi(req.Form.Get(k))
+				price, _ = strconv.ParseFloat(req.FormValue(fmt.Sprintf("Price_%d", lv)), 32)
+				if req.FormValue(fmt.Sprintf("Enabled_%d", lv)) == "on" {
+=======
 	for k, _ := range form {
 		if strings.HasPrefix(k, "Id_") {
 			if lv, err = strconv.Atoi(k[3:]); err == nil {
 				id, _ = strconv.Atoi(form.Get(k))
 				price, _ = strconv.ParseFloat(ctx.Request.FormValue(fmt.Sprintf("Price_%d", lv)), 32)
 				if ctx.Request.FormValue(fmt.Sprintf("Enabled_%d", lv)) == "on" {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 					enabled = 1
 				} else {
 					enabled = 0
@@ -325,17 +598,30 @@ func (this *goodsC) LvPrice_post(ctx *web.Context) {
 					Enabled: enabled,
 				})
 			} else {
+<<<<<<< HEAD
+				return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+=======
 				ctx.Response.JsonOutput(gof.Message{Message: err.Error()})
 				return
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 			}
 		}
 	}
 
+<<<<<<< HEAD
+	partnerId := getPartnerId(ctx)
+	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
+	if err != nil {
+		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+	} else {
+		return ctx.JSON(http.StatusOK, gof.Message{Result: true})
+=======
 	partnerId := this.GetPartnerId(ctx)
 	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
 	if err != nil {
 		ctx.Response.JsonOutput(gof.Message{Message: err.Error()})
 	} else {
 		ctx.Response.JsonOutput(gof.Message{Result: true})
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 }

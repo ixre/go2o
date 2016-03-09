@@ -257,16 +257,31 @@ func (this *Shopping) SmartChoiceShop(address string) (partner.IShop, error) {
 }
 
 // 生成订单
+<<<<<<< HEAD
+func (this *Shopping) BuildOrder(memberId int, subject string, couponCode string) (shopping.IOrder, shopping.ICart, error) {
+=======
 func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrder, shopping.ICart, error) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	order, m, cart, err := this.ParseShoppingCart(memberId)
 	if err != nil {
 		return order, cart, err
 	}
+<<<<<<< HEAD
+	var val = order.GetValue()
+	if len(subject) > 0 {
+		val.Subject = subject
+		order.SetValue(&val)
+	}
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	if len(couponCode) != 0 {
 		var coupon promotion.ICouponPromotion
 		var result bool
+<<<<<<< HEAD
+=======
 		var val = order.GetValue()
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		cp := this._promRep.GetCouponByCode(
 			this._partnerId, couponCode)
 
@@ -299,13 +314,21 @@ func (this *Shopping) BuildOrder(memberId int, couponCode string) (shopping.IOrd
 	return order, cart, err
 }
 
+<<<<<<< HEAD
+func (this *Shopping) SubmitOrder(memberId int, subject string, couponCode string, useBalanceDiscount bool) (string, error) {
+	order, cart, err := this.BuildOrder(memberId, subject, couponCode)
+=======
 func (this *Shopping) SubmitOrder(memberId int, couponCode string, useBalanceDiscount bool) (string, error) {
 	order, cart, err := this.BuildOrder(memberId, couponCode)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err != nil {
 		return "", err
 	}
 	var cv = cart.GetValue()
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err == nil {
 		err = order.SetShop(cv.ShopId)
 		if err == nil {
@@ -379,29 +402,44 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
 	var shop partner.IShop
+<<<<<<< HEAD
+	if biShops == nil {
+		biShops = this._partner.GetBusinessInShops()
+	}
+=======
 
 	if biShops == nil {
 		biShops = this._partner.GetBusinessInShops()
 	}
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if len(biShops) == 1 {
 		shop = biShops[0]
 	} else {
 		shop, err = this.SmartChoiceShop(v.DeliverAddress)
 		if err != nil {
+<<<<<<< HEAD
+=======
 			log.Println(err)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 			order.Suspend("智能分配门店失败！原因：" + err.Error())
 			return err
 		}
 	}
 
 	if shop != nil {
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		sv := shop.GetValue()
 		order.SetShop(shop.GetDomainId())
 		err = order.Confirm()
 		//err = order.Process()
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
 			"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
 	}

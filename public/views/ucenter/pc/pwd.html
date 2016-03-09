@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+    <title>修改密码_{{.Map.partner.Name}}</title>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+    <link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?v={{.Var.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+
+<div class="panel page-main">
+    <div class="side">
+        {{template "menu"}}
+    </div>
+
+    <div class="main">
+
+        <h1>修改密码</h1>
+
+        <div class="line"></div>
+        <div id="pl" class="summary"></div>
+
+        <div id="form1" class="form">
+            <div class="fl">
+                <div class="label">原密码：</div>
+                <div class="in">
+                    <input class="ui-box" type="password" class="ui-validate ui-box" required="true" field="OldPwd"
+                           summary="{required:'原密码不能为空'}"/><span class="tip"></span>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">新的密码：</div>
+                <div class="in">
+                    <input class="ui-box" type="password" class="ui-validate ui-box" field="NewPwd" required="true"
+                           summary="{required:'密码不能为空'}"/>
+                </div>
+            </div>
+            <div class="fl">
+                <div class="label">重复密码：</div>
+                <div class="in">
+                    <input class="ui-box" type="password" class="ui-validate ui-box" required="true" field="RePwd"
+                           summary="{required:'请再次输入密码!'}"/>
+                </div>
+            </div>
+
+            <div class="fl">
+                <div class="label"></div>
+                <div class="in">
+                    <input class="ui-box" type="button" value="修改" onclick="saveData()"/>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core_full.js?ver={{.Var.version}}"></script>
+
+
+<script type="text/javascript">
+    var pl = j6.$('pl');
+
+	function saveData(){
+	    if(j6.validator.validate('form1')){
+	        var data = j6.json.toObject('form1');
+	        j6.xhr.jsonPost('?',data,function(json){
+	            if(json.result){
+                    pl.innerHTML='<b>修改成功</b>';
+                    pl.className='green';
+	            }else{
+	                pl.innerHTML='<b>'+ json.message +'</b>';
+                    pl.className='red';
+	            }
+	        });
+	    }
+	}
+
+
+</script>
+
+{{template "footer"$}}
+
+</body>
+</html>

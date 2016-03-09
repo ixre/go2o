@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员银行信息</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1" class="member-profile">
+    <ul>
+        <li class="item"><label>银行名称：</label>{{.Map.bank.Name}}</li>
+        <li class="item"><label>户名：</label>{{.Map.bank.AccountName}}</li>
+        <li class="item" style="width:100%"><label>账号：</label>{{.Map.bank.Account}}</li>
+        <li class="item" style="width:100%"><label>开户行：</label>{{.Map.bank.Network}}</li>
+    </ul>
+
+    <div class="clear-fix"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>分店管理</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0" />
+            <input type="text" field="Name" class="ui-validate ui-box" required="true" />
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店地址：</div>
+        <div class="in">
+            <input field="Address" class="ui-validate ui-box" required="true" style="width:300px"/>
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>门店电话：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" field="Phone" required="true" style="width:300px"/>*多个电话用“，”隔开
+        </div>
+    </div>
+    <div class="fl">
+        <div class="label">状态：</div>
+        <div class="in">
+            <input type="radio" name="State" field="State" value="1" id="State1" checked="checked"/><label for="State1">启用</label>
+            <input type="radio" name="State" field="State" value="0" id="State2"/><label for="State2">停用</label>
+            <input type="radio" name="State" field="State" value="2" id="State3"/><label for="State3">暂停营业</label>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>配送范围：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" field="DeliverRadius" required="true" isnumber="true" style="width:30px" value="3"/>&nbsp;公里以内
+            <div class="note">系统会根据配送方圆公里自动匹配门店</div>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>排序：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" field="OrderIndex" required="true" isnumber="true" style="width:30px" value="0"/>
+            * 排序数字，越小排列越靠前
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <span class="ui-button w150" id="btn_save"><span class="button-inner"><span class="button-txt">保存</span><a href="javascript:;"></a></span></span>
+            <span class="ui-button w150"><span class="button-inner"><span class="button-txt">重置</span><input type="reset" value="reset" /></span></span>
+        </div>
+    </div>
+</div>
+
+    <script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/export.js?spam={{.Var.spam}}"></script>
+    <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+    
+    <script>
+    var entity ={{.Map.entity}} ||{};
+    j6.json.bind('form1', entity);
+
+
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SaveShop', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
+                    j6.tab.closeAndRefresh( '门店管理');
+                });
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+    </script>
+</body>
+</html>

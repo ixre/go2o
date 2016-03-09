@@ -13,9 +13,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+<<<<<<< HEAD
+	"github.com/jsix/gof"
+	"go2o/src/core/variable"
+	"go2o/src/x/echox"
+=======
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
 	"go2o/src/core/variable"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"io"
 	"io/ioutil"
 	"math/rand"
@@ -161,7 +167,11 @@ func fileManager(r *http.Request, rootDir, rootUrl string) ([]byte, error) {
 	for i := 0; i < dirList.Len(); i++ {
 		hash := make(map[string]interface{})
 		fs, _ := ioutil.ReadDir(currentPath + "/" + dirList.files[i].Name())
+<<<<<<< HEAD
+		//fmt.Println("----", currentPath+"/"+dirList.files[i].Name())
+=======
 		fmt.Println("----", currentPath+"/"+dirList.files[i].Name())
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		hash["is_dir"] = true
 		hash["has_file"] = len(fs) > 0
 		hash["is_photo"] = false
@@ -215,7 +225,15 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err
 	}
 
 	var fileName string = header.Filename
+<<<<<<< HEAD
+	var extIdx = strings.LastIndex(fileName, ".")
+	if extIdx == -1 {
+		return "", errors.New("Unkown file type")
+	}
+	var fileExt string = strings.ToLower(fileName[extIdx+1:])
+=======
 	var fileExt string = strings.ToLower(fileName[strings.Index(fileName, ".")+1:])
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 检查上传目录
 	var dirPath string = rootPath
@@ -285,6 +303,32 @@ func fileUpload(r *http.Request, savePath, rootPath string) (fileUrl string, err
 	return dirPath + newFileName, nil
 }
 
+<<<<<<< HEAD
+type editorC struct {
+}
+
+func (this *editorC) File_manager(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
+	d, err := fileManager(ctx.Request(),
+		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
+		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
+	)
+	if err != nil {
+		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, d)
+}
+
+func (this *editorC) File_upload(ctx *echox.Context) error {
+	if ctx.Request().Method != "POST" {
+		return errors.New("error request method")
+	}
+	partnerId := getPartnerId(ctx)
+	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
+	fileUrl, err := fileUpload(ctx.Request(),
+		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
+=======
 var _ mvc.Filter = new(editorC)
 
 type editorC struct {
@@ -309,6 +353,7 @@ func (this *editorC) File_upload_post(ctx *web.Context) {
 	partnerId := this.GetPartnerId(ctx)
 	fileUrl, err := fileUpload(ctx.Request,
 		fmt.Sprintf("./static/uploads/%d/upload/", partnerId),
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	var hash map[string]interface{} = make(map[string]interface{})
@@ -319,7 +364,11 @@ func (this *editorC) File_upload_post(ctx *web.Context) {
 		hash["error"] = 1
 		hash["message"] = err.Error()
 	}
+<<<<<<< HEAD
+	return ctx.JSON(http.StatusOK, hash)
+=======
 	ctx.Response.Header().Add("Content-Type", "application/json")
 	d, _ := json.Marshal(hash)
 	ctx.Response.Write(d)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }

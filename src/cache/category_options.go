@@ -32,7 +32,10 @@ func readToCategoryDropList(partnerId int) []byte {
 		}
 	}
 	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f, nil)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	return buf.Bytes()
 }
 

@@ -15,6 +15,10 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
+<<<<<<< HEAD
+	"go2o/src/x/echox"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"html/template"
 	"net/http"
 	"strconv"
@@ -23,6 +27,79 @@ import (
 )
 
 type partnerC struct {
+<<<<<<< HEAD
+}
+
+func (c *partnerC) Index(ctx *echox.Context) error {
+	return ctx.RenderOK("partner.index.html", ctx.NewData())
+}
+
+func (c *partnerC) CreatePartner(ctx *echox.Context) error {
+	return ctx.RenderOK("partner.create.html", ctx.NewData())
+}
+
+// 保存商户(POST)
+func (c *partnerC) SavePartner(ctx *echox.Context) error {
+	r := ctx.Request()
+	if r.Method == "POST" {
+		var result gof.Message
+		var isCreate bool
+		r.ParseForm()
+
+		partner := partner.ValuePartner{}
+		web.ParseFormToEntity(r.Form, &partner)
+
+		dt := time.Now()
+		anousPwd := strings.Repeat("*", 10) //匿名密码
+		if len(partner.Pwd) != 0 && partner.Pwd != anousPwd {
+			partner.Pwd = domain.PartnerSha1Pwd(partner.Usr, partner.Pwd)
+		}
+
+		//更新
+		if partner.Id > 0 {
+			original, _ := dps.PartnerService.GetPartner(partner.Id)
+			partner.JoinTime = original.JoinTime
+			partner.ExpiresTime = original.ExpiresTime
+			partner.UpdateTime = dt.Unix()
+
+			if partner.Pwd == anousPwd {
+				partner.Pwd = original.Pwd
+			}
+		} else {
+			partner.JoinTime = dt.Unix()
+			partner.ExpiresTime = dt.AddDate(10, 0, 0).Unix()
+			partner.UpdateTime = dt.Unix()
+			isCreate = true
+		}
+
+		id, err := dps.PartnerService.SavePartner(partner.Id, &partner)
+		if err != nil {
+			result.Message = err.Error()
+		} else {
+			result.Data = id
+			result.Result = true
+			if isCreate {
+				// 初始化商户信息
+			}
+		}
+		return ctx.JSON(http.StatusOK, result)
+	}
+	return nil
+}
+
+// 商户配置管理
+func (this *partnerC) PartnerConf(ctx *echox.Context) error {
+	var partnerId int
+	partnerId, _ = strconv.Atoi(ctx.Query("id"))
+	d := ctx.NewData()
+	d.Map["partnerId"] = partnerId
+	return ctx.RenderOK("partner.create.html", d)
+}
+
+func (c *partnerC) EditPartner(ctx *echox.Context) error {
+	var entityJson template.JS
+	id, err := strconv.Atoi(ctx.Query("id"))
+=======
 	*baseC
 }
 
@@ -91,6 +168,7 @@ func (this *partnerC) PartnerConf(ctx *web.Context) {
 func (c *partnerC) EditPartner(ctx *web.Context) {
 	var entityJson template.JS
 	id, err := strconv.Atoi(ctx.Request.URL.Query().Get("id"))
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err == nil {
 		partner, err := dps.PartnerService.GetPartner(id)
 		if err == nil && partner != nil {
@@ -99,6 +177,17 @@ func (c *partnerC) EditPartner(ctx *web.Context) {
 			entityJson = template.JS(entity)
 		}
 	}
+<<<<<<< HEAD
+	d := ctx.NewData()
+	d.Map["entity"] = entityJson
+	return ctx.RenderOK("partner.edit.html", d)
+}
+func (c *partnerC) List(ctx *echox.Context) error {
+	return ctx.RenderOK("partner.list.html", ctx.NewData())
+}
+
+func (c *partnerC) DelPartner(w http.ResponseWriter, r *http.Request) {
+=======
 	ctx.App.Template().Execute(ctx.Response, gof.TemplateDataMap{
 		"entity": entityJson,
 	}, "views/master/partner/partner_edit.html")
@@ -109,6 +198,7 @@ func (c *partnerC) List(ctx *web.Context) {
 }
 
 func (c *partnerC) DelPartner_post(w http.ResponseWriter, r *http.Request) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	//	var result gof.Message
 	//	r.ParseForm()
 	//	ptid, err := strconv.Atoi(r.Form.Get("id"))

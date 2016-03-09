@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+	<title>订单提现</title>
+	<meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/ucenter/touch/touch.css?v={{.Var.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="/static/css/ucenter/touch/iconfont/iconfont.css?v={{.Var.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+<div class="panel page-main">
+	<div class="side">
+		{{template "menu"}}
+	</div>
+
+
+	<div class="main">
+		<h1>我的积分</h1>
+
+		<div class="line"></div>
+
+		<div class="summary">当前积分：<b>{{.Map.account.Integral}}</b></div>
+		<br /><br />
+
+		<h1>兑换商品</h1>
+		<div class="line"></div>
+		备货中...
+		<br /><br /><br /><br />
+		<h1>兑换优惠券</h1>
+		<div class="line"></div>
+		备货中...
+	</div>
+</div>
+
+{{template "footer"$}}
+</body>
+</html>

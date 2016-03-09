@@ -29,6 +29,12 @@ type IOrder interface {
 	// 获生成值
 	GetValue() ValueOrder
 
+<<<<<<< HEAD
+	// 设置订单值
+	SetValue(*ValueOrder) error
+
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	// 应用优惠券
 	ApplyCoupon(coupon promotion.ICouponPromotion) error
 
@@ -86,8 +92,13 @@ type IOrder interface {
 	// 确认订单
 	Confirm() error
 
+<<<<<<< HEAD
+	// 配送订单,并记录配送服务商编号及单号
+	Deliver(spId int, spNo string) error
+=======
 	// 配送订单
 	Deliver() error
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 挂起
 	Suspend(reason string) error

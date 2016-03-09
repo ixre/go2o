@@ -1,0 +1,52 @@
+{{$price := .Map.goods.SalePrice}}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>会员价</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1_lv" class="form margin30">
+    <input type="hidden" field="goodsId" value="{{.Map.goods.GoodsId}}"/>
+    <table cellspacing="1" class="ui-table">
+        <tr class="summary">
+            <td colspan="3">
+                商品:<span class="goods-name">{{.Map.goods.Name}}</span>&nbsp;
+                参考售价：<span class="goods-price">{{.Map.goods.SalePrice}}</span>
+            </td>
+        </tr>
+        <tr>
+            <th style="text-align:left">会员等级</th>
+            <th>会员价</th>
+            <th>是否启用</th>
+        </tr>
+
+        {{.Map.setHtml}}
+    </table>
+
+    <div class="margin30" style="margin-left:0">
+            <span class="ui-button w150" id="btn_save_lv"><span class="button-inner"><span class="button-txt">提交</span><a href="javascript:;"></a></span></span>
+    </div>
+
+</div>
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script>
+    j6.$('btn_save_lv').onclick = function () {
+        if (j6.validator.validate('form1_lv')) {
+            var data = j6.json.toObject('form1_lv');
+            j6.xhr.jsonPost('LvPrice', data, function (json) {
+                window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function () {
+                    //j6.tab.closeAndRefresh('商品管理');
+                });
+            }, function (e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

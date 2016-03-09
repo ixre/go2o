@@ -9,22 +9,69 @@
 package partner
 
 import (
+<<<<<<< HEAD
+=======
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
+<<<<<<< HEAD
+	"go2o/src/x/echox"
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"html/template"
 	"strconv"
 )
 
+<<<<<<< HEAD
+func (this *orderC) setShop(ctx *echox.Context,
+	partnerId int, order *shopping.ValueOrder) error {
+=======
 func (this *orderC) setShop(ctx *web.Context,
 	partnerId int, order *shopping.ValueOrder) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	shopDr := cache.GetShopDropList(partnerId, -1)
 
 	isNoShop := len(shopDr) == 0
 
+<<<<<<< HEAD
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+		"shopDr":  template.HTML(shopDr),
+		"noShop":  isNoShop,
+		"orderNo": order.OrderNo,
+	}
+	return ctx.RenderOK("order.setup_setshop.html", d)
+}
+
+// 设置门店(POST)
+func (this *orderC) SetShop(ctx *echox.Context) error {
+	partnerId := getPartnerId(ctx)
+	r := ctx.Request()
+	if r.Method == "POST" {
+		r.ParseForm()
+
+		shopId, err := strconv.Atoi(r.FormValue("shopId"))
+		if err == nil {
+			orderNo := r.FormValue("order_no")
+			err = dps.ShoppingService.SetDeliverShop(partnerId,
+				orderNo, shopId)
+			dps.ShoppingService.ConfirmOrder(partnerId, orderNo)
+		}
+		if err != nil {
+			return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")
+		}
+		return ctx.StringOK("{result:true}")
+	}
+	return nil
+}
+
+func (this *orderC) setState(ctx *echox.Context,
+	partnerId int, order *shopping.ValueOrder) error {
+=======
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"shopDr":  template.HTML(shopDr),
@@ -52,6 +99,7 @@ func (this *orderC) SetShop_post(ctx *web.Context) {
 
 func (this *orderC) setState(ctx *web.Context,
 	partnerId int, order *shopping.ValueOrder) {
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	var descript string
 	var button string
@@ -97,10 +145,21 @@ func (this *orderC) setState(ctx *web.Context,
 		}
 	}
 
+<<<<<<< HEAD
+	d := echox.NewRenderData()
+	d.Map = map[string]interface{}{
+
+		"button":   template.HTML(button),
+		"descript": template.HTML(descript),
+		"order_no": order.OrderNo,
+	}
+	return ctx.RenderOK("order.setup_setstate.html", d)
+=======
 	ctx.App.Template().Execute(ctx.Response,
 		gof.TemplateDataMap{
 			"button":   template.HTML(button),
 			"descript": template.HTML(descript),
 			"order_no": order.OrderNo,
 		}, "views/partner/order/order_setup_setstate.html")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }

@@ -155,10 +155,18 @@ func (this *MemberRep) SaveAccount(v *member.AccountValue) (int, error) {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
 
 	rc := core.GetRedisConn()
+<<<<<<< HEAD
+	defer rc.Close()
+	// 保存最后更新时间
+	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, v.MemberId)
+	rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
+	rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, v.MemberId) // push to tcp notify queue
+=======
 	// 保存最后更新时间
 	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, v.MemberId)
 	rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
 	rc.Do("LPUSH", variable.KvAccountUpdateTcpNotifyQueue, v.MemberId) // push to tcp notify queue
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	// 保存会员信息
 
@@ -193,11 +201,19 @@ func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 
 // 获取会员关联
 func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
+<<<<<<< HEAD
+	var e member.MemberRelation
+	if this.Connector.GetOrm().Get(memberId, &e) != nil {
+		return nil
+	}
+	return &e
+=======
 	e := new(member.MemberRelation)
 	if this.Connector.GetOrm().Get(memberId, e) != nil {
 		return nil
 	}
 	return e
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 // 获取积分对应的等级
@@ -221,6 +237,19 @@ func (this *MemberRep) LockMember(id int, state int) error {
 func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	if v.Id > 0 {
 		rc := core.GetRedisConn()
+<<<<<<< HEAD
+		defer rc.Close()
+		// 保存最后更新时间 todo:
+		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
+		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
+		rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
+
+		// 保存会员信息
+		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
+		if err == nil {
+			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id)) // push to queue
+		}
+=======
 		// 保存最后更新时间
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
 		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
@@ -229,6 +258,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 		// 保存会员信息
 
 		_, _, err := this.Connector.GetOrm().Save(v.Id, v)
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		return v.Id, err
 	}
 	return this.createMember(v)
@@ -240,14 +270,36 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	if err != nil {
 		return -1, err
 	}
+<<<<<<< HEAD
+	this.Connector.ExecScalar("SELECT MAX(id) FROM mm_member", &v.Id)
+	this.initMember(v)
+
+	rc := core.GetRedisConn()
+	defer rc.Close()
+	rc.Do("RPUSH", variable.KvMemberUpdateQueue,
+		fmt.Sprintf("%d-create", v.Id)) // push to queue
+
+	// 更新会员数 todo: 考虑去掉
+=======
 	id := this.getLatestId()
 	this.initMember(id, v)
 
 	// 更新会员数
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	var total = 0
 	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member", &total)
 	gof.CurrentApp.Storage().Set(variable.KvTotalMembers, total)
 
+<<<<<<< HEAD
+	return v.Id, err
+}
+
+func (this *MemberRep) initMember(v *member.ValueMember) {
+
+	orm := this.Connector.GetOrm()
+	orm.Save(nil, &member.AccountValue{
+		MemberId:    v.Id,
+=======
 	return id, err
 }
 
@@ -262,6 +314,7 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 	orm := this.Connector.GetOrm()
 	orm.Save(nil, &member.AccountValue{
 		MemberId:    id,
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		Balance:     0,
 		TotalFee:    0,
 		TotalCharge: 0,
@@ -270,12 +323,20 @@ func (this *MemberRep) initMember(id int, v *member.ValueMember) {
 	})
 
 	orm.Save(nil, &member.BankInfo{
+<<<<<<< HEAD
+		MemberId: v.Id,
+=======
 		MemberId: id,
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		State:    1,
 	})
 
 	orm.Save(nil, &member.MemberRelation{
+<<<<<<< HEAD
+		MemberId:          v.Id,
+=======
 		MemberId:          id,
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		CardId:            "",
 		RefereesId:        0,
 		RegisterPartnerId: 0,
@@ -306,8 +367,14 @@ func (this *MemberRep) SaveRelation(v *member.MemberRelation) error {
 func (this *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
+<<<<<<< HEAD
+		_, _, err := orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM mm_delivery_addr", &v.Id)
+		return v.Id, err
+=======
 		_, id, err := orm.Save(nil, v)
 		return int(id), err
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	} else {
 		_, _, err := orm.Save(v.Id, v)
 		return v.Id, err

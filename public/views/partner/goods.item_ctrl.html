@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商品操作项</title>
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Var.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}">
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div class="easyui-tabs">
+    <div title="基本信息" style="padding:10px;" href="edit?item_id={{.Map.item_id}}"></div>
+    <div title="商品描述" style="padding:10px;" href="item_info?item_id={{.Map.item_id}}"></div>
+    <div title="会员价格设定" href="lvPrice?item_id={{.Map.item_id}}" style="padding:10px;">
+
+    </div>
+    <!--<div title="Third Tab" iconCls="icon-reload" closable="true" style="padding:10px;">-->
+        <!--Third Tab-->
+    <!--</div>-->
+</div>
+
+
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/editor/kindeditor-all-min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/editor/plugins/code/prettify.js?spam={{.Var.spam}}"></script>
+
+</body>
+</html>

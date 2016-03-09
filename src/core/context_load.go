@@ -53,6 +53,63 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm := connector.GetOrm()
 
 	/** new **/
+<<<<<<< HEAD
+	orm.TableMapping(member.ValueMember{}, "mm_member")
+	orm.TableMapping(member.IntegralLog{}, "mm_integral_log")
+	orm.TableMapping(member.AccountValue{}, "mm_account")
+	orm.TableMapping(member.DeliverAddress{}, "mm_deliver_addr")
+	orm.TableMapping(member.MemberRelation{}, "mm_relation")
+	orm.TableMapping(member.BalanceInfoValue{}, "mm_balance_info")
+
+	orm.TableMapping(member.BankInfo{}, "mm_bank")
+	orm.TableMapping(shopping.ValueOrder{}, "pt_order")
+	orm.TableMapping(shopping.OrderItem{}, "pt_order_item")
+	orm.TableMapping(shopping.OrderCoupon{}, "pt_order_coupon")
+	orm.TableMapping(shopping.OrderPromotionBind{}, "pt_order_pb")
+	orm.TableMapping(shopping.OrderLog{}, "pt_order_log")
+	orm.TableMapping(shopping.ValueCart{}, "sale_cart")
+	orm.TableMapping(shopping.ValueCartItem{}, "sale_cart_item")
+
+	/** 销售 **/
+	orm.TableMapping(sale.ValueItem{}, "gs_item")
+	orm.TableMapping(sale.ValueGoods{}, "gs_goods")
+	orm.TableMapping(sale.ValueCategory{}, "gs_category")
+	orm.TableMapping(sale.GoodsSnapshot{}, "gs_snapshot")
+	orm.TableMapping(sale.ValueSaleTag{}, "gs_sale_tag")
+	orm.TableMapping(sale.MemberPrice{}, "gs_member_price")
+
+	/** 商户 **/
+	orm.TableMapping(partner.ValuePartner{}, "pt_partner")
+	orm.TableMapping(partner.ApiInfo{}, "pt_api")
+	orm.TableMapping(partner.SiteConf{}, "pt_siteconf")
+	orm.TableMapping(partner.ValueShop{}, "pt_shop")
+	orm.TableMapping(partner.SaleConf{}, "pt_saleconf")
+	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
+	orm.TableMapping(content.ValuePage{}, "pt_page")
+	orm.TableMapping(ad.ValueAdvertisement{}, "pt_ad")
+	orm.TableMapping(ad.ValueImage{}, "pt_ad_image")
+	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
+	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")
+
+	/** 促销 **/
+	orm.TableMapping(promotion.ValueCoupon{}, "pm_coupon")
+	orm.TableMapping(promotion.ValueCouponBind{}, "pm_coupon_bind")
+	orm.TableMapping(promotion.ValueCouponTake{}, "pm_coupon_take")
+	orm.TableMapping(promotion.ValuePromotion{}, "pm_info")
+	orm.TableMapping(promotion.ValueCashBack{}, "pm_cash_back")
+
+	/** 配送 **/
+	orm.TableMapping(delivery.AreaValue{}, "dlv_area")
+	orm.TableMapping(delivery.CoverageValue{}, "dlv_coverage")
+	orm.TableMapping(delivery.PartnerDeliverBind{}, "dlv_partner_bind")
+
+	/** 用户 **/
+	orm.TableMapping(user.RoleValue{}, "usr_role")
+	orm.TableMapping(user.PersonValue{}, "usr_person")
+	orm.TableMapping(user.CredentialValue{}, "usr_credential")
+
+	orm.TableMapping(valueobject.Goods{}, "")
+=======
 	orm.CreateTableMap(member.ValueMember{}, "mm_member")
 	orm.CreateTableMap(member.IntegralLog{}, "mm_integral_log")
 	orm.CreateTableMap(member.AccountValue{}, "mm_account")
@@ -108,6 +165,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.CreateTableMap(user.CredentialValue{}, "usr_credential")
 
 	orm.CreateTableMap(valueobject.Goods{}, "")
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	return connector
 }

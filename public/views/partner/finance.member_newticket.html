@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>客服充值</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<div id="form1" class="form margin30">
+    <div class="tip-box">
+        目标操作会员：<b style="color:#0a0">{{.Map.member.Name}}</b>
+    </div>
+    <br />
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>单据类型：</div>
+        <div class="in">
+            <input type="hidden" field="MemberId" value="{{.Map.m.Id}}"/>
+            <select name="kt" field="kt" class="ui-validate ui-box" required="true">
+                <option value="">一请选择一</option>
+                <option value="{{.Map.bpKt}}">{{.Map.bpName}}</option>
+            </select>
+         </div>
+    </div>
+
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>单据金额：</div>
+        <div class="in">
+            <input type="hidden" field="MemberId" value="{{.Map.member.Id}}"/>
+            <select name="oper" field="oper" class="ui-validate ui-box">
+                <option value="+">添加</option>
+                <option value="-">扣减</option>
+            </select>
+            <input id="tb_amount" class="ui-validate ui-box" isnumber="true" type="text" value="" field="amount" style="width:50px"/>元
+        </div>
+    </div>
+
+
+    <div class="fl">
+        <div class="label"><span class="red"></span>单据备注：</div>
+        <div class="in">
+            <input name="remark" class="ui-validate ui-box" type="text" value="" field="remark"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+            <span class="ui-button w150">
+                <span class="button-inner">
+                    <span class="button-txt">生成</span>
+                    <input type="button" id="btn_save"/>
+                </span>
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script>
+    j6.$('btn_save').onclick = function () {
+        var data = j6.json.toObject('form1');
+        data.Amount = parseFloat(data.amount || 0);
+        if (data.Amount <= 0) {
+            j6.validator.setTip(j6.$('tb_amount'), false, null, "金额错误");
+            return false;
+        } else {
+            j6.validator.removeTip(j6.$('tb_amount'));
+        }
+        var t = this;
+        t.disabled = true;
+        if(j6.validator.validate('form1')) {
+            j6.xhr.jsonPost(location.href, data, function (json) {
+                window.parent.$.messager.alert('提示', json.result ? '操作成功' : json.message,
+                        json.result ? 'ok' : 'error', function () {
+                            var d = j6.dialog.getDialog();
+                            if (d.window.refresh) {
+                                d.window.refresh();
+                            }
+                            d.close();
+                        });
+                t.disabled = false;
+            }, function (e) {
+                t.disabled = false;
+                window.parent.$.messager.alert('提示', e, 'error');
+            });
+        }
+    };
+</script>
+</body>
+</html>

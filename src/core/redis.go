@@ -17,6 +17,14 @@ import (
 	"time"
 )
 
+<<<<<<< HEAD
+var (
+	hasGet   bool = false
+	globPool *redis.Pool
+)
+
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func createRedisPool(c *gof.Config) *redis.Pool {
 	redisHost := c.GetString("redis_host")
 	redisDb := c.GetString("redis_db")
@@ -71,6 +79,28 @@ func createRedisPool(c *gof.Config) *redis.Pool {
 	}
 }
 
+<<<<<<< HEAD
+// 获取Redis连接池
+func GetRedisPool() *redis.Pool {
+	if !hasGet {
+		app := gof.CurrentApp
+		if app == nil {
+			panic(errors.New("gobal app not initialize!"))
+		}
+		var ok bool
+		globPool, ok = app.Storage().Driver().(*redis.Pool)
+		if !ok {
+			panic(errors.New("storage drive not base redis"))
+		}
+		hasGet = true
+	}
+	return globPool
+}
+
+// 获取Redis连接
+func GetRedisConn() redis.Conn {
+	return GetRedisPool().Get()
+=======
 // 获取Redis连接
 func GetRedisConn() redis.Conn {
 	app := gof.CurrentApp
@@ -82,4 +112,5 @@ func GetRedisConn() redis.Conn {
 		panic(errors.New("storage drive not base redis"))
 	}
 	return conn
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }

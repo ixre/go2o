@@ -28,4 +28,16 @@ var (
 
 	ErrSalesPercent *domain.DomainError = domain.NewDomainError(
 		"err_sales_percent", "销售比例错误")
+<<<<<<< HEAD
+
+	ErrRegOff *domain.DomainError = domain.NewDomainError(
+		"err_reg_off", "CODE:1011,系统未开放注册")
+
+	ErrRegMustInvitation *domain.DomainError = domain.NewDomainError(
+		"err_reg_must_invitation", "CODE:1011,系统只允许邀请注册")
+
+	ErrRegOffInvitation *domain.DomainError = domain.NewDomainError(
+		"err_reg_off_invitation", "CODE:1011,系统关闭邀请注册")
+=======
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )

@@ -9,7 +9,11 @@ ac.present_balance,m.reg_time,m.last_login_time
  FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
 INNER JOIN pt_member_level lv ON lv.value = m.level
 INNER JOIN mm_account ac ON m.id = ac.member_id
+<<<<<<< HEAD
+ WHERE lv.partner_id={partner_id} AND r.reg_partner_id = {partner_id}
+=======
  WHERE lv.partner_id={partner_id}
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
  AND (m.name LIKE '%{keyword}%' OR m.usr LIKE '%{keyword}%'
  OR m.phone LIKE '%{keyword}%')
  AND ({level_value}<0 OR m.level={level_value})
@@ -23,7 +27,11 @@ ORDER BY m.reg_time DESC
     <![CDATA[ SELECT COUNT(0) FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
 INNER JOIN pt_member_level lv ON lv.value = m.level
 INNER JOIN mm_account ac ON m.id = ac.member_id
+<<<<<<< HEAD
+ WHERE lv.partner_id={partner_id} AND r.reg_partner_id = {partner_id}
+=======
  WHERE lv.partner_id={partner_id}
+>>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
  AND (m.name LIKE '%{keyword}%' OR m.usr LIKE '%{keyword}%'
  OR m.phone LIKE '%{keyword}%')
  AND ({level_value}<0 OR m.level={level_value})

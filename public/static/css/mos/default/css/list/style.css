@@ -1,0 +1,23 @@
+.style-page .pxui-tab-nav i,
+.style-page .pxui-list span{background-image:url(../../images/home/index.gif@11);background-size:260px 134px;}
+.style-page .pxui-tab-nav{background:#fff;padding:10px 0;line-height:18px;height:auto;overflow:hidden;-moz-box-shadow:0px 2px 5px #e7e7e7; -webkit-box-shadow:0px 2px 5px #e7e7e7; box-shadow:0px 2px 5px #e7e7e7;}
+.style-page .pxui-tab-nav a.selected span{position:absolute;border-bottom: 2px solid #fd5744;border-left: 1px solid transparent;border-right: 1px solid transparent;height: 0;bottom: -10PX;left: 50%;margin-left: -45%;width:90%;}
+.style-page .pxui-tab-nav a{height:auto;position:relative;}
+.style-page .pxui-tab-nav a.selected{background:#fff;line-height:18px;}
+.style-page .pxui-tab-nav i{width:24px;height:21px;display:block;margin:auto;background-position:-62px 0;}
+.style-page .pxui-tab-nav a.selected:nth-child(1) i{background-position:-33px 0;}
+.style-page .pxui-tab-nav a:nth-child(2) i{background-position:-120px 0;}
+.style-page .pxui-tab-nav a.selected:nth-child(2) i{background-position:-91px 0;}
+.style-page .pxui-tab-nav a:nth-child(3) i{background-position:-149px 0;}
+.style-page .pxui-tab-nav a:nth-child(4) i{background-position:-178px 0;}
+.style-page .pxui-list a{height:66px;position:relative;}
+.style-page .pxui-list{line-height:50px;}
+.style-page .pxui-list b{font-size:16px;display:inline-block;margin-left:62px;}
+.style-page .pxui-list p{position:absolute;margin-top:-45px;margin-left:76px;}
+.style-page .pxui-list p a{display:inline;border:0;padding:0;}
+.style-page .pxui-list span{position:absolute;width:48px;height:48px;border-radius:24px;background-position:0 -32px;margin-top:9px;}
+.style-page .pxui-list :nth-child(3) span{background-position:-53px -32px;}
+.style-page .pxui-list :nth-child(5) span{background-position:-212px -32px;}
+.style-page .pxui-list :nth-child(7) span{background-position:-159px -32px;}
+.style-page .pxui-list :nth-child(9) span{background-position:-106px -32px;}
+.style-page .pxui-list :nth-child(11) span{background-position:-159px -85px;}

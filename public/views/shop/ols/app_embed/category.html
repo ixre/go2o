@@ -1,0 +1,24 @@
+{{$img_serve:=.Map.img_serve}}
+<!doctype html>
+<html>
+<head>
+    <title>商品分类</title>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/app_embed/stand.css?spam={{.Var.spam}}"/>
+</head>
+<body>
+
+    {{template "header" $}}
+
+    <div class="page-category-list">
+        <div class="panel">
+            {{.Map.cate_html}}
+        </div>
+    </div>
+
+    {{template "footer" $}}
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>商户编辑</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="form1" class="form margin30">
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>名称：</div>
+        <div class="in">
+            <input type="hidden" field="Id" value="0"/>
+            <input class="ui-validate ui-box" type="text" field="Name" required="true" />
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
+        <div class="in" style="position: relative;height:70px;">
+            <img id="upload_img" src="{{.Var.img_serve}}/share/nopic.gif" style="float:left;margin-right:10px;width: 140px; height: 60px;border:solid 1px #aaa;padding:1px;" />
+            <input class="ui-validate ui-box" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
+            <span id="upload_btn"><button>选择图片上传(140*60)</button></span>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系电话：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="Tel" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>联系手机：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="Phone" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"><span class="red">*&nbsp;</span>地址：</div>
+        <div class="in">
+            <input class="ui-validate ui-box" type="text" field="Address" required="true"/>
+        </div>
+    </div>
+
+    <div class="fl">
+        <div class="label"></div>
+        <div class="in">
+             <span class="ui-button w150" id="btn_save">                 <span class="button-inner">                 <span class="button-txt">提交</span><a href="javascript:;"></a>                 </span>             </span>
+        </div>
+    </div>
+</div>
+
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script>
+    var entity ={{.Map.entity}} ||{};
+    j6.json.bind('form1', entity);
+    j6.$('upload_img').src = '{{.Var.img_serve}}/'+ entity.Logo;
+
+    //上传缩略图
+    j6.upload({
+        id: 'upload_btn',
+        debug: !true,
+        url: '/upload.cgi?type=101',
+        exts: '*.gif;*.jpg;*.png;*.bmp'
+    },function (result, data) {
+        if (result) {
+            j6.$('upload_path').value = data.url;
+            j6.$('upload_img').src = '{{.Var.img_serve}}/'+ data.url;
+        } else {
+            alert('上传失败：' + data);
+        }
+    });
+
+    j6.$('btn_save').onclick = function() {
+        if (j6.validator.validate('form1')) {
+            var data = j6.json.toObject('form1');
+            j6.xhr.jsonPost('SavePartner', data, function(json) {
+                window.parent.$.messager.alert('提示', json.result ? '商户创建成功，请继续为商户配置其他信息！' : json.message,
+                        "ok",function(){
+                            j6.tab.closeAndRefresh('商户管理');
+                        }
+                );
+            }, function(e) {
+                window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');
+            });
+        }
+    }
+</script>
+</body>
+</html>

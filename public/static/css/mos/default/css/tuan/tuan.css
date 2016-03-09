@@ -1,0 +1,9 @@
+.pxui-tab{ margin-bottom:10px;}
+.tuan-list{height:120px; background:#fff; overflow:hidden; border-bottom:1px solid #b5bfd7; margin-bottom:5px;}
+.tuan-list .img120{ float:left; margin-right:10px;}
+.pxui-color-yellow{color:#ffc832}
+.tuan-list .title,.tuan-list .detail{display: block; overflow:hidden; color:#575757;font-size:14px;/*white-space:nowrap;text-overflow:ellipsis;-o-text-overflow:ellipsis;*/}
+.tuan-list .title{  height:80px;padding-top:6px;line-height:20px; padding-right: 10px;}
+.tuan-list .detail{ line-height:22px; height:50px;display:none;}
+.tuan-list p{ height:24px; overflow:hidden;}
+.tuan-list p span{ margin-right:5px;}

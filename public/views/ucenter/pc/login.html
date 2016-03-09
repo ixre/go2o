@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+    <title>会员登录</title>
+    <link rel="Stylesheet" href="{{.Var.static_serve}}/css/common.css?spam={{.Var.spam}}" />
+    <link rel="Stylesheet" href="{{.Var.static_serve}}/css/ucenter/pc/ucenter.css?spam={{.Var.spam}}" />
+    <style type="text/css">
+        .shadow {
+            background: none repeat scroll 0 0 #d0d0d0;
+            /*padding: 3px;*/
+            box-shadow: 0px 1px 5px #888888;
+        }
+        .shadow .content {
+        /*margin: -5px 0 0 -5px;*/
+        background: none repeat scroll 0 0 white;
+        border: 1px solid #888;
+        line-height: 20px;
+        padding: 1px;
+        }
+        #form1 {
+            width: 400px;
+           opacity:0;filter:alpha(opacity=0)
+        }
+
+        .c1 {
+        border-bottom: solid 1px #e5e5e5;
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+        font-size: 20px;
+        line-height: 25px;
+        color: #006699;
+        }
+
+        p {
+        margin: 5px 38px;
+        font-size: 14px;
+        }
+
+        .msg {
+        color: red;
+        text-align: center;
+        }
+    </style>
+</head>
+<body class="login-page">
+<div id="form1" class="shadow">
+    <div class="content" style="padding: 50px">
+        <div class="center c1">
+            <strong>会员登录</strong>
+        </div>
+        <div class="msg" id="tip">&nbsp;</div>
+
+        <div>
+            <p>
+                用户：<input type="text" name="usr" field="usr" class="ui-validate ui-box"
+                          required="true" />
+            </p>
+
+            <p>
+                密码：<input type="password" name="pwd" field="pwd"
+                          class="ui-validate ui-box" required="true" />
+            </p>
+
+            <p style="text-align: right">
+                <input type="submit" class="btn" value="登录" id="login" />
+            </p>
+
+
+        </div>
+
+    </div>
+</div>
+
+
+<script src="{{.Var.static_serve}}/assets/js/mobi/core.js?version={{.Var.version}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/mobi/device.js?version={{.Var.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?version={{.Var.version}}"></script>
+
+<script type="text/javascript">
+        var d = j6.$('form1');
+        j6.style(d,{
+                position:'absolute',
+                left: (j6.screen.width()- j6.width(d) ) /2 +'px',
+                top: (j6.screen.height() - j6.height(d) - 40) /2 +'px'
+            })
+		   var tip = j6.$('tip');
+		   document.body.onkeydown = function (e) {
+	            var event = window.event || e;
+	            if (event.keyCode == 13) {
+	                login();
+	            }
+	        };
+	        function login() {
+	            var data = j6.json.toObject('form1');
+                data.pwd = sha1(data.pwd);
+                j6.json.bind('form1',data);
+	            if (j6.validator.validate('form1')){
+	                j6.xhr.jsonPost(location.href, data, function (json) {
+	                    if (json.result) {
+	                      window.parent.location.replace(unescape(j6.request('return_url')||'/'));
+	                    }
+	                    else {
+	                        if (json.message.indexOf('验证码') != -1) {
+	                            refreshImage();
+	                        }
+	                        tip.innerHTML = '<span style="color:red">提示：' + json.message + '</span>';
+	                    }
+	                }, function (x) {
+	                    tip.innerHTML = '<span style="color:red">服务器出错，请重试!</span>';
+	                });
+	            }
+	        }
+	        
+	        j6.$('login').onclick=login;
+            j6.animation.show('form1',null,4);
+		</script>
+</body>
+</html>
