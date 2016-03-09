@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-<<<<<<< HEAD
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -30,31 +29,11 @@ func (this *configC) Profile(ctx *echox.Context) error {
 		return this.profile_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)
-=======
-	"github.com/jsix/gof/web/mvc"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/service/dps"
-	"html/template"
-	"time"
-)
-
-var _ mvc.Filter = new(configC)
-
-type configC struct {
-	*baseC
-}
-
-//资料配置
-func (this *configC) Profile(ctx *web.Context) {
-
-	partnerId := this.GetPartnerId(ctx)
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	p, _ := dps.PartnerService.GetPartner(partnerId)
 	p.Pwd = ""
 	p.ExpiresTime = time.Now().Unix()
 
 	js, _ := json.Marshal(p)
-<<<<<<< HEAD
 	d := echox.NewRenderData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.profile.html", d)
@@ -63,19 +42,6 @@ func (this *configC) Profile(ctx *web.Context) {
 func (this *configC) profile_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-=======
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/profile.html")
-}
-
-func (this *configC) Profile_post(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	var result gof.Message
 	r.ParseForm()
 
@@ -100,7 +66,6 @@ func (this *configC) Profile_post(ctx *web.Context) {
 		result.Result = true
 		result.Data = id
 	}
-<<<<<<< HEAD
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -120,27 +85,6 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 func (this *configC) siteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-=======
-	w.Write(result.Marshal())
-}
-
-//站点配置
-func (this *configC) SiteConf(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	conf := dps.PartnerService.GetSiteConf(partnerId)
-	js, _ := json.Marshal(conf)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/site_conf.html")
-}
-
-func (this *configC) SiteConf_post(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	var result gof.Message
 	r.ParseForm()
 
@@ -159,7 +103,6 @@ func (this *configC) SiteConf_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true, Message: ""}
 	}
-<<<<<<< HEAD
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -179,27 +122,6 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 func (this *configC) saleConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	r := ctx.Request()
-=======
-	w.Write(result.Marshal())
-}
-
-//销售配置
-func (this *configC) SaleConf(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	conf := dps.PartnerService.GetSaleConf(partnerId)
-	js, _ := json.Marshal(conf)
-
-	ctx.App.Template().Execute(ctx.Response,
-		gof.TemplateDataMap{
-			"entity": template.JS(js),
-		},
-		"views/partner/conf/sale_conf.html")
-}
-
-func (this *configC) SaleConf_post(ctx *web.Context) {
-	partnerId := this.GetPartnerId(ctx)
-	r, w := ctx.Request, ctx.Response
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	var result gof.Message
 	r.ParseForm()
 
@@ -215,9 +137,5 @@ func (this *configC) SaleConf_post(ctx *web.Context) {
 	} else {
 		result = gof.Message{Result: true, Message: ""}
 	}
-<<<<<<< HEAD
 	return ctx.JSON(http.StatusOK, result)
-=======
-	w.Write(result.Marshal())
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }

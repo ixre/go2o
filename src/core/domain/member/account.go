@@ -10,13 +10,9 @@ package member
 
 import (
 	"errors"
-<<<<<<< HEAD
 	dm "go2o/src/core/domain"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
-=======
-	"go2o/src/core/domain/interface/member"
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"time"
 )
 
@@ -213,7 +209,6 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 	return errors.New("kind not match")
 }
 
-<<<<<<< HEAD
 // 请求提现,返回info_id,交易号及错误
 func (this *Account) RequestApplyCash(applyType int, title string,
 	amount float32, commission float32) (int, string, error) {
@@ -231,28 +226,11 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-=======
-// 请求提现
-func (this *Account) RequestApplyCash(applyType int, title string,
-	amount float32, commission float32) error {
-	if amount <= 0 {
-		return member.ErrIncorrectAmount
-	}
-	if this._value.PresentBalance < amount {
-		return member.ErrOutOfBalance
-	}
-
-	csnAmount := amount * commission
-	finalAmount := amount - csnAmount
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	v := &member.BalanceInfoValue{
 		Kind:      member.KindBalanceApplyCash,
 		Type:      applyType,
 		Title:     title,
-<<<<<<< HEAD
 		TradeNo:   tradeNo,
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		Amount:    finalAmount,
 		CsnAmount: csnAmount,
 		State:     member.StateApplySubmitted,
@@ -264,20 +242,12 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 		v.State = member.StateApplyOver
 	}
 
-<<<<<<< HEAD
 	id, err := this.SaveBalanceInfo(v)
-=======
-	_, err := this.SaveBalanceInfo(v)
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	if err == nil {
 		this._value.PresentBalance -= amount
 		_, err = this.Save()
 	}
-<<<<<<< HEAD
 	return id, tradeNo, err
-=======
-	return err
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 // 确认提现
@@ -288,16 +258,11 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 		if pass {
 			v.State = member.StateApplyConfirmed
 		} else {
-<<<<<<< HEAD
 			if v.State == member.StateApplyNotPass {
 				return dm.ErrState
 			}
 			v.State = member.StateApplyNotPass
 			this._value.PresentBalance += v.CsnAmount + (-v.Amount)
-=======
-			v.State = member.StateApplyNotPass
-			this._value.PresentBalance += v.Amount + v.CsnAmount
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 			if _, err := this.Save(); err != nil {
 				return err
 			}

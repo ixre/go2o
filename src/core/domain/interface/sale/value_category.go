@@ -21,10 +21,6 @@ type ValueCategory struct {
 	OrderIndex  int    `db:"order_index"`
 	Url         string `db:"url"`
 	CreateTime  int64  `db:"create_time"`
-<<<<<<< HEAD
 	Enabled     int    `db:"enabled"`
-=======
-	Enabled     int    `db:"enabled`
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	Description string `db:"description"`
 }

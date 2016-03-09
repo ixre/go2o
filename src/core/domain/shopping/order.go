@@ -19,13 +19,8 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure"
-<<<<<<< HEAD
 	"go2o/src/core/variable"
 	"log"
-=======
-	"go2o/src/core/infrastructure/log"
-	"go2o/src/core/variable"
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"strings"
 	"time"
 )
@@ -33,10 +28,7 @@ import (
 var (
 	EXP_BIT float32
 )
-<<<<<<< HEAD
 var _ shopping.IOrder = new(Order)
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 type Order struct {
 	_shopping        shopping.IShopping
@@ -77,7 +69,6 @@ func (this *Order) GetValue() shopping.ValueOrder {
 	return *this._value
 }
 
-<<<<<<< HEAD
 // 设置订单值
 func (this *Order) SetValue(v *shopping.ValueOrder) error {
 	v.Id = this.GetDomainId()
@@ -85,8 +76,6 @@ func (this *Order) SetValue(v *shopping.ValueOrder) error {
 	return nil
 }
 
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 // 应用优惠券
 func (this *Order) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	if this._coupons == nil {
@@ -218,15 +207,8 @@ func (this *Order) PaymentForOnlineTrade(serverProvider string, tradeNo string) 
 	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
-<<<<<<< HEAD
 	this._shopping.SmartConfirmOrder(this) // 确认订单
 	_, err := this.Save()
-=======
-	_, err := this.Save()
-
-	this._shopping.SmartConfirmOrder(this) // 确认订单
-
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	return err
 }
 
@@ -241,11 +223,7 @@ func (this *Order) SetDeliver(deliverAddressId int) error {
 		v.DeliverTime = time.Now().Add(-time.Hour).Unix()
 		return nil
 	}
-<<<<<<< HEAD
 	return member.ErrNoSuchDeliverAddress
-=======
-	return errors.New("Deliver address not exist!")
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 // 使用余额支付
@@ -549,17 +527,9 @@ func (this *Order) Confirm() error {
 		this._value.IsPaid == enum.FALSE {
 		return shopping.ErrOrderNotPayed
 	}
-<<<<<<< HEAD
 	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
 		this._value.Status = enum.ORDER_WAIT_DELIVERY
 		this._value.UpdateTime = time.Now().Unix()
-=======
-
-	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
-		this._value.Status = enum.ORDER_WAIT_DELIVERY
-		this._value.UpdateTime = time.Now().Unix()
-
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		_, err := this.Save()
 		if err == nil {
 			err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
@@ -585,12 +555,8 @@ func (this *Order) addGoodsSaleNum(snapshotId int, quantity int) error {
 }
 
 // 配送订单
-<<<<<<< HEAD
 func (this *Order) Deliver(spId int, spNo string) error {
 	//todo: 记录快递配送信息
-=======
-func (this *Order) Deliver() error {
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	dt := time.Now()
 	this._value.Status += 1
 	this._value.DeliverTime = dt.Unix()
@@ -699,10 +665,6 @@ func (this *Order) Complete() error {
 	ptl, err = this._partnerRep.GetPartner(v.PartnerId)
 	if err != nil {
 		log.Println("供应商异常!", v.PartnerId)
-<<<<<<< HEAD
-=======
-		log.PrintErr(err)
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 		return err
 	}
 

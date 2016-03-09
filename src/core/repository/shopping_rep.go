@@ -13,10 +13,7 @@ import (
 	"errors"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
-<<<<<<< HEAD
 	"go2o/src/core"
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
@@ -100,25 +97,17 @@ func (this *shoppingRep) GetOrderItems(orderId int) []*shopping.OrderItem {
 
 func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, error) {
 	var err error
-<<<<<<< HEAD
 	var statusIsChanged bool //业务状态是否改变
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	d := this.Connector
 	v.PartnerId = partnerId
 
 	if v.Id > 0 {
-<<<<<<< HEAD
 		var oriStatus int
 		d.ExecScalar("SELECT status FROM pt_order WHERE id=?", &oriStatus, v.Id)
 		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
 		_, _, err = d.GetOrm().Save(v.Id, v)
 		if v.Status == enum.ORDER_COMPLETED {
 			//todo:将去掉下行
-=======
-		_, _, err = d.GetOrm().Save(v.Id, v)
-		if v.Status == enum.ORDER_COMPLETED {
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
 		}
 	} else {
@@ -133,7 +122,6 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
 		}
-<<<<<<< HEAD
 		statusIsChanged = true
 	}
 
@@ -142,11 +130,6 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		defer rc.Close()
 		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue
 		//log.Println("-- PUSH - ",v.Id,err)
-=======
-
-		// Sign new order
-		gof.CurrentApp.Storage().Set(variable.KvHaveNewCreatedOrder, enum.TRUE)
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	}
 
 	// 保存订单项
@@ -172,7 +155,6 @@ func (this *shoppingRep) SaveOrderCouponBind(val *shopping.OrderCoupon) error {
 	return err
 }
 
-<<<<<<< HEAD
 // 根据编号获取订单
 func (this *shoppingRep) GetOrderById(id int) *shopping.ValueOrder {
 	var v = new(shopping.ValueOrder)
@@ -182,8 +164,6 @@ func (this *shoppingRep) GetOrderById(id int) *shopping.ValueOrder {
 	return nil
 }
 
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 	*shopping.ValueOrder, error) {
 	var v = new(shopping.ValueOrder)
@@ -194,7 +174,6 @@ func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 	return v, err
 }
 
-<<<<<<< HEAD
 // 根据订单号获取订单
 func (this *shoppingRep) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
 	var v = new(shopping.ValueOrder)
@@ -205,8 +184,6 @@ func (this *shoppingRep) GetValueOrderByNo(orderNo string) *shopping.ValueOrder 
 	return nil
 }
 
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 // 获取等待处理的订单
 func (this *shoppingRep) GetWaitingSetupOrders(partnerId int) ([]*shopping.ValueOrder, error) {
 	dst := []*shopping.ValueOrder{}

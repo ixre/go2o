@@ -65,7 +65,7 @@ zhu***@126.com
 
 ## Deploy ##
 ### 1. Import database ###
- Create new mysql db instance named "go2o"
+> Create new mysql db instance named "go2o"
  and import data use mysql utility.
  Database backup file is here : [go2o.sql](https://github.com/jsix/go2o/blob/master/docs/data/go2o.sql)
 

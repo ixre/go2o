@@ -112,11 +112,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
 				if level > 0 {
-<<<<<<< HEAD
 					goods = sl.CreateGoodsByItem(
-=======
-					goods = sl.CreateGoods(
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 						sl.CreateItem(sale.ParseToPartialValueItem(gv)),
 						sale.ParseToValueGoods(gv),
 					)
@@ -166,13 +162,10 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 		return nil, sale.ErrNoSuchGoods // 没有商品
 	}
 
-<<<<<<< HEAD
 	if !goods.GetItem().IsOnShelves() {
 		return nil, sale.ErrNotOnShelves //未上架
 	}
 
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 	stockNum := goods.GetValue().StockNum
 	if stockNum == 0 {
 		return nil, sale.ErrFullOfStock // 已经卖完了

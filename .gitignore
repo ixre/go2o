@@ -12,3 +12,5 @@ app_*.conf
 *.zip
 uploads/102
 uploads/103
+test*
+*.psd

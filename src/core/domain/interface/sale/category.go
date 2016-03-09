@@ -12,11 +12,7 @@ package sale
 type ICategory interface {
 	GetDomainId() int
 
-<<<<<<< HEAD
 	GetValue() *ValueCategory
-=======
-	GetValue() ValueCategory
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 
 	SetValue(*ValueCategory) error
 

@@ -12,10 +12,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/mvc"
-<<<<<<< HEAD
 	"github.com/labstack/echo"
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 )
 
 var (
@@ -58,11 +55,8 @@ func RegisterRoutes(c gof.App) {
 	routes.Add("/", mc.Index)
 	routes.Add("/user/jump_m", uc.member)
 }
-<<<<<<< HEAD
 
 func GetServe() *echo.Echo {
 	s := echo.New()
 	return s
 }
-=======
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d

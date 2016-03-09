@@ -36,13 +36,8 @@ func (this *Category) GetDomainId() int {
 	return this._value.Id
 }
 
-<<<<<<< HEAD
 func (this *Category) GetValue() *sale.ValueCategory {
 	return this._value
-=======
-func (this *Category) GetValue() sale.ValueCategory {
-	return *this._value
->>>>>>> 2616cf765706f843f62d942c38b85a9a18214d6d
 }
 
 func (this *Category) SetValue(v *sale.ValueCategory) error {
