@@ -58,7 +58,7 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 	r := c.Request()
 	sessionId := r.URL.Query().Get("sessionId")
 	url := r.URL.Query().Get("return_url")
-	if len(url) == 0{
+	if len(url) == 0 {
 		url = "/"
 	}
 	var m *member.ValueMember
@@ -72,8 +72,8 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 			m = dps.MemberService.GetMember(memberId)
 			c.Session.Set("member", m)
 			c.Session.Save()
-		}else{
-			return c.String(http.StatusOK,"会话不正确")
+		} else {
+			return c.String(http.StatusOK, "会话不正确")
 		}
 	} else {
 		// 从统一平台连接过来（标准版商户PC前端)
@@ -89,7 +89,7 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 		if rl.RegisterPartnerId > 0 {
 			c.Session.Set("member:rel_partner", rl.RegisterPartnerId)
 			c.Session.Save()
-			c.Redirect(302,url)
+			c.Redirect(302, url)
 			return nil
 		}
 	}

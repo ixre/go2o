@@ -147,6 +147,15 @@ func (this *memberService) LockMember(partnerId, id int) (bool, error) {
 	return true, m.Unlock()
 }
 
+// 判断资料是否完善
+func (this *memberService) ProfileCompleted(memberId int) bool {
+	m := this._memberRep.GetMember(memberId)
+	if m != nil {
+		return m.ProfileCompleted()
+	}
+	return false
+}
+
 // 重置密码
 func (this *memberService) ResetPassword(memberId int) string {
 	m := this._memberRep.GetMember(memberId)

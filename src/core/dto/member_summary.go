@@ -16,9 +16,9 @@ type MemberSummary struct {
 	Avatar         string `db:"-"`
 	Exp            int    `db:"exp"`
 	Level          int    `db:"level"`
-	LevelName      string
-	Integral       int
-	Balance        float32
-	PresentBalance float32
+	LevelName      string `db:"level_name"`
+	Integral       int    `db:"integral"`
+	Balance        float32 `db:"balance"`
+	PresentBalance float32 `db:"present_balance"`
 	UpdateTime     int64 `db:"update_time"`
 }

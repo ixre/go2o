@@ -142,6 +142,13 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	return nil
 }
 
+func (this *Member) ProfileCompleted() bool {
+	return len(this._value.Im) != 0 && len(this._value.Email) != 0 &&
+		len(this._value.BirthDay) != 0 && len(this._value.Address) != 0 &&
+		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
+		this._value.Sex != 0
+}
+
 func (this *Member) notifyOnProfileComplete() {
 	rl := this.GetRelation()
 	pt, err := this._partnerRep.GetPartner(rl.RegisterPartnerId)

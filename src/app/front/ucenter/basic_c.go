@@ -9,63 +9,69 @@
 package ucenter
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/jsix/gof"
+	fmt2 "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
 	"strconv"
-	"go2o/src/core/variable"
-	"bytes"
-	"fmt"
-	fmt2 "github.com/jsix/gof/util/fmt"
 )
 
 type basicC struct {
 }
 
-func getFieldHtml(alias,note,field string,show bool)string{
-	const tpl string = `<div class=\"fl %s\">
+func getFieldHtml(alias, note, field string, required bool, show bool) string {
+	const tpl string = `<div class="fl %s">
 			<div class="label">%s：</div>
 		<div class="in">
-		<input class="ui-box ui-validate" tipin="tip_%s" field="%s"/>
+		<input class="ui-box ui-validate" required="%s" tipin="tip_%s" field="%s"/>
 		<span class="fv" id="tip_%s">%s</span>
 		</div>
 		</div>`
-	return fmt.Sprintf(tpl,fmt2.BoolString(show,""," hidden"),
-		alias,field,field,field,note)
+	return fmt.Sprintf(tpl, fmt2.BoolString(show, "", " hidden"),
+		fmt2.BoolString(required, "<span class=\"red\">*</span>"+alias, alias),
+		fmt2.BoolString(required, "true", "false"),
+		field, field, field, note)
 }
-func getExtFormFields()*bytes.Buffer{
-	buf := bytes.NewBufferString(nil)
+func getExtFormFields() *bytes.Buffer {
+	buf := bytes.NewBufferString("")
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberIM,
+		variable.MemberImNote, "Im", variable.MemberImRequired, true))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt1,
-		variable.AliasMemberExt1Note,
-		variable.AliasMemberExt1Show,"Ext1"))
+		variable.MemberExt1Note, "Ext1", variable.MemberExt1Required,
+		variable.MemberExt1Show))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt2,
-		variable.AliasMemberExt2Note,
-		variable.AliasMemberExt2Show,"Ext2"))
+		variable.MemberExt2Note, "Ext2", variable.MemberExt2Required,
+		variable.MemberExt2Show))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt3,
-		variable.AliasMemberExt3Note,
-		variable.AliasMemberExt3Show,"Ext3"))
+		variable.MemberExt3Note, "Ext3", variable.MemberExt3Required,
+		variable.MemberExt3Show))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt4,
-		variable.AliasMemberExt4Note,
-		variable.AliasMemberExt4Show,"Ext4"))
+		variable.MemberExt4Note, "Ext4", variable.MemberExt4Required,
+		variable.MemberExt4Show))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt5,
-		variable.AliasMemberExt5Note,
-		variable.AliasMemberExt5Show,"Ext5"))
+		variable.MemberExt5Note, "Ext5", variable.MemberExt5Required,
+		variable.MemberExt5Show))
 	buf.WriteString(getFieldHtml(
 		variable.AliasMemberExt6,
-		variable.AliasMemberExt6Note,
-		variable.AliasMemberExt6Show,"Ext6"))
+		variable.MemberExt6Note, "Ext6", variable.MemberExt6Required,
+		variable.MemberExt6Show))
+	return buf
 }
 
 func (this *basicC) Profile(ctx *echox.Context) error {
@@ -77,8 +83,6 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 	conf := getSiteConf(p.Id)
 	js, _ := json.Marshal(mm)
 	d := ctx.NewData()
-
-
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
 		"conf":         conf,
@@ -86,7 +90,7 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 		"member":       mm,
 		"entity":       template.JS(js),
 		"aliasIM":      variable.AliasMemberIM,
-		"extFields":template.HTML(getExtFormFields().String()),
+		"extFields":    template.HTML(getExtFormFields().String()),
 	}
 	return ctx.RenderOK("profile.html", d)
 }

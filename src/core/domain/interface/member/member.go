@@ -33,6 +33,9 @@ type IMember interface {
 	// 解锁会员
 	Unlock() error
 
+	// 资料是否完善
+	ProfileCompleted() bool
+
 	// 获取提现银行信息
 	GetBank() BankInfo
 

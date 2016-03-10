@@ -348,7 +348,7 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
 	arr := []*member.ValueMember{}
 	this.Connector.GetOrm().SelectByQuery(&arr,
-		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?)", memberId)
+		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?) ORDER BY level DESC,id", memberId)
 	return arr
 }
 
