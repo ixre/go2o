@@ -18,9 +18,21 @@ var (
 	AliasIntegral       string = "积分"
 	AliasMemberIM       string = "即时通讯"
 	AliasMemberExt1     string = "扩展1"
+	AliasMemberExt1Note string = ""
+	AliasMemberExt1Show bool = false
 	AliasMemberExt2     string = "扩展2"
+	AliasMemberExt2Note string = ""
+	AliasMemberExt2Show bool = false
 	AliasMemberExt3     string = "扩展3"
+	AliasMemberExt3Note string = ""
+	AliasMemberExt3Show bool = false
 	AliasMemberExt4     string = "扩展4"
+	AliasMemberExt4Note string = ""
+	AliasMemberExt4Show bool = false
 	AliasMemberExt5     string = "扩展5"
+	AliasMemberExt5Note string = ""
+	AliasMemberExt5Show bool = false
 	AliasMemberExt6     string = "扩展6"
+	AliasMemberExt6Note string = ""
+	AliasMemberExt6Show bool = false
 )

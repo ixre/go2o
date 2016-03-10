@@ -21,9 +21,51 @@ import (
 	"net/http"
 	"strconv"
 	"go2o/src/core/variable"
+	"bytes"
+	"fmt"
+	fmt2 "github.com/jsix/gof/util/fmt"
 )
 
 type basicC struct {
+}
+
+func getFieldHtml(alias,note,field string,show bool)string{
+	const tpl string = `<div class=\"fl %s\">
+			<div class="label">%s：</div>
+		<div class="in">
+		<input class="ui-box ui-validate" tipin="tip_%s" field="%s"/>
+		<span class="fv" id="tip_%s">%s</span>
+		</div>
+		</div>`
+	return fmt.Sprintf(tpl,fmt2.BoolString(show,""," hidden"),
+		alias,field,field,field,note)
+}
+func getExtFormFields()*bytes.Buffer{
+	buf := bytes.NewBufferString(nil)
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt1,
+		variable.AliasMemberExt1Note,
+		variable.AliasMemberExt1Show,"Ext1"))
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt2,
+		variable.AliasMemberExt2Note,
+		variable.AliasMemberExt2Show,"Ext2"))
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt3,
+		variable.AliasMemberExt3Note,
+		variable.AliasMemberExt3Show,"Ext3"))
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt4,
+		variable.AliasMemberExt4Note,
+		variable.AliasMemberExt4Show,"Ext4"))
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt5,
+		variable.AliasMemberExt5Note,
+		variable.AliasMemberExt5Show,"Ext5"))
+	buf.WriteString(getFieldHtml(
+		variable.AliasMemberExt6,
+		variable.AliasMemberExt6Note,
+		variable.AliasMemberExt6Show,"Ext6"))
 }
 
 func (this *basicC) Profile(ctx *echox.Context) error {
@@ -35,19 +77,16 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 	conf := getSiteConf(p.Id)
 	js, _ := json.Marshal(mm)
 	d := ctx.NewData()
+
+
 	d.Map = gof.TemplateDataMap{
 		"partner":      p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
 		"entity":       template.JS(js),
-		"aliasIm":      variable.AliasMemberIM,
-        "aliasExt1":variable.AliasMemberExt1,
-        "aliasExt2":variable.AliasMemberExt2,
-        "aliasExt3":variable.AliasMemberExt3,
-        "aliasExt4":variable.AliasMemberExt4,
-        "aliasExt5":variable.AliasMemberExt5,
-        "aliasExt6":variable.AliasMemberExt6,
+		"aliasIM":      variable.AliasMemberIM,
+		"extFields":template.HTML(getExtFormFields().String()),
 	}
 	return ctx.RenderOK("profile.html", d)
 }
