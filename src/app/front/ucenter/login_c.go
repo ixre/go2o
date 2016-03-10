@@ -54,9 +54,13 @@ func (this *loginC) index_post(ctx *echox.Context) error {
 }
 
 //从partner登录过来的信息
-func (this *loginC) Partner_connect(ctx *echox.Context) error {
-	r := ctx.Request()
+func (this *loginC) Partner_connect(c *echox.Context) error {
+	r := c.Request()
 	sessionId := r.URL.Query().Get("sessionId")
+	url := r.URL.Query().Get("return_url")
+	if len(url) == 0{
+		url = "/"
+	}
 	var m *member.ValueMember
 	var err error
 
@@ -65,29 +69,31 @@ func (this *loginC) Partner_connect(ctx *echox.Context) error {
 		memberId, err := strconv.Atoi(r.URL.Query().Get("mid"))
 		token := r.URL.Query().Get("token")
 		if err == nil && token != "" {
-			m := dps.MemberService.GetMember(memberId)
-			ctx.Session.Set("member", m)
-			ctx.Session.Save()
+			m = dps.MemberService.GetMember(memberId)
+			c.Session.Set("member", m)
+			c.Session.Save()
+		}else{
+			return c.String(http.StatusOK,"会话不正确")
 		}
 	} else {
 		// 从统一平台连接过来（标准版商户PC前端)
-		ctx.Session.UseInstead(sessionId)
-		m = ctx.Session.Get("member").(*member.ValueMember)
+		c.Session.UseInstead(sessionId)
+		m = c.Session.Get("member").(*member.ValueMember)
 	}
 
 	// 设置访问设备
-	util.SetBrownerDevice(ctx.Response(), ctx.Request(), ctx.Query("device"))
+	util.SetBrownerDevice(c.Response(), c.Request(), c.Query("device"))
 
-	if err == nil || m != nil {
+	if err == nil && m != nil {
 		rl := dps.MemberService.GetRelation(m.Id)
 		if rl.RegisterPartnerId > 0 {
-			ctx.Session.Set("member:rel_partner", rl.RegisterPartnerId)
-			ctx.Session.Save()
-			ctx.Redirect(302, "/")
+			c.Session.Set("member:rel_partner", rl.RegisterPartnerId)
+			c.Session.Save()
+			c.Redirect(302,url)
 			return nil
 		}
 	}
-	ctx.Redirect(302, "/login")
+	c.Redirect(302, "/login")
 	return nil
 }
 
