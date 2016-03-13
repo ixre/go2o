@@ -84,13 +84,17 @@ func (this *MainC) Msd(ctx *echox.Context) error {
 	return ctx.StringOK("disconnect fail")
 }
 
-func (this *MainC) T(ctx *echox.Context) error {
-	path := ctx.Request().URL.Path
+func (this *MainC) T(c *echox.Context) error {
+	path := c.Request().URL.Path
 	var i int = strings.LastIndex(path, "/")
 	ivCode := path[i+1:]
-	ctx.Response().Header().Add("Location", "/user/register?invi_code="+
-		ivCode+"&"+ctx.Request().URL.RawQuery)
-	ctx.Response().WriteHeader(302)
+	device := c.Query("device")
+	if len(device) > 0 {
+		util.SetBrownerDevice(c.Response(), c.Request(), device) //设置访问设备
+	}
+	c.Response().Header().Add("Location", "/user/register?invi_code="+
+		ivCode+"&"+c.Request().URL.RawQuery)
+	c.Response().WriteHeader(302)
 	return nil
 }
 

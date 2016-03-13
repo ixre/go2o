@@ -31,7 +31,9 @@ func memberLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 		path := ctx.Request().URL.Path
 
 		const ignore string = "/login|/partner_connect|/msc|/msd|/partner_disconnect|"
-		if strings.Index(ignore, path+"|") != -1 || strings.HasPrefix(path, "/static/") {
+		if strings.HasPrefix(path, "/static/") || //静态资源
+			strings.HasPrefix(path, "/get/") || //获取动态资源
+			strings.Index(ignore, path+"|") != -1 {
 			return h(ctx)
 		}
 		session := session.Default(ctx.Response(), ctx.Request())

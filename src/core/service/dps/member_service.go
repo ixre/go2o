@@ -187,7 +187,7 @@ func (this *memberService) TryLogin(partnerId int, usr,
 		return nil, errors.New("会员用户或密码不正确")
 	}
 
-	if val.State == 0 {
+	if val.State == member.StateStopped {
 		return nil, errors.New("会员已停用")
 	}
 

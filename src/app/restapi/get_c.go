@@ -27,6 +27,9 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 	domain := ctx.Query("domain")                       //域名
 	memberId, _ := strconv.Atoi(ctx.Query("member_id")) //会员编号
 	targetUrl := ctx.Query("target_url")                //目标跳转地址
+	if len(domain) == 0 {
+		domain = "http://" + ctx.Request().Host
+	}
 	if len(targetUrl) == 0 {
 		targetUrl = "/main/app"
 	}
@@ -36,7 +39,7 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 			url.QueryEscape("?return_url="+targetUrl)
 		qrBytes := gen.BuildQrCodeForUrl(url, 10)
 		ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
-		ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%d.jpg", memberId))
+		ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InvitationCode))
 		ctx.Response().Write(qrBytes)
 	}
 	return nil
