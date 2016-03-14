@@ -38,4 +38,7 @@ window.cli = {
     login:function(arg){
         loopCall('login',arg);
     },
+    close:function(arg){
+        loopCall('close',arg);
+    },
 };
