@@ -61,7 +61,7 @@
         <div class="fl">
             <div class="label">电子邮箱：</div>
             <div class="in">
-                <input class="ui-box ui-validate" regex="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*"
+                <input class="ui-box ui-validate" regex="(\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*){0,1}"
                        tipin="tip_mail" Field="Email" summary="{regex:'请正确填写邮箱'}" style="width:75%"/>
                 <span class="fv" id="tip_mail"><br />邮箱可用于找回密码</span>
             </div>
