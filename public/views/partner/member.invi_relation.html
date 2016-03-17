@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>邀请关系</title>
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+<template id="tpl" class="hidden">
+    <li class="{class}">
+        <div class="box">
+            <span class="avatar">
+                <img src="{Avatar}" width="40" height="40" alt="头像"/>
+            </span>
+            <span class="name" title="{FullName}">{Name}</span>
+            <span class="level">{LevelName}</span>
+            <span class="lastLoginTime hidden">{LatestLoginTime}</span>
+        </div>
+        <div class="abs dir">
+            >>
+        </div>
+    </li>
+</template>
+
+
+<div class="inv_list" id="inv_list">
+    加载中...
+</div>
+
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript">
+    var data = {{.Map.listJson}};
+    var htm = "<ul>";
+    var tpl = j6.$('tpl').innerHTML;
+    for(var i=0;i<data.length;i++){
+        if(i == 0){
+            data[i].class = 'me';
+        }else if(i == data.length - 1){
+            data[i].class = 'last';
+        }else{
+            data[i].class = 'i';
+            for(var j = 0;j<0;j++) {
+                htm += j6.template(tpl, data[i]);
+            }
+        }
+        data[i].FullName = data[i].Name;
+        if(data[i].Name.trim().length > 6){
+            data[i].Name = data[i].Name.trim().substring(0,5)+'...';
+        }
+        htm += j6.template(tpl,data[i]);
+    }
+    htm += '</ul>';
+    j6.$('inv_list').innerHTML = htm;
+</script>
+</body>
+</html>

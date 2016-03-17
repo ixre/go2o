@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/member"
@@ -389,4 +390,26 @@ func (this *memberC) Team_rank(ctx *echox.Context) error {
 	d := echox.NewRenderData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	return ctx.RenderOK("member.team_rank.html", d)
+}
+
+// 邀请关系
+func (this *memberC) Invi_relation(c *echox.Context) error {
+	partnerId := getPartnerId(c)
+	memberId, _ := strconv.Atoi(c.Query("member_id"))
+	ms := dps.MemberService
+	idArr := []int{memberId}
+	rl := ms.GetRelation(memberId)
+	for rl != nil && rl.RefereesId > 0 {
+		idArr = append(idArr, rl.RefereesId)
+		rl = ms.GetRelation(rl.RefereesId)
+	}
+	log.Println(idArr)
+	//for i, j := 0, len(idArr)-1; i < j; i, j = i+1, j-1 {
+	//	//反序
+	//	idArr[i], idArr[j] = idArr[j], idArr[i]
+	//}
+	list, _ := json.Marshal(ms.GetMemberList(partnerId, idArr))
+	d := echox.NewRenderData()
+	d.Map["listJson"] = template.JS(list)
+	return c.RenderOK("member.invi_relation.html", d)
 }

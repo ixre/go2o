@@ -14,6 +14,8 @@ import (
 	"github.com/jsix/gof/db"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/dto"
+	"strconv"
+	"strings"
 )
 
 type MemberQuery struct {
@@ -22,6 +24,25 @@ type MemberQuery struct {
 
 func NewMemberQuery(c db.Connector) *MemberQuery {
 	return &MemberQuery{c}
+}
+
+// 获取会员列表
+func (this *MemberQuery) GetMemberList(partnerId int, ids []int) []*dto.MemberSummary {
+	list := []*dto.MemberSummary{}
+	strIds := make([]string, len(ids))
+	for i, v := range ids {
+		strIds[i] = strconv.Itoa(v)
+	}
+	if len(ids) > 0 {
+		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
+		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
+				lv.name as level_name,a.integral,a.balance,a.present_balance,
+				m.update_time FROM mm_member m INNER JOIN pt_member_level lv
+				ON m.level = lv.value INNER JOIN mm_account a ON
+				 a.member_id = m.id WHERE lv.partner_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
+		this.Connector.GetOrm().SelectByQuery(&list, query, partnerId)
+	}
+	return list
 }
 
 // 获取返现记录

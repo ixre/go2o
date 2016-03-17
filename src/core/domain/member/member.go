@@ -95,6 +95,17 @@ func (this *Member) validate(v *member.ValueMember) error {
 // 设置值
 func (this *Member) SetValue(v *member.ValueMember) error {
 	v.Usr = this._value.Usr
+	v.Address = strings.TrimSpace(v.Address)
+	v.Im = strings.TrimSpace(v.Im)
+	v.Email = strings.TrimSpace(v.Email)
+	v.Phone = strings.TrimSpace(v.Phone)
+	v.Name = strings.TrimSpace(v.Name)
+	v.Ext1 = strings.TrimSpace(v.Ext1)
+	v.Ext2 = strings.TrimSpace(v.Ext2)
+	v.Ext3 = strings.TrimSpace(v.Ext3)
+	v.Ext4 = strings.TrimSpace(v.Ext4)
+	v.Ext5 = strings.TrimSpace(v.Ext5)
+	v.Ext6 = strings.TrimSpace(v.Ext6)
 	if err := this.validate(v); err != nil {
 		return err
 	}
@@ -133,20 +144,17 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.TradePwd = v.TradePwd
 	}
 
-	if len(this._value.Im) != 0 && len(this._value.Email) != 0 &&
-		len(this._value.BirthDay) != 0 && len(this._value.Address) != 0 &&
-		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
-		this._value.Sex != 0 {
+	if this.ProfileCompleted() { // 已完善资料
 		this.notifyOnProfileComplete()
 	}
 	return nil
 }
 
 func (this *Member) ProfileCompleted() bool {
-	return len(this._value.Im) != 0 && len(this._value.Email) != 0 &&
-		len(this._value.BirthDay) != 0 && len(this._value.Address) != 0 &&
-		len(this._value.Phone) != 0 && len(this._value.Avatar) != 0 &&
-		this._value.Sex != 0
+	return len(this._value.Name) != 0 && len(this._value.Im) != 0 &&
+		len(this._value.Email) != 0 && len(this._value.BirthDay) != 0 &&
+		len(this._value.Address) != 0 && len(this._value.Phone) != 0 &&
+		len(this._value.Avatar) != 0 && this._value.Sex != 0
 }
 
 func (this *Member) notifyOnProfileComplete() {

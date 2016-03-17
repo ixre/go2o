@@ -160,7 +160,7 @@ func (this *memberService) ProfileCompleted(memberId int) bool {
 func (this *memberService) ResetPassword(memberId int) string {
 	m := this._memberRep.GetMember(memberId)
 	if m != nil {
-		newPwd := domain.GenerateRandomPwd(6)
+		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
 		if m.ModifyPassword(newEncPwd, "") == nil {
 			return newPwd
@@ -317,6 +317,14 @@ func (this *memberService) GetMyInvitationMembers(memberId int) ([]*member.Value
 // 获取会员最后更新时间
 func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 	return this._memberRep.GetMemberLatestUpdateTime(memberId)
+}
+
+func (this *memberService) GetMemberList(partnerId int, ids []int) []*dto.MemberSummary {
+	list := this._query.GetMemberList(partnerId, ids)
+	for _, v := range list {
+		v.Avatar = format.GetResUrl(v.Avatar)
+	}
+	return list
 }
 
 // 获取会员汇总信息

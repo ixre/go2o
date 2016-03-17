@@ -30,7 +30,9 @@
             <li class="item"><label>邮箱：</label>{{.Map.m.Email}}</li>
 
             <li class="item"><label>地址：</label>{{.Map.m.Address}}</li>
-            <li class="item"><label>邀请人：</label><a href="javascript:;" onclick="showInv(this,'{{.Map.invId}}')">{{.Map.invName}}</a></li>
+            <li class="item"><label>邀请人：</label><a href="javascript:;" onclick="showInv(this,'{{.Map.invId}}')">{{.Map.invName}}</a>
+                <input type="button" class="btn btn-plat" value="查看关联" onclick="showFullInv(this,'{{.Map.m.Id}}')" style="margin:5px 0 0 90px"/>
+            </li>
 
             <li class="item"><label>注册来源：</label>{{.Map.m.RegFrom}}</li>
             <li class="item"><label>注册IP：</label>{{.Map.m.RegIp}}</li>
@@ -51,6 +53,10 @@
         if(memberId > 0){
             j6.tab.open('查看邀请人:'+ t.innerHTML, '/member/member_details?member_id='+memberId, true);
         }
+    }
+    function showFullInv(t,id){
+        var d = j6.dialog.create2('邀请关系',true,true);
+        d.open('/member/invi_relation?member_id='+memberId,600,400);
     }
 </script>
 

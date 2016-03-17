@@ -64,6 +64,11 @@ func NewSecret(hex int) string {
 }
 
 // 创建随机密码
-func GenerateRandomPwd(len int) string {
-	return util.RandString(len)
+func GenerateRandomPwd(n int) string {
+	return util.RandString(n)
+}
+
+// 创建随机数字密码
+func GenerateRandomIntPwd(n int) string {
+	return strconv.Itoa(util.RandInt(n))
 }

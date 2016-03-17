@@ -81,7 +81,7 @@ func DownloadToLocal(partnerId int, url string, guessExt string) string {
 				}
 				buf.Flush()
 
-				return filePath
+				return filePath[2:] // 去掉"./"
 			}
 		}
 	}
