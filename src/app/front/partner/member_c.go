@@ -14,7 +14,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/member"
@@ -403,7 +402,6 @@ func (this *memberC) Invi_relation(c *echox.Context) error {
 		idArr = append(idArr, rl.RefereesId)
 		rl = ms.GetRelation(rl.RefereesId)
 	}
-	log.Println(idArr)
 	//for i, j := 0, len(idArr)-1; i < j; i, j = i+1, j-1 {
 	//	//反序
 	//	idArr[i], idArr[j] = idArr[j], idArr[i]
