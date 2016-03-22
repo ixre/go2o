@@ -14,7 +14,7 @@ import (
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
-	"gobx/share/variable"
+	"go2o/src/core/variable"
 )
 
 type getC struct {
