@@ -13,8 +13,8 @@ import (
 	"fmt"
 	"go2o/src/core/infrastructure/gen"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
-"go2o/src/core/variable"
 )
 
 type getC struct {
