@@ -119,6 +119,7 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 	this._value.Name = v.Name
 	this._value.Sex = v.Sex
 	this._value.RegFrom = v.RegFrom
+	this._value.Remark = v.Remark
 	this._value.Ext1 = v.Ext1
 	this._value.Ext2 = v.Ext2
 	this._value.Ext3 = v.Ext3

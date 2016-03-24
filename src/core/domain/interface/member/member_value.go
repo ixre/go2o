@@ -35,12 +35,13 @@ type ValueMember struct {
 	RegIp          string `db:"reg_ip"`
 	State          int    `db:"state"`
 	RegTime        int64  `db:"reg_time"`
-	Ext1           string `db:"ext_1"` // 扩展1
-	Ext2           string `db:"ext_2"` // 扩展2
-	Ext3           string `db:"ext_3"` // 扩展3
-	Ext4           string `db:"ext_4"` // 扩展4
-	Ext5           string `db:"ext_4"` // 扩展5
-	Ext6           string `db:"ext_4"` // 扩展6
+	Remark         string `db:"remark"` //备注
+	Ext1           string `db:"ext_1"`  // 扩展1
+	Ext2           string `db:"ext_2"`  // 扩展2
+	Ext3           string `db:"ext_3"`  // 扩展3
+	Ext4           string `db:"ext_4"`  // 扩展4
+	Ext5           string `db:"ext_4"`  // 扩展5
+	Ext6           string `db:"ext_4"`  // 扩展6
 	LastLoginTime  int64  `db:"last_login_time"`
 	UpdateTime     int64  `db:"update_time"`
 	DynamicToken   string `db:"-"` // 动态令牌，用于登陆或API调用
