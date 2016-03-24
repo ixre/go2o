@@ -571,6 +571,9 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	kType int, tit string, amount float32) (string, error) {
 	var err error
 	var tradeNo string
+	if amount == 0 {
+		return "", member.ErrIncorrectAmount
+	}
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return "", member.ErrNoSuchMember

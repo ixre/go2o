@@ -338,6 +338,9 @@ func (this *Account) Unfreezes(title string, tradeNo string, amount float32, ref
 
 // 冻结赠送金额
 func (this *Account) FreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
 	if this._value.PresentBalance < amount {
 		return member.ErrNotEnoughAmount
 	}
@@ -348,7 +351,7 @@ func (this *Account) FreezesPresent(title string, tradeNo string, amount float32
 		Kind:    member.KindBalanceFreezesPresent,
 		Title:   title,
 		RefId:   referId,
-		Amount:  amount,
+		Amount:  -amount,
 		TradeNo: tradeNo,
 		State:   member.StatusOK,
 	}
@@ -363,6 +366,9 @@ func (this *Account) FreezesPresent(title string, tradeNo string, amount float32
 
 // 解冻赠送金额
 func (this *Account) UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
 	if this._value.FreezesPresent < amount {
 		return member.ErrNotEnoughAmount
 	}

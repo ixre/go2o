@@ -72,7 +72,7 @@
             j6.validator.removeTip(j6.$('tb_amount'));
         }
         var t = this;
-        t.disabled = true;
+        t.disabled = false;
         if(j6.validator.validate('form1')) {
             j6.xhr.jsonPost(location.href, data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '操作成功' : json.message,
@@ -83,9 +83,9 @@
                             }
                             d.close();
                         });
-                t.disabled = false;
+                t.disabled = true;
             }, function (e) {
-                t.disabled = false;
+                t.disabled = true;
                 window.parent.$.messager.alert('提示', e, 'error');
             });
         }
