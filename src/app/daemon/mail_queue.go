@@ -9,10 +9,12 @@
 package daemon
 
 import (
-	"go2o/src/core/domain/interface/enum"
+	"github.com/garyburd/redigo/redis"
+	"go2o/src/core"
 	"go2o/src/core/domain/interface/partner/mss"
 	mssIns "go2o/src/core/infrastructure/mss"
 	"go2o/src/core/variable"
+	"strconv"
 	"time"
 )
 
@@ -22,22 +24,31 @@ var (
 
 // 邮件队列
 func startMailQueue(ss []Service) {
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	//var id int
 	for {
-		if i, _ := appCtx.Storage().GetInt(variable.KvNewMailTask); i == enum.FALSE {
-			defer func() {
-				appCtx.Storage().Set(variable.KvNewMailTask, enum.TRUE)
-			}()
-			var list = []*mss.MailTask{}
-			err := appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
-			if err == nil && len(list) > 0 {
-				for _, s := range ss {
-					if !s.HandleMailQueue(list) {
-						break
-					}
-				}
+		arr, err := redis.Values(conn.Do("BLPOP",
+			variable.KvNewMailTask, 0))
+		if err == nil {
+			_, err = strconv.Atoi(string(arr[1].([]byte)))
+			if err == nil {
+				//todo: 此处获取所有需发送的邮件,应去掉从数据库批量查询操作
+				sendForWaittingQueue(ss)
 			}
 		}
-		time.Sleep(tickerDuration)
+	}
+}
+
+func sendForWaittingQueue(ss []Service) {
+	var list = []*mss.MailTask{}
+	err := appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
+	if err == nil && len(list) > 0 {
+		for _, s := range ss {
+			if !s.HandleMailQueue(list) {
+				break
+			}
+		}
 	}
 }
 

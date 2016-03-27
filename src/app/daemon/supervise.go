@@ -27,7 +27,7 @@ func superviseOrder(ss []Service) {
 	var id int
 	for {
 		arr, err := redis.Values(conn.Do("BLPOP",
-			variable.KvOrderBusinessQueue, 0))
+			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
 			id, err = strconv.Atoi(string(arr[1].([]byte)))
 			if err == nil { //通知订单更新
@@ -79,7 +79,7 @@ func superviseMemberUpdate(ss []Service) {
 func detectOrderExpires(a gof.App) {
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*"))
+	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*")) //获取标记为等待过期的订单
 	ss := dps.ShoppingService
 	for _, v := range list {
 		if unix, err := redis.Int64(conn.Do("GET", v)); err == nil {
@@ -92,7 +92,6 @@ func detectOrderExpires(a gof.App) {
 				}
 			}
 		}
-
 	}
 }
 
