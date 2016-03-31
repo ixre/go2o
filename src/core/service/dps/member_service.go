@@ -40,6 +40,9 @@ func NewMemberService(partnerService *partnerService, rep member.IMemberRep,
 }
 
 func (this *memberService) GetMember(id int) *member.ValueMember {
+	if id <= 0 {
+		return nil
+	}
 	v := this._memberRep.GetMember(id)
 	if v != nil {
 		nv := v.GetValue()
@@ -50,6 +53,9 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 
 func (this *memberService) getMember(partnerId, memberId int) (
 	member.IMember, error) {
+	if memberId <= 0 {
+		return nil, member.ErrNoSuchMember
+	}
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
