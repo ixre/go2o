@@ -65,7 +65,8 @@ type (
 	RiseInfoValue struct {
 		//Id  int `db:"id" pk:"yes" auto:"no"`
 		PersonId    int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
-		Balance     float32 `db:"base_balance"`                 //本金及收益的余额
+		Balance     float32 `db:"balance"`                 //本金及收益的余额
+		Rise       float32 `db:"rise"`                          //当前的收益
 		TransferIn  float32 `db:"transfer_in"`                  //今日转入
 		TotalAmount float32 `db:"total_amount"`                 //总金额
 		TotalRise   float32 `db:"total_rise"`                   //总收益
