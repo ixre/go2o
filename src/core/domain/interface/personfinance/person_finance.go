@@ -24,9 +24,9 @@ type (
 		// 获取聚合根
 		GetAggregateRootId() int
 		// 获取账号
-		GetMemberAccount() *member.IAccount
+		GetMemberAccount() member.IAccount
 		// 获取增利账户信息(类:余额宝)
-		GetRiseInfo() *IRiseInfo
+		GetRiseInfo() IRiseInfo
 		// 创建增利账户信息
 		CreateRiseInfo() error
 	}
@@ -34,9 +34,6 @@ type (
 	// 现金增利
 	IRiseInfo interface {
 		GetDomainId() int
-
-		// 将Transfer_in的金额到余额,用于计算收益
-		TransferToBalance(amount float32) error
 
 		// 获取值
 		Value() (RiseInfoValue, error)
@@ -49,6 +46,10 @@ type (
 
 		// 转出
 		TransferOut(amount float32) error
+
+		// 根据日志记录提交转入转出,如果已经确认操作,则返回错误
+		// 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
+		CommitTransfer(logId int) error
 
 		// 结算增利信息,dayRatio 为每天的收益比率
 		RiseSettleForToday(dayRatio float32) error
@@ -78,7 +79,7 @@ type (
 		Date       string  `db:"date"`
 		BaseAmount float32 `db:"base_amount"` //本金
 		RiseAmount string  `db:"rise_amount"` //增加金额
-		IntDate    int64   `db:"unix_date"`
+		UnixDate   int64   `db:"unix_date"`
 		UpdateTime int64   `db:"update_time"`
 	}
 
@@ -89,18 +90,22 @@ type (
 		Amount     float32 `db:"amount"`      //金额
 		Type       int     `db:"type"`        //类型
 		State      int     `db:"state"`       //状态
-		Date       int64   `db:"date"`        // 日期
+		UnixDate   int64   `db:"unix_date"`   // 日期
 		LogTime    int64   `db:"log_time"`    //日志时间
 		UpdateTime int64   `db:"update_time"` //更新时间
 	}
 
 	IPersonFinanceRepository interface {
-		GetRiseByTime(begin, end int64) []*RiseDayInfo
+		GetPersonFinance(personId int) IPersonFinance
+		GetRiseByTime(personId int, begin, end int64) []*RiseDayInfo
 		GetRiseValueByPersonId(id int) (v *RiseInfoValue, err error)
 		SaveRiseInfo(*RiseInfoValue) (id int, err error)
 
+		// 获取日志
+		GetRiseLog(personId, logId int) *RiseLog
+
 		// 保存日志
-		SaveRiseLog(*RiseLog) error
+		SaveRiseLog(*RiseLog) (int, error)
 
 		// 获取日志
 		GetRiseLogs(personId int, date int64, riseType int) []*RiseLog
@@ -113,6 +118,8 @@ var (
 
 	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
 		"err_balance_amount", "金额错误!")
+	ErrIncorrectTransfer *domain.DomainError = domain.NewDomainError(
+		"err_incorrent_transfer", "已确认或非转入(转出)操作!")
 	ErrNoSuchRiseInfo *domain.DomainError = domain.NewDomainError(
 		"err_no_such_rise_info", "未开通该功能!")
 	ErrHasSettled *domain.DomainError = domain.NewDomainError(

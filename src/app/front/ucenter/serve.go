@@ -38,6 +38,7 @@ func registerRoutes(s *echox.Echo) {
 	ac := &accountC{}
 	lc := &loginC{}
 	gc := &getC{}
+	riseC := &personFinanceRiseC{}
 
 	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
@@ -52,6 +53,7 @@ func registerRoutes(s *echox.Echo) {
 	s.Danyx("/order/:action", oc)
 	s.Danyx("/account/:action", ac)
 	s.Getx("/get/qr/:code/:size", gc.GetQR)
+	s.Danyx("/finance/rise/:action", riseC)
 }
 
 var (

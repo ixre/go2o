@@ -24,6 +24,7 @@ var (
 	DeliverService       *deliveryService
 	ContentService       *contentService
 	AdvertisementService *advertisementService
+	PersonFinanceService *personFinanceService
 )
 
 func Init(ctx gof.App) {
@@ -40,6 +41,7 @@ func Init(ctx gof.App) {
 	mssRep := repository.NewMssRep(db)
 	partnerRep := repository.NewPartnerRep(db, userRep, memberRep, mssRep)
 	memberRep.SetPartnerRep(partnerRep)
+	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
 
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)
@@ -60,4 +62,5 @@ func Init(ctx gof.App) {
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdvertisementService = NewAdvertisementService(adRep)
+	PersonFinanceService = NewPersonFinanceService(personFinanceRep)
 }
