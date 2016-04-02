@@ -12,7 +12,7 @@ package enum
 type OrderState int
 
 const (
-	// 已作废
+	// 已取消
 	ORDER_CANCEL = 0
 	// 订单待支付
 	ORDER_WAIT_PAYMENT = 1

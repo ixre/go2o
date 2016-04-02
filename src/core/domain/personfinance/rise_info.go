@@ -140,8 +140,8 @@ func (this *riseInfo) TransferOut(amount float32) (err error) {
 	return err
 }
 
-// 结算增利信息(前一日)
-func (this *riseInfo) RiseSettleForToday(dayRatio float32) (err error) {
+// 结算收益(按天结息,前一日)
+func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
 	if this._v == nil { //判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err

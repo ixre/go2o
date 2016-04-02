@@ -55,6 +55,7 @@ func (this *personFinanceService) CommitTransfer(personId, logId int) error {
 	return rs.CommitTransfer(logId)
 }
 
+// 转入
 func (this *personFinanceService) RiseTransferIn(personId int, transferFrom int, amount float32) error {
 	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
 	if amount < personfinance.RiseMinTransferInAmount {
@@ -85,7 +86,14 @@ func (this *personFinanceService) RiseTransferIn(personId int, transferFrom int,
 	return errors.New("未知的转入方式")
 }
 
+// 转出
 func (this *personFinanceService) RiseTransferOut(personId int, amount float32) error {
 	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
 	return r.TransferOut(amount)
+}
+
+// 结算收益(按天结息)
+func (this *personFinanceService) RiseSettleByDay(personId int, dayRatio float32) (err error) {
+	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
+	return r.RiseSettleByDay(dayRatio)
 }

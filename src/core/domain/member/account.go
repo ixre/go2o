@@ -219,7 +219,7 @@ func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
 		Type:    1,
 		Title:   "订单抵扣",
 		TradeNo: tradeNo,
-		Amount:  amount,
+		Amount:  -amount,
 		State:   1,
 	}
 	_, err := this.SaveBalanceInfo(v)

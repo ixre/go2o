@@ -14,9 +14,14 @@ import (
 )
 
 var (
-	RiseMinTransferInAmount  float32 = 100.00 //最低转入金额为100
-	RiseMinTransferOutAmount float32 = 0.00   //最低转出金额
-	RiseSettleTValue         int     = 2      //T+? 开使计算收益
+	RiseMinTransferInAmount  float32 = 100.00       //最低转入金额为100
+	RiseMinTransferOutAmount float32 = 0.00         //最低转出金额
+	RiseSettleTValue         int     = 2            //T+? 开使计算收益
+	RiseNormalDayRatio       float32 = 0.0001369863 // 年化5%,按365天计算
+	// 比例提供者,默认为:personfinance.RiseNormalDayRatio
+	RiseDayRatioProvider func(personId int) float32 = func(personId int) float32 {
+		return RiseNormalDayRatio
+	}
 )
 
 type (
@@ -39,9 +44,6 @@ type (
 		// 获取值
 		Value() (RiseInfoValue, error)
 
-		// 设置值
-		//Set(*RiseInfoValue)error
-
 		// 转入
 		TransferIn(amount float32) error
 
@@ -52,8 +54,8 @@ type (
 		// 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
 		CommitTransfer(logId int) error
 
-		// 结算增利信息,dayRatio 为每天的收益比率
-		RiseSettleForToday(dayRatio float32) error
+		// 结算收益(按天结息,前一日),dayRatio 为每天的收益比率
+		RiseSettleByDay(dayRatio float32) error
 
 		// 获取时间段内的增利信息
 		GetRiseByTime(begin, end int64) []*RiseDayInfo
