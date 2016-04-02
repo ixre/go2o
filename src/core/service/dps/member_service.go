@@ -384,6 +384,15 @@ func (this *memberService) PresentBalance(partnerId, memberId int, title string,
 	return m.GetAccount().PresentBalance(title, tradeNo, amount)
 }
 
+// 扣减奖金
+func (this *memberService) DiscountPresent(partnerId, memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().DiscountPresent(title, tradeNo, amount, mustLargeZero)
+}
+
 // 流通账户
 func (this *memberService) ChargeFlowBalance(partnerId, memberId int, title string, tradeNo string, amount float32) error {
 	m, err := this.getMember(partnerId, memberId)
@@ -574,7 +583,7 @@ func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelC
 
 // 生成会员账户人工单据
 func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind int,
-	kType int, tit string, amount float32) (string, error) {
+	tit string, amount float32) (string, error) {
 	var err error
 	var tradeNo string
 	if amount == 0 {
@@ -584,14 +593,41 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	if m == nil {
 		return "", member.ErrNoSuchMember
 	}
-
+	acc := m.GetAccount()
+	var tit2 string
 	if kind == member.KindBalancePresent {
-		tit2 := "[KF]客服调整-" + variable.AliasPresentAccount
-		if len(tit) > 0 {
-			tit2 = tit2 + "(" + tit + ")"
-		}
 		tradeNo = domain.NewTradeNo(partnerId)
-		err = m.GetAccount().PresentBalance(tit2, tradeNo, amount)
+		if amount > 0 { //增加奖金
+			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.PresentBalance(tit2, tradeNo, amount)
+		} else { //扣减奖金
+			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.DiscountPresent(tit2, tradeNo, -amount, false)
+		}
 	}
+
+	if kind == member.KindBalanceCharge {
+		tradeNo = domain.NewTradeNo(partnerId)
+		if amount > 0 {
+			tit2 = "[KF]客服充值卡"
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.ChargeBalance(member.TypeBalanceServiceCharge, tit2, tradeNo, amount)
+		} else {
+			tit2 = "[KF]客服扣减"
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.DiscountBalance(tit2, tradeNo, -amount)
+		}
+	}
+
 	return tradeNo, err
 }

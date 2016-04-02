@@ -80,10 +80,11 @@ func (this *riseInfo) TransferIn(amount float32) (err error) {
 			return err
 		}
 	}
-	if amount < personfinance.MinRiseTransferInAmount {
+	if amount < personfinance.RiseMinTransferInAmount {
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
-			personfinance.MinRiseTransferInAmount))
+			personfinance.RiseMinTransferInAmount))
 	}
+
 	dt := time.Now()
 	this._v.TransferIn += amount
 	this._v.TotalAmount += amount
@@ -113,9 +114,9 @@ func (this *riseInfo) TransferOut(amount float32) (err error) {
 		return personfinance.ErrOutOfBalance
 	}
 
-	if amount != this._v.Balance && amount < personfinance.MinRiseTransferOutAmount {
+	if amount != this._v.Balance && amount < personfinance.RiseMinTransferOutAmount {
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferOut.Error(),
-			personfinance.MinRiseTransferOutAmount))
+			personfinance.RiseMinTransferOutAmount))
 	}
 
 	dt := time.Now()
@@ -160,7 +161,7 @@ func (this *riseInfo) RiseSettleForToday(dayRatio float32) (err error) {
 		amount := this._v.Balance * dayRatio
 		if amount > 0.01 {
 			this._v.Balance += amount
-            this._v.Rise += amount
+			this._v.Rise += amount
 			this._v.TotalRise += amount
 			err = this.Save()
 			if err == nil {

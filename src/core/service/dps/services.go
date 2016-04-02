@@ -62,5 +62,5 @@ func Init(ctx gof.App) {
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdvertisementService = NewAdvertisementService(adRep)
-	PersonFinanceService = NewPersonFinanceService(personFinanceRep)
+	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
 }

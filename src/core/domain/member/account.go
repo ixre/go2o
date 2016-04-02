@@ -72,6 +72,9 @@ func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
 // @amount 金额
 func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error {
 	//todo: 客服充值需记录操作人
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
 
 	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
 		chargeType == member.TypeBalanceServiceCharge {
@@ -94,10 +97,33 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 	return errors.New("error charge type")
 }
 
+// 扣减余额
+func (this *Account) DiscountBalance(title string, tradeNo string, amount float32) (err error) {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if this._value.Balance < amount {
+		return member.ErrNotEnoughAmount
+	}
+	v := &member.BalanceInfoValue{
+		Kind:    member.KindBalanceDiscount,
+		Title:   title,
+		TradeNo: tradeNo,
+		Amount:  -amount,
+		State:   1,
+	}
+	_, err = this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.Balance -= amount
+		_, err = this.Save()
+	}
+	return err
+}
+
 // 赠送金额
 func (this *Account) PresentBalance(title string, tradeNo string, amount float32) error {
 	//todo:??客服调整
-	if amount == 0 {
+	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	if len(title) == 0 {
@@ -121,6 +147,34 @@ func (this *Account) PresentBalance(title string, tradeNo string, amount float32
 		if amount > 0 {
 			this._value.TotalPresentFee += amount
 		}
+		_, err = this.Save()
+	}
+	return err
+}
+
+// 扣减奖金
+func (this *Account) DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if mustLargeZero && this._value.PresentBalance < amount {
+		return member.ErrNotEnoughAmount
+	}
+
+	if len(title) == 0 {
+		title = "出账"
+	}
+
+	v := &member.BalanceInfoValue{
+		Kind:    member.KindPresentDiscount,
+		Title:   title,
+		TradeNo: tradeNo,
+		Amount:  -amount,
+		State:   1,
+	}
+	_, err := this.SaveBalanceInfo(v)
+	if err == nil {
+		this._value.PresentBalance -= amount
 		_, err = this.Save()
 	}
 	return err

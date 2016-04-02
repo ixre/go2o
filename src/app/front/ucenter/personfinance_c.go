@@ -13,25 +13,25 @@ import (
 	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
 	"strconv"
-    "go2o/src/core/variable"
-    "strings"
+	"strings"
+	"time"
 )
 
 type personFinanceRiseC struct {
 }
 
-
-func (this *personFinanceRiseC) chkOpenState(memberId int,c *echox.Context)(bool,error){
-   _,err := dps.PersonFinanceService.GetRiseInfo(memberId)
-    b := err == nil
-    if !b{ //如果未开通,则跳转到开通界面
-        return false,c.Redirect(http.StatusFound,"openService?return_url="+
-            c.Request().URL.String())
-    }
-    return true,nil
+func (this *personFinanceRiseC) chkOpenState(memberId int, c *echox.Context) (bool, error) {
+	_, err := dps.PersonFinanceService.GetRiseInfo(memberId)
+	b := err == nil
+	if !b { //如果未开通,则跳转到开通界面
+		return false, c.Redirect(http.StatusFound, "openService?return_url="+
+			c.Request().URL.String())
+	}
+	return true, nil
 }
 
 func (this *personFinanceRiseC) OpenService(c *echox.Context) error {
@@ -39,7 +39,7 @@ func (this *personFinanceRiseC) OpenService(c *echox.Context) error {
 		return this.openService_post(c)
 	}
 	d := c.NewData()
-    d.Map["AliasRise"] = variable.AliasRisePersonFinance
+	d.Map["AliasRise"] = variable.AliasRisePersonFinance
 	return c.Render(http.StatusOK, "rise_openservice.html", d)
 }
 
@@ -47,11 +47,11 @@ func (this *personFinanceRiseC) openService_post(c *echox.Context) error {
 	msg := gof.Message{}
 	memberId := GetSessionMemberId(c)
 	if err := dps.PersonFinanceService.OpenRiseService(memberId); err != nil {
-        if strings.Index(err.Error(),"exists") != -1{
-            msg.Message ="您已经开通服务!"
-        }else{
-            msg.Message = err.Error()
-        }
+		if strings.Index(err.Error(), "exists") != -1 {
+			msg.Message = "您已经开通服务!"
+		} else {
+			msg.Message = err.Error()
+		}
 	} else {
 		msg.Result = true
 	}
@@ -59,25 +59,48 @@ func (this *personFinanceRiseC) openService_post(c *echox.Context) error {
 }
 
 func (this *personFinanceRiseC) TransferIn(c *echox.Context) error {
-    memberId := GetSessionMemberId(c)
-    if b,err := this.chkOpenState(memberId,c);!b{
-        return err
-    }
+	if c.Request().Method == "POST" {
+		return this.transferIn_post(c)
+	}
+	memberId := GetSessionMemberId(c)
+	if b, err := this.chkOpenState(memberId, c); !b {
+		return err
+	}
 	d := c.NewData()
-	d.Map["min_tranfer"] = format.FormatFloat(personfinance.MinRiseTransferInAmount)
+	d.Map["MinTranfer"] = format.FormatFloat(personfinance.RiseMinTransferInAmount)
+	d.Map["RiseDate"] = time.Now().AddDate(0, 0, personfinance.RiseSettleTValue).Format("2006-01-02")
+	d.Map["AliasPresentBalance"] = variable.AliasPresentAccount
+	d.Map["Account"] = dps.MemberService.GetAccount(memberId)
+
 	return c.Render(http.StatusOK, "rise_transferin.html", d)
+}
+
+func (this *personFinanceRiseC) transferIn_post(c *echox.Context) error {
+	msg := gof.Message{}
+	memberId := GetSessionMemberId(c)
+	amount, err := strconv.ParseFloat(c.Form("Amount"), 32)
+	transferFrom, _ := strconv.Atoi(c.Form("TransferFrom"))
+	if err == nil {
+		err = dps.PersonFinanceService.RiseTransferIn(memberId, transferFrom, float32(amount))
+	}
+	if err != nil {
+		msg.Message = err.Error()
+	} else {
+		msg.Result = true
+	}
+	return c.JSON(http.StatusOK, msg)
 }
 
 func (this *personFinanceRiseC) TransferOut(c *echox.Context) error {
 	if c.Request().Method == "POST" {
 		return this.transferOut_post(c)
 	}
-    memberId := GetSessionMemberId(c)
-    if b,err := this.chkOpenState(memberId,c);!b{
-        return err
-    }
+	memberId := GetSessionMemberId(c)
+	if b, err := this.chkOpenState(memberId, c); !b {
+		return err
+	}
 	d := c.NewData()
-	d.Map["min_tranfer"] = format.FormatFloat(personfinance.MinRiseTransferOutAmount)
+	d.Map["min_tranfer"] = format.FormatFloat(personfinance.RiseMinTransferOutAmount)
 	return c.Render(http.StatusOK, "rise_transferout.html", d)
 }
 

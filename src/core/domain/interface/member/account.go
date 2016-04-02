@@ -15,13 +15,20 @@ const (
 	KindBalanceShopping = 1
 	// 充值
 	KindBalanceCharge = 2
+
 	// 赠送
 	KindBalancePresent = 3
-
+	// 流通账户
 	KindBalanceFlow = 4 // 账户流通
-	KindGrow        = 5 // 增利
 
-	KindCommission = 9 // 手续费
+	// 扣除余额
+	KindBalanceDiscount = 5
+	// 抵扣奖金
+	KindPresentDiscount = 6
+
+	KindGrow = 7 // 增利
+
+	//KindCommission = 9 // 手续费
 
 	// 提现
 	KindBalanceApplyCash = 11
@@ -93,8 +100,14 @@ type IAccount interface {
 	// @amount 金额
 	ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error
 
+	// 扣减余额
+	DiscountBalance(title string, tradeNo string, amount float32) error
+
 	// 赠送金额
 	PresentBalance(title string, tradeNo string, amount float32) error
+
+	// 扣减奖金,mustLargeZero是否必须大于0
+	DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error
 
 	// 流通账户余额变动，如扣除,amount传入负数金额
 	ChargeFlowBalance(title string, tradeNo string, amount float32) error

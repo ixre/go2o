@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	MinRiseTransferInAmount  float32 = 100.00 //最低转入金额为100
-	MinRiseTransferOutAmount float32 = 0.00   //最低转出金额
+	RiseMinTransferInAmount  float32 = 100.00 //最低转入金额为100
+	RiseMinTransferOutAmount float32 = 0.00   //最低转出金额
+	RiseSettleTValue         int     = 2      //T+? 开使计算收益
 )
 
 type (
@@ -65,8 +66,8 @@ type (
 	RiseInfoValue struct {
 		//Id  int `db:"id" pk:"yes" auto:"no"`
 		PersonId    int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
-		Balance     float32 `db:"balance"`                 //本金及收益的余额
-		Rise       float32 `db:"rise"`                          //当前的收益
+		Balance     float32 `db:"balance"`                      //本金及收益的余额
+		Rise        float32 `db:"rise"`                         //当前的收益
 		TransferIn  float32 `db:"transfer_in"`                  //今日转入
 		TotalAmount float32 `db:"total_amount"`                 //总金额
 		TotalRise   float32 `db:"total_rise"`                   //总收益

@@ -21,6 +21,7 @@ import (
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/partner/user"
+	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
@@ -28,7 +29,6 @@ import (
 	"go2o/src/core/variable"
 	"strconv"
 	"time"
-	"go2o/src/core/domain/interface/personfinance"
 )
 
 func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
@@ -108,9 +108,9 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(user.PersonValue{}, "usr_person")
 	orm.TableMapping(user.CredentialValue{}, "usr_credential")
 
-	orm.TableMapping(personfinance.RiseInfoValue{},"pf_riseinfo")
-	orm.TableMapping(personfinance.RiseDayInfo{},"pf_dayrise")
-
+	orm.TableMapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
+	orm.TableMapping(personfinance.RiseDayInfo{}, "pf_dayrise")
+	orm.TableMapping(personfinance.RiseLog{}, "pf_riselogcd .")
 
 	orm.TableMapping(valueobject.Goods{}, "")
 
