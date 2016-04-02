@@ -45,6 +45,16 @@ func (this *personFinanceService) OpenRiseService(personId int) error {
 	return pf.CreateRiseInfo()
 }
 
+// 提交转入/转出日志
+func (this *personFinanceService) CommitTransfer(personId,logId int)error{
+	pf := this._rep.GetPersonFinance(personId)
+	rs := pf.GetRiseInfo()
+	if rs == nil{
+		return personfinance.ErrNoSuchRiseInfo
+	}
+	return rs.CommitTransfer(logId)
+}
+
 func (this *personFinanceService) RiseTransferIn(personId int, transferFrom int, amount float32) error {
 	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
 	if amount < personfinance.RiseMinTransferInAmount {

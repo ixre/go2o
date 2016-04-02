@@ -13,7 +13,7 @@ import (
 	"go2o/src/core/infrastructure/domain"
 )
 
-const (
+var (
 	RiseMinTransferInAmount  float32 = 100.00 //最低转入金额为100
 	RiseMinTransferOutAmount float32 = 0.00   //最低转出金额
 	RiseSettleTValue         int     = 2      //T+? 开使计算收益

@@ -49,14 +49,14 @@ func (this *riseInfo) CommitTransfer(logId int) (err error) {
 	}
 	l := this._rep.GetRiseLog(this.GetDomainId(), logId)
 	if l == nil || l.State != personfinance.RiseStateDefault || ( // 状态应用未确认
-	l.State != personfinance.RiseTypeTransferIn &&                // 类型应为转入或转出
-		l.State != personfinance.RiseTypeTransferOut) {
+		l.Type != personfinance.RiseTypeTransferIn &&                // 类型应为转入或转出
+		l.Type != personfinance.RiseTypeTransferOut) {
 		return personfinance.ErrIncorrectTransfer
 	}
 	if this._v.TransferIn < l.Amount {
 		return personfinance.ErrIncorrectAmount
 	}
-	switch l.State {
+	switch l.Type {
 	case personfinance.RiseTypeTransferIn:
 		this._v.Balance += l.Amount
 		this._v.TransferIn -= l.Amount
