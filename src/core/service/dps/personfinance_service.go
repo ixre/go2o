@@ -46,10 +46,10 @@ func (this *personFinanceService) OpenRiseService(personId int) error {
 }
 
 // 提交转入/转出日志
-func (this *personFinanceService) CommitTransfer(personId,logId int)error{
+func (this *personFinanceService) CommitTransfer(personId, logId int) error {
 	pf := this._rep.GetPersonFinance(personId)
 	rs := pf.GetRiseInfo()
-	if rs == nil{
+	if rs == nil {
 		return personfinance.ErrNoSuchRiseInfo
 	}
 	return rs.CommitTransfer(logId)

@@ -198,7 +198,7 @@ func (this *orderC) payment_post(ctx *echox.Context) error {
 
 	order := dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
 
-	err := dps.MemberService.Charge(partnerId, order.MemberId, member.TypeBalanceSystemCharge, "系统充值", "", order.PayFee)
+	err := dps.MemberService.Charge(partnerId, order.MemberId, member.TypeBalanceSystemCharge, "系统充值(订单付款)", "", order.PayFee)
 	if err == nil {
 		err = dps.ShoppingService.PayForOrderByManager(partnerId, orderNo)
 	}

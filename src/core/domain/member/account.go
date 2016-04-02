@@ -77,7 +77,7 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 	}
 
 	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
-		chargeType == member.TypeBalanceServiceCharge {
+		chargeType == member.TypeBalanceServiceCharge || chargeType == member.TypeBalanceOrderRefund {
 
 		v := &member.BalanceInfoValue{
 			Kind:    member.KindBalanceCharge,

@@ -14,6 +14,9 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"github.com/robfig/cron"
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
@@ -22,12 +25,9 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"log"
+	"runtime"
 	"strings"
 	"time"
-	"github.com/robfig/cron"
-	"runtime"
-	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/db/orm"
 )
 
 // 守护进程执行的函数
@@ -54,14 +54,14 @@ type Service interface {
 
 var (
 	appCtx           *core.MainApp
-	_db               db.Connector
-	_orm              orm.Orm
+	_db              db.Connector
+	_orm             orm.Orm
 	services         []Service      = make([]Service, 0)
 	serviceNames     map[string]int = make(map[string]int)
 	tickerDuration   time.Duration  = 20 * time.Second // 间隔20秒执行
 	tickerInvokeFunc []Func         = []Func{}
-	cronTab          *cron.Cron   = cron.New()
-	ticker           *time.Ticker = time.NewTicker(tickerDuration)
+	cronTab          *cron.Cron     = cron.New()
+	ticker           *time.Ticker   = time.NewTicker(tickerDuration)
 )
 
 // 注册服务
@@ -96,11 +96,11 @@ func Start() {
 	}
 
 	startCronTab()
-	startTicker()  //阻塞
+	startTicker() //阻塞
 
 }
 
-func startTicker(){
+func startTicker() {
 	for { //执行定时任务
 		select {
 		case <-ticker.C:
@@ -111,13 +111,13 @@ func startTicker(){
 	}
 }
 
-func startCronTab(){
+func startCronTab() {
 	//test running right now!
 
 	personFinanceSettle()
 
-	cronTab.AddFunc("0 0 2 * * *",personFinanceSettle) //个人金融结算,每天2点更新数据
-	cronTab.AddFunc("1 * * * * *",func(){ log.Println("grouting -",runtime.NumGoroutine(),runtime.NumCPU())})
+	cronTab.AddFunc("0 0 2 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
+	cronTab.AddFunc("1 * * * * *", func() { log.Println("grouting -", runtime.NumGoroutine(), runtime.NumCPU()) })
 	cronTab.Start()
 }
 

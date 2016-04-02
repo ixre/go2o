@@ -49,6 +49,8 @@ const (
 	TypeBalanceNetPayCharge = 2
 	// 客服充值
 	TypeBalanceServiceCharge = 3
+	// 订单退款
+	TypeBalanceOrderRefund = 4
 
 	// 提现并充值到余额
 	TypeApplyCashToCharge = 1
