@@ -167,6 +167,7 @@ func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
 			this._v.Balance += amount
 			this._v.Rise += amount
 			this._v.TotalRise += amount
+			this._v.SettledDate = dtUnix  //结算日为昨日
 			err = this.Save()
 
 			if err == nil {

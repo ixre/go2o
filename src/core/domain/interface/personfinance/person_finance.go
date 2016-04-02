@@ -73,6 +73,7 @@ type (
 		TransferIn  float32 `db:"transfer_in"`                  //今日转入
 		TotalAmount float32 `db:"total_amount"`                 //总金额
 		TotalRise   float32 `db:"total_rise"`                   //总收益
+		SettledDate int64   `db:"settled_date"`                 //结算日期,用于筛选需要结算的数据
 		UpdateTime  int64   `db:"update_time"`
 	}
 
