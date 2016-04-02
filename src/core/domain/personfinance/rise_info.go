@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/infrastructure/tool"
+	"math"
 	"time"
 )
 
@@ -153,25 +154,39 @@ func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
 	}
 
 	dt := time.Now().Add(time.Hour * -24) //计算昨日的收益
+	dtUnix := tool.GetStartDate(dt).Unix()
 	if this.daySettled(dt) {
 		return personfinance.ErrHasSettled
 	}
 
 	if this._v.Balance > 0 {
-		amount := this._v.Balance * dayRatio
+		amount := float32(math.Floor(float64(this._v.Balance*
+			dayRatio)*100) / 100) //按2位小数精度
 		if amount > 0.01 {
+			oriBalance := this._v.Balance
 			this._v.Balance += amount
 			this._v.Rise += amount
 			this._v.TotalRise += amount
 			err = this.Save()
+
 			if err == nil {
+				// 保存日志
 				_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 					PersonId:   this.GetDomainId(),
 					Amount:     amount,
 					Type:       personfinance.RiseTypeSettle,
 					State:      personfinance.RiseStateOk,
-					UnixDate:   tool.GetStartDate(dt).Unix(),
+					UnixDate:   dtUnix,
 					LogTime:    this._v.UpdateTime,
+					UpdateTime: this._v.UpdateTime,
+				})
+				// 存储每日收益
+				_, err = this._rep.SaveRiseDayInfo(&personfinance.RiseDayInfo{
+					PersonId:   this.GetDomainId(),
+					Date:       dt.Format("2006-01-02"),
+					BaseAmount: oriBalance,
+					RiseAmount: amount,
+					UnixDate:   dtUnix,
 					UpdateTime: this._v.UpdateTime,
 				})
 			}

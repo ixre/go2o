@@ -86,3 +86,14 @@ func (this *personFinanceRepository) GetRiseLogs(personId int, date int64, riseT
 	this._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
 	return list
 }
+
+// 保存每日收益
+func (this *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (id int, err error) {
+	if v.Id > 0 {
+		_, _, err = this._orm.Save(v.Id, v)
+	} else {
+		_, _, err = this._orm.Save(nil, v)
+		this._db.ExecScalar("SELECT MAX(id) FROM pf_riseday", &v.Id)
+	}
+	return v.Id, err
+}

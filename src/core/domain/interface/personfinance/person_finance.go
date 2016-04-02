@@ -82,7 +82,7 @@ type (
 		PersonId   int     `db:"person_id"`
 		Date       string  `db:"date"`
 		BaseAmount float32 `db:"base_amount"` //本金
-		RiseAmount string  `db:"rise_amount"` //增加金额
+		RiseAmount float32 `db:"rise_amount"` //增加金额
 		UnixDate   int64   `db:"unix_date"`
 		UpdateTime int64   `db:"update_time"`
 	}
@@ -100,9 +100,16 @@ type (
 	}
 
 	IPersonFinanceRepository interface {
+		// 获取个人财富聚合根
 		GetPersonFinance(personId int) IPersonFinance
+
+		// 根据时间获取收益情况
 		GetRiseByTime(personId int, begin, end int64) []*RiseDayInfo
+
+		// 根据人员编号获取收益
 		GetRiseValueByPersonId(id int) (v *RiseInfoValue, err error)
+
+		// 保存收益信息
 		SaveRiseInfo(*RiseInfoValue) (id int, err error)
 
 		// 获取日志
@@ -113,6 +120,9 @@ type (
 
 		// 获取日志
 		GetRiseLogs(personId int, date int64, riseType int) []*RiseLog
+
+		// 保存每日收益
+		SaveRiseDayInfo(*RiseDayInfo) (int, error)
 	}
 )
 

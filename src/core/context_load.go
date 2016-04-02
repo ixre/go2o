@@ -109,7 +109,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(user.CredentialValue{}, "usr_credential")
 
 	orm.TableMapping(personfinance.RiseInfoValue{}, "pf_riseinfo")
-	orm.TableMapping(personfinance.RiseDayInfo{}, "pf_dayrise")
+	orm.TableMapping(personfinance.RiseDayInfo{}, "pf_riseday")
 	orm.TableMapping(personfinance.RiseLog{}, "pf_riselog")
 
 	orm.TableMapping(valueobject.Goods{}, "")
