@@ -14,13 +14,17 @@ import (
 	"go2o/src/core/infrastructure/tool"
 	"go2o/src/core/service/dps"
 	"log"
+	"math"
 	"sync"
 	"time"
 )
 
 func personFinanceSettle() {
+	b := time.Now()
 	confirmTransferIn(time.Now())
 	settleRiseData(time.Now().Add(time.Hour * -24)) //结算昨日的收益
+	log.Println("[ PersonFinance][ Settle][ Success]:Total used",
+		math.Floor(time.Now().Sub(b).Minutes()*100)/100, "minutes!")
 }
 
 // 确认转入数据
@@ -44,6 +48,7 @@ func confirmTransferIn(t time.Time) {
 		go confirmTransferInByCursor(wg, unixDate, cursor, size)
 		cursor += size
 		wg.Add(1)
+		time.Sleep(time.Second)
 	}
 	wg.Wait()
 }
@@ -57,7 +62,7 @@ func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, cursor, size 
 	ds := dps.PersonFinanceService
 	for _, v := range list {
 		if err := ds.CommitTransfer(v.PersonId, v.Id); err != nil {
-			log.Println("[ PersonFinance][ Transfer][ Fail]:", err.Error())
+			log.Println("[ PersonFinance][ Transfer][ Fail]: person_id=", v.PersonId, "error=", err.Error())
 			v.State = -1
 			_orm.Save(v.Id, v) //标记为异常
 		}
@@ -84,6 +89,7 @@ func settleRiseData(t time.Time) {
 		go riseGroupSettle(wg, unixDate, cursor, size)
 		cursor += size
 		wg.Add(1)
+		time.Sleep(time.Second)
 	}
 	wg.Wait()
 }
@@ -102,7 +108,7 @@ func riseGroupSettle(wg *sync.WaitGroup, unixDate int64, cursor, size int) {
 	ds := dps.PersonFinanceService
 	for _, id := range list {
 		if err := ds.RiseSettleByDay(id, personfinance.RiseDayRatioProvider(id)); err != nil {
-			log.Println("[ PersonFinance][ Settle][ Fail]:", err.Error())
+			log.Println("[ PersonFinance][ Settle][ Fail]: person_id=", id, "error=", err.Error())
 		}
 	}
 	wg.Done()
