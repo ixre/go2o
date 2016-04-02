@@ -22,7 +22,7 @@ import (
 func personFinanceSettle() {
 	b := time.Now()
 	confirmTransferIn(time.Now()) //今天确认T+?前的转入
-	settleRiseData() //今天结算昨日的收益
+	settleRiseData()              //今天结算昨日的收益
 	log.Println("[ PersonFinance][ Settle][ Success]:Total used",
 		math.Floor(time.Now().Sub(b).Minutes()*100)/100, "minutes!")
 }
@@ -75,8 +75,8 @@ func settleRiseData() {
 	var err error
 	dt := time.Now().Add(time.Hour * -24)
 	settleDate := tool.GetStartDate(dt).Unix() //结算日期
-	total := 0  //总数
-	cursor := 0 // 游标,每次从db中取条数
+	total := 0                                 //总数
+	cursor := 0                                // 游标,每次从db中取条数
 	const size int = 50
 
 	err = _db.ExecScalar("SELECT COUNT(0) FROM pf_riseinfo WHERE balance > 0 AND settled_date < ? ",
@@ -106,7 +106,7 @@ func riseGroupSettle(wg *sync.WaitGroup, settleDate int64, cursor, size int) {
 				rows.Scan(&id)
 				list = append(list, id)
 			}
-		}, settleDate,cursor, size)
+		}, settleDate, cursor, size)
 	ds := dps.PersonFinanceService
 	for _, id := range list {
 		if err := ds.RiseSettleByDay(id, personfinance.RiseDayRatioProvider(id)); err != nil {
