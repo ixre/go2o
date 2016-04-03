@@ -65,14 +65,17 @@ func (this *PersonFinance) CreateRiseInfo() error {
 func (this *PersonFinance) SyncToAccount() error {
 	var balance float32
 	var totalAmount float32
-	var growEarnings float32
+	var growEarnings float32  // 当前收益
+	var totalGrowEarnings float32 // 总收益
 	r := this.GetRiseInfo()
 	if r, err := r.Value(); err != nil {
 		return err
 	} else {
 		balance += r.Balance
 		totalAmount += r.TotalAmount
-		growEarnings += r.TotalRise
+		growEarnings += r.Rise
+		totalGrowEarnings += r.TotalRise
 	}
-	return this._accRep.SaveGrowAccount(this.GetAggregateRootId(), balance, totalAmount, growEarnings)
+	return this._accRep.SaveGrowAccount(this.GetAggregateRootId(),
+		balance, totalAmount, growEarnings, totalGrowEarnings)
 }

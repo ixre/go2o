@@ -21,7 +21,8 @@ type AccountValue struct {
 	FlowBalance     float32 `db:"flow_balance" json:"flowBalance"`          // 流动账户余额
 	GrowBalance     float32 `db:"grow_balance" json:"growBalance"`          // 当前理财账户余额
 	GrowAmount      float32 `db:"grow_amount" json:"growAmount"`            // 理财总投资金额,不含收益
-	GrowEarnings    float32 `db:"grow_earnings" json:"growRise"`            // 累积收益金额
+	GrowEarnings    float32 `db:"grow_earnings" json:"growEarnings"`            // 当前收益金额
+	GrowTotalEarnings float32 `db:"grow_total_earnings" json:"growTotalEarnings"` // 累积收益金额
 	TotalFee        float32 `db:"total_fee" json:"totalFee"`                // 总消费额
 	TotalCharge     float32 `db:"total_charge" json:"totalCharge"`          // 总充值额
 	TotalPay        float32 `db:"total_pay" json:"totalPay"`                // 总支付额

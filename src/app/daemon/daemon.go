@@ -116,7 +116,7 @@ func startCronTab() {
 	//	personFinanceSettle()
 	//}()
 	//cron
-	cronTab.AddFunc("0 0 2 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
+	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
 	//cronTab.AddFunc("1 * * * * *", func() { log.Println("grouting -", runtime.NumGoroutine(), runtime.NumCPU()) })
 	cronTab.Start()
 }

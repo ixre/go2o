@@ -23,6 +23,7 @@ const batGroupSize int = 50 //跑批每组数量
 
 func personFinanceSettle() {
 	now := time.Now()
+	//invokeSettle(now.Add(time.Hour * -24))
 	invokeSettle(now)
 }
 
