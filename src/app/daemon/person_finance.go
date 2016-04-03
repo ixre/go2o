@@ -23,7 +23,6 @@ const batGroupSize int = 50 //跑批每组数量
 
 func personFinanceSettle() {
 	now := time.Now()
-	invokeSettle(now.Add(time.Hour * -24))
 	invokeSettle(now)
 }
 
@@ -83,7 +82,7 @@ func confirmTransferIn(t time.Time) {
 			go confirmTransferInByCursor(&wg, unixDate, splitIdArr)
 			cursor += batGroupSize
 			wg.Add(1)
-			time.Sleep(time.Microsecond * 500)
+			time.Sleep(time.Microsecond * 1000)
 			//log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1],len(splitIdArr))
 		}
 		wg.Wait()
@@ -157,7 +156,7 @@ func settleRiseData(settleDate time.Time) {
 			go riseGroupSettle(&wg, settleUnix, splitIdArr)
 			cursor += batGroupSize
 			wg.Add(1)
-			time.Sleep(time.Microsecond * 500)
+			time.Sleep(time.Microsecond * 1000)
 			log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1], len(splitIdArr))
 		}
 		wg.Wait()
