@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+const batGroupSize int = 50 //跑批每组数量
+
 func personFinanceSettle() {
 	now := time.Now()
 	invokeSettle(now.Add(time.Hour * -24))
@@ -41,8 +43,7 @@ func confirmTransferIn(t time.Time) {
 	var err error
 	settleTime := t.AddDate(0, 0, -personfinance.RiseSettleTValue) // 倒推结算日
 	unixDate := tool.GetStartDate(settleTime).Unix()
-	cursor := 0 // 游标,每次从db中取条数
-	const size int = 50
+	cursor := 0   // 游标,每次从db中取条数
 	setupNum := 0 //步骤编号
 	for {
 		// 获取前1000条记录到IdArr
@@ -74,15 +75,15 @@ func confirmTransferIn(t time.Time) {
 		wg := sync.WaitGroup{}
 		for cursor < len(idArr) {
 			var splitIdArr []int
-			if cursor+size < len(idArr) {
-				splitIdArr = idArr[cursor : cursor+size]
+			if cursor+batGroupSize < len(idArr) {
+				splitIdArr = idArr[cursor : cursor+batGroupSize]
 			} else {
 				splitIdArr = idArr[cursor:]
 			}
 			go confirmTransferInByCursor(&wg, unixDate, splitIdArr)
-			cursor += size
+			cursor += batGroupSize
 			wg.Add(1)
-			time.Sleep(time.Second)
+			time.Sleep(time.Microsecond * 500)
 			//log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1],len(splitIdArr))
 		}
 		wg.Wait()
@@ -118,8 +119,7 @@ func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, idArr []int) 
 func settleRiseData(settleDate time.Time) {
 	var err error
 	settleUnix := tool.GetStartDate(settleDate).Unix() //结算日期
-	cursor := 0                                        // 游标,每次从db中取条数
-	const size int = 50
+	cursor := 0
 	setupNum := 0 //步骤编号
 
 	for {
@@ -149,15 +149,15 @@ func settleRiseData(settleDate time.Time) {
 		wg := sync.WaitGroup{}
 		for cursor < len(idArr) {
 			var splitIdArr []int
-			if cursor+size < len(idArr) {
-				splitIdArr = idArr[cursor : cursor+size]
+			if cursor+batGroupSize < len(idArr) {
+				splitIdArr = idArr[cursor : cursor+batGroupSize]
 			} else {
 				splitIdArr = idArr[cursor:]
 			}
 			go riseGroupSettle(&wg, settleUnix, splitIdArr)
-			cursor += size
+			cursor += batGroupSize
 			wg.Add(1)
-			time.Sleep(time.Second)
+			time.Sleep(time.Microsecond * 500)
 			log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1], len(splitIdArr))
 		}
 		wg.Wait()

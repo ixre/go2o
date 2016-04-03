@@ -158,6 +158,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 			gfmt.BoolString(m.Sex == 2, "女士", "-")),
 		"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),
 		"regTime":       format.HanUnixDateTime(m.RegTime),
+		"Avatar":        format.GetResUrl(m.Avatar),
 	}
 
 	return ctx.RenderOK("member.basic_info.html", d)

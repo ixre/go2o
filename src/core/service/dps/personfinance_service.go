@@ -102,7 +102,7 @@ func (this *personFinanceService) RiseTransferOut(personId int, amount float32) 
 	return pf.SyncToAccount() //同步到会员账户
 }
 
-// 结算收益(按天结息)
+// 结算收益(按日期每天结息)
 func (this *personFinanceService) RiseSettleByDay(personId int, settleUnix int64, dayRatio float32) (err error) {
 	pf := this._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()

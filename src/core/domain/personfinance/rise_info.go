@@ -154,12 +154,14 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 		return personfinance.ErrRatio
 	}
 
-	dt := time.Now().Add(time.Hour * -24) //计算昨日的收益
-	dtUnix := tool.GetStartDate(dt).Unix()
+	//dt := time.Now().Add(time.Hour * -24) //计算昨日的收益
+	//dtUnix := tool.GetStartDate(dt).Unix()
 
 	if settleDateUnix%100 != 0 {
 		return personfinance.ErrUnixDate
 	}
+
+	settleDateStr := time.Unix(settleDateUnix, 0).Format("2006-01-02") //结算日期年月日
 
 	if b, err := this.daySettled(settleDateUnix); b {
 		if err != nil {
@@ -176,7 +178,7 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 			this._v.Balance += amount
 			this._v.Rise += amount
 			this._v.TotalRise += amount
-			this._v.SettledDate = dtUnix //结算日为昨日
+			this._v.SettledDate = settleDateUnix //结算日为昨日
 			err = this.Save()
 
 			if err == nil {
@@ -186,17 +188,17 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 					Amount:     amount,
 					Type:       personfinance.RiseTypeSettle,
 					State:      personfinance.RiseStateOk,
-					UnixDate:   dtUnix,
+					UnixDate:   settleDateUnix,
 					LogTime:    this._v.UpdateTime,
 					UpdateTime: this._v.UpdateTime,
 				})
 				// 存储每日收益
 				_, err = this._rep.SaveRiseDayInfo(&personfinance.RiseDayInfo{
 					PersonId:   this.GetDomainId(),
-					Date:       dt.Format("2006-01-02"),
+					Date:       settleDateStr,
 					BaseAmount: oriBalance,
 					RiseAmount: amount,
-					UnixDate:   dtUnix,
+					UnixDate:   settleDateUnix,
 					UpdateTime: this._v.UpdateTime,
 				})
 			}
