@@ -60,3 +60,19 @@ func (this *PersonFinance) CreateRiseInfo() error {
 	}
 	return errors.New("rise info exists!")
 }
+
+// 同步到会员账户理财数据
+func (this *PersonFinance) SyncToAccount() error {
+	var balance float32
+	var totalAmount float32
+	var growEarnings float32
+	r := this.GetRiseInfo()
+	if r, err := r.Value(); err != nil {
+		return err
+	} else {
+		balance += r.Balance
+		totalAmount += r.TotalAmount
+		growEarnings += r.TotalRise
+	}
+	return this._accRep.SaveGrowAccount(this.GetAggregateRootId(), balance, totalAmount, growEarnings)
+}

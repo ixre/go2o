@@ -21,7 +21,7 @@ import (
 
 func personFinanceSettle() {
 	now := time.Now()
-	//invokeSettle(now.Add(time.Hour * 24))
+	invokeSettle(now.Add(time.Hour * -24))
 	invokeSettle(now)
 }
 
@@ -118,7 +118,6 @@ func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, idArr []int) 
 func settleRiseData(settleDate time.Time) {
 	var err error
 	settleUnix := tool.GetStartDate(settleDate).Unix() //结算日期
-	total := 0                                         //总数
 	cursor := 0                                        // 游标,每次从db中取条数
 	const size int = 50
 	setupNum := 0 //步骤编号
@@ -145,10 +144,10 @@ func settleRiseData(settleDate time.Time) {
 
 		setupNum += 1
 		log.Println("[ PersonFinance][ RiseSettle][ Job]:Setup ", setupNum,
-			" ; Total ", total, "records! unix date =", settleUnix)
+			" ; Total ", len(idArr), "records! unix date =", settleUnix)
 
 		wg := sync.WaitGroup{}
-		for cursor < total {
+		for cursor < len(idArr) {
 			var splitIdArr []int
 			if cursor+size < len(idArr) {
 				splitIdArr = idArr[cursor : cursor+size]

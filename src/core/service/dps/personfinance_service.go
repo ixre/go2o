@@ -56,44 +56,58 @@ func (this *personFinanceService) CommitTransfer(personId, logId int) error {
 }
 
 // 转入
-func (this *personFinanceService) RiseTransferIn(personId int, transferFrom int, amount float32) error {
-	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
+func (this *personFinanceService) RiseTransferIn(personId int, transferFrom int, amount float32) (err error) {
+	pf := this._rep.GetPersonFinance(personId)
+	r := pf.GetRiseInfo()
 	if amount < personfinance.RiseMinTransferInAmount {
 		//金额不足最低转入金额
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
 			personfinance.RiseMinTransferInAmount))
 	}
-
 	m := this._accRep.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
 	if transferFrom == TransferFromBalance { //从余额转入
-		if err := acc.DiscountBalance("理财转入", domain.NewTradeNo(10000), amount); err != nil {
+		if err = acc.DiscountBalance("理财转入", domain.NewTradeNo(10000), amount); err != nil {
 			return err
 		}
-		return r.TransferIn(amount)
+		if err = r.TransferIn(amount); err != nil { //转入
+			return err
+		}
+		return pf.SyncToAccount() //同步到会员账户
 	}
 
 	if transferFrom == TransferFromPresent { //从奖金转入
 		if err := acc.DiscountPresent("理财转入", domain.NewTradeNo(10000), amount, true); err != nil {
 			return err
 		}
-		return r.TransferIn(amount)
+		if err = r.TransferIn(amount); err != nil { //转入
+			return err
+		}
+		return pf.SyncToAccount() //同步到会员账户
 	}
 
 	return errors.New("未知的转入方式")
 }
 
 // 转出
-func (this *personFinanceService) RiseTransferOut(personId int, amount float32) error {
-	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
-	return r.TransferOut(amount)
+func (this *personFinanceService) RiseTransferOut(personId int, amount float32) (err error) {
+	pf := this._rep.GetPersonFinance(personId)
+	r := pf.GetRiseInfo()
+	if err = r.TransferOut(amount); err != nil {
+		return err
+	}
+	return pf.SyncToAccount() //同步到会员账户
 }
 
 // 结算收益(按天结息)
 func (this *personFinanceService) RiseSettleByDay(personId int, settleUnix int64, dayRatio float32) (err error) {
-	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
-	return r.RiseSettleByDay(settleUnix, dayRatio)
+	pf := this._rep.GetPersonFinance(personId)
+	r := pf.GetRiseInfo()
+	if err = r.RiseSettleByDay(settleUnix, dayRatio); err != nil {
+		return err
+	}
+	return pf.SyncToAccount() //同步到会员账户
 }

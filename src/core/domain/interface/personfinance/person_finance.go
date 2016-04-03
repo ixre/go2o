@@ -35,6 +35,8 @@ type (
 		GetRiseInfo() IRiseInfo
 		// 创建增利账户信息
 		CreateRiseInfo() error
+		// 同步到会员账户理财数据
+		SyncToAccount() error
 	}
 
 	// 现金增利

@@ -416,3 +416,10 @@ func (this *MemberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) 
 	}
 	return v.Id, err
 }
+
+// 保存理财账户信息
+func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount, growEarnings float32) error {
+	_, err := this.Connector.ExecNonQuery("UPDATE mm_account SET grow_balance=?,grow_amount=?,grow_earnings=? where member_id=?",
+		balance, totalAmount, growEarnings, memberId)
+	return err
+}
