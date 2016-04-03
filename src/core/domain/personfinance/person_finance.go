@@ -65,7 +65,7 @@ func (this *PersonFinance) CreateRiseInfo() error {
 func (this *PersonFinance) SyncToAccount() error {
 	var balance float32
 	var totalAmount float32
-	var growEarnings float32  // 当前收益
+	var growEarnings float32      // 当前收益
 	var totalGrowEarnings float32 // 总收益
 	r := this.GetRiseInfo()
 	if r, err := r.Value(); err != nil {

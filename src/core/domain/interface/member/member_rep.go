@@ -116,5 +116,5 @@ type IMemberRep interface {
 	SaveBalanceInfo(v *BalanceInfoValue) (int, error)
 
 	// 保存理财账户信息
-	SaveGrowAccount(memberId int, balance, totalAmount, growEarnings,totalGrowEarnings float32) error
+	SaveGrowAccount(memberId int, balance, totalAmount, growEarnings, totalGrowEarnings float32) error
 }

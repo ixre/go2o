@@ -40,10 +40,11 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 	m := dps.MemberService.GetMember(memberId)
 	d := echox.NewRenderData()
 	d.Map = map[string]interface{}{
-		"member":    m,
-		"bpName":    variable.AliasPresentAccount,
-		"bpKt":      member.KindBalancePresent,
-		"balanceKt": member.KindBalanceCharge,
+		"member": m,
+		"bpName": variable.AliasPresentAccount,
+		"bpKt":   member.KindBalancePresent,
+		"bKt":    member.KindBalanceCharge,
+		"bName":  variable.AliasBalanceAccount,
 	}
 	return c.RenderOK("finance.member_newticket.html", d)
 }

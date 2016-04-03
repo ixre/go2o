@@ -418,8 +418,8 @@ func (this *MemberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) 
 }
 
 // 保存理财账户信息
-func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount, growEarnings,totalGrowEarnings float32) error {
+func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount, growEarnings, totalGrowEarnings float32) error {
 	_, err := this.Connector.ExecNonQuery("UPDATE mm_account SET grow_balance=?,grow_amount=?,grow_earnings=?,grow_total_earnings=? where member_id=?",
-		balance, totalAmount, growEarnings, totalGrowEarnings,memberId)
+		balance, totalAmount, growEarnings, totalGrowEarnings, memberId)
 	return err
 }

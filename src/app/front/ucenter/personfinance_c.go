@@ -70,6 +70,7 @@ func (this *personFinanceRiseC) TransferIn(c *echox.Context) error {
 	d.Map["MinTranfer"] = format.FormatFloat(personfinance.RiseMinTransferInAmount)
 	d.Map["RiseDate"] = time.Now().AddDate(0, 0, personfinance.RiseSettleTValue).Format("2006-01-02")
 	d.Map["AliasPresentBalance"] = variable.AliasPresentAccount
+	d.Map["AliasBalance"] = variable.AliasBalanceAccount
 	d.Map["Account"] = dps.MemberService.GetAccount(memberId)
 
 	return c.Render(http.StatusOK, "rise_transferin.html", d)
