@@ -93,7 +93,7 @@ func (this *personFinanceService) RiseTransferOut(personId int, amount float32) 
 }
 
 // 结算收益(按天结息)
-func (this *personFinanceService) RiseSettleByDay(personId int, dayRatio float32) (err error) {
+func (this *personFinanceService) RiseSettleByDay(personId int, settleUnix int64, dayRatio float32) (err error) {
 	r := this._rep.GetPersonFinance(personId).GetRiseInfo()
-	return r.RiseSettleByDay(dayRatio)
+	return r.RiseSettleByDay(settleUnix, dayRatio)
 }

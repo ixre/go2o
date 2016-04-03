@@ -20,45 +20,88 @@ import (
 )
 
 func personFinanceSettle() {
+	now := time.Now()
+	//invokeSettle(now.Add(time.Hour * 24))
+	invokeSettle(now)
+}
+
+// 执行结算,结算时间为当天,
+// 收益计算当天前一天收益,转入转出按当天计算
+func invokeSettle(t time.Time) {
 	b := time.Now()
-	confirmTransferIn(time.Now()) //今天确认T+?前的转入
-	settleRiseData()              //今天结算昨日的收益
+	confirmTransferIn(t)                   //今天确认T+?前的转入
+	settleRiseData(t.Add(time.Hour * -24)) //今天结算昨日的收益
 	log.Println("[ PersonFinance][ Settle][ Success]:Total used",
 		math.Floor(time.Now().Sub(b).Minutes()*100)/100, "minutes!")
 }
 
 // 确认转入数据
+// 采用按ID分段,通过传入ID区间用多个gorouting进行处理.
 func confirmTransferIn(t time.Time) {
 	var err error
 	settleTime := t.AddDate(0, 0, -personfinance.RiseSettleTValue) // 倒推结算日
 	unixDate := tool.GetStartDate(settleTime).Unix()
-	total := 0  //总数
 	cursor := 0 // 游标,每次从db中取条数
 	const size int = 50
+	setupNum := 0 //步骤编号
+	for {
+		// 获取前1000条记录到IdArr
+		idArr := []int{}
+		i := 0
+		err = _db.Query("SELECT id FROM pf_riselog WHERE unix_date=? AND type=? AND state=? LIMIT 0,?",
+			func(rows *sql.Rows) {
+				for rows.Next() {
+					rows.Scan(&i)
+					if i > 0 {
+						idArr = append(idArr, i)
+					}
+				}
+			}, unixDate, personfinance.RiseTypeTransferIn,
+			personfinance.RiseStateDefault, 1000)
+		if err != nil {
+			log.Println("[ Error][ Transfer-Confirm]:", err.Error())
+			break
+		}
+		if len(idArr) == 0 {
+			break
+		}
 
-	err = _db.ExecScalar("SELECT COUNT(0) FROM pf_riselog WHERE unix_date=? AND type=? AND state=?",
-		&total, unixDate, personfinance.RiseTypeTransferIn, personfinance.RiseStateDefault)
-	if err != nil {
-		log.Println("[ Error][ Transfer-Confirm]:", err.Error())
-		return
+		setupNum += 1
+		log.Println("[ PersonFinance][ Transfer][ Job]:Setup", setupNum,
+			"; Total", len(idArr), "records! unix date =", unixDate)
+
+		// 将IdArr按指定size切片处理
+		wg := sync.WaitGroup{}
+		for cursor < len(idArr) {
+			var splitIdArr []int
+			if cursor+size < len(idArr) {
+				splitIdArr = idArr[cursor : cursor+size]
+			} else {
+				splitIdArr = idArr[cursor:]
+			}
+			go confirmTransferInByCursor(&wg, unixDate, splitIdArr)
+			cursor += size
+			wg.Add(1)
+			time.Sleep(time.Second)
+			//log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1],len(splitIdArr))
+		}
+		wg.Wait()
+		cursor = 0 //重置游标
 	}
-	log.Println("[ PersonFinance][ Transfer][ Job]:Total ", total, "records! unix date =", unixDate)
-	wg := &sync.WaitGroup{}
-	for cursor < total {
-		go confirmTransferInByCursor(wg, unixDate, cursor, size)
-		cursor += size
-		wg.Add(1)
-		time.Sleep(time.Second)
-	}
-	wg.Wait()
 }
 
 // 分组确认转入数据
-func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, cursor, size int) {
+func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, idArr []int) {
+
+	//log.Println(fmt.Sprintf("[SQL]: select * FROM pf_riselog WHERE id BETWEEN %d AND %d AND unix_date=%d AND type=%d AND state=%d ORDER BY id ",
+	//	 idArr[0],idArr[len(idArr)-1], unixDate, personfinance.RiseTypeTransferIn,
+	//	personfinance.RiseStateDefault))
+	//time.Sleep(time.Second * 1)
+
 	list := make([]*personfinance.RiseLog, 0)
-	_orm.Select(&list, "unix_date=? AND type=? AND state=? ORDER BY id LIMIT ?,?",
-		unixDate, personfinance.RiseTypeTransferIn,
-		personfinance.RiseStateDefault, cursor, size)
+	_orm.Select(&list, "id BETWEEN ? AND ? AND unix_date=? AND type=? AND state=? ORDER BY id",
+		idArr[0], idArr[len(idArr)-1], unixDate, personfinance.RiseTypeTransferIn,
+		personfinance.RiseStateDefault)
 	ds := dps.PersonFinanceService
 	for _, v := range list {
 		if err := ds.CommitTransfer(v.PersonId, v.Id); err != nil {
@@ -71,45 +114,63 @@ func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, cursor, size 
 }
 
 // 结算增利数据,t为结算日
-func settleRiseData() {
+// 采用按ID分段,通过传入ID区间用多个gorouting进行处理.
+func settleRiseData(settleDate time.Time) {
 	var err error
-	dt := time.Now().Add(time.Hour * -24)
-	settleDate := tool.GetStartDate(dt).Unix() //结算日期
-	total := 0                                 //总数
-	cursor := 0                                // 游标,每次从db中取条数
+	settleUnix := tool.GetStartDate(settleDate).Unix() //结算日期
+	total := 0                                         //总数
+	cursor := 0                                        // 游标,每次从db中取条数
 	const size int = 50
+	setupNum := 0 //步骤编号
 
-	err = _db.ExecScalar("SELECT COUNT(0) FROM pf_riseinfo WHERE balance > 0 AND settled_date < ? ",
-		&total, settleDate)
-	if err != nil {
-		log.Println("[ Error][ Rise-Settle]:", err.Error())
-		return
+	for {
+		idArr := []int{}
+		i := 0
+		err = _db.Query("SELECT person_id FROM pf_riseinfo WHERE balance > 0 AND settled_date < ? LIMIT 0,?",
+			func(rows *sql.Rows) {
+				for rows.Next() {
+					rows.Scan(&i)
+					if i > 0 {
+						idArr = append(idArr, i)
+					}
+				}
+			}, settleUnix, 1000)
+		if err != nil {
+			log.Println("[ Error][ Rise-Settle]:", err.Error())
+			break
+		}
+		if len(idArr) == 0 {
+			break
+		}
+
+		setupNum += 1
+		log.Println("[ PersonFinance][ RiseSettle][ Job]:Setup ", setupNum,
+			" ; Total ", total, "records! unix date =", settleUnix)
+
+		wg := sync.WaitGroup{}
+		for cursor < total {
+			var splitIdArr []int
+			if cursor+size < len(idArr) {
+				splitIdArr = idArr[cursor : cursor+size]
+			} else {
+				splitIdArr = idArr[cursor:]
+			}
+			go riseGroupSettle(&wg, settleUnix, splitIdArr)
+			cursor += size
+			wg.Add(1)
+			time.Sleep(time.Second)
+			log.Println("[Output]- ", splitIdArr[0], splitIdArr[len(splitIdArr)-1], len(splitIdArr))
+		}
+		wg.Wait()
+		cursor = 0 //重置游标
 	}
-	log.Println("[ PersonFinance][ RiseSettle][ Job]:Total ", total, "records! unix date =", settleDate)
-	wg := &sync.WaitGroup{}
-	for cursor < total {
-		go riseGroupSettle(wg, settleDate, cursor, size)
-		cursor += size
-		wg.Add(1)
-		time.Sleep(time.Second)
-	}
-	wg.Wait()
 }
 
 // 分组确认转入数据
-func riseGroupSettle(wg *sync.WaitGroup, settleDate int64, cursor, size int) {
-	list := []int{}
-	var id int
-	_db.Query("SELECT person_id FROM pf_riseinfo WHERE balance > 0 AND settled_date < ? LIMIT ?,?",
-		func(rows *sql.Rows) {
-			for rows.Next() {
-				rows.Scan(&id)
-				list = append(list, id)
-			}
-		}, settleDate, cursor, size)
+func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personIdArr []int) {
 	ds := dps.PersonFinanceService
-	for _, id := range list {
-		if err := ds.RiseSettleByDay(id, personfinance.RiseDayRatioProvider(id)); err != nil {
+	for _, id := range personIdArr {
+		if err := ds.RiseSettleByDay(id, settleUnix, personfinance.RiseDayRatioProvider(id)); err != nil {
 			log.Println("[ PersonFinance][ Settle][ Fail]: person_id=", id, "error=", err.Error())
 		}
 	}

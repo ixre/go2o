@@ -141,8 +141,9 @@ func (this *riseInfo) TransferOut(amount float32) (err error) {
 	return err
 }
 
-// 结算收益(按天结息,前一日)
-func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
+// 结算收益(按天结息),settleUnix:结算日期的时间戳(不含时间),
+// dayRatio 为每天的收益比率
+func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (err error) {
 	if this._v == nil { //判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
@@ -155,7 +156,15 @@ func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
 
 	dt := time.Now().Add(time.Hour * -24) //计算昨日的收益
 	dtUnix := tool.GetStartDate(dt).Unix()
-	if this.daySettled(dt) {
+
+	if settleDateUnix%100 != 0 {
+		return personfinance.ErrUnixDate
+	}
+
+	if b, err := this.daySettled(settleDateUnix); b {
+		if err != nil {
+			return err
+		}
 		return personfinance.ErrHasSettled
 	}
 
@@ -197,11 +206,13 @@ func (this *riseInfo) RiseSettleByDay(dayRatio float32) (err error) {
 }
 
 // 是否已经结算
-func (this *riseInfo) daySettled(t time.Time) bool {
-	unix := tool.GetStartDate(t).Unix()
-	arr := this._rep.GetRiseLogs(this.GetDomainId(), unix,
+func (this *riseInfo) daySettled(dateUnix int64) (bool, error) {
+	if dateUnix%100 != 0 {
+		return true, personfinance.ErrUnixDate
+	}
+	arr := this._rep.GetRiseLogs(this.GetDomainId(), dateUnix,
 		personfinance.RiseTypeSettle)
-	return len(arr) > 0
+	return len(arr) > 0, nil
 }
 
 // 获取时间段内的增利信息

@@ -54,8 +54,9 @@ type (
 		// 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
 		CommitTransfer(logId int) error
 
-		// 结算收益(按天结息,前一日),dayRatio 为每天的收益比率
-		RiseSettleByDay(dayRatio float32) error
+		// 结算收益(按天结息),settleUnix:结算日期的时间戳(不含时间),
+		// dayRatio 为每天的收益比率
+		RiseSettleByDay(settleUnix int64, dayRatio float32) error
 
 		// 获取时间段内的增利信息
 		GetRiseByTime(begin, end int64) []*RiseDayInfo
@@ -139,6 +140,8 @@ var (
 		"err_no_such_rise_info", "未开通该功能!")
 	ErrHasSettled *domain.DomainError = domain.NewDomainError(
 		"err_has_settled", "已经结算!")
+	ErrUnixDate *domain.DomainError = domain.NewDomainError(
+		"err_unix_date", "错误的日期时间戳!")
 	ErrRatio *domain.DomainError = domain.NewDomainError(
 		"err_ratio", "利率不正确!")
 
