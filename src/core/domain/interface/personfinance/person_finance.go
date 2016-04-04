@@ -24,6 +24,50 @@ var (
 	}
 )
 
+const (
+	//转入方式
+	TransferFromWithBalance = 1 //通过余额转入
+	TransferFromWithPresent = 2 //通过创业金转入
+
+	//转出方式
+	TransferOutWithBalance = 1
+	TransferOutWithPresent = 2
+	TransferOutWithBank    = 3
+
+	RiseStateOk      int = 1 //OK
+	RiseStateDefault int = 0 //默认状态
+)
+
+const (
+	RiseTypeTransferIn  int = 1 + iota //转入
+	RiseTypeTransferOut                //转出
+	RiseTypeSettle                     //结算
+	RiseTypeAdjust                     //人工调整
+)
+
+var (
+	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
+		"err_balance_amount", "金额错误")
+	ErrIncorrectTransfer *domain.DomainError = domain.NewDomainError(
+		"err_incorrent_transfer", "已确认或非转入(转出)操作")
+	ErrNoSuchRiseInfo *domain.DomainError = domain.NewDomainError(
+		"err_no_such_rise_info", "未开通该功能")
+	ErrHasSettled *domain.DomainError = domain.NewDomainError(
+		"err_has_settled", "已经结算")
+	ErrUnixDate *domain.DomainError = domain.NewDomainError(
+		"err_unix_date", "错误的日期时间戳")
+	ErrRatio *domain.DomainError = domain.NewDomainError(
+		"err_ratio", "利率不正确")
+	ErrLessThanMinTransferIn *domain.DomainError = domain.NewDomainError(
+		"err_less_than_min_transfer_in", "转入金额最低%s")
+	ErrLessThanMinTransferOut *domain.DomainError = domain.NewDomainError(
+		"err_less_than_min_transfer_out", "转出金额最低%s")
+	ErrMustAllTransferOut *domain.DomainError = domain.NewDomainError(
+		"err_must_all_transfer_out", "金额最低%s或全部转出")
+	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
+		"err_out_of_balance", "超出帐户最大金额")
+)
+
 type (
 	// 在此聚合下, 会员抽象为Person, PersonId 对应 MemberId
 	IPersonFinance interface {
@@ -47,10 +91,11 @@ type (
 		Value() (RiseInfoValue, error)
 
 		// 转入
-		TransferIn(amount float32) error
+		TransferIn(amount float32, w TransferWith) error
 
-		// 转出
-		TransferOut(amount float32) error
+		// 转出,w为转出方式(如银行,余额等),state为日志的状态,某些操作
+		// 需要确认,有些不需要.通过state来传入
+		TransferOut(amount float32, w TransferWith, state int) error
 
 		// 根据日志记录提交转入转出,如果已经确认操作,则返回错误
 		// 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
@@ -93,15 +138,20 @@ type (
 
 	// 收益日志
 	RiseLog struct {
-		Id         int     `db:"id" pk:"yes" auto:"yes"`
-		PersonId   int     `db:"person_id"`   //会员编号
-		Amount     float32 `db:"amount"`      //金额
-		Type       int     `db:"type"`        //类型
-		State      int     `db:"state"`       //状态
-		UnixDate   int64   `db:"unix_date"`   // 日期
-		LogTime    int64   `db:"log_time"`    //日志时间
-		UpdateTime int64   `db:"update_time"` //更新时间
+		Id           int     `db:"id" pk:"yes" auto:"yes"`
+		PersonId     int     `db:"person_id"`     //会员编号
+		Amount       float32 `db:"amount"`        //金额
+		Type         int     `db:"type"`          //类型
+		TransferWith int     `db:"transfer_with"` //转入转出的方式
+		State        int     `db:"state"`         //状态
+		UnixDate     int64   `db:"unix_date"`     //日期
+		Remark       string  `db:"remark"`        //备注,比如转账的交易号
+		LogTime      int64   `db:"log_time"`      //日志时间
+		UpdateTime   int64   `db:"update_time"`   //更新时间
 	}
+
+	// 转入转出方式
+	TransferWith int
 
 	IPersonFinanceRepository interface {
 		// 获取个人财富聚合根
@@ -128,38 +178,4 @@ type (
 		// 保存每日收益
 		SaveRiseDayInfo(*RiseDayInfo) (int, error)
 	}
-)
-
-var (
-	RiseStateOk      int = 1 //OK
-	RiseStateDefault int = 0 //默认状态
-
-	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
-		"err_balance_amount", "金额错误!")
-	ErrIncorrectTransfer *domain.DomainError = domain.NewDomainError(
-		"err_incorrent_transfer", "已确认或非转入(转出)操作!")
-	ErrNoSuchRiseInfo *domain.DomainError = domain.NewDomainError(
-		"err_no_such_rise_info", "未开通该功能!")
-	ErrHasSettled *domain.DomainError = domain.NewDomainError(
-		"err_has_settled", "已经结算!")
-	ErrUnixDate *domain.DomainError = domain.NewDomainError(
-		"err_unix_date", "错误的日期时间戳!")
-	ErrRatio *domain.DomainError = domain.NewDomainError(
-		"err_ratio", "利率不正确!")
-
-	ErrLessThanMinTransferIn *domain.DomainError = domain.NewDomainError(
-		"err_less_than_min_transfer_in", "转入金额最低%d!")
-
-	ErrLessThanMinTransferOut *domain.DomainError = domain.NewDomainError(
-		"err_less_than_min_transfer_out", "转出金额最低%d!")
-
-	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
-		"err_out_of_balance", "超出帐户最大金额!")
-)
-
-const (
-	RiseTypeTransferIn  int = 1 + iota //转入
-	RiseTypeTransferOut                //转出
-	RiseTypeSettle                     //结算
-	RiseTypeAdjust                     //人工调整
 )

@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/personfinance"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/tool"
 	"math"
 	"time"
@@ -75,15 +76,21 @@ func (this *riseInfo) CommitTransfer(logId int) (err error) {
 }
 
 // 转入
-func (this *riseInfo) TransferIn(amount float32) (err error) {
+func (this *riseInfo) TransferIn(amount float32,
+	w personfinance.TransferWith) (err error) {
 	if this._v == nil { //判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
 		}
 	}
+
+	if amount <= 0 {
+		return personfinance.ErrIncorrectAmount
+	}
+
 	if amount < personfinance.RiseMinTransferInAmount {
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
-			personfinance.RiseMinTransferInAmount))
+			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
 	}
 
 	dt := time.Now()
@@ -92,49 +99,69 @@ func (this *riseInfo) TransferIn(amount float32) (err error) {
 	this._v.UpdateTime = dt.Unix()
 	if err = this.Save(); err == nil { //保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
-			PersonId:   this.GetDomainId(),
-			Amount:     amount,
-			Type:       personfinance.RiseTypeTransferIn,
-			State:      personfinance.RiseStateDefault,
-			UnixDate:   tool.GetStartDate(dt).Unix(),
-			LogTime:    this._v.UpdateTime,
-			UpdateTime: this._v.UpdateTime,
+			PersonId:     this.GetDomainId(),
+			Amount:       amount,
+			Type:         personfinance.RiseTypeTransferIn,
+			TransferWith: int(w),
+			State:        personfinance.RiseStateDefault,
+			UnixDate:     tool.GetStartDate(dt).Unix(),
+			LogTime:      this._v.UpdateTime,
+			UpdateTime:   this._v.UpdateTime,
 		})
 	}
 	return err
 }
 
-// 转出
-func (this *riseInfo) TransferOut(amount float32) (err error) {
-	if this._v == nil { //判断会员是否存在
+// 转出,w为转出方式(如银行,余额等),state为日志的状态,某些操作
+// 需要确认,有些不需要.通过state来传入
+func (this *riseInfo) TransferOut(amount float32,
+	w personfinance.TransferWith, state int) (err error) {
+	if this._v == nil {
+		//判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
 		}
 	}
-	if amount > this._v.Balance { //超出账户金额
+	if amount <= 0 {
+		return personfinance.ErrIncorrectAmount
+	}
+
+	if amount > this._v.Balance {
+		//超出账户金额
 		return personfinance.ErrOutOfBalance
 	}
 
-	if amount != this._v.Balance && amount < personfinance.RiseMinTransferOutAmount {
-		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferOut.Error(),
-			personfinance.RiseMinTransferOutAmount))
+	// 低于最低转出金额,且不是全部转出.返回错误. 若转出到余额则无限制
+	if amount != this._v.Balance && //非全部转出
+		w != personfinance.TransferOutWithBalance && //非转出余额
+		amount < personfinance.RiseMinTransferOutAmount {
+		if this._v.Balance > personfinance.RiseMinTransferOutAmount { //金额大于转出金额
+			return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferOut.Error(),
+				format.FormatFloat(personfinance.RiseMinTransferOutAmount)))
+		} else { //金额小于转出金额
+			return errors.New(fmt.Sprintf(personfinance.ErrMustAllTransferOut.Error(),
+				format.FormatFloat(personfinance.RiseMinTransferOutAmount)))
+		}
 	}
 
 	dt := time.Now()
 	this._v.UpdateTime = dt.Unix()
 	this._v.Balance -= amount
-	if this._v.Balance == 0 { //若全部提出,则理财金额清0
+	if this._v.Balance == 0 {
+		//若全部提出,则理财金额清0
 		this._v.Rise = 0
 	}
-	if err = this.Save(); err == nil { //保存并记录日志
+	if err = this.Save(); err == nil {
+		//保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
-			PersonId:   this.GetDomainId(),
-			Amount:     amount,
-			Type:       personfinance.RiseTypeTransferOut,
-			State:      personfinance.RiseStateDefault,
-			UnixDate:   tool.GetStartDate(dt).Unix(),
-			LogTime:    this._v.UpdateTime,
-			UpdateTime: this._v.UpdateTime,
+			PersonId:     this.GetDomainId(),
+			Amount:       amount,
+			Type:         personfinance.RiseTypeTransferOut,
+			TransferWith: int(w),
+			State:        state,
+			UnixDate:     tool.GetStartDate(dt).Unix(),
+			LogTime:      this._v.UpdateTime,
+			UpdateTime:   this._v.UpdateTime,
 		})
 	}
 	//todo: 新增操作记录,如审核,打款,完成等

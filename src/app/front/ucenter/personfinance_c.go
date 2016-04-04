@@ -24,14 +24,15 @@ import (
 type personFinanceRiseC struct {
 }
 
-func (this *personFinanceRiseC) chkOpenState(memberId int, c *echox.Context) (bool, error) {
-	_, err := dps.PersonFinanceService.GetRiseInfo(memberId)
+func (this *personFinanceRiseC) chkOpenState(memberId int, c *echox.Context) (
+	bool, personfinance.RiseInfoValue, error) {
+	e, err := dps.PersonFinanceService.GetRiseInfo(memberId)
 	b := err == nil
 	if !b { //如果未开通,则跳转到开通界面
-		return false, c.Redirect(http.StatusFound, "openService?return_url="+
+		return false, e, c.Redirect(http.StatusFound, "openService?return_url="+
 			c.Request().URL.String())
 	}
-	return true, nil
+	return true, e, nil
 }
 
 func (this *personFinanceRiseC) OpenService(c *echox.Context) error {
@@ -63,7 +64,7 @@ func (this *personFinanceRiseC) TransferIn(c *echox.Context) error {
 		return this.transferIn_post(c)
 	}
 	memberId := GetSessionMemberId(c)
-	if b, err := this.chkOpenState(memberId, c); !b {
+	if b, _, err := this.chkOpenState(memberId, c); !b {
 		return err
 	}
 	d := c.NewData()
@@ -79,9 +80,10 @@ func (this *personFinanceRiseC) transferIn_post(c *echox.Context) error {
 	msg := gof.Message{}
 	memberId := GetSessionMemberId(c)
 	amount, err := strconv.ParseFloat(c.Form("Amount"), 32)
-	transferFrom, _ := strconv.Atoi(c.Form("TransferFrom"))
+	transferFrom, _ := strconv.Atoi(c.Form("TransferWith"))
 	if err == nil {
-		err = dps.PersonFinanceService.RiseTransferIn(memberId, transferFrom, float32(amount))
+		err = dps.PersonFinanceService.RiseTransferIn(memberId,
+			personfinance.TransferWith(transferFrom), float32(amount))
 	}
 	if err != nil {
 		msg.Message = err.Error()
@@ -96,23 +98,28 @@ func (this *personFinanceRiseC) TransferOut(c *echox.Context) error {
 		return this.transferOut_post(c)
 	}
 	memberId := GetSessionMemberId(c)
-	if b, err := this.chkOpenState(memberId, c); !b {
+	if b, e, err := this.chkOpenState(memberId, c); !b {
 		return err
+	} else {
+		d := c.NewData()
+		d.Map["AliasBalance"] = variable.AliasBalanceAccount
+		d.Map["MinTranfer"] = format.FormatFloat(personfinance.RiseMinTransferOutAmount)
+		d.Map["MaxTransferAmount"] = format.FormatFloat(e.Balance)
+		return c.Render(http.StatusOK, "rise_transferout.html", d)
 	}
-	d := c.NewData()
-	d.Map["min_tranfer"] = format.FormatFloat(personfinance.RiseMinTransferOutAmount)
-	return c.Render(http.StatusOK, "rise_transferout.html", d)
 }
 
 func (this *personFinanceRiseC) transferOut_post(c *echox.Context) error {
 	msg := gof.Message{}
 	memberId := GetSessionMemberId(c)
-	amount, err := strconv.ParseFloat(c.Form("amount"), 32)
+	amount, err := strconv.ParseFloat(c.Form("Amount"), 32)
+	transferTo, _ := strconv.Atoi(c.Form("TransferWith"))
 	if err == nil {
-		err = dps.PersonFinanceService.RiseTransferOut(memberId, float32(amount))
+		err = dps.PersonFinanceService.RiseTransferOut(memberId,
+			personfinance.TransferWith(transferTo), float32(amount))
 	}
 	if err != nil {
-		msg.Message = msg.Message
+		msg.Message = err.Error()
 	} else {
 		msg.Result = true
 	}

@@ -664,8 +664,10 @@ CREATE TABLE `pf_riselog` (
   `person_id` int(11) DEFAULT NULL,
   `amount` float(10,2) DEFAULT NULL,
   `type` tinyint(1) DEFAULT NULL,
+  `transfer_with` tinyint(1) DEFAULT NULL,
   `state` tinyint(1) DEFAULT NULL,
   `unix_date` int(11) DEFAULT NULL,
+  `remark` varchar(120) DEFAULT NULL,
   `log_time` int(11) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -1621,4 +1623,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-03 16:37:54
+-- Dump completed on 2016-04-04 16:14:58
