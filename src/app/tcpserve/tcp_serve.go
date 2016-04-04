@@ -22,10 +22,10 @@ import (
 
 var (
 	// 主动关闭没有活动的连接(当前减去最后活动时间)
-	disconnectDuration                       = time.Second * 60
+	disconnectDuration                       = time.Minute * 10
 
 	// 默认连接存活时间
-	defaultReadDeadLine = time.Second * 40
+	defaultReadDeadLine = time.Second * 60
 	handlers           map[string]nc.CmdFunc = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,

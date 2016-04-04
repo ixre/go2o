@@ -47,13 +47,13 @@ func superviseOrder(ss []Service) {
 	}
 }
 
-// 监视新订单
+// 监视新会员
 func superviseMemberUpdate(ss []Service) {
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	var id int
 	for {
-		arr, err := redis.Values(core.GetRedisConn().Do("BLPOP",
+		arr, err := redis.Values(conn.Do("BLPOP",
 			variable.KvMemberUpdateQueue, 0))
 		if err == nil { //通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1].([]byte))

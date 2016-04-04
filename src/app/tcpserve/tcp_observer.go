@@ -23,7 +23,7 @@ func AccountNotifyJob(s *nc.SocketServer){
     defer conn.Close()
     for {
         values, err := redis.Values(conn.Do("BLPOP",
-            variable.KvAccountUpdateTcpNotifyQueue))
+            variable.KvAccountUpdateTcpNotifyQueue,0))
         if err == nil {
             id,err := strconv.Atoi(string(values[1].([]byte)))
             if err == nil{
@@ -52,12 +52,13 @@ func pushMemberAccount(s *nc.SocketServer,connList []net.Conn, memberId int) {
 }
 
 
-func MemberSummaryNotifyJob(s *nc.SocketServer) error {
+func MemberSummaryNotifyJob(s *nc.SocketServer) {
     conn := core.GetRedisConn()
     defer conn.Close()
     for {
+        s.Print("----- summary updated")
         values, err := redis.Values(conn.Do("BLPOP",
-            variable.KvMemberUpdateTcpNotifyQueue))
+            variable.KvMemberUpdateTcpNotifyQueue,0))
         if err == nil {
             id,err := strconv.Atoi(string(values[1].([]byte)))
             if err == nil{
