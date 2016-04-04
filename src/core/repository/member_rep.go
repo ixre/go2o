@@ -153,16 +153,16 @@ func (this *MemberRep) GetAccount(memberId int) *member.AccountValue {
 // 保存账户，传入会员编号
 func (this *MemberRep) SaveAccount(v *member.AccountValue) (int, error) {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
-	this.pushToAccountUpdateQueue(v.MemberId,v.UpdateTime)
+	this.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 	return v.MemberId, err
 }
 
-func (this *MemberRep) pushToAccountUpdateQueue(memberId int,updateTime int64){
+func (this *MemberRep) pushToAccountUpdateQueue(memberId int, updateTime int64) {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	// 保存最后更新时间
 	mutKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
-	rc.Do("SETEX", mutKey, 3600*400,updateTime)
+	rc.Do("SETEX", mutKey, 3600*400, updateTime)
 	// push to tcp notify queue
 	rc.Do("RPUSH", variable.KvAccountUpdateTcpNotifyQueue, memberId)
 }
@@ -420,10 +420,10 @@ func (this *MemberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) 
 
 // 保存理财账户信息
 func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
-	growEarnings, totalGrowEarnings float32,updateTime int64) error {
+	growEarnings, totalGrowEarnings float32, updateTime int64) error {
 	_, err := this.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance=?,
 		grow_amount=?,grow_earnings=?,grow_total_earnings=?,update_time=? where member_id=?`,
-		balance, totalAmount, growEarnings, totalGrowEarnings,updateTime,memberId)
-	this.pushToAccountUpdateQueue(memberId,updateTime)
+		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
+	this.pushToAccountUpdateQueue(memberId, updateTime)
 	return err
 }

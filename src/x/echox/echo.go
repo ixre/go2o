@@ -11,12 +11,12 @@ package echox
 import (
 	"errors"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
 	"net/http"
 	"reflect"
 	"strings"
-	"github.com/jsix/gof/log"
 )
 
 var (
@@ -40,10 +40,10 @@ type (
 		Map  map[string]interface{}
 		Data interface{}
 	}
-	Handler   func(*Context) error
-	HttpHosts map[string]http.Handler
-	HandlerProvider interface{
-		FactoryHandler(path string)*Handler
+	Handler         func(*Context) error
+	HttpHosts       map[string]http.Handler
+	HandlerProvider interface {
+		FactoryHandler(path string) *Handler
 	}
 )
 
@@ -96,19 +96,18 @@ func (this *Echo) Postx(path string, h Handler) {
 	this.Post(path, this.parseHandler(h))
 }
 
-func (this *Echo) getMvcHandler(route string,c *Context,obj interface{})Handler {
+func (this *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
 	a := c.Param("action")
 	k := route + a
-	if v, ok := this.dynamicHandlers[k]; ok {//查找路由表
+	if v, ok := this.dynamicHandlers[k]; ok { //查找路由表
 		return v
 	}
-	if v, ok := getHandler(obj, a); ok {//存储路由表
+	if v, ok := getHandler(obj, a); ok { //存储路由表
 		this.dynamicHandlers[k] = v
 		return v
 	}
 	return nil
 }
-
 
 // 注册动态获取处理程序
 // todo:?? 应复写Any
@@ -117,7 +116,7 @@ func (this *Echo) Aanyx(path string, obj interface{}) {
 		if hd := this.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
-		return c.String(http.StatusInternalServerError,"no such file")
+		return c.String(http.StatusInternalServerError, "no such file")
 	}
 	this.Any(path, this.parseHandler(h))
 }
@@ -126,16 +125,16 @@ func (this *Context) StringOK(s string) error {
 	return this.debug(this.String(http.StatusOK, s))
 }
 
-func (this *Context) debug(err error) error{
-	if err != nil{
-		log.Println("[ Echox][ Error]:",err.Error())
+func (this *Context) debug(err error) error {
+	if err != nil {
+		log.Println("[ Echox][ Error]:", err.Error())
 	}
 	return err
 }
 
 // 覆写Render方法
-func (this *Context) Render(code int,name string,data interface{})error{
-	return this.debug(this.Context.Render(code,name,data))
+func (this *Context) Render(code int, name string, data interface{}) error {
+	return this.debug(this.Context.Render(code, name, data))
 }
 
 func (this *Context) RenderOK(name string, data interface{}) error {
