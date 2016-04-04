@@ -85,7 +85,7 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 				return err
 			}
 
-			s.Print("[ CLIENT] - Version = %s", arr[2])
+			s.Printf("[ CLIENT] - Version = %s", arr[2])
 			return nil
 		}
 	}
@@ -123,7 +123,7 @@ func handleCommand(s *nc.SocketServer,ci *nc.Client, cmd string) ([]byte, error)
 		return nil, nil
 	}
 	if !strings.HasPrefix(cmd, "PING") {
-		s.Print("[ CLIENT][ MESSAGE] - send by %d ; %s", ci.Source, cmd)
+		s.Printf("[ CLIENT][ MESSAGE] - send by %d ; %s", ci.Source, cmd)
 		ci.LatestConnectTime = time.Now()
 	}
 	i := strings.Index(cmd, ":")

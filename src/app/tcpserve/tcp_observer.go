@@ -18,6 +18,7 @@ import (
     "encoding/json"
 )
 
+//note: 业务逻辑上可能会出现通知多次的情况
 func AccountNotifyJob(s *nc.SocketServer){
     conn := core.GetRedisConn()
     defer conn.Close()
@@ -39,7 +40,7 @@ func AccountNotifyJob(s *nc.SocketServer){
 
 // push member summary to tcp client
 func pushMemberAccount(s *nc.SocketServer,connList []net.Conn, memberId int) {
-    s.Print("[ TCP][ NOTIFY] - notify account update - %d", memberId)
+    s.Printf("[ TCP][ NOTIFY] - notify account update - %d", memberId)
     sm := getMemberAccount(memberId, 0)
     if sm != nil {
         if d, err := json.Marshal(sm); err == nil {
@@ -56,7 +57,6 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
     conn := core.GetRedisConn()
     defer conn.Close()
     for {
-        s.Print("----- summary updated")
         values, err := redis.Values(conn.Do("BLPOP",
             variable.KvMemberUpdateTcpNotifyQueue,0))
         if err == nil {
@@ -74,7 +74,7 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
 
 // push member summary to tcp client
 func pushMemberSummary(s *nc.SocketServer,connList []net.Conn, memberId int) {
-    s.Print("[ TCP][ NOTIFY] - notify member update - %d", memberId)
+    s.Printf("[ TCP][ NOTIFY] - notify member update - %d", memberId)
     sm := GetMemberSummary(memberId, 0)
     if d, err := json.Marshal(sm); err == nil {
         d = append([]byte("MSUM:"), d...)
