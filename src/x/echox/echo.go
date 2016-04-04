@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"reflect"
 	"strings"
+	"github.com/jsix/gof/log"
 )
 
 var (
@@ -41,6 +42,9 @@ type (
 	}
 	Handler   func(*Context) error
 	HttpHosts map[string]http.Handler
+	HandlerProvider interface{
+		FactoryHandler(path string)*Handler
+	}
 )
 
 // new echo instance
@@ -92,29 +96,50 @@ func (this *Echo) Postx(path string, h Handler) {
 	this.Post(path, this.parseHandler(h))
 }
 
+func (this *Echo) getMvcHandler(route string,c *Context,obj interface{})Handler {
+	a := c.Param("action")
+	k := route + a
+	if v, ok := this.dynamicHandlers[k]; ok {//查找路由表
+		return v
+	}
+	if v, ok := getHandler(obj, a); ok {//存储路由表
+		this.dynamicHandlers[k] = v
+		return v
+	}
+	return nil
+}
+
+
 // 注册动态获取处理程序
-func (this *Echo) Danyx(path string, v interface{}) {
-	h := func(ctx *Context) error {
-		a := ctx.Param("action")
-		k := path + a
-		if v, ok := this.dynamicHandlers[k]; ok {
-			return v(ctx)
+// todo:?? 应复写Any
+func (this *Echo) Aanyx(path string, obj interface{}) {
+	h := func(c *Context) error {
+		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+			return hd(c)
 		}
-		if v, ok := getHandler(v, a); ok {
-			this.dynamicHandlers[k] = v
-			return v(ctx)
-		}
-		return errors.New("no such action named : " + a)
+		return c.String(http.StatusInternalServerError,"no such file")
 	}
 	this.Any(path, this.parseHandler(h))
 }
 
 func (this *Context) StringOK(s string) error {
-	return this.String(http.StatusOK, s)
+	return this.debug(this.String(http.StatusOK, s))
+}
+
+func (this *Context) debug(err error) error{
+	if err != nil{
+		log.Println("[ Echox][ Error]:",err.Error())
+	}
+	return err
+}
+
+// 覆写Render方法
+func (this *Context) Render(code int,name string,data interface{})error{
+	return this.debug(this.Context.Render(code,name,data))
 }
 
 func (this *Context) RenderOK(name string, data interface{}) error {
-	return this.Render(http.StatusOK, name, data)
+	return this.debug(this.Render(http.StatusOK, name, data))
 }
 
 func (this *Context) NewData() *TemplateData {

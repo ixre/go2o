@@ -40,7 +40,7 @@ func (this *personFinanceRiseC) OpenService(c *echox.Context) error {
 	}
 	d := c.NewData()
 	d.Map["AliasRise"] = variable.AliasRisePersonFinance
-	return c.Render(http.StatusOK, "rise_openservice.html", d)
+	return c.RenderOK("rise_openservice.html", d)
 }
 
 func (this *personFinanceRiseC) openService_post(c *echox.Context) error {
@@ -72,7 +72,6 @@ func (this *personFinanceRiseC) TransferIn(c *echox.Context) error {
 	d.Map["AliasPresentBalance"] = variable.AliasPresentAccount
 	d.Map["AliasBalance"] = variable.AliasBalanceAccount
 	d.Map["Account"] = dps.MemberService.GetAccount(memberId)
-
 	return c.Render(http.StatusOK, "rise_transferin.html", d)
 }
 

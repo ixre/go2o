@@ -49,11 +49,11 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/msd", mc.Msd)
 	s.Getx("/partner_connect", lc.Partner_connect)
 	s.Getx("/partner_disconnect", lc.Partner_disconnect)
-	s.Danyx("/basic/:action", bc)
-	s.Danyx("/order/:action", oc)
-	s.Danyx("/account/:action", ac)
+	s.Aanyx("/basic/:action", bc)
+	s.Aanyx("/order/:action", oc)
+	s.Aanyx("/account/:action", ac)
 	s.Getx("/get/qr/:code/:size", gc.GetQR)
-	s.Danyx("/finance/rise/:action", riseC)
+	s.Aanyx("/finance/rise/:action", riseC)
 }
 
 var (

@@ -77,5 +77,5 @@ func (this *PersonFinance) SyncToAccount() error {
 		totalGrowEarnings += r.TotalRise
 	}
 	return this._accRep.SaveGrowAccount(this.GetAggregateRootId(),
-		balance, totalAmount, growEarnings, totalGrowEarnings)
+		balance, totalAmount, growEarnings, totalGrowEarnings,time.Now().Unix())
 }
