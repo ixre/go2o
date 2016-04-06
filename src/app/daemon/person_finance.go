@@ -125,7 +125,7 @@ func settleRiseData(settleDate time.Time) {
 	for {
 		idArr := []int{}
 		i := 0
-		err = _db.Query("SELECT person_id FROM pf_riseinfo WHERE balance > 0 AND settled_date < ? LIMIT 0,?",
+		err = _db.Query("SELECT person_id FROM pf_riseinfo WHERE settlement_amount > 0 AND settled_date < ? LIMIT 0,?",
 			func(rows *sql.Rows) {
 				for rows.Next() {
 					rows.Scan(&i)

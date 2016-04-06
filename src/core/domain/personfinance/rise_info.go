@@ -211,7 +211,7 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 
 
 	if this._v.Balance > 0 {
-		amount := float32(math.Floor(float64(this._v.Balance*
+		amount := float32(math.Floor(float64(this._v.SettlementAmount *
 			dayRatio)*100) / 100) //按2位小数精度
 		if amount > 0.01 {
 			if _,err = this.monthSettle(this._v,settleDateUnix);err != nil{

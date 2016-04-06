@@ -633,6 +633,7 @@ DROP TABLE IF EXISTS `pf_riseinfo`;
 CREATE TABLE `pf_riseinfo` (
   `person_id` int(11) NOT NULL,
   `balance` float(10,2) DEFAULT NULL,
+  `settlement_amount` float(10,2) DEFAULT NULL COMMENT '结算金额',
   `rise` float(10,2) DEFAULT NULL,
   `transfer_in` float(10,2) DEFAULT NULL,
   `total_amount` float(10,2) DEFAULT NULL,
@@ -662,6 +663,7 @@ DROP TABLE IF EXISTS `pf_riselog`;
 CREATE TABLE `pf_riselog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `person_id` int(11) DEFAULT NULL,
+  `title` varchar(45) DEFAULT NULL,
   `amount` float(10,2) DEFAULT NULL,
   `type` tinyint(1) DEFAULT NULL,
   `transfer_with` tinyint(1) DEFAULT NULL,
@@ -1623,4 +1625,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-04 16:14:58
+-- Dump completed on 2016-04-06  9:56:22
