@@ -41,7 +41,8 @@ const (
 const (
 	RiseTypeTransferIn  int = 1 + iota //转入
 	RiseTypeTransferOut                //转出
-	RiseTypeSettle                     //结算
+	RiseTypeGenerateInterest           //计算利息
+	RiseTypeMonthSettle                //月结算,红利再投资
 	RiseTypeAdjust                     //人工调整
 )
 
@@ -117,6 +118,7 @@ type (
 		//Id  int `db:"id" pk:"yes" auto:"no"`
 		PersonId    int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
 		Balance     float32 `db:"balance"`                      //本金及收益的余额
+		SettlementAmount      float32 `db:"settlement_amount"`  //结算金额,日日计息, 月月分红
 		Rise        float32 `db:"rise"`                         //当前的收益
 		TransferIn  float32 `db:"transfer_in"`                  //今日转入
 		TotalAmount float32 `db:"total_amount"`                 //总金额
@@ -140,6 +142,7 @@ type (
 	RiseLog struct {
 		Id           int     `db:"id" pk:"yes" auto:"yes"`
 		PersonId     int     `db:"person_id"`     //会员编号
+		Title        string  `db:"title"`         //日志标题
 		Amount       float32 `db:"amount"`        //金额
 		Type         int     `db:"type"`          //类型
 		TransferWith int     `db:"transfer_with"` //转入转出的方式

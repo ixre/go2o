@@ -18,6 +18,7 @@ import (
 	"go2o/src/x/echox"
 	"net/http"
 	"strings"
+	"go2o/src/core/variable"
 )
 
 type mainC struct {
@@ -108,6 +109,7 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 	dm.Data = gof.TemplateDataMap{
 		"partner": pt,
 		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
+		"AliasGrow" : variable.AliasGrowAccount,
 	}
 	return ctx.Render(200, "dashboard.html", dm)
 }
