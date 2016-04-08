@@ -44,4 +44,7 @@ var (
 	MemberExt6Note         string = ""
 	MemberExt6Required     bool   = false
 	MemberExt6Show         bool   = false
+
+	// 理财最低等级限制
+	PersonFinanceMinLevelLimit int  = 0
 )
