@@ -11,12 +11,30 @@ package partner
 import (
     "go2o/src/x/echox"
     "net/http"
+    "go2o/src/core/variable"
+    "strconv"
+    "go2o/src/core/service/dps"
 )
 
 type personFinanceC struct{
 }
 
-func (this *personFinanceC) Earnings_accounts(c *echox.Context)error{
+func (this *personFinanceC) Earnings_account(c *echox.Context)error{
     d := c.NewData()
-    return c.Render(http.StatusOK,"pf.earnings_accounts",d)
+    d.Map["GrowAlias"] = variable.AliasGrowAccount
+    return c.Render(http.StatusOK,"pf.earnings_account.html",d)
+}
+
+
+func (this *personFinanceC) Earnings_log(c *echox.Context)error{
+    d := c.NewData()
+
+    personId,err := strconv.Atoi(c.Query("person_id"))
+    if err == nil{
+       if m := dps.MemberService.GetMember(personId);m != nil{
+           d.Map["PersonName"] = m.Name
+       }
+    }
+    d.Map["GrowAlias"] = variable.AliasGrowAccount
+    return c.Render(http.StatusOK,"pf.earnings_log.html",d)
 }

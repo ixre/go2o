@@ -46,6 +46,7 @@ func GetServe() *echox.Echo {
 	s.Aanyx("/mss/:action", new(mssC))
 	s.Aanyx("/editor/:action", new(editorC))
 	s.Aanyx("/finance/:action", new(financeC))
+	s.Aanyx("/person_finance/:action",new(personFinanceC))
 	return s
 }
 
