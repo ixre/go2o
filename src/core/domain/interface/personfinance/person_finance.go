@@ -39,11 +39,11 @@ const (
 )
 
 const (
-	RiseTypeTransferIn  int = 1 + iota //转入
-	RiseTypeTransferOut                //转出
-	RiseTypeGenerateInterest           //计算利息
-	RiseTypeMonthSettle                //月结算,红利再投资
-	RiseTypeAdjust                     //人工调整
+	RiseTypeTransferIn       int = 1 + iota //转入
+	RiseTypeTransferOut                     //转出
+	RiseTypeGenerateInterest                //计算利息
+	RiseTypeMonthSettle                     //月结算,红利再投资
+	RiseTypeAdjust                          //人工调整
 )
 
 var (
@@ -116,15 +116,15 @@ type (
 	// 收益总记录
 	RiseInfoValue struct {
 		//Id  int `db:"id" pk:"yes" auto:"no"`
-		PersonId    int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
-		Balance     float32 `db:"balance"`                      //本金及收益的余额
-		SettlementAmount      float32 `db:"settlement_amount"`  //结算金额,日日计息, 月月分红
-		Rise        float32 `db:"rise"`                         //当前的收益
-		TransferIn  float32 `db:"transfer_in"`                  //今日转入
-		TotalAmount float32 `db:"total_amount"`                 //总金额
-		TotalRise   float32 `db:"total_rise"`                   //总收益
-		SettledDate int64   `db:"settled_date"`                 //结算日期,用于筛选需要结算的数据
-		UpdateTime  int64   `db:"update_time"`
+		PersonId         int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
+		Balance          float32 `db:"balance"`                      //本金及收益的余额
+		SettlementAmount float32 `db:"settlement_amount"`            //结算金额,日日计息, 月月分红
+		Rise             float32 `db:"rise"`                         //当前的收益
+		TransferIn       float32 `db:"transfer_in"`                  //今日转入
+		TotalAmount      float32 `db:"total_amount"`                 //总金额
+		TotalRise        float32 `db:"total_rise"`                   //总收益
+		SettledDate      int64   `db:"settled_date"`                 //结算日期,用于筛选需要结算的数据
+		UpdateTime       int64   `db:"update_time"`
 	}
 
 	// 收益每日结算数据

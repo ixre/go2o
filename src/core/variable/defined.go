@@ -46,5 +46,5 @@ var (
 	MemberExt6Show         bool   = false
 
 	// 理财最低等级限制
-	PersonFinanceMinLevelLimit int  = 0
+	PersonFinanceMinLevelLimit int = 0
 )

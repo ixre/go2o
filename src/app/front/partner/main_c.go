@@ -15,10 +15,10 @@ import (
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
 	"strings"
-	"go2o/src/core/variable"
 )
 
 type mainC struct {
@@ -107,9 +107,9 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": pt,
-		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
-		"AliasGrow" : variable.AliasGrowAccount,
+		"partner":   pt,
+		"loginIp":   ctx.Request().Header.Get("USER_ADDRESS"),
+		"AliasGrow": variable.AliasGrowAccount,
 	}
 	return ctx.Render(200, "dashboard.html", d)
 }

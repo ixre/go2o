@@ -10,6 +10,8 @@ package daemon
 
 import (
 	"database/sql"
+	"github.com/garyburd/redigo/redis"
+	"go2o/src/core"
 	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/infrastructure/tool"
 	"go2o/src/core/service/dps"
@@ -17,11 +19,9 @@ import (
 	"math"
 	"sync"
 	"time"
-	"go2o/src/core"
-	"github.com/garyburd/redigo/redis"
 )
 
-const batGroupSize int = 30 //跑批每组数量
+const batGroupSize int = 50 //跑批每组数量
 var (
 	settleUnixKey string = "go2o:d:pf:settled_unix"
 )
@@ -30,7 +30,7 @@ func personFinanceSettle() {
 	now := time.Now()
 	//invokeSettle(now.Add(time.Hour * -24))
 	unix := tool.GetStartDate(time.Now()).Unix()
-	if todayIsSettled(unix){
+	if todayIsSettled(unix) {
 		log.Println("[ PersonFinance][ Settle][ Info]:Today is settled!")
 		return
 	}
@@ -40,21 +40,21 @@ func personFinanceSettle() {
 }
 
 // 今日是否结算
-func todayIsSettled(unix int64)bool{
+func todayIsSettled(unix int64) bool {
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	unix2,err := redis.Int(conn.Do("GET", settleUnixKey))
-	if err != nil{
+	unix2, err := redis.Int(conn.Do("GET", settleUnixKey))
+	if err != nil {
 		return false
 	}
-	return unix ==int64(unix2)
+	return unix == int64(unix2)
 }
 
 // 保存最新结算日期
-func saveLatestSettleUnix(unix int64){
+func saveLatestSettleUnix(unix int64) {
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	conn.Do("SET", settleUnixKey,unix)
+	conn.Do("SET", settleUnixKey, unix)
 }
 
 // 执行结算,结算时间为当天,

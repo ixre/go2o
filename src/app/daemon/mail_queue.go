@@ -28,14 +28,16 @@ func startMailQueue(ss []Service) {
 	defer conn.Close()
 	//var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
-			variable.KvNewMailTask, 0))
+		arr, err := redis.Values(conn.Do("BLPOP", variable.KvNewMailTask, 0))
 		if err == nil {
 			_, err = strconv.Atoi(string(arr[1].([]byte)))
 			if err == nil {
 				//todo: 此处获取所有需发送的邮件,应去掉从数据库批量查询操作
 				sendForWaittingQueue(ss)
 			}
+		} else {
+			appCtx.Log().Println("[ Daemon][ MailQueue][ Error] - ", err.Error())
+			break
 		}
 	}
 }

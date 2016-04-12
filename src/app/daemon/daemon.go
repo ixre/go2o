@@ -104,7 +104,7 @@ func startTicker() {
 		select {
 		case <-ticker.C:
 			for _, f := range tickerInvokeFunc {
-				f(appCtx)
+				go f(appCtx)
 			}
 		}
 	}
@@ -131,7 +131,7 @@ type defaultService struct {
 }
 
 // 注册系统服务
-func (this *defaultService) register() {
+func (this *defaultService) init() {
 	if len(services) == 0 {
 		RegisterService(this)
 	} else {
@@ -225,7 +225,7 @@ func Run(ctx gof.App) {
 		sOrder:  true,
 		sMail:   sMail,
 	}
-	s.register()
+	s.init()
 	Start()
 }
 
@@ -264,7 +264,7 @@ func FlagRun() {
 		sOrder:  true,
 		sMail:   true,
 	}
-	s.register()
+	s.init()
 	Start()
 
 	<-ch

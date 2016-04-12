@@ -41,10 +41,10 @@ func (this *personFinanceService) GetRiseInfo(personId int) (
 // 开通增利服务
 func (this *personFinanceService) OpenRiseService(personId int) error {
 	m := this._accRep.GetMember(personId)
-	if m == nil{
+	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	if m.GetValue().Level < variable.PersonFinanceMinLevelLimit{
+	if m.GetValue().Level < variable.PersonFinanceMinLevelLimit {
 		return errors.New("会员等级不够,请升级后再开通理财账户！")
 	}
 	pf := this._rep.GetPersonFinance(personId)

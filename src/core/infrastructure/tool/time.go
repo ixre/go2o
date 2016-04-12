@@ -28,12 +28,13 @@ func GetTodayStartEndUnix(t time.Time) (int64, int64) {
 		time.Date(y, m, d, 24, 59, 59, 999, time.Local).Unix()
 }
 
-var monthDays []int=[]int{31,0,31,30,31,30,31,31,30,31,30,31}
+var monthDays []int = []int{31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
 // 获取一个月的最后一天
-func LastDay(year int,m time.Month) int {
+func LastDay(year int, m time.Month) int {
 	if m == 2 {
-		isLeapYear := year % 4 == 0 &&
-		(year % 100 != 0 || year % 400 == 0)
+		isLeapYear := year%4 == 0 &&
+			(year%100 != 0 || year%400 == 0)
 
 		if isLeapYear {
 			return 29

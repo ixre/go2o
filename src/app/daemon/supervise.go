@@ -26,8 +26,8 @@ func superviseOrder(ss []Service) {
 	defer conn.Close()
 	var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
-			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
+		arr, err := redis.Values(conn.Do("BLPOP", variable.KvOrderBusinessQueue,
+			0)) //取出队列的一个元素
 		if err == nil {
 			id, err = strconv.Atoi(string(arr[1].([]byte)))
 			if err == nil { //通知订单更新
@@ -39,10 +39,8 @@ func superviseOrder(ss []Service) {
 				}
 			}
 		} else {
-			appCtx.Log().Println("[ DAEMON][ QUEUE][ NEW-ORDER] -", err.Error())
-			if strings.Index(err.Error(), "nil") == -1 {
-				time.Sleep(tickerDuration * 10)
-			}
+			appCtx.Log().Println("[ Daemon][ OrderQueue][ Error] - ", err.Error())
+			break
 		}
 	}
 }
@@ -53,8 +51,7 @@ func superviseMemberUpdate(ss []Service) {
 	defer conn.Close()
 	var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
-			variable.KvMemberUpdateQueue, 0))
+		arr, err := redis.Values(conn.Do("BLPOP", variable.KvMemberUpdateQueue, 0))
 		if err == nil { //通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1].([]byte))
 			mArr := strings.Split(s, "-")
@@ -68,10 +65,8 @@ func superviseMemberUpdate(ss []Service) {
 				}
 			}
 		} else {
-			appCtx.Log().Println("[ DAEMON][ QUEUE][ MEMBER] -", err.Error())
-			if strings.Index(err.Error(), "nil") == -1 {
-				time.Sleep(tickerDuration * 10)
-			}
+			appCtx.Log().Println("[ Daemon][ MemberQueue][ Error] - ", err.Error())
+			break
 		}
 	}
 }

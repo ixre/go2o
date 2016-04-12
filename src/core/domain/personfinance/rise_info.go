@@ -61,7 +61,7 @@ func (this *riseInfo) CommitTransfer(logId int) (err error) {
 	switch l.Type {
 	case personfinance.RiseTypeTransferIn:
 		this._v.Balance += l.Amount
-		this._v.SettlementAmount += l.Amount  // 计入结算金额
+		this._v.SettlementAmount += l.Amount // 计入结算金额
 		this._v.TransferIn -= l.Amount
 		err = this.Save()
 		//todo: 记录开使计算收益的日志
@@ -101,7 +101,7 @@ func (this *riseInfo) TransferIn(amount float32,
 	if err = this.Save(); err == nil { //保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
-			Title:"转入",
+			Title:        "转入",
 			Amount:       amount,
 			Type:         personfinance.RiseTypeTransferIn,
 			TransferWith: int(w),
@@ -151,7 +151,7 @@ func (this *riseInfo) TransferOut(amount float32,
 	this._v.Balance -= amount
 	this._v.SettlementAmount -= amount
 
-	if this._v.SettlementAmount < 0{  //提现超出结算金额
+	if this._v.SettlementAmount < 0 { //提现超出结算金额
 		this._v.SettlementAmount = 0
 	}
 
@@ -160,12 +160,11 @@ func (this *riseInfo) TransferOut(amount float32,
 		this._v.SettlementAmount = 0
 	}
 
-
 	if err = this.Save(); err == nil {
 		//保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
-			Title:"转出",
+			Title:        "转出",
 			Amount:       amount,
 			Type:         personfinance.RiseTypeTransferOut,
 			TransferWith: int(w),
@@ -208,13 +207,11 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 		return personfinance.ErrHasSettled
 	}
 
-
-
 	if this._v.Balance > 0 {
-		amount := float32(math.Floor(float64(this._v.SettlementAmount *
+		amount := float32(math.Floor(float64(this._v.SettlementAmount*
 			dayRatio)*100) / 100) //按2位小数精度
 		if amount > 0.01 {
-			if _,err = this.monthSettle(this._v,settleDateUnix);err != nil{
+			if _, err = this.monthSettle(this._v, settleDateUnix); err != nil {
 				return err
 			}
 			oriBalance := this._v.Balance
@@ -222,12 +219,13 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 			this._v.Rise += amount
 			this._v.TotalRise += amount
 			this._v.SettledDate = settleDateUnix //结算日为昨日
+			this._v.UpdateTime = time.Now().Unix()
 			err = this.Save()
 			if err == nil {
 				// 保存计息日志
 				_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 					PersonId:   this.GetDomainId(),
-					Title: "收益",
+					Title:      "收益",
 					Amount:     amount,
 					Type:       personfinance.RiseTypeGenerateInterest,
 					State:      personfinance.RiseStateOk,
@@ -251,34 +249,37 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 }
 
 // 月结
-func (this *riseInfo) monthSettle(v *personfinance.RiseInfoValue,settleDateUnix int64)(settled bool ,err error){
+func (this *riseInfo) monthSettle(v *personfinance.RiseInfoValue, settleDateUnix int64) (settled bool, err error) {
 	if settleDateUnix%100 != 0 {
-		return false,personfinance.ErrUnixDate
+		return false, personfinance.ErrUnixDate
 	}
-	y,m,d := time.Unix(settleDateUnix,0).Date()
-	isBonusDay := tool.LastDay(y,m) == d  // 是否为分红结算月结日期
-	if isBonusDay{
+	y, m, d := time.Unix(settleDateUnix, 0).Date()
+	isBonusDay := tool.LastDay(y, m) == d // 是否为分红结算月结日期
+	if isBonusDay {
 		//月结分红时,将余额作为新的投资金额
 		//分红 = 余额 - 结算结算金额
 		bonusAmount := this._v.Balance - this._v.SettlementAmount //分红金额
 		if bonusAmount > 0 {
 			this._v.SettlementAmount = this._v.Balance
-
-			// 保存分红再投资日志
-			_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
-				PersonId:   this.GetDomainId(),
-				Title:  "红利再投资",
-				Amount:     bonusAmount,
-				Type:       personfinance.RiseTypeMonthSettle,
-				State:      personfinance.RiseStateOk,
-				UnixDate:   settleDateUnix,
-				LogTime:    this._v.UpdateTime,
-				UpdateTime: this._v.UpdateTime,
-			})
+			this._v.UpdateTime = time.Now().Unix()
+			err = this.Save()
+			if err == nil {
+				// 保存分红再投资日志
+				_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
+					PersonId:   this.GetDomainId(),
+					Title:      "红利再投资",
+					Amount:     bonusAmount,
+					Type:       personfinance.RiseTypeMonthSettle,
+					State:      personfinance.RiseStateOk,
+					UnixDate:   settleDateUnix,
+					LogTime:    this._v.UpdateTime,
+					UpdateTime: this._v.UpdateTime,
+				})
+			}
 		}
-		return true,err
+		return true, err
 	}
-	return false,err
+	return false, err
 }
 
 // 是否已经结算
