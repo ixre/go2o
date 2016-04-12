@@ -11,7 +11,7 @@ package format
 
 import (
 	"fmt"
-	"github.com/jsix/gof/math"
+	m "github.com/jsix/gof/math"
 	"strconv"
 	"strings"
 )
@@ -38,5 +38,14 @@ func ToDiscountStr(discount int) string {
 }
 
 func RoundAmount(amount float32) float32 {
-	return math.Round32(amount, 2)
+	return m.Round32(amount, 2)
+}
+
+// 普通近似值计算, 不四舍五入,n为小数点精度
+func FixedDecimalN(amount float64,n int)float64{
+	return m.FixFloat32(amount,n)
+}
+
+func FixedDecimal(amount float64)float64{
+	return m.FixFloat32(amount,2)
 }

@@ -15,7 +15,6 @@ import (
 	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/infrastructure/tool"
-	"math"
 	"time"
 )
 
@@ -101,7 +100,7 @@ func (this *riseInfo) TransferIn(amount float32,
 	if err = this.Save(); err == nil { //保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
-			Title:        "转入",
+			Title:        "[转入]从"+personfinance.TransferInWithText(w)+"转入",
 			Amount:       amount,
 			Type:         personfinance.RiseTypeTransferIn,
 			TransferWith: int(w),
@@ -164,7 +163,7 @@ func (this *riseInfo) TransferOut(amount float32,
 		//保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
-			Title:        "转出",
+			Title:        "[转出]转出到"+personfinance.TransferInWithText(w),
 			Amount:       amount,
 			Type:         personfinance.RiseTypeTransferOut,
 			TransferWith: int(w),
@@ -208,8 +207,7 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 	}
 
 	if this._v.Balance > 0 {
-		amount := float32(math.Floor(float64(this._v.SettlementAmount*
-			dayRatio)*100) / 100) //按2位小数精度
+		amount := float32(format.FixedDecimal(float64(this._v.SettlementAmount* dayRatio))) //按2位小数精度
 		if amount > 0.01 {
 			if _, err = this.monthSettle(this._v, settleDateUnix); err != nil {
 				return err
@@ -267,7 +265,7 @@ func (this *riseInfo) monthSettle(v *personfinance.RiseInfoValue, settleDateUnix
 				// 保存分红再投资日志
 				_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 					PersonId:   this.GetDomainId(),
-					Title:      "红利再投资",
+					Title:      "[月结]红利再投资",
 					Amount:     bonusAmount,
 					Type:       personfinance.RiseTypeMonthSettle,
 					State:      personfinance.RiseStateOk,

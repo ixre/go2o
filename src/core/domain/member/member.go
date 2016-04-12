@@ -218,6 +218,9 @@ func (this *Member) GetAccount() member.IAccount {
 func (this *Member) GetBank() member.BankInfo {
 	if this._bank == nil {
 		this._bank = this._rep.GetBankInfo(this._value.Id)
+		if this._bank == nil{
+			return member.BankInfo{}
+		}
 	}
 	return *this._bank
 }
@@ -225,18 +228,31 @@ func (this *Member) GetBank() member.BankInfo {
 // 保存提现银行信息
 func (this *Member) SaveBank(v *member.BankInfo) error {
 	this.GetBank()
-
 	if this._bank == nil {
 		this._bank = v
 	} else {
+		if this._bank.IsLocked == member.BankLocked{
+			return member.ErrBankInfoLocked
+		}
 		this._bank.Account = v.Account
 		this._bank.AccountName = v.AccountName
 		this._bank.Network = v.Network
 		this._bank.State = v.State
 		this._bank.Name = v.Name
 	}
+	this._bank.IsLocked = member.BankLocked  //锁定
 	this._bank.UpdateTime = time.Now().Unix()
 	//this._bank.MemberId = this.value.Id
+	return this._rep.SaveBankInfo(this._bank)
+}
+
+// 解锁提现银行卡信息
+func (this *Member) UnlockBank()error{
+	this.GetBank()
+	if this._bank == nil{
+		return member.ErrBankInfoNoYetSet
+	}
+	this._bank.IsLocked = member.BankNoLock
 	return this._rep.SaveBankInfo(this._bank)
 }
 
