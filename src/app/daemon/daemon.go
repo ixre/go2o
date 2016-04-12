@@ -111,10 +111,9 @@ func startTicker() {
 }
 
 func startCronTab() {
-	//test running right now!
-	//go func() {
-	//	personFinanceSettle()
-	//}()
+	go func() {
+		personFinanceSettle()
+	}()
 	//cron
 	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
 	//cronTab.AddFunc("1 * * * * *", func() { log.Println("grouting -", runtime.NumGoroutine(), runtime.NumCPU()) })

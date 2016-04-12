@@ -35,6 +35,7 @@ func (this *personFinanceC) Earnings_log(c *echox.Context)error{
            d.Map["PersonName"] = m.Name
        }
     }
+    d.Map["PersonId"] = personId
     d.Map["GrowAlias"] = variable.AliasGrowAccount
     return c.Render(http.StatusOK,"pf.earnings_log.html",d)
 }
