@@ -11,6 +11,7 @@ package personfinance
 import (
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/infrastructure/domain"
+	"go2o/src/core/variable"
 )
 
 var (
@@ -21,6 +22,30 @@ var (
 	// 比例提供者,默认为:personfinance.RiseNormalDayRatio
 	RiseDayRatioProvider func(personId int) float32 = func(personId int) float32 {
 		return RiseNormalDayRatio
+	}
+
+	// 转入方式描述
+	TransferInWithText=func(w TransferWith)string{
+		switch w {
+		case TransferFromWithBalance:
+			return variable.AliasBalanceAccount
+		case TransferFromWithPresent:
+			return variable.AliasPresentAccount
+		}
+		return "nil"
+	}
+
+	// 转出方式描述
+	TransferOutWithText=func(w TransferWith)string{
+		switch w {
+		case TransferOutWithBalance:
+			return variable.AliasBalanceAccount
+		case TransferOutWithPresent:
+			return variable.AliasPresentAccount
+		case TransferOutWithBank:
+			return "银行"
+		}
+		return "nil"
 	}
 )
 

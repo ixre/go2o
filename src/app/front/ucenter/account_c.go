@@ -358,19 +358,13 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 func (this *accountC) bank_info_post(ctx *echox.Context) error {
 	m := getMember(ctx)
 	r := ctx.Request()
-	var msg gof.Message
+	msg := new(gof.Message)
 	r.ParseForm()
 	e := new(member.BankInfo)
 	web.ParseFormToEntity(r.Form, e)
 	e.MemberId = m.Id
 	err := dps.MemberService.SaveBankInfo(e)
-
-	if err != nil {
-		msg.Message = err.Error()
-	} else {
-		msg.Result = true
-	}
-	return ctx.JSON(http.StatusOK, msg)
+	return ctx.JSON(http.StatusOK, msg.Error(err))
 }
 
 func (this *accountC) Integral_exchange(ctx *echox.Context) error {

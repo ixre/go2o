@@ -243,6 +243,12 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 	return m.SaveBank(v)
 }
 
+// 解锁银行卡信息
+func (this *memberService) UnlockBankInfo(memberId int) error {
+	m := this._memberRep.CreateMember(&member.ValueMember{Id:memberId})
+	return m.UnlockBank()
+}
+
 // 获取返现记录
 func (this *memberService) QueryIncomeLog(memberId, page, size int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {

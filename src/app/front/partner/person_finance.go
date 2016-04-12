@@ -38,3 +38,9 @@ func (this *personFinanceC) Earnings_log(c *echox.Context) error {
 	d.Map["GrowAlias"] = variable.AliasGrowAccount
 	return c.Render(http.StatusOK, "pf.earnings_log.html", d)
 }
+
+func (this *personFinanceC) Earnings_transferlog(c *echox.Context) error {
+	d := c.NewData()
+	d.Map["GrowAlias"] = variable.AliasGrowAccount
+	return c.Render(http.StatusOK, "pf.earnings_transferlog.html", d)
+}
