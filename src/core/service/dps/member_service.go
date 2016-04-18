@@ -245,7 +245,7 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 
 // 解锁银行卡信息
 func (this *memberService) UnlockBankInfo(memberId int) error {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id:memberId})
+	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
 	return m.UnlockBank()
 }
 

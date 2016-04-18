@@ -121,6 +121,29 @@ func (this *MainC) Index(ctx *echox.Context) error {
 	return ctx.RenderOK("index.html", d)
 }
 
+func (this *MainC) MallEntry(ctx *echox.Context) error {
+	p := getPartner(ctx)
+	m := GetMember(ctx)
+
+	if this.HandleIndexGo(ctx) {
+		return nil
+	}
+
+	siteConf := getSiteConf(ctx)
+	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
+	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
+
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
+		"partner":  p,
+		"conf":     siteConf,
+		"newGoods": newGoods,
+		"hotSales": hotSales,
+		"member":   m,
+	}
+	return ctx.RenderOK("mall_entry.html", d)
+}
+
 func (this *MainC) App(ctx *echox.Context) error {
 	p := getPartner(ctx)
 	m := GetMember(ctx)
