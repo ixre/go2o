@@ -9,7 +9,12 @@
 
 <div id="form1" class="member-profile">
     <ul>
-        <li class="item"><label>{{.Map.integralAlias}}：</label>{{.Map.acc.Integral}}</li>
+        <li class="item" style="width:100%"><label>{{.Map.integralAlias}}：</label>{{.Map.acc.Integral}}</li>
+
+        <li class="item"><label>总消费(元)：</label>{{.Map.acc.TotalFee}}</li>
+        <li class="item"><label>总充值(元)：</label>{{.Map.acc.TotalCharge}}</li>
+        <li class="item"><label>共支付(元)：</label>{{.Map.acc.TotalPay}}</li>
+
         <li class="item"><label>{{.Map.balanceAccountAlias}}：</label>{{.Map.acc.Balance}}
             &nbsp;(冻结:{{.Map.acc.FreezesFee}})</li>
 
@@ -17,10 +22,11 @@
             &nbsp;(冻结:{{.Map.acc.FreezesPresent}})</li>
 
         <li class="item"><label>{{.Map.flowAccountAlias}}：</label>{{.Map.acc.FlowBalance}}</li>
-        <li class="item"><label>{{.Map.growAccountAlias}}：</label>{{.Map.acc.GrowAmount}}</li>
-        <li class="item"><label>总消费(元)：</label>{{.Map.acc.TotalFee}}</li>
-        <li class="item"><label>总充值(元)：</label>{{.Map.acc.TotalCharge}}</li>
-        <li class="item"><label>共支付(元)：</label>{{.Map.acc.TotalPay}}</li>
+        <li class="item"><label>{{.Map.growAccountAlias}}：</label>{{.Map.acc.GrowBalance}}&nbsp;/&nbsp;收益:
+            &nbsp;{{.Map.acc.GrowEarnings}}</li>
+        <li class="item"><label>累计转入:</label>{{.Map.acc.GrowAmount}}</li>
+        <li class="item"><label>总收益:</label>{{.Map.acc.GrowTotalEarnings}}</li>
+
 
 
         <li class="item" style="width:100%"><label>更新时间：</label>{{.Map.updateTime}}</li>

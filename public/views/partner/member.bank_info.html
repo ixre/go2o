@@ -16,7 +16,26 @@
     </ul>
 
     <div class="clear-fix"></div>
+    <div class="buttons">
+        <input class="btn btn-flat" type="button" id="btn_unlock_bank" value="凊除锁定(重新添加银行卡)"/>
+    </div>
 </div>
+
+<script type="text/javascript">
+    j6.$('btn_unlock_bank').onclick=function(){
+        window.parent.$.messager.confirm('提示','凊除锁定后,会员可重新设置银行卡信息!<br />确定要继续吗?',function(r){
+            if(r){
+                j6.xhr.jsonPost('/member/unlock_bankinfo',{member_id:memberId},function(r){
+                    if(r.result){
+                        window.parent.$.messager.alert('提示', '操作成功!',  'ok' );
+                    }else {
+                        window.parent.$.messager.alert('提示', r.message, 'error');
+                    }
+                });
+            }
+        });
+    };
+</script>
 
 </body>
 </html>
