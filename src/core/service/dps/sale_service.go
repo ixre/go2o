@@ -15,9 +15,9 @@ import (
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
+	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
 	"strconv"
-	"go2o/src/core/infrastructure/domain"
 )
 
 type saleService struct {
@@ -172,13 +172,13 @@ func (this *saleService) DeleteGoods(partnerId, goodsId int) error {
 	return sl.DeleteGoods(goodsId)
 }
 
-func (this *saleService) GetCategory(partnerId, id int)(*sale.ValueCategory,domain.IOptionStore) {
+func (this *saleService) GetCategory(partnerId, id int) (*sale.ValueCategory, domain.IOptionStore) {
 	sl := this._rep.GetSale(partnerId)
 	c := sl.GetCategory(id)
 	if c != nil {
-		return c.GetValue(),c.GetOption()
+		return c.GetValue(), c.GetOption()
 	}
-	return nil,nil
+	return nil, nil
 }
 
 func (this *saleService) DeleteCategory(partnerId, id int) error {
