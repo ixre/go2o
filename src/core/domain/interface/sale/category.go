@@ -12,13 +12,12 @@ package sale
 import "go2o/src/core/infrastructure/domain"
 
 type (
-
 	ICategory interface {
 		GetDomainId() int
 
 		GetValue() *ValueCategory
 
-		GetOption()domain.IOptionStore
+		GetOption() domain.IOptionStore
 
 		SetValue(*ValueCategory) error
 
@@ -29,8 +28,7 @@ type (
 	}
 )
 
-var(
+var (
 	C_OptionViewName string = "viewName" //显示的视图名称
 	C_OptionDescribe string = "describe" //描述
 )
-

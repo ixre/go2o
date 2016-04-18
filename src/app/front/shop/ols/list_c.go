@@ -105,11 +105,11 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 	if page < 1 {
 		page = 1
 	}
-	categoryId := idArr[len(idArr) - 1]
+	categoryId := idArr[len(idArr)-1]
 	cat, opt := dps.SaleService.GetCategory(p.Id, categoryId)
 
 	total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,
-		(page - 1) * size, page * size, sortQuery)
+		(page-1)*size, page*size, sortQuery)
 
 	var pagerHtml string
 	if total > size {
@@ -140,7 +140,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 					</div>
                     <div class="clear-fix"></div>
                 </div>
-		`, i % 2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
+		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
 				v.Name, v.Name, format.FormatFloat(v.SalePrice),
 				hasDisCls, format.FormatFloat(v.Price)))
 		}
@@ -156,12 +156,12 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"cat":      cat,
-		"sort_bar": template.HTML(sortBar),
-		"items":    template.HTML(buf.Bytes()),
-		"pager":    template.HTML(pagerHtml),
-		"DescribeNotNil":len(optDes.Value) > 0,
-		"Describe" :template.HTML(optDes.Value),
+		"cat":            cat,
+		"sort_bar":       template.HTML(sortBar),
+		"items":          template.HTML(buf.Bytes()),
+		"pager":          template.HTML(pagerHtml),
+		"DescribeNotNil": len(optDes.Value) > 0,
+		"Describe":       template.HTML(optDes.Value),
 	}
 	return ctx.RenderOK(optView.Value, d)
 }
