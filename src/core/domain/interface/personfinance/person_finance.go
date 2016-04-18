@@ -25,7 +25,7 @@ var (
 	}
 
 	// 转入方式描述
-	TransferInWithText=func(w TransferWith)string{
+	TransferInWithText = func(w TransferWith) string {
 		switch w {
 		case TransferFromWithBalance:
 			return variable.AliasBalanceAccount
@@ -36,7 +36,7 @@ var (
 	}
 
 	// 转出方式描述
-	TransferOutWithText=func(w TransferWith)string{
+	TransferOutWithText = func(w TransferWith) string {
 		switch w {
 		case TransferOutWithBalance:
 			return variable.AliasBalanceAccount
@@ -154,13 +154,13 @@ type (
 
 	// 收益每日结算数据
 	RiseDayInfo struct {
-		Id         int     `db:"id" pk:"yes" auto:"yes"`
-		PersonId   int     `db:"person_id"`
-		Date       string  `db:"date"`
-		BaseAmount float32 `db:"base_amount"` //本金
-		RiseAmount float32 `db:"rise_amount"` //增加金额
-		UnixDate   int64   `db:"unix_date"`
-		UpdateTime int64   `db:"update_time"`
+		Id               int     `db:"id" pk:"yes" auto:"yes"`
+		PersonId         int     `db:"person_id"`
+		Date             string  `db:"date"`
+		SettlementAmount float32 `db:"base_amount"` //本金
+		RiseAmount       float32 `db:"rise_amount"` //增加金额
+		UnixDate         int64   `db:"unix_date"`
+		UpdateTime       int64   `db:"update_time"`
 	}
 
 	// 收益日志

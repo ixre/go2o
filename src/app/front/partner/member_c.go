@@ -199,12 +199,12 @@ func (this *memberC) Member_bankinfo(ctx *echox.Context) error {
 	return ctx.String(http.StatusOK, "<span class=\"red\">尚未完善</span>")
 }
 
-func (this *memberC) Unlock_bankinfo(ctx *echox.Context)error{
-	if ctx.Request().Method == "POST"{
+func (this *memberC) Unlock_bankinfo(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
 		memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 		msg := new(gof.Message)
 		err := dps.MemberService.UnlockBankInfo(memberId)
-		return ctx.JSON(http.StatusOK,msg.Error(err))
+		return ctx.JSON(http.StatusOK, msg.Error(err))
 	}
 	return nil
 }
