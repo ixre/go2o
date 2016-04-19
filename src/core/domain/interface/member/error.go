@@ -37,8 +37,11 @@ var (
 	ErrDeliverContactPhone *domain.DomainError = domain.NewDomainError(
 		"err_deliver_phone_is_null", "联系人电话有误")
 
+	ErrNoSuchBankInfo *domain.DomainError = domain.NewDomainError(
+		"err_no_such_bank_info", "请完善银行卡信息")
+
 	ErrBankInfoLocked *domain.DomainError = domain.NewDomainError(
-		"err_bank_info_locked", "银行卡信息已锁定,无法更改!")
+		"err_bank_info_locked", "银行卡信息已锁定,无法更改")
 
 	ErrBankInfoNoYetSet *domain.DomainError = domain.NewDomainError(
 		"err_bank_info_no_yet_set", "银行卡信息尚未设置")
