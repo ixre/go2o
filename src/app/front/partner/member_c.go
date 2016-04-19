@@ -158,6 +158,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 			gfmt.BoolString(m.Sex == 2, "女士", "-")),
 		"lastLoginTime": format.HanUnixDateTime(m.LastLoginTime),
 		"regTime":       format.HanUnixDateTime(m.RegTime),
+		"Avatar":        format.GetResUrl(m.Avatar),
 	}
 
 	return ctx.RenderOK("member.basic_info.html", d)
@@ -186,16 +187,26 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 }
 
 // 会员收款银行信息
-func (this *memberC) Member_curr_bank(ctx *echox.Context) error {
+func (this *memberC) Member_bankinfo(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
 		len(e.Name) > 0 && len(e.Network) > 0 {
 		d := echox.NewRenderData()
 		d.Map["bank"] = e
-		return ctx.RenderOK("member.curr_bank.html", d)
+		return ctx.RenderOK("member.bank_info.html", d)
 	}
 	return ctx.String(http.StatusOK, "<span class=\"red\">尚未完善</span>")
+}
+
+func (this *memberC) Unlock_bankinfo(ctx *echox.Context) error {
+	if ctx.Request().Method == "POST" {
+		memberId, _ := strconv.Atoi(ctx.Query("member_id"))
+		msg := new(gof.Message)
+		err := dps.MemberService.UnlockBankInfo(memberId)
+		return ctx.JSON(http.StatusOK, msg.Error(err))
+	}
+	return nil
 }
 
 // 重置密码(POST)

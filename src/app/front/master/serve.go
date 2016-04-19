@@ -24,7 +24,7 @@ func registerRoutes(s *echox.Echo) {
 	s.Anyx("/login", mc.Login)
 	s.Getx("/logout", mc.Logout)
 	s.Postx("/upload.cgi", mc.Upload_post)
-	s.Danyx("/partner/:action", new(partnerC))
+	s.Aanyx("/partner/:action", new(partnerC))
 	s.Postx("/export/getExportData", mc.exportData)
 
 }

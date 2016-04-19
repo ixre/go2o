@@ -9,7 +9,6 @@
 package partner
 
 import (
-	"fmt"
 	"github.com/jsix/gof"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
@@ -17,7 +16,6 @@ import (
 	"go2o/src/x/echox"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type financeC struct {
@@ -44,7 +42,9 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 	d.Map = map[string]interface{}{
 		"member": m,
 		"bpName": variable.AliasPresentAccount,
-		"bpKt":   fmt.Sprintf("%d-1", member.KindBalancePresent),
+		"bpKt":   member.KindBalancePresent,
+		"bKt":    member.KindBalanceCharge,
+		"bName":  variable.AliasBalanceAccount,
 	}
 	return c.RenderOK("finance.member_newticket.html", d)
 }
@@ -53,18 +53,20 @@ func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 	var msg = gof.Message{Result: true}
 	partnerId := getPartnerId(c)
 	memberId, _ := strconv.Atoi(c.Form("member_id"))
-	kt := strings.Split(c.Form("kt"), "-")
-	if len(kt) < 2 {
-		return c.JSON(http.StatusOK, gof.Message{Message: "参数错误"})
-	}
-	kind, _ := strconv.Atoi(kt[0])
-	ktype, _ := strconv.Atoi(kt[1])
+	//kt := strings.Split(c.Form("kt"), "-")
+	//if len(kt) < 2 {
+	//	return c.JSON(http.StatusOK, gof.Message{Message: "参数错误"})
+	//}
+	//kind, _ := strconv.Atoi(kt[0])
+	//ktype, _ := strconv.Atoi(kt[1])
+
+	kind, _ := strconv.Atoi(c.Form("kt"))
 	oper := c.Form("oper")
 	remark := c.Form("remark")
 	amtStr := c.Form("amount")
 	amount, err := strconv.ParseFloat(oper+amtStr, 32)
 	if err == nil {
-		_, err = dps.MemberService.NewBalanceTicket(partnerId, memberId, kind, ktype, remark, float32(amount))
+		_, err = dps.MemberService.NewBalanceTicket(partnerId, memberId, kind, remark, float32(amount))
 	}
 	if err != nil {
 		msg.Message = err.Error()

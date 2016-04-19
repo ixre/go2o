@@ -10,7 +10,7 @@
 <div id="form1" class="member-profile">
 
     <div class="avatar">
-        <img src="{{.Var.img_serve}}/{{.Map.m.Avatar}}"/>
+        <img src="{{.Map.Avatar}}"/>
     </div>
 
     <div class="profile">
@@ -29,9 +29,10 @@
             <li class="item"><label>即时通讯：</label>{{.Map.m.Im}}</li>
             <li class="item"><label>邮箱：</label>{{.Map.m.Email}}</li>
 
-            <li class="item"><label>地址：</label>{{.Map.m.Address}}</li>
+            <li class="item" style="width:100%"><label>地址：</label>{{.Map.m.Address}}</li>
+            <li class="item"><label>邀请码：</label>{{.Map.m.InvitationCode}}</li>
             <li class="item"><label>邀请人：</label><a href="javascript:;" onclick="showInv(this,'{{.Map.invId}}')">{{.Map.invName}}</a>
-                <input type="button" class="btn btn-plat" value="查看关联" onclick="showFullInv(this,'{{.Map.m.Id}}')" style="margin:5px 0 0 90px"/>
+                <input type="button" class="btn btn-plat" value="查看关联" onclick="showFullInv(this,'{{.Map.m.Id}}')" style="margin:5px 0 0 75px"/>
             </li>
 
             <li class="item"><label>注册来源：</label>{{.Map.m.RegFrom}}</li>
@@ -39,7 +40,7 @@
             <li class="item"><label>注册时间：</label>{{.Map.regTime}}</li>
 
 
-            <li class="item"><label>最后登陆时间：</label>{{.Map.lastLoginTime}}</li>
+            <li class="item"><label>最后登陆：</label>{{.Map.lastLoginTime}}</li>
         </ul>
     </div>
 

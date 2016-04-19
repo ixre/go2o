@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>理财账户</title>
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/gray/easyui.css?spam={{.Var.spam}}">
+    <link rel="stylesheet" type="text/css" href="{{.Var.static_serve}}/assets/easyui/themes/icon.css?spam={{.Var.spam}}">
+    <link href="{{.Var.static_serve}}/assets/mui/css/latest/page_style.css?v={{.Var.version}}" rel="stylesheet" type="text/css" />
+    <link href="{{.Var.static_serve}}/css/partner/partner.css?spam={{.Var.spam}}" rel="stylesheet" type="text/css" />
+</head>
+    <div id="dg"></div>
+    <div class="toolBar">
+        <div class="search_bar padding2" id="search_bar">
+            <ul>
+
+                <li>
+                    <span class="title">会员：</span>
+                    <input type="hidden" field="person_id" value="{{.Map.PersonId}}"/>
+                    <span>{{.Map.PersonName}}</span>
+                </li>
+                <li>
+                    <span class="title">类型:</span>
+                    <select class="ui-box" field="type">
+                        <option value="-1">一 不限 一</option>
+                        <option value="1">转入</option>
+                        <option value="2">转出</option>
+                        <option value="3">计息(每日)</option>
+                        <option value="4">结息(每月)</option>
+                        <option value="5">人工调整</option>
+                    </select>
+                </li>
+                <li>
+                    <span class="title">关键词：</span>
+                    <input class="ui-box" type="text" field="keyword" />
+                </li>
+                <li>
+                    <a class="easyui-linkbutton" data-options="iconCls:'icon-search'" id="btnSearch">
+                        <span class="icon"></span>搜索</a>
+                </li>
+                <li class="hidden">
+                    <a class="easyui-linkbutton" iconcls="icon-add" id="btn_gen_ticket">
+                        <span class="icon"></span>生成单据</a>
+                </li>
+            </ul>
+            <div class="clearfix"></div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+
+
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/jquery.easyui.min.js?spam={{.Var.spam}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/easyui/locale/easyui-lang-zh_CN.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/export.js?spam={{.Var.spam}}"></script>
+<script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
+
+<script type="text/javascript">
+    var id = 'dg';
+    expr.ele = 'search_bar';
+    expr.portal = 'Partner.PersonFinanceRiseLog';
+    expr.checkParams = function (data) {
+        return true;
+    };
+
+    window.refresh = function () {
+        expr.reload(id);
+    };
+
+    j6.$(id).style.height = j6.screen.height() + 'px';
+
+    $(function () {
+
+        //导出
+        $('#btnExport').click(
+                function () {
+                    expr.showExportDialog();
+                });
+
+        j6.$('btnSearch').onclick=function () {
+            expr.search('dg');
+        };
+
+
+        //加载数据
+        $('#'+id).datagrid({
+            toolbar: '.toolBar',
+            singleSelect: !false,
+            pagination: true,
+            rownumbers: true,
+            fitColumns: true,
+            pageList:[30,40,50],
+            pageSize:30,
+            url: expr.getDataUrl(),
+            columns: [
+                [
+                    //{ field: 'id', title: '编号',align: 'center',width: 60 },
+                    { field: 'unix_date', title: '日期',align: 'center',width: 80 ,formatter:unix2Date},
+                    { field: 'title', title: '标题', align: 'left', width: 150 },
+                    { field: 'amount', title: '金额',align: 'center',width: 80,formatter:roundStr },
+                    {field: 'log_time', title: '日志时间',align: 'center',width: 120,formatter:unix2str},
+                    {field: 'remark', title: '备注',align: 'center',width: 200},
+                ]
+            ]
+        });
+    });
+
+
+    j6.$('btn_gen_ticket').onclick=function(){
+        j6.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
+    };
+</script>
+
+</body>
+</html>

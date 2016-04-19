@@ -164,7 +164,7 @@ func (this *Order) paymentWithBalance(buyerType int) error {
 	} else {
 		this._value.BalanceDiscount = fee
 		this._value.PayFee -= fee
-		err := acc.OrderDiscount(this._value.OrderNo, fee)
+		err := acc.OrderDiscount(this.GetOrderNo(), fee)
 		if err != nil {
 			return err
 		}
@@ -586,6 +586,7 @@ func (this *Order) Cancel(reason string) error {
 	this._value.UpdateTime = time.Now().Unix()
 
 	this.cancelGoods()
+	this.backupPayment()
 
 	_, err := this.Save()
 	if err == nil {
@@ -612,6 +613,18 @@ func (this *Order) cancelGoods() error {
 		if goods != nil {
 			goods.CancelSale(v.Quantity, this.GetOrderNo())
 		}
+	}
+	return nil
+}
+
+func (this *Order) backupPayment() error {
+	if this._value.BalanceDiscount > 0 { //退回账户余额抵扣
+		acc := this._memberRep.GetMember(this._value.MemberId).GetAccount()
+		return acc.ChargeBalance(member.TypeBalanceOrderRefund, "订单退款", this.GetOrderNo(),
+			this._value.BalanceDiscount)
+	}
+	if this._value.PayFee > 0 {
+		//todo: 其他支付方式退还,如网银???
 	}
 	return nil
 }

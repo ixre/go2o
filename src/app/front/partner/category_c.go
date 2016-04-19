@@ -65,7 +65,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	r := ctx.Request()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
-	var category *sale.ValueCategory = dps.SaleService.GetCategory(partnerId, id)
+	category, _ := dps.SaleService.GetCategory(partnerId, id)
 	json, _ := json.Marshal(category)
 
 	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))

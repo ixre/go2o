@@ -95,7 +95,7 @@
 
 <script type="text/javascript">
     var pageVar = {
-        sysName: '{{.Map.Data.partner.Name}} :: 商户后台管理中心',
+        sysName: '{{.Map.partner.Name}} :: 商户后台管理中心',
         sysLogo: '',
         dateStr: '2013-10-15',
         firstTabName: '欢迎首页',
@@ -127,6 +127,7 @@
                     {text: '财务管理', uri: '', childs: [
                         {text: '订单付款', uri: '/order/waitPaymentList'},
                         {text: '提现申请', uri: '/member/applyRequestList'},
+                        {text: '{{.Map.AliasGrow}}', uri: '/person_finance/earnings_account'},
                     ]},
                     {text: '消息系统', uri: '', childs: [
                         {text: '邮件模板', uri: '/mss/mail_template_list'},
@@ -142,7 +143,7 @@
                         //{text: '配送中订单', uri: '/order/list?status=4'},
                         //{text: '已收货订单', uri: '/order/list?status=5'},
                         {text: '已完成订单', uri: '/order/list?status=6'},
-                        {text: '已作废订单', uri: '/order/list?status=0'}
+                        {text: '已取消订单', uri: '/order/list?status=0'}
                     ]},
                     {text: '优惠促销', uri: '', childs: [
                         {text: '优惠券管理', uri: '/prom/list?flag=1'},
