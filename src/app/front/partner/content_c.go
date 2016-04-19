@@ -27,7 +27,7 @@ type contentC struct {
 //商品列表
 func (this *contentC) Page_list(ctx *echox.Context) error {
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("content.page_list.html", d)
 }
 
@@ -38,7 +38,7 @@ func (this *contentC) Page_edit(ctx *echox.Context) error {
 	e := dps.ContentService.GetPage(partnerId, id)
 
 	js, _ := json.Marshal(e)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("content.page_edit.html", d)
 }
@@ -50,7 +50,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 	}
 
 	js, _ := json.Marshal(e)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("content.page_edit.html", d)
 }

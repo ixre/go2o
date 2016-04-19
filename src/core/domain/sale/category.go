@@ -74,7 +74,8 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 		val.Description = v.Description
 		val.Enabled = v.Enabled
 		val.Name = v.Name
-		val.OrderIndex = v.OrderIndex
+		val.SortNumber = v.SortNumber
+		val.Icon = v.Icon
 		if val.ParentId != v.ParentId {
 			this._parentIdChanged = true
 			val.ParentId = v.ParentId

@@ -18,7 +18,8 @@ type ValueCategory struct {
 	PartnerId int `db:"partner_id"`
 	//名称
 	Name        string `db:"name"`
-	OrderIndex  int    `db:"order_index"`
+	SortNumber  int    `db:"sort_number"`
+	Icon        string `db:"icon"`
 	Url         string `db:"url"`
 	CreateTime  int64  `db:"create_time"`
 	Enabled     int    `db:"enabled"`

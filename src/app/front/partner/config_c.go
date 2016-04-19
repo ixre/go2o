@@ -34,7 +34,7 @@ func (this *configC) Profile(ctx *echox.Context) error {
 	p.ExpiresTime = time.Now().Unix()
 
 	js, _ := json.Marshal(p)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.profile.html", d)
 }
@@ -77,7 +77,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.site_conf.html", d)
 }
@@ -114,7 +114,7 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.sale_conf.html", d)
 }

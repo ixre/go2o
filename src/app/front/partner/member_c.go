@@ -33,7 +33,7 @@ type memberC struct {
 }
 
 func (this *memberC) LevelList(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("member.level_list.html", d)
 }
 
@@ -43,13 +43,13 @@ func (this *memberC) EditMLevel(ctx *echox.Context) error {
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
 	js, _ := json.Marshal(entity)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("member.edit_level.html", d)
 }
 
 func (this *memberC) CreateMLevel(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS("{}")
 	return ctx.RenderOK("member.create_level.html", d)
 }
@@ -103,7 +103,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 // 会员列表
 func (this *memberC) List(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	return ctx.RenderOK("member.list.html", d)
 }
@@ -129,7 +129,7 @@ func (this *memberC) Lock_member(ctx *echox.Context) error {
 func (this *memberC) Member_details(ctx *echox.Context) error {
 	memberId, _ := strconv.Atoi(ctx.Query("member_id"))
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["memberId"] = memberId
 	return ctx.RenderOK("member.details.html", d)
 }
@@ -148,7 +148,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 		rlm := dps.MemberService.GetMember(rl.RefereesId)
 		invName = rlm.Name + "(" + rlm.Usr + ")"
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"m":       m,
 		"lv":      lv,
@@ -172,7 +172,7 @@ func (this *memberC) Member_account(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "no such account")
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"acc": acc,
 		"balanceAccountAlias": variable.AliasBalanceAccount,
@@ -192,7 +192,7 @@ func (this *memberC) Member_bankinfo(ctx *echox.Context) error {
 	e := dps.MemberService.GetBank(memberId)
 	if e != nil && len(e.Account) > 0 && len(e.AccountName) > 0 &&
 		len(e.Name) > 0 && len(e.Network) > 0 {
-		d := echox.NewRenderData()
+		d := ctx.NewData()
 		d.Map["bank"] = e
 		return ctx.RenderOK("member.bank_info.html", d)
 	}
@@ -240,7 +240,7 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 	if mem == nil {
 		return ctx.String(http.StatusOK, "no such member")
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["m"] = mem
 	return ctx.RenderOK("member.charge.html", d)
 }
@@ -277,7 +277,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	d.Map["kind"] = member.KindBalanceApplyCash
 	return ctx.RenderOK("member.apply_request_list.html", d)
@@ -320,7 +320,7 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "no such request")
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["info"] = info
 	d.Map["applyTime"] = time.Unix(info.CreateTime, 0).Format("2006-01-02 15:04:05")
 	return ctx.RenderOK("member.back_apply_req.html", d)
@@ -357,7 +357,7 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "no such info")
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	bank := dps.MemberService.GetBank(memberId)
 	if info.Amount < 0 {
 		info.Amount = -info.Amount
@@ -397,7 +397,7 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 // 团队排名列表
 func (this *memberC) Team_rank(ctx *echox.Context) error {
 	levelDr := getLevelDropDownList(getPartnerId(ctx))
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	return ctx.RenderOK("member.team_rank.html", d)
 }
@@ -418,7 +418,7 @@ func (this *memberC) Invi_relation(c *echox.Context) error {
 	//	idArr[i], idArr[j] = idArr[j], idArr[i]
 	//}
 	list, _ := json.Marshal(ms.GetMemberList(partnerId, idArr))
-	d := echox.NewRenderData()
+	d := c.NewData()
 	d.Map["listJson"] = template.JS(list)
 	return c.RenderOK("member.invi_relation.html", d)
 }

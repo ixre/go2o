@@ -27,7 +27,7 @@ type mssC struct {
 
 //邮件模板列表
 func (this *mssC) Mail_template_list(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("mss.mail_tpl_list.html", d)
 }
 
@@ -38,7 +38,7 @@ func (this *mssC) Edit_mail_tpl(ctx *echox.Context) error {
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
 
 	js, _ := json.Marshal(e)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.Render(http.StatusOK, "mss.edit_mail_tpl.html", d)
 }
@@ -49,7 +49,7 @@ func (this *mssC) Create_mail_tpl(ctx *echox.Context) error {
 		Enabled: 1,
 	}
 	js, _ := json.Marshal(e)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.Render(http.StatusOK, "mss.edit_mail_tpl.html", d)
 }
@@ -117,7 +117,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
 	js, _ := json.Marshal(e)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["mailTplOpt"] = template.HTML(this.getMailTemplateOpts(partnerId))
 	d.Map["entity"] = template.JS(js)
 

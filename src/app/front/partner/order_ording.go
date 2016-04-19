@@ -24,7 +24,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 
 	isNoShop := len(shopDr) == 0
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"shopDr":  template.HTML(shopDr),
 		"noShop":  isNoShop,
@@ -102,7 +102,7 @@ func (this *orderC) setState(ctx *echox.Context,
 		}
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 
 		"button":   template.HTML(button),

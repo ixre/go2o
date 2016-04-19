@@ -18,6 +18,7 @@ import (
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
@@ -30,7 +31,7 @@ type categoryC struct {
 
 //分类树形功能
 func (this *categoryC) All_category(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
 	return ctx.RenderOK("category.index.html", d)
 }
@@ -44,7 +45,7 @@ func (this *categoryC) CategoryJson(ctx *echox.Context) error {
 
 //分类树形功能
 func (this *categoryC) CategorySelect(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("category.select.html", d)
 }
 
@@ -52,11 +53,19 @@ func (this *categoryC) CategorySelect(ctx *echox.Context) error {
 func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 
-	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
-	json, _ := json.Marshal(node)
+	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	d := echox.NewRenderData()
-	d.Map["treeJson"] = template.JS(json)
+	e := &sale.ValueCategory{
+		Icon: ctx.App.Config().GetString(variable.NoPicPath),
+	}
+	eJson, _ := json.Marshal(e)
+
+	d := ctx.NewData()
+	d.Map = map[string]interface{}{
+		"Entity":   template.JS(eJson),
+		"CateOpts": template.HTML(cateOpts),
+		"Icon":     format.GetGoodsImageUrl(e.Icon),
+	}
 	return ctx.RenderOK("category.create.html", d)
 }
 
@@ -65,17 +74,18 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	r := ctx.Request()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
-	category, _ := dps.SaleService.GetCategory(partnerId, id)
-	json, _ := json.Marshal(category)
+	e, _ := dps.SaleService.GetCategory(partnerId, id)
+	eJson, _ := json.Marshal(e)
 
 	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))
 	originOpts := cache.GetDropOptionsOfCategory(partnerId)
 	cateOpts := re.ReplaceAll(originOpts, nil)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
-		"entity":    template.JS(json),
-		"cate_opts": template.HTML(cateOpts),
+		"Entity":   template.JS(eJson),
+		"CateOpts": template.HTML(cateOpts),
+		"Icon":     format.GetGoodsImageUrl(e.Icon),
 	}
 	return ctx.RenderOK("category.edit.html", d)
 }

@@ -24,7 +24,7 @@ type financeC struct {
 func (t *financeC) Balance_info(c *echox.Context) error {
 	memberId, _ := strconv.Atoi(c.Query("member_id"))
 	m := dps.MemberService.GetMember(memberId)
-	d := echox.NewRenderData()
+	d := c.NewData()
 	d.Map = map[string]interface{}{
 		"memberId": memberId,
 		"member":   m,
@@ -38,7 +38,7 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 	}
 	memberId, _ := strconv.Atoi(c.Query("member_id"))
 	m := dps.MemberService.GetMember(memberId)
-	d := echox.NewRenderData()
+	d := c.NewData()
 	d.Map = map[string]interface{}{
 		"member": m,
 		"bpName": variable.AliasPresentAccount,
