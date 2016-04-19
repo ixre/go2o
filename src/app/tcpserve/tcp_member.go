@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
 	"go2o/src/cache"
@@ -20,7 +19,6 @@ import (
 	"go2o/src/core/dto"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
-	"net"
 	"strconv"
 	"strings"
 )
@@ -93,50 +91,4 @@ func cliMGet(ci *nc.Client, plan string) ([]byte, error) {
 
 	}
 	return nil, errors.New("unknown type:" + plan)
-}
-
-func mmSummaryNotify(s *nc.SocketServer, conn redis.Conn) error {
-	uid, err := redis.Int(conn.Do("LPOP", variable.KvMemberUpdateTcpNotifyQueue))
-	if err == nil {
-		connList := s.GetConn(uid)
-		if len(connList) > 0 {
-			pushMemberSummary(connList, uid)
-		}
-	}
-	return err
-}
-
-func mmAccountNotify(s *nc.SocketServer, conn redis.Conn) error {
-	uid, err := redis.Int(conn.Do("LPOP", variable.KvAccountUpdateTcpNotifyQueue))
-	if err == nil {
-		connList := s.GetConn(uid)
-		if len(connList) > 0 {
-			pushMemberAccount(connList, uid)
-		}
-	}
-	return err
-}
-
-// push member summary to tcp client
-func pushMemberSummary(connList []net.Conn, memberId int) {
-	s.Print("[ TCP][ NOTIFY] - notify member update - %d", memberId)
-	sm := GetMemberSummary(memberId, 0)
-	if d, err := json.Marshal(sm); err == nil {
-		d = append([]byte("MSUM:"), d...)
-		for _, conn := range connList {
-			go conn.Write(append(d, '\n'))
-		}
-	}
-}
-
-// push member summary to tcp client
-func pushMemberAccount(connList []net.Conn, memberId int) {
-	s.Print("[ TCP][ NOTIFY] - notify account update - %d", memberId)
-	sm := getMemberAccount(memberId, 0)
-	if d, err := json.Marshal(sm); err == nil {
-		d = append([]byte("MACC:"), d...)
-		for _, conn := range connList {
-			go conn.Write(append(d, '\n'))
-		}
-	}
 }

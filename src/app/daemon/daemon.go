@@ -14,6 +14,9 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"github.com/robfig/cron"
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
@@ -50,10 +53,14 @@ type Service interface {
 
 var (
 	appCtx           *core.MainApp
+	_db              db.Connector
+	_orm             orm.Orm
 	services         []Service      = make([]Service, 0)
 	serviceNames     map[string]int = make(map[string]int)
-	tickerDuration   time.Duration  = 5 * time.Second // 间隔5秒执行
+	tickerDuration   time.Duration  = 20 * time.Second // 间隔20秒执行
 	tickerInvokeFunc []Func         = []Func{}
+	cronTab          *cron.Cron     = cron.New()
+	ticker           *time.Ticker   = time.NewTicker(tickerDuration)
 )
 
 // 注册服务
@@ -76,27 +83,45 @@ func AddTickerFunc(f Func) {
 
 // 启动守护进程
 func Start() {
+	defer func() {
+		cronTab.Stop()
+		ticker.Stop()
+	}()
+
 	for i, s := range services { //运行自定义服务
 		log.Println("** [ Go2o][ Daemon] - (", i, ")", s.Name(), "daemon running")
 		s.SetApp(appCtx)
 		go s.Start()
 	}
-	tk := time.NewTicker(tickerDuration)
-	defer func() {
-		tk.Stop()
-	}()
+
+	startCronTab()
+	startTicker() //阻塞
+
+}
+
+func startTicker() {
 	for { //执行定时任务
 		select {
-		case <-tk.C:
+		case <-ticker.C:
 			for _, f := range tickerInvokeFunc {
-				f(appCtx)
+				go f(appCtx)
 			}
 		}
 	}
 }
 
-func recoverDaemon() {
+func startCronTab() {
+	//cron
+	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
+	//cronTab.AddFunc("1 * * * * *", func() { log.Println("grouting -", runtime.NumGoroutine(), runtime.NumCPU()) })
+	cronTab.Start()
 
+	go func() {
+		personFinanceSettle()
+	}()
+}
+
+func recoverDaemon() {
 }
 
 type defaultService struct {
@@ -107,7 +132,7 @@ type defaultService struct {
 }
 
 // 注册系统服务
-func (this *defaultService) register() {
+func (this *defaultService) init() {
 	if len(services) == 0 {
 		RegisterService(this)
 	} else {
@@ -191,7 +216,8 @@ func Run(ctx gof.App) {
 	} else {
 		appCtx = core.NewMainApp("app.conf")
 	}
-
+	_db = appCtx.Db()
+	_orm = _db.GetOrm()
 	sMail := appCtx.Config().GetString(variable.SystemMailQueueOff) != "1" //是否关闭系统邮件队列
 	//sMail := cnf.GetString(variable.)
 
@@ -200,7 +226,7 @@ func Run(ctx gof.App) {
 		sOrder:  true,
 		sMail:   sMail,
 	}
-	s.register()
+	s.init()
 	Start()
 }
 
@@ -223,6 +249,9 @@ func FlagRun() {
 	appCtx.Init(debug, trace)
 	gof.CurrentApp = appCtx
 
+	_db = appCtx.Db()
+	_orm = _db.GetOrm()
+
 	dps.Init(appCtx)
 
 	//todo:???
@@ -236,7 +265,7 @@ func FlagRun() {
 		sOrder:  true,
 		sMail:   true,
 	}
-	s.register()
+	s.init()
 	Start()
 
 	<-ch

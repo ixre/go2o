@@ -9,15 +9,26 @@
 
 package sale
 
-type ICategory interface {
-	GetDomainId() int
+import "go2o/src/core/infrastructure/domain"
 
-	GetValue() *ValueCategory
+type (
+	ICategory interface {
+		GetDomainId() int
 
-	SetValue(*ValueCategory) error
+		GetValue() *ValueCategory
 
-	Save() (int, error)
+		GetOption() domain.IOptionStore
 
-	// 获取子栏目的编号
-	GetChildId() []int
-}
+		SetValue(*ValueCategory) error
+
+		Save() (int, error)
+
+		// 获取子栏目的编号
+		GetChildId() []int
+	}
+)
+
+var (
+	C_OptionViewName string = "viewName" //显示的视图名称
+	C_OptionDescribe string = "describe" //描述
+)

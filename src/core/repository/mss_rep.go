@@ -9,9 +9,8 @@
 package repository
 
 import (
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
-	"go2o/src/core/domain/interface/enum"
+	"go2o/src/core"
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/variable"
 )
@@ -65,9 +64,20 @@ func (this *MssRep) DeleteMailTemplate(partnerId, id int) error {
 
 // 加入到发送对列
 func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
-	if _, _, err := this._conn.GetOrm().Save(nil, v); err != nil {
-		return err
+	var err error
+	if v.Id > 0 {
+		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+	} else {
+		_, _, err = this._conn.GetOrm().Save(nil, v)
+		if err == nil {
+			err = this._conn.ExecScalar("SELECT max(id) FROM pt_mail_queue", &v.Id)
+		}
 	}
-	gof.CurrentApp.Storage().Set(variable.KvNewMailTask, enum.FALSE)
-	return nil
+
+	if err == nil {
+		rc := core.GetRedisConn()
+		defer rc.Close()
+		rc.Do("RPUSH", variable.KvNewMailTask, v.Id) // push to queue
+	}
+	return err
 }

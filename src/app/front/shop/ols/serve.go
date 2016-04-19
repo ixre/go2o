@@ -38,19 +38,20 @@ func registerRoutes(s *echox.Echo) {
 
 	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
+	s.Getx("/mall", mc.MallEntry)
 	s.Getx("/cart", cc.Index)
 	s.Getx("/change_device", mc.change_device)
-	s.Danyx("/main/:action", mc)
+	s.Aanyx("/main/:action", mc)
 	s.Getx("/msc", mc.Msc)
 	s.Getx("/msd", mc.Msd)
-	s.Danyx("/buy/:action", sp)
+	s.Aanyx("/buy/:action", sp)
 
-	s.Danyx("/shopping/:action", sp)
-	s.Danyx("/list/:action", lc)
-	s.Danyx("/cart/:action", cc)
-	s.Danyx("/user/:action", uc)
-	s.Danyx("/content/:action", ctc)
-	s.Danyx("/pay/:action", pc)
+	s.Aanyx("/shopping/:action", sp)
+	s.Aanyx("/list/:action", lc)
+	s.Aanyx("/cart/:action", cc)
+	s.Aanyx("/user/:action", uc)
+	s.Aanyx("/content/:action", ctc)
+	s.Aanyx("/pay/:action", pc)
 
 	// 购物车接口
 	s.Postx("/cart_api_v1", cc.CartApiHandle)

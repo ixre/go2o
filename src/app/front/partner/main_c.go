@@ -15,6 +15,7 @@ import (
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
 	"strings"
@@ -104,12 +105,13 @@ func (this *mainC) Logout(ctx *echox.Context) error {
 func (this *mainC) Dashboard(ctx *echox.Context) error {
 	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
 
-	dm := echox.NewRenderData()
-	dm.Data = gof.TemplateDataMap{
-		"partner": pt,
-		"loginIp": ctx.Request().Header.Get("USER_ADDRESS"),
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
+		"partner":   pt,
+		"loginIp":   ctx.Request().Header.Get("USER_ADDRESS"),
+		"AliasGrow": variable.AliasGrowAccount,
 	}
-	return ctx.Render(200, "dashboard.html", dm)
+	return ctx.Render(200, "dashboard.html", d)
 }
 
 //商户汇总页

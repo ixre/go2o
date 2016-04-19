@@ -65,7 +65,7 @@ func (this *orderC) setState(ctx *echox.Context,
 	case enum.ORDER_COMPLETED:
 		descript = `<span style="color:green">订单已经完成！</span>`
 	case enum.ORDER_CANCEL:
-		descript = `<span style="color:red">订单已经作废！</span>`
+		descript = `<span style="color:red">订单已经取消！</span>`
 	case enum.ORDER_WAIT_CONFIRM:
 		descript = "确认订单无误后，点击按钮进行下一步.."
 		button = `<span class="ui-button w80 small-button">

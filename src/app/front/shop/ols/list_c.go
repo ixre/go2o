@@ -106,7 +106,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 		page = 1
 	}
 	categoryId := idArr[len(idArr)-1]
-	cat := dps.SaleService.GetCategory(p.Id, categoryId)
+	cat, opt := dps.SaleService.GetCategory(p.Id, categoryId)
 
 	total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,
 		(page-1)*size, page*size, sortQuery)
@@ -150,14 +150,20 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 		sortQuery,
 		r.URL.RequestURI())
 
+	optView := opt.Get(sale.C_OptionViewName)
+	optDes := opt.Get(sale.C_OptionDescribe)
+	optDes.Value = strings.TrimSpace(optDes.Value)
+
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"cat":      cat,
-		"sort_bar": template.HTML(sortBar),
-		"items":    template.HTML(buf.Bytes()),
-		"pager":    template.HTML(pagerHtml),
+		"cat":            cat,
+		"sort_bar":       template.HTML(sortBar),
+		"items":          template.HTML(buf.Bytes()),
+		"pager":          template.HTML(pagerHtml),
+		"DescribeNotNil": len(optDes.Value) > 0,
+		"Describe":       template.HTML(optDes.Value),
 	}
-	return ctx.RenderOK("list.html", d)
+	return ctx.RenderOK(optView.Value, d)
 }
 
 // 销售标签列表

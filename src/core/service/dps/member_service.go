@@ -40,6 +40,9 @@ func NewMemberService(partnerService *partnerService, rep member.IMemberRep,
 }
 
 func (this *memberService) GetMember(id int) *member.ValueMember {
+	if id <= 0 {
+		return nil
+	}
 	v := this._memberRep.GetMember(id)
 	if v != nil {
 		nv := v.GetValue()
@@ -50,6 +53,9 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 
 func (this *memberService) getMember(partnerId, memberId int) (
 	member.IMember, error) {
+	if memberId <= 0 {
+		return nil, member.ErrNoSuchMember
+	}
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
@@ -237,6 +243,12 @@ func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 	return m.SaveBank(v)
 }
 
+// 解锁银行卡信息
+func (this *memberService) UnlockBankInfo(memberId int) error {
+	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	return m.UnlockBank()
+}
+
 // 获取返现记录
 func (this *memberService) QueryIncomeLog(memberId, page, size int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
@@ -376,6 +388,15 @@ func (this *memberService) PresentBalance(partnerId, memberId int, title string,
 		return err
 	}
 	return m.GetAccount().PresentBalance(title, tradeNo, amount)
+}
+
+// 扣减奖金
+func (this *memberService) DiscountPresent(partnerId, memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
+	m, err := this.getMember(partnerId, memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().DiscountPresent(title, tradeNo, amount, mustLargeZero)
 }
 
 // 流通账户
@@ -568,21 +589,51 @@ func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelC
 
 // 生成会员账户人工单据
 func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind int,
-	kType int, tit string, amount float32) (string, error) {
+	tit string, amount float32) (string, error) {
 	var err error
 	var tradeNo string
+	if amount == 0 {
+		return "", member.ErrIncorrectAmount
+	}
 	m := this._memberRep.GetMember(memberId)
 	if m == nil {
 		return "", member.ErrNoSuchMember
 	}
-
+	acc := m.GetAccount()
+	var tit2 string
 	if kind == member.KindBalancePresent {
-		tit2 := "[KF]客服调整-" + variable.AliasPresentAccount
-		if len(tit) > 0 {
-			tit2 = tit2 + "(" + tit + ")"
-		}
 		tradeNo = domain.NewTradeNo(partnerId)
-		err = m.GetAccount().PresentBalance(tit2, tradeNo, amount)
+		if amount > 0 { //增加奖金
+			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.PresentBalance(tit2, tradeNo, amount)
+		} else { //扣减奖金
+			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.DiscountPresent(tit2, tradeNo, -amount, false)
+		}
 	}
+
+	if kind == member.KindBalanceCharge {
+		tradeNo = domain.NewTradeNo(partnerId)
+		if amount > 0 {
+			tit2 = "[KF]客服充值卡"
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.ChargeBalance(member.TypeBalanceServiceCharge, tit2, tradeNo, amount)
+		} else {
+			tit2 = "[KF]客服扣减"
+			if len(tit) > 0 {
+				tit2 = tit2 + "(" + tit + ")"
+			}
+			err = acc.DiscountBalance(tit2, tradeNo, -amount)
+		}
+	}
+
 	return tradeNo, err
 }

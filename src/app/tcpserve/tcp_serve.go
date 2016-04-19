@@ -10,11 +10,9 @@ package tcpserve
 
 import (
 	"errors"
-	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
 	"go2o/src/app/util"
-	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"net"
 	"strconv"
@@ -23,35 +21,43 @@ import (
 )
 
 var (
-	s                  *nc.SocketServer
-	disconnectDuration                       = time.Second * 60
-	readDeadLine                             = time.Second * 40
-	handlers           map[string]nc.CmdFunc = map[string]nc.CmdFunc{
+	// 主动关闭没有活动的连接(当前减去最后活动时间)
+	disconnectDuration = time.Minute * 10
+
+	// 默认连接存活时间
+	defaultReadDeadLine                       = time.Second * 60
+	handlers            map[string]nc.CmdFunc = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
 		"PING":  cliPing,
 	}
 )
 
-func ListenTcp(addr string) {
-	s = nc.NewSocketServer()
-	s.ReadDeadLine = readDeadLine
-	serveLoop(s) // server loop,send some message to client
-	//s.OutputOff()
-	s.Listen(addr, func(conn net.Conn, b []byte) ([]byte, error) {
+func NewServe(output bool) *nc.SocketServer {
+	var s *nc.SocketServer
+	r := func(conn net.Conn, b []byte) ([]byte, error) {
 		cmd := string(b)
 		id, ok := s.GetCli(conn)
-		if !ok { // not join,auth first!
+		if !ok {
+			// not join,auth first!
 			if err := connAuth(s, conn, cmd); err != nil {
 				return nil, err
 			}
 			return []byte("ok"), nil
 		}
-		if strings.HasPrefix(cmd, "MAUTH:") { //auth member
+		if strings.HasPrefix(cmd, "MAUTH:") {
+			//auth member
 			return memberAuth(s, id, cmd[6:])
 		}
-		return handleCommand(id, cmd)
-	})
+		return handleCommand(s, id, cmd)
+	}
+
+	s = nc.NewSocketServer(r)
+	s.ReadDeadLine = defaultReadDeadLine
+	if !output {
+		s.OutputOff()
+	}
+	return s
 }
 
 // Add socket command handler
@@ -79,7 +85,7 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 				return err
 			}
 
-			s.Print("[ CLIENT] - Version = %s", arr[2])
+			s.Printf("[ CLIENT] - Version = %s", arr[2])
 			return nil
 		}
 	}
@@ -110,14 +116,14 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 }
 
 // Handle command of client sending.
-func handleCommand(ci *nc.Client, cmd string) ([]byte, error) {
+func handleCommand(s *nc.SocketServer, ci *nc.Client, cmd string) ([]byte, error) {
 	if time.Now().Sub(ci.LatestConnectTime) > disconnectDuration { //主动关闭没有活动的连接
 		//s.Print("--disconnect ---",ci.Addr.String())
 		ci.Conn.Close()
 		return nil, nil
 	}
 	if !strings.HasPrefix(cmd, "PING") {
-		s.Print("[ CLIENT][ MESSAGE] - send by %d ; %s", ci.Source, cmd)
+		s.Printf("[ CLIENT][ MESSAGE] - send by %d ; %s", ci.Source, cmd)
 		ci.LatestConnectTime = time.Now()
 	}
 	i := strings.Index(cmd, ":")
@@ -128,22 +134,6 @@ func handleCommand(ci *nc.Client, cmd string) ([]byte, error) {
 		}
 	}
 	return nil, errors.New("unknown command:" + cmd)
-}
-
-func serveLoop(s *nc.SocketServer) {
-	conn := core.GetRedisConn()
-	go notifyMup(s, conn)
-}
-
-func notifyMup(s *nc.SocketServer, conn redis.Conn) {
-	time.Sleep(time.Second * 10) // 等待监听服务
-	for {
-		err := mmSummaryNotify(s, conn)
-		err1 := mmAccountNotify(s, conn)
-		if err != nil || err1 != nil {
-			time.Sleep(time.Second * 1) //阻塞,避免轮询占用CPU
-		}
-	}
 }
 
 // print text by client sending.

@@ -31,21 +31,22 @@ func GetServe() *echox.Echo {
 	s.Anyx("/login", mc.Login)
 	s.Postx("/export/getExportData", mc.exportData) //数据导出
 	s.Postx("/upload.cgi", mc.Upload_post)          //上传文件
-	s.Danyx("/main/:action", mc)
-	s.Danyx("/shop/:action", new(shopC))             //商家门店控制器
-	s.Danyx("/goods/:action", new(goodsC))           //商品控制器
-	s.Danyx("/order/:action", new(orderC))           // 订单控制器
-	s.Danyx("/category/:action", new(categoryC))     // 商品分类控制器
-	s.Danyx("/conf/:action", new(configC))           // 商户设置控制器
-	s.Danyx("/prom/:action", new(promC))             // 促销控制器
-	s.Danyx("/delivery/:action", new(coverageAreaC)) // 配送区域控制器
-	s.Danyx("/member/:action", new(memberC))
-	s.Danyx("/sale/:action", new(saleC))
-	s.Danyx("/content/:action", new(contentC))
-	s.Danyx("/ad/:action", new(adC))
-	s.Danyx("/mss/:action", new(mssC))
-	s.Danyx("/editor/:action", new(editorC))
-	s.Danyx("/finance/:action", new(financeC))
+	s.Aanyx("/main/:action", mc)
+	s.Aanyx("/shop/:action", new(shopC))             //商家门店控制器
+	s.Aanyx("/goods/:action", new(goodsC))           //商品控制器
+	s.Aanyx("/order/:action", new(orderC))           // 订单控制器
+	s.Aanyx("/category/:action", new(categoryC))     // 商品分类控制器
+	s.Aanyx("/conf/:action", new(configC))           // 商户设置控制器
+	s.Aanyx("/prom/:action", new(promC))             // 促销控制器
+	s.Aanyx("/delivery/:action", new(coverageAreaC)) // 配送区域控制器
+	s.Aanyx("/member/:action", new(memberC))
+	s.Aanyx("/sale/:action", new(saleC))
+	s.Aanyx("/content/:action", new(contentC))
+	s.Aanyx("/ad/:action", new(adC))
+	s.Aanyx("/mss/:action", new(mssC))
+	s.Aanyx("/editor/:action", new(editorC))
+	s.Aanyx("/finance/:action", new(financeC))
+	s.Aanyx("/person_finance/:action", new(personFinanceC))
 	return s
 }
 
