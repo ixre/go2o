@@ -43,7 +43,7 @@ func (this *mainC) Login(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.Login_post(ctx)
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("login.html", d)
 }
 
@@ -118,7 +118,7 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 func (this *mainC) Summary(ctx *echox.Context) error {
 	r := ctx.Request()
 	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["partner"] = pt
 	d.Map["loginIp"] = r.Header.Get("USER_ADDRESS")
 

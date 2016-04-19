@@ -28,7 +28,7 @@ type orderC struct {
 func (this *orderC) List(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
 	return ctx.Render(http.StatusOK, "order.list.html", d)
 }
@@ -37,7 +37,7 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
 	return ctx.Render(http.StatusOK, "order.waitpay_list.html", d)
 }
@@ -46,7 +46,7 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.cancel_post(ctx)
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.Render(http.StatusOK, "order.cancel.html", d)
 }
 
@@ -99,7 +99,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"entity":   template.JS(js),
 		"member":   member,
@@ -183,7 +183,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shopName"] = shopName
 	d.Map["order"] = *e
 	return ctx.Render(http.StatusOK, "order.payment.html", d)

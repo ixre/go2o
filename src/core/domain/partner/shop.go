@@ -51,7 +51,7 @@ func (this *Shop) SetValue(v *partner.ValueShop) error {
 	//this.value.DeliverRadius = v.DeliverRadius
 	this.value.Address = v.Address
 	this.value.Name = v.Name
-	this.value.OrderIndex = v.OrderIndex
+	this.value.SortNumber = v.SortNumber
 	this.value.PartnerId = this.partner.GetAggregateRootId()
 	this.value.Phone = v.Phone
 	this.value.State = v.State
