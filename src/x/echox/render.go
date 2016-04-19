@@ -87,9 +87,12 @@ func (g *GoTemplateForEcho) fsNotify() {
 		}
 	}(g)
 
-	//w.Add(g.fileDirectory)
+	w.Add(g.fileDirectory)
 	filepath.Walk(g.fileDirectory, func(path string, info os.FileInfo, err error) error {
-		return w.Add(path)
+		if info.IsDir() {
+			return w.Add(path)
+		}
+		return nil
 	})
 
 	<-ch
