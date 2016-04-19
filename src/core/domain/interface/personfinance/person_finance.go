@@ -43,7 +43,7 @@ var (
 		case TransferOutWithPresent:
 			return variable.AliasPresentAccount
 		case TransferOutWithBank:
-			return "银行"
+			return "银行账户"
 		}
 		return "nil"
 	}

@@ -240,6 +240,7 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 		this._bank.State = v.State
 		this._bank.Name = v.Name
 	}
+	this._bank.State = member.StateOk       //todo:???
 	this._bank.IsLocked = member.BankLocked //锁定
 	this._bank.UpdateTime = time.Now().Unix()
 	//this._bank.MemberId = this.value.Id

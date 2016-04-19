@@ -126,7 +126,11 @@ func (this *personFinanceService) RiseTransferOut(personId int,
 	}
 
 	if transferWith == personfinance.TransferOutWithBank {
-		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
+		if b := m.GetBank(); !b.Right() || !b.Locked() {
+			return member.ErrNoSuchBankInfo
+		}
+		if err = r.TransferOut(amount, transferWith,
+			personfinance.RiseStateOk); err == nil {
 			err = pf.SyncToAccount()
 		}
 		return err
@@ -136,7 +140,8 @@ func (this *personFinanceService) RiseTransferOut(personId int,
 }
 
 // 结算收益(按日期每天结息)
-func (this *personFinanceService) RiseSettleByDay(personId int, settleUnix int64, dayRatio float32) (err error) {
+func (this *personFinanceService) RiseSettleByDay(personId int,
+	settleUnix int64, dayRatio float32) (err error) {
 	pf := this._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 	if err = r.RiseSettleByDay(settleUnix, dayRatio); err != nil {

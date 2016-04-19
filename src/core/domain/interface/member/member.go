@@ -149,3 +149,12 @@ type (
 		DeleteDeliver(int) error
 	}
 )
+
+func (this BankInfo) Right() bool {
+	return len(this.Name) > 0 && len(this.Account) > 0 &&
+		len(this.AccountName) > 0
+}
+
+func (this BankInfo) Locked() bool {
+	return this.IsLocked == BankLocked
+}

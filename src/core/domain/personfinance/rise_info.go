@@ -163,7 +163,7 @@ func (this *riseInfo) TransferOut(amount float32,
 		//保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
-			Title:        "[转出]转出到" + personfinance.TransferInWithText(w),
+			Title:        "[转出]转出到" + personfinance.TransferOutWithText(w),
 			Amount:       amount,
 			Type:         personfinance.RiseTypeTransferOut,
 			TransferWith: int(w),

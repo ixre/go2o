@@ -12,8 +12,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -90,7 +90,6 @@ func (this *OptionStoreWrapper) getRdKey() string {
 	} else if s[:1] == "." {
 		s = s[1:]
 	}
-	log.Println(s)
 	return s
 }
 func (this *OptionStoreWrapper) Stat() error {
@@ -175,7 +174,6 @@ func (this *OptionStoreWrapper) Flush() (err error) {
 		if err == nil {
 			err = ioutil.WriteFile(this.Indent(), d, os.ModePerm)
 		}
-		log.Println("--", err)
 		return err
 	}
 	return nil
