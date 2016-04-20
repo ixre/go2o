@@ -11,18 +11,18 @@ package sale
 
 //分类
 type ValueCategory struct {
-	Id int `db:"id" auto:"yes" pk:"yes" json:"id"`
+	Id int `db:"id" auto:"yes" pk:"yes"`
 	//父分类
-	ParentId int `db:"parent_id" json:"parentId"`
+	ParentId int `db:"parent_id"`
 	//供应商编号
-	PartnerId int `db:"partner_id" json:"PartnerId"`
+	PartnerId int `db:"partner_id"`
 	//名称
-	Name        string           `db:"name" json:"name"`
-	SortNumber  int              `db:"sort_number" json:"sortNumber"`
-	Icon        string           `db:"icon" json:"icon"`
+	Name        string           `db:"name"`
+	SortNumber  int              `db:"sort_number"`
+	Icon        string           `db:"icon"`
 	Url         string           `db:"url" json:"url"`
-	CreateTime  int64            `db:"create_time" json:"createTime"`
-	Enabled     int              `db:"enabled" json:"enabled"`
-	Description string           `db:"description" json:"description"`
-	Child       []*ValueCategory `db:"-" json:"child"`
+	CreateTime  int64            `db:"create_time"`
+	Enabled     int              `db:"enabled"`
+	Description string           `db:"description"`
+	Child       []*ValueCategory `db:"-"`
 }
