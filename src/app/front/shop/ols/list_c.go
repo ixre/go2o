@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/algorithm/iterator"
-	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/pager"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/enum"
@@ -65,19 +64,32 @@ func (this *ListC) All_cate(ctx *echox.Context) error {
 	mm := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 
-	categories := dps.SaleService.GetCategories(p.Id)
-	buf := bytes.NewBufferString("")
-	categoryWalk(buf, categories)
-	web.SetCacheHeader(ctx.Response(), 10)
+	//categories := dps.SaleService.GetCategories(p.Id)
+	//buf := bytes.NewBufferString("")
+	//categoryWalk(buf, categories)
+	//web.SetCacheHeader(ctx.Response(), 10)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":   p,
-		"member":    mm,
-		"conf":      siteConf,
-		"cate_html": template.HTML(buf.String()),
+		"partner": p,
+		"member":  mm,
+		"conf":    siteConf,
+		//"cate_html": template.HTML(buf.String()),
 	}
 	return ctx.RenderOK("category.html", d)
 
+}
+
+// 大类Json
+func (this ListC) CategoryJson(c *echox.Context) error {
+	parentId, _ := strconv.Atoi(c.Form("parent_id"))
+	partnerId := GetPartnerId(c.Request(), c.Session)
+	var v []*sale.ValueCategory
+	if parentId == 0 {
+		v = dps.SaleService.GetBigCategories(partnerId)
+	} else {
+		v = dps.SaleService.GetChildCategories(partnerId, parentId)
+	}
+	return c.JSON(http.StatusOK, v)
 }
 
 func (this *ListC) getIdArray(path string) []int {
