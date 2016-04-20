@@ -250,7 +250,7 @@ func (this *saleService) GetBigCategories(partnerId int) []*sale.ValueCategory {
 	cats := sl.GetCategories()
 	list := []*sale.ValueCategory{}
 	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == 0 {
+		if vv := v.GetValue(); vv.ParentId == 0 && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
 			list = append(list, vv)
 		}
@@ -263,7 +263,7 @@ func (this *saleService) GetChildCategories(partnerId, parentId int) []*sale.Val
 	cats := sl.GetCategories()
 	list := []*sale.ValueCategory{}
 	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == parentId {
+		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
 			list = append(list, vv)
 			this.setChild(cats, vv)
@@ -274,7 +274,7 @@ func (this *saleService) GetChildCategories(partnerId, parentId int) []*sale.Val
 
 func (this *saleService) setChild(list []sale.ICategory, dst *sale.ValueCategory) {
 	for _, v := range list {
-		if vv := v.GetValue(); vv.ParentId == dst.Id {
+		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
 			if dst.Child == nil {
 				dst.Child = []*sale.ValueCategory{}
 			}
