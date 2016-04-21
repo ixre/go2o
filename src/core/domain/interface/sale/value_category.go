@@ -20,7 +20,7 @@ type ValueCategory struct {
 	Name        string           `db:"name"`
 	SortNumber  int              `db:"sort_number"`
 	Icon        string           `db:"icon"`
-	Url         string           `db:"url" json:"url"`
+	Url         string           `db:"url"`
 	CreateTime  int64            `db:"create_time"`
 	Enabled     int              `db:"enabled"`
 	Description string           `db:"description"`
