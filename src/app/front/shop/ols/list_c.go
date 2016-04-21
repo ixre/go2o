@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/algorithm/iterator"
 	"github.com/jsix/gof/web/pager"
 	"go2o/src/app/front"
+	aputil "go2o/src/app/util"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/domain/util"
@@ -106,8 +107,67 @@ func (this *ListC) GetSorter(ctx *echox.Context) error {
 	return nil
 }
 
+// 获取商品JSON数据
+func (this *ListC) GetGoodsListJson(c *echox.Context) error {
+	if c.Request().Method != "POST" {
+		return nil
+	}
+	partnerId := GetPartnerId(c.Request(), c.Session)
+	size, _ := strconv.Atoi(c.Form("size"))
+	begin, _ := strconv.Atoi(c.Form("begin"))
+	categoryId, _ := strconv.Atoi(c.Form("categoryId"))
+	sortQuery := c.Form("sort")
+
+	total, items := dps.SaleService.GetPagedOnShelvesGoods(partnerId, categoryId,
+		begin, begin+size, sortQuery)
+	for _, v := range items {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+	}
+	d := map[string]interface{}{
+		"total": total,
+		"rows":  items,
+	}
+	return c.JSON(http.StatusOK, d)
+}
+
+func (this *ListC) mobileListIndex(ctx *echox.Context) error {
+	r := ctx.Request()
+	partnerId := GetPartnerId(r, ctx.Session)
+	sortQuery := ctx.Query("sort")
+	idArr := this.getIdArray(r.URL.Path)
+	categoryId := idArr[len(idArr)-1]
+	cat, opt := dps.SaleService.GetCategory(partnerId, categoryId)
+
+	sortBar := front.GetSorterHtml(front.GoodsListSortItems,
+		sortQuery,
+		r.URL.RequestURI())
+
+	optView := opt.Get(sale.C_OptionViewName)
+	optDes := opt.Get(sale.C_OptionDescribe)
+	optDes.Value = strings.TrimSpace(optDes.Value)
+
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
+		"cat":            cat,
+		"sort_bar":       template.HTML(sortBar),
+		"DescribeNotNil": len(optDes.Value) > 0,
+		"Describe":       template.HTML(optDes.Value),
+	}
+	return ctx.RenderOK(optView.Value, d)
+}
+
 // 商品列表
 func (this *ListC) List_Index(ctx *echox.Context) error {
+	switch aputil.GetBrownerDevice(ctx.Request()) {
+	default:
+	case aputil.DevicePC:
+		//pcServe.ServeHTTP(w, r)
+	case aputil.DeviceTouchPad, aputil.DeviceMobile:
+		return this.mobileListIndex(ctx)
+	case aputil.DeviceAppEmbed:
+		//embedServe.ServeHTTP(w, r)
+	}
+
 	r := ctx.Request()
 	p := getPartner(ctx)
 	const size int = 20 //-1表示全部
