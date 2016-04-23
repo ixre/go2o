@@ -52,7 +52,7 @@ func (this *Category) GetOption() domain.IOptionStore {
 				Type:  domain.OptionTypeString,
 				Must:  false,
 				Title: "显示页面",
-				Value: "list.html",
+				Value: "goods_list.html",
 			})
 			opt.Set(sale.C_OptionDescribe, &domain.Option{
 				Key:   sale.C_OptionDescribe,

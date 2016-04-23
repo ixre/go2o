@@ -17,18 +17,22 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
+	"go2o/src/core/query"
 	"strconv"
 )
 
 type saleService struct {
-	_rep      sale.ISaleRep
-	_goodsRep sale.IGoodsRep
+	_rep        sale.ISaleRep
+	_goodsRep   sale.IGoodsRep
+	_goodsQuery *query.GoodsQuery
 }
 
-func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep) *saleService {
+func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep,
+	goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
-		_rep:      r,
-		_goodsRep: goodsRep,
+		_rep:        r,
+		_goodsRep:   goodsRep,
+		_goodsQuery: goodsQuery,
 	}
 }
 
@@ -163,7 +167,33 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 	}
 
 	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, where, orderBy)
+}
 
+// 获取分页上架的商品
+func (this *saleService) GetPagedOnShelvesGoodsByKeyword(partnerId,
+	start, end int, word, sortQuery string) (int, []*valueobject.Goods) {
+	var where string
+	var orderBy string
+	switch sortQuery {
+	case "price_0":
+		where = ""
+		orderBy = "gs_item.sale_price ASC"
+	case "price_1":
+		where = ""
+		orderBy = "gs_item.sale_price DESC"
+	case "sale_0":
+		where = ""
+		orderBy = "gs_goods.sale_num ASC"
+	case "sale_1":
+		where = ""
+		orderBy = "gs_goods.sale_num DESC"
+	case "rate_0":
+	//todo:
+	case "rate_1":
+		//todo:
+	}
+
+	return this._goodsQuery.GetPagedOnShelvesGoodsByKeyword(partnerId, start, end, word, where, orderBy)
 }
 
 // 删除产品
