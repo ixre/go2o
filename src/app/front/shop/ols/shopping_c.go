@@ -96,6 +96,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 		"deliverId":   deliverId,
 		"deliverOpt":  deliverOpt,
 		"paymentOpt":  paymentOpt,
+		"TotalFee":    format.FormatFloat(cart.TotalFee),
 	}
 	return ctx.RenderOK("order_confirm.html", d)
 }
