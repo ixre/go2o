@@ -64,6 +64,7 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/st/*", lc.SaleTagGoodsList)
 	s.Getx("/user/jump_m", uc.JumpToMCenter)
 	s.Getx("/c-*.htm", lc.List_Index)
+	s.Getx("/search", lc.SearchList)
 	s.Getx("/goods-*.htm", lc.GoodsView)
 	s.Getx("/content/p/:id", ctc.Page)
 }

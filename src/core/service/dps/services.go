@@ -52,13 +52,14 @@ func Init(ctx gof.App) {
 	memberQue := query.NewMemberQuery(db)
 	partnerQue := query.NewPartnerQuery(ctx)
 	contentQue := query.NewContentQuery(db)
+	goodsQuery := query.NewGoodsQuery(db)
 
 	/** Service **/
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep)
 	PartnerService = NewPartnerService(partnerRep, saleRep, adRep, partnerQue)
 	MemberService = NewMemberService(PartnerService, memberRep, memberQue)
-	SaleService = NewSaleService(saleRep, goodsRep)
+	SaleService = NewSaleService(saleRep, goodsRep, goodsQuery)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdvertisementService = NewAdvertisementService(adRep)

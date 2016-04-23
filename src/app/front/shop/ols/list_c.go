@@ -24,6 +24,7 @@ import (
 	"go2o/src/x/echox"
 	"html/template"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -236,6 +237,121 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 		"Describe":       template.HTML(optDes.Value),
 	}
 	return ctx.RenderOK(optView.Value, d)
+}
+
+// 商品列表
+func (this *ListC) SearchList(ctx *echox.Context) error {
+	switch aputil.GetBrownerDevice(ctx.Request()) {
+	default:
+	case aputil.DevicePC:
+	//pcServe.ServeHTTP(w, r)
+	case aputil.DeviceTouchPad, aputil.DeviceMobile:
+		return this.mobileSearchList(ctx)
+	case aputil.DeviceAppEmbed:
+		//embedServe.ServeHTTP(w, r)
+	}
+
+	r := ctx.Request()
+	p := getPartner(ctx)
+	const size int = 20 //-1表示全部
+	sortQuery := ctx.Query("sort")
+	page, _ := strconv.Atoi(ctx.Query("page"))
+	key := ctx.Query("w")
+	if page < 1 {
+		page = 1
+	}
+
+	total, items := dps.SaleService.GetPagedOnShelvesGoodsByKeyword(p.Id,
+		(page-1)*size, page*size, key, sortQuery)
+
+	var pagerHtml string
+	if total > size {
+		pager := pager.NewUrlPager(pager.TotalPage(total, size), page, pager.GetterDefaultPager)
+		pager.RecordCount = total
+		pagerHtml = pager.PagerString()
+	}
+
+	buf := bytes.NewBufferString("")
+
+	if len(items) == 0 {
+		buf.WriteString("<div class=\"no_goods\">没有找到商品!</div>")
+	} else {
+		for i, v := range items {
+			var hasDisCls string = ""
+			if v.SalePrice == v.Price {
+				hasDisCls = "no-disc"
+			}
+			buf.WriteString(fmt.Sprintf(`
+				<div class="item item-i%d">
+					<div class="block">
+						<a href="/goods-%d.htm" class="goods-link">
+							<img class="goods-img" src="%s" alt="%s"/>
+							<h3 class="name">%s</h3>
+							<span class="sale-price">￥%s</span>
+							<span class="market-price %s"><del>￥%s</del></span>
+						</a>
+					</div>
+                    <div class="clear-fix"></div>
+                </div>
+		`, i%2, v.GoodsId, format.GetGoodsImageUrl(v.Image),
+				v.Name, v.Name, format.FormatFloat(v.SalePrice),
+				hasDisCls, format.FormatFloat(v.Price)))
+		}
+	}
+
+	sortBar := front.GetSorterHtml(front.GoodsListSortItems,
+		sortQuery,
+		r.URL.RequestURI())
+
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
+		"sort_bar": template.HTML(sortBar),
+		"items":    template.HTML(buf.Bytes()),
+		"pager":    template.HTML(pagerHtml),
+	}
+	return ctx.RenderOK("goods_search.html", d)
+}
+
+// 手机搜索列表
+func (this *ListC) mobileSearchList(ctx *echox.Context) error {
+	r := ctx.Request()
+	//partnerId := GetPartnerId(r, ctx.Session)
+	sortQuery := ctx.Query("sort")
+	word, _ := url.QueryUnescape(ctx.Query("word"))
+
+	sortBar := front.GetSorterHtml(front.GoodsListSortItems,
+		sortQuery,
+		r.URL.RequestURI())
+
+	d := ctx.NewData()
+	d.Map = gof.TemplateDataMap{
+		"Keyword":  word,
+		"sort_bar": template.HTML(sortBar),
+	}
+	return ctx.RenderOK("goods_search.html", d)
+}
+
+// 获取商品JSON数据
+func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
+	if c.Request().Method != "POST" {
+		return nil
+	}
+	partnerId := GetPartnerId(c.Request(), c.Session)
+	size, _ := strconv.Atoi(c.Form("size"))
+	begin, _ := strconv.Atoi(c.Form("begin"))
+	word, _ := url.QueryUnescape(c.Form("word"))
+	sortQuery := c.Form("sort")
+
+	total, items := dps.SaleService.GetPagedOnShelvesGoodsByKeyword(partnerId,
+		begin, begin+size, word, sortQuery)
+	for _, v := range items {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+	}
+	d := map[string]interface{}{
+		"total": total,
+		"rows":  items,
+	}
+	return c.JSON(http.StatusOK, d)
 }
 
 // 销售标签列表
