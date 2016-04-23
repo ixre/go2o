@@ -17,40 +17,34 @@ import (
 // 购物车详情
 func CartDetails(c *dto.ShoppingCart) string {
 	var byts *bytes.Buffer = bytes.NewBufferString("")
-	byts.WriteString(`
-		<table cellspacing="1" class="cart_details_table">
-			<thead>
-				<tr>
-					<td><span class="t">商品</span></td>
-					<td><span class="t">价格</span></td>
-					<td><span class="t">数量</span></td>
-					<td><span class="t">总价</span></td>
-				</tr>
-			</thead>
-		`)
+	//byts.WriteString(`
+	//	<table cellspacing="1" class="cart_details_table">
+	//		<thead>
+	//			<tr>
+	//				<td><span class="t">商品</span></td>
+	//				<td><span class="t">价格</span></td>
+	//				<td><span class="t">数量</span></td>
+	//				<td><span class="t">总价</span></td>
+	//			</tr>
+	//		</thead>
+	//	`)
 
 	for _, v := range c.Items {
 		byts.WriteString(fmt.Sprintf(`
-			<tr class="goods">
-				<td class="goods-info">
-				   <a target="_blank" href="/goods-%d.htm"><img src="%s" class="goods-thumb" />
-				   	<span class="goods-title">%s</span></a>
+			<div class="goods-item">
+				   <a target="_blank" href="/goods-%d.htm">
+				     <img src="%s" class="goods-thumb" />
+				   </a>
+				   	<span class="goods-title">%s
+							<span class="goods-num">x%d</span>
+					</span>
 				   	<span class="goods-no">商品编号：<i>%s</i></span>
-				</td>
-
-				<td>
-					￥%s
-				</td>
-				<td>
-					x%d
-				</td>
-				<td>
-					￥%s
-				</td>
-			</tr>
+				<span class="goods-price">￥%s</span>
+				<span class="goods-fee">￥%s</span>
+			</div>
 		`,
-			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.GoodsNo,
-			FormatFloat(v.SalePrice), v.Num, FormatFloat(v.SalePrice*float32(v.Num)),
+			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.Num, v.GoodsNo,
+			FormatFloat(v.SalePrice), FormatFloat(v.SalePrice*float32(v.Num)),
 		))
 	}
 

@@ -100,10 +100,10 @@ shoppingCart.prototype.xhr = function (data, call) {
     });
 };
 
-shoppingCart.prototype.init = function (panel_id,callback) {
+shoppingCart.prototype.init = function (ele,callback) {
     this.loadCart((function (t) {
         return function (cart) {
-            t.initLayout(panel_id, false);
+            t.initLayout(ele.nodeName?ele:document.getElementById(ele), false);
             t.retrieval(cart,callback);
         };
     })(this));
@@ -127,7 +127,7 @@ shoppingCart.prototype.loadCart = function (call) {
     this.xhr({action: 'get', 'cart.key': this.key}, caller)
 };
 
-shoppingCart.prototype.initLayout = function (panel_id, usetheme) {
+shoppingCart.prototype.initLayout = function (ele, usetheme) {
     this.panel = document.getElementById(panel_id);
     var pnodes = this.panel.childNodes;
     for (var i = 0; i < pnodes.length; i++) {
