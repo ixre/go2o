@@ -22,6 +22,7 @@ func GetServe() *echox.Echo {
 	s := echox.New()
 	s.SetTemplateRender("public/views/partner")
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
 
 	s.Static("/static/", "./public/static/") //静态资源

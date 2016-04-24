@@ -33,6 +33,7 @@ func GetServe() *echox.Echo {
 	s := echox.New()
 	s.SetTemplateRender("public/views/master")
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(masterLogonCheck) // 判断商户登陆状态
 	registerRoutes(s)
 	return s

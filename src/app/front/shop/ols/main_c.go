@@ -107,8 +107,8 @@ func (this *MainC) Index(ctx *echox.Context) error {
 	}
 
 	siteConf := getSiteConf(ctx)
-	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
-	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
+	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", "", 0, 12)
+	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", "", 0, 12)
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
@@ -130,8 +130,8 @@ func (this *MainC) MallEntry(ctx *echox.Context) error {
 	}
 
 	siteConf := getSiteConf(ctx)
-	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", 0, 12)
-	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", 0, 12)
+	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", "", 0, 12)
+	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", "", 0, 12)
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{

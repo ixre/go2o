@@ -11,11 +11,12 @@ package echox
 import (
 	"errors"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -202,3 +203,40 @@ func NewRenderData() *TemplateData {
 //		return nil
 //	}
 //}
+
+/****************  MIDDLE WAVE ***************/
+
+var (
+	requestFilter = map[string]*regexp.Regexp{
+		"GET": regexp.MustCompile("'|(and|or)\\b.+?(>|<|=|in|like)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION" +
+			".+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+" +
+			"(TABLE|DATABASE)"),
+		"POST": regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*" +
+			".+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|" +
+			"(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)"),
+	}
+
+/*
+	getFilter = postFilter = cookieFilter = regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)");
+*/
+)
+
+// 防SQL注入
+func StopAttack(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		badRequest := false
+		method := ctx.Request().Method
+		switch method {
+		case "GET":
+			badRequest = requestFilter[method].MatchString(ctx.Request().URL.RawQuery)
+		case "POST":
+			badRequest = requestFilter["GET"].MatchString(ctx.Request().URL.String()) ||
+				requestFilter[method].MatchString(ctx.Request().PostForm.Encode())
+		}
+		if badRequest {
+			return ctx.HTML(http.StatusNotFound,
+				"<div style='color:red;'>您提交的参数非法,系统已记录您本次操作!</div>")
+		}
+		return h(ctx)
+	}
+}

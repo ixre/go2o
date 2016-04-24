@@ -67,6 +67,7 @@ func getServe(path string) *echox.Echo {
 	s := echox.New()
 	s.SetTemplateRender(path)
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(memberLogonCheck)
 	registerRoutes(s)
 	return s
