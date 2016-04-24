@@ -193,7 +193,8 @@ func (this *saleService) GetPagedOnShelvesGoodsByKeyword(partnerId,
 		//todo:
 	}
 
-	return this._goodsQuery.GetPagedOnShelvesGoodsByKeyword(partnerId, start, end, word, where, orderBy)
+	return this._goodsQuery.GetPagedOnShelvesGoodsByKeyword(partnerId,
+		start, end, word, where, orderBy)
 }
 
 // 删除产品
@@ -377,21 +378,23 @@ func (this *saleService) SaveItemSaleTags(partnerId, itemId int, tagIds []int) e
 }
 
 // 根据销售标签获取指定数目的商品
-func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*valueobject.Goods {
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int,
+	code, sortBy string, begin int, end int) []*valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	if tag := sl.GetSaleTagByCode(code); tag != nil {
-		return tag.GetValueGoods(begin, end)
+		return tag.GetValueGoods(sortBy, begin, end)
 	}
 	return make([]*valueobject.Goods, 0)
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, tagId int, begin int, end int) (int, []*valueobject.Goods) {
+func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int,
+	tagId int, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
 	sl := this._rep.GetSale(partnerId)
 	tag := sl.CreateSaleTag(&sale.ValueSaleTag{
 		Id: tagId,
 	})
-	return tag.GetPagedValueGoods(begin, end)
+	return tag.GetPagedValueGoods(sortBy, begin, end)
 }
 
 // 删除销售标签

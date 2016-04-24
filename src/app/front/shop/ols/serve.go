@@ -72,6 +72,7 @@ func registerRoutes(s *echox.Echo) {
 func getServe(path string) *echox.Echo {
 	s := echox.New()
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(shopCheck)
 	registerRoutes(s)
 	s.SetTemplateRender(path)
@@ -82,7 +83,8 @@ func getServe(path string) *echox.Echo {
 func init() {
 	pcServe = getServe("public/views/shop/ols/pc")
 	mobiServe = getServe("public/views/shop/ols/mobi")
-	embedServe = getServe("public/views/shop/ols/app_embed")
+	//embedServe = getServe("public/views/shop/ols/app_embed")
+	embedServe = getServe("public/views/shop/ols/mobi")
 }
 
 // 获取所有服务
