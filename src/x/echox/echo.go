@@ -133,6 +133,10 @@ func (this *Context) debug(err error) error {
 	return err
 }
 
+func (this *Context) Debug(err error) error {
+	return this.debug(err)
+}
+
 // 覆写Render方法
 func (this *Context) Render(code int, name string, data interface{}) error {
 	return this.debug(this.Context.Render(code, name, data))

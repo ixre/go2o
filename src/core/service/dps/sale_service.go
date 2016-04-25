@@ -138,35 +138,15 @@ func (this *saleService) DeleteItem(partnerId int, id int) error {
 
 // 获取分页上架的商品
 func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int,
-	sortQuery string) (int, []*valueobject.Goods) {
+	sortBy string) (int, []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
-	var cate sale.ICategory = sl.GetCategory(categoryId)
-	var ids []int = cate.GetChildId()
-	ids = append(ids, categoryId)
-	//todo: cache
-
-	var where string
-	var orderBy string
-	switch sortQuery {
-	case "price_0":
-		where = ""
-		orderBy = "gs_item.sale_price ASC"
-	case "price_1":
-		where = ""
-		orderBy = "gs_item.sale_price DESC"
-	case "sale_0":
-		where = ""
-		orderBy = "gs_goods.sale_num ASC"
-	case "sale_1":
-		where = ""
-		orderBy = "gs_goods.sale_num DESC"
-	case "rate_0":
-	//todo:
-	case "rate_1":
-		//todo:
+	if categoryId > 0 {
+		var cate sale.ICategory = sl.GetCategory(categoryId)
+		var ids []int = cate.GetChildId()
+		ids = append(ids, categoryId)
+		return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, "", sortBy)
 	}
-
-	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, where, orderBy)
+	return sl.GetOnShelvesGoods(start, end, sortBy)
 }
 
 // 获取分页上架的商品
