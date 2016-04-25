@@ -50,6 +50,12 @@ func GetPartnerSiteConfCK(partnerId int) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", partnerId)
 }
 
+func DelPartnerCache(partnerId int) {
+	kvs := GetKVS()
+	kvs.Del(GetValuePartnerCacheCK(partnerId))
+	kvs.Del(GetPartnerSiteConfCK(partnerId))
+}
+
 // 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var v *partner.SiteConf
