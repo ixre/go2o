@@ -112,11 +112,11 @@ func (this *MainC) Index(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":  p,
-		"conf":     siteConf,
-		"newGoods": newGoods,
-		"hotSales": hotSales,
-		"member":   m,
+		"Partner":  p,
+		"Conf":     siteConf,
+		"NewGoods": newGoods,
+		"HotSales": hotSales,
+		"Member":   m,
 	}
 	return ctx.RenderOK("index.html", d)
 }

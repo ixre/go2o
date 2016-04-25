@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
+	"go2o/src/cache"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -59,11 +60,9 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	e.Id = partnerId
 
 	id, err := dps.PartnerService.SavePartner(partnerId, &e)
-
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 		result.Data = id
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -72,7 +71,7 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 //站点配置
 func (this *configC) SiteConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
-		return this.saleConf_post(ctx)
+		return this.siteConf_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
@@ -97,11 +96,9 @@ func (this *configC) siteConf_post(ctx *echox.Context) error {
 	e.PartnerId = partnerId
 
 	err := dps.PartnerService.SaveSiteConf(partnerId, &e)
-
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -131,11 +128,9 @@ func (this *configC) saleConf_post(ctx *echox.Context) error {
 	e.PartnerId = partnerId
 
 	err := dps.PartnerService.SaveSaleConf(partnerId, &e)
-
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
