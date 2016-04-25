@@ -107,16 +107,16 @@ func (this *MainC) Index(ctx *echox.Context) error {
 	}
 
 	siteConf := getSiteConf(ctx)
-	newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", "", 0, 12)
-	hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", "", 0, 12)
+	//newGoods := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "new-goods", "", 0, 12)
+	//hotSales := dps.SaleService.GetValueGoodsBySaleTag(p.Id, "hot-sales", "", 0, 12)
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Partner":  p,
-		"Conf":     siteConf,
-		"NewGoods": newGoods,
-		"HotSales": hotSales,
-		"Member":   m,
+		"Partner": p,
+		"Conf":    siteConf,
+		//"NewGoods": newGoods,
+		//"HotSales": hotSales,
+		"Member": m,
 	}
 	return ctx.RenderOK("index.html", d)
 }

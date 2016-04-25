@@ -24,6 +24,9 @@ type mainC struct {
 
 //todo:bug 当在UCenter登陆，会话会超时
 func (this *mainC) Index(ctx *echox.Context) error {
+
+	return ctx.RenderOK("index.html", ctx.NewData())
+
 	mm := getMember(ctx)
 	p := getPartner(ctx)
 	conf := getSiteConf(p.Id)

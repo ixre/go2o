@@ -108,6 +108,25 @@ func (this *ListC) GetSorter(ctx *echox.Context) error {
 	return nil
 }
 
+func (this *ListC) getGoodsSortSql(sortQuery string) string {
+	var orderBy string
+	switch sortQuery {
+	case "price_0":
+		orderBy = "gs_item.sale_price ASC"
+	case "price_1":
+		orderBy = "gs_item.sale_price DESC"
+	case "sale_0":
+		orderBy = "gs_goods.sale_num ASC"
+	case "sale_1":
+		orderBy = "gs_goods.sale_num DESC"
+	case "rate_0":
+	//todo:
+	case "rate_1":
+		//todo:
+	}
+	return orderBy
+}
+
 // 获取商品JSON数据
 func (this *ListC) GetGoodsListJson(c *echox.Context) error {
 	if c.Request().Method != "POST" {
@@ -120,7 +139,7 @@ func (this *ListC) GetGoodsListJson(c *echox.Context) error {
 	sortQuery := c.Form("sort")
 
 	total, items := dps.SaleService.GetPagedOnShelvesGoods(partnerId, categoryId,
-		begin, begin+size, sortQuery)
+		begin, begin+size, this.getGoodsSortSql(sortQuery))
 	for _, v := range items {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 	}
@@ -136,7 +155,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 	switch aputil.GetBrownerDevice(ctx.Request()) {
 	default:
 	case aputil.DevicePC:
-		//pcServe.ServeHTTP(w, r)
+	//pcServe.ServeHTTP(w, r)
 	case aputil.DeviceTouchPad, aputil.DeviceMobile:
 		return this.mobileListIndex(ctx)
 	case aputil.DeviceAppEmbed:
@@ -156,7 +175,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 	cat, opt := dps.SaleService.GetCategory(p.Id, categoryId)
 
 	total, items := dps.SaleService.GetPagedOnShelvesGoods(p.Id, categoryId,
-		(page-1)*size, page*size, sortQuery)
+		(page-1)*size, page*size, this.getGoodsSortSql(sortQuery))
 
 	var pagerHtml string
 	if total > size {
@@ -318,10 +337,6 @@ func (this *ListC) mobileSearchList(ctx *echox.Context) error {
 	sortQuery := ctx.Query("sort")
 	word, _ := url.QueryUnescape(ctx.Query("word"))
 	word = strings.TrimSpace(word)
-	if len(word) == 0 {
-		return ctx.Redirect(302, "/")
-	}
-
 	sortBar := front.GetSorterHtml(front.GoodsListSortItems,
 		sortQuery,
 		r.URL.RequestURI())

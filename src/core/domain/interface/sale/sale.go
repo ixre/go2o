@@ -9,6 +9,8 @@
 
 package sale
 
+import "go2o/src/core/domain/interface/valueobject"
+
 type ISale interface {
 	GetAggregateRootId() int
 
@@ -71,4 +73,7 @@ type ISale interface {
 
 	// 根据Key获取商品快照
 	GetGoodsSnapshotByKey(key string) *GoodsSnapshot
+
+	// 获取指定数量已上架的商品
+	GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
 }

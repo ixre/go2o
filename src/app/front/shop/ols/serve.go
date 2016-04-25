@@ -11,7 +11,7 @@ package ols
 import (
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
+	//mw "github.com/labstack/echo/middleware"
 	"go2o/src/app/util"
 	"go2o/src/cache"
 	"go2o/src/core/domain/interface/enum"
@@ -35,6 +35,7 @@ func registerRoutes(s *echox.Echo) {
 	uc := &UserC{}
 	lc := &ListC{}
 	ctc := &ContentC{}
+	jc := &jsonC{}
 
 	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
@@ -45,13 +46,13 @@ func registerRoutes(s *echox.Echo) {
 	s.Getx("/msc", mc.Msc)
 	s.Getx("/msd", mc.Msd)
 	s.Aanyx("/buy/:action", sp)
-
 	s.Aanyx("/shopping/:action", sp)
 	s.Aanyx("/list/:action", lc)
 	s.Aanyx("/cart/:action", cc)
 	s.Aanyx("/user/:action", uc)
 	s.Aanyx("/content/:action", ctc)
 	s.Aanyx("/pay/:action", pc)
+	s.Aanyx("/json/:action", jc)
 
 	// 购物车接口
 	s.Postx("/cart_api_v1", cc.CartApiHandle)
@@ -71,7 +72,7 @@ func registerRoutes(s *echox.Echo) {
 
 func getServe(path string) *echox.Echo {
 	s := echox.New()
-	s.Use(mw.Recover())
+	//s.Use(mw.Recover())
 	s.Use(echox.StopAttack)
 	s.Use(shopCheck)
 	registerRoutes(s)
