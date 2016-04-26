@@ -146,7 +146,7 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		ids = append(ids, categoryId)
 		return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, "", sortBy)
 	}
-	return sl.GetOnShelvesGoods(start, end, sortBy)
+	return -1, sl.GetOnShelvesGoods(start, end, sortBy)
 }
 
 // 获取分页上架的商品
