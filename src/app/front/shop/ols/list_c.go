@@ -84,7 +84,7 @@ func (this *ListC) All_cate(ctx *echox.Context) error {
 // 大类Json
 func (this ListC) CategoryJson(c *echox.Context) error {
 	parentId, _ := strconv.Atoi(c.Form("parent_id"))
-	partnerId := GetPartnerId(c.Request(), c.Session)
+	partnerId := GetPartnerId(c)
 	var v []*sale.ValueCategory
 	if parentId == 0 {
 		v = dps.SaleService.GetBigCategories(partnerId)
@@ -132,7 +132,7 @@ func (this *ListC) GetGoodsListJson(c *echox.Context) error {
 	if c.Request().Method != "POST" {
 		return nil
 	}
-	partnerId := GetPartnerId(c.Request(), c.Session)
+	partnerId := GetPartnerId(c)
 	size, _ := strconv.Atoi(c.Form("size"))
 	begin, _ := strconv.Atoi(c.Form("begin"))
 	categoryId, _ := strconv.Atoi(c.Form("categoryId"))
@@ -233,7 +233,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 }
 func (this *ListC) mobileListIndex(ctx *echox.Context) error {
 	r := ctx.Request()
-	partnerId := GetPartnerId(r, ctx.Session)
+	partnerId := GetPartnerId(ctx)
 	sortQuery := ctx.Query("sort")
 	idArr := this.getIdArray(r.URL.Path)
 	categoryId := idArr[len(idArr)-1]
@@ -333,7 +333,7 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 // 手机搜索列表
 func (this *ListC) mobileSearchList(ctx *echox.Context) error {
 	r := ctx.Request()
-	//partnerId := GetPartnerId(r, ctx.Session)
+	//partnerId := GetPartnerId(ctx)
 	sortQuery := ctx.Query("sort")
 	word, _ := url.QueryUnescape(ctx.Query("word"))
 	word = strings.TrimSpace(word)
@@ -354,7 +354,7 @@ func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
 	if c.Request().Method != "POST" {
 		return nil
 	}
-	partnerId := GetPartnerId(c.Request(), c.Session)
+	partnerId := GetPartnerId(c)
 	size, _ := strconv.Atoi(c.Form("size"))
 	begin, _ := strconv.Atoi(c.Form("begin"))
 	word, _ := url.QueryUnescape(c.Form("word"))
@@ -444,7 +444,7 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 
 func (this *ListC) mobileSaleTagList(ctx *echox.Context) error {
 	r := ctx.Request()
-	partnerId := GetPartnerId(r, ctx.Session)
+	partnerId := GetPartnerId(ctx)
 	sortBy := ctx.Query("sort")
 
 	tagCode := ctx.P(0)
@@ -487,7 +487,7 @@ func (this *ListC) getSaleTagSortBySql(sortQuery string) string {
 }
 
 func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
-	partnerId := GetPartnerId(ctx.Request(), ctx.Session)
+	partnerId := GetPartnerId(ctx)
 	code := strings.TrimSpace(ctx.Form("code"))
 	saleTag := dps.SaleService.GetSaleTagByCode(partnerId, code)
 	if saleTag == nil {

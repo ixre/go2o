@@ -10,6 +10,7 @@ package dps
 
 import (
 	"go2o/src/core/domain/interface/ad"
+	"go2o/src/core/infrastructure/format"
 )
 
 type advertisementService struct {
@@ -40,7 +41,11 @@ func (this *advertisementService) GetAdvertisementAndDataByName(partnerId int, n
 		v := adv.GetValue()
 		switch adv.Type() {
 		case ad.TypeGallery:
-			return v, adv.(ad.IGalleryAd).GetEnabledAdValue()
+			gallary := adv.(ad.IGalleryAd).GetEnabledAdValue()
+			for _, v := range gallary {
+				v.ImageUrl = format.GetResUrl(v.ImageUrl)
+			}
+			return v, gallary
 			//todo: 其他的广告类型
 		}
 		return v, nil

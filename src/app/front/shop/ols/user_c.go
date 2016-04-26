@@ -53,7 +53,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
 	//r.ParseForm()
 	var result gof.Message
-	partnerId := GetPartnerId(r, ctx.Session)
+	partnerId := GetPartnerId(ctx)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)

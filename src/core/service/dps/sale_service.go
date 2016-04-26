@@ -138,15 +138,22 @@ func (this *saleService) DeleteItem(partnerId int, id int) error {
 
 // 获取分页上架的商品
 func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int,
-	sortBy string) (int, []*valueobject.Goods) {
+	sortBy string) (total int, list []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
+
 	if categoryId > 0 {
 		var cate sale.ICategory = sl.GetCategory(categoryId)
 		var ids []int = cate.GetChildId()
 		ids = append(ids, categoryId)
-		return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, "", sortBy)
+		total, list = this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, "", sortBy)
+	} else {
+		total = -1
+		list = sl.GetOnShelvesGoods(start, end, sortBy)
 	}
-	return -1, sl.GetOnShelvesGoods(start, end, sortBy)
+	for _, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+	}
+	return total, list
 }
 
 // 获取分页上架的商品
@@ -362,7 +369,11 @@ func (this *saleService) GetValueGoodsBySaleTag(partnerId int,
 	code, sortBy string, begin int, end int) []*valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	if tag := sl.GetSaleTagByCode(code); tag != nil {
-		return tag.GetValueGoods(sortBy, begin, end)
+		list := tag.GetValueGoods(sortBy, begin, end)
+		for _, v := range list {
+			v.Image = format.GetGoodsImageUrl(v.Image)
+		}
+		return list
 	}
 	return make([]*valueobject.Goods, 0)
 }

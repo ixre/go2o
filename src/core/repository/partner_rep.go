@@ -232,7 +232,7 @@ func (this *partnerRep) GetValueShop(partnerId, shopId int) *partner.ValueShop {
 		v.PartnerId == partnerId {
 		return v
 	} else {
-		log.PrintErr(err)
+		log.Error(err)
 	}
 	return nil
 }
@@ -243,7 +243,7 @@ func (this *partnerRep) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 		"SELECT * FROM pt_shop WHERE partner_id=?", partnerId)
 
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 		return nil
 	}
 
