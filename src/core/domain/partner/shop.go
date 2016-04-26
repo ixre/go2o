@@ -69,7 +69,7 @@ func (this *Shop) Save() (int, error) {
 //		var err error
 //		this.lng, this.lat, err = lbs.GetLocation(this.value.Address)
 //		if err != nil {
-//			log.PrintErr(err)
+//			log.Error(err)
 //		}
 //	}
 //	return this.lng, this.lat
@@ -89,7 +89,7 @@ func (this *Shop) Save() (int, error) {
 //func (this *Shop) CanDeliverTo(address string) (bool, int) {
 //	lng, lat, err := lbs.GetLocation(address)
 //	if err != nil {
-//		log.PrintErr(err)
+//		log.Error(err)
 //		return false, -1
 //	}
 //	return this.CanDeliver(lng, lat)

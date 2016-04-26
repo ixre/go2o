@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/ui/tree"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"

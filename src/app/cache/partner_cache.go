@@ -58,24 +58,32 @@ func DelPartnerCache(partnerId int) {
 
 // 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
-	var v *partner.SiteConf
+	var v partner.SiteConf
 	var sto gof.Storage = GetKVS()
 	var key string = GetPartnerSiteConfCK(partnerId)
-
-	if sto.DriverName() == storage.DriveHashStorage {
-		if obj, err := GetKVS().GetRaw(key); err != nil {
-			v = obj.(*partner.SiteConf)
+	if sto.Get(key, &v) != nil {
+		v2 := dps.PartnerService.GetSiteConf(partnerId)
+		if v2 != nil {
+			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 		}
-	} else if sto.DriverName() == storage.DriveRedisStorage {
-		sto.Get(key, &v)
+		return v2
 	}
+	return &v
+}
 
-	if v == nil {
-		if v = dps.PartnerService.GetSiteConf(partnerId); v != nil {
-			sto.Set(key, v)
+// 根据主机头识别会员编号
+func GetPartnerIdByHost(host string) int {
+	partnerId := 0
+	key := "cache:host-for:" + host
+	sto := GetKVS()
+	var err error
+	if partnerId, err = sto.GetInt(key); err != nil || partnerId <= 0 {
+		partnerId = dps.PartnerService.GetPartnerIdByHost(host)
+		if partnerId > 0 {
+			sto.SetExpire(key, partnerId, DefaultMaxSeconds)
 		}
 	}
-	return v
+	return partnerId
 }
 
 // 根据API ID获取商户ID

@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"

@@ -369,7 +369,7 @@ func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 		})
 
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 	}
 	return d
 }

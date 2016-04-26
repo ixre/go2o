@@ -11,7 +11,7 @@ package ucenter
 import (
 	"github.com/jsix/gof/web/session"
 	"github.com/labstack/echo"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"

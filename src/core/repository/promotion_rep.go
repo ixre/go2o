@@ -184,7 +184,7 @@ func (this *promotionRep) GetCouponTakes(couponId int) []promotion.ValueCouponTa
 	err := this.Connector.GetOrm().SelectByQuery(&arr,
 		"SELECT * FROM pm_coupon_take WHERE coupon_id =?", couponId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 	}
 
 	return arr
@@ -204,7 +204,7 @@ func (this *promotionRep) GetCouponBinds(couponId int) []promotion.ValueCouponBi
 	err := this.Connector.GetOrm().SelectByQuery(arr,
 		"SELECT * FROM pm_coupon_bind WHERE coupon_id = ?", couponId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 	}
 	return arr
 }

@@ -12,7 +12,7 @@ package partner
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
