@@ -154,7 +154,7 @@ func (this *goodsRep) GetOnShelvesGoods(partnerId int, start, end int, sortBy st
 	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.partner_id=? AND gs_item.state=1
-		 AND gs_item.on_shelves=1 ORDER BY %s update_time DESC LIMIT ?,?`,
+		 AND gs_item.on_shelves=1 ORDER BY %s,update_time DESC LIMIT ?,?`,
 		sortBy)
 
 	this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId, start, (end - start))

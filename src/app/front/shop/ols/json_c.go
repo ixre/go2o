@@ -63,3 +63,22 @@ func (t *jsonC) Simple_goods(ctx *echox.Context) error {
 	}
 	return ctx.Debug(ctx.JSON(http.StatusOK, data))
 }
+
+// 获取销售标签获取商品
+func (t *jsonC) Saletag_goods(ctx *echox.Context) error {
+	codes := strings.Split(strings.TrimSpace(ctx.Form("codes")), "|")
+	begin, _ := strconv.Atoi(ctx.Form("begin"))
+	size, err := strconv.Atoi(ctx.Form("size"))
+	if err != nil {
+		msg := &gof.Message{}
+		return ctx.JSON(http.StatusNotFound, msg.Error(err))
+	}
+	partnerId := GetPartnerId(ctx.Request(), ctx.Session)
+	data := make(map[string]interface{}, len(codes))
+	for _, code := range codes {
+		list := dps.SaleService.GetValueGoodsBySaleTag(
+			partnerId, code, "", begin, begin+size)
+		data[code] = list
+	}
+	return ctx.Debug(ctx.JSON(http.StatusOK, data))
+}
