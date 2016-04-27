@@ -12,8 +12,8 @@ package app
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
-	"go2o/src/app/front/master"
-	"go2o/src/app/front/partner"
+	//"go2o/src/app/front/master"
+	//"go2o/src/app/front/partner"
 	"go2o/src/app/front/shop/ols"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/variable"
@@ -77,8 +77,8 @@ func Run(ch chan bool, app gof.App, addr string) {
 	}
 	echox.GlobSet(m, w)
 	hosts := make(MyHttpHosts)
-	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
-	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
+	//hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
+	//hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
 	http.ListenAndServe(addr, hosts)

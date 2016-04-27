@@ -57,7 +57,7 @@ func (this *loginC) index_post(ctx *echox.Context) error {
 func (this *loginC) Partner_connect(c *echox.Context) error {
 	r := c.Request()
 	sessionId := r.URL.Query().Get("sessionId")
-	url := r.URL.Query().Get("return_url")
+	url := r.URL.Query().Get("url")
 	if len(url) == 0 {
 		url = "/"
 	}
