@@ -12,8 +12,10 @@ import (
 	"encoding/json"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"go2o/src/app/util"
+	aputil "go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"html/template"
 	"time"
@@ -22,10 +24,24 @@ import (
 type mainC struct {
 }
 
-//todo:bug 当在UCenter登陆，会话会超时
+func (this *mainC) mobileIndex(ctx *echox.Context) error {
+	d := ctx.NewData()
+	d.Map = map[string]interface{}{
+		"AliasGrowAccount":    template.HTML(variable.AliasGrowAccount),
+		"AliasPresentAccount": template.HTML(variable.AliasPresentAccount),
+	}
+	return ctx.RenderOK("index.html", d)
+}
+
 func (this *mainC) Index(ctx *echox.Context) error {
 
-	return ctx.RenderOK("index.html", ctx.NewData())
+	switch aputil.GetBrownerDevice(ctx.HttpRequest()) {
+	default:
+	case aputil.DevicePC:
+	case aputil.DeviceTouchPad, aputil.DeviceMobile, aputil.DeviceAppEmbed:
+		return this.mobileIndex(ctx)
+	}
+
 	mm := getMember(ctx)
 	p := getPartner(ctx)
 	conf := getSiteConf(p.Id)
@@ -44,7 +60,9 @@ func (this *mainC) Index(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = map[string]interface{}{
-		"level": lv,
+		"AliasGrowAccount":    variable.AliasGrowAccount,
+		"AliasPresentAccount": variable.AliasPresentAccount,
+		"level":               lv,
 		//"nLevel":       nextLv,
 		"member":       mm,
 		"partner":      p,

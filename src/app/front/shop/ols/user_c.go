@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -163,18 +164,21 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 // 跳转到会员中心
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
+	returnUrl := ctx.Query("url")
 	m := GetMember(ctx)
 	var location string
 	if m == nil {
-		location = "/user/login?return_url=/user/jump_m"
+		location = "/user/login?return_url=" +
+			url.QueryEscape("/user/jump_m?url="+returnUrl)
 	} else {
-		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
+		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s&url=%s",
 			variable.DOMAIN_PREFIX_MEMBER,
 			ctx.App.Config().GetString(variable.ServerDomain),
 			util.GetBrownerDevice(ctx.HttpRequest()),
 			ctx.Session.GetSessionId(),
 			m.Id,
 			m.DynamicToken,
+			url.QueryEscape(returnUrl),
 		)
 	}
 	return ctx.Redirect(302, location)

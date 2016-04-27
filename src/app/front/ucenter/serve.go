@@ -32,6 +32,7 @@ func registerRoutes(s *echox.Echo) {
 	lc := &loginC{}
 	gc := &getC{}
 	riseC := &personFinanceRiseC{}
+	jc := &jsonC{}
 
 	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
@@ -47,6 +48,7 @@ func registerRoutes(s *echox.Echo) {
 	s.Aanyx("/account/:action", ac)
 	s.Getx("/get/qr/:code/:size", gc.GetQR)
 	s.Aanyx("/finance/rise/:action", riseC)
+	s.Apostx("/json/:action", jc)
 }
 
 func getServe(path string) *echox.Echo {

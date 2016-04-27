@@ -37,6 +37,7 @@ func (this *MemberQuery) GetMemberList(partnerId int, ids []int) []*dto.MemberSu
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
 		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
 				lv.name as level_name,a.integral,a.balance,a.present_balance,
+				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN pt_member_level lv
 				ON m.level = lv.value INNER JOIN mm_account a ON
 				 a.member_id = m.id WHERE lv.partner_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)

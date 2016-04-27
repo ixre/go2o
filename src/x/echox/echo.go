@@ -120,6 +120,26 @@ func (this *Echo) Aanyx(path string, obj interface{}) {
 	this.Any(path, this.parseHandler(h))
 }
 
+func (this *Echo) Agetx(path string, obj interface{}) {
+	h := func(c *Context) error {
+		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+			return hd(c)
+		}
+		return c.String(http.StatusInternalServerError, "no such file")
+	}
+	this.Get(path, this.parseHandler(h))
+}
+
+func (this *Echo) Apostx(path string, obj interface{}) {
+	h := func(c *Context) error {
+		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+			return hd(c)
+		}
+		return c.String(http.StatusInternalServerError, "no such file")
+	}
+	this.Post(path, this.parseHandler(h))
+}
+
 func ParseContext(ctx *echo.Context, app gof.App) *Context {
 	req, rsp := ctx.Request(), ctx.Response()
 	s := session.Default(rsp, req)
