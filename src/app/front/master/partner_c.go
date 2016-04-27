@@ -36,7 +36,7 @@ func (c *partnerC) CreatePartner(ctx *echox.Context) error {
 
 // 保存商户(POST)
 func (c *partnerC) SavePartner(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		var isCreate bool

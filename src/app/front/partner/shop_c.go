@@ -53,7 +53,7 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 //保存门店信息(POST)
 func (this *shopC) SaveShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
@@ -77,7 +77,7 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 func (this *shopC) Del(ctx *echox.Context) error {
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		shopId, err := strconv.Atoi(r.FormValue("id"))

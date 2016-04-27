@@ -57,7 +57,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 
 func (this *contentC) SavePage(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 
 		r.ParseForm()
@@ -86,7 +86,7 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 
 func (this *contentC) Page_del(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 

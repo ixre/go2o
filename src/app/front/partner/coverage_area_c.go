@@ -26,7 +26,7 @@ func (this *coverageAreaC) Create(ctx *echox.Context) error {
 
 // 保存配送区域(POST)
 func (this *coverageAreaC) SaveArea(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()

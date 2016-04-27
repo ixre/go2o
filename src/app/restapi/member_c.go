@@ -11,7 +11,6 @@ package restapi
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/labstack/echo"
 	"go2o/src/app/cache"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
@@ -20,7 +19,9 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -98,7 +99,7 @@ func (this *MemberC) Ping(ctx *echo.Context) error {
 // 同步
 func (this *MemberC) Async(ctx *echo.Context) error {
 	var rlt AsyncResult
-	var form = ctx.Request().Form
+	var form = url.Values(ctx.Request().Form)
 	var mut, aut, kvMut, kvAut int
 	memberId := GetMemberId(ctx)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))

@@ -53,7 +53,7 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 func (this *orderC) cancel_post(ctx *echox.Context) error {
 	result := gof.Message{}
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	reason := r.FormValue("reason")
 	err := dps.ShoppingService.CancelOrder(partnerId,
@@ -69,7 +69,7 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 
 func (this *orderC) View(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -112,7 +112,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 
 func (this *orderC) Setup(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
@@ -147,7 +147,7 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 	}
 	var msg gof.Message
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
@@ -167,7 +167,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 		return this.payment_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -192,7 +192,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 
 func (this *orderC) payment_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 

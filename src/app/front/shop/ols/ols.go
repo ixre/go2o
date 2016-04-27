@@ -15,6 +15,11 @@ import (
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"net/url"
+	"sync"
+)
+
+var (
+	mux sync.Mutex
 )
 
 // 获取商户编号
@@ -57,7 +62,7 @@ func GetMember(ctx *echox.Context) *member.ValueMember {
 func CheckMemberLogin(ctx *echox.Context) bool {
 	if ctx.Session.Get("member") == nil {
 		ctx.Response().Header().Add("Location", "/user/login?return_url="+
-			url.QueryEscape(ctx.Request().RequestURI))
+			url.QueryEscape(ctx.HttpRequest().RequestURI))
 		ctx.Response().WriteHeader(302)
 		return false
 	}
@@ -66,6 +71,8 @@ func CheckMemberLogin(ctx *echox.Context) bool {
 
 // 获取商户编号
 func GetPartnerId(ctx *echox.Context) int {
+	mux.Lock()
+	defer mux.Unlock()
 	if v := ctx.Get("partner_id"); v != nil {
 		return v.(int)
 	}

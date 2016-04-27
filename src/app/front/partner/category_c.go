@@ -71,7 +71,7 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
 	e, _ := dps.SaleService.GetCategory(partnerId, id)
@@ -93,7 +93,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 //修改门店信息
 func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
@@ -114,7 +114,7 @@ func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 
 func (this *categoryC) DelCategory(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()

@@ -22,7 +22,7 @@ type MainC struct {
 
 // 处理跳转
 func (this *MainC) HandleIndexGo(ctx *echox.Context) bool {
-	r, w := ctx.Request(), ctx.Response()
+	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	g := r.URL.Query().Get("go")
 	if g == "buy" {
 		w.Header().Add("Location", "/list")
@@ -34,8 +34,8 @@ func (this *MainC) HandleIndexGo(ctx *echox.Context) bool {
 
 // 更换访问设备
 func (this *MainC) change_device(ctx *echox.Context) error {
-	r := ctx.Request()
-	util.SetDeviceByUrlQuery(ctx.Response(), r)
+	r := ctx.HttpRequest()
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), r)
 	toUrl := r.URL.Query().Get("return_url")
 	if len(toUrl) == 0 {
 		toUrl = r.Referer()
@@ -48,8 +48,7 @@ func (this *MainC) change_device(ctx *echox.Context) error {
 
 // Member session connect
 func (this *MainC) Msc(ctx *echox.Context) error {
-	form := ctx.Request().URL.Query()
-	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), ctx.HttpRequest())
 	util.MemberHttpSessionConnect(ctx, func(memberId int) {
 		v := ctx.Session.Get("member")
 		var m *member.ValueMember
@@ -67,7 +66,7 @@ func (this *MainC) Msc(ctx *echox.Context) error {
 		}
 	})
 
-	rtu := form.Get("return_url")
+	rtu := ctx.Query("return_url")
 	if len(rtu) == 0 {
 		rtu = "/"
 	}
@@ -90,10 +89,10 @@ func (this *MainC) T(c *echox.Context) error {
 	ivCode := path[i+1:]
 	device := c.Query("device")
 	if len(device) > 0 {
-		util.SetBrownerDevice(c.Response(), c.Request(), device) //设置访问设备
+		util.SetBrownerDevice(c.HttpResponse(), c.HttpRequest(), device) //设置访问设备
 	}
 	c.Response().Header().Add("Location", "/user/register?invi_code="+
-		ivCode+"&"+c.Request().URL.RawQuery)
+		ivCode+"&"+c.HttpRequest().URL.RawQuery)
 	c.Response().WriteHeader(302)
 	return nil
 }

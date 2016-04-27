@@ -56,7 +56,7 @@ func (this *mssC) Create_mail_tpl(ctx *echox.Context) error {
 
 // 删除邮件模板(POST)
 func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 
 		req.ParseForm()
@@ -79,7 +79,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 // 保存邮件模板(POST)
 func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
@@ -128,7 +128,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 	var result gof.Message
 	partnerId := getPartnerId(ctx)
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	var data map[string]string = make(map[string]string, 0)
 	for k, v := range req.Form {

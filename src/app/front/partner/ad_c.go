@@ -55,7 +55,7 @@ func (this *adC) Create(ctx *echox.Context) error {
 
 // 删除广告(POST)
 func (this *adC) Delete_ad(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
@@ -77,7 +77,7 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 // 保存广告(POST)
 func (this *adC) SaveAd(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 
@@ -150,7 +150,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 // 保存图片(POST)
 func (this *adC) SaveImage(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
@@ -174,7 +174,7 @@ func (this *adC) SaveImage(ctx *echox.Context) error {
 
 // 删除广告图片(POST)
 func (this *adC) Delete_image(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message

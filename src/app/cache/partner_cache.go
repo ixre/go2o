@@ -11,33 +11,24 @@ package cache
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/storage"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 )
 
 // 获取商户信息缓存
 func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
-	var v *partner.ValuePartner
+	var v partner.ValuePartner
 	var sto gof.Storage = GetKVS()
 	var key string = GetValuePartnerCacheCK(partnerId)
-
-	if sto.DriverName() == storage.DriveHashStorage {
-		if obj, err := GetKVS().GetRaw(key); err != nil {
-			v = obj.(*partner.ValuePartner)
+	if sto.Get(key, &v) != nil {
+		v2, err := dps.PartnerService.GetPartner(partnerId)
+		if v2 != nil && err == nil {
+			sto.SetExpire(key, *v2, DefaultMaxSeconds)
+			return v2
 		}
-	} else if sto.DriverName() == storage.DriveRedisStorage {
-		sto.Get(key, &v)
 	}
+	return &v
 
-	if v == nil {
-		var err error
-		if v, err = dps.PartnerService.GetPartner(partnerId); err == nil {
-			sto.Set(key, v)
-		}
-
-	}
-	return v
 }
 
 // 设置商户信息缓存

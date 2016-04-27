@@ -98,7 +98,7 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 // 保存商品描述
 func (this *goodsC) Item_info(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
@@ -117,7 +117,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 // 保存货品描述信息(POST)
 func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("ItemId"))
@@ -140,7 +140,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 // 保存货品信息(POST)
 func (this *goodsC) SaveItem(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		ss := dps.SaleService
 		var result gof.Message
@@ -169,7 +169,7 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 // 删除商品信息(POST)
 func (this *goodsC) Del_goods(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -189,7 +189,7 @@ func (this *goodsC) Del_goods(ctx *echox.Context) error {
 // 删除货品信息(POST)
 func (this *goodsC) Del_item(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 
@@ -234,7 +234,7 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 
 // 保存销售标签(POST)
 func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		var result gof.Message
@@ -320,7 +320,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 }
 
 func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
 	if err != nil {
