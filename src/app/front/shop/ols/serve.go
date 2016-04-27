@@ -9,17 +9,20 @@
 package ols
 
 import (
-	"github.com/labstack/echo"
-	//mw "github.com/labstack/echo/middleware"
 	"go2o/src/app/cache"
 	"go2o/src/app/util"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/http"
 	"strings"
+	"sync"
 )
 
 var (
+	waitInit   bool
+	serveMux   sync.Mutex
 	pcServe    *echox.Echo
 	mobiServe  *echox.Echo
 	embedServe *echox.Echo
@@ -75,7 +78,7 @@ func registerRoutes(s *echox.Echo) {
 
 func getServe(path string) *echox.Echo {
 	s := echox.New()
-	//s.Use(mw.Recover())
+	s.Use(mw.Recover())
 	s.Use(echox.StopAttack)
 	s.Use(shopCheck)
 	registerRoutes(s)
@@ -83,21 +86,23 @@ func getServe(path string) *echox.Echo {
 	return s
 }
 
-// 初始化
-func init() {
+// 获取所有服务
+func GetServes() (sPc *echox.Echo, sMobi *echox.Echo, sApp *echox.Echo) {
 	pcServe = getServe("public/views/shop/ols/pc")
 	mobiServe = getServe("public/views/shop/ols/mobi")
 	//embedServe = getServe("public/views/shop/ols/app_embed")
 	embedServe = getServe("public/views/shop/ols/mobi")
-}
-
-// 获取所有服务
-func GetServes() (sPc *echox.Echo, sMobi *echox.Echo, sApp *echox.Echo) {
 	return pcServe, mobiServe, embedServe
 }
 
 // 处理服务
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if waitInit {
+		serveMux.Lock()
+		defer serveMux.Unlock()
+		GetServes()
+		waitInit = false
+	}
 	switch util.GetBrownerDevice(r) {
 	default:
 	case util.DevicePC:

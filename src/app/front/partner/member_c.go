@@ -57,7 +57,7 @@ func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 // 保存会员等级(POST)
 func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
@@ -80,7 +80,7 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 }
 
 func (this *memberC) DelMLevel(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
@@ -110,7 +110,7 @@ func (this *memberC) List(ctx *echox.Context) error {
 
 // 锁定会员
 func (this *memberC) Lock_member(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		id, _ := strconv.Atoi(req.FormValue("id"))
@@ -212,7 +212,7 @@ func (this *memberC) Unlock_bankinfo(ctx *echox.Context) error {
 // 重置密码(POST)
 func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 	var result gof.Message
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
@@ -247,7 +247,7 @@ func (this *memberC) Charge(ctx *echox.Context) error {
 func (this *memberC) charge_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
@@ -286,7 +286,7 @@ func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
 // 审核提现请求
 func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 	var msg gof.Message
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		partnerId := getPartnerId(ctx)
@@ -328,7 +328,7 @@ func (this *memberC) Back_apply_req(ctx *echox.Context) error {
 
 func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
@@ -373,7 +373,7 @@ func (this *memberC) Handle_apply_req(ctx *echox.Context) error {
 func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	partnerId := getPartnerId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))

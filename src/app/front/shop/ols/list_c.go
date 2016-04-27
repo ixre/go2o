@@ -129,7 +129,7 @@ func (this *ListC) getGoodsSortSql(sortQuery string) string {
 
 // 获取商品JSON数据
 func (this *ListC) GetGoodsListJson(c *echox.Context) error {
-	if c.Request().Method != "POST" {
+	if c.Request().Method == "POST" {
 		return nil
 	}
 	partnerId := GetPartnerId(c)
@@ -152,7 +152,7 @@ func (this *ListC) GetGoodsListJson(c *echox.Context) error {
 
 // 商品列表
 func (this *ListC) List_Index(ctx *echox.Context) error {
-	switch aputil.GetBrownerDevice(ctx.Request()) {
+	switch aputil.GetBrownerDevice(ctx.HttpRequest()) {
 	default:
 	case aputil.DevicePC:
 	//pcServe.ServeHTTP(w, r)
@@ -162,7 +162,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 		//embedServe.ServeHTTP(w, r)
 	}
 
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	p := getPartner(ctx)
 	const size int = 20 //-1表示全部
 	sortQuery := ctx.Query("sort")
@@ -232,7 +232,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 	return ctx.RenderOK(optView.Value, d)
 }
 func (this *ListC) mobileListIndex(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	partnerId := GetPartnerId(ctx)
 	sortQuery := ctx.Query("sort")
 	idArr := this.getIdArray(r.URL.Path)
@@ -259,7 +259,7 @@ func (this *ListC) mobileListIndex(ctx *echox.Context) error {
 
 // 商品列表
 func (this *ListC) SearchList(ctx *echox.Context) error {
-	switch aputil.GetBrownerDevice(ctx.Request()) {
+	switch aputil.GetBrownerDevice(ctx.HttpRequest()) {
 	default:
 	case aputil.DevicePC:
 	//pcServe.ServeHTTP(w, r)
@@ -269,7 +269,7 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 		//embedServe.ServeHTTP(w, r)
 	}
 
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	p := getPartner(ctx)
 	const size int = 20 //-1表示全部
 	sortQuery := ctx.Query("sort")
@@ -332,7 +332,7 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 
 // 手机搜索列表
 func (this *ListC) mobileSearchList(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	//partnerId := GetPartnerId(ctx)
 	sortQuery := ctx.Query("sort")
 	word, _ := url.QueryUnescape(ctx.Query("word"))
@@ -351,7 +351,7 @@ func (this *ListC) mobileSearchList(ctx *echox.Context) error {
 
 // 获取商品JSON数据
 func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
-	if c.Request().Method != "POST" {
+	if c.Request().Method == "POST" {
 		return nil
 	}
 	partnerId := GetPartnerId(c)
@@ -375,7 +375,7 @@ func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
 // 销售标签列表
 func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 
-	switch aputil.GetBrownerDevice(ctx.Request()) {
+	switch aputil.GetBrownerDevice(ctx.HttpRequest()) {
 	default:
 	case aputil.DevicePC:
 	//pcServe.ServeHTTP(w, r)
@@ -383,7 +383,7 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 		return this.mobileSaleTagList(ctx)
 	}
 
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	p := getPartner(ctx)
 
 	const size int = 20
@@ -396,7 +396,7 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 
 	saleTag := dps.SaleService.GetSaleTagByCode(p.Id, tagCode)
 	if saleTag == nil {
-		http.Error(ctx.Response(), "404 file not found!", http.StatusNotFound)
+		http.Error(ctx.HttpResponse(), "404 file not found!", http.StatusNotFound)
 		return nil
 	}
 
@@ -443,14 +443,14 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 }
 
 func (this *ListC) mobileSaleTagList(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	partnerId := GetPartnerId(ctx)
 	sortBy := ctx.Query("sort")
 
 	tagCode := ctx.P(0)
 	saleTag := dps.SaleService.GetSaleTagByCode(partnerId, tagCode)
 	if saleTag == nil {
-		http.Error(ctx.Response(), "not found!", http.StatusNotFound)
+		http.Error(ctx.HttpResponse(), "not found!", http.StatusNotFound)
 		return nil
 	}
 
@@ -491,7 +491,7 @@ func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
 	code := strings.TrimSpace(ctx.Form("code"))
 	saleTag := dps.SaleService.GetSaleTagByCode(partnerId, code)
 	if saleTag == nil {
-		http.Error(ctx.Response(), "{err:'no such tag'}", http.StatusNotFound)
+		http.Error(ctx.HttpResponse(), "{err:'no such tag'}", http.StatusNotFound)
 		return nil
 	}
 	size, _ := strconv.Atoi(ctx.Form("size"))
@@ -512,7 +512,7 @@ func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
 
 // 商品详情
 func (this *ListC) GoodsView(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	p := getPartner(ctx)
 	path := r.URL.Path
 	goodsId, _ := strconv.Atoi(path[strings.LastIndex(path, "-")+1 : strings.Index(path, ".")])

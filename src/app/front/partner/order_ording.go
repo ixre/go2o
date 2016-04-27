@@ -36,7 +36,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 // 设置门店(POST)
 func (this *orderC) SetShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 

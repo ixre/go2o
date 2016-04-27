@@ -12,7 +12,7 @@ import (
 	"errors"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
-	"github.com/labstack/echo"
+	"gopkg.in/labstack/echo.v1"
 	"log"
 	"net/http"
 	"reflect"
@@ -33,8 +33,10 @@ type (
 	}
 	Context struct {
 		*echo.Context
-		App     gof.App
-		Session *session.Session
+		App      gof.App
+		Session  *session.Session
+		response http.ResponseWriter
+		request  *http.Request
 	}
 	TemplateData struct {
 		Var  map[string]interface{}
@@ -65,15 +67,11 @@ func (this *Echo) chkApp() {
 	}
 }
 
+// 转换为Echo Handler
 func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	return func(ctx *echo.Context) error {
 		this.chkApp()
-		s := session.Default(ctx.Response(), ctx.Request())
-		return h(&Context{
-			Context: ctx,
-			Session: s,
-			App:     this.app,
-		})
+		return h(ParseContext(ctx, this.app))
 	}
 }
 
@@ -120,6 +118,25 @@ func (this *Echo) Aanyx(path string, obj interface{}) {
 		return c.String(http.StatusInternalServerError, "no such file")
 	}
 	this.Any(path, this.parseHandler(h))
+}
+
+func ParseContext(ctx *echo.Context, app gof.App) *Context {
+	req, rsp := ctx.Request(), ctx.Response()
+	s := session.Default(rsp, req)
+	return &Context{
+		Context:  ctx,
+		Session:  s,
+		App:      app,
+		response: rsp,
+		request:  req,
+	}
+}
+
+func (this *Context) HttpResponse() http.ResponseWriter {
+	return this.response
+}
+func (this *Context) HttpRequest() *http.Request {
+	return this.request
 }
 
 func (this *Context) StringOK(s string) error {
@@ -196,7 +213,7 @@ func NewRenderData() *TemplateData {
 }
 
 //
-//type InterceptorFunc func(*echo.Context) bool
+//type InterceptorFunc func(echo.Context) bool
 //
 //// 拦截器
 //func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
@@ -234,8 +251,9 @@ func StopAttack(h echo.HandlerFunc) echo.HandlerFunc {
 		case "GET":
 			badRequest = requestFilter[method].MatchString(ctx.Request().URL.RawQuery)
 		case "POST":
-			badRequest = requestFilter["GET"].MatchString(ctx.Request().URL.String()) ||
-				requestFilter[method].MatchString(ctx.Request().PostForm.Encode())
+			badRequest = requestFilter["GET"].MatchString(ctx.Request().URL.RawQuery) ||
+				requestFilter[method].MatchString(
+					ctx.Request().Form.Encode())
 		}
 		if badRequest {
 			return ctx.HTML(http.StatusNotFound,

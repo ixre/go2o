@@ -12,13 +12,13 @@ package app
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
-	"github.com/labstack/echo"
 	"go2o/src/app/front/master"
 	"go2o/src/app/front/partner"
 	"go2o/src/app/front/shop/ols"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
 	"log"
 	"net/http"
 	"strconv"
@@ -52,7 +52,7 @@ func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 运行网页
+// 运行Web,监听到3个端口
 func Run(ch chan bool, app gof.App, addr string) {
 	defer func() {
 		ch <- true
@@ -81,7 +81,6 @@ func Run(ch chan bool, app gof.App, addr string) {
 	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
 	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
 	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
-
 	http.ListenAndServe(addr, hosts)
 }
 

@@ -42,7 +42,7 @@ func (this *configC) Profile(ctx *echox.Context) error {
 
 func (this *configC) profile_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
@@ -83,7 +83,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 
 func (this *configC) siteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
@@ -118,7 +118,7 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 
 func (this *configC) saleConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 

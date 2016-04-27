@@ -10,9 +10,9 @@ package master
 
 import (
 	"github.com/jsix/gof/web/session"
-	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/url"
 )
 
@@ -50,7 +50,7 @@ func masterLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			return h(ctx)
 		}
 		ctx.Response().Header().Set("Location", "/login?return_url="+
-			url.QueryEscape(ctx.Request().URL.String()))
+			url.QueryEscape(ctx.Request().RequestURI))
 		ctx.Response().WriteHeader(302)
 		return nil
 	}

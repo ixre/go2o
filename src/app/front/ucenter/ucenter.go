@@ -10,12 +10,12 @@ package ucenter
 
 import (
 	"github.com/jsix/gof/web/session"
-	"github.com/labstack/echo"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
 	"net/url"
 	"strings"
 	"sync"
@@ -28,6 +28,8 @@ var (
 // 会员登陆检查
 func memberLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx *echo.Context) error {
+		mux.Lock()
+		defer mux.Unlock()
 		path := ctx.Request().URL.Path
 
 		const ignore string = "/login|/partner_connect|/msc|/msd|/partner_disconnect|"
@@ -36,6 +38,7 @@ func memberLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			strings.Index(ignore, path+"|") != -1 {
 			return h(ctx)
 		}
+
 		session := session.Default(ctx.Response(), ctx.Request())
 		if m := session.Get("member"); m != nil {
 			return h(ctx)

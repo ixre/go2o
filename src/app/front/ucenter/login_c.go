@@ -30,7 +30,7 @@ func (this *loginC) Index(ctx *echox.Context) error {
 	return ctx.RenderOK("login.html", ctx.NewData())
 }
 func (this *loginC) index_post(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	var result gof.Message
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
@@ -82,7 +82,7 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 	}
 
 	// 设置访问设备
-	util.SetBrownerDevice(c.Response(), c.Request(), c.Query("device"))
+	util.SetBrownerDevice(c.HttpResponse(), c.HttpRequest(), c.Query("device"))
 
 	if err == nil && m != nil {
 		rl := dps.MemberService.GetRelation(m.Id)
@@ -100,6 +100,6 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 //从partner端退出
 func (this *loginC) Partner_disconnect(ctx *echox.Context) error {
 	ctx.Session.Destroy()
-	ctx.Response().Write([]byte("{state:1}"))
+	ctx.HttpResponse().Write([]byte("{state:1}"))
 	return nil
 }

@@ -10,8 +10,8 @@ package echox
 
 import (
 	"errors"
-	"github.com/labstack/echo"
 	"gopkg.in/fsnotify.v1"
+	"gopkg.in/labstack/echo.v1"
 	"html/template"
 	"io"
 	"log"

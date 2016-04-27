@@ -72,7 +72,7 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	return p
 }
 func (this *PaymentC) Create(ctx *echox.Context) error {
-	r, w := ctx.Request(), ctx.Response()
+	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	qs := r.URL.Query()
 	partnerId := GetSessionPartnerId(ctx)
 	orderNo := qs.Get("order_no")
@@ -130,7 +130,7 @@ func (this *PaymentC) Return_alipay(ctx *echox.Context) error {
 	//this.paymentFail(ctx,nil)
 	//return
 	aliPayObj := this.getAliPayment(ctx)
-	result := aliPayObj.Return(ctx.Request())
+	result := aliPayObj.Return(ctx.HttpRequest())
 	partnerId := GetSessionPartnerId(ctx)
 	if len(result.OrderNo) == 0 {
 		result.OrderNo = ctx.Session.Get("current_payment").(string)
@@ -145,7 +145,7 @@ func (this *PaymentC) Return_alipay(ctx *echox.Context) error {
 }
 
 func (this *PaymentC) Notify_post(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	path := r.URL.Path
 	lastSeg := strings.Split(path[strings.LastIndex(path, "/")+1:], "_")
 	paymentOpt := lastSeg[1]
@@ -154,7 +154,7 @@ func (this *PaymentC) Notify_post(ctx *echox.Context) error {
 
 	if paymentOpt == "alipay" {
 		aliPayObj := this.getAliPayment(ctx)
-		result := aliPayObj.Notify(ctx.Request())
+		result := aliPayObj.Notify(ctx.HttpRequest())
 		order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
 		if result.Status == payment.StatusTradeSuccess {
 			this.handleOrder(order, "alipay", &result)

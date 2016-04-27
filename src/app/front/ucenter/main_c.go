@@ -26,7 +26,6 @@ type mainC struct {
 func (this *mainC) Index(ctx *echox.Context) error {
 
 	return ctx.RenderOK("index.html", ctx.NewData())
-
 	mm := getMember(ctx)
 	p := getPartner(ctx)
 	conf := getSiteConf(p.Id)
@@ -71,14 +70,14 @@ func (this *mainC) Logout(ctx *echox.Context) error {
 	//		http.SetCookie(w, cookie)
 	//	}
 	ctx.Session.Destroy()
-	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.HttpResponse().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
 // 切换设备
 func (this *mainC) Change_device(ctx *echox.Context) error {
 	form := ctx.Request().URL.Query()
-	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), ctx.HttpRequest())
 	toUrl := form.Get("return_url")
 	if len(toUrl) == 0 {
 		toUrl = ctx.Request().Referer()
@@ -94,7 +93,7 @@ func (this *mainC) Change_device(ctx *echox.Context) error {
 // Member session connect
 func (this *mainC) Msc(ctx *echox.Context) error {
 	form := ctx.Request().URL.Query()
-	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), ctx.HttpRequest())
 	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
 		v := ctx.Session.Get("member")
 		var m *member.ValueMember
