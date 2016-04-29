@@ -129,7 +129,7 @@ func (this *ListC) getGoodsSortSql(sortQuery string) string {
 
 // 获取商品JSON数据
 func (this *ListC) GetGoodsListJson(c *echox.Context) error {
-	if c.Request().Method == "POST" {
+	if c.Request().Method != "POST" {
 		return nil
 	}
 	partnerId := GetPartnerId(c)
@@ -351,7 +351,7 @@ func (this *ListC) mobileSearchList(ctx *echox.Context) error {
 
 // 获取商品JSON数据
 func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
-	if c.Request().Method == "POST" {
+	if c.Request().Method != "POST" {
 		return nil
 	}
 	partnerId := GetPartnerId(c)

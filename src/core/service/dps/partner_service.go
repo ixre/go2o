@@ -16,7 +16,6 @@ import (
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
-	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/query"
 	"log"
 	"strings"
@@ -150,8 +149,6 @@ func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	conf := pt.GetSiteConf()
-	log.Println(partnerId, conf.Logo)
-	conf.Logo = format.GetResUrl(conf.Logo)
 	return &conf
 }
 

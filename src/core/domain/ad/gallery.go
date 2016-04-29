@@ -8,7 +8,10 @@
  */
 package ad
 
-import "go2o/src/core/domain/interface/ad"
+import (
+	"go2o/src/core/domain/interface/ad"
+	"sort"
+)
 
 var _ ad.IAdvertisement = new(GalleryAd)
 var _ ad.IGalleryAd = new(GalleryAd)
@@ -23,6 +26,7 @@ func (this *GalleryAd) GetAdValue() ad.ValueGallery {
 	if this._adValue == nil {
 		if this.GetDomainId() > 0 {
 			this._adValue = this.Rep.GetValueGallery(this.GetDomainId())
+			sort.Sort(this._adValue)
 		} else {
 			this._adValue = []*ad.ValueImage{}
 		}

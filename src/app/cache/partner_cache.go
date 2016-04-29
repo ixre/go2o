@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 )
 
@@ -54,6 +55,7 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 	var key string = GetPartnerSiteConfCK(partnerId)
 	if sto.Get(key, &v) != nil {
 		v2 := dps.PartnerService.GetSiteConf(partnerId)
+		v2.Logo = format.GetResUrl(v2.Logo)
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 		}
