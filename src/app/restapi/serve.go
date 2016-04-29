@@ -10,9 +10,9 @@ package restapi
 
 import (
 	"github.com/jsix/gof"
-	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
 	"go2o/src/core/variable"
+	"gopkg.in/labstack/echo.v1"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"log"
 	"net/http"
 	"strconv"

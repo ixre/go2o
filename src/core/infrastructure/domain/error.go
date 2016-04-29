@@ -24,3 +24,7 @@ func NewDomainError(key string, msg string) *DomainError {
 func (this *DomainError) Error() string {
 	return this.DefaultError
 }
+
+func (this *DomainError) Set(msg string) {
+	this.DefaultError = msg
+}

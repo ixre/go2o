@@ -19,6 +19,7 @@ import (
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -30,7 +31,7 @@ func (this *UserC) Login(ctx *echox.Context) error {
 		return this.login_post(ctx)
 	}
 	p := getPartner(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
 	if len(returnUrl) == 0 {
@@ -49,11 +50,11 @@ func (this *UserC) Login(ctx *echox.Context) error {
 }
 
 func (this *UserC) login_post(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
 	//r.ParseForm()
 	var result gof.Message
-	partnerId := GetPartnerId(r, ctx.Session)
+	partnerId := GetPartnerId(ctx)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
@@ -74,7 +75,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 
 func (this *UserC) Register(ctx *echox.Context) error {
 	p := getPartner(ctx)
-	inviCode := ctx.Request().URL.Query().Get("invi_code")
+	inviCode := ctx.HttpRequest().URL.Query().Get("invi_code")
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
@@ -87,7 +88,7 @@ func (this *UserC) Register(ctx *echox.Context) error {
 
 // 验证用户(POST)
 func (this *UserC) ValidUsr(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var msg gof.Message
 		r.ParseForm()
@@ -105,7 +106,7 @@ func (this *UserC) ValidUsr(ctx *echox.Context) error {
 
 // 验证推荐人(POST)
 func (this *UserC) Valid_invitation(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		msg := gof.Message{Result: true}
@@ -124,7 +125,7 @@ func (this *UserC) Valid_invitation(ctx *echox.Context) error {
 
 // 提交注册信息(POST)
 func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		var result gof.Message
@@ -163,18 +164,21 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 // 跳转到会员中心
 // url : /user/jump_m
 func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
+	returnUrl := ctx.Query("url")
 	m := GetMember(ctx)
 	var location string
 	if m == nil {
-		location = "/user/login?return_url=/user/jump_m"
+		location = "/user/login?return_url=" +
+			url.QueryEscape("/user/jump_m?url="+returnUrl)
 	} else {
-		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s",
+		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s&url=%s",
 			variable.DOMAIN_PREFIX_MEMBER,
 			ctx.App.Config().GetString(variable.ServerDomain),
-			util.GetBrownerDevice(ctx.Request()),
+			util.GetBrownerDevice(ctx.HttpRequest()),
 			ctx.Session.GetSessionId(),
 			m.Id,
 			m.DynamicToken,
+			url.QueryEscape(returnUrl),
 		)
 	}
 	return ctx.Redirect(302, location)
@@ -184,7 +188,7 @@ func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 func (this *UserC) Logout(ctx *echox.Context) error {
 	ctx.Session.Set("member", nil)
 	ctx.Session.Save()
-	ctx.Response().Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
+	ctx.HttpResponse().Write([]byte(fmt.Sprintf(`<html><head><title>正在退出...</title></head><body>
 			3秒后将自动返回到首页... <br />
 			<iframe src="http://%s%s/partner_disconnect" width="0" height="0" frameBorder="0"></iframe>
 			<script>window.onload=function(){location.replace('/')}</script></body></html>`,

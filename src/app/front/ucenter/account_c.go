@@ -55,7 +55,7 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 
 func (this *accountC) income_log_post(ctx *echox.Context) error {
 	m := getMember(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))
@@ -128,7 +128,7 @@ func (this *accountC) Apply_cash(ctx *echox.Context) error {
 func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	partnerId := getPartner(ctx).Id
 	strAmount := strings.TrimSpace(r.FormValue("Amount"))
@@ -214,7 +214,7 @@ func (this *accountC) Convert_f2p(ctx *echox.Context) error {
 func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	pt := getPartner(ctx)
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
@@ -275,7 +275,7 @@ func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
 func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 	var msg gof.Message
 	var err error
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	p := getPartner(ctx)
 	toMemberId, _ := strconv.Atoi(r.FormValue("ToId"))
@@ -357,7 +357,7 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 
 func (this *accountC) bank_info_post(ctx *echox.Context) error {
 	m := getMember(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	msg := new(gof.Message)
 	r.ParseForm()
 	e := new(member.BankInfo)

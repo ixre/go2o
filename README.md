@@ -63,6 +63,12 @@ zhu***@126.com
 珠三Go技术群：**102629585** (___珠三是珠三角 , 是QQ群，不是其他群___)
 
 
+#### MAC下运行请先设置最大连接数:
+
+    sudo sysctl -w kern.ipc.somaxconn=4096
+
+
+
 ## Deploy ##
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"
@@ -75,29 +81,62 @@ zhu***@126.com
 	cd /home/usr/go
 	go build go2o-server.go
 	go build go2o-daemon.go
+	go build go2o-tcpserve.go
 
 ### 2.Running Service ###
 	Usage of ./go2o-server:
-		-debug=false: enable debug
-		-conf=app.conf:config file
-		-help=false: command usage
-		-mode="sha": boot mode.'h'- boot http service,'s'- boot socket service
-	    -port=1001: web server port
-		-port2=1002: socket server port
-		-d = false : running daemon service
+		 -conf string
+             	 (default "app.conf")
+           -d	run daemon
+           -debug
+             	enable debug
+           -trace
+             	enable trace
+           -help
+             	command usage
+           -port int
+             	web server port (default 14190)
+           -restport int
+             	rest api port (default 14191)
 
 	Usage of ./go2o-daemon:
 		-debug = false : enable debug
 
+	Usage of ./go2o-tcpserve:
+	  -conf string
+        	 (default "app.conf")
+      -l	log output
+      -port int
+        	 (default 14197)
+
 ### 3.Add http proxy by nginx ###
 	server {
-		listen          80;
-		server_name     *.ts.com;
-		location / {
-			proxy_pass   http://localhost:1002;
-			proxy_set_header Host $host;
-		}
-	}
+            listen          80;
+            server_name     static.ts.com;
+            root    /home/usr/go/src/go2o/static;
+    	location ~* \.(eot|ttf|woff|woff2|svg)$ {
+          		add_header Access-Control-Allow-Origin *;
+      	}
+    }
+
+    server {
+            listen          80;
+            server_name     img.ts.com;
+            root            /home/usr/go/src/go2o/uploads;
+    	location ~* \.(eot|ttf|woff|woff2|svg)$ {
+          		add_header Access-Control-Allow-Origin *;
+      	}
+    }
+
+    server {
+            listen          80;
+            server_name     *.ts.com;
+            location / {
+                    proxy_pass   http://localhost:14190;
+                    proxy_set_header Host $host;
+            }
+    }
+
 
 
 

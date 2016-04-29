@@ -51,7 +51,7 @@ func (this *orderC) all_post(ctx *echox.Context) error {
 
 func (this *orderC) responseList(ctx *echox.Context, where string) error {
 	m := getMember(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	page, _ := strconv.Atoi(r.FormValue("page"))
 	size, _ := strconv.Atoi(r.FormValue("size"))

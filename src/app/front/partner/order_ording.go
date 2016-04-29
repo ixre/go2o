@@ -9,7 +9,7 @@
 package partner
 
 import (
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
@@ -24,7 +24,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 
 	isNoShop := len(shopDr) == 0
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"shopDr":  template.HTML(shopDr),
 		"noShop":  isNoShop,
@@ -36,7 +36,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 // 设置门店(POST)
 func (this *orderC) SetShop(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
@@ -102,7 +102,7 @@ func (this *orderC) setState(ctx *echox.Context,
 		}
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 
 		"button":   template.HTML(button),

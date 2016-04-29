@@ -14,19 +14,19 @@ type coverageAreaC struct {
 }
 
 func (this *coverageAreaC) CoverageAreList(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("delivery.coverage_area_list.html", d)
 }
 
 func (this *coverageAreaC) Create(ctx *echox.Context) error {
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS("{}")
 	return ctx.RenderOK("delivery.create_area.html", d)
 }
 
 // 保存配送区域(POST)
 func (this *coverageAreaC) SaveArea(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()

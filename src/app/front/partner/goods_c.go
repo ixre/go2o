@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -34,7 +34,7 @@ type goodsC struct {
 func (this *goodsC) Item_list(ctx *echox.Context) error {
 	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
 	return ctx.RenderOK("goods.item_list.html", d)
@@ -43,7 +43,7 @@ func (this *goodsC) Item_list(ctx *echox.Context) error {
 //货品选择
 func (this *goodsC) Goods_select(ctx *echox.Context) error {
 	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
 	return ctx.RenderOK("goods.select.html", d)
@@ -59,12 +59,12 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 	}
 	js, _ := json.Marshal(e)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
-		"nopic":     format.GetGoodsImageUrl(""),
+		"Image":     format.GetGoodsImageUrl(e.Image),
 	}
 	return ctx.RenderOK("goods.create_goods.html", d)
 }
@@ -84,11 +84,12 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"entity":    template.JS(js),
 		"shop_chk":  template.HTML(shopChks),
 		"cate_opts": template.HTML(cateOpts),
+		"Image":     format.GetGoodsImageUrl(e.Image),
 		"gs":        gs,
 	}
 	return ctx.RenderOK("goods.update_goods.html", d)
@@ -97,7 +98,7 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 // 保存商品描述
 func (this *goodsC) Item_info(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
 	e = dps.SaleService.GetValueItem(partnerId, id)
@@ -105,7 +106,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "商品不存在")
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"item_id":   e.Id,
 		"item_info": template.HTML(e.Description),
@@ -116,7 +117,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 // 保存货品描述信息(POST)
 func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("ItemId"))
@@ -139,7 +140,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 // 保存货品信息(POST)
 func (this *goodsC) SaveItem(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		ss := dps.SaleService
 		var result gof.Message
@@ -168,7 +169,7 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 // 删除商品信息(POST)
 func (this *goodsC) Del_goods(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -188,7 +189,7 @@ func (this *goodsC) Del_goods(ctx *echox.Context) error {
 // 删除货品信息(POST)
 func (this *goodsC) Del_item(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 
@@ -222,7 +223,7 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 
 	tagVal := strings.Join(strArr, ",")
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"goodsId":  goodsId,
 		"tagsHtml": template.HTML(tagsHtml),
@@ -233,7 +234,7 @@ func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
 
 // 保存销售标签(POST)
 func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		var result gof.Message
@@ -265,7 +266,7 @@ func (this *goodsC) ItemCtrl(ctx *echox.Context) error {
 
 	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["item_id"] = itemId
 	return ctx.RenderOK("goods.item_ctrl.html", d)
 }
@@ -310,7 +311,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 		}
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"goods":   goods,
 		"setHtml": template.HTML(buf.String()),
@@ -319,7 +320,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 }
 
 func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	req.ParseForm()
 	goodsId, err := strconv.Atoi(req.FormValue("goodsId"))
 	if err != nil {

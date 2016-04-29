@@ -9,14 +9,17 @@
 package ols
 
 import (
-	"github.com/jsix/gof/web/session"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
-	"net/http"
 	"net/url"
+	"sync"
+)
+
+var (
+	mux sync.Mutex
 )
 
 // 获取商户编号
@@ -36,7 +39,12 @@ func getPartnerApi(ctx *echox.Context) *partner.ApiInfo {
 
 // 获取商户站点设置
 func getSiteConf(ctx *echox.Context) *partner.SiteConf {
-	return cache.GetPartnerSiteConf(GetSessionPartnerId(ctx))
+	conf := ctx.Get("conf").(*partner.SiteConf)
+	if conf == nil {
+		conf = cache.GetPartnerSiteConf(GetSessionPartnerId(ctx))
+		ctx.Set("conf", conf)
+	}
+	return conf
 }
 
 // 获取会员
@@ -54,7 +62,7 @@ func GetMember(ctx *echox.Context) *member.ValueMember {
 func CheckMemberLogin(ctx *echox.Context) bool {
 	if ctx.Session.Get("member") == nil {
 		ctx.Response().Header().Add("Location", "/user/login?return_url="+
-			url.QueryEscape(ctx.Request().RequestURI))
+			url.QueryEscape(ctx.HttpRequest().RequestURI))
 		ctx.Response().WriteHeader(302)
 		return false
 	}
@@ -62,19 +70,15 @@ func CheckMemberLogin(ctx *echox.Context) bool {
 }
 
 // 获取商户编号
-func GetPartnerId(r *http.Request, s *session.Session) int {
-	return 104
-	currHost := r.Host
-	host := s.Get("webui_host")
-	pid := s.Get("webui_pid")
-	if host == nil || pid == nil || host != currHost {
-		partnerId := dps.PartnerService.GetPartnerIdByHost(currHost)
-		if partnerId != -1 {
-			s.Set("webui_host", currHost)
-			s.Set("webui_pid", partnerId)
-			s.Save()
-		}
-		return partnerId
+func GetPartnerId(ctx *echox.Context) int {
+	mux.Lock()
+	defer mux.Unlock()
+	if v := ctx.Get("partner_id"); v != nil {
+		return v.(int)
 	}
-	return pid.(int)
+	currHost := ctx.Request().Host
+	//ctx.Set("webui_host", currHost)
+	partnerId := cache.GetPartnerIdByHost(currHost)
+	ctx.Set("partnerId", partnerId)
+	return partnerId
 }

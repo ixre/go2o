@@ -116,7 +116,7 @@ func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 
 }
 
-// 获取在货架上的商品
+// 获取已上架的商品
 func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
 	var sql string
 
@@ -146,4 +146,17 @@ func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start,
 	}
 
 	return total, e
+}
+
+// 获取指定数量已上架的商品
+func (this *goodsRep) GetOnShelvesGoods(partnerId int, start, end int, sortBy string) []*valueobject.Goods {
+	e := []*valueobject.Goods{}
+	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
+		 WHERE gs_category.partner_id=? AND gs_item.state=1
+		 AND gs_item.on_shelves=1 ORDER BY %s,update_time DESC LIMIT ?,?`,
+		sortBy)
+
+	this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId, start, (end - start))
+	return e
 }

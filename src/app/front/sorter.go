@@ -77,8 +77,9 @@ func GetSorterHtml(items []*SortItem, selected string, urlPath string) string {
 			sortUrl = v.Name
 		}
 
-		buf.WriteString(fmt.Sprintf("<a href=\"%ssort=%s\" sort-name=\"%s\" sort-val=\"%s\">%s</a>",
-			urlPath, sortUrl, v.Name, sortValue, v.Text))
+		buf.WriteString(fmt.Sprintf(`<a href="%ssort=%s" sort-name="%s"
+			class="sort-item" sort-val="%s">%s<span class="sort-d d%s"></span></a>`,
+			urlPath, sortUrl, v.Name, sortValue, v.Text, sortValue))
 
 		if v.Option {
 			buf.WriteString("<span class=\"d\"></span>")

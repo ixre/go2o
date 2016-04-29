@@ -97,7 +97,7 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 
 func (this *basicC) profile_post(ctx *echox.Context) error {
 	mm := getMember(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 	m := new(member.ValueMember)
@@ -132,7 +132,7 @@ func (this *basicC) Pwd(ctx *echox.Context) error {
 }
 
 func (this *basicC) pwd_post(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 	m := getMember(ctx)
@@ -174,7 +174,7 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 	return ctx.RenderOK("trade_pwd.html", d)
 }
 func (this *basicC) trade_pwd_post(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 	m := getMember(ctx)
@@ -218,12 +218,12 @@ func (this *basicC) deliver_post(ctx *echox.Context) error {
 	m := getMember(ctx)
 	add := dps.MemberService.GetDeliverAddress(m.Id)
 	js, _ := json.Marshal(add)
-	ctx.Response().Write([]byte(`{"rows":` + string(js) + `}`))
+	ctx.HttpResponse().Write([]byte(`{"rows":` + string(js) + `}`))
 	return nil
 }
 
 func (this *basicC) SaveDeliver(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		m := getMember(ctx)
 		var result gof.Message
@@ -243,7 +243,7 @@ func (this *basicC) SaveDeliver(ctx *echox.Context) error {
 }
 
 func (this *basicC) DeleteDeliver(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		m := getMember(ctx)

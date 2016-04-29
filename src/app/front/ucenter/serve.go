@@ -9,27 +9,20 @@
 package ucenter
 
 import (
-	mw "github.com/labstack/echo/middleware"
 	"go2o/src/app/util"
 	"go2o/src/x/echox"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/http"
+	"sync"
 )
 
-//处理请求
-//func Handle(ctx *web.Context) {
-//	switch util.GetBrownerDevice(ctx) {
-//	default:
-//	case util.DevicePC:
-//		ctx.Items["device_view_dir"] = "pc"
-//		routes.Handle(ctx)
-//	case util.DeviceTouchPad, util.DeviceMobile:
-//		ctx.Items["device_view_dir"] = "touchpad"
-//		moRoutes.Handle(ctx)
-//	case util.DeviceAppEmbed:
-//		ctx.Items["device_view_dir"] = "app_embed"
-//		routes.Handle(ctx)
-//	}
-//}
+var (
+	waitInit   bool = true
+	serveMux   sync.Mutex
+	pcServe    *echox.Echo
+	mobiServe  *echox.Echo
+	embedServe *echox.Echo
+)
 
 func registerRoutes(s *echox.Echo) {
 	mc := &mainC{}
@@ -39,6 +32,7 @@ func registerRoutes(s *echox.Echo) {
 	lc := &loginC{}
 	gc := &getC{}
 	riseC := &personFinanceRiseC{}
+	jc := &jsonC{}
 
 	s.Static("/static/", "./public/static/") //静态资源
 	s.Getx("/", mc.Index)
@@ -54,19 +48,14 @@ func registerRoutes(s *echox.Echo) {
 	s.Aanyx("/account/:action", ac)
 	s.Getx("/get/qr/:code/:size", gc.GetQR)
 	s.Aanyx("/finance/rise/:action", riseC)
+	s.Apostx("/json/:action", jc)
 }
-
-var (
-	waitInit   bool = true
-	pcServe    *echox.Echo
-	mobiServe  *echox.Echo
-	embedServe *echox.Echo
-)
 
 func getServe(path string) *echox.Echo {
 	s := echox.New()
 	s.SetTemplateRender(path)
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(memberLogonCheck)
 	registerRoutes(s)
 	return s
@@ -74,9 +63,12 @@ func getServe(path string) *echox.Echo {
 
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if waitInit {
+		serveMux.Lock()
+		defer serveMux.Unlock()
 		pcServe = getServe("public/views/ucenter/pc")
 		mobiServe = getServe("public/views/ucenter/mobi")
-		embedServe = getServe("public/views/ucenter/app_embed")
+		embedServe = getServe("public/views/ucenter/mobi")
+		//embedServe = getServe("public/views/ucenter/app_embed")
 		waitInit = false
 	}
 	switch util.GetBrownerDevice(r) {

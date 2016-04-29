@@ -276,7 +276,7 @@ func (this *Shopping) BuildOrder(memberId int, subject string, couponCode string
 
 		// 如果优惠券不存在
 		if cp == nil {
-			log.PrintErr(err)
+			log.Error(err)
 			return order, cart, errors.New("优惠券无效")
 		}
 
@@ -293,7 +293,7 @@ func (this *Shopping) BuildOrder(memberId int, subject string, couponCode string
 				_, err = coupon.GetBind(memberId)
 			}
 			if err != nil {
-				log.PrintErr(err)
+				log.Error(err)
 				return order, cart, errors.New("优惠券无效")
 			}
 			err = order.ApplyCoupon(coupon) //应用优惠券

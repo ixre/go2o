@@ -40,7 +40,7 @@ func orderDaemon(app gof.App) {
 
 func autoSetOrder(partnerId int) {
 	f := func(err error) {
-		appCtx.Log().PrintErr(err)
+		appCtx.Log().Error(err)
 	}
 	dps.ShoppingService.OrderAutoSetup(partnerId, f)
 }

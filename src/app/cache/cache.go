@@ -3,7 +3,7 @@
  * name : cache.go
  * author : jarryliu
  * date : -- :
- * description :
+ * description : 为应用提供缓存
  * history :
  */
 package cache
@@ -16,19 +16,22 @@ import (
 
 /** this package is manage system cache. **/
 
-var _kvCacheStorage gof.Storage
+var (
+	DefaultMaxSeconds int64 = 300 //默认存储300秒
+	kvCacheStorage    gof.Storage
+)
 
 // Get Key-value storage
 func GetKVS() gof.Storage {
-	if _kvCacheStorage == nil {
+	if kvCacheStorage == nil {
 		panic(errors.New("Can't find storage medium."))
 	}
-	return _kvCacheStorage
+	return kvCacheStorage
 }
 
 func Initialize(kvStorage gof.Storage) {
 	if kvStorage.DriverName() == storage.DriveRedisStorage {
-		_kvCacheStorage = kvStorage
+		kvCacheStorage = kvStorage
 	} else {
 		panic(errors.New("only support redis storage now."))
 	}

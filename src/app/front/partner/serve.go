@@ -10,9 +10,9 @@ package partner
 
 import (
 	"github.com/jsix/gof/web/session"
-	"github.com/labstack/echo"
-	mw "github.com/labstack/echo/middleware"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/url"
 	"strings"
 )
@@ -22,6 +22,7 @@ func GetServe() *echox.Echo {
 	s := echox.New()
 	s.SetTemplateRender("public/views/partner")
 	s.Use(mw.Recover())
+	s.Use(echox.StopAttack)
 	s.Use(partnerLogonCheck) // 判断商户登陆状态
 
 	s.Static("/static/", "./public/static/") //静态资源
@@ -62,7 +63,7 @@ func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			return h(ctx)
 		}
 		ctx.Response().Header().Set("Location", "/login?return_url="+
-			url.QueryEscape(ctx.Request().URL.String()))
+			url.QueryEscape(ctx.Request().RequestURI))
 		ctx.Response().WriteHeader(302)
 		return nil
 	}

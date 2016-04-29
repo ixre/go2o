@@ -87,7 +87,7 @@ func CompareMemberApiToken(sto gof.Storage, memberId int, token string) bool {
 func MemberHttpSessionConnect(ctx *echox.Context, call func(memberId int)) (ok bool, memberId int) {
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
-	form := ctx.Request().URL.Query()
+	form := ctx.HttpRequest().URL.Query()
 	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
 		var token string = form.Get("token")
 		if CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
@@ -115,7 +115,7 @@ func MemberHttpSessionConnect(ctx *echox.Context, call func(memberId int)) (ok b
 
 // 会员Http请求会话链接
 func MemberHttpSessionDisconnect(ctx *echox.Context) bool {
-	form := ctx.Request().URL.Query()
+	form := ctx.HttpRequest().URL.Query()
 	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
 		var token string = form.Get("token")
 		return RemoveMemberApiToken(ctx.App.Storage(), memberId, token)

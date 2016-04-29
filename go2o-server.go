@@ -16,16 +16,15 @@ import (
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/web/session"
 	"go2o/src/app"
+	"go2o/src/app/cache"
 	"go2o/src/app/daemon"
 	"go2o/src/app/restapi"
-	"go2o/src/cache"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
 	"log"
 	"os"
 	"os/signal"
 	"runtime"
-	"strings"
 	"syscall"
 )
 
@@ -35,7 +34,6 @@ func main() {
 		confFile  string
 		httpPort  int
 		restPort  int
-		mode      string //启动模式: h开启http,s开启socket,a开启所有
 		debug     bool
 		trace     bool
 		runDaemon bool // 运行daemon
@@ -43,9 +41,8 @@ func main() {
 		newApp    *core.MainApp
 	)
 
-	flag.IntVar(&restPort, "port3", 14191, "rest api port")
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
-	flag.StringVar(&mode, "mode", "hr", "boot mode.'h'- boot http service,'s'- boot socket service")
+	flag.IntVar(&restPort, "restport", 14191, "rest api port")
 	flag.BoolVar(&debug, "debug", false, "enable debug")
 	flag.BoolVar(&trace, "trace", false, "enable trace")
 	flag.BoolVar(&help, "help", false, "command usage")
@@ -88,15 +85,9 @@ func main() {
 		go daemon.Run(newApp)
 	}
 
-	if strings.Contains(mode, "h") {
-		booted = true
-		go app.Run(ch, newApp, fmt.Sprintf(":%d", httpPort))
-	}
+	go app.Run(ch, newApp, fmt.Sprintf(":%d", httpPort)) //运行HTTP
 
-	if strings.Contains(mode, "r") {
-		booted = true
-		go restapi.Run(newApp, restPort)
-	}
+	go restapi.Run(newApp, restPort) // 运行REST API
 
 	if booted {
 		<-ch

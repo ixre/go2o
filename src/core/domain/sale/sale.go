@@ -13,6 +13,7 @@ import (
 	"errors"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
+	"go2o/src/core/domain/interface/valueobject"
 	"time"
 )
 
@@ -271,4 +272,11 @@ func (this *Sale) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
 // 根据Key获取商品快照
 func (this *Sale) GetGoodsSnapshotByKey(key string) *sale.GoodsSnapshot {
 	return this._saleRep.GetGoodsSnapshotByKey(key)
+}
+
+// 获取指定数量已上架的商品
+func (this *Sale) GetOnShelvesGoods(start, end int,
+	sortBy string) []*valueobject.Goods {
+	return this._goodsRep.GetOnShelvesGoods(this.GetAggregateRootId(),
+		start, end, sortBy)
 }

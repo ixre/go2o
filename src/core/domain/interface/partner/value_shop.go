@@ -16,7 +16,7 @@ type ValueShop struct {
 	Name       string `db:"name"`
 	Address    string `db:"address"`
 	Phone      string `db:"phone"`
-	OrderIndex int    `db:"order_index"`
+	SortNumber int    `db:"sort_number"`
 	State      int    `db:"state"`
 	CreateTime int64  `db:"create_time"`
 

@@ -40,7 +40,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
 		return nil
 	}
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	p := getPartner(ctx)
 	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
@@ -96,6 +96,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 		"deliverId":   deliverId,
 		"deliverOpt":  deliverOpt,
 		"paymentOpt":  paymentOpt,
+		"TotalFee":    format.FormatFloat(cart.TotalFee),
 	}
 	return ctx.RenderOK("order_confirm.html", d)
 }
@@ -105,7 +106,7 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
 		return nil
 	}
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		p := getPartner(ctx)
 		m := GetMember(ctx)
@@ -153,7 +154,7 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
 		return nil
 	}
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	m := GetMember(ctx)
 	address := dps.MemberService.GetDeliverAddress(m.Id)
 	var selId int
@@ -172,7 +173,7 @@ func (this *ShoppingC) GetDeliverAddress(ctx *echox.Context) error {
 
 // 保存配送地址(POST)
 func (this *ShoppingC) SaveDeliverAddress(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if this.prepare(ctx) && r.Method == "POST" {
 		msg := gof.Message{Result: true}
 		m := GetMember(ctx)
@@ -192,7 +193,7 @@ func (this *ShoppingC) SaveDeliverAddress(ctx *echox.Context) error {
 
 // 应用卡券(POST)
 func (this *ShoppingC) Apply(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if this.prepare(ctx) && r.Method == "POST" {
 		r.ParseForm()
 		applyType := r.URL.Query().Get("type")
@@ -207,7 +208,7 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 	msg := gof.Message{}
 	p := getPartner(ctx)
 	m := GetMember(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 
 	code := r.FormValue("code")
 	subject := r.FormValue("subject") // not necessary
@@ -222,7 +223,7 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 
 // 提交订单
 func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if this.prepare(ctx) && r.Method == "POST" {
 		p := getPartner(ctx)
 		m := GetMember(ctx)
@@ -287,11 +288,11 @@ func (this *ShoppingC) releaseOrder(ctx *echox.Context) {
 
 // 清除购物车
 func (this *ShoppingC) emptyShoppingCart(ctx *echox.Context) {
-	cookie, _ := ctx.Request().Cookie("_cart")
+	cookie, _ := ctx.HttpRequest().Cookie("_cart")
 	if cookie != nil {
 		cookie.Expires = time.Now().Add(time.Hour * 24 * -30)
 		cookie.Path = "/"
-		http.SetCookie(ctx.Response(), cookie)
+		http.SetCookie(ctx.HttpResponse(), cookie)
 	}
 }
 
@@ -310,7 +311,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 	if !this.prepare(ctx) {
 		return nil
 	}
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 
 	p := getPartner(ctx)
 	m := GetMember(ctx)

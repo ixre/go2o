@@ -11,12 +11,12 @@ package partner
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/labstack/echo"
 	"go2o/src/app/front"
 	"go2o/src/core/domain/interface/partner"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
 	"go2o/src/x/echox"
+	"gopkg.in/labstack/echo.v1"
 	"net/http"
 	"strings"
 )
@@ -43,12 +43,12 @@ func (this *mainC) Login(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.Login_post(ctx)
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.RenderOK("login.html", d)
 }
 
 func (this *mainC) Login_post(ctx *echox.Context) error {
-	r, w := ctx.Request(), ctx.Response()
+	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	r.ParseForm()
 	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
 
@@ -97,7 +97,7 @@ func (pb *mainC) ValidLogin(usr string, pwd string) (*partner.ValuePartner, bool
 
 func (this *mainC) Logout(ctx *echox.Context) error {
 	ctx.Session.Destroy()
-	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.HttpResponse().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
@@ -116,9 +116,9 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 
 //商户汇总页
 func (this *mainC) Summary(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	pt, _ := dps.PartnerService.GetPartner(getPartnerId(ctx))
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["partner"] = pt
 	d.Map["loginIp"] = r.Header.Get("USER_ADDRESS")
 
@@ -127,17 +127,17 @@ func (this *mainC) Summary(ctx *echox.Context) error {
 
 // 导出数据
 func (this *mainC) exportData(ctx *echox.Context) error {
-	ctx.Response().Header().Set("Content-Type", "application/json")
-	ctx.Response().Write(GetExportData(ctx.Request(), getPartnerId(ctx)))
+	ctx.HttpResponse().Header().Set("Content-Type", "application/json")
+	ctx.HttpResponse().Write(GetExportData(ctx.HttpRequest(), getPartnerId(ctx)))
 	return nil
 }
 
 func (this *mainC) Upload_post(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	partnerId := getPartnerId(ctx)
 	req.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range req.MultipartForm.File {
-		ctx.Response().Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
+		ctx.HttpResponse().Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
 	}
 	return nil
 }

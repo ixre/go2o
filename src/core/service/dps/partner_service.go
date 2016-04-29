@@ -16,8 +16,8 @@ import (
 	"go2o/src/core/domain/interface/partner/mss"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
-	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/query"
+	"log"
 	"strings"
 )
 
@@ -119,7 +119,7 @@ func (this *partnerService) GetPartnerIdByHost(host string) int {
 func (this *partnerService) GetPartnerMajorHost(partnerId int) string {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	return pt.GetMajorHost()
 }
@@ -137,7 +137,7 @@ func (this *partnerService) SaveSaleConf(partnerId int, v *partner.SaleConf) err
 func (this *partnerService) GetSaleConf(partnerId int) *partner.SaleConf {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	conf := pt.GetSaleConf()
 	return &conf
@@ -146,7 +146,7 @@ func (this *partnerService) GetSaleConf(partnerId int) *partner.SaleConf {
 func (this *partnerService) GetSiteConf(partnerId int) *partner.SiteConf {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	conf := pt.GetSiteConf()
 	return &conf
@@ -174,7 +174,7 @@ func (this *partnerService) CheckRegisterPerm(partnerId int, isInvitation bool) 
 func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueShop {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	shops := pt.GetShops()
 	sv := make([]*partner.ValueShop, len(shops))
@@ -188,7 +188,8 @@ func (this *partnerService) GetShopsOfPartner(partnerId int) []*partner.ValueSho
 func (this *partnerService) GetShopValueById(partnerId, shopId int) *partner.ValueShop {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	v := pt.GetShop(shopId).GetValue()
 	return &v
@@ -197,7 +198,8 @@ func (this *partnerService) GetShopValueById(partnerId, shopId int) *partner.Val
 func (this *partnerService) SaveShop(partnerId int, v *partner.ValueShop) (int, error) {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+
+		log.Println("[ Partner][ Service]-", err.Error())
 		return 0, err
 	}
 	var shop partner.IShop
@@ -219,7 +221,8 @@ func (this *partnerService) SaveShop(partnerId int, v *partner.ValueShop) (int, 
 func (this *partnerService) DeleteShop(partnerId, shopId int) error {
 	pt, err := this._partnerRep.GetPartner(partnerId)
 	if err != nil {
-		log.PrintErr(err)
+
+		log.Println("[ Partner][ Service]-", err.Error())
 	}
 	return pt.DeleteShop(shopId)
 }

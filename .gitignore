@@ -10,6 +10,7 @@ pkg
 app_*.conf
 *.psd
 *.zip
+uploads
 uploads/102
 uploads/103
 test*

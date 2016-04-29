@@ -29,7 +29,7 @@ type WebCgi struct {
 }
 
 func (this *WebCgi) Upload(key string, ctx *echox.Context, saveDir string) []byte {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var ext string
 	var filePath string
 	var err error
@@ -86,7 +86,7 @@ func (this *WebCgi) Upload(key string, ctx *echox.Context, saveDir string) []byt
 
 //获取位置
 func (this *WebCgi) GeoLocation(ctx *echox.Context) {
-	r, w := ctx.Request(), ctx.Response()
+	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	ip := r.RemoteAddr[:strings.Index(r.RemoteAddr, ":")]
 	add := tool.GetLocation(ip)
 	w.Write([]byte(fmt.Sprintf(`{"ip":"%s","addr":"%s"}`, ip, add)))
