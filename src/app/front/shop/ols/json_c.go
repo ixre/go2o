@@ -11,7 +11,6 @@ package ols
 import (
 	"encoding/gob"
 	"fmt"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/domain/interface/valueobject"
@@ -72,31 +71,44 @@ func (t *jsonC) Ad(ctx *echox.Context) error {
 	return ctx.JSON(http.StatusOK, result)
 }
 
-// 商品
-func (t *jsonC) Simple_goods(ctx *echox.Context) error {
-	typeParams := strings.TrimSpace(ctx.Form("types"))
-	types := strings.Split(typeParams, "|")
-	size, err := strconv.Atoi(ctx.Form("size"))
-	if err != nil {
-		msg := &gof.Message{}
-		return ctx.JSON(http.StatusNotFound, msg.Error(err))
+func (t *jsonC) getMultiParams(s string) (p string, size, begin int) {
+	arr := strings.Split(s, "*")
+	l := len(arr)
+	if l == 1 {
+		p = s
+		size = 10 //返回默认10条
+	} else {
+		p = arr[0]
+		size, _ = strconv.Atoi(arr[1])
+		if l > 2 {
+			begin, _ = strconv.Atoi(arr[2])
+		}
 	}
+	return p, size, begin
+}
+
+// 商品
+func (this *jsonC) Simple_goods(ctx *echox.Context) error {
+	typeParams := strings.TrimSpace(ctx.Form("params"))
+	types := strings.Split(typeParams, "|")
 	partnerId := GetPartnerId(ctx)
 	result := make(map[string]interface{}, len(types))
 
-	key := fmt.Sprint("go2o:front:sg:%d-%d-%s", partnerId, size, getMd5(typeParams))
+	key := fmt.Sprint("go2o:front:sg:%d-%s", partnerId, getMd5(typeParams))
 	sto := ctx.App.Storage()
-	if err := sto.Get(key, &result); err != nil { //从缓存中读取
+	if err := sto.Get(key, &result); err != nil {
+		//从缓存中读取
 		log.Println(err)
 		ss := dps.SaleService
 		for _, t := range types {
-			switch t {
+			p, size, begin := this.getMultiParams(t)
+			switch p {
 			case "new-goods":
-				_, result[t] = ss.GetPagedOnShelvesGoods(partnerId,
-					-1, 0, size, "gs_goods.id DESC")
+				_, result[p] = ss.GetPagedOnShelvesGoods(partnerId,
+					-1, begin, begin+size, "gs_goods.id DESC")
 			case "hot-sales":
-				_, result[t] = ss.GetPagedOnShelvesGoods(partnerId,
-					-1, 0, size, "gs_goods.sale_num DESC")
+				_, result[p] = ss.GetPagedOnShelvesGoods(partnerId,
+					-1, begin, begin+size, "gs_goods.sale_num DESC")
 			}
 		}
 		sto.SetExpire(key, result, maxSeconds)
@@ -105,23 +117,18 @@ func (t *jsonC) Simple_goods(ctx *echox.Context) error {
 }
 
 // 获取销售标签获取商品
-func (t *jsonC) Saletag_goods(ctx *echox.Context) error {
-	codeParams := strings.TrimSpace(ctx.Form("codes"))
+func (this *jsonC) Saletag_goods(ctx *echox.Context) error {
+	codeParams := strings.TrimSpace(ctx.Form("params"))
 	codes := strings.Split(codeParams, "|")
-	begin, _ := strconv.Atoi(ctx.Form("begin"))
-	size, err := strconv.Atoi(ctx.Form("size"))
-	if err != nil {
-		msg := &gof.Message{}
-		return ctx.JSON(http.StatusNotFound, msg.Error(err))
-	}
 	partnerId := GetPartnerId(ctx)
 	result := make(map[string]interface{}, len(codes))
 
-	key := fmt.Sprint("go2o:front:stg:%d-%d-%d-%s", partnerId, begin, size, getMd5(codeParams))
+	key := fmt.Sprint("go2o:front:stg:%d--%s", partnerId, getMd5(codeParams))
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil { //从缓存中读取
 		log.Println(err)
-		for _, code := range codes {
+		for _, param := range codes {
+			code, size, begin := this.getMultiParams(param)
 			list := dps.SaleService.GetValueGoodsBySaleTag(
 				partnerId, code, "", begin, begin+size)
 			result[code] = list

@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/web"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
@@ -78,6 +79,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
+	d.Map["Logo"] = format.GetResUrl(conf.Logo)
 	return ctx.RenderOK("conf.site_conf.html", d)
 }
 
