@@ -12,8 +12,10 @@ import (
 	"encoding/json"
 	gfmt "github.com/jsix/gof/util/fmt"
 	"go2o/src/app/util"
+	aputil "go2o/src/app/util"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"html/template"
 	"time"
@@ -22,8 +24,24 @@ import (
 type mainC struct {
 }
 
-//todo:bug 当在UCenter登陆，会话会超时
+func (this *mainC) mobileIndex(ctx *echox.Context) error {
+	d := ctx.NewData()
+	d.Map = map[string]interface{}{
+		"AliasGrowAccount":    template.HTML(variable.AliasGrowAccount),
+		"AliasPresentAccount": template.HTML(variable.AliasPresentAccount),
+	}
+	return ctx.RenderOK("index.html", d)
+}
+
 func (this *mainC) Index(ctx *echox.Context) error {
+
+	switch aputil.GetBrownerDevice(ctx.HttpRequest()) {
+	default:
+	case aputil.DevicePC:
+	case aputil.DeviceTouchPad, aputil.DeviceMobile, aputil.DeviceAppEmbed:
+		return this.mobileIndex(ctx)
+	}
+
 	mm := getMember(ctx)
 	p := getPartner(ctx)
 	conf := getSiteConf(p.Id)
@@ -42,7 +60,9 @@ func (this *mainC) Index(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = map[string]interface{}{
-		"level": lv,
+		"AliasGrowAccount":    variable.AliasGrowAccount,
+		"AliasPresentAccount": variable.AliasPresentAccount,
+		"level":               lv,
 		//"nLevel":       nextLv,
 		"member":       mm,
 		"partner":      p,
@@ -68,14 +88,14 @@ func (this *mainC) Logout(ctx *echox.Context) error {
 	//		http.SetCookie(w, cookie)
 	//	}
 	ctx.Session.Destroy()
-	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.HttpResponse().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
 // 切换设备
 func (this *mainC) Change_device(ctx *echox.Context) error {
 	form := ctx.Request().URL.Query()
-	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), ctx.HttpRequest())
 	toUrl := form.Get("return_url")
 	if len(toUrl) == 0 {
 		toUrl = ctx.Request().Referer()
@@ -91,7 +111,7 @@ func (this *mainC) Change_device(ctx *echox.Context) error {
 // Member session connect
 func (this *mainC) Msc(ctx *echox.Context) error {
 	form := ctx.Request().URL.Query()
-	util.SetDeviceByUrlQuery(ctx.Response(), ctx.Request())
+	util.SetDeviceByUrlQuery(ctx.HttpResponse(), ctx.HttpRequest())
 	ok, memberId := util.MemberHttpSessionConnect(ctx, func(memberId int) {
 		v := ctx.Session.Get("member")
 		var m *member.ValueMember

@@ -6,7 +6,7 @@ import (
 	"runtime"
 )
 
-func PrintErr(err error) {
+func Error(err error) {
 	_, f, line, _ := runtime.Caller(1)
 	if err != nil && infrastructure.DebugMode {
 		infrastructure.GetApp().Log().Println(

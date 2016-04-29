@@ -54,8 +54,8 @@ func (this *getC) GetQR(ctx *echox.Context) error {
 	var url string = domain + "/change_device?device=3&return_url=/main/t/" + code
 	qrBytes := gen.BuildQrCodeForUrl(url, 10)
 	ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
-	ctx.Response().Header().Set("Content-Disposition",
+	ctx.HttpResponse().Header().Set("Content-Disposition",
 		fmt.Sprintf("attachment;filename=tgcode_%s.jpg", code))
-	ctx.Response().Write(qrBytes)
+	ctx.HttpResponse().Write(qrBytes)
 	return nil
 }

@@ -108,7 +108,8 @@ func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
 		}
 	}
 	var invitationId int = 0
-	if len(invitationCode) > 0 { //判断邀请码是否正确
+	if len(invitationCode) > 0 {
+		//判断邀请码是否正确
 		invitationId = this.GetMemberIdByInvitationCode(invitationCode)
 		if invitationId <= 0 {
 			return -1, member.ErrInvitationCode
@@ -347,17 +348,21 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 		acv := m.GetAccount().GetValue()
 		lv := m.GetLevel()
 		return &dto.MemberSummary{
-			Id:             m.GetAggregateRootId(),
-			Usr:            mv.Usr,
-			Name:           mv.Name,
-			Avatar:         format.GetResUrl(mv.Avatar),
-			Exp:            mv.Exp,
-			Level:          mv.Level,
-			LevelName:      lv.Name,
-			Integral:       acv.Integral,
-			Balance:        acv.Balance,
-			PresentBalance: acv.PresentBalance,
-			UpdateTime:     mv.UpdateTime,
+			Id:                m.GetAggregateRootId(),
+			Usr:               mv.Usr,
+			Name:              mv.Name,
+			Avatar:            format.GetResUrl(mv.Avatar),
+			Exp:               mv.Exp,
+			Level:             mv.Level,
+			LevelName:         lv.Name,
+			Integral:          acv.Integral,
+			Balance:           acv.Balance,
+			PresentBalance:    acv.PresentBalance,
+			GrowBalance:       acv.GrowBalance,
+			GrowAmount:        acv.GrowAmount,
+			GrowEarnings:      acv.GrowEarnings,
+			GrowTotalEarnings: acv.GrowTotalEarnings,
+			UpdateTime:        mv.UpdateTime,
 		}
 	}
 	return nil
@@ -603,13 +608,15 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	var tit2 string
 	if kind == member.KindBalancePresent {
 		tradeNo = domain.NewTradeNo(partnerId)
-		if amount > 0 { //增加奖金
+		if amount > 0 {
+			//增加奖金
 			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
 			err = acc.PresentBalance(tit2, tradeNo, amount)
-		} else { //扣减奖金
+		} else {
+			//扣减奖金
 			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"

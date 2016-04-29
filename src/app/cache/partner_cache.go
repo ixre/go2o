@@ -11,33 +11,25 @@ package cache
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/storage"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 )
 
 // 获取商户信息缓存
 func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
-	var v *partner.ValuePartner
+	var v partner.ValuePartner
 	var sto gof.Storage = GetKVS()
 	var key string = GetValuePartnerCacheCK(partnerId)
-
-	if sto.DriverName() == storage.DriveHashStorage {
-		if obj, err := GetKVS().GetRaw(key); err != nil {
-			v = obj.(*partner.ValuePartner)
+	if sto.Get(key, &v) != nil {
+		v2, err := dps.PartnerService.GetPartner(partnerId)
+		if v2 != nil && err == nil {
+			sto.SetExpire(key, *v2, DefaultMaxSeconds)
+			return v2
 		}
-	} else if sto.DriverName() == storage.DriveRedisStorage {
-		sto.Get(key, &v)
 	}
+	return &v
 
-	if v == nil {
-		var err error
-		if v, err = dps.PartnerService.GetPartner(partnerId); err == nil {
-			sto.Set(key, v)
-		}
-
-	}
-	return v
 }
 
 // 设置商户信息缓存
@@ -50,26 +42,41 @@ func GetPartnerSiteConfCK(partnerId int) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", partnerId)
 }
 
+func DelPartnerCache(partnerId int) {
+	kvs := GetKVS()
+	kvs.Del(GetValuePartnerCacheCK(partnerId))
+	kvs.Del(GetPartnerSiteConfCK(partnerId))
+}
+
 // 获取商户站点配置
 func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
-	var v *partner.SiteConf
+	var v partner.SiteConf
 	var sto gof.Storage = GetKVS()
 	var key string = GetPartnerSiteConfCK(partnerId)
-
-	if sto.DriverName() == storage.DriveHashStorage {
-		if obj, err := GetKVS().GetRaw(key); err != nil {
-			v = obj.(*partner.SiteConf)
+	if sto.Get(key, &v) != nil {
+		v2 := dps.PartnerService.GetSiteConf(partnerId)
+		v2.Logo = format.GetResUrl(v2.Logo)
+		if v2 != nil {
+			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 		}
-	} else if sto.DriverName() == storage.DriveRedisStorage {
-		sto.Get(key, &v)
+		return v2
 	}
+	return &v
+}
 
-	if v == nil {
-		if v = dps.PartnerService.GetSiteConf(partnerId); v != nil {
-			sto.Set(key, v)
+// 根据主机头识别会员编号
+func GetPartnerIdByHost(host string) int {
+	partnerId := 0
+	key := "cache:host-for:" + host
+	sto := GetKVS()
+	var err error
+	if partnerId, err = sto.GetInt(key); err != nil || partnerId <= 0 {
+		partnerId = dps.PartnerService.GetPartnerIdByHost(host)
+		if partnerId > 0 {
+			sto.SetExpire(key, partnerId, DefaultMaxSeconds)
 		}
 	}
-	return v
+	return partnerId
 }
 
 // 根据API ID获取商户ID

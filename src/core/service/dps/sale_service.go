@@ -17,18 +17,22 @@ import (
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/infrastructure/format"
+	"go2o/src/core/query"
 	"strconv"
 )
 
 type saleService struct {
-	_rep      sale.ISaleRep
-	_goodsRep sale.IGoodsRep
+	_rep        sale.ISaleRep
+	_goodsRep   sale.IGoodsRep
+	_goodsQuery *query.GoodsQuery
 }
 
-func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep) *saleService {
+func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep,
+	goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
-		_rep:      r,
-		_goodsRep: goodsRep,
+		_rep:        r,
+		_goodsRep:   goodsRep,
+		_goodsQuery: goodsQuery,
 	}
 }
 
@@ -134,13 +138,27 @@ func (this *saleService) DeleteItem(partnerId int, id int) error {
 
 // 获取分页上架的商品
 func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, end int,
-	sortQuery string) (int, []*valueobject.Goods) {
+	sortBy string) (total int, list []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(partnerId)
-	var cate sale.ICategory = sl.GetCategory(categoryId)
-	var ids []int = cate.GetChildId()
-	ids = append(ids, categoryId)
-	//todo: cache
 
+	if categoryId > 0 {
+		var cate sale.ICategory = sl.GetCategory(categoryId)
+		var ids []int = cate.GetChildId()
+		ids = append(ids, categoryId)
+		total, list = this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, "", sortBy)
+	} else {
+		total = -1
+		list = sl.GetOnShelvesGoods(start, end, sortBy)
+	}
+	for _, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+	}
+	return total, list
+}
+
+// 获取分页上架的商品
+func (this *saleService) GetPagedOnShelvesGoodsByKeyword(partnerId,
+	start, end int, word, sortQuery string) (int, []*valueobject.Goods) {
 	var where string
 	var orderBy string
 	switch sortQuery {
@@ -162,8 +180,8 @@ func (this *saleService) GetPagedOnShelvesGoods(partnerId, categoryId, start, en
 		//todo:
 	}
 
-	return this._goodsRep.GetPagedOnShelvesGoods(partnerId, ids, start, end, where, orderBy)
-
+	return this._goodsQuery.GetPagedOnShelvesGoodsByKeyword(partnerId,
+		start, end, word, where, orderBy)
 }
 
 // 删除产品
@@ -239,9 +257,49 @@ func (this *saleService) GetCategories(partnerId int) []*sale.ValueCategory {
 	var list []*sale.ValueCategory = make([]*sale.ValueCategory, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
+		vv.Icon = format.GetResUrl(vv.Icon)
 		list[i] = vv
 	}
 	return list
+}
+
+func (this *saleService) GetBigCategories(partnerId int) []*sale.ValueCategory {
+	sl := this._rep.GetSale(partnerId)
+	cats := sl.GetCategories()
+	list := []*sale.ValueCategory{}
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == 0 && vv.Enabled == 1 {
+			vv.Icon = format.GetResUrl(vv.Icon)
+			list = append(list, vv)
+		}
+	}
+	return list
+}
+
+func (this *saleService) GetChildCategories(partnerId, parentId int) []*sale.ValueCategory {
+	sl := this._rep.GetSale(partnerId)
+	cats := sl.GetCategories()
+	list := []*sale.ValueCategory{}
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+			vv.Icon = format.GetResUrl(vv.Icon)
+			list = append(list, vv)
+			this.setChild(cats, vv)
+		}
+	}
+	return list
+}
+
+func (this *saleService) setChild(list []sale.ICategory, dst *sale.ValueCategory) {
+	for _, v := range list {
+		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
+			if dst.Child == nil {
+				dst.Child = []*sale.ValueCategory{}
+			}
+			vv.Icon = format.GetResUrl(vv.Icon)
+			dst.Child = append(dst.Child, vv)
+		}
+	}
 }
 
 func (this *saleService) GetAllSaleTags(partnerId int) []*sale.ValueSaleTag {
@@ -307,21 +365,27 @@ func (this *saleService) SaveItemSaleTags(partnerId, itemId int, tagIds []int) e
 }
 
 // 根据销售标签获取指定数目的商品
-func (this *saleService) GetValueGoodsBySaleTag(partnerId int, code string, begin int, end int) []*valueobject.Goods {
+func (this *saleService) GetValueGoodsBySaleTag(partnerId int,
+	code, sortBy string, begin int, end int) []*valueobject.Goods {
 	sl := this._rep.GetSale(partnerId)
 	if tag := sl.GetSaleTagByCode(code); tag != nil {
-		return tag.GetValueGoods(begin, end)
+		list := tag.GetValueGoods(sortBy, begin, end)
+		for _, v := range list {
+			v.Image = format.GetGoodsImageUrl(v.Image)
+		}
+		return list
 	}
 	return make([]*valueobject.Goods, 0)
 }
 
 // 根据分页销售标签获取指定数目的商品
-func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int, tagId int, begin int, end int) (int, []*valueobject.Goods) {
+func (this *saleService) GetPagedValueGoodsBySaleTag(partnerId int,
+	tagId int, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
 	sl := this._rep.GetSale(partnerId)
 	tag := sl.CreateSaleTag(&sale.ValueSaleTag{
 		Id: tagId,
 	})
-	return tag.GetPagedValueGoods(begin, end)
+	return tag.GetPagedValueGoods(sortBy, begin, end)
 }
 
 // 删除销售标签

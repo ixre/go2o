@@ -36,7 +36,7 @@ func (this *promC) List(ctx *echox.Context) error {
 
 // 删除促销(POST)
 func (this *promC) Del(ctx *echox.Context) error {
-	req := ctx.Request()
+	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
@@ -102,7 +102,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 // 保存现金返现(POST)
 func (this *promC) Save_cb(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
@@ -181,7 +181,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 // 保存优惠券(POST)
 func (this *promC) Save_coupon(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
@@ -237,7 +237,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 
 func (this *promC) bind_coupon_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 	id, err := strconv.Atoi(r.FormValue("id"))

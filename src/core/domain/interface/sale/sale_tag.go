@@ -26,8 +26,8 @@ type ISaleTag interface {
 	System() bool
 
 	// 获取标签下的商品
-	GetValueGoods(begin, end int) []*valueobject.Goods
+	GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods
 
 	// 获取标签下的分页商品
-	GetPagedValueGoods(begin, end int) (total int, goods []*valueobject.Goods)
+	GetPagedValueGoods(sortBy string, begin, end int) (total int, goods []*valueobject.Goods)
 }

@@ -10,10 +10,10 @@ package restapi
 
 import (
 	"github.com/jsix/gof"
-	"github.com/labstack/echo"
 	"go2o/src/core/domain/interface/ad"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
+	"gopkg.in/labstack/echo.v1"
 	"net/http"
 	"strings"
 )

@@ -12,7 +12,7 @@ package partner
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
-	"go2o/src/cache"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
 	"go2o/src/core/service/dps"
@@ -28,7 +28,7 @@ type orderC struct {
 func (this *orderC) List(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
 	return ctx.Render(http.StatusOK, "order.list.html", d)
 }
@@ -37,7 +37,7 @@ func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
 	return ctx.Render(http.StatusOK, "order.waitpay_list.html", d)
 }
@@ -46,14 +46,14 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.cancel_post(ctx)
 	}
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	return ctx.Render(http.StatusOK, "order.cancel.html", d)
 }
 
 func (this *orderC) cancel_post(ctx *echox.Context) error {
 	result := gof.Message{}
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	reason := r.FormValue("reason")
 	err := dps.ShoppingService.CancelOrder(partnerId,
@@ -69,7 +69,7 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 
 func (this *orderC) View(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -99,7 +99,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map = map[string]interface{}{
 		"entity":   template.JS(js),
 		"member":   member,
@@ -112,7 +112,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 
 func (this *orderC) Setup(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
@@ -147,7 +147,7 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 	}
 	var msg gof.Message
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
@@ -167,7 +167,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 		return this.payment_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -183,7 +183,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
 	}
 
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["shopName"] = shopName
 	d.Map["order"] = *e
 	return ctx.Render(http.StatusOK, "order.payment.html", d)
@@ -192,7 +192,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 
 func (this *orderC) payment_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 

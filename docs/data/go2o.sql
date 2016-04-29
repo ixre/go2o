@@ -136,7 +136,7 @@ CREATE TABLE `gs_category` (
   `url` varchar(120) DEFAULT NULL,
   `enabled` bit(1) DEFAULT NULL COMMENT '是否可用',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
-  `order_index` int(11) DEFAULT '0' COMMENT '序号',
+  `sort_number` int(11) DEFAULT '0' COMMENT '序号',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='food categories';
@@ -1365,7 +1365,7 @@ CREATE TABLE `pt_shop` (
   `phone` varchar(45) DEFAULT NULL,
   `location` varchar(50) DEFAULT NULL COMMENT '坐标',
   `deliver_radius` int(11) DEFAULT NULL COMMENT '配送范围',
-  `order_index` int(11) DEFAULT '0',
+  `sort_number` int(11) DEFAULT '0',
   `state` int(11) DEFAULT NULL COMMENT '0:表示禁用   1:表示正常',
   `create_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)

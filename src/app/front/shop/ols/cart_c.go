@@ -25,7 +25,7 @@ type CartC struct {
 
 // 购物车API(POST)
 func (this *CartC) CartApiHandle(ctx *echox.Context) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	if r.Method != "POST" {
 		return nil
 	}
@@ -61,7 +61,7 @@ func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
 	}
 
 	// 持续保存cookie
-	ck, err := ctx.Request().Cookie("_cart")
+	ck, err := ctx.HttpRequest().Cookie("_cart")
 	if err != nil {
 		ck = &http.Cookie{
 			Name: "_cart",
@@ -70,13 +70,13 @@ func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
 	}
 	ck.Value = cart.CartKey
 	ck.Expires = time.Now().Add(time.Hour * 48)
-	http.SetCookie(ctx.Response(), ck)
+	http.SetCookie(ctx.HttpResponse(), ck)
 	return ctx.JSON(http.StatusOK, cart)
 }
 
 func (this *CartC) cart_AddItem(ctx *echox.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) error {
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	item, err := dps.ShoppingService.AddCartItem(p.Id, memberId, cartKey, goodsId, num)
@@ -94,7 +94,7 @@ func (this *CartC) cart_AddItem(ctx *echox.Context,
 func (this *CartC) cart_RemoveItem(ctx *echox.Context,
 	p *partner.ValuePartner, memberId int, cartKey string) error {
 	var result gof.Message
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
 	err := dps.ShoppingService.SubCartItem(p.Id, memberId, cartKey, goodsId, num)

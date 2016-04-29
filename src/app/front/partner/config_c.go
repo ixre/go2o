@@ -12,7 +12,9 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
+	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
@@ -34,14 +36,14 @@ func (this *configC) Profile(ctx *echox.Context) error {
 	p.ExpiresTime = time.Now().Unix()
 
 	js, _ := json.Marshal(p)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.profile.html", d)
 }
 
 func (this *configC) profile_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
@@ -59,11 +61,9 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	e.Id = partnerId
 
 	id, err := dps.PartnerService.SavePartner(partnerId, &e)
-
-	if err != nil {
-		result.Message = err.Error()
-	} else {
-		result.Result = true
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 		result.Data = id
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -72,19 +72,20 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 //站点配置
 func (this *configC) SiteConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
-		return this.saleConf_post(ctx)
+		return this.siteConf_post(ctx)
 	}
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
+	d.Map["Logo"] = format.GetResUrl(conf.Logo)
 	return ctx.RenderOK("conf.site_conf.html", d)
 }
 
 func (this *configC) siteConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
@@ -97,11 +98,9 @@ func (this *configC) siteConf_post(ctx *echox.Context) error {
 	e.PartnerId = partnerId
 
 	err := dps.PartnerService.SaveSiteConf(partnerId, &e)
-
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -114,14 +113,14 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
-	d := echox.NewRenderData()
+	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
 	return ctx.RenderOK("conf.sale_conf.html", d)
 }
 
 func (this *configC) saleConf_post(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
-	r := ctx.Request()
+	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
@@ -131,11 +130,9 @@ func (this *configC) saleConf_post(ctx *echox.Context) error {
 	e.PartnerId = partnerId
 
 	err := dps.PartnerService.SaveSaleConf(partnerId, &e)
-
-	if err != nil {
-		result = gof.Message{Result: false, Message: err.Error()}
-	} else {
-		result = gof.Message{Result: true, Message: ""}
+	result.Error(err)
+	if err == nil {
+		cache.DelPartnerCache(partnerId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

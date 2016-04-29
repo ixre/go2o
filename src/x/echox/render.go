@@ -10,8 +10,8 @@ package echox
 
 import (
 	"errors"
-	"github.com/labstack/echo"
 	"gopkg.in/fsnotify.v1"
+	"gopkg.in/labstack/echo.v1"
 	"html/template"
 	"io"
 	"log"
@@ -71,7 +71,6 @@ func (g *GoTemplateForEcho) fsNotify() {
 		for {
 			select {
 			case event := <-w.Events:
-				log.Println(event)
 				if event.Op&fsnotify.Write != 0 || event.Op&fsnotify.Create != 0 {
 					if strings.HasSuffix(event.Name, ".html") {
 						log.Println("[ Template][ Update]: file - ", event.Name)
@@ -88,9 +87,12 @@ func (g *GoTemplateForEcho) fsNotify() {
 		}
 	}(g)
 
-	//w.Add(g.fileDirectory)
+	w.Add(g.fileDirectory)
 	filepath.Walk(g.fileDirectory, func(path string, info os.FileInfo, err error) error {
-		return w.Add(path)
+		if info.IsDir() {
+			return w.Add(path)
+		}
+		return nil
 	})
 
 	<-ch

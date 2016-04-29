@@ -12,7 +12,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"go2o/src/core/infrastructure"
-	"go2o/src/core/infrastructure/log"
 	"go2o/src/core/variable"
 	"regexp"
 )
@@ -29,42 +28,13 @@ func NewPartnerQuery(c gof.App) *PartnerQuery {
 	}
 }
 
-/*
-
-
-def getpage(partnerid,type):
-    '获取页面内容'
-    row = newdb().fetchone('SELECT `content` FROM pt_page WHERE `ptid`=%(ptid)s and `type`=%(type)s',
-                            {
-                             'ptid':partnerid,
-                             'type':type
-                            })
-
-    return '' if row==None else row[0]
-
-
-def updatepage(partnerid,type,content):
-    '更新页面内容'
-    data={
-          'ptid':partnerid,
-          'type':type,
-          'content':content,
-          'updatetime':utility.timestr()
-          }
-
-    row=newdb().query('UPDATE pt_page SET `content`=%(content)s,`updatetime`=%(updatetime)s WHERE `ptid`=%(ptid)s AND `type`=%(type)s',data)
-    if row==0:
-        newdb().query('INSERT INTO pt_page (`ptid`,`type`,`content`,`updatetime`) VALUES(%(ptid)s,%(type)s,%(content)s,%(updatetime)s)',data)
-
-*/
-
 var (
 	commHostRegexp *regexp.Regexp
 )
 
 func getHostRegexp() *regexp.Regexp {
 	if commHostRegexp == nil {
-		commHostRegexp = regexp.MustCompile("([^.]+)." +
+		commHostRegexp = regexp.MustCompile("([^\\.]+)." +
 			infrastructure.GetApp().Config().GetString(variable.ServerDomain))
 	}
 	return commHostRegexp
@@ -91,9 +61,8 @@ func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
 					 ON pt_siteconf.partner_id = pt_partner.id
 					 WHERE host=?`, &partnerId, host)
 	}
-
 	if err != nil {
-		log.PrintErr(err)
+		gof.CurrentApp.Log().Error(err)
 	}
 	return partnerId
 }

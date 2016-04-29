@@ -9,6 +9,7 @@
 package master
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jsix/gof"
 	"go2o/src/app/front"
@@ -28,7 +29,7 @@ func (this *mainC) Index(ctx *echox.Context) error {
 
 func (this *mainC) Logout(ctx *echox.Context) error {
 	ctx.Session.Destroy()
-	ctx.Response().Write([]byte("<script>location.replace('/login')</script>"))
+	ctx.HttpResponse().Write([]byte("<script>location.replace('/login')</script>"))
 	return nil
 }
 
@@ -48,14 +49,14 @@ func (this *mainC) Summary(ctx *echox.Context) error {
 
 // 导出数据
 func (this *mainC) exportData(ctx *echox.Context) error {
-	ctx.Response().Header().Set("Content-Type", "application/json")
-	ctx.Response().Write(GetExportData(ctx.Request()))
+	ctx.HttpResponse().Header().Set("Content-Type", "application/json")
+	ctx.HttpResponse().Write(GetExportData(ctx.HttpRequest()))
 	return nil
 }
 
 func (this *mainC) Upload_post(ctx *echox.Context) error {
-	r, w := ctx.Request(), ctx.Response()
-	r.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
+	r, w := ctx.HttpRequest(), ctx.HttpResponse()
+	r.ParseMultipartForm(64 * 1024 * 1024 * 1024) //64M
 	for f := range r.MultipartForm.File {
 		w.Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("master/item_pic/")))
 		break
@@ -65,26 +66,21 @@ func (this *mainC) Upload_post(ctx *echox.Context) error {
 
 //登陆
 func (this *mainC) Login(ctx *echox.Context) error {
-	if ctx.Request().Method == "POST" {
+	if ctx.HttpRequest().Method == "POST" {
 		return this.login_post(ctx)
 	}
 	return ctx.RenderOK("login.html", ctx.NewData())
 }
 func (this *mainC) login_post(ctx *echox.Context) error {
-	r := ctx.Request()
 	var msg gof.Message
-	r.ParseForm()
-	usr, pwd := r.Form.Get("uid"), r.Form.Get("pwd")
-
+	ctx.HttpRequest().ParseForm()
+	usr, pwd := ctx.HttpRequest().FormValue("uid"), ctx.HttpRequest().FormValue("pwd")
+	var err error
 	if domain.Md5Pwd(pwd, usr) == ctx.App.Config().GetString("webmaster_valid_md5") {
 		ctx.Session.Set("is_master", 1)
-		if err := ctx.Session.Save(); err != nil {
-			msg.Message = err.Error()
-		} else {
-			msg.Result = true
-		}
+		err = ctx.Session.Save()
 	} else {
-		msg.Message = "用户或密码不正确！"
+		err = errors.New("用户或密码不正确！")
 	}
-	return ctx.JSON(http.StatusOK, msg)
+	return ctx.JSON(http.StatusOK, msg.Error(err))
 }

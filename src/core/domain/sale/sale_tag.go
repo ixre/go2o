@@ -21,7 +21,8 @@ type SaleTag struct {
 	_value     *sale.ValueSaleTag
 }
 
-func NewSaleTag(partnerId int, value *sale.ValueSaleTag, rep sale.ISaleTagRep) sale.ISaleTag {
+func NewSaleTag(partnerId int, value *sale.ValueSaleTag,
+	rep sale.ISaleTagRep) sale.ISaleTag {
 	return &SaleTag{
 		_rep:       rep,
 		_partnerId: partnerId,
@@ -68,23 +69,25 @@ func (this *SaleTag) Save() (int, error) {
 }
 
 // 获取标签下的商品
-func (this *SaleTag) GetValueGoods(begin, end int) []*valueobject.Goods {
+func (this *SaleTag) GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetValueGoodsBySaleTag(this._partnerId, this._value.Id, begin, end)
+	return this._rep.GetValueGoodsBySaleTag(this._partnerId,
+		this._value.Id, sortBy, begin, end)
 }
 
 // 获取标签下的分页商品
-func (this *SaleTag) GetPagedValueGoods(begin, end int) (int, []*valueobject.Goods) {
+func (this *SaleTag) GetPagedValueGoods(sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId, this.GetDomainId(), begin, end)
+	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId,
+		this.GetDomainId(), sortBy, begin, end)
 }

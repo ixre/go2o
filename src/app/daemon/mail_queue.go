@@ -60,7 +60,7 @@ func handleMailQueue(list []*mss.MailTask) {
 		go func(ch chan int, t *mss.MailTask) {
 			err := mssIns.SendMailWithDefaultConfig(t.Subject, []string{t.SendTo}, []byte(t.Body))
 			if err != nil {
-				appCtx.Log().PrintErr(err)
+				appCtx.Log().Error(err)
 				t.IsFailed = 1
 				t.IsSend = 1
 			} else {

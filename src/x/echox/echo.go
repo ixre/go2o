@@ -11,11 +11,12 @@ package echox
 import (
 	"errors"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/web/session"
-	"github.com/labstack/echo"
+	"gopkg.in/labstack/echo.v1"
+	"log"
 	"net/http"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -32,8 +33,10 @@ type (
 	}
 	Context struct {
 		*echo.Context
-		App     gof.App
-		Session *session.Session
+		App      gof.App
+		Session  *session.Session
+		response http.ResponseWriter
+		request  *http.Request
 	}
 	TemplateData struct {
 		Var  map[string]interface{}
@@ -64,15 +67,11 @@ func (this *Echo) chkApp() {
 	}
 }
 
+// 转换为Echo Handler
 func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	return func(ctx *echo.Context) error {
 		this.chkApp()
-		s := session.Default(ctx.Response(), ctx.Request())
-		return h(&Context{
-			Context: ctx,
-			Session: s,
-			App:     this.app,
-		})
+		return h(ParseContext(ctx, this.app))
 	}
 }
 
@@ -121,6 +120,45 @@ func (this *Echo) Aanyx(path string, obj interface{}) {
 	this.Any(path, this.parseHandler(h))
 }
 
+func (this *Echo) Agetx(path string, obj interface{}) {
+	h := func(c *Context) error {
+		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+			return hd(c)
+		}
+		return c.String(http.StatusInternalServerError, "no such file")
+	}
+	this.Get(path, this.parseHandler(h))
+}
+
+func (this *Echo) Apostx(path string, obj interface{}) {
+	h := func(c *Context) error {
+		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+			return hd(c)
+		}
+		return c.String(http.StatusInternalServerError, "no such file")
+	}
+	this.Post(path, this.parseHandler(h))
+}
+
+func ParseContext(ctx *echo.Context, app gof.App) *Context {
+	req, rsp := ctx.Request(), ctx.Response()
+	s := session.Default(rsp, req)
+	return &Context{
+		Context:  ctx,
+		Session:  s,
+		App:      app,
+		response: rsp,
+		request:  req,
+	}
+}
+
+func (this *Context) HttpResponse() http.ResponseWriter {
+	return this.response
+}
+func (this *Context) HttpRequest() *http.Request {
+	return this.request
+}
+
 func (this *Context) StringOK(s string) error {
 	return this.debug(this.String(http.StatusOK, s))
 }
@@ -130,6 +168,10 @@ func (this *Context) debug(err error) error {
 		log.Println("[ Echox][ Error]:", err.Error())
 	}
 	return err
+}
+
+func (this *Context) Debug(err error) error {
+	return this.debug(err)
 }
 
 // 覆写Render方法
@@ -191,7 +233,7 @@ func NewRenderData() *TemplateData {
 }
 
 //
-//type InterceptorFunc func(*echo.Context) bool
+//type InterceptorFunc func(echo.Context) bool
 //
 //// 拦截器
 //func Interceptor(fn echo.HandlerFunc, ifn InterceptorFunc) echo.HandlerFunc {
@@ -202,3 +244,41 @@ func NewRenderData() *TemplateData {
 //		return nil
 //	}
 //}
+
+/****************  MIDDLE WAVE ***************/
+
+var (
+	requestFilter = map[string]*regexp.Regexp{
+		"GET": regexp.MustCompile("'|(and|or)\\b.+?(>|<|=|in|like)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION" +
+			".+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+" +
+			"(TABLE|DATABASE)"),
+		"POST": regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*" +
+			".+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|" +
+			"(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)"),
+	}
+
+/*
+	getFilter = postFilter = cookieFilter = regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)");
+*/
+)
+
+// 防SQL注入
+func StopAttack(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		badRequest := false
+		method := ctx.Request().Method
+		switch method {
+		case "GET":
+			badRequest = requestFilter[method].MatchString(ctx.Request().URL.RawQuery)
+		case "POST":
+			badRequest = requestFilter["GET"].MatchString(ctx.Request().URL.RawQuery) ||
+				requestFilter[method].MatchString(
+					ctx.Request().Form.Encode())
+		}
+		if badRequest {
+			return ctx.HTML(http.StatusNotFound,
+				"<div style='color:red;'>您提交的参数非法,系统已记录您本次操作!</div>")
+		}
+		return h(ctx)
+	}
+}

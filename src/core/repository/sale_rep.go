@@ -244,7 +244,7 @@ func (this *saleRep) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
 	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
 	err := this.Connector.GetOrm().Get(id, e)
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 		e = nil
 	}
 	return e
@@ -255,7 +255,7 @@ func (this *saleRep) GetGoodsSnapshotByKey(key string) *sale.GoodsSnapshot {
 	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
 	err := this.Connector.GetOrm().GetBy(e, "key=?", key)
 	if err != nil {
-		log.PrintErr(err)
+		log.Error(err)
 		e = nil
 	}
 	return e

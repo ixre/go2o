@@ -295,7 +295,7 @@ type editorC struct {
 func (this *editorC) File_manager(ctx *echox.Context) error {
 	partnerId := getPartnerId(ctx)
 	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
-	d, err := fileManager(ctx.Request(),
+	d, err := fileManager(ctx.HttpRequest(),
 		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
 		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
@@ -311,9 +311,10 @@ func (this *editorC) File_upload(ctx *echox.Context) error {
 	}
 	partnerId := getPartnerId(ctx)
 	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
-	fileUrl, err := fileUpload(ctx.Request(),
+	fileUrl, err := fileUpload(ctx.HttpRequest(),
 		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
-		fmt.Sprintf("%s/%d/upload/", ctx.App.Config().GetString(variable.ImageServer), partnerId),
+		fmt.Sprintf("%s/%d/upload/",
+			ctx.App.Config().GetString(variable.ImageServer), partnerId),
 	)
 	var hash map[string]interface{} = make(map[string]interface{})
 	if err == nil {

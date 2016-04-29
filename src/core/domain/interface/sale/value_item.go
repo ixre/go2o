@@ -28,7 +28,7 @@ type ValueItem struct {
 	ApplySubs string  `db:"apply_subs"`
 
 	//简单备注,如:(限时促销)
-	Note        string `db:"note"`
+	Remark      string `db:"remark"`
 	Description string `db:"description"`
 
 	// 是否上架,1为上架
