@@ -14,6 +14,7 @@ import (
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/valueobject"
+	"sort"
 	"time"
 )
 
@@ -167,6 +168,7 @@ func (this *Sale) GetCategory(id int) sale.ICategory {
 func (this *Sale) GetCategories() []sale.ICategory {
 	//if this.categories == nil {
 	list := this._saleRep.GetCategories(this.GetAggregateRootId())
+	sort.Sort(list)
 	this._categories = make([]sale.ICategory, len(list))
 	for i, v := range list {
 		this._categories[i] = this.CreateCategory(v)

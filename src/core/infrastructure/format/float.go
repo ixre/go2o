@@ -17,6 +17,7 @@ import (
 )
 
 func FormatFloat(f float32) string {
+	//regexp : ([^\.]+)(\.|(\.[1-9]))0*$  =>  $1$3
 	s := fmt.Sprintf("%.2f", f)
 	if strings.HasSuffix(s, ".00") {
 		return s[:len(s)-3]
