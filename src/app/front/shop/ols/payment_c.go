@@ -17,6 +17,7 @@ import (
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/infrastructure/payment"
 	"go2o/src/core/service/dps"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"net/http"
 	"strconv"
@@ -39,34 +40,40 @@ func getDomain(r *http.Request) string {
 func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	var p payment.IPayment
 
+	cnf := ctx.App.Config()
 	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
 		p = &payment.AliPayWap{
-			Partner: "2088021187655650",
-			Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
-			Seller:  "1515827759@qq.com",
-			PrivateKey: `-----BEGIN ENCRYPTED PRIVATE KEY-----
-	MIICoTAbBgkqhkiG9w0BBQMwDgQIu5+aUzZxXVUCAggABIICgMJ/Hc9wnG//S/Rg
-	7f4ReeAP0cybL3dO5MUHUnQDa6gGebSPMmB/rAXjtMmTjzyYCjhbJyRkSHKNWLIx
-	zZdHMv4T7A/cHK0owRKSNnW7AzY4seCBbnsLteVo33PBAF5u+tO9O5maBm2Rv9xi
-	3gtSH2gh5RoGrjF85VsRm0Vn/e/4Q3dB/IN5YZt2W76GJpPpLk9ltgmJYFcJ0c3X
-	LAqK08RQGN7TfHptYFydrtBftFI6kj1jn7Qs3h7Uqc1qpnDroWqSio7IWE6cF8Nx
-	XD94xuIPLBVlRjGPIZq1PwaIO0cfcAkcD8JZqVMCn99c9x5MW0DFzNjotithZB2v
-	ApooLlhYqoLOrPGpUW8aOnaJ15/awMsJYtyvjF4/IkY6Q1xVqwCTKnNq9aMlmKZU
-	W+8gnJxpqVRNCUC6fuJhLU2fPD85RWfHoAq8iNxz1nz8KHiVVh3FSwS1RyxV6amH
-	ozar9aGZPlh1zT649h51YSpLy/q2pJwfl78a97ArAqXCCltLF/oMDqwcs4BqM9qP
-	PUcSt0k6mURvLwBe2ztop4xTFONn5DizAvEmdTO1YHOQlqDXbxSfO9gH7Yj5fmoL
-	AdebjiSZfR//1dvePyM8wkk67PdWItxuNGKg7TeZCxfsGkYsq4t38rRNHmSvevV0
-	c9XWpbqupJy/g8OsP1Afj4F+9W3wBkhiMFvidIvJcTnkvmxJGz+dJb/feBr10Il+
-	+CVucgZdPkMQoREe+FDV3G3K1ZaoGLvbZwcUBsyF0X/l3TIjgjQxuW8j+1NMkstF
-	TsARjljf7udXaOCK7Uf6vujC2Zk3UI/39LSJ12WAB/Wgc1TEhBq/e6hnyGXtbuBf
-	Ibg2Kl0=
-	-----END ENCRYPTED PRIVATE KEY-----`,
+			Partner: cnf.Get(variable.Alipay_Partner),
+			Key:     cnf.Get(variable.Alipay_Key),
+			Seller:  cnf.Get(variable.Alipay_Seller),
 		}
+		//	p = &payment.AliPayWap{
+		//		Partner: "2088021187655650",
+		//		Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
+		//		Seller:  "1515827759@qq.com",
+		//		PrivateKey: `-----BEGIN ENCRYPTED PRIVATE KEY-----
+		//MIICoTAbBgkqhkiG9w0BBQMwDgQIu5+aUzZxXVUCAggABIICgMJ/Hc9wnG//S/Rg
+		//7f4ReeAP0cybL3dO5MUHUnQDa6gGebSPMmB/rAXjtMmTjzyYCjhbJyRkSHKNWLIx
+		//zZdHMv4T7A/cHK0owRKSNnW7AzY4seCBbnsLteVo33PBAF5u+tO9O5maBm2Rv9xi
+		//3gtSH2gh5RoGrjF85VsRm0Vn/e/4Q3dB/IN5YZt2W76GJpPpLk9ltgmJYFcJ0c3X
+		//LAqK08RQGN7TfHptYFydrtBftFI6kj1jn7Qs3h7Uqc1qpnDroWqSio7IWE6cF8Nx
+		//XD94xuIPLBVlRjGPIZq1PwaIO0cfcAkcD8JZqVMCn99c9x5MW0DFzNjotithZB2v
+		//ApooLlhYqoLOrPGpUW8aOnaJ15/awMsJYtyvjF4/IkY6Q1xVqwCTKnNq9aMlmKZU
+		//W+8gnJxpqVRNCUC6fuJhLU2fPD85RWfHoAq8iNxz1nz8KHiVVh3FSwS1RyxV6amH
+		//ozar9aGZPlh1zT649h51YSpLy/q2pJwfl78a97ArAqXCCltLF/oMDqwcs4BqM9qP
+		//PUcSt0k6mURvLwBe2ztop4xTFONn5DizAvEmdTO1YHOQlqDXbxSfO9gH7Yj5fmoL
+		//AdebjiSZfR//1dvePyM8wkk67PdWItxuNGKg7TeZCxfsGkYsq4t38rRNHmSvevV0
+		//c9XWpbqupJy/g8OsP1Afj4F+9W3wBkhiMFvidIvJcTnkvmxJGz+dJb/feBr10Il+
+		//+CVucgZdPkMQoREe+FDV3G3K1ZaoGLvbZwcUBsyF0X/l3TIjgjQxuW8j+1NMkstF
+		//TsARjljf7udXaOCK7Uf6vujC2Zk3UI/39LSJ12WAB/Wgc1TEhBq/e6hnyGXtbuBf
+		//Ibg2Kl0=
+		//-----END ENCRYPTED PRIVATE KEY-----`,
+		//	}
 	} else {
 		p = &payment.AliPay{
-			Partner: "2088021187655650",
-			Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
-			Seller:  "1515827759@qq.com",
+			Partner: cnf.Get(variable.Alipay_Partner),
+			Key:     cnf.Get(variable.Alipay_Key),
+			Seller:  cnf.Get(variable.Alipay_Seller),
 		}
 	}
 	return p
