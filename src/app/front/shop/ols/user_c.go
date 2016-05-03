@@ -41,9 +41,9 @@ func (this *UserC) Login(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":  p,
-		"conf":     siteConf,
-		"tipStyle": tipStyle,
+		"Partner":  p,
+		"Conf":     siteConf,
+		"TipStyle": tipStyle,
 	}
 	return ctx.RenderOK("login.html", d)
 
@@ -79,9 +79,9 @@ func (this *UserC) Register(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":   p,
-		"conf":      siteConf,
-		"invi_code": inviCode,
+		"Partner":   p,
+		"Conf":      siteConf,
+		"Invi_code": inviCode,
 	}
 	return ctx.RenderOK("register.html", d)
 }
@@ -162,14 +162,14 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 }
 
 // 跳转到会员中心
-// url : /user/jump_m
+// url : /user/jump_uc
 func (this *UserC) JumpToMCenter(ctx *echox.Context) error {
 	returnUrl := ctx.Query("url")
 	m := GetMember(ctx)
 	var location string
 	if m == nil {
 		location = "/user/login?return_url=" +
-			url.QueryEscape("/user/jump_m?url="+returnUrl)
+			url.QueryEscape("/user/jump_uc?url="+returnUrl)
 	} else {
 		location = fmt.Sprintf("http://%s%s/partner_connect?device=%s&sessionId=%s&mid=%d&token=%s&url=%s",
 			variable.DOMAIN_PREFIX_MEMBER,

@@ -9,6 +9,8 @@
 
 package sale
 
+import "sort"
+
 //分类
 type ValueCategory struct {
 	Id int `db:"id" auto:"yes" pk:"yes"`
@@ -25,4 +27,20 @@ type ValueCategory struct {
 	Enabled     int              `db:"enabled"`
 	Description string           `db:"description"`
 	Child       []*ValueCategory `db:"-"`
+}
+
+var _ sort.Interface = new(CategoryList)
+
+type CategoryList []*ValueCategory
+
+func (c CategoryList) Len() int {
+	return len(c)
+}
+
+func (c CategoryList) Less(i, j int) bool {
+	return c[i].SortNumber < c[j].SortNumber || (c[i].SortNumber == c[j].SortNumber && c[i].Id < c[j].Id)
+}
+
+func (c CategoryList) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
 }
