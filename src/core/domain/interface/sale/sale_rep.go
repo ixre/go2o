@@ -39,13 +39,13 @@ type ISaleRep interface {
 
 	GetCategory(partnerId, id int) *ValueCategory
 
-	GetCategories(partnerId int) []*ValueCategory
+	GetCategories(partnerId int) CategoryList
 
 	// 获取与栏目相关的栏目
-	GetRelationCategories(partnerId, categoryId int) []*ValueCategory
+	GetRelationCategories(partnerId, categoryId int) CategoryList
 
 	// 获取子栏目
-	GetChildCategories(partnerId, categoryId int) []*ValueCategory
+	GetChildCategories(partnerId, categoryId int) CategoryList
 
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)

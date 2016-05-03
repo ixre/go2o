@@ -157,7 +157,7 @@ func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
 	return nil
 }
 
-func (this *saleRep) GetCategories(partnerId int) []*sale.ValueCategory {
+func (this *saleRep) GetCategories(partnerId int) sale.CategoryList {
 	var e []*sale.ValueCategory = []*sale.ValueCategory{}
 	err := this.Connector.GetOrm().Select(&e, "partner_id=? ORDER BY id ASC", partnerId)
 	if err == nil {
@@ -167,7 +167,7 @@ func (this *saleRep) GetCategories(partnerId int) []*sale.ValueCategory {
 }
 
 // 获取与栏目相关的栏目
-func (this *saleRep) GetRelationCategories(partnerId, categoryId int) []*sale.ValueCategory {
+func (this *saleRep) GetRelationCategories(partnerId, categoryId int) sale.CategoryList {
 	var all []*sale.ValueCategory = this.GetCategories(partnerId)
 	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
 	var isMatch bool
@@ -195,7 +195,7 @@ func (this *saleRep) GetRelationCategories(partnerId, categoryId int) []*sale.Va
 }
 
 // 获取子栏目
-func (this *saleRep) GetChildCategories(partnerId, categoryId int) []*sale.ValueCategory {
+func (this *saleRep) GetChildCategories(partnerId, categoryId int) sale.CategoryList {
 	var all []*sale.ValueCategory = this.GetCategories(partnerId)
 	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
 
