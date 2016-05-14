@@ -106,7 +106,7 @@
 </div>
 
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?hover=navi&amp;ver={{.Var.version}}"></script>
-        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?{{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?{{.Var.version}}"></script>
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/member/register.js?{{.Var.version}}"></script>
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
 <script type="text/javascript">
@@ -115,7 +115,7 @@
         showInviPanel();
     }
     function showInviPanel(){
-        j6.$('invi-panel').className = j6.$('invi-panel').className.replace(' hidden','');
+        jr.$('invi-panel').className = jr.$('invi-panel').className.replace(' hidden','');
     }
     window.registerCallback =function(json){
       if(json.message.indexOf("1011") == 0){

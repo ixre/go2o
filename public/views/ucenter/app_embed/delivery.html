@@ -90,14 +90,14 @@
 </script>
 
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.version}}"></script>
-<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?ver={{.Var.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?ver={{.Var.version}}"></script>
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/dg.js?ver={{.Var.version}}"></script>
 
 
 <script type="text/javascript">
     var addrs = {};
     var numIdx = 0;
-    var htmTpl = j6.$('deliver_tpl').innerHTML;
+    var htmTpl = jr.$('deliver_tpl').innerHTML;
 
     var _dg = j6.grid('dg', {
         url: location.href,
@@ -134,13 +134,13 @@
     _dg.resize();
 
 
-    var addressTpl = j6.$('addressTpl').innerHTML;
-    var newPanel = j6.$('new_panel');
+    var addressTpl = jr.$('addressTpl').innerHTML;
+    var newPanel = jr.$('new_panel');
 
     function toggleNewAdd(){
         j6.animation.toggleHeight(newPanel,null,25);
     }
-    j6.$('btn_new_address').onclick=function(){
+    jr.$('btn_new_address').onclick=function(){
         j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();

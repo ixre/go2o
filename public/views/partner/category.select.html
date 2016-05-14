@@ -13,7 +13,7 @@
 	
 <script type="text/javascript">
 var treeObj = null;
-var treeEle = j6.$('menu_tree');
+var treeEle = jr.$('menu_tree');
 function treeHandler(src,value,text){
 	var nodeLinks = j6.dom.getsByClass(treeEle, 'node');
 	j6.each(nodeLinks, function(i, e) {
@@ -47,7 +47,7 @@ function ajaxLoadTree(){
 	});
 }
 ajaxLoadTree();
-j6.dom.fitHeight(j6.$('menu_tree').parentNode);
+j6.dom.fitHeight(jr.$('menu_tree').parentNode);
 </script>
 </body>
 </html>

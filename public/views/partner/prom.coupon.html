@@ -144,15 +144,15 @@
     j6.json.bind('form1', entity);
     j6.json.bind('form1', entity2);
 
-    var bt= j6.$('beginTime');
-    var ot = j6.$('overTime');
+    var bt= jr.$('beginTime');
+    var ot = jr.$('overTime');
     j6.calender(bt);
     j6.calender(ot);
     bt.onchange=bt.onblur;
     ot.onchange= ot.onblur;
 
 
-    j6.$('btn_save').onclick = function() {
+    jr.$('btn_save').onclick = function() {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             data.BeginTime += ' 00:00:00';

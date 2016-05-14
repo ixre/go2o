@@ -100,20 +100,20 @@
     j6.json.bind('form1', entity);
     j6.json.bind('form1', e2);
 
-    j6.$('btn_sel_goods').onclick = function(){
+    jr.$('btn_sel_goods').onclick = function(){
         var d = j6.dialog.create2('选择商品',true,true);
         d.open('/goods/goods_select',800,550);
     };
 
     function goodsSelected(row){
-        var e = j6.$('goods_info');
+        var e = jr.$('goods_info');
         e.innerHTML = row.name+'<span>(销售价：'+row.sale_price+')</span>';
         e.parentNode.className='sel_result';
         j6.json.bind('form1', {GoodsId:row.id});
         return true;
     }
 
-    j6.$('btn_save').onclick = function() {
+    jr.$('btn_save').onclick = function() {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             if(data.GoodsId=='' || parseInt(data.GoodsId) <= 0){

@@ -84,13 +84,13 @@
     <script src="{{.Var.static_serve}}/assets/js/shopping_cart.min.js?spam={{.Var.spam}}"></script>
 
     <script type="text/javascript">
-        var cartNum = j6.$('cart-num');
+        var cartNum = jr.$('cart-num');
         window.onload = function() {
             window.cart.init('cart-panel', function (c) {
                 cartNum.innerHTML = c.total_num;
             });
             function addToCart(t,tip,call){
-                var num = parseInt(j6.$('buyNum').value);
+                var num = parseInt(jr.$('buyNum').value);
                 var goodsId = parseInt(t.getAttribute("goods-id"));
                 window.cart.add(goodsId, num, function (c) {
                     if(tip) {
@@ -104,10 +104,10 @@
                     window.cli.alert(msg,'购物车');
                 });
             }
-            j6.$('btn_add_cart').onclick = function () {
+            jr.$('btn_add_cart').onclick = function () {
                 addToCart(this,true);
             };
-            j6.$('btn_view_buy').onclick = function () {
+            jr.$('btn_view_buy').onclick = function () {
                 addToCart(this,false,function(){
                     setTimeout(function(){
                         location.href = '/buy/confirm?t='+new Date().getSeconds();

@@ -37,10 +37,10 @@
     <script type="text/javascript">
         window.cart.init('cart-panel', function (c) { });
         window.onload=function() {
-            j6.$('btn_settle').onclick = function () {
+            jr.$('btn_settle').onclick = function () {
                 location.href = '/buy/confirm';
             }
-            j6.$('btn_back').onclick = function () {
+            jr.$('btn_back').onclick = function () {
                 if(document.referrer) {
                    window.history.go(-1);
                 }else{

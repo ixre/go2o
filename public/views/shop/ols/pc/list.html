@@ -48,14 +48,14 @@ body{overflow: hidden}
 <script type="text/javascript">
   var sw = j6.screen.width();    //page width
   var sh = j6.screen.height();   //page height
-  var tog = j6.$('toggleTop');   //toggle navigator
+  var tog = jr.$('toggleTop');   //toggle navigator
   var togIsLoad = false;        
-  var ldgate = j6.$('loading-gate');
+  var ldgate = jr.$('loading-gate');
   var ldbox = ldgate.getElementsByTagName('DIV')[1];
 
   var ordPanel = j6.dom.getsByClass(document.body,'ording-panel')[0];
-  var catePl = j6.$('category-panel');
-  var itemPl = j6.$('items-panel');
+  var catePl = jr.$('category-panel');
+  var itemPl = jr.$('items-panel');
 
 
 
@@ -73,7 +73,7 @@ function ordingInit(){
   j6.style(ordPanel,{height:(sh-30)+'px',margin:'0'});
   var lis = catePl.getElementsByTagName('LI');
   j6.each(lis,function(i,e){
-    j6.event.add(e,'click',(function(lis,t){
+    jr.event.add(e,'click',(function(lis,t){
       return function(){
         var id= parseInt(t.getAttribute('val'));
         loadItemsByCate(id);
@@ -105,7 +105,7 @@ function ordingInit(){
            j6.animation.show(itemPl,null,4);
 
         },dur);
-    },function(x){j6.$('fditems').innerHTML='加载失败';});
+    },function(x){jr.$('fditems').innerHTML='加载失败';});
   }
 
 

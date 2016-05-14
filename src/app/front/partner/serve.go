@@ -15,6 +15,13 @@ import (
 	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/url"
 	"strings"
+	"github.com/jsix/gof"
+	"go2o/src/core/variable"
+	"strconv"
+	"time"
+	"net/http"
+	"log"
+	"github.com/jsix/gof/crypto"
 )
 
 func GetServe() *echox.Echo {
@@ -67,4 +74,31 @@ func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 		ctx.Response().WriteHeader(302)
 		return nil
 	}
+}
+
+
+func Listen(ch chan bool, app gof.App, addr string) {
+	defer func() {
+		ch <- true
+	}()
+	if app.Debug() {
+		log.Println("** [ Go2o][ Web][ Booted] - Web server (with debug) running on", addr)
+	} else {
+		log.Println("** [ Go2o][ Web][ Booted] - Web server running on", addr)
+	}
+
+	c := app.Config()
+	m := map[string]interface{}{
+		"static_serve": c.GetString(variable.StaticServer),
+		"img_serve":    c.GetString(variable.ImageServer),
+		"domain":       c.GetString(variable.ServerDomain),
+		"version":      c.GetString(variable.Version),
+		"spam":         crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14],
+	}
+	w := func(e echo.Renderer) { //当改动文件时,自动创建spam
+		m := echox.GetGlobTemplateVars()
+		m["spam"] = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+	}
+	echox.GlobSet(m, w)
+	http.ListenAndServe(addr,GetServe())
 }

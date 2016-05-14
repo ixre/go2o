@@ -12,11 +12,14 @@ if (window.menuHandler == undefined) {
     window.menuHandler = null;
 }
 
-
 function showGate() {
     var els = document.getElementsByTagName("DIV");
     els[0].className = 'loading-gate';
     els[1].className = 'loading-bar';
+    if (/MSIE\s*(5|6|7)\./.test(window.navigator.userAgent)) {
+        els[1].style.left = (document.documentElement.clientWidth - els[1].offsetWidth) / 2 + 'px';
+        els[1].style.top = (document.documentElement.clientHeight - els[1].offsetHeight) / 2 + 'px';
+    }
 }
 
 function cancelGate() {
@@ -61,7 +64,7 @@ var FwMenu = {
                         url = md[i1].childs[i2].childs[i3].uri;
                         // html += (i3 != 0 && i3 % 4 == 0 ? '<div class="clearfix"></div>' : '') +
                         html += '<li' + (i2 == 0 && i3 == 0 ? ' class="current"' : '') + '><a class="fn" style="cursor:pointer;" url="' + url + '"' +
-                                //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
+                            //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
                             '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linkText + '</a></li>';
                     }
                     html += '</ul></div></div>';
@@ -135,13 +138,11 @@ var FwMenu = {
                 }
             }
         }
-
         if (selectedLi != null) {
             selectedLi.parentNode.parentNode.className = 'panel';
         } else if (firstPanel != null) {
             firstPanel.className = 'panel';
         }
-
     },
     //查看菜单
     show: function (titleDiv) {
@@ -188,8 +189,8 @@ var FwTab = {
     pageLoad: function () {
         this.hiddenLoadBar();
     },
-    showLoadBar: function () {},
-    hiddenLoadBar: function () {},
+    showLoadBar: function () { },
+    hiddenLoadBar: function () { },
     show: function (text, url, closeable) {
         var _tabs = this.tabs.getElementsByTagName('LI');
         var _indent;
@@ -259,7 +260,7 @@ var FwTab = {
     },
     set: function (t, isOpen) {
 
-        //如果不是刚打开的tab,则关闭加载提示 
+        //如果不是刚打开的tab,则关闭加载提示
         if (!isOpen) {
             this.hiddenLoadBar();
         }
@@ -301,7 +302,7 @@ var FwTab = {
                     }
                 }
             }
-                //根据标题来关闭
+            //根据标题来关闭
             else if (typeof (t) == 'string') {
                 var list = j6.dom.getsByClass(this.tabs, 'tab-title');
                 for (var i = 0; i < list.length; i++) {
@@ -476,8 +477,8 @@ var mainDiv = document.getElementsByClassName('page-main')[0];
 function getDivByCls(cls, ele) {
     var e = ele || mainDiv;
     return (e.getElementsByClassName ?
-    e.getElementsByClassName(cls) :
-    document.getElementsByClassName(cls, e))[0];
+        e.getElementsByClassName(cls) :
+        document.getElementsByClassName(cls, e))[0];
 }
 
 //左栏div
@@ -497,7 +498,7 @@ var userDiv = getDivByCls('page-user', document.body);
 //重置窗口尺寸
 function _resizeWin() {
     var height = document.documentElement.clientHeight;
-    var width =j6.screen.width();
+    var width = j6.screen.width();
 
     mainDiv.style.height = (height - mainDiv.offsetTop) + 'px';
     frameDiv.style.height = (mainDiv.offsetHeight - frameDiv.offsetTop) + 'px';
@@ -518,7 +519,9 @@ window.onload = function () {
             window.M.setFullScreen();
             e.returnvalue = false;
             return false;
-        } else if (e.keyCode == 122) {
+        } else if (e.ctrlKey && e.keyCode === 83) {
+            return j6.event.preventDefault(event);
+        } else if (e.keyCode === 122) {
             window.M.setFullScreen();
             e.returnvalue = false;
             return false;
@@ -549,22 +552,22 @@ window.onload = function () {
 
     //添加左右栏改变大小功能
     new drag(splitDiv, window).custom(null, 'w-resize', (function (ld, rd, sd, minWidth, maxWidth) {
-        return function (event) {
-            //显示遮罩层以支持drag
-            frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
-            var e = event || window.event;
-            window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
-            if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
-            var mx = e.clientX;
-            if (mx > minWidth && mx < maxWidth) {
-                sd.style.left = mx + 'px';
-                ld.style.width = mx + 'px';
-                ld.style.marginRight = -mx + 'px';
-                rd.style.marginLeft = (mx + 5) + 'px';
-                _resizeWin();
-            }
-        };
-    })(leftDiv,
+            return function (event) {
+                //显示遮罩层以支持drag
+                frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
+                var e = event || window.event;
+                window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+                if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
+                var mx = e.clientX;
+                if (mx > minWidth && mx < maxWidth) {
+                    sd.style.left = mx + 'px';
+                    ld.style.width = mx + 'px';
+                    ld.style.marginRight = -mx + 'px';
+                    rd.style.marginLeft = (mx + 5) + 'px';
+                    _resizeWin();
+                }
+            };
+        })(leftDiv,
         rightDiv,
         splitDiv,
         splitDiv.getAttribute('min'),
@@ -574,5 +577,3 @@ window.onload = function () {
         });
 
 };
-
-

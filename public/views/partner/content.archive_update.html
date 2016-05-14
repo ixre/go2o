@@ -169,8 +169,8 @@
         //j6.json.bind('form1',extData);
 
         //设置是否跳转显示
-        var redirectPanel = j6.$('redirectPanel');
-        j6.$('IsRedirect1').onchange = j6.$('IsRedirect2').onchange = function(){
+        var redirectPanel = jr.$('redirectPanel');
+        jr.$('IsRedirect1').onchange = jr.$('IsRedirect2').onchange = function(){
             if(this.checked){
                 if(this.value == '1'){
                     redirectPanel.className = '';
@@ -182,7 +182,7 @@
         if(entity.IsRedirect)redirectPanel.className='';
 
         
-        j6.$('thumbnail_img').src = entity.Thumbnail;
+        jr.$('thumbnail_img').src = entity.Thumbnail;
         var thumbId= 'thumbnail', thumbImg = 'thumbnail_img';
 
         //上传缩略图
@@ -193,8 +193,8 @@
             exts: '*.gif;*.jpg;*.png;*.bmp'
         },function (result, data) {
             if (result) {
-                j6.$(thumbId).value = data.url;
-                j6.$(thumbImg).src = data.url;
+                jr.$(thumbId).value = data.url;
+                jr.$(thumbImg).src = data.url;
             } else {
                 alert('上传失败：' + data);
             }
@@ -252,8 +252,8 @@
             dpimg.onchange = function () {
                 var imgurl = this.options[this.selectedIndex].value;
                 if (imgurl != "") {
-                    j6.$(thumbId).value = imgurl;
-                    j6.$(thumbImg).src = imgurl;
+                    jr.$(thumbId).value = imgurl;
+                    jr.$(thumbImg).src = imgurl;
                 }
             };
         }
@@ -283,7 +283,7 @@
         }
         window.saveData = submitForm;
 
-        j6.$('alias').onblur = function () {
+        jr.$('alias').onblur = function () {
             if (this.nodeName) {
                 var ele = this;
                 if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
@@ -294,7 +294,7 @@
             }
         };
 
-        j6.$('alias').nextSibling.onclick = function () {
+        jr.$('alias').nextSibling.onclick = function () {
 
             var e = this.previousSibling;
             var _title = j6.val('title');

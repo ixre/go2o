@@ -58,10 +58,10 @@
 <script>
     var entity = {{.Map.entity}}||{};
     var imgUrl =  entity.GoodsImage.indexOf('http://')!=-1 ? entity.GoodsImage: '{{.Var.img_serve}}/'+ entity.GoodsImage;
-    j6.$('upload_img').src = imgUrl;
+    jr.$('upload_img').src = imgUrl;
     j6.json.bind('form1', entity);
 
-    j6.$('btn_save').onclick = function () {
+    jr.$('btn_save').onclick = function () {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             j6.xhr.jsonPost('Save_stag', data, function (json) {
