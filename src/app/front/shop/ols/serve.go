@@ -14,7 +14,7 @@ import (
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/x/echox"
 	"gopkg.in/labstack/echo.v1"
-	//mw "gopkg.in/labstack/echo.v1/middleware"
+	mw "gopkg.in/labstack/echo.v1/middleware"
 	"net/http"
 	"strings"
 	"sync"
@@ -78,7 +78,7 @@ func registerRoutes(s *echox.Echo) {
 
 func getServe(path string) *echox.Echo {
 	s := echox.New()
-	//s.Use(mw.Recover())
+	s.Use(mw.Recover())
 	s.Use(echox.StopAttack)
 	s.Use(shopCheck)
 	registerRoutes(s)
