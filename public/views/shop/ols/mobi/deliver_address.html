@@ -49,8 +49,8 @@
 
 <script type="text/javascript">
     var addrs = {{.Map.addrs}};
-    var addressTpl = j6.$('addressTpl').innerHTML;
-    var newPanel = j6.$('new_panel');
+    var addressTpl = jr.$('addressTpl').innerHTML;
+    var newPanel = jr.$('new_panel');
     var selId = {{.Map.sel}};
 
     function toggleNewAdd(b){
@@ -61,7 +61,7 @@
             toggleDL(false);
         }
     }
-    j6.$('btn_new_address').onclick=function(){
+    jr.$('btn_new_address').onclick=function(){
         j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();
@@ -83,7 +83,7 @@
         for(var i=0;i<addrs.length;i++){
             html += j6.template(tpl,addrs[i]);
         }
-        j6.$('address_panel').innerHTML = html;
+        jr.$('address_panel').innerHTML = html;
         if(addrs.length != 0){
             var addr = null;
             if(selId > 0) {
@@ -148,7 +148,7 @@
     }
 
 
-    j6.$('cb1').onclick=function(){
+    jr.$('cb1').onclick=function(){
         var data = j6.json.toObject('address_panel');
         var addrId = data.AddrId;
         var addr = getSingleAddr(addrId);

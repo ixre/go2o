@@ -153,10 +153,10 @@
         recoverFrom('postForm');
         dynamicContent();
         reloadFee();
-        j6.$('btn_submit_order').onclick=submitOrder;
-        j6.$('btn_submit_order').removeAttribute('disabled');
+        jr.$('btn_submit_order').onclick=submitOrder;
+        jr.$('btn_submit_order').removeAttribute('disabled');
         window.toggleDelivery = function(b){
-            var pl = j6.$('delivery-confirm-panel');
+            var pl = jr.$('delivery-confirm-panel');
             pl.className = b ?'':'hidden';
         };
     </script>

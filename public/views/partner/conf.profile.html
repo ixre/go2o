@@ -63,7 +63,7 @@
 <script>
     var entity ={{.Map.entity}} ||{};
     j6.json.bind('form1', entity);
-    j6.$('upload_img').src = '{{.Var.img_serve}}/'+ entity.Logo;
+    jr.$('upload_img').src = '{{.Var.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
     j6.upload({
@@ -73,14 +73,14 @@
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {
-            j6.$('upload_path').value = data.url;
-            j6.$('upload_img').src = '{{.Var.img_serve}}/'+ data.url;
+            jr.$('upload_path').value = data.url;
+            jr.$('upload_img').src = '{{.Var.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }
     });
 
-    j6.$('btn_save').onclick = function() {
+    jr.$('btn_save').onclick = function() {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             j6.xhr.jsonPost('', data, function(json) {

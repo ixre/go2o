@@ -75,10 +75,10 @@
 
 
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core.js?spam={{.Var.spam}}"></script>
-<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?version={{.Var.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?version={{.Var.version}}"></script>
 
 <script type="text/javascript">
-    var tip = j6.$('tip');
+    var tip = jr.$('tip');
     document.body.onkeydown = function (e) {
         var event = window.event || e;
         if (event.keyCode == 13) {
@@ -107,7 +107,7 @@
         }
     }
 
-    j6.$('btn_login').onclick=login;
+    jr.$('btn_login').onclick=login;
 </script>
 
 {{template "footer".}}

@@ -33,7 +33,7 @@
 <script type="text/javascript">
     var data = {{.Map.listJson}};
     var htm = "<ul>";
-    var tpl = j6.$('tpl').innerHTML;
+    var tpl = jr.$('tpl').innerHTML;
     for(var i=0;i<data.length;i++){
         if(i == 0){
             data[i].class = 'me';
@@ -52,7 +52,7 @@
         htm += j6.template(tpl,data[i]);
     }
     htm += '</ul>';
-    j6.$('inv_list').innerHTML = htm;
+    jr.$('inv_list').innerHTML = htm;
 </script>
 </body>
 </html>

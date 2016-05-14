@@ -74,16 +74,16 @@
 
 <script src="{{.Var.static_serve}}/assets/js/mobi/core.js?version={{.Var.version}}"></script>
 <script src="{{.Var.static_serve}}/assets/js/mobi/device.js?version={{.Var.version}}"></script>
-<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?version={{.Var.version}}"></script>
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?version={{.Var.version}}"></script>
 
 <script type="text/javascript">
-        var d = j6.$('form1');
+        var d = jr.$('form1');
         j6.style(d,{
                 position:'absolute',
                 left: (j6.screen.width()- j6.width(d) ) /2 +'px',
                 top: (j6.screen.height() - j6.height(d) - 40) /2 +'px'
             })
-		   var tip = j6.$('tip');
+		   var tip = jr.$('tip');
 		   document.body.onkeydown = function (e) {
 	            var event = window.event || e;
 	            if (event.keyCode == 13) {
@@ -111,7 +111,7 @@
 	            }
 	        }
 	        
-	        j6.$('login').onclick=login;
+	        jr.$('login').onclick=login;
             j6.animation.show('form1',null,4);
 		</script>
 </body>
