@@ -43,9 +43,9 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	cnf := ctx.App.Config()
 	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
 		p = &payment.AliPayWap{
-			Partner: cnf.Get(variable.Alipay_Partner),
-			Key:     cnf.Get(variable.Alipay_Key),
-			Seller:  cnf.Get(variable.Alipay_Seller),
+			Partner: cnf.GetString(variable.Alipay_Partner),
+			Key:     cnf.GetString(variable.Alipay_Key),
+			Seller:  cnf.GetString(variable.Alipay_Seller),
 		}
 		//	p = &payment.AliPayWap{
 		//		Partner: "2088021187655650",
@@ -71,9 +71,9 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 		//	}
 	} else {
 		p = &payment.AliPay{
-			Partner: cnf.Get(variable.Alipay_Partner),
-			Key:     cnf.Get(variable.Alipay_Key),
-			Seller:  cnf.Get(variable.Alipay_Seller),
+			Partner: cnf.GetString(variable.Alipay_Partner),
+			Key:     cnf.GetString(variable.Alipay_Key),
+			Seller:  cnf.GetString(variable.Alipay_Seller),
 		}
 	}
 	return p
