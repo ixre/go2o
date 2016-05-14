@@ -23,9 +23,8 @@ import (
 	"go2o/src/core/service/dps"
 	"log"
 	"os"
-	"os/signal"
 	"runtime"
-	"syscall"
+	"go2o/src/fix"
 )
 
 func main() {
@@ -63,8 +62,8 @@ func main() {
 	if !newApp.Init(debug, trace) {
 		os.Exit(1)
 	}
-
-	go handleSignal(ch)
+	fix.CustomFix()
+	go fix.SignalNotify(ch)
 
 	if v := newApp.Config().GetInt("server_port"); v != 0 {
 		httpPort = v
@@ -94,19 +93,4 @@ func main() {
 	}
 
 	os.Exit(1) // 退出
-}
-
-func handleSignal(srcCh chan bool) {
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM)
-	for {
-		sig := <-ch
-		switch sig {
-		case syscall.SIGHUP:
-		//log.Println("[ OS][ TERM] - go2o sighup ...")
-		case syscall.SIGTERM: // 退出时
-			log.Println("[ OS][ TERM] - go2o server has exit !")
-			close(srcCh)
-		}
-	}
 }
