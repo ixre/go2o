@@ -154,7 +154,7 @@ dTree.prototype.bind = function (json,completeFunc) {
 
     var load = function (j, pid) {
         var childs = j.childs;
-        j6.each(childs, function (i, e) {
+        jr.each(childs, function (i, e) {
             //e.id = ++id;
             //e.pid = pid;
 
@@ -724,7 +724,7 @@ if (!Array.prototype.pop) {
 
 };
 
-j6.extend({
+jr.extend({
     tree: {
         load: function (id, data, resPath, handler,completeFunc) {
             var rdId = 'tree_' + Math.ceil(Math.random() * 100);
@@ -734,7 +734,7 @@ j6.extend({
             ele.innerHTML = window[rdId].toString();
             
             if(handler && handler instanceof Function){
-                j6.each(ele.getElementsByTagName('A'),function(i,e){
+                jr.each(ele.getElementsByTagName('A'),function(i,e){
                 	if(e.className == 'node'){
                 		jr.event.add(e,'click',(function(_e,_v,_t){
                 			return function(){

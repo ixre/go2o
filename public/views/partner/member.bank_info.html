@@ -25,7 +25,7 @@
     jr.$('btn_unlock_bank').onclick=function(){
         window.parent.$.messager.confirm('提示','凊除锁定后,会员可重新设置银行卡信息!<br />确定要继续吗?',function(r){
             if(r){
-                j6.xhr.jsonPost('/member/unlock_bankinfo',{member_id:memberId},function(r){
+                jr.xhr.jsonPost('/member/unlock_bankinfo',{member_id:memberId},function(r){
                     if(r.result){
                         window.parent.$.messager.alert('提示', '操作成功!',  'ok' );
                     }else {

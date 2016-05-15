@@ -69,7 +69,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback,errCallback, char
                 t.lastChar = keyStr;
             }
 
-            j6.xhr.request({
+            jr.xhr.request({
                 uri: t.url + (t.url.indexOf('?') == -1 ? "?" : '&') + 'key=' + encodeURIComponent(keyStr),
                 params: {}, method: 'GET', data: 'json'
             }, {
@@ -97,7 +97,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback,errCallback, char
                         pi.innerHTML = html;
 
                         var lis = pi.getElementsByTagName('LI');
-                        j6.each(lis, function (i, li) {
+                        jr.each(lis, function (i, li) {
                             li.onmouseover = (function (_p, _lis) {
                                 return function () {
                                     for (var j = 0; j < _lis.length; j++) {
@@ -167,7 +167,7 @@ function autoCompletion(ele, url, loadCallback, selectCallback,errCallback, char
 }
 
 
-j6.extend({
+jr.extend({
     autoCompletion: function (ele, url, loadCallback, selectCallback,errCallback, charMinLen) {
         return new autoCompletion(ele, url, loadCallback, selectCallback, errCallback,charMinLen);
     }

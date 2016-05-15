@@ -45,7 +45,7 @@
 
     <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?{{.Var.version}}"></script>
     <script type="text/javascript">
-        j6.each(jr.$('sort-bar').getElementsByTagName('A'),function(i,e){
+        jr.each(jr.$('sort-bar').getElementsByTagName('A'),function(i,e){
             e.onclick=function() {
                 window.location.replace(this.href);
                 return false;

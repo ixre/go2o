@@ -115,9 +115,9 @@
 
 			<script type="text/javascript">
 				function saveData(){
-						j6.xhr.jsonPost(location.href,{},function(json){
+						jr.xhr.jsonPost(location.href,{},function(json){
 							if(json.result){
-								location.href = j6.request('return_url') || 'transfer_in';
+								location.href = jr.request('return_url') || 'transfer_in';
 							}else {
 								alert(json.message);
 							}

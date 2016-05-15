@@ -75,7 +75,7 @@
     var memberId = {{.Map.memberId}};
     var tipBox = jr.$('tipBox');
     function setTxt(p,b) {
-        var t = j6.dom.getsByClass(p,'button-txt')[0];
+        var t = jr.dom.getsByClass(p,'button-txt')[0];
         if (b == 0 || t.innerHTML.replace(/<[^>]+>/gm,'') == '停用') {
             t.innerHTML = '<span style="color:green">启用</span>';
         } else {
@@ -88,13 +88,13 @@
     }
 
     window.onload=function(){
-        j6.load('member-basic','member_basic?member_id='+memberId);
-        j6.load('member-account','member_account?member_id='+memberId);
-        j6.load('member-bank','member_bankinfo?member_id='+memberId);
+        jr.load('member-basic','member_basic?member_id='+memberId);
+        jr.load('member-account','member_account?member_id='+memberId);
+        jr.load('member-bank','member_bankinfo?member_id='+memberId);
 
         jr.$('btn_lock').onclick=function(){
             var t =this;
-            j6.xhr.jsonPost('/member/lock_member', {id: memberId }, function(json) {
+            jr.xhr.jsonPost('/member/lock_member', {id: memberId }, function(json) {
                 if (json.result) {
                     setTxt(t);
                 }else{
@@ -104,17 +104,17 @@
         };
 
         jr.$('btn_refresh_acc').onclick=function(){
-            j6.load('member-account','member_account?member_id='+memberId);
+            jr.load('member-account','member_account?member_id='+memberId);
         };
 
         jr.$('btn_charge').onclick=function(){
-            j6.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + memberId,400,300);
+            jr.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + memberId,400,300);
         };
 
         jr.$('btn_resetPwd').onclick=function(){
             window.parent.$.messager.confirm('提示',"重置密码后,旧密码将不可用!<br />确定要重置吗?",function(r){
                if(r){
-                   j6.xhr.jsonPost('/member/reset_pwd',{member_id:memberId},function(r){
+                   jr.xhr.jsonPost('/member/reset_pwd',{member_id:memberId},function(r){
                      if(r.result){
                         tipBox.innerHTML = r.message;
                          tipBox.className = tipBox.className.replace(' hidden','');
@@ -127,7 +127,7 @@
         };
 
         jr.$('btn_finance_info').onclick=function(){
-           j6.tab.open('会员财务明细', '/finance/balance_info?member_id='+memberId, true);
+           jr.tab.open('会员财务明细', '/finance/balance_info?member_id='+memberId, true);
         };
     };
 

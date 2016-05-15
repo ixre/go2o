@@ -1,10 +1,10 @@
 ﻿define(['jr/core'],function(j6) {
-    j6.extend({
+    jr.extend({
         form: {
             getData: function (a) {
                 var b = '';
                 var c = document.forms[a || 0];
-                return j6.json.toQueryString(c)
+                return jr.json.toQueryString(c)
             }, asyncSubmit: function (a, b) {
                 var c = document.forms[a || 0];
                 var d = document.getElementById('$async_ifr');
@@ -30,13 +30,13 @@
             }
         }
     });
-    j6.extend({
+    jr.extend({
         validator: {
             setTip: function (e, a, b, c) {
                 if (b) {
                     var d = e.getAttribute('summary');
                     if (d) {
-                        d = j6.toJson(d);
+                        d = jr.toJson(d);
                         if (d[b]) {
                             c = d[b]
                         }
@@ -58,7 +58,7 @@
                     h = document.createElement('DIV');
                     h.id = g;
                     h.className = 'validator';
-                    var i = j6.getPosition(e);
+                    var i = jr.getPosition(e);
                     h.style.cssText = 'position:absolute;left:' + (i.right + document.documentElement.scrollLeft) + 'px;top:' + (i.top + document.documentElement.scrollTop) + 'px';
                     document.body.appendChild(h)
                 }
@@ -79,7 +79,7 @@
                 if (a) {
                     var b = true;
                     var c = document.getElementById(a);
-                    j6.each(j6.dom.getsByClass(c, 'ui-validate'), function (i, e) {
+                    jr.each(jr.dom.getsByClass(c, 'ui-validate'), function (i, e) {
                         if (b) {
                             if (e.getAttribute('tipin')) {
                                 if (jr.$(e.getAttribute('tipin')).innerHTML.indexOf('valid-error') != -1) {
@@ -87,7 +87,7 @@
                                 }
                             } else {
                                 e = document.getElementById(e.getAttribute('validate_id'));
-                                if (j6.dom.getsByClass(e, 'valid-error').length != 0) {
+                                if (jr.dom.getsByClass(e, 'valid-error').length != 0) {
                                     b = false
                                 }
                             }
@@ -95,7 +95,7 @@
                     });
                     return b
                 } else {
-                    return j6.dom.getsByClass(document, 'valid-error').length == 0
+                    return jr.dom.getsByClass(document, 'valid-error').length == 0
                 }
             }, init: function () {
                 var f = j6;
@@ -195,9 +195,9 @@
             }, validate: function (a) {
                 var b;
                 if (a) {
-                    b = j6.dom.getsByClass(document.getElementById(a), 'ui-validate')
+                    b = jr.dom.getsByClass(document.getElementById(a), 'ui-validate')
                 } else {
-                    b = j6.dom.getsByClass(document, 'ui-validate')
+                    b = jr.dom.getsByClass(document, 'ui-validate')
                 }
                 var c = function (e) {
                     return e.getAttribute('required') == "true" || e.getAttribute('isrequired') == "true" || e.getAttribute('length') || e.getAttribute('regex')
@@ -214,6 +214,6 @@
         }
     });
     jr.event.add(window, 'load', function () {
-        j6.validator.init()
+        jr.validator.init()
     });
 });

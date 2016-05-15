@@ -42,14 +42,14 @@
         }else{
             data[i].class = 'i';
             for(var j = 0;j<0;j++) {
-                htm += j6.template(tpl, data[i]);
+                htm += jr.template(tpl, data[i]);
             }
         }
         data[i].FullName = data[i].Name;
         if(data[i].Name.trim().length > 6){
             data[i].Name = data[i].Name.trim().substring(0,5)+'...';
         }
-        htm += j6.template(tpl,data[i]);
+        htm += jr.template(tpl,data[i]);
     }
     htm += '</ul>';
     jr.$('inv_list').innerHTML = htm;

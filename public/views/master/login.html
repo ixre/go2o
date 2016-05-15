@@ -62,10 +62,10 @@ p {
 	<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
 	<script type="text/javascript">
 	 var d = jr.$('form1');
-        j6.style(d,{
+        jr.style(d,{
                 position:'absolute',
-                left: (j6.screen.width()- j6.width(d) ) /2 +'px',
-                top: (j6.screen.height() - j6.height(d) - 40) /2 +'px'
+                left: (jr.screen.width()- jr.width(d) ) /2 +'px',
+                top: (jr.screen.height() - jr.height(d) - 40) /2 +'px'
             })
         
 		   var tip = jr.$('tip');
@@ -76,11 +76,11 @@ p {
 	            }
 	        };
 	        function login() {
-	            var formData = j6.json.toObject('form1');
+	            var formData = jr.json.toObject('form1');
 
-	            if (j6.validator.validate('form1')){
+	            if (jr.validator.validate('form1')){
 	            		
-	                j6.xhr.jsonPost(location.href, formData, function (json) {
+	                jr.xhr.jsonPost(location.href, formData, function (json) {
 	                    if (json.result) {
 	                        tip.innerHTML = '<span style="color:green">登录成功,正在进入管理中心...</span>';
 	                        setTimeout(function () {
@@ -100,7 +100,7 @@ p {
 	        }
 	        
 	        jr.$('login').onclick=login;
-           j6.animation.show('form1',null,4);
+           jr.animation.show('form1',null,4);
 		</script>
 </body>
 </html>

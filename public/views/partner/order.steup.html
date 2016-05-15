@@ -91,10 +91,10 @@
 
 	<script type="text/javascript">
           var entity ={{.Map.entity}} ||{};
-          j6.json.bind('form1', entity);
+          jr.json.bind('form1', entity);
 
         function doNext(){
-            j6.load('pl','setup?order_no'+j6.request('order_no'));
+            jr.load('pl','setup?order_no'+jr.request('order_no'));
         }
 
         doNext();

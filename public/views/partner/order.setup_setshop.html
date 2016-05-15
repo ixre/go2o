@@ -27,9 +27,9 @@
 
 	<script type="text/javascript">
     function setShop(){
-        var data = j6.json.toObject('form2');
+        var data = jr.json.toObject('form2');
         if(data.shopId != ""){
-            j6.xhr.jsonPost('setShop',data,function(json){
+            jr.xhr.jsonPost('setShop',data,function(json){
                 if(json.result){
                     location.reload();
                 }else{

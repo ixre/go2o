@@ -69,12 +69,12 @@
 
 			<script type="text/javascript">
 				var bty = {{.Map.entity}}||{};
-				j6.json.bind('form_bank',bty);
+				jr.json.bind('form_bank',bty);
 
 				function saveData(){
-					if(j6.validator.validate('form_bank')){
-						var data = j6.json.toObject('form_bank');
-						j6.xhr.jsonPost("",data,function(json){
+					if(jr.validator.validate('form_bank')){
+						var data = jr.json.toObject('form_bank');
+						jr.xhr.jsonPost("",data,function(json){
 							if(json.result){
 								window.cli.alert('修改成功');
 							}else{

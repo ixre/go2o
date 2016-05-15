@@ -79,7 +79,7 @@ function datagrid(ele, config) {
 
         this.gridView = (this.panel.getElementsByClassName
             ? this.panel.getElementsByClassName('ui-datagrid-view')
-            : j6.dom.getsByClass(this.panel, 'ui-datagrid-view'))[0];
+            : jr.dom.getsByClass(this.panel, 'ui-datagrid-view'))[0];
 
         this.loadbox = this.gridView.getElementsByTagName('DIV')[0];
     };
@@ -148,7 +148,7 @@ function datagrid(ele, config) {
             }
         }
 
-        j6.xhr.request({
+        jr.xhr.request({
             uri: this.data_url,
             data: 'json',
             params: this.data,
@@ -204,7 +204,7 @@ datagrid.prototype.reload = function (params, data) {
     this.load(data);
 };
 
-j6.extend({
+jr.extend({
     grid: function (ele, config) {
         return new datagrid(ele, config);
     },

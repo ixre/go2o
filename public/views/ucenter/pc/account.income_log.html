@@ -25,9 +25,9 @@
 
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core_full.js?ver={{.Var.version}}"></script>
         <script type="text/javascript">
-            var _dg = j6.grid('dg', {
+            var _dg = jr.grid('dg', {
                 url: location.href,
-                data: {page:j6.request('page')||1,size:10},
+                data: {page:jr.request('page')||1,size:10},
                 idField: 'id',
                 columns: [
                     { field: 'record_time', title: '产生时间', width: 120},
@@ -42,7 +42,7 @@
                 ],
                 loaded: function (data) {
                     var tables = document.getElementsByTagName('TABLE');
-                    j6.table.dynamic(tables[1], false);
+                    jr.table.dynamic(tables[1], false);
                     tables[1].className= '';
 
                     //加载分页

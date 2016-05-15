@@ -1,7 +1,7 @@
-﻿//j6.__WORKPATH__ = '/assets/js/plugin/';
+﻿//jr.__WORKPATH__ = '/assets/js/plugin/';
 
 //
-//j6.extend({
+//jr.extend({
 //    tab: {
 //        check:function(){
 //            if(window.parent.FwTab){
@@ -42,17 +42,17 @@
 //});
 
 /*
- j6.extend({
+ jr.extend({
  repeater: function (ele, url, data, format, loaded) {
- j6.lazyRun(function() {
- var dataLoader = j6.dataLoader(ele, {
+ jr.lazyRun(function() {
+ var dataLoader = jr.dataLoader(ele, {
  url: url,
  data: data,
  loaded: function (json) {
  ele.innerHTML = '';
  var html = '<ul>';
  for (var i in json.rows) {
- html += '<li>' + j6.template(format, json.rows[i]) + '</li>';
+ html += '<li>' + jr.template(format, json.rows[i]) + '</li>';
  }
  html += '</ul>';
  ele.innerHTML = html;
@@ -64,8 +64,8 @@
  });
  },
  completion: function (ele, url, loadCallback, selectCallback,minLen) {
- j6.lazyRun(function () {
- j6.autoCompletion(ele, url, loadCallback, selectCallback, minLen);
+ jr.lazyRun(function () {
+ jr.autoCompletion(ele, url, loadCallback, selectCallback, minLen);
  });
  }
  });
@@ -73,7 +73,7 @@
  */
 
 
-j6.extend({
+jr.extend({
     float:function(val){
         return parseFloat(val);
     }

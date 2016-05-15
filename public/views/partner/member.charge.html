@@ -34,20 +34,20 @@
 
 <script>
     jr.$('btn_save').onclick = function () {
-        var data = j6.json.toObject('form1');
+        var data = jr.json.toObject('form1');
         data.Amount = parseFloat(data.Amount || 0);
         if (data.Amount <= 0) {
-            j6.validator.setTip(jr.$('tb_amount'), false, null, "充值金额错误");
+            jr.validator.setTip(jr.$('tb_amount'), false, null, "充值金额错误");
             return false;
         }else{
-            j6.validator.removeTip(jr.$('tb_amount'));
+            jr.validator.removeTip(jr.$('tb_amount'));
         }
 
         var finalAmount = data.Amount + parseFloat(jr.$('lb_balance').innerHTML);
         if (confirm('充值后金额：￥' + finalAmount + '元\n确定要继续充值吗？')) {
-            j6.xhr.jsonPost(location.href, data, function (json) {
+            jr.xhr.jsonPost(location.href, data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '充值成功' : json.message, 'ok', function () {
-                    var d = j6.dialog.getDialog();
+                    var d = jr.dialog.getDialog();
                     if (d.window.refresh) {
                         d.window.refresh();
                     }

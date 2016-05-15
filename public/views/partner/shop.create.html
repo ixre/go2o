@@ -68,15 +68,15 @@
     
     <script>
     var entity ={{.Map.entity}} ||{};
-    j6.json.bind('form1', entity);
+    jr.json.bind('form1', entity);
 
 
     jr.$('btn_save').onclick = function() {
-        if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
-            j6.xhr.jsonPost('SaveShop', data, function(json) {
+        if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
+            jr.xhr.jsonPost('SaveShop', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    j6.tab.closeAndRefresh( '门店管理');
+                    jr.tab.closeAndRefresh( '门店管理');
                 });
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

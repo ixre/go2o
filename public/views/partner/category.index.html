@@ -39,22 +39,22 @@
     var treeObj = null;
     var treePanel = jr.$('menu_tree');
     function treeHandler(src,value,text){
-        var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
-        j6.each(nodeLinks, function(i, e) {
+        var nodeLinks = jr.dom.getsByClass(treePanel, 'node');
+        jr.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 e.style.backgroundColor='';
             }
         });
         src.parentNode.style.backgroundColor="#FBEC88";
-        j6.json.bind(expr.ele,{cid:value});
+        jr.json.bind(expr.ele,{cid:value});
         jr.$('btnSearch').onclick();
     };
 
     function loadTree(json){
         //加载栏目树
-        var treeObj = j6.tree.load('menu_tree',json,'{{.Var.static_serve}}/assets/js/tree/',treeHandler);
-        var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
-        j6.each(nodeLinks, function(i, e) {
+        var treeObj = jr.tree.load('menu_tree',json,'{{.Var.static_serve}}/assets/js/tree/',treeHandler);
+        var nodeLinks = jr.dom.getsByClass(treePanel, 'node');
+        jr.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
                 var v =jr.$(e,'A',{className:'node'});
                 if(v.length==0)return;
@@ -79,7 +79,7 @@
                 span.innerHTML = html;
                 e.appendChild(span);
 
-                j6.hover(e,
+                jr.hover(e,
                         (function(e){
                             return function(){
                                 e.className='';
@@ -96,11 +96,11 @@
     }
 
     function tree_add(){
-        j6.tab.open('添加分类', '/category/CreateCategory' , true);
+        jr.tab.open('添加分类', '/category/CreateCategory' , true);
     }
 
     function tree_edit(e,id){
-        j6.tab.open('修改分类', '/category/EditCategory?id='+id , true);
+        jr.tab.open('修改分类', '/category/EditCategory?id='+id , true);
         jr.event.stopBubble(e||window.event);
     }
 
@@ -108,7 +108,7 @@
         jr.event.stopBubble(e||window.event);
      window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('DelCategory', { id: id }, function(json) {
+                jr.xhr.jsonPost('DelCategory', { id: id }, function(json) {
                     if (json.result) {
                         window.refresh();
                     }
@@ -121,12 +121,12 @@
     function ajaxLoadTree(){
         //var data = {"text":"根节点","value":"","url":"","icon":"","open":true,"childs":[{"text":"小炒","value":"18","url":"","icon":"","open":true,"childs":[]}]};
         //loadTree(data);
-        j6.xhr.get('categoryJson',function(result){
-            loadTree(j6.toJson(result));
+        jr.xhr.get('categoryJson',function(result){
+            loadTree(jr.toJson(result));
         });
     }
     ajaxLoadTree();
-    j6.dom.fitHeight(jr.$('menu_tree').parentNode);
+    jr.dom.fitHeight(jr.$('menu_tree').parentNode);
     jr.$('btnAddCategory').onclick = tree_add;
     jr.$('btnCollect').onclick = function(){
         treeObj.oAll();

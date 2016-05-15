@@ -62,9 +62,9 @@
     var pl = jr.$('pl');
 
 	function saveData(){
-	    if(j6.validator.validate('form1')){
-	        var data = j6.json.toObject('form1');
-	        j6.xhr.jsonPost('?',data,function(json){
+	    if(jr.validator.validate('form1')){
+	        var data = jr.json.toObject('form1');
+	        jr.xhr.jsonPost('?',data,function(json){
 	            if(json.result){
                     pl.innerHTML='<b>修改成功</b>';
                     pl.className='green';

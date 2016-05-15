@@ -107,8 +107,8 @@
 
 				function saveData(){
 					jr.$('tb_amount').onblur();
-					if(j6.validator.validate('form1')){
-						var data = j6.json.toObject('form1');
+					if(jr.validator.validate('form1')){
+						var data = jr.json.toObject('form1');
 						data.Amount = parseFloat(data.Amount);
 						data.TradePwd = sha1(data.TradePwd);
 						if(data.Amount <= 0){
@@ -120,7 +120,7 @@
 							tipMsg.className= 'tip-msg red';
 							return false;
 						}
-						j6.xhr.jsonPost('apply_cash',data,function(json){
+						jr.xhr.jsonPost('apply_cash',data,function(json){
 							if(json.result){
 								balance -= data.Amount;
 								jr.$('lb_balance').innerHTML = balance;

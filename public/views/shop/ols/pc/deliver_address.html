@@ -54,19 +54,19 @@
     var selId = {{.Map.sel}};
 
     function toggleNewAdd(){
-        j6.animation.toggleHeight(newPanel,null,15);
+        jr.animation.toggleHeight(newPanel,null,15);
     }
     jr.$('btn_new_address').onclick=function(){
-        j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
+        jr.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();
         }
     }
 
     function newAddr(show){
-        j6.style(newPanel,{display:'none'});
+        jr.style(newPanel,{display:'none'});
         newPanel.innerHTML=addressTpl;
-        j6.validator.init();
+        jr.validator.init();
     }
 
     if(addrs.length!=0){
@@ -75,7 +75,7 @@
             '<label for="addr_{Id}"><strong>{RealName}</strong>({Phone},{Address})</label>&nbsp;&nbsp;'+
             '<a href="javascript:editAddr({Id})">修改</a></div>';
         for(var i=0;i<addrs.length;i++){
-            html += j6.template(tpl,addrs[i]);
+            html += jr.template(tpl,addrs[i]);
         }
         jr.$('address_panel').innerHTML = html;
         if(addrs.length != 0){
@@ -87,7 +87,7 @@
                 selId = addrs[0].Id;
             }
         }
-        j6.json.bind('address_panel', {AddrId: selId});
+        jr.json.bind('address_panel', {AddrId: selId});
         newAddr();
     }else{
         newAddr();
@@ -111,7 +111,7 @@
     function editAddr(id){
         var addr =getSingleAddr(id);
         if(addr!= null){
-            j6.json.bind(newPanel,addr);
+            jr.json.bind(newPanel,addr);
             if(newPanel.offsetHeight == 0){
                 toggleNewAdd();
             }
@@ -119,9 +119,9 @@
     }
 
     function saveDeliveAddr(){
-        if(j6.validator.validate('form-deliver')){
-            var d = j6.json.toObject('form-deliver');
-            j6.xhr.jsonPost('/shopping/saveDeliverAddress',d,function(json){
+        if(jr.validator.validate('form-deliver')){
+            var d = jr.json.toObject('form-deliver');
+            jr.xhr.jsonPost('/shopping/saveDeliverAddress',d,function(json){
                if(json.result){
                    selectDeliver();
                }else{
@@ -133,11 +133,11 @@
 
 
     jr.$('cb1').onclick=function(){
-        var data = j6.json.toObject('address_panel');
+        var data = jr.json.toObject('address_panel');
         var addrId = data.AddrId;
         var addr = getSingleAddr(addrId);
         if(addr != null){
-            j6.json.bind('postForm',{
+            jr.json.bind('postForm',{
                 deliver_id:addrId,
                 deliver_person:addr.RealName,
                 deliver_phone:addr.Phone,

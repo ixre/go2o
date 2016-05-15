@@ -7,8 +7,8 @@ function tabCard(e,opt) {
     opt.frameClass = opt.frameClass || 'frame';
     opt.frames = opt.frames || e;
   
-    var tabItems = j6.dom.getsByClass(e,opt.tabClass);
-    var tabFrames = j6.dom.getsByClass(opt.frames,opt.frameClass);
+    var tabItems = jr.dom.getsByClass(e,opt.tabClass);
+    var tabFrames = jr.dom.getsByClass(opt.frames,opt.frameClass);
     var len = tabItems.length;
     for (var i = 0; i < len; i++) {
         var func = function () {

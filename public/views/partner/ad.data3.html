@@ -65,7 +65,7 @@
         expr.reload('dg');
     };
 
-    jr.$('dg').style.height = j6.screen.height() + 'px';
+    jr.$('dg').style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -126,17 +126,17 @@
 
 
     function addRec(){
-        j6.tab.open('新增广告图片项', '/ad/createAdImage?ad_id={{.Map.adId}}', true);
+        jr.tab.open('新增广告图片项', '/ad/createAdImage?ad_id={{.Map.adId}}', true);
     }
 
     function editRec(id){
-        j6.tab.open('编辑广告', '/ad/editAdImage?ad_id={{.Map.adId}}&id=' + id,  true);
+        jr.tab.open('编辑广告', '/ad/editAdImage?ad_id={{.Map.adId}}&id=' + id,  true);
     }
 
     function delRec(id) {
         window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('/ad/delete_image', {ad_id:'{{.Map.adId}}',id: id }, function(json) {
+                jr.xhr.jsonPost('/ad/delete_image', {ad_id:'{{.Map.adId}}',id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }else{

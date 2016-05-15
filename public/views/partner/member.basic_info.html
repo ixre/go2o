@@ -52,11 +52,11 @@
     function showInv(t,id){
         var memberId = parseInt(id);
         if(memberId > 0){
-            j6.tab.open('查看邀请人:'+ t.innerHTML, '/member/member_details?member_id='+memberId, true);
+            jr.tab.open('查看邀请人:'+ t.innerHTML, '/member/member_details?member_id='+memberId, true);
         }
     }
     function showFullInv(t,id){
-        var d = j6.dialog.create2('邀请关系',true,true);
+        var d = jr.dialog.create2('邀请关系',true,true);
         d.open('/member/invi_relation?member_id='+memberId,600,400);
     }
 </script>

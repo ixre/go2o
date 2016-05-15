@@ -66,7 +66,7 @@
         expr.reload(id);
     };
 
-    jr.$(id).style.height = j6.screen.height() + 'px';
+    jr.$(id).style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -96,7 +96,7 @@
                     //{ field: 'id', title: '编号',align: 'center',width: 60 },
                     { field: 'unix_date', title: '日期',align: 'center',width: 80 ,formatter:unix2Date},
                     { field: 'name', title: '会员', align: 'left', width: 150,formatter:function(v,row){
-                        return j6.template('<a href="javascript:;" onclick="showRec(\'{person_id}\',\'{name}\')">{name}</a>',
+                        return jr.template('<a href="javascript:;" onclick="showRec(\'{person_id}\',\'{name}\')">{name}</a>',
                                 row);
                     }},
                     { field: 'phone', title: '手机', align: 'center', width: 80 },
@@ -114,11 +114,11 @@
 
 
     jr.$('btn_gen_ticket').onclick=function(){
-        j6.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
+        jr.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
     };
 
     function showRec(id,name){
-        j6.tab.open('会员:'+name, '/member/member_details?member_id=' + id,  true);
+        jr.tab.open('会员:'+name, '/member/member_details?member_id=' + id,  true);
     }
 </script>
 

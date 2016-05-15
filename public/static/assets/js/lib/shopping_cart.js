@@ -49,7 +49,7 @@ function shoppingCart() {
         if (ele.getElementsByClassName) {
             return ele.getElementsByClassName(cls);
         }
-        return j6.dom.getsByClass(ele, cls);
+        return jr.dom.getsByClass(ele, cls);
     };
 
     this.addQua = function (goodsId, num) {
@@ -95,19 +95,19 @@ function shoppingCart() {
 // 重置购物车KEY
 shoppingCart.prototype.renewKey = function (newKey) {
     if (this.key == null) {
-        this.key = j6.cookie.read('_cart');
+        this.key = jr.cookie.read('_cart');
     }
     if (newKey) {
         this.key = newKey;
         if (this.cookieManaged) {
-            j6.cookie.write('_cart', this.key);
+            jr.cookie.write('_cart', this.key);
         }
     }
     return this.key;
 };
 
 shoppingCart.prototype.xhr = function (data, call) {
-    j6.xhr.jsonPost(this.api, data, function (obj) {
+    jr.xhr.jsonPost(this.api, data, function (obj) {
         if (call)call(obj);  // 回调处理购物车项
     });
 };
@@ -191,7 +191,7 @@ shoppingCart.prototype.addItem = function (args) {
         if (args.image) {
             nameHtml = '<img src="' + args.image + '" class="image"/>' + nameHtml
         }
-        nameHtml += j6.template('<span class="qp"><a class="sub_btn" href="javascript:;" onclick="return' +
+        nameHtml += jr.template('<span class="qp"><a class="sub_btn" href="javascript:;" onclick="return' +
             ' cart.remove({goodsId},1)">-</a>' +
             '<input class="cart_q" value="{num}" type="text" onlur="return cart.setNum({goodsId});"/>' +
             '<a class="plus_btn" href="javascript:;" onclick="return cart.add({goodsId},1)">+</a></span>',

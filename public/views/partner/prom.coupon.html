@@ -141,25 +141,25 @@
     entity2.OverTime = unix2str(entity2.OverTime);
     entity2.BeginTime = entity2.BeginTime.substring(0,entity2.BeginTime.indexOf(' '));
     entity2.OverTime = entity2.OverTime.substring(0,entity2.OverTime.indexOf(' '));
-    j6.json.bind('form1', entity);
-    j6.json.bind('form1', entity2);
+    jr.json.bind('form1', entity);
+    jr.json.bind('form1', entity2);
 
     var bt= jr.$('beginTime');
     var ot = jr.$('overTime');
-    j6.calender(bt);
-    j6.calender(ot);
+    jr.calender(bt);
+    jr.calender(ot);
     bt.onchange=bt.onblur;
     ot.onchange= ot.onblur;
 
 
     jr.$('btn_save').onclick = function() {
-        if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
+        if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
             data.BeginTime += ' 00:00:00';
             data.OverTime += ' 00:00:00';
-            j6.xhr.jsonPost('Save_coupon', data, function(json) {
+            jr.xhr.jsonPost('Save_coupon', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
-                    j6.tab.closeAndRefresh('优惠券管理');
+                    jr.tab.closeAndRefresh('优惠券管理');
                 });
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

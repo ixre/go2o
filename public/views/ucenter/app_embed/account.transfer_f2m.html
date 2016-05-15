@@ -80,7 +80,7 @@
 				var balance = {{.Map.account.FlowBalance}};
 				var cns = {{.Map.cns}};
 				var finalAmount,cnsAmount;
-				j6.xhr.filter = null;
+				jr.xhr.filter = null;
 
 				window.onload = function() {
 					finalAmount = jr.$('finalAmount');
@@ -109,7 +109,7 @@
 						toId.value = '0';
 					};
 
-					j6.autoCompletion(tbUsr, '../basic/member_cln_filter', function (data) {
+					jr.autoCompletion(tbUsr, '../basic/member_cln_filter', function (data) {
 						toId.value = '0';
 						for (var j = 0; j < data.length; j++) {
 							data[j].text = data[j].name + (data[j].phone.length >0 ?'(手机:'+data[j].phone+')':'');
@@ -122,8 +122,8 @@
 
 				function saveData(){
 					jr.$('tb_amount').onblur();
-					if(j6.validator.validate('form1')){
-						var data = j6.json.toObject('form1');
+					if(jr.validator.validate('form1')){
+						var data = jr.json.toObject('form1');
 						data.Amount = parseFloat(data.Amount);
 						data.TradePwd = sha1(data.TradePwd);
 						if(parseInt(data.ToId) <= 0 || data.UserName.length == 0){
@@ -139,7 +139,7 @@
 							tipMsg.className= 'tip-msg red';
 							return false;
 						}
-						j6.xhr.jsonPost('transfer_f2m',data,function(json){
+						jr.xhr.jsonPost('transfer_f2m',data,function(json){
 							if(json.result){
 								balance -= data.Amount;
 								jr.$('lb_balance').innerHTML = balance;

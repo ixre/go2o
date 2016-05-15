@@ -64,7 +64,7 @@ window.refresh = function () {
  expr.reload('dg');
 };
 
-jr.$('dg').style.height = j6.screen.height() + 'px';
+jr.$('dg').style.height = jr.screen.height() + 'px';
 
 $(function () {
 
@@ -116,17 +116,17 @@ $(function () {
 jr.$('btnAdd').onclick=addRec;
 
 function addRec(){
-    j6.tab.open('创建商户', 'partner/createPartner', true);
+    jr.tab.open('创建商户', 'partner/createPartner', true);
 }
 
 function editRec(id){
-    j6.tab.open('商户配置', 'partner/PartnerConf?id='+id, true);
+    jr.tab.open('商户配置', 'partner/PartnerConf?id='+id, true);
 }
 
 function delRec(id) {
  window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
         if (result) {
-            j6.xhr.jsonPost('/a/DelPartner', { id: id }, function(json) {
+            jr.xhr.jsonPost('/a/DelPartner', { id: id }, function(json) {
                 if (json.result) {
                 	window.refresh()
                 }

@@ -41,18 +41,18 @@ define(['jr/core'], function () {
             key: null,
             cookieManaged: false,  //仅cookie
             xhr: function (data, call) {
-                j6.xhr.jsonPost(this.api, data, function (obj) {
+                jr.xhr.jsonPost(this.api, data, function (obj) {
                     if (call)call(obj);  // 回调处理购物车项
                 });
             },
             renewKey: function (newKey) {
                 if (this.key == null) {
-                    this.key = j6.cookie.read('_cart');
+                    this.key = jr.cookie.read('_cart');
                 }
                 if (newKey) {
                     this.key = newKey;
                     if (this.cookieManaged) {
-                        j6.cookie.write('_cart', this.key);
+                        jr.cookie.write('_cart', this.key);
                     }
                 }
                 return this.key;
@@ -86,11 +86,11 @@ define(['jr/core'], function () {
 });
 
 function shopDomInit() {
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     var btnSearch = document.getElementById('btn-goods-search');
     if (btnSearch) {
         btnSearch.onclick = function () {
-            var v = j6.dom.getsByClass(document.body, 'search-key')[0].value;
+            var v = jr.dom.getsByClass(document.body, 'search-key')[0].value;
             location.href = '/search?word=' + encodeURIComponent(v);
         };
     }
@@ -99,15 +99,15 @@ function shopDomInit() {
     var cartNumEles = document.getElementsByClassName('top-cart-num');
     if (cartNumEles.length > 0) {
         this.cart.loadCart(function (c) {
-            j6.each(cartNumEles, function (i, e) {
+            jr.each(cartNumEles, function (i, e) {
                 e.getElementsByTagName('I')[0].innerHTML = c['total_num'];
             });
         });
     }
 
     //初始化按钮
-    var btns = j6.dom.getsByClass(document.body,'btn');
-    j6.each(btns,function(i,e){
+    var btns = jr.dom.getsByClass(document.body,'btn');
+    jr.each(btns,function(i,e){
         var _do = e.getAttribute('do');
         if(_do && window.funcs[_do]){
             jr.event.add(e,'click',window.funcs[_do]);

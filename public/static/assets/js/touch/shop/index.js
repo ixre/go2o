@@ -39,8 +39,8 @@ function setSpecialBlock(m, Mustache, cls, tit, tmpl, data) {
     show(e)
 }
 function loadSpecialAd(m, Mustache, $) {
-    j6.xhr.get('/json/ad?names=mobi_shop_flash|mobi_shop_g1|mobi_shop_g2', function (data) {
-        data = j6.toJson(data);
+    jr.xhr.get('/json/ad?names=mobi_shop_flash|mobi_shop_g1|mobi_shop_g2', function (data) {
+        data = jr.toJson(data);
         initSlideFlash(m, Mustache, $, data['mobi_shop_flash']);
         setSpecialBlock(m, Mustache, 'special-block-1',
             '推荐商品', specialTmplA, data['mobi_shop_g1']);
@@ -49,7 +49,7 @@ function loadSpecialAd(m, Mustache, $) {
     });
 }
 function loadGoods(m, Mustache) {
-    j6.xhr.jsonPost('/json/simple_goods', 'params=new-goods*4|hot-sales*4*3', function (data) {
+    jr.xhr.jsonPost('/json/simple_goods', 'params=new-goods*4|hot-sales*4*3', function (data) {
         var e = m.getByClass('goods-block-new');
         e.innerHTML = Mustache.render(titTmplB, {Title: '新品上架'}) +
             Mustache.render(goodsTmpl, {list: data['new-goods']});
@@ -62,7 +62,7 @@ function loadGoods(m, Mustache) {
 }
 
 function loadSaleTagGoods(m, Mustache) {
-    j6.xhr.jsonPost('/json/saletag_goods', 'params=fanli*4', function (data) {
+    jr.xhr.jsonPost('/json/saletag_goods', 'params=fanli*4', function (data) {
         var e = m.getByClass('goods-block-fanli');
         e.innerHTML = Mustache.render(titTmplA, {Title: '返利商品', Url: '/st/fanli'}) +
             Mustache.render(goodsTmpl, {list: data['fanli']});
@@ -78,7 +78,7 @@ require([
     'jquery.slides'
 ], function (m, Mustache, $,l) {
     m.init();
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     initClickEvent(m)
     preParseTmpl(m, Mustache)
     loadSpecialAd(m, Mustache, $);
