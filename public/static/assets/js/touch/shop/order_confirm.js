@@ -8,7 +8,7 @@ require([
     "lib/util_comm"
 ], function (m, Mustache) {
     m.init();
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     // window.cart.init('cart-panel', function (c) {
     //     m.closeTipBox();
     // });
@@ -51,20 +51,20 @@ function initEvents() {
     ckBalance = jr.$('ck_useBalance');
     tbCouponCode = jr.$('coupon_code');
 
-    var items = j6.dom.getsByClass(pl, 'item');
-    var editLinks = j6.dom.getsByClass(pl, 'edit_link');
-    var confirmBtns = j6.dom.getsByClass(pl, 'confirm-button');
+    var items = jr.dom.getsByClass(pl, 'item');
+    var editLinks = jr.dom.getsByClass(pl, 'edit_link');
+    var confirmBtns = jr.dom.getsByClass(pl, 'confirm-button');
 
-    j6.each(editLinks,
+    jr.each(editLinks,
         function(i, e) {
             jr.event.add(e.getElementsByTagName('A')[0], 'click', (function(items, i, e) {
                 return function() {
-                    j6.each(items,
+                    jr.each(items,
                         function(i2, e2) {
                             if (i2 == i) {
                                 e2.className += ' active_item';
                                 //e2.style.display='none';
-                                //j6.animation.toggleHeight(e2,null,15);
+                                //jr.animation.toggleHeight(e2,null,15);
                             } else {
                                 e2.className = e2.className.replace(' active_item', '');
                             }
@@ -73,7 +73,7 @@ function initEvents() {
             })(items, i, e));
         });
 
-    j6.each(confirmBtns,
+    jr.each(confirmBtns,
         function(i, e) {
             jr.event.add(e, 'click', (function(item) {
                 return function() {
@@ -84,25 +84,25 @@ function initEvents() {
 
     jr.$('cb1').onclick = function() {};
     jr.$('el2').onclick = function() {
-        j6.json.bind('ctl2', {
+        jr.json.bind('ctl2', {
             deliver_opt: window.sctJson.deliver_opt
         });
     };
     jr.$('cb2').onclick = function() {
-        var data = j6.json.toObject('ctl2');
+        var data = jr.json.toObject('ctl2');
         window.sctJson.deliver_opt = parseInt(data.deliver_opt);
         dynamicContent('deliver');
         persistData();
     };
 
     jr.$('el3').onclick = function() {
-        j6.json.bind('ctl3', {
+        jr.json.bind('ctl3', {
             pay_opt: window.sctJson.pay_opt
         });
     };
 
     jr.$('cb3').onclick = function() {
-        var data = j6.json.toObject('ctl3');
+        var data = jr.json.toObject('ctl3');
         window.sctJson.pay_opt = parseInt(data.pay_opt);
         dynamicContent('payment');
         persistData();
@@ -171,7 +171,7 @@ function dynamicContent(t) {
 
 // 更新数据到服务器端
 function persistData() {
-    j6.xhr.jsonPost('/buy/buyingPersist', window.sctJson, function (d) {
+    jr.xhr.jsonPost('/buy/buyingPersist', window.sctJson, function (d) {
         if (d.message) {
             window.cli.alert(d.message);
         }
@@ -180,12 +180,12 @@ function persistData() {
 
 // 选择配送地址
 function selectDeliver() {
-    j6.load('deliver-panel', '/buy/getDeliverAddress?sel=' + window.sctJson.deliver_id);
+    jr.load('deliver-panel', '/buy/getDeliverAddress?sel=' + window.sctJson.deliver_id);
 }
 
 // 从表单中恢复数据
 function recoverFrom(id) {
-    window.sctJson = j6.json.toObject(id);
+    window.sctJson = jr.json.toObject(id);
     if (window.sctJson.deliver_id <= 0) {
         jr.$('item1').className += ' active_item';
         selectDeliver();
@@ -194,7 +194,7 @@ function recoverFrom(id) {
 
 function applyCouponCode() {
     if (this.value == '') {
-        j6.validator.removeTip(this);
+        jr.validator.removeTip(this);
         couDes.innerHTML = '';
         if (couDes.className.indexOf(' hidden') == -1) {
             couDes.className += ' hidden';
@@ -202,17 +202,17 @@ function applyCouponCode() {
         coupon_fee = 0;
     } else {
         var t = this;
-        j6.xhr.jsonPost('/buy/apply?type=coupon', {
+        jr.xhr.jsonPost('/buy/apply?type=coupon', {
                 code: this.value
             },
             function(json) {
                 if (json.result == false) {
-                    j6.validator.setTip(t, false, null, json.message);
+                    jr.validator.setTip(t, false, null, json.message);
                     couDes.className = 'coupon_desc hidden';
                     coupon_fee = 0;
                     reloadFee();
                 } else {
-                    j6.validator.removeTip(t);
+                    jr.validator.removeTip(t);
                     if (json.couponFee) {
                         couDes.className = 'coupon_desc';
                         couDes.innerHTML = '优惠内容：' + json.couponDescribe +
@@ -232,10 +232,10 @@ function submitOrder(ele,m) {
         m.closeTipBox();
     }
 
-    if (j6.validator.validate('form_coupon')) {
+    if (jr.validator.validate('form_coupon')) {
 
         var data = window.sctJson;
-        var cp = j6.json.toObject(form_coupon);
+        var cp = jr.json.toObject(form_coupon);
         if (data.deliver_id <= 0) {
             var e = jr.$('item1');
             e.className += ' active_item';
@@ -251,7 +251,7 @@ function submitOrder(ele,m) {
 
         data.balance_discount = ckBalance.checked?'1':'0';
 
-        j6.xhr.jsonPost('submit_0', data, function (j) {
+        jr.xhr.jsonPost('submit_0', data, function (j) {
             if (j.result) {
                 var orderNo = j.data;
                 location.replace("payment?order_no=" + orderNo)
@@ -275,7 +275,7 @@ function reloadFee(promFee,payFee) {
         balancePay = acc_balance > _payFee ?_payFee:acc_balance;
         _payFee -= balancePay;
     }
-    j6.json.bind(cashPl, {
+    jr.json.bind(cashPl, {
         PromFee: fmtAmount(_promFee),
         BalanceFee :fmtAmount(balancePay),
         OrderFee: fmtAmount(_payFee),

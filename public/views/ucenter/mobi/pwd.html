@@ -64,8 +64,8 @@
 
 <script type="text/javascript">
 	function saveData(){
-	    if(j6.validator.validate('form1')){
-	        var data = j6.json.toObject('form1');
+	    if(jr.validator.validate('form1')){
+	        var data = jr.json.toObject('form1');
             if(data.OldPwd == data.NewPwd){
                 showErr('新密码不能与原密码相同',2000);
                 return false;
@@ -73,7 +73,7 @@
             data.OldPwd = sha1(data.OldPwd);
             data.NewPwd = sha1(data.NewPwd);
             data.RePwd = sha1(data.RePwd);
-	        j6.xhr.jsonPost('?',data,function(json){
+	        jr.xhr.jsonPost('?',data,function(json){
                 if (json.result) {
                     showMsg('修改成功',2000);
                 } else {

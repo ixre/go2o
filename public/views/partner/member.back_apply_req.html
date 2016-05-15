@@ -37,11 +37,11 @@
 
 <script>
     jr.$('btn_save').onclick = function () {
-       // if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
-            j6.xhr.jsonPost(location.href, data, function (json) {
+       // if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
+            jr.xhr.jsonPost(location.href, data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '操作成功！' : json.message, 'ok', function () {
-                    var d = j6.dialog.getDialog();
+                    var d = jr.dialog.getDialog();
                     if(d.window.refresh) {
                         d.window.refresh();
                     }

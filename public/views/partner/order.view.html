@@ -104,11 +104,11 @@
 
 	<script type="text/javascript">
           var entity ={{.Map.entity}} ||{};
-          entity.itemsInfo = itemFmt(j6.toJson(entity.itemsInfo));
-          j6.json.bind('form1', entity);
-          j6.load('pl','setup?order_no='+j6.request('order_no'));
+          entity.itemsInfo = itemFmt(jr.toJson(entity.itemsInfo));
+          jr.json.bind('form1', entity);
+          jr.load('pl','setup?order_no='+jr.request('order_no'));
           function refresh(){
-            var d = j6.dialog.getDialog();
+            var d = jr.dialog.getDialog();
             if(d){
                 d.window.refresh();
             }
@@ -121,7 +121,7 @@
                   if(items[i].img.indexOf("http") != 0){
                       items[i].img = "{{.Var.img_serve}}/"+items[i].img;
                   }
-                  html += j6.template(tpl,items[i]);
+                  html += jr.template(tpl,items[i]);
               }
               return html;
           }

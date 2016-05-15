@@ -163,10 +163,10 @@
     <script type="text/javascript">
         var entity = ${json};
         entity.IsRedirect = (entity.Location||'').length!=0;
-        j6.json.bind('form1',entity);
+        jr.json.bind('form1',entity);
 
         //var extData = ${ext_json};
-        //j6.json.bind('form1',extData);
+        //jr.json.bind('form1',extData);
 
         //设置是否跳转显示
         var redirectPanel = jr.$('redirectPanel');
@@ -186,7 +186,7 @@
         var thumbId= 'thumbnail', thumbImg = 'thumbnail_img';
 
         //上传缩略图
-        var thumb_upload = j6.upload({
+        var thumb_upload = jr.upload({
             id: 'upload_thumbnail',
             debug: !true,
             url: '?module=upload&action=uploadimage&for=${thumbPrefix}&upload.id=thumb_upload',
@@ -260,8 +260,8 @@
 
 
         function submitForm() {
-            if (j6.validator.validate()) {
-                var data = j6.json.toObject('form1');
+            if (jr.validator.validate()) {
+                var data = jr.json.toObject('form1');
                 data.Content = editor.html();
                 if(data.IsRedirect=='0')data.Location='';
                /*
@@ -270,7 +270,7 @@
                     return false;
                 }*/
 
-                j6.xhr.jsonPost('${url}', data, function (json) {
+                jr.xhr.jsonPost('${url}', data, function (json) {
                     if (json.result) {
                         parent.M.alert('操作成功！');
                         if(_dg)_dg.reload();
@@ -287,9 +287,9 @@
             if (this.nodeName) {
                 var ele = this;
                 if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
-                    j6.validator.setTip(ele, false, 'error');
+                    jr.validator.setTip(ele, false, 'error');
                 } else {
-                    j6.validator.removeTip(ele);
+                    jr.validator.removeTip(ele);
                 }
             }
         };
@@ -297,20 +297,20 @@
         jr.$('alias').nextSibling.onclick = function () {
 
             var e = this.previousSibling;
-            var _title = j6.val('title');
+            var _title = jr.val('title');
             if (_title == '') {
-                j6.validator.setTip(e, false, null, '请先填写标题!');
+                jr.validator.setTip(e, false, null, '请先填写标题!');
             } else {
-                j6.xhr.post('?', 'module=ajax&action=getspellword&word=' + encodeURIComponent(_title), function (result) {
+                jr.xhr.post('?', 'module=ajax&action=getspellword&word=' + encodeURIComponent(_title), function (result) {
                     e.value = result.toLowerCase();
                     e.onblur();
                 }, function () {
-                    j6.validator.setTip(e, false, null, '获取失败,请重试!');
+                    jr.validator.setTip(e, false, null, '获取失败,请重试!');
                 });
             }
         };
 
-        j6.validator.init();
+        jr.validator.init();
 
 
     </script>

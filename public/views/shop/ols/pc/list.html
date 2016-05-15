@@ -46,38 +46,38 @@ body{overflow: hidden}
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/shopping_cart.js?spam={{.Var.spam}}"></script>
 
 <script type="text/javascript">
-  var sw = j6.screen.width();    //page width
-  var sh = j6.screen.height();   //page height
+  var sw = jr.screen.width();    //page width
+  var sh = jr.screen.height();   //page height
   var tog = jr.$('toggleTop');   //toggle navigator
   var togIsLoad = false;        
   var ldgate = jr.$('loading-gate');
   var ldbox = ldgate.getElementsByTagName('DIV')[1];
 
-  var ordPanel = j6.dom.getsByClass(document.body,'ording-panel')[0];
+  var ordPanel = jr.dom.getsByClass(document.body,'ording-panel')[0];
   var catePl = jr.$('category-panel');
   var itemPl = jr.$('items-panel');
 
 
 
 function toggleLoading(){
-   if(j6.style(ldgate)['display'] == 'none'){
-      j6.style(ldgate,{height:sh+'px',width:sw+'px',display:'block'});
-      j6.style(ldbox,{top:(sh-ldbox.offsetHeight)/2+'px',left:(sw-ldbox.offsetWidth)/2+'px'});
+   if(jr.style(ldgate)['display'] == 'none'){
+      jr.style(ldgate,{height:sh+'px',width:sw+'px',display:'block'});
+      jr.style(ldbox,{top:(sh-ldbox.offsetHeight)/2+'px',left:(sw-ldbox.offsetWidth)/2+'px'});
    }else{
-      j6.style(ldgate,{height:'0',width:'0',display:'none'});
+      jr.style(ldgate,{height:'0',width:'0',display:'none'});
    }
 }
 
 function ordingInit(){
   loadItemsByCate(15)
-  j6.style(ordPanel,{height:(sh-30)+'px',margin:'0'});
+  jr.style(ordPanel,{height:(sh-30)+'px',margin:'0'});
   var lis = catePl.getElementsByTagName('LI');
-  j6.each(lis,function(i,e){
+  jr.each(lis,function(i,e){
     jr.event.add(e,'click',(function(lis,t){
       return function(){
         var id= parseInt(t.getAttribute('val'));
         loadItemsByCate(id);
-        j6.each(lis,function(i,e){
+        jr.each(lis,function(i,e){
           e.className = t == e ?'current':'';
         });
       };
@@ -88,21 +88,21 @@ function ordingInit(){
   function loadItemsByCate(id){
     toggleLoading();
     var dt = new Date() ;
-    j6.xhr.get('../list/getList?cid='+id,function(x){
+    jr.xhr.get('../list/getList?cid='+id,function(x){
         var dur = new Date() -dt > 1000?0:1000;
         setTimeout(function(){
             if(!togIsLoad){
               togIsLoad=true;
                // window.funcs.toggleTop.apply(tog);
             }
-            j6.style(itemPl,{opacity:0,filter:"alpha(opacity=0)"});
+            jr.style(itemPl,{opacity:0,filter:"alpha(opacity=0)"});
             if(x.length<10){
               itemPl.innerHTML='<p style="font-size:200%;color:#FF0000;margin:0 auto;padding:20% 0;text-align:center;">没有商品</p>';
             }else{
               itemPl.innerHTML=x;
             }
             toggleLoading();
-           j6.animation.show(itemPl,null,4);
+           jr.animation.show(itemPl,null,4);
 
         },dur);
     },function(x){jr.$('fditems').innerHTML='加载失败';});

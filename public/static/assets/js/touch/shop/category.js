@@ -5,14 +5,14 @@ require([
     'shop/main',
     "lib/mustache"],function(m,Mustache){
     m.init()
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     nDiv = m.getByClass('l');
     mDiv = m.getByClass('m');
     t1 = m.parseTmpl(m.getByClass('template1').innerHTML);
     t2 = m.parseTmpl(m.getByClass('template2').innerHTML);
     Mustache.parse(t1);
     Mustache.parse(t2);
-    j6.xhr.jsonPost('CategoryJson',{parent_id:0},function(json){
+    jr.xhr.jsonPost('CategoryJson',{parent_id:0},function(json){
        nDiv.innerHTML = Mustache.render(t1,{list:json});
         var iLs = nDiv.getElementsByClassName('i');
         bindEvents(Mustache,iLs,nDiv);
@@ -24,7 +24,7 @@ require([
 });
 
 function bindEvents(Mustache,iLs,nDiv) {
-    j6.each(iLs, function (i, e) {
+    jr.each(iLs, function (i, e) {
         e.onclick = (function (list) {
             return function () {
                 for (var i = 0; i < list.length; i++) {
@@ -45,7 +45,7 @@ function fillChildData(Mustache,data,m,t){
     if(cacheObject[data] != null){
         bd(cacheObject[data]);
     }else {
-        j6.xhr.jsonPost('CategoryJson', {parent_id: data}, function (json) {
+        jr.xhr.jsonPost('CategoryJson', {parent_id: data}, function (json) {
             cacheObject[data] = json;
             bd(json);
         });

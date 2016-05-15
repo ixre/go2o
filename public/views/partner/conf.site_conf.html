@@ -62,10 +62,10 @@
 
 <script>
     var entity ={{.Map.entity}} ||{};
-    j6.json.bind('form1', entity);
+    jr.json.bind('form1', entity);
 
     //上传缩略图
-    j6.upload({
+    jr.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
@@ -94,9 +94,9 @@
     if(entity.State == 0)statePanel.className='';
 
     jr.$('btn_save').onclick = function() {
-        if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
-            j6.xhr.jsonPost('', data, function(json) {
+        if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
+            jr.xhr.jsonPost('', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message);
             }, function(e) {
                 window.parent.$.messager.alert('提示', " 保存失败！ ", 'error');

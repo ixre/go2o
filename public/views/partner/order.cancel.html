@@ -50,11 +50,11 @@
         };
     function submitCancel() {
      window.parent.$.messager.confirm('操作提示', '您确定要将此订单取消吗？',function(r) {
-            var data = j6.json.toObject('form1');
-            j6.xhr.jsonPost(location.href, data, function (json) {
+            var data = jr.json.toObject('form1');
+            jr.xhr.jsonPost(location.href, data, function (json) {
                 if (json.result) {
 
-                    var dg = j6.dialog.getDialog();
+                    var dg = jr.dialog.getDialog();
                     $.messager.alert("提示",'订单已取消','ok',function(){
                         dg.close();
                     });

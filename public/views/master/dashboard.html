@@ -149,7 +149,7 @@
     };
     pageVar.dateStr = getDate();
     document.title = pageVar.sysName;
-    j6.json.bind(document, pageVar);
+    jr.json.bind(document, pageVar);
 
     //绑定logo
     var logoEle = document.getElementsByClassName('logo')[0];
@@ -181,9 +181,9 @@
 
         //下拉菜单事件注册
         var menuLis = document.getElementsByClassName('icon-ctrl')[0].getElementsByTagName('LI');
-        j6.each(menuLis, function (i, e) {
+        jr.each(menuLis, function (i, e) {
             if (e.className.indexOf('drop') != -1) {
-                j6.hover(e);
+                jr.hover(e);
             }
         });
 

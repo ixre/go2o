@@ -55,7 +55,7 @@
     <script>
         expr.ele = 'search_bar';
 
-        j6.json.bind(expr.ele, { keyword: decodeURIComponent(j6.request('CarNo')) });
+        jr.json.bind(expr.ele, { keyword: decodeURIComponent(jr.request('CarNo')) });
 
         expr.portal = 'Partner.ShopList'; //配置导出的入口
         expr.checkParams = function (data) {
@@ -64,7 +64,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        jr.$('dg').style.height = j6.screen.height() + 'px';
+        jr.$('dg').style.height = jr.screen.height() + 'px';
 
         $(function () {
 
@@ -122,17 +122,17 @@
         jr.$('btnAdd').onclick=addRec;
         
         function addRec(){
-            j6.tab.open('新增门店', '/shop/create',  true);
+            jr.tab.open('新增门店', '/shop/create',  true);
         }
         
         function editRec(id){
-            j6.tab.open('修改门店信息', '/shop/modify?id=' + id, true);
+            jr.tab.open('修改门店信息', '/shop/modify?id=' + id, true);
         }
         
         function delRec(id) {
          window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
                 if (result) {
-                    j6.xhr.jsonPost('/shop/del', { id: id }, function(json) {
+                    jr.xhr.jsonPost('/shop/del', { id: id }, function(json) {
                         if (json.result) {
                             expr.reload('dg');
                         }else{

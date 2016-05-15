@@ -59,7 +59,7 @@
 <script>
     expr.ele = 'search_bar';
 
-    j6.json.bind(expr.ele, { keyword: decodeURIComponent(j6.request('keyword')) });
+    jr.json.bind(expr.ele, { keyword: decodeURIComponent(jr.request('keyword')) });
 
     expr.portal = 'Partner.CoverageAreList'; //配置导出的入口
     expr.checkParams = function (data) {
@@ -68,7 +68,7 @@
 
     var refresh = function () { expr.reload('dg'); };
 
-    jr.$('dg').style.height = j6.screen.height() + 'px';
+    jr.$('dg').style.height = jr.screen.height() + 'px';
 
     $(function () {
         //加载数据
@@ -93,7 +93,7 @@
     });
 
     function addRecore(){
-        j6.tab.open('新增配送区域','delivery/create', true);
+        jr.tab.open('新增配送区域','delivery/create', true);
     }
 
     jr.$('btnAdd').onclick = addRecore;

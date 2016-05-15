@@ -5,9 +5,9 @@ require([
     'lib/sha1'],
     function(m) {
         m.init();
-        j6.validator.init();
+        jr.validator.init();
         window.pc.login = null;
-        window.cli.login(j6.request('return_url'));
+        window.cli.login(jr.request('return_url'));
         if(window.android || window.ios) {
             window.history.go(-1);
         }else{
@@ -25,14 +25,14 @@ require([
 );
 
 function subLogin() {
-    var data = j6.json.toObject('form1');
-    if (j6.validator.validate('form1')){
+    var data = jr.json.toObject('form1');
+    if (jr.validator.validate('form1')){
         data.pwd = sha1(data.pwd);
-        j6.json.bind('form1',data);
+        jr.json.bind('form1',data);
 
-        j6.xhr.jsonPost(location.href, data, function (json) {
+        jr.xhr.jsonPost(location.href, data, function (json) {
             if (json.result) {
-                window.parent.location.replace(decodeURIComponent(j6.request('return_url')||'/'));
+                window.parent.location.replace(decodeURIComponent(jr.request('return_url')||'/'));
             }else {
                 if (json.message.indexOf('验证码') != -1) {
                     refreshImage();

@@ -18,7 +18,7 @@
 //
 
 
-if (!window.j6) { alert('请加载json4html.js文件!'); }
+if (!window.jr) { alert('请加载json4html.js文件!'); }
 
 var expr = {
     ele: '',
@@ -26,7 +26,7 @@ var expr = {
     hanlderPrefix: '/export/',
     portal: '',
     _getParams: function () {
-        return encodeURIComponent(j6.json.toString(this.ele));
+        return encodeURIComponent(jr.json.toString(this.ele));
     },
 
     checkParams: function (data) {
@@ -69,8 +69,8 @@ var expr = {
             + 'getTotalView?portal=' + expr.portal
             + '&params=' + expr._getParams();
 
-        j6.xhr.post(url, {}, function (json) {
-            j6.json.bind(id || 'totalView', json);
+        jr.xhr.post(url, {}, function (json) {
+            jr.json.bind(id || 'totalView', json);
         });
     }
 };

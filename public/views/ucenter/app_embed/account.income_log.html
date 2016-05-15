@@ -40,14 +40,14 @@
     <script type="text/javascript">
         var htmTpl = jr.$('list_tpl').innerHTML;
         window.onload=function() {
-            var _dg = j6.grid('dg', {
+            var _dg = jr.grid('dg', {
                 url: location.href,
-                data: {page: j6.request('page') || 1, size:15},
+                data: {page: jr.request('page') || 1, size:15},
                 idField: 'id',
                 columns: [
                     {
                         field: 'record_time', title: '产生时间', width: 120, formatter: function (v, r) {
-                        return j6.template(htmTpl, {
+                        return jr.template(htmTpl, {
                             amount:parseFloat(r.amount).toFixed(2),
                             title: r.title,
                             submit_time: unix2str(r.create_time).substring(0,16),
@@ -64,7 +64,7 @@
                     }
                     e.className = 'ui-table';
                     var tables = document.getElementsByTagName('TABLE');
-                    //j6.table.dynamic(tables[1], false);
+                    //jr.table.dynamic(tables[1], false);
                     tables[1].className = '';
                     //加载分页
                     this.panel.nextSibling.innerHTML = data.text;

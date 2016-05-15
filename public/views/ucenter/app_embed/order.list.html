@@ -42,19 +42,19 @@
             var ORDER_STATE_TEXTS = new Array("已取消", "待确认","已确认", "待发货", "配送中","已收货","已完成");
             var htmTpl = jr.$('list_tpl').innerHTML;
             var domain = '{{.Map.partner_host}}';
-            var _dg = j6.grid('dg', {
+            var _dg = jr.grid('dg', {
                 url: location.href,
-                data: {page:j6.request('page')||1,size:15},
+                data: {page:jr.request('page')||1,size:15},
                 idField: 'id',
                 columns: [
                     { field: 'order_no', title: '订单',formatter:function(v,r){
-                        return j6.template(htmTpl,{
+                        return jr.template(htmTpl,{
                             order_no:v,
                             fee: '￥'+r.fee,
                             domain : domain,
                             payment : r.payment_opt,
                             show_payment: r.is_paid == '1'?'hidden':'',
-                            goods: itemFmt(j6.toJson(r.items_info)),
+                            goods: itemFmt(jr.toJson(r.items_info)),
                             submit_time:unix2str(r.create_time).substring(0,16),
                             status:r.is_paid == '0'?'待支付':ORDER_STATE_TEXTS[parseInt(r.status)],
                         });
@@ -78,7 +78,7 @@
                     if(items[i].img.indexOf("http") != 0){
                         items[i].img = "{{.Var.img_serve}}/"+items[i].img;
                     }
-                    html += j6.template(tpl,items[i]);
+                    html += jr.template(tpl,items[i]);
                 }
                 return html;
             }

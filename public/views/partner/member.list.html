@@ -76,7 +76,7 @@
         expr.reload('dg');
     };
 
-    jr.$('dg').style.height = j6.screen.height() + 'px';
+    jr.$('dg').style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -123,10 +123,10 @@
                     }},
                     { field: 'integral', title: '积分', align: 'center', width: 60 },
                     { field: 'balance', title: '账户余额', align: 'center', width: 80,formatter:function(v,r){
-                        return j6.float(v).toFixed(2)+'<br /><a href="javascript:;" onclick="charge('+ r.id+')">充值</a>'
+                        return jr.float(v).toFixed(2)+'<br /><a href="javascript:;" onclick="charge('+ r.id+')">充值</a>'
                     }},
                     { field: 'total_pay', title: '消费总额', align: 'center', width: 80,formatter:function(v){
-                        return j6.float(v).toFixed(2);
+                        return jr.float(v).toFixed(2);
                     }},
                     //{ field: 'birthday', title: '出生日期', align: 'center', width: 80},
                     { field: 'reg_time', title: '注册时间', align: 'center', width: 90,formatter:function(v){
@@ -148,7 +148,7 @@
                         }
                     },
                     { field: 'id2', title: '操作',align: 'center',formatter:function(val,row){
-                        return j6.template('<a href="javascript:;" class="btn btn-short" onclick="editRec(\'{id}\',\'{name}\')">操作</a>',
+                        return jr.template('<a href="javascript:;" class="btn btn-short" onclick="editRec(\'{id}\',\'{name}\')">操作</a>',
                                 row);
                     } },
                 ]
@@ -158,13 +158,13 @@
 
 
     function editRec(id,name){
-        j6.tab.open('会员:'+name, '/member/member_details?member_id=' + id,  true);
+        jr.tab.open('会员:'+name, '/member/member_details?member_id=' + id,  true);
     }
 
     function delRec(id) {
         window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
-                j6.xhr.jsonPost('/member/del_member', {id: id }, function(json) {
+                jr.xhr.jsonPost('/member/del_member', {id: id }, function(json) {
                     if (json.result) {
                         expr.reload('dg');
                     }else{
@@ -176,7 +176,7 @@
     }
 
     function charge(id){
-        j6.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + id,400,300);
+        jr.dialog.create2('客服充值',true,true).open('/member/charge?member_id=' + id,400,300);
     }
 </script>
 

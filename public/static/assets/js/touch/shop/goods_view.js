@@ -13,7 +13,7 @@ require([
     //'lib/parabola'
 ], function (m) {
     m.init();
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     cartNum = jr.$('cart-num');
     m.cart.loadCart(function (c) {
         cartNum.innerHTML = c.total_num;

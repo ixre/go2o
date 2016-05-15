@@ -65,7 +65,7 @@
         expr.reload('dg');
     };
 
-    jr.$('dg').style.height = j6.screen.height() + 'px';
+    jr.$('dg').style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -116,7 +116,7 @@
     function select(index){
         $('#dg').datagrid('selectRow',index); // 选择行
         var row = $('#dg').datagrid('getSelected');
-        var d = j6.dialog.getDialog();
+        var d = jr.dialog.getDialog();
         if(d.window.goodsSelected(row)){
             d.close();
         }

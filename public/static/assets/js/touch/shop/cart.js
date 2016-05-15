@@ -4,7 +4,7 @@ require([
     "lib/shopping_cart"
 ], function (m, Mustache) {
     m.init();
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     window.cart.init('cart-panel', function (c) {
         m.closeTipBox();
     });

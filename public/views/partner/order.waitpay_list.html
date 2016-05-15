@@ -43,7 +43,7 @@
         var shops = {{.Map.shops}};
         expr.ele = 'search_bar';
 
-        j6.json.bind(expr.ele, {status: decodeURIComponent(j6.request('status')) });
+        jr.json.bind(expr.ele, {status: decodeURIComponent(jr.request('status')) });
 
         expr.portal = 'Partner.WaitPaymentOrderList'; //配置导出的入口
         expr.checkParams = function (data) {
@@ -52,7 +52,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        jr.$('dg').style.height = j6.screen.height() + 'px';
+        jr.$('dg').style.height = jr.screen.height() + 'px';
 
         $(function () {
 
@@ -80,7 +80,7 @@
                     [
                         {field:'order_no',title:'订单号',width:100,align:'center'},
                         {field:'items_info',title:'商品',width:150,align:'center',formatter:function(v){
-                            return itemFmt(j6.toJson(v));
+                            return itemFmt(jr.toJson(v));
                         }},
                         {field:'member_name',title:'购买会员',width:80,align:'center',formatter:function(v,r){
                             return v +'<br />('+ r.member_user+')';
@@ -96,14 +96,14 @@
                             }
                         },
                         {field:'total_fee',title:'订单总金额',width:60,sortable:true,align:'center',  formatter:function(val){
-                                    return '￥'+j6.float(val);
+                                    return '￥'+jr.float(val);
                             }},
                         {field:'fee',title:'订单金额',width:60,sortable:true,align:'center',
                             sorter:function(a,b){
                                 return (a>b?1:-1);
                             },
                             formatter:function(val){
-                                return '￥'+j6.float(val);
+                                return '￥'+jr.float(val);
                             }
                         },
                         {field:'paymethod',title:'支付方式',width:60,sortable:true,align:'center',
@@ -114,7 +114,7 @@
 
                         {field:'pay_fee',title:'支付金额',width:60,sortable:true,align:'center',
                             formatter:function(val){
-                                    return '￥'+j6.float(val);
+                                    return '￥'+jr.float(val);
                             }
                         },
                         {field:'deliver_time',title:'配送时间',width:150,align:'center',
@@ -134,17 +134,17 @@
 
 
         function editRec(id){
-            j6.dialog.create2('订单操作',true,true).open('/order/view?order_no=' + id, 600,400);
+            jr.dialog.create2('订单操作',true,true).open('/order/view?order_no=' + id, 600,400);
         }
 
         function payment(id){
-            j6.dialog.create2('人工付款',true,true).open('/order/payment?order_no=' + id, 600,400);
+            jr.dialog.create2('人工付款',true,true).open('/order/payment?order_no=' + id, 600,400);
         }
 
 
 
         function signDel(id){
-           j6.dialog.create2('订单取消',true,true).open('/order/cancel?order_no=' + id, 600,400);
+           jr.dialog.create2('订单取消',true,true).open('/order/cancel?order_no=' + id, 600,400);
 		}
 
         function itemFmt(items){
@@ -154,7 +154,7 @@
                 if(items[i].img.indexOf("http") != 0){
                     items[i].img = "{{.Var.img_serve}}/"+items[i].img;
                 }
-                html += j6.template(tpl,items[i]);
+                html += jr.template(tpl,items[i]);
             }
             return html;
         }

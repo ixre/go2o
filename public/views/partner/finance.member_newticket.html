@@ -64,21 +64,21 @@
 
 <script>
     jr.$('btn_save').onclick = function () {
-        var data = j6.json.toObject('form1');
+        var data = jr.json.toObject('form1');
         data.Amount = parseFloat(data.amount || 0);
         if (data.Amount <= 0) {
-            j6.validator.setTip(jr.$('tb_amount'), false, null, "金额错误");
+            jr.validator.setTip(jr.$('tb_amount'), false, null, "金额错误");
             return false;
         } else {
-            j6.validator.removeTip(jr.$('tb_amount'));
+            jr.validator.removeTip(jr.$('tb_amount'));
         }
         var t = this;
         t.disabled = false;
-        if(j6.validator.validate('form1')) {
-            j6.xhr.jsonPost(location.href, data, function (json) {
+        if(jr.validator.validate('form1')) {
+            jr.xhr.jsonPost(location.href, data, function (json) {
                 window.parent.$.messager.alert('提示', json.result ? '操作成功' : json.message,
                         json.result ? 'ok' : 'error', function () {
-                            var d = j6.dialog.getDialog();
+                            var d = jr.dialog.getDialog();
                             if (d.window.refresh) {
                                 d.window.refresh();
                             }

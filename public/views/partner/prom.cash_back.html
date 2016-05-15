@@ -97,11 +97,11 @@
 <script>
     var entity ={{.Map.entity}} ||{};
     var e2 = {{.Map.entity2}} || {}
-    j6.json.bind('form1', entity);
-    j6.json.bind('form1', e2);
+    jr.json.bind('form1', entity);
+    jr.json.bind('form1', e2);
 
     jr.$('btn_sel_goods').onclick = function(){
-        var d = j6.dialog.create2('选择商品',true,true);
+        var d = jr.dialog.create2('选择商品',true,true);
         d.open('/goods/goods_select',800,550);
     };
 
@@ -109,21 +109,21 @@
         var e = jr.$('goods_info');
         e.innerHTML = row.name+'<span>(销售价：'+row.sale_price+')</span>';
         e.parentNode.className='sel_result';
-        j6.json.bind('form1', {GoodsId:row.id});
+        jr.json.bind('form1', {GoodsId:row.id});
         return true;
     }
 
     jr.$('btn_save').onclick = function() {
-        if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
+        if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
             if(data.GoodsId=='' || parseInt(data.GoodsId) <= 0){
                 window.parent.$.messager.alert('提示','请选择商品','error');
                 return;
             }
-            j6.xhr.jsonPost('save_cb', data, function(json) {
+            jr.xhr.jsonPost('save_cb', data, function(json) {
                 if(json.result){
                     window.parent.$.messager.alert('提示', '保存成功！','ok',function(){
-                        j6.tab.closeAndRefresh('商品返现');
+                        jr.tab.closeAndRefresh('商品返现');
                     });
                 }else {
                     window.parent.$.messager.alert('提示',  json.message,'error');

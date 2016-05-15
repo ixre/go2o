@@ -14,25 +14,25 @@ function initFormEvent() {
     jr.$('usr').onblur = function () {
         if (this.value == undefined)return;
         if (this.value == ''){
-            j6.validator.setTip(this, false, 0, '请输入用户名!');
+            jr.validator.setTip(this, false, 0, '请输入用户名!');
             usrIsOk = false;
         }
         //else if(!/^(?=[A-Za-z])/.test(this.value))valid.setError(this,1);     //必须字符开头
         else if (!/^[A-Za-z0-9]+$/.test(this.value)){
             usrIsOk = false;
-            j6.validator.setTip(this, false, '3', '');
+            jr.validator.setTip(this, false, '3', '');
         }
         else {
             var t = this;
             if(t.value != lastOkUsr) {
-                j6.validator.setTip(t, false, null, '验证中...');
-                j6.xhr.jsonPost('/user/ValidUsr', {usr: escape(t.value)}, function (json) {
+                jr.validator.setTip(t, false, null, '验证中...');
+                jr.xhr.jsonPost('/user/ValidUsr', {usr: escape(t.value)}, function (json) {
                     if (json.result) {
-                        j6.validator.setTip(t, true, null, '用户名可用');
+                        jr.validator.setTip(t, true, null, '用户名可用');
                         lastOkUsr = t.value;
                     }
                     else {
-                        j6.validator.setTip(t, false, null, json.message);
+                        jr.validator.setTip(t, false, null, json.message);
                     }
                 });
             }
@@ -61,25 +61,25 @@ function initFormEvent() {
      */
     jr.$('pwd').onblur = function () {
         if(this.value.length == 0) {
-            j6.validator.setTip(this, false, 'required');
+            jr.validator.setTip(this, false, 'required');
         }else if (/^(?=_)/.test(this.value) || this.value.indexOf('_') == this.value.length - 1)
-                j6.validator.setTip(this, false, '1');
+                jr.validator.setTip(this, false, '1');
             else if (!/^[A-Za-z0-9_]*$/.test(this.value)) {
-                j6.validator.setTip(this, false, '3');
+                jr.validator.setTip(this, false, '3');
             }
             else if (this.value.length < 6 || this.value.length > 12) {
-                j6.validator.setTip(this, false, '2');
+                jr.validator.setTip(this, false, '2');
             }
             else {
-                j6.validator.removeTip(this);
+                jr.validator.removeTip(this);
             }
     };
 
     jr.$('rePwd').onblur = function () {
         if (this.value != jr.$('pwd').value) {
-            j6.validator.setTip(this, false, null, "两次密码输入不一致")
+            jr.validator.setTip(this, false, null, "两次密码输入不一致")
         } else {
-            j6.validator.removeTip(this);
+            jr.validator.removeTip(this);
         }
     };
 
@@ -88,12 +88,12 @@ function initFormEvent() {
         phone.onblur = function () {
             if (this.value == undefined)return;
             if (this.value != '' && !/^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8])(\d{8})$/.test(this.value)) {
-                j6.validator.setTip(this, false, '0');
+                jr.validator.setTip(this, false, '0');
             } else {
                 if (this.value != '') {
-                    j6.validator.removeTip(this);
+                    jr.validator.removeTip(this);
                 } else {
-                    j6.validator.setTip(this, false, '2');
+                    jr.validator.setTip(this, false, '2');
                 }
                 /*
                  if (this.value != ''){
@@ -115,17 +115,17 @@ function initFormEvent() {
         inviCode.onblur = function () {
             var val = this.value;
             if (val.length == 0) {
-                j6.validator.removeTip(this);
+                jr.validator.removeTip(this);
             } else {
                 var t = this;
-                j6.validator.setTip(this, false, null, '验证中...');
-                j6.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
+                jr.validator.setTip(this, false, null, '验证中...');
+                jr.xhr.jsonPost('/user/valid_invitation', {invi_code: val}, function (json) {
                     if (json.result) {
                         //valid.setTip(t, true, null, '邀请人为:'+json.data.Name);
-                        j6.validator.removeTip(t);
+                        jr.validator.removeTip(t);
                     }
                     else {
-                        j6.validator.setTip(t, false, null, json.message);
+                        jr.validator.setTip(t, false, null, json.message);
                     }
                 });
             }
@@ -195,16 +195,16 @@ function initFormEvent() {
     btnRegister.disabled = '';
     btnRegister.onclick = function () {
         var t = this;
-        if (j6.validator.validate('reg_panel')) {
-            var d = j6.json.toObject('reg_panel');
+        if (jr.validator.validate('reg_panel')) {
+            var d = jr.json.toObject('reg_panel');
             if (d.remember != 'on') {
                 alert('请同意注册条款')
             } else {
                 var tip = jr.$('tip');
                 t.disabled = true;
-                j6.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
+                jr.xhr.jsonPost('/user/postRegisterInfo', d, function (json) {
                     if (json.result) {
-                        var returnUrl = decodeURIComponent(j6.request('return_url'));
+                        var returnUrl = decodeURIComponent(jr.request('return_url'));
                         tip.className = 'tip-panel';
                         tip.innerHTML = '<span style="color:#0a0">注册成功，请等待页面跳转</span>';
 
@@ -245,9 +245,9 @@ require([
     ],
     function (m) {
         m.init();
-        j6.validator.init();
+        jr.validator.init();
         initFormEvent();
-        var inviCode = j6.request('invi_code');
+        var inviCode = jr.request('invi_code');
         if (inviCode == undefined || inviCode.length == 0) {
             showInviPanel();
         }

@@ -79,7 +79,7 @@
 
 <script type="text/javascript">
     window.pc.login = null;
-    window.cli.login(j6.request('return_url'));
+    window.cli.login(jr.request('return_url'));
 
         if(window.android || window.ios) {
             //window.history.go(-1);
@@ -88,10 +88,10 @@
         }
 
         var d = jr.$('form1');
-        j6.style(d,{
+        jr.style(d,{
                 position:'absolute',
-                left: (j6.screen.width()- j6.width(d) ) /2 +'px',
-                top: (j6.screen.height() - j6.height(d) - 40) /2 +'px'
+                left: (jr.screen.width()- jr.width(d) ) /2 +'px',
+                top: (jr.screen.height() - jr.height(d) - 40) /2 +'px'
             })
 		   var tip = jr.$('tip');
 		   document.body.onkeydown = function (e) {
@@ -101,13 +101,13 @@
 	            }
 	        };
 	        function subLogin() {
-	            var data = j6.json.toObject('form1');
+	            var data = jr.json.toObject('form1');
                 data.pwd = sha1(data.pwd);
-                j6.json.bind('form1',data);
-	            if (j6.validator.validate('form1')){
-	                j6.xhr.jsonPost(location.href, data, function (json) {
+                jr.json.bind('form1',data);
+	            if (jr.validator.validate('form1')){
+	                jr.xhr.jsonPost(location.href, data, function (json) {
 	                    if (json.result) {
-                            var returnUrl =decodeURIComponent(j6.request('return_url')||'/');
+                            var returnUrl =decodeURIComponent(jr.request('return_url')||'/');
 	                      window.parent.location.replace(returnUrl);
 	                    }
 	                    else {
@@ -123,7 +123,7 @@
 	        }
 	        
 	        jr.$('login').onclick=subLogin;
-            j6.animation.show('form1',null,4);
+            jr.animation.show('form1',null,4);
 		</script>
 </body>
 </html>

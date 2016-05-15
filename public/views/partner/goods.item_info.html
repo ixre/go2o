@@ -50,7 +50,7 @@
         var css = document.createElement('STYLE');
         css.innerHTML='.ke-content p{text-indent:0em;}';
 
-        j6.each(ifrs,function(i,e){
+        jr.each(ifrs,function(i,e){
             e.contentWindow.document.body.appendChild(css);
         });
     }
@@ -59,10 +59,10 @@
 <script type="text/javascript">
     initEditor('editor');
     function submitForm() {
-        if (j6.validator.validate()) {
-            var data = j6.json.toObject('form1_2');
+        if (jr.validator.validate()) {
+            var data = jr.json.toObject('form1_2');
             data.Info = editor.html();
-            j6.xhr.jsonPost('save_item_info', data, function (json) {
+            jr.xhr.jsonPost('save_item_info', data, function (json) {
                 if (json.result) {
                     window.parent.$.messager.alert('提示', '保存成功！', 'ok');
                 } else {

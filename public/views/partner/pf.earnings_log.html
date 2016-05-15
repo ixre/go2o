@@ -67,7 +67,7 @@
         expr.reload(id);
     };
 
-    jr.$(id).style.height = j6.screen.height() + 'px';
+    jr.$(id).style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -107,7 +107,7 @@
 
 
     jr.$('btn_gen_ticket').onclick=function(){
-        j6.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
+        jr.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
     };
 </script>
 

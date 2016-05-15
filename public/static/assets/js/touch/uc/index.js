@@ -9,7 +9,7 @@ function show(e) {
 
 
 function loadMember(m, Mustache) {
-    j6.xhr.jsonPost('/json/member', '', function (data) {
+    jr.xhr.jsonPost('/json/member', '', function (data) {
         m.closeTipBox();
         var e = m.getByClass('member-profile');
         e.innerHTML = Mustache.render(memberTmpl,{member:data});
@@ -23,7 +23,7 @@ require([
     'lib/mustache',
 ], function (m, Mustache) {
     m.init();
-    j6.xhr.filter = null;
+    jr.xhr.filter = null;
     preParseTmpl(m, Mustache);
     loadMember(m, Mustache);
     //loadVallet(m, Mustache);

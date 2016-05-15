@@ -79,7 +79,7 @@
         var css = document.createElement('STYLE');
         css.innerHTML='.ke-content p{text-indent:0em;}';
 
-        j6.each(ifrs,function(i,e){
+        jr.each(ifrs,function(i,e){
             e.contentWindow.document.body.appendChild(css);
         });
     }
@@ -87,17 +87,17 @@
 
 <script type="text/javascript">
     var entity = {{.Map.entity}};
-    j6.json.bind('form1',entity);
+    jr.json.bind('form1',entity);
 
     initEditor('editor');
     function submitForm() {
-        if (j6.validator.validate()) {
-            var data = j6.json.toObject('form1');
+        if (jr.validator.validate()) {
+            var data = jr.json.toObject('form1');
             data.Body = editor.html();
-            j6.xhr.jsonPost('save_mail_tpl', data, function (json) {
+            jr.xhr.jsonPost('save_mail_tpl', data, function (json) {
                 if (json.result) {
                     window.parent.$.messager.alert('提示', '保存成功！', 'ok', function () {
-                        j6.tab.closeAndRefresh('邮件模板');
+                        jr.tab.closeAndRefresh('邮件模板');
                     });
                 } else {
                     window.parent.$.messager.alert('提示',json.message, 'error');
@@ -112,15 +112,15 @@
         if (this.nodeName) {
             var ele = this;
             if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {
-                j6.validator.setTip(ele, false, 'error');
+                jr.validator.setTip(ele, false, 'error');
             } else {
-                j6.validator.removeTip(ele);
+                jr.validator.removeTip(ele);
             }
         }
     };
 
 
-    j6.validator.init();
+    jr.validator.init();
 
 
 </script>

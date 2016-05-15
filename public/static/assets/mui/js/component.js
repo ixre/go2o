@@ -82,17 +82,17 @@ var FwMenu = {
         //获取所有的标题菜单
         this.menuTitles = this.getByCls('group-title');
         var t = this;
-        j6.each(this.menuTitles, function (i, e) {
+        jr.each(this.menuTitles, function (i, e) {
             var groupName = e.getAttribute('group');
-            j6.event.add(e, 'click', (function (_t, _e) {
+            jr.event.add(e, 'click', (function (_t, _e) {
                 return function () {
                     _t.show(_e);
                 };
             })(t, e));
 
             //设置打开
-            j6.each(e.nextSibling.getElementsByTagName('LI'), function (i2, e2) {
-                j6.event.add(e2, 'click', (function (_this, _t, g) {
+            jr.each(e.nextSibling.getElementsByTagName('LI'), function (i2, e2) {
+                jr.event.add(e2, 'click', (function (_this, _t, g) {
                     return function () {
                         _t.set(groupName, _this);
                         var a = _this.childNodes[0];
@@ -120,7 +120,7 @@ var FwMenu = {
         var titleGroups = [];
         var _lis;
 
-        j6.each(menuTitles, function (i, e) {
+        jr.each(menuTitles, function (i, e) {
             if (e.getAttribute('group') != groupName) {
                 e.parentNode.className = 'group hidden';
             } else {
@@ -160,7 +160,7 @@ var FwMenu = {
     //查看菜单
     show: function (titleDiv) {
         var groupName = titleDiv.getAttribute('group');
-        j6.each(this.menuTitles, function (i, e) {
+        jr.each(this.menuTitles, function (i, e) {
             if (e.getAttribute('group') == groupName) {
                 if (e != titleDiv) {
                     e.nextSibling.className = 'panel hidden';
@@ -171,9 +171,9 @@ var FwMenu = {
         });
     },
     set: function (groupName, ele) {
-        j6.each(this.menuTitles, function (i, e) {
+        jr.each(this.menuTitles, function (i, e) {
             if (e.getAttribute('group') == groupName) {
-                j6.each(e.nextSibling.getElementsByTagName('LI'), function (i, e2) {
+                jr.each(e.nextSibling.getElementsByTagName('LI'), function (i, e2) {
                     e2.className = ele == e2 ? 'current' : '';
                 });
             }
@@ -183,7 +183,7 @@ var FwMenu = {
         var bigNav = jr.dom.getsByClass(document,'big-nav')[0];
         var html ='';
         for(var i=0;i<menuData.length;i++){
-            html += j6.template('<li class="item"><a class="title" href="'+
+            html += jr.template('<li class="item"><a class="title" href="'+
                 'javascript:FwMenu.change(\'{id}\');"><i class="icon {class}"></i>'+
                 '{text}</a></li>',menuData[i]);
         }
@@ -199,8 +199,8 @@ var FwTab = {
     frames: null,
     tabs: null,
     initialize: function () {
-        var framebox = j6.$('pageframes');
-        this.tabs = j6.$('pagetabs').getElementsByTagName('UL')[0];
+        var framebox = jr.$('pageframes');
+        this.tabs = jr.$('pagetabs').getElementsByTagName('UL')[0];
 
         var getByCls = function (cls) {
             return (framebox.getElementsByClassName ? framebox.getElementsByClassName(cls) : document.getElementsByClassName(cls, framebox))[0];
@@ -222,7 +222,7 @@ var FwTab = {
         var _cur_indents = url;
         var _li = null;
 
-        j6.each(_tabs, function (i, obj) {
+        jr.each(_tabs, function (i, obj) {
             _indent = obj.getAttribute('indent');
             if (_indent == _cur_indents) {
                 _exits = true;
@@ -255,7 +255,7 @@ var FwTab = {
             frame.setAttribute('frameBorder', '0', 0);
             frame.setAttribute('indent', _cur_indents);
             frame.setAttribute('id', 'ifr_' + _cur_indents);
-            j6.event.add(frame, 'load', _loadCall);
+            jr.event.add(frame, 'load', _loadCall);
 
 
 
@@ -292,7 +292,7 @@ var FwTab = {
         var li = t.nodeName != 'LI' ? t.parentNode.parentNode : t;
         var _frames = this.frames.getElementsByTagName('DIV');
         var _lis = this.tabs.getElementsByTagName('LI');
-        j6.each(_lis, function (i, obj) {
+        jr.each(_lis, function (i, obj) {
             if (obj == li) {
                 obj.className = 'current';
                 _frames[i].className = 'current';
@@ -316,7 +316,7 @@ var FwTab = {
         if (t) {
             //传递指定的tab进行关闭
             if (t.nodeName == 'SPAN') {
-                var list = j6.dom.getsByClass(this.tabs, 'tab-close');
+                var list = jr.dom.getsByClass(this.tabs, 'tab-close');
                 var noCloseBtnLen = this.tabs.getElementsByTagName('LI').length - list.length;
                 for (var i = 0; i < list.length; i++) {
                     if (list[i] == t) {
@@ -328,7 +328,7 @@ var FwTab = {
             }
             //根据标题来关闭
             else if (typeof (t) == 'string') {
-                var list = j6.dom.getsByClass(this.tabs, 'tab-title');
+                var list = jr.dom.getsByClass(this.tabs, 'tab-title');
                 for (var i = 0; i < list.length; i++) {
                     if (t == list[i].innerHTML.replace(/<[^>]+>/g, '')) {
                         closeIndex = i;
@@ -388,7 +388,7 @@ var FwTab = {
     getWindow: function (t) {
         if (typeof (t) == 'string') {
             var frameIndex = -1;
-            var list = j6.dom.getsByClass(this.tabs, 'tab-title');
+            var list = jr.dom.getsByClass(this.tabs, 'tab-title');
             for (var i = 0; i < list.length; i++) {
                 if (t == list[i].innerHTML.replace(/<[^>]+>/g, '')) {
                     frameIndex = i;
@@ -415,13 +415,13 @@ window.M = {
         newDialog(id, title, url, isAjax, width, height, closeCall);
     },
     alert: function (html, func) {
-        j6.tipbox.show(html, false, 100, 2000, 'up');
+        jr.tipbox.show(html, false, 100, 2000, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
     },
     msgtip: function (arg, func) {
-        j6.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
+        jr.tipbox.show(arg.html, false, 100, arg.autoClose ? 2000 : -1, 'up');
         if (func) {
             setTimeout(func, 1000);
         }
@@ -434,9 +434,9 @@ window.M = {
     },
     clearCache: function (t) {
         window.M.msgtip({ html: '清除中....' });
-        j6.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
+        jr.xhr.post(window._path, 'module=ajax&action=clearcache', function (x) {
             window.M.msgtip({ html: '缓存清除完成!', autoClose: true });
-            j6.xhr.get('/');
+            jr.xhr.get('/');
         }, function (x) { });
     },
     addFavorite: function () {
@@ -501,7 +501,7 @@ var frameShadowDiv = getDivByCls('page-frame-shadow');
 //重置窗口尺寸
 function _resizeWin() {
     var height = document.documentElement.clientHeight;
-    var width = j6.screen.width();
+    var width = jr.screen.width();
 
     mainDiv.style.height = (height - mainDiv.offsetTop) + 'px';
     frameDiv.style.height = (mainDiv.offsetHeight - frameDiv.offsetTop) + 'px';
@@ -510,7 +510,7 @@ function _resizeWin() {
     rightDiv.style.width = (width - leftDiv.offsetWidth - splitDiv.offsetWidth + 1) + 'px';
 }
 
-j6.event.add(window, 'resize', _resizeWin);
+jr.event.add(window, 'resize', _resizeWin);
 
 //设置按键
 window.onload = function () {
@@ -522,7 +522,7 @@ window.onload = function () {
             e.returnvalue = false;
             return false;
         } else if (e.ctrlKey && e.keyCode === 83) {
-            return j6.event.preventDefault(event);
+            return jr.event.preventDefault(event);
         } else if (e.keyCode === 122) {
             window.M.setFullScreen();
             e.returnvalue = false;

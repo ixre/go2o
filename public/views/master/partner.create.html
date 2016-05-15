@@ -58,11 +58,11 @@
 
 <script>
     var entity ={{.Map.entity}} ||{};
-    j6.json.bind('form1', entity);
+    jr.json.bind('form1', entity);
     jr.$('upload_img').src = '{{.Var.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
-    j6.upload({
+    jr.upload({
         id: 'upload_btn',
         debug: !true,
         url: '/upload.cgi?type=101',
@@ -77,12 +77,12 @@
     });
 
     jr.$('btn_save').onclick = function() {
-        if (j6.validator.validate('form1')) {
-            var data = j6.json.toObject('form1');
-            j6.xhr.jsonPost('SavePartner', data, function(json) {
+        if (jr.validator.validate('form1')) {
+            var data = jr.json.toObject('form1');
+            jr.xhr.jsonPost('SavePartner', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '商户创建成功，请继续为商户配置其他信息！' : json.message,
                         "ok",function(){
-                            j6.tab.closeAndRefresh('商户管理');
+                            jr.tab.closeAndRefresh('商户管理');
                         }
                 );
             }, function(e) {

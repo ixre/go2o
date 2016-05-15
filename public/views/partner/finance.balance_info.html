@@ -58,7 +58,7 @@
         expr.reload(id);
     };
 
-    jr.$(id).style.height = j6.screen.height() + 'px';
+    jr.$(id).style.height = jr.screen.height() + 'px';
 
     $(function () {
 
@@ -101,22 +101,22 @@
 
 
     jr.$('btn_gen_ticket').onclick=function(){
-        j6.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
+        jr.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
     };
 
     jr.$('btnAdd').onclick=addRec;
 
 
     function addRec(){
-        j6.tab.open('新增商品', '/goods/create', true);
+        jr.tab.open('新增商品', '/goods/create', true);
     }
 
     function setSaleTag(id){
-        j6.dialog.create2('设置商品销售标签',true,true).open('/goods/setSaleTag?id=' +id,400,300);
+        jr.dialog.create2('设置商品销售标签',true,true).open('/goods/setSaleTag?id=' +id,400,300);
     }
 
     function editRec(id){
-        j6.tab.open('修改商品', '/goods/itemCtrl?item_id=' +id,  true);
+        jr.tab.open('修改商品', '/goods/itemCtrl?item_id=' +id,  true);
     }
 </script>
 
