@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<head>
+	<title>理财转出</title>
+	<meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
+	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/uc/touch/touch.css?v={{.Var.version}}"/>
+</head>
+<body>
+
+{{template "header"$}}
+	<div class="page-rise-transfer-in page-rise-transfer-out">
+
+		<div id="cns-panel" class="tip-pl">
+			可用余额：<span class="max-transfer-amount">{{.Map.MaxTransferAmount}}</span>元
+		</div>
+
+		<div id="form1" class="form form2">
+
+
+				<div class="fl">
+					<div class="label">转出金额：</div>
+					<div class="in">
+						<input id="tb_amount" type="text" class="ui-box ui-validate" isfloat="true"
+							   required="true" field="Amount" style="width:80px" summary="{required:'请输入金额'}"/>
+					</div>
+				</div>
+
+				<div class="fl">
+					<div class="label">转出方式：</div>
+					<div class="in">
+						<input type="radio" name="TransferWith" field="TransferWith" value="1"
+							   id="TransferWith1" checked="checked"/>
+							<label for="TransferWith1">{{.Map.AliasBalance}}(快速)</label><br />
+						<!-- <input type="radio" name="TransferWith" field="TransferWith" value="2" id="TransferWith2"/><label for="TransferWith2">{{.Map.AliasPresentBalance}}(<em>{{.Map.Account.PresentBalance}}</em>元)</label>-->
+						<input type="radio" name="TransferWith" field="TransferWith" value="3" id="TransferWith3"/>
+							<label for="TransferWith3">银行汇款(2-5个工作日)</label>
+					</div>
+				</div>
+
+				<div class="fl">
+					<div class="label">&nbsp;</div>
+					<div class="in">
+						<div>
+							<input class="btn btn-m" type="button" value="确认转出" onclick="saveData(this)"/>
+						</div>
+					</div>
+
+				</div>
+			</div>
+				<div class="note-line">
+					<b><span class="red">*</span>&nbsp;说明：</b><br />
+					1、转出金额当天没有收益！<br />
+					2、银行转账单笔最低转出{{.Map.MinTranfer}}元；低于{{.Map.MinTranfer}}需全部转出。<br />
+					3、转出到余额无最低金额限制，秒到账，可商城消费及理财转入。
+				</div>
+
+	</div>
+
+
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.version}}"></script>
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/device.js?ver={{.Var.version}}"></script>
+		<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?ver={{.Var.version}}"></script>
+
+
+			<script type="text/javascript">
+				var minTransferAmount = {{.Map.MinTranfer}};
+				var maxTransferAmount = {{.Map.MaxTransferAmount}};
+
+				function saveData(t){
+					if(j6.validator.validate('form1')) {
+						var data = j6.json.toObject('form1');
+						data.Amount = parseFloat(data.Amount || '0');
+						if(data.Amount > parseFloat(maxTransferAmount)){
+							alert('超出最大转出金额！');
+							return false;
+						}
+
+						t.disbaled = true;
+						if (confirm("转出金额当天无收益,确定继续转出吗？")) {
+							j6.xhr.jsonPost(location.href, data, function (json) {
+								if (json.result) {
+									alert('转出成功！');
+									location.replace(location.href);
+								} else {
+									alert(json.message);
+								}
+								t.disbaled = false;
+							});
+						}
+					}
+				}
+			</script>
+
+{{template "footer"$}}
+
+</body>
+</html>

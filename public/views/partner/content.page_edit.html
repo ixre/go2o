@@ -112,7 +112,7 @@
 <script type="text/javascript">
     var entity = {{.Map.entity}};
     j6.json.bind('form1',entity);
-    j6.$('page_id').innerHTML=entity.Id;
+    jr.$('page_id').innerHTML=entity.Id;
 
     initEditor('editor');
     function submitForm() {
@@ -132,8 +132,8 @@
         return false;
     }
     window.saveData = submitForm;
-    j6.$('btn_save').onclick=submitForm;
-    j6.$('alias').onblur = function () {
+    jr.$('btn_save').onclick=submitForm;
+    jr.$('alias').onblur = function () {
         if (this.nodeName) {
             var ele = this;
             if (!/^[a-zA-Z.*()0-9_-]{0,50}$/.test(this.value)) {

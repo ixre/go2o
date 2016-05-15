@@ -37,7 +37,7 @@
 
 <script type="text/javascript">
     var treeObj = null;
-    var treePanel = j6.$('menu_tree');
+    var treePanel = jr.$('menu_tree');
     function treeHandler(src,value,text){
         var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
         j6.each(nodeLinks, function(i, e) {
@@ -47,7 +47,7 @@
         });
         src.parentNode.style.backgroundColor="#FBEC88";
         j6.json.bind(expr.ele,{cid:value});
-        j6.$('btnSearch').onclick();
+        jr.$('btnSearch').onclick();
     };
 
     function loadTree(json){
@@ -56,7 +56,7 @@
         var nodeLinks = j6.dom.getsByClass(treePanel, 'node');
         j6.each(nodeLinks, function(i, e) {
             if (e.nodeName == 'DIV') {
-                var v =j6.$(e,'A',{className:'node'});
+                var v =jr.$(e,'A',{className:'node'});
                 if(v.length==0)return;
                 v = v[0].getAttribute('node-value');
                 var html = "";
@@ -101,11 +101,11 @@
 
     function tree_edit(e,id){
         j6.tab.open('修改分类', '/category/EditCategory?id='+id , true);
-        j6.event.stopBubble(e||window.event);
+        jr.event.stopBubble(e||window.event);
     }
 
     function tree_del(e,id){
-        j6.event.stopBubble(e||window.event);
+        jr.event.stopBubble(e||window.event);
      window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
             if (result) {
                 j6.xhr.jsonPost('DelCategory', { id: id }, function(json) {
@@ -126,9 +126,9 @@
         });
     }
     ajaxLoadTree();
-    j6.dom.fitHeight(j6.$('menu_tree').parentNode);
-    j6.$('btnAddCategory').onclick = tree_add;
-    j6.$('btnCollect').onclick = function(){
+    j6.dom.fitHeight(jr.$('menu_tree').parentNode);
+    jr.$('btnAddCategory').onclick = tree_add;
+    jr.$('btnCollect').onclick = function(){
         treeObj.oAll();
     }
 </script>

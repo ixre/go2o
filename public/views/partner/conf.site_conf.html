@@ -15,7 +15,7 @@
         <div class="label"><span class="red">*&nbsp;</span>标志Logo：</div>
         <div class="in" style="position: relative;height:70px;">
             <input type="hidden" field="PtId" value="0"/>
-            <img id="upload_img" src="{{.Var.img_serve}}/resouce/item_nopic.gif"
+            <img id="upload_img" src="{{.Map.Logo}}"
                  style="float:left;margin-right:10px;width:150px; height: 60px;border:solid 1px #aaa;padding:1px;" />
             <input class="ui-validate ui-box" length="[0,150]" type="hidden" field="Logo" id="upload_path"/>
             <span id="upload_btn"><button>选择图片上传(150*60)</button></span>
@@ -63,7 +63,6 @@
 <script>
     var entity ={{.Map.entity}} ||{};
     j6.json.bind('form1', entity);
-    j6.$('upload_img').src = '{{.Var.img_serve}}/'+ entity.Logo;
 
     //上传缩略图
     j6.upload({
@@ -73,8 +72,8 @@
         exts: '*.gif;*.jpg;*.png;*.bmp'
     },function (result, data) {
         if (result) {
-            j6.$('upload_path').value = data.url;
-            j6.$('upload_img').src = '{{.Var.img_serve}}/'+ data.url;
+            jr.$('upload_path').value = data.url;
+            jr.$('upload_img').src = '{{.Var.img_serve}}/'+ data.url;
         } else {
             alert('上传失败：' + data);
         }
@@ -82,8 +81,8 @@
 
 
     //设置是否跳转显示
-    var statePanel = j6.$('statePanel');
-    j6.$('State1').onchange = j6.$('State2').onchange = function(){
+    var statePanel = jr.$('statePanel');
+    jr.$('State1').onchange = jr.$('State2').onchange = function(){
         if(this.checked){
             if(this.value == '0'){
                 statePanel.className = '';
@@ -94,7 +93,7 @@
     };
     if(entity.State == 0)statePanel.className='';
 
-    j6.$('btn_save').onclick = function() {
+    jr.$('btn_save').onclick = function() {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             j6.xhr.jsonPost('', data, function(json) {

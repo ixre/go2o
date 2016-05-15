@@ -12,11 +12,14 @@ if (window.menuHandler == undefined) {
     window.menuHandler = null;
 }
 
-
 function showGate() {
     var els = document.getElementsByTagName("DIV");
     els[0].className = 'loading-gate';
     els[1].className = 'loading-bar';
+    if (/MSIE\s*(5|6|7)\./.test(window.navigator.userAgent)) {
+        els[1].style.left = (document.documentElement.clientWidth - els[1].offsetWidth) / 2 + 'px';
+        els[1].style.top = (document.documentElement.clientHeight - els[1].offsetHeight) / 2 + 'px';
+    }
 }
 
 function cancelGate() {
@@ -29,6 +32,8 @@ function cancelGate() {
 var FwMenu = {
     ele: null,
     menuTitles: [],
+    bigNavEles:[],
+    data :{},
     getByCls: function (className) {
         return this.ele.getElementsByClassName ? this.ele.getElementsByClassName(className) : document.getElementsByClassName(className, this.ele);
     },
@@ -37,6 +42,7 @@ var FwMenu = {
         this.ele = document.getElementsByClassName('page-left-menu')[0];
         //第一次加载
         var md = data;
+        this.data = md;
 
         //处理菜单数据
         if (menuHandler && menuHandler instanceof Function) {
@@ -45,6 +51,9 @@ var FwMenu = {
                 md = hdata;
             }
         }
+
+        this.initBigNav(md);
+
 
         var menuEle = this.ele;
 
@@ -61,7 +70,7 @@ var FwMenu = {
                         url = md[i1].childs[i2].childs[i3].uri;
                         // html += (i3 != 0 && i3 % 4 == 0 ? '<div class="clearfix"></div>' : '') +
                         html += '<li' + (i2 == 0 && i3 == 0 ? ' class="current"' : '') + '><a class="fn" style="cursor:pointer;" url="' + url + '"' +
-                                //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
+                            //(md[i1].childs[i2].childs.length == 1 ? ' style="margin:0 ' + ((100 - linktext.length * 14) / 2) + 'px"' : '') +
                             '><span class="icon icon_' + i1 + '_' + i2 + '_' + i3 + '"></span>' + linkText + '</a></li>';
                     }
                     html += '</ul></div></div>';
@@ -106,7 +115,6 @@ var FwMenu = {
                 groupName = menuTitles[0].getAttribute('group');
             }
         }
-        var isFirst = true;
         var selectedLi = null;  //已经选择的功能菜单
         var firstPanel = null;
         var titleGroups = [];
@@ -135,13 +143,19 @@ var FwMenu = {
                 }
             }
         }
-
         if (selectedLi != null) {
             selectedLi.parentNode.parentNode.className = 'panel';
         } else if (firstPanel != null) {
             firstPanel.className = 'panel';
         }
-
+        // 设置BigNav
+        for(var i=0,l = this.data.length;i<l;i++){
+            if(this.data[i].id == id){
+                this.bigNavEles[i].className = 'item current';
+            }else{
+                this.bigNavEles[i].className = 'item';
+            }
+        }
     },
     //查看菜单
     show: function (titleDiv) {
@@ -164,6 +178,17 @@ var FwMenu = {
                 });
             }
         });
+    },
+    initBigNav:function(menuData){
+        var bigNav = jr.dom.getsByClass(document,'big-nav')[0];
+        var html ='';
+        for(var i=0;i<menuData.length;i++){
+            html += j6.template('<li class="item"><a class="title" href="'+
+                'javascript:FwMenu.change(\'{id}\');"><i class="icon {class}"></i>'+
+                '{text}</a></li>',menuData[i]);
+        }
+        bigNav.innerHTML = html;
+        this.bigNavEles = bigNav.getElementsByTagName('LI');
     }
 };
 
@@ -188,8 +213,8 @@ var FwTab = {
     pageLoad: function () {
         this.hiddenLoadBar();
     },
-    showLoadBar: function () {},
-    hiddenLoadBar: function () {},
+    showLoadBar: function () { },
+    hiddenLoadBar: function () { },
     show: function (text, url, closeable) {
         var _tabs = this.tabs.getElementsByTagName('LI');
         var _indent;
@@ -259,7 +284,7 @@ var FwTab = {
     },
     set: function (t, isOpen) {
 
-        //如果不是刚打开的tab,则关闭加载提示 
+        //如果不是刚打开的tab,则关闭加载提示
         if (!isOpen) {
             this.hiddenLoadBar();
         }
@@ -301,7 +326,7 @@ var FwTab = {
                     }
                 }
             }
-                //根据标题来关闭
+            //根据标题来关闭
             else if (typeof (t) == 'string') {
                 var list = j6.dom.getsByClass(this.tabs, 'tab-title');
                 for (var i = 0; i < list.length; i++) {
@@ -355,7 +380,6 @@ var FwTab = {
                     _ifrs[closeIndex].className = 'current';
                     _ifrs[closeIndex].style.height = '100%';
                 }
-
             }
         }
     },
@@ -385,23 +409,6 @@ var FwTab = {
         return null;
     }
 };
-
-
-
-//加载app
-function loadApps() {
-    var ele;
-    j6.each(document.getElementsByTagName('H2'), function (i, e) {
-        if (e.innerHTML == 'APPS') {
-            ele = e.parentNode.getElementsByTagName('DIV')[0];
-        }
-    });
-    if (ele) {
-        ele.id = 'ribbon-apps';
-        j6.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
-    }
-}
-
 
 window.M = {
     dialog: function (id, title, url, isAjax, width, height, closeCall) {
@@ -476,8 +483,8 @@ var mainDiv = document.getElementsByClassName('page-main')[0];
 function getDivByCls(cls, ele) {
     var e = ele || mainDiv;
     return (e.getElementsByClassName ?
-    e.getElementsByClassName(cls) :
-    document.getElementsByClassName(cls, e))[0];
+        e.getElementsByClassName(cls) :
+        document.getElementsByClassName(cls, e))[0];
 }
 
 //左栏div
@@ -491,20 +498,16 @@ var splitDiv = getDivByCls('page-main-split');
 //框架遮盖层
 var frameShadowDiv = getDivByCls('page-frame-shadow');
 
-//用户操作栏
-var userDiv = getDivByCls('page-user', document.body);
-
 //重置窗口尺寸
 function _resizeWin() {
     var height = document.documentElement.clientHeight;
-    var width =j6.screen.width();
+    var width = j6.screen.width();
 
     mainDiv.style.height = (height - mainDiv.offsetTop) + 'px';
     frameDiv.style.height = (mainDiv.offsetHeight - frameDiv.offsetTop) + 'px';
 
     //设置右栏的宽度
     rightDiv.style.width = (width - leftDiv.offsetWidth - splitDiv.offsetWidth + 1) + 'px';
-
 }
 
 j6.event.add(window, 'resize', _resizeWin);
@@ -518,7 +521,9 @@ window.onload = function () {
             window.M.setFullScreen();
             e.returnvalue = false;
             return false;
-        } else if (e.keyCode == 122) {
+        } else if (e.ctrlKey && e.keyCode === 83) {
+            return j6.event.preventDefault(event);
+        } else if (e.keyCode === 122) {
             window.M.setFullScreen();
             e.returnvalue = false;
             return false;
@@ -549,22 +554,22 @@ window.onload = function () {
 
     //添加左右栏改变大小功能
     new drag(splitDiv, window).custom(null, 'w-resize', (function (ld, rd, sd, minWidth, maxWidth) {
-        return function (event) {
-            //显示遮罩层以支持drag
-            frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
-            var e = event || window.event;
-            window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
-            if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
-            var mx = e.clientX;
-            if (mx > minWidth && mx < maxWidth) {
-                sd.style.left = mx + 'px';
-                ld.style.width = mx + 'px';
-                ld.style.marginRight = -mx + 'px';
-                rd.style.marginLeft = (mx + 5) + 'px';
-                _resizeWin();
-            }
-        };
-    })(leftDiv,
+            return function (event) {
+                //显示遮罩层以支持drag
+                frameShadowDiv.className = frameShadowDiv.className.replace(' hidden', '');
+                var e = event || window.event;
+                window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();
+                if (e.preventDefault) e.preventDefault();                       //这两句便是解决firefox拖动问题的.
+                var mx = e.clientX;
+                if (mx > minWidth && mx < maxWidth) {
+                    sd.style.left = mx + 'px';
+                    ld.style.width = mx + 'px';
+                    ld.style.marginRight = -mx + 'px';
+                    rd.style.marginLeft = (mx + 5) + 'px';
+                    _resizeWin();
+                }
+            };
+        })(leftDiv,
         rightDiv,
         splitDiv,
         splitDiv.getAttribute('min'),
@@ -574,5 +579,3 @@ window.onload = function () {
         });
 
 };
-
-

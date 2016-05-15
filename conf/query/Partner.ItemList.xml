@@ -13,10 +13,8 @@ f.small_title,
 `cost`,
 `sale_price`,
 `apply_subs`,
-`note`,
 on_shelves,
 `state`,
-/*`description`,*/
 f.`create_time`,
 f.`update_time`
 FROM `gs_item` f INNER JOIN gs_category c ON f.category_id = c.id

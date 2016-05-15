@@ -112,13 +112,13 @@
     _dg.resize();
 
 
-    var addressTpl = j6.$('addressTpl').innerHTML;
-    var newPanel = j6.$('new_panel');
+    var addressTpl = jr.$('addressTpl').innerHTML;
+    var newPanel = jr.$('new_panel');
 
     function toggleNewAdd(){
         j6.animation.toggleHeight(newPanel,null,25);
     }
-    j6.$('btn_new_address').onclick=function(){
+    jr.$('btn_new_address').onclick=function(){
         j6.json.bind(newPanel,{Id:0,Address:'',RealName:'',Phone:''});
         if(newPanel.offsetHeight == 0){
             toggleNewAdd();

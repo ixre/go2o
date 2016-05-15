@@ -63,14 +63,14 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 <script>
-    j6.$('btn_save').onclick = function () {
+    jr.$('btn_save').onclick = function () {
         var data = j6.json.toObject('form1');
         data.Amount = parseFloat(data.amount || 0);
         if (data.Amount <= 0) {
-            j6.validator.setTip(j6.$('tb_amount'), false, null, "金额错误");
+            j6.validator.setTip(jr.$('tb_amount'), false, null, "金额错误");
             return false;
         } else {
-            j6.validator.removeTip(j6.$('tb_amount'));
+            j6.validator.removeTip(jr.$('tb_amount'));
         }
         var t = this;
         t.disabled = false;

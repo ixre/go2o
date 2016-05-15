@@ -35,10 +35,10 @@
 </script>
 
     <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?ver={{.Var.version}}"></script>
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?ver={{.Var.version}}"></script>
     <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/dg.js?ver={{.Var.version}}"></script>
     <script type="text/javascript">
-        var htmTpl = j6.$('list_tpl').innerHTML;
+        var htmTpl = jr.$('list_tpl').innerHTML;
         window.onload=function() {
             var _dg = j6.grid('dg', {
                 url: location.href,
@@ -56,7 +56,7 @@
                     }
                 ],
                 loaded: function (data) {
-                    var e = j6.$('dg')
+                    var e = jr.$('dg')
                     if (data.rows == null || data.rows.length == 0) {
                         e.innerHTML = '<div class="no-row">没有返现记录！</div>';
                         e.className = '';

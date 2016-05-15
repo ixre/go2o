@@ -115,7 +115,7 @@
 <script>
     var id = {{.Map.info.Id}};
     var memberId = {{.Map.info.MemberId}};
-    j6.$('btn_save').onclick = function () {
+    jr.$('btn_save').onclick = function () {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             j6.xhr.jsonPost(location.href, data, function (json) {
@@ -137,17 +137,17 @@
     }
 
 
-    j6.$('btn_back').onclick = function () {
+    jr.$('btn_back').onclick = function () {
         passRequest(false);
     };
 
-    j6.$('btn_pass').onclick = function () {
+    jr.$('btn_pass').onclick = function () {
        passRequest(true);
     };
 
 
     function passRequest(r) {
-        var reason = j6.$('tb_reason').value;
+        var reason = jr.$('tb_reason').value;
         var tit = r ? '申请通过' : '申请被退回';
         j6.xhr.jsonPost('pass_apply_req', {id: id, member_id: memberId, pass: r?1:0, reason: escape(reason)},
                 function (json) {
@@ -169,7 +169,7 @@
 
 
     function quickReason(t){
-        j6.$('tb_reason').value = t.value;
+        jr.$('tb_reason').value = t.value;
     }
 </script>
 </body>

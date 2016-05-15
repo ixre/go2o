@@ -56,7 +56,7 @@
     var entity ={{.Map.entity}} ||{};
     j6.json.bind('form_adv1', entity);
 
-    j6.$('btn_save').onclick = function() {
+    jr.$('btn_save').onclick = function() {
         if (j6.validator.validate('form_adv1')) {
             var data = j6.json.toObject('form_adv1');
             j6.xhr.jsonPost('SaveAd', data, function(json) {

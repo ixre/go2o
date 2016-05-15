@@ -69,6 +69,11 @@ zhu***@126.com
 
 
 
+pub-serve   ---  14199
+partner-serve  ---- 14192
+
+
+
 ## Deploy ##
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"

@@ -58,7 +58,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        j6.$('dg').style.height = j6.screen.height() + 'px';
+        jr.$('dg').style.height = j6.screen.height() + 'px';
 
         $(function () {
 
@@ -111,7 +111,7 @@
 
 
 
-        j6.$('btnAdd').onclick=addRec;
+        jr.$('btnAdd').onclick=addRec;
         function addRec(){
             j6.dialog.create2('添加销售标签',true,true).open('/sale/create_stag', 600,400);
         }

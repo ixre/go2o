@@ -728,7 +728,7 @@ j6.extend({
     tree: {
         load: function (id, data, resPath, handler,completeFunc) {
             var rdId = 'tree_' + Math.ceil(Math.random() * 100);
-            var ele = j6.$(id);
+            var ele = jr.$(id);
             window[rdId] = new dTree(rdId, resPath);
             window[rdId].bind(data,completeFunc);
             ele.innerHTML = window[rdId].toString();
@@ -736,7 +736,7 @@ j6.extend({
             if(handler && handler instanceof Function){
                 j6.each(ele.getElementsByTagName('A'),function(i,e){
                 	if(e.className == 'node'){
-                		j6.event.add(e,'click',(function(_e,_v,_t){
+                		jr.event.add(e,'click',(function(_e,_v,_t){
                 			return function(){
                 				handler(_e,_v,_t);
                 			};

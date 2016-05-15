@@ -13,7 +13,7 @@ f.small_title,
 `cost`,
 `sale_price`,
 `apply_subs`,
-`note`,
+`remark`,
 on_shelves,
 `state`,
 /*`description`,*/

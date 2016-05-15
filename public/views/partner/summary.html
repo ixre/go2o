@@ -73,10 +73,7 @@
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/core_full.js?spam={{.Var.spam}}"></script>
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/global.js?spam={{.Var.spam}}"></script>
 <script type="text/javascript">
-  j6.xhr.get('/main/geoLocation',function(r){
-      var j=j6.toJson(r);
-      j6.$('location').innerHTML='<span style="color:green">'+ j.addr+'</span>';
-  });
+  setGeo('location')
 </script>
 </body>
 </html>
