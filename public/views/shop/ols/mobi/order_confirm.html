@@ -4,7 +4,7 @@
 <head>
     <title>订单确认</title>
     <meta charset="utf-8">
-    <meta content="width=device-width,initial-scale=1,maximum-scale=1"/>
+    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
@@ -12,10 +12,7 @@
 
 </head>
 <body>
-
-    {{template "header" $}}
-
-
+{{template "loader"}}
     <div id="order-confirm-panel" class="order-confirm-panel panel">
         <div id="item1" class="item first_item">
             <h2 class="title">配送地址<span class="edit_link">[<a id="el1" href="javascript:void(0);" onclick="selectDeliver()">修改</a>]</span></h2>
@@ -99,20 +96,18 @@
 
                 <div class="balance_pay" id="balance_pay">
                     <input type="checkbox" field="UseBalanceDiscount" value="1" id="ck_useBalance"/>
-                    <label for="ck_useBalance">使用余额(账户当前余额：<span id="lb_balance">-</span>元)</label>
+                    <label for="ck_useBalance">使用余额支付(账户余额：<span id="lb_balance">-</span>元)</label>
                 </div>
-            <br />
 
-            <br />
-
+            <div class="clear"><br /><br /></div>
             <div class="cash-panel" id="cash-panel">
                     <ul>
-                        <li class="total"><label>商品总价：</label><em>￥<span class="money">{{.Map.cart.TotalFee}}</span></em></li>
-                        <li class="prom"><label>优惠金额：</label><em>-￥<span field="PromFee">0</span></em></li>
-                        <li class="balance"><label>账户支付：</label><em>-￥<span field="BalanceFee">0</span></em></li>
+                        <li class="total"><label>商品总价：</label><em>￥<span class="money">{{.Map.TotalFee}}</span></em></li>
+                        <li class="prom"><label>优惠金额：</label><em>￥<span field="PromFee">0</span></em></li>
+                        <li class="balance"><label>余额支付：</label><em>￥<span field="BalanceFee">0</span></em></li>
                         <li class="fee"><label>需支付：</label><em>￥<span field="OrderFee">0</span></em></li>
                     </ul>
-                <div class="clear-fix"></div>
+                <div class="clear"></div>
             </div>
 
         </div>
@@ -142,25 +137,13 @@
         var acc_balance = {{.Map.balance}};
         var sctJson = {pay_opt:1,deliver_opt:1,deliver_id:0,shop_id:0,deliver_person:'',deliver_phone:'',deliver_address:''};
     </script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?{{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/form.js?{{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/lib/animation.js?{{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/ppc.js?{{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/device.js?{{.Var.version}}"></script>
-    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/buy/buy_confirm.js?{{.Var.version}}"></script>
-    <script type="text/javascript">
-        pageInit();
-        recoverFrom('postForm');
-        dynamicContent();
-        reloadFee();
-        jr.$('btn_submit_order').onclick=submitOrder;
-        jr.$('btn_submit_order').removeAttribute('disabled');
-        window.toggleDelivery = function(b){
-            var pl = jr.$('delivery-confirm-panel');
-            pl.className = b ?'':'hidden';
-        };
-    </script>
-
+<script type="text/javascript" src="{{.Var.static_serve}}/assets/js/require.js?{{.Var.Spam}}"></script>
+<script type="text/javascript">
+    var _baseUrl = '{{.Var.static_serve}}';
+    require([_baseUrl + "/assets/js/touch/require_config.js"], function () {
+        require(['shop/order_confirm']);
+    });
+</script>
 
     {{template "footer" $}}
 </body>

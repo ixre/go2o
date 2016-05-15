@@ -78,9 +78,6 @@ func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 
 
 func Listen(ch chan bool, app gof.App, addr string) {
-	defer func() {
-		ch <- true
-	}()
 	if app.Debug() {
 		log.Println("** [ Go2o][ Web][ Booted] - Web server (with debug) running on", addr)
 	} else {

@@ -107,7 +107,7 @@
 					jr.$('tb_amount').onblur();
 					if(j6.validator.validate('form1')){
 						var data = j6.json.toObject('form1');
-						data.Amount = parseFloat(data.Amount);
+						data.Amount = parseFloat(data.Amount ||'0');
 						data.TradePwd = sha1(data.TradePwd);
 						if(data.Amount <= 0){
 							tipMsg.innerHTML = '提现金额错误';

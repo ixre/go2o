@@ -2,11 +2,14 @@
 <!doctype html>
 <html>
 <head>
-    <title>{{.Map.partner.Name}}</title>
+    <title>{{.Map.Partner.Name}}</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="Stylesheet" href="{{.Var.static_serve}}/css/page.css?spam={{.Var.spam}}" type="text/css"/>
     <link rel="Stylesheet" href="{{.Var.static_serve}}/css/shop/default/style.css?spam={{.Var.spam}}" type="text/css"/>
+    <script type="text/javascript">
+        location.href='/change_device?device=3';
+    </script>
 </head>
 <body>
 
@@ -18,7 +21,7 @@
         <h2>新品上市</h2>
         <div class="new-goods goods-list">
 
-            {{range $i,$v := .Map.newGoods}}
+            {{range $i,$v := .Map.NewGoods}}
             <div class="goods first">
                 <div class="item">
                     <a href="/goods-{{$v.GoodsId}}.htm">
@@ -37,7 +40,7 @@
 
         <h2>热销商品</h2>
         <div class="new-goods goods-list">
-            {{range $i,$v := .Map.hotSales}}
+            {{range $i,$v := .Map.HotSales}}
             <div class="goods first">
                 <div class="item">
                     <a href="/goods-{{$v.GoodsId}}.htm">
