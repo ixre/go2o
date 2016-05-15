@@ -5,7 +5,7 @@
 */
 
 /*dl,img,input,dt,dd{vertical-align:middle;}*/
-body{margin:0px;font:75% Tahoma,'微软雅黑',sans-serif;background:#f5f5f5;}
+body{margin:0px;font:75% Tahoma,'微软雅黑',sans-serif;background:#FFF;}
 ul{margin:0;padding:0;list-style:none;}
 .left{float:left;}.tleft{text-align:left;padding-left:5px;}.right{float:right;}.center{text-align:center;}.clearfix{clear:both;height:0px;}.overflow{overflow:hidden;}.hidden{display:none;}
 .relative{position:relative;}.absolute{position:absolute;}.red{color:red}
