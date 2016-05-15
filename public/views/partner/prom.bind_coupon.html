@@ -46,7 +46,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        j6.$('dg').style.height = j6.screen.height() + 'px';
+        jr.$('dg').style.height = j6.screen.height() + 'px';
 
         $(function () {
             //导出
@@ -94,7 +94,7 @@
         });
 
         var amount= {{.Map.entity2.Amount}};
-        j6.$('btnBind').onclick=function(){
+        jr.$('btnBind').onclick=function(){
             var rows = $('#dg').datagrid('getSelections');
             var len = rows.length;
             if (len == 0) {

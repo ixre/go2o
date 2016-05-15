@@ -6,7 +6,7 @@
 
 
 function datagrid(ele, config) {
-    this.panel = ele.nodeName ? ele : j6.$(ele);
+    this.panel = ele.nodeName ? ele : jr.$(ele);
     this.columns = config.columns;
     //Id域
     this.idField = config.idField || "id";
@@ -169,9 +169,9 @@ function datagrid(ele, config) {
     //        t.resize.apply(t);
     //    };
     //})(this);
-    //j6.event.add(window, 'load', resizeFunc);
+    //jr.event.add(window, 'load', resizeFunc);
     //window.attachEvent('resize', resizeFunc);
-    //j6.event.add(window, 'resize', this.resize.apply(this));
+    //jr.event.add(window, 'resize', this.resize.apply(this));
 
     this._initLayout();
 

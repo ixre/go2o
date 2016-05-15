@@ -66,7 +66,7 @@
         expr.reload(id);
     };
 
-    j6.$(id).style.height = j6.screen.height() + 'px';
+    jr.$(id).style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -76,7 +76,7 @@
                     expr.showExportDialog();
                 });
 
-        j6.$('btnSearch').onclick=function () {
+        jr.$('btnSearch').onclick=function () {
             expr.search('dg');
         };
 
@@ -113,7 +113,7 @@
     });
 
 
-    j6.$('btn_gen_ticket').onclick=function(){
+    jr.$('btn_gen_ticket').onclick=function(){
         j6.dialog.create2('生成单据',true,true).open('/finance/new_balance_ticket?member_id={{.Map.member.Id}}',400,300);
     };
 

@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"go2o/src/fix"
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 	gof.CurrentApp = core.NewMainApp(conf)
 	dps.Init(gof.CurrentApp)
 	cache.Initialize(gof.CurrentApp.Storage())
+	fix.CustomFix()
 
 	ts := tcpserve.NewServe(logOutput)
 	ts.RegisterJob(tcpserve.MemberSummaryNotifyJob) //注册会员信息通知

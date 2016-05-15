@@ -4,50 +4,45 @@
 <head>
     <title>购物车</title>
     <meta charset="utf-8">
-    <meta content="width=device-width,initial-scale=1"/>
+    <meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
     <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
 </head>
 <body>
 
     {{template "header" $}}
 
+    {{template "loader"}}
 
-    <div>
-        <span></span>
-    </div>
     <div class="cart-summary">
         <div id="cart-panel" class="cart-panel">
-            <div class="cart"></div>
-            <div class="submit">
-                <a href="javascript:void(0)" class="btn" id="btn_back">继续购物</a>
-                <a class="btn btn-orange" href="javascript:;" id="btn_settle">结算订单</a>
+            <div class="cart hidden">
+                <div class="err">您的购物车还没有商品!<br />
+                    <br />
+                    <a class="btn btn-orange" href="/">继续购物</a>
+
+                </div>
+            </div>
+            <div class="total hidden">
+                共<span class="cart_tq">0</span>件，总价：￥<span class="cart_fee">0</span>元
+                <div class="submit">
+                    <a href="javascript:void(0)" class="btn" id="btn_back">继续购物</a>
+                    <a class="btn btn-orange" href="javascript:;" id="btn_settle">结算订单</a>
+                </div>
             </div>
         </div>
-
-
     </div>
-
-    <br />
 
     {{template "footer" $}}
 
-    <script src="{{.Var.static_serve}}/assets/js/mobi/core.js?spam={{.Var.spam}}"></script>
-    <script src="{{.Var.static_serve}}/assets/js/shopping_cart.min.js?spam={{.Var.spam}}"></script>
-
-    <script type="text/javascript">
-        window.cart.init('cart-panel', function (c) { });
-        window.onload=function() {
-            j6.$('btn_settle').onclick = function () {
-                location.href = '/buy/confirm';
-            }
-            j6.$('btn_back').onclick = function () {
-                if(document.referrer) {
-                   window.history.go(-1);
-                }else{
-                    location.href='/list/all_cate';
-                }
-            }
-        }
-    </script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/require.js?{{.Var.Spam}}"></script>
+        <script type="text/javascript">
+            var _baseUrl = '{{.Var.static_serve}}';
+            require([_baseUrl + "/assets/js/touch/require_config.js"], function () {
+                require(['shop/cart']);
+            });
+        </script>
 </body>
 </html>

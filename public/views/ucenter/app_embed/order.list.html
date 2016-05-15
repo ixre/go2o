@@ -35,12 +35,12 @@
         </div>
     </script>
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/core.js?ver={{.Var.version}}"></script>
-        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/j6/ui.min.js?ver={{.Var.version}}"></script>
+        <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/jr/ui.min.js?ver={{.Var.version}}"></script>
         <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/mobi/dg.js?ver={{.Var.version}}"></script>
 
         <script type="text/javascript">
             var ORDER_STATE_TEXTS = new Array("已取消", "待确认","已确认", "待发货", "配送中","已收货","已完成");
-            var htmTpl = j6.$('list_tpl').innerHTML;
+            var htmTpl = jr.$('list_tpl').innerHTML;
             var domain = '{{.Map.partner_host}}';
             var _dg = j6.grid('dg', {
                 url: location.href,

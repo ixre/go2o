@@ -64,7 +64,7 @@
 
         var refresh = function () { expr.reload('dg'); };
 
-        j6.$('dg').style.height = j6.screen.height() + 'px';
+        jr.$('dg').style.height = j6.screen.height() + 'px';
 
         $(function () {
 
@@ -119,7 +119,7 @@
             });
         });
         
-        j6.$('btnAdd').onclick=addRec;
+        jr.$('btnAdd').onclick=addRec;
         
         function addRec(){
             j6.tab.open('新增门店', '/shop/create',  true);

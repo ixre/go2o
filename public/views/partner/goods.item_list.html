@@ -73,7 +73,7 @@
         expr.reload(id);
     };
 
-    j6.$(id).style.height = j6.screen.height() + 'px';
+    jr.$(id).style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -83,7 +83,7 @@
                     expr.showExportDialog();
                 });
 
-        j6.$('btnSearch').onclick=function () {
+        jr.$('btnSearch').onclick=function () {
             expr.search('dg');
         };
 
@@ -144,7 +144,7 @@
         });
     });
 
-    j6.$('btnAdd').onclick=addRec;
+    jr.$('btnAdd').onclick=addRec;
 
 
     function addRec(){

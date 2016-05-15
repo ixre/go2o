@@ -108,7 +108,7 @@
         expr.reload('dg');
     };
 
-    j6.$('dg').style.height = j6.screen.height() + 'px';
+    jr.$('dg').style.height = j6.screen.height() + 'px';
 
     $(function () {
 
@@ -118,7 +118,7 @@
                     expr.showExportDialog();
                 });
 
-        j6.$('btnSearch').onclick=function () {
+        jr.$('btnSearch').onclick=function () {
             expr.search('dg');
         };
 
@@ -163,8 +163,8 @@
             "locale":localeOpt,
             "opens": "left"
         }, function (start, end, label) {
-            j6.$('start_time').value = start.format('YYYY/MM/DD HH:mm');
-            j6.$('end_time').value = end.format('YYYY/MM/DD HH:mm');
+            jr.$('start_time').value = start.format('YYYY/MM/DD HH:mm');
+            jr.$('end_time').value = end.format('YYYY/MM/DD HH:mm');
         });
     });
 

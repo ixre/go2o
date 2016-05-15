@@ -56,7 +56,7 @@
     var entity = {{.Map.entity}}||{};
     j6.json.bind('form1', entity);
 
-    j6.$('btn_save').onclick = function () {
+    jr.$('btn_save').onclick = function () {
         if (j6.validator.validate('form1')) {
             var data = j6.json.toObject('form1');
             j6.xhr.jsonPost('SaveMLevel', data, function (json) {

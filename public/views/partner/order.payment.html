@@ -47,7 +47,7 @@
 <script src="{{.Var.static_serve}}/assets/js/plugins/sys.js?spam={{.Var.spam}}"></script>
 
 	<script type="text/javascript">
-        j6.$('btn_payment').onclick=function() {
+        jr.$('btn_payment').onclick=function() {
             var data = {orderNo: '{{.Map.order.OrderNo}}'};
             parent.$.messager.confirm('提示', '您确定要为订单：' + data.orderNo + '进行支付吗？', function (r) {
                 if(r){
