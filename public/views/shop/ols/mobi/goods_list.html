@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+    <title>{{.Map.Category.Name}}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="black" name="apple-mobile-web-app-status-bar-style" />
+    <meta content="telephone=no" name="format-detection" />
+    <link type="text/css" rel="stylesheet" href="{{.Var.static_serve}}/css/shop/touchpad/stand.css?spam={{.Var.spam}}"/>
+    <style type="text/css">
+        #wrapper li{line-height:3rem;}
+    </style>
+</head>
+<body>
+
+    {{template "header" $}}
+
+    {{template "loader"}}
+
+    <script type="text/tmpl" class="template_goods">
+        {#list}
+        <div class="item item-i0">
+                <a url="/goods-{GoodsId}.htm" onclick="go(this)">
+                    <div class="auto-fit">
+                        <img class="goods-img" src="{Image}" alt="{Name}"/>
+                    </div>
+                    <h3 class="name">{Name}</h3>
+
+                    <div class="price">
+                        <span class="sale-price">￥{SalePrice}</span>
+                        <span class="normal-price "><del>￥{Price}</del></span>
+                    </div>
+                    <div class="num">
+                        <span class="stock">库存:{StockNum}&nbsp;&nbsp;</span>
+                        <span class="saleNum">已售:{SaleNum}</span>
+                    </div>
+                </a>
+                <div class="join-cart" skuId="{SkuId}" goodsId="{GoodsId}">Add To Cart</div>
+
+        </div>
+        {/list}
+    </script>
+
+    <div class="page-category">
+
+        {{if .Map.DescribeNotNil}}
+        <div class="cate-describe">
+            {{.Map.Describe}}
+        </div>
+        {{end}}
+
+        <div class="sort-bar" id="sort-bar">
+            {{.Map.SortBar}}
+        </div>
+
+       <div class="item-list item-normal"></div>
+        <div class="load-ele hidden">
+            <span class="icon"></span>
+           <span class="msg load-msg">
+               加载中...
+           </span>
+        </div>
+
+    </div>
+
+
+    {{template "footer" $}}
+
+
+    <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/require.js?{{.Var.Spam}}"></script>
+    <script type="text/javascript">
+        var _baseUrl = '{{.Var.static_serve}}';
+        require([_baseUrl + "/assets/js/touch/require_config.js"], function () {
+            require(['shop/goods_list']);
+        });
+    </script>
+</body>
+</html>
