@@ -32,9 +32,15 @@ type ImageFileHandler struct {
 	upSaveDir string
 }
 
+func NewImageFileHandler(a gof.App)*ImageFileHandler{
+	return &ImageFileHandler{
+		app:a,
+	}
+}
+
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
-	if path[1:4] == "res" {
+	if strings.HasPrefix(path,"/res/") {
 		http.ServeFile(w, r, "public/static"+r.URL.Path)
 	} else {
 		if len(i.upSaveDir) == 0 {
@@ -48,7 +54,7 @@ func Listen(ch chan bool, app gof.App, addr string) {
 	log.Println("** [ Go2o][ Web][ Booted] - Pub server running on", addr)
 	h := &pubHandler{}
 	s := &StaticHandler{}
-	i :=  &ImageFileHandler{app: app}
+	i :=  NewImageFileHandler(app)
 	http.ListenAndServe(addr,h.set(s,i))
 }
 

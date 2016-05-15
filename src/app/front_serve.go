@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/src/app/front/master"
-	"go2o/src/app/front/partner"
 	"go2o/src/app/front/shop/ols"
 	"go2o/src/app/front/ucenter"
 	"go2o/src/core/variable"
@@ -25,32 +24,6 @@ import (
 	"strings"
 	"time"
 )
-
-// 静态文件
-type StaticHandler struct {
-}
-
-func (s *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./public/static"+r.URL.Path)
-}
-
-// 图片处理
-type ImageFileHandler struct {
-	app       gof.App
-	upSaveDir string
-}
-
-func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path
-	if path[1:4] == "res" {
-		http.ServeFile(w, r, "public/static"+r.URL.Path)
-	} else {
-		if len(i.upSaveDir) == 0 {
-			i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
-		}
-		http.ServeFile(w, r, i.upSaveDir+r.URL.Path)
-	}
-}
 
 // 运行Web,监听到3个端口
 func Run(ch chan bool, app gof.App, addr string) {
@@ -78,9 +51,6 @@ func Run(ch chan bool, app gof.App, addr string) {
 	echox.GlobSet(m, w)
 	hosts := make(MyHttpHosts)
 	hosts[variable.DOMAIN_PREFIX_WEBMASTER] = master.GetServe()
-	hosts[variable.DOMAIN_PREFIX_PARTNER] = partner.GetServe()
-	hosts[variable.DOMAIN_PREFIX_STATIC] = new(StaticHandler)
-	hosts[variable.DOMAIN_PREFIX_IMAGE] = &ImageFileHandler{app: app}
 	http.ListenAndServe(addr, hosts)
 }
 

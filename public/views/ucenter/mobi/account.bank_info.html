@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>银行设置</title>
+	<title>绑定银行卡</title>
 	<meta content="width=device-width,initial-scale=1" name="viewport" />
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/page.css?v={{.Var.version}}"/>
 	<link rel="StyleSheet" type="text/css" href="{{.Var.static_serve}}/css/uc/touch/touch.css?v={{.Var.version}}"/>
@@ -8,13 +8,13 @@
 <body>
 <div class="page-main page-bank">
 		<div class="tip-box">
-			<span class="red">注意：</span>提现金额默认汇款到银行，请正确设置。并确保户名与会员姓名一致。
+			<span class="red">注意：</span>银行账户只允许绑定一次，请认真填写！如需更换请联系客服。
 		</div>
 
 
 		<div id="form_bank" class="form form2">
 
-			<div class="tit"><b>收款银行帐号</b></div>
+			<div class="tit"><b>绑定银行卡</b></div>
 			<div id="pl" class="summary"></div>
 			<div class="fl">
 				<div class="label">开户银行：</div>
@@ -57,7 +57,7 @@
 				<div class="fl">
 					<div class="label"></div>
 					<div class="in">
-						<input class="btn" type="button" value="保存" onclick="saveData()"/>
+						<input class="btn btn-m" type="button" value="保存" onclick="saveData()"/>
 					</div>
 				</div>
 		</div>
@@ -78,6 +78,9 @@
 							if(json.result){
 								window.cli.alert('修改成功');
 							}else{
+								if(json.message.indexOf('锁定')!= -1){
+									json.message = '银行账号只能填写一次,如需修改,请联系客服!';
+								}
 								window.cli.alert(json.message);
 							}
 						});

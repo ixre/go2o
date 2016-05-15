@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{.Map.page.Title}}</title>
-    <meta content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;" id="viewport" name="viewport" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
     <meta content="yes" name="apple-mobile-web-app-capable" />
     <meta content="black" name="apple-mobile-web-app-status-bar-style" />
     <meta content="telephone=no" name="format-detection" />
@@ -13,7 +13,7 @@
     {{end}}
 </head>
 <body>
-    {{template "header".}}
+    <!-- {{template "header".}}-->
     <div class="panel page-layout">
         {{.Map.rawBody}}
     </div>
