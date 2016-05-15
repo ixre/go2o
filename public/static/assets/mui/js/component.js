@@ -32,6 +32,8 @@ function cancelGate() {
 var FwMenu = {
     ele: null,
     menuTitles: [],
+    bigNavEles:[],
+    data :{},
     getByCls: function (className) {
         return this.ele.getElementsByClassName ? this.ele.getElementsByClassName(className) : document.getElementsByClassName(className, this.ele);
     },
@@ -40,6 +42,7 @@ var FwMenu = {
         this.ele = document.getElementsByClassName('page-left-menu')[0];
         //第一次加载
         var md = data;
+        this.data = md;
 
         //处理菜单数据
         if (menuHandler && menuHandler instanceof Function) {
@@ -48,6 +51,9 @@ var FwMenu = {
                 md = hdata;
             }
         }
+
+        this.initBigNav(md);
+
 
         var menuEle = this.ele;
 
@@ -109,7 +115,6 @@ var FwMenu = {
                 groupName = menuTitles[0].getAttribute('group');
             }
         }
-        var isFirst = true;
         var selectedLi = null;  //已经选择的功能菜单
         var firstPanel = null;
         var titleGroups = [];
@@ -143,6 +148,14 @@ var FwMenu = {
         } else if (firstPanel != null) {
             firstPanel.className = 'panel';
         }
+        // 设置BigNav
+        for(var i=0,l = this.data.length;i<l;i++){
+            if(this.data[i].id == id){
+                this.bigNavEles[i].className = 'item current';
+            }else{
+                this.bigNavEles[i].className = 'item';
+            }
+        }
     },
     //查看菜单
     show: function (titleDiv) {
@@ -165,6 +178,17 @@ var FwMenu = {
                 });
             }
         });
+    },
+    initBigNav:function(menuData){
+        var bigNav = jr.dom.getsByClass(document,'big-nav')[0];
+        var html ='';
+        for(var i=0;i<menuData.length;i++){
+            html += j6.template('<li class="item"><a class="title" href="'+
+                'javascript:FwMenu.change(\'{id}\');"><i class="icon {class}"></i>'+
+                '{text}</a></li>',menuData[i]);
+        }
+        bigNav.innerHTML = html;
+        this.bigNavEles = bigNav.getElementsByTagName('LI');
     }
 };
 
@@ -356,7 +380,6 @@ var FwTab = {
                     _ifrs[closeIndex].className = 'current';
                     _ifrs[closeIndex].style.height = '100%';
                 }
-
             }
         }
     },
@@ -386,23 +409,6 @@ var FwTab = {
         return null;
     }
 };
-
-
-
-//加载app
-function loadApps() {
-    var ele;
-    j6.each(document.getElementsByTagName('H2'), function (i, e) {
-        if (e.innerHTML == 'APPS') {
-            ele = e.parentNode.getElementsByTagName('DIV')[0];
-        }
-    });
-    if (ele) {
-        ele.id = 'ribbon-apps';
-        j6.load(ele, window._path + '?module=plugin&action=miniapps&ajax=1');
-    }
-}
-
 
 window.M = {
     dialog: function (id, title, url, isAjax, width, height, closeCall) {
@@ -492,9 +498,6 @@ var splitDiv = getDivByCls('page-main-split');
 //框架遮盖层
 var frameShadowDiv = getDivByCls('page-frame-shadow');
 
-//用户操作栏
-var userDiv = getDivByCls('page-user', document.body);
-
 //重置窗口尺寸
 function _resizeWin() {
     var height = document.documentElement.clientHeight;
@@ -505,7 +508,6 @@ function _resizeWin() {
 
     //设置右栏的宽度
     rightDiv.style.width = (width - leftDiv.offsetWidth - splitDiv.offsetWidth + 1) + 'px';
-
 }
 
 j6.event.add(window, 'resize', _resizeWin);
