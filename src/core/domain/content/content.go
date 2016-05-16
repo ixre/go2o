@@ -14,13 +14,13 @@ var _ content.IContent = new(Content)
 
 type Content struct {
 	_contentRep content.IContentRep
-	_merchantId  int
+	_merchantId int
 }
 
 func NewContent(merchantId int, rep content.IContentRep) content.IContent {
 	return &Content{
 		_contentRep: rep,
-		_merchantId:  merchantId,
+		_merchantId: merchantId,
 	}
 }
 

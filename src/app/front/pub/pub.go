@@ -17,7 +17,6 @@ import (
 	"strings"
 )
 
-
 // 静态文件
 type StaticHandler struct {
 }
@@ -32,15 +31,15 @@ type ImageFileHandler struct {
 	upSaveDir string
 }
 
-func NewImageFileHandler(a gof.App)*ImageFileHandler{
+func NewImageFileHandler(a gof.App) *ImageFileHandler {
 	return &ImageFileHandler{
-		app:a,
+		app: a,
 	}
 }
 
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
-	if strings.HasPrefix(path,"/res/") {
+	if strings.HasPrefix(path, "/res/") {
 		http.ServeFile(w, r, "public/static"+r.URL.Path)
 	} else {
 		if len(i.upSaveDir) == 0 {
@@ -54,16 +53,16 @@ func Listen(ch chan bool, app gof.App, addr string) {
 	log.Println("** [ Go2o][ Web][ Booted] - Pub server running on", addr)
 	h := &pubHandler{}
 	s := &StaticHandler{}
-	i :=  NewImageFileHandler(app)
-	http.ListenAndServe(addr,h.set(s,i))
+	i := NewImageFileHandler(app)
+	http.ListenAndServe(addr, h.set(s, i))
 }
 
-type pubHandler struct{
+type pubHandler struct {
 	staticServe *StaticHandler
-	imgServe *ImageFileHandler
+	imgServe    *ImageFileHandler
 }
 
-func (this *pubHandler) set(s *StaticHandler,i *ImageFileHandler)http.Handler {
+func (this *pubHandler) set(s *StaticHandler, i *ImageFileHandler) http.Handler {
 	this.staticServe = s
 	this.imgServe = i
 	return this
@@ -77,6 +76,6 @@ func (this *pubHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case variable.DOMAIN_PREFIX_IMAGE:
 		this.imgServe.ServeHTTP(w, r)
 	default:
-		http.Error(w,"no such file",404)
+		http.Error(w, "no such file", 404)
 	}
 }

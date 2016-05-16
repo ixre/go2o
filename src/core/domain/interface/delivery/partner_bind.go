@@ -10,7 +10,7 @@ package delivery
 
 type PartnerDeliverBind struct {
 	Id           int `db:"id" auto:"yes" pk:"yes"`
-	MerchantId    int `db:"merchant_id"`
+	MerchantId   int `db:"merchant_id"`
 	CoverageId   int `db:"coverage_id"`
 	ShopId       int `db:"shop_id"`
 	DeliverUsrId int `db:"delivery_usr_id"`

@@ -21,10 +21,10 @@ import (
 	"go2o/src/app/restapi"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
+	"go2o/src/fix"
 	"log"
 	"os"
 	"runtime"
-	"go2o/src/fix"
 )
 
 func main() {

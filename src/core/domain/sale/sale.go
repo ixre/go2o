@@ -23,7 +23,7 @@ var _ sale.ISale = new(Sale)
 const MAX_CACHE_SIZE int = 1000
 
 type Sale struct {
-	_merchantId  int
+	_merchantId int
 	_saleRep    sale.ISaleRep
 	_saleTagRep sale.ISaleTagRep
 	_goodsRep   sale.IGoodsRep
@@ -35,7 +35,7 @@ type Sale struct {
 func NewSale(merchantId int, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	tagRep sale.ISaleTagRep, promRep promotion.IPromotionRep) sale.ISale {
 	return (&Sale{
-		_merchantId:  merchantId,
+		_merchantId: merchantId,
 		_saleRep:    saleRep,
 		_saleTagRep: tagRep,
 		_goodsRep:   goodsRep,

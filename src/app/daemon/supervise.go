@@ -82,7 +82,7 @@ func detectOrderExpires(a gof.App) {
 				arr := strings.Split(v[strings.LastIndex(v, ":")+1:], "_") //key: 商户号_订单号
 				if merchantId, err := strconv.Atoi(arr[0]); err == nil {
 					err = ss.CancelOrder(merchantId, arr[1], "订单超时,自动取消") //清除
-					conn.Do("DEL", v)                                    //清除待取消记录
+					conn.Do("DEL", v)                                     //清除待取消记录
 					//log.Println(unix,"--",time.Now().Unix(),v,err)
 				}
 			}

@@ -128,13 +128,13 @@ var _ domain.IOptionStore = new(categoryOption)
 type categoryOption struct {
 	domain.IOptionStore
 	_merchantId int
-	_c         *Category
+	_c          *Category
 }
 
 func newCategoryOption(c *Category) domain.IOptionStore {
 	i := fmt.Sprintf("conf/%d/option/c/%d", c.GetValue().MerchantId, c.GetDomainId())
 	return &categoryOption{
-		_merchantId:   c.GetValue().ParentId,
+		_merchantId:  c.GetValue().ParentId,
 		_c:           c,
 		IOptionStore: domain.NewOptionStoreWrapper(i),
 	}

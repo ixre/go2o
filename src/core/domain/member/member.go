@@ -297,7 +297,7 @@ func (this *Member) GetLevel() *valueobject.MemberLevel {
 func (this *Member) AddIntegral(merchantId int, backType int,
 	integral int, log string) error {
 	inLog := &member.IntegralLog{
-		MerchantId:  merchantId,
+		MerchantId: merchantId,
 		MemberId:   this._value.Id,
 		Type:       backType,
 		Integral:   integral,

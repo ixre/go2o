@@ -16,17 +16,17 @@ import (
 var _ sale.ISaleTag = new(SaleTag)
 
 type SaleTag struct {
-	_rep       sale.ISaleTagRep
+	_rep        sale.ISaleTagRep
 	_merchantId int
-	_value     *sale.ValueSaleTag
+	_value      *sale.ValueSaleTag
 }
 
 func NewSaleTag(merchantId int, value *sale.ValueSaleTag,
 	rep sale.ISaleTagRep) sale.ISaleTag {
 	return &SaleTag{
-		_rep:       rep,
+		_rep:        rep,
 		_merchantId: merchantId,
-		_value:     value,
+		_value:      value,
 	}
 }
 

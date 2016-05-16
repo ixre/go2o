@@ -9,19 +9,19 @@
 package merchant
 
 import (
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/web/session"
+	"go2o/src/core/variable"
 	"go2o/src/x/echox"
 	"gopkg.in/labstack/echo.v1"
 	mw "gopkg.in/labstack/echo.v1/middleware"
-	"net/url"
-	"strings"
-	"github.com/jsix/gof"
-	"go2o/src/core/variable"
-	"strconv"
-	"time"
-	"net/http"
 	"log"
-	"github.com/jsix/gof/crypto"
+	"net/http"
+	"net/url"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func GetServe() *echox.Echo {
@@ -76,7 +76,6 @@ func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-
 func Listen(ch chan bool, app gof.App, addr string) {
 	if app.Debug() {
 		log.Println("** [ Go2o][ Web][ Booted] - Web server (with debug) running on", addr)
@@ -97,5 +96,5 @@ func Listen(ch chan bool, app gof.App, addr string) {
 		m["spam"] = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
 	}
 	echox.GlobSet(m, w)
-	http.ListenAndServe(addr,GetServe())
+	http.ListenAndServe(addr, GetServe())
 }

@@ -16,13 +16,13 @@ var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
 	merchantId int
-	rep       user.IUserRep
+	rep        user.IUserRep
 }
 
 func NewUserManager(merchantId int, rep user.IUserRep) user.IUserManager {
 	return &UserManager{
 		merchantId: merchantId,
-		rep:       rep,
+		rep:        rep,
 	}
 }
 

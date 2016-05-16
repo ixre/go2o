@@ -28,16 +28,16 @@ import (
 var _ merchant.IMerchant = new(Merchant)
 
 type Merchant struct {
-	_value           *merchant.MerchantValue
-	_saleConf        *merchant.SaleConf
-	_siteConf        *merchant.SiteConf
-	_apiInfo         *merchant.ApiInfo
-	_shops           []merchant.IShop
-	_host            string
+	_value    *merchant.MerchantValue
+	_saleConf *merchant.SaleConf
+	_siteConf *merchant.SiteConf
+	_apiInfo  *merchant.ApiInfo
+	_shops    []merchant.IShop
+	_host     string
 
-	_rep             merchant.IMerchantRep
-	_userRep         user.IUserRep
-	_memberRep       member.IMemberRep
+	_rep       merchant.IMerchantRep
+	_userRep   user.IUserRep
+	_memberRep member.IMemberRep
 
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
@@ -348,7 +348,7 @@ func (this *Merchant) ConfManager() merchant.IConfManager {
 	if this._confManager == nil {
 		this._confManager = &ConfManager{
 			_merchantId: this.GetAggregateRootId(),
-			_rep:       this._rep,
+			_rep:        this._rep,
 		}
 	}
 	return this._confManager

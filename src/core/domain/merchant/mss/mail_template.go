@@ -17,17 +17,17 @@ import (
 var _ mss.IMsgTemplate = new(mailTemplate)
 
 type mailTemplate struct {
-	_rep       mss.IMssRep
+	_rep        mss.IMssRep
 	_merchantId int
-	_tpl       *mss.MailTemplate
-	_data      mss.MsgData
+	_tpl        *mss.MailTemplate
+	_data       mss.MsgData
 }
 
 func newMailTemplate(merchantId int, rep mss.IMssRep, tpl *mss.MailTemplate) mss.IMsgTemplate {
 	return &mailTemplate{
-		_rep:       rep,
+		_rep:        rep,
 		_merchantId: merchantId,
-		_tpl:       tpl,
+		_tpl:        tpl,
 	}
 }
 
@@ -41,7 +41,7 @@ func (this *mailTemplate) JoinQueen(to []string) error {
 	unix := time.Now().Unix()
 	for _, t := range to {
 		task := &mss.MailTask{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Subject:    mssIns.Transplate(this._tpl.Subject, this._data),
 			Body:       mssIns.Transplate(this._tpl.Body, this._data),
 			SendTo:     t,

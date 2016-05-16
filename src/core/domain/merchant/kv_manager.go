@@ -17,7 +17,7 @@ import (
 var _ merchant.IKvManager = new(KvManager)
 
 type KvManager struct {
-	_partner   *Merchant
+	_partner    *Merchant
 	_merchantId int
 	// 标识
 	_indent string
@@ -25,9 +25,9 @@ type KvManager struct {
 
 func newKvManager(p *Merchant, indent string) merchant.IKvManager {
 	return &KvManager{
-		_partner:   p,
+		_partner:    p,
 		_merchantId: p.GetAggregateRootId(),
-		_indent:    indent,
+		_indent:     indent,
 	}
 }
 

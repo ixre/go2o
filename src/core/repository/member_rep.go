@@ -279,9 +279,9 @@ func (this *MemberRep) initMember(v *member.ValueMember) {
 	})
 
 	orm.Save(nil, &member.MemberRelation{
-		MemberId:          v.Id,
-		CardId:            "",
-		RefereesId:        0,
+		MemberId:           v.Id,
+		CardId:             "",
+		RefereesId:         0,
 		RegisterMerchantId: 0,
 	})
 }

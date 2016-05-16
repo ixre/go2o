@@ -17,14 +17,14 @@ var _ content.IPage = new(Page)
 
 type Page struct {
 	_contentRep content.IContentRep
-	_merchantId  int
+	_merchantId int
 	_value      *content.ValuePage
 }
 
 func NewPage(merchantId int, rep content.IContentRep, v *content.ValuePage) content.IPage {
 	return &Page{
 		_contentRep: rep,
-		_merchantId:  merchantId,
+		_merchantId: merchantId,
 		_value:      v,
 	}
 }

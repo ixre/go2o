@@ -16,11 +16,11 @@ import (
 	"go2o/src/app/tcpserve"
 	"go2o/src/core"
 	"go2o/src/core/service/dps"
+	"go2o/src/fix"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"go2o/src/fix"
 )
 
 func main() {
