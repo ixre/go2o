@@ -16,7 +16,7 @@ import (
 var _ merchant.IConfManager = new(ConfManager)
 
 type ConfManager struct {
-	_rep       merchant.IMerchantRep
+	_rep        merchant.IMerchantRep
 	_merchantId int
-	_levelSet  []*valueobject.MemberLevel
+	_levelSet   []*valueobject.MemberLevel
 }

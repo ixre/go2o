@@ -96,13 +96,13 @@ func (this *partnerService) initializePartner(merchantId int) {
 
 	// 保存站点设置
 	pt.SaveSiteConf(&merchant.SiteConf{
-		MerchantId:  pt.GetAggregateRootId(),
+		MerchantId: pt.GetAggregateRootId(),
 		IndexTitle: pt.GetValue().Name,
 	})
 
 	// 保存销售设置
 	pt.SaveSaleConf(&merchant.SaleConf{
-		MerchantId:    pt.GetAggregateRootId(),
+		MerchantId:   pt.GetAggregateRootId(),
 		RegisterMode: merchant.ModeRegisterNormal,
 	})
 

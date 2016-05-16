@@ -16,13 +16,13 @@ import (
 var _ ad.IPartnerAdvertisement = new(PartnerAdvertisement)
 
 type PartnerAdvertisement struct {
-	_rep       ad.IAdvertisementRep
+	_rep        ad.IAdvertisementRep
 	_merchantId int
 }
 
 func NewPartnerAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IPartnerAdvertisement {
 	return &PartnerAdvertisement{
-		_rep:       rep,
+		_rep:        rep,
 		_merchantId: merchantId,
 	}
 }
@@ -35,21 +35,21 @@ func (this *PartnerAdvertisement) InitInternalAdvertisements() {
 	arr := []*ad.ValueAdvertisement{
 		&ad.ValueAdvertisement{
 			MerchantId: merchantId,
-			Name:      "online-shop-slide",
-			Type:      ad.TypeGallery,
-			Enabled:   1,
+			Name:       "online-shop-slide",
+			Type:       ad.TypeGallery,
+			Enabled:    1,
 		},
 		&ad.ValueAdvertisement{
 			MerchantId: merchantId,
-			Name:      "app-entry-slide",
-			Type:      ad.TypeGallery,
-			Enabled:   1,
+			Name:       "app-entry-slide",
+			Type:       ad.TypeGallery,
+			Enabled:    1,
 		},
 		&ad.ValueAdvertisement{
 			MerchantId: merchantId,
-			Name:      "online-mobi-shop-slide",
-			Type:      ad.TypeGallery,
-			Enabled:   1,
+			Name:       "online-mobi-shop-slide",
+			Type:       ad.TypeGallery,
+			Enabled:    1,
 		},
 	}
 

@@ -9,26 +9,25 @@
 package fix
 
 import (
-    "os"
-    "os/signal"
-    "syscall"
-    "log"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-func CustomFix(){
+func CustomFix() {
 
 }
 
 func SignalNotify(c chan bool) {
-    ch := make(chan os.Signal)
-    signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM,syscall.SIGKILL)
-    for {
-        sig := <-ch
-        switch sig {
-        case syscall.SIGHUP,syscall.SIGKILL,syscall.SIGTERM: // 退出时
-            log.Println("[ OS][ TERM] - program has exit !")
-            close(c)
-        }
-    }
+	ch := make(chan os.Signal)
+	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGKILL)
+	for {
+		sig := <-ch
+		switch sig {
+		case syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM: // 退出时
+			log.Println("[ OS][ TERM] - program has exit !")
+			close(c)
+		}
+	}
 }
-

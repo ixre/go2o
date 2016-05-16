@@ -20,7 +20,7 @@ type Cart struct {
 	_shoppingRep shopping.IShoppingRep
 	_partnerRep  merchant.IMerchantRep
 	_memberRep   member.IMemberRep
-	_merchantId   int
+	_merchantId  int
 	_summary     string
 	_shop        merchant.IShop
 	_deliver     member.IDeliver
@@ -31,7 +31,7 @@ func createCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, s
 	val *shopping.ValueCart) shopping.ICart {
 	return (&Cart{
 		_value:       val,
-		_merchantId:   merchantId,
+		_merchantId:  merchantId,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
@@ -61,7 +61,7 @@ func newCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, sale
 		_value:       value,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
-		_merchantId:   merchantId,
+		_merchantId:  merchantId,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
 		_goodsRep:    goodsRep,

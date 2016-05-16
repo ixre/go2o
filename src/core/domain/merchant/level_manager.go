@@ -20,15 +20,15 @@ import (
 var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
-	_rep       member.IMemberRep
+	_rep        member.IMemberRep
 	_merchantId int
-	_levelSet  []*valueobject.MemberLevel
+	_levelSet   []*valueobject.MemberLevel
 }
 
 func NewLevelManager(merchantId int, rep member.IMemberRep) merchant.ILevelManager {
 	return &LevelManager{
 		_merchantId: merchantId,
-		_rep:       rep,
+		_rep:        rep,
 	}
 }
 
@@ -40,35 +40,35 @@ func (this *LevelManager) InitDefaultLevels() error {
 	}
 	var arr []*valueobject.MemberLevel = []*valueobject.MemberLevel{
 		&valueobject.MemberLevel{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Name:       "普通会员",
 			RequireExp: 0,
 			Value:      1,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Name:       "铜牌会员",
 			RequireExp: 100,
 			Value:      2,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Name:       "银牌会员",
 			RequireExp: 500,
 			Value:      3,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Name:       "金牌会员",
 			RequireExp: 1200,
 			Value:      4,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._merchantId,
+			MerchantId: this._merchantId,
 			Name:       "白金会员",
 			RequireExp: 1500,
 			Value:      5,

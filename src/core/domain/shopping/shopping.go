@@ -33,7 +33,7 @@ type Shopping struct {
 	_memberRep   member.IMemberRep
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
-	_merchantId   int
+	_merchantId  int
 	_partner     merchant.IMerchant
 }
 
@@ -50,7 +50,7 @@ func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 		_goodsRep:    goodsRep,
 		_promRep:     promRep,
 		_memberRep:   memberRep,
-		_merchantId:   merchantId,
+		_merchantId:  merchantId,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
 		_partner:     pt,
