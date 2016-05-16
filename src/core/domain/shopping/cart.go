@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/domain/interface/valueobject"
@@ -18,15 +18,15 @@ type Cart struct {
 	_saleRep     sale.ISaleRep
 	_goodsRep    sale.IGoodsRep
 	_shoppingRep shopping.IShoppingRep
-	_partnerRep  partner.IPartnerRep
+	_partnerRep  merchant.IMerchantRep
 	_memberRep   member.IMemberRep
 	_partnerId   int
 	_summary     string
-	_shop        partner.IShop
+	_shop        merchant.IShop
 	_deliver     member.IDeliver
 }
 
-func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
+func createCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
 	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int,
 	val *shopping.ValueCart) shopping.ICart {
 	return (&Cart{
@@ -41,7 +41,7 @@ func createCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, sal
 }
 
 //todo: partnerId 应去掉，可能在多个商家买东西
-func newCart(partnerRep partner.IPartnerRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
+func newCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
 	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
@@ -248,19 +248,19 @@ func (this *Cart) SetBuyer(buyerId int) error {
 
 // 结算数据持久化
 func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
-	var shop partner.IShop
+	var shop merchant.IShop
 	var deliver member.IDeliver
 	var err error
 
 	if shopId > 0 {
-		var pt partner.IPartner
-		pt, err = this._partnerRep.GetPartner(this._partnerId)
+		var pt merchant.IMerchant
+		pt, err = this._partnerRep.GetMerchant(this._partnerId)
 		if err != nil {
 			return err
 		}
 		shop = pt.GetShop(shopId)
 		if shop == nil {
-			return partner.ErrNoSuchShop
+			return merchant.ErrNoSuchShop
 		}
 		this._shop = shop
 		this._value.ShopId = shopId
@@ -285,11 +285,11 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 }
 
 // 获取结算数据
-func (this *Cart) GetSettleData() (s partner.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
+func (this *Cart) GetSettleData() (s merchant.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
 	var err error
 	if this._value.ShopId > 0 && this._shop == nil {
-		var pt partner.IPartner
-		pt, err = this._partnerRep.GetPartner(this._partnerId)
+		var pt merchant.IMerchant
+		pt, err = this._partnerRep.GetMerchant(this._partnerId)
 		if err == nil {
 			this._shop = pt.GetShop(this._value.ShopId)
 		}

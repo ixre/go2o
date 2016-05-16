@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"bytes"
@@ -16,8 +16,8 @@ import (
 	"go2o/src/x/echox"
 )
 
-func getPartnerId(ctx *echox.Context) int {
-	obj := ctx.Session.Get("partner_id")
+func getMerchantId(ctx *echox.Context) int {
+	obj := ctx.Session.Get("merchant_id")
 	if obj != nil {
 		return obj.(int)
 	}

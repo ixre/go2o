@@ -33,7 +33,7 @@ func (this *Delivery) GetAggregateRootId() int {
 }
 
 // 等同于GetAggregateRootId()
-func (this *Delivery) GetPartnerId() int {
+func (this *Delivery) GetMerchantId() int {
 	return this._id
 }
 

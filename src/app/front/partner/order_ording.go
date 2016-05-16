@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"go2o/src/app/cache"
@@ -35,7 +35,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 
 // 设置门店(POST)
 func (this *orderC) SetShop(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()

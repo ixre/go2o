@@ -11,7 +11,7 @@ package member
 
 type IntegralLog struct {
 	Id         int    `db:"id" pk:"yes" auto:"yes"`
-	PartnerId  int    `db:"partner_id"`
+	MerchantId  int    `db:"merchant_id"`
 	MemberId   int    `db:"member_id"`
 	Type       int    `db:"type"`
 	Integral   int    `db:"integral"`

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -33,7 +33,7 @@ func (this *contentC) Page_list(ctx *echox.Context) error {
 
 // 修改页面
 func (this *contentC) Page_edit(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	e := dps.ContentService.GetPage(partnerId, id)
 
@@ -56,7 +56,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 }
 
 func (this *contentC) SavePage(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 
@@ -69,7 +69,7 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 
 		//更新
 		e.UpdateTime = time.Now().Unix()
-		e.PartnerId = partnerId
+		e.MerchantId = partnerId
 
 		id, err := dps.ContentService.SavePage(partnerId, &e)
 
@@ -85,7 +85,7 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 }
 
 func (this *contentC) Page_del(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()

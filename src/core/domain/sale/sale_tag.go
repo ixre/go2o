@@ -64,7 +64,7 @@ func (this *SaleTag) SetValue(v *sale.ValueSaleTag) error {
 }
 
 func (this *SaleTag) Save() (int, error) {
-	this._value.PartnerId = this._partnerId
+	this._value.MerchantId = this._partnerId
 	return this._rep.SaveSaleTag(this._partnerId, this._value)
 }
 

@@ -14,7 +14,7 @@ type MailTask struct {
 	// 任务编号,无任务为0
 	TaskId int `db:"task_id"`
 	// 商户编号
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 	// 发送至
 	SendTo string `db:"send_to"`
 	// 主题

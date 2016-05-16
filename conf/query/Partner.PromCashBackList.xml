@@ -8,7 +8,7 @@ pi.update_time,cb.back_fee,cb.min_fee,cb.back_type,cb.data_tag
  FROM pm_info pi INNER JOIN pm_cash_back cb ON cb.id = pi.id
 INNER JOIN gs_goods gs ON gs.id = pi.goods_id
 INNER JOIN gs_item gi ON gi.id = gs.item_id
-     WHERE pi.partner_id={partner_id}
+     WHERE pi.merchant_id={merchant_id}
     AND ({enabled}<0 OR pi.enabled={enabled})
      AND (pi.short_name LIKE '%{keyword}%' OR gi.name LIKE '%{keyword}')
     ORDER BY id limit {page_start},{page_size}
@@ -19,7 +19,7 @@ INNER JOIN gs_item gi ON gi.id = gs.item_id
     <![CDATA[SELECT COUNT(0) FROM pm_info pi INNER JOIN pm_cash_back cb ON cb.id = pi.id
 INNER JOIN gs_goods gs ON gs.id = pi.goods_id
 INNER JOIN gs_item gi ON gi.id = gs.item_id
-     WHERE pi.partner_id={partner_id}
+     WHERE pi.merchant_id={merchant_id}
     AND ({enabled}<0 OR pi.enabled={enabled})
      AND (pi.short_name LIKE '%{keyword}%' OR gi.name LIKE '%{keyword}')]]>
   </Total>

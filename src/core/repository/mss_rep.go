@@ -11,7 +11,7 @@ package repository
 import (
 	"github.com/jsix/gof/db"
 	"go2o/src/core"
-	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/merchant/mss"
 	"go2o/src/core/variable"
 )
 
@@ -44,7 +44,7 @@ func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE partner_id=?", &v.Id, v.PartnerId)
+		this._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE merchant_id=?", &v.Id, v.MerchantId)
 	}
 	return v.Id, err
 }
@@ -52,13 +52,13 @@ func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 // 获取所有的邮箱模版
 func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	this._conn.GetOrm().Select(&list, "partner_id=?", partnerId)
+	this._conn.GetOrm().Select(&list, "merchant_id=?", partnerId)
 	return list
 }
 
 // 删除邮件模板
 func (this *MssRep) DeleteMailTemplate(partnerId, id int) error {
-	_, err := this._conn.GetOrm().Delete(mss.MailTemplate{}, "partner_id=? AND id=?", partnerId, id)
+	_, err := this._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", partnerId, id)
 	return err
 }
 

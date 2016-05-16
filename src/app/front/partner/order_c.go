@@ -7,7 +7,7 @@
  * history :
  */
 
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -26,7 +26,7 @@ type orderC struct {
 }
 
 func (this *orderC) List(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
@@ -34,7 +34,7 @@ func (this *orderC) List(ctx *echox.Context) error {
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	shopsJson := cache.GetShopsJson(partnerId)
 
 	d := ctx.NewData()
@@ -52,7 +52,7 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 
 func (this *orderC) cancel_post(ctx *echox.Context) error {
 	result := gof.Message{}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	reason := r.FormValue("reason")
@@ -68,7 +68,7 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) View(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -111,7 +111,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
 	if e == nil {
@@ -146,7 +146,7 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
 	var msg gof.Message
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -166,7 +166,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.payment_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
@@ -191,7 +191,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 }
 
 func (this *orderC) payment_post(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")

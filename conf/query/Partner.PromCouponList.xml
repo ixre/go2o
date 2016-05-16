@@ -18,9 +18,9 @@
             lv.name as limit_levelName
  FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
  LEFT JOIN pt_member_level lv ON lv.value=c.min_level
- AND lv.partner_id = pi.partner_id
+ AND lv.merchant_id = pi.merchant_id
 
-     WHERE pi.partner_id={partner_id}
+     WHERE pi.merchant_id={merchant_id}
     AND ({enabled}<0 OR pi.enabled={enabled})
      AND pi.short_name LIKE '%{keyword}%'
     ORDER BY pi.update_time DESC LIMIT {page_start},{page_size}
@@ -31,9 +31,9 @@
     <![CDATA[SELECT COUNT(0)
      FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
      LEFT JOIN pt_member_level lv ON lv.value=c.min_level
-     AND lv.partner_id = pi.partner_id
+     AND lv.merchant_id = pi.merchant_id
 
-     WHERE pi.partner_id={partner_id}
+     WHERE pi.merchant_id={merchant_id}
      AND ({enabled}<0 OR pi.enabled={enabled})
      AND pi.short_name LIKE '%{keyword}%'
     ]]>

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 type IConfManager interface {
 }

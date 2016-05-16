@@ -120,16 +120,16 @@ func detectOrderExpires(a gof.App) {
 //}
 //
 //type orderInfo struct {
-//	PartnerId int
+//	MerchantId int
 //	OrderNo   string
 //}
 //
 //func confirmOrderQueue(app gof.App) {
 //	var list []*orderInfo = []*orderInfo{}
-//	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT partner_id,order_no FROM pt_order WHERE status=%d",
+//	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT merchant_id,order_no FROM pt_order WHERE status=%d",
 //		enum.ORDER_WAIT_CONFIRM))
 //	for _, v := range list {
-//		err := dps.ShoppingService.ConfirmOrder(v.PartnerId, v.OrderNo)
+//		err := dps.ShoppingService.ConfirmOrder(v.MerchantId, v.OrderNo)
 //		if err != nil {
 //			appCtx.Log().Printf("[ DAEMON][ ORDER][ ERROR] - %s\n", err.Error())
 //		}

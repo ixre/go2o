@@ -103,7 +103,7 @@ DROP TABLE IF EXISTS `dlv_partner_bind`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `dlv_partner_bind` (
   `id` int(11) NOT NULL,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `coverage_id` int(11) DEFAULT NULL,
   `shop_id` int(11) DEFAULT NULL,
   `delivery_usr_id` int(11) DEFAULT NULL,
@@ -131,7 +131,7 @@ DROP TABLE IF EXISTS `gs_category`;
 CREATE TABLE `gs_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) DEFAULT NULL COMMENT '父分类',
-  `partner_id` int(11) DEFAULT NULL COMMENT '商家ID(pattern ID);如果为空，则表示模式分类',
+  `merchant_id` int(11) DEFAULT NULL COMMENT '商家ID(pattern ID);如果为空，则表示模式分类',
   `name` varchar(20) DEFAULT NULL,
   `url` varchar(120) DEFAULT NULL,
   `enabled` bit(1) DEFAULT NULL COMMENT '是否可用',
@@ -278,7 +278,7 @@ DROP TABLE IF EXISTS `gs_sale_tag`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gs_sale_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `tag_code` varchar(45) DEFAULT NULL,
   `tag_name` varchar(45) DEFAULT NULL,
   `goods_image` varchar(100) DEFAULT NULL,
@@ -500,7 +500,7 @@ DROP TABLE IF EXISTS `mm_integral_log`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mm_integral_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `member_id` int(11) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `integral` int(11) DEFAULT NULL,
@@ -581,7 +581,7 @@ CREATE TABLE `mm_relation` (
   `member_id` int(11) NOT NULL,
   `card_id` varchar(20) DEFAULT NULL,
   `invi_member_id` int(11) DEFAULT NULL COMMENT '邀请人的会员ID',
-  `reg_partner_id` int(11) DEFAULT NULL COMMENT '注册商户编号',
+  `reg_merchant_id` int(11) DEFAULT NULL COMMENT '注册商户编号',
   PRIMARY KEY (`member_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -720,7 +720,7 @@ DROP TABLE IF EXISTS `pm_coupon`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pm_coupon` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `code` varchar(10) DEFAULT NULL COMMENT '优惠码',
   `description` varchar(50) DEFAULT NULL,
   `amount` int(11) DEFAULT NULL COMMENT '优惠码可用数量',
@@ -815,7 +815,7 @@ DROP TABLE IF EXISTS `pm_info`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pm_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `short_name` varchar(45) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
   `type_flag` int(11) DEFAULT NULL,
@@ -844,7 +844,7 @@ DROP TABLE IF EXISTS `pt_ad`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_ad` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
   `is_internal` tinyint(1) DEFAULT NULL,
   `type_id` tinyint(1) DEFAULT NULL,
@@ -899,12 +899,12 @@ DROP TABLE IF EXISTS `pt_api`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_api` (
-  `partner_id` int(11) NOT NULL,
+  `merchant_id` int(11) NOT NULL,
   `api_id` varchar(10) DEFAULT NULL,
   `api_secret` varchar(32) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL COMMENT '是否启用',
   `white_list` varchar(100) DEFAULT NULL COMMENT '白名单',
-  PRIMARY KEY (`partner_id`)
+  PRIMARY KEY (`merchant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -927,7 +927,7 @@ DROP TABLE IF EXISTS `pt_kvset`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_kvset` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `key` varchar(45) DEFAULT NULL,
   `value` varchar(100) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
@@ -953,7 +953,7 @@ DROP TABLE IF EXISTS `pt_kvset_member`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_kvset_member` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `key` varchar(45) DEFAULT NULL,
   `value` varchar(100) DEFAULT NULL,
   `update_time` int(11) DEFAULT NULL,
@@ -980,7 +980,7 @@ DROP TABLE IF EXISTS `pt_mail_queue`;
 CREATE TABLE `pt_mail_queue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `task_id` int(11) DEFAULT NULL,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `send_to` varchar(100) DEFAULT NULL,
   `subject` varchar(100) DEFAULT NULL,
   `body` varchar(1000) DEFAULT NULL,
@@ -1010,7 +1010,7 @@ DROP TABLE IF EXISTS `pt_mail_template`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_mail_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
   `subject` varchar(100) DEFAULT NULL,
   `body` varchar(1000) DEFAULT NULL,
@@ -1039,7 +1039,7 @@ DROP TABLE IF EXISTS `pt_member_level`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_member_level` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
   `value` int(11) DEFAULT '1' COMMENT '等级值',
   `require_exp` int(11) DEFAULT NULL COMMENT '要求积分',
@@ -1069,7 +1069,7 @@ CREATE TABLE `pt_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `order_no` varchar(15) NOT NULL,
   `member_id` int(11) DEFAULT NULL COMMENT '-1代表游客订餐',
-  `partner_id` int(11) DEFAULT NULL COMMENT '商家ID',
+  `merchant_id` int(11) DEFAULT NULL COMMENT '商家ID',
   `shop_id` varchar(45) DEFAULT NULL COMMENT '商家分店ID, 0为未指定，需管理指定',
   `subject` varchar(45) DEFAULT NULL,
   `items_info` varchar(5000) DEFAULT NULL,
@@ -1229,7 +1229,7 @@ DROP TABLE IF EXISTS `pt_page`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `title` varchar(100) DEFAULT NULL,
   `str_indent` varchar(50) DEFAULT NULL,
   `keyword` varchar(100) DEFAULT NULL,
@@ -1252,13 +1252,13 @@ LOCK TABLES `pt_page` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pt_partner`
+-- Table structure for table `pt_merchant`
 --
 
-DROP TABLE IF EXISTS `pt_partner`;
+DROP TABLE IF EXISTS `pt_merchant`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pt_partner` (
+CREATE TABLE `pt_merchant` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `usr` varchar(20) DEFAULT NULL,
   `pwd` varchar(45) DEFAULT NULL,
@@ -1277,13 +1277,13 @@ CREATE TABLE `pt_partner` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pt_partner`
+-- Dumping data for table `pt_merchant`
 --
 
-LOCK TABLES `pt_partner` WRITE;
-/*!40000 ALTER TABLE `pt_partner` DISABLE KEYS */;
-INSERT INTO `pt_partner` VALUES (101,'go2o','a74edf6058814890e95cb2af67c1d2761c16ca47','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499),(104,'zs','89a2143339120174160e70f65993f74cc1a8b7a0','朝首','master/item_pic/20150513221019.png','0757-22332233','18512345678','佛山市南海区海八路20号',1431526823,1747146023,1431526823,0,0),(105,'wzo2o','89a3b5c0336e0f6f66a7658f90500c53','万州O2O','master/item_pic/20150513221025.png','0592-2231232','18850001234','重庆市江北区小桥路123号',1431527146,1747146346,1431527146,0,0);
-/*!40000 ALTER TABLE `pt_partner` ENABLE KEYS */;
+LOCK TABLES `pt_merchant` WRITE;
+/*!40000 ALTER TABLE `pt_merchant` DISABLE KEYS */;
+INSERT INTO `pt_merchant` VALUES (101,'go2o','a74edf6058814890e95cb2af67c1d2761c16ca47','美味汇',NULL,'0757-82255311','18616999822','佛山市禅城区亲仁路白燕街9号201',1421890499,1466666666,1421890499,1421890499,1421890499),(104,'zs','89a2143339120174160e70f65993f74cc1a8b7a0','朝首','master/item_pic/20150513221019.png','0757-22332233','18512345678','佛山市南海区海八路20号',1431526823,1747146023,1431526823,0,0),(105,'wzo2o','89a3b5c0336e0f6f66a7658f90500c53','万州O2O','master/item_pic/20150513221025.png','0592-2231232','18850001234','重庆市江北区小桥路123号',1431527146,1747146346,1431527146,0,0);
+/*!40000 ALTER TABLE `pt_merchant` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1320,7 +1320,7 @@ DROP TABLE IF EXISTS `pt_saleconf`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_saleconf` (
-  `partner_id` int(11) NOT NULL,
+  `merchant_id` int(11) NOT NULL,
   `cb_percent` float(4,2) DEFAULT NULL COMMENT '反现比例,0则不返现',
   `cb_tg1_percent` float(4,2) DEFAULT NULL COMMENT '一级比例',
   `cb_tg2_percent` float(4,2) DEFAULT NULL COMMENT '二级比例',
@@ -1336,7 +1336,7 @@ CREATE TABLE `pt_saleconf` (
   `oa_confirm_minute` int(11) DEFAULT NULL COMMENT '订单自动确认（分钟）',
   `oa_receive_hour` int(11) DEFAULT NULL COMMENT '超时自动收货（小时）',
   `apply_csn` float(6,4) DEFAULT '0.0000',
-  PRIMARY KEY (`partner_id`,`trans_csn`)
+  PRIMARY KEY (`merchant_id`,`trans_csn`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1359,7 +1359,7 @@ DROP TABLE IF EXISTS `pt_shop`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_shop` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `partner_id` int(11) DEFAULT NULL,
+  `merchant_id` int(11) DEFAULT NULL,
   `name` varchar(50) DEFAULT NULL,
   `address` varchar(100) DEFAULT NULL,
   `phone` varchar(45) DEFAULT NULL,
@@ -1390,14 +1390,14 @@ DROP TABLE IF EXISTS `pt_siteconf`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `pt_siteconf` (
-  `partner_id` int(11) NOT NULL,
+  `merchant_id` int(11) NOT NULL,
   `host` varchar(45) NOT NULL,
   `logo` varchar(100) DEFAULT NULL,
   `index_title` varchar(100) DEFAULT NULL COMMENT '首页标题',
   `sub_title` varchar(100) DEFAULT NULL COMMENT '子页面标题',
   `state` int(11) DEFAULT NULL COMMENT '状态: 0:暂停  1：正常',
   `state_html` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`partner_id`)
+  PRIMARY KEY (`merchant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='合作商域名绑定';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

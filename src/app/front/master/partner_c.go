@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/infrastructure/domain"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -35,14 +35,14 @@ func (c *partnerC) CreatePartner(ctx *echox.Context) error {
 }
 
 // 保存商户(POST)
-func (c *partnerC) SavePartner(ctx *echox.Context) error {
+func (c *partnerC) SaveMerchant(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		var isCreate bool
 		r.ParseForm()
 
-		partner := partner.ValuePartner{}
+		partner := merchant.MerchantValue{}
 		web.ParseFormToEntity(r.Form, &partner)
 
 		dt := time.Now()
@@ -53,7 +53,7 @@ func (c *partnerC) SavePartner(ctx *echox.Context) error {
 
 		//更新
 		if partner.Id > 0 {
-			original, _ := dps.PartnerService.GetPartner(partner.Id)
+			original, _ := dps.PartnerService.GetMerchant(partner.Id)
 			partner.JoinTime = original.JoinTime
 			partner.ExpiresTime = original.ExpiresTime
 			partner.UpdateTime = dt.Unix()
@@ -68,7 +68,7 @@ func (c *partnerC) SavePartner(ctx *echox.Context) error {
 			isCreate = true
 		}
 
-		id, err := dps.PartnerService.SavePartner(partner.Id, &partner)
+		id, err := dps.PartnerService.SaveMerchant(partner.Id, &partner)
 		if err != nil {
 			result.Message = err.Error()
 		} else {
@@ -96,7 +96,7 @@ func (c *partnerC) EditPartner(ctx *echox.Context) error {
 	var entityJson template.JS
 	id, err := strconv.Atoi(ctx.Query("id"))
 	if err == nil {
-		partner, err := dps.PartnerService.GetPartner(id)
+		partner, err := dps.PartnerService.GetMerchant(id)
 		if err == nil && partner != nil {
 			partner.Pwd = strings.Repeat("*", 10)
 			entity, _ := json.Marshal(partner)

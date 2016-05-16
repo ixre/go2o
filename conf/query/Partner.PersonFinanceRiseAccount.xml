@@ -6,7 +6,7 @@
 
     SELECT m.name,r.* FROM mm_member m INNER JOIN pf_riseinfo r ON r.person_id=m.id
 INNER JOIN mm_relation rl ON rl.member_id=m.id
-WHERE rl.reg_partner_id={partner_id} AND ('{keyword}' = '' OR (m.usr LIKE '%{keyword}%' OR m.name LIKE '%{keyword}%' OR m.phone
+WHERE rl.reg_merchant_id={merchant_id} AND ('{keyword}' = '' OR (m.usr LIKE '%{keyword}%' OR m.name LIKE '%{keyword}%' OR m.phone
 LIKE '%{keyword}%')) ORDER BY {order} LIMIT {page_start},{page_size}
      ]]>
   </Query>
@@ -14,7 +14,7 @@ LIKE '%{keyword}%')) ORDER BY {order} LIMIT {page_start},{page_size}
   <Total>
     <![CDATA[ SELECT COUNT(0) FROM mm_member m INNER JOIN pf_riseinfo r ON r.person_id=m.id
 INNER JOIN mm_relation rl ON rl.member_id=m.id
-WHERE rl.reg_partner_id={partner_id} AND ('{keyword}' = '' OR (m.usr LIKE '%{keyword}%' OR m.name LIKE '%{keyword}%' OR m.phone
+WHERE rl.reg_merchant_id={merchant_id} AND ('{keyword}' = '' OR (m.usr LIKE '%{keyword}%' OR m.name LIKE '%{keyword}%' OR m.phone
 LIKE '%{keyword}%'))
  ]]>
   </Total>

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"github.com/jsix/gof/web/session"
@@ -65,8 +65,8 @@ func partnerLogonCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			return h(ctx)
 		}
 		session := session.Default(ctx.Response(), ctx.Request())
-		if id := session.Get("partner_id"); id != nil {
-			ctx.Set("partner_id", id.(int))
+		if id := session.Get("merchant_id"); id != nil {
+			ctx.Set("merchant_id", id.(int))
 			return h(ctx)
 		}
 		ctx.Response().Header().Set("Location", "/login?return_url="+

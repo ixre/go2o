@@ -25,8 +25,8 @@
         AND b.coupon_id={couponId}) as bind_num
 
 FROM mm_member m  INNER JOIN  mm_relation r ON m.id = r.member_id
-INNER JOIN pt_member_level lv ON lv.value = m.level AND lv.partner_id=r.reg_partner_id
-WHERE  r.reg_partner_id = {partner_id}
+INNER JOIN pt_member_level lv ON lv.value = m.level AND lv.merchant_id=r.reg_merchant_id
+WHERE  r.reg_merchant_id = {merchant_id}
             ORDER BY m.last_login_time DESC,m.id ASC LIMIT {page_start},{page_size}
      ]]>
   </Query>
@@ -35,7 +35,7 @@ WHERE  r.reg_partner_id = {partner_id}
     <![CDATA[SELECT COUNT(0) FROM mm_member m
     INNER JOIN  mm_relation r ON m.id = r.member_id
 INNER JOIN pt_member_level lv ON lv.value = m.level
- AND lv.partner_id=r.reg_partner_id
-WHERE  r.reg_partner_id = {partner_id}]]>
+ AND lv.merchant_id=r.reg_merchant_id
+WHERE  r.reg_merchant_id = {merchant_id}]]>
   </Total>
 </ExportItemConfig>

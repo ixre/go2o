@@ -15,9 +15,9 @@ import (
 	"errors"
 	"fmt"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
-	partnerImpl "go2o/src/core/domain/partner"
+	partnerImpl "go2o/src/core/domain/merchant"
 	"go2o/src/core/infrastructure/domain"
 	"regexp"
 	"strings"
@@ -32,13 +32,13 @@ type Member struct {
 	_bank         *member.BankInfo
 	_level        *valueobject.MemberLevel
 	_rep          member.IMemberRep
-	_partnerRep   partner.IPartnerRep
+	_partnerRep   merchant.IMerchantRep
 	_relation     *member.MemberRelation
 	_invitation   member.IInvitationManager
-	_levelManager partner.ILevelManager
+	_levelManager merchant.ILevelManager
 }
 
-func NewMember(val *member.ValueMember, rep member.IMemberRep, partnerRep partner.IPartnerRep) member.IMember {
+func NewMember(val *member.ValueMember, rep member.IMemberRep, partnerRep merchant.IMerchantRep) member.IMember {
 	return &Member{
 		_value:      val,
 		_rep:        rep,
@@ -160,7 +160,7 @@ func (this *Member) ProfileCompleted() bool {
 
 func (this *Member) notifyOnProfileComplete() {
 	rl := this.GetRelation()
-	pt, err := this._partnerRep.GetPartner(rl.RegisterPartnerId)
+	pt, err := this._partnerRep.GetMerchant(rl.RegisterMerchantId)
 	if err == nil {
 		key := fmt.Sprintf("profile:complete:id_%d", this.GetAggregateRootId())
 		if pt.MemberKvManager().GetInt(key) == 0 {
@@ -173,8 +173,8 @@ func (this *Member) notifyOnProfileComplete() {
 	}
 }
 
-func (this *Member) sendNotifyMail(pt partner.IPartner) error {
-	tplId := pt.KvManager().GetInt(partner.KeyMssTplIdOfProfileComplete)
+func (this *Member) sendNotifyMail(pt merchant.IMerchant) error {
+	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
 		mailTpl := pt.MssManager().GetMailTemplate(tplId)
 		if mailTpl != nil {
@@ -274,10 +274,10 @@ func (this *Member) AddExp(exp int) error {
 }
 
 // 获取等级管理
-func (this *Member) getLevelManager() partner.ILevelManager {
+func (this *Member) getLevelManager() merchant.ILevelManager {
 	if this._levelManager == nil {
 		rl := this.GetRelation()
-		partnerId := rl.RegisterPartnerId
+		partnerId := rl.RegisterMerchantId
 		this._levelManager = partnerImpl.NewLevelManager(partnerId, this._rep)
 	}
 	return this._levelManager
@@ -297,7 +297,7 @@ func (this *Member) GetLevel() *valueobject.MemberLevel {
 func (this *Member) AddIntegral(partnerId int, backType int,
 	integral int, log string) error {
 	inLog := &member.IntegralLog{
-		PartnerId:  partnerId,
+		MerchantId:  partnerId,
 		MemberId:   this._value.Id,
 		Type:       backType,
 		Integral:   integral,

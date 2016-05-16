@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -38,7 +38,7 @@ func (this *categoryC) All_category(ctx *echox.Context) error {
 
 //分类Json数据
 func (this *categoryC) CategoryJson(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
 	return ctx.JSON(http.StatusOK, node)
 }
@@ -51,7 +51,7 @@ func (this *categoryC) CategorySelect(ctx *echox.Context) error {
 
 //分类Json数据
 func (this *categoryC) CreateCategory(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -70,7 +70,7 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 }
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
@@ -92,7 +92,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *categoryC) SaveCategory(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -113,7 +113,7 @@ func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 }
 
 func (this *categoryC) DelCategory(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message

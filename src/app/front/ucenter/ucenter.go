@@ -12,7 +12,7 @@ import (
 	"github.com/jsix/gof/web/session"
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"gopkg.in/labstack/echo.v1"
@@ -76,7 +76,7 @@ func reCacheMember(ctx *echox.Context, memberId int) *member.ValueMember {
 }
 
 // 获取商户
-func getPartner(ctx *echox.Context) *partner.ValuePartner {
+func getPartner(ctx *echox.Context) *merchant.MerchantValue {
 	val := ctx.Session.Get("member:rel_partner")
 	if val != nil {
 		return cache.GetValuePartnerCache(val.(int))
@@ -84,15 +84,15 @@ func getPartner(ctx *echox.Context) *partner.ValuePartner {
 		m := getMember(ctx)
 		if m != nil {
 			rel := dps.MemberService.GetRelation(m.Id)
-			ctx.Session.Set("member:rel_partner", rel.RegisterPartnerId)
+			ctx.Session.Set("member:rel_partner", rel.RegisterMerchantId)
 			ctx.Session.Save()
-			return cache.GetValuePartnerCache(rel.RegisterPartnerId)
+			return cache.GetValuePartnerCache(rel.RegisterMerchantId)
 		}
 	}
 	return nil
 }
 
 // 获取商户的站点设置
-func getSiteConf(partnerId int) *partner.SiteConf {
+func getSiteConf(partnerId int) *merchant.SiteConf {
 	return cache.GetPartnerSiteConf(partnerId)
 }

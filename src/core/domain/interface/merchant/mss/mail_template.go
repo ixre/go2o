@@ -13,7 +13,7 @@ type MailTemplate struct {
 	// 编号
 	Id int `db:"id" pk:"yes" auto:"yes"`
 	// 商户编号
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 	// 名称
 	Name string `db:"name"`
 	// 主题

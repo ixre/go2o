@@ -10,7 +10,7 @@ package ols
 
 import (
 	"github.com/jsix/gof"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -50,7 +50,7 @@ func (this *CartC) CartApiHandle(ctx *echox.Context) error {
 	return nil
 }
 
-func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
+func (this *CartC) cart_GetCart(ctx *echox.Context, p *merchant.MerchantValue,
 	memberId int, cartKey string) error {
 	cart := dps.ShoppingService.GetShoppingCart(p.Id, memberId, cartKey)
 
@@ -75,7 +75,7 @@ func (this *CartC) cart_GetCart(ctx *echox.Context, p *partner.ValuePartner,
 }
 
 func (this *CartC) cart_AddItem(ctx *echox.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) error {
+	p *merchant.MerchantValue, memberId int, cartKey string) error {
 	r := ctx.HttpRequest()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))
 	num, _ := strconv.Atoi(r.FormValue("num"))
@@ -92,7 +92,7 @@ func (this *CartC) cart_AddItem(ctx *echox.Context,
 }
 
 func (this *CartC) cart_RemoveItem(ctx *echox.Context,
-	p *partner.ValuePartner, memberId int, cartKey string) error {
+	p *merchant.MerchantValue, memberId int, cartKey string) error {
 	var result gof.Message
 	r := ctx.HttpRequest()
 	goodsId, _ := strconv.Atoi(r.FormValue("id"))

@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"bytes"
@@ -32,7 +32,7 @@ type goodsC struct {
 
 //货品列表
 func (this *goodsC) Item_list(ctx *echox.Context) error {
-	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
+	cateOpts := cache.GetDropOptionsOfCategory(getMerchantId(ctx))
 
 	d := ctx.NewData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
@@ -42,7 +42,7 @@ func (this *goodsC) Item_list(ctx *echox.Context) error {
 
 //货品选择
 func (this *goodsC) Goods_select(ctx *echox.Context) error {
-	cateOpts := cache.GetDropOptionsOfCategory(getPartnerId(ctx))
+	cateOpts := cache.GetDropOptionsOfCategory(getMerchantId(ctx))
 	d := ctx.NewData()
 	d.Map["cate_opts"] = template.HTML(cateOpts)
 	d.Map["no_pic_url"] = format.GetGoodsImageUrl("")
@@ -50,7 +50,7 @@ func (this *goodsC) Goods_select(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Create(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	shopChks := cache.GetShopCheckboxs(partnerId, "")
 	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
 
@@ -70,7 +70,7 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Edit(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	var e *sale.ValueItem
 	ss := dps.SaleService
 	id, _ := strconv.Atoi(ctx.Query("item_id"))
@@ -97,7 +97,7 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 
 // 保存商品描述
 func (this *goodsC) Item_info(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
@@ -116,7 +116,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 
 // 保存货品描述信息(POST)
 func (this *goodsC) Save_item_info(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -139,7 +139,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 
 // 保存货品信息(POST)
 func (this *goodsC) SaveItem(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		ss := dps.SaleService
@@ -168,7 +168,7 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 
 // 删除商品信息(POST)
 func (this *goodsC) Del_goods(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	if r.Method == "POST" {
@@ -188,7 +188,7 @@ func (this *goodsC) Del_goods(ctx *echox.Context) error {
 
 // 删除货品信息(POST)
 func (this *goodsC) Del_item(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -209,7 +209,7 @@ func (this *goodsC) Del_item(ctx *echox.Context) error {
 
 // 设置销售标签
 func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	goodsId, _ := strconv.Atoi(ctx.Query("id"))
 
 	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
@@ -248,7 +248,7 @@ func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
 				}
 			}
 
-			partnerId := getPartnerId(ctx)
+			partnerId := getMerchantId(ctx)
 			err = dps.SaleService.SaveItemSaleTags(partnerId, goodsId, ids)
 		}
 
@@ -275,7 +275,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.lvPrice_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	//todo: should be goodsId
 	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
 	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
@@ -357,7 +357,7 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 		}
 	}
 
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
 	if err != nil {
 		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})

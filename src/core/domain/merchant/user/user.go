@@ -9,7 +9,7 @@
 package user
 
 import (
-	"go2o/src/core/domain/interface/partner/user"
+	"go2o/src/core/domain/interface/merchant/user"
 )
 
 var _ user.IUser = new(User)

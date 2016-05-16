@@ -89,7 +89,7 @@ func (this *Category) SetValue(v *sale.ValueCategory) error {
 // 获取子栏目的编号
 func (this *Category) GetChildId() []int {
 	if this._childIdArr == nil {
-		childCats := this._rep.GetChildCategories(this._value.PartnerId, this.GetDomainId())
+		childCats := this._rep.GetChildCategories(this._value.MerchantId, this.GetDomainId())
 		this._childIdArr = make([]int, len(childCats))
 		for i, v := range childCats {
 			this._childIdArr[i] = v.Id
@@ -104,7 +104,7 @@ func (this *Category) Save() (int, error) {
 		this._value.Id = id
 		if len(this._value.Url) == 0 || (this._parentIdChanged &&
 			strings.HasPrefix(this._value.Url, "/c-")) {
-			this._value.Url = this.getAutomaticUrl(this._value.PartnerId, id)
+			this._value.Url = this.getAutomaticUrl(this._value.MerchantId, id)
 			this._parentIdChanged = false
 			return this.Save()
 		}
@@ -132,7 +132,7 @@ type categoryOption struct {
 }
 
 func newCategoryOption(c *Category) domain.IOptionStore {
-	i := fmt.Sprintf("conf/%d/option/c/%d", c.GetValue().PartnerId, c.GetDomainId())
+	i := fmt.Sprintf("conf/%d/option/c/%d", c.GetValue().MerchantId, c.GetDomainId())
 	return &categoryOption{
 		_partnerId:   c.GetValue().ParentId,
 		_c:           c,

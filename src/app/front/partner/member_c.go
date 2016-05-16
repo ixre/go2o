@@ -7,7 +7,7 @@
  * history :
  */
 
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ import (
 	gfmt "github.com/jsix/gof/util/fmt"
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
@@ -39,7 +39,7 @@ func (this *memberC) LevelList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *memberC) EditMLevel(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
 	js, _ := json.Marshal(entity)
@@ -56,7 +56,7 @@ func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 
 // 保存会员等级(POST)
 func (this *memberC) SaveMLevel(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -64,7 +64,7 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 
 		e := valueobject.MemberLevel{}
 		web.ParseFormToEntity(r.Form, &e)
-		e.PartnerId = getPartnerId(ctx)
+		e.MerchantId = getMerchantId(ctx)
 
 		id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
 
@@ -84,7 +84,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
 			err = dps.PartnerService.DelMemberLevel(partnerId, id)
@@ -102,7 +102,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 
 // 会员列表
 func (this *memberC) List(ctx *echox.Context) error {
-	levelDr := getLevelDropDownList(getPartnerId(ctx))
+	levelDr := getLevelDropDownList(getMerchantId(ctx))
 	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	return ctx.RenderOK("member.list.html", d)
@@ -114,7 +114,7 @@ func (this *memberC) Lock_member(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		id, _ := strconv.Atoi(req.FormValue("id"))
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		var result gof.Message
 		if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
 			result.Message = err.Error()
@@ -141,7 +141,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 	if m == nil {
 		return ctx.String(http.StatusOK, "no such member")
 	}
-	lv := dps.PartnerService.GetLevel(getPartnerId(ctx), m.Level)
+	lv := dps.PartnerService.GetLevel(getMerchantId(ctx), m.Level)
 	rl := dps.MemberService.GetRelation(m.Id)
 	var invName string = "无"
 	if rl.RefereesId > 0 {
@@ -217,8 +217,8 @@ func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 		req.ParseForm()
 		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
 		rl := dps.MemberService.GetRelation(memberId)
-		partnerId := getPartnerId(ctx)
-		if rl == nil || rl.RegisterPartnerId != partnerId {
+		partnerId := getMerchantId(ctx)
+		if rl == nil || rl.RegisterMerchantId != partnerId {
 			result.Message = "无权进行当前操作"
 		} else {
 			newPwd := dps.MemberService.ResetPassword(memberId)
@@ -249,7 +249,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(req.FormValue("Amount"), 32)
 	if amount < 0 {
@@ -257,8 +257,8 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 	} else {
 		rel := dps.MemberService.GetRelation(memberId)
 
-		if rel.RegisterPartnerId != getPartnerId(ctx) {
-			err = partner.ErrPartnerNotMatch
+		if rel.RegisterMerchantId != getMerchantId(ctx) {
+			err = merchant.ErrPartnerNotMatch
 		} else {
 			title := fmt.Sprintf("[KF]客服充值%s", format.FormatFloat(float32(amount)))
 			err = dps.MemberService.Charge(partnerId, memberId,
@@ -275,7 +275,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 
 // 提现列表
 func (this *memberC) ApplyRequestList(ctx *echox.Context) error {
-	levelDr := getLevelDropDownList(getPartnerId(ctx))
+	levelDr := getLevelDropDownList(getMerchantId(ctx))
 
 	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
@@ -289,7 +289,7 @@ func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		passed := req.FormValue("pass") == "1"
 		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
 		id, _ := strconv.Atoi(req.FormValue("id"))
@@ -330,7 +330,7 @@ func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	id, _ := strconv.Atoi(req.FormValue("Id"))
 
@@ -375,7 +375,7 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	id, _ := strconv.Atoi(req.FormValue("Id"))
 	agree := req.FormValue("Agree") == "on"
@@ -396,7 +396,7 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 
 // 团队排名列表
 func (this *memberC) Team_rank(ctx *echox.Context) error {
-	levelDr := getLevelDropDownList(getPartnerId(ctx))
+	levelDr := getLevelDropDownList(getMerchantId(ctx))
 	d := ctx.NewData()
 	d.Map["levelDr"] = template.HTML(levelDr)
 	return ctx.RenderOK("member.team_rank.html", d)
@@ -404,7 +404,7 @@ func (this *memberC) Team_rank(ctx *echox.Context) error {
 
 // 邀请关系
 func (this *memberC) Invi_relation(c *echox.Context) error {
-	partnerId := getPartnerId(c)
+	partnerId := getMerchantId(c)
 	memberId, _ := strconv.Atoi(c.Query("member_id"))
 	ms := dps.MemberService
 	idArr := []int{memberId}

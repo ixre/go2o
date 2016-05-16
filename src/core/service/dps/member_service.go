@@ -13,7 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/domain"
@@ -60,8 +60,8 @@ func (this *memberService) getMember(partnerId, memberId int) (
 	if m == nil {
 		return m, member.ErrNoSuchMember
 	}
-	if m.GetRelation().RegisterPartnerId != partnerId {
-		return m, partner.ErrPartnerNotMatch
+	if m.GetRelation().RegisterMerchantId != partnerId {
+		return m, merchant.ErrPartnerNotMatch
 	}
 	return m, nil
 }
@@ -122,7 +122,7 @@ func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
 		m := this._memberRep.GetMember(id)
 		rl := m.GetRelation()
 		rl.RefereesId = invitationId
-		rl.RegisterPartnerId = partnerId
+		rl.RegisterMerchantId = partnerId
 		rl.CardId = cardId
 		return id, m.SaveRelation(rl)
 	}
@@ -201,7 +201,7 @@ func (this *memberService) TryLogin(partnerId int, usr,
 	m := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
-	if partnerId != -1 && rl.RegisterPartnerId != partnerId {
+	if partnerId != -1 && rl.RegisterMerchantId != partnerId {
 		return nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 

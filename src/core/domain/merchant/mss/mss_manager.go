@@ -10,8 +10,8 @@ package mss
 
 import (
 	"errors"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/merchant"
+	"go2o/src/core/domain/interface/merchant/mss"
 	"strconv"
 	"time"
 )
@@ -19,13 +19,13 @@ import (
 var _ mss.IMssManager = new(MssManager)
 
 type MssManager struct {
-	_partner       partner.IPartner
+	_partner       merchant.IMerchant
 	_mssRep        mss.IMssRep
-	_partnerRep    partner.IPartnerRep
+	_partnerRep    merchant.IMerchantRep
 	_mailTemplates []*mss.MailTemplate
 }
 
-func NewMssManager(p partner.IPartner, rep mss.IMssRep, partnerRep partner.IPartnerRep) mss.IMssManager {
+func NewMssManager(p merchant.IMerchant, rep mss.IMssRep, partnerRep merchant.IMerchantRep) mss.IMssManager {
 	return &MssManager{
 		_partner:    p,
 		_mssRep:     rep,
@@ -65,7 +65,7 @@ func (this *MssManager) GetMailTemplate(id int) *mss.MailTemplate {
 
 // 保存邮箱模版
 func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
-	v.PartnerId = this._partner.GetAggregateRootId()
+	v.MerchantId = this._partner.GetAggregateRootId()
 	v.UpdateTime = time.Now().Unix()
 	if v.CreateTime == 0 {
 		v.CreateTime = v.UpdateTime

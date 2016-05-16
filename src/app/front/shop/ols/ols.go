@@ -11,7 +11,7 @@ package ols
 import (
 	"go2o/src/app/cache"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"net/url"
@@ -23,25 +23,25 @@ var (
 )
 
 // 获取商户编号
-func GetSessionPartnerId(ctx *echox.Context) int {
-	return ctx.Get("partner_id").(int)
+func GetSessionMerchantId(ctx *echox.Context) int {
+	return ctx.Get("merchant_id").(int)
 }
 
-func getPartner(ctx *echox.Context) *partner.ValuePartner {
-	partnerId := ctx.Get("partner_id").(int)
+func getPartner(ctx *echox.Context) *merchant.MerchantValue {
+	partnerId := ctx.Get("merchant_id").(int)
 	return cache.GetValuePartnerCache(partnerId)
 }
 
 // 获取商户API信息
-func getPartnerApi(ctx *echox.Context) *partner.ApiInfo {
-	return dps.PartnerService.GetApiInfo(GetSessionPartnerId(ctx))
+func getPartnerApi(ctx *echox.Context) *merchant.ApiInfo {
+	return dps.PartnerService.GetApiInfo(GetSessionMerchantId(ctx))
 }
 
 // 获取商户站点设置
-func getSiteConf(ctx *echox.Context) *partner.SiteConf {
-	conf := ctx.Get("conf").(*partner.SiteConf)
+func getSiteConf(ctx *echox.Context) *merchant.SiteConf {
+	conf := ctx.Get("conf").(*merchant.SiteConf)
 	if conf == nil {
-		conf = cache.GetPartnerSiteConf(GetSessionPartnerId(ctx))
+		conf = cache.GetPartnerSiteConf(GetSessionMerchantId(ctx))
 		ctx.Set("conf", conf)
 	}
 	return conf
@@ -70,15 +70,15 @@ func CheckMemberLogin(ctx *echox.Context) bool {
 }
 
 // 获取商户编号
-func GetPartnerId(ctx *echox.Context) int {
+func GetMerchantId(ctx *echox.Context) int {
 	mux.Lock()
 	defer mux.Unlock()
-	if v := ctx.Get("partner_id"); v != nil {
+	if v := ctx.Get("merchant_id"); v != nil {
 		return v.(int)
 	}
 	currHost := ctx.Request().Host
 	//ctx.Set("webui_host", currHost)
-	partnerId := cache.GetPartnerIdByHost(currHost)
+	partnerId := cache.GetMerchantIdByHost(currHost)
 	ctx.Set("partnerId", partnerId)
 	return partnerId
 }

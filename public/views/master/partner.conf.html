@@ -67,7 +67,7 @@
     jr.$('btn_save').onclick = function() {
         if (jr.validator.validate('form1')) {
             var data = jr.json.toObject('form1');
-            jr.xhr.jsonPost('SavePartner', data, function(json) {
+            jr.xhr.jsonPost('SaveMerchant', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '保存成功！' : json.message, 'ok', function() {
                     //jr.tab.closeAndRefresh(function() {}, '员工管理');
                    var d = jr.dialog.getDialog();

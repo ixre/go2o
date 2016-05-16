@@ -5,7 +5,7 @@
     <![CDATA[
     SELECT r.* FROM mm_member m INNER JOIN pf_riselog r ON r.person_id=m.id
 INNER JOIN mm_relation rl ON rl.member_id=m.id
-WHERE rl.reg_partner_id={partner_id} AND r.person_id={person_id}
+WHERE rl.reg_merchant_id={merchant_id} AND r.person_id={person_id}
  AND ({type}=-1 OR {type}=type) AND ('{keyword}' = ''
 OR (r.title LIKE '%{keyword}%')) ORDER BY log_time DESC LIMIT {page_start},{page_size}
      ]]>
@@ -14,7 +14,7 @@ OR (r.title LIKE '%{keyword}%')) ORDER BY log_time DESC LIMIT {page_start},{page
   <Total>
     <![CDATA[ SELECT COUNT(0) FROM mm_member m INNER JOIN pf_riselog r ON r.person_id=m.id
 INNER JOIN mm_relation rl ON rl.member_id=m.id
-WHERE rl.reg_partner_id={partner_id} AND r.person_id={person_id}
+WHERE rl.reg_merchant_id={merchant_id} AND r.person_id={person_id}
 AND ({type}=-1 OR {type}=type) AND ('{keyword}' = ''
 OR (r.title LIKE '%{keyword}%'))
  ]]>

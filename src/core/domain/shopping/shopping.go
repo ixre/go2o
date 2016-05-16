@@ -15,7 +15,7 @@ import (
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
@@ -31,18 +31,18 @@ type Shopping struct {
 	_goodsRep    sale.IGoodsRep
 	_promRep     promotion.IPromotionRep
 	_memberRep   member.IMemberRep
-	_partnerRep  partner.IPartnerRep
+	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
 	_partnerId   int
-	_partner     partner.IPartner
+	_partner     merchant.IMerchant
 }
 
-func NewShopping(partnerId int, partnerRep partner.IPartnerRep,
+func NewShopping(partnerId int, partnerRep merchant.IMerchantRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
-	pt, _ := partnerRep.GetPartner(partnerId)
+	pt, _ := partnerRep.GetMerchant(partnerId)
 
 	return &Shopping{
 		_rep:         rep,
@@ -222,14 +222,14 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	}
 
 	val.MemberId = memberId
-	val.PartnerId = this._partnerId
+	val.MerchantId = this._partnerId
 
 	tf, of := cart.GetFee()
 	val.TotalFee = tf //总金额
 	val.Fee = of      //实际金额
 	val.PayFee = of
 	val.DiscountFee = tf - of //优惠金额
-	val.PartnerId = this._partnerId
+	val.MerchantId = this._partnerId
 	val.Status = 1
 
 	order = this.CreateOrder(&val, cart)
@@ -241,7 +241,7 @@ func (this *Shopping) GetFreeOrderNo() string {
 }
 
 // 智能选择门店
-func (this *Shopping) SmartChoiceShop(address string) (partner.IShop, error) {
+func (this *Shopping) SmartChoiceShop(address string) (merchant.IShop, error) {
 	dly := this._deliveryRep.GetDelivery(this.GetAggregateRootId())
 
 	lng, lat, err := lbs.GetLocation(address)
@@ -338,7 +338,7 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 
 var (
 	shopLocker sync.Mutex
-	biShops    []partner.IShop
+	biShops    []merchant.IShop
 )
 
 // 自动设置订单
@@ -381,7 +381,7 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-	var shop partner.IShop
+	var shop merchant.IShop
 	if biShops == nil {
 		biShops = this._partner.GetBusinessInShops()
 	}
@@ -407,7 +407,7 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 }
 
 func (this *Shopping) setupOrder(v *shopping.ValueOrder,
-	conf *partner.SaleConf, t time.Time, f func(error)) {
+	conf *merchant.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)
 	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second

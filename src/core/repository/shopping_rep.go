@@ -17,7 +17,7 @@ import (
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
@@ -35,12 +35,12 @@ type shoppingRep struct {
 	_goodsRep   sale.IGoodsRep
 	_promRep    promotion.IPromotionRep
 	_memberRep  member.IMemberRep
-	_partnerRep partner.IPartnerRep
+	_partnerRep merchant.IMerchantRep
 	_deliverRep delivery.IDeliveryRep
 	_cache      map[int]shopping.IShopping
 }
 
-func NewShoppingRep(c db.Connector, ptRep partner.IPartnerRep,
+func NewShoppingRep(c db.Connector, ptRep merchant.IMerchantRep,
 	saleRep sale.ISaleRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
 	return (&shoppingRep{
@@ -99,7 +99,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	var err error
 	var statusIsChanged bool //业务状态是否改变
 	d := this.Connector
-	v.PartnerId = partnerId
+	v.MerchantId = partnerId
 
 	if v.Id > 0 {
 		var oriStatus int
@@ -113,13 +113,13 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 	} else {
 		//验证Partner和Member是否有绑定关系
 		var num int
-		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_partner_id=?`,
-			&num, v.MemberId, v.PartnerId); num != 1 {
+		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_merchant_id=?`,
+			&num, v.MemberId, v.MerchantId); num != 1 {
 			return v.Id, errors.New("error partner and member.")
 		}
 		_, _, err = d.GetOrm().Save(nil, v)
 		if err == nil {
-			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE partner_id=? AND member_id=?`, &v.Id,
+			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE merchant_id=? AND member_id=?`, &v.Id,
 				partnerId, v.MemberId)
 		}
 		statusIsChanged = true
@@ -167,7 +167,7 @@ func (this *shoppingRep) GetOrderById(id int) *shopping.ValueOrder {
 func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
 	*shopping.ValueOrder, error) {
 	var v = new(shopping.ValueOrder)
-	err := this.Connector.GetOrm().GetBy(v, "partner_id=? AND order_no=?", partnerId, orderNo)
+	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND order_no=?", partnerId, orderNo)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func (this *shoppingRep) GetValueOrderByNo(orderNo string) *shopping.ValueOrder 
 func (this *shoppingRep) GetWaitingSetupOrders(partnerId int) ([]*shopping.ValueOrder, error) {
 	dst := []*shopping.ValueOrder{}
 	err := this.Connector.GetOrm().Select(&dst,
-		"partner_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
+		"merchant_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
 		partnerId)
 	if err != nil {
 		return nil, err

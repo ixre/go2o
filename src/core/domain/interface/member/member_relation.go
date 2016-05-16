@@ -16,5 +16,5 @@ type MemberRelation struct {
 	//推荐人（会员）
 	RefereesId int `db:"invi_member_id"`
 	//注册关联商家编号
-	RegisterPartnerId int `db:"reg_partner_id"`
+	RegisterMerchantId int `db:"reg_merchant_id"`
 }

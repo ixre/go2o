@@ -13,7 +13,7 @@ type ValueSaleTag struct {
 	Id int `db:"id" auto:"yes" pk:"yes"`
 
 	// 商户编号
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 
 	// 标签代码
 	TagCode string `db:"tag_code"`

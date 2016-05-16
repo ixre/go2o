@@ -25,7 +25,7 @@ const (
 
 //新订单号
 func NewOrderNo(partnerId int) string {
-	//PartnerId的首位和末尾再加7位随机数
+	//MerchantId的首位和末尾再加7位随机数
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
 	rd := minRand + rand.Intn(maxRand-minRand) //minRand - maxRand中间的随机数

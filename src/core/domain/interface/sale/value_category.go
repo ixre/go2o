@@ -17,7 +17,7 @@ type ValueCategory struct {
 	//父分类
 	ParentId int `db:"parent_id"`
 	//供应商编号
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 	//名称
 	Name        string           `db:"name"`
 	SortNumber  int              `db:"sort_number"`

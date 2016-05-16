@@ -6,18 +6,18 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"errors"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
 )
 
 //todo: 这里引用IMemberRep似乎有问题
 
-var _ partner.ILevelManager = new(LevelManager)
+var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
 	_rep       member.IMemberRep
@@ -25,7 +25,7 @@ type LevelManager struct {
 	_levelSet  []*valueobject.MemberLevel
 }
 
-func NewLevelManager(partnerId int, rep member.IMemberRep) partner.ILevelManager {
+func NewLevelManager(partnerId int, rep member.IMemberRep) merchant.ILevelManager {
 	return &LevelManager{
 		_partnerId: partnerId,
 		_rep:       rep,
@@ -40,35 +40,35 @@ func (this *LevelManager) InitDefaultLevels() error {
 	}
 	var arr []*valueobject.MemberLevel = []*valueobject.MemberLevel{
 		&valueobject.MemberLevel{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Name:       "普通会员",
 			RequireExp: 0,
 			Value:      1,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Name:       "铜牌会员",
 			RequireExp: 100,
 			Value:      2,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Name:       "银牌会员",
 			RequireExp: 500,
 			Value:      3,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Name:       "金牌会员",
 			RequireExp: 1200,
 			Value:      4,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Name:       "白金会员",
 			RequireExp: 1500,
 			Value:      5,
@@ -138,7 +138,7 @@ func (this *LevelManager) DeleteLevel(id int) error {
 
 // 保存等级
 func (this *LevelManager) SaveLevel(v *valueobject.MemberLevel) (int, error) {
-	v.PartnerId = this._partnerId
+	v.MerchantId = this._partnerId
 	// 如果新增（非初始化）等级自动设置值
 	if v.Id <= 0 && len(this._levelSet) == 0 {
 		v.Value = this.getMaxLevelValue() + 1

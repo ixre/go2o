@@ -120,12 +120,12 @@ func shopCheck(h echo.HandlerFunc) echo.HandlerFunc {
 		if !strings.HasPrefix(path, "/json/") &&
 			!strings.HasPrefix(path, "/static/") {
 			// 商户不存在
-			partnerId := GetPartnerId(&echox.Context{Context: ctx})
+			partnerId := GetMerchantId(&echox.Context{Context: ctx})
 			if partnerId <= 0 {
 				return ctx.String(http.StatusOK, "No such partner")
 			}
 
-			ctx.Set("partner_id", partnerId) // 缓存PartnerId
+			ctx.Set("merchant_id", partnerId) // 缓存MerchantId
 
 			// 判断线上商店开通情况
 			var conf = cache.GetPartnerSiteConf(partnerId)

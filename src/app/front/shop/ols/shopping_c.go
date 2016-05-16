@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof/web"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/dto"
 	"go2o/src/core/infrastructure/format"
@@ -296,8 +296,8 @@ func (this *ShoppingC) emptyShoppingCart(ctx *echox.Context) {
 	}
 }
 
-func (this *ShoppingC) OrderEmpty(ctx *echox.Context, p *partner.ValuePartner,
-	m *member.ValueMember, conf *partner.SiteConf) error {
+func (this *ShoppingC) OrderEmpty(ctx *echox.Context, p *merchant.MerchantValue,
+	m *member.ValueMember, conf *merchant.SiteConf) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"partner": p,
@@ -361,8 +361,8 @@ func (this *ShoppingC) Order_finish(ctx *echox.Context) error {
 	return this.orderFinish(ctx, p, m, siteConf, order)
 }
 
-func (this *ShoppingC) orderFinish(ctx *echox.Context, p *partner.ValuePartner,
-	m *member.ValueMember, siteConf *partner.SiteConf, order *shopping.ValueOrder) error {
+func (this *ShoppingC) orderFinish(ctx *echox.Context, p *merchant.MerchantValue,
+	m *member.ValueMember, siteConf *merchant.SiteConf, order *shopping.ValueOrder) error {
 	if !this.prepare(ctx) {
 		return nil
 	}

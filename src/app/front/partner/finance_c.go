@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"github.com/jsix/gof"
@@ -51,7 +51,7 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 
 func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 	var msg = gof.Message{Result: true}
-	partnerId := getPartnerId(c)
+	partnerId := getMerchantId(c)
 	memberId, _ := strconv.Atoi(c.Form("member_id"))
 	//kt := strings.Split(c.Form("kt"), "-")
 	//if len(kt) < 2 {

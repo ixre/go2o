@@ -17,7 +17,7 @@ import (
 	"github.com/jsix/gof/log"
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
 	memberImpl "go2o/src/core/domain/member"
 	"go2o/src/core/variable"
@@ -27,7 +27,7 @@ var _ member.IMemberRep = new(MemberRep)
 
 type MemberRep struct {
 	db.Connector
-	_partnerRep partner.IPartnerRep
+	_partnerRep merchant.IMerchantRep
 }
 
 func NewMemberRep(c db.Connector) *MemberRep {
@@ -36,7 +36,7 @@ func NewMemberRep(c db.Connector) *MemberRep {
 	}
 }
 
-func (this *MemberRep) SetPartnerRep(partnerRep partner.IPartnerRep) {
+func (this *MemberRep) SetMerchantRep(partnerRep merchant.IMerchantRep) {
 	this._partnerRep = partnerRep
 }
 
@@ -90,7 +90,7 @@ func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 
 func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value = ?", partnerId, levelValue)
+	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value = ?", partnerId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -100,7 +100,7 @@ func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLe
 // 获取下一个等级
 func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, "partner_id=? AND value>? LIMIT 0,1", partnerId, levelVal)
+	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value>? LIMIT 0,1", partnerId, levelVal)
 	if err != nil {
 		return nil
 	}
@@ -111,14 +111,14 @@ func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.Member
 func (this *MemberRep) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
 	list := []*valueobject.MemberLevel{}
 	this.Connector.GetOrm().Select(&list,
-		"partner_id=?", partnerId)
+		"merchant_id=?", partnerId)
 	return list
 }
 
 // 删除会员等级
 func (this *MemberRep) DeleteMemberLevel(partnerId, id int) error {
 	_, err := this.Connector.GetOrm().Delete(&valueobject.MemberLevel{},
-		"id=? AND partner_id=?", id, partnerId)
+		"id=? AND merchant_id=?", id, partnerId)
 	return err
 }
 
@@ -206,7 +206,7 @@ func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
 func (this *MemberRep) GetLevelValueByExp(partnerId int, exp int) int {
 	var levelId int
 	this.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
-	 	where lv.partner_id=? AND lv.require_exp <= ? AND lv.enabled=1
+	 	where lv.merchant_id=? AND lv.require_exp <= ? AND lv.enabled=1
 	 	 ORDER BY lv.require_exp DESC LIMIT 0,1`,
 		&levelId, partnerId, exp)
 	return levelId
@@ -282,7 +282,7 @@ func (this *MemberRep) initMember(v *member.ValueMember) {
 		MemberId:          v.Id,
 		CardId:            "",
 		RefereesId:        0,
-		RegisterPartnerId: 0,
+		RegisterMerchantId: 0,
 	})
 }
 

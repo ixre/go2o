@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -32,7 +32,7 @@ func (this *adC) List(ctx *echox.Context) error {
 
 // 修改广告
 func (this *adC) Edit(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	e := dps.AdvertisementService.GetAdvertisement(partnerId, id)
 
@@ -59,7 +59,7 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
 
@@ -76,7 +76,7 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 
 // 保存广告(POST)
 func (this *adC) SaveAd(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
@@ -87,7 +87,7 @@ func (this *adC) SaveAd(ctx *echox.Context) error {
 		web.ParseFormToEntity(req.Form, &e)
 
 		//更新
-		e.PartnerId = partnerId
+		e.MerchantId = partnerId
 
 		id, err := dps.AdvertisementService.SaveAdvertisement(partnerId, &e)
 
@@ -135,7 +135,7 @@ func (this *adC) CreateAdImage(ctx *echox.Context) error {
 
 // 保存广告
 func (this *adC) EditAdImage(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	adId, _ := strconv.Atoi(ctx.Query("ad_id"))
 	imgId, _ := strconv.Atoi(ctx.Query("id"))
 
@@ -149,7 +149,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 
 // 保存图片(POST)
 func (this *adC) SaveImage(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -178,7 +178,7 @@ func (this *adC) Delete_image(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("ad_id"))
 		imgId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)

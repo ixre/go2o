@@ -86,8 +86,8 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 
 	if err == nil && m != nil {
 		rl := dps.MemberService.GetRelation(m.Id)
-		if rl.RegisterPartnerId > 0 {
-			c.Session.Set("member:rel_partner", rl.RegisterPartnerId)
+		if rl.RegisterMerchantId > 0 {
+			c.Session.Set("member:rel_partner", rl.RegisterMerchantId)
 			c.Session.Save()
 			c.Redirect(302, url)
 			return nil

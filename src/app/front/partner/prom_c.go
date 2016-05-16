@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -40,7 +40,7 @@ func (this *promC) Del(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		promId, _ := strconv.Atoi(req.FormValue("id"))
 
 		err := dps.PromService.DelPromotion(partnerId, promId)
@@ -84,7 +84,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 	js2, _ := json.Marshal(e2)
 
 	var goodsInfo string
-	goods := dps.SaleService.GetValueGoods(getPartnerId(ctx), e.GoodsId)
+	goods := dps.SaleService.GetValueGoods(getMerchantId(ctx), e.GoodsId)
 	goodsInfo = fmt.Sprintf("%s<span>(销售价：%s)</span>", goods.Name, format.FormatFloat(goods.SalePrice))
 
 	d := ctx.NewData()
@@ -101,7 +101,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 
 // 保存现金返现(POST)
 func (this *promC) Save_cb(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -113,7 +113,7 @@ func (this *promC) Save_cb(ctx *echox.Context) error {
 		e2 := promotion.ValueCashBack{}
 		web.ParseFormToEntity(r.Form, &e2)
 
-		e.PartnerId = partnerId
+		e.MerchantId = partnerId
 		e.TypeFlag = promotion.TypeFlagCashBack
 
 		id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
@@ -143,7 +143,7 @@ func (this *promC) Create_coupon(ctx *echox.Context) error {
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := getLevelDropDownList(getPartnerId(ctx))
+	levelDr := getLevelDropDownList(getMerchantId(ctx))
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
@@ -159,14 +159,14 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	e, e2 := dps.PromService.GetPromotion(id)
 
-	if e.PartnerId != getPartnerId(ctx) {
+	if e.MerchantId != getMerchantId(ctx) {
 		return ctx.StringOK(promotion.ErrNoSuchPromotion.Error())
 	}
 
 	js, _ := json.Marshal(e)
 	js2, _ := json.Marshal(e2)
 
-	levelDr := getLevelDropDownList(getPartnerId(ctx))
+	levelDr := getLevelDropDownList(getMerchantId(ctx))
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
@@ -180,7 +180,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 
 // 保存优惠券(POST)
 func (this *promC) Save_coupon(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -192,7 +192,7 @@ func (this *promC) Save_coupon(ctx *echox.Context) error {
 		e2 := promotion.ValueCoupon{}
 		web.ParseFormToEntity(r.Form, &e2)
 
-		e.PartnerId = partnerId
+		e.MerchantId = partnerId
 		e.TypeFlag = promotion.TypeFlagCoupon
 
 		const layout string = "2006-01-02 15:04:05"
@@ -221,7 +221,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 	}
 	id, _ := strconv.Atoi(ctx.Query("coupon_id"))
 	e, e2 := dps.PromService.GetPromotion(id)
-	if e.PartnerId != getPartnerId(ctx) {
+	if e.MerchantId != getMerchantId(ctx) {
 		return ctx.StringOK(promotion.ErrNoSuchPromotion.Error())
 
 	}
@@ -236,7 +236,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 }
 
 func (this *promC) bind_coupon_post(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()

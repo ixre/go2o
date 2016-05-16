@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import "go2o/src/core/domain/interface/valueobject"
 

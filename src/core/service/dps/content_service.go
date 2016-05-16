@@ -10,7 +10,7 @@ package dps
 
 import (
 	"go2o/src/core/domain/interface/content"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/query"
 )
 
@@ -51,8 +51,8 @@ func (this *contentService) SavePage(partnerId int, v *content.ValuePage) (int, 
 	c := this._contentRep.GetContent(partnerId)
 	var page content.IPage
 
-	if v.PartnerId != partnerId {
-		return -1, partner.ErrPartnerNotMatch
+	if v.MerchantId != partnerId {
+		return -1, merchant.ErrPartnerNotMatch
 	}
 
 	if v.Id > 0 {
