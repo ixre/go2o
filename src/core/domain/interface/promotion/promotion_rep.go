@@ -41,7 +41,7 @@ type IPromotionRep interface {
 	GetPromotionOfGoods(goodsId int) []*ValuePromotion
 
 	// 获取商户订单可用的促销
-	GetPromotionOfPartnerOrder(partnerId int) []*ValuePromotion
+	GetPromotionOfPartnerOrder(merchantId int) []*ValuePromotion
 
 	/** =======  优惠券 ==========**/
 
@@ -67,10 +67,10 @@ type IPromotionRep interface {
 	GetCouponBinds(couponId int) []ValueCouponBind
 
 	// 根据优惠券代码获取优惠券
-	GetValueCouponByCode(partnerId int, couponCode string) *ValueCoupon
+	GetValueCouponByCode(merchantId int, couponCode string) *ValueCoupon
 
 	// 根据代码获取优惠券
-	GetCouponByCode(partnerId int, code string) IPromotion
+	GetCouponByCode(merchantId int, code string) IPromotion
 
 	// 获取会员的优惠券绑定
 	GetCouponBindByMemberId(couponId, memberId int) (*ValueCouponBind, error)

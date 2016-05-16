@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	partnerIds []int
+	merchantIds []int
 )
 
 func getPartners() []int {
-	if partnerIds == nil {
-		partnerIds = dps.PartnerService.GetPartnersId()
+	if merchantIds == nil {
+		merchantIds = dps.PartnerService.GetPartnersId()
 	}
-	return partnerIds
+	return merchantIds
 }
 
 /***** OLD CODE *****/
@@ -38,9 +38,9 @@ func orderDaemon(app gof.App) {
 	}
 }
 
-func autoSetOrder(partnerId int) {
+func autoSetOrder(merchantId int) {
 	f := func(err error) {
 		appCtx.Log().Error(err)
 	}
-	dps.ShoppingService.OrderAutoSetup(partnerId, f)
+	dps.ShoppingService.OrderAutoSetup(merchantId, f)
 }

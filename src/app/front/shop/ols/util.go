@@ -33,11 +33,11 @@ func HandleCustomError(w http.ResponseWriter, ctx *web.Context, err error) {
 	}
 }
 
-func GetShops(c gof.App, partnerId int) []byte {
+func GetShops(c gof.App, merchantId int) []byte {
 	//分店
 	var buf *bytes.Buffer = bytes.NewBufferString("")
 
-	shops := dps.PartnerService.GetShopsOfMerchant(partnerId)
+	shops := dps.PartnerService.GetShopsOfMerchant(merchantId)
 	if len(shops) == 0 {
 		return []byte("<div class=\"nodata noshop\">还未添加分店</div>")
 	}
@@ -54,9 +54,9 @@ func GetShops(c gof.App, partnerId int) []byte {
 	return buf.Bytes()
 }
 
-func GetCategories(c gof.App, partnerId int, secret string) []byte {
+func GetCategories(c gof.App, merchantId int, secret string) []byte {
 	var buf *bytes.Buffer = bytes.NewBufferString("")
-	categories := dps.SaleService.GetCategories(partnerId)
+	categories := dps.SaleService.GetCategories(merchantId)
 
 	buf.WriteString(`<ul class="categories">
 		<li class="s0 current" val="0">

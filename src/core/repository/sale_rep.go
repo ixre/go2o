@@ -44,20 +44,20 @@ func (this *saleRep) init() sale.ISaleRep {
 	return this
 }
 
-func (this *saleRep) GetSale(partnerId int) sale.ISale {
-	v, ok := this._cache[partnerId]
+func (this *saleRep) GetSale(merchantId int) sale.ISale {
+	v, ok := this._cache[merchantId]
 	if !ok {
-		v = saleImpl.NewSale(partnerId, this, this._goodsRep, this._tagRep, this._promRep)
-		this._cache[partnerId] = v
+		v = saleImpl.NewSale(merchantId, this, this._goodsRep, this._tagRep, this._promRep)
+		this._cache[merchantId] = v
 	}
 	return v
 }
 
-func (this *saleRep) GetValueItem(partnerId, itemId int) *sale.ValueItem {
+func (this *saleRep) GetValueItem(merchantId, itemId int) *sale.ValueItem {
 	var e *sale.ValueItem = new(sale.ValueItem)
 	err := this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
 			INNER JOIN gs_category c ON c.id = gs_item.category_id WHERE gs_item.id=?
-			AND c.merchant_id=?`, itemId, partnerId)
+			AND c.merchant_id=?`, itemId, merchantId)
 	if err != nil {
 		return nil
 	}
@@ -65,7 +65,7 @@ func (this *saleRep) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 }
 
 func (this *saleRep) GetItemByIds(ids ...int) ([]*sale.ValueItem, error) {
-	//todo: partnerId
+	//todo: merchantId
 	var items []*sale.ValueItem
 
 	//todo:改成database/sql方式，不使用orm
@@ -86,15 +86,15 @@ func (this *saleRep) SaveValueItem(v *sale.ValueItem) (int, error) {
 	}
 }
 
-func (this *saleRep) GetPagedOnShelvesItem(partnerId int, catIds []int, start, end int) (total int, e []*sale.ValueItem) {
+func (this *saleRep) GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, e []*sale.ValueItem) {
 	var sql string
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, partnerId, catIdStr, start, (end - start))
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, merchantId, catIdStr, start, (end - start))
 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, partnerId, catIdStr), &total)
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, merchantId, catIdStr), &total)
 
 	e = []*sale.ValueItem{}
 	this.Connector.GetOrm().SelectByQuery(&e, sql)
@@ -103,17 +103,17 @@ func (this *saleRep) GetPagedOnShelvesItem(partnerId int, catIds []int, start, e
 }
 
 // 获取货品销售总数
-func (this *saleRep) GetItemSaleNum(partnerId int, id int) int {
+func (this *saleRep) GetItemSaleNum(merchantId int, id int) int {
 	var num int
 	this.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`, &num, id)
 	return num
 }
 
-func (this *saleRep) DeleteItem(partnerId, itemId int) error {
+func (this *saleRep) DeleteItem(merchantId, itemId int) error {
 	_, _, err := this.Connector.Exec(`
 		DELETE f FROM gs_item AS f
 		INNER JOIN gs_category AS c ON f.category_id=c.id
-		WHERE f.id=? AND c.merchant_id=?`, itemId, partnerId)
+		WHERE f.id=? AND c.merchant_id=?`, itemId, merchantId)
 	return err
 }
 
@@ -131,35 +131,35 @@ func (this *saleRep) SaveCategory(v *sale.ValueCategory) (int, error) {
 	}
 }
 
-func (this *saleRep) DeleteCategory(partnerId, id int) error {
+func (this *saleRep) DeleteCategory(merchantId, id int) error {
 	//删除子类
 	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE merchant_id=? AND parent_id=?",
-		partnerId, id)
+		merchantId, id)
 
 	//删除分类
 	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE merchant_id=? AND id=?",
-		partnerId, id)
+		merchantId, id)
 
 	//清理项
 	this.Connector.Exec(`DELETE FROM gs_item WHERE Cid NOT IN
-		(SELECT Id FROM gs_category WHERE merchant_id=?)`, partnerId)
+		(SELECT Id FROM gs_category WHERE merchant_id=?)`, merchantId)
 
 	return err
 }
 
-func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
+func (this *saleRep) GetCategory(merchantId, id int) *sale.ValueCategory {
 	var e *sale.ValueCategory = new(sale.ValueCategory)
 	err := this.Connector.GetOrm().Get(id, e)
 	log.Println("--", e)
-	if err == nil && e.MerchantId == partnerId {
+	if err == nil && e.MerchantId == merchantId {
 		return e
 	}
 	return nil
 }
 
-func (this *saleRep) GetCategories(partnerId int) sale.CategoryList {
+func (this *saleRep) GetCategories(merchantId int) sale.CategoryList {
 	var e []*sale.ValueCategory = []*sale.ValueCategory{}
-	err := this.Connector.GetOrm().Select(&e, "merchant_id=? ORDER BY id ASC", partnerId)
+	err := this.Connector.GetOrm().Select(&e, "merchant_id=? ORDER BY id ASC", merchantId)
 	if err == nil {
 		return e
 	}
@@ -167,8 +167,8 @@ func (this *saleRep) GetCategories(partnerId int) sale.CategoryList {
 }
 
 // 获取与栏目相关的栏目
-func (this *saleRep) GetRelationCategories(partnerId, categoryId int) sale.CategoryList {
-	var all []*sale.ValueCategory = this.GetCategories(partnerId)
+func (this *saleRep) GetRelationCategories(merchantId, categoryId int) sale.CategoryList {
+	var all []*sale.ValueCategory = this.GetCategories(merchantId)
 	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
 	var isMatch bool
 	var pid int
@@ -195,8 +195,8 @@ func (this *saleRep) GetRelationCategories(partnerId, categoryId int) sale.Categ
 }
 
 // 获取子栏目
-func (this *saleRep) GetChildCategories(partnerId, categoryId int) sale.CategoryList {
-	var all []*sale.ValueCategory = this.GetCategories(partnerId)
+func (this *saleRep) GetChildCategories(merchantId, categoryId int) sale.CategoryList {
+	var all []*sale.ValueCategory = this.GetCategories(merchantId)
 	var newArr []*sale.ValueCategory = []*sale.ValueCategory{}
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {

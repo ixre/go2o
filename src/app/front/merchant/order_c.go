@@ -26,16 +26,16 @@ type orderC struct {
 }
 
 func (this *orderC) List(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
-	shopsJson := cache.GetShopsJson(partnerId)
+	merchantId := getMerchantId(ctx)
+	shopsJson := cache.GetShopsJson(merchantId)
 	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
 	return ctx.Render(http.StatusOK, "order.list.html", d)
 }
 
 func (this *orderC) WaitPaymentList(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
-	shopsJson := cache.GetShopsJson(partnerId)
+	merchantId := getMerchantId(ctx)
+	shopsJson := cache.GetShopsJson(merchantId)
 
 	d := ctx.NewData()
 	d.Map["shops"] = template.JS(shopsJson)
@@ -52,11 +52,11 @@ func (this *orderC) Cancel(ctx *echox.Context) error {
 
 func (this *orderC) cancel_post(ctx *echox.Context) error {
 	result := gof.Message{}
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	reason := r.FormValue("reason")
-	err := dps.ShoppingService.CancelOrder(partnerId,
+	err := dps.ShoppingService.CancelOrder(merchantId,
 		r.FormValue("order_no"), reason)
 
 	if err == nil {
@@ -68,10 +68,10 @@ func (this *orderC) cancel_post(ctx *echox.Context) error {
 }
 
 func (this *orderC) View(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
+	e := dps.ShoppingService.GetOrderByNo(merchantId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
 	}
@@ -94,7 +94,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 	if e.ShopId == 0 {
 		shopName = "未指定"
 	} else {
-		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
+		shopName = dps.PartnerService.GetShopValueById(merchantId, e.ShopId).Name
 	}
 	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
@@ -111,17 +111,17 @@ func (this *orderC) View(ctx *echox.Context) error {
 }
 
 func (this *orderC) Setup(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
-	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
+	e := dps.ShoppingService.GetOrderByNo(merchantId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
 	}
 
 	if e.ShopId == 0 {
-		return this.setShop(ctx, partnerId, e)
+		return this.setShop(ctx, merchantId, e)
 	}
-	return this.setState(ctx, partnerId, e)
+	return this.setState(ctx, merchantId, e)
 }
 
 // 锁定，防止重复下单，返回false,表示正在处理订单
@@ -146,11 +146,11 @@ func (this *orderC) OrderSetup(ctx *echox.Context) error {
 		return ctx.String(http.StatusOK, "请勿频繁操作")
 	}
 	var msg gof.Message
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
-		err := dps.ShoppingService.HandleOrder(partnerId, r.FormValue("order_no"))
+		err := dps.ShoppingService.HandleOrder(merchantId, r.FormValue("order_no"))
 		this.releaseOrder(ctx)
 		if err != nil {
 			msg.Message = err.Error()
@@ -166,10 +166,10 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.payment_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	e := dps.ShoppingService.GetOrderByNo(partnerId, r.FormValue("order_no"))
+	e := dps.ShoppingService.GetOrderByNo(merchantId, r.FormValue("order_no"))
 	if e == nil {
 		return ctx.String(http.StatusOK, "无效订单")
 	} else if e.IsPaid == 1 {
@@ -180,7 +180,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	if e.ShopId == 0 {
 		shopName = "未指定"
 	} else {
-		shopName = dps.PartnerService.GetShopValueById(partnerId, e.ShopId).Name
+		shopName = dps.PartnerService.GetShopValueById(merchantId, e.ShopId).Name
 	}
 
 	d := ctx.NewData()
@@ -191,16 +191,16 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 }
 
 func (this *orderC) payment_post(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	orderNo := r.FormValue("orderNo")
 
-	order := dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
+	order := dps.ShoppingService.GetOrderByNo(merchantId, orderNo)
 
-	err := dps.MemberService.Charge(partnerId, order.MemberId, member.TypeBalanceSystemCharge, "系统充值(订单付款)", "", order.PayFee)
+	err := dps.MemberService.Charge(merchantId, order.MemberId, member.TypeBalanceSystemCharge, "系统充值(订单付款)", "", order.PayFee)
 	if err == nil {
-		err = dps.ShoppingService.PayForOrderByManager(partnerId, orderNo)
+		err = dps.ShoppingService.PayForOrderByManager(merchantId, orderNo)
 	}
 
 	if err != nil {

@@ -22,5 +22,5 @@ type IUserRep interface {
 	GetPersonValue(int) *PersonValue
 
 	// 获取配送人员
-	GetDeliveryStaffPersons(partnerId int) []*PersonValue
+	GetDeliveryStaffPersons(merchantId int) []*PersonValue
 }

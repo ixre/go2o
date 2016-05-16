@@ -88,9 +88,9 @@ func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 	return memberId
 }
 
-func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLevel {
+func (this *MemberRep) GetLevel(merchantId, levelValue int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value = ?", partnerId, levelValue)
+	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value = ?", merchantId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -98,9 +98,9 @@ func (this *MemberRep) GetLevel(partnerId, levelValue int) *valueobject.MemberLe
 }
 
 // 获取下一个等级
-func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.MemberLevel {
+func (this *MemberRep) GetNextLevel(merchantId, levelVal int) *valueobject.MemberLevel {
 	var m valueobject.MemberLevel
-	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value>? LIMIT 0,1", partnerId, levelVal)
+	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value>? LIMIT 0,1", merchantId, levelVal)
 	if err != nil {
 		return nil
 	}
@@ -108,22 +108,22 @@ func (this *MemberRep) GetNextLevel(partnerId, levelVal int) *valueobject.Member
 }
 
 // 获取会员等级
-func (this *MemberRep) GetMemberLevels(partnerId int) []*valueobject.MemberLevel {
+func (this *MemberRep) GetMemberLevels(merchantId int) []*valueobject.MemberLevel {
 	list := []*valueobject.MemberLevel{}
 	this.Connector.GetOrm().Select(&list,
-		"merchant_id=?", partnerId)
+		"merchant_id=?", merchantId)
 	return list
 }
 
 // 删除会员等级
-func (this *MemberRep) DeleteMemberLevel(partnerId, id int) error {
+func (this *MemberRep) DeleteMemberLevel(merchantId, id int) error {
 	_, err := this.Connector.GetOrm().Delete(&valueobject.MemberLevel{},
-		"id=? AND merchant_id=?", id, partnerId)
+		"id=? AND merchant_id=?", id, merchantId)
 	return err
 }
 
 // 保存等级
-func (this *MemberRep) SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error) {
+func (this *MemberRep) SaveMemberLevel(merchantId int, v *valueobject.MemberLevel) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -203,12 +203,12 @@ func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
 }
 
 // 获取积分对应的等级
-func (this *MemberRep) GetLevelValueByExp(partnerId int, exp int) int {
+func (this *MemberRep) GetLevelValueByExp(merchantId int, exp int) int {
 	var levelId int
 	this.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.merchant_id=? AND lv.require_exp <= ? AND lv.enabled=1
 	 	 ORDER BY lv.require_exp DESC LIMIT 0,1`,
-		&levelId, partnerId, exp)
+		&levelId, merchantId, exp)
 	return levelId
 
 }

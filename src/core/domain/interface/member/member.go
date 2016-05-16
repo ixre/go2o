@@ -115,8 +115,8 @@ type (
 		GetLevel() *valueobject.MemberLevel
 
 		//　增加积分
-		// todo:partnerId 不需要
-		AddIntegral(partnerId int, backType int, integral int, log string) error
+		// todo:merchantId 不需要
+		AddIntegral(merchantId int, backType int, integral int, log string) error
 
 		// 获取关联的会员
 		GetRelation() *MemberRelation

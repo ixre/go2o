@@ -33,9 +33,9 @@ func (this *mssC) Mail_template_list(ctx *echox.Context) error {
 
 // 修改广告
 func (this *mssC) Edit_mail_tpl(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
+	e, _ := dps.PartnerService.GetMailTemplate(merchantId, id)
 
 	js, _ := json.Marshal(e)
 	d := ctx.NewData()
@@ -61,9 +61,9 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
-		err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
+		err := dps.PartnerService.DeleteMailTemplate(merchantId, adId)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -78,7 +78,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 
 // 保存邮件模板(POST)
 func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -89,9 +89,9 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 		web.ParseFormToEntity(r.Form, &e)
 
 		//更新
-		e.MerchantId = partnerId
+		e.MerchantId = merchantId
 
-		id, err := dps.PartnerService.SaveMailTemplate(partnerId, &e)
+		id, err := dps.PartnerService.SaveMailTemplate(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -104,8 +104,8 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 	return nil
 }
 
-func (this *mssC) getMailTemplateOpts(partnerId int) string {
-	return getMailTemplateOpts(partnerId)
+func (this *mssC) getMailTemplateOpts(merchantId int) string {
+	return getMailTemplateOpts(merchantId)
 }
 
 // 设置
@@ -113,12 +113,12 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.mss_setting_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
-	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
+	merchantId := getMerchantId(ctx)
+	e := dps.PartnerService.GetKeyMapsByKeyword(merchantId, "mss_")
 	js, _ := json.Marshal(e)
 
 	d := ctx.NewData()
-	d.Map["mailTplOpt"] = template.HTML(this.getMailTemplateOpts(partnerId))
+	d.Map["mailTplOpt"] = template.HTML(this.getMailTemplateOpts(merchantId))
 	d.Map["entity"] = template.JS(js)
 
 	return ctx.Render(http.StatusOK, "mss.setting.html", d)
@@ -127,7 +127,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 // 保存设置
 func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 	var result gof.Message
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	req := ctx.HttpRequest()
 	req.ParseForm()
 	var data map[string]string = make(map[string]string, 0)
@@ -137,7 +137,7 @@ func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 		}
 	}
 
-	err := dps.PartnerService.SaveKeyMaps(partnerId, data)
+	err := dps.PartnerService.SaveKeyMaps(merchantId, data)
 
 	if err != nil {
 		result.Message = err.Error()

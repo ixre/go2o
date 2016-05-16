@@ -108,8 +108,8 @@ func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 // 获取可用的促销,不包含优惠券
 func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if this._availPromotions == nil {
-		partnerId := this._value.MerchantId
-		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfPartnerOrder(partnerId)
+		merchantId := this._value.MerchantId
+		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfPartnerOrder(merchantId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
 			proms[i] = this._promRep.CreatePromotion(v)

@@ -124,9 +124,9 @@ func (this *promotionRep) GetPromotionOfGoods(goodsId int) []*promotion.ValuePro
 }
 
 // 获取商户订单可用的促销
-func (this *promotionRep) GetPromotionOfPartnerOrder(partnerId int) []*promotion.ValuePromotion {
+func (this *promotionRep) GetPromotionOfPartnerOrder(merchantId int) []*promotion.ValuePromotion {
 	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
-	err := this.Connector.GetOrm().Select(&arr, "merchant_id=? AND goods_id=0 AND enabled=1 ORDER BY id", partnerId)
+	err := this.Connector.GetOrm().Select(&arr, "merchant_id=? AND goods_id=0 AND enabled=1 ORDER BY id", merchantId)
 	if err == nil {
 		return arr
 	}
@@ -255,12 +255,12 @@ func (this *promotionRep) GetCouponTakeByMemberId(couponId, memberId int) (*prom
 }
 
 // 根据优惠券代码获取优惠券
-func (this *promotionRep) GetValueCouponByCode(partnerId int, couponCode string) *promotion.ValueCoupon {
+func (this *promotionRep) GetValueCouponByCode(merchantId int, couponCode string) *promotion.ValueCoupon {
 	var e promotion.ValueCoupon
 	err := this.Connector.GetOrm().GetByQuery(&e,
 		fmt.Sprintf(`SELECT * FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
 		 		WHERE merchant_id=%d AND code='%s'`,
-			partnerId, couponCode))
+			merchantId, couponCode))
 
 	if err == nil {
 		return &e
@@ -269,8 +269,8 @@ func (this *promotionRep) GetValueCouponByCode(partnerId int, couponCode string)
 }
 
 // 根据代码获取优惠券
-func (this *promotionRep) GetCouponByCode(partnerId int, code string) promotion.IPromotion {
-	v := this.GetValueCouponByCode(partnerId, code)
+func (this *promotionRep) GetCouponByCode(merchantId int, code string) promotion.IPromotion {
+	v := this.GetValueCouponByCode(merchantId, code)
 	if v != nil {
 		p := this.GetValuePromotion(v.Id)
 		prom := this.CreatePromotion(p)

@@ -23,7 +23,7 @@ var _ sale.ISale = new(Sale)
 const MAX_CACHE_SIZE int = 1000
 
 type Sale struct {
-	_partnerId  int
+	_merchantId  int
 	_saleRep    sale.ISaleRep
 	_saleTagRep sale.ISaleTagRep
 	_goodsRep   sale.IGoodsRep
@@ -32,10 +32,10 @@ type Sale struct {
 	_categories []sale.ICategory
 }
 
-func NewSale(partnerId int, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+func NewSale(merchantId int, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	tagRep sale.ISaleTagRep, promRep promotion.IPromotionRep) sale.ISale {
 	return (&Sale{
-		_partnerId:  partnerId,
+		_merchantId:  merchantId,
 		_saleRep:    saleRep,
 		_saleTagRep: tagRep,
 		_goodsRep:   goodsRep,
@@ -59,7 +59,7 @@ func (this *Sale) chkCache() {
 }
 
 func (this *Sale) GetAggregateRootId() int {
-	return this._partnerId
+	return this._merchantId
 }
 
 func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
@@ -215,7 +215,7 @@ func (this *Sale) InitSaleTags() error {
 	var err error
 	for _, v := range arr {
 		v.Enabled = 1
-		v.MerchantId = this._partnerId
+		v.MerchantId = this._merchantId
 		v.IsInternal = 1
 		_, err = this.CreateSaleTag(&v).Save()
 	}
@@ -225,7 +225,7 @@ func (this *Sale) InitSaleTags() error {
 
 // 获取所有的销售标签
 func (this *Sale) GetAllSaleTags() []sale.ISaleTag {
-	arr := this._saleTagRep.GetAllValueSaleTags(this._partnerId)
+	arr := this._saleTagRep.GetAllValueSaleTags(this._merchantId)
 	var tags = make([]sale.ISaleTag, len(arr))
 
 	for i, v := range arr {
@@ -236,12 +236,12 @@ func (this *Sale) GetAllSaleTags() []sale.ISaleTag {
 
 // 获取销售标签
 func (this *Sale) GetSaleTag(id int) sale.ISaleTag {
-	return this._saleTagRep.GetSaleTag(this._partnerId, id)
+	return this._saleTagRep.GetSaleTag(this._merchantId, id)
 }
 
 // 根据Code获取销售标签
 func (this *Sale) GetSaleTagByCode(code string) sale.ISaleTag {
-	v := this._saleTagRep.GetSaleTagByCode(this._partnerId, code)
+	v := this._saleTagRep.GetSaleTagByCode(this._merchantId, code)
 	return this.CreateSaleTag(v)
 }
 
@@ -261,7 +261,7 @@ func (this *Sale) DeleteSaleTag(id int) error {
 		if v.System() {
 			return sale.ErrInternalDisallow
 		}
-		return this._saleTagRep.DeleteSaleTag(this._partnerId, id)
+		return this._saleTagRep.DeleteSaleTag(this._merchantId, id)
 	}
 	return nil
 }

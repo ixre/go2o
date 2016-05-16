@@ -40,9 +40,9 @@ func (this *shopC) Create(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *shopC) Modify(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	shop := dps.PartnerService.GetShopValueById(partnerId, id)
+	shop := dps.PartnerService.GetShopValueById(merchantId, id)
 	entity, _ := json.Marshal(shop)
 
 	d := ctx.NewData()
@@ -52,7 +52,7 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 
 //保存门店信息(POST)
 func (this *shopC) SaveShop(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -61,7 +61,7 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 		shop := merchant.ValueShop{}
 		web.ParseFormToEntity(r.Form, &shop)
 
-		id, err := dps.PartnerService.SaveShop(partnerId, &shop)
+		id, err := dps.PartnerService.SaveShop(merchantId, &shop)
 
 		if err != nil {
 			result = gof.Message{Result: true, Message: err.Error()}
@@ -76,13 +76,13 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 // 删除商店(POST)
 func (this *shopC) Del(ctx *echox.Context) error {
 	var result gof.Message
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 		shopId, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
-			err = dps.PartnerService.DeleteShop(partnerId, shopId)
+			err = dps.PartnerService.DeleteShop(merchantId, shopId)
 		}
 
 		if err != nil {

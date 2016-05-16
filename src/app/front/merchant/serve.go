@@ -27,7 +27,7 @@ import (
 func GetServe() *echox.Echo {
 
 	s := echox.New()
-	s.SetTemplateRender("public/views/partner")
+	s.SetTemplateRender("public/views/merchant")
 	s.Use(mw.Recover())
 	s.Use(echox.StopAttack)
 	s.Use(partnerLogonCheck) // 判断商户登陆状态

@@ -42,8 +42,8 @@ func (this *getC) GetQR(ctx *echox.Context) error {
 		if rl == nil {
 			return errors.New("Code error")
 		}
-		partnerId := rl.RegisterMerchantId
-		pt, _ := dps.PartnerService.GetMerchant(partnerId)
+		merchantId := rl.RegisterMerchantId
+		pt, _ := dps.PartnerService.GetMerchant(merchantId)
 		if pt == nil {
 			return errors.New("Except member")
 		}

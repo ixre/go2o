@@ -19,8 +19,8 @@ import (
 )
 
 func (this *orderC) setShop(ctx *echox.Context,
-	partnerId int, order *shopping.ValueOrder) error {
-	shopDr := cache.GetShopDropList(partnerId, -1)
+	merchantId int, order *shopping.ValueOrder) error {
+	shopDr := cache.GetShopDropList(merchantId, -1)
 
 	isNoShop := len(shopDr) == 0
 
@@ -35,7 +35,7 @@ func (this *orderC) setShop(ctx *echox.Context,
 
 // 设置门店(POST)
 func (this *orderC) SetShop(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -43,9 +43,9 @@ func (this *orderC) SetShop(ctx *echox.Context) error {
 		shopId, err := strconv.Atoi(r.FormValue("shopId"))
 		if err == nil {
 			orderNo := r.FormValue("order_no")
-			err = dps.ShoppingService.SetDeliverShop(partnerId,
+			err = dps.ShoppingService.SetDeliverShop(merchantId,
 				orderNo, shopId)
-			dps.ShoppingService.ConfirmOrder(partnerId, orderNo)
+			dps.ShoppingService.ConfirmOrder(merchantId, orderNo)
 		}
 		if err != nil {
 			return ctx.StringOK("{result:false,message:'" + err.Error() + "'}")
@@ -56,7 +56,7 @@ func (this *orderC) SetShop(ctx *echox.Context) error {
 }
 
 func (this *orderC) setState(ctx *echox.Context,
-	partnerId int, order *shopping.ValueOrder) error {
+	merchantId int, order *shopping.ValueOrder) error {
 
 	var descript string
 	var button string

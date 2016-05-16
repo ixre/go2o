@@ -20,18 +20,18 @@ type Cart struct {
 	_shoppingRep shopping.IShoppingRep
 	_partnerRep  merchant.IMerchantRep
 	_memberRep   member.IMemberRep
-	_partnerId   int
+	_merchantId   int
 	_summary     string
 	_shop        merchant.IShop
 	_deliver     member.IDeliver
 }
 
 func createCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int,
+	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, merchantId int,
 	val *shopping.ValueCart) shopping.ICart {
 	return (&Cart{
 		_value:       val,
-		_partnerId:   partnerId,
+		_merchantId:   merchantId,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
 		_shoppingRep: shoppingRep,
@@ -40,9 +40,9 @@ func createCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, s
 	}).init()
 }
 
-//todo: partnerId 应去掉，可能在多个商家买东西
+//todo: merchantId 应去掉，可能在多个商家买东西
 func newCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, partnerId int, buyerId int) shopping.ICart {
+	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, merchantId int, buyerId int) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &shopping.ValueCart{
@@ -61,7 +61,7 @@ func newCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, sale
 		_value:       value,
 		_partnerRep:  partnerRep,
 		_memberRep:   memberRep,
-		_partnerId:   partnerId,
+		_merchantId:   merchantId,
 		_shoppingRep: shoppingRep,
 		_saleRep:     saleRep,
 		_goodsRep:    goodsRep,
@@ -102,7 +102,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 
 			//  更新登陆后的优惠价
 			if this._value.BuyerId > 0 {
-				sl = this._saleRep.GetSale(this._partnerId)
+				sl = this._saleRep.GetSale(this._merchantId)
 				m := this._memberRep.GetMember(this._value.BuyerId)
 				if m != nil {
 					level = m.GetValue().Level
@@ -142,7 +142,7 @@ func (this *Cart) GetValue() shopping.ValueCart {
 
 // 获取购物车中的商品
 func (this *Cart) GetCartGoods() []sale.IGoods {
-	sl := this._saleRep.GetSale(this._partnerId)
+	sl := this._saleRep.GetSale(this._merchantId)
 	var gs []sale.IGoods = make([]sale.IGoods, len(this._value.Items))
 	for i, v := range this._value.Items {
 		gs[i] = sl.GetGoods(v.GoodsId)
@@ -156,7 +156,7 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 	if this._value.Items == nil {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
-	sl := this._saleRep.GetSale(this._partnerId)
+	sl := this._saleRep.GetSale(this._merchantId)
 	goods := sl.GetGoods(goodsId)
 	if goods == nil {
 		return nil, sale.ErrNoSuchGoods // 没有商品
@@ -254,7 +254,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 
 	if shopId > 0 {
 		var pt merchant.IMerchant
-		pt, err = this._partnerRep.GetMerchant(this._partnerId)
+		pt, err = this._partnerRep.GetMerchant(this._merchantId)
 		if err != nil {
 			return err
 		}
@@ -289,7 +289,7 @@ func (this *Cart) GetSettleData() (s merchant.IShop, d member.IDeliver, paymentO
 	var err error
 	if this._value.ShopId > 0 && this._shop == nil {
 		var pt merchant.IMerchant
-		pt, err = this._partnerRep.GetMerchant(this._partnerId)
+		pt, err = this._partnerRep.GetMerchant(this._merchantId)
 		if err == nil {
 			this._shop = pt.GetShop(this._value.ShopId)
 		}

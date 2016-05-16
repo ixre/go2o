@@ -31,7 +31,7 @@ var ExpManager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &
 //================== 导出控制器 ==============//
 
 // 获取导出数据
-func GetExportData(r *http.Request, partnerId int) []byte {
+func GetExportData(r *http.Request, merchantId int) []byte {
 	query := r.URL.Query()
 	r.ParseForm()
 	var exportItem report.IDataExportPortal = ExpManager.GetExportItem(query.Get("portal"))
@@ -43,7 +43,7 @@ func GetExportData(r *http.Request, partnerId int) []byte {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
 
-		parameter.Parameters["merchant_id"] = strconv.Itoa(partnerId)
+		parameter.Parameters["merchant_id"] = strconv.Itoa(merchantId)
 
 		if page != "" {
 			parameter.Parameters["pageIndex"] = page

@@ -34,16 +34,16 @@ func (this *saleTagRep) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 }
 
 // 获取所有的销售标签
-func (this *saleTagRep) GetAllValueSaleTags(partnerId int) []*sale.ValueSaleTag {
+func (this *saleTagRep) GetAllValueSaleTags(merchantId int) []*sale.ValueSaleTag {
 	arr := []*sale.ValueSaleTag{}
-	this.Connector.GetOrm().Select(&arr, "merchant_id=?", partnerId)
+	this.Connector.GetOrm().Select(&arr, "merchant_id=?", merchantId)
 	return arr
 }
 
 // 获取销售标签值
-func (this *saleTagRep) GetValueSaleTag(partnerId int, tagId int) *sale.ValueSaleTag {
+func (this *saleTagRep) GetValueSaleTag(merchantId int, tagId int) *sale.ValueSaleTag {
 	var v *sale.ValueSaleTag = new(sale.ValueSaleTag)
-	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND id=?", partnerId, tagId)
+	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND id=?", merchantId, tagId)
 	if err == nil {
 		return v
 	}
@@ -51,41 +51,41 @@ func (this *saleTagRep) GetValueSaleTag(partnerId int, tagId int) *sale.ValueSal
 }
 
 // 获取销售标签
-func (this *saleTagRep) GetSaleTag(partnerId int, id int) sale.ISaleTag {
-	return this.CreateSaleTag(this.GetValueSaleTag(partnerId, id))
+func (this *saleTagRep) GetSaleTag(merchantId int, id int) sale.ISaleTag {
+	return this.CreateSaleTag(this.GetValueSaleTag(merchantId, id))
 }
 
 // 保存销售标签
-func (this *saleTagRep) SaveSaleTag(partnerId int, v *sale.ValueSaleTag) (int, error) {
+func (this *saleTagRep) SaveSaleTag(merchantId int, v *sale.ValueSaleTag) (int, error) {
 	orm := this.GetOrm()
 	var err error
-	v.MerchantId = partnerId
+	v.MerchantId = merchantId
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM gs_sale_tag WHERE merchant_id=?", &v.Id, partnerId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM gs_sale_tag WHERE merchant_id=?", &v.Id, merchantId)
 	}
 	return v.Id, err
 }
 
 // 根据Code获取销售标签
-func (this *saleTagRep) GetSaleTagByCode(partnerId int, code string) *sale.ValueSaleTag {
+func (this *saleTagRep) GetSaleTagByCode(merchantId int, code string) *sale.ValueSaleTag {
 	var v *sale.ValueSaleTag = new(sale.ValueSaleTag)
-	if this.GetOrm().GetBy(v, "merchant_id=? AND tag_code=?", partnerId, code) == nil {
+	if this.GetOrm().GetBy(v, "merchant_id=? AND tag_code=?", merchantId, code) == nil {
 		return v
 	}
 	return nil
 }
 
 // 删除销售标签
-func (this *saleTagRep) DeleteSaleTag(partnerId int, id int) error {
-	_, err := this.GetOrm().Delete(&sale.ValueSaleTag{}, "merchant_id=? AND id=?", partnerId, id)
+func (this *saleTagRep) DeleteSaleTag(merchantId int, id int) error {
+	_, err := this.GetOrm().Delete(&sale.ValueSaleTag{}, "merchant_id=? AND id=?", merchantId, id)
 	return err
 }
 
 // 获取商品
-func (this *saleTagRep) GetValueGoodsBySaleTag(partnerId,
+func (this *saleTagRep) GetValueGoodsBySaleTag(merchantId,
 	tagId int, sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
@@ -96,12 +96,12 @@ func (this *saleTagRep) GetValueGoodsBySaleTag(partnerId,
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
 			WHERE t.merchant_id=? AND t.id=?) `+sortBy+`
-			LIMIT ?,?`, partnerId, tagId, begin, end)
+			LIMIT ?,?`, merchantId, tagId, begin, end)
 	return arr
 }
 
 // 获取商品
-func (this *saleTagRep) GetPagedValueGoodsBySaleTag(partnerId,
+func (this *saleTagRep) GetPagedValueGoodsBySaleTag(merchantId,
 	tagId int, sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {
@@ -110,13 +110,13 @@ func (this *saleTagRep) GetPagedValueGoodsBySaleTag(partnerId,
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
-			WHERE t.merchant_id=? AND t.id=?)`), &total, partnerId, tagId)
+			WHERE t.merchant_id=? AND t.id=?)`), &total, merchantId, tagId)
 	arr := []*valueobject.Goods{}
 	if total > 0 {
 		this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_tag t ON t.id = g.sale_tag_id
-			WHERE t.merchant_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`, partnerId, tagId, begin, end)
+			WHERE t.merchant_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`, merchantId, tagId, begin, end)
 	}
 	return total, arr
 }

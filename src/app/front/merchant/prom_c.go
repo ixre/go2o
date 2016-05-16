@@ -40,10 +40,10 @@ func (this *promC) Del(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		promId, _ := strconv.Atoi(req.FormValue("id"))
 
-		err := dps.PromService.DelPromotion(partnerId, promId)
+		err := dps.PromService.DelPromotion(merchantId, promId)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -101,7 +101,7 @@ func (this *promC) Edit_cb(ctx *echox.Context) error {
 
 // 保存现金返现(POST)
 func (this *promC) Save_cb(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -113,10 +113,10 @@ func (this *promC) Save_cb(ctx *echox.Context) error {
 		e2 := promotion.ValueCashBack{}
 		web.ParseFormToEntity(r.Form, &e2)
 
-		e.MerchantId = partnerId
+		e.MerchantId = merchantId
 		e.TypeFlag = promotion.TypeFlagCashBack
 
-		id, err := dps.PromService.SaveCashBackPromotion(partnerId, &e, &e2)
+		id, err := dps.PromService.SaveCashBackPromotion(merchantId, &e, &e2)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -180,7 +180,7 @@ func (this *promC) Edit_coupon(ctx *echox.Context) error {
 
 // 保存优惠券(POST)
 func (this *promC) Save_coupon(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -192,7 +192,7 @@ func (this *promC) Save_coupon(ctx *echox.Context) error {
 		e2 := promotion.ValueCoupon{}
 		web.ParseFormToEntity(r.Form, &e2)
 
-		e.MerchantId = partnerId
+		e.MerchantId = merchantId
 		e.TypeFlag = promotion.TypeFlagCoupon
 
 		const layout string = "2006-01-02 15:04:05"
@@ -201,7 +201,7 @@ func (this *promC) Save_coupon(ctx *echox.Context) error {
 		e2.BeginTime = bt.Unix()
 		e2.OverTime = ot.Unix()
 
-		id, err := dps.PromService.SaveCoupon(partnerId, &e, &e2)
+		id, err := dps.PromService.SaveCoupon(merchantId, &e, &e2)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -236,7 +236,7 @@ func (this *promC) Bind_coupon(ctx *echox.Context) error {
 }
 
 func (this *promC) bind_coupon_post(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
@@ -247,7 +247,7 @@ func (this *promC) bind_coupon_post(ctx *echox.Context) error {
 			result.Message = "请选择会员"
 		} else {
 			idArr := strings.Split(memberIds, ",")
-			err = dps.PromService.BindCoupons(partnerId, id, idArr)
+			err = dps.PromService.BindCoupons(merchantId, id, idArr)
 		}
 	}
 	if err != nil {

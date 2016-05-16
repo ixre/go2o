@@ -54,11 +54,11 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
 	//r.ParseForm()
 	var result gof.Message
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
-	m, err := dps.MemberService.TryLogin(partnerId, usr, pwd, true)
+	m, err := dps.MemberService.TryLogin(merchantId, usr, pwd, true)
 	if err == nil {
 		result.Result = true
 		ctx.Session.Set("member", m)
@@ -139,17 +139,17 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 		}
 
 		var memberId int
-		var partnerId int
+		var merchantId int
 		var err error
 
-		partnerId = GetSessionMerchantId(ctx)
+		merchantId = GetSessionMerchantId(ctx)
 		if len(member.Usr) == 0 || len(member.Pwd) == 0 {
 			result.Message = "1000:注册信息不完整"
 			return ctx.JSON(http.StatusOK, result)
 		}
 
 		member.Pwd = domain.MemberSha1Pwd(member.Pwd)
-		memberId, err = dps.MemberService.RegisterMember(partnerId, &member, "", code)
+		memberId, err = dps.MemberService.RegisterMember(merchantId, &member, "", code)
 		if err != nil {
 			result.Message = err.Error()
 		} else {

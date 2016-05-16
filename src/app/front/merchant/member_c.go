@@ -39,9 +39,9 @@ func (this *memberC) LevelList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *memberC) EditMLevel(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	entity := dps.PartnerService.GetMemberLevelById(partnerId, id)
+	entity := dps.PartnerService.GetMemberLevelById(merchantId, id)
 	js, _ := json.Marshal(entity)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -56,7 +56,7 @@ func (this *memberC) CreateMLevel(ctx *echox.Context) error {
 
 // 保存会员等级(POST)
 func (this *memberC) SaveMLevel(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -66,7 +66,7 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 		web.ParseFormToEntity(r.Form, &e)
 		e.MerchantId = getMerchantId(ctx)
 
-		id, err := dps.PartnerService.SaveMemberLevel(partnerId, &e)
+		id, err := dps.PartnerService.SaveMemberLevel(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -84,10 +84,10 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
-			err = dps.PartnerService.DelMemberLevel(partnerId, id)
+			err = dps.PartnerService.DelMemberLevel(merchantId, id)
 		}
 
 		if err != nil {
@@ -114,9 +114,9 @@ func (this *memberC) Lock_member(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		id, _ := strconv.Atoi(req.FormValue("id"))
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		var result gof.Message
-		if _, err := dps.MemberService.LockMember(partnerId, id); err != nil {
+		if _, err := dps.MemberService.LockMember(merchantId, id); err != nil {
 			result.Message = err.Error()
 		} else {
 			result.Result = true
@@ -217,8 +217,8 @@ func (this *memberC) Reset_pwd(ctx *echox.Context) error {
 		req.ParseForm()
 		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
 		rl := dps.MemberService.GetRelation(memberId)
-		partnerId := getMerchantId(ctx)
-		if rl == nil || rl.RegisterMerchantId != partnerId {
+		merchantId := getMerchantId(ctx)
+		if rl == nil || rl.RegisterMerchantId != merchantId {
 			result.Message = "无权进行当前操作"
 		} else {
 			newPwd := dps.MemberService.ResetPassword(memberId)
@@ -249,7 +249,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	amount, _ := strconv.ParseFloat(req.FormValue("Amount"), 32)
 	if amount < 0 {
@@ -261,7 +261,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 			err = merchant.ErrPartnerNotMatch
 		} else {
 			title := fmt.Sprintf("[KF]客服充值%s", format.FormatFloat(float32(amount)))
-			err = dps.MemberService.Charge(partnerId, memberId,
+			err = dps.MemberService.Charge(merchantId, memberId,
 				member.TypeBalanceServiceCharge, title, "-", float32(amount))
 		}
 		if err != nil {
@@ -289,12 +289,12 @@ func (this *memberC) Pass_apply_req(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		passed := req.FormValue("pass") == "1"
 		memberId, _ := strconv.Atoi(req.FormValue("member_id"))
 		id, _ := strconv.Atoi(req.FormValue("id"))
 
-		err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, passed, "")
+		err := dps.MemberService.ConfirmApplyCash(merchantId, memberId, id, passed, "")
 
 		if err != nil {
 			msg.Message = err.Error()
@@ -330,11 +330,11 @@ func (this *memberC) back_apply_req_post(ctx *echox.Context) error {
 	var msg gof.Message
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	id, _ := strconv.Atoi(req.FormValue("Id"))
 
-	err := dps.MemberService.ConfirmApplyCash(partnerId, memberId, id, false, "")
+	err := dps.MemberService.ConfirmApplyCash(merchantId, memberId, id, false, "")
 	if err != nil {
 		msg.Message = err.Error()
 	} else {
@@ -375,7 +375,7 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 	var err error
 	req := ctx.HttpRequest()
 	req.ParseForm()
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	memberId, _ := strconv.Atoi(req.FormValue("MemberId"))
 	id, _ := strconv.Atoi(req.FormValue("Id"))
 	agree := req.FormValue("Agree") == "on"
@@ -384,7 +384,7 @@ func (this *memberC) handle_apply_req_post(ctx *echox.Context) error {
 	if !agree {
 		err = errors.New("请同意已知晓并打款选项")
 	} else {
-		err = dps.MemberService.FinishApplyCash(partnerId, memberId, id, tradeNo)
+		err = dps.MemberService.FinishApplyCash(merchantId, memberId, id, tradeNo)
 	}
 	if err != nil {
 		msg.Message = err.Error()
@@ -404,7 +404,7 @@ func (this *memberC) Team_rank(ctx *echox.Context) error {
 
 // 邀请关系
 func (this *memberC) Invi_relation(c *echox.Context) error {
-	partnerId := getMerchantId(c)
+	merchantId := getMerchantId(c)
 	memberId, _ := strconv.Atoi(c.Query("member_id"))
 	ms := dps.MemberService
 	idArr := []int{memberId}
@@ -417,7 +417,7 @@ func (this *memberC) Invi_relation(c *echox.Context) error {
 	//	//反序
 	//	idArr[i], idArr[j] = idArr[j], idArr[i]
 	//}
-	list, _ := json.Marshal(ms.GetMemberList(partnerId, idArr))
+	list, _ := json.Marshal(ms.GetMemberList(merchantId, idArr))
 	d := c.NewData()
 	d.Map["listJson"] = template.JS(list)
 	return c.RenderOK("member.invi_relation.html", d)

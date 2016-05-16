@@ -33,16 +33,16 @@ type Shopping struct {
 	_memberRep   member.IMemberRep
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
-	_partnerId   int
+	_merchantId   int
 	_partner     merchant.IMerchant
 }
 
-func NewShopping(partnerId int, partnerRep merchant.IMerchantRep,
+func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
-	pt, _ := partnerRep.GetMerchant(partnerId)
+	pt, _ := partnerRep.GetMerchant(merchantId)
 
 	return &Shopping{
 		_rep:         rep,
@@ -50,7 +50,7 @@ func NewShopping(partnerId int, partnerRep merchant.IMerchantRep,
 		_goodsRep:    goodsRep,
 		_promRep:     promRep,
 		_memberRep:   memberRep,
-		_partnerId:   partnerId,
+		_merchantId:   merchantId,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
 		_partner:     pt,
@@ -58,7 +58,7 @@ func NewShopping(partnerId int, partnerRep merchant.IMerchantRep,
 }
 
 func (this *Shopping) GetAggregateRootId() int {
-	return this._partnerId
+	return this._merchantId
 }
 
 func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart) shopping.IOrder {
@@ -69,7 +69,7 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart)
 // @buyerId 为购买会员ID,0表示匿名购物车
 func (this *Shopping) NewCart(buyerId int) shopping.ICart {
 	var cart shopping.ICart = newCart(this._partnerRep, this._memberRep, this._saleRep,
-		this._goodsRep, this._rep, this._partnerId, buyerId)
+		this._goodsRep, this._rep, this._merchantId, buyerId)
 	cart.Save()
 	return cart
 }
@@ -80,7 +80,7 @@ func (this *Shopping) CheckCart(cart shopping.ICart) error {
 		return shopping.ErrEmptyShoppingCart
 	}
 
-	sl := this._saleRep.GetSale(this._partnerId)
+	sl := this._saleRep.GetSale(this._merchantId)
 	for _, v := range cart.GetValue().Items {
 		goods := sl.GetGoods(v.GoodsId)
 		if goods == nil {
@@ -102,7 +102,7 @@ func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep, this._rep, this._partnerId, cart), nil
+			this._goodsRep, this._rep, this._merchantId, cart), nil
 	}
 	return nil, error
 }
@@ -187,7 +187,7 @@ func (this *Shopping) GetCurrentCart(buyerId int) (shopping.ICart, error) {
 	cart, error := this._rep.GetLatestCart(buyerId)
 	if error == nil {
 		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep, this._rep, this._partnerId, cart), nil
+			this._goodsRep, this._rep, this._merchantId, cart), nil
 	}
 	return nil, error
 }
@@ -222,14 +222,14 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 	}
 
 	val.MemberId = memberId
-	val.MerchantId = this._partnerId
+	val.MerchantId = this._merchantId
 
 	tf, of := cart.GetFee()
 	val.TotalFee = tf //总金额
 	val.Fee = of      //实际金额
 	val.PayFee = of
 	val.DiscountFee = tf - of //优惠金额
-	val.MerchantId = this._partnerId
+	val.MerchantId = this._merchantId
 	val.Status = 1
 
 	order = this.CreateOrder(&val, cart)
@@ -237,7 +237,7 @@ func (this *Shopping) ParseShoppingCart(memberId int) (shopping.IOrder,
 }
 
 func (this *Shopping) GetFreeOrderNo() string {
-	return this._rep.GetFreeOrderNo(this._partnerId)
+	return this._rep.GetFreeOrderNo(this._merchantId)
 }
 
 // 智能选择门店
@@ -272,7 +272,7 @@ func (this *Shopping) BuildOrder(memberId int, subject string, couponCode string
 		var coupon promotion.ICouponPromotion
 		var result bool
 		cp := this._promRep.GetCouponByCode(
-			this._partnerId, couponCode)
+			this._merchantId, couponCode)
 
 		// 如果优惠券不存在
 		if cp == nil {
@@ -327,7 +327,7 @@ func (this *Shopping) SubmitOrder(memberId int, subject string, couponCode strin
 }
 
 func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
-	val, err := this._rep.GetOrderByNo(this._partnerId, orderNo)
+	val, err := this._rep.GetOrderByNo(this._merchantId, orderNo)
 	if err != nil {
 		return nil, errors.New("订单不存在")
 	}
@@ -355,7 +355,7 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 
 	saleConf := this._partner.GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
-		orders, err = this._rep.GetWaitingSetupOrders(this._partnerId)
+		orders, err = this._rep.GetWaitingSetupOrders(this._merchantId)
 		if err != nil {
 			f(err)
 			return

@@ -17,36 +17,36 @@ var _ ad.IPartnerAdvertisement = new(PartnerAdvertisement)
 
 type PartnerAdvertisement struct {
 	_rep       ad.IAdvertisementRep
-	_partnerId int
+	_merchantId int
 }
 
-func NewPartnerAdvertisement(partnerId int, rep ad.IAdvertisementRep) ad.IPartnerAdvertisement {
+func NewPartnerAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IPartnerAdvertisement {
 	return &PartnerAdvertisement{
 		_rep:       rep,
-		_partnerId: partnerId,
+		_merchantId: merchantId,
 	}
 }
 
 // 初始化默认的广告位
 func (this *PartnerAdvertisement) InitInternalAdvertisements() {
-	partnerId := this.GetAggregateRootId()
+	merchantId := this.GetAggregateRootId()
 	unix := time.Now().Unix()
 
 	arr := []*ad.ValueAdvertisement{
 		&ad.ValueAdvertisement{
-			MerchantId: partnerId,
+			MerchantId: merchantId,
 			Name:      "online-shop-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,
 		},
 		&ad.ValueAdvertisement{
-			MerchantId: partnerId,
+			MerchantId: merchantId,
 			Name:      "app-entry-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,
 		},
 		&ad.ValueAdvertisement{
-			MerchantId: partnerId,
+			MerchantId: merchantId,
 			Name:      "online-mobi-shop-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,
@@ -62,12 +62,12 @@ func (this *PartnerAdvertisement) InitInternalAdvertisements() {
 
 // 获取聚合根标识
 func (this *PartnerAdvertisement) GetAggregateRootId() int {
-	return this._partnerId
+	return this._merchantId
 }
 
 // 根据编号获取广告
 func (this *PartnerAdvertisement) GetById(id int) ad.IAdvertisement {
-	v := this._rep.GetValueAdvertisement(this._partnerId, id)
+	v := this._rep.GetValueAdvertisement(this._merchantId, id)
 	if v != nil {
 		return this.CreateAdvertisement(v)
 	}
@@ -83,7 +83,7 @@ func (this *PartnerAdvertisement) DeleteAdvertisement(advertisementId int) error
 			return ad.ErrInternalDisallow
 		}
 
-		err := this._rep.DelAdvertisement(this._partnerId, advertisementId)
+		err := this._rep.DelAdvertisement(this._merchantId, advertisementId)
 
 		this._rep.DelImageDataForAdvertisement(advertisementId)
 		this._rep.DelTextDataForAdvertisement(advertisementId)
@@ -95,7 +95,7 @@ func (this *PartnerAdvertisement) DeleteAdvertisement(advertisementId int) error
 
 // 根据名称获取广告
 func (this *PartnerAdvertisement) GetByName(name string) ad.IAdvertisement {
-	v := this._rep.GetValueAdvertisementByName(this._partnerId, name)
+	v := this._rep.GetValueAdvertisementByName(this._merchantId, name)
 	if v != nil {
 		return this.CreateAdvertisement(v)
 	}

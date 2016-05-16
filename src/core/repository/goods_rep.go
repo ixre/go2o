@@ -117,7 +117,7 @@ func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 }
 
 // 获取已上架的商品
-func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
+func (this *goodsRep) GetPagedOnShelvesGoods(merchantId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
 	var sql string
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
@@ -132,7 +132,7 @@ func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start,
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.merchant_id=? AND gs_category.id IN (%s) AND gs_item.state=1
-		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total, partnerId)
+		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total, merchantId)
 
 	e = []*valueobject.Goods{}
 	if total > 0 {
@@ -142,14 +142,14 @@ func (this *goodsRep) GetPagedOnShelvesGoods(partnerId int, catIds []int, start,
 		 AND gs_item.on_shelves=1 %s ORDER BY %s update_time DESC LIMIT %d,%d`, catIdStr,
 			where, orderBy, start, (end - start))
 
-		this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId)
+		this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId)
 	}
 
 	return total, e
 }
 
 // 获取指定数量已上架的商品
-func (this *goodsRep) GetOnShelvesGoods(partnerId int, start, end int, sortBy string) []*valueobject.Goods {
+func (this *goodsRep) GetOnShelvesGoods(merchantId int, start, end int, sortBy string) []*valueobject.Goods {
 	e := []*valueobject.Goods{}
 	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
@@ -157,6 +157,6 @@ func (this *goodsRep) GetOnShelvesGoods(partnerId int, start, end int, sortBy st
 		 AND gs_item.on_shelves=1 ORDER BY %s,update_time DESC LIMIT ?,?`,
 		sortBy)
 
-	this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId, start, (end - start))
+	this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, start, (end - start))
 	return e
 }

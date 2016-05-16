@@ -50,19 +50,19 @@ type IMemberRep interface {
 	SaveRelation(*MemberRelation) error
 
 	// 获取等级
-	GetLevel(partnerId, levelValue int) *valueobject.MemberLevel
+	GetLevel(merchantId, levelValue int) *valueobject.MemberLevel
 
 	// 获取下一个等级
-	GetNextLevel(partnerId, levelVal int) *valueobject.MemberLevel
+	GetNextLevel(merchantId, levelVal int) *valueobject.MemberLevel
 
 	// 获取会员等级
-	GetMemberLevels(partnerId int) []*valueobject.MemberLevel
+	GetMemberLevels(merchantId int) []*valueobject.MemberLevel
 
 	// 删除会员等级
-	DeleteMemberLevel(partnerId, id int) error
+	DeleteMemberLevel(merchantId, id int) error
 
 	// 保存等级
-	SaveMemberLevel(partnerId int, v *valueobject.MemberLevel) (int, error)
+	SaveMemberLevel(merchantId int, v *valueobject.MemberLevel) (int, error)
 
 	// 获取账户
 	GetAccount(memberId int) *AccountValue
@@ -83,7 +83,7 @@ type IMemberRep interface {
 	GetRelation(memberId int) *MemberRelation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(partnerId int, exp int) int
+	GetLevelValueByExp(merchantId int, exp int) int
 
 	// 保存地址
 	SaveDeliver(*DeliverAddress) (int, error)

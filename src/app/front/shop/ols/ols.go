@@ -28,8 +28,8 @@ func GetSessionMerchantId(ctx *echox.Context) int {
 }
 
 func getPartner(ctx *echox.Context) *merchant.MerchantValue {
-	partnerId := ctx.Get("merchant_id").(int)
-	return cache.GetValuePartnerCache(partnerId)
+	merchantId := ctx.Get("merchant_id").(int)
+	return cache.GetValuePartnerCache(merchantId)
 }
 
 // 获取商户API信息
@@ -78,7 +78,7 @@ func GetMerchantId(ctx *echox.Context) int {
 	}
 	currHost := ctx.Request().Host
 	//ctx.Set("webui_host", currHost)
-	partnerId := cache.GetMerchantIdByHost(currHost)
-	ctx.Set("partnerId", partnerId)
-	return partnerId
+	merchantId := cache.GetMerchantIdByHost(currHost)
+	ctx.Set("merchantId", merchantId)
+	return merchantId
 }

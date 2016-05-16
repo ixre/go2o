@@ -112,8 +112,8 @@ func (this *Category) Save() (int, error) {
 	return id, err
 }
 
-func (this *Category) getAutomaticUrl(partnerId, id int) string {
-	var relCategories []*sale.ValueCategory = this._rep.GetRelationCategories(partnerId, id)
+func (this *Category) getAutomaticUrl(merchantId, id int) string {
+	var relCategories []*sale.ValueCategory = this._rep.GetRelationCategories(merchantId, id)
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCategories)
 	for i := l; i > 0; i-- {
@@ -127,14 +127,14 @@ var _ domain.IOptionStore = new(categoryOption)
 
 type categoryOption struct {
 	domain.IOptionStore
-	_partnerId int
+	_merchantId int
 	_c         *Category
 }
 
 func newCategoryOption(c *Category) domain.IOptionStore {
 	i := fmt.Sprintf("conf/%d/option/c/%d", c.GetValue().MerchantId, c.GetDomainId())
 	return &categoryOption{
-		_partnerId:   c.GetValue().ParentId,
+		_merchantId:   c.GetValue().ParentId,
 		_c:           c,
 		IOptionStore: domain.NewOptionStoreWrapper(i),
 	}

@@ -139,11 +139,11 @@ func (this *Item) saveGoods() {
 //		return 0, sale.ErrNotOnShelves
 //	}
 //
-//	partnerId := this._sale.GetAggregateRootId()
+//	merchantId := this._sale.GetAggregateRootId()
 //	unix := time.Now().Unix()
-//	cate := this._saleRep.GetCategory(partnerId, v.CategoryId)
+//	cate := this._saleRep.GetCategory(merchantId, v.CategoryId)
 //	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
-//		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
+//		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
 //		GoodsId:      this.GetDomainId(),
 //		GoodsName:    v.Name,
 //		GoodsNo:      v.GoodsNo,

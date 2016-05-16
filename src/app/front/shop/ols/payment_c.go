@@ -81,17 +81,17 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 func (this *PaymentC) Create(ctx *echox.Context) error {
 	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	qs := r.URL.Query()
-	partnerId := GetSessionMerchantId(ctx)
+	merchantId := GetSessionMerchantId(ctx)
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
 
 	var order *shopping.ValueOrder
 	if len(orderNo) > 0 {
-		//	dps.ShoppingService.PayForOrderOnlineTrade(partnerId,orderNo,"alipay","")
+		//	dps.ShoppingService.PayForOrderOnlineTrade(merchantId,orderNo,"alipay","")
 		//	ctx.Response.Header().Add("Location", fmt.Sprintf("/buy/payment?order_no=%s", orderNo))
 		//	ctx.Response.WriteHeader(302)
 		//	return
-		order = dps.ShoppingService.GetOrderByNo(partnerId, orderNo)
+		order = dps.ShoppingService.GetOrderByNo(merchantId, orderNo)
 	}
 
 	//todo:?需要优化
@@ -119,7 +119,7 @@ func (this *PaymentC) Create(ctx *echox.Context) error {
 		aliPayObj := this.getAliPayment(ctx)
 		domain := getDomain(r)
 		returnUrl := fmt.Sprintf("%s/pay/return_alipay", domain)
-		notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, partnerId)
+		notifyUrl := fmt.Sprintf("%s/pay/notify/%d_alipay", domain, merchantId)
 		if len(order.Subject) == 0 {
 			order.Subject = "在线支付订单"
 		}
@@ -138,11 +138,11 @@ func (this *PaymentC) Return_alipay(ctx *echox.Context) error {
 	//return
 	aliPayObj := this.getAliPayment(ctx)
 	result := aliPayObj.Return(ctx.HttpRequest())
-	partnerId := GetSessionMerchantId(ctx)
+	merchantId := GetSessionMerchantId(ctx)
 	if len(result.OrderNo) == 0 {
 		result.OrderNo = ctx.Session.Get("current_payment").(string)
 	}
-	order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
+	order := dps.ShoppingService.GetOrderByNo(merchantId, result.OrderNo)
 	if result.Status == payment.StatusTradeSuccess {
 		this.handleOrder(order, "alipay", &result)
 		return this.paymentSuccess(ctx, order, &result)
@@ -156,13 +156,13 @@ func (this *PaymentC) Notify_post(ctx *echox.Context) error {
 	path := r.URL.Path
 	lastSeg := strings.Split(path[strings.LastIndex(path, "/")+1:], "_")
 	paymentOpt := lastSeg[1]
-	partnerId, _ := strconv.Atoi(lastSeg[0])
-	payment.Debug(" [ Notify] - URL - %s - %d -  %s", r.RequestURI, partnerId, paymentOpt)
+	merchantId, _ := strconv.Atoi(lastSeg[0])
+	payment.Debug(" [ Notify] - URL - %s - %d -  %s", r.RequestURI, merchantId, paymentOpt)
 
 	if paymentOpt == "alipay" {
 		aliPayObj := this.getAliPayment(ctx)
 		result := aliPayObj.Notify(ctx.HttpRequest())
-		order := dps.ShoppingService.GetOrderByNo(partnerId, result.OrderNo)
+		order := dps.ShoppingService.GetOrderByNo(merchantId, result.OrderNo)
 		if result.Status == payment.StatusTradeSuccess {
 			this.handleOrder(order, "alipay", &result)
 			payment.Debug("payment ok")

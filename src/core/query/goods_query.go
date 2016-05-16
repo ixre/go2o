@@ -24,7 +24,7 @@ func NewGoodsQuery(c db.Connector) *GoodsQuery {
 	}
 }
 
-func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(partnerId int, start, end int,
+func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, end int,
 	keyword, where, orderBy string) (total int, goods []*valueobject.Goods) {
 	var sql string
 
@@ -40,7 +40,7 @@ func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(partnerId int, start, end
          INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.merchant_id=? AND gs_item.state=1
-		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s`, where), &total, partnerId, keyword)
+		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s`, where), &total, merchantId, keyword)
 
 	e := []*valueobject.Goods{}
 	if total > 0 {
@@ -50,7 +50,7 @@ func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(partnerId int, start, end
 		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 
-		this.Connector.GetOrm().SelectByQuery(&e, sql, partnerId, keyword, start, (end - start))
+		this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, keyword, start, (end - start))
 	}
 
 	return total, e
