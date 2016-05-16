@@ -51,7 +51,7 @@ func (t *financeC) New_balance_ticket(c *echox.Context) error {
 
 func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 	var msg = gof.Message{Result: true}
-	partnerId := getMerchantId(c)
+	merchantId := getMerchantId(c)
 	memberId, _ := strconv.Atoi(c.Form("member_id"))
 	//kt := strings.Split(c.Form("kt"), "-")
 	//if len(kt) < 2 {
@@ -66,7 +66,7 @@ func (t *financeC) new_balance_ticket_post(c *echox.Context) error {
 	amtStr := c.Form("amount")
 	amount, err := strconv.ParseFloat(oper+amtStr, 32)
 	if err == nil {
-		_, err = dps.MemberService.NewBalanceTicket(partnerId, memberId, kind, remark, float32(amount))
+		_, err = dps.MemberService.NewBalanceTicket(merchantId, memberId, kind, remark, float32(amount))
 	}
 	if err != nil {
 		msg.Message = err.Error()

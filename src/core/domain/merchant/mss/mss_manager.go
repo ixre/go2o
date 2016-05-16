@@ -37,14 +37,14 @@ func NewMssManager(p merchant.IMerchant, rep mss.IMssRep, partnerRep merchant.IM
 func (this *MssManager) CreateMsgTemplate(v interface{}) (mss.IMsgTemplate, error) {
 	//todo: other message type
 	var err error
-	partnerId := this._partner.GetAggregateRootId()
+	merchantId := this._partner.GetAggregateRootId()
 	switch v.(type) {
 	case *mss.MailTemplate:
 		tpl := v.(*mss.MailTemplate)
 		if tpl.Enabled == 0 {
 			err = mss.ErrNotEnabled
 		}
-		return newMailTemplate(partnerId, this._mssRep, tpl), err
+		return newMailTemplate(merchantId, this._mssRep, tpl), err
 	}
 	return nil, mss.ErrNotSupportMessageType
 }
@@ -75,11 +75,11 @@ func (this *MssManager) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 
 // 删除邮件模板
 func (this *MssManager) DeleteMailTemplate(id int) error {
-	partnerId := this._partner.GetAggregateRootId()
-	if this._partnerRep.CheckKvContainValue(partnerId, "kvset", strconv.Itoa(id), "mail") > 0 {
+	merchantId := this._partner.GetAggregateRootId()
+	if this._partnerRep.CheckKvContainValue(merchantId, "kvset", strconv.Itoa(id), "mail") > 0 {
 		return mss.ErrTemplateUsed
 	}
-	return this._mssRep.DeleteMailTemplate(partnerId, id)
+	return this._mssRep.DeleteMailTemplate(merchantId, id)
 }
 
 // 获取所有的邮箱模版

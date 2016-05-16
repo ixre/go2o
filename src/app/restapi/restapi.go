@@ -40,9 +40,9 @@ func getUserInfo(ctx *echo.Context) (string, string) {
 // 检查是否有权限调用接口(商户)
 func chkPartnerApiSecret(ctx *echo.Context) bool {
 	i, s := getUserInfo(ctx)
-	ok, partnerId := CheckApiPermission(i, s)
+	ok, merchantId := CheckApiPermission(i, s)
 	if ok {
-		ctx.Set("merchant_id", partnerId)
+		ctx.Set("merchant_id", merchantId)
 	}
 	return ok
 }
@@ -76,13 +76,13 @@ func ApiTest(ctx *echo.Context) error {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) (ok bool, partnerId int) {
+func CheckApiPermission(apiId string, secret string) (ok bool, merchantId int) {
 	if len(apiId) != 0 && len(secret) != 0 {
-		var partnerId int = cache.GetMerchantIdByApiId(apiId)
-		var apiInfo *merchant.ApiInfo = cache.GetPartnerApiInfo(partnerId)
+		var merchantId int = cache.GetMerchantIdByApiId(apiId)
+		var apiInfo *merchant.ApiInfo = cache.GetPartnerApiInfo(merchantId)
 		if apiInfo != nil {
-			return apiInfo.ApiSecret == secret, partnerId
+			return apiInfo.ApiSecret == secret, merchantId
 		}
 	}
-	return false, partnerId
+	return false, merchantId
 }

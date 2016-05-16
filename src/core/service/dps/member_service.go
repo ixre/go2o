@@ -51,7 +51,7 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
-func (this *memberService) getMember(partnerId, memberId int) (
+func (this *memberService) getMember(merchantId, memberId int) (
 	member.IMember, error) {
 	if memberId <= 0 {
 		return nil, member.ErrNoSuchMember
@@ -60,7 +60,7 @@ func (this *memberService) getMember(partnerId, memberId int) (
 	if m == nil {
 		return m, member.ErrNoSuchMember
 	}
-	if m.GetRelation().RegisterMerchantId != partnerId {
+	if m.GetRelation().RegisterMerchantId != merchantId {
 		return m, merchant.ErrPartnerNotMatch
 	}
 	return m, nil
@@ -99,10 +99,10 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 }
 
 // 注册会员
-func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
+func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 	cardId string, invitationCode string) (int, error) {
-	if partnerId != -1 {
-		err := this._partnerService.CheckRegisterPerm(partnerId, len(invitationCode) > 0)
+	if merchantId != -1 {
+		err := this._partnerService.CheckRegisterPerm(merchantId, len(invitationCode) > 0)
 		if err != nil {
 			return -1, err
 		}
@@ -122,7 +122,7 @@ func (this *memberService) RegisterMember(partnerId int, v *member.ValueMember,
 		m := this._memberRep.GetMember(id)
 		rl := m.GetRelation()
 		rl.RefereesId = invitationId
-		rl.RegisterMerchantId = partnerId
+		rl.RegisterMerchantId = merchantId
 		rl.CardId = cardId
 		return id, m.SaveRelation(rl)
 	}
@@ -141,7 +141,7 @@ func (this *memberService) GetRelation(memberId int) *member.MemberRelation {
 }
 
 // 锁定/解锁会员
-func (this *memberService) LockMember(partnerId, id int) (bool, error) {
+func (this *memberService) LockMember(merchantId, id int) (bool, error) {
 	m := this._memberRep.GetMember(id)
 	if m == nil {
 		return false, member.ErrNoSuchMember
@@ -177,7 +177,7 @@ func (this *memberService) ResetPassword(memberId int) string {
 }
 
 // 检查凭据, update:是否更新登陆时间
-func (this *memberService) TryLogin(partnerId int, usr,
+func (this *memberService) TryLogin(merchantId int, usr,
 	pwd string, update bool) (*member.ValueMember, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
@@ -201,7 +201,7 @@ func (this *memberService) TryLogin(partnerId int, usr,
 	m := this._memberRep.GetMember(val.Id)
 	rl := m.GetRelation()
 
-	if partnerId != -1 && rl.RegisterMerchantId != partnerId {
+	if merchantId != -1 && rl.RegisterMerchantId != merchantId {
 		return nil, errors.New("无法登陆:NOT MATCH PARTNER!")
 	}
 
@@ -332,8 +332,8 @@ func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 	return this._memberRep.GetMemberLatestUpdateTime(memberId)
 }
 
-func (this *memberService) GetMemberList(partnerId int, ids []int) []*dto.MemberSummary {
-	list := this._query.GetMemberList(partnerId, ids)
+func (this *memberService) GetMemberList(merchantId int, ids []int) []*dto.MemberSummary {
+	list := this._query.GetMemberList(merchantId, ids)
 	for _, v := range list {
 		v.Avatar = format.GetResUrl(v.Avatar)
 	}
@@ -378,8 +378,8 @@ func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.Bala
 }
 
 // 充值
-func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tradeNo string, amount float32) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) Charge(merchantId, memberId, chargeType int, title, tradeNo string, amount float32) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -387,8 +387,8 @@ func (this *memberService) Charge(partnerId, memberId, chargeType int, title, tr
 }
 
 // 赠送金额充值
-func (this *memberService) PresentBalance(partnerId, memberId int, title string, tradeNo string, amount float32) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) PresentBalance(merchantId, memberId int, title string, tradeNo string, amount float32) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -396,8 +396,8 @@ func (this *memberService) PresentBalance(partnerId, memberId int, title string,
 }
 
 // 扣减奖金
-func (this *memberService) DiscountPresent(partnerId, memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) DiscountPresent(merchantId, memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -405,8 +405,8 @@ func (this *memberService) DiscountPresent(partnerId, memberId int, title string
 }
 
 // 流通账户
-func (this *memberService) ChargeFlowBalance(partnerId, memberId int, title string, tradeNo string, amount float32) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) ChargeFlowBalance(merchantId, memberId int, title string, tradeNo string, amount float32) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -426,9 +426,9 @@ func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, 
 }
 
 // 提现并返回提现编号,交易号以及错误信息
-func (this *memberService) SubmitApplyPresentBalance(partnerId, memberId int, applyType int,
+func (this *memberService) SubmitApplyPresentBalance(merchantId, memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
-	m, err := this.getMember(partnerId, memberId)
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return 0, "", err
 	}
@@ -479,8 +479,8 @@ func (this *memberService) GetLatestApplyCashText(memberId int) string {
 }
 
 // 确认提现
-func (this *memberService) ConfirmApplyCash(partnerId int, memberId int, infoId int, pass bool, remark string) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) ConfirmApplyCash(merchantId int, memberId int, infoId int, pass bool, remark string) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -488,8 +488,8 @@ func (this *memberService) ConfirmApplyCash(partnerId int, memberId int, infoId 
 }
 
 // 完成提现
-func (this *memberService) FinishApplyCash(partnerId, memberId, id int, tradeNo string) error {
-	m, err := this.getMember(partnerId, memberId)
+func (this *memberService) FinishApplyCash(merchantId, memberId, id int, tradeNo string) error {
+	m, err := this.getMember(merchantId, memberId)
 	if err != nil {
 		return err
 	}
@@ -582,18 +582,18 @@ func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int
 }
 
 // 根据用户或手机筛选会员
-func (this *memberService) FilterMemberByUsrOrPhone(partnerId int, key string) []*dto.SimpleMember {
-	return this._query.FilterMemberByUsrOrPhone(partnerId, key)
+func (this *memberService) FilterMemberByUsrOrPhone(merchantId int, key string) []*dto.SimpleMember {
+	return this._query.FilterMemberByUsrOrPhone(merchantId, key)
 }
 
 // 会员推广排名
-func (this *memberService) GetMemberInviRank(partnerId int, allTeam bool, levelComp string, level int,
+func (this *memberService) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
-	return this._query.GetMemberInviRank(partnerId, allTeam, levelComp, level, startTime, endTime, num)
+	return this._query.GetMemberInviRank(merchantId, allTeam, levelComp, level, startTime, endTime, num)
 }
 
 // 生成会员账户人工单据
-func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind int,
+func (this *memberService) NewBalanceTicket(merchantId int, memberId int, kind int,
 	tit string, amount float32) (string, error) {
 	var err error
 	var tradeNo string
@@ -607,7 +607,7 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	acc := m.GetAccount()
 	var tit2 string
 	if kind == member.KindBalancePresent {
-		tradeNo = domain.NewTradeNo(partnerId)
+		tradeNo = domain.NewTradeNo(merchantId)
 		if amount > 0 {
 			//增加奖金
 			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
@@ -626,7 +626,7 @@ func (this *memberService) NewBalanceTicket(partnerId int, memberId int, kind in
 	}
 
 	if kind == member.KindBalanceCharge {
-		tradeNo = domain.NewTradeNo(partnerId)
+		tradeNo = domain.NewTradeNo(merchantId)
 		if amount > 0 {
 			tit2 = "[KF]客服充值卡"
 			if len(tit) > 0 {

@@ -10,10 +10,10 @@
 package shopping
 
 type IShoppingRep interface {
-	GetShopping(partnerId int) IShopping
+	GetShopping(merchantId int) IShopping
 
 	// 保存订单,返回订单编号
-	SaveOrder(partnerId int, v *ValueOrder) (int, error)
+	SaveOrder(merchantId int, v *ValueOrder) (int, error)
 
 	// 保存订单优惠券绑定
 	SaveOrderCouponBind(*OrderCoupon) error
@@ -25,19 +25,19 @@ type IShoppingRep interface {
 	SavePromotionBindForOrder(*OrderPromotionBind) (int, error)
 
 	// 获取可用的订单号
-	GetFreeOrderNo(partnerId int) string
+	GetFreeOrderNo(merchantId int) string
 
 	// 根据编号获取订单
 	GetOrderById(id int) *ValueOrder
 
 	// 根据订单号获取订单
-	GetOrderByNo(partnerId int, orderNo string) (*ValueOrder, error)
+	GetOrderByNo(merchantId int, orderNo string) (*ValueOrder, error)
 
 	// 根据订单号获取订单
 	GetValueOrderByNo(orderNo string) *ValueOrder
 
 	// 获取等待处理的订单
-	GetWaitingSetupOrders(partnerId int) ([]*ValueOrder, error)
+	GetWaitingSetupOrders(merchantId int) ([]*ValueOrder, error)
 
 	// 获取订单项
 	GetOrderItems(orderId int) []*OrderItem

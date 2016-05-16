@@ -34,7 +34,7 @@ type MemberC struct {
 func (this *MemberC) Login(ctx *echo.Context) error {
 	r := ctx.Request()
 	var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	var result dto.MemberLoginResult
 
 	pwd = strings.TrimSpace(pwd)
@@ -43,7 +43,7 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		e, err := dps.MemberService.TryLogin(partnerId, usr, encodePwd, true)
+		e, err := dps.MemberService.TryLogin(merchantId, usr, encodePwd, true)
 
 		if err == nil {
 			// 生成令牌
@@ -64,7 +64,7 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 	r := ctx.Request()
 	var result dto.MessageResult
 	var err error
-	var partnerId int = getMerchantId(ctx)
+	var merchantId int = getMerchantId(ctx)
 	var usr string = r.FormValue("usr")
 	var pwd string = r.FormValue("pwd")
 	var phone string = r.FormValue("phone")
@@ -82,7 +82,7 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 	member.Phone = phone
 	member.RegFrom = registerFrom
 
-	_, err = dps.MemberService.RegisterMember(partnerId, &member, "", invitationCode)
+	_, err = dps.MemberService.RegisterMember(merchantId, &member, "", invitationCode)
 	if err == nil {
 		result.Result = true
 	} else {

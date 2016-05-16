@@ -277,8 +277,8 @@ func (this *Member) AddExp(exp int) error {
 func (this *Member) getLevelManager() merchant.ILevelManager {
 	if this._levelManager == nil {
 		rl := this.GetRelation()
-		partnerId := rl.RegisterMerchantId
-		this._levelManager = partnerImpl.NewLevelManager(partnerId, this._rep)
+		merchantId := rl.RegisterMerchantId
+		this._levelManager = partnerImpl.NewLevelManager(merchantId, this._rep)
 	}
 	return this._levelManager
 
@@ -293,11 +293,11 @@ func (this *Member) GetLevel() *valueobject.MemberLevel {
 }
 
 //　增加积分
-// todo:partnerId 不需要
-func (this *Member) AddIntegral(partnerId int, backType int,
+// todo:merchantId 不需要
+func (this *Member) AddIntegral(merchantId int, backType int,
 	integral int, log string) error {
 	inLog := &member.IntegralLog{
-		MerchantId:  partnerId,
+		MerchantId:  merchantId,
 		MemberId:   this._value.Id,
 		Type:       backType,
 		Integral:   integral,

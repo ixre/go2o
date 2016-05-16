@@ -21,13 +21,13 @@ var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
 	_rep       member.IMemberRep
-	_partnerId int
+	_merchantId int
 	_levelSet  []*valueobject.MemberLevel
 }
 
-func NewLevelManager(partnerId int, rep member.IMemberRep) merchant.ILevelManager {
+func NewLevelManager(merchantId int, rep member.IMemberRep) merchant.ILevelManager {
 	return &LevelManager{
-		_partnerId: partnerId,
+		_merchantId: merchantId,
 		_rep:       rep,
 	}
 }
@@ -40,35 +40,35 @@ func (this *LevelManager) InitDefaultLevels() error {
 	}
 	var arr []*valueobject.MemberLevel = []*valueobject.MemberLevel{
 		&valueobject.MemberLevel{
-			MerchantId:  this._partnerId,
+			MerchantId:  this._merchantId,
 			Name:       "普通会员",
 			RequireExp: 0,
 			Value:      1,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._partnerId,
+			MerchantId:  this._merchantId,
 			Name:       "铜牌会员",
 			RequireExp: 100,
 			Value:      2,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._partnerId,
+			MerchantId:  this._merchantId,
 			Name:       "银牌会员",
 			RequireExp: 500,
 			Value:      3,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._partnerId,
+			MerchantId:  this._merchantId,
 			Name:       "金牌会员",
 			RequireExp: 1200,
 			Value:      4,
 			Enabled:    1,
 		},
 		&valueobject.MemberLevel{
-			MerchantId:  this._partnerId,
+			MerchantId:  this._merchantId,
 			Name:       "白金会员",
 			RequireExp: 1500,
 			Value:      5,
@@ -86,7 +86,7 @@ func (this *LevelManager) InitDefaultLevels() error {
 func (this *LevelManager) GetLevelSet() []*valueobject.MemberLevel {
 	if this._levelSet == nil {
 		// 已经排好序
-		this._levelSet = this._rep.GetMemberLevels(this._partnerId)
+		this._levelSet = this._rep.GetMemberLevels(this._merchantId)
 	}
 	return this._levelSet
 }
@@ -113,7 +113,7 @@ func (this *LevelManager) GetLevelByValue(value int) *valueobject.MemberLevel {
 
 // 获取下一个等级
 func (this *LevelManager) GetNextLevel(value int) *valueobject.MemberLevel {
-	return this._rep.GetNextLevel(this._partnerId, value)
+	return this._rep.GetNextLevel(this._merchantId, value)
 }
 
 // 删除等级
@@ -131,20 +131,20 @@ func (this *LevelManager) DeleteLevel(id int) error {
 	}
 	if exists {
 		//todo: 更新会员的等级到下一级
-		return this._rep.DeleteMemberLevel(this._partnerId, id)
+		return this._rep.DeleteMemberLevel(this._merchantId, id)
 	}
 	return errors.New("no such record")
 }
 
 // 保存等级
 func (this *LevelManager) SaveLevel(v *valueobject.MemberLevel) (int, error) {
-	v.MerchantId = this._partnerId
+	v.MerchantId = this._merchantId
 	// 如果新增（非初始化）等级自动设置值
 	if v.Id <= 0 && len(this._levelSet) == 0 {
 		v.Value = this.getMaxLevelValue() + 1
 	}
 	this._levelSet = nil
-	return this._rep.SaveMemberLevel(this._partnerId, v)
+	return this._rep.SaveMemberLevel(this._merchantId, v)
 }
 
 // 获取最大的等级值

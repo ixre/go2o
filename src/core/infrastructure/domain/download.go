@@ -22,9 +22,9 @@ import (
 	"time"
 )
 
-func getSavePath(partnerId int) string {
+func getSavePath(merchantId int) string {
 	return fmt.Sprintf("./%s%d/rem/", gof.CurrentApp.
-		Config().GetString(variable.UploadSaveDir), partnerId)
+		Config().GetString(variable.UploadSaveDir), merchantId)
 }
 
 func getFileName(disposition string, guessExt string) string {
@@ -37,7 +37,7 @@ func getFileName(disposition string, guessExt string) string {
 }
 
 // 下载远程资源并返回本地地址
-func DownloadToLocal(partnerId int, url string, guessExt string) string {
+func DownloadToLocal(merchantId int, url string, guessExt string) string {
 	var req *http.Request
 	var err error
 	req, err = http.NewRequest("GET", url, nil)
@@ -45,7 +45,7 @@ func DownloadToLocal(partnerId int, url string, guessExt string) string {
 		req.Header.Set("User_Agent", "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_3 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8J2 Safari/6533.18.5")
 		if rsp, err := http.DefaultClient.Do(req); err == nil {
 
-			savePath := getSavePath(partnerId)
+			savePath := getSavePath(merchantId)
 			fileName := getFileName(rsp.Header.Get("Content-Disposition"), guessExt)
 			if _, err := os.Stat(savePath); os.IsNotExist(err) {
 				os.MkdirAll(savePath, os.ModePerm)

@@ -38,8 +38,8 @@ func (this *categoryC) All_category(ctx *echox.Context) error {
 
 //分类Json数据
 func (this *categoryC) CategoryJson(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
-	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(partnerId)
+	merchantId := getMerchantId(ctx)
+	var node *tree.TreeNode = dps.SaleService.GetCategoryTreeNode(merchantId)
 	return ctx.JSON(http.StatusOK, node)
 }
 
@@ -51,9 +51,9 @@ func (this *categoryC) CategorySelect(ctx *echox.Context) error {
 
 //分类Json数据
 func (this *categoryC) CreateCategory(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 
-	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
+	cateOpts := cache.GetDropOptionsOfCategory(merchantId)
 
 	e := &sale.ValueCategory{
 		Icon: ctx.App.Config().GetString(variable.NoPicPath),
@@ -70,15 +70,15 @@ func (this *categoryC) CreateCategory(ctx *echox.Context) error {
 }
 
 func (this *categoryC) EditCategory(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	r.ParseForm()
 	id, _ := strconv.Atoi(r.Form.Get("id"))
-	e, _ := dps.SaleService.GetCategory(partnerId, id)
+	e, _ := dps.SaleService.GetCategory(merchantId, id)
 	eJson, _ := json.Marshal(e)
 
 	re := regexp.MustCompile(fmt.Sprintf("<option class=\"opt\\d+\" value=\"%d\">[^>]+>", id))
-	originOpts := cache.GetDropOptionsOfCategory(partnerId)
+	originOpts := cache.GetDropOptionsOfCategory(merchantId)
 	cateOpts := re.ReplaceAll(originOpts, nil)
 
 	d := ctx.NewData()
@@ -92,7 +92,7 @@ func (this *categoryC) EditCategory(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *categoryC) SaveCategory(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -101,7 +101,7 @@ func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 		e := sale.ValueCategory{}
 		web.ParseFormToEntity(r.Form, &e)
 
-		id, err := dps.SaleService.SaveCategory(partnerId, &e)
+		id, err := dps.SaleService.SaveCategory(merchantId, &e)
 		if err != nil {
 			result = gof.Message{Result: false, Message: err.Error()}
 		} else {
@@ -113,7 +113,7 @@ func (this *categoryC) SaveCategory(ctx *echox.Context) error {
 }
 
 func (this *categoryC) DelCategory(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -121,7 +121,7 @@ func (this *categoryC) DelCategory(ctx *echox.Context) error {
 		categoryId, _ := strconv.Atoi(r.FormValue("id"))
 
 		//删除分类
-		err := dps.SaleService.DeleteCategory(partnerId, categoryId)
+		err := dps.SaleService.DeleteCategory(merchantId, categoryId)
 		if err != nil {
 			result = gof.Message{Result: false, Message: err.Error()}
 		} else {

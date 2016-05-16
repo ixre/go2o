@@ -17,14 +17,14 @@ var _ content.IPage = new(Page)
 
 type Page struct {
 	_contentRep content.IContentRep
-	_partnerId  int
+	_merchantId  int
 	_value      *content.ValuePage
 }
 
-func NewPage(partnerId int, rep content.IContentRep, v *content.ValuePage) content.IPage {
+func NewPage(merchantId int, rep content.IContentRep, v *content.ValuePage) content.IPage {
 	return &Page{
 		_contentRep: rep,
-		_partnerId:  partnerId,
+		_merchantId:  merchantId,
 		_value:      v,
 	}
 }
@@ -49,5 +49,5 @@ func (this *Page) SetValue(v *content.ValuePage) error {
 // 保存
 func (this *Page) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()
-	return this._contentRep.SavePage(this._partnerId, this._value)
+	return this._contentRep.SavePage(this._merchantId, this._value)
 }

@@ -13,7 +13,7 @@ type ValueOrder struct {
 	Id        int    `db:"id" pk:"yes" auto:"yes" json:"id"`
 	OrderNo   string `db:"order_no" json:"orderNo"`
 	MemberId  int    `db:"member_id" json:"memberId"`
-	MerchantId int    `db:"merchant_id" json:"partnerId"`
+	MerchantId int    `db:"merchant_id" json:"merchantId"`
 	// 订单标题
 	Subject   string `db:"subject" json:"subject"`
 	ShopId    int    `db:"shop_id" json:"shopId"`

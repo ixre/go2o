@@ -21,7 +21,7 @@ var _ promotion.IPromotion = new(Promotion)
 
 type Promotion struct {
 	_memberRep member.IMemberRep
-	_partnerId int
+	_merchantId int
 	_promRep   promotion.IPromotionRep
 	_value     *promotion.ValuePromotion
 	_goodsRep  sale.IGoodsRep

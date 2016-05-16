@@ -27,7 +27,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (this *MemberQuery) GetMemberList(partnerId int, ids []int) []*dto.MemberSummary {
+func (this *MemberQuery) GetMemberList(merchantId int, ids []int) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
@@ -41,7 +41,7 @@ func (this *MemberQuery) GetMemberList(partnerId int, ids []int) []*dto.MemberSu
 				m.update_time FROM mm_member m INNER JOIN pt_member_level lv
 				ON m.level = lv.value INNER JOIN mm_account a ON
 				 a.member_id = m.id WHERE lv.merchant_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
-		this.Connector.GetOrm().SelectByQuery(&list, query, partnerId)
+		this.Connector.GetOrm().SelectByQuery(&list, query, merchantId)
 	}
 	return list
 }
@@ -128,7 +128,7 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 }
 
 // 筛选会员根据用户或者手机
-func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int, key string) []*dto.SimpleMember {
+func (this *MemberQuery) FilterMemberByUsrOrPhone(merchantId int, key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	var list []*dto.SimpleMember = make([]*dto.SimpleMember, 0)
 	var id int
@@ -145,12 +145,12 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int, key string) []*
 				Phone: phone,
 			})
 		}
-	}, partnerId, qp, qp)
+	}, merchantId, qp, qp)
 	return list
 }
 
 // 会员推广排名
-func (this *MemberQuery) GetMemberInviRank(partnerId int, allTeam bool, levelComp string, level int,
+func (this *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
 	var id int
@@ -197,7 +197,7 @@ func (this *MemberQuery) GetMemberInviRank(partnerId int, allTeam bool, levelCom
 				RegTime:  regTime,
 			})
 		}
-	}, startTime, endTime, startTime, endTime, startTime, endTime, partnerId, 1, num)
+	}, startTime, endTime, startTime, endTime, startTime, endTime, merchantId, 1, num)
 
 	return list
 }

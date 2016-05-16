@@ -30,8 +30,8 @@ func (this *configC) Profile(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.profile_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
-	p, _ := dps.PartnerService.GetMerchant(partnerId)
+	merchantId := getMerchantId(ctx)
+	p, _ := dps.PartnerService.GetMerchant(merchantId)
 	p.Pwd = ""
 	p.ExpiresTime = time.Now().Unix()
 
@@ -42,7 +42,7 @@ func (this *configC) Profile(ctx *echox.Context) error {
 }
 
 func (this *configC) profile_post(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
@@ -51,19 +51,19 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin, _ := dps.PartnerService.GetMerchant(partnerId)
+	origin, _ := dps.PartnerService.GetMerchant(merchantId)
 	e.ExpiresTime = origin.ExpiresTime
 	e.JoinTime = origin.JoinTime
 	e.LastLoginTime = origin.LastLoginTime
 	e.LoginTime = origin.LoginTime
 	e.Pwd = origin.Pwd
 	e.UpdateTime = time.Now().Unix()
-	e.Id = partnerId
+	e.Id = merchantId
 
-	id, err := dps.PartnerService.SaveMerchant(partnerId, &e)
+	id, err := dps.PartnerService.SaveMerchant(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(partnerId)
+		cache.DelPartnerCache(merchantId)
 		result.Data = id
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -74,8 +74,8 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.siteConf_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
-	conf := dps.PartnerService.GetSiteConf(partnerId)
+	merchantId := getMerchantId(ctx)
+	conf := dps.PartnerService.GetSiteConf(merchantId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -84,7 +84,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 }
 
 func (this *configC) siteConf_post(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
@@ -93,14 +93,14 @@ func (this *configC) siteConf_post(ctx *echox.Context) error {
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin := dps.PartnerService.GetSiteConf(partnerId)
+	origin := dps.PartnerService.GetSiteConf(merchantId)
 	e.Host = origin.Host
-	e.MerchantId = partnerId
+	e.MerchantId = merchantId
 
-	err := dps.PartnerService.SaveSiteConf(partnerId, &e)
+	err := dps.PartnerService.SaveSiteConf(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(partnerId)
+		cache.DelPartnerCache(merchantId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -110,8 +110,8 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.saleConf_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
-	conf := dps.PartnerService.GetSaleConf(partnerId)
+	merchantId := getMerchantId(ctx)
+	conf := dps.PartnerService.GetSaleConf(merchantId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -119,7 +119,7 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 }
 
 func (this *configC) saleConf_post(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
@@ -127,12 +127,12 @@ func (this *configC) saleConf_post(ctx *echox.Context) error {
 	e := merchant.SaleConf{}
 	web.ParseFormToEntity(r.Form, &e)
 
-	e.MerchantId = partnerId
+	e.MerchantId = merchantId
 
-	err := dps.PartnerService.SaveSaleConf(partnerId, &e)
+	err := dps.PartnerService.SaveSaleConf(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(partnerId)
+		cache.DelPartnerCache(merchantId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

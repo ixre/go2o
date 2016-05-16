@@ -17,6 +17,6 @@ var _ merchant.IConfManager = new(ConfManager)
 
 type ConfManager struct {
 	_rep       merchant.IMerchantRep
-	_partnerId int
+	_merchantId int
 	_levelSet  []*valueobject.MemberLevel
 }

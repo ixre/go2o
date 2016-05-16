@@ -130,7 +130,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	partnerId := getPartner(ctx).Id
+	merchantId := getPartner(ctx).Id
 	strAmount := strings.TrimSpace(r.FormValue("Amount"))
 	if len(strAmount) == 0 || strAmount == "NaN" {
 		msg.Message = "提现金额错误"
@@ -145,7 +145,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 
 	tradePwd := r.FormValue("TradePwd")
 	memberId := getMember(ctx).Id
-	saleConf := dps.PartnerService.GetSaleConf(partnerId)
+	saleConf := dps.PartnerService.GetSaleConf(merchantId)
 	bank := dps.MemberService.GetBank(memberId)
 
 	if bank == nil || len(bank.Account) == 0 || len(bank.AccountName) == 0 ||
@@ -163,7 +163,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 			format.FormatFloat(float32(minAmount))))
 	} else {
 		m := getMember(ctx)
-		_, _, err = dps.MemberService.SubmitApplyPresentBalance(partnerId, m.Id,
+		_, _, err = dps.MemberService.SubmitApplyPresentBalance(merchantId, m.Id,
 			member.TypeApplyCashToBank, float32(amount), saleConf.ApplyCsn)
 	}
 

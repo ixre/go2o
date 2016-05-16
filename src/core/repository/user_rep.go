@@ -75,7 +75,7 @@ func (this *userRep) GetPersonValue(id int) *user.PersonValue {
 }
 
 // 获取配送人员
-func (this *userRep) GetDeliveryStaffPersons(partnerId int) []*user.PersonValue {
+func (this *userRep) GetDeliveryStaffPersons(merchantId int) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
 	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
 	if err != nil {

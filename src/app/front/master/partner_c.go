@@ -85,10 +85,10 @@ func (c *partnerC) SaveMerchant(ctx *echox.Context) error {
 
 // 商户配置管理
 func (this *partnerC) PartnerConf(ctx *echox.Context) error {
-	var partnerId int
-	partnerId, _ = strconv.Atoi(ctx.Query("id"))
+	var merchantId int
+	merchantId, _ = strconv.Atoi(ctx.Query("id"))
 	d := ctx.NewData()
-	d.Map["partnerId"] = partnerId
+	d.Map["merchantId"] = merchantId
 	return ctx.RenderOK("partner.create.html", d)
 }
 

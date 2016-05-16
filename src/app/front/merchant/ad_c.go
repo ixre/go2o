@@ -32,9 +32,9 @@ func (this *adC) List(ctx *echox.Context) error {
 
 // 修改广告
 func (this *adC) Edit(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	e := dps.AdvertisementService.GetAdvertisement(partnerId, id)
+	e := dps.AdvertisementService.GetAdvertisement(merchantId, id)
 
 	js, _ := json.Marshal(e)
 	d := ctx.NewData()
@@ -59,9 +59,9 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
-		err := dps.AdvertisementService.DelAdvertisement(partnerId, adId)
+		err := dps.AdvertisementService.DelAdvertisement(merchantId, adId)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -76,7 +76,7 @@ func (this *adC) Delete_ad(ctx *echox.Context) error {
 
 // 保存广告(POST)
 func (this *adC) SaveAd(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	req := ctx.HttpRequest()
 	if req.Method == "POST" {
 		req.ParseForm()
@@ -87,9 +87,9 @@ func (this *adC) SaveAd(ctx *echox.Context) error {
 		web.ParseFormToEntity(req.Form, &e)
 
 		//更新
-		e.MerchantId = partnerId
+		e.MerchantId = merchantId
 
-		id, err := dps.AdvertisementService.SaveAdvertisement(partnerId, &e)
+		id, err := dps.AdvertisementService.SaveAdvertisement(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -135,11 +135,11 @@ func (this *adC) CreateAdImage(ctx *echox.Context) error {
 
 // 保存广告
 func (this *adC) EditAdImage(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	adId, _ := strconv.Atoi(ctx.Query("ad_id"))
 	imgId, _ := strconv.Atoi(ctx.Query("id"))
 
-	e := dps.AdvertisementService.GetValueAdImage(partnerId, adId, imgId)
+	e := dps.AdvertisementService.GetValueAdImage(merchantId, adId, imgId)
 
 	js, _ := json.Marshal(e)
 	d := ctx.NewData()
@@ -149,7 +149,7 @@ func (this *adC) EditAdImage(ctx *echox.Context) error {
 
 // 保存图片(POST)
 func (this *adC) SaveImage(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -159,7 +159,7 @@ func (this *adC) SaveImage(ctx *echox.Context) error {
 		e := ad.ValueImage{}
 		web.ParseFormToEntity(r.Form, &e)
 
-		id, err := dps.AdvertisementService.SaveImage(partnerId, e.AdvertisementId, &e)
+		id, err := dps.AdvertisementService.SaveImage(merchantId, e.AdvertisementId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -178,10 +178,10 @@ func (this *adC) Delete_image(ctx *echox.Context) error {
 	if req.Method == "POST" {
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("ad_id"))
 		imgId, _ := strconv.Atoi(req.FormValue("id"))
-		err := dps.AdvertisementService.DelAdImage(partnerId, adId, imgId)
+		err := dps.AdvertisementService.DelAdImage(merchantId, adId, imgId)
 
 		if err != nil {
 			result.Message = err.Error()

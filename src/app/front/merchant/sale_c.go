@@ -32,10 +32,10 @@ func (this *saleC) TagList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *saleC) Edit_stag(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
-	entity := dps.SaleService.GetSaleTag(partnerId, id)
+	entity := dps.SaleService.GetSaleTag(merchantId, id)
 	bys, _ := json.Marshal(entity)
 
 	d := ctx.NewData()
@@ -56,7 +56,7 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 
 // 保存销售标签(POST)
 func (this *saleC) Save_stag(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -66,7 +66,7 @@ func (this *saleC) Save_stag(ctx *echox.Context) error {
 		web.ParseFormToEntity(r.Form, &e)
 		e.MerchantId = getMerchantId(ctx)
 
-		id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
+		id, err := dps.SaleService.SaveSaleTag(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -85,10 +85,10 @@ func (this *saleC) Del_stag(ctx *echox.Context) error {
 	var result gof.Message
 	if r.Method == "POST" {
 		r.ParseForm()
-		partnerId := getMerchantId(ctx)
+		merchantId := getMerchantId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
-			err = dps.SaleService.DeleteSaleTag(partnerId, id)
+			err = dps.SaleService.DeleteSaleTag(merchantId, id)
 		}
 
 		if err != nil {

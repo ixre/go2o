@@ -134,10 +134,10 @@ func (this *mainC) exportData(ctx *echox.Context) error {
 
 func (this *mainC) Upload_post(ctx *echox.Context) error {
 	req := ctx.HttpRequest()
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	req.ParseMultipartForm(20 * 1024 * 1024 * 1024) //20M
 	for f := range req.MultipartForm.File {
-		ctx.HttpResponse().Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", partnerId)))
+		ctx.HttpResponse().Write(this.WebCgi.Upload(f, ctx, fmt.Sprintf("%d/item_pic/", merchantId)))
 	}
 	return nil
 }

@@ -46,17 +46,17 @@ func getMd5(s string) string {
 func (t *jsonC) Ad(ctx *echox.Context) error {
 	namesParams := strings.TrimSpace(ctx.Query("names"))
 	names := strings.Split(namesParams, "|")
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	as := dps.AdvertisementService
 
 	result := make(map[string]map[string]interface{}, len(names))
-	key := fmt.Sprint("go2o:front:ad:%d-%s", partnerId, getMd5(namesParams))
+	key := fmt.Sprint("go2o:front:ad:%d-%s", merchantId, getMd5(namesParams))
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil { //从缓存中读取
 		log.Println(err)
 		for _, n := range names {
 			//分别绑定广告
-			ad, data := as.GetAdvertisementAndDataByName(partnerId, n)
+			ad, data := as.GetAdvertisementAndDataByName(merchantId, n)
 			if ad == nil {
 				result[n] = nil
 				continue
@@ -91,10 +91,10 @@ func (t *jsonC) getMultiParams(s string) (p string, size, begin int) {
 func (this *jsonC) Simple_goods(ctx *echox.Context) error {
 	typeParams := strings.TrimSpace(ctx.Form("params"))
 	types := strings.Split(typeParams, "|")
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	result := make(map[string]interface{}, len(types))
 
-	key := fmt.Sprint("go2o:front:sg:%d-%s", partnerId, getMd5(typeParams))
+	key := fmt.Sprint("go2o:front:sg:%d-%s", merchantId, getMd5(typeParams))
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -104,10 +104,10 @@ func (this *jsonC) Simple_goods(ctx *echox.Context) error {
 			p, size, begin := this.getMultiParams(t)
 			switch p {
 			case "new-goods":
-				_, result[p] = ss.GetPagedOnShelvesGoods(partnerId,
+				_, result[p] = ss.GetPagedOnShelvesGoods(merchantId,
 					-1, begin, begin+size, "gs_goods.id DESC")
 			case "hot-sales":
-				_, result[p] = ss.GetPagedOnShelvesGoods(partnerId,
+				_, result[p] = ss.GetPagedOnShelvesGoods(merchantId,
 					-1, begin, begin+size, "gs_goods.sale_num DESC")
 			}
 		}
@@ -120,17 +120,17 @@ func (this *jsonC) Simple_goods(ctx *echox.Context) error {
 func (this *jsonC) Saletag_goods(ctx *echox.Context) error {
 	codeParams := strings.TrimSpace(ctx.Form("params"))
 	codes := strings.Split(codeParams, "|")
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	result := make(map[string]interface{}, len(codes))
 
-	key := fmt.Sprint("go2o:front:stg:%d--%s", partnerId, getMd5(codeParams))
+	key := fmt.Sprint("go2o:front:stg:%d--%s", merchantId, getMd5(codeParams))
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil { //从缓存中读取
 		log.Println(err)
 		for _, param := range codes {
 			code, size, begin := this.getMultiParams(param)
 			list := dps.SaleService.GetValueGoodsBySaleTag(
-				partnerId, code, "", begin, begin+size)
+				merchantId, code, "", begin, begin+size)
 			result[code] = list
 		}
 		sto.SetExpire(key, result, maxSeconds)

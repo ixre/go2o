@@ -38,9 +38,9 @@ func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
 }
 
 // 获取等级下拉选项列表
-func getLevelDropDownList(partnerId int) string {
+func getLevelDropDownList(merchantId int) string {
 	buf := bytes.NewBufferString("")
-	lvs := dps.PartnerService.GetMemberLevels(partnerId)
+	lvs := dps.PartnerService.GetMemberLevels(merchantId)
 	for _, v := range lvs {
 		if v.Enabled == 1 {
 			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
@@ -50,9 +50,9 @@ func getLevelDropDownList(partnerId int) string {
 }
 
 // 获取邮件模板选项
-func getMailTemplateOpts(partnerId int) string {
+func getMailTemplateOpts(merchantId int) string {
 	buf := bytes.NewBufferString("")
-	list := dps.PartnerService.GetMailTemplates(partnerId)
+	list := dps.PartnerService.GetMailTemplates(merchantId)
 	for _, v := range list {
 		if v.Enabled == 1 {
 			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Id, v.Name))

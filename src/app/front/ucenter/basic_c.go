@@ -269,7 +269,7 @@ func (this *basicC) Member_cln_filter(ctx *echox.Context) error {
 		})
 	}
 	var list []*dto.SimpleMember
-	partnerId := getPartner(ctx).Id
-	list = dps.MemberService.FilterMemberByUsrOrPhone(partnerId, key)
+	merchantId := getPartner(ctx).Id
+	list = dps.MemberService.FilterMemberByUsrOrPhone(merchantId, key)
 	return ctx.JSON(http.StatusOK, list)
 }

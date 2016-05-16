@@ -347,7 +347,7 @@ func (this *Merchant) UserManager() user.IUserManager {
 func (this *Merchant) ConfManager() merchant.IConfManager {
 	if this._confManager == nil {
 		this._confManager = &ConfManager{
-			_partnerId: this.GetAggregateRootId(),
+			_merchantId: this.GetAggregateRootId(),
 			_rep:       this._rep,
 		}
 	}

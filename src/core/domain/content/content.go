@@ -14,19 +14,19 @@ var _ content.IContent = new(Content)
 
 type Content struct {
 	_contentRep content.IContentRep
-	_partnerId  int
+	_merchantId  int
 }
 
-func NewContent(partnerId int, rep content.IContentRep) content.IContent {
+func NewContent(merchantId int, rep content.IContentRep) content.IContent {
 	return &Content{
 		_contentRep: rep,
-		_partnerId:  partnerId,
+		_merchantId:  merchantId,
 	}
 }
 
 // 获取聚合根编号
 func (this *Content) GetAggregateRootId() int {
-	return this._partnerId
+	return this._merchantId
 }
 
 // 创建页面

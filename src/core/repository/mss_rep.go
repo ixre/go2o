@@ -28,7 +28,7 @@ func NewMssRep(conn db.Connector) mss.IMssRep {
 }
 
 // 获取邮箱模板
-func (this *MssRep) GetMailTemplate(partnerId, id int) *mss.MailTemplate {
+func (this *MssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -50,15 +50,15 @@ func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(partnerId int) []*mss.MailTemplate {
+func (this *MssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	this._conn.GetOrm().Select(&list, "merchant_id=?", partnerId)
+	this._conn.GetOrm().Select(&list, "merchant_id=?", merchantId)
 	return list
 }
 
 // 删除邮件模板
-func (this *MssRep) DeleteMailTemplate(partnerId, id int) error {
-	_, err := this._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", partnerId, id)
+func (this *MssRep) DeleteMailTemplate(merchantId, id int) error {
+	_, err := this._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", merchantId, id)
 	return err
 }
 

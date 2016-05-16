@@ -120,7 +120,7 @@
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/require.js?{{.Var.Spam}}"></script>
 <script type="text/javascript">
     var _baseUrl = '{{.Var.static_serve}}';
-    var _partnerId = '{{.Map.Partner.Id}}';
+    var _merchantId = '{{.Map.Partner.Id}}';
     require([_baseUrl + "/assets/js/touch/require_config.js"], function () {
         require(['uc/index']);
     });

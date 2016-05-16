@@ -11,10 +11,10 @@ package ad
 // 广告仓储
 type IAdvertisementRep interface {
 	// 获取商户的广告管理
-	GetPartnerAdvertisement(partnerId int) IPartnerAdvertisement
+	GetPartnerAdvertisement(merchantId int) IPartnerAdvertisement
 
 	// 根据名称获取广告编号
-	GetIdByName(partnerId int, name string) int
+	GetIdByName(merchantId int, name string) int
 
 	// 保存广告值
 	SaveAdvertisementValue(*ValueAdvertisement) (int, error)
@@ -23,10 +23,10 @@ type IAdvertisementRep interface {
 	SaveAdImageValue(*ValueImage) (int, error)
 
 	// 获取广告
-	GetValueAdvertisement(partnerId, id int) *ValueAdvertisement
+	GetValueAdvertisement(merchantId, id int) *ValueAdvertisement
 
 	// 根据名称获取广告
-	GetValueAdvertisementByName(partnerId int, name string) *ValueAdvertisement
+	GetValueAdvertisementByName(merchantId int, name string) *ValueAdvertisement
 
 	// 获取轮播广告
 	GetValueGallery(advertisementId int) ValueGallery
@@ -38,7 +38,7 @@ type IAdvertisementRep interface {
 	DelAdImage(advertisementId, id int) error
 
 	// 删除广告
-	DelAdvertisement(partnerId, advertisementId int) error
+	DelAdvertisement(merchantId, advertisementId int) error
 
 	// 删除广告的图片数据
 	DelImageDataForAdvertisement(advertisementId int) error

@@ -93,6 +93,6 @@ func getPartner(ctx *echox.Context) *merchant.MerchantValue {
 }
 
 // 获取商户的站点设置
-func getSiteConf(partnerId int) *merchant.SiteConf {
-	return cache.GetPartnerSiteConf(partnerId)
+func getSiteConf(merchantId int) *merchant.SiteConf {
+	return cache.GetPartnerSiteConf(merchantId)
 }

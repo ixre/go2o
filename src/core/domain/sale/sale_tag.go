@@ -17,15 +17,15 @@ var _ sale.ISaleTag = new(SaleTag)
 
 type SaleTag struct {
 	_rep       sale.ISaleTagRep
-	_partnerId int
+	_merchantId int
 	_value     *sale.ValueSaleTag
 }
 
-func NewSaleTag(partnerId int, value *sale.ValueSaleTag,
+func NewSaleTag(merchantId int, value *sale.ValueSaleTag,
 	rep sale.ISaleTagRep) sale.ISaleTag {
 	return &SaleTag{
 		_rep:       rep,
-		_partnerId: partnerId,
+		_merchantId: merchantId,
 		_value:     value,
 	}
 }
@@ -64,8 +64,8 @@ func (this *SaleTag) SetValue(v *sale.ValueSaleTag) error {
 }
 
 func (this *SaleTag) Save() (int, error) {
-	this._value.MerchantId = this._partnerId
-	return this._rep.SaveSaleTag(this._partnerId, this._value)
+	this._value.MerchantId = this._merchantId
+	return this._rep.SaveSaleTag(this._merchantId, this._value)
 }
 
 // 获取标签下的商品
@@ -76,7 +76,7 @@ func (this *SaleTag) GetValueGoods(sortBy string, begin, end int) []*valueobject
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetValueGoodsBySaleTag(this._partnerId,
+	return this._rep.GetValueGoodsBySaleTag(this._merchantId,
 		this._value.Id, sortBy, begin, end)
 }
 
@@ -88,6 +88,6 @@ func (this *SaleTag) GetPagedValueGoods(sortBy string, begin, end int) (int, []*
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetPagedValueGoodsBySaleTag(this._partnerId,
+	return this._rep.GetPagedValueGoodsBySaleTag(this._merchantId,
 		this.GetDomainId(), sortBy, begin, end)
 }

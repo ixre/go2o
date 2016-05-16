@@ -28,14 +28,14 @@ func NewAdvertisementRep(c db.Connector) ad.IAdvertisementRep {
 }
 
 // 获取商户的广告管理
-func (this *advertisementRep) GetPartnerAdvertisement(partnerId int) ad.IPartnerAdvertisement {
-	return adImpl.NewPartnerAdvertisement(partnerId, this)
+func (this *advertisementRep) GetPartnerAdvertisement(merchantId int) ad.IPartnerAdvertisement {
+	return adImpl.NewPartnerAdvertisement(merchantId, this)
 }
 
 // 根据名称获取广告编号
-func (this *advertisementRep) GetIdByName(partnerId int, name string) int {
+func (this *advertisementRep) GetIdByName(merchantId int, name string) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM pt_ad WHERE merchant_id=? AND name=?", &id, partnerId, name)
+	this.Connector.ExecScalar("SELECT id FROM pt_ad WHERE merchant_id=? AND name=?", &id, merchantId, name)
 	return id
 }
 
@@ -66,18 +66,18 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage) (int, error) {
 }
 
 // 获取广告
-func (this *advertisementRep) GetValueAdvertisement(partnerId, id int) *ad.ValueAdvertisement {
+func (this *advertisementRep) GetValueAdvertisement(merchantId, id int) *ad.ValueAdvertisement {
 	var e ad.ValueAdvertisement
-	if err := this.Connector.GetOrm().Get(id, &e); err == nil && e.MerchantId == partnerId {
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil && e.MerchantId == merchantId {
 		return &e
 	}
 	return nil
 }
 
 // 根据名称获取广告
-func (this *advertisementRep) GetValueAdvertisementByName(partnerId int, name string) *ad.ValueAdvertisement {
+func (this *advertisementRep) GetValueAdvertisementByName(merchantId int, name string) *ad.ValueAdvertisement {
 	var e ad.ValueAdvertisement
-	if err := this.Connector.GetOrm().GetBy(&e, "merchant_id=? and name=?", partnerId, name); err == nil {
+	if err := this.Connector.GetOrm().GetBy(&e, "merchant_id=? and name=?", merchantId, name); err == nil {
 		return &e
 	}
 	return nil
@@ -108,8 +108,8 @@ func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
 }
 
 // 删除广告
-func (this *advertisementRep) DelAdvertisement(partnerId, advertisementId int) error {
-	_, err := this.Connector.GetOrm().Delete(ad.ValueAdvertisement{}, "merchant_id=? AND id=?", partnerId, advertisementId)
+func (this *advertisementRep) DelAdvertisement(merchantId, advertisementId int) error {
+	_, err := this.Connector.GetOrm().Delete(ad.ValueAdvertisement{}, "merchant_id=? AND id=?", merchantId, advertisementId)
 	return err
 }
 

@@ -59,26 +59,26 @@ func (this *shoppingRep) init() shopping.IShoppingRep {
 	return this
 }
 
-func (this *shoppingRep) GetShopping(partnerId int) shopping.IShopping {
+func (this *shoppingRep) GetShopping(merchantId int) shopping.IShopping {
 	if this._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
-	v, ok := this._cache[partnerId]
+	v, ok := this._cache[merchantId]
 	if !ok {
-		v = shoppingImpl.NewShopping(partnerId, this._partnerRep,
+		v = shoppingImpl.NewShopping(merchantId, this._partnerRep,
 			this, this._saleRep, this._goodsRep, this._promRep, this._memberRep, this._deliverRep)
-		this._cache[partnerId] = v
+		this._cache[merchantId] = v
 	}
 	return v
 }
 
 // 获取可用的订单号
-func (this *shoppingRep) GetFreeOrderNo(partnerId int) string {
+func (this *shoppingRep) GetFreeOrderNo(merchantId int) string {
 	//todo:实际应用需要预先生成订单号
 	d := this.Connector
 	var order_no string
 	for {
-		order_no = domain.NewOrderNo(partnerId)
+		order_no = domain.NewOrderNo(merchantId)
 		var rec int
 		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`,
 			&rec, order_no); rec == 0 {
@@ -95,11 +95,11 @@ func (this *shoppingRep) GetOrderItems(orderId int) []*shopping.OrderItem {
 	return items
 }
 
-func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, error) {
+func (this *shoppingRep) SaveOrder(merchantId int, v *shopping.ValueOrder) (int, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
 	d := this.Connector
-	v.MerchantId = partnerId
+	v.MerchantId = merchantId
 
 	if v.Id > 0 {
 		var oriStatus int
@@ -120,7 +120,7 @@ func (this *shoppingRep) SaveOrder(partnerId int, v *shopping.ValueOrder) (int, 
 		_, _, err = d.GetOrm().Save(nil, v)
 		if err == nil {
 			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE merchant_id=? AND member_id=?`, &v.Id,
-				partnerId, v.MemberId)
+				merchantId, v.MemberId)
 		}
 		statusIsChanged = true
 	}
@@ -164,10 +164,10 @@ func (this *shoppingRep) GetOrderById(id int) *shopping.ValueOrder {
 	return nil
 }
 
-func (this *shoppingRep) GetOrderByNo(partnerId int, orderNo string) (
+func (this *shoppingRep) GetOrderByNo(merchantId int, orderNo string) (
 	*shopping.ValueOrder, error) {
 	var v = new(shopping.ValueOrder)
-	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND order_no=?", partnerId, orderNo)
+	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND order_no=?", merchantId, orderNo)
 	if err != nil {
 		return nil, err
 	}
@@ -185,11 +185,11 @@ func (this *shoppingRep) GetValueOrderByNo(orderNo string) *shopping.ValueOrder 
 }
 
 // 获取等待处理的订单
-func (this *shoppingRep) GetWaitingSetupOrders(partnerId int) ([]*shopping.ValueOrder, error) {
+func (this *shoppingRep) GetWaitingSetupOrders(merchantId int) ([]*shopping.ValueOrder, error) {
 	dst := []*shopping.ValueOrder{}
 	err := this.Connector.GetOrm().Select(&dst,
 		"merchant_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
-		partnerId)
+		merchantId)
 	if err != nil {
 		return nil, err
 	}

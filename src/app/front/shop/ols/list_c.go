@@ -84,12 +84,12 @@ func (this *ListC) All_cate(ctx *echox.Context) error {
 // 大类Json
 func (this ListC) CategoryJson(c *echox.Context) error {
 	parentId, _ := strconv.Atoi(c.Form("parent_id"))
-	partnerId := GetMerchantId(c)
+	merchantId := GetMerchantId(c)
 	var v []*sale.ValueCategory
 	if parentId == 0 {
-		v = dps.SaleService.GetBigCategories(partnerId)
+		v = dps.SaleService.GetBigCategories(merchantId)
 	} else {
-		v = dps.SaleService.GetChildCategories(partnerId, parentId)
+		v = dps.SaleService.GetChildCategories(merchantId, parentId)
 	}
 	return c.JSON(http.StatusOK, v)
 }
@@ -132,13 +132,13 @@ func (this *ListC) GetGoodsListJson(c *echox.Context) error {
 	if c.Request().Method != "POST" {
 		return nil
 	}
-	partnerId := GetMerchantId(c)
+	merchantId := GetMerchantId(c)
 	size, _ := strconv.Atoi(c.Form("size"))
 	begin, _ := strconv.Atoi(c.Form("begin"))
 	categoryId, _ := strconv.Atoi(c.Form("categoryId"))
 	sortQuery := c.Form("sort")
 
-	total, items := dps.SaleService.GetPagedOnShelvesGoods(partnerId, categoryId,
+	total, items := dps.SaleService.GetPagedOnShelvesGoods(merchantId, categoryId,
 		begin, begin+size, this.getGoodsSortSql(sortQuery))
 	for _, v := range items {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -233,11 +233,11 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 }
 func (this *ListC) mobileListIndex(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	sortQuery := ctx.Query("sort")
 	idArr := this.getIdArray(r.URL.Path)
 	categoryId := idArr[len(idArr)-1]
-	cat, opt := dps.SaleService.GetCategory(partnerId, categoryId)
+	cat, opt := dps.SaleService.GetCategory(merchantId, categoryId)
 
 	sortBar := front.GetSorterHtml(front.GoodsListSortItems,
 		sortQuery,
@@ -333,7 +333,7 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 // 手机搜索列表
 func (this *ListC) mobileSearchList(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	//partnerId := GetMerchantId(ctx)
+	//merchantId := GetMerchantId(ctx)
 	sortQuery := ctx.Query("sort")
 	word, _ := url.QueryUnescape(ctx.Query("word"))
 	word = strings.TrimSpace(word)
@@ -354,13 +354,13 @@ func (this *ListC) GetGoodsSearchJson(c *echox.Context) error {
 	if c.Request().Method != "POST" {
 		return nil
 	}
-	partnerId := GetMerchantId(c)
+	merchantId := GetMerchantId(c)
 	size, _ := strconv.Atoi(c.Form("size"))
 	begin, _ := strconv.Atoi(c.Form("begin"))
 	word, _ := url.QueryUnescape(c.Form("word"))
 	sortQuery := c.Form("sort")
 
-	total, items := dps.SaleService.GetPagedOnShelvesGoodsByKeyword(partnerId,
+	total, items := dps.SaleService.GetPagedOnShelvesGoodsByKeyword(merchantId,
 		begin, begin+size, word, sortQuery)
 	for _, v := range items {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -444,11 +444,11 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 
 func (this *ListC) mobileSaleTagList(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	sortBy := ctx.Query("sort")
 
 	tagCode := ctx.P(0)
-	saleTag := dps.SaleService.GetSaleTagByCode(partnerId, tagCode)
+	saleTag := dps.SaleService.GetSaleTagByCode(merchantId, tagCode)
 	if saleTag == nil {
 		http.Error(ctx.HttpResponse(), "not found!", http.StatusNotFound)
 		return nil
@@ -487,9 +487,9 @@ func (this *ListC) getSaleTagSortBySql(sortQuery string) string {
 }
 
 func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
-	partnerId := GetMerchantId(ctx)
+	merchantId := GetMerchantId(ctx)
 	code := strings.TrimSpace(ctx.Form("code"))
-	saleTag := dps.SaleService.GetSaleTagByCode(partnerId, code)
+	saleTag := dps.SaleService.GetSaleTagByCode(merchantId, code)
 	if saleTag == nil {
 		http.Error(ctx.HttpResponse(), "{err:'no such tag'}", http.StatusNotFound)
 		return nil
@@ -499,7 +499,7 @@ func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
 	sortBy := ctx.Form("sort")
 
 	total, items := dps.SaleService.GetPagedValueGoodsBySaleTag(
-		partnerId, saleTag.Id, this.getSaleTagSortBySql(sortBy), begin, begin+size)
+		merchantId, saleTag.Id, this.getSaleTagSortBySql(sortBy), begin, begin+size)
 	for _, v := range items {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 	}

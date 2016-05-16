@@ -33,9 +33,9 @@ func (this *contentC) Page_list(ctx *echox.Context) error {
 
 // 修改页面
 func (this *contentC) Page_edit(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	e := dps.ContentService.GetPage(partnerId, id)
+	e := dps.ContentService.GetPage(merchantId, id)
 
 	js, _ := json.Marshal(e)
 	d := ctx.NewData()
@@ -56,7 +56,7 @@ func (this *contentC) Page_create(ctx *echox.Context) error {
 }
 
 func (this *contentC) SavePage(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 
@@ -69,9 +69,9 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 
 		//更新
 		e.UpdateTime = time.Now().Unix()
-		e.MerchantId = partnerId
+		e.MerchantId = merchantId
 
-		id, err := dps.ContentService.SavePage(partnerId, &e)
+		id, err := dps.ContentService.SavePage(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -85,14 +85,14 @@ func (this *contentC) SavePage(ctx *echox.Context) error {
 }
 
 func (this *contentC) Page_del(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
 
 		var result gof.Message
 		id, _ := strconv.Atoi(r.FormValue("id"))
-		err := dps.ContentService.DeletePage(partnerId, id)
+		err := dps.ContentService.DeletePage(merchantId, id)
 
 		if err != nil {
 			result.Message = err.Error()

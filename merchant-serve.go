@@ -21,7 +21,7 @@ import (
     "os"
     "runtime"
     "go2o/src/fix"
-    "go2o/src/app/front/partner"
+    "go2o/src/app/front/merchant"
     "github.com/jsix/gof/web/session"
 )
 

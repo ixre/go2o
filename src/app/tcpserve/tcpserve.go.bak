@@ -138,8 +138,8 @@ func createConnection(conn net.Conn, line string) error {
 	if strings.HasPrefix(line, "AUTH:") {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
-			partnerId := dps.PartnerService.GetMerchantIdByApiId(arr[0])
-			apiInfo := dps.PartnerService.GetApiInfo(partnerId)
+			merchantId := dps.PartnerService.GetMerchantIdByApiId(arr[0])
+			apiInfo := dps.PartnerService.GetApiInfo(merchantId)
 
 			if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 				if apiInfo.Enabled == 0 {
@@ -147,14 +147,14 @@ func createConnection(conn net.Conn, line string) error {
 				}
 				now := time.Now()
 				cli := &ClientIdentity{
-					Id:              partnerId,
+					Id:              merchantId,
 					Addr:            conn.RemoteAddr(),
 					Conn:            conn,
 					ConnectTime:     now,
 					LastConnectTime: now,
 				}
 				clients[conn.RemoteAddr().String()] = cli
-				printf(true, "[ CLIENT][ AUTH] - auth success! client id = %d ; version = %s", partnerId, arr[2])
+				printf(true, "[ CLIENT][ AUTH] - auth success! client id = %d ; version = %s", merchantId, arr[2])
 				return nil
 			}
 		}

@@ -50,9 +50,9 @@ func (this *goodsC) Goods_select(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Create(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
-	shopChks := cache.GetShopCheckboxs(partnerId, "")
-	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
+	merchantId := getMerchantId(ctx)
+	shopChks := cache.GetShopCheckboxs(merchantId, "")
+	cateOpts := cache.GetDropOptionsOfCategory(merchantId)
 
 	e := &sale.ValueItem{
 		Image: ctx.App.Config().GetString(variable.NoPicPath),
@@ -70,19 +70,19 @@ func (this *goodsC) Create(ctx *echox.Context) error {
 }
 
 func (this *goodsC) Edit(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	var e *sale.ValueItem
 	ss := dps.SaleService
 	id, _ := strconv.Atoi(ctx.Query("item_id"))
-	e = ss.GetValueItem(partnerId, id)
+	e = ss.GetValueItem(merchantId, id)
 	if e == nil {
 		return ctx.StringOK("商品不存在")
 	}
 	e.Description = ""
 	js, _ := json.Marshal(e)
-	gs := ss.GetGoodsBySku(partnerId, e.Id, 0) //todo:???
-	shopChks := cache.GetShopCheckboxs(partnerId, e.ApplySubs)
-	cateOpts := cache.GetDropOptionsOfCategory(partnerId)
+	gs := ss.GetGoodsBySku(merchantId, e.Id, 0) //todo:???
+	shopChks := cache.GetShopCheckboxs(merchantId, e.ApplySubs)
+	cateOpts := cache.GetDropOptionsOfCategory(merchantId)
 
 	d := ctx.NewData()
 	d.Map = map[string]interface{}{
@@ -97,11 +97,11 @@ func (this *goodsC) Edit(ctx *echox.Context) error {
 
 // 保存商品描述
 func (this *goodsC) Item_info(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var e *sale.ValueItem
 	id, _ := strconv.Atoi(r.URL.Query().Get("item_id"))
-	e = dps.SaleService.GetValueItem(partnerId, id)
+	e = dps.SaleService.GetValueItem(merchantId, id)
 	if e == nil {
 		return ctx.String(http.StatusOK, "商品不存在")
 	}
@@ -116,7 +116,7 @@ func (this *goodsC) Item_info(ctx *echox.Context) error {
 
 // 保存货品描述信息(POST)
 func (this *goodsC) Save_item_info(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -124,7 +124,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 		info := r.FormValue("Info")
 
 		var result gof.Message
-		err := dps.SaleService.SaveItemInfo(partnerId, id, info)
+		err := dps.SaleService.SaveItemInfo(merchantId, id, info)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -139,7 +139,7 @@ func (this *goodsC) Save_item_info(ctx *echox.Context) error {
 
 // 保存货品信息(POST)
 func (this *goodsC) SaveItem(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		ss := dps.SaleService
@@ -148,16 +148,16 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 		e := sale.ValueItem{}
 		web.ParseFormToEntity(r.Form, &e)
 		e.State = 1 //todo: 暂时使用
-		id, err := ss.SaveItem(partnerId, &e)
+		id, err := ss.SaveItem(merchantId, &e)
 		if err != nil {
 			result.Message = err.Error()
 		} else {
-			gs := ss.GetValueGoodsBySku(partnerId, id, 0) //todo: ??? SKU
+			gs := ss.GetValueGoodsBySku(merchantId, id, 0) //todo: ??? SKU
 			gs.StockNum, _ = strconv.Atoi(r.FormValue("StockNum"))
 			gs.SaleNum, _ = strconv.Atoi(r.FormValue("SaleNum"))
 			price, _ := strconv.ParseFloat(r.FormValue("SalePrice"), 32)
 			gs.SalePrice = float32(price)
-			ss.SaveGoods(partnerId, gs)
+			ss.SaveGoods(merchantId, gs)
 			result.Result = true
 			result.Data = id
 		}
@@ -168,13 +168,13 @@ func (this *goodsC) SaveItem(ctx *echox.Context) error {
 
 // 删除商品信息(POST)
 func (this *goodsC) Del_goods(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	if r.Method == "POST" {
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
-		err := dps.SaleService.DeleteGoods(partnerId, id)
+		err := dps.SaleService.DeleteGoods(merchantId, id)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -188,14 +188,14 @@ func (this *goodsC) Del_goods(ctx *echox.Context) error {
 
 // 删除货品信息(POST)
 func (this *goodsC) Del_item(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 
 		r.ParseForm()
 		id, _ := strconv.Atoi(r.FormValue("id"))
-		err := dps.SaleService.DeleteItem(partnerId, id)
+		err := dps.SaleService.DeleteItem(merchantId, id)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -209,13 +209,13 @@ func (this *goodsC) Del_item(ctx *echox.Context) error {
 
 // 设置销售标签
 func (this *goodsC) SetSaleTag(ctx *echox.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	goodsId, _ := strconv.Atoi(ctx.Query("id"))
 
-	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(partnerId)
+	var tags []*sale.ValueSaleTag = dps.SaleService.GetAllSaleTags(merchantId)
 	tagsHtml := getSaleTagsCheckBoxHtml(tags)
 
-	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetItemSaleTags(partnerId, goodsId)
+	var chkTags []*sale.ValueSaleTag = dps.SaleService.GetItemSaleTags(merchantId, goodsId)
 	strArr := make([]string, len(chkTags))
 	for i, v := range chkTags {
 		strArr[i] = strconv.Itoa(v.Id)
@@ -248,8 +248,8 @@ func (this *goodsC) SaveGoodsSTag(ctx *echox.Context) error {
 				}
 			}
 
-			partnerId := getMerchantId(ctx)
-			err = dps.SaleService.SaveItemSaleTags(partnerId, goodsId, ids)
+			merchantId := getMerchantId(ctx)
+			err = dps.SaleService.SaveItemSaleTags(merchantId, goodsId, ids)
 		}
 
 		if err != nil {
@@ -275,12 +275,12 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.lvPrice_post(ctx)
 	}
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	//todo: should be goodsId
 	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
-	goods := dps.SaleService.GetGoodsBySku(partnerId, itemId, 0)
-	lvs := dps.PartnerService.GetMemberLevels(partnerId)
-	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(partnerId, goods.GoodsId)
+	goods := dps.SaleService.GetGoodsBySku(merchantId, itemId, 0)
+	lvs := dps.PartnerService.GetMemberLevels(merchantId)
+	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(merchantId, goods.GoodsId)
 
 	var buf *bytes.Buffer = bytes.NewBufferString("")
 
@@ -357,8 +357,8 @@ func (this *goodsC) lvPrice_post(ctx *echox.Context) error {
 		}
 	}
 
-	partnerId := getMerchantId(ctx)
-	err = dps.SaleService.SaveMemberPrices(partnerId, goodsId, priceSet)
+	merchantId := getMerchantId(ctx)
+	err = dps.SaleService.SaveMemberPrices(merchantId, goodsId, priceSet)
 	if err != nil {
 		return ctx.JSON(http.StatusOK, gof.Message{Message: err.Error()})
 	} else {

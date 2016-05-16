@@ -50,25 +50,25 @@ func (this *promotionService) SavePromotion(v *promotion.ValuePromotion) (int, e
 }
 
 // 删除促销
-func (this *promotionService) DelPromotion(partnerId int, promId int) error {
+func (this *promotionService) DelPromotion(merchantId int, promId int) error {
 	prom := this._rep.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
-	if prom.GetValue().MerchantId != partnerId {
+	if prom.GetValue().MerchantId != merchantId {
 		return merchant.ErrPartnerNotMatch
 	}
 
 	return promImpl.DeletePromotion(prom)
 }
 
-func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.ValuePromotion,
+func (this *promotionService) SaveCashBackPromotion(merchantId int, v *promotion.ValuePromotion,
 	v1 *promotion.ValueCashBack) (int, error) {
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
-		if prom.GetValue().MerchantId != partnerId {
+		if prom.GetValue().MerchantId != merchantId {
 			return -1, merchant.ErrPartnerNotMatch
 		}
 	} else {
@@ -88,12 +88,12 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 }
 
 /**************   Coupon ************/
-func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromotion, v1 *promotion.ValueCoupon) (int, error) {
+func (this *promotionService) SaveCoupon(merchantId int, v *promotion.ValuePromotion, v1 *promotion.ValueCoupon) (int, error) {
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
-		if prom.GetValue().MerchantId != partnerId {
+		if prom.GetValue().MerchantId != merchantId {
 			return -1, merchant.ErrPartnerNotMatch
 		}
 	} else {
@@ -112,7 +112,7 @@ func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromot
 	return prom.Save()
 }
 
-func (this *promotionService) BindCoupons(partnerId int, id int, members []string) error {
+func (this *promotionService) BindCoupons(merchantId int, id int, members []string) error {
 	coupon := this._rep.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

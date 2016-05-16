@@ -211,11 +211,11 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 		return -1, sale.ErrNotOnShelves
 	}
 
-	partnerId := this._sale.GetAggregateRootId()
+	merchantId := this._sale.GetAggregateRootId()
 	unix := time.Now().Unix()
-	cate := this._saleRep.GetCategory(partnerId, gv.CategoryId)
+	cate := this._saleRep.GetCategory(merchantId, gv.CategoryId)
 	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
-		Key:          fmt.Sprintf("%d-g%d-%d", partnerId, v.Id, unix),
+		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
 		ItemId:       gv.Id,
 		GoodsId:      this.GetDomainId(),
 		GoodsName:    gv.Name,

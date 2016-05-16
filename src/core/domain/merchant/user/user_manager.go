@@ -15,13 +15,13 @@ import (
 var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
-	partnerId int
+	merchantId int
 	rep       user.IUserRep
 }
 
-func NewUserManager(partnerId int, rep user.IUserRep) user.IUserManager {
+func NewUserManager(merchantId int, rep user.IUserRep) user.IUserManager {
 	return &UserManager{
-		partnerId: partnerId,
+		merchantId: merchantId,
 		rep:       rep,
 	}
 }
@@ -37,7 +37,7 @@ func (this *UserManager) GetUser(id int) user.IUser {
 
 // 获取所有配送员
 func (this *UserManager) GetDeliveryStaff() []user.IDeliveryStaff {
-	list := this.rep.GetDeliveryStaffPersons(this.partnerId)
+	list := this.rep.GetDeliveryStaffPersons(this.merchantId)
 	var staffs = make([]user.IDeliveryStaff, len(list))
 	for i, v := range list {
 		staffs[i] = newUser(v, this.rep)

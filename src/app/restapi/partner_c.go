@@ -23,9 +23,9 @@ type partnerC struct {
 
 // 获取广告数据
 func (this *partnerC) Get_ad(ctx *echo.Context) error {
-	partnerId := getMerchantId(ctx)
+	merchantId := getMerchantId(ctx)
 	adName := ctx.Request().FormValue("ad_name")
-	adv, data := dps.AdvertisementService.GetAdvertisementAndDataByName(partnerId, adName)
+	adv, data := dps.AdvertisementService.GetAdvertisementAndDataByName(merchantId, adName)
 	if data != nil {
 		// 图片广告
 		if adv.Type == ad.TypeGallery {
