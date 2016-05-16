@@ -7,14 +7,14 @@
  * history :
  */
 
-package partner
+package merchant
 
 import (
 	"go2o/src/core/infrastructure/domain"
 )
 
 var (
-	ErrNoSuchPartner *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchMerchant *domain.DomainError = domain.NewDomainError(
 		"no_such_partner", "商家不存在")
 
 	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(

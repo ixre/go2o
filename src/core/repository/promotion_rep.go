@@ -69,7 +69,7 @@ func (this *promotionRep) SaveValuePromotion(v *promotion.ValuePromotion) (int, 
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pm_info WHERE partner_id=?", &v.Id, v.PartnerId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM pm_info WHERE merchant_id=?", &v.Id, v.MerchantId)
 	}
 	return v.Id, err
 }
@@ -126,7 +126,7 @@ func (this *promotionRep) GetPromotionOfGoods(goodsId int) []*promotion.ValuePro
 // 获取商户订单可用的促销
 func (this *promotionRep) GetPromotionOfPartnerOrder(partnerId int) []*promotion.ValuePromotion {
 	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
-	err := this.Connector.GetOrm().Select(&arr, "partner_id=? AND goods_id=0 AND enabled=1 ORDER BY id", partnerId)
+	err := this.Connector.GetOrm().Select(&arr, "merchant_id=? AND goods_id=0 AND enabled=1 ORDER BY id", partnerId)
 	if err == nil {
 		return arr
 	}
@@ -259,7 +259,7 @@ func (this *promotionRep) GetValueCouponByCode(partnerId int, couponCode string)
 	var e promotion.ValueCoupon
 	err := this.Connector.GetOrm().GetByQuery(&e,
 		fmt.Sprintf(`SELECT * FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
-		 		WHERE partner_id=%d AND code='%s'`,
+		 		WHERE merchant_id=%d AND code='%s'`,
 			partnerId, couponCode))
 
 	if err == nil {

@@ -6,13 +6,13 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/merchant/mss"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
@@ -33,7 +33,7 @@ func (this *mssC) Mail_template_list(ctx *echox.Context) error {
 
 // 修改广告
 func (this *mssC) Edit_mail_tpl(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	e, _ := dps.PartnerService.GetMailTemplate(partnerId, id)
 
@@ -61,7 +61,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 
 		req.ParseForm()
 		var result gof.Message
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
 		err := dps.PartnerService.DeleteMailTemplate(partnerId, adId)
 
@@ -78,7 +78,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 
 // 保存邮件模板(POST)
 func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()
@@ -89,7 +89,7 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 		web.ParseFormToEntity(r.Form, &e)
 
 		//更新
-		e.PartnerId = partnerId
+		e.MerchantId = partnerId
 
 		id, err := dps.PartnerService.SaveMailTemplate(partnerId, &e)
 
@@ -113,7 +113,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.mss_setting_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	e := dps.PartnerService.GetKeyMapsByKeyword(partnerId, "mss_")
 	js, _ := json.Marshal(e)
 
@@ -127,7 +127,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 // 保存设置
 func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 	var result gof.Message
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	req := ctx.HttpRequest()
 	req.ParseForm()
 	var data map[string]string = make(map[string]string, 0)

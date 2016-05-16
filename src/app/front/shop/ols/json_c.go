@@ -46,7 +46,7 @@ func getMd5(s string) string {
 func (t *jsonC) Ad(ctx *echox.Context) error {
 	namesParams := strings.TrimSpace(ctx.Query("names"))
 	names := strings.Split(namesParams, "|")
-	partnerId := GetPartnerId(ctx)
+	partnerId := GetMerchantId(ctx)
 	as := dps.AdvertisementService
 
 	result := make(map[string]map[string]interface{}, len(names))
@@ -91,7 +91,7 @@ func (t *jsonC) getMultiParams(s string) (p string, size, begin int) {
 func (this *jsonC) Simple_goods(ctx *echox.Context) error {
 	typeParams := strings.TrimSpace(ctx.Form("params"))
 	types := strings.Split(typeParams, "|")
-	partnerId := GetPartnerId(ctx)
+	partnerId := GetMerchantId(ctx)
 	result := make(map[string]interface{}, len(types))
 
 	key := fmt.Sprint("go2o:front:sg:%d-%s", partnerId, getMd5(typeParams))
@@ -120,7 +120,7 @@ func (this *jsonC) Simple_goods(ctx *echox.Context) error {
 func (this *jsonC) Saletag_goods(ctx *echox.Context) error {
 	codeParams := strings.TrimSpace(ctx.Form("params"))
 	codes := strings.Split(codeParams, "|")
-	partnerId := GetPartnerId(ctx)
+	partnerId := GetMerchantId(ctx)
 	result := make(map[string]interface{}, len(codes))
 
 	key := fmt.Sprint("go2o:front:stg:%d--%s", partnerId, getMd5(codeParams))

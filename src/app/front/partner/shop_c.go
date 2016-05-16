@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 //关于regexp的资料
 //http://www.cnblogs.com/golove/archive/2013/08/20/3270918.html
@@ -15,7 +15,7 @@ import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
 	"html/template"
@@ -40,7 +40,7 @@ func (this *shopC) Create(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *shopC) Modify(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
 	shop := dps.PartnerService.GetShopValueById(partnerId, id)
 	entity, _ := json.Marshal(shop)
@@ -52,13 +52,13 @@ func (this *shopC) Modify(ctx *echox.Context) error {
 
 //保存门店信息(POST)
 func (this *shopC) SaveShop(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
 		r.ParseForm()
 
-		shop := partner.ValueShop{}
+		shop := merchant.ValueShop{}
 		web.ParseFormToEntity(r.Form, &shop)
 
 		id, err := dps.PartnerService.SaveShop(partnerId, &shop)
@@ -76,7 +76,7 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 // 删除商店(POST)
 func (this *shopC) Del(ctx *echox.Context) error {
 	var result gof.Message
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		r.ParseForm()

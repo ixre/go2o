@@ -54,7 +54,7 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 	//return ctx.String(http.StatusNotFound,r.FormValue("usr"))
 	//r.ParseForm()
 	var result gof.Message
-	partnerId := GetPartnerId(ctx)
+	partnerId := GetMerchantId(ctx)
 	usr, pwd := r.FormValue("usr"), r.FormValue("pwd")
 
 	pwd = strings.TrimSpace(pwd)
@@ -142,7 +142,7 @@ func (this *UserC) PostRegisterInfo(ctx *echox.Context) error {
 		var partnerId int
 		var err error
 
-		partnerId = GetSessionPartnerId(ctx)
+		partnerId = GetSessionMerchantId(ctx)
 		if len(member.Usr) == 0 || len(member.Pwd) == 0 {
 			result.Message = "1000:注册信息不完整"
 			return ctx.JSON(http.StatusOK, result)

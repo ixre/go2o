@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
 	"go2o/src/core/domain/interface/shopping"
@@ -39,7 +39,7 @@ type Order struct {
 	_orderPbs        []*shopping.OrderPromotionBind
 	_memberRep       member.IMemberRep
 	_shoppingRep     shopping.IShoppingRep
-	_partnerRep      partner.IPartnerRep
+	_partnerRep      merchant.IMerchantRep
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
 	_internalSuspend bool // 是否为内部挂起
@@ -47,7 +47,7 @@ type Order struct {
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
-	partnerRep partner.IPartnerRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
+	partnerRep merchant.IMerchantRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep) shopping.IOrder {
 	return &Order{
 		_shopping:    shopping,
@@ -108,7 +108,7 @@ func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 // 获取可用的促销,不包含优惠券
 func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if this._availPromotions == nil {
-		partnerId := this._value.PartnerId
+		partnerId := this._value.MerchantId
 		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfPartnerOrder(partnerId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
@@ -439,7 +439,7 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 	if this._value.Items == nil {
 		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
 	}
-	var sl sale.ISale = this._saleRep.GetSale(this._value.PartnerId)
+	var sl sale.ISale = this._saleRep.GetSale(this._value.MerchantId)
 	var item sale.IItem
 	var snap *sale.GoodsSnapshot
 	for i, v := range cartItems {
@@ -545,7 +545,7 @@ func (this *Order) addGoodsSaleNum(snapshotId int, quantity int) error {
 	if snapshot == nil {
 		return sale.ErrNoSuchSnapshot
 	}
-	var goods sale.IGoods = this._saleRep.GetSale(this._value.PartnerId).
+	var goods sale.IGoods = this._saleRep.GetSale(this._value.MerchantId).
 		GetGoods(snapshot.GoodsId)
 
 	if goods == nil {
@@ -608,7 +608,7 @@ func (this *Order) cancelGoods() error {
 		if snapshot == nil {
 			return sale.ErrNoSuchSnapshot
 		}
-		var goods sale.IGoods = this._saleRep.GetSale(this._value.PartnerId).
+		var goods sale.IGoods = this._saleRep.GetSale(this._value.MerchantId).
 			GetGoods(snapshot.GoodsId)
 		if goods != nil {
 			goods.CancelSale(v.Quantity, this.GetOrderNo())
@@ -674,10 +674,10 @@ func (this *Order) Complete() error {
 		return member.ErrNoSuchMember
 	}
 	var err error
-	var ptl partner.IPartner
-	ptl, err = this._partnerRep.GetPartner(v.PartnerId)
+	var ptl merchant.IMerchant
+	ptl, err = this._partnerRep.GetMerchant(v.MerchantId)
 	if err != nil {
-		log.Println("供应商异常!", v.PartnerId)
+		log.Println("供应商异常!", v.MerchantId)
 		return err
 	}
 
@@ -717,7 +717,7 @@ func (this *Order) Complete() error {
 
 		// 赠送积分
 		if backIntegral != 0 {
-			err = m.AddIntegral(v.PartnerId, enum.INTEGRAL_TYPE_ORDER,
+			err = m.AddIntegral(v.MerchantId, enum.INTEGRAL_TYPE_ORDER,
 				backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
 			if err != nil {
 				return err
@@ -744,7 +744,7 @@ func (this *Order) Complete() error {
 }
 
 // 更新返现到会员账户
-func (this *Order) updateShoppingMemberBackFee(pt partner.IPartner,
+func (this *Order) updateShoppingMemberBackFee(pt merchant.IMerchant,
 	m member.IMember, fee float32, unixTime int64) {
 	if fee == 0 {
 		return
@@ -768,7 +768,7 @@ func (this *Order) updateShoppingMemberBackFee(pt partner.IPartner,
 }
 
 // 处理返现促销
-func (this *Order) handleCashBackPromotions(pt partner.IPartner, m member.IMember) error {
+func (this *Order) handleCashBackPromotions(pt merchant.IMerchant, m member.IMember) error {
 	proms := this.GetPromotionBinds()
 	for _, v := range proms {
 		if v.PromotionType == promotion.TypeFlagCashBack {
@@ -780,7 +780,7 @@ func (this *Order) handleCashBackPromotions(pt partner.IPartner, m member.IMembe
 }
 
 // 处理返现促销
-func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember,
+func (this *Order) handleCashBackPromotion(pt merchant.IMerchant, m member.IMember,
 	v *shopping.OrderPromotionBind, pm promotion.IPromotion) error {
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
 
@@ -813,7 +813,7 @@ func (this *Order) handleCashBackPromotion(pt partner.IPartner, m member.IMember
 }
 
 // 三级返现
-func (this *Order) backFor3R(pt partner.IPartner, m member.IMember,
+func (this *Order) backFor3R(pt merchant.IMerchant, m member.IMember,
 	back_fee float32, unixTime int64) {
 	if back_fee == 0 {
 		return

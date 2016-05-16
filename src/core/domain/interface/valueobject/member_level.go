@@ -12,7 +12,7 @@ package valueobject
 type MemberLevel struct {
 	Id int `db:"id" auto:"yes" pk:"yes"`
 
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 
 	// 等级值(1,2,4,8,16)
 	Value int `db:"value" `

@@ -7,23 +7,23 @@
  * history :
  */
 
-package partner
+package merchant
 
 import (
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 )
 
-var _ partner.IShop = new(Shop)
+var _ merchant.IShop = new(Shop)
 
 type Shop struct {
-	partnerRep partner.IPartnerRep
-	value      *partner.ValueShop
-	partner    *Partner
+	partnerRep merchant.IMerchantRep
+	value      *merchant.ValueShop
+	partner    *Merchant
 	lng        float64
 	lat        float64
 }
 
-func newShop(pt *Partner, v *partner.ValueShop, partnerRep partner.IPartnerRep) partner.IShop {
+func newShop(pt *Merchant, v *merchant.ValueShop, partnerRep merchant.IMerchantRep) merchant.IShop {
 	return &Shop{
 		partnerRep: partnerRep,
 		value:      v,
@@ -35,11 +35,11 @@ func (this *Shop) GetDomainId() int {
 	return this.value.Id
 }
 
-func (this *Shop) GetValue() partner.ValueShop {
+func (this *Shop) GetValue() merchant.ValueShop {
 	return *this.value
 }
 
-func (this *Shop) SetValue(v *partner.ValueShop) error {
+func (this *Shop) SetValue(v *merchant.ValueShop) error {
 	//	if this.value.Address != v.Address ||
 	//		len(this.value.Location) == 0 {
 	//		lng, lat, err := lbs.GetLocation(v.Address)
@@ -52,7 +52,7 @@ func (this *Shop) SetValue(v *partner.ValueShop) error {
 	this.value.Address = v.Address
 	this.value.Name = v.Name
 	this.value.SortNumber = v.SortNumber
-	this.value.PartnerId = this.partner.GetAggregateRootId()
+	this.value.MerchantId = this.partner.GetAggregateRootId()
 	this.value.Phone = v.Phone
 	this.value.State = v.State
 	return nil

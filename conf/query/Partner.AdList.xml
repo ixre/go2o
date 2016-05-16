@@ -2,7 +2,7 @@
 <ExportItemConfig>
   <ColumnMappingString></ColumnMappingString>
   <Query>
-    <![CDATA[SELECT * FROM pt_ad WHERE partner_id={partner_id}
+    <![CDATA[SELECT * FROM pt_ad WHERE merchant_id={merchant_id}
     AND ({enabled}<0 OR enabled={enabled}) AND ({is_internal}<0 OR is_internal={is_internal})
      AND name LIKE '%{keyword}%'
     ORDER BY id limit {page_start},{page_size}
@@ -10,7 +10,7 @@
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM pt_ad WHERE partner_id={partner_id}
+    <![CDATA[SELECT COUNT(0) FROM pt_ad WHERE merchant_id={merchant_id}
     AND ({enabled}<0 OR enabled={enabled})  AND ({is_internal}<0 OR
     is_internal={is_internal}) AND name LIKE '%{keyword}%']]>
   </Total>

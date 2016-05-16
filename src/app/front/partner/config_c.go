@@ -6,14 +6,14 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"encoding/json"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"go2o/src/app/cache"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 	"go2o/src/x/echox"
@@ -30,8 +30,8 @@ func (this *configC) Profile(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.profile_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
-	p, _ := dps.PartnerService.GetPartner(partnerId)
+	partnerId := getMerchantId(ctx)
+	p, _ := dps.PartnerService.GetMerchant(partnerId)
 	p.Pwd = ""
 	p.ExpiresTime = time.Now().Unix()
 
@@ -42,16 +42,16 @@ func (this *configC) Profile(ctx *echox.Context) error {
 }
 
 func (this *configC) profile_post(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
-	e := partner.ValuePartner{}
+	e := merchant.MerchantValue{}
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin, _ := dps.PartnerService.GetPartner(partnerId)
+	origin, _ := dps.PartnerService.GetMerchant(partnerId)
 	e.ExpiresTime = origin.ExpiresTime
 	e.JoinTime = origin.JoinTime
 	e.LastLoginTime = origin.LastLoginTime
@@ -60,7 +60,7 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	e.UpdateTime = time.Now().Unix()
 	e.Id = partnerId
 
-	id, err := dps.PartnerService.SavePartner(partnerId, &e)
+	id, err := dps.PartnerService.SaveMerchant(partnerId, &e)
 	result.Error(err)
 	if err == nil {
 		cache.DelPartnerCache(partnerId)
@@ -74,7 +74,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.siteConf_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	conf := dps.PartnerService.GetSiteConf(partnerId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
@@ -84,18 +84,18 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 }
 
 func (this *configC) siteConf_post(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
-	e := partner.SiteConf{}
+	e := merchant.SiteConf{}
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
 	origin := dps.PartnerService.GetSiteConf(partnerId)
 	e.Host = origin.Host
-	e.PartnerId = partnerId
+	e.MerchantId = partnerId
 
 	err := dps.PartnerService.SaveSiteConf(partnerId, &e)
 	result.Error(err)
@@ -110,7 +110,7 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.saleConf_post(ctx)
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	conf := dps.PartnerService.GetSaleConf(partnerId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
@@ -119,15 +119,15 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 }
 
 func (this *configC) saleConf_post(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	var result gof.Message
 	r.ParseForm()
 
-	e := partner.SaleConf{}
+	e := merchant.SaleConf{}
 	web.ParseFormToEntity(r.Form, &e)
 
-	e.PartnerId = partnerId
+	e.MerchantId = partnerId
 
 	err := dps.PartnerService.SaveSaleConf(partnerId, &e)
 	result.Error(err)

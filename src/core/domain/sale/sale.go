@@ -151,7 +151,7 @@ func (this *Sale) CreateCategory(v *sale.ValueCategory) sale.ICategory {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	v.PartnerId = this.GetAggregateRootId()
+	v.MerchantId = this.GetAggregateRootId()
 	return newCategory(this._saleRep, v)
 }
 
@@ -215,7 +215,7 @@ func (this *Sale) InitSaleTags() error {
 	var err error
 	for _, v := range arr {
 		v.Enabled = 1
-		v.PartnerId = this._partnerId
+		v.MerchantId = this._partnerId
 		v.IsInternal = 1
 		_, err = this.CreateSaleTag(&v).Save()
 	}
@@ -250,7 +250,7 @@ func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
 	if v == nil {
 		return nil
 	}
-	v.PartnerId = this.GetAggregateRootId()
+	v.MerchantId = this.GetAggregateRootId()
 	return this._saleTagRep.CreateSaleTag(v)
 }
 

@@ -34,19 +34,19 @@ func (this *PartnerAdvertisement) InitInternalAdvertisements() {
 
 	arr := []*ad.ValueAdvertisement{
 		&ad.ValueAdvertisement{
-			PartnerId: partnerId,
+			MerchantId: partnerId,
 			Name:      "online-shop-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,
 		},
 		&ad.ValueAdvertisement{
-			PartnerId: partnerId,
+			MerchantId: partnerId,
 			Name:      "app-entry-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,
 		},
 		&ad.ValueAdvertisement{
-			PartnerId: partnerId,
+			MerchantId: partnerId,
 			Name:      "online-mobi-shop-slide",
 			Type:      ad.TypeGallery,
 			Enabled:   1,

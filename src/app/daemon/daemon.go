@@ -20,7 +20,7 @@ import (
 	"go2o/src/core"
 	"go2o/src/core/domain/interface/enum"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/merchant/mss"
 	"go2o/src/core/domain/interface/shopping"
 	"go2o/src/core/service/dps"
 	"go2o/src/core/variable"
@@ -167,7 +167,7 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 	defer conn.Close()
 	if this.sOrder {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
-			dps.ShoppingService.ConfirmOrder(o.PartnerId, o.OrderNo)
+			dps.ShoppingService.ConfirmOrder(o.MerchantId, o.OrderNo)
 		}
 	}
 	return true
@@ -176,7 +176,7 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 //设置过期时间
 func (this *defaultService) setOrderExpires(conn redis.Conn, o *shopping.ValueOrder) {
 	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
-		ss := dps.PartnerService.GetSaleConf(o.PartnerId)
+		ss := dps.PartnerService.GetSaleConf(o.MerchantId)
 		t := int64(ss.OrderTimeOutMinute) * 60
 		unix := o.CreateTime + t
 		conn.Do("SET", this.getExpiresKey(o), unix)
@@ -186,7 +186,7 @@ func (this *defaultService) setOrderExpires(conn redis.Conn, o *shopping.ValueOr
 }
 
 func (this *defaultService) getExpiresKey(o *shopping.ValueOrder) string {
-	return fmt.Sprintf("%s%d_%s", variable.KvOrderExpiresTime, o.PartnerId, o.OrderNo)
+	return fmt.Sprintf("%s%d_%s", variable.KvOrderExpiresTime, o.MerchantId, o.OrderNo)
 }
 
 // 监视会员修改,@create:是否为新注册会员

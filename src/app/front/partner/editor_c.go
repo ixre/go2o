@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"bufio"
@@ -293,7 +293,7 @@ type editorC struct {
 }
 
 func (this *editorC) File_manager(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
 	d, err := fileManager(ctx.HttpRequest(),
 		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),
@@ -309,7 +309,7 @@ func (this *editorC) File_upload(ctx *echox.Context) error {
 	if ctx.Request().Method != "POST" {
 		return errors.New("error request method")
 	}
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	upDir := ctx.App.Config().GetString(variable.UploadSaveDir)
 	fileUrl, err := fileUpload(ctx.HttpRequest(),
 		fmt.Sprintf("%s/%d/upload/", upDir, partnerId),

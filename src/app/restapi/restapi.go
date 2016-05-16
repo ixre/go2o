@@ -12,7 +12,7 @@ import (
 	"github.com/jsix/gof"
 	"go2o/src/app/cache"
 	"go2o/src/app/util"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"gopkg.in/labstack/echo.v1"
 	"net/http"
 	"strconv"
@@ -26,10 +26,10 @@ func GetStorage() gof.Storage {
 // 获取传入的商户接口编号和密钥
 func getUserInfo(ctx *echo.Context) (string, string) {
 	r := ctx.Request()
-	apiId := r.FormValue("partner_id")
+	apiId := r.FormValue("merchant_id")
 	apiSecret := r.FormValue("secret")
 	if len(apiId) == 0 {
-		apiId = r.URL.Query().Get("partner_id")
+		apiId = r.URL.Query().Get("merchant_id")
 	}
 	if len(apiSecret) == 0 {
 		apiSecret = r.URL.Query().Get("secret")
@@ -42,7 +42,7 @@ func chkPartnerApiSecret(ctx *echo.Context) bool {
 	i, s := getUserInfo(ctx)
 	ok, partnerId := CheckApiPermission(i, s)
 	if ok {
-		ctx.Set("partner_id", partnerId)
+		ctx.Set("merchant_id", partnerId)
 	}
 	return ok
 }
@@ -62,8 +62,8 @@ func checkMemberToken(ctx *echo.Context) bool {
 }
 
 // 获取商户编号
-func getPartnerId(ctx *echo.Context) int {
-	return ctx.Get("partner_id").(int)
+func getMerchantId(ctx *echo.Context) int {
+	return ctx.Get("merchant_id").(int)
 }
 
 // 获取会员编号
@@ -78,8 +78,8 @@ func ApiTest(ctx *echo.Context) error {
 // 检查是否有权限
 func CheckApiPermission(apiId string, secret string) (ok bool, partnerId int) {
 	if len(apiId) != 0 && len(secret) != 0 {
-		var partnerId int = cache.GetPartnerIdByApiId(apiId)
-		var apiInfo *partner.ApiInfo = cache.GetPartnerApiInfo(partnerId)
+		var partnerId int = cache.GetMerchantIdByApiId(apiId)
+		var apiInfo *merchant.ApiInfo = cache.GetPartnerApiInfo(partnerId)
 		if apiInfo != nil {
 			return apiInfo.ApiSecret == secret, partnerId
 		}

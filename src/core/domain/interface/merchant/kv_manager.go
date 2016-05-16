@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 const (
 	KeyMssTplIdOfProfileComplete string = "mss_profile_complete_mail_tpl"

@@ -2,15 +2,15 @@
 <ExportItemConfig>
     <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
     <Query>
-        <![CDATA[SELECT p.*,(SELECT COUNT(0) FROM pt_shop s WHERE s.partner_id=p.id) as shop_num
-         FROM pt_partner p WHERE
+        <![CDATA[SELECT p.*,(SELECT COUNT(0) FROM pt_shop s WHERE s.merchant_id=p.id) as shop_num
+         FROM pt_merchant p WHERE
      (Name Like '%{keyword}%' OR Address LIKE '%{keyword}%' OR Tel LIKE '%{keyword}%') 
      limit {page_start},{page_size}
      ]]>
     </Query>
     <Import><![CDATA[]]></Import>
     <Total>
-        <![CDATA[SELECT COUNT(0) FROM pt_partner WHERE
+        <![CDATA[SELECT COUNT(0) FROM pt_merchant WHERE
      (Name Like '%{keyword}%' OR Address LIKE '%{keyword}%' OR Tel LIKE '%{keyword}%') 
      ]]>
     </Total>

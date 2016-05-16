@@ -81,7 +81,7 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 func (this *PaymentC) Create(ctx *echox.Context) error {
 	r, w := ctx.HttpRequest(), ctx.HttpResponse()
 	qs := r.URL.Query()
-	partnerId := GetSessionPartnerId(ctx)
+	partnerId := GetSessionMerchantId(ctx)
 	orderNo := qs.Get("order_no")
 	paymentOpt := qs.Get("pay_opt")
 
@@ -138,7 +138,7 @@ func (this *PaymentC) Return_alipay(ctx *echox.Context) error {
 	//return
 	aliPayObj := this.getAliPayment(ctx)
 	result := aliPayObj.Return(ctx.HttpRequest())
-	partnerId := GetSessionPartnerId(ctx)
+	partnerId := GetSessionMerchantId(ctx)
 	if len(result.OrderNo) == 0 {
 		result.OrderNo = ctx.Session.Get("current_payment").(string)
 	}
@@ -180,7 +180,7 @@ func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result 
 		if order.IsPaid == 1 {
 			return errors.New("order has paid")
 		}
-		return dps.ShoppingService.PayForOrderOnlineTrade(order.PartnerId,
+		return dps.ShoppingService.PayForOrderOnlineTrade(order.MerchantId,
 			order.OrderNo, sp, result.TradeNo)
 	}
 	return errors.New("no such order")

@@ -7,7 +7,7 @@
  * history :
  */
 
-package partner
+package merchant
 
 import (
 	"encoding/json"
@@ -32,7 +32,7 @@ func (this *saleC) TagList(ctx *echox.Context) error {
 
 //修改门店信息
 func (this *saleC) Edit_stag(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	id, _ := strconv.Atoi(r.URL.Query().Get("id"))
 	entity := dps.SaleService.GetSaleTag(partnerId, id)
@@ -56,7 +56,7 @@ func (this *saleC) Create_stag(ctx *echox.Context) error {
 
 // 保存销售标签(POST)
 func (this *saleC) Save_stag(ctx *echox.Context) error {
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
 		var result gof.Message
@@ -64,7 +64,7 @@ func (this *saleC) Save_stag(ctx *echox.Context) error {
 
 		e := sale.ValueSaleTag{}
 		web.ParseFormToEntity(r.Form, &e)
-		e.PartnerId = getPartnerId(ctx)
+		e.MerchantId = getMerchantId(ctx)
 
 		id, err := dps.SaleService.SaveSaleTag(partnerId, &e)
 
@@ -85,7 +85,7 @@ func (this *saleC) Del_stag(ctx *echox.Context) error {
 	var result gof.Message
 	if r.Method == "POST" {
 		r.ParseForm()
-		partnerId := getPartnerId(ctx)
+		partnerId := getMerchantId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
 			err = dps.SaleService.DeleteSaleTag(partnerId, id)

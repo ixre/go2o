@@ -9,7 +9,7 @@
 package mss
 
 import (
-	"go2o/src/core/domain/interface/partner/mss"
+	"go2o/src/core/domain/interface/merchant/mss"
 	mssIns "go2o/src/core/infrastructure/mss"
 	"time"
 )
@@ -41,7 +41,7 @@ func (this *mailTemplate) JoinQueen(to []string) error {
 	unix := time.Now().Unix()
 	for _, t := range to {
 		task := &mss.MailTask{
-			PartnerId:  this._partnerId,
+			MerchantId:  this._partnerId,
 			Subject:    mssIns.Transplate(this._tpl.Subject, this._data),
 			Body:       mssIns.Transplate(this._tpl.Body, this._data),
 			SendTo:     t,

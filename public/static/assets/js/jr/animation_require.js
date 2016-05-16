@@ -1,4 +1,4 @@
-﻿define(['jr/core'],function(j6) {
+﻿define(['jr/core'],function(jr) {
     jr.extend({
         animation: {
             timer: function (call, overCall, start, end, speed) {

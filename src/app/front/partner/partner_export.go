@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
 	"database/sql"
@@ -43,7 +43,7 @@ func GetExportData(r *http.Request, partnerId int) []byte {
 		page, rows := r.Form.Get("page"), r.Form.Get("rows")
 		var parameter *report.ExportParams = report.GetExportParams(query.Get("params"), nil)
 
-		parameter.Parameters["partner_id"] = strconv.Itoa(partnerId)
+		parameter.Parameters["merchant_id"] = strconv.Itoa(partnerId)
 
 		if page != "" {
 			parameter.Parameters["pageIndex"] = page

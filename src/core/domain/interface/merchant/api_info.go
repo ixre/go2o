@@ -6,12 +6,12 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 // 商户接口信息
 type ApiInfo struct {
 	// 商户编号
-	PartnerId int `db:"partner_id" pk:"yes" auto:"no"`
+	MerchantId int `db:"merchant_id" pk:"yes" auto:"no"`
 	// 商户接口编号(10位数字)
 	ApiId string `db:"api_id"`
 	// 密钥

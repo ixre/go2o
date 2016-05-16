@@ -34,7 +34,7 @@ type MemberC struct {
 func (this *MemberC) Login(ctx *echo.Context) error {
 	r := ctx.Request()
 	var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
-	partnerId := getPartnerId(ctx)
+	partnerId := getMerchantId(ctx)
 	var result dto.MemberLoginResult
 
 	pwd = strings.TrimSpace(pwd)
@@ -64,7 +64,7 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 	r := ctx.Request()
 	var result dto.MessageResult
 	var err error
-	var partnerId int = getPartnerId(ctx)
+	var partnerId int = getMerchantId(ctx)
 	var usr string = r.FormValue("usr")
 	var pwd string = r.FormValue("pwd")
 	var phone string = r.FormValue("phone")

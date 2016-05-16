@@ -6,24 +6,24 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"strconv"
 	"time"
 )
 
-var _ partner.IKvManager = new(KvManager)
+var _ merchant.IKvManager = new(KvManager)
 
 type KvManager struct {
-	_partner   *Partner
+	_partner   *Merchant
 	_partnerId int
 	// 标识
 	_indent string
 }
 
-func newKvManager(p *Partner, indent string) partner.IKvManager {
+func newKvManager(p *Merchant, indent string) merchant.IKvManager {
 	return &KvManager{
 		_partner:   p,
 		_partnerId: p.GetAggregateRootId(),

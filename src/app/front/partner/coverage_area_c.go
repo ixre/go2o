@@ -1,4 +1,4 @@
-package partner
+package merchant
 
 import (
 	"github.com/jsix/gof"

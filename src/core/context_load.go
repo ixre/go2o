@@ -18,9 +18,9 @@ import (
 	"go2o/src/core/domain/interface/content"
 	"go2o/src/core/domain/interface/delivery"
 	"go2o/src/core/domain/interface/member"
-	"go2o/src/core/domain/interface/partner"
-	"go2o/src/core/domain/interface/partner/mss"
-	"go2o/src/core/domain/interface/partner/user"
+	"go2o/src/core/domain/interface/merchant"
+	"go2o/src/core/domain/interface/merchant/mss"
+	"go2o/src/core/domain/interface/merchant/user"
 	"go2o/src/core/domain/interface/personfinance"
 	"go2o/src/core/domain/interface/promotion"
 	"go2o/src/core/domain/interface/sale"
@@ -79,11 +79,11 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(sale.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
-	orm.TableMapping(partner.ValuePartner{}, "pt_partner")
-	orm.TableMapping(partner.ApiInfo{}, "pt_api")
-	orm.TableMapping(partner.SiteConf{}, "pt_siteconf")
-	orm.TableMapping(partner.ValueShop{}, "pt_shop")
-	orm.TableMapping(partner.SaleConf{}, "pt_saleconf")
+	orm.TableMapping(merchant.MerchantValue{}, "pt_merchant")
+	orm.TableMapping(merchant.ApiInfo{}, "pt_api")
+	orm.TableMapping(merchant.SiteConf{}, "pt_siteconf")
+	orm.TableMapping(merchant.ValueShop{}, "pt_shop")
+	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
 	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")
 	orm.TableMapping(ad.ValueAdvertisement{}, "pt_ad")

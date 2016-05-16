@@ -6,17 +6,17 @@
  * description :
  * history :
  */
-package partner
+package merchant
 
 import (
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/valueobject"
 )
 
-var _ partner.IConfManager = new(ConfManager)
+var _ merchant.IConfManager = new(ConfManager)
 
 type ConfManager struct {
-	_rep       partner.IPartnerRep
+	_rep       merchant.IMerchantRep
 	_partnerId int
 	_levelSet  []*valueobject.MemberLevel
 }

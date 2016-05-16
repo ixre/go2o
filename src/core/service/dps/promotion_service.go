@@ -10,7 +10,7 @@
 package dps
 
 import (
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/domain/interface/promotion"
 	promImpl "go2o/src/core/domain/promotion"
 )
@@ -55,8 +55,8 @@ func (this *promotionService) DelPromotion(partnerId int, promId int) error {
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
 	}
-	if prom.GetValue().PartnerId != partnerId {
-		return partner.ErrPartnerNotMatch
+	if prom.GetValue().MerchantId != partnerId {
+		return merchant.ErrPartnerNotMatch
 	}
 
 	return promImpl.DeletePromotion(prom)
@@ -68,8 +68,8 @@ func (this *promotionService) SaveCashBackPromotion(partnerId int, v *promotion.
 	var err error
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
-		if prom.GetValue().PartnerId != partnerId {
-			return -1, partner.ErrPartnerNotMatch
+		if prom.GetValue().MerchantId != partnerId {
+			return -1, merchant.ErrPartnerNotMatch
 		}
 	} else {
 		prom = this._rep.CreatePromotion(v)
@@ -93,8 +93,8 @@ func (this *promotionService) SaveCoupon(partnerId int, v *promotion.ValuePromot
 	var err error
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
-		if prom.GetValue().PartnerId != partnerId {
-			return -1, partner.ErrPartnerNotMatch
+		if prom.GetValue().MerchantId != partnerId {
+			return -1, merchant.ErrPartnerNotMatch
 		}
 	} else {
 		prom = this._rep.CreatePromotion(v)

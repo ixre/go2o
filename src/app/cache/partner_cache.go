@@ -11,18 +11,18 @@ package cache
 import (
 	"fmt"
 	"github.com/jsix/gof"
-	"go2o/src/core/domain/interface/partner"
+	"go2o/src/core/domain/interface/merchant"
 	"go2o/src/core/infrastructure/format"
 	"go2o/src/core/service/dps"
 )
 
 // 获取商户信息缓存
-func GetValuePartnerCache(partnerId int) *partner.ValuePartner {
-	var v partner.ValuePartner
+func GetValuePartnerCache(partnerId int) *merchant.MerchantValue {
+	var v merchant.MerchantValue
 	var sto gof.Storage = GetKVS()
 	var key string = GetValuePartnerCacheCK(partnerId)
 	if sto.Get(key, &v) != nil {
-		v2, err := dps.PartnerService.GetPartner(partnerId)
+		v2, err := dps.PartnerService.GetMerchant(partnerId)
 		if v2 != nil && err == nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -49,8 +49,8 @@ func DelPartnerCache(partnerId int) {
 }
 
 // 获取商户站点配置
-func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
-	var v partner.SiteConf
+func GetPartnerSiteConf(partnerId int) *merchant.SiteConf {
+	var v merchant.SiteConf
 	var sto gof.Storage = GetKVS()
 	var key string = GetPartnerSiteConfCK(partnerId)
 	if sto.Get(key, &v) != nil {
@@ -65,13 +65,13 @@ func GetPartnerSiteConf(partnerId int) *partner.SiteConf {
 }
 
 // 根据主机头识别会员编号
-func GetPartnerIdByHost(host string) int {
+func GetMerchantIdByHost(host string) int {
 	partnerId := 0
 	key := "cache:host-for:" + host
 	sto := GetKVS()
 	var err error
 	if partnerId, err = sto.GetInt(key); err != nil || partnerId <= 0 {
-		partnerId = dps.PartnerService.GetPartnerIdByHost(host)
+		partnerId = dps.PartnerService.GetMerchantIdByHost(host)
 		if partnerId > 0 {
 			sto.SetExpire(key, partnerId, DefaultMaxSeconds)
 		}
@@ -80,13 +80,13 @@ func GetPartnerIdByHost(host string) int {
 }
 
 // 根据API ID获取商户ID
-func GetPartnerIdByApiId(apiId string) int {
+func GetMerchantIdByApiId(apiId string) int {
 	var partnerId int
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &partnerId)
 	if partnerId == 0 {
-		partnerId = dps.PartnerService.GetPartnerIdByApiId(apiId)
+		partnerId = dps.PartnerService.GetMerchantIdByApiId(apiId)
 		if partnerId != 0 {
 			kvs.Set(key, partnerId)
 		}
@@ -95,8 +95,8 @@ func GetPartnerIdByApiId(apiId string) int {
 }
 
 // 获取API 信息
-func GetPartnerApiInfo(partnerId int) *partner.ApiInfo {
-	var d *partner.ApiInfo = new(partner.ApiInfo)
+func GetPartnerApiInfo(partnerId int) *merchant.ApiInfo {
+	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", partnerId)
 	err := kvs.Get(key, &d)

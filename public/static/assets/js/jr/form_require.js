@@ -1,4 +1,4 @@
-﻿define(['jr/core'],function(j6) {
+﻿define(['jr/core'],function(jr) {
     jr.extend({
         form: {
             getData: function (a) {

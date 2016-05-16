@@ -2,14 +2,14 @@
 <ExportItemConfig>
   <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
   <Query>
-    <![CDATA[SELECT * FROM gs_sale_tag WHERE partner_id={partner_id}
+    <![CDATA[SELECT * FROM gs_sale_tag WHERE merchant_id={merchant_id}
     AND ({enabled}<0 OR enabled={enabled}) AND ( tag_name Like '%{keyword}%'
       OR tag_code LIKE '%{keyword}%') limit {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM gs_sale_tag WHERE partner_id={partner_id}
+    <![CDATA[SELECT COUNT(0) FROM gs_sale_tag WHERE merchant_id={merchant_id}
     AND ({enabled}<0 OR enabled={enabled}) AND ( tag_name Like '%{keyword}%'
       OR tag_code LIKE '%{keyword}%') ]]>
   </Total>

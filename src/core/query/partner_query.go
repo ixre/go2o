@@ -41,7 +41,7 @@ func getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商户编号
-func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
+func (this *PartnerQuery) QueryMerchantIdByHost(host string) int {
 	//  $ 获取合作商ID
 	// $ hostname : 域名
 	// *.wdian.net  二级域名
@@ -54,11 +54,11 @@ func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
 	if reg.MatchString(host) {
 		matches := reg.FindAllStringSubmatch(host, 1)
 		usr := matches[0][1]
-		err = this.Connector.ExecScalar(`SELECT id FROM pt_partner WHERE usr=?`, &partnerId, usr)
+		err = this.Connector.ExecScalar(`SELECT id FROM pt_merchant WHERE usr=?`, &partnerId, usr)
 	} else {
 		err = this.Connector.ExecScalar(
-			`SELECT id FROM pt_partner INNER JOIN pt_siteconf
-					 ON pt_siteconf.partner_id = pt_partner.id
+			`SELECT id FROM pt_merchant INNER JOIN pt_siteconf
+					 ON pt_siteconf.merchant_id = pt_merchant.id
 					 WHERE host=?`, &partnerId, host)
 	}
 	if err != nil {
@@ -70,6 +70,6 @@ func (this *PartnerQuery) QueryPartnerIdByHost(host string) int {
 // 验证用户密码并返回编号
 func (this *PartnerQuery) Verify(usr, pwd string) int {
 	var id int = -1
-	this.Connector.ExecScalar("SELECT id FROM pt_partner WHERE usr=? AND pwd=?", &id, usr, pwd)
+	this.Connector.ExecScalar("SELECT id FROM pt_merchant WHERE usr=? AND pwd=?", &id, usr, pwd)
 	return id
 }

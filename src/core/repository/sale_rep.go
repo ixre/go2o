@@ -57,7 +57,7 @@ func (this *saleRep) GetValueItem(partnerId, itemId int) *sale.ValueItem {
 	var e *sale.ValueItem = new(sale.ValueItem)
 	err := this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
 			INNER JOIN gs_category c ON c.id = gs_item.category_id WHERE gs_item.id=?
-			AND c.partner_id=?`, itemId, partnerId)
+			AND c.merchant_id=?`, itemId, partnerId)
 	if err != nil {
 		return nil
 	}
@@ -91,10 +91,10 @@ func (this *saleRep) GetPagedOnShelvesItem(partnerId int, catIds []int, start, e
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, partnerId, catIdStr, start, (end - start))
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, partnerId, catIdStr, start, (end - start))
 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE partner_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, partnerId, catIdStr), &total)
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, partnerId, catIdStr), &total)
 
 	e = []*sale.ValueItem{}
 	this.Connector.GetOrm().SelectByQuery(&e, sql)
@@ -113,7 +113,7 @@ func (this *saleRep) DeleteItem(partnerId, itemId int) error {
 	_, _, err := this.Connector.Exec(`
 		DELETE f FROM gs_item AS f
 		INNER JOIN gs_category AS c ON f.category_id=c.id
-		WHERE f.id=? AND c.partner_id=?`, itemId, partnerId)
+		WHERE f.id=? AND c.merchant_id=?`, itemId, partnerId)
 	return err
 }
 
@@ -133,16 +133,16 @@ func (this *saleRep) SaveCategory(v *sale.ValueCategory) (int, error) {
 
 func (this *saleRep) DeleteCategory(partnerId, id int) error {
 	//删除子类
-	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND parent_id=?",
+	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE merchant_id=? AND parent_id=?",
 		partnerId, id)
 
 	//删除分类
-	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE partner_id=? AND id=?",
+	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE merchant_id=? AND id=?",
 		partnerId, id)
 
 	//清理项
 	this.Connector.Exec(`DELETE FROM gs_item WHERE Cid NOT IN
-		(SELECT Id FROM gs_category WHERE partner_id=?)`, partnerId)
+		(SELECT Id FROM gs_category WHERE merchant_id=?)`, partnerId)
 
 	return err
 }
@@ -151,7 +151,7 @@ func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
 	var e *sale.ValueCategory = new(sale.ValueCategory)
 	err := this.Connector.GetOrm().Get(id, e)
 	log.Println("--", e)
-	if err == nil && e.PartnerId == partnerId {
+	if err == nil && e.MerchantId == partnerId {
 		return e
 	}
 	return nil
@@ -159,7 +159,7 @@ func (this *saleRep) GetCategory(partnerId, id int) *sale.ValueCategory {
 
 func (this *saleRep) GetCategories(partnerId int) sale.CategoryList {
 	var e []*sale.ValueCategory = []*sale.ValueCategory{}
-	err := this.Connector.GetOrm().Select(&e, "partner_id=? ORDER BY id ASC", partnerId)
+	err := this.Connector.GetOrm().Select(&e, "merchant_id=? ORDER BY id ASC", partnerId)
 	if err == nil {
 		return e
 	}

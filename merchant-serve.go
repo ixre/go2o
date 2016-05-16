@@ -64,7 +64,7 @@ func main() {
     core.RegisterTypes()
     cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
     session.Set(newApp.Storage(),"")
-    go partner.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))
+    go merchant.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))
 
     <-ch
 }

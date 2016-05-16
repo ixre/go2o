@@ -13,7 +13,7 @@ type ValuePage struct {
 	Id int `db:"id" pk:"yes" auto:"yes"`
 
 	// 商户编号
-	PartnerId int `db:"partner_id"`
+	MerchantId int `db:"merchant_id"`
 
 	// 标题
 	Title string `db:"title"`

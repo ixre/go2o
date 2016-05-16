@@ -79,7 +79,7 @@
     jr.$('btn_save').onclick = function() {
         if (jr.validator.validate('form1')) {
             var data = jr.json.toObject('form1');
-            jr.xhr.jsonPost('SavePartner', data, function(json) {
+            jr.xhr.jsonPost('SaveMerchant', data, function(json) {
                 window.parent.$.messager.alert('提示', json.result ? '商户创建成功，请继续为商户配置其他信息！' : json.message,
                         "ok",function(){
                             jr.tab.closeAndRefresh('商户管理');

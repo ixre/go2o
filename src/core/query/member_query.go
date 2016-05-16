@@ -40,7 +40,7 @@ func (this *MemberQuery) GetMemberList(partnerId int, ids []int) []*dto.MemberSu
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN pt_member_level lv
 				ON m.level = lv.value INNER JOIN mm_account a ON
-				 a.member_id = m.id WHERE lv.partner_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
+				 a.member_id = m.id WHERE lv.merchant_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
 		this.Connector.GetOrm().SelectByQuery(&list, query, partnerId)
 	}
 	return list
@@ -93,7 +93,7 @@ func (this *MemberQuery) QueryPagerOrder(memberId, page, size int,
 	d.Query(fmt.Sprintf(` SELECT id,
 			order_no,
 			member_id,
-			partner_id,
+			merchant_id,
 			shop_id,
 			replace(items_info,'\n','<br />') as items_info,
 			total_fee,
@@ -134,7 +134,7 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(partnerId int, key string) []*
 	var id int
 	var usr, name, phone string
 	this.Query(`SELECT id,usr,name,phone FROM mm_member INNER JOIN mm_relation ON
-		mm_relation.member_id = mm_member.id WHERE mm_relation.reg_partner_id=?
+		mm_relation.member_id = mm_member.id WHERE mm_relation.reg_merchant_id=?
 		AND usr LIKE ? OR name LIKE ?`, func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone)
@@ -169,20 +169,20 @@ func (this *MemberQuery) GetMemberInviRank(partnerId int, allTeam bool, levelCom
 	this.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id  AND m1.reg_time BETWEEN
+	AND r.reg_merchant_id=rl.reg_merchant_id  AND m1.reg_time BETWEEN
   ? AND ? ) as invi_num,
 	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+	AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
   ? AND ? )+
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
   ON m1.id = r.member_id WHERE (m1.level%s) AND invi_member_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id =
-    m.id AND r.reg_partner_id=rl.reg_partner_id AND m1.reg_time BETWEEN
+    m.id AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
   ? AND ? ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_partner_id = ? AND state= ?) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_merchant_id = ? AND state= ?) t ORDER BY %s,t.reg_time asc
  LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)

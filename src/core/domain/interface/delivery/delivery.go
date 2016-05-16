@@ -13,7 +13,7 @@ type IDelivery interface {
 	GetAggregateRootId() int
 
 	// 等同于GetAggregateRootId()
-	GetPartnerId() int
+	GetMerchantId() int
 
 	// 获取最近的配送区域
 	GetNearestCoverage(lng, lat float64) ICoverageArea
