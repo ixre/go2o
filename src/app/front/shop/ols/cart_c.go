@@ -30,7 +30,7 @@ func (this *CartC) CartApiHandle(ctx *echox.Context) error {
 		return nil
 	}
 	r.ParseForm()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	var action = strings.ToLower(r.FormValue("action"))
 	var cartKey = r.FormValue("cart.key")

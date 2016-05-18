@@ -101,7 +101,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	/** 配送 **/
 	orm.TableMapping(delivery.AreaValue{}, "dlv_area")
 	orm.TableMapping(delivery.CoverageValue{}, "dlv_coverage")
-	orm.TableMapping(delivery.PartnerDeliverBind{}, "dlv_partner_bind")
+	orm.TableMapping(delivery.MerchantDeliverBind{}, "dlv_merchant_bind")
 
 	/** 用户 **/
 	orm.TableMapping(user.RoleValue{}, "usr_role")

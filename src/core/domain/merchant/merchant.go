@@ -111,11 +111,11 @@ func (this *Merchant) Save() (int, error) {
 		return this._rep.SaveMerchant(this._value)
 	}
 
-	return this.createPartner()
+	return this.createMerchant()
 }
 
 // 创建商户
-func (this *Merchant) createPartner() (int, error) {
+func (this *Merchant) createMerchant() (int, error) {
 	if id := this.GetAggregateRootId(); id > 0 {
 		return id, nil
 	}

@@ -32,12 +32,12 @@ func (this *orderC) All(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.all_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -70,12 +70,12 @@ func (this *orderC) Wait_payment(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.wait_payment_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -92,12 +92,12 @@ func (this *orderC) Wait_delivery(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.wait_payment_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -112,12 +112,12 @@ func (this *orderC) wait_delivery_post(ctx *echox.Context) error {
 
 func (this *orderC) Completed(ctx *echox.Context) error {
 
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -127,12 +127,12 @@ func (this *orderC) Completed(ctx *echox.Context) error {
 }
 
 func (this *orderC) Canceled(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,

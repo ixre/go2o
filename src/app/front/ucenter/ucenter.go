@@ -76,17 +76,17 @@ func reCacheMember(ctx *echox.Context, memberId int) *member.ValueMember {
 }
 
 // 获取商户
-func getPartner(ctx *echox.Context) *merchant.MerchantValue {
+func getMerchant(ctx *echox.Context) *merchant.MerchantValue {
 	val := ctx.Session.Get("member:rel_partner")
 	if val != nil {
-		return cache.GetValuePartnerCache(val.(int))
+		return cache.GetValueMerchantCache(val.(int))
 	} else {
 		m := getMember(ctx)
 		if m != nil {
 			rel := dps.MemberService.GetRelation(m.Id)
 			ctx.Session.Set("member:rel_partner", rel.RegisterMerchantId)
 			ctx.Session.Save()
-			return cache.GetValuePartnerCache(rel.RegisterMerchantId)
+			return cache.GetValueMerchantCache(rel.RegisterMerchantId)
 		}
 	}
 	return nil
@@ -94,5 +94,5 @@ func getPartner(ctx *echox.Context) *merchant.MerchantValue {
 
 // 获取商户的站点设置
 func getSiteConf(merchantId int) *merchant.SiteConf {
-	return cache.GetPartnerSiteConf(merchantId)
+	return cache.GetMerchantSiteConf(merchantId)
 }

@@ -17,12 +17,12 @@ import (
 )
 
 // 获取商户信息缓存
-func GetValuePartnerCache(merchantId int) *merchant.MerchantValue {
+func GetValueMerchantCache(merchantId int) *merchant.MerchantValue {
 	var v merchant.MerchantValue
 	var sto gof.Storage = GetKVS()
-	var key string = GetValuePartnerCacheCK(merchantId)
+	var key string = GetValueMerchantCacheCK(merchantId)
 	if sto.Get(key, &v) != nil {
-		v2, err := dps.PartnerService.GetMerchant(merchantId)
+		v2, err := dps.MerchantService.GetMerchant(merchantId)
 		if v2 != nil && err == nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -33,28 +33,28 @@ func GetValuePartnerCache(merchantId int) *merchant.MerchantValue {
 }
 
 // 设置商户信息缓存
-func GetValuePartnerCacheCK(merchantId int) string {
+func GetValueMerchantCacheCK(merchantId int) string {
 	return fmt.Sprintf("cache:partner:value:%d", merchantId)
 }
 
 // 设置商户站点配置
-func GetPartnerSiteConfCK(merchantId int) string {
+func GetMerchantSiteConfCK(merchantId int) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", merchantId)
 }
 
-func DelPartnerCache(merchantId int) {
+func DelMerchantCache(merchantId int) {
 	kvs := GetKVS()
-	kvs.Del(GetValuePartnerCacheCK(merchantId))
-	kvs.Del(GetPartnerSiteConfCK(merchantId))
+	kvs.Del(GetValueMerchantCacheCK(merchantId))
+	kvs.Del(GetMerchantSiteConfCK(merchantId))
 }
 
 // 获取商户站点配置
-func GetPartnerSiteConf(merchantId int) *merchant.SiteConf {
+func GetMerchantSiteConf(merchantId int) *merchant.SiteConf {
 	var v merchant.SiteConf
 	var sto gof.Storage = GetKVS()
-	var key string = GetPartnerSiteConfCK(merchantId)
+	var key string = GetMerchantSiteConfCK(merchantId)
 	if sto.Get(key, &v) != nil {
-		v2 := dps.PartnerService.GetSiteConf(merchantId)
+		v2 := dps.MerchantService.GetSiteConf(merchantId)
 		v2.Logo = format.GetResUrl(v2.Logo)
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
@@ -71,7 +71,7 @@ func GetMerchantIdByHost(host string) int {
 	sto := GetKVS()
 	var err error
 	if merchantId, err = sto.GetInt(key); err != nil || merchantId <= 0 {
-		merchantId = dps.PartnerService.GetMerchantIdByHost(host)
+		merchantId = dps.MerchantService.GetMerchantIdByHost(host)
 		if merchantId > 0 {
 			sto.SetExpire(key, merchantId, DefaultMaxSeconds)
 		}
@@ -86,7 +86,7 @@ func GetMerchantIdByApiId(apiId string) int {
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &merchantId)
 	if merchantId == 0 {
-		merchantId = dps.PartnerService.GetMerchantIdByApiId(apiId)
+		merchantId = dps.MerchantService.GetMerchantIdByApiId(apiId)
 		if merchantId != 0 {
 			kvs.Set(key, merchantId)
 		}
@@ -95,13 +95,13 @@ func GetMerchantIdByApiId(apiId string) int {
 }
 
 // 获取API 信息
-func GetPartnerApiInfo(merchantId int) *merchant.ApiInfo {
+func GetMerchantApiInfo(merchantId int) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", merchantId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		if d = dps.PartnerService.GetApiInfo(merchantId); d != nil {
+		if d = dps.MerchantService.GetApiInfo(merchantId); d != nil {
 			kvs.Set(key, d)
 		}
 	}

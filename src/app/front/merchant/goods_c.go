@@ -279,7 +279,7 @@ func (this *goodsC) LvPrice(ctx *echox.Context) error {
 	//todo: should be goodsId
 	itemId, _ := strconv.Atoi(ctx.Query("item_id"))
 	goods := dps.SaleService.GetGoodsBySku(merchantId, itemId, 0)
-	lvs := dps.PartnerService.GetMemberLevels(merchantId)
+	lvs := dps.MerchantService.GetMemberLevels(merchantId)
 	var prices []*sale.MemberPrice = dps.SaleService.GetGoodsLevelPrices(merchantId, goods.GoodsId)
 
 	var buf *bytes.Buffer = bytes.NewBufferString("")

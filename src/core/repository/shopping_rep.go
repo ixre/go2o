@@ -111,7 +111,7 @@ func (this *shoppingRep) SaveOrder(merchantId int, v *shopping.ValueOrder) (int,
 			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
 		}
 	} else {
-		//验证Partner和Member是否有绑定关系
+		//验证Merchant和Member是否有绑定关系
 		var num int
 		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_merchant_id=?`,
 			&num, v.MemberId, v.MerchantId); num != 1 {

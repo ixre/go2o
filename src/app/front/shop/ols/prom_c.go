@@ -17,10 +17,10 @@ type promC struct {
 }
 
 func (this *promC) Coupon(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Partner": p,
+		"Merchant": p,
 		"Conf":    getSiteConf(ctx),
 	}
 	return ctx.RenderOK("coupon.html", d)

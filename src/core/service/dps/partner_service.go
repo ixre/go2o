@@ -25,11 +25,11 @@ type partnerService struct {
 	_partnerRep merchant.IMerchantRep
 	_adRep      ad.IAdvertisementRep
 	_saleRep    sale.ISaleRep
-	_query      *query.PartnerQuery
+	_query      *query.MerchantQuery
 }
 
-func NewPartnerService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
-	adRep ad.IAdvertisementRep, q *query.PartnerQuery) *partnerService {
+func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
+	adRep ad.IAdvertisementRep, q *query.MerchantQuery) *partnerService {
 	return &partnerService{
 		_partnerRep: r,
 		_query:      q,
@@ -79,16 +79,16 @@ func (this *partnerService) SaveMerchant(merchantId int, v *merchant.MerchantVal
 	merchantId, err = pt.Save()
 
 	if isCreate {
-		this.initializePartner(merchantId)
+		this.initializeMerchant(merchantId)
 	}
 
 	return merchantId, err
 }
 
-func (this *partnerService) initializePartner(merchantId int) {
+func (this *partnerService) initializeMerchant(merchantId int) {
 
 	// 初始化广告
-	this._adRep.GetPartnerAdvertisement(merchantId).InitInternalAdvertisements()
+	this._adRep.GetMerchantAdvertisement(merchantId).InitInternalAdvertisements()
 
 	// 初始化会员默认等级
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
@@ -119,7 +119,7 @@ func (this *partnerService) GetMerchantIdByHost(host string) int {
 func (this *partnerService) GetMerchantMajorHost(merchantId int) string {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	return pt.GetMajorHost()
 }
@@ -137,7 +137,7 @@ func (this *partnerService) SaveSaleConf(merchantId int, v *merchant.SaleConf) e
 func (this *partnerService) GetSaleConf(merchantId int) *merchant.SaleConf {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	conf := pt.GetSaleConf()
 	return &conf
@@ -146,7 +146,7 @@ func (this *partnerService) GetSaleConf(merchantId int) *merchant.SaleConf {
 func (this *partnerService) GetSiteConf(merchantId int) *merchant.SiteConf {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	conf := pt.GetSiteConf()
 	return &conf
@@ -174,7 +174,7 @@ func (this *partnerService) CheckRegisterPerm(merchantId int, isInvitation bool)
 func (this *partnerService) GetShopsOfMerchant(merchantId int) []*merchant.ValueShop {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	shops := pt.GetShops()
 	sv := make([]*merchant.ValueShop, len(shops))
@@ -189,7 +189,7 @@ func (this *partnerService) GetShopValueById(merchantId, shopId int) *merchant.V
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	v := pt.GetShop(shopId).GetValue()
 	return &v
@@ -199,7 +199,7 @@ func (this *partnerService) SaveShop(merchantId int, v *merchant.ValueShop) (int
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 		return 0, err
 	}
 	var shop merchant.IShop
@@ -222,12 +222,12 @@ func (this *partnerService) DeleteShop(merchantId, shopId int) error {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 
-		log.Println("[ Partner][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	return pt.DeleteShop(shopId)
 }
 
-func (this *partnerService) GetPartnersId() []int {
+func (this *partnerService) GetMerchantsId() []int {
 	return this._partnerRep.GetMerchantsId()
 }
 
@@ -312,7 +312,7 @@ func (this *partnerService) GetMailTemplate(merchantId int, id int) (*mss.MailTe
 // 保存邮件模板
 func (this *partnerService) SaveMailTemplate(merchantId int, v *mss.MailTemplate) (int, error) {
 	if v.MerchantId != merchantId {
-		return 0, merchant.ErrPartnerNotMatch
+		return 0, merchant.ErrMerchantNotMatch
 	}
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {

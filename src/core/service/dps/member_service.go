@@ -61,7 +61,7 @@ func (this *memberService) getMember(merchantId, memberId int) (
 		return m, member.ErrNoSuchMember
 	}
 	if m.GetRelation().RegisterMerchantId != merchantId {
-		return m, merchant.ErrPartnerNotMatch
+		return m, merchant.ErrMerchantNotMatch
 	}
 	return m, nil
 }

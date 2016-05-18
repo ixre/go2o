@@ -128,7 +128,7 @@ func shopCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			ctx.Set("merchant_id", merchantId) // 缓存MerchantId
 
 			// 判断线上商店开通情况
-			var conf = cache.GetPartnerSiteConf(merchantId)
+			var conf = cache.GetMerchantSiteConf(merchantId)
 			if conf == nil {
 				return ctx.String(http.StatusOK, "线上商店未开通")
 			}

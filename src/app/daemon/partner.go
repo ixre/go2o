@@ -19,9 +19,9 @@ var (
 	merchantIds []int
 )
 
-func getPartners() []int {
+func getMerchants() []int {
 	if merchantIds == nil {
-		merchantIds = dps.PartnerService.GetPartnersId()
+		merchantIds = dps.MerchantService.GetMerchantsId()
 	}
 	return merchantIds
 }
@@ -31,7 +31,7 @@ func getPartners() []int {
 
 func orderDaemon(app gof.App) {
 	defer recoverDaemon()
-	ids := getPartners()
+	ids := getMerchants()
 	for _, v := range ids {
 		log.Println("--", v)
 		autoSetOrder(v)

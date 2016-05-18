@@ -41,7 +41,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 		return nil
 	}
 	r := ctx.HttpRequest()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 
@@ -84,7 +84,7 @@ func (this *ShoppingC) Confirm(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":     p,
+		"Merchant":    p,
 		"member":      m,
 		"cart":        cart,
 		"cartDetails": template.HTML(format.CartDetails(cart)),
@@ -108,7 +108,7 @@ func (this *ShoppingC) BuyingPersist(ctx *echox.Context) error {
 	}
 	r := ctx.HttpRequest()
 	if r.Method == "POST" {
-		p := getPartner(ctx)
+		p := getMerchant(ctx)
 		m := GetMember(ctx)
 		msg := gof.Message{}
 		var err error
@@ -206,7 +206,7 @@ func (this *ShoppingC) Apply(ctx *echox.Context) error {
 
 func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 	msg := gof.Message{}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	r := ctx.HttpRequest()
 
@@ -225,7 +225,7 @@ func (this *ShoppingC) applyCoupon(ctx *echox.Context) error {
 func (this *ShoppingC) Submit_0(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
 	if this.prepare(ctx) && r.Method == "POST" {
-		p := getPartner(ctx)
+		p := getMerchant(ctx)
 		m := GetMember(ctx)
 
 		r.ParseForm()
@@ -300,7 +300,7 @@ func (this *ShoppingC) OrderEmpty(ctx *echox.Context, p *merchant.MerchantValue,
 	m *member.ValueMember, conf *merchant.SiteConf) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"member":  m,
 		"conf":    conf,
 	}
@@ -313,7 +313,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 	}
 	r := ctx.HttpRequest()
 
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	var payHtml string // 支付HTML
@@ -339,7 +339,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 
 		d := ctx.NewData()
 		d.Map = gof.TemplateDataMap{
-			"partner":      p,
+			"Merchant":     p,
 			"member":       m,
 			"conf":         siteConf,
 			"order":        order,
@@ -353,7 +353,7 @@ func (this *ShoppingC) Payment(ctx *echox.Context) error {
 }
 
 func (this *ShoppingC) Order_finish(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	orderNo := ctx.Query("order_no")
@@ -378,7 +378,7 @@ func (this *ShoppingC) orderFinish(ctx *echox.Context, p *merchant.MerchantValue
 		}
 		d := ctx.NewData()
 		d.Map = gof.TemplateDataMap{
-			"partner":      p,
+			"Merchant":     p,
 			"member":       m,
 			"conf":         siteConf,
 			"order":        order,

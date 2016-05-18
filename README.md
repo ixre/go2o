@@ -74,7 +74,7 @@ zhu***@126.com
 
 
 pub-serve   ---  14199
-partner-serve  ---- 14192
+merchant-serve  ---- 14192
 
 
 
@@ -150,7 +150,7 @@ partner-serve  ---- 14192
 
 
 ### 4.Add test hosts ###
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com partner.ts.com mu.ts.com u.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com  >> /etc/hosts
+> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com merchant.ts.com mu.ts.com u.ts.com www.ts1.com www.ts2.com api.ts.com webmaster.ts.com  >> /etc/hosts
 
 ## Access Entry ##
 
@@ -159,15 +159,15 @@ webmaster.ts.com
 
 account: go2o / 123456
 
-### Partner Management ###
-partner.ts.com
+### Merchant Management ###
+merchant.ts.com
 
 account: go2o / 123456
 
 ### Member Center ###
 member.ts.com
 
-### Partner Sales ###
+### Merchant Sales ###
 go2o.ts.com
 
 you can add host to table "pt_host" use MySql Workbench.

@@ -30,7 +30,7 @@ func (this *UserC) Login(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.login_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	r := ctx.HttpRequest()
 	var tipStyle string
 	var returnUrl string = r.URL.Query().Get("return_url")
@@ -41,7 +41,7 @@ func (this *UserC) Login(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Partner":  p,
+		"Merchant":  p,
 		"Conf":     siteConf,
 		"TipStyle": tipStyle,
 	}
@@ -74,12 +74,12 @@ func (this *UserC) login_post(ctx *echox.Context) error {
 }
 
 func (this *UserC) Register(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	inviCode := ctx.HttpRequest().URL.Query().Get("invi_code")
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Partner":   p,
+		"Merchant":   p,
 		"Conf":      siteConf,
 		"Invi_code": inviCode,
 	}

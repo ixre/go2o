@@ -60,7 +60,7 @@ type notifyResult struct {
 }
 
 type AliPayWap struct {
-	Partner     string //合作者ID
+	Merchant     string //合作者ID
 	Key         string //合作者私钥
 	Seller      string //网站卖家邮箱地址
 	PrivateKey  string
@@ -97,7 +97,7 @@ func (this *AliPayWap) getToken(orderNo string, subject string,
 
 	urls := &url.Values{}
 	urls.Set("service", "alipay.wap.trade.create.direct")
-	urls.Set("partner", this.Partner)
+	urls.Set("partner", this.Merchant)
 	urls.Set("_input_charset", cCharset)
 	urls.Set("sec_id", "MD5")
 	urls.Set("format", cFormat)
@@ -169,7 +169,7 @@ func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 	req_data := "<auth_and_execute_req><request_token>" + sToken + "</request_token></auth_and_execute_req>"
 	urls := &url.Values{}
 	urls.Set("service", STR_SERVICE)
-	urls.Set("partner", this.Partner)
+	urls.Set("partner", this.Merchant)
 	urls.Set("_input_charset", cCharset)
 	urls.Set("sec_id", cSignType)
 	urls.Set("format", cFormat)
@@ -185,7 +185,7 @@ func (this *AliPayWap) CreateGateway(orderNo string, fee float32, subject,
 	sHtml += cWapGateway + "_input_charset=" + cCharset + `" method="get">`
 	sHtml += `<input type="hidden" name="sec_id" value="` + cSignType + `"/>`
 	sHtml += `<input type="hidden" name="req_data" value="` + req_data + `"/>`
-	sHtml += `<input type="hidden" name="partner" value="` + this.Partner + `"/>`
+	sHtml += `<input type="hidden" name="partner" value="` + this.Merchant + `"/>`
 	sHtml += `<input type="hidden" name="service" value="` + STR_SERVICE + `"/>`
 	sHtml += `<input type="hidden" name="_input_charset" value="` + cCharset + `"/>`
 	sHtml += `<input type="hidden" name="v" value="` + cVersion + `"/>`

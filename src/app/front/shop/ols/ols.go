@@ -27,21 +27,21 @@ func GetSessionMerchantId(ctx *echox.Context) int {
 	return ctx.Get("merchant_id").(int)
 }
 
-func getPartner(ctx *echox.Context) *merchant.MerchantValue {
+func getMerchant(ctx *echox.Context) *merchant.MerchantValue {
 	merchantId := ctx.Get("merchant_id").(int)
-	return cache.GetValuePartnerCache(merchantId)
+	return cache.GetValueMerchantCache(merchantId)
 }
 
 // 获取商户API信息
-func getPartnerApi(ctx *echox.Context) *merchant.ApiInfo {
-	return dps.PartnerService.GetApiInfo(GetSessionMerchantId(ctx))
+func getMerchantApi(ctx *echox.Context) *merchant.ApiInfo {
+	return dps.MerchantService.GetApiInfo(GetSessionMerchantId(ctx))
 }
 
 // 获取商户站点设置
 func getSiteConf(ctx *echox.Context) *merchant.SiteConf {
 	conf := ctx.Get("conf").(*merchant.SiteConf)
 	if conf == nil {
-		conf = cache.GetPartnerSiteConf(GetSessionMerchantId(ctx))
+		conf = cache.GetMerchantSiteConf(GetSessionMerchantId(ctx))
 		ctx.Set("conf", conf)
 	}
 	return conf

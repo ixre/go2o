@@ -45,7 +45,7 @@
 
         jr.json.bind(expr.ele, {status: decodeURIComponent(jr.request('status')) });
 
-        expr.portal = 'Partner.WaitPaymentOrderList'; //配置导出的入口
+        expr.portal = 'Merchant.WaitPaymentOrderList'; //配置导出的入口
         expr.checkParams = function (data) {
             return true;
         };

@@ -71,8 +71,8 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int, error) {
-				merchantId := dps.PartnerService.GetMerchantIdByApiId(arr[0])
-				apiInfo := dps.PartnerService.GetApiInfo(merchantId)
+				merchantId := dps.MerchantService.GetMerchantIdByApiId(arr[0])
+				apiInfo := dps.MerchantService.GetApiInfo(merchantId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
 						return merchantId, errors.New("api has exipres")

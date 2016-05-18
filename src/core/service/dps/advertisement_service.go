@@ -26,7 +26,7 @@ func NewAdvertisementService(rep ad.IAdvertisementRep) *advertisementService {
 
 // 获取广告
 func (this *advertisementService) GetAdvertisement(merchantId, id int) *ad.ValueAdvertisement {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	if adv := pa.GetById(id); adv != nil {
 		return adv.GetValue()
 	}
@@ -36,7 +36,7 @@ func (this *advertisementService) GetAdvertisement(merchantId, id int) *ad.Value
 // 获取广告及广告数据
 func (this *advertisementService) GetAdvertisementAndDataByName(merchantId int, name string) (
 	*ad.ValueAdvertisement, interface{}) {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	if adv := pa.GetByName(name); adv != nil {
 		v := adv.GetValue()
 		switch adv.Type() {
@@ -55,7 +55,7 @@ func (this *advertisementService) GetAdvertisementAndDataByName(merchantId int, 
 
 // 保存广告
 func (this *advertisementService) SaveAdvertisement(merchantId int, v *ad.ValueAdvertisement) (int, error) {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	var adv ad.IAdvertisement
 	if v.Id > 0 {
 		adv = pa.GetById(v.Id)
@@ -67,12 +67,12 @@ func (this *advertisementService) SaveAdvertisement(merchantId int, v *ad.ValueA
 }
 
 func (this *advertisementService) DelAdvertisement(merchantId, advertisementId int) error {
-	return this._rep.GetPartnerAdvertisement(merchantId).DeleteAdvertisement(advertisementId)
+	return this._rep.GetMerchantAdvertisement(merchantId).DeleteAdvertisement(advertisementId)
 }
 
 // 保存广告图片
 func (this *advertisementService) SaveImage(merchantId int, advertisementId int, v *ad.ValueImage) (int, error) {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	var adv ad.IAdvertisement = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
@@ -85,7 +85,7 @@ func (this *advertisementService) SaveImage(merchantId int, advertisementId int,
 
 // 获取广告图片
 func (this *advertisementService) GetValueAdImage(merchantId, advertisementId, imgId int) *ad.ValueImage {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	var adv ad.IAdvertisement = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
@@ -98,7 +98,7 @@ func (this *advertisementService) GetValueAdImage(merchantId, advertisementId, i
 
 // 删除广告图片
 func (this *advertisementService) DelAdImage(merchantId, advertisementId, imgId int) error {
-	pa := this._rep.GetPartnerAdvertisement(merchantId)
+	pa := this._rep.GetMerchantAdvertisement(merchantId)
 	var adv ad.IAdvertisement = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {

@@ -30,7 +30,7 @@ func (c *partnerC) Index(ctx *echox.Context) error {
 	return ctx.RenderOK("partner.index.html", ctx.NewData())
 }
 
-func (c *partnerC) CreatePartner(ctx *echox.Context) error {
+func (c *partnerC) CreateMerchant(ctx *echox.Context) error {
 	return ctx.RenderOK("partner.create.html", ctx.NewData())
 }
 
@@ -48,12 +48,12 @@ func (c *partnerC) SaveMerchant(ctx *echox.Context) error {
 		dt := time.Now()
 		anousPwd := strings.Repeat("*", 10) //匿名密码
 		if len(partner.Pwd) != 0 && partner.Pwd != anousPwd {
-			partner.Pwd = domain.PartnerSha1Pwd(partner.Usr, partner.Pwd)
+			partner.Pwd = domain.MerchantSha1Pwd(partner.Usr, partner.Pwd)
 		}
 
 		//更新
 		if partner.Id > 0 {
-			original, _ := dps.PartnerService.GetMerchant(partner.Id)
+			original, _ := dps.MerchantService.GetMerchant(partner.Id)
 			partner.JoinTime = original.JoinTime
 			partner.ExpiresTime = original.ExpiresTime
 			partner.UpdateTime = dt.Unix()
@@ -68,7 +68,7 @@ func (c *partnerC) SaveMerchant(ctx *echox.Context) error {
 			isCreate = true
 		}
 
-		id, err := dps.PartnerService.SaveMerchant(partner.Id, &partner)
+		id, err := dps.MerchantService.SaveMerchant(partner.Id, &partner)
 		if err != nil {
 			result.Message = err.Error()
 		} else {
@@ -84,7 +84,7 @@ func (c *partnerC) SaveMerchant(ctx *echox.Context) error {
 }
 
 // 商户配置管理
-func (this *partnerC) PartnerConf(ctx *echox.Context) error {
+func (this *partnerC) MerchantConf(ctx *echox.Context) error {
 	var merchantId int
 	merchantId, _ = strconv.Atoi(ctx.Query("id"))
 	d := ctx.NewData()
@@ -92,11 +92,11 @@ func (this *partnerC) PartnerConf(ctx *echox.Context) error {
 	return ctx.RenderOK("partner.create.html", d)
 }
 
-func (c *partnerC) EditPartner(ctx *echox.Context) error {
+func (c *partnerC) EditMerchant(ctx *echox.Context) error {
 	var entityJson template.JS
 	id, err := strconv.Atoi(ctx.Query("id"))
 	if err == nil {
-		partner, err := dps.PartnerService.GetMerchant(id)
+		partner, err := dps.MerchantService.GetMerchant(id)
 		if err == nil && partner != nil {
 			partner.Pwd = strings.Repeat("*", 10)
 			entity, _ := json.Marshal(partner)
@@ -111,14 +111,14 @@ func (c *partnerC) List(ctx *echox.Context) error {
 	return ctx.RenderOK("partner.list.html", ctx.NewData())
 }
 
-func (c *partnerC) DelPartner(w http.ResponseWriter, r *http.Request) {
+func (c *partnerC) DelMerchant(w http.ResponseWriter, r *http.Request) {
 	//	var result gof.Message
 	//	r.ParseForm()
 	//	ptid, err := strconv.Atoi(r.Form.Get("id"))
 	//	if err != nil {
 	//		result.Message = err.Error()
 	//	} else {
-	////		err := dps.PartnerService.DeletePartner(ptid)
+	////		err := dps.MerchantService.DeleteMerchant(ptid)
 	////		if err != nil {
 	////			result.Message = err.Error()
 	////		} else {

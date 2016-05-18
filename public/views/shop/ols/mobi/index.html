@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>{{.Map.Partner.Name}}</title>
+    <title>{{.Map.Merchant.Name}}</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1,initial-scale=1, maximum-scale=1, user-scalable=1;"/>
     <!--离线应用的另一个技巧-->
@@ -20,7 +20,7 @@
 </div>-->
 <header>
     <div class="logo">
-        <img src="{{.Map.Conf.Logo}}" height="40" alt="{{.Map.Partner.Name}}"/>
+        <img src="{{.Map.Conf.Logo}}" height="40" alt="{{.Map.Merchant.Name}}"/>
     </div>
     <div class="quick">
             <span class="icon icon-search">
@@ -190,7 +190,7 @@
 <script type="text/javascript" src="{{.Var.static_serve}}/assets/js/require.js?{{.Var.Spam}}"></script>
 <script type="text/javascript">
     var _baseUrl = '{{.Var.static_serve}}';
-    var _merchantId = '{{.Map.Partner.Id}}';
+    var _merchantId = '{{.Map.Merchant.Id}}';
     require([_baseUrl + "/assets/js/touch/require_config.js"], function () {
         require(['shop/index']);
     });

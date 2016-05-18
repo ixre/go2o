@@ -55,7 +55,7 @@
 
 <script type="text/javascript">
 expr.ele = 'search_bar';
-expr.portal = 'Master.PartnerList'; //配置导出的入口
+expr.portal = 'Master.MerchantList'; //配置导出的入口
 expr.checkParams = function (data) {
     return true;
 };
@@ -116,17 +116,17 @@ $(function () {
 jr.$('btnAdd').onclick=addRec;
 
 function addRec(){
-    jr.tab.open('创建商户', 'partner/createPartner', true);
+    jr.tab.open('创建商户', 'partner/createMerchant', true);
 }
 
 function editRec(id){
-    jr.tab.open('商户配置', 'partner/PartnerConf?id='+id, true);
+    jr.tab.open('商户配置', 'partner/MerchantConf?id='+id, true);
 }
 
 function delRec(id) {
  window.parent.$.messager.confirm('提示', '删除后不可恢复，您确定要继续吗？', function(result) {
         if (result) {
-            jr.xhr.jsonPost('/a/DelPartner', { id: id }, function(json) {
+            jr.xhr.jsonPost('/a/DelMerchant', { id: id }, function(json) {
                 if (json.result) {
                 	window.refresh()
                 }

@@ -42,12 +42,12 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 		return this.income_log_post(ctx)
 	}
 	m := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
-		"partner": p,
+		"Merchant":p,
 		"member":  m,
 	}
 	return ctx.RenderOK("account.income_log.html", d)
@@ -83,10 +83,10 @@ func (this *accountC) Apply_cash(ctx *echox.Context) error {
 		return this.apply_cash_post(ctx)
 	}
 	m := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	acc := dps.MemberService.GetAccount(m.Id)
-	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	saleConf := dps.MerchantService.GetSaleConf(p.Id)
 
 	var latestInfo string = dps.MemberService.GetLatestApplyCashText(m.Id)
 	if len(latestInfo) != 0 {
@@ -111,7 +111,7 @@ func (this *accountC) Apply_cash(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":           conf,
-		"partner":        p,
+		"Merchant":       p,
 		"member":         m,
 		"minAmount":      format.FormatFloat(float32(minAmount)),
 		"maxApplyAmount": maxApplyAmount,
@@ -130,7 +130,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	merchantId := getPartner(ctx).Id
+	merchantId := getMerchant(ctx).Id
 	strAmount := strings.TrimSpace(r.FormValue("Amount"))
 	if len(strAmount) == 0 || strAmount == "NaN" {
 		msg.Message = "提现金额错误"
@@ -145,7 +145,7 @@ func (this *accountC) apply_cash_post(ctx *echox.Context) error {
 
 	tradePwd := r.FormValue("TradePwd")
 	memberId := getMember(ctx).Id
-	saleConf := dps.PartnerService.GetSaleConf(merchantId)
+	saleConf := dps.MerchantService.GetSaleConf(merchantId)
 	bank := dps.MemberService.GetBank(memberId)
 
 	if bank == nil || len(bank.Account) == 0 || len(bank.AccountName) == 0 ||
@@ -182,9 +182,9 @@ func (this *accountC) Convert_f2p(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.convert_f2p_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
-	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	saleConf := dps.MerchantService.GetSaleConf(p.Id)
 	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
@@ -199,7 +199,7 @@ func (this *accountC) Convert_f2p(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":              conf,
-		"partner":           p,
+		"Merchant":          p,
 		"member":            m,
 		"account":           acc,
 		"commissionStr":     template.HTML(commissionStr),
@@ -216,10 +216,10 @@ func (this *accountC) convert_f2p_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	pt := getPartner(ctx)
+	pt := getMerchant(ctx)
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	tradePwd := r.FormValue("TradePwd")
-	saleConf := dps.PartnerService.GetSaleConf(pt.Id)
+	saleConf := dps.MerchantService.GetSaleConf(pt.Id)
 
 	m := getMember(ctx)
 
@@ -243,9 +243,9 @@ func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.transfer_f2m_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
-	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	saleConf := dps.MerchantService.GetSaleConf(p.Id)
 	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
 
@@ -260,7 +260,7 @@ func (this *accountC) Transfer_f2m(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":           conf,
-		"partner":        p,
+		"Merchant":       p,
 		"member":         m,
 		"account":        acc,
 		"commissionStr":  template.HTML(commissionStr),
@@ -277,11 +277,11 @@ func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 	var err error
 	r := ctx.HttpRequest()
 	r.ParseForm()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	toMemberId, _ := strconv.Atoi(r.FormValue("ToId"))
 	amount, _ := strconv.ParseFloat(r.FormValue("Amount"), 32)
 	tradePwd := r.FormValue("TradePwd")
-	saleConf := dps.PartnerService.GetSaleConf(p.Id)
+	saleConf := dps.MerchantService.GetSaleConf(p.Id)
 	m := getMember(ctx)
 
 	if toMemberId == m.Id {
@@ -303,7 +303,7 @@ func (this *accountC) transfer_f2m_post(ctx *echox.Context) error {
 
 // 转账成功提示页面
 func (this *accountC) Transfer_success(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 
 	src := ctx.Query("src")
@@ -327,7 +327,7 @@ func (this *accountC) Transfer_success(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":     conf,
-		"partner":  p,
+		"Merchant": p,
 		"title":    title,
 		"subTitle": subTitle,
 		"btnText":  btnText,
@@ -340,7 +340,7 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 	if ctx.Request().Method == "POST" {
 		return this.bank_info_post(ctx)
 	}
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	bank := dps.MemberService.GetBank(m.Id)
@@ -349,7 +349,7 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
-		"partner": p,
+		"Merchant":p,
 		"entity":  template.JS(js),
 	}
 	return ctx.RenderOK("account.bank_info.html", d)
@@ -368,7 +368,7 @@ func (this *accountC) bank_info_post(ctx *echox.Context) error {
 }
 
 func (this *accountC) Integral_exchange(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	m := getMember(ctx)
 	acc := dps.MemberService.GetAccount(m.Id)
@@ -377,7 +377,7 @@ func (this *accountC) Integral_exchange(ctx *echox.Context) error {
 	d.Map = gof.TemplateDataMap{
 		"conf":    conf,
 		"record":  15,
-		"partner": p,
+		"Merchant":p,
 		"member":  m,
 		"account": acc,
 	}

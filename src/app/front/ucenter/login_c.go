@@ -54,7 +54,7 @@ func (this *loginC) index_post(ctx *echox.Context) error {
 }
 
 //从partner登录过来的信息
-func (this *loginC) Partner_connect(c *echox.Context) error {
+func (this *loginC) Merchant_connect(c *echox.Context) error {
 	r := c.Request()
 	sessionId := r.URL.Query().Get("sessionId")
 	url := r.URL.Query().Get("url")
@@ -98,7 +98,7 @@ func (this *loginC) Partner_connect(c *echox.Context) error {
 }
 
 //从partner端退出
-func (this *loginC) Partner_disconnect(ctx *echox.Context) error {
+func (this *loginC) Merchant_disconnect(ctx *echox.Context) error {
 	ctx.Session.Destroy()
 	ctx.HttpResponse().Write([]byte("{state:1}"))
 	return nil

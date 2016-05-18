@@ -41,7 +41,7 @@ func (this *memberC) LevelList(ctx *echox.Context) error {
 func (this *memberC) EditMLevel(ctx *echox.Context) error {
 	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	entity := dps.PartnerService.GetMemberLevelById(merchantId, id)
+	entity := dps.MerchantService.GetMemberLevelById(merchantId, id)
 	js, _ := json.Marshal(entity)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -66,7 +66,7 @@ func (this *memberC) SaveMLevel(ctx *echox.Context) error {
 		web.ParseFormToEntity(r.Form, &e)
 		e.MerchantId = getMerchantId(ctx)
 
-		id, err := dps.PartnerService.SaveMemberLevel(merchantId, &e)
+		id, err := dps.MerchantService.SaveMemberLevel(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -87,7 +87,7 @@ func (this *memberC) DelMLevel(ctx *echox.Context) error {
 		merchantId := getMerchantId(ctx)
 		id, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
-			err = dps.PartnerService.DelMemberLevel(merchantId, id)
+			err = dps.MerchantService.DelMemberLevel(merchantId, id)
 		}
 
 		if err != nil {
@@ -141,7 +141,7 @@ func (this *memberC) Member_basic(ctx *echox.Context) error {
 	if m == nil {
 		return ctx.String(http.StatusOK, "no such member")
 	}
-	lv := dps.PartnerService.GetLevel(getMerchantId(ctx), m.Level)
+	lv := dps.MerchantService.GetLevel(getMerchantId(ctx), m.Level)
 	rl := dps.MemberService.GetRelation(m.Id)
 	var invName string = "无"
 	if rl.RefereesId > 0 {
@@ -258,7 +258,7 @@ func (this *memberC) charge_post(ctx *echox.Context) error {
 		rel := dps.MemberService.GetRelation(memberId)
 
 		if rel.RegisterMerchantId != getMerchantId(ctx) {
-			err = merchant.ErrPartnerNotMatch
+			err = merchant.ErrMerchantNotMatch
 		} else {
 			title := fmt.Sprintf("[KF]客服充值%s", format.FormatFloat(float32(amount)))
 			err = dps.MemberService.Charge(merchantId, memberId,
