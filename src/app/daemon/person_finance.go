@@ -192,6 +192,8 @@ func settleRiseData(settleDate time.Time) {
 		}
 		wg.Wait()
 		cursor = 0 //重置游标
+
+		time.Sleep(time.Second * 5)
 	}
 }
 

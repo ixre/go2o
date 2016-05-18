@@ -60,7 +60,7 @@ type notifyResult struct {
 }
 
 type AliPayWap struct {
-	Merchant     string //合作者ID
+	Merchant    string //合作者ID
 	Key         string //合作者私钥
 	Seller      string //网站卖家邮箱地址
 	PrivateKey  string

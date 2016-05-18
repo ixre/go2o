@@ -98,7 +98,7 @@
                     return jr.dom.getsByClass(document, 'valid-error').length == 0
                 }
             }, init: function () {
-                var f = j6;
+                var f = jr;
                 if (!f) {
                     alert('未引用核心库!');
                     return false

@@ -43,7 +43,8 @@ func (this *riseInfo) GetDomainId() int {
 // 根据日志记录提交转入转出,如果已经确认操作,则返回错误
 // 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
 func (this *riseInfo) CommitTransfer(logId int) (err error) {
-	if this._v == nil { //判断会员是否存在
+	if this._v == nil {
+		//判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
 		}
@@ -63,7 +64,7 @@ func (this *riseInfo) CommitTransfer(logId int) (err error) {
 		this._v.SettlementAmount += l.Amount // 计入结算金额
 		this._v.TransferIn -= l.Amount
 		err = this.Save()
-		//todo: 记录开使计算收益的日志
+	//todo: 记录开使计算收益的日志
 	case personfinance.RiseTypeTransferOut:
 		//todo: 处理打款, 转出成功日志
 	}
@@ -78,7 +79,8 @@ func (this *riseInfo) CommitTransfer(logId int) (err error) {
 // 转入
 func (this *riseInfo) TransferIn(amount float32,
 	w personfinance.TransferWith) (err error) {
-	if this._v == nil { //判断会员是否存在
+	if this._v == nil {
+		//判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
 		}
@@ -97,7 +99,8 @@ func (this *riseInfo) TransferIn(amount float32,
 	this._v.TransferIn += amount
 	this._v.TotalAmount += amount
 	this._v.UpdateTime = dt.Unix()
-	if err = this.Save(); err == nil { //保存并记录日志
+	if err = this.Save(); err == nil {
+		//保存并记录日志
 		_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
 			PersonId:     this.GetDomainId(),
 			Title:        "[转入]从" + personfinance.TransferInWithText(w) + "转入",
@@ -136,10 +139,12 @@ func (this *riseInfo) TransferOut(amount float32,
 	if amount != this._v.Balance && //非全部转出
 		w != personfinance.TransferOutWithBalance && //非转出余额
 		amount < personfinance.RiseMinTransferOutAmount {
-		if this._v.Balance > personfinance.RiseMinTransferOutAmount { //金额大于转出金额
+		if this._v.Balance > personfinance.RiseMinTransferOutAmount {
+			//金额大于转出金额
 			return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferOut.Error(),
 				format.FormatFloat(personfinance.RiseMinTransferOutAmount)))
-		} else { //金额小于转出金额
+		} else {
+			//金额小于转出金额
 			return errors.New(fmt.Sprintf(personfinance.ErrMustAllTransferOut.Error(),
 				format.FormatFloat(personfinance.RiseMinTransferOutAmount)))
 		}
@@ -150,11 +155,13 @@ func (this *riseInfo) TransferOut(amount float32,
 	this._v.Balance -= amount
 	this._v.SettlementAmount -= amount
 
-	if this._v.SettlementAmount < 0 { //提现超出结算金额
+	if this._v.SettlementAmount < 0 {
+		//提现超出结算金额
 		this._v.SettlementAmount = 0
 	}
 
-	if this._v.Balance == 0 { //若全部提出,则理财收益和结算金额清零
+	if this._v.Balance == 0 {
+		//若全部提出,则理财收益和结算金额清零
 		this._v.Rise = 0
 		this._v.SettlementAmount = 0
 	}
@@ -180,7 +187,8 @@ func (this *riseInfo) TransferOut(amount float32,
 // 结算收益(按天结息),settleUnix:结算日期的时间戳(不含时间),
 // dayRatio 为每天的收益比率
 func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (err error) {
-	if this._v == nil { //判断会员是否存在
+	if this._v == nil {
+		//判断会员是否存在
 		if _, err = this.Value(); err != nil {
 			return err
 		}
@@ -206,40 +214,45 @@ func (this *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (e
 		return personfinance.ErrHasSettled
 	}
 
-	if this._v.Balance > 0 {
-		amount := float32(format.FixedDecimal(float64(this._v.SettlementAmount * dayRatio))) //按2位小数精度
-		if amount > 0.01 {
+	if this._v.SettlementAmount > 0 {
+		amount := float32(format.FixedDecimal(float64(
+			this._v.SettlementAmount * dayRatio))) //按2位小数精度
+
+		// 有可能出现金额太小,收益为0的情况,这时应标记结算日期为最新;
+		// 但不增加收益日志
+		if amount > 0.00 {
 			if _, err = this.monthSettle(this._v, settleDateUnix); err != nil {
 				return err
 			}
+
 			this._v.Balance += amount
 			this._v.Rise += amount
 			this._v.TotalRise += amount
-			this._v.SettledDate = settleDateUnix //结算日为昨日
-			this._v.UpdateTime = time.Now().Unix()
-			err = this.Save()
-			if err == nil {
-				// 保存计息日志
-				_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
-					PersonId:   this.GetDomainId(),
-					Title:      "收益",
-					Amount:     amount,
-					Type:       personfinance.RiseTypeGenerateInterest,
-					State:      personfinance.RiseStateOk,
-					UnixDate:   settleDateUnix,
-					LogTime:    this._v.UpdateTime,
-					UpdateTime: this._v.UpdateTime,
-				})
-				// 存储每日收益
-				_, err = this._rep.SaveRiseDayInfo(&personfinance.RiseDayInfo{
-					PersonId:         this.GetDomainId(),
-					Date:             settleDateStr,
-					SettlementAmount: this._v.SettlementAmount,
-					RiseAmount:       amount,
-					UnixDate:         settleDateUnix,
-					UpdateTime:       this._v.UpdateTime,
-				})
-			}
+		}
+		this._v.SettledDate = settleDateUnix //结算日为昨日
+		this._v.UpdateTime = time.Now().Unix()
+		err = this.Save()
+		if err == nil && amount > 0.00 {
+			// 保存计息日志
+			_, err = this._rep.SaveRiseLog(&personfinance.RiseLog{
+				PersonId:   this.GetDomainId(),
+				Title:      "收益",
+				Amount:     amount,
+				Type:       personfinance.RiseTypeGenerateInterest,
+				State:      personfinance.RiseStateOk,
+				UnixDate:   settleDateUnix,
+				LogTime:    this._v.UpdateTime,
+				UpdateTime: this._v.UpdateTime,
+			})
+			// 存储每日收益
+			_, err = this._rep.SaveRiseDayInfo(&personfinance.RiseDayInfo{
+				PersonId:         this.GetDomainId(),
+				Date:             settleDateStr,
+				SettlementAmount: this._v.SettlementAmount,
+				RiseAmount:       amount,
+				UnixDate:         settleDateUnix,
+				UpdateTime:       this._v.UpdateTime,
+			})
 		}
 	}
 	return err

@@ -300,9 +300,9 @@ func (this *ShoppingC) OrderEmpty(ctx *echox.Context, p *merchant.MerchantValue,
 	m *member.ValueMember, conf *merchant.SiteConf) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"member":  m,
-		"conf":    conf,
+		"Merchant": p,
+		"member":   m,
+		"conf":     conf,
 	}
 	return ctx.RenderOK("order_empty.html", d)
 }
