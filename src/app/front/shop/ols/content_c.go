@@ -42,11 +42,11 @@ func (this *ContentC) Page(c *echox.Context) error {
 
 	d := c.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"member":  mm,
-		"conf":    siteConf,
-		"page":    page,
-		"rawBody": template.HTML(page.Body),
+		"Merchant": p,
+		"member":   mm,
+		"conf":     siteConf,
+		"page":     page,
+		"rawBody":  template.HTML(page.Body),
 	}
 	return c.RenderOK("page.html", d)
 }

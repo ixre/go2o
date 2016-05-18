@@ -46,9 +46,9 @@ func (this *accountC) Income_log(ctx *echox.Context) error {
 	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"conf":    conf,
-		"Merchant":p,
-		"member":  m,
+		"conf":     conf,
+		"Merchant": p,
+		"member":   m,
 	}
 	return ctx.RenderOK("account.income_log.html", d)
 }
@@ -348,9 +348,9 @@ func (this *accountC) Bank_info(ctx *echox.Context) error {
 	js, _ := json.Marshal(bank)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"conf":    conf,
-		"Merchant":p,
-		"entity":  template.JS(js),
+		"conf":     conf,
+		"Merchant": p,
+		"entity":   template.JS(js),
 	}
 	return ctx.RenderOK("account.bank_info.html", d)
 }
@@ -375,11 +375,11 @@ func (this *accountC) Integral_exchange(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"conf":    conf,
-		"record":  15,
-		"Merchant":p,
-		"member":  m,
-		"account": acc,
+		"conf":     conf,
+		"record":   15,
+		"Merchant": p,
+		"member":   m,
+		"account":  acc,
 	}
 	return ctx.RenderOK("account.integral_exchange.html", d)
 }

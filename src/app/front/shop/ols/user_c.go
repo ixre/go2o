@@ -41,7 +41,7 @@ func (this *UserC) Login(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":  p,
+		"Merchant": p,
 		"Conf":     siteConf,
 		"TipStyle": tipStyle,
 	}
@@ -79,7 +79,7 @@ func (this *UserC) Register(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":   p,
+		"Merchant":  p,
 		"Conf":      siteConf,
 		"Invi_code": inviCode,
 	}

@@ -19,7 +19,7 @@ var (
 	PromService          *promotionService
 	ShoppingService      *shoppingService
 	MemberService        *memberService
-	MerchantService       *partnerService
+	MerchantService      *partnerService
 	SaleService          *saleService
 	DeliverService       *deliveryService
 	ContentService       *contentService

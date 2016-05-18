@@ -108,8 +108,8 @@ func (this *MainC) Index(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"Merchant": p,
-		"Conf":    getSiteConf(ctx),
-		"Member":  m,
+		"Conf":     getSiteConf(ctx),
+		"Member":   m,
 	}
 	return ctx.RenderOK("index.html", d)
 }
@@ -143,9 +143,9 @@ func (this *MainC) App(ctx *echox.Context) error {
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"conf":    siteConf,
-		"member":  m,
+		"Merchant": p,
+		"conf":     siteConf,
+		"member":   m,
 	}
 	return ctx.RenderOK("app.html", d)
 }

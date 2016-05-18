@@ -21,7 +21,7 @@ func (this *promC) Coupon(ctx *echox.Context) error {
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
 		"Merchant": p,
-		"Conf":    getSiteConf(ctx),
+		"Conf":     getSiteConf(ctx),
 	}
 	return ctx.RenderOK("coupon.html", d)
 }

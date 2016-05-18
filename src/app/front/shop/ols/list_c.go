@@ -72,9 +72,9 @@ func (this *ListC) All_cate(ctx *echox.Context) error {
 	//web.SetCacheHeader(ctx.Response(), 10)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"member":  mm,
-		"conf":    siteConf,
+		"Merchant": p,
+		"member":   mm,
+		"conf":     siteConf,
 		//"cate_html": template.HTML(buf.String()),
 	}
 	return ctx.RenderOK("category.html", d)

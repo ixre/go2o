@@ -27,7 +27,6 @@ type IGalleryAd interface {
 	DelImage(id int) error
 }
 
-
 var _ sort.Interface = ValueGallery{}
 
 // 轮播广告图片集合
@@ -41,7 +40,7 @@ func (this ValueGallery) Len() int {
 // index i should sort before the element with index j.
 func (this ValueGallery) Less(i, j int) bool {
 	return this[i].SortNumber < this[j].SortNumber || (this[i].SortNumber == this[j].SortNumber &&
-	this[i].Id < this[j].Id)
+		this[i].Id < this[j].Id)
 }
 
 // Swap swaps the elements with indexes i and j.

@@ -44,8 +44,8 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
 		p = &payment.AliPayWap{
 			Merchant: cnf.GetString(variable.Alipay_Partner),
-			Key:     cnf.GetString(variable.Alipay_Key),
-			Seller:  cnf.GetString(variable.Alipay_Seller),
+			Key:      cnf.GetString(variable.Alipay_Key),
+			Seller:   cnf.GetString(variable.Alipay_Seller),
 		}
 		//	p = &payment.AliPayWap{
 		//		Merchant: "2088021187655650",
@@ -192,9 +192,9 @@ func (this *PaymentC) paymentSuccess(ctx *echox.Context,
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"conf":    siteConf,
-		"order":   order,
+		"Merchant": p,
+		"conf":     siteConf,
+		"order":    order,
 	}
 	return ctx.RenderOK("payment_success.html", d)
 }
@@ -205,9 +205,9 @@ func (this *PaymentC) paymentFail(ctx *echox.Context,
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Merchant":p,
-		"conf":    siteConf,
-		"order":   order,
+		"Merchant": p,
+		"conf":     siteConf,
+		"order":    order,
 	}
 	return ctx.RenderOK("payment_fail.html", d)
 }
