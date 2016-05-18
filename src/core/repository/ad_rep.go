@@ -28,7 +28,7 @@ func NewAdvertisementRep(c db.Connector) ad.IAdvertisementRep {
 }
 
 // 获取商户的广告管理
-func (this *advertisementRep) GetPartnerAdvertisement(merchantId int) ad.IPartnerAdvertisement {
+func (this *advertisementRep) GetPartnerAdvertisement(merchantId int) ad.IMerchantAdvertisement {
 	return adImpl.NewPartnerAdvertisement(merchantId, this)
 }
 

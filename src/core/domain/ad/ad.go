@@ -13,14 +13,14 @@ import (
 	"time"
 )
 
-var _ ad.IPartnerAdvertisement = new(PartnerAdvertisement)
+var _ ad.IMerchantAdvertisement = new(PartnerAdvertisement)
 
 type PartnerAdvertisement struct {
 	_rep        ad.IAdvertisementRep
 	_merchantId int
 }
 
-func NewPartnerAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IPartnerAdvertisement {
+func NewPartnerAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IMerchantAdvertisement {
 	return &PartnerAdvertisement{
 		_rep:        rep,
 		_merchantId: merchantId,

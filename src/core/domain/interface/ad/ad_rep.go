@@ -11,7 +11,7 @@ package ad
 // 广告仓储
 type IAdvertisementRep interface {
 	// 获取商户的广告管理
-	GetPartnerAdvertisement(merchantId int) IPartnerAdvertisement
+	GetPartnerAdvertisement(merchantId int) IMerchantAdvertisement
 
 	// 根据名称获取广告编号
 	GetIdByName(merchantId int, name string) int
