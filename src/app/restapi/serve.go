@@ -80,7 +80,7 @@ func beforeRequest() echo.MiddlewareFunc {
 			if path != "/" {
 				//检查商户接口权限
 				ctx.Request().ParseForm()
-				if !chkPartnerApiSecret(ctx) {
+				if !chkMerchantApiSecret(ctx) {
 					return ctx.String(http.StatusOK, "{error:'secret incorrent'}")
 				}
 				//检查会员会话

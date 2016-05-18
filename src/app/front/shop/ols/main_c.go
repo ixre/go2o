@@ -98,7 +98,7 @@ func (this *MainC) T(c *echox.Context) error {
 }
 
 func (this *MainC) Index(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 
 	if this.HandleIndexGo(ctx) {
@@ -107,7 +107,7 @@ func (this *MainC) Index(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"Partner": p,
+		"Merchant": p,
 		"Conf":    getSiteConf(ctx),
 		"Member":  m,
 	}
@@ -115,7 +115,7 @@ func (this *MainC) Index(ctx *echox.Context) error {
 }
 
 func (this *MainC) MallEntry(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 
 	if this.HandleIndexGo(ctx) {
@@ -128,7 +128,7 @@ func (this *MainC) MallEntry(ctx *echox.Context) error {
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":  p,
+		"Merchant": p,
 		"conf":     siteConf,
 		"newGoods": newGoods,
 		"hotSales": hotSales,
@@ -138,12 +138,12 @@ func (this *MainC) MallEntry(ctx *echox.Context) error {
 }
 
 func (this *MainC) App(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	m := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"conf":    siteConf,
 		"member":  m,
 	}

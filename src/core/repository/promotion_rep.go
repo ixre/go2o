@@ -124,7 +124,7 @@ func (this *promotionRep) GetPromotionOfGoods(goodsId int) []*promotion.ValuePro
 }
 
 // 获取商户订单可用的促销
-func (this *promotionRep) GetPromotionOfPartnerOrder(merchantId int) []*promotion.ValuePromotion {
+func (this *promotionRep) GetPromotionOfMerchantOrder(merchantId int) []*promotion.ValuePromotion {
 	var arr []*promotion.ValuePromotion = []*promotion.ValuePromotion{}
 	err := this.Connector.GetOrm().Select(&arr, "merchant_id=? AND goods_id=0 AND enabled=1 ORDER BY id", merchantId)
 	if err == nil {

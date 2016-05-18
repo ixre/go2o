@@ -16,7 +16,7 @@ import (
 )
 
 func GetShopCheckboxs(merchantId int, chks string) []byte {
-	shops := dps.PartnerService.GetShopsOfMerchant(merchantId)
+	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
 	buf := bytes.NewBufferString("")
 
 	if len(chks) == 0 {
@@ -61,7 +61,7 @@ func GetShopCheckboxs(merchantId int, chks string) []byte {
 }
 
 func GetShopsJson(merchantId int) []byte {
-	shops := dps.PartnerService.GetShopsOfMerchant(merchantId)
+	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {
 		if i != 0 {
@@ -75,7 +75,7 @@ func GetShopsJson(merchantId int) []byte {
 
 func GetShopDropList(merchantId int, selected int) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops := dps.PartnerService.GetShopsOfMerchant(merchantId)
+	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

@@ -52,7 +52,7 @@ func (this *contentService) SavePage(merchantId int, v *content.ValuePage) (int,
 	var page content.IPage
 
 	if v.MerchantId != merchantId {
-		return -1, merchant.ErrPartnerNotMatch
+		return -1, merchant.ErrMerchantNotMatch
 	}
 
 	if v.Id > 0 {

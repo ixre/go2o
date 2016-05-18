@@ -16,13 +16,13 @@ import (
 	"regexp"
 )
 
-type PartnerQuery struct {
+type MerchantQuery struct {
 	db.Connector
 	gof.Storage
 }
 
-func NewPartnerQuery(c gof.App) *PartnerQuery {
-	return &PartnerQuery{
+func NewMerchantQuery(c gof.App) *MerchantQuery {
+	return &MerchantQuery{
 		Connector: c.Db(),
 		Storage:   c.Storage(),
 	}
@@ -41,7 +41,7 @@ func getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商户编号
-func (this *PartnerQuery) QueryMerchantIdByHost(host string) int {
+func (this *MerchantQuery) QueryMerchantIdByHost(host string) int {
 	//  $ 获取合作商ID
 	// $ hostname : 域名
 	// *.wdian.net  二级域名
@@ -68,7 +68,7 @@ func (this *PartnerQuery) QueryMerchantIdByHost(host string) int {
 }
 
 // 验证用户密码并返回编号
-func (this *PartnerQuery) Verify(usr, pwd string) int {
+func (this *MerchantQuery) Verify(usr, pwd string) int {
 	var id int = -1
 	this.Connector.ExecScalar("SELECT id FROM pt_merchant WHERE usr=? AND pwd=?", &id, usr, pwd)
 	return id

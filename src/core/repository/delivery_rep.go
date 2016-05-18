@@ -76,8 +76,8 @@ func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageVal
 }
 
 // 获取配送绑定
-func (this *deliveryRep) GetDeliveryBind(merchantId, coverageId int) *delivery.PartnerDeliverBind {
-	e := new(delivery.PartnerDeliverBind)
+func (this *deliveryRep) GetDeliveryBind(merchantId, coverageId int) *delivery.MerchantDeliverBind {
+	e := new(delivery.MerchantDeliverBind)
 	err := this.Connector.GetOrm().GetBy(e, "merchant_id=? AND coverage_id=?", merchantId, coverageId)
 	if err != nil {
 		return nil

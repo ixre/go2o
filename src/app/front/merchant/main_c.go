@@ -78,13 +78,13 @@ func (pb *mainC) ValidLogin(usr string, pwd string) (*merchant.MerchantValue, bo
 	var pt *merchant.MerchantValue
 	var err error
 
-	id := dps.PartnerService.Verify(usr, pwd)
+	id := dps.MerchantService.Verify(usr, pwd)
 
 	if id == -1 {
 		result = false
 		message = "用户或密码不正确！"
 	} else {
-		pt, err = dps.PartnerService.GetMerchant(id)
+		pt, err = dps.MerchantService.GetMerchant(id)
 		if err != nil {
 			message = err.Error()
 			result = false
@@ -103,11 +103,11 @@ func (this *mainC) Logout(ctx *echox.Context) error {
 
 //商户首页
 func (this *mainC) Dashboard(ctx *echox.Context) error {
-	pt, _ := dps.PartnerService.GetMerchant(getMerchantId(ctx))
+	pt, _ := dps.MerchantService.GetMerchant(getMerchantId(ctx))
 
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":   pt,
+		"Merchant":  pt,
 		"loginIp":   ctx.Request().Header.Get("USER_ADDRESS"),
 		"AliasGrow": variable.AliasGrowAccount,
 	}
@@ -117,9 +117,9 @@ func (this *mainC) Dashboard(ctx *echox.Context) error {
 //商户汇总页
 func (this *mainC) Summary(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	pt, _ := dps.PartnerService.GetMerchant(getMerchantId(ctx))
+	pt, _ := dps.MerchantService.GetMerchant(getMerchantId(ctx))
 	d := ctx.NewData()
-	d.Map["partner"] = pt
+	d.Map["Merchant"] = pt
 	d.Map["loginIp"] = r.Header.Get("USER_ADDRESS")
 
 	return ctx.Render(http.StatusOK, "summary.html", d)

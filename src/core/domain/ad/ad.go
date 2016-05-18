@@ -13,22 +13,22 @@ import (
 	"time"
 )
 
-var _ ad.IMerchantAdvertisement = new(PartnerAdvertisement)
+var _ ad.IMerchantAdvertisement = new(MerchantAdvertisement)
 
-type PartnerAdvertisement struct {
+type MerchantAdvertisement struct {
 	_rep        ad.IAdvertisementRep
 	_merchantId int
 }
 
-func NewPartnerAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IMerchantAdvertisement {
-	return &PartnerAdvertisement{
+func NewMerchantAdvertisement(merchantId int, rep ad.IAdvertisementRep) ad.IMerchantAdvertisement {
+	return &MerchantAdvertisement{
 		_rep:        rep,
 		_merchantId: merchantId,
 	}
 }
 
 // 初始化默认的广告位
-func (this *PartnerAdvertisement) InitInternalAdvertisements() {
+func (this *MerchantAdvertisement) InitInternalAdvertisements() {
 	merchantId := this.GetAggregateRootId()
 	unix := time.Now().Unix()
 
@@ -61,12 +61,12 @@ func (this *PartnerAdvertisement) InitInternalAdvertisements() {
 }
 
 // 获取聚合根标识
-func (this *PartnerAdvertisement) GetAggregateRootId() int {
+func (this *MerchantAdvertisement) GetAggregateRootId() int {
 	return this._merchantId
 }
 
 // 根据编号获取广告
-func (this *PartnerAdvertisement) GetById(id int) ad.IAdvertisement {
+func (this *MerchantAdvertisement) GetById(id int) ad.IAdvertisement {
 	v := this._rep.GetValueAdvertisement(this._merchantId, id)
 	if v != nil {
 		return this.CreateAdvertisement(v)
@@ -75,7 +75,7 @@ func (this *PartnerAdvertisement) GetById(id int) ad.IAdvertisement {
 }
 
 // 删除广告
-func (this *PartnerAdvertisement) DeleteAdvertisement(advertisementId int) error {
+func (this *MerchantAdvertisement) DeleteAdvertisement(advertisementId int) error {
 	adv := this.GetById(advertisementId)
 	if adv != nil {
 
@@ -94,7 +94,7 @@ func (this *PartnerAdvertisement) DeleteAdvertisement(advertisementId int) error
 }
 
 // 根据名称获取广告
-func (this *PartnerAdvertisement) GetByName(name string) ad.IAdvertisement {
+func (this *MerchantAdvertisement) GetByName(name string) ad.IAdvertisement {
 	v := this._rep.GetValueAdvertisementByName(this._merchantId, name)
 	if v != nil {
 		return this.CreateAdvertisement(v)
@@ -103,7 +103,7 @@ func (this *PartnerAdvertisement) GetByName(name string) ad.IAdvertisement {
 }
 
 // 创建广告对象
-func (this *PartnerAdvertisement) CreateAdvertisement(v *ad.ValueAdvertisement) ad.IAdvertisement {
+func (this *MerchantAdvertisement) CreateAdvertisement(v *ad.ValueAdvertisement) ad.IAdvertisement {
 	adv := &Advertisement{
 		Rep:   this._rep,
 		Value: v,

@@ -24,7 +24,7 @@ type ContentC struct {
 
 // 自定义页面
 func (this *ContentC) Page(c *echox.Context) error {
-	p := getPartner(c)
+	p := getMerchant(c)
 	mm := GetMember(c)
 	siteConf := getSiteConf(c)
 	var page *content.ValuePage
@@ -42,7 +42,7 @@ func (this *ContentC) Page(c *echox.Context) error {
 
 	d := c.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"member":  mm,
 		"conf":    siteConf,
 		"page":    page,

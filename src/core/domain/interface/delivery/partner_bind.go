@@ -8,7 +8,7 @@
  */
 package delivery
 
-type PartnerDeliverBind struct {
+type MerchantDeliverBind struct {
 	Id           int `db:"id" auto:"yes" pk:"yes"`
 	MerchantId   int `db:"merchant_id"`
 	CoverageId   int `db:"coverage_id"`

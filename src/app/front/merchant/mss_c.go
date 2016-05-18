@@ -35,7 +35,7 @@ func (this *mssC) Mail_template_list(ctx *echox.Context) error {
 func (this *mssC) Edit_mail_tpl(ctx *echox.Context) error {
 	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	e, _ := dps.PartnerService.GetMailTemplate(merchantId, id)
+	e, _ := dps.MerchantService.GetMailTemplate(merchantId, id)
 
 	js, _ := json.Marshal(e)
 	d := ctx.NewData()
@@ -63,7 +63,7 @@ func (this *mssC) Del_mail_tpl(ctx *echox.Context) error {
 		var result gof.Message
 		merchantId := getMerchantId(ctx)
 		adId, _ := strconv.Atoi(req.FormValue("id"))
-		err := dps.PartnerService.DeleteMailTemplate(merchantId, adId)
+		err := dps.MerchantService.DeleteMailTemplate(merchantId, adId)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -91,7 +91,7 @@ func (this *mssC) Save_mail_tpl(ctx *echox.Context) error {
 		//更新
 		e.MerchantId = merchantId
 
-		id, err := dps.PartnerService.SaveMailTemplate(merchantId, &e)
+		id, err := dps.MerchantService.SaveMailTemplate(merchantId, &e)
 
 		if err != nil {
 			result.Message = err.Error()
@@ -114,7 +114,7 @@ func (this *mssC) Mss_setting(ctx *echox.Context) error {
 		return this.mss_setting_post(ctx)
 	}
 	merchantId := getMerchantId(ctx)
-	e := dps.PartnerService.GetKeyMapsByKeyword(merchantId, "mss_")
+	e := dps.MerchantService.GetKeyMapsByKeyword(merchantId, "mss_")
 	js, _ := json.Marshal(e)
 
 	d := ctx.NewData()
@@ -137,7 +137,7 @@ func (this *mssC) mss_setting_post(ctx *echox.Context) error {
 		}
 	}
 
-	err := dps.PartnerService.SaveKeyMaps(merchantId, data)
+	err := dps.MerchantService.SaveKeyMaps(merchantId, data)
 
 	if err != nil {
 		result.Message = err.Error()

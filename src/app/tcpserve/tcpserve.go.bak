@@ -138,8 +138,8 @@ func createConnection(conn net.Conn, line string) error {
 	if strings.HasPrefix(line, "AUTH:") {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
-			merchantId := dps.PartnerService.GetMerchantIdByApiId(arr[0])
-			apiInfo := dps.PartnerService.GetApiInfo(merchantId)
+			merchantId := dps.MerchantService.GetMerchantIdByApiId(arr[0])
+			apiInfo := dps.MerchantService.GetApiInfo(merchantId)
 
 			if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 				if apiInfo.Enabled == 0 {

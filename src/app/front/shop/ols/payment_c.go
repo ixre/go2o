@@ -43,12 +43,12 @@ func (this *PaymentC) getAliPayment(ctx *echox.Context) payment.IPayment {
 	cnf := ctx.App.Config()
 	if guitl.IsMobileAgent(ctx.Request().UserAgent()) {
 		p = &payment.AliPayWap{
-			Partner: cnf.GetString(variable.Alipay_Partner),
+			Merchant: cnf.GetString(variable.Alipay_Partner),
 			Key:     cnf.GetString(variable.Alipay_Key),
 			Seller:  cnf.GetString(variable.Alipay_Seller),
 		}
 		//	p = &payment.AliPayWap{
-		//		Partner: "2088021187655650",
+		//		Merchant: "2088021187655650",
 		//		Key:     "3aijnz4020um0c7iq0ayanaqqcxtxk5i",
 		//		Seller:  "1515827759@qq.com",
 		//		PrivateKey: `-----BEGIN ENCRYPTED PRIVATE KEY-----
@@ -188,11 +188,11 @@ func (this *PaymentC) handleOrder(order *shopping.ValueOrder, sp string, result 
 
 func (this *PaymentC) paymentSuccess(ctx *echox.Context,
 	order *shopping.ValueOrder, result *payment.Result) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"conf":    siteConf,
 		"order":   order,
 	}
@@ -201,11 +201,11 @@ func (this *PaymentC) paymentSuccess(ctx *echox.Context,
 
 func (this *PaymentC) paymentFail(ctx *echox.Context,
 	order *shopping.ValueOrder, result *payment.Result) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	siteConf := getSiteConf(ctx)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"conf":    siteConf,
 		"order":   order,
 	}

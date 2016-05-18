@@ -40,7 +40,7 @@ func getSaleTagsCheckBoxHtml(tags []*sale.ValueSaleTag) string {
 // 获取等级下拉选项列表
 func getLevelDropDownList(merchantId int) string {
 	buf := bytes.NewBufferString("")
-	lvs := dps.PartnerService.GetMemberLevels(merchantId)
+	lvs := dps.MerchantService.GetMemberLevels(merchantId)
 	for _, v := range lvs {
 		if v.Enabled == 1 {
 			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Value, v.Name))
@@ -52,7 +52,7 @@ func getLevelDropDownList(merchantId int) string {
 // 获取邮件模板选项
 func getMailTemplateOpts(merchantId int) string {
 	buf := bytes.NewBufferString("")
-	list := dps.PartnerService.GetMailTemplates(merchantId)
+	list := dps.MerchantService.GetMailTemplates(merchantId)
 	for _, v := range list {
 		if v.Enabled == 1 {
 			buf.WriteString(fmt.Sprintf(`<option value="%d">%s</option>`, v.Id, v.Name))

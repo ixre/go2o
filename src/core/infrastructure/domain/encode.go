@@ -29,7 +29,7 @@ func MemberSha1Pwd(pwd string) string {
 }
 
 //加密合作商密码
-func PartnerSha1Pwd(usr, pwd string) string {
+func MerchantSha1Pwd(usr, pwd string) string {
 	return crypto.Sha1([]byte(ShaPwd(pwd, usr+":")))
 }
 

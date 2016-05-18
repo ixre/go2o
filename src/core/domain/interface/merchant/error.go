@@ -20,7 +20,7 @@ var (
 	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(
 		"no_such_shop", "门店不存在")
 
-	ErrPartnerNotMatch *domain.DomainError = domain.NewDomainError(
+	ErrMerchantNotMatch *domain.DomainError = domain.NewDomainError(
 		"not_match", "商家不匹配")
 
 	ErrRegisterMode *domain.DomainError = domain.NewDomainError(

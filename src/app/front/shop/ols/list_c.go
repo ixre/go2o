@@ -62,7 +62,7 @@ func categoryWalk(buf *bytes.Buffer, cs []*sale.ValueCategory) {
 
 // 类目，限移动端
 func (this *ListC) All_cate(ctx *echox.Context) error {
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	mm := GetMember(ctx)
 	siteConf := getSiteConf(ctx)
 
@@ -72,7 +72,7 @@ func (this *ListC) All_cate(ctx *echox.Context) error {
 	//web.SetCacheHeader(ctx.Response(), 10)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner": p,
+		"Merchant":p,
 		"member":  mm,
 		"conf":    siteConf,
 		//"cate_html": template.HTML(buf.String()),
@@ -163,7 +163,7 @@ func (this *ListC) List_Index(ctx *echox.Context) error {
 	}
 
 	r := ctx.HttpRequest()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	const size int = 20 //-1表示全部
 	sortQuery := ctx.Query("sort")
 	idArr := this.getIdArray(r.URL.Path)
@@ -270,7 +270,7 @@ func (this *ListC) SearchList(ctx *echox.Context) error {
 	}
 
 	r := ctx.HttpRequest()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	const size int = 20 //-1表示全部
 	sortQuery := ctx.Query("sort")
 	page, _ := strconv.Atoi(ctx.Query("page"))
@@ -384,7 +384,7 @@ func (this *ListC) SaleTagGoodsList(ctx *echox.Context) error {
 	}
 
 	r := ctx.HttpRequest()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 
 	const size int = 20
 	page, _ := strconv.Atoi(ctx.Query("page"))
@@ -513,7 +513,7 @@ func (this *ListC) GetGoodsJsonBySaleTag(ctx *echox.Context) error {
 // 商品详情
 func (this *ListC) GoodsView(ctx *echox.Context) error {
 	r := ctx.HttpRequest()
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	path := r.URL.Path
 	goodsId, _ := strconv.Atoi(path[strings.LastIndex(path, "-")+1 : strings.Index(path, ".")])
 

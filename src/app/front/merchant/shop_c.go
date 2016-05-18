@@ -42,7 +42,7 @@ func (this *shopC) Create(ctx *echox.Context) error {
 func (this *shopC) Modify(ctx *echox.Context) error {
 	merchantId := getMerchantId(ctx)
 	id, _ := strconv.Atoi(ctx.Query("id"))
-	shop := dps.PartnerService.GetShopValueById(merchantId, id)
+	shop := dps.MerchantService.GetShopValueById(merchantId, id)
 	entity, _ := json.Marshal(shop)
 
 	d := ctx.NewData()
@@ -61,7 +61,7 @@ func (this *shopC) SaveShop(ctx *echox.Context) error {
 		shop := merchant.ValueShop{}
 		web.ParseFormToEntity(r.Form, &shop)
 
-		id, err := dps.PartnerService.SaveShop(merchantId, &shop)
+		id, err := dps.MerchantService.SaveShop(merchantId, &shop)
 
 		if err != nil {
 			result = gof.Message{Result: true, Message: err.Error()}
@@ -82,7 +82,7 @@ func (this *shopC) Del(ctx *echox.Context) error {
 		r.ParseForm()
 		shopId, err := strconv.Atoi(r.FormValue("id"))
 		if err == nil {
-			err = dps.PartnerService.DeleteShop(merchantId, shopId)
+			err = dps.MerchantService.DeleteShop(merchantId, shopId)
 		}
 
 		if err != nil {

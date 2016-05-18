@@ -94,7 +94,7 @@ func (this *orderC) View(ctx *echox.Context) error {
 	if e.ShopId == 0 {
 		shopName = "未指定"
 	} else {
-		shopName = dps.PartnerService.GetShopValueById(merchantId, e.ShopId).Name
+		shopName = dps.MerchantService.GetShopValueById(merchantId, e.ShopId).Name
 	}
 	payment = enum.GetPaymentName(e.PaymentOpt)
 	orderStateText = enum.OrderState(e.Status).String()
@@ -180,7 +180,7 @@ func (this *orderC) Payment(ctx *echox.Context) error {
 	if e.ShopId == 0 {
 		shopName = "未指定"
 	} else {
-		shopName = dps.PartnerService.GetShopValueById(merchantId, e.ShopId).Name
+		shopName = dps.MerchantService.GetShopValueById(merchantId, e.ShopId).Name
 	}
 
 	d := ctx.NewData()

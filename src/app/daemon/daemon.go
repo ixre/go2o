@@ -176,7 +176,7 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 //设置过期时间
 func (this *defaultService) setOrderExpires(conn redis.Conn, o *shopping.ValueOrder) {
 	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
-		ss := dps.PartnerService.GetSaleConf(o.MerchantId)
+		ss := dps.MerchantService.GetSaleConf(o.MerchantId)
 		t := int64(ss.OrderTimeOutMinute) * 60
 		unix := o.CreateTime + t
 		conn.Do("SET", this.getExpiresKey(o), unix)

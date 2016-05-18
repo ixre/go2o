@@ -43,7 +43,7 @@ func (this *mainC) Index(ctx *echox.Context) error {
 	}
 
 	mm := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 
 	acc := dps.MemberService.GetAccount(mm.Id)
@@ -51,8 +51,8 @@ func (this *mainC) Index(ctx *echox.Context) error {
 	info := make(map[string]string)
 	info["memName"] = mm.Name
 
-	lv := dps.PartnerService.GetLevel(p.Id, mm.Level)
-	//nextLv := dps.PartnerService.GetNextLevel(p.Id, mm.Level)
+	lv := dps.MerchantService.GetLevel(p.Id, mm.Level)
+	//nextLv := dps.MerchantService.GetNextLevel(p.Id, mm.Level)
 
 	//		if nextLv == nil {
 	//			nextLv = lv
@@ -65,7 +65,7 @@ func (this *mainC) Index(ctx *echox.Context) error {
 		"level":               lv,
 		//"nLevel":       nextLv,
 		"member":       mm,
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"json":         template.JS(js),

@@ -31,7 +31,7 @@ func (this *configC) Profile(ctx *echox.Context) error {
 		return this.profile_post(ctx)
 	}
 	merchantId := getMerchantId(ctx)
-	p, _ := dps.PartnerService.GetMerchant(merchantId)
+	p, _ := dps.MerchantService.GetMerchant(merchantId)
 	p.Pwd = ""
 	p.ExpiresTime = time.Now().Unix()
 
@@ -51,7 +51,7 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin, _ := dps.PartnerService.GetMerchant(merchantId)
+	origin, _ := dps.MerchantService.GetMerchant(merchantId)
 	e.ExpiresTime = origin.ExpiresTime
 	e.JoinTime = origin.JoinTime
 	e.LastLoginTime = origin.LastLoginTime
@@ -60,10 +60,10 @@ func (this *configC) profile_post(ctx *echox.Context) error {
 	e.UpdateTime = time.Now().Unix()
 	e.Id = merchantId
 
-	id, err := dps.PartnerService.SaveMerchant(merchantId, &e)
+	id, err := dps.MerchantService.SaveMerchant(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(merchantId)
+		cache.DelMerchantCache(merchantId)
 		result.Data = id
 	}
 	return ctx.JSON(http.StatusOK, result)
@@ -75,7 +75,7 @@ func (this *configC) SiteConf(ctx *echox.Context) error {
 		return this.siteConf_post(ctx)
 	}
 	merchantId := getMerchantId(ctx)
-	conf := dps.PartnerService.GetSiteConf(merchantId)
+	conf := dps.MerchantService.GetSiteConf(merchantId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -93,14 +93,14 @@ func (this *configC) siteConf_post(ctx *echox.Context) error {
 	web.ParseFormToEntity(r.Form, &e)
 
 	//更新
-	origin := dps.PartnerService.GetSiteConf(merchantId)
+	origin := dps.MerchantService.GetSiteConf(merchantId)
 	e.Host = origin.Host
 	e.MerchantId = merchantId
 
-	err := dps.PartnerService.SaveSiteConf(merchantId, &e)
+	err := dps.MerchantService.SaveSiteConf(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(merchantId)
+		cache.DelMerchantCache(merchantId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }
@@ -111,7 +111,7 @@ func (this *configC) SaleConf(ctx *echox.Context) error {
 		return this.saleConf_post(ctx)
 	}
 	merchantId := getMerchantId(ctx)
-	conf := dps.PartnerService.GetSaleConf(merchantId)
+	conf := dps.MerchantService.GetSaleConf(merchantId)
 	js, _ := json.Marshal(conf)
 	d := ctx.NewData()
 	d.Map["entity"] = template.JS(js)
@@ -129,10 +129,10 @@ func (this *configC) saleConf_post(ctx *echox.Context) error {
 
 	e.MerchantId = merchantId
 
-	err := dps.PartnerService.SaveSaleConf(merchantId, &e)
+	err := dps.MerchantService.SaveSaleConf(merchantId, &e)
 	result.Error(err)
 	if err == nil {
-		cache.DelPartnerCache(merchantId)
+		cache.DelMerchantCache(merchantId)
 	}
 	return ctx.JSON(http.StatusOK, result)
 }

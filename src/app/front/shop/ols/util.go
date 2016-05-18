@@ -37,7 +37,7 @@ func GetShops(c gof.App, merchantId int) []byte {
 	//分店
 	var buf *bytes.Buffer = bytes.NewBufferString("")
 
-	shops := dps.PartnerService.GetShopsOfMerchant(merchantId)
+	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
 	if len(shops) == 0 {
 		return []byte("<div class=\"nodata noshop\">还未添加分店</div>")
 	}

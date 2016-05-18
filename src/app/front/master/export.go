@@ -20,13 +20,13 @@ import (
 
 //==================  数据导出 ===============//
 
-type PartnerDbGetter struct{}
+type MerchantDbGetter struct{}
 
-func (dbGetter *PartnerDbGetter) GetDB() *sql.DB {
+func (dbGetter *MerchantDbGetter) GetDB() *sql.DB {
 	return gof.CurrentApp.Db().GetDb()
 }
 
-var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &PartnerDbGetter{}}
+var EXP_Manager *report.ExportItemManager = &report.ExportItemManager{DbGetter: &MerchantDbGetter{}}
 
 //================== 导出控制器 ==============//
 

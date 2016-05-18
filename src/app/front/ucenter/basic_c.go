@@ -79,12 +79,12 @@ func (this *basicC) Profile(ctx *echox.Context) error {
 		return this.profile_post(ctx)
 	}
 	mm := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	js, _ := json.Marshal(mm)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
@@ -119,11 +119,11 @@ func (this *basicC) Pwd(ctx *echox.Context) error {
 		return this.pwd_post(ctx)
 	}
 	mm := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       mm,
@@ -161,11 +161,11 @@ func (this *basicC) Trade_pwd(ctx *echox.Context) error {
 		return this.trade_pwd_post(ctx)
 	}
 	m := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -202,11 +202,11 @@ func (this *basicC) Deliver(ctx *echox.Context) error {
 		return this.deliver_post(ctx)
 	}
 	m := getMember(ctx)
-	p := getPartner(ctx)
+	p := getMerchant(ctx)
 	conf := getSiteConf(p.Id)
 	d := ctx.NewData()
 	d.Map = gof.TemplateDataMap{
-		"partner":      p,
+		"Merchant":     p,
 		"conf":         conf,
 		"partner_host": conf.Host,
 		"member":       m,
@@ -269,7 +269,7 @@ func (this *basicC) Member_cln_filter(ctx *echox.Context) error {
 		})
 	}
 	var list []*dto.SimpleMember
-	merchantId := getPartner(ctx).Id
+	merchantId := getMerchant(ctx).Id
 	list = dps.MemberService.FilterMemberByUsrOrPhone(merchantId, key)
 	return ctx.JSON(http.StatusOK, list)
 }
