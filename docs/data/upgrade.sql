@@ -12,7 +12,7 @@ ALTER TABLE `zxdb`.`mm_relation`
 CHANGE COLUMN `reg_partner_id` `reg_merchant_id` INT(11) NULL DEFAULT NULL COMMENT '注册商户编号' ;
 ALTER TABLE `zxdb`.`pm_info`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
-ALTER TABLE `zxdb`.`pt_ad`
+ALTER TABLE `zxdb`.`ad_list`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`pt_api`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL ;
@@ -34,5 +34,13 @@ ALTER TABLE `zxdb`.`pt_shop`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`pt_siteconf`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL ;
+
+-- ---------------
+
+ALTER TABLE `zxdb`.`pt_ad`
+RENAME TO  `zxdb`.`ad_list` ;
+
+ALTER TABLE `zxdb`.`pt_ad_image`
+RENAME TO  `zxdb`.`ad_image_ad` ;
 
 
