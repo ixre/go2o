@@ -8,6 +8,8 @@
  */
 package ad
 
+//todo: 文字和图片广告待实现
+
 const (
 	// 文字广告
 	TypeHyperLink = 1

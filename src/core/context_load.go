@@ -86,8 +86,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
 	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")
-	orm.TableMapping(ad.ValueAdvertisement{}, "pt_ad")
-	orm.TableMapping(ad.ValueImage{}, "pt_ad_image")
+	orm.TableMapping(ad.ValueAdvertisement{}, "ad_list")
+	orm.TableMapping(ad.ValueImage{}, "ad_image_ad")
 	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")
 

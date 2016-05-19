@@ -35,7 +35,7 @@ func (this *advertisementRep) GetMerchantAdvertisement(merchantId int) ad.IMerch
 // 根据名称获取广告编号
 func (this *advertisementRep) GetIdByName(merchantId int, name string) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM pt_ad WHERE merchant_id=? AND name=?", &id, merchantId, name)
+	this.Connector.ExecScalar("SELECT id FROM ad_list WHERE merchant_id=? AND name=?", &id, merchantId, name)
 	return id
 }
 
@@ -47,7 +47,7 @@ func (this *advertisementRep) SaveAdvertisementValue(v *ad.ValueAdvertisement) (
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_ad WHERE merchant_id=?", &v.Id, v.MerchantId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_list WHERE merchant_id=?", &v.Id, v.MerchantId)
 	}
 	return v.Id, err
 }
@@ -60,7 +60,7 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage) (int, error) {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_ad_image WHERE ad_id=?", &v.Id, v.AdvertisementId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_image_ad WHERE ad_id=?", &v.Id, v.AdvertisementId)
 	}
 	return v.Id, err
 }

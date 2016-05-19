@@ -836,13 +836,13 @@ LOCK TABLES `pm_info` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pt_ad`
+-- Table structure for table `ad_list`
 --
 
-DROP TABLE IF EXISTS `pt_ad`;
+DROP TABLE IF EXISTS `ad_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pt_ad` (
+CREATE TABLE `ad_list` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `merchant_id` int(11) DEFAULT NULL,
   `name` varchar(45) DEFAULT NULL,
@@ -855,22 +855,22 @@ CREATE TABLE `pt_ad` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pt_ad`
+-- Dumping data for table `ad_list`
 --
 
-LOCK TABLES `pt_ad` WRITE;
-/*!40000 ALTER TABLE `pt_ad` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pt_ad` ENABLE KEYS */;
+LOCK TABLES `ad_list` WRITE;
+/*!40000 ALTER TABLE `ad_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ad_list` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `pt_ad_image`
+-- Table structure for table `ad_image_ad`
 --
 
-DROP TABLE IF EXISTS `pt_ad_image`;
+DROP TABLE IF EXISTS `ad_image_ad`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `pt_ad_image` (
+CREATE TABLE `ad_image_ad` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ad_id` int(11) DEFAULT NULL,
   `title` varchar(45) DEFAULT NULL,
@@ -883,12 +883,12 @@ CREATE TABLE `pt_ad_image` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `pt_ad_image`
+-- Dumping data for table `ad_image_ad`
 --
 
-LOCK TABLES `pt_ad_image` WRITE;
-/*!40000 ALTER TABLE `pt_ad_image` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pt_ad_image` ENABLE KEYS */;
+LOCK TABLES `ad_image_ad` WRITE;
+/*!40000 ALTER TABLE `ad_image_ad` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ad_image_ad` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

@@ -2,20 +2,20 @@
 <ExportItemConfig>
   <ColumnMappingString></ColumnMappingString>
   <Query>
-    <![CDATA[SELECT pt_ad_image.* FROM pt_ad_image
-     INNER JOIN pt_ad ON pt_ad.id = pt_ad_image.ad_id
+    <![CDATA[SELECT ad_image_ad.* FROM ad_image_ad
+     INNER JOIN ad_list ON ad_list.id = ad_image_ad.ad_id
      WHERE merchant_id={merchant_id} AND ad_id={ad_id}
-    AND ({enabled}<0 OR pt_ad_image.enabled={enabled})
+    AND ({enabled}<0 OR ad_image_ad.enabled={enabled})
      AND title LIKE '%{keyword}%'
-    ORDER BY pt_ad_image.sort_number limit {page_start},{page_size}
+    ORDER BY ad_image_ad.sort_number limit {page_start},{page_size}
      ]]>
   </Query>
   <Import><![CDATA[]]></Import>
   <Total>
-    <![CDATA[SELECT COUNT(0) FROM pt_ad_image
-     INNER JOIN pt_ad ON pt_ad.id = pt_ad_image.ad_id
+    <![CDATA[SELECT COUNT(0) FROM ad_image_ad
+     INNER JOIN ad_list ON ad_list.id = ad_image_ad.ad_id
      WHERE merchant_id={merchant_id} AND ad_id={ad_id}
-    AND ({enabled}<0 OR pt_ad_image.enabled={enabled})
+    AND ({enabled}<0 OR ad_image_ad.enabled={enabled})
      AND title LIKE '%{keyword}%']]>
   </Total>
 </ExportItemConfig>
