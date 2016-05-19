@@ -32,10 +32,10 @@ func getUserInfo(ctx *echo.Context) (string, string) {
 		apiId = r.URL.Query().Get("merchant_id")
 	}
 
-    //todo: 兼容partner_id  ,将删除
-	if len(apiId) == 0{
+	//todo: 兼容partner_id  ,将删除
+	if len(apiId) == 0 {
 		apiId = r.FormValue("partner_id")
-		if len(apiId) == 0{
+		if len(apiId) == 0 {
 			apiId = r.URL.Query().Get("partner_id")
 		}
 	}
