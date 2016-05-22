@@ -61,7 +61,6 @@ func main() {
 
 	gof.CurrentApp = newApp
 	dps.Init(newApp)
-	core.RegisterTypes()
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	session.Set(newApp.Storage(), "")
 	go merchant.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))

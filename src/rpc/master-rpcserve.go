@@ -1,9 +1,13 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : core.go
+ * name : master-rpcserve
  * author : jarryliu
- * date : -- :
+ * date : 2016-05-21 13:03
  * description :
  * history :
  */
-package core
+package main
+
+func main() {
+
+}

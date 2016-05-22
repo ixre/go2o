@@ -14,8 +14,12 @@ import (
 	"go2o/src/core/domain/interface/merchant"
 )
 
-// 注册序列号类型
-func RegisterTypes() {
+func init() {
+	registerTypes()
+}
+
+// 注册序列类型
+func registerTypes() {
 	gob.Register(&member.ValueMember{})
 	gob.Register(&merchant.MerchantValue{})
 	gob.Register(&merchant.ApiInfo{})

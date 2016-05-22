@@ -75,7 +75,6 @@ func main() {
 	gof.CurrentApp = newApp
 	dps.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
-	core.RegisterTypes()
 	session.Set(newApp.Storage(), "")
 
 	var booted bool
