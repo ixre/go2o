@@ -37,7 +37,7 @@ __项目最新版本: v 0.1.2 __
 
 由 #刘铭#, #大鹏# 开发.
 
-__代码架构将调整,代码见develop分支__
+__代码架构将调整,代码见develop分支, 新的代码库不在包含UI, UI见分支v0.1.1__
 
 ------------------------
 贡献代码请看： [todo list](https://github.com/jsix/go2o/tree/master/docs/dev/todo.md) |
