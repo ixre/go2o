@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString></ColumnMappingString>
+  <Query>
+    <![CDATA[SELECT * FROM pt_member_level WHERE merchant_id={merchant_id}
+    AND ({enabled}<0 OR enabled={enabled}) AND name Like '%{keyword}%'
+    ORDER BY `value`
+     limit {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[SELECT COUNT(0) FROM pt_member_level WHERE merchant_id={merchant_id}
+    AND ({enabled}<0 OR enabled={enabled}) AND name Like '%{keyword}%']]>
+  </Total>
+</ExportItemConfig>

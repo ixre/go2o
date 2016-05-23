@@ -26,11 +26,11 @@ import (
 
 type memberService struct {
 	_memberRep      member.IMemberRep
-	_partnerService *partnerService
+	_partnerService *merchantService
 	_query          *query.MemberQuery
 }
 
-func NewMemberService(partnerService *partnerService, rep member.IMemberRep,
+func NewMemberService(partnerService *merchantService, rep member.IMemberRep,
 	q *query.MemberQuery) *memberService {
 	return &memberService{
 		_memberRep:      rep,
