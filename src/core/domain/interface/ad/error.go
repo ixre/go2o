@@ -23,8 +23,8 @@ var (
 	ErrNoSuchAd *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad", "广告不存在")
 
-ErrNoSuchAdGroup *domain.DomainError = domain.NewDomainError(
-	"err_no_such_ad_group", "广告组不存在")
+	ErrNoSuchAdGroup *domain.DomainError = domain.NewDomainError(
+		"err_no_such_ad_group", "广告组不存在")
 
 	ErrNoSuchAdPosition *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad_position", "广告位不存在")

@@ -27,7 +27,7 @@ type merchantService struct {
 }
 
 func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
-	 q *query.MerchantQuery) *merchantService {
+	q *query.MerchantQuery) *merchantService {
 	return &merchantService{
 		_partnerRep: r,
 		_query:      q,

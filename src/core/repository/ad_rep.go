@@ -10,8 +10,8 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
-	"go2o/src/core/domain/interface/ad"
 	adImpl "go2o/src/core/domain/ad"
+	"go2o/src/core/domain/interface/ad"
 )
 
 var _ ad.IAdRep = new(advertisementRep)
@@ -28,45 +28,44 @@ func NewAdvertisementRep(c db.Connector) ad.IAdRep {
 }
 
 // 获取广告管理器
-func (this *advertisementRep) GetAdManager()ad.IAdManager{
+func (this *advertisementRep) GetAdManager() ad.IAdManager {
 	return adImpl.NewAdManager(this)
 }
 
 // 获取广告分组
-func (this *advertisementRep) GetAdGroups() []*ad.AdGroup{
+func (this *advertisementRep) GetAdGroups() []*ad.AdGroup {
 	panic("")
 }
 
 // 删除广告组
-func (this *advertisementRep) DelAdGroup(id int) error{
+func (this *advertisementRep) DelAdGroup(id int) error {
 	panic("")
 }
 
 // 获取广告位
-func (this *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPosition{
+func (this *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPosition {
 	panic("")
 }
 
 // 删除广告位
-func (this *advertisementRep) DelAdPosition(id int) error{
+func (this *advertisementRep) DelAdPosition(id int) error {
 	panic("")
 }
 
 // 保存广告位
-func (this *advertisementRep) SaveAdPosition(a *ad.AdPosition) (int, error){
+func (this *advertisementRep) SaveAdPosition(a *ad.AdPosition) (int, error) {
 	panic("")
 }
 
 // 保存
-func (this *advertisementRep) SaveAdGroup(value *ad.AdGroup) (int, error){
+func (this *advertisementRep) SaveAdGroup(value *ad.AdGroup) (int, error) {
 	panic("")
 }
 
 // 设置用户的广告
-func (this *advertisementRep) SetUserAd(adUserId,posId,adId int)error{
+func (this *advertisementRep) SetUserAd(adUserId, posId, adId int) error {
 	panic("")
 }
-
 
 // 根据名称获取广告编号
 func (this *advertisementRep) GetIdByName(merchantId int, name string) int {
@@ -104,7 +103,7 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage) (int, error) {
 // 获取广告
 func (this *advertisementRep) GetValueAdvertisement(id int) *ad.ValueAdvertisement {
 	var e ad.ValueAdvertisement
-	if err := this.Connector.GetOrm().Get(id, &e); err == nil{
+	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
 	return nil
