@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ExportItemConfig>
+  <ColumnMappingString>Id:编号;CarId:车辆;CarNo:车牌号;</ColumnMappingString>
+  <Query>
+    <![CDATA[
+    SELECT
+gs.id,
+category_id,
+f.name,
+`img`,
+`price`,
+`cost`,
+`sale_price`,
+on_shelves,
+`state`,
+gs.stock_num,
+gs.sale_num,
+f.`update_time`
+FROM gs_goods gs INNER JOIN gs_item f ON gs.item_id=f.id
+INNER JOIN gs_category c ON f.category_id = c.id
+WHERE c.merchant_id={merchant_id} AND ({state}<0 OR state={state})
+ AND ({cid}<0 OR f.category_id={cid})
+ AND ('{keyword}'='' OR f.name Like '%{keyword}%')
+ /*AND ('{cost1}'='' OR cost  */
+ ORDER BY f.update_time DESC
+ LIMIT {page_start},{page_size}
+     ]]>
+  </Query>
+  <Import><![CDATA[]]></Import>
+  <Total>
+    <![CDATA[
+		    SELECT COUNT(0) FROM gs_goods gs INNER JOIN gs_item f ON gs.item_id=f.id
+		     INNER JOIN gs_category c ON f.category_id = c.id
+            WHERE c.merchant_id={merchant_id} AND ({state}<0 OR state={state})
+             AND ({cid}<= 0 OR f.category_id={cid})
+             AND ('{keyword}'='' OR f.name Like '%{keyword}%')
+             /*AND ('{cost1}'='' OR cost  */
+	]]>
+  </Total>
+</ExportItemConfig>

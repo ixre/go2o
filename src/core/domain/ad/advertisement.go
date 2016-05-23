@@ -16,7 +16,7 @@ import (
 var _ ad.IAdvertisement = new(Advertisement)
 
 type Advertisement struct {
-	Rep   ad.IAdvertisementRep
+	Rep   ad.IAdRep
 	Value *ad.ValueAdvertisement
 }
 
@@ -61,7 +61,7 @@ func (this *Advertisement) GetValue() *ad.ValueAdvertisement {
 
 // 保存广告
 func (this *Advertisement) Save() (int, error) {
-	id := this.Rep.GetIdByName(this.Value.MerchantId, this.Value.Name)
+	id := this.Rep.GetIdByName(this.Value.AdUserId, this.Value.Name)
 	if id > 0 && id != this.GetDomainId() {
 		return this.GetDomainId(), ad.ErrNameExists
 	}
