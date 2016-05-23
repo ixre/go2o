@@ -28,6 +28,52 @@ func (this *adService) getUserAd(adUserId int) ad.IUserAd {
 	return this._rep.GetAdManager().GetUserAd(adUserId)
 }
 
+func (this *adService) GetAdGroupById(id int)ad.AdGroup{
+	return this._rep.GetAdManager().GetAdGroup(id).GetValue()
+}
+
+func (this *adService) DelAdGroup(id int)error{
+	return this._rep.GetAdManager().DelAdGroup(id)
+}
+
+func (this *adService) SaveAdGroup(d *ad.AdGroup)(int,error){
+	m := this._rep.GetAdManager()
+	var e ad.IAdGroup
+	if d.Id > 0 {
+		e =m.GetAdGroup(d.Id)
+	}else{
+		e = m.CreateAdGroup(d.Name)
+	}
+	err := e.SetValue(d)
+	if err == nil{
+		return e.Save()
+	}
+	return -1,err
+}
+
+func (this *adService) GetGroups()[]ad.AdGroup {
+	m := this._rep.GetAdManager()
+	list := m.GetAdGroups()
+	list2 := []ad.AdGroup{}
+	for _, v := range list {
+		list2 = append(list2,v.GetValue())
+	}
+	return list2
+}
+
+
+func (this *adService) GetPosition(groupId,adPosId int)*ad.AdPosition{
+	return this._rep.GetAdManager().GetAdGroup(groupId).GetPosition(adPosId)
+}
+
+func (this *adService) SaveAdPosition(e *ad.AdPosition)(int,error){
+	return this._rep.GetAdManager().GetAdGroup(e.GroupId).SavePosition(e)
+}
+
+func (this *adService) DelAdPosition(groupId,id int)(error){
+	return  this._rep.GetAdManager().GetAdGroup(groupId).DelPosition(id)
+}
+
 // 获取广告
 func (this *adService) GetAdvertisement(adUserId, id int) *ad.ValueAdvertisement {
 	if adv := this.getUserAd(adUserId).GetById(id); adv != nil {

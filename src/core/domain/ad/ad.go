@@ -94,6 +94,16 @@ func (this *AdGroupImpl) GetValue() ad.AdGroup {
 	return *this._value
 }
 
+// 设置值
+func (this *AdGroupImpl) SetValue(v *ad.AdGroup)error{
+	if v != nil{
+		this._value.Name = v.Name
+		this._value.Enabled = v.Enabled
+		this._value.Opened = v.Opened
+	}
+	return nil
+}
+
 // 获取广告位
 func (this *AdGroupImpl) GetPositions() []*ad.AdPosition {
 	if this._positions == nil {
@@ -124,6 +134,7 @@ func (this *AdGroupImpl) DelPosition(id int) error {
 
 // 保存广告位
 func (this *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
+	a.GroupId = this.GetDomainId()
 	return this._rep.SaveAdPosition(a)
 }
 

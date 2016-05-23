@@ -19,11 +19,22 @@ var (
 	PromService          *promotionService
 	ShoppingService      *shoppingService
 	MemberService        *memberService
+
+	// 商户服务
 	MerchantService      *merchantService
+
+	// 销售服务
 	SaleService          *saleService
+
 	DeliverService       *deliveryService
+
+	// 内容服务
 	ContentService       *contentService
-	AdvertisementService *adService
+
+	// 广告服务
+	AdService *adService
+
+	// 个人金融服务
 	PersonFinanceService *personFinanceService
 )
 
@@ -62,6 +73,6 @@ func Init(ctx gof.App) {
 	SaleService = NewSaleService(saleRep, goodsRep, goodsQuery)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
-	AdvertisementService = NewAdvertisementService(adRep)
+	AdService = NewAdvertisementService(adRep)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
 }
