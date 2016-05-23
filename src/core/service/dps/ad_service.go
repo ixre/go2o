@@ -24,7 +24,7 @@ func NewAdvertisementService(rep ad.IAdRep) *adService {
 	}
 }
 
-func (this *adService) getUserAd(adUserId int)ad.IUserAd{
+func (this *adService) getUserAd(adUserId int) ad.IUserAd {
 	return this._rep.GetAdManager().GetUserAd(adUserId)
 }
 
