@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+var (
+	// Sha1算法的随机字符
+	Sha1OffSet string = "@k3f.net"
+)
+
 func ChkPwdRight(pwd string) (bool, error) {
 	if len(pwd) < 6 {
 		return false, errors.New("密码必须大于6位")
@@ -34,11 +39,11 @@ func MerchantSha1Pwd(usr, pwd string) string {
 }
 
 // 密码Md5加密
-func Md5Pwd(pwd, offset string) string {
-	return crypto.Md5([]byte(strings.Join([]string{offset, "go2o@S1N1.COM", pwd}, "")))
+func Md5Pwd(pwd, str string) string {
+	return crypto.Md5([]byte(strings.Join([]string{str, Sha1OffSet, pwd}, "")))
 }
 
 // 密码SHA1加密
-func ShaPwd(pwd, offset string) string {
-	return crypto.Sha1([]byte(strings.Join([]string{offset, pwd, "@h3f.net"}, "")))
+func ShaPwd(pwd, p string) string {
+	return crypto.Sha1([]byte(strings.Join([]string{p, pwd, Sha1OffSet}, "")))
 }
