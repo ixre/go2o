@@ -1,0 +1,66 @@
+/**
+ * Copyright 2015 @ z3q.net.
+ * name : kv_manager
+ * author : jarryliu
+ * date : 2015-07-26 22:44
+ * description :
+ * history :
+ */
+package merchant
+
+import (
+	"go2o/core/domain/interface/merchant"
+	"strconv"
+	"time"
+)
+
+var _ merchant.IKvManager = new(KvManager)
+
+type KvManager struct {
+	_partner    *Merchant
+	_merchantId int
+	// 标识
+	_indent string
+}
+
+func newKvManager(p *Merchant, indent string) merchant.IKvManager {
+	return &KvManager{
+		_partner:    p,
+		_merchantId: p.GetAggregateRootId(),
+		_indent:     indent,
+	}
+}
+
+// 获取键值
+func (this *KvManager) Get(k string) string {
+	return this._partner._rep.GetKeyValue(this._merchantId, this._indent, k)
+}
+
+// 获取int类型的键值
+func (this *KvManager) GetInt(k string) int {
+	i, _ := strconv.Atoi(this.Get(k))
+	return i
+}
+
+// 设置
+func (this *KvManager) Set(k, v string) {
+	this._partner._rep.SaveKeyValue(this._merchantId, this._indent, k, v, time.Now().Unix())
+}
+
+// 获取多项
+func (this *KvManager) Gets(k []string) map[string]string {
+	return this._partner._rep.GetKeyMap(this._merchantId, this._indent, k)
+}
+
+// 设置多项
+func (this *KvManager) Sets(v map[string]string) error {
+	for k, v := range v {
+		this.Set(k, v)
+	}
+	return nil
+}
+
+// 根据关键字获取字典
+func (this *KvManager) GetsByChar(keyword string) map[string]string {
+	return this._partner._rep.GetKeyMapByChar(this._merchantId, this._indent, keyword)
+}
