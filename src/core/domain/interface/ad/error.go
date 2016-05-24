@@ -14,9 +14,6 @@ import (
 )
 
 var (
-	ErrNameExists *domain.DomainError = domain.NewDomainError(
-		"name_exists", "已经存在相同的名称的广告")
-
 	ErrInternalDisallow *domain.DomainError = domain.NewDomainError(
 		"err_internal_disallow", "不允许修改系统内置广告")
 
@@ -28,4 +25,7 @@ var (
 
 	ErrNoSuchAdPosition *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad_position", "广告位不存在")
+
+	ErrDisallowModifyAdType *domain.DomainError = domain.NewDomainError(
+		"err_disallow_modify_ad_type", "广告创建后不允许修改类型")
 )

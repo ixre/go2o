@@ -108,7 +108,7 @@ func (this *advertisementRep) GetIdByName(merchantId int, name string) int {
 }
 
 // 保存广告值
-func (this *advertisementRep) SaveAdvertisementValue(v *ad.ValueAdvertisement) (int, error) {
+func (this *advertisementRep) SaveAdValue(v *ad.Ad) (int, error) {
 	var err error
 	this.Mutex.Lock()
 	var orm = this.Connector.GetOrm()
@@ -117,7 +117,7 @@ func (this *advertisementRep) SaveAdvertisementValue(v *ad.ValueAdvertisement) (
 	} else {
 		_, _, err = orm.Save(nil, v)
 		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_list WHERE merchant_id=?",
-			&v.Id, v.AdUserId)
+			&v.Id, v.UserId)
 	}
 	this.Mutex.Unlock()
 	return v.Id, err
@@ -137,8 +137,8 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage) (int, error) {
 }
 
 // 获取广告
-func (this *advertisementRep) GetValueAdvertisement(id int) *ad.ValueAdvertisement {
-	var e ad.ValueAdvertisement
+func (this *advertisementRep) GetValueAdvertisement(id int) *ad.Ad {
+	var e ad.Ad
 	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
@@ -146,8 +146,8 @@ func (this *advertisementRep) GetValueAdvertisement(id int) *ad.ValueAdvertiseme
 }
 
 // 根据名称获取广告
-func (this *advertisementRep) GetValueAdvertisementByName(merchantId int, name string) *ad.ValueAdvertisement {
-	var e ad.ValueAdvertisement
+func (this *advertisementRep) GetValueAdvertisementByName(merchantId int, name string) *ad.Ad {
+	var e ad.Ad
 	if err := this.Connector.GetOrm().GetBy(&e, "merchant_id=? and name=?", merchantId, name); err == nil {
 		return &e
 	}
@@ -180,7 +180,7 @@ func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
 
 // 删除广告
 func (this *advertisementRep) DelAdvertisement(merchantId, advertisementId int) error {
-	_, err := this.Connector.GetOrm().Delete(ad.ValueAdvertisement{}, "merchant_id=? AND id=?", merchantId, advertisementId)
+	_, err := this.Connector.GetOrm().Delete(ad.Ad{}, "merchant_id=? AND id=?", merchantId, advertisementId)
 	return err
 }
 

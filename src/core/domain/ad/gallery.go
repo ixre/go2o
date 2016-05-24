@@ -13,11 +13,11 @@ import (
 	"sort"
 )
 
-var _ ad.IAdvertisement = new(GalleryAd)
+var _ ad.IAd = new(GalleryAd)
 var _ ad.IGalleryAd = new(GalleryAd)
 
 type GalleryAd struct {
-	*Advertisement
+	*AdImpl
 	_adValue ad.ValueGallery
 }
 
@@ -60,4 +60,13 @@ func (this *GalleryAd) GetImage(id int) *ad.ValueImage {
 // 删除图片项
 func (this *GalleryAd) DelImage(id int) error {
 	return this.Rep.DelAdImage(this.GetDomainId(), id)
+}
+
+// 转换为数据传输对象
+func (this *GalleryAd) Dto() *ad.AdDto {
+	return &ad.AdDto{
+		Id:   this.AdImpl.GetDomainId(),
+		Type: this.AdImpl.Type(),
+		Data: this.GetEnabledAdValue(),
+	}
 }

@@ -54,7 +54,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm := connector.GetOrm()
 
 	/* ad */
-	orm.TableMapping(ad.ValueAdvertisement{}, "ad_list")
+	orm.TableMapping(ad.Ad{}, "ad_list")
 	orm.TableMapping(ad.ValueImage{}, "ad_image_ad")
 	orm.TableMapping(ad.AdGroup{}, "ad_group")
 	orm.TableMapping(ad.AdPosition{}, "ad_position")
