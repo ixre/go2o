@@ -10,6 +10,7 @@ package ad
 
 import (
 	"go2o/src/core/domain/interface/ad"
+	"time"
 )
 
 var _ ad.IUserAd = new(UserAdImpl)
@@ -199,7 +200,7 @@ func (this *UserAdImpl) GetAggregateRootId() int {
 }
 
 // 根据编号获取广告
-func (this *UserAdImpl) GetById(id int) ad.IAdvertisement {
+func (this *UserAdImpl) GetById(id int) ad.IAd {
 	v := this._rep.GetValueAdvertisement(id)
 	if v != nil {
 		return this.CreateAdvertisement(v)
@@ -224,7 +225,7 @@ func (this *UserAdImpl) DeleteAdvertisement(advertisementId int) error {
 }
 
 // 根据名称获取广告
-func (this *UserAdImpl) GetByName(name string) ad.IAdvertisement {
+func (this *UserAdImpl) GetByName(name string) ad.IAd {
 	v := this._rep.GetValueAdvertisementByName(this._adUserId, name)
 	if v != nil {
 		return this.CreateAdvertisement(v)
@@ -233,8 +234,8 @@ func (this *UserAdImpl) GetByName(name string) ad.IAdvertisement {
 }
 
 // 创建广告对象
-func (this *UserAdImpl) CreateAdvertisement(v *ad.ValueAdvertisement) ad.IAdvertisement {
-	adv := &Advertisement{
+func (this *UserAdImpl) CreateAdvertisement(v *ad.Ad) ad.IAd {
+	adv := &AdImpl{
 		Rep:   this._rep,
 		Value: v,
 	}
@@ -242,7 +243,7 @@ func (this *UserAdImpl) CreateAdvertisement(v *ad.ValueAdvertisement) ad.IAdvert
 	// 轮播广告
 	if v.Type == ad.TypeGallery {
 		return &GalleryAd{
-			Advertisement: adv,
+			AdImpl: adv,
 		}
 	}
 
@@ -259,4 +260,85 @@ func (this *UserAdImpl) SetAd(posId, adId int) error {
 		return ad.ErrNoSuchAd
 	}
 	return this._rep.SetUserAd(this.GetAggregateRootId(), posId, adId)
+}
+
+var _ ad.IAd = new(AdImpl)
+
+type AdImpl struct {
+	Rep   ad.IAdRep
+	Value *ad.Ad
+}
+
+// 获取领域对象编号
+func (this *AdImpl) GetDomainId() int {
+	if this.Value != nil {
+		return this.Value.Id
+	}
+	return 0
+}
+
+// 是否为系统内置的广告
+func (this *AdImpl) System() bool {
+	return this.Value.UserId == 0
+}
+
+// 广告类型
+func (this *AdImpl) Type() int {
+	return this.Value.Type
+}
+
+// 广告名称
+func (this *AdImpl) Name() string {
+	return this.Value.Name
+}
+
+// 设置值
+func (this *AdImpl) SetValue(v *ad.Ad) error {
+	if v.Type != this.Type() {
+		return ad.ErrDisallowModifyAdType
+	}
+	// 如果为系统内置广告，不能修改名称
+	this.Value.Name = v.Name
+	return nil
+}
+
+// 获取值
+func (this *AdImpl) GetValue() *ad.Ad {
+	return this.Value
+}
+
+// 保存广告
+func (this *AdImpl) Save() (int, error) {
+	//id := this.Rep.GetIdByName(this.Value.UserId, this.Value.Name)
+	//if id > 0 && id != this.GetDomainId() {
+	//	return this.GetDomainId(), ad.ErrNameExists
+	//}
+	this.Value.UpdateTime = time.Now().Unix()
+	return this.Rep.SaveAdValue(this.Value)
+}
+
+// 增加展现次数
+func (this *AdImpl) AddShowTimes(times int) error {
+	this.Value.ShowTimes += times
+	return nil
+}
+
+// 增加展现次数
+func (this *AdImpl) AddClickTimes(times int) error {
+	this.Value.ClickTimes += times
+	return nil
+}
+
+// 增加展现次数
+func (this *AdImpl) AddShowDays(days int) error {
+	this.Value.ShowDays += days
+	return nil
+}
+
+// 转换为数据传输对象
+func (this *AdImpl) Dto() *ad.AdDto {
+	return &ad.AdDto{
+		Id:   this.GetDomainId(),
+		Type: this.Type(),
+	}
 }

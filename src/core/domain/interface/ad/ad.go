@@ -78,23 +78,24 @@ type (
 		DeleteAdvertisement(advertisementId int) error
 
 		// 根据编号获取广告
-		GetById(int) IAdvertisement
+		GetById(int) IAd
 
 		// 根据名称获取广告
-		GetByName(string) IAdvertisement
+		GetByName(string) IAd
 
 		// 创建广告对象
-		CreateAdvertisement(*ValueAdvertisement) IAdvertisement
+		CreateAdvertisement(*Ad) IAd
 
 		// 设置广告
 		SetAd(posId, adId int) error
 	}
 
-	IAdvertisement interface {
+	// 广告接口
+	IAd interface {
 		// 获取领域对象编号
 		GetDomainId() int
 
-		// 是否为系统内置的广告
+		// 是否为系统发布的广告
 		System() bool
 
 		// 广告类型
@@ -104,13 +105,25 @@ type (
 		Name() string
 
 		// 设置值
-		SetValue(*ValueAdvertisement) error
+		SetValue(*Ad) error
 
 		// 获取值
-		GetValue() *ValueAdvertisement
+		GetValue() *Ad
 
 		// 保存广告
 		Save() (int, error)
+
+		// 增加展现次数
+		AddShowTimes(times int) error
+
+		// 增加展现次数
+		AddClickTimes(times int) error
+
+		// 增加展现次数
+		AddShowDays(times int) error
+
+		// 转换为数据传输对象
+		Dto() *AdDto
 	}
 
 	// 广告分组
@@ -155,27 +168,37 @@ type (
 	}
 
 	// 广告
-	ValueAdvertisement struct {
+	Ad struct {
 		// 编号
 		Id int `db:"id" auto:"yes" pk:"yes"`
 
 		//广告用户编号
-		AdUserId int `db:"user_id"`
+		UserId int `db:"user_id"`
 
 		// 名称
 		Name string `db:"name"`
 
-		// 是否内部
-		IsInternal int `db:"is_internal"`
-
 		// 广告类型
 		Type int `db:"type_id"`
 
-		// 是否启用
-		Enabled int `db:"enabled"`
+		// 展现次数
+		ShowTimes int `db:"show_times"`
+
+		// 点击次数
+		ClickTimes int `db:"click_times"`
+
+		// 展现天数
+		ShowDays int `db:"show_days"`
 
 		// 修改时间
 		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 广告数据传输对象
+	AdDto struct {
+		Id   int         `json:"id"`
+		Type int         `json:"type"`
+		Data interface{} `json:"data"`
 	}
 
 	ValueText struct {
@@ -249,16 +272,16 @@ type (
 		GetIdByName(merchantId int, name string) int
 
 		// 保存广告值
-		SaveAdvertisementValue(*ValueAdvertisement) (int, error)
+		SaveAdValue(*Ad) (int, error)
 
 		// 保存广告图片
 		SaveAdImageValue(*ValueImage) (int, error)
 
 		// 获取广告
-		GetValueAdvertisement(id int) *ValueAdvertisement
+		GetValueAdvertisement(id int) *Ad
 
 		// 根据名称获取广告
-		GetValueAdvertisementByName(merchantId int, name string) *ValueAdvertisement
+		GetValueAdvertisementByName(merchantId int, name string) *Ad
 
 		// 获取轮播广告
 		GetValueGallery(advertisementId int) ValueGallery

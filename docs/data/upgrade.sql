@@ -71,3 +71,12 @@ CREATE TABLE `ad_userset` (
   `ad_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `zxdb`.`ad_list`
+DROP COLUMN `enabled`,
+DROP COLUMN `is_internal`,
+CHANGE COLUMN `merchant_id` `user_id` INT(11) NULL DEFAULT NULL ,
+ADD COLUMN `show_times` INT NULL COMMENT '展现数量' AFTER `type_id`,
+ADD COLUMN `click_times` INT NULL COMMENT '点击次数' AFTER `show_time`,
+ADD COLUMN `show_days` INT NULL COMMENT '投放天数' AFTER `click_count`;
+

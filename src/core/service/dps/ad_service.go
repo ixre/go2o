@@ -78,7 +78,7 @@ func (this *adService) SetDefaultAd(groupId, posId, adId int) error {
 }
 
 // 获取广告
-func (this *adService) GetAdvertisement(adUserId, id int) *ad.ValueAdvertisement {
+func (this *adService) GetAdvertisement(adUserId, id int) *ad.Ad {
 	if adv := this.getUserAd(adUserId).GetById(id); adv != nil {
 		return adv.GetValue()
 	}
@@ -87,7 +87,7 @@ func (this *adService) GetAdvertisement(adUserId, id int) *ad.ValueAdvertisement
 
 // 获取广告及广告数据
 func (this *adService) GetAdvertisementAndDataByName(adUserId int, name string) (
-	*ad.ValueAdvertisement, interface{}) {
+	*ad.Ad, interface{}) {
 	if adv := this.getUserAd(adUserId).GetByName(name); adv != nil {
 		v := adv.GetValue()
 		switch adv.Type() {
@@ -105,9 +105,9 @@ func (this *adService) GetAdvertisementAndDataByName(adUserId int, name string) 
 }
 
 // 保存广告
-func (this *adService) SaveAdvertisement(adUserId int, v *ad.ValueAdvertisement) (int, error) {
+func (this *adService) SaveAdvertisement(adUserId int, v *ad.Ad) (int, error) {
 	pa := this.getUserAd(adUserId)
-	var adv ad.IAdvertisement
+	var adv ad.IAd
 	if v.Id > 0 {
 		adv = pa.GetById(v.Id)
 		adv.SetValue(v)
@@ -124,7 +124,7 @@ func (this *adService) DelAdvertisement(adUserId, adId int) error {
 // 保存广告图片
 func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.ValueImage) (int, error) {
 	pa := this.getUserAd(adUserId)
-	var adv ad.IAdvertisement = pa.GetById(advertisementId)
+	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
 			gad := adv.(ad.IGalleryAd)
@@ -137,7 +137,7 @@ func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.ValueI
 // 获取广告图片
 func (this *adService) GetValueAdImage(adUserId, advertisementId, imgId int) *ad.ValueImage {
 	pa := this.getUserAd(adUserId)
-	var adv ad.IAdvertisement = pa.GetById(advertisementId)
+	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
 			gad := adv.(ad.IGalleryAd)
@@ -150,7 +150,7 @@ func (this *adService) GetValueAdImage(adUserId, advertisementId, imgId int) *ad
 // 删除广告图片
 func (this *adService) DelAdImage(adUserId, advertisementId, imgId int) error {
 	pa := this.getUserAd(adUserId)
-	var adv ad.IAdvertisement = pa.GetById(advertisementId)
+	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
 		if adv.Type() == ad.TypeGallery {
 			gad := adv.(ad.IGalleryAd)
