@@ -148,7 +148,7 @@ type (
 		PosId int `db:"pos_id"`
 
 		//广告用户编号
-		AdUserId int `db:"ad_userid"`
+		AdUserId int `db:"user_id"`
 
 		// 广告编号
 		AdId int `db:"ad_id"`
@@ -160,7 +160,7 @@ type (
 		Id int `db:"id" auto:"yes" pk:"yes"`
 
 		//广告用户编号
-		AdUserId int `db:"ad_userid"`
+		AdUserId int `db:"user_id"`
 
 		// 名称
 		Name string `db:"name"`

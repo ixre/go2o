@@ -12,12 +12,14 @@ import (
 	"github.com/jsix/gof/db"
 	adImpl "go2o/src/core/domain/ad"
 	"go2o/src/core/domain/interface/ad"
+	"sync"
 )
 
 var _ ad.IAdRep = new(advertisementRep)
 
 type advertisementRep struct {
 	db.Connector
+	sync.Mutex
 }
 
 // 广告仓储
@@ -34,56 +36,90 @@ func (this *advertisementRep) GetAdManager() ad.IAdManager {
 
 // 获取广告分组
 func (this *advertisementRep) GetAdGroups() []*ad.AdGroup {
-	panic("")
+	var list = []*ad.AdGroup{}
+	if err := this.Connector.GetOrm().Select(&list, ""); err != nil {
+		handleError(err)
+	}
+	return list
 }
 
 // 删除广告组
 func (this *advertisementRep) DelAdGroup(id int) error {
-	panic("")
+	return this.Connector.GetOrm().DeleteByPk(&ad.AdGroup{}, id)
 }
 
 // 获取广告位
 func (this *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPosition {
-	panic("")
+	var list = []*ad.AdPosition{}
+	if err := this.Connector.GetOrm().Select(&list, "group_id=?", adGroupId); err != nil {
+		handleError(err)
+	}
+	return list
 }
 
 // 删除广告位
 func (this *advertisementRep) DelAdPosition(id int) error {
-	panic("")
+	return this.Connector.GetOrm().DeleteByPk(&ad.AdPosition{}, id)
 }
 
 // 保存广告位
-func (this *advertisementRep) SaveAdPosition(a *ad.AdPosition) (int, error) {
-	panic("")
+func (this *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
+	var err error
+	this.Mutex.Lock()
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_position WHERE id=?", &v.Id, v.Id)
+	}
+	this.Mutex.Unlock()
+	return v.Id, err
 }
 
 // 保存
-func (this *advertisementRep) SaveAdGroup(value *ad.AdGroup) (int, error) {
-	panic("")
+func (this *advertisementRep) SaveAdGroup(v *ad.AdGroup) (int, error) {
+	var err error
+	this.Mutex.Lock()
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_group WHERE id=?", &v.Id, v.Id)
+	}
+	this.Mutex.Unlock()
+	return v.Id, err
 }
 
 // 设置用户的广告
 func (this *advertisementRep) SetUserAd(adUserId, posId, adId int) error {
-	panic("")
+	_, err := this.Connector.ExecNonQuery("UPDATE ad_userset set ad_id=? WHERE user_id=? AND pos_id=?",
+		adId, adUserId, posId)
+	return err
 }
 
 // 根据名称获取广告编号
 func (this *advertisementRep) GetIdByName(merchantId int, name string) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM ad_list WHERE merchant_id=? AND name=?", &id, merchantId, name)
+	this.Connector.ExecScalar("SELECT id FROM ad_list WHERE merchant_id=? AND name=?",
+		&id, merchantId, name)
 	return id
 }
 
 // 保存广告值
 func (this *advertisementRep) SaveAdvertisementValue(v *ad.ValueAdvertisement) (int, error) {
 	var err error
+	this.Mutex.Lock()
 	var orm = this.Connector.GetOrm()
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_list WHERE merchant_id=?", &v.Id, v.AdUserId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_list WHERE merchant_id=?",
+			&v.Id, v.AdUserId)
 	}
+	this.Mutex.Unlock()
 	return v.Id, err
 }
 
