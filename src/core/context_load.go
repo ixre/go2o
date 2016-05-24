@@ -53,6 +53,13 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//table mapping
 	orm := connector.GetOrm()
 
+	/* ad */
+	orm.TableMapping(ad.ValueAdvertisement{}, "ad_list")
+	orm.TableMapping(ad.ValueImage{}, "ad_image_ad")
+	orm.TableMapping(ad.AdGroup{}, "ad_group")
+	orm.TableMapping(ad.AdPosition{}, "ad_position")
+	orm.TableMapping(ad.AdUserSet{}, "ad_userset")
+
 	/** new **/
 	orm.TableMapping(member.ValueMember{}, "mm_member")
 	orm.TableMapping(member.IntegralLog{}, "mm_integral_log")
@@ -86,8 +93,6 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
 	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")
-	orm.TableMapping(ad.ValueAdvertisement{}, "ad_list")
-	orm.TableMapping(ad.ValueImage{}, "ad_image_ad")
 	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")
 

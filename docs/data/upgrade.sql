@@ -43,4 +43,31 @@ RENAME TO  `zxdb`.`ad_list` ;
 ALTER TABLE `zxdb`.`pt_ad_image`
 RENAME TO  `zxdb`.`ad_image_ad` ;
 
+CREATE TABLE `ad_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(10) DEFAULT NULL,
+  `opened` tinyint(1) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `ad_position` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_id` int(11) DEFAULT NULL,
+  `name` varchar(20) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `default` int(11) DEFAULT NULL,
+  `opened` tinyint(1) DEFAULT NULL,
+  `enabled` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_idx` (`group_id`),
+  CONSTRAINT `id` FOREIGN KEY (`group_id`) REFERENCES `ad_group` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ad_userset` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `pos_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `ad_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
