@@ -95,8 +95,8 @@ func (this *AdGroupImpl) GetValue() ad.AdGroup {
 }
 
 // 设置值
-func (this *AdGroupImpl) SetValue(v *ad.AdGroup)error{
-	if v != nil{
+func (this *AdGroupImpl) SetValue(v *ad.AdGroup) error {
+	if v != nil {
 		this._value.Name = v.Name
 		this._value.Enabled = v.Enabled
 		this._value.Opened = v.Opened
