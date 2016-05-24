@@ -16,20 +16,20 @@ import (
 )
 
 var (
-	PromService          *promotionService
-	ShoppingService      *shoppingService
-	MemberService        *memberService
+	PromService     *promotionService
+	ShoppingService *shoppingService
+	MemberService   *memberService
 
 	// 商户服务
-	MerchantService      *merchantService
+	MerchantService *merchantService
 
 	// 销售服务
-	SaleService          *saleService
+	SaleService *saleService
 
-	DeliverService       *deliveryService
+	DeliverService *deliveryService
 
 	// 内容服务
-	ContentService       *contentService
+	ContentService *contentService
 
 	// 广告服务
 	AdService *adService

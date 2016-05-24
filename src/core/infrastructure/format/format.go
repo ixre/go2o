@@ -9,12 +9,12 @@
 package format
 
 import (
-    "html/template"
-    "encoding/json"
+	"encoding/json"
+	"html/template"
 )
 
 // 强制序列化为可用于HTML的JSON
-func MustHtmlJson(v interface{})template.JS{
-    d,_ := json.Marshal(v)
-    return template.JS(d)
+func MustHtmlJson(v interface{}) template.JS {
+	d, _ := json.Marshal(v)
+	return template.JS(d)
 }

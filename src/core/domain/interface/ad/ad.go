@@ -46,7 +46,7 @@ type (
 		// 获取值
 		GetValue() AdGroup
 		// 设置值
-		SetValue(v *AdGroup)error
+		SetValue(v *AdGroup) error
 		// 获取广告位
 		GetPositions() []*AdPosition
 		// 根据Id获取广告位
