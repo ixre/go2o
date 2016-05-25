@@ -236,18 +236,26 @@ func (this *UserAdImpl) GetByName(name string) ad.IAd {
 // 创建广告对象
 func (this *UserAdImpl) CreateAdvertisement(v *ad.Ad) ad.IAd {
 	adv := &AdImpl{
-		Rep:   this._rep,
-		Value: v,
+		_rep:   this._rep,
+		_value: v,
 	}
-
-	// 轮播广告
-	if v.Type == ad.TypeGallery {
+	switch v.Type {
+	case ad.TypeGallery:
+		// 轮播广告
 		return &GalleryAd{
 			AdImpl: adv,
 		}
+	case ad.TypeHyperLink:
+		// 文本广告
+		return &HyperLinkAdImpl{
+			AdImpl: adv,
+		}
+	case ad.TypeImage:
+		// 图片广告
+		return &ImageAdImpl{
+			AdImpl: adv,
+		}
 	}
-
-	//todo: other ad type
 	return adv
 }
 
@@ -265,31 +273,31 @@ func (this *UserAdImpl) SetAd(posId, adId int) error {
 var _ ad.IAd = new(AdImpl)
 
 type AdImpl struct {
-	Rep   ad.IAdRep
-	Value *ad.Ad
+	_rep   ad.IAdRep
+	_value *ad.Ad
 }
 
 // 获取领域对象编号
 func (this *AdImpl) GetDomainId() int {
-	if this.Value != nil {
-		return this.Value.Id
+	if this._value != nil {
+		return this._value.Id
 	}
 	return 0
 }
 
 // 是否为系统内置的广告
 func (this *AdImpl) System() bool {
-	return this.Value.UserId == 0
+	return this._value.UserId == 0
 }
 
 // 广告类型
 func (this *AdImpl) Type() int {
-	return this.Value.Type
+	return this._value.Type
 }
 
 // 广告名称
 func (this *AdImpl) Name() string {
-	return this.Value.Name
+	return this._value.Name
 }
 
 // 设置值
@@ -298,13 +306,13 @@ func (this *AdImpl) SetValue(v *ad.Ad) error {
 		return ad.ErrDisallowModifyAdType
 	}
 	// 如果为系统内置广告，不能修改名称
-	this.Value.Name = v.Name
+	this._value.Name = v.Name
 	return nil
 }
 
 // 获取值
 func (this *AdImpl) GetValue() *ad.Ad {
-	return this.Value
+	return this._value
 }
 
 // 保存广告
@@ -313,25 +321,25 @@ func (this *AdImpl) Save() (int, error) {
 	//if id > 0 && id != this.GetDomainId() {
 	//	return this.GetDomainId(), ad.ErrNameExists
 	//}
-	this.Value.UpdateTime = time.Now().Unix()
-	return this.Rep.SaveAdValue(this.Value)
+	this._value.UpdateTime = time.Now().Unix()
+	return this._rep.SaveAdValue(this._value)
 }
 
 // 增加展现次数
 func (this *AdImpl) AddShowTimes(times int) error {
-	this.Value.ShowTimes += times
+	this._value.ShowTimes += times
 	return nil
 }
 
 // 增加展现次数
 func (this *AdImpl) AddClickTimes(times int) error {
-	this.Value.ClickTimes += times
+	this._value.ClickTimes += times
 	return nil
 }
 
 // 增加展现次数
 func (this *AdImpl) AddShowDays(days int) error {
-	this.Value.ShowDays += days
+	this._value.ShowDays += days
 	return nil
 }
 

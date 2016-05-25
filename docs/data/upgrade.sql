@@ -41,7 +41,7 @@ ALTER TABLE `zxdb`.`pt_ad`
 RENAME TO  `zxdb`.`ad_list` ;
 
 ALTER TABLE `zxdb`.`pt_ad_image`
-RENAME TO  `zxdb`.`ad_image_ad` ;
+RENAME TO  `zxdb`.`ad_image` ;
 
 CREATE TABLE `ad_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -79,4 +79,12 @@ CHANGE COLUMN `merchant_id` `user_id` INT(11) NULL DEFAULT NULL ,
 ADD COLUMN `show_times` INT NULL COMMENT '展现数量' AFTER `type_id`,
 ADD COLUMN `click_times` INT NULL COMMENT '点击次数' AFTER `show_time`,
 ADD COLUMN `show_days` INT NULL COMMENT '投放天数' AFTER `click_count`;
+
+CREATE TABLE `zxdb`.`ad_hyperlink` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `ad_id` INT NULL,
+  `title` VARCHAR(50) NULL,
+  `link_url` VARCHAR(120) NULL,
+  PRIMARY KEY (`id`));
+
 

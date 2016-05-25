@@ -25,10 +25,10 @@ type GalleryAd struct {
 func (this *GalleryAd) GetAdValue() ad.ValueGallery {
 	if this._adValue == nil {
 		if this.GetDomainId() > 0 {
-			this._adValue = this.Rep.GetValueGallery(this.GetDomainId())
+			this._adValue = this._rep.GetValueGallery(this.GetDomainId())
 			sort.Sort(this._adValue)
 		} else {
-			this._adValue = []*ad.ValueImage{}
+			this._adValue = []*ad.Image{}
 		}
 	}
 	return this._adValue
@@ -47,19 +47,19 @@ func (this *GalleryAd) GetEnabledAdValue() ad.ValueGallery {
 }
 
 // 保存广告图片
-func (this *GalleryAd) SaveImage(v *ad.ValueImage) (int, error) {
-	v.AdvertisementId = this.GetDomainId()
-	return this.Rep.SaveAdImageValue(v)
+func (this *GalleryAd) SaveImage(v *ad.Image) (int, error) {
+	v.AdId = this.GetDomainId()
+	return this._rep.SaveAdImageValue(v)
 }
 
 // 获取图片项
-func (this *GalleryAd) GetImage(id int) *ad.ValueImage {
-	return this.Rep.GetValueAdImage(this.GetDomainId(), id)
+func (this *GalleryAd) GetImage(id int) *ad.Image {
+	return this._rep.GetValueAdImage(this.GetDomainId(), id)
 }
 
 // 删除图片项
 func (this *GalleryAd) DelImage(id int) error {
-	return this.Rep.DelAdImage(this.GetDomainId(), id)
+	return this._rep.DelAdImage(this.GetDomainId(), id)
 }
 
 // 转换为数据传输对象

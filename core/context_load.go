@@ -55,7 +55,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 
 	/* ad */
 	orm.TableMapping(ad.Ad{}, "ad_list")
-	orm.TableMapping(ad.ValueImage{}, "ad_image_ad")
+	orm.TableMapping(ad.Image{}, "ad_image")
+	orm.TableMapping(ad.HyperLink{}, "ad_hyperlink")
 	orm.TableMapping(ad.AdGroup{}, "ad_group")
 	orm.TableMapping(ad.AdPosition{}, "ad_position")
 	orm.TableMapping(ad.AdUserSet{}, "ad_userset")

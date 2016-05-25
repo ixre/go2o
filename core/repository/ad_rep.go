@@ -71,7 +71,7 @@ func (this *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_position WHERE id=?", &v.Id, v.Id)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_position WHERE group_id=?", &v.Id, v.GroupId)
 	}
 	this.Mutex.Unlock()
 	return v.Id, err
@@ -86,7 +86,7 @@ func (this *advertisementRep) SaveAdGroup(v *ad.AdGroup) (int, error) {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_group WHERE id=?", &v.Id, v.Id)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_group", &v.Id)
 	}
 	this.Mutex.Unlock()
 	return v.Id, err
@@ -123,15 +123,40 @@ func (this *advertisementRep) SaveAdValue(v *ad.Ad) (int, error) {
 	return v.Id, err
 }
 
+// 获取超链接广告数据
+func (this *advertisementRep) GetHyperLinkData(adId int) *ad.HyperLink {
+	e := ad.HyperLink{}
+	if err := this.GetOrm().GetBy(&e, "ad_id=?", adId); err != nil {
+		handleError(err)
+		return nil
+	}
+	return &e
+}
+
+// 保存超链接广告数据
+func (this *advertisementRep) SaveHyperLinkData(v *ad.HyperLink) (int, error) {
+	var err error
+	this.Mutex.Lock()
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_hyperlink WHERE ad_id=?", &v.Id, v.AdId)
+	}
+	this.Mutex.Unlock()
+	return v.Id, err
+}
+
 // 保存广告图片
-func (this *advertisementRep) SaveAdImageValue(v *ad.ValueImage) (int, error) {
+func (this *advertisementRep) SaveAdImageValue(v *ad.Image) (int, error) {
 	var err error
 	var orm = this.Connector.GetOrm()
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_image_ad WHERE ad_id=?", &v.Id, v.AdvertisementId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM ad_image WHERE ad_id=?", &v.Id, v.AdId)
 	}
 	return v.Id, err
 }
@@ -156,7 +181,7 @@ func (this *advertisementRep) GetValueAdvertisementByName(merchantId int, name s
 
 // 获取轮播广告
 func (this *advertisementRep) GetValueGallery(advertisementId int) ad.ValueGallery {
-	var list = []*ad.ValueImage{}
+	var list = []*ad.Image{}
 	if err := this.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_number ASC", advertisementId); err == nil {
 		return list
 	}
@@ -164,8 +189,8 @@ func (this *advertisementRep) GetValueGallery(advertisementId int) ad.ValueGalle
 }
 
 // 获取图片项
-func (this *advertisementRep) GetValueAdImage(advertisementId, id int) *ad.ValueImage {
-	var e ad.ValueImage
+func (this *advertisementRep) GetValueAdImage(advertisementId, id int) *ad.Image {
+	var e ad.Image
 	if err := this.Connector.GetOrm().GetBy(&e, "ad_id=? and id=?", advertisementId, id); err == nil {
 		return &e
 	}
@@ -174,7 +199,7 @@ func (this *advertisementRep) GetValueAdImage(advertisementId, id int) *ad.Value
 
 // 删除图片项
 func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
-	_, err := this.Connector.GetOrm().Delete(ad.ValueImage{}, "ad_id=? and id=?", advertisementId, id)
+	_, err := this.Connector.GetOrm().Delete(ad.Image{}, "ad_id=? and id=?", advertisementId, id)
 	return err
 }
 
@@ -186,7 +211,7 @@ func (this *advertisementRep) DelAdvertisement(merchantId, advertisementId int) 
 
 // 删除广告的图片数据
 func (this *advertisementRep) DelImageDataForAdvertisement(advertisementId int) error {
-	_, err := this.Connector.GetOrm().Delete(ad.ValueImage{}, "ad_id=?", advertisementId)
+	_, err := this.Connector.GetOrm().Delete(ad.Image{}, "ad_id=?", advertisementId)
 	return err
 }
 

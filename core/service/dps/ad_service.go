@@ -122,7 +122,7 @@ func (this *adService) DelAdvertisement(adUserId, adId int) error {
 }
 
 // 保存广告图片
-func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.ValueImage) (int, error) {
+func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.Image) (int, error) {
 	pa := this.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
@@ -135,7 +135,7 @@ func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.ValueI
 }
 
 // 获取广告图片
-func (this *adService) GetValueAdImage(adUserId, advertisementId, imgId int) *ad.ValueImage {
+func (this *adService) GetValueAdImage(adUserId, advertisementId, imgId int) *ad.Image {
 	pa := this.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
