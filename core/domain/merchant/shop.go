@@ -11,35 +11,37 @@ package merchant
 
 import (
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/infrastructure/lbs"
+	"log"
 )
 
-var _ merchant.IShop = new(Shop)
+var _ merchant.IShop = new(ShopImpl)
 
-type Shop struct {
+type ShopImpl struct {
 	partnerRep merchant.IMerchantRep
-	value      *merchant.ValueShop
-	partner    *Merchant
+	value      *merchant.Shop
+	partner    *MerchantImpl
 	lng        float64
 	lat        float64
 }
 
-func newShop(pt *Merchant, v *merchant.ValueShop, partnerRep merchant.IMerchantRep) merchant.IShop {
-	return &Shop{
+func newShop(pt *MerchantImpl, v *merchant.Shop, partnerRep merchant.IMerchantRep) merchant.IShop {
+	return &ShopImpl{
 		partnerRep: partnerRep,
 		value:      v,
 		partner:    pt,
 	}
 }
 
-func (this *Shop) GetDomainId() int {
+func (this *ShopImpl) GetDomainId() int {
 	return this.value.Id
 }
 
-func (this *Shop) GetValue() merchant.ValueShop {
+func (this *ShopImpl) GetValue() merchant.Shop {
 	return *this.value
 }
 
-func (this *Shop) SetValue(v *merchant.ValueShop) error {
+func (this *ShopImpl) SetValue(v *merchant.Shop) error {
 	//	if this.value.Address != v.Address ||
 	//		len(this.value.Location) == 0 {
 	//		lng, lat, err := lbs.GetLocation(v.Address)
@@ -58,39 +60,41 @@ func (this *Shop) SetValue(v *merchant.ValueShop) error {
 	return nil
 }
 
-func (this *Shop) Save() (int, error) {
+func (this *ShopImpl) Save() (int, error) {
 	this.partner.clearShopCache()
 	return this.partnerRep.SaveShop(this.value)
 }
 
-//// 获取经维度
-//func (this *Shop) GetLngLat() (float64, float64) {
-//	if this.lng == 0 || this.lat == 0 {
-//		var err error
-//		this.lng, this.lat, err = lbs.GetLocation(this.value.Address)
-//		if err != nil {
-//			log.Error(err)
-//		}
-//	}
-//	return this.lng, this.lat
-//}
+// 获取经维度
+func (this *ShopImpl) GetLngLat() (float64, float64) {
+	if this.lng == 0 || this.lat == 0 {
+		var err error
+		this.lng, this.lat, err = lbs.GetLocation(this.value.Address)
+		if err != nil {
+			log.Println("[ Go2o][ LBS][ Error] -", err.Error())
+		}
+	}
+	return this.lng, this.lat
+}
 
-//// 是否可以配送
-//// 返回是否可以配送，以及距离(米)
-//func (this *Shop) CanDeliver(lng, lat float64) (bool, int) {
-//	shopLng, shopLat := this.GetLngLat()
-//	distance := lbs.GetLocDistance(shopLng, shopLat, lng, lat)
-//	i := int(distance)
-//	return i <= this.value.DeliverRadius*1000, i
-//}
+// 是否可以配送
+// 返回是否可以配送，以及距离(米)
+func (this *ShopImpl) CanDeliver(lng, lat float64) (bool, int) {
+	//todo:
+	return true, -1
+	//shopLng, shopLat := this.GetLngLat()
+	//distance := lbs.GetLocDistance(shopLng, shopLat, lng, lat)
+	//i := int(distance)
+	//return i <= this.value.DeliverRadius*1000, i
+}
 
-//// 是否可以配送
-//// 返回是否可以配送，以及距离(米)
-//func (this *Shop) CanDeliverTo(address string) (bool, int) {
-//	lng, lat, err := lbs.GetLocation(address)
-//	if err != nil {
-//		log.Error(err)
-//		return false, -1
-//	}
-//	return this.CanDeliver(lng, lat)
-//}
+// 是否可以配送
+// 返回是否可以配送，以及距离(米)
+func (this *ShopImpl) CanDeliverTo(address string) (bool, int) {
+	lng, lat, err := lbs.GetLocation(address)
+	if err != nil {
+		log.Println("[ Go2o][ LBS][ Error] -", err.Error())
+		return false, -1
+	}
+	return this.CanDeliver(lng, lat)
+}

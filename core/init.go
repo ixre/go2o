@@ -21,6 +21,6 @@ func init() {
 // 注册序列类型
 func registerTypes() {
 	gob.Register(&member.ValueMember{})
-	gob.Register(&merchant.MerchantValue{})
+	gob.Register(&merchant.Merchant{})
 	gob.Register(&merchant.ApiInfo{})
 }

@@ -86,6 +86,7 @@ func (this *adService) GetAdvertisement(adUserId, id int) *ad.Ad {
 }
 
 // 获取广告及广告数据
+//todo:obslete
 func (this *adService) GetAdvertisementAndDataByName(adUserId int, name string) (
 	*ad.Ad, interface{}) {
 	if adv := this.getUserAd(adUserId).GetByName(name); adv != nil {
@@ -102,6 +103,15 @@ func (this *adService) GetAdvertisementAndDataByName(adUserId int, name string) 
 		return v, nil
 	}
 	return nil, nil
+}
+
+// 获取广告数据传输对象
+func (this *adService) GetAdDto(userId int, id int) *ad.AdDto {
+	ua := this.getUserAd(userId)
+	if adv := ua.GetById(id); adv != nil {
+		return adv.Dto()
+	}
+	return nil
 }
 
 // 保存广告

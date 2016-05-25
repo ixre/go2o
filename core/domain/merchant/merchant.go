@@ -25,12 +25,12 @@ import (
 	"time"
 )
 
-var _ merchant.IMerchant = new(Merchant)
+var _ merchant.IMerchant = new(MerchantImpl)
 
-type Merchant struct {
-	_value    *merchant.MerchantValue
+type MerchantImpl struct {
+	_value    *merchant.Merchant
 	_saleConf *merchant.SaleConf
-	_siteConf *merchant.SiteConf
+	_siteConf *merchant.ShopSiteConf
 	_apiInfo  *merchant.ApiInfo
 	_shops    []merchant.IShop
 	_host     string
@@ -48,7 +48,7 @@ type Merchant struct {
 	_mssRep          mss.IMssRep
 }
 
-func NewMerchant(v *merchant.MerchantValue, rep merchant.IMerchantRep, userRep user.IUserRep,
+func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep, userRep user.IUserRep,
 	memberRep member.IMemberRep, mssRep mss.IMssRep) (merchant.IMerchant, error) {
 
 	var err error
@@ -61,7 +61,7 @@ func NewMerchant(v *merchant.MerchantValue, rep merchant.IMerchantRep, userRep u
 		err = errors.New("103: partner is expires")
 	}
 
-	return &Merchant{
+	return &MerchantImpl{
 		_value:     v,
 		_rep:       rep,
 		_userRep:   userRep,
@@ -70,18 +70,18 @@ func NewMerchant(v *merchant.MerchantValue, rep merchant.IMerchantRep, userRep u
 	}, err
 }
 
-func (this *Merchant) clearShopCache() {
+func (this *MerchantImpl) clearShopCache() {
 	this._shops = nil
 }
 
-func (this *Merchant) GetAggregateRootId() int {
+func (this *MerchantImpl) GetAggregateRootId() int {
 	return this._value.Id
 }
-func (this *Merchant) GetValue() merchant.MerchantValue {
+func (this *MerchantImpl) GetValue() merchant.Merchant {
 	return *this._value
 }
 
-func (this *Merchant) SetValue(v *merchant.MerchantValue) error {
+func (this *MerchantImpl) SetValue(v *merchant.Merchant) error {
 	tv := this._value
 	if v.Id == tv.Id {
 		tv.Name = v.Name
@@ -105,7 +105,7 @@ func (this *Merchant) SetValue(v *merchant.MerchantValue) error {
 }
 
 // 保存
-func (this *Merchant) Save() (int, error) {
+func (this *MerchantImpl) Save() (int, error) {
 	var id int = this.GetAggregateRootId()
 	if id > 0 {
 		return this._rep.SaveMerchant(this._value)
@@ -115,7 +115,7 @@ func (this *Merchant) Save() (int, error) {
 }
 
 // 创建商户
-func (this *Merchant) createMerchant() (int, error) {
+func (this *MerchantImpl) createMerchant() (int, error) {
 	if id := this.GetAggregateRootId(); id > 0 {
 		return id, nil
 	}
@@ -132,7 +132,7 @@ func (this *Merchant) createMerchant() (int, error) {
 	this._value.Id = id
 
 	// SiteConf
-	this._siteConf = &merchant.SiteConf{
+	this._siteConf = &merchant.ShopSiteConf{
 		IndexTitle: "线上商店-" + v.Name,
 		SubTitle:   "线上商店-" + v.Name,
 		Logo:       v.Logo,
@@ -163,7 +163,7 @@ func (this *Merchant) createMerchant() (int, error) {
 }
 
 // 获取商户的域名
-func (this *Merchant) GetMajorHost() string {
+func (this *MerchantImpl) GetMajorHost() string {
 	if len(this._host) == 0 {
 		host := this._rep.GetMerchantMajorHost(this.GetAggregateRootId())
 		if len(host) == 0 {
@@ -176,7 +176,7 @@ func (this *Merchant) GetMajorHost() string {
 }
 
 // 获取销售配置
-func (this *Merchant) GetSaleConf() merchant.SaleConf {
+func (this *MerchantImpl) GetSaleConf() merchant.SaleConf {
 	if this._saleConf == nil {
 		//10%分成
 		//0.2,         #上级
@@ -191,14 +191,14 @@ func (this *Merchant) GetSaleConf() merchant.SaleConf {
 }
 
 // 保存销售配置
-func (this *Merchant) SaveSaleConf(v *merchant.SaleConf) error {
+func (this *MerchantImpl) SaveSaleConf(v *merchant.SaleConf) error {
 
 	this.GetSaleConf()
 
-	if v.RegisterMode == merchant.ModeRegisterClosed ||
-		v.RegisterMode == merchant.ModeRegisterNormal ||
-		v.RegisterMode == merchant.ModeRegisterMustInvitation ||
-		v.RegisterMode == merchant.ModeRegisterMustRedirect {
+	if v.RegisterMode == merchant.RegisterModeClosed ||
+		v.RegisterMode == merchant.RegisterModeNormal ||
+		v.RegisterMode == merchant.RegisterModeMustInvitation ||
+		v.RegisterMode == merchant.RegisterModeMustRedirect {
 		this._saleConf.RegisterMode = v.RegisterMode
 	} else {
 		return merchant.ErrRegisterMode
@@ -220,22 +220,22 @@ func (this *Merchant) SaveSaleConf(v *merchant.SaleConf) error {
 }
 
 // 注册权限验证,如果没有权限注册,返回错误
-func (this *Merchant) RegisterPerm(isInvitation bool) error {
+func (this *MerchantImpl) RegisterPerm(isInvitation bool) error {
 	conf := this.GetSaleConf()
-	if conf.RegisterMode == merchant.ModeRegisterClosed {
+	if conf.RegisterMode == merchant.RegisterModeClosed {
 		return merchant.ErrRegOff
 	}
-	if conf.RegisterMode == merchant.ModeRegisterMustInvitation && !isInvitation {
+	if conf.RegisterMode == merchant.RegisterModeMustInvitation && !isInvitation {
 		return merchant.ErrRegMustInvitation
 	}
-	if conf.RegisterMode == merchant.ModeRegisterMustRedirect && isInvitation {
+	if conf.RegisterMode == merchant.RegisterModeMustRedirect && isInvitation {
 		return merchant.ErrRegOffInvitation
 	}
 	return nil
 }
 
 // 验证销售设置
-func (this *Merchant) verifySaleConf(v *merchant.SaleConf) {
+func (this *MerchantImpl) verifySaleConf(v *merchant.SaleConf) {
 	if v.OrderTimeOutMinute <= 0 {
 		v.OrderTimeOutMinute = 1440 // 一天
 	}
@@ -250,7 +250,7 @@ func (this *Merchant) verifySaleConf(v *merchant.SaleConf) {
 }
 
 // 获取站点配置
-func (this *Merchant) GetSiteConf() merchant.SiteConf {
+func (this *MerchantImpl) GetSiteConf() merchant.ShopSiteConf {
 	if this._siteConf == nil {
 		this._siteConf = this._rep.GetSiteConf(this.GetAggregateRootId())
 	}
@@ -258,14 +258,14 @@ func (this *Merchant) GetSiteConf() merchant.SiteConf {
 }
 
 // 保存站点配置
-func (this *Merchant) SaveSiteConf(v *merchant.SiteConf) error {
+func (this *MerchantImpl) SaveSiteConf(v *merchant.ShopSiteConf) error {
 	this._siteConf = v
 	this._siteConf.MerchantId = this._value.Id
 	return this._rep.SaveSiteConf(this.GetAggregateRootId(), this._siteConf)
 }
 
 // 获取API信息
-func (this *Merchant) GetApiInfo() merchant.ApiInfo {
+func (this *MerchantImpl) GetApiInfo() merchant.ApiInfo {
 	if this._apiInfo == nil {
 		this._apiInfo = this._rep.GetApiInfo(this.GetAggregateRootId())
 	}
@@ -273,21 +273,21 @@ func (this *Merchant) GetApiInfo() merchant.ApiInfo {
 }
 
 // 保存API信息
-func (this *Merchant) SaveApiInfo(v *merchant.ApiInfo) error {
+func (this *MerchantImpl) SaveApiInfo(v *merchant.ApiInfo) error {
 	this._apiInfo = v
 	this._apiInfo.MerchantId = this._value.Id
 	return this._rep.SaveApiInfo(this.GetAggregateRootId(), this._apiInfo)
 }
 
 // 新建商店
-func (this *Merchant) CreateShop(v *merchant.ValueShop) merchant.IShop {
+func (this *MerchantImpl) CreateShop(v *merchant.Shop) merchant.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.MerchantId = this.GetAggregateRootId()
 	return newShop(this, v, this._rep)
 }
 
 // 获取所有商店
-func (this *Merchant) GetShops() []merchant.IShop {
+func (this *MerchantImpl) GetShops() []merchant.IShop {
 	if this._shops == nil {
 		shops := this._rep.GetShopsOfMerchant(this.GetAggregateRootId())
 		this._shops = make([]merchant.IShop, len(shops))
@@ -300,7 +300,7 @@ func (this *Merchant) GetShops() []merchant.IShop {
 }
 
 // 获取营业中的商店
-func (this *Merchant) GetBusinessInShops() []merchant.IShop {
+func (this *MerchantImpl) GetBusinessInShops() []merchant.IShop {
 	var list []merchant.IShop = make([]merchant.IShop, 0)
 	for _, v := range this._shops {
 		if v.GetValue().State == enum.ShopBusinessIn {
@@ -311,7 +311,7 @@ func (this *Merchant) GetBusinessInShops() []merchant.IShop {
 }
 
 // 获取商店
-func (this *Merchant) GetShop(shopId int) merchant.IShop {
+func (this *MerchantImpl) GetShop(shopId int) merchant.IShop {
 	//	v := this.rep.GetValueShop(this.GetAggregateRootId(), shopId)
 	//	if v == nil {
 	//		return nil
@@ -328,13 +328,13 @@ func (this *Merchant) GetShop(shopId int) merchant.IShop {
 }
 
 // 删除门店
-func (this *Merchant) DeleteShop(shopId int) error {
+func (this *MerchantImpl) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
 	return this._rep.DeleteShop(this.GetAggregateRootId(), shopId)
 }
 
 // 返回用户服务
-func (this *Merchant) UserManager() user.IUserManager {
+func (this *MerchantImpl) UserManager() user.IUserManager {
 	if this._userManager == nil {
 		this._userManager = userImpl.NewUserManager(
 			this.GetAggregateRootId(),
@@ -344,7 +344,7 @@ func (this *Merchant) UserManager() user.IUserManager {
 }
 
 // 返回设置服务
-func (this *Merchant) ConfManager() merchant.IConfManager {
+func (this *MerchantImpl) ConfManager() merchant.IConfManager {
 	if this._confManager == nil {
 		this._confManager = &ConfManager{
 			_merchantId: this.GetAggregateRootId(),
@@ -355,7 +355,7 @@ func (this *Merchant) ConfManager() merchant.IConfManager {
 }
 
 // 获取会员管理服务
-func (this *Merchant) LevelManager() merchant.ILevelManager {
+func (this *MerchantImpl) LevelManager() merchant.ILevelManager {
 	if this._levelManager == nil {
 		this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
 	}
@@ -363,7 +363,7 @@ func (this *Merchant) LevelManager() merchant.ILevelManager {
 }
 
 // 获取键值管理器
-func (this *Merchant) KvManager() merchant.IKvManager {
+func (this *MerchantImpl) KvManager() merchant.IKvManager {
 	if this._kvManager == nil {
 		this._kvManager = newKvManager(this, "kvset")
 	}
@@ -371,7 +371,7 @@ func (this *Merchant) KvManager() merchant.IKvManager {
 }
 
 // 获取用户键值管理器
-func (this *Merchant) MemberKvManager() merchant.IKvManager {
+func (this *MerchantImpl) MemberKvManager() merchant.IKvManager {
 	if this._memberKvManager == nil {
 		this._memberKvManager = newKvManager(this, "kvset_member")
 	}
@@ -379,7 +379,7 @@ func (this *Merchant) MemberKvManager() merchant.IKvManager {
 }
 
 // 消息系统管理器
-func (this *Merchant) MssManager() mss.IMssManager {
+func (this *MerchantImpl) MssManager() mss.IMssManager {
 	if this._mssManager == nil {
 		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
 	}

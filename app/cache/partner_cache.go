@@ -17,8 +17,8 @@ import (
 )
 
 // 获取商户信息缓存
-func GetValueMerchantCache(merchantId int) *merchant.MerchantValue {
-	var v merchant.MerchantValue
+func GetValueMerchantCache(merchantId int) *merchant.Merchant {
+	var v merchant.Merchant
 	var sto gof.Storage = GetKVS()
 	var key string = GetValueMerchantCacheCK(merchantId)
 	if sto.Get(key, &v) != nil {
@@ -49,8 +49,8 @@ func DelMerchantCache(merchantId int) {
 }
 
 // 获取商户站点配置
-func GetMerchantSiteConf(merchantId int) *merchant.SiteConf {
-	var v merchant.SiteConf
+func GetMerchantSiteConf(merchantId int) *merchant.ShopSiteConf {
+	var v merchant.ShopSiteConf
 	var sto gof.Storage = GetKVS()
 	var key string = GetMerchantSiteConfCK(merchantId)
 	if sto.Get(key, &v) != nil {
