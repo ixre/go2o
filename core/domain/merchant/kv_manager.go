@@ -17,13 +17,13 @@ import (
 var _ merchant.IKvManager = new(KvManager)
 
 type KvManager struct {
-	_partner    *Merchant
+	_partner    *MerchantImpl
 	_merchantId int
 	// 标识
 	_indent string
 }
 
-func newKvManager(p *Merchant, indent string) merchant.IKvManager {
+func newKvManager(p *MerchantImpl, indent string) merchant.IKvManager {
 	return &KvManager{
 		_partner:    p,
 		_merchantId: p.GetAggregateRootId(),

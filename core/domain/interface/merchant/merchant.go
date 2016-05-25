@@ -15,19 +15,19 @@ import (
 )
 
 const (
-	ModeRegisterClosed         = 0 // 关闭注册
-	ModeRegisterNormal         = 1 // 正常注册
-	ModeRegisterMustInvitation = 2 // 必须邀请注册
-	ModeRegisterMustRedirect   = 3 // 必须直接注册
+	RegisterModeClosed         = 0 // 关闭注册
+	RegisterModeNormal         = 1 // 正常注册
+	RegisterModeMustInvitation = 2 // 必须邀请注册
+	RegisterModeMustRedirect   = 3 // 必须直接注册
 )
 
 type (
 	IMerchant interface {
 		GetAggregateRootId() int
 
-		GetValue() MerchantValue
+		GetValue() Merchant
 
-		SetValue(*MerchantValue) error
+		SetValue(*Merchant) error
 
 		// 保存
 		Save() (int, error)
@@ -42,10 +42,10 @@ type (
 		SaveSaleConf(*SaleConf) error
 
 		// 获取站点配置
-		GetSiteConf() SiteConf
+		GetSiteConf() ShopSiteConf
 
 		// 保存站点配置
-		SaveSiteConf(*SiteConf) error
+		SaveSiteConf(*ShopSiteConf) error
 
 		// 注册权限验证,如果没有权限注册,返回错误
 		RegisterPerm(isInvitation bool) error
@@ -57,7 +57,7 @@ type (
 		SaveApiInfo(*ApiInfo) error
 
 		// 新建商店
-		CreateShop(*ValueShop) IShop
+		CreateShop(*Shop) IShop
 
 		// 获取所有商店
 		GetShops() []IShop
@@ -91,7 +91,7 @@ type (
 	}
 
 	//合作商
-	MerchantValue struct {
+	Merchant struct {
 		Id            int    `db:"id" pk:"yes" auto:"yes"`
 		Usr           string `db:"usr"`
 		Pwd           string `db:"pwd"`
@@ -118,11 +118,24 @@ type (
 		OrderTimeOutMinute      int     `db:"oa_timeout_minute"`              // 订单超时分钟数
 		OrderConfirmAfterMinute int     `db:"oa_confirm_minute"`              // 订单自动确认时间
 		OrderTimeOutReceiveHour int     `db:"oa_receive_hour"`                // 订单超时自动收货
+		RegisterMode            int     `db:"register_mode"`                  // 必须注册模式
+		ApplyCsn                float32 `db:"apply_csn"`                      // 提现手续费费率
+		TransCsn                float32 `db:"trans_csn"`                      // 转账手续费费率
+		FlowConvertCsn          float32 `db:"flow_convert_csn"`               // 活动账户转为赠送可提现奖金手续费费率
+		PresentConvertCsn       float32 `db:"present_convert_csn"`            // 赠送账户转换手续费费率
+	}
 
-		RegisterMode      int     `db:"register_mode"`       // 必须注册模式
-		ApplyCsn          float32 `db:"apply_csn"`           // 提现手续费费率
-		TransCsn          float32 `db:"trans_csn"`           // 转账手续费费率
-		FlowConvertCsn    float32 `db:"flow_convert_csn"`    // 活动账户转为赠送可提现奖金手续费费率
-		PresentConvertCsn float32 `db:"present_convert_csn"` // 赠送账户转换手续费费率
+	// 商户接口信息
+	ApiInfo struct {
+		// 商户编号
+		MerchantId int `db:"merchant_id" pk:"yes" auto:"no"`
+		// 商户接口编号(10位数字)
+		ApiId string `db:"api_id"`
+		// 密钥
+		ApiSecret string `db:"api_secret"`
+		// IP白名单
+		WhiteList string `db:"white_list"`
+		// 是否启用,0:停用,1启用
+		Enabled int `db:"enabled"`
 	}
 )

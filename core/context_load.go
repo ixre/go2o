@@ -87,10 +87,10 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(sale.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
-	orm.TableMapping(merchant.MerchantValue{}, "pt_merchant")
+	orm.TableMapping(merchant.Merchant{}, "pt_merchant")
 	orm.TableMapping(merchant.ApiInfo{}, "pt_api")
-	orm.TableMapping(merchant.SiteConf{}, "pt_siteconf")
-	orm.TableMapping(merchant.ValueShop{}, "pt_shop")
+	orm.TableMapping(merchant.ShopSiteConf{}, "pt_siteconf")
+	orm.TableMapping(merchant.Shop{}, "pt_shop")
 	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
 	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")

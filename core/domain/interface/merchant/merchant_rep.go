@@ -10,7 +10,7 @@
 package merchant
 
 type IMerchantRep interface {
-	CreateMerchant(*MerchantValue) (IMerchant, error)
+	CreateMerchant(*Merchant) (IMerchant, error)
 
 	// 获取商户的编号
 	GetMerchantsId() []int
@@ -21,7 +21,7 @@ type IMerchantRep interface {
 	GetMerchantMajorHost(int) string
 
 	// 保存
-	SaveMerchant(*MerchantValue) (int, error)
+	SaveMerchant(*Merchant) (int, error)
 
 	// 获取销售配置
 	GetSaleConf(int) *SaleConf
@@ -29,9 +29,9 @@ type IMerchantRep interface {
 	SaveSaleConf(merchantId int, v *SaleConf) error
 
 	// 获取站点配置
-	GetSiteConf(int) *SiteConf
+	GetSiteConf(int) *ShopSiteConf
 
-	SaveSiteConf(merchantId int, v *SiteConf) error
+	SaveSiteConf(merchantId int, v *ShopSiteConf) error
 
 	// 保存API信息
 	SaveApiInfo(merchantId int, d *ApiInfo) error
@@ -42,11 +42,11 @@ type IMerchantRep interface {
 	// 根据API编号获取商户编号
 	GetMerchantIdByApiId(apiId string) int
 
-	SaveShop(*ValueShop) (int, error)
+	SaveShop(*Shop) (int, error)
 
-	GetValueShop(merchantId, shopId int) *ValueShop
+	GetValueShop(merchantId, shopId int) *Shop
 
-	GetShopsOfMerchant(merchantId int) []*ValueShop
+	GetShopsOfMerchant(merchantId int) []*Shop
 
 	DeleteShop(merchantId, shopId int) error
 

@@ -46,7 +46,7 @@ func NewMerchantRep(c db.Connector, userRep user.IUserRep, memberRep member.IMem
 	}
 }
 
-func (this *merchantRep) CreateMerchant(v *merchant.MerchantValue) (merchant.IMerchant, error) {
+func (this *merchantRep) CreateMerchant(v *merchant.Merchant) (merchant.IMerchant, error) {
 	return merchantImpl.NewMerchant(v, this, this._userRep, this._memberRep, this._mssRep)
 }
 
@@ -58,7 +58,7 @@ func (this *merchantRep) GetMerchant(id int) (merchant.IMerchant, error) {
 	v, ok := this._cache[id]
 	var err error
 	if !ok {
-		e := new(merchant.MerchantValue)
+		e := new(merchant.Merchant)
 		if this.Connector.GetOrm().Get(id, e) == nil {
 			v, err = this.CreateMerchant(e)
 			if v != nil {
@@ -81,7 +81,7 @@ func (this *merchantRep) GetMerchantMajorHost(merchantId int) string {
 }
 
 // 保存
-func (this *merchantRep) SaveMerchant(v *merchant.MerchantValue) (int, error) {
+func (this *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
 	var err error
 	if v.Id <= 0 {
 		orm := this.Connector.GetOrm()
@@ -151,8 +151,8 @@ func (this *merchantRep) SaveSaleConf(merchantId int, v *merchant.SaleConf) erro
 }
 
 // 获取站点配置
-func (this *merchantRep) GetSiteConf(merchantId int) *merchant.SiteConf {
-	var siteConf merchant.SiteConf
+func (this *merchantRep) GetSiteConf(merchantId int) *merchant.ShopSiteConf {
+	var siteConf merchant.ShopSiteConf
 	if err := this.Connector.GetOrm().Get(merchantId, &siteConf); err == nil {
 		if len(siteConf.Host) == 0 {
 			var usr string
@@ -168,7 +168,7 @@ func (this *merchantRep) GetSiteConf(merchantId int) *merchant.SiteConf {
 	return nil
 }
 
-func (this *merchantRep) SaveSiteConf(merchantId int, v *merchant.SiteConf) error {
+func (this *merchantRep) SaveSiteConf(merchantId int, v *merchant.ShopSiteConf) error {
 	defer this.renew(v.MerchantId)
 
 	var err error
@@ -211,7 +211,7 @@ func (this *merchantRep) GetMerchantIdByApiId(apiId string) int {
 	return merchantId
 }
 
-func (this *merchantRep) SaveShop(v *merchant.ValueShop) (int, error) {
+func (this *merchantRep) SaveShop(v *merchant.Shop) (int, error) {
 	defer this.renew(v.MerchantId)
 	orm := this.Connector.GetOrm()
 	if v.Id > 0 {
@@ -225,8 +225,8 @@ func (this *merchantRep) SaveShop(v *merchant.ValueShop) (int, error) {
 	}
 }
 
-func (this *merchantRep) GetValueShop(merchantId, shopId int) *merchant.ValueShop {
-	var v *merchant.ValueShop = new(merchant.ValueShop)
+func (this *merchantRep) GetValueShop(merchantId, shopId int) *merchant.Shop {
+	var v *merchant.Shop = new(merchant.Shop)
 	err := this.Connector.GetOrm().Get(shopId, v)
 	if err == nil &&
 		v.MerchantId == merchantId {
@@ -237,8 +237,8 @@ func (this *merchantRep) GetValueShop(merchantId, shopId int) *merchant.ValueSho
 	return nil
 }
 
-func (this *merchantRep) GetShopsOfMerchant(merchantId int) []*merchant.ValueShop {
-	shops := []*merchant.ValueShop{}
+func (this *merchantRep) GetShopsOfMerchant(merchantId int) []*merchant.Shop {
+	shops := []*merchant.Shop{}
 	err := this.Connector.GetOrm().SelectByQuery(&shops,
 		"SELECT * FROM pt_shop WHERE merchant_id=?", merchantId)
 
@@ -252,7 +252,7 @@ func (this *merchantRep) GetShopsOfMerchant(merchantId int) []*merchant.ValueSho
 
 func (this *merchantRep) DeleteShop(merchantId, shopId int) error {
 	defer this.renew(merchantId)
-	_, err := this.Connector.GetOrm().Delete(merchant.ValueShop{},
+	_, err := this.Connector.GetOrm().Delete(merchant.Shop{},
 		"merchant_id=? AND id=?", merchantId, shopId)
 	return err
 }

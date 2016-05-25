@@ -41,7 +41,7 @@ func (this *merchantService) Verify(usr, pwd string) int {
 	return this._query.Verify(usr, pwd)
 }
 
-func (this *merchantService) GetMerchant(merchantId int) (*merchant.MerchantValue, error) {
+func (this *merchantService) GetMerchant(merchantId int) (*merchant.Merchant, error) {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if pt != nil {
 		v := pt.GetValue()
@@ -50,7 +50,7 @@ func (this *merchantService) GetMerchant(merchantId int) (*merchant.MerchantValu
 	return nil, err
 }
 
-func (this *merchantService) SaveMerchant(merchantId int, v *merchant.MerchantValue) (int, error) {
+func (this *merchantService) SaveMerchant(merchantId int, v *merchant.Merchant) (int, error) {
 	var pt merchant.IMerchant
 	var err error
 	var isCreate bool
@@ -89,7 +89,7 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 	pt.LevelManager().InitDefaultLevels()
 
 	// 保存站点设置
-	pt.SaveSiteConf(&merchant.SiteConf{
+	pt.SaveSiteConf(&merchant.ShopSiteConf{
 		MerchantId: pt.GetAggregateRootId(),
 		IndexTitle: pt.GetValue().Name,
 	})
@@ -97,7 +97,7 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 	// 保存销售设置
 	pt.SaveSaleConf(&merchant.SaleConf{
 		MerchantId:   pt.GetAggregateRootId(),
-		RegisterMode: merchant.ModeRegisterNormal,
+		RegisterMode: merchant.RegisterModeNormal,
 	})
 
 	// 初始化销售标签
@@ -118,7 +118,7 @@ func (this *merchantService) GetMerchantMajorHost(merchantId int) string {
 	return pt.GetMajorHost()
 }
 
-func (this *merchantService) SaveSiteConf(merchantId int, v *merchant.SiteConf) error {
+func (this *merchantService) SaveSiteConf(merchantId int, v *merchant.ShopSiteConf) error {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.SaveSiteConf(v)
 }
@@ -137,7 +137,7 @@ func (this *merchantService) GetSaleConf(merchantId int) *merchant.SaleConf {
 	return &conf
 }
 
-func (this *merchantService) GetSiteConf(merchantId int) *merchant.SiteConf {
+func (this *merchantService) GetSiteConf(merchantId int) *merchant.ShopSiteConf {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 		log.Println("[ Merchant][ Service]-", err.Error())
@@ -165,13 +165,13 @@ func (this *merchantService) CheckRegisterPerm(merchantId int, isInvitation bool
 	return err
 }
 
-func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.ValueShop {
+func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.Shop {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	shops := pt.GetShops()
-	sv := make([]*merchant.ValueShop, len(shops))
+	sv := make([]*merchant.Shop, len(shops))
 	for i, v := range shops {
 		vv := v.GetValue()
 		sv[i] = &vv
@@ -179,7 +179,7 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.Valu
 	return sv
 }
 
-func (this *merchantService) GetShopValueById(merchantId, shopId int) *merchant.ValueShop {
+func (this *merchantService) GetShopValueById(merchantId, shopId int) *merchant.Shop {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 
@@ -189,7 +189,7 @@ func (this *merchantService) GetShopValueById(merchantId, shopId int) *merchant.
 	return &v
 }
 
-func (this *merchantService) SaveShop(merchantId int, v *merchant.ValueShop) (int, error) {
+func (this *merchantService) SaveShop(merchantId int, v *merchant.Shop) (int, error) {
 	pt, err := this._partnerRep.GetMerchant(merchantId)
 	if err != nil {
 
