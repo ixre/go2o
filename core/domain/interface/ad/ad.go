@@ -201,47 +201,6 @@ type (
 		Data interface{} `json:"data"`
 	}
 
-	ValueText struct {
-		// 编号
-		Id int `db:"id" auto:"yes" pk:"true"`
-
-		// 广告编号
-		AdvertisementId int `db:"ad_id"`
-
-		// 标题
-		Title string `db:"title"`
-
-		// 链接
-		LinkUrl string `db:"link_url"`
-
-		// 是否启用
-		Enabled int `db:"enabled"`
-	}
-
-	// 广告图片
-	ValueImage struct {
-		// 图片编号
-		Id int `db:"id" auto:"yes" pk:"true"`
-
-		// 广告编号
-		AdvertisementId int `db:"ad_id"`
-
-		// 图片标题
-		Title string `db:"title"`
-
-		// 链接
-		LinkUrl string `db:"link_url"`
-
-		// 图片地址
-		ImageUrl string `db:"image_url"`
-
-		// 排列序号
-		SortNumber int `db:"sort_number"`
-
-		// 是否启用
-		Enabled int `db:"enabled"`
-	}
-
 	// 广告仓储
 	IAdRep interface {
 		// 获取广告管理器
@@ -274,8 +233,16 @@ type (
 		// 保存广告值
 		SaveAdValue(*Ad) (int, error)
 
+		/* ===============  广告类型 ================*/
+
+		// 获取超链接广告数据
+		GetHyperLinkData(adId int) *HyperLink
+
+		// 保存超链接广告数据
+		SaveHyperLinkData(value *HyperLink) (int, error)
+
 		// 保存广告图片
-		SaveAdImageValue(*ValueImage) (int, error)
+		SaveAdImageValue(*Image) (int, error)
 
 		// 获取广告
 		GetValueAdvertisement(id int) *Ad
@@ -287,7 +254,7 @@ type (
 		GetValueGallery(advertisementId int) ValueGallery
 
 		// 获取图片项
-		GetValueAdImage(advertisementId, id int) *ValueImage
+		GetValueAdImage(advertisementId, id int) *Image
 
 		// 删除图片项
 		DelAdImage(advertisementId, id int) error

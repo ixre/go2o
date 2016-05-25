@@ -864,13 +864,13 @@ LOCK TABLES `ad_list` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `ad_image_ad`
+-- Table structure for table `ad_image`
 --
 
-DROP TABLE IF EXISTS `ad_image_ad`;
+DROP TABLE IF EXISTS `ad_image`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `ad_image_ad` (
+CREATE TABLE `ad_image` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ad_id` int(11) DEFAULT NULL,
   `title` varchar(45) DEFAULT NULL,
@@ -883,12 +883,12 @@ CREATE TABLE `ad_image_ad` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `ad_image_ad`
+-- Dumping data for table `ad_image`
 --
 
-LOCK TABLES `ad_image_ad` WRITE;
-/*!40000 ALTER TABLE `ad_image_ad` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ad_image_ad` ENABLE KEYS */;
+LOCK TABLES `ad_image` WRITE;
+/*!40000 ALTER TABLE `ad_image` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ad_image` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
