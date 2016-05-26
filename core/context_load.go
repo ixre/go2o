@@ -62,6 +62,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(ad.AdUserSet{}, "ad_userset")
 
 	/** new **/
+	orm.TableMapping(member.Level{}, "mm_level")
 	orm.TableMapping(member.ValueMember{}, "mm_member")
 	orm.TableMapping(member.IntegralLog{}, "mm_integral_log")
 	orm.TableMapping(member.AccountValue{}, "mm_account")
@@ -92,7 +93,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(merchant.ShopSiteConf{}, "pt_siteconf")
 	orm.TableMapping(merchant.Shop{}, "pt_shop")
 	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
-	orm.TableMapping(valueobject.MemberLevel{}, "pt_member_level")
+	orm.TableMapping(merchant.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")
 	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")

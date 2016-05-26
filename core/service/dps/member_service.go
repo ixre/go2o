@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -129,7 +128,7 @@ func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 	return id, err
 }
 
-func (this *memberService) GetLevel(memberId int) *valueobject.MemberLevel {
+func (this *memberService) GetLevel(memberId int) *member.Level {
 	if m := this._memberRep.GetMember(memberId); m != nil {
 		return m.GetLevel()
 	}

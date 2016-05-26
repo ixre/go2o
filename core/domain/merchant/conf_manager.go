@@ -10,7 +10,6 @@ package merchant
 
 import (
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/valueobject"
 )
 
 var _ merchant.IConfManager = new(ConfManager)
@@ -18,5 +17,4 @@ var _ merchant.IConfManager = new(ConfManager)
 type ConfManager struct {
 	_rep        merchant.IMerchantRep
 	_merchantId int
-	_levelSet   []*valueobject.MemberLevel
 }

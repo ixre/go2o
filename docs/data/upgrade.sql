@@ -87,4 +87,16 @@ CREATE TABLE `zxdb`.`ad_hyperlink` (
   `link_url` VARCHAR(120) NULL,
   PRIMARY KEY (`id`));
 
+--------------------------------
+
+
+CREATE TABLE `zxdb`.`mm_level` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  `require_exp` INT NULL,
+  `program_signal` VARCHAR(45) NULL,
+  `enabled` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
+
 

@@ -9,9 +9,26 @@
 
 package member
 
-import "go2o/core/domain/interface/valueobject"
+import (
+	"go2o/core/domain/interface/merchant"
+)
 
 type IMemberRep interface {
+
+	// 获取管理服务
+	GetManager() IMemberManager
+
+	// 获取会员等级
+	GetMemberLevels_New() []*Level
+
+	// 获取等级对应的会员数
+	GetMemberNumByLevel_New(id int) int
+
+	// 删除会员等级
+	DeleteMemberLevel_New(id int) error
+
+	// 保存会员等级
+	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
 	GetMemberValueByUsr(usr string) *ValueMember
@@ -48,21 +65,6 @@ type IMemberRep interface {
 
 	// 保存绑定
 	SaveRelation(*MemberRelation) error
-
-	// 获取等级
-	GetLevel(merchantId, levelValue int) *valueobject.MemberLevel
-
-	// 获取下一个等级
-	GetNextLevel(merchantId, levelVal int) *valueobject.MemberLevel
-
-	// 获取会员等级
-	GetMemberLevels(merchantId int) []*valueobject.MemberLevel
-
-	// 删除会员等级
-	DeleteMemberLevel(merchantId, id int) error
-
-	// 保存等级
-	SaveMemberLevel(merchantId int, v *valueobject.MemberLevel) (int, error)
 
 	// 获取账户
 	GetAccount(memberId int) *AccountValue
@@ -118,4 +120,22 @@ type IMemberRep interface {
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int, balance, totalAmount,
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
+
+	//todo:商户需重构的等级方法
+	/************  商户需重构的等级方法  *************/
+
+	//获取等级
+	GetLevel(merchantId, levelValue int) *merchant.MemberLevel
+
+	// 获取下一个等级
+	GetNextLevel(merchantId, levelVal int) *merchant.MemberLevel
+
+	// 获取会员等级
+	GetMemberLevels(merchantId int) []*merchant.MemberLevel
+
+	// 删除会员等级
+	DeleteMemberLevel(merchantId, id int) error
+
+	// 保存等级
+	SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error)
 }
