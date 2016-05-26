@@ -23,8 +23,7 @@ type (
 	Level struct {
 		//编号
 		Id int `db:"id" auto:"yes" pk:"yes"`
-		//等级值(1,2,4,8,16)
-		Value int `db:"-" `
+
 		//等级名称
 		Name string `db:"name"`
 		//需要经验值
@@ -33,6 +32,10 @@ type (
 		ProgramSignal string `db:"program_signal"`
 		//是否启用
 		Enabled int `db:"enabled"`
+
+		//等级值(1,2,4,8,16)
+		Value int `db:"-"`
+
 	}
 
 	ILevelManager interface {

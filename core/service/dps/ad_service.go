@@ -132,7 +132,7 @@ func (this *adService) SaveAdvertisement(adUserId int, v *ad.Ad) (int, error) {
 	return adv.Save()
 }
 
-func (this *adService) DelAdvertisement(adUserId, adId int) error {
+func (this *adService) DeleteAd(adUserId, adId int) error {
 	return this.getUserAd(adUserId).DeleteAdvertisement(adId)
 }
 
