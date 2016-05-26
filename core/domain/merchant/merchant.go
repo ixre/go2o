@@ -356,10 +356,12 @@ func (this *MerchantImpl) ConfManager() merchant.IConfManager {
 
 // 获取会员管理服务
 func (this *MerchantImpl) LevelManager() merchant.ILevelManager {
-	if this._levelManager == nil {
-		this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
-	}
-	return this._levelManager
+	return nil
+	/*
+		if this._levelManager == nil {
+			this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
+		}
+		return this._levelManager*/
 }
 
 // 获取键值管理器

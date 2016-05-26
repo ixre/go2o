@@ -8,16 +8,3 @@
  */
 
 package valueobject
-
-type MemberLevel struct {
-	Id int `db:"id" auto:"yes" pk:"yes"`
-
-	MerchantId int `db:"merchant_id"`
-
-	// 等级值(1,2,4,8,16)
-	Value int `db:"value" `
-
-	Name       string `db:"name"`
-	RequireExp int    `db:"require_exp"`
-	Enabled    int    `db:"enabled"`
-}

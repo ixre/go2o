@@ -9,8 +9,6 @@
 
 package member
 
-import "go2o/core/domain/interface/valueobject"
-
 const (
 	StateStopped = 0 //已停用
 	StateOk      = 1 //正常
@@ -60,7 +58,7 @@ type (
 		AddExp(exp int) error
 
 		// 获取等级
-		GetLevel() *valueobject.MemberLevel
+		GetLevel() *Level
 
 		//　增加积分
 		// todo:merchantId 不需要

@@ -14,7 +14,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/valueobject"
 	"go2o/core/query"
 	"log"
 	"strings"
@@ -86,7 +85,6 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 
 	// 初始化会员默认等级
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
-	pt.LevelManager().InitDefaultLevels()
 
 	// 保存站点设置
 	pt.SaveSiteConf(&merchant.ShopSiteConf{
@@ -244,37 +242,37 @@ func (this *merchantService) GetMerchantIdByApiId(apiId string) int {
 }
 
 // 获取所有会员等级
-func (this *merchantService) GetMemberLevels(merchantId int) []*valueobject.MemberLevel {
+func (this *merchantService) _GetMemberLevels(merchantId int) []*merchant.MemberLevel {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().GetLevelSet()
 }
 
 // 根据编号获取会员等级信息
-func (this *merchantService) GetMemberLevelById(merchantId, id int) *valueobject.MemberLevel {
+func (this *merchantService) _GetMemberLevelById(merchantId, id int) *merchant.MemberLevel {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().GetLevelById(id)
 }
 
 // 保存会员等级信息
-func (this *merchantService) SaveMemberLevel(merchantId int, v *valueobject.MemberLevel) (int, error) {
+func (this *merchantService) _SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error) {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().SaveLevel(v)
 }
 
 // 删除会员等级
-func (this *merchantService) DelMemberLevel(merchantId, levelId int) error {
+func (this *merchantService) _DelMemberLevel(merchantId, levelId int) error {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().DeleteLevel(levelId)
 }
 
 // 获取等级
-func (this *merchantService) GetLevel(merchantId, level int) *valueobject.MemberLevel {
+func (this *merchantService) _GetLevel(merchantId, level int) *merchant.MemberLevel {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().GetLevelByValue(level)
 }
 
 // 获取下一个等级
-func (this *merchantService) GetNextLevel(merchantId, levelValue int) *valueobject.MemberLevel {
+func (this *merchantService) _GetNextLevel(merchantId, levelValue int) *merchant.MemberLevel {
 	pt, _ := this._partnerRep.GetMerchant(merchantId)
 	return pt.LevelManager().GetNextLevel(levelValue)
 }

@@ -16,33 +16,34 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/valueobject"
-	partnerImpl "go2o/core/domain/merchant"
 	"go2o/core/infrastructure/domain"
 	"regexp"
 	"strings"
 	"time"
 )
 
+//todo: 依赖商户的 MSS 发送通知消息,应去掉
 var _ member.IMember = new(Member)
 
 type Member struct {
-	_value        *member.ValueMember
-	_account      member.IAccount
-	_bank         *member.BankInfo
-	_level        *valueobject.MemberLevel
-	_rep          member.IMemberRep
-	_partnerRep   merchant.IMerchantRep
-	_relation     *member.MemberRelation
-	_invitation   member.IInvitationManager
-	_levelManager merchant.ILevelManager
+	_manager     member.IMemberManager
+	_value       *member.ValueMember
+	_account     member.IAccount
+	_bank        *member.BankInfo
+	_level       *member.Level
+	_rep         member.IMemberRep
+	_merchantRep merchant.IMerchantRep
+	_relation    *member.MemberRelation
+	_invitation  member.IInvitationManager
 }
 
-func NewMember(val *member.ValueMember, rep member.IMemberRep, partnerRep merchant.IMerchantRep) member.IMember {
+func NewMember(manager member.IMemberManager, val *member.ValueMember, rep member.IMemberRep,
+	merchantRep merchant.IMerchantRep) member.IMember {
 	return &Member{
-		_value:      val,
-		_rep:        rep,
-		_partnerRep: partnerRep,
+		_manager:     manager,
+		_value:       val,
+		_rep:         rep,
+		_merchantRep: merchantRep,
 	}
 }
 
@@ -160,7 +161,7 @@ func (this *Member) ProfileCompleted() bool {
 
 func (this *Member) notifyOnProfileComplete() {
 	rl := this.GetRelation()
-	pt, err := this._partnerRep.GetMerchant(rl.RegisterMerchantId)
+	pt, err := this._merchantRep.GetMerchant(rl.RegisterMerchantId)
 	if err == nil {
 		key := fmt.Sprintf("profile:complete:id_%d", this.GetAggregateRootId())
 		if pt.MemberKvManager().GetInt(key) == 0 {
@@ -273,21 +274,11 @@ func (this *Member) AddExp(exp int) error {
 	return err
 }
 
-// 获取等级管理
-func (this *Member) getLevelManager() merchant.ILevelManager {
-	if this._levelManager == nil {
-		rl := this.GetRelation()
-		merchantId := rl.RegisterMerchantId
-		this._levelManager = partnerImpl.NewLevelManager(merchantId, this._rep)
-	}
-	return this._levelManager
-
-}
-
 // 获取等级
-func (this *Member) GetLevel() *valueobject.MemberLevel {
+func (this *Member) GetLevel() *member.Level {
 	if this._level == nil {
-		this._level = this.getLevelManager().GetLevelByValue(this._value.Level)
+		this._level = this._manager.LevelManager().
+			GetLevelById(this._value.Level)
 	}
 	return this._level
 }
@@ -317,9 +308,10 @@ func (this *Member) AddIntegral(merchantId int, backType int,
 
 // 检查升级
 func (this *Member) checkUpLevel() bool {
-	levelValue := this.getLevelManager().GetLevelValueByExp(this._value.Exp)
-	if levelValue != 0 && this._value.Level < levelValue {
-		this._value.Level = levelValue
+	lg := this._manager.LevelManager()
+	levelId := lg.GetLevelIdByExp(this._value.Exp)
+	if levelId != 0 && this._value.Level < levelId {
+		this._value.Level = levelId
 		this.Save()
 		this._level = nil
 		return true

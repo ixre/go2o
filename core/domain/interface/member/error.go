@@ -25,6 +25,12 @@ var (
 	ErrNoSuchDeliverAddress *domain.DomainError = domain.NewDomainError(
 		"member_no_such_deliver_address", "配送地址错误")
 
+	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
+		"member_level_used", "此等级已被会员使用")
+
+	ErrLevelRequireExp *domain.DomainError = domain.NewDomainError(
+		"member_level_require_exp", "所需经验值必须大于%d")
+
 	ErrNoSuchMember *domain.DomainError = domain.NewDomainError(
 		"member_no_such_member", "会员不存在")
 

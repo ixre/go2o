@@ -18,12 +18,16 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/variable"
+	"sync"
 )
 
 var _ member.IMemberRep = new(MemberRep)
+var (
+	memberManager member.IMemberManager
+	mux           sync.Mutex
+)
 
 type MemberRep struct {
 	db.Connector
@@ -34,6 +38,48 @@ func NewMemberRep(c db.Connector) *MemberRep {
 	return &MemberRep{
 		Connector: c,
 	}
+}
+
+// 获取管理服务
+func (this *MemberRep) GetManager() member.IMemberManager {
+	mux.Lock()
+	if memberManager == nil {
+		memberManager = memberImpl.NewMemberManager(this)
+	}
+	mux.Unlock()
+	return memberManager
+}
+
+// 获取会员等级
+func (this *MemberRep) GetMemberLevels_New() []*member.Level {
+	list := []*member.Level{}
+	this.Connector.GetOrm().Select(&list, "enabled=1")
+	return list
+}
+
+// 获取等级对应的会员数
+func (this *MemberRep) GetMemberNumByLevel_New(id int) int {
+	total := 0
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE level=?", &total, id)
+	return total
+}
+
+// 删除会员等级
+func (this *MemberRep) DeleteMemberLevel_New(id int) error {
+	return this.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
+}
+
+// 保存会员等级
+func (this *MemberRep) SaveMemberLevel_New(v *member.Level) (int, error) {
+	orm := this.Connector.GetOrm()
+	var err error
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		_, _, err = orm.Save(nil, v)
+		this.Connector.ExecScalar(`SELECT MAX(id) FROM mm_level`, &v.Id)
+	}
+	return v.Id, err
 }
 
 func (this *MemberRep) SetMerchantRep(partnerRep merchant.IMerchantRep) {
@@ -78,7 +124,7 @@ func (this *MemberRep) GetMemberIdByUser(user string) int {
 
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
-	return memberImpl.NewMember(v, this, this._partnerRep)
+	return memberImpl.NewMember(this.GetManager(), v, this, this._partnerRep)
 }
 
 // 根据邀请码获取会员编号
@@ -88,8 +134,8 @@ func (this *MemberRep) GetMemberIdByInvitationCode(code string) int {
 	return memberId
 }
 
-func (this *MemberRep) GetLevel(merchantId, levelValue int) *valueobject.MemberLevel {
-	var m valueobject.MemberLevel
+func (this *MemberRep) GetLevel(merchantId, levelValue int) *merchant.MemberLevel {
+	var m merchant.MemberLevel
 	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value = ?", merchantId, levelValue)
 	if err != nil {
 		return nil
@@ -98,8 +144,8 @@ func (this *MemberRep) GetLevel(merchantId, levelValue int) *valueobject.MemberL
 }
 
 // 获取下一个等级
-func (this *MemberRep) GetNextLevel(merchantId, levelVal int) *valueobject.MemberLevel {
-	var m valueobject.MemberLevel
+func (this *MemberRep) GetNextLevel(merchantId, levelVal int) *merchant.MemberLevel {
+	var m merchant.MemberLevel
 	err := this.Connector.GetOrm().GetBy(&m, "merchant_id=? AND value>? LIMIT 0,1", merchantId, levelVal)
 	if err != nil {
 		return nil
@@ -108,8 +154,8 @@ func (this *MemberRep) GetNextLevel(merchantId, levelVal int) *valueobject.Membe
 }
 
 // 获取会员等级
-func (this *MemberRep) GetMemberLevels(merchantId int) []*valueobject.MemberLevel {
-	list := []*valueobject.MemberLevel{}
+func (this *MemberRep) GetMemberLevels(merchantId int) []*merchant.MemberLevel {
+	list := []*merchant.MemberLevel{}
 	this.Connector.GetOrm().Select(&list,
 		"merchant_id=?", merchantId)
 	return list
@@ -117,13 +163,13 @@ func (this *MemberRep) GetMemberLevels(merchantId int) []*valueobject.MemberLeve
 
 // 删除会员等级
 func (this *MemberRep) DeleteMemberLevel(merchantId, id int) error {
-	_, err := this.Connector.GetOrm().Delete(&valueobject.MemberLevel{},
+	_, err := this.Connector.GetOrm().Delete(&merchant.MemberLevel{},
 		"id=? AND merchant_id=?", id, merchantId)
 	return err
 }
 
 // 保存等级
-func (this *MemberRep) SaveMemberLevel(merchantId int, v *valueobject.MemberLevel) (int, error) {
+func (this *MemberRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
