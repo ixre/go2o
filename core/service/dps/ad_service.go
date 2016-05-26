@@ -136,14 +136,43 @@ func (this *adService) DeleteAd(adUserId, adId int) error {
 	return this.getUserAd(adUserId).DeleteAdvertisement(adId)
 }
 
+// 保存图片广告
+func (this *adService) SaveHyperLinkAd(adUserId int, v *ad.HyperLink) (int, error) {
+	pa := this.getUserAd(adUserId)
+	var adv ad.IAd = pa.GetById(v.AdId)
+	if adv.Type() == ad.TypeHyperLink {
+		g := adv.(ad.IHyperLinkAd)
+		g.SetData(v)
+		return adv.Save()
+	}
+	return -1, nil
+}
+
+// 保存图片广告
+func (this *adService) SaveImageAd(adUserId int, v *ad.Image) (int, error) {
+	pa := this.getUserAd(adUserId)
+	var adv ad.IAd = pa.GetById(v.AdId)
+	if adv.Type() == ad.TypeImage {
+		g := adv.(ad.IImageAd)
+		g.SetData(v)
+		return adv.Save()
+	}
+	return -1, nil
+}
+
 // 保存广告图片
 func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.Image) (int, error) {
 	pa := this.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
-		if adv.Type() == ad.TypeGallery {
+		switch adv.Type() {
+		case ad.TypeGallery:
 			gad := adv.(ad.IGalleryAd)
 			return gad.SaveImage(v)
+		case ad.TypeImage:
+			gad := adv.(ad.IImageAd)
+			gad.SetData(v)
+			return adv.Save()
 		}
 	}
 	return -1, nil

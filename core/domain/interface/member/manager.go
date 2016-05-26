@@ -35,7 +35,6 @@ type (
 
 		//等级值(1,2,4,8,16)
 		Value int `db:"-"`
-
 	}
 
 	ILevelManager interface {
