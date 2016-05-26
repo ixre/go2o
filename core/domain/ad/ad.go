@@ -173,7 +173,7 @@ func (this *AdGroupImpl) SetDefault(adPosId int, adId int) error {
 	if v := this.GetPosition(adPosId); v != nil {
 		// if this._rep.GetValueAdvertisement()
 		//todo: 检测广告是否存在
-		v.Default = adId
+		v.DefaultId = adId
 		_, err := this.SavePosition(v)
 		return err
 	}

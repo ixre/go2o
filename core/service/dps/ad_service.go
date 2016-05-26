@@ -9,6 +9,7 @@
 package dps
 
 import (
+	"errors"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/infrastructure/format"
 )
@@ -66,7 +67,11 @@ func (this *adService) GetPosition(groupId, adPosId int) *ad.AdPosition {
 }
 
 func (this *adService) SaveAdPosition(e *ad.AdPosition) (int, error) {
-	return this._rep.GetAdManager().GetAdGroup(e.GroupId).SavePosition(e)
+	group := this._rep.GetAdManager().GetAdGroup(e.GroupId)
+	if group == nil {
+		return -1, errors.New("no such ad group")
+	}
+	return group.SavePosition(e)
 }
 
 func (this *adService) DelAdPosition(groupId, id int) error {
