@@ -148,8 +148,8 @@ type (
 		Opened int `db:"opened"`
 		// 是否启用
 		Enabled int `db:"enabled"`
-		// 默认广告
-		Default int `db:"default"`
+		// 默认广告编号
+		DefaultId int `db:"default_id"`
 	}
 
 	// 广告用户设置

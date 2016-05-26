@@ -24,7 +24,7 @@ import (
 )
 
 type memberService struct {
-	_memberRep      member.IMemberRep
+	_rep            member.IMemberRep
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 }
@@ -32,17 +32,43 @@ type memberService struct {
 func NewMemberService(partnerService *merchantService, rep member.IMemberRep,
 	q *query.MemberQuery) *memberService {
 	return &memberService{
-		_memberRep:      rep,
+		_rep:            rep,
 		_query:          q,
 		_partnerService: partnerService,
 	}
+}
+
+/**================ 会员等级 ==================**/
+// 获取所有会员等级
+func (this *memberService) GetMemberLevels() []*member.Level {
+	return this._rep.GetManager().LevelManager().GetLevelSet()
+}
+
+// 根据编号获取会员等级信息
+func (this *memberService) GetMemberLevelById(id int) *member.Level {
+	return this._rep.GetManager().LevelManager().GetLevelById(id)
+}
+
+// 保存会员等级信息
+func (this *memberService) SaveMemberLevel(v *member.Level) (int, error) {
+	return this._rep.GetManager().LevelManager().SaveLevel(v)
+}
+
+// 删除会员等级
+func (this *memberService) DelMemberLevel(levelId int) error {
+	return this._rep.GetManager().LevelManager().DeleteLevel(levelId)
+}
+
+// 获取下一个等级
+func (this *memberService) GetNextLevel(levelId int) *member.Level {
+	return this._rep.GetManager().LevelManager().GetNextLevelById(levelId)
 }
 
 func (this *memberService) GetMember(id int) *member.ValueMember {
 	if id <= 0 {
 		return nil
 	}
-	v := this._memberRep.GetMember(id)
+	v := this._rep.GetMember(id)
 	if v != nil {
 		nv := v.GetValue()
 		return &nv
@@ -55,7 +81,7 @@ func (this *memberService) getMember(merchantId, memberId int) (
 	if memberId <= 0 {
 		return nil, member.ErrNoSuchMember
 	}
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
 	}
@@ -66,12 +92,12 @@ func (this *memberService) getMember(merchantId, memberId int) (
 }
 
 func (this *memberService) GetMemberIdByInvitationCode(code string) int {
-	return this._memberRep.GetMemberIdByInvitationCode(code)
+	return this._rep.GetMemberIdByInvitationCode(code)
 }
 
 // 更改会员用户名
 func (this *memberService) ChangeUsr(id int, usr string) error {
-	m := this._memberRep.GetMember(id)
+	m := this._rep.GetMember(id)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -87,7 +113,7 @@ func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 }
 
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
-	m := this._memberRep.GetMember(v.Id)
+	m := this._rep.GetMember(v.Id)
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
@@ -114,11 +140,11 @@ func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 			return -1, member.ErrInvitationCode
 		}
 	}
-	m := this._memberRep.CreateMember(v) //创建会员
+	m := this._rep.CreateMember(v) //创建会员
 	id, err := m.Save()
 	if err == nil {
 		// 保存关联信息
-		m := this._memberRep.GetMember(id)
+		m := this._rep.GetMember(id)
 		rl := m.GetRelation()
 		rl.RefereesId = invitationId
 		rl.RegisterMerchantId = merchantId
@@ -129,19 +155,19 @@ func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 }
 
 func (this *memberService) GetLevel(memberId int) *member.Level {
-	if m := this._memberRep.GetMember(memberId); m != nil {
+	if m := this._rep.GetMember(memberId); m != nil {
 		return m.GetLevel()
 	}
 	return nil
 }
 
 func (this *memberService) GetRelation(memberId int) *member.MemberRelation {
-	return this._memberRep.GetRelation(memberId)
+	return this._rep.GetRelation(memberId)
 }
 
 // 锁定/解锁会员
 func (this *memberService) LockMember(merchantId, id int) (bool, error) {
-	m := this._memberRep.GetMember(id)
+	m := this._rep.GetMember(id)
 	if m == nil {
 		return false, member.ErrNoSuchMember
 	}
@@ -155,7 +181,7 @@ func (this *memberService) LockMember(merchantId, id int) (bool, error) {
 
 // 判断资料是否完善
 func (this *memberService) ProfileCompleted(memberId int) bool {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m != nil {
 		return m.ProfileCompleted()
 	}
@@ -164,7 +190,7 @@ func (this *memberService) ProfileCompleted(memberId int) bool {
 
 // 重置密码
 func (this *memberService) ResetPassword(memberId int) string {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
@@ -180,9 +206,9 @@ func (this *memberService) TryLogin(merchantId int, usr,
 	pwd string, update bool) (*member.ValueMember, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
-	val := this._memberRep.GetMemberValueByUsr(usr)
+	val := this._rep.GetMemberValueByUsr(usr)
 	if val == nil {
-		val = this._memberRep.GetMemberValueByPhone(usr)
+		val = this._rep.GetMemberValueByPhone(usr)
 	}
 
 	if val == nil {
@@ -197,7 +223,7 @@ func (this *memberService) TryLogin(merchantId int, usr,
 		return nil, errors.New("会员已停用")
 	}
 
-	m := this._memberRep.GetMember(val.Id)
+	m := this._rep.GetMember(val.Id)
 	rl := m.GetRelation()
 
 	if merchantId != -1 && rl.RegisterMerchantId != merchantId {
@@ -219,33 +245,33 @@ func (this *memberService) CheckUsr(usr string, memberId int) error {
 	if len(usr) < 6 {
 		return member.ErrUsrLength
 	}
-	if this._memberRep.CheckUsrExist(usr, memberId) {
+	if this._rep.CheckUsrExist(usr, memberId) {
 		return member.ErrUsrExist
 	}
 	return nil
 }
 
 func (this *memberService) GetAccount(memberId int) *member.AccountValue {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	//m, _ := this._memberRep.GetMember(memberId)
 	//m.AddExp(300)
 	return m.GetAccount().GetValue()
 }
 
 func (this *memberService) GetBank(memberId int) *member.BankInfo {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	b := m.GetBank()
 	return &b
 }
 
 func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: v.MemberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: v.MemberId})
 	return m.SaveBank(v)
 }
 
 // 解锁银行卡信息
 func (this *memberService) UnlockBankInfo(memberId int) error {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	return m.UnlockBank()
 }
 
@@ -263,20 +289,20 @@ func (this *memberService) QueryPagerOrder(memberId, page, size int,
 
 /*********** 收货地址 ***********/
 func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddress {
-	return this._memberRep.GetDeliverAddress(memberId)
+	return this._rep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
 func (this *memberService) GetDeliverAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	v := m.GetDeliver(deliverId).GetValue()
 	return &v
 }
 
 //保存配送地址
 func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAddress) (int, error) {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	var v member.IDeliver
 	var err error
 	if e.Id > 0 {
@@ -293,12 +319,12 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 
 //删除配送地址
 func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	return m.DeleteDeliver(deliverId)
 }
 
 func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m != nil {
 		return m.ModifyPassword(newPwd, oldPwd)
 	}
@@ -307,7 +333,7 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 
 //修改密码
 func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m != nil {
 		return m.ModifyTradePassword(newPwd, oldPwd)
 	}
@@ -316,19 +342,19 @@ func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd stri
 
 //判断会员是否由指定会员邀请推荐的
 func (this *memberService) IsInvitation(memberId int, invitationMemberId int) bool {
-	m := this._memberRep.CreateMember(&member.ValueMember{Id: memberId})
+	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
 	return m.Invitation().InvitationBy(invitationMemberId)
 }
 
 // 获取我邀请的会员及会员邀请的人数
 func (this *memberService) GetMyInvitationMembers(memberId int) ([]*member.ValueMember, map[int]int) {
-	iv := this._memberRep.CreateMember(&member.ValueMember{Id: memberId}).Invitation()
+	iv := this._rep.CreateMember(&member.ValueMember{Id: memberId}).Invitation()
 	return iv.GetMyInvitationMembers(), iv.GetSubInvitationNum()
 }
 
 // 获取会员最后更新时间
 func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
-	return this._memberRep.GetMemberLatestUpdateTime(memberId)
+	return this._rep.GetMemberLatestUpdateTime(memberId)
 }
 
 func (this *memberService) GetMemberList(merchantId int, ids []int) []*dto.MemberSummary {
@@ -341,7 +367,7 @@ func (this *memberService) GetMemberList(merchantId int, ids []int) []*dto.Membe
 
 // 获取会员汇总信息
 func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
-	var m member.IMember = this._memberRep.GetMember(memberId)
+	var m member.IMember = this._rep.GetMember(memberId)
 	if m != nil {
 		mv := m.GetValue()
 		acv := m.GetAccount().GetValue()
@@ -369,7 +395,7 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 
 // 获取余额变动信息
 func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.BalanceInfoValue {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return nil
 	}
@@ -498,7 +524,7 @@ func (this *memberService) FinishApplyCash(merchantId, memberId, id int, tradeNo
 // 冻结余额
 func (this *memberService) Freezes(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -508,7 +534,7 @@ func (this *memberService) Freezes(memberId int, title string,
 // 解冻金额
 func (this *memberService) Unfreezes(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -518,7 +544,7 @@ func (this *memberService) Unfreezes(memberId int, title string,
 // 冻结赠送金额
 func (this *memberService) FreezesPresent(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -528,7 +554,7 @@ func (this *memberService) FreezesPresent(memberId int, title string,
 // 解冻赠送金额
 func (this *memberService) UnfreezesPresent(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -538,7 +564,7 @@ func (this *memberService) UnfreezesPresent(memberId int, title string,
 // 转账余额到其他账户
 func (this *memberService) TransferBalance(memberId int, kind int, amount float32, tradeNo string,
 	toTitle, fromTitle string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -549,7 +575,7 @@ func (this *memberService) TransferBalance(memberId int, kind int, amount float3
 // commission手续费
 func (this *memberService) TransferPresent(memberId int, kind int, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -561,7 +587,7 @@ func (this *memberService) TransferPresent(memberId int, kind int, amount float3
 // commission手续费
 func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
 	commission float32, tradeNo string, toTitle string, fromTitle string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -572,7 +598,7 @@ func (this *memberService) TransferFlow(memberId int, kind int, amount float32,
 // 将活动金转给其他人
 func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int,
 	amount float32, commission float32, tradeNo string, toTitle string, fromTitle string) error {
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -599,7 +625,7 @@ func (this *memberService) NewBalanceTicket(merchantId int, memberId int, kind i
 	if amount == 0 {
 		return "", member.ErrIncorrectAmount
 	}
-	m := this._memberRep.GetMember(memberId)
+	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return "", member.ErrNoSuchMember
 	}

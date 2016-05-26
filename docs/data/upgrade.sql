@@ -56,7 +56,7 @@ CREATE TABLE `ad_position` (
   `group_id` int(11) DEFAULT NULL,
   `name` varchar(20) DEFAULT NULL,
   `description` varchar(100) DEFAULT NULL,
-  `default` int(11) DEFAULT NULL,
+  `default_id` int(11) DEFAULT NULL,
   `opened` tinyint(1) DEFAULT NULL,
   `enabled` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),

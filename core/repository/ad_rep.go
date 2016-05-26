@@ -205,7 +205,7 @@ func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
 
 // 删除广告
 func (this *advertisementRep) DelAdvertisement(merchantId, advertisementId int) error {
-	_, err := this.Connector.GetOrm().Delete(ad.Ad{}, "merchant_id=? AND id=?", merchantId, advertisementId)
+	_, err := this.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", merchantId, advertisementId)
 	return err
 }
 
@@ -217,6 +217,6 @@ func (this *advertisementRep) DelImageDataForAdvertisement(advertisementId int) 
 
 // 删除广告的文字数据
 func (this *advertisementRep) DelTextDataForAdvertisement(advertisementId int) error {
-	//todo:
-	return nil
+	_, err := this.Connector.GetOrm().Delete(ad.HyperLink{}, "ad_id=?", advertisementId)
+	return err
 }
