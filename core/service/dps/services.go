@@ -18,6 +18,8 @@ import (
 var (
 	PromService     *promotionService
 	ShoppingService *shoppingService
+
+	// 会员服务
 	MemberService   *memberService
 
 	// 商户服务
