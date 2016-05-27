@@ -20,7 +20,7 @@ var (
 	ShoppingService *shoppingService
 
 	// 会员服务
-	MemberService   *memberService
+	MemberService *memberService
 
 	// 商户服务
 	MerchantService *merchantService

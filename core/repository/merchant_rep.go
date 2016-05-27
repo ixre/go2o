@@ -182,15 +182,13 @@ func (this *merchantRep) SaveSiteConf(merchantId int, v *merchant.ShopSiteConf) 
 }
 
 // 保存API信息
-func (this *merchantRep) SaveApiInfo(merchantId int, d *merchant.ApiInfo) error {
+func (this *merchantRep) SaveApiInfo(v *merchant.ApiInfo) error {
 	var err error
 	orm := this.GetOrm()
-	if d.MerchantId == 0 { //实体未传递merchantId时新增
-		d.MerchantId = merchantId
-		_, _, err = orm.Save(nil, d)
+	if v.MerchantId <= 0 {
+		_, _, err = orm.Save(nil, v)
 	} else {
-		d.MerchantId = merchantId
-		_, _, err = orm.Save(merchantId, d)
+		_, _, err = orm.Save(v.MerchantId, v)
 	}
 	return err
 }

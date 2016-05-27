@@ -108,10 +108,9 @@ func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
-
-func (this *memberService) SaveMemberProfile(id int,v *member.ValueMember)(int,error){
+func (this *memberService) SaveMemberProfile(id int, v *member.ValueMember) (int, error) {
 	//todo:
-	return -1,nil
+	return -1, nil
 }
 
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
@@ -362,7 +361,7 @@ func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 }
 
 func (this *memberService) GetMemberList(ids []int) []*dto.MemberSummary {
-	list := this._query.GetMemberList( ids)
+	list := this._query.GetMemberList(ids)
 	for _, v := range list {
 		v.Avatar = format.GetResUrl(v.Avatar)
 	}
@@ -417,7 +416,7 @@ func (this *memberService) Charge(memberId, chargeType int, title, tradeNo strin
 
 // 赠送金额充值
 func (this *memberService) PresentBalance(memberId int, title string, tradeNo string, amount float32) error {
-	m, err := this.getMember( memberId)
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}
@@ -508,7 +507,7 @@ func (this *memberService) GetLatestApplyCashText(memberId int) string {
 }
 
 // 确认提现
-func (this *memberService) ConfirmApplyCash( memberId int, infoId int, pass bool, remark string) error {
+func (this *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, remark string) error {
 	m, err := this.getMember(memberId)
 	if err != nil {
 		return err

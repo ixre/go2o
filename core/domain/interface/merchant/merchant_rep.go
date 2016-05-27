@@ -34,7 +34,7 @@ type IMerchantRep interface {
 	SaveSiteConf(merchantId int, v *ShopSiteConf) error
 
 	// 保存API信息
-	SaveApiInfo(merchantId int, d *ApiInfo) error
+	SaveApiInfo(d *ApiInfo) error
 
 	// 获取API信息
 	GetApiInfo(merchantId int) *ApiInfo

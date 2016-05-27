@@ -50,12 +50,6 @@ type (
 		// 注册权限验证,如果没有权限注册,返回错误
 		RegisterPerm(isInvitation bool) error
 
-		// 获取API信息
-		GetApiInfo() ApiInfo
-
-		// 保存API信息
-		SaveApiInfo(*ApiInfo) error
-
 		// 新建商店
 		CreateShop(*Shop) IShop
 
@@ -83,8 +77,11 @@ type (
 		// 获取键值管理器
 		KvManager() IKvManager
 
-		// 企业资料管理器
+		// 企业资料服务
 		ProfileManager() IProfileManager
+
+		// API服务
+		ApiManager() IApiManager
 
 		// 获取会员键值管理器
 		MemberKvManager() IKvManager
@@ -126,19 +123,5 @@ type (
 		TransCsn                float32 `db:"trans_csn"`                      // 转账手续费费率
 		FlowConvertCsn          float32 `db:"flow_convert_csn"`               // 活动账户转为赠送可提现奖金手续费费率
 		PresentConvertCsn       float32 `db:"present_convert_csn"`            // 赠送账户转换手续费费率
-	}
-
-	// 商户接口信息
-	ApiInfo struct {
-		// 商户编号
-		MerchantId int `db:"merchant_id" pk:"yes" auto:"no"`
-		// 商户接口编号(10位数字)
-		ApiId string `db:"api_id"`
-		// 密钥
-		ApiSecret string `db:"api_secret"`
-		// IP白名单
-		WhiteList string `db:"white_list"`
-		// 是否启用,0:停用,1启用
-		Enabled int `db:"enabled"`
 	}
 )

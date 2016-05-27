@@ -249,14 +249,23 @@ func (this *merchantService) GetMerchantsId() []int {
 // 保存API信息
 func (this *merchantService) SaveApiInfo(merchantId int, d *merchant.ApiInfo) error {
 	pt, _ := this._mchRep.GetMerchant(merchantId)
-	return pt.SaveApiInfo(d)
+	return pt.ApiManager().SaveApiInfo(d)
 }
 
 // 获取API接口
 func (this *merchantService) GetApiInfo(merchantId int) *merchant.ApiInfo {
 	pt, _ := this._mchRep.GetMerchant(merchantId)
-	v := pt.GetApiInfo()
+	v := pt.ApiManager().GetApiInfo()
 	return &v
+}
+
+// 启用/停用接口权限
+func (this *merchantService) ApiPerm(merchantId int, enabled bool) error {
+	pt, _ := this._mchRep.GetMerchant(merchantId)
+	if enabled {
+		return pt.ApiManager().EnableApiPerm()
+	}
+	return pt.ApiManager().DisableApiPerm()
 }
 
 // 根据API ID获取MerchantId
