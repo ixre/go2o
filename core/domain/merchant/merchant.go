@@ -46,6 +46,7 @@ type MerchantImpl struct {
 	_memberKvManager merchant.IKvManager
 	_mssManager      mss.IMssManager
 	_mssRep          mss.IMssRep
+	_profileManager  merchant.IProfileManager
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep, userRep user.IUserRep,
@@ -386,4 +387,12 @@ func (this *MerchantImpl) MssManager() mss.IMssManager {
 		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
 	}
 	return this._mssManager
+}
+
+// 企业资料管理器
+func (this *MerchantImpl) ProfileManager() merchant.IProfileManager {
+	if this._profileManager == nil {
+		this._profileManager = newProfileManager(this)
+	}
+	return this._profileManager
 }

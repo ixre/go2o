@@ -99,4 +99,22 @@ CREATE TABLE `zxdb`.`mm_level` (
   PRIMARY KEY (`id`));
 
 
+  CREATE TABLE `zxdb`.`mch_enterpriseinfo` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `merchant_id` INT NULL,
+  `name` VARCHAR(45) NULL,
+  `company_no` VARCHAR(45) NULL,
+  `person_name` VARCHAR(10) NULL,
+  `tel` VARCHAR(45) NULL,
+  `address` VARCHAR(120) NULL,
+  `person_imageurl` VARCHAR(120) NULL,
+  `company_imageurl` VARCHAR(120) NULL,
+  `reviewed` TINYINT(1) NULL COMMENT '是否审核通过',
+  `review_time` INT NULL,
+  `remark` VARCHAR(45) NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+
 
