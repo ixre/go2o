@@ -19,6 +19,9 @@ var (
 	PromService     *promotionService
 	ShoppingService *shoppingService
 
+	// 基础服务
+	BaseService *platformService
+
 	// 会员服务
 	MemberService *memberService
 
@@ -45,6 +48,7 @@ func Init(ctx gof.App) {
 	db := Context.Db()
 
 	/** Repository **/
+	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
 	memberRep := repository.NewMemberRep(db)
 	goodsRep := repository.NewGoodsRep(db)
@@ -68,6 +72,7 @@ func Init(ctx gof.App) {
 	goodsQuery := query.NewGoodsQuery(db)
 
 	/** Service **/
+	BaseService = NewPlatformService(valRep)
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep)
 	MerchantService = NewMerchantService(partnerRep, saleRep, partnerQue)

@@ -26,7 +26,7 @@ import (
 var _ member.IMemberRep = new(MemberRep)
 var (
 	memberManager member.IMemberManager
-	mux           sync.Mutex
+	memberMux sync.Mutex
 )
 
 type MemberRep struct {
@@ -42,11 +42,11 @@ func NewMemberRep(c db.Connector) *MemberRep {
 
 // 获取管理服务
 func (this *MemberRep) GetManager() member.IMemberManager {
-	mux.Lock()
+	memberMux.Lock()
 	if memberManager == nil {
 		memberManager = memberImpl.NewMemberManager(this)
 	}
-	mux.Unlock()
+	memberMux.Unlock()
 	return memberManager
 }
 
