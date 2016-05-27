@@ -86,7 +86,9 @@ func (this *MerchantImpl) SetValue(v *merchant.Merchant) error {
 	tv := this._value
 	if v.Id == tv.Id {
 		tv.Name = v.Name
-		tv.Address = v.Address
+		tv.Province = v.Province
+		tv.City = v.City
+		tv.District = v.District
 		if v.LastLoginTime > 0 {
 			tv.LastLoginTime = v.LastLoginTime
 		}
@@ -97,10 +99,8 @@ func (this *MerchantImpl) SetValue(v *merchant.Merchant) error {
 		if len(v.Logo) != 0 {
 			tv.Logo = v.Logo
 		}
-		tv.Phone = v.Phone
 		tv.Pwd = v.Pwd
 		tv.UpdateTime = time.Now().Unix()
-
 	}
 	return nil
 }
