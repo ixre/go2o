@@ -31,7 +31,6 @@ type MerchantImpl struct {
 	_value    *merchant.Merchant
 	_saleConf *merchant.SaleConf
 	_siteConf *merchant.ShopSiteConf
-	_apiInfo  *merchant.ApiInfo
 	_shops    []merchant.IShop
 	_host     string
 
@@ -47,6 +46,7 @@ type MerchantImpl struct {
 	_mssManager      mss.IMssManager
 	_mssRep          mss.IMssRep
 	_profileManager  merchant.IProfileManager
+	_apiManager      merchant.IApiManager
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep, userRep user.IUserRep,
@@ -152,14 +152,13 @@ func (this *MerchantImpl) createMerchant() (int, error) {
 	this._saleConf.MerchantId = id
 
 	// 创建API
-	this._apiInfo = &merchant.ApiInfo{
+	api := &merchant.ApiInfo{
 		ApiId:     domain.NewApiId(id),
 		ApiSecret: domain.NewSecret(id),
 		WhiteList: "*",
 		Enabled:   1,
 	}
-	err = this._rep.SaveApiInfo(id, this._apiInfo)
-
+	err = this.ApiManager().SaveApiInfo(api)
 	return id, err
 }
 
@@ -265,21 +264,6 @@ func (this *MerchantImpl) SaveSiteConf(v *merchant.ShopSiteConf) error {
 	return this._rep.SaveSiteConf(this.GetAggregateRootId(), this._siteConf)
 }
 
-// 获取API信息
-func (this *MerchantImpl) GetApiInfo() merchant.ApiInfo {
-	if this._apiInfo == nil {
-		this._apiInfo = this._rep.GetApiInfo(this.GetAggregateRootId())
-	}
-	return *this._apiInfo
-}
-
-// 保存API信息
-func (this *MerchantImpl) SaveApiInfo(v *merchant.ApiInfo) error {
-	this._apiInfo = v
-	this._apiInfo.MerchantId = this._value.Id
-	return this._rep.SaveApiInfo(this.GetAggregateRootId(), this._apiInfo)
-}
-
 // 新建商店
 func (this *MerchantImpl) CreateShop(v *merchant.Shop) merchant.IShop {
 	v.CreateTime = time.Now().Unix()
@@ -359,10 +343,10 @@ func (this *MerchantImpl) ConfManager() merchant.IConfManager {
 func (this *MerchantImpl) LevelManager() merchant.ILevelManager {
 	return nil
 	/*
-		if this._levelManager == nil {
-			this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
-		}
-		return this._levelManager*/
+	   if this._levelManager == nil {
+	       this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
+	   }
+	   return this._levelManager*/
 }
 
 // 获取键值管理器
@@ -395,4 +379,12 @@ func (this *MerchantImpl) ProfileManager() merchant.IProfileManager {
 		this._profileManager = newProfileManager(this)
 	}
 	return this._profileManager
+}
+
+// API服务
+func (this *MerchantImpl) ApiManager() merchant.IApiManager {
+	if this._apiManager == nil {
+		this._apiManager = newApiManagerImpl(this)
+	}
+	return this._apiManager
 }
