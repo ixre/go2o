@@ -26,7 +26,7 @@ import (
 var _ member.IMemberRep = new(MemberRep)
 var (
 	memberManager member.IMemberManager
-	memberMux sync.Mutex
+	memberMux     sync.Mutex
 )
 
 type MemberRep struct {

@@ -201,21 +201,21 @@ func (this *UserAdImpl) GetAggregateRootId() int {
 
 // 根据编号获取广告
 func (this *UserAdImpl) GetById(id int) ad.IAd {
-	v := this._rep.GetValueAdvertisement(id)
+	v := this._rep.GetValueAd(id)
 	if v != nil {
-		return this.CreateAdvertisement(v)
+		return this.CreateAd(v)
 	}
 	return nil
 }
 
 // 删除广告
-func (this *UserAdImpl) DeleteAdvertisement(advertisementId int) error {
+func (this *UserAdImpl) DeleteAd(advertisementId int) error {
 	adv := this.GetById(advertisementId)
 	if adv != nil {
 		if adv.System() {
 			return ad.ErrInternalDisallow
 		}
-		err := this._rep.DelAdvertisement(this._adUserId, advertisementId)
+		err := this._rep.DelAd(this._adUserId, advertisementId)
 		this._rep.DelImageDataForAdvertisement(advertisementId)
 		this._rep.DelTextDataForAdvertisement(advertisementId)
 		return err
@@ -226,15 +226,15 @@ func (this *UserAdImpl) DeleteAdvertisement(advertisementId int) error {
 
 // 根据名称获取广告
 func (this *UserAdImpl) GetByName(name string) ad.IAd {
-	v := this._rep.GetValueAdvertisementByName(this._adUserId, name)
+	v := this._rep.GetAdByName(this._adUserId, name)
 	if v != nil {
-		return this.CreateAdvertisement(v)
+		return this.CreateAd(v)
 	}
 	return nil
 }
 
 // 创建广告对象
-func (this *UserAdImpl) CreateAdvertisement(v *ad.Ad) ad.IAd {
+func (this *UserAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 	adv := &AdImpl{
 		_rep:   this._rep,
 		_value: v,
@@ -264,7 +264,7 @@ func (this *UserAdImpl) SetAd(posId, adId int) error {
 	if this._manager.GetAdGroup(posId) == nil {
 		return ad.ErrNoSuchAdPosition
 	}
-	if this._rep.GetValueAdvertisement(adId) == nil {
+	if this._rep.GetValueAd(adId) == nil {
 		return ad.ErrNoSuchAd
 	}
 	return this._rep.SetUserAd(this.GetAggregateRootId(), posId, adId)
@@ -305,7 +305,6 @@ func (this *AdImpl) SetValue(v *ad.Ad) error {
 	if v.Type != this.Type() {
 		return ad.ErrDisallowModifyAdType
 	}
-	// 如果为系统内置广告，不能修改名称
 	this._value.Name = v.Name
 	return nil
 }

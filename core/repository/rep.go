@@ -8,15 +8,16 @@
  */
 package repository
 
-import(
-	"github.com/jsix/gof"
-	"sync"
+import (
 	"encoding/gob"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
 	"os"
 	"path"
+	"sync"
 )
 
-var(
+var (
 	mux sync.Mutex
 )
 
@@ -28,7 +29,7 @@ func handleError(err error) error {
 	return err
 }
 
-func unMarshalFromFile(file string,dst interface{})error {
+func unMarshalFromFile(file string, dst interface{}) error {
 	mux.Lock()
 	fi, err := os.Open(file)
 	if err == nil {
@@ -39,18 +40,19 @@ func unMarshalFromFile(file string,dst interface{})error {
 	return err
 }
 
-
-func marshalToFile(file string,src interface{})error{
+func marshalToFile(file string, src interface{}) error {
 	//检测目录是否存在,不存在则创建目录
 	dir := path.Dir(file)
-	if _,err := os.Stat(dir); err == os.ErrNotExist{
-		os.MkdirAll(dir,os.ModePerm)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, os.ModePerm)
+	} else {
+		log.Println(err.Error())
 	}
 	mux.Lock()
 	f, err := os.OpenFile(file,
 		os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
 		os.ModePerm)
-	if err == nil{
+	if err == nil {
 		enc := gob.NewEncoder(f)
 		err = enc.Encode(src)
 	}

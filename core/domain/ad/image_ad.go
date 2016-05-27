@@ -10,6 +10,7 @@ package ad
 
 import (
 	"go2o/core/domain/interface/ad"
+	"go2o/core/infrastructure/format"
 )
 
 var _ ad.IImageAd = new(ImageAdImpl)
@@ -30,7 +31,9 @@ func (this *ImageAdImpl) getData() *ad.Image {
 		//如果不存在,则创建一个新的对象
 		if this._extValue == nil {
 			this._extValue = &ad.Image{
-				AdId: this.GetDomainId(),
+				AdId:     this.GetDomainId(),
+				ImageUrl: format.GetNoPicPath(),
+				Enabled:  1,
 			}
 		}
 	}

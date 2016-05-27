@@ -162,7 +162,7 @@ func (this *advertisementRep) SaveAdImageValue(v *ad.Image) (int, error) {
 }
 
 // 获取广告
-func (this *advertisementRep) GetValueAdvertisement(id int) *ad.Ad {
+func (this *advertisementRep) GetValueAd(id int) *ad.Ad {
 	var e ad.Ad
 	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -171,7 +171,7 @@ func (this *advertisementRep) GetValueAdvertisement(id int) *ad.Ad {
 }
 
 // 根据名称获取广告
-func (this *advertisementRep) GetValueAdvertisementByName(merchantId int, name string) *ad.Ad {
+func (this *advertisementRep) GetAdByName(merchantId int, name string) *ad.Ad {
 	var e ad.Ad
 	if err := this.Connector.GetOrm().GetBy(&e, "merchant_id=? and name=?", merchantId, name); err == nil {
 		return &e
@@ -204,7 +204,7 @@ func (this *advertisementRep) DelAdImage(advertisementId, id int) error {
 }
 
 // 删除广告
-func (this *advertisementRep) DelAdvertisement(merchantId, advertisementId int) error {
+func (this *advertisementRep) DelAd(merchantId, advertisementId int) error {
 	_, err := this.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", merchantId, advertisementId)
 	return err
 }

@@ -119,21 +119,24 @@ func (this *adService) GetAdDto(userId int, id int) *ad.AdDto {
 	return nil
 }
 
-// 保存广告
-func (this *adService) SaveAdvertisement(adUserId int, v *ad.Ad) (int, error) {
+// 保存广告,更新时不允许修改类型
+func (this *adService) SaveAd(adUserId int, v *ad.Ad) (int, error) {
 	pa := this.getUserAd(adUserId)
 	var adv ad.IAd
 	if v.Id > 0 {
 		adv = pa.GetById(v.Id)
-		adv.SetValue(v)
+		err := adv.SetValue(v)
+		if err != nil {
+			return -1, err
+		}
 	} else {
-		adv = pa.CreateAdvertisement(v)
+		adv = pa.CreateAd(v)
 	}
 	return adv.Save()
 }
 
 func (this *adService) DeleteAd(adUserId, adId int) error {
-	return this.getUserAd(adUserId).DeleteAdvertisement(adId)
+	return this.getUserAd(adUserId).DeleteAd(adId)
 }
 
 // 保存图片广告
@@ -175,7 +178,7 @@ func (this *adService) SaveImage(adUserId int, advertisementId int, v *ad.Image)
 			return adv.Save()
 		}
 	}
-	return -1, nil
+	return -1, ad.ErrNoSuchAd
 }
 
 // 获取广告图片
