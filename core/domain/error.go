@@ -13,4 +13,7 @@ import "go2o/core/infrastructure/domain"
 var (
 	ErrState *domain.DomainError = domain.NewDomainError(
 		"err_state", "state error")
+
+	ErrReviewed *domain.DomainError = domain.NewDomainError(
+		"err_reviewed", "已经审核通过")
 )

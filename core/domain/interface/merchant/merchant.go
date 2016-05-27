@@ -83,6 +83,9 @@ type (
 		// 获取键值管理器
 		KvManager() IKvManager
 
+		// 企业资料管理器
+		ProfileManager() IProfileManager
+
 		// 获取会员键值管理器
 		MemberKvManager() IKvManager
 
