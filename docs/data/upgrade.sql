@@ -107,6 +107,10 @@ CREATE TABLE `zxdb`.`mm_level` (
   `person_name` VARCHAR(10) NULL,
   `tel` VARCHAR(45) NULL,
   `address` VARCHAR(120) NULL,
+  `province` INT NOT NULL,
+  `city`  INT NOT NULL,
+  `district` INT NOT NULL,
+  `location` VARCHAR(45) NULL,
   `person_imageurl` VARCHAR(120) NULL,
   `company_imageurl` VARCHAR(120) NULL,
   `reviewed` TINYINT(1) NULL COMMENT '是否审核通过',
@@ -114,6 +118,15 @@ CREATE TABLE `zxdb`.`mm_level` (
   `remark` VARCHAR(45) NULL,
   `update_time` INT NULL,
   PRIMARY KEY (`id`));
+
+
+ALTER TABLE `zxdb`.`pt_merchant`
+DROP COLUMN `address`,
+DROP COLUMN `phone`,
+DROP COLUMN `tel`,
+ADD COLUMN `province` INT NULL AFTER `logo`,
+ADD COLUMN `city` INT NULL AFTER `province`,
+ADD COLUMN `district` INT NULL AFTER `city`, RENAME TO  `zxdb`.`mch_merchant` ;
 
 
 

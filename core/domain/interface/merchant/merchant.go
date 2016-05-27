@@ -92,19 +92,22 @@ type (
 
 	//合作商
 	Merchant struct {
-		Id            int    `db:"id" pk:"yes" auto:"yes"`
-		Usr           string `db:"usr"`
-		Pwd           string `db:"pwd"`
-		Name          string `db:"name"`
-		Logo          string `db:"logo"`
-		Tel           string `db:"tel"`
-		Phone         string `db:"phone"`
-		Address       string `db:"address"`
-		ExpiresTime   int64  `db:"expires_time"`
-		JoinTime      int64  `db:"join_time"`
-		UpdateTime    int64  `db:"update_time"`
-		LoginTime     int64  `db:"login_time"`
-		LastLoginTime int64  `db:"last_login_time"`
+		Id   int    `db:"id" pk:"yes" auto:"yes"`
+		Usr  string `db:"usr"`
+		Pwd  string `db:"pwd"`
+		Name string `db:"name"`
+		Logo string `db:"logo"`
+		// 省
+		Province int `db:"province"`
+		// 市
+		City int `db:"city"`
+		// 区
+		District      int   `db:"district"`
+		ExpiresTime   int64 `db:"expires_time"`
+		JoinTime      int64 `db:"join_time"`
+		UpdateTime    int64 `db:"update_time"`
+		LoginTime     int64 `db:"login_time"`
+		LastLoginTime int64 `db:"last_login_time"`
 	}
 	SaleConf struct {
 		MerchantId              int     `db:"merchant_id" auto:"no" pk:"yes"` // 合作商编号

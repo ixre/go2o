@@ -86,7 +86,7 @@ func (this *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
 	if v.Id <= 0 {
 		orm := this.Connector.GetOrm()
 		_, _, err = orm.Save(nil, v)
-		err = this.Connector.ExecScalar(`SELECT MAX(id) FROM pt_merchant`, &v.Id)
+		err = this.Connector.ExecScalar(`SELECT MAX(id) FROM mch_merchant`, &v.Id)
 		if err != nil {
 			return 0, err
 		}
@@ -115,7 +115,7 @@ func (this *merchantRep) GetMerchantsId() []int {
 	dst := []int{}
 	var i int
 
-	this.Connector.Query("SELECT id FROM pt_merchant", func(rows *sql.Rows) {
+	this.Connector.Query("SELECT id FROM mch_merchant", func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&i)
 			dst = append(dst, i)
@@ -157,7 +157,7 @@ func (this *merchantRep) GetSiteConf(merchantId int) *merchant.ShopSiteConf {
 		if len(siteConf.Host) == 0 {
 			var usr string
 			this.Connector.ExecScalar(
-				`SELECT usr FROM pt_merchant WHERE id=?`,
+				`SELECT usr FROM mch_merchant WHERE id=?`,
 				&usr, merchantId)
 			siteConf.Host = fmt.Sprintf("%s.%s", usr,
 				infrastructure.GetApp().Config().

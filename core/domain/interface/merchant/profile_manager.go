@@ -29,6 +29,18 @@ type (
 		// 公司电话
 		Tel string `db:"tel"`
 
+		// 省
+		Province int `db:"province"`
+
+		// 市
+		City int `db:"city"`
+
+		// 区
+		District int `db:"district"`
+
+		// 省+市+区字符串表示
+		Location string `db:"location"`
+
 		// 公司地址
 		Address string `db:"address"`
 

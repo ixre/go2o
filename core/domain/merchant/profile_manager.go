@@ -51,7 +51,8 @@ func (this *profileManagerImpl) GetReviewedEnterpriseInfo() merchant.EnterpriseI
 	return e
 }
 
-func copyEnterpriseInfo(src *merchant.EnterpriseInfo, dst *merchant.EnterpriseInfo) {
+func (this *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
+	dst *merchant.EnterpriseInfo) {
 	// 公司名称
 	dst.Name = src.Name
 	// 公司营业执照编号
@@ -62,6 +63,15 @@ func copyEnterpriseInfo(src *merchant.EnterpriseInfo, dst *merchant.EnterpriseIn
 	dst.Tel = src.Tel
 	// 公司地址
 	dst.Address = src.Address
+
+	dst.Province = src.Province
+
+	dst.City = src.City
+
+	dst.District = src.District
+
+	dst.Location = src.Location
+
 	// 身份证验证图片(人捧身份证照相)
 	dst.PersonImageUrl = src.PersonImageUrl
 	// 营业执照图片
@@ -77,7 +87,7 @@ func copyEnterpriseInfo(src *merchant.EnterpriseInfo, dst *merchant.EnterpriseIn
 // 保存企业信息
 func (this *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
 	e := this.GetEnterpriseInfo()
-	copyEnterpriseInfo(v, &e)
+	this.copy(v, &e)
 	// 如已审核,则创建一个待审核
 	dt := time.Now().Unix()
 	if e.Reviewed == 1 {
@@ -104,18 +114,53 @@ func (this *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (
 func (this *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) error {
 	e := this.GetEnterpriseInfo()
 	if e.Reviewed == 1 {
-		return domain.ErrReviewed
+		return domain.ErrReviewed //已经审核通过
 	}
+
+	e.ReviewTime = time.Now().Unix()
+	// 通过审核,将审批的记录删除,同时更新到审核数据
 	if pass {
+		var err error
 		e.Reviewed = 1
 		e.Remark = ""
-	} else {
-		e.Remark = message
-	}
-	e.ReviewTime = time.Now().Unix()
+		e2 := this.GetReviewedEnterpriseInfo()
+		this.copy(&e, &e2)
 
+		// 删除待审核数据
+		err = tmp.Db().GetOrm().DeleteByPk(merchant.EnterpriseInfo{}, e.Id)
+		if err != nil {
+			return err
+		}
+
+		//将e2作为新的保存
+		if err = this.save(&e2); err == nil {
+			// 保存省、市、区到Merchant
+			v := this.GetValue()
+			v.Province = e2.Province
+			v.City = e2.City
+			v.District = e2.District
+			err = this.SetValue(&v)
+			if err == nil {
+				_, err = this.Save()
+			}
+		}
+
+		return err
+	}
+
+	e.Reviewed = 0
+	e.Remark = message
+	return this.save(&e)
+}
+
+func (this *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
 	//==================================
+	var err error
 	orm := tmp.Db().GetOrm()
-	_, _, err := orm.Save(e.Id, e)
+	if e.Id > 0 {
+		_, _, err = orm.Save(e.Id, e)
+	} else {
+		_, _, err = orm.Save(nil, e)
+	}
 	return err
 }

@@ -89,7 +89,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 
 	/** 商户 **/
 	orm.TableMapping(merchant.EnterpriseInfo{}, "mch_enterpriseinfo")
-	orm.TableMapping(merchant.Merchant{}, "pt_merchant")
+	orm.TableMapping(merchant.Merchant{}, "mch_merchant")
 	orm.TableMapping(merchant.ApiInfo{}, "pt_api")
 	orm.TableMapping(merchant.ShopSiteConf{}, "pt_siteconf")
 	orm.TableMapping(merchant.Shop{}, "pt_shop")
