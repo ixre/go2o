@@ -75,7 +75,7 @@ type (
 		GetAggregateRootId() int
 
 		// 删除广告
-		DeleteAdvertisement(advertisementId int) error
+		DeleteAd(advertisementId int) error
 
 		// 根据编号获取广告
 		GetById(int) IAd
@@ -84,7 +84,7 @@ type (
 		GetByName(string) IAd
 
 		// 创建广告对象
-		CreateAdvertisement(*Ad) IAd
+		CreateAd(*Ad) IAd
 
 		// 设置广告
 		SetAd(posId, adId int) error
@@ -245,10 +245,10 @@ type (
 		SaveAdImageValue(*Image) (int, error)
 
 		// 获取广告
-		GetValueAdvertisement(id int) *Ad
+		GetValueAd(id int) *Ad
 
 		// 根据名称获取广告
-		GetValueAdvertisementByName(merchantId int, name string) *Ad
+		GetAdByName(merchantId int, name string) *Ad
 
 		// 获取轮播广告
 		GetValueGallery(advertisementId int) ValueGallery
@@ -260,7 +260,7 @@ type (
 		DelAdImage(advertisementId, id int) error
 
 		// 删除广告
-		DelAdvertisement(merchantId, advertisementId int) error
+		DelAd(merchantId, advertisementId int) error
 
 		// 删除广告的图片数据
 		DelImageDataForAdvertisement(advertisementId int) error

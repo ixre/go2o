@@ -9,27 +9,26 @@
 package dps
 
 import (
-    "go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/valueobject"
 )
 
 // 平台服务
 type platformService struct {
-    _rep            valueobject.IValueRep
+	_rep valueobject.IValueRep
 }
 
 func NewPlatformService(rep valueobject.IValueRep) *platformService {
-    return &platformService{
-        _rep:            rep,
-    }
+	return &platformService{
+		_rep: rep,
+	}
 }
 
-
 // 获取微信接口配置
-func (this *platformService) GetWxApiConfig()*valueobject.WxApiConfig{
-    return this._rep.GetWxApiConfig()
+func (this *platformService) GetWxApiConfig() *valueobject.WxApiConfig {
+	return this._rep.GetWxApiConfig()
 }
 
 // 保存微信接口配置
-func (this *platformService) SaveWxApiConfig(v *valueobject.WxApiConfig)error{
-    return this._rep.SaveWxApiConfig(v)
+func (this *platformService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
+	return this._rep.SaveWxApiConfig(v)
 }

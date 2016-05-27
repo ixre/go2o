@@ -18,6 +18,7 @@ import (
 var (
 	imageServe   string
 	noPicUrl     string
+	_noPicUrl    string
 	picCfgLoaded bool
 )
 
@@ -31,6 +32,15 @@ func FormatGoodsNo(d int) string {
 		return s
 	}
 	return strings.Repeat("0", l-sl) + s
+}
+
+// 获取无图片地址
+func GetNoPicPath() string {
+	if len(_noPicUrl) == 0 {
+		ctx := infrastructure.GetApp()
+		_noPicUrl = ctx.Config().GetString(variable.NoPicPath)
+	}
+	return _noPicUrl
 }
 
 // 获取商品图片地址
