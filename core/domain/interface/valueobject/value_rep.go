@@ -35,7 +35,7 @@ type(
         MchCertPath      string
         //微信支付的证书公钥路径(上传)
         MchCertKeyPath   string
-        
+
         //MchPayNotifyPath string //微信支付异步通知的路径
     }
 
