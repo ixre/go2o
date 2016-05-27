@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -76,7 +75,7 @@ func (this *memberService) GetMember(id int) *member.ValueMember {
 	return nil
 }
 
-func (this *memberService) getMember(merchantId, memberId int) (
+func (this *memberService) getMember(memberId int) (
 	member.IMember, error) {
 	if memberId <= 0 {
 		return nil, member.ErrNoSuchMember
@@ -84,9 +83,6 @@ func (this *memberService) getMember(merchantId, memberId int) (
 	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
-	}
-	if m.GetRelation().RegisterMerchantId != merchantId {
-		return m, merchant.ErrMerchantNotMatch
 	}
 	return m, nil
 }
@@ -112,6 +108,12 @@ func (this *memberService) SaveMember(v *member.ValueMember) (int, error) {
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
+
+func (this *memberService) SaveMemberProfile(id int,v *member.ValueMember)(int,error){
+	//todo:
+	return -1,nil
+}
+
 func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 	m := this._rep.GetMember(v.Id)
 	if m == nil {
@@ -127,6 +129,8 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 	cardId string, invitationCode string) (int, error) {
 	if merchantId != -1 {
+
+		//todo:
 		err := this._partnerService.CheckRegisterPerm(merchantId, len(invitationCode) > 0)
 		if err != nil {
 			return -1, err
@@ -166,7 +170,7 @@ func (this *memberService) GetRelation(memberId int) *member.MemberRelation {
 }
 
 // 锁定/解锁会员
-func (this *memberService) LockMember(merchantId, id int) (bool, error) {
+func (this *memberService) LockMember(id int) (bool, error) {
 	m := this._rep.GetMember(id)
 	if m == nil {
 		return false, member.ErrNoSuchMember
@@ -357,8 +361,8 @@ func (this *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 	return this._rep.GetMemberLatestUpdateTime(memberId)
 }
 
-func (this *memberService) GetMemberList(merchantId int, ids []int) []*dto.MemberSummary {
-	list := this._query.GetMemberList(merchantId, ids)
+func (this *memberService) GetMemberList(ids []int) []*dto.MemberSummary {
+	list := this._query.GetMemberList( ids)
 	for _, v := range list {
 		v.Avatar = format.GetResUrl(v.Avatar)
 	}
@@ -403,8 +407,8 @@ func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.Bala
 }
 
 // 充值
-func (this *memberService) Charge(merchantId, memberId, chargeType int, title, tradeNo string, amount float32) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) Charge(memberId, chargeType int, title, tradeNo string, amount float32) error {
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}
@@ -412,8 +416,8 @@ func (this *memberService) Charge(merchantId, memberId, chargeType int, title, t
 }
 
 // 赠送金额充值
-func (this *memberService) PresentBalance(merchantId, memberId int, title string, tradeNo string, amount float32) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) PresentBalance(memberId int, title string, tradeNo string, amount float32) error {
+	m, err := this.getMember( memberId)
 	if err != nil {
 		return err
 	}
@@ -421,8 +425,8 @@ func (this *memberService) PresentBalance(merchantId, memberId int, title string
 }
 
 // 扣减奖金
-func (this *memberService) DiscountPresent(merchantId, memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) DiscountPresent(memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}
@@ -430,8 +434,8 @@ func (this *memberService) DiscountPresent(merchantId, memberId int, title strin
 }
 
 // 流通账户
-func (this *memberService) ChargeFlowBalance(merchantId, memberId int, title string, tradeNo string, amount float32) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) ChargeFlowBalance(memberId int, title string, tradeNo string, amount float32) error {
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}
@@ -451,9 +455,9 @@ func (this *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, 
 }
 
 // 提现并返回提现编号,交易号以及错误信息
-func (this *memberService) SubmitApplyPresentBalance(merchantId, memberId int, applyType int,
+func (this *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
-	m, err := this.getMember(merchantId, memberId)
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return 0, "", err
 	}
@@ -504,8 +508,8 @@ func (this *memberService) GetLatestApplyCashText(memberId int) string {
 }
 
 // 确认提现
-func (this *memberService) ConfirmApplyCash(merchantId int, memberId int, infoId int, pass bool, remark string) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) ConfirmApplyCash( memberId int, infoId int, pass bool, remark string) error {
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}
@@ -513,8 +517,8 @@ func (this *memberService) ConfirmApplyCash(merchantId int, memberId int, infoId
 }
 
 // 完成提现
-func (this *memberService) FinishApplyCash(merchantId, memberId, id int, tradeNo string) error {
-	m, err := this.getMember(merchantId, memberId)
+func (this *memberService) FinishApplyCash(memberId, id int, tradeNo string) error {
+	m, err := this.getMember(memberId)
 	if err != nil {
 		return err
 	}

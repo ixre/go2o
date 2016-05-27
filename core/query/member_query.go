@@ -27,7 +27,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (this *MemberQuery) GetMemberList(merchantId int, ids []int) []*dto.MemberSummary {
+func (this *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
@@ -38,10 +38,10 @@ func (this *MemberQuery) GetMemberList(merchantId int, ids []int) []*dto.MemberS
 		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
 				lv.name as level_name,a.integral,a.balance,a.present_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
-				m.update_time FROM mm_member m INNER JOIN pt_member_level lv
-				ON m.level = lv.value INNER JOIN mm_account a ON
-				 a.member_id = m.id WHERE lv.merchant_id=? AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
-		this.Connector.GetOrm().SelectByQuery(&list, query, merchantId)
+				m.update_time FROM mm_member m INNER JOIN mm_level lv
+				ON m.level = lv.id INNER JOIN mm_account a ON
+				 a.member_id = m.id AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
+		this.Connector.GetOrm().SelectByQuery(&list, query)
 	}
 	return list
 }
