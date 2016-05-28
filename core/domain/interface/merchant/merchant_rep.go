@@ -15,6 +15,7 @@ type IMerchantRep interface {
 	// 获取商户的编号
 	GetMerchantsId() []int
 
+	// 获取商户,并槛车商户状态,返回错误
 	GetMerchant(int) (IMerchant, error)
 
 	// 获取合作商主要的域名主机

@@ -59,13 +59,13 @@ func (this *merchantRep) GetMerchant(id int) (merchant.IMerchant, error) {
 	var err error
 	if !ok {
 		e := new(merchant.Merchant)
-		if this.Connector.GetOrm().Get(id, e) == nil {
+		err = this.Connector.GetOrm().Get(id, e)
+		if err == nil {
+			// 缓存到列表中
 			v, err = this.CreateMerchant(e)
 			if v != nil {
 				this._cache[id] = v
 			}
-		} else {
-			err = merchant.ErrNoSuchMerchant
 		}
 	}
 	return v, err

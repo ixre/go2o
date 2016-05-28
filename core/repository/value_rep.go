@@ -55,7 +55,7 @@ func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
 			RegisterMode:        member.RegisterModeNormal,
 			AnonymousRegistered: true,
 		} // 默认值
-		unMarshalFromFile("conf/core/wx_api", this._rpConf)
+		unMarshalFromFile("conf/core/register_perm", this._rpConf)
 	}
 	return this._rpConf
 }
@@ -64,7 +64,7 @@ func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
 func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
 		this._rpConf = v
-		return marshalToFile("conf/core/wx_api", this._rpConf)
+		return marshalToFile("conf/core/register_perm", this._rpConf)
 	}
 	return errors.New("nil value")
 }

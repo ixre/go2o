@@ -33,7 +33,7 @@ const (
 	s_sWebCallbackUrl   = "http://xxxx/alipay_web_callback"              //网站同步返回地址
 	s_sWapNotifyUrl     = "http://xxxx/alipay_wap_notify"                //WAP异步返回地址
 	s_sWapCallbackUrl   = "http://xxxx/alipay_wap_callback"              //WAP同步返回地址
-	s_sWapMerchantUrl   = "http://xxxx/alipay_wap"                       //WAP商家购物网址
+	s_sWapMerchantUrl   = "http://xxxx/alipay_wap"                       //WAP商户购物网址
 	s_sRefundNotifyUrl  = "http://xxxx/alipay_refund_notify"             //退款通知地址
 	s_sSellerEmail      = "xxxx@xxxx.com"                                //网站卖家邮箱地址
 	s_sVersion          = "2.0"

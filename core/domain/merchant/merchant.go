@@ -10,7 +10,6 @@
 package merchant
 
 import (
-	"errors"
 	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -51,24 +50,14 @@ type MerchantImpl struct {
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep, userRep user.IUserRep,
 	memberRep member.IMemberRep, mssRep mss.IMssRep) (merchant.IMerchant, error) {
-
-	var err error
-
-	if v == nil {
-		err = errors.New("101:no such partner")
-		return nil, err
-	}
-	if time.Now().Unix() > v.ExpiresTime {
-		err = errors.New("103: partner is expires")
-	}
-
-	return &MerchantImpl{
+	mch := &MerchantImpl{
 		_value:     v,
 		_rep:       rep,
 		_userRep:   userRep,
 		_memberRep: memberRep,
 		_mssRep:    mssRep,
-	}, err
+	}
+	return mch, mch.Stat()
 }
 
 func (this *MerchantImpl) clearShopCache() {
@@ -113,6 +102,26 @@ func (this *MerchantImpl) Save() (int, error) {
 	}
 
 	return this.createMerchant()
+}
+
+// 获取商户的状态,判断 过期时间、判断是否停用。
+// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
+func (this *MerchantImpl) Stat() error {
+	if this._value == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	if this._value.Enabled == 0 {
+		return merchant.ErrMerchantDisabled
+	}
+	if this._value.ExpiresTime < time.Now().Unix() {
+		return merchant.ErrMerchantExpires
+	}
+	return nil
+}
+
+// 返回对应的会员编号
+func (this *MerchantImpl) Member() int {
+	return this.GetValue().MemberId
 }
 
 // 创建商户

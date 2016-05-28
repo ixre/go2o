@@ -15,12 +15,21 @@ import (
 )
 
 type (
+	// 商户接口
+	//todo: 可以被缓存起来
 	IMerchant interface {
 		GetAggregateRootId() int
 
 		GetValue() Merchant
 
 		SetValue(*Merchant) error
+
+		// 获取商户的状态,判断 过期时间、判断是否停用。
+		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
+		Stat() error
+
+		// 返回对应的会员编号
+		Member() int
 
 		// 保存
 		Save() (int, error)
@@ -82,17 +91,22 @@ type (
 
 	//合作商
 	Merchant struct {
-		Id   int    `db:"id" pk:"yes" auto:"yes"`
-		Usr  string `db:"usr"`
-		Pwd  string `db:"pwd"`
-		Name string `db:"name"`
-		Logo string `db:"logo"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 关联的会员编号,作为结算账户
+		MemberId int    `db:"member_id"`
+		Usr      string `db:"usr"`
+		Pwd      string `db:"pwd"`
+		Name     string `db:"name"`
+		Logo     string `db:"logo"`
 		// 省
 		Province int `db:"province"`
 		// 市
 		City int `db:"city"`
 		// 区
-		District      int   `db:"district"`
+		District int `db:"district"`
+		// 是否启用
+		Enabled int `db:"enabled"`
+
 		ExpiresTime   int64 `db:"expires_time"`
 		JoinTime      int64 `db:"join_time"`
 		UpdateTime    int64 `db:"update_time"`

@@ -763,7 +763,7 @@ func (this *Order) updateShoppingMemberBackFee(pt merchant.IMerchant,
 	acc.Save()
 
 	//给自己返现
-	tit := fmt.Sprintf("订单:%s(商家:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
+	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
 	acc.PresentBalance(tit, v.OrderNo, float32(fee))
 }
 
@@ -859,7 +859,7 @@ func (this *Order) updateMemberAccount(m member.IMember,
 	acc.Save()
 
 	//给自己返现
-	tit := fmt.Sprintf("订单:%s(商家:%s,会员:%s)收入￥%.2f元",
+	tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 		this._value.OrderNo, ptName, mName, fee)
 	acc.PresentBalance(tit, this._value.OrderNo, fee)
 }

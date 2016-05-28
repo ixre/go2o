@@ -124,6 +124,15 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 	this._saleRep.GetSale(merchantId).InitSaleTags()
 }
 
+// 获取商户的状态
+func (this *merchantService) Stat(merchantId int) error {
+	mch, err := this._mchRep.GetMerchant(merchantId)
+	if err != nil {
+		return err
+	}
+	return mch.Stat()
+}
+
 // 根据主机查询商户编号
 func (this *merchantService) GetMerchantIdByHost(host string) int {
 	return this._query.QueryMerchantIdByHost(host)
