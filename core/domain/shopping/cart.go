@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
@@ -22,7 +23,7 @@ type Cart struct {
 	_memberRep   member.IMemberRep
 	_merchantId  int
 	_summary     string
-	_shop        merchant.IShop
+	_shop        shop.IShop
 	_deliver     member.IDeliver
 }
 
@@ -248,17 +249,17 @@ func (this *Cart) SetBuyer(buyerId int) error {
 
 // 结算数据持久化
 func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
-	var shop merchant.IShop
+	var shop shop.IShop
 	var deliver member.IDeliver
 	var err error
 
 	if shopId > 0 {
-		var pt merchant.IMerchant
-		pt, err = this._partnerRep.GetMerchant(this._merchantId)
+		var mch merchant.IMerchant
+		mch, err = this._partnerRep.GetMerchant(this._merchantId)
 		if err != nil {
 			return err
 		}
-		shop = pt.GetShop(shopId)
+		shop = mch.ShopManager().GetShop(shopId)
 		if shop == nil {
 			return merchant.ErrNoSuchShop
 		}
@@ -285,13 +286,13 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 }
 
 // 获取结算数据
-func (this *Cart) GetSettleData() (s merchant.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
+func (this *Cart) GetSettleData() (s shop.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
 	var err error
 	if this._value.ShopId > 0 && this._shop == nil {
 		var pt merchant.IMerchant
 		pt, err = this._partnerRep.GetMerchant(this._merchantId)
 		if err == nil {
-			this._shop = pt.GetShop(this._value.ShopId)
+			this._shop = pt.ShopManager().GetShop(this._value.ShopId)
 		}
 	}
 	if this._value.DeliverId > 0 && this._deliver == nil {

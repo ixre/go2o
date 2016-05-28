@@ -11,7 +11,7 @@ package shopping
 
 import (
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 )
 
 //　购物聚合根
@@ -66,7 +66,7 @@ type IShopping interface {
 	OrderAutoSetup(f func(error))
 
 	// 智能选择门店
-	SmartChoiceShop(address string) (merchant.IShop, error)
+	SmartChoiceShop(address string) (shop.IShop, error)
 
 	// 智能确定订单
 	SmartConfirmOrder(order IOrder) error

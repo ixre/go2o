@@ -7,9 +7,32 @@
  * history :
  */
 
-package merchant
+package shop
 
 type (
+	IShopManager interface {
+		// 获取站点配置
+		GetSiteConf() ShopSiteConf
+
+		// 保存站点配置
+		SaveSiteConf(*ShopSiteConf) error
+
+		// 新建商店
+		CreateShop(*Shop) IShop
+
+		// 获取所有商店
+		GetShops() []IShop
+
+		// 获取营业中的商店
+		GetBusinessInShops() []IShop
+
+		// 获取商店
+		GetShop(int) IShop
+
+		// 删除门店
+		DeleteShop(shopId int) error
+	}
+
 	IShop interface {
 		GetDomainId() int
 

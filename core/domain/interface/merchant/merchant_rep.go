@@ -29,11 +29,6 @@ type IMerchantRep interface {
 
 	SaveSaleConf(merchantId int, v *SaleConf) error
 
-	// 获取站点配置
-	GetSiteConf(int) *ShopSiteConf
-
-	SaveSiteConf(merchantId int, v *ShopSiteConf) error
-
 	// 保存API信息
 	SaveApiInfo(d *ApiInfo) error
 
@@ -42,14 +37,6 @@ type IMerchantRep interface {
 
 	// 根据API编号获取商户编号
 	GetMerchantIdByApiId(apiId string) int
-
-	SaveShop(*Shop) (int, error)
-
-	GetValueShop(merchantId, shopId int) *Shop
-
-	GetShopsOfMerchant(merchantId int) []*Shop
-
-	DeleteShop(merchantId, shopId int) error
 
 	// 获取键值
 	GetKeyValue(merchantId int, indent string, k string) string

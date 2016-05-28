@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/dps"
 )
@@ -49,8 +50,8 @@ func DelMerchantCache(merchantId int) {
 }
 
 // 获取商户站点配置
-func GetMerchantSiteConf(merchantId int) *merchant.ShopSiteConf {
-	var v merchant.ShopSiteConf
+func GetMerchantSiteConf(merchantId int) *shop.ShopSiteConf {
+	var v shop.ShopSiteConf
 	var sto gof.Storage = GetKVS()
 	var key string = GetMerchantSiteConfCK(merchantId)
 	if sto.Get(key, &v) != nil {

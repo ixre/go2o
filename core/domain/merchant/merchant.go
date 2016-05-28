@@ -11,12 +11,12 @@ package merchant
 
 import (
 	"fmt"
-	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
 	mssImpl "go2o/core/domain/merchant/mss"
+	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
@@ -27,16 +27,12 @@ import (
 var _ merchant.IMerchant = new(MerchantImpl)
 
 type MerchantImpl struct {
-	_value    *merchant.Merchant
-	_saleConf *merchant.SaleConf
-	_siteConf *merchant.ShopSiteConf
-	_shops    []merchant.IShop
-	_host     string
-
-	_rep       merchant.IMerchantRep
-	_userRep   user.IUserRep
-	_memberRep member.IMemberRep
-
+	_value           *merchant.Merchant
+	_saleConf        *merchant.SaleConf
+	_host            string
+	_rep             merchant.IMerchantRep
+	_shopRep         shop.IShopRep
+	_userRep         user.IUserRep
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_levelManager    merchant.ILevelManager
@@ -46,22 +42,24 @@ type MerchantImpl struct {
 	_mssRep          mss.IMssRep
 	_profileManager  merchant.IProfileManager
 	_apiManager      merchant.IApiManager
+	_shopManager     shop.IShopManager
 }
 
-func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep, userRep user.IUserRep,
-	memberRep member.IMemberRep, mssRep mss.IMssRep) (merchant.IMerchant, error) {
+func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
+	shopRep shop.IShopRep, userRep user.IUserRep,
+	mssRep mss.IMssRep) (merchant.IMerchant, error) {
 	mch := &MerchantImpl{
-		_value:     v,
-		_rep:       rep,
-		_userRep:   userRep,
-		_memberRep: memberRep,
-		_mssRep:    mssRep,
+		_value:   v,
+		_rep:     rep,
+		_shopRep: shopRep,
+		_userRep: userRep,
+		_mssRep:  mssRep,
 	}
 	return mch, mch.Stat()
 }
 
-func (this *MerchantImpl) clearShopCache() {
-	this._shops = nil
+func (this *MerchantImpl) GetRep() merchant.IMerchantRep {
+	return this._rep
 }
 
 func (this *MerchantImpl) GetAggregateRootId() int {
@@ -141,16 +139,18 @@ func (this *MerchantImpl) createMerchant() (int, error) {
 	// 初始化商户信息
 	this._value.Id = id
 
+	//todo:  初始化商店
+
 	// SiteConf
-	this._siteConf = &merchant.ShopSiteConf{
-		IndexTitle: "线上商店-" + v.Name,
-		SubTitle:   "线上商店-" + v.Name,
-		Logo:       v.Logo,
-		State:      1,
-		StateHtml:  "",
-	}
-	err = this._rep.SaveSiteConf(id, this._siteConf)
-	this._siteConf.MerchantId = id
+	//this._siteConf = &shop.ShopSiteConf{
+	//	IndexTitle: "线上商店-" + v.Name,
+	//	SubTitle:   "线上商店-" + v.Name,
+	//	Logo:       v.Logo,
+	//	State:      1,
+	//	StateHtml:  "",
+	//}
+	//err = this._rep.SaveSiteConf(id, this._siteConf)
+	//this._siteConf.MerchantId = id
 
 	// SaleConf
 	this._saleConf = &merchant.SaleConf{
@@ -232,75 +232,6 @@ func (this *MerchantImpl) verifySaleConf(v *merchant.SaleConf) {
 	}
 }
 
-// 获取站点配置
-func (this *MerchantImpl) GetSiteConf() merchant.ShopSiteConf {
-	if this._siteConf == nil {
-		this._siteConf = this._rep.GetSiteConf(this.GetAggregateRootId())
-	}
-	return *this._siteConf
-}
-
-// 保存站点配置
-func (this *MerchantImpl) SaveSiteConf(v *merchant.ShopSiteConf) error {
-	this._siteConf = v
-	this._siteConf.MerchantId = this._value.Id
-	return this._rep.SaveSiteConf(this.GetAggregateRootId(), this._siteConf)
-}
-
-// 新建商店
-func (this *MerchantImpl) CreateShop(v *merchant.Shop) merchant.IShop {
-	v.CreateTime = time.Now().Unix()
-	v.MerchantId = this.GetAggregateRootId()
-	return newShop(this, v, this._rep)
-}
-
-// 获取所有商店
-func (this *MerchantImpl) GetShops() []merchant.IShop {
-	if this._shops == nil {
-		shops := this._rep.GetShopsOfMerchant(this.GetAggregateRootId())
-		this._shops = make([]merchant.IShop, len(shops))
-		for i, v := range shops {
-			this._shops[i] = this.CreateShop(v)
-		}
-	}
-
-	return this._shops
-}
-
-// 获取营业中的商店
-func (this *MerchantImpl) GetBusinessInShops() []merchant.IShop {
-	var list []merchant.IShop = make([]merchant.IShop, 0)
-	for _, v := range this._shops {
-		if v.GetValue().State == enum.ShopBusinessIn {
-			list = append(list, v)
-		}
-	}
-	return list
-}
-
-// 获取商店
-func (this *MerchantImpl) GetShop(shopId int) merchant.IShop {
-	//	v := this.rep.GetValueShop(this.GetAggregateRootId(), shopId)
-	//	if v == nil {
-	//		return nil
-	//	}
-	//	return this.CreateShop(v)
-	shops := this.GetShops()
-
-	for _, v := range shops {
-		if v.GetValue().Id == shopId {
-			return v
-		}
-	}
-	return nil
-}
-
-// 删除门店
-func (this *MerchantImpl) DeleteShop(shopId int) error {
-	//todo : 检测订单数量
-	return this._rep.DeleteShop(this.GetAggregateRootId(), shopId)
-}
-
 // 返回用户服务
 func (this *MerchantImpl) UserManager() user.IUserManager {
 	if this._userManager == nil {
@@ -370,4 +301,12 @@ func (this *MerchantImpl) ApiManager() merchant.IApiManager {
 		this._apiManager = newApiManagerImpl(this)
 	}
 	return this._apiManager
+}
+
+// 商店服务
+func (this *MerchantImpl) ShopManager() shop.IShopManager {
+	if this._shopManager == nil {
+		this._shopManager = si.NewShopManagerImpl(this, this._shopRep)
+	}
+	return this._shopManager
 }

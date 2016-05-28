@@ -11,6 +11,7 @@ package merchant
 
 import (
 	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
 )
 
@@ -43,27 +44,6 @@ type (
 		// 保存销售配置
 		SaveSaleConf(*SaleConf) error
 
-		// 获取站点配置
-		GetSiteConf() ShopSiteConf
-
-		// 保存站点配置
-		SaveSiteConf(*ShopSiteConf) error
-
-		// 新建商店
-		CreateShop(*Shop) IShop
-
-		// 获取所有商店
-		GetShops() []IShop
-
-		// 获取营业中的商店
-		GetBusinessInShops() []IShop
-
-		// 获取商店
-		GetShop(int) IShop
-
-		// 删除门店
-		DeleteShop(shopId int) error
-
 		// 返回用户服务
 		UserManager() user.IUserManager
 
@@ -81,6 +61,9 @@ type (
 
 		// API服务
 		ApiManager() IApiManager
+
+		// 商店服务
+		ShopManager() shop.IShopManager
 
 		// 获取会员键值管理器
 		MemberKvManager() IKvManager

@@ -13,6 +13,7 @@ import (
 	"errors"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/query"
 	"log"
@@ -107,17 +108,17 @@ func (this *merchantService) SaveMerchant(merchantId int, v *merchant.Merchant) 
 func (this *merchantService) initializeMerchant(merchantId int) {
 
 	// 初始化会员默认等级
-	pt, _ := this._mchRep.GetMerchant(merchantId)
+	mch, _ := this._mchRep.GetMerchant(merchantId)
 
 	// 保存站点设置
-	pt.SaveSiteConf(&merchant.ShopSiteConf{
-		MerchantId: pt.GetAggregateRootId(),
-		IndexTitle: pt.GetValue().Name,
+	mch.ShopManager().SaveSiteConf(&shop.ShopSiteConf{
+		MerchantId: mch.GetAggregateRootId(),
+		IndexTitle: mch.GetValue().Name,
 	})
 
 	// 保存销售设置
-	pt.SaveSaleConf(&merchant.SaleConf{
-		MerchantId: pt.GetAggregateRootId(),
+	mch.SaveSaleConf(&merchant.SaleConf{
+		MerchantId: mch.GetAggregateRootId(),
 	})
 
 	// 初始化销售标签
@@ -147,9 +148,9 @@ func (this *merchantService) GetMerchantMajorHost(merchantId int) string {
 	return pt.GetMajorHost()
 }
 
-func (this *merchantService) SaveSiteConf(merchantId int, v *merchant.ShopSiteConf) error {
-	pt, _ := this._mchRep.GetMerchant(merchantId)
-	return pt.SaveSiteConf(v)
+func (this *merchantService) SaveSiteConf(merchantId int, v *shop.ShopSiteConf) error {
+	mch, _ := this._mchRep.GetMerchant(merchantId)
+	return mch.ShopManager().SaveSiteConf(v)
 }
 
 func (this *merchantService) SaveSaleConf(merchantId int, v *merchant.SaleConf) error {
@@ -166,22 +167,22 @@ func (this *merchantService) GetSaleConf(merchantId int) *merchant.SaleConf {
 	return &conf
 }
 
-func (this *merchantService) GetSiteConf(merchantId int) *merchant.ShopSiteConf {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+func (this *merchantService) GetSiteConf(merchantId int) *shop.ShopSiteConf {
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
-	conf := pt.GetSiteConf()
+	conf := mch.ShopManager().GetSiteConf()
 	return &conf
 }
 
-func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.Shop {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+func (this *merchantService) GetShopsOfMerchant(merchantId int) []*shop.Shop {
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
-	shops := pt.GetShops()
-	sv := make([]*merchant.Shop, len(shops))
+	shops := mch.ShopManager().GetShops()
+	sv := make([]*shop.Shop, len(shops))
 	for i, v := range shops {
 		vv := v.GetValue()
 		sv[i] = &vv
@@ -189,31 +190,31 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.Shop
 	return sv
 }
 
-func (this *merchantService) GetShopValueById(merchantId, shopId int) *merchant.Shop {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+func (this *merchantService) GetShopValueById(merchantId, shopId int) *shop.Shop {
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
-	v := pt.GetShop(shopId).GetValue()
+	v := mch.ShopManager().GetShop(shopId).GetValue()
 	return &v
 }
 
-func (this *merchantService) SaveShop(merchantId int, v *merchant.Shop) (int, error) {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+func (this *merchantService) SaveShop(merchantId int, v *shop.Shop) (int, error) {
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 
 		log.Println("[ Merchant][ Service]-", err.Error())
 		return 0, err
 	}
-	var shop merchant.IShop
+	var shop shop.IShop
 	if v.Id > 0 {
-		shop = pt.GetShop(v.Id)
+		shop = mch.ShopManager().GetShop(v.Id)
 		if shop == nil {
 			return 0, errors.New("门店不存在")
 		}
 	} else {
-		shop = pt.CreateShop(v)
+		shop = mch.ShopManager().CreateShop(v)
 	}
 	err = shop.SetValue(v)
 	if err != nil {
@@ -223,12 +224,12 @@ func (this *merchantService) SaveShop(merchantId int, v *merchant.Shop) (int, er
 }
 
 func (this *merchantService) DeleteShop(merchantId, shopId int) error {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
-	return pt.DeleteShop(shopId)
+	return mch.ShopManager().DeleteShop(shopId)
 }
 
 func (this *merchantService) GetMerchantsId() []int {

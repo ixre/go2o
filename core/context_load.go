@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/domain/interface/promotion"
@@ -91,8 +92,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(merchant.EnterpriseInfo{}, "mch_enterpriseinfo")
 	orm.TableMapping(merchant.Merchant{}, "mch_merchant")
 	orm.TableMapping(merchant.ApiInfo{}, "pt_api")
-	orm.TableMapping(merchant.ShopSiteConf{}, "pt_siteconf")
-	orm.TableMapping(merchant.Shop{}, "pt_shop")
+	orm.TableMapping(shop.ShopSiteConf{}, "pt_siteconf")
+	orm.TableMapping(shop.Shop{}, "pt_shop")
 	orm.TableMapping(merchant.SaleConf{}, "pt_saleconf")
 	orm.TableMapping(merchant.MemberLevel{}, "pt_member_level")
 	orm.TableMapping(content.ValuePage{}, "pt_page")

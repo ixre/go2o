@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
@@ -34,7 +35,7 @@ type Shopping struct {
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
 	_merchantId  int
-	_partner     merchant.IMerchant
+	_merchant    merchant.IMerchant
 }
 
 func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
@@ -42,7 +43,7 @@ func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
 
-	pt, _ := partnerRep.GetMerchant(merchantId)
+	mch, _ := partnerRep.GetMerchant(merchantId)
 
 	return &Shopping{
 		_rep:         rep,
@@ -53,7 +54,7 @@ func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 		_merchantId:  merchantId,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
-		_partner:     pt,
+		_merchant:    mch,
 	}
 }
 
@@ -241,7 +242,7 @@ func (this *Shopping) GetFreeOrderNo() string {
 }
 
 // 智能选择门店
-func (this *Shopping) SmartChoiceShop(address string) (merchant.IShop, error) {
+func (this *Shopping) SmartChoiceShop(address string) (shop.IShop, error) {
 	dly := this._deliveryRep.GetDelivery(this.GetAggregateRootId())
 
 	lng, lat, err := lbs.GetLocation(address)
@@ -253,7 +254,7 @@ func (this *Shopping) SmartChoiceShop(address string) (merchant.IShop, error) {
 		return nil, delivery.ErrNotCoveragedArea
 	}
 	shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
-	return this._partner.GetShop(shopId), err
+	return this._merchant.ShopManager().GetShop(shopId), err
 }
 
 // 生成订单
@@ -338,7 +339,7 @@ func (this *Shopping) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
 
 var (
 	shopLocker sync.Mutex
-	biShops    []merchant.IShop
+	biShops    []shop.IShop
 )
 
 // 自动设置订单
@@ -353,7 +354,7 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 	biShops = nil
 	log.Println("[SETUP] start auto setup")
 
-	saleConf := this._partner.GetSaleConf()
+	saleConf := this._merchant.GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
 		orders, err = this._rep.GetWaitingSetupOrders(this._merchantId)
 		if err != nil {
@@ -381,9 +382,9 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-	var shop merchant.IShop
+	var shop shop.IShop
 	if biShops == nil {
-		biShops = this._partner.GetBusinessInShops()
+		biShops = this._merchant.ShopManager().GetBusinessInShops()
 	}
 	if len(biShops) == 1 {
 		shop = biShops[0]
