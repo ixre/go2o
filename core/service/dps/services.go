@@ -56,7 +56,8 @@ func Init(ctx gof.App) {
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
 	saleRep := repository.NewSaleRep(db, tagSaleRep, goodsRep, promRep)
 	mssRep := repository.NewMssRep(db)
-	partnerRep := repository.NewMerchantRep(db, userRep, memberRep, mssRep)
+	shopRep := repository.NewShopRep(db)
+	partnerRep := repository.NewMerchantRep(db, shopRep, userRep, mssRep)
 	memberRep.SetMerchantRep(partnerRep)
 	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
 

@@ -11,7 +11,7 @@ package shopping
 
 import (
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 )
 
@@ -28,7 +28,7 @@ type ICart interface {
 	SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error
 
 	// 获取结算数据
-	GetSettleData() (s merchant.IShop, d member.IDeliver, paymentOpt, deliverOpt int)
+	GetSettleData() (s shop.IShop, d member.IDeliver, paymentOpt, deliverOpt int)
 
 	// 设置购买会员
 	SetBuyer(buyerId int) error
