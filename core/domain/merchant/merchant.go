@@ -28,7 +28,6 @@ var _ merchant.IMerchant = new(MerchantImpl)
 
 type MerchantImpl struct {
 	_value           *merchant.Merchant
-	_saleConf        *merchant.SaleConf
 	_host            string
 	_rep             merchant.IMerchantRep
 	_shopRep         shop.IShopRep
@@ -153,12 +152,12 @@ func (this *MerchantImpl) createMerchant() (int, error) {
 	//this._siteConf.MerchantId = id
 
 	// SaleConf
-	this._saleConf = &merchant.SaleConf{
-		AutoSetupOrder:  1,
-		IntegralBackNum: 0,
-	}
-	err = this._rep.SaveSaleConf(id, this._saleConf)
-	this._saleConf.MerchantId = id
+	//this._saleConf = &merchant.SaleConf{
+	//	AutoSetupOrder:  1,
+	//	IntegralBackNum: 0,
+	//}
+	//err = this._rep.SaveSaleConf(id, this._saleConf)
+	//this._saleConf.MerchantId = id
 
 	// 创建API
 	api := &merchant.ApiInfo{
@@ -184,54 +183,6 @@ func (this *MerchantImpl) GetMajorHost() string {
 	return this._host
 }
 
-// 获取销售配置
-func (this *MerchantImpl) GetSaleConf() merchant.SaleConf {
-	if this._saleConf == nil {
-		//10%分成
-		//0.2,         #上级
-		//0.1,         #上上级
-		//0.8          #消费者自己
-		this._saleConf = this._rep.GetSaleConf(
-			this.GetAggregateRootId())
-
-		this.verifySaleConf(this._saleConf)
-	}
-	return *this._saleConf
-}
-
-// 保存销售配置
-func (this *MerchantImpl) SaveSaleConf(v *merchant.SaleConf) error {
-	this.GetSaleConf()
-	if v.FlowConvertCsn < 0 || v.PresentConvertCsn < 0 ||
-		v.ApplyCsn < 0 || v.TransCsn < 0 ||
-		v.FlowConvertCsn > 1 || v.PresentConvertCsn > 1 ||
-		v.ApplyCsn > 1 || v.TransCsn > 1 {
-		return merchant.ErrSalesPercent
-	}
-
-	this.verifySaleConf(v)
-
-	this._saleConf = v
-	this._saleConf.MerchantId = this._value.Id
-
-	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
-}
-
-// 验证销售设置
-func (this *MerchantImpl) verifySaleConf(v *merchant.SaleConf) {
-	if v.OrderTimeOutMinute <= 0 {
-		v.OrderTimeOutMinute = 1440 // 一天
-	}
-
-	if v.OrderConfirmAfterMinute <= 0 {
-		v.OrderConfirmAfterMinute = 60 // 一小时后自动确认
-	}
-
-	if v.OrderTimeOutReceiveHour <= 0 {
-		v.OrderTimeOutReceiveHour = 7 * 24 // 7天后自动确认
-	}
-}
-
 // 返回用户服务
 func (this *MerchantImpl) UserManager() user.IUserManager {
 	if this._userManager == nil {
@@ -240,17 +191,6 @@ func (this *MerchantImpl) UserManager() user.IUserManager {
 			this._userRep)
 	}
 	return this._userManager
-}
-
-// 返回设置服务
-func (this *MerchantImpl) ConfManager() merchant.IConfManager {
-	if this._confManager == nil {
-		this._confManager = &ConfManager{
-			_merchantId: this.GetAggregateRootId(),
-			_rep:        this._rep,
-		}
-	}
-	return this._confManager
 }
 
 // 获取会员管理服务
@@ -285,6 +225,14 @@ func (this *MerchantImpl) MssManager() mss.IMssManager {
 		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
 	}
 	return this._mssManager
+}
+
+// 返回设置服务
+func (this *MerchantImpl) ConfManager() merchant.IConfManager {
+	if this._confManager == nil {
+		this._confManager = newConfigManagerImpl(this, this._rep)
+	}
+	return this._confManager
 }
 
 // 企业资料管理器

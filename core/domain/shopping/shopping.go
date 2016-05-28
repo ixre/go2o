@@ -354,7 +354,7 @@ func (this *Shopping) OrderAutoSetup(f func(error)) {
 	biShops = nil
 	log.Println("[SETUP] start auto setup")
 
-	saleConf := this._merchant.GetSaleConf()
+	saleConf := this._merchant.ConfManager().GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
 		orders, err = this._rep.GetWaitingSetupOrders(this._merchantId)
 		if err != nil {
