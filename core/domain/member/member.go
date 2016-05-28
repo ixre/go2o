@@ -413,6 +413,13 @@ func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
 
 // 创建会员
 func (this *Member) create(m *member.ValueMember) (int, error) {
+
+	//todo: 获取推荐人编号
+	//todo: 检测是否有注册权限
+	//if err := this._manager.RegisterPerm(this._relation.RefereesId);err != nil{
+	//	return -1,err
+	//}
+
 	if this.usrIsExist(m.Usr) {
 		return -1, member.ErrUsrExist
 	}

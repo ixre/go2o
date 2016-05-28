@@ -18,6 +18,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/variable"
 	"sync"
@@ -32,11 +33,13 @@ var (
 type MemberRep struct {
 	db.Connector
 	_partnerRep merchant.IMerchantRep
+	_valRep     valueobject.IValueRep
 }
 
-func NewMemberRep(c db.Connector) *MemberRep {
+func NewMemberRep(c db.Connector, valRep valueobject.IValueRep) *MemberRep {
 	return &MemberRep{
 		Connector: c,
+		_valRep:   valRep,
 	}
 }
 
@@ -44,7 +47,7 @@ func NewMemberRep(c db.Connector) *MemberRep {
 func (this *MemberRep) GetManager() member.IMemberManager {
 	memberMux.Lock()
 	if memberManager == nil {
-		memberManager = memberImpl.NewMemberManager(this)
+		memberManager = memberImpl.NewMemberManager(this, this._valRep)
 	}
 	memberMux.Unlock()
 	return memberManager

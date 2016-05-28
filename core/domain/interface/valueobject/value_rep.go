@@ -39,10 +39,28 @@ type (
 		//MchPayNotifyPath string //微信支付异步通知的路径
 	}
 
+	// 注册权限设置
+	RegisterPerm struct {
+		// 注册模式,等于member.RegisterMode
+		RegisterMode int
+		// 是否允许匿名注册
+		AnonymousRegistered bool
+		// 注册提示
+		Notice string
+	}
+
 	IValueRep interface {
+
 		// 获取微信接口配置
 		GetWxApiConfig() *WxApiConfig
+
 		// 保存微信接口配置
 		SaveWxApiConfig(v *WxApiConfig) error
+
+		// 获取注册权限
+		GetRegisterPerm() *RegisterPerm
+
+		// 保存注册权限
+		SaveRegisterPerm(v *RegisterPerm) error
 	}
 )

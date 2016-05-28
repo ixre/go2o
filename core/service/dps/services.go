@@ -50,7 +50,7 @@ func Init(ctx gof.App) {
 	/** Repository **/
 	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
-	memberRep := repository.NewMemberRep(db)
+	memberRep := repository.NewMemberRep(db, valRep)
 	goodsRep := repository.NewGoodsRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)

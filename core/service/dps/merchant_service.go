@@ -117,8 +117,7 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 
 	// 保存销售设置
 	pt.SaveSaleConf(&merchant.SaleConf{
-		MerchantId:   pt.GetAggregateRootId(),
-		RegisterMode: merchant.RegisterModeNormal,
+		MerchantId: pt.GetAggregateRootId(),
 	})
 
 	// 初始化销售标签
@@ -165,25 +164,6 @@ func (this *merchantService) GetSiteConf(merchantId int) *merchant.ShopSiteConf 
 	}
 	conf := pt.GetSiteConf()
 	return &conf
-}
-
-// 检查注册权限
-func (this *merchantService) CheckRegisterPerm(merchantId int, isInvitation bool) error {
-	//	if conf.RegisterMode == partner.ModeRegisterClosed {
-	//		return errors.New("1011:系统暂不开放注册")
-	//	}
-	//	if conf.RegisterMode == partner.ModeRegisterMustInvitation && len(code) == 0 {
-	//		return errors.New("1011:必须使用推荐码注册")
-	//	}
-	//	if conf.RegisterMode == partner.ModeRegisterMustRedirect && len(code) > 0 {
-	//		return errors.New("1011:系统暂不开放推荐注册")
-	//	}
-
-	pt, err := this._mchRep.GetMerchant(merchantId)
-	if err == nil {
-		err = pt.RegisterPerm(isInvitation)
-	}
-	return err
 }
 
 func (this *merchantService) GetShopsOfMerchant(merchantId int) []*merchant.Shop {

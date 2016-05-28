@@ -32,3 +32,13 @@ func (this *platformService) GetWxApiConfig() *valueobject.WxApiConfig {
 func (this *platformService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	return this._rep.SaveWxApiConfig(v)
 }
+
+// 获取注册配置
+func (this *platformService) GetRegisterPerm() *valueobject.RegisterPerm {
+	return this._rep.GetRegisterPerm()
+}
+
+// 保存注册配置
+func (this *platformService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
+	return this._rep.SaveRegisterPerm(v)
+}

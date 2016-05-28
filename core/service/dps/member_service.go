@@ -127,34 +127,32 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 // 注册会员
 func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 	cardId string, invitationCode string) (int, error) {
-	if merchantId != -1 {
 
-		//todo:
-		err := this._partnerService.CheckRegisterPerm(merchantId, len(invitationCode) > 0)
-		if err != nil {
-			return -1, err
-		}
-	}
-	var invitationId int = 0
-	if len(invitationCode) > 0 {
-		//判断邀请码是否正确
-		invitationId = this.GetMemberIdByInvitationCode(invitationCode)
-		if invitationId <= 0 {
-			return -1, member.ErrInvitationCode
-		}
-	}
-	m := this._rep.CreateMember(v) //创建会员
-	id, err := m.Save()
+	// todo: 检测注册权限,这里应删除。应用到 member的create方法
+	err := this._rep.GetManager().RegisterPerm(len(invitationCode) > 0)
 	if err == nil {
-		// 保存关联信息
-		m := this._rep.GetMember(id)
-		rl := m.GetRelation()
-		rl.RefereesId = invitationId
-		rl.RegisterMerchantId = merchantId
-		rl.CardId = cardId
-		return id, m.SaveRelation(rl)
+		var invitationId int = 0
+		if len(invitationCode) > 0 {
+			//判断邀请码是否正确
+			invitationId = this.GetMemberIdByInvitationCode(invitationCode)
+			if invitationId <= 0 {
+				return -1, member.ErrInvitationCode
+			}
+		}
+		m := this._rep.CreateMember(v) //创建会员
+		id, err := m.Save()
+		if err == nil {
+			// 保存关联信息
+			m := this._rep.GetMember(id)
+			rl := m.GetRelation()
+			rl.RefereesId = invitationId
+			rl.RegisterMerchantId = merchantId
+			rl.CardId = cardId
+			return id, m.SaveRelation(rl)
+		}
+		return id, err
 	}
-	return id, err
+	return -1, err
 }
 
 func (this *memberService) GetLevel(memberId int) *member.Level {

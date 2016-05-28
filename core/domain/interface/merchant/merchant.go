@@ -14,13 +14,6 @@ import (
 	"go2o/core/domain/interface/merchant/user"
 )
 
-const (
-	RegisterModeClosed         = 0 // 关闭注册
-	RegisterModeNormal         = 1 // 正常注册
-	RegisterModeMustInvitation = 2 // 必须邀请注册
-	RegisterModeMustRedirect   = 3 // 必须直接注册
-)
-
 type (
 	IMerchant interface {
 		GetAggregateRootId() int
@@ -46,9 +39,6 @@ type (
 
 		// 保存站点配置
 		SaveSiteConf(*ShopSiteConf) error
-
-		// 注册权限验证,如果没有权限注册,返回错误
-		RegisterPerm(isInvitation bool) error
 
 		// 新建商店
 		CreateShop(*Shop) IShop
