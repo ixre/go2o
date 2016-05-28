@@ -11,7 +11,6 @@ package repository
 import (
 	"encoding/gob"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"os"
 	"path"
 	"sync"
@@ -29,6 +28,7 @@ func handleError(err error) error {
 	return err
 }
 
+// 从文件中反序列化
 func unMarshalFromFile(file string, dst interface{}) error {
 	mux.Lock()
 	fi, err := os.Open(file)
@@ -40,13 +40,12 @@ func unMarshalFromFile(file string, dst interface{}) error {
 	return err
 }
 
+// 序列化并存储到文件
 func marshalToFile(file string, src interface{}) error {
 	//检测目录是否存在,不存在则创建目录
 	dir := path.Dir(file)
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, os.ModePerm)
-	} else {
-		log.Println(err.Error())
 	}
 	mux.Lock()
 	f, err := os.OpenFile(file,

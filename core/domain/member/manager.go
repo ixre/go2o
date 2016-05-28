@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/valueobject"
 	"sort"
 )
 
@@ -20,17 +21,37 @@ var _ member.ILevelManager = new(levelManagerImpl)
 
 type MemberManagerImpl struct {
 	_levelManager member.ILevelManager
+	_valRep       valueobject.IValueRep
 }
 
-func NewMemberManager(rep member.IMemberRep) member.IMemberManager {
+func NewMemberManager(rep member.IMemberRep,
+	valRep valueobject.IValueRep) member.IMemberManager {
 	return &MemberManagerImpl{
 		_levelManager: newLevelManager(rep),
+		_valRep:       valRep,
 	}
 }
 
 // 等级服务
 func (this *MemberManagerImpl) LevelManager() member.ILevelManager {
 	return this._levelManager
+}
+
+// 检测注册权限
+func (this *MemberManagerImpl) RegisterPerm(invitation bool) error {
+	conf := this._valRep.GetRegisterPerm()
+	if conf.RegisterMode == member.RegisterModeClosed {
+		return member.ErrRegOff
+	}
+	if conf.RegisterMode == member.RegisterModeMustInvitation && !invitation {
+		return member.ErrRegMustInvitation
+	}
+	if conf.RegisterMode == member.RegisterModeMustRedirect && invitation {
+		return member.ErrRegOffInvitation
+	} else if conf.RegisterMode == member.RegisterModeNormal {
+
+	}
+	return nil
 }
 
 // 等级服务实现

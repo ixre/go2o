@@ -192,18 +192,7 @@ func (this *MerchantImpl) GetSaleConf() merchant.SaleConf {
 
 // 保存销售配置
 func (this *MerchantImpl) SaveSaleConf(v *merchant.SaleConf) error {
-
 	this.GetSaleConf()
-
-	if v.RegisterMode == merchant.RegisterModeClosed ||
-		v.RegisterMode == merchant.RegisterModeNormal ||
-		v.RegisterMode == merchant.RegisterModeMustInvitation ||
-		v.RegisterMode == merchant.RegisterModeMustRedirect {
-		this._saleConf.RegisterMode = v.RegisterMode
-	} else {
-		return merchant.ErrRegisterMode
-	}
-
 	if v.FlowConvertCsn < 0 || v.PresentConvertCsn < 0 ||
 		v.ApplyCsn < 0 || v.TransCsn < 0 ||
 		v.FlowConvertCsn > 1 || v.PresentConvertCsn > 1 ||
@@ -217,21 +206,6 @@ func (this *MerchantImpl) SaveSaleConf(v *merchant.SaleConf) error {
 	this._saleConf.MerchantId = this._value.Id
 
 	return this._rep.SaveSaleConf(this.GetAggregateRootId(), this._saleConf)
-}
-
-// 注册权限验证,如果没有权限注册,返回错误
-func (this *MerchantImpl) RegisterPerm(isInvitation bool) error {
-	conf := this.GetSaleConf()
-	if conf.RegisterMode == merchant.RegisterModeClosed {
-		return merchant.ErrRegOff
-	}
-	if conf.RegisterMode == merchant.RegisterModeMustInvitation && !isInvitation {
-		return merchant.ErrRegMustInvitation
-	}
-	if conf.RegisterMode == merchant.RegisterModeMustRedirect && isInvitation {
-		return merchant.ErrRegOffInvitation
-	}
-	return nil
 }
 
 // 验证销售设置

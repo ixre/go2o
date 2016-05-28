@@ -8,12 +8,22 @@
  */
 package member
 
+const (
+	RegisterModeClosed         = 0 // 关闭注册
+	RegisterModeNormal         = 1 // 正常注册
+	RegisterModeMustInvitation = 2 // 必须邀请注册
+	RegisterModeMustRedirect   = 3 // 必须直接注册
+)
+
 type (
 
 	// 会员服务
 	IMemberManager interface {
 		// 等级服务
 		LevelManager() ILevelManager
+
+		// 检测注册权限
+		RegisterPerm(invitation bool) error
 
 		// IDocManager()IDocManager
 	}
