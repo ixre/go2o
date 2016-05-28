@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/valueobject"
 	mssImpl "go2o/core/domain/merchant/mss"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
@@ -32,6 +33,7 @@ type MerchantImpl struct {
 	_rep             merchant.IMerchantRep
 	_shopRep         shop.IShopRep
 	_userRep         user.IUserRep
+	_valRep          valueobject.IValueRep
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_levelManager    merchant.ILevelManager
@@ -46,13 +48,14 @@ type MerchantImpl struct {
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
 	shopRep shop.IShopRep, userRep user.IUserRep,
-	mssRep mss.IMssRep) (merchant.IMerchant, error) {
+	mssRep mss.IMssRep, valRep valueobject.IValueRep) (merchant.IMerchant, error) {
 	mch := &MerchantImpl{
 		_value:   v,
 		_rep:     rep,
 		_shopRep: shopRep,
 		_userRep: userRep,
 		_mssRep:  mssRep,
+		_valRep:  valRep,
 	}
 	return mch, mch.Stat()
 }
@@ -230,7 +233,7 @@ func (this *MerchantImpl) MssManager() mss.IMssManager {
 // 返回设置服务
 func (this *MerchantImpl) ConfManager() merchant.IConfManager {
 	if this._confManager == nil {
-		this._confManager = newConfigManagerImpl(this, this._rep)
+		this._confManager = newConfigManagerImpl(this, this._rep, this._valRep)
 	}
 	return this._confManager
 }

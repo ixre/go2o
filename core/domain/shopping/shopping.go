@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/lbs"
 	"go2o/core/infrastructure/log"
 	"sync"
@@ -34,6 +35,7 @@ type Shopping struct {
 	_memberRep   member.IMemberRep
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
+	_valRep      valueobject.IValueRep
 	_merchantId  int
 	_merchant    merchant.IMerchant
 }
@@ -41,7 +43,7 @@ type Shopping struct {
 func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	deliveryRep delivery.IDeliveryRep) shopping.IShopping {
+	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) shopping.IShopping {
 
 	mch, _ := partnerRep.GetMerchant(merchantId)
 
@@ -54,6 +56,7 @@ func NewShopping(merchantId int, partnerRep merchant.IMerchantRep,
 		_merchantId:  merchantId,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
+		_valRep:      valRep,
 		_merchant:    mch,
 	}
 }
@@ -62,8 +65,11 @@ func (this *Shopping) GetAggregateRootId() int {
 	return this._merchantId
 }
 
-func (this *Shopping) CreateOrder(val *shopping.ValueOrder, cart shopping.ICart) shopping.IOrder {
-	return newOrder(this, val, cart, this._partnerRep, this._rep, this._saleRep, this._promRep, this._memberRep)
+func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
+	cart shopping.ICart) shopping.IOrder {
+	return newOrder(this, val, cart, this._partnerRep,
+		this._rep, this._saleRep, this._promRep,
+		this._memberRep, this._valRep)
 }
 
 //创建购物车

@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
+	"go2o/core/domain/interface/valueobject"
 	shoppingImpl "go2o/core/domain/shopping"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
@@ -37,12 +38,14 @@ type shoppingRep struct {
 	_memberRep  member.IMemberRep
 	_partnerRep merchant.IMerchantRep
 	_deliverRep delivery.IDeliveryRep
+	_valRep     valueobject.IValueRep
 	_cache      map[int]shopping.IShopping
 }
 
 func NewShoppingRep(c db.Connector, ptRep merchant.IMerchantRep,
 	saleRep sale.ISaleRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep,
-	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep) shopping.IShoppingRep {
+	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
+	valRep valueobject.IValueRep) shopping.IShoppingRep {
 	return (&shoppingRep{
 		Connector:   c,
 		_saleRep:    saleRep,
@@ -51,6 +54,7 @@ func NewShoppingRep(c db.Connector, ptRep merchant.IMerchantRep,
 		_memberRep:  memRep,
 		_partnerRep: ptRep,
 		_deliverRep: deliverRep,
+		_valRep:     valRep,
 	}).init()
 }
 
@@ -66,7 +70,8 @@ func (this *shoppingRep) GetShopping(merchantId int) shopping.IShopping {
 	v, ok := this._cache[merchantId]
 	if !ok {
 		v = shoppingImpl.NewShopping(merchantId, this._partnerRep,
-			this, this._saleRep, this._goodsRep, this._promRep, this._memberRep, this._deliverRep)
+			this, this._saleRep, this._goodsRep, this._promRep,
+			this._memberRep, this._deliverRep, this._valRep)
 		this._cache[merchantId] = v
 	}
 	return v

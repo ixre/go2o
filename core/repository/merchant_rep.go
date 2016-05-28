@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/valueobject"
 	merchantImpl "go2o/core/domain/merchant"
 	"go2o/core/infrastructure/domain"
 	"strings"
@@ -31,21 +32,23 @@ type merchantRep struct {
 	_userRep user.IUserRep
 	_mssRep  mss.IMssRep
 	_shopRep shop.IShopRep
+	_valRep  valueobject.IValueRep
 }
 
 func NewMerchantRep(c db.Connector, shopRep shop.IShopRep, userRep user.IUserRep,
-	mssRep mss.IMssRep) merchant.IMerchantRep {
+	mssRep mss.IMssRep, valRep valueobject.IValueRep) merchant.IMerchantRep {
 	return &merchantRep{
 		Connector: c,
 		_cache:    make(map[int]merchant.IMerchant),
 		_userRep:  userRep,
 		_mssRep:   mssRep,
 		_shopRep:  shopRep,
+		_valRep:   valRep,
 	}
 }
 
 func (this *merchantRep) CreateMerchant(v *merchant.Merchant) (merchant.IMerchant, error) {
-	return merchantImpl.NewMerchant(v, this, this._shopRep, this._userRep, this._mssRep)
+	return merchantImpl.NewMerchant(v, this, this._shopRep, this._userRep, this._mssRep, this._valRep)
 }
 
 func (this *merchantRep) renew(merchantId int) {
@@ -124,7 +127,7 @@ func (this *merchantRep) GetMerchantsId() []int {
 }
 
 // 获取销售配置
-func (this *merchantRep) GetSaleConf(merchantId int) *merchant.SaleConf {
+func (this *merchantRep) GetMerchantSaleConf(merchantId int) *merchant.SaleConf {
 	//10%分成
 	//0.2,         #上级
 	//0.1,         #上上级
@@ -136,13 +139,12 @@ func (this *merchantRep) GetSaleConf(merchantId int) *merchant.SaleConf {
 	return nil
 }
 
-func (this *merchantRep) SaveSaleConf(merchantId int, v *merchant.SaleConf) error {
+func (this *merchantRep) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 	defer this.renew(v.MerchantId)
 	var err error
 	if v.MerchantId > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.MerchantId, v)
 	} else {
-		v.MerchantId = merchantId
 		_, _, err = this.Connector.GetOrm().Save(nil, v)
 	}
 	return err

@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
 	"log"
@@ -42,13 +43,15 @@ type Order struct {
 	_partnerRep      merchant.IMerchantRep
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
+	_valRep          valueobject.IValueRep
 	_internalSuspend bool // 是否为内部挂起
 	_balanceDiscount bool // 余额支付
 }
 
 func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
 	partnerRep merchant.IMerchantRep, shoppingRep shopping.IShoppingRep, saleRep sale.ISaleRep,
-	promRep promotion.IPromotionRep, memberRep member.IMemberRep) shopping.IOrder {
+	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
+	valRep valueobject.IValueRep) shopping.IOrder {
 	return &Order{
 		_shopping:    shopping,
 		_value:       value,
@@ -58,6 +61,7 @@ func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shop
 		_shoppingRep: shoppingRep,
 		_partnerRep:  partnerRep,
 		_saleRep:     saleRep,
+		_valRep:      valRep,
 	}
 }
 
@@ -704,6 +708,7 @@ func (this *Order) Complete() error {
 	//******* 返现到账户  ************
 	var back_fee float32
 	saleConf := mch.ConfManager().GetSaleConf()
+	globSaleConf := this._valRep.GetGlobSaleConf()
 	if saleConf.CashBackPercent > 0 {
 		back_fee = v.Fee * saleConf.CashBackPercent
 
@@ -712,8 +717,8 @@ func (this *Order) Complete() error {
 			back_fee*saleConf.CashBackMemberPercent, now)
 
 		//todo: 增加阶梯的返积分,比如订单满30送100积分
-		backIntegral := int(v.Fee)*saleConf.IntegralBackNum +
-			saleConf.IntegralBackExtra
+		backIntegral := int(v.Fee)*globSaleConf.IntegralBackNum +
+			globSaleConf.IntegralBackExtra
 
 		// 赠送积分
 		if backIntegral != 0 {

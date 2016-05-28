@@ -25,9 +25,10 @@ type IMerchantRep interface {
 	SaveMerchant(*Merchant) (int, error)
 
 	// 获取销售配置
-	GetSaleConf(int) *SaleConf
+	GetMerchantSaleConf(int) *SaleConf
 
-	SaveSaleConf(merchantId int, v *SaleConf) error
+	// 保存销售配置
+	SaveMerchantSaleConf(v *SaleConf) error
 
 	// 保存API信息
 	SaveApiInfo(d *ApiInfo) error
