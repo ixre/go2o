@@ -674,14 +674,14 @@ func (this *Order) Complete() error {
 		return member.ErrNoSuchMember
 	}
 	var err error
-	var ptl merchant.IMerchant
-	ptl, err = this._partnerRep.GetMerchant(v.MerchantId)
+	var mch merchant.IMerchant
+	mch, err = this._partnerRep.GetMerchant(v.MerchantId)
 	if err != nil {
 		log.Println("供应商异常!", v.MerchantId)
 		return err
 	}
 
-	pv := ptl.GetValue()
+	pv := mch.GetValue()
 	if pv.ExpiresTime < time.Now().Unix() {
 		return errors.New("您的账户已经过期!")
 	}
@@ -703,12 +703,12 @@ func (this *Order) Complete() error {
 
 	//******* 返现到账户  ************
 	var back_fee float32
-	saleConf := ptl.GetSaleConf()
+	saleConf := mch.ConfManager().GetSaleConf()
 	if saleConf.CashBackPercent > 0 {
 		back_fee = v.Fee * saleConf.CashBackPercent
 
 		//将此次消费记入会员账户
-		this.updateShoppingMemberBackFee(ptl, m,
+		this.updateShoppingMemberBackFee(mch, m,
 			back_fee*saleConf.CashBackMemberPercent, now)
 
 		//todo: 增加阶梯的返积分,比如订单满30送100积分
@@ -734,10 +734,10 @@ func (this *Order) Complete() error {
 	if err == nil {
 		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
 		// 处理返现促销
-		this.handleCashBackPromotions(ptl, m)
+		this.handleCashBackPromotions(mch, m)
 		// 三级返现
 		if back_fee > 0 {
-			this.backFor3R(ptl, m, back_fee, now)
+			this.backFor3R(mch, m, back_fee, now)
 		}
 	}
 	return err
@@ -813,7 +813,7 @@ func (this *Order) handleCashBackPromotion(pt merchant.IMerchant, m member.IMemb
 }
 
 // 三级返现
-func (this *Order) backFor3R(pt merchant.IMerchant, m member.IMember,
+func (this *Order) backFor3R(mch merchant.IMerchant, m member.IMember,
 	back_fee float32, unixTime int64) {
 	if back_fee == 0 {
 		return
@@ -821,7 +821,7 @@ func (this *Order) backFor3R(pt merchant.IMerchant, m member.IMember,
 
 	i := 0
 	mName := m.GetValue().Name
-	saleConf := pt.GetSaleConf()
+	saleConf := mch.ConfManager().GetSaleConf()
 	percent := saleConf.CashBackTg2Percent
 	for i < 2 {
 		rl := m.GetRelation()
@@ -838,7 +838,7 @@ func (this *Order) backFor3R(pt merchant.IMerchant, m member.IMember,
 			percent = saleConf.CashBackTg1Percent
 		}
 
-		this.updateMemberAccount(m, pt.GetValue().Name, mName,
+		this.updateMemberAccount(m, mch.GetValue().Name, mName,
 			back_fee*percent, unixTime)
 		i++
 	}

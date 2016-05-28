@@ -47,10 +47,44 @@ type (
 		AnonymousRegistered bool
 		// 注册提示
 		Notice string
+		// 用户条款内容
+		Licence string
+	}
+
+	GlobSaleConf struct {
+		// 是否启用分销模式
+		FxSalesEnabled bool
+		// 返现比例,0则不返现
+		CashBackPercent float32
+		// 一级比例
+		CashBackTg1Percent float32
+		// 二级比例
+		CashBackTg2Percent float32
+		// 会员比例
+		CashBackMemberPercent float32
+		// 每一元返多少积分
+		IntegralBackNum int
+		// 每单额外赠送
+		IntegralBackExtra int
+		// 自动设置订单
+		AutoSetupOrder bool
+		// 订单超时分钟数
+		OrderTimeOutMinute int
+		// 订单自动确认时间
+		OrderConfirmAfterMinute int
+		// 订单超时自动收货
+		OrderTimeOutReceiveHour int
+		// 提现手续费费率
+		ApplyCsn float32
+		// 转账手续费费率
+		TransCsn float32
+		// 活动账户转为赠送可提现奖金手续费费率
+		FlowConvertCsn float32
+		// 赠送账户转换手续费费率
+		PresentConvertCsn float32
 	}
 
 	IValueRep interface {
-
 		// 获取微信接口配置
 		GetWxApiConfig() *WxApiConfig
 

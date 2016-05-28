@@ -116,10 +116,10 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 		IndexTitle: mch.GetValue().Name,
 	})
 
+	conf := merchant.DefaultSaleConf
+	conf.MerchantId = mch.GetAggregateRootId()
 	// 保存销售设置
-	mch.SaveSaleConf(&merchant.SaleConf{
-		MerchantId: mch.GetAggregateRootId(),
-	})
+	mch.ConfManager().SaveSaleConf(&conf)
 
 	// 初始化销售标签
 	this._saleRep.GetSale(merchantId).InitSaleTags()
@@ -154,16 +154,16 @@ func (this *merchantService) SaveSiteConf(merchantId int, v *shop.ShopSiteConf) 
 }
 
 func (this *merchantService) SaveSaleConf(merchantId int, v *merchant.SaleConf) error {
-	pt, _ := this._mchRep.GetMerchant(merchantId)
-	return pt.SaveSaleConf(v)
+	mch, _ := this._mchRep.GetMerchant(merchantId)
+	return mch.ConfManager().SaveSaleConf(v)
 }
 
 func (this *merchantService) GetSaleConf(merchantId int) *merchant.SaleConf {
-	pt, err := this._mchRep.GetMerchant(merchantId)
+	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
-	conf := pt.GetSaleConf()
+	conf := mch.ConfManager().GetSaleConf()
 	return &conf
 }
 

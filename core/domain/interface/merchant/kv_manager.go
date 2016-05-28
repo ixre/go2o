@@ -12,6 +12,12 @@ const (
 	KeyMssTplIdOfProfileComplete string = "mss_profile_complete_mail_tpl"
 )
 
+//todo: 存储设置项的名字, 存储到文件中
+var (
+	// 检测KeyValue,如非法则返回错误,不持久化
+	KeyValueChecker func(map[string]string) error
+)
+
 type (
 	IKvManager interface {
 		// 获取
