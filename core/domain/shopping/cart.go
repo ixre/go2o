@@ -40,7 +40,7 @@ func createCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, s
 	}).init()
 }
 
-//todo: merchantId 应去掉，可能在多个商家买东西
+//todo: merchantId 应去掉，可能在多个商户买东西
 func newCart(partnerRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
 	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep, merchantId int, buyerId int) shopping.ICart {
 	unix := time.Now().Unix()

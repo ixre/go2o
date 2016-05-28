@@ -15,6 +15,6 @@ type MemberRelation struct {
 	CardId string `db:"card_id"`
 	//推荐人（会员）
 	RefereesId int `db:"invi_member_id"`
-	//注册关联商家编号
+	//注册关联商户编号
 	RegisterMerchantId int `db:"reg_merchant_id"`
 }

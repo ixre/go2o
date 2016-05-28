@@ -5,7 +5,7 @@ CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`dlv_partner_bind`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL , RENAME TO  `zxdb`.`dlv_merchant_bind` ;
 ALTER TABLE `zxdb`.`gs_category`
-CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL COMMENT '商家ID(pattern ID);如果为空，则表示模式分类' ;
+CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL COMMENT '商户ID(pattern ID);如果为空，则表示模式分类' ;
 ALTER TABLE `zxdb`.`gs_sale_tag`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`mm_relation`
@@ -27,7 +27,7 @@ CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`pt_member_level`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL ;
 ALTER TABLE `zxdb`.`pt_order`
-CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL COMMENT '商家ID' ;
+CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL COMMENT '商户ID' ;
 ALTER TABLE `zxdb`.`pt_saleconf`
 CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL ;
 ALTER TABLE `zxdb`.`pt_shop`
@@ -126,7 +126,12 @@ DROP COLUMN `phone`,
 DROP COLUMN `tel`,
 ADD COLUMN `province` INT NULL AFTER `logo`,
 ADD COLUMN `city` INT NULL AFTER `province`,
-ADD COLUMN `district` INT NULL AFTER `city`, RENAME TO  `zxdb`.`mch_merchant` ;
+ADD COLUMN `district` INT NULL AFTER `city`,
+ADD COLUMN `enabled` TINYINT(1) NULL AFTER `join_time`,
+ADD COLUMN `member_id` INT UNSIGNED NULL AFTER `id`,
+RENAME TO  `zxdb`.`mch_merchant` ;
+
+
 
 
 
