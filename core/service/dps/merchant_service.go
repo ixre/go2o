@@ -116,10 +116,10 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 		IndexTitle: mch.GetValue().Name,
 	})
 
-	conf := merchant.DefaultSaleConf
-	conf.MerchantId = mch.GetAggregateRootId()
+	//conf := merchant.DefaultSaleConf
+	//conf.MerchantId = mch.GetAggregateRootId()
 	// 保存销售设置
-	mch.ConfManager().SaveSaleConf(&conf)
+	//mch.ConfManager().SaveSaleConf(&conf)
 
 	// 初始化销售标签
 	this._saleRep.GetSale(merchantId).InitSaleTags()

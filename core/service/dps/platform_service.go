@@ -42,3 +42,23 @@ func (this *platformService) GetRegisterPerm() *valueobject.RegisterPerm {
 func (this *platformService) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	return this._rep.SaveRegisterPerm(v)
 }
+
+// 获取全局系统销售设置
+func (this *platformService) GetGlobSaleConf() *valueobject.GlobSaleConf {
+	return this._rep.GetGlobSaleConf()
+}
+
+// 保存全局系统销售设置
+func (this *platformService) SaveGlobSaleConf(v *valueobject.GlobSaleConf) error {
+	return this._rep.SaveGlobSaleConf(v)
+}
+
+// 获取全局商户销售设置
+func (this *platformService) GetGlobMerchantSaleConf() *valueobject.GlobMerchantSaleConf {
+	return this._rep.GetGlobMerchantSaleConf()
+}
+
+// 保存全局商户销售设置
+func (this *platformService) SaveGlobMerchantSaleConf(v *valueobject.GlobMerchantSaleConf) error {
+	return this._rep.SaveGlobMerchantSaleConf(v)
+}

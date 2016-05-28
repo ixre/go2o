@@ -132,6 +132,21 @@ ADD COLUMN `member_id` INT UNSIGNED NULL AFTER `id`,
 RENAME TO  `zxdb`.`mch_merchant` ;
 
 
+ALTER TABLE `zxdb`.`pt_saleconf`
+  DROP COLUMN `present_convert_csn`,
+  DROP COLUMN `flow_convert_csn`,
+  DROP COLUMN `apply_csn`,
+  DROP COLUMN `trans_csn`,
+  DROP COLUMN `register_mode`,
+  DROP COLUMN `ib_extra`,
+  DROP COLUMN `ib_num`,
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NOT NULL ,
+  ADD COLUMN `fx_sales` TINYINT(1) NULL COMMENT '是否启用分销' AFTER `mch_id`,
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (`mch_id`), RENAME TO  `zxdb`.`mch_saleconf` ;
+
+
+
 
 
 
