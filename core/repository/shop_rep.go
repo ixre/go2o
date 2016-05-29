@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure"
-	"go2o/core/infrastructure/log"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
 )
 
@@ -41,10 +41,12 @@ func (this *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
 }
 
 // 保存线上商店
-func (this *shopRep) SaveOnlineShop(v *shop.OnlineShop) error {
-	_, _, err := this.GetOrm().Save(v.ShopId, v)
-	if err != nil {
+func (this *shopRep) SaveOnlineShop(v *shop.OnlineShop, create bool) error {
+	var err error
+	if create {
 		_, _, err = this.GetOrm().Save(nil, v)
+	} else {
+		_, _, err = this.GetOrm().Save(v.ShopId, v)
 	}
 	return err
 }
@@ -59,10 +61,12 @@ func (this *shopRep) GetOfflineShop(shopId int) *shop.OfflineShop {
 }
 
 // 保存线下商店
-func (this *shopRep) SaveOfflineShop(v *shop.OfflineShop) error {
-	_, _, err := this.GetOrm().Save(v.ShopId, v)
-	if err != nil {
+func (this *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
+	var err error
+	if create {
 		_, _, err = this.GetOrm().Save(nil, v)
+	} else {
+		_, _, err = this.GetOrm().Save(v.ShopId, v)
 	}
 	return err
 }
@@ -119,15 +123,15 @@ func (this *shopRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 
 func (this *shopRep) SaveShop(v *shop.Shop) (int, error) {
 	orm := this.Connector.GetOrm()
+	var err error
 	if v.Id > 0 {
-		_, _, err := orm.Save(v.Id, v)
-		return v.Id, err
+		_, _, err = orm.Save(v.Id, v)
 	} else {
-		_, _, err := orm.Save(nil, v)
-
-		//todo: return id
-		return 0, err
+		var id int64
+		_, id, err = orm.Save(nil, v)
+		v.Id = int(id)
 	}
+	return v.Id, err
 }
 
 func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
@@ -137,7 +141,7 @@ func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 		v.MerchantId == merchantId {
 		return v
 	} else {
-		log.Error(err)
+		domain.HandleError(err)
 	}
 	return nil
 }
@@ -148,7 +152,7 @@ func (this *shopRep) GetShopsOfMerchant(mchId int) []*shop.Shop {
 		"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
 
 	if err != nil {
-		log.Error(err)
+		domain.HandleError(err)
 		return nil
 	}
 
