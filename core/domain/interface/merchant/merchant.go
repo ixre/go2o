@@ -17,7 +17,7 @@ import (
 
 type (
 	// 商户接口
-	//todo: 可以被缓存起来
+	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
 		GetAggregateRootId() int
 
@@ -74,6 +74,8 @@ type (
 		Usr      string `db:"usr"`
 		Pwd      string `db:"pwd"`
 		Name     string `db:"name"`
+		// 商户等级
+		Level    int   `db:"level"`
 		Logo     string `db:"logo"`
 		// 省
 		Province int `db:"province"`

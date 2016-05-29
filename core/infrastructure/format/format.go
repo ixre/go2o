@@ -11,10 +11,14 @@ package format
 import (
 	"encoding/json"
 	"html/template"
+	"github.com/jsix/gof/log"
 )
 
 // 强制序列化为可用于HTML的JSON
 func MustHtmlJson(v interface{}) template.JS {
-	d, _ := json.Marshal(v)
+	d, err := json.Marshal(v)
+	if err != nil{
+		log.Println("[ Go2o][ Json] - ",err.Error())
+	}
 	return template.JS(d)
 }
