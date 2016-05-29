@@ -201,6 +201,12 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 	return sv
 }
 
+// 获取商店的数据
+func (this *merchantService) GetShopData(mchId, shopId int) *shop.ShopDto {
+	mch, _ := this._mchRep.GetMerchant(mchId)
+	return mch.ShopManager().GetShop(shopId).Data()
+}
+
 func (this *merchantService) GetShopValueById(merchantId, shopId int) *shop.Shop {
 	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {

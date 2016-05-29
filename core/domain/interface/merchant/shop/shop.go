@@ -17,7 +17,7 @@ const (
 	TypeOfflineShop = 2
 )
 
-const(
+const (
 	// 停用状态
 	StateStopped = 0
 	// 待审核状态
@@ -30,23 +30,33 @@ const(
 	StatePause = 4
 )
 
-
 var (
 	// 商店状态字典
 	StateTextMap = map[int]string{
-		StateStopped:"已停用",
-		StateWaitReview:"待审核",
-		StateNormal:"正常",
-		StateSuspend:"系统挂起",
-		StatePause:"商户暂停",
+		StateStopped:    "已停用",
+		StateWaitReview: "待审核",
+		StateNormal:     "正常",
+		StateSuspend:    "系统挂起",
+		StatePause:      "商户暂停",
 	}
 
 	StateTextStrMap = map[string]string{
-		strconv.Itoa(StateStopped):StateTextMap[StateStopped],
-		strconv.Itoa(StateWaitReview):StateTextMap[StateWaitReview],
-		strconv.Itoa(StateNormal):StateTextMap[StateNormal],
-		strconv.Itoa(StateSuspend):StateTextMap[StateSuspend],
-		strconv.Itoa(StatePause):StateTextMap[StatePause],
+		strconv.Itoa(StateStopped):    StateTextMap[StateStopped],
+		strconv.Itoa(StateWaitReview): StateTextMap[StateWaitReview],
+		strconv.Itoa(StateNormal):     StateTextMap[StateNormal],
+		strconv.Itoa(StateSuspend):    StateTextMap[StateSuspend],
+		strconv.Itoa(StatePause):      StateTextMap[StatePause],
+	}
+
+	// 商店类型字电
+	TypeTextMap = map[int]string{
+		TypeOnlineShop:  "商店",
+		TypeOfflineShop: "门店",
+	}
+
+	TypeTextStrMap = map[string]string{
+		strconv.Itoa(TypeOnlineShop):  "商店",
+		strconv.Itoa(TypeOfflineShop): "门店",
 	}
 
 	DefaultOnlineShop = OnlineShop{

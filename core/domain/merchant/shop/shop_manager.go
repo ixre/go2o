@@ -64,7 +64,6 @@ func (this *shopManagerImpl) GetShops() []shop.IShop {
 			this._shops[i] = this.CreateShop(v)
 		}
 	}
-
 	return this._shops
 }
 
