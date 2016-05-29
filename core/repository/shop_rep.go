@@ -142,10 +142,10 @@ func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 	return nil
 }
 
-func (this *shopRep) GetShopsOfMerchant(merchantId int) []*shop.Shop {
+func (this *shopRep) GetShopsOfMerchant(mchId int) []*shop.Shop {
 	shops := []*shop.Shop{}
 	err := this.Connector.GetOrm().SelectByQuery(&shops,
-		"SELECT * FROM mch_shop WHERE merchant_id=?", merchantId)
+		"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
 
 	if err != nil {
 		log.Error(err)
@@ -155,8 +155,8 @@ func (this *shopRep) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 	return shops
 }
 
-func (this *shopRep) DeleteShop(merchantId, shopId int) error {
+func (this *shopRep) DeleteShop(mchId, shopId int) error {
 	_, err := this.Connector.GetOrm().Delete(shop.Shop{},
-		"merchant_id=? AND id=?", merchantId, shopId)
+		"mch_id=? AND id=?", mchId, shopId)
 	return err
 }

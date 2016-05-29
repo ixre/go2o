@@ -75,8 +75,8 @@ type (
 		Pwd      string `db:"pwd"`
 		Name     string `db:"name"`
 		// 商户等级
-		Level    int   `db:"level"`
-		Logo     string `db:"logo"`
+		Level int    `db:"level"`
+		Logo  string `db:"logo"`
 		// 省
 		Province int `db:"province"`
 		// 市
