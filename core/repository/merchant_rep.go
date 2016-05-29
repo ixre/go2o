@@ -174,7 +174,7 @@ func (this *merchantRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (this *merchantRep) GetMerchantIdByApiId(apiId string) int {
 	var merchantId int
-	this.ExecScalar("SELECT merchant_id FROM pt_api WHERE api_id=?", &merchantId, apiId)
+	this.ExecScalar("SELECT merchant_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
 	return merchantId
 }
 

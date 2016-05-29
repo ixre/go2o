@@ -249,6 +249,7 @@ func (this *Shopping) GetFreeOrderNo() string {
 
 // 智能选择门店
 func (this *Shopping) SmartChoiceShop(address string) (shop.IShop, error) {
+	//todo: 应只选择线下实体店
 	dly := this._deliveryRep.GetDelivery(this.GetAggregateRootId())
 
 	lng, lat, err := lbs.GetLocation(address)
@@ -388,27 +389,28 @@ func (this *Shopping) SmartConfirmOrder(order shopping.IOrder) error {
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-	var shop shop.IShop
+	var sp shop.IShop
 	if biShops == nil {
 		biShops = this._merchant.ShopManager().GetBusinessInShops()
 	}
 	if len(biShops) == 1 {
-		shop = biShops[0]
+		sp = biShops[0]
 	} else {
-		shop, err = this.SmartChoiceShop(v.DeliverAddress)
+		sp, err = this.SmartChoiceShop(v.DeliverAddress)
 		if err != nil {
 			order.Suspend("智能分配门店失败！原因：" + err.Error())
 			return err
 		}
 	}
 
-	if shop != nil {
-		sv := shop.GetValue()
-		order.SetShop(shop.GetDomainId())
+	if sp != nil && sp.Type() == shop.TypeOfflineShop {
+		sv := sp.GetValue()
+		order.SetShop(sp.GetDomainId())
 		err = order.Confirm()
 		//err = order.Process()
+		ofs := sp.(shop.IOfflineShop).GetShopValue()
 		order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
-			"自动分配门店:%s,电话：%s", sv.Name, sv.Phone))
+			"自动分配门店:%s,电话：%s", sv.Name, ofs.Tel))
 	}
 	return err
 }
