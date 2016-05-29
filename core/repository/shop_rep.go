@@ -31,6 +31,42 @@ func NewShopRep(c db.Connector) shop.IShopRep {
 	}
 }
 
+// 获取线上商店
+func (this *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
+	e := shop.OnlineShop{}
+	if this.GetOrm().Get(shopId, &e) != nil {
+		return nil
+	}
+	return &e
+}
+
+// 保存线上商店
+func (this *shopRep) SaveOnlineShop(v *shop.OnlineShop) error {
+	_, _, err := this.GetOrm().Save(v.ShopId, v)
+	if err != nil {
+		_, _, err = this.GetOrm().Save(nil, v)
+	}
+	return err
+}
+
+// 获取线下商店
+func (this *shopRep) GetOfflineShop(shopId int) *shop.OfflineShop {
+	e := shop.OfflineShop{}
+	if this.GetOrm().Get(shopId, &e) != nil {
+		return nil
+	}
+	return &e
+}
+
+// 保存线下商店
+func (this *shopRep) SaveOfflineShop(v *shop.OfflineShop) error {
+	_, _, err := this.GetOrm().Save(v.ShopId, v)
+	if err != nil {
+		_, _, err = this.GetOrm().Save(nil, v)
+	}
+	return err
+}
+
 // 获取站点配置
 func (this *shopRep) GetSiteConf(merchantId int) *shop.ShopSiteConf {
 	var siteConf shop.ShopSiteConf
@@ -109,7 +145,7 @@ func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 func (this *shopRep) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 	shops := []*shop.Shop{}
 	err := this.Connector.GetOrm().SelectByQuery(&shops,
-		"SELECT * FROM pt_shop WHERE merchant_id=?", merchantId)
+		"SELECT * FROM mch_shop WHERE merchant_id=?", merchantId)
 
 	if err != nil {
 		log.Error(err)

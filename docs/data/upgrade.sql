@@ -99,9 +99,14 @@ CREATE TABLE `zxdb`.`mm_level` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `zxdb`.`pt_api`
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NOT NULL ,
+  RENAME TO  `zxdb`.`mch_api` ;
+
+
   CREATE TABLE `zxdb`.`mch_enterpriseinfo` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `merchant_id` INT NULL,
+  `mch_id` INT NULL,
   `name` VARCHAR(45) NULL,
   `company_no` VARCHAR(45) NULL,
   `person_name` VARCHAR(10) NULL,
@@ -143,11 +148,42 @@ ALTER TABLE `zxdb`.`pt_saleconf`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NOT NULL ,
   ADD COLUMN `fx_sales` TINYINT(1) NULL COMMENT '是否启用分销' AFTER `mch_id`,
   DROP PRIMARY KEY,
-  ADD PRIMARY KEY (`mch_id`), RENAME TO  `zxdb`.`mch_saleconf` ;
+  ADD PRIMARY KEY (`mch_id`), RENAME TO `zxdb`.`mch_saleconf` ;
 
 
+CREATE TABLE `zxdb`.`mch_offline_shop` (
+  `shop_id` INT NOT NULL,
+  `tel` VARCHAR(45) NULL,
+  `addr` VARCHAR(45) NULL,
+  `lng` FLOAT(5,2) NULL,
+  `lat` FLOAT(5,2) NULL,
+  `deliver_radius` INT NULL COMMENT '配送范围',
+  `province` INT NULL,
+  `city` INT NULL,
+  `district` INT NULL,
+  PRIMARY KEY (`shop_id`));
 
 
+ALTER TABLE `zxdb`.`pt_shop`
+  DROP COLUMN `deliver_radius`,
+  DROP COLUMN `location`,
+  DROP COLUMN `phone`,
+  DROP COLUMN `address`,
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL ,
+  ADD COLUMN `shop_type` TINYINT(1) NULL AFTER `mch_id`, RENAME TO  `zxdb`.`mch_shop` ;
+
+
+CREATE TABLE `zxdb`.`mch_online_shop` (
+  `shop_id` INT NOT NULL,
+  `alias` VARCHAR(20) NULL,
+  `tel` VARCHAR(45) NULL,
+  `addr` VARCHAR(120) NULL,
+  `host` VARCHAR(20) NULL,
+  `logo` VARCHAR(120) NULL,
+  `index_tit` VARCHAR(120) NULL,
+  `sub_tit` VARCHAR(120) NULL,
+  `notice_html` TEXT NULL,
+  PRIMARY KEY (`shop_id`));
 
 
 

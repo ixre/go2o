@@ -15,7 +15,7 @@ type (
 		Id int `db:"id"`
 
 		// 商户编号
-		MerchantId int `db:"merchant_id"`
+		MerchantId int `db:"mch_id"`
 
 		// 公司名称
 		Name string `db:"name"`

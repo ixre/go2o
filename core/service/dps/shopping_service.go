@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
 )
@@ -239,17 +240,17 @@ func (this *shoppingService) PrepareSettlePersist(merchantId, memberId, shopId, 
 
 func (this *shoppingService) GetCartSettle(merchantId, memberId int, cartKey string) *dto.SettleMeta {
 	var cart = this.getShoppingCart(merchantId, memberId, cartKey)
-	shop, deliver, payOpt, dlvOpt := cart.GetSettleData()
+	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
 	var st *dto.SettleMeta = new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
 	st.DeliverOpt = dlvOpt
-	if shop != nil {
-		v := shop.GetValue()
-
+	if sp != nil {
+		v := sp.GetValue()
+		ols := sp.(shop.IOnlineShop)
 		st.Shop = &dto.SettleShopMeta{
 			Id:   v.Id,
 			Name: v.Name,
-			Tel:  v.Phone,
+			Tel:  ols.GetShopValue().Tel,
 		}
 	}
 
