@@ -9,6 +9,16 @@
 
 package domain
 
+import "github.com/jsix/gof"
+
+// 处理错误
+func HandleError(err error) error {
+	if err != nil && gof.CurrentApp.Debug() {
+		gof.CurrentApp.Log().Println("[ Go2o][ Error] -", err.Error())
+	}
+	return err
+}
+
 type DomainError struct {
 	Key          string
 	DefaultError string
