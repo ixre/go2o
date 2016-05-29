@@ -92,15 +92,20 @@ func (this *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 		return merchant.ErrSalesPercent
 	}
 	this.GetSaleConf()
-	this.verifySaleConf(v)
+	if err := this.verifySaleConf(v); err != nil {
+		return err
+	}
 	this._saleConf = v
 	this._saleConf.MerchantId = this.getMerchantId()
 	return this._rep.SaveMerchantSaleConf(this._saleConf)
 }
 
 // 验证销售设置
-func (this *confManagerImpl) verifySaleConf(v *merchant.SaleConf) {
+func (this *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
 	cfg := this._valRep.GetGlobMerchantSaleConf()
+	if !cfg.FxSalesEnabled && v.FxSalesEnabled == 1 {
+		return merchant.ErrEnabledFxSales
+	}
 	if v.OrderTimeOutMinute <= 0 {
 		v.OrderTimeOutMinute = cfg.OrderTimeOutMinute
 	}
@@ -114,5 +119,5 @@ func (this *confManagerImpl) verifySaleConf(v *merchant.SaleConf) {
 		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
 		v.FxSalesEnabled = 0 //自动关闭分销
 	}
-
+	return nil
 }

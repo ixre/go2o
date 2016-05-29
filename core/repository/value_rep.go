@@ -11,7 +11,6 @@ package repository
 import (
 	"errors"
 	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 )
@@ -19,6 +18,12 @@ import (
 var _ valueobject.IValueRep = new(valueRep)
 
 var (
+	// 默认注册权限设置
+	defaultRegisterPerm = valueobject.RegisterPerm{
+		RegisterMode:        member.RegisterModeNormal,
+		AnonymousRegistered: true,
+	}
+
 	// 默认全局销售设置
 	defaultGlobSaleConf = valueobject.GlobSaleConf{
 		// 提现手续费费率
@@ -101,10 +106,8 @@ func (this *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 // 获取注册权限
 func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
 	if this._rpConf == nil {
-		this._rpConf = &valueobject.RegisterPerm{
-			RegisterMode:        member.RegisterModeNormal,
-			AnonymousRegistered: true,
-		} // 默认值
+		v := defaultRegisterPerm
+		this._rpConf = &v
 		unMarshalFromFile("conf/core/register_perm", this._rpConf)
 	}
 	return this._rpConf
@@ -122,9 +125,8 @@ func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 // 获取全局系统销售设置
 func (this *valueRep) GetGlobSaleConf() *valueobject.GlobSaleConf {
 	if this._globSaleConf == nil {
-		this._globSaleConf = &defaultGlobSaleConf
-		this._globSaleConf.ApplyCsn = 1
-		log.Println(defaultGlobSaleConf.ApplyCsn)
+		v := defaultGlobSaleConf
+		this._globSaleConf = &v
 		unMarshalFromFile("conf/core/sale_conf", this._globSaleConf)
 	}
 	return this._globSaleConf
@@ -142,7 +144,8 @@ func (this *valueRep) SaveGlobSaleConf(v *valueobject.GlobSaleConf) error {
 // 获取全局商户销售设置
 func (this *valueRep) GetGlobMerchantSaleConf() *valueobject.GlobMerchantSaleConf {
 	if this._globMchSaleConf == nil {
-		this._globMchSaleConf = &defaultGlobMchSaleConf
+		v := defaultGlobMchSaleConf
+		this._globMchSaleConf = &v
 		unMarshalFromFile("conf/core/mch_sale_conf", this._globMchSaleConf)
 	}
 	return this._globMchSaleConf
