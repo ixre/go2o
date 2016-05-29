@@ -185,5 +185,9 @@ CREATE TABLE `zxdb`.`mch_online_shop` (
   `notice_html` TEXT NULL,
   PRIMARY KEY (`shop_id`));
 
+ALTER TABLE `zxdb`.`mch_merchant`
+  ADD COLUMN `level` INT NULL COMMENT '商户等级' AFTER `name`;
+
+
 
 

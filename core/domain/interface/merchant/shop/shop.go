@@ -8,6 +8,8 @@
  */
 package shop
 
+import "strconv"
+
 const (
 	// 线上商店
 	TypeOnlineShop = 1
@@ -15,7 +17,38 @@ const (
 	TypeOfflineShop = 2
 )
 
+const(
+	// 停用状态
+	StateStopped = 0
+	// 待审核状态
+	StateWaitReview = 1
+	// 正常状态
+	StateNormal = 2
+	// 暂停状态
+	StateSuspend = 3
+	// 暂停状态
+	StatePause = 4
+)
+
+
 var (
+	// 商店状态字典
+	StateTextMap = map[int]string{
+		StateStopped:"已停用",
+		StateWaitReview:"待审核",
+		StateNormal:"正常",
+		StateSuspend:"系统挂起",
+		StatePause:"商户暂停",
+	}
+
+	StateTextStrMap = map[string]string{
+		strconv.Itoa(StateStopped):StateTextMap[StateStopped],
+		strconv.Itoa(StateWaitReview):StateTextMap[StateWaitReview],
+		strconv.Itoa(StateNormal):StateTextMap[StateNormal],
+		strconv.Itoa(StateSuspend):StateTextMap[StateSuspend],
+		strconv.Itoa(StatePause):StateTextMap[StatePause],
+	}
+
 	DefaultOnlineShop = OnlineShop{
 		// 通讯地址
 		Address: "",
@@ -151,8 +184,10 @@ type (
 	OfflineShop struct {
 		// 商店编号
 		ShopId int `db:"shop_id" pk:"yes" auto:"no"`
+
 		// 联系电话
 		Tel string `db:"tel"`
+
 		// 通讯地址
 		Address string `db:"addr"`
 
