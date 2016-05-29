@@ -69,7 +69,6 @@ func (this *ShopImpl) SetValue(v *shop.Shop) error {
 	//this.value.DeliverRadius = v.DeliverRadius
 	this._value.Name = v.Name
 	this._value.SortNumber = v.SortNumber
-	this._value.MerchantId = this._merchant.GetAggregateRootId()
 	this._value.State = v.State
 	return nil
 }
@@ -87,6 +86,7 @@ func (this *ShopImpl) Data() *shop.ShopDto {
 		MerchantId: this._value.MerchantId,
 		ShopType:   this.Type(),
 		Name:       this._value.Name,
+		State:      this._value.State,
 		Data:       nil,
 	}
 }
@@ -118,9 +118,12 @@ func newOfflineShopImpl(s *ShopImpl) shop.IShop {
 
 // 设置值
 func (this *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
-	if v.ShopId == this.GetDomainId() {
-		//todo: copy ,不能设置Enabled
-		this._shopVal = v
+	this._shopVal.Address = v.Address
+	this._shopVal.Tel = v.Tel
+	this._shopVal.DeliverRadius = v.DeliverRadius
+	if v.Lat > 0 && v.Lng > 0 {
+		this._shopVal.Lat = v.Lat
+		this._shopVal.Lng = v.Lng
 	}
 	return nil
 }
@@ -165,11 +168,13 @@ func (this *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
 
 // 保存
 func (this *offlineShopImpl) Save() (int, error) {
-	i, err := this.ShopImpl.Save()
+	create := this.GetDomainId() <= 0
+	id, err := this.ShopImpl.Save()
 	if err == nil {
-		err = this._shopRep.SaveOfflineShop(this._shopVal)
+		this._shopVal.ShopId = id
+		err = this._shopRep.SaveOfflineShop(this._shopVal, create)
 	}
-	return i, err
+	return id, err
 }
 
 // 数据
@@ -202,10 +207,20 @@ func newOnlineShopImpl(s *ShopImpl) shop.IShop {
 
 // 设置值
 func (this *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
-	if v.ShopId == this.GetDomainId() {
-		//todo: copy ,不能设置Enabled
-		this._shopVal = v
+	this._shopVal.Tel = v.Tel
+	this._shopVal.Address = v.Address
+	if len(v.Alias) > 0 {
+		this._shopVal.Alias = v.Alias
 	}
+	if len(v.Host) > 0 {
+		this._shopVal.Host = v.Host
+	}
+	if len(v.Logo) > 0 {
+		this._shopVal.Logo = v.Logo
+	}
+	this._shopVal.IndexTitle = v.IndexTitle
+	this._shopVal.SubTitle = v.SubTitle
+	this._shopVal.Notice = v.Notice
 	return nil
 }
 
@@ -216,11 +231,13 @@ func (this *onlineShopImpl) GetShopValue() shop.OnlineShop {
 
 // 保存
 func (this *onlineShopImpl) Save() (int, error) {
-	i, err := this.ShopImpl.Save()
+	create := this.GetDomainId() <= 0
+	id, err := this.ShopImpl.Save()
 	if err == nil {
-		err = this._shopRep.SaveOnlineShop(this._shopVal)
+		this._shopVal.ShopId = id
+		err = this._shopRep.SaveOnlineShop(this._shopVal, create)
 	}
-	return i, err
+	return id, err
 }
 
 // 数据

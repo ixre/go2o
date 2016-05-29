@@ -111,6 +111,7 @@ func (this *MerchantImpl) Stat() error {
 		return merchant.ErrNoSuchMerchant
 	}
 	if this._value.Enabled == 0 {
+		//log.Println("[MERCHANT][ IMPL] - ",this._value)
 		return merchant.ErrMerchantDisabled
 	}
 	if this._value.ExpiresTime < time.Now().Unix() {

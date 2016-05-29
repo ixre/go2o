@@ -158,6 +158,7 @@ type (
 		MerchantId int
 		ShopType   int
 		Name       string
+		State      int
 		// 线上/线下商店的数据
 		Data interface{}
 	}

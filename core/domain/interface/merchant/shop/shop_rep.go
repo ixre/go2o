@@ -28,12 +28,12 @@ type (
 		GetOnlineShop(shopId int) *OnlineShop
 
 		// 保存线上商店
-		SaveOnlineShop(*OnlineShop) error
+		SaveOnlineShop(v *OnlineShop, create bool) error
 
 		// 获取线下商店
 		GetOfflineShop(shopId int) *OfflineShop
 
 		// 保存线下商店
-		SaveOfflineShop(*OfflineShop) error
+		SaveOfflineShop(v *OfflineShop, create bool) error
 	}
 )
