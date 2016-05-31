@@ -34,7 +34,7 @@ func (this *profileManagerImpl) GetEnterpriseInfo() merchant.EnterpriseInfo {
 	e := merchant.EnterpriseInfo{
 		MerchantId: this.GetAggregateRootId(),
 	}
-	err := orm.GetBy(&e, "merchant_id=? AND reviewed=0", this.GetAggregateRootId())
+	err := orm.GetBy(&e, "mch_id=? AND reviewed=0", this.GetAggregateRootId())
 	if err != nil {
 		return this.GetReviewedEnterpriseInfo()
 	}
@@ -47,7 +47,7 @@ func (this *profileManagerImpl) GetReviewedEnterpriseInfo() merchant.EnterpriseI
 	e := merchant.EnterpriseInfo{
 		MerchantId: this.GetAggregateRootId(),
 	}
-	orm.GetBy(&e, "merchant_id=? AND reviewed=1", this.GetAggregateRootId())
+	orm.GetBy(&e, "mch_id=? AND reviewed=1", this.GetAggregateRootId())
 	return e
 }
 
