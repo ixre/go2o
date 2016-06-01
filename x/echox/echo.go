@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web/session"
 	"gopkg.in/labstack/echo.v1"
+	"io"
 	"log"
 	"net/http"
 	"reflect"
@@ -22,7 +23,7 @@ import (
 
 var (
 	_globTemplateVar map[string]interface{} = nil
-	_globRenderWatch RenderWatchFunc
+	_                echo.Renderer          = new(GoTemplateForEcho)
 )
 
 type (
@@ -77,7 +78,7 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 
 // 设置模板
 func (this *Echo) SetTemplateRender(path string) {
-	this.SetRenderer(newGoTemplateForEcho(path, _globRenderWatch))
+	this.SetRenderer(newGoTemplateForEcho(path))
 }
 
 // 注册自定义的GET处理程序
@@ -214,9 +215,8 @@ func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // 全局设定ECHO参数
-func GlobSet(globVars map[string]interface{}, w RenderWatchFunc) {
+func GlobSet(globVars map[string]interface{}) {
 	_globTemplateVar = globVars
-	_globRenderWatch = w
 }
 
 // 获取全局模版变量
@@ -224,12 +224,18 @@ func GetGlobTemplateVars() map[string]interface{} {
 	return _globTemplateVar
 }
 
-func NewRenderData() *TemplateData {
-	return &TemplateData{
-		Var:  _globTemplateVar,
-		Map:  make(map[string]interface{}),
-		Data: nil,
+func newGoTemplateForEcho(dir string) echo.Renderer {
+	return &GoTemplateForEcho{
+		CachedTemplate: gof.NewCachedTemplate(dir),
 	}
+}
+
+type GoTemplateForEcho struct {
+	*gof.CachedTemplate
+}
+
+func (this *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
+	return this.Execute(w, name, data)
 }
 
 //
