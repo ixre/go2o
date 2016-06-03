@@ -10,13 +10,10 @@
 package repository
 
 import (
-	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/variable"
 )
 
 var _ shop.IShopRep = new(shopRep)
@@ -67,35 +64,6 @@ func (this *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
 		_, _, err = this.GetOrm().Save(nil, v)
 	} else {
 		_, _, err = this.GetOrm().Save(v.ShopId, v)
-	}
-	return err
-}
-
-// 获取站点配置
-func (this *shopRep) GetSiteConf(merchantId int) *shop.ShopSiteConf {
-	var siteConf shop.ShopSiteConf
-	if err := this.Connector.GetOrm().Get(merchantId, &siteConf); err == nil {
-		if len(siteConf.Host) == 0 {
-			var usr string
-			this.Connector.ExecScalar(
-				`SELECT usr FROM mch_merchant WHERE id=?`,
-				&usr, merchantId)
-			siteConf.Host = fmt.Sprintf("%s.%s", usr,
-				infrastructure.GetApp().Config().
-					GetString(variable.ServerDomain))
-		}
-		return &siteConf
-	}
-	return nil
-}
-
-func (this *shopRep) SaveSiteConf(merchantId int, v *shop.ShopSiteConf) error {
-	var err error
-	if v.MerchantId > 0 {
-		_, _, err = this.Connector.GetOrm().Save(v.MerchantId, v)
-	} else {
-		v.MerchantId = merchantId
-		_, _, err = this.Connector.GetOrm().Save(nil, v)
 	}
 	return err
 }

@@ -10,12 +10,6 @@ package shop
 
 type (
 	IShopRep interface {
-
-		// 获取站点配置
-		GetSiteConf(int) *ShopSiteConf
-
-		SaveSiteConf(merchantId int, v *ShopSiteConf) error
-
 		SaveShop(*Shop) (int, error)
 
 		GetValueShop(merchantId, shopId int) *Shop

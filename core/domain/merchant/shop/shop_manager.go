@@ -30,24 +30,6 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManag
 	}
 }
 
-// 获取站点配置
-func (this *shopManagerImpl) GetSiteConf() shop.ShopSiteConf {
-	return shop.ShopSiteConf{}
-	//if this._siteConf == nil {
-	//    this._siteConf = this._rep.GetSiteConf(this.GetAggregateRootId())
-	//}
-	//return *this._siteConf
-}
-
-// 保存站点配置
-func (this *shopManagerImpl) SaveSiteConf(v *shop.ShopSiteConf) error {
-	return nil
-	//    this._siteConf = v
-	//    this._siteConf.MerchantId = this._value.Id
-	//    return this._rep.SaveSiteConf(this.GetAggregateRootId(), this._siteConf)
-	//
-}
-
 // 新建商店
 func (this *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
@@ -98,5 +80,11 @@ func (this *shopManagerImpl) GetShop(shopId int) shop.IShop {
 // 删除门店
 func (this *shopManagerImpl) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
+	this.Reload()
 	return this._rep.DeleteShop(this._merchant.GetAggregateRootId(), shopId)
+}
+
+// 重新加载数据
+func (this *shopManagerImpl) Reload() {
+	this._shops = nil
 }

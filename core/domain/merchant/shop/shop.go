@@ -74,8 +74,7 @@ func (this *ShopImpl) SetValue(v *shop.Shop) error {
 }
 
 func (this *ShopImpl) Save() (int, error) {
-	//todo: clear cache
-	//this.partner.clearShopCache()
+	this._merchant.ShopManager().Reload() //清除缓存
 	return this._shopRep.SaveShop(this._value)
 }
 
