@@ -54,7 +54,9 @@ func Listen(ch chan bool, app gof.App, addr string) {
 	h := &pubHandler{}
 	s := &StaticHandler{}
 	i := NewImageFileHandler(app)
-	http.ListenAndServe(addr, h.set(s, i))
+	if err := http.ListenAndServe(addr, h.set(s, i)); err != nil {
+		log.Println("** [ Go2o][ Web][ Exit] -", err.Error())
+	}
 }
 
 type pubHandler struct {
