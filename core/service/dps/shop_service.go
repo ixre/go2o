@@ -54,10 +54,9 @@ func (this *shopService) GetShopData(mchId, shopId int) *shop.ShopDto {
 	return nil
 }
 
-func (this *merchantService) GetShopValueById(mchId, shopId int) *shop.Shop {
+func (this *shopService) GetShopValueById(mchId, shopId int) *shop.Shop {
 	mch, err := this._mchRep.GetMerchant(mchId)
 	if err != nil {
-
 		log.Println("[ Merchant][ Service]-", err.Error())
 	}
 	v := mch.ShopManager().GetShop(shopId).GetValue()

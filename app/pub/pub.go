@@ -39,14 +39,15 @@ func NewImageFileHandler(a gof.App) *ImageFileHandler {
 
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
-	if strings.HasPrefix(path, "/res/") {
-		http.ServeFile(w, r, "public/static"+r.URL.Path)
-	} else {
-		if len(i.upSaveDir) == 0 {
-			i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
-		}
-		http.ServeFile(w, r, i.upSaveDir+r.URL.Path)
+	//if strings.HasPrefix(path, "/res/") {
+	//	http.ServeFile(w, r, "public/static"+path)
+	//} else {
+	if len(i.upSaveDir) == 0 {
+		i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
 	}
+	http.ServeFile(w, r, i.upSaveDir+path)
+
+	//}
 }
 
 func Listen(ch chan bool, app gof.App, addr string) {

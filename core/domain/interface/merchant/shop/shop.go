@@ -40,18 +40,33 @@ var (
 		StatePause:      "商户暂停",
 	}
 
-	StateTextStrMap = map[string]string{
-		strconv.Itoa(StateStopped):    StateTextMap[StateStopped],
-		strconv.Itoa(StateWaitReview): StateTextMap[StateWaitReview],
-		strconv.Itoa(StateNormal):     StateTextMap[StateNormal],
-		strconv.Itoa(StateSuspend):    StateTextMap[StateSuspend],
-		strconv.Itoa(StatePause):      StateTextMap[StatePause],
+	// 状态顺序
+	StateIndex = []int{
+		StateStopped,
+		StateWaitReview,
+		StateNormal,
+		StateSuspend,
+		StatePause,
 	}
 
 	// 商店类型字电
 	TypeTextMap = map[int]string{
 		TypeOnlineShop:  "商店",
 		TypeOfflineShop: "门店",
+	}
+
+	// 类型顺序
+	TypeIndex = []int{
+		TypeOnlineShop,
+		TypeOfflineShop,
+	}
+
+	StateTextStrMap = map[string]string{
+		strconv.Itoa(StateStopped):    StateTextMap[StateStopped],
+		strconv.Itoa(StateWaitReview): StateTextMap[StateWaitReview],
+		strconv.Itoa(StateNormal):     StateTextMap[StateNormal],
+		strconv.Itoa(StateSuspend):    StateTextMap[StateSuspend],
+		strconv.Itoa(StatePause):      StateTextMap[StatePause],
 	}
 
 	TypeTextStrMap = map[string]string{
