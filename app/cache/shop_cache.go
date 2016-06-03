@@ -69,7 +69,7 @@ func GetOnlineShopData(shopId int) *shop.ShopDto {
 		if v2 := dps.ShopService.GetShopData(mchId, shopId); v2 != nil {
 			v3 := v2.Data.(shop.OnlineShop)
 			v3.Logo = format.GetResUrl(v3.Logo)
-			v2.Data = v3
+			v2.Data = &v3
 			if v2 != nil {
 				sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			}

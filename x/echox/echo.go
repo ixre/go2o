@@ -77,8 +77,8 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 }
 
 // 设置模板
-func (this *Echo) SetTemplateRender(path string) {
-	this.SetRenderer(newGoTemplateForEcho(path))
+func (this *Echo) SetTemplateRender(basePath string, files ...string) {
+	this.SetRenderer(newGoTemplateForEcho(basePath, files...))
 }
 
 // 注册自定义的GET处理程序
@@ -99,10 +99,12 @@ func (this *Echo) Postx(path string, h Handler) {
 func (this *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
 	a := c.Param("action")
 	k := route + a
-	if v, ok := this.dynamicHandlers[k]; ok { //查找路由表
+	if v, ok := this.dynamicHandlers[k]; ok {
+		//查找路由表
 		return v
 	}
-	if v, ok := getHandler(obj, a); ok { //存储路由表
+	if v, ok := getHandler(obj, a); ok {
+		//存储路由表
 		this.dynamicHandlers[k] = v
 		return v
 	}
@@ -224,9 +226,9 @@ func GetGlobTemplateVars() map[string]interface{} {
 	return _globTemplateVar
 }
 
-func newGoTemplateForEcho(dir string) echo.Renderer {
+func newGoTemplateForEcho(dir string, files ...string) echo.Renderer {
 	return &GoTemplateForEcho{
-		CachedTemplate: gof.NewCachedTemplate(dir),
+		CachedTemplate: gof.NewCachedTemplate(dir, files...),
 	}
 }
 
@@ -263,9 +265,9 @@ var (
 			"(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)"),
 	}
 
-/*
-	getFilter = postFilter = cookieFilter = regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)");
-*/
+	/*
+	   getFilter = postFilter = cookieFilter = regexp.MustCompile("\\b(and|or)\\b.{1,6}?(=|>|<|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\/|<\\s*script\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)");
+	*/
 )
 
 // 防SQL注入
