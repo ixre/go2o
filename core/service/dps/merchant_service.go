@@ -119,13 +119,7 @@ func (this *merchantService) SaveMerchant(merchantId int, v *merchant.Merchant) 
 func (this *merchantService) initializeMerchant(merchantId int) {
 
 	// 初始化会员默认等级
-	mch, _ := this._mchRep.GetMerchant(merchantId)
-
-	// 保存站点设置
-	mch.ShopManager().SaveSiteConf(&shop.ShopSiteConf{
-		MerchantId: mch.GetAggregateRootId(),
-		IndexTitle: mch.GetValue().Name,
-	})
+	// this._mchRep.GetMerchant(merchantId)
 
 	//conf := merchant.DefaultSaleConf
 	//conf.MerchantId = mch.GetAggregateRootId()
@@ -159,11 +153,6 @@ func (this *merchantService) GetMerchantMajorHost(merchantId int) string {
 	return mch.GetMajorHost()
 }
 
-func (this *merchantService) SaveSiteConf(merchantId int, v *shop.ShopSiteConf) error {
-	mch, _ := this._mchRep.GetMerchant(merchantId)
-	return mch.ShopManager().SaveSiteConf(v)
-}
-
 func (this *merchantService) SaveSaleConf(merchantId int, v *merchant.SaleConf) error {
 	mch, _ := this._mchRep.GetMerchant(merchantId)
 	return mch.ConfManager().SaveSaleConf(v)
@@ -175,15 +164,6 @@ func (this *merchantService) GetSaleConf(merchantId int) *merchant.SaleConf {
 		log.Println("[ Merchant][ Service]-", err.Error(), ",ID:", merchantId)
 	}
 	conf := mch.ConfManager().GetSaleConf()
-	return &conf
-}
-
-func (this *merchantService) GetSiteConf(merchantId int) *shop.ShopSiteConf {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-		log.Println("[ Merchant][ Service]-", err.Error(), ",ID:", merchantId)
-	}
-	conf := mch.ShopManager().GetSiteConf()
 	return &conf
 }
 
