@@ -181,7 +181,7 @@ func (this *merchantService) GetSaleConf(merchantId int) *merchant.SaleConf {
 func (this *merchantService) GetSiteConf(merchantId int) *shop.ShopSiteConf {
 	mch, err := this._mchRep.GetMerchant(merchantId)
 	if err != nil {
-		log.Println("[ Merchant][ Service]-", err.Error())
+		log.Println("[ Merchant][ Service]-", err.Error(), ",ID:", merchantId)
 	}
 	conf := mch.ShopManager().GetSiteConf()
 	return &conf
@@ -199,106 +199,6 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 		sv[i] = &vv
 	}
 	return sv
-}
-
-// 获取商店的数据
-func (this *merchantService) GetShopData(mchId, shopId int) *shop.ShopDto {
-	mch, _ := this._mchRep.GetMerchant(mchId)
-	return mch.ShopManager().GetShop(shopId).Data()
-}
-
-func (this *merchantService) GetShopValueById(merchantId, shopId int) *shop.Shop {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-
-		log.Println("[ Merchant][ Service]-", err.Error())
-	}
-	v := mch.ShopManager().GetShop(shopId).GetValue()
-	return &v
-}
-
-// 保存线上商店
-func (this *merchantService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error {
-	mch, err := this._mchRep.GetMerchant(s.MerchantId)
-	if err == nil {
-		mgr := mch.ShopManager()
-		var sp shop.IShop
-		if s.Id > 0 { // 保存商店
-			sp = mgr.GetShop(s.Id)
-			err = sp.SetValue(s)
-			if err != nil {
-				return err
-			}
-		} else {
-			// 创建商店
-			sp = mgr.CreateShop(s)
-		}
-
-		ofs := sp.(shop.IOnlineShop)
-		err = ofs.SetShopValue(v)
-		if err == nil {
-			_, err = sp.Save()
-		}
-	}
-	return err
-}
-
-// 保存门店
-func (this *merchantService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error {
-	mch, err := this._mchRep.GetMerchant(s.MerchantId)
-	if err == nil {
-		mgr := mch.ShopManager()
-		var sp shop.IShop
-		if s.Id > 0 { // 保存商店
-			sp = mgr.GetShop(s.Id)
-			err = sp.SetValue(s)
-			if err != nil {
-				return err
-			}
-		} else {
-			// 创建商店
-			sp = mgr.CreateShop(s)
-		}
-
-		ofs := sp.(shop.IOfflineShop)
-		err = ofs.SetShopValue(v)
-		if err == nil {
-			_, err = sp.Save()
-		}
-	}
-	return err
-}
-
-func (this *merchantService) SaveShop(merchantId int, v *shop.Shop) (int, error) {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-
-		log.Println("[ Merchant][ Service]-", err.Error())
-		return 0, err
-	}
-	var shop shop.IShop
-	if v.Id > 0 {
-		shop = mch.ShopManager().GetShop(v.Id)
-		if shop == nil {
-			return 0, errors.New("门店不存在")
-		}
-	} else {
-		shop = mch.ShopManager().CreateShop(v)
-	}
-	err = shop.SetValue(v)
-	if err != nil {
-		return 0, err
-	}
-	return shop.Save()
-}
-
-func (this *merchantService) DeleteShop(merchantId, shopId int) error {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-
-		log.Println("[ Merchant][ Service]-", err.Error())
-	}
-	return mch.ShopManager().DeleteShop(shopId)
 }
 
 func (this *merchantService) GetMerchantsId() []int {

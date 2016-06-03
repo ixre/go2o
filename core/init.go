@@ -12,6 +12,7 @@ import (
 	"encoding/gob"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
 )
 
 func init() {
@@ -23,4 +24,7 @@ func registerTypes() {
 	gob.Register(&member.ValueMember{})
 	gob.Register(&merchant.Merchant{})
 	gob.Register(&merchant.ApiInfo{})
+	gob.Register(&shop.OnlineShop{})
+	gob.Register(&shop.OfflineShop{})
+	gob.Register(&shop.ShopDto{})
 }

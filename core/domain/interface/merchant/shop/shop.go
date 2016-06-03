@@ -55,8 +55,8 @@ var (
 	}
 
 	TypeTextStrMap = map[string]string{
-		strconv.Itoa(TypeOnlineShop):  "商店",
-		strconv.Itoa(TypeOfflineShop): "门店",
+		strconv.Itoa(TypeOnlineShop):  TypeTextMap[TypeOnlineShop],
+		strconv.Itoa(TypeOfflineShop): TypeTextMap[TypeOfflineShop],
 	}
 
 	DefaultOnlineShop = OnlineShop{
