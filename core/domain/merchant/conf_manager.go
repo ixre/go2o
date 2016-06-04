@@ -52,7 +52,7 @@ func (this *confManagerImpl) GetSaleConf() merchant.SaleConf {
 }
 
 func (this *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
-	cfg := this._valRep.GetGlobMerchantSaleConf()
+	cfg := this._valRep.GetGlobMchSaleConf()
 	// 是否启用分销
 	if cfg.FxSalesEnabled {
 		dst.FxSalesEnabled = 1
@@ -102,7 +102,7 @@ func (this *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 
 // 验证销售设置
 func (this *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
-	cfg := this._valRep.GetGlobMerchantSaleConf()
+	cfg := this._valRep.GetGlobMchSaleConf()
 	if !cfg.FxSalesEnabled && v.FxSalesEnabled == 1 {
 		return merchant.ErrEnabledFxSales
 	}

@@ -53,12 +53,22 @@ func (this *platformService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) e
 	return this._rep.SaveGlobNumberConf(v)
 }
 
+// 获取全局商户设置
+func (this *platformService) GetGlobMchConf() *valueobject.GlobMchConf {
+	return this._rep.GetGlobMchConf()
+}
+
+// 保存全局商户设置
+func (this *platformService) SaveGlobMchConf(v *valueobject.GlobMchConf) error {
+	return this._rep.SaveGlobMchConf(v)
+}
+
 // 获取全局商户销售设置
-func (this *platformService) GetGlobMerchantSaleConf() *valueobject.GlobMerchantSaleConf {
-	return this._rep.GetGlobMerchantSaleConf()
+func (this *platformService) GetGlobMchSaleConf() *valueobject.GlobMchSaleConf {
+	return this._rep.GetGlobMchSaleConf()
 }
 
 // 保存全局商户销售设置
-func (this *platformService) SaveGlobMerchantSaleConf(v *valueobject.GlobMerchantSaleConf) error {
-	return this._rep.SaveGlobMerchantSaleConf(v)
+func (this *platformService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
+	return this._rep.SaveGlobMchSaleConf(v)
 }

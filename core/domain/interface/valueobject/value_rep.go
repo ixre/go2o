@@ -16,7 +16,6 @@ var (
 type (
 	// 微信API设置
 	WxApiConfig struct {
-
 		/**===== 微信公众平台设置 =====**/
 
 		//APP ID
@@ -79,7 +78,7 @@ type (
 	}
 
 	// 全局商户销售设置
-	GlobMerchantSaleConf struct {
+	GlobMchSaleConf struct {
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现
@@ -102,7 +101,7 @@ type (
 	}
 
 	// 全局商户设置
-	GlobMerchantConf struct {
+	GlobMchConf struct {
 		// 允许商户创建商品分类
 		AllowGoodsCategory bool
 		// 允许商户创建页面分类
@@ -128,10 +127,16 @@ type (
 		// 保存全局系统数值设置
 		SaveGlobNumberConf(v *GlobNumberConf) error
 
+		// 获取全局商户设置
+		GetGlobMchConf() *GlobMchConf
+
+		// 保存全局商户设置
+		SaveGlobMchConf(v *GlobMchConf) error
+
 		// 获取全局商户销售设置
-		GetGlobMerchantSaleConf() *GlobMerchantSaleConf
+		GetGlobMchSaleConf() *GlobMchSaleConf
 
 		// 保存全局商户销售设置
-		SaveGlobMerchantSaleConf(v *GlobMerchantSaleConf) error
+		SaveGlobMchSaleConf(v *GlobMchSaleConf) error
 	}
 )
