@@ -49,6 +49,8 @@ type (
 		Child       []*Category `db:"-"`
 	}
 	ICategoryRep interface {
+		// 获取系统的栏目服务
+		GetGlobManager()ICategoryManager
 		// 保存分类
 		SaveCategory(*Category) (int, error)
 
