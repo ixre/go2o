@@ -30,23 +30,6 @@ type ISaleRep interface {
 	// 删除货品
 	DeleteItem(merchantId, goodsId int) error
 
-	/*********** Category ************/
-
-	// 保存分类
-	SaveCategory(*ValueCategory) (int, error)
-
-	DeleteCategory(merchantId, id int) error
-
-	GetCategory(merchantId, id int) *ValueCategory
-
-	GetCategories(merchantId int) CategoryList
-
-	// 获取与栏目相关的栏目
-	GetRelationCategories(merchantId, categoryId int) CategoryList
-
-	// 获取子栏目
-	GetChildCategories(merchantId, categoryId int) CategoryList
-
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)
 

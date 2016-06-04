@@ -25,14 +25,16 @@ type saleService struct {
 	_rep        sale.ISaleRep
 	_goodsRep   sale.IGoodsRep
 	_goodsQuery *query.GoodsQuery
+	_cateRep    sale.ICategoryRep
 }
 
-func NewSaleService(r sale.ISaleRep, goodsRep sale.IGoodsRep,
-	goodsQuery *query.GoodsQuery) *saleService {
+func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
+	goodsRep sale.IGoodsRep, goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
 		_rep:        r,
 		_goodsRep:   goodsRep,
 		_goodsQuery: goodsQuery,
+		_cateRep:    cateRep,
 	}
 }
 
@@ -142,7 +144,7 @@ func (this *saleService) GetPagedOnShelvesGoods(merchantId, categoryId, start, e
 	var sl sale.ISale = this._rep.GetSale(merchantId)
 
 	if categoryId > 0 {
-		var cate sale.ICategory = sl.GetCategory(categoryId)
+		var cate sale.ICategory = sl.CategoryManager().GetCategory(categoryId)
 		var ids []int = cate.GetChildId()
 		ids = append(ids, categoryId)
 		total, list = this._goodsRep.GetPagedOnShelvesGoods(merchantId, ids, start, end, "", sortBy)
@@ -190,9 +192,9 @@ func (this *saleService) DeleteGoods(merchantId, goodsId int) error {
 	return sl.DeleteGoods(goodsId)
 }
 
-func (this *saleService) GetCategory(merchantId, id int) (*sale.ValueCategory, domain.IOptionStore) {
+func (this *saleService) GetCategory(merchantId, id int) (*sale.Category, domain.IOptionStore) {
 	sl := this._rep.GetSale(merchantId)
-	c := sl.GetCategory(id)
+	c := sl.CategoryManager().GetCategory(id)
 	if c != nil {
 		return c.GetValue(), c.GetOption()
 	}
@@ -201,19 +203,19 @@ func (this *saleService) GetCategory(merchantId, id int) (*sale.ValueCategory, d
 
 func (this *saleService) DeleteCategory(merchantId, id int) error {
 	sl := this._rep.GetSale(merchantId)
-	return sl.DeleteCategory(id)
+	return sl.CategoryManager().DeleteCategory(id)
 }
 
-func (this *saleService) SaveCategory(merchantId int, v *sale.ValueCategory) (int, error) {
+func (this *saleService) SaveCategory(merchantId int, v *sale.Category) (int, error) {
 	sl := this._rep.GetSale(merchantId)
 	var ca sale.ICategory
 	if v.Id > 0 {
-		ca = sl.GetCategory(v.Id)
+		ca = sl.CategoryManager().GetCategory(v.Id)
 		if err := ca.SetValue(v); err != nil {
 			return 0, err
 		}
 	} else {
-		ca = sl.CreateCategory(v)
+		ca = sl.CategoryManager().CreateCategory(v)
 	}
 
 	return ca.Save()
@@ -221,7 +223,7 @@ func (this *saleService) SaveCategory(merchantId int, v *sale.ValueCategory) (in
 
 func (this *saleService) GetCategoryTreeNode(merchantId int) *tree.TreeNode {
 	sl := this._rep.GetSale(merchantId)
-	cats := sl.GetCategories()
+	cats := sl.CategoryManager().GetCategories()
 	rootNode := &tree.TreeNode{
 		Text:   "根节点",
 		Value:  "",
@@ -251,10 +253,10 @@ func (this *saleService) walkCategoryTree(node *tree.TreeNode, parentId int, cat
 	}
 }
 
-func (this *saleService) GetCategories(merchantId int) []*sale.ValueCategory {
+func (this *saleService) GetCategories(merchantId int) []*sale.Category {
 	sl := this._rep.GetSale(merchantId)
-	cats := sl.GetCategories()
-	var list []*sale.ValueCategory = make([]*sale.ValueCategory, len(cats))
+	cats := sl.CategoryManager().GetCategories()
+	var list []*sale.Category = make([]*sale.Category, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
 		vv.Icon = format.GetResUrl(vv.Icon)
@@ -263,10 +265,10 @@ func (this *saleService) GetCategories(merchantId int) []*sale.ValueCategory {
 	return list
 }
 
-func (this *saleService) GetBigCategories(merchantId int) []*sale.ValueCategory {
+func (this *saleService) GetBigCategories(merchantId int) []*sale.Category {
 	sl := this._rep.GetSale(merchantId)
-	cats := sl.GetCategories()
-	list := []*sale.ValueCategory{}
+	cats := sl.CategoryManager().GetCategories()
+	list := []*sale.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == 0 && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
@@ -276,10 +278,10 @@ func (this *saleService) GetBigCategories(merchantId int) []*sale.ValueCategory 
 	return list
 }
 
-func (this *saleService) GetChildCategories(merchantId, parentId int) []*sale.ValueCategory {
+func (this *saleService) GetChildCategories(merchantId, parentId int) []*sale.Category {
 	sl := this._rep.GetSale(merchantId)
-	cats := sl.GetCategories()
-	list := []*sale.ValueCategory{}
+	cats := sl.CategoryManager().GetCategories()
+	list := []*sale.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
@@ -290,11 +292,11 @@ func (this *saleService) GetChildCategories(merchantId, parentId int) []*sale.Va
 	return list
 }
 
-func (this *saleService) setChild(list []sale.ICategory, dst *sale.ValueCategory) {
+func (this *saleService) setChild(list []sale.ICategory, dst *sale.Category) {
 	for _, v := range list {
 		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
 			if dst.Child == nil {
-				dst.Child = []*sale.ValueCategory{}
+				dst.Child = []*sale.Category{}
 			}
 			vv.Icon = format.GetResUrl(vv.Icon)
 			dst.Child = append(dst.Child, vv)

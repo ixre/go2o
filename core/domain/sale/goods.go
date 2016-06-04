@@ -213,7 +213,7 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 
 	merchantId := this._sale.GetAggregateRootId()
 	unix := time.Now().Unix()
-	cate := this._saleRep.GetCategory(merchantId, gv.CategoryId)
+	cate := this._sale.CategoryManager().GetCategory(gv.CategoryId)
 	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
 		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
 		ItemId:       gv.Id,
@@ -221,7 +221,7 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 		GoodsName:    gv.Name,
 		GoodsNo:      gv.GoodsNo,
 		SmallTitle:   gv.SmallTitle,
-		CategoryName: cate.Name,
+		CategoryName: cate.GetValue().Name,
 		Image:        gv.Image,
 		Cost:         gv.Cost,
 		SalePrice:    gv.SalePrice,

@@ -21,7 +21,7 @@ func readToCategoryDropList(merchantId int) []byte {
 	categories := dps.SaleService.GetCategories(merchantId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
-		c := v1.(*sale.ValueCategory)
+		c := v1.(*sale.Category)
 		if c.Id != 0 {
 			buf.WriteString(fmt.Sprintf(
 				`<option class="opt%d" value="%d">%s</option>`,
@@ -31,7 +31,7 @@ func readToCategoryDropList(merchantId int) []byte {
 			))
 		}
 	}
-	util.WalkCategory(categories, &sale.ValueCategory{Id: 0}, f, nil)
+	util.WalkCategory(categories, &sale.Category{Id: 0}, f, nil)
 	return buf.Bytes()
 }
 

@@ -9,10 +9,15 @@
 
 package sale
 
-import "go2o/core/domain/interface/valueobject"
+import (
+	"go2o/core/domain/interface/valueobject"
+)
 
 type ISale interface {
 	GetAggregateRootId() int
+
+	// 分类服务
+	CategoryManager() ICategoryManager
 
 	// 创建产品
 	CreateItem(*ValueItem) IItem
@@ -34,18 +39,6 @@ type ISale interface {
 
 	// 根据产品SKU获取商品
 	GetGoodsBySku(itemId, sku int) IGoods
-
-	// 创建分类
-	CreateCategory(*ValueCategory) ICategory
-
-	// 获取分类
-	GetCategory(int) ICategory
-
-	// 获取所有分类
-	GetCategories() []ICategory
-
-	// 删除分类
-	DeleteCategory(int) error
 
 	// 获取所有的销售标签
 	GetAllSaleTags() []ISaleTag
