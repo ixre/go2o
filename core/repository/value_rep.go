@@ -11,6 +11,7 @@ package repository
 import (
 	"errors"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 )
@@ -44,10 +45,15 @@ var (
 		TradeCsnFeeByOrder: 1, // 每笔订单最低收取1元
 		// 按交易金额收取手续费的百分百
 		TradeCsnPercentByFee: 0.01, // 1%收取
-
 	}
 
-	defaultGlobMchSaleConf = valueobject.GlobMerchantSaleConf{
+	// 默认商户设置
+	defaultGlobMchConf = valueobject.GlobMchConf{
+		AllowGoodsCategory: false,
+		AllowPageCategory:  false,
+	}
+
+	defaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
 		// 是否启用分销模式
 		FxSalesEnabled: false,
 		// 返现比例,0则不返现
@@ -73,14 +79,25 @@ var (
 type valueRep struct {
 	db.Connector
 	_wxConf          *valueobject.WxApiConfig
+	_wxGob           *util.GobFile
 	_rpConf          *valueobject.RegisterPerm
-	_globSaleConf    *valueobject.GlobNumberConf
-	_globMchSaleConf *valueobject.GlobMerchantSaleConf
+	_rpGob           *util.GobFile
+	_numConf         *valueobject.GlobNumberConf
+	_numGob          *util.GobFile
+	_globMchConf     *valueobject.GlobMchConf
+	_mchGob          *util.GobFile
+	_globMchSaleConf *valueobject.GlobMchSaleConf
+	_mscGob          *util.GobFile
 }
 
 func NewValueRep(conn db.Connector) valueobject.IValueRep {
 	return &valueRep{
 		Connector: conn,
+		_wxGob:    util.NewGobFile("conf/core/wx_api"),
+		_rpGob:    util.NewGobFile("conf/core/register_perm"),
+		_numGob:   util.NewGobFile("conf/core/number_conf"),
+		_mchGob:   util.NewGobFile("conf/core/mch_conf"),
+		_mscGob:   util.NewGobFile("conf/core/mch_sale_conf"),
 	}
 }
 
@@ -88,7 +105,7 @@ func NewValueRep(conn db.Connector) valueobject.IValueRep {
 func (this *valueRep) GetWxApiConfig() *valueobject.WxApiConfig {
 	if this._wxConf == nil {
 		this._wxConf = &valueobject.WxApiConfig{}
-		unMarshalFromFile("conf/core/wx_api", this._wxConf)
+		this._wxGob.Unmarshal(this._wxConf)
 	}
 	return this._wxConf
 }
@@ -98,7 +115,7 @@ func (this *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	if v != nil {
 		//todo: 检查证书文件是否存在
 		this._wxConf = v
-		return marshalToFile("conf/core/wx_api", this._wxConf)
+		return this._wxGob.Save(this._wxConf)
 	}
 	return errors.New("nil value")
 }
@@ -108,7 +125,7 @@ func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
 	if this._rpConf == nil {
 		v := defaultRegisterPerm
 		this._rpConf = &v
-		unMarshalFromFile("conf/core/register_perm", this._rpConf)
+		this._rpGob.Unmarshal(this._rpConf)
 	}
 	return this._rpConf
 }
@@ -117,45 +134,64 @@ func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
 func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
 		this._rpConf = v
-		return marshalToFile("conf/core/register_perm", this._rpConf)
+		return this._rpGob.Save(this._rpConf)
 	}
 	return nil
 }
 
 // 获取全局系统销售设置
 func (this *valueRep) GetGlobNumberConf() *valueobject.GlobNumberConf {
-	if this._globSaleConf == nil {
+	if this._numConf == nil {
 		v := defaultGlobNumberConf
-		this._globSaleConf = &v
-		unMarshalFromFile("conf/core/number_conf", this._globSaleConf)
+		this._numConf = &v
+		this._numGob.Unmarshal(this._numConf)
 	}
-	return this._globSaleConf
+	return this._numConf
 }
 
 // 保存全局系统销售设置
 func (this *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
-		this._globSaleConf = v
-		return marshalToFile("conf/core/number_conf", this._globSaleConf)
+		this._numConf = v
+		return this._numGob.Save(this._numConf)
+	}
+	return nil
+}
+
+// 获取全局商户设置
+func (this *valueRep) GetGlobMchConf() *valueobject.GlobMchConf {
+	if this._globMchConf == nil {
+		v := defaultGlobMchConf
+		this._globMchConf = &v
+		this._mchGob.Unmarshal(this._globMchConf)
+	}
+	return this._globMchConf
+}
+
+// 保存全局商户设置
+func (this *valueRep) SaveGlobMchConf(v *valueobject.GlobMchConf) error {
+	if v != nil {
+		this._globMchConf = v
+		return this._mchGob.Save(this._globMchConf)
 	}
 	return nil
 }
 
 // 获取全局商户销售设置
-func (this *valueRep) GetGlobMerchantSaleConf() *valueobject.GlobMerchantSaleConf {
+func (this *valueRep) GetGlobMchSaleConf() *valueobject.GlobMchSaleConf {
 	if this._globMchSaleConf == nil {
 		v := defaultGlobMchSaleConf
 		this._globMchSaleConf = &v
-		unMarshalFromFile("conf/core/mch_sale_conf", this._globMchSaleConf)
+		this._mscGob.Unmarshal(this._globMchSaleConf)
 	}
 	return this._globMchSaleConf
 }
 
 // 保存全局商户销售设置
-func (this *valueRep) SaveGlobMerchantSaleConf(v *valueobject.GlobMerchantSaleConf) error {
+func (this *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	if v != nil {
 		this._globMchSaleConf = v
-		return marshalToFile("conf/core/mch_sale_conf", this._globMchSaleConf)
+		return this._mscGob.Save(this._globMchSaleConf)
 	}
 	return nil
 }
