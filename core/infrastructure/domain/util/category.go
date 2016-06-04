@@ -13,10 +13,10 @@ import (
 	"go2o/core/domain/interface/sale"
 )
 
-type CategoryFormatFunc func(c *sale.ValueCategory, level int)
+type CategoryFormatFunc func(c *sale.Category, level int)
 
 // 迭代栏目
-func IterateCategory(categories []*sale.ValueCategory, c *sale.ValueCategory,
+func IterateCategory(categories []*sale.Category, c *sale.Category,
 	iterateFunc CategoryFormatFunc, finishFunc CategoryFormatFunc, level int) {
 	if c.Id != 0 {
 		iterateFunc(c, level)
@@ -35,9 +35,9 @@ func IterateCategory(categories []*sale.ValueCategory, c *sale.ValueCategory,
 }
 
 // 迭代栏目
-func WalkCategory(cs []*sale.ValueCategory, v *sale.ValueCategory, start iterator.WalkFunc, over iterator.WalkFunc) {
+func WalkCategory(cs []*sale.Category, v *sale.Category, start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*sale.ValueCategory).ParentId == v.(*sale.ValueCategory).Id
+		return v1.(*sale.Category).ParentId == v.(*sale.Category).Id
 	}
 	var arr []interface{} = make([]interface{}, len(cs))
 	for i, v := range cs {

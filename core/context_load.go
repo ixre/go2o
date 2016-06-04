@@ -83,7 +83,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	/** 销售 **/
 	orm.TableMapping(sale.ValueItem{}, "gs_item")
 	orm.TableMapping(sale.ValueGoods{}, "gs_goods")
-	orm.TableMapping(sale.ValueCategory{}, "gs_category")
+	orm.TableMapping(sale.Category{}, "gs_category")
 	orm.TableMapping(sale.GoodsSnapshot{}, "gs_snapshot")
 	orm.TableMapping(sale.ValueSaleTag{}, "gs_sale_tag")
 	orm.TableMapping(sale.MemberPrice{}, "gs_member_price")

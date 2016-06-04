@@ -14,7 +14,6 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
-	"sort"
 	"time"
 )
 
@@ -23,29 +22,43 @@ var _ sale.ISale = new(Sale)
 const MAX_CACHE_SIZE int = 1000
 
 type Sale struct {
-	_merchantId int
-	_saleRep    sale.ISaleRep
-	_saleTagRep sale.ISaleTagRep
-	_goodsRep   sale.IGoodsRep
-	_promRep    promotion.IPromotionRep
-	_proCache   map[int]sale.IItem
-	_categories []sale.ICategory
+	_merchantId  int
+	_saleRep     sale.ISaleRep
+	_saleTagRep  sale.ISaleTagRep
+	_cateRep     sale.ICategoryRep
+	_goodsRep    sale.IGoodsRep
+	_valRep      valueobject.IValueRep
+	_promRep     promotion.IPromotionRep
+	_proCache    map[int]sale.IItem
+	_cateManager sale.ICategoryManager
 }
 
-func NewSale(merchantId int, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
-	tagRep sale.ISaleTagRep, promRep promotion.IPromotionRep) sale.ISale {
+func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
+	cateRep sale.ICategoryRep, goodsRep sale.IGoodsRep, tagRep sale.ISaleTagRep,
+	promRep promotion.IPromotionRep) sale.ISale {
 	return (&Sale{
 		_merchantId: merchantId,
+		_cateRep:    cateRep,
 		_saleRep:    saleRep,
 		_saleTagRep: tagRep,
 		_goodsRep:   goodsRep,
 		_promRep:    promRep,
+		_valRep:     valRep,
 	}).init()
 }
 
 func (this *Sale) init() sale.ISale {
 	this._proCache = make(map[int]sale.IItem)
 	return this
+}
+
+// 分类服务
+func (this *Sale) CategoryManager() sale.ICategoryManager {
+	if this._cateManager == nil {
+		this._cateManager = NewCategoryManager(
+			this.GetAggregateRootId(), this._cateRep, this._valRep)
+	}
+	return this._cateManager
 }
 
 func (this *Sale) clearCache(goodsId int) {
@@ -144,43 +157,6 @@ func (this *Sale) DeleteGoods(goodsId int) error {
 		this.clearCache(goodsId)
 	}
 	return err
-}
-
-// 创建分类
-func (this *Sale) CreateCategory(v *sale.ValueCategory) sale.ICategory {
-	if v.CreateTime == 0 {
-		v.CreateTime = time.Now().Unix()
-	}
-	v.MerchantId = this.GetAggregateRootId()
-	return newCategory(this._saleRep, v)
-}
-
-// 获取分类
-func (this *Sale) GetCategory(id int) sale.ICategory {
-	v := this._saleRep.GetCategory(this.GetAggregateRootId(), id)
-	if v != nil {
-		return this.CreateCategory(v)
-	}
-	return nil
-}
-
-// 获取所有分类
-func (this *Sale) GetCategories() []sale.ICategory {
-	//if this.categories == nil {
-	list := this._saleRep.GetCategories(this.GetAggregateRootId())
-	sort.Sort(list)
-	this._categories = make([]sale.ICategory, len(list))
-	for i, v := range list {
-		this._categories[i] = this.CreateCategory(v)
-	}
-	//}
-	return this._categories
-}
-
-// 删除分类
-func (this *Sale) DeleteCategory(id int) error {
-	//todo: 删除应放到这里来处理
-	return this._saleRep.DeleteCategory(this.GetAggregateRootId(), id)
 }
 
 // 初始化销售标签
