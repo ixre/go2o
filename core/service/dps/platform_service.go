@@ -43,14 +43,14 @@ func (this *platformService) SaveRegisterPerm(v *valueobject.RegisterPerm) error
 	return this._rep.SaveRegisterPerm(v)
 }
 
-// 获取全局系统销售设置
-func (this *platformService) GetGlobSaleConf() *valueobject.GlobSaleConf {
-	return this._rep.GetGlobSaleConf()
+// 获取全局系统数值设置
+func (this *platformService) GetGlobNumberConf() *valueobject.GlobNumberConf {
+	return this._rep.GetGlobNumberConf()
 }
 
-// 保存全局系统销售设置
-func (this *platformService) SaveGlobSaleConf(v *valueobject.GlobSaleConf) error {
-	return this._rep.SaveGlobSaleConf(v)
+// 保存全局系统数值设置
+func (this *platformService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
+	return this._rep.SaveGlobNumberConf(v)
 }
 
 // 获取全局商户销售设置

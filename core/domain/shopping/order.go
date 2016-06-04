@@ -708,7 +708,7 @@ func (this *Order) Complete() error {
 	//******* 返现到账户  ************
 	var back_fee float32
 	saleConf := mch.ConfManager().GetSaleConf()
-	globSaleConf := this._valRep.GetGlobSaleConf()
+	globSaleConf := this._valRep.GetGlobNumberConf()
 	if saleConf.CashBackPercent > 0 {
 		back_fee = v.Fee * saleConf.CashBackPercent
 

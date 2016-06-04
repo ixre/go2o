@@ -56,8 +56,8 @@ type (
 		Licence string
 	}
 
-	// 全局销售设置
-	GlobSaleConf struct {
+	// 全局数值设置
+	GlobNumberConf struct {
 		// 提现手续费费率
 		ApplyCsn float32
 		// 转账手续费费率
@@ -101,6 +101,14 @@ type (
 		OrderTimeOutReceiveHour int
 	}
 
+	// 全局商户设置
+	GlobMerchantConf struct {
+		// 允许商户创建商品分类
+		AllowGoodsCategory bool
+		// 允许商户创建页面分类
+		AllowPageCategory bool
+	}
+
 	IValueRep interface {
 		// 获取微信接口配置
 		GetWxApiConfig() *WxApiConfig
@@ -114,11 +122,11 @@ type (
 		// 保存注册权限
 		SaveRegisterPerm(v *RegisterPerm) error
 
-		// 获取全局系统销售设置
-		GetGlobSaleConf() *GlobSaleConf
+		// 获取全局系统数值设置
+		GetGlobNumberConf() *GlobNumberConf
 
-		// 保存全局系统销售设置
-		SaveGlobSaleConf(v *GlobSaleConf) error
+		// 保存全局系统数值设置
+		SaveGlobNumberConf(v *GlobNumberConf) error
 
 		// 获取全局商户销售设置
 		GetGlobMerchantSaleConf() *GlobMerchantSaleConf
