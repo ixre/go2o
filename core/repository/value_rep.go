@@ -25,7 +25,7 @@ var (
 	}
 
 	// 默认全局销售设置
-	defaultGlobSaleConf = valueobject.GlobSaleConf{
+	defaultGlobNumberConf = valueobject.GlobNumberConf{
 		// 提现手续费费率
 		ApplyCsn: 0.01,
 		// 转账手续费费率
@@ -74,7 +74,7 @@ type valueRep struct {
 	db.Connector
 	_wxConf          *valueobject.WxApiConfig
 	_rpConf          *valueobject.RegisterPerm
-	_globSaleConf    *valueobject.GlobSaleConf
+	_globSaleConf    *valueobject.GlobNumberConf
 	_globMchSaleConf *valueobject.GlobMerchantSaleConf
 }
 
@@ -123,20 +123,20 @@ func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 }
 
 // 获取全局系统销售设置
-func (this *valueRep) GetGlobSaleConf() *valueobject.GlobSaleConf {
+func (this *valueRep) GetGlobNumberConf() *valueobject.GlobNumberConf {
 	if this._globSaleConf == nil {
-		v := defaultGlobSaleConf
+		v := defaultGlobNumberConf
 		this._globSaleConf = &v
-		unMarshalFromFile("conf/core/sale_conf", this._globSaleConf)
+		unMarshalFromFile("conf/core/number_conf", this._globSaleConf)
 	}
 	return this._globSaleConf
 }
 
 // 保存全局系统销售设置
-func (this *valueRep) SaveGlobSaleConf(v *valueobject.GlobSaleConf) error {
+func (this *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
 		this._globSaleConf = v
-		return marshalToFile("conf/core/sale_conf", this._globSaleConf)
+		return marshalToFile("conf/core/number_conf", this._globSaleConf)
 	}
 	return nil
 }
