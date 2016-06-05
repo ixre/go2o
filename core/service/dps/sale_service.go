@@ -201,8 +201,8 @@ func (this *saleService) GetCategory(merchantId, id int) (*sale.Category, domain
 	return nil, nil
 }
 
-func (this *saleService) DeleteCategory(merchantId, id int) error {
-	sl := this._rep.GetSale(merchantId)
+func (this *saleService) DeleteCategory(mchId, id int) error {
+	sl := this._rep.GetSale(mchId)
 	return sl.CategoryManager().DeleteCategory(id)
 }
 

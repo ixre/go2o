@@ -18,6 +18,12 @@ var (
 	ErrReadonlyCategory *domain.DomainError = domain.NewDomainError(
 		"err_readonly_category", "无权修改系统分类",
 	)
+	ErrCategoryNotExist *domain.DomainError = domain.NewDomainError(
+		"err_category_not_exist", "分类不存在",
+	)
+	ErrHasChildCategories *domain.DomainError = domain.NewDomainError(
+		"err_has_child_categories", "分类包含子分类,无法删除",
+	)
 )
 
 type (
