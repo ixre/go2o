@@ -14,6 +14,12 @@ import (
 	"sort"
 )
 
+var (
+	ErrReadonlyCategory *domain.DomainError = domain.NewDomainError(
+		"err_readonly_category", "无权修改系统分类",
+	)
+)
+
 type (
 	ICategory interface {
 		GetDomainId() int
@@ -35,7 +41,7 @@ type (
 		//父分类
 		ParentId int `db:"parent_id"`
 		//供应商编号
-		MerchantId int `db:"merchant_id"`
+		MerchantId int `db:"mch_id"`
 		//名称
 		Name       string `db:"name"`
 		SortNumber int    `db:"sort_number"`
@@ -50,7 +56,7 @@ type (
 	}
 	ICategoryRep interface {
 		// 获取系统的栏目服务
-		GetGlobManager()ICategoryManager
+		GetGlobManager() ICategoryManager
 		// 保存分类
 		SaveCategory(*Category) (int, error)
 

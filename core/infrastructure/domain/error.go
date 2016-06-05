@@ -11,6 +11,7 @@ package domain
 
 import "github.com/jsix/gof"
 
+//todo: 可以做通过后台设置错误信息
 // 处理错误
 func HandleError(err error) error {
 	if err != nil && gof.CurrentApp.Debug() {

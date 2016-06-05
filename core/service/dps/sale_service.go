@@ -265,22 +265,28 @@ func (this *saleService) GetCategories(merchantId int) []*sale.Category {
 	return list
 }
 
-func (this *saleService) GetBigCategories(merchantId int) []*sale.Category {
-	sl := this._rep.GetSale(merchantId)
-	cats := sl.CategoryManager().GetCategories()
+func (this *saleService) getCategoryManager(mchId int) sale.ICategoryManager {
+	if mchId > 0 {
+		sl := this._rep.GetSale(mchId)
+		return sl.CategoryManager()
+	}
+	return this._cateRep.GetGlobManager()
+}
+
+func (this *saleService) GetBigCategories(mchId int) []*sale.Category {
+	cats := this.getCategoryManager(mchId).GetCategories()
 	list := []*sale.Category{}
 	for _, v := range cats {
-		if vv := v.GetValue(); vv.ParentId == 0 && vv.Enabled == 1 {
-			vv.Icon = format.GetResUrl(vv.Icon)
-			list = append(list, vv)
+		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
+			v2.Icon = format.GetResUrl(v2.Icon)
+			list = append(list, v2)
 		}
 	}
 	return list
 }
 
-func (this *saleService) GetChildCategories(merchantId, parentId int) []*sale.Category {
-	sl := this._rep.GetSale(merchantId)
-	cats := sl.CategoryManager().GetCategories()
+func (this *saleService) GetChildCategories(mchId, parentId int) []*sale.Category {
+	cats := this.getCategoryManager(mchId).GetCategories()
 	list := []*sale.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {

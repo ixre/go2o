@@ -57,7 +57,7 @@ func Init(ctx gof.App) {
 	goodsRep := repository.NewGoodsRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
-	cateRep := repository.NewCategoryRep(db,valRep)
+	cateRep := repository.NewCategoryRep(db, valRep)
 	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep, goodsRep, promRep)
 	mssRep := repository.NewMssRep(db)
 	shopRep := repository.NewShopRep(db)
