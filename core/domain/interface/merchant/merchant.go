@@ -29,6 +29,9 @@ type (
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
 
+		// 是否自营
+		SelfSales()bool
+
 		// 返回对应的会员编号
 		Member() int
 
@@ -71,9 +74,17 @@ type (
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
 		MemberId int    `db:"member_id"`
+
+
 		Usr      string `db:"usr"`
 		Pwd      string `db:"pwd"`
+
+		// 商户名称
 		Name     string `db:"name"`
+
+		// 是否自营
+		SelfSales   int `db:"self_sales"`
+
 		// 商户等级
 		Level int    `db:"level"`
 		Logo  string `db:"logo"`

@@ -196,6 +196,10 @@ DEFAULT NULL COMMENT '商户ID(merhantId ID);如果为空，则表示系统的f�
 ALTER TABLE `flm`.`gs_category`
   ADD COLUMN `level` TINYINT(1) NULL AFTER `sort_number`;
 
+ALTER TABLE `flm`.`mch_merchant`
+  ADD COLUMN `self_sales` TINYINT(1) NULL AFTER `name`;
+
+
 
 
 
