@@ -52,6 +52,15 @@ func (this *categoryRep) SaveCategory(v *sale.Category) (int, error) {
 	}
 }
 
+// 检查分类是否关联商品
+func (this *categoryRep) CheckGoodsContain(mchId, id int) bool {
+	num := 0
+	//清理项
+	this.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
+		(SELECT Id FROM gs_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
+	return num > 0
+}
+
 func (this *categoryRep) DeleteCategory(merchantId, id int) error {
 	//删除子类
 	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
@@ -60,10 +69,6 @@ func (this *categoryRep) DeleteCategory(merchantId, id int) error {
 	//删除分类
 	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND id=?",
 		merchantId, id)
-
-	//清理项
-	this.Connector.Exec(`DELETE FROM gs_item WHERE Cid NOT IN
-		(SELECT Id FROM gs_category WHERE mch_id=?)`, merchantId)
 
 	return err
 }
