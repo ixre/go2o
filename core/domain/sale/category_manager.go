@@ -94,7 +94,7 @@ func (this *categoryImpl) SetValue(v *sale.Category) error {
 }
 
 // 获取子栏目的编号
-func (this *categoryImpl) GetChildId() []int {
+func (this *categoryImpl) GetChildes() []int {
 	if this._childIdArr == nil {
 		childCats := this._rep.GetChildCategories(
 			this._value.MerchantId, this.GetDomainId())
@@ -265,7 +265,7 @@ func (this *categoryManagerImpl) DeleteCategory(id int) error {
 	if c == nil {
 		return sale.ErrCategoryNotExist
 	}
-	if len(c.GetChildId()) > 0 {
+	if len(c.GetChildes()) > 0 {
 		return sale.ErrHasChildCategories
 	}
 	if this._rep.CheckGoodsContain(this.getRelationId(), id) {

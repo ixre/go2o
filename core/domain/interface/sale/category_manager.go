@@ -31,18 +31,24 @@ var (
 
 type (
 	ICategory interface {
+		// 获取领域编号
 		GetDomainId() int
 
+		// 获取值
 		GetValue() *Category
 
-		GetOption() domain.IOptionStore
-
+		// 设置值
 		SetValue(*Category) error
 
+		//todo: 做成界面,同时可后台管理项
+		// 获取扩展数据
+		GetOption() domain.IOptionStore
+
+		// 保存
 		Save() (int, error)
 
 		// 获取子栏目的编号
-		GetChildId() []int
+		GetChildes() []int
 	}
 	//分类
 	Category struct {
@@ -55,13 +61,19 @@ type (
 		Name       string `db:"name"`
 		SortNumber int    `db:"sort_number"`
 		//层级,用于判断2个分类是否为同一级
-		Level       int         `db:"level"`
-		Icon        string      `db:"icon"`
-		Url         string      `db:"url"`
-		CreateTime  int64       `db:"create_time"`
-		Enabled     int         `db:"enabled"`
-		Description string      `db:"description"`
-		Child       []*Category `db:"-"`
+		Level int `db:"level"`
+		// 图标
+		Icon string `db:"icon"`
+		// 地址
+		Url string `db:"url"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+		// 是否启用,默认为不启用
+		Enabled int `db:"enabled"`
+		// 描述
+		Description string `db:"description"`
+		// 子分类
+		Child []*Category `db:"-"`
 	}
 	ICategoryRep interface {
 		// 获取系统的栏目服务

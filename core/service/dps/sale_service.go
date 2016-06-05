@@ -145,7 +145,7 @@ func (this *saleService) GetPagedOnShelvesGoods(merchantId, categoryId, start, e
 
 	if categoryId > 0 {
 		var cate sale.ICategory = sl.CategoryManager().GetCategory(categoryId)
-		var ids []int = cate.GetChildId()
+		var ids []int = cate.GetChildes()
 		ids = append(ids, categoryId)
 		total, list = this._goodsRep.GetPagedOnShelvesGoods(merchantId, ids, start, end, "", sortBy)
 	} else {
