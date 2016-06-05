@@ -189,5 +189,13 @@ ALTER TABLE `zxdb`.`mch_merchant`
   ADD COLUMN `level` INT NULL COMMENT '商户等级' AFTER `name`;
 
 
+ALTER TABLE `flm`.`gs_category`
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL
+DEFAULT NULL COMMENT '商户ID(merhantId ID);如果为空，则表示系统的f分类 ';
+
+ALTER TABLE `flm`.`gs_category`
+  ADD COLUMN `level` TINYINT(1) NULL AFTER `sort_number`;
+
+
 
 
