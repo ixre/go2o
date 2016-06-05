@@ -258,5 +258,13 @@ func (this *categoryManagerImpl) GetCategories() []sale.ICategory {
 // 删除分类
 func (this *categoryManagerImpl) DeleteCategory(id int) error {
 	//todo: 删除应放到这里来处理
+	c := this.GetCategory(id)
+	if c == nil {
+		return sale.ErrCategoryNotExist
+	}
+	if len(c.GetChildId()) > 0 {
+		return sale.ErrHasChildCategories
+	}
+	this.clean() //清理缓存
 	return this._rep.DeleteCategory(this.getRelationId(), id)
 }

@@ -13,7 +13,6 @@ import (
 	"errors"
 	"github.com/jsix/gof"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -114,10 +113,6 @@ func (this *OptionStoreWrapper) load() error {
 			if err == nil {
 				err = sto.SetExpire(rdKey, this._data, 3600) //存储到Kv
 			}
-		}
-
-		if err != nil {
-			log.Println("[ Option Store][ Error] -", err.Error())
 		}
 		return err
 	}
