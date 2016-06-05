@@ -38,6 +38,9 @@ type (
 
 		// flush to file
 		Flush() error
+
+		// destroy and delete file
+		Destroy() error
 	}
 
 	OptionType int
@@ -172,4 +175,9 @@ func (this *OptionStoreWrapper) Flush() (err error) {
 		return err
 	}
 	return nil
+}
+
+// destroy and delete file
+func (this *OptionStoreWrapper) Destroy() error {
+	return os.Remove(this.Indent())
 }

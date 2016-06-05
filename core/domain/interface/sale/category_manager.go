@@ -24,6 +24,9 @@ var (
 	ErrHasChildCategories *domain.DomainError = domain.NewDomainError(
 		"err_has_child_categories", "分类包含子分类,无法删除",
 	)
+	ErrCategoryContainGoods *domain.DomainError = domain.NewDomainError(
+		"err_category_contain_goods", "分类包含商品,无法删除",
+	)
 )
 
 type (
@@ -66,10 +69,16 @@ type (
 		// 保存分类
 		SaveCategory(*Category) (int, error)
 
+		// 检查分类是否关联商品
+		CheckGoodsContain(mchId, id int) bool
+
+		// 删除分类
 		DeleteCategory(mchId, id int) error
 
+		// 获取分类
 		GetCategory(mchId, id int) *Category
 
+		// 获取所有分类
 		GetCategories(mchId int) CategoryList
 
 		// 获取与栏目相关的栏目

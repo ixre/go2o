@@ -33,7 +33,8 @@ type categoryImpl struct {
 	_manager         sale.ICategoryManager
 }
 
-func newCategory(rep sale.ICategoryRep, v *sale.Category, manager sale.ICategoryManager) sale.ICategory {
+func newCategory(rep sale.ICategoryRep, v *sale.Category,
+	manager sale.ICategoryManager) sale.ICategory {
 	return &categoryImpl{
 		_value:   v,
 		_rep:     rep,
@@ -95,7 +96,8 @@ func (this *categoryImpl) SetValue(v *sale.Category) error {
 // 获取子栏目的编号
 func (this *categoryImpl) GetChildId() []int {
 	if this._childIdArr == nil {
-		childCats := this._rep.GetChildCategories(this._value.MerchantId, this.GetDomainId())
+		childCats := this._rep.GetChildCategories(
+			this._value.MerchantId, this.GetDomainId())
 		this._childIdArr = make([]int, len(childCats))
 		for i, v := range childCats {
 			this._childIdArr[i] = v.Id
@@ -109,12 +111,14 @@ func (this *categoryImpl) setCategoryLevel() {
 		&this._value.Level)
 }
 
-func (this *categoryImpl) parentWalk(list []sale.ICategory, parentId int, level *int) {
+func (this *categoryImpl) parentWalk(list []sale.ICategory,
+	parentId int, level *int) {
 	*level += 1
 	if parentId > 0 {
 		for _, v := range list {
 			if v2 := v.GetValue(); v2.Id == v2.ParentId {
-				panic(errors.New(fmt.Sprintf("Bad category , id is same of parent id , id:%s",
+				panic(errors.New(fmt.Sprintf(
+					"Bad category , id is same of parent id , id:%s",
 					v2.Id)))
 			} else if v2.Id == parentId {
 				this.parentWalk(list, v2.ParentId, level)
@@ -257,7 +261,6 @@ func (this *categoryManagerImpl) GetCategories() []sale.ICategory {
 
 // 删除分类
 func (this *categoryManagerImpl) DeleteCategory(id int) error {
-	//todo: 删除应放到这里来处理
 	c := this.GetCategory(id)
 	if c == nil {
 		return sale.ErrCategoryNotExist
@@ -265,6 +268,15 @@ func (this *categoryManagerImpl) DeleteCategory(id int) error {
 	if len(c.GetChildId()) > 0 {
 		return sale.ErrHasChildCategories
 	}
-	this.clean() //清理缓存
-	return this._rep.DeleteCategory(this.getRelationId(), id)
+	if this._rep.CheckGoodsContain(this.getRelationId(), id) {
+		return sale.ErrCategoryContainGoods
+	}
+
+	err := this._rep.DeleteCategory(this.getRelationId(), id)
+	if err == nil {
+		this.clean() //清理缓存
+		err = c.GetOption().Destroy()
+		c = nil
+	}
+	return err
 }
