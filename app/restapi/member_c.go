@@ -34,7 +34,7 @@ type MemberC struct {
 func (this *MemberC) Login(ctx *echo.Context) error {
 	r := ctx.Request()
 	var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")
-	merchantId := getMerchantId(ctx)
+	//merchantId := getMerchantId(ctx)
 	var result dto.MemberLoginResult
 
 	pwd = strings.TrimSpace(pwd)
@@ -43,7 +43,7 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		e, err := dps.MemberService.TryLogin(merchantId, usr, encodePwd, true)
+		e, err := dps.MemberService.TryLogin(usr, encodePwd, true)
 
 		if err == nil {
 			// 生成令牌
