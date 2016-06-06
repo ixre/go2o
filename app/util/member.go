@@ -37,6 +37,7 @@ func SetMemberApiToken(sto gof.Storage, memberId int, pwd string) string {
 	var token string = string(cyp.Encode())
 	var key string = GetMemberApiTokenKey(memberId)
 
+	//todo: 凭据过期
 	sto.Set(key, token)      // 存储令牌
 	sto.Set(key+"base", pwd) // 存储令牌凭据
 

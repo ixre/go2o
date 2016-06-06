@@ -16,14 +16,15 @@ var (
 type (
 	// 平台设置
 	PlatformConf struct {
+		// 平台名称
+		Name string
 		// 标志
 		Logo string
 		// 允许商户创建商品分类
 		MchGoodsCategory bool
 		// 允许商户创建页面分类
-		MchPageCategory  bool
+		MchPageCategory bool
 	}
-
 
 	// 微信API设置
 	WxApiConfig struct {
@@ -110,7 +111,6 @@ type (
 		// 订单超时自动收货
 		OrderTimeOutReceiveHour int
 	}
-
 
 	IValueRep interface {
 		// 获取微信接口配置
