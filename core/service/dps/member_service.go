@@ -203,8 +203,8 @@ func (this *memberService) ResetPassword(memberId int) string {
 }
 
 // 检查凭据, update:是否更新登陆时间
-func (this *memberService) TryLogin(merchantId int, usr,
-	pwd string, update bool) (*member.ValueMember, error) {
+func (this *memberService) TryLogin(usr, pwd string, update bool) (
+	*member.ValueMember, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
 	val := this._rep.GetMemberValueByUsr(usr)
@@ -225,11 +225,6 @@ func (this *memberService) TryLogin(merchantId int, usr,
 	}
 
 	m := this._rep.GetMember(val.Id)
-	rl := m.GetRelation()
-
-	if merchantId != -1 && rl.RegisterMerchantId != merchantId {
-		return nil, errors.New("无法登陆:NOT MATCH PARTNER!")
-	}
 
 	if update {
 		unix := time.Now().Unix()
