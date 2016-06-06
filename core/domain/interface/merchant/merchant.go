@@ -30,7 +30,7 @@ type (
 		Stat() error
 
 		// 是否自营
-		SelfSales()bool
+		SelfSales() bool
 
 		// 返回对应的会员编号
 		Member() int
@@ -73,17 +73,16 @@ type (
 	Merchant struct {
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
-		MemberId int    `db:"member_id"`
+		MemberId int `db:"member_id"`
 
-
-		Usr      string `db:"usr"`
-		Pwd      string `db:"pwd"`
+		Usr string `db:"usr"`
+		Pwd string `db:"pwd"`
 
 		// 商户名称
-		Name     string `db:"name"`
+		Name string `db:"name"`
 
 		// 是否自营
-		SelfSales   int `db:"self_sales"`
+		SelfSales int `db:"self_sales"`
 
 		// 商户等级
 		Level int    `db:"level"`

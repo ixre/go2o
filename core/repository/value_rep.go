@@ -19,6 +19,16 @@ import (
 var _ valueobject.IValueRep = new(valueRep)
 
 var (
+
+	// 默认平台设置
+	//todo: 默认值
+	defaultPlatformConf = valueobject.PlatformConf{
+		Name:             "GO2O",
+		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		MchGoodsCategory: false,
+		MchPageCategory:  false,
+	}
+
 	// 默认注册权限设置
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
@@ -45,14 +55,6 @@ var (
 		TradeCsnFeeByOrder: 1, // 每笔订单最低收取1元
 		// 按交易金额收取手续费的百分百
 		TradeCsnPercentByFee: 0.01, // 1%收取
-	}
-
-	// 默认平台设置
-	//todo: 默认值
-	defaultPlatformConf = valueobject.PlatformConf{
-		Logo:"",
-		MchGoodsCategory: false,
-		MchPageCategory:  false,
 	}
 
 	defaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
