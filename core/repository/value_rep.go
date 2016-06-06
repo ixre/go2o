@@ -47,10 +47,12 @@ var (
 		TradeCsnPercentByFee: 0.01, // 1%收取
 	}
 
-	// 默认商户设置
-	defaultGlobMchConf = valueobject.GlobMchConf{
-		AllowGoodsCategory: false,
-		AllowPageCategory:  false,
+	// 默认平台设置
+	//todo: 默认值
+	defaultPlatformConf = valueobject.PlatformConf{
+		Logo:"",
+		MchGoodsCategory: false,
+		MchPageCategory:  false,
 	}
 
 	defaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
@@ -84,7 +86,7 @@ type valueRep struct {
 	_rpGob           *util.GobFile
 	_numConf         *valueobject.GlobNumberConf
 	_numGob          *util.GobFile
-	_globMchConf     *valueobject.GlobMchConf
+	_globMchConf     *valueobject.PlatformConf
 	_mchGob          *util.GobFile
 	_globMchSaleConf *valueobject.GlobMchSaleConf
 	_mscGob          *util.GobFile
@@ -102,12 +104,12 @@ func NewValueRep(conn db.Connector) valueobject.IValueRep {
 }
 
 // 获取微信接口配置
-func (this *valueRep) GetWxApiConfig() *valueobject.WxApiConfig {
+func (this *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
 	if this._wxConf == nil {
 		this._wxConf = &valueobject.WxApiConfig{}
 		this._wxGob.Unmarshal(this._wxConf)
 	}
-	return this._wxConf
+	return *this._wxConf
 }
 
 // 保存微信接口配置
@@ -121,13 +123,13 @@ func (this *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 }
 
 // 获取注册权限
-func (this *valueRep) GetRegisterPerm() *valueobject.RegisterPerm {
+func (this *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
 	if this._rpConf == nil {
 		v := defaultRegisterPerm
 		this._rpConf = &v
 		this._rpGob.Unmarshal(this._rpConf)
 	}
-	return this._rpConf
+	return *this._rpConf
 }
 
 // 保存注册权限
@@ -140,13 +142,13 @@ func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 }
 
 // 获取全局系统销售设置
-func (this *valueRep) GetGlobNumberConf() *valueobject.GlobNumberConf {
+func (this *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
 	if this._numConf == nil {
 		v := defaultGlobNumberConf
 		this._numConf = &v
 		this._numGob.Unmarshal(this._numConf)
 	}
-	return this._numConf
+	return *this._numConf
 }
 
 // 保存全局系统销售设置
@@ -158,18 +160,18 @@ func (this *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	return nil
 }
 
-// 获取全局商户设置
-func (this *valueRep) GetGlobMchConf() *valueobject.GlobMchConf {
+// 获取平台设置
+func (this *valueRep) GetPlatformConf() valueobject.PlatformConf {
 	if this._globMchConf == nil {
-		v := defaultGlobMchConf
+		v := defaultPlatformConf
 		this._globMchConf = &v
 		this._mchGob.Unmarshal(this._globMchConf)
 	}
-	return this._globMchConf
+	return *this._globMchConf
 }
 
-// 保存全局商户设置
-func (this *valueRep) SaveGlobMchConf(v *valueobject.GlobMchConf) error {
+// 保存平台设置
+func (this *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
 		this._globMchConf = v
 		return this._mchGob.Save(this._globMchConf)
@@ -178,13 +180,13 @@ func (this *valueRep) SaveGlobMchConf(v *valueobject.GlobMchConf) error {
 }
 
 // 获取全局商户销售设置
-func (this *valueRep) GetGlobMchSaleConf() *valueobject.GlobMchSaleConf {
+func (this *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	if this._globMchSaleConf == nil {
 		v := defaultGlobMchSaleConf
 		this._globMchSaleConf = &v
 		this._mscGob.Unmarshal(this._globMchSaleConf)
 	}
-	return this._globMchSaleConf
+	return *this._globMchSaleConf
 }
 
 // 保存全局商户销售设置

@@ -24,7 +24,7 @@ func NewPlatformService(rep valueobject.IValueRep) *platformService {
 }
 
 // 获取微信接口配置
-func (this *platformService) GetWxApiConfig() *valueobject.WxApiConfig {
+func (this *platformService) GetWxApiConfig() valueobject.WxApiConfig {
 	return this._rep.GetWxApiConfig()
 }
 
@@ -34,7 +34,7 @@ func (this *platformService) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 }
 
 // 获取注册配置
-func (this *platformService) GetRegisterPerm() *valueobject.RegisterPerm {
+func (this *platformService) GetRegisterPerm() valueobject.RegisterPerm {
 	return this._rep.GetRegisterPerm()
 }
 
@@ -44,7 +44,7 @@ func (this *platformService) SaveRegisterPerm(v *valueobject.RegisterPerm) error
 }
 
 // 获取全局系统数值设置
-func (this *platformService) GetGlobNumberConf() *valueobject.GlobNumberConf {
+func (this *platformService) GetGlobNumberConf() valueobject.GlobNumberConf {
 	return this._rep.GetGlobNumberConf()
 }
 
@@ -53,18 +53,18 @@ func (this *platformService) SaveGlobNumberConf(v *valueobject.GlobNumberConf) e
 	return this._rep.SaveGlobNumberConf(v)
 }
 
-// 获取全局商户设置
-func (this *platformService) GetGlobMchConf() *valueobject.GlobMchConf {
-	return this._rep.GetGlobMchConf()
+// 获取平台设置
+func (this *platformService) GetPlatformConf() valueobject.PlatformConf {
+	return this._rep.GetPlatformConf()
 }
 
-// 保存全局商户设置
-func (this *platformService) SaveGlobMchConf(v *valueobject.GlobMchConf) error {
-	return this._rep.SaveGlobMchConf(v)
+// 保存平台设置
+func (this *platformService) SavePlatformConf(v *valueobject.PlatformConf) error {
+	return this._rep.SavePlatformConf(v)
 }
 
 // 获取全局商户销售设置
-func (this *platformService) GetGlobMchSaleConf() *valueobject.GlobMchSaleConf {
+func (this *platformService) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	return this._rep.GetGlobMchSaleConf()
 }
 

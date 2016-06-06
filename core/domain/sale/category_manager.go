@@ -204,8 +204,8 @@ func NewCategoryManager(mchId int, rep sale.ICategoryRep,
 }
 
 func (this *categoryManagerImpl) init() sale.ICategoryManager {
-	mchConf := this._valRep.GetGlobMchConf()
-	if !mchConf.AllowGoodsCategory && this._mchId > 0 {
+	mchConf := this._valRep.GetPlatformConf()
+	if !mchConf.MchGoodsCategory && this._mchId > 0 {
 		this._readonly = true
 		this._mchId = 0
 	}
