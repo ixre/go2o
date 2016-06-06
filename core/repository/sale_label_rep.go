@@ -17,16 +17,16 @@ import (
 	saleImpl "go2o/core/domain/sale"
 )
 
-type saleTagRep struct {
+type saleLabelRep struct {
 	db.Connector
 }
 
-func NewTagSaleRep(c db.Connector) sale.ISaleTagRep {
-	return &saleTagRep{c}
+func NewTagSaleRep(c db.Connector) sale.ISaleLabelRep {
+	return &saleLabelRep{c}
 }
 
 // 创建销售标签
-func (this *saleTagRep) CreateSaleTag(v *sale.SaleLabel) sale.ISaleLabel {
+func (this *saleLabelRep) CreateSaleLabel(v *sale.SaleLabel) sale.ISaleLabel {
 	if v != nil {
 		return saleImpl.NewSaleLabel(v.MerchantId, v, this)
 	}
@@ -34,14 +34,14 @@ func (this *saleTagRep) CreateSaleTag(v *sale.SaleLabel) sale.ISaleLabel {
 }
 
 // 获取所有的销售标签
-func (this *saleTagRep) GetAllValueSaleTags(merchantId int) []*sale.SaleLabel {
+func (this *saleLabelRep) GetAllValueSaleLabels(merchantId int) []*sale.SaleLabel {
 	arr := []*sale.SaleLabel{}
 	this.Connector.GetOrm().Select(&arr, "merchant_id=?", merchantId)
 	return arr
 }
 
 // 获取销售标签值
-func (this *saleTagRep) GetValueSaleTag(merchantId int, tagId int) *sale.SaleLabel {
+func (this *saleLabelRep) GetValueSaleLabel(merchantId int, tagId int) *sale.SaleLabel {
 	var v *sale.SaleLabel = new(sale.SaleLabel)
 	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND id=?", merchantId, tagId)
 	if err == nil {
@@ -51,12 +51,12 @@ func (this *saleTagRep) GetValueSaleTag(merchantId int, tagId int) *sale.SaleLab
 }
 
 // 获取销售标签
-func (this *saleTagRep) GetSaleTag(merchantId int, id int) sale.ISaleLabel {
-	return this.CreateSaleTag(this.GetValueSaleTag(merchantId, id))
+func (this *saleLabelRep) GetSaleLabel(merchantId int, id int) sale.ISaleLabel {
+	return this.CreateSaleLabel(this.GetValueSaleLabel(merchantId, id))
 }
 
 // 保存销售标签
-func (this *saleTagRep) SaveSaleTag(merchantId int, v *sale.SaleLabel) (int, error) {
+func (this *saleLabelRep) SaveSaleLabel(merchantId int, v *sale.SaleLabel) (int, error) {
 	orm := this.GetOrm()
 	var err error
 	v.MerchantId = merchantId
@@ -70,7 +70,7 @@ func (this *saleTagRep) SaveSaleTag(merchantId int, v *sale.SaleLabel) (int, err
 }
 
 // 根据Code获取销售标签
-func (this *saleTagRep) GetSaleTagByCode(merchantId int, code string) *sale.SaleLabel {
+func (this *saleLabelRep) GetSaleLabelByCode(merchantId int, code string) *sale.SaleLabel {
 	var v *sale.SaleLabel = new(sale.SaleLabel)
 	if this.GetOrm().GetBy(v, "merchant_id=? AND tag_code=?", merchantId, code) == nil {
 		return v
@@ -79,13 +79,13 @@ func (this *saleTagRep) GetSaleTagByCode(merchantId int, code string) *sale.Sale
 }
 
 // 删除销售标签
-func (this *saleTagRep) DeleteSaleTag(merchantId int, id int) error {
+func (this *saleLabelRep) DeleteSaleLabel(merchantId int, id int) error {
 	_, err := this.GetOrm().Delete(&sale.SaleLabel{}, "merchant_id=? AND id=?", merchantId, id)
 	return err
 }
 
 // 获取商品
-func (this *saleTagRep) GetValueGoodsBySaleTag(merchantId,
+func (this *saleLabelRep) GetValueGoodsBySaleLabel(merchantId,
 	tagId int, sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
@@ -101,7 +101,7 @@ func (this *saleTagRep) GetValueGoodsBySaleTag(merchantId,
 }
 
 // 获取商品
-func (this *saleTagRep) GetPagedValueGoodsBySaleTag(merchantId,
+func (this *saleLabelRep) GetPagedValueGoodsBySaleLabel(merchantId,
 	tagId int, sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {
@@ -122,7 +122,7 @@ func (this *saleTagRep) GetPagedValueGoodsBySaleTag(merchantId,
 }
 
 // 获取商品的销售标签
-func (this *saleTagRep) GetItemSaleTags(itemId int) []*sale.SaleLabel {
+func (this *saleLabelRep) GetItemSaleLabels(itemId int) []*sale.SaleLabel {
 	arr := []*sale.SaleLabel{}
 	this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
 	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, itemId)
@@ -130,16 +130,16 @@ func (this *saleTagRep) GetItemSaleTags(itemId int) []*sale.SaleLabel {
 }
 
 // 清理商品的销售标签
-func (this *saleTagRep) CleanItemSaleTags(itemId int) error {
+func (this *saleLabelRep) CleanItemSaleLabels(itemId int) error {
 	_, err := this.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", itemId)
 	return err
 }
 
 // 保存商品的销售标签
-func (this *saleTagRep) SaveItemSaleTags(itemId int, tagIds []int) error {
+func (this *saleLabelRep) SaveItemSaleLabels(itemId int, tagIds []int) error {
 	var err error
 	if tagIds == nil {
-		return errors.New("SaleTag Ids can't be null.")
+		return errors.New("SaleLabel Ids can't be null.")
 	}
 
 	for _, v := range tagIds {

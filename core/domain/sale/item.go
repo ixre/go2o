@@ -20,23 +20,23 @@ import (
 var _ sale.IItem = new(Item)
 
 type Item struct {
-	_value      *sale.ValueItem
-	_saleRep    sale.ISaleRep
-	_saleTagRep sale.ISaleTagRep
-	_goodsRep   sale.IGoodsRep
-	_promRep    promotion.IPromotionRep
-	_sale       *Sale
-	_saleTags   []*sale.SaleLabel
+	_value        *sale.ValueItem
+	_saleRep      sale.ISaleRep
+	_saleLabelRep sale.ISaleLabelRep
+	_goodsRep     sale.IGoodsRep
+	_promRep      promotion.IPromotionRep
+	_sale         *Sale
+	_saleLabels   []*sale.SaleLabel
 }
 
 func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep,
-	saleTagRep sale.ISaleTagRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
+	saleLabelRep sale.ISaleLabelRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
 	return &Item{
-		_value:      v,
-		_saleRep:    saleRep,
-		_saleTagRep: saleTagRep,
-		_sale:       sale,
-		_goodsRep:   goodsRep,
+		_value:        v,
+		_saleRep:      saleRep,
+		_saleLabelRep: saleLabelRep,
+		_sale:         sale,
+		_goodsRep:     goodsRep,
 	}
 }
 
@@ -64,19 +64,19 @@ func (this *Item) IsOnShelves() bool {
 }
 
 // 获取商品的销售标签
-func (this *Item) GetSaleTags() []*sale.SaleLabel {
-	if this._saleTags == nil {
-		this._saleTags = this._saleTagRep.GetItemSaleTags(this.GetDomainId())
+func (this *Item) GetSaleLabels() []*sale.SaleLabel {
+	if this._saleLabels == nil {
+		this._saleLabels = this._saleLabelRep.GetItemSaleLabels(this.GetDomainId())
 	}
-	return this._saleTags
+	return this._saleLabels
 }
 
 // 保存销售标签
-func (this *Item) SaveSaleTags(tagIds []int) error {
-	err := this._saleTagRep.CleanItemSaleTags(this.GetDomainId())
+func (this *Item) SaveSaleLabels(tagIds []int) error {
+	err := this._saleLabelRep.CleanItemSaleLabels(this.GetDomainId())
 	if err == nil {
-		err = this._saleTagRep.SaveItemSaleTags(this.GetDomainId(), tagIds)
-		this._saleTags = nil
+		err = this._saleLabelRep.SaveItemSaleLabels(this.GetDomainId(), tagIds)
+		this._saleLabels = nil
 	}
 	return err
 }

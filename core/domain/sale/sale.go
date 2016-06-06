@@ -22,28 +22,28 @@ var _ sale.ISale = new(Sale)
 const MAX_CACHE_SIZE int = 1000
 
 type Sale struct {
-	_merchantId  int
-	_saleRep     sale.ISaleRep
-	_saleTagRep  sale.ISaleTagRep
-	_cateRep     sale.ICategoryRep
-	_goodsRep    sale.IGoodsRep
-	_valRep      valueobject.IValueRep
-	_promRep     promotion.IPromotionRep
-	_proCache    map[int]sale.IItem
-	_cateManager sale.ICategoryManager
+	_merchantId   int
+	_saleRep      sale.ISaleRep
+	_saleLabelRep sale.ISaleLabelRep
+	_cateRep      sale.ICategoryRep
+	_goodsRep     sale.IGoodsRep
+	_valRep       valueobject.IValueRep
+	_promRep      promotion.IPromotionRep
+	_proCache     map[int]sale.IItem
+	_cateManager  sale.ICategoryManager
 }
 
 func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
-	cateRep sale.ICategoryRep, goodsRep sale.IGoodsRep, tagRep sale.ISaleTagRep,
+	cateRep sale.ICategoryRep, goodsRep sale.IGoodsRep, tagRep sale.ISaleLabelRep,
 	promRep promotion.IPromotionRep) sale.ISale {
 	return (&Sale{
-		_merchantId: merchantId,
-		_cateRep:    cateRep,
-		_saleRep:    saleRep,
-		_saleTagRep: tagRep,
-		_goodsRep:   goodsRep,
-		_promRep:    promRep,
-		_valRep:     valRep,
+		_merchantId:   merchantId,
+		_cateRep:      cateRep,
+		_saleRep:      saleRep,
+		_saleLabelRep: tagRep,
+		_goodsRep:     goodsRep,
+		_promRep:      promRep,
+		_valRep:       valRep,
 	}).init()
 }
 
@@ -82,7 +82,7 @@ func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
 	if v.UpdateTime == 0 {
 		v.UpdateTime = v.CreateTime
 	} //todo: 判断category
-	return newItem(this, v, this._saleRep, this._saleTagRep, this._goodsRep, this._promRep)
+	return newItem(this, v, this._saleRep, this._saleLabelRep, this._goodsRep, this._promRep)
 }
 
 // 创建商品
@@ -160,8 +160,8 @@ func (this *Sale) DeleteGoods(goodsId int) error {
 }
 
 // 初始化销售标签
-func (this *Sale) InitSaleTags() error {
-	if len(this.GetAllSaleTags()) != 0 {
+func (this *Sale) InitSaleLabels() error {
+	if len(this.GetAllSaleLabels()) != 0 {
 		return errors.New("已经存在数据，无法初始化!")
 	}
 
@@ -192,51 +192,51 @@ func (this *Sale) InitSaleTags() error {
 	for _, v := range arr {
 		v.Enabled = 1
 		v.MerchantId = this._merchantId
-		_, err = this.CreateSaleTag(&v).Save()
+		_, err = this.CreateSaleLabel(&v).Save()
 	}
 
 	return err
 }
 
 // 获取所有的销售标签
-func (this *Sale) GetAllSaleTags() []sale.ISaleLabel {
-	arr := this._saleTagRep.GetAllValueSaleTags(this._merchantId)
+func (this *Sale) GetAllSaleLabels() []sale.ISaleLabel {
+	arr := this._saleLabelRep.GetAllValueSaleLabels(this._merchantId)
 	var tags = make([]sale.ISaleLabel, len(arr))
 
 	for i, v := range arr {
-		tags[i] = this.CreateSaleTag(v)
+		tags[i] = this.CreateSaleLabel(v)
 	}
 	return tags
 }
 
 // 获取销售标签
-func (this *Sale) GetSaleTag(id int) sale.ISaleLabel {
-	return this._saleTagRep.GetSaleTag(this._merchantId, id)
+func (this *Sale) GetSaleLabel(id int) sale.ISaleLabel {
+	return this._saleLabelRep.GetSaleLabel(this._merchantId, id)
 }
 
 // 根据Code获取销售标签
-func (this *Sale) GetSaleTagByCode(code string) sale.ISaleLabel {
-	v := this._saleTagRep.GetSaleTagByCode(this._merchantId, code)
-	return this.CreateSaleTag(v)
+func (this *Sale) GetSaleLabelByCode(code string) sale.ISaleLabel {
+	v := this._saleLabelRep.GetSaleLabelByCode(this._merchantId, code)
+	return this.CreateSaleLabel(v)
 }
 
 // 创建销售标签
-func (this *Sale) CreateSaleTag(v *sale.SaleLabel) sale.ISaleLabel {
+func (this *Sale) CreateSaleLabel(v *sale.SaleLabel) sale.ISaleLabel {
 	if v == nil {
 		return nil
 	}
 	v.MerchantId = this.GetAggregateRootId()
-	return this._saleTagRep.CreateSaleTag(v)
+	return this._saleLabelRep.CreateSaleLabel(v)
 }
 
 // 删除销售标签
-func (this *Sale) DeleteSaleTag(id int) error {
-	v := this.GetSaleTag(id)
+func (this *Sale) DeleteSaleLabel(id int) error {
+	v := this.GetSaleLabel(id)
 	if v != nil {
 		if v.System() {
 			return sale.ErrInternalDisallow
 		}
-		return this._saleTagRep.DeleteSaleTag(this._merchantId, id)
+		return this._saleLabelRep.DeleteSaleLabel(this._merchantId, id)
 	}
 	return nil
 }

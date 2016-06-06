@@ -16,13 +16,13 @@ import (
 var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
-	_rep        sale.ISaleTagRep
+	_rep        sale.ISaleLabelRep
 	_merchantId int
 	_value      *sale.SaleLabel
 }
 
 func NewSaleLabel(mchId int, value *sale.SaleLabel,
-	rep sale.ISaleTagRep) sale.ISaleLabel {
+	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
 		_rep:        rep,
 		_merchantId: mchId,
@@ -65,7 +65,7 @@ func (this *saleLabelImpl) SetValue(v *sale.SaleLabel) error {
 
 func (this *saleLabelImpl) Save() (int, error) {
 	this._value.MerchantId = this._merchantId
-	return this._rep.SaveSaleTag(this._merchantId, this._value)
+	return this._rep.SaveSaleLabel(this._merchantId, this._value)
 }
 
 // 获取标签下的商品
@@ -76,7 +76,7 @@ func (this *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*value
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetValueGoodsBySaleTag(this._merchantId,
+	return this._rep.GetValueGoodsBySaleLabel(this._merchantId,
 		this._value.Id, sortBy, begin, end)
 }
 
@@ -88,6 +88,6 @@ func (this *saleLabelImpl) GetPagedValueGoods(sortBy string, begin, end int) (in
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetPagedValueGoodsBySaleTag(this._merchantId,
+	return this._rep.GetPagedValueGoodsBySaleLabel(this._merchantId,
 		this.GetDomainId(), sortBy, begin, end)
 }

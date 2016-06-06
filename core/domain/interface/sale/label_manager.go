@@ -54,43 +54,43 @@ type (
 		GetPagedValueGoods(sortBy string, begin, end int) (total int, goods []*valueobject.Goods)
 	}
 
-	ISaleTagRep interface {
+	ISaleLabelRep interface {
 		// 创建销售标签
-		CreateSaleTag(v *SaleLabel) ISaleLabel
+		CreateSaleLabel(v *SaleLabel) ISaleLabel
 
 		// 获取所有的销售标签
-		GetAllValueSaleTags(merchantId int) []*SaleLabel
+		GetAllValueSaleLabels(merchantId int) []*SaleLabel
 
 		// 获取销售标签值
-		GetValueSaleTag(merchantId int, tagId int) *SaleLabel
+		GetValueSaleLabel(merchantId int, tagId int) *SaleLabel
 
 		// 根据Code获取销售标签
-		GetSaleTagByCode(merchantId int, code string) *SaleLabel
+		GetSaleLabelByCode(merchantId int, code string) *SaleLabel
 
 		// 删除销售标签
-		DeleteSaleTag(merchantId int, id int) error
+		DeleteSaleLabel(merchantId int, id int) error
 
 		// 获取销售标签
-		GetSaleTag(merchantId int, tagId int) ISaleLabel
+		GetSaleLabel(merchantId int, tagId int) ISaleLabel
 
 		// 保存销售标签
-		SaveSaleTag(merchantId int, v *SaleLabel) (int, error)
+		SaveSaleLabel(merchantId int, v *SaleLabel) (int, error)
 
 		// 获取商品
-		GetValueGoodsBySaleTag(merchantId, tagId int, sortBy string,
+		GetValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
 			begin, end int) []*valueobject.Goods
 
 		// 获取分页商品
-		GetPagedValueGoodsBySaleTag(merchantId, tagId int, sortBy string,
+		GetPagedValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
 			begin, end int) (int, []*valueobject.Goods)
 
 		// 获取商品的销售标签
-		GetItemSaleTags(itemId int) []*SaleLabel
+		GetItemSaleLabels(itemId int) []*SaleLabel
 
 		// 清理商品的销售标签
-		CleanItemSaleTags(itemId int) error
+		CleanItemSaleLabels(itemId int) error
 
 		// 保存商品的销售标签
-		SaveItemSaleTags(itemId int, tagIds []int) error
+		SaveItemSaleLabels(itemId int, tagIds []int) error
 	}
 )
