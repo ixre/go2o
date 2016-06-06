@@ -10,6 +10,8 @@
 package variable
 
 const (
+	// 主站域名前缀
+	DOMAIN_PREFIX_MAIN   = "www."
 	// 系统管理域名前缀
 	DOMAIN_PREFIX_WEBMASTER = "webmaster."
 	// 会员中心域名前缀
