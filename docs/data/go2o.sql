@@ -270,13 +270,13 @@ LOCK TABLES `gs_member_price` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `gs_sale_tag`
+-- Table structure for table `gs_sale_label`
 --
 
-DROP TABLE IF EXISTS `gs_sale_tag`;
+DROP TABLE IF EXISTS `gs_sale_label`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gs_sale_tag` (
+CREATE TABLE `gs_sale_label` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `merchant_id` int(11) DEFAULT NULL,
   `tag_code` varchar(45) DEFAULT NULL,
@@ -289,13 +289,13 @@ CREATE TABLE `gs_sale_tag` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `gs_sale_tag`
+-- Dumping data for table `gs_sale_label`
 --
 
-LOCK TABLES `gs_sale_tag` WRITE;
-/*!40000 ALTER TABLE `gs_sale_tag` DISABLE KEYS */;
-INSERT INTO `gs_sale_tag` VALUES (1,102,'host-sales','热销商品',NULL,NULL,1),(2,101,'new-goods','新品上架',NULL,NULL,1),(3,101,'hot-sales','热销商品',NULL,NULL,1),(4,101,'special-goods','特色商品',NULL,NULL,1),(5,101,'prom-sales','优惠促销',NULL,NULL,1),(6,101,'clean-goods','尾品清仓',NULL,NULL,1);
-/*!40000 ALTER TABLE `gs_sale_tag` ENABLE KEYS */;
+LOCK TABLES `gs_sale_label` WRITE;
+/*!40000 ALTER TABLE `gs_sale_label` DISABLE KEYS */;
+INSERT INTO `gs_sale_label` VALUES (1,102,'host-sales','热销商品',NULL,NULL,1),(2,101,'new-goods','新品上架',NULL,NULL,1),(3,101,'hot-sales','热销商品',NULL,NULL,1),(4,101,'special-goods','特色商品',NULL,NULL,1),(5,101,'prom-sales','优惠促销',NULL,NULL,1),(6,101,'clean-goods','尾品清仓',NULL,NULL,1);
+/*!40000 ALTER TABLE `gs_sale_label` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
