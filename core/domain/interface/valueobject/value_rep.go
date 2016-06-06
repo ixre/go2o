@@ -14,6 +14,17 @@ var (
 )
 
 type (
+	// 平台设置
+	PlatformConf struct {
+		// 标志
+		Logo string
+		// 允许商户创建商品分类
+		MchGoodsCategory bool
+		// 允许商户创建页面分类
+		MchPageCategory  bool
+	}
+
+
 	// 微信API设置
 	WxApiConfig struct {
 		/**===== 微信公众平台设置 =====**/
@@ -100,41 +111,34 @@ type (
 		OrderTimeOutReceiveHour int
 	}
 
-	// 全局商户设置
-	GlobMchConf struct {
-		// 允许商户创建商品分类
-		AllowGoodsCategory bool
-		// 允许商户创建页面分类
-		AllowPageCategory bool
-	}
 
 	IValueRep interface {
 		// 获取微信接口配置
-		GetWxApiConfig() *WxApiConfig
+		GetWxApiConfig() WxApiConfig
 
 		// 保存微信接口配置
 		SaveWxApiConfig(v *WxApiConfig) error
 
 		// 获取注册权限
-		GetRegisterPerm() *RegisterPerm
+		GetRegisterPerm() RegisterPerm
 
 		// 保存注册权限
 		SaveRegisterPerm(v *RegisterPerm) error
 
 		// 获取全局系统数值设置
-		GetGlobNumberConf() *GlobNumberConf
+		GetGlobNumberConf() GlobNumberConf
 
 		// 保存全局系统数值设置
 		SaveGlobNumberConf(v *GlobNumberConf) error
 
-		// 获取全局商户设置
-		GetGlobMchConf() *GlobMchConf
+		// 获取平台设置
+		GetPlatformConf() PlatformConf
 
-		// 保存全局商户设置
-		SaveGlobMchConf(v *GlobMchConf) error
+		// 保存平台设置
+		SavePlatformConf(v *PlatformConf) error
 
 		// 获取全局商户销售设置
-		GetGlobMchSaleConf() *GlobMchSaleConf
+		GetGlobMchSaleConf() GlobMchSaleConf
 
 		// 保存全局商户销售设置
 		SaveGlobMchSaleConf(v *GlobMchSaleConf) error

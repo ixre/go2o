@@ -11,6 +11,8 @@ package passport
 import (
     "github.com/jsix/gof"
     "go2o/x/echox"
+    "go2o/core/service/dps"
+    "go2o/core/infrastructure/format"
 )
 
 type ssoC struct{
@@ -25,7 +27,10 @@ func (this *ssoC) Login(ctx *echox.Context)error {
     if len(returnUrl) == 0 {
         tipStyle = " hidden"
     }
+    conf := dps.BaseService.GetPlatformConf()
+    conf.Logo = format.GetResUrl(conf.Logo)
     d := ctx.NewData()
     d.Map["TipStyle"] = tipStyle
+    d.Map["Conf"] = conf
     return ctx.RenderOK("sso_login.html", d)
 }
