@@ -165,24 +165,24 @@ func (this *Sale) InitSaleTags() error {
 		return errors.New("已经存在数据，无法初始化!")
 	}
 
-	arr := []sale.ValueSaleTag{
-		sale.ValueSaleTag{
+	arr := []sale.SaleLabel{
+		sale.SaleLabel{
 			TagName: "新品上架",
 			TagCode: "new-goods",
 		},
-		sale.ValueSaleTag{
+		sale.SaleLabel{
 			TagName: "热销商品",
 			TagCode: "hot-sales",
 		},
-		sale.ValueSaleTag{
+		sale.SaleLabel{
 			TagName: "特色商品",
 			TagCode: "special-goods",
 		},
-		sale.ValueSaleTag{
+		sale.SaleLabel{
 			TagName: "优惠促销",
 			TagCode: "prom-sales",
 		},
-		sale.ValueSaleTag{
+		sale.SaleLabel{
 			TagName: "尾品清仓",
 			TagCode: "clean-goods",
 		},
@@ -192,7 +192,6 @@ func (this *Sale) InitSaleTags() error {
 	for _, v := range arr {
 		v.Enabled = 1
 		v.MerchantId = this._merchantId
-		v.IsInternal = 1
 		_, err = this.CreateSaleTag(&v).Save()
 	}
 
@@ -200,9 +199,9 @@ func (this *Sale) InitSaleTags() error {
 }
 
 // 获取所有的销售标签
-func (this *Sale) GetAllSaleTags() []sale.ISaleTag {
+func (this *Sale) GetAllSaleTags() []sale.ISaleLabel {
 	arr := this._saleTagRep.GetAllValueSaleTags(this._merchantId)
-	var tags = make([]sale.ISaleTag, len(arr))
+	var tags = make([]sale.ISaleLabel, len(arr))
 
 	for i, v := range arr {
 		tags[i] = this.CreateSaleTag(v)
@@ -211,18 +210,18 @@ func (this *Sale) GetAllSaleTags() []sale.ISaleTag {
 }
 
 // 获取销售标签
-func (this *Sale) GetSaleTag(id int) sale.ISaleTag {
+func (this *Sale) GetSaleTag(id int) sale.ISaleLabel {
 	return this._saleTagRep.GetSaleTag(this._merchantId, id)
 }
 
 // 根据Code获取销售标签
-func (this *Sale) GetSaleTagByCode(code string) sale.ISaleTag {
+func (this *Sale) GetSaleTagByCode(code string) sale.ISaleLabel {
 	v := this._saleTagRep.GetSaleTagByCode(this._merchantId, code)
 	return this.CreateSaleTag(v)
 }
 
 // 创建销售标签
-func (this *Sale) CreateSaleTag(v *sale.ValueSaleTag) sale.ISaleTag {
+func (this *Sale) CreateSaleTag(v *sale.SaleLabel) sale.ISaleLabel {
 	if v == nil {
 		return nil
 	}

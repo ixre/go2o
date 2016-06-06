@@ -26,7 +26,7 @@ type Item struct {
 	_goodsRep   sale.IGoodsRep
 	_promRep    promotion.IPromotionRep
 	_sale       *Sale
-	_saleTags   []*sale.ValueSaleTag
+	_saleTags   []*sale.SaleLabel
 }
 
 func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep,
@@ -64,7 +64,7 @@ func (this *Item) IsOnShelves() bool {
 }
 
 // 获取商品的销售标签
-func (this *Item) GetSaleTags() []*sale.ValueSaleTag {
+func (this *Item) GetSaleTags() []*sale.SaleLabel {
 	if this._saleTags == nil {
 		this._saleTags = this._saleTagRep.GetItemSaleTags(this.GetDomainId())
 	}
