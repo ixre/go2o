@@ -41,22 +41,22 @@ type ISale interface {
 	GetGoodsBySku(itemId, sku int) IGoods
 
 	// 获取所有的销售标签
-	GetAllSaleTags() []ISaleLabel
+	GetAllSaleLabels() []ISaleLabel
 
 	// 初始化销售标签
-	InitSaleTags() error
+	InitSaleLabels() error
 
 	// 获取销售标签
-	GetSaleTag(id int) ISaleLabel
+	GetSaleLabel(id int) ISaleLabel
 
 	// 根据Code获取销售标签
-	GetSaleTagByCode(code string) ISaleLabel
+	GetSaleLabelByCode(code string) ISaleLabel
 
 	// 创建销售标签
-	CreateSaleTag(v *SaleLabel) ISaleLabel
+	CreateSaleLabel(v *SaleLabel) ISaleLabel
 
 	// 删除销售标签
-	DeleteSaleTag(id int) error
+	DeleteSaleLabel(id int) error
 
 	// 删除商品
 	DeleteGoods(int) error
