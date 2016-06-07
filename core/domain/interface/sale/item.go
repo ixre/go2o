@@ -20,7 +20,7 @@ type IItem interface {
 	IsOnShelves() bool
 
 	// 获取销售标签
-	GetSaleLabels() []*SaleLabel
+	GetSaleLabels() []*Label
 
 	// 保存销售标签
 	SaveSaleLabels([]int) error
