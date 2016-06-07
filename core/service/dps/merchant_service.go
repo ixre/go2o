@@ -127,7 +127,7 @@ func (this *merchantService) initializeMerchant(merchantId int) {
 	//mch.ConfManager().SaveSaleConf(&conf)
 
 	// 初始化销售标签
-	this._saleRep.GetSale(merchantId).InitSaleLabels()
+	this._saleRep.GetSale(merchantId).LabelManager().InitSaleLabels()
 }
 
 // 获取商户的状态

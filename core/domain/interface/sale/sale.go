@@ -19,6 +19,9 @@ type ISale interface {
 	// 分类服务
 	CategoryManager() ICategoryManager
 
+	// 标签管理器
+	LabelManager() ILabelManager
+
 	// 创建产品
 	CreateItem(*ValueItem) IItem
 
@@ -39,24 +42,6 @@ type ISale interface {
 
 	// 根据产品SKU获取商品
 	GetGoodsBySku(itemId, sku int) IGoods
-
-	// 获取所有的销售标签
-	GetAllSaleLabels() []ISaleLabel
-
-	// 初始化销售标签
-	InitSaleLabels() error
-
-	// 获取销售标签
-	GetSaleLabel(id int) ISaleLabel
-
-	// 根据Code获取销售标签
-	GetSaleLabelByCode(code string) ISaleLabel
-
-	// 创建销售标签
-	CreateSaleLabel(v *SaleLabel) ISaleLabel
-
-	// 删除销售标签
-	DeleteSaleLabel(id int) error
 
 	// 删除商品
 	DeleteGoods(int) error

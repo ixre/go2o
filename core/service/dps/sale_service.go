@@ -310,11 +310,11 @@ func (this *saleService) setChild(list []sale.ICategory, dst *sale.Category) {
 	}
 }
 
-func (this *saleService) GetAllSaleLabels(merchantId int) []*sale.SaleLabel {
+func (this *saleService) GetAllSaleLabels(merchantId int) []*sale.Label {
 	sl := this._rep.GetSale(merchantId)
-	tags := sl.GetAllSaleLabels()
+	tags := sl.LabelManager().GetAllSaleLabels()
 
-	var vtags []*sale.SaleLabel = make([]*sale.SaleLabel, len(tags))
+	var vtags []*sale.Label = make([]*sale.Label, len(tags))
 	for i, v := range tags {
 		vtags[i] = v.GetValue()
 	}
@@ -322,37 +322,37 @@ func (this *saleService) GetAllSaleLabels(merchantId int) []*sale.SaleLabel {
 }
 
 // 获取销售标签
-func (this *saleService) GetSaleLabel(merchantId, id int) *sale.SaleLabel {
+func (this *saleService) GetSaleLabel(merchantId, id int) *sale.Label {
 	sl := this._rep.GetSale(merchantId)
-	if tag := sl.GetSaleLabel(id); tag != nil {
+	if tag := sl.LabelManager().GetSaleLabel(id); tag != nil {
 		return tag.GetValue()
 	}
 	return nil
 }
 
 // 获取销售标签
-func (this *saleService) GetSaleLabelByCode(merchantId int, code string) *sale.SaleLabel {
+func (this *saleService) GetSaleLabelByCode(merchantId int, code string) *sale.Label {
 	sl := this._rep.GetSale(merchantId)
-	if tag := sl.GetSaleLabelByCode(code); tag != nil {
+	if tag := sl.LabelManager().GetSaleLabelByCode(code); tag != nil {
 		return tag.GetValue()
 	}
 	return nil
 }
 
 // 保存销售标签
-func (this *saleService) SaveSaleLabel(merchantId int, v *sale.SaleLabel) (int, error) {
+func (this *saleService) SaveSaleLabel(merchantId int, v *sale.Label) (int, error) {
 	sl := this._rep.GetSale(merchantId)
 	if v.Id > 0 {
-		tag := sl.GetSaleLabel(v.Id)
+		tag := sl.LabelManager().GetSaleLabel(v.Id)
 		tag.SetValue(v)
 		return tag.Save()
 	}
-	return sl.CreateSaleLabel(v).Save()
+	return sl.LabelManager().CreateSaleLabel(v).Save()
 }
 
 // 获取商品的销售标签
-func (this *saleService) GetItemSaleLabels(merchantId, itemId int) []*sale.SaleLabel {
-	var list = make([]*sale.SaleLabel, 0)
+func (this *saleService) GetItemSaleLabels(merchantId, itemId int) []*sale.Label {
+	var list = make([]*sale.Label, 0)
 	sl := this._rep.GetSale(merchantId)
 	if goods := sl.GetItem(itemId); goods != nil {
 		list = goods.GetSaleLabels()
@@ -376,7 +376,7 @@ func (this *saleService) SaveItemSaleLabels(merchantId, itemId int, tagIds []int
 func (this *saleService) GetValueGoodsBySaleLabel(merchantId int,
 	code, sortBy string, begin int, end int) []*valueobject.Goods {
 	sl := this._rep.GetSale(merchantId)
-	if tag := sl.GetSaleLabelByCode(code); tag != nil {
+	if tag := sl.LabelManager().GetSaleLabelByCode(code); tag != nil {
 		list := tag.GetValueGoods(sortBy, begin, end)
 		for _, v := range list {
 			v.Image = format.GetGoodsImageUrl(v.Image)
@@ -390,7 +390,7 @@ func (this *saleService) GetValueGoodsBySaleLabel(merchantId int,
 func (this *saleService) GetPagedValueGoodsBySaleLabel(merchantId int,
 	tagId int, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
 	sl := this._rep.GetSale(merchantId)
-	tag := sl.CreateSaleLabel(&sale.SaleLabel{
+	tag := sl.LabelManager().CreateSaleLabel(&sale.Label{
 		Id: tagId,
 	})
 	return tag.GetPagedValueGoods(sortBy, begin, end)
@@ -398,7 +398,7 @@ func (this *saleService) GetPagedValueGoodsBySaleLabel(merchantId int,
 
 // 删除销售标签
 func (this *saleService) DeleteSaleLabel(merchantId int, id int) error {
-	return this._rep.GetSale(merchantId).DeleteSaleLabel(id)
+	return this._rep.GetSale(merchantId).LabelManager().DeleteSaleLabel(id)
 }
 
 // 获取商品的会员价

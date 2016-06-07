@@ -12,7 +12,7 @@ import "go2o/core/domain/interface/valueobject"
 
 type (
 	// 销售标签
-	SaleLabel struct {
+	Label struct {
 		Id int `db:"id" auto:"yes" pk:"yes"`
 
 		// 商户编号
@@ -36,10 +36,10 @@ type (
 		GetDomainId() int
 
 		// 获取值
-		GetValue() *SaleLabel
+		GetValue() *Label
 
 		// 设置值
-		SetValue(v *SaleLabel) error
+		SetValue(v *Label) error
 
 		// 保存
 		Save() (int, error)
@@ -54,18 +54,39 @@ type (
 		GetPagedValueGoods(sortBy string, begin, end int) (total int, goods []*valueobject.Goods)
 	}
 
-	ISaleLabelRep interface {
-		// 创建销售标签
-		CreateSaleLabel(v *SaleLabel) ISaleLabel
-
+	// 标签服务
+	ILabelManager interface {
 		// 获取所有的销售标签
-		GetAllValueSaleLabels(merchantId int) []*SaleLabel
+		GetAllSaleLabels() []ISaleLabel
 
-		// 获取销售标签值
-		GetValueSaleLabel(merchantId int, tagId int) *SaleLabel
+		// 初始化销售标签
+		InitSaleLabels() error
+
+		// 获取销售标签
+		GetSaleLabel(id int) ISaleLabel
 
 		// 根据Code获取销售标签
-		GetSaleLabelByCode(merchantId int, code string) *SaleLabel
+		GetSaleLabelByCode(code string) ISaleLabel
+
+		// 创建销售标签
+		CreateSaleLabel(v *Label) ISaleLabel
+
+		// 删除销售标签
+		DeleteSaleLabel(id int) error
+	}
+
+	ISaleLabelRep interface {
+		// 创建销售标签
+		CreateSaleLabel(v *Label) ISaleLabel
+
+		// 获取所有的销售标签
+		GetAllValueSaleLabels(merchantId int) []*Label
+
+		// 获取销售标签值
+		GetValueSaleLabel(merchantId int, tagId int) *Label
+
+		// 根据Code获取销售标签
+		GetSaleLabelByCode(merchantId int, code string) *Label
 
 		// 删除销售标签
 		DeleteSaleLabel(merchantId int, id int) error
@@ -74,7 +95,7 @@ type (
 		GetSaleLabel(merchantId int, tagId int) ISaleLabel
 
 		// 保存销售标签
-		SaveSaleLabel(merchantId int, v *SaleLabel) (int, error)
+		SaveSaleLabel(merchantId int, v *Label) (int, error)
 
 		// 获取商品
 		GetValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
@@ -85,7 +106,7 @@ type (
 			begin, end int) (int, []*valueobject.Goods)
 
 		// 获取商品的销售标签
-		GetItemSaleLabels(itemId int) []*SaleLabel
+		GetItemSaleLabels(itemId int) []*Label
 
 		// 清理商品的销售标签
 		CleanItemSaleLabels(itemId int) error
