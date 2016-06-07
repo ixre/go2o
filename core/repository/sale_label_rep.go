@@ -36,14 +36,14 @@ func (this *saleLabelRep) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 // 获取所有的销售标签
 func (this *saleLabelRep) GetAllValueSaleLabels(merchantId int) []*sale.Label {
 	arr := []*sale.Label{}
-	this.Connector.GetOrm().Select(&arr, "merchant_id=?", merchantId)
+	this.Connector.GetOrm().Select(&arr, "mch_id=?", merchantId)
 	return arr
 }
 
 // 获取销售标签值
 func (this *saleLabelRep) GetValueSaleLabel(merchantId int, tagId int) *sale.Label {
 	var v *sale.Label = new(sale.Label)
-	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND id=?", merchantId, tagId)
+	err := this.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", merchantId, tagId)
 	if err == nil {
 		return v
 	}
@@ -64,7 +64,7 @@ func (this *saleLabelRep) SaveSaleLabel(merchantId int, v *sale.Label) (int, err
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM gs_sale_label WHERE merchant_id=?", &v.Id, merchantId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM gs_sale_label WHERE mch_id=?", &v.Id, merchantId)
 	}
 	return v.Id, err
 }
@@ -72,7 +72,7 @@ func (this *saleLabelRep) SaveSaleLabel(merchantId int, v *sale.Label) (int, err
 // 根据Code获取销售标签
 func (this *saleLabelRep) GetSaleLabelByCode(merchantId int, code string) *sale.Label {
 	var v *sale.Label = new(sale.Label)
-	if this.GetOrm().GetBy(v, "merchant_id=? AND tag_code=?", merchantId, code) == nil {
+	if this.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", merchantId, code) == nil {
 		return v
 	}
 	return nil
@@ -80,7 +80,7 @@ func (this *saleLabelRep) GetSaleLabelByCode(merchantId int, code string) *sale.
 
 // 删除销售标签
 func (this *saleLabelRep) DeleteSaleLabel(merchantId int, id int) error {
-	_, err := this.GetOrm().Delete(&sale.Label{}, "merchant_id=? AND id=?", merchantId, id)
+	_, err := this.GetOrm().Delete(&sale.Label{}, "mch_id=? AND id=?", merchantId, id)
 	return err
 }
 
@@ -95,7 +95,7 @@ func (this *saleLabelRep) GetValueGoodsBySaleLabel(merchantId,
 	       gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.merchant_id=? AND t.id=?) `+sortBy+`
+			WHERE t.mch_id=? AND t.id=?) `+sortBy+`
 			LIMIT ?,?`, merchantId, tagId, begin, end)
 	return arr
 }
@@ -110,13 +110,13 @@ func (this *saleLabelRep) GetPagedValueGoodsBySaleLabel(merchantId,
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.merchant_id=? AND t.id=?)`), &total, merchantId, tagId)
+			WHERE t.mch_id=? AND t.id=?)`), &total, merchantId, tagId)
 	arr := []*valueobject.Goods{}
 	if total > 0 {
 		this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 WHERE gs_item.state=1  AND gs_item.on_shelves=1 AND gs_item.id IN (
 			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.merchant_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`, merchantId, tagId, begin, end)
+			WHERE t.mch_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`, merchantId, tagId, begin, end)
 	}
 	return total, arr
 }
