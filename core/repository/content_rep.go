@@ -64,7 +64,7 @@ func (this *contentRep) SavePage(merchantId int, v *content.ValuePage) (int, err
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_page WHERE merchant_id=?", &v.Id, merchantId)
+		this.Connector.ExecScalar("SELECT MAX(id) FROM mch_page WHERE merchant_id=?", &v.Id, merchantId)
 	}
 	return v.Id, err
 }
