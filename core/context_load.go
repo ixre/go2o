@@ -97,7 +97,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(shop.OfflineShop{}, "mch_offline_shop")
 	orm.TableMapping(merchant.SaleConf{}, "mch_sale_conf")
 	orm.TableMapping(merchant.MemberLevel{}, "pt_member_level")
-	orm.TableMapping(content.ValuePage{}, "pt_page")
+	orm.TableMapping(content.ValuePage{}, "mch_page")
 	orm.TableMapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.TableMapping(mss.MailTask{}, "pt_mail_queue")
 

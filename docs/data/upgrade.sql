@@ -206,6 +206,11 @@ ALTER TABLE `flm`.`gs_sale_label`
   CHANGE COLUMN `goods_image` `label_image` VARCHAR(100) NULL DEFAULT NULL , RENAME TO  `flm`.`gs_sale_label` ;
 
 
+ALTER TABLE `flm`.`pt_page`
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL , RENAME TO  `flm`.`mch_page` ;
+
+
+
 
 
 
