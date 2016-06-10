@@ -17,7 +17,7 @@ const (
 	// 会员中心域名前缀
 	DOMAIN_PREFIX_MEMBER = "u."
 	// 商户系统域名前缀
-	DOMAIN_PREFIX_PARTNER = "partner."
+	DOMAIN_PREFIX_MERCHANT = "mch."
 	// 通行证域名前缀
 	DOMAIN_PREFIX_PASSPORT = "passport."
 	// 通行证域名协议,默认为http,可以使用https安全加密
