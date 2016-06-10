@@ -150,7 +150,7 @@ merchant-serve  ---- 14192
 
 
 ### 4.Add test hosts ###
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com merchant.ts.com mu.ts.com u.ts.com passport.ts.com www.ts1
+> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com mu.ts.com u.ts.com passport.ts.com www.ts1
 .com www.ts2
 .com api.ts.com webmaster.ts.com  >> /etc/hosts
 

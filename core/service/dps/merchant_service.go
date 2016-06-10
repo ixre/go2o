@@ -36,6 +36,10 @@ func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
 	}
 }
 
+func (this *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant {
+	return nil
+}
+
 // 验证用户密码并返回编号
 func (this *merchantService) Verify(usr, pwd string) int {
 	usr = strings.ToLower(strings.TrimSpace(usr))
