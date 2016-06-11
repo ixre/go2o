@@ -39,7 +39,7 @@ func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
 }
 
 // 获取产品值
-func (this *saleService) GetValueItem(merchantId, itemId int) *sale.ValueItem {
+func (this *saleService) GetValueItem(merchantId, itemId int) *sale.Item {
 	sl := this._rep.GetSale(merchantId)
 	pro := sl.GetItem(itemId)
 	v := pro.GetValue()
@@ -83,7 +83,7 @@ func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *sale.ValueGoods {
 }
 
 // 保存产品
-func (this *saleService) SaveItem(merchantId int, v *sale.ValueItem) (int, error) {
+func (this *saleService) SaveItem(merchantId int, v *sale.Item) (int, error) {
 	sl := this._rep.GetSale(merchantId)
 	var pro sale.IItem
 	if v.Id > 0 {

@@ -209,6 +209,10 @@ ALTER TABLE `flm`.`gs_sale_label`
 ALTER TABLE `flm`.`pt_page`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL , RENAME TO  `flm`.`mch_page` ;
 
+ALTER TABLE `flm`.`gs_item`
+  ADD COLUMN `supplier_id` INT NULL AFTER `category_id`;
+
+
 
 
 

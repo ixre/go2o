@@ -23,7 +23,7 @@ type ISale interface {
 	LabelManager() ILabelManager
 
 	// 创建产品
-	CreateItem(*ValueItem) IItem
+	CreateItem(*Item) IItem
 
 	// 根据产品编号获取货品
 	GetItem(int) IItem

@@ -60,8 +60,8 @@ func (this *saleRep) GetSale(mchId int) sale.ISale {
 	return v
 }
 
-func (this *saleRep) GetValueItem(merchantId, itemId int) *sale.ValueItem {
-	var e *sale.ValueItem = new(sale.ValueItem)
+func (this *saleRep) GetValueItem(merchantId, itemId int) *sale.Item {
+	var e *sale.Item = new(sale.Item)
 	err := this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
 			INNER JOIN gs_category c ON c.id = gs_item.category_id WHERE gs_item.id=?
 			AND c.merchant_id=?`, itemId, merchantId)
@@ -71,9 +71,9 @@ func (this *saleRep) GetValueItem(merchantId, itemId int) *sale.ValueItem {
 	return e
 }
 
-func (this *saleRep) GetItemByIds(ids ...int) ([]*sale.ValueItem, error) {
+func (this *saleRep) GetItemByIds(ids ...int) ([]*sale.Item, error) {
 	//todo: merchantId
-	var items []*sale.ValueItem
+	var items []*sale.Item
 
 	//todo:改成database/sql方式，不使用orm
 	err := this.Connector.GetOrm().SelectByQuery(&items,
@@ -82,7 +82,7 @@ func (this *saleRep) GetItemByIds(ids ...int) ([]*sale.ValueItem, error) {
 	return items, err
 }
 
-func (this *saleRep) SaveValueItem(v *sale.ValueItem) (int, error) {
+func (this *saleRep) SaveValueItem(v *sale.Item) (int, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
 		_, id, err := orm.Save(nil, v)
@@ -93,7 +93,7 @@ func (this *saleRep) SaveValueItem(v *sale.ValueItem) (int, error) {
 	}
 }
 
-func (this *saleRep) GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, e []*sale.ValueItem) {
+func (this *saleRep) GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, e []*sale.Item) {
 	var sql string
 
 	var catIdStr string = format.GetCategoryIdStr(catIds)
@@ -103,7 +103,7 @@ func (this *saleRep) GetPagedOnShelvesItem(merchantId int, catIds []int, start, 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, merchantId, catIdStr), &total)
 
-	e = []*sale.ValueItem{}
+	e = []*sale.Item{}
 	this.Connector.GetOrm().SelectByQuery(&e, sql)
 
 	return total, e

@@ -84,7 +84,7 @@ func (this *Sale) GetAggregateRootId() int {
 	return this._merchantId
 }
 
-func (this *Sale) CreateItem(v *sale.ValueItem) sale.IItem {
+func (this *Sale) CreateItem(v *sale.Item) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}

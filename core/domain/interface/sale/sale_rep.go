@@ -14,15 +14,15 @@ type ISaleRep interface {
 	GetSale(merchantId int) ISale
 
 	// 获取货品
-	GetValueItem(merchantId, itemId int) *ValueItem
+	GetValueItem(merchantId, itemId int) *Item
 
 	// 根据id获取货品
-	GetItemByIds(ids ...int) ([]*ValueItem, error)
+	GetItemByIds(ids ...int) ([]*Item, error)
 
-	SaveValueItem(*ValueItem) (int, error)
+	SaveValueItem(*Item) (int, error)
 
 	// 获取在货架上的商品
-	GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, goods []*ValueItem)
+	GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, goods []*Item)
 
 	// 获取货品销售总数
 	GetItemSaleNum(merchantId int, id int) int
