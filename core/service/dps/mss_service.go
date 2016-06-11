@@ -41,3 +41,13 @@ func (this *mssService) GetMailTemplates() []*mss.MailTemplate {
 func (this *mssService) DeleteMailTemplate(id int) error {
 	return this._rep.GetManager().DeleteMailTemplate(id)
 }
+
+// 获取邮件绑定
+func (this *mssService) GetConfig() mss.Config {
+	return this._rep.GetManager().GetConfig()
+}
+
+// 保存邮件
+func (this *mssService) SaveConfig(conf *mss.Config) error {
+	return this._rep.GetManager().SaveConfig(conf)
+}

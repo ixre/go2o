@@ -20,6 +20,7 @@ type messageProviderImpl struct {
 	_appUserId     int
 	_mssRep        mss.IMssRep
 	_mailTemplates []*mss.MailTemplate
+	_config        *mss.Config
 }
 
 func NewMssManager(appUserId int, rep mss.IMssRep) mss.IMessageProvider {
@@ -32,6 +33,23 @@ func NewMssManager(appUserId int, rep mss.IMssRep) mss.IMessageProvider {
 // 获取聚合根编号
 func (this *messageProviderImpl) GetAggregateRootId() int {
 	return this._appUserId
+}
+
+// 获取配置
+func (this *messageProviderImpl) GetConfig() mss.Config {
+	if this._config == nil {
+		this._config = this._mssRep.GetConfig(this._appUserId)
+	}
+	return *this._config
+}
+
+// 保存消息设置
+func (this *messageProviderImpl) SaveConfig(conf *mss.Config) error {
+	err := this._mssRep.SaveConfig(this._appUserId, conf)
+	if err == nil {
+		this._config = nil
+	}
+	return err
 }
 
 // 创建消息模版对象

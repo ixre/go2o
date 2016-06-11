@@ -9,10 +9,13 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	mssImpl "go2o/core/domain/mss"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
 )
 
@@ -34,6 +37,28 @@ func (this *MssRep) GetManager() mss.IMessageProvider {
 		this._globMss = mssImpl.NewMssManager(0, this)
 	}
 	return this._globMss
+}
+
+// 获取短信配置
+func (this *MssRep) GetConfig(userId int) *mss.Config {
+	conf := mss.Config{}
+	filePath := "conf/core/mss_conf"
+	if userId != 0 {
+		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
+	}
+	globFile := util.NewGobFile(filePath)
+	domain.HandleError(globFile.Unmarshal(&conf))
+	return &conf
+}
+
+// 保存消息设置
+func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
+	filePath := "conf/core/mss_conf"
+	if userId != 0 {
+		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
+	}
+	globFile := util.NewGobFile(filePath)
+	return globFile.Save(conf)
 }
 
 // 获取邮箱模板
