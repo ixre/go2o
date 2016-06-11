@@ -11,20 +11,29 @@ package repository
 import (
 	"github.com/jsix/gof/db"
 	"go2o/core"
-	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/mss"
+	mssImpl "go2o/core/domain/mss"
 	"go2o/core/variable"
 )
 
 var _ mss.IMssRep = new(MssRep)
 
 type MssRep struct {
-	_conn db.Connector
+	_conn    db.Connector
+	_globMss mss.IMessageProvider
 }
 
 func NewMssRep(conn db.Connector) mss.IMssRep {
 	return &MssRep{
 		_conn: conn,
 	}
+}
+
+func (this *MssRep) GetManager() mss.IMessageProvider {
+	if this._globMss == nil {
+		this._globMss = mssImpl.NewMssManager(0, this)
+	}
+	return this._globMss
 }
 
 // 获取邮箱模板

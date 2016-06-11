@@ -10,7 +10,6 @@
 package merchant
 
 import (
-	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
 )
@@ -66,7 +65,7 @@ type (
 		MemberKvManager() IKvManager
 
 		// 消息系统管理器
-		MssManager() mss.IMssManager
+		//MssManager() mss.IMssManager
 	}
 
 	//合作商

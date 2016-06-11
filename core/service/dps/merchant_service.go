@@ -12,7 +12,6 @@ package dps
 import (
 	"errors"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/infrastructure/domain"
@@ -265,43 +264,4 @@ func (this *merchantService) SaveKeyMaps(merchantId int, data map[string]string)
 		return err
 	}
 	return mch.KvManager().Sets(data)
-}
-
-// 获取邮件模版
-func (this *merchantService) GetMailTemplate(merchantId int, id int) (*mss.MailTemplate, error) {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-		return nil, err
-	}
-	return mch.MssManager().GetMailTemplate(id), nil
-}
-
-// 保存邮件模板
-func (this *merchantService) SaveMailTemplate(merchantId int, v *mss.MailTemplate) (int, error) {
-	if v.MerchantId != merchantId {
-		return 0, merchant.ErrMerchantNotMatch
-	}
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-		return 0, err
-	}
-	return mch.MssManager().SaveMailTemplate(v)
-}
-
-// 获取邮件模板
-func (this *merchantService) GetMailTemplates(merchantId int) []*mss.MailTemplate {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-		return nil
-	}
-	return mch.MssManager().GetMailTemplates()
-}
-
-// 删除邮件模板
-func (this *merchantService) DeleteMailTemplate(merchantId int, id int) error {
-	mch, err := this._mchRep.GetMerchant(merchantId)
-	if err != nil {
-		return err
-	}
-	return mch.MssManager().DeleteMailTemplate(id)
 }

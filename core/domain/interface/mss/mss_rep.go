@@ -9,6 +9,7 @@
 package mss
 
 type IMssRep interface {
+	GetManager() IMessageProvider
 	// 获取邮箱模板
 	GetMailTemplate(merchantId, id int) *MailTemplate
 	// 保存邮箱模版

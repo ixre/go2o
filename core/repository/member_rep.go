@@ -18,6 +18,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/variable"
@@ -34,11 +35,14 @@ type MemberRep struct {
 	db.Connector
 	_partnerRep merchant.IMerchantRep
 	_valRep     valueobject.IValueRep
+	_mssRep     mss.IMssRep
 }
 
-func NewMemberRep(c db.Connector, valRep valueobject.IValueRep) *MemberRep {
+func NewMemberRep(c db.Connector, mssRep mss.IMssRep,
+	valRep valueobject.IValueRep) *MemberRep {
 	return &MemberRep{
 		Connector: c,
+		_mssRep:   mssRep,
 		_valRep:   valRep,
 	}
 }
@@ -127,7 +131,8 @@ func (this *MemberRep) GetMemberIdByUser(user string) int {
 
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
-	return memberImpl.NewMember(this.GetManager(), v, this, this._partnerRep)
+	return memberImpl.NewMember(this.GetManager(), v, this,
+		this._mssRep.GetManager(), this._partnerRep)
 }
 
 // 根据邀请码获取会员编号

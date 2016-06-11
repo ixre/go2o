@@ -12,11 +12,10 @@ package merchant
 import (
 	"fmt"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/mss"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
-	mssImpl "go2o/core/domain/merchant/mss"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
 	"go2o/core/infrastructure"
@@ -39,11 +38,11 @@ type MerchantImpl struct {
 	_levelManager    merchant.ILevelManager
 	_kvManager       merchant.IKvManager
 	_memberKvManager merchant.IKvManager
-	_mssManager      mss.IMssManager
-	_mssRep          mss.IMssRep
-	_profileManager  merchant.IProfileManager
-	_apiManager      merchant.IApiManager
-	_shopManager     shop.IShopManager
+	//_mssManager      mss.IMssManager
+	//_mssRep          mss.IMssRep
+	_profileManager merchant.IProfileManager
+	_apiManager     merchant.IApiManager
+	_shopManager    shop.IShopManager
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
@@ -54,8 +53,8 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
 		_rep:     rep,
 		_shopRep: shopRep,
 		_userRep: userRep,
-		_mssRep:  mssRep,
-		_valRep:  valRep,
+		//_mssRep:  mssRep,
+		_valRep: valRep,
 	}
 	return mch, mch.Stat()
 }
@@ -253,12 +252,12 @@ func (this *MerchantImpl) MemberKvManager() merchant.IKvManager {
 }
 
 // 消息系统管理器
-func (this *MerchantImpl) MssManager() mss.IMssManager {
-	if this._mssManager == nil {
-		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
-	}
-	return this._mssManager
-}
+//func (this *MerchantImpl) MssManager() mss.IMssManager {
+//	if this._mssManager == nil {
+//		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
+//	}
+//	return this._mssManager
+//}
 
 // 返回设置服务
 func (this *MerchantImpl) ConfManager() merchant.IConfManager {

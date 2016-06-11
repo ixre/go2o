@@ -9,7 +9,7 @@
 package mss
 
 import (
-	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/mss"
 	mssIns "go2o/core/infrastructure/mss"
 	"time"
 )
@@ -23,7 +23,8 @@ type mailTemplate struct {
 	_data       mss.MsgData
 }
 
-func newMailTemplate(merchantId int, rep mss.IMssRep, tpl *mss.MailTemplate) mss.IMsgTemplate {
+func newMailTemplate(merchantId int, rep mss.IMssRep,
+	tpl *mss.MailTemplate) mss.IMsgTemplate {
 	return &mailTemplate{
 		_rep:        rep,
 		_merchantId: merchantId,

@@ -8,8 +8,11 @@
  */
 package mss
 
-// Message send manager
-type IMssManager interface {
+// Message manager
+type IMessageProvider interface {
+	// 获取聚合根编号
+	GetAggregateRootId() int
+
 	// 发送消息
 	Send(tpl IMsgTemplate, d MsgData, to []string) error
 

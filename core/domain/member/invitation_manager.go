@@ -17,7 +17,7 @@ import (
 var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
-	_member       *Member
+	_member       *memberImpl
 	_myInvMembers []*member.ValueMember
 }
 
