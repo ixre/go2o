@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/mss"
 	"go2o/core/infrastructure/domain"
 	"regexp"
 	"strings"
@@ -23,9 +24,9 @@ import (
 )
 
 //todo: 依赖商户的 MSS 发送通知消息,应去掉
-var _ member.IMember = new(Member)
+var _ member.IMember = new(memberImpl)
 
-type Member struct {
+type memberImpl struct {
 	_manager     member.IMemberManager
 	_value       *member.ValueMember
 	_account     member.IAccount
@@ -35,25 +36,27 @@ type Member struct {
 	_merchantRep merchant.IMerchantRep
 	_relation    *member.MemberRelation
 	_invitation  member.IInvitationManager
+	_mssProvider mss.IMessageProvider
 }
 
 func NewMember(manager member.IMemberManager, val *member.ValueMember, rep member.IMemberRep,
-	merchantRep merchant.IMerchantRep) member.IMember {
-	return &Member{
+	mp mss.IMessageProvider, merchantRep merchant.IMerchantRep) member.IMember {
+	return &memberImpl{
 		_manager:     manager,
 		_value:       val,
 		_rep:         rep,
+		_mssProvider: mp,
 		_merchantRep: merchantRep,
 	}
 }
 
 // 获取聚合根编号
-func (this *Member) GetAggregateRootId() int {
+func (this *memberImpl) GetAggregateRootId() int {
 	return this._value.Id
 }
 
 // 获取值
-func (this *Member) GetValue() member.ValueMember {
+func (this *memberImpl) GetValue() member.ValueMember {
 	return *this._value
 }
 
@@ -64,7 +67,7 @@ var (
 	qqRegex    = regexp.MustCompile("^\\d{5,12}$")
 )
 
-func (this *Member) validate(v *member.ValueMember) error {
+func (this *memberImpl) validate(v *member.ValueMember) error {
 	v.Usr = strings.ToLower(strings.TrimSpace(v.Usr)) // 小写并删除空格
 	v.Name = strings.TrimSpace(v.Name)
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
@@ -94,7 +97,7 @@ func (this *Member) validate(v *member.ValueMember) error {
 }
 
 // 设置值
-func (this *Member) SetValue(v *member.ValueMember) error {
+func (this *memberImpl) SetValue(v *member.ValueMember) error {
 	v.Usr = this._value.Usr
 	v.Address = strings.TrimSpace(v.Address)
 	v.Im = strings.TrimSpace(v.Im)
@@ -146,20 +149,21 @@ func (this *Member) SetValue(v *member.ValueMember) error {
 		this._value.TradePwd = v.TradePwd
 	}
 
-	if this.ProfileCompleted() { // 已完善资料
+	if this.ProfileCompleted() {
+		// 已完善资料
 		this.notifyOnProfileComplete()
 	}
 	return nil
 }
 
-func (this *Member) ProfileCompleted() bool {
+func (this *memberImpl) ProfileCompleted() bool {
 	return len(this._value.Name) != 0 && len(this._value.Im) != 0 &&
 		len(this._value.Email) != 0 && len(this._value.BirthDay) != 0 &&
 		len(this._value.Address) != 0 && len(this._value.Phone) != 0 &&
 		len(this._value.Avatar) != 0 && this._value.Sex != 0
 }
 
-func (this *Member) notifyOnProfileComplete() {
+func (this *memberImpl) notifyOnProfileComplete() {
 	rl := this.GetRelation()
 	pt, err := this._merchantRep.GetMerchant(rl.RegisterMerchantId)
 	if err == nil {
@@ -174,12 +178,12 @@ func (this *Member) notifyOnProfileComplete() {
 	}
 }
 
-func (this *Member) sendNotifyMail(pt merchant.IMerchant) error {
+func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := pt.MssManager().GetMailTemplate(tplId)
+		mailTpl := this._mssProvider.GetMailTemplate(tplId)
 		if mailTpl != nil {
-			tpl, err := pt.MssManager().CreateMsgTemplate(mailTpl)
+			tpl, err := this._mssProvider.CreateMsgTemplate(mailTpl)
 			if err != nil {
 				return err
 			}
@@ -190,14 +194,14 @@ func (this *Member) sendNotifyMail(pt merchant.IMerchant) error {
 				"InvitationCode": this._value.InvitationCode,
 			}
 
-			return pt.MssManager().Send(tpl, data, []string{this._value.Email})
+			return this._mssProvider.Send(tpl, data, []string{this._value.Email})
 		}
 	}
 	return errors.New("no such email template")
 }
 
 // 邀请管理
-func (this *Member) Invitation() member.IInvitationManager {
+func (this *memberImpl) Invitation() member.IInvitationManager {
 	if this._invitation == nil {
 		this._invitation = &invitationManager{
 			_member: this,
@@ -207,7 +211,7 @@ func (this *Member) Invitation() member.IInvitationManager {
 }
 
 // 获取账户
-func (this *Member) GetAccount() member.IAccount {
+func (this *memberImpl) GetAccount() member.IAccount {
 	if this._account == nil {
 		v := this._rep.GetAccount(this._value.Id)
 		return NewAccount(v, this._rep)
@@ -216,7 +220,7 @@ func (this *Member) GetAccount() member.IAccount {
 }
 
 // 获取提现银行信息
-func (this *Member) GetBank() member.BankInfo {
+func (this *memberImpl) GetBank() member.BankInfo {
 	if this._bank == nil {
 		this._bank = this._rep.GetBankInfo(this._value.Id)
 		if this._bank == nil {
@@ -227,7 +231,7 @@ func (this *Member) GetBank() member.BankInfo {
 }
 
 // 保存提现银行信息
-func (this *Member) SaveBank(v *member.BankInfo) error {
+func (this *memberImpl) SaveBank(v *member.BankInfo) error {
 	this.GetBank()
 	if this._bank == nil {
 		this._bank = v
@@ -249,7 +253,7 @@ func (this *Member) SaveBank(v *member.BankInfo) error {
 }
 
 // 解锁提现银行卡信息
-func (this *Member) UnlockBank() error {
+func (this *memberImpl) UnlockBank() error {
 	this.GetBank()
 	if this._bank == nil {
 		return member.ErrBankInfoNoYetSet
@@ -259,13 +263,13 @@ func (this *Member) UnlockBank() error {
 }
 
 // 保存积分记录
-func (this *Member) SaveIntegralLog(l *member.IntegralLog) error {
+func (this *memberImpl) SaveIntegralLog(l *member.IntegralLog) error {
 	l.MemberId = this._value.Id
 	return this._rep.SaveIntegralLog(l)
 }
 
 // 增加经验值
-func (this *Member) AddExp(exp int) error {
+func (this *memberImpl) AddExp(exp int) error {
 	this._value.Exp += exp
 	_, err := this.Save()
 	//判断是否升级
@@ -275,7 +279,7 @@ func (this *Member) AddExp(exp int) error {
 }
 
 // 获取等级
-func (this *Member) GetLevel() *member.Level {
+func (this *memberImpl) GetLevel() *member.Level {
 	if this._level == nil {
 		this._level = this._manager.LevelManager().
 			GetLevelById(this._value.Level)
@@ -285,7 +289,7 @@ func (this *Member) GetLevel() *member.Level {
 
 //　增加积分
 // todo:merchantId 不需要
-func (this *Member) AddIntegral(merchantId int, backType int,
+func (this *memberImpl) AddIntegral(merchantId int, backType int,
 	integral int, log string) error {
 	inLog := &member.IntegralLog{
 		MerchantId: merchantId,
@@ -307,7 +311,7 @@ func (this *Member) AddIntegral(merchantId int, backType int,
 }
 
 // 检查升级
-func (this *Member) checkUpLevel() bool {
+func (this *memberImpl) checkUpLevel() bool {
 	lg := this._manager.LevelManager()
 	levelId := lg.GetLevelIdByExp(this._value.Exp)
 	if levelId != 0 && this._value.Level < levelId {
@@ -320,7 +324,7 @@ func (this *Member) checkUpLevel() bool {
 }
 
 // 获取会员关联
-func (this *Member) GetRelation() *member.MemberRelation {
+func (this *memberImpl) GetRelation() *member.MemberRelation {
 	if this._relation == nil {
 		this._relation = this._rep.GetRelation(this._value.Id)
 	}
@@ -328,7 +332,7 @@ func (this *Member) GetRelation() *member.MemberRelation {
 }
 
 // 更换用户名
-func (this *Member) ChangeUsr(usr string) error {
+func (this *memberImpl) ChangeUsr(usr string) error {
 	if usr == this._value.Usr {
 		return member.ErrSameUsr
 	}
@@ -347,7 +351,7 @@ func (this *Member) ChangeUsr(usr string) error {
 }
 
 // 保存
-func (this *Member) Save() (int, error) {
+func (this *memberImpl) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if this._value.Id > 0 {
 		return this._rep.SaveMember(this._value)
@@ -363,17 +367,17 @@ func (this *Member) Save() (int, error) {
 }
 
 // 锁定会员
-func (this *Member) Lock() error {
+func (this *memberImpl) Lock() error {
 	return this._rep.LockMember(this.GetAggregateRootId(), 0)
 }
 
 // 解锁会员
-func (this *Member) Unlock() error {
+func (this *memberImpl) Unlock() error {
 	return this._rep.LockMember(this.GetAggregateRootId(), 1)
 }
 
 // 修改密码,旧密码可为空
-func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
+func (this *memberImpl) ModifyPassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
 		return member.ErrPwdCannotSame
@@ -394,7 +398,7 @@ func (this *Member) ModifyPassword(newPwd, oldPwd string) error {
 }
 
 // 修改交易密码，旧密码可为空
-func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
+func (this *memberImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
 		return member.ErrPwdCannotSame
@@ -412,7 +416,7 @@ func (this *Member) ModifyTradePassword(newPwd, oldPwd string) error {
 }
 
 // 创建会员
-func (this *Member) create(m *member.ValueMember) (int, error) {
+func (this *memberImpl) create(m *member.ValueMember) (int, error) {
 
 	//todo: 获取推荐人编号
 	//todo: 检测是否有注册权限
@@ -452,7 +456,7 @@ func (this *Member) create(m *member.ValueMember) (int, error) {
 }
 
 // 创建邀请码
-func (this *Member) generateInvitationCode() string {
+func (this *memberImpl) generateInvitationCode() string {
 	var code string
 	for {
 		code = domain.GenerateInvitationCode()
@@ -464,29 +468,29 @@ func (this *Member) generateInvitationCode() string {
 }
 
 // 用户是否已经存在
-func (this *Member) usrIsExist(usr string) bool {
+func (this *memberImpl) usrIsExist(usr string) bool {
 	return this._rep.CheckUsrExist(usr, this.GetAggregateRootId())
 }
 
 // 手机号码是否占用
-func (this *Member) PhoneIsExist(phone string) bool {
+func (this *memberImpl) PhoneIsExist(phone string) bool {
 	return this._rep.CheckPhoneBind(this._value.Usr, this.GetAggregateRootId())
 }
 
 // 创建并初始化
-func (this *Member) SaveRelation(r *member.MemberRelation) error {
+func (this *memberImpl) SaveRelation(r *member.MemberRelation) error {
 	this._relation = r
 	this._relation.MemberId = this._value.Id
 	return this._rep.SaveRelation(this._relation)
 }
 
 // 创建配送地址
-func (this *Member) CreateDeliver(v *member.DeliverAddress) (member.IDeliver, error) {
+func (this *memberImpl) CreateDeliver(v *member.DeliverAddress) (member.IDeliver, error) {
 	return newDeliver(v, this._rep)
 }
 
 // 获取配送地址
-func (this *Member) GetDeliverAddress() []member.IDeliver {
+func (this *memberImpl) GetDeliverAddress() []member.IDeliver {
 	var vls []*member.DeliverAddress
 	vls = this._rep.GetDeliverAddress(this.GetAggregateRootId())
 	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
@@ -497,7 +501,7 @@ func (this *Member) GetDeliverAddress() []member.IDeliver {
 }
 
 // 获取配送地址
-func (this *Member) GetDeliver(deliverId int) member.IDeliver {
+func (this *memberImpl) GetDeliver(deliverId int) member.IDeliver {
 	v := this._rep.GetSingleDeliverAddress(this.GetAggregateRootId(), deliverId)
 	if v != nil {
 		d, _ := this.CreateDeliver(v)
@@ -507,6 +511,6 @@ func (this *Member) GetDeliver(deliverId int) member.IDeliver {
 }
 
 // 删除配送地址
-func (this *Member) DeleteDeliver(deliverId int) error {
+func (this *memberImpl) DeleteDeliver(deliverId int) error {
 	return this._rep.DeleteDeliver(this.GetAggregateRootId(), deliverId)
 }

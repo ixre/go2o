@@ -34,6 +34,9 @@ var (
 	// 销售服务
 	SaleService *saleService
 
+	// 消息服务
+	MssService *mssService
+
 	DeliverService *deliveryService
 
 	// 内容服务
@@ -53,13 +56,13 @@ func Init(ctx gof.App) {
 	/** Repository **/
 	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
-	memberRep := repository.NewMemberRep(db, valRep)
+	mssRep := repository.NewMssRep(db)
+	memberRep := repository.NewMemberRep(db, mssRep, valRep)
 	goodsRep := repository.NewGoodsRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
 	cateRep := repository.NewCategoryRep(db, valRep)
 	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep, goodsRep, promRep)
-	mssRep := repository.NewMssRep(db)
 	shopRep := repository.NewShopRep(db)
 	mchRep := repository.NewMerchantRep(db, shopRep, userRep, mssRep, valRep)
 	memberRep.SetMerchantRep(mchRep)
@@ -86,6 +89,7 @@ func Init(ctx gof.App) {
 	ShopService = NewShopService(shopRep, mchRep, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRep, memberQue)
 	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
+	MssService = NewMssService(mssRep)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdService = NewAdvertisementService(adRep)
