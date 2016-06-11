@@ -15,23 +15,26 @@ import (
 	"go2o/core/domain/interface/sale"
 	"strconv"
 	"time"
+	"go2o/core/domain/interface/valueobject"
 )
 
 var _ sale.IItem = new(ItemImpl)
 
 type ItemImpl struct {
+	_manager *itemManagerImpl
 	_value        *sale.Item
 	_saleRep      sale.ISaleRep
 	_saleLabelRep sale.ISaleLabelRep
 	_goodsRep     sale.IGoodsRep
 	_promRep      promotion.IPromotionRep
-	_sale         *Sale
+	_sale         *SaleImpl
 	_saleLabels   []*sale.Label
 }
 
-func newItem(sale *Sale, v *sale.Item, saleRep sale.ISaleRep,
+func newItem(mgr *itemManagerImpl,sale *SaleImpl, v *sale.Item, saleRep sale.ISaleRep,
 	saleLabelRep sale.ISaleLabelRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
 	return &ItemImpl{
+		_manager : mgr,
 		_value:        v,
 		_saleRep:      saleRep,
 		_saleLabelRep: saleLabelRep,
@@ -111,6 +114,7 @@ func (this *ItemImpl) Save() (int, error) {
 	return id, err
 }
 
+//todo: 过渡方法,应有SKU,不根据Item生成Goods
 func (this *ItemImpl) saveGoods() {
 	val := this._goodsRep.GetValueGoods(this.GetDomainId(), 0)
 	if val == nil {
@@ -124,7 +128,8 @@ func (this *ItemImpl) saveGoods() {
 			SaleNum:       100,
 		}
 	}
-	goods := NewSaleGoods(this._sale, this, val, this._saleRep, this._goodsRep, this._promRep)
+	goods := NewSaleGoods(nil,this._sale, this, val,
+		this._saleRep, this._goodsRep, this._promRep)
 	goods.Save()
 }
 
@@ -185,3 +190,65 @@ func (this *ItemImpl) saveGoods() {
 //	}
 //	return this._latestSnapshot
 //}
+
+var _ sale.IItemManager = new(itemManagerImpl)
+type itemManagerImpl struct{
+	_sale   *SaleImpl
+	_valRep valueobject.IValueRep
+	_supplierId  int
+}
+
+func NewItemManager(mchId int, s *SaleImpl,
+valRep valueobject.IValueRep) sale.IItemManager {
+	c := &itemManagerImpl{
+		_sale:    s,
+		_supplierId:  mchId,
+		_valRep: valRep,
+	}
+	return c.init()
+}
+
+func (this *itemManagerImpl) init() sale.IItemManager {
+	return this
+}
+
+
+func (this *itemManagerImpl) CreateItem(v *sale.Item) sale.IItem {
+	if v.CreateTime == 0 {
+		v.CreateTime = time.Now().Unix()
+	}
+	if v.UpdateTime == 0 {
+		v.UpdateTime = v.CreateTime
+	} //todo: 判断category
+	return newItem(this,this._sale, v, this._sale._saleRep, this._sale._labelRep,
+		this._sale._goodsRep, this._sale._promRep)
+}
+
+// 删除货品
+func (this *itemManagerImpl) DeleteItem(id int) error {
+	var err error
+	num := this._sale._saleRep.GetItemSaleNum(this._supplierId, id)
+
+	if num == 0 {
+		err = this._sale._saleRep.DeleteItem(this._supplierId, id)
+		if err != nil {
+			this._sale.clearCache(id)
+		}
+	} else {
+		err = sale.ErrCanNotDeleteItem
+	}
+	return err
+}
+
+// 根据产品编号获取产品
+func (this *itemManagerImpl) GetItem(itemId int) sale.IItem {
+	pv := this._sale._saleRep.GetValueItem(this._supplierId, itemId)
+	if pv != nil {
+		return this.CreateItem(pv)
+	}
+	return nil
+}
+
+
+
+

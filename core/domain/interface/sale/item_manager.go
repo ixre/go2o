@@ -35,6 +35,14 @@ type(
 
     // 货品服务
     IItemManager interface {
+        // 创建产品
+        CreateItem(*Item) IItem
+
+        // 根据产品编号获取货品
+        GetItem(int) IItem
+
+        // 删除货品
+        DeleteItem(int) error
 
     }
 

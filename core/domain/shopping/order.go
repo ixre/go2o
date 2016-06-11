@@ -447,7 +447,7 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 	var item sale.IItem
 	var snap *sale.GoodsSnapshot
 	for i, v := range cartItems {
-		snap = sl.GetGoodsSnapshot(cartItems[i].SnapshotId)
+		snap = sl.GoodsManager().GetGoodsSnapshot(cartItems[i].SnapshotId)
 		if snap == nil {
 			return 0, errors.New("商品缺少快照：" + item.GetValue().Name)
 		}
@@ -550,7 +550,7 @@ func (this *Order) addGoodsSaleNum(snapshotId int, quantity int) error {
 		return sale.ErrNoSuchSnapshot
 	}
 	var goods sale.IGoods = this._saleRep.GetSale(this._value.MerchantId).
-		GetGoods(snapshot.GoodsId)
+		GoodsManager().GetGoods(snapshot.GoodsId)
 
 	if goods == nil {
 		return sale.ErrNoSuchGoods
@@ -613,7 +613,7 @@ func (this *Order) cancelGoods() error {
 			return sale.ErrNoSuchSnapshot
 		}
 		var goods sale.IGoods = this._saleRep.GetSale(this._value.MerchantId).
-			GetGoods(snapshot.GoodsId)
+		GoodsManager().GetGoods(snapshot.GoodsId)
 		if goods != nil {
 			goods.CancelSale(v.Quantity, this.GetOrderNo())
 		}

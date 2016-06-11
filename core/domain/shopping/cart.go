@@ -113,8 +113,8 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.ValueCartItem) {
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
 				if level > 0 {
-					goods = sl.CreateGoodsByItem(
-						sl.CreateItem(sale.ParseToPartialValueItem(gv)),
+					goods = sl.GoodsManager().CreateGoodsByItem(
+						sl.ItemManager().CreateItem(sale.ParseToPartialValueItem(gv)),
 						sale.ParseToValueGoods(gv),
 					)
 					if p := goods.GetPromotionPrice(level); p < gv.SalePrice {
@@ -146,7 +146,7 @@ func (this *Cart) GetCartGoods() []sale.IGoods {
 	sl := this._saleRep.GetSale(this._merchantId)
 	var gs []sale.IGoods = make([]sale.IGoods, len(this._value.Items))
 	for i, v := range this._value.Items {
-		gs[i] = sl.GetGoods(v.GoodsId)
+		gs[i] = sl.GoodsManager().GetGoods(v.GoodsId)
 	}
 	return gs
 }
@@ -158,7 +158,7 @@ func (this *Cart) AddItem(goodsId, num int) (*shopping.ValueCartItem, error) {
 		this._value.Items = []*shopping.ValueCartItem{}
 	}
 	sl := this._saleRep.GetSale(this._merchantId)
-	goods := sl.GetGoods(goodsId)
+	goods := sl.GoodsManager().GetGoods(goodsId)
 	if goods == nil {
 		return nil, sale.ErrNoSuchGoods // 没有商品
 	}

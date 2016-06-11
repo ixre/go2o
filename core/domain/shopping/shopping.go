@@ -89,7 +89,7 @@ func (this *Shopping) CheckCart(cart shopping.ICart) error {
 
 	sl := this._saleRep.GetSale(this._merchantId)
 	for _, v := range cart.GetValue().Items {
-		goods := sl.GetGoods(v.GoodsId)
+		goods := sl.GoodsManager().GetGoods(v.GoodsId)
 		if goods == nil {
 			return sale.ErrNoSuchGoods // 没有商品
 		}
