@@ -11,8 +11,8 @@ package sale
 import "go2o/core/domain/interface/valueobject"
 
 // 转换包含部分数据的产品值对象
-func ParseToPartialValueItem(v *valueobject.Goods) *ValueItem {
-	return &ValueItem{
+func ParseToPartialValueItem(v *valueobject.Goods) *Item {
+	return &Item{
 		Id:         v.Item_Id,
 		CategoryId: v.CategoryId,
 		Name:       v.Name,

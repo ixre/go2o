@@ -17,10 +17,10 @@ import (
 	"time"
 )
 
-var _ sale.IItem = new(Item)
+var _ sale.IItem = new(ItemImpl)
 
-type Item struct {
-	_value        *sale.ValueItem
+type ItemImpl struct {
+	_value        *sale.Item
 	_saleRep      sale.ISaleRep
 	_saleLabelRep sale.ISaleLabelRep
 	_goodsRep     sale.IGoodsRep
@@ -29,9 +29,9 @@ type Item struct {
 	_saleLabels   []*sale.Label
 }
 
-func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep,
+func newItem(sale *Sale, v *sale.Item, saleRep sale.ISaleRep,
 	saleLabelRep sale.ISaleLabelRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
-	return &Item{
+	return &ItemImpl{
 		_value:        v,
 		_saleRep:      saleRep,
 		_saleLabelRep: saleLabelRep,
@@ -40,15 +40,15 @@ func newItem(sale *Sale, v *sale.ValueItem, saleRep sale.ISaleRep,
 	}
 }
 
-func (this *Item) GetDomainId() int {
+func (this *ItemImpl) GetDomainId() int {
 	return this._value.Id
 }
 
-func (this *Item) GetValue() sale.ValueItem {
+func (this *ItemImpl) GetValue() sale.Item {
 	return *this._value
 }
 
-func (this *Item) SetValue(v *sale.ValueItem) error {
+func (this *ItemImpl) SetValue(v *sale.Item) error {
 	if v.Id == this._value.Id {
 		v.CreateTime = this._value.CreateTime
 		v.GoodsNo = this._value.GoodsNo
@@ -59,12 +59,12 @@ func (this *Item) SetValue(v *sale.ValueItem) error {
 }
 
 // 是否上架
-func (this *Item) IsOnShelves() bool {
+func (this *ItemImpl) IsOnShelves() bool {
 	return this._value.OnShelves == 1
 }
 
 // 获取商品的销售标签
-func (this *Item) GetSaleLabels() []*sale.Label {
+func (this *ItemImpl) GetSaleLabels() []*sale.Label {
 	if this._saleLabels == nil {
 		this._saleLabels = this._saleLabelRep.GetItemSaleLabels(this.GetDomainId())
 	}
@@ -72,7 +72,7 @@ func (this *Item) GetSaleLabels() []*sale.Label {
 }
 
 // 保存销售标签
-func (this *Item) SaveSaleLabels(tagIds []int) error {
+func (this *ItemImpl) SaveSaleLabels(tagIds []int) error {
 	err := this._saleLabelRep.CleanItemSaleLabels(this.GetDomainId())
 	if err == nil {
 		err = this._saleLabelRep.SaveItemSaleLabels(this.GetDomainId(), tagIds)
@@ -82,7 +82,7 @@ func (this *Item) SaveSaleLabels(tagIds []int) error {
 }
 
 // 保存
-func (this *Item) Save() (int, error) {
+func (this *ItemImpl) Save() (int, error) {
 	this._sale.clearCache(this._value.Id)
 
 	unix := time.Now().Unix()
@@ -111,7 +111,7 @@ func (this *Item) Save() (int, error) {
 	return id, err
 }
 
-func (this *Item) saveGoods() {
+func (this *ItemImpl) saveGoods() {
 	val := this._goodsRep.GetValueGoods(this.GetDomainId(), 0)
 	if val == nil {
 		val = &sale.ValueGoods{
