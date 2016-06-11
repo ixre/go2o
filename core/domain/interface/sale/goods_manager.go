@@ -65,6 +65,33 @@ type(
         GetLatestSnapshot() *GoodsSnapshot
     }
 
+    // 商品服务
+    IGoodsManager interface{
+        // 创建商品
+        CreateGoodsByItem(IItem, *ValueGoods) IGoods
+
+        // 创建商品
+        CreateGoods(*ValueGoods) IGoods
+
+        // 根据产品编号获取商品
+        GetGoods(int) IGoods
+
+        // 根据产品SKU获取商品
+        GetGoodsBySku(itemId, sku int) IGoods
+
+        // 删除商品
+        DeleteGoods(int) error
+
+        // 获取指定的商品快照
+        GetGoodsSnapshot(id int) *GoodsSnapshot
+
+        // 根据Key获取商品快照
+        GetGoodsSnapshotByKey(key string) *GoodsSnapshot
+
+        // 获取指定数量已上架的商品
+        GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
+    }
+
     // 商品仓储
     IGoodsRep interface {
         // 获取商品
@@ -99,4 +126,70 @@ type(
         // 移除会员价
         RemoveGoodsLevelPrice(id int) error
     }
+
+    // 商品
+    ValueGoods struct {
+        Id            int `db:"id" pk:"yes" auto:"yes"`
+
+        // 货品编号
+        ItemId        int `db:"item_id"`
+
+        // 是否为赠品
+        IsPresent     int `db:"is_present"`
+
+        // 规格
+        SkuId         int `db:"sku_id"`
+
+        // 促销标志
+        PromotionFlag int `db:"prom_flag"`
+
+        // 库存
+        StockNum      int `db:"stock_num"`
+
+        // 已售件数
+        SaleNum       int `db:"sale_num"`
+
+        // 销售价
+        SalePrice     float32 `db:"-"`
+
+        // 促销价
+        PromPrice     float32 `db:"-"`
+
+        // 实际价
+        Price         float32 `db:"-"`
+    }
+
+
+    // 商品快照
+    GoodsSnapshot struct {
+        Id           int    `db:"id" auto:"yes" pk:"yes"`
+        Key          string `db:"snapshot_key"`
+        ItemId       int    `db:"item_id"`
+        GoodsId      int    `db:"goods_id"`
+        GoodsName    string `db:"goods_name"`
+        GoodsNo      string `db:"goods_no"`
+        SmallTitle   string `db:"small_title"`
+        CategoryName string `db:"category_name"`
+        Image        string `db:"img"`
+
+        //成本价
+        Cost         float32 `db:"cost"`
+
+        //定价
+        Price        float32 `db:"price"`
+
+        //销售价
+        SalePrice    float32 `db:"sale_price"`
+        CreateTime   int64   `db:"create_time"`
+    }
+
+
+    // 简单商品信息
+    SimpleGoods struct {
+        GoodsId    int    `json:"id"`
+        GoodsImage string `json:"img"`
+        Name       string `json:"name"`
+        Quantity   string `json:"qty"`
+    }
+
 )
