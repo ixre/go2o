@@ -39,11 +39,14 @@ func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
 }
 
 // 获取产品值
-func (this *saleService) GetValueItem(merchantId, itemId int) *sale.Item {
-	sl := this._rep.GetSale(merchantId)
+func (this *saleService) GetValueItem(supplierId, itemId int) *sale.Item {
+	sl := this._rep.GetSale(supplierId)
 	pro := sl.ItemManager().GetItem(itemId)
-	v := pro.GetValue()
-	return &v
+	if pro != nil {
+		v := pro.GetValue()
+		return &v
+	}
+	return nil
 }
 
 // 获取商品值

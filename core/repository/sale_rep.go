@@ -60,15 +60,16 @@ func (this *saleRep) GetSale(mchId int) sale.ISale {
 	return v
 }
 
-func (this *saleRep) GetValueItem(merchantId, itemId int) *sale.Item {
+func (this *saleRep) GetValueItem(supplierId, itemId int) *sale.Item {
 	var e *sale.Item = new(sale.Item)
 	err := this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
-			INNER JOIN gs_category c ON c.id = gs_item.category_id WHERE gs_item.id=?
-			AND c.merchant_id=?`, itemId, merchantId)
-	if err != nil {
-		return nil
+			INNER JOIN gs_category c ON c.id = gs_item.category_id
+			 WHERE gs_item.id=?
+			AND supplier_id=?`, itemId, supplierId)
+	if err == nil {
+		return e
 	}
-	return e
+	return nil
 }
 
 func (this *saleRep) GetItemByIds(ids ...int) ([]*sale.Item, error) {

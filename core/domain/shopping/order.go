@@ -613,7 +613,7 @@ func (this *Order) cancelGoods() error {
 			return sale.ErrNoSuchSnapshot
 		}
 		var goods sale.IGoods = this._saleRep.GetSale(this._value.MerchantId).
-		GoodsManager().GetGoods(snapshot.GoodsId)
+			GoodsManager().GetGoods(snapshot.GoodsId)
 		if goods != nil {
 			goods.CancelSale(v.Quantity, this.GetOrderNo())
 		}

@@ -19,8 +19,8 @@ type ISale interface {
 	LabelManager() ILabelManager
 
 	// 货品服务
-	ItemManager()IItemManager
+	ItemManager() IItemManager
 
 	// 商品服务
-	GoodsManager()IGoodsManager
+	GoodsManager() IGoodsManager
 }

@@ -14,7 +14,7 @@ type ISaleRep interface {
 	GetSale(merchantId int) ISale
 
 	// 获取货品
-	GetValueItem(merchantId, itemId int) *Item
+	GetValueItem(supplierId, itemId int) *Item
 
 	// 根据id获取货品
 	GetItemByIds(ids ...int) ([]*Item, error)
@@ -22,13 +22,13 @@ type ISaleRep interface {
 	SaveValueItem(*Item) (int, error)
 
 	// 获取在货架上的商品
-	GetPagedOnShelvesItem(merchantId int, catIds []int, start, end int) (total int, goods []*Item)
+	GetPagedOnShelvesItem(supplierId int, catIds []int, start, end int) (total int, goods []*Item)
 
 	// 获取货品销售总数
-	GetItemSaleNum(merchantId int, id int) int
+	GetItemSaleNum(supplierId int, id int) int
 
 	// 删除货品
-	DeleteItem(merchantId, goodsId int) error
+	DeleteItem(supplierId, goodsId int) error
 
 	// 保存快照
 	SaveSnapshot(*GoodsSnapshot) (int, error)

@@ -24,9 +24,9 @@ type saleLabelImpl struct {
 func NewSaleLabel(mchId int, value *sale.Label,
 	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
-		_rep:        rep,
+		_rep:   rep,
 		_mchId: mchId,
-		_value:      value,
+		_value: value,
 	}
 }
 
