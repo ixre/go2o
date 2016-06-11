@@ -31,20 +31,20 @@ type SaleImpl struct {
 	_cateManager  sale.ICategoryManager
 	_labelManager sale.ILabelManager
 	_itemManager  sale.IItemManager
-	_goodsManager  sale.IGoodsManager
+	_goodsManager sale.IGoodsManager
 }
 
 func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
 	cateRep sale.ICategoryRep, goodsRep sale.IGoodsRep, tagRep sale.ISaleLabelRep,
 	promRep promotion.IPromotionRep) sale.ISale {
 	return (&SaleImpl{
-		_mchId: merchantId,
-		_cateRep:    cateRep,
-		_saleRep:    saleRep,
-		_labelRep:   tagRep,
-		_goodsRep:   goodsRep,
-		_promRep:    promRep,
-		_valRep:     valRep,
+		_mchId:    merchantId,
+		_cateRep:  cateRep,
+		_saleRep:  saleRep,
+		_labelRep: tagRep,
+		_goodsRep: goodsRep,
+		_promRep:  promRep,
+		_valRep:   valRep,
 	}).init()
 }
 
@@ -71,9 +71,8 @@ func (this *SaleImpl) LabelManager() sale.ILabelManager {
 	return this._labelManager
 }
 
-
 // 货品服务
-func (this *SaleImpl) ItemManager()sale.IItemManager{
+func (this *SaleImpl) ItemManager() sale.IItemManager {
 	if this._itemManager == nil {
 		this._itemManager = NewItemManager(
 			this.GetAggregateRootId(), this, this._valRep)
@@ -81,9 +80,8 @@ func (this *SaleImpl) ItemManager()sale.IItemManager{
 	return this._itemManager
 }
 
-
 // 商品服务
-func (this *SaleImpl) GoodsManager()sale.IGoodsManager{
+func (this *SaleImpl) GoodsManager() sale.IGoodsManager {
 	if this._goodsManager == nil {
 		this._goodsManager = NewGoodsManager(
 			this.GetAggregateRootId(), this, this._valRep)
@@ -104,4 +102,3 @@ func (this *SaleImpl) chkCache() {
 func (this *SaleImpl) GetAggregateRootId() int {
 	return this._mchId
 }
-

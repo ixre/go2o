@@ -13,15 +13,15 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"time"
-	"go2o/core/domain/interface/valueobject"
 )
 
 var _ sale.IItem = new(ItemImpl)
 
 type ItemImpl struct {
-	_manager *itemManagerImpl
+	_manager      *itemManagerImpl
 	_value        *sale.Item
 	_saleRep      sale.ISaleRep
 	_saleLabelRep sale.ISaleLabelRep
@@ -31,10 +31,10 @@ type ItemImpl struct {
 	_saleLabels   []*sale.Label
 }
 
-func newItem(mgr *itemManagerImpl,sale *SaleImpl, v *sale.Item, saleRep sale.ISaleRep,
+func newItem(mgr *itemManagerImpl, sale *SaleImpl, v *sale.Item, saleRep sale.ISaleRep,
 	saleLabelRep sale.ISaleLabelRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
 	return &ItemImpl{
-		_manager : mgr,
+		_manager:      mgr,
 		_value:        v,
 		_saleRep:      saleRep,
 		_saleLabelRep: saleLabelRep,
@@ -128,7 +128,7 @@ func (this *ItemImpl) saveGoods() {
 			SaleNum:       100,
 		}
 	}
-	goods := NewSaleGoods(nil,this._sale, this, val,
+	goods := NewSaleGoods(nil, this._sale, this, val,
 		this._saleRep, this._goodsRep, this._promRep)
 	goods.Save()
 }
@@ -192,18 +192,19 @@ func (this *ItemImpl) saveGoods() {
 //}
 
 var _ sale.IItemManager = new(itemManagerImpl)
-type itemManagerImpl struct{
-	_sale   *SaleImpl
-	_valRep valueobject.IValueRep
-	_supplierId  int
+
+type itemManagerImpl struct {
+	_sale       *SaleImpl
+	_valRep     valueobject.IValueRep
+	_supplierId int
 }
 
 func NewItemManager(mchId int, s *SaleImpl,
-valRep valueobject.IValueRep) sale.IItemManager {
+	valRep valueobject.IValueRep) sale.IItemManager {
 	c := &itemManagerImpl{
-		_sale:    s,
-		_supplierId:  mchId,
-		_valRep: valRep,
+		_sale:       s,
+		_supplierId: mchId,
+		_valRep:     valRep,
 	}
 	return c.init()
 }
@@ -212,7 +213,6 @@ func (this *itemManagerImpl) init() sale.IItemManager {
 	return this
 }
 
-
 func (this *itemManagerImpl) CreateItem(v *sale.Item) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
@@ -220,7 +220,7 @@ func (this *itemManagerImpl) CreateItem(v *sale.Item) sale.IItem {
 	if v.UpdateTime == 0 {
 		v.UpdateTime = v.CreateTime
 	} //todo: 判断category
-	return newItem(this,this._sale, v, this._sale._saleRep, this._sale._labelRep,
+	return newItem(this, this._sale, v, this._sale._saleRep, this._sale._labelRep,
 		this._sale._goodsRep, this._sale._promRep)
 }
 
@@ -248,7 +248,3 @@ func (this *itemManagerImpl) GetItem(itemId int) sale.IItem {
 	}
 	return nil
 }
-
-
-
-
