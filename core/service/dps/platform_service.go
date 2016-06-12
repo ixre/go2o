@@ -87,3 +87,8 @@ func (this *platformService) SaveSmsApiPerm(provider int, s *valueobject.SmsApiP
 func (this *platformService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 	return this._rep.GetDefaultSmsApiPerm()
 }
+
+// 获取下级区域
+func (this *platformService) GetChildAreas(id int) []*valueobject.Area {
+	return this._rep.GetChildAreas(id)
+}

@@ -33,7 +33,7 @@ func startMailQueue(ss []Service) {
 			_, err = strconv.Atoi(string(arr[1].([]byte)))
 			if err == nil {
 				//todo: 此处获取所有需发送的邮件,应去掉从数据库批量查询操作
-				sendForWaittingQueue(ss)
+				sendForWaitingQueue(ss)
 			}
 		} else {
 			appCtx.Log().Println("[ Daemon][ MailQueue][ Error] - ", err.Error())
@@ -42,7 +42,7 @@ func startMailQueue(ss []Service) {
 	}
 }
 
-func sendForWaittingQueue(ss []Service) {
+func sendForWaitingQueue(ss []Service) {
 	var list = []*mss.MailTask{}
 	err := appCtx.Db().GetOrm().Select(&list, "is_send = 0 OR is_failed = 1")
 	if err == nil && len(list) > 0 {

@@ -54,6 +54,8 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	//table mapping
 	orm := connector.GetOrm()
 
+	orm.TableMapping(valueobject.Area{}, "china_area")
+
 	/* ad */
 	orm.TableMapping(ad.Ad{}, "ad_list")
 	orm.TableMapping(ad.Image{}, "ad_image")

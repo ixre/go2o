@@ -33,7 +33,6 @@ func orderDaemon(app gof.App) {
 	defer recoverDaemon()
 	ids := getMerchants()
 	for _, v := range ids {
-		log.Println("--", v)
 		autoSetOrder(v)
 	}
 }

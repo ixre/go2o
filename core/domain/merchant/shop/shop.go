@@ -120,6 +120,9 @@ func (this *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
 	this._shopVal.Address = v.Address
 	this._shopVal.Tel = v.Tel
 	this._shopVal.DeliverRadius = v.DeliverRadius
+	this._shopVal.Province = v.Province
+	this._shopVal.City = v.City
+	this._shopVal.District = v.District
 	if v.Lat > 0 && v.Lng > 0 {
 		this._shopVal.Lat = v.Lat
 		this._shopVal.Lng = v.Lng

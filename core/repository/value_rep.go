@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
+	"sync"
 )
 
 var _ valueobject.IValueRep = new(valueRep)
@@ -99,6 +100,8 @@ type valueRep struct {
 	_mscGob          *util.GobFile
 	_smsConf         valueobject.SmsApiSet
 	_smsGob          *util.GobFile
+	_areaCache       map[int][]*valueobject.Area
+	_areaMux         sync.Mutex
 }
 
 func NewValueRep(conn db.Connector) valueobject.IValueRep {
@@ -250,4 +253,22 @@ func (this *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 		}
 	}
 	return 0, nil
+}
+
+// 获取下级区域
+func (this *valueRep) GetChildAreas(id int) []*valueobject.Area {
+	this._areaMux.Lock()
+	defer this._areaMux.Unlock()
+	if this._areaCache == nil {
+		this._areaCache = make(map[int][]*valueobject.Area)
+	}
+	if v, ok := this._areaCache[id]; ok {
+		return v
+	}
+	v := []*valueobject.Area{}
+	err := this.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", id)
+	if err == nil {
+		this._areaCache[id] = v
+	}
+	return v
 }
