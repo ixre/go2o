@@ -214,6 +214,15 @@ type (
 		// 联系电话
 		Tel string `db:"tel"`
 
+		// 省
+		Province int `db:"province"`
+
+		// 市
+		City int `db:"city"`
+
+		// 区
+		District int `db:"district"`
+
 		// 通讯地址
 		Address string `db:"addr"`
 

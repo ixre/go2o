@@ -164,6 +164,9 @@ type (
 
 		// 获取默认的短信API,返回API提供商编号及API信息
 		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
+
+		// 获取下级区域
+		GetChildAreas(id int) []*Area
 	}
 
 	// 短信接口
@@ -174,4 +177,12 @@ type (
 	}
 	// 短信接口设置
 	SmsApiSet map[int]*SmsApiPerm
+
+	//http://www.stats.gov.cn/tjsj/tjbz/xzqhdm/
+	// 区域,中国行政区划
+	Area struct {
+		Code   int    `db:"code" json:"code"`
+		Parent int    `db:"parent" json:"parent"`
+		Name   string `db:"name" json:"name"`
+	}
 )
