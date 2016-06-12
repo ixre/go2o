@@ -20,7 +20,7 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/service/dps"
 	"go2o/core/variable"

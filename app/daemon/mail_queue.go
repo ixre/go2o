@@ -11,7 +11,7 @@ package daemon
 import (
 	"github.com/garyburd/redigo/redis"
 	"go2o/core"
-	"go2o/core/domain/interface/merchant/mss"
+	"go2o/core/domain/interface/mss"
 	mssIns "go2o/core/infrastructure/mss"
 	"go2o/core/variable"
 	"strconv"
