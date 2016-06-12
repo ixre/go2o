@@ -105,7 +105,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.TableMapping(promotion.ValueCoupon{}, "pm_coupon")
 	orm.TableMapping(promotion.ValueCouponBind{}, "pm_coupon_bind")
 	orm.TableMapping(promotion.ValueCouponTake{}, "pm_coupon_take")
-	orm.TableMapping(promotion.ValuePromotion{}, "pm_info")
+	orm.TableMapping(promotion.PromotionInfo{}, "pm_info")
 	orm.TableMapping(promotion.ValueCashBack{}, "pm_cash_back")
 
 	/** 配送 **/

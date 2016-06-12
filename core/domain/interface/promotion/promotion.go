@@ -20,13 +20,13 @@ type IPromotion interface {
 	GetAggregateRootId() int
 
 	// 获取值
-	GetValue() *ValuePromotion
+	GetValue() *PromotionInfo
 
 	// 获取相关的值
 	GetRelationValue() interface{}
 
 	// 设置值
-	SetValue(*ValuePromotion) error
+	SetValue(*PromotionInfo) error
 
 	// 应用类型
 	ApplyFor() int

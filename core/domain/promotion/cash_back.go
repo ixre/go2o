@@ -22,7 +22,7 @@ var (
 var _ promotion.ICashBackPromotion = new(CashBackPromotion)
 
 type CashBackPromotion struct {
-	*Promotion
+	*promotionImpl
 	_cashBackValue *promotion.ValueCashBack
 	_dataTag       map[string]string
 }
@@ -88,7 +88,7 @@ func (this *CashBackPromotion) Save() (int, error) {
 
 	var isCreate bool = this.GetAggregateRootId() == 0
 	this._value.TypeFlag = promotion.TypeFlagCashBack
-	id, err := this.Promotion.Save()
+	id, err := this.promotionImpl.Save()
 	if err == nil {
 		this._value.Id = id
 		if this._cashBackValue == nil {
