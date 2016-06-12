@@ -19,7 +19,6 @@ import (
 var _ valueobject.IValueRep = new(valueRep)
 
 var (
-
 	// 默认平台设置
 	//todo: 默认值
 	defaultPlatformConf = valueobject.PlatformConf{
@@ -78,6 +77,12 @@ var (
 		// 订单超时自动收货
 		OrderTimeOutReceiveHour: 168, //c7天
 	}
+
+	// 默认短信接口设置
+	defaultSmsConf = map[int]*valueobject.SmsApiPerm{
+		valueobject.SmsAli:     &valueobject.SmsApiPerm{Default: true},
+		valueobject.SmsNetEasy: &valueobject.SmsApiPerm{},
+	}
 )
 
 type valueRep struct {
@@ -92,6 +97,8 @@ type valueRep struct {
 	_mchGob          *util.GobFile
 	_globMchSaleConf *valueobject.GlobMchSaleConf
 	_mscGob          *util.GobFile
+	_smsConf         valueobject.SmsApiSet
+	_smsGob          *util.GobFile
 }
 
 func NewValueRep(conn db.Connector) valueobject.IValueRep {
@@ -102,6 +109,7 @@ func NewValueRep(conn db.Connector) valueobject.IValueRep {
 		_numGob:   util.NewGobFile("conf/core/number_conf"),
 		_mchGob:   util.NewGobFile("conf/core/mch_conf"),
 		_mscGob:   util.NewGobFile("conf/core/mch_sale_conf"),
+		_smsGob:   util.NewGobFile("conf/core/sms_conf"),
 	}
 }
 
@@ -198,4 +206,48 @@ func (this *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error 
 		return this._mscGob.Save(this._globMchSaleConf)
 	}
 	return nil
+}
+
+// 获取短信设置
+func (this *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
+	if this._smsConf == nil {
+		this._smsConf = defaultSmsConf
+		this._smsGob.Unmarshal(&this._smsConf)
+	}
+	return this._smsConf
+}
+
+// 保存短信API
+func (this *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
+	if _, ok := this.GetSmsApiSet()[provider]; !ok {
+		return errors.New("系统不支持的短信接口")
+	}
+
+	if s.Default {
+		// 取消其他接口的默认选项
+		for p, v := range this._smsConf {
+			if p == provider {
+				v.Default = true
+			} else {
+				v.Default = false
+			}
+		}
+	} else {
+		//检验是否取消了正在使用的短信接口
+		if i, _ := this.GetDefaultSmsApiPerm(); i == provider {
+			return errors.New("系统应启用一个短信接口")
+		}
+	}
+	this._smsConf[provider] = s
+	return this._smsGob.Save(this._smsConf)
+}
+
+// 获取默认的短信API
+func (this *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+	for i, v := range this.GetSmsApiSet() {
+		if v.Default {
+			return i, v
+		}
+	}
+	return 0, nil
 }

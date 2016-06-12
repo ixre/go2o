@@ -13,6 +13,19 @@ var (
 	TradeCsnTypeByFee   = 2 //按交易金额收取手续费
 )
 
+var (
+	SmsAli     = 1 //阿里大鱼
+	SmsNetEasy = 2 //网易
+	SmsIndex   = []int{
+		SmsAli,
+		SmsNetEasy,
+	}
+	SmsTextMap = map[int]string{
+		SmsAli:     "阿里大鱼",
+		SmsNetEasy: "网易",
+	}
+)
+
 type (
 	// 平台设置
 	PlatformConf struct {
@@ -142,5 +155,23 @@ type (
 
 		// 保存全局商户销售设置
 		SaveGlobMchSaleConf(v *GlobMchSaleConf) error
+
+		// 获取短信设置
+		GetSmsApiSet() SmsApiSet
+
+		// 保存短信API
+		SaveSmsApiPerm(provider int, s *SmsApiPerm) error
+
+		// 获取默认的短信API,返回API提供商编号及API信息
+		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
 	}
+
+	// 短信接口
+	SmsApiPerm struct {
+		UserId   string //接口编号
+		ApiToken string //接口密钥
+		Default  bool   //是否默认的接口使用
+	}
+	// 短信接口设置
+	SmsApiSet map[int]*SmsApiPerm
 )

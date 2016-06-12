@@ -72,3 +72,18 @@ func (this *platformService) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 func (this *platformService) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	return this._rep.SaveGlobMchSaleConf(v)
 }
+
+// 获取短信设置
+func (this *platformService) GetSmsApiSet() valueobject.SmsApiSet {
+	return this._rep.GetSmsApiSet()
+}
+
+// 保存短信API
+func (this *platformService) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
+	return this._rep.SaveSmsApiPerm(provider, s)
+}
+
+// 获取默认的短信API
+func (this *platformService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+	return this._rep.GetDefaultSmsApiPerm()
+}
