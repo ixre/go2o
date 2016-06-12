@@ -16,7 +16,7 @@ import (
 )
 
 func FactoryPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep, memRep member.IMemberRep,
-	v *promotion.ValuePromotion) promotion.IPromotion {
+	v *promotion.PromotionInfo) promotion.IPromotion {
 	p := newPromotion(rep, goodsRep, memRep, v)
 
 	switch p.Type() {
@@ -30,7 +30,7 @@ func FactoryPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep, memR
 }
 
 // 创建
-func createCashBackPromotion(p *Promotion) promotion.IPromotion {
+func createCashBackPromotion(p *promotionImpl) promotion.IPromotion {
 	var pv *promotion.ValueCashBack
 
 	if p.GetAggregateRootId() > 0 {
@@ -43,12 +43,12 @@ func createCashBackPromotion(p *Promotion) promotion.IPromotion {
 	}
 
 	return &CashBackPromotion{
-		Promotion:      p,
+		promotionImpl:  p,
 		_cashBackValue: pv,
 	}
 }
 
-func createCouponPromotion(p *Promotion) promotion.IPromotion {
+func createCouponPromotion(p *promotionImpl) promotion.IPromotion {
 	var pv *promotion.ValueCoupon
 
 	if p.GetAggregateRootId() > 0 {

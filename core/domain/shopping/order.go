@@ -113,7 +113,7 @@ func (this *Order) GetCoupons() []promotion.ICouponPromotion {
 func (this *Order) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if this._availPromotions == nil {
 		merchantId := this._value.MerchantId
-		var vp []*promotion.ValuePromotion = this._promRep.GetPromotionOfMerchantOrder(merchantId)
+		var vp []*promotion.PromotionInfo = this._promRep.GetPromotionOfMerchantOrder(merchantId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
 			proms[i] = this._promRep.CreatePromotion(v)

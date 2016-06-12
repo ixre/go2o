@@ -212,6 +212,10 @@ ALTER TABLE `flm`.`pt_page`
 ALTER TABLE `flm`.`gs_item`
   ADD COLUMN `supplier_id` INT NULL AFTER `category_id`;
 
+ALTER TABLE `flm`.`pm_info`
+  CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL ;
+
+
 
 
 

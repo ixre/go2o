@@ -14,13 +14,13 @@ type IPromotionRep interface {
 	GetPromotion(id int) IPromotion
 
 	// 获取促销
-	CreatePromotion(v *ValuePromotion) IPromotion
+	CreatePromotion(v *PromotionInfo) IPromotion
 
 	// 获取促销
-	GetValuePromotion(id int) *ValuePromotion
+	GetValuePromotion(id int) *PromotionInfo
 
 	// 保存促销
-	SaveValuePromotion(*ValuePromotion) (int, error)
+	SaveValuePromotion(*PromotionInfo) (int, error)
 
 	// 删除促销
 	DeletePromotion(id int) error
@@ -38,10 +38,10 @@ type IPromotionRep interface {
 	GetGoodsPromotionId(goodsId int, promFlag int) int
 
 	// 获取商品可用的促销
-	GetPromotionOfGoods(goodsId int) []*ValuePromotion
+	GetPromotionOfGoods(goodsId int) []*PromotionInfo
 
 	// 获取商户订单可用的促销
-	GetPromotionOfMerchantOrder(merchantId int) []*ValuePromotion
+	GetPromotionOfMerchantOrder(merchantId int) []*PromotionInfo
 
 	/** =======  优惠券 ==========**/
 

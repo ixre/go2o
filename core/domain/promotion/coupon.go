@@ -31,7 +31,7 @@ var _ promotion.ICouponPromotion = new(Coupon)
 // 优惠券可以设置启用和停用
 // 是否允许绑定，如果不绑定。则可以任意使用.只要有绑定和使用后，就不允许修改此属性。
 type Coupon struct {
-	*Promotion
+	*promotionImpl
 	_detailsValue *promotion.ValueCoupon
 	_promRep      promotion.IPromotionRep
 	_memberRep    member.IMemberRep
@@ -41,12 +41,12 @@ type Coupon struct {
 	_binds_loaded bool
 }
 
-func newCoupon(p *Promotion, v *promotion.ValueCoupon, promRep promotion.IPromotionRep,
+func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep) *Coupon {
 
 	cp := &Coupon{
 		_detailsValue: v,
-		Promotion:     p,
+		promotionImpl: p,
 		_promRep:      promRep,
 		_memberRep:    memberRep,
 	}
@@ -145,7 +145,7 @@ func (this *Coupon) Save() (int, error) {
 
 	var isCreate bool = this.GetAggregateRootId() == 0
 
-	id, err := this.Promotion.Save()
+	id, err := this.promotionImpl.Save()
 	this._value.Id = id
 
 	if err == nil {

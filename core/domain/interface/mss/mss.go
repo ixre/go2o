@@ -8,6 +8,8 @@
  */
 package mss
 
+//todo: waiting refactor
+
 const (
 	NotifyByMessage = 1 + iota
 	NotifyByEMail
@@ -63,16 +65,17 @@ type (
 
 	// 系统消息发送配置
 	Config struct {
+		//注册完成
+		RegisterNotifyEnabled bool
+		// 通知类型
+		RegisterNotifyType int
+		// 通知模板选择
+		RegisterNotifyTpl int
 		// 资料完成
 		ProfileCompleteNotifyEnabled bool
 		// 通知类型
 		ProfileCompleteNotifyType int
 		// 通知模板选择
 		ProfileCompleteNotifyTpl int
-
-		//注册完成
-		RegisterNotifyEnabled bool
-		RegisterNotifyType    int
-		RegisterNotifyTpl     int
 	}
 )

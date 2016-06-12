@@ -17,19 +17,19 @@ import (
 	"time"
 )
 
-var _ promotion.IPromotion = new(Promotion)
+var _ promotion.IPromotion = new(promotionImpl)
 
-type Promotion struct {
+type promotionImpl struct {
 	_memberRep  member.IMemberRep
 	_merchantId int
 	_promRep    promotion.IPromotionRep
-	_value      *promotion.ValuePromotion
+	_value      *promotion.PromotionInfo
 	_goodsRep   sale.IGoodsRep
 }
 
 func newPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep,
-	memRep member.IMemberRep, v *promotion.ValuePromotion) *Promotion {
-	return &Promotion{
+	memRep member.IMemberRep, v *promotion.PromotionInfo) *promotionImpl {
+	return &promotionImpl{
 		_promRep:   rep,
 		_memberRep: memRep,
 		_goodsRep:  goodsRep,
@@ -38,7 +38,7 @@ func newPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep,
 }
 
 // 获取聚合根编号
-func (this *Promotion) GetAggregateRootId() int {
+func (this *promotionImpl) GetAggregateRootId() int {
 	if this._value != nil {
 		return this._value.Id
 	}
@@ -46,17 +46,17 @@ func (this *Promotion) GetAggregateRootId() int {
 }
 
 // 获取值
-func (this *Promotion) GetValue() *promotion.ValuePromotion {
+func (this *promotionImpl) GetValue() *promotion.PromotionInfo {
 	return this._value
 }
 
 // 获取相关的值
-func (this *Promotion) GetRelationValue() interface{} {
+func (this *promotionImpl) GetRelationValue() interface{} {
 	panic(errors.New("not implement!"))
 }
 
 // 设置值
-func (this *Promotion) SetValue(v *promotion.ValuePromotion) error {
+func (this *promotionImpl) SetValue(v *promotion.PromotionInfo) error {
 
 	// 一种促销只能有一个?
 	//todo: 每个商户设置不一样
@@ -73,7 +73,7 @@ func (this *Promotion) SetValue(v *promotion.ValuePromotion) error {
 }
 
 // 应用类型
-func (this *Promotion) ApplyFor() int {
+func (this *promotionImpl) ApplyFor() int {
 	if this._value.GoodsId > 0 {
 		return promotion.ApplyForGoods
 	}
@@ -81,17 +81,17 @@ func (this *Promotion) ApplyFor() int {
 }
 
 // 促销类型
-func (this *Promotion) Type() int {
+func (this *promotionImpl) Type() int {
 	return this._value.TypeFlag
 }
 
 // 促销类型
-func (this *Promotion) TypeName() string {
+func (this *promotionImpl) TypeName() string {
 	panic(errors.New("not implement"))
 }
 
 // 保存
-func (this *Promotion) Save() (int, error) {
+func (this *promotionImpl) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()
 	return this._promRep.SaveValuePromotion(this._value)
 }
