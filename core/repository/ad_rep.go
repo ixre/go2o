@@ -183,7 +183,7 @@ func (this *advertisementRep) GetValueAd(id int) *ad.Ad {
 // 根据名称获取广告
 func (this *advertisementRep) GetAdByKey(userId int, key string) *ad.Ad {
     e := ad.Ad{}
-    const sql string = `select ad_list.* FROM ad_list
+    const sql string = `select * FROM ad_list
         INNER JOIN ad_userset ON ad_userset.user_id = ad_list.user_id
         INNER JOIN ad_position ON ad_userset.pos_id=ad_position.id
         WHERE ad_list.user_id = ? AND ad_position.key=?`

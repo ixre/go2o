@@ -109,12 +109,12 @@ func (this *adManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
 
 type AdGroupImpl struct {
     _rep       ad.IAdRep
-    _manager   ad.IAdManager
+    _manager   *adManagerImpl
     _value     *ad.AdGroup
     _positions []*ad.AdPosition
 }
 
-func newAdGroup(m ad.IAdManager, rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
+func newAdGroup(m *adManagerImpl, rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
     return &AdGroupImpl{
         _rep:     rep,
         _manager: m,
@@ -167,6 +167,7 @@ func (this *AdGroupImpl) DelPosition(id int) error {
     //	return ad.err
     //}
     this._positions = nil
+    this._manager._cache = nil
     return this._rep.DelAdPosition(id)
 }
 
@@ -176,6 +177,8 @@ func (this *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
         return 0, ad.ErrKeyExists
     }
     a.GroupId = this.GetDomainId()
+    this._positions = nil
+    this._manager._cache = nil
     return this._rep.SaveAdPosition(a)
 }
 
@@ -215,6 +218,7 @@ func (this *AdGroupImpl) SetDefault(adPosId int, adId int) error {
         //todo: 检测广告是否存在
         v.DefaultId = adId
         _, err := this.SavePosition(v)
+        this._manager._cache = nil
         return err
     }
     return ad.ErrNoSuchAd
@@ -274,6 +278,9 @@ func (this *userAdImpl) DeleteAd(adId int) error {
         err := this._rep.DelAd(this._adUserId, adId)
         this._rep.DelImageDataForAdvertisement(adId)
         this._rep.DelTextDataForAdvertisement(adId)
+        if err  == nil{
+            this._cache = nil
+        }
         return err
     }
     return nil
@@ -340,7 +347,11 @@ func (this *userAdImpl) SetAd(posId, adId int) error {
     if this._rep.GetValueAd(adId) == nil {
         return ad.ErrNoSuchAd
     }
-    return this._rep.SetUserAd(this.GetAggregateRootId(), posId, adId)
+    err := this._rep.SetUserAd(this.GetAggregateRootId(), posId, adId)
+    if err == nil{
+        this._cache = nil
+    }
+    return err
 }
 
 var _ ad.IAd = new(AdImpl)
