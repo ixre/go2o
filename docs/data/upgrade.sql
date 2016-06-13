@@ -215,6 +215,10 @@ ALTER TABLE `flm`.`gs_item`
 ALTER TABLE `flm`.`pm_info`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`ad_position`
+  CHANGE COLUMN `description` `key` VARCHAR(45) NULL DEFAULT NULL AFTER `group_id`,
+  CHANGE COLUMN `name` `name` VARCHAR(45) NULL DEFAULT NULL ;
+
 
 
 

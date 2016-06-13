@@ -35,6 +35,9 @@ type (
 		// 创建广告组
 		CreateAdGroup(name string) IAdGroup
 
+		// 根据KEY获取广告位
+		GetAdPositionByKey(key string) *AdPosition
+
 		// 获取用户的广告管理
 		GetUserAd(adUserId int) IUserAd
 	}
@@ -76,6 +79,9 @@ type (
 
 		// 删除广告
 		DeleteAd(advertisementId int) error
+
+		//获取广告关联的广告位
+		GetAdPositionsByAdId(adId int) []*AdPosition
 
 		// 根据编号获取广告
 		GetById(int) IAd
@@ -140,10 +146,10 @@ type (
 		Id int `db:"id" auto:"yes" pk:"yes"`
 		// 分组编号
 		GroupId int `db:"group_id"`
+		// 引用键
+		Key string `db:"key"`
 		// 名称
 		Name string `db:"name"`
-		// 描述
-		Description string `db:"description"`
 		// 是否开放给外部
 		Opened int `db:"opened"`
 		// 是否启用
@@ -211,6 +217,9 @@ type (
 
 		// 删除广告组
 		DelAdGroup(id int) error
+
+		// 根据KEY获取广告位
+		GetAdPositionByKey(key string) *AdPosition
 
 		// 获取广告位
 		GetAdPositionsByGroupId(adGroupId int) []*AdPosition

@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var _ ad.IUserAd = new(UserAdImpl)
+var _ ad.IUserAd = new(userAdImpl)
 var _ ad.IAdGroup = new(AdGroupImpl)
 var _ ad.IAdManager = new(AdManagerImpl)
 
@@ -34,7 +34,7 @@ func (this *AdManagerImpl) GetAdGroups() []ad.IAdGroup {
 		list := this._rep.GetAdGroups()
 		this._groups = make([]ad.IAdGroup, len(list))
 		for i, v := range list {
-			this._groups[i] = newAdGroup(this._rep, v)
+			this._groups[i] = newAdGroup(this, this._rep, v)
 		}
 	}
 	return this._groups
@@ -59,12 +59,17 @@ func (this *AdManagerImpl) DelAdGroup(id int) error {
 
 // 创建广告组
 func (this *AdManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
-	return newAdGroup(this._rep, &ad.AdGroup{
+	return newAdGroup(this, this._rep, &ad.AdGroup{
 		Id:      0,
 		Name:    name,
 		Opened:  1,
 		Enabled: 1,
 	})
+}
+
+// 根据KEY获取广告位
+func (this *AdManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
+	return this._rep.GetAdPositionByKey(key)
 }
 
 // 获取用户的广告管理
@@ -74,14 +79,16 @@ func (this *AdManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
 
 type AdGroupImpl struct {
 	_rep       ad.IAdRep
+	_manager   ad.IAdManager
 	_value     *ad.AdGroup
 	_positions []*ad.AdPosition
 }
 
-func newAdGroup(rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
+func newAdGroup(m ad.IAdManager, rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
 	return &AdGroupImpl{
-		_rep:   rep,
-		_value: v,
+		_rep:     rep,
+		_manager: m,
+		_value:   v,
 	}
 }
 
@@ -135,6 +142,9 @@ func (this *AdGroupImpl) DelPosition(id int) error {
 
 // 保存广告位
 func (this *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
+	if pos := this._manager.GetAdPositionByKey(a.Key); pos != nil && pos.Id != a.Id {
+		return 0, ad.ErrKeyExists
+	}
 	a.GroupId = this.GetDomainId()
 	return this._rep.SaveAdPosition(a)
 }
@@ -180,14 +190,14 @@ func (this *AdGroupImpl) SetDefault(adPosId int, adId int) error {
 	return ad.ErrNoSuchAd
 }
 
-type UserAdImpl struct {
+type userAdImpl struct {
 	_rep      ad.IAdRep
 	_manager  ad.IAdManager
 	_adUserId int
 }
 
 func newUserAd(m ad.IAdManager, rep ad.IAdRep, adUserId int) ad.IUserAd {
-	return &UserAdImpl{
+	return &userAdImpl{
 		_rep:      rep,
 		_manager:  m,
 		_adUserId: adUserId,
@@ -195,12 +205,12 @@ func newUserAd(m ad.IAdManager, rep ad.IAdRep, adUserId int) ad.IUserAd {
 }
 
 // 获取聚合根标识
-func (this *UserAdImpl) GetAggregateRootId() int {
+func (this *userAdImpl) GetAggregateRootId() int {
 	return this._adUserId
 }
 
 // 根据编号获取广告
-func (this *UserAdImpl) GetById(id int) ad.IAd {
+func (this *userAdImpl) GetById(id int) ad.IAd {
 	v := this._rep.GetValueAd(id)
 	if v != nil {
 		return this.CreateAd(v)
@@ -208,24 +218,36 @@ func (this *UserAdImpl) GetById(id int) ad.IAd {
 	return nil
 }
 
-// 删除广告
-func (this *UserAdImpl) DeleteAd(advertisementId int) error {
-	adv := this.GetById(advertisementId)
-	if adv != nil {
-		if adv.System() {
-			return ad.ErrInternalDisallow
+// 获取广告关联的广告位
+func (this *userAdImpl) GetAdPositionsByAdId(adId int) []*ad.AdPosition {
+	list := []*ad.AdPosition{}
+	for _, v := range this._manager.GetAdGroups() {
+		for _, p := range v.GetPositions() {
+			if p.DefaultId == adId {
+				list = append(list, p)
+			}
 		}
-		err := this._rep.DelAd(this._adUserId, advertisementId)
-		this._rep.DelImageDataForAdvertisement(advertisementId)
-		this._rep.DelTextDataForAdvertisement(advertisementId)
-		return err
+	}
+	return list
+}
 
+// 删除广告
+func (this *userAdImpl) DeleteAd(adId int) error {
+	adv := this.GetById(adId)
+	if adv != nil {
+		if len(this.GetAdPositionsByAdId(adId)) > 0 {
+			return ad.ErrAdUsed
+		}
+		err := this._rep.DelAd(this._adUserId, adId)
+		this._rep.DelImageDataForAdvertisement(adId)
+		this._rep.DelTextDataForAdvertisement(adId)
+		return err
 	}
 	return nil
 }
 
 // 根据名称获取广告
-func (this *UserAdImpl) GetByName(name string) ad.IAd {
+func (this *userAdImpl) GetByName(name string) ad.IAd {
 	v := this._rep.GetAdByName(this._adUserId, name)
 	if v != nil {
 		return this.CreateAd(v)
@@ -234,7 +256,7 @@ func (this *UserAdImpl) GetByName(name string) ad.IAd {
 }
 
 // 创建广告对象
-func (this *UserAdImpl) CreateAd(v *ad.Ad) ad.IAd {
+func (this *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 	adv := &AdImpl{
 		_rep:   this._rep,
 		_value: v,
@@ -260,7 +282,7 @@ func (this *UserAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 }
 
 // 设置广告
-func (this *UserAdImpl) SetAd(posId, adId int) error {
+func (this *userAdImpl) SetAd(posId, adId int) error {
 	if this._manager.GetAdGroup(posId) == nil {
 		return ad.ErrNoSuchAdPosition
 	}
