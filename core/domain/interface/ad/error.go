@@ -28,4 +28,10 @@ var (
 
 	ErrDisallowModifyAdType *domain.DomainError = domain.NewDomainError(
 		"err_disallow_modify_ad_type", "广告创建后不允许修改类型")
+
+	ErrKeyExists *domain.DomainError = domain.NewDomainError(
+		"err_key_exists", "广告位KEY已存在")
+
+	ErrAdUsed *domain.DomainError = domain.NewDomainError(
+		"err_ad_used", " 无法删除已投放的广告")
 )

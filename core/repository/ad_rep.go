@@ -48,6 +48,16 @@ func (this *advertisementRep) DelAdGroup(id int) error {
 	return this.Connector.GetOrm().DeleteByPk(&ad.AdGroup{}, id)
 }
 
+// 根据KEY获取广告位
+func (this *advertisementRep) GetAdPositionByKey(key string) *ad.AdPosition {
+	e := ad.AdPosition{}
+	if err := this.GetOrm().GetBy(&e, "key=?", key); err != nil {
+		handleError(err)
+		return nil
+	}
+	return &e
+}
+
 // 获取广告位
 func (this *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPosition {
 	var list = []*ad.AdPosition{}
