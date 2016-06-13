@@ -12,7 +12,6 @@ package daemon
 import (
 	"github.com/jsix/gof"
 	"go2o/core/service/dps"
-	"log"
 )
 
 var (

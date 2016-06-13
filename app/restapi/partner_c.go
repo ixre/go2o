@@ -25,7 +25,7 @@ type partnerC struct {
 func (this *partnerC) Get_ad(ctx *echo.Context) error {
 	merchantId := getMerchantId(ctx)
 	adName := ctx.Request().FormValue("ad_name")
-	adv, data := dps.AdService.GetAdvertisementAndDataByName(merchantId, adName)
+	adv, data := dps.AdService.GetAdAndDataByKey(merchantId, adName)
 	if data != nil {
 		// 图片广告
 		if adv.Type == ad.TypeGallery {
