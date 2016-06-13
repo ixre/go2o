@@ -91,10 +91,9 @@ func (this *adService) GetAdvertisement(adUserId, id int) *ad.Ad {
 }
 
 // 获取广告及广告数据
-//todo:obslete
-func (this *adService) GetAdvertisementAndDataByName(adUserId int, name string) (
+func (this *adService) GetAdAndDataByKey(adUserId int, key string) (
 	*ad.Ad, interface{}) {
-	if adv := this.getUserAd(adUserId).GetByName(name); adv != nil {
+	if adv := this.getUserAd(adUserId).GetByPositionKey(key); adv != nil {
 		v := adv.GetValue()
 		switch adv.Type() {
 		case ad.TypeGallery:
