@@ -11,7 +11,6 @@ package mss
 import (
 	"go2o/core/domain/interface/mss"
 	"regexp"
-	"errors"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
@@ -27,47 +26,88 @@ func Transplate(c string, m map[string]string) string {
 	})
 }
 
-
 var _ mss.IMessage = new(messageImpl)
 
 type messageImpl struct {
-	_rep        mss.IMssRep
-	_msg        *mss.Message
-	_tpl        *mss.MailTemplate
-	_data       mss.MessageData
+	_rep  mss.IMssRep
+	_msg  *mss.Message
+	_tpl  *mss.MailTemplate
+	_data mss.MessageData
 }
 
-func newMailTemplate(msg *mss.Message,rep mss.IMssRep) mss.IMessage {
+func newMessage(msg *mss.Message, rep mss.IMssRep) mss.IMessage {
 	return &messageImpl{
+		_rep: rep,
+		_msg: msg,
+	}
+}
+
+// 获取领域编号
+func (this *messageImpl) GetDomainId() int {
+	return this._msg.Id
+}
+
+func (this *messageImpl) Type() int {
+	return this._msg.Type
+}
+
+// 保存
+func (this *messageImpl) Save() (int, error) {
+	if this.GetDomainId() > 0 {
+		return this._msg.Id, mss.ErrMessageUpdate
+	}
+	// 检查消息用途,SenderRole不做检查
+	if this._msg.UseFor != mss.UseForNotify &&
+		this._msg.UseFor != mss.UseForService &&
+		this._msg.UseFor != mss.UserForChat {
+		return this.GetDomainId(), mss.ErrUnknownMessageUseFor
+	}
+	id, err := this._rep.SaveMessage(this._msg)
+	this._msg.Id = id
+	return id, err
+}
+
+// 发送
+func (this *messageImpl) Send(d mss.MessageData) error {
+	if this.GetDomainId() > 0 {
+		return mss.ErrMessageNotSave
+	}
+	//todo: 检查是否已经发送
+	return nil
+}
+
+var _ mss.IMailMessage = new(mailMessageImpl)
+var _ mss.IMessage = new(mailMessageImpl)
+
+type mailMessageImpl struct {
+	*messageImpl
+	_val *mss.ValueMailMessage
+	_rep mss.IMssRep
+}
+
+func newMailMessage(m *messageImpl, v *mss.ValueMailMessage,
+	rep mss.IMssRep) mss.IMessage {
+	return &mailMessageImpl{
+		messageImpl: m,
+		_val:        v,
 		_rep:        rep,
-		_msg :msg,
 	}
 }
 
-// 解析消息模板内容
-func (this *messageImpl) parse(val interface{},d mss.MessageData)interface{} {
-	this._data = d
-	switch this._msg.Type{
-	case mss.TypeEmailMessage:
-		v := val.(*mss.ValueMailMessage)
-		v.Body = Transplate(v.Body,d)
-		v.Subject = Transplate(v.Subject,d)
-	case mss.TypeSiteMessage:
-		v := val.(*mss.ValueSiteMessage)
-		v.Subject = Transplate(v.Subject,d)
-		v.Message = Transplate(v.Message,d)
-	case mss.TypePhoneMessage:
-		v := val.(*mss.ValuePhoneMessage)
-		Transplate(string(*v),d)
-	default:
-		panic(errors.New("Unkown message type"))
-	}
-	return val
+func (this *mailMessageImpl) Value() *mss.ValueMailMessage {
+	return this._val
 }
 
-//todo: 修改邮箱信息
-// 加入到发送对列
-func (this *messageImpl) sendMailMessage(v *mss.ValueMailMessage) error {
+func (this *mailMessageImpl) Save() (int, error) {
+	return this.messageImpl.Save()
+}
+
+// 发送
+func (this *mailMessageImpl) Send(d mss.MessageData) error {
+	v := this._val
+	v.Body = Transplate(v.Body, d)
+	v.Subject = Transplate(v.Subject, d)
+
 	//unix := time.Now().Unix()
 	//for _, _ := range this._msg.To {
 	//	task := &mss.MailTask{
@@ -79,57 +119,72 @@ func (this *messageImpl) sendMailMessage(v *mss.ValueMailMessage) error {
 	//	}
 	//	this._rep.JoinMailTaskToQueen(task)
 	//}
-	return nil
+	return this.messageImpl.Send(d)
 }
 
-// 获取领域编号
-func (this *messageImpl) GetDomainId()int{
-	return this._msg.Id
+var _ mss.IPhoneMessage = new(phoneMessageImpl)
+var _ mss.IMessage = new(phoneMessageImpl)
+
+type phoneMessageImpl struct {
+	*messageImpl
+	_val *mss.ValuePhoneMessage
+	_rep mss.IMssRep
 }
 
-// 保存
-func (this *messageImpl)Save()(int,error){
-	if this.GetDomainId() > 0{
-		return this._msg.Id,mss.ErrMessageUpdate
+func newPhoneMessage(m *messageImpl, v *mss.ValuePhoneMessage,
+	rep mss.IMssRep) mss.IMessage {
+	return &phoneMessageImpl{
+		messageImpl: m,
+		_val:        v,
+		_rep:        rep,
 	}
-	id,err := this._rep.SaveMessage(this._msg)
-	this._msg.Id = id
-	return id,err
+}
+
+func (this *phoneMessageImpl) Value() *mss.ValuePhoneMessage {
+	return this._val
+}
+
+func (this *phoneMessageImpl) Save() (int, error) {
+	return this.messageImpl.Save()
 }
 
 // 发送
-func (this *messageImpl) Send(msgContent interface{}, d mss.MessageData) error{
-	if this.GetDomainId() <= 0 {
-		return mss.ErrMessageNotSave
+func (this *phoneMessageImpl) Send(d mss.MessageData) error {
+	v := *this._val
+	v = mss.ValuePhoneMessage(Transplate(string(v), d))
+	return this.messageImpl.Send(d)
+}
+
+var _ mss.ISiteMessage = new(siteMessageImpl)
+var _ mss.IMessage = new(siteMessageImpl)
+
+type siteMessageImpl struct {
+	*messageImpl
+	_val *mss.ValueSiteMessage
+	_rep mss.IMssRep
+}
+
+func newSiteMessage(m *messageImpl, v *mss.ValueSiteMessage,
+	rep mss.IMssRep) mss.IMessage {
+	return &siteMessageImpl{
+		messageImpl: m,
+		_val:        v,
+		_rep:        rep,
 	}
-	switch this._msg.Type{
-	case mss.TypeEmailMessage:
-		v := msgContent.(*mss.ValueMailMessage)
-		v.Body = Transplate(v.Body, d)
-		v.Subject = Transplate(v.Subject, d)
-		return this.sendMailMessage(v)
-	case mss.TypeSiteMessage:
-		v := msgContent.(*mss.ValueSiteMessage)
-		v.Subject = Transplate(v.Subject, d)
-		v.Message = Transplate(v.Message, d)
-		return this.sendSiteMessage(v)
-	case mss.TypePhoneMessage:
-		v := msgContent.(*mss.ValuePhoneMessage)
-		*v = mss.ValuePhoneMessage(Transplate(string(*v), d))
-		return this.sendPhoneMessage(v)
-	}
-	return mss.ErrNotSupportMessageType
 }
 
-func (this *messageImpl) sendSiteMessage(v *mss.ValueSiteMessage)error{
-	//todo:
-	return nil
+func (this *siteMessageImpl) Value() *mss.ValueSiteMessage {
+	return this._val
 }
 
-
-func (this *messageImpl) sendPhoneMessage(v *mss.ValuePhoneMessage)error{
-	//todo:
-	return nil
+func (this *siteMessageImpl) Save() (int, error) {
+	return this.messageImpl.Save()
 }
 
-
+// 发送
+func (this *siteMessageImpl) Send(d mss.MessageData) error {
+	v := this._val
+	v.Subject = Transplate(v.Subject, d)
+	v.Message = Transplate(v.Message, d)
+	return this.messageImpl.Send(d)
+}

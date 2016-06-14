@@ -22,36 +22,34 @@ import (
 var _ mss.IMssRep = new(MssRep)
 
 type MssRep struct {
-	_conn    db.Connector
-	_globMss mss.IMessageProvider
-	_notifyItems  map[string]*mss.NotifyItem
-	_itemGob    *util.GobFile
-	_sysManger   mss.ISystemManager
+	_conn        db.Connector
+	_globMss     mss.IUserMessageManager
+	_notifyItems map[string]*mss.NotifyItem
+	_itemGob     *util.GobFile
+	_sysManger   mss.IMessageManager
 }
 
 func NewMssRep(conn db.Connector) mss.IMssRep {
 	return &MssRep{
-		_conn: conn,
+		_conn:    conn,
 		_itemGob: util.NewGobFile("conf/core/mss_notify"),
 	}
 }
 
-
 // 系统消息服务
-func (this *MssRep) GetManager() mss.ISystemManager{
-	if this._sysManger == nil{
+func (this *MssRep) GetManager() mss.IMessageManager {
+	if this._sysManger == nil {
 		this._sysManger = mssImpl.NewMessageManager(this)
 	}
 	return this._sysManger
 }
 
-func (this *MssRep) GetProvider() mss.IMessageProvider {
+func (this *MssRep) GetProvider() mss.IUserMessageManager {
 	if this._globMss == nil {
 		this._globMss = mssImpl.NewMssManager(0, this)
 	}
 	return this._globMss
 }
-
 
 // 获取短信配置
 func (this *MssRep) GetConfig(userId int) *mss.Config {
@@ -75,13 +73,13 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 	return globFile.Save(conf)
 }
 
-func (this *MssRep) getNotifyItemMap()map[string]*mss.NotifyItem{
-	if(this._notifyItems == nil){
+func (this *MssRep) getNotifyItemMap() map[string]*mss.NotifyItem {
+	if this._notifyItems == nil {
 		this._notifyItems = map[string]*mss.NotifyItem{}
 		err := this._itemGob.Unmarshal(&this._notifyItems)
 		//拷贝系统默认的配置
-		if err != nil{
-			for _,v := range mss.DefaultNotifyItems{
+		if err != nil {
+			for _, v := range mss.DefaultNotifyItems {
 				vv := *v
 				this._notifyItems[v.Key] = &vv
 			}
@@ -89,24 +87,25 @@ func (this *MssRep) getNotifyItemMap()map[string]*mss.NotifyItem{
 	}
 	return this._notifyItems
 }
+
 // 获取所有的通知项
-func (this *MssRep) GetAllNotifyItem()[]mss.NotifyItem{
+func (this *MssRep) GetAllNotifyItem() []mss.NotifyItem {
 	list := []mss.NotifyItem{}
-	for _,v := range mss.DefaultNotifyItems{
+	for _, v := range mss.DefaultNotifyItems {
 		v2 := this.getNotifyItemMap()[v.Key]
-		list = append(list,*v2)
+		list = append(list, *v2)
 	}
 	return list
 }
 
 // 获取通知项
-func (this *MssRep) GetNotifyItem(key string)*mss.NotifyItem{
+func (this *MssRep) GetNotifyItem(key string) *mss.NotifyItem {
 
 	return this.getNotifyItemMap()[key]
 }
 
 // 保存通知项
-func (this *MssRep) SaveNotifyItem(v *mss.NotifyItem)error{
+func (this *MssRep) SaveNotifyItem(v *mss.NotifyItem) error {
 	this._notifyItems[v.Key] = v
 	return this._itemGob.Save(this._notifyItems)
 }
@@ -166,8 +165,8 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 	return err
 }
 
-
-func (this *MssRep) SaveMessage(v *mss.Message)(int,error){
+// 保存消息
+func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -176,5 +175,12 @@ func (this *MssRep) SaveMessage(v *mss.Message)(int,error){
 		_, id, err = this._conn.GetOrm().Save(nil, v)
 		v.Id = int(id)
 	}
-	return v.Id,err
+	return v.Id, err
+}
+
+// 获取消息
+func (this *MssRep) GetMessage(id int) *mss.Message {
+	//todo:
+	msg := mss.Message{}
+	return &msg
 }
