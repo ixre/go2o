@@ -10,46 +10,67 @@ package mss
 
 import (
     "errors"
+    "go2o/core/infrastructure/domain"
 )
 
 //todo: waiting refactor
 
 const (
-    NotifyByMessage = 1 + iota
-    NotifyByEMail
-    NotifyByPhoneMessage
+    TypeSiteMessage = 1 + iota
+    TypeEmailMessage
+    TypePhoneMessage
 )
 
 var (
+    ErrNotSupportMessageType *domain.DomainError = domain.NewDomainError(
+        "err_not_support_message_type", "不支持的消息类型")
+
+    ErrNotEnabled *domain.DomainError = domain.NewDomainError(
+        "err_template_not_enabled", "模板未启用")
+
+    ErrTemplateUsed *domain.DomainError = domain.NewDomainError(
+        "err_template_used", "模板被使用，无法删除")
+
+    ErrNoSuchNotifyItem *domain.DomainError = domain.NewDomainError(
+        "err_no_such_notify_item", "通知项不存在")
+
+    ErrMessageUpdate *domain.DomainError = domain.NewDomainError(
+        "err_message_update", "消息不需要更新")
+
+    ErrMessageNotSave *domain.DomainError = domain.NewDomainError(
+        "err_message_not_save", "请在消息发送前保存")
+
+
     // 类型字典
     NotifyTypeMap = map[int]string{
-        NotifyByMessage:      "站内信",
-        NotifyByEMail:        "邮件",
-        NotifyByPhoneMessage: "短信",
+        TypeSiteMessage:      "站内信",
+        TypeEmailMessage:        "邮件",
+        TypePhoneMessage: "短信",
     }
 
     // 类型顺序
     NotifyTypeIndex = []int{
-        NotifyByMessage,
-        NotifyByEMail,
-        NotifyByPhoneMessage,
+        TypeSiteMessage,
+        TypeEmailMessage,
+        TypePhoneMessage,
     }
 
     // 默认通知项
     DefaultNotifyItems = NotifyItemSet{
         &NotifyItem{
-            Key:"register_ok",
+            Key:"注册通知",
             TplId:-1,
-            NotifyBy:NotifyByMessage,
+            NotifyBy:TypeSiteMessage,
             Content:"您好,恭喜您已注册成功{platform}的会员!",
             Tags:map[string]string{
                 "platform":"平台名称",
             },
         },
         &NotifyItem{
-            Key:"valid_phone",
+            Key:"验证手机",
             TplId:-1,
-            NotifyBy:NotifyByMessage,
+            ReadonlyBy:true,
+            NotifyBy:TypePhoneMessage,
             Content:"您正在进行{operation},本次验证码为{code},有效期为{minutes}分种,[{platform}]。",
             Tags:map[string]string{
                 "operation":"操作,如找回密码,重置手机等",
@@ -63,21 +84,21 @@ var (
 
 //可通过外部添加
 func RegisterNotifyItem(key string, item *NotifyItem) {
-    for _,v := range DefaultNotifyItems{
-        if v.Key == key{
+    for _, v := range DefaultNotifyItems {
+        if v.Key == key {
             panic(errors.New("通知项" + key + "已存在!"))
         }
     }
-    DefaultNotifyItems = append(DefaultNotifyItems,item)
+    DefaultNotifyItems = append(DefaultNotifyItems, item)
 }
 
 type (
     // 系统管理
     ISystemManager interface {
         // 获取所有的通知项
-        GetAllNotifyItem()[]NotifyItem
+        GetAllNotifyItem() []NotifyItem
         // 获取通知项配置
-        GetNotifyItem(key string)NotifyItem
+        GetNotifyItem(key string) NotifyItem
         // 保存通知项设置
         SaveNotifyItem(item *NotifyItem) error
     }
@@ -88,13 +109,13 @@ type (
         GetAggregateRootId() int
 
         // 获取配置
-        GetConfig()Config
+        GetConfig() Config
 
         // 保存消息设置
         SaveConfig(conf *Config) error
 
         // 发送消息
-        Send(tpl IMsgTemplate, d MsgData, to []string) error
+        Send(tpl IMessage, d MessageData, to []string) error
 
         // 获取邮箱模板
         GetMailTemplate(int) *MailTemplate
@@ -108,8 +129,8 @@ type (
         // 删除邮件模板
         DeleteMailTemplate(int) error
 
-        // 创建消息模版对象
-        CreateMsgTemplate(v interface{}) (IMsgTemplate, error)
+        // 创建消息对象
+        CreateMessage(msg *Message) (IMessage)
     }
 
     IMssRep interface {
@@ -126,13 +147,13 @@ type (
         SaveConfig(userId int, conf *Config) error
 
         // 获取所有的通知项
-        GetAllNotifyItem()[]NotifyItem
+        GetAllNotifyItem() []NotifyItem
 
         // 获取通知项
-        GetNotifyItem(key string)*NotifyItem
+        GetNotifyItem(key string) *NotifyItem
 
         // 保存通知项
-        SaveNotifyItem(v *NotifyItem)error
+        SaveNotifyItem(v *NotifyItem) error
 
         // 获取邮箱模板
         GetMailTemplate(userId, id int) *MailTemplate
@@ -144,16 +165,21 @@ type (
         DeleteMailTemplate(userId, id int) error
         // 加入到发送对列
         JoinMailTaskToQueen(*MailTask) error
+
+        SaveMessage(msg *Message)(int,error)
     }
 
 
     // 通知项
     NotifyItem struct {
-        Key string
-        NotifyBy int
-        TplId    int
-        Content  string
-        Tags     map[string]string
+        Key        string
+        // 发送方式
+        NotifyBy   int
+        // 不允许修改发送方式
+        ReadonlyBy bool
+        TplId      int
+        Content    string
+        Tags       map[string]string
     }
 
     // 通知项集合

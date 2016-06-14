@@ -75,17 +75,7 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 	return globFile.Save(conf)
 }
 
-// 获取所有的通知项
-func (this *MssRep) GetAllNotifyItem()[]mss.NotifyItem{
-	list := []mss.NotifyItem{}
-	for _,v := range this._notifyItems{
-		list = append(list,*v)
-	}
-	return list
-}
-
-// 获取通知项
-func (this *MssRep) GetNotifyItem(key string)*mss.NotifyItem{
+func (this *MssRep) getNotifyItemMap()map[string]*mss.NotifyItem{
 	if(this._notifyItems == nil){
 		this._notifyItems = map[string]*mss.NotifyItem{}
 		err := this._itemGob.Unmarshal(&this._notifyItems)
@@ -97,7 +87,22 @@ func (this *MssRep) GetNotifyItem(key string)*mss.NotifyItem{
 			}
 		}
 	}
-	return this._notifyItems[key]
+	return this._notifyItems
+}
+// 获取所有的通知项
+func (this *MssRep) GetAllNotifyItem()[]mss.NotifyItem{
+	list := []mss.NotifyItem{}
+	for _,v := range mss.DefaultNotifyItems{
+		v2 := this.getNotifyItemMap()[v.Key]
+		list = append(list,*v2)
+	}
+	return list
+}
+
+// 获取通知项
+func (this *MssRep) GetNotifyItem(key string)*mss.NotifyItem{
+
+	return this.getNotifyItemMap()[key]
 }
 
 // 保存通知项
@@ -159,4 +164,15 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 		rc.Do("RPUSH", variable.KvNewMailTask, v.Id) // push to queue
 	}
 	return err
+}
+
+
+func (this *MssRep) SaveMessage(v *mss.Message)(int,error){
+	var err error
+	if v.Id > 0 {
+		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+	} else {
+		_, v.Id, err = this._conn.GetOrm().Save(nil, v)
+	}
+	return v.Id,err
 }
