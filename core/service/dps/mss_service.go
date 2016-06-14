@@ -54,18 +54,19 @@ func (this *mssService) SaveConfig(conf *mss.Config) error {
 
 //可通过外部添加
 func (this *mssService) RegisterNotifyItem(key string, item *mss.NotifyItem) {
-	mss.RegisterNotifyItem(key,item)
+	mss.RegisterNotifyItem(key, item)
 }
 
-func (this *mssService) GetAllNotifyItem()[]mss.NotifyItem{
+func (this *mssService) GetAllNotifyItem() []mss.NotifyItem {
 	return this._rep.GetManager().GetAllNotifyItem()
 }
 
 // 获取通知项配置
-func (this *mssService) GetNotifyItem(key string) mss.NotifyItem{
+func (this *mssService) GetNotifyItem(key string) mss.NotifyItem {
 	return this._rep.GetManager().GetNotifyItem(key)
 }
+
 // 保存通知项设置
-func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error{
+func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error {
 	return this._rep.GetManager().SaveNotifyItem(item)
 }

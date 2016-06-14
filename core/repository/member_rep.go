@@ -132,7 +132,7 @@ func (this *MemberRep) GetMemberIdByUser(user string) int {
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
 	return memberImpl.NewMember(this.GetManager(), v, this,
-		this._mssRep.GetProvider(), this._partnerRep)
+		this._mssRep, this._partnerRep)
 }
 
 // 根据邀请码获取会员编号

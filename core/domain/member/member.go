@@ -36,16 +36,16 @@ type memberImpl struct {
 	_merchantRep merchant.IMerchantRep
 	_relation    *member.MemberRelation
 	_invitation  member.IInvitationManager
-	_mssProvider mss.IMessageProvider
+	_mssRep      mss.IMssRep
 }
 
 func NewMember(manager member.IMemberManager, val *member.ValueMember, rep member.IMemberRep,
-	mp mss.IMessageProvider, merchantRep merchant.IMerchantRep) member.IMember {
+	mp mss.IMssRep, merchantRep merchant.IMerchantRep) member.IMember {
 	return &memberImpl{
 		_manager:     manager,
 		_value:       val,
 		_rep:         rep,
-		_mssProvider: mp,
+		_mssRep:      mp,
 		_merchantRep: merchantRep,
 	}
 }
@@ -181,23 +181,21 @@ func (this *memberImpl) notifyOnProfileComplete() {
 func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := this._mssProvider.GetMailTemplate(tplId)
+		mailTpl := this._mssRep.GetProvider().GetMailTemplate(tplId)
 		if mailTpl != nil {
 			//todo:
-			v := &mss.Message{
-
-			}
+			v := &mss.Message{}
 			val := &mss.ValueMailMessage{
-				Subject:mailTpl.Subject,
-				Body:mailTpl.Body,
+				Subject: mailTpl.Subject,
+				Body:    mailTpl.Body,
 			}
-			msg := this._mssProvider.CreateMessage(v)
+			msg := this._mssRep.GetManager().CreateMessage(v, val)
 			//todo:?? data
 			var data = map[string]string{
 				"Name":           this._value.Name,
 				"InvitationCode": this._value.InvitationCode,
 			}
-			return msg.Send(val,data)
+			return msg.Send(data)
 		}
 	}
 	return errors.New("no such email template")

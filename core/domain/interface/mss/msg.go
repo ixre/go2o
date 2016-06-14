@@ -9,122 +9,137 @@
 package mss
 
 var (
-    RoleSystem = 0
-    RoleMember = 1
-    RoleMerchant = 2
+	RoleSystem   = 0
+	RoleMember   = 1
+	RoleMerchant = 2
 )
 
-type(
-    IMessage interface {
-        // 应用数据
-        //Parse(MessageData) string
-        // 加入到发送对列
-        //JoinQueen(to []string) error
-
-        // 获取领域编号
-        GetDomainId()int
-
-        // 保存
-        Save()(int,error)
-
-        // 发送
-        Send(msg interface{}, data MessageData) error
-    }
-
-    // 消息值
-    ValueMessage string
-
-    // 简讯
-    ValuePhoneMessage  string
-
-    // 邮件消息
-    ValueMailMessage struct {
-        // 主题
-        Subject string `json:"subject"`
-        // 内容
-        Body    string `json:"body"`
-    }
-
-    // 站内信
-    ValueSiteMessage struct {
-        // 主题
-        Subject string  `json:"subject"`
-        // 信息内容
-        Message string `json:"message"`
-    }
-
-    // 消息,优先级为: AllUser ->  ToRole  ->  To
-    Message struct {
-        // 消息编号
-        Id         int  `db:"id" pk:"yes" auto:"yes"`
-        // 发送人角色
-        SenderRole   int `db:"sender_role"`
-        // 发送人类型
-        SenderId int `db:"sender_int"`
-        // 发送的目标
-        To         []User `db:"-"`
-        // 发送的用户角色
-        ToRole     int  `db:"to_role"`
-        // 全系统接收
-        AllUser    int   `db:"all_user"`
-        // 消息类型
-        Type      int `db:"msg_type"`
-        // 是否只能阅读
-        Readonly   int  `db:"read_only"`
-    }
-
-    User  struct {
-        Id   int
-        Role int
-    }
+var (
+	// 用于通知
+	UseForNotify = 1
+	// 用于好友交流
+	UserForChat = 2
+	// 用于客服
+	UseForService = 3
 )
 
+type (
 
-// 消息数据
-type MessageData map[string]string
+	// 消息数据
+	MessageData map[string]string
 
+	// 简讯
+	ValuePhoneMessage string
 
-// 邮件模版
-type MailTemplate struct {
-    // 编号
-    Id         int `db:"id" pk:"yes" auto:"yes"`
-    // 商户编号
-    MerchantId int `db:"merchant_id"`
-    // 名称
-    Name       string `db:"name"`
-    // 主题
-    Subject    string `db:"subject"`
-    // 内容
-    Body       string `db:"body"`
+	// 邮件消息
+	ValueMailMessage struct {
+		// 主题
+		Subject string `json:"subject"`
+		// 内容
+		Body string `json:"body"`
+	}
 
-    // 是否启用
-    Enabled    int `db:"enabled"`
+	// 站内信
+	ValueSiteMessage struct {
+		// 主题
+		Subject string `json:"subject"`
+		// 信息内容
+		Message string `json:"message"`
+	}
 
-    // 创建时间
-    CreateTime int64 `db:"create_time"`
-    // 更新时间
-    UpdateTime int64 `db:"update_time"`
-}
+	User struct {
+		Id   int
+		Role int
+	}
 
-type MailTask struct {
-    // 编号
-    Id         int `db:"id" pk:"yes" auto:"yes"`
-    // 任务编号,无任务为0
-    TaskId     int `db:"task_id"`
-    // 商户编号
-    MerchantId int `db:"merchant_id"`
-    // 发送至
-    SendTo     string `db:"send_to"`
-    // 主题
-    Subject    string `db:"subject"`
-    // 内容
-    Body       string `db:"body"`
-    // 是否发送(0,1)
-    IsSend     int `db:"is_send"`
-    // 是否失败(0,1)
-    IsFailed   int `db:"is_failed"`
-    // 创建时间
-    CreateTime int64 `db:"create_time"`
-    // 发送时间
-    SendTime   int64 `db:"update_time`
-}
+	// 消息,优先级为: AllUser ->  ToRole  ->  To
+	Message struct {
+		// 消息编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 消息类型
+		Type int `db:"msg_type"`
+		// 消息用途
+		UseFor int `db:"use_for"`
+		// 发送人角色
+		SenderRole int `db:"sender_role"`
+		// 发送人类型
+		SenderId int `db:"sender_int"`
+		// 发送的目标
+		To []User `db:"-"`
+		// 发送的用户角色
+		ToRole int `db:"to_role"`
+		// 全系统接收
+		AllUser int `db:"all_user"`
+		// 是否只能阅读
+		Readonly int `db:"read_only"`
+	}
+
+	// 消息内容
+	Content struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 消息编号
+		MsgId int `db:"msg_id"`
+		// 数据
+		Data string `db:"msg_data"`
+	}
+
+	// 用户消息绑定
+	UserMessage struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 接收者编号
+		ToId int `db:"to_id"`
+		// 接收者角色
+		ToRole int `db:"to_role"`
+		// 内容编号
+		ContentId int `db:"content_id"`
+		// 是否阅读
+		HasRead int `db:"has_read"`
+	}
+
+	// 回复
+	Replay struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 关联回复编号
+		ReplayId int `db:"from_id"`
+		// 发送者编号
+		SenderId int `db:"sender_id"`
+		// 发送者角色
+		SenderRole int `db:"sender_role"`
+		// 内容
+		Content string `db:"content"`
+	}
+
+	IMessage interface {
+		// 应用数据
+		//Parse(MessageData) string
+		// 加入到发送对列
+		//JoinQueen(to []string) error
+
+		// 获取领域编号
+		GetDomainId() int
+
+		// 消息类型
+		Type() int
+
+		// 保存
+		Save() (int, error)
+
+		// 发送
+		Send(data MessageData) error
+	}
+
+	ISiteMessage interface {
+		Value() *ValueSiteMessage
+	}
+
+	IMailMessage interface {
+		Value() *ValueMailMessage
+	}
+
+	IPhoneMessage interface {
+		Value() *ValuePhoneMessage
+	}
+)
