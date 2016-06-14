@@ -12,7 +12,6 @@ import (
 	"go2o/core/domain/interface/mss"
 	"regexp"
 	"errors"
-	"go2o/core/infrastructure/mss"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
