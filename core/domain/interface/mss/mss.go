@@ -115,7 +115,7 @@ type (
         SaveConfig(conf *Config) error
 
         // 发送消息
-        Send(tpl IMessage, d MessageData, to []string) error
+        Send(msg IMessage, msgContent interface{}, data MessageData) error
 
         // 获取邮箱模板
         GetMailTemplate(int) *MailTemplate

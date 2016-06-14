@@ -183,18 +183,21 @@ func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	if tplId > 0 {
 		mailTpl := this._mssProvider.GetMailTemplate(tplId)
 		if mailTpl != nil {
-			tpl, err := this._mssProvider.CreateMsgTemplate(mailTpl)
-			if err != nil {
-				return err
-			}
+			//todo:
+			v := &mss.Message{
 
+			}
+			val := &mss.ValueMailMessage{
+				Subject:mailTpl.Subject,
+				Body:mailTpl.Body,
+			}
+			msg := this._mssProvider.CreateMessage(v)
 			//todo:?? data
 			var data = map[string]string{
 				"Name":           this._value.Name,
 				"InvitationCode": this._value.InvitationCode,
 			}
-
-			return this._mssProvider.Send(tpl, data, []string{this._value.Email})
+			return msg.Send(val,data)
 		}
 	}
 	return errors.New("no such email template")

@@ -172,7 +172,9 @@ func (this *MssRep) SaveMessage(v *mss.Message)(int,error){
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
 	} else {
-		_, v.Id, err = this._conn.GetOrm().Save(nil, v)
+		var id int64
+		_, id, err = this._conn.GetOrm().Save(nil, v)
+		v.Id = int(id)
 	}
 	return v.Id,err
 }
