@@ -24,20 +24,34 @@ var _ mss.IMssRep = new(MssRep)
 type MssRep struct {
 	_conn    db.Connector
 	_globMss mss.IMessageProvider
+	_notifyItems  map[string]*mss.NotifyItem
+	_itemGob    *util.GobFile
+	_sysManger   mss.ISystemManager
 }
 
 func NewMssRep(conn db.Connector) mss.IMssRep {
 	return &MssRep{
 		_conn: conn,
+		_itemGob: util.NewGobFile("conf/core/mss_notify"),
 	}
 }
 
-func (this *MssRep) GetManager() mss.IMessageProvider {
+
+// 系统消息服务
+func (this *MssRep) GetManager() mss.ISystemManager{
+	if this._sysManger == nil{
+		this._sysManger = mssImpl.NewMessageManager(this)
+	}
+	return this._sysManger
+}
+
+func (this *MssRep) GetProvider() mss.IMessageProvider {
 	if this._globMss == nil {
 		this._globMss = mssImpl.NewMssManager(0, this)
 	}
 	return this._globMss
 }
+
 
 // 获取短信配置
 func (this *MssRep) GetConfig(userId int) *mss.Config {
@@ -59,6 +73,37 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 	}
 	globFile := util.NewGobFile(filePath)
 	return globFile.Save(conf)
+}
+
+// 获取所有的通知项
+func (this *MssRep) GetAllNotifyItem()[]mss.NotifyItem{
+	list := []mss.NotifyItem{}
+	for _,v := range this._notifyItems{
+		list = append(list,*v)
+	}
+	return list
+}
+
+// 获取通知项
+func (this *MssRep) GetNotifyItem(key string)*mss.NotifyItem{
+	if(this._notifyItems == nil){
+		this._notifyItems = map[string]*mss.NotifyItem{}
+		err := this._itemGob.Unmarshal(&this._notifyItems)
+		//拷贝系统默认的配置
+		if err != nil{
+			for _,v := range mss.DefaultNotifyItems{
+				vv := *v
+				this._notifyItems[v.Key] = &vv
+			}
+		}
+	}
+	return this._notifyItems[key]
+}
+
+// 保存通知项
+func (this *MssRep) SaveNotifyItem(v *mss.NotifyItem)error{
+	this._notifyItems[v.Key] = v
+	return this._itemGob.Save(this._notifyItems)
 }
 
 // 获取邮箱模板
