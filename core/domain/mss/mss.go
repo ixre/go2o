@@ -89,29 +89,30 @@ func (this *messageProviderImpl) SaveConfig(conf *mss.Config) error {
 
 
 // 创建消息模版对象
-func (this *messageProviderImpl) CreateMsgTemplate(v interface{}) (
-mss.IMsgTemplate, error) {
+func (this *messageProviderImpl) CreateMessage(msg *mss.Message) (mss.IMessage) {
+    return newMailTemplate(msg,this._mssRep)
+
+
     //todo: other message type
-    var err error
-    switch v.(type) {
-    case *mss.MailTemplate:
-        tpl := v.(*mss.MailTemplate)
-        if tpl.Enabled == 0 {
-            err = mss.ErrNotEnabled
-        }
-        return newMailTemplate(this._appUserId, this._mssRep, tpl), err
-    }
-    return nil, mss.ErrNotSupportMessageType
+    //var err error
+    //switch v.(type) {
+    //case *mss.MailTemplate:
+    //    tpl := v.(*mss.MailTemplate)
+    //    if tpl.Enabled == 0 {
+    //        err = mss.ErrNotEnabled
+    //    }
+    //    return newMailTemplate(msg,this._mssRep), err
+    //}
+    //return nil, mss.ErrNotSupportMessageType
 }
 
 // 发送消息
-func (this *messageProviderImpl) Send(tpl mss.IMsgTemplate,
-data mss.MsgData, to []string) error {
-    if tpl != nil {
-        tpl.ApplyData(data)
-        return tpl.JoinQueen(to)
+func (this *messageProviderImpl) Send(msg mss.IMessage, msgContent interface{},
+    data mss.MessageData) error {
+    if(msg.GetDomainId() ==0){
+        msg.Save()
     }
-    return errors.New("template is nil")
+    return msg.Send(msgContent,data)
 }
 
 // 获取邮箱模板
