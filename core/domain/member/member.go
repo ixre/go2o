@@ -183,8 +183,29 @@ func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	if tplId > 0 {
 		mailTpl := this._mssRep.GetProvider().GetMailTemplate(tplId)
 		if mailTpl != nil {
-			//todo:
-			v := &mss.Message{}
+			v := &mss.Message{
+				// 消息类型
+				Type: mss.TypeEmailMessage,
+				// 消息用途
+				UseFor: mss.UseForNotify,
+				// 发送人角色
+				SenderRole: mss.RoleSystem,
+				// 发送人编号
+				SenderId: 0,
+				// 发送的目标
+				To: []mss.User{
+					mss.User{
+						Role: mss.RoleMember,
+						Id:   this.GetAggregateRootId(),
+					},
+				},
+				// 发送的用户角色
+				ToRole: -1,
+				// 全系统接收
+				AllUser: -1,
+				// 是否只能阅读
+				Readonly: 1,
+			}
 			val := &mss.ValueMailMessage{
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,

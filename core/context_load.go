@@ -50,12 +50,14 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		dbCharset,
 	)
 	connector := db.NewSimpleConnector(driver, connStr, l, 5000, debug)
+	OrmMapping(connector)
+	return connector
+}
 
+func OrmMapping(conn db.Connector){
 	//table mapping
-	orm := connector.GetOrm()
-
+	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")
-
 	/* ad */
 	orm.Mapping(ad.Ad{}, "ad_list")
 	orm.Mapping(ad.Image{}, "ad_image")
@@ -125,8 +127,6 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
 	orm.Mapping(valueobject.Goods{}, "")
-
-	return connector
 }
 
 func initTemplate(c *gof.Config) *gof.Template {
