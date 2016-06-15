@@ -70,3 +70,41 @@ func (this *mssService) GetNotifyItem(key string) mss.NotifyItem {
 func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error {
 	return this._rep.GetManager().SaveNotifyItem(item)
 }
+
+//todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
+// 发送站内通知信息,
+// toRole: 为-1时发送给所有用户
+// sendNow: 是否马上发送
+func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
+	msg *mss.SiteMessage,sendNow bool) error {
+	v := &mss.Message{
+		Id: 0,
+		// 消息类型
+		Type: mss.TypeSiteMessage,
+		// 消息用途
+		UseFor: mss.UseForNotify,
+		// 发送人角色
+		SenderRole: mss.RoleSystem,
+		// 发送人编号
+		SenderId: senderId,
+		// 发送的用户角色
+		ToRole: -1,
+		// 全系统接收
+		AllUser: 1,
+		// 是否只能阅读
+		Readonly: 1,
+	}
+
+	if toRole == -1 {
+		v.AllUser = 1
+	} else {
+		v.ToRole = toRole
+	}
+	var err error
+	m := this._rep.GetManager().CreateMessage(v, msg)
+	if _, err = m.Save(); err == nil {
+		err = m.Send(nil)
+	}
+	return err
+}
+
