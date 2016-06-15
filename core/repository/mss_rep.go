@@ -184,3 +184,29 @@ func (this *MssRep) GetMessage(id int) *mss.Message {
 	msg := mss.Message{}
 	return &msg
 }
+
+// 保存用户消息关联
+func (this *MssRep) SaveUserMsg(v *mss.To) (int, error) {
+	var err error
+	if v.Id > 0 {
+		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+	} else {
+		var id int64
+		_, id, err = this._conn.GetOrm().Save(nil, v)
+		v.Id = int(id)
+	}
+	return v.Id, err
+}
+
+// 保存消息内容
+func (this *MssRep) SaveMsgContent(v *mss.Content) (int, error) {
+	var err error
+	if v.Id > 0 {
+		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+	} else {
+		var id int64
+		_, id, err = this._conn.GetOrm().Save(nil, v)
+		v.Id = int(id)
+	}
+	return v.Id, err
+}

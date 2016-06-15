@@ -54,7 +54,7 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 	return connector
 }
 
-func OrmMapping(conn db.Connector){
+func OrmMapping(conn db.Connector) {
 	//table mapping
 	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")
@@ -65,6 +65,12 @@ func OrmMapping(conn db.Connector){
 	orm.Mapping(ad.AdGroup{}, "ad_group")
 	orm.Mapping(ad.AdPosition{}, "ad_position")
 	orm.Mapping(ad.AdUserSet{}, "ad_userset")
+
+	/* MSS */
+	orm.Mapping(mss.Message{}, "msg_list")
+	orm.Mapping(mss.To{}, "msg_to")
+	orm.Mapping(mss.Content{}, "msg_content")
+	orm.Mapping(mss.Replay{}, "msg_replay")
 
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")

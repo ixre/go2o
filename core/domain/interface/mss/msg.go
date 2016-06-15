@@ -8,6 +8,7 @@
  */
 package mss
 
+//todo: 客服消息
 var (
 	RoleSystem   = 0
 	RoleMember   = 1
@@ -26,13 +27,13 @@ var (
 type (
 
 	// 消息数据
-	MessageData map[string]string
+	Data map[string]string
 
 	// 简讯
-	ValuePhoneMessage string
+	PhoneMessage string
 
 	// 邮件消息
-	ValueMailMessage struct {
+	MailMessage struct {
 		// 主题
 		Subject string `json:"subject"`
 		// 内容
@@ -40,7 +41,7 @@ type (
 	}
 
 	// 站内信
-	ValueSiteMessage struct {
+	SiteMessage struct {
 		// 主题
 		Subject string `json:"subject"`
 		// 信息内容
@@ -63,15 +64,19 @@ type (
 		// 发送人角色
 		SenderRole int `db:"sender_role"`
 		// 发送人编号
-		SenderId int `db:"sender_int"`
+		SenderId int `db:"sender_id"`
 		// 发送的目标
 		To []User `db:"-"`
+		// 内容
+		Content *Content `db:"-"`
 		// 发送的用户角色
 		ToRole int `db:"to_role"`
 		// 全系统接收,1为是,0为否
 		AllUser int `db:"all_user"`
 		// 是否只能阅读
 		Readonly int `db:"read_only"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
 	}
 
 	// 消息内容
@@ -85,7 +90,7 @@ type (
 	}
 
 	// 用户消息绑定
-	UserMessage struct {
+	To struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 接收者编号
@@ -96,6 +101,8 @@ type (
 		ContentId int `db:"content_id"`
 		// 是否阅读
 		HasRead int `db:"has_read"`
+		// 阅读时间
+		ReadTime int64 `db:"read_time"`
 	}
 
 	// 回复
@@ -103,7 +110,7 @@ type (
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 关联回复编号
-		ReplayId int `db:"from_id"`
+		ReferId int `db:"refer_id"`
 		// 发送者编号
 		SenderId int `db:"sender_id"`
 		// 发送者角色
@@ -128,18 +135,18 @@ type (
 		Save() (int, error)
 
 		// 发送
-		Send(data MessageData) error
+		Send(data Data) error
 	}
 
 	ISiteMessage interface {
-		Value() *ValueSiteMessage
+		Value() *SiteMessage
 	}
 
 	IMailMessage interface {
-		Value() *ValueMailMessage
+		Value() *MailMessage
 	}
 
 	IPhoneMessage interface {
-		Value() *ValuePhoneMessage
+		Value() *PhoneMessage
 	}
 )
