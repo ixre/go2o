@@ -62,13 +62,13 @@ type (
 		UseFor int `db:"use_for"`
 		// 发送人角色
 		SenderRole int `db:"sender_role"`
-		// 发送人类型
+		// 发送人编号
 		SenderId int `db:"sender_int"`
 		// 发送的目标
 		To []User `db:"-"`
 		// 发送的用户角色
 		ToRole int `db:"to_role"`
-		// 全系统接收
+		// 全系统接收,1为是,0为否
 		AllUser int `db:"all_user"`
 		// 是否只能阅读
 		Readonly int `db:"read_only"`

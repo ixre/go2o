@@ -43,6 +43,20 @@ var (
 	ErrUnknownMessageUseFor *domain.DomainError = domain.NewDomainError(
 		"err_unknown_message_use_for", "未知的消息用途")
 
+	ErrMessageAllUser *domain.DomainError = domain.NewDomainError(
+		"err_message_all_user", "消息为全员消息,指定了多余的参数",
+	)
+
+	ErrMessageToRole *domain.DomainError = domain.NewDomainError(
+		"err_message_to_role", "消息为用户类型消息,指定了多余的用户",
+	)
+
+	ErrUnknownRole *domain.DomainError = domain.NewDomainError(
+		"err_unknown_role", "未知的用户类型")
+
+	ErrNoSuchReceiveUser *domain.DomainError = domain.NewDomainError(
+		"err_no_such_receive_user", "消息没有指定接收用户")
+
 	// 类型字典
 	NotifyTypeMap = map[int]string{
 		TypeSiteMessage:  "站内信",

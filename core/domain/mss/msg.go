@@ -11,6 +11,8 @@ package mss
 import (
 	"go2o/core/domain/interface/mss"
 	"regexp"
+	"time"
+	"strconv"
 )
 
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
@@ -62,6 +64,28 @@ func (this *messageImpl) Save() (int, error) {
 		this._msg.UseFor != mss.UserForChat {
 		return this.GetDomainId(), mss.ErrUnknownMessageUseFor
 	}
+
+	// 检查发送目标群体
+	if this._msg.AllUser == 1 {
+		if this._msg.ToRole > 0 ||
+			(this._msg.To != nil && len(this._msg.To) > 0) {
+			return 0, mss.ErrMessageAllUser
+		}
+	} else if this._msg.ToRole > 0 {
+		//检验用户类型
+		if this._msg.ToRole != mss.RoleMember &&
+			this._msg.ToRole != mss.RoleMerchant &&
+			this._msg.ToRole != mss.RoleSystem {
+			return 0, mss.ErrUnknownRole
+		}
+		if len(this._msg.To) > 0 {
+			return 0, mss.ErrMessageToRole
+		}
+
+	} else if len(this._msg.To) == 0 {
+		return 0, mss.ErrNoSuchReceiveUser
+	}
+
 	id, err := this._rep.SaveMessage(this._msg)
 	this._msg.Id = id
 	return id, err
@@ -69,9 +93,10 @@ func (this *messageImpl) Save() (int, error) {
 
 // 发送
 func (this *messageImpl) Send(d mss.MessageData) error {
-	if this.GetDomainId() > 0 {
+	if this.GetDomainId() <= 0 {
 		return mss.ErrMessageNotSave
 	}
+
 	//todo: 检查是否已经发送
 	return nil
 }
@@ -104,21 +129,24 @@ func (this *mailMessageImpl) Save() (int, error) {
 
 // 发送
 func (this *mailMessageImpl) Send(d mss.MessageData) error {
+	if err := this.messageImpl.Send(d);err != nil{
+		return err
+	}
 	v := this._val
 	v.Body = Transplate(v.Body, d)
 	v.Subject = Transplate(v.Subject, d)
 
-	//unix := time.Now().Unix()
-	//for _, _ := range this._msg.To {
-	//	task := &mss.MailTask{
-	//		MerchantId: 0,
-	//		Subject:  v.Subject,
-	//		Body:  v.Body,
-	//		//SendTo:     t.Id,
-	//		CreateTime: unix,
-	//	}
-	//	this._rep.JoinMailTaskToQueen(task)
-	//}
+	unix := time.Now().Unix()
+	for _, t := range this._msg.To {
+		task := &mss.MailTask{
+			MerchantId: 0,
+			Subject:  v.Subject,
+			Body:  v.Body,
+			SendTo:    strconv.Itoa(t.Id),  //todo: mail address
+			CreateTime: unix,
+		}
+		this._rep.JoinMailTaskToQueen(task)
+	}
 	return this.messageImpl.Send(d)
 }
 
@@ -150,6 +178,9 @@ func (this *phoneMessageImpl) Save() (int, error) {
 
 // 发送
 func (this *phoneMessageImpl) Send(d mss.MessageData) error {
+	if err := this.messageImpl.Send(d);err != nil{
+		return err
+	}
 	v := *this._val
 	v = mss.ValuePhoneMessage(Transplate(string(v), d))
 	return this.messageImpl.Send(d)
@@ -183,8 +214,12 @@ func (this *siteMessageImpl) Save() (int, error) {
 
 // 发送
 func (this *siteMessageImpl) Send(d mss.MessageData) error {
+	if err := this.messageImpl.Send(d);err != nil{
+		return err
+	}
 	v := this._val
 	v.Subject = Transplate(v.Subject, d)
 	v.Message = Transplate(v.Message, d)
-	return this.messageImpl.Send(d)
+
+	return nil
 }
