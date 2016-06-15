@@ -76,7 +76,7 @@ func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error {
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
 func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
-	msg *mss.SiteMessage,sendNow bool) error {
+	msg *mss.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
@@ -107,4 +107,3 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 	}
 	return err
 }
-

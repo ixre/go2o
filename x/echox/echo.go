@@ -77,8 +77,8 @@ func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 }
 
 // 设置模板
-func (this *Echo) SetTemplateRender(basePath string, files ...string) {
-	this.SetRenderer(newGoTemplateForEcho(basePath, files...))
+func (this *Echo) SetTemplateRender(basePath string, notify bool, files ...string) {
+	this.SetRenderer(newGoTemplateForEcho(basePath, notify, files...))
 }
 
 // 注册自定义的GET处理程序
@@ -226,9 +226,9 @@ func GetGlobTemplateVars() map[string]interface{} {
 	return _globTemplateVar
 }
 
-func newGoTemplateForEcho(dir string, files ...string) echo.Renderer {
+func newGoTemplateForEcho(dir string, notify bool, files ...string) echo.Renderer {
 	return &GoTemplateForEcho{
-		CachedTemplate: gof.NewCachedTemplate(dir, files...),
+		CachedTemplate: gof.NewCachedTemplate(dir, notify, files...),
 	}
 }
 
