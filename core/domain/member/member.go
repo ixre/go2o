@@ -206,7 +206,7 @@ func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				// 是否只能阅读
 				Readonly: 1,
 			}
-			val := &mss.ValueMailMessage{
+			val := &mss.MailMessage{
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,
 			}

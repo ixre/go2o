@@ -191,6 +191,12 @@ type (
 
 		// 获取消息
 		GetMessage(id int) *Message
+
+		// 保存用户消息关联
+		SaveUserMsg(to *To) (int, error)
+
+		// 保存消息内容
+		SaveMsgContent(co *Content) (int, error)
 	}
 
 	// 通知项

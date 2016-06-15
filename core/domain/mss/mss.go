@@ -56,11 +56,11 @@ func (this *messageManagerImpl) CreateMessage(msg *mss.Message,
 	if content != nil {
 		switch m.Type() {
 		case mss.TypeEmailMessage:
-			return newMailMessage(m, content.(*mss.ValueMailMessage), this._rep)
+			return newMailMessage(m, content.(*mss.MailMessage), this._rep)
 		case mss.TypeSiteMessage:
-			return newSiteMessage(m, content.(*mss.ValueSiteMessage), this._rep)
+			return newSiteMessage(m, content.(*mss.SiteMessage), this._rep)
 		case mss.TypePhoneMessage:
-			return newPhoneMessage(m, content.(*mss.ValuePhoneMessage), this._rep)
+			return newPhoneMessage(m, content.(*mss.PhoneMessage), this._rep)
 		}
 	} else {
 		if m.Type() == mss.TypeEmailMessage ||

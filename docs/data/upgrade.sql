@@ -219,6 +219,43 @@ ALTER TABLE `flm`.`ad_position`
   CHANGE COLUMN `description` `key` VARCHAR(45) NULL DEFAULT NULL AFTER `group_id`,
   CHANGE COLUMN `name` `name` VARCHAR(45) NULL DEFAULT NULL ;
 
+CREATE TABLE `flm`.`msg_list` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `msg_type` TINYINT(1) NULL,
+  `use_for` TINYINT(1) NULL,
+  `sender_id` INT NULL,
+  `sender_role` TINYINT(2) NULL,
+  `to_role` TINYINT(2) NULL,
+  `all_user` TINYINT(1) NULL,
+  `read_only` TINYINT(1) NULL,
+  `create_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `flm`.`msg_content` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `msg_id` INT NULL,
+  `msg_data` TEXT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `flm`.`msg_to` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `to_id` INT NULL,
+  `to_role` TINYINT(2) NULL,
+  `content_id` INT NULL,
+  `has_read` TINYINT(1) NULL,
+  `read_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `flm`.`msg_replay` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `refer_id` INT NULL,
+  `sender_id` INT NULL,
+  `sender_role` TINYINT(2) NULL,
+  `content` TEXT NULL,
+  PRIMARY KEY (`id`));
+
+
+
 
 
 
