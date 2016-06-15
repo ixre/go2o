@@ -90,23 +90,27 @@ func (this *adService) GetAdvertisement(adUserId, id int) *ad.Ad {
 	return nil
 }
 
-// 获取广告及广告数据
-func (this *adService) GetAdAndDataByKey(adUserId int, key string) (
-	*ad.Ad, interface{}) {
+// 获取广告及广告数据, 用于展示关高
+func (this *adService) GetAdAndDataByKey(adUserId int, key string) *ad.AdDto {
 	if adv := this.getUserAd(adUserId).GetByPositionKey(key); adv != nil {
-		v := adv.GetValue()
 		switch adv.Type() {
 		case ad.TypeGallery:
-			gallary := adv.(ad.IGalleryAd).GetEnabledAdValue()
+			dto := adv.Dto()
+			gallary := dto.Data.(ad.ValueGallery)
 			for _, v := range gallary {
 				v.ImageUrl = format.GetResUrl(v.ImageUrl)
 			}
-			return v, gallary
-			//todo: 其他的广告类型
+			dto.Data = gallary
+			return dto
+		case ad.TypeImage:
+			dto := adv.Dto()
+			img := dto.Data.(*ad.Image)
+			img.ImageUrl = format.GetResUrl(img.ImageUrl)
+			return dto
 		}
-		return v, nil
+		return adv.Dto()
 	}
-	return nil, nil
+	return nil
 }
 
 // 获取广告数据传输对象
