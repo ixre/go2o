@@ -34,7 +34,7 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManag
 func (this *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.MerchantId = this._merchant.GetAggregateRootId()
-	return newShop(this._merchant, this, v, this._rep)
+	return newShop(this, v, this._rep)
 }
 
 // 获取所有商店

@@ -215,7 +215,7 @@ func (this *shoppingRep) GetShoppingCart(key string) (*shopping.ValueCart, error
 		return nil, err
 	}
 
-	var items = []*shopping.ValueCartItem{}
+	var items = []*shopping.CartItem{}
 	err = this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 	if err == nil {
 		v.Items = items
@@ -232,7 +232,7 @@ func (this *shoppingRep) GetLatestCart(buyerId int) (*shopping.ValueCart, error)
 		return nil, err
 	}
 
-	var items = []*shopping.ValueCartItem{}
+	var items = []*shopping.CartItem{}
 	err = this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 	if err == nil {
 		v.Items = items
@@ -255,11 +255,11 @@ func (this *shoppingRep) SaveShoppingCart(v *shopping.ValueCart) (int, error) {
 
 // 移出购物车项
 func (this *shoppingRep) RemoveCartItem(id int) error {
-	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCartItem{}, id)
+	return this.Connector.GetOrm().DeleteByPk(shopping.CartItem{}, id)
 }
 
 // 保存购物车项
-func (this *shoppingRep) SaveCartItem(v *shopping.ValueCartItem) (int, error) {
+func (this *shoppingRep) SaveCartItem(v *shopping.CartItem) (int, error) {
 	_orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -274,7 +274,7 @@ func (this *shoppingRep) SaveCartItem(v *shopping.ValueCartItem) (int, error) {
 
 // 清空购物车项
 func (this *shoppingRep) EmptyCartItems(id int) error {
-	_, err := this.Connector.GetOrm().Delete(shopping.ValueCartItem{}, "cart_id=?", id)
+	_, err := this.Connector.GetOrm().Delete(shopping.CartItem{}, "cart_id=?", id)
 	return err
 }
 

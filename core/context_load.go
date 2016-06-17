@@ -88,7 +88,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shopping.OrderPromotionBind{}, "pt_order_pb")
 	orm.Mapping(shopping.OrderLog{}, "pt_order_log")
 	orm.Mapping(shopping.ValueCart{}, "sale_cart")
-	orm.Mapping(shopping.ValueCartItem{}, "sale_cart_item")
+	orm.Mapping(shopping.CartItem{}, "sale_cart_item")
 
 	/** 销售 **/
 	orm.Mapping(sale.Item{}, "gs_item")

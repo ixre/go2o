@@ -75,8 +75,8 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
 //创建购物车
 // @buyerId 为购买会员ID,0表示匿名购物车
 func (this *Shopping) NewCart() shopping.ICart {
-	var cart shopping.ICart = newCart(this._partnerRep, this._memberRep, this._saleRep,
-		this._goodsRep, this._rep, -1, this._buyerId)
+	cart := newCart(this._buyerId, this._partnerRep, this._memberRep, this._saleRep,
+		this._goodsRep, this._rep)
 	cart.Save()
 	return cart
 }
@@ -108,8 +108,9 @@ func (this *Shopping) CheckCart(cart shopping.ICart) error {
 func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
 	cart, error := this._rep.GetShoppingCart(key)
 	if error == nil {
-		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep, this._rep, this._buyerId, cart), nil
+		cart.BuyerId = this._buyerId
+		return createCart(cart, this._partnerRep, this._memberRep, this._saleRep,
+			this._goodsRep, this._rep), nil
 	}
 	return nil, error
 }
@@ -193,8 +194,8 @@ func (this *Shopping) GetShoppingCart(cartKey string) shopping.ICart {
 func (this *Shopping) GetCurrentCart() (shopping.ICart, error) {
 	cart, error := this._rep.GetLatestCart(this._buyerId)
 	if error == nil {
-		return createCart(this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep, this._rep, this._buyerId, cart), nil
+		return createCart(cart, this._partnerRep, this._memberRep,
+			this._saleRep, this._goodsRep, this._rep), nil
 	}
 	return nil, error
 }

@@ -13,18 +13,28 @@ import (
 	"bytes"
 	"errors"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
 )
 
 type shoppingService struct {
-	_rep shopping.IShoppingRep
+	_rep      shopping.IShoppingRep
+	_goodsRep sale.IGoodsRep
+	_saleRep  sale.ISaleRep
+	_mchRep   merchant.IMerchantRep
 }
 
-func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
+func NewShoppingService(r shopping.IShoppingRep,
+	saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+	mchRep merchant.IMerchantRep) *shoppingService {
 	return &shoppingService{
-		_rep: r,
+		_rep:      r,
+		_goodsRep: goodsRep,
+		_saleRep:  saleRep,
+		_mchRep:   mchRep,
 	}
 }
 
@@ -203,10 +213,42 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	return cart
 }
 
+//todo: 这里响应较慢,性能?
 func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	goodsId, num int) (*dto.CartItem, error) {
 	cart := this.getShoppingCart(memberId, cartKey)
-	item, err := cart.AddItem(goodsId, num)
+	var item *shopping.CartItem
+	var err error
+	// 从购物车中添加
+	for k, v := range cart.Items() {
+		if k == goodsId {
+			item, err = cart.AddItem(v.MerchantId, v.ShopId, goodsId, num)
+			break
+		}
+	}
+	// 将新商品加入到购物车
+	if item == nil {
+		gv := this._goodsRep.GetValueGoodsById(goodsId)
+		tm := this._saleRep.GetValueItem(-1, gv.ItemId)
+		mchId := tm.SupplierId
+		mch, err2 := this._mchRep.GetMerchant(mchId)
+		if err2 != nil {
+			return nil, err2
+		}
+		shops := mch.ShopManager().GetShops()
+		shopId := 0
+		for _, v := range shops {
+			if v.Type() == shop.TypeOnlineShop {
+				shopId = v.GetDomainId()
+				break
+			}
+		}
+		if shopId == 0 {
+			return nil, errors.New("商户还未开通商城")
+		}
+		item, err = cart.AddItem(mchId, shopId, goodsId, num)
+	}
+
 	if err == nil {
 		cart.Save()
 		return &dto.CartItem{

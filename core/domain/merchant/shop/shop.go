@@ -10,7 +10,6 @@
 package shop
 
 import (
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/lbs"
 	"log"
@@ -21,19 +20,17 @@ var _ shop.IOfflineShop = new(offlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
 
 type ShopImpl struct {
-	_manager  *shopManagerImpl
-	_shopRep  shop.IShopRep
-	_value    *shop.Shop
-	_merchant merchant.IMerchant
+	_manager *shopManagerImpl
+	_shopRep shop.IShopRep
+	_value   *shop.Shop
 }
 
-func newShop(pt merchant.IMerchant, manager *shopManagerImpl,
+func newShop(manager *shopManagerImpl,
 	v *shop.Shop, shopRep shop.IShopRep) shop.IShop {
 	s := &ShopImpl{
-		_manager:  manager,
-		_shopRep:  shopRep,
-		_value:    v,
-		_merchant: pt,
+		_manager: manager,
+		_shopRep: shopRep,
+		_value:   v,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:
@@ -74,7 +71,9 @@ func (this *ShopImpl) SetValue(v *shop.Shop) error {
 }
 
 func (this *ShopImpl) Save() (int, error) {
-	this._merchant.ShopManager().Reload() //清除缓存
+	if this._manager != nil {
+		this._manager.Reload() //清除缓存
+	}
 	return this._shopRep.SaveShop(this._value)
 }
 

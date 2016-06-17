@@ -58,7 +58,7 @@ type IShoppingRep interface {
 	RemoveCartItem(int) error
 
 	// 保存购物车项
-	SaveCartItem(*ValueCartItem) (int, error)
+	SaveCartItem(*CartItem) (int, error)
 
 	// 清空购物车项
 	EmptyCartItems(id int) error

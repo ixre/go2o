@@ -21,6 +21,9 @@ type ICart interface {
 	// 获取购物车值
 	GetValue() ValueCart
 
+	// 获取商品编号与购物车项的集合
+	Items() map[int]*CartItem
+
 	// 获取购物车中的商品
 	GetCartGoods() []sale.IGoods
 
@@ -33,8 +36,9 @@ type ICart interface {
 	// 设置购买会员
 	SetBuyer(buyerId int) error
 
-	// 添加项
-	AddItem(goodsId, num int) (*ValueCartItem, error)
+	// 添加项,需传递商户编号、店铺编号
+	// todo: 这里有问题、如果是线下店的购物车,如何实现?
+	AddItem(mchId int, shopId int, goodsId, num int) (*CartItem, error)
 
 	// 移出项
 	RemoveItem(goodsId, num int) error
