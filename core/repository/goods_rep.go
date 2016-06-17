@@ -120,8 +120,8 @@ func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 func (this *goodsRep) GetPagedOnShelvesGoods(mchId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
 	var sql string
 
-	 catIdStr := ""
-	if catIds != nil && len(catIds)> 0 {
+	catIdStr := ""
+	if catIds != nil && len(catIds) > 0 {
 		catIdStr = fmt.Sprintf(" AND gs_category.id IN (%s)",
 			format.GetCategoryIdStr(catIds))
 	}
@@ -137,7 +137,7 @@ func (this *goodsRep) GetPagedOnShelvesGoods(mchId int, catIds []int, start, end
 	 INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE (?<=0 OR supplier_id=?) %s AND gs_item.state=1
-		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total,mchId, mchId)
+		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total, mchId, mchId)
 
 	e = []*valueobject.Goods{}
 	if total > 0 {
@@ -147,7 +147,7 @@ func (this *goodsRep) GetPagedOnShelvesGoods(mchId int, catIds []int, start, end
 		 AND gs_item.on_shelves=1 %s ORDER BY %s update_time DESC LIMIT %d,%d`, catIdStr,
 			where, orderBy, start, (end - start))
 
-		this.Connector.GetOrm().SelectByQuery(&e, sql,mchId,mchId)
+		this.Connector.GetOrm().SelectByQuery(&e, sql, mchId, mchId)
 	}
 
 	return total, e

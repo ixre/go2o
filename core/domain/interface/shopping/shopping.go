@@ -24,7 +24,7 @@ type IShopping interface {
 
 	//创建购物车
 	// @buyerId 为购买会员ID,0表示匿名购物车
-	NewCart(buyerId int) ICart
+	NewCart() ICart
 
 	// 检查购物车
 	CheckCart(cart ICart) error
@@ -39,22 +39,22 @@ type IShopping interface {
 	GetCartByKey(key string) (ICart, error)
 
 	// 获取购物车
-	GetShoppingCart(buyerId int, cartKey string) ICart
+	GetShoppingCart(cartKey string) ICart
 
 	// 获取没有结算的购物车
-	GetCurrentCart(buyerId int) (ICart, error)
+	GetCurrentCart() (ICart, error)
 
 	// 绑定购物车会员编号
-	BindCartBuyer(cartKey string, buyerId int) error
+	BindCartBuyer(cartKey string) error
 
 	// 将购物车转换为订单
-	ParseShoppingCart(memberId int) (IOrder, member.IMember, ICart, error)
+	ParseShoppingCart() (IOrder, member.IMember, ICart, error)
 
 	// 组装订单
-	BuildOrder(memberId int, subject string, couponCode string) (IOrder, ICart, error)
+	BuildOrder(subject string, couponCode string) (IOrder, ICart, error)
 
 	// 提交订单
-	SubmitOrder(memberId int, subject string, couponCode string, useBalanceDiscount bool) (string, error)
+	SubmitOrder(subject string, couponCode string, useBalanceDiscount bool) (string, error)
 
 	// 获取可用的订单号
 	GetFreeOrderNo() string

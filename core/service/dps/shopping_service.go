@@ -28,10 +28,10 @@ func NewShoppingService(r shopping.IShoppingRep) *shoppingService {
 	}
 }
 
-func (this *shoppingService) BuildOrder(merchantId int, subject string, memberId int,
+func (this *shoppingService) BuildOrder(subject string, memberId int,
 	cartKey string, couponCode string) (map[string]interface{}, error) {
-	var sp shopping.IShopping = this._rep.GetShopping(merchantId)
-	order, _, err := sp.BuildOrder(memberId, subject, couponCode)
+	var sp shopping.IShopping = this._rep.GetShopping(memberId)
+	order, _, err := sp.BuildOrder(subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,11 @@ func (this *shoppingService) BuildOrder(merchantId int, subject string, memberId
 	return data, err
 }
 
-func (this *shoppingService) SubmitOrder(merchantId, memberId int, subject string, couponCode string, useBalanceDiscount bool) (
+func (this *shoppingService) SubmitOrder(memberId int, subject string,
+	couponCode string, useBalanceDiscount bool) (
 	orderNo string, err error) {
-	var sp shopping.IShopping = this._rep.GetShopping(merchantId)
-	return sp.SubmitOrder(memberId, subject, couponCode, useBalanceDiscount)
+	var sp shopping.IShopping = this._rep.GetShopping(memberId)
+	return sp.SubmitOrder(subject, couponCode, useBalanceDiscount)
 }
 
 func (this *shoppingService) SetDeliverShop(merchantId int, orderNo string,
@@ -151,20 +152,20 @@ func (this *shoppingService) CancelOrder(merchantId int, orderNo string, reason 
 }
 
 //  获取购物车
-func (this *shoppingService) getShoppingCart(merchantId int, buyerId int, cartKey string) shopping.ICart {
-	sp := this._rep.GetShopping(merchantId)
-	return sp.GetShoppingCart(buyerId, cartKey)
+func (this *shoppingService) getShoppingCart(buyerId int, cartKey string) shopping.ICart {
+	sp := this._rep.GetShopping(buyerId)
+	return sp.GetShoppingCart(cartKey)
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (this *shoppingService) GetShoppingCart(merchantId int, memberId int, cartKey string) *dto.ShoppingCart {
-	cart := this.getShoppingCart(merchantId, memberId, cartKey)
+func (this *shoppingService) GetShoppingCart(memberId int, cartKey string) *dto.ShoppingCart {
+	cart := this.getShoppingCart(memberId, cartKey)
 	return this.parseDtoCart(cart)
 }
 
 // 创建一个新的购物车
-func (this *shoppingService) CreateShoppingCart(merchantId int, memberId int) *dto.ShoppingCart {
-	cart := this._rep.GetShopping(merchantId).NewCart(memberId)
+func (this *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
+	cart := this._rep.GetShopping(memberId).NewCart()
 	return this.parseDtoCart(cart)
 }
 
@@ -202,8 +203,9 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 	return cart
 }
 
-func (this *shoppingService) AddCartItem(merchantId, memberId int, cartKey string, goodsId, num int) (*dto.CartItem, error) {
-	cart := this.getShoppingCart(merchantId, memberId, cartKey)
+func (this *shoppingService) AddCartItem(memberId int, cartKey string,
+	goodsId, num int) (*dto.CartItem, error) {
+	cart := this.getShoppingCart(memberId, cartKey)
 	item, err := cart.AddItem(goodsId, num)
 	if err == nil {
 		cart.Save()
@@ -219,8 +221,9 @@ func (this *shoppingService) AddCartItem(merchantId, memberId int, cartKey strin
 	}
 	return nil, err
 }
-func (this *shoppingService) SubCartItem(merchantId, memberId int, cartKey string, goodsId, num int) error {
-	cart := this.getShoppingCart(merchantId, memberId, cartKey)
+func (this *shoppingService) SubCartItem(memberId int,
+	cartKey string, goodsId, num int) error {
+	cart := this.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {
 		_, err = cart.Save()
@@ -229,8 +232,9 @@ func (this *shoppingService) SubCartItem(merchantId, memberId int, cartKey strin
 }
 
 // 更新购物车结算
-func (this *shoppingService) PrepareSettlePersist(merchantId, memberId, shopId, paymentOpt, deliverOpt, deliverId int) error {
-	var cart = this.getShoppingCart(merchantId, memberId, "")
+func (this *shoppingService) PrepareSettlePersist(memberId, shopId,
+	paymentOpt, deliverOpt, deliverId int) error {
+	var cart = this.getShoppingCart(memberId, "")
 	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
 	if err == nil {
 		_, err = cart.Save()
@@ -238,8 +242,9 @@ func (this *shoppingService) PrepareSettlePersist(merchantId, memberId, shopId, 
 	return err
 }
 
-func (this *shoppingService) GetCartSettle(merchantId, memberId int, cartKey string) *dto.SettleMeta {
-	var cart = this.getShoppingCart(merchantId, memberId, cartKey)
+func (this *shoppingService) GetCartSettle(memberId int,
+	cartKey string) *dto.SettleMeta {
+	var cart = this.getShoppingCart(memberId, cartKey)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
 	var st *dto.SettleMeta = new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
