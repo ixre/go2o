@@ -62,10 +62,11 @@ func (this *saleRep) GetSale(mchId int) sale.ISale {
 
 func (this *saleRep) GetValueItem(supplierId, itemId int) *sale.Item {
 	var e *sale.Item = new(sale.Item)
+	//todo: supplier_id  == -1
 	err := this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
 			INNER JOIN gs_category c ON c.id = gs_item.category_id
 			 WHERE gs_item.id=?
-			AND supplier_id=?`, itemId, supplierId)
+			AND (supplier_id=? OR ? = -1)`, itemId, supplierId, supplierId)
 	if err == nil {
 		return e
 	}

@@ -255,6 +255,12 @@ CREATE TABLE `flm`.`msg_replay` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `flm`.`sale_cart_item`
+  ADD COLUMN `mch_id` INT NULL AFTER `cart_id`,
+  ADD COLUMN `shop_id` INT NULL AFTER `mch_id`;
+
+
+
 
 
 
