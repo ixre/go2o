@@ -534,5 +534,6 @@ func (this *memberImpl) GetDeliver(deliverId int) member.IDeliver {
 
 // 删除配送地址
 func (this *memberImpl) DeleteDeliver(deliverId int) error {
+	//todo: 至少保留一个配送地址
 	return this._rep.DeleteDeliver(this.GetAggregateRootId(), deliverId)
 }

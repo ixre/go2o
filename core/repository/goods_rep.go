@@ -117,10 +117,14 @@ func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 }
 
 // 获取已上架的商品
-func (this *goodsRep) GetPagedOnShelvesGoods(merchantId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
+func (this *goodsRep) GetPagedOnShelvesGoods(mchId int, catIds []int, start, end int, where, orderBy string) (total int, e []*valueobject.Goods) {
 	var sql string
 
-	var catIdStr string = format.GetCategoryIdStr(catIds)
+	 catIdStr := ""
+	if catIds != nil && len(catIds)> 0 {
+		catIdStr = fmt.Sprintf(" AND gs_category.id IN (%s)",
+			format.GetCategoryIdStr(catIds))
+	}
 
 	if len(where) != 0 {
 		where = " AND " + where
@@ -129,20 +133,21 @@ func (this *goodsRep) GetPagedOnShelvesGoods(merchantId int, catIds []int, start
 		orderBy += ","
 	}
 
-	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
+	 INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		 WHERE supplier_id=? AND gs_category.id IN (%s) AND gs_item.state=1
-		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total, merchantId)
+		 WHERE (?<=0 OR supplier_id=?) %s AND gs_item.state=1
+		 AND gs_item.on_shelves=1 %s`, catIdStr, where), &total,mchId, mchId)
 
 	e = []*valueobject.Goods{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		 WHERE supplier_id=? AND gs_category.id IN (%s) AND gs_item.state=1
+		 WHERE (?<=0 OR supplier_id=?) %s AND gs_item.state=1
 		 AND gs_item.on_shelves=1 %s ORDER BY %s update_time DESC LIMIT %d,%d`, catIdStr,
 			where, orderBy, start, (end - start))
 
-		this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId)
+		this.Connector.GetOrm().SelectByQuery(&e, sql,mchId,mchId)
 	}
 
 	return total, e

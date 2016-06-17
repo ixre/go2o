@@ -142,7 +142,7 @@ func (this *saleService) DeleteItem(merchantId int, id int) error {
 }
 
 // 获取分页上架的商品
-func (this *saleService) GetPagedOnShelvesGoods(merchantId, categoryId, start, end int,
+func (this *saleService) GetShopPagedOnShelvesGoods(merchantId, categoryId, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	var sl sale.ISale = this._rep.GetSale(merchantId)
 
@@ -154,6 +154,23 @@ func (this *saleService) GetPagedOnShelvesGoods(merchantId, categoryId, start, e
 	} else {
 		total = -1
 		list = sl.GoodsManager().GetOnShelvesGoods(start, end, sortBy)
+	}
+	for _, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+	}
+	return total, list
+}
+
+func (this *saleService) GetPagedOnShelvesGoods(categoryId, start, end int,
+	sortBy string) (total int, list []*valueobject.Goods) {
+	if categoryId > 0 {
+		cate := this._cateRep.GetGlobManager().GetCategory(categoryId)
+		var ids []int = cate.GetChildes()
+		ids = append(ids, categoryId)
+		total, list = this._goodsRep.GetPagedOnShelvesGoods(0,ids, start, end, "", sortBy)
+	} else {
+		total = -1
+		total,list = this._goodsRep.GetPagedOnShelvesGoods(0,[]int{},start,end,"",sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
