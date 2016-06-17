@@ -294,9 +294,10 @@ func (this *saleService) GetChildCategories(mchId, parentId int) []*sale.Categor
 	list := []*sale.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
-			vv.Icon = format.GetResUrl(vv.Icon)
-			list = append(list, vv)
-			this.setChild(cats, vv)
+			v2 := *vv
+			v2.Icon = format.GetResUrl(v2.Icon)
+			list = append(list, &v2)
+			this.setChild(cats, &v2)
 		}
 	}
 	return list

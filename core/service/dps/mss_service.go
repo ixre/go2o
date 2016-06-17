@@ -90,12 +90,12 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 		// 发送的用户角色
 		ToRole: -1,
 		// 全系统接收
-		AllUser: 1,
+		AllUser: -1,
 		// 是否只能阅读
 		Readonly: 1,
 	}
 
-	if toRole == -1 {
+	if toRole <= 0 {
 		v.AllUser = 1
 	} else {
 		v.ToRole = toRole
