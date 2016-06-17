@@ -63,17 +63,17 @@ func (this *shoppingRep) init() shopping.IShoppingRep {
 	return this
 }
 
-func (this *shoppingRep) GetShopping(merchantId int) shopping.IShopping {
+func (this *shoppingRep) GetShopping(memberId int) shopping.IShopping {
 	if this._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
-	v, ok := this._cache[merchantId]
-	if !ok {
-		v = shoppingImpl.NewShopping(merchantId, this._partnerRep,
-			this, this._saleRep, this._goodsRep, this._promRep,
-			this._memberRep, this._deliverRep, this._valRep)
-		this._cache[merchantId] = v
-	}
+	//v, ok := this._cache[merchantId]
+	//if !ok {
+	v := shoppingImpl.NewShopping(memberId, this._partnerRep,
+		this, this._saleRep, this._goodsRep, this._promRep,
+		this._memberRep, this._deliverRep, this._valRep)
+	//this._cache[merchantId] = v
+	//}
 	return v
 }
 
