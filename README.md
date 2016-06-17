@@ -122,7 +122,7 @@ merchant-serve  ---- 14192
 	server {
             listen          80;
             server_name     static.ts.com;
-            root    /home/usr/go/src/go2o/static;
+            root    /home/usr/go/src/go2o/public/static;
     	location ~* \.(eot|ttf|woff|woff2|svg)$ {
           		add_header Access-Control-Allow-Origin *;
       	}
