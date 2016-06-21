@@ -8,7 +8,10 @@
  */
 package shop
 
-import "strconv"
+import (
+	"go2o/core/infrastructure/domain"
+	"strconv"
+)
 
 const (
 	// 线上商店
@@ -31,6 +34,9 @@ const (
 )
 
 var (
+	ErrSameNameShopExists *domain.DomainError = domain.NewDomainError(
+		"err_same_name_shop_exists", "商店已经存在")
+
 	// 商店状态字典
 	StateTextMap = map[int]string{
 		StateStopped:    "已停用",

@@ -25,6 +25,9 @@ type (
 		// 获取商店
 		GetShop(int) IShop
 
+		// 根据名称获取商店
+		GetShopByName(name string) IShop
+
 		// 删除门店
 		DeleteShop(shopId int) error
 

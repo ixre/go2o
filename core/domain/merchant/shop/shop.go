@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/lbs"
 	"log"
+	"strings"
 )
 
 var _ shop.IShop = new(ShopImpl)
@@ -64,9 +65,17 @@ func (this *ShopImpl) SetValue(v *shop.Shop) error {
 	//		this.value.Location = fmt.Sprintf("%f,%f", lng, lat)
 	//}
 	//this.value.DeliverRadius = v.DeliverRadius
+	if err := this.check(v); err != nil {
+		return err
+	}
 	this._value.Name = v.Name
 	this._value.SortNumber = v.SortNumber
 	this._value.State = v.State
+	return nil
+}
+
+func (this *ShopImpl) check(v *shop.Shop) error {
+	v.Name = strings.TrimSpace(v.Name)
 	return nil
 }
 
@@ -173,6 +182,7 @@ func (this *offlineShopImpl) Save() (int, error) {
 	id, err := this.ShopImpl.Save()
 	if err == nil {
 		this._shopVal.ShopId = id
+		this._manager.Reload()
 		err = this._shopRep.SaveOfflineShop(this._shopVal, create)
 	}
 	return id, err
@@ -236,6 +246,7 @@ func (this *onlineShopImpl) Save() (int, error) {
 	id, err := this.ShopImpl.Save()
 	if err == nil {
 		this._shopVal.ShopId = id
+		this._manager.Reload()
 		err = this._shopRep.SaveOnlineShop(this._shopVal, create)
 	}
 	return id, err

@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"strings"
 	"time"
 )
 
@@ -49,10 +50,21 @@ func (this *shopManagerImpl) GetShops() []shop.IShop {
 	return this._shops
 }
 
+// 根据名称获取商店
+func (this *shopManagerImpl) GetShopByName(name string) shop.IShop {
+	name = strings.TrimSpace(name)
+	for _, v := range this.GetShops() {
+		if strings.TrimSpace(v.GetValue().Name) == name {
+			return v
+		}
+	}
+	return nil
+}
+
 // 获取营业中的商店
 func (this *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 	var list []shop.IShop = make([]shop.IShop, 0)
-	for _, v := range this._shops {
+	for _, v := range this.GetShops() {
 		if v.GetValue().State == enum.ShopBusinessIn {
 			list = append(list, v)
 		}
