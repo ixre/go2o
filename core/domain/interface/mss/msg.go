@@ -24,6 +24,15 @@ var (
 	UseForService = 3
 )
 
+var (
+	// 站内信用途表
+	UseForMap = map[int]string{
+		1: "站内信",
+		2: "系统公告",
+		3: "系统通知",
+	}
+)
+
 type (
 
 	// 消息数据
