@@ -76,6 +76,10 @@ func (this *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error 
 				return err
 			}
 		} else {
+			//检测店名是否重复
+			if err = this.checkShopName(mgr, s.Id, s.Name); err != nil {
+				return err
+			}
 			// 创建商店
 			sp = mgr.CreateShop(s)
 		}
@@ -87,6 +91,17 @@ func (this *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error 
 		}
 	}
 	return err
+}
+
+func (this *shopService) checkShopName(mgr shop.IShopManager, id int, name string) error {
+	v := mgr.GetShopByName(name)
+	if v != nil {
+		sv := v.GetValue()
+		if sv.Name == sv.Name && sv.Id != id {
+			return shop.ErrSameNameShopExists
+		}
+	}
+	return nil
 }
 
 // 保存门店
@@ -102,7 +117,11 @@ func (this *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) erro
 				return err
 			}
 		} else {
-			// 创建商店
+			//检测店名是否重复
+			if err = this.checkShopName(mgr, s.Id, s.Name); err != nil {
+				return err
+			}
+			//创建商店
 			sp = mgr.CreateShop(s)
 		}
 
@@ -115,8 +134,8 @@ func (this *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) erro
 	return err
 }
 
-func (this *shopService) SaveShop(merchantId int, v *shop.Shop) (int, error) {
-	mch, err := this._mchRep.GetMerchant(merchantId)
+func (this *shopService) SaveShop(mchId int, v *shop.Shop) (int, error) {
+	mch, err := this._mchRep.GetMerchant(mchId)
 	if err != nil {
 
 		log.Println("[ Merchant][ Service]-", err.Error())
@@ -133,7 +152,7 @@ func (this *shopService) SaveShop(merchantId int, v *shop.Shop) (int, error) {
 	}
 	err = shop.SetValue(v)
 	if err != nil {
-		return 0, err
+		return v.Id, err
 	}
 	return shop.Save()
 }
