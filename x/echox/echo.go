@@ -45,7 +45,6 @@ type (
 		Data interface{}
 	}
 	Handler         func(*Context) error
-	HttpHosts       map[string]http.Handler
 	HandlerProvider interface {
 		FactoryHandler(path string) *Handler
 	}
@@ -203,17 +202,6 @@ func getHandler(v interface{}, action string) (Handler, bool) {
 		return v, ok
 	}
 	return nil, false
-}
-
-func (this HttpHosts) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	subName := r.Host[:strings.Index(r.Host, ".")+1]
-	if h, ok := this[subName]; ok {
-		h.ServeHTTP(w, r)
-	} else if h, ok = this["*"]; ok {
-		h.ServeHTTP(w, r)
-	} else {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-	}
 }
 
 // 全局设定ECHO参数
