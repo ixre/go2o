@@ -13,11 +13,19 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
+	"go2o/core/infrastructure/gen"
 	"go2o/x/echox"
 	"strconv"
 )
 
 const offset string = "%$^&@#"
+
+// 生成推广二维码
+func GenerateInvitationQr(domain string,
+	code string, targetUrl string) []byte {
+	url := domain + "/t/" + code + "?device=3&return_url=" + targetUrl
+	return gen.BuildQrCodeForUrl(url, 10)
+}
 
 func chkStorage(sto gof.Storage) {
 	if sto == nil {

@@ -45,6 +45,9 @@ type (
 
 		//等级值(1,2,4,8,16)
 		Value int `db:"-"`
+
+		//是否为正式会员/非正式
+		IsOfficial int `db:"is_official"`
 	}
 
 	ILevelManager interface {

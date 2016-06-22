@@ -23,3 +23,8 @@ const (
 	KvOrderBusinessQueue          = "go2o:q:sa_order_busi"  //订单业务队列(如已创建,已完成等只执行一次)
 	KvOrderExpiresTime            = "go2o:o:expires:"       //订单过期时间
 )
+
+const (
+	//用户推荐DM页图片广告
+	AdKeyInvitationDM = "UC_INVATION_DM"
+)

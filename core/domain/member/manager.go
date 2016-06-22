@@ -73,29 +73,42 @@ func (this *levelManagerImpl) init() member.ILevelManager {
 
 		this._enabledLevels = []*member.Level{
 			&member.Level{
-				Name:       "普通会员",
+				Name:       "待激活会员",
 				RequireExp: 0,
 				Enabled:    1,
+				IsOfficial: 0,
 			},
+
+			&member.Level{
+				Name:       "普通会员",
+				RequireExp: 1,
+				Enabled:    1,
+				IsOfficial: 1,
+			},
+
 			&member.Level{
 				Name:       "铜牌会员",
 				RequireExp: 100,
 				Enabled:    1,
+				IsOfficial: 1,
 			},
 			&member.Level{
 				Name:       "银牌会员",
 				RequireExp: 500,
 				Enabled:    1,
+				IsOfficial: 1,
 			},
 			&member.Level{
 				Name:       "金牌会员",
 				RequireExp: 1200,
 				Enabled:    1,
+				IsOfficial: 1,
 			},
 			&member.Level{
 				Name:       "白金会员",
 				RequireExp: 1500,
 				Enabled:    1,
+				IsOfficial: 1,
 			},
 		}
 		// 存储并设置编号

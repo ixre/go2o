@@ -11,11 +11,11 @@ package restapi
 import (
 	"crypto/sha1"
 	"fmt"
+	"go2o/app/util"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/service/dps"
 	"gopkg.in/labstack/echo.v1"
 	"io"
-	"net/url"
 	"strconv"
 )
 
@@ -31,16 +31,13 @@ func (this *getC) Invite_qr(ctx *echo.Context) error {
 		domain = "http://" + ctx.Request().Host
 	}
 	if len(targetUrl) == 0 {
-		targetUrl = "/main/app"
+		targetUrl = dps.BaseService.GetRegisterPerm().CallBackUrl
 	}
 	m := dps.MemberService.GetMember(memberId)
 	if m != nil {
-		var url string = domain + "/change_device?device=3&return_url=/main/t/" + m.InvitationCode +
-			url.QueryEscape("?return_url="+targetUrl)
-		qrBytes := gen.BuildQrCodeForUrl(url, 10)
 		ctx.Response().Header().Add("Content-Type", "Image/Jpeg")
 		ctx.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InvitationCode))
-		ctx.Response().Write(qrBytes)
+		ctx.Response().Write(util.GenerateInvitationQr(domain, m.InvitationCode, targetUrl))
 	}
 	return nil
 }
