@@ -259,6 +259,9 @@ ALTER TABLE `flm`.`sale_cart_item`
   ADD COLUMN `mch_id` INT NULL AFTER `cart_id`,
   ADD COLUMN `shop_id` INT NULL AFTER `mch_id`;
 
+ALTER TABLE `flm`.`mm_level`
+  ADD COLUMN `is_official` TINYINT(1) NULL AFTER `program_signal`;
+
 
 
 
