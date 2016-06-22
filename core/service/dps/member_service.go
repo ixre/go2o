@@ -343,9 +343,18 @@ func (this *memberService) IsInvitation(memberId int, invitationMemberId int) bo
 }
 
 // 获取我邀请的会员及会员邀请的人数
-func (this *memberService) GetMyInvitationMembers(memberId int) ([]*member.ValueMember, map[int]int) {
+func (this *memberService) GetMyPagedInvitationMembers(memberId int,
+	begin, end int) (total int, rows []*member.ValueMember, num map[int]int) {
 	iv := this._rep.CreateMember(&member.ValueMember{Id: memberId}).Invitation()
-	return iv.GetMyInvitationMembers(), iv.GetSubInvitationNum()
+	total, rows = iv.GetInvitationMembers(begin, end)
+	if l := len(rows); l > 0 {
+		arr := make([]int, l)
+		for i := 0; i < l; i++ {
+			arr[i] = rows[i].Id
+		}
+		num = iv.GetSubInvitationNum(arr)
+	}
+	return total, rows, num
 }
 
 // 获取会员最后更新时间

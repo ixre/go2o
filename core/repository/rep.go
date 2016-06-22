@@ -9,7 +9,7 @@
 package repository
 
 import (
-	"github.com/jsix/gof"
+	"go2o/core/infrastructure/domain"
 	"sync"
 )
 
@@ -19,8 +19,9 @@ var (
 
 // 处理错误
 func handleError(err error) error {
-	if err != nil && gof.CurrentApp.Debug() {
-		gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
-	}
-	return err
+	return domain.HandleError(err, "rep")
+	//if err != nil && gof.CurrentApp.Debug() {
+	//	gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
+	//}
+	//return err
 }

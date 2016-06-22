@@ -15,7 +15,6 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	mssImpl "go2o/core/domain/mss"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
 )
 
@@ -59,7 +58,7 @@ func (this *MssRep) GetConfig(userId int) *mss.Config {
 		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
 	}
 	globFile := util.NewGobFile(filePath)
-	domain.HandleError(globFile.Unmarshal(&conf))
+	handleError(globFile.Unmarshal(&conf))
 	return &conf
 }
 

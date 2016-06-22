@@ -100,10 +100,10 @@ type IMemberRep interface {
 	DeleteDeliver(memberId, deliverId int) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId int) []*ValueMember
+	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*ValueMember)
 
 	// 获取下级会员数量
-	GetSubInvitationNum(memberIds string) map[int]int
+	GetSubInvitationNum(memberId int, memberIdArr []int) map[int]int
 
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int) *ValueMember

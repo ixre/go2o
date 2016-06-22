@@ -11,6 +11,7 @@ package dps
 
 import (
 	"github.com/jsix/gof"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/repository"
 )
@@ -48,6 +49,15 @@ var (
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
 )
+
+// 处理错误
+func handleError(err error) error {
+	return domain.HandleError(err, "service")
+	//if err != nil && gof.CurrentApp.Debug() {
+	//	gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
+	//}
+	//return err
+}
 
 func Init(ctx gof.App) {
 	Context := ctx
