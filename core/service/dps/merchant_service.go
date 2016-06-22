@@ -14,7 +14,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"log"
 	"strings"
@@ -50,7 +49,7 @@ func (this *merchantService) GetEnterpriseInfo(mchId int,
 	reviewed bool) merchant.EnterpriseInfo {
 	mch, err := this._mchRep.GetMerchant(mchId)
 	if err != nil {
-		domain.HandleError(err)
+		handleError(err)
 		return merchant.EnterpriseInfo{}
 	}
 	if reviewed {

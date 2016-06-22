@@ -13,13 +13,13 @@ type IInvitationManager interface {
 	InvitationBy(memberId int) bool
 
 	// 获取我邀请的会员
-	GetMyInvitationMembers() []*ValueMember
+	GetInvitationMembers(begin, end int) (total int, rows []*ValueMember)
 
 	// 获取我的邀请码
 	GetMyInvitationCode() string
 
 	// 获取邀请会员下级邀请数量
-	GetSubInvitationNum() map[int]int
+	GetSubInvitationNum(memberIdArr []int) map[int]int
 
 	// 获取邀请要的会员
 	GetInvitationMeMember() *ValueMember

@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/log"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -22,6 +21,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/variable"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -400,15 +401,30 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 }
 
 // 邀请
-func (this *MemberRep) GetMyInvitationMembers(memberId int) []*member.ValueMember {
+func (this *MemberRep) GetMyInvitationMembers(memberId, begin, end int) (
+	total int, rows []*member.ValueMember) {
 	arr := []*member.ValueMember{}
-	this.Connector.GetOrm().SelectByQuery(&arr,
-		"SELECT * FROM mm_member WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?) ORDER BY level DESC,id", memberId)
-	return arr
+	this.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
+	 (SELECT member_id FROM mm_relation WHERE invi_member_id=?)`, &total, memberId)
+	if total > 0 {
+
+		this.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM mm_member
+	    WHERE id IN (SELECT member_id FROM mm_relation WHERE invi_member_id=?)
+	 ORDER BY level DESC,id LIMIT ?,?`, memberId, begin, end-begin)
+	}
+	return total, arr
 }
 
 // 获取下级会员数量
-func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
+func (this *MemberRep) GetSubInvitationNum(memberId int, memberIdArr []int) map[int]int {
+	if len(memberIdArr) == 0 {
+		return map[int]int{}
+	}
+	var ids []string = make([]string, len(memberIdArr))
+	for i, v := range memberIdArr {
+		ids[i] = strconv.Itoa(v)
+	}
+	memberIds := strings.Join(ids, ",")
 	var d map[int]int = make(map[int]int)
 	err := this.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
@@ -421,10 +437,7 @@ func (this *MemberRep) GetSubInvitationNum(memberIds string) map[int]int {
 			}
 			rows.Close()
 		})
-
-	if err != nil {
-		log.Error(err)
-	}
+	handleError(err)
 	return d
 }
 

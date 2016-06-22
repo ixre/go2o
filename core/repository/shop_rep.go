@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/infrastructure/domain"
 )
 
 var _ shop.IShopRep = new(shopRep)
@@ -109,7 +108,7 @@ func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 		v.MerchantId == merchantId {
 		return v
 	} else {
-		domain.HandleError(err)
+		handleError(err)
 	}
 	return nil
 }
@@ -120,7 +119,7 @@ func (this *shopRep) GetShopsOfMerchant(mchId int) []*shop.Shop {
 		"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
 
 	if err != nil {
-		domain.HandleError(err)
+		handleError(err)
 		return nil
 	}
 
