@@ -40,6 +40,7 @@ type (
 	}
 
 	// 微信API设置
+	//todo: ??? 应在应用层
 	WxApiConfig struct {
 		/**===== 微信公众平台设置 =====**/
 
@@ -66,6 +67,10 @@ type (
 		MchCertKeyPath string
 		//是否启用红包功能
 		RedPackEnabled bool
+		//红包金额限制
+		RedPackAmountLimit float32
+		//红包每日数量限制
+		RedPackDayTimeLimit int
 
 		//MchPayNotifyPath string //微信支付异步通知的路径
 	}
@@ -80,6 +85,8 @@ type (
 		Notice string
 		// 用户条款内容
 		Licence string
+		// 注册回调页
+		CallBackUrl string
 	}
 
 	// 全局数值设置

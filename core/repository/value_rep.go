@@ -33,6 +33,7 @@ var (
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
 		AnonymousRegistered: true,
+		CallBackUrl:         "/auth?uc=1", //默认进入会员中心
 	}
 
 	// 默认全局销售设置
