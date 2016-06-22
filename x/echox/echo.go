@@ -11,10 +11,10 @@ package echox
 import (
 	"errors"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/session"
 	"gopkg.in/labstack/echo.v1"
 	"io"
-	"log"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -167,7 +167,8 @@ func (this *Context) StringOK(s string) error {
 
 func (this *Context) debug(err error) error {
 	if err != nil {
-		log.Println("[ Echox][ Error]:", err.Error())
+		web.HttpError(this.HttpResponse(), err)
+		return nil
 	}
 	return err
 }
