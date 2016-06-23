@@ -104,7 +104,9 @@ func (this *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	//if len(pro.Name) == 0 {
 	//    pro.Name = m.Usr
 	//}
-
+	dst.Province = v.Province
+	dst.City = v.City
+	dst.District = v.District
 	dst.Address = v.Address
 	dst.BirthDay = v.BirthDay
 	dst.Im = v.Im

@@ -303,6 +303,28 @@ INSERT INTO mm_profile SELECT `id`,`name`,`sex`,`avatar`,`birthday`,`phone`,
 `address`,`qq`,`im`,`ext_1`, `ext_2`,`ext_3`,`ext_4`,`ext_5`,`ext_6`,`email`,
 `remark`,`update_time` FROM mm_member;
 
+ALTER TABLE `flm`.`mm_profile`
+  ADD COLUMN `province` INT NULL AFTER `email`,
+  ADD COLUMN `city` INT NULL AFTER `province`,
+  ADD COLUMN `district` INT NULL AFTER `city`;
+
+ALTER TABLE `flm`.`mm_member`
+  DROP COLUMN `remark`,
+  DROP COLUMN `email`,
+  DROP COLUMN `ext_6`,
+  DROP COLUMN `ext_5`,
+  DROP COLUMN `ext_4`,
+  DROP COLUMN `ext_3`,
+  DROP COLUMN `ext_2`,
+  DROP COLUMN `ext_1`,
+  DROP COLUMN `im`,
+  DROP COLUMN `qq`,
+  DROP COLUMN `address`,
+  DROP COLUMN `phone`,
+  DROP COLUMN `birthday`,
+  DROP COLUMN `avatar`,
+  DROP COLUMN `sex`,
+  DROP COLUMN `name`;
 
 
 
