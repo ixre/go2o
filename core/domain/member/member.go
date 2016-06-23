@@ -12,8 +12,6 @@ package member
 //todo: 要注意UpdateTime的更新
 
 import (
-	"errors"
-	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
@@ -74,162 +72,35 @@ var (
 	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
 	emailRegex = regexp.MustCompile("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*")
 	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8]|14[7])(\\d{8})$")
-	qqRegex    = regexp.MustCompile("^\\d{5,12}$")
 )
 
 func (this *memberImpl) validate(v *member.ValueMember) error {
 	v.Usr = strings.ToLower(strings.TrimSpace(v.Usr)) // 小写并删除空格
-	v.Name = strings.TrimSpace(v.Name)
-	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
-	v.Phone = strings.TrimSpace(v.Phone)
-
 	if len([]rune(v.Usr)) < 6 {
 		return member.ErrUsrLength
 	}
 	if !userRegex.MatchString(v.Usr) {
 		return member.ErrUsrValidErr
 	}
-
-	if len([]rune(v.Name)) < 2 {
-		return member.ErrPersonName
-	}
-
-	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
-		return member.ErrEmailValidErr
-	}
-	if len(v.Phone) != 0 && !phoneRegex.MatchString(v.Phone) {
-		return member.ErrPhoneValidErr
-	}
-	//if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {
-	//	return member.ErrQqValidErr
-	//}
 	return nil
 }
 
 // 设置值
 func (this *memberImpl) SetValue(v *member.ValueMember) error {
 	v.Usr = this._value.Usr
-	v.Address = strings.TrimSpace(v.Address)
-	v.Im = strings.TrimSpace(v.Im)
-	v.Email = strings.TrimSpace(v.Email)
-	v.Phone = strings.TrimSpace(v.Phone)
-	v.Name = strings.TrimSpace(v.Name)
-	v.Ext1 = strings.TrimSpace(v.Ext1)
-	v.Ext2 = strings.TrimSpace(v.Ext2)
-	v.Ext3 = strings.TrimSpace(v.Ext3)
-	v.Ext4 = strings.TrimSpace(v.Ext4)
-	v.Ext5 = strings.TrimSpace(v.Ext5)
-	v.Ext6 = strings.TrimSpace(v.Ext6)
-	if err := this.validate(v); err != nil {
-		return err
-	}
-	this._value.Address = v.Address
-	this._value.BirthDay = v.BirthDay
-	this._value.Im = v.Im
-	this._value.Email = v.Email
-	this._value.LastLoginTime = v.LastLoginTime
-	this._value.Phone = v.Phone
-	this._value.Pwd = v.Pwd
-	this._value.Name = v.Name
-	this._value.Sex = v.Sex
-	this._value.RegFrom = v.RegFrom
-	this._value.Remark = v.Remark
-	this._value.Ext1 = v.Ext1
-	this._value.Ext2 = v.Ext2
-	this._value.Ext3 = v.Ext3
-	this._value.Ext4 = v.Ext4
-	this._value.Ext5 = v.Ext5
-	this._value.Ext6 = v.Ext6
-	if v.Avatar != "" {
-		this._value.Avatar = v.Avatar
-	}
 	if len(this._value.InvitationCode) == 0 {
 		this._value.InvitationCode = v.InvitationCode
 	}
-
 	if v.Exp != 0 {
 		this._value.Exp = v.Exp
 	}
-
 	if v.Level > 0 {
 		this._value.Level = v.Level
 	}
-
 	if len(v.TradePwd) == 0 {
 		this._value.TradePwd = v.TradePwd
 	}
-
-	if this.ProfileCompleted() {
-		// 已完善资料
-		this.notifyOnProfileComplete()
-	}
 	return nil
-}
-
-func (this *memberImpl) ProfileCompleted() bool {
-	return len(this._value.Name) != 0 && len(this._value.Im) != 0 &&
-		len(this._value.Email) != 0 && len(this._value.BirthDay) != 0 &&
-		len(this._value.Address) != 0 && len(this._value.Phone) != 0 &&
-		len(this._value.Avatar) != 0 && this._value.Sex != 0
-}
-
-func (this *memberImpl) notifyOnProfileComplete() {
-	rl := this.GetRelation()
-	pt, err := this._merchantRep.GetMerchant(rl.RegisterMerchantId)
-	if err == nil {
-		key := fmt.Sprintf("profile:complete:id_%d", this.GetAggregateRootId())
-		if pt.MemberKvManager().GetInt(key) == 0 {
-			if err := this.sendNotifyMail(pt); err == nil {
-				pt.MemberKvManager().Set(key, "1")
-			} else {
-				fmt.Println(err.Error())
-			}
-		}
-	}
-}
-
-func (this *memberImpl) sendNotifyMail(pt merchant.IMerchant) error {
-	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
-	if tplId > 0 {
-		mailTpl := this._mssRep.GetProvider().GetMailTemplate(tplId)
-		if mailTpl != nil {
-			v := &mss.Message{
-				// 消息类型
-				Type: mss.TypeEmailMessage,
-				// 消息用途
-				UseFor: mss.UseForNotify,
-				// 发送人角色
-				SenderRole: mss.RoleSystem,
-				// 发送人编号
-				SenderId: 0,
-				// 发送的目标
-				To: []mss.User{
-					mss.User{
-						Role: mss.RoleMember,
-						Id:   this.GetAggregateRootId(),
-					},
-				},
-				// 发送的用户角色
-				ToRole: -1,
-				// 全系统接收
-				AllUser: -1,
-				// 是否只能阅读
-				Readonly: 1,
-			}
-			val := &mss.MailMessage{
-				Subject: mailTpl.Subject,
-				Body:    mailTpl.Body,
-			}
-			msg := this._mssRep.GetManager().CreateMessage(v, val)
-			//todo:?? data
-			var data = map[string]string{
-				"Name":           this._value.Name,
-				"InvitationCode": this._value.InvitationCode,
-			}
-			return msg.Send(data)
-		}
-	}
-	return errors.New("no such email template")
 }
 
 // 邀请管理
@@ -346,13 +217,10 @@ func (this *memberImpl) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
-	if len(this._value.Name) == 0 {
-		this._value.Name = this._value.Usr
-	}
 	if err := this.validate(this._value); err != nil {
 		return this.GetAggregateRootId(), err
 	}
-	return this.create(this._value)
+	return this.create(this._value, nil)
 }
 
 // 锁定会员
@@ -366,36 +234,26 @@ func (this *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (this *memberImpl) create(m *member.ValueMember) (int, error) {
-
+func (this *memberImpl) create(m *member.ValueMember, pro *member.Profile) (int, error) {
 	//todo: 获取推荐人编号
 	//todo: 检测是否有注册权限
 	//if err := this._manager.RegisterPerm(this._relation.RefereesId);err != nil{
 	//	return -1,err
 	//}
-
 	if this.usrIsExist(m.Usr) {
 		return -1, member.ErrUsrExist
 	}
-	if len(m.Phone) > 0 && this.PhoneIsExist(m.Phone) {
-		return -1, member.ErrPhoneHasBind
-	}
+
 	t := time.Now().Unix()
 	m.State = 1
 	m.RegTime = t
 	m.LastLoginTime = t
 	m.Level = 1
 	m.Exp = 1
-	m.Avatar = "resource/no_avatar.gif"
-	m.BirthDay = "1970-01-01"
 	m.DynamicToken = m.Pwd
 	m.Exp = 0
 	if len(m.RegFrom) == 0 {
 		m.RegFrom = "API-INTERNAL"
-	}
-	// 如果昵称为空，则跟用户名相同
-	if len(m.Name) == 0 {
-		m.Name = m.Usr
 	}
 	m.InvitationCode = this.generateInvitationCode() // 创建一个邀请码
 	id, err := this._rep.SaveMember(m)

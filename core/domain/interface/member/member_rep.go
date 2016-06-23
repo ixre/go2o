@@ -18,6 +18,12 @@ type IMemberRep interface {
 	// 获取管理服务
 	GetManager() IMemberManager
 
+	// 获取资料或初始化
+	GetProfile(memberId int) *Profile
+
+	// 保存资料
+	SaveProfile(v *Profile) error
+
 	// 获取会员等级
 	GetMemberLevels_New() []*Level
 

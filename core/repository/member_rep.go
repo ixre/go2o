@@ -24,6 +24,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var _ member.IMemberRep = new(MemberRep)
@@ -58,6 +59,24 @@ func (this *MemberRep) GetManager() member.IMemberManager {
 	return memberManager
 }
 
+// 获取资料或初始化
+func (this *MemberRep) GetProfile(memberId int) *member.Profile {
+	e := member.Profile{}
+	orm := this.Connector.GetOrm()
+	if orm.Get(memberId, &e) != nil {
+		e.MemberId = memberId
+		e.UpdateTime = time.Now().Unix()
+		orm.Save(nil, &e)
+	}
+	return &e
+}
+
+// 保存资料
+func (this *MemberRep) SaveProfile(v *member.Profile) error {
+	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
+	return err
+}
+
 // 获取会员等级
 func (this *MemberRep) GetMemberLevels_New() []*member.Level {
 	list := []*member.Level{}
@@ -84,8 +103,9 @@ func (this *MemberRep) SaveMemberLevel_New(v *member.Level) (int, error) {
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
-		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM mm_level`, &v.Id)
+		var id int64
+		_, id, err = orm.Save(nil, v)
+		v.Id = int(id)
 	}
 	return v.Id, err
 }
@@ -295,12 +315,12 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 }
 
 func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
-
-	_, _, err := this.Connector.GetOrm().Save(nil, v)
+	var id int64
+	_, id, err := this.Connector.GetOrm().Save(nil, v)
 	if err != nil {
 		return -1, err
 	}
-	this.Connector.ExecScalar("SELECT MAX(id) FROM mm_member", &v.Id)
+	v.Id = int(id)
 	this.initMember(v)
 
 	rc := core.GetRedisConn()

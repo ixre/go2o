@@ -275,6 +275,36 @@ CREATE TABLE `flm`.`mm_trusted_info` (
   PRIMARY KEY (`member_id`));
 
 
+CREATE TABLE `mm_profile` (
+  `member_id` int(11) NOT NULL,
+  `name` varchar(20) DEFAULT NULL COMMENT '名字',
+  `sex` int(1) DEFAULT NULL COMMENT '性别(0: 未知,1:男,2：女)',
+  `avatar` varchar(80) DEFAULT NULL,
+  `birthday` varchar(20) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL COMMENT '送餐地址',
+  `qq` varchar(15) DEFAULT NULL,
+  `im` varchar(45) DEFAULT NULL,
+  `ext_1` varchar(45) DEFAULT NULL,
+  `ext_2` varchar(45) DEFAULT NULL,
+  `ext_3` varchar(45) DEFAULT NULL,
+  `ext_4` varchar(45) DEFAULT NULL,
+  `ext_5` varchar(45) DEFAULT NULL,
+  `ext_6` varchar(45) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `remark` varchar(100) DEFAULT NULL,
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`member_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+
+# copy profile info to mm_profile
+
+INSERT INTO mm_profile SELECT `id`,`name`,`sex`,`avatar`,`birthday`,`phone`,
+`address`,`qq`,`im`,`ext_1`, `ext_2`,`ext_3`,`ext_4`,`ext_5`,`ext_6`,`email`,
+`remark`,`update_time` FROM mm_member;
+
+
+
 
 
 

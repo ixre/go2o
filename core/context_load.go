@@ -80,7 +80,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.DeliverAddress{}, "mm_deliver_addr")
 	orm.Mapping(member.MemberRelation{}, "mm_relation")
 	orm.Mapping(member.BalanceInfoValue{}, "mm_balance_info")
-	orm.Mapping(member.TrustedInfo{},"mm_trusted_info")
+	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 
 	orm.Mapping(member.BankInfo{}, "mm_bank")
 	orm.Mapping(shopping.ValueOrder{}, "pt_order")

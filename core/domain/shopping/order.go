@@ -825,7 +825,7 @@ func (this *Order) backFor3R(mch merchant.IMerchant, m member.IMember,
 	}
 
 	i := 0
-	mName := m.GetValue().Name
+	mName := m.ProfileManager().GetProfile().Name
 	saleConf := mch.ConfManager().GetSaleConf()
 	percent := saleConf.CashBackTg2Percent
 	for i < 2 {

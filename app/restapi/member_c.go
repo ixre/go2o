@@ -75,14 +75,17 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 		regIp = r.RemoteAddr[:i]
 	}
 
-	var member member.ValueMember
-	member.Usr = usr
-	member.Pwd = domain.MemberSha1Pwd(pwd)
-	member.RegIp = regIp
-	member.Phone = phone
-	member.RegFrom = registerFrom
+	m := &member.ValueMember{}
+	pro := &member.Profile{}
+	m.Usr = usr
+	m.Pwd = domain.MemberSha1Pwd(pwd)
+	m.RegIp = regIp
+	m.RegFrom = registerFrom
 
-	_, err = dps.MemberService.RegisterMember(merchantId, &member, "", invitationCode)
+	pro.Phone = phone
+	pro.Name = m.Usr
+
+	_, err = dps.MemberService.RegisterMember(merchantId, m, pro, "", invitationCode)
 	if err == nil {
 		result.Result = true
 	} else {

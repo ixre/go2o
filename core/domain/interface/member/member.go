@@ -42,9 +42,6 @@ type (
 		// 解锁会员
 		Unlock() error
 
-		// 资料是否完善
-		ProfileCompleted() bool
-
 		//　保存积分记录
 		SaveIntegralLog(*IntegralLog) error
 
@@ -73,6 +70,15 @@ type (
 
 	// 会员资料服务
 	IProfileManager interface {
+		// 获取资料
+		GetProfile() Profile
+
+		// 保存资料
+		SaveProfile(v *Profile) error
+
+		// 资料是否完善
+		ProfileCompleted() bool
+
 		// 修改密码,旧密码可为空
 		ModifyPassword(newPwd, oldPwd string) error
 
@@ -111,51 +117,80 @@ type (
 	}
 
 	ValueMember struct {
-		Id  int    `db:"id" auto:"yes" pk:"yes"`
+		// 编号
+		Id int `db:"id" auto:"yes" pk:"yes"`
+		// 用户名
 		Usr string `db:"usr"`
+		// 密码
 		Pwd string `db:"Pwd"`
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
-		// 姓名
-		Name string `db:"name"`
 		// 经验值
 		Exp int `db:"exp"`
 		// 等级
 		Level int `db:"level"`
-
-		Sex      int    `db:"sex"`
-		Avatar   string `db:"avatar"`
-		BirthDay string `db:"birthday"`
-		Phone    string `db:"phone"`
-		Address  string `db:"address"`
-		Im       string `db:"im"`
-		Email    string `db:"email"`
 		// 邀请码
 		InvitationCode string `db:"invitation_code"`
-		RegFrom        string `db:"reg_from"`
-		RegIp          string `db:"reg_ip"`
-		State          int    `db:"state"`
-		RegTime        int64  `db:"reg_time"`
-		Remark         string `db:"remark"` //备注
-		Ext1           string `db:"ext_1"`  // 扩展1
-		Ext2           string `db:"ext_2"`  // 扩展2
-		Ext3           string `db:"ext_3"`  // 扩展3
-		Ext4           string `db:"ext_4"`  // 扩展4
-		Ext5           string `db:"ext_4"`  // 扩展5
-		Ext6           string `db:"ext_4"`  // 扩展6
-		LastLoginTime  int64  `db:"last_login_time"`
-		UpdateTime     int64  `db:"update_time"`
-		DynamicToken   string `db:"-"` // 动态令牌，用于登陆或API调用
-		TimeoutTime    int64  `db:"-"` // 超时时间
+		// 注册来源
+		RegFrom string `db:"reg_from"`
+		// 注册IP
+		RegIp string `db:"reg_ip"`
+		// 注册时间
+		RegTime int64 `db:"reg_time"`
+		// 状态
+		State int `db:"state"`
+		// 最后登陆时间
+		LastLoginTime int64 `db:"last_login_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+		// 动态令牌，用于登陆或API调用
+		DynamicToken string `db:"-"`
+		// 超时时间
+		TimeoutTime int64 `db:"-"`
 	}
 
+	// 会员资料
 	Profile struct {
+		//会员编号
+		MemberId int `db:"member_id" pk:"yes" auto:"no"`
+		//姓名
+		Name string `db:"name"`
+		//头像
+		Avatar string `db:"avatar"`
+		//性别
+		Sex int `db:"sex"`
+		//生日
+		BirthDay string `db:"birthday"`
+		//电话
+		Phone string `db:"phone"`
+		//地址
+		Address string `db:"address"`
+		//即时通讯
+		Im string `db:"im"`
+		//电子邮件
+		Email string `db:"email"`
+		//备注
+		Remark string `db:"remark"`
+		// 扩展1
+		Ext1 string `db:"ext_1"`
+		// 扩展2
+		Ext2 string `db:"ext_2"`
+		// 扩展3
+		Ext3 string `db:"ext_3"`
+		// 扩展4
+		Ext4 string `db:"ext_4"`
+		// 扩展5
+		Ext5 string `db:"ext_4"`
+		// 扩展6
+		Ext6 string `db:"ext_4"`
+		//更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 实名认证信息
 	TrustedInfo struct {
 		//会员编号
-		MemberId int `db:"member_id"`
+		MemberId int `db:"member_id" pk:"yes"`
 		//真实姓名
 		RealName string `db:"real_name"`
 		//身份证号码
