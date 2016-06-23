@@ -195,7 +195,7 @@ func (this *memberService) ResetPassword(memberId int) string {
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
-		if m.ModifyPassword(newEncPwd, "") == nil {
+		if m.ProfileManager().ModifyPassword(newEncPwd, "") == nil {
 			return newPwd
 		}
 	}
@@ -256,19 +256,42 @@ func (this *memberService) GetAccount(memberId int) *member.AccountValue {
 
 func (this *memberService) GetBank(memberId int) *member.BankInfo {
 	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
-	b := m.GetBank()
+	b := m.ProfileManager().GetBank()
 	return &b
 }
 
 func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 	m := this._rep.CreateMember(&member.ValueMember{Id: v.MemberId})
-	return m.SaveBank(v)
+	return m.ProfileManager().SaveBank(v)
 }
 
 // 解锁银行卡信息
 func (this *memberService) UnlockBankInfo(memberId int) error {
 	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
-	return m.UnlockBank()
+	return m.ProfileManager().UnlockBank()
+}
+
+// 实名认证信息
+func (this *memberService) GetTrustedInfo(memberId int) member.TrustedInfo {
+	m := this._rep.GetMember(memberId)
+	return m.ProfileManager().GetTrustedInfo()
+}
+
+// 保存实名认证信息
+func (this *memberService) SaveTrustedInfo(memberId int, v *member.TrustedInfo) error {
+	m := this._rep.GetMember(memberId)
+	err := m.ProfileManager().SaveTrustedInfo(v)
+	//todo: 取消自动认证
+	if err == nil {
+		err = this.ReviewTrustedInfo(memberId, true, "")
+	}
+	return err
+}
+
+// 审核实名认证,若重复审核将返回错误
+func (this *memberService) ReviewTrustedInfo(memberId int, pass bool, remark string) error {
+	m := this._rep.GetMember(memberId)
+	return m.ProfileManager().ReviewTrustedInfo(pass, remark)
 }
 
 // 获取返现记录
@@ -292,7 +315,7 @@ func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddr
 func (this *memberService) GetDeliverAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
-	v := m.GetDeliver(deliverId).GetValue()
+	v := m.ProfileManager().GetDeliver(deliverId).GetValue()
 	return &v
 }
 
@@ -302,10 +325,10 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 	var v member.IDeliver
 	var err error
 	if e.Id > 0 {
-		v = m.GetDeliver(e.Id)
+		v = m.ProfileManager().GetDeliver(e.Id)
 		err = v.SetValue(e)
 	} else {
-		v, err = m.CreateDeliver(e)
+		v, err = m.ProfileManager().CreateDeliver(e)
 	}
 	if err != nil {
 		return -1, err
@@ -316,13 +339,13 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 //删除配送地址
 func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
 	m := this._rep.CreateMember(&member.ValueMember{Id: memberId})
-	return m.DeleteDeliver(deliverId)
+	return m.ProfileManager().DeleteDeliver(deliverId)
 }
 
 func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ModifyPassword(newPwd, oldPwd)
+		return m.ProfileManager().ModifyPassword(newPwd, oldPwd)
 	}
 	return member.ErrNoSuchMember
 }
@@ -331,7 +354,7 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ModifyTradePassword(newPwd, oldPwd)
+		return m.ProfileManager().ModifyTradePassword(newPwd, oldPwd)
 	}
 	return member.ErrNoSuchMember
 }

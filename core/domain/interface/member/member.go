@@ -21,6 +21,9 @@ type (
 		// 获取聚合根编号
 		GetAggregateRootId() int
 
+		// 会员资料服务
+		ProfileManager() IProfileManager
+
 		// 获取值
 		GetValue() ValueMember
 
@@ -41,15 +44,6 @@ type (
 
 		// 资料是否完善
 		ProfileCompleted() bool
-
-		// 获取提现银行信息
-		GetBank() BankInfo
-
-		// 保存提现银行信息,保存后将锁定
-		SaveBank(*BankInfo) error
-
-		// 解锁提现银行卡信息
-		UnlockBank() error
 
 		//　保存积分记录
 		SaveIntegralLog(*IntegralLog) error
@@ -75,12 +69,33 @@ type (
 
 		// 保存
 		Save() (int, error)
+	}
 
+	// 会员资料服务
+	IProfileManager interface {
 		// 修改密码,旧密码可为空
 		ModifyPassword(newPwd, oldPwd string) error
 
 		// 修改交易密码，旧密码可为空
 		ModifyTradePassword(newPwd, oldPwd string) error
+
+		// 获取提现银行信息
+		GetBank() BankInfo
+
+		// 保存提现银行信息,保存后将锁定
+		SaveBank(*BankInfo) error
+
+		// 解锁提现银行卡信息
+		UnlockBank() error
+
+		// 实名认证信息
+		GetTrustedInfo() TrustedInfo
+
+		// 保存实名认证信息
+		SaveTrustedInfo(v *TrustedInfo) error
+
+		// 审核实名认证,若重复审核将返回错误
+		ReviewTrustedInfo(pass bool, remark string) error
 
 		// 创建配送地址
 		CreateDeliver(*DeliverAddress) (IDeliver, error)
@@ -94,6 +109,7 @@ type (
 		// 删除配送地址
 		DeleteDeliver(int) error
 	}
+
 	ValueMember struct {
 		Id  int    `db:"id" auto:"yes" pk:"yes"`
 		Usr string `db:"usr"`
@@ -133,17 +149,50 @@ type (
 		TimeoutTime    int64  `db:"-"` // 超时时间
 	}
 
+	Profile struct {
+	}
+
+	// 实名认证信息
+	TrustedInfo struct {
+		//会员编号
+		MemberId int `db:"member_id"`
+		//真实姓名
+		RealName string `db:"real_name"`
+		//身份证号码
+		BodyNumber string `db:"body_number"`
+		//认证图片、身份证、人与身份证的图像等
+		TrustImage string `db:"trust_image"`
+		//是否处理
+		IsHandle int `db:"is_handle"`
+		//是否审核通过
+		Reviewed int `db:"reviewed"`
+		//审核时间
+		ReviewTime int64 `db:"review_time"`
+		//审核备注
+		Remark string `db:"remark"`
+		//更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
 	// 银行卡信息,因为重要且非频繁更新的数据
 	// 所以需要用IsLocked来标记是否锁定
 	BankInfo struct {
-		MemberId    int    `db:"member_id" pk:"yes"`
-		Name        string `db:"name"`
-		Account     string `db:"account"`
+		//会员编号
+		MemberId int `db:"member_id" pk:"yes"`
+		//名称
+		Name string `db:"name"`
+		//账号
+		Account string `db:"account"`
+		//账户名
 		AccountName string `db:"account_name"`
-		Network     string `db:"network"`
-		State       int    `db:"state"`
-		IsLocked    int    `db:"is_locked"`
-		UpdateTime  int64  `db:"update_time"`
+		//支行网点
+		Network string `db:"network"`
+		//状态
+		State int `db:"state"`
+		//是否锁定
+		IsLocked int `db:"is_locked"`
+		//更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 )
 
