@@ -262,6 +262,19 @@ ALTER TABLE `flm`.`sale_cart_item`
 ALTER TABLE `flm`.`mm_level`
   ADD COLUMN `is_official` TINYINT(1) NULL AFTER `program_signal`;
 
+CREATE TABLE `flm`.`mm_trusted_info` (
+  `member_id` INT NOT NULL,
+  `real_name` VARCHAR(10) NULL,
+  `body_number` VARCHAR(20) NULL,
+  `trust_image` VARCHAR(120) NULL,
+  `is_handle` TINYINT(1) NULL,
+  `reviewed` TINYINT(1) NULL,
+  `review_time` INT NULL,
+  `remark` VARCHAR(120) NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`member_id`));
+
+
 
 
 
