@@ -169,8 +169,15 @@ type (
 		Im string `db:"im"`
 		//电子邮件
 		Email string `db:"email"`
+		// 省
+		Province int `db:"province"`
+		// 市
+		City int `db:"city"`
+		// 区
+		District int `db:"district"`
 		//备注
 		Remark string `db:"remark"`
+
 		// 扩展1
 		Ext1 string `db:"ext_1"`
 		// 扩展2

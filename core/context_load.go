@@ -75,6 +75,7 @@ func OrmMapping(conn db.Connector) {
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")
 	orm.Mapping(member.ValueMember{}, "mm_member")
+	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.AccountValue{}, "mm_account")
 	orm.Mapping(member.DeliverAddress{}, "mm_deliver_addr")
