@@ -47,7 +47,7 @@ func (this *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 }
 
 // 获取返现记录
-func (this *MemberQuery) QueryBalanceLog(memberId, page, size int,
+func (this *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
 	d := this.Connector
@@ -67,7 +67,7 @@ func (this *MemberQuery) QueryBalanceLog(memberId, page, size int,
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		rows = db.RowsToMarshalMap(_rows)
 		_rows.Close()
-	}, memberId, (page-1)*size, size)
+	}, memberId,begin, end-begin)
 
 	return num, rows
 }
@@ -128,14 +128,13 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 }
 
 // 筛选会员根据用户或者手机
-func (this *MemberQuery) FilterMemberByUsrOrPhone(merchantId int, key string) []*dto.SimpleMember {
+func (this *MemberQuery) FilterMemberByUsrOrPhone( key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	var list []*dto.SimpleMember = make([]*dto.SimpleMember, 0)
 	var id int
 	var usr, name, phone string
-	this.Query(`SELECT id,usr,name,phone FROM mm_member INNER JOIN mm_relation ON
-		mm_relation.member_id = mm_member.id WHERE mm_relation.reg_merchant_id=?
-		AND usr LIKE ? OR name LIKE ?`, func(rows *sql.Rows) {
+	this.Query(`SELECT id,usr,name,phone FROM mm_member WHERE
+		usr LIKE ? OR name LIKE ? OR phone LIKE ?`, func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone)
 			list = append(list, &dto.SimpleMember{
@@ -145,7 +144,7 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(merchantId int, key string) []
 				Phone: phone,
 			})
 		}
-	}, merchantId, qp, qp)
+	}, qp, qp, qp)
 	return list
 }
 
