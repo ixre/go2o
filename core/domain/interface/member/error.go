@@ -112,4 +112,7 @@ var (
 
 	ErrNotSupportTransfer *domain.DomainError = domain.NewDomainError(
 		"err_not_support_transfer", "不支持的转账方式")
+
+	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
+		"err_missing_trusted_info", "实名认证信息不完整")
 )

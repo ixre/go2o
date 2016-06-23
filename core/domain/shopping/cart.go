@@ -292,7 +292,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 		if m == nil {
 			return member.ErrNoSuchMember
 		}
-		deliver = m.GetDeliver(deliverId)
+		deliver = m.ProfileManager().GetDeliver(deliverId)
 		if deliver == nil {
 			return member.ErrInvalidSession
 		}
@@ -320,7 +320,7 @@ func (this *Cart) GetSettleData() (s shop.IShop, d member.IDeliver, paymentOpt, 
 		var m member.IMember
 		m = this._memberRep.GetMember(this._value.BuyerId)
 		if m != nil {
-			this._deliver = m.GetDeliver(this._value.DeliverId)
+			this._deliver = m.ProfileManager().GetDeliver(this._value.DeliverId)
 		}
 	}
 	return this._shop, this._deliver, this._value.PaymentOpt, this._value.DeliverOpt

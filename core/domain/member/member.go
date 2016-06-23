@@ -30,13 +30,14 @@ type memberImpl struct {
 	_manager     member.IMemberManager
 	_value       *member.ValueMember
 	_account     member.IAccount
-	_bank        *member.BankInfo
 	_level       *member.Level
 	_rep         member.IMemberRep
 	_merchantRep merchant.IMerchantRep
 	_relation    *member.MemberRelation
 	_invitation  member.IInvitationManager
 	_mssRep      mss.IMssRep
+
+	_profileManager member.IProfileManager
 }
 
 func NewMember(manager member.IMemberManager, val *member.ValueMember, rep member.IMemberRep,
@@ -53,6 +54,15 @@ func NewMember(manager member.IMemberManager, val *member.ValueMember, rep membe
 // 获取聚合根编号
 func (this *memberImpl) GetAggregateRootId() int {
 	return this._value.Id
+}
+
+// 会员资料服务
+func (this *memberImpl) ProfileManager() member.IProfileManager {
+	if this._profileManager == nil {
+		this._profileManager = newProfileManagerImpl(this,
+			this.GetAggregateRootId(), this._rep)
+	}
+	return this._profileManager
 }
 
 // 获取值
@@ -241,49 +251,6 @@ func (this *memberImpl) GetAccount() member.IAccount {
 	return this._account
 }
 
-// 获取提现银行信息
-func (this *memberImpl) GetBank() member.BankInfo {
-	if this._bank == nil {
-		this._bank = this._rep.GetBankInfo(this._value.Id)
-		if this._bank == nil {
-			return member.BankInfo{}
-		}
-	}
-	return *this._bank
-}
-
-// 保存提现银行信息
-func (this *memberImpl) SaveBank(v *member.BankInfo) error {
-	this.GetBank()
-	if this._bank == nil {
-		this._bank = v
-	} else {
-		if this._bank.IsLocked == member.BankLocked {
-			return member.ErrBankInfoLocked
-		}
-		this._bank.Account = v.Account
-		this._bank.AccountName = v.AccountName
-		this._bank.Network = v.Network
-		this._bank.State = v.State
-		this._bank.Name = v.Name
-	}
-	this._bank.State = member.StateOk       //todo:???
-	this._bank.IsLocked = member.BankLocked //锁定
-	this._bank.UpdateTime = time.Now().Unix()
-	//this._bank.MemberId = this.value.Id
-	return this._rep.SaveBankInfo(this._bank)
-}
-
-// 解锁提现银行卡信息
-func (this *memberImpl) UnlockBank() error {
-	this.GetBank()
-	if this._bank == nil {
-		return member.ErrBankInfoNoYetSet
-	}
-	this._bank.IsLocked = member.BankNoLock
-	return this._rep.SaveBankInfo(this._bank)
-}
-
 // 保存积分记录
 func (this *memberImpl) SaveIntegralLog(l *member.IntegralLog) error {
 	l.MemberId = this._value.Id
@@ -398,45 +365,6 @@ func (this *memberImpl) Unlock() error {
 	return this._rep.LockMember(this.GetAggregateRootId(), 1)
 }
 
-// 修改密码,旧密码可为空
-func (this *memberImpl) ModifyPassword(newPwd, oldPwd string) error {
-	var err error
-	if newPwd == oldPwd {
-		return member.ErrPwdCannotSame
-	}
-
-	if b, err := domain.ChkPwdRight(newPwd); !b {
-		return err
-	}
-
-	if len(oldPwd) != 0 && oldPwd != this._value.Pwd {
-		return member.ErrPwdOldPwdNotRight
-	}
-
-	this._value.Pwd = newPwd
-	_, err = this.Save()
-
-	return err
-}
-
-// 修改交易密码，旧密码可为空
-func (this *memberImpl) ModifyTradePassword(newPwd, oldPwd string) error {
-	var err error
-	if newPwd == oldPwd {
-		return member.ErrPwdCannotSame
-	}
-	if b, err := domain.ChkPwdRight(newPwd); !b {
-		return err
-	}
-	// 已经设置过旧密码
-	if len(this._value.TradePwd) != 0 && this._value.TradePwd != oldPwd {
-		return member.ErrPwdOldPwdNotRight
-	}
-	this._value.TradePwd = newPwd
-	_, err = this.Save()
-	return err
-}
-
 // 创建会员
 func (this *memberImpl) create(m *member.ValueMember) (int, error) {
 
@@ -504,36 +432,4 @@ func (this *memberImpl) SaveRelation(r *member.MemberRelation) error {
 	this._relation = r
 	this._relation.MemberId = this._value.Id
 	return this._rep.SaveRelation(this._relation)
-}
-
-// 创建配送地址
-func (this *memberImpl) CreateDeliver(v *member.DeliverAddress) (member.IDeliver, error) {
-	return newDeliver(v, this._rep)
-}
-
-// 获取配送地址
-func (this *memberImpl) GetDeliverAddress() []member.IDeliver {
-	var vls []*member.DeliverAddress
-	vls = this._rep.GetDeliverAddress(this.GetAggregateRootId())
-	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
-	for i, v := range vls {
-		arr[i], _ = this.CreateDeliver(v)
-	}
-	return arr
-}
-
-// 获取配送地址
-func (this *memberImpl) GetDeliver(deliverId int) member.IDeliver {
-	v := this._rep.GetSingleDeliverAddress(this.GetAggregateRootId(), deliverId)
-	if v != nil {
-		d, _ := this.CreateDeliver(v)
-		return d
-	}
-	return nil
-}
-
-// 删除配送地址
-func (this *memberImpl) DeleteDeliver(deliverId int) error {
-	//todo: 至少保留一个配送地址
-	return this._rep.DeleteDeliver(this.GetAggregateRootId(), deliverId)
 }

@@ -67,7 +67,7 @@ func (this *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 	d.Query(sqlLine, func(_rows *sql.Rows) {
 		rows = db.RowsToMarshalMap(_rows)
 		_rows.Close()
-	}, memberId,begin, end-begin)
+	}, memberId, begin, end-begin)
 
 	return num, rows
 }
@@ -128,7 +128,7 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 }
 
 // 筛选会员根据用户或者手机
-func (this *MemberQuery) FilterMemberByUsrOrPhone( key string) []*dto.SimpleMember {
+func (this *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	var list []*dto.SimpleMember = make([]*dto.SimpleMember, 0)
 	var id int
