@@ -45,7 +45,7 @@ func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promo
 
 	var backFunc = func(m member.IMember, parentM member.IMember, fee int) {
 		// fmt.Println("---------[ back ]",parentM.GetValue().Name,fee)
-		backCashForMember(m, order, fee, parentM.GetValue().Name)
+		backCashForMember(m, order, fee, parentM.ProfileManager().GetProfile().Name)
 	}
 	var i int = 0
 	for true {

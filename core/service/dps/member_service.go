@@ -37,6 +37,21 @@ func NewMemberService(partnerService *merchantService, rep member.IMemberRep,
 	}
 }
 
+// 获取资料
+func (this *memberService) GetProfile(memberId int) member.Profile {
+	m := this._rep.GetMember(memberId)
+	if m != nil {
+		return m.ProfileManager().GetProfile()
+	}
+	return member.Profile{}
+}
+
+// 保存资料
+func (this *memberService) SaveProfile(memberId int, v *member.Profile) error {
+	m := this._rep.GetMember(memberId)
+	return m.ProfileManager().SaveProfile(v)
+}
+
 /**================ 会员等级 ==================**/
 // 获取所有会员等级
 func (this *memberService) GetMemberLevels() []*member.Level {
@@ -126,7 +141,14 @@ func (this *memberService) updateMember(v *member.ValueMember) (int, error) {
 
 // 注册会员
 func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
-	cardId string, invitationCode string) (int, error) {
+	pro *member.Profile, cardId string, invitationCode string) (int, error) {
+
+	//先验证手机
+	if len(pro.Phone) > 0 {
+		if b := this._rep.CheckPhoneBind(pro.Phone, v.Id); b {
+			return -1, member.ErrPhoneHasBind
+		}
+	}
 
 	// todo: 检测注册权限,这里应删除。应用到 member的create方法
 	err := this._rep.GetManager().RegisterPerm(len(invitationCode) > 0)
@@ -142,13 +164,16 @@ func (this *memberService) RegisterMember(merchantId int, v *member.ValueMember,
 		m := this._rep.CreateMember(v) //创建会员
 		id, err := m.Save()
 		if err == nil {
-			// 保存关联信息
-			m := this._rep.GetMember(id)
-			rl := m.GetRelation()
-			rl.RefereesId = invitationId
-			rl.RegisterMerchantId = merchantId
-			rl.CardId = cardId
-			return id, m.SaveRelation(rl)
+			pro.MemberId = id
+			err = m.ProfileManager().SaveProfile(pro)
+			if err == nil {
+				// 保存关联信息
+				rl := m.GetRelation()
+				rl.RefereesId = invitationId
+				rl.RegisterMerchantId = merchantId
+				rl.CardId = cardId
+				return id, m.SaveRelation(rl)
+			}
 		}
 		return id, err
 	}
@@ -184,7 +209,7 @@ func (this *memberService) LockMember(id int) (bool, error) {
 func (this *memberService) ProfileCompleted(memberId int) bool {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ProfileCompleted()
+		return m.ProfileManager().ProfileCompleted()
 	}
 	return false
 }
@@ -400,11 +425,12 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 		mv := m.GetValue()
 		acv := m.GetAccount().GetValue()
 		lv := m.GetLevel()
+		pro := m.ProfileManager().GetProfile()
 		return &dto.MemberSummary{
 			Id:                m.GetAggregateRootId(),
 			Usr:               mv.Usr,
-			Name:              mv.Name,
-			Avatar:            format.GetResUrl(mv.Avatar),
+			Name:              pro.Name,
+			Avatar:            format.GetResUrl(pro.Avatar),
 			Exp:               mv.Exp,
 			Level:             mv.Level,
 			LevelName:         lv.Name,
