@@ -272,9 +272,9 @@ func (this *memberService) UnlockBankInfo(memberId int) error {
 }
 
 // 获取返现记录
-func (this *memberService) QueryIncomeLog(memberId, page, size int,
+func (this *memberService) QueryIncomeLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
-	return this._query.QueryBalanceLog(memberId, page, size, where, orderBy)
+	return this._query.QueryBalanceLog(memberId, begin, end, where, orderBy)
 }
 
 // 查询分页订单
@@ -612,8 +612,8 @@ func (this *memberService) TransferFlowTo(memberId int, toMemberId int, kind int
 }
 
 // 根据用户或手机筛选会员
-func (this *memberService) FilterMemberByUsrOrPhone(merchantId int, key string) []*dto.SimpleMember {
-	return this._query.FilterMemberByUsrOrPhone(merchantId, key)
+func (this *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
+	return this._query.FilterMemberByUsrOrPhone(key)
 }
 
 // 会员推广排名
