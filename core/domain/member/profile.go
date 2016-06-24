@@ -97,7 +97,7 @@ func (this *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 		return err
 	}
 
-	//pro.Avatar = "resource/no_avatar.gif"
+	//pro.Avatar = "res/no_avatar.gif"
 	//pro.BirthDay = "1970-01-01"
 	//
 	//// 如果昵称为空，则跟用户名相同
@@ -344,12 +344,12 @@ func (this *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) {
 // 实名认证信息
 func (this *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if this._trustedInfo == nil {
+		this._trustedInfo = &member.TrustedInfo{
+			MemberId: this._memberId,
+		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
-		if err := orm.Get(this._memberId, &this._trustedInfo); err != nil {
-			this._trustedInfo = &member.TrustedInfo{
-				MemberId: this._memberId,
-			}
+		if err := orm.Get(this._memberId, this._trustedInfo); err != nil {
 			orm.Save(nil, this._trustedInfo)
 		}
 	}

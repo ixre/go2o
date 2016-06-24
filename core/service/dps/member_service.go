@@ -216,6 +216,9 @@ func (this *memberService) RegisterMember(merchantId int, v *member.Member,
 			if len(pro.Name) == 0 { //如果未设置昵称,则默认为用户名
 				pro.Name = "用户:" + v.Usr
 			}
+			if len(pro.Avatar) == 0 {
+				pro.Avatar = "res/no_avatar.gif"
+			}
 			err = m.ProfileManager().SaveProfile(pro)
 			if err == nil {
 				// 保存关联信息
