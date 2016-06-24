@@ -8,12 +8,8 @@
  */
 package dto
 
-import (
-	"go2o/core/domain/interface/member"
-)
-
 type MemberLoginResult struct {
 	Result  bool
 	Message string
-	Member  *member.Member
+	Member  *MemberSummary
 }

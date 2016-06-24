@@ -64,6 +64,7 @@ func Init(ctx gof.App) {
 	db := Context.Db()
 
 	/** Repository **/
+
 	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
 	mssRep := repository.NewMssRep(db)
