@@ -554,8 +554,18 @@ func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
 // 获取会员分页的优惠券列表
 func (this *MemberRep) GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.ValueCoupon) {
 	list := []*dto.ValueCoupon{}
-	this.Connector.GetOrm().SelectByQuery(&list,
-		fmt.Sprintf(`SELECT * FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
-		 		WHERE mch_id=%d AND code='%s'`))
-	return 0, list
+	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
+        FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
+	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
+	    WHERE member_id=? AND %s`, where), &total, memberId)
+	if total > 0 {
+		this.Connector.GetOrm().SelectByQuery(&list,
+			fmt.Sprintf(`SELECT pi.id,SUM(1) as num,pi.short_name as title,
+            code,fee,c.discount,is_used,over_time FROM pm_info pi
+             INNER JOIN pm_coupon c ON c.id = pi.id
+	        INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id
+	        WHERE member_id=? AND %s GROUP BY pi.id order by bind_time DESC LIMIT ?,?`, where),
+			memberId, start, end-start)
+	}
+	return total, list
 }
