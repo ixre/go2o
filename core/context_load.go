@@ -74,7 +74,7 @@ func OrmMapping(conn db.Connector) {
 
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")
-	orm.Mapping(member.ValueMember{}, "mm_member")
+	orm.Mapping(member.Member{}, "mm_member")
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
 	orm.Mapping(member.AccountValue{}, "mm_account")
@@ -82,6 +82,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.MemberRelation{}, "mm_relation")
 	orm.Mapping(member.BalanceInfoValue{}, "mm_balance_info")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
+	orm.Mapping(member.Favorite{}, "mm_favorite")
 
 	orm.Mapping(member.BankInfo{}, "mm_bank")
 	orm.Mapping(shopping.ValueOrder{}, "pt_order")

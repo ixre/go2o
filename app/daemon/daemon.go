@@ -49,7 +49,7 @@ type Service interface {
 
 	// 监视会员修改,@create:是否为新注册会员
 	// 返回布尔值,如果返回false,则不继续执行
-	MemberObs(m *member.ValueMember, create bool) bool
+	MemberObs(m *member.Member, create bool) bool
 
 	// 处理邮件队列
 	// 返回布尔值,如果返回false,则不继续执行
@@ -196,7 +196,7 @@ func (this *defaultService) getExpiresKey(o *shopping.ValueOrder) string {
 
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) MemberObs(m *member.ValueMember, create bool) bool {
+func (this *defaultService) MemberObs(m *member.Member, create bool) bool {
 	defer Recover()
 	if this.sMember {
 		//todo: 执行会员逻辑

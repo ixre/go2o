@@ -59,8 +59,8 @@ func (this *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
 	v.Phone = strings.TrimSpace(v.Phone)
 
-	if len([]rune(v.Name)) < 2 {
-		return member.ErrPersonName
+	if len([]rune(v.Name)) < 1 {
+		return member.ErrNilNickName
 	}
 
 	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {

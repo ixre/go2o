@@ -98,7 +98,7 @@ func (this *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
 }
 
 func (this *merchantRep) doSomething() {
-	ms := []*member.ValueMember{}
+	ms := []*member.Member{}
 	orm := this.Connector.GetOrm()
 	orm.Select(&ms, "1=1")
 

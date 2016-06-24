@@ -77,6 +77,34 @@ func (this *MemberRep) SaveProfile(v *member.Profile) error {
 	return err
 }
 
+//收藏,typeId 为类型编号, referId为关联的ID
+func (this *MemberRep) Favorite(memberId int, favType, referId int) error {
+	_, _, err := this.Connector.GetOrm().Save(nil, &member.Favorite{
+		MemberId:   memberId,
+		FavType:    favType,
+		ReferId:    referId,
+		UpdateTime: time.Now().Unix(),
+	})
+	return err
+}
+
+//是否已收藏
+func (this *MemberRep) Favored(memberId, favType, referId int) bool {
+	num := 0
+	this.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
+	WHERE member_id=? AND fav_type=? AND refer_id=?`, &num,
+		memberId, favType, referId)
+	return num > 0
+}
+
+//取消收藏
+func (this *MemberRep) CancelFavorite(memberId int, favType, referId int) error {
+	_, err := this.Connector.GetOrm().Delete(&member.Favorite{},
+		"member_id=? AND fav_type=? AND refer_id=?",
+		memberId, favType, referId)
+	return err
+}
+
 // 获取会员等级
 func (this *MemberRep) GetMemberLevels_New() []*member.Level {
 	list := []*member.Level{}
@@ -115,8 +143,8 @@ func (this *MemberRep) SetMerchantRep(partnerRep merchant.IMerchantRep) {
 }
 
 // 根据用户名获取会员
-func (this *MemberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
-	e := &member.ValueMember{}
+func (this *MemberRep) GetMemberValueByUsr(usr string) *member.Member {
+	e := &member.Member{}
 	err := this.Connector.GetOrm().GetBy(e, "usr=?", usr)
 	if err != nil {
 		return nil
@@ -125,8 +153,8 @@ func (this *MemberRep) GetMemberValueByUsr(usr string) *member.ValueMember {
 }
 
 // 根据手机号码获取会员
-func (this *MemberRep) GetMemberValueByPhone(phone string) *member.ValueMember {
-	e := &member.ValueMember{}
+func (this *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
+	e := &member.Member{}
 	err := this.Connector.GetOrm().GetBy(e, "phone=?", phone)
 	if err != nil {
 		return nil
@@ -136,7 +164,7 @@ func (this *MemberRep) GetMemberValueByPhone(phone string) *member.ValueMember {
 
 // 获取会员
 func (this *MemberRep) GetMember(memberId int) member.IMember {
-	e := &member.ValueMember{}
+	e := &member.Member{}
 	err := this.Connector.GetOrm().Get(memberId, e)
 	if err == nil {
 		return this.CreateMember(e)
@@ -151,9 +179,14 @@ func (this *MemberRep) GetMemberIdByUser(user string) int {
 }
 
 // 创建会员
-func (this *MemberRep) CreateMember(v *member.ValueMember) member.IMember {
+func (this *MemberRep) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(this.GetManager(), v, this,
 		this._mssRep, this._partnerRep)
+}
+
+// 创建会员,仅作为某些操作使用,不保存
+func (this *MemberRep) CreateMemberById(memberId int) member.IMember {
+	return this.CreateMember(&member.Member{Id: memberId})
 }
 
 // 根据邀请码获取会员编号
@@ -295,7 +328,7 @@ func (this *MemberRep) LockMember(id int, state int) error {
 }
 
 // 保存会员
-func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
+func (this *MemberRep) SaveMember(v *member.Member) (int, error) {
 	if v.Id > 0 {
 		rc := core.GetRedisConn()
 		defer rc.Close()
@@ -314,7 +347,7 @@ func (this *MemberRep) SaveMember(v *member.ValueMember) (int, error) {
 	return this.createMember(v)
 }
 
-func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
+func (this *MemberRep) createMember(v *member.Member) (int, error) {
 	var id int64
 	_, id, err := this.Connector.GetOrm().Save(nil, v)
 	if err != nil {
@@ -336,7 +369,7 @@ func (this *MemberRep) createMember(v *member.ValueMember) (int, error) {
 	return v.Id, err
 }
 
-func (this *MemberRep) initMember(v *member.ValueMember) {
+func (this *MemberRep) initMember(v *member.Member) {
 
 	orm := this.Connector.GetOrm()
 	orm.Save(nil, &member.AccountValue{
@@ -364,14 +397,16 @@ func (this *MemberRep) initMember(v *member.ValueMember) {
 // 用户名是否存在
 func (this *MemberRep) CheckUsrExist(usr string, memberId int) bool {
 	var c int
-	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=? AND id<>?", &c, usr, memberId)
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=? AND id<>?",
+		&c, usr, memberId)
 	return c != 0
 }
 
 // 手机号码是否使用
 func (this *MemberRep) CheckPhoneBind(phone string, memberId int) bool {
 	var c int
-	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE phone=? AND id<>?", &c, phone, memberId)
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM mm_profile WHERE phone=? AND member_id<>?",
+		&c, phone, memberId)
 	return c != 0
 }
 
@@ -422,8 +457,8 @@ func (this *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 
 // 邀请
 func (this *MemberRep) GetMyInvitationMembers(memberId, begin, end int) (
-	total int, rows []*member.ValueMember) {
-	arr := []*member.ValueMember{}
+	total int, rows []*member.Member) {
+	arr := []*member.Member{}
 	this.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
 	 (SELECT member_id FROM mm_relation WHERE invi_member_id=?)`, &total, memberId)
 	if total > 0 {
@@ -462,8 +497,8 @@ func (this *MemberRep) GetSubInvitationNum(memberId int, memberIdArr []int) map[
 }
 
 // 获取推荐我的人
-func (this *MemberRep) GetInvitationMeMember(memberId int) *member.ValueMember {
-	var d *member.ValueMember = new(member.ValueMember)
+func (this *MemberRep) GetInvitationMeMember(memberId int) *member.Member {
+	var d *member.Member = new(member.Member)
 	err := this.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT invi_member_id FROM mm_relation  WHERE id=?)",
 		memberId)

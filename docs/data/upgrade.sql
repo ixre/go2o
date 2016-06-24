@@ -327,6 +327,16 @@ ALTER TABLE `flm`.`mm_member`
   DROP COLUMN `name`;
 
 
+CREATE TABLE `flm`.`mm_favorite` (
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '会员收藏表',
+  `member_id` INT NULL,
+  `fav_type` TINYINT(1) NULL,
+  `refer_id` INT NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+
 
 
 

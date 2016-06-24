@@ -75,7 +75,7 @@ func (this *MemberC) Register(ctx *echo.Context) error {
 		regIp = r.RemoteAddr[:i]
 	}
 
-	m := &member.ValueMember{}
+	m := &member.Member{}
 	pro := &member.Profile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
