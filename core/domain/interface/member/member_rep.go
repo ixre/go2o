@@ -11,6 +11,7 @@ package member
 
 import (
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/dto"
 )
 
 type IMemberRep interface {
@@ -156,4 +157,7 @@ type IMemberRep interface {
 
 	//取消收藏
 	CancelFavorite(memberId, favType, referId int) error
+
+	// 获取会员分页的优惠券列表
+	GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.ValueCoupon)
 }

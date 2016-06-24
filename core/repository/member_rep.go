@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
+	"go2o/core/dto"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -548,4 +549,13 @@ func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
 	this.pushToAccountUpdateQueue(memberId, updateTime)
 	return err
+}
+
+// 获取会员分页的优惠券列表
+func (this *MemberRep) GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.ValueCoupon) {
+	list := []*dto.ValueCoupon{}
+	this.Connector.GetOrm().SelectByQuery(&list,
+		fmt.Sprintf(`SELECT * FROM pm_info INNER JOIN pm_coupon ON pm_info.id=pm_coupon.id
+		 		WHERE mch_id=%d AND code='%s'`))
+	return 0, list
 }

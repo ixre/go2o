@@ -34,6 +34,9 @@ type (
 		// 会员收藏服务
 		FavoriteManager() IFavoriteManager
 
+		// 礼品卡服务
+		GiftCardManager() IGiftCardManager
+
 		// 获取值
 		GetValue() Member
 

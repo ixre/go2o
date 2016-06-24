@@ -777,3 +777,23 @@ func (this *memberService) NewBalanceTicket(merchantId int, memberId int, kind i
 
 	return tradeNo, err
 }
+
+//********* 促销  **********//
+
+// 可用的优惠券分页数据
+func (this *memberService) PagedAvailableCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+	return this._rep.CreateMemberById(memberId).
+		GiftCardManager().PagedAvailableCoupon(start, end)
+}
+
+// 已使用的优惠券
+func (this *memberService) PagedAllCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+	return this._rep.CreateMemberById(memberId).
+		GiftCardManager().PagedAllCoupon(start, end)
+}
+
+// 过期的优惠券
+func (this *memberService) PagedExpiresCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+	return this._rep.CreateMemberById(memberId).
+		GiftCardManager().PagedExpiresCoupon(start, end)
+}

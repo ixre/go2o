@@ -38,6 +38,7 @@ type memberImpl struct {
 
 	_profileManager  member.IProfileManager
 	_favoriteManager member.IFavoriteManager
+	_giftCardManager member.IGiftCardManager
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
@@ -68,10 +69,19 @@ func (this *memberImpl) ProfileManager() member.IProfileManager {
 // 会员收藏服务
 func (this *memberImpl) FavoriteManager() member.IFavoriteManager {
 	if this._favoriteManager == nil {
-		this._favoriteManager = newFavoriteManagerImpl(this.GetAggregateRootId(),
-			this._rep)
+		this._favoriteManager = newFavoriteManagerImpl(
+			this.GetAggregateRootId(), this._rep)
 	}
 	return this._favoriteManager
+}
+
+// 礼品卡服务
+func (this *memberImpl) GiftCardManager() member.IGiftCardManager {
+	if this._giftCardManager == nil {
+		this._giftCardManager = newGiftCardManagerImpl(
+			this.GetAggregateRootId(), this._rep)
+	}
+	return this._giftCardManager
 }
 
 // 获取值

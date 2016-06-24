@@ -48,7 +48,8 @@ func (this *MemberC) Login(ctx *echo.Context) error {
 		if err == nil {
 			// 生成令牌
 			e.DynamicToken = util.SetMemberApiToken(sto, e.Id, e.Pwd)
-			result.Member = e
+			mm := dps.MemberService.GetMemberSummary(e.Id)
+			result.Member = mm
 			result.Result = true
 		} else {
 			result.Message = err.Error()
