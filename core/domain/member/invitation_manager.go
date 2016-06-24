@@ -16,7 +16,7 @@ var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
 	_member       *memberImpl
-	_myInvMembers []*member.ValueMember
+	_myInvMembers []*member.Member
 }
 
 // 判断是否推荐了某个会员
@@ -30,7 +30,7 @@ func (this *invitationManager) InvitationBy(memberId int) bool {
 
 // 获取我邀请的会员
 func (this *invitationManager) GetInvitationMembers(begin, end int) (
-	int, []*member.ValueMember) {
+	int, []*member.Member) {
 	return this._member._rep.GetMyInvitationMembers(
 		this._member.GetAggregateRootId(), begin, end)
 }
@@ -47,6 +47,6 @@ func (this *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]in
 }
 
 // 获取邀请要的会员
-func (this *invitationManager) GetInvitationMeMember() *member.ValueMember {
+func (this *invitationManager) GetInvitationMeMember() *member.Member {
 	return this._member._rep.GetInvitationMeMember(this._member.GetAggregateRootId())
 }

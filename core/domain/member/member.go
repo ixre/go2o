@@ -12,6 +12,7 @@ package member
 //todo: 要注意UpdateTime的更新
 
 import (
+	"errors"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
@@ -26,7 +27,7 @@ var _ member.IMember = new(memberImpl)
 
 type memberImpl struct {
 	_manager     member.IMemberManager
-	_value       *member.ValueMember
+	_value       *member.Member
 	_account     member.IAccount
 	_level       *member.Level
 	_rep         member.IMemberRep
@@ -35,10 +36,11 @@ type memberImpl struct {
 	_invitation  member.IInvitationManager
 	_mssRep      mss.IMssRep
 
-	_profileManager member.IProfileManager
+	_profileManager  member.IProfileManager
+	_favoriteManager member.IFavoriteManager
 }
 
-func NewMember(manager member.IMemberManager, val *member.ValueMember, rep member.IMemberRep,
+func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
 	mp mss.IMssRep, merchantRep merchant.IMerchantRep) member.IMember {
 	return &memberImpl{
 		_manager:     manager,
@@ -63,8 +65,17 @@ func (this *memberImpl) ProfileManager() member.IProfileManager {
 	return this._profileManager
 }
 
+// 会员收藏服务
+func (this *memberImpl) FavoriteManager() member.IFavoriteManager {
+	if this._favoriteManager == nil {
+		this._favoriteManager = newFavoriteManagerImpl(this.GetAggregateRootId(),
+			this._rep)
+	}
+	return this._favoriteManager
+}
+
 // 获取值
-func (this *memberImpl) GetValue() member.ValueMember {
+func (this *memberImpl) GetValue() member.Member {
 	return *this._value
 }
 
@@ -74,7 +85,7 @@ var (
 	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8]|14[7])(\\d{8})$")
 )
 
-func (this *memberImpl) validate(v *member.ValueMember) error {
+func (this *memberImpl) validate(v *member.Member) error {
 	v.Usr = strings.ToLower(strings.TrimSpace(v.Usr)) // 小写并删除空格
 	if len([]rune(v.Usr)) < 6 {
 		return member.ErrUsrLength
@@ -86,7 +97,7 @@ func (this *memberImpl) validate(v *member.ValueMember) error {
 }
 
 // 设置值
-func (this *memberImpl) SetValue(v *member.ValueMember) error {
+func (this *memberImpl) SetValue(v *member.Member) error {
 	v.Usr = this._value.Usr
 	if len(this._value.InvitationCode) == 0 {
 		this._value.InvitationCode = v.InvitationCode
@@ -234,7 +245,7 @@ func (this *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (this *memberImpl) create(m *member.ValueMember, pro *member.Profile) (int, error) {
+func (this *memberImpl) create(m *member.Member, pro *member.Profile) (int, error) {
 	//todo: 获取推荐人编号
 	//todo: 检测是否有注册权限
 	//if err := this._manager.RegisterPerm(this._relation.RefereesId);err != nil{
@@ -290,4 +301,71 @@ func (this *memberImpl) SaveRelation(r *member.MemberRelation) error {
 	this._relation = r
 	this._relation.MemberId = this._value.Id
 	return this._rep.SaveRelation(this._relation)
+}
+
+var _ member.IFavoriteManager = new(favoriteManagerImpl)
+
+type favoriteManagerImpl struct {
+	_memberId int
+	_rep      member.IMemberRep
+}
+
+func newFavoriteManagerImpl(memberId int,
+	rep member.IMemberRep) member.IFavoriteManager {
+	if memberId == 0 {
+		//如果会员不存在,则不应创建服务
+		panic(errors.New("member not exists"))
+	}
+	return &favoriteManagerImpl{
+		_memberId: memberId,
+		_rep:      rep,
+	}
+}
+
+// 收藏
+func (this *favoriteManagerImpl) Favorite(favType, referId int) error {
+	if this.Favored(favType, referId) {
+		return member.ErrFavored
+	}
+	return this._rep.Favorite(this._memberId, favType, referId)
+}
+
+// 是否已收藏
+func (this *favoriteManagerImpl) Favored(favType, referId int) bool {
+	return this._rep.Favored(this._memberId, favType, referId)
+}
+
+// 取消收藏
+func (this *favoriteManagerImpl) Cancel(favType, referId int) error {
+	return this._rep.CancelFavorite(this._memberId, favType, referId)
+}
+
+// 收藏商品
+func (this *favoriteManagerImpl) FavoriteGoods(goodsId int) error {
+	return this.Favorite(member.FavTypeGoods, goodsId)
+}
+
+// 取消收藏商品
+func (this *favoriteManagerImpl) CancelGoodsFavorite(goodsId int) error {
+	return this.Cancel(member.FavTypeGoods, goodsId)
+}
+
+// 商品是否已收藏
+func (this *favoriteManagerImpl) GoodsFavored(goodsId int) bool {
+	return this.Favored(member.FavTypeGoods, goodsId)
+}
+
+// 收藏店铺
+func (this *favoriteManagerImpl) FavoriteShop(shopId int) error {
+	return this.Favorite(member.FavTypeShop, shopId)
+}
+
+// 取消收藏店铺
+func (this *favoriteManagerImpl) CancelShopFavorite(shopId int) error {
+	return this.Cancel(member.FavTypeShop, shopId)
+}
+
+// 商店是否已收藏
+func (this *favoriteManagerImpl) ShopFavored(shopId int) bool {
+	return this.Favored(member.FavTypeShop, shopId)
 }

@@ -16,6 +16,13 @@ const (
 	BankLocked   = 1
 )
 
+const (
+	// 收藏店铺
+	FavTypeShop = iota + 1
+	// 收藏商品
+	FavTypeGoods
+)
+
 type (
 	IMember interface {
 		// 获取聚合根编号
@@ -24,14 +31,17 @@ type (
 		// 会员资料服务
 		ProfileManager() IProfileManager
 
+		// 会员收藏服务
+		FavoriteManager() IFavoriteManager
+
 		// 获取值
-		GetValue() ValueMember
+		GetValue() Member
 
 		// 邀请管理
 		Invitation() IInvitationManager
 
 		// 设置值
-		SetValue(*ValueMember) error
+		SetValue(*Member) error
 
 		// 获取账户
 		GetAccount() IAccount
@@ -116,7 +126,38 @@ type (
 		DeleteDeliver(int) error
 	}
 
-	ValueMember struct {
+	// 收藏服务
+	IFavoriteManager interface {
+
+		// 收藏
+		Favorite(favType, referId int) error
+
+		// 是否已收藏
+		Favored(favType, referId int) bool
+
+		// 取消收藏
+		Cancel(favType, referId int) error
+
+		// 收藏商品
+		FavoriteGoods(goodsId int) error
+
+		// 取消收藏商品
+		CancelGoodsFavorite(goodsId int) error
+
+		// 收藏店铺
+		FavoriteShop(shopId int) error
+
+		// 取消收藏店铺
+		CancelShopFavorite(shopId int) error
+
+		// 商品是否已收藏
+		GoodsFavored(goodsId int) bool
+
+		// 商店是否已收藏
+		ShopFavored(shopId int) bool
+	}
+
+	Member struct {
 		// 编号
 		Id int `db:"id" auto:"yes" pk:"yes"`
 		// 用户名
@@ -234,6 +275,20 @@ type (
 		//是否锁定
 		IsLocked int `db:"is_locked"`
 		//更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 收藏
+	Favorite struct {
+		// 编号
+		Id int `db:"id"`
+		// 会员编号
+		MemberId int `db:"member_id"`
+		// 收藏类型
+		FavType int `db:"fav_type"`
+		// 引用编号
+		ReferId int `db:"refer_id"`
+		// 收藏时间
 		UpdateTime int64 `db:"update_time"`
 	}
 )

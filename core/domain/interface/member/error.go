@@ -86,8 +86,8 @@ var (
 	ErrUsrExist *domain.DomainError = domain.NewDomainError(
 		"err_usr_exist", "用户名已存在")
 
-	ErrPersonName *domain.DomainError = domain.NewDomainError(
-		"err_person_name", "姓名不正确")
+	ErrNilNickName *domain.DomainError = domain.NewDomainError(
+		"err_nil_nick_name", "昵称不能为空")
 
 	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
 		"err_email_valid_err", "邮箱不正确")
@@ -115,4 +115,7 @@ var (
 
 	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
 		"err_missing_trusted_info", "实名认证信息不完整")
+
+	ErrFavored *domain.DomainError = domain.NewDomainError(
+		"err_favored", "已经收藏过了")
 )

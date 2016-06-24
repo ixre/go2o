@@ -15,5 +15,5 @@ import (
 type MemberLoginResult struct {
 	Result  bool
 	Message string
-	Member  *member.ValueMember
+	Member  *member.Member
 }

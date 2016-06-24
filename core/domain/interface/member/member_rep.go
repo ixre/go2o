@@ -37,19 +37,22 @@ type IMemberRep interface {
 	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
-	GetMemberValueByUsr(usr string) *ValueMember
+	GetMemberValueByUsr(usr string) *Member
 
 	// 根据手机号码获取会员
-	GetMemberValueByPhone(phone string) *ValueMember
+	GetMemberValueByPhone(phone string) *Member
 
 	// 获取会员
 	GetMember(memberId int) IMember
 
 	// 创建会员
-	CreateMember(*ValueMember) IMember
+	CreateMember(*Member) IMember
+
+	// 创建会员,仅作为某些操作使用,不保存
+	CreateMemberById(memberId int) IMember
 
 	// 保存
-	SaveMember(v *ValueMember) (int, error)
+	SaveMember(v *Member) (int, error)
 
 	// 获取会员最后更新时间
 	GetMemberLatestUpdateTime(int) int64
@@ -106,13 +109,13 @@ type IMemberRep interface {
 	DeleteDeliver(memberId, deliverId int) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*ValueMember)
+	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*Member)
 
 	// 获取下级会员数量
 	GetSubInvitationNum(memberId int, memberIdArr []int) map[int]int
 
 	// 获取推荐我的人
-	GetInvitationMeMember(memberId int) *ValueMember
+	GetInvitationMeMember(memberId int) *Member
 
 	// 根据编号获取余额变动信息
 	GetBalanceInfo(id int) *BalanceInfoValue
@@ -144,4 +147,13 @@ type IMemberRep interface {
 
 	// 保存等级
 	SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error)
+
+	//收藏,favType 为收藏类型, referId为关联的ID
+	Favorite(memberId, favType, referId int) error
+
+	//是否已收藏
+	Favored(memberId, favType, referId int) bool
+
+	//取消收藏
+	CancelFavorite(memberId, favType, referId int) error
 }
