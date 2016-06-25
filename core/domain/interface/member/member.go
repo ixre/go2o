@@ -29,19 +29,19 @@ type (
 		GetAggregateRootId() int
 
 		// 会员资料服务
-		ProfileManager() IProfileManager
+		Profile() IProfileManager
 
 		// 会员收藏服务
-		FavoriteManager() IFavoriteManager
+		Favorite() IFavoriteManager
 
 		// 礼品卡服务
-		GiftCardManager() IGiftCardManager
-
-		// 获取值
-		GetValue() Member
+		GiftCard() IGiftCardManager
 
 		// 邀请管理
 		Invitation() IInvitationManager
+
+		// 获取值
+		GetValue() Member
 
 		// 设置值
 		SetValue(*Member) error
@@ -55,24 +55,17 @@ type (
 		// 解锁会员
 		Unlock() error
 
-		//　保存积分记录
-		SaveIntegralLog(*IntegralLog) error
+		// 获取关联的会员
+		GetRelation() *Relation
+
+		// 更新会员绑定
+		SaveRelation(r *Relation) error
 
 		// 增加经验值
 		AddExp(exp int) error
 
 		// 获取等级
 		GetLevel() *Level
-
-		//　增加积分
-		// todo:merchantId 不需要
-		AddIntegral(merchantId int, backType int, integral int, log string) error
-
-		// 获取关联的会员
-		GetRelation() *MemberRelation
-
-		// 更新会员绑定
-		SaveRelation(r *MemberRelation) error
 
 		// 更换用户名
 		ChangeUsr(string) error
@@ -131,7 +124,6 @@ type (
 
 	// 收藏服务
 	IFavoriteManager interface {
-
 		// 收藏
 		Favorite(favType, referId int) error
 
@@ -238,6 +230,17 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
+	//会员关联表
+	Relation struct {
+		MemberId int `db:"member_id" pk:"yes"`
+		//会员卡号
+		CardId string `db:"card_id"`
+		//推荐人（会员）
+		RefereesId int `db:"invi_member_id"`
+		//注册关联商户编号
+		RegisterMerchantId int `db:"reg_merchant_id"`
+	}
+
 	// 实名认证信息
 	TrustedInfo struct {
 		//会员编号
@@ -293,6 +296,38 @@ type (
 		ReferId int `db:"refer_id"`
 		// 收藏时间
 		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 收货地址
+	IDeliverAddress interface {
+		GetDomainId() int
+		GetValue() DeliverAddress
+		SetValue(*DeliverAddress) error
+		Save() (int, error)
+	}
+
+	// 收货地址
+	DeliverAddress struct {
+		//编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		//会员编号
+		MemberId int `db:"member_id"`
+		//收货人
+		RealName string `db:"real_name"`
+		//电话
+		Phone string `db:"phone"`
+		//省
+		Province int `db:"province"`
+		//市
+		City int `db:"city"`
+		//区
+		District int `db:"district"`
+		//地区(省市区连接)
+		Area string `db:"area"`
+		//地址
+		Address string `db:"address"`
+		//是否默认
+		IsDefault int `db:"is_default"`
 	}
 )
 

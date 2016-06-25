@@ -77,10 +77,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Member{}, "mm_member")
 	orm.Mapping(member.Profile{}, "mm_profile")
 	orm.Mapping(member.IntegralLog{}, "mm_integral_log")
-	orm.Mapping(member.AccountValue{}, "mm_account")
+	orm.Mapping(member.Account{}, "mm_account")
 	orm.Mapping(member.DeliverAddress{}, "mm_deliver_addr")
-	orm.Mapping(member.MemberRelation{}, "mm_relation")
-	orm.Mapping(member.BalanceInfoValue{}, "mm_balance_info")
+	orm.Mapping(member.Relation{}, "mm_relation")
+	orm.Mapping(member.BalanceInfo{}, "mm_balance_info")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
 

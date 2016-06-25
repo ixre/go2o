@@ -41,7 +41,7 @@ func NewMemberService(mchService *merchantService, rep member.IMemberRep,
 func (this *memberService) GetProfile(memberId int) member.Profile {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ProfileManager().GetProfile()
+		return m.Profile().GetProfile()
 	}
 	return member.Profile{}
 }
@@ -49,55 +49,55 @@ func (this *memberService) GetProfile(memberId int) member.Profile {
 // 保存资料
 func (this *memberService) SaveProfile(memberId int, v *member.Profile) error {
 	m := this._rep.GetMember(memberId)
-	return m.ProfileManager().SaveProfile(v)
+	return m.Profile().SaveProfile(v)
 }
 
 // 是否已收藏
 func (this *memberService) Favored(memberId, favType, referId int) bool {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().Favored(favType, referId)
+		Favorite().Favored(favType, referId)
 }
 
 // 取消收藏
 func (this *memberService) Cancel(memberId, favType, referId int) error {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().Cancel(favType, referId)
+		Favorite().Cancel(favType, referId)
 }
 
 // 收藏商品
 func (this *memberService) FavoriteGoods(memberId, goodsId int) error {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().FavoriteGoods(goodsId)
+		Favorite().FavoriteGoods(goodsId)
 }
 
 // 取消收藏商品
 func (this *memberService) CancelGoodsFavorite(memberId, goodsId int) error {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().CancelGoodsFavorite(goodsId)
+		Favorite().CancelGoodsFavorite(goodsId)
 }
 
 // 收藏店铺
 func (this *memberService) FavoriteShop(memberId, shopId int) error {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().FavoriteShop(shopId)
+		Favorite().FavoriteShop(shopId)
 }
 
 // 取消收藏店铺
 func (this *memberService) CancelShopFavorite(memberId, shopId int) error {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().CancelShopFavorite(shopId)
+		Favorite().CancelShopFavorite(shopId)
 }
 
 // 商品是否已收藏
 func (this *memberService) GoodsFavored(memberId, goodsId int) bool {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().GoodsFavored(goodsId)
+		Favorite().GoodsFavored(goodsId)
 }
 
 // 商店是否已收藏
 func (this *memberService) ShopFavored(memberId, shopId int) bool {
 	return this._rep.CreateMemberById(memberId).
-		FavoriteManager().ShopFavored(shopId)
+		Favorite().ShopFavored(shopId)
 }
 
 /**================ 会员等级 ==================**/
@@ -219,7 +219,7 @@ func (this *memberService) RegisterMember(merchantId int, v *member.Member,
 			if len(pro.Avatar) == 0 {
 				pro.Avatar = "res/no_avatar.gif"
 			}
-			err = m.ProfileManager().SaveProfile(pro)
+			err = m.Profile().SaveProfile(pro)
 			if err == nil {
 				// 保存关联信息
 				rl := m.GetRelation()
@@ -241,7 +241,7 @@ func (this *memberService) GetLevel(memberId int) *member.Level {
 	return nil
 }
 
-func (this *memberService) GetRelation(memberId int) *member.MemberRelation {
+func (this *memberService) GetRelation(memberId int) *member.Relation {
 	return this._rep.GetRelation(memberId)
 }
 
@@ -263,7 +263,7 @@ func (this *memberService) LockMember(id int) (bool, error) {
 func (this *memberService) ProfileCompleted(memberId int) bool {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ProfileManager().ProfileCompleted()
+		return m.Profile().ProfileCompleted()
 	}
 	return false
 }
@@ -274,7 +274,7 @@ func (this *memberService) ResetPassword(memberId int) string {
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
-		if m.ProfileManager().ModifyPassword(newEncPwd, "") == nil {
+		if m.Profile().ModifyPassword(newEncPwd, "") == nil {
 			return newPwd
 		}
 	}
@@ -326,7 +326,7 @@ func (this *memberService) CheckUsr(usr string, memberId int) error {
 	return nil
 }
 
-func (this *memberService) GetAccount(memberId int) *member.AccountValue {
+func (this *memberService) GetAccount(memberId int) *member.Account {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
 	//m, _ := this._memberRep.GetMember(memberId)
 	//m.AddExp(300)
@@ -335,31 +335,31 @@ func (this *memberService) GetAccount(memberId int) *member.AccountValue {
 
 func (this *memberService) GetBank(memberId int) *member.BankInfo {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
-	b := m.ProfileManager().GetBank()
+	b := m.Profile().GetBank()
 	return &b
 }
 
 func (this *memberService) SaveBankInfo(v *member.BankInfo) error {
 	m := this._rep.CreateMember(&member.Member{Id: v.MemberId})
-	return m.ProfileManager().SaveBank(v)
+	return m.Profile().SaveBank(v)
 }
 
 // 解锁银行卡信息
 func (this *memberService) UnlockBankInfo(memberId int) error {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
-	return m.ProfileManager().UnlockBank()
+	return m.Profile().UnlockBank()
 }
 
 // 实名认证信息
 func (this *memberService) GetTrustedInfo(memberId int) member.TrustedInfo {
 	m := this._rep.GetMember(memberId)
-	return m.ProfileManager().GetTrustedInfo()
+	return m.Profile().GetTrustedInfo()
 }
 
 // 保存实名认证信息
 func (this *memberService) SaveTrustedInfo(memberId int, v *member.TrustedInfo) error {
 	m := this._rep.GetMember(memberId)
-	err := m.ProfileManager().SaveTrustedInfo(v)
+	err := m.Profile().SaveTrustedInfo(v)
 	//todo: 取消自动认证
 	if err == nil {
 		err = this.ReviewTrustedInfo(memberId, true, "")
@@ -370,7 +370,7 @@ func (this *memberService) SaveTrustedInfo(memberId int, v *member.TrustedInfo) 
 // 审核实名认证,若重复审核将返回错误
 func (this *memberService) ReviewTrustedInfo(memberId int, pass bool, remark string) error {
 	m := this._rep.GetMember(memberId)
-	return m.ProfileManager().ReviewTrustedInfo(pass, remark)
+	return m.Profile().ReviewTrustedInfo(pass, remark)
 }
 
 // 获取返现记录
@@ -394,7 +394,7 @@ func (this *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddr
 func (this *memberService) GetDeliverAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
-	v := m.ProfileManager().GetDeliver(deliverId).GetValue()
+	v := m.Profile().GetDeliver(deliverId).GetValue()
 	return &v
 }
 
@@ -404,10 +404,10 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 	var v member.IDeliverAddress
 	var err error
 	if e.Id > 0 {
-		v = m.ProfileManager().GetDeliver(e.Id)
+		v = m.Profile().GetDeliver(e.Id)
 		err = v.SetValue(e)
 	} else {
-		v = m.ProfileManager().CreateDeliver(e)
+		v = m.Profile().CreateDeliver(e)
 	}
 	if err != nil {
 		return -1, err
@@ -418,13 +418,13 @@ func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAdd
 //删除配送地址
 func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
-	return m.ProfileManager().DeleteDeliver(deliverId)
+	return m.Profile().DeleteDeliver(deliverId)
 }
 
 func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ProfileManager().ModifyPassword(newPwd, oldPwd)
+		return m.Profile().ModifyPassword(newPwd, oldPwd)
 	}
 	return member.ErrNoSuchMember
 }
@@ -433,7 +433,7 @@ func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) e
 func (this *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
 	m := this._rep.GetMember(memberId)
 	if m != nil {
-		return m.ProfileManager().ModifyTradePassword(newPwd, oldPwd)
+		return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 	}
 	return member.ErrNoSuchMember
 }
@@ -479,7 +479,7 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 		mv := m.GetValue()
 		acv := m.GetAccount().GetValue()
 		lv := m.GetLevel()
-		pro := m.ProfileManager().GetProfile()
+		pro := m.Profile().GetProfile()
 		return &dto.MemberSummary{
 			Id:                m.GetAggregateRootId(),
 			Usr:               mv.Usr,
@@ -502,7 +502,7 @@ func (this *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 }
 
 // 获取余额变动信息
-func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.BalanceInfoValue {
+func (this *memberService) GetBalanceInfoById(memberId, infoId int) *member.BalanceInfo {
 	m := this._rep.GetMember(memberId)
 	if m == nil {
 		return nil
@@ -580,7 +580,7 @@ func (this *memberService) SubmitApplyPresentBalance(memberId int, applyType int
 }
 
 // 获取最近的提现
-func (this *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfoValue {
+func (this *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfo {
 	return this._query.GetLatestBalanceInfoByKind(memberId, member.KindBalanceApplyCash)
 }
 
@@ -781,19 +781,19 @@ func (this *memberService) NewBalanceTicket(merchantId int, memberId int, kind i
 //********* 促销  **********//
 
 // 可用的优惠券分页数据
-func (this *memberService) PagedAvailableCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+func (this *memberService) PagedAvailableCoupon(memberId, start, end int) (int, []*dto.SimpleCoupon) {
 	return this._rep.CreateMemberById(memberId).
-		GiftCardManager().PagedAvailableCoupon(start, end)
+		GiftCard().PagedAvailableCoupon(start, end)
 }
 
 // 已使用的优惠券
-func (this *memberService) PagedAllCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+func (this *memberService) PagedAllCoupon(memberId, start, end int) (int, []*dto.SimpleCoupon) {
 	return this._rep.CreateMemberById(memberId).
-		GiftCardManager().PagedAllCoupon(start, end)
+		GiftCard().PagedAllCoupon(start, end)
 }
 
 // 过期的优惠券
-func (this *memberService) PagedExpiresCoupon(memberId, start, end int) (int, []*dto.ValueCoupon) {
+func (this *memberService) PagedExpiresCoupon(memberId, start, end int) (int, []*dto.SimpleCoupon) {
 	return this._rep.CreateMemberById(memberId).
-		GiftCardManager().PagedExpiresCoupon(start, end)
+		GiftCard().PagedExpiresCoupon(start, end)
 }

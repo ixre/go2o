@@ -722,7 +722,7 @@ func (this *Order) Complete() error {
 
 		// 赠送积分
 		if backIntegral != 0 {
-			err = m.AddIntegral(v.MerchantId, enum.INTEGRAL_TYPE_ORDER,
+			err = m.GetAccount().AddIntegral(v.MerchantId, enum.INTEGRAL_TYPE_ORDER,
 				backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
 			if err != nil {
 				return err
@@ -825,7 +825,7 @@ func (this *Order) backFor3R(mch merchant.IMerchant, m member.IMember,
 	}
 
 	i := 0
-	mName := m.ProfileManager().GetProfile().Name
+	mName := m.Profile().GetProfile().Name
 	saleConf := mch.ConfManager().GetSaleConf()
 	percent := saleConf.CashBackTg2Percent
 	for i < 2 {

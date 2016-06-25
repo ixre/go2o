@@ -17,7 +17,7 @@ func TestDeliverAddressSave(t *testing.T) {
 	m := NewMember(NewMemberManager(nil, nil), &member.Member{
 		Id: 1,
 	}, nil, nil, nil)
-	d := m.ProfileManager().GetDeliverAddress()[0]
+	d := m.Profile().GetDeliverAddress()[0]
 	v := d.GetValue()
 	v.Province = 440000
 	v.City = 440600
