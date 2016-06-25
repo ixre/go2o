@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"regexp"
@@ -30,13 +31,14 @@ type profileManagerImpl struct {
 	_member      *memberImpl
 	_memberId    int
 	_rep         member.IMemberRep
+	_valRep      valueobject.IValueRep
 	_bank        *member.BankInfo
 	_trustedInfo *member.TrustedInfo
 	_profile     *member.Profile
 }
 
 func newProfileManagerImpl(m *memberImpl, memberId int,
-	rep member.IMemberRep) member.IProfileManager {
+	rep member.IMemberRep, valRep valueobject.IValueRep) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
 		panic(errors.New("member not exists"))
@@ -45,6 +47,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int,
 		_member:   m,
 		_memberId: memberId,
 		_rep:      rep,
+		_valRep:   valRep,
 	}
 }
 
@@ -303,27 +306,26 @@ func (this *profileManagerImpl) UnlockBank() error {
 }
 
 // 创建配送地址
-func (this *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) (member.IDeliver, error) {
-	return newDeliver(v, this._rep)
+func (this *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) member.IDeliverAddress {
+	return newDeliver(v, this._rep, this._valRep)
 }
 
 // 获取配送地址
-func (this *profileManagerImpl) GetDeliverAddress() []member.IDeliver {
+func (this *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 	var vls []*member.DeliverAddress
 	vls = this._rep.GetDeliverAddress(this._memberId)
-	var arr []member.IDeliver = make([]member.IDeliver, len(vls))
+	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(vls))
 	for i, v := range vls {
-		arr[i], _ = this.CreateDeliver(v)
+		arr[i] = this.CreateDeliver(v)
 	}
 	return arr
 }
 
 // 获取配送地址
-func (this *profileManagerImpl) GetDeliver(deliverId int) member.IDeliver {
+func (this *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
 	v := this._rep.GetSingleDeliverAddress(this._memberId, deliverId)
 	if v != nil {
-		d, _ := this.CreateDeliver(v)
-		return d
+		return this.CreateDeliver(v)
 	}
 	return nil
 }
@@ -386,4 +388,83 @@ func (this *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) erro
 	this._trustedInfo.ReviewTime = time.Now().Unix()
 	_, _, err := tmp.Db().GetOrm().Save(nil, this._trustedInfo)
 	return err
+}
+
+var _ member.IDeliverAddress = new(deliverAddressImpl)
+
+type deliverAddressImpl struct {
+	_value     *member.DeliverAddress
+	_memberRep member.IMemberRep
+	_valRep    valueobject.IValueRep
+}
+
+func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
+	valRep valueobject.IValueRep) member.IDeliverAddress {
+	d := &deliverAddressImpl{
+		_value:     v,
+		_memberRep: memberRep,
+		_valRep:    valRep,
+	}
+	return d
+}
+
+func (this *deliverAddressImpl) GetDomainId() int {
+	return this._value.Id
+}
+
+func (this *deliverAddressImpl) GetValue() member.DeliverAddress {
+	return *this._value
+}
+
+func (this *deliverAddressImpl) SetValue(v *member.DeliverAddress) error {
+	if this._value.MemberId == v.MemberId {
+		if err := this.checkValue(v); err != nil {
+			return err
+		}
+		this._value = v
+	}
+	return nil
+}
+
+// 设置地区中文名
+func (this *deliverAddressImpl) renewAreaName(v *member.DeliverAddress) string {
+	names := this._valRep.GetAreaNames([]int{
+		v.Province,
+		v.City,
+		v.District,
+	})
+	return strings.Join(names, " ")
+}
+
+func (this *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
+	v.Address = strings.TrimSpace(v.Address)
+	v.RealName = strings.TrimSpace(v.RealName)
+	v.Phone = strings.TrimSpace(v.Phone)
+
+	if len([]rune(v.RealName)) < 2 {
+		return member.ErrDeliverContactPersonName
+	}
+
+	if v.Province <= 0 || v.City <= 0 || v.District <= 0 {
+		return member.ErrNotSetArea
+	}
+
+	if !phoneRegex.MatchString(v.Phone) {
+		return member.ErrDeliverContactPhone
+	}
+
+	if len([]rune(v.Address)) < 6 {
+		// 判断字符长度
+		return member.ErrDeliverAddressLen
+	}
+
+	return nil
+}
+
+func (this *deliverAddressImpl) Save() (int, error) {
+	if err := this.checkValue(this._value); err != nil {
+		return this.GetDomainId(), err
+	}
+	this._value.Area = this.renewAreaName(this._value)
+	return this._memberRep.SaveDeliver(this._value)
 }

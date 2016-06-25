@@ -52,6 +52,9 @@ var (
 	ErrDeliverContactPhone *domain.DomainError = domain.NewDomainError(
 		"err_deliver_phone_is_null", "联系人电话有误")
 
+	ErrNotSetArea *domain.DomainError = domain.NewDomainError(
+		"err_not_set_area", "地址不正确")
+
 	ErrNoSuchBankInfo *domain.DomainError = domain.NewDomainError(
 		"err_no_such_bank_info", "请完善银行卡信息")
 
