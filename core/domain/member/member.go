@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"regexp"
 	"strings"
@@ -35,6 +36,7 @@ type memberImpl struct {
 	_relation    *member.MemberRelation
 	_invitation  member.IInvitationManager
 	_mssRep      mss.IMssRep
+	_valRep      valueobject.IValueRep
 
 	_profileManager  member.IProfileManager
 	_favoriteManager member.IFavoriteManager
@@ -42,12 +44,13 @@ type memberImpl struct {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
-	mp mss.IMssRep, merchantRep merchant.IMerchantRep) member.IMember {
+	mp mss.IMssRep, valRep valueobject.IValueRep, merchantRep merchant.IMerchantRep) member.IMember {
 	return &memberImpl{
 		_manager:     manager,
 		_value:       val,
 		_rep:         rep,
 		_mssRep:      mp,
+		_valRep:      valRep,
 		_merchantRep: merchantRep,
 	}
 }
@@ -61,7 +64,7 @@ func (this *memberImpl) GetAggregateRootId() int {
 func (this *memberImpl) ProfileManager() member.IProfileManager {
 	if this._profileManager == nil {
 		this._profileManager = newProfileManagerImpl(this,
-			this.GetAggregateRootId(), this._rep)
+			this.GetAggregateRootId(), this._rep, this._valRep)
 	}
 	return this._profileManager
 }

@@ -401,13 +401,13 @@ func (this *memberService) GetDeliverAddressById(memberId,
 //保存配送地址
 func (this *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAddress) (int, error) {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
-	var v member.IDeliver
+	var v member.IDeliverAddress
 	var err error
 	if e.Id > 0 {
 		v = m.ProfileManager().GetDeliver(e.Id)
 		err = v.SetValue(e)
 	} else {
-		v, err = m.ProfileManager().CreateDeliver(e)
+		v = m.ProfileManager().CreateDeliver(e)
 	}
 	if err != nil {
 		return -1, err

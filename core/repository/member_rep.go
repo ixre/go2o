@@ -182,7 +182,7 @@ func (this *MemberRep) GetMemberIdByUser(user string) int {
 // 创建会员
 func (this *MemberRep) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(this.GetManager(), v, this,
-		this._mssRep, this._partnerRep)
+		this._mssRep, this._valRep, this._partnerRep)
 }
 
 // 创建会员,仅作为某些操作使用,不保存

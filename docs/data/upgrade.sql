@@ -336,6 +336,14 @@ CREATE TABLE `flm`.`mm_favorite` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `flm`.`mm_deliver_addr`
+  CHANGE COLUMN `address` `address` VARCHAR(80) NULL DEFAULT NULL COMMENT '详细地址' ,
+  ADD COLUMN `province` INT NULL AFTER `phone`,
+  ADD COLUMN `city` INT NULL AFTER `province`,
+  ADD COLUMN `district` INT NULL AFTER `city`,
+  ADD COLUMN `area` VARCHAR(50) NULL COMMENT '省市区' AFTER `district`;
+
+
 
 
 

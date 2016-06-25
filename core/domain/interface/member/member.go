@@ -117,13 +117,13 @@ type (
 		ReviewTrustedInfo(pass bool, remark string) error
 
 		// 创建配送地址
-		CreateDeliver(*DeliverAddress) (IDeliver, error)
+		CreateDeliver(*DeliverAddress) IDeliverAddress
 
 		// 获取配送地址
-		GetDeliverAddress() []IDeliver
+		GetDeliverAddress() []IDeliverAddress
 
 		// 获取配送地址
-		GetDeliver(int) IDeliver
+		GetDeliver(int) IDeliverAddress
 
 		// 删除配送地址
 		DeleteDeliver(int) error

@@ -23,7 +23,7 @@ type Cart struct {
 	_memberRep   member.IMemberRep
 	_summary     string
 	_shop        shop.IShop
-	_deliver     member.IDeliver
+	_deliver     member.IDeliverAddress
 }
 
 func createCart(val *shopping.ValueCart, mchRep merchant.IMerchantRep,
@@ -267,7 +267,7 @@ func (this *Cart) SetBuyer(buyerId int) error {
 // 结算数据持久化
 func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
 	//var shop shop.IShop
-	var deliver member.IDeliver
+	var deliver member.IDeliverAddress
 	var err error
 
 	if shopId > 0 {
@@ -306,7 +306,7 @@ func (this *Cart) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) e
 }
 
 // 获取结算数据
-func (this *Cart) GetSettleData() (s shop.IShop, d member.IDeliver, paymentOpt, deliverOpt int) {
+func (this *Cart) GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt, deliverOpt int) {
 	//var err error
 	if this._value.ShopId > 0 && this._shop == nil {
 		//var pt merchant.IMerchant

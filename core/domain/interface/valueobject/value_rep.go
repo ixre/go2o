@@ -180,6 +180,9 @@ type (
 
 		// 获取下级区域
 		GetChildAreas(id int) []*Area
+
+		// 获取地区名称
+		GetAreaNames(id []int) []string
 	}
 
 	// 短信接口

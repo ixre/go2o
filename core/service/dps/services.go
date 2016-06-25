@@ -105,4 +105,13 @@ func Init(ctx gof.App) {
 	ContentService = NewContentService(contentRep, contentQue)
 	AdService = NewAdvertisementService(adRep)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
+
+	//m := memberRep.GetMember(1)
+	//d := m.ProfileManager().GetDeliverAddress()[0]
+	//v := d.GetValue()
+	//v.Province = 440000
+	//v.City = 440600
+	//v.District = 440605
+	//d.SetValue(&v)
+	//d.Save()
 }

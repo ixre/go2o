@@ -9,11 +9,15 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
+	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -272,4 +276,24 @@ func (this *valueRep) GetChildAreas(id int) []*valueobject.Area {
 		this._areaCache[id] = v
 	}
 	return v
+}
+
+// 获取地区名称
+func (this *valueRep) GetAreaNames(id []int) []string {
+	strArr := make([]string, len(id))
+	for i, v := range id {
+		strArr[i] = strconv.Itoa(v)
+	}
+	i := 0
+	this.Connector.Query(fmt.Sprintf(
+		"SELECT name FROM china_area WHERE code IN (%s)",
+		strings.Join(strArr, ",")),
+		func(rows *sql.Rows) {
+			for rows.Next() {
+				rows.Scan(&strArr[i])
+				strArr[i] = strings.TrimSpace(strArr[i]) //去除空格
+				i++
+			}
+		})
+	return strArr
 }
