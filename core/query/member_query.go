@@ -118,8 +118,8 @@ func (this *MemberQuery) QueryPagerOrder(memberId, page, size int,
 }
 
 // 获取最近的余额变动信息
-func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfoValue {
-	var info = new(member.BalanceInfoValue)
+func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfo {
+	var info = new(member.BalanceInfo)
 	if err := this.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info

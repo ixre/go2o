@@ -74,13 +74,13 @@ type IMemberRep interface {
 	CheckPhoneBind(phone string, memberId int) bool
 
 	// 保存绑定
-	SaveRelation(*MemberRelation) error
+	SaveRelation(*Relation) error
 
 	// 获取账户
-	GetAccount(memberId int) *AccountValue
+	GetAccount(memberId int) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*AccountValue) (int, error)
+	SaveAccount(*Account) (int, error)
 
 	// 获取银行信息
 	GetBankInfo(int) *BankInfo
@@ -92,7 +92,7 @@ type IMemberRep interface {
 	SaveIntegralLog(*IntegralLog) error
 
 	// 获取会员关联
-	GetRelation(memberId int) *MemberRelation
+	GetRelation(memberId int) *Relation
 
 	// 获取经验值对应的等级
 	GetLevelValueByExp(merchantId int, exp int) int
@@ -119,13 +119,13 @@ type IMemberRep interface {
 	GetInvitationMeMember(memberId int) *Member
 
 	// 根据编号获取余额变动信息
-	GetBalanceInfo(id int) *BalanceInfoValue
+	GetBalanceInfo(id int) *BalanceInfo
 
 	// 根据号码获取余额变动信息
-	GetBalanceInfoByNo(tradeNo string) *BalanceInfoValue
+	GetBalanceInfoByNo(tradeNo string) *BalanceInfo
 
 	// 保存余额变动信息
-	SaveBalanceInfo(v *BalanceInfoValue) (int, error)
+	SaveBalanceInfo(v *BalanceInfo) (int, error)
 
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int, balance, totalAmount,
@@ -159,5 +159,5 @@ type IMemberRep interface {
 	CancelFavorite(memberId, favType, referId int) error
 
 	// 获取会员分页的优惠券列表
-	GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.ValueCoupon)
+	GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 }

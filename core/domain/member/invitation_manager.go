@@ -36,7 +36,7 @@ func (this *invitationManager) GetInvitationMembers(begin, end int) (
 }
 
 // 获取我的邀请码
-func (this *invitationManager) GetMyInvitationCode() string {
+func (this *invitationManager) MyCode() string {
 	return this._member.GetValue().InvitationCode
 }
 

@@ -253,14 +253,14 @@ func (this *MemberRep) GetMemberLatestUpdateTime(id int) int64 {
 }
 
 // 获取账户
-func (this *MemberRep) GetAccount(memberId int) *member.AccountValue {
-	e := new(member.AccountValue)
+func (this *MemberRep) GetAccount(memberId int) *member.Account {
+	e := new(member.Account)
 	this.Connector.GetOrm().Get(memberId, e)
 	return e
 }
 
 // 保存账户，传入会员编号
-func (this *MemberRep) SaveAccount(v *member.AccountValue) (int, error) {
+func (this *MemberRep) SaveAccount(v *member.Account) (int, error) {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
 	this.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
 	return v.MemberId, err
@@ -303,8 +303,8 @@ func (this *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 }
 
 // 获取会员关联
-func (this *MemberRep) GetRelation(memberId int) *member.MemberRelation {
-	var e member.MemberRelation
+func (this *MemberRep) GetRelation(memberId int) *member.Relation {
+	var e member.Relation
 	if this.Connector.GetOrm().Get(memberId, &e) != nil {
 		return nil
 	}
@@ -373,7 +373,7 @@ func (this *MemberRep) createMember(v *member.Member) (int, error) {
 func (this *MemberRep) initMember(v *member.Member) {
 
 	orm := this.Connector.GetOrm()
-	orm.Save(nil, &member.AccountValue{
+	orm.Save(nil, &member.Account{
 		MemberId:    v.Id,
 		Balance:     0,
 		TotalFee:    0,
@@ -387,7 +387,7 @@ func (this *MemberRep) initMember(v *member.Member) {
 		State:    1,
 	})
 
-	orm.Save(nil, &member.MemberRelation{
+	orm.Save(nil, &member.Relation{
 		MemberId:           v.Id,
 		CardId:             "",
 		RefereesId:         0,
@@ -412,7 +412,7 @@ func (this *MemberRep) CheckPhoneBind(phone string, memberId int) bool {
 }
 
 // 保存绑定
-func (this *MemberRep) SaveRelation(v *member.MemberRelation) error {
+func (this *MemberRep) SaveRelation(v *member.Relation) error {
 	_, _, err := this.Connector.GetOrm().Save(v.MemberId, v)
 	return err
 }
@@ -511,8 +511,8 @@ func (this *MemberRep) GetInvitationMeMember(memberId int) *member.Member {
 }
 
 // 根据编号获取余额变动信息
-func (this *MemberRep) GetBalanceInfo(id int) *member.BalanceInfoValue {
-	var e member.BalanceInfoValue
+func (this *MemberRep) GetBalanceInfo(id int) *member.BalanceInfo {
+	var e member.BalanceInfo
 	if err := this.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
@@ -520,8 +520,8 @@ func (this *MemberRep) GetBalanceInfo(id int) *member.BalanceInfoValue {
 }
 
 // 根据号码获取余额变动信息
-func (this *MemberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfoValue {
-	var e member.BalanceInfoValue
+func (this *MemberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfo {
+	var e member.BalanceInfo
 	if err := this.Connector.GetOrm().GetBy(&e, "trade_no=?", tradeNo); err == nil {
 		return &e
 	}
@@ -529,7 +529,7 @@ func (this *MemberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfoVal
 }
 
 // 保存余额变动信息
-func (this *MemberRep) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
+func (this *MemberRep) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 	var err error
 	var orm = this.Connector.GetOrm()
 	if v.Id > 0 {
@@ -552,8 +552,8 @@ func (this *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
 }
 
 // 获取会员分页的优惠券列表
-func (this *MemberRep) GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.ValueCoupon) {
-	list := []*dto.ValueCoupon{}
+func (this *MemberRep) GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
+	list := []*dto.SimpleCoupon{}
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
         FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id
 	    INNER JOIN pm_coupon_bind pb ON pb.coupon_id=pi.id

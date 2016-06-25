@@ -21,12 +21,12 @@ type (
 		// TakeCoupon()
 
 		// 可用的优惠券分页数据
-		PagedAvailableCoupon(start, end int) (total int, rows []*dto.ValueCoupon)
+		PagedAvailableCoupon(start, end int) (total int, rows []*dto.SimpleCoupon)
 
 		// 所有的优惠券
-		PagedAllCoupon(start, end int) (total int, rows []*dto.ValueCoupon)
+		PagedAllCoupon(start, end int) (total int, rows []*dto.SimpleCoupon)
 
 		// 过期的优惠券
-		PagedExpiresCoupon(start, end int) (total int, rows []*dto.ValueCoupon)
+		PagedExpiresCoupon(start, end int) (total int, rows []*dto.SimpleCoupon)
 	}
 )

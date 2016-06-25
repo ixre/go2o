@@ -33,7 +33,7 @@ type memberImpl struct {
 	_level       *member.Level
 	_rep         member.IMemberRep
 	_merchantRep merchant.IMerchantRep
-	_relation    *member.MemberRelation
+	_relation    *member.Relation
 	_invitation  member.IInvitationManager
 	_mssRep      mss.IMssRep
 	_valRep      valueobject.IValueRep
@@ -61,7 +61,7 @@ func (this *memberImpl) GetAggregateRootId() int {
 }
 
 // 会员资料服务
-func (this *memberImpl) ProfileManager() member.IProfileManager {
+func (this *memberImpl) Profile() member.IProfileManager {
 	if this._profileManager == nil {
 		this._profileManager = newProfileManagerImpl(this,
 			this.GetAggregateRootId(), this._rep, this._valRep)
@@ -70,7 +70,7 @@ func (this *memberImpl) ProfileManager() member.IProfileManager {
 }
 
 // 会员收藏服务
-func (this *memberImpl) FavoriteManager() member.IFavoriteManager {
+func (this *memberImpl) Favorite() member.IFavoriteManager {
 	if this._favoriteManager == nil {
 		this._favoriteManager = newFavoriteManagerImpl(
 			this.GetAggregateRootId(), this._rep)
@@ -79,12 +79,22 @@ func (this *memberImpl) FavoriteManager() member.IFavoriteManager {
 }
 
 // 礼品卡服务
-func (this *memberImpl) GiftCardManager() member.IGiftCardManager {
+func (this *memberImpl) GiftCard() member.IGiftCardManager {
 	if this._giftCardManager == nil {
 		this._giftCardManager = newGiftCardManagerImpl(
 			this.GetAggregateRootId(), this._rep)
 	}
 	return this._giftCardManager
+}
+
+// 邀请管理
+func (this *memberImpl) Invitation() member.IInvitationManager {
+	if this._invitation == nil {
+		this._invitation = &invitationManager{
+			_member: this,
+		}
+	}
+	return this._invitation
 }
 
 // 获取值
@@ -127,16 +137,6 @@ func (this *memberImpl) SetValue(v *member.Member) error {
 	return nil
 }
 
-// 邀请管理
-func (this *memberImpl) Invitation() member.IInvitationManager {
-	if this._invitation == nil {
-		this._invitation = &invitationManager{
-			_member: this,
-		}
-	}
-	return this._invitation
-}
-
 // 获取账户
 func (this *memberImpl) GetAccount() member.IAccount {
 	if this._account == nil {
@@ -144,12 +144,6 @@ func (this *memberImpl) GetAccount() member.IAccount {
 		return NewAccount(v, this._rep)
 	}
 	return this._account
-}
-
-// 保存积分记录
-func (this *memberImpl) SaveIntegralLog(l *member.IntegralLog) error {
-	l.MemberId = this._value.Id
-	return this._rep.SaveIntegralLog(l)
 }
 
 // 增加经验值
@@ -171,29 +165,6 @@ func (this *memberImpl) GetLevel() *member.Level {
 	return this._level
 }
 
-//　增加积分
-// todo:merchantId 不需要
-func (this *memberImpl) AddIntegral(merchantId int, backType int,
-	integral int, log string) error {
-	inLog := &member.IntegralLog{
-		MerchantId: merchantId,
-		MemberId:   this._value.Id,
-		Type:       backType,
-		Integral:   integral,
-		Log:        log,
-		RecordTime: time.Now().Unix(),
-	}
-
-	err := this._rep.SaveIntegralLog(inLog)
-	if err == nil {
-		acc := this.GetAccount()
-		acv := acc.GetValue()
-		acv.Integral += integral
-		_, err = acc.Save()
-	}
-	return err
-}
-
 // 检查升级
 func (this *memberImpl) checkUpLevel() bool {
 	lg := this._manager.LevelManager()
@@ -208,7 +179,7 @@ func (this *memberImpl) checkUpLevel() bool {
 }
 
 // 获取会员关联
-func (this *memberImpl) GetRelation() *member.MemberRelation {
+func (this *memberImpl) GetRelation() *member.Relation {
 	if this._relation == nil {
 		this._relation = this._rep.GetRelation(this._value.Id)
 	}
@@ -304,13 +275,8 @@ func (this *memberImpl) usrIsExist(usr string) bool {
 	return this._rep.CheckUsrExist(usr, this.GetAggregateRootId())
 }
 
-// 手机号码是否占用
-func (this *memberImpl) PhoneIsExist(phone string) bool {
-	return this._rep.CheckPhoneBind(this._value.Usr, this.GetAggregateRootId())
-}
-
 // 创建并初始化
-func (this *memberImpl) SaveRelation(r *member.MemberRelation) error {
+func (this *memberImpl) SaveRelation(r *member.Relation) error {
 	this._relation = r
 	this._relation.MemberId = this._value.Id
 	return this._rep.SaveRelation(this._relation)
@@ -318,6 +284,7 @@ func (this *memberImpl) SaveRelation(r *member.MemberRelation) error {
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)
 
+// 收藏服务
 type favoriteManagerImpl struct {
 	_memberId int
 	_rep      member.IMemberRep

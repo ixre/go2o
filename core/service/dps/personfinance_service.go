@@ -126,7 +126,7 @@ func (this *personFinanceService) RiseTransferOut(personId int,
 	}
 
 	if transferWith == personfinance.TransferOutWithBank {
-		if b := m.ProfileManager().GetBank(); !b.Right() || !b.Locked() {
+		if b := m.Profile().GetBank(); !b.Right() || !b.Locked() {
 			return member.ErrNoSuchBankInfo
 		}
 		if err = r.TransferOut(amount, transferWith,

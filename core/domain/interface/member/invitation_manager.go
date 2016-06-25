@@ -16,11 +16,11 @@ type IInvitationManager interface {
 	GetInvitationMembers(begin, end int) (total int, rows []*Member)
 
 	// 获取我的邀请码
-	GetMyInvitationCode() string
+	MyCode() string
 
 	// 获取邀请会员下级邀请数量
 	GetSubInvitationNum(memberIdArr []int) map[int]int
 
-	// 获取邀请要的会员
+	// 获取邀请我的会员
 	GetInvitationMeMember() *Member
 }

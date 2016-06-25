@@ -16,48 +16,76 @@ import (
 	"time"
 )
 
-var _ member.IAccount = new(Account)
+var _ member.IAccount = new(accountImpl)
 
-type Account struct {
-	_value *member.AccountValue
+type accountImpl struct {
+	_value *member.Account
 	_rep   member.IMemberRep
 }
 
-func NewAccount(value *member.AccountValue, rep member.IMemberRep) member.IAccount {
-	return &Account{
+func NewAccount(value *member.Account,
+	rep member.IMemberRep) member.IAccount {
+	return &accountImpl{
 		_value: value,
 		_rep:   rep,
 	}
 }
 
 // 获取领域对象编号
-func (this *Account) GetDomainId() int {
+func (this *accountImpl) GetDomainId() int {
 	return this._value.MemberId
 }
 
 // 获取账户值
-func (this *Account) GetValue() *member.AccountValue {
+func (this *accountImpl) GetValue() *member.Account {
 	return this._value
 }
 
 // 保存
-func (this *Account) Save() (int, error) {
+func (this *accountImpl) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()
 	return this._rep.SaveAccount(this._value)
 }
 
+// 保存积分记录
+func (this *accountImpl) SaveIntegralLog(l *member.IntegralLog) error {
+	l.MemberId = this._value.MemberId
+	return this._rep.SaveIntegralLog(l)
+}
+
+//　增加积分
+// todo:merchantId 不需要
+func (this *accountImpl) AddIntegral(merchantId int, backType int,
+	integral int, log string) error {
+	inLog := &member.IntegralLog{
+		MerchantId: merchantId,
+		MemberId:   this._value.MemberId,
+		Type:       backType,
+		Integral:   integral,
+		Log:        log,
+		RecordTime: time.Now().Unix(),
+	}
+
+	err := this._rep.SaveIntegralLog(inLog)
+	if err == nil {
+		this._value.Integral += integral
+		_, err = this.Save()
+	}
+	return err
+}
+
 // 根据编号获取余额变动信息
-func (this *Account) GetBalanceInfo(id int) *member.BalanceInfoValue {
+func (this *accountImpl) GetBalanceInfo(id int) *member.BalanceInfo {
 	return this._rep.GetBalanceInfo(id)
 }
 
 // 根据号码获取余额变动信息
-func (this *Account) GetBalanceInfoByNo(no string) *member.BalanceInfoValue {
+func (this *accountImpl) GetBalanceInfoByNo(no string) *member.BalanceInfo {
 	return this._rep.GetBalanceInfoByNo(no)
 }
 
 // 保存余额变动信息
-func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
+func (this *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 	v.MemberId = this.GetDomainId()
 	v.UpdateTime = time.Now().Unix()
 	if v.CreateTime == 0 {
@@ -70,7 +98,7 @@ func (this *Account) SaveBalanceInfo(v *member.BalanceInfoValue) (int, error) {
 // @title 充值标题说明
 // @no    充值订单编号
 // @amount 金额
-func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error {
+func (this *accountImpl) ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error {
 	//todo: 客服充值需记录操作人
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
@@ -79,7 +107,7 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
 		chargeType == member.TypeBalanceServiceCharge || chargeType == member.TypeBalanceOrderRefund {
 
-		v := &member.BalanceInfoValue{
+		v := &member.BalanceInfo{
 			Kind:    member.KindBalanceCharge,
 			Type:    chargeType,
 			Title:   title,
@@ -98,14 +126,14 @@ func (this *Account) ChargeBalance(chargeType int, title string, tradeNo string,
 }
 
 // 扣减余额
-func (this *Account) DiscountBalance(title string, tradeNo string, amount float32) (err error) {
+func (this *accountImpl) DiscountBalance(title string, tradeNo string, amount float32) (err error) {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	if this._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceDiscount,
 		Title:   title,
 		TradeNo: tradeNo,
@@ -121,7 +149,7 @@ func (this *Account) DiscountBalance(title string, tradeNo string, amount float3
 }
 
 // 赠送金额
-func (this *Account) PresentBalance(title string, tradeNo string, amount float32) error {
+func (this *accountImpl) PresentBalance(title string, tradeNo string, amount float32) error {
 	//todo:??客服调整
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
@@ -134,7 +162,7 @@ func (this *Account) PresentBalance(title string, tradeNo string, amount float32
 		}
 	}
 
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalancePresent,
 		Title:   title,
 		TradeNo: tradeNo,
@@ -153,7 +181,7 @@ func (this *Account) PresentBalance(title string, tradeNo string, amount float32
 }
 
 // 扣减奖金
-func (this *Account) DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error {
+func (this *accountImpl) DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -165,7 +193,7 @@ func (this *Account) DiscountPresent(title string, tradeNo string, amount float3
 		title = "出账"
 	}
 
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindPresentDiscount,
 		Title:   title,
 		TradeNo: tradeNo,
@@ -181,7 +209,7 @@ func (this *Account) DiscountPresent(title string, tradeNo string, amount float3
 }
 
 // 流通账户余额充值，如扣除,amount传入负数金额
-func (this *Account) ChargeFlowBalance(title string, tradeNo string, amount float32) error {
+func (this *accountImpl) ChargeFlowBalance(title string, tradeNo string, amount float32) error {
 	if len(title) == 0 {
 		if amount > 0 {
 			title = "流动账户入账"
@@ -189,7 +217,7 @@ func (this *Account) ChargeFlowBalance(title string, tradeNo string, amount floa
 			title = "流动账户出账"
 		}
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceFlow,
 		Title:   title,
 		TradeNo: tradeNo,
@@ -205,7 +233,7 @@ func (this *Account) ChargeFlowBalance(title string, tradeNo string, amount floa
 }
 
 // 订单抵扣消费
-func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
+func (this *accountImpl) OrderDiscount(tradeNo string, amount float32) error {
 	if amount < 0 || len(tradeNo) == 0 {
 		return errors.New("amount error or missing trade no")
 	}
@@ -214,7 +242,7 @@ func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
 		return member.ErrOutOfBalance
 	}
 
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceShopping,
 		Type:    1,
 		Title:   "订单抵扣",
@@ -231,12 +259,12 @@ func (this *Account) OrderDiscount(tradeNo string, amount float32) error {
 }
 
 // 退款
-func (this *Account) RequestBackBalance(backType int, title string,
+func (this *accountImpl) RequestBackBalance(backType int, title string,
 	amount float32) error {
 	if amount > this._value.Balance {
 		return member.ErrOutOfBalance
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:   member.KindBalanceBack,
 		Type:   backType,
 		Title:  title,
@@ -252,7 +280,7 @@ func (this *Account) RequestBackBalance(backType int, title string,
 }
 
 // 完成退款
-func (this *Account) FinishBackBalance(id int, tradeNo string) error {
+func (this *accountImpl) FinishBackBalance(id int, tradeNo string) error {
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceBack {
 		v.TradeNo = tradeNo
@@ -264,7 +292,7 @@ func (this *Account) FinishBackBalance(id int, tradeNo string) error {
 }
 
 // 请求提现,返回info_id,交易号及错误
-func (this *Account) RequestApplyCash(applyType int, title string,
+func (this *accountImpl) RequestApplyCash(applyType int, title string,
 	amount float32, commission float32) (int, string, error) {
 	if amount <= 0 {
 		return 0, "", member.ErrIncorrectAmount
@@ -280,7 +308,7 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:      member.KindBalanceApplyCash,
 		Type:      applyType,
 		Title:     title,
@@ -305,7 +333,7 @@ func (this *Account) RequestApplyCash(applyType int, title string,
 }
 
 // 确认提现
-func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
+func (this *accountImpl) ConfirmApplyCash(id int, pass bool, remark string) error {
 	//todo: remark
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
@@ -328,7 +356,7 @@ func (this *Account) ConfirmApplyCash(id int, pass bool, remark string) error {
 }
 
 // 完成提现
-func (this *Account) FinishApplyCash(id int, tradeNo string) error {
+func (this *accountImpl) FinishApplyCash(id int, tradeNo string) error {
 	v := this.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceApplyCash {
 		v.TradeNo = tradeNo
@@ -340,14 +368,14 @@ func (this *Account) FinishApplyCash(id int, tradeNo string) error {
 }
 
 // 冻结余额
-func (this *Account) Freezes(title string, tradeNo string, amount float32, referId int) error {
+func (this *accountImpl) Freezes(title string, tradeNo string, amount float32, referId int) error {
 	if this._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "资金冻结"
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceFreezes,
 		Title:   title,
 		RefId:   referId,
@@ -365,14 +393,14 @@ func (this *Account) Freezes(title string, tradeNo string, amount float32, refer
 }
 
 // 解冻金额
-func (this *Account) Unfreezes(title string, tradeNo string, amount float32, referId int) error {
+func (this *accountImpl) Unfreezes(title string, tradeNo string, amount float32, referId int) error {
 	if this._value.FreezesFee < amount {
 		return member.ErrNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "资金解结"
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceUnfreezes,
 		Title:   title,
 		RefId:   referId,
@@ -391,7 +419,7 @@ func (this *Account) Unfreezes(title string, tradeNo string, amount float32, ref
 }
 
 // 冻结赠送金额
-func (this *Account) FreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+func (this *accountImpl) FreezesPresent(title string, tradeNo string, amount float32, referId int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -401,7 +429,7 @@ func (this *Account) FreezesPresent(title string, tradeNo string, amount float32
 	if len(title) == 0 {
 		title = "(赠送)资金冻结"
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceFreezesPresent,
 		Title:   title,
 		RefId:   referId,
@@ -419,7 +447,7 @@ func (this *Account) FreezesPresent(title string, tradeNo string, amount float32
 }
 
 // 解冻赠送金额
-func (this *Account) UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+func (this *accountImpl) UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -429,7 +457,7 @@ func (this *Account) UnfreezesPresent(title string, tradeNo string, amount float
 	if len(title) == 0 {
 		title = "(赠送)资金解冻"
 	}
-	v := &member.BalanceInfoValue{
+	v := &member.BalanceInfo{
 		Kind:    member.KindBalanceUnfreezesPresent,
 		Title:   title,
 		RefId:   referId,
@@ -447,7 +475,7 @@ func (this *Account) UnfreezesPresent(title string, tradeNo string, amount float
 }
 
 // 转账余额到其他账户
-func (this *Account) TransferBalance(kind int, amount float32,
+func (this *accountImpl) TransferBalance(kind int, amount float32,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -457,7 +485,7 @@ func (this *Account) TransferBalance(kind int, amount float32,
 		this._value.Balance -= amount
 		this._value.FlowBalance += amount
 		if _, err = this.Save(); err == nil {
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    member.KindBalanceTransfer,
 				Title:   toTitle,
 				Amount:  -amount,
@@ -465,7 +493,7 @@ func (this *Account) TransferBalance(kind int, amount float32,
 				State:   member.StatusOK,
 			})
 
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    member.KindBalanceTransfer,
 				Title:   fromTitle,
 				Amount:  amount,
@@ -480,7 +508,7 @@ func (this *Account) TransferBalance(kind int, amount float32,
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (this *Account) TransferPresent(kind int, amount float32, commission float32,
+func (this *accountImpl) TransferPresent(kind int, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -490,7 +518,7 @@ func (this *Account) TransferPresent(kind int, amount float32, commission float3
 		this._value.Balance -= amount
 		this._value.FlowBalance += amount
 		if _, err = this.Save(); err == nil {
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    member.KindBalanceTransfer,
 				Title:   toTitle,
 				Amount:  -amount,
@@ -498,7 +526,7 @@ func (this *Account) TransferPresent(kind int, amount float32, commission float3
 				State:   member.StatusOK,
 			})
 
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    kind,
 				Title:   fromTitle,
 				Amount:  amount,
@@ -513,7 +541,7 @@ func (this *Account) TransferPresent(kind int, amount float32, commission float3
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (this *Account) TransferFlow(kind int, amount float32, commission float32,
+func (this *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 
@@ -530,7 +558,7 @@ func (this *Account) TransferFlow(kind int, amount float32, commission float32,
 		this._value.TotalPresentFee += finalAmount
 
 		if _, err = this.Save(); err == nil {
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:      member.KindBalanceTransfer,
 				Title:     toTitle,
 				Amount:    -amount,
@@ -539,7 +567,7 @@ func (this *Account) TransferFlow(kind int, amount float32, commission float32,
 				State:     member.StatusOK,
 			})
 
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    kind,
 				Title:   fromTitle,
 				Amount:  finalAmount,
@@ -554,7 +582,7 @@ func (this *Account) TransferFlow(kind int, amount float32, commission float32,
 }
 
 // 将活动金转给其他人
-func (this *Account) TransferFlowTo(memberId int, kind int,
+func (this *accountImpl) TransferFlowTo(memberId int, kind int,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
 
@@ -578,7 +606,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 
 		if _, err = this.Save(); err == nil {
 
-			this.SaveBalanceInfo(&member.BalanceInfoValue{
+			this.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:      member.KindBalanceTransfer,
 				Title:     toTitle,
 				Amount:    -finalAmount,
@@ -589,7 +617,7 @@ func (this *Account) TransferFlowTo(memberId int, kind int,
 			})
 
 			if _, err = acc2.Save(); err == nil {
-				acc2.SaveBalanceInfo(&member.BalanceInfoValue{
+				acc2.SaveBalanceInfo(&member.BalanceInfo{
 					Kind:    kind,
 					Title:   fromTitle,
 					Amount:  amount,

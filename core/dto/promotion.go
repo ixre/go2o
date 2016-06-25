@@ -10,7 +10,7 @@ package dto
 
 type (
 	//member_rep LINE:562
-	ValueCoupon struct {
+	SimpleCoupon struct {
 		// 优惠券编号
 		Id int `db:"id"`
 

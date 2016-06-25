@@ -48,13 +48,13 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 	return v
 }
 
-func getMemberAccount(memberId int, updateTime int) *member.AccountValue {
+func getMemberAccount(memberId int, updateTime int) *member.Account {
 	sto := gof.CurrentApp.Storage()
 	var kvAut int
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	kvAut, _ = sto.GetInt(autKey)
 	//get from redis
-	var v *member.AccountValue = new(member.AccountValue)
+	var v *member.Account = new(member.Account)
 	var key = fmt.Sprintf("cac:mm:acc:%d", memberId)
 	if kvAut != 0 && kvAut == updateTime {
 		if cache.GetKVS().Get(key, v) == nil {
