@@ -1,0 +1,201 @@
+/**
+ * Copyright 2015 @ z3q.net.
+ * name : article
+ * author : jarryliu
+ * date : 2016-06-27 15:57
+ * description :
+ * history :
+ */
+package content
+
+import (
+	"go2o/core/domain/interface/content"
+	"time"
+)
+
+var _ content.ICategory = new(categoryImpl)
+
+type categoryImpl struct {
+	_contentRep content.IContentRep
+	_value      *content.ArticleCategory
+	_manager    *articleManagerImpl
+}
+
+func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
+	rep content.IContentRep) content.ICategory {
+	return &categoryImpl{
+		_contentRep: rep,
+		_value:      v,
+		_manager:    m,
+	}
+}
+
+// 获取领域编号
+func (this *categoryImpl) GetDomainId() int {
+	return this._value.Id
+}
+
+// 获取文章数量
+func (this *categoryImpl) ArticleNum() int {
+	return this._contentRep.GetArticleNumByCategory(this.GetDomainId())
+}
+
+// 获取值
+func (this *categoryImpl) GetValue() content.ArticleCategory {
+	return *this._value
+}
+
+// 设置值
+func (this *categoryImpl) SetValue(v *content.ArticleCategory) error {
+	if this._contentRep.CategoryExists(this._value.Alias, this.GetDomainId()) {
+		return content.ErrCategoryAliasExists
+	}
+	v.Id = this.GetDomainId()
+	this._value = v
+	return nil
+}
+
+// 保存
+func (this *categoryImpl) Save() (int, error) {
+	this._value.UpdateTime = time.Now().Unix()
+	id, err := this._contentRep.SaveCategory(this._value)
+	if err == nil {
+		this._manager._categories = nil
+		this._manager._categoryList = nil
+	}
+	this._value.Id = id
+	return id, err
+}
+
+var _ content.IArticle = new(articleImpl)
+
+type articleImpl struct {
+	_rep      content.IContentRep
+	_value    *content.Article
+	_category content.ICategory
+	_manager  content.IArticleManager
+}
+
+func NewArticle(v *content.Article, m content.IArticleManager,
+	rep content.IContentRep) content.IArticle {
+	return &articleImpl{
+		_rep:   rep,
+		_value: v,
+	}
+}
+
+// 获取领域编号
+func (this *articleImpl) GetDomainId() int {
+	return this._value.Id
+}
+
+// 获取值
+func (this *articleImpl) GetValue() content.Article {
+	return *this._value
+}
+
+// 设置值
+func (this *articleImpl) SetValue(v *content.Article) error {
+	v.Id = this.GetDomainId()
+	this._value = v
+	return nil
+}
+
+// 栏目
+func (this *articleImpl) Category() content.ICategory {
+	if this._category == nil {
+		this._category = this._manager.GetCategory(this._value.CategoryId)
+	}
+	return this._category
+}
+
+// 保存文章
+func (this *articleImpl) Save() (int, error) {
+	this._value.UpdateTime = time.Now().Unix()
+	id, err := this._rep.SaveArticle(this._value)
+	this._value.Id = id
+	return id, err
+}
+
+var _ content.IArticleManager = new(articleManagerImpl)
+
+type articleManagerImpl struct {
+	_rep          content.IContentRep
+	_categories   []content.ICategory
+	_categoryList map[int]content.ICategory
+}
+
+func newArticleManagerImpl(rep content.IContentRep) content.IArticleManager {
+	return &articleManagerImpl{
+		_rep:          rep,
+		_categoryList: map[int]content.ICategory{},
+	}
+}
+
+// 获取所有的栏目
+func (this *articleManagerImpl) GetAllCategory() []content.ICategory {
+	if this._categories == nil {
+		list := this._rep.GetAllArticleCategory()
+		this._categories = make([]content.ICategory, len(list))
+		this._categoryList = make(map[int]content.ICategory)
+		for i, v := range list {
+			this._categories[i] = NewCategory(v, this, this._rep)
+			this._categoryList[v.Id] = this._categories[i]
+		}
+	}
+	return this._categories
+}
+
+// 获取栏目
+func (this *articleManagerImpl) GetCategory(id int) content.ICategory {
+	this.GetAllCategory()
+	return this._categoryList[id]
+}
+
+// 创建栏目
+func (this *articleManagerImpl) CreateCategory(v *content.ArticleCategory) content.ICategory {
+	return NewCategory(v, this, this._rep)
+}
+
+// 删除栏目
+func (this *articleManagerImpl) DelCategory(id int) error {
+	c := this.GetCategory(id)
+	if c != nil {
+		if c.ArticleNum() > 0 {
+			return content.ErrCategoryContainArchive
+		}
+		err := this._rep.DeleteCategory(id)
+		if err == nil {
+			this._categories = nil
+			this._categoryList = nil
+		}
+		return err
+	}
+	return nil
+
+}
+
+// 创建文章
+func (this *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
+	return NewArticle(v, nil, this._rep)
+}
+
+// 获取文章
+func (this *articleManagerImpl) GetArticle(id int) content.IArticle {
+	v := this._rep.GetArticleById(id)
+	if v == nil {
+		return NewArticle(v, this, this._rep)
+	}
+	return nil
+}
+
+// 获取文章列表
+func (this *articleManagerImpl) GetArticleList(categoryId int,
+	begin, end int) []*content.Article {
+	return this._rep.GetArticleList(categoryId, begin, end)
+}
+
+// 删除文章
+func (this *articleManagerImpl) DeleteArticle(id int) error {
+	return this._rep.DeleteArticle(id)
+}

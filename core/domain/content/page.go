@@ -13,16 +13,17 @@ import (
 	"time"
 )
 
-var _ content.IPage = new(Page)
+var _ content.IPage = new(pageImpl)
 
-type Page struct {
+type pageImpl struct {
 	_contentRep content.IContentRep
 	_merchantId int
-	_value      *content.ValuePage
+	_value      *content.Page
 }
 
-func NewPage(merchantId int, rep content.IContentRep, v *content.ValuePage) content.IPage {
-	return &Page{
+func newPage(merchantId int, rep content.IContentRep,
+	v *content.Page) content.IPage {
+	return &pageImpl{
 		_contentRep: rep,
 		_merchantId: merchantId,
 		_value:      v,
@@ -30,24 +31,24 @@ func NewPage(merchantId int, rep content.IContentRep, v *content.ValuePage) cont
 }
 
 // 获取领域编号
-func (this *Page) GetDomainId() int {
+func (this *pageImpl) GetDomainId() int {
 	return this._value.Id
 }
 
 // 获取值
-func (this *Page) GetValue() *content.ValuePage {
+func (this *pageImpl) GetValue() *content.Page {
 	return this._value
 }
 
 // 设置值
-func (this *Page) SetValue(v *content.ValuePage) error {
+func (this *pageImpl) SetValue(v *content.Page) error {
 	v.Id = this.GetDomainId()
 	this._value = v
 	return nil
 }
 
 // 保存
-func (this *Page) Save() (int, error) {
+func (this *pageImpl) Save() (int, error) {
 	this._value.UpdateTime = time.Now().Unix()
 	return this._contentRep.SavePage(this._merchantId, this._value)
 }

@@ -343,6 +343,41 @@ ALTER TABLE `flm`.`mm_deliver_addr`
   ADD COLUMN `district` INT NULL AFTER `city`,
   ADD COLUMN `area` VARCHAR(50) NULL COMMENT '省市区' AFTER `district`;
 
+ALTER TABLE `flm`.`mch_page`
+  RENAME TO  `flm`.`con_page` ;
+
+CREATE TABLE `flm`.`con_article_category` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `parent_id` INT NULL,
+  `name` VARCHAR(45) NULL,
+  `alias` VARCHAR(45) NULL,
+  `title` VARCHAR(120) NULL,
+  `keywords` VARCHAR(120) NULL,
+  `describe` VARCHAR(250) NULL,
+  `sort_number` INT NULL,
+  `location` VARCHAR(120) NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+CREATE TABLE `flm`.`con_article` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `category_id` INT NULL,
+  `title` VARCHAR(120) NULL,
+  `small_title` VARCHAR(45) NULL,
+  `thumbnail` VARCHAR(120) NULL,
+  `location` VARCHAR(120) NULL,
+  `publisher_id` INT NULL,
+  `content` TEXT NULL,
+  `tags` VARCHAR(120) NULL,
+  `view_count` INT NULL,
+  `sort_number` INT NULL,
+  `create_time` INT NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+
 
 
 

@@ -72,6 +72,11 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.Content{}, "msg_content")
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
+	/* 内容 */
+	orm.Mapping(content.Page{}, "con_page")
+	orm.Mapping(content.Article{}, "con_article")
+	orm.Mapping(content.ArticleCategory{}, "con_article_category")
+
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")
 	orm.Mapping(member.Member{}, "mm_member")
@@ -110,7 +115,6 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shop.OfflineShop{}, "mch_offline_shop")
 	orm.Mapping(merchant.SaleConf{}, "mch_sale_conf")
 	orm.Mapping(merchant.MemberLevel{}, "pt_member_level")
-	orm.Mapping(content.ValuePage{}, "mch_page")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
