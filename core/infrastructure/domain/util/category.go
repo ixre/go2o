@@ -10,6 +10,7 @@ package util
 
 import (
 	"github.com/jsix/gof/algorithm/iterator"
+	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/sale"
 )
 
@@ -35,9 +36,23 @@ func IterateCategory(categories []*sale.Category, c *sale.Category,
 }
 
 // 迭代栏目
-func WalkCategory(cs []*sale.Category, v *sale.Category, start iterator.WalkFunc, over iterator.WalkFunc) {
+func WalkSaleCategory(cs []*sale.Category, v *sale.Category,
+	start iterator.WalkFunc, over iterator.WalkFunc) {
 	var condition iterator.Condition = func(v, v1 interface{}) bool {
 		return v1.(*sale.Category).ParentId == v.(*sale.Category).Id
+	}
+	var arr []interface{} = make([]interface{}, len(cs))
+	for i, v := range cs {
+		arr[i] = v
+	}
+	iterator.Walk(arr, v, condition, start, over, 0)
+}
+
+// 迭代栏目
+func WalkArticleCategory(cs []content.ArticleCategory, v *content.ArticleCategory,
+	start iterator.WalkFunc, over iterator.WalkFunc) {
+	var condition iterator.Condition = func(v, v1 interface{}) bool {
+		return v1.(content.ArticleCategory).ParentId == v.(*content.ArticleCategory).Id
 	}
 	var arr []interface{} = make([]interface{}, len(cs))
 	for i, v := range cs {

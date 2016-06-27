@@ -13,25 +13,34 @@ import "go2o/core/domain/interface/content"
 var _ content.IContent = new(Content)
 
 type Content struct {
-	_contentRep content.IContentRep
-	_merchantId int
+	_contentRep     content.IContentRep
+	_userId         int
+	_articleManager content.IArticleManager
 }
 
-func NewContent(merchantId int, rep content.IContentRep) content.IContent {
+func NewContent(userId int, rep content.IContentRep) content.IContent {
 	return &Content{
 		_contentRep: rep,
-		_merchantId: merchantId,
+		_userId:     userId,
 	}
 }
 
 // 获取聚合根编号
 func (this *Content) GetAggregateRootId() int {
-	return this._merchantId
+	return this._userId
+}
+
+// 文章服务
+func (this *Content) ArticleManager() content.IArticleManager {
+	if this._articleManager == nil {
+		this._articleManager = newArticleManagerImpl(this._contentRep)
+	}
+	return this._articleManager
 }
 
 // 创建页面
-func (this *Content) CreatePage(v *content.ValuePage) content.IPage {
-	return NewPage(this.GetAggregateRootId(), this._contentRep, v)
+func (this *Content) CreatePage(v *content.Page) content.IPage {
+	return newPage(this.GetAggregateRootId(), this._contentRep, v)
 }
 
 // 获取页面
@@ -55,28 +64,4 @@ func (this *Content) GetPageByStringIndent(indent string) content.IPage {
 // 删除页面
 func (this *Content) DeletePage(id int) error {
 	return this._contentRep.DeletePage(this.GetAggregateRootId(), id)
-}
-
-// 创建文章
-func (this *Content) CreateArticle(*content.ValuePage) content.IArticle {
-	//todo:
-	return nil
-}
-
-// 获取文章
-func (this *Content) GetArticle(id int) content.IArticle {
-	//todo:
-	return nil
-}
-
-// 获取文章列表
-func (this *Content) GetArticleList(categoryId int, start, over int) []content.IArticle {
-	//todo:
-	return nil
-}
-
-// 删除文章
-func (this *Content) DeleteArticle(id int) error {
-	//todo:
-	return nil
 }
