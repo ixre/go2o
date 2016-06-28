@@ -421,6 +421,7 @@ func (this *memberService) DeleteDeliverAddress(memberId int, deliverId int) err
 	return m.Profile().DeleteDeliver(deliverId)
 }
 
+// 修改密码
 func (this *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
 	m := this._rep.GetMember(memberId)
 	if m != nil {

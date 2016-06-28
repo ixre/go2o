@@ -9,6 +9,7 @@
 package mss
 
 import (
+	"encoding/json"
 	"go2o/core/domain/interface/mss"
 	"time"
 )
@@ -75,7 +76,20 @@ func (this *messageManagerImpl) CreateMessage(msg *mss.Message,
 // 创建消息模版对象
 func (this *messageManagerImpl) GetMessage(id int) mss.IMessage {
 	if msg := this._rep.GetMessage(id); msg != nil {
-		return this.CreateMessage(msg, nil)
+		con := this._rep.GetMessageContent(msg.Id)
+		switch msg.Type {
+		case mss.TypePhoneMessage:
+			v := mss.PhoneMessage(con.Data)
+			return this.CreateMessage(msg, &v)
+		case mss.TypeEmailMessage:
+			v := mss.MailMessage{}
+			json.Unmarshal([]byte(con.Data), &v)
+			return this.CreateMessage(msg, &v)
+		case mss.TypeSiteMessage:
+			v := mss.SiteMessage{}
+			json.Unmarshal([]byte(con.Data), &v)
+			return this.CreateMessage(msg, &v)
+		}
 	}
 	return nil
 }

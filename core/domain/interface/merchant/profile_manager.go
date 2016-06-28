@@ -76,5 +76,8 @@ type (
 
 		// 标记企业为审核通过
 		ReviewEnterpriseInfo(reviewed bool, message string) error
+
+		// 修改密码
+		ModifyPassword(newPwd, oldPwd string) error
 	}
 )

@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/tmp"
+	dm "go2o/core/infrastructure/domain"
 	"time"
 )
 
@@ -151,6 +152,23 @@ func (this *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) 
 	e.Reviewed = 0
 	e.Remark = message
 	return this.save(&e)
+}
+
+// 修改密码
+func (this *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
+	var err error
+	if newPwd == oldPwd {
+		return domain.ErrPwdCannotSame
+	}
+	if b, err := dm.ChkPwdRight(newPwd); !b {
+		return err
+	}
+	if len(oldPwd) != 0 && oldPwd != this._value.Pwd {
+		return domain.ErrPwdOldPwdNotRight
+	}
+	this._value.Pwd = dm.MerchantSha1Pwd(this._value.Usr, newPwd)
+	_, err = this.Save()
+	return err
 }
 
 func (this *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {

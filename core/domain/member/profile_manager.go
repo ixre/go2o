@@ -11,12 +11,13 @@ package member
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
-	"go2o/core/infrastructure/domain"
+	dm "go2o/core/infrastructure/domain"
 	"regexp"
 	"strings"
 	"time"
@@ -227,18 +228,18 @@ func (this *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 func (this *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
-		return member.ErrPwdCannotSame
+		return domain.ErrPwdCannotSame
 	}
 
-	if b, err := domain.ChkPwdRight(newPwd); !b {
+	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
 
 	if len(oldPwd) != 0 && oldPwd != this._member._value.Pwd {
-		return member.ErrPwdOldPwdNotRight
+		return domain.ErrPwdOldPwdNotRight
 	}
 
-	this._member._value.Pwd = newPwd
+	this._member._value.Pwd = dm.MemberSha1Pwd(newPwd)
 	_, err = this._member.Save()
 
 	return err
@@ -248,16 +249,16 @@ func (this *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 func (this *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
-		return member.ErrPwdCannotSame
+		return domain.ErrPwdCannotSame
 	}
-	if b, err := domain.ChkPwdRight(newPwd); !b {
+	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
 	// 已经设置过旧密码
 	if len(this._member._value.TradePwd) != 0 && this._member._value.TradePwd != oldPwd {
-		return member.ErrPwdOldPwdNotRight
+		return domain.ErrPwdOldPwdNotRight
 	}
-	this._member._value.TradePwd = newPwd
+	this._member._value.TradePwd = dm.MemberSha1Pwd(newPwd)
 	_, err = this._member.Save()
 	return err
 }

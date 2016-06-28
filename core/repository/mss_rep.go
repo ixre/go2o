@@ -179,9 +179,11 @@ func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
 
 // 获取消息
 func (this *MssRep) GetMessage(id int) *mss.Message {
-	//todo:
-	msg := mss.Message{}
-	return &msg
+	e := mss.Message{}
+	if this._conn.GetOrm().Get(id, &e) == nil {
+		return &e
+	}
+	return nil
 }
 
 // 保存用户消息关联
@@ -208,4 +210,23 @@ func (this *MssRep) SaveMsgContent(v *mss.Content) (int, error) {
 		v.Id = int(id)
 	}
 	return v.Id, err
+}
+
+// 获取消息内容
+func (this *MssRep) GetMessageContent(msgId int) *mss.Content {
+	e := mss.Content{}
+	if this._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
+		return &e
+	}
+	return nil
+}
+
+// 获取消息目标
+func (this *MssRep) GetMessageTo(msgId, toUserId, toRole int) *mss.To {
+	e := mss.To{}
+	if this._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to t INNER JOIN msg_content c ON c.id = t.id
+WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {
+		return &e
+	}
+	return nil
 }

@@ -54,6 +54,36 @@ func (this *messageImpl) Type() int {
 	return this._msg.Type
 }
 
+// 是否向特定的人发送
+func (this *messageImpl) SpecialTo() bool {
+	return this._msg.To != nil && len(this._msg.To) > 0
+}
+
+// 检测是否有权限查看
+func (this *messageImpl) CheckPerm(toUserId int, toRole int) bool {
+	if this._msg.AllUser == 1 || this._msg.ToRole == toRole {
+		return true
+	}
+	if this._msg.To != nil {
+		for _, v := range this._msg.To {
+			if v.Id == toUserId && v.Role == toRole {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// 获取消息
+func (this *messageImpl) GetValue() mss.Message {
+	return *this._msg
+}
+
+// 获取消息发送目标
+func (this *messageImpl) GetTo(toUserId int, toRole int) *mss.To {
+	return this._rep.GetMessageTo(this.GetDomainId(), toUserId, toRole)
+}
+
 // 保存
 //todo: 会出现保存后不发送的情况
 func (this *messageImpl) Save() (int, error) {

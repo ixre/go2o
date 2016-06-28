@@ -64,12 +64,6 @@ var (
 	ErrBankInfoNoYetSet *domain.DomainError = domain.NewDomainError(
 		"err_bank_info_no_yet_set", "银行卡信息尚未设置")
 
-	ErrPwdCannotSame *domain.DomainError = domain.NewDomainError(
-		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
-
-	ErrPwdOldPwdNotRight *domain.DomainError = domain.NewDomainError(
-		"Err_Pwd_Pld_Pwd_Not_Right", "原密码不正确")
-
 	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
 		"err_balance_amount", "金额错误")
 
