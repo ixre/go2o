@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	"time"
 )
@@ -28,7 +29,7 @@ type SaleGoods struct {
 	_goodsRep       sale.IGoodsRep
 	_promRep        promotion.IPromotionRep
 	_sale           sale.ISale
-	_latestSnapshot *sale.GoodsSnapshot
+	_latestSnapshot *goods.GoodsSnapshot
 	_levelPrices    []*sale.MemberPrice
 	_promDescribes  map[string]string
 }
@@ -216,7 +217,7 @@ func (this *SaleGoods) GenerateSnapshot() (int, error) {
 	merchantId := this._sale.GetAggregateRootId()
 	unix := time.Now().Unix()
 	cate := this._sale.CategoryManager().GetCategory(gv.CategoryId)
-	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
+	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
 		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
 		ItemId:       gv.Id,
 		GoodsId:      this.GetDomainId(),
@@ -267,7 +268,7 @@ func (this *SaleGoods) CancelSale(quantity int, orderNo string) error {
 }
 
 // 是否为新快照,与旧有快照进行数据对比
-func (this *SaleGoods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
+func (this *SaleGoods) isNewSnapshot(gsn *goods.GoodsSnapshot) bool {
 	latestGsn := this.GetLatestSnapshot()
 	if latestGsn != nil {
 		return latestGsn.GoodsName != gsn.GoodsName ||
@@ -282,7 +283,7 @@ func (this *SaleGoods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
 }
 
 // 获取最新的快照
-func (this *SaleGoods) GetLatestSnapshot() *sale.GoodsSnapshot {
+func (this *SaleGoods) GetLatestSnapshot() *goods.GoodsSnapshot {
 	if this._latestSnapshot == nil {
 		this._latestSnapshot = this._saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
 	}
@@ -363,12 +364,12 @@ func (this *goodsManagerImpl) DeleteGoods(goodsId int) error {
 }
 
 // 获取指定的商品快照
-func (this *goodsManagerImpl) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
+func (this *goodsManagerImpl) GetGoodsSnapshot(id int) *goods.GoodsSnapshot {
 	return this._sale._saleRep.GetGoodsSnapshot(id)
 }
 
 // 根据Key获取商品快照
-func (this *goodsManagerImpl) GetGoodsSnapshotByKey(key string) *sale.GoodsSnapshot {
+func (this *goodsManagerImpl) GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot {
 	return this._sale._saleRep.GetGoodsSnapshotByKey(key)
 }
 

@@ -9,6 +9,8 @@
 
 package sale
 
+import "go2o/core/domain/interface/sale/goods"
+
 // 销售仓库
 type ISaleRep interface {
 	GetSale(merchantId int) ISale
@@ -31,14 +33,14 @@ type ISaleRep interface {
 	DeleteItem(supplierId, goodsId int) error
 
 	// 保存快照
-	SaveSnapshot(*GoodsSnapshot) (int, error)
+	SaveSnapshot(*goods.GoodsSnapshot) (int, error)
 
 	// 获取最新的商品快照
-	GetLatestGoodsSnapshot(goodsId int) *GoodsSnapshot
+	GetLatestGoodsSnapshot(goodsId int) *goods.GoodsSnapshot
 
 	// 获取指定的商品快照
-	GetGoodsSnapshot(id int) *GoodsSnapshot
+	GetGoodsSnapshot(id int) *goods.GoodsSnapshot
 
 	// 根据Key获取商品快照
-	GetGoodsSnapshotByKey(key string) *GoodsSnapshot
+	GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot
 }

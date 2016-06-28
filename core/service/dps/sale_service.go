@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
@@ -471,9 +472,13 @@ func (this *saleService) SaveMemberPrices(merchantId int, goodsId int, priceSet 
 	return nil
 }
 
+func (this *saleService) GetGoodsComplexInfo(goodsId int) *dto.GoodsComplex {
+	return this._goodsQuery.GetGoodsComplex(goodsId)
+}
+
 // 获取商品详情
-func (this *saleService) GetGoodsDetails(merchantId, goodsId, mLevel int) (*valueobject.Goods, map[string]string) {
-	sl := this._rep.GetSale(merchantId)
+func (this *saleService) GetGoodsDetails(mchId, goodsId, mLevel int) (*valueobject.Goods, map[string]string) {
+	sl := this._rep.GetSale(mchId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	gv := goods.GetPackedValue()
 	proMap := goods.GetPromotionDescribe()

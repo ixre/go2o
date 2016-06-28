@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/dto"
 )
 
 type GoodsQuery struct {
@@ -54,4 +55,15 @@ func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, en
 	}
 
 	return total, e
+}
+
+func (this GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
+	e := dto.GoodsComplex{}
+	sql := `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
+		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
+		 WHERE gs_category.mch_id=? AND gs_item.state=1
+		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`
+
+	this.Connector.GetOrm().GetByQuery(&e, sql, goodsId)
+	return &e
 }

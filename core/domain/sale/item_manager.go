@@ -147,7 +147,7 @@ func (this *ItemImpl) saveGoods() {
 //	merchantId := this._sale.GetAggregateRootId()
 //	unix := time.Now().Unix()
 //	cate := this._saleRep.GetCategory(merchantId, v.CategoryId)
-//	var gsn *sale.GoodsSnapshot = &sale.GoodsSnapshot{
+//	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
 //		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
 //		GoodsId:      this.GetDomainId(),
 //		GoodsName:    v.Name,
@@ -169,7 +169,7 @@ func (this *ItemImpl) saveGoods() {
 //}
 //
 //// 是否为新快照,与旧有快照进行数据对比
-//func (this *Goods) isNewSnapshot(gsn *sale.GoodsSnapshot) bool {
+//func (this *Goods) isNewSnapshot(gsn *goods.GoodsSnapshot) bool {
 //	latestGsn := this.GetLatestSnapshot()
 //	if latestGsn != nil {
 //		return latestGsn.GoodsName != gsn.GoodsName ||
@@ -184,7 +184,7 @@ func (this *ItemImpl) saveGoods() {
 //}
 //
 //// 获取最新的快照
-//func (this *Goods) GetLatestSnapshot() *sale.GoodsSnapshot {
+//func (this *Goods) GetLatestSnapshot() *goods.GoodsSnapshot {
 //	if this._latestSnapshot == nil {
 //		this._latestSnapshot = this._saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
 //	}
