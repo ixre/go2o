@@ -24,7 +24,7 @@ type (
 		GetItem() IItem
 
 		// 设置值
-		GetValue() *ValueGoods
+		GetValue() *goods.ValueGoods
 
 		// 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
@@ -42,13 +42,13 @@ type (
 		GetPromotionDescribe() map[string]string
 
 		// 获取会员价
-		GetLevelPrices() []*MemberPrice
+		GetLevelPrices() []*goods.MemberPrice
 
 		// 保存会员价
-		SaveLevelPrice(*MemberPrice) (int, error)
+		SaveLevelPrice(*goods.MemberPrice) (int, error)
 
 		// 设置值
-		SetValue(*ValueGoods) error
+		SetValue(*goods.ValueGoods) error
 
 		// 保存
 		Save() (int, error)
@@ -69,10 +69,10 @@ type (
 	// 商品服务
 	IGoodsManager interface {
 		// 创建商品
-		CreateGoodsByItem(IItem, *ValueGoods) IGoods
+		CreateGoodsByItem(IItem, *goods.ValueGoods) IGoods
 
 		// 创建商品
-		CreateGoods(*ValueGoods) IGoods
+		CreateGoods(*goods.ValueGoods) IGoods
 
 		// 根据产品编号获取商品
 		GetGoods(int) IGoods
@@ -93,73 +93,6 @@ type (
 		GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
 	}
 
-	// 商品仓储
-	IGoodsRep interface {
-		// 获取商品
-		GetValueGoods(itemId int, sku int) *ValueGoods
-
-		// 获取商品
-		GetValueGoodsById(goodsId int) *ValueGoods
-
-		// 根据SKU获取商品
-		GetValueGoodsBySku(itemId, sku int) *ValueGoods
-
-		// 保存商品
-		SaveValueGoods(*ValueGoods) (int, error)
-
-		// 获取在货架上的商品
-		GetOnShelvesGoods(merchantId int, start, end int,
-			sortBy string) []*valueobject.Goods
-
-		// 获取在货架上的商品
-		GetPagedOnShelvesGoods(merchantId int, catIds []int, start, end int,
-			where, orderBy string) (total int, goods []*valueobject.Goods)
-
-		// 根据编号获取商品
-		GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error)
-
-		// 获取会员价
-		GetGoodsLevelPrice(goodsId int) []*MemberPrice
-
-		// 保存会员价
-		SaveGoodsLevelPrice(*MemberPrice) (int, error)
-
-		// 移除会员价
-		RemoveGoodsLevelPrice(id int) error
-	}
-
-	// 商品
-	ValueGoods struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
-
-		// 货品编号
-		ItemId int `db:"item_id"`
-
-		// 是否为赠品
-		IsPresent int `db:"is_present"`
-
-		// 规格
-		SkuId int `db:"sku_id"`
-
-		// 促销标志
-		PromotionFlag int `db:"prom_flag"`
-
-		// 库存
-		StockNum int `db:"stock_num"`
-
-		// 已售件数
-		SaleNum int `db:"sale_num"`
-
-		// 销售价
-		SalePrice float32 `db:"-"`
-
-		// 促销价
-		PromPrice float32 `db:"-"`
-
-		// 实际价
-		Price float32 `db:"-"`
-	}
-
 	// 简单商品信息
 	SimpleGoods struct {
 		GoodsId    int    `json:"id"`
@@ -168,3 +101,16 @@ type (
 		Quantity   string `json:"qty"`
 	}
 )
+
+// 转换包含部分数据的产品值对象
+func ParseToPartialValueItem(v *valueobject.Goods) *Item {
+	return &Item{
+		Id:         v.Item_Id,
+		CategoryId: v.CategoryId,
+		Name:       v.Name,
+		GoodsNo:    v.GoodsNo,
+		Image:      v.Image,
+		Price:      v.Price,
+		SalePrice:  v.SalePrice,
+	}
+}

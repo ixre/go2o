@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"time"
@@ -25,14 +26,14 @@ type ItemImpl struct {
 	_value        *sale.Item
 	_saleRep      sale.ISaleRep
 	_saleLabelRep sale.ISaleLabelRep
-	_goodsRep     sale.IGoodsRep
+	_goodsRep     goods.IGoodsRep
 	_promRep      promotion.IPromotionRep
 	_sale         *SaleImpl
 	_saleLabels   []*sale.Label
 }
 
 func newItem(mgr *itemManagerImpl, sale *SaleImpl, v *sale.Item, saleRep sale.ISaleRep,
-	saleLabelRep sale.ISaleLabelRep, goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
+	saleLabelRep sale.ISaleLabelRep, goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
 	return &ItemImpl{
 		_manager:      mgr,
 		_value:        v,
@@ -118,7 +119,7 @@ func (this *ItemImpl) Save() (int, error) {
 func (this *ItemImpl) saveGoods() {
 	val := this._goodsRep.GetValueGoods(this.GetDomainId(), 0)
 	if val == nil {
-		val = &sale.ValueGoods{
+		val = &goods.ValueGoods{
 			Id:            0,
 			ItemId:        this.GetDomainId(),
 			IsPresent:     0,

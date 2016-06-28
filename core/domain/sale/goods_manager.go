@@ -24,18 +24,18 @@ var _ domain.IDomain = new(SaleGoods)
 type SaleGoods struct {
 	_manager        *goodsManagerImpl
 	_goods          sale.IItem
-	_value          *sale.ValueGoods
+	_value          *goods.ValueGoods
 	_saleRep        sale.ISaleRep
-	_goodsRep       sale.IGoodsRep
+	_goodsRep       goods.IGoodsRep
 	_promRep        promotion.IPromotionRep
 	_sale           sale.ISale
 	_latestSnapshot *goods.GoodsSnapshot
-	_levelPrices    []*sale.MemberPrice
+	_levelPrices    []*goods.MemberPrice
 	_promDescribes  map[string]string
 }
 
-func NewSaleGoods(m *goodsManagerImpl, s sale.ISale, goods sale.IItem, value *sale.ValueGoods, rep sale.ISaleRep,
-	goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
+func NewSaleGoods(m *goodsManagerImpl, s sale.ISale, goods sale.IItem, value *goods.ValueGoods, rep sale.ISaleRep,
+	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
 	v := &SaleGoods{
 		_manager:        m,
 		_goods:          goods,
@@ -67,7 +67,7 @@ func (this *SaleGoods) GetItem() sale.IItem {
 }
 
 // 设置值
-func (this *SaleGoods) GetValue() *sale.ValueGoods {
+func (this *SaleGoods) GetValue() *goods.ValueGoods {
 	return this._value
 }
 
@@ -158,7 +158,7 @@ func (this *SaleGoods) GetPromotionDescribe() map[string]string {
 }
 
 // 获取会员价
-func (this *SaleGoods) GetLevelPrices() []*sale.MemberPrice {
+func (this *SaleGoods) GetLevelPrices() []*goods.MemberPrice {
 	if this._levelPrices == nil {
 		this._levelPrices = this._goodsRep.GetGoodsLevelPrice(this.GetDomainId())
 	}
@@ -166,7 +166,7 @@ func (this *SaleGoods) GetLevelPrices() []*sale.MemberPrice {
 }
 
 // 保存会员价
-func (this *SaleGoods) SaveLevelPrice(v *sale.MemberPrice) (int, error) {
+func (this *SaleGoods) SaveLevelPrice(v *goods.MemberPrice) (int, error) {
 	v.GoodsId = this.GetDomainId()
 	if this._value.SalePrice == v.Price {
 		if v.Id > 0 {
@@ -178,7 +178,7 @@ func (this *SaleGoods) SaveLevelPrice(v *sale.MemberPrice) (int, error) {
 }
 
 // 设置值
-func (this *SaleGoods) SetValue(v *sale.ValueGoods) error {
+func (this *SaleGoods) SetValue(v *goods.ValueGoods) error {
 	this._value.IsPresent = v.IsPresent
 	this._value.SaleNum = v.SaleNum
 	this._value.StockNum = v.StockNum
@@ -313,20 +313,20 @@ func (this *goodsManagerImpl) init() sale.IGoodsManager {
 }
 
 // 创建商品
-func (this *goodsManagerImpl) CreateGoods(s *sale.ValueGoods) sale.IGoods {
+func (this *goodsManagerImpl) CreateGoods(s *goods.ValueGoods) sale.IGoods {
 	return NewSaleGoods(this, this._sale, nil, s, this._sale._saleRep,
 		this._sale._goodsRep, this._sale._promRep)
 }
 
 // 创建商品
-func (this *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *sale.ValueGoods) sale.IGoods {
+func (this *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGoods) sale.IGoods {
 	return NewSaleGoods(this, this._sale, item, v, this._sale._saleRep,
 		this._sale._goodsRep, this._sale._promRep)
 }
 
 // 根据产品编号获取商品
 func (this *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
-	var v *sale.ValueGoods = this._sale._goodsRep.GetValueGoodsById(goodsId)
+	var v *goods.ValueGoods = this._sale._goodsRep.GetValueGoodsById(goodsId)
 	if v != nil {
 		pv := this._sale._saleRep.GetValueItem(this._mchId, v.ItemId)
 		if pv != nil {
@@ -338,7 +338,7 @@ func (this *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
 
 // 根据产品SKU获取商品
 func (this *goodsManagerImpl) GetGoodsBySku(itemId, sku int) sale.IGoods {
-	var v *sale.ValueGoods = this._sale._goodsRep.GetValueGoodsBySku(itemId, sku)
+	var v *goods.ValueGoods = this._sale._goodsRep.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		pv := this._sale._saleRep.GetValueItem(this._mchId, v.ItemId)
 		if pv != nil {

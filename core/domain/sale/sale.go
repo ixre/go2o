@@ -12,6 +12,7 @@ package sale
 import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -24,7 +25,7 @@ type SaleImpl struct {
 	_saleRep      sale.ISaleRep
 	_labelRep     sale.ISaleLabelRep
 	_cateRep      sale.ICategoryRep
-	_goodsRep     sale.IGoodsRep
+	_goodsRep     goods.IGoodsRep
 	_valRep       valueobject.IValueRep
 	_promRep      promotion.IPromotionRep
 	_proCache     map[int]sale.IItem
@@ -35,7 +36,7 @@ type SaleImpl struct {
 }
 
 func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
-	cateRep sale.ICategoryRep, goodsRep sale.IGoodsRep, tagRep sale.ISaleLabelRep,
+	cateRep sale.ICategoryRep, goodsRep goods.IGoodsRep, tagRep sale.ISaleLabelRep,
 	promRep promotion.IPromotionRep) sale.ISale {
 	return (&SaleImpl{
 		_mchId:    merchantId,

@@ -101,11 +101,12 @@ func OrmMapping(conn db.Connector) {
 
 	/** 销售 **/
 	orm.Mapping(sale.Item{}, "gs_item")
-	orm.Mapping(sale.ValueGoods{}, "gs_goods")
+	orm.Mapping(goods.ValueGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "gs_category")
-	orm.Mapping(goods.GoodsSnapshot{}, "gs_snapshot")
+	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
+	orm.Mapping(goods.GoodsSnapshot{}, "gs_trade_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")
-	orm.Mapping(sale.MemberPrice{}, "gs_member_price")
+	orm.Mapping(goods.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
 	orm.Mapping(merchant.Merchant{}, "mch_merchant")

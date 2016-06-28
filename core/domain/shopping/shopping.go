@@ -19,6 +19,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/lbs"
@@ -30,7 +31,7 @@ import (
 type Shopping struct {
 	_rep         shopping.IShoppingRep
 	_saleRep     sale.ISaleRep
-	_goodsRep    sale.IGoodsRep
+	_goodsRep    goods.IGoodsRep
 	_promRep     promotion.IPromotionRep
 	_memberRep   member.IMemberRep
 	_partnerRep  merchant.IMerchantRep
@@ -41,7 +42,7 @@ type Shopping struct {
 }
 
 func NewShopping(buyerId int, partnerRep merchant.IMerchantRep,
-	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) shopping.IShopping {
 

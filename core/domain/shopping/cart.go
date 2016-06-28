@@ -7,7 +7,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
+	gds "go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -18,7 +18,7 @@ import (
 type Cart struct {
 	_value       *shopping.ValueCart
 	_saleRep     sale.ISaleRep
-	_goodsRep    sale.IGoodsRep
+	_goodsRep    gds.IGoodsRep
 	_shoppingRep shopping.IShoppingRep
 	_mchRep      merchant.IMerchantRep
 	_memberRep   member.IMemberRep
@@ -29,7 +29,7 @@ type Cart struct {
 
 func createCart(val *shopping.ValueCart, mchRep merchant.IMerchantRep,
 	memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep,
+	goodsRep gds.IGoodsRep, shoppingRep shopping.IShoppingRep,
 ) shopping.ICart {
 	return (&Cart{
 		_value:       val,
@@ -43,7 +43,7 @@ func createCart(val *shopping.ValueCart, mchRep merchant.IMerchantRep,
 
 //todo: merchantId 应去掉，可能在多个商户买东西
 func newCart(buyerId int, mchRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep sale.IGoodsRep, shoppingRep shopping.IShoppingRep) shopping.ICart {
+	goodsRep gds.IGoodsRep, shoppingRep shopping.IShoppingRep) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &shopping.ValueCart{
@@ -117,7 +117,7 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.CartItem) {
 				if level > 0 {
 					goods = sl.GoodsManager().CreateGoodsByItem(
 						sl.ItemManager().CreateItem(sale.ParseToPartialValueItem(gv)),
-						sale.ParseToValueGoods(gv),
+						gds.ParseToValueGoods(gv),
 					)
 					if p := goods.GetPromotionPrice(level); p < gv.SalePrice {
 						gv.SalePrice = p
@@ -366,7 +366,7 @@ func (this *Cart) GetSummary() string {
 	buf := bytes.NewBufferString("")
 	length := len(this._value.Items)
 
-	var snap *goods.GoodsSnapshot
+	var snap *gds.GoodsSnapshot
 	for i, v := range this._value.Items {
 
 		snap = this._saleRep.GetGoodsSnapshot(v.SnapshotId)

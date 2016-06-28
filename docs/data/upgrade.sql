@@ -377,6 +377,31 @@ CREATE TABLE `flm`.`con_article` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `zxdb`.`gs_snapshot`
+  RENAME TO  `zxdb`.`gs_trade_snapshot` ;
+
+
+CREATE TABLE `zxdb`.`gs_snapshot` (
+  `id` INT NOT NULL,
+  `snapshot_key` VARCHAR(45) NULL,
+  `mch_id` INT NULL,
+  `goods_id` INT NULL,
+  `goods_title` VARCHAR(80) NULL,
+  `small_title` VARCHAR(45) NULL,
+  `goods_no` VARCHAR(45) NULL,
+  `item_id` INT NULL,
+  `category_id` INT NULL,
+  `img` VARCHAR(120) NULL,
+  `price` DECIMAL(8,2) NULL,
+  `sale_price` DECIMAL(8,2) NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+
+
+
+
+
 
 
 
