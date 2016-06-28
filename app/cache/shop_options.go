@@ -15,14 +15,14 @@ import (
 	"strings"
 )
 
-func GetShopCheckboxs(merchantId int, chks string) []byte {
-	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
+func GetShopCheckboxs(mchId int, chks string) []byte {
+	shops := dps.MerchantService.GetOnlineShops(mchId)
 	buf := bytes.NewBufferString("")
 
 	if len(chks) == 0 {
 		for i, k := range shops {
 			buf.WriteString(fmt.Sprintf(
-				`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]"/>
+				`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
 			 	<label for="shop%d">%s</label>`,
 				k.Id,
 				i,

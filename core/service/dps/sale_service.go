@@ -212,7 +212,18 @@ func (this *saleService) DeleteGoods(merchantId, goodsId int) error {
 	return sl.GoodsManager().DeleteGoods(goodsId)
 }
 
-func (this *saleService) GetCategory(merchantId, id int) (*sale.Category,
+// 获取商品分类
+func (this *saleService) GetCategory(merchantId, id int) *sale.Category {
+	sl := this._rep.GetSale(merchantId)
+	c := sl.CategoryManager().GetCategory(id)
+	if c != nil {
+		return c.GetValue()
+	}
+	return nil
+}
+
+// 获取商品分类和选项
+func (this *saleService) GetCategoryAndOptions(merchantId, id int) (*sale.Category,
 	domain.IOptionStore) {
 	sl := this._rep.GetSale(merchantId)
 	c := sl.CategoryManager().GetCategory(id)
@@ -282,6 +293,20 @@ func (this *saleService) GetCategories(merchantId int) []*sale.Category {
 		vv := v.GetValue()
 		vv.Icon = format.GetResUrl(vv.Icon)
 		list[i] = vv
+	}
+	return list
+}
+
+// 根据上级编号获取分类列表
+func (this *saleService) GetCategoriesByParentId(mchId, parentId int) []*sale.Category {
+	cats := this.getCategoryManager(mchId).GetCategories()
+	list := []*sale.Category{}
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+			v2 := *vv
+			v2.Icon = format.GetResUrl(v2.Icon)
+			list = append(list, &v2)
+		}
 	}
 	return list
 }

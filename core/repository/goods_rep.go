@@ -78,20 +78,17 @@ func (this *goodsRep) GetGoodsLevelPrice(goodsId int) []*sale.MemberPrice {
 
 // 保存会员价
 func (this *goodsRep) SaveGoodsLevelPrice(v *sale.MemberPrice) (id int, err error) {
-
-	if v.Id <= 0 {
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=? and level=?`,
-			&v.Id, v.GoodsId, v.Level)
-	}
-
+	//if v.Id <= 0 {
+	//	this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=? and level=?`,
+	//		&v.Id, v.GoodsId, v.Level)
+	//}
 	if v.Id > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
 		id = v.Id
 	} else {
-		_, _, err = this.Connector.GetOrm().Save(nil, v)
-		if err == nil {
-			err = this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=?`, &id, v.GoodsId)
-		}
+		var id64 int64
+		_, id64, err = this.Connector.GetOrm().Save(nil, v)
+		v.Id = int(id64)
 	}
 	return id, err
 }
@@ -105,15 +102,12 @@ func (this *goodsRep) RemoveGoodsLevelPrice(id int) error {
 func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
 	if v.Id > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
-		id = v.Id
 	} else {
-		_, _, err = this.Connector.GetOrm().Save(nil, v)
-		if err == nil {
-			err = this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_goods where items_id=?`, &id, v.ItemId)
-		}
+		var id64 int64
+		_, id64, err = this.Connector.GetOrm().Save(nil, v)
+		v.Id = int(id64)
 	}
-	return id, err
-
+	return v.Id, err
 }
 
 // 获取已上架的商品
