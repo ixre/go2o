@@ -183,6 +183,20 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 	return sv
 }
 
+// 获取商城
+func (this *merchantService) GetOnlineShops(mchId int) []*shop.Shop {
+	mch, _ := this._mchRep.GetMerchant(mchId)
+	shops := mch.ShopManager().GetShops()
+	sv := []*shop.Shop{}
+	for _, v := range shops {
+		if v.Type() == shop.TypeOnlineShop {
+			vv := v.GetValue()
+			sv = append(sv, &vv)
+		}
+	}
+	return sv
+}
+
 // 修改密码
 func (this *merchantService) ModifyPassword(mchId int, oldPwd, newPwd string) error {
 	mch, _ := this._mchRep.GetMerchant(mchId)
