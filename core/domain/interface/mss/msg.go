@@ -140,12 +140,17 @@ type (
 		// 消息类型
 		Type() int
 
-		//// 检测是否有权限查看
-		//CheckPerm(toUserId int,toRole int)bool
-		//
-		//GetValue()*Message
-		//
-		//GetContent()*Content
+		// 检测是否有权限查看
+		CheckPerm(toUserId int, toRole int) bool
+
+		// 是否向特定的人发送
+		SpecialTo() bool
+
+		// 获取消息
+		GetValue() Message
+
+		// 获取消息发送目标
+		GetTo(toUserId, toRole int) *To
 
 		// 保存
 		Save() (int, error)

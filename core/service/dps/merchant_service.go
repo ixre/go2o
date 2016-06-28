@@ -183,6 +183,15 @@ func (this *merchantService) GetShopsOfMerchant(merchantId int) []*shop.Shop {
 	return sv
 }
 
+// 修改密码
+func (this *merchantService) ModifyPassword(mchId int, oldPwd, newPwd string) error {
+	mch, _ := this._mchRep.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ProfileManager().ModifyPassword(newPwd, oldPwd)
+	}
+	return merchant.ErrNoSuchMerchant
+}
+
 func (this *merchantService) GetMerchantsId() []int {
 	return this._mchRep.GetMerchantsId()
 }

@@ -10,6 +10,7 @@ package dps
 
 import (
 	"go2o/core/domain/interface/mss"
+	"go2o/core/dto"
 )
 
 type mssService struct {
@@ -108,12 +109,39 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 	return err
 }
 
-func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *mss.Message {
-	//msg := this._rep.GetManager().GetMessage(id)
-	//if msg != nil{
-	//	if msg.CheckPerm(toUserId,toRole){
-	//		return msg.Dto()
-	//	}
-	//}
+// 获取站内信
+func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessage {
+	msg := this._rep.GetManager().GetMessage(id)
+	if msg != nil && msg.CheckPerm(toUserId, toRole) {
+		val := msg.GetValue()
+		dto := &dto.SiteMessage{
+			Id:           val.Id,
+			Type:         val.Type,
+			UseFor:       val.UseFor,
+			SenderUserId: 0,
+			SenderName:   "系统",
+			Readonly:     val.Readonly,
+			CreateTime:   val.CreateTime,
+			ToId:         toUserId,
+			ToRole:       toRole,
+		}
+
+		switch msg.Type() {
+		case mss.TypePhoneMessage:
+			dto.Data = msg.(mss.IPhoneMessage).Value()
+		case mss.TypeEmailMessage:
+			dto.Data = msg.(mss.IMailMessage).Value()
+		case mss.TypeSiteMessage:
+			dto.Data = msg.(mss.ISiteMessage).Value()
+		}
+
+		if msg.SpecialTo() {
+			if to := msg.GetTo(toUserId, toRole); to != nil {
+				dto.HasRead = to.HasRead
+				dto.ReadTime = to.ReadTime
+			}
+		}
+		return dto
+	}
 	return nil
 }

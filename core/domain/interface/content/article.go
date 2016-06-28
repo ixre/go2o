@@ -51,6 +51,9 @@ type (
 		// 获取栏目
 		GetCategory(id int) ICategory
 
+		// 根据标识获取文章栏目
+		GetCategoryByAlias(alias string) ICategory
+
 		// 获取所有的栏目
 		GetAllCategory() []ICategory
 

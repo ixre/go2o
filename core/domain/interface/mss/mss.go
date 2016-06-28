@@ -197,6 +197,12 @@ type (
 
 		// 保存消息内容
 		SaveMsgContent(co *Content) (int, error)
+
+		// 获取消息内容
+		GetMessageContent(msgId int) *Content
+
+		// 获取消息目标
+		GetMessageTo(msgId, toUserId, toRole int) *To
 	}
 
 	// 通知项

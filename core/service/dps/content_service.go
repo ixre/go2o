@@ -83,7 +83,7 @@ func (this *contentService) GetArticleCategories() []content.ArticleCategory {
 	return arr
 }
 
-// 获取文章分类
+// 获取文章栏目
 func (this *contentService) GetArticleCategory(id int) content.ArticleCategory {
 	m := this._sysContent.ArticleManager().GetCategory(id)
 	if m != nil {
@@ -92,7 +92,16 @@ func (this *contentService) GetArticleCategory(id int) content.ArticleCategory {
 	return content.ArticleCategory{}
 }
 
-// 保存文章分类
+// 根据标识获取文章栏目
+func (this *contentService) GetArticleCategoryByAlias(alias string) content.ArticleCategory {
+	m := this._sysContent.ArticleManager().GetCategoryByAlias(alias)
+	if m != nil {
+		return m.GetValue()
+	}
+	return content.ArticleCategory{}
+}
+
+// 保存文章栏目
 func (this *contentService) SaveArticleCategory(v *content.ArticleCategory) (int, error) {
 	m := this._sysContent.ArticleManager()
 	c := m.GetCategory(v.Id)

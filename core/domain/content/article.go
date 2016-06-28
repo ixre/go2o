@@ -10,6 +10,7 @@ package content
 
 import (
 	"go2o/core/domain/interface/content"
+	"strconv"
 	"time"
 )
 
@@ -155,6 +156,17 @@ func (this *articleManagerImpl) GetCategory(id int) content.ICategory {
 // 创建栏目
 func (this *articleManagerImpl) CreateCategory(v *content.ArticleCategory) content.ICategory {
 	return NewCategory(v, this, this._rep)
+}
+
+// 根据标识获取文章栏目
+func (this *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory {
+	this.GetAllCategory()
+	for _, v := range this._categories {
+		if v2 := v.GetValue(); v2.Alias == alias || strconv.Itoa(v2.Id) == alias {
+			return v
+		}
+	}
+	return nil
 }
 
 // 删除栏目
