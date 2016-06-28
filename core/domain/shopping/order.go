@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure"
@@ -445,7 +446,7 @@ func (this *Order) saveOrderOnSubmit() (int, error) {
 	}
 	var sl sale.ISale = this._saleRep.GetSale(this._value.MerchantId)
 	var item sale.IItem
-	var snap *sale.GoodsSnapshot
+	var snap *goods.GoodsSnapshot
 	for i, v := range cartItems {
 		snap = sl.GoodsManager().GetGoodsSnapshot(cartItems[i].SnapshotId)
 		if snap == nil {

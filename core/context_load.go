@@ -25,6 +25,7 @@ import (
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
@@ -102,7 +103,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(sale.Item{}, "gs_item")
 	orm.Mapping(sale.ValueGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "gs_category")
-	orm.Mapping(sale.GoodsSnapshot{}, "gs_snapshot")
+	orm.Mapping(goods.GoodsSnapshot{}, "gs_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")
 	orm.Mapping(sale.MemberPrice{}, "gs_member_price")
 

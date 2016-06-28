@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	saleImpl "go2o/core/domain/sale"
 	"go2o/core/infrastructure/format"
@@ -127,7 +128,7 @@ func (this *saleRep) DeleteItem(merchantId, itemId int) error {
 }
 
 // 保存快照
-func (this *saleRep) SaveSnapshot(v *sale.GoodsSnapshot) (int, error) {
+func (this *saleRep) SaveSnapshot(v *goods.GoodsSnapshot) (int, error) {
 	var id int
 	_, _, err := this.Connector.GetOrm().Save(nil, v)
 	if err == nil {
@@ -138,8 +139,8 @@ func (this *saleRep) SaveSnapshot(v *sale.GoodsSnapshot) (int, error) {
 }
 
 // 获取最新的商品快照
-func (this *saleRep) GetLatestGoodsSnapshot(goodsId int) *sale.GoodsSnapshot {
-	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
+func (this *saleRep) GetLatestGoodsSnapshot(goodsId int) *goods.GoodsSnapshot {
+	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
 	if this.Connector.GetOrm().GetBy(e, "goods_id=? ORDER BY id DESC", goodsId) == nil {
 		return e
 	}
@@ -147,8 +148,8 @@ func (this *saleRep) GetLatestGoodsSnapshot(goodsId int) *sale.GoodsSnapshot {
 }
 
 // 获取指定的商品快照
-func (this *saleRep) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
-	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
+func (this *saleRep) GetGoodsSnapshot(id int) *goods.GoodsSnapshot {
+	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
 	err := this.Connector.GetOrm().Get(id, e)
 	if err != nil {
 		log.Error(err)
@@ -158,8 +159,8 @@ func (this *saleRep) GetGoodsSnapshot(id int) *sale.GoodsSnapshot {
 }
 
 // 根据Key获取商品快照
-func (this *saleRep) GetGoodsSnapshotByKey(key string) *sale.GoodsSnapshot {
-	var e *sale.GoodsSnapshot = new(sale.GoodsSnapshot)
+func (this *saleRep) GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot {
+	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
 	err := this.Connector.GetOrm().GetBy(e, "key=?", key)
 	if err != nil {
 		log.Error(err)

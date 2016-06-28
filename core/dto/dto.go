@@ -41,4 +41,12 @@ type (
 		// 阅读时间
 		ReadTime int64 `db:"read_time"`
 	}
+
+	// 商品查询复合信息
+	GoodsComplex struct {
+		GoodsId int    `db:"id"`
+		ItemId  int    `db:"item_id"`
+		MchId   int    `db:"mch_id"`
+		MchName string `db:"mch_name"`
+	}
 )

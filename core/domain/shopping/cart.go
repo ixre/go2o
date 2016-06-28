@@ -7,6 +7,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -365,7 +366,7 @@ func (this *Cart) GetSummary() string {
 	buf := bytes.NewBufferString("")
 	length := len(this._value.Items)
 
-	var snap *sale.GoodsSnapshot
+	var snap *goods.GoodsSnapshot
 	for i, v := range this._value.Items {
 
 		snap = this._saleRep.GetGoodsSnapshot(v.SnapshotId)

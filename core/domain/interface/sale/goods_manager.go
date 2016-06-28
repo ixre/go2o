@@ -10,6 +10,7 @@ package sale
 
 import (
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -62,7 +63,7 @@ type (
 		GenerateSnapshot() (int, error)
 
 		// 获取最新的快照
-		GetLatestSnapshot() *GoodsSnapshot
+		GetLatestSnapshot() *goods.GoodsSnapshot
 	}
 
 	// 商品服务
@@ -83,10 +84,10 @@ type (
 		DeleteGoods(int) error
 
 		// 获取指定的商品快照
-		GetGoodsSnapshot(id int) *GoodsSnapshot
+		GetGoodsSnapshot(id int) *goods.GoodsSnapshot
 
 		// 根据Key获取商品快照
-		GetGoodsSnapshotByKey(key string) *GoodsSnapshot
+		GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot
 
 		// 获取指定数量已上架的商品
 		GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
@@ -157,29 +158,6 @@ type (
 
 		// 实际价
 		Price float32 `db:"-"`
-	}
-
-	// 商品快照
-	GoodsSnapshot struct {
-		Id           int    `db:"id" auto:"yes" pk:"yes"`
-		Key          string `db:"snapshot_key"`
-		ItemId       int    `db:"item_id"`
-		GoodsId      int    `db:"goods_id"`
-		GoodsName    string `db:"goods_name"`
-		GoodsNo      string `db:"goods_no"`
-		SmallTitle   string `db:"small_title"`
-		CategoryName string `db:"category_name"`
-		Image        string `db:"img"`
-
-		//成本价
-		Cost float32 `db:"cost"`
-
-		//定价
-		Price float32 `db:"price"`
-
-		//销售价
-		SalePrice  float32 `db:"sale_price"`
-		CreateTime int64   `db:"create_time"`
 	}
 
 	// 简单商品信息
