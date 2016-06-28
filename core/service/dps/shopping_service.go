@@ -16,19 +16,20 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
 )
 
 type shoppingService struct {
 	_rep      shopping.IShoppingRep
-	_goodsRep sale.IGoodsRep
+	_goodsRep goods.IGoodsRep
 	_saleRep  sale.ISaleRep
 	_mchRep   merchant.IMerchantRep
 }
 
 func NewShoppingService(r shopping.IShoppingRep,
-	saleRep sale.ISaleRep, goodsRep sale.IGoodsRep,
+	saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
 	mchRep merchant.IMerchantRep) *shoppingService {
 	return &shoppingService{
 		_rep:      r,

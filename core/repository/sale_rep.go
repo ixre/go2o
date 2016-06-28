@@ -28,14 +28,14 @@ type saleRep struct {
 	_cache    map[int]sale.ISale
 	_tagRep   sale.ISaleLabelRep
 	_promRep  promotion.IPromotionRep
-	_goodsRep sale.IGoodsRep
+	_goodsRep goods.IGoodsRep
 	_cateRep  sale.ICategoryRep
 	_valRep   valueobject.IValueRep
 }
 
 func NewSaleRep(c db.Connector, cateRep sale.ICategoryRep,
 	valRep valueobject.IValueRep, saleLabelRep sale.ISaleLabelRep,
-	goodsRep sale.IGoodsRep, promRep promotion.IPromotionRep) sale.ISaleRep {
+	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.ISaleRep {
 	return (&saleRep{
 		Connector: c,
 		_tagRep:   saleLabelRep,

@@ -11,11 +11,11 @@ package promotion
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep, memRep member.IMemberRep,
+func FactoryPromotion(rep promotion.IPromotionRep, goodsRep goods.IGoodsRep, memRep member.IMemberRep,
 	v *promotion.PromotionInfo) promotion.IPromotion {
 	p := newPromotion(rep, goodsRep, memRep, v)
 

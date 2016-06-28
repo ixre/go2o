@@ -13,7 +13,7 @@ import (
 	"errors"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"time"
 )
 
@@ -24,10 +24,10 @@ type promotionImpl struct {
 	_merchantId int
 	_promRep    promotion.IPromotionRep
 	_value      *promotion.PromotionInfo
-	_goodsRep   sale.IGoodsRep
+	_goodsRep   goods.IGoodsRep
 }
 
-func newPromotion(rep promotion.IPromotionRep, goodsRep sale.IGoodsRep,
+func newPromotion(rep promotion.IPromotionRep, goodsRep goods.IGoodsRep,
 	memRep member.IMemberRep, v *promotion.PromotionInfo) *promotionImpl {
 	return &promotionImpl{
 		_promRep:   rep,

@@ -11,27 +11,27 @@ package repository
 import (
 	"fmt"
 	"github.com/jsix/gof/db"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 )
 
-var _ sale.IGoodsRep = new(goodsRep)
+var _ goods.IGoodsRep = new(goodsRep)
 
 type goodsRep struct {
 	db.Connector
 }
 
 // 商品仓储
-func NewGoodsRep(c db.Connector) sale.IGoodsRep {
+func NewGoodsRep(c db.Connector) goods.IGoodsRep {
 	return &goodsRep{
 		Connector: c,
 	}
 }
 
 // 获取商品
-func (this *goodsRep) GetValueGoods(itemId int, skuId int) *sale.ValueGoods {
-	var e *sale.ValueGoods = new(sale.ValueGoods)
+func (this *goodsRep) GetValueGoods(itemId int, skuId int) *goods.ValueGoods {
+	var e *goods.ValueGoods = new(goods.ValueGoods)
 	if this.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
 	}
@@ -39,8 +39,8 @@ func (this *goodsRep) GetValueGoods(itemId int, skuId int) *sale.ValueGoods {
 }
 
 // 获取商品
-func (this *goodsRep) GetValueGoodsById(goodsId int) *sale.ValueGoods {
-	var e *sale.ValueGoods = new(sale.ValueGoods)
+func (this *goodsRep) GetValueGoodsById(goodsId int) *goods.ValueGoods {
+	var e *goods.ValueGoods = new(goods.ValueGoods)
 	if this.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
 	}
@@ -48,8 +48,8 @@ func (this *goodsRep) GetValueGoodsById(goodsId int) *sale.ValueGoods {
 }
 
 // 根据SKU获取商品
-func (this *goodsRep) GetValueGoodsBySku(itemId, sku int) *sale.ValueGoods {
-	var e *sale.ValueGoods = new(sale.ValueGoods)
+func (this *goodsRep) GetValueGoodsBySku(itemId, sku int) *goods.ValueGoods {
+	var e *goods.ValueGoods = new(goods.ValueGoods)
 	if this.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
@@ -67,8 +67,8 @@ func (this *goodsRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error) {
 }
 
 // 获取会员价
-func (this *goodsRep) GetGoodsLevelPrice(goodsId int) []*sale.MemberPrice {
-	var items []*sale.MemberPrice
+func (this *goodsRep) GetGoodsLevelPrice(goodsId int) []*goods.MemberPrice {
+	var items []*goods.MemberPrice
 	if this.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
 		return items
@@ -77,7 +77,7 @@ func (this *goodsRep) GetGoodsLevelPrice(goodsId int) []*sale.MemberPrice {
 }
 
 // 保存会员价
-func (this *goodsRep) SaveGoodsLevelPrice(v *sale.MemberPrice) (id int, err error) {
+func (this *goodsRep) SaveGoodsLevelPrice(v *goods.MemberPrice) (id int, err error) {
 	//if v.Id <= 0 {
 	//	this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=? and level=?`,
 	//		&v.Id, v.GoodsId, v.Level)
@@ -95,11 +95,11 @@ func (this *goodsRep) SaveGoodsLevelPrice(v *sale.MemberPrice) (id int, err erro
 
 // 移除会员价
 func (this *goodsRep) RemoveGoodsLevelPrice(id int) error {
-	return this.Connector.GetOrm().DeleteByPk(sale.MemberPrice{}, id)
+	return this.Connector.GetOrm().DeleteByPk(goods.MemberPrice{}, id)
 }
 
 // 保存商品
-func (this *goodsRep) SaveValueGoods(v *sale.ValueGoods) (id int, err error) {
+func (this *goodsRep) SaveValueGoods(v *goods.ValueGoods) (id int, err error) {
 	if v.Id > 0 {
 		_, _, err = this.Connector.GetOrm().Save(v.Id, v)
 	} else {

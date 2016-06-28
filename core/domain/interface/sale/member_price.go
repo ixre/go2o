@@ -17,12 +17,3 @@ CREATE TABLE `zsdb`.`gs_member_price` (
   `enabled` TINYINT(1) NULL,
   PRIMARY KEY (`id`));
 */
-
-// 会员价
-type MemberPrice struct {
-	Id      int     `db:"id" pk:"yes" auto:"yes"`
-	GoodsId int     `db:"goods_id"`
-	Level   int     `db:"level"`
-	Price   float32 `db:"price"`
-	Enabled int     `db:"enabled"`
-}

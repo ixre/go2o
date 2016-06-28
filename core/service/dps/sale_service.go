@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -24,13 +25,13 @@ import (
 
 type saleService struct {
 	_rep        sale.ISaleRep
-	_goodsRep   sale.IGoodsRep
+	_goodsRep   goods.IGoodsRep
 	_goodsQuery *query.GoodsQuery
 	_cateRep    sale.ICategoryRep
 }
 
 func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
-	goodsRep sale.IGoodsRep, goodsQuery *query.GoodsQuery) *saleService {
+	goodsRep goods.IGoodsRep, goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
 		_rep:        r,
 		_goodsRep:   goodsRep,
@@ -68,7 +69,7 @@ func (this *saleService) GetGoodsBySku(merchantId int, itemId int, sku int) *val
 }
 
 // 根据SKU获取商品
-func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int) *sale.ValueGoods {
+func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int) *goods.ValueGoods {
 	sl := this._rep.GetSale(merchantId)
 	gs := sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	if gs != nil {
@@ -78,7 +79,7 @@ func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int)
 }
 
 // 根据快照编号获取商品
-func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *sale.ValueGoods {
+func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
 	snap := this._rep.GetGoodsSnapshot(snapshotId)
 	if snap != nil {
 		return this._goodsRep.GetValueGoodsById(snap.GoodsId)
@@ -125,7 +126,7 @@ func (this *saleService) SaveItemInfo(merchantId int, itemId int, info string) e
 }
 
 // 保存商品
-func (this *saleService) SaveGoods(merchantId int, gs *sale.ValueGoods) (int, error) {
+func (this *saleService) SaveGoods(merchantId int, gs *goods.ValueGoods) (int, error) {
 	sl := this._rep.GetSale(merchantId)
 	if gs.Id > 0 {
 		g := sl.GoodsManager().GetGoods(gs.Id)
@@ -450,16 +451,16 @@ func (this *saleService) DeleteSaleLabel(merchantId int, id int) error {
 }
 
 // 获取商品的会员价
-func (this *saleService) GetGoodsLevelPrices(merchantId, goodsId int) []*sale.MemberPrice {
+func (this *saleService) GetGoodsLevelPrices(merchantId, goodsId int) []*goods.MemberPrice {
 	sl := this._rep.GetSale(merchantId)
 	if goods := sl.GoodsManager().GetGoods(goodsId); goods != nil {
 		return goods.GetLevelPrices()
 	}
-	return make([]*sale.MemberPrice, 0)
+	return make([]*goods.MemberPrice, 0)
 }
 
 // 保存商品的会员价
-func (this *saleService) SaveMemberPrices(merchantId int, goodsId int, priceSet []*sale.MemberPrice) error {
+func (this *saleService) SaveMemberPrices(merchantId int, goodsId int, priceSet []*goods.MemberPrice) error {
 	sl := this._rep.GetSale(merchantId)
 	var err error
 	if goods := sl.GoodsManager().GetGoods(goodsId); goods != nil {
