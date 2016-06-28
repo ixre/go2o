@@ -107,3 +107,13 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 	}
 	return err
 }
+
+func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *mss.Message {
+	//msg := this._rep.GetManager().GetMessage(id)
+	//if msg != nil{
+	//	if msg.CheckPerm(toUserId,toRole){
+	//		return msg.Dto()
+	//	}
+	//}
+	return nil
+}

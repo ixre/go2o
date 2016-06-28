@@ -140,6 +140,13 @@ type (
 		// 消息类型
 		Type() int
 
+		//// 检测是否有权限查看
+		//CheckPerm(toUserId int,toRole int)bool
+		//
+		//GetValue()*Message
+		//
+		//GetContent()*Content
+
 		// 保存
 		Save() (int, error)
 
