@@ -155,7 +155,7 @@ type (
 		Name string `db:"name"`
 		//todo:广告位类型限制
 		// 广告类型限制,0为无限制
-		TypeLimit int //`db:"type_limit"`
+		TypeLimit int `db:"-"` //`db:"type_limit"`
 		// 是否开放给外部
 		Opened int `db:"opened"`
 		// 是否启用
