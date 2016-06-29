@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/dto"
 )
 
 type ICart interface {
@@ -60,4 +61,16 @@ type ICart interface {
 
 	// 获取金额
 	GetFee() (totalFee float32, orderFee float32)
+}
+
+func ParseCartItem(item *CartItem) *dto.CartItem {
+	return &dto.CartItem{
+		GoodsId:    item.GoodsId,
+		GoodsName:  item.Name,
+		SmallTitle: item.SmallTitle,
+		GoodsImage: item.Image,
+		Quantity:   item.Quantity,
+		Price:      item.Price,
+		SalePrice:  item.SalePrice,
+	}
 }

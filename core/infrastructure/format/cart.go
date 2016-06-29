@@ -43,8 +43,8 @@ func CartDetails(c *dto.ShoppingCart) string {
 				<span class="goods-fee">￥%s</span>
 			</div>
 		`,
-			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.Num, v.GoodsNo,
-			FormatFloat(v.SalePrice), FormatFloat(v.SalePrice*float32(v.Num)),
+			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.Quantity, v.GoodsNo,
+			FormatFloat(v.SalePrice), FormatFloat(v.SalePrice*float32(v.Quantity)),
 		))
 	}
 

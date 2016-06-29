@@ -27,7 +27,7 @@ type ValueCart struct {
 type CartItem struct {
 	Id         int     `db:"id" pk:"yes" auto:"yes"`
 	CartId     int     `db:"cart_id"`
-	MerchantId int     `db:"mch_id"`
+	VendorId   int     `db:"mch_id"`
 	ShopId     int     `db:"shop_id"`
 	GoodsId    int     `db:"goods_id"`
 	SnapshotId int     `db:"snap_id"`

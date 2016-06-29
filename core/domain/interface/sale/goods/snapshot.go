@@ -30,13 +30,13 @@ type (
 	// 商品快照
 	Snapshot struct {
 		//SKU编号
-		SkuId int `db:"sku_id" auto:"yes" pk:"no"`
+		SkuId int `db:"sku_id" auto:"no" pk:"no"`
 		//快照编号: 商户编号+g商品编号+快照时间戳
 		Key string `db:"snapshot_key"`
 		//供应商编号
 		VendorId int `db:"vendor_id"`
 		//商品编号
-		GoodsId int `db:"goods_id"`
+		//GoodsId int `db:"goods_id"`
 		//商品标题
 		GoodsTitle string `db:"goods_title"`
 		//小标题

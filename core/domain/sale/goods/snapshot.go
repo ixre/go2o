@@ -27,11 +27,12 @@ type snapshotManagerImpl struct {
 }
 
 func NewSnapshotManagerImpl(skuId int, rep goods.IGoodsRep,
-	iRep item.IItemRep, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
+	itemRep item.IItemRep, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
 	return &snapshotManagerImpl{
-		_rep:   rep,
-		_skuId: skuId,
-		_gs:    gs,
+		_rep:     rep,
+		_skuId:   skuId,
+		_gs:      gs,
+		_itemRep: itemRep,
 	}
 }
 
@@ -68,6 +69,7 @@ func (this *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Ite
 }
 
 // 更新快照
+// todo: 当上架并通过审核后,才更新快照
 func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 	ls := this.GetLatestSnapshot()
 	gs, gi := this.getGoodsAndItem()
@@ -76,17 +78,21 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		return -1, goods.ErrNoSuchGoods
 	}
 
+	//是否上架
 	if gi.OnShelves != 1 {
-		//是否上架
 		return -1, goods.ErrNotOnShelves
+	}
+	// 是否审核通过
+	if gi.ReviewPass == 0 {
+		return -1, item.ErrNotBeReview
 	}
 
 	unix := time.Now().Unix()
-	var gsn *goods.Snapshot = &goods.Snapshot{
+	var snap *goods.Snapshot = &goods.Snapshot{
 		SkuId:      this._skuId,
+		VendorId:   gi.VendorId,
 		Key:        fmt.Sprintf("%d-g%d-%d", gi.VendorId, this._skuId, unix),
-		ItemId:     gs.Id,
-		GoodsId:    this._skuId,
+		ItemId:     gs.ItemId,
 		GoodsTitle: gi.Name,
 		GoodsNo:    gi.GoodsNo,
 		SmallTitle: gi.SmallTitle,
@@ -97,9 +103,9 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		UpdateTime: unix,
 	}
 
-	if this.CompareSnapshot(gsn, ls) {
-		this._latestSnapshot = gsn
-		return this._rep.SaveSnapshot(gsn)
+	if this.CompareSnapshot(snap, ls) {
+		this._latestSnapshot = snap
+		return this._rep.SaveSnapshot(snap)
 	}
 
 	return 0, goods.ErrLatestSnapshot

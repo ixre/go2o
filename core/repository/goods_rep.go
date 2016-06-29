@@ -162,16 +162,26 @@ func (this *goodsRep) GetOnShelvesGoods(merchantId int, start, end int, sortBy s
 
 // 保存快照
 func (this *goodsRep) SaveSnapshot(v *goods.Snapshot) (int, error) {
-	var id int
-	_, _, err := this.Connector.GetOrm().Save(nil, v)
-	if err == nil {
-		err = this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_snapshot where goods_id=?`, &id, v.GoodsId)
+	var i int64
+	var err error
+	i, _, err = this.Connector.GetOrm().Save(v.SkuId, v)
+	if i == 0 {
+		_, _, err = this.Connector.GetOrm().Save(nil, v)
 	}
-	return id, err
+	return v.SkuId, err
 }
 
 // 获取最新的商品快照
 func (this *goodsRep) GetLatestSnapshot(skuId int) *goods.Snapshot {
+	e := &goods.Snapshot{}
+	if this.Connector.GetOrm().Get(skuId, e) == nil {
+		return e
+	}
+	return nil
+}
+
+// 获取最新的商品快照
+func (this *goodsRep) GetLatestSaleSnapshot(skuId int) *goods.Snapshot {
 	var e *goods.Snapshot = new(goods.Snapshot)
 	if this.Connector.GetOrm().GetBy(e, "goods_id=? ORDER BY id DESC", skuId) == nil {
 		return e
