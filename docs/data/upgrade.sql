@@ -378,14 +378,13 @@ CREATE TABLE `flm`.`con_article` (
 
 
 ALTER TABLE `zxdb`.`gs_snapshot`
-  RENAME TO  `zxdb`.`gs_trade_snapshot` ;
+  RENAME TO  `zxdb`.`gs_sale_snapshot` ;
 
 
 CREATE TABLE `zxdb`.`gs_snapshot` (
-  `id` INT NOT NULL,
+  `sku_id` INT NOT NULL,
+  `vendor_id` INT NULL,
   `snapshot_key` VARCHAR(45) NULL,
-  `mch_id` INT NULL,
-  `goods_id` INT NULL,
   `goods_title` VARCHAR(80) NULL,
   `small_title` VARCHAR(45) NULL,
   `goods_no` VARCHAR(45) NULL,

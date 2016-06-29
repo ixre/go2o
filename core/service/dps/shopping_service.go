@@ -231,7 +231,7 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	if item == nil {
 		gv := this._goodsRep.GetValueGoodsById(goodsId)
 		tm := this._saleRep.GetValueItem(-1, gv.ItemId)
-		mchId := tm.SupplierId
+		mchId := tm.VendorId
 		mch, err2 := this._mchRep.GetMerchant(mchId)
 		if err2 != nil {
 			return nil, err2
