@@ -7,7 +7,8 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
-	gds "go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -18,7 +19,7 @@ import (
 type Cart struct {
 	_value       *shopping.ValueCart
 	_saleRep     sale.ISaleRep
-	_goodsRep    gds.IGoodsRep
+	_goodsRep    goods.IGoodsRep
 	_shoppingRep shopping.IShoppingRep
 	_mchRep      merchant.IMerchantRep
 	_memberRep   member.IMemberRep
@@ -29,7 +30,7 @@ type Cart struct {
 
 func createCart(val *shopping.ValueCart, mchRep merchant.IMerchantRep,
 	memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep gds.IGoodsRep, shoppingRep shopping.IShoppingRep,
+	goodsRep goods.IGoodsRep, shoppingRep shopping.IShoppingRep,
 ) shopping.ICart {
 	return (&Cart{
 		_value:       val,
@@ -43,7 +44,7 @@ func createCart(val *shopping.ValueCart, mchRep merchant.IMerchantRep,
 
 //todo: merchantId 应去掉，可能在多个商户买东西
 func newCart(buyerId int, mchRep merchant.IMerchantRep, memberRep member.IMemberRep, saleRep sale.ISaleRep,
-	goodsRep gds.IGoodsRep, shoppingRep shopping.IShoppingRep) shopping.ICart {
+	goodsRep goods.IGoodsRep, shoppingRep shopping.IShoppingRep) shopping.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &shopping.ValueCart{
@@ -89,15 +90,15 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.CartItem) {
 		}
 
 		// 设置附加的值
-		goods, err := this._goodsRep.GetGoodsByIds(ids...)
+		goodsList, err := this._goodsRep.GetGoodsByIds(ids...)
 		if err == nil {
-			var goodsMap = make(map[int]*valueobject.Goods, len(goods))
-			for _, v := range goods {
+			var goodsMap = make(map[int]*valueobject.Goods, len(goodsList))
+			for _, v := range goodsList {
 				goodsMap[v.GoodsId] = v
 			}
 
 			var level int
-			var goods sale.IGoods
+			var gds sale.IGoods
 			var sl sale.ISale
 
 			//  更新登陆后的优惠价
@@ -115,11 +116,11 @@ func (this *Cart) setAttachGoodsInfo(items []*shopping.CartItem) {
 			for _, v := range items {
 				gv, ok := goodsMap[v.GoodsId]
 				if level > 0 {
-					goods = sl.GoodsManager().CreateGoodsByItem(
-						sl.ItemManager().CreateItem(sale.ParseToPartialValueItem(gv)),
-						gds.ParseToValueGoods(gv),
+					gds = sl.GoodsManager().CreateGoodsByItem(
+						sl.ItemManager().CreateItem(item.ParseToPartialValueItem(gv)),
+						goods.ParseToValueGoods(gv),
 					)
-					if p := goods.GetPromotionPrice(level); p < gv.SalePrice {
+					if p := gds.GetPromotionPrice(level); p < gv.SalePrice {
 						gv.SalePrice = p
 					}
 				}
@@ -174,16 +175,16 @@ func (this *Cart) AddItem(mchId int, shopId int, goodsId int,
 		this._value.Items = []*shopping.CartItem{}
 	}
 	sl := this._saleRep.GetSale(mchId)
-	goods := sl.GoodsManager().GetGoods(goodsId)
-	if goods == nil {
-		return nil, sale.ErrNoSuchGoods // 没有商品
+	gds := sl.GoodsManager().GetGoods(goodsId)
+	if gds == nil {
+		return nil, goods.ErrNoSuchGoods // 没有商品
 	}
 
-	if !goods.GetItem().IsOnShelves() {
-		return nil, sale.ErrNotOnShelves //未上架
+	if !gds.GetItem().IsOnShelves() {
+		return nil, goods.ErrNotOnShelves //未上架
 	}
 
-	stockNum := goods.GetValue().StockNum
+	stockNum := gds.GetValue().StockNum
 	if stockNum == 0 {
 		return nil, sale.ErrFullOfStock // 已经卖完了
 	}
@@ -199,18 +200,20 @@ func (this *Cart) AddItem(mchId int, shopId int, goodsId int,
 		}
 	}
 
-	gv := goods.GetPackedValue()
-	snap := goods.GetLatestSnapshot()
+	gv := gds.GetPackedValue()
+
+	//todo: 生成交易快照
+	snap := gds.SnapshotManager().GetLatestSnapshot()
 
 	if snap == nil {
-		return nil, sale.ErrNoSuchSnapshot
+		return nil, goods.ErrNoSuchSnapshot
 	}
 
 	v := &shopping.CartItem{
 		CartId:     this.GetDomainId(),
 		MerchantId: mchId,
 		ShopId:     shopId,
-		SnapshotId: snap.Id,
+		SnapshotId: snap.SkuId,
 		GoodsId:    goodsId,
 		Quantity:   num,
 		Name:       gv.Name,
@@ -366,10 +369,10 @@ func (this *Cart) GetSummary() string {
 	buf := bytes.NewBufferString("")
 	length := len(this._value.Items)
 
-	var snap *gds.GoodsSnapshot
+	var snap *goods.GoodsSnapshot
 	for i, v := range this._value.Items {
 
-		snap = this._saleRep.GetGoodsSnapshot(v.SnapshotId)
+		snap = this._goodsRep.GetSaleSnapshot(v.SnapshotId)
 		if snap != nil {
 			buf.WriteString(snap.GoodsName)
 			if len(snap.SmallTitle) != 0 {

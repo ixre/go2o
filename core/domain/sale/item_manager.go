@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"time"
@@ -23,20 +24,23 @@ var _ sale.IItem = new(ItemImpl)
 
 type ItemImpl struct {
 	_manager      *itemManagerImpl
-	_value        *sale.Item
+	_value        *item.Item
 	_saleRep      sale.ISaleRep
+	_itemRep      item.IItemRep
 	_saleLabelRep sale.ISaleLabelRep
 	_goodsRep     goods.IGoodsRep
 	_promRep      promotion.IPromotionRep
-	_sale         *SaleImpl
+	_sale         *saleImpl
 	_saleLabels   []*sale.Label
 }
 
-func newItem(mgr *itemManagerImpl, sale *SaleImpl, v *sale.Item, saleRep sale.ISaleRep,
+func newItem(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
+	itemRep item.IItemRep, saleRep sale.ISaleRep,
 	saleLabelRep sale.ISaleLabelRep, goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IItem {
 	return &ItemImpl{
 		_manager:      mgr,
 		_value:        v,
+		_itemRep:      itemRep,
 		_saleRep:      saleRep,
 		_saleLabelRep: saleLabelRep,
 		_sale:         sale,
@@ -48,11 +52,11 @@ func (this *ItemImpl) GetDomainId() int {
 	return this._value.Id
 }
 
-func (this *ItemImpl) GetValue() sale.Item {
+func (this *ItemImpl) GetValue() item.Item {
 	return *this._value
 }
 
-func (this *ItemImpl) SetValue(v *sale.Item) error {
+func (this *ItemImpl) SetValue(v *item.Item) error {
 	if v.Id == this._value.Id {
 		v.CreateTime = this._value.CreateTime
 		v.GoodsNo = this._value.GoodsNo
@@ -103,7 +107,7 @@ func (this *ItemImpl) Save() (int, error) {
 		this._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
-	id, err := this._saleRep.SaveValueItem(this._value)
+	id, err := this._itemRep.SaveValueItem(this._value)
 	if err == nil {
 		this._value.Id = id
 		//todo: 保存商品
@@ -195,17 +199,19 @@ func (this *ItemImpl) saveGoods() {
 var _ sale.IItemManager = new(itemManagerImpl)
 
 type itemManagerImpl struct {
-	_sale       *SaleImpl
-	_valRep     valueobject.IValueRep
-	_supplierId int
+	_sale     *saleImpl
+	_itemRep  item.IItemRep
+	_valRep   valueobject.IValueRep
+	_vendorId int
 }
 
-func NewItemManager(mchId int, s *SaleImpl,
-	valRep valueobject.IValueRep) sale.IItemManager {
+func NewItemManager(vendorId int, s *saleImpl,
+	itemRep item.IItemRep, valRep valueobject.IValueRep) sale.IItemManager {
 	c := &itemManagerImpl{
-		_sale:       s,
-		_supplierId: mchId,
-		_valRep:     valRep,
+		_sale:     s,
+		_vendorId: vendorId,
+		_valRep:   valRep,
+		_itemRep:  itemRep,
 	}
 	return c.init()
 }
@@ -214,24 +220,25 @@ func (this *itemManagerImpl) init() sale.IItemManager {
 	return this
 }
 
-func (this *itemManagerImpl) CreateItem(v *sale.Item) sale.IItem {
+func (this *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
 	if v.UpdateTime == 0 {
 		v.UpdateTime = v.CreateTime
 	} //todo: 判断category
-	return newItem(this, this._sale, v, this._sale._saleRep, this._sale._labelRep,
+	return newItem(this, this._sale, v, this._itemRep,
+		this._sale._saleRep, this._sale._labelRep,
 		this._sale._goodsRep, this._sale._promRep)
 }
 
 // 删除货品
 func (this *itemManagerImpl) DeleteItem(id int) error {
 	var err error
-	num := this._sale._saleRep.GetItemSaleNum(this._supplierId, id)
+	num := this._itemRep.GetItemSaleNum(this._vendorId, id)
 
 	if num == 0 {
-		err = this._sale._saleRep.DeleteItem(this._supplierId, id)
+		err = this._itemRep.DeleteItem(this._vendorId, id)
 		if err != nil {
 			this._sale.clearCache(id)
 		}
@@ -243,8 +250,8 @@ func (this *itemManagerImpl) DeleteItem(id int) error {
 
 // 根据产品编号获取产品
 func (this *itemManagerImpl) GetItem(itemId int) sale.IItem {
-	pv := this._sale._saleRep.GetValueItem(this._supplierId, itemId)
-	if pv != nil {
+	pv := this._itemRep.GetValueItem(itemId)
+	if pv != nil && pv.VendorId == this._vendorId {
 		return this.CreateItem(pv)
 	}
 	return nil

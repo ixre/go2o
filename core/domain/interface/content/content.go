@@ -12,10 +12,13 @@ import "go2o/core/infrastructure/domain"
 
 var (
 	ErrCategoryContainArchive *domain.DomainError = domain.NewDomainError(
-		"err_category_contain_archive", "栏目包含文章,不允许删除!")
+		"err_category_contain_archive", "栏目包含文章,不允许删除")
 
 	ErrCategoryAliasExists *domain.DomainError = domain.NewDomainError(
-		"err_category_alias_exists", "已存在相同标识的栏目!")
+		"err_category_alias_exists", "已存在相同标识的栏目")
+
+	NotSetCategory *domain.DomainError = domain.NewDomainError(
+		"err_not_set_category", "请选择分类")
 )
 
 type (

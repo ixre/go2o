@@ -9,34 +9,37 @@
 package sale
 
 import (
-	"fmt"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
-	"time"
+	goodsImpl "go2o/core/domain/sale/goods"
 )
 
-var _ sale.IGoods = new(SaleGoods)
-var _ domain.IDomain = new(SaleGoods)
+var _ sale.IGoods = new(tmpGoodsImpl)
+var _ domain.IDomain = new(tmpGoodsImpl)
 
-type SaleGoods struct {
+// 临时的商品实现  todo: 要与item分开
+type tmpGoodsImpl struct {
 	_manager        *goodsManagerImpl
 	_goods          sale.IItem
 	_value          *goods.ValueGoods
 	_saleRep        sale.ISaleRep
 	_goodsRep       goods.IGoodsRep
+	_itemRep        item.IItemRep
 	_promRep        promotion.IPromotionRep
 	_sale           sale.ISale
 	_latestSnapshot *goods.GoodsSnapshot
 	_levelPrices    []*goods.MemberPrice
 	_promDescribes  map[string]string
+	_snapManager    goods.ISnapshotManager
 }
 
 func NewSaleGoods(m *goodsManagerImpl, s sale.ISale, goods sale.IItem, value *goods.ValueGoods, rep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
-	v := &SaleGoods{
+	v := &tmpGoodsImpl{
 		_manager:        m,
 		_goods:          goods,
 		_value:          value,
@@ -49,7 +52,7 @@ func NewSaleGoods(m *goodsManagerImpl, s sale.ISale, goods sale.IItem, value *go
 	return v.init()
 }
 
-func (this *SaleGoods) init() sale.IGoods {
+func (this *tmpGoodsImpl) init() sale.IGoods {
 	this._value.Price = this._value.Price
 	this._value.SalePrice = this._goods.GetValue().SalePrice
 	this._value.PromPrice = this._goods.GetValue().SalePrice
@@ -57,22 +60,32 @@ func (this *SaleGoods) init() sale.IGoods {
 }
 
 //获取领域对象编号
-func (this *SaleGoods) GetDomainId() int {
+func (this *tmpGoodsImpl) GetDomainId() int {
 	return this._value.Id
 }
 
+// 商品快照
+func (this *tmpGoodsImpl) SnapshotManager() goods.ISnapshotManager {
+	if this._snapManager == nil {
+		gi := this.GetItem().GetValue()
+		this._snapManager = goodsImpl.NewSnapshotManagerImpl(this.GetDomainId(),
+			this._goodsRep, this._itemRep, this.GetValue(), &gi)
+	}
+	return this._snapManager
+}
+
 // 获取货品
-func (this *SaleGoods) GetItem() sale.IItem {
+func (this *tmpGoodsImpl) GetItem() sale.IItem {
 	return this._goods
 }
 
 // 设置值
-func (this *SaleGoods) GetValue() *goods.ValueGoods {
+func (this *tmpGoodsImpl) GetValue() *goods.ValueGoods {
 	return this._value
 }
 
 // 获取包装过的商品信息
-func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
+func (this *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 	item := this.GetItem().GetValue()
 	gv := this.GetValue()
 	goods := &valueobject.Goods{
@@ -95,7 +108,7 @@ func (this *SaleGoods) GetPackedValue() *valueobject.Goods {
 }
 
 // 获取促销信息
-func (this *SaleGoods) GetPromotions() []promotion.IPromotion {
+func (this *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
 	var vp []*promotion.PromotionInfo = this._promRep.GetPromotionOfGoods(this.GetDomainId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 	for i, v := range vp {
@@ -105,7 +118,7 @@ func (this *SaleGoods) GetPromotions() []promotion.IPromotion {
 }
 
 // 获取会员价销价
-func (this *SaleGoods) GetLevelPrice(level int) (bool, float32) {
+func (this *tmpGoodsImpl) GetLevelPrice(level int) (bool, float32) {
 	lvp := this.GetLevelPrices()
 	for _, v := range lvp {
 		if level == v.Level && v.Price < this._value.SalePrice {
@@ -116,7 +129,7 @@ func (this *SaleGoods) GetLevelPrice(level int) (bool, float32) {
 }
 
 // 获取促销价
-func (this *SaleGoods) GetPromotionPrice(level int) float32 {
+func (this *tmpGoodsImpl) GetPromotionPrice(level int) float32 {
 	b, price := this.GetLevelPrice(level)
 	if b {
 		return price
@@ -125,7 +138,7 @@ func (this *SaleGoods) GetPromotionPrice(level int) float32 {
 }
 
 // 获取促销描述
-func (this *SaleGoods) GetPromotionDescribe() map[string]string {
+func (this *tmpGoodsImpl) GetPromotionDescribe() map[string]string {
 	if this._promDescribes == nil {
 		proms := this.GetPromotions()
 		this._promDescribes = make(map[string]string, len(proms))
@@ -158,7 +171,7 @@ func (this *SaleGoods) GetPromotionDescribe() map[string]string {
 }
 
 // 获取会员价
-func (this *SaleGoods) GetLevelPrices() []*goods.MemberPrice {
+func (this *tmpGoodsImpl) GetLevelPrices() []*goods.MemberPrice {
 	if this._levelPrices == nil {
 		this._levelPrices = this._goodsRep.GetGoodsLevelPrice(this.GetDomainId())
 	}
@@ -166,7 +179,7 @@ func (this *SaleGoods) GetLevelPrices() []*goods.MemberPrice {
 }
 
 // 保存会员价
-func (this *SaleGoods) SaveLevelPrice(v *goods.MemberPrice) (int, error) {
+func (this *tmpGoodsImpl) SaveLevelPrice(v *goods.MemberPrice) (int, error) {
 	v.GoodsId = this.GetDomainId()
 	if this._value.SalePrice == v.Price {
 		if v.Id > 0 {
@@ -178,7 +191,7 @@ func (this *SaleGoods) SaveLevelPrice(v *goods.MemberPrice) (int, error) {
 }
 
 // 设置值
-func (this *SaleGoods) SetValue(v *goods.ValueGoods) error {
+func (this *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
 	this._value.IsPresent = v.IsPresent
 	this._value.SaleNum = v.SaleNum
 	this._value.StockNum = v.StockNum
@@ -188,60 +201,19 @@ func (this *SaleGoods) SetValue(v *goods.ValueGoods) error {
 }
 
 // 保存
-func (this *SaleGoods) Save() (int, error) {
+func (this *tmpGoodsImpl) Save() (int, error) {
 	id, err := this._goodsRep.SaveValueGoods(this._value)
 	if err == nil {
-		_, err = this.GenerateSnapshot()
+		_, err = this.SnapshotManager().GenerateSnapshot()
 	}
 	this._value.Id = id
 	return id, err
-
 	//todo: save promotion
 	// return id,err
 }
 
-// 生成快照
-func (this *SaleGoods) GenerateSnapshot() (int, error) {
-	v := this._value
-	gi := this.GetItem()
-	gv := gi.GetValue()
-
-	if v.Id <= 0 {
-		return -1, sale.ErrNoSuchGoods
-	}
-
-	if !gi.IsOnShelves() {
-		return -1, sale.ErrNotOnShelves
-	}
-
-	merchantId := this._sale.GetAggregateRootId()
-	unix := time.Now().Unix()
-	cate := this._sale.CategoryManager().GetCategory(gv.CategoryId)
-	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
-		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
-		ItemId:       gv.Id,
-		GoodsId:      this.GetDomainId(),
-		GoodsName:    gv.Name,
-		GoodsNo:      gv.GoodsNo,
-		SmallTitle:   gv.SmallTitle,
-		CategoryName: cate.GetValue().Name,
-		Image:        gv.Image,
-		Cost:         gv.Cost,
-		SalePrice:    gv.SalePrice,
-		Price:        this._value.Price,
-		CreateTime:   unix,
-	}
-
-	if this.isNewSnapshot(gsn) {
-		this._latestSnapshot = gsn
-		return this._saleRep.SaveSnapshot(gsn)
-	}
-
-	return 0, sale.ErrLatestSnapshot
-}
-
 // 更新销售数量
-func (this *SaleGoods) AddSaleNum(quantity int) error {
+func (this *tmpGoodsImpl) AddSaleNum(quantity int) error {
 	// 减去库存
 	if quantity > 0 {
 		if quantity > this._value.StockNum {
@@ -256,7 +228,7 @@ func (this *SaleGoods) AddSaleNum(quantity int) error {
 }
 
 // 取消销售
-func (this *SaleGoods) CancelSale(quantity int, orderNo string) error {
+func (this *tmpGoodsImpl) CancelSale(quantity int, orderNo string) error {
 	// 减去库存
 	if quantity > 0 {
 		this._value.StockNum += quantity
@@ -267,38 +239,15 @@ func (this *SaleGoods) CancelSale(quantity int, orderNo string) error {
 	return sale.ErrGoodsNum
 }
 
-// 是否为新快照,与旧有快照进行数据对比
-func (this *SaleGoods) isNewSnapshot(gsn *goods.GoodsSnapshot) bool {
-	latestGsn := this.GetLatestSnapshot()
-	if latestGsn != nil {
-		return latestGsn.GoodsName != gsn.GoodsName ||
-			latestGsn.SmallTitle != gsn.SmallTitle ||
-			latestGsn.CategoryName != gsn.CategoryName ||
-			latestGsn.Image != gsn.Image ||
-			latestGsn.Cost != gsn.Cost ||
-			latestGsn.Price != gsn.Price ||
-			latestGsn.SalePrice != gsn.SalePrice
-	}
-	return true
-}
-
-// 获取最新的快照
-func (this *SaleGoods) GetLatestSnapshot() *goods.GoodsSnapshot {
-	if this._latestSnapshot == nil {
-		this._latestSnapshot = this._saleRep.GetLatestGoodsSnapshot(this.GetDomainId())
-	}
-	return this._latestSnapshot
-}
-
 var _ sale.IGoodsManager = new(goodsManagerImpl)
 
 type goodsManagerImpl struct {
-	_sale   *SaleImpl
+	_sale   *saleImpl
 	_valRep valueobject.IValueRep
 	_mchId  int
 }
 
-func NewGoodsManager(mchId int, s *SaleImpl,
+func NewGoodsManager(mchId int, s *saleImpl,
 	valRep valueobject.IValueRep) sale.IGoodsManager {
 	c := &goodsManagerImpl{
 		_sale:   s,
@@ -328,7 +277,7 @@ func (this *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueG
 func (this *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
 	var v *goods.ValueGoods = this._sale._goodsRep.GetValueGoodsById(goodsId)
 	if v != nil {
-		pv := this._sale._saleRep.GetValueItem(this._mchId, v.ItemId)
+		pv := this._sale._itemRep.GetValueItem(v.ItemId)
 		if pv != nil {
 			return this.CreateGoodsByItem(this._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -340,7 +289,7 @@ func (this *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
 func (this *goodsManagerImpl) GetGoodsBySku(itemId, sku int) sale.IGoods {
 	var v *goods.ValueGoods = this._sale._goodsRep.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
-		pv := this._sale._saleRep.GetValueItem(this._mchId, v.ItemId)
+		pv := this._sale._itemRep.GetValueItem(v.ItemId)
 		if pv != nil {
 			return this.CreateGoodsByItem(this._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -350,27 +299,17 @@ func (this *goodsManagerImpl) GetGoodsBySku(itemId, sku int) sale.IGoods {
 
 // 删除商品
 func (this *goodsManagerImpl) DeleteGoods(goodsId int) error {
-	goods := this.GetGoods(goodsId)
-	if goods.GetValue().SaleNum > 0 {
-		return sale.ErrNoSuchSnapshot
+	gs := this.GetGoods(goodsId)
+	if gs.GetValue().SaleNum > 0 {
+		return goods.ErrNoSuchSnapshot
 	}
 
 	//todo: delete goods
-	err := this._sale._saleRep.DeleteItem(this._mchId, goodsId)
+	err := this._sale._itemRep.DeleteItem(this._mchId, goodsId)
 	if err != nil {
 		this._sale.clearCache(goodsId)
 	}
 	return err
-}
-
-// 获取指定的商品快照
-func (this *goodsManagerImpl) GetGoodsSnapshot(id int) *goods.GoodsSnapshot {
-	return this._sale._saleRep.GetGoodsSnapshot(id)
-}
-
-// 根据Key获取商品快照
-func (this *goodsManagerImpl) GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot {
-	return this._sale._saleRep.GetGoodsSnapshotByKey(key)
 }
 
 // 获取指定数量已上架的商品
