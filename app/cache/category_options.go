@@ -55,7 +55,8 @@ func readToArticleCategoryDropList() []byte {
 			))
 		}
 	}
-	util.WalkArticleCategory(categories, &content.ArticleCategory{Id: 0}, f, nil)
+	util.WalkArticleCategory(categories, &content.ArticleCategory{Id: 0},
+		f, nil)
 	return buf.Bytes()
 }
 

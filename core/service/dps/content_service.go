@@ -74,11 +74,12 @@ func (this *contentService) DeletePage(merchantId int, pageId int) error {
 }
 
 // 获取所有栏目
-func (this *contentService) GetArticleCategories() []content.ArticleCategory {
+func (this *contentService) GetArticleCategories() []*content.ArticleCategory {
 	list := this._sysContent.ArticleManager().GetAllCategory()
-	arr := make([]content.ArticleCategory, len(list))
+	arr := make([]*content.ArticleCategory, len(list))
 	for i, v := range list {
-		arr[i] = v.GetValue()
+		val := v.GetValue()
+		arr[i] = &val
 	}
 	return arr
 }
