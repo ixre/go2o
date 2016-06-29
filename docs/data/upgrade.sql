@@ -396,6 +396,11 @@ CREATE TABLE `zxdb`.`gs_snapshot` (
   `update_time` INT NULL,
   PRIMARY KEY (`id`));
 
+ALTER TABLE `flm`.`gs_item`
+  ADD COLUMN `has_review` TINYINT(1) NULL AFTER `state`,
+  ADD COLUMN `review_pass` TINYINT(1) NULL AFTER `has_review`;
+
+
 
 
 

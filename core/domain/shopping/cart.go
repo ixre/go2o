@@ -211,7 +211,7 @@ func (this *Cart) AddItem(mchId int, shopId int, goodsId int,
 
 	v := &shopping.CartItem{
 		CartId:     this.GetDomainId(),
-		MerchantId: mchId,
+		VendorId:   mchId,
 		ShopId:     shopId,
 		SnapshotId: snap.SkuId,
 		GoodsId:    goodsId,
@@ -252,7 +252,7 @@ func (this *Cart) RemoveItem(goodsId, num int) error {
 func (this *Cart) Combine(c shopping.ICart) (shopping.ICart, error) {
 	if c.GetDomainId() != this.GetDomainId() {
 		for _, v := range c.GetValue().Items {
-			this.AddItem(v.MerchantId, v.ShopId, v.GoodsId, v.Quantity)
+			this.AddItem(v.VendorId, v.ShopId, v.GoodsId, v.Quantity)
 		}
 	}
 	return this, nil

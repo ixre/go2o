@@ -8,7 +8,15 @@
  */
 package item
 
-import "go2o/core/domain/interface/valueobject"
+import (
+	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/domain"
+)
+
+var (
+	ErrNotBeReview *domain.DomainError = domain.NewDomainError(
+		"err_not_be_review", "商品还未通过审核")
+)
 
 type (
 	IItemRep interface {
@@ -55,6 +63,12 @@ type (
 
 		// 是否上架,1为上架
 		OnShelves int `db:"on_shelves"`
+
+		// 是否审核
+		HasReview int `db:"has_review"`
+
+		// 是否审核通过
+		ReviewPass int `db:"review_pass"`
 
 		State      int   `db:"state"`
 		CreateTime int64 `db:"create_time"`

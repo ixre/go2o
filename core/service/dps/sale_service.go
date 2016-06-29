@@ -89,15 +89,15 @@ func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods 
 }
 
 // 保存产品
-func (this *saleService) SaveItem(merchantId int, v *item.Item) (int, error) {
-	sl := this._rep.GetSale(merchantId)
+func (this *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
+	sl := this._rep.GetSale(vendorId)
 	var pro sale.IItem
+	v.VendorId = vendorId //设置供应商编号
 	if v.Id > 0 {
 		pro = sl.ItemManager().GetItem(v.Id)
-		if pro == nil {
+		if pro == nil || pro.GetValue().VendorId != vendorId {
 			return 0, errors.New("产品不存在")
 		}
-
 		// 修改货品时，不会修改详情
 		v.Description = pro.GetValue().Description
 
@@ -497,4 +497,9 @@ func (this *saleService) GetItemDescriptionByGoodsId(merchantId, goodsId int) st
 	sl := this._rep.GetSale(merchantId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	return goods.GetItem().GetValue().Description
+}
+
+// 获取商品快照
+func (this *saleService) GetSnapshot(skuId int) *goods.Snapshot {
+	return this._goodsRep.GetLatestSnapshot(skuId)
 }

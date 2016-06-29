@@ -206,11 +206,11 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 					GoodsNo:    v.GoodsNo,
 					SmallTitle: v.SmallTitle,
 					GoodsImage: v.Image,
-					Num:        v.Quantity,
+					Quantity:   v.Quantity,
 					Price:      v.Price,
 					SalePrice:  v.SalePrice,
 				}
-				cart.TotalNum += cart.Items[i].Num
+				cart.TotalNum += cart.Items[i].Quantity
 			}
 		}
 	}
@@ -220,23 +220,27 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 
 //todo: 这里响应较慢,性能?
 func (this *shoppingService) AddCartItem(memberId int, cartKey string,
-	goodsId, num int) (*dto.CartItem, error) {
+	skuId, num int) (*dto.CartItem, error) {
 	cart := this.getShoppingCart(memberId, cartKey)
 	var item *shopping.CartItem
 	var err error
 	// 从购物车中添加
 	for k, v := range cart.Items() {
-		if k == goodsId {
-			item, err = cart.AddItem(v.MerchantId, v.ShopId, goodsId, num)
+		if k == skuId {
+			item, err = cart.AddItem(v.VendorId, v.ShopId, skuId, num)
 			break
 		}
 	}
 	// 将新商品加入到购物车
 	if item == nil {
-		gv := this._goodsRep.GetValueGoodsById(goodsId)
-		tm := this._itemRep.GetValueItem(gv.ItemId)
-		mchId := tm.VendorId
-		mch, err2 := this._mchRep.GetMerchant(mchId)
+		snap := this._goodsRep.GetLatestSnapshot(skuId)
+		if snap == nil {
+			return nil, goods.ErrNoSuchGoods
+		}
+		tm := this._itemRep.GetValueItem(snap.ItemId)
+
+		// 检测是否开通商城
+		mch, err2 := this._mchRep.GetMerchant(tm.VendorId)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -251,20 +255,15 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 		if shopId == 0 {
 			return nil, errors.New("商户还未开通商城")
 		}
-		item, err = cart.AddItem(mchId, shopId, goodsId, num)
+
+		// 加入购物车
+		item, err = cart.AddItem(snap.VendorId, shopId, skuId, num)
 	}
 
 	if err == nil {
-		cart.Save()
-		return &dto.CartItem{
-			GoodsId:    item.GoodsId,
-			GoodsName:  item.Name,
-			SmallTitle: item.SmallTitle,
-			GoodsImage: item.Image,
-			Num:        num,
-			Price:      item.Price,
-			SalePrice:  item.SalePrice,
-		}, nil
+		if _, err = cart.Save(); err == nil {
+			return shopping.ParseCartItem(item), err
+		}
 	}
 	return nil, err
 }

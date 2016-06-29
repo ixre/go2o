@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
 	goodsImpl "go2o/core/domain/sale/goods"
+	dm "go2o/core/infrastructure/domain"
 )
 
 var _ sale.IGoods = new(tmpGoodsImpl)
@@ -37,13 +38,16 @@ type tmpGoodsImpl struct {
 	_snapManager    goods.ISnapshotManager
 }
 
-func NewSaleGoods(m *goodsManagerImpl, s sale.ISale, goods sale.IItem, value *goods.ValueGoods, rep sale.ISaleRep,
+func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
+	itemRep item.IItemRep, goods sale.IItem,
+	value *goods.ValueGoods, rep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
 	v := &tmpGoodsImpl{
 		_manager:        m,
 		_goods:          goods,
 		_value:          value,
 		_saleRep:        rep,
+		_itemRep:        itemRep,
 		_goodsRep:       goodsRep,
 		_promRep:        promRep,
 		_sale:           s,
@@ -204,7 +208,8 @@ func (this *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
 func (this *tmpGoodsImpl) Save() (int, error) {
 	id, err := this._goodsRep.SaveValueGoods(this._value)
 	if err == nil {
-		_, err = this.SnapshotManager().GenerateSnapshot()
+		_, err := this.SnapshotManager().GenerateSnapshot()
+		dm.HandleError(err, "domain")
 	}
 	this._value.Id = id
 	return id, err
@@ -263,14 +268,16 @@ func (this *goodsManagerImpl) init() sale.IGoodsManager {
 
 // 创建商品
 func (this *goodsManagerImpl) CreateGoods(s *goods.ValueGoods) sale.IGoods {
-	return NewSaleGoods(this, this._sale, nil, s, this._sale._saleRep,
+	return NewSaleGoods(this, this._sale, this._sale._itemRep,
+		nil, s, this._sale._saleRep,
 		this._sale._goodsRep, this._sale._promRep)
 }
 
 // 创建商品
 func (this *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGoods) sale.IGoods {
-	return NewSaleGoods(this, this._sale, item, v, this._sale._saleRep,
-		this._sale._goodsRep, this._sale._promRep)
+	return NewSaleGoods(this, this._sale, this._sale._itemRep,
+		item, v, this._sale._saleRep, this._sale._goodsRep,
+		this._sale._promRep)
 }
 
 // 根据产品编号获取商品

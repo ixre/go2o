@@ -89,6 +89,12 @@ func (this *ItemImpl) SaveSaleLabels(tagIds []int) error {
 	return err
 }
 
+// 重置审核状态
+func (this *ItemImpl) resetReview() {
+	this._value.HasReview = 0
+	this._value.ReviewPass = 0
+}
+
 // 保存
 func (this *ItemImpl) Save() (int, error) {
 	this._sale.clearCache(this._value.Id)
@@ -107,9 +113,16 @@ func (this *ItemImpl) Save() (int, error) {
 		this._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
+	this.resetReview()
+
+	//todo:  暂时自动审核通过
+	this._value.HasReview = 1
+	this._value.ReviewPass = 1
+
 	id, err := this._itemRep.SaveValueItem(this._value)
 	if err == nil {
 		this._value.Id = id
+
 		//todo: 保存商品
 		this.saveGoods()
 
@@ -133,7 +146,7 @@ func (this *ItemImpl) saveGoods() {
 			SaleNum:       100,
 		}
 	}
-	goods := NewSaleGoods(nil, this._sale, this, val,
+	goods := NewSaleGoods(nil, this._sale, this._itemRep, this, val,
 		this._saleRep, this._goodsRep, this._promRep)
 	goods.Save()
 }
