@@ -29,29 +29,30 @@ type (
 
 	// 商品快照
 	Snapshot struct {
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		//SKU编号
+		SkuId      int `db:"sku_id" auto:"yes" pk:"no"`
 		//快照编号: 商户编号+g商品编号+快照时间戳
-		Key string `db:"snapshot_key"`
-		//商户编号
-		MchId int `db:"mch_id"`
+		Key        string `db:"snapshot_key"`
+		//供应商编号
+		VendorId   int `db:"vendor_id"`
 		//商品编号
-		GoodsId int `db:"goods_id"`
+		GoodsId    int `db:"goods_id"`
 		//商品标题
 		GoodsTitle string `db:"goods_title"`
 		//小标题
 		SmallTitle string `db:"small_title"`
 		//货号
-		GoodsNo string `db:"goods_no"`
+		GoodsNo    string `db:"goods_no"`
 		//货品编号
-		ItemId int `db:"item_id"`
+		ItemId     int `db:"item_id"`
 		//分类编号
 		CategoryId string `db:"category_id"`
 		//图片
-		Image string `db:"img"`
+		Image      string `db:"img"`
 		//定价
-		Price float32 `db:"price"`
+		Price      float32 `db:"price"`
 		//销售价
-		SalePrice float32 `db:"sale_price"`
+		SalePrice  float32 `db:"sale_price"`
 		//快照时间
 		UpdateTime int64 `db:"update_time"`
 	}

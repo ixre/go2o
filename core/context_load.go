@@ -104,7 +104,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "gs_category")
 	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
-	orm.Mapping(goods.GoodsSnapshot{}, "gs_trade_snapshot")
+	orm.Mapping(goods.GoodsSnapshot{}, "gs_sale_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")
 	orm.Mapping(goods.MemberPrice{}, "gs_member_price")
 
