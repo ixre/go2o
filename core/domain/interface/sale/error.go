@@ -13,18 +13,6 @@ import (
 )
 
 var (
-	ErrNoSuchGoods *domain.DomainError = domain.NewDomainError(
-		"no_such_goods", "商品不存在")
-
-	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
-		"latest_snapshot", "已经是最新的快照")
-
-	ErrNoSuchSnapshot *domain.DomainError = domain.NewDomainError(
-		"no_such_snapshot", "商品快照不存在")
-
-	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
-		"not_on_shelves", "商品未上架")
-
 	ErrGoodsNum *domain.DomainError = domain.NewDomainError(
 		"err_goods_num", "商品数量错误")
 

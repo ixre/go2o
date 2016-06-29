@@ -8,7 +8,24 @@
  */
 package goods
 
-import "go2o/core/domain/interface/valueobject"
+import (
+	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/domain"
+)
+
+var (
+	ErrNoSuchGoods *domain.DomainError = domain.NewDomainError(
+		"no_such_goods", "商品不存在")
+
+	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
+		"latest_snapshot", "已经是最新的快照")
+
+	ErrNoSuchSnapshot *domain.DomainError = domain.NewDomainError(
+		"no_such_snapshot", "商品快照不存在")
+
+	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
+		"not_on_shelves", "商品未上架")
+)
 
 type (
 	// 商品仓储
@@ -44,6 +61,18 @@ type (
 
 		// 移除会员价
 		RemoveGoodsLevelPrice(id int) error
+
+		// 保存快照
+		SaveSnapshot(*Snapshot) (int, error)
+
+		// 获取最新的商品快照
+		GetLatestSnapshot(skuId int) *Snapshot
+
+		// 获取指定的商品快照
+		GetSaleSnapshot(id int) *GoodsSnapshot
+
+		// 根据Key获取商品快照
+		GetSaleSnapshotByKey(key string) *GoodsSnapshot
 	}
 
 	// 商品

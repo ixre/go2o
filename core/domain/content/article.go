@@ -112,6 +112,9 @@ func (this *articleImpl) Category() content.ICategory {
 
 // 保存文章
 func (this *articleImpl) Save() (int, error) {
+	if this.Category() == nil {
+		return this.GetDomainId(), content.NotSetCategory
+	}
 	this._value.UpdateTime = time.Now().Unix()
 	id, err := this._rep.SaveArticle(this._value)
 	this._value.Id = id
@@ -189,13 +192,13 @@ func (this *articleManagerImpl) DelCategory(id int) error {
 
 // 创建文章
 func (this *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle {
-	return NewArticle(v, nil, this._rep)
+	return NewArticle(v, this, this._rep)
 }
 
 // 获取文章
 func (this *articleManagerImpl) GetArticle(id int) content.IArticle {
 	v := this._rep.GetArticleById(id)
-	if v == nil {
+	if v != nil {
 		return NewArticle(v, this, this._rep)
 	}
 	return nil

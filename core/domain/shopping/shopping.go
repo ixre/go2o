@@ -69,7 +69,7 @@ func (this *Shopping) GetAggregateRootId() int {
 func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
 	cart shopping.ICart) shopping.IOrder {
 	return newOrder(this, val, cart, this._partnerRep,
-		this._rep, this._saleRep, this._promRep,
+		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._valRep)
 }
 
@@ -90,11 +90,11 @@ func (this *Shopping) CheckCart(cart shopping.ICart) error {
 
 	sl := this._saleRep.GetSale(this._buyerId)
 	for _, v := range cart.GetValue().Items {
-		goods := sl.GoodsManager().GetGoods(v.GoodsId)
-		if goods == nil {
-			return sale.ErrNoSuchGoods // 没有商品
+		gds := sl.GoodsManager().GetGoods(v.GoodsId)
+		if gds == nil {
+			return goods.ErrNoSuchGoods // 没有商品
 		}
-		stockNum := goods.GetValue().StockNum
+		stockNum := gds.GetValue().StockNum
 		if stockNum == 0 {
 			return sale.ErrFullOfStock // 已经卖完了
 		}

@@ -159,3 +159,40 @@ func (this *goodsRep) GetOnShelvesGoods(merchantId int, start, end int, sortBy s
 	this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, start, (end - start))
 	return e
 }
+
+// 保存快照
+func (this *goodsRep) SaveSnapshot(v *goods.Snapshot) (int, error) {
+	var id int
+	_, _, err := this.Connector.GetOrm().Save(nil, v)
+	if err == nil {
+		err = this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_snapshot where goods_id=?`, &id, v.GoodsId)
+	}
+	return id, err
+}
+
+// 获取最新的商品快照
+func (this *goodsRep) GetLatestSnapshot(skuId int) *goods.Snapshot {
+	var e *goods.Snapshot = new(goods.Snapshot)
+	if this.Connector.GetOrm().GetBy(e, "goods_id=? ORDER BY id DESC", skuId) == nil {
+		return e
+	}
+	return nil
+}
+
+// 获取指定的商品快照
+func (this *goodsRep) GetSaleSnapshot(id int) *goods.GoodsSnapshot {
+	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
+	if this.Connector.GetOrm().Get(id, e) == nil {
+		return e
+	}
+	return nil
+}
+
+// 根据Key获取商品快照
+func (this *goodsRep) GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot {
+	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
+	if this.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
+		return e
+	}
+	return nil
+}

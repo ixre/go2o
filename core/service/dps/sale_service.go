@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -41,7 +42,7 @@ func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
 }
 
 // 获取产品值
-func (this *saleService) GetValueItem(supplierId, itemId int) *sale.Item {
+func (this *saleService) GetValueItem(supplierId, itemId int) *item.Item {
 	sl := this._rep.GetSale(supplierId)
 	pro := sl.ItemManager().GetItem(itemId)
 	if pro != nil {
@@ -80,7 +81,7 @@ func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int)
 
 // 根据快照编号获取商品
 func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
-	snap := this._rep.GetGoodsSnapshot(snapshotId)
+	snap := this._goodsRep.GetSaleSnapshot(snapshotId)
 	if snap != nil {
 		return this._goodsRep.GetValueGoodsById(snap.GoodsId)
 	}
@@ -88,7 +89,7 @@ func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods 
 }
 
 // 保存产品
-func (this *saleService) SaveItem(merchantId int, v *sale.Item) (int, error) {
+func (this *saleService) SaveItem(merchantId int, v *item.Item) (int, error) {
 	sl := this._rep.GetSale(merchantId)
 	var pro sale.IItem
 	if v.Id > 0 {

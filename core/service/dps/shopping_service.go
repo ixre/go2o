@@ -17,22 +17,26 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
 )
 
 type shoppingService struct {
 	_rep      shopping.IShoppingRep
+	_itemRep  item.IItemRep
 	_goodsRep goods.IGoodsRep
 	_saleRep  sale.ISaleRep
 	_mchRep   merchant.IMerchantRep
 }
 
 func NewShoppingService(r shopping.IShoppingRep,
-	saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
+	saleRep sale.ISaleRep,
+	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
 	mchRep merchant.IMerchantRep) *shoppingService {
 	return &shoppingService{
 		_rep:      r,
+		_itemRep:  itemRep,
 		_goodsRep: goodsRep,
 		_saleRep:  saleRep,
 		_mchRep:   mchRep,
@@ -230,7 +234,7 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	// 将新商品加入到购物车
 	if item == nil {
 		gv := this._goodsRep.GetValueGoodsById(goodsId)
-		tm := this._saleRep.GetValueItem(-1, gv.ItemId)
+		tm := this._itemRep.GetValueItem(gv.ItemId)
 		mchId := tm.VendorId
 		mch, err2 := this._mchRep.GetMerchant(mchId)
 		if err2 != nil {

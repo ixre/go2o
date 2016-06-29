@@ -20,6 +20,9 @@ type (
 		// 获取领域对象编号
 		GetDomainId() int
 
+		// 商品快照
+		SnapshotManager() goods.ISnapshotManager
+
 		// 获取货品
 		GetItem() IItem
 
@@ -59,11 +62,11 @@ type (
 		// 取消销售
 		CancelSale(quantity int, orderNo string) error
 
-		// 生成快照
-		GenerateSnapshot() (int, error)
-
-		// 获取最新的快照
-		GetLatestSnapshot() *goods.GoodsSnapshot
+		//// 生成快照
+		//GenerateSnapshot() (int, error)
+		//
+		//// 获取最新的快照
+		//GetLatestSnapshot() *goods.GoodsSnapshot
 	}
 
 	// 商品服务
@@ -83,11 +86,11 @@ type (
 		// 删除商品
 		DeleteGoods(int) error
 
-		// 获取指定的商品快照
-		GetGoodsSnapshot(id int) *goods.GoodsSnapshot
-
-		// 根据Key获取商品快照
-		GetGoodsSnapshotByKey(key string) *goods.GoodsSnapshot
+		//// 获取指定的商品快照
+		//GetSaleSnapshot(id int) *goods.GoodsSnapshot
+		//
+		//// 根据Key获取商品快照
+		//GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot
 
 		// 获取指定数量已上架的商品
 		GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
@@ -101,16 +104,3 @@ type (
 		Quantity   string `json:"qty"`
 	}
 )
-
-// 转换包含部分数据的产品值对象
-func ParseToPartialValueItem(v *valueobject.Goods) *Item {
-	return &Item{
-		Id:         v.Item_Id,
-		CategoryId: v.CategoryId,
-		Name:       v.Name,
-		GoodsNo:    v.GoodsNo,
-		Image:      v.Image,
-		Price:      v.Price,
-		SalePrice:  v.SalePrice,
-	}
-}
