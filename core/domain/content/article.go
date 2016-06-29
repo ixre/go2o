@@ -82,6 +82,7 @@ func NewArticle(v *content.Article, m content.IArticleManager,
 	return &articleImpl{
 		_rep:   rep,
 		_value: v,
+		_manager:m,
 	}
 }
 
