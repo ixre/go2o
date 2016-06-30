@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/ad"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/member"
@@ -97,8 +98,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shopping.OrderCoupon{}, "pt_order_coupon")
 	orm.Mapping(shopping.OrderPromotionBind{}, "pt_order_pb")
 	orm.Mapping(shopping.OrderLog{}, "pt_order_log")
-	orm.Mapping(shopping.ValueCart{}, "sale_cart")
-	orm.Mapping(shopping.CartItem{}, "sale_cart_item")
+	orm.Mapping(cart.ValueCart{}, "sale_cart")
+	orm.Mapping(cart.CartItem{}, "sale_cart_item")
 
 	/** 销售 **/
 	orm.Mapping(item.Item{}, "gs_item")

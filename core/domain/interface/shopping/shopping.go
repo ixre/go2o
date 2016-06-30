@@ -10,6 +10,7 @@
 package shopping
 
 import (
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 )
@@ -20,14 +21,7 @@ type IShopping interface {
 
 	// 创建订单,如果为已存在的订单则没有Cart.
 	// todo:需重构为单独的类型
-	CreateOrder(*ValueOrder, ICart) IOrder
-
-	//创建购物车
-	// @buyerId 为购买会员ID,0表示匿名购物车
-	NewCart() ICart
-
-	// 检查购物车
-	CheckCart(cart ICart) error
+	CreateOrder(*ValueOrder, cart.ICart) IOrder
 
 	// 根据数据获取购物车,
 	// 如果member的cart与key不一致，则合并购物车；
@@ -36,22 +30,16 @@ type IShopping interface {
 	//GetCart(key string,memberId int) (ICart, error)
 
 	// 根据数据获取购物车
-	GetCartByKey(key string) (ICart, error)
+	//GetCartByKey(key string) (ICart, error)
 
 	// 获取购物车
-	GetShoppingCart(cartKey string) ICart
-
-	// 获取没有结算的购物车
-	GetCurrentCart() (ICart, error)
-
-	// 绑定购物车会员编号
-	BindCartBuyer(cartKey string) error
+	//GetShoppingCart(cartKey string) ICart
 
 	// 将购物车转换为订单
-	ParseShoppingCart() (IOrder, member.IMember, ICart, error)
+	ParseShoppingCart() (IOrder, member.IMember, cart.ICart, error)
 
 	// 组装订单
-	BuildOrder(subject string, couponCode string) (IOrder, ICart, error)
+	BuildOrder(subject string, couponCode string) (IOrder, cart.ICart, error)
 
 	// 提交订单
 	SubmitOrder(subject string, couponCode string, useBalanceDiscount bool) (string, error)

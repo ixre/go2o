@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"go2o/core"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -37,14 +38,16 @@ type shoppingRep struct {
 	_goodsRep   goods.IGoodsRep
 	_promRep    promotion.IPromotionRep
 	_memberRep  member.IMemberRep
-	_partnerRep merchant.IMerchantRep
+	_mchRep     merchant.IMerchantRep
 	_deliverRep delivery.IDeliveryRep
+	_cartRep    cart.ICartRep
 	_valRep     valueobject.IValueRep
 	_cache      map[int]shopping.IShopping
 }
 
 func NewShoppingRep(c db.Connector, ptRep merchant.IMerchantRep,
-	saleRep sale.ISaleRep, goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
+	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
+	promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
 	valRep valueobject.IValueRep) shopping.IShoppingRep {
 	return (&shoppingRep{
@@ -53,7 +56,8 @@ func NewShoppingRep(c db.Connector, ptRep merchant.IMerchantRep,
 		_goodsRep:   goodsRep,
 		_promRep:    promRep,
 		_memberRep:  memRep,
-		_partnerRep: ptRep,
+		_mchRep:     ptRep,
+		_cartRep:    cartRep,
 		_deliverRep: deliverRep,
 		_valRep:     valRep,
 	}).init()
@@ -70,7 +74,7 @@ func (this *shoppingRep) GetShopping(memberId int) shopping.IShopping {
 	}
 	//v, ok := this._cache[merchantId]
 	//if !ok {
-	v := shoppingImpl.NewShopping(memberId, this._partnerRep,
+	v := shoppingImpl.NewShopping(memberId, this._cartRep, this._mchRep,
 		this, this._saleRep, this._goodsRep, this._promRep,
 		this._memberRep, this._deliverRep, this._valRep)
 	//this._cache[merchantId] = v
@@ -206,82 +210,6 @@ func (this *shoppingRep) GetWaitingSetupOrders(merchantId int) ([]*shopping.Valu
 func (this *shoppingRep) SaveOrderLog(v *shopping.OrderLog) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, v)
 	return err
-}
-
-// 获取购物车
-func (this *shoppingRep) GetShoppingCart(key string) (*shopping.ValueCart, error) {
-	var v = new(shopping.ValueCart)
-	err := this.Connector.GetOrm().GetBy(v, "cart_key=?", key)
-	if v == nil || err != nil {
-		return nil, err
-	}
-
-	var items = []*shopping.CartItem{}
-	err = this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
-	if err == nil {
-		v.Items = items
-	}
-
-	return v, err
-}
-
-// 获取最新的购物车
-func (this *shoppingRep) GetLatestCart(buyerId int) (*shopping.ValueCart, error) {
-	var v = new(shopping.ValueCart)
-	err := this.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId)
-	if v == nil || err != nil {
-		return nil, err
-	}
-
-	var items = []*shopping.CartItem{}
-	err = this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
-	if err == nil {
-		v.Items = items
-	}
-	return v, err
-}
-
-// 保存购物车
-func (this *shoppingRep) SaveShoppingCart(v *shopping.ValueCart) (int, error) {
-	var err error
-	_orm := this.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = _orm.Save(v.Id, v)
-	} else {
-		_, _, err = _orm.Save(nil, v)
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart`, &v.Id)
-	}
-	return v.Id, err
-}
-
-// 移出购物车项
-func (this *shoppingRep) RemoveCartItem(id int) error {
-	return this.Connector.GetOrm().DeleteByPk(shopping.CartItem{}, id)
-}
-
-// 保存购物车项
-func (this *shoppingRep) SaveCartItem(v *shopping.CartItem) (int, error) {
-	_orm := this.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = _orm.Save(v.Id, v)
-	} else {
-		_, _, err = _orm.Save(nil, v)
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart_item where cart_id=?`, &v.Id, v.CartId)
-	}
-
-	return v.Id, err
-}
-
-// 清空购物车项
-func (this *shoppingRep) EmptyCartItems(id int) error {
-	_, err := this.Connector.GetOrm().Delete(shopping.CartItem{}, "cart_id=?", id)
-	return err
-}
-
-// 删除购物车
-func (this *shoppingRep) DeleteCart(id int) error {
-	return this.Connector.GetOrm().DeleteByPk(shopping.ValueCart{}, id)
 }
 
 // 获取订单的促销绑定

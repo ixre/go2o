@@ -7,22 +7,40 @@
  * history :
  */
 
-package shopping
+package cart
 
 import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
+)
+
+var (
+	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
+		"empty_shopping_cart", "购物车没有商品")
+
+	ErrCartBuyerBinded *domain.DomainError = domain.NewDomainError(
+		"cart_buyer_binded ", "购物车已绑定")
+
+	ErrDisallowBindForCart *domain.DomainError = domain.NewDomainError(
+		"cart_disallow_bind ", "无法为购物车绑定订单")
 )
 
 type (
 	ICart interface {
-		// 获取领域对象编号
-		GetDomainId() int
+		// 获取聚合根编号
+		GetAggregateRootId() int
+
+		// 获取购物车的KEY
+		Key() string
 
 		// 获取购物车值
 		GetValue() ValueCart
+
+		// 检查购物车
+		Check() error
 
 		// 获取商品编号与购物车项的集合
 		Items() map[int]*CartItem
@@ -63,6 +81,41 @@ type (
 
 		// 获取金额
 		GetFee() (totalFee float32, orderFee float32)
+	}
+
+	ICartRep interface {
+		// 创建购物车对象
+		CreateCart(v *ValueCart) ICart
+
+		// 创建一个购物车
+		NewCart() ICart
+
+		// 获取购物车
+		GetShoppingCartByKey(key string) ICart
+
+		// 获取会员没有结算的购物车
+		GetMemberCurrentCart(buyerId int) ICart
+
+		// 获取购物车
+		GetShoppingCart(key string) *ValueCart
+
+		// 获取最新的购物车
+		GetLatestCart(buyerId int) *ValueCart
+
+		// 保存购物车
+		SaveShoppingCart(*ValueCart) (int, error)
+
+		// 移出购物车项
+		RemoveCartItem(int) error
+
+		// 保存购物车项
+		SaveCartItem(*CartItem) (int, error)
+
+		// 清空购物车项
+		EmptyCartItems(id int) error
+
+		// 删除购物车
+		DeleteCart(id int) error
 	}
 
 	ValueCart struct {
