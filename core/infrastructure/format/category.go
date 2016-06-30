@@ -14,7 +14,7 @@ import (
 )
 
 // 获取栏目编号字符串
-func GetCategoryIdStr(ids []int) string {
+func IdArrJoinStr(ids []int) string {
 	var strIds []string = make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(v)

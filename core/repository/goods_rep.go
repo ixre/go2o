@@ -11,6 +11,7 @@ package repository
 import (
 	"fmt"
 	"github.com/jsix/gof/db"
+	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
@@ -20,13 +21,27 @@ var _ goods.IGoodsRep = new(goodsRep)
 
 type goodsRep struct {
 	db.Connector
+	_saleRep sale.ISaleRep
 }
 
 // 商品仓储
-func NewGoodsRep(c db.Connector) goods.IGoodsRep {
+func NewGoodsRep(c db.Connector) *goodsRep {
 	return &goodsRep{
 		Connector: c,
 	}
+}
+func (this *goodsRep) SetSaleRep(saleRep sale.ISaleRep) {
+	this._saleRep = saleRep
+}
+
+// 根据SKU-ID获取商品,SKU-ID为商品ID
+func (this *goodsRep) GetGoodsBySKuId(skuId int) interface{} {
+	snap := this.GetLatestSnapshot(skuId)
+	if snap != nil {
+		return this._saleRep.GetSale(snap.VendorId).
+			GoodsManager().GetGoods(skuId)
+	}
+	return nil
 }
 
 // 获取商品
@@ -61,7 +76,7 @@ func (this *goodsRep) GetGoodsByIds(ids ...int) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := this.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_goods.item_id=gs_item.id
-	 WHERE gs_goods.id IN (`+format.GetCategoryIdStr(ids)+`)`)
+     WHERE gs_goods.id IN (`+format.IdArrJoinStr(ids)+`)`)
 
 	return items, err
 }
@@ -117,7 +132,7 @@ func (this *goodsRep) GetPagedOnShelvesGoods(mchId int, catIds []int, start, end
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
 		catIdStr = fmt.Sprintf(" AND gs_category.id IN (%s)",
-			format.GetCategoryIdStr(catIds))
+			format.IdArrJoinStr(catIds))
 	}
 
 	if len(where) != 0 {
@@ -205,4 +220,13 @@ func (this *goodsRep) GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot {
 		return e
 	}
 	return nil
+}
+
+// 根据指定商品快照
+func (this *goodsRep) GetSnapshots(skuIdArr []int) []goods.Snapshot {
+	list := []goods.Snapshot{}
+	this.Connector.GetOrm().SelectByQuery(&list,
+		`SELECT * FROM gs_snapshot WHERE sku_id IN (`+
+			format.IdArrJoinStr(skuIdArr)+`)`)
+	return list
 }

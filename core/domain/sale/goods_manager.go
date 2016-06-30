@@ -113,7 +113,8 @@ func (this *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 
 // 获取促销信息
 func (this *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
-	var vp []*promotion.PromotionInfo = this._promRep.GetPromotionOfGoods(this.GetDomainId())
+	var vp []*promotion.PromotionInfo = this._promRep.GetPromotionOfGoods(
+		this.GetDomainId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 	for i, v := range vp {
 		proms[i] = this._promRep.CreatePromotion(v)

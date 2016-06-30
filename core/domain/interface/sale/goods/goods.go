@@ -33,6 +33,10 @@ type (
 		// 获取商品
 		GetValueGoods(itemId int, sku int) *ValueGoods
 
+		// 根据SKU-ID获取商品,SKU-ID为商品ID
+		//todo: 循环引有,故为interface{}
+		GetGoodsBySKuId(skuId int) interface{}
+
 		// 获取商品
 		GetValueGoodsById(goodsId int) *ValueGoods
 
@@ -73,6 +77,9 @@ type (
 
 		// 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *GoodsSnapshot
+
+		// 根据指定商品快照
+		GetSnapshots(skuIdArr []int) []Snapshot
 	}
 
 	// 商品

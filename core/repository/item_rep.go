@@ -45,7 +45,7 @@ func (this *itemRep) GetItemByIds(ids ...int) ([]*item.Item, error) {
 
 	//todo:改成database/sql方式，不使用orm
 	err := this.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_item WHERE id IN (`+format.GetCategoryIdStr(ids)+`)`)
+		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr(ids)+`)`)
 
 	return items, err
 }
@@ -65,7 +65,7 @@ func (this *itemRep) GetPagedOnShelvesItem(merchantId int, catIds []int,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 
-	var catIdStr string = format.GetCategoryIdStr(catIds)
+	var catIdStr string = format.IdArrJoinStr(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, merchantId, catIdStr, start, (end - start))
 

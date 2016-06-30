@@ -65,7 +65,7 @@ func (this *cartRep) GetMemberCurrentCart(buyerId int) cart.ICart {
 func (this *cartRep) GetShoppingCart(key string) *cart.ValueCart {
 	var v = &cart.ValueCart{}
 	if this.Connector.GetOrm().GetBy(v, "cart_key=?", key) == nil {
-		var items = []*cart.CartItem{}
+		items := []*cart.CartItem{}
 		this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
 		return v
