@@ -53,7 +53,9 @@ func (this *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 			latest.CategoryId != snap.CategoryId ||
 			latest.Image != snap.Image ||
 			latest.Price != snap.Price ||
-			latest.SalePrice != snap.SalePrice
+			latest.SalePrice != snap.SalePrice ||
+			latest.OnShelves != snap.OnShelves ||
+			latest.LevelSales != snap.LevelSales
 	}
 	return true
 }
@@ -68,8 +70,7 @@ func (this *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Ite
 	return this._gs, this._gi
 }
 
-// 更新快照
-// todo: 当上架并通过审核后,才更新快照
+// 更新快照, 通过审核后,才会更新快照
 func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 	ls := this.GetLatestSnapshot()
 	gs, gi := this.getGoodsAndItem()
@@ -78,13 +79,14 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		return -1, goods.ErrNoSuchGoods
 	}
 
-	//是否上架
-	if gi.OnShelves != 1 {
-		return -1, goods.ErrNotOnShelves
-	}
 	// 是否审核通过
 	if gi.ReviewPass == 0 {
 		return -1, item.ErrNotBeReview
+	}
+
+	LevelSales := 0
+	if len(this._rep.GetGoodsLevelPrice(this._skuId)) > 0 {
+		LevelSales = 1
 	}
 
 	unix := time.Now().Unix()
@@ -100,6 +102,8 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		Image:      gi.Image,
 		SalePrice:  gs.SalePrice,
 		Price:      gs.Price,
+		LevelSales: LevelSales,
+		OnShelves:  gi.OnShelves,
 		UpdateTime: unix,
 	}
 

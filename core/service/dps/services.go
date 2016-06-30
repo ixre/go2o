@@ -65,28 +65,29 @@ func Init(ctx gof.App) {
 
 	/** Repository **/
 
+	goodsRep := repository.NewGoodsRep(db)
 	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
 	mssRep := repository.NewMssRep(db)
 	memberRep := repository.NewMemberRep(db, mssRep, valRep)
 	itemRep := repository.NewItemRep(db)
-	goodsRep := repository.NewGoodsRep(db)
-	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
 	cateRep := repository.NewCategoryRep(db, valRep)
 	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
 		itemRep, goodsRep, promRep)
+	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
 	shopRep := repository.NewShopRep(db)
 	mchRep := repository.NewMerchantRep(db, shopRep, userRep, mssRep, valRep)
-	memberRep.SetMerchantRep(mchRep)
 	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
-
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)
 	adRep := repository.NewAdvertisementRep(db)
 	spRep := repository.NewShoppingRep(db, mchRep, saleRep, cartRep, goodsRep,
 		promRep, memberRep, deliveryRep, valRep)
+
+	goodsRep.SetSaleRep(saleRep) //fixed
+	memberRep.SetMerchantRep(mchRep)
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)

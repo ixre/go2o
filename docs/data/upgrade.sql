@@ -400,6 +400,13 @@ ALTER TABLE `flm`.`gs_item`
   ADD COLUMN `has_review` TINYINT(1) NULL AFTER `state`,
   ADD COLUMN `review_pass` TINYINT(1) NULL AFTER `has_review`;
 
+ALTER TABLE `flm`.`gs_snapshot`
+  CHANGE COLUMN `category_id` `cat_id` INT(11) NULL DEFAULT NULL ,
+  ADD COLUMN `on_shelves` TINYINT(1) NULL DEFAULT 1 AFTER `cat_id`;
+
+
+ALTER TABLE `flm`.`gs_snapshot`
+  ADD COLUMN `level_sales` TINYINT(1) NULL COMMENT '是否有会员价' AFTER `sale_price`;
 
 
 

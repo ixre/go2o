@@ -76,29 +76,6 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
 		this._memberRep, this._valRep)
 }
 
-//创建购物车
-// @buyerId 为购买会员ID,0表示匿名购物车
-//func (this *Shopping) NewCart() shopping.ICart {
-//	cart := newCart(this._buyerId, this._partnerRep, this._memberRep, this._saleRep,
-//		this._goodsRep, this._rep)
-//	cart.Save()
-//	return cart
-//}
-//
-//
-//
-//// 根据数据获取购物车
-//func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
-//	cart, error := this._rep.GetShoppingCart(key)
-//	if error == nil {
-//		cart.BuyerId = this._buyerId
-//		return createCart(cart, this._partnerRep, this._memberRep, this._saleRep,
-//			this._goodsRep, this._rep), nil
-//	}
-//	return nil, error
-//}
-//
-
 // 将购物车转换为订单
 func (this *Shopping) ParseShoppingCart() (shopping.IOrder,
 	member.IMember, cart.ICart, error) {

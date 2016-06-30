@@ -59,13 +59,13 @@ type (
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(mchId int, shopId int, goodsId, num int) (*CartItem, error)
+		AddItem(vendorId int, shopId int, skuId, num int) (*CartItem, error)
 
 		// 移出项
-		RemoveItem(goodsId, num int) error
+		RemoveItem(skuId, num int) error
 
 		// 合并购物车，并返回新的购物车
-		Combine(ICart) (ICart, error)
+		Combine(ICart) ICart
 
 		// 保存购物车
 		Save() (int, error)
@@ -118,6 +118,7 @@ type (
 		DeleteCart(id int) error
 	}
 
+	//todo:  shopId应去掉,同时应存储邮费等信息
 	ValueCart struct {
 		Id      int    `db:"id" pk:"yes" auto:"yes"`
 		CartKey string `db:"cart_key"`
