@@ -12,6 +12,7 @@ package dps
 import (
 	"bytes"
 	"errors"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -20,6 +21,7 @@ import (
 	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
 )
 
 type shoppingService struct {
@@ -27,16 +29,18 @@ type shoppingService struct {
 	_itemRep  item.IItemRep
 	_goodsRep goods.IGoodsRep
 	_saleRep  sale.ISaleRep
+	_cartRep  cart.ICartRep
 	_mchRep   merchant.IMerchantRep
 }
 
 func NewShoppingService(r shopping.IShoppingRep,
-	saleRep sale.ISaleRep,
+	saleRep sale.ISaleRep, cartRep cart.ICartRep,
 	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
 	mchRep merchant.IMerchantRep) *shoppingService {
 	return &shoppingService{
 		_rep:      r,
 		_itemRep:  itemRep,
+		_cartRep:  cartRep,
 		_goodsRep: goodsRep,
 		_saleRep:  saleRep,
 		_mchRep:   mchRep,
@@ -167,27 +171,41 @@ func (this *shoppingService) CancelOrder(merchantId int, orderNo string, reason 
 }
 
 //  获取购物车
-func (this *shoppingService) getShoppingCart(buyerId int, cartKey string) shopping.ICart {
-	sp := this._rep.GetShopping(buyerId)
-	return sp.GetShoppingCart(cartKey)
+func (this *shoppingService) getShoppingCart(buyerId int,
+	cartKey string) cart.ICart {
+	var c cart.ICart
+	if len(cartKey) > 0 {
+		c = this._cartRep.GetShoppingCartByKey(cartKey)
+	}
+	if c == nil {
+		c = this._cartRep.NewCart()
+		_, err := c.Save()
+		domain.HandleError(err, "service")
+	}
+	if c.GetValue().BuyerId <= 0 {
+		err := c.SetBuyer(buyerId)
+		domain.HandleError(err, "service")
+	}
+	return c
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (this *shoppingService) GetShoppingCart(memberId int, cartKey string) *dto.ShoppingCart {
+func (this *shoppingService) GetShoppingCart(memberId int,
+	cartKey string) *dto.ShoppingCart {
 	cart := this.getShoppingCart(memberId, cartKey)
 	return this.parseDtoCart(cart)
 }
 
 // 创建一个新的购物车
 func (this *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
-	cart := this._rep.GetShopping(memberId).NewCart()
+	cart := this._cartRep.NewCart()
 	return this.parseDtoCart(cart)
 }
 
-func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
+func (this *shoppingService) parseDtoCart(c cart.ICart) *dto.ShoppingCart {
 	var cart = new(dto.ShoppingCart)
 	v := c.GetValue()
-	cart.Id = c.GetDomainId()
+	cart.Id = c.GetAggregateRootId()
 	cart.BuyerId = v.BuyerId
 	cart.CartKey = v.CartKey
 	cart.UpdateTime = v.UpdateTime
@@ -221,13 +239,13 @@ func (this *shoppingService) parseDtoCart(c shopping.ICart) *dto.ShoppingCart {
 //todo: 这里响应较慢,性能?
 func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	skuId, num int) (*dto.CartItem, error) {
-	cart := this.getShoppingCart(memberId, cartKey)
-	var item *shopping.CartItem
+	c := this.getShoppingCart(memberId, cartKey)
+	var item *cart.CartItem
 	var err error
 	// 从购物车中添加
-	for k, v := range cart.Items() {
+	for k, v := range c.Items() {
 		if k == skuId {
-			item, err = cart.AddItem(v.VendorId, v.ShopId, skuId, num)
+			item, err = c.AddItem(v.VendorId, v.ShopId, skuId, num)
 			break
 		}
 	}
@@ -257,12 +275,12 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 		}
 
 		// 加入购物车
-		item, err = cart.AddItem(snap.VendorId, shopId, skuId, num)
+		item, err = c.AddItem(snap.VendorId, shopId, skuId, num)
 	}
 
 	if err == nil {
-		if _, err = cart.Save(); err == nil {
-			return shopping.ParseCartItem(item), err
+		if _, err = c.Save(); err == nil {
+			return cart.ParseCartItem(item), err
 		}
 	}
 	return nil, err

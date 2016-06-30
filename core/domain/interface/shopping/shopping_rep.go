@@ -44,25 +44,4 @@ type IShoppingRep interface {
 
 	// 保存订单日志
 	SaveOrderLog(*OrderLog) error
-
-	// 获取购物车
-	GetShoppingCart(key string) (*ValueCart, error)
-
-	// 获取最新的购物车
-	GetLatestCart(buyerId int) (*ValueCart, error)
-
-	// 保存购物车
-	SaveShoppingCart(*ValueCart) (int, error)
-
-	// 移出购物车项
-	RemoveCartItem(int) error
-
-	// 保存购物车项
-	SaveCartItem(*CartItem) (int, error)
-
-	// 清空购物车项
-	EmptyCartItems(id int) error
-
-	// 删除购物车
-	DeleteCart(id int) error
 }

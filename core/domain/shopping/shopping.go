@@ -12,6 +12,7 @@ package shopping
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -31,6 +32,7 @@ import (
 type Shopping struct {
 	_rep         shopping.IShoppingRep
 	_saleRep     sale.ISaleRep
+	_cartRep     cart.ICartRep
 	_goodsRep    goods.IGoodsRep
 	_promRep     promotion.IPromotionRep
 	_memberRep   member.IMemberRep
@@ -41,7 +43,7 @@ type Shopping struct {
 	_merchant    merchant.IMerchant
 }
 
-func NewShopping(buyerId int, partnerRep merchant.IMerchantRep,
+func NewShopping(buyerId int, cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 	rep shopping.IShoppingRep, saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) shopping.IShopping {
@@ -50,6 +52,7 @@ func NewShopping(buyerId int, partnerRep merchant.IMerchantRep,
 
 	return &Shopping{
 		_rep:         rep,
+		_cartRep:     cartRep,
 		_saleRep:     saleRep,
 		_goodsRep:    goodsRep,
 		_promRep:     promRep,
@@ -67,7 +70,7 @@ func (this *Shopping) GetAggregateRootId() int {
 }
 
 func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
-	cart shopping.ICart) shopping.IOrder {
+	cart cart.ICart) shopping.IOrder {
 	return newOrder(this, val, cart, this._partnerRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._valRep)
@@ -75,165 +78,54 @@ func (this *Shopping) CreateOrder(val *shopping.ValueOrder,
 
 //创建购物车
 // @buyerId 为购买会员ID,0表示匿名购物车
-func (this *Shopping) NewCart() shopping.ICart {
-	cart := newCart(this._buyerId, this._partnerRep, this._memberRep, this._saleRep,
-		this._goodsRep, this._rep)
-	cart.Save()
-	return cart
-}
-
-// 检查购物车
-func (this *Shopping) CheckCart(cart shopping.ICart) error {
-	if cart == nil || len(cart.GetValue().Items) == 0 {
-		return shopping.ErrEmptyShoppingCart
-	}
-
-	sl := this._saleRep.GetSale(this._buyerId)
-	for _, v := range cart.GetValue().Items {
-		gds := sl.GoodsManager().GetGoods(v.GoodsId)
-		if gds == nil {
-			return goods.ErrNoSuchGoods // 没有商品
-		}
-		stockNum := gds.GetValue().StockNum
-		if stockNum == 0 {
-			return sale.ErrFullOfStock // 已经卖完了
-		}
-		if stockNum < v.Quantity {
-			return sale.ErrOutOfStock // 超出库存
-		}
-	}
-	return nil
-}
-
-// 根据数据获取购物车
-func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
-	cart, error := this._rep.GetShoppingCart(key)
-	if error == nil {
-		cart.BuyerId = this._buyerId
-		return createCart(cart, this._partnerRep, this._memberRep, this._saleRep,
-			this._goodsRep, this._rep), nil
-	}
-	return nil, error
-}
-
-func (this *Shopping) GetShoppingCart(cartKey string) shopping.ICart {
-
-	var hasOutCart = len(cartKey) != 0
-	var hasBuyer = this._buyerId != 0
-
-	var memCart shopping.ICart = nil // 消费者的购物车
-	var outCart shopping.ICart = nil // 通过cartKey传入的购物车
-
-	if hasBuyer {
-		// 如果没有传递cartKey ，或者传递的cart和会员绑定的购物车相同，直接返回
-		if memCart, _ = this.GetCurrentCart(); memCart != nil {
-			if !hasOutCart || memCart.GetValue().CartKey == cartKey {
-				return memCart
-			}
-		} else {
-			memCart = this.NewCart()
-		}
-	}
-
-	if hasOutCart {
-		outCart, _ = this.GetCartByKey(cartKey)
-	}
-
-	// 合并购物车
-	if outCart != nil && hasBuyer {
-		if buyerId := outCart.GetValue().BuyerId; buyerId <= 0 || buyerId == this._buyerId {
-			memCart, _ = memCart.Combine(outCart)
-			outCart.Destroy()
-			memCart.Save()
-		}
-	}
-
-	if memCart != nil {
-		return memCart
-	}
-
-	if outCart != nil {
-		return outCart
-	}
-
-	return this.NewCart()
-
-	//	if !hasOutCart {
-	//		if c == nil {
-	//			// 新的购物车不存在，直接返回会员的购物车
-	//			if mc != nil {
-	//				return mc
-	//			}
-	//		} else {
-	//			cv := c.GetValue()
-	//			//合并购物车
-	//			if cv.BuyerId <= 0 {
-	//				// 设置购买者
-	//				if hasBuyer {
-	//					c.SetBuyer(buyerId)
-	//				}
-	//			} else if mc != nil && cv.BuyerId == buyerId {
-	//				// 合并购物车
-	//				nc, err := mc.Combine(c)
-	//				if err == nil {
-	//					nc.Save()
-	//					return nc
-	//				}
-	//				return mc
-	//			}
-	//
-	//			// 如果没有购买，则返回
-	//			return c
-	//		}
-	//	}
-
-	// 返回一个新的购物车
-	//	return this.NewCart(buyerId)
-}
-
-// 获取没有结算的购物车
-func (this *Shopping) GetCurrentCart() (shopping.ICart, error) {
-	cart, error := this._rep.GetLatestCart(this._buyerId)
-	if error == nil {
-		return createCart(cart, this._partnerRep, this._memberRep,
-			this._saleRep, this._goodsRep, this._rep), nil
-	}
-	return nil, error
-}
-
-// 绑定购物车会员编号
-func (this *Shopping) BindCartBuyer(cartKey string) error {
-	cart, err := this.GetCartByKey(cartKey)
-	if err != nil {
-		return err
-	}
-	return cart.SetBuyer(this._buyerId)
-}
+//func (this *Shopping) NewCart() shopping.ICart {
+//	cart := newCart(this._buyerId, this._partnerRep, this._memberRep, this._saleRep,
+//		this._goodsRep, this._rep)
+//	cart.Save()
+//	return cart
+//}
+//
+//
+//
+//// 根据数据获取购物车
+//func (this *Shopping) GetCartByKey(key string) (shopping.ICart, error) {
+//	cart, error := this._rep.GetShoppingCart(key)
+//	if error == nil {
+//		cart.BuyerId = this._buyerId
+//		return createCart(cart, this._partnerRep, this._memberRep, this._saleRep,
+//			this._goodsRep, this._rep), nil
+//	}
+//	return nil, error
+//}
+//
 
 // 将购物车转换为订单
 func (this *Shopping) ParseShoppingCart() (shopping.IOrder,
-	member.IMember, shopping.ICart, error) {
+	member.IMember, cart.ICart, error) {
 	var order shopping.IOrder
 	var val shopping.ValueOrder
-	var cart shopping.ICart
+	var mc cart.ICart
 	var m member.IMember
 	var err error
 
-	m = this._memberRep.GetMember(this._buyerId)
-	if m == nil {
-		return nil, m, nil, member.ErrSessionTimeout
+	mc = this._cartRep.GetMemberCurrentCart(this._buyerId)
+	if mc == nil {
+		return nil, m, nil, cart.ErrEmptyShoppingCart
+	}
+	if err = mc.Check(); err != nil {
+		return nil, m, nil, err
 	}
 
-	cart, err = this.GetCurrentCart()
-
-	if err != nil || cart == nil || len(cart.GetValue().Items) == 0 {
-		return nil, m, cart, shopping.ErrEmptyShoppingCart
-	}
+	//todo: need member check ?
+	//m = this._memberRep.GetMember(this._buyerId)
+	//if m == nil {
+	//	return nil, m, nil, member.ErrSessionTimeout
+	//}
 
 	val.MemberId = this._buyerId
 	val.MerchantId = this._buyerId
 
-	tf, of := cart.GetFee()
+	tf, of := mc.GetFee()
 	val.TotalFee = tf //总金额
 	val.Fee = of      //实际金额
 	val.PayFee = of
@@ -241,8 +133,8 @@ func (this *Shopping) ParseShoppingCart() (shopping.IOrder,
 	val.MerchantId = this._buyerId
 	val.Status = 1
 
-	order = this.CreateOrder(&val, cart)
-	return order, m, cart, nil
+	order = this.CreateOrder(&val, mc)
+	return order, m, mc, nil
 }
 
 func (this *Shopping) GetFreeOrderNo() string {
@@ -268,7 +160,7 @@ func (this *Shopping) SmartChoiceShop(address string) (shop.IShop, error) {
 
 // 生成订单
 func (this *Shopping) BuildOrder(subject string, couponCode string) (
-	shopping.IOrder, shopping.ICart, error) {
+	shopping.IOrder, cart.ICart, error) {
 	order, m, cart, err := this.ParseShoppingCart()
 	if err != nil {
 		return order, cart, err

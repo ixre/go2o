@@ -12,6 +12,7 @@ package shopping
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -35,7 +36,7 @@ var _ shopping.IOrder = new(orderImpl)
 type orderImpl struct {
 	_shopping        shopping.IShopping
 	_value           *shopping.ValueOrder
-	_cart            shopping.ICart
+	_cart            cart.ICart
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
 	_orderPbs        []*shopping.OrderPromotionBind
@@ -50,8 +51,9 @@ type orderImpl struct {
 	_balanceDiscount bool // 余额支付
 }
 
-func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder, cart shopping.ICart,
-	partnerRep merchant.IMerchantRep, shoppingRep shopping.IShoppingRep,
+func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder,
+	cart cart.ICart, partnerRep merchant.IMerchantRep,
+	shoppingRep shopping.IShoppingRep,
 	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	valRep valueobject.IValueRep) shopping.IOrder {
@@ -242,10 +244,10 @@ func (this *orderImpl) UseBalanceDiscount() {
 // 提交订单，返回订单号。如有错误则返回
 func (this *orderImpl) Submit() (string, error) {
 	if this.GetDomainId() != 0 {
-		return "", errors.New("订单不允许重复提交！")
+		return "", errors.New("订单不允许重复提交")
 	}
 
-	if err := this._shopping.CheckCart(this._cart); err != nil {
+	if err := this._cart.Check(); err != nil {
 		return "", err
 	}
 
@@ -349,7 +351,8 @@ func (this *orderImpl) bindPromotionOnSubmit(orderNo string, prom promotion.IPro
 }
 
 // 应用购物车内商品的促销
-func (this *orderImpl) applyCartPromotionObSubmit(vo *shopping.ValueOrder, cart shopping.ICart) ([]promotion.IPromotion, int) {
+func (this *orderImpl) applyCartPromotionObSubmit(vo *shopping.ValueOrder,
+	cart cart.ICart) ([]promotion.IPromotion, int) {
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, 0)
 	var prom promotion.IPromotion
 	var saveFee int

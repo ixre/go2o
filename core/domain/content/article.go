@@ -80,9 +80,9 @@ type articleImpl struct {
 func NewArticle(v *content.Article, m content.IArticleManager,
 	rep content.IContentRep) content.IArticle {
 	return &articleImpl{
-		_rep:   rep,
-		_value: v,
-		_manager:m,
+		_rep:     rep,
+		_value:   v,
+		_manager: m,
 	}
 }
 
