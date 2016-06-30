@@ -12,6 +12,9 @@ type (
 	IShopRep interface {
 		SaveShop(*Shop) (int, error)
 
+		// 商店别名是否存在
+		ShopAliasExists(alias string, shopId int) bool
+
 		GetValueShop(merchantId, shopId int) *Shop
 
 		GetShopsOfMerchant(merchantId int) []*Shop

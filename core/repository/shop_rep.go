@@ -27,6 +27,14 @@ func NewShopRep(c db.Connector) shop.IShopRep {
 	}
 }
 
+// 商店别名是否存在
+func (this *shopRep) ShopAliasExists(alias string, shopId int) bool {
+	num := 0
+	this.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
+		alias=? AND shop_id<>?`, &num, alias, shopId)
+	return num > 0
+}
+
 // 获取线上商店
 func (this *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
 	e := shop.OnlineShop{}

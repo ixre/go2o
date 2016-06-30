@@ -10,7 +10,6 @@ package cache
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
@@ -62,8 +61,8 @@ func GetMchIdByShopId(shopId int) (mchId int) {
 // 获取商城的数据
 func GetOnlineShopData(shopId int) *shop.ShopDto {
 	var v shop.ShopDto
-	var sto gof.Storage = GetKVS()
-	var key string = GetShopDataKey(shopId)
+	sto := GetKVS()
+	key := GetShopDataKey(shopId)
 	if sto.Get(key, &v) != nil {
 		mchId := GetMchIdByShopId(shopId)
 		if v2 := dps.ShopService.GetShopData(mchId, shopId); v2 != nil {
@@ -77,4 +76,12 @@ func GetOnlineShopData(shopId int) *shop.ShopDto {
 		}
 	}
 	return &v
+}
+
+// 清除在线商店缓存
+func CleanShopData(shopId int) {
+	if shopId > 0 {
+		key := GetShopDataKey(shopId)
+		GetKVS().Del(key)
+	}
 }

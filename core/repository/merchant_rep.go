@@ -152,12 +152,10 @@ func (this *merchantRep) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 
 // 保存API信息
 func (this *merchantRep) SaveApiInfo(v *merchant.ApiInfo) error {
-	var err error
-	orm := this.GetOrm()
-	if v.MerchantId <= 0 {
+	orm := this.Connector.GetOrm()
+	i, _, err := orm.Save(v.MerchantId, v)
+	if i == 0 {
 		_, _, err = orm.Save(nil, v)
-	} else {
-		_, _, err = orm.Save(v.MerchantId, v)
 	}
 	return err
 }

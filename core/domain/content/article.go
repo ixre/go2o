@@ -141,10 +141,37 @@ func newArticleManagerImpl(rep content.IContentRep) content.IArticleManager {
 func (this *articleManagerImpl) GetAllCategory() []content.ICategory {
 	if this._categories == nil {
 		list := this._rep.GetAllArticleCategory()
-		this._categories = make([]content.ICategory, len(list))
+		l := len(list)
+		//如果没有分类,则初始化数据
+		if l == 0 {
+			list = []*content.ArticleCategory{
+				&content.ArticleCategory{
+					Id:    0,
+					Alias: "mch-notice",
+					Name:  "商户公告",
+				},
+				&content.ArticleCategory{
+					Id:    0,
+					Alias: "mall-activity",
+					Name:  "商城活动",
+				},
+				&content.ArticleCategory{
+					Id:    0,
+					Alias: "mem-notice",
+					Name:  "会员公告",
+				},
+			}
+			l = len(list)
+		}
+
+		this._categories = make([]content.ICategory, l)
 		this._categoryList = make(map[int]content.ICategory)
 		for i, v := range list {
-			this._categories[i] = NewCategory(v, this, this._rep)
+			c := NewCategory(v, this, this._rep)
+			if c.GetDomainId() == 0 {
+				c.Save() //如果为新建的分类,则保存
+			}
+			this._categories[i] = c
 			this._categoryList[v.Id] = this._categories[i]
 		}
 	}
