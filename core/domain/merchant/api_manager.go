@@ -9,9 +9,8 @@
 package merchant
 
 import (
-	"errors"
-	"fmt"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/infrastructure/domain"
 )
 
 var _ merchant.IApiManager = new(apiManagerImpl)
@@ -31,9 +30,17 @@ func newApiManagerImpl(m *MerchantImpl) merchant.IApiManager {
 func (this *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
 	if this._apiInfo == nil {
 		this._apiInfo = this._rep.GetApiInfo(this.GetAggregateRootId())
+		//没有API则生成
 		if this._apiInfo == nil {
-			panic(errors.New(fmt.Sprintf("商户:%d-%s 未生成API数据",
-				this.GetAggregateRootId(), this.GetValue().Name)))
+			mchId := this.GetAggregateRootId()
+			this._apiInfo = &merchant.ApiInfo{
+				MerchantId: mchId,
+				ApiId:      domain.NewApiId(mchId),
+				ApiSecret:  domain.NewSecret(mchId),
+				WhiteList:  "*",
+				Enabled:    0,
+			}
+			this.SaveApiInfo(this._apiInfo)
 		}
 	}
 	return this._apiInfo

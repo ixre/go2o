@@ -13,6 +13,13 @@ import (
 	"strconv"
 )
 
+var (
+	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
+		"err_not_set_alias", "请设置商城别名")
+	ErrShopAliasUsed *domain.DomainError = domain.NewDomainError(
+		"err_shop_alias_used", "商城别名已被占用")
+)
+
 const (
 	// 线上商店
 	TypeOnlineShop = 1

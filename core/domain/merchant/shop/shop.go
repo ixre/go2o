@@ -216,11 +216,25 @@ func newOnlineShopImpl(s *ShopImpl) shop.IShop {
 	}
 }
 
+func (this *onlineShopImpl) checkShopAlias(alias string) error {
+	if this._shopRep.ShopAliasExists(alias, this.GetDomainId()) {
+		return shop.ErrShopAliasUsed
+	}
+	return nil
+}
+
 // 设置值
 func (this *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	this._shopVal.Tel = v.Tel
 	this._shopVal.Address = v.Address
-	if len(v.Alias) > 0 {
+
+	if len(this._shopVal.Alias) == 0 {
+		if len(v.Alias) == 0 {
+			return shop.ErrNotSetAlias
+		}
+		if err := this.checkShopAlias(v.Alias); err != nil {
+			return err
+		}
 		this._shopVal.Alias = v.Alias
 	}
 	if len(v.Host) > 0 {
@@ -229,6 +243,7 @@ func (this *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	if len(v.Logo) > 0 {
 		this._shopVal.Logo = v.Logo
 	}
+
 	this._shopVal.IndexTitle = v.IndexTitle
 	this._shopVal.SubTitle = v.SubTitle
 	this._shopVal.Notice = v.Notice

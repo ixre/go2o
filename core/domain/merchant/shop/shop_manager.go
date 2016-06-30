@@ -99,4 +99,5 @@ func (this *shopManagerImpl) DeleteShop(shopId int) error {
 // 重新加载数据
 func (this *shopManagerImpl) Reload() {
 	this._shops = nil
+	//todo:  如果系统后台和前台,无法同时清理缓存
 }

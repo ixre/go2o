@@ -19,6 +19,7 @@ import (
 	"reflect"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 var (
@@ -30,6 +31,7 @@ type (
 	Echo struct {
 		*echo.Echo
 		app             gof.App
+		mux             sync.RWMutex
 		dynamicHandlers map[string]Handler // 动态处理程序
 	}
 	Context struct {
@@ -96,6 +98,8 @@ func (this *Echo) Postx(path string, h Handler) {
 }
 
 func (this *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
+	this.mux.Lock()
+	defer this.mux.Unlock()
 	a := c.Param("action")
 	k := route + a
 	if v, ok := this.dynamicHandlers[k]; ok {
