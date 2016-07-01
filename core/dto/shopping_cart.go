@@ -34,14 +34,14 @@ type CartVendorGroup struct{
 }
 
 type CartItem struct {
-	GoodsId    int     `json:"id"`
+	GoodsId    int     `json:"skuId"`
 	GoodsName  string  `json:"name"`
 	GoodsNo    string  `json:"no"`
 	SmallTitle string  `json:"title"`
 	GoodsImage string  `json:"image"`
 	Quantity   int     `json:"num"`
 	Price      float32 `json:"price"`
-	SalePrice  float32 `json:"sale_price"`
+	SalePrice  float32 `json:"salePrice"`
 	// 是否结算
-	IsSettle   bool    `json:"isSettle"`
+	IsSettle   bool    `json:"checked"`
 }
