@@ -10,7 +10,6 @@
 package repository
 
 import (
-	"errors"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"go2o/core"
@@ -121,21 +120,20 @@ func (this *shoppingRep) SaveOrder(merchantId int, v *shopping.ValueOrder) (int,
 			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
 		}
 	} else {
-		//验证Merchant和Member是否有绑定关系
-		var num int
-		if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_merchant_id=?`,
-			&num, v.MemberId, v.MerchantId); num != 1 {
-			return v.Id, errors.New("error partner and member.")
-		}
-		_, _, err = d.GetOrm().Save(nil, v)
-		if err == nil {
-			err = d.ExecScalar(`SELECT MAX(id) FROM pt_order WHERE merchant_id=? AND member_id=?`, &v.Id,
-				merchantId, v.MemberId)
-		}
+		////验证Merchant和Member是否有绑定关系
+		//var num int
+		//if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_merchant_id=?`,
+		//	&num, v.MemberId, v.MerchantId); num != 1 {
+		//	return v.Id, errors.New("error partner and member.")
+		//}
+		var id int64
+		_, id, err = d.GetOrm().Save(nil, v)
+		v.Id = int(id)
 		statusIsChanged = true
 	}
 
-	if statusIsChanged { //如果业务状态已经发生改变,则提交到队列
+	if statusIsChanged {
+		//如果业务状态已经发生改变,则提交到队列
 		rc := core.GetRedisConn()
 		defer rc.Close()
 		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue

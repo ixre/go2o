@@ -413,6 +413,12 @@ ALTER TABLE `flm`.`sale_cart_item`
   CHANGE COLUMN `quantity` `quantity` INT(8) NULL DEFAULT NULL ,
   ADD COLUMN `checked` TINYINT(1) NULL AFTER `quantity`;
 
+ALTER TABLE `flm`.`gs_snapshot`
+  ADD COLUMN `sale_num` INT NULL AFTER `level_sales`,
+  ADD COLUMN `stock_num` INT NULL AFTER `sale_num`;
+
+
+
 
 
 

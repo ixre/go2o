@@ -55,7 +55,9 @@ func (this *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 			latest.Price != snap.Price ||
 			latest.SalePrice != snap.SalePrice ||
 			latest.OnShelves != snap.OnShelves ||
-			latest.LevelSales != snap.LevelSales
+			latest.LevelSales != snap.LevelSales ||
+			latest.SaleNum != snap.SaleNum ||
+			latest.StockNum != snap.StockNum
 	}
 	return true
 }
@@ -101,7 +103,9 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		CategoryId: gi.CategoryId,
 		Image:      gi.Image,
 		SalePrice:  gs.SalePrice,
-		Price:      gs.Price,
+		Price:      gi.Price,
+		SaleNum:    gs.SaleNum,
+		StockNum:   gs.StockNum,
 		LevelSales: LevelSales,
 		OnShelves:  gi.OnShelves,
 		UpdateTime: unix,
