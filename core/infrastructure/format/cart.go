@@ -9,28 +9,24 @@
 package format
 
 import (
-	"bytes"
-	"fmt"
-	"go2o/core/dto"
+    "bytes"
+    "fmt"
+    "go2o/core/dto"
 )
 
 // 购物车详情
 func CartDetails(c *dto.ShoppingCart) string {
-	var byts *bytes.Buffer = bytes.NewBufferString("")
-	//byts.WriteString(`
-	//	<table cellspacing="1" class="cart_details_table">
-	//		<thead>
-	//			<tr>
-	//				<td><span class="t">商品</span></td>
-	//				<td><span class="t">价格</span></td>
-	//				<td><span class="t">数量</span></td>
-	//				<td><span class="t">总价</span></td>
-	//			</tr>
-	//		</thead>
-	//	`)
-
-	for _, v := range c.Items {
-		byts.WriteString(fmt.Sprintf(`
+    buf := bytes.NewBufferString("")
+    for _, vendor := range c.Vendors {
+        buf.WriteString(fmt.Sprintf(`
+			<div class="vendor">
+				<div class="tit">%s</div>
+		`, vendor.ShopName))
+        for _, item := range vendor.Items {
+            if !item.IsSettle{ //只显示结账的
+                continue
+            }
+            buf.WriteString(fmt.Sprintf(`
 			<div class="goods-item">
 				   <a target="_blank" href="/goods-%d.htm">
 				     <img src="%s" class="goods-thumb" />
@@ -43,12 +39,12 @@ func CartDetails(c *dto.ShoppingCart) string {
 				<span class="goods-fee">￥%s</span>
 			</div>
 		`,
-			v.GoodsId, GetGoodsImageUrl(v.GoodsImage), v.GoodsName, v.Quantity, v.GoodsNo,
-			FormatFloat(v.SalePrice), FormatFloat(v.SalePrice*float32(v.Quantity)),
-		))
-	}
+                item.GoodsId, GetGoodsImageUrl(item.GoodsImage), item.GoodsName, item.Quantity, item.GoodsNo,
+                FormatFloat(item.SalePrice), FormatFloat(item.SalePrice * float32(item.Quantity)),
+            ))
+        }
+        buf.WriteString("</div>")
+    }
 
-	byts.WriteString("</table>")
-
-	return byts.String()
+    return buf.String()
 }
