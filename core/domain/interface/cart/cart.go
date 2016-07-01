@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 )
 
 var (
@@ -149,6 +150,9 @@ type (
 		GoodsNo    string  `db:"-"`
 		SmallTitle string  `db:"-"`
 		Image      string  `db:"-"`
+
+		// 是否结算
+		IsSettle   bool    `db:"-" json:"isSettle"`
 	}
 )
 
@@ -156,10 +160,51 @@ func ParseCartItem(item *CartItem) *dto.CartItem {
 	return &dto.CartItem{
 		GoodsId:    item.GoodsId,
 		GoodsName:  item.Name,
+		GoodsNo:    item.GoodsNo,
 		SmallTitle: item.SmallTitle,
-		GoodsImage: item.Image,
+		GoodsImage: format.GetGoodsImageUrl(item.Image),
 		Quantity:   item.Quantity,
 		Price:      item.Price,
 		SalePrice:  item.SalePrice,
 	}
+}
+
+
+func  ParseToDtoCart(c ICart) *dto.ShoppingCart {
+	cart := &dto.ShoppingCart{}
+	v := c.GetValue()
+	cart.Id = c.GetAggregateRootId()
+	cart.BuyerId = v.BuyerId
+	cart.CartKey = v.CartKey
+	cart.UpdateTime = v.UpdateTime
+	t, f := c.GetFee()
+	cart.TotalFee = t
+	cart.OrderFee = f
+	cart.Summary = c.GetSummary()
+	cart.Vendors = []*dto.CartVendorGroup{}
+
+	if v.Items != nil {
+		if l := len(v.Items); l > 0 {
+			mp := make(map[int]*dto.CartVendorGroup,0) //保存运营商到map
+			for _, v := range v.Items {
+				vendor, ok := mp[v.ShopId]
+				if !ok {
+					vendor = &dto.CartVendorGroup{
+						VendorId:v.VendorId,
+						ShopId:v.ShopId,
+						Items: []*dto.CartItem{},
+					}
+					mp[v.ShopId] = vendor
+					cart.Vendors = append(cart.Vendors,vendor)
+				}
+				if v.IsSettle{
+					vendor.SettleNum += 1
+				}
+				vendor.Items = append(vendor.Items,ParseCartItem(v))
+				cart.TotalNum += v.Quantity
+			}
+		}
+	}
+
+	return cart
 }
