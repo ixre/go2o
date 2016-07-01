@@ -408,6 +408,12 @@ ALTER TABLE `flm`.`gs_snapshot`
 ALTER TABLE `flm`.`gs_snapshot`
   ADD COLUMN `level_sales` TINYINT(1) NULL COMMENT '是否有会员价' AFTER `sale_price`;
 
+ALTER TABLE `flm`.`sale_cart_item`
+  CHANGE COLUMN `mch_id` `vendor_id` INT(11) NULL DEFAULT NULL ,
+  CHANGE COLUMN `quantity` `quantity` INT(8) NULL DEFAULT NULL ,
+  ADD COLUMN `checked` TINYINT(1) NULL AFTER `quantity`;
+
+
 
 
 
