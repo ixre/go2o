@@ -273,6 +273,13 @@ cartKey string, goodsId, num int) error {
     return err
 }
 
+// 勾选商品结算
+func (this *shoppingService) CartCheckSign(memberId int,
+    cartKey string,arr []int)error{
+    cart := this.getShoppingCart(memberId, cartKey)
+    return cart.SignItemChecked(arr)
+}
+
 // 更新购物车结算
 func (this *shoppingService) PrepareSettlePersist(memberId, shopId,
 paymentOpt, deliverOpt, deliverId int) error {

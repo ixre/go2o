@@ -10,38 +10,38 @@
 package dto
 
 type ShoppingCart struct {
-	Id         int         `json:"-"`
-	CartKey    string      `json:"key"`
-	BuyerId    int         `json:"buyer"`
-	Summary    string      `json:"summary"`
-	UpdateTime int64       `json:"update_time"`
-	//Items      []*CartItem `json:"items"`
-	TotalNum   int         `json:"total_num"` // 总数量
-	TotalFee   float32     `json:"total"`
-	OrderFee   float32     `json:"fee"`
-	// 运营商
-	Vendors    []*CartVendorGroup `json:"vendors"`
+    Id         int         `json:"-"`
+    CartKey    string      `json:"key"`
+    BuyerId    int         `json:"buyer"`
+    Summary    string      `json:"summary"`
+    UpdateTime int64       `json:"update_time"`
+                                              //Items      []*CartItem `json:"items"`
+    TotalNum   int         `json:"total_num"` // 总数量
+    TotalFee   float32     `json:"total"`
+    OrderFee   float32     `json:"fee"`
+                                              // 运营商
+    Vendors    []*CartVendorGroup `json:"vendors"`
 }
 
-type CartVendorGroup struct{
-	VendorId  int  `json:"vendorId"`
-	VendorName string `json:"vendorName"`
-	ShopId    int   `json:"shopId"`
-	ShopName  string  `json:"shopName"`
-	Items   []*CartItem  `json:"items"`
-	//结算商品项数目
-	SettleNum  int   `json:"settleNum"`
+type CartVendorGroup struct {
+    VendorId   int  `json:"vendorId"`
+    VendorName string `json:"vendorName"`
+    ShopId     int   `json:"shopId"`
+    ShopName   string  `json:"shopName"`
+    Items      []*CartItem  `json:"items"`
+    //结算商品项数目
+    CheckedNum int   `json:"checkedNum"`
 }
 
 type CartItem struct {
-	GoodsId    int     `json:"skuId"`
-	GoodsName  string  `json:"name"`
-	GoodsNo    string  `json:"no"`
-	SmallTitle string  `json:"title"`
-	GoodsImage string  `json:"image"`
-	Quantity   int     `json:"num"`
-	Price      float32 `json:"price"`
-	SalePrice  float32 `json:"salePrice"`
-	// 是否结算
-	IsSettle   bool    `json:"checked"`
+    GoodsId    int     `json:"skuId"`
+    GoodsName  string  `json:"name"`
+    GoodsNo    string  `json:"no"`
+    SmallTitle string  `json:"title"`
+    GoodsImage string  `json:"image"`
+    Quantity   int     `json:"num"`
+    Price      float32 `json:"price"`
+    SalePrice  float32 `json:"salePrice"`
+    // 是否结算
+    Checked    bool    `json:"checked"`
 }

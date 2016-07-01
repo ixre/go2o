@@ -23,7 +23,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 				<div class="tit">%s</div>
 		`, vendor.ShopName))
         for _, item := range vendor.Items {
-            if !item.IsSettle{ //只显示结账的
+            if !item.Checked { //只显示结账的
                 continue
             }
             buf.WriteString(fmt.Sprintf(`
