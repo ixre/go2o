@@ -24,6 +24,7 @@ import (
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -312,8 +313,6 @@ func (this *orderImpl) Submit() (string, error) {
 		this.bindCouponOnSubmit(v.OrderNo)
 		// 扣除库存
 		this.applyGoodsNum()
-		// 销毁购物车
-		this._cart.Destroy()
 		// 绑定购物车商品的促销
 		for _, p := range proms {
 			this.bindPromotionOnSubmit(v.OrderNo, p)
@@ -448,27 +447,37 @@ func (this *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 func (this *orderImpl) saveOrderOnSubmit() (int, error) {
 	cartItems := this._cart.GetValue().Items
 	if this._value.Items == nil {
-		this._value.Items = make([]*shopping.OrderItem, len(cartItems))
+		this._value.Items = []*shopping.OrderItem{}
 	}
-	var item sale.IItem
-	var snap *goods.GoodsSnapshot
 	for i, v := range cartItems {
-		snap = this._goodsRep.GetSaleSnapshot(cartItems[i].SnapshotId)
-		if snap == nil {
-			return 0, errors.New("商品缺少快照：" + item.GetValue().Name)
-		}
-
-		this._value.Items[i] = &shopping.OrderItem{
-			Id:         0,
-			SnapshotId: snap.Id,
-			Quantity:   v.Quantity,
-			Sku:        "", //todo
-			Fee:        v.SalePrice * float32(v.Quantity),
+		if v.Checked == 1 {
+			snap := this._goodsRep.GetLatestSnapshot(cartItems[i].SkuId)
+			if snap == nil {
+				return 0, errors.New("商品缺少快照：" +
+					strconv.Itoa(cartItems[i].SkuId))
+			}
+			this._value.Items = append(this._value.Items, &shopping.OrderItem{
+				Id:         0,
+				SnapshotId: snap.SkuId,
+				Quantity:   v.Quantity,
+				Sku:        snap.Sku,
+				Fee:        v.SalePrice * float32(v.Quantity),
+			})
 		}
 	}
-
-	return this._shoppingRep.SaveOrder(this._shopping.GetAggregateRootId(),
+	if len(this._value.Items) == 0 {
+		return this.GetDomainId(), cart.ErrEmptyShoppingCart
+	}
+	id, err := this._shoppingRep.SaveOrder(this._shopping.GetAggregateRootId(),
 		this._value)
+	if err == nil {
+		this._value.Id = id
+		// 释放购物车并销毁
+		if this._cart.Release() {
+			this._cart.Destroy()
+		}
+	}
+	return id, err
 }
 
 // 保存订单

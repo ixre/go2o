@@ -47,6 +47,8 @@ type (
 		ItemId int `db:"item_id"`
 		//分类编号
 		CategoryId int `db:"cat_id"`
+		//SKU  todo:????
+		Sku string `db:"-"`
 		// 是否上架
 		OnShelves int `db:"on_shelves"`
 		//图片
@@ -57,6 +59,10 @@ type (
 		SalePrice float32 `db:"sale_price"`
 		//是否有会员价
 		LevelSales int `db:"level_sales"`
+		//销售数量
+		SaleNum int `db:"sale_num"`
+		//库存
+		StockNum int `db:"stock_num"`
 		//快照时间
 		UpdateTime int64 `db:"update_time"`
 	}
