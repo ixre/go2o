@@ -16,9 +16,7 @@ import (
 )
 
 //　购物聚合根
-type IShopping interface {
-	GetAggregateRootId() int
-
+type IOrderManager interface {
 	// 创建订单,如果为已存在的订单则没有Cart.
 	// todo:需重构为单独的类型
 	CreateOrder(*ValueOrder, cart.ICart) IOrder

@@ -35,14 +35,14 @@ var (
 var _ shopping.IOrder = new(orderImpl)
 
 type orderImpl struct {
-	_shopping        shopping.IShopping
+	_shopping        shopping.IOrderManager
 	_value           *shopping.ValueOrder
 	_cart            cart.ICart
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
 	_orderPbs        []*shopping.OrderPromotionBind
 	_memberRep       member.IMemberRep
-	_shoppingRep     shopping.IShoppingRep
+	_shoppingRep     shopping.IOrderRep
 	_partnerRep      merchant.IMerchantRep
 	_goodsRep        goods.IGoodsRep
 	_saleRep         sale.ISaleRep
@@ -52,9 +52,9 @@ type orderImpl struct {
 	_balanceDiscount bool // 余额支付
 }
 
-func newOrder(shopping shopping.IShopping, value *shopping.ValueOrder,
+func newOrder(shopping shopping.IOrderManager, value *shopping.ValueOrder,
 	cart cart.ICart, partnerRep merchant.IMerchantRep,
-	shoppingRep shopping.IShoppingRep,
+	shoppingRep shopping.IOrderRep,
 	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	valRep valueobject.IValueRep) shopping.IOrder {
@@ -468,7 +468,9 @@ func (this *orderImpl) saveOrderOnSubmit() (int, error) {
 	if len(this._value.Items) == 0 {
 		return this.GetDomainId(), cart.ErrEmptyShoppingCart
 	}
-	id, err := this._shoppingRep.SaveOrder(this._shopping.GetAggregateRootId(),
+
+	//todo: this._shopping.GetAggregateRootId()
+	id, err := this._shoppingRep.SaveOrder(-1,
 		this._value)
 	if err == nil {
 		this._value.Id = id
@@ -488,8 +490,9 @@ func (this *orderImpl) Save() (int, error) {
 	}
 
 	if this._value.Id > 0 {
+		//todo: this._shopping.GetAggregateRootId()
 		return this._shoppingRep.SaveOrder(
-			this._shopping.GetAggregateRootId(), this._value)
+			-1, this._value)
 	}
 	this._internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")

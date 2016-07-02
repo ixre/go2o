@@ -172,7 +172,7 @@ func (this *defaultService) OrderObs(o *shopping.ValueOrder) bool {
 	defer conn.Close()
 	if this.sOrder {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
-			dps.ShoppingService.ConfirmOrder(o.MerchantId, o.OrderNo)
+			dps.ShoppingService.ConfirmOrder(o.OrderNo)
 		}
 	}
 	return true
@@ -191,7 +191,7 @@ func (this *defaultService) setOrderExpires(conn redis.Conn, o *shopping.ValueOr
 }
 
 func (this *defaultService) getExpiresKey(o *shopping.ValueOrder) string {
-	return fmt.Sprintf("%s%d_%s", variable.KvOrderExpiresTime, o.MerchantId, o.OrderNo)
+	return fmt.Sprintf("%s%s", variable.KvOrderExpiresTime, o.OrderNo)
 }
 
 // 监视会员修改,@create:是否为新注册会员

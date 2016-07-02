@@ -29,6 +29,7 @@ func NewContentService(rep content.IContentRep, q *query.ContentQuery) *contentS
 }
 
 // 获取页面
+//todo: 取消merchantId
 func (this *contentService) GetPage(merchantId, id int) *content.Page {
 	c := this._contentRep.GetContent(merchantId)
 	page := c.GetPage(id)
@@ -39,6 +40,7 @@ func (this *contentService) GetPage(merchantId, id int) *content.Page {
 }
 
 // 根据标识获取页面
+//todo: 取消merchantId
 func (this *contentService) GetPageByIndent(merchantId int, indent string) *content.Page {
 	c := this._contentRep.GetContent(merchantId)
 	page := c.GetPageByStringIndent(indent)

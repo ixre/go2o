@@ -9,8 +9,9 @@
 
 package shopping
 
-type IShoppingRep interface {
-	GetShopping(memberId int) IShopping
+type IOrderRep interface {
+	// 获取订单服务
+	Manager() IOrderManager
 
 	// 保存订单,返回订单编号
 	SaveOrder(merchantId int, v *ValueOrder) (int, error)
