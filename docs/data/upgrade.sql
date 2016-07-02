@@ -418,6 +418,13 @@ ALTER TABLE `flm`.`gs_snapshot`
   ADD COLUMN `stock_num` INT NULL AFTER `sale_num`;
 
 
+ALTER TABLE `flm`.`pt_order`
+  CHANGE COLUMN `member_id` `buyner_id` INT(11) NULL DEFAULT NULL COMMENT '-1代表游客订餐' ,
+  CHANGE COLUMN `merchant_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '商家ID' ;
+
+
+
+
 
 
 

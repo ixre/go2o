@@ -6,9 +6,9 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/shopping"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -527,9 +527,9 @@ func (this *cartImpl) GetSummary() string {
 
 // 获取Json格式的商品数据
 func (this *cartImpl) GetJsonItems() []byte {
-	var goods []*shopping.OrderGoods = make([]*shopping.OrderGoods, len(this._value.Items))
+	var goods []*order.OrderGoods = make([]*order.OrderGoods, len(this._value.Items))
 	for i, v := range this._value.Items {
-		goods[i] = &shopping.OrderGoods{
+		goods[i] = &order.OrderGoods{
 			GoodsId:    v.SkuId,
 			GoodsImage: v.Image,
 			Quantity:   v.Quantity,

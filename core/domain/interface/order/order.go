@@ -7,7 +7,7 @@
  * history :
  */
 
-package shopping
+package order
 
 import (
 	"go2o/core/domain/interface/enum"
@@ -176,10 +176,10 @@ type (
 	}
 
 	ValueOrder struct {
-		Id         int    `db:"id" pk:"yes" auto:"yes" json:"id"`
-		OrderNo    string `db:"order_no" json:"orderNo"`
-		MemberId   int    `db:"member_id" json:"memberId"`
-		MerchantId int    `db:"merchant_id" json:"merchantId"`
+		Id       int    `db:"id" pk:"yes" auto:"yes" json:"id"`
+		OrderNo  string `db:"order_no" json:"orderNo"`
+		BuyerId  int    `db:"buyner_id" json:"memberId"`
+		VendorId int    `db:"vendor_id" json:"vendorId"`
 		// 订单标题
 		Subject   string `db:"subject" json:"subject"`
 		ShopId    int    `db:"shop_id" json:"shopId"`

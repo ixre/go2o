@@ -7,7 +7,7 @@
  * history :
  */
 
-package shopping
+package order
 
 import (
 	"go2o/core/domain/interface/cart"
@@ -34,19 +34,20 @@ type IOrderManager interface {
 	//GetShoppingCart(cartKey string) ICart
 
 	// 将购物车转换为订单
-	ParseShoppingCart() (IOrder, member.IMember, cart.ICart, error)
+	ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
 
 	// 组装订单
-	BuildOrder(subject string, couponCode string) (IOrder, cart.ICart, error)
+	BuildOrder(c cart.ICart, subject string, couponCode string) (IOrder, error)
 
 	// 提交订单
-	SubmitOrder(subject string, couponCode string, useBalanceDiscount bool) (string, error)
+	SubmitOrder(c cart.ICart, subject string, couponCode string,
+		balanceDiscount bool) (string, error)
 
-	// 获取可用的订单号
-	GetFreeOrderNo() string
+	// 获取可用的订单号, 系统直营传入vendor为0
+	GetFreeOrderNo(vendor int) string
 
 	// 根据订单号获取订单
-	GetOrderByNo(orderNo string) (IOrder, error)
+	GetOrderByNo(orderNo string) IOrder
 
 	// 自动设置订单
 	OrderAutoSetup(f func(error))

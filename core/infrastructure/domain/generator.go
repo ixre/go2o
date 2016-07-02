@@ -18,20 +18,25 @@ import (
 	"time"
 )
 
-const (
-	minRand int = 100000
-	maxRand int = 999900
-)
-
 //新订单号
-func NewOrderNo(merchantId int) string {
+func NewOrderNo(vendorId int) string {
 	//MerchantId的首位和末尾再加7位随机数
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
-	rd := minRand + rand.Intn(maxRand-minRand) //minRand - maxRand中间的随机数
+	typeStr := ""
 	timeStr := time.Now().Format("0601")
-	ptStr := strconv.Itoa(merchantId)
-	return fmt.Sprintf("%s%s%s%d", ptStr[:1], timeStr, ptStr[len(ptStr)-1:], rd)
+	rd := strconv.Itoa(time.Now().Nanosecond() + rand.Intn(999-100))
+	if l := len(rd); l > 6 {
+		rd = rd[:6]
+	} else {
+		rd = strings.Repeat("0", 6-l) + rd
+	}
+	if vendorId > 0 {
+		typeStr = "MC"
+	} else {
+		typeStr = "ZY"
+	}
+	return fmt.Sprintf("%s%s%s", typeStr, timeStr, rd)
 }
 
 // 新交易号(12位)

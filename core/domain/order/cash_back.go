@@ -6,20 +6,20 @@
  * description :
  * history :
  */
-package shopping
+package order
 
 import (
 	"fmt"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/shopping"
 	"go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func HandleCashBackDataTag(m member.IMember, order *shopping.ValueOrder,
+func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 	data := c.GetDataTag()
 	var level int = 0
@@ -34,7 +34,7 @@ func HandleCashBackDataTag(m member.IMember, order *shopping.ValueOrder,
 	cashBack3R(level, m, order, c, memberRep)
 }
 
-func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
+func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 
 	dt := c.GetDataTag()
 
@@ -76,7 +76,7 @@ func cashBack3R(level int, m member.IMember, order *shopping.ValueOrder, c promo
 	}
 }
 
-func backCashForMember(m member.IMember, order *shopping.ValueOrder,
+func backCashForMember(m member.IMember, order *order.ValueOrder,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
