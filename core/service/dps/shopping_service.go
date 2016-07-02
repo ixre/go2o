@@ -16,25 +16,25 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
-	"go2o/core/domain/interface/shopping"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 )
 
 type shoppingService struct {
-	_rep      shopping.IOrderRep
+	_rep      order.IOrderRep
 	_itemRep  item.IItemRep
 	_goodsRep goods.IGoodsRep
 	_saleRep  sale.ISaleRep
 	_cartRep  cart.ICartRep
 	_mchRep   merchant.IMerchantRep
-	_manager  shopping.IOrderManager
+	_manager  order.IOrderManager
 }
 
-func NewShoppingService(r shopping.IOrderRep,
+func NewShoppingService(r order.IOrderRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep,
 	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
 	mchRep merchant.IMerchantRep) *shoppingService {
@@ -49,121 +49,7 @@ func NewShoppingService(r shopping.IOrderRep,
 	}
 }
 
-func (this *shoppingService) BuildOrder(subject string, memberId int,
-	cartKey string, couponCode string) (map[string]interface{}, error) {
-	order, _, err := this._manager.BuildOrder(subject, couponCode)
-	if err != nil {
-		return nil, err
-	}
-
-	v := order.GetValue()
-	buf := bytes.NewBufferString("")
-
-	for _, v := range order.GetCoupons() {
-		buf.WriteString(v.GetDescribe())
-		buf.WriteString("\n")
-	}
-
-	var data map[string]interface{}
-	data = make(map[string]interface{})
-	if couponCode != "" {
-		if v.CouponFee == 0 {
-			data["result"] = v.CouponFee != 0
-			data["message"] = "优惠券无效"
-		} else {
-			// 成功应用优惠券
-			data["totalFee"] = v.TotalFee
-			data["fee"] = v.Fee
-			data["payFee"] = v.PayFee
-			data["discountFee"] = v.DiscountFee
-			data["couponFee"] = v.CouponFee
-			data["couponDescribe"] = buf.String()
-		}
-	} else {
-		//　取消优惠券
-		data["totalFee"] = v.TotalFee
-		data["fee"] = v.Fee
-		data["payFee"] = v.PayFee
-		data["discountFee"] = v.DiscountFee
-	}
-	return data, err
-}
-
-func (this *shoppingService) SubmitOrder(memberId int, subject string,
-	couponCode string, useBalanceDiscount bool) (
-	orderNo string, err error) {
-	return this._manager.SubmitOrder(subject, couponCode, useBalanceDiscount)
-}
-
-func (this *shoppingService) SetDeliverShop(orderNo string,
-	shopId int) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		if err = order.SetShop(shopId); err == nil {
-			_, err = order.Save()
-		}
-	}
-	return err
-}
-
-func (this *shoppingService) HandleOrder(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		b := order.IsOver()
-		if b {
-			return errors.New("订单已经完成!")
-		}
-
-		status := order.GetValue().Status
-		switch status + 1 {
-		case enum.ORDER_WAIT_CONFIRM:
-			err = order.Confirm()
-		case enum.ORDER_WAIT_DELIVERY:
-			err = order.Process()
-		case enum.ORDER_WAIT_RECEIVE:
-			err = order.Deliver(0, "")
-		case enum.ORDER_RECEIVED:
-			err = order.SignReceived()
-		case enum.ORDER_COMPLETED:
-			err = order.Complete()
-		}
-	}
-	return err
-}
-
-// 根据编号获取订单
-func (this *shoppingService) GetOrderById(id int) *shopping.ValueOrder {
-	v := this._rep.GetOrderById(id)
-	if v != nil {
-		v.Items = this._rep.GetOrderItems(id)
-	}
-	return v
-}
-
-func (this *shoppingService) GetOrderByNo(orderNo string) *shopping.ValueOrder {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err != nil {
-		return nil
-	}
-	if order == nil {
-		return nil
-	}
-	v := order.GetValue()
-	return &v
-}
-
-// 根据订单号获取订单
-func (this *shoppingService) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
-	return this._rep.GetValueOrderByNo(orderNo)
-}
-
-func (this *shoppingService) CancelOrder(orderNo string, reason string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		err = order.Cancel(reason)
-	}
-	return err
-}
+/*================ 购物车  ================*/
 
 //  获取购物车
 func (this *shoppingService) getShoppingCart(buyerId int,
@@ -319,45 +205,159 @@ func (this *shoppingService) GetCartSettle(memberId int,
 	return st
 }
 
-func (this *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
-	this._manager.OrderAutoSetup(f)
+/*================ 订单  ================*/
+
+func (this *shoppingService) BuildOrder(buyerId int, cartKey string,
+	subject string, couponCode string) (map[string]interface{}, error) {
+	cart := this.getShoppingCart(buyerId, cartKey)
+	order, err := this._manager.BuildOrder(cart, subject, couponCode)
+	if err != nil {
+		return nil, err
+	}
+
+	v := order.GetValue()
+	buf := bytes.NewBufferString("")
+
+	for _, v := range order.GetCoupons() {
+		buf.WriteString(v.GetDescribe())
+		buf.WriteString("\n")
+	}
+
+	var data map[string]interface{}
+	data = make(map[string]interface{})
+	if couponCode != "" {
+		if v.CouponFee == 0 {
+			data["result"] = v.CouponFee != 0
+			data["message"] = "优惠券无效"
+		} else {
+			// 成功应用优惠券
+			data["totalFee"] = v.TotalFee
+			data["fee"] = v.Fee
+			data["payFee"] = v.PayFee
+			data["discountFee"] = v.DiscountFee
+			data["couponFee"] = v.CouponFee
+			data["couponDescribe"] = buf.String()
+		}
+	} else {
+		//　取消优惠券
+		data["totalFee"] = v.TotalFee
+		data["fee"] = v.Fee
+		data["payFee"] = v.PayFee
+		data["discountFee"] = v.DiscountFee
+	}
+	return data, err
+}
+
+func (this *shoppingService) SubmitOrder(buyerId int, subject string,
+	couponCode string, useBalanceDiscount bool) (orderNo string, err error) {
+	c := this.getShoppingCart(buyerId, "")
+	return this._manager.SubmitOrder(c, subject, couponCode, useBalanceDiscount)
+}
+
+func (this *shoppingService) SetDeliverShop(orderNo string,
+	shopId int) (err error) {
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
+	}
+	if err = o.SetShop(shopId); err == nil {
+		_, err = o.Save()
+	}
+	return err
+}
+
+func (this *shoppingService) HandleOrder(orderNo string) (err error) {
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
+	}
+	b := o.IsOver()
+	if b {
+		return errors.New("订单已经完成!")
+	}
+
+	status := o.GetValue().Status
+	switch status + 1 {
+	case enum.ORDER_WAIT_CONFIRM:
+		err = o.Confirm()
+	case enum.ORDER_WAIT_DELIVERY:
+		err = o.Process()
+	case enum.ORDER_WAIT_RECEIVE:
+		err = o.Deliver(0, "")
+	case enum.ORDER_RECEIVED:
+		err = o.SignReceived()
+	case enum.ORDER_COMPLETED:
+		err = o.Complete()
+	}
+	return err
+}
+
+// 根据编号获取订单
+func (this *shoppingService) GetOrderById(id int) *order.ValueOrder {
+	v := this._rep.GetOrderById(id)
+	if v != nil {
+		v.Items = this._rep.GetOrderItems(id)
+	}
+	return v
+}
+
+func (this *shoppingService) GetOrderByNo(orderNo string) *order.ValueOrder {
+	order := this._manager.GetOrderByNo(orderNo)
+	if order != nil {
+		v := order.GetValue()
+		return &v
+	}
+	return nil
+}
+
+// 根据订单号获取订单
+func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.ValueOrder {
+	return this._rep.GetValueOrderByNo(orderNo)
+}
+
+func (this *shoppingService) CancelOrder(orderNo string, reason string) error {
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
+	}
+	return o.Cancel(reason)
 }
 
 // 使用余额为订单付款
 func (this *shoppingService) PayForOrderWithBalance(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		err = order.PaymentWithBalance()
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	return o.PaymentWithBalance()
 }
 
 // 人工付款
 func (this *shoppingService) PayForOrderByManager(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		err = order.CmPaymentWithBalance()
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	return o.CmPaymentWithBalance()
 }
 
 // 确认付款
 func (this *shoppingService) PayForOrderOnlineTrade(orderNo string,
 	spName string, tradeNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		err = order.PaymentForOnlineTrade(spName, tradeNo)
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	return o.PaymentForOnlineTrade(spName, tradeNo)
 }
 
 // 确定订单
 func (this *shoppingService) ConfirmOrder(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil {
-		err = order.Confirm()
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	return o.Confirm()
 }
 
 //todo: 非必须的orderNo改为orderId
@@ -365,27 +365,40 @@ func (this *shoppingService) ConfirmOrder(orderNo string) error {
 func (this *shoppingService) DeliveryOrder(orderNo string,
 	deliverySpId int, deliverySpNo string) error {
 	//todo:配送订单,并记录配送服务商编号及单号
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil && order.GetValue().Status == enum.ORDER_WAIT_DELIVERY {
-		err = order.Deliver(deliverySpId, deliverySpNo)
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	if o.GetValue().Status == enum.ORDER_WAIT_DELIVERY {
+		return o.Deliver(deliverySpId, deliverySpNo)
+	}
+	return order.ErrOrderDelved
 }
 
 // 标记订单已经收货
 func (this *shoppingService) SignOrderReceived(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil && order.GetValue().Status == enum.ORDER_WAIT_RECEIVE {
-		err = order.SignReceived()
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	if o.GetValue().Status == enum.ORDER_WAIT_RECEIVE {
+		return o.SignReceived()
+	}
+	return nil
 }
 
 // 标记订单已经完成
 func (this *shoppingService) SignOrderCompleted(orderNo string) error {
-	order, err := this._manager.GetOrderByNo(orderNo)
-	if err == nil && order.GetValue().Status == enum.ORDER_RECEIVED {
-		err = order.Complete()
+	o := this._manager.GetOrderByNo(orderNo)
+	if o == nil {
+		return order.ErrNoSuchOrder
 	}
-	return err
+	if o.GetValue().Status == enum.ORDER_RECEIVED {
+		return o.Complete()
+	}
+	return nil
+}
+
+func (this *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
+	this._manager.OrderAutoSetup(f)
 }

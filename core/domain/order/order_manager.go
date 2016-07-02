@@ -7,7 +7,7 @@
  * history :
  */
 
-package shopping
+package order
 
 import (
 	"errors"
@@ -18,10 +18,10 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/lbs"
 	"go2o/core/infrastructure/log"
@@ -29,10 +29,10 @@ import (
 	"time"
 )
 
-var _ shopping.IOrderManager = new(orderManagerImpl)
+var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	_rep         shopping.IOrderRep
+	_rep         order.IOrderRep
 	_saleRep     sale.ISaleRep
 	_cartRep     cart.ICartRep
 	_goodsRep    goods.IGoodsRep
@@ -41,14 +41,13 @@ type orderManagerImpl struct {
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
 	_valRep      valueobject.IValueRep
-	_buyerId     int
 	_merchant    merchant.IMerchant
 }
 
 func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
-	rep shopping.IOrderRep, saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
+	rep order.IOrderRep, saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) shopping.IOrderManager {
+	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) order.IOrderManager {
 
 	return &orderManagerImpl{
 		_rep:         rep,
@@ -63,53 +62,51 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 	}
 }
 
-func (this *orderManagerImpl) CreateOrder(val *shopping.ValueOrder,
-	cart cart.ICart) shopping.IOrder {
+func (this *orderManagerImpl) CreateOrder(val *order.ValueOrder,
+	cart cart.ICart) order.IOrder {
 	return newOrder(this, val, cart, this._partnerRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._valRep)
 }
 
 // 将购物车转换为订单
-func (this *orderManagerImpl) ParseShoppingCart() (shopping.IOrder,
-	member.IMember, cart.ICart, error) {
-	var order shopping.IOrder
-	var val shopping.ValueOrder
-	var mc cart.ICart
+func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
+	member.IMember, error) {
+	val := &order.ValueOrder{}
 	var m member.IMember
 	var err error
 
-	mc = this._cartRep.GetMemberCurrentCart(this._buyerId)
-	if mc == nil {
-		return nil, m, nil, cart.ErrEmptyShoppingCart
+	if c == nil {
+		return nil, m, cart.ErrEmptyShoppingCart
 	}
-	if err = mc.Check(); err != nil {
-		return nil, m, nil, err
+	if err = c.Check(); err != nil {
+		return nil, m, err
+	}
+	// 判断购买会员
+	val.BuyerId = c.GetValue().BuyerId
+	if val.BuyerId > 0 {
+		m = this._memberRep.GetMember(val.BuyerId)
+	}
+	if m == nil {
+		return nil, m, member.ErrSessionTimeout
 	}
 
-	//todo: need member check ?
-	//m = this._memberRep.GetMember(this._buyerId)
-	//if m == nil {
-	//	return nil, m, nil, member.ErrSessionTimeout
-	//}
+	val.VendorId = -1
 
-	val.MemberId = this._buyerId
-	val.MerchantId = this._buyerId
-
-	tf, of := mc.GetFee()
+	tf, of := c.GetFee()
 	val.TotalFee = tf //总金额
 	val.Fee = of      //实际金额
 	val.PayFee = of
 	val.DiscountFee = tf - of //优惠金额
-	val.MerchantId = this._buyerId
+	val.VendorId = -1
 	val.Status = 1
 
-	order = this.CreateOrder(&val, mc)
-	return order, m, mc, nil
+	o := this.CreateOrder(val, c)
+	return o, m, nil
 }
 
-func (this *orderManagerImpl) GetFreeOrderNo() string {
-	return this._rep.GetFreeOrderNo(this._buyerId)
+func (this *orderManagerImpl) GetFreeOrderNo(vendorId int) string {
+	return this._rep.GetFreeOrderNo(vendorId)
 }
 
 // 智能选择门店
@@ -131,11 +128,11 @@ func (this *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error
 }
 
 // 生成订单
-func (this *orderManagerImpl) BuildOrder(subject string, couponCode string) (
-	shopping.IOrder, cart.ICart, error) {
-	order, m, cart, err := this.ParseShoppingCart()
+func (this *orderManagerImpl) BuildOrder(c cart.ICart, subject string, couponCode string) (
+	order.IOrder, error) {
+	order, m, err := this.ParseToOrder(c)
 	if err != nil {
-		return order, cart, err
+		return order, err
 	}
 	var val = order.GetValue()
 	if len(subject) > 0 {
@@ -147,12 +144,12 @@ func (this *orderManagerImpl) BuildOrder(subject string, couponCode string) (
 		var coupon promotion.ICouponPromotion
 		var result bool
 		cp := this._promRep.GetCouponByCode(
-			this._buyerId, couponCode)
+			m.GetAggregateRootId(), couponCode)
 
 		// 如果优惠券不存在
 		if cp == nil {
 			log.Error(err)
-			return order, cart, errors.New("优惠券无效")
+			return order, errors.New("优惠券无效")
 		}
 
 		coupon = cp.(promotion.ICouponPromotion)
@@ -169,22 +166,22 @@ func (this *orderManagerImpl) BuildOrder(subject string, couponCode string) (
 			}
 			if err != nil {
 				log.Error(err)
-				return order, cart, errors.New("优惠券无效")
+				return order, errors.New("优惠券无效")
 			}
 			err = order.ApplyCoupon(coupon) //应用优惠券
 		}
 	}
 
-	return order, cart, err
+	return order, err
 }
 
-func (this *orderManagerImpl) SubmitOrder(subject string,
+func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 	couponCode string, useBalanceDiscount bool) (string, error) {
-	order, cart, err := this.BuildOrder(subject, couponCode)
+	order, err := this.BuildOrder(c, subject, couponCode)
 	if err != nil {
 		return "", err
 	}
-	var cv = cart.GetValue()
+	var cv = c.GetValue()
 	if err == nil {
 		err = order.SetShop(cv.ShopId)
 		if err == nil {
@@ -201,14 +198,13 @@ func (this *orderManagerImpl) SubmitOrder(subject string,
 	return "", err
 }
 
-func (this *orderManagerImpl) GetOrderByNo(orderNo string) (shopping.IOrder, error) {
-	val, err := this._rep.GetOrderByNo(this._buyerId, orderNo)
-	if err != nil {
-		return nil, errors.New("订单不存在")
+func (this *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
+	val := this._rep.GetValueOrderByNo(orderNo)
+	if val != nil {
+		val.Items = this._rep.GetOrderItems(val.Id)
+		return this.CreateOrder(val, nil)
 	}
-
-	val.Items = this._rep.GetOrderItems(val.Id)
-	return this.CreateOrder(val, nil), err
+	return nil
 }
 
 var (
@@ -218,7 +214,7 @@ var (
 
 // 自动设置订单
 func (this *orderManagerImpl) OrderAutoSetup(f func(error)) {
-	var orders []*shopping.ValueOrder
+	var orders []*order.ValueOrder
 	var err error
 
 	shopLocker.Lock()
@@ -230,7 +226,7 @@ func (this *orderManagerImpl) OrderAutoSetup(f func(error)) {
 
 	saleConf := this._merchant.ConfManager().GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
-		orders, err = this._rep.GetWaitingSetupOrders(this._buyerId)
+		orders, err = this._rep.GetWaitingSetupOrders(-1)
 		if err != nil {
 			f(err)
 			return
@@ -252,7 +248,7 @@ const (
 	order_complete_hour  = 11
 )
 
-func (this *orderManagerImpl) SmartConfirmOrder(order shopping.IOrder) error {
+func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
@@ -282,7 +278,7 @@ func (this *orderManagerImpl) SmartConfirmOrder(order shopping.IOrder) error {
 	return err
 }
 
-func (this *orderManagerImpl) setupOrder(v *shopping.ValueOrder,
+func (this *orderManagerImpl) setupOrder(v *order.ValueOrder,
 	conf *merchant.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)

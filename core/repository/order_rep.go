@@ -10,7 +10,6 @@
 package repository
 
 import (
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"go2o/core"
 	"go2o/core/domain/interface/cart"
@@ -18,18 +17,18 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/shopping"
 	"go2o/core/domain/interface/valueobject"
-	shoppingImpl "go2o/core/domain/shopping"
+	orderImpl "go2o/core/domain/order"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
 	"time"
 )
 
-var _ shopping.IOrderRep = new(orderRepImpl)
+var _ order.IOrderRep = new(orderRepImpl)
 
 type orderRepImpl struct {
 	db.Connector
@@ -41,15 +40,15 @@ type orderRepImpl struct {
 	_deliverRep delivery.IDeliveryRep
 	_cartRep    cart.ICartRep
 	_valRep     valueobject.IValueRep
-	_cache      map[int]shopping.IOrderManager
-	_manager    shopping.IOrderManager
+	_cache      map[int]order.IOrderManager
+	_manager    order.IOrderManager
 }
 
 func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
-	valRep valueobject.IValueRep) shopping.IOrderRep {
+	valRep valueobject.IValueRep) order.IOrderRep {
 	return &orderRepImpl{
 		Connector:   c,
 		_saleRep:    saleRep,
@@ -63,12 +62,12 @@ func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep,
 	}
 }
 
-func (this *orderRepImpl) Manager() shopping.IOrderManager {
+func (this *orderRepImpl) Manager() order.IOrderManager {
 	if this._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
 	if this._manager == nil {
-		this._manager = shoppingImpl.NewOrderManager(this._cartRep, this._mchRep,
+		this._manager = orderImpl.NewOrderManager(this._cartRep, this._mchRep,
 			this, this._saleRep, this._goodsRep, this._promRep,
 			this._memberRep, this._deliverRep, this._valRep)
 	}
@@ -76,12 +75,12 @@ func (this *orderRepImpl) Manager() shopping.IOrderManager {
 }
 
 // 获取可用的订单号
-func (this *orderRepImpl) GetFreeOrderNo(merchantId int) string {
+func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 	//todo:实际应用需要预先生成订单号
 	d := this.Connector
 	var order_no string
 	for {
-		order_no = domain.NewOrderNo(merchantId)
+		order_no = domain.NewOrderNo(vendorId)
 		var rec int
 		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`,
 			&rec, order_no); rec == 0 {
@@ -92,27 +91,22 @@ func (this *orderRepImpl) GetFreeOrderNo(merchantId int) string {
 }
 
 // 获取订单项
-func (this *orderRepImpl) GetOrderItems(orderId int) []*shopping.OrderItem {
-	var items = []*shopping.OrderItem{}
+func (this *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
+	var items = []*order.OrderItem{}
 	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items
 }
 
-func (this *orderRepImpl) SaveOrder(merchantId int, v *shopping.ValueOrder) (int, error) {
+func (this *orderRepImpl) SaveOrder(v *order.ValueOrder) (int, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
 	d := this.Connector
-	v.MerchantId = merchantId
 
 	if v.Id > 0 {
 		var oriStatus int
 		d.ExecScalar("SELECT status FROM pt_order WHERE id=?", &oriStatus, v.Id)
 		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
 		_, _, err = d.GetOrm().Save(v.Id, v)
-		if v.Status == enum.ORDER_COMPLETED {
-			//todo:将去掉下行
-			gof.CurrentApp.Storage().Set(variable.KvHaveNewCompletedOrder, enum.TRUE)
-		}
 	} else {
 		////验证Merchant和Member是否有绑定关系
 		//var num int
@@ -152,46 +146,35 @@ func (this *orderRepImpl) SaveOrder(merchantId int, v *shopping.ValueOrder) (int
 }
 
 //　保存订单优惠券绑定
-func (this *orderRepImpl) SaveOrderCouponBind(val *shopping.OrderCoupon) error {
+func (this *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, val)
 	return err
 }
 
 // 根据编号获取订单
-func (this *orderRepImpl) GetOrderById(id int) *shopping.ValueOrder {
-	var v = new(shopping.ValueOrder)
+func (this *orderRepImpl) GetOrderById(id int) *order.ValueOrder {
+	var v = new(order.ValueOrder)
 	if err := this.Connector.GetOrm().GetBy(v, "id=?", id); err == nil {
 		return v
 	}
 	return nil
 }
 
-func (this *orderRepImpl) GetOrderByNo(merchantId int, orderNo string) (
-	*shopping.ValueOrder, error) {
-	var v = new(shopping.ValueOrder)
-	err := this.Connector.GetOrm().GetBy(v, "merchant_id=? AND order_no=?", merchantId, orderNo)
-	if err != nil {
-		return nil, err
-	}
-	return v, err
-}
-
 // 根据订单号获取订单
-func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *shopping.ValueOrder {
-	var v = new(shopping.ValueOrder)
-	err := this.Connector.GetOrm().GetBy(v, "order_no=?", orderNo)
-	if err == nil {
-		return v
+func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ValueOrder {
+	e := new(order.ValueOrder)
+	if this.Connector.GetOrm().GetBy(e, "order_no=?", orderNo) == nil {
+		return e
 	}
 	return nil
 }
 
 // 获取等待处理的订单
-func (this *orderRepImpl) GetWaitingSetupOrders(merchantId int) ([]*shopping.ValueOrder, error) {
-	dst := []*shopping.ValueOrder{}
+func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.ValueOrder, error) {
+	dst := []*order.ValueOrder{}
 	err := this.Connector.GetOrm().Select(&dst,
-		"merchant_id=? AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
-		merchantId)
+		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
+		vendorId)
 	if err != nil {
 		return nil, err
 	}
@@ -199,23 +182,23 @@ func (this *orderRepImpl) GetWaitingSetupOrders(merchantId int) ([]*shopping.Val
 }
 
 // 保存订单日志
-func (this *orderRepImpl) SaveOrderLog(v *shopping.OrderLog) error {
+func (this *orderRepImpl) SaveOrderLog(v *order.OrderLog) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, v)
 	return err
 }
 
 // 获取订单的促销绑定
-func (this *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*shopping.OrderPromotionBind {
-	var arr []*shopping.OrderPromotionBind = []*shopping.OrderPromotionBind{}
+func (this *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderPromotionBind {
+	var arr []*order.OrderPromotionBind = []*order.OrderPromotionBind{}
 	err := this.Connector.GetOrm().Select(&arr, "order_no=?", orderNo)
 	if err == nil {
 		return arr
 	}
-	return make([]*shopping.OrderPromotionBind, 0)
+	return make([]*order.OrderPromotionBind, 0)
 }
 
 // 保存订单的促销绑定
-func (this *orderRepImpl) SavePromotionBindForOrder(v *shopping.OrderPromotionBind) (int, error) {
+func (this *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (int, error) {
 	var err error
 	var orm = this.Connector.GetOrm()
 	if v.Id > 0 {
