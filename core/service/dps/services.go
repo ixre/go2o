@@ -83,7 +83,7 @@ func Init(ctx gof.App) {
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)
 	adRep := repository.NewAdvertisementRep(db)
-	spRep := repository.NewShoppingRep(db, mchRep, saleRep, cartRep, goodsRep,
+	spRep := repository.NewOrderRep(db, mchRep, saleRep, cartRep, goodsRep,
 		promRep, memberRep, deliveryRep, valRep)
 
 	goodsRep.SetSaleRep(saleRep) //fixed
