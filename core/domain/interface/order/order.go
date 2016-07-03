@@ -14,15 +14,10 @@ import (
 	"go2o/core/domain/interface/promotion"
 )
 
-const (
-	PaymentNotYet  = 0 // 订单尚未支付
-	PaymentByBuyer = 1 // 购买者支付
-	PaymentByCM    = 2 // 客服人工支付
-)
-
 type (
 	IOrder interface {
-		GetDomainId() int
+		// 获取聚合根编号
+		GetAggregateRootId() int
 
 		// 获取订单号
 		GetOrderNo() string
@@ -57,6 +52,9 @@ type (
 		// 使用余额支付
 		PaymentWithBalance() error
 
+		// 应用余额支付
+		UseBalanceDiscount()
+
 		// 客服使用余额支付
 		CmPaymentWithBalance() error
 
@@ -68,9 +66,6 @@ type (
 
 		// 添加备注
 		AddRemark(string)
-
-		// 应用余额支付
-		UseBalanceDiscount()
 
 		// 提交订单，返回订单号。如有错误则返回
 		Submit() (string, error)

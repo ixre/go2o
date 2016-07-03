@@ -254,6 +254,9 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
 	var sp shop.IShop
 	if biShops == nil {
+		// /pay/return_alipay?out_trade_no=ZY1607375766&request_token=requestToken&result=success&trade_no
+		// =2016070221001004880246862127&sign=75a18ca0d75750ac22fedbbe6468c187&sign_type=MD5
+		//todo:  拆分订单
 		biShops = this._merchant.ShopManager().GetBusinessInShops()
 	}
 	if len(biShops) == 1 {

@@ -17,9 +17,13 @@ import (
 //获取当前地址
 func GetRawUrl(r *http.Request) string {
 	query := r.URL.RawQuery
+	proto := "http"
 	if len(query) > 0 {
 		query = "?" + query
 	}
-	return url.QueryEscape(fmt.Sprintf("http://%s%s%s",
-		r.Host, r.URL.Path, query))
+	if r.Proto == "HTTPS" {
+		proto = "https"
+	}
+	return url.QueryEscape(fmt.Sprintf("%s://%s%s%s",
+		proto, r.Host, r.URL.Path, query))
 }

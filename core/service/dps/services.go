@@ -35,6 +35,9 @@ var (
 	// 销售服务
 	SaleService *saleService
 
+	// 支付服务
+	PaymentService *paymentService
+
 	// 消息服务
 	MssService *mssService
 
@@ -77,6 +80,7 @@ func Init(ctx gof.App) {
 	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
 		itemRep, goodsRep, promRep)
 	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
+	payRep := repository.NewPaymentRep(db, memberRep, valRep)
 	shopRep := repository.NewShopRep(db)
 	mchRep := repository.NewMerchantRep(db, shopRep, userRep, mssRep, valRep)
 	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
@@ -105,6 +109,7 @@ func Init(ctx gof.App) {
 	ShopService = NewShopService(shopRep, mchRep, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRep, memberQue)
 	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
+	PaymentService = NewPaymentService(payRep)
 	MssService = NewMssService(mssRep)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)

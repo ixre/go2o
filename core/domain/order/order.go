@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
@@ -72,7 +73,7 @@ func newOrder(shopping order.IOrderManager, value *order.ValueOrder,
 	}
 }
 
-func (this *orderImpl) GetDomainId() int {
+func (this *orderImpl) GetAggregateRootId() int {
 	return this._value.Id
 }
 
@@ -82,7 +83,7 @@ func (this *orderImpl) GetValue() order.ValueOrder {
 
 // 设置订单值
 func (this *orderImpl) SetValue(v *order.ValueOrder) error {
-	v.Id = this.GetDomainId()
+	v.Id = this.GetAggregateRootId()
 	this._value = v
 	return nil
 }
@@ -171,11 +172,11 @@ func (this *orderImpl) paymentWithBalance(buyerType int) error {
 	}
 	acc := this._memberRep.GetMember(this._value.BuyerId).GetAccount()
 	if fee := this.getBalanceDiscountFee(acc); fee == 0 {
-		return order.ErrBalanceNotEnough
+		return member.ErrAccountBalanceNotEnough
 	} else {
 		this._value.BalanceDiscount = fee
 		this._value.PayFee -= fee
-		err := acc.OrderDiscount(this.GetOrderNo(), fee)
+		err := acc.PaymentDiscount(this.GetOrderNo(), fee)
 		if err != nil {
 			return err
 		}
@@ -197,12 +198,12 @@ func (this *orderImpl) paymentWithBalance(buyerType int) error {
 
 // 使用余额支付
 func (this *orderImpl) PaymentWithBalance() error {
-	return this.paymentWithBalance(order.PaymentByBuyer)
+	return this.paymentWithBalance(payment.PaymentByBuyer)
 }
 
 // 客服使用余额支付
 func (this *orderImpl) CmPaymentWithBalance() error {
-	return this.paymentWithBalance(order.PaymentByCM)
+	return this.paymentWithBalance(payment.PaymentByCM)
 }
 
 // 在线交易支付
@@ -212,7 +213,7 @@ func (this *orderImpl) PaymentForOnlineTrade(serverProvider string, tradeNo stri
 	}
 	unix := time.Now().Unix()
 	this._value.IsPaid = 1
-	this._value.PaymentSign = order.PaymentByBuyer
+	this._value.PaymentSign = payment.PaymentByBuyer
 	if this._value.Status == enum.ORDER_WAIT_PAYMENT {
 		this._value.Status = enum.ORDER_WAIT_CONFIRM // 设置为待确认状态
 	}
@@ -244,7 +245,7 @@ func (this *orderImpl) UseBalanceDiscount() {
 
 // 提交订单，返回订单号。如有错误则返回
 func (this *orderImpl) Submit() (string, error) {
-	if this.GetDomainId() != 0 {
+	if this.GetAggregateRootId() != 0 {
 		return "", errors.New("订单不允许重复提交")
 	}
 
@@ -296,7 +297,7 @@ func (this *orderImpl) Submit() (string, error) {
 	// 校验是否支付
 	if v.PayFee == 0 {
 		v.IsPaid = 1
-		v.PaymentSign = order.PaymentByBuyer
+		v.PaymentSign = payment.PaymentByBuyer
 	}
 
 	// 设置订单状态
@@ -322,7 +323,7 @@ func (this *orderImpl) Submit() (string, error) {
 		}
 		// 记录余额支付记录
 		if v.BalanceDiscount > 0 {
-			err = acc.OrderDiscount(v.OrderNo, v.BalanceDiscount)
+			err = acc.PaymentDiscount(v.OrderNo, v.BalanceDiscount)
 		}
 	}
 	return v.OrderNo, err
@@ -400,7 +401,7 @@ func (this *orderImpl) applyCartPromotionObSubmit(vo *order.ValueOrder,
 func (this *orderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range this.GetCoupons() {
-		oc.Clone(c, this.GetDomainId(), this._value.Fee)
+		oc.Clone(c, this.GetAggregateRootId(), this._value.Fee)
 		this._shoppingRep.SaveOrderCouponBind(oc)
 
 		// 绑定促销
@@ -469,7 +470,7 @@ func (this *orderImpl) saveOrderOnSubmit() (int, error) {
 		}
 	}
 	if len(this._value.Items) == 0 {
-		return this.GetDomainId(), cart.ErrEmptyShoppingCart
+		return this.GetAggregateRootId(), cart.ErrEmptyShoppingCart
 	}
 
 	id, err := this._shoppingRep.SaveOrder(this._value)
@@ -506,7 +507,7 @@ func (this *orderImpl) applyGoodsNum() {
 
 // 添加日志
 func (this *orderImpl) AppendLog(t enum.OrderLogType, system bool, message string) error {
-	if this.GetDomainId() <= 0 {
+	if this.GetAggregateRootId() <= 0 {
 		return errors.New("order not created.")
 	}
 
@@ -518,7 +519,7 @@ func (this *orderImpl) AppendLog(t enum.OrderLogType, system bool, message strin
 	}
 
 	var ol *order.OrderLog = &order.OrderLog{
-		OrderId:    this.GetDomainId(),
+		OrderId:    this.GetAggregateRootId(),
 		Type:       int(t),
 		IsSystem:   systemInt,
 		Message:    message,
