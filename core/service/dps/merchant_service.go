@@ -69,7 +69,8 @@ func (this *merchantService) SaveEnterpriseInfo(mchId int,
 }
 
 // 审核企业信息
-func (this *merchantService) ReviewEnterpriseInfo(mchId int, pass bool, remark string) error {
+func (this *merchantService) ReviewEnterpriseInfo(mchId int, pass bool,
+	remark string) error {
 	mch, err := this._mchRep.GetMerchant(mchId)
 	if err != nil {
 		return err

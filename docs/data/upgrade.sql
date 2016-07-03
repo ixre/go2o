@@ -422,6 +422,27 @@ ALTER TABLE `flm`.`pt_order`
   CHANGE COLUMN `member_id` `buyner_id` INT(11) NULL DEFAULT NULL COMMENT '-1代表游客订餐' ,
   CHANGE COLUMN `merchant_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '商家ID' ;
 
+CREATE TABLE `flm`.`pay_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `trade_no` VARCHAR(45) NULL,
+  `vendor_id` INT NULL,
+  `order_id` INT NULL,
+  `buy_user` INT NULL,
+  `payment_user` INT NULL,
+  `total_fee` DECIMAL(8,2) NULL,
+  `balance_discount` DECIMAL(8,2) NULL,
+  `integral_discount` DECIMAL(8,2) NULL,
+  `system_discount` DECIMAL(8,2) NULL,
+  `coupon_discount` DECIMAL(8,2) NULL,
+  `sub_fee` DECIMAL(8,2) NULL,
+  `final_fee` DECIMAL(8,2) NULL,
+  `payment_opt` TINYINT(2) NULL,
+  `payment_sign` TINYINT(1) NULL,
+  `outer_no` VARCHAR(45) NULL COMMENT '外部订单号',
+  `create_time` INT NULL,
+  `paid_time` INT NULL,
+  `state` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
 
 
 

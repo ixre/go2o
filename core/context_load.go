@@ -24,6 +24,7 @@ import (
 	"go2o/core/domain/interface/merchant/user"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
@@ -121,6 +122,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(merchant.MemberLevel{}, "pt_member_level")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
+
+	orm.Mapping(payment.PaymentOrderBean{}, "pay_order")
 
 	/** 促销 **/
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")

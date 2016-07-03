@@ -19,10 +19,12 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/lbs"
 	"go2o/core/infrastructure/log"
 	"sync"
@@ -41,13 +43,15 @@ type orderManagerImpl struct {
 	_partnerRep  merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
 	_valRep      valueobject.IValueRep
+	_payRep      payment.IPaymentRep
 	_merchant    merchant.IMerchant
 }
 
 func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
-	rep order.IOrderRep, saleRep sale.ISaleRep, goodsRep goods.IGoodsRep,
-	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	deliveryRep delivery.IDeliveryRep, valRep valueobject.IValueRep) order.IOrderManager {
+	rep order.IOrderRep, payRep payment.IPaymentRep, saleRep sale.ISaleRep,
+	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
+	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
+	valRep valueobject.IValueRep) order.IOrderManager {
 
 	return &orderManagerImpl{
 		_rep:         rep,
@@ -56,6 +60,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 		_goodsRep:    goodsRep,
 		_promRep:     promRep,
 		_memberRep:   memberRep,
+		_payRep:      payRep,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
 		_valRep:      valRep,
@@ -127,77 +132,155 @@ func (this *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error
 	return this._merchant.ShopManager().GetShop(shopId), err
 }
 
-// 生成订单
-func (this *orderManagerImpl) BuildOrder(c cart.ICart, subject string, couponCode string) (
-	order.IOrder, error) {
-	order, m, err := this.ParseToOrder(c)
-	if err != nil {
-		return order, err
+// 生成支付单
+func (this *orderManagerImpl) createPaymentOrder(m member.IMember,
+	o order.IOrder) payment.IPaymentOrder {
+	val := o.GetValue()
+	v := &payment.PaymentOrderBean{
+		BuyUser:     m.GetAggregateRootId(),
+		PaymentUser: m.GetAggregateRootId(),
+		VendorId:    0,
+		OrderId:     0,
+		// 支付单金额
+		TotalFee: val.Fee,
+		// 余额抵扣
+		BalanceDiscount: 0,
+		// 积分抵扣
+		IntegralDiscount: 0,
+		// 系统支付抵扣金额
+		SystemDiscount: 0,
+		// 优惠券金额
+		CouponDiscount: 0,
+		// 立减金额
+		SubFee: 0,
+		// 支付选项
+		PaymentOpt: payment.OptPerm,
+		// 支付方式
+		PaymentSign: val.PaymentSign,
+		//创建时间
+		CreateTime: time.Now().Unix(),
+		// 在线支付的交易单号
+		OuterNo: "",
+		//支付时间
+		PaidTime: 0,
+		// 状态:  0为未付款，1为已付款，2为已取消
+		State: payment.StateNotYetPayment,
 	}
-	var val = order.GetValue()
-	if len(subject) > 0 {
-		val.Subject = subject
-		order.SetValue(&val)
+	v.FinalFee = v.TotalFee - v.SubFee - v.SystemDiscount -
+		v.IntegralDiscount - v.BalanceDiscount
+	return this._payRep.CreatePaymentOrder(v)
+}
+
+// 应用优惠券
+func (this *orderManagerImpl) applyCoupon(m member.IMember,
+	py payment.IPaymentOrder, couponCode string) error {
+	po := py.GetValue()
+	cp := this._promRep.GetCouponByCode(
+		m.GetAggregateRootId(), couponCode)
+	// 如果优惠券不存在
+	if cp == nil {
+		return errors.New("优惠券无效")
 	}
-
-	if len(couponCode) != 0 {
-		var coupon promotion.ICouponPromotion
-		var result bool
-		cp := this._promRep.GetCouponByCode(
-			m.GetAggregateRootId(), couponCode)
-
-		// 如果优惠券不存在
-		if cp == nil {
-			log.Error(err)
-			return order, errors.New("优惠券无效")
-		}
-
-		coupon = cp.(promotion.ICouponPromotion)
-		result, err = coupon.CanUse(m, val.Fee)
-		if result {
-			if coupon.CanTake() {
-				_, err = coupon.GetTake(m.GetAggregateRootId())
-				//如果未占用，则占用
-				if err != nil {
-					err = coupon.Take(m.GetAggregateRootId())
-				}
-			} else {
-				_, err = coupon.GetBind(m.GetAggregateRootId())
-			}
+	// 获取优惠券
+	coupon := cp.(promotion.ICouponPromotion)
+	result, err := coupon.CanUse(m, po.TotalFee)
+	if result {
+		if coupon.CanTake() {
+			_, err = coupon.GetTake(m.GetAggregateRootId())
+			//如果未占用，则占用
 			if err != nil {
-				log.Error(err)
-				return order, errors.New("优惠券无效")
+				err = coupon.Take(m.GetAggregateRootId())
 			}
-			err = order.ApplyCoupon(coupon) //应用优惠券
+		} else {
+			_, err = coupon.GetBind(m.GetAggregateRootId())
+		}
+		if err != nil {
+			domain.HandleError(err, "domain")
+			err = errors.New("优惠券无效")
+		} else {
+			_, err = py.CouponDiscount(coupon) //应用优惠券
+			// err = order.ApplyCoupon(coupon)
 		}
 	}
+	return err
+}
 
-	return order, err
+// 预生成订单及支付单
+func (this *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
+	couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
+	order, m, err := this.ParseToOrder(c)
+	var py payment.IPaymentOrder
+	if err == nil {
+		py = this.createPaymentOrder(m, order)
+		val := order.GetValue()
+		if len(subject) > 0 {
+			val.Subject = subject
+			order.SetValue(&val)
+		}
+
+		if len(couponCode) != 0 {
+			err = this.applyCoupon(m, py, couponCode)
+		}
+	}
+	return order, py, err
 }
 
 func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
-	couponCode string, useBalanceDiscount bool) (string, error) {
-	order, err := this.BuildOrder(c, subject, couponCode)
+	couponCode string, useBalanceDiscount bool) (string, string, error) {
+	order, py, err := this.PrepareOrder(c, subject, couponCode)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	var cv = c.GetValue()
+	orderNo, err := order.Submit()
+	tradeNo := orderNo
 	if err == nil {
-		err = order.SetShop(cv.ShopId)
-		if err == nil {
-			order.SetPayment(cv.PaymentOpt)
-			err = order.SetDeliver(cv.DeliverId)
-			if useBalanceDiscount {
-				order.UseBalanceDiscount()
-			}
-			if err == nil {
-				return order.Submit()
-			}
+		cv := c.GetValue()
+		cv.PaymentOpt = enum.PaymentOnlinePay
+		pyUpdate := false
+		//todo: 设置配送门店
+		//err = order.SetShop(cv.ShopId)
+		//err = order.SetDeliver(cv.DeliverId)
+
+		// 设置支付方式
+		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
+			return orderNo, tradeNo, err
 		}
+
+		// 处理支付单
+		py.BindOrder(order.GetAggregateRootId(), tradeNo)
+		if _, err = py.Save(); err != nil {
+			err = errors.New("下单出错:" + err.Error())
+			order.Cancel(err.Error())
+			domain.HandleError(err, "domain")
+			return orderNo, tradeNo, err
+		}
+
+		// 使用余额支付
+		if useBalanceDiscount {
+			err = py.BalanceDiscount()
+			pyUpdate = true
+		}
+
+		// 更新支付单
+		if err == nil && pyUpdate {
+			_, err = py.Save()
+		}
+
 	}
-	return "", err
+	return orderNo, tradeNo, err
 }
 
+// 根据订单编号获取订单
+func (this *orderManagerImpl) GetOrderById(orderId int) order.IOrder {
+	val := this._rep.GetOrderById(orderId)
+	if val != nil {
+		val.Items = this._rep.GetOrderItems(val.Id)
+		return this.CreateOrder(val, nil)
+	}
+	return nil
+}
+
+// 根据订单号获取订单
 func (this *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 	val := this._rep.GetValueOrderByNo(orderNo)
 	if val != nil {
@@ -205,6 +288,15 @@ func (this *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 		return this.CreateOrder(val, nil)
 	}
 	return nil
+}
+
+// 在线交易支付
+func (this *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
+	o := this.GetOrderById(orderId)
+	if o == nil {
+		return order.ErrNoSuchOrder
+	}
+	return o.PaymentForOnlineTrade("", "")
 }
 
 var (
@@ -249,6 +341,10 @@ const (
 )
 
 func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
+
+	return nil
+
+	//todo:  自动确认订单
 	var err error
 	v := order.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)

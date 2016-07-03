@@ -40,6 +40,9 @@ const (
 )
 
 var (
+	ErrNoSuchPaymentOrder *domain.DomainError = domain.NewDomainError(
+		"err_no_such_payment_order", "支付单不存在")
+
 	ErrPaymentNotSave *domain.DomainError = domain.NewDomainError(
 		"err_payment_not_save", "支付单需保存后才能执行操作")
 
@@ -63,111 +66,114 @@ var (
 
 	ErrCanNotSystemDiscount *domain.DomainError = domain.NewDomainError(
 		"err_can_not_system_discount", "不允许系统支付")
+
+	ErrOuterNo *domain.DomainError = domain.NewDomainError(
+		"err_outer_no", "第三方交易号错误")
 )
 
 type (
-	/// <summary>
-	/// 支付单接口
-	/// </summary>
+
+	// 支付单接口
 	IPaymentOrder interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int
-		/// <summary>
-		/// 优惠券抵扣
-		/// </summary>
+
+		// 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
-		BalanceDiscount(fee float32) error
+
+		// 使用会员的余额抵扣
+		BalanceDiscount() error
+
 		IntegralDiscount(integral int) error
-		/// <summary>
-		/// 系统支付金额
-		/// </summary>
+
+		// 系统支付金额
 		SystemPayment(fee float32) error
-		BindOrder(orderId int) error
+
+		// 设置支付方式
+		SetPaymentSign(paymentSign int) error
+
+		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号
+		BindOrder(orderId int, tradeNo string) error
+
 		Save() (int, error)
-		PaymentFinish(tradeNo string) error
+
+		// 支付完成,传入第三名支付名称,以及外部的交易号
+		PaymentFinish(spName string, outerNo string) error
+
 		GetValue() PaymentOrderBean
-		/// <summary>
-		/// 取消支付
-		/// </summary>
+
+		// 取消支付
 		Cancel() error
 	}
 
 	IPaymentRep interface {
 		// 根据编号获取支付单
 		GetPaymentOrder(id int) IPaymentOrder
+
 		// 根据支付单号获取支付单
 		GetPaymentOrderByNo(paymentNo string) IPaymentOrder
+
 		// 创建支付单
 		CreatePaymentOrder(p *PaymentOrderBean) IPaymentOrder
+
 		// 保存支付单
 		SavePaymentOrder(v *PaymentOrderBean) (int, error)
+
+		// 通知支付单完成
+		NotifyPaymentFinish(paymentOrderId int) error
 	}
 
+	// 支付单实体
 	PaymentOrderBean struct {
-		Id int
-		/// <summary>
-		/// 支付单号
-		/// </summary>
-		PaymentNo string
-		/// <summary>
-		/// 运营商编号，0表示无
-		/// </summary>
-		VendorId int
-		/// <summary>
-		/// 订单编号,0表示无
-		/// </summary>
-		OrderId int
-		/// <summary>
-		/// 购买用户
-		/// </summary>
-		BuyUser int
-		/// <summary>
-		/// 支付用户
-		/// </summary>
-		PaymentUser int
-		/// <summary>
-		/// 支付单金额
-		/// </summary>
-		TotalFee float32
-		/// <summary>
-		/// 余额抵扣
-		/// </summary>
-		BalanceDiscount float32
-		/// <summary>
-		/// 积分抵扣
-		/// </summary>
-		IntegralDiscount float32
-		/// <summary>
-		/// 系统支付抵扣金额
-		/// </summary>
-		SystemDiscount float32
-		/// <summary>
-		/// 优惠券金额
-		/// </summary>
-		CouponFee float32
-		/// <summary>
-		/// 立减金额
-		/// </summary>
-		SubFee float32
-		/// <summary>
-		/// 最终支付金额
-		/// </summary>
-		FinalFee float32
-		/// <summary>
-		/// 支付选项，位运算。可用优惠券，积分抵扣等运算
-		/// </summary>
-		PaymentOpt int
-		/// 支付方式
-		PaymentSign int
+		Id int `db:"id" pk:"yes" auto:"yes"`
+
+		// 支付单号
+		TradeNo string `db:"trade_no"`
+
+		// 运营商编号，0表示无
+		VendorId int `db:"vendor_id"`
+
+		// 订单编号,0表示无
+		OrderId int `db:"order_id"`
+
+		// 购买用户
+		BuyUser int `db:"buy_user"`
+
+		// 支付用户
+		PaymentUser int `db:"payment_user"`
+
+		// 支付单金额
+		TotalFee float32 `db:"total_fee"`
+
+		// 余额抵扣
+		BalanceDiscount float32 `db:"balance_discount"`
+
+		// 积分抵扣
+		IntegralDiscount float32 `db:"integral_discount"`
+
+		// 系统支付抵扣金额
+		SystemDiscount float32 `db:"system_discount"`
+
+		// 优惠券金额
+		CouponDiscount float32 `db:"coupon_discount"`
+
+		// 立减金额
+		SubFee float32 `db:"sub_fee"`
+
+		// 最终支付金额
+		FinalFee float32 `db:"final_fee"`
+
+		// 支付选项，位运算。可用优惠券，积分抵扣等运算
+		PaymentOpt int `db:"payment_opt"`
+		// 支付方式
+		PaymentSign int `db:"payment_sign"`
+		// 在线支付的交易单号
+		OuterNo string `db:"outer_no"`
 		//创建时间
-		CreateTime int64
-		/// 在线支付的交易单号
-		TradeNo string
+		CreateTime int64 `db:"create_time"`
 		//支付时间
-		PaidTime int64
-		/// <summary>
-		/// 状态:  0为未付款，1为已付款，2为已取消
-		/// </summary>
-		State int
+		PaidTime int64 `db:"paid_time"`
+		// 状态:  0为未付款，1为已付款，2为已取消
+		State int `db:"state"`
 	}
 )

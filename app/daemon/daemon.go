@@ -22,6 +22,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/service/dps"
 	"go2o/core/variable"
 	"log"
@@ -43,16 +44,16 @@ type Service interface {
 	// 启动服务
 	Start()
 
-	// 处理订单,需根据订单不同的状态,作不同的业务
-	// 返回布尔值,如果返回false,则不继续执行
+	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
 	OrderObs(*order.ValueOrder) bool
 
-	// 监视会员修改,@create:是否为新注册会员
-	// 返回布尔值,如果返回false,则不继续执行
+	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *member.Member, create bool) bool
 
-	// 处理邮件队列
-	// 返回布尔值,如果返回false,则不继续执行
+	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
+	PaymentOrderObs(order *payment.PaymentOrderBean) bool
+
+	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
 	HandleMailQueue([]*mss.MailTask) bool
 }
 
@@ -161,6 +162,7 @@ func (this *defaultService) Start() {
 	AddTickerFunc(detectOrderExpires) //检查订单过期
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)
+	go supervisePaymentOrderFinish(services)
 	go startMailQueue(services)
 }
 
@@ -178,7 +180,23 @@ func (this *defaultService) OrderObs(o *order.ValueOrder) bool {
 	return true
 }
 
-//设置过期时间
+// 监视会员修改,@create:是否为新注册会员
+// 返回布尔值,如果返回false,则不继续执行
+func (this *defaultService) MemberObs(m *member.Member, create bool) bool {
+	defer Recover()
+	if this.sMember {
+		//todo: 执行会员逻辑
+	}
+	return true
+}
+
+// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
+func (this *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) bool {
+	this.app.Log().Println("---支付单", order.TradeNo, "支付完成")
+	return true
+}
+
+//设置订单过期时间
 func (this *defaultService) setOrderExpires(conn redis.Conn, o *order.ValueOrder) {
 	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
 		ss := dps.MerchantService.GetSaleConf(o.VendorId)
@@ -192,16 +210,6 @@ func (this *defaultService) setOrderExpires(conn redis.Conn, o *order.ValueOrder
 
 func (this *defaultService) getExpiresKey(o *order.ValueOrder) string {
 	return fmt.Sprintf("%s%s", variable.KvOrderExpiresTime, o.OrderNo)
-}
-
-// 监视会员修改,@create:是否为新注册会员
-// 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) MemberObs(m *member.Member, create bool) bool {
-	defer Recover()
-	if this.sMember {
-		//todo: 执行会员逻辑
-	}
-	return true
 }
 
 // 处理邮件队列
