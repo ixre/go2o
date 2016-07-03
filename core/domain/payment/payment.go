@@ -36,6 +36,11 @@ func (this *paymentOrderImpl) GetAggregateRootId() int {
 	return this._value.Id
 }
 
+// 获取交易号
+func (this *paymentOrderImpl) GetTradeNo() string {
+	return this._value.TradeNo
+}
+
 // 重新修正金额
 func (this *paymentOrderImpl) fixFee() {
 	v := this._value

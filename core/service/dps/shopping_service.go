@@ -253,10 +253,15 @@ func (this *shoppingService) PrepareOrder(buyerId int, cartKey string,
 }
 
 func (this *shoppingService) SubmitOrder(buyerId int, cartKey string,
-	subject string, couponCode string, useBalanceDiscount bool) (
+	subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	c := this.getShoppingCart(buyerId, cartKey)
-	return this._manager.SubmitOrder(c, subject, couponCode, useBalanceDiscount)
+	od, py, err := this._manager.SubmitOrder(c, subject, couponCode, balanceDiscount)
+	if err == nil {
+		od.BreakUpByVendor() //根据运营商拆单
+		return od.GetOrderNo(), py.GetTradeNo(), err
+	}
+	return "", "", err
 }
 
 func (this *shoppingService) SetDeliverShop(orderNo string,
@@ -347,6 +352,7 @@ func (this *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 确认付款
+//todo: 需删除
 func (this *shoppingService) PayForOrderOnlineTrade(orderNo string,
 	spName string, tradeNo string) error {
 	o := this._manager.GetOrderByNo(orderNo)

@@ -78,6 +78,9 @@ type (
 		// 获取聚合根编号
 		GetAggregateRootId() int
 
+		// 获取交易号
+		GetTradeNo() string
+
 		// 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
 
