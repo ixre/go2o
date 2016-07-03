@@ -608,6 +608,8 @@ func (this *orderImpl) Cancel(reason string) error {
 	this._value.Status = enum.ORDER_CANCEL
 	this._value.UpdateTime = time.Now().Unix()
 
+	//todo: 应同时取消支付单
+
 	this.cancelGoods()
 	this.backupPayment()
 

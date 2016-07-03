@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
@@ -41,19 +42,21 @@ type orderRepImpl struct {
 	_cartRep    cart.ICartRep
 	_valRep     valueobject.IValueRep
 	_cache      map[int]order.IOrderManager
+	_payRep     payment.IPaymentRep
 	_manager    order.IOrderManager
 }
 
-func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep,
+func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
-	valRep valueobject.IValueRep) order.IOrderRep {
+	valRep valueobject.IValueRep) *orderRepImpl {
 	return &orderRepImpl{
 		Connector:   c,
 		_saleRep:    saleRep,
 		_goodsRep:   goodsRep,
 		_promRep:    promRep,
+		_payRep:     payRep,
 		_memberRep:  memRep,
 		_mchRep:     ptRep,
 		_cartRep:    cartRep,
@@ -62,13 +65,17 @@ func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep,
 	}
 }
 
+func (this *orderRepImpl) SetPaymentRep(payRep payment.IPaymentRep) {
+	this._payRep = payRep
+}
+
 func (this *orderRepImpl) Manager() order.IOrderManager {
 	if this._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
 	if this._manager == nil {
 		this._manager = orderImpl.NewOrderManager(this._cartRep, this._mchRep,
-			this, this._saleRep, this._goodsRep, this._promRep,
+			this, this._payRep, this._saleRep, this._goodsRep, this._promRep,
 			this._memberRep, this._deliverRep, this._valRep)
 	}
 	return this._manager

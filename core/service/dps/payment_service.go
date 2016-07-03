@@ -21,14 +21,18 @@ func NewPaymentService(rep payment.IPaymentRep) *paymentService {
 }
 
 // 根据编号获取支付单
-func (this *paymentService) GetPaymentOrder(id int) payment.PaymentOrderBean {
-	return this._rep.GetPaymentOrder(id).GetValue()
+func (this *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
+	v := this._rep.GetPaymentOrder(id).GetValue()
+	return &v
 }
 
 // 根据支付单号获取支付单
-func (this *paymentService) GetPaymentOrderByNo(paymentNo string,
-) payment.PaymentOrderBean {
-	return this._rep.GetPaymentOrderByNo(paymentNo).GetValue()
+func (this *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrderBean {
+	if v := this._rep.GetPaymentOrderByNo(paymentNo); v != nil {
+		v2 := v.GetValue()
+		return &v2
+	}
+	return nil
 }
 
 // 创建支付单
@@ -36,4 +40,18 @@ func (this *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
 ) (int, error) {
 	p := this._rep.CreatePaymentOrder(v)
 	return p.Save()
+}
+
+// 创建支付单
+func (this *paymentService) FinishPayment(tradeNo string, spName string,
+	outerNo string) error {
+	o := this._rep.GetPaymentOrderByNo(tradeNo)
+	if o == nil {
+		return payment.ErrNoSuchPaymentOrder
+	}
+	err := o.PaymentFinish(spName, outerNo)
+	if err == nil {
+		_, err = o.Save()
+	}
+	return err
 }

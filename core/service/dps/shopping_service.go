@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
@@ -32,12 +33,13 @@ type shoppingService struct {
 	_cartRep  cart.ICartRep
 	_mchRep   merchant.IMerchantRep
 	_manager  order.IOrderManager
+	_payRep   payment.IPaymentRep
 }
 
 func NewShoppingService(r order.IOrderRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep,
 	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	mchRep merchant.IMerchantRep) *shoppingService {
+	mchRep merchant.IMerchantRep, payRep payment.IPaymentRep) *shoppingService {
 	return &shoppingService{
 		_rep:      r,
 		_itemRep:  itemRep,
@@ -45,6 +47,7 @@ func NewShoppingService(r order.IOrderRep,
 		_goodsRep: goodsRep,
 		_saleRep:  saleRep,
 		_mchRep:   mchRep,
+		_payRep:   payRep,
 		_manager:  r.Manager(),
 	}
 }
@@ -207,15 +210,16 @@ func (this *shoppingService) GetCartSettle(memberId int,
 
 /*================ 订单  ================*/
 
-func (this *shoppingService) BuildOrder(buyerId int, cartKey string,
+func (this *shoppingService) PrepareOrder(buyerId int, cartKey string,
 	subject string, couponCode string) (map[string]interface{}, error) {
 	cart := this.getShoppingCart(buyerId, cartKey)
-	order, err := this._manager.BuildOrder(cart, subject, couponCode)
+	order, py, err := this._manager.PrepareOrder(cart, subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
 
 	v := order.GetValue()
+	po := py.GetValue()
 	buf := bytes.NewBufferString("")
 
 	for _, v := range order.GetCoupons() {
@@ -223,34 +227,35 @@ func (this *shoppingService) BuildOrder(buyerId int, cartKey string,
 		buf.WriteString("\n")
 	}
 
-	var data map[string]interface{}
-	data = make(map[string]interface{})
+	discountFee := v.TotalFee - po.TotalFee + po.SubFee
+	data := make(map[string]interface{})
 	if couponCode != "" {
-		if v.CouponFee == 0 {
+		if po.CouponDiscount == 0 {
 			data["result"] = v.CouponFee != 0
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
 			data["totalFee"] = v.TotalFee
-			data["fee"] = v.Fee
-			data["payFee"] = v.PayFee
-			data["discountFee"] = v.DiscountFee
-			data["couponFee"] = v.CouponFee
+			data["fee"] = po.TotalFee
+			data["payFee"] = po.FinalFee
+			data["discountFee"] = discountFee
+			data["couponFee"] = po.CouponDiscount
 			data["couponDescribe"] = buf.String()
 		}
 	} else {
 		//　取消优惠券
 		data["totalFee"] = v.TotalFee
-		data["fee"] = v.Fee
-		data["payFee"] = v.PayFee
-		data["discountFee"] = v.DiscountFee
+		data["fee"] = po.TotalFee
+		data["payFee"] = po.FinalFee
+		data["discountFee"] = discountFee
 	}
 	return data, err
 }
 
-func (this *shoppingService) SubmitOrder(buyerId int, subject string,
-	couponCode string, useBalanceDiscount bool) (orderNo string, err error) {
-	c := this.getShoppingCart(buyerId, "")
+func (this *shoppingService) SubmitOrder(buyerId int, cartKey string,
+	subject string, couponCode string, useBalanceDiscount bool) (
+	orderNo string, paymentTradeNo string, err error) {
+	c := this.getShoppingCart(buyerId, cartKey)
 	return this._manager.SubmitOrder(c, subject, couponCode, useBalanceDiscount)
 }
 

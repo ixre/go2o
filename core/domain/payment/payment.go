@@ -9,21 +9,27 @@
 package payment
 
 import (
+	"errors"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/domain"
+	"strings"
 	"time"
 )
 
 var _ payment.IPaymentOrder = new(paymentOrderImpl)
 
 type paymentOrderImpl struct {
-	_rep     payment.IPaymentRep
-	_value   *payment.PaymentOrderBean
-	_mmRep   member.IMemberRep
-	_valRep  valueobject.IValueRep
-	_coupons []promotion.ICouponPromotion
+	_rep                payment.IPaymentRep
+	_value              *payment.PaymentOrderBean
+	_mmRep              member.IMemberRep
+	_valRep             valueobject.IValueRep
+	_coupons            []promotion.ICouponPromotion
+	_orderManager       order.IOrderManager
+	_firstFinishPayment bool //第一次完成支付
 }
 
 func (this *paymentOrderImpl) GetAggregateRootId() int {
@@ -33,13 +39,25 @@ func (this *paymentOrderImpl) GetAggregateRootId() int {
 // 重新修正金额
 func (this *paymentOrderImpl) fixFee() {
 	v := this._value
-	v.FinalFee = v.TotalFee - v.CouponFee - v.BalanceDiscount -
+	v.FinalFee = v.TotalFee - v.CouponDiscount - v.BalanceDiscount -
 		v.IntegralDiscount - v.SubFee - v.SystemDiscount
 }
 
-// 更新订单状态
-func (this *paymentOrderImpl) updateOrderFinish() {
-	panic("未实现")
+// 更新订单状态, 需要注意,防止多次订单更新
+func (this *paymentOrderImpl) notifyPaymentFinish() {
+
+	err := this._rep.NotifyPaymentFinish(this.GetAggregateRootId())
+	if err != nil {
+		err = errors.New("Notify payment finish error :" + err.Error())
+		domain.HandleError(err, "domain")
+	}
+	if this._value.OrderId > 0 {
+		err = this._orderManager.PaymentForOnlineTrade(this._value.OrderId)
+		if err != nil {
+			domain.HandleError(err, "domain")
+		}
+	}
+
 	//todo:  更新订单状态
 
 	//this._value.PaymentSign = buyerType
@@ -48,9 +66,8 @@ func (this *paymentOrderImpl) updateOrderFinish() {
 	//}
 }
 
-/// <summary>
-/// 优惠券抵扣
-/// </summary>
+// 优惠券抵扣
+
 func (this *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	float32, error) {
 	if this._value.PaymentOpt&payment.OptUseCoupon == 0 {
@@ -65,10 +82,10 @@ func (this *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) 
 	fee := this._value.TotalFee - this._value.SubFee -
 		this._value.SystemDiscount
 	for _, v := range this._coupons {
-		this._value.CouponFee += v.GetCouponFee(fee)
+		this._value.CouponDiscount += v.GetCouponFee(fee)
 	}
 	this.fixFee()
-	return this._value.CouponFee, nil
+	return this._value.CouponDiscount, nil
 }
 
 // 在支付之前检查订单状态
@@ -100,7 +117,7 @@ func (this *paymentOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32
 }
 
 // 使用余额支付
-func (this *paymentOrderImpl) paymentWithBalance(buyerType int, fee float32) error {
+func (this *paymentOrderImpl) paymentWithBalance(buyerType int) error {
 	if this._value.PaymentOpt&payment.OptBalanceDiscount == 0 {
 		return payment.ErrCanNotUseBalance
 	}
@@ -108,11 +125,12 @@ func (this *paymentOrderImpl) paymentWithBalance(buyerType int, fee float32) err
 	if err == nil {
 		// 判断扣减金额,是否大于0
 		acc := this._mmRep.GetMember(this._value.BuyUser).GetAccount()
-		if fee := this.getBalanceDiscountFee(acc); fee == 0 {
+		fee := this.getBalanceDiscountFee(acc)
+		if fee == 0 {
 			return member.ErrAccountBalanceNotEnough
 		}
 		// 从会员账户扣减,并更新支付单
-		err = acc.PaymentDiscount(this.GetValue().PaymentNo, fee)
+		err = acc.PaymentDiscount(this.GetValue().TradeNo, fee)
 		if err == nil {
 			this._value.BalanceDiscount = fee
 			this.fixFee()
@@ -121,24 +139,24 @@ func (this *paymentOrderImpl) paymentWithBalance(buyerType int, fee float32) err
 	return err
 }
 
+// 检查是否支付完成, 且返回是否为第一次支付成功,
 func (this *paymentOrderImpl) checkPaymentOk() (bool, error) {
-	err := this.checkPayment()
 	b := false
-	if err == nil {
+	if this._value.State == payment.StateNotYetPayment {
 		unix := time.Now().Unix()
 		// 如果支付完成,则更新订单状态
 		if b = this._value.FinalFee == 0; b {
 			this._value.State = payment.StateFinishPayment
-			this.updateOrderFinish()
+			this._firstFinishPayment = true
 		}
 		this._value.PaidTime = unix
 	}
-	return b, err
+	return b, nil
 }
 
-// 使用余额支付
-func (this *paymentOrderImpl) BalanceDiscount(fee float32) error {
-	return this.paymentWithBalance(payment.PaymentByBuyer, fee)
+// 使用会员的余额抵扣
+func (this *paymentOrderImpl) BalanceDiscount() error {
+	return this.paymentWithBalance(payment.PaymentByBuyer)
 }
 
 // 计算积分折算后的金额
@@ -157,7 +175,6 @@ func (this *paymentOrderImpl) IntegralDiscount(integral int) error {
 	if this._value.PaymentOpt&payment.OptIntegralDiscount == 0 {
 		return payment.ErrCanNotUseIntegral
 	}
-
 	err := this.checkPayment()
 	if err == nil {
 		// 判断扣减金额,是否大于0
@@ -166,7 +183,7 @@ func (this *paymentOrderImpl) IntegralDiscount(integral int) error {
 			return member.ErrAccountBalanceNotEnough
 		}
 		fee := this.mathIntegralFee(integral)
-		err = acc.DiscountIntegral(this.GetValue().PaymentNo, integral, fee)
+		err = acc.DiscountIntegral(this.GetValue().TradeNo, integral, fee)
 		if err == nil {
 			this._value.IntegralDiscount = fee
 			this.fixFee()
@@ -175,9 +192,7 @@ func (this *paymentOrderImpl) IntegralDiscount(integral int) error {
 	return err
 }
 
-/// <summary>
-/// 系统支付金额
-/// </summary>
+// 系统支付金额
 func (this *paymentOrderImpl) SystemPayment(fee float32) error {
 	if this._value.PaymentOpt&payment.OptSystemPayment == 0 {
 		return payment.ErrCanNotSystemDiscount
@@ -189,9 +204,21 @@ func (this *paymentOrderImpl) SystemPayment(fee float32) error {
 	}
 	return err
 }
-func (this *paymentOrderImpl) BindOrder(orderId int) error {
-	//todo: check order exists
+
+// 设置支付方式
+func (this *paymentOrderImpl) SetPaymentSign(paymentSign int) error {
+	//todo: 某个支付方式被暂停
+	this._value.PaymentSign = paymentSign
+	return nil
+}
+
+// 绑定订单号,如果交易号为空则绑定参数中传递的交易号
+func (this *paymentOrderImpl) BindOrder(orderId int, tradeNo string) error {
+	//todo: check order exists  and tradeNo exists
 	this._value.OrderId = orderId
+	if len(this._value.TradeNo) == 0 {
+		this._value.TradeNo = tradeNo
+	}
 	return nil
 }
 func (this *paymentOrderImpl) Save() (int, error) {
@@ -203,24 +230,39 @@ func (this *paymentOrderImpl) Save() (int, error) {
 		}
 		this._value.Id, err = this._rep.SavePaymentOrder(this._value)
 	}
+
+	//保存支付单后,通知支付成功。只通知一次
+	if err == nil && this._firstFinishPayment {
+		this._firstFinishPayment = false
+		this.notifyPaymentFinish()
+	}
 	return this.GetAggregateRootId(), err
 }
 
-func (this *paymentOrderImpl) PaymentFinish(tradeNo string) error {
-	err := this.checkPayment()
-	if err == nil {
-		this._value.TradeNo = tradeNo
-		this._value.FinalFee = 0
+// 支付完成,传入第三名支付名称,以及外部的交易号
+func (this *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
+	outerNo = strings.TrimSpace(outerNo)
+	if len(outerNo) < 8 {
+		return payment.ErrOuterNo
 	}
-	return err
+	if this._value.State == payment.StateFinishPayment {
+		return payment.ErrOrderPayed
+	}
+	if this._value.State == payment.StateHasCancel {
+		return payment.ErrOrderHasCancel
+	}
+	this._value.State = payment.StateFinishPayment
+	this._value.OuterNo = outerNo
+	this._value.PaidTime = time.Now().Unix()
+	this._firstFinishPayment = true
+
+	return nil
 }
 func (this *paymentOrderImpl) GetValue() payment.PaymentOrderBean {
 	return *this._value
 }
 
-/// <summary>
-/// 取消支付
-/// </summary>
+// 取消支付
 func (this *paymentOrderImpl) Cancel() error {
 	this._value.State = payment.StateHasCancel
 	return nil
@@ -231,11 +273,12 @@ type PaymentRepBase struct {
 
 func (this *PaymentRepBase) CreatePaymentOrder(v *payment.
 	PaymentOrderBean, rep payment.IPaymentRep, mmRep member.IMemberRep,
-	valRep valueobject.IValueRep) payment.IPaymentOrder {
+	orderManager order.IOrderManager, valRep valueobject.IValueRep) payment.IPaymentOrder {
 	return &paymentOrderImpl{
-		_rep:    rep,
-		_value:  v,
-		_mmRep:  mmRep,
-		_valRep: valRep,
+		_rep:          rep,
+		_value:        v,
+		_mmRep:        mmRep,
+		_valRep:       valRep,
+		_orderManager: orderManager,
 	}
 }

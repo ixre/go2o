@@ -10,10 +10,13 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"go2o/core"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
 	payImpl "go2o/core/domain/payment"
+	"go2o/core/variable"
 )
 
 var _ payment.IPaymentRep = new(paymentRep)
@@ -23,14 +26,16 @@ type paymentRep struct {
 	*payImpl.PaymentRepBase
 	_memberRep member.IMemberRep
 	_valRep    valueobject.IValueRep
+	_orderRep  order.IOrderRep
 }
 
 func NewPaymentRep(conn db.Connector, mmRep member.IMemberRep,
-	valRep valueobject.IValueRep) payment.IPaymentRep {
+	orderRep order.IOrderRep, valRep valueobject.IValueRep) payment.IPaymentRep {
 	return &paymentRep{
 		Connector:  conn,
 		_memberRep: mmRep,
 		_valRep:    valRep,
+		_orderRep:  orderRep,
 	}
 }
 
@@ -48,7 +53,7 @@ func (this *paymentRep) GetPaymentOrder(
 func (this *paymentRep) GetPaymentOrderByNo(
 	paymentNo string) payment.IPaymentOrder {
 	e := &payment.PaymentOrderBean{}
-	if this.Connector.GetOrm().GetBy(e, "payment_no=?", paymentNo) == nil {
+	if this.Connector.GetOrm().GetBy(e, "trade_no=?", paymentNo) == nil {
 		return this.CreatePaymentOrder(e)
 	}
 	return nil
@@ -58,7 +63,7 @@ func (this *paymentRep) GetPaymentOrderByNo(
 func (this *paymentRep) CreatePaymentOrder(
 	p *payment.PaymentOrderBean) payment.IPaymentOrder {
 	return this.PaymentRepBase.CreatePaymentOrder(p, this,
-		this._memberRep, this._valRep)
+		this._memberRep, this._orderRep.Manager(), this._valRep)
 }
 
 // 保存支付单
@@ -73,4 +78,12 @@ func (this *paymentRep) SavePaymentOrder(
 		v.Id = int(id64)
 	}
 	return v.Id, err
+}
+
+// 通知支付单完成
+func (this *paymentRep) NotifyPaymentFinish(paymentOrderId int) error {
+	rc := core.GetRedisConn()
+	defer rc.Close()
+	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
+	return err
 }
