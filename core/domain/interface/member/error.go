@@ -115,4 +115,7 @@ var (
 
 	ErrFavored *domain.DomainError = domain.NewDomainError(
 		"err_favored", "已经收藏过了")
+
+	ErrAccountBalanceNotEnough *domain.DomainError = domain.NewDomainError(
+		"err_account_balance_not_enough ", "账户余额不足")
 )

@@ -91,6 +91,8 @@ type (
 
 	// 全局数值设置
 	GlobNumberConf struct {
+		// 兑换1元所需要的积分
+		IntegralExchangeRate int
 		// 提现手续费费率
 		ApplyCsn float32
 		// 转账手续费费率

@@ -16,9 +16,6 @@ var (
 	ErrNoSuchOrder *domain.DomainError = domain.NewDomainError(
 		"err_no_such_order ", "订单不存在")
 
-	ErrBalanceNotEnough *domain.DomainError = domain.NewDomainError(
-		"err_balance_not_enough ", "余额不足")
-
 	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_payed ", "订单已支付")
 

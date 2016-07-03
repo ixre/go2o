@@ -42,6 +42,8 @@ var (
 
 	// 默认全局销售设置
 	defaultGlobNumberConf = valueobject.GlobNumberConf{
+		// 兑换1元所需要的积分
+		IntegralExchangeRate: 1000,
 		// 提现手续费费率
 		ApplyCsn: 0.01,
 		// 转账手续费费率

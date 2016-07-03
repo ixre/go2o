@@ -232,8 +232,8 @@ func (this *accountImpl) ChargeFlowBalance(title string, tradeNo string, amount 
 	return err
 }
 
-// 订单抵扣消费
-func (this *accountImpl) OrderDiscount(tradeNo string, amount float32) error {
+// 支付单抵扣消费,tradeNo为支付单单号
+func (this *accountImpl) PaymentDiscount(tradeNo string, amount float32) error {
 	if amount < 0 || len(tradeNo) == 0 {
 		return errors.New("amount error or missing trade no")
 	}
@@ -256,6 +256,11 @@ func (this *accountImpl) OrderDiscount(tradeNo string, amount float32) error {
 		_, err = this.Save()
 	}
 	return err
+}
+
+// 支付单抵扣积分,integral为积分,exchangeFee
+func (this *accountImpl) DiscountIntegral(tradeNo string, integral int, exchangeFee float32) error {
+	panic("未实现")
 }
 
 // 退款
