@@ -226,10 +226,11 @@ func (this *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
 }
 
 func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
-	couponCode string, useBalanceDiscount bool) (string, string, error) {
+	couponCode string, useBalanceDiscount bool) (order.IOrder,
+	payment.IPaymentOrder, error) {
 	order, py, err := this.PrepareOrder(c, subject, couponCode)
 	if err != nil {
-		return "", "", err
+		return order, py, err
 	}
 	orderNo, err := order.Submit()
 	tradeNo := orderNo
@@ -243,7 +244,7 @@ func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 
 		// 设置支付方式
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
-			return orderNo, tradeNo, err
+			return order, py, err
 		}
 
 		// 处理支付单
@@ -252,7 +253,7 @@ func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 			err = errors.New("下单出错:" + err.Error())
 			order.Cancel(err.Error())
 			domain.HandleError(err, "domain")
-			return orderNo, tradeNo, err
+			return order, py, err
 		}
 
 		// 使用余额支付
@@ -265,9 +266,8 @@ func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 		if err == nil && pyUpdate {
 			_, err = py.Save()
 		}
-
 	}
-	return orderNo, tradeNo, err
+	return order, py, err
 }
 
 // 根据订单编号获取订单

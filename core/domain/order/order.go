@@ -263,9 +263,6 @@ func (this *orderImpl) Submit() (string, error) {
 	v.CreateTime = time.Now().Unix()
 	v.UpdateTime = v.CreateTime
 	v.ItemsInfo = string(this._cart.GetJsonItems())
-
-	//todo: --------- 在这里拆单 -----------
-	//todo:  设置vendor
 	v.OrderNo = this._manager.GetFreeOrderNo(0)
 
 	// 应用优惠券
@@ -455,17 +452,28 @@ func (this *orderImpl) saveOrderOnSubmit() (int, error) {
 	}
 	for i, v := range cartItems {
 		if v.Checked == 1 {
+			if this._value.VendorId == 0 {
+				this._value.VendorId = v.VendorId
+				this._value.ShopId = v.ShopId
+			}
+
+			//todo: 在这里获取/生成商品的交易快照
 			snap := this._goodsRep.GetLatestSnapshot(cartItems[i].SkuId)
 			if snap == nil {
 				return 0, errors.New("商品缺少快照：" +
 					strconv.Itoa(cartItems[i].SkuId))
 			}
+			fee := v.SalePrice * float32(v.Quantity)
 			this._value.Items = append(this._value.Items, &order.OrderItem{
 				Id:         0,
+				VendorId:   v.VendorId,
+				ShopId:     v.ShopId,
+				SkuId:      v.SkuId,
 				SnapshotId: snap.SkuId,
 				Quantity:   v.Quantity,
 				Sku:        snap.Sku,
-				Fee:        v.SalePrice * float32(v.Quantity),
+				Fee:        fee,
+				FinalFee:   fee,
 			})
 		}
 	}
@@ -496,6 +504,36 @@ func (this *orderImpl) Save() (int, error) {
 	}
 	this._internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
+}
+
+//根据运营商拆单,返回拆单结果,及拆分的订单数组
+func (this *orderImpl) BreakUpByVendor() ([]order.IOrder, error) {
+	if this.GetAggregateRootId() <= 0 {
+		return nil, order.ErrNoSuchOrder
+	}
+
+	mp := make(map[int]int) //存储VendorId与Items数量的映射
+	for _, v := range this._value.Items {
+		if _, ok := mp[v.VendorId]; !ok {
+			mp[v.VendorId] = 1
+		} else {
+			mp[v.VendorId] += 1
+		}
+	}
+
+	// 只有一个运营商,则不允许拆单
+	l := len(mp)
+	if l < 1 {
+		return nil, order.ErrOrderBreakUpFail
+	}
+	// 清空父订单的VendorId和ShopId
+	this._value.VendorId = 0
+	this._value.ShopId = 0
+
+	// list := make([]order.IOrder,l)
+
+	//todo: 拆分
+	return nil, nil
 }
 
 // 扣除库存

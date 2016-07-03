@@ -12,6 +12,28 @@ package order
 import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/infrastructure/domain"
+)
+
+// 参考:
+//http://www.pmcaff.com/discuss?id=1000000000138488
+//http://www.zhihu.com/question/31640837
+
+var (
+	ErrNoSuchOrder *domain.DomainError = domain.NewDomainError(
+		"err_no_such_order ", "订单不存在")
+
+	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
+		"err_order_payed ", "订单已支付")
+
+	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
+		"err_order_not_payed ", "订单未支付")
+
+	ErrOrderDelved *domain.DomainError = domain.NewDomainError(
+		"err_order_delved ", "订单已发货")
+
+	ErrOrderBreakUpFail *domain.DomainError = domain.NewDomainError(
+		"err_order_break_up_fail", "拆分订单操作失败")
 )
 
 type (
@@ -38,7 +60,8 @@ type (
 		GetAvailableOrderPromotions() []promotion.IPromotion
 
 		// 获取最省的促销
-		GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int)
+		GetBestSavePromotion() (p promotion.IPromotion,
+			saveFee float32, integral int)
 
 		// 获取促销绑定
 		GetPromotionBinds() []*OrderPromotionBind
@@ -70,8 +93,12 @@ type (
 		// 提交订单，返回订单号。如有错误则返回
 		Submit() (string, error)
 
-		// 保存订单
+		// 保存订单, 在生成支付单后,应该根据实际支付金额
+		// 进行拆单,并切均摊优惠抵扣金额
 		Save() (int, error)
+
+		//根据运营商拆单,返回拆单结果,及拆分的订单数组
+		BreakUpByVendor() ([]IOrder, error)
 
 		// 添加日志,system表示为系统日志
 		AppendLog(t enum.OrderLogType, system bool, message string) error
@@ -106,13 +133,28 @@ type (
 
 	// 订单商品项
 	OrderItem struct {
-		Id         int     `db:"id" pk:"yes" auto:"yes" json:"id"`
-		OrderId    int     `db:"order_id"`
-		SnapshotId int     `db:"snapshot_id"`
-		Quantity   int     `db:"quantity"`
-		Sku        string  `db:"sku"`
-		Fee        float32 `db:"fee"`
-		UpdateTime int64   `db:"update_time"`
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes" json:"id"`
+		// 订单编号
+		OrderId int `db:"order_id"`
+		// 运营商编号
+		VendorId int `db:"vendor_id"`
+		// 商店编号
+		ShopId int `db:"shop_id"`
+		// 商品SKU编号
+		SkuId int `db:"sku_id"`
+		// 快照编号
+		SnapshotId int `db:"snap_id"`
+		// 数量
+		Quantity int `db:"quantity"`
+		// SKU描述
+		Sku string `db:"sku"`
+		// 金额
+		Fee float32 `db:"fee"`
+		// 最终金额, 可能会有优惠均摊抵扣的金额
+		FinalFee float32 `db:"final_fee"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 简单商品信息
@@ -173,7 +215,7 @@ type (
 	ValueOrder struct {
 		Id       int    `db:"id" pk:"yes" auto:"yes" json:"id"`
 		OrderNo  string `db:"order_no" json:"orderNo"`
-		BuyerId  int    `db:"buyner_id" json:"memberId"`
+		BuyerId  int    `db:"buyer_id" json:"memberId"`
 		VendorId int    `db:"vendor_id" json:"vendorId"`
 		// 订单标题
 		Subject   string `db:"subject" json:"subject"`

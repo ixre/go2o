@@ -445,6 +445,19 @@ CREATE TABLE `flm`.`pay_order` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `zxdb`.`pt_order`
+  CHANGE COLUMN `buyner_id` `buyer_id` INT(11) NULL DEFAULT NULL COMMENT '-1代表游客订餐' ;
+
+ALTER TABLE `zxdb`.`pt_order_item`
+  CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL ,
+  CHANGE COLUMN `quantity` `quantity` INT(6) NULL DEFAULT NULL ,
+  CHANGE COLUMN `update_time` `update_time` INT NULL DEFAULT NULL ,
+  ADD COLUMN `vendor_id` INT NULL AFTER `order_id`,
+  ADD COLUMN `shop_id` INT NULL AFTER `vendor_id`,
+  ADD COLUMN `sku_id` INT NULL AFTER `shop_id`,
+  ADD COLUMN `final_fee` DECIMAL(8,2) NULL AFTER `fee`;
+
+
 
 
 
