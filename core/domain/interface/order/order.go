@@ -314,9 +314,9 @@ type (
 		// 订单编号
 		OrderId int `db:"order_id"`
 		// 运营商编号
-		VendorId int `db:"vendor_id"`
+		VendorId int `db:"-"`
 		// 商店编号
-		ShopId int `db:"shop_id"`
+		ShopId int `db:"-"`
 		// 商品SKU编号
 		SkuId int `db:"sku_id"`
 		// 快照编号

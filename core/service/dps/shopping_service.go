@@ -307,13 +307,7 @@ func (this *shoppingService) HandleOrder(orderNo string) (err error) {
 
 // 根据编号获取订单
 func (this *shoppingService) GetOrderById(id int) *order.Order {
-	v := this._rep.GetOrderById(id)
-	if v != nil {
-
-		panic("not implement")
-		//v.Items = this._rep.GetOrderItems(id)
-	}
-	return v
+	return this._rep.GetOrderById(id)
 }
 
 func (this *shoppingService) GetOrderByNo(orderNo string) *order.Order {
