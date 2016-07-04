@@ -28,6 +28,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+    "go2o/core/infrastructure/domain"
 )
 
 var (
@@ -77,8 +78,8 @@ func (this *orderImpl) GetAggregateRootId() int {
 	return this._value.Id
 }
 
-func (this *orderImpl) GetValue() order.ValueOrder {
-	return *this._value
+func (this *orderImpl) GetValue() *order.ValueOrder {
+	return this._value
 }
 
 // 设置订单值
@@ -512,28 +513,89 @@ func (this *orderImpl) BreakUpByVendor() ([]order.IOrder, error) {
 		return nil, order.ErrNoSuchOrder
 	}
 
-	mp := make(map[int]int) //存储VendorId与Items数量的映射
+	vendorMap := make(map[int]int) //存储VendorId与Items数量的映射
 	for _, v := range this._value.Items {
-		if _, ok := mp[v.VendorId]; !ok {
-			mp[v.VendorId] = 1
-		} else {
-			mp[v.VendorId] += 1
+		if _, ok := vendorMap[v.VendorId]; !ok {
+			vendorMap[v.VendorId] = v.ShopId
 		}
 	}
 
 	// 只有一个运营商,则不允许拆单
-	l := len(mp)
+	l := len(vendorMap)
 	if l < 1 {
 		return nil, order.ErrOrderBreakUpFail
 	}
+
 	// 清空父订单的VendorId和ShopId
 	this._value.VendorId = 0
 	this._value.ShopId = 0
 
-	// list := make([]order.IOrder,l)
+    list := make([]order.IOrder,l)
+    unix := time.Now().Unix()
+    orderMap := make(map[int]order.IOrder)
+    for _, orderItem := range this._value.Items {
+        o, ok := orderMap[orderItem.VendorId]
+        if !ok {
+            o, _= this.generateSubOrderByVendor(orderItem.VendorId,
+                orderItem.ShopId)
+            orderMap[orderItem.VendorId] = o
+            list = append(list,o)
+        }
+        v := o.GetValue()
+        v.Fee += orderItem.Fee
+        v.PayFee += orderItem.FinalFee
+        orderItem.OrderId = o.GetAggregateRootId()
+        orderItem.UpdateTime = unix
+    }
+    for _,v := range list{
+        if _,err1 := v.Save();err1 != nil{
+            domain.HandleError(err1,"domain")
+        }
+    }
+    _,err := this.Save()
+	return list, err
+}
 
-	//todo: 拆分
-	return nil, nil
+// 根据运营商生成子订单
+func (this *orderImpl) generateSubOrderByVendor(vendorId int,
+    shopId int)(order.IOrder,*order.ValueOrder){
+    v := &order.ValueOrder{
+        OrderNo :this._manager.GetFreeOrderNo(vendorId),
+        BuyerId :this._value.BuyerId,
+        VendorId:vendorId,
+        // 订单标题
+        Subject:"子订单",
+        ShopId :shopId,
+        ItemsInfo:"",
+        // 总金额
+        TotalFee:0,
+        // 实际金额
+        Fee:0,
+        // 支付金额
+        PayFee:0,
+        // 减免金额(包含优惠券金额)
+        DiscountFee:0,
+        // 余额抵扣
+        BalanceDiscount:0,
+        // 优惠券优惠金额
+        CouponFee:0,
+        // 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
+        IsSuspend :0,
+        Note :"",
+        Remark:"",
+        // 支付时间
+        PaidTime:this._value.PaidTime,
+        DeliverName:this._value.DeliverName,
+        DeliverPhone:this._value.DeliverPhone,
+        DeliverAddress:this._value.DeliverAddress,
+        DeliverTime :this._value.DeliverTime,
+        CreateTime :this._value.CreateTime,
+        // 订单状态
+        Status:this._value.Status,
+        UpdateTime:this._value.UpdateTime,
+    }
+    o:= this._manager.CreateBlankOrder(v)
+    return o,v
 }
 
 // 扣除库存
