@@ -276,14 +276,18 @@ func (this *orderImpl) buildVendorItemMap(items []*cart.CartItem) {
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
+			item := this.parseCartToOrderItem(v)
+			if item == nil {
+				domain.HandleError(errors.New("转换购物车商品到订单商品时出错: 商品SKU"+
+					strconv.Itoa(v.SkuId)), "domain")
+				continue
+			}
 			list, ok := mp[v.VendorId]
 			if !ok {
 				list = []*order.OrderItem{}
-				mp[v.VendorId] = list
 			}
-			if item := this.parseCartToOrderItem(v); item != nil {
-				list = append(list, item)
-			}
+			mp[v.VendorId] = append(list, item)
+			//log.Println("--- vendor map len:", len(mp[v.VendorId]))
 		}
 	}
 }
@@ -543,11 +547,11 @@ func (this *orderImpl) Save() (int, error) {
 }
 
 // 根据运营商生成子订单
-func (this *orderImpl) createSubOrderByVendor(vendorId int, newOrderNo bool,
-	items []*order.OrderItem) order.ISubOrder {
+func (this *orderImpl) createSubOrderByVendor(parentOrderId int,
+	vendorId int, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
 	orderNo := this.GetOrderNo()
 	if newOrderNo {
-		this._manager.GetFreeOrderNo(vendorId)
+		orderNo = this._manager.GetFreeOrderNo(vendorId)
 	}
 
 	if len(items) == 0 {
@@ -559,6 +563,7 @@ func (this *orderImpl) createSubOrderByVendor(vendorId int, newOrderNo bool,
 	v := &order.SubOrder{
 		OrderNo:   orderNo,
 		VendorId:  vendorId,
+		ParentId:  parentOrderId,
 		Subject:   "子订单",
 		ShopId:    items[0].ShopId,
 		ItemsInfo: "",
@@ -575,7 +580,6 @@ func (this *orderImpl) createSubOrderByVendor(vendorId int, newOrderNo bool,
 		UpdateTime: this._value.UpdateTime,
 		Items:      items,
 	}
-
 	// 计算订单金额
 	for _, item := range items {
 		v.TotalFee += item.Fee
@@ -591,18 +595,21 @@ func (this *orderImpl) createSubOrderByVendor(vendorId int, newOrderNo bool,
 
 //根据运营商拆单,返回拆单结果,及拆分的订单数组
 func (this *orderImpl) breakUpByVendor() []order.ISubOrder {
-	if this.GetAggregateRootId() <= 0 ||
+	parentOrderId := this.GetAggregateRootId()
+	if parentOrderId <= 0 ||
 		this._vendorItemsMap == nil ||
 		len(this._vendorItemsMap) == 0 {
 		//todo: 订单要取消掉
-		panic("订单异常: VendorItemMap为空," +
-			this._value.OrderNo)
+		panic(fmt.Sprintf("订单异常: 订单未生成或VendorItemMap为空,"+
+			"订单编号:%d,订单号:%s,vendor len:%d",
+			parentOrderId, this._value.OrderNo, len(this._vendorItemsMap)))
 	}
 	l := len(this._vendorItemsMap)
 	list := make([]order.ISubOrder, l)
 	i := 0
 	for k, v := range this._vendorItemsMap {
-		list[i] = this.createSubOrderByVendor(k, l > 1, v)
+		//log.Println("----- vendor ", k, len(v),l)
+		list[i] = this.createSubOrderByVendor(parentOrderId, k, l > 1, v)
 		if _, err := list[i].Save(); err != nil {
 			domain.HandleError(err, "domain")
 		}
@@ -952,8 +959,11 @@ func (this *subOrderImpl) SetShop(shopId int) error {
 
 // 保存订单
 func (this *subOrderImpl) Save() (int, error) {
+	if this.GetDomainId() > 0 {
+		return this._rep.SaveSubOrder(this._value)
+	}
 	id, err := this._rep.SaveSubOrder(this._value)
-	if this.GetDomainId() <= 0 && err == nil {
+	if err == nil {
 		this._value.Id = id
 		unix := time.Now().Unix()
 		for _, v := range this._value.Items {

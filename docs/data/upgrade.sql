@@ -499,6 +499,16 @@ CREATE TABLE `flm`.`sale_sub_order` (
   PRIMARY KEY (`id`));
 
 
+ALTER TABLE `flm`.`pt_order_item`
+  CHANGE COLUMN `update_time` `update_time` INT NULL DEFAULT NULL ,
+  ADD COLUMN `sku_id` INT NULL AFTER `order_id`,
+  ADD COLUMN `final_fee` DECIMAL(8,2) NULL AFTER `fee`, RENAME TO  `flm`.`sale_order_item` ;
+
+ALTER TABLE `flm`.`sale_order_item`
+  CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL ;
+
+
+
 
 
 
