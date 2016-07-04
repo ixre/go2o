@@ -12,6 +12,7 @@ package order
 import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/infrastructure/domain"
 )
@@ -59,6 +60,9 @@ type (
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 
+		// 获取购买的会员
+		GetBuyer() member.IMember
+
 		// GetComplexValue()dto.OrderComplex
 		// 设置订单值
 		//SetValue(*Order) error
@@ -80,7 +84,7 @@ type (
 		GetPromotionBinds() []*OrderPromotionBind
 
 		// 设置支付方式
-		SetPayment(payment int)
+		//SetPayment(payment int)
 
 		// 使用余额支付
 		PaymentWithBalance() error
@@ -105,7 +109,7 @@ type (
 		Save() (int, error)
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
-		BreakUpByVendor() ([]IOrder, error)
+		//BreakUpByVendor() ([]IOrder, error)
 
 		// 添加日志,system表示为系统日志
 		AppendLog(t enum.OrderLogType, system bool, message string) error
@@ -123,7 +127,7 @@ type (
 		Deliver(spId int, spNo string) error
 
 		// 获取支付金额
-		GetPaymentFee() float32
+		//GetPaymentFee() float32
 
 		//*********** 删除  *************//
 
@@ -150,6 +154,9 @@ type (
 		// 获取领域对象编号
 		GetDomainId() int
 
+		// 获取值对象
+		GetValue() *SubOrder
+
 		// 设置Shop,如果不需要记录日志，则remark传递空
 		SetShop(shopId int) error
 
@@ -167,6 +174,9 @@ type (
 
 		// 取消订单
 		Cancel(reason string) error
+
+		// 保存订单
+		Save() (int, error)
 	}
 
 	// 简单商品信息
@@ -190,7 +200,7 @@ type (
 		Id int `db:"id" pk:"yes" auto:"yes"`
 
 		// 订单号
-		OrderId string `db:"order_id"`
+		OrderId int `db:"order_id"`
 
 		// 促销编号
 		PromotionId int `db:"promotion_id"`
@@ -258,7 +268,7 @@ type (
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态
 		//todo: ???删除?
-		Status int `db:"-" json:"status"`
+		Status int `db:"status" json:"status"`
 	}
 
 	// 子订单
@@ -288,7 +298,7 @@ type (
 		// 顾客备注
 		Note string `db:"note" json:"note"`
 		// 系统备注
-		Remark string `db:"note" json:"remark"`
+		Remark string `db:"remark" json:"remark"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态

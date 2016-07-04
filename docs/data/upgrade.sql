@@ -457,6 +457,47 @@ ALTER TABLE `zxdb`.`pt_order_item`
   ADD COLUMN `sku_id` INT NULL AFTER `shop_id`,
   ADD COLUMN `final_fee` DECIMAL(8,2) NULL AFTER `fee`;
 
+CREATE TABLE `flm`.`sale_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_no` VARCHAR(20) NULL,
+  `buyer_id` INT NULL,
+  `items_info` VARCHAR(255) NULL,
+  `total_fee` DECIMAL(8,2) NULL,
+  `discount_fee` DECIMAL(8,2) NULL,
+  `final_fee` DECIMAL(8,2) NULL,
+  `is_paid` TINYINT(1) NULL,
+  `paid_time` INT NULL,
+  `consignee_person` VARCHAR(45) NULL,
+  `consignee_phone` VARCHAR(45) NULL,
+  `shipping_address` VARCHAR(120) NULL,
+  `shipping_time` VARCHAR(45) NULL,
+  `create_time` INT NULL,
+  `update_time` INT NULL,
+  `status` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
+ALTER TABLE `flm`.`pt_order_pb`
+  CHANGE COLUMN `order_no` `order_id` INT NULL DEFAULT NULL AFTER `id`;
+
+
+CREATE TABLE `flm`.`sale_sub_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_no` VARCHAR(20) NULL,
+  `parent_order` INT NULL,
+  `vendor_id` INT NULL,
+  `shop_id` INT NULL,
+  `subject` VARCHAR(45) NULL,
+  `items_info` VARCHAR(255) NULL,
+  `total_fee` DECIMAL(8,2) NULL,
+  `discount_fee` DECIMAL(8,2) NULL,
+  `final_fee` DECIMAL(8,2) NULL,
+  `is_suspend` TINYINT(1) NULL,
+  `note` VARCHAR(120) NULL,
+  `remark` VARCHAR(120) NULL,
+  `update_time` INT NULL,
+  `status` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
 
 
 

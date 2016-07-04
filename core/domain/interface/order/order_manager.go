@@ -24,7 +24,7 @@ type (
 		CreateOrder(*Order, cart.ICart) IOrder
 
 		// 生成空白订单,并保存返回对象
-		CreateBlankOrder(*SubOrder) ISubOrder
+		CreateSubOrder(*SubOrder) ISubOrder
 
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
@@ -57,6 +57,9 @@ type (
 
 		// 智能确定订单
 		SmartConfirmOrder(order IOrder) error
+
+		// 根据父订单编号获取购买的商品项
+		GetItemsByParentOrderId(orderId int) []*OrderItem
 	}
 
 	IOrderRep interface {
@@ -87,10 +90,19 @@ type (
 		// 获取等待处理的订单
 		GetWaitingSetupOrders(vendorId int) ([]*Order, error)
 
+		// 保存订单日志
+		SaveOrderLog(*OrderLog) error
+
+		// 保存子订单
+		SaveSubOrder(value *SubOrder) (int, error)
+
+		// 保存子订单的商品项,并返回编号和错误
+		SaveOrderItem(subOrderId int, value *OrderItem) (int, error)
+
 		// 获取订单项
 		GetOrderItems(orderId int) []*OrderItem
 
-		// 保存订单日志
-		SaveOrderLog(*OrderLog) error
+		// 根据父订单编号获取购买的商品项
+		GetItemsByParentOrderId(orderId int) []*OrderItem
 	}
 )

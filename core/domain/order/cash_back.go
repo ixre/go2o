@@ -19,7 +19,7 @@ import (
 	"time"
 )
 
-func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
+func HandleCashBackDataTag(m member.IMember, order *order.Order,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 	data := c.GetDataTag()
 	var level int = 0
@@ -34,7 +34,7 @@ func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
 	cashBack3R(level, m, order, c, memberRep)
 }
 
-func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
+func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 
 	dt := c.GetDataTag()
 
@@ -76,7 +76,7 @@ func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotio
 	}
 }
 
-func backCashForMember(m member.IMember, order *order.ValueOrder,
+func backCashForMember(m member.IMember, order *order.Order,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
