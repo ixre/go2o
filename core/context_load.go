@@ -92,9 +92,14 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.BalanceInfo{}, "mm_balance_info")
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
-
 	orm.Mapping(member.BankInfo{}, "mm_bank")
-	orm.Mapping(order.ValueOrder{}, "pt_order")
+
+	//** ORDER **//
+
+	orm.Mapping(order.Order{}, "sale_order")
+	orm.Mapping(order.SubOrder{}, "sale_sub_order")
+
+	//orm.Mapping(order.ValueOrder1{}, "pt_order")
 	orm.Mapping(order.OrderItem{}, "pt_order_item")
 	orm.Mapping(order.OrderCoupon{}, "pt_order_coupon")
 	orm.Mapping(order.OrderPromotionBind{}, "pt_order_pb")

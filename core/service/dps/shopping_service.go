@@ -257,11 +257,10 @@ func (this *shoppingService) SubmitOrder(buyerId int, cartKey string,
 	orderNo string, paymentTradeNo string, err error) {
 	c := this.getShoppingCart(buyerId, cartKey)
 	od, py, err := this._manager.SubmitOrder(c, subject, couponCode, balanceDiscount)
-	if err == nil {
-		od.BreakUpByVendor() //根据运营商拆单
-		return od.GetOrderNo(), py.GetTradeNo(), err
+	if err != nil {
+		return "", "", err
 	}
-	return "", "", err
+	return od.GetOrderNo(), py.GetTradeNo(), err
 }
 
 func (this *shoppingService) SetDeliverShop(orderNo string,
@@ -377,6 +376,11 @@ func (this *shoppingService) ConfirmOrder(orderNo string) error {
 		return order.ErrNoSuchOrder
 	}
 	return o.Confirm()
+}
+
+// 根据父订单编号获取购买的商品项
+func (this *shoppingService) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
+	return this._manager.GetItemsByParentOrderId(orderId)
 }
 
 //todo: 非必须的orderNo改为orderId

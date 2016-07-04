@@ -26,7 +26,6 @@ import (
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
-	"time"
 )
 
 var _ order.IOrderRep = new(orderRepImpl)
@@ -97,14 +96,7 @@ func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 	return order_no
 }
 
-// 获取订单项
-func (this *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
-	var items = []*order.OrderItem{}
-	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
-	return items
-}
-
-func (this *orderRepImpl) SaveOrder(v *order.ValueOrder) (int, error) {
+func (this *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
 	d := this.Connector
@@ -135,20 +127,6 @@ func (this *orderRepImpl) SaveOrder(v *order.ValueOrder) (int, error) {
 		//log.Println("-- PUSH - ",v.Id,err)
 	}
 
-	// 保存订单项
-	unix := time.Now().Unix()
-	if err == nil && v.Items != nil {
-		orm := d.GetOrm()
-		for _, v1 := range v.Items {
-			v1.OrderId = v.Id
-			v1.UpdateTime = unix
-			if v1.Id > 0 {
-				orm.Save(v1.Id, v1)
-			} else {
-				orm.Save(nil, v1)
-			}
-		}
-	}
 	return v.Id, err
 }
 
@@ -159,17 +137,17 @@ func (this *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 }
 
 // 根据编号获取订单
-func (this *orderRepImpl) GetOrderById(id int) *order.ValueOrder {
-	var v = new(order.ValueOrder)
-	if err := this.Connector.GetOrm().GetBy(v, "id=?", id); err == nil {
+func (this *orderRepImpl) GetOrderById(id int) *order.Order {
+	var v = new(order.Order)
+	if err := this.Connector.GetOrm().Get(id, v); err == nil {
 		return v
 	}
 	return nil
 }
 
 // 根据订单号获取订单
-func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ValueOrder {
-	e := new(order.ValueOrder)
+func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *order.Order {
+	e := new(order.Order)
 	if this.Connector.GetOrm().GetBy(e, "order_no=?", orderNo) == nil {
 		return e
 	}
@@ -177,11 +155,11 @@ func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ValueOrder {
 }
 
 // 获取等待处理的订单
-func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.ValueOrder, error) {
-	dst := []*order.ValueOrder{}
+func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.Order, error) {
+	dst := []*order.Order{}
 	err := this.Connector.GetOrm().Select(&dst,
-		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+enum.ORDER_SETUP_STATE+")",
-		vendorId)
+		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+
+			enum.ORDER_SETUP_STATE+")", vendorId)
 	if err != nil {
 		return nil, err
 	}
@@ -211,9 +189,53 @@ func (this *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind)
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
-		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM pt_order_pb WHERE order_no=? AND promotion_id=?",
-			&v.Id, v.OrderNo, v.PromotionId)
+		var id64 int64
+		_, id64, err = orm.Save(nil, v)
+		v.Id = int(id64)
+	}
+	return v.Id, err
+}
+
+// 获取订单项
+func (this *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
+	var items = []*order.OrderItem{}
+	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
+	return items
+}
+
+// 根据父订单编号获取购买的商品项
+func (this *orderRepImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
+	var items = []*order.OrderItem{}
+	this.Connector.GetOrm().SelectByQuery(&items,
+		"order_id IN (SELECT id FROM sale_sub_order WHERE parent_order=?)", orderId)
+	return items
+}
+
+// 保存子订单
+func (this *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
+	var err error
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		var id64 int64
+		_, id64, err = orm.Save(nil, v)
+		v.Id = int(id64)
+	}
+	return v.Id, err
+}
+
+// 保存子订单的商品项,并返回编号和错误
+func (this *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int, error) {
+	var err error
+	v.OrderId = subOrderId
+	var orm = this.Connector.GetOrm()
+	if v.Id > 0 {
+		_, _, err = orm.Save(v.Id, v)
+	} else {
+		var id64 int64
+		_, id64, err = orm.Save(nil, v)
+		v.Id = int(id64)
 	}
 	return v.Id, err
 }
