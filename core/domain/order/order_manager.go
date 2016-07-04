@@ -67,53 +67,70 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 	}
 }
 
-func (this *orderManagerImpl) CreateOrder(val *order.ValueOrder,
+// 生成订单
+func (this *orderManagerImpl) CreateOrder(val *order.Order,
 	cart cart.ICart) order.IOrder {
 	return newOrder(this, val, cart, this._partnerRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._valRep)
 }
 
-
 // 生成空白订单,并保存返回对象
-func (this *orderManagerImpl) CreateBlankOrder(*order.ValueOrder)order.IOrder{
+func (this *orderManagerImpl) CreateBlankOrder(*order.SubOrder) order.ISubOrder {
 	return nil
+}
+
+// 在下单前检查购物车
+func (this *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
+	if c == nil {
+		return cart.ErrEmptyShoppingCart
+	}
+	return c.Check()
 }
 
 // 将购物车转换为订单
 func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	member.IMember, error) {
-	val := &order.ValueOrder{}
 	var m member.IMember
-	var err error
-
-	if c == nil {
-		return nil, m, cart.ErrEmptyShoppingCart
-	}
-	if err = c.Check(); err != nil {
+	err := this.checkCartForOrder(c)
+	if err != nil {
 		return nil, m, err
 	}
+	val := &order.Order{}
+
 	// 判断购买会员
-	val.BuyerId = c.GetValue().BuyerId
+	buyerId := c.GetValue().BuyerId
 	if val.BuyerId > 0 {
+		val.BuyerId = buyerId
 		m = this._memberRep.GetMember(val.BuyerId)
 	}
 	if m == nil {
 		return nil, m, member.ErrSessionTimeout
 	}
-
-	val.VendorId = -1
-
-	tf, of := c.GetFee()
-	val.TotalFee = tf //总金额
-	val.Fee = of      //实际金额
-	val.PayFee = of
-	val.DiscountFee = tf - of //优惠金额
-	val.VendorId = -1
-	val.Status = 1
-
+	val.Status = enum.ORDER_WAIT_PAYMENT
 	o := this.CreateOrder(val, c)
-	return o, m, nil
+	err = o.RequireCart(c)
+	return o, m, err
+}
+
+// 预生成订单及支付单
+func (this *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
+	couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
+	//todo: subject 或备注先不理会,可能是多个note。且在下单后再提交备注
+	order, m, err := this.ParseToOrder(c)
+	var py payment.IPaymentOrder
+	if err == nil {
+		py = this.createPaymentOrder(m, order)
+		//val := order.GetValue()
+		if len(subject) > 0 {
+			//val.Subject = subject
+			//order.SetValue(val)
+		}
+		if len(couponCode) != 0 {
+			err = this.applyCoupon(m, order, py, couponCode)
+		}
+	}
+	return order, py, err
 }
 
 func (this *orderManagerImpl) GetFreeOrderNo(vendorId int) string {
@@ -178,7 +195,7 @@ func (this *orderManagerImpl) createPaymentOrder(m member.IMember,
 }
 
 // 应用优惠券
-func (this *orderManagerImpl) applyCoupon(m member.IMember,
+func (this *orderManagerImpl) applyCoupon(m member.IMember, order order.IOrder,
 	py payment.IPaymentOrder, couponCode string) error {
 	po := py.GetValue()
 	cp := this._promRep.GetCouponByCode(
@@ -204,31 +221,13 @@ func (this *orderManagerImpl) applyCoupon(m member.IMember,
 			domain.HandleError(err, "domain")
 			err = errors.New("优惠券无效")
 		} else {
-			_, err = py.CouponDiscount(coupon) //应用优惠券
-			// err = order.ApplyCoupon(coupon)
+			//应用优惠券
+			if err = order.ApplyCoupon(coupon); err == nil {
+				_, err = py.CouponDiscount(coupon)
+			}
 		}
 	}
 	return err
-}
-
-// 预生成订单及支付单
-func (this *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
-	couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
-	order, m, err := this.ParseToOrder(c)
-	var py payment.IPaymentOrder
-	if err == nil {
-		py = this.createPaymentOrder(m, order)
-		val := order.GetValue()
-		if len(subject) > 0 {
-			val.Subject = subject
-			order.SetValue(val)
-		}
-
-		if len(couponCode) != 0 {
-			err = this.applyCoupon(m, py, couponCode)
-		}
-	}
-	return order, py, err
 }
 
 func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
@@ -312,7 +311,7 @@ var (
 
 // 自动设置订单
 func (this *orderManagerImpl) OrderAutoSetup(f func(error)) {
-	var orders []*order.ValueOrder
+	var orders []*order.Order
 	var err error
 
 	shopLocker.Lock()
@@ -364,7 +363,7 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 	if len(biShops) == 1 {
 		sp = biShops[0]
 	} else {
-		sp, err = this.SmartChoiceShop(v.DeliverAddress)
+		sp, err = this.SmartChoiceShop(v.ShippingAddress)
 		if err != nil {
 			order.Suspend("智能分配门店失败！原因：" + err.Error())
 			return err
@@ -383,7 +382,7 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 	return err
 }
 
-func (this *orderManagerImpl) setupOrder(v *order.ValueOrder,
+func (this *orderManagerImpl) setupOrder(v *order.Order,
 	conf *merchant.SaleConf, t time.Time, f func(error)) {
 	var err error
 	order := this.CreateOrder(v, nil)

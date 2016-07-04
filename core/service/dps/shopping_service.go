@@ -231,7 +231,7 @@ func (this *shoppingService) PrepareOrder(buyerId int, cartKey string,
 	data := make(map[string]interface{})
 	if couponCode != "" {
 		if po.CouponDiscount == 0 {
-			data["result"] = v.CouponFee != 0
+			data["result"] = po.CouponDiscount != 0
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
@@ -270,9 +270,11 @@ func (this *shoppingService) SetDeliverShop(orderNo string,
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	if err = o.SetShop(shopId); err == nil {
-		_, err = o.Save()
-	}
+
+	panic("not implement")
+	//if err = o.SetShop(shopId); err == nil {
+	//	_, err = o.Save()
+	//}
 	return err
 }
 
@@ -286,6 +288,8 @@ func (this *shoppingService) HandleOrder(orderNo string) (err error) {
 		return errors.New("订单已经完成!")
 	}
 
+	panic("not implement")
+
 	status := o.GetValue().Status
 	switch status + 1 {
 	case enum.ORDER_WAIT_CONFIRM:
@@ -294,24 +298,26 @@ func (this *shoppingService) HandleOrder(orderNo string) (err error) {
 		err = o.Process()
 	case enum.ORDER_WAIT_RECEIVE:
 		err = o.Deliver(0, "")
-	case enum.ORDER_RECEIVED:
-		err = o.SignReceived()
-	case enum.ORDER_COMPLETED:
-		err = o.Complete()
+		//case enum.ORDER_RECEIVED:
+		//	err = o.SignReceived()
+		//case enum.ORDER_COMPLETED:
+		//	err = o.Complete()
 	}
 	return err
 }
 
 // 根据编号获取订单
-func (this *shoppingService) GetOrderById(id int) *order.ValueOrder {
+func (this *shoppingService) GetOrderById(id int) *order.Order {
 	v := this._rep.GetOrderById(id)
 	if v != nil {
-		v.Items = this._rep.GetOrderItems(id)
+
+		panic("not implement")
+		//v.Items = this._rep.GetOrderItems(id)
 	}
 	return v
 }
 
-func (this *shoppingService) GetOrderByNo(orderNo string) *order.ValueOrder {
+func (this *shoppingService) GetOrderByNo(orderNo string) *order.Order {
 	order := this._manager.GetOrderByNo(orderNo)
 	if order != nil {
 		return order.GetValue()
@@ -320,7 +326,7 @@ func (this *shoppingService) GetOrderByNo(orderNo string) *order.ValueOrder {
 }
 
 // 根据订单号获取订单
-func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.ValueOrder {
+func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 	return this._rep.GetValueOrderByNo(orderNo)
 }
 
@@ -329,7 +335,10 @@ func (this *shoppingService) CancelOrder(orderNo string, reason string) error {
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	return o.Cancel(reason)
+
+	panic("not implement")
+	return nil
+	//return o.Cancel(reason)
 }
 
 // 使用余额为订单付款
@@ -392,7 +401,10 @@ func (this *shoppingService) SignOrderReceived(orderNo string) error {
 		return order.ErrNoSuchOrder
 	}
 	if o.GetValue().Status == enum.ORDER_WAIT_RECEIVE {
-		return o.SignReceived()
+
+		panic("not implement")
+		return nil
+		//return o.SignReceived()
 	}
 	return nil
 }
@@ -404,7 +416,8 @@ func (this *shoppingService) SignOrderCompleted(orderNo string) error {
 		return order.ErrNoSuchOrder
 	}
 	if o.GetValue().Status == enum.ORDER_RECEIVED {
-		return o.Complete()
+		panic("not implement")
+		//return o.Complete()
 	}
 	return nil
 }

@@ -21,10 +21,10 @@ type (
 	IOrderManager interface {
 		// 创建订单,如果为已存在的订单则没有Cart.
 		// todo:需重构为单独的类型
-		CreateOrder(*ValueOrder, cart.ICart) IOrder
+		CreateOrder(*Order, cart.ICart) IOrder
 
 		// 生成空白订单,并保存返回对象
-		CreateBlankOrder(*ValueOrder)IOrder
+		CreateBlankOrder(*SubOrder) ISubOrder
 
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
@@ -64,7 +64,7 @@ type (
 		Manager() IOrderManager
 
 		// 保存订单,返回订单编号
-		SaveOrder(v *ValueOrder) (int, error)
+		SaveOrder(v *Order) (int, error)
 
 		// 保存订单优惠券绑定
 		SaveOrderCouponBind(*OrderCoupon) error
@@ -79,13 +79,13 @@ type (
 		GetFreeOrderNo(vendorId int) string
 
 		// 根据编号获取订单
-		GetOrderById(id int) *ValueOrder
+		GetOrderById(id int) *Order
 
 		// 根据订单号获取订单
-		GetValueOrderByNo(orderNo string) *ValueOrder
+		GetValueOrderByNo(orderNo string) *Order
 
 		// 获取等待处理的订单
-		GetWaitingSetupOrders(vendorId int) ([]*ValueOrder, error)
+		GetWaitingSetupOrders(vendorId int) ([]*Order, error)
 
 		// 获取订单项
 		GetOrderItems(orderId int) []*OrderItem
