@@ -74,6 +74,12 @@ func (this *orderManagerImpl) CreateOrder(val *order.ValueOrder,
 		this._memberRep, this._valRep)
 }
 
+
+// 生成空白订单,并保存返回对象
+func (this *orderManagerImpl) CreateBlankOrder(*order.ValueOrder)order.IOrder{
+	return nil
+}
+
 // 将购物车转换为订单
 func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	member.IMember, error) {
@@ -215,7 +221,7 @@ func (this *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
 		val := order.GetValue()
 		if len(subject) > 0 {
 			val.Subject = subject
-			order.SetValue(&val)
+			order.SetValue(val)
 		}
 
 		if len(couponCode) != 0 {

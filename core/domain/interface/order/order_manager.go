@@ -23,6 +23,9 @@ type (
 		// todo:需重构为单独的类型
 		CreateOrder(*ValueOrder, cart.ICart) IOrder
 
+		// 生成空白订单,并保存返回对象
+		CreateBlankOrder(*ValueOrder)IOrder
+
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
 

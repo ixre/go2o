@@ -314,8 +314,7 @@ func (this *shoppingService) GetOrderById(id int) *order.ValueOrder {
 func (this *shoppingService) GetOrderByNo(orderNo string) *order.ValueOrder {
 	order := this._manager.GetOrderByNo(orderNo)
 	if order != nil {
-		v := order.GetValue()
-		return &v
+		return order.GetValue()
 	}
 	return nil
 }

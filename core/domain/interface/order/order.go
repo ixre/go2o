@@ -45,7 +45,7 @@ type (
 		GetOrderNo() string
 
 		// 获生成值
-		GetValue() ValueOrder
+		GetValue()*ValueOrder
 
 		// 设置订单值
 		SetValue(*ValueOrder) error
