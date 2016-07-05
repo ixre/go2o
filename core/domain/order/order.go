@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
@@ -48,20 +49,24 @@ type orderImpl struct {
 	_buyer           member.IMember
 	_orderRep        order.IOrderRep
 	_partnerRep      merchant.IMerchantRep //todo: can delete ?
+	_expressRep      express.IExpressRep
 	_goodsRep        goods.IGoodsRep
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
 	_valRep          valueobject.IValueRep
 	// 运营商商品映射,用于整理购物车
-	_vendorItemsMap  map[int][]*order.OrderItem
-	_internalSuspend bool // 是否为内部挂起
+	_vendorItemsMap map[int][]*order.OrderItem
+	// 运营商与邮费的MAP
+	_vendorExpressMap map[int]float32
+	// 是否为内部挂起
+	_internalSuspend bool
 }
 
 func newOrder(shopping order.IOrderManager, value *order.Order,
 	mchRep merchant.IMerchantRep, shoppingRep order.IOrderRep,
 	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	valRep valueobject.IValueRep) order.IOrder {
+	expressRep express.IExpressRep, valRep valueobject.IValueRep) order.IOrder {
 	return &orderImpl{
 		_manager:    shopping,
 		_value:      value,
@@ -72,6 +77,7 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 		_goodsRep:   goodsRep,
 		_saleRep:    saleRep,
 		_valRep:     valRep,
+		_expressRep: expressRep,
 	}
 }
 
@@ -246,11 +252,55 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 	this._value.TotalFee = of                                             //总金额
 	this._value.FinalFee = of                                             //实际金额
 	this._value.DiscountFee = this._value.TotalFee - this._value.FinalFee //优惠金额
-	this._value.Status = 1
 
 	// 将购物车的商品分类整理
-	this.buildVendorItemMap(items)
+	this._vendorItemsMap = this.buildVendorItemMap(items)
+
+	// 更新订单的金额
+	this._vendorExpressMap = this.updateOrderFee(this._vendorItemsMap)
+
+	// 状态设为待支付
+	this._value.Status = 1
+
 	return nil
+}
+
+// 更新订单金额,并返回运费
+func (this *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float32 {
+	this._value.TotalFee = 0
+	weightMap := make(map[int]int) //重量
+	for k, v := range mp {
+		weightMap[k] = 0
+		for _, item := range v {
+			this._value.TotalFee += item.Fee
+			weightMap[k] += item.Weight
+		}
+	}
+	// 计算运费
+	expressMap := make(map[int]float32)
+	for k, weight := range weightMap {
+		//todo: 计算运费需从外部传入参数
+		unit := weight / 1000 //转换为kg
+		expressMap[k] = this._expressRep.GetUserExpress(k).
+			GetExpressFee(-1, "1000", unit)
+		this._value.ExpressFee += expressMap[k]
+	}
+	this._value.TotalFee += this._value.ExpressFee
+	this._value.FinalFee = this._value.TotalFee
+	this._value.DiscountFee = 0
+	return expressMap
+}
+
+// 根据运营商获取商品和运费信息,限未生成的订单
+func (this *orderImpl) GetByVendor() (items map[int][]*order.OrderItem,
+	expressFee map[int]float32) {
+	if this._vendorItemsMap == nil {
+		panic("订单尚未读取购物车!")
+	}
+	if this._vendorExpressMap == nil {
+		panic("订单尚未计算金额")
+	}
+	return this._vendorItemsMap, this._vendorExpressMap
 }
 
 // 检查购物车
@@ -262,9 +312,8 @@ func (this *orderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (this *orderImpl) buildVendorItemMap(items []*cart.CartItem) {
+func (this *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int][]*order.OrderItem {
 	mp := make(map[int][]*order.OrderItem)
-	this._vendorItemsMap = mp
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
@@ -282,6 +331,7 @@ func (this *orderImpl) buildVendorItemMap(items []*cart.CartItem) {
 			//log.Println("--- vendor map len:", len(mp[v.VendorId]))
 		}
 	}
+	return mp
 }
 
 // 转换购物车的商品项为订单项目
@@ -304,6 +354,7 @@ func (this *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		Sku:        snap.Sku,
 		Fee:        fee,
 		FinalFee:   fee,
+		Weight:     snap.Weight * c.Quantity, //计算重量
 	}
 }
 
@@ -335,7 +386,8 @@ func (this *orderImpl) Submit() (string, error) {
 	if len(proms) != 0 {
 		v.DiscountFee += float32(fee)
 		v.FinalFee = v.TotalFee - v.DiscountFee
-		if v.FinalFee < 0 { // 如果出现优惠券多余的金额也一并使用
+		if v.FinalFee < 0 {
+			// 如果出现优惠券多余的金额也一并使用
 			v.FinalFee = 0
 		}
 	}

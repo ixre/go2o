@@ -51,11 +51,16 @@ type (
 		Image      string `db:"img"`
 		//成本价
 		Cost float32 `db:"cost"`
+		// 单件重量,单位:克(g)
+		Weight int `db:"weight"`
+
 		//定价
 		Price float32 `db:"price"`
+
 		//参考销售价
 		SalePrice float32 `db:"sale_price"`
-		ApplySubs string  `db:"apply_subs"`
+
+		ApplySubs string `db:"apply_subs"`
 
 		//简单备注,如:(限时促销)
 		Remark      string `db:"remark"`

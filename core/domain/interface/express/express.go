@@ -22,10 +22,8 @@ var (
 const (
 	//根据重量计算面积
 	BasisByWeight = 1
-	//根据件数计算运费
+	//根据件数计算运费,通常大件物品,可以按件收费
 	BasisByNumber = 2
-	//根据面积计算运费
-	BasisBySpace = 3
 )
 
 var (
