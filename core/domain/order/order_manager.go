@@ -68,9 +68,8 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 }
 
 // 生成订单
-func (this *orderManagerImpl) CreateOrder(val *order.Order,
-	cart cart.ICart) order.IOrder {
-	return newOrder(this, val, cart, this._partnerRep,
+func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
+	return newOrder(this, val, this._partnerRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._valRep)
 }
@@ -109,7 +108,7 @@ func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 		return nil, m, member.ErrNoSuchMember
 	}
 	val.Status = enum.ORDER_WAIT_PAYMENT
-	o := this.CreateOrder(val, nil)
+	o := this.CreateOrder(val)
 	err = o.RequireCart(c)
 	return o, m, err
 }
@@ -280,24 +279,20 @@ func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 
 // 根据订单编号获取订单
 func (this *orderManagerImpl) GetOrderById(orderId int) order.IOrder {
-	panic("not implement")
-	//val := this._rep.GetOrderById(orderId)
-	//if val != nil {
-	//	val.Items = this._rep.GetOrderItems(val.Id)
-	//	return this.CreateOrder(val, nil)
-	//}
-	//return nil
+	val := this._rep.GetOrderById(orderId)
+	if val != nil {
+		return this.CreateOrder(val)
+	}
+	return nil
 }
 
 // 根据订单号获取订单
 func (this *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	panic("not impl")
-	//val := this._rep.GetValueOrderByNo(orderNo)
-	//if val != nil {
-	//	val.Items = this._rep.GetOrderItems(val.Id)
-	//	return this.CreateOrder(val, nil)
-	//}
-	//return nil
+	val := this._rep.GetValueOrderByNo(orderNo)
+	if val != nil {
+		return this.CreateOrder(val)
+	}
+	return nil
 }
 
 // 在线交易支付
@@ -399,7 +394,7 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 func (this *orderManagerImpl) setupOrder(v *order.Order,
 	conf *merchant.SaleConf, t time.Time, f func(error)) {
 	var err error
-	order := this.CreateOrder(v, nil)
+	order := this.CreateOrder(v)
 	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
 
 	switch v.Status {
