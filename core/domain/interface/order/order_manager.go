@@ -21,7 +21,7 @@ type (
 	IOrderManager interface {
 		// 创建订单,如果为已存在的订单则没有Cart.
 		// todo:需重构为单独的类型
-		CreateOrder(*Order, cart.ICart) IOrder
+		CreateOrder(*Order) IOrder
 
 		// 生成空白订单,并保存返回对象
 		CreateSubOrder(*SubOrder) ISubOrder

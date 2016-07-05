@@ -35,45 +35,43 @@ var (
 )
 var _ order.IOrder = new(orderImpl)
 
+//todo: 促销
+
 type orderImpl struct {
 	_manager         order.IOrderManager
 	_value           *order.Order
-	_cart            cart.ICart
+	_cart            cart.ICart //购物车,仅在订单生成时设置
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
 	_orderPbs        []*order.OrderPromotionBind
 	_memberRep       member.IMemberRep
 	_buyer           member.IMember
-	_shoppingRep     order.IOrderRep
-	_partnerRep      merchant.IMerchantRep
+	_orderRep        order.IOrderRep
+	_partnerRep      merchant.IMerchantRep //todo: can delete ?
 	_goodsRep        goods.IGoodsRep
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
 	_valRep          valueobject.IValueRep
 	// 运营商商品映射,用于整理购物车
-	_vendorItemsMap map[int][]*order.OrderItem
-
+	_vendorItemsMap  map[int][]*order.OrderItem
 	_internalSuspend bool // 是否为内部挂起
-	_balanceDiscount bool // 余额支付
 }
 
 func newOrder(shopping order.IOrderManager, value *order.Order,
-	cart cart.ICart, partnerRep merchant.IMerchantRep,
-	shoppingRep order.IOrderRep,
+	mchRep merchant.IMerchantRep, shoppingRep order.IOrderRep,
 	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
 	valRep valueobject.IValueRep) order.IOrder {
 	return &orderImpl{
-		_manager:     shopping,
-		_value:       value,
-		_cart:        cart,
-		_memberRep:   memberRep,
-		_promRep:     promRep,
-		_shoppingRep: shoppingRep,
-		_partnerRep:  partnerRep,
-		_goodsRep:    goodsRep,
-		_saleRep:     saleRep,
-		_valRep:      valRep,
+		_manager:    shopping,
+		_value:      value,
+		_memberRep:  memberRep,
+		_promRep:    promRep,
+		_orderRep:   shoppingRep,
+		_partnerRep: mchRep,
+		_goodsRep:   goodsRep,
+		_saleRep:    saleRep,
+		_valRep:     valRep,
 	}
 }
 
@@ -171,7 +169,7 @@ func (this *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 // 获取促销绑定
 func (this *orderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 	if this._orderPbs == nil {
-		this._orderPbs = this._shoppingRep.GetOrderPromotionBinds(this._value.OrderNo)
+		this._orderPbs = this._orderRep.GetOrderPromotionBinds(this._value.OrderNo)
 	}
 	return this._orderPbs
 }
@@ -218,11 +216,6 @@ func (this *orderImpl) SetDeliver(deliverAddressId int) error {
 	return member.ErrNoSuchDeliverAddress
 }
 
-// 使用余额支付
-func (this *orderImpl) UseBalanceDiscount() {
-	this._balanceDiscount = true
-}
-
 // 获取购买的会员
 func (this *orderImpl) GetBuyer() member.IMember {
 	if this._buyer == nil {
@@ -249,11 +242,10 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 	//todo: 重构,根据vendorItemMap获取金额
 
 	this._cart = c
-	tf, of := c.GetFee()
-	this._value.TotalFee = tf //总金额
+	_, of := c.GetFee()
+	this._value.TotalFee = of //总金额
 	this._value.FinalFee = of //实际金额
-	//this._value.PayFee = of //todo:
-	this._value.DiscountFee = tf - of //优惠金额
+	this._value.DiscountFee = this._value.TotalFee - this._value.FinalFee //优惠金额
 	this._value.Status = 1
 
 	// 将购物车的商品分类整理
@@ -329,22 +321,27 @@ func (this *orderImpl) Submit() (string, error) {
 	}
 
 	v := this._value
+
+    //todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
+    //prom,fee,integral := this.GetBestSavePromotion()
+
 	// 应用优惠券
 	if err := this.applyCouponOnSubmit(v); err != nil {
 		return "", err
 	}
-	//todo: best promotion
-	//prom,fee,integral := this.GetBestSavePromotion()
 
 	// 判断商品的优惠促销,如返现等
 	proms, fee := this.applyCartPromotionOnSubmit(v, this._cart)
 	if len(proms) != 0 {
 		v.DiscountFee += float32(fee)
-		v.FinalFee -= float32(fee)
-		if v.FinalFee < 0 {
+		v.FinalFee = v.TotalFee - v.DiscountFee
+        if v.FinalFee < 0 { // 如果出现优惠券多余的金额也一并使用
 			v.FinalFee = 0
 		}
 	}
+
+    this.avgDiscountToItem()
+
 	// 检查是否已支付完成
 	this.checkNewOrderPayment()
 
@@ -372,6 +369,22 @@ func (this *orderImpl) Submit() (string, error) {
 	return v.OrderNo, err
 }
 
+// 平均优惠抵扣金额到商品
+func (this *orderImpl) avgDiscountToItem(){
+    if this._vendorItemsMap == nil{
+        panic(errors.New("仅能在下单时进行商品抵扣均分"))
+    }
+    if this._value.DiscountFee > 0 {
+        totalFee := this._value.TotalFee
+        disFee := this._value.DiscountFee
+        for _, items := range this._vendorItemsMap {
+            for _, v := range items {
+                v.FinalFee = v.Fee - (v.Fee / totalFee) * disFee
+            }
+        }
+    }
+}
+
 // 绑定促销优惠
 func (this *orderImpl) bindPromotionOnSubmit(orderNo string,
 	prom promotion.IPromotion) (int, error) {
@@ -395,7 +408,7 @@ func (this *orderImpl) bindPromotionOnSubmit(orderNo string,
 		IsConfirm:       1,
 		IsApply:         0,
 	}
-	return this._shoppingRep.SavePromotionBindForOrder(v)
+	return this._orderRep.SavePromotionBindForOrder(v)
 }
 
 // 应用购物车内商品的促销
@@ -447,8 +460,7 @@ func (this *orderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range this.GetCoupons() {
 		oc.Clone(c, this.GetAggregateRootId(), this._value.FinalFee)
-		this._shoppingRep.SaveOrderCouponBind(oc)
-
+		this._orderRep.SaveOrderCouponBind(oc)
 		// 绑定促销
 		this.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
 	}
@@ -520,7 +532,7 @@ func (this *orderImpl) saveNewOrderOnSubmit() (int, error) {
 	this._value.CreateTime = unix
 	this._value.UpdateTime = unix
 
-	id, err := this._shoppingRep.SaveOrder(this._value)
+	id, err := this._orderRep.SaveOrder(this._value)
 	if err == nil {
 		this._value.Id = id
 		// 释放购物车并销毁
@@ -540,7 +552,7 @@ func (this *orderImpl) Save() (int, error) {
 	//}
 
 	if this._value.Id > 0 {
-		return this._shoppingRep.SaveOrder(this._value)
+		return this._orderRep.SaveOrder(this._value)
 	}
 	this._internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
@@ -690,7 +702,7 @@ func (this *orderImpl) AppendLog(t enum.OrderLogType, system bool, message strin
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return this._shoppingRep.SaveOrderLog(ol)
+	return this._orderRep.SaveOrderLog(ol)
 }
 
 // 订单是否已完成
@@ -839,7 +851,7 @@ func (this *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	if err == nil {
 		// 优惠绑定生效
 		v.IsApply = 1
-		this._shoppingRep.SavePromotionBindForOrder(v)
+		this._orderRep.SavePromotionBindForOrder(v)
 
 		// 处理自定义返现
 		c := pm.(promotion.ICashBackPromotion)

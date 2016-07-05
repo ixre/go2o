@@ -89,9 +89,6 @@ type (
 		// 使用余额支付
 		PaymentWithBalance() error
 
-		// 应用余额支付
-		UseBalanceDiscount()
-
 		// 客服使用余额支付
 		CmPaymentWithBalance() error
 
