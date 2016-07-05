@@ -543,6 +543,15 @@ CREATE TABLE `flm`.`express_provider` (
   `enabled` TINYINT(1) NULL,
   PRIMARY KEY (`id`));
 
+ALTER TABLE `flm`.`gs_item`
+  ADD COLUMN `weight` INT NULL COMMENT '重量,单位:克(g)' AFTER `cost`;
+
+ALTER TABLE `flm`.`gs_snapshot`
+  ADD COLUMN `weight` INT NULL COMMENT '单件重量,单位:克(g)' AFTER `img`;
+
+ALTER TABLE `flm`.`sale_order`
+  ADD COLUMN `express_fee` DECIMAL(8,2) NULL COMMENT '物流费' AFTER `discount_fee`;
+
 
 
 

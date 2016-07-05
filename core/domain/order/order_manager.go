@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -44,6 +45,7 @@ type orderManagerImpl struct {
 	_deliveryRep delivery.IDeliveryRep
 	_valRep      valueobject.IValueRep
 	_payRep      payment.IPaymentRep
+	_expressRep  express.IExpressRep
 	_merchant    merchant.IMerchant
 }
 
@@ -51,6 +53,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 	rep order.IOrderRep, payRep payment.IPaymentRep, saleRep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
+	expressRep express.IExpressRep,
 	valRep valueobject.IValueRep) order.IOrderManager {
 
 	return &orderManagerImpl{
@@ -64,6 +67,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 		_partnerRep:  partnerRep,
 		_deliveryRep: deliveryRep,
 		_valRep:      valRep,
+		_expressRep:  expressRep,
 	}
 }
 
@@ -71,7 +75,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 	return newOrder(this, val, this._partnerRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
-		this._memberRep, this._valRep)
+		this._memberRep, this._expressRep, this._valRep)
 }
 
 // 生成空白订单,并保存返回对象
@@ -110,6 +114,7 @@ func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	val.Status = enum.ORDER_WAIT_PAYMENT
 	o := this.CreateOrder(val)
 	err = o.RequireCart(c)
+	o.GetByVendor()
 	return o, m, err
 }
 

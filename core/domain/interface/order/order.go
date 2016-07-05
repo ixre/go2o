@@ -60,6 +60,9 @@ type (
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 
+		// 根据运营商获取商品和运费信息,限未生成的订单
+		GetByVendor() (items map[int][]*OrderItem, expressFee map[int]float32)
+
 		// 获取购买的会员
 		GetBuyer() member.IMember
 
@@ -243,6 +246,8 @@ type (
 		ItemsInfo string `db:"items_info" json:"itemsInfo"`
 		// 订单总金额
 		TotalFee float32 `db:"total_fee"`
+		// 运费
+		ExpressFee float32 `db:"express_fee"`
 		// 优惠减免金额
 		DiscountFee float32 `db:"discount_fee" json:"discountFee"`
 		// 实际金额
@@ -328,6 +333,8 @@ type (
 		FinalFee float32 `db:"final_fee"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+		// 重量,用于生成订单时存储数据
+		Weight int `db:"-"`
 	}
 
 	ValueOrder2 struct {

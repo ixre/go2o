@@ -17,8 +17,7 @@ import (
 )
 
 var (
-	PromService     *promotionService
-	ShoppingService *shoppingService
+	PromService *promotionService
 
 	// 基础服务
 	BaseService *platformService
@@ -34,6 +33,9 @@ var (
 
 	// 销售服务
 	SaleService *saleService
+
+	// 购物服务
+	ShoppingService *shoppingService
 
 	// 支付服务
 	PaymentService *paymentService
@@ -92,7 +94,7 @@ func Init(ctx gof.App) {
 	contentRep := repository.NewContentRep(db)
 	adRep := repository.NewAdvertisementRep(db)
 	spRep := repository.NewOrderRep(db, mchRep, nil, saleRep, cartRep, goodsRep,
-		promRep, memberRep, deliveryRep, valRep)
+		promRep, memberRep, deliveryRep, expressRep, valRep)
 	payRep := repository.NewPaymentRep(db, memberRep, spRep, valRep)
 
 	goodsRep.SetSaleRep(saleRep) //fixed

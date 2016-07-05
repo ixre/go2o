@@ -210,7 +210,16 @@ func (this *shoppingService) GetCartSettle(memberId int,
 
 /*================ 订单  ================*/
 
-func (this *shoppingService) PrepareOrder(buyerId int, cartKey string,
+func (this *shoppingService) PrepareOrder(buyerId int, cartKey string) *order.Order {
+	cart := this.getShoppingCart(buyerId, cartKey)
+	order, _, err := this._manager.PrepareOrder(cart, "", "")
+	if err != nil {
+		return nil
+	}
+	return order.GetValue()
+}
+
+func (this *shoppingService) PrepareOrder2(buyerId int, cartKey string,
 	subject string, couponCode string) (map[string]interface{}, error) {
 	cart := this.getShoppingCart(buyerId, cartKey)
 	order, py, err := this._manager.PrepareOrder(cart, subject, couponCode)
@@ -229,26 +238,27 @@ func (this *shoppingService) PrepareOrder(buyerId int, cartKey string,
 
 	discountFee := v.TotalFee - po.TotalFee + po.SubFee
 	data := make(map[string]interface{})
+
+	//　取消优惠券
+	data["totalFee"] = v.TotalFee
+	data["fee"] = po.TotalFee
+	data["payFee"] = po.FinalFee
+	data["discountFee"] = discountFee
+	data["expressFee"] = v.ExpressFee
+
+	// 设置优惠券的信息
 	if couponCode != "" {
+		// 优惠券没有减金额
 		if po.CouponDiscount == 0 {
 			data["result"] = po.CouponDiscount != 0
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
-			data["totalFee"] = v.TotalFee
-			data["fee"] = po.TotalFee
-			data["payFee"] = po.FinalFee
-			data["discountFee"] = discountFee
 			data["couponFee"] = po.CouponDiscount
 			data["couponDescribe"] = buf.String()
 		}
-	} else {
-		//　取消优惠券
-		data["totalFee"] = v.TotalFee
-		data["fee"] = po.TotalFee
-		data["payFee"] = po.FinalFee
-		data["discountFee"] = discountFee
 	}
+
 	return data, err
 }
 

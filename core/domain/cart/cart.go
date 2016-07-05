@@ -432,7 +432,8 @@ func (this *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId in
 }
 
 // 获取结算数据
-func (this *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt, deliverOpt int) {
+func (this *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
+	paymentOpt, deliverOpt int) {
 	//var err error
 	if this._value.ShopId > 0 && this._shop == nil {
 		//var pt merchant.IMerchant
