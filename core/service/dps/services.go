@@ -41,6 +41,10 @@ var (
 	// 消息服务
 	MssService *mssService
 
+	// 快递服务
+	ExpressService *expressService
+
+	// 配送服务
 	DeliverService *deliveryService
 
 	// 内容服务
@@ -72,6 +76,7 @@ func Init(ctx gof.App) {
 	valRep := repository.NewValueRep(db)
 	userRep := repository.NewUserRep(db)
 	mssRep := repository.NewMssRep(db)
+	expressRep := repository.NewExpressRep(db)
 	memberRep := repository.NewMemberRep(db, mssRep, valRep)
 	itemRep := repository.NewItemRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
@@ -112,6 +117,7 @@ func Init(ctx gof.App) {
 	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
 	PaymentService = NewPaymentService(payRep)
 	MssService = NewMssService(mssRep)
+	ExpressService = NewExpressService(expressRep)
 	DeliverService = NewDeliveryService(deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdService = NewAdvertisementService(adRep)

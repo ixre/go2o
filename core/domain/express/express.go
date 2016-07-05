@@ -10,12 +10,13 @@ package express
 
 import (
 	"go2o/core/domain/interface/express"
+	"go2o/core/infrastructure/domain"
 	"strings"
 	"sync"
 )
 
 const (
-	areaDelimer = ','
+	areaDelimer = ","
 )
 
 var _ express.IUserExpress = new(userExpressImpl)
@@ -24,6 +25,13 @@ type userExpressImpl struct {
 	_userId int
 	_arr    []express.IExpressTemplate
 	_rep    express.IExpressRep
+}
+
+func NewUserExpress(userId int, rep express.IExpressRep) express.IUserExpress {
+	return &userExpressImpl{
+		_userId: userId,
+		_rep:    rep,
+	}
 }
 
 // 获取聚合根编号
@@ -84,15 +92,14 @@ func (this *userExpressImpl) mathFee(unit int, firstUnit int,
 		if outUnit%addUnix > 0 {
 			outTimes += 1
 		}
-		return firstFee + outTimes*addFee
+		return firstFee + float32(outTimes)*addFee
 	}
 	return firstFee
 
 }
 
 // 获取快递费,传入地区编码，根据单位值，如总重量。
-func (this *userExpressImpl) GetExpressFee(templateId int,
-	areaCode string, unit int) float32 {
+func (this *userExpressImpl) GetExpressFee(templateId int, areaCode string, unit int) float32 {
 	tpl := this.GetTemplate(templateId)
 	v := tpl.Value()
 	//判断是否免邮
@@ -101,7 +108,7 @@ func (this *userExpressImpl) GetExpressFee(templateId int,
 	}
 	//根据地区规则计算运费
 	areaSet := tpl.GetAreaExpressTemplateByAreaCode(areaCode)
-	if areaSet == nil {
+	if areaSet != nil {
 		return this.mathFee(unit, areaSet.FirstUnit, areaSet.FirstFee,
 			areaSet.AddUnit, areaSet.AddFee)
 	}
@@ -163,26 +170,26 @@ func (this *expressTemplateImpl) Save() (int, error) {
 }
 
 // 保存地区快递模板
-func (this *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) error {
+func (this *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (int, error) {
 	this.GetAllAreaTemplate()
 	arr := this.getAreaCodeArray(t.CodeList)
 	if arr == nil {
-		return express.ErrExpressTemplateMissingAreaCode
+		return 0, express.ErrExpressTemplateMissingAreaCode
 	}
 	for _, code := range arr {
 		v, ok := this._areaMap[code]
 		if ok && v.Id != t.Id {
-			return express.ErrExistsAreaTemplateSet
+			return 0, express.ErrExistsAreaTemplateSet
 		}
 	}
 	// 保存,如果未出错,则更新缓存
-	_, err := this._rep.SaveExpressTemplateAreaSet(t)
+	id, err := this._rep.SaveExpressTemplateAreaSet(t)
 	if err == nil {
 		this._areaList = nil
 		this._areaMap = nil
 		this.GetAllAreaTemplate()
 	}
-	return err
+	return id, err
 }
 
 func (this *expressTemplateImpl) getAreaCodeArray(codeList string) []string {
@@ -214,7 +221,7 @@ func (this *expressTemplateImpl) initAreaMap() {
 }
 
 // 获取所有的地区快递模板
-func (this *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressTemplate {
+func (this *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressAreaTemplate {
 	this._mux.Lock()
 	if this._areaList == nil {
 		this._areaList = this._rep.GetExpressTemplateAllAreaSet(this.GetDomainId())
@@ -238,4 +245,17 @@ func (this *expressTemplateImpl) GetAreaExpressTemplate(id int) *express.Express
 		}
 	}
 	return nil
+}
+
+type ExpressRepBase struct {
+}
+
+func (this *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRep) []*express.ExpressProvider {
+	var err error
+	for _, v := range express.SupportedExpressProvider {
+		if v.Id, err = rep.SaveExpressProvider(v); err != nil {
+			domain.HandleError(err, "domain")
+		}
+	}
+	return express.SupportedExpressProvider
 }

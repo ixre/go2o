@@ -509,6 +509,41 @@ ALTER TABLE `flm`.`sale_order_item`
 
 
 
+CREATE TABLE `flm`.`express_template` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NULL,
+  `name` VARCHAR(45) NULL,
+  `is_free` TINYINT(1) NULL,
+  `basis` TINYINT(1) NULL,
+  `first_unit` INT(5) NULL,
+  `first_fee` DECIMAL(6,2) NULL,
+  `add_unit` INT(5) NULL,
+  `add_fee` DECIMAL(6,2) NULL,
+  `enabled` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
+
+CREATE TABLE `flm`.`express_area_set` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `template_id` INT NULL,
+  `code_list` VARCHAR(500) NULL,
+  `name_list` VARCHAR(120) NULL,
+  `first_unit` INT(5) NULL,
+  `first_fee` DECIMAL(6,2) NULL,
+  `add_unit` INT(5) NULL,
+  `add_fee` DECIMAL(6,2) NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `flm`.`express_provider` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  `letter` VARCHAR(1) NULL,
+  `code` VARCHAR(10) NULL,
+  `api_code` VARCHAR(10) NULL,
+  `enabled` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
+
 
 
 
