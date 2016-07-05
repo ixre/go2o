@@ -87,6 +87,7 @@ type (
 		// 使用会员的余额抵扣
 		BalanceDiscount() error
 
+		// 使用会员积分抵扣
 		IntegralDiscount(integral int) error
 
 		// 系统支付金额
@@ -95,14 +96,17 @@ type (
 		// 设置支付方式
 		SetPaymentSign(paymentSign int) error
 
-		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号
+		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
+		// 支付单的交易号,可能是与订单号一样的
 		BindOrder(orderId int, tradeNo string) error
 
+		// 保存
 		Save() (int, error)
 
 		// 支付完成,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outerNo string) error
 
+		// 获取支付单的值
 		GetValue() PaymentOrderBean
 
 		// 取消支付

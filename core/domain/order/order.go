@@ -243,8 +243,8 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 
 	this._cart = c
 	_, of := c.GetFee()
-	this._value.TotalFee = of //总金额
-	this._value.FinalFee = of //实际金额
+	this._value.TotalFee = of                                             //总金额
+	this._value.FinalFee = of                                             //实际金额
 	this._value.DiscountFee = this._value.TotalFee - this._value.FinalFee //优惠金额
 	this._value.Status = 1
 
@@ -322,8 +322,8 @@ func (this *orderImpl) Submit() (string, error) {
 
 	v := this._value
 
-    //todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
-    //prom,fee,integral := this.GetBestSavePromotion()
+	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
+	//prom,fee,integral := this.GetBestSavePromotion()
 
 	// 应用优惠券
 	if err := this.applyCouponOnSubmit(v); err != nil {
@@ -335,12 +335,12 @@ func (this *orderImpl) Submit() (string, error) {
 	if len(proms) != 0 {
 		v.DiscountFee += float32(fee)
 		v.FinalFee = v.TotalFee - v.DiscountFee
-        if v.FinalFee < 0 { // 如果出现优惠券多余的金额也一并使用
+		if v.FinalFee < 0 { // 如果出现优惠券多余的金额也一并使用
 			v.FinalFee = 0
 		}
 	}
 
-    this.avgDiscountToItem()
+	this.avgDiscountToItem()
 
 	// 检查是否已支付完成
 	this.checkNewOrderPayment()
@@ -370,19 +370,19 @@ func (this *orderImpl) Submit() (string, error) {
 }
 
 // 平均优惠抵扣金额到商品
-func (this *orderImpl) avgDiscountToItem(){
-    if this._vendorItemsMap == nil{
-        panic(errors.New("仅能在下单时进行商品抵扣均分"))
-    }
-    if this._value.DiscountFee > 0 {
-        totalFee := this._value.TotalFee
-        disFee := this._value.DiscountFee
-        for _, items := range this._vendorItemsMap {
-            for _, v := range items {
-                v.FinalFee = v.Fee - (v.Fee / totalFee) * disFee
-            }
-        }
-    }
+func (this *orderImpl) avgDiscountToItem() {
+	if this._vendorItemsMap == nil {
+		panic(errors.New("仅能在下单时进行商品抵扣均分"))
+	}
+	if this._value.DiscountFee > 0 {
+		totalFee := this._value.TotalFee
+		disFee := this._value.DiscountFee
+		for _, items := range this._vendorItemsMap {
+			for _, v := range items {
+				v.FinalFee = v.Fee - (v.Fee/totalFee)*disFee
+			}
+		}
+	}
 }
 
 // 绑定促销优惠
