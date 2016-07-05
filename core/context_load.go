@@ -18,6 +18,7 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/delivery"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -107,6 +108,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(cart.ValueCart{}, "sale_cart")
 	orm.Mapping(cart.CartItem{}, "sale_cart_item")
 
+	//** Express **//
+	orm.Mapping(express.ExpressProvider{}, "express_provider")
+	orm.Mapping(express.ExpressTemplate{}, "express_template")
+	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
 	/** 销售 **/
 	orm.Mapping(item.Item{}, "gs_item")
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
