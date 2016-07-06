@@ -9,15 +9,36 @@
 package query
 
 import (
-	"github.com/jsix/gof/db"
+    "github.com/jsix/gof/db"
+    "go2o/core/domain/interface/content"
+    "fmt"
 )
 
 type ContentQuery struct {
-	db.Connector
+    db.Connector
 }
 
 func NewContentQuery(c db.Connector) *ContentQuery {
-	return &ContentQuery{c}
+    return &ContentQuery{c}
+}
+
+func (this *ContentQuery) PagedArticleList(catId, begin, size int, where string) (total int,
+rows []*content.Article) {
+    if len(where) != 0 {
+        where = " AND " + where
+    }
+
+    this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM FROM
+		con_article WHERE category_id=? %s`, where), &total, catId)
+
+    rows = []*content.Article{}
+    if total > 0 {
+        this.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM FROM
+		con_article WHERE category_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
+            catId, begin,size)
+    }
+
+    return total, rows
 }
 
 // 获取页面列表
