@@ -124,12 +124,13 @@ func (this *contentService) DeleteArticleCategory(categoryId int) error {
 }
 
 // 获取文章
-func (this *contentService) GetArticle(id int) content.Article {
+func (this *contentService) GetArticle(id int)*content.Article {
 	a := this._sysContent.ArticleManager().GetArticle(id)
 	if a != nil {
-		return a.GetValue()
+		v :=  a.GetValue()
+		return &v
 	}
-	return content.Article{}
+	return nil
 }
 
 // 删除文章
@@ -149,4 +150,10 @@ func (this *contentService) SaveArticle(e *content.Article) (int, error) {
 		return a.Save()
 	}
 	return -1, err
+}
+
+
+func (this *contentService) PagedArticleList(catId,begin,size int,
+	where string)(int,[]*content.Article){
+	return this._query.PagedArticleList(catId,begin,size,where)
 }
