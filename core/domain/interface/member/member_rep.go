@@ -64,6 +64,12 @@ type IMemberRep interface {
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int
 
+	// 根据手机号获取会员编号
+	GetMemberIdByPhone(phone string) int
+
+	// 根据邮箱地址获取会员编号
+	GetMemberIdByEmail(email string) int
+
 	// 获取会员编号
 	GetMemberIdByUser(string string) int
 

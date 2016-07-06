@@ -11,6 +11,7 @@ package mss
 import (
 	"encoding/json"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	"time"
 )
 
@@ -28,45 +29,23 @@ func NewMessageManager(rep mss.IMssRep) mss.IMessageManager {
 	}
 }
 
-// 获取所有的通知项
-func (this *messageManagerImpl) GetAllNotifyItem() []mss.NotifyItem {
-	return this._rep.GetAllNotifyItem()
-}
-
-// 获取通知项配置
-func (this *messageManagerImpl) GetNotifyItem(key string) mss.NotifyItem {
-	return *this._rep.GetNotifyItem(key)
-}
-
-// 保存通知项设置
-func (this *messageManagerImpl) SaveNotifyItem(item *mss.NotifyItem) error {
-	v := this._rep.GetNotifyItem(item.Key)
-	if v == nil {
-		return mss.ErrNoSuchNotifyItem
-	}
-	v.Content = item.Content
-	v.TplId = item.TplId
-	v.NotifyBy = item.NotifyBy
-	return this._rep.SaveNotifyItem(v)
-}
-
 // 创建消息模版对象
 func (this *messageManagerImpl) CreateMessage(msg *mss.Message,
 	content interface{}) mss.IMessage {
 	m := newMessage(msg, this._rep).(*messageImpl)
 	if content != nil {
 		switch m.Type() {
-		case mss.TypeEmailMessage:
-			return newMailMessage(m, content.(*mss.MailMessage), this._rep)
-		case mss.TypeSiteMessage:
-			return newSiteMessage(m, content.(*mss.SiteMessage), this._rep)
-		case mss.TypePhoneMessage:
-			return newPhoneMessage(m, content.(*mss.PhoneMessage), this._rep)
+		case notify.TypeEmailMessage:
+			return newMailMessage(m, content.(*notify.MailMessage), this._rep)
+		case notify.TypeSiteMessage:
+			return newSiteMessage(m, content.(*notify.SiteMessage), this._rep)
+		case notify.TypePhoneMessage:
+			return newPhoneMessage(m, content.(*notify.PhoneMessage), this._rep)
 		}
 	} else {
-		if m.Type() == mss.TypeEmailMessage ||
-			m.Type() == mss.TypeSiteMessage ||
-			m.Type() == mss.TypePhoneMessage {
+		if m.Type() == notify.TypeEmailMessage ||
+			m.Type() == notify.TypeSiteMessage ||
+			m.Type() == notify.TypePhoneMessage {
 			return m
 		}
 	}
@@ -78,20 +57,39 @@ func (this *messageManagerImpl) GetMessage(id int) mss.IMessage {
 	if msg := this._rep.GetMessage(id); msg != nil {
 		con := this._rep.GetMessageContent(msg.Id)
 		switch msg.Type {
-		case mss.TypePhoneMessage:
-			v := mss.PhoneMessage(con.Data)
+		case notify.TypePhoneMessage:
+			v := notify.PhoneMessage(con.Data)
 			return this.CreateMessage(msg, &v)
-		case mss.TypeEmailMessage:
-			v := mss.MailMessage{}
+		case notify.TypeEmailMessage:
+			v := notify.MailMessage{}
 			json.Unmarshal([]byte(con.Data), &v)
 			return this.CreateMessage(msg, &v)
-		case mss.TypeSiteMessage:
-			v := mss.SiteMessage{}
+		case notify.TypeSiteMessage:
+			v := notify.SiteMessage{}
 			json.Unmarshal([]byte(con.Data), &v)
 			return this.CreateMessage(msg, &v)
 		}
 	}
 	return nil
+}
+
+// 创建用于会员通知的消息对象
+func (this *messageManagerImpl) CreateMemberNotifyMessage(memberId int, msgType int,
+	content interface{}) mss.IMessage {
+	msg := &mss.Message{
+		Type:       msgType,
+		UseFor:     mss.UseForNotify,
+		SenderRole: mss.RoleSystem,
+		SenderId:   0,
+		To: []mss.User{
+			mss.User{
+				Id:   memberId,
+				Role: mss.RoleMember,
+			},
+		},
+		CreateTime: time.Now().Unix(),
+	}
+	return this.CreateMessage(msg, content)
 }
 
 type userMessageManagerImpl struct {

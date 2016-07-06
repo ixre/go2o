@@ -163,6 +163,20 @@ func (this *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 	return e
 }
 
+// 根据手机号获取会员编号
+func (this *MemberRep) GetMemberIdByPhone(phone string) int {
+	id := -1
+	this.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
+	return id
+}
+
+// 根据邮箱地址获取会员编号
+func (this *MemberRep) GetMemberIdByEmail(email string) int {
+	id := -1
+	this.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
+	return id
+}
+
 // 获取会员
 func (this *MemberRep) GetMember(memberId int) member.IMember {
 	e := &member.Member{}

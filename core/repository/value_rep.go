@@ -259,7 +259,7 @@ func (this *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 			return i, v
 		}
 	}
-	return 0, nil
+	panic(errors.New("至少为系统设置一个短信接口"))
 }
 
 // 获取下级区域

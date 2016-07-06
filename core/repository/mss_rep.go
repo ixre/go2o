@@ -14,33 +14,48 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/valueobject"
 	mssImpl "go2o/core/domain/mss"
+	notifyImpl "go2o/core/domain/mss/notify"
 	"go2o/core/variable"
 )
 
 var _ mss.IMssRep = new(MssRep)
 
 type MssRep struct {
-	_conn        db.Connector
-	_globMss     mss.IUserMessageManager
-	_notifyItems map[string]*mss.NotifyItem
-	_itemGob     *util.GobFile
-	_sysManger   mss.IMessageManager
+	_conn         db.Connector
+	_sysManger    mss.IMessageManager
+	_notifyManger notify.INotifyManager
+	_notifyRep    notify.INotifyRep
+	_valRep       valueobject.IValueRep
+	_globMss      mss.IUserMessageManager
 }
 
-func NewMssRep(conn db.Connector) mss.IMssRep {
+func NewMssRep(conn db.Connector, notifyRep notify.INotifyRep,
+	valRep valueobject.IValueRep) mss.IMssRep {
 	return &MssRep{
-		_conn:    conn,
-		_itemGob: util.NewGobFile("conf/core/mss_notify"),
+		_conn:      conn,
+		_notifyRep: notifyRep,
+		_valRep:    valRep,
 	}
 }
 
 // 系统消息服务
-func (this *MssRep) GetManager() mss.IMessageManager {
+func (this *MssRep) MessageManager() mss.IMessageManager {
 	if this._sysManger == nil {
 		this._sysManger = mssImpl.NewMessageManager(this)
 	}
 	return this._sysManger
+}
+
+// 通知服务
+func (this *MssRep) NotifyManager() notify.INotifyManager {
+	if this._notifyManger == nil {
+		this._notifyManger = notifyImpl.NewNotifyManager(
+			this._notifyRep, this._valRep)
+	}
+	return this._notifyManger
 }
 
 func (this *MssRep) GetProvider() mss.IUserMessageManager {
@@ -70,43 +85,6 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 	}
 	globFile := util.NewGobFile(filePath)
 	return globFile.Save(conf)
-}
-
-func (this *MssRep) getNotifyItemMap() map[string]*mss.NotifyItem {
-	if this._notifyItems == nil {
-		this._notifyItems = map[string]*mss.NotifyItem{}
-		err := this._itemGob.Unmarshal(&this._notifyItems)
-		//拷贝系统默认的配置
-		if err != nil {
-			for _, v := range mss.DefaultNotifyItems {
-				vv := *v
-				this._notifyItems[v.Key] = &vv
-			}
-		}
-	}
-	return this._notifyItems
-}
-
-// 获取所有的通知项
-func (this *MssRep) GetAllNotifyItem() []mss.NotifyItem {
-	list := []mss.NotifyItem{}
-	for _, v := range mss.DefaultNotifyItems {
-		v2 := this.getNotifyItemMap()[v.Key]
-		list = append(list, *v2)
-	}
-	return list
-}
-
-// 获取通知项
-func (this *MssRep) GetNotifyItem(key string) *mss.NotifyItem {
-
-	return this.getNotifyItemMap()[key]
-}
-
-// 保存通知项
-func (this *MssRep) SaveNotifyItem(v *mss.NotifyItem) error {
-	this._notifyItems[v.Key] = v
-	return this._itemGob.Save(this._notifyItems)
 }
 
 // 获取邮箱模板

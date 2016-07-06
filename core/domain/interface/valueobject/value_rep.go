@@ -189,9 +189,9 @@ type (
 
 	// 短信接口
 	SmsApiPerm struct {
-		UserId   string //接口编号
-		ApiToken string //接口密钥
-		Default  bool   //是否默认的接口使用
+		ApiKey    string //接口编号
+		ApiSecret string //接口密钥
+		Default   bool   //是否默认的接口使用
 	}
 	// 短信接口设置
 	SmsApiSet map[int]*SmsApiPerm

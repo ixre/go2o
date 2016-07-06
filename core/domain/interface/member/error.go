@@ -28,6 +28,12 @@ var (
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 
+	ErrCheckCodeError *domain.DomainError = domain.NewDomainError(
+		"err_member_check_code_err", "校验码错误")
+
+	ErrCheckCodeExpires *domain.DomainError = domain.NewDomainError(
+		"err_member_check_code_expires", "校验码已失效")
+
 	ErrInvalidSession *domain.DomainError = domain.NewDomainError(
 		"member_invalid_session", "异常会话")
 

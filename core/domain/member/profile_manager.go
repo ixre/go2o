@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
@@ -185,7 +186,7 @@ func (this *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
-				Type: mss.TypeEmailMessage,
+				Type: notify.TypeEmailMessage,
 				// 消息用途
 				UseFor: mss.UseForNotify,
 				// 发送人角色
@@ -206,11 +207,11 @@ func (this *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				// 是否只能阅读
 				Readonly: 1,
 			}
-			val := &mss.MailMessage{
+			val := &notify.MailMessage{
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,
 			}
-			msg := this._member._mssRep.GetManager().CreateMessage(v, val)
+			msg := this._member._mssRep.MessageManager().CreateMessage(v, val)
 			//todo:?? data
 			var data = map[string]string{
 				"Name":           this._profile.Name,
