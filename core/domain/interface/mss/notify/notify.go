@@ -51,7 +51,7 @@ var (
 			TplId:      -1,
 			ReadonlyBy: true,
 			NotifyBy:   TypePhoneMessage,
-			Content:    "您正在进行{operation},本次验证码为{code},有效期为{minutes}分种。",
+			Content:    "您好,本次{operation}验证码为{code},有效期为{minutes}分钟。",
 			Tags: map[string]string{
 				"operation": "操作,如找回密码,重置手机等",
 				"code":      "验证码",
@@ -63,7 +63,7 @@ var (
 			TplId:      -1,
 			ReadonlyBy: true,
 			NotifyBy:   TypeEmailMessage,
-			Content:    "您正在进行{operation},本次验证码为{code},有效期为{minutes}分种。",
+			Content:    "您好,本次{operation}验证码为{code},有效期为{minutes}分钟。",
 			Tags: map[string]string{
 				"operation": "操作,如找回密码,重置手机等",
 				"code":      "验证码",
