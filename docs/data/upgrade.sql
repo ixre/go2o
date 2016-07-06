@@ -362,7 +362,7 @@ CREATE TABLE `flm`.`con_article_category` (
 
 CREATE TABLE `flm`.`con_article` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `category_id` INT NULL,
+  `cat_id` INT NULL,
   `title` VARCHAR(120) NULL,
   `small_title` VARCHAR(45) NULL,
   `thumbnail` VARCHAR(120) NULL,
