@@ -73,7 +73,7 @@ func (this *contentRep) SavePage(merchantId int, v *content.Page) (int, error) {
 // 获取文章数量
 func (this *contentRep) GetArticleNumByCategory(categoryId int) int {
 	num := 0
-	this.Connector.ExecScalar("SELECT COUNT(0) FROM con_article WHERE category_id=?",
+	this.Connector.ExecScalar("SELECT COUNT(0) FROM con_article WHERE cat_id=?",
 		&num, categoryId)
 	return num
 }
@@ -124,7 +124,7 @@ func (this *contentRep) GetArticleById(id int) *content.Article {
 func (this *contentRep) GetArticleList(categoryId int, begin int, end int) []*content.Article {
 	list := []*content.Article{}
 	this.Connector.GetOrm().SelectByQuery(&content.Article{},
-		"category_id=? LIMIT ?,?", categoryId, begin, end-begin)
+		"cat_id=? LIMIT ?,?", categoryId, begin, end-begin)
 	return list
 }
 

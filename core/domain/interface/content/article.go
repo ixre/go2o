@@ -114,7 +114,7 @@ type (
 		Id int `db:"id" auto:"yes" pk:"yes"`
 
 		// 栏目编号
-		CategoryId int `db:"category_id"`
+		CategoryId int `db:"cat_id"`
 
 		//标题
 		Title string `db:"title"`

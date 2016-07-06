@@ -28,13 +28,13 @@ rows []*content.Article) {
         where = " AND " + where
     }
 
-    this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM FROM
-		con_article WHERE category_id=? %s`, where), &total, catId)
+    this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
+		con_article WHERE cat_id=? %s`, where), &total, catId)
 
     rows = []*content.Article{}
     if total > 0 {
-        this.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM FROM
-		con_article WHERE category_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
+        this.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
+		con_article WHERE cat_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
             catId, begin,size)
     }
 

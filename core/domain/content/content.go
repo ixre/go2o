@@ -33,7 +33,7 @@ func (this *Content) GetAggregateRootId() int {
 // 文章服务
 func (this *Content) ArticleManager() content.IArticleManager {
 	if this._articleManager == nil {
-		this._articleManager = newArticleManagerImpl(this._contentRep)
+		this._articleManager = newArticleManagerImpl(this._userId,this._contentRep)
 	}
 	return this._articleManager
 }
