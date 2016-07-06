@@ -90,6 +90,7 @@ var (
 	defaultSmsConf = map[int]*valueobject.SmsApiPerm{
 		valueobject.SmsAli:     &valueobject.SmsApiPerm{Default: true},
 		valueobject.SmsNetEasy: &valueobject.SmsApiPerm{},
+		valueobject.Sms253Com: &valueobject.SmsApiPerm{},
 	}
 )
 
