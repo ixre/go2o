@@ -17,7 +17,6 @@ import (
 // 处理错误
 func HandleError(err error, src string) error {
 	if err != nil && gof.CurrentApp.Debug() {
-		panic(err)
 		gof.CurrentApp.Log().Println("[ Go2o][ Error] - ", err.Error())
 	}
 	return err
