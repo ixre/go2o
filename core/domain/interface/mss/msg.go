@@ -8,6 +8,8 @@
  */
 package mss
 
+import "go2o/core/domain/interface/mss/notify"
+
 //todo: 客服消息
 var (
 	RoleSystem   = 0
@@ -37,25 +39,6 @@ type (
 
 	// 消息数据
 	Data map[string]string
-
-	// 简讯
-	PhoneMessage string
-
-	// 邮件消息
-	MailMessage struct {
-		// 主题
-		Subject string `json:"subject"`
-		// 内容
-		Body string `json:"body"`
-	}
-
-	// 站内信
-	SiteMessage struct {
-		// 主题
-		Subject string `json:"subject"`
-		// 信息内容
-		Message string `json:"message"`
-	}
 
 	User struct {
 		Id   int
@@ -160,14 +143,14 @@ type (
 	}
 
 	ISiteMessage interface {
-		Value() *SiteMessage
+		Value() *notify.SiteMessage
 	}
 
 	IMailMessage interface {
-		Value() *MailMessage
+		Value() *notify.MailMessage
 	}
 
 	IPhoneMessage interface {
-		Value() *PhoneMessage
+		Value() *notify.PhoneMessage
 	}
 )

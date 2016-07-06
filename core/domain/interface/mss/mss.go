@@ -9,17 +9,11 @@
 package mss
 
 import (
-	"errors"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/infrastructure/domain"
 )
 
 //todo: waiting refactor
-
-const (
-	TypeSiteMessage = 1 + iota
-	TypeEmailMessage
-	TypePhoneMessage
-)
 
 var (
 	ErrNotSupportMessageType *domain.DomainError = domain.NewDomainError(
@@ -30,9 +24,6 @@ var (
 
 	ErrTemplateUsed *domain.DomainError = domain.NewDomainError(
 		"err_template_used", "模板被使用，无法删除")
-
-	ErrNoSuchNotifyItem *domain.DomainError = domain.NewDomainError(
-		"err_no_such_notify_item", "通知项不存在")
 
 	ErrMessageUpdate *domain.DomainError = domain.NewDomainError(
 		"err_message_update", "消息不需要更新")
@@ -56,70 +47,17 @@ var (
 
 	ErrNoSuchReceiveUser *domain.DomainError = domain.NewDomainError(
 		"err_no_such_receive_user", "消息没有指定接收用户")
-
-	// 类型字典
-	NotifyTypeMap = map[int]string{
-		TypeSiteMessage:  "站内信",
-		TypeEmailMessage: "邮件",
-		TypePhoneMessage: "短信",
-	}
-
-	// 类型顺序
-	NotifyTypeIndex = []int{
-		TypeSiteMessage,
-		TypeEmailMessage,
-		TypePhoneMessage,
-	}
-
-	// 默认通知项
-	DefaultNotifyItems = NotifyItemSet{
-		&NotifyItem{
-			Key:      "注册通知",
-			TplId:    -1,
-			NotifyBy: TypeSiteMessage,
-			Content:  "您好,恭喜您已注册成功{platform}的会员!",
-			Tags: map[string]string{
-				"platform": "平台名称",
-			},
-		},
-		&NotifyItem{
-			Key:        "验证手机",
-			TplId:      -1,
-			ReadonlyBy: true,
-			NotifyBy:   TypePhoneMessage,
-			Content:    "您正在进行{operation},本次验证码为{code},有效期为{minutes}分种,[{platform}]。",
-			Tags: map[string]string{
-				"operation": "操作,如找回密码,重置手机等",
-				"code":      "验证码",
-				"minutes":   "有效时间",
-				"platform":  "平台名称",
-			},
-		},
-	}
 )
-
-//可通过外部添加
-func RegisterNotifyItem(key string, item *NotifyItem) {
-	for _, v := range DefaultNotifyItems {
-		if v.Key == key {
-			panic(errors.New("通知项" + key + "已存在!"))
-		}
-	}
-	DefaultNotifyItems = append(DefaultNotifyItems, item)
-}
 
 type (
 	// 系统管理
 	IMessageManager interface {
-		// 获取所有的通知项
-		GetAllNotifyItem() []NotifyItem
-		// 获取通知项配置
-		GetNotifyItem(key string) NotifyItem
-		// 保存通知项设置
-		SaveNotifyItem(item *NotifyItem) error
-
 		// 创建消息对象
 		CreateMessage(msg *Message, content interface{}) IMessage
+
+		// 创建用于会员通知的消息对象
+		CreateMemberNotifyMessage(memberId int, msgType int,
+			content interface{}) IMessage
 
 		// 获取消息
 		GetMessage(id int) IMessage
@@ -154,22 +92,16 @@ type (
 		GetProvider() IUserMessageManager
 
 		// 系统消息服务
-		GetManager() IMessageManager
+		MessageManager() IMessageManager
+
+		// 通知服务
+		NotifyManager() notify.INotifyManager
 
 		// 获取消息设置
 		GetConfig(userId int) *Config
 
 		// 保存消息设置
 		SaveConfig(userId int, conf *Config) error
-
-		// 获取所有的通知项
-		GetAllNotifyItem() []NotifyItem
-
-		// 获取通知项
-		GetNotifyItem(key string) *NotifyItem
-
-		// 保存通知项
-		SaveNotifyItem(v *NotifyItem) error
 
 		// 获取邮箱模板
 		GetMailTemplate(userId, id int) *MailTemplate
@@ -204,21 +136,6 @@ type (
 		// 获取消息目标
 		GetMessageTo(msgId, toUserId, toRole int) *To
 	}
-
-	// 通知项
-	NotifyItem struct {
-		Key string
-		// 发送方式
-		NotifyBy int
-		// 不允许修改发送方式
-		ReadonlyBy bool
-		TplId      int
-		Content    string
-		Tags       map[string]string
-	}
-
-	// 通知项集合
-	NotifyItemSet []*NotifyItem
 
 	// 系统消息发送配置
 	//todo: 过时的

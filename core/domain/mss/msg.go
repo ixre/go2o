@@ -11,6 +11,7 @@ package mss
 import (
 	"encoding/json"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	"regexp"
 	"strconv"
 	"time"
@@ -177,11 +178,11 @@ var _ mss.IMessage = new(mailMessageImpl)
 
 type mailMessageImpl struct {
 	*messageImpl
-	_val *mss.MailMessage
+	_val *notify.MailMessage
 	_rep mss.IMssRep
 }
 
-func newMailMessage(m *messageImpl, v *mss.MailMessage,
+func newMailMessage(m *messageImpl, v *notify.MailMessage,
 	rep mss.IMssRep) mss.IMessage {
 	return &mailMessageImpl{
 		messageImpl: m,
@@ -190,7 +191,7 @@ func newMailMessage(m *messageImpl, v *mss.MailMessage,
 	}
 }
 
-func (this *mailMessageImpl) Value() *mss.MailMessage {
+func (this *mailMessageImpl) Value() *notify.MailMessage {
 	return this._val
 }
 
@@ -231,11 +232,11 @@ var _ mss.IMessage = new(phoneMessageImpl)
 
 type phoneMessageImpl struct {
 	*messageImpl
-	_val *mss.PhoneMessage
+	_val *notify.PhoneMessage
 	_rep mss.IMssRep
 }
 
-func newPhoneMessage(m *messageImpl, v *mss.PhoneMessage,
+func newPhoneMessage(m *messageImpl, v *notify.PhoneMessage,
 	rep mss.IMssRep) mss.IMessage {
 	return &phoneMessageImpl{
 		messageImpl: m,
@@ -244,7 +245,7 @@ func newPhoneMessage(m *messageImpl, v *mss.PhoneMessage,
 	}
 }
 
-func (this *phoneMessageImpl) Value() *mss.PhoneMessage {
+func (this *phoneMessageImpl) Value() *notify.PhoneMessage {
 	return this._val
 }
 
@@ -257,7 +258,7 @@ func (this *phoneMessageImpl) Send(d mss.Data) error {
 	err := this.messageImpl.Send(d)
 	if err == nil {
 		v := *this._val
-		v = mss.PhoneMessage(Transplate(string(v), d))
+		v = notify.PhoneMessage(Transplate(string(v), d))
 		var contentId int //内容编号
 		if contentId, err = this.saveContent(string(v)); err == nil {
 			this.saveUserMsg(contentId, 1) //短信默认已读
@@ -271,11 +272,11 @@ var _ mss.IMessage = new(siteMessageImpl)
 
 type siteMessageImpl struct {
 	*messageImpl
-	_val *mss.SiteMessage
+	_val *notify.SiteMessage
 	_rep mss.IMssRep
 }
 
-func newSiteMessage(m *messageImpl, v *mss.SiteMessage,
+func newSiteMessage(m *messageImpl, v *notify.SiteMessage,
 	rep mss.IMssRep) mss.IMessage {
 	return &siteMessageImpl{
 		messageImpl: m,
@@ -284,7 +285,7 @@ func newSiteMessage(m *messageImpl, v *mss.SiteMessage,
 	}
 }
 
-func (this *siteMessageImpl) Value() *mss.SiteMessage {
+func (this *siteMessageImpl) Value() *notify.SiteMessage {
 	return this._val
 }
 

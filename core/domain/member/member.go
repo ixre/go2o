@@ -16,8 +16,10 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/tool/sms"
 	"regexp"
 	"strings"
 	"time"
@@ -27,17 +29,16 @@ import (
 var _ member.IMember = new(memberImpl)
 
 type memberImpl struct {
-	_manager     member.IMemberManager
-	_value       *member.Member
-	_account     member.IAccount
-	_level       *member.Level
-	_rep         member.IMemberRep
-	_merchantRep merchant.IMerchantRep
-	_relation    *member.Relation
-	_invitation  member.IInvitationManager
-	_mssRep      mss.IMssRep
-	_valRep      valueobject.IValueRep
-
+	_manager         member.IMemberManager
+	_value           *member.Member
+	_account         member.IAccount
+	_level           *member.Level
+	_rep             member.IMemberRep
+	_merchantRep     merchant.IMerchantRep
+	_relation        *member.Relation
+	_invitation      member.IInvitationManager
+	_mssRep          mss.IMssRep
+	_valRep          valueobject.IValueRep
 	_profileManager  member.IProfileManager
 	_favoriteManager member.IFavoriteManager
 	_giftCardManager member.IGiftCardManager
@@ -133,6 +134,60 @@ func (this *memberImpl) SetValue(v *member.Member) error {
 	}
 	if len(v.TradePwd) == 0 {
 		this._value.TradePwd = v.TradePwd
+	}
+	return nil
+}
+
+// 发送验证码,并返回验证码
+func (this *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
+	const expiresMinutes = 10 //10分钟生效
+	code := domain.NewCheckCode()
+	this._value.CheckCode = code
+	this._value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
+	_, err := this.Save()
+	if err == nil {
+		mgr := this._mssRep.NotifyManager()
+		pro := this.Profile().GetProfile()
+
+		// 创建参数
+		data := map[string]interface{}{
+			"code":      code,
+			"operation": operation,
+			"minutes":   expiresMinutes,
+		}
+
+		// 根据消息类型发送信息
+		switch mssType {
+		case notify.TypePhoneMessage:
+			// 某些短信平台要求传入模板ID,在这里附加参数
+			provider, _ := this._valRep.GetDefaultSmsApiPerm()
+			data = sms.AppendCheckPhoneParams(provider, data)
+
+			// 构造并发送短信
+			n := mgr.GetNotifyItem("验证手机")
+			c := notify.PhoneMessage(n.Content)
+			err = mgr.SendPhoneMessage(pro.Phone, c, data)
+
+		default:
+		case notify.TypeEmailMessage:
+			n := mgr.GetNotifyItem("验证邮箱")
+			c := &notify.MailMessage{
+				Subject: operation + "验证码",
+				Body:    n.Content,
+			}
+			err = mgr.SendEmail(pro.Phone, c, data)
+		}
+	}
+	return code, err
+}
+
+// 对比验证码
+func (this *memberImpl) CompareCheckCode(code string) error {
+	if this._value.CheckCode != strings.TrimSpace(code) {
+		return member.ErrCheckCodeError
+	}
+	if this._value.CheckExpires < time.Now().Unix() {
+		return member.ErrCheckCodeExpires
 	}
 	return nil
 }

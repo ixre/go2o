@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -152,6 +153,27 @@ func (this *memberService) getMember(memberId int) (
 
 func (this *memberService) GetMemberIdByInvitationCode(code string) int {
 	return this._rep.GetMemberIdByInvitationCode(code)
+}
+
+// 根据信息获取会员编号
+func (this *memberService) GetMemberIdByBasis(str string, basic int) int {
+	switch basic {
+	default:
+	case notify.TypePhoneMessage:
+		return this._rep.GetMemberIdByPhone(str)
+	case notify.TypeEmailMessage:
+		return this._rep.GetMemberIdByEmail(str)
+	}
+	return -1
+}
+
+// 发送验证码
+func (this *memberService) SendCode(memberId int, operation string, msgType int) (string, error) {
+	m := this._rep.GetMember(memberId)
+	if m == nil {
+		return "", member.ErrNoSuchMember
+	}
+	return m.SendCheckCode(operation, msgType)
 }
 
 // 更改会员用户名

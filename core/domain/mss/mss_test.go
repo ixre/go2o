@@ -12,6 +12,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	_ "go2o/core/testing"
 	"testing"
 )
@@ -21,7 +22,7 @@ var _ mss.IMssRep = new(MssRep)
 type MssRep struct {
 	_conn        db.Connector
 	_globMss     mss.IUserMessageManager
-	_notifyItems map[string]*mss.NotifyItem
+	_notifyItems map[string]*notify.NotifyItem
 	_sysManger   mss.IMessageManager
 }
 
@@ -57,17 +58,17 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 }
 
 // 获取所有的通知项
-func (this *MssRep) GetAllNotifyItem() []mss.NotifyItem {
-	return []mss.NotifyItem{}
+func (this *MssRep) GetAllNotifyItem() []notify.NotifyItem {
+	return []notify.NotifyItem{}
 }
 
 // 获取通知项
-func (this *MssRep) GetNotifyItem(key string) *mss.NotifyItem {
+func (this *MssRep) GetNotifyItem(key string) *notify.NotifyItem {
 	return nil
 }
 
 // 保存通知项
-func (this *MssRep) SaveNotifyItem(v *mss.NotifyItem) error {
+func (this *MssRep) SaveNotifyItem(v *notify.NotifyItem) error {
 	return nil
 }
 
@@ -151,7 +152,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypeEmailMessage,
+		Type: notify.TypeEmailMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -172,7 +173,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		// 是否只能阅读
 		Readonly: 1,
 	}
-	val := &mss.MailMessage{
+	val := &notify.MailMessage{
 		Subject: "邮件",
 		Body:    "您好,邮件{Name}",
 	}
@@ -194,7 +195,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v = &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypePhoneMessage,
+		Type: notify.TypePhoneMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -232,7 +233,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 	v = &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypeSiteMessage,
+		Type: notify.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -246,7 +247,7 @@ func TestMessageManagerImpl_SendMessage(t *testing.T) {
 		// 是否只能阅读
 		Readonly: 1,
 	}
-	sm := mss.SiteMessage{
+	sm := notify.SiteMessage{
 		Subject: "站内信",
 		Message: "您好短信{Name}",
 	}

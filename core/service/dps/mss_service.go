@@ -10,6 +10,7 @@ package dps
 
 import (
 	"go2o/core/domain/interface/mss"
+	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
 )
 
@@ -54,22 +55,22 @@ func (this *mssService) SaveConfig(conf *mss.Config) error {
 }
 
 //可通过外部添加
-func (this *mssService) RegisterNotifyItem(key string, item *mss.NotifyItem) {
-	mss.RegisterNotifyItem(key, item)
+func (this *mssService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
+	notify.RegisterNotifyItem(key, item)
 }
 
-func (this *mssService) GetAllNotifyItem() []mss.NotifyItem {
-	return this._rep.GetManager().GetAllNotifyItem()
+func (this *mssService) GetAllNotifyItem() []notify.NotifyItem {
+	return this._rep.NotifyManager().GetAllNotifyItem()
 }
 
 // 获取通知项配置
-func (this *mssService) GetNotifyItem(key string) mss.NotifyItem {
-	return this._rep.GetManager().GetNotifyItem(key)
+func (this *mssService) GetNotifyItem(key string) notify.NotifyItem {
+	return this._rep.NotifyManager().GetNotifyItem(key)
 }
 
 // 保存通知项设置
-func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error {
-	return this._rep.GetManager().SaveNotifyItem(item)
+func (this *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
+	return this._rep.NotifyManager().SaveNotifyItem(item)
 }
 
 //todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
@@ -77,11 +78,11 @@ func (this *mssService) SaveNotifyItem(item *mss.NotifyItem) error {
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
 func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
-	msg *mss.SiteMessage, sendNow bool) error {
+	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型
-		Type: mss.TypeSiteMessage,
+		Type: notify.TypeSiteMessage,
 		// 消息用途
 		UseFor: mss.UseForNotify,
 		// 发送人角色
@@ -102,7 +103,7 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 		v.ToRole = toRole
 	}
 	var err error
-	m := this._rep.GetManager().CreateMessage(v, msg)
+	m := this._rep.MessageManager().CreateMessage(v, msg)
 	if _, err = m.Save(); err == nil {
 		err = m.Send(nil)
 	}
@@ -111,7 +112,7 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 
 // 获取站内信
 func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessage {
-	msg := this._rep.GetManager().GetMessage(id)
+	msg := this._rep.MessageManager().GetMessage(id)
 	if msg != nil && msg.CheckPerm(toUserId, toRole) {
 		val := msg.GetValue()
 		dto := &dto.SiteMessage{
@@ -127,11 +128,11 @@ func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessag
 		}
 
 		switch msg.Type() {
-		case mss.TypePhoneMessage:
+		case notify.TypePhoneMessage:
 			dto.Data = msg.(mss.IPhoneMessage).Value()
-		case mss.TypeEmailMessage:
+		case notify.TypeEmailMessage:
 			dto.Data = msg.(mss.IMailMessage).Value()
-		case mss.TypeSiteMessage:
+		case notify.TypeSiteMessage:
 			dto.Data = msg.(mss.ISiteMessage).Value()
 		}
 

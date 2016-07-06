@@ -53,7 +53,15 @@ func NewTradeNo(merchantId int) string {
 func GenerateInvitationCode() string {
 	var seed string = fmt.Sprintf("%d%s", time.Now().Unix(), util.RandString(6))
 	var md5 = crypto.Md5([]byte(seed))
-	return md5[8:14]
+	return md5[8:16]
+}
+
+// 获取新的验证码
+func NewCheckCode() string {
+	unix := time.Now().UnixNano()
+	rand.Seed(unix)
+	rd := 1000 + rand.Intn(9999-1000)
+	return strconv.Itoa(rd)
 }
 
 // 创建API编号(10位)

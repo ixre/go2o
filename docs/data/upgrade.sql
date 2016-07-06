@@ -553,6 +553,12 @@ ALTER TABLE `flm`.`sale_order`
   ADD COLUMN `express_fee` DECIMAL(8,2) NULL COMMENT '物流费' AFTER `discount_fee`;
 
 
+ALTER TABLE `flm`.`mm_member`
+  ADD COLUMN `check_code` VARCHAR(8) NULL AFTER `reg_time`,
+  ADD COLUMN `check_expires` INT NULL AFTER `check_code`;
+
+
+
 
 
 

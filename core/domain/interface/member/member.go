@@ -49,6 +49,12 @@ type (
 		// 获取账户
 		GetAccount() IAccount
 
+		// 发送验证码,传入操作及消息类型,并返回验证码,及错误
+		SendCheckCode(operation string, mssType int) (string, error)
+
+		// 对比验证码
+		CompareCheckCode(code string) error
+
 		// 锁定会员
 		Lock() error
 
@@ -173,6 +179,10 @@ type (
 		RegIp string `db:"reg_ip"`
 		// 注册时间
 		RegTime int64 `db:"reg_time"`
+		// 校验码
+		CheckCode string `db:"check_code"`
+		// 校验码过期时间
+		CheckExpires int64 `db:"check_expires"`
 		// 状态
 		State int `db:"state"`
 		// 最后登陆时间

@@ -6,7 +6,7 @@
  * description : 接口中的参数均以模板和数据形式出现
  * history :
  */
-package tool
+package sms
 
 import (
 	"errors"
@@ -21,6 +21,17 @@ const (
 	SmsNetEasy = 2 //网易
 )
 
+// 附加检查手机短信的参数
+func AppendCheckPhoneParams(provider int, param map[string]interface{}) map[string]interface{} {
+	//todo: 考虑在参数中读取
+	if provider == SmsAli {
+		param[aliyu.ParamKeyTplName] = ""
+		param[aliyu.ParamKeyTplId] = ""
+	}
+	return param
+}
+
+// 发送短信
 func SendSms(provider int, appKey, appSecret, phoneNum string,
 	tpl string, param map[string]interface{}) error {
 	switch provider {
