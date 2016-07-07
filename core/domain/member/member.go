@@ -109,12 +109,13 @@ var (
 	phoneRegex = regexp.MustCompile("^(13[0-9]|15[0|1|2|3|4|5|6|8|9]|18[0|1|2|3|5|6|7|8|9]|17[0|6|7|8]|14[7])(\\d{8})$")
 )
 
-func (this *memberImpl) validate(v *member.Member) error {
-	v.Usr = strings.ToLower(strings.TrimSpace(v.Usr)) // 小写并删除空格
-	if len([]rune(v.Usr)) < 6 {
+// 验证用户名
+func validUsr(usr string) error {
+	usr = strings.ToLower(strings.TrimSpace(usr)) // 小写并删除空格
+	if len([]rune(usr)) < 6 {
 		return member.ErrUsrLength
 	}
-	if !userRegex.MatchString(v.Usr) {
+	if !userRegex.MatchString(usr) {
 		return member.ErrUsrValidErr
 	}
 	return nil
@@ -267,7 +268,7 @@ func (this *memberImpl) Save() (int, error) {
 		return this._rep.SaveMember(this._value)
 	}
 
-	if err := this.validate(this._value); err != nil {
+	if err := validUsr(this._value.Usr); err != nil {
 		return this.GetAggregateRootId(), err
 	}
 	return this.create(this._value, nil)

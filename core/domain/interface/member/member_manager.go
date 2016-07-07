@@ -25,6 +25,10 @@ type (
 		// 检测注册权限
 		RegisterPerm(invitation bool) error
 
+		// 检查注册信息是否正确
+		CheckPostedRegisterInfo(v *Member, pro *Profile,
+			invitationCode string) (invitationId int, err error)
+
 		// IDocManager()IDocManager
 	}
 

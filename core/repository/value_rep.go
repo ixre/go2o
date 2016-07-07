@@ -36,6 +36,9 @@ var (
 	// 默认注册权限设置
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
+		NeedPhone:           false,
+		MustBinPhone:        false,
+		NeedIm:              false,
 		AnonymousRegistered: true,
 		CallBackUrl:         "/auth?uc=1", //默认进入会员中心
 	}

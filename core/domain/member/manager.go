@@ -13,7 +13,9 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/variable"
 	"sort"
+	"strings"
 )
 
 var _ member.IMemberManager = new(MemberManagerImpl)
@@ -22,6 +24,7 @@ var _ member.ILevelManager = new(levelManagerImpl)
 type MemberManagerImpl struct {
 	_levelManager member.ILevelManager
 	_valRep       valueobject.IValueRep
+	_rep          member.IMemberRep
 }
 
 func NewMemberManager(rep member.IMemberRep,
@@ -29,6 +32,7 @@ func NewMemberManager(rep member.IMemberRep,
 	return &MemberManagerImpl{
 		_levelManager: newLevelManager(rep),
 		_valRep:       valRep,
+		_rep:          rep,
 	}
 }
 
@@ -52,6 +56,71 @@ func (this *MemberManagerImpl) RegisterPerm(invitation bool) error {
 
 	}
 	return nil
+}
+
+func (this *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, error) {
+	var invitationId int = 0
+	if len(invitationCode) > 0 {
+		//判断邀请码是否正确
+		invitationId = this._rep.GetMemberIdByInvitationCode(invitationCode)
+		if invitationId <= 0 {
+			return -1, member.ErrInvitationCode
+		}
+	}
+	return invitationId, nil
+}
+
+// 检查注册信息是否正确
+func (this *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
+	pro *member.Profile, invitationCode string) (invitationId int, err error) {
+	perm := this._valRep.GetRegisterPerm()
+
+	//验证用户名
+	v.Usr = strings.TrimSpace(v.Usr)
+	if len(v.Usr) < 6 {
+		return 0, member.ErrUsrLength
+	}
+	if !userRegex.MatchString(v.Usr) {
+		return 0, member.ErrUsrValidErr
+	}
+	if this._rep.CheckUsrExist(v.Usr, 0) {
+		return 0, member.ErrUsrExist
+	}
+
+	//验证密码
+	v.Pwd = strings.TrimSpace(v.Pwd)
+	if len(v.Pwd) < 6 {
+		return 0, member.ErrPwdLength
+	}
+
+	//验证手机
+	pro.Phone = strings.TrimSpace(pro.Phone)
+	l := len(pro.Phone)
+	if perm.NeedPhone && l == 0 {
+		return 0, member.ErrMissingPhone
+	}
+	if l > 0 {
+		if !phoneRegex.MatchString(pro.Phone) {
+			return 0, member.ErrBadPhoneFormat
+		}
+		if b := this._rep.CheckPhoneBind(pro.Phone, v.Id); b {
+			return 0, member.ErrPhoneHasBind
+		}
+	}
+
+	//验证IM
+	pro.Im = strings.TrimSpace(pro.Im)
+	if perm.NeedIm && len(pro.Im) == 0 {
+		return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
+			"IM", variable.AliasMemberIM, -1))
+	}
+
+	// 检查验证码
+	err = this.RegisterPerm(len(invitationCode) > 0)
+	if err == nil {
+		invitationId, err = this.checkInvitationCode(invitationCode)
+	}
+	return invitationId, err
 }
 
 // 等级服务实现
