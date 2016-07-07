@@ -29,7 +29,7 @@ var (
 		"member_session_time_out", "会员会话超时")
 
 	ErrCheckCodeError *domain.DomainError = domain.NewDomainError(
-		"err_member_check_code_err", "校验码错误")
+		"err_member_check_code_err", "校验码不正确")
 
 	ErrCheckCodeExpires *domain.DomainError = domain.NewDomainError(
 		"err_member_check_code_expires", "校验码已失效")

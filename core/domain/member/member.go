@@ -182,7 +182,7 @@ func (this *memberImpl) SendCheckCode(operation string, mssType int) (string, er
 }
 
 // 对比验证码
-func (this *memberImpl) CompareCheckCode(code string) error {
+func (this *memberImpl) CompareCode(code string) error {
 	if this._value.CheckCode != strings.TrimSpace(code) {
 		return member.ErrCheckCodeError
 	}
