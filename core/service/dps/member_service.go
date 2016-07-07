@@ -221,31 +221,15 @@ func (this *memberService) updateMember(v *member.Member) (int, error) {
 // 注册会员
 func (this *memberService) RegisterMember(merchantId int, v *member.Member,
 	pro *member.Profile, cardId string, invitationCode string) (int, error) {
-
-	//先验证手机
-	if len(pro.Phone) > 0 {
-		if b := this._rep.CheckPhoneBind(pro.Phone, v.Id); b {
-			return -1, member.ErrPhoneHasBind
-		}
-	}
-
-	// todo: 检测注册权限,这里应删除。应用到 member的create方法
-	err := this._rep.GetManager().RegisterPerm(len(invitationCode) > 0)
+	invitationId, err := this._rep.GetManager().CheckPostedRegisterInfo(v, pro, invitationCode)
 	if err == nil {
-		var invitationId int = 0
-		if len(invitationCode) > 0 {
-			//判断邀请码是否正确
-			invitationId = this.GetMemberIdByInvitationCode(invitationCode)
-			if invitationId <= 0 {
-				return -1, member.ErrInvitationCode
-			}
-		}
 		m := this._rep.CreateMember(v) //创建会员
 		id, err := m.Save()
 		if err == nil {
 			pro.MemberId = id
-			if len(pro.Name) == 0 { //如果未设置昵称,则默认为用户名
-				pro.Name = "用户:" + v.Usr
+			if len(pro.Name) == 0 {
+				//如果未设置昵称,则默认为用户名
+				pro.Name = "用户" + v.Usr
 			}
 			if len(pro.Avatar) == 0 {
 				pro.Avatar = "res/no_avatar.gif"
@@ -260,7 +244,6 @@ func (this *memberService) RegisterMember(merchantId int, v *member.Member,
 				return id, m.SaveRelation(rl)
 			}
 		}
-		return id, err
 	}
 	return -1, err
 }

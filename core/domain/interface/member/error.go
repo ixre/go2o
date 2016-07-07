@@ -37,6 +37,9 @@ var (
 	ErrInvalidSession *domain.DomainError = domain.NewDomainError(
 		"member_invalid_session", "异常会话")
 
+	ErrPwdLength *domain.DomainError = domain.NewDomainError(
+		"err_member_pwd_length", "密码至少包含6个字符")
+
 	ErrNoSuchDeliverAddress *domain.DomainError = domain.NewDomainError(
 		"member_no_such_deliver_address", "配送地址错误")
 
@@ -87,19 +90,28 @@ var (
 		"err_same_usr", "用户名与原来相同")
 
 	ErrUsrExist *domain.DomainError = domain.NewDomainError(
-		"err_usr_exist", "用户名已存在")
+		"err_member_usr_exist", "用户名已存在")
 
 	ErrNilNickName *domain.DomainError = domain.NewDomainError(
-		"err_nil_nick_name", "昵称不能为空")
+		"err_member_nil_nick_name", "昵称不能为空")
 
 	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
-		"err_email_valid_err", "邮箱不正确")
+		"err_member_email_valid_err", "邮箱不正确")
 
 	ErrPhoneValidErr *domain.DomainError = domain.NewDomainError(
-		"err_phone_valid_err", "手机号码不正确")
+		"err_member_phone_valid_err", "手机号码不正确")
 
 	ErrPhoneHasBind *domain.DomainError = domain.NewDomainError(
-		"err_phone_has_bind", "手机号码已经绑定")
+		"err_member_phone_has_bind", "手机号码已经绑定")
+
+	ErrMissingPhone *domain.DomainError = domain.NewDomainError(
+		"err_member_missing_phone", "请填写手机号码")
+
+	ErrMissingIM *domain.DomainError = domain.NewDomainError(
+		"err_member_missing_im", "请填写IM")
+
+	ErrBadPhoneFormat *domain.DomainError = domain.NewDomainError(
+		"err_bad_phone_format", "手机号码不正确")
 
 	ErrQqValidErr *domain.DomainError = domain.NewDomainError(
 		"err_qq_valid_err", "QQ号码不正确")

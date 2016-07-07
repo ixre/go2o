@@ -84,6 +84,12 @@ type (
 		RegisterMode int
 		// 是否允许匿名注册
 		AnonymousRegistered bool
+		// 是否需要填写手机
+		NeedPhone bool
+		// 必须绑定手机
+		MustBinPhone bool
+		// 是否需要填写即时通讯
+		NeedIm bool
 		// 注册提示
 		Notice string
 		// 用户条款内容
