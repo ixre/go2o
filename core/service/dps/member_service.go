@@ -176,6 +176,15 @@ func (this *memberService) SendCode(memberId int, operation string, msgType int)
 	return m.SendCheckCode(operation, msgType)
 }
 
+// 对比验证码
+func (this *memberService) CompareCode(memberId int, code string) error {
+	m := this._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.CompareCode(code)
+}
+
 // 更改会员用户名
 func (this *memberService) ChangeUsr(id int, usr string) error {
 	m := this._rep.GetMember(id)

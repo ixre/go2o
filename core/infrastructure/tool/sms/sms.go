@@ -12,15 +12,15 @@ import (
 	"errors"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/iface/aliyu"
+	"go2o/core/infrastructure/iface/cl253"
 	"strconv"
 	"strings"
-	"go2o/core/infrastructure/iface/cl253"
 )
 
 const (
 	SmsAli     = 1 //阿里大鱼
 	SmsNetEasy = 2 //网易
-	SmsCl253 = 3
+	SmsCl253   = 3
 )
 
 // 附加检查手机短信的参数
@@ -40,7 +40,7 @@ func SendSms(provider int, appKey, appSecret, phoneNum string,
 	case SmsAli:
 		return aliyu.SendSms(appKey, appSecret, phoneNum, tpl, param)
 	case SmsCl253:
-		return cl253.SendMsgToMobile(appKey,appSecret,phoneNum,compile(tpl,param))
+		return cl253.SendMsgToMobile(appKey, appSecret, phoneNum, compile(tpl, param))
 	}
 	return errors.New("未知的短信接口服务商" + strconv.Itoa(provider))
 }
@@ -52,7 +52,7 @@ func compile(tpl string, param map[string]interface{}) string {
 		switch v.(type) {
 		case string:
 			str = v.(string)
-		case int,int32, int64:
+		case int, int32, int64:
 			str = strconv.Itoa(v.(int))
 		case float32, float64:
 			str = format.FormatFloat(v.(float32))

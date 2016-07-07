@@ -53,7 +53,7 @@ type (
 		SendCheckCode(operation string, mssType int) (string, error)
 
 		// 对比验证码
-		CompareCheckCode(code string) error
+		CompareCode(code string) error
 
 		// 锁定会员
 		Lock() error
