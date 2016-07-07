@@ -146,3 +146,10 @@ func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessag
 	}
 	return nil
 }
+
+// 发送短信
+func (this *mssService) SendPhoneMessage(phone string,
+	msg notify.PhoneMessage, data map[string]interface{}) error {
+	mg := this._rep.NotifyManager()
+	return mg.SendPhoneMessage(phone, msg, data)
+}

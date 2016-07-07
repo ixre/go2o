@@ -340,6 +340,11 @@ func (this *memberService) CheckUsr(usr string, memberId int) error {
 	return nil
 }
 
+// 检查手机号码是否与会员一致
+func (this *memberService) CheckPhone(phone string, memberId int) error {
+	return this._rep.GetManager().CheckPhoneBind(phone, memberId)
+}
+
 func (this *memberService) GetAccount(memberId int) *member.Account {
 	m := this._rep.CreateMember(&member.Member{Id: memberId})
 	//m, _ := this._memberRep.GetMember(memberId)
