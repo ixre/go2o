@@ -70,6 +70,20 @@ func (this *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, 
 	return invitationId, nil
 }
 
+// 检查手机绑定,同时检查手机格式
+func (this *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
+	if len(phone) <= 0 {
+		return member.ErrMissingPhone
+	}
+	if !phoneRegex.MatchString(phone) {
+		return member.ErrBadPhoneFormat
+	}
+	if b := this._rep.CheckPhoneBind(phone, memberId); b {
+		return member.ErrPhoneHasBind
+	}
+	return nil
+}
+
 // 检查注册信息是否正确
 func (this *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int, err error) {
