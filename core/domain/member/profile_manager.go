@@ -236,7 +236,8 @@ func (this *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		return err
 	}
 
-	if len(oldPwd) != 0 && oldPwd != this._member._value.Pwd {
+	if len(oldPwd) != 0 &&
+		dm.MemberSha1Pwd(oldPwd) != this._member._value.Pwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
 
@@ -256,7 +257,8 @@ func (this *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error
 		return err
 	}
 	// 已经设置过旧密码
-	if len(this._member._value.TradePwd) != 0 && this._member._value.TradePwd != oldPwd {
+	if len(this._member._value.TradePwd) != 0 &&
+		this._member._value.TradePwd != dm.MemberSha1Pwd(oldPwd) {
 		return domain.ErrPwdOldPwdNotRight
 	}
 	this._member._value.TradePwd = dm.MemberSha1Pwd(newPwd)
