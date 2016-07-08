@@ -201,7 +201,7 @@ func (this *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate
 		if ok && v.Id != t.Id {
 			return 0, express.ErrExistsAreaTemplateSet
 		}
-		intArr[i] = strconv.Atoi(code)
+		intArr[i],_ = strconv.Atoi(code)
 	}
 	// 获取对应的中文名称
 	names := this._valRep.GetAreaNames(intArr)
