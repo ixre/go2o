@@ -13,19 +13,22 @@ import (
 	"github.com/jsix/gof/db/orm"
 	expImpl "go2o/core/domain/express"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/valueobject"
 	"sync"
 )
 
 type expressRep struct {
 	db.Connector
 	*expImpl.ExpressRepBase
+	_valRep        valueobject.IValueRep
 	ProvidersCache []*express.ExpressProvider
 	mux            sync.Mutex
 }
 
-func NewExpressRep(conn db.Connector) express.IExpressRep {
+func NewExpressRep(conn db.Connector, valRep valueobject.IValueRep) express.IExpressRep {
 	return &expressRep{
 		Connector: conn,
+		_valRep:   valRep,
 	}
 }
 
@@ -64,7 +67,7 @@ func (this *expressRep) SaveExpressProvider(v *express.ExpressProvider) (int, er
 
 // 获取用户的快递
 func (this *expressRep) GetUserExpress(userId int) express.IUserExpress {
-	return expImpl.NewUserExpress(userId, this)
+	return expImpl.NewUserExpress(userId, this, this._valRep)
 }
 
 // 获取用户的快递模板
