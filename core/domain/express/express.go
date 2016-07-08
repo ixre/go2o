@@ -10,7 +10,9 @@ package express
 
 import (
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -25,12 +27,15 @@ type userExpressImpl struct {
 	_userId int
 	_arr    []express.IExpressTemplate
 	_rep    express.IExpressRep
+	_valRep valueobject.IValueRep
 }
 
-func NewUserExpress(userId int, rep express.IExpressRep) express.IUserExpress {
+func NewUserExpress(userId int, rep express.IExpressRep,
+	valRep valueobject.IValueRep) express.IUserExpress {
 	return &userExpressImpl{
 		_userId: userId,
 		_rep:    rep,
+		_valRep: valRep,
 	}
 }
 
@@ -42,7 +47,7 @@ func (this *userExpressImpl) GetAggregateRootId() int {
 // 创建快递模板
 func (this *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
 	t.UserId = this.GetAggregateRootId()
-	return newExpressTemplate(this, t, this._rep)
+	return newExpressTemplate(this, t, this._rep, this._valRep)
 }
 
 // 获取快递模板
@@ -138,14 +143,16 @@ type expressTemplateImpl struct {
 	_areaList    []express.ExpressAreaTemplate
 	_areaMap     map[string]*express.ExpressAreaTemplate
 	_mux         sync.Mutex
+	_valRep      valueobject.IValueRep
 }
 
 func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
-	rep express.IExpressRep) express.IExpressTemplate {
+	rep express.IExpressRep, valRep valueobject.IValueRep) express.IExpressTemplate {
 	return &expressTemplateImpl{
 		_value:       v,
 		_userExpress: u,
 		_rep:         rep,
+		_valRep:      valRep,
 	}
 }
 
@@ -188,12 +195,18 @@ func (this *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate
 	if arr == nil {
 		return 0, express.ErrExpressTemplateMissingAreaCode
 	}
-	for _, code := range arr {
+	intArr := make([]int, len(arr))
+	for i, code := range arr {
 		v, ok := this._areaMap[code]
 		if ok && v.Id != t.Id {
 			return 0, express.ErrExistsAreaTemplateSet
 		}
+		intArr[i] = strconv.Atoi(code)
 	}
+	// 获取对应的中文名称
+	names := this._valRep.GetAreaNames(intArr)
+	t.NameList = strings.Join(names, ",")
+
 	// 保存,如果未出错,则更新缓存
 	id, err := this._rep.SaveExpressTemplateAreaSet(t)
 	if err == nil {
@@ -276,6 +289,7 @@ func (this *expressTemplateImpl) GetAreaExpressTemplate(id int) *express.Express
 type ExpressRepBase struct {
 }
 
+// 将默认的快递服务商保存
 func (this *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRep) []*express.ExpressProvider {
 	var err error
 	for _, v := range express.SupportedExpressProvider {

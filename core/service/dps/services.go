@@ -79,7 +79,7 @@ func Init(ctx gof.App) {
 	userRep := repository.NewUserRep(db)
 	notifyRep := repository.NewNotifyRep(db)
 	mssRep := repository.NewMssRep(db, notifyRep, valRep)
-	expressRep := repository.NewExpressRep(db)
+	expressRep := repository.NewExpressRep(db, valRep)
 	memberRep := repository.NewMemberRep(db, mssRep, valRep)
 	itemRep := repository.NewItemRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
