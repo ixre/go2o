@@ -27,14 +27,16 @@ type memberService struct {
 	_rep            member.IMemberRep
 	_partnerService *merchantService
 	_query          *query.MemberQuery
+	_orderQuery     *query.OrderQuery
 }
 
 func NewMemberService(mchService *merchantService, rep member.IMemberRep,
-	q *query.MemberQuery) *memberService {
+	q *query.MemberQuery, oq *query.OrderQuery) *memberService {
 	return &memberService{
 		_rep:            rep,
 		_query:          q,
 		_partnerService: mchService,
+		_orderQuery:     oq,
 	}
 }
 
@@ -401,7 +403,8 @@ func (this *memberService) QueryIncomeLog(memberId, begin, end int,
 // 查询分页订单
 func (this *memberService) QueryPagerOrder(memberId, page, size int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
-	return this._query.QueryPagerOrder(memberId, page, size, where, orderBy)
+	return 0, nil
+	//return this._query.QueryPagerOrder(memberId, page, size, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
