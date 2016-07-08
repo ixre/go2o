@@ -17,6 +17,8 @@ var (
 		"err_express_template_missing_area_code", "运费模板未指定地区")
 	ErrExistsAreaTemplateSet *domain.DomainError = domain.NewDomainError(
 		"err_express_exists_area_template_set", "地区已存在运费模板设置")
+	ErrNoSuchTemplate *domain.DomainError = domain.NewDomainError(
+		"err_express_no_such_template", "运费模板不存在")
 )
 
 const (
@@ -105,6 +107,9 @@ type (
 
 		// 获取所有的地区快递模板
 		GetAllAreaTemplate() []ExpressAreaTemplate
+
+		// 删除模板地区设定
+		DeleteAreaSet(areaSetId int) error
 	}
 
 	IExpressRep interface {
@@ -134,6 +139,9 @@ type (
 
 		// 保存模板的地区设置
 		SaveExpressTemplateAreaSet(t *ExpressAreaTemplate) (int, error)
+
+		// 删除模板的地区设置
+		DeleteAreaExpressTemplate(templateId int, areaSetId int) error
 	}
 
 	// 快递服务商

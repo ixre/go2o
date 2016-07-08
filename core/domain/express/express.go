@@ -243,6 +243,20 @@ func (this *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressAreaTempl
 	return this._areaList
 }
 
+// 删除模板地区设定
+func (this *expressTemplateImpl) DeleteAreaSet(areaSetId int) error {
+	this.GetAllAreaTemplate()
+	if this.GetAreaExpressTemplate(areaSetId) != nil {
+		err := this._rep.DeleteAreaExpressTemplate(this.GetDomainId(), areaSetId)
+		if err == nil {
+			this._areaList = nil
+			this._areaMap = nil
+		}
+		return err
+	}
+	return nil
+}
+
 // 根据地区编码获取运费模板
 func (this *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) *express.ExpressAreaTemplate {
 	this.GetAllAreaTemplate()

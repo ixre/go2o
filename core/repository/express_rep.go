@@ -97,3 +97,10 @@ func (this *expressRep) GetExpressTemplateAllAreaSet(templateId int) []express.E
 func (this *expressRep) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate) (int, error) {
 	return orm.Save(this.GetOrm(), v, v.Id)
 }
+
+// 删除模板的地区设置
+func (this *expressRep) DeleteAreaExpressTemplate(templateId int, areaSetId int) error {
+	_, err := this.Connector.GetOrm().Delete(express.ExpressAreaTemplate{},
+		"id= ? AND template_id=?", areaSetId, templateId)
+	return err
+}

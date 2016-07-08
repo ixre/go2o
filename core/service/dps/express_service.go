@@ -76,6 +76,16 @@ func (this *expressService) DeleteTemplate(userId int, id int) error {
 	return u.DeleteTemplate(id)
 }
 
+// 删除模板地区设定
+func (this *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int) error {
+	u := this._rep.GetUserExpress(userId)
+	t := u.GetTemplate(id)
+	if t == nil {
+		return express.ErrNoSuchTemplate
+	}
+	return t.DeleteAreaSet(areaSetId)
+}
+
 // 获取快递费,传入地区编码，根据单位值，如总重量。
 func (this *expressService) GetExpressFee(userId int, templateId int,
 	areaCode string, unit int) float32 {
