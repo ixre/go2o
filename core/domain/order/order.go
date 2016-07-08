@@ -336,10 +336,11 @@ func (this *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int][]*ord
 
 // 转换购物车的商品项为订单项目
 func (this *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
-	//todo: 在这里获取/生成商品的交易快照
-	snap := this._goodsRep.GetLatestSnapshot(c.SkuId)
+	gs := this._saleRep.GetSale(c.VendorId).GoodsManager().CreateGoods(
+		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
+	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {
-		domain.HandleError(errors.New("商品缺少快照："+
+		domain.HandleError(errors.New("商品快照生成失败："+
 			strconv.Itoa(c.SkuId)), "domain")
 		return nil
 	}
@@ -349,12 +350,11 @@ func (this *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		VendorId:   c.VendorId,
 		ShopId:     c.ShopId,
 		SkuId:      c.SkuId,
-		SnapshotId: snap.SkuId,
+		SnapshotId: snap.Id,
 		Quantity:   c.Quantity,
-		Sku:        snap.Sku,
 		Fee:        fee,
 		FinalFee:   fee,
-		Weight:     snap.Weight * c.Quantity, //计算重量
+		Weight:     c.Snapshot.Weight * c.Quantity, //计算重量
 	}
 }
 
@@ -686,7 +686,7 @@ func (this *orderImpl) breakUpByVendor() []order.ISubOrder {
 func (this *orderImpl) applyGoodsNum() {
 	for _, v := range this._vendorItemsMap {
 		for _, v2 := range v {
-			this.addGoodsSaleNum(v2.SkuId, v2.Quantity)
+			this.addGoodsSaleNum(v2.VendorId, v2.SkuId, v2.Quantity)
 		}
 	}
 }
@@ -793,18 +793,9 @@ func (this *orderImpl) Confirm() error {
 }
 
 // 添加商品销售数量
-func (this *orderImpl) addGoodsSaleNum(snapshotId int, quantity int) error {
-	return nil
-
-	//todo: 销售快照
-	snapshot := this._goodsRep.GetSaleSnapshot(snapshotId)
-	if snapshot == nil {
-		return goods.ErrNoSuchSnapshot
-	}
-	vendorId := 0
-	var gds sale.IGoods = this._saleRep.GetSale(vendorId).
-		GoodsManager().GetGoods(snapshot.GoodsId)
-
+func (this *orderImpl) addGoodsSaleNum(vendorId, skuId, quantity int) error {
+	gds := this._saleRep.GetSale(vendorId).
+		GoodsManager().GetGoods(skuId)
 	if gds == nil {
 		return goods.ErrNoSuchGoods
 	}
@@ -1195,7 +1186,7 @@ func (this *subOrderImpl) cancelGoods() error {
 			return goods.ErrNoSuchSnapshot
 		}
 		var gds sale.IGoods = this._saleRep.GetSale(this._value.VendorId).
-			GoodsManager().GetGoods(snapshot.GoodsId)
+			GoodsManager().GetGoods(snapshot.SkuId)
 		if gds != nil {
 			gds.CancelSale(v.Quantity, this._value.OrderNo)
 		}

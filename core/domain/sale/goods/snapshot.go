@@ -32,6 +32,7 @@ func NewSnapshotManagerImpl(skuId int, rep goods.IGoodsRep,
 		_rep:     rep,
 		_skuId:   skuId,
 		_gs:      gs,
+		_gi:      gi,
 		_itemRep: itemRep,
 	}
 }
@@ -121,17 +122,55 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 	return 0, goods.ErrLatestSnapshot
 }
 
-// 生成交易快照
-func (this *snapshotManagerImpl) GenerateSaleSnapshot() (int, error) {
-	return -1, nil
-}
-
 // 根据KEY获取已销售商品的快照
-func (this *snapshotManagerImpl) GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot {
+func (this *snapshotManagerImpl) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
 	return this._rep.GetSaleSnapshotByKey(key)
 }
 
 // 根据ID获取已销售商品的快照
-func (this *snapshotManagerImpl) GetSaleSnapshot(id int) *goods.GoodsSnapshot {
+func (this *snapshotManagerImpl) GetSaleSnapshot(id int) *goods.SalesSnapshot {
 	return this._rep.GetSaleSnapshot(id)
+}
+
+// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
+func (this *snapshotManagerImpl) GetLatestSaleSnapshot() *goods.SalesSnapshot {
+	snap := this._rep.GetLatestSaleSnapshot(this._skuId)
+	snapBasis := this.GetLatestSnapshot()
+	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
+		// 生成交易快照
+		snap = this.createNewSaleSnap(snapBasis)
+		snap.Id, _ = this._rep.SaveSaleSnapshot(snap)
+	}
+	return snap
+}
+
+// 通过商品快照创建新的商品销售快照
+func (this *snapshotManagerImpl) createNewSaleSnap(snap *goods.Snapshot) *goods.SalesSnapshot {
+	sn := &goods.SalesSnapshot{
+		//快照编号
+		Id: 0,
+		//商品SKU编号
+		SkuId: this._skuId,
+		// 卖家编号
+		SellerId: snap.VendorId,
+		//商品标题
+		GoodsTitle: snap.GoodsTitle,
+		//货号
+		GoodsNo: snap.GoodsNo,
+		//货品编号
+		ItemId: snap.ItemId,
+		//分类编号
+		CategoryId: snap.CategoryId,
+		//SKU
+		Sku: snap.Sku,
+		//图片
+		Image: snap.Image,
+		//销售价
+		Price: snap.SalePrice,
+		// 快照时间
+		CreateTime: snap.UpdateTime,
+	}
+	//快照编码: 商户编号+g商品编号+快照时间戳
+	sn.SnapshotKey = fmt.Sprintf("%d-g%d-%d", sn.SellerId, sn.SkuId, sn.CreateTime)
+	return sn
 }

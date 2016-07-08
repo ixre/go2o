@@ -507,6 +507,9 @@ ALTER TABLE `flm`.`pt_order_item`
 ALTER TABLE `flm`.`sale_order_item`
   CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`sale_order_item`
+  DROP COLUMN `sku`;
+
 
 
 CREATE TABLE `flm`.`express_template` (
@@ -556,6 +559,23 @@ ALTER TABLE `flm`.`sale_order`
 ALTER TABLE `flm`.`mm_member`
   ADD COLUMN `check_code` VARCHAR(8) NULL AFTER `reg_time`,
   ADD COLUMN `check_expires` INT NULL AFTER `check_code`;
+
+
+CREATE TABLE `flm`.`gs_sales_snapshot` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `snap_key` VARCHAR(45) NULL,
+  `sku_id` INT NULL,
+  `seller_id` INT NULL,
+  `item_id` INT NULL,
+  `cat_id` INT NULL,
+  `goods_title` VARCHAR(120) NULL,
+  `goods_no` VARCHAR(45) NULL,
+  `sku` VARCHAR(120) NULL,
+  `img` VARCHAR(120) NULL,
+  `price` DECIMAL(8,2) NULL,
+  `create_time` INT NULL,
+  PRIMARY KEY (`id`));
+
 
 
 

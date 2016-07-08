@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -147,17 +148,19 @@ type (
 
 	// 购物车项
 	CartItem struct {
-		Id         int     `db:"id" pk:"yes" auto:"yes"`
-		CartId     int     `db:"cart_id"`
-		VendorId   int     `db:"vendor_id"`
-		ShopId     int     `db:"shop_id"`
-		SkuId      int     `db:"goods_id"`
-		SnapshotId int     `db:"snap_id"`
-		Quantity   int     `db:"quantity"`
-		Checked    int     `db:"checked" json:"checked"` // 是否结算
-		Sku        string  `db:"-"`
+		Id         int             `db:"id" pk:"yes" auto:"yes"`
+		CartId     int             `db:"cart_id"`
+		VendorId   int             `db:"vendor_id"`
+		ShopId     int             `db:"shop_id"`
+		SkuId      int             `db:"goods_id"`
+		SnapshotId int             `db:"snap_id"`
+		Quantity   int             `db:"quantity"`
+		Checked    int             `db:"checked" json:"checked"` // 是否结算
+		Snapshot   *goods.Snapshot `db:"-"`
+
 		Price      float32 `db:"-"`
 		SalePrice  float32 `db:"-"`
+		Sku        string  `db:"-"`
 		Name       string  `db:"-"`
 		GoodsNo    string  `db:"-"`
 		SmallTitle string  `db:"-"`

@@ -142,6 +142,7 @@ func (this *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 		}
 		// 设置购物车项的数据
 		if ok {
+			v.Snapshot = gv
 			v.Name = gv.GoodsTitle
 			v.Price = gv.Price
 			v.GoodsNo = gv.GoodsNo

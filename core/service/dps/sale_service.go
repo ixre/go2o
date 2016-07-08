@@ -83,7 +83,7 @@ func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int)
 func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
 	snap := this._goodsRep.GetSaleSnapshot(snapshotId)
 	if snap != nil {
-		return this._goodsRep.GetValueGoodsById(snap.GoodsId)
+		return this._goodsRep.GetValueGoodsById(snap.SkuId)
 	}
 	return nil
 }

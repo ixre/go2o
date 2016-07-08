@@ -90,7 +90,7 @@ func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 	d := this.Connector
 	var order_no string
 	for {
-		order_no = domain.NewOrderNo(vendorId)
+		order_no = domain.NewOrderNo(vendorId, "")
 		var rec int
 		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`,
 			&rec, order_no); rec == 0 {

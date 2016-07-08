@@ -24,18 +24,17 @@ var _ domain.IDomain = new(tmpGoodsImpl)
 
 // 临时的商品实现  todo: 要与item分开
 type tmpGoodsImpl struct {
-	_manager        *goodsManagerImpl
-	_goods          sale.IItem
-	_value          *goods.ValueGoods
-	_saleRep        sale.ISaleRep
-	_goodsRep       goods.IGoodsRep
-	_itemRep        item.IItemRep
-	_promRep        promotion.IPromotionRep
-	_sale           sale.ISale
-	_latestSnapshot *goods.GoodsSnapshot
-	_levelPrices    []*goods.MemberPrice
-	_promDescribes  map[string]string
-	_snapManager    goods.ISnapshotManager
+	_manager       *goodsManagerImpl
+	_goods         sale.IItem
+	_value         *goods.ValueGoods
+	_saleRep       sale.ISaleRep
+	_goodsRep      goods.IGoodsRep
+	_itemRep       item.IItemRep
+	_promRep       promotion.IPromotionRep
+	_sale          sale.ISale
+	_levelPrices   []*goods.MemberPrice
+	_promDescribes map[string]string
+	_snapManager   goods.ISnapshotManager
 }
 
 func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
@@ -43,23 +42,24 @@ func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
 	value *goods.ValueGoods, rep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
 	v := &tmpGoodsImpl{
-		_manager:        m,
-		_goods:          goods,
-		_value:          value,
-		_saleRep:        rep,
-		_itemRep:        itemRep,
-		_goodsRep:       goodsRep,
-		_promRep:        promRep,
-		_sale:           s,
-		_latestSnapshot: nil,
+		_manager:  m,
+		_goods:    goods,
+		_value:    value,
+		_saleRep:  rep,
+		_itemRep:  itemRep,
+		_goodsRep: goodsRep,
+		_promRep:  promRep,
+		_sale:     s,
 	}
 	return v.init()
 }
 
 func (this *tmpGoodsImpl) init() sale.IGoods {
 	this._value.Price = this._value.Price
-	this._value.SalePrice = this._goods.GetValue().SalePrice
-	this._value.PromPrice = this._goods.GetValue().SalePrice
+	if this._goods != nil {
+		this._value.SalePrice = this._goods.GetValue().SalePrice
+		this._value.PromPrice = this._goods.GetValue().SalePrice
+	}
 	return this
 }
 
@@ -71,9 +71,14 @@ func (this *tmpGoodsImpl) GetDomainId() int {
 // 商品快照
 func (this *tmpGoodsImpl) SnapshotManager() goods.ISnapshotManager {
 	if this._snapManager == nil {
-		gi := this.GetItem().GetValue()
+		var item *item.Item
+		gi := this.GetItem()
+		if gi != nil {
+			v := gi.GetValue()
+			item = &v
+		}
 		this._snapManager = goodsImpl.NewSnapshotManagerImpl(this.GetDomainId(),
-			this._goodsRep, this._itemRep, this.GetValue(), &gi)
+			this._goodsRep, this._itemRep, this.GetValue(), item)
 	}
 	return this._snapManager
 }

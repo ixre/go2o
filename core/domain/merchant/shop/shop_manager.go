@@ -92,8 +92,31 @@ func (this *shopManagerImpl) GetShop(shopId int) shop.IShop {
 // 删除门店
 func (this *shopManagerImpl) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
-	this.Reload()
-	return this._rep.DeleteShop(this._merchant.GetAggregateRootId(), shopId)
+	mchId := this._merchant.GetAggregateRootId()
+	s := this.GetShop(shopId)
+	if s != nil {
+		this.Reload() //重新加载数据
+		switch s.Type() {
+		case shop.TypeOfflineShop:
+			return this.deleteOfflineShop(mchId, s)
+
+		case shop.TypeOnlineShop:
+			return this.deleteOnlineShop(mchId, s)
+		}
+	}
+	return nil
+}
+
+func (this *shopManagerImpl) deleteOnlineShop(mchId int, s shop.IShop) error {
+	shopId := s.GetDomainId()
+	err := this._rep.DeleteOnlineShop(mchId, shopId)
+	return err
+}
+
+func (this *shopManagerImpl) deleteOfflineShop(mchId int, s shop.IShop) error {
+	shopId := s.GetDomainId()
+	err := this._rep.DeleteOfflineShop(mchId, shopId)
+	return err
 }
 
 // 重新加载数据
