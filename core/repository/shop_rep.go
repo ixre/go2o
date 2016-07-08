@@ -134,8 +134,26 @@ func (this *shopRep) GetShopsOfMerchant(mchId int) []*shop.Shop {
 	return shops
 }
 
-func (this *shopRep) DeleteShop(mchId, shopId int) error {
+func (this *shopRep) deleteShop(mchId, shopId int) error {
 	_, err := this.Connector.GetOrm().Delete(shop.Shop{},
 		"mch_id=? AND id=?", mchId, shopId)
+	return err
+}
+
+// 删除线上商店
+func (this *shopRep) DeleteOnlineShop(mchId, shopId int) error {
+	err := this.deleteShop(mchId, shopId)
+	if err == nil {
+		err = this.Connector.GetOrm().DeleteByPk(shop.OnlineShop{}, shopId)
+	}
+	return err
+}
+
+// 删除线下门店
+func (this *shopRep) DeleteOfflineShop(mchId, shopId int) error {
+	err := this.deleteShop(mchId, shopId)
+	if err == nil {
+		err = this.Connector.GetOrm().DeleteByPk(shop.OfflineShop{}, shopId)
+	}
 	return err
 }

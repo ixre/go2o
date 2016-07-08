@@ -315,10 +315,6 @@ type (
 		Id int `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int `db:"order_id"`
-		// 运营商编号
-		VendorId int `db:"-"`
-		// 商店编号
-		ShopId int `db:"-"`
 		// 商品SKU编号
 		SkuId int `db:"sku_id"`
 		// 快照编号
@@ -326,13 +322,18 @@ type (
 		// 数量
 		Quantity int `db:"quantity"`
 		// SKU描述
-		Sku string `db:"sku"`
+		//Sku string `db:"sku"`
 		// 金额
 		Fee float32 `db:"fee"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
 		FinalFee float32 `db:"final_fee"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+
+		// 运营商编号
+		VendorId int `db:"-"`
+		// 商店编号
+		ShopId int `db:"-"`
 		// 重量,用于生成订单时存储数据
 		Weight int `db:"-"`
 	}

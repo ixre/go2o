@@ -69,17 +69,23 @@ type (
 		// 保存快照
 		SaveSnapshot(*Snapshot) (int, error)
 
+		// 根据指定商品快照
+		GetSnapshots(skuIdArr []int) []Snapshot
+
 		// 获取最新的商品快照
 		GetLatestSnapshot(skuId int) *Snapshot
 
 		// 获取指定的商品快照
-		GetSaleSnapshot(id int) *GoodsSnapshot
+		GetSaleSnapshot(id int) *SalesSnapshot
 
 		// 根据Key获取商品快照
-		GetSaleSnapshotByKey(key string) *GoodsSnapshot
+		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
-		// 根据指定商品快照
-		GetSnapshots(skuIdArr []int) []Snapshot
+		// 获取最新的商品销售快照
+		GetLatestSaleSnapshot(skuId int) *SalesSnapshot
+
+		// 保存商品销售快照
+		SaveSaleSnapshot(*SalesSnapshot) (int, error)
 	}
 
 	// 商品

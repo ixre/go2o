@@ -11,6 +11,7 @@ package repository
 import (
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
@@ -195,33 +196,6 @@ func (this *goodsRep) GetLatestSnapshot(skuId int) *goods.Snapshot {
 	return nil
 }
 
-// 获取最新的商品快照
-func (this *goodsRep) GetLatestSaleSnapshot(skuId int) *goods.Snapshot {
-	var e *goods.Snapshot = new(goods.Snapshot)
-	if this.Connector.GetOrm().GetBy(e, "goods_id=? ORDER BY id DESC", skuId) == nil {
-		return e
-	}
-	return nil
-}
-
-// 获取指定的商品快照
-func (this *goodsRep) GetSaleSnapshot(id int) *goods.GoodsSnapshot {
-	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
-	if this.Connector.GetOrm().Get(id, e) == nil {
-		return e
-	}
-	return nil
-}
-
-// 根据Key获取商品快照
-func (this *goodsRep) GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot {
-	var e *goods.GoodsSnapshot = new(goods.GoodsSnapshot)
-	if this.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
-		return e
-	}
-	return nil
-}
-
 // 根据指定商品快照
 func (this *goodsRep) GetSnapshots(skuIdArr []int) []goods.Snapshot {
 	list := []goods.Snapshot{}
@@ -229,4 +203,36 @@ func (this *goodsRep) GetSnapshots(skuIdArr []int) []goods.Snapshot {
 		`SELECT * FROM gs_snapshot WHERE sku_id IN (`+
 			format.IdArrJoinStr(skuIdArr)+`)`)
 	return list
+}
+
+// 获取最新的商品销售快照
+func (this *goodsRep) GetLatestSaleSnapshot(skuId int) *goods.SalesSnapshot {
+	e := new(goods.SalesSnapshot)
+	if this.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
+		return e
+	}
+	return nil
+}
+
+// 获取指定的商品销售快照
+func (this *goodsRep) GetSaleSnapshot(id int) *goods.SalesSnapshot {
+	e := new(goods.SalesSnapshot)
+	if this.Connector.GetOrm().Get(id, e) == nil {
+		return e
+	}
+	return nil
+}
+
+// 根据Key获取商品销售快照
+func (this *goodsRep) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
+	var e *goods.SalesSnapshot = new(goods.SalesSnapshot)
+	if this.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
+		return e
+	}
+	return nil
+}
+
+// 保存商品销售快照
+func (this *goodsRep) SaveSaleSnapshot(v *goods.SalesSnapshot) (int, error) {
+	return orm.Save(this.Connector.GetOrm(), v, v.Id)
 }

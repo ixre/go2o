@@ -19,7 +19,11 @@ type (
 
 		GetShopsOfMerchant(merchantId int) []*Shop
 
-		DeleteShop(merchantId, shopId int) error
+		// 删除线上商店
+		DeleteOnlineShop(mchId, shopId int) error
+
+		// 删除线下门店
+		DeleteOfflineShop(mchId, shopId int) error
 
 		// 获取线上商店
 		GetOnlineShop(shopId int) *OnlineShop

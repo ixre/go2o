@@ -9,6 +9,7 @@
 package domain
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/util"
@@ -19,24 +20,26 @@ import (
 )
 
 //新订单号
-func NewOrderNo(vendorId int) string {
+func NewOrderNo(vendorId int, prefix string) string {
+	rdLen := 6 - len(prefix)
 	//MerchantId的首位和末尾再加7位随机数
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
-	typeStr := ""
-	timeStr := time.Now().Format("0601")
-	rd := strconv.Itoa(time.Now().Nanosecond() + rand.Intn(999-100))
-	if l := len(rd); l > 6 {
-		rd = rd[:6]
-	} else {
-		rd = strings.Repeat("0", 6-l) + rd
+	buf := bytes.NewBufferString(prefix)
+	vendorStr := strconv.Itoa(vendorId)
+	if l := len(vendorStr); l < 6 {
+		buf.WriteString("1")
+		buf.WriteString(strings.Repeat("0", 5-l))
 	}
-	if vendorId > 0 {
-		typeStr = "MC"
+	buf.WriteString(vendorStr)
+	rd := strconv.Itoa(rand.Intn(999999 - 100000))
+	if l := len(rd); l > rdLen {
+		buf.WriteString(rd[:rdLen])
 	} else {
-		typeStr = "ZY"
+		buf.WriteString(strings.Repeat("0", rdLen-l))
+		buf.WriteString(rd)
 	}
-	return fmt.Sprintf("%s%s%s", typeStr, timeStr, rd)
+	return buf.String()
 }
 
 // 新交易号(12位)
