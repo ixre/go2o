@@ -124,7 +124,7 @@ func (this *orderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 		// 标题
 		Title: coupon.GetDescribe(),
 		// 节省金额
-		SaveFee: coupon.GetCouponFee(this._value.TotalFee),
+		SaveFee: coupon.GetCouponFee(this._value.GoodsFee),
 		// 赠送积分
 		PresentIntegral: 0, //todo;/////
 		// 是否应用
@@ -244,21 +244,12 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 	if len(items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
-
-	//todo: 重构,根据vendorItemMap获取金额
-
+	// 绑定结算购物车
 	this._cart = c
-	_, of := c.GetFee()
-	this._value.TotalFee = of                                             //总金额
-	this._value.FinalFee = of                                             //实际金额
-	this._value.DiscountFee = this._value.TotalFee - this._value.FinalFee //优惠金额
-
 	// 将购物车的商品分类整理
 	this._vendorItemsMap = this.buildVendorItemMap(items)
-
 	// 更新订单的金额
 	this._vendorExpressMap = this.updateOrderFee(this._vendorItemsMap)
-
 	// 状态设为待支付
 	this._value.Status = 1
 
@@ -267,12 +258,16 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 
 // 更新订单金额,并返回运费
 func (this *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float32 {
-	this._value.TotalFee = 0
+	this._value.GoodsFee = 0
 	weightMap := make(map[int]int) //重量
 	for k, v := range mp {
 		weightMap[k] = 0
 		for _, item := range v {
-			this._value.TotalFee += item.Fee
+			//计算商品总金额
+			this._value.GoodsFee += item.Fee
+			//计算商品优惠金额
+			this._value.DiscountFee += item.Fee - item.FinalFee
+			//计重
 			weightMap[k] += item.Weight
 		}
 	}
@@ -283,11 +278,14 @@ func (this *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]flo
 		unit := weight / 1000 //转换为kg
 		expressMap[k] = this._expressRep.GetUserExpress(k).
 			GetExpressFee(-1, "1000", unit)
+		//叠加运费
 		this._value.ExpressFee += expressMap[k]
 	}
-	this._value.TotalFee += this._value.ExpressFee
-	this._value.FinalFee = this._value.TotalFee
-	this._value.DiscountFee = 0
+
+	this._value.PackageFee = 0
+	//计算最终金额
+	this._value.FinalFee = this._value.GoodsFee - this._value.DiscountFee +
+		this._value.ExpressFee + this._value.PackageFee
 	return expressMap
 }
 
@@ -385,7 +383,7 @@ func (this *orderImpl) Submit() (string, error) {
 	proms, fee := this.applyCartPromotionOnSubmit(v, this._cart)
 	if len(proms) != 0 {
 		v.DiscountFee += float32(fee)
-		v.FinalFee = v.TotalFee - v.DiscountFee
+		v.FinalFee = v.GoodsFee - v.DiscountFee
 		if v.FinalFee < 0 {
 			// 如果出现优惠券多余的金额也一并使用
 			v.FinalFee = 0
@@ -427,7 +425,7 @@ func (this *orderImpl) avgDiscountToItem() {
 		panic(errors.New("仅能在下单时进行商品抵扣均分"))
 	}
 	if this._value.DiscountFee > 0 {
-		totalFee := this._value.TotalFee
+		totalFee := this._value.GoodsFee
 		disFee := this._value.DiscountFee
 		for _, items := range this._vendorItemsMap {
 			for _, v := range items {
@@ -632,9 +630,10 @@ func (this *orderImpl) createSubOrderByVendor(parentOrderId int,
 		ShopId:    items[0].ShopId,
 		ItemsInfo: "",
 		// 总金额
-		TotalFee: 0,
+		GoodsFee: 0,
 		// 减免金额(包含优惠券金额)
 		DiscountFee: 0,
+		ExpressFee:  0,
 		FinalFee:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend:  0,
@@ -646,10 +645,17 @@ func (this *orderImpl) createSubOrderByVendor(parentOrderId int,
 	}
 	// 计算订单金额
 	for _, item := range items {
-		v.TotalFee += item.Fee
-		v.FinalFee += item.FinalFee
+		//计算商品金额
+		v.GoodsFee += item.Fee
+		//计算商品优惠金额
+		v.DiscountFee += item.Fee - item.FinalFee
 	}
-	v.DiscountFee = v.TotalFee - v.FinalFee
+	// 设置运费
+	v.ExpressFee = this._vendorExpressMap[vendorId]
+	// 设置包装费
+	v.PackageFee = 0
+	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
+	v.FinalFee = v.GoodsFee - v.DiscountFee + v.PackageFee + v.ExpressFee
 	// 判断是否已支付
 	if this._value.IsPaid == 1 {
 		v.Status = enum.ORDER_WAIT_CONFIRM
@@ -1083,7 +1089,7 @@ func (this *subOrderImpl) updateAccountForOrder(m member.IMember,
 	acc := m.GetAccount()
 	ov := order.GetValue()
 	acv := acc.GetValue()
-	acv.TotalFee += ov.TotalFee
+	acv.TotalFee += ov.GoodsFee
 	acv.TotalPay += ov.FinalFee
 	acv.UpdateTime = time.Now().Unix()
 	acc.Save()

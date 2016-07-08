@@ -72,51 +72,6 @@ func (this *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 	return num, rows
 }
 
-// 查询分页订单
-func (this *MemberQuery) QueryPagerOrder(memberId, page, size int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
-
-	d := this.Connector
-
-	if where != "" {
-		where = "AND " + where
-	}
-	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
-	} else {
-		orderBy = " ORDER BY update_time DESC,create_time desc "
-	}
-
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pt_order WHERE
-	 		member_id=? %s`, where), &num, memberId)
-
-	d.Query(fmt.Sprintf(` SELECT id,
-			order_no,
-			buyer_id,
-			vendor_id,
-			shop_id,
-			replace(items_info,'\n','<br />') as items_info,
-			total_fee,
-			fee,
-			pay_fee,
-			payment_opt,
-			is_paid,
-			note,
-			status,
-			paid_time,
-            create_time,
-            deliver_time,
-            update_time
-            FROM pt_order WHERE member_id=? %s %s LIMIT ?,?`,
-		where, orderBy),
-		func(_rows *sql.Rows) {
-			rows = db.RowsToMarshalMap(_rows)
-			_rows.Close()
-		}, memberId, (page-1)*size, size)
-
-	return num, rows
-}
-
 // 获取最近的余额变动信息
 func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)

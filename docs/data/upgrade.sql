@@ -576,6 +576,21 @@ CREATE TABLE `flm`.`gs_sales_snapshot` (
   `create_time` INT NULL,
   PRIMARY KEY (`id`));
 
+ALTER TABLE `flm`.`sale_order`
+  CHANGE COLUMN `total_fee` `goods_fee` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '商品金额' ;
+
+
+ALTER TABLE `flm`.`sale_sub_order`
+  CHANGE COLUMN `total_fee` `goods_fee` DECIMAL(8,2) NULL DEFAULT NULL ,
+  ADD COLUMN `express_fee` DECIMAL(4,2) NULL AFTER `discount_fee`;
+
+ALTER TABLE `flm`.`sale_order`
+  ADD COLUMN `package_fee` DECIMAL(4,2) NULL AFTER `express_fee`;
+
+ALTER TABLE `flm`.`sale_sub_order`
+  ADD COLUMN `package_fee` DECIMAL(4,2) NULL AFTER `express_fee`;
+
+
 
 
 
