@@ -60,7 +60,7 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
         vendor_id,o.shop_id,s.name as shop_name,
         o.goods_fee,o.discount_fee,o.express_fee,
-        o.package_fee,o.final_fee,o.status
+        o.package_fee,o.final_fee,po.is_paid,o.status,po.create_time
          FROM flm.sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
             INNER JOIN mch_shop s ON o.shop_id=s.id
          WHERE buyer_id=? %s %s LIMIT ?,?`,
@@ -73,7 +73,7 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 				}
 				rs.Scan(&e.Id, &e.OrderNo, &e.ParentNo, &e.VendorId, &e.ShopId,
 					&e.ShopName, &e.GoodsFee, &e.DiscountFee, &e.ExpressFee,
-					&e.PackageFee, &e.FinalFee, &e.Status)
+					&e.PackageFee, &e.FinalFee, &e.IsPaid, &e.Status, &e.CreateTime)
 				orderList = append(orderList, e)
 				orderMap[e.Id] = i
 				if i != 0 {

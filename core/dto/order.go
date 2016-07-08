@@ -27,8 +27,10 @@ type (
 		DiscountFee float32
 		ExpressFee  float32
 		PackageFee  float32
+		IsPaid      bool
 		FinalFee    float32
 		Status      int
+		CreateTime  int64
 		Items       []*OrderItem
 	}
 
