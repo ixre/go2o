@@ -401,10 +401,9 @@ func (this *memberService) QueryIncomeLog(memberId, begin, end int,
 }
 
 // 查询分页订单
-func (this *memberService) QueryPagerOrder(memberId, page, size int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
-	return 0, nil
-	//return this._query.QueryPagerOrder(memberId, page, size, where, orderBy)
+func (this *memberService) QueryPagerOrder(memberId, begin, size int, pagination bool,
+	where, orderBy string) (num int, rows []*dto.PagedMemberSubOrder) {
+	return this._orderQuery.QueryPagerOrder(memberId, begin, size, pagination, where, orderBy)
 }
 
 /*********** 收货地址 ***********/
