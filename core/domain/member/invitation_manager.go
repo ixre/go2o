@@ -10,6 +10,7 @@ package member
 
 import (
 	"go2o/core/domain/interface/member"
+	"go2o/core/dto"
 )
 
 var _ member.IInvitationManager = new(invitationManager)
@@ -30,7 +31,7 @@ func (this *invitationManager) InvitationBy(memberId int) bool {
 
 // 获取我邀请的会员
 func (this *invitationManager) GetInvitationMembers(begin, end int) (
-	int, []*member.Member) {
+	int, []*dto.InvitationMember) {
 	return this._member._rep.GetMyInvitationMembers(
 		this._member.GetAggregateRootId(), begin, end)
 }
@@ -42,6 +43,9 @@ func (this *invitationManager) MyCode() string {
 
 // 获取邀请会员下级邀请数量
 func (this *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]int {
+	if memberIdArr == nil || len(memberIdArr) == 0{
+		return map[int]int{}
+	}
 	return this._member._rep.GetSubInvitationNum(this._member.GetAggregateRootId(),
 		memberIdArr)
 }

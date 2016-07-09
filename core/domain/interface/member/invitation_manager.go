@@ -8,12 +8,14 @@
  */
 package member
 
+import "go2o/core/dto"
+
 type IInvitationManager interface {
 	// 判断是否由会员邀请
 	InvitationBy(memberId int) bool
 
 	// 获取我邀请的会员
-	GetInvitationMembers(begin, end int) (total int, rows []*Member)
+	GetInvitationMembers(begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取我的邀请码
 	MyCode() string

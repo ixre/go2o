@@ -116,7 +116,7 @@ type IMemberRep interface {
 	DeleteDeliver(memberId, deliverId int) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*Member)
+	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
 	GetSubInvitationNum(memberId int, memberIdArr []int) map[int]int
