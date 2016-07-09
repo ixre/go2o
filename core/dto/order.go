@@ -41,14 +41,27 @@ type (
 
 	// 订单商品项
 	OrderItem struct {
-		Id         int
-		OrderId    int
+		// 编号
+		Id int
+		// 订单编号
+		OrderId int
+		// 商品快照编号
 		SnapshotId int
-		SkuId      int
+		// 商品SKU编号
+		SkuId int
+		// 商品标题
 		GoodsTitle string
-		Image      string
-		Quantity   int
-		Fee        float32
-		FinalFee   float32
+		// 商品图片
+		Image string
+		// 商品单价
+		Price float32
+		// 商品实际单价
+		FinalPrice float32
+		// 商品数量
+		Quantity int
+		// 商品总金额
+		Fee float32
+		// 商品实际总金额
+		FinalFee float32
 	}
 )
