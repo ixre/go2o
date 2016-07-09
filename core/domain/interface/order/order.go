@@ -23,6 +23,81 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
+type OrderState int
+
+const (
+	/****** 在履行前,订单可以取消申请推狂  ******/
+
+	// 等待支付
+	StatAwaitingPayment = 1
+	// 等待确认
+	StatAwaitingConfirm = 2
+	// 等待备货
+	StatAwaitingPickup = 3
+	// 等待发货
+	StatAwaitingShipment = 4
+
+	/****** 订单取消 ******/
+
+	// 系统取消
+	StatCancelled = 11
+	// 买家申请取消,等待卖家确认
+	StatAwaitingCancel = 12
+	// 卖家谢绝订单,由于无货等原因
+	StatDeclined = 13
+	// 已退款,完成取消
+	StatRefunded = 14
+
+	/****** 履行后订单只能退货或换货 ******/
+
+	// 部分发货(将订单商品分多个包裹发货)
+	PartiallyShipped = 5
+	// 完成发货
+	StatShipped = 6
+	// 订单完成
+	StatCompleted = 7
+
+	/****** 售后状态 ******/
+
+	// 已退货
+	StatGoodsRefunded = 15
+)
+
+func (t OrderState) String() string {
+	switch t {
+	case StatAwaitingPayment:
+		return "待付款"
+	case StatAwaitingConfirm:
+		return "待确认"
+	case StatAwaitingPickup:
+		return "正在备货"
+	case StatAwaitingShipment:
+		return "等待发货"
+	case StatCancelled:
+		return "交易关闭"
+	case StatDeclined:
+		return "卖家关闭"
+	case StatAwaitingCancel:
+		return "等待退款"
+	case StatRefunded:
+		return "已退款"
+	case PartiallyShipped:
+		return "已部分发货"
+	case StatShipped:
+		return "待收货"
+	case StatCompleted:
+		return "交易完成"
+	case StatGoodsRefunded:
+		return "已退货"
+	}
+	return "Error State"
+}
+
+// 后端状态描述
+func (t OrderState) BackEndString() string {
+	return t.String()
+}
+
 var (
 	ErrRequireCart *domain.DomainError = domain.NewDomainError(
 		"err_require_cart", "订单已生成,无法引入购物车")
