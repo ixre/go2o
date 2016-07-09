@@ -45,7 +45,7 @@ type Service interface {
 	Start()
 
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
-	OrderObs(*order.Order) bool
+	OrderObs(*order.SubOrder) bool
 
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *member.Member, create bool) bool
@@ -168,7 +168,7 @@ func (this *defaultService) Start() {
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) OrderObs(o *order.Order) bool {
+func (this *defaultService) OrderObs(o *order.SubOrder) bool {
 	defer Recover()
 	conn := core.GetRedisConn()
 	defer conn.Close()
@@ -176,6 +176,7 @@ func (this *defaultService) OrderObs(o *order.Order) bool {
 		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.OrderNo)
 		}
+		this.updateOrderExpires(conn, o)
 	}
 	return true
 }
@@ -197,19 +198,17 @@ func (this *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) boo
 }
 
 //设置订单过期时间
-func (this *defaultService) setOrderExpires(conn redis.Conn, o *order.Order) {
+func (this *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
 	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
 		ss := dps.BaseService.GetGlobMchSaleConf()
-		t := int64(ss.OrderTimeOutMinute) * 60
-		unix := o.CreateTime + t
+		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		conn.Do("SET", this.getExpiresKey(o), unix)
-	} else if o.IsPaid == 1 { //删除过期时间
+	} else if o.Status == enum.ORDER_WAIT_CONFIRM { //删除过期时间
 		conn.Do("DEL", this.getExpiresKey(o))
 	}
 }
-
-func (this *defaultService) getExpiresKey(o *order.Order) string {
-	return fmt.Sprintf("%s%s", variable.KvOrderExpiresTime, o.OrderNo)
+func (this *defaultService) getExpiresKey(o *order.SubOrder) string {
+	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.Id)
 }
 
 // 处理邮件队列

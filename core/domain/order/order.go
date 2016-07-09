@@ -609,7 +609,7 @@ func (this *orderImpl) Save() (int, error) {
 }
 
 // 根据运营商生成子订单
-func (this *orderImpl) createSubOrderByVendor(parentOrderId int,
+func (this *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
 	vendorId int, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
 	orderNo := this.GetOrderNo()
 	if newOrderNo {
@@ -624,6 +624,7 @@ func (this *orderImpl) createSubOrderByVendor(parentOrderId int,
 
 	v := &order.SubOrder{
 		OrderNo:   orderNo,
+		BuyerId:   buyerId,
 		VendorId:  vendorId,
 		ParentId:  parentOrderId,
 		Subject:   "子订单",
@@ -677,9 +678,10 @@ func (this *orderImpl) breakUpByVendor() []order.ISubOrder {
 	l := len(this._vendorItemsMap)
 	list := make([]order.ISubOrder, l)
 	i := 0
+	buyerId := this._buyer.GetAggregateRootId()
 	for k, v := range this._vendorItemsMap {
 		//log.Println("----- vendor ", k, len(v),l)
-		list[i] = this.createSubOrderByVendor(parentOrderId, k, l > 1, v)
+		list[i] = this.createSubOrderByVendor(parentOrderId, buyerId, k, l > 1, v)
 		if _, err := list[i].Save(); err != nil {
 			domain.HandleError(err, "domain")
 		}
