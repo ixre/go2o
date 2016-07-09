@@ -11,7 +11,6 @@ package order
 
 import (
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/infrastructure/domain"
@@ -96,6 +95,23 @@ func (t OrderState) String() string {
 // 后端状态描述
 func (t OrderState) BackEndString() string {
 	return t.String()
+}
+
+const (
+	LogSetup       LogType = 1
+	LogChangePrice LogType = 2
+)
+
+type LogType int
+
+func (this LogType) String() string {
+	switch this {
+	case LogSetup:
+		return "流程"
+	case LogChangePrice:
+		return "调价"
+	}
+	return ""
 }
 
 var (
@@ -187,7 +203,7 @@ type (
 		//BreakUpByVendor() ([]IOrder, error)
 
 		// 添加日志,system表示为系统日志
-		AppendLog(t enum.OrderLogType, system bool, message string) error
+		AppendLog(l *OrderLog) error
 
 		// 订单是否结束
 		IsOver() bool
@@ -232,6 +248,9 @@ type (
 		// 获取值对象
 		GetValue() *SubOrder
 
+		// 记录订单日志
+		AppendLog(logType LogType, system bool, message string) error
+
 		// 设置Shop,如果不需要记录日志，则remark传递空
 		SetShop(shopId int) error
 
@@ -263,9 +282,11 @@ type (
 	}
 
 	OrderLog struct {
-		//Id int `db:"id" auto:"yes" pk:"yes"`
-		OrderId    int    `db:"order_id"`
-		Type       int    `db:"type"`
+		Id      int `db:"id" auto:"yes" pk:"yes"`
+		OrderId int `db:"order_id"`
+		Type    int `db:"type"`
+		// 订单状态
+		OrderState int    `db:"order_state"`
 		IsSystem   int    `db:"is_system"`
 		Message    string `db:"message"`
 		RecordTime int64  `db:"record_time"`
@@ -349,7 +370,7 @@ type (
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态
 		//todo: ???删除?
-		Status int `db:"status" json:"status"`
+		State int `db:"status" json:"status"`
 	}
 
 	// 子订单
@@ -389,7 +410,7 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态
-		Status int `db:"status" json:"status"`
+		State int `db:"status" json:"status"`
 		// 订单项
 		Items []*OrderItem `db:"-"`
 	}

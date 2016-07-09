@@ -91,7 +91,7 @@ type (
 		GetWaitingSetupOrders(vendorId int) ([]*Order, error)
 
 		// 保存订单日志
-		SaveOrderLog(*OrderLog) error
+		SaveSubOrderLog(*OrderLog) error
 
 		// 获取子订单
 		GetSubOrder(id int) *SubOrder
