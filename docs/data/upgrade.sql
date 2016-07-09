@@ -591,6 +591,11 @@ ALTER TABLE `flm`.`sale_sub_order`
   ADD COLUMN `package_fee` DECIMAL(4,2) NULL AFTER `express_fee`;
 
 
+ALTER TABLE `flm`.`sale_sub_order`
+  ADD COLUMN `buyer_id` INT NULL AFTER `parent_order`;
+
+
+
 
 
 

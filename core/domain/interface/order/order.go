@@ -285,6 +285,8 @@ type (
 		OrderNo string `db:"order_no"`
 		// 订单编号
 		ParentId int `db:"parent_order"`
+		// 购买人编号(冗余,便于商户处理数据)
+		BuyerId int `db:"buyer_id"`
 		// 运营商编号
 		VendorId int `db:"vendor_id" json:"vendorId"`
 		// 店铺编号

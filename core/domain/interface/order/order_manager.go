@@ -93,6 +93,9 @@ type (
 		// 保存订单日志
 		SaveOrderLog(*OrderLog) error
 
+		// 获取子订单
+		GetSubOrder(id int) *SubOrder
+
 		// 保存子订单
 		SaveSubOrder(value *SubOrder) (int, error)
 

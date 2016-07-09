@@ -11,6 +11,7 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
@@ -100,40 +101,6 @@ func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 	return order_no
 }
 
-func (this *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
-	var err error
-	var statusIsChanged bool //业务状态是否改变
-	d := this.Connector
-
-	if v.Id > 0 {
-		var oriStatus int
-		d.ExecScalar("SELECT status FROM pt_order WHERE id=?", &oriStatus, v.Id)
-		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
-		_, _, err = d.GetOrm().Save(v.Id, v)
-	} else {
-		////验证Merchant和Member是否有绑定关系
-		//var num int
-		//if d.ExecScalar(`SELECT COUNT(0) FROM mm_relation WHERE member_id=? AND reg_merchant_id=?`,
-		//	&num, v.MemberId, v.MerchantId); num != 1 {
-		//	return v.Id, errors.New("error partner and member.")
-		//}
-		var id int64
-		_, id, err = d.GetOrm().Save(nil, v)
-		v.Id = int(id)
-		statusIsChanged = true
-	}
-
-	if statusIsChanged {
-		//如果业务状态已经发生改变,则提交到队列
-		rc := core.GetRedisConn()
-		defer rc.Close()
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id) // push to queue
-		//log.Println("-- PUSH - ",v.Id,err)
-	}
-
-	return v.Id, err
-}
-
 //　保存订单优惠券绑定
 func (this *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, val)
@@ -215,16 +182,40 @@ func (this *orderRepImpl) GetItemsByParentOrderId(orderId int) []*order.OrderIte
 	return items
 }
 
+func (this *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
+	return orm.Save(this.GetOrm(), v, v.Id)
+}
+
+// 获取子订单
+func (this *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
+	e := &order.SubOrder{}
+	if this.GetOrm().Get(id, e) == nil {
+		return e
+	}
+	return nil
+}
+
 // 保存子订单
 func (this *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 	var err error
-	var orm = this.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
+	var statusIsChanged bool //业务状态是否改变
+	d := this.Connector
+
+	if v.Id <= 0 {
+		statusIsChanged = true
 	} else {
-		var id64 int64
-		_, id64, err = orm.Save(nil, v)
-		v.Id = int(id64)
+		var oriStatus int
+		d.ExecScalar("SELECT status FROM sale_sub_order WHERE id=?", &oriStatus, v.Id)
+		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
+	}
+	v.Id, err = orm.Save(this.GetOrm(), v, v.Id)
+
+	//如果业务状态已经发生改变,则提交到队列
+	if statusIsChanged && v.Id > 0 {
+		rc := core.GetRedisConn()
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id)
+		rc.Close()
+		//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
 	}
 	return v.Id, err
 }

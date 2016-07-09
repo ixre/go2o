@@ -25,17 +25,20 @@ func superviseOrder(ss []Service) {
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	var id int
+	sv := dps.ShoppingService
+
 	for {
 		arr, err := redis.Values(conn.Do("BLPOP",
-			variable.KvOrderBusinessQueue,
-			0)) //取出队列的一个元素
+			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
 			id, err = strconv.Atoi(string(arr[1].([]byte)))
-			if err == nil { //通知订单更新
-				order := dps.ShoppingService.GetOrderById(id)
-				for _, v := range ss {
-					if !v.OrderObs(order) {
-						break
+			if err == nil {
+				//通知订单更新
+				if order := sv.GetSubOrder(id); order != nil {
+					for _, v := range ss {
+						if !v.OrderObs(order) {
+							break
+						}
 					}
 				}
 			}
@@ -55,7 +58,8 @@ func superviseMemberUpdate(ss []Service) {
 	for {
 		arr, err := redis.Values(conn.Do("BLPOP",
 			variable.KvMemberUpdateQueue, 0))
-		if err == nil { //通知会员修改,格式如: 1-[create|update]
+		if err == nil {
+			//通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1].([]byte))
 			mArr := strings.Split(s, "-")
 			id, err = strconv.Atoi(mArr[0])
@@ -83,7 +87,8 @@ func supervisePaymentOrderFinish(ss []Service) {
 	for {
 		arr, err := redis.Values(conn.Do("BLPOP",
 			variable.KvPaymentOrderFinishQueue, 0))
-		if err == nil { //通知会员修改,格式如: 1-[create|update]
+		if err == nil {
+			//通知会员修改,格式如: 1-[create|update]
 			s := string(arr[1].([]byte))
 			id, err = strconv.Atoi(s)
 			if err == nil {
@@ -105,16 +110,19 @@ func supervisePaymentOrderFinish(ss []Service) {
 func detectOrderExpires(a gof.App) {
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*")) //获取标记为等待过期的订单
+	//获取标记为等待过期的订单
+	orderId := 0
+	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*"))
 	ss := dps.ShoppingService
 	for _, v := range list {
 		if unix, err := redis.Int64(conn.Do("GET", v)); err == nil {
+			//获取过期时间
 			if unix < time.Now().Unix() {
-				//todo:  testing orderNo 是否正确
-				orderNo := v[len(variable.KvOrderExpiresTime):] //key: 订单号
-				err = ss.CancelOrder(orderNo, "订单超时,自动取消")      //清除
-				conn.Do("DEL", v)                               //清除待取消记录
-				//log.Println(unix,"--",time.Now().Unix(),v,err)
+				//订单号
+				orderId, err = strconv.Atoi(v[len(variable.KvOrderExpiresTime):])
+				err = ss.CancelOrder(orderId, "订单超时,自动取消") //清除
+				conn.Do("DEL", v)                          //清除待取消记录
+				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
 			}
 		}
 	}

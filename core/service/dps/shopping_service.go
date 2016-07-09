@@ -12,6 +12,7 @@ package dps
 import (
 	"bytes"
 	"errors"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
@@ -333,7 +334,24 @@ func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 	return this._rep.GetValueOrderByNo(orderNo)
 }
 
-func (this *shoppingService) CancelOrder(orderNo string, reason string) error {
+// 获取子订单
+func (this *shoppingService) GetSubOrder(id int) *order.SubOrder {
+	return this._rep.GetSubOrder(id)
+}
+
+func (this *shoppingService) CancelOrder(orderId int, reason string) error {
+	log.Println("---取消订单", orderId)
+	o := this._manager.GetOrderById(orderId)
+	if o == nil {
+		return order.ErrNoSuchOrder
+	}
+
+	panic("not implement")
+	return nil
+	//return o.Cancel(reason)
+}
+
+func (this *shoppingService) CancelOrderByNo(orderNo string, reason string) error {
 	o := this._manager.GetOrderByNo(orderNo)
 	if o == nil {
 		return order.ErrNoSuchOrder

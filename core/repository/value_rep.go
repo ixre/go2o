@@ -82,7 +82,7 @@ var (
 		// 自动设置订单
 		AutoSetupOrder: 1,
 		// 订单超时分钟数
-		OrderTimeOutMinute: 720, // 12小时
+		OrderTimeOutMinute: 10, // 720, // 12小时
 		// 订单自动确认时间
 		OrderConfirmAfterMinute: 10,
 		// 订单超时自动收货
