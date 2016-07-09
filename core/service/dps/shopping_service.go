@@ -103,14 +103,14 @@ func (this *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 
 //todo: 这里响应较慢,性能?
 func (this *shoppingService) AddCartItem(memberId int, cartKey string,
-	skuId, num int) (*dto.CartItem, error) {
+	skuId, num int, checked bool) (*dto.CartItem, error) {
 	c := this.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
 	var err error
 	// 从购物车中添加
 	for k, v := range c.Items() {
 		if k == skuId {
-			item, err = c.AddItem(v.VendorId, v.ShopId, skuId, num)
+			item, err = c.AddItem(v.VendorId, v.ShopId, skuId, num, checked)
 			break
 		}
 	}
@@ -140,7 +140,7 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 		}
 
 		// 加入购物车
-		item, err = c.AddItem(snap.VendorId, shopId, skuId, num)
+		item, err = c.AddItem(snap.VendorId, shopId, skuId, num, checked)
 	}
 
 	if err == nil {

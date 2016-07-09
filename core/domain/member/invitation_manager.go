@@ -43,7 +43,7 @@ func (this *invitationManager) MyCode() string {
 
 // 获取邀请会员下级邀请数量
 func (this *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]int {
-	if memberIdArr == nil || len(memberIdArr) == 0{
+	if memberIdArr == nil || len(memberIdArr) == 0 {
 		return map[int]int{}
 	}
 	return this._member._rep.GetSubInvitationNum(this._member.GetAggregateRootId(),
