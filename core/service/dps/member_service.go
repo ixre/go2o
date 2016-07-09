@@ -477,7 +477,7 @@ func (this *memberService) GetMyPagedInvitationMembers(memberId int,
 			arr[i] = rows[i].MemberId
 		}
 		num := iv.GetSubInvitationNum(arr)
-		for i :=0;i <l ;i++{
+		for i := 0; i < l; i++ {
 			rows[i].InvitationNum = num[rows[i].MemberId]
 			rows[i].Avatar = format.GetResUrl(rows[i].Avatar)
 		}

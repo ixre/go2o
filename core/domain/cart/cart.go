@@ -183,7 +183,7 @@ func (this *cartImpl) Items() map[int]*cart.CartItem {
 
 // 添加项
 func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
-	num int) (*cart.CartItem, error) {
+	num int, checked bool) (*cart.CartItem, error) {
 	var err error
 	if this._value.Items == nil {
 		this._value.Items = []*cart.CartItem{}
@@ -205,6 +205,9 @@ func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 				return v, sale.ErrOutOfStock // 库存不足
 			}
 			v.Quantity += num
+			if checked {
+				v.Checked = 1
+			}
 			return v, err
 		}
 	}
@@ -226,6 +229,9 @@ func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 		Image:      snap.Image,
 		Price:      snap.Price,
 		SalePrice:  snap.SalePrice,
+	}
+	if checked {
+		v.Checked = 1
 	}
 	this._value.Items = append(this._value.Items, v)
 	return v, err
@@ -344,7 +350,7 @@ func (this *cartImpl) Combine(c cart.ICart) cart.ICart {
 	if c.GetAggregateRootId() != this.GetAggregateRootId() {
 		for _, v := range c.GetValue().Items {
 			if item, err := this.AddItem(v.VendorId, v.ShopId,
-				v.SkuId, v.Quantity); err == nil {
+				v.SkuId, v.Quantity, v.Checked == 1); err == nil {
 				if v.Checked == 1 {
 					item.Checked = 1
 				}

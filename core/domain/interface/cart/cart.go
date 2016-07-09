@@ -64,7 +64,7 @@ type (
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(vendorId int, shopId int, skuId, num int) (*CartItem, error)
+		AddItem(vendorId int, shopId int, skuId, num int, checked bool) (*CartItem, error)
 
 		// 移出项
 		RemoveItem(skuId, num int) error
