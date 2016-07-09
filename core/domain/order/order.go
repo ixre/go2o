@@ -200,9 +200,7 @@ func (this *orderImpl) PaymentForOnlineTrade(serverProvider string, tradeNo stri
 	this._value.IsPaid = 1
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
-	if this._value.Status == enum.ORDER_WAIT_PAYMENT {
-		this._value.Status = enum.ORDER_WAIT_CONFIRM // 设置为待确认状态
-	}
+	this._value.State = order.StatAwaitingConfirm
 	this._manager.SmartConfirmOrder(this) // 确认订单
 	_, err := this.Save()
 	return err
@@ -251,7 +249,7 @@ func (this *orderImpl) RequireCart(c cart.ICart) error {
 	// 更新订单的金额
 	this._vendorExpressMap = this.updateOrderFee(this._vendorItemsMap)
 	// 状态设为待支付
-	this._value.Status = 1
+	this._value.State = 1
 
 	return nil
 }
@@ -558,19 +556,18 @@ func (this *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 // 有可能为多余的, 应等到支付单支付完成后,再通知订单支付完成。
 func (this *orderImpl) checkNewOrderPayment() {
 	// 校验是否支付
+	//todo:  线下支付应设为等待确认
+	//|| v.PaymentOpt == enum.PaymentOfflineCashPay ||
+	//v.PaymentOpt == enum.PaymentRemit {
+	//v.PaymentSign = 1
+
+	// 设置订单状态
 	if this._value.FinalFee == 0 {
 		this._value.IsPaid = 1
 		this._value.PaidTime = time.Now().Unix()
-	}
-	// 设置订单状态
-	if this._value.IsPaid == 1 {
-		//todo:  线下支付应设为等待确认
-		//|| v.PaymentOpt == enum.PaymentOfflineCashPay ||
-		//v.PaymentOpt == enum.PaymentRemit {
-		//v.PaymentSign = 1
-		this._value.Status = enum.ORDER_WAIT_CONFIRM
-	} else {
-		this._value.Status = enum.ORDER_WAIT_PAYMENT
+		this._value.State = order.StatAwaitingConfirm
+	} else if this._value.State == 0 {
+		this._value.State = order.StatAwaitingPayment
 	}
 }
 
@@ -640,7 +637,7 @@ func (this *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
 		IsSuspend:  0,
 		Note:       "",
 		Remark:     "",
-		Status:     enum.ORDER_WAIT_PAYMENT,
+		State:      order.StatAwaitingPayment,
 		UpdateTime: this._value.UpdateTime,
 		Items:      items,
 	}
@@ -659,7 +656,7 @@ func (this *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
 	v.FinalFee = v.GoodsFee - v.DiscountFee + v.PackageFee + v.ExpressFee
 	// 判断是否已支付
 	if this._value.IsPaid == 1 {
-		v.Status = enum.ORDER_WAIT_CONFIRM
+		v.State = enum.ORDER_WAIT_CONFIRM
 	}
 	return this._manager.CreateSubOrder(v)
 }
@@ -721,13 +718,10 @@ func (this *orderImpl) paymentWithBalance(buyerType int) error {
 	if this._value.FinalFee == 0 {
 		this._value.IsPaid = 1
 		// this._value.PaymentSign = buyerType
-		if this._value.Status == enum.ORDER_WAIT_PAYMENT {
-			this._value.Status = enum.ORDER_WAIT_CONFIRM
-		}
+		this._value.State = enum.ORDER_WAIT_CONFIRM
 	}
 	this._value.UpdateTime = unix
 	this._value.PaidTime = unix
-
 	_, err := this.Save()
 	return err
 }
@@ -743,38 +737,25 @@ func (this *orderImpl) CmPaymentWithBalance() error {
 }
 
 // 添加日志
-func (this *orderImpl) AppendLog(t enum.OrderLogType, system bool, message string) error {
+func (this *orderImpl) AppendLog(l *order.OrderLog) error {
 	if this.GetAggregateRootId() <= 0 {
 		return errors.New("order not created.")
 	}
-
-	var systemInt int
-	if system {
-		systemInt = 1
-	} else {
-		systemInt = 0
-	}
-
-	var ol *order.OrderLog = &order.OrderLog{
-		OrderId:    this.GetAggregateRootId(),
-		Type:       int(t),
-		IsSystem:   systemInt,
-		Message:    message,
-		RecordTime: time.Now().Unix(),
-	}
-	return this._orderRep.SaveOrderLog(ol)
+	l.OrderId = this.GetAggregateRootId()
+	l.RecordTime = time.Now().Unix()
+	return this._orderRep.SaveSubOrderLog(l)
 }
 
 // 订单是否已完成
 func (this *orderImpl) IsOver() bool {
-	s := this._value.Status
+	s := this._value.State
 	return s == enum.ORDER_CANCEL || s == enum.ORDER_COMPLETED
 }
 
 // 处理订单
 func (this *orderImpl) Process() error {
 	dt := time.Now()
-	this._value.Status += 1
+	this._value.State += 1
 	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
@@ -814,13 +795,18 @@ func (this *orderImpl) addGoodsSaleNum(vendorId, skuId, quantity int) error {
 func (this *orderImpl) Deliver(spId int, spNo string) error {
 	//todo: 记录快递配送信息
 	dt := time.Now()
-	this._value.Status += 1
+	this._value.State += 1
 	this._value.ShippingTime = dt.Unix()
 	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
 	if err == nil {
-		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单开始配送")
+		err = this.AppendLog(&order.OrderLog{
+			Type:       int(order.LogSetup),
+			OrderState: order.StatShipped,
+			IsSystem:   0,
+			Message:    "",
+		})
 	}
 	return err
 }
@@ -1013,7 +999,7 @@ func (this *subOrderImpl) AddRemark(remark string) {
 func (this *subOrderImpl) SetShop(shopId int) error {
 	//todo:验证Shop
 	this._value.ShopId = shopId
-	if this._value.Status == enum.ORDER_WAIT_CONFIRM {
+	if this._value.State == enum.ORDER_WAIT_CONFIRM {
 		panic("not impl")
 		// this.Confirm()
 	}
@@ -1034,6 +1020,7 @@ func (this *subOrderImpl) Save() (int, error) {
 			v.UpdateTime = unix
 			this._rep.SaveOrderItem(id, v)
 		}
+		this.AppendLog(order.LogSetup, true, "{created}")
 	}
 	return id, err
 }
@@ -1045,14 +1032,13 @@ func (this *subOrderImpl) Suspend(reason string) error {
 	this._value.UpdateTime = time.Now().Unix()
 	_, err := this.Save()
 	if err == nil {
-		err = this.AppendLog(enum.ORDER_LOG_SETUP, true, "订单已锁定"+reason)
+		err = this.AppendLog(order.LogSetup, true, "订单已锁定"+reason)
 	}
 	return err
 }
 
 // 添加日志
-func (this *subOrderImpl) AppendLog(t enum.OrderLogType,
-	system bool, message string) error {
+func (this *subOrderImpl) AppendLog(logType order.LogType, system bool, message string) error {
 	if this.GetDomainId() <= 0 {
 		return errors.New("order not created.")
 	}
@@ -1062,25 +1048,26 @@ func (this *subOrderImpl) AppendLog(t enum.OrderLogType,
 	} else {
 		systemInt = 0
 	}
-	var ol *order.OrderLog = &order.OrderLog{
+	l := &order.OrderLog{
 		OrderId:    this.GetDomainId(),
-		Type:       int(t),
+		Type:       int(logType),
 		IsSystem:   systemInt,
+		OrderState: int(this._value.State),
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return this._rep.SaveOrderLog(ol)
+	return this._rep.SaveSubOrderLog(l)
 }
 
 // 标记收货
 func (this *subOrderImpl) SignReceived() error {
 	dt := time.Now()
-	this._value.Status = enum.ORDER_RECEIVED
+	this._value.State = order.StatCompleted
 	this._value.UpdateTime = dt.Unix()
 
 	_, err := this.Save()
 	if err == nil {
-		err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "已收货")
+		err = this.AppendLog(order.LogSetup, false, "已收货,订单完成!")
 	}
 	return err
 }
@@ -1207,7 +1194,7 @@ func (this *subOrderImpl) Cancel(reason string) error {
 	if len(strings.TrimSpace(reason)) == 0 {
 		return errors.New("取消原因不能为空")
 	}
-	status := this._value.Status
+	status := this._value.State
 	if status == enum.ORDER_COMPLETED {
 		return errors.New("订单已经完成!")
 	}
@@ -1215,7 +1202,7 @@ func (this *subOrderImpl) Cancel(reason string) error {
 		return errors.New("订单已经被取消!")
 	}
 
-	this._value.Status = enum.ORDER_CANCEL
+	this._value.State = enum.ORDER_CANCEL
 	this._value.UpdateTime = time.Now().Unix()
 
 	//todo: 应同时取消支付单
@@ -1227,7 +1214,7 @@ func (this *subOrderImpl) Cancel(reason string) error {
 
 	_, err := this.Save()
 	if err == nil {
-		err = this.AppendLog(enum.ORDER_LOG_SETUP, true, "订单已取消,原因："+reason)
+		err = this.AppendLog(order.LogSetup, true, "订单已取消,原因："+reason)
 	}
 
 	return err

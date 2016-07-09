@@ -138,7 +138,7 @@ func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.Order, e
 }
 
 // 保存订单日志
-func (this *orderRepImpl) SaveOrderLog(v *order.OrderLog) error {
+func (this *orderRepImpl) SaveSubOrderLog(v *order.OrderLog) error {
 	_, _, err := this.Connector.GetOrm().Save(nil, v)
 	return err
 }
@@ -206,7 +206,7 @@ func (this *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 	} else {
 		var oriStatus int
 		d.ExecScalar("SELECT status FROM sale_sub_order WHERE id=?", &oriStatus, v.Id)
-		statusIsChanged = oriStatus != v.Status // 业务状态是否改变
+		statusIsChanged = oriStatus != v.State // 业务状态是否改变
 	}
 	v.Id, err = orm.Save(this.GetOrm(), v, v.Id)
 

@@ -594,6 +594,9 @@ ALTER TABLE `flm`.`sale_sub_order`
 ALTER TABLE `flm`.`sale_sub_order`
   ADD COLUMN `buyer_id` INT NULL AFTER `parent_order`;
 
+ALTER TABLE `zxdb`.`pt_order_log`
+  ADD COLUMN `order_state` TINYINT(2) NULL AFTER `type`, RENAME TO  `zxdb`.`sale_order_log` ;
+
 
 
 

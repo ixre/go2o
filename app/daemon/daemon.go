@@ -173,7 +173,7 @@ func (this *defaultService) OrderObs(o *order.SubOrder) bool {
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	if this.sOrder {
-		if o.Status == enum.ORDER_WAIT_CONFIRM { //确认订单
+		if o.State == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.OrderNo)
 		}
 		this.updateOrderExpires(conn, o)
@@ -199,11 +199,11 @@ func (this *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) boo
 
 //设置订单过期时间
 func (this *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
-	if o.Status == enum.ORDER_WAIT_PAYMENT { //订单刚创建时,设置过期时间
+	if o.State == order.StatAwaitingPayment { //订单刚创建时,设置过期时间
 		ss := dps.BaseService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		conn.Do("SET", this.getExpiresKey(o), unix)
-	} else if o.Status == enum.ORDER_WAIT_CONFIRM { //删除过期时间
+	} else if o.State == enum.ORDER_WAIT_CONFIRM { //删除过期时间
 		conn.Do("DEL", this.getExpiresKey(o))
 	}
 }

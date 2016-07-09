@@ -15,7 +15,7 @@ const (
 	// 已取消
 	ORDER_CANCEL = 0
 	// 订单待支付
-	ORDER_WAIT_PAYMENT = 1
+	//ORDER_WAIT_PAYMENT = 1
 	// 订单待确认
 	ORDER_WAIT_CONFIRM = 2
 	// 订单待发货
@@ -35,8 +35,8 @@ func (t OrderState) String() string {
 	switch t {
 	case ORDER_CANCEL:
 		return "已取消"
-	case ORDER_WAIT_PAYMENT:
-		return "待付款"
+	//case ORDER_WAIT_PAYMENT:
+	//	return "待付款"
 	case ORDER_WAIT_CONFIRM:
 		return "待确认"
 	case ORDER_WAIT_DELIVERY:

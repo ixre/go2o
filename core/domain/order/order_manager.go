@@ -111,7 +111,7 @@ func (this *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
-	val.Status = enum.ORDER_WAIT_PAYMENT
+	val.State = order.StatAwaitingPayment
 	o := this.CreateOrder(val)
 	err = o.RequireCart(c)
 	o.GetByVendor()
@@ -355,13 +355,13 @@ const (
 	order_complete_hour  = 11
 )
 
-func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
+func (this *orderManagerImpl) SmartConfirmOrder(o order.IOrder) error {
 
 	return nil
 
 	//todo:  自动确认订单
 	var err error
-	v := order.GetValue()
+	v := o.GetValue()
 	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
 	var sp shop.IShop
 	if biShops == nil {
@@ -387,11 +387,14 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 		//todo: set shop
 		panic("not impl")
 		//order.SetShop(sp.GetDomainId())
-		err = order.Confirm()
+		err = o.Confirm()
 		//err = order.Process()
 		ofs := sp.(shop.IOfflineShop).GetShopValue()
-		order.AppendLog(enum.ORDER_LOG_SETUP, false, fmt.Sprintf(
-			"自动分配门店:%s,电话：%s", sv.Name, ofs.Tel))
+		o.AppendLog(&order.OrderLog{
+			Type:     int(order.LogSetup),
+			IsSystem: 1,
+			Message:  fmt.Sprintf("自动分配门店:%s,电话：%s", sv.Name, ofs.Tel),
+		})
 	}
 	return err
 }
@@ -399,11 +402,11 @@ func (this *orderManagerImpl) SmartConfirmOrder(order order.IOrder) error {
 func (this *orderManagerImpl) setupOrder(v *order.Order,
 	conf *merchant.SaleConf, t time.Time, f func(error)) {
 	var err error
-	order := this.CreateOrder(v)
+	od := this.CreateOrder(v)
 	dur := time.Duration(t.Unix()-v.CreateTime) * time.Second
 
-	switch v.Status {
-	case enum.ORDER_WAIT_PAYMENT:
+	switch v.State {
+	case order.StatAwaitingPayment:
 		if v.IsPaid == 0 && dur > time.Minute*time.Duration(conf.OrderTimeOutMinute) {
 			//todo: del
 
@@ -413,7 +416,7 @@ func (this *orderManagerImpl) setupOrder(v *order.Order,
 
 	case enum.ORDER_WAIT_CONFIRM:
 		if dur > time.Minute*time.Duration(conf.OrderConfirmAfterMinute) {
-			err = this.SmartConfirmOrder(order)
+			err = this.SmartConfirmOrder(od)
 		}
 
 	//		case enum.ORDER_WAIT_DELIVERY:

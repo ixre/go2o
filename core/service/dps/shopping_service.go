@@ -300,7 +300,7 @@ func (this *shoppingService) HandleOrder(orderNo string) (err error) {
 
 	panic("not implement")
 
-	status := o.GetValue().Status
+	status := o.GetValue().State
 	switch status + 1 {
 	case enum.ORDER_WAIT_CONFIRM:
 		err = o.Confirm()
@@ -414,7 +414,7 @@ func (this *shoppingService) DeliveryOrder(orderNo string,
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	if o.GetValue().Status == enum.ORDER_WAIT_DELIVERY {
+	if o.GetValue().State == enum.ORDER_WAIT_DELIVERY {
 		return o.Deliver(deliverySpId, deliverySpNo)
 	}
 	return order.ErrOrderDelved
@@ -426,7 +426,7 @@ func (this *shoppingService) SignOrderReceived(orderNo string) error {
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	if o.GetValue().Status == enum.ORDER_WAIT_RECEIVE {
+	if o.GetValue().State == enum.ORDER_WAIT_RECEIVE {
 
 		panic("not implement")
 		return nil
@@ -441,7 +441,7 @@ func (this *shoppingService) SignOrderCompleted(orderNo string) error {
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	if o.GetValue().Status == enum.ORDER_RECEIVED {
+	if o.GetValue().State == enum.ORDER_RECEIVED {
 		panic("not implement")
 		//return o.Complete()
 	}
