@@ -18,7 +18,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
@@ -34,13 +33,12 @@ type shoppingService struct {
 	_cartRep  cart.ICartRep
 	_mchRep   merchant.IMerchantRep
 	_manager  order.IOrderManager
-	_payRep   payment.IPaymentRep
 }
 
 func NewShoppingService(r order.IOrderRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep,
 	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	mchRep merchant.IMerchantRep, payRep payment.IPaymentRep) *shoppingService {
+	mchRep merchant.IMerchantRep) *shoppingService {
 	return &shoppingService{
 		_rep:      r,
 		_itemRep:  itemRep,
@@ -48,7 +46,6 @@ func NewShoppingService(r order.IOrderRep,
 		_goodsRep: goodsRep,
 		_saleRep:  saleRep,
 		_mchRep:   mchRep,
-		_payRep:   payRep,
 		_manager:  r.Manager(),
 	}
 }
@@ -378,17 +375,6 @@ func (this *shoppingService) PayForOrderByManager(orderNo string) error {
 		return order.ErrNoSuchOrder
 	}
 	return o.CmPaymentWithBalance()
-}
-
-// 确认付款
-//todo: 需删除
-func (this *shoppingService) PayForOrderOnlineTrade(orderNo string,
-	spName string, tradeNo string) error {
-	o := this._manager.GetOrderByNo(orderNo)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.PaymentForOnlineTrade(spName, tradeNo)
 }
 
 // 确定订单

@@ -8,15 +8,20 @@
  */
 package dps
 
-import "go2o/core/domain/interface/payment"
+import (
+	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
+)
 
 type paymentService struct {
-	_rep payment.IPaymentRep
+	_rep      payment.IPaymentRep
+	_orderRep order.IOrderRep
 }
 
-func NewPaymentService(rep payment.IPaymentRep) *paymentService {
+func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *paymentService {
 	return &paymentService{
-		_rep: rep,
+		_rep:      rep,
+		_orderRep: orderRep,
 	}
 }
 
@@ -52,6 +57,10 @@ func (this *paymentService) FinishPayment(tradeNo string, spName string,
 	err := o.PaymentFinish(spName, outerNo)
 	if err == nil {
 		_, err = o.Save()
+		//更改订单支付完成
+		if err == nil {
+			err = this._orderRep.Manager().PaymentForOnlineTrade(o.GetValue().OrderId)
+		}
 	}
 	return err
 }

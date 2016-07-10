@@ -60,6 +60,7 @@ type orderImpl struct {
 	_vendorExpressMap map[int]float32
 	// 是否为内部挂起
 	_internalSuspend bool
+	_subList         []order.ISubOrder
 }
 
 func newOrder(shopping order.IOrderManager, value *order.Order,
@@ -184,26 +185,6 @@ func (this *orderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 func (this *orderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
 	//todo: not implement
 	return nil, 0, 0
-}
-
-// 设置支付方式
-//func (this *orderImpl) SetPayment(payment int) {
-//	this._value.PaymentOpt = payment
-//}
-
-// 在线交易支付
-func (this *orderImpl) PaymentForOnlineTrade(serverProvider string, tradeNo string) error {
-	if this._value.IsPaid == 1 {
-		return order.ErrOrderPayed
-	}
-	unix := time.Now().Unix()
-	this._value.IsPaid = 1
-	this._value.UpdateTime = unix
-	this._value.PaidTime = unix
-	this._value.State = order.StatAwaitingConfirm
-	this._manager.SmartConfirmOrder(this) // 确认订单
-	_, err := this.Save()
-	return err
 }
 
 // 设置配送地址
@@ -698,6 +679,52 @@ func (this *orderImpl) applyGoodsNum() {
 
 //****************  订单提交结束 **************//
 
+// 设置支付方式
+//func (this *orderImpl) SetPayment(payment int) {
+//	this._value.PaymentOpt = payment
+//}
+
+// 获取子订单列表
+func (this *orderImpl) GetSubOrders() []order.ISubOrder {
+	if this.GetAggregateRootId() <= 0 {
+		panic(order.ErrNoYetCreated)
+	}
+	if this._subList == nil {
+		subList := this._orderRep.GetSubOrdersByParentId(this.GetAggregateRootId())
+		for _, v := range subList {
+			this._subList = append(this._subList,
+				this._manager.CreateSubOrder(v))
+		}
+	}
+	return this._subList
+}
+
+// 在线支付交易完成
+func (this *orderImpl) OnlinePaymentTradeFinish() (err error) {
+	for _, o := range this.GetSubOrders() {
+		err = o.PaymentFinishByOnlineTrade()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+
+	//todo:
+	if this._value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
+	unix := time.Now().Unix()
+	this._value.IsPaid = 1
+	this._value.UpdateTime = unix
+	this._value.PaidTime = unix
+	this._value.State = order.StatAwaitingConfirm
+
+	this._manager.SmartConfirmOrder(this) // 确认订单
+
+	_, err = this.Save()
+	return err
+}
+
 // 使用余额支付
 func (this *orderImpl) paymentWithBalance(buyerType int) error {
 	if this._value.IsPaid == 1 {
@@ -1023,6 +1050,23 @@ func (this *subOrderImpl) Save() (int, error) {
 		this.AppendLog(order.LogSetup, true, "{created}")
 	}
 	return id, err
+}
+
+// 在线支付交易完成
+func (this *subOrderImpl) PaymentFinishByOnlineTrade() error {
+	if this._value.State == order.StatAwaitingPayment {
+		this._value.IsPaid = 1
+		this._value.State = order.StatAwaitingConfirm
+		err := this.AppendLog(order.LogSetup, true, "{finish_pay}")
+		if err == nil {
+			_, err = this.Save()
+		}
+		return err
+	}
+	if this._value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
+	return order.ErrOrderHasCancel
 }
 
 // 挂起
