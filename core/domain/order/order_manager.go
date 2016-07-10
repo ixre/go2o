@@ -306,7 +306,7 @@ func (this *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	return o.PaymentForOnlineTrade("", "")
+	return o.OnlinePaymentTradeFinish()
 }
 
 // 根据父订单编号获取购买的商品项

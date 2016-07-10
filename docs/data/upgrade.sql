@@ -597,7 +597,8 @@ ALTER TABLE `flm`.`sale_sub_order`
 ALTER TABLE `zxdb`.`pt_order_log`
   ADD COLUMN `order_state` TINYINT(2) NULL AFTER `type`, RENAME TO  `zxdb`.`sale_order_log` ;
 
-
+ALTER TABLE `flm`.`sale_sub_order`
+  ADD COLUMN `is_paid` TINYINT(1) NULL AFTER `final_fee`;
 
 
 

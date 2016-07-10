@@ -93,6 +93,9 @@ type (
 		// 保存订单日志
 		SaveSubOrderLog(*OrderLog) error
 
+		// 获取订单的所有子订单
+		GetSubOrdersByParentId(orderId int) []*SubOrder
+
 		// 获取子订单
 		GetSubOrder(id int) *SubOrder
 

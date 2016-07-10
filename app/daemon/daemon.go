@@ -172,6 +172,10 @@ func (this *defaultService) OrderObs(o *order.SubOrder) bool {
 	defer Recover()
 	conn := core.GetRedisConn()
 	defer conn.Close()
+	if this.app.Debug() {
+		this.app.Log().Println("---订单", o.OrderNo, "状态:", o.State)
+	}
+
 	if this.sOrder {
 		if o.State == enum.ORDER_WAIT_CONFIRM { //确认订单
 			dps.ShoppingService.ConfirmOrder(o.OrderNo)
@@ -193,7 +197,9 @@ func (this *defaultService) MemberObs(m *member.Member, create bool) bool {
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
 func (this *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) bool {
-	this.app.Log().Println("---支付单", order.TradeNo, "支付完成")
+	if this.app.Debug() {
+		this.app.Log().Println("---支付单", order.TradeNo, "支付完成")
+	}
 	return true
 }
 

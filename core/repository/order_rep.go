@@ -186,6 +186,13 @@ func (this *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
 	return orm.Save(this.GetOrm(), v, v.Id)
 }
 
+// 获取订单的所有子订单
+func (this *orderRepImpl) GetSubOrdersByParentId(orderId int) []*order.SubOrder {
+	list := []*order.SubOrder{}
+	this.GetOrm().Select(&list, "parent_order=?", orderId)
+	return list
+}
+
 // 获取子订单
 func (this *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
 	e := &order.SubOrder{}

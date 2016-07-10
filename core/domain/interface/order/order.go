@@ -124,6 +124,9 @@ var (
 	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_payed ", "订单已支付")
 
+	ErrNoYetCreated *domain.DomainError = domain.NewDomainError(
+		"err_order_not_yet_created ", "订单尚未生成")
+
 	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_not_payed ", "订单未支付")
 
@@ -135,6 +138,9 @@ var (
 
 	ErrPromotionApplied *domain.DomainError = domain.NewDomainError(
 		"err_promotion_applied", "已经使用相同的促销")
+
+	ErrOrderHasCancel *domain.DomainError = domain.NewDomainError(
+		"err_order_has_cancel", "订单已被取消")
 )
 
 type (
@@ -186,8 +192,8 @@ type (
 		// 客服使用余额支付
 		CmPaymentWithBalance() error
 
-		// 在线交易支付
-		PaymentForOnlineTrade(serverProvider string, tradeNo string) error
+		// 在线支付交易完成
+		OnlinePaymentTradeFinish() error
 
 		// 设置配送地址
 		SetDeliver(deliverAddressId int) error
@@ -201,6 +207,9 @@ type (
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
+
+		// 获取子订单列表
+		GetSubOrders() []ISubOrder
 
 		// 添加日志,system表示为系统日志
 		AppendLog(l *OrderLog) error
@@ -271,6 +280,9 @@ type (
 
 		// 保存订单
 		Save() (int, error)
+
+		// 在线支付交易完成
+		PaymentFinishByOnlineTrade() error
 	}
 
 	// 简单商品信息
@@ -401,6 +413,8 @@ type (
 		PackageFee float32 `db:"package_fee"`
 		// 实际金额
 		FinalFee float32 `db:"final_fee" json:"fee"`
+		// 是否支付
+		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend int `db:"is_suspend" json:"is_suspend"`
 		// 顾客备注
