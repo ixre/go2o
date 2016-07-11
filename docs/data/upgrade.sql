@@ -600,6 +600,11 @@ ALTER TABLE `zxdb`.`pt_order_log`
 ALTER TABLE `flm`.`sale_sub_order`
   ADD COLUMN `is_paid` TINYINT(1) NULL AFTER `final_fee`;
 
+ALTER TABLE `flm`.`sale_sub_order`
+  CHANGE COLUMN `status` `state` TINYINT(1) NULL DEFAULT NULL ;
+
+ALTER TABLE `flm`.`sale_order`
+  CHANGE COLUMN `status` `state` TINYINT(1) NULL DEFAULT NULL ;
 
 
 
