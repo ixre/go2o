@@ -274,6 +274,14 @@ func (this *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 			pyUpdate = true
 		}
 
+		// 如果已支付完成,则将订单设为支付完成
+		if v := py.GetValue(); v.FinalFee == 0 &&
+			v.State == payment.StateFinishPayment {
+			for _, sub := range order.GetSubOrders() {
+				sub.PaymentFinishByOnlineTrade()
+			}
+		}
+
 		// 更新支付单
 		if err == nil && pyUpdate {
 			_, err = py.Save()

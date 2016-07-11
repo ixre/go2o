@@ -39,9 +39,10 @@ var _ order.IOrder = new(orderImpl)
 //todo: 促销
 
 type orderImpl struct {
-	_manager         order.IOrderManager
-	_value           *order.Order
-	_cart            cart.ICart //购物车,仅在订单生成时设置
+	_manager order.IOrderManager
+	_value   *order.Order
+	_cart    cart.ICart //购物车,仅在订单生成时设置
+	//_payOrder        *payment.IPaymentOrder //支付单
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
 	_orderPbs        []*order.OrderPromotionBind
@@ -1052,8 +1053,8 @@ func (this *subOrderImpl) Save() (int, error) {
 	return id, err
 }
 
-// 在线支付交易完成
-func (this *subOrderImpl) PaymentFinishByOnlineTrade() error {
+// 订单完成支付
+func (this *subOrderImpl) orderFinishPaid() error {
 	if this._value.State == order.StatAwaitingPayment {
 		this._value.IsPaid = 1
 		this._value.State = order.StatAwaitingConfirm
@@ -1067,6 +1068,11 @@ func (this *subOrderImpl) PaymentFinishByOnlineTrade() error {
 		return order.ErrOrderPayed
 	}
 	return order.ErrOrderHasCancel
+}
+
+// 在线支付交易完成
+func (this *subOrderImpl) PaymentFinishByOnlineTrade() error {
+	return this.orderFinishPaid()
 }
 
 // 挂起
