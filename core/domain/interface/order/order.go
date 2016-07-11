@@ -382,7 +382,7 @@ type (
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态
 		//todo: ???删除?
-		State int `db:"status" json:"status"`
+		State int `db:"state" json:"state"`
 	}
 
 	// 子订单
@@ -424,7 +424,7 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态
-		State int `db:"status" json:"status"`
+		State int `db:"state" json:"state"`
 		// 订单项
 		Items []*OrderItem `db:"-"`
 	}
