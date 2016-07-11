@@ -46,7 +46,7 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order
 		  INNER JOIN sale_order ON sale_sub_order.parent_order = sale_order.id
-		   WHERE buyer_id=? %s`,
+		   WHERE sale_sub_order.buyer_id=? %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -60,10 +60,10 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
         vendor_id,o.shop_id,s.name as shop_name,
         o.goods_fee,o.discount_fee,o.express_fee,
-        o.package_fee,o.final_fee,po.is_paid,o.status,po.create_time
+        o.package_fee,o.final_fee,o.is_paid,o.status,po.create_time
          FROM flm.sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
             INNER JOIN mch_shop s ON o.shop_id=s.id
-         WHERE buyer_id=? %s %s LIMIT ?,?`,
+         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			i := 0

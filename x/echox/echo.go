@@ -165,6 +165,10 @@ func (this *Context) HttpRequest() *http.Request {
 	return this.request
 }
 
+func (this *Context) IsPost() bool {
+	return this.request.Method == "POST"
+}
+
 func (this *Context) StringOK(s string) error {
 	return this.debug(this.String(http.StatusOK, s))
 }
