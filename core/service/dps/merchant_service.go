@@ -45,17 +45,37 @@ func (this *merchantService) Verify(usr, pwd string) int {
 }
 
 // 获取企业信息
-func (this *merchantService) GetEnterpriseInfo(mchId int,
-	reviewed bool) merchant.EnterpriseInfo {
+func (this *merchantService) GetReviewedEnterpriseInfo(mchId int) *merchant.EnterpriseInfo {
 	mch, err := this._mchRep.GetMerchant(mchId)
 	if err != nil {
 		handleError(err)
-		return merchant.EnterpriseInfo{}
+		return &merchant.EnterpriseInfo{}
 	}
-	if reviewed {
-		return mch.ProfileManager().GetReviewedEnterpriseInfo()
+	return mch.ProfileManager().GetReviewedEnterpriseInfo()
+}
+
+// 获取企业信息,并返回是否为提交的信息
+func (this *merchantService) GetReviewingEnterpriseInfo(mchId int) (
+	e *merchant.EnterpriseInfo, isPost bool) {
+	mch, err := this._mchRep.GetMerchant(mchId)
+	if err != nil {
+		handleError(err)
+		return nil, false
 	}
-	return mch.ProfileManager().GetEnterpriseInfo()
+	mg := mch.ProfileManager()
+	e = mg.GetReviewingEnterpriseInfo()
+	if e != nil {
+		return e, true
+	}
+	e = mg.GetReviewedEnterpriseInfo()
+	if e != nil {
+		v := *e
+		v.IsHandled = 0
+		v.Reviewed = 0
+		return &v, false
+	}
+	return nil, false
+
 }
 
 // 保存企业信息

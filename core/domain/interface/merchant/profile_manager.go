@@ -26,6 +26,9 @@ type (
 		// 法人
 		PersonName string `db:"person_name"`
 
+		// 法人身份证编号
+		PersonIdNo string `db:"person_id"`
+
 		// 公司电话
 		Tel string `db:"tel"`
 
@@ -50,6 +53,9 @@ type (
 		// 营业执照图片
 		CompanyImageUrl string `db:"company_imageurl"`
 
+		// 是否已经处理
+		IsHandled int `db:"is_handled"`
+
 		//是否已审核
 		Reviewed int `db:"reviewed"`
 
@@ -66,10 +72,10 @@ type (
 	// 基本资料管理器
 	IProfileManager interface {
 		// 获取企业信息
-		GetEnterpriseInfo() EnterpriseInfo
+		GetReviewingEnterpriseInfo() *EnterpriseInfo
 
 		// 获取审核过的企业信息
-		GetReviewedEnterpriseInfo() EnterpriseInfo
+		GetReviewedEnterpriseInfo() *EnterpriseInfo
 
 		// 保存企业信息
 		SaveEnterpriseInfo(v *EnterpriseInfo) (int, error)

@@ -606,6 +606,11 @@ ALTER TABLE `flm`.`sale_sub_order`
 ALTER TABLE `flm`.`sale_order`
   CHANGE COLUMN `status` `state` TINYINT(1) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`mch_enterprise_info`
+  ADD COLUMN `person_id` VARCHAR(20) NULL COMMENT '法人身份证号' AFTER `person_name`;
+
+ALTER TABLE `flm`.`mch_enterprise_info`
+  ADD COLUMN `is_handled` TINYINT(1) NULL AFTER `company_imageurl`;
 
 
 
