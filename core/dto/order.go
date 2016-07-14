@@ -35,6 +35,28 @@ type (
 		Items       []*OrderItem
 	}
 
+	PagedVendorOrder struct {
+		Id        int
+		OrderNo   string
+		ParentNo  string
+		BuyerId   int
+		BuyerName string
+
+		//VendorId    int
+		//ShopId      int
+		//ShopName    string
+		GoodsFee    float32
+		DiscountFee float32
+		ExpressFee  float32
+		PackageFee  float32
+		IsPaid      bool
+		FinalFee    float32
+		State       int
+		StateText   string
+		CreateTime  int64
+		Items       []*OrderItem
+	}
+
 	/*
 	   SELECT si.id,si.order_id,si.snap_id,sn.sku_id,sn.goods_title,sn.img,
 	           si.quantity,si.fee,si.final_fee
