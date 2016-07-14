@@ -23,30 +23,33 @@ import (
 	"go2o/core/domain/interface/sale/item"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/query"
 )
 
 type shoppingService struct {
-	_rep      order.IOrderRep
-	_itemRep  item.IItemRep
-	_goodsRep goods.IGoodsRep
-	_saleRep  sale.ISaleRep
-	_cartRep  cart.ICartRep
-	_mchRep   merchant.IMerchantRep
-	_manager  order.IOrderManager
+	_rep        order.IOrderRep
+	_itemRep    item.IItemRep
+	_goodsRep   goods.IGoodsRep
+	_saleRep    sale.ISaleRep
+	_cartRep    cart.ICartRep
+	_mchRep     merchant.IMerchantRep
+	_manager    order.IOrderManager
+	_orderQuery *query.OrderQuery
 }
 
 func NewShoppingService(r order.IOrderRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep,
 	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	mchRep merchant.IMerchantRep) *shoppingService {
+	mchRep merchant.IMerchantRep, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
-		_rep:      r,
-		_itemRep:  itemRep,
-		_cartRep:  cartRep,
-		_goodsRep: goodsRep,
-		_saleRep:  saleRep,
-		_mchRep:   mchRep,
-		_manager:  r.Manager(),
+		_rep:        r,
+		_itemRep:    itemRep,
+		_cartRep:    cartRep,
+		_goodsRep:   goodsRep,
+		_saleRep:    saleRep,
+		_mchRep:     mchRep,
+		_manager:    r.Manager(),
+		_orderQuery: orderQuery,
 	}
 }
 
@@ -333,24 +336,32 @@ func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 
 // 获取子订单
 func (this *shoppingService) GetSubOrder(id int) *order.SubOrder {
-	return this._manager.GetSubOrder(id).GetValue()
+	return this._rep.GetSubOrder(id)
 }
 
 // 获取子订单
 func (this *shoppingService) GetSubOrderByNo(orderNo string) *order.SubOrder {
-	id := this._rep.GetOrderId(orderNo, true)
-	if id <= 0 {
-		return nil
-	}
-	return this.GetSubOrder(id)
-}
-
-func (this *shoppingService) GetMinifySubOrder(id int) *order.SubOrder {
-	return this._rep.GetSubOrder(id)
-}
-
-func (this *shoppingService) GetMinifySubOrderByNo(orderNo string) *order.SubOrder {
 	return this._rep.GetSubOrderByNo(orderNo)
+}
+
+// 获取子订单及商品项
+func (this *shoppingService) GetSubOrderAndItems(id int) (o *order.SubOrder,
+	item []*dto.OrderItem) {
+	o = this.GetSubOrder(id)
+	if o == nil {
+		return o, []*dto.OrderItem{}
+	}
+	return o, this._orderQuery.QueryOrderItems(id)
+}
+
+// 获取子订单及商品项
+func (this *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (o *order.SubOrder,
+	item []*dto.OrderItem) {
+	o = this.GetSubOrderByNo(orderNo)
+	if o == nil {
+		return o, []*dto.OrderItem{}
+	}
+	return o, this._orderQuery.QueryOrderItems(o.Id)
 }
 
 func (this *shoppingService) CancelOrder(orderId int, reason string) error {
