@@ -121,7 +121,7 @@ func (this *Echo) Aanyx(path string, obj interface{}) {
 		if hd := this.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
-		return c.String(http.StatusInternalServerError, "no such file")
+		return c.String(http.StatusNotFound, "no such file")
 	}
 	this.Any(path, this.parseHandler(h))
 }
@@ -131,7 +131,7 @@ func (this *Echo) Agetx(path string, obj interface{}) {
 		if hd := this.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
-		return c.String(http.StatusInternalServerError, "no such file")
+		return c.String(http.StatusNotFound, "no such file")
 	}
 	this.Get(path, this.parseHandler(h))
 }
@@ -141,7 +141,7 @@ func (this *Echo) Apostx(path string, obj interface{}) {
 		if hd := this.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
-		return c.String(http.StatusInternalServerError, "no such file")
+		return c.String(http.StatusNotFound, "no such file")
 	}
 	this.Post(path, this.parseHandler(h))
 }

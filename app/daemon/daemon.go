@@ -178,7 +178,7 @@ func (this *defaultService) OrderObs(o *order.SubOrder) bool {
 
 	if this.sOrder {
 		if o.State == enum.ORDER_WAIT_CONFIRM { //确认订单
-			dps.ShoppingService.ConfirmOrder(o.OrderNo)
+			dps.ShoppingService.ConfirmOrder(o.Id)
 		}
 		this.updateOrderExpires(conn, o)
 	}

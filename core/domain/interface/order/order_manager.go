@@ -60,6 +60,11 @@ type (
 
 		// 根据父订单编号获取购买的商品项
 		GetItemsByParentOrderId(orderId int) []*OrderItem
+
+		//*********  子订单  *********//
+
+		// 获取子订单
+		GetSubOrder(id int) ISubOrder
 	}
 
 	IOrderRep interface {
@@ -96,8 +101,14 @@ type (
 		// 获取订单的所有子订单
 		GetSubOrdersByParentId(orderId int) []*SubOrder
 
+		// 获取订单编号
+		GetOrderId(orderNo string, subOrder bool) int
+
 		// 获取子订单
 		GetSubOrder(id int) *SubOrder
+
+		// 根据订单号获取子订单
+		GetSubOrderByNo(orderNo string) *SubOrder
 
 		// 保存子订单
 		SaveSubOrder(value *SubOrder) (int, error)

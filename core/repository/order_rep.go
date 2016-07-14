@@ -193,10 +193,30 @@ func (this *orderRepImpl) GetSubOrdersByParentId(orderId int) []*order.SubOrder 
 	return list
 }
 
+// 获取订单编号
+func (this *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int {
+	id := 0
+	if subOrder {
+		this.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
+	} else {
+		this.Connector.ExecScalar("SELECT id FROM sale_order where order_no=?", &id, orderNo)
+	}
+	return id
+}
+
 // 获取子订单
 func (this *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
 	e := &order.SubOrder{}
 	if this.GetOrm().Get(id, e) == nil {
+		return e
+	}
+	return nil
+}
+
+// 根据订单号获取子订单
+func (this *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
+	e := &order.SubOrder{}
+	if this.GetOrm().GetBy(e, "order_no=?", orderNo) == nil {
 		return e
 	}
 	return nil
@@ -229,15 +249,6 @@ func (this *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 
 // 保存子订单的商品项,并返回编号和错误
 func (this *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int, error) {
-	var err error
 	v.OrderId = subOrderId
-	var orm = this.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		var id64 int64
-		_, id64, err = orm.Save(nil, v)
-		v.Id = int(id64)
-	}
-	return v.Id, err
+	return orm.Save(this.GetOrm(), v, v.Id)
 }
