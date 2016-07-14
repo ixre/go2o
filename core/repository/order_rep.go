@@ -252,3 +252,10 @@ func (this *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int
 	v.OrderId = subOrderId
 	return orm.Save(this.GetOrm(), v, v.Id)
 }
+
+// 获取订单的操作记录
+func (this *orderRepImpl) GetSubOrderLogs(orderId int) []*order.OrderLog {
+	list := []*order.OrderLog{}
+	this.GetOrm().Select(&list, "order_id=?", orderId)
+	return list
+}

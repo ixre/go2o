@@ -121,5 +121,8 @@ type (
 
 		// 根据父订单编号获取购买的商品项
 		GetItemsByParentOrderId(orderId int) []*OrderItem
+
+		// 获取订单的操作记录
+		GetSubOrderLogs(orderId int) []*OrderLog
 	}
 )

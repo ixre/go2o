@@ -403,6 +403,14 @@ func (this *shoppingService) ConfirmOrder(id int) error {
 	return o.Confirm()
 }
 
+func (this *shoppingService) GetOrderLogString(id int) []byte {
+	o := this._manager.GetSubOrder(id)
+	if o == nil {
+		return []byte("")
+	}
+	return o.LogBytes()
+}
+
 // 根据父订单编号获取购买的商品项
 func (this *shoppingService) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
 	return this._manager.GetItemsByParentOrderId(orderId)
