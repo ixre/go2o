@@ -21,17 +21,19 @@ import (
 )
 
 type merchantService struct {
-	_mchRep  merchant.IMerchantRep
-	_saleRep sale.ISaleRep
-	_query   *query.MerchantQuery
+	_mchRep     merchant.IMerchantRep
+	_saleRep    sale.ISaleRep
+	_query      *query.MerchantQuery
+	_orderQuery *query.OrderQuery
 }
 
 func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
-	q *query.MerchantQuery) *merchantService {
+	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
-		_mchRep:  r,
-		_query:   q,
-		_saleRep: saleRep,
+		_mchRep:     r,
+		_query:      q,
+		_saleRep:    saleRep,
+		_orderQuery: orderQuery,
 	}
 }
 
@@ -311,7 +313,7 @@ func (this *merchantService) SaveKeyMaps(merchantId int, data map[string]string)
 }
 
 // 查询分页订单
-func (this *memberService) PagedOrdersOfVendor(vendorId, begin, size int, pagination bool,
+func (this *merchantService) PagedOrdersOfVendor(vendorId, begin, size int, pagination bool,
 	where, orderBy string) (num int, rows []*dto.PagedVendorOrder) {
 	return this._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
