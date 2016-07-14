@@ -269,6 +269,9 @@ type (
 		// 确认订单
 		Confirm() error
 
+		// 获取订单的日志
+		LogBytes() []byte
+
 		// 挂起
 		Suspend(reason string) error
 

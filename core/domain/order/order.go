@@ -10,6 +10,7 @@
 package order
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go2o/core/domain/interface/cart"
@@ -1111,6 +1112,42 @@ func (this *subOrderImpl) Confirm() (err error) {
 		}
 	}
 	return err
+}
+
+// 获取订单的日志
+func (this *subOrderImpl) LogBytes() []byte {
+	buf := bytes.NewBufferString("")
+	list := this._rep.GetSubOrderLogs(this.GetDomainId())
+	for _, v := range list {
+		buf.WriteString(time.Unix(v.RecordTime, 0).Format("2006-01-02 15:04:05"))
+		buf.WriteString("  ")
+		if v.Message[:1] == "{" {
+			if msg := this.getLogStringByStat(v.OrderState); len(msg) > 0 {
+				v.Message = msg
+			}
+		}
+		buf.WriteString(v.Message)
+		buf.Write([]byte("\n"))
+	}
+	return buf.Bytes()
+}
+
+func (this *subOrderImpl) getLogStringByStat(stat int) string {
+	switch stat {
+	case order.StatAwaitingPayment:
+		return "订单已提交..."
+	case order.StatAwaitingConfirm:
+		return "订单已支付,等待商户确认。"
+	case order.StatAwaitingPickup:
+		return "订单已确认,备货中..."
+	case order.StatAwaitingShipment:
+		return "备货完成,即将发货。"
+	case order.StatShipped:
+		return "订单已发货,请等待收货。"
+	case order.StatCompleted:
+		return "已收货,订单完成。"
+	}
+	return ""
 }
 
 // 标记收货
