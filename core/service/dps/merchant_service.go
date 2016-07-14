@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
+	"go2o/core/dto"
 	"go2o/core/query"
 	"log"
 	"strings"
@@ -307,4 +308,10 @@ func (this *merchantService) SaveKeyMaps(merchantId int, data map[string]string)
 		return err
 	}
 	return mch.KvManager().Sets(data)
+}
+
+// 查询分页订单
+func (this *memberService) PagedOrdersOfVendor(vendorId, begin, size int, pagination bool,
+	where, orderBy string) (num int, rows []*dto.PagedVendorOrder) {
+	return this._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
