@@ -317,6 +317,14 @@ func (this *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
 	return o.OnlinePaymentTradeFinish()
 }
 
+// 获取子订单
+func (this *orderManagerImpl) GetSubOrder(id int) order.ISubOrder {
+	if v := this._rep.GetSubOrder(id); v != nil {
+		return this.CreateSubOrder(v)
+	}
+	return nil
+}
+
 // 根据父订单编号获取购买的商品项
 func (this *orderManagerImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
 	return this._rep.GetItemsByParentOrderId(orderId)

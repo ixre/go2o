@@ -333,7 +333,24 @@ func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 
 // 获取子订单
 func (this *shoppingService) GetSubOrder(id int) *order.SubOrder {
+	return this._manager.GetSubOrder(id).GetValue()
+}
+
+// 获取子订单
+func (this *shoppingService) GetSubOrderByNo(orderNo string) *order.SubOrder {
+	id := this._rep.GetOrderId(orderNo, true)
+	if id <= 0 {
+		return nil
+	}
+	return this.GetSubOrder(id)
+}
+
+func (this *shoppingService) GetMinifySubOrder(id int) *order.SubOrder {
 	return this._rep.GetSubOrder(id)
+}
+
+func (this *shoppingService) GetMinifySubOrderByNo(orderNo string) *order.SubOrder {
+	return this._rep.GetSubOrderByNo(orderNo)
 }
 
 func (this *shoppingService) CancelOrder(orderId int, reason string) error {
@@ -378,8 +395,8 @@ func (this *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 确定订单
-func (this *shoppingService) ConfirmOrder(orderNo string) error {
-	o := this._manager.GetOrderByNo(orderNo)
+func (this *shoppingService) ConfirmOrder(id int) error {
+	o := this._manager.GetSubOrder(id)
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}

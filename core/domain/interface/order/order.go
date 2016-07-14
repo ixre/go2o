@@ -266,6 +266,9 @@ type (
 		// 添加备注
 		AddRemark(string)
 
+		// 确认订单
+		Confirm() error
+
 		// 挂起
 		Suspend(reason string) error
 

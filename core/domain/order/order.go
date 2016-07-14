@@ -792,20 +792,6 @@ func (this *orderImpl) Process() error {
 
 // 确认订单
 func (this *orderImpl) Confirm() error {
-	panic("not implement")
-	//if this._value.PaymentOpt == enum.PaymentOnlinePay &&
-	//this._value.IsPaid == enum.FALSE {
-	//    return order.ErrOrderNotPayed
-	//}
-	//if this._value.Status == enum.ORDER_WAIT_CONFIRM {
-	//    this._value.Status = enum.ORDER_WAIT_DELIVERY
-	//    this._value.UpdateTime = time.Now().Unix()
-	//    _, err := this.Save()
-	//    if err == nil {
-	//        err = this.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已经确认")
-	//    }
-	//    return err
-	//}
 	return nil
 }
 
@@ -1107,6 +1093,24 @@ func (this *subOrderImpl) AppendLog(logType order.LogType, system bool, message 
 		RecordTime: time.Now().Unix(),
 	}
 	return this._rep.SaveSubOrderLog(l)
+}
+
+// 确认订单
+func (this *subOrderImpl) Confirm() (err error) {
+	//todo: 线下交易,自动确认
+	//if this._value.PaymentOpt == enum.PaymentOnlinePay &&
+	//this._value.IsPaid == enum.FALSE {
+	//    return order.ErrOrderNotPayed
+	//}
+	if this._value.State == order.StatAwaitingConfirm {
+		this._value.State = order.StatAwaitingPickup
+		this._value.UpdateTime = time.Now().Unix()
+		_, err = this.Save()
+		if err == nil {
+			err = this.AppendLog(order.LogSetup, false, "{confirm}")
+		}
+	}
+	return err
 }
 
 // 标记收货
