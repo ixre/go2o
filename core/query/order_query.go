@@ -26,6 +26,30 @@ func NewOrderQuery(conn db.Connector) *OrderQuery {
 	return &OrderQuery{Connector: conn}
 }
 
+func (this *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
+	list := []*dto.OrderItem{}
+	// 查询分页订单的Item
+	this.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
+            sn.goods_title,sn.img,sn.price,si.quantity,si.fee,si.final_fee
+            FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            ON sn.id=si.snap_id WHERE si.order_id IN(%s)
+            ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
+		for rs.Next() {
+			e := &dto.OrderItem{}
+			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
+				&e.Image, &e.Price, &e.Quantity, &e.Fee, &e.FinalFee)
+			e.FinalPrice = e.FinalFee / float32(e.Quantity)
+			list = append(list, e)
+		}
+	})
+	return list
+}
+
+// 获取订单的商品项
+func (this *OrderQuery) QueryOrderItems(subOrderId int) []*dto.OrderItem {
+	return this.queryOrderItems(strconv.Itoa(subOrderId))
+}
+
 // 查询分页订单
 func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
