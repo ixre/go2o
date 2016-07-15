@@ -453,6 +453,8 @@ type (
 		Fee float32 `db:"fee"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
 		FinalFee float32 `db:"final_fee"`
+		// 是否发货
+		IsShip int `db:"is_ship"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 

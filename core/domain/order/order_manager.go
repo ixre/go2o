@@ -24,6 +24,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/lbs"
@@ -47,13 +48,14 @@ type orderManagerImpl struct {
 	_payRep      payment.IPaymentRep
 	_expressRep  express.IExpressRep
 	_merchant    merchant.IMerchant
+	_shipRep     shipment.IShipmentRep
 }
 
 func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 	rep order.IOrderRep, payRep payment.IPaymentRep, saleRep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
-	expressRep express.IExpressRep,
+	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
 	valRep valueobject.IValueRep) order.IOrderManager {
 
 	return &orderManagerImpl{
@@ -68,6 +70,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 		_deliveryRep: deliveryRep,
 		_valRep:      valRep,
 		_expressRep:  expressRep,
+		_shipRep:     shipRep,
 	}
 }
 
@@ -81,7 +84,7 @@ func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 // 生成空白订单,并保存返回对象
 func (this *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
 	return NewSubOrder(v, this, this._rep, this._memberRep,
-		this._goodsRep, this._saleRep)
+		this._goodsRep, this._shipRep, this._saleRep)
 }
 
 // 在下单前检查购物车
