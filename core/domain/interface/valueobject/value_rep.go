@@ -102,6 +102,12 @@ type (
 	GlobNumberConf struct {
 		// 兑换1元所需要的积分
 		IntegralExchangeRate int
+		// 消费1元产生的经验
+		ExperienceRateByOrder float32
+		// 消费1元产生的积分
+		IntegralRateByOrder float32
+		// 每单额外赠送
+		IntegralBackExtra int
 		// 提现手续费费率
 		ApplyCsn float32
 		// 转账手续费费率
@@ -110,10 +116,6 @@ type (
 		FlowConvertCsn float32
 		// 赠送账户转换手续费费率
 		PresentConvertCsn float32
-		// 每一元返多少积分
-		IntegralBackNum int
-		// 每单额外赠送
-		IntegralBackExtra int
 		// 交易手续费类型
 		TradeCsnType int
 		// 按交易笔数收取手续费的金额

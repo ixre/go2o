@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -25,9 +26,7 @@ import (
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/variable"
 	"strconv"
 	"strings"
 	"time"
@@ -337,8 +336,8 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		Amount:      fee,
 		FinalAmount: fee,
 		//是否配送
-		IsShip: 0,
-		Weight: c.Snapshot.Weight * c.Quantity, //计算重量
+		IsShipped: 0,
+		Weight:    c.Snapshot.Weight * c.Quantity, //计算重量
 	}
 }
 
@@ -985,12 +984,14 @@ type subOrderImpl struct {
 	_saleRep         sale.ISaleRep
 	_manager         order.IOrderManager
 	_shipRep         shipment.IShipmentRep
+	_valRep          valueobject.IValueRep
 }
 
 func NewSubOrder(v *order.SubOrder,
 	manager order.IOrderManager, rep order.IOrderRep,
 	mmRep member.IMemberRep, goodsRep goods.IGoodsRep,
-	shipRep shipment.IShipmentRep, saleRep sale.ISaleRep) order.ISubOrder {
+	shipRep shipment.IShipmentRep, saleRep sale.ISaleRep,
+	valRep valueobject.IValueRep) order.ISubOrder {
 	return &subOrderImpl{
 		_value:     v,
 		_manager:   manager,
@@ -999,6 +1000,7 @@ func NewSubOrder(v *order.SubOrder,
 		_goodsRep:  goodsRep,
 		_saleRep:   saleRep,
 		_shipRep:   shipRep,
+		_valRep:    valRep,
 	}
 }
 
@@ -1014,7 +1016,8 @@ func (o *subOrderImpl) GetValue() *order.SubOrder {
 
 // 获取商品项
 func (o *subOrderImpl) Items() []*order.OrderItem {
-	if o._value.Items != nil && o.GetDomainId() > 0 {
+	if (o._value.Items == nil || len(o._value.Items) == 0) &&
+		o.GetDomainId() > 0 {
 		o._value.Items = o._rep.GetOrderItems(o.GetDomainId())
 	}
 	return o._value.Items
@@ -1036,6 +1039,20 @@ func (o *subOrderImpl) SetShop(shopId int) error {
 	return nil
 }
 
+func (o *subOrderImpl) saveOrderItems() error {
+	unix := time.Now().Unix()
+	id := o.GetDomainId()
+	for _, v := range o.Items() {
+		v.OrderId = id
+		v.UpdateTime = unix
+		_, err := o._rep.SaveOrderItem(id, v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // 保存订单
 func (o *subOrderImpl) Save() (int, error) {
 	if o.GetDomainId() > 0 {
@@ -1044,12 +1061,7 @@ func (o *subOrderImpl) Save() (int, error) {
 	id, err := o._rep.SaveSubOrder(o._value)
 	if err == nil {
 		o._value.Id = id
-		unix := time.Now().Unix()
-		for _, v := range o._value.Items {
-			v.OrderId = id
-			v.UpdateTime = unix
-			o._rep.SaveOrderItem(id, v)
-		}
+		err = o.saveOrderItems()
 		o.AppendLog(order.LogSetup, true, "{created}")
 	}
 	return id, err
@@ -1118,21 +1130,28 @@ func (o *subOrderImpl) Confirm() (err error) {
 	//o._value.IsPaid == enum.FALSE {
 	//    return order.ErrOrderNotPayed
 	//}
-	if o._value.State == order.StatAwaitingConfirm {
-		o._value.State = order.StatAwaitingPickup
-		o._value.UpdateTime = time.Now().Unix()
-		_, err = o.Save()
-		if err == nil {
-			err = o.AppendLog(order.LogSetup, false, "{confirm}")
-		}
+	if o._value.State < order.StatAwaitingConfirm {
+		return order.ErrOrderNotPayed
+	}
+	if o._value.State >= order.StatAwaitingPickup {
+		return order.ErrOrderHasConfirm
+	}
+	o._value.State = order.StatAwaitingPickup
+	o._value.UpdateTime = time.Now().Unix()
+	_, err = o.Save()
+	if err == nil {
+		err = o.AppendLog(order.LogSetup, false, "{confirm}")
 	}
 	return err
 }
 
 // 捡货(备货)
 func (o *subOrderImpl) PickUp() error {
-	if o._value.State != order.StatAwaitingPickup {
-		return order.ErrUnusualOrderStat
+	if o._value.State < order.StatAwaitingPickup {
+		return order.ErrOrderNotConfirm
+	}
+	if o._value.State >= order.StatAwaitingShipment {
+		return order.ErrOrderHasPickUp
 	}
 	o._value.State = order.StatAwaitingShipment
 	o._value.UpdateTime = time.Now().Unix()
@@ -1147,10 +1166,13 @@ func (o *subOrderImpl) PickUp() error {
 func (o *subOrderImpl) Ship(spId int, spOrder string) error {
 	//so := o._shipRep.GetOrders()
 	//todo: 可进行发货修改
-
-	if o._value.State != order.StatAwaitingShipment {
-		return order.ErrUnusualOrderStat
+	if o._value.State < order.StatAwaitingShipment {
+		return order.ErrOrderNotPickUp
 	}
+	if o._value.State >= order.StatShipped {
+		return order.ErrOrderShipped
+	}
+
 	if list := o._shipRep.GetOrders(o.GetDomainId()); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
@@ -1166,10 +1188,12 @@ func (o *subOrderImpl) Ship(spId int, spOrder string) error {
 	if err == nil {
 		o._value.State = order.StatShipped
 		o._value.UpdateTime = time.Now().Unix()
-		_, err = o.Save()
-		if err == nil {
-			o.AppendLog(order.LogSetup, true, "{shipped}")
+		if _, err = o.Save(); err != nil {
+			return err
 		}
+		// 保存商品的发货状态
+		err = o.saveOrderItems()
+		o.AppendLog(order.LogSetup, true, "{shipped}")
 	}
 	return err
 }
@@ -1178,40 +1202,52 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.OrderItem) shipment.IS
 	if items == nil || len(items) == 0 {
 		return nil
 	}
-	list := []*shipment.Item{}
 	unix := time.Now().Unix()
 	so := &shipment.ShipmentOrder{
-		Id:           0,
-		OrderId:      o.GetDomainId(),
-		ExpressLog:   "",
-		ShipTime:     unix,
-		Stat:         shipment.StatAwaitingShipment,
-		UpdateTime:   unix,
-		ShipmentItem: list,
+		Id:         0,
+		OrderId:    o.GetDomainId(),
+		ExpressLog: "",
+		ShipTime:   unix,
+		Stat:       shipment.StatAwaitingShipment,
+		UpdateTime: unix,
+		Items:      []*shipment.Item{},
 	}
 	for _, v := range items {
+		if v.IsShipped == 1 {
+			continue
+		}
 		so.Amount += v.Amount
 		so.FinalAmount += v.FinalAmount
-		list = append(list, &shipment.Item{
+		so.Items = append(so.Items, &shipment.Item{
 			Id:          0,
 			GoodsSnapId: v.SnapshotId,
 			Quantity:    v.Quantity,
 			Amount:      v.Amount,
 			FinalAmount: v.FinalAmount,
 		})
+		v.IsShipped = 1
 	}
 	return o._shipRep.CreateShipmentOrder(so)
 }
 
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
+	var err error
+	if o._value.State < order.StatShipped {
+		return order.ErrOrderNotShipped
+	}
+	if o._value.State >= order.StatCompleted {
+		return order.ErrIsCompleted
+	}
 	dt := time.Now()
 	o._value.State = order.StatCompleted
 	o._value.UpdateTime = dt.Unix()
-	_, err := o.Save()
+	if _, err = o.Save(); err != nil {
+		return err
+	}
+	err = o.AppendLog(order.LogSetup, false, "{completed}")
 	if err == nil {
-		err = o.AppendLog(order.LogSetup, false, "{completed}")
-		o.onOrderComplete()
+		err = o.onOrderComplete()
 	}
 	return err
 }
@@ -1253,15 +1289,41 @@ func (o *subOrderImpl) getLogStringByStat(stat int) string {
 }
 
 // 更新账户
-func (o *subOrderImpl) updateAccountForOrder(m member.IMember,
-	order order.ISubOrder) {
+func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
+	if o._value.State != order.StatCompleted {
+		return order.ErrUnusualOrderStat
+	}
+	var err error
+	ov := o._value
+	conf := o._valRep.GetGlobNumberConf()
+	amount := ov.FinalAmount
 	acc := m.GetAccount()
-	ov := order.GetValue()
+
+	// 增加经验
+	rate := conf.ExperienceRateByOrder
+	if exp := int(amount * rate); exp > 0 {
+		if err = m.AddExp(exp); err != nil {
+			return err
+		}
+	}
+
+	// 增加积分
+	//todo: 增加阶梯的返积分,比如订单满30送100积分
+	integral := int(amount*conf.IntegralRateByOrder) + conf.IntegralBackExtra
+	// 赠送积分
+	if integral > 0 {
+		err = m.GetAccount().AddIntegral(ov.VendorId, enum.INTEGRAL_TYPE_ORDER,
+			integral, fmt.Sprintf("订单返积分%d个", integral))
+		if err != nil {
+			return err
+		}
+	}
 	acv := acc.GetValue()
 	acv.TotalFee += ov.GoodsAmount
 	acv.TotalPay += ov.FinalAmount
 	acv.UpdateTime = time.Now().Unix()
-	acc.Save()
+	_, err = acc.Save()
+	return err
 }
 
 // 完成订单
@@ -1269,15 +1331,27 @@ func (o *subOrderImpl) onOrderComplete() error {
 	// now := time.Now().Unix()
 	// v := o._value
 
+	// 更新发货单
+	soList := o._shipRep.GetOrders(o.GetDomainId())
+	for _, v := range soList {
+		domain.HandleError(v.Completed(), "domain")
+	}
+
+	// 获取消费者消息
 	po := o._rep.Manager().GetOrderById(o._value.ParentId)
-	pv := po.GetValue()
-	m := o._memberRep.GetMember(pv.BuyerId)
+	m := po.GetBuyer()
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	var err error
 
-	//todo: ???
+	mv := m.GetValue()
+	log.Println("---", o._value.ParentId, " ", mv.Id, ",", mv.Usr)
+
+	// 更新会员账户
+	err := o.updateAccountForOrder(m)
+	if err != nil {
+		return err
+	}
 
 	//var mch merchant.IMerchant
 	////mch, err = o._partnerRep.GetMerchant(v.VendorId)
@@ -1291,22 +1365,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 	//    return err
 	//}
 
-	// 增加经验
-	if EXP_BIT == 0 {
-		fv := infrastructure.GetApp().Config().GetFloat(variable.EXP_BIT)
-		if fv <= 0 {
-			panic("[WANNING]:Exp_bit not set!")
-		}
-		EXP_BIT = float32(fv)
-	}
-	if err = m.AddExp(int(pv.FinalAmount * EXP_BIT)); err != nil {
-		return err
-	}
-
-	// 更新账户
-	o.updateAccountForOrder(m, o)
-
-	panic("not implement")
+	// panic("not implement")
 
 	//todo: 获取商户的销售比例
 
@@ -1321,18 +1380,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 	//    o.updateShoppingMemberBackFee(mch, m,
 	//        back_fee * saleConf.CashBackMemberPercent, now)
 	//
-	//    //todo: 增加阶梯的返积分,比如订单满30送100积分
-	//    backIntegral := int(v.Fee) * globSaleConf.IntegralBackNum +
-	//    globSaleConf.IntegralBackExtra
 	//
-	//    // 赠送积分
-	//    if backIntegral != 0 {
-	//        err = m.GetAccount().AddIntegral(v.VendorId, enum.INTEGRAL_TYPE_ORDER,
-	//            backIntegral, fmt.Sprintf("订单返积分%d个", backIntegral))
-	//        if err != nil {
-	//            return err
-	//        }
-	//    }
 	//}
 	//
 	//o._value.Status = enum.ORDER_COMPLETED
@@ -1350,7 +1398,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 	//        o.backFor3R(mch, m, back_fee, now)
 	//    }
 	//}
-	//return err
+	return err
 }
 
 // 取消商品

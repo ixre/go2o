@@ -47,6 +47,12 @@ var (
 	defaultGlobNumberConf = valueobject.GlobNumberConf{
 		// 兑换1元所需要的积分
 		IntegralExchangeRate: 1000,
+		// 消费1元产生的经验
+		ExperienceRateByOrder: 1,
+		// 消费1元产生的积分
+		IntegralRateByOrder: 1,
+		// 每单额外赠送
+		IntegralBackExtra: 0,
 		// 提现手续费费率
 		ApplyCsn: 0.01,
 		// 转账手续费费率
@@ -55,10 +61,6 @@ var (
 		FlowConvertCsn: 0.05,
 		// 赠送账户转换手续费费率
 		PresentConvertCsn: 0.05,
-		// 每一元返多少积分
-		IntegralBackNum: 1,
-		// 每单额外赠送
-		IntegralBackExtra: 0,
 		// 交易手续费类型
 		TradeCsnType: valueobject.TradeCsnTypeByFee,
 		// 按交易笔数收取手续费的金额

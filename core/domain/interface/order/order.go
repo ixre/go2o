@@ -126,10 +126,12 @@ var (
 
 	ErrNoYetCreated *domain.DomainError = domain.NewDomainError(
 		"err_order_not_yet_created ", "订单尚未生成")
+
 	ErrUnusualOrder *domain.DomainError = domain.NewDomainError(
 		"err_unusual_order", "订单异常")
+
 	ErrUnusualOrderStat *domain.DomainError = domain.NewDomainError(
-		"err_except_order_stat", "订单状态异常")
+		"err_except_order_stat", "订单状态不匹配、无法执行此操作!")
 
 	ErrPartialShipment *domain.DomainError = domain.NewDomainError(
 		"err_order_partial_shipment", "订单部分商品已经发货")
@@ -137,8 +139,26 @@ var (
 	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_not_payed ", "订单未支付")
 
-	ErrOrderDelved *domain.DomainError = domain.NewDomainError(
-		"err_order_delved ", "订单已发货")
+	ErrOrderHasConfirm *domain.DomainError = domain.NewDomainError(
+		"err_order_has_confirm", "订单已经确认")
+
+	ErrOrderNotConfirm *domain.DomainError = domain.NewDomainError(
+		"err_order_not_confirm", "请等待系统确认")
+
+	ErrOrderHasPickUp *domain.DomainError = domain.NewDomainError(
+		"err_order_has_pick_up", "订单已经备货")
+
+	ErrOrderNotPickUp *domain.DomainError = domain.NewDomainError(
+		"err_order_not_pick_up", "请等待商品备货")
+
+	ErrOrderShipped *domain.DomainError = domain.NewDomainError(
+		"err_order_shipped", "订单已经发货")
+
+	ErrOrderNotShipped *domain.DomainError = domain.NewDomainError(
+		"err_order_not_shipped", "订单尚未发货")
+
+	ErrIsCompleted *domain.DomainError = domain.NewDomainError(
+		"err_order_is_completed", "订单已经完成")
 
 	ErrOrderBreakUpFail *domain.DomainError = domain.NewDomainError(
 		"err_order_break_up_fail", "拆分订单操作失败")
@@ -467,7 +487,7 @@ type (
 		// 最终金额, 可能会有优惠均摊抵扣的金额
 		FinalAmount float32 `db:"final_amount"`
 		// 是否发货
-		IsShip int `db:"is_ship"`
+		IsShipped int `db:"is_shipped"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 

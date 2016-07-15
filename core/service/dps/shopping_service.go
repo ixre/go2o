@@ -439,7 +439,7 @@ func (this *shoppingService) DeliveryOrder(orderNo string,
 	if o.GetValue().State == enum.ORDER_WAIT_DELIVERY {
 		return o.Deliver(deliverySpId, deliverySpNo)
 	}
-	return order.ErrOrderDelved
+	return order.ErrOrderShipped
 }
 
 // 标记订单已经收货

@@ -52,6 +52,9 @@ type (
 		// 保存发货单
 		SaveShipmentOrder(o *ShipmentOrder) (int, error)
 
+		// 保存发货商品项
+		SaveShipmentItem(v *Item) (int, error)
+
 		// 删除发货单
 		DeleteShipmentOrder(id int) error
 	}
@@ -78,7 +81,7 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:update_time"`
 		// 配送项目
-		ShipmentItem []*Item `db:"-"`
+		Items []*Item `db:"-"`
 	}
 
 	Item struct {
