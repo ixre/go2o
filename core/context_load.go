@@ -31,6 +31,7 @@ import (
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
 	"strconv"
@@ -112,6 +113,11 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(express.ExpressProvider{}, "express_provider")
 	orm.Mapping(express.ExpressTemplate{}, "express_template")
 	orm.Mapping(express.ExpressAreaTemplate{}, "express_area_set")
+
+	//** Shipment **/
+	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
+	orm.Mapping(shipment.Item{}, "ship_item")
+
 	/** 销售 **/
 	orm.Mapping(item.Item{}, "gs_item")
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
