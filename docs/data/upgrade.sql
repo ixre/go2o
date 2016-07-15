@@ -612,10 +612,41 @@ ALTER TABLE `flm`.`mch_enterprise_info`
 ALTER TABLE `flm`.`mch_enterprise_info`
   ADD COLUMN `is_handled` TINYINT(1) NULL AFTER `company_imageurl`;
 
+CREATE TABLE `flm`.`ship_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NULL,
+  `sp_id` INT NULL COMMENT '快递SP编号',
+  `sp_order` VARCHAR(20) NULL COMMENT '快递SP单号',
+  `exporess_log` VARCHAR(512) NULL,
+  `amount` DECIMAL(8,2) NULL,
+  `final_amount` DECIMAL(8,2) NULL,
+  `ship_time` INT NULL COMMENT '发货时间',
+  `state` TINYINT(1) NULL COMMENT '是否已收货',
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
 
 
+CREATE TABLE `flm`.`ship_item` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `ship_order` INT NULL,
+  `snap_id` INT NULL,
+  `quantity` INT NULL,
+  `amount` DECIMAL(8,2) NULL,
+  `final_amount` DECIMAL(8,2) NULL,
+  PRIMARY KEY (`id`));
+ALTER TABLE `flm`.`sale_order`
+  CHANGE COLUMN `goods_fee` `goods_amount` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '商品金额' ,
+  CHANGE COLUMN `discount_fee` `discount_amount` DECIMAL(8,2) NULL DEFAULT NULL ,
+  CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8,2) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`sale_order_item`
+  CHANGE COLUMN `fee` `amount` DECIMAL(8,2) NULL DEFAULT NULL ,
+  CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8,2) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`sale_sub_order`
+  CHANGE COLUMN `goods_fee` `goods_amount` DECIMAL(8,2) NULL DEFAULT NULL ,
+  CHANGE COLUMN `discount_fee` `discount_amount` DECIMAL(8,2) NULL DEFAULT NULL ,
+  CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8,2) NULL DEFAULT NULL ;
 
 
 

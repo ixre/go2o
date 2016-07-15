@@ -126,6 +126,13 @@ var (
 
 	ErrNoYetCreated *domain.DomainError = domain.NewDomainError(
 		"err_order_not_yet_created ", "订单尚未生成")
+	ErrUnusualOrder *domain.DomainError = domain.NewDomainError(
+		"err_unusual_order", "订单异常")
+	ErrUnusualOrderStat *domain.DomainError = domain.NewDomainError(
+		"err_except_order_stat", "订单状态异常")
+
+	ErrPartialShipment *domain.DomainError = domain.NewDomainError(
+		"err_order_partial_shipment", "订单部分商品已经发货")
 
 	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_not_payed ", "订单未支付")
@@ -257,6 +264,12 @@ type (
 		// 获取值对象
 		GetValue() *SubOrder
 
+		// 获取商品项
+		Items() []*OrderItem
+
+		// 在线支付交易完成
+		PaymentFinishByOnlineTrade() error
+
 		// 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
 
@@ -269,26 +282,26 @@ type (
 		// 确认订单
 		Confirm() error
 
+		// 捡货(备货)
+		PickUp() error
+
+		// 发货
+		Ship(spId int, spOrder string) error
+
+		// 已收货
+		BuyerReceived() error
+
 		// 获取订单的日志
 		LogBytes() []byte
 
 		// 挂起
 		Suspend(reason string) error
 
-		// 标记收货
-		SignReceived() error
-
-		// 完成订单
-		Complete() error
-
 		// 取消订单
 		Cancel(reason string) error
 
 		// 保存订单
 		Save() (int, error)
-
-		// 在线支付交易完成
-		PaymentFinishByOnlineTrade() error
 	}
 
 	// 简单商品信息
@@ -361,15 +374,15 @@ type (
 		// 订单详情
 		ItemsInfo string `db:"items_info" json:"itemsInfo"`
 		// 商品金额
-		GoodsFee float32 `db:"goods_fee"`
+		GoodsAmount float32 `db:"goods_amount"`
 		// 优惠减免金额
-		DiscountFee float32 `db:"discount_fee" json:"discountFee"`
+		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
 		// 运费
 		ExpressFee float32 `db:"express_fee"`
 		// 包装费用
 		PackageFee float32 `db:"package_fee"`
 		// 实际金额
-		FinalFee float32 `db:"final_fee" json:"fee"`
+		FinalAmount float32 `db:"final_amount" json:"fee"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 支付时间
@@ -410,15 +423,15 @@ type (
 		// 订单详情
 		ItemsInfo string `db:"items_info" json:"itemsInfo"`
 		// 商品金额
-		GoodsFee float32 `db:"goods_fee"`
+		GoodsAmount float32 `db:"goods_amount"`
 		// 优惠减免金额
-		DiscountFee float32 `db:"discount_fee" json:"discountFee"`
+		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
 		// 运费
 		ExpressFee float32 `db:"express_fee"`
 		// 包装费用
 		PackageFee float32 `db:"package_fee"`
 		// 实际金额
-		FinalFee float32 `db:"final_fee" json:"fee"`
+		FinalAmount float32 `db:"final_amount" json:"fee"`
 		// 是否支付
 		IsPaid int `db:"is_paid"`
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
@@ -450,9 +463,9 @@ type (
 		// SKU描述
 		//Sku string `db:"sku"`
 		// 金额
-		Fee float32 `db:"fee"`
+		Amount float32 `db:"amount"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
-		FinalFee float32 `db:"final_fee"`
+		FinalAmount float32 `db:"final_amount"`
 		// 是否发货
 		IsShip int `db:"is_ship"`
 		// 更新时间

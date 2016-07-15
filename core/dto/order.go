@@ -12,27 +12,27 @@ type (
 	/*
 	   o.order_no,po.order_no as parent_no,
 	       vendor_id,o.shop_id,s.name as shop_name,
-	       o.goods_fee,o.discount_fee,o.express_fee,
+	       o.goods_amount,o.discount_amount,o.express_fee,
 	       o.package_fee,o.final_fee,o.status
 	*/
 	// 会员分页子订单
 	PagedMemberSubOrder struct {
-		Id          int
-		OrderNo     string
-		ParentNo    string
-		VendorId    int
-		ShopId      int
-		ShopName    string
-		GoodsFee    float32
-		DiscountFee float32
-		ExpressFee  float32
-		PackageFee  float32
-		IsPaid      bool
-		FinalFee    float32
-		State       int
-		StateText   string
-		CreateTime  int64
-		Items       []*OrderItem
+		Id             int
+		OrderNo        string
+		ParentNo       string
+		VendorId       int
+		ShopId         int
+		ShopName       string
+		GoodsAmount    float32
+		DiscountAmount float32
+		ExpressFee     float32
+		PackageFee     float32
+		IsPaid         bool
+		FinalAmount    float32
+		State          int
+		StateText      string
+		CreateTime     int64
+		Items          []*OrderItem
 	}
 
 	PagedVendorOrder struct {
@@ -45,16 +45,16 @@ type (
 		//VendorId    int
 		//ShopId      int
 		//ShopName    string
-		GoodsFee    float32
-		DiscountFee float32
-		ExpressFee  float32
-		PackageFee  float32
-		IsPaid      bool
-		FinalFee    float32
-		State       int
-		StateText   string
-		CreateTime  int64
-		Items       []*OrderItem
+		GoodsAmount    float32
+		DiscountAmount float32
+		ExpressFee     float32
+		PackageFee     float32
+		IsPaid         bool
+		FinalAmount    float32
+		State          int
+		StateText      string
+		CreateTime     int64
+		Items          []*OrderItem
 	}
 
 	/*
@@ -83,8 +83,8 @@ type (
 		// 商品数量
 		Quantity int
 		// 商品总金额
-		Fee float32
+		Amount float32
 		// 商品实际总金额
-		FinalFee float32
+		FinalAmount float32
 	}
 )

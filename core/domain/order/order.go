@@ -128,7 +128,7 @@ func (o *orderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 		// 标题
 		Title: coupon.GetDescribe(),
 		// 节省金额
-		SaveFee: coupon.GetCouponFee(o._value.GoodsFee),
+		SaveFee: coupon.GetCouponFee(o._value.GoodsAmount),
 		// 赠送积分
 		PresentIntegral: 0, //todo;/////
 		// 是否应用
@@ -240,15 +240,15 @@ func (o *orderImpl) RequireCart(c cart.ICart) error {
 
 // 更新订单金额,并返回运费
 func (o *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float32 {
-	o._value.GoodsFee = 0
+	o._value.GoodsAmount = 0
 	weightMap := make(map[int]int) //重量
 	for k, v := range mp {
 		weightMap[k] = 0
 		for _, item := range v {
 			//计算商品总金额
-			o._value.GoodsFee += item.Fee
+			o._value.GoodsAmount += item.Amount
 			//计算商品优惠金额
-			o._value.DiscountFee += item.Fee - item.FinalFee
+			o._value.DiscountAmount += item.Amount - item.FinalAmount
 			//计重
 			weightMap[k] += item.Weight
 		}
@@ -266,7 +266,7 @@ func (o *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float3
 
 	o._value.PackageFee = 0
 	//计算最终金额
-	o._value.FinalFee = o._value.GoodsFee - o._value.DiscountFee +
+	o._value.FinalAmount = o._value.GoodsAmount - o._value.DiscountAmount +
 		o._value.ExpressFee + o._value.PackageFee
 	return expressMap
 }
@@ -328,14 +328,14 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	}
 	fee := c.SalePrice * float32(c.Quantity)
 	return &order.OrderItem{
-		Id:         0,
-		VendorId:   c.VendorId,
-		ShopId:     c.ShopId,
-		SkuId:      c.SkuId,
-		SnapshotId: snap.Id,
-		Quantity:   c.Quantity,
-		Fee:        fee,
-		FinalFee:   fee,
+		Id:          0,
+		VendorId:    c.VendorId,
+		ShopId:      c.ShopId,
+		SkuId:       c.SkuId,
+		SnapshotId:  snap.Id,
+		Quantity:    c.Quantity,
+		Amount:      fee,
+		FinalAmount: fee,
 		//是否配送
 		IsShip: 0,
 		Weight: c.Snapshot.Weight * c.Quantity, //计算重量
@@ -368,11 +368,11 @@ func (o *orderImpl) Submit() (string, error) {
 	// 判断商品的优惠促销,如返现等
 	proms, fee := o.applyCartPromotionOnSubmit(v, o._cart)
 	if len(proms) != 0 {
-		v.DiscountFee += float32(fee)
-		v.FinalFee = v.GoodsFee - v.DiscountFee
-		if v.FinalFee < 0 {
+		v.DiscountAmount += float32(fee)
+		v.FinalAmount = v.GoodsAmount - v.DiscountAmount
+		if v.FinalAmount < 0 {
 			// 如果出现优惠券多余的金额也一并使用
-			v.FinalFee = 0
+			v.FinalAmount = 0
 		}
 	}
 
@@ -410,12 +410,12 @@ func (o *orderImpl) avgDiscountToItem() {
 	if o._vendorItemsMap == nil {
 		panic(errors.New("仅能在下单时进行商品抵扣均分"))
 	}
-	if o._value.DiscountFee > 0 {
-		totalFee := o._value.GoodsFee
-		disFee := o._value.DiscountFee
+	if o._value.DiscountAmount > 0 {
+		totalFee := o._value.GoodsAmount
+		disFee := o._value.DiscountAmount
 		for _, items := range o._vendorItemsMap {
 			for _, v := range items {
-				v.FinalFee = v.Fee - (v.Fee/totalFee)*disFee
+				v.FinalAmount = v.Amount - (v.Amount/totalFee)*disFee
 			}
 		}
 	}
@@ -454,7 +454,7 @@ func (o *orderImpl) applyCartPromotionOnSubmit(vo *order.Order,
 	var prom promotion.IPromotion
 	var saveFee int
 	var totalSaveFee int
-	var intOrderFee = int(vo.FinalFee)
+	var intOrderFee = int(vo.FinalAmount)
 	var rightBack bool
 
 	for _, v := range cart.GetCartGoods() {
@@ -495,7 +495,7 @@ func (o *orderImpl) applyCartPromotionOnSubmit(vo *order.Order,
 func (o *orderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
-		oc.Clone(c, o.GetAggregateRootId(), o._value.FinalFee)
+		oc.Clone(c, o.GetAggregateRootId(), o._value.FinalAmount)
 		o._orderRep.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
@@ -528,12 +528,12 @@ func (o *orderImpl) applyCouponOnSubmit(v *order.Order) error {
 
 // 应用余额支付
 func (o *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
-	if o._value.FinalFee <= 0 {
+	if o._value.FinalAmount <= 0 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= o._value.FinalFee {
-		return o._value.FinalFee
+	if acv.Balance >= o._value.FinalAmount {
+		return o._value.FinalAmount
 	} else {
 		return acv.Balance
 	}
@@ -550,7 +550,7 @@ func (o *orderImpl) checkNewOrderPayment() {
 	//v.PaymentSign = 1
 
 	// 设置订单状态
-	if o._value.FinalFee == 0 {
+	if o._value.FinalAmount == 0 {
 		o._value.IsPaid = 1
 		o._value.PaidTime = time.Now().Unix()
 		o._value.State = order.StatAwaitingConfirm
@@ -616,11 +616,11 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
 		ShopId:    items[0].ShopId,
 		ItemsInfo: "",
 		// 总金额
-		GoodsFee: 0,
+		GoodsAmount: 0,
 		// 减免金额(包含优惠券金额)
-		DiscountFee: 0,
-		ExpressFee:  0,
-		FinalFee:    0,
+		DiscountAmount: 0,
+		ExpressFee:     0,
+		FinalAmount:    0,
 		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
 		IsSuspend:  0,
 		Note:       "",
@@ -632,16 +632,16 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
 	// 计算订单金额
 	for _, item := range items {
 		//计算商品金额
-		v.GoodsFee += item.Fee
+		v.GoodsAmount += item.Amount
 		//计算商品优惠金额
-		v.DiscountFee += item.Fee - item.FinalFee
+		v.DiscountAmount += item.Amount - item.FinalAmount
 	}
 	// 设置运费
 	v.ExpressFee = o._vendorExpressMap[vendorId]
 	// 设置包装费
 	v.PackageFee = 0
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
-	v.FinalFee = v.GoodsFee - v.DiscountFee + v.PackageFee + v.ExpressFee
+	v.FinalAmount = v.GoodsAmount - v.DiscountAmount + v.PackageFee + v.ExpressFee
 	// 判断是否已支付
 	if o._value.IsPaid == 1 {
 		v.State = enum.ORDER_WAIT_CONFIRM
@@ -741,15 +741,15 @@ func (o *orderImpl) paymentWithBalance(buyerType int) error {
 	if fee := o.getBalanceDiscountFee(acc); fee == 0 {
 		return member.ErrAccountBalanceNotEnough
 	} else {
-		o._value.DiscountFee = fee
-		o._value.FinalFee -= fee
+		o._value.DiscountAmount = fee
+		o._value.FinalAmount -= fee
 		err := acc.PaymentDiscount(o.GetOrderNo(), fee)
 		if err != nil {
 			return err
 		}
 	}
 	unix := time.Now().Unix()
-	if o._value.FinalFee == 0 {
+	if o._value.FinalAmount == 0 {
 		o._value.IsPaid = 1
 		// o._value.PaymentSign = buyerType
 		o._value.State = enum.ORDER_WAIT_CONFIRM
@@ -837,14 +837,14 @@ func (o *orderImpl) GetOrderNo() string {
 }
 
 func (o *orderImpl) backupPayment() error {
-	if o._value.DiscountFee > 0 {
+	if o._value.DiscountAmount > 0 {
 		//退回账户余额抵扣
 		acc := o._memberRep.GetMember(o._value.BuyerId).GetAccount()
 		return acc.ChargeBalance(member.TypeBalanceOrderRefund, "订单退款",
 			o.GetOrderNo(),
-			o._value.DiscountFee)
+			o._value.DiscountAmount)
 	}
-	if o._value.FinalFee > 0 {
+	if o._value.FinalAmount > 0 {
 		//todo: 其他支付方式退还,如网银???
 	}
 	return nil
@@ -1012,6 +1012,14 @@ func (o *subOrderImpl) GetValue() *order.SubOrder {
 	return o._value
 }
 
+// 获取商品项
+func (o *subOrderImpl) Items() []*order.OrderItem {
+	if o._value.Items != nil && o.GetDomainId() > 0 {
+		o._value.Items = o._rep.GetOrderItems(o.GetDomainId())
+	}
+	return o._value.Items
+}
+
 // 添加备注
 func (o *subOrderImpl) AddRemark(remark string) {
 	o._value.Remark = remark
@@ -1121,6 +1129,93 @@ func (o *subOrderImpl) Confirm() (err error) {
 	return err
 }
 
+// 捡货(备货)
+func (o *subOrderImpl) PickUp() error {
+	if o._value.State != order.StatAwaitingPickup {
+		return order.ErrUnusualOrderStat
+	}
+	o._value.State = order.StatAwaitingShipment
+	o._value.UpdateTime = time.Now().Unix()
+	_, err := o.Save()
+	if err == nil {
+		err = o.AppendLog(order.LogSetup, true, "{pickup}")
+	}
+	return err
+}
+
+// 发货
+func (o *subOrderImpl) Ship(spId int, spOrder string) error {
+	//so := o._shipRep.GetOrders()
+	//todo: 可进行发货修改
+
+	if o._value.State != order.StatAwaitingShipment {
+		return order.ErrUnusualOrderStat
+	}
+	if list := o._shipRep.GetOrders(o.GetDomainId()); len(list) > 0 {
+		return order.ErrPartialShipment
+	}
+	if spId <= 0 || spOrder == "" {
+		return shipment.ErrMissingSpInfo
+	}
+	so := o.createShipmentOrder(o.Items())
+	if so == nil {
+		return order.ErrUnusualOrder
+	}
+	// 生成发货单并发货
+	err := so.Ship(spId, spOrder)
+	if err == nil {
+		o._value.State = order.StatShipped
+		o._value.UpdateTime = time.Now().Unix()
+		_, err = o.Save()
+		if err == nil {
+			o.AppendLog(order.LogSetup, true, "{shipped}")
+		}
+	}
+	return err
+}
+
+func (o *subOrderImpl) createShipmentOrder(items []*order.OrderItem) shipment.IShipmentOrder {
+	if items == nil || len(items) == 0 {
+		return nil
+	}
+	list := []*shipment.Item{}
+	unix := time.Now().Unix()
+	so := &shipment.ShipmentOrder{
+		Id:           0,
+		OrderId:      o.GetDomainId(),
+		ExpressLog:   "",
+		ShipTime:     unix,
+		Stat:         shipment.StatAwaitingShipment,
+		UpdateTime:   unix,
+		ShipmentItem: list,
+	}
+	for _, v := range items {
+		so.Amount += v.Amount
+		so.FinalAmount += v.FinalAmount
+		list = append(list, &shipment.Item{
+			Id:          0,
+			GoodsSnapId: v.SnapshotId,
+			Quantity:    v.Quantity,
+			Amount:      v.Amount,
+			FinalAmount: v.FinalAmount,
+		})
+	}
+	return o._shipRep.CreateShipmentOrder(so)
+}
+
+// 已收货
+func (o *subOrderImpl) BuyerReceived() error {
+	dt := time.Now()
+	o._value.State = order.StatCompleted
+	o._value.UpdateTime = dt.Unix()
+	_, err := o.Save()
+	if err == nil {
+		err = o.AppendLog(order.LogSetup, false, "{completed}")
+		o.onOrderComplete()
+	}
+	return err
+}
+
 // 获取订单的日志
 func (o *subOrderImpl) LogBytes() []byte {
 	buf := bytes.NewBufferString("")
@@ -1157,33 +1252,20 @@ func (o *subOrderImpl) getLogStringByStat(stat int) string {
 	return ""
 }
 
-// 标记收货
-func (o *subOrderImpl) SignReceived() error {
-	dt := time.Now()
-	o._value.State = order.StatCompleted
-	o._value.UpdateTime = dt.Unix()
-
-	_, err := o.Save()
-	if err == nil {
-		err = o.AppendLog(order.LogSetup, false, "已收货,订单完成!")
-	}
-	return err
-}
-
 // 更新账户
 func (o *subOrderImpl) updateAccountForOrder(m member.IMember,
 	order order.ISubOrder) {
 	acc := m.GetAccount()
 	ov := order.GetValue()
 	acv := acc.GetValue()
-	acv.TotalFee += ov.GoodsFee
-	acv.TotalPay += ov.FinalFee
+	acv.TotalFee += ov.GoodsAmount
+	acv.TotalPay += ov.FinalAmount
 	acv.UpdateTime = time.Now().Unix()
 	acc.Save()
 }
 
 // 完成订单
-func (o *subOrderImpl) Complete() error {
+func (o *subOrderImpl) onOrderComplete() error {
 	// now := time.Now().Unix()
 	// v := o._value
 
@@ -1217,7 +1299,7 @@ func (o *subOrderImpl) Complete() error {
 		}
 		EXP_BIT = float32(fv)
 	}
-	if err = m.AddExp(int(pv.FinalFee * EXP_BIT)); err != nil {
+	if err = m.AddExp(int(pv.FinalAmount * EXP_BIT)); err != nil {
 		return err
 	}
 

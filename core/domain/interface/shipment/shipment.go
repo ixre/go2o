@@ -8,6 +8,23 @@
  */
 package shipment
 
+import "go2o/core/infrastructure/domain"
+
+const (
+	// 等待发货
+	StatAwaitingShipment = 1 + iota
+	// 已发货
+	StatShipped
+	// 已完成
+	StatCompleted
+)
+
+var (
+	ErrMissingSpInfo *domain.DomainError = domain.NewDomainError(
+		"err_shipment_missing_spinfo", "物流信息不完整、无法进行发货!",
+	)
+)
+
 type (
 	IShipmentOrder interface {
 		// 获取聚合根编号
@@ -17,7 +34,7 @@ type (
 		// 发货
 		Ship(spId int, spOrderNo string) error
 		// 发货完成
-		Shipped() error
+		Completed() error
 		// 更新快递记录
 		UpdateLog() error
 	}
@@ -55,9 +72,9 @@ type (
 		// 货物实际金额
 		FinalAmount float32 `db:"final_amount"`
 		// 发货时间
-		ShipTime int64 `db:"shop_time"`
-		// 是否收货
-		IsShipped int `db:"is_shipped"`
+		ShipTime int64 `db:"ship_time"`
+		// 状态
+		Stat int `db:"state"`
 		// 更新时间
 		UpdateTime int64 `db:update_time"`
 		// 配送项目
@@ -67,7 +84,7 @@ type (
 	Item struct {
 		Id int `db:"id" auto:"yes" pk:"yes"`
 		// 发货单编号
-		OrderId int `db:"order_id"`
+		OrderId int `db:"ship_order"`
 		// 商品销售快照编号
 		GoodsSnapId int `db:"snap_id"`
 		// 数量

@@ -174,7 +174,7 @@ func (this *orderManagerImpl) createPaymentOrder(m member.IMember,
 		VendorId:    0,
 		OrderId:     0,
 		// 支付单金额
-		TotalFee: val.FinalFee,
+		TotalFee: val.FinalAmount,
 		// 余额抵扣
 		BalanceDiscount: 0,
 		// 积分抵扣

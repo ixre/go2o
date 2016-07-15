@@ -60,6 +60,7 @@ func (s *shipmentOrderImpl) Ship(spId int, spOrderNo string) error {
 		s._value.SpId = spId
 	}
 	s._value.SpOrderNo = spOrderNo
+	s._value.Stat = shipment.StatShipped
 	s._value.ShipTime = time.Now().Unix()
 	return s.save()
 }
@@ -75,8 +76,8 @@ func (s *shipmentOrderImpl) save() error {
 }
 
 // 发货完成
-func (s *shipmentOrderImpl) Shipped() error {
-	s._value.IsShipped = 1
+func (s *shipmentOrderImpl) Completed() error {
+	s._value.Stat = shipment.StatCompleted
 	return s.save()
 }
 
