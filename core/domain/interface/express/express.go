@@ -19,6 +19,8 @@ var (
 		"err_express_exists_area_template_set", "地区已存在运费模板设置")
 	ErrNoSuchTemplate *domain.DomainError = domain.NewDomainError(
 		"err_express_no_such_template", "运费模板不存在")
+	ErrNotSupportProvider *domain.DomainError = domain.NewDomainError(
+		"err_express_no_support_provider", "不支持该物流服务商")
 )
 
 const (

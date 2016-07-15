@@ -24,6 +24,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	orderImpl "go2o/core/domain/order"
 	"go2o/core/infrastructure/domain"
@@ -46,13 +47,14 @@ type orderRepImpl struct {
 	_payRep     payment.IPaymentRep
 	_manager    order.IOrderManager
 	_expressRep express.IExpressRep
+	_shipRep    shipment.IShipmentRep
 }
 
 func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep,
 	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
-	expressRep express.IExpressRep,
+	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
 	valRep valueobject.IValueRep) *orderRepImpl {
 	return &orderRepImpl{
 		Connector:   c,
@@ -66,6 +68,7 @@ func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPa
 		_deliverRep: deliverRep,
 		_valRep:     valRep,
 		_expressRep: expressRep,
+		_shipRep:    shipRep,
 	}
 }
 
@@ -80,7 +83,7 @@ func (this *orderRepImpl) Manager() order.IOrderManager {
 	if this._manager == nil {
 		this._manager = orderImpl.NewOrderManager(this._cartRep, this._mchRep,
 			this, this._payRep, this._saleRep, this._goodsRep, this._promRep,
-			this._memberRep, this._deliverRep, this._expressRep, this._valRep)
+			this._memberRep, this._deliverRep, this._expressRep, this._shipRep, this._valRep)
 	}
 	return this._manager
 }
