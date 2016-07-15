@@ -11,13 +11,104 @@ package order
 import (
 	"fmt"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
 	"time"
 )
+
+func (o *subOrderImpl) handleCashBack() error {
+	v := o._value
+	mch, err := o._mchRep.GetMerchant(v.VendorId)
+	if err != nil {
+		return err
+	}
+
+	buyer := o.GetBuyer()
+	now := time.Now().Unix()
+
+	//******* 返现到账户  ************
+	var back_fee float32
+	saleConf := mch.ConfManager().GetSaleConf()
+	//globSaleConf := o._valRep.GetGlobNumberConf()
+	if saleConf.CashBackPercent > 0 {
+		back_fee = v.FinalAmount * saleConf.CashBackPercent
+		//将此次消费记入会员账户
+		err = o.updateShoppingMemberBackFee(mch.GetValue().Name, buyer,
+			back_fee*saleConf.CashBackMemberPercent, now)
+		domain.HandleError(err, "domain")
+
+	}
+
+	// 处理返现促销
+	//todo: ????
+	//o.handleCashBackPromotions(mch, m)
+	// 三级返现
+	if back_fee > 0 {
+		err = o.backFor3R(mch, buyer, back_fee, now)
+	}
+	return err
+}
+
+func (o *subOrderImpl) updateMemberAccount(m member.IMember,
+	ptName, mName string, fee float32, unixTime int64) error {
+	if fee > 0 {
+		//更新账户
+		acc := m.GetAccount()
+		acv := acc.GetValue()
+		acv.PresentBalance += fee
+		acv.TotalPresentFee += fee
+		acv.UpdateTime = unixTime
+		_, err := acc.Save()
+		if err == nil {
+			//给自己返现
+			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
+				o._value.OrderNo, ptName, mName, fee)
+			err = acc.PresentBalance(tit, o._value.OrderNo, fee)
+		}
+		return err
+	}
+	return nil
+}
+
+// 三级返现
+func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
+	back_fee float32, unixTime int64) (err error) {
+	if back_fee > 0 {
+		i := 0
+		mName := m.Profile().GetProfile().Name
+		saleConf := mch.ConfManager().GetSaleConf()
+		percent := saleConf.CashBackTg2Percent
+		for i < 2 {
+			rl := m.GetRelation()
+			if rl == nil || rl.RefereesId == 0 {
+				break
+			}
+
+			m = o._memberRep.GetMember(rl.RefereesId)
+			if m == nil {
+				break
+			}
+
+			if i == 1 {
+				percent = saleConf.CashBackTg1Percent
+			}
+
+			err = o.updateMemberAccount(m, mch.GetValue().Name, mName,
+				back_fee*percent, unixTime)
+			if err != nil {
+				domain.HandleError(err, "domain")
+				break
+			}
+			i++
+		}
+	}
+	return err
+}
 
 func HandleCashBackDataTag(m member.IMember, order *order.Order,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {

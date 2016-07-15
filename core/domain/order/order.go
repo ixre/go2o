@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -32,9 +31,6 @@ import (
 	"time"
 )
 
-var (
-	EXP_BIT float32
-)
 var _ order.IOrder = new(orderImpl)
 
 //todo: 促销
@@ -920,63 +916,12 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	return err
 }
 
-// 三级返现
-func (o *orderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
-	back_fee float32, unixTime int64) {
-	if back_fee == 0 {
-		return
-	}
-
-	i := 0
-	mName := m.Profile().GetProfile().Name
-	saleConf := mch.ConfManager().GetSaleConf()
-	percent := saleConf.CashBackTg2Percent
-	for i < 2 {
-		rl := m.GetRelation()
-		if rl == nil || rl.RefereesId == 0 {
-			break
-		}
-
-		m = o._memberRep.GetMember(rl.RefereesId)
-		if m == nil {
-			break
-		}
-
-		if i == 1 {
-			percent = saleConf.CashBackTg1Percent
-		}
-
-		o.updateMemberAccount(m, mch.GetValue().Name, mName,
-			back_fee*percent, unixTime)
-		i++
-	}
-}
-
-func (o *orderImpl) updateMemberAccount(m member.IMember,
-	ptName, mName string, fee float32, unixTime int64) {
-	if fee == 0 {
-		return
-	}
-
-	//更新账户
-	acc := m.GetAccount()
-	acv := acc.GetValue()
-	acv.PresentBalance += fee
-	acv.TotalPresentFee += fee
-	acv.UpdateTime = unixTime
-	acc.Save()
-
-	//给自己返现
-	tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
-		o._value.OrderNo, ptName, mName, fee)
-	acc.PresentBalance(tit, o._value.OrderNo, fee)
-}
-
 var _ order.ISubOrder = new(subOrderImpl)
 
 // 子订单实现
 type subOrderImpl struct {
 	_value           *order.SubOrder
+	_buyer           member.IMember
 	_internalSuspend bool //内部挂起
 	_rep             order.IOrderRep
 	_memberRep       member.IMemberRep
@@ -985,13 +930,15 @@ type subOrderImpl struct {
 	_manager         order.IOrderManager
 	_shipRep         shipment.IShipmentRep
 	_valRep          valueobject.IValueRep
+	_mchRep          merchant.IMerchantRep
 }
 
 func NewSubOrder(v *order.SubOrder,
 	manager order.IOrderManager, rep order.IOrderRep,
 	mmRep member.IMemberRep, goodsRep goods.IGoodsRep,
 	shipRep shipment.IShipmentRep, saleRep sale.ISaleRep,
-	valRep valueobject.IValueRep) order.ISubOrder {
+	valRep valueobject.IValueRep,
+	mchRep merchant.IMerchantRep) order.ISubOrder {
 	return &subOrderImpl{
 		_value:     v,
 		_manager:   manager,
@@ -1001,6 +948,7 @@ func NewSubOrder(v *order.SubOrder,
 		_saleRep:   saleRep,
 		_shipRep:   shipRep,
 		_valRep:    valRep,
+		_mchRep:    mchRep,
 	}
 }
 
@@ -1021,6 +969,17 @@ func (o *subOrderImpl) Items() []*order.OrderItem {
 		o._value.Items = o._rep.GetOrderItems(o.GetDomainId())
 	}
 	return o._value.Items
+}
+
+// 获取购买的会员
+func (o *subOrderImpl) GetBuyer() member.IMember {
+	if o._buyer == nil {
+		//if o._value.BuyerId <= 0 {
+		//    panic(errors.New("订单BuyerId非会员或未设置"))
+		//}
+		o._buyer = o._memberRep.GetMember(o._value.BuyerId)
+	}
+	return o._buyer
 }
 
 // 添加备注
@@ -1242,12 +1201,16 @@ func (o *subOrderImpl) BuyerReceived() error {
 	dt := time.Now()
 	o._value.State = order.StatCompleted
 	o._value.UpdateTime = dt.Unix()
+	o._value.IsSuspend = 0
 	if _, err = o.Save(); err != nil {
 		return err
 	}
-	err = o.AppendLog(order.LogSetup, false, "{completed}")
+	err = o.AppendLog(order.LogSetup, true, "{completed}")
 	if err == nil {
-		err = o.onOrderComplete()
+		// 执行其他的操作
+		if err2 := o.onOrderComplete(); err != nil {
+			domain.HandleError(err2, "domain")
+		}
 	}
 	return err
 }
@@ -1326,81 +1289,6 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	return err
 }
 
-// 完成订单
-func (o *subOrderImpl) onOrderComplete() error {
-	// now := time.Now().Unix()
-	// v := o._value
-
-	// 更新发货单
-	soList := o._shipRep.GetOrders(o.GetDomainId())
-	for _, v := range soList {
-		domain.HandleError(v.Completed(), "domain")
-	}
-
-	// 获取消费者消息
-	po := o._rep.Manager().GetOrderById(o._value.ParentId)
-	m := po.GetBuyer()
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-
-	mv := m.GetValue()
-	log.Println("---", o._value.ParentId, " ", mv.Id, ",", mv.Usr)
-
-	// 更新会员账户
-	err := o.updateAccountForOrder(m)
-	if err != nil {
-		return err
-	}
-
-	//var mch merchant.IMerchant
-	////mch, err = o._partnerRep.GetMerchant(v.VendorId)
-	//pv := mch.GetValue()
-	//if pv.ExpiresTime < time.Now().Unix() {
-	//    return errors.New("您的账户已经过期!")
-	//}
-	//
-	//if err != nil {
-	//    log.Println("供应商异常!", v.VendorId)
-	//    return err
-	//}
-
-	// panic("not implement")
-
-	//todo: 获取商户的销售比例
-
-	//******* 返现到账户  ************
-	//var back_fee float32
-	//saleConf := mch.ConfManager().GetSaleConf()
-	//globSaleConf := o._valRep.GetGlobNumberConf()
-	//if saleConf.CashBackPercent > 0 {
-	//    back_fee = v.Fee * saleConf.CashBackPercent
-	//
-	//    //将此次消费记入会员账户
-	//    o.updateShoppingMemberBackFee(mch, m,
-	//        back_fee * saleConf.CashBackMemberPercent, now)
-	//
-	//
-	//}
-	//
-	//o._value.Status = enum.ORDER_COMPLETED
-	//o._value.IsSuspend = 0
-	//o._value.UpdateTime = now
-	//
-	//_, err = o.Save()
-	//
-	//if err == nil {
-	//    err = o.AppendLog(enum.ORDER_LOG_SETUP, false, "订单已完成")
-	//    // 处理返现促销
-	//    o.handleCashBackPromotions(mch, m)
-	//    // 三级返现
-	//    if back_fee > 0 {
-	//        o.backFor3R(mch, m, back_fee, now)
-	//    }
-	//}
-	return err
-}
-
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
 	for _, v := range o._value.Items {
@@ -1446,4 +1334,56 @@ func (o *subOrderImpl) Cancel(reason string) error {
 	}
 
 	return err
+}
+
+// 完成订单
+func (o *subOrderImpl) onOrderComplete() error {
+	// now := time.Now().Unix()
+	// v := o._value
+
+	// 更新发货单
+	soList := o._shipRep.GetOrders(o.GetDomainId())
+	for _, v := range soList {
+		domain.HandleError(v.Completed(), "domain")
+	}
+
+	// 获取消费者消息
+	m := o.GetBuyer()
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+
+	// 更新会员账户
+	err := o.updateAccountForOrder(m)
+	if err != nil {
+		return err
+	}
+
+	// 处理返现
+	err = o.handleCashBack()
+
+	return err
+}
+
+// 更新返现到会员账户
+func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
+	m member.IMember, fee float32, unixTime int64) error {
+	if fee > 0 {
+		v := o.GetValue()
+
+		//更新账户
+		acc := m.GetAccount()
+		acv := acc.GetValue()
+		//acc.TotalFee += o._value.Fee
+		//acc.TotalPay += o._value.PayFee
+		acv.PresentBalance += fee // 更新赠送余额
+		acv.TotalPresentFee += fee
+		acv.UpdateTime = unixTime
+		acc.Save()
+
+		//给自己返现
+		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
+		return acc.PresentBalance(tit, v.OrderNo, float32(fee))
+	}
+	return nil
 }

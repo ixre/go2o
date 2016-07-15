@@ -42,7 +42,7 @@ type orderManagerImpl struct {
 	_goodsRep    goods.IGoodsRep
 	_promRep     promotion.IPromotionRep
 	_memberRep   member.IMemberRep
-	_partnerRep  merchant.IMerchantRep
+	_mchRep      merchant.IMerchantRep
 	_deliveryRep delivery.IDeliveryRep
 	_valRep      valueobject.IValueRep
 	_payRep      payment.IPaymentRep
@@ -51,7 +51,7 @@ type orderManagerImpl struct {
 	_shipRep     shipment.IShipmentRep
 }
 
-func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
+func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
 	rep order.IOrderRep, payRep payment.IPaymentRep, saleRep sale.ISaleRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
@@ -66,7 +66,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 		_promRep:     promRep,
 		_memberRep:   memberRep,
 		_payRep:      payRep,
-		_partnerRep:  partnerRep,
+		_mchRep:      mchRep,
 		_deliveryRep: deliveryRep,
 		_valRep:      valRep,
 		_expressRep:  expressRep,
@@ -76,7 +76,7 @@ func NewOrderManager(cartRep cart.ICartRep, partnerRep merchant.IMerchantRep,
 
 // 生成订单
 func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
-	return newOrder(this, val, this._partnerRep,
+	return newOrder(this, val, this._mchRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
 		this._memberRep, this._expressRep, this._valRep)
 }
@@ -84,7 +84,8 @@ func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 // 生成空白订单,并保存返回对象
 func (this *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
 	return NewSubOrder(v, this, this._rep, this._memberRep,
-		this._goodsRep, this._shipRep, this._saleRep, this._valRep)
+		this._goodsRep, this._shipRep, this._saleRep,
+		this._valRep, this._mchRep)
 }
 
 // 在下单前检查购物车
