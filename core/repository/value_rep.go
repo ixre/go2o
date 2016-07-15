@@ -24,6 +24,11 @@ import (
 var _ valueobject.IValueRep = new(valueRep)
 
 var (
+	defaultRegistry = valueobject.Registry{
+		AlertMessageForOrderReceive: "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!",
+		Extend: map[string]string{},
+	}
+
 	// 默认平台设置
 	//todo: 默认值
 	defaultPlatformConf = valueobject.PlatformConf{
@@ -109,6 +114,8 @@ type valueRep struct {
 	_numGob          *util.GobFile
 	_globMchConf     *valueobject.PlatformConf
 	_mchGob          *util.GobFile
+	_globRegistry    *valueobject.Registry
+	_rstGob          *util.GobFile
 	_globMchSaleConf *valueobject.GlobMchSaleConf
 	_mscGob          *util.GobFile
 	_smsConf         valueobject.SmsApiSet
@@ -120,6 +127,7 @@ type valueRep struct {
 func NewValueRep(conn db.Connector) valueobject.IValueRep {
 	return &valueRep{
 		Connector: conn,
+		_rstGob:   util.NewGobFile("conf/core/registry"),
 		_wxGob:    util.NewGobFile("conf/core/wx_api"),
 		_rpGob:    util.NewGobFile("conf/core/register_perm"),
 		_numGob:   util.NewGobFile("conf/core/number_conf"),
@@ -201,6 +209,25 @@ func (this *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
 		this._globMchConf = v
 		return this._mchGob.Save(this._globMchConf)
+	}
+	return nil
+}
+
+// 获取数据存储
+func (v *valueRep) GetRegistry() valueobject.Registry {
+	if v._globRegistry == nil {
+		v2 := defaultRegistry
+		v._globRegistry = &v2
+		v._rstGob.Unmarshal(v._globRegistry)
+	}
+	return *v._globRegistry
+}
+
+// 保存数据存储
+func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
+	if r != nil {
+		v._globRegistry = r
+		return v._rstGob.Save(v._globRegistry)
 	}
 	return nil
 }

@@ -226,19 +226,19 @@ func (this *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
 }
 
 // 保存子订单
-func (this *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
+func (o *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
-	d := this.Connector
+	d := o.Connector
 
 	if v.Id <= 0 {
 		statusIsChanged = true
 	} else {
 		var oriStatus int
-		d.ExecScalar("SELECT status FROM sale_sub_order WHERE id=?", &oriStatus, v.Id)
+		d.ExecScalar("SELECT state FROM sale_sub_order WHERE id=?", &oriStatus, v.Id)
 		statusIsChanged = oriStatus != v.State // 业务状态是否改变
 	}
-	v.Id, err = orm.Save(this.GetOrm(), v, v.Id)
+	v.Id, err = orm.Save(o.GetOrm(), v, v.Id)
 
 	//如果业务状态已经发生改变,则提交到队列
 	if statusIsChanged && v.Id > 0 {

@@ -23,6 +23,16 @@ func NewPlatformService(rep valueobject.IValueRep) *platformService {
 	}
 }
 
+// 获取数据存储
+func (s *platformService) GetRegistry() valueobject.Registry {
+	return s._rep.GetRegistry()
+}
+
+// 保存数据存储
+func (s *platformService) SaveRegistry(v *valueobject.Registry) error {
+	return s._rep.SaveRegistry(v)
+}
+
 // 获取微信接口配置
 func (this *platformService) GetWxApiConfig() valueobject.WxApiConfig {
 	return this._rep.GetWxApiConfig()

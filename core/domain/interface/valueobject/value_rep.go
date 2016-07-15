@@ -42,6 +42,13 @@ type (
 		MchPageCategory bool
 	}
 
+	Registry struct {
+		// 收货时的提示信息
+		AlertMessageForOrderReceive string
+		// 其他扩展数据
+		Extend map[string]string
+	}
+
 	// 微信API设置
 	//todo: ??? 应在应用层
 	WxApiConfig struct {
@@ -175,6 +182,12 @@ type (
 
 		// 保存平台设置
 		SavePlatformConf(v *PlatformConf) error
+
+		// 获取数据存储
+		GetRegistry() Registry
+
+		// 保存数据存储
+		SaveRegistry(v *Registry) error
 
 		// 获取全局商户销售设置
 		GetGlobMchSaleConf() GlobMchSaleConf
