@@ -86,5 +86,7 @@ type (
 		Amount float32
 		// 商品实际总金额
 		FinalAmount float32
+		// 是否已发货
+		IsShipped int
 	}
 )

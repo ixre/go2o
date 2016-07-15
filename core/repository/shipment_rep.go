@@ -67,6 +67,11 @@ func (s *shipmentRep) SaveShipmentOrder(o *shipment.ShipmentOrder) (int, error) 
 	return orm.Save(s.GetOrm(), o, o.Id)
 }
 
+// 保存发货商品项
+func (s *shipmentRep) SaveShipmentItem(v *shipment.Item) (int, error) {
+	return orm.Save(s.GetOrm(), v, v.Id)
+}
+
 // 删除发货单
 func (s *shipmentRep) DeleteShipmentOrder(id int) error {
 	return s.GetOrm().DeleteByPk(&shipment.ShipmentOrder{}, id)

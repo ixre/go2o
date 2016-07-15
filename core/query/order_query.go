@@ -30,14 +30,14 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 	list := []*dto.OrderItem{}
 	// 查询分页订单的Item
 	o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
-            sn.goods_title,sn.img,sn.price,si.quantity,si.fee,si.final_amount
-            FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            sn.goods_title,sn.img,sn.price,si.quantity,si.amount,si.final_amount,
+            si.is_shipped FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN(%s)
             ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
 		for rs.Next() {
 			e := &dto.OrderItem{}
 			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
-				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount)
+				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 			e.FinalPrice = e.FinalAmount / float32(e.Quantity)
 			list = append(list, e)
 		}
@@ -112,14 +112,14 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 
 	// 查询分页订单的Item
 	d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
-            sn.goods_title,sn.img,sn.price,si.quantity,si.amount,si.final_amount
-            FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            sn.goods_title,sn.img,sn.price,si.quantity,si.amount,si.final_amount,
+            si.is_shipped FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN(%s)
             ORDER BY si.id ASC`, idBuf.String()), func(rs *sql.Rows) {
 		for rs.Next() {
 			e := &dto.OrderItem{}
 			rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
-				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount)
+				&e.Image, &e.Price, &e.Quantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 			e.FinalPrice = e.FinalAmount / float32(e.Quantity)
 			orderList[orderMap[e.OrderId]].Items = append(
 				orderList[orderMap[e.OrderId]].Items, e)

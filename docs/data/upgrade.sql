@@ -648,6 +648,13 @@ ALTER TABLE `flm`.`sale_sub_order`
   CHANGE COLUMN `discount_fee` `discount_amount` DECIMAL(8,2) NULL DEFAULT NULL ,
   CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8,2) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`sale_order_item`
+  ADD COLUMN `is_shipped` TINYINT(1) NULL AFTER `final_amount`;
+
+ALTER TABLE `flm`.`mm_integral_log`
+  CHANGE COLUMN `partner_id` `mch_id` INT(11) NULL DEFAULT NULL ;
+
+
 
 
 

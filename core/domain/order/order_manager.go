@@ -84,7 +84,7 @@ func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 // 生成空白订单,并保存返回对象
 func (this *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
 	return NewSubOrder(v, this, this._rep, this._memberRep,
-		this._goodsRep, this._shipRep, this._saleRep)
+		this._goodsRep, this._shipRep, this._saleRep, this._valRep)
 }
 
 // 在下单前检查购物车

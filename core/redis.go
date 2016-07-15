@@ -22,7 +22,7 @@ var (
 	globPool *redis.Pool
 )
 
-func createRedisPool(c *gof.Config) *redis.Pool {
+func CreateRedisPool(c *gof.Config) *redis.Pool {
 	redisHost := c.GetString("redis_host")
 	redisDb := c.GetString("redis_db")
 	redisPort := c.GetInt("redis_port")
@@ -95,5 +95,9 @@ func GetRedisPool() *redis.Pool {
 
 // 获取Redis连接
 func GetRedisConn() redis.Conn {
-	return GetRedisPool().Get()
+	pool := GetRedisPool()
+	if pool != nil {
+		return pool.Get()
+	}
+	return nil
 }

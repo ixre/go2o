@@ -92,7 +92,7 @@ func (this *MainApp) Log() log.ILogger {
 
 func (this *MainApp) Redis() *redis.Pool {
 	if this._redis == nil {
-		this._redis = createRedisPool(this.Config())
+		this._redis = CreateRedisPool(this.Config())
 	}
 	return this._redis
 }

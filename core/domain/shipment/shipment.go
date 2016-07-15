@@ -68,9 +68,23 @@ func (s *shipmentOrderImpl) Ship(spId int, spOrderNo string) error {
 // 保存
 func (s *shipmentOrderImpl) save() error {
 	s._value.UpdateTime = time.Now().Unix()
+	if s.GetAggregateRootId() > 0 {
+		_, err := s._rep.SaveShipmentOrder(s._value)
+		return err
+	}
 	id, err := s._rep.SaveShipmentOrder(s._value)
-	if s.GetAggregateRootId() <= 0 {
+	if err == nil {
 		s._value.Id = id
+		items := s._value.Items
+		if items != nil && len(items) > 0 {
+			for _, v := range items {
+				v.OrderId = id
+				v.Id, err = s._rep.SaveShipmentItem(v)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 	return err
 }

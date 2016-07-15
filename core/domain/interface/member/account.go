@@ -231,7 +231,7 @@ type (
 	// 积分记录
 	IntegralLog struct {
 		Id         int    `db:"id" pk:"yes" auto:"yes"`
-		MerchantId int    `db:"merchant_id"`
+		MerchantId int    `db:"mch_id"`
 		MemberId   int    `db:"member_id"`
 		Type       int    `db:"type"`
 		Integral   int    `db:"integral"`
