@@ -12,6 +12,7 @@ package order
 import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/infrastructure/domain"
 )
@@ -166,8 +167,14 @@ var (
 	ErrPromotionApplied *domain.DomainError = domain.NewDomainError(
 		"err_promotion_applied", "已经使用相同的促销")
 
-	ErrOrderHasCancel *domain.DomainError = domain.NewDomainError(
+	ErrEmptyReason *domain.DomainError = domain.NewDomainError(
+		"err_order_empty_reason", "原因不能为空")
+
+	ErrOrderCancelled *domain.DomainError = domain.NewDomainError(
 		"err_order_has_cancel", "订单已被取消")
+
+	ErrDisallowCancel *domain.DomainError = domain.NewDomainError(
+		"err_order_can_not_cancel", "订单已付款、无法取消")
 )
 
 type (
@@ -189,6 +196,9 @@ type (
 
 		// 获取购买的会员
 		GetBuyer() member.IMember
+
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
 
 		// GetComplexValue()dto.OrderComplex
 		// 设置订单值
@@ -286,6 +296,9 @@ type (
 
 		// 获取商品项
 		Items() []*OrderItem
+
+		// 获取父订单
+		Parent() IOrder
 
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error

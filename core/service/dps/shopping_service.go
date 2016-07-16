@@ -235,7 +235,7 @@ func (this *shoppingService) PrepareOrder2(buyerId int, cartKey string,
 		buf.WriteString("\n")
 	}
 
-	discountFee := v.GoodsAmount - po.TotalFee + po.SubFee
+	discountFee := v.GoodsAmount - po.TotalFee + po.SubAmount
 	data := make(map[string]interface{})
 
 	//　取消优惠券
