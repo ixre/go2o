@@ -111,6 +111,9 @@ type (
 
 		// 取消支付
 		Cancel() error
+
+		// 调整金额,如果调整的金额与实付金额一致,则取消支付单
+		Adjust(amount float32) error
 	}
 
 	IPaymentRep interface {
@@ -119,6 +122,9 @@ type (
 
 		// 根据支付单号获取支付单
 		GetPaymentOrderByNo(paymentNo string) IPaymentOrder
+
+		// 根据订单号获取支付单
+		GetPaymentBySalesOrderId(orderId int) IPaymentOrder
 
 		// 创建支付单
 		CreatePaymentOrder(p *PaymentOrderBean) IPaymentOrder
@@ -132,44 +138,34 @@ type (
 
 	// 支付单实体
 	PaymentOrderBean struct {
+		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
-
 		// 支付单号
 		TradeNo string `db:"trade_no"`
-
 		// 运营商编号，0表示无
 		VendorId int `db:"vendor_id"`
-
 		// 订单编号,0表示无
 		OrderId int `db:"order_id"`
-
 		// 购买用户
 		BuyUser int `db:"buy_user"`
-
 		// 支付用户
 		PaymentUser int `db:"payment_user"`
-
 		// 支付单金额
 		TotalFee float32 `db:"total_fee"`
-
 		// 余额抵扣
 		BalanceDiscount float32 `db:"balance_discount"`
-
 		// 积分抵扣
 		IntegralDiscount float32 `db:"integral_discount"`
-
 		// 系统支付抵扣金额
 		SystemDiscount float32 `db:"system_discount"`
-
 		// 优惠券金额
 		CouponDiscount float32 `db:"coupon_discount"`
-
 		// 立减金额
-		SubFee float32 `db:"sub_fee"`
-
+		SubAmount float32 `db:"sub_amount"`
+		// 调整的金额
+		AdjustmentAmount float32 `db:"adjustment_amount"`
 		// 最终支付金额
 		FinalFee float32 `db:"final_fee"`
-
 		// 支付选项，位运算。可用优惠券，积分抵扣等运算
 		PaymentOpt int `db:"payment_opt"`
 		// 支付方式

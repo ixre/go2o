@@ -59,6 +59,15 @@ func (this *paymentRep) GetPaymentOrderByNo(
 	return nil
 }
 
+// 根据订单号获取支付单
+func (p *paymentRep) GetPaymentBySalesOrderId(orderId int) payment.IPaymentOrder {
+	e := &payment.PaymentOrderBean{}
+	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
+		return p.CreatePaymentOrder(e)
+	}
+	return nil
+}
+
 // 创建支付单
 func (this *paymentRep) CreatePaymentOrder(
 	p *payment.PaymentOrderBean) payment.IPaymentOrder {

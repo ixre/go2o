@@ -45,7 +45,7 @@ func (this *paymentOrderImpl) GetTradeNo() string {
 func (this *paymentOrderImpl) fixFee() {
 	v := this._value
 	v.FinalFee = v.TotalFee - v.CouponDiscount - v.BalanceDiscount -
-		v.IntegralDiscount - v.SubFee - v.SystemDiscount
+		v.IntegralDiscount - v.SubAmount - v.SystemDiscount
 }
 
 // 更新订单状态, 需要注意,防止多次订单更新
@@ -84,7 +84,7 @@ func (this *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) 
 	}
 	this._coupons = append(this._coupons, coupon)
 	// 支付金额应减去立减和系统支付的部分
-	fee := this._value.TotalFee - this._value.SubFee -
+	fee := this._value.TotalFee - this._value.SubAmount -
 		this._value.SystemDiscount
 	for _, v := range this._coupons {
 		this._value.CouponDiscount += v.GetCouponFee(fee)
@@ -270,6 +270,11 @@ func (this *paymentOrderImpl) GetValue() payment.PaymentOrderBean {
 // 取消支付
 func (this *paymentOrderImpl) Cancel() error {
 	this._value.State = payment.StateHasCancel
+	return nil
+}
+
+// 调整金额,如果调整的金额与实付金额一致,则取消支付单
+func (p *paymentOrderImpl) Adjust(amount float32) error {
 	return nil
 }
 

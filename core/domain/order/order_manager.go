@@ -78,7 +78,7 @@ func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
 func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 	return newOrder(this, val, this._mchRep,
 		this._rep, this._goodsRep, this._saleRep, this._promRep,
-		this._memberRep, this._expressRep, this._valRep)
+		this._memberRep, this._expressRep, this._payRep, this._valRep)
 }
 
 // 生成空白订单,并保存返回对象
@@ -185,7 +185,9 @@ func (this *orderManagerImpl) createPaymentOrder(m member.IMember,
 		// 优惠券金额
 		CouponDiscount: 0,
 		// 立减金额
-		SubFee: 0,
+		SubAmount: 0,
+		// 调整的金额
+		AdjustmentAmount: 0,
 		// 支付选项
 		PaymentOpt: payment.OptPerm,
 		// 支付方式
@@ -199,7 +201,7 @@ func (this *orderManagerImpl) createPaymentOrder(m member.IMember,
 		// 状态:  0为未付款，1为已付款，2为已取消
 		State: payment.StateNotYetPayment,
 	}
-	v.FinalFee = v.TotalFee - v.SubFee - v.SystemDiscount -
+	v.FinalFee = v.TotalFee - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	return this._payRep.CreatePaymentOrder(v)
 }

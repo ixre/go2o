@@ -654,6 +654,9 @@ ALTER TABLE `flm`.`sale_order_item`
 ALTER TABLE `flm`.`mm_integral_log`
   CHANGE COLUMN `partner_id` `mch_id` INT(11) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`pay_order`
+  CHANGE COLUMN `sub_fee` `sub_amount` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '立减金额' ,
+  ADD COLUMN `adjustment_amount` DECIMAL(8,2) NULL COMMENT '调整金额' AFTER `sub_amount`;
 
 
 

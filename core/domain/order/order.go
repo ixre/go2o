@@ -40,6 +40,7 @@ type orderImpl struct {
 	_value   *order.Order
 	_cart    cart.ICart //购物车,仅在订单生成时设置
 	//_payOrder        *payment.IPaymentOrder //支付单
+	_paymentOrder    payment.IPaymentOrder
 	_coupons         []promotion.ICouponPromotion
 	_availPromotions []promotion.IPromotion
 	_orderPbs        []*order.OrderPromotionBind
@@ -48,6 +49,7 @@ type orderImpl struct {
 	_orderRep        order.IOrderRep
 	_partnerRep      merchant.IMerchantRep //todo: can delete ?
 	_expressRep      express.IExpressRep
+	_payRep          payment.IPaymentRep
 	_goodsRep        goods.IGoodsRep
 	_saleRep         sale.ISaleRep
 	_promRep         promotion.IPromotionRep
@@ -65,7 +67,8 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 	mchRep merchant.IMerchantRep, shoppingRep order.IOrderRep,
 	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
 	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	expressRep express.IExpressRep, valRep valueobject.IValueRep) order.IOrder {
+	expressRep express.IExpressRep, payRep payment.IPaymentRep,
+	valRep valueobject.IValueRep) order.IOrder {
 	return &orderImpl{
 		_manager:    shopping,
 		_value:      value,
@@ -77,6 +80,7 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 		_saleRep:    saleRep,
 		_valRep:     valRep,
 		_expressRep: expressRep,
+		_payRep:     payRep,
 	}
 }
 
@@ -208,6 +212,17 @@ func (o *orderImpl) GetBuyer() member.IMember {
 		o._buyer = o._memberRep.GetMember(o._value.BuyerId)
 	}
 	return o._buyer
+}
+
+// 获取支付单
+func (o *orderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	if o._paymentOrder == nil {
+		if o.GetAggregateRootId() <= 0 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o._paymentOrder = o._payRep.GetPaymentBySalesOrderId(o.GetAggregateRootId())
+	}
+	return o._paymentOrder
 }
 
 //************* 订单提交 ***************//
@@ -921,6 +936,7 @@ var _ order.ISubOrder = new(subOrderImpl)
 // 子订单实现
 type subOrderImpl struct {
 	_value           *order.SubOrder
+	_parent          order.IOrder
 	_buyer           member.IMember
 	_internalSuspend bool //内部挂起
 	_rep             order.IOrderRep
@@ -969,6 +985,14 @@ func (o *subOrderImpl) Items() []*order.OrderItem {
 		o._value.Items = o._rep.GetOrderItems(o.GetDomainId())
 	}
 	return o._value.Items
+}
+
+// 获取父订单
+func (o *subOrderImpl) Parent() order.IOrder {
+	if o._parent == nil {
+		o._parent = o._manager.GetOrderById(o._value.ParentId)
+	}
+	return o._parent
 }
 
 // 获取购买的会员
@@ -1040,7 +1064,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 	if o._value.IsPaid == 1 {
 		return order.ErrOrderPayed
 	}
-	return order.ErrOrderHasCancel
+	return order.ErrOrderCancelled
 }
 
 // 在线支付交易完成
@@ -1307,33 +1331,39 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消订单
 func (o *subOrderImpl) Cancel(reason string) error {
+	if o._value.State == order.StatCancelled {
+		return order.ErrOrderCancelled
+	}
+	if o._value.State != order.StatAwaitingPayment {
+		return order.ErrDisallowCancel
+	}
 	if len(strings.TrimSpace(reason)) == 0 {
-		return errors.New("取消原因不能为空")
+		return order.ErrEmptyReason
 	}
-	status := o._value.State
-	if status == enum.ORDER_COMPLETED {
-		return errors.New("订单已经完成!")
-	}
-	if status == enum.ORDER_CANCEL {
-		return errors.New("订单已经被取消!")
-	}
-
-	o._value.State = enum.ORDER_CANCEL
+	o._value.State = order.StatCancelled
 	o._value.UpdateTime = time.Now().Unix()
-
-	//todo: 应同时取消支付单
-
-	o.cancelGoods()
-	//todo: 退款
-
-	//o.backupPayment()
-
 	_, err := o.Save()
 	if err == nil {
-		err = o.AppendLog(order.LogSetup, true, "订单已取消,原因："+reason)
+		domain.HandleError(o.AppendLog(order.LogSetup, true,
+			"订单已取消,原因："+reason), "domain")
+		//todo: 应同时取消支付单
+		domain.HandleError(o.cancelPaymentOrder(), "domain")
+		err = o.cancelGoods()
+		//todo: 退款
+		//o.backupPayment()
 	}
-
 	return err
+}
+
+// 取消支付单
+func (o *subOrderImpl) cancelPaymentOrder() error {
+	po := o._manager.CreateOrder(&order.Order{
+		Id: o._value.ParentId,
+	}).GetPaymentOrder()
+	if po != nil {
+		return po.Adjust(o._value.FinalAmount)
+	}
+	return nil
 }
 
 // 完成订单
