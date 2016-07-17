@@ -46,6 +46,13 @@ type (
 	IAfterSalesRep interface {
 		// 创建退款单
 		CreateRefundOrder(v *RefundOrder) IRefundOrder
+
+		// 获取退款单
+		GetRefundOrder(id int)IRefundOrder
+
+		// 获取订单的退款单
+		GetRefundOrders(orderId int)[]IRefundOrder
+
 	}
 
 	// 售后单
@@ -54,6 +61,8 @@ type (
 		Id int `db:"id"`
 		// 订单编号
 		OrderId int `db:"order_id"`
+		// 运营商编号
+		VendorId int `db:"vendor_id"`
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号

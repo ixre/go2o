@@ -59,6 +59,8 @@ type (
 		Id int `db:"id"`
 		// 订单编号
 		OrderId int `db:"order_id"`
+		// 运营商编号
+		VendorId int `db:"vendor_id"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 退款方式：1.退回余额  2: 原路退回
