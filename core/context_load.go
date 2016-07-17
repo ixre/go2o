@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/ad"
+	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/delivery"
@@ -108,6 +109,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(order.OrderLog{}, "sale_order_log")
 	orm.Mapping(cart.ValueCart{}, "sale_cart")
 	orm.Mapping(cart.CartItem{}, "sale_cart_item")
+
+	//** After Sales **/
+	orm.Mapping(afterSales.AfterSalesOrder{}, "sale_after_order")
+	orm.Mapping(afterSales.ReturnOrder{}, "sale_return")
 
 	//** Express **//
 	orm.Mapping(express.ExpressProvider{}, "express_provider")
