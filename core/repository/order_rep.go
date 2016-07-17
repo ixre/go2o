@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core"
+	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
@@ -35,40 +36,42 @@ var _ order.IOrderRep = new(orderRepImpl)
 
 type orderRepImpl struct {
 	db.Connector
-	_saleRep    sale.ISaleRep
-	_goodsRep   goods.IGoodsRep
-	_promRep    promotion.IPromotionRep
-	_memberRep  member.IMemberRep
-	_mchRep     merchant.IMerchantRep
-	_deliverRep delivery.IDeliveryRep
-	_cartRep    cart.ICartRep
-	_valRep     valueobject.IValueRep
-	_cache      map[int]order.IOrderManager
-	_payRep     payment.IPaymentRep
-	_manager    order.IOrderManager
-	_expressRep express.IExpressRep
-	_shipRep    shipment.IShipmentRep
+	_saleRep       sale.ISaleRep
+	_goodsRep      goods.IGoodsRep
+	_promRep       promotion.IPromotionRep
+	_memberRep     member.IMemberRep
+	_mchRep        merchant.IMerchantRep
+	_deliverRep    delivery.IDeliveryRep
+	_cartRep       cart.ICartRep
+	_valRep        valueobject.IValueRep
+	_cache         map[int]order.IOrderManager
+	_payRep        payment.IPaymentRep
+	_manager       order.IOrderManager
+	_expressRep    express.IExpressRep
+	_shipRep       shipment.IShipmentRep
+	_afterSalesRep afterSales.IAfterSalesRep
 }
 
 func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
-	promRep promotion.IPromotionRep,
-	memRep member.IMemberRep, deliverRep delivery.IDeliveryRep,
-	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
+	promRep promotion.IPromotionRep, memRep member.IMemberRep,
+	deliverRep delivery.IDeliveryRep, expressRep express.IExpressRep,
+	shipRep shipment.IShipmentRep, afterSalesRep afterSales.IAfterSalesRep,
 	valRep valueobject.IValueRep) *orderRepImpl {
 	return &orderRepImpl{
-		Connector:   c,
-		_saleRep:    saleRep,
-		_goodsRep:   goodsRep,
-		_promRep:    promRep,
-		_payRep:     payRep,
-		_memberRep:  memRep,
-		_mchRep:     ptRep,
-		_cartRep:    cartRep,
-		_deliverRep: deliverRep,
-		_valRep:     valRep,
-		_expressRep: expressRep,
-		_shipRep:    shipRep,
+		Connector:      c,
+		_saleRep:       saleRep,
+		_goodsRep:      goodsRep,
+		_promRep:       promRep,
+		_payRep:        payRep,
+		_memberRep:     memRep,
+		_mchRep:        ptRep,
+		_cartRep:       cartRep,
+		_deliverRep:    deliverRep,
+		_valRep:        valRep,
+		_expressRep:    expressRep,
+		_shipRep:       shipRep,
+		_afterSalesRep: afterSalesRep,
 	}
 }
 
@@ -83,7 +86,8 @@ func (this *orderRepImpl) Manager() order.IOrderManager {
 	if this._manager == nil {
 		this._manager = orderImpl.NewOrderManager(this._cartRep, this._mchRep,
 			this, this._payRep, this._saleRep, this._goodsRep, this._promRep,
-			this._memberRep, this._deliverRep, this._expressRep, this._shipRep, this._valRep)
+			this._memberRep, this._deliverRep, this._expressRep, this._shipRep,
+			this._afterSalesRep, this._valRep)
 	}
 	return this._manager
 }

@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -947,24 +948,26 @@ type subOrderImpl struct {
 	_shipRep         shipment.IShipmentRep
 	_valRep          valueobject.IValueRep
 	_mchRep          merchant.IMerchantRep
+	_afterSalesRep   afterSales.IAfterSalesRep
 }
 
 func NewSubOrder(v *order.SubOrder,
 	manager order.IOrderManager, rep order.IOrderRep,
 	mmRep member.IMemberRep, goodsRep goods.IGoodsRep,
 	shipRep shipment.IShipmentRep, saleRep sale.ISaleRep,
-	valRep valueobject.IValueRep,
+	valRep valueobject.IValueRep, afterSalesRep afterSales.IAfterSalesRep,
 	mchRep merchant.IMerchantRep) order.ISubOrder {
 	return &subOrderImpl{
-		_value:     v,
-		_manager:   manager,
-		_rep:       rep,
-		_memberRep: mmRep,
-		_goodsRep:  goodsRep,
-		_saleRep:   saleRep,
-		_shipRep:   shipRep,
-		_valRep:    valRep,
-		_mchRep:    mchRep,
+		_value:         v,
+		_manager:       manager,
+		_rep:           rep,
+		_memberRep:     mmRep,
+		_goodsRep:      goodsRep,
+		_saleRep:       saleRep,
+		_shipRep:       shipRep,
+		_valRep:        valRep,
+		_mchRep:        mchRep,
+		_afterSalesRep: afterSalesRep,
 	}
 }
 
@@ -1334,23 +1337,27 @@ func (o *subOrderImpl) Cancel(reason string) error {
 	if o._value.State == order.StatCancelled {
 		return order.ErrOrderCancelled
 	}
-	if o._value.State != order.StatAwaitingPayment {
+	if o._value.State >= order.StatShipped {
 		return order.ErrDisallowCancel
 	}
 	if len(strings.TrimSpace(reason)) == 0 {
 		return order.ErrEmptyReason
 	}
+
 	o._value.State = order.StatCancelled
 	o._value.UpdateTime = time.Now().Unix()
 	_, err := o.Save()
 	if err == nil {
 		domain.HandleError(o.AppendLog(order.LogSetup, true,
 			"订单已取消,原因："+reason), "domain")
-		//todo: 应同时取消支付单
+		// 取消支付单
 		domain.HandleError(o.cancelPaymentOrder(), "domain")
+		// 取消商品
 		err = o.cancelGoods()
-		//todo: 退款
-		//o.backupPayment()
+		//如果已付款,则取消订单
+		if err == nil && o._value.IsPaid == 1 {
+			err = o.refund(reason)
+		}
 	}
 	return err
 }
@@ -1361,9 +1368,51 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 		Id: o._value.ParentId,
 	}).GetPaymentOrder()
 	if po != nil {
+		// 订单金额为0,则取消订单
+		if po.GetValue().FinalFee-o._value.FinalAmount == 0 {
+			return po.Cancel()
+		}
 		return po.Adjust(o._value.FinalAmount)
 	}
 	return nil
+}
+
+// 退款申请
+func (o *subOrderImpl) refund(reason string) error {
+	//todo: 商户谢绝订单,现仅处理用户提交的退款
+	ov := o._value
+	unix := time.Now().Unix()
+	rv := &afterSales.RefundOrder{
+		Id: 0,
+		// 订单编号
+		OrderId: o.GetDomainId(),
+		// 金额
+		Amount: ov.FinalAmount,
+		// 退款方式：1.退回余额  2: 原路退回
+		RefundType: 1,
+		// 是否为全部退款
+		AllRefund: 1,
+		// 退款的商品项编号
+		ItemId: 0,
+		// 联系人
+		PersonName: "",
+		// 联系电话
+		PersonPhone: "",
+		// 退款原因
+		Reason: reason,
+		// 退款单备注(系统)
+		Remark: "",
+		// 运营商备注
+		VendorRemark: "",
+		// 退款状态
+		State: afterSales.RefundStatAwaittingVendor,
+		// 提交时间
+		CreateTime: unix,
+		// 更新时间
+		UpdateTime: unix,
+	}
+	ro := o._afterSalesRep.CreateRefundOrder(rv)
+	return ro.Submit()
 }
 
 // 完成订单

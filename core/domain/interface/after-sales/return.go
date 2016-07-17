@@ -6,13 +6,13 @@
  * description :
  * history :
  */
-package after_sales
+package afterSales
 
 type (
-	// 退款单接口
-	IRefundOrder interface {
-		// 同意退款
-		Refund() error
+	// 退款货接口
+	IReturnOrder interface {
+		// 同意退货
+		Return() error
 	}
 	// 退款单
 	ReturnOrder struct {

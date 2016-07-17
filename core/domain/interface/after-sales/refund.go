@@ -6,7 +6,22 @@
  * description :
  * history :
  */
-package after_sales
+package afterSales
+
+const (
+	// 等待运营商确认
+	RefundStatAwaittingVendor = 1 + iota
+	// 退款取消
+	RefundStatCancelled
+	// 运营商拒绝退款
+	RefundStatVendorDecline
+	// 调解状态
+	RefundStatIntercede
+	// 等待确认退款
+	RefundStatAwaittingConfirm
+	// 退款成功
+	RefundStatCompleted
+)
 
 type (
 	// 退款单
@@ -45,7 +60,7 @@ type (
 		// 订单编号
 		OrderId int `db:"order_id"`
 		// 金额
-		Amount int `db:"amount"`
+		Amount float32 `db:"amount"`
 		// 退款方式：1.退回余额  2: 原路退回
 		RefundType int `db:"refund_type"`
 		// 是否为全部退款
@@ -65,8 +80,8 @@ type (
 		// 退款状态
 		State int `db:"state"`
 		// 提交时间
-		CreateTime int `db:"create_time"`
+		CreateTime int64 `db:"create_time"`
 		// 更新时间
-		UpdateTime int `db:"update_time"`
+		UpdateTime int64 `db:"update_time"`
 	}
 )

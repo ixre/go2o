@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package after_sales
+package afterSales
 
 type (
 	// 维修单
