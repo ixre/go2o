@@ -10,7 +10,7 @@ package afterSales
 
 const (
 	// 等待运营商确认
-	RefundStatAwaittingVendor = 1 + iota
+	RefundStatAwaitingVendor = 1 + iota
 	// 退款取消
 	RefundStatCancelled
 	// 运营商拒绝退款

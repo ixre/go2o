@@ -170,11 +170,17 @@ var (
 	ErrEmptyReason *domain.DomainError = domain.NewDomainError(
 		"err_order_empty_reason", "原因不能为空")
 
-	ErrOrderCancelled *domain.DomainError = domain.NewDomainError(
-		"err_order_has_cancel", "订单已被取消")
+	ErrOrderCanNotCancel *domain.DomainError = domain.NewDomainError(
+		"err_order_can_not_cancel", "订单无法取消")
 
 	ErrDisallowCancel *domain.DomainError = domain.NewDomainError(
 		"err_order_can_not_cancel", "订单已付款、无法取消")
+
+	ErrHasRefund *domain.DomainError = domain.NewDomainError(
+		"err_order_has_refund", "订单已经退款")
+
+	ErrDisallowRefund *domain.DomainError = domain.NewDomainError(
+		"err_order_disallow_refund", "订单不允许退款")
 )
 
 type (
@@ -332,6 +338,18 @@ type (
 
 		// 取消订单
 		Cancel(reason string) error
+
+		// 申请退款
+		SubmitRefund(reason string) error
+
+		// 取消退款申请
+		CancelRefund() error
+
+		// 谢绝订单
+		Decline(reason string) error
+
+		// 退款
+		Refund() error
 
 		// 保存订单
 		Save() (int, error)
