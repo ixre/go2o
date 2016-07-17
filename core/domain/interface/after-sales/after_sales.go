@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package after_sales
+package afterSales
 
 type (
 
@@ -41,6 +41,11 @@ type (
 
 		// 设置要退回货物信息
 		SetItem(itemId int, quantity int) error
+	}
+
+	IAfterSalesRep interface {
+		// 创建退款单
+		CreateRefundOrder(v *RefundOrder) IRefundOrder
 	}
 
 	// 售后单

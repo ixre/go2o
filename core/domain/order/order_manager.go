@@ -12,6 +12,7 @@ package order
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
@@ -36,19 +37,20 @@ import (
 var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	_rep         order.IOrderRep
-	_saleRep     sale.ISaleRep
-	_cartRep     cart.ICartRep
-	_goodsRep    goods.IGoodsRep
-	_promRep     promotion.IPromotionRep
-	_memberRep   member.IMemberRep
-	_mchRep      merchant.IMerchantRep
-	_deliveryRep delivery.IDeliveryRep
-	_valRep      valueobject.IValueRep
-	_payRep      payment.IPaymentRep
-	_expressRep  express.IExpressRep
-	_merchant    merchant.IMerchant
-	_shipRep     shipment.IShipmentRep
+	_rep           order.IOrderRep
+	_saleRep       sale.ISaleRep
+	_cartRep       cart.ICartRep
+	_goodsRep      goods.IGoodsRep
+	_promRep       promotion.IPromotionRep
+	_memberRep     member.IMemberRep
+	_mchRep        merchant.IMerchantRep
+	_deliveryRep   delivery.IDeliveryRep
+	_valRep        valueobject.IValueRep
+	_payRep        payment.IPaymentRep
+	_expressRep    express.IExpressRep
+	_merchant      merchant.IMerchant
+	_shipRep       shipment.IShipmentRep
+	_afterSalesRep afterSales.IAfterSalesRep
 }
 
 func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
@@ -56,21 +58,22 @@ func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
 	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
 	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
+	afterSalesRep afterSales.IAfterSalesRep,
 	valRep valueobject.IValueRep) order.IOrderManager {
-
 	return &orderManagerImpl{
-		_rep:         rep,
-		_cartRep:     cartRep,
-		_saleRep:     saleRep,
-		_goodsRep:    goodsRep,
-		_promRep:     promRep,
-		_memberRep:   memberRep,
-		_payRep:      payRep,
-		_mchRep:      mchRep,
-		_deliveryRep: deliveryRep,
-		_valRep:      valRep,
-		_expressRep:  expressRep,
-		_shipRep:     shipRep,
+		_rep:           rep,
+		_cartRep:       cartRep,
+		_saleRep:       saleRep,
+		_goodsRep:      goodsRep,
+		_promRep:       promRep,
+		_memberRep:     memberRep,
+		_payRep:        payRep,
+		_mchRep:        mchRep,
+		_deliveryRep:   deliveryRep,
+		_valRep:        valRep,
+		_expressRep:    expressRep,
+		_shipRep:       shipRep,
+		_afterSalesRep: afterSalesRep,
 	}
 }
 
@@ -85,7 +88,7 @@ func (this *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 func (this *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
 	return NewSubOrder(v, this, this._rep, this._memberRep,
 		this._goodsRep, this._shipRep, this._saleRep,
-		this._valRep, this._mchRep)
+		this._valRep, this._afterSalesRep, this._mchRep)
 }
 
 // 在下单前检查购物车

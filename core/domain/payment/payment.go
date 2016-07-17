@@ -275,7 +275,14 @@ func (this *paymentOrderImpl) Cancel() error {
 
 // 调整金额,如果调整的金额与实付金额一致,则取消支付单
 func (p *paymentOrderImpl) Adjust(amount float32) error {
-	return nil
+	p._value.AdjustmentAmount += amount
+	p._value.FinalFee += amount
+	if p._value.FinalFee <= 0 {
+		_, err := p.checkPaymentOk()
+		return err
+	}
+	_, err := p.Save()
+	return err
 }
 
 type PaymentRepBase struct {

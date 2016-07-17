@@ -88,6 +88,7 @@ func Init(ctx gof.App) {
 	cateRep := repository.NewCategoryRep(db, valRep)
 	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
 		itemRep, goodsRep, promRep)
+	afterSalesRep := repository.NewAfterSalesRep(db)
 	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
 	shopRep := repository.NewShopRep(db)
 	mchRep := repository.NewMerchantRep(db, shopRep, userRep, mssRep, valRep)
@@ -96,7 +97,7 @@ func Init(ctx gof.App) {
 	contentRep := repository.NewContentRep(db)
 	adRep := repository.NewAdvertisementRep(db)
 	spRep := repository.NewOrderRep(db, mchRep, nil, saleRep, cartRep, goodsRep,
-		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
+		promRep, memberRep, deliveryRep, expressRep, shipRep, afterSalesRep, valRep)
 	payRep := repository.NewPaymentRep(db, memberRep, spRep, valRep)
 
 	goodsRep.SetSaleRep(saleRep) //fixed
