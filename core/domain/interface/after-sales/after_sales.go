@@ -60,6 +60,9 @@ var (
 
 	ErrItemOutOfQuantity *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_out_of_quantity", "商品超出最大数量")
+
+	ErrReasonLength *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_reason_length", "原因不能少于10字")
 )
 
 type (
@@ -109,20 +112,28 @@ type (
 
 		// 获取订单的退款单
 		GetRefundOrders(orderId int) []IRefundOrder
+
+		// 创建售后单
+		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
+
+		// 获取售后单
+		GetAfterSalesOrder(id int) IAfterSalesOrder
 	}
 
 	// 售后单
 	AfterSalesOrder struct {
 		// 编号
-		Id int `db:"id"`
+		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
 		OrderId int `db:"order_id"`
 		// 运营商编号
 		VendorId int `db:"vendor_id"`
+		// 购买者编号
+		BuyerId int `db:"buyer_id"`
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号
-		ItemId int `db:"item_id"`
+		SnapshotId int `db:"snap_id"`
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后原因

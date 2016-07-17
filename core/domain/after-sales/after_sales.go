@@ -12,8 +12,10 @@ import (
 	"errors"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/tmp"
+	"strings"
 	"time"
 )
 
@@ -24,6 +26,17 @@ type afterSalesOrderImpl struct {
 	_rep      afterSales.IAfterSalesRep
 	_order    order.ISubOrder
 	_orderRep order.IOrderRep
+}
+
+func NewAfterSalesOrder(v *afterSales.AfterSalesOrder,
+	rep afterSales.IAfterSalesRep, orderRep order.IOrderRep,
+	memberRep member.IMemberRep) afterSales.IAfterSalesOrder {
+	as := newAfterSalesOrder(v, rep, orderRep)
+	switch v.Type {
+	case afterSales.TypeReturn:
+		return NewReturnOrderImpl(as, memberRep)
+	}
+	panic(errors.New("不支持的售后单类型"))
 }
 
 func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
@@ -44,7 +57,7 @@ func (a *afterSalesOrderImpl) SaveOrder() error {
 	if a._value.OrderId <= 0 {
 		panic(errors.New("售后单没有绑定订单"))
 	}
-	if a._value.ItemId <= 0 || a._value.Quantity <= 0 {
+	if a._value.SnapshotId <= 0 || a._value.Quantity <= 0 {
 		panic(errors.New("售后单缺少商品"))
 	}
 	a._value.UpdateTime = time.Now().Unix()
@@ -67,15 +80,15 @@ func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 }
 
 // 设置要退回货物信息
-func (a *afterSalesOrderImpl) SetItem(itemId int, quantity int) error {
+func (a *afterSalesOrderImpl) SetItem(snapshotId int, quantity int) error {
 	for _, v := range a.GetOrder().Items() {
-		if v.Id == itemId {
+		if v.SnapshotId == snapshotId {
 			// 判断是否超过数量
 			if v.Quantity < quantity {
 				return afterSales.ErrItemOutOfQuantity
 			}
 			// 设置退回商品
-			a._value.ItemId = itemId
+			a._value.SnapshotId = snapshotId
 			a._value.Quantity = quantity
 			return nil
 		}
@@ -88,9 +101,16 @@ func (a *afterSalesOrderImpl) Submit() error {
 	if a.GetDomainId() > 0 {
 		panic(errors.New("售后单已提交"))
 	}
-	if a._value.ItemId <= 0 || a._value.Quantity <= 0 {
+	if a._value.SnapshotId <= 0 || a._value.Quantity <= 0 {
 		panic(errors.New("售后单未包括商品项"))
 	}
+	a._value.Reason = strings.TrimSpace(a._value.Reason)
+	if len(a._value.Reason) < 10 {
+		return afterSales.ErrReasonLength
+	}
+	ov := a.GetOrder().GetValue()
+	a._value.VendorId = ov.VendorId
+	a._value.BuyerId = ov.BuyerId
 	a._value.State = afterSales.StatAwaitingVendor
 	a._value.CreateTime = time.Now().Unix()
 	return a.SaveOrder()

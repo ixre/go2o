@@ -659,6 +659,33 @@ ALTER TABLE `flm`.`pay_order`
   ADD COLUMN `adjustment_amount` DECIMAL(8,2) NULL COMMENT '调整金额' AFTER `sub_amount`;
 
 
+CREATE TABLE `flm`.`sale_after_order` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NULL,
+  `vendor_id` INT NULL,
+  `buyer_id` INT NULL,
+  `type` TINYINT(1) NULL,
+  `snap_id` INT NULL,
+  `quantity` INT NULL,
+  `reason` VARCHAR(255) NULL,
+  `person_name` VARCHAR(10) NULL,
+  `person_phone` VARCHAR(20) NULL,
+  `rsp_name` VARCHAR(10) NULL COMMENT '退货快递名称',
+  `rsp_order` VARCHAR(20) NULL COMMENT '退货快递单号',
+  `rsp_image` VARCHAR(120) NULL,
+  `remark` VARCHAR(45) NULL,
+  `vendor_remark` VARCHAR(45) NULL,
+  `state` TINYINT(1) NULL,
+  `create_time` INT NULL,
+  `update_time` INT NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `flm`.`sale_return` (
+  `id` INT NOT NULL,
+  `amount` DECIMAL(8,2) NULL,
+  `is_refund` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
+
 
 
 
