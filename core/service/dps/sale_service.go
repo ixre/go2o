@@ -80,12 +80,17 @@ func (this *saleService) GetValueGoodsBySku(merchantId int, itemId int, sku int)
 }
 
 // 根据快照编号获取商品
-func (this *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
-	snap := this._goodsRep.GetSaleSnapshot(snapshotId)
+func (s *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
+	snap := s._goodsRep.GetSaleSnapshot(snapshotId)
 	if snap != nil {
-		return this._goodsRep.GetValueGoodsById(snap.SkuId)
+		return s._goodsRep.GetValueGoodsById(snap.SkuId)
 	}
 	return nil
+}
+
+// 根据快照编号获取商品
+func (s *saleService) GetSaleSnapshotById(snapshotId int) *goods.SalesSnapshot {
+	return s._goodsRep.GetSaleSnapshot(snapshotId)
 }
 
 // 保存产品

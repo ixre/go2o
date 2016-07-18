@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 )
 
@@ -60,4 +61,16 @@ func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int) []afte
 func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
+}
+
+// 获取售后单
+func (a *afterSalesService) GetAfterSaleOrder(id int) *afterSales.AfterSalesOrder {
+	as := a._rep.GetAfterSalesOrder(id)
+	if as != nil {
+		v := as.Value()
+		v.StateText = afterSales.Stat(v.State).String()
+		v.ReturnSpImage = format.GetResUrl(v.ReturnSpImage)
+		return &v
+	}
+	return nil
 }
