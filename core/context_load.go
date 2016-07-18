@@ -113,6 +113,8 @@ func OrmMapping(conn db.Connector) {
 	//** After Sales **/
 	orm.Mapping(afterSales.AfterSalesOrder{}, "sale_after_order")
 	orm.Mapping(afterSales.ReturnOrder{}, "sale_return")
+	orm.Mapping(afterSales.ExchangeOrder{}, "sale_exchange")
+	orm.Mapping(afterSales.RefundOrder{}, "sale_refund")
 
 	//** Express **//
 	orm.Mapping(express.ExpressProvider{}, "express_provider")

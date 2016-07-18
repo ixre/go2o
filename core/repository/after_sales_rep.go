@@ -34,32 +34,6 @@ func NewAfterSalesRep(conn db.Connector, orderRep order.IOrderRep,
 
 }
 
-// 创建退款单
-func (a *afterSalesRep) CreateRefundOrder(v *afterSales.RefundOrder) afterSales.IRefundOrder {
-	return asImpl.NewRefundOrder(v, a, a._orderRep)
-}
-
-// 获取退款单
-func (a *afterSalesRep) GetRefundOrder(id int) afterSales.IRefundOrder {
-	e := &afterSales.RefundOrder{}
-	if a.GetOrm().Get(id, e) == nil {
-		return a.CreateRefundOrder(e)
-	}
-	return nil
-}
-
-// 获取订单的退款单
-func (a *afterSalesRep) GetRefundOrders(orderId int) []afterSales.IRefundOrder {
-	list := []*afterSales.RefundOrder{}
-	orders := []afterSales.IRefundOrder{}
-	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {
-		for _, v := range list {
-			orders = append(orders, a.CreateRefundOrder(v))
-		}
-	}
-	return orders
-}
-
 // 创建售后单
 func (a *afterSalesRep) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrder {
 	return asImpl.NewAfterSalesOrder(v, a, a._orderRep, a._memberRep)
@@ -72,4 +46,16 @@ func (a *afterSalesRep) GetAfterSalesOrder(id int) afterSales.IAfterSalesOrder {
 		return a.CreateAfterSalesOrder(v)
 	}
 	return nil
+}
+
+// 获取订单的售后单
+func (a *afterSalesRep) GetAllOfSaleOrder(orderId int) []afterSales.IAfterSalesOrder {
+	list := []*afterSales.AfterSalesOrder{}
+	orders := []afterSales.IAfterSalesOrder{}
+	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {
+		for _, v := range list {
+			orders = append(orders, a.CreateAfterSalesOrder(v))
+		}
+	}
+	return orders
 }
