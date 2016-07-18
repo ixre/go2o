@@ -1025,8 +1025,13 @@ func (o *subOrderImpl) saveOrderItems() error {
 
 // 保存订单
 func (o *subOrderImpl) Save() (int, error) {
+	unix := time.Now().Unix()
+	o._value.UpdateTime = unix
 	if o.GetDomainId() > 0 {
 		return o._rep.SaveSubOrder(o._value)
+	}
+	if o._value.CreateTime <= 0 {
+		o._value.CreateTime = unix
 	}
 	id, err := o._rep.SaveSubOrder(o._value)
 	if err == nil {

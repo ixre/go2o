@@ -502,6 +502,8 @@ type (
 		Note string `db:"note" json:"note"`
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
+		// 下单时间
+		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单状态

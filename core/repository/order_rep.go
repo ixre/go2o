@@ -10,6 +10,7 @@
 package repository
 
 import (
+	"database/sql"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core"
@@ -27,6 +28,7 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	orderImpl "go2o/core/domain/order"
+	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
 )
@@ -262,4 +264,30 @@ func (this *orderRepImpl) GetSubOrderLogs(orderId int) []*order.OrderLog {
 	list := []*order.OrderLog{}
 	this.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
+}
+
+// 根据商品快照获取订单项
+func (o *orderRepImpl) GetOrderItemBySnapshotId(orderId int, snapshotId int) *order.OrderItem {
+	e := &order.OrderItem{}
+	if o.GetOrm().GetBy(e, "order_id=? AND snap_id=?", orderId, snapshotId) == nil {
+		return e
+	}
+	return nil
+}
+
+// 根据商品快照获取订单项数据传输对象
+func (o *orderRepImpl) GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem {
+	e := &dto.OrderItem{}
+	err := o.QueryRow(`SELECT si.id,si.order_id,si.snap_id,sn.sku_id,
+            sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
+            si.is_shipped FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            ON sn.id=si.snap_id WHERE si.order_id = ? AND si.snap_id=?`, func(rs *sql.Row) {
+		rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.SkuId, &e.GoodsTitle,
+			&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
+		e.FinalPrice = e.FinalAmount / float32(e.Quantity)
+	}, orderId, snapshotId)
+	if err == nil {
+		return e
+	}
+	return nil
 }
