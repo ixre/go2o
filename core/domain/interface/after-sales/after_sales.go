@@ -44,8 +44,8 @@ const (
 )
 
 var (
-	// 不需要平台确认的状态
-	IgnoreConfirmStats = []int{
+	// 不需要平台确认的售后类型
+	IgnoreConfirmTypes = []int{
 		TypeExchange,
 		TypeService,
 	}
@@ -63,6 +63,9 @@ var (
 
 	ErrReasonLength *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_reason_length", "原因不能少于10字")
+
+	ErrNotConfirm *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_not_confirm", "售后单尚未确认")
 )
 
 type (
@@ -71,6 +74,9 @@ type (
 	IAfterSalesOrder interface {
 		// 获取领域编号
 		GetDomainId() int
+
+		// 获取售后单数据
+		Value() AfterSalesOrder
 
 		// 获取订单
 		GetOrder() order.ISubOrder
@@ -87,7 +93,7 @@ type (
 		// 拒绝售后服务
 		Decline(reason string) error
 
-		// 同意售后服务
+		// 同意售后服务,部分操作在同意后,无需确认
 		Agree() error
 
 		// 退回商品
@@ -96,7 +102,7 @@ type (
 		// 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
 		ReturnReceive() error
 
-		// 系统确认
+		// 系统确认,泛化应有不同的实现
 		Confirm() error
 
 		// 申请调解,只有在商户拒绝后才能申请
@@ -104,20 +110,14 @@ type (
 	}
 
 	IAfterSalesRep interface {
-		// 创建退款单
-		CreateRefundOrder(v *RefundOrder) IRefundOrder
-
-		// 获取退款单
-		GetRefundOrder(id int) IRefundOrder
-
-		// 获取订单的退款单
-		GetRefundOrders(orderId int) []IRefundOrder
-
 		// 创建售后单
 		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
 
 		// 获取售后单
 		GetAfterSalesOrder(id int) IAfterSalesOrder
+
+		// 获取订单的售后单
+		GetAllOfSaleOrder(orderId int) []IAfterSalesOrder
 	}
 
 	// 售后单
@@ -158,5 +158,7 @@ type (
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
+		// 售后单数据,如退款单、退货单、换货单等
+		Data interface{} `db:"-"`
 	}
 )

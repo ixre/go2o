@@ -25,7 +25,7 @@ type returnOrderImpl struct {
 	_memberRep   member.IMemberRep
 }
 
-func NewReturnOrderImpl(v *afterSalesOrderImpl,
+func newReturnOrderImpl(v *afterSalesOrderImpl,
 	memberRep member.IMemberRep) *returnOrderImpl {
 	if v._value.Type != afterSales.TypeReturn {
 		panic(errors.New("售后单类型不是退货单"))
@@ -48,6 +48,20 @@ func (r *returnOrderImpl) getValue() *afterSales.ReturnOrder {
 		panic(errors.New("退货单不存在"))
 	}
 	return r._returnValue
+}
+
+// 获取售后单数据
+func (r *returnOrderImpl) Value() afterSales.AfterSalesOrder {
+	v := r.afterSalesOrderImpl.Value()
+	v2 := r.getValue()
+	v.Data = *v2
+	return v
+}
+
+// 保存
+func (r *returnOrderImpl) saveReturnOrder() error {
+	_, err := orm.Save(tmp.Db().GetOrm(), r._returnValue, r.GetDomainId())
+	return err
 }
 
 // 提交售后申请
@@ -75,7 +89,7 @@ func (r *returnOrderImpl) Submit() error {
 	return err
 }
 
-// 同意退货
+// 完成退货
 func (r *returnOrderImpl) Confirm() error {
 	err := r.afterSalesOrderImpl.Confirm()
 	if err == nil {
@@ -84,14 +98,17 @@ func (r *returnOrderImpl) Confirm() error {
 	return err
 }
 
-// 同意退货
+// 处理退货
 func (r *returnOrderImpl) handleReturn() error {
+
+	//todo:??添加库存,或计入残次品
+
 	v := r.getValue()
 	if v.IsRefund == 1 {
 		return nil
 	}
 	v.IsRefund = 1
-	_, err := orm.Save(tmp.Db().GetOrm(), r._returnValue, r.GetDomainId())
+	err := r.saveReturnOrder()
 	if err == nil {
 		err = r.backAmount(v.Amount)
 	}

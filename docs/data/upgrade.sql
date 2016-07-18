@@ -686,7 +686,21 @@ CREATE TABLE `flm`.`sale_return` (
   `is_refund` TINYINT(1) NULL,
   PRIMARY KEY (`id`));
 
+CREATE TABLE `flm`.`sale_exchange` (
+  `id` INT NOT NULL,
+  `is_shipped` TINYINT(1) NULL,
+  `sp_name` VARCHAR(20) NULL,
+  `sp_order` VARCHAR(20) NULL,
+  `ship_time` INT NULL,
+  `is_received` TINYINT(1) NULL,
+  `receive_time` INT NULL,
+  PRIMARY KEY (`id`));
 
+CREATE TABLE `flm`.`sale_refund` (
+  `id` INT NOT NULL,
+  `amount` DECIMAL(8,2) NULL,
+  `is_refund` TINYINT(1) NULL,
+  PRIMARY KEY (`id`));
 
 
 

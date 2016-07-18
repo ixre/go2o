@@ -34,7 +34,11 @@ func NewAfterSalesOrder(v *afterSales.AfterSalesOrder,
 	as := newAfterSalesOrder(v, rep, orderRep)
 	switch v.Type {
 	case afterSales.TypeReturn:
-		return NewReturnOrderImpl(as, memberRep)
+		return newReturnOrderImpl(as, memberRep)
+	case afterSales.TypeExchange:
+		return newExchangeOrderImpl(as)
+	case afterSales.TypeRefund:
+		return newRefundOrder(as, memberRep)
 	}
 	panic(errors.New("不支持的售后单类型"))
 }
@@ -51,6 +55,11 @@ func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
 // 获取领域编号
 func (a *afterSalesOrderImpl) GetDomainId() int {
 	return a._value.Id
+}
+
+// 获取售后单数据
+func (a *afterSalesOrderImpl) Value() afterSales.AfterSalesOrder {
+	return *a._value
 }
 
 func (a *afterSalesOrderImpl) SaveOrder() error {
@@ -171,8 +180,8 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 
 	// 判断是否需要审核
 	needConfirm := true
-	for _, v := range afterSales.IgnoreConfirmStats {
-		if a._value.State == v {
+	for _, v := range afterSales.IgnoreConfirmTypes {
+		if a._value.Type == v {
 			needConfirm = false
 			break
 		}
@@ -183,19 +192,41 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 		return a.SaveOrder()
 	}
 	// 不需要审核,直接完成
-	return a.Complete()
+	return a.complete()
 }
 
-// 系统确认
+// 系统确认,泛化可能需要重新实现
 func (a *afterSalesOrderImpl) Confirm() error {
 	if a._value.State != afterSales.StatAwaitingConfirm {
 		return afterSales.ErrUnusualStat
 	}
-	return a.Complete()
+	return a.complete()
 }
 
-// 完成执行的操作,泛化可能需要重新实现
-func (a *afterSalesOrderImpl) Complete() error {
+// 完成执行的操作
+func (a *afterSalesOrderImpl) complete() error {
+	if a._value.State == afterSales.StatCompleted {
+		return afterSales.ErrAfterSalesOrderCompleted
+	}
+	isConfirm := a._value.State == afterSales.StatAwaitingConfirm
+	// 如果状态不为等待审核状态,则判断是否需要审核
+	// 且状态是否为待收货状态(二次确认)
+	if !isConfirm {
+		needConfirm := true
+		for _, v := range afterSales.IgnoreConfirmTypes {
+			if a._value.State == v {
+				needConfirm = false
+				break
+			}
+		}
+		isConfirm = !needConfirm && (a._value.State == afterSales.StatAwaitingReturnShip ||
+			a._value.State == afterSales.StatReturnShipped)
+
+		// 如果仍然不符合条件,则返回错误
+		if !isConfirm {
+			return afterSales.ErrNotConfirm
+		}
+	}
 	a._value.State = afterSales.StatCompleted
 	return a.SaveOrder()
 }

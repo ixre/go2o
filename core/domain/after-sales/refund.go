@@ -9,116 +9,114 @@
 package afterSales
 
 import (
+	"errors"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
-	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/tmp"
-	"time"
 )
 
 var _ afterSales.IRefundOrder = new(refundOrderImpl)
 
 type refundOrderImpl struct {
-	_rep      afterSales.IAfterSalesRep
-	_value    *afterSales.RefundOrder
-	_order    order.ISubOrder
-	_orderRep order.IOrderRep
+	*afterSalesOrderImpl
+	_refValue  *afterSales.RefundOrder
+	_memberRep member.IMemberRep
 }
 
-func NewRefundOrder(v *afterSales.RefundOrder, rep afterSales.IAfterSalesRep,
-	orderRep order.IOrderRep) *refundOrderImpl {
+func newRefundOrder(v *afterSalesOrderImpl, memberRep member.IMemberRep) *refundOrderImpl {
+	if v._value.Type != afterSales.TypeRefund {
+		panic(errors.New("售后单类型不是退款单"))
+	}
 	return &refundOrderImpl{
-		_rep:      rep,
-		_value:    v,
-		_orderRep: orderRep,
+		afterSalesOrderImpl: v,
+		_memberRep:          memberRep,
 	}
 }
 
-// 获取领域对象编号
-func (r *refundOrderImpl) GetDomainId() int {
-	return r._value.Id
-}
-
-// 获取值
-func (r *refundOrderImpl) GetValue() afterSales.RefundOrder {
-	return *r._value
-}
-
-// 获取订单
-func (r *refundOrderImpl) Order() order.ISubOrder {
-	if r._order == nil {
-		r._order = r._orderRep.Manager().GetSubOrder(r._value.OrderId)
+func (r *refundOrderImpl) getValue() *afterSales.RefundOrder {
+	if r._refValue == nil {
+		if r.GetDomainId() <= 0 {
+			panic(errors.New("退款单还未提交"))
+		}
+		v := &afterSales.RefundOrder{}
+		if tmp.Db().GetOrm().Get(r.GetDomainId(), v) == nil {
+			r._refValue = v
+		}
+		panic(errors.New("退款单不存在"))
 	}
-	return r._order
+	return r._refValue
 }
 
-func (r *refundOrderImpl) save() error {
-	r._value.UpdateTime = time.Now().Unix()
-	id, err := orm.Save(tmp.Db().GetOrm(), r._value, r.GetDomainId())
-	r._value.Id = id
+// 获取售后单数据
+func (r *refundOrderImpl) Value() afterSales.AfterSalesOrder {
+	v := r.afterSalesOrderImpl.Value()
+	v2 := r.getValue()
+	v.Data = *v2
+	return v
+}
+
+// 保存
+func (r *refundOrderImpl) saveRefundOrder() error {
+	_, err := orm.Save(tmp.Db().GetOrm(), r._refValue, r.GetDomainId())
 	return err
 }
 
 // 提交退款申请
 func (r *refundOrderImpl) Submit() error {
-	if r.GetDomainId() > 0 {
+	err := r.afterSalesOrderImpl.Submit()
+	// 提交退款单
+	if err == nil {
+		r._refValue = &afterSales.RefundOrder{
+			Id:       r.afterSalesOrderImpl.GetDomainId(),
+			IsRefund: 0,
+		}
+		o := r.GetOrder()
+		for _, v := range o.Items() {
+			if v.SnapshotId == r._value.SnapshotId {
+				r._refValue.Amount = v.FinalAmount * float32(r._value.Quantity)
+				break
+			}
+		}
+		if r._refValue.Amount <= 0 {
+			panic(errors.New("退款单货款为零"))
+		}
+		_, err = orm.Save(tmp.Db().GetOrm(), r._refValue, 0)
+	}
+	return err
+}
+
+// 完成退款
+func (r *refundOrderImpl) Confirm() error {
+	err := r.afterSalesOrderImpl.Confirm()
+	if err == nil {
+		err = r.handleReturn()
+	}
+	return err
+}
+
+// 处理退款
+func (r *refundOrderImpl) handleReturn() error {
+	v := r.getValue()
+	if v.IsRefund == 1 {
 		return nil
 	}
-	err := r.save()
+	v.IsRefund = 1
+	err := r.saveRefundOrder()
 	if err == nil {
-		err = r.Order().SubmitRefund(r._value.Reason)
+		err = r.backAmount(v.Amount)
 	}
 	return err
 }
 
-// 取消申请退款
-func (r *refundOrderImpl) Cancel() error {
-	r._value.State = afterSales.RefundStatCancelled
-	err := r.save()
-	if err == nil {
-		err = r.Order().CancelRefund()
+// 退款
+func (r *refundOrderImpl) backAmount(amount float32) error {
+	o := r.GetOrder().GetValue()
+	mm := r._memberRep.GetMember(r._value.BuyerId)
+	if mm == nil {
+		return member.ErrNoSuchMember
 	}
-	return err
-}
-
-// 拒绝退款
-func (r *refundOrderImpl) Decline(remark string) error {
-	r._value.State = afterSales.RefundStatVendorDecline
-	r._value.VendorRemark = remark
-	err := r.save()
-	if err == nil {
-		err = r.Order().Decline(remark)
-	}
-	return err
-}
-
-// 同意退款
-func (r *refundOrderImpl) Agree() error {
-	r._value.State = afterSales.RefundStatAwaittingConfirm
-	return r.save()
-}
-
-// 确认退款
-func (r *refundOrderImpl) Confirm() error {
-	r._value.State = afterSales.RefundStatCompleted
-	err := r.save()
-	if err == nil {
-		err = r.Order().Refund()
-	}
-	return err
-}
-
-// 申请调解
-func (r *refundOrderImpl) RequestIntercede() error {
-	r._value.State = afterSales.RefundStatIntercede
-	return r.save()
-}
-
-// 调解后直接操作退款或退回
-func (r *refundOrderImpl) IntercedeHandle(pass bool, remark string) error {
-	r._value.Remark = remark
-	if pass {
-		return r.Confirm()
-	}
-	return nil
+	acc := mm.GetAccount()
+	return acc.ChargeBalance(member.TypeBalanceOrderRefund, "订单退款",
+		o.OrderNo, amount)
 }
