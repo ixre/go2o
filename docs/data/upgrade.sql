@@ -707,6 +707,8 @@ ALTER TABLE `flm`.`sale_order_item`
 
 
 
+ALTER TABLE `flm`.`sale_sub_order`
+  ADD COLUMN `create_time` INT NULL AFTER `remark`;
 
 
 

@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/dto"
 )
 
 type (
@@ -124,5 +125,11 @@ type (
 
 		// 获取订单的操作记录
 		GetSubOrderLogs(orderId int) []*OrderLog
+
+		// 根据商品快照获取订单项
+		GetOrderItemBySnapshotId(orderId int, snapshotId int) *OrderItem
+
+		// 根据商品快照获取订单项数据传输对象
+		GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem
 	}
 )

@@ -409,6 +409,13 @@ func (s *shoppingService) BuyerReceived(subOrderId int) error {
 	return o.BuyerReceived()
 }
 
+func (s *shoppingService) GetOrderItemBySnapshotId(orderId int, snapshotId int) *order.OrderItem {
+	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
+}
+func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem {
+	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
+}
+
 func (this *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
 	this._manager.OrderAutoSetup(f)
 }
