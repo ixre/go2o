@@ -11,17 +11,22 @@ package dps
 import (
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
+	"go2o/core/dto"
+	"go2o/core/query"
 )
 
 type afterSalesService struct {
 	_orderRep order.IOrderRep
 	_rep      afterSales.IAfterSalesRep
+	_query    *query.AfterSalesQuery
 }
 
-func NewAfterSalesService(rep afterSales.IAfterSalesRep, orderRep order.IOrderRep) *afterSalesService {
+func NewAfterSalesService(rep afterSales.IAfterSalesRep,
+	q *query.AfterSalesQuery, orderRep order.IOrderRep) *afterSalesService {
 	return &afterSalesService{
 		_rep:      rep,
 		_orderRep: orderRep,
+		_query:    q,
 	}
 }
 
@@ -41,12 +46,18 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
 }
 
 // 获取订单的所有售后单
-func (a *afterSalesService)GetAllAfterSalesOrderOfSaleOrder(orderId int)[]afterSales.AfterSalesOrder {
-    list := a._rep.GetAllOfSaleOrder(orderId)
-    arr := make([]afterSales.AfterSalesOrder, len(list))
-    for i, v := range list {
-        arr[i] = v.Value()
-        arr[i].StateText = afterSales.Stat(arr[i].State).String()
-    }
-    return arr
+func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int) []afterSales.AfterSalesOrder {
+	list := a._rep.GetAllOfSaleOrder(orderId)
+	arr := make([]afterSales.AfterSalesOrder, len(list))
+	for i, v := range list {
+		arr[i] = v.Value()
+		arr[i].StateText = afterSales.Stat(arr[i].State).String()
+	}
+	return arr
+}
+
+// 获取会员的分页售后单
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId, begin,
+	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
+	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }

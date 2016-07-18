@@ -115,13 +115,14 @@ func Init(ctx gof.App) {
 	goodsQuery := query.NewGoodsQuery(db)
 	shopQuery := query.NewShopQuery(ctx)
 	orderQuery := query.NewOrderQuery(db)
+	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
 	BaseService = NewPlatformService(valRep)
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep, saleRep, cartRep,
 		itemRep, goodsRep, mchRep, orderQuery)
-	AfterSalesService = NewAfterSalesService(asRep, spRep)
+	AfterSalesService = NewAfterSalesService(asRep, afterSalesQuery, spRep)
 	MerchantService = NewMerchantService(mchRep, saleRep, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRep, mchRep, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRep, memberQue, orderQuery)
