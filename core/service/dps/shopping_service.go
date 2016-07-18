@@ -409,9 +409,12 @@ func (s *shoppingService) BuyerReceived(subOrderId int) error {
 	return o.BuyerReceived()
 }
 
+// 根据商品快照获取订单项
 func (s *shoppingService) GetOrderItemBySnapshotId(orderId int, snapshotId int) *order.OrderItem {
 	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
+
+// 根据商品快照获取订单项数据传输对象
 func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem {
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }
