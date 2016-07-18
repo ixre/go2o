@@ -42,10 +42,10 @@ func (r *returnOrderImpl) getValue() *afterSales.ReturnOrder {
 			panic(errors.New("退货单还未提交"))
 		}
 		v := &afterSales.ReturnOrder{}
-		if tmp.Db().GetOrm().Get(r.GetDomainId(), v) == nil {
-			r._returnValue = v
+		if tmp.Db().GetOrm().Get(r.GetDomainId(), v) != nil {
+			panic(errors.New("退货单不存在"))
 		}
-		panic(errors.New("退货单不存在"))
+		r._returnValue = v
 	}
 	return r._returnValue
 }

@@ -41,10 +41,10 @@ func (e *exchangeOrderImpl) getValue() *afterSales.ExchangeOrder {
 			panic(errors.New("换货单还未提交"))
 		}
 		v := &afterSales.ExchangeOrder{}
-		if tmp.Db().GetOrm().Get(e.GetDomainId(), v) == nil {
-			e._excValue = v
+		if tmp.Db().GetOrm().Get(e.GetDomainId(), v) != nil {
+			panic(errors.New("换货单不存在"))
 		}
-		panic(errors.New("换货单不存在"))
+		e._excValue = v
 	}
 	return e._excValue
 }
