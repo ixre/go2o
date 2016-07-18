@@ -58,14 +58,20 @@ var (
 	ErrNoSuchOrderItem *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_no_such_order_item", "订单中不包括该商品")
 
-	ErrItemOutOfQuantity *domain.DomainError = domain.NewDomainError(
-		"err_after_sales_order_out_of_quantity", "商品超出最大数量")
+	ErrOutOfQuantity *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_out_of_quantity", "超出数量")
 
 	ErrReasonLength *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_reason_length", "原因不能少于10字")
 
 	ErrNotConfirm *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_not_confirm", "售后单尚未确认")
+
+	ErrHasCancelled *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_has_cancelled", "售后单已取消")
+
+	ErrOrderAmount *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_amount", "售后单金额不能为零")
 )
 
 type (

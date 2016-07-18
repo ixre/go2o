@@ -64,13 +64,41 @@ func (r *returnOrderImpl) saveReturnOrder() error {
 	return err
 }
 
+// 设置要退回货物信息
+func (r *returnOrderImpl) SetItem(snapshotId int, quantity int) error {
+	o := r.GetOrder()
+	for _, v := range o.Items() {
+		if v.SnapshotId == snapshotId {
+			// 判断是否超过数量,减去已退货数量
+			if v.Quantity-v.ReturnQuantity < quantity {
+				return afterSales.ErrOutOfQuantity
+			}
+			// 设置退回商品
+			r._value.SnapshotId = snapshotId
+			r._value.Quantity = quantity
+			return nil
+		}
+	}
+	return afterSales.ErrNoSuchOrderItem
+}
+
 // 提交售后申请
 func (r *returnOrderImpl) Submit() error {
 	err := r.afterSalesOrderImpl.Submit()
 	// 提交退货单
-	if err != nil {
-		return err
+	if err == nil {
+		// 锁定退货数量
+		err = r.GetOrder().Return(r._value.SnapshotId, r._value.Quantity)
+		if err == nil {
+			// 生成退货单
+			err = r.submitReturnOrder()
+		}
 	}
+	return err
+}
+
+// 提交退货单
+func (r *returnOrderImpl) submitReturnOrder() (err error) {
 	r._returnValue = &afterSales.ReturnOrder{
 		Id:       r.afterSalesOrderImpl.GetDomainId(),
 		IsRefund: 0,
@@ -78,14 +106,25 @@ func (r *returnOrderImpl) Submit() error {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == r._value.SnapshotId {
-			r._returnValue.Amount = v.FinalAmount * float32(r._value.Quantity)
+			price := v.FinalAmount / float32(v.Quantity) // 计算单价
+			r._returnValue.Amount = price * float32(r._value.Quantity)
 			break
 		}
 	}
 	if r._returnValue.Amount <= 0 {
-		panic(errors.New("退货单货款为零"))
+		return afterSales.ErrOrderAmount
 	}
 	_, err = orm.Save(tmp.Db().GetOrm(), r._returnValue, 0)
+	return err
+}
+
+// 取消申请
+func (r *returnOrderImpl) Cancel() error {
+	err := r.afterSalesOrderImpl.Cancel()
+	if err == nil {
+		// 撤销退货数量
+		err = r.GetOrder().RevertReturn(r._value.SnapshotId, r._value.Quantity)
+	}
 	return err
 }
 

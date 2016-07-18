@@ -347,7 +347,9 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		FinalAmount: fee,
 		//是否配送
 		IsShipped: 0,
-		Weight:    c.Snapshot.Weight * c.Quantity, //计算重量
+		// 退回数量
+		ReturnQuantity: 0,
+		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
 	}
 }
 
@@ -1370,6 +1372,36 @@ func (o *subOrderImpl) Cancel(reason string) error {
 		}
 	}
 	return err
+}
+
+// 退回商品
+func (o *subOrderImpl) Return(snapshotId int, quantity int) error {
+	for _, v := range o.Items() {
+		if v.SnapshotId == snapshotId {
+			if v.Quantity-v.ReturnQuantity < quantity {
+				return order.ErrOutOfQuantity
+			}
+			v.ReturnQuantity += quantity
+			_, err := o._rep.SaveOrderItem(o.GetDomainId(), v)
+			return err
+		}
+	}
+	return order.ErrNoSuchGoodsOfOrder
+}
+
+// 撤销退回商品
+func (o *subOrderImpl) RevertReturn(snapshotId int, quantity int) error {
+	for _, v := range o.Items() {
+		if v.SnapshotId == snapshotId {
+			if v.ReturnQuantity < quantity {
+				return order.ErrOutOfQuantity
+			}
+			v.ReturnQuantity -= quantity
+			_, err := o._rep.SaveOrderItem(o.GetDomainId(), v)
+			return err
+		}
+	}
+	return order.ErrNoSuchGoodsOfOrder
 }
 
 // 申请退款

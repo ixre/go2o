@@ -94,7 +94,7 @@ func (a *afterSalesOrderImpl) SetItem(snapshotId int, quantity int) error {
 		if v.SnapshotId == snapshotId {
 			// 判断是否超过数量
 			if v.Quantity < quantity {
-				return afterSales.ErrItemOutOfQuantity
+				return afterSales.ErrOutOfQuantity
 			}
 			// 设置退回商品
 			a._value.SnapshotId = snapshotId
@@ -110,8 +110,9 @@ func (a *afterSalesOrderImpl) Submit() error {
 	if a.GetDomainId() > 0 {
 		panic(errors.New("售后单已提交"))
 	}
+	// 售后单未包括商品项
 	if a._value.SnapshotId <= 0 || a._value.Quantity <= 0 {
-		panic(errors.New("售后单未包括商品项"))
+		return afterSales.ErrNoSuchOrderItem
 	}
 	a._value.Reason = strings.TrimSpace(a._value.Reason)
 	if len(a._value.Reason) < 10 {
@@ -129,6 +130,9 @@ func (a *afterSalesOrderImpl) Submit() error {
 func (a *afterSalesOrderImpl) Cancel() error {
 	if a._value.State == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
+	}
+	if a._value.State == afterSales.StatCancelled {
+		return afterSales.ErrHasCancelled
 	}
 	a._value.State = afterSales.StatCancelled
 	return a.SaveOrder()
@@ -186,9 +190,10 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 			break
 		}
 	}
+	// 设置为待审核状态
+	a._value.State = afterSales.StatAwaitingConfirm
 	// 需要审核
 	if needConfirm {
-		a._value.State = afterSales.StatAwaitingConfirm
 		return a.SaveOrder()
 	}
 	// 不需要审核,直接完成
@@ -197,6 +202,9 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 
 // 系统确认,泛化可能需要重新实现
 func (a *afterSalesOrderImpl) Confirm() error {
+	if a._value.State == afterSales.StatCompleted {
+		return afterSales.ErrAfterSalesOrderCompleted
+	}
 	if a._value.State != afterSales.StatAwaitingConfirm {
 		return afterSales.ErrUnusualStat
 	}

@@ -702,6 +702,10 @@ CREATE TABLE `flm`.`sale_refund` (
   `is_refund` TINYINT(1) NULL,
   PRIMARY KEY (`id`));
 
+ALTER TABLE `flm`.`sale_order_item`
+  ADD COLUMN `return_quantity` INT NULL AFTER `quantity`;
+
+
 
 
 

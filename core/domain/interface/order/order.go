@@ -140,6 +140,10 @@ var (
 	ErrOrderNotPayed *domain.DomainError = domain.NewDomainError(
 		"err_order_not_payed ", "订单未支付")
 
+	ErrOutOfQuantity *domain.DomainError = domain.NewDomainError(
+		"err_order_out_of_quantity", "超出数量")
+	ErrNoSuchGoodsOfOrder *domain.DomainError = domain.NewDomainError(
+		"err_order_no_such_goods_of_order", "订单中不包括该商品")
 	ErrOrderHasConfirm *domain.DomainError = domain.NewDomainError(
 		"err_order_has_confirm", "订单已经确认")
 
@@ -339,7 +343,14 @@ type (
 		// 取消订单
 		Cancel(reason string) error
 
+		// 退回商品
+		Return(snapshotId int, quantity int) error
+
+		// 撤销退回商品
+		RevertReturn(snapshotId int, quantity int) error
+
 		// 申请退款
+		// todo ???
 		SubmitRefund(reason string) error
 
 		// 取消退款申请
@@ -511,6 +522,8 @@ type (
 		SnapshotId int `db:"snap_id"`
 		// 数量
 		Quantity int `db:"quantity"`
+		// 退回数量(退货)
+		ReturnQuantity int `db:"return_quantity"`
 		// SKU描述
 		//Sku string `db:"sku"`
 		// 金额
@@ -521,7 +534,6 @@ type (
 		IsShipped int `db:"is_shipped"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
-
 		// 运营商编号
 		VendorId int `db:"-"`
 		// 商店编号
