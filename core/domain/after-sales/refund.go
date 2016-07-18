@@ -62,26 +62,67 @@ func (r *refundOrderImpl) saveRefundOrder() error {
 	return err
 }
 
+// 设置要退回货物信息
+func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
+	o := r.GetOrder()
+	for _, v := range o.Items() {
+		if v.SnapshotId == snapshotId {
+			// 判断是否超过数量,减去已退货数量
+			if v.Quantity-v.ReturnQuantity < quantity {
+				return afterSales.ErrOutOfQuantity
+			}
+			// 设置退回商品
+			r._value.SnapshotId = snapshotId
+			r._value.Quantity = quantity
+			return nil
+		}
+	}
+	return afterSales.ErrNoSuchOrderItem
+}
+
 // 提交退款申请
 func (r *refundOrderImpl) Submit() error {
 	err := r.afterSalesOrderImpl.Submit()
 	// 提交退款单
 	if err == nil {
-		r._refValue = &afterSales.RefundOrder{
-			Id:       r.afterSalesOrderImpl.GetDomainId(),
-			IsRefund: 0,
+		// 锁定退货数量
+		err = r.GetOrder().Return(r._value.SnapshotId, r._value.Quantity)
+		if err == nil {
+			// 生成退款单
+			err = r.submitRefundOrder()
 		}
-		o := r.GetOrder()
-		for _, v := range o.Items() {
-			if v.SnapshotId == r._value.SnapshotId {
-				r._refValue.Amount = v.FinalAmount * float32(r._value.Quantity)
-				break
-			}
+	}
+	return err
+}
+
+// 提交退款单
+func (r *refundOrderImpl) submitRefundOrder() (err error) {
+	r._refValue = &afterSales.RefundOrder{
+		Id:       r.afterSalesOrderImpl.GetDomainId(),
+		IsRefund: 0,
+	}
+	// 计算退款金额
+	o := r.GetOrder()
+	for _, v := range o.Items() {
+		if v.SnapshotId == r._value.SnapshotId {
+			price := v.FinalAmount / float32(v.Quantity) // 计算单价
+			r._refValue.Amount = price * float32(r._value.Quantity)
+			break
 		}
-		if r._refValue.Amount <= 0 {
-			panic(errors.New("退款单货款为零"))
-		}
-		_, err = orm.Save(tmp.Db().GetOrm(), r._refValue, 0)
+	}
+	if r._refValue.Amount <= 0 {
+		return afterSales.ErrOrderAmount
+	}
+	_, err = orm.Save(tmp.Db().GetOrm(), r._refValue, 0)
+	return err
+}
+
+// 取消申请
+func (r *refundOrderImpl) Cancel() error {
+	err := r.afterSalesOrderImpl.Cancel()
+	if err == nil {
+		// 撤销退货数量
+		err = r.GetOrder().RevertReturn(r._value.SnapshotId, r._value.Quantity)
 	}
 	return err
 }
