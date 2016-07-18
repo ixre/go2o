@@ -39,3 +39,14 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
 	})
 	return ro.Submit()
 }
+
+// 获取订单的所有售后单
+func (a *afterSalesService)GetAllAfterSalesOrderOfSaleOrder(orderId int)[]afterSales.AfterSalesOrder {
+    list := a._rep.GetAllOfSaleOrder(orderId)
+    arr := make([]afterSales.AfterSalesOrder, len(list))
+    for i, v := range list {
+        arr[i] = v.Value()
+        arr[i].StateText = afterSales.Stat(arr[i].State).String()
+    }
+    return arr
+}
