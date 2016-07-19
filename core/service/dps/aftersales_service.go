@@ -33,7 +33,7 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRep,
 
 // 提交售后单
 func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
-	snapshotId int, quantity int, reason string, img string) error {
+	snapshotId int, quantity int, reason string, img string) (int, error) {
 	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
 		OrderId: orderId,
