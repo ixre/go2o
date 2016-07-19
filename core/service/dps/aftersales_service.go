@@ -43,7 +43,11 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
 		Reason:        reason,
 		ReturnSpImage: img,
 	})
-	return ro.Submit()
+	err := ro.SetItem(snapshotId,quantity)
+	if err == nil {
+		return ro.Submit()
+	}
+	return 0,err
 }
 
 // 获取订单的所有售后单
