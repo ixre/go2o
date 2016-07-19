@@ -62,7 +62,7 @@ func (a *afterSalesOrderImpl) Value() afterSales.AfterSalesOrder {
 	return *a._value
 }
 
-func (a *afterSalesOrderImpl) SaveOrder() error {
+func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 	if a._value.OrderId <= 0 {
 		panic(errors.New("售后单没有绑定订单"))
 	}
@@ -106,24 +106,24 @@ func (a *afterSalesOrderImpl) SetItem(snapshotId int, quantity int) error {
 }
 
 // 提交售后申请
-func (a *afterSalesOrderImpl) Submit() error {
+func (a *afterSalesOrderImpl) Submit() (int, error) {
 	if a.GetDomainId() > 0 {
 		panic(errors.New("售后单已提交"))
 	}
 	// 售后单未包括商品项
 	if a._value.SnapshotId <= 0 || a._value.Quantity <= 0 {
-		return afterSales.ErrNoSuchOrderItem
+		return 0, afterSales.ErrNoSuchOrderItem
 	}
 	a._value.Reason = strings.TrimSpace(a._value.Reason)
 	if len(a._value.Reason) < 10 {
-		return afterSales.ErrReasonLength
+		return 0, afterSales.ErrReasonLength
 	}
 	ov := a.GetOrder().GetValue()
 	a._value.VendorId = ov.VendorId
 	a._value.BuyerId = ov.BuyerId
 	a._value.State = afterSales.StatAwaitingVendor
 	a._value.CreateTime = time.Now().Unix()
-	return a.SaveOrder()
+	return a.GetDomainId(), a.saveAfterSalesOrder()
 }
 
 // 取消申请
@@ -135,7 +135,7 @@ func (a *afterSalesOrderImpl) Cancel() error {
 		return afterSales.ErrHasCancelled
 	}
 	a._value.State = afterSales.StatCancelled
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }
 
 // 拒绝售后服务
@@ -145,7 +145,7 @@ func (a *afterSalesOrderImpl) Decline(reason string) error {
 	}
 	a._value.State = afterSales.StatDeclined
 	a._value.VendorRemark = reason
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }
 
 // 同意售后服务
@@ -160,7 +160,7 @@ func (a *afterSalesOrderImpl) Agree() error {
 	}
 	// 标记为等待收货
 	a._value.State = afterSales.StatAwaitingReturnShip
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }
 
 // 退回商品
@@ -172,7 +172,7 @@ func (a *afterSalesOrderImpl) ReturnShip(spName string, spOrder string, image st
 	a._value.ReturnSpOrder = spOrder
 	a._value.ReturnSpImage = image
 	a._value.State = afterSales.StatReturnShipped
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }
 
 // 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
@@ -194,7 +194,7 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 	a._value.State = afterSales.StatAwaitingConfirm
 	// 需要审核
 	if needConfirm {
-		return a.SaveOrder()
+		return a.saveAfterSalesOrder()
 	}
 	// 不需要审核,直接完成
 	return a.complete()
@@ -236,7 +236,7 @@ func (a *afterSalesOrderImpl) complete() error {
 		}
 	}
 	a._value.State = afterSales.StatCompleted
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }
 
 // 申请调解,只有在商户拒绝后才能申请
@@ -245,5 +245,5 @@ func (a *afterSalesOrderImpl) RequestIntercede() error {
 		return afterSales.ErrUnusualStat
 	}
 	a._value.State = afterSales.StatIntercede
-	return a.SaveOrder()
+	return a.saveAfterSalesOrder()
 }

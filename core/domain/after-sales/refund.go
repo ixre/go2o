@@ -81,8 +81,8 @@ func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
 }
 
 // 提交退款申请
-func (r *refundOrderImpl) Submit() error {
-	err := r.afterSalesOrderImpl.Submit()
+func (r *refundOrderImpl) Submit() (int, error) {
+	id, err := r.afterSalesOrderImpl.Submit()
 	// 提交退款单
 	if err == nil {
 		// 锁定退货数量
@@ -92,7 +92,7 @@ func (r *refundOrderImpl) Submit() error {
 			err = r.submitRefundOrder()
 		}
 	}
-	return err
+	return id, err
 }
 
 // 提交退款单

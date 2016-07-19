@@ -93,7 +93,7 @@ type (
 		SetItem(itemId int, quantity int) error
 
 		// 提交售后申请
-		Submit() error
+		Submit() (int, error)
 
 		// 取消申请
 		Cancel() error

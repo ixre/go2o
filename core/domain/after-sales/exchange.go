@@ -58,8 +58,8 @@ func (e *exchangeOrderImpl) Value() afterSales.AfterSalesOrder {
 }
 
 // 提交售后申请
-func (e *exchangeOrderImpl) Submit() error {
-	err := e.afterSalesOrderImpl.Submit()
+func (e *exchangeOrderImpl) Submit() (int, error) {
+	id, err := e.afterSalesOrderImpl.Submit()
 	// 提交换货单
 	if err == nil {
 		e._excValue = &afterSales.ExchangeOrder{
@@ -73,7 +73,7 @@ func (e *exchangeOrderImpl) Submit() error {
 		}
 		_, err = orm.Save(tmp.Db().GetOrm(), e._excValue, 0)
 	}
-	return err
+	return id, err
 }
 
 // 保存换货单
