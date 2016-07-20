@@ -205,16 +205,35 @@ func (a *afterSalesOrderImpl) Confirm() error {
 	if a._value.State == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
+	if a._value.State == afterSales.StateRejected {
+		return afterSales.ErrAfterSalesRejected
+	}
 	if a._value.State != afterSales.StatAwaitingConfirm {
 		return afterSales.ErrUnusualStat
 	}
 	return a.complete()
 }
 
+// 退回售后单
+func (a *afterSalesOrderImpl) Reject(remark string) error {
+	if a._value.State == afterSales.StatCompleted {
+		return afterSales.ErrAfterSalesOrderCompleted
+	}
+	if a._value.State != afterSales.StatAwaitingConfirm {
+		return afterSales.ErrUnusualStat
+	}
+	a._value.Remark = remark
+	a._value.State = afterSales.StateRejected
+	return a.saveAfterSalesOrder()
+}
+
 // 完成执行的操作
 func (a *afterSalesOrderImpl) complete() error {
 	if a._value.State == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
+	}
+	if a._value.State == afterSales.StateRejected {
+		return afterSales.ErrAfterSalesRejected
 	}
 	isConfirm := a._value.State == afterSales.StatAwaitingConfirm
 	// 如果状态不为等待审核状态,则判断是否需要审核

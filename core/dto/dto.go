@@ -77,4 +77,32 @@ type (
 		// 订单状态
 		StateText string `db:"-"`
 	}
+
+	PagedVendorAfterSalesOrder struct {
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderNo int `db:"order_id"`
+		// 会员编号
+		BuyerId int `db:"vendor_id"`
+		// 会员名称
+		BuyerName string `db:"buyer_name"`
+		// 类型，退货、换货、维修
+		Type       int `db:"type"`
+		SkuId      int
+		GoodsTitle string
+		GoodsImage string
+		// 退货的商品项编号
+		SnapshotId int `db:"snap_id"`
+		// 商品数量
+		Quantity int `db:"quantity"`
+		// 售后单状态
+		State int `db:"state"`
+		// 提交时间
+		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+		// 订单状态
+		StateText string `db:"-"`
+	}
 )

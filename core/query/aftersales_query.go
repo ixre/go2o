@@ -56,3 +56,34 @@ WHERE ao.buyer_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
 	}
 	return total, list
 }
+
+// 获取分页售后单
+func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
+	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
+	list := []*dto.PagedVendorAfterSalesOrder{}
+	total := 0
+	if len(where) > 0 {
+		where = " AND " + where
+	}
+	a.ExecScalar("SELECT COUNT(0) FROM sale_after_order ao WHERE ao.vendor_id=?"+where, &total, vendorId)
+	if total > 0 {
+		a.Query(`SELECT ao.id,ao.type,so.order_no,so.buyer_id,mp.name as buyer_name,
+ ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
+ ao.create_time,ao.update_time FROM sale_after_order ao
+INNER JOIN sale_sub_order so ON so.id=ao.order_id
+INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
+INNER JOIN gs_sales_snapshot sn ON sn.id = ao.snap_id
+WHERE ao.vendor_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
+			for rs.Next() {
+				e := &dto.PagedVendorAfterSalesOrder{}
+				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.BuyerId, &e.BuyerName,
+					&e.SnapshotId, &e.Quantity, &e.SkuId, &e.GoodsTitle,
+					&e.GoodsImage, &e.State, &e.CreateTime, &e.UpdateTime)
+				e.StateText = afterSales.Stat(e.State).String()
+				e.GoodsImage = format.GetResUrl(e.GoodsImage)
+				list = append(list, e)
+			}
+		}, vendorId, begin, size)
+	}
+	return total, list
+}
