@@ -43,11 +43,11 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
 		Reason:        reason,
 		ReturnSpImage: img,
 	})
-	err := ro.SetItem(snapshotId,quantity)
+	err := ro.SetItem(snapshotId, quantity)
 	if err == nil {
 		return ro.Submit()
 	}
-	return 0,err
+	return 0, err
 }
 
 // 获取订单的所有售后单
@@ -67,6 +67,12 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }
 
+// 获取会员的分页售后单
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
+	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
+	return a._query.QueryPagerAfterSalesOrderOfVendor(vendorId, begin, size, where)
+}
+
 // 获取售后单
 func (a *afterSalesService) GetAfterSaleOrder(id int) *afterSales.AfterSalesOrder {
 	as := a._rep.GetAfterSalesOrder(id)
@@ -77,4 +83,52 @@ func (a *afterSalesService) GetAfterSaleOrder(id int) *afterSales.AfterSalesOrde
 		return &v
 	}
 	return nil
+}
+
+// 同意售后
+func (a *afterSalesService) AgreeAfterSales(id int, remark string) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.Agree()
+}
+
+// 拒绝售后
+func (a *afterSalesService) DeclineAfterSales(id int, reason string) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.Decline(reason)
+}
+
+// 申请调解
+func (a *afterSalesService) RequestIntercede(id int) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.RequestIntercede()
+}
+
+// 系统确认
+func (a *afterSalesService) ConfirmAfterSales(id int) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.Confirm()
+}
+
+// 系统退回
+func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.Reject(remark)
+}
+
+// 售后收货
+func (a *afterSalesService) ReceiveAfterSalesReturnShipment(id int) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	return as.ReturnReceive()
+}
+
+// 退货发货
+func (a *afterSalesService) ExchangeShipment(id int, spName string, spOrder string) error {
+	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
+	return ex.ExchangeShip(spName, spOrder)
+}
+
+// 退货收货
+func (a *afterSalesService) ReceiveExchange(id int) error {
+	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
+	return ex.ExchangeReceive()
 }

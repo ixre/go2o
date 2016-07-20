@@ -26,6 +26,8 @@ const (
 	StatReturnShipped
 	// 已收货,等待系统确认
 	StatAwaitingConfirm
+	// 已退回
+	StateRejected
 	// 售后单已完成
 	StatCompleted
 	// 售后单已取消
@@ -51,6 +53,9 @@ var (
 	}
 	ErrAfterSalesOrderCompleted *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_completed", "售后单已完成,无法进行操作!")
+
+	ErrAfterSalesRejected *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_rejected", "售后单已被系统退回")
 
 	ErrUnusualStat *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_unusual_stat", "不合法的售后单状态")
@@ -112,6 +117,9 @@ type (
 
 		// 系统确认,泛化应有不同的实现
 		Confirm() error
+
+		// 退回售后单
+		Reject(remark string) error
 
 		// 申请调解,只有在商户拒绝后才能申请
 		RequestIntercede() error
