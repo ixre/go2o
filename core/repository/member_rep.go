@@ -107,9 +107,9 @@ func (this *MemberRep) CancelFavorite(memberId int, favType, referId int) error 
 }
 
 // 获取会员等级
-func (this *MemberRep) GetMemberLevels_New() []*member.Level {
+func (m *MemberRep) GetMemberLevels_New() []*member.Level {
 	list := []*member.Level{}
-	this.Connector.GetOrm().Select(&list, "enabled=1")
+	m.Connector.GetOrm().Select(&list, "1=1 ORDER BY id ASC")
 	return list
 }
 

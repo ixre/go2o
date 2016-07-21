@@ -11,6 +11,7 @@ package member
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
@@ -139,8 +140,8 @@ func (this *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
 
 // 等级服务实现
 type levelManagerImpl struct {
-	_rep           member.IMemberRep
-	_enabledLevels []*member.Level //可用的等级
+	_rep    member.IMemberRep
+	_levels []*member.Level //可用的等级
 }
 
 func newLevelManager(rep member.IMemberRep) member.ILevelManager {
@@ -151,43 +152,41 @@ func newLevelManager(rep member.IMemberRep) member.ILevelManager {
 }
 
 // 初始化默认等级
-func (this *levelManagerImpl) init() member.ILevelManager {
-	if len(this.GetLevelSet()) == 0 {
-
-		this._enabledLevels = []*member.Level{
-			&member.Level{
+func (l *levelManagerImpl) init() member.ILevelManager {
+	if len(l.GetLevelSet()) == 0 {
+		log.Println("----- errr    ")
+		l._levels = []*member.Level{
+			{
 				Name:       "待激活会员",
 				RequireExp: 0,
 				Enabled:    1,
 				IsOfficial: 0,
 			},
-
-			&member.Level{
+			{
 				Name:       "普通会员",
 				RequireExp: 1,
 				Enabled:    1,
 				IsOfficial: 1,
 			},
-
-			&member.Level{
+			{
 				Name:       "铜牌会员",
 				RequireExp: 100,
 				Enabled:    1,
 				IsOfficial: 1,
 			},
-			&member.Level{
+			{
 				Name:       "银牌会员",
 				RequireExp: 500,
 				Enabled:    1,
 				IsOfficial: 1,
 			},
-			&member.Level{
+			{
 				Name:       "金牌会员",
 				RequireExp: 1200,
 				Enabled:    1,
 				IsOfficial: 1,
 			},
-			&member.Level{
+			{
 				Name:       "白金会员",
 				RequireExp: 1500,
 				Enabled:    1,
@@ -195,44 +194,42 @@ func (this *levelManagerImpl) init() member.ILevelManager {
 			},
 		}
 		// 存储并设置编号
-		for _, v := range this._enabledLevels {
-			v.Id, _ = this.SaveLevel(v)
+		for _, v := range l._levels {
+			v.Id, _ = l.SaveLevel(v)
 		}
 	}
-	return this
+	return l
 }
 
 // 获取等级设置
-func (this *levelManagerImpl) GetLevelSet() []*member.Level {
-	if this._enabledLevels == nil {
+func (l *levelManagerImpl) GetLevelSet() []*member.Level {
+	if l._levels == nil {
 		// 已经排好序
-		this._enabledLevels = this._rep.GetMemberLevels_New()
+		l._levels = l._rep.GetMemberLevels_New()
 	}
-	return this._enabledLevels
+	return l._levels
 }
 
 // 获取等级
-func (this *levelManagerImpl) GetLevelById(id int) *member.Level {
-	arr := this.GetLevelSet()
-	if len(arr) > 0 {
-		i := sort.Search(len(arr), func(i int) bool {
+func (l *levelManagerImpl) GetLevelById(id int) *member.Level {
+	if id == 0 {
+		return nil
+	}
+	arr := l.GetLevelSet()
+	if la := len(arr); la > 0 {
+		i := sort.Search(la, func(i int) bool {
 			return arr[i].Id >= id
 		})
-		return arr[i]
+		if i < la && arr[i].Id == id {
+			return arr[i]
+		}
 	}
-	return nil
-
-	//for _, v := range this.GetLevelSet() {
-	//	if v.Id == id {
-	//		return v
-	//	}
-	//}
-	//return nil
+	panic(errors.New(fmt.Sprintf("no such member level id as %d", id)))
 }
 
 // 获取下一个等级
-func (this *levelManagerImpl) GetNextLevelById(id int) *member.Level {
-	arr := this.GetLevelSet()
+func (l *levelManagerImpl) GetNextLevelById(id int) *member.Level {
+	arr := l.GetLevelSet()
 	i := sort.Search(len(arr), func(i int) bool {
 		return arr[i].Id >= id
 	})
@@ -243,9 +240,9 @@ func (this *levelManagerImpl) GetNextLevelById(id int) *member.Level {
 }
 
 // 删除等级
-func (this *levelManagerImpl) DeleteLevel(id int) error {
+func (l *levelManagerImpl) DeleteLevel(id int) error {
 	pos := 0
-	for i, v := range this.GetLevelSet() {
+	for i, v := range l.GetLevelSet() {
 		if v.Id == id {
 			pos = i
 			break
@@ -254,27 +251,27 @@ func (this *levelManagerImpl) DeleteLevel(id int) error {
 	if pos > 0 {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
 		// todo: 也可以更新到下一个等级
-		if n := this._rep.GetMemberNumByLevel_New(id); n > 0 {
+		if n := l._rep.GetMemberNumByLevel_New(id); n > 0 {
 			return member.ErrLevelUsed
 		}
-		this._enabledLevels = append(this._enabledLevels[:pos],
-			this._enabledLevels[pos+1:]...)
-		return this._rep.DeleteMemberLevel_New(id)
+		l._levels = append(l._levels[:pos],
+			l._levels[pos+1:]...)
+		return l._rep.DeleteMemberLevel_New(id)
 	}
 	return nil
 }
 
 // 保存等级
-func (this *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
+func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	// 如果新增（非初始化）等级自动设置值
 	//if v.Id <= 0 && len(this._levelSet) == 0 {
 	//    v.Value = this.getMaxLevelValue() + 1
 	//}
-	this._enabledLevels = nil
-	if err := this.checkNewLevel(v); err != nil {
+	l._levels = nil
+	if err := l.checkNewLevel(v); err != nil {
 		return -1, err
 	}
-	return this._rep.SaveMemberLevel_New(v)
+	return l._rep.SaveMemberLevel_New(v)
 }
 
 // 新增等级时检查经验值
