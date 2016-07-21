@@ -116,9 +116,15 @@ func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
 }
 
 // 售后收货
-func (a *afterSalesService) ReceiveAfterSalesReturnShipment(id int) error {
+func (a *afterSalesService) ReceiveReturnShipment(id int) error {
 	as := a._rep.GetAfterSalesOrder(id)
-	return as.ReturnReceive()
+	err := as.ReturnReceive()
+	if err == nil {
+		if as.Value().State != afterSales.TypeExchange {
+			err = as.Process()
+		}
+	}
+	return err
 }
 
 // 退货发货

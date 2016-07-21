@@ -138,6 +138,29 @@ func (a *afterSalesOrderImpl) Cancel() error {
 	return a.saveAfterSalesOrder()
 }
 
+// 同意售后服务
+func (a *afterSalesOrderImpl) Agree() error {
+	if a._value.State != afterSales.StatAwaitingVendor {
+		return afterSales.ErrUnusualStat
+	}
+	// 判断是否需要审核
+	needConfirm := true
+	for _, v := range afterSales.IgnoreConfirmTypes {
+		if a._value.Type == v {
+			needConfirm = false
+			break
+		}
+	}
+	// 设置为待审核状态
+	a._value.State = afterSales.StatAwaitingConfirm
+	// 需要审核
+	if needConfirm {
+		return a.saveAfterSalesOrder()
+	}
+	// 不需要审核,直接审核通过
+	return a.Confirm()
+}
+
 // 拒绝售后服务
 func (a *afterSalesOrderImpl) Decline(reason string) error {
 	if a._value.State != afterSales.StatAwaitingVendor {
@@ -148,18 +171,44 @@ func (a *afterSalesOrderImpl) Decline(reason string) error {
 	return a.saveAfterSalesOrder()
 }
 
-// 同意售后服务
-func (a *afterSalesOrderImpl) Agree() error {
-	if a._value.State != afterSales.StatAwaitingVendor {
+// 申请调解,只有在商户拒绝后才能申请
+func (a *afterSalesOrderImpl) RequestIntercede() error {
+	if a._value.State != afterSales.StatDeclined {
 		return afterSales.ErrUnusualStat
 	}
-	// 退款,不需要退货,直接进入确认状态
-	if a._value.Type == afterSales.TypeRefund {
-		a._value.State = afterSales.StatAwaitingReturnShip
-		return a.ReturnReceive()
+	a._value.State = afterSales.StatIntercede
+	return a.saveAfterSalesOrder()
+}
+
+// 系统确认
+func (a *afterSalesOrderImpl) Confirm() error {
+	if a._value.State == afterSales.StatCompleted {
+		return afterSales.ErrAfterSalesOrderCompleted
 	}
-	// 标记为等待收货
+	if a._value.State == afterSales.StateRejected {
+		return afterSales.ErrAfterSalesRejected
+	}
+	if a._value.State != afterSales.StatAwaitingConfirm {
+		return afterSales.ErrUnusualStat
+	}
+	// 退款,不需要退货,直接进入完成状态
+	if a._value.Type == afterSales.TypeRefund {
+		return a.awaitingProcess()
+	}
 	a._value.State = afterSales.StatAwaitingReturnShip
+	return a.saveAfterSalesOrder()
+}
+
+// 退回售后单
+func (a *afterSalesOrderImpl) Reject(remark string) error {
+	if a._value.State == afterSales.StatCompleted {
+		return afterSales.ErrAfterSalesOrderCompleted
+	}
+	if a._value.State != afterSales.StatAwaitingConfirm {
+		return afterSales.ErrUnusualStat
+	}
+	a._value.Remark = remark
+	a._value.State = afterSales.StateRejected
 	return a.saveAfterSalesOrder()
 }
 
@@ -181,88 +230,38 @@ func (a *afterSalesOrderImpl) ReturnReceive() error {
 		a._value.State != afterSales.StatReturnShipped {
 		return afterSales.ErrUnusualStat
 	}
-
-	// 判断是否需要审核
-	needConfirm := true
-	for _, v := range afterSales.IgnoreConfirmTypes {
-		if a._value.Type == v {
-			needConfirm = false
-			break
-		}
-	}
-	// 设置为待审核状态
-	a._value.State = afterSales.StatAwaitingConfirm
-	// 需要审核
-	if needConfirm {
-		return a.saveAfterSalesOrder()
-	}
-	// 不需要审核,直接完成
-	return a.complete()
+	return a.awaitingProcess()
 }
 
-// 系统确认,泛化可能需要重新实现
-func (a *afterSalesOrderImpl) Confirm() error {
+// 等待处理
+func (a *afterSalesOrderImpl) awaitingProcess() error {
 	if a._value.State == afterSales.StatCompleted {
 		return afterSales.ErrAfterSalesOrderCompleted
 	}
 	if a._value.State == afterSales.StateRejected {
 		return afterSales.ErrAfterSalesRejected
 	}
-	if a._value.State != afterSales.StatAwaitingConfirm {
-		return afterSales.ErrUnusualStat
-	}
-	return a.complete()
-}
 
-// 退回售后单
-func (a *afterSalesOrderImpl) Reject(remark string) error {
-	if a._value.State == afterSales.StatCompleted {
-		return afterSales.ErrAfterSalesOrderCompleted
+	// 判断状态是否正确
+	statOK := a._value.State == afterSales.StatAwaitingReturnShip ||
+		a._value.State == afterSales.StatReturnShipped
+	if !statOK && a._value.Type == afterSales.TypeRefund {
+		statOK = a._value.State == afterSales.StatAwaitingConfirm
 	}
-	if a._value.State != afterSales.StatAwaitingConfirm {
-		return afterSales.ErrUnusualStat
+	if !statOK {
+		return afterSales.ErrNotConfirm
 	}
-	a._value.Remark = remark
-	a._value.State = afterSales.StateRejected
+
+	// 等待处理
+	a._value.State = afterSales.StateAwaitingProcess
 	return a.saveAfterSalesOrder()
 }
 
-// 完成执行的操作
-func (a *afterSalesOrderImpl) complete() error {
-	if a._value.State == afterSales.StatCompleted {
-		return afterSales.ErrAfterSalesOrderCompleted
-	}
-	if a._value.State == afterSales.StateRejected {
-		return afterSales.ErrAfterSalesRejected
-	}
-	isConfirm := a._value.State == afterSales.StatAwaitingConfirm
-	// 如果状态不为等待审核状态,则判断是否需要审核
-	// 且状态是否为待收货状态(二次确认)
-	if !isConfirm {
-		needConfirm := true
-		for _, v := range afterSales.IgnoreConfirmTypes {
-			if a._value.State == v {
-				needConfirm = false
-				break
-			}
-		}
-		isConfirm = !needConfirm && (a._value.State == afterSales.StatAwaitingReturnShip ||
-			a._value.State == afterSales.StatReturnShipped)
-
-		// 如果仍然不符合条件,则返回错误
-		if !isConfirm {
-			return afterSales.ErrNotConfirm
-		}
+// 处理售后单,处理完成后将变为已完成
+func (a *afterSalesOrderImpl) Process() error {
+	if a._value.State != afterSales.StateAwaitingProcess {
+		return afterSales.ErrUnusualStat
 	}
 	a._value.State = afterSales.StatCompleted
-	return a.saveAfterSalesOrder()
-}
-
-// 申请调解,只有在商户拒绝后才能申请
-func (a *afterSalesOrderImpl) RequestIntercede() error {
-	if a._value.State != afterSales.StatDeclined {
-		return afterSales.ErrUnusualStat
-	}
-	a._value.State = afterSales.StatIntercede
 	return a.saveAfterSalesOrder()
 }

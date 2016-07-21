@@ -28,6 +28,8 @@ const (
 	StatAwaitingConfirm
 	// 已退回
 	StateRejected
+	// 等待处理
+	StateAwaitingProcess
 	// 售后单已完成
 	StatCompleted
 	// 售后单已取消
@@ -77,11 +79,20 @@ var (
 
 	ErrOrderAmount *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_amount", "售后单金额不能为零")
+
+	ErrExchangeOrderNoShipping *domain.DomainError = domain.NewDomainError(
+		"err_exhange_order_no_shipping", "换货单尚未发货给顾客")
+
+	ErrNotReceive *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_order_not_receive", "尚未收货")
 )
 
 type (
 	// 售后单状态
 	Stat int
+
+	// 提交售后  -》 商户同意(拒绝) -》 系统确认(取消),或客服调解 -》
+	// 开始发货  -》 确认收货       -》 处理售后     -》 完成
 
 	// 售后单
 	IAfterSalesOrder interface {
@@ -103,17 +114,14 @@ type (
 		// 取消申请
 		Cancel() error
 
-		// 拒绝售后服务
-		Decline(reason string) error
-
 		// 同意售后服务,部分操作在同意后,无需确认
 		Agree() error
 
-		// 退回商品
-		ReturnShip(spName string, spOrder string, image string) error
+		// 拒绝售后服务
+		Decline(reason string) error
 
-		// 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
-		ReturnReceive() error
+		// 申请调解,只有在商户拒绝后才能申请
+		RequestIntercede() error
 
 		// 系统确认,泛化应有不同的实现
 		Confirm() error
@@ -121,8 +129,14 @@ type (
 		// 退回售后单
 		Reject(remark string) error
 
-		// 申请调解,只有在商户拒绝后才能申请
-		RequestIntercede() error
+		// 退回商品
+		ReturnShip(spName string, spOrder string, image string) error
+
+		// 收货, 在商品已退回或尚未发货情况下(线下退货),可以执行此操作
+		ReturnReceive() error
+
+		// 处理售后单,处理完成后将变为已完成
+		Process() error
 	}
 
 	IAfterSalesRep interface {

@@ -54,6 +54,13 @@ func (e *exchangeOrderImpl) Value() afterSales.AfterSalesOrder {
 	v := e.afterSalesOrderImpl.Value()
 	v2 := e.getValue()
 	v.Data = *v2
+	// 自动收货
+	if v2.IsShipped == 1 && v2.ReceiveTime < time.Now().Unix() {
+		v2.IsReceived = 1
+		if err := e.Process(); err == nil {
+			e.saveExchangeOrder(v2)
+		}
+	}
 	return v
 }
 
@@ -82,6 +89,18 @@ func (e *exchangeOrderImpl) saveExchangeOrder(v *afterSales.ExchangeOrder) error
 	return err
 }
 
+// 处理完成
+func (e *exchangeOrderImpl) Process() error {
+	v := e.getValue()
+	if v.IsShipped == 0 {
+		return afterSales.ErrExchangeOrderNoShipping
+	}
+	if v.IsReceived == 0 {
+		return afterSales.ErrNotReceive
+	}
+	return e.afterSalesOrderImpl.Process()
+}
+
 // 将换货的商品重新发货
 func (e *exchangeOrderImpl) ExchangeShip(spName string, spOrder string) error {
 	if e.afterSalesOrderImpl.GetDomainId() <= 0 {
@@ -108,5 +127,9 @@ func (e *exchangeOrderImpl) ExchangeReceive() error {
 	v := e.getValue()
 	v.IsReceived = 1
 	v.ReceiveTime = time.Now().Unix()
-	return e.saveExchangeOrder(v)
+	err := e.saveExchangeOrder(v)
+	if err == nil {
+		err = e.Process()
+	}
+	return err
 }

@@ -128,9 +128,19 @@ func (r *returnOrderImpl) Cancel() error {
 	return err
 }
 
+// 退回申请
+func (r *returnOrderImpl) Reject(remark string) error {
+	err := r.afterSalesOrderImpl.Reject(remark)
+	if err == nil {
+		// 撤销退货数量
+		err = r.GetOrder().RevertReturn(r._value.SnapshotId, r._value.Quantity)
+	}
+	return err
+}
+
 // 完成退货
-func (r *returnOrderImpl) Confirm() error {
-	err := r.afterSalesOrderImpl.Confirm()
+func (r *returnOrderImpl) Process() error {
+	err := r.afterSalesOrderImpl.Process()
 	if err == nil {
 		err = r.handleReturn()
 	}
