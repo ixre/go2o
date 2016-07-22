@@ -203,43 +203,52 @@ func (this *memberImpl) GetAccount() member.IAccount {
 }
 
 // 增加经验值
-func (this *memberImpl) AddExp(exp int) error {
-	this._value.Exp += exp
-	_, err := this.Save()
+func (m *memberImpl) AddExp(exp int) error {
+	m._value.Exp += exp
+	_, err := m.Save()
 	//判断是否升级
-	this.checkUpLevel()
+	m.checkUpLevel()
 
 	return err
 }
 
 // 获取等级
-func (this *memberImpl) GetLevel() *member.Level {
-	if this._level == nil {
-		this._level = this._manager.LevelManager().
-			GetLevelById(this._value.Level)
+func (m *memberImpl) GetLevel() *member.Level {
+	if m._level == nil {
+		m._level = m._manager.LevelManager().
+			GetLevelById(m._value.Level)
 	}
-	return this._level
+	return m._level
 }
 
 // 检查升级
-func (this *memberImpl) checkUpLevel() bool {
-	lg := this._manager.LevelManager()
-	levelId := lg.GetLevelIdByExp(this._value.Exp)
-	if levelId != 0 && this._value.Level < levelId {
-		this._value.Level = levelId
-		this.Save()
-		this._level = nil
-		return true
+func (m *memberImpl) checkUpLevel() bool {
+	lg := m._manager.LevelManager()
+	levelId := lg.GetLevelIdByExp(m._value.Exp)
+	if levelId == 0 {
+		return false
 	}
-	return false
+	// 判断是否大于当前等级
+	if m._value.Level > levelId {
+		return false
+	}
+	// 判断等级是否启用
+	lv := lg.GetLevelById(levelId)
+	if lv.Enabled == 0 {
+		return false
+	}
+	m._value.Level = levelId
+	m.Save()
+	m._level = nil
+	return true
 }
 
 // 获取会员关联
-func (this *memberImpl) GetRelation() *member.Relation {
-	if this._relation == nil {
-		this._relation = this._rep.GetRelation(this._value.Id)
+func (m *memberImpl) GetRelation() *member.Relation {
+	if m._relation == nil {
+		m._relation = m._rep.GetRelation(m._value.Id)
 	}
-	return this._relation
+	return m._relation
 }
 
 // 更换用户名

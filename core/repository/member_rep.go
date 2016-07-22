@@ -154,9 +154,11 @@ func (this *MemberRep) GetMemberValueByUsr(usr string) *member.Member {
 }
 
 // 根据手机号码获取会员
-func (this *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
+func (m *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 	e := &member.Member{}
-	err := this.Connector.GetOrm().GetBy(e, "phone=?", phone)
+	err := m.GetOrm().GetByQuery(e, `SELECT * FROM mm_member
+		INNER JOIN mm_profile ON mm_profile.member_id = mm_member.id
+		 WHERE phone=?`, phone)
 	if err != nil {
 		return nil
 	}
@@ -164,39 +166,39 @@ func (this *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 }
 
 // 根据手机号获取会员编号
-func (this *MemberRep) GetMemberIdByPhone(phone string) int {
+func (m *MemberRep) GetMemberIdByPhone(phone string) int {
 	id := -1
-	this.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
+	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
-func (this *MemberRep) GetMemberIdByEmail(email string) int {
+func (m *MemberRep) GetMemberIdByEmail(email string) int {
 	id := -1
-	this.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
+	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
 	return id
 }
 
 // 获取会员
-func (this *MemberRep) GetMember(memberId int) member.IMember {
+func (m *MemberRep) GetMember(memberId int) member.IMember {
 	e := &member.Member{}
-	err := this.Connector.GetOrm().Get(memberId, e)
+	err := m.Connector.GetOrm().Get(memberId, e)
 	if err == nil {
-		return this.CreateMember(e)
+		return m.CreateMember(e)
 	}
 	return nil
 }
 
-func (this *MemberRep) GetMemberIdByUser(user string) int {
+func (m *MemberRep) GetMemberIdByUser(user string) int {
 	var id int
-	this.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
+	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
 }
 
 // 创建会员
-func (this *MemberRep) CreateMember(v *member.Member) member.IMember {
-	return memberImpl.NewMember(this.GetManager(), v, this,
-		this._mssRep, this._valRep, this._partnerRep)
+func (m *MemberRep) CreateMember(v *member.Member) member.IMember {
+	return memberImpl.NewMember(m.GetManager(), v, m,
+		m._mssRep, m._valRep, m._partnerRep)
 }
 
 // 创建会员,仅作为某些操作使用,不保存

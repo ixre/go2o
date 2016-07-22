@@ -1275,14 +1275,17 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	var err error
 	ov := o._value
 	conf := o._valRep.GetGlobNumberConf()
+	ptc := o._valRep.GetPlatformConf()
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 
 	// 增加经验
-	rate := conf.ExperienceRateByOrder
-	if exp := int(amount * rate); exp > 0 {
-		if err = m.AddExp(exp); err != nil {
-			return err
+	if ptc.EnabledMemberExperience {
+		rate := conf.ExperienceRateByOrder
+		if exp := int(amount * rate); exp > 0 {
+			if err = m.AddExp(exp); err != nil {
+				return err
+			}
 		}
 	}
 

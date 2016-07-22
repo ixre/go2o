@@ -40,6 +40,8 @@ type (
 		MchGoodsCategory bool
 		// 允许商户创建页面分类
 		MchPageCategory bool
+		// 是否启用会员经验值
+		EnabledMemberExperience bool
 	}
 
 	Registry struct {
