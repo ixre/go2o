@@ -32,10 +32,11 @@ var (
 	// 默认平台设置
 	//todo: 默认值
 	defaultPlatformConf = valueobject.PlatformConf{
-		Name:             "GO2O",
-		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-		MchGoodsCategory: false,
-		MchPageCategory:  false,
+		Name:                    "GO2O",
+		Logo:                    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		MchGoodsCategory:        false,
+		MchPageCategory:         false,
+		EnabledMemberExperience: !true,
 	}
 
 	// 默认注册权限设置

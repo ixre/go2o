@@ -46,8 +46,17 @@ var (
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
 		"member_level_used", "此等级已被会员使用")
 
-	ErrLevelRequireExp *domain.DomainError = domain.NewDomainError(
-		"member_level_require_exp", "所需经验值必须大于%d")
+	ErrExistsSameProgramSignalLevel *domain.DomainError = domain.NewDomainError(
+		"member_exists_same_program_signal_level", "存在相同可编程签名的等级")
+
+	ErrMustMoreThanMaxLevel *domain.DomainError = domain.NewDomainError(
+		"member_level_must_more_than_max_level", "经验值必须大于最大等级")
+
+	ErrLessThanLevelRequireExp *domain.DomainError = domain.NewDomainError(
+		"member_level_less_than_exp", "经验值必须大于前一等级")
+
+	ErrMoreThanLevelRequireExp *domain.DomainError = domain.NewDomainError(
+		"member_level_more_than_exp", "经验值必须小于后一等级")
 
 	ErrNoSuchMember *domain.DomainError = domain.NewDomainError(
 		"member_no_such_member", "会员不存在")
