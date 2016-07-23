@@ -76,6 +76,9 @@ var (
 	ErrNoSuchBankInfo *domain.DomainError = domain.NewDomainError(
 		"err_no_such_bank_info", "请完善银行卡信息")
 
+	ErrBankInfo *domain.DomainError = domain.NewDomainError(
+		"err_member_bank_info", "银行卡信息不正确")
+
 	ErrBankInfoLocked *domain.DomainError = domain.NewDomainError(
 		"err_bank_info_locked", "银行卡信息已锁定,无法更改")
 
@@ -139,6 +142,9 @@ var (
 
 	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
 		"err_missing_trusted_info", "信息不完整、无法完成实名认证")
+
+	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
+		"err_member_not_trusted", "尚未实名认证")
 
 	ErrTrustCardId *domain.DomainError = domain.NewDomainError(
 		"err_member_trust_car_id", "身份证不正确")

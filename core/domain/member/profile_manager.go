@@ -273,7 +273,13 @@ func (p *profileManagerImpl) GetBank() member.BankInfo {
 	if p._bank == nil {
 		p._bank = p._rep.GetBankInfo(p._memberId)
 		if p._bank == nil {
-			return member.BankInfo{}
+			p._bank = &member.BankInfo{
+				MemberId:   p._memberId,
+				IsLocked:   member.BankNoLock,
+				State:      0,
+				UpdateTime: time.Now().Unix(),
+			}
+			orm.Save(tmp.Db().GetOrm(), p._bank, 0)
 		}
 	}
 	return *p._bank
@@ -281,19 +287,29 @@ func (p *profileManagerImpl) GetBank() member.BankInfo {
 
 // 保存提现银行信息
 func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
-	p.GetBank()
-	if p._bank == nil {
-		p._bank = v
-	} else {
-		if p._bank.IsLocked == member.BankLocked {
-			return member.ErrBankInfoLocked
-		}
-		p._bank.Account = v.Account
-		p._bank.AccountName = v.AccountName
-		p._bank.Network = v.Network
-		p._bank.State = v.State
-		p._bank.Name = v.Name
+	v.Account = strings.TrimSpace(v.Account)
+	v.AccountName = strings.TrimSpace(v.AccountName)
+	v.Network = strings.TrimSpace(v.Network)
+	v.Name = strings.TrimSpace(v.Name)
+	if v.Account == "" || v.Name == "" {
+		return member.ErrBankInfo
 	}
+	trustInfo := p.GetTrustedInfo()
+	if trustInfo.Reviewed == 0 {
+		return member.ErrNotTrusted
+	}
+
+	p.GetBank()
+	if p._bank.IsLocked == member.BankLocked {
+		return member.ErrBankInfoLocked
+	}
+	p._bank.Account = v.Account
+	p._bank.AccountName = trustInfo.RealName
+	//p._bank.AccountName = v.AccountName
+	p._bank.Network = v.Network
+	p._bank.State = v.State
+	p._bank.Name = v.Name
+
 	p._bank.State = member.StateOk       //todo:???
 	p._bank.IsLocked = member.BankLocked //锁定
 	p._bank.UpdateTime = time.Now().Unix()
@@ -406,6 +422,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	// 保存
 	p.GetTrustedInfo()
 	p.copyTrustedInfo(v, p._trustedInfo)
+	p._trustedInfo.Remark = ""
 	p._trustedInfo.IsHandle = 0 //标记为未处理
 	p._trustedInfo.UpdateTime = time.Now().Unix()
 	_, err = orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
