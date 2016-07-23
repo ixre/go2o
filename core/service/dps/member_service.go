@@ -115,7 +115,7 @@ func (ms *memberService) GetMemberLevelById(id int) *member.Level {
 }
 
 // 根据可编程字符获取会员等级
-func (ms *memberService)  GetLevelByProgramSign(sign string)*member.Level{
+func (ms *memberService) GetLevelByProgramSign(sign string) *member.Level {
 	return ms._rep.GetManager().LevelManager().GetLevelByProgramSign(sign)
 }
 
@@ -132,6 +132,15 @@ func (ms *memberService) DelMemberLevel(levelId int) error {
 // 获取下一个等级
 func (ms *memberService) GetNextLevel(levelId int) *member.Level {
 	return ms._rep.GetManager().LevelManager().GetNextLevelById(levelId)
+}
+
+// 获取启用中的最大等级,用于判断是否可以升级
+func (ms *memberService) GetHighestLevel() member.Level {
+	lv := ms._rep.GetManager().LevelManager().GetHighestLevel()
+	if lv != nil {
+		return *lv
+	}
+	return member.Level{}
 }
 
 func (ms *memberService) GetMember(id int) *member.Member {
