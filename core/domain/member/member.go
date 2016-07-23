@@ -57,50 +57,50 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 }
 
 // 获取聚合根编号
-func (this *memberImpl) GetAggregateRootId() int {
-	return this._value.Id
+func (m *memberImpl) GetAggregateRootId() int {
+	return m._value.Id
 }
 
 // 会员资料服务
-func (this *memberImpl) Profile() member.IProfileManager {
-	if this._profileManager == nil {
-		this._profileManager = newProfileManagerImpl(this,
-			this.GetAggregateRootId(), this._rep, this._valRep)
+func (m *memberImpl) Profile() member.IProfileManager {
+	if m._profileManager == nil {
+		m._profileManager = newProfileManagerImpl(m,
+			m.GetAggregateRootId(), m._rep, m._valRep)
 	}
-	return this._profileManager
+	return m._profileManager
 }
 
 // 会员收藏服务
-func (this *memberImpl) Favorite() member.IFavoriteManager {
-	if this._favoriteManager == nil {
-		this._favoriteManager = newFavoriteManagerImpl(
-			this.GetAggregateRootId(), this._rep)
+func (m *memberImpl) Favorite() member.IFavoriteManager {
+	if m._favoriteManager == nil {
+		m._favoriteManager = newFavoriteManagerImpl(
+			m.GetAggregateRootId(), m._rep)
 	}
-	return this._favoriteManager
+	return m._favoriteManager
 }
 
 // 礼品卡服务
-func (this *memberImpl) GiftCard() member.IGiftCardManager {
-	if this._giftCardManager == nil {
-		this._giftCardManager = newGiftCardManagerImpl(
-			this.GetAggregateRootId(), this._rep)
+func (m *memberImpl) GiftCard() member.IGiftCardManager {
+	if m._giftCardManager == nil {
+		m._giftCardManager = newGiftCardManagerImpl(
+			m.GetAggregateRootId(), m._rep)
 	}
-	return this._giftCardManager
+	return m._giftCardManager
 }
 
 // 邀请管理
-func (this *memberImpl) Invitation() member.IInvitationManager {
-	if this._invitation == nil {
-		this._invitation = &invitationManager{
-			_member: this,
+func (m *memberImpl) Invitation() member.IInvitationManager {
+	if m._invitation == nil {
+		m._invitation = &invitationManager{
+			_member: m,
 		}
 	}
-	return this._invitation
+	return m._invitation
 }
 
 // 获取值
-func (this *memberImpl) GetValue() member.Member {
-	return *this._value
+func (m *memberImpl) GetValue() member.Member {
+	return *m._value
 }
 
 var (
@@ -122,33 +122,33 @@ func validUsr(usr string) error {
 }
 
 // 设置值
-func (this *memberImpl) SetValue(v *member.Member) error {
-	v.Usr = this._value.Usr
-	if len(this._value.InvitationCode) == 0 {
-		this._value.InvitationCode = v.InvitationCode
+func (m *memberImpl) SetValue(v *member.Member) error {
+	v.Usr = m._value.Usr
+	if len(m._value.InvitationCode) == 0 {
+		m._value.InvitationCode = v.InvitationCode
 	}
 	if v.Exp != 0 {
-		this._value.Exp = v.Exp
+		m._value.Exp = v.Exp
 	}
 	if v.Level > 0 {
-		this._value.Level = v.Level
+		m._value.Level = v.Level
 	}
 	if len(v.TradePwd) == 0 {
-		this._value.TradePwd = v.TradePwd
+		m._value.TradePwd = v.TradePwd
 	}
 	return nil
 }
 
 // 发送验证码,并返回验证码
-func (this *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
+func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
 	const expiresMinutes = 10 //10分钟生效
 	code := domain.NewCheckCode()
-	this._value.CheckCode = code
-	this._value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
-	_, err := this.Save()
+	m._value.CheckCode = code
+	m._value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
+	_, err := m.Save()
 	if err == nil {
-		mgr := this._mssRep.NotifyManager()
-		pro := this.Profile().GetProfile()
+		mgr := m._mssRep.NotifyManager()
+		pro := m.Profile().GetProfile()
 
 		// 创建参数
 		data := map[string]interface{}{
@@ -161,7 +161,7 @@ func (this *memberImpl) SendCheckCode(operation string, mssType int) (string, er
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := this._valRep.GetDefaultSmsApiPerm()
+			provider, _ := m._valRep.GetDefaultSmsApiPerm()
 			data = sms.AppendCheckPhoneParams(provider, data)
 
 			// 构造并发送短信
@@ -183,23 +183,23 @@ func (this *memberImpl) SendCheckCode(operation string, mssType int) (string, er
 }
 
 // 对比验证码
-func (this *memberImpl) CompareCode(code string) error {
-	if this._value.CheckCode != strings.TrimSpace(code) {
+func (m *memberImpl) CompareCode(code string) error {
+	if m._value.CheckCode != strings.TrimSpace(code) {
 		return member.ErrCheckCodeError
 	}
-	if this._value.CheckExpires < time.Now().Unix() {
+	if m._value.CheckExpires < time.Now().Unix() {
 		return member.ErrCheckCodeExpires
 	}
 	return nil
 }
 
 // 获取账户
-func (this *memberImpl) GetAccount() member.IAccount {
-	if this._account == nil {
-		v := this._rep.GetAccount(this._value.Id)
-		return NewAccount(v, this._rep)
+func (m *memberImpl) GetAccount() member.IAccount {
+	if m._account == nil {
+		v := m._rep.GetAccount(m._value.Id)
+		return NewAccount(v, m._rep)
 	}
-	return this._account
+	return m._account
 }
 
 // 增加经验值
@@ -252,8 +252,8 @@ func (m *memberImpl) GetRelation() *member.Relation {
 }
 
 // 更换用户名
-func (this *memberImpl) ChangeUsr(usr string) error {
-	if usr == this._value.Usr {
+func (m *memberImpl) ChangeUsr(usr string) error {
+	if usr == m._value.Usr {
 		return member.ErrSameUsr
 	}
 	if len([]rune(usr)) < 6 {
@@ -262,73 +262,73 @@ func (this *memberImpl) ChangeUsr(usr string) error {
 	if !userRegex.MatchString(usr) {
 		return member.ErrUsrValidErr
 	}
-	if this.usrIsExist(usr) {
+	if m.usrIsExist(usr) {
 		return member.ErrUsrExist
 	}
-	this._value.Usr = usr
-	_, err := this.Save()
+	m._value.Usr = usr
+	_, err := m.Save()
 	return err
 }
 
 // 保存
-func (this *memberImpl) Save() (int, error) {
-	this._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
-	if this._value.Id > 0 {
-		return this._rep.SaveMember(this._value)
+func (m *memberImpl) Save() (int, error) {
+	m._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
+	if m._value.Id > 0 {
+		return m._rep.SaveMember(m._value)
 	}
 
-	if err := validUsr(this._value.Usr); err != nil {
-		return this.GetAggregateRootId(), err
+	if err := validUsr(m._value.Usr); err != nil {
+		return m.GetAggregateRootId(), err
 	}
-	return this.create(this._value, nil)
+	return m.create(m._value, nil)
 }
 
 // 锁定会员
-func (this *memberImpl) Lock() error {
-	return this._rep.LockMember(this.GetAggregateRootId(), 0)
+func (m *memberImpl) Lock() error {
+	return m._rep.LockMember(m.GetAggregateRootId(), 0)
 }
 
 // 解锁会员
-func (this *memberImpl) Unlock() error {
-	return this._rep.LockMember(this.GetAggregateRootId(), 1)
+func (m *memberImpl) Unlock() error {
+	return m._rep.LockMember(m.GetAggregateRootId(), 1)
 }
 
 // 创建会员
-func (this *memberImpl) create(m *member.Member, pro *member.Profile) (int, error) {
+func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) {
 	//todo: 获取推荐人编号
 	//todo: 检测是否有注册权限
-	//if err := this._manager.RegisterPerm(this._relation.RefereesId);err != nil{
+	//if err := m._manager.RegisterPerm(m._relation.RefereesId);err != nil{
 	//	return -1,err
 	//}
-	if this.usrIsExist(m.Usr) {
+	if m.usrIsExist(v.Usr) {
 		return -1, member.ErrUsrExist
 	}
 
 	t := time.Now().Unix()
-	m.State = 1
-	m.RegTime = t
-	m.LastLoginTime = t
-	m.Level = 1
-	m.Exp = 1
-	m.DynamicToken = m.Pwd
-	m.Exp = 0
-	if len(m.RegFrom) == 0 {
-		m.RegFrom = "API-INTERNAL"
+	v.State = 1
+	v.RegTime = t
+	v.LastLoginTime = t
+	v.Level = 1
+	v.Exp = 1
+	v.DynamicToken = v.Pwd
+	v.Exp = 0
+	if len(v.RegFrom) == 0 {
+		v.RegFrom = "API-INTERNAL"
 	}
-	m.InvitationCode = this.generateInvitationCode() // 创建一个邀请码
-	id, err := this._rep.SaveMember(m)
+	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
+	id, err := m._rep.SaveMember(v)
 	if id != 0 {
-		this._value.Id = id
+		m._value.Id = id
 	}
 	return id, err
 }
 
 // 创建邀请码
-func (this *memberImpl) generateInvitationCode() string {
+func (m *memberImpl) generateInvitationCode() string {
 	var code string
 	for {
 		code = domain.GenerateInvitationCode()
-		if memberId := this._rep.GetMemberIdByInvitationCode(code); memberId == 0 {
+		if memberId := m._rep.GetMemberIdByInvitationCode(code); memberId == 0 {
 			break
 		}
 	}
@@ -336,15 +336,15 @@ func (this *memberImpl) generateInvitationCode() string {
 }
 
 // 用户是否已经存在
-func (this *memberImpl) usrIsExist(usr string) bool {
-	return this._rep.CheckUsrExist(usr, this.GetAggregateRootId())
+func (m *memberImpl) usrIsExist(usr string) bool {
+	return m._rep.CheckUsrExist(usr, m.GetAggregateRootId())
 }
 
 // 创建并初始化
-func (this *memberImpl) SaveRelation(r *member.Relation) error {
-	this._relation = r
-	this._relation.MemberId = this._value.Id
-	return this._rep.SaveRelation(this._relation)
+func (m *memberImpl) SaveRelation(r *member.Relation) error {
+	m._relation = r
+	m._relation.MemberId = m._value.Id
+	return m._rep.SaveRelation(m._relation)
 }
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)
@@ -368,49 +368,49 @@ func newFavoriteManagerImpl(memberId int,
 }
 
 // 收藏
-func (this *favoriteManagerImpl) Favorite(favType, referId int) error {
-	if this.Favored(favType, referId) {
+func (m *favoriteManagerImpl) Favorite(favType, referId int) error {
+	if m.Favored(favType, referId) {
 		return member.ErrFavored
 	}
-	return this._rep.Favorite(this._memberId, favType, referId)
+	return m._rep.Favorite(m._memberId, favType, referId)
 }
 
 // 是否已收藏
-func (this *favoriteManagerImpl) Favored(favType, referId int) bool {
-	return this._rep.Favored(this._memberId, favType, referId)
+func (m *favoriteManagerImpl) Favored(favType, referId int) bool {
+	return m._rep.Favored(m._memberId, favType, referId)
 }
 
 // 取消收藏
-func (this *favoriteManagerImpl) Cancel(favType, referId int) error {
-	return this._rep.CancelFavorite(this._memberId, favType, referId)
+func (m *favoriteManagerImpl) Cancel(favType, referId int) error {
+	return m._rep.CancelFavorite(m._memberId, favType, referId)
 }
 
 // 收藏商品
-func (this *favoriteManagerImpl) FavoriteGoods(goodsId int) error {
-	return this.Favorite(member.FavTypeGoods, goodsId)
+func (m *favoriteManagerImpl) FavoriteGoods(goodsId int) error {
+	return m.Favorite(member.FavTypeGoods, goodsId)
 }
 
 // 取消收藏商品
-func (this *favoriteManagerImpl) CancelGoodsFavorite(goodsId int) error {
-	return this.Cancel(member.FavTypeGoods, goodsId)
+func (m *favoriteManagerImpl) CancelGoodsFavorite(goodsId int) error {
+	return m.Cancel(member.FavTypeGoods, goodsId)
 }
 
 // 商品是否已收藏
-func (this *favoriteManagerImpl) GoodsFavored(goodsId int) bool {
-	return this.Favored(member.FavTypeGoods, goodsId)
+func (m *favoriteManagerImpl) GoodsFavored(goodsId int) bool {
+	return m.Favored(member.FavTypeGoods, goodsId)
 }
 
 // 收藏店铺
-func (this *favoriteManagerImpl) FavoriteShop(shopId int) error {
-	return this.Favorite(member.FavTypeShop, shopId)
+func (m *favoriteManagerImpl) FavoriteShop(shopId int) error {
+	return m.Favorite(member.FavTypeShop, shopId)
 }
 
 // 取消收藏店铺
-func (this *favoriteManagerImpl) CancelShopFavorite(shopId int) error {
-	return this.Cancel(member.FavTypeShop, shopId)
+func (m *favoriteManagerImpl) CancelShopFavorite(shopId int) error {
+	return m.Cancel(member.FavTypeShop, shopId)
 }
 
 // 商店是否已收藏
-func (this *favoriteManagerImpl) ShopFavored(shopId int) bool {
-	return this.Favored(member.FavTypeShop, shopId)
+func (m *favoriteManagerImpl) ShopFavored(shopId int) bool {
+	return m.Favored(member.FavTypeShop, shopId)
 }
