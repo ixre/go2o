@@ -19,14 +19,13 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
-	"regexp"
 	"strings"
 	"time"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
 var (
-	qqRegex = regexp.MustCompile("^\\d{5,12}$")
+// qqRegex = regexp.MustCompile("^\\d{5,12}$")
 )
 
 type profileManagerImpl struct {
@@ -54,12 +53,12 @@ func newProfileManagerImpl(m *memberImpl, memberId int,
 }
 
 // 手机号码是否占用
-func (pm *profileManagerImpl) phoneIsExist(phone string) bool {
-	return pm._rep.CheckPhoneBind(phone, pm._memberId)
+func (p *profileManagerImpl) phoneIsExist(phone string) bool {
+	return p._rep.CheckPhoneBind(phone, p._memberId)
 }
 
 // 验证数据
-func (pm *profileManagerImpl) validateProfile(v *member.Profile) error {
+func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Name = strings.TrimSpace(v.Name)
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
 	v.Phone = strings.TrimSpace(v.Phone)
@@ -75,7 +74,7 @@ func (pm *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrPhoneValidErr
 	}
 
-	if len(v.Phone) > 0 && pm.phoneIsExist(v.Phone) {
+	if len(v.Phone) > 0 && p.phoneIsExist(v.Phone) {
 		return member.ErrPhoneHasBind
 	}
 
@@ -86,7 +85,7 @@ func (pm *profileManagerImpl) validateProfile(v *member.Profile) error {
 }
 
 // 拷贝资料
-func (pm *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
+func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	v.Address = strings.TrimSpace(v.Address)
 	v.Im = strings.TrimSpace(v.Im)
 	v.Email = strings.TrimSpace(v.Email)
@@ -98,7 +97,7 @@ func (pm *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	v.Ext4 = strings.TrimSpace(v.Ext4)
 	v.Ext5 = strings.TrimSpace(v.Ext5)
 	v.Ext6 = strings.TrimSpace(v.Ext6)
-	if err := pm.validateProfile(v); err != nil {
+	if err := p.validateProfile(v); err != nil {
 		return err
 	}
 
@@ -132,45 +131,45 @@ func (pm *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	return nil
 }
 
-func (pm *profileManagerImpl) ProfileCompleted() bool {
-	v := pm.GetProfile()
+func (p *profileManagerImpl) ProfileCompleted() bool {
+	v := p.GetProfile()
 	return len(v.Name) != 0 && len(v.Im) != 0 &&
-		len(v.Email) != 0 && len(v.BirthDay) != 0 &&
-		len(v.Address) != 0 && len(v.Phone) != 0 &&
-		len(v.Avatar) != 0 && v.Sex != 0
+		len(v.BirthDay) != 0 && len(v.Address) != 0 &&
+		len(v.Phone) != 0 && v.Sex != 0 &&
+		v.Province != 0 && v.City != 0 && v.District != 0
 }
 
 // 获取资料
-func (pm *profileManagerImpl) GetProfile() member.Profile {
-	if pm._profile == nil {
-		pm._profile = pm._rep.GetProfile(pm._memberId)
+func (p *profileManagerImpl) GetProfile() member.Profile {
+	if p._profile == nil {
+		p._profile = p._rep.GetProfile(p._memberId)
 	}
-	return *pm._profile
+	return *p._profile
 }
 
 // 保存资料
-func (pm *profileManagerImpl) SaveProfile(v *member.Profile) error {
-	ptr := pm.GetProfile()
-	err := pm.copyProfile(v, &ptr)
+func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
+	ptr := p.GetProfile()
+	err := p.copyProfile(v, &ptr)
 	if err == nil {
-		ptr.MemberId = pm._memberId
-		err = pm._rep.SaveProfile(&ptr)
-		if pm.ProfileCompleted() {
+		ptr.MemberId = p._memberId
+		err = p._rep.SaveProfile(&ptr)
+		if p.ProfileCompleted() {
 			// 已完善资料
-			pm.notifyOnProfileComplete()
+			p.notifyOnProfileComplete()
 		}
 	}
 	return err
 }
 
 //todo: ?? 重构
-func (pm *profileManagerImpl) notifyOnProfileComplete() {
-	rl := pm._member.GetRelation()
-	pt, err := pm._member._merchantRep.GetMerchant(rl.RegisterMerchantId)
+func (p *profileManagerImpl) notifyOnProfileComplete() {
+	rl := p._member.GetRelation()
+	pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMerchantId)
 	if err == nil {
-		key := fmt.Sprintf("profile:complete:id_%d", pm._memberId)
+		key := fmt.Sprintf("profile:complete:id_%d", p._memberId)
 		if pt.MemberKvManager().GetInt(key) == 0 {
-			if err := pm.sendNotifyMail(pt); err == nil {
+			if err := p.sendNotifyMail(pt); err == nil {
 				pt.MemberKvManager().Set(key, "1")
 			} else {
 				fmt.Println(err.Error())
@@ -179,10 +178,10 @@ func (pm *profileManagerImpl) notifyOnProfileComplete() {
 	}
 }
 
-func (pm *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
+func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := pm._member._mssRep.GetProvider().GetMailTemplate(tplId)
+		mailTpl := p._member._mssRep.GetProvider().GetMailTemplate(tplId)
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
@@ -197,7 +196,7 @@ func (pm *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				To: []mss.User{
 					mss.User{
 						Role: mss.RoleMember,
-						Id:   pm._memberId,
+						Id:   p._memberId,
 					},
 				},
 				// 发送的用户角色
@@ -211,11 +210,11 @@ func (pm *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,
 			}
-			msg := pm._member._mssRep.MessageManager().CreateMessage(v, val)
+			msg := p._member._mssRep.MessageManager().CreateMessage(v, val)
 			//todo:?? data
 			var data = map[string]string{
-				"Name":           pm._profile.Name,
-				"InvitationCode": pm._member.GetValue().InvitationCode,
+				"Name":           p._profile.Name,
+				"InvitationCode": p._member.GetValue().InvitationCode,
 			}
 			return msg.Send(data)
 		}
@@ -226,7 +225,7 @@ func (pm *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 //todo: 密码应独立为credential
 
 // 修改密码,旧密码可为空
-func (pm *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
+func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
 		return domain.ErrPwdCannotSame
@@ -237,18 +236,18 @@ func (pm *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	}
 
 	if len(oldPwd) != 0 &&
-		dm.MemberSha1Pwd(oldPwd) != pm._member._value.Pwd {
+		dm.MemberSha1Pwd(oldPwd) != p._member._value.Pwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
 
-	pm._member._value.Pwd = dm.MemberSha1Pwd(newPwd)
-	_, err = pm._member.Save()
+	p._member._value.Pwd = dm.MemberSha1Pwd(newPwd)
+	_, err = p._member.Save()
 
 	return err
 }
 
 // 修改交易密码，旧密码可为空
-func (pm *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
+func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 	var err error
 	if newPwd == oldPwd {
 		return domain.ErrPwdCannotSame
@@ -257,114 +256,114 @@ func (pm *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 		return err
 	}
 	// 已经设置过旧密码
-	if len(pm._member._value.TradePwd) != 0 &&
-		pm._member._value.TradePwd != dm.MemberSha1Pwd(oldPwd) {
+	if len(p._member._value.TradePwd) != 0 &&
+		p._member._value.TradePwd != dm.MemberSha1Pwd(oldPwd) {
 		return domain.ErrPwdOldPwdNotRight
 	}
-	pm._member._value.TradePwd = dm.MemberSha1Pwd(newPwd)
-	_, err = pm._member.Save()
+	p._member._value.TradePwd = dm.MemberSha1Pwd(newPwd)
+	_, err = p._member.Save()
 	return err
 }
 
 // 获取提现银行信息
-func (pm *profileManagerImpl) GetBank() member.BankInfo {
-	if pm._bank == nil {
-		pm._bank = pm._rep.GetBankInfo(pm._memberId)
-		if pm._bank == nil {
+func (p *profileManagerImpl) GetBank() member.BankInfo {
+	if p._bank == nil {
+		p._bank = p._rep.GetBankInfo(p._memberId)
+		if p._bank == nil {
 			return member.BankInfo{}
 		}
 	}
-	return *pm._bank
+	return *p._bank
 }
 
 // 保存提现银行信息
-func (pm *profileManagerImpl) SaveBank(v *member.BankInfo) error {
-	pm.GetBank()
-	if pm._bank == nil {
-		pm._bank = v
+func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
+	p.GetBank()
+	if p._bank == nil {
+		p._bank = v
 	} else {
-		if pm._bank.IsLocked == member.BankLocked {
+		if p._bank.IsLocked == member.BankLocked {
 			return member.ErrBankInfoLocked
 		}
-		pm._bank.Account = v.Account
-		pm._bank.AccountName = v.AccountName
-		pm._bank.Network = v.Network
-		pm._bank.State = v.State
-		pm._bank.Name = v.Name
+		p._bank.Account = v.Account
+		p._bank.AccountName = v.AccountName
+		p._bank.Network = v.Network
+		p._bank.State = v.State
+		p._bank.Name = v.Name
 	}
-	pm._bank.State = member.StateOk       //todo:???
-	pm._bank.IsLocked = member.BankLocked //锁定
-	pm._bank.UpdateTime = time.Now().Unix()
-	//pm._bank.MemberId = pm.value.Id
-	return pm._rep.SaveBankInfo(pm._bank)
+	p._bank.State = member.StateOk       //todo:???
+	p._bank.IsLocked = member.BankLocked //锁定
+	p._bank.UpdateTime = time.Now().Unix()
+	//p._bank.MemberId = p.value.Id
+	return p._rep.SaveBankInfo(p._bank)
 }
 
 // 解锁提现银行卡信息
-func (pm *profileManagerImpl) UnlockBank() error {
-	pm.GetBank()
-	if pm._bank == nil {
+func (p *profileManagerImpl) UnlockBank() error {
+	p.GetBank()
+	if p._bank == nil {
 		return member.ErrBankInfoNoYetSet
 	}
-	pm._bank.IsLocked = member.BankNoLock
-	return pm._rep.SaveBankInfo(pm._bank)
+	p._bank.IsLocked = member.BankNoLock
+	return p._rep.SaveBankInfo(p._bank)
 }
 
 // 创建配送地址
-func (pm *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) member.IDeliverAddress {
-	return newDeliver(v, pm._rep, pm._valRep)
+func (p *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) member.IDeliverAddress {
+	return newDeliver(v, p._rep, p._valRep)
 }
 
 // 获取配送地址
-func (pm *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
+func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 	var vls []*member.DeliverAddress
-	vls = pm._rep.GetDeliverAddress(pm._memberId)
+	vls = p._rep.GetDeliverAddress(p._memberId)
 	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(vls))
 	for i, v := range vls {
-		arr[i] = pm.CreateDeliver(v)
+		arr[i] = p.CreateDeliver(v)
 	}
 	return arr
 }
 
 // 获取配送地址
-func (pm *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
-	v := pm._rep.GetSingleDeliverAddress(pm._memberId, deliverId)
+func (p *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
+	v := p._rep.GetSingleDeliverAddress(p._memberId, deliverId)
 	if v != nil {
-		return pm.CreateDeliver(v)
+		return p.CreateDeliver(v)
 	}
 	return nil
 }
 
 // 删除配送地址
-func (pm *profileManagerImpl) DeleteDeliver(deliverId int) error {
+func (p *profileManagerImpl) DeleteDeliver(deliverId int) error {
 	//todo: 至少保留一个配送地址
-	return pm._rep.DeleteDeliver(pm._memberId, deliverId)
+	return p._rep.DeleteDeliver(p._memberId, deliverId)
 }
 
 // 拷贝认证信息
-func (pm *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) {
+func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) {
 	dst.RealName = src.RealName
 	dst.BodyNumber = src.BodyNumber
 	dst.TrustImage = src.TrustImage
 }
 
 // 实名认证信息
-func (pm *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
-	if pm._trustedInfo == nil {
-		pm._trustedInfo = &member.TrustedInfo{
-			MemberId: pm._memberId,
+func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
+	if p._trustedInfo == nil {
+		p._trustedInfo = &member.TrustedInfo{
+			MemberId: p._memberId,
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
-		if err := orm.Get(pm._memberId, pm._trustedInfo); err != nil {
-			orm.Save(nil, pm._trustedInfo)
+		if err := orm.Get(p._memberId, p._trustedInfo); err != nil {
+			orm.Save(nil, p._trustedInfo)
 		}
 	}
-	return *pm._trustedInfo
+	return *p._trustedInfo
 }
 
 // 保存实名认证信息
-func (pm *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
-	pm.GetTrustedInfo()
+func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
+	p.GetTrustedInfo()
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
 	v.BodyNumber = strings.TrimSpace(v.BodyNumber)
 	v.RealName = strings.TrimSpace(v.RealName)
@@ -372,25 +371,25 @@ func (pm *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		len(v.BodyNumber) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
-	pm.copyTrustedInfo(v, pm._trustedInfo)
-	pm._trustedInfo.IsHandle = 0 //标记为未处理
-	pm._trustedInfo.UpdateTime = time.Now().Unix()
-	_, _, err := tmp.Db().GetOrm().Save(nil, pm._trustedInfo)
+	p.copyTrustedInfo(v, p._trustedInfo)
+	p._trustedInfo.IsHandle = 0 //标记为未处理
+	p._trustedInfo.UpdateTime = time.Now().Unix()
+	_, _, err := tmp.Db().GetOrm().Save(nil, p._trustedInfo)
 	return err
 }
 
 // 审核实名认证,若重复审核将返回错误
-func (pm *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
-	pm.GetTrustedInfo()
+func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
+	p.GetTrustedInfo()
 	if pass {
-		pm._trustedInfo.Reviewed = 1
+		p._trustedInfo.Reviewed = 1
 	} else {
-		pm._trustedInfo.Reviewed = 0
+		p._trustedInfo.Reviewed = 0
 	}
-	pm._trustedInfo.IsHandle = 1 //标记为已处理
-	pm._trustedInfo.Remark = remark
-	pm._trustedInfo.ReviewTime = time.Now().Unix()
-	_, _, err := tmp.Db().GetOrm().Save(nil, pm._trustedInfo)
+	p._trustedInfo.IsHandle = 1 //标记为已处理
+	p._trustedInfo.Remark = remark
+	p._trustedInfo.ReviewTime = time.Now().Unix()
+	_, _, err := tmp.Db().GetOrm().Save(nil, p._trustedInfo)
 	return err
 }
 
@@ -412,27 +411,27 @@ func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
 	return d
 }
 
-func (pm *deliverAddressImpl) GetDomainId() int {
-	return pm._value.Id
+func (p *deliverAddressImpl) GetDomainId() int {
+	return p._value.Id
 }
 
-func (pm *deliverAddressImpl) GetValue() member.DeliverAddress {
-	return *pm._value
+func (p *deliverAddressImpl) GetValue() member.DeliverAddress {
+	return *p._value
 }
 
-func (pm *deliverAddressImpl) SetValue(v *member.DeliverAddress) error {
-	if pm._value.MemberId == v.MemberId {
-		if err := pm.checkValue(v); err != nil {
+func (p *deliverAddressImpl) SetValue(v *member.DeliverAddress) error {
+	if p._value.MemberId == v.MemberId {
+		if err := p.checkValue(v); err != nil {
 			return err
 		}
-		pm._value = v
+		p._value = v
 	}
 	return nil
 }
 
 // 设置地区中文名
-func (pm *deliverAddressImpl) renewAreaName(v *member.DeliverAddress) string {
-	names := pm._valRep.GetAreaNames([]int{
+func (p *deliverAddressImpl) renewAreaName(v *member.DeliverAddress) string {
+	names := p._valRep.GetAreaNames([]int{
 		v.Province,
 		v.City,
 		v.District,
@@ -440,7 +439,7 @@ func (pm *deliverAddressImpl) renewAreaName(v *member.DeliverAddress) string {
 	return strings.Join(names, " ")
 }
 
-func (pm *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
+func (p *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
 	v.Address = strings.TrimSpace(v.Address)
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.Phone = strings.TrimSpace(v.Phone)
@@ -465,10 +464,10 @@ func (pm *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
 	return nil
 }
 
-func (pm *deliverAddressImpl) Save() (int, error) {
-	if err := pm.checkValue(pm._value); err != nil {
-		return pm.GetDomainId(), err
+func (p *deliverAddressImpl) Save() (int, error) {
+	if err := p.checkValue(p._value); err != nil {
+		return p.GetDomainId(), err
 	}
-	pm._value.Area = pm.renewAreaName(pm._value)
-	return pm._memberRep.SaveDeliver(pm._value)
+	p._value.Area = p.renewAreaName(p._value)
+	return p._memberRep.SaveDeliver(p._value)
 }

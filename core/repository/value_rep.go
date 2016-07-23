@@ -56,77 +56,77 @@ func NewValueRep(conn db.Connector) valueobject.IValueRep {
 }
 
 // 获取微信接口配置
-func (this *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
-	if this._wxConf == nil {
-		this._wxConf = &valueobject.WxApiConfig{}
-		this._wxGob.Unmarshal(this._wxConf)
+func (vp *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
+	if vp._wxConf == nil {
+		vp._wxConf = &valueobject.WxApiConfig{}
+		vp._wxGob.Unmarshal(vp._wxConf)
 	}
-	return *this._wxConf
+	return *vp._wxConf
 }
 
 // 保存微信接口配置
-func (this *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
+func (vp *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	if v != nil {
 		//todo: 检查证书文件是否存在
-		this._wxConf = v
-		return this._wxGob.Save(this._wxConf)
+		vp._wxConf = v
+		return vp._wxGob.Save(vp._wxConf)
 	}
 	return errors.New("nil value")
 }
 
 // 获取注册权限
-func (this *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
-	if this._rpConf == nil {
+func (vp *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
+	if vp._rpConf == nil {
 		v := defaultRegisterPerm
-		this._rpConf = &v
-		this._rpGob.Unmarshal(this._rpConf)
+		vp._rpConf = &v
+		vp._rpGob.Unmarshal(vp._rpConf)
 	}
-	return *this._rpConf
+	return *vp._rpConf
 }
 
 // 保存注册权限
-func (this *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
+func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
-		this._rpConf = v
-		return this._rpGob.Save(this._rpConf)
+		vp._rpConf = v
+		return vp._rpGob.Save(vp._rpConf)
 	}
 	return nil
 }
 
 // 获取全局系统销售设置
-func (this *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
-	if this._numConf == nil {
+func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
+	if vp._numConf == nil {
 		v := defaultGlobNumberConf
-		this._numConf = &v
-		this._numGob.Unmarshal(this._numConf)
+		vp._numConf = &v
+		vp._numGob.Unmarshal(vp._numConf)
 	}
-	return *this._numConf
+	return *vp._numConf
 }
 
 // 保存全局系统销售设置
-func (this *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
+func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
-		this._numConf = v
-		return this._numGob.Save(this._numConf)
+		vp._numConf = v
+		return vp._numGob.Save(vp._numConf)
 	}
 	return nil
 }
 
 // 获取平台设置
-func (this *valueRep) GetPlatformConf() valueobject.PlatformConf {
-	if this._globMchConf == nil {
+func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
+	if vp._globMchConf == nil {
 		v := defaultPlatformConf
-		this._globMchConf = &v
-		this._mchGob.Unmarshal(this._globMchConf)
+		vp._globMchConf = &v
+		vp._mchGob.Unmarshal(vp._globMchConf)
 	}
-	return *this._globMchConf
+	return *vp._globMchConf
 }
 
 // 保存平台设置
-func (this *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
+func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
-		this._globMchConf = v
-		return this._mchGob.Save(this._globMchConf)
+		vp._globMchConf = v
+		return vp._mchGob.Save(vp._globMchConf)
 	}
 	return nil
 }
@@ -151,42 +151,42 @@ func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
 }
 
 // 获取全局商户销售设置
-func (this *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
-	if this._globMchSaleConf == nil {
+func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
+	if vp._globMchSaleConf == nil {
 		v := defaultGlobMchSaleConf
-		this._globMchSaleConf = &v
-		this._mscGob.Unmarshal(this._globMchSaleConf)
+		vp._globMchSaleConf = &v
+		vp._mscGob.Unmarshal(vp._globMchSaleConf)
 	}
-	return *this._globMchSaleConf
+	return *vp._globMchSaleConf
 }
 
 // 保存全局商户销售设置
-func (this *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
+func (vp *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	if v != nil {
-		this._globMchSaleConf = v
-		return this._mscGob.Save(this._globMchSaleConf)
+		vp._globMchSaleConf = v
+		return vp._mscGob.Save(vp._globMchSaleConf)
 	}
 	return nil
 }
 
 // 获取短信设置
-func (this *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
-	if this._smsConf == nil {
-		this._smsConf = defaultSmsConf
-		this._smsGob.Unmarshal(&this._smsConf)
+func (vp *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
+	if vp._smsConf == nil {
+		vp._smsConf = defaultSmsConf
+		vp._smsGob.Unmarshal(&vp._smsConf)
 	}
-	return this._smsConf
+	return vp._smsConf
 }
 
 // 保存短信API
-func (this *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
-	if _, ok := this.GetSmsApiSet()[provider]; !ok {
+func (vp *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
+	if _, ok := vp.GetSmsApiSet()[provider]; !ok {
 		return errors.New("系统不支持的短信接口")
 	}
 
 	if s.Default {
 		// 取消其他接口的默认选项
-		for p, v := range this._smsConf {
+		for p, v := range vp._smsConf {
 			if p == provider {
 				v.Default = true
 			} else {
@@ -195,17 +195,17 @@ func (this *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) er
 		}
 	} else {
 		//检验是否取消了正在使用的短信接口
-		if i, _ := this.GetDefaultSmsApiPerm(); i == provider {
+		if i, _ := vp.GetDefaultSmsApiPerm(); i == provider {
 			return errors.New("系统应启用一个短信接口")
 		}
 	}
-	this._smsConf[provider] = s
-	return this._smsGob.Save(this._smsConf)
+	vp._smsConf[provider] = s
+	return vp._smsGob.Save(vp._smsConf)
 }
 
 // 获取默认的短信API
-func (this *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
-	for i, v := range this.GetSmsApiSet() {
+func (vp *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+	for i, v := range vp.GetSmsApiSet() {
 		if v.Default {
 			return i, v
 		}
@@ -214,31 +214,31 @@ func (this *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 }
 
 // 获取下级区域
-func (this *valueRep) GetChildAreas(id int) []*valueobject.Area {
-	this._areaMux.Lock()
-	defer this._areaMux.Unlock()
-	if this._areaCache == nil {
-		this._areaCache = make(map[int][]*valueobject.Area)
+func (vp *valueRep) GetChildAreas(id int) []*valueobject.Area {
+	vp._areaMux.Lock()
+	defer vp._areaMux.Unlock()
+	if vp._areaCache == nil {
+		vp._areaCache = make(map[int][]*valueobject.Area)
 	}
-	if v, ok := this._areaCache[id]; ok {
+	if v, ok := vp._areaCache[id]; ok {
 		return v
 	}
 	v := []*valueobject.Area{}
-	err := this.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", id)
+	err := vp.Connector.GetOrm().Select(&v, "code <> 0 AND parent=?", id)
 	if err == nil {
-		this._areaCache[id] = v
+		vp._areaCache[id] = v
 	}
 	return v
 }
 
 // 获取地区名称
-func (this *valueRep) GetAreaNames(id []int) []string {
+func (vp *valueRep) GetAreaNames(id []int) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
 		strArr[i] = strconv.Itoa(v)
 	}
 	i := 0
-	this.Connector.Query(fmt.Sprintf(
+	vp.Connector.Query(fmt.Sprintf(
 		"SELECT name FROM china_area WHERE code IN (%s)",
 		strings.Join(strArr, ",")),
 		func(rows *sql.Rows) {
