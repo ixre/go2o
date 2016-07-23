@@ -258,7 +258,7 @@ type (
 		//真实姓名
 		RealName string `db:"real_name"`
 		//身份证号码
-		BodyNumber string `db:"body_number"`
+		CardId string `db:"card_id"`
 		//认证图片、身份证、人与身份证的图像等
 		TrustImage string `db:"trust_image"`
 		//是否处理
