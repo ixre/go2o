@@ -47,6 +47,8 @@ type (
 	Registry struct {
 		// 收货时的提示信息
 		AlertMessageForOrderReceive string
+		// 会员中心首页模板文件名称
+		UCenterIndexTplFile string
 		// 其他扩展数据
 		Extend map[string]string
 	}
