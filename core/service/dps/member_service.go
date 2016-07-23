@@ -242,6 +242,7 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 		m := ms._rep.CreateMember(v) //创建会员
 		id, err := m.Save()
 		if err == nil {
+			pro.Sex = 1
 			pro.MemberId = id
 			if len(pro.Name) == 0 {
 				//如果未设置昵称,则默认为用户名
