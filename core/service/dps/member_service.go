@@ -395,12 +395,12 @@ func (ms *memberService) GetTrustedInfo(memberId int) member.TrustedInfo {
 // 保存实名认证信息
 func (ms *memberService) SaveTrustedInfo(memberId int, v *member.TrustedInfo) error {
 	m := ms._rep.GetMember(memberId)
-	err := m.Profile().SaveTrustedInfo(v)
-	//todo: 取消自动认证
-	if err == nil {
-		err = ms.ReviewTrustedInfo(memberId, true, "")
+	if m == nil {
+		return member.ErrNoSuchMember
 	}
-	return err
+	//todo: 取消自动认证
+	defer ms.ReviewTrustedInfo(memberId, true, "")
+	return m.Profile().SaveTrustedInfo(v)
 }
 
 // 审核实名认证,若重复审核将返回错误

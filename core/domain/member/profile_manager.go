@@ -11,6 +11,7 @@ package member
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -19,13 +20,15 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/domain/util"
 	"strings"
 	"time"
 )
 
 var _ member.IProfileManager = new(profileManagerImpl)
 var (
-// qqRegex = regexp.MustCompile("^\\d{5,12}$")
+	exampleTrustImageUrl = "res/tru-example.jpg"
+	// qqRegex = regexp.MustCompile("^\\d{5,12}$")
 )
 
 type profileManagerImpl struct {
@@ -342,7 +345,7 @@ func (p *profileManagerImpl) DeleteDeliver(deliverId int) error {
 // 拷贝认证信息
 func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) {
 	dst.RealName = src.RealName
-	dst.BodyNumber = src.BodyNumber
+	dst.CardId = src.CardId
 	dst.TrustImage = src.TrustImage
 }
 
@@ -358,23 +361,55 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 			orm.Save(nil, p._trustedInfo)
 		}
 	}
+	// 显示示例图片
+	if p._trustedInfo.TrustImage == "" {
+		p._trustedInfo.TrustImage = exampleTrustImageUrl
+	}
 	return *p._trustedInfo
+}
+
+func (p *profileManagerImpl) checkCardId(cardId string, memberId int) bool {
+	mId := 0
+	tmp.Db().Exec("SELECT member_id FROM mm_trusted_info WHERE card_id=?", &mId, cardId)
+	return mId == 0 || mId == memberId
 }
 
 // 保存实名认证信息
 func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
-	p.GetTrustedInfo()
+	// 验证数据是否完整
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
-	v.BodyNumber = strings.TrimSpace(v.BodyNumber)
+	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
 	if len(v.TrustImage) == 0 || len(v.RealName) == 0 ||
-		len(v.BodyNumber) == 0 {
+		len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
+	// 校验身份证号是否正确
+	v.CardId = strings.ToUpper(v.CardId)
+	err := util.CheckChineseCardID(v.CardId)
+	if err != nil {
+		err = member.ErrTrustCardId
+	}
+
+	// 检查身份证是否已被占用
+	if !p.checkCardId(v.CardId, p._memberId) {
+		err = member.ErrCarIdExists
+	}
+
+	// 检测上传认证图片
+	if v.TrustImage != "" {
+		if len(v.TrustImage) < 10 || v.TrustImage == exampleTrustImageUrl {
+			return member.ErrTrustMissingImage
+		}
+	}
+
+	// 保存
+	p.GetTrustedInfo()
 	p.copyTrustedInfo(v, p._trustedInfo)
 	p._trustedInfo.IsHandle = 0 //标记为未处理
 	p._trustedInfo.UpdateTime = time.Now().Unix()
-	_, _, err := tmp.Db().GetOrm().Save(nil, p._trustedInfo)
+	_, err = orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
+		p._trustedInfo.MemberId)
 	return err
 }
 
@@ -389,7 +424,8 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p._trustedInfo.IsHandle = 1 //标记为已处理
 	p._trustedInfo.Remark = remark
 	p._trustedInfo.ReviewTime = time.Now().Unix()
-	_, _, err := tmp.Db().GetOrm().Save(nil, p._trustedInfo)
+	_, err := orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
+		p._trustedInfo.MemberId)
 	return err
 }
 

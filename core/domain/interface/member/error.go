@@ -138,7 +138,16 @@ var (
 		"err_not_support_transfer", "不支持的转账方式")
 
 	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
-		"err_missing_trusted_info", "实名认证信息不完整")
+		"err_missing_trusted_info", "信息不完整、无法完成实名认证")
+
+	ErrTrustCardId *domain.DomainError = domain.NewDomainError(
+		"err_member_trust_car_id", "身份证不正确")
+
+	ErrCarIdExists *domain.DomainError = domain.NewDomainError(
+		"err_member_trust_car_id", "身份证已使用")
+
+	ErrTrustMissingImage *domain.DomainError = domain.NewDomainError(
+		"err_member_trust_missing_image", "请上传认证照片")
 
 	ErrFavored *domain.DomainError = domain.NewDomainError(
 		"err_favored", "已经收藏过了")

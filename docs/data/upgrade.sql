@@ -710,6 +710,10 @@ ALTER TABLE `flm`.`sale_order_item`
 ALTER TABLE `flm`.`sale_sub_order`
   ADD COLUMN `create_time` INT NULL AFTER `remark`;
 
+ALTER TABLE `flm`.`mm_trusted_info`
+  CHANGE COLUMN `body_number` `card_id` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
+
+
 
 
 
