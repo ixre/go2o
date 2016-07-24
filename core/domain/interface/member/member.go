@@ -23,6 +23,10 @@ const (
 	FavTypeGoods
 )
 
+const (
+	TypeIntegralDiscount = 1
+)
+
 type (
 	IMember interface {
 		// 获取聚合根编号
