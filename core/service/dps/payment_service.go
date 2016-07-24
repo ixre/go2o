@@ -26,14 +26,14 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 }
 
 // 根据编号获取支付单
-func (this *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
-	v := this._rep.GetPaymentOrder(id).GetValue()
+func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
+	v := p._rep.GetPaymentOrder(id).GetValue()
 	return &v
 }
 
 // 根据支付单号获取支付单
-func (this *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrderBean {
-	if v := this._rep.GetPaymentOrderByNo(paymentNo); v != nil {
+func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrderBean {
+	if v := p._rep.GetPaymentOrderByNo(paymentNo); v != nil {
 		v2 := v.GetValue()
 		return &v2
 	}
@@ -41,16 +41,16 @@ func (this *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.Payme
 }
 
 // 创建支付单
-func (this *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
+func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
 ) (int, error) {
-	p := this._rep.CreatePaymentOrder(v)
-	return p.Save()
+	o := p._rep.CreatePaymentOrder(v)
+	return o.Save()
 }
 
 // 创建支付单
-func (this *paymentService) FinishPayment(tradeNo string, spName string,
+func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	outerNo string) error {
-	o := this._rep.GetPaymentOrderByNo(tradeNo)
+	o := p._rep.GetPaymentOrderByNo(tradeNo)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
@@ -59,7 +59,7 @@ func (this *paymentService) FinishPayment(tradeNo string, spName string,
 		_, err = o.Save()
 		//更改订单支付完成
 		if err == nil {
-			err = this._orderRep.Manager().PaymentForOnlineTrade(o.GetValue().OrderId)
+			err = p._orderRep.Manager().PaymentForOnlineTrade(o.GetValue().OrderId)
 		}
 	}
 	return err
