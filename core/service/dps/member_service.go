@@ -398,9 +398,13 @@ func (ms *memberService) SaveTrustedInfo(memberId int, v *member.TrustedInfo) er
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	//todo: 取消自动认证
-	defer ms.ReviewTrustedInfo(memberId, true, "")
-	return m.Profile().SaveTrustedInfo(v)
+
+	err := m.Profile().SaveTrustedInfo(v)
+	if err == nil {
+		//todo: 取消自动认证
+		defer ms.ReviewTrustedInfo(memberId, true, "")
+	}
+	return err
 }
 
 // 审核实名认证,若重复审核将返回错误

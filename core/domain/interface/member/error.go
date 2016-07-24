@@ -146,11 +146,14 @@ var (
 	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
 		"err_member_not_trusted", "尚未实名认证")
 
+	ErrRealName *domain.DomainError = domain.NewDomainError(
+		"err_real_name", "请输入真实姓名")
+
 	ErrTrustCardId *domain.DomainError = domain.NewDomainError(
-		"err_member_trust_car_id", "身份证不正确")
+		"err_member_trust_car_id", "身份证号码不正确")
 
 	ErrCarIdExists *domain.DomainError = domain.NewDomainError(
-		"err_member_trust_car_id", "身份证已使用")
+		"err_member_trust_car_id", "身份证号码已使用")
 
 	ErrTrustMissingImage *domain.DomainError = domain.NewDomainError(
 		"err_member_trust_missing_image", "请上传认证照片")
@@ -160,4 +163,7 @@ var (
 
 	ErrAccountBalanceNotEnough *domain.DomainError = domain.NewDomainError(
 		"err_account_balance_not_enough ", "账户余额不足")
+
+	ErrNoSuchIntegral *domain.DomainError = domain.NewDomainError(
+		"err_account_no_such_integral", "账户积分不足")
 )

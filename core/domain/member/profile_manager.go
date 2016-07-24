@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/domain/util"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -29,6 +30,7 @@ var _ member.IProfileManager = new(profileManagerImpl)
 var (
 	exampleTrustImageUrl = "res/tru-example.jpg"
 	// qqRegex = regexp.MustCompile("^\\d{5,12}$")
+	zhNameRegexp = regexp.MustCompile("^[\u4e00-\u9fa5]{2,4}$")
 )
 
 type profileManagerImpl struct {
@@ -386,8 +388,9 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 
 func (p *profileManagerImpl) checkCardId(cardId string, memberId int) bool {
 	mId := 0
-	tmp.Db().Exec("SELECT member_id FROM mm_trusted_info WHERE card_id=?", &mId, cardId)
-	return mId == 0 || mId == memberId
+	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mm_trusted_info WHERE card_id=? AND member_id <> ?",
+		&mId, cardId, memberId)
+	return mId == 0
 }
 
 // 保存实名认证信息
@@ -400,11 +403,17 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
+
+	// 验证姓名
+	if !zhNameRegexp.MatchString(v.RealName) {
+		return member.ErrRealName
+	}
+
 	// 校验身份证号是否正确
 	v.CardId = strings.ToUpper(v.CardId)
 	err := util.CheckChineseCardID(v.CardId)
 	if err != nil {
-		err = member.ErrTrustCardId
+		return member.ErrTrustCardId
 	}
 
 	// 检查身份证是否已被占用
