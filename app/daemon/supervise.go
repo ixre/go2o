@@ -11,7 +11,6 @@ package daemon
 
 import (
 	"github.com/garyburd/redigo/redis"
-	"github.com/jsix/gof"
 	"go2o/core"
 	"go2o/core/service/dps"
 	"go2o/core/variable"
@@ -107,7 +106,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 	}
 }
 
-func detectOrderExpires(a gof.App) {
+func detectOrderExpires() {
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	//获取标记为等待过期的订单

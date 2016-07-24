@@ -90,7 +90,7 @@ func (this *paymentRep) SavePaymentOrder(
 }
 
 // 通知支付单完成
-func (this *paymentRep) NotifyPaymentFinish(paymentOrderId int) error {
+func (p *paymentRep) NotifyPaymentFinish(paymentOrderId int) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)

@@ -372,6 +372,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if p._trustedInfo == nil {
 		p._trustedInfo = &member.TrustedInfo{
 			MemberId: p._memberId,
+			IsHandle: 1,
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
