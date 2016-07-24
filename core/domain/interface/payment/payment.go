@@ -19,9 +19,11 @@ const (
 	PaymentByBuyer = 1 // 购买者支付
 	PaymentByCM    = 2 // 客服人工支付
 
-	StateNotYetPayment = 0 // 尚未支付
-	StateFinishPayment = 1 // 已支付
-	StateHasCancel     = 2 // 已经取消
+	StateAwaitingPayment = 0 // 等待支付
+	StateFinishPayment   = 1 // 已支付
+	StateHasCancel       = 2 // 已经取消
+
+	TypeShopping = 1 //购物
 )
 
 const (
@@ -144,6 +146,8 @@ type (
 		TradeNo string `db:"trade_no"`
 		// 运营商编号，0表示无
 		VendorId int `db:"vendor_id"`
+		// 支付单类型,如果购物或其他
+		Type int `db:"order_type"`
 		// 订单编号,0表示无
 		OrderId int `db:"order_id"`
 		// 购买用户

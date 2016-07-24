@@ -714,6 +714,8 @@ ALTER TABLE `flm`.`mm_trusted_info`
   CHANGE COLUMN `body_number` `card_id` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
 
 
+ALTER TABLE `flm`.`pay_order`
+  ADD COLUMN `order_type` INT NULL COMMENT '支付单的类型，如购物或其他' AFTER `vendor_id`;
 
 
 

@@ -147,7 +147,7 @@ func (this *paymentOrderImpl) paymentWithBalance(buyerType int) error {
 // 检查是否支付完成, 且返回是否为第一次支付成功,
 func (this *paymentOrderImpl) checkPaymentOk() (bool, error) {
 	b := false
-	if this._value.State == payment.StateNotYetPayment {
+	if this._value.State == payment.StateAwaitingPayment {
 		unix := time.Now().Unix()
 		// 如果支付完成,则更新订单状态
 		if b = this._value.FinalFee == 0; b {
