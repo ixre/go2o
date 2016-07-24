@@ -89,8 +89,8 @@ type (
 		// 使用会员的余额抵扣
 		BalanceDiscount() error
 
-		// 使用会员积分抵扣
-		IntegralDiscount(integral int) error
+		// 使用会员积分抵扣,返回抵扣的金额及错误
+		IntegralDiscount(integral int) (float32, error)
 
 		// 系统支付金额
 		SystemPayment(fee float32) error
@@ -150,6 +150,8 @@ type (
 		Type int `db:"order_type"`
 		// 订单编号,0表示无
 		OrderId int `db:"order_id"`
+		// 支付单主题
+		Subject string `db:"subject"`
 		// 购买用户
 		BuyUser int `db:"buy_user"`
 		// 支付用户

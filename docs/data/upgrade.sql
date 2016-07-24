@@ -717,6 +717,10 @@ ALTER TABLE `flm`.`mm_trusted_info`
 ALTER TABLE `flm`.`pay_order`
   ADD COLUMN `order_type` INT NULL COMMENT '支付单的类型，如购物或其他' AFTER `vendor_id`;
 
+ALTER TABLE `flm`.`pay_order`
+  ADD COLUMN `subject` VARCHAR(45) NULL COMMENT '支付单标题' AFTER `order_id`;
+
+
 
 
 

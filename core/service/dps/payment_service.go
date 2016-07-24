@@ -47,6 +47,16 @@ func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
 	return o.Save()
 }
 
+// 积分抵扣支付单
+func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
+	integral int) (float32, error) {
+	o := p._rep.GetPaymentOrder(orderId)
+	if o == nil {
+		return 0, payment.ErrNoSuchPaymentOrder
+	}
+	return o.IntegralDiscount(integral)
+}
+
 // 创建支付单
 func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	outerNo string) error {
