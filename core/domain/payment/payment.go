@@ -51,7 +51,6 @@ func (p *paymentOrderImpl) fixFee() {
 
 // 更新订单状态, 需要注意,防止多次订单更新
 func (p *paymentOrderImpl) notifyPaymentFinish() {
-
 	err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
 	if err != nil {
 		err = errors.New("Notify payment finish error :" + err.Error())
@@ -59,17 +58,8 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	}
 	if p._value.OrderId > 0 {
 		err = p._orderManager.PaymentForOnlineTrade(p._value.OrderId)
-		if err != nil {
-			domain.HandleError(err, "domain")
-		}
+		domain.HandleError(err, "domain")
 	}
-
-	//todo:  更新订单状态
-
-	//p._value.PaymentSign = buyerType
-	//if p._value.Status == enum.ORDER_WAIT_PAYMENT {
-	//    p._value.Status = enum.ORDER_WAIT_CONFIRM
-	//}
 }
 
 // 优惠券抵扣
@@ -229,7 +219,12 @@ func (p *paymentOrderImpl) BindOrder(orderId int, tradeNo string) error {
 	}
 	return nil
 }
+
 func (p *paymentOrderImpl) Save() (int, error) {
+	return p.save()
+}
+
+func (p *paymentOrderImpl) save() (int, error) {
 	_, err := p.checkPaymentOk()
 	if err == nil {
 		unix := time.Now().Unix()
@@ -242,7 +237,7 @@ func (p *paymentOrderImpl) Save() (int, error) {
 	//保存支付单后,通知支付成功。只通知一次
 	if err == nil && p._firstFinishPayment {
 		p._firstFinishPayment = false
-		p.notifyPaymentFinish()
+		go p.notifyPaymentFinish()
 	}
 	return p.GetAggregateRootId(), err
 }

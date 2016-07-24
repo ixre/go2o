@@ -38,11 +38,8 @@ type Service interface {
 	// 服务名称
 	Name() string
 
-	// 设置APP上下文
-	SetApp(gof.App)
-
-	// 启动服务
-	Start()
+	// 启动服务,并传入APP上下文对象
+	Start(gof.App)
 
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
 	OrderObs(*order.SubOrder) bool
@@ -94,19 +91,19 @@ func Start() {
 		ticker.Stop()
 	}()
 
-	for i, s := range services { //运行自定义服务
+	//运行自定义服务
+	for i, s := range services {
 		log.Println("** [ Go2o][ Daemon] - (", i, ")", s.Name(), "daemon running")
-		s.SetApp(appCtx)
-		go s.Start()
+		go s.Start(appCtx)
 	}
 
-	startCronTab()
-	startTicker() //阻塞
-
+	startCronTab() // 运行计划任务
+	startTicker()  // 阻塞
 }
 
 func startTicker() {
-	for { //执行定时任务
+	// 执行定时任务
+	for {
 		select {
 		case <-ticker.C:
 			for _, f := range tickerInvokeFunc {
@@ -116,15 +113,13 @@ func startTicker() {
 	}
 }
 
+// 运行定时任务
 func startCronTab() {
-	//cron
-	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle) //个人金融结算,每天2点更新数据
-	//cronTab.AddFunc("1 * * * * *", func() { log.Println("grouting -", runtime.NumGoroutine(), runtime.NumCPU()) })
+	//个人金融结算,每天2点更新数据
+	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle)
+	//检查订单过期,5分钟检测一次
+	cronTab.AddFunc("5 * * * * *", detectOrderExpires)
 	cronTab.Start()
-
-	go func() {
-		personFinanceSettle()
-	}()
 }
 
 func recoverDaemon() {
@@ -138,90 +133,88 @@ type defaultService struct {
 }
 
 // 注册系统服务
-func (this *defaultService) init() {
+func (d *defaultService) init() {
 	if len(services) == 0 {
-		RegisterService(this)
+		RegisterService(d)
 	} else {
-		services = append([]Service{this}, services...)
+		services = append([]Service{d}, services...)
 	}
 }
 
 // 服务名称
-func (this *defaultService) Name() string {
+func (d *defaultService) Name() string {
 	return "sys"
 }
 
-// 设置APP上下文
-func (this *defaultService) SetApp(a gof.App) {
-	this.app = a
-}
-
 // 启动服务
-func (this *defaultService) Start() {
-	//AddTickerFunc(orderDaemon) //订单自动进行流程
-	AddTickerFunc(detectOrderExpires) //检查订单过期
+func (d *defaultService) Start(a gof.App) {
+	d.app = a
 	go superviseMemberUpdate(services)
 	go superviseOrder(services)
 	go supervisePaymentOrderFinish(services)
 	go startMailQueue(services)
+	go personFinanceSettle() //启动时结算
 }
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) OrderObs(o *order.SubOrder) bool {
+func (d *defaultService) OrderObs(o *order.SubOrder) bool {
 	defer Recover()
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	if this.app.Debug() {
-		this.app.Log().Println("---订单", o.OrderNo, "状态:", o.State)
+	if d.app.Debug() {
+		d.app.Log().Println("---订单", o.OrderNo, "状态:", o.State)
 	}
 
-	if this.sOrder {
-		if o.State == enum.ORDER_WAIT_CONFIRM { //确认订单
+	if d.sOrder {
+		if o.State == enum.ORDER_WAIT_CONFIRM {
+			//确认订单
 			dps.ShoppingService.ConfirmOrder(o.Id)
 		}
-		this.updateOrderExpires(conn, o)
+		d.updateOrderExpires(conn, o)
 	}
 	return true
 }
 
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) MemberObs(m *member.Member, create bool) bool {
+func (d *defaultService) MemberObs(m *member.Member, create bool) bool {
 	defer Recover()
-	if this.sMember {
+	if d.sMember {
 		//todo: 执行会员逻辑
 	}
 	return true
 }
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) bool {
-	if this.app.Debug() {
-		this.app.Log().Println("---支付单", order.TradeNo, "支付完成")
+func (d *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) bool {
+	if d.app.Debug() {
+		d.app.Log().Println("---支付单", order.TradeNo, "支付完成")
 	}
 	return true
 }
 
 //设置订单过期时间
-func (this *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
-	if o.State == order.StatAwaitingPayment { //订单刚创建时,设置过期时间
+func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
+	if o.State == order.StatAwaitingPayment {
+		//订单刚创建时,设置过期时间
 		ss := dps.BaseService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
-		conn.Do("SET", this.getExpiresKey(o), unix)
-	} else if o.State == enum.ORDER_WAIT_CONFIRM { //删除过期时间
-		conn.Do("DEL", this.getExpiresKey(o))
+		conn.Do("SET", d.getExpiresKey(o), unix)
+	} else if o.State == enum.ORDER_WAIT_CONFIRM {
+		//删除过期时间
+		conn.Do("DEL", d.getExpiresKey(o))
 	}
 }
-func (this *defaultService) getExpiresKey(o *order.SubOrder) string {
+func (d *defaultService) getExpiresKey(o *order.SubOrder) string {
 	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.Id)
 }
 
 // 处理邮件队列
 // 返回布尔值,如果返回false,则不继续执行
-func (this *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
+func (d *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
 	defer Recover()
-	if !this.sMail {
+	if !d.sMail {
 		handleMailQueue(list)
 	}
 	return true

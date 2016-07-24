@@ -9,6 +9,7 @@
 package fix
 
 import (
+	"go2o/core"
 	"go2o/core/variable"
 	"log"
 	"os"
@@ -48,7 +49,12 @@ func SignalNotify(c chan bool) {
 		switch sig {
 		case syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM: // 退出时
 			log.Println("[ OS][ TERM] - program has exit !")
+			dispose()
 			close(c)
 		}
 	}
+}
+
+func dispose() {
+	core.GetRedisPool().Close()
 }
