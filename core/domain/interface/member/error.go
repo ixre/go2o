@@ -88,6 +88,9 @@ var (
 	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
 		"err_balance_amount", "金额错误")
 
+	ErrIncorrectQuota *domain.DomainError = domain.NewDomainError(
+		"err_member_incorrent_quote", "数量错误")
+
 	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
 		"err_out_of_balance", "超出金额")
 

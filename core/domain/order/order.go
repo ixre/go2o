@@ -1294,8 +1294,8 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	integral := int(amount*conf.IntegralRateByOrder) + conf.IntegralBackExtra
 	// 赠送积分
 	if integral > 0 {
-		err = m.GetAccount().AddIntegral(ov.VendorId, enum.INTEGRAL_TYPE_ORDER,
-			integral, fmt.Sprintf("订单返积分%d个", integral))
+		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,
+			o._value.OrderNo, integral, "")
 		if err != nil {
 			return err
 		}

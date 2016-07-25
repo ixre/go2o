@@ -77,6 +77,17 @@ const (
 	StatusOK     = 1
 )
 
+const (
+	// 赠送
+	TypeIntegralPresent = 1
+	// 积分抵扣
+	TypeIntegralDiscount = 2
+	// 购物赠送
+	TypeIntegralShoppingPresent = 3
+	// 支付抵扣
+	TypeIntegralPaymentDiscount = 4
+)
+
 type (
 	IAccount interface {
 		// 获取领域对象编号
@@ -87,13 +98,6 @@ type (
 
 		// 保存
 		Save() (int, error)
-
-		//　保存积分记录
-		SaveIntegralLog(*IntegralLog) error
-
-		//　增加积分
-		// todo:merchantId 不需要
-		AddIntegral(merchantId int, backType int, integral int, log string) error
 
 		// 根据编号获取余额变动信息
 		GetBalanceInfo(id int) *BalanceInfo
@@ -125,8 +129,11 @@ type (
 		// 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount float32) error
 
-		// 支付单抵扣积分,integral为积分,exchangeFee
-		DiscountIntegral(tradeNo string, integral int, exchangeFee float32) error
+		//　增加积分
+		AddIntegral(logType int, outerNo string, value int, remark string) error
+
+		// 积分抵扣
+		IntegralDiscount(logType int, outerNo string, value int, remark string) error
 
 		// 退款
 		RequestBackBalance(backType int, title string, amount float32) error
@@ -230,12 +237,19 @@ type (
 
 	// 积分记录
 	IntegralLog struct {
-		Id         int    `db:"id" pk:"yes" auto:"yes"`
-		MerchantId int    `db:"mch_id"`
-		MemberId   int    `db:"member_id"`
-		Type       int    `db:"type"`
-		Integral   int    `db:"integral"`
-		Log        string `db:"log"`
-		RecordTime int64  `db:"record_time"`
+		// 编号
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
+		MemberId int `db:"member_id"`
+		// 类型
+		Type int `db:"type"`
+		// 关联的编号
+		OuterNo string `db:"outer_no"`
+		// 积分值
+		Value int `db:"value"`
+		// 备注
+		Remark string `db:"remark"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
 	}
 )
