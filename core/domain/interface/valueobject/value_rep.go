@@ -53,6 +53,8 @@ type (
 		MemberProfileNotCompletedMessage string
 		// 会员实名提醒信息
 		MemberNotTrustedMessage string
+		// 注册后赠送积分数量
+		PresentIntegralNumOfRegister int
 		// 其他扩展数据
 		Extend map[string]string
 	}

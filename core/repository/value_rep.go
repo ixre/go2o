@@ -134,7 +134,7 @@ func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 // 获取数据存储
 func (v *valueRep) GetRegistry() valueobject.Registry {
 	if v._globRegistry == nil {
-		v2 := defaultRegistry
+		v2 := DefaultRegistry
 		v._globRegistry = &v2
 		v._rstGob.Unmarshal(v._globRegistry)
 	}
