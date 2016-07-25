@@ -10,6 +10,7 @@ package fix
 
 import (
 	"go2o/core"
+	"go2o/core/repository"
 	"go2o/core/variable"
 	"log"
 	"os"
@@ -39,6 +40,9 @@ func CustomFix() {
 	variable.AliasMemberExt6 = "扩展6"
 	variable.MemberExt6Note = ""
 	variable.MemberExt6Show = false
+
+	// 注册后赠送10w积分
+	repository.DefaultRegistry.PresentIntegralNumOfRegister = 10000000
 }
 
 func SignalNotify(c chan bool) {

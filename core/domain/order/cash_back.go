@@ -21,6 +21,23 @@ import (
 	"time"
 )
 
+// 获取推荐数组
+func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
+	arr := make([]int, level)
+	i := 0
+	referId := memberId
+	for i <= level-1 {
+		rl := o._memberRep.GetRelation(referId)
+		if rl == nil || rl.RefereesId <= 0 {
+			break
+		}
+		arr[i] = rl.RefereesId
+		referId = arr[i]
+		i++
+	}
+	return arr
+}
+
 func (o *subOrderImpl) handleCashBack() error {
 	v := o._value
 	mch, err := o._mchRep.GetMerchant(v.VendorId)

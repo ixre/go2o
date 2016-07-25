@@ -14,13 +14,15 @@ import (
 )
 
 var (
-	defaultRegistry = valueobject.Registry{
+	DefaultRegistry = valueobject.Registry{
 		AlertMessageForOrderReceive: "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!",
 		// 会员中心首页模板文件名称
 		UCenterIndexTplFile:              "index.html",
 		MemberProfileNotCompletedMessage: "您的个人资料未完善,是否立即完善?",
 		MemberNotTrustedMessage:          "您尚未实名认证!",
-		Extend:                           map[string]string{},
+		// 注册后赠送积分数量
+		PresentIntegralNumOfRegister: 0,
+		Extend: map[string]string{},
 	}
 
 	// 默认平台设置

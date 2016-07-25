@@ -317,10 +317,21 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) 
 	}
 	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
 	id, err := m._rep.SaveMember(v)
-	if id != 0 {
+	if err == nil {
 		m._value.Id = id
+		go m.memberInit()
 	}
 	return id, err
+}
+
+// 会员初始化
+func (m *memberImpl) memberInit() {
+	conf := m._valRep.GetRegistry()
+	// 注册后赠送积分
+	if conf.PresentIntegralNumOfRegister > 0 {
+		m.GetAccount().AddIntegral(member.TypeIntegralPresent, "",
+			conf.PresentIntegralNumOfRegister, "新会员注册赠送积分")
+	}
 }
 
 // 创建邀请码
