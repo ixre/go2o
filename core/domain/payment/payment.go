@@ -173,14 +173,16 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int) (float32, error) {
 		return 0, payment.ErrCanNotUseIntegral
 	}
 	err := p.checkPayment()
-	if err == nil {
-		// 判断扣减金额,是否大于0
+	if err != nil {
+		return 0, err
+	}
+	// 判断扣减金额是否大于0
+	amount = p.mathIntegralFee(integral)
+	if amount > 0 {
 		acc := p._mmRep.GetMember(p._value.BuyUser).GetAccount()
-		if acc.GetValue().Integral < integral {
-			return 0, member.ErrAccountBalanceNotEnough
-		}
-		amount = p.mathIntegralFee(integral)
-		err = acc.DiscountIntegral(p.GetValue().TradeNo, integral, amount)
+		// 抵扣积分
+		err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
+			p.GetValue().TradeNo, integral, "")
 		if err == nil {
 			p._value.IntegralDiscount = amount
 			p.fixFee()

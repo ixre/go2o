@@ -47,31 +47,6 @@ func (a *accountImpl) Save() (int, error) {
 	return a._rep.SaveAccount(a._value)
 }
 
-// 保存积分记录
-func (a *accountImpl) SaveIntegralLog(l *member.IntegralLog) error {
-	l.MemberId = a._value.MemberId
-	return a._rep.SaveIntegralLog(l)
-}
-
-//　增加积分
-func (a *accountImpl) AddIntegral(merchantId int, backType int,
-	integral int, log string) error {
-	inLog := &member.IntegralLog{
-		MemberId:   a._value.MemberId,
-		Type:       backType,
-		Integral:   integral,
-		Log:        log,
-		RecordTime: time.Now().Unix(),
-	}
-
-	err := a._rep.SaveIntegralLog(inLog)
-	if err == nil {
-		a._value.Integral += integral
-		_, err = a.Save()
-	}
-	return err
-}
-
 // 根据编号获取余额变动信息
 func (a *accountImpl) GetBalanceInfo(id int) *member.BalanceInfo {
 	return a._rep.GetBalanceInfo(id)
@@ -257,21 +232,53 @@ func (a *accountImpl) PaymentDiscount(tradeNo string, amount float32) error {
 	return err
 }
 
-// 支付单抵扣积分,integral为积分,exchangeFee
-func (a *accountImpl) DiscountIntegral(tradeNo string, integral int, fee float32) error {
-	if a._value.Integral < integral {
+//　增加积分
+func (a *accountImpl) AddIntegral(logType int, outerNo string, value int, remark string) error {
+	if value <= 0 {
+		return member.ErrIncorrectQuota
+	}
+	if logType <= 0 {
+		logType = member.TypeIntegralPresent
+	}
+	l := &member.IntegralLog{
+		MemberId:   a._value.MemberId,
+		Type:       logType,
+		OuterNo:    outerNo,
+		Value:      value,
+		Remark:     remark,
+		CreateTime: time.Now().Unix(),
+	}
+	err := a._rep.SaveIntegralLog(l)
+	if err == nil {
+		a._value.Integral += value
+		_, err = a.Save()
+	}
+	return err
+}
+
+// 积分抵扣
+func (a *accountImpl) IntegralDiscount(logType int, outerNo string, value int, remark string) error {
+	if value <= 0 {
+		return member.ErrIncorrectQuota
+	}
+	if a._value.Integral < value {
 		return member.ErrNoSuchIntegral
 	}
-	inLog := &member.IntegralLog{
-		MemberId: a._value.MemberId,
-		Type:     member.TypeIntegralDiscount,
-		Integral: integral,
-		// Log:        logStr,
-		RecordTime: time.Now().Unix(),
+	if logType <= 0 {
+		logType = member.TypeIntegralDiscount
 	}
-	err := a._rep.SaveIntegralLog(inLog)
+
+	l := &member.IntegralLog{
+		MemberId:   a._value.MemberId,
+		Type:       member.TypeIntegralDiscount,
+		Value:      -value,
+		OuterNo:    outerNo,
+		Remark:     remark,
+		CreateTime: time.Now().Unix(),
+	}
+	err := a._rep.SaveIntegralLog(l)
 	if err == nil {
-		a._value.Integral -= integral
+		a._value.Integral -= value
 		_, err = a.Save()
 	}
 	return err

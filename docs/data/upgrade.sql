@@ -721,6 +721,20 @@ ALTER TABLE `flm`.`pay_order`
   ADD COLUMN `subject` VARCHAR(45) NULL COMMENT '支付单标题' AFTER `order_id`;
 
 
+ALTER TABLE `flm`.`mm_integral_log`
+  DROP COLUMN `mch_id`,
+  CHANGE COLUMN `member_id` `member_id` INT(11) NOT NULL ,
+  CHANGE COLUMN `type` `type` INT(11) NOT NULL ,
+  CHANGE COLUMN `integral` `value` INT(11) NOT NULL ,
+  CHANGE COLUMN `log` `remark` VARCHAR(100) NULL DEFAULT NULL ,
+  CHANGE COLUMN `record_time` `create_time` INT(11) NOT NULL ;
+
+ALTER TABLE `flm`.`mm_integral_log`
+  ADD COLUMN `outer_no` VARCHAR(45) NULL AFTER `type`;
+
+
+
+
 
 
 
