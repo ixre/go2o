@@ -46,9 +46,11 @@ var (
 	}
 
 	// 默认全局销售设置
-	defaultGlobNumberConf = valueobject.GlobNumberConf{
+	DefaultGlobNumberConf = valueobject.GlobNumberConf{
 		// 兑换1元所需要的积分
-		IntegralExchangeRate: 1000,
+		IntegralExchangeRate: 100,
+		// 抵扣1元所需要的积分
+		IntegralDiscountRate: 100,
 		// 消费1元产生的经验
 		ExperienceRateByOrder: 1,
 		// 消费1元产生的积分

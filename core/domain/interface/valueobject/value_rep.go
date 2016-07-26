@@ -118,7 +118,9 @@ type (
 	// 全局数值设置
 	GlobNumberConf struct {
 		// 兑换1元所需要的积分
-		IntegralExchangeRate int
+		IntegralExchangeRate float32
+		// 抵扣1元所需要的积分
+		IntegralDiscountRate float32
 		// 消费1元产生的经验
 		ExperienceRateByOrder float32
 		// 消费1元产生的积分

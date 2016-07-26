@@ -96,7 +96,7 @@ func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 // 获取全局系统销售设置
 func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
 	if vp._numConf == nil {
-		v := defaultGlobNumberConf
+		v := DefaultGlobNumberConf
 		vp._numConf = &v
 		vp._numGob.Unmarshal(vp._numConf)
 	}
