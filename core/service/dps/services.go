@@ -74,6 +74,7 @@ func handleError(err error) error {
 func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
+	sto := Context.Storage()
 
 	/** Repository **/
 
@@ -84,7 +85,7 @@ func Init(ctx gof.App) {
 	mssRep := repository.NewMssRep(db, notifyRep, valRep)
 	expressRep := repository.NewExpressRep(db, valRep)
 	shipRep := repository.NewShipmentRep(db, expressRep)
-	memberRep := repository.NewMemberRep(db, mssRep, valRep)
+	memberRep := repository.NewMemberRep(sto, db, mssRep, valRep)
 	itemRep := repository.NewItemRep(db)
 	tagSaleRep := repository.NewTagSaleRep(db)
 	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
