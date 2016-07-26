@@ -110,7 +110,7 @@ func (ms *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 根据编号获取会员等级信息
-func (ms *memberService) GetMemberLevelById(id int) *member.Level {
+func (ms *memberService) GetLevelById(id int) *member.Level {
 	return ms._rep.GetManager().LevelManager().GetLevelById(id)
 }
 
