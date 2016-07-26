@@ -56,7 +56,7 @@ func NewTradeNo(merchantId int) string {
 func GenerateInvitationCode() string {
 	var seed string = fmt.Sprintf("%d%s", time.Now().Unix(), util.RandString(6))
 	var md5 = crypto.Md5([]byte(seed))
-	return md5[8:16]
+	return md5[8:14]
 }
 
 // 获取新的验证码

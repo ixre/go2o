@@ -120,7 +120,9 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.BirthDay = v.BirthDay
 	dst.Im = v.Im
 	dst.Email = v.Email
-	dst.Phone = v.Phone
+	if dst.Phone != "" {
+		dst.Phone = v.Phone
+	}
 	dst.Name = v.Name
 	dst.Sex = v.Sex
 	dst.Remark = v.Remark
