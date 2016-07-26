@@ -159,15 +159,15 @@ func (p *paymentOrderImpl) BalanceDiscount() error {
 func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
 	if integral > 0 {
 		conf := p._valRep.GetGlobNumberConf()
-		if conf.IntegralExchangeRate > 0 {
-			return float32(integral) / float32(conf.IntegralExchangeRate)
+		if conf.IntegralDiscountRate > 0 {
+			return float32(integral) / conf.IntegralDiscountRate
 		}
 	}
 	return 0
 }
 
-// 积分抵扣,返回抵扣的金额及错误
-func (p *paymentOrderImpl) IntegralDiscount(integral int) (float32, error) {
+// 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
+func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (float32, error) {
 	var amount float32 = 0
 	if p._value.PaymentOpt&payment.OptIntegralDiscount == 0 {
 		return 0, payment.ErrCanNotUseIntegral
@@ -178,6 +178,12 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int) (float32, error) {
 	}
 	// 判断扣减金额是否大于0
 	amount = p.mathIntegralFee(integral)
+	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
+	if !ignoreAmount && amount > p._value.FinalFee {
+		conf := p._valRep.GetGlobNumberConf()
+		amount = p._value.FinalFee
+		integral = int(amount * conf.IntegralDiscountRate)
+	}
 	if amount > 0 {
 		acc := p._mmRep.GetMember(p._value.BuyUser).GetAccount()
 		// 抵扣积分

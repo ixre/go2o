@@ -27,8 +27,12 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 
 // 根据编号获取支付单
 func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
-	v := p._rep.GetPaymentOrder(id).GetValue()
-	return &v
+	po := p._rep.GetPaymentOrder(id)
+	if po != nil {
+		v := po.GetValue()
+		return &v
+	}
+	return nil
 }
 
 // 根据支付单号获取支付单
@@ -49,12 +53,12 @@ func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
 
 // 积分抵扣支付单
 func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
-	integral int) (float32, error) {
+	integral int, ignoreOut bool) (float32, error) {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
 		return 0, payment.ErrNoSuchPaymentOrder
 	}
-	return o.IntegralDiscount(integral)
+	return o.IntegralDiscount(integral, ignoreOut)
 }
 
 // 创建支付单

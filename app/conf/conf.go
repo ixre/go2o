@@ -6,19 +6,16 @@
  * description : 自定义调整
  * history :
  */
-package fix
+package conf
 
 import (
-	"go2o/core"
+	"github.com/jsix/gof"
 	"go2o/core/repository"
 	"go2o/core/variable"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
-func CustomFix() {
+// 参数参数自定义设置
+func Configure(app gof.App) {
 	variable.AliasMemberIM = "微信"
 	variable.MemberImNote = "填写微信后才可领取红包"
 	variable.MemberImRequired = true
@@ -41,24 +38,8 @@ func CustomFix() {
 	variable.MemberExt6Note = ""
 	variable.MemberExt6Show = false
 
-	// 注册后赠送10w积分
-	repository.DefaultRegistry.PresentIntegralNumOfRegister = 10000000
-}
-
-func SignalNotify(c chan bool) {
-	ch := make(chan os.Signal)
-	signal.Notify(ch, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGKILL)
-	for {
-		sig := <-ch
-		switch sig {
-		case syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM: // 退出时
-			log.Println("[ OS][ TERM] - program has exit !")
-			dispose()
-			close(c)
-		}
-	}
-}
-
-func dispose() {
-	core.GetRedisPool().Close()
+	// 注册后赠送100w积分
+	repository.DefaultRegistry.PresentIntegralNumOfRegister = 1000000
+	// 积分兑换率,兑换1元需要的积分
+	repository.DefaultGlobNumberConf.IntegralDiscountRate = 1
 }
