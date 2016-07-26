@@ -18,6 +18,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"strings"
 	"time"
+	"log"
 )
 
 //todo: ??? save 改为submit
@@ -187,6 +188,9 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 	if amount > 0 {
 		acc := p._mmRep.GetMember(p._value.BuyUser).GetAccount()
 		// 抵扣积分
+
+		log.Println("----",p._value.BuyUser,acc.GetValue().Integral,"discount:",integral)
+		log.Printf("-----%#v\n",acc.GetValue())
 		err = acc.IntegralDiscount(member.TypeIntegralPaymentDiscount,
 			p.GetValue().TradeNo, integral, "")
 		if err == nil {
