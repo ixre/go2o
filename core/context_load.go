@@ -57,11 +57,11 @@ func getDb(c *gof.Config, debug bool, l log.ILogger) db.Connector {
 		dbCharset,
 	)
 	connector := db.NewSimpleConnector(driver, connStr, l, 5000, debug)
-	OrmMapping(connector)
+	ormMapping(connector)
 	return connector
 }
 
-func OrmMapping(conn db.Connector) {
+func ormMapping(conn db.Connector) {
 	//table mapping
 	orm := conn.GetOrm()
 	orm.Mapping(valueobject.Area{}, "china_area")

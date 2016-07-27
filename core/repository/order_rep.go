@@ -12,9 +12,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
@@ -38,7 +38,7 @@ import (
 var _ order.IOrderRep = new(orderRepImpl)
 
 type orderRepImpl struct {
-	gof.Storage
+	Storage storage.Interface
 	db.Connector
 	_saleRep    sale.ISaleRep
 	_goodsRep   goods.IGoodsRep
@@ -55,7 +55,8 @@ type orderRepImpl struct {
 	_shipRep    shipment.IShipmentRep
 }
 
-func NewOrderRep(sto gof.Storage, c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
+func NewOrderRep(sto storage.Interface, c db.Connector,
+	mchRep merchant.IMerchantRep, payRep payment.IPaymentRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep, memRep member.IMemberRep,
 	deliverRep delivery.IDeliveryRep, expressRep express.IExpressRep,
@@ -69,7 +70,7 @@ func NewOrderRep(sto gof.Storage, c db.Connector, ptRep merchant.IMerchantRep, p
 		_promRep:    promRep,
 		_payRep:     payRep,
 		_memberRep:  memRep,
-		_mchRep:     ptRep,
+		_mchRep:     mchRep,
 		_cartRep:    cartRep,
 		_deliverRep: deliverRep,
 		_valRep:     valRep,
@@ -125,7 +126,7 @@ func (o *orderRepImpl) GetOrderById(id int) *order.Order {
 		if o.Connector.GetOrm().Get(id, e) != nil {
 			return nil
 		}
-		o.SetExpire(k, *e, DefaultCacheSeconds*10)
+		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
 	return e
 }
@@ -256,7 +257,7 @@ func (o *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
 		if o.Connector.GetOrm().Get(id, e) != nil {
 			return nil
 		}
-		o.SetExpire(k, *e, DefaultCacheSeconds*10)
+		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
 	return e
 }

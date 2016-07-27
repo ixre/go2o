@@ -10,6 +10,7 @@ package restapi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"go2o/core/variable"
 	"gopkg.in/labstack/echo.v1"
 	mw "gopkg.in/labstack/echo.v1/middleware"
@@ -23,7 +24,7 @@ var (
 	API_DOMAIN   string
 	API_HOST_CHK bool = false // 必须匹配Host
 	PathPrefix        = "/go2o_api_v1"
-	sto          gof.Storage
+	sto          storage.Interface
 	serve        *echo.Echo
 )
 

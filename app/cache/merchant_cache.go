@@ -10,7 +10,7 @@ package cache
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/service/dps"
 )
@@ -18,7 +18,7 @@ import (
 // 获取商户信息缓存
 func GetValueMerchantCache(merchantId int) *merchant.Merchant {
 	var v merchant.Merchant
-	var sto gof.Storage = GetKVS()
+	var sto storage.Interface = GetKVS()
 	var key string = GetValueMerchantCacheCK(merchantId)
 	if sto.Get(key, &v) != nil {
 		v2, err := dps.MerchantService.GetMerchant(merchantId)

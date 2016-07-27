@@ -10,9 +10,9 @@ package repository
 
 import (
 	"fmt"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -26,14 +26,14 @@ var _ payment.IPaymentRep = new(paymentRep)
 
 type paymentRep struct {
 	db.Connector
-	gof.Storage
+	Storage storage.Interface
 	*payImpl.PaymentRepBase
 	_memberRep member.IMemberRep
 	_valRep    valueobject.IValueRep
 	_orderRep  order.IOrderRep
 }
 
-func NewPaymentRep(sto gof.Storage, conn db.Connector, mmRep member.IMemberRep,
+func NewPaymentRep(sto storage.Interface, conn db.Connector, mmRep member.IMemberRep,
 	orderRep order.IOrderRep, valRep valueobject.IValueRep) payment.IPaymentRep {
 	return &paymentRep{
 		Storage:    sto,
@@ -65,11 +65,11 @@ func (p *paymentRep) GetPaymentOrder(
 	id int) payment.IPaymentOrder {
 	e := &payment.PaymentOrderBean{}
 	k := p.getPaymentOrderCk(id)
-	if p.Get(k, e) != nil {
+	if p.Storage.Get(k, e) != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
 			return nil
 		}
-		p.SetExpire(k, *e, DefaultCacheSeconds)
+		p.Storage.SetExpire(k, *e, DefaultCacheSeconds)
 	}
 	return p.CreatePaymentOrder(e)
 }
@@ -100,9 +100,9 @@ func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrderBean) (int, error) 
 	if err == nil {
 		v.Id = id
 		// 缓存订单
-		p.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
+		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
-		p.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
+		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 	}
 	return id, err
 }
