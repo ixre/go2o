@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	mux sync.Mutex
+	mux                 sync.Mutex
+	DefaultCacheSeconds int64 = 3600
 )
 
 // 处理错误

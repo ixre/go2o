@@ -11,6 +11,8 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core"
@@ -36,6 +38,7 @@ import (
 var _ order.IOrderRep = new(orderRepImpl)
 
 type orderRepImpl struct {
+	gof.Storage
 	db.Connector
 	_saleRep    sale.ISaleRep
 	_goodsRep   goods.IGoodsRep
@@ -52,13 +55,14 @@ type orderRepImpl struct {
 	_shipRep    shipment.IShipmentRep
 }
 
-func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
+func NewOrderRep(sto gof.Storage, c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPaymentRep,
 	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
 	promRep promotion.IPromotionRep, memRep member.IMemberRep,
 	deliverRep delivery.IDeliveryRep, expressRep express.IExpressRep,
 	shipRep shipment.IShipmentRep,
 	valRep valueobject.IValueRep) *orderRepImpl {
 	return &orderRepImpl{
+		Storage:     sto,
 		Connector:   c,
 		_saleRep:    saleRep,
 		_goodsRep:   goodsRep,
@@ -74,27 +78,27 @@ func NewOrderRep(c db.Connector, ptRep merchant.IMerchantRep, payRep payment.IPa
 	}
 }
 
-func (this *orderRepImpl) SetPaymentRep(payRep payment.IPaymentRep) {
-	this._payRep = payRep
+func (o *orderRepImpl) SetPaymentRep(payRep payment.IPaymentRep) {
+	o._payRep = payRep
 }
 
-func (this *orderRepImpl) Manager() order.IOrderManager {
-	if this._saleRep == nil {
+func (o *orderRepImpl) Manager() order.IOrderManager {
+	if o._saleRep == nil {
 		panic("saleRep uninitialize!")
 	}
-	if this._manager == nil {
-		this._manager = orderImpl.NewOrderManager(this._cartRep, this._mchRep,
-			this, this._payRep, this._saleRep, this._goodsRep, this._promRep,
-			this._memberRep, this._deliverRep, this._expressRep, this._shipRep,
-			this._valRep)
+	if o._manager == nil {
+		o._manager = orderImpl.NewOrderManager(o._cartRep, o._mchRep,
+			o, o._payRep, o._saleRep, o._goodsRep, o._promRep,
+			o._memberRep, o._deliverRep, o._expressRep, o._shipRep,
+			o._valRep)
 	}
-	return this._manager
+	return o._manager
 }
 
 // 获取可用的订单号
-func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
+func (o *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 	//todo:实际应用需要预先生成订单号
-	d := this.Connector
+	d := o.Connector
 	var order_no string
 	for {
 		order_no = domain.NewOrderNo(vendorId, "")
@@ -108,33 +112,37 @@ func (this *orderRepImpl) GetFreeOrderNo(vendorId int) string {
 }
 
 //　保存订单优惠券绑定
-func (this *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
-	_, _, err := this.Connector.GetOrm().Save(nil, val)
+func (o *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
+	_, _, err := o.Connector.GetOrm().Save(nil, val)
 	return err
 }
 
 // 根据编号获取订单
-func (this *orderRepImpl) GetOrderById(id int) *order.Order {
-	var v = new(order.Order)
-	if err := this.Connector.GetOrm().Get(id, v); err == nil {
-		return v
+func (o *orderRepImpl) GetOrderById(id int) *order.Order {
+	e := &order.Order{}
+	k := o.getOrderCk(id, false)
+	if o.Storage.Get(k, e) != nil {
+		if o.Connector.GetOrm().Get(id, e) != nil {
+			return nil
+		}
+		o.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
-	return nil
+	return e
 }
 
 // 根据订单号获取订单
-func (this *orderRepImpl) GetValueOrderByNo(orderNo string) *order.Order {
-	e := new(order.Order)
-	if this.Connector.GetOrm().GetBy(e, "order_no=?", orderNo) == nil {
-		return e
+func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.Order {
+	id := o.GetOrderId(orderNo, false)
+	if id > 0 {
+		return o.GetOrderById(id)
 	}
 	return nil
 }
 
 // 获取等待处理的订单
-func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.Order, error) {
+func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.Order, error) {
 	dst := []*order.Order{}
-	err := this.Connector.GetOrm().Select(&dst,
+	err := o.Connector.GetOrm().Select(&dst,
 		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+
 			enum.ORDER_SETUP_STATE+")", vendorId)
 	if err != nil {
@@ -144,15 +152,15 @@ func (this *orderRepImpl) GetWaitingSetupOrders(vendorId int) ([]*order.Order, e
 }
 
 // 保存订单日志
-func (this *orderRepImpl) SaveSubOrderLog(v *order.OrderLog) error {
-	_, _, err := this.Connector.GetOrm().Save(nil, v)
+func (o *orderRepImpl) SaveSubOrderLog(v *order.OrderLog) error {
+	_, _, err := o.Connector.GetOrm().Save(nil, v)
 	return err
 }
 
 // 获取订单的促销绑定
-func (this *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderPromotionBind {
+func (o *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderPromotionBind {
 	var arr []*order.OrderPromotionBind = []*order.OrderPromotionBind{}
-	err := this.Connector.GetOrm().Select(&arr, "order_no=?", orderNo)
+	err := o.Connector.GetOrm().Select(&arr, "order_no=?", orderNo)
 	if err == nil {
 		return arr
 	}
@@ -160,9 +168,9 @@ func (this *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderP
 }
 
 // 保存订单的促销绑定
-func (this *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (int, error) {
+func (o *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (int, error) {
 	var err error
-	var orm = this.Connector.GetOrm()
+	var orm = o.Connector.GetOrm()
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
@@ -174,56 +182,90 @@ func (this *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind)
 }
 
 // 获取订单项
-func (this *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
+func (o *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
 	var items = []*order.OrderItem{}
-	this.Connector.GetOrm().Select(&items, "order_id=?", orderId)
+	o.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items
 }
 
 // 根据父订单编号获取购买的商品项
-func (this *orderRepImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
+func (o *orderRepImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
 	var items = []*order.OrderItem{}
-	this.Connector.GetOrm().SelectByQuery(&items,
+	o.Connector.GetOrm().SelectByQuery(&items,
 		"order_id IN (SELECT id FROM sale_sub_order WHERE parent_order=?)", orderId)
 	return items
 }
 
-func (this *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
-	return orm.Save(this.GetOrm(), v, v.Id)
+func (o *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
+	id, err := orm.Save(o.GetOrm(), v, v.Id)
+	if err == nil {
+		v.Id = id
+		// 缓存
+		o.Storage.SetExpire(o.getOrderCk(v.Id, false), *v, DefaultCacheSeconds*10)
+		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.Id)
+	}
+	return id, err
 }
 
 // 获取订单的所有子订单
-func (this *orderRepImpl) GetSubOrdersByParentId(orderId int) []*order.SubOrder {
+func (o *orderRepImpl) GetSubOrdersByParentId(orderId int) []*order.SubOrder {
 	list := []*order.SubOrder{}
-	this.GetOrm().Select(&list, "parent_order=?", orderId)
+	o.GetOrm().Select(&list, "parent_order=?", orderId)
 	return list
 }
 
-// 获取订单编号
-func (this *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int {
-	id := 0
+// 获取缓存订单的Key
+func (o *orderRepImpl) getOrderCk(id int, subOrder bool) string {
 	if subOrder {
-		this.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
-	} else {
-		this.Connector.ExecScalar("SELECT id FROM sale_order where order_no=?", &id, orderNo)
+		return fmt.Sprintf("go2o:rep:order:s_%d", id)
+	}
+	return fmt.Sprintf("go2o:rep:order:%d", id)
+}
+
+// 获取缓存订单编号的Key
+func (o *orderRepImpl) getOrderCkByNo(orderNo string, subOrder bool) string {
+	if subOrder {
+		return fmt.Sprintf("go2o:rep:order:s_%s", orderNo)
+	}
+	return fmt.Sprintf("go2o:rep:order:%s", orderNo)
+}
+
+// 获取订单编号
+func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int {
+	id := 0
+	k := o.getOrderCkByNo(orderNo, subOrder)
+	id, err := o.Storage.GetInt(k)
+	if err != nil {
+		if subOrder {
+			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
+		} else {
+			o.Connector.ExecScalar("SELECT id FROM sale_order where order_no=?", &id, orderNo)
+		}
+		if id > 0 {
+			o.Storage.Set(k, id)
+		}
 	}
 	return id
 }
 
 // 获取子订单
-func (this *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
+func (o *orderRepImpl) GetSubOrder(id int) *order.SubOrder {
 	e := &order.SubOrder{}
-	if this.GetOrm().Get(id, e) == nil {
-		return e
+	k := o.getOrderCk(id, true)
+	if o.Storage.Get(k, e) != nil {
+		if o.Connector.GetOrm().Get(id, e) != nil {
+			return nil
+		}
+		o.SetExpire(k, *e, DefaultCacheSeconds*10)
 	}
-	return nil
+	return e
 }
 
 // 根据订单号获取子订单
-func (this *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
-	e := &order.SubOrder{}
-	if this.GetOrm().GetBy(e, "order_no=?", orderNo) == nil {
-		return e
+func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
+	id := o.GetOrderId(orderNo, true)
+	if id > 0 {
+		return o.GetSubOrder(id)
 	}
 	return nil
 }
@@ -232,16 +274,18 @@ func (this *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
 func (o *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
-	d := o.Connector
-
 	if v.Id <= 0 {
 		statusIsChanged = true
 	} else {
-		var oriStatus int
-		d.ExecScalar("SELECT state FROM sale_sub_order WHERE id=?", &oriStatus, v.Id)
-		statusIsChanged = oriStatus != v.State // 业务状态是否改变
+		origin := o.GetSubOrder(v.Id)
+		statusIsChanged = origin.State != v.State // 业务状态是否改变
 	}
 	v.Id, err = orm.Save(o.GetOrm(), v, v.Id)
+
+	// 缓存订单号
+	o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.Id)
+	// 缓存订单
+	o.Storage.SetExpire(o.getOrderCk(v.Id, true), *v, DefaultCacheSeconds*10)
 
 	//如果业务状态已经发生改变,则提交到队列
 	if statusIsChanged && v.Id > 0 {
@@ -254,15 +298,15 @@ func (o *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 }
 
 // 保存子订单的商品项,并返回编号和错误
-func (this *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int, error) {
+func (o *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int, error) {
 	v.OrderId = subOrderId
-	return orm.Save(this.GetOrm(), v, v.Id)
+	return orm.Save(o.GetOrm(), v, v.Id)
 }
 
 // 获取订单的操作记录
-func (this *orderRepImpl) GetSubOrderLogs(orderId int) []*order.OrderLog {
+func (o *orderRepImpl) GetSubOrderLogs(orderId int) []*order.OrderLog {
 	list := []*order.OrderLog{}
-	this.GetOrm().Select(&list, "order_id=?", orderId)
+	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
 }
 
