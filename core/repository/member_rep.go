@@ -23,7 +23,6 @@ import (
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
 	"go2o/core/variable"
-	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -68,7 +67,7 @@ func (m *MemberRep) GetManager() member.IMemberManager {
 func (m *MemberRep) GetProfile(memberId int) *member.Profile {
 	e := &member.Profile{}
 	key := m.getProfileCk(memberId)
-	if m.Storage.Get(key, e) != nil {
+	if m.Storage.Get(key, &e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			e.MemberId = memberId
 		} else {
@@ -82,7 +81,7 @@ func (m *MemberRep) GetProfile(memberId int) *member.Profile {
 func (m *MemberRep) SaveProfile(v *member.Profile) error {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
-		go m.Storage.Set(m.getProfileCk(v.MemberId), *v)
+		err = m.Storage.Set(m.getProfileCk(v.MemberId), *v)
 	}
 	return err
 }
@@ -205,14 +204,10 @@ func (m *MemberRep) getTrustCk(memberId int) string {
 func (m *MemberRep) GetMember(memberId int) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
-	if m.Storage.Get(key, e) != nil {
+	if m.Storage.Get(key, &e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
-		log.Printf("log-from db %#v\n", e)
-		m.Storage.Set(key, *e)
-	} else {
-		log.Printf("log-from redis %#v\n", e)
 	}
 	return m.CreateMember(e)
 }
@@ -232,12 +227,13 @@ func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
 		_, _, err := m.Connector.GetOrm().Save(v.Id, v)
 		if err == nil {
 			// 存储到缓存中
-			m.Storage.Set(m.getMemberCk(v.Id), *v)
+			err = m.Storage.Set(m.getMemberCk(v.Id), *v)
 			// 存储到队列
 			rc.Do("RPUSH", variable.KvMemberUpdateQueue, fmt.Sprintf("%d-update", v.Id))
 		}
 		return v.Id, err
 	}
+
 	return m.createMember(v)
 }
 
@@ -370,7 +366,7 @@ func (m *MemberRep) GetMemberLatestUpdateTime(id int) int64 {
 func (m *MemberRep) GetAccount(memberId int) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
-	if m.Storage.Get(key, e) != nil {
+	if m.Storage.Get(key, &e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
@@ -383,8 +379,8 @@ func (m *MemberRep) GetAccount(memberId int) *member.Account {
 func (m *MemberRep) SaveAccount(v *member.Account) (int, error) {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
-		go m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
-		go m.Storage.Set(m.getAccountCk(v.MemberId), *v)
+		m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
+		m.Storage.Set(m.getAccountCk(v.MemberId), *v)
 	}
 	return v.MemberId, err
 }
@@ -433,7 +429,7 @@ func (m *MemberRep) getRelationCk(memberId int) string {
 func (m *MemberRep) GetRelation(memberId int) *member.Relation {
 	e := &member.Relation{}
 	key := m.getRelationCk(memberId)
-	if m.Storage.Get(key, e) != nil {
+	if m.Storage.Get(key, &e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
@@ -479,7 +475,7 @@ func (m *MemberRep) CheckPhoneBind(phone string, memberId int) bool {
 func (m *MemberRep) SaveRelation(v *member.Relation) error {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
-		go m.Storage.Set(m.getRelationCk(v.MemberId), *v)
+		err = m.Storage.Set(m.getRelationCk(v.MemberId), *v)
 	}
 	return err
 }
