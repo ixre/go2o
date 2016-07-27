@@ -65,7 +65,7 @@ func (p *paymentRep) GetPaymentOrder(
 	id int) payment.IPaymentOrder {
 	e := &payment.PaymentOrderBean{}
 	k := p.getPaymentOrderCk(id)
-	if p.Storage.Get(k, e) != nil {
+	if p.Storage.Get(k, &e) != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
 			return nil
 		}
