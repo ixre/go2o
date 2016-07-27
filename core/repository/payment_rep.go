@@ -9,7 +9,10 @@
 package repository
 
 import (
+	"fmt"
+	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -23,40 +26,22 @@ var _ payment.IPaymentRep = new(paymentRep)
 
 type paymentRep struct {
 	db.Connector
+	gof.Storage
 	*payImpl.PaymentRepBase
 	_memberRep member.IMemberRep
 	_valRep    valueobject.IValueRep
 	_orderRep  order.IOrderRep
 }
 
-func NewPaymentRep(conn db.Connector, mmRep member.IMemberRep,
+func NewPaymentRep(sto gof.Storage, conn db.Connector, mmRep member.IMemberRep,
 	orderRep order.IOrderRep, valRep valueobject.IValueRep) payment.IPaymentRep {
 	return &paymentRep{
+		Storage:    sto,
 		Connector:  conn,
 		_memberRep: mmRep,
 		_valRep:    valRep,
 		_orderRep:  orderRep,
 	}
-}
-
-// 根据编号获取支付单
-func (this *paymentRep) GetPaymentOrder(
-	id int) payment.IPaymentOrder {
-	e := &payment.PaymentOrderBean{}
-	if this.Connector.GetOrm().Get(id, e) == nil {
-		return this.CreatePaymentOrder(e)
-	}
-	return nil
-}
-
-// 根据支付单号获取支付单
-func (this *paymentRep) GetPaymentOrderByNo(
-	paymentNo string) payment.IPaymentOrder {
-	e := &payment.PaymentOrderBean{}
-	if this.Connector.GetOrm().GetBy(e, "trade_no=?", paymentNo) == nil {
-		return this.CreatePaymentOrder(e)
-	}
-	return nil
 }
 
 // 根据订单号获取支付单
@@ -68,25 +53,58 @@ func (p *paymentRep) GetPaymentBySalesOrderId(orderId int) payment.IPaymentOrder
 	return nil
 }
 
+func (p *paymentRep) getPaymentOrderCk(id int) string {
+	return fmt.Sprintf("go2o:rep:pay:order:%d", id)
+}
+func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
+	return fmt.Sprintf("go2o:rep:pay:order:%s", orderNO)
+}
+
+// 根据编号获取支付单
+func (p *paymentRep) GetPaymentOrder(
+	id int) payment.IPaymentOrder {
+	e := &payment.PaymentOrderBean{}
+	k := p.getPaymentOrderCk(id)
+	if p.Get(k, e) != nil {
+		if p.Connector.GetOrm().Get(id, e) != nil {
+			return nil
+		}
+		p.SetExpire(k, *e, DefaultCacheSeconds)
+	}
+	return p.CreatePaymentOrder(e)
+}
+
+// 根据支付单号获取支付单
+func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder {
+	k := p.getPaymentOrderCkByNo(paymentNo)
+	id, err := p.Storage.GetInt(k)
+	if err != nil {
+		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
+	}
+	if id > 0 {
+		return p.GetPaymentOrder(id)
+	}
+	return nil
+}
+
 // 创建支付单
-func (this *paymentRep) CreatePaymentOrder(
-	p *payment.PaymentOrderBean) payment.IPaymentOrder {
-	return this.PaymentRepBase.CreatePaymentOrder(p, this,
-		this._memberRep, this._orderRep.Manager(), this._valRep)
+func (p *paymentRep) CreatePaymentOrder(
+	o *payment.PaymentOrderBean) payment.IPaymentOrder {
+	return p.PaymentRepBase.CreatePaymentOrder(o, p,
+		p._memberRep, p._orderRep.Manager(), p._valRep)
 }
 
 // 保存支付单
-func (this *paymentRep) SavePaymentOrder(
-	v *payment.PaymentOrderBean) (id int, err error) {
-	orm := this.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		var id64 int64
-		_, id64, err = orm.Save(nil, v)
-		v.Id = int(id64)
+func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrderBean) (int, error) {
+	id, err := orm.Save(p.GetOrm(), v, v.Id)
+	if err == nil {
+		v.Id = id
+		// 缓存订单
+		p.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
+		// 缓存订单号与订单的关系
+		p.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
 	}
-	return v.Id, err
+	return id, err
 }
 
 // 通知支付单完成
