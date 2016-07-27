@@ -80,11 +80,12 @@ func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder
 	id, err := p.Storage.GetInt(k)
 	if err != nil {
 		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
+		if id == 0 {
+			return nil
+		}
+		p.Storage.SetExpire(k, id, DefaultCacheSeconds*10)
 	}
-	if id > 0 {
-		return p.GetPaymentOrder(id)
-	}
-	return nil
+	return p.GetPaymentOrder(id)
 }
 
 // 创建支付单

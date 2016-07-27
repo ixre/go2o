@@ -208,6 +208,7 @@ func (m *MemberRep) GetMember(memberId int) member.IMember {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
+		m.Storage.Set(key, *e)
 	}
 	return m.CreateMember(e)
 }
