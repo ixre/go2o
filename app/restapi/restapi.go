@@ -10,6 +10,7 @@ package restapi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/storage"
 	"go2o/app/cache"
 	"go2o/app/util"
 	"go2o/core/domain/interface/merchant"
@@ -19,7 +20,7 @@ import (
 )
 
 // 获取存储
-func GetStorage() gof.Storage {
+func GetStorage() storage.Interface {
 	return sto
 }
 

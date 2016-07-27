@@ -12,6 +12,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 )
@@ -29,7 +30,7 @@ type MainApp struct {
 	_debugMode    bool
 	_template     *gof.Template
 	_logger       log.ILogger
-	_storage      gof.Storage
+	_storage      storage.Interface
 }
 
 func NewMainApp(confPath string) *MainApp {
@@ -38,71 +39,72 @@ func NewMainApp(confPath string) *MainApp {
 	}
 }
 
-func (this *MainApp) Db() db.Connector {
-	if this._dbConnector == nil {
-		this._dbConnector = getDb(this.Config(), this._debugMode, this.Log())
+func (a *MainApp) Db() db.Connector {
+	if a._dbConnector == nil {
+		a._dbConnector = getDb(a.Config(), a._debugMode, a.Log())
+		orm.CacheProxy(a._dbConnector.GetOrm(), a.Storage())
 	}
-	return this._dbConnector
+	return a._dbConnector
 }
 
-func (this *MainApp) Storage() gof.Storage {
-	if this._storage == nil {
-		this._storage = storage.NewRedisStorage(this.Redis())
+func (a *MainApp) Storage() storage.Interface {
+	if a._storage == nil {
+		a._storage = storage.NewRedisStorage(a.Redis())
 	}
-	return this._storage
+	return a._storage
 }
 
-func (this *MainApp) Template() *gof.Template {
-	if this._template == nil {
-		this._template = initTemplate(this.Config())
+func (a *MainApp) Template() *gof.Template {
+	if a._template == nil {
+		a._template = initTemplate(a.Config())
 	}
-	return this._template
+	return a._template
 }
 
-func (this *MainApp) Config() *gof.Config {
-	if this._config == nil {
-		if cfg, err := gof.LoadConfig(this._confFilePath); err == nil {
-			this._config = cfg
+func (a *MainApp) Config() *gof.Config {
+	if a._config == nil {
+		if cfg, err := gof.LoadConfig(a._confFilePath); err == nil {
+			a._config = cfg
 			cfg.Set("exp_fee_bit", float64(1))
 		} else {
 			log.Fatalln(err)
 		}
 	}
-	return this._config
+	return a._config
 }
 
-func (this *MainApp) Source() interface{} {
-	return this
+func (a *MainApp) Source() interface{} {
+	return a
 }
 
-func (this *MainApp) Debug() bool {
-	return this._debugMode
+func (a *MainApp) Debug() bool {
+	return a._debugMode
 }
 
-func (this *MainApp) Log() log.ILogger {
-	if this._logger == nil {
+func (a *MainApp) Log() log.ILogger {
+	if a._logger == nil {
 		var flag int = 0
-		if this._debugMode {
+		if a._debugMode {
 			flag = log.LOpen | log.LESource | log.LStdFlags
 		}
-		this._logger = log.NewLogger(nil, " O2O", flag)
+		a._logger = log.NewLogger(nil, " O2O", flag)
 	}
-	return this._logger
+	return a._logger
 }
 
-func (this *MainApp) Redis() *redis.Pool {
-	if this._redis == nil {
-		this._redis = CreateRedisPool(this.Config())
+func (a *MainApp) Redis() *redis.Pool {
+	if a._redis == nil {
+		a._redis = CreateRedisPool(a.Config())
 	}
-	return this._redis
+	return a._redis
 }
 
-func (this *MainApp) Init(debug, trace bool) bool {
-	this._debugMode = debug
+func (a *MainApp) Init(debug, trace bool) bool {
+	a._debugMode = debug
 
 	if trace {
-		this.Db().GetOrm().SetTrace(this._debugMode)
+		a.Db().GetOrm().SetTrace(a._debugMode)
 	}
-	this.Loaded = true
+	a.Loaded = true
 	return true
 }

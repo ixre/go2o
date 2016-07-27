@@ -11,6 +11,7 @@ package query
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/storage"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
 	"regexp"
@@ -18,7 +19,7 @@ import (
 
 type MerchantQuery struct {
 	db.Connector
-	gof.Storage
+	Storage storage.Interface
 }
 
 func NewMerchantQuery(c gof.App) *MerchantQuery {
@@ -41,7 +42,7 @@ func getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商户编号
-func (this *MerchantQuery) QueryMerchantIdByHost(host string) int {
+func (m *MerchantQuery) QueryMerchantIdByHost(host string) int {
 	//  $ 获取合作商ID
 	// $ hostname : 域名
 	// *.wdian.net  二级域名
@@ -54,12 +55,12 @@ func (this *MerchantQuery) QueryMerchantIdByHost(host string) int {
 	if reg.MatchString(host) {
 		matches := reg.FindAllStringSubmatch(host, 1)
 		usr := matches[0][1]
-		err = this.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE usr=?`, &merchantId, usr)
+		err = m.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE usr=?`, &merchantId, usr)
 	} else {
-		err = this.Connector.ExecScalar(
+		err = m.Connector.ExecScalar(
 			`SELECT id FROM mch_merchant INNER JOIN pt_siteconf
-					 ON pt_siteconf.merchant_id = mch_merchant.id
-					 WHERE host=?`, &merchantId, host)
+                     ON pt_siteconf.merchant_id = mch_merchant.id
+                     WHERE host=?`, &merchantId, host)
 	}
 	if err != nil {
 		gof.CurrentApp.Log().Error(err)
@@ -68,8 +69,8 @@ func (this *MerchantQuery) QueryMerchantIdByHost(host string) int {
 }
 
 // 验证用户密码并返回编号
-func (this *MerchantQuery) Verify(usr, pwd string) int {
+func (m *MerchantQuery) Verify(usr, pwd string) int {
 	var id int = -1
-	this.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE usr=? AND pwd=?", &id, usr, pwd)
+	m.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE usr=? AND pwd=?", &id, usr, pwd)
 	return id
 }

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -36,14 +37,14 @@ var (
 )
 
 type MemberRep struct {
-	gof.Storage
+	Storage storage.Interface
 	db.Connector
 	_partnerRep merchant.IMerchantRep
 	_valRep     valueobject.IValueRep
 	_mssRep     mss.IMssRep
 }
 
-func NewMemberRep(sto gof.Storage, c db.Connector, mssRep mss.IMssRep,
+func NewMemberRep(sto storage.Interface, c db.Connector, mssRep mss.IMssRep,
 	valRep valueobject.IValueRep) *MemberRep {
 	return &MemberRep{
 		Storage:   sto,
