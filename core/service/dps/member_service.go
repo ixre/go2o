@@ -265,7 +265,7 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 	return -1, err
 }
 
-func (ms *memberService) GetLevel(memberId int) *member.Level {
+func (ms *memberService) GetMemberLevel(memberId int) *member.Level {
 	if m := ms._rep.GetMember(memberId); m != nil {
 		return m.GetLevel()
 	}
