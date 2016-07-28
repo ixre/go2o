@@ -199,16 +199,22 @@ func (m *MemberRep) getProfileCk(memberId int) string {
 func (m *MemberRep) getTrustCk(memberId int) string {
 	return fmt.Sprintf("go2o:rep:mm-trust:%d", memberId)
 }
+func (m *MemberRep) getGlobLevelsCk() string {
+	return "go2o:rep:mm-lv"
+}
 
 // 获取会员
 func (m *MemberRep) GetMember(memberId int) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
-	if m.Storage.Get(key, &e) != nil {
+	if err := m.Storage.Get(key, &e); err != nil {
+		//log.Println("-- mm",err)
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
 		m.Storage.Set(key, *e)
+	} else {
+		//log.Println(fmt.Sprintf("--- member: %d > %#v",memberId,e))
 	}
 	return m.CreateMember(e)
 }
@@ -226,6 +232,7 @@ func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
 
 		// 保存会员信息
 		_, _, err := m.Connector.GetOrm().Save(v.Id, v)
+
 		if err == nil {
 			// 存储到缓存中
 			err = m.Storage.Set(m.getMemberCk(v.Id), *v)
@@ -372,6 +379,8 @@ func (m *MemberRep) GetAccount(memberId int) *member.Account {
 			return nil
 		}
 		m.Storage.Set(key, *e)
+	} else {
+		//log.Println(fmt.Sprintf("--- account: %d > %#v",memberId,e))
 	}
 	return e
 }
@@ -430,7 +439,7 @@ func (m *MemberRep) getRelationCk(memberId int) string {
 func (m *MemberRep) GetRelation(memberId int) *member.Relation {
 	e := &member.Relation{}
 	key := m.getRelationCk(memberId)
-	if m.Storage.Get(key, &e) != nil {
+	if m.Storage.Get(key, e) != nil {
 		if m.Connector.GetOrm().Get(memberId, e) != nil {
 			return nil
 		}
