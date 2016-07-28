@@ -9,7 +9,6 @@
 package payment
 
 import (
-	"errors"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
@@ -51,13 +50,18 @@ func (p *paymentOrderImpl) fixFee() {
 
 // 更新订单状态, 需要注意,防止多次订单更新
 func (p *paymentOrderImpl) notifyPaymentFinish() {
-	err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
-	if err != nil {
-		err = errors.New("Notify payment finish error :" + err.Error())
-		domain.HandleError(err, "domain")
+	if p.GetAggregateRootId() <= 0 {
+		panic(payment.ErrNoSuchPaymentOrder)
 	}
+	//err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
+	//if err != nil {
+	//	err = errors.New("Notify payment finish error :" + err.Error())
+	//	domain.HandleError(err, "domain")
+	//}
+
+	// 通知订单支付完成
 	if p._value.OrderId > 0 {
-		err = p._orderManager.PaymentForOnlineTrade(p._value.OrderId)
+		err := p._orderManager.PaymentForOnlineTrade(p._value.OrderId)
 		domain.HandleError(err, "domain")
 	}
 }
@@ -90,6 +94,10 @@ func (p *paymentOrderImpl) checkPayment() error {
 		return payment.ErrPaymentNotSave
 	}
 	switch p._value.State {
+	case payment.StateAwaitingPayment:
+		if p._value.FinalFee == 0 {
+			return payment.ErrFinalFee
+		}
 	case payment.StateFinishPayment:
 		return payment.ErrOrderPayed
 	case payment.StateHasCancel:
@@ -169,7 +177,7 @@ func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
 func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (float32, error) {
 	var amount float32 = 0
-	if p._value.PaymentOpt&payment.OptIntegralDiscount == 0 {
+	if p._value.PaymentOpt&payment.OptIntegralDiscount != payment.OptIntegralDiscount {
 		return 0, payment.ErrCanNotUseIntegral
 	}
 	err := p.checkPayment()
@@ -184,6 +192,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 		amount = p._value.FinalFee
 		integral = int(amount * conf.IntegralDiscountRate)
 	}
+
 	if amount > 0 {
 		acc := p._mmRep.GetMember(p._value.BuyUser).GetAccount()
 		// 抵扣积分

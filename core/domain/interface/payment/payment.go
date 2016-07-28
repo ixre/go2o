@@ -48,6 +48,9 @@ var (
 	ErrPaymentNotSave *domain.DomainError = domain.NewDomainError(
 		"err_payment_not_save", "支付单需保存后才能执行操作")
 
+	ErrFinalFee *domain.DomainError = domain.NewDomainError(
+		"err_final_fee", "支付单金额有误")
+
 	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
 		"err_payment_order_payed", "订单已支付")
 
@@ -135,7 +138,7 @@ type (
 		SavePaymentOrder(v *PaymentOrderBean) (int, error)
 
 		// 通知支付单完成
-		NotifyPaymentFinish(paymentOrderId int) error
+		//NotifyPaymentFinish(paymentOrderId int) error
 	}
 
 	// 支付单实体

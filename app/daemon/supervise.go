@@ -27,10 +27,10 @@ func superviseOrder(ss []Service) {
 	sv := dps.ShoppingService
 
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
+		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
-			id, err = strconv.Atoi(string(arr[1].([]byte)))
+			id, err = strconv.Atoi(string(arr[1]))
 			if err == nil {
 				//通知订单更新
 				if order := sv.GetSubOrder(id); order != nil {
@@ -55,11 +55,11 @@ func superviseMemberUpdate(ss []Service) {
 	defer conn.Close()
 	var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
+		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvMemberUpdateQueue, 0))
 		if err == nil {
 			//通知会员修改,格式如: 1-[create|update]
-			s := string(arr[1].([]byte))
+			s := string(arr[1])
 			mArr := strings.Split(s, "-")
 			id, err = strconv.Atoi(mArr[0])
 			if err == nil {
@@ -84,11 +84,11 @@ func supervisePaymentOrderFinish(ss []Service) {
 	defer conn.Close()
 	var id int
 	for {
-		arr, err := redis.Values(conn.Do("BLPOP",
+		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvPaymentOrderFinishQueue, 0))
 		if err == nil {
 			//通知会员修改,格式如: 1-[create|update]
-			s := string(arr[1].([]byte))
+			s := string(arr[1])
 			id, err = strconv.Atoi(s)
 			if err == nil {
 				order := dps.PaymentService.GetPaymentOrder(id)

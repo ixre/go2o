@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
+	"log"
 )
 
 var _ payment.IPaymentRep = new(paymentRep)
@@ -63,13 +64,19 @@ func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
 // 根据编号获取支付单
 func (p *paymentRep) GetPaymentOrder(
 	id int) payment.IPaymentOrder {
+	if id <= 0 {
+		return nil
+	}
 	e := &payment.PaymentOrderBean{}
 	k := p.getPaymentOrderCk(id)
-	if p.Storage.Get(k, &e) != nil {
+	if err := p.Storage.Get(k, &e); err != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
+			panic(fmt.Sprintf("---%d", id))
 			return nil
 		}
 		p.Storage.SetExpire(k, *e, DefaultCacheSeconds)
+	} else {
+		// log.Println(fmt.Sprintf("--- payment: %d > %#v",id,e))
 	}
 	return p.CreatePaymentOrder(e)
 }
@@ -97,6 +104,10 @@ func (p *paymentRep) CreatePaymentOrder(
 
 // 保存支付单
 func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrderBean) (int, error) {
+	stat := v.State
+	if v.Id > 0 {
+		stat = p.GetPaymentOrder(v.Id).GetValue().State
+	}
 	id, err := orm.Save(p.GetOrm(), v, v.Id)
 	if err == nil {
 		v.Id = id
@@ -104,14 +115,19 @@ func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrderBean) (int, error) 
 		p.Storage.SetExpire(p.getPaymentOrderCk(id), *v, DefaultCacheSeconds)
 		// 缓存订单号与订单的关系
 		p.Storage.SetExpire(p.getPaymentOrderCkByNo(v.TradeNo), v.Id, DefaultCacheSeconds*10)
+		// 已经更改过状态,且为已成功,则推送到队列中
+		if stat != v.State && v.State == payment.StateFinishPayment {
+			p.notifyPaymentFinish(v.Id)
+		}
 	}
 	return id, err
 }
 
 // 通知支付单完成
-func (p *paymentRep) NotifyPaymentFinish(paymentOrderId int) error {
+func (p *paymentRep) notifyPaymentFinish(paymentOrderId int) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
+	log.Println("--  推送支付单成功", paymentOrderId)
 	return err
 }

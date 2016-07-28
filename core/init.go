@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/payment"
 )
 
 func init() {
@@ -27,4 +28,7 @@ func registerTypes() {
 	gob.Register(&shop.OnlineShop{})
 	gob.Register(&shop.OfflineShop{})
 	gob.Register(&shop.ShopDto{})
+	gob.Register(&member.Account{})
+	gob.Register(&payment.PaymentOrderBean{})
+	gob.Register(&member.Relation{})
 }
