@@ -82,10 +82,14 @@ const (
 	TypeIntegralPresent = 1
 	// 积分抵扣
 	TypeIntegralDiscount = 2
+	// 积分冻结
+	TypeIntegralFreeze = 3
+	// 积分解冻
+	TypeIntegralUnfreeze = 4
 	// 购物赠送
-	TypeIntegralShoppingPresent = 3
+	TypeIntegralShoppingPresent = 5
 	// 支付抵扣
-	TypeIntegralPaymentDiscount = 4
+	TypeIntegralPaymentDiscount = 6
 )
 
 type (
@@ -134,6 +138,12 @@ type (
 
 		// 积分抵扣
 		IntegralDiscount(logType int, outerNo string, value int, remark string) error
+
+		// 冻结积分,当new为true不扣除积分,反之扣除积分
+		FreezesIntegral(value int, new bool, remark string) error
+
+		// 解冻积分
+		UnfreezesIntegral(value int, remark string) error
 
 		// 退款
 		RequestBackBalance(backType int, title string, amount float32) error
@@ -205,10 +215,12 @@ type (
 		MemberId int `db:"member_id" pk:"yes" json:"memberId"`
 		// 积分
 		Integral int `db:"integral"`
+		// 不可用积分
+		FreezesIntegral int `db:"freezes_integral"`
 		// 余额
 		Balance float32 `db:"balance" json:"balance"`
-		// 冻结金额
-		FreezesFee float32 `db:"freezes_fee" json:"freezesFee"`
+		// 不可用余额
+		FreezesFee float32 `db:"freezes_balance" json:"freezesFee"`
 		//奖金账户余额
 		PresentBalance float32 `db:"present_balance" json:"presentBalance"`
 		//冻结赠送额
@@ -225,9 +237,9 @@ type (
 		GrowEarnings float32 `db:"grow_earnings" json:"growEarnings"`
 		//累积收益金额
 		GrowTotalEarnings float32 `db:"grow_total_earnings" json:"growTotalEarnings"`
-		//总消费额
-		TotalFee float32 `db:"total_fee" json:"totalFee"`
-		//总充值额
+		//总消费金额
+		TotalConsumption float32 `db:"total_consumption" json:"totalFee"`
+		//总充值金额
 		TotalCharge float32 `db:"total_charge" json:"totalCharge"`
 		//总支付额
 		TotalPay float32 `db:"total_pay" json:"totalPay"`
