@@ -169,4 +169,7 @@ var (
 
 	ErrNoSuchIntegral *domain.DomainError = domain.NewDomainError(
 		"err_account_no_such_integral", "账户积分不足")
+
+	ErrMissingOuterNo *domain.DomainError = domain.NewDomainError(
+		"err_account_missing_outer_no", "缺少订单号")
 )

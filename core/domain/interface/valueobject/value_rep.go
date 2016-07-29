@@ -124,7 +124,7 @@ type (
 		// 消费1元产生的经验
 		ExperienceRateByOrder float32
 		// 消费1元产生的积分
-		IntegralRateByOrder float32
+		IntegralRateByConsumption float32
 		// 每单额外赠送
 		IntegralBackExtra int
 		// 提现手续费费率

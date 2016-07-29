@@ -54,7 +54,7 @@ var (
 		// 消费1元产生的经验
 		ExperienceRateByOrder: 1,
 		// 消费1元产生的积分
-		IntegralRateByOrder: 1,
+		IntegralRateByConsumption: 1,
 		// 每单额外赠送
 		IntegralBackExtra: 0,
 		// 提现手续费费率
