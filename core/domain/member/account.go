@@ -240,6 +240,9 @@ func (a *accountImpl) AddIntegral(logType int, outerNo string, value int, remark
 	if logType <= 0 {
 		logType = member.TypeIntegralPresent
 	}
+	if logType == member.TypeIntegralShoppingPresent && outerNo == "" {
+		return member.ErrMissingOuterNo
+	}
 	l := &member.IntegralLog{
 		MemberId:   a._value.MemberId,
 		Type:       logType,
@@ -265,6 +268,11 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 	if a._value.Integral < value {
 		return member.ErrNoSuchIntegral
 	}
+
+	if logType == member.TypeIntegralPaymentDiscount && outerNo == "" {
+		return member.ErrMissingOuterNo
+	}
+
 	if logType <= 0 {
 		logType = member.TypeIntegralDiscount
 	}

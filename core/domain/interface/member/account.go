@@ -134,7 +134,7 @@ type (
 		PaymentDiscount(tradeNo string, amount float32) error
 
 		//　增加积分
-		AddIntegral(logType int, outerNo string, value int, remark string) error
+		AddIntegral(iType int, outerNo string, value int, remark string) error
 
 		// 积分抵扣
 		IntegralDiscount(logType int, outerNo string, value int, remark string) error

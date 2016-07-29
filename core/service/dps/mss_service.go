@@ -25,59 +25,59 @@ func NewMssService(rep mss.IMssRep) *mssService {
 }
 
 // 获取邮件模版
-func (this *mssService) GetMailTemplate(id int) *mss.MailTemplate {
-	return this._rep.GetProvider().GetMailTemplate(id)
+func (m *mssService) GetMailTemplate(id int) *mss.MailTemplate {
+	return m._rep.GetProvider().GetMailTemplate(id)
 }
 
 // 保存邮件模板
-func (this *mssService) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
-	return this._rep.GetProvider().SaveMailTemplate(v)
+func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+	return m._rep.GetProvider().SaveMailTemplate(v)
 }
 
 // 获取邮件模板
-func (this *mssService) GetMailTemplates() []*mss.MailTemplate {
-	return this._rep.GetProvider().GetMailTemplates()
+func (m *mssService) GetMailTemplates() []*mss.MailTemplate {
+	return m._rep.GetProvider().GetMailTemplates()
 }
 
 // 删除邮件模板
-func (this *mssService) DeleteMailTemplate(id int) error {
-	return this._rep.GetProvider().DeleteMailTemplate(id)
+func (m *mssService) DeleteMailTemplate(id int) error {
+	return m._rep.GetProvider().DeleteMailTemplate(id)
 }
 
 // 获取邮件绑定
-func (this *mssService) GetConfig() mss.Config {
-	return this._rep.GetProvider().GetConfig()
+func (m *mssService) GetConfig() mss.Config {
+	return m._rep.GetProvider().GetConfig()
 }
 
 // 保存邮件
-func (this *mssService) SaveConfig(conf *mss.Config) error {
-	return this._rep.GetProvider().SaveConfig(conf)
+func (m *mssService) SaveConfig(conf *mss.Config) error {
+	return m._rep.GetProvider().SaveConfig(conf)
 }
 
 //可通过外部添加
-func (this *mssService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
+func (m *mssService) RegisterNotifyItem(key string, item *notify.NotifyItem) {
 	notify.RegisterNotifyItem(key, item)
 }
 
-func (this *mssService) GetAllNotifyItem() []notify.NotifyItem {
-	return this._rep.NotifyManager().GetAllNotifyItem()
+func (m *mssService) GetAllNotifyItem() []notify.NotifyItem {
+	return m._rep.NotifyManager().GetAllNotifyItem()
 }
 
 // 获取通知项配置
-func (this *mssService) GetNotifyItem(key string) notify.NotifyItem {
-	return this._rep.NotifyManager().GetNotifyItem(key)
+func (m *mssService) GetNotifyItem(key string) notify.NotifyItem {
+	return m._rep.NotifyManager().GetNotifyItem(key)
 }
 
 // 保存通知项设置
-func (this *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
-	return this._rep.NotifyManager().SaveNotifyItem(item)
+func (m *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
+	return m._rep.NotifyManager().SaveNotifyItem(item)
 }
 
 //todo: 考虑弄一个,确定后再发送.这样可以先在系统,然后才发送
 // 发送站内通知信息,
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
-func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
+func (ms *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -103,7 +103,39 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 		v.ToRole = toRole
 	}
 	var err error
-	m := this._rep.MessageManager().CreateMessage(v, msg)
+	m := ms._rep.MessageManager().CreateMessage(v, msg)
+	if _, err = m.Save(); err == nil {
+		err = m.Send(nil)
+	}
+	return err
+}
+
+// 对会用户发送站内信
+func (ms *mssService) SendSiteMessageToUser(senderId int, toRole int, toUser int,
+	msg *notify.SiteMessage, sendNow bool) error {
+	v := &mss.Message{
+		Id: 0,
+		// 消息类型
+		Type: notify.TypeSiteMessage,
+		// 消息用途
+		UseFor: mss.UseForNotify,
+		// 发送人角色
+		SenderRole: mss.RoleSystem,
+		// 发送人编号
+		SenderId: senderId,
+		To: []mss.User{
+			{Id: toUser, Role: toRole},
+		},
+		// 发送的用户角色
+		ToRole: -1,
+		// 全系统接收
+		AllUser: -1,
+		// 是否只能阅读
+		Readonly: 1,
+	}
+
+	var err error
+	m := ms._rep.MessageManager().CreateMessage(v, msg)
 	if _, err = m.Save(); err == nil {
 		err = m.Send(nil)
 	}
@@ -111,8 +143,8 @@ func (this *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 }
 
 // 获取站内信
-func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessage {
-	msg := this._rep.MessageManager().GetMessage(id)
+func (m *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessage {
+	msg := m._rep.MessageManager().GetMessage(id)
 	if msg != nil && msg.CheckPerm(toUserId, toRole) {
 		val := msg.GetValue()
 		dto := &dto.SiteMessage{
@@ -148,8 +180,8 @@ func (this *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessag
 }
 
 // 发送短信
-func (this *mssService) SendPhoneMessage(phone string,
+func (m *mssService) SendPhoneMessage(phone string,
 	msg notify.PhoneMessage, data map[string]interface{}) error {
-	mg := this._rep.NotifyManager()
+	mg := m._rep.NotifyManager()
 	return mg.SendPhoneMessage(phone, msg, data)
 }

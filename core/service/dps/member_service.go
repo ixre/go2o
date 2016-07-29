@@ -556,7 +556,8 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int) *member.Balanc
 }
 
 // 充值
-func (ms *memberService) Charge(memberId, chargeType int, title, tradeNo string, amount float32) error {
+func (ms *memberService) Charge(memberId, chargeType int, title,
+	tradeNo string, amount float32) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -564,8 +565,19 @@ func (ms *memberService) Charge(memberId, chargeType int, title, tradeNo string,
 	return m.GetAccount().ChargeBalance(chargeType, title, tradeNo, amount)
 }
 
+// 增加积分
+func (ms *memberService) AddIntegral(memberId int, iType int,
+	orderNo string, value int, remark string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().AddIntegral(iType, orderNo, value, remark)
+}
+
 // 赠送金额充值
-func (ms *memberService) PresentBalance(memberId int, title string, tradeNo string, amount float32) error {
+func (ms *memberService) PresentBalance(memberId int, title string,
+	tradeNo string, amount float32) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -574,7 +586,8 @@ func (ms *memberService) PresentBalance(memberId int, title string, tradeNo stri
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
-func (ms *memberService) FreezesIntegral(memberId int, value int, new bool, remark string) error {
+func (ms *memberService) FreezesIntegral(memberId int, value int,
+	new bool, remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -583,7 +596,8 @@ func (ms *memberService) FreezesIntegral(memberId int, value int, new bool, rema
 }
 
 // 解冻积分
-func (ms *memberService) UnfreezesIntegral(memberId int, value int, remark string) error {
+func (ms *memberService) UnfreezesIntegral(memberId int,
+	value int, remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -592,7 +606,8 @@ func (ms *memberService) UnfreezesIntegral(memberId int, value int, remark strin
 }
 
 // 扣减奖金
-func (ms *memberService) DiscountPresent(memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
+func (ms *memberService) DiscountPresent(memberId int, title string,
+	tradeNo string, amount float32, mustLargeZero bool) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -601,7 +616,8 @@ func (ms *memberService) DiscountPresent(memberId int, title string, tradeNo str
 }
 
 // 流通账户
-func (ms *memberService) ChargeFlowBalance(memberId int, title string, tradeNo string, amount float32) error {
+func (ms *memberService) ChargeFlowBalance(memberId int, title string,
+	tradeNo string, amount float32) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
