@@ -1301,7 +1301,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalFee += ov.GoodsAmount
+	acv.TotalConsumption += ov.GoodsAmount
 	acv.TotalPay += ov.FinalAmount
 	acv.UpdateTime = time.Now().Unix()
 	_, err = acc.Save()

@@ -733,6 +733,26 @@ ALTER TABLE `flm`.`mm_integral_log`
   ADD COLUMN `outer_no` VARCHAR(45) NULL AFTER `type`;
 
 
+ALTER TABLE `flm`.`mm_account`
+  CHANGE COLUMN `freezes_fee` `freezes_balance` FLOAT(10,2) NOT NULL AFTER `balance`,
+  CHANGE COLUMN `freezes_present` `freezes_present` FLOAT(10,2) NOT NULL AFTER `present_balance`,
+  CHANGE COLUMN `total_fee` `total_consumption` FLOAT(10,2) NOT NULL COMMENT '总消费' AFTER `total_pay`,
+  CHANGE COLUMN `integral` `integral` INT(11) NOT NULL ,
+  CHANGE COLUMN `balance` `balance` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `present_balance` `present_balance` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `total_present_fee` `total_present_fee` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `flow_balance` `flow_balance` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_balance` `grow_balance` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_amount` `grow_amount` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_earnings` `grow_earnings` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_total_earnings` `grow_total_earnings` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `total_charge` `total_charge` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `total_pay` `total_pay` FLOAT(10,2) NOT NULL ,
+  CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '积分' ,
+  ADD COLUMN `freezes_integral` INT NOT NULL COMMENT '不可用积分' AFTER `integral`;
+
+
+
 
 
 

@@ -573,6 +573,24 @@ func (ms *memberService) PresentBalance(memberId int, title string, tradeNo stri
 	return m.GetAccount().PresentBalance(title, tradeNo, amount)
 }
 
+// 冻结积分,当new为true不扣除积分,反之扣除积分
+func (ms *memberService) FreezesIntegral(memberId int, value int, new bool, remark string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().FreezesIntegral(value, new, remark)
+}
+
+// 解冻积分
+func (ms *memberService) UnfreezesIntegral(memberId int, value int, remark string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().UnfreezesIntegral(value, remark)
+}
+
 // 扣减奖金
 func (ms *memberService) DiscountPresent(memberId int, title string, tradeNo string, amount float32, mustLargeZero bool) error {
 	m, err := ms.getMember(memberId)

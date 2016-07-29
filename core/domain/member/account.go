@@ -285,6 +285,50 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 	return err
 }
 
+// 冻结积分,当new为true不扣除积分,反之扣除积分
+func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error {
+	if !new {
+		if a._value.Integral < value {
+			return member.ErrNoSuchIntegral
+		}
+		a._value.Integral -= value
+	}
+	a._value.FreezesIntegral += value
+	_, err := a.Save()
+	if err == nil {
+		l := &member.IntegralLog{
+			MemberId:   a._value.MemberId,
+			Type:       member.TypeIntegralFreeze,
+			Value:      -value,
+			Remark:     remark,
+			CreateTime: time.Now().Unix(),
+		}
+		err = a._rep.SaveIntegralLog(l)
+	}
+	return err
+}
+
+// 解冻积分
+func (a *accountImpl) UnfreezesIntegral(value int, remark string) error {
+	if a._value.FreezesIntegral < value {
+		return member.ErrNoSuchIntegral
+	}
+	a._value.FreezesIntegral -= value
+	a._value.Integral += value
+	_, err := a.Save()
+	if err == nil {
+		l := &member.IntegralLog{
+			MemberId:   a._value.MemberId,
+			Type:       member.TypeIntegralUnfreeze,
+			Value:      value,
+			Remark:     remark,
+			CreateTime: time.Now().Unix(),
+		}
+		err = a._rep.SaveIntegralLog(l)
+	}
+	return err
+}
+
 // 退款
 func (a *accountImpl) RequestBackBalance(backType int, title string,
 	amount float32) error {
