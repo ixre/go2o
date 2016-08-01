@@ -188,16 +188,16 @@ func (m *MemberRep) GetMemberIdByEmail(email string) int {
 }
 
 func (m *MemberRep) getMemberCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:member:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:inf:%d", memberId)
 }
 func (m *MemberRep) getAccountCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:mm-acc:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:acc:%d", memberId)
 }
 func (m *MemberRep) getProfileCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:mm-pro:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:pro:%d", memberId)
 }
 func (m *MemberRep) getTrustCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:mm-trust:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:trust:%d", memberId)
 }
 func (m *MemberRep) getGlobLevelsCk() string {
 	return "go2o:rep:mm-lv"

@@ -20,7 +20,6 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	payImpl "go2o/core/domain/payment"
 	"go2o/core/variable"
-	"log"
 )
 
 var _ payment.IPaymentRep = new(paymentRep)
@@ -128,6 +127,6 @@ func (p *paymentRep) notifyPaymentFinish(paymentOrderId int) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)
-	log.Println("--  推送支付单成功", paymentOrderId)
+	//log.Println("--  推送支付单成功", paymentOrderId)
 	return err
 }
