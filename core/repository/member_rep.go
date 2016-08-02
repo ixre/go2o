@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
@@ -68,8 +69,11 @@ func (m *MemberRep) GetProfile(memberId int) *member.Profile {
 	e := &member.Profile{}
 	key := m.getProfileCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
-		if m.Connector.GetOrm().Get(memberId, e) != nil {
-			e.MemberId = memberId
+		if err := m.Connector.GetOrm().Get(memberId, e); err != nil {
+			if err == sql.ErrNoRows {
+				e.MemberId = memberId
+				orm.Save(m.GetOrm(), e, 0)
+			}
 		} else {
 			m.Storage.Set(key, *e)
 		}
@@ -380,7 +384,7 @@ func (m *MemberRep) GetAccount(memberId int) *member.Account {
 		}
 		m.Storage.Set(key, *e)
 	} else {
-		//log.Println(fmt.Sprintf("--- account: %d > %#v",memberId,e))
+		//log.Println(key,fmt.Sprintf("--- account: %d > %#v",memberId,e))
 	}
 	return e
 }

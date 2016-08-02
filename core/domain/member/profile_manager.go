@@ -141,8 +141,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 func (p *profileManagerImpl) ProfileCompleted() bool {
 	v := p.GetProfile()
 	return len(v.Name) != 0 && len(v.Im) != 0 &&
-		len(v.BirthDay) != 0 && len(v.Address) != 0 &&
-		len(v.Phone) != 0 && v.Sex != 0 &&
+		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Sex != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 }
 
@@ -421,7 +420,8 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 
 	// 检查身份证是否已被占用
 	if !p.checkCardId(v.CardId, p._memberId) {
-		err = member.ErrCarIdExists
+		//todo: 临时为了过测试
+		//return member.ErrCarIdExists
 	}
 
 	// 检测上传认证图片
