@@ -34,7 +34,7 @@ var monthDays []int = []int{31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 func LastDay(year int, m time.Month) int {
 	if m == 2 {
 		isLeapYear := year%4 == 0 &&
-				(year%100 != 0 || year%400 == 0)
+			(year%100 != 0 || year%400 == 0)
 		if isLeapYear {
 			return 29
 		}
