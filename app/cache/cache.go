@@ -10,6 +10,7 @@ package cache
 
 import (
 	"errors"
+	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 )
 
@@ -26,6 +27,15 @@ func GetKVS() storage.Interface {
 		panic(errors.New("Can't find storage medium."))
 	}
 	return kvCacheStorage
+}
+
+// 删除指定前缀的缓存
+func PrefixDel(prefix string) {
+	sto := GetKVS().(storage.IRedisStorage)
+	_, err := sto.PrefixDel(prefix)
+	if err != nil {
+		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
+	}
 }
 
 func Initialize(kvStorage storage.Interface) {

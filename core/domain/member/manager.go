@@ -139,8 +139,7 @@ func (l *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
 
 // 等级服务实现
 type levelManagerImpl struct {
-	_rep    member.IMemberRep
-	_levels []*member.Level //可用的等级
+	_rep member.IMemberRep
 }
 
 func newLevelManager(rep member.IMemberRep) member.ILevelManager {
@@ -153,7 +152,7 @@ func newLevelManager(rep member.IMemberRep) member.ILevelManager {
 // 初始化默认等级
 func (l *levelManagerImpl) init() member.ILevelManager {
 	if len(l.GetLevelSet()) == 0 {
-		l._levels = []*member.Level{
+		levels := []*member.Level{
 			{
 				Name:          "待激活会员",
 				RequireExp:    0,
@@ -198,7 +197,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 			},
 		}
 		// 存储并设置编号
-		for _, v := range l._levels {
+		for _, v := range levels {
 			v.Id, _ = l.SaveLevel(v)
 		}
 	}
@@ -207,11 +206,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 
 // 获取等级设置
 func (l *levelManagerImpl) GetLevelSet() []*member.Level {
-	if l._levels == nil {
-		// 已经排好序
-		l._levels = l._rep.GetMemberLevels_New()
-	}
-	return l._levels
+	return l._rep.GetMemberLevels_New()
 }
 
 // 获取等级
@@ -261,21 +256,13 @@ func (l *levelManagerImpl) GetNextLevelById(id int) *member.Level {
 
 // 删除等级
 func (l *levelManagerImpl) DeleteLevel(id int) error {
-	pos := 0
-	for i, v := range l.GetLevelSet() {
-		if v.Id == id {
-			pos = i
-			break
-		}
-	}
-	if pos > 0 {
+	lv := l.GetLevelById(id)
+	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
 		// todo: 也可以更新到下一个等级
 		if n := l._rep.GetMemberNumByLevel_New(id); n > 0 {
 			return member.ErrLevelUsed
 		}
-		l._levels = append(l._levels[:pos],
-			l._levels[pos+1:]...)
 		return l._rep.DeleteMemberLevel_New(id)
 	}
 	return nil
@@ -289,10 +276,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	}
 	err := l.checkLevelExp(v)
 	if err == nil {
-		v.Id, err = l._rep.SaveMemberLevel_New(v)
-		if err == nil {
-			l._levels = nil
-		}
+		return l._rep.SaveMemberLevel_New(v)
 	}
 	return v.Id, err
 }

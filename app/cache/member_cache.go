@@ -14,7 +14,7 @@ import (
 )
 
 func GetHighestLevel() *member.Level {
-	key := "go2o:cache:max-level"
+	key := "go2o:rep:level:glob:max"
 	sto := GetKVS()
 	lv := member.Level{}
 	if sto.Get(key, &lv) != nil {

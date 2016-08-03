@@ -9,6 +9,8 @@
 package repository
 
 import (
+	"github.com/jsix/gof/log"
+	"github.com/jsix/gof/storage"
 	"go2o/core/infrastructure/domain"
 	"sync"
 )
@@ -25,4 +27,13 @@ func handleError(err error) error {
 	//	gof.CurrentApp.Log().Println("[ Go2o][ Rep][ Error] -", err.Error())
 	//}
 	//return err
+}
+
+// 删除指定前缀的缓存
+func PrefixDel(sto storage.Interface, prefix string) {
+	rds := sto.(storage.IRedisStorage)
+	_, err := rds.PrefixDel(prefix)
+	if err != nil {
+		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
+	}
 }
