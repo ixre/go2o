@@ -146,6 +146,9 @@ var (
 	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
 		"err_missing_trusted_info", "信息不完整、无法完成实名认证")
 
+	ErrEmptyReviewRemark *domain.DomainError = domain.NewDomainError(
+		"err_member_empty_remark", "原因不能为空")
+
 	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
 		"err_member_not_trusted", "尚未实名认证")
 

@@ -448,6 +448,10 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	if pass {
 		p._trustedInfo.Reviewed = 1
 	} else {
+		remark = strings.TrimSpace(remark)
+		if remark == "" {
+			return member.ErrEmptyReviewRemark
+		}
 		p._trustedInfo.Reviewed = 0
 	}
 	p._trustedInfo.IsHandle = 1 //标记为已处理
