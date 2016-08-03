@@ -118,11 +118,22 @@ func (m *MemberRep) CancelFavorite(memberId int, favType, referId int) error {
 	return err
 }
 
+var (
+	globLevels []*member.Level
+)
+
 // 获取会员等级
 func (m *MemberRep) GetMemberLevels_New() []*member.Level {
-	list := []*member.Level{}
-	m.Connector.GetOrm().Select(&list, "1=1 ORDER BY id ASC")
-	return list
+	const key = "go2o:rep:level:glob:cache"
+	i, err := m.Storage.GetInt(key)
+	load := err != nil || i != 1 || globLevels == nil
+	if load {
+		list := []*member.Level{}
+		m.Connector.GetOrm().Select(&list, "1=1 ORDER BY id ASC")
+		globLevels = list
+		m.Storage.Set(key, 1)
+	}
+	return globLevels
 }
 
 // 获取等级对应的会员数
@@ -134,21 +145,20 @@ func (m *MemberRep) GetMemberNumByLevel_New(id int) int {
 
 // 删除会员等级
 func (m *MemberRep) DeleteMemberLevel_New(id int) error {
-	return m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
+	err := m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
+	if err == nil {
+		PrefixDel(m.Storage, "go2o:rep:level:*")
+	}
+	return err
 }
 
 // 保存会员等级
 func (m *MemberRep) SaveMemberLevel_New(v *member.Level) (int, error) {
-	orm := m.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = orm.Save(nil, v)
-		v.Id = int(id)
+	id, err := orm.Save(m.GetOrm(), v, v.Id)
+	if err == nil {
+		PrefixDel(m.Storage, "go2o:rep:level:*")
 	}
-	return v.Id, err
+	return id, err
 }
 
 func (m *MemberRep) SetMerchantRep(partnerRep merchant.IMerchantRep) {
