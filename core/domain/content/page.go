@@ -31,24 +31,27 @@ func newPage(merchantId int, rep content.IContentRep,
 }
 
 // 获取领域编号
-func (this *pageImpl) GetDomainId() int {
-	return this._value.Id
+func (p *pageImpl) GetDomainId() int {
+	return p._value.Id
 }
 
 // 获取值
-func (this *pageImpl) GetValue() *content.Page {
-	return this._value
+func (p *pageImpl) GetValue() *content.Page {
+	return p._value
 }
 
 // 设置值
-func (this *pageImpl) SetValue(v *content.Page) error {
-	v.Id = this.GetDomainId()
-	this._value = v
+func (p *pageImpl) SetValue(v *content.Page) error {
+	v.Id = p.GetDomainId()
+	if p._value.UserId != v.UserId {
+		return content.ErrUserNotMatch
+	}
+	p._value = v
 	return nil
 }
 
 // 保存
-func (this *pageImpl) Save() (int, error) {
-	this._value.UpdateTime = time.Now().Unix()
-	return this._contentRep.SavePage(this._merchantId, this._value)
+func (p *pageImpl) Save() (int, error) {
+	p._value.UpdateTime = time.Now().Unix()
+	return p._contentRep.SavePage(p._merchantId, p._value)
 }
