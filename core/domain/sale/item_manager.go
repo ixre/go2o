@@ -110,7 +110,7 @@ func (i *ItemImpl) checkPrice() error {
 	minRate := conf.GoodsMinProfitRate
 	if rate < minRate {
 		return errors.New(fmt.Sprintf(goods.ErrGoodsMinProfitRate.Error(),
-			int(minRate*100)))
+			strconv.Itoa(int(minRate*100))+"%"))
 	}
 	return nil
 }

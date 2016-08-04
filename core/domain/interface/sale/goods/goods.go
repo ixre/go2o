@@ -30,7 +30,7 @@ var (
 		"err_goods_sale_price_less_than_cost", "商品销售价必须高于供货价")
 
 	ErrGoodsMinProfitRate *domain.DomainError = domain.NewDomainError(
-		"err_goods_min_profit_rate", "商品利润率不能低于%d/100")
+		"err_goods_min_profit_rate", "商品利润率不能低于%s")
 )
 
 type (
