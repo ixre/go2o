@@ -40,19 +40,19 @@ func NewUserExpress(userId int, rep express.IExpressRep,
 }
 
 // 获取聚合根编号
-func (this *userExpressImpl) GetAggregateRootId() int {
-	return this._userId
+func (e *userExpressImpl) GetAggregateRootId() int {
+	return e._userId
 }
 
 // 创建快递模板
-func (this *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
-	t.UserId = this.GetAggregateRootId()
-	return newExpressTemplate(this, t, this._rep, this._valRep)
+func (e *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
+	t.UserId = e.GetAggregateRootId()
+	return newExpressTemplate(e, t, e._rep, e._valRep)
 }
 
 // 获取快递模板
-func (this *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
-	for _, v := range this.GetAllTemplate() {
+func (e *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
+	for _, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
 			return v
 		}
@@ -61,25 +61,25 @@ func (this *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
 }
 
 // 获取所有的快递模板
-func (this *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
-	if this._arr == nil {
-		list := this._rep.GetUserAllTemplate(this.GetAggregateRootId())
-		this._arr = make([]express.IExpressTemplate, len(list))
+func (e *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
+	if e._arr == nil {
+		list := e._rep.GetUserAllTemplate(e.GetAggregateRootId())
+		e._arr = make([]express.IExpressTemplate, len(list))
 		for i, v := range list {
-			this._arr[i] = this.CreateTemplate(v)
+			e._arr[i] = e.CreateTemplate(v)
 		}
 	}
-	return this._arr
+	return e._arr
 }
 
 // 删除模板
-func (this *userExpressImpl) DeleteTemplate(id int) error {
-	for i, v := range this.GetAllTemplate() {
+func (e *userExpressImpl) DeleteTemplate(id int) error {
+	for i, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
-			err := this._rep.DeleteExpressTemplate(
-				this.GetAggregateRootId(), v.GetDomainId())
+			err := e._rep.DeleteExpressTemplate(
+				e.GetAggregateRootId(), v.GetDomainId())
 			if err == nil {
-				this._arr = append(this._arr[:i], this._arr[i+1:]...)
+				e._arr = append(e._arr[:i], e._arr[i+1:]...)
 			}
 			return err
 		}
@@ -88,7 +88,7 @@ func (this *userExpressImpl) DeleteTemplate(id int) error {
 }
 
 // 计算快递运费
-func (this *userExpressImpl) mathFee(basis int, unit int, firstUnit int,
+func (e *userExpressImpl) mathFee(basis int, unit int, firstUnit int,
 	firstFee float32, addUnix int, addFee float32) float32 {
 	outUnit := unit - firstUnit
 	if outUnit > 0 {
@@ -104,20 +104,20 @@ func (this *userExpressImpl) mathFee(basis int, unit int, firstUnit int,
 }
 
 // 获取快递费,传入地区编码，根据单位值，如总重量。
-func (this *userExpressImpl) GetExpressFee(templateId int, areaCode string, unit int) float32 {
-	tpl := this.GetTemplate(templateId)
+func (e *userExpressImpl) GetExpressFee(templateId int, areaCode string, unit int) float32 {
+	tpl := e.GetTemplate(templateId)
 	if tpl == nil {
 		//return 0
 		//todo: 仅仅为测试,如果未指定快递模板,则用默认的第一个
-		if len(this.GetAllTemplate()) > 0 {
-			tpl = this.GetTemplate(this.GetAllTemplate()[0].GetDomainId())
+		if len(e.GetAllTemplate()) > 0 {
+			tpl = e.GetTemplate(e.GetAllTemplate()[0].GetDomainId())
 		} else {
 			return 0
 		}
 	}
 	v := tpl.Value()
 
-	//log.Println("--------", this._userId, unit,v)
+	//log.Println("--------", e._userId, unit,v)
 
 	//判断是否免邮
 	if v.IsFree == 1 {
@@ -126,11 +126,11 @@ func (this *userExpressImpl) GetExpressFee(templateId int, areaCode string, unit
 	//根据地区规则计算运费
 	areaSet := tpl.GetAreaExpressTemplateByAreaCode(areaCode)
 	if areaSet != nil {
-		return this.mathFee(v.Basis, unit, areaSet.FirstUnit, areaSet.FirstFee,
+		return e.mathFee(v.Basis, unit, areaSet.FirstUnit, areaSet.FirstFee,
 			areaSet.AddUnit, areaSet.AddFee)
 	}
 	//根据默认规则计算运费
-	return this.mathFee(v.Basis, unit, v.FirstUnit, v.FirstFee,
+	return e.mathFee(v.Basis, unit, v.FirstUnit, v.FirstFee,
 		v.AddUnit, v.AddFee)
 }
 
@@ -157,67 +157,94 @@ func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
 }
 
 // 获取领域对象编号
-func (this *expressTemplateImpl) GetDomainId() int {
-	return this._value.Id
+func (e *expressTemplateImpl) GetDomainId() int {
+	return e._value.Id
 }
 
 // 获取快递模板数据
-func (this *expressTemplateImpl) Value() express.ExpressTemplate {
-	return *this._value
+func (e *expressTemplateImpl) Value() express.ExpressTemplate {
+	return *e._value
 }
 
-// 设置地区的快递模板
-func (this *expressTemplateImpl) Set(v *express.ExpressTemplate) error {
-	if this._value.UserId != v.UserId ||
-		v.Basis <= 0 || len(v.Name) == 0 ||
-		v.AddFee <= 0 || v.AddUnit <= 0 ||
-		v.FirstUnit <= 0 {
-		return express.ErrNotFullExpressTemplate
+func (e *expressTemplateImpl) checkValue(v *express.ExpressTemplate) error {
+	if v.Name == "" {
+		return express.ErrExpressTemplateName
 	}
-	this._value = v
+	if e._value.UserId > 0 && v.UserId != e._value.UserId {
+		return express.ErrUserNotMatch
+	}
+	// 如果不包邮,检查相关设置
+	if v.IsFree == 0 {
+		if v.Basis <= 0 {
+			return express.ErrExpressBasis
+		}
+		if v.FirstUnit <= 0 {
+			return express.ErrFirstUnitNotSet
+		}
+
+		if v.AddUnit <= 0 {
+			return express.ErrAddUnitNotSet
+		}
+		if v.AddFee <= 0 {
+			return express.ErrAddFee
+		}
+	}
 	return nil
 }
 
-// 保存
-func (this *expressTemplateImpl) Save() (int, error) {
-	id, err := this._rep.SaveExpressTemplate(this._value)
+// 设置地区的快递模板
+func (e *expressTemplateImpl) Set(v *express.ExpressTemplate) error {
+	v.Name = strings.TrimSpace(v.Name)
+	if v.FirstFee < 0 {
+		v.FirstFee = -v.FirstFee
+	}
+	err := e.checkValue(v)
 	if err == nil {
-		this._value.Id = id
-		this._userExpress._arr = nil
+		e._value = v
+	}
+	return err
+}
+
+// 保存
+func (e *expressTemplateImpl) Save() (int, error) {
+	id, err := e._rep.SaveExpressTemplate(e._value)
+	if err == nil {
+		e._value.Id = id
+		e._userExpress._arr = nil
 	}
 	return id, err
 }
 
 // 保存地区快递模板
-func (this *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (int, error) {
-	this.GetAllAreaTemplate()
-	arr := this.getAreaCodeArray(t.CodeList)
+func (e *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (int, error) {
+	e.GetAllAreaTemplate()
+	arr := e.getAreaCodeArray(t.CodeList)
 	if arr == nil {
 		return 0, express.ErrExpressTemplateMissingAreaCode
 	}
 	intArr := make([]int, len(arr))
 	for i, code := range arr {
-		v, ok := this._areaMap[code]
+		v, ok := e._areaMap[code]
 		if ok && v.Id != t.Id {
 			return 0, express.ErrExistsAreaTemplateSet
 		}
 		intArr[i], _ = strconv.Atoi(code)
 	}
 	// 获取对应的中文名称
-	names := this._valRep.GetAreaNames(intArr)
+	names := e._valRep.GetAreaNames(intArr)
 	t.NameList = strings.Join(names, ",")
 
 	// 保存,如果未出错,则更新缓存
-	id, err := this._rep.SaveExpressTemplateAreaSet(t)
+	id, err := e._rep.SaveExpressTemplateAreaSet(t)
 	if err == nil {
-		this._areaList = nil
-		this._areaMap = nil
-		this.GetAllAreaTemplate()
+		e._areaList = nil
+		e._areaMap = nil
+		e.GetAllAreaTemplate()
 	}
 	return id, err
 }
 
-func (this *expressTemplateImpl) getAreaCodeArray(codeList string) []string {
+func (e *expressTemplateImpl) getAreaCodeArray(codeList string) []string {
 	codeList = strings.Trim(codeList, " ")
 	if codeList == "" {
 		return nil
@@ -226,10 +253,10 @@ func (this *expressTemplateImpl) getAreaCodeArray(codeList string) []string {
 }
 
 // 初始化地区与运费的映射
-func (this *expressTemplateImpl) initAreaMap() {
-	this._areaMap = make(map[string]*express.ExpressAreaTemplate, len(this._areaList))
-	for _, v := range this._areaList {
-		arr := this.getAreaCodeArray(v.CodeList)
+func (e *expressTemplateImpl) initAreaMap() {
+	e._areaMap = make(map[string]*express.ExpressAreaTemplate, len(e._areaList))
+	for _, v := range e._areaList {
+		arr := e.getAreaCodeArray(v.CodeList)
 		if arr == nil {
 			continue
 		}
@@ -238,32 +265,32 @@ func (this *expressTemplateImpl) initAreaMap() {
 			if code == "" {
 				continue
 			}
-			if _, ok := this._areaMap[code]; !ok {
-				this._areaMap[code] = &v
+			if _, ok := e._areaMap[code]; !ok {
+				e._areaMap[code] = &v
 			}
 		}
 	}
 }
 
 // 获取所有的地区快递模板
-func (this *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressAreaTemplate {
-	this._mux.Lock()
-	if this._areaList == nil {
-		this._areaList = this._rep.GetExpressTemplateAllAreaSet(this.GetDomainId())
-		this.initAreaMap()
+func (e *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressAreaTemplate {
+	e._mux.Lock()
+	if e._areaList == nil {
+		e._areaList = e._rep.GetExpressTemplateAllAreaSet(e.GetDomainId())
+		e.initAreaMap()
 	}
-	this._mux.Unlock()
-	return this._areaList
+	e._mux.Unlock()
+	return e._areaList
 }
 
 // 删除模板地区设定
-func (this *expressTemplateImpl) DeleteAreaSet(areaSetId int) error {
-	this.GetAllAreaTemplate()
-	if this.GetAreaExpressTemplate(areaSetId) != nil {
-		err := this._rep.DeleteAreaExpressTemplate(this.GetDomainId(), areaSetId)
+func (e *expressTemplateImpl) DeleteAreaSet(areaSetId int) error {
+	e.GetAllAreaTemplate()
+	if e.GetAreaExpressTemplate(areaSetId) != nil {
+		err := e._rep.DeleteAreaExpressTemplate(e.GetDomainId(), areaSetId)
 		if err == nil {
-			this._areaList = nil
-			this._areaMap = nil
+			e._areaList = nil
+			e._areaMap = nil
 		}
 		return err
 	}
@@ -271,14 +298,14 @@ func (this *expressTemplateImpl) DeleteAreaSet(areaSetId int) error {
 }
 
 // 根据地区编码获取运费模板
-func (this *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) *express.ExpressAreaTemplate {
-	this.GetAllAreaTemplate()
-	return this._areaMap[areaCode]
+func (e *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) *express.ExpressAreaTemplate {
+	e.GetAllAreaTemplate()
+	return e._areaMap[areaCode]
 }
 
 // 根据编号获取地区的运费模板
-func (this *expressTemplateImpl) GetAreaExpressTemplate(id int) *express.ExpressAreaTemplate {
-	for _, v := range this.GetAllAreaTemplate() {
+func (e *expressTemplateImpl) GetAreaExpressTemplate(id int) *express.ExpressAreaTemplate {
+	for _, v := range e.GetAllAreaTemplate() {
 		if v.Id == id {
 			return &v
 		}
@@ -290,7 +317,7 @@ type ExpressRepBase struct {
 }
 
 // 将默认的快递服务商保存
-func (this *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRep) []*express.ExpressProvider {
+func (e *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRep) []*express.ExpressProvider {
 	var err error
 	for _, v := range express.SupportedExpressProvider {
 		if v.Id, err = rep.SaveExpressProvider(v); err != nil {

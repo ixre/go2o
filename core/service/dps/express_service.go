@@ -22,23 +22,25 @@ func NewExpressService(rep express.IExpressRep) *expressService {
 }
 
 // 获取快递公司
-func (this *expressService) GetExpressProvider(id int) *express.ExpressProvider {
-	return this._rep.GetExpressProvider(id)
+func (e *expressService) GetExpressProvider(id int) *express.ExpressProvider {
+	return e._rep.GetExpressProvider(id)
 }
 
 // 保存快递公司
-func (this *expressService) SaveExpressProvider(v *express.ExpressProvider) (int, error) {
-	return this._rep.SaveExpressProvider(v)
+func (e *expressService) SaveExpressProvider(v *express.ExpressProvider) (int, error) {
+	return e._rep.SaveExpressProvider(v)
 }
 
 // 保存快递模板
-func (this *expressService) SaveTemplate(userId int, v *express.ExpressTemplate) (int, error) {
-	u := this._rep.GetUserExpress(userId)
+func (ec *expressService) SaveTemplate(userId int, v *express.ExpressTemplate) (int, error) {
+	u := ec._rep.GetUserExpress(userId)
 	var e express.IExpressTemplate
 	if v.Id > 0 {
 		e = u.GetTemplate(v.Id)
 	} else {
-		e = u.CreateTemplate(&express.ExpressTemplate{})
+		e = u.CreateTemplate(&express.ExpressTemplate{
+			UserId: userId,
+		})
 	}
 	err := e.Set(v)
 	if err == nil {
@@ -48,8 +50,8 @@ func (this *expressService) SaveTemplate(userId int, v *express.ExpressTemplate)
 }
 
 // 获取快递模板
-func (this *expressService) GetTemplate(userId, id int) *express.ExpressTemplate {
-	u := this._rep.GetUserExpress(userId)
+func (e *expressService) GetTemplate(userId, id int) *express.ExpressTemplate {
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(id)
 	if t != nil {
 		v := t.Value()
@@ -59,8 +61,8 @@ func (this *expressService) GetTemplate(userId, id int) *express.ExpressTemplate
 }
 
 // 获取所有的快递模板
-func (this *expressService) GetAllTemplate(userId int) []*express.ExpressTemplate {
-	u := this._rep.GetUserExpress(userId)
+func (e *expressService) GetAllTemplate(userId int) []*express.ExpressTemplate {
+	u := e._rep.GetUserExpress(userId)
 	list := u.GetAllTemplate()
 	arr := make([]*express.ExpressTemplate, len(list))
 	for i, v := range list {
@@ -71,14 +73,14 @@ func (this *expressService) GetAllTemplate(userId int) []*express.ExpressTemplat
 }
 
 // 删除模板
-func (this *expressService) DeleteTemplate(userId int, id int) error {
-	u := this._rep.GetUserExpress(userId)
+func (e *expressService) DeleteTemplate(userId int, id int) error {
+	u := e._rep.GetUserExpress(userId)
 	return u.DeleteTemplate(id)
 }
 
 // 删除模板地区设定
-func (this *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int) error {
-	u := this._rep.GetUserExpress(userId)
+func (e *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int) error {
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(id)
 	if t == nil {
 		return express.ErrNoSuchTemplate
@@ -87,16 +89,16 @@ func (this *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int) err
 }
 
 // 获取快递费,传入地区编码，根据单位值，如总重量。
-func (this *expressService) GetExpressFee(userId int, templateId int,
+func (e *expressService) GetExpressFee(userId int, templateId int,
 	areaCode string, unit int) float32 {
-	u := this._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(userId)
 	return u.GetExpressFee(templateId, areaCode, unit)
 }
 
 // 根据地区编码获取运费模板
-func (this *expressService) GetAreaExpressTemplateByAreaCode(userId int,
+func (e *expressService) GetAreaExpressTemplateByAreaCode(userId int,
 	templateId int, areaCode string) *express.ExpressAreaTemplate {
-	u := this._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(templateId)
 	if t != nil {
 		return t.GetAreaExpressTemplateByAreaCode(areaCode)
@@ -105,9 +107,9 @@ func (this *expressService) GetAreaExpressTemplateByAreaCode(userId int,
 }
 
 // 根据编号获取地区的运费模板
-func (this *expressService) GetAreaExpressTemplate(userId int,
+func (e *expressService) GetAreaExpressTemplate(userId int,
 	templateId int, id int) *express.ExpressAreaTemplate {
-	u := this._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(templateId)
 	if t != nil {
 		return t.GetAreaExpressTemplate(id)
@@ -116,9 +118,9 @@ func (this *expressService) GetAreaExpressTemplate(userId int,
 }
 
 // 保存地区快递模板
-func (this *expressService) SaveAreaTemplate(userId int,
+func (e *expressService) SaveAreaTemplate(userId int,
 	templateId int, v *express.ExpressAreaTemplate) (int, error) {
-	u := this._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(templateId)
 	if t != nil {
 		return t.SaveAreaTemplate(v)
@@ -127,9 +129,9 @@ func (this *expressService) SaveAreaTemplate(userId int,
 }
 
 // 获取所有的地区快递模板
-func (this *expressService) GetAllAreaTemplate(userId int,
+func (e *expressService) GetAllAreaTemplate(userId int,
 	templateId int) []express.ExpressAreaTemplate {
-	u := this._rep.GetUserExpress(userId)
+	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(templateId)
 	if t != nil {
 		return t.GetAllAreaTemplate()
