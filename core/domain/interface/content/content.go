@@ -19,6 +19,9 @@ var (
 
 	NotSetCategory *domain.DomainError = domain.NewDomainError(
 		"err_not_set_category", "请选择分类")
+
+	ErrUserNotMatch *domain.DomainError = domain.NewDomainError(
+		"err_content_user_not_match", "用户不匹配")
 )
 
 type (
