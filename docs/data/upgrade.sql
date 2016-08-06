@@ -752,6 +752,23 @@ ALTER TABLE `flm`.`mm_account`
   ADD COLUMN `freezes_integral` INT NOT NULL COMMENT '不可用积分' AFTER `integral`;
 
 
+ALTER TABLE `flm`.`con_page`
+  CHANGE COLUMN `mch_id` `user_id` INT(11) NULL DEFAULT NULL ;
+
+DROP TABLE `flm`.`gs_member_price`;
+
+CREATE TABLE `gs_member_price` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `goods_id` int(11) NOT NULL,
+  `level` int(11) NOT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `max_quota` int(11) NOT NULL,
+  `enabled` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+
 
 
 
