@@ -348,6 +348,14 @@ func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
 	return adv
 }
 
+// 检测广告位是否可以被绑定
+func (a *userAdImpl) checkPositionBind(posId int, adId int) bool {
+	total := 0
+	tmp.Db().ExecScalar("SELECT COUNT(0) FROM ad_userset WHERE user_id=? AND pos_id=? AND ad_id<>?",
+		&total, a._adUserId, posId, adId)
+	return total == 0
+}
+
 // 设置广告
 func (a *userAdImpl) SetAd(posId, adId int) error {
 	ap := a._manager.GetAdPositionById(posId)
@@ -357,10 +365,12 @@ func (a *userAdImpl) SetAd(posId, adId int) error {
 	if ap.Opened == 0 {
 		return ad.ErrNotOpened
 	}
+	if !a.checkPositionBind(posId, adId) {
+		return ad.ErrUserPositionIsBind
+	}
 	if a._rep.GetValueAd(adId) == nil {
 		return ad.ErrNoSuchAd
 	}
-
 	err := a._rep.SetUserAd(a.GetAggregateRootId(), posId, adId)
 	if err == nil {
 		a._cache = nil
