@@ -35,6 +35,9 @@ type (
 		// 创建广告组
 		CreateAdGroup(name string) IAdGroup
 
+		// 根据编号获取广告位
+		GetAdPositionById(id int)*AdPosition
+
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *AdPosition
 
