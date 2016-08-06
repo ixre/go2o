@@ -28,7 +28,8 @@ var (
 
 	ErrNotOpened *domain.DomainError = domain.NewDomainError(
 		"err_position_not_opened", "广告未开放")
-
+	ErrUserPositionIsBind *domain.DomainError = domain.NewDomainError(
+		"err_ad_user_position_is_bind", "该广告位已绑定其他广告")
 	ErrAdType *domain.DomainError = domain.NewDomainError(
 		"err_ad_type", "请选择广告类型")
 
