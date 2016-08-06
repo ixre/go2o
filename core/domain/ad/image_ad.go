@@ -17,7 +17,7 @@ var _ ad.IImageAd = new(ImageAdImpl)
 
 type ImageAdImpl struct {
 	_extValue *ad.Image
-	*AdImpl
+	*adImpl
 }
 
 // 获取链接广告值
@@ -51,7 +51,7 @@ func (this *ImageAdImpl) SetData(d *ad.Image) error {
 
 // 保存广告
 func (this *ImageAdImpl) Save() (int, error) {
-	id, err := this.AdImpl.Save()
+	id, err := this.adImpl.Save()
 	if err == nil {
 		v := this.getData()
 		v.AdId = id
@@ -63,8 +63,8 @@ func (this *ImageAdImpl) Save() (int, error) {
 // 转换为数据传输对象
 func (this *ImageAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.AdImpl.GetDomainId(),
-		Type: this.AdImpl.Type(),
+		Id:   this.adImpl.GetDomainId(),
+		Type: this.adImpl.Type(),
 		Data: this.getData(),
 	}
 }

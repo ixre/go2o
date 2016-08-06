@@ -35,20 +35,20 @@ func NewAdManager(rep ad.IAdRep) ad.IAdManager {
 }
 
 // 获取广告分组
-func (this *adManagerImpl) GetAdGroups() []ad.IAdGroup {
-	if this._groups == nil {
-		list := this._rep.GetAdGroups()
-		this._groups = make([]ad.IAdGroup, len(list))
+func (a *adManagerImpl) GetAdGroups() []ad.IAdGroup {
+	if a._groups == nil {
+		list := a._rep.GetAdGroups()
+		a._groups = make([]ad.IAdGroup, len(list))
 		for i, v := range list {
-			this._groups[i] = newAdGroup(this, this._rep, v)
+			a._groups[i] = newAdGroup(a, a._rep, v)
 		}
 	}
-	return this._groups
+	return a._groups
 }
 
 // 获取单个广告分组
-func (this *adManagerImpl) GetAdGroup(id int) ad.IAdGroup {
-	list := this.GetAdGroups()
+func (a *adManagerImpl) GetAdGroup(id int) ad.IAdGroup {
+	list := a.GetAdGroups()
 	for _, v := range list {
 		if v.GetDomainId() == id {
 			return v
@@ -58,14 +58,14 @@ func (this *adManagerImpl) GetAdGroup(id int) ad.IAdGroup {
 }
 
 // 删除广告组
-func (this *adManagerImpl) DelAdGroup(id int) error {
-	this._groups = nil
-	return this._rep.DelAdGroup(id)
+func (a *adManagerImpl) DelAdGroup(id int) error {
+	a._groups = nil
+	return a._rep.DelAdGroup(id)
 }
 
 // 创建广告组
-func (this *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
-	return newAdGroup(this, this._rep, &ad.AdGroup{
+func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
+	return newAdGroup(a, a._rep, &ad.AdGroup{
 		Id:      0,
 		Name:    name,
 		Opened:  1,
@@ -74,37 +74,37 @@ func (this *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
 }
 
 // 根据KEY获取广告位
-func (this *adManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
-	return this._rep.GetAdPositionByKey(key)
+func (a *adManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
+	return a._rep.GetAdPositionByKey(key)
 }
 
 // 根据广告位KEY获取默认广告
-func (this *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
-	this._mux.Lock()
-	defer this._mux.Unlock()
+func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
+	a._mux.Lock()
+	defer a._mux.Unlock()
 	ok := false
 	var iv ad.IAd
-	if this._cache == nil {
-		this._cache = make(map[string]ad.IAd)
+	if a._cache == nil {
+		a._cache = make(map[string]ad.IAd)
 	}
 	//从缓存中获取
-	if iv, ok = this._cache[key]; ok {
+	if iv, ok = a._cache[key]; ok {
 		return iv
 	}
 
-	pos := this.GetAdPositionByKey(key)
+	pos := a.GetAdPositionByKey(key)
 	if pos != nil && pos.DefaultId > 0 {
-		iv = this._defaultAd.GetById(pos.DefaultId)
+		iv = a._defaultAd.GetById(pos.DefaultId)
 	}
 	if iv != nil {
-		this._cache[key] = iv
+		a._cache[key] = iv
 	}
 	return iv
 }
 
 // 获取用户的广告管理
-func (this *adManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
-	return newUserAd(this, this._rep, adUserId)
+func (a *adManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
+	return newUserAd(a, a._rep, adUserId)
 }
 
 type AdGroupImpl struct {
@@ -123,36 +123,36 @@ func newAdGroup(m *adManagerImpl, rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
 }
 
 // 获取领域编号
-func (this *AdGroupImpl) GetDomainId() int {
-	return this._value.Id
+func (a *AdGroupImpl) GetDomainId() int {
+	return a._value.Id
 }
 
 // 获取值
-func (this *AdGroupImpl) GetValue() ad.AdGroup {
-	return *this._value
+func (a *AdGroupImpl) GetValue() ad.AdGroup {
+	return *a._value
 }
 
 // 设置值
-func (this *AdGroupImpl) SetValue(v *ad.AdGroup) error {
+func (a *AdGroupImpl) SetValue(v *ad.AdGroup) error {
 	if v != nil {
-		this._value.Name = v.Name
-		this._value.Enabled = v.Enabled
-		this._value.Opened = v.Opened
+		a._value.Name = v.Name
+		a._value.Enabled = v.Enabled
+		a._value.Opened = v.Opened
 	}
 	return nil
 }
 
 // 获取广告位
-func (this *AdGroupImpl) GetPositions() []*ad.AdPosition {
-	if this._positions == nil {
-		this._positions = this._rep.GetAdPositionsByGroupId(this.GetDomainId())
+func (a *AdGroupImpl) GetPositions() []*ad.AdPosition {
+	if a._positions == nil {
+		a._positions = a._rep.GetAdPositionsByGroupId(a.GetDomainId())
 	}
-	return this._positions
+	return a._positions
 }
 
 // 根据Id获取广告位
-func (this *AdGroupImpl) GetPosition(id int) *ad.AdPosition {
-	for _, v := range this.GetPositions() {
+func (a *AdGroupImpl) GetPosition(id int) *ad.AdPosition {
+	for _, v := range a.GetPositions() {
 		if v.Id == id {
 			return v
 		}
@@ -161,64 +161,64 @@ func (this *AdGroupImpl) GetPosition(id int) *ad.AdPosition {
 }
 
 // 删除广告位
-func (this *AdGroupImpl) DelPosition(id int) error {
+func (a *AdGroupImpl) DelPosition(id int) error {
 	//todo: 广告位已投放广告,不允许删除
-	//if this.getAdPositionBindNum(id) > 0{
+	//if a.getAdPositionBindNum(id) > 0{
 	//	return ad.err
 	//}
-	this._positions = nil
-	this._manager._cache = nil
-	return this._rep.DelAdPosition(id)
+	a._positions = nil
+	a._manager._cache = nil
+	return a._rep.DelAdPosition(id)
 }
 
 // 保存广告位
-func (this *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
-	if pos := this._manager.GetAdPositionByKey(a.Key); pos != nil && pos.Id != a.Id {
+func (ag *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
+	if pos := ag._manager.GetAdPositionByKey(a.Key); pos != nil && pos.Id != a.Id {
 		return 0, ad.ErrKeyExists
 	}
-	a.GroupId = this.GetDomainId()
-	this._positions = nil
-	this._manager._cache = nil
-	return this._rep.SaveAdPosition(a)
+	a.GroupId = ag.GetDomainId()
+	ag._positions = nil
+	ag._manager._cache = nil
+	return ag._rep.SaveAdPosition(a)
 }
 
 // 保存,需调用Save()保存
-func (this *AdGroupImpl) Save() (int, error) {
-	return this._rep.SaveAdGroup(this._value)
+func (a *AdGroupImpl) Save() (int, error) {
+	return a._rep.SaveAdGroup(a._value)
 }
 
 // 开放,需调用Save()保存
-func (this *AdGroupImpl) Open() error {
-	this._value.Opened = 1
+func (a *AdGroupImpl) Open() error {
+	a._value.Opened = 1
 	return nil
 }
 
 // 关闭,需调用Save()保存
-func (this *AdGroupImpl) Close() error {
-	this._value.Opened = 0
+func (a *AdGroupImpl) Close() error {
+	a._value.Opened = 0
 	return nil
 }
 
 // 启用,需调用Save()保存
-func (this *AdGroupImpl) Enabled() error {
-	this._value.Enabled = 1
+func (a *AdGroupImpl) Enabled() error {
+	a._value.Enabled = 1
 	return nil
 }
 
 // 禁用,需调用Save()保存
-func (this *AdGroupImpl) Disabled() error {
-	this._value.Enabled = 0
+func (a *AdGroupImpl) Disabled() error {
+	a._value.Enabled = 0
 	return nil
 }
 
 // 设置默认广告
-func (this *AdGroupImpl) SetDefault(adPosId int, adId int) error {
-	if v := this.GetPosition(adPosId); v != nil {
-		// if this._rep.GetValueAdvertisement()
+func (a *AdGroupImpl) SetDefault(adPosId int, adId int) error {
+	if v := a.GetPosition(adPosId); v != nil {
+		// if a._rep.GetValueAdvertisement()
 		//todo: 检测广告是否存在
 		v.DefaultId = adId
-		_, err := this.SavePosition(v)
-		this._manager._cache = nil
+		_, err := a.SavePosition(v)
+		a._manager._cache = nil
 		return err
 	}
 	return ad.ErrNoSuchAd
@@ -241,23 +241,23 @@ func newUserAd(m ad.IAdManager, rep ad.IAdRep, adUserId int) ad.IUserAd {
 }
 
 // 获取聚合根标识
-func (this *userAdImpl) GetAggregateRootId() int {
-	return this._adUserId
+func (a *userAdImpl) GetAggregateRootId() int {
+	return a._adUserId
 }
 
 // 根据编号获取广告
-func (this *userAdImpl) GetById(id int) ad.IAd {
-	v := this._rep.GetValueAd(id)
+func (a *userAdImpl) GetById(id int) ad.IAd {
+	v := a._rep.GetValueAd(id)
 	if v != nil {
-		return this.CreateAd(v)
+		return a.CreateAd(v)
 	}
 	return nil
 }
 
 // 获取广告关联的广告位
-func (this *userAdImpl) GetAdPositionsByAdId(adId int) []*ad.AdPosition {
+func (a *userAdImpl) GetAdPositionsByAdId(adId int) []*ad.AdPosition {
 	list := []*ad.AdPosition{}
-	for _, v := range this._manager.GetAdGroups() {
+	for _, v := range a._manager.GetAdGroups() {
 		for _, p := range v.GetPositions() {
 			if p.DefaultId == adId {
 				list = append(list, p)
@@ -268,17 +268,17 @@ func (this *userAdImpl) GetAdPositionsByAdId(adId int) []*ad.AdPosition {
 }
 
 // 删除广告
-func (this *userAdImpl) DeleteAd(adId int) error {
-	adv := this.GetById(adId)
+func (a *userAdImpl) DeleteAd(adId int) error {
+	adv := a.GetById(adId)
 	if adv != nil {
-		if len(this.GetAdPositionsByAdId(adId)) > 0 {
+		if len(a.GetAdPositionsByAdId(adId)) > 0 {
 			return ad.ErrAdUsed
 		}
-		err := this._rep.DelAd(this._adUserId, adId)
-		this._rep.DelImageDataForAdvertisement(adId)
-		this._rep.DelTextDataForAdvertisement(adId)
+		err := a._rep.DelAd(a._adUserId, adId)
+		a._rep.DelImageDataForAdvertisement(adId)
+		a._rep.DelTextDataForAdvertisement(adId)
 		if err == nil {
-			this._cache = nil
+			a._cache = nil
 		}
 		return err
 	}
@@ -286,149 +286,152 @@ func (this *userAdImpl) DeleteAd(adId int) error {
 }
 
 // 根据KEY获取广告
-func (this *userAdImpl) GetByPositionKey(key string) ad.IAd {
-	this._mux.Lock()
-	defer this._mux.Unlock()
+func (a *userAdImpl) GetByPositionKey(key string) ad.IAd {
+	a._mux.Lock()
+	defer a._mux.Unlock()
 	ok := false
 	var iv ad.IAd
-	if this._cache == nil {
-		this._cache = make(map[string]ad.IAd)
+	if a._cache == nil {
+		a._cache = make(map[string]ad.IAd)
 	}
 	//从缓存中获取
-	if iv, ok = this._cache[key]; ok {
+	if iv, ok = a._cache[key]; ok {
 		return iv
 	}
 	//获取用户的设定,如果没有,则获取平台的设定
-	v := this._rep.GetAdByKey(this._adUserId, key)
+	v := a._rep.GetAdByKey(a._adUserId, key)
 	if v == nil {
-		iv = this._manager.GetAdByPositionKey(key)
+		iv = a._manager.GetAdByPositionKey(key)
 	} else {
-		iv = this.CreateAd(v)
+		iv = a.CreateAd(v)
 	}
 	//加入到缓存
 	if iv != nil {
-		this._cache[key] = iv
+		a._cache[key] = iv
 	}
 	return iv
 }
 
 // 创建广告对象
-func (this *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
-	adv := &AdImpl{
-		_rep:   this._rep,
+func (a *userAdImpl) CreateAd(v *ad.Ad) ad.IAd {
+	adv := &adImpl{
+		_rep:   a._rep,
 		_value: v,
 	}
 	switch v.Type {
 	case ad.TypeGallery:
 		// 轮播广告
 		return &GalleryAd{
-			AdImpl: adv,
+			adImpl: adv,
 		}
 	case ad.TypeHyperLink:
 		// 文本广告
 		return &HyperLinkAdImpl{
-			AdImpl: adv,
+			adImpl: adv,
 		}
 	case ad.TypeImage:
 		// 图片广告
 		return &ImageAdImpl{
-			AdImpl: adv,
+			adImpl: adv,
 		}
 	}
 	return adv
 }
 
 // 设置广告
-func (this *userAdImpl) SetAd(posId, adId int) error {
-	if this._manager.GetAdGroup(posId) == nil {
+func (a *userAdImpl) SetAd(posId, adId int) error {
+	if a._manager.GetAdGroup(posId) == nil {
 		return ad.ErrNoSuchAdPosition
 	}
-	if this._rep.GetValueAd(adId) == nil {
+	if a._rep.GetValueAd(adId) == nil {
 		return ad.ErrNoSuchAd
 	}
-	err := this._rep.SetUserAd(this.GetAggregateRootId(), posId, adId)
+	err := a._rep.SetUserAd(a.GetAggregateRootId(), posId, adId)
 	if err == nil {
-		this._cache = nil
+		a._cache = nil
 	}
 	return err
 }
 
-var _ ad.IAd = new(AdImpl)
+var _ ad.IAd = new(adImpl)
 
-type AdImpl struct {
+type adImpl struct {
 	_rep   ad.IAdRep
 	_value *ad.Ad
 }
 
 // 获取领域对象编号
-func (this *AdImpl) GetDomainId() int {
-	if this._value != nil {
-		return this._value.Id
+func (a *adImpl) GetDomainId() int {
+	if a._value != nil {
+		return a._value.Id
 	}
 	return 0
 }
 
 // 是否为系统内置的广告
-func (this *AdImpl) System() bool {
-	return this._value.UserId == 0
+func (a *adImpl) System() bool {
+	return a._value.UserId == 0
 }
 
 // 广告类型
-func (this *AdImpl) Type() int {
-	return this._value.Type
+func (a *adImpl) Type() int {
+	return a._value.Type
 }
 
 // 广告名称
-func (this *AdImpl) Name() string {
-	return this._value.Name
+func (a *adImpl) Name() string {
+	return a._value.Name
 }
 
 // 设置值
-func (this *AdImpl) SetValue(v *ad.Ad) error {
-	if v.Type != this.Type() {
+func (a *adImpl) SetValue(v *ad.Ad) error {
+	if v.Type == 0 {
+		return ad.ErrAdType
+	}
+	if v.Type != a.Type() {
 		return ad.ErrDisallowModifyAdType
 	}
-	this._value.Name = v.Name
+	a._value.Name = v.Name
 	return nil
 }
 
 // 获取值
-func (this *AdImpl) GetValue() *ad.Ad {
-	return this._value
+func (a *adImpl) GetValue() *ad.Ad {
+	return a._value
 }
 
 // 保存广告
-func (this *AdImpl) Save() (int, error) {
-	//id := this.Rep.GetIdByName(this.Value.UserId, this.Value.Name)
-	//if id > 0 && id != this.GetDomainId() {
-	//	return this.GetDomainId(), ad.ErrNameExists
+func (a *adImpl) Save() (int, error) {
+	//id := a.Rep.GetIdByName(a.Value.UserId, a.Value.Name)
+	//if id > 0 && id != a.GetDomainId() {
+	//	return a.GetDomainId(), ad.ErrNameExists
 	//}
-	this._value.UpdateTime = time.Now().Unix()
-	return this._rep.SaveAdValue(this._value)
+	a._value.UpdateTime = time.Now().Unix()
+	return a._rep.SaveAdValue(a._value)
 }
 
 // 增加展现次数
-func (this *AdImpl) AddShowTimes(times int) error {
-	this._value.ShowTimes += times
+func (a *adImpl) AddShowTimes(times int) error {
+	a._value.ShowTimes += times
 	return nil
 }
 
 // 增加展现次数
-func (this *AdImpl) AddClickTimes(times int) error {
-	this._value.ClickTimes += times
+func (a *adImpl) AddClickTimes(times int) error {
+	a._value.ClickTimes += times
 	return nil
 }
 
 // 增加展现次数
-func (this *AdImpl) AddShowDays(days int) error {
-	this._value.ShowDays += days
+func (a *adImpl) AddShowDays(days int) error {
+	a._value.ShowDays += days
 	return nil
 }
 
 // 转换为数据传输对象
-func (this *AdImpl) Dto() *ad.AdDto {
+func (a *adImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.GetDomainId(),
-		Type: this.Type(),
+		Id:   a.GetDomainId(),
+		Type: a.Type(),
 	}
 }

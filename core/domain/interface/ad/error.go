@@ -26,6 +26,9 @@ var (
 	ErrNoSuchAdPosition *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad_position", "广告位不存在")
 
+	ErrAdType *domain.DomainError = domain.NewDomainError(
+		"err_ad_type", "请选择广告类型")
+
 	ErrDisallowModifyAdType *domain.DomainError = domain.NewDomainError(
 		"err_disallow_modify_ad_type", "广告创建后不允许修改类型")
 
