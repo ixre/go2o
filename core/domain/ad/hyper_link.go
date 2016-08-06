@@ -16,7 +16,7 @@ var _ ad.IHyperLinkAd = new(HyperLinkAdImpl)
 
 type HyperLinkAdImpl struct {
 	_extValue *ad.HyperLink
-	*AdImpl
+	*adImpl
 }
 
 // 获取链接广告值
@@ -36,7 +36,7 @@ func (this *HyperLinkAdImpl) getData() *ad.HyperLink {
 
 func (this *HyperLinkAdImpl) SetData(d *ad.HyperLink) error {
 	v := this.getData()
-	v.AdId = this.AdImpl.GetDomainId()
+	v.AdId = this.adImpl.GetDomainId()
 	v.LinkUrl = d.LinkUrl
 	v.Title = d.Title
 	return nil
@@ -44,7 +44,7 @@ func (this *HyperLinkAdImpl) SetData(d *ad.HyperLink) error {
 
 // 保存广告
 func (this *HyperLinkAdImpl) Save() (int, error) {
-	id, err := this.AdImpl.Save()
+	id, err := this.adImpl.Save()
 	if err == nil {
 		v := this.getData()
 		v.AdId = id
@@ -56,8 +56,8 @@ func (this *HyperLinkAdImpl) Save() (int, error) {
 // 转换为数据传输对象
 func (this *HyperLinkAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.AdImpl.GetDomainId(),
-		Type: this.AdImpl.Type(),
+		Id:   this.adImpl.GetDomainId(),
+		Type: this.adImpl.Type(),
 		Data: this.getData(),
 	}
 }

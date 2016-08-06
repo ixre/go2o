@@ -17,7 +17,7 @@ var _ ad.IAd = new(GalleryAd)
 var _ ad.IGalleryAd = new(GalleryAd)
 
 type GalleryAd struct {
-	*AdImpl
+	*adImpl
 	_adValue ad.ValueGallery
 }
 
@@ -65,8 +65,8 @@ func (this *GalleryAd) DelImage(id int) error {
 // 转换为数据传输对象
 func (this *GalleryAd) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.AdImpl.GetDomainId(),
-		Type: this.AdImpl.Type(),
+		Id:   this.adImpl.GetDomainId(),
+		Type: this.adImpl.Type(),
 		Data: this.GetEnabledAdValue(),
 	}
 }
