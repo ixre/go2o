@@ -128,11 +128,13 @@ type (
 
 	// 会员价
 	MemberPrice struct {
-		Id      int     `db:"id" pk:"yes" auto:"yes"`
-		GoodsId int     `db:"goods_id"`
-		Level   int     `db:"level"`
-		Price   float32 `db:"price"`
-		Enabled int     `db:"enabled"`
+		Id       int     `db:"id" pk:"yes" auto:"yes"`
+		GoodsId  int     `db:"goods_id"`
+		Level    int     `db:"level"`
+		Price    float32 `db:"price"`
+		// 限购数量
+		MaxQuota int     `db:"max_quota"`
+		Enabled  int     `db:"enabled"`
 	}
 )
 
