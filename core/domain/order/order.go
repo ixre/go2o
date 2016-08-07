@@ -1154,6 +1154,7 @@ func (o *subOrderImpl) Ship(spId int, spOrder string) error {
 	if spId <= 0 || spOrder == "" {
 		return shipment.ErrMissingSpInfo
 	}
+
 	so := o.createShipmentOrder(o.Items())
 	if so == nil {
 		return order.ErrUnusualOrder

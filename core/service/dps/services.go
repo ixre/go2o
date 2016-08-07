@@ -50,7 +50,7 @@ var (
 	ExpressService *expressService
 
 	// 配送服务
-	DeliverService *deliveryService
+	ShipmentService *shipmentService
 
 	// 内容服务
 	ContentService *contentService
@@ -131,7 +131,7 @@ func Init(ctx gof.App) {
 	PaymentService = NewPaymentService(payRep, spRep)
 	MssService = NewMssService(mssRep)
 	ExpressService = NewExpressService(expressRep)
-	DeliverService = NewDeliveryService(deliveryRep)
+	ShipmentService = NewShipmentService(shipRep, deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
 	AdService = NewAdvertisementService(adRep)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
