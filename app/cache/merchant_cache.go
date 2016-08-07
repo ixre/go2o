@@ -9,10 +9,15 @@
 package cache
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jsix/gof/storage"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/service/dps"
+	"sort"
+	"strconv"
+	"strings"
 )
 
 // 获取商户信息缓存
@@ -89,4 +94,78 @@ func GetMerchantApiInfo(merchantId int) *merchant.ApiInfo {
 		}
 	}
 	return d
+}
+
+var (
+	expressCacheKey = "go2o:rep:express:ship-tab"
+)
+
+// 获取发货的快递选项卡
+func GetShipExpressTab() string {
+	sto := GetKVS()
+	html, err := sto.GetString(expressCacheKey)
+	if err != nil {
+		html = getRealShipExpressTab()
+		sto.Set(expressCacheKey, html)
+	}
+	return html
+}
+
+func getRealShipExpressTab() string {
+	buf := bytes.NewBuffer(nil)
+	list := dps.ExpressService.GetEnabledProviders()
+	iMap := make(map[string][]*express.ExpressProvider, 0)
+	letArr := []string{}
+	for _, v := range list {
+		for _, g := range strings.Split(v.GroupFlag, ",") {
+			if g == "" {
+				continue
+			}
+			arr, ok := iMap[g]
+			if !ok {
+				arr = []*express.ExpressProvider{}
+				letArr = append(letArr, g)
+			}
+			arr = append(arr, v)
+			iMap[g] = arr
+		}
+
+	}
+	sort.Strings(letArr)
+	l := len(letArr)
+	if letArr[l-1] == "常用" {
+		letArr = append(letArr[l-1:], letArr[:l-1]...)
+	}
+
+	buf.WriteString(`<div class="ui-tabs" id="tab_express"><ul class="tabs">`)
+	for _, v := range letArr {
+		buf.WriteString(`<li title="`)
+		buf.WriteString(v)
+		buf.WriteString(`" href="`)
+		buf.WriteString(v)
+		buf.WriteString(`"><span class="tab-title">`)
+		buf.WriteString(v)
+		buf.WriteString(`</li>`)
+	}
+	buf.WriteString("</ul>")
+	buf.WriteString(`<div class="frames">`)
+	i := 0
+	for _, l := range letArr {
+		buf.WriteString(`<div class="frame"><ul class="list">`)
+		for _, v := range iMap[l] {
+			i++
+			buf.WriteString("<li><input type=\"radio\" name=\"ProviderId\" field=\"ProviderId\" value=\"")
+			buf.WriteString(strconv.Itoa(v.Id))
+			buf.WriteString(`" id="provider_`)
+			buf.WriteString(strconv.Itoa(i))
+			buf.WriteString(`"/><label for="provider_`)
+			buf.WriteString(strconv.Itoa(i))
+			buf.WriteString(`">`)
+			buf.WriteString(v.Name)
+			buf.WriteString("</label></li>")
+		}
+		buf.WriteString("</ul></div>")
+	}
+	buf.WriteString("</div></div>")
+	return buf.String()
 }

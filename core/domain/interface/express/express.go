@@ -44,31 +44,34 @@ var (
 	//todo: 选择一些主流的快递
 	// 系统支持的快递服务商
 	SupportedExpressProvider = []*ExpressProvider{
-		NewExpressProvider("顺丰快递", "S", "SF", "SF"),
-		NewExpressProvider("圆通速递", "Y", "YTO", "YTO"),
-		NewExpressProvider("中通速递", "Z", "ZTO", "ZTO"),
-		NewExpressProvider("韵达快运", "Y", "YD", "YD"),
-		NewExpressProvider("海航天天快递", "H", "HHTT", "HHTT"),
-		NewExpressProvider("全峰快递", "Q", "QFKD", "QFKD"),
-		NewExpressProvider("EMS", "E", "EMS", "EMS"),
-		NewExpressProvider("优速物流", "Y", "UC", "UC"),
-		NewExpressProvider("宅急送", "Z", "ZJS", "ZJS"),
-		NewExpressProvider("全一快递", "Q", "UAPEX", "UAPEX"),
-		NewExpressProvider("联邦快递", "L", "FEDEX", "FEDEX"),
-		NewExpressProvider("汇通快运", "H", "HTKY", "HTKY"),
-		NewExpressProvider("德邦物流", "D", "DBL", "DBL"),
-		NewExpressProvider("中铁快运", "Z", "ZTKY", "ZTKY"),
-		NewExpressProvider("CCES", "C", "CCES", "CCES"),
-		NewExpressProvider("联昊通物流", "L", "LHT", "LHT"),
-		NewExpressProvider("申通物流", "S", "STO", "STO"),
-		NewExpressProvider("龙邦物流", "L", "LB", "LB"),
-		NewExpressProvider("新邦物流", "X", "XBWL", "XBWL"),
-		NewExpressProvider("港中能达", "G", "NEDA", "NEDA"),
-		NewExpressProvider("全日通快递", "Q", "QRT", "QRT"),
-		NewExpressProvider("邮政平邮", "Y", "YZPY", "YZPY"),
-		NewExpressProvider("亚风", "Y", "YFSD", "YFSD"),
-		NewExpressProvider("大田物流", "D", "DTWL", "DTWL"),
-		NewExpressProvider("其它", "O", "OTHER", "OTHER"),
+		NewExpressProvider("大田物流", "A-E", "DTWL", "DTWL"),
+		NewExpressProvider("CCES", "A-E", "CCES", "CCES"),
+		NewExpressProvider("德邦物流", "常用,A-E", "DBL", "DBL"),
+		NewExpressProvider("EMS", "常用,A-E", "EMS", "EMS"),
+
+		NewExpressProvider("港中能达", "F-J", "NEDA", "NEDA"),
+		NewExpressProvider("龙邦物流", "F-J", "LB", "LB"),
+		NewExpressProvider("联邦快递", "F-J", "FEDEX", "FEDEX"),
+		NewExpressProvider("联昊通物流", "F-J", "LHT", "LHT"),
+		NewExpressProvider("汇通快运", "F-J", "HTKY", "HTKY"),
+		NewExpressProvider("海航天天快递", "F-J", "HHTT", "HHTT"),
+
+		NewExpressProvider("全峰快递", "常用,P-T", "QFKD", "QFKD"),
+		NewExpressProvider("全一快递", "P-T", "UAPEX", "UAPEX"),
+		NewExpressProvider("全日通快递", "P-T", "QRT", "QRT"),
+
+		NewExpressProvider("顺丰快递", "常用,U-Z", "SF", "SF"),
+		NewExpressProvider("申通物流", "常用,U-Z", "STO", "STO"),
+		NewExpressProvider("圆通速递", "常用,U-Z", "YTO", "YTO"),
+		NewExpressProvider("中通速递", "常用,U-Z", "ZTO", "ZTO"),
+		NewExpressProvider("韵达快运", "常用,U-Z", "YD", "YD"),
+		NewExpressProvider("优速物流", "常用,U-Z", "UC", "UC"),
+		NewExpressProvider("宅急送", "常用,U-Z", "ZJS", "ZJS"),
+		NewExpressProvider("新邦物流", "U-Z", "XBWL", "XBWL"),
+		NewExpressProvider("邮政平邮", "常用,U-Z", "YZPY", "YZPY"),
+		NewExpressProvider("中铁快运", "U-Z", "ZTKY", "ZTKY"),
+		NewExpressProvider("亚风速递", "U-Z", "YFSD", "YFSD"),
+		NewExpressProvider("其它", "U-Z", "OTHER", "OTHER"),
 	}
 )
 
@@ -163,7 +166,9 @@ type (
 		// 快递名称
 		Name string `db:"name"`
 		// 首字母，用于索引分组
-		FirstLetter string `db:"letter"`
+		//FirstLetter string `db:"letter"`
+		// 分组,多个组,用","隔开
+		GroupFlag string `db:"group_flag"`
 		// 快递公司编码
 		Code string `db:"code"`
 		// 接口编码
@@ -217,12 +222,12 @@ type (
 	}
 )
 
-func NewExpressProvider(name, letter, code, apiCode string) *ExpressProvider {
+func NewExpressProvider(name, group, code, apiCode string) *ExpressProvider {
 	return &ExpressProvider{
-		Name:        name,
-		FirstLetter: letter,
-		Code:        code,
-		ApiCode:     apiCode,
-		Enabled:     1,
+		Name:      name,
+		GroupFlag: group,
+		Code:      code,
+		ApiCode:   apiCode,
+		Enabled:   1,
 	}
 }

@@ -31,6 +31,18 @@ func (e *expressService) SaveExpressProvider(v *express.ExpressProvider) (int, e
 	return e._rep.SaveExpressProvider(v)
 }
 
+// 获取可用的快递公司
+func (e *expressService) GetEnabledProviders() []*express.ExpressProvider {
+	arr := []*express.ExpressProvider{}
+	list := e._rep.GetExpressProviders()
+	for _, v := range list {
+		if v.Enabled == 1 {
+			arr = append(arr, v)
+		}
+	}
+	return arr
+}
+
 // 保存快递模板
 func (ec *expressService) SaveTemplate(userId int, v *express.ExpressTemplate) (int, error) {
 	u := ec._rep.GetUserExpress(userId)

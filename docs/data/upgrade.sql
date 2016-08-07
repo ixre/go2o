@@ -768,6 +768,10 @@ CREATE TABLE `gs_member_price` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+ALTER TABLE `flm`.`express_provider`
+  CHANGE COLUMN `letter` `group_flag` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
+
+
 
 
 
