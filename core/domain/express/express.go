@@ -87,51 +87,9 @@ func (e *userExpressImpl) DeleteTemplate(id int) error {
 	return nil
 }
 
-// 计算快递运费
-func (e *userExpressImpl) mathFee(basis int, unit int, firstUnit int,
-	firstFee float32, addUnix int, addFee float32) float32 {
-	outUnit := unit - firstUnit
-	if outUnit > 0 {
-		// 如果超过首次计量,则获取超出倍数,叠加计费
-		outTimes := outUnit / addUnix
-		if outUnit%addUnix > 0 {
-			outTimes += 1
-		}
-		return firstFee + float32(outTimes)*addFee
-	}
-	return firstFee
-
-}
-
-// 获取快递费,传入地区编码，根据单位值，如总重量。
-func (e *userExpressImpl) GetExpressFee(templateId int, areaCode string, unit int) float32 {
-	tpl := e.GetTemplate(templateId)
-	if tpl == nil {
-		//return 0
-		//todo: 仅仅为测试,如果未指定快递模板,则用默认的第一个
-		if len(e.GetAllTemplate()) > 0 {
-			tpl = e.GetTemplate(e.GetAllTemplate()[0].GetDomainId())
-		} else {
-			return 0
-		}
-	}
-	v := tpl.Value()
-
-	//log.Println("--------", e._userId, unit,v)
-
-	//判断是否免邮
-	if v.IsFree == 1 {
-		return 0
-	}
-	//根据地区规则计算运费
-	areaSet := tpl.GetAreaExpressTemplateByAreaCode(areaCode)
-	if areaSet != nil {
-		return e.mathFee(v.Basis, unit, areaSet.FirstUnit, areaSet.FirstFee,
-			areaSet.AddUnit, areaSet.AddFee)
-	}
-	//根据默认规则计算运费
-	return e.mathFee(v.Basis, unit, v.FirstUnit, v.FirstFee,
-		v.AddUnit, v.AddFee)
+// 创建运费计算器
+func (e *userExpressImpl) CreateCalculator() express.IExpressCalculator {
+	return newExpressCalculator(e)
 }
 
 var _ express.IExpressTemplate = new(expressTemplateImpl)

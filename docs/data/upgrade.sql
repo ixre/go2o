@@ -781,6 +781,11 @@ ALTER TABLE `flm`.`gs_snapshot`
 ALTER TABLE `flm`.`gs_item`
   CHANGE COLUMN `img` `img` VARCHAR(120) NULL DEFAULT NULL ;
 
+ALTER TABLE `flm`.`gs_item`
+  CHANGE COLUMN `weight` `weight` FLOAT(6,2) NULL DEFAULT NULL COMMENT '重量,单位:克(g)' ;
+
+ALTER TABLE `flm`.`gs_snapshot`
+  CHANGE COLUMN `weight` `weight` FLOAT(6,2) NULL DEFAULT NULL COMMENT '单件重量,单位:克(g)' ;
 
 
 

@@ -59,8 +59,8 @@ type (
 		Price float32 `db:"price"`
 		//销售价
 		SalePrice float32 `db:"sale_price"`
-		// 单件重量,单位:克(g)
-		Weight int `db:"weight"`
+		// 单件重量,单位:千克(kg)
+		Weight float32 `db:"weight"`
 		//是否有会员价
 		LevelSales int `db:"level_sales"`
 		//销售数量

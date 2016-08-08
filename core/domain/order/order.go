@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -247,32 +248,49 @@ func (o *orderImpl) RequireCart(c cart.ICart) error {
 	return nil
 }
 
+// 加入运费计算器
+func (o *orderImpl) addItemToExpressCalculator(ue express.IUserExpress,
+	item *order.OrderItem, cul express.IExpressCalculator) {
+	tpl := ue.GetTemplate(item.ExpressTplId)
+	if tpl != nil {
+		var err error
+		v := tpl.Value()
+		switch v.Basis {
+		case express.BasisByNumber:
+			err = cul.Add(item.ExpressTplId, float32(item.Quantity))
+		case express.BasisByWeight:
+			err = cul.Add(item.ExpressTplId, item.Weight)
+		case express.BasisByVolume:
+			err = cul.Add(item.ExpressTplId, item.Weight)
+		}
+		if err != nil {
+			log.Println("[ Order][ Express][ Error]:", err)
+		}
+	}
+}
+
 // 更新订单金额,并返回运费
 func (o *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float32 {
 	o._value.GoodsAmount = 0
-	weightMap := make(map[int]int) //重量
+	expCul := make(map[int]express.IExpressCalculator)
+	expressMap := make(map[int]float32)
 	for k, v := range mp {
-		weightMap[k] = 0
+		userExpress := o._expressRep.GetUserExpress(k)
+		expCul[k] = userExpress.CreateCalculator()
 		for _, item := range v {
 			//计算商品总金额
 			o._value.GoodsAmount += item.Amount
 			//计算商品优惠金额
 			o._value.DiscountAmount += item.Amount - item.FinalAmount
-			//计重
-			weightMap[k] += item.Weight
+			//加入运费计算器
+			o.addItemToExpressCalculator(userExpress, item, expCul[k])
 		}
-	}
-	// 计算运费
-	expressMap := make(map[int]float32)
-	for k, weight := range weightMap {
-		//todo: 计算运费需从外部传入参数
-		unit := weight / 1000 //转换为kg
-		expressMap[k] = o._expressRep.GetUserExpress(k).
-			GetExpressFee(-1, "1000", unit)
+		//计算商户的运费
+		expCul[k].Calculate("") //todo: 传入城市地区编号
+		expressMap[k] = expCul[k].Total()
 		//叠加运费
 		o._value.ExpressFee += expressMap[k]
 	}
-
 	o._value.PackageFee = 0
 	//计算最终金额
 	o._value.FinalAmount = o._value.GoodsAmount - o._value.DiscountAmount +
@@ -329,16 +347,9 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int][]*order.
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	gs := o._saleRep.GetSale(c.VendorId).GoodsManager().CreateGoods(
 		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
-	// 快照
-	snap := gs.SnapshotManager().GetLatestSnapshot()
-	if snap == nil {
-		domain.HandleError(errors.New("商品快照生成失败："+
-			strconv.Itoa(c.SkuId)), "domain")
-		return nil
-	}
 	// 获取商品已销售快照
-	saleSnap := gs.SnapshotManager().GetLatestSaleSnapshot()
-	if saleSnap == nil {
+	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
+	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
 			strconv.Itoa(c.SkuId)), "domain")
 		return nil
@@ -349,7 +360,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
-		SnapshotId:  saleSnap.Id,
+		SnapshotId:  snap.Id,
 		Quantity:    c.Quantity,
 		Amount:      fee,
 		FinalAmount: fee,
@@ -357,8 +368,8 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
-		ExpressTplId:   snap.ExpressTplId,
-		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
+		ExpressTplId:   c.Snapshot.ExpressTplId,
+		Weight:         c.Snapshot.Weight * float32(c.Quantity), //计算重量
 	}
 }
 
