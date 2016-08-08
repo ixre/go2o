@@ -10,6 +10,7 @@
 package sale
 
 import (
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
@@ -28,6 +29,7 @@ type saleImpl struct {
 	_cateRep      sale.ICategoryRep
 	_goodsRep     goods.IGoodsRep
 	_valRep       valueobject.IValueRep
+	_expressRep   express.IExpressRep
 	_promRep      promotion.IPromotionRep
 	_proCache     map[int]sale.IItem
 	_cateManager  sale.ICategoryManager
@@ -39,70 +41,73 @@ type saleImpl struct {
 
 func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
 	cateRep sale.ICategoryRep, itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	tagRep sale.ISaleLabelRep, promRep promotion.IPromotionRep) sale.ISale {
+	tagRep sale.ISaleLabelRep, expressRep express.IExpressRep,
+	promRep promotion.IPromotionRep) sale.ISale {
 	return (&saleImpl{
-		_mchId:    merchantId,
-		_cateRep:  cateRep,
-		_saleRep:  saleRep,
-		_labelRep: tagRep,
-		_itemRep:  itemRep,
-		_goodsRep: goodsRep,
-		_promRep:  promRep,
-		_valRep:   valRep,
+		_mchId:      merchantId,
+		_cateRep:    cateRep,
+		_saleRep:    saleRep,
+		_labelRep:   tagRep,
+		_itemRep:    itemRep,
+		_goodsRep:   goodsRep,
+		_expressRep: expressRep,
+		_promRep:    promRep,
+		_valRep:     valRep,
 	}).init()
 }
 
-func (this *saleImpl) init() sale.ISale {
-	this._proCache = make(map[int]sale.IItem)
-	return this
+func (s *saleImpl) init() sale.ISale {
+	s._proCache = make(map[int]sale.IItem)
+	return s
 }
 
 // 分类服务
-func (this *saleImpl) CategoryManager() sale.ICategoryManager {
-	if this._cateManager == nil {
-		this._cateManager = NewCategoryManager(
-			this.GetAggregateRootId(), this._cateRep, this._valRep)
+func (s *saleImpl) CategoryManager() sale.ICategoryManager {
+	if s._cateManager == nil {
+		s._cateManager = NewCategoryManager(
+			s.GetAggregateRootId(), s._cateRep, s._valRep)
 	}
-	return this._cateManager
+	return s._cateManager
 }
 
 // 标签管理器
-func (this *saleImpl) LabelManager() sale.ILabelManager {
-	if this._labelManager == nil {
-		this._labelManager = NewLabelManager(
-			this.GetAggregateRootId(), this._labelRep, this._valRep)
+func (s *saleImpl) LabelManager() sale.ILabelManager {
+	if s._labelManager == nil {
+		s._labelManager = NewLabelManager(
+			s.GetAggregateRootId(), s._labelRep, s._valRep)
 	}
-	return this._labelManager
+	return s._labelManager
 }
 
 // 货品服务
-func (this *saleImpl) ItemManager() sale.IItemManager {
-	if this._itemManager == nil {
-		this._itemManager = NewItemManager(
-			this.GetAggregateRootId(), this, this._itemRep, this._valRep)
+func (s *saleImpl) ItemManager() sale.IItemManager {
+	if s._itemManager == nil {
+		s._itemManager = NewItemManager(
+			s.GetAggregateRootId(), s, s._itemRep,
+			s._expressRep, s._valRep)
 	}
-	return this._itemManager
+	return s._itemManager
 }
 
 // 商品服务
-func (this *saleImpl) GoodsManager() sale.IGoodsManager {
-	if this._goodsManager == nil {
-		this._goodsManager = NewGoodsManager(
-			this.GetAggregateRootId(), this, this._valRep)
+func (s *saleImpl) GoodsManager() sale.IGoodsManager {
+	if s._goodsManager == nil {
+		s._goodsManager = NewGoodsManager(
+			s.GetAggregateRootId(), s, s._valRep)
 	}
-	return this._goodsManager
+	return s._goodsManager
 }
 
-func (this *saleImpl) clearCache(goodsId int) {
-	delete(this._proCache, goodsId)
+func (s *saleImpl) clearCache(goodsId int) {
+	delete(s._proCache, goodsId)
 }
 
-func (this *saleImpl) chkCache() {
-	if len(this._proCache) >= MAX_CACHE_SIZE {
-		this._proCache = make(map[int]sale.IItem)
+func (s *saleImpl) chkCache() {
+	if len(s._proCache) >= MAX_CACHE_SIZE {
+		s._proCache = make(map[int]sale.IItem)
 	}
 }
 
-func (this *saleImpl) GetAggregateRootId() int {
-	return this._mchId
+func (s *saleImpl) GetAggregateRootId() int {
+	return s._mchId
 }

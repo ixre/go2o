@@ -55,6 +55,8 @@ type (
 		MemberNotTrustedMessage string
 		// 注册后赠送积分数量
 		PresentIntegralNumOfRegister int
+		// 商品默认图片
+		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
 		// 其他扩展数据

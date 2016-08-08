@@ -29,6 +29,8 @@ var (
 		"err_express_exists_area_template_set", "地区已存在运费模板设置")
 	ErrNoSuchTemplate *domain.DomainError = domain.NewDomainError(
 		"err_express_no_such_template", "运费模板不存在")
+	ErrTemplateNotEnabled *domain.DomainError = domain.NewDomainError(
+		"err_express_template_not_enabled", "运费模板未启用")
 	ErrNotSupportProvider *domain.DomainError = domain.NewDomainError(
 		"err_express_no_support_provider", "不支持该物流服务商")
 )
@@ -107,6 +109,9 @@ type (
 
 		// 设置地区的快递模板
 		Set(v *ExpressTemplate) error
+
+		// 是否启用
+		Enabled() bool
 
 		// 保存
 		Save() (int, error)

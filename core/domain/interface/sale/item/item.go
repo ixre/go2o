@@ -14,8 +14,14 @@ import (
 )
 
 var (
+	ErrVendor *domain.DomainError = domain.NewDomainError(
+		"err_not_be_review", "商品供应商不正确")
+
 	ErrNotBeReview *domain.DomainError = domain.NewDomainError(
 		"err_not_be_review", "商品还未通过审核")
+
+	ErrNotUploadImage *domain.DomainError = domain.NewDomainError(
+		"err_goods_not_upload_image", "请上传商品图片")
 )
 
 type (
@@ -40,43 +46,47 @@ type (
 
 	// 商品值
 	Item struct {
-		Id         int    `db:"id" auto:"yes" pk:"yes"`
-		CategoryId int    `db:"category_id"`
-		Name       string `db:"name"`
+		// 编号
+		Id int `db:"id" auto:"yes" pk:"yes"`
+		// 分类
+		CategoryId int `db:"category_id"`
+		// 名称
+		Name string `db:"name"`
 		//供应商编号(暂时同mch_id)
 		VendorId int `db:"supplier_id"`
 		// 货号
-		GoodsNo    string `db:"goods_no"`
+		GoodsNo string `db:"goods_no"`
+		// 小标题
 		SmallTitle string `db:"small_title"`
-		Image      string `db:"img"`
-		//成本价
+		// 图片
+		Image string `db:"img"`
+		// 成本价
 		Cost float32 `db:"cost"`
 		// 单件重量,单位:克(g)
 		Weight int `db:"weight"`
-
 		//定价
 		Price float32 `db:"price"`
-
 		//参考销售价
 		SalePrice float32 `db:"sale_price"`
-
+		// 运费模板编号
+		ExpressTplId int `db:"express_tid"`
+		// 供应门店 //todo: 去掉
 		ApplySubs string `db:"apply_subs"`
-
-		//简单备注,如:(限时促销)
-		Remark      string `db:"remark"`
+		//简单备注,如:(限时促销),todo: 去掉
+		Remark string `db:"remark"`
+		// 描述
 		Description string `db:"description"`
-
 		// 是否上架,1为上架
 		OnShelves int `db:"on_shelves"`
-
 		// 是否审核
 		HasReview int `db:"has_review"`
-
 		// 是否审核通过
 		ReviewPass int `db:"review_pass"`
-
-		State      int   `db:"state"`
+		// 状态
+		State int `db:"state"`
+		// 创建时间
 		CreateTime int64 `db:"create_time"`
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 )

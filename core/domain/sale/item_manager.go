@@ -12,56 +12,93 @@ package sale
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"time"
 )
 
-var _ sale.IItem = new(ItemImpl)
+var _ sale.IItem = new(itemImpl)
 
-type ItemImpl struct {
+type itemImpl struct {
 	_manager      *itemManagerImpl
 	_value        *item.Item
 	_saleRep      sale.ISaleRep
 	_itemRep      item.IItemRep
 	_saleLabelRep sale.ISaleLabelRep
 	_goodsRep     goods.IGoodsRep
+	_expressRep   express.IExpressRep
 	_promRep      promotion.IPromotionRep
 	_sale         *saleImpl
 	_saleLabels   []*sale.Label
 	_valueRep     valueobject.IValueRep
 }
 
-func newItem(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
+func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
 	itemRep item.IItemRep, saleRep sale.ISaleRep,
 	saleLabelRep sale.ISaleLabelRep, goodsRep goods.IGoodsRep,
-	valRep valueobject.IValueRep,
+	valRep valueobject.IValueRep, expressRep express.IExpressRep,
 	promRep promotion.IPromotionRep) sale.IItem {
-	return &ItemImpl{
+	return &itemImpl{
 		_manager:      mgr,
 		_value:        v,
 		_itemRep:      itemRep,
 		_saleRep:      saleRep,
 		_saleLabelRep: saleLabelRep,
 		_sale:         sale,
+		_expressRep:   expressRep,
 		_goodsRep:     goodsRep,
 		_valueRep:     valRep,
 	}
 }
 
-func (i *ItemImpl) GetDomainId() int {
+func (i *itemImpl) GetDomainId() int {
 	return i._value.Id
 }
 
-func (i *ItemImpl) GetValue() item.Item {
+func (i *itemImpl) GetValue() item.Item {
 	return *i._value
 }
 
-func (i *ItemImpl) SetValue(v *item.Item) error {
+func (i *itemImpl) checkValue(v *item.Item) error {
+	registry := i._valueRep.GetRegistry()
+
+	// 检测供应商
+	if v.VendorId <= 0 || v.VendorId != i._value.VendorId {
+		return item.ErrVendor
+	}
+
+	// 检测是否上传图片
+	if v.Image == registry.GoodsDefaultImage {
+		return item.ErrNotUploadImage
+	}
+
+	// 检测运费模板
+	if v.ExpressTplId <= 0 {
+		return shipment.ErrNotSetExpressTemplate
+	}
+	tpl := i._expressRep.GetUserExpress(v.VendorId).GetTemplate(v.ExpressTplId)
+	if tpl == nil {
+		return express.ErrNoSuchTemplate
+	}
+	if !tpl.Enabled() {
+		return express.ErrTemplateNotEnabled
+	}
+
+	// 检测价格
+	return i.checkPrice(v)
+}
+
+// 设置值
+func (i *itemImpl) SetValue(v *item.Item) error {
+	if err := i.checkValue(v); err != nil {
+		return err
+	}
 	if v.Id == i._value.Id {
 		v.CreateTime = i._value.CreateTime
 		v.GoodsNo = i._value.GoodsNo
@@ -72,12 +109,12 @@ func (i *ItemImpl) SetValue(v *item.Item) error {
 }
 
 // 是否上架
-func (i *ItemImpl) IsOnShelves() bool {
+func (i *itemImpl) IsOnShelves() bool {
 	return i._value.OnShelves == 1
 }
 
 // 获取商品的销售标签
-func (i *ItemImpl) GetSaleLabels() []*sale.Label {
+func (i *itemImpl) GetSaleLabels() []*sale.Label {
 	if i._saleLabels == nil {
 		i._saleLabels = i._saleLabelRep.GetItemSaleLabels(i.GetDomainId())
 	}
@@ -85,7 +122,7 @@ func (i *ItemImpl) GetSaleLabels() []*sale.Label {
 }
 
 // 保存销售标签
-func (i *ItemImpl) SaveSaleLabels(tagIds []int) error {
+func (i *itemImpl) SaveSaleLabels(tagIds []int) error {
 	err := i._saleLabelRep.CleanItemSaleLabels(i.GetDomainId())
 	if err == nil {
 		err = i._saleLabelRep.SaveItemSaleLabels(i.GetDomainId(), tagIds)
@@ -95,14 +132,14 @@ func (i *ItemImpl) SaveSaleLabels(tagIds []int) error {
 }
 
 // 重置审核状态
-func (i *ItemImpl) resetReview() {
+func (i *itemImpl) resetReview() {
 	i._value.HasReview = 0
 	i._value.ReviewPass = 0
 }
 
 // 判断价格是否正确
-func (i *ItemImpl) checkPrice() error {
-	rate := (i._value.SalePrice - i._value.Cost) / i._value.SalePrice
+func (i *itemImpl) checkPrice(v *item.Item) error {
+	rate := (v.SalePrice - v.Cost) / v.SalePrice
 	if rate < 0 {
 		return goods.ErrSalePriceLessThanCost
 	}
@@ -116,7 +153,7 @@ func (i *ItemImpl) checkPrice() error {
 }
 
 // 保存
-func (i *ItemImpl) Save() (int, error) {
+func (i *itemImpl) Save() (int, error) {
 	i._sale.clearCache(i._value.Id)
 	unix := time.Now().Unix()
 	i._value.UpdateTime = unix
@@ -128,10 +165,6 @@ func (i *ItemImpl) Save() (int, error) {
 		us := strconv.Itoa(int(unix))
 		l := len(cs)
 		i._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
-	}
-	err := i.checkPrice()
-	if err != nil {
-		return i.GetDomainId(), err
 	}
 
 	i.resetReview()
@@ -154,7 +187,7 @@ func (i *ItemImpl) Save() (int, error) {
 }
 
 //todo: 过渡方法,应有SKU,不根据Item生成Goods
-func (i *ItemImpl) saveGoods() {
+func (i *itemImpl) saveGoods() {
 	val := i._goodsRep.GetValueGoods(i.GetDomainId(), 0)
 	if val == nil {
 		val = &goods.ValueGoods{
@@ -233,19 +266,22 @@ func (i *ItemImpl) saveGoods() {
 var _ sale.IItemManager = new(itemManagerImpl)
 
 type itemManagerImpl struct {
-	_sale     *saleImpl
-	_itemRep  item.IItemRep
-	_valRep   valueobject.IValueRep
-	_vendorId int
+	_sale       *saleImpl
+	_itemRep    item.IItemRep
+	_valRep     valueobject.IValueRep
+	_expressRep express.IExpressRep
+	_vendorId   int
 }
 
 func NewItemManager(vendorId int, s *saleImpl,
-	itemRep item.IItemRep, valRep valueobject.IValueRep) sale.IItemManager {
+	itemRep item.IItemRep, expressRep express.IExpressRep,
+	valRep valueobject.IValueRep) sale.IItemManager {
 	c := &itemManagerImpl{
-		_sale:     s,
-		_vendorId: vendorId,
-		_valRep:   valRep,
-		_itemRep:  itemRep,
+		_sale:       s,
+		_vendorId:   vendorId,
+		_valRep:     valRep,
+		_itemRep:    itemRep,
+		_expressRep: expressRep,
 	}
 	return c.init()
 }
@@ -261,9 +297,10 @@ func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 	if v.UpdateTime == 0 {
 		v.UpdateTime = v.CreateTime
 	} //todo: 判断category
-	return newItem(i, i._sale, v, i._itemRep,
+	return newItemImpl(i, i._sale, v, i._itemRep,
 		i._sale._saleRep, i._sale._labelRep,
-		i._sale._goodsRep, i._valRep, i._sale._promRep)
+		i._sale._goodsRep, i._valRep, i._expressRep,
+		i._sale._promRep)
 }
 
 // 删除货品

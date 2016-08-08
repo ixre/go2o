@@ -105,8 +105,8 @@ const (
 
 type LogType int
 
-func (this LogType) String() string {
-	switch this {
+func (o LogType) String() string {
+	switch o {
 	case LogSetup:
 		return "流程"
 	case LogChangePrice:
@@ -542,17 +542,19 @@ type (
 		ShopId int `db:"-"`
 		// 重量,用于生成订单时存储数据
 		Weight int `db:"-"`
+		// 快递模板编号
+		ExpressTplId int `db:"-"`
 	}
 )
 
-func (this *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
+func (o *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
 	orderId int, orderFee float32) *OrderCoupon {
 	v := coupon.GetDetailsValue()
-	this.CouponCode = v.Code
-	this.CouponId = v.Id
-	this.OrderId = orderId
-	this.Fee = coupon.GetCouponFee(orderFee)
-	this.Describe = coupon.GetDescribe()
-	this.SendIntegral = v.Integral
-	return this
+	o.CouponCode = v.Code
+	o.CouponId = v.Id
+	o.OrderId = orderId
+	o.Fee = coupon.GetCouponFee(orderFee)
+	o.Describe = coupon.GetDescribe()
+	o.SendIntegral = v.Integral
+	return o
 }
