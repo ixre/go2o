@@ -49,6 +49,8 @@ type (
 		CategoryId int `db:"cat_id"`
 		//SKU  todo:????
 		Sku string `db:"-"`
+		//运费模板编号
+		ExpressTplId int `db:"express_tid"`
 		// 是否上架
 		OnShelves int `db:"on_shelves"`
 		//图片

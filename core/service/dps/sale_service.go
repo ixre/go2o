@@ -105,12 +105,11 @@ func (s *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
 		}
 		// 修改货品时，不会修改详情
 		v.Description = pro.GetValue().Description
-
-		if err := pro.SetValue(v); err != nil {
-			return 0, err
-		}
 	} else {
 		pro = sl.ItemManager().CreateItem(v)
+	}
+	if err := pro.SetValue(v); err != nil {
+		return 0, err
 	}
 	return pro.Save()
 }

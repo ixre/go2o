@@ -205,6 +205,11 @@ func (e *expressTemplateImpl) Set(v *express.ExpressTemplate) error {
 	return err
 }
 
+// 是否启用
+func (e *expressTemplateImpl) Enabled() bool {
+	return e._value.Enabled == 1
+}
+
 // 保存
 func (e *expressTemplateImpl) Save() (int, error) {
 	id, err := e._rep.SaveExpressTemplate(e._value)

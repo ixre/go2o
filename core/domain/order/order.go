@@ -329,8 +329,16 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int][]*order.
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	gs := o._saleRep.GetSale(c.VendorId).GoodsManager().CreateGoods(
 		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
-	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
+	// 快照
+	snap := gs.SnapshotManager().GetLatestSnapshot()
 	if snap == nil {
+		domain.HandleError(errors.New("商品快照生成失败："+
+			strconv.Itoa(c.SkuId)), "domain")
+		return nil
+	}
+	// 获取商品已销售快照
+	saleSnap := gs.SnapshotManager().GetLatestSaleSnapshot()
+	if saleSnap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
 			strconv.Itoa(c.SkuId)), "domain")
 		return nil
@@ -341,7 +349,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
-		SnapshotId:  snap.Id,
+		SnapshotId:  saleSnap.Id,
 		Quantity:    c.Quantity,
 		Amount:      fee,
 		FinalAmount: fee,
@@ -349,6 +357,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
+		ExpressTplId:   snap.ExpressTplId,
 		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
 	}
 }

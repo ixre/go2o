@@ -38,15 +38,15 @@ func NewSnapshotManagerImpl(skuId int, rep goods.IGoodsRep,
 }
 
 // 获取最新的快照
-func (this *snapshotManagerImpl) GetLatestSnapshot() *goods.Snapshot {
-	if this._latestSnapshot == nil {
-		this._latestSnapshot = this._rep.GetLatestSnapshot(this._skuId)
+func (s *snapshotManagerImpl) GetLatestSnapshot() *goods.Snapshot {
+	if s._latestSnapshot == nil {
+		s._latestSnapshot = s._rep.GetLatestSnapshot(s._skuId)
 	}
-	return this._latestSnapshot
+	return s._latestSnapshot
 }
 
 // 是否为新快照,与旧有快照进行数据对比
-func (this *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
+func (s *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 	latest *goods.Snapshot) bool {
 	if latest != nil {
 		return latest.GoodsTitle != snap.GoodsTitle ||
@@ -59,27 +59,28 @@ func (this *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 			latest.LevelSales != snap.LevelSales ||
 			latest.SaleNum != snap.SaleNum ||
 			latest.StockNum != snap.StockNum ||
+			latest.ExpressTplId != snap.ExpressTplId ||
 			latest.Weight != snap.Weight
 	}
 	return true
 }
 
-func (this *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) {
-	if this._gs == nil {
-		this._gs = this._rep.GetValueGoodsById(this._skuId)
+func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) {
+	if s._gs == nil {
+		s._gs = s._rep.GetValueGoodsById(s._skuId)
 	}
-	if this._gi == nil {
-		this._gi = this._itemRep.GetValueItem(this._gs.ItemId)
+	if s._gi == nil {
+		s._gi = s._itemRep.GetValueItem(s._gs.ItemId)
 	}
-	return this._gs, this._gi
+	return s._gs, s._gi
 }
 
 // 更新快照, 通过审核后,才会更新快照
-func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
-	ls := this.GetLatestSnapshot()
-	gs, gi := this.getGoodsAndItem()
+func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
+	ls := s.GetLatestSnapshot()
+	gs, gi := s.getGoodsAndItem()
 
-	if this._skuId <= 0 || gi == nil || gs == nil {
+	if s._skuId <= 0 || gi == nil || gs == nil {
 		return -1, goods.ErrNoSuchGoods
 	}
 
@@ -89,68 +90,70 @@ func (this *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 	}
 
 	LevelSales := 0
-	if len(this._rep.GetGoodsLevelPrice(this._skuId)) > 0 {
+	if len(s._rep.GetGoodsLevelPrice(s._skuId)) > 0 {
 		LevelSales = 1
 	}
 
 	unix := time.Now().Unix()
 	var snap *goods.Snapshot = &goods.Snapshot{
-		SkuId:      this._skuId,
-		VendorId:   gi.VendorId,
-		Key:        fmt.Sprintf("%d-g%d-%d", gi.VendorId, this._skuId, unix),
-		ItemId:     gs.ItemId,
-		GoodsTitle: gi.Name,
-		GoodsNo:    gi.GoodsNo,
-		SmallTitle: gi.SmallTitle,
-		CategoryId: gi.CategoryId,
-		Image:      gi.Image,
-		Weight:     gi.Weight,
-		SalePrice:  gs.SalePrice,
-		Price:      gi.Price,
-		SaleNum:    gs.SaleNum,
-		StockNum:   gs.StockNum,
-		LevelSales: LevelSales,
-		OnShelves:  gi.OnShelves,
-		UpdateTime: unix,
+		SkuId:        s._skuId,
+		VendorId:     gi.VendorId,
+		Key:          fmt.Sprintf("%d-g%d-%d", gi.VendorId, s._skuId, unix),
+		ItemId:       gs.ItemId,
+		GoodsTitle:   gi.Name,
+		GoodsNo:      gi.GoodsNo,
+		SmallTitle:   gi.SmallTitle,
+		CategoryId:   gi.CategoryId,
+		Image:        gi.Image,
+		Weight:       gi.Weight,
+		SalePrice:    gs.SalePrice,
+		Price:        gi.Price,
+		SaleNum:      gs.SaleNum,
+		StockNum:     gs.StockNum,
+		LevelSales:   LevelSales,
+		OnShelves:    gi.OnShelves,
+		ExpressTplId: gi.ExpressTplId,
+		UpdateTime:   unix,
 	}
 
-	if this.CompareSnapshot(snap, ls) {
-		this._latestSnapshot = snap
-		return this._rep.SaveSnapshot(snap)
+	if s.CompareSnapshot(snap, ls) {
+		s._latestSnapshot = snap
+		return s._rep.SaveSnapshot(snap)
 	}
 
-	return 0, goods.ErrLatestSnapshot
+	return snap.SkuId, nil
+	//return 0, goods.ErrLatestSnapshot
 }
 
 // 根据KEY获取已销售商品的快照
-func (this *snapshotManagerImpl) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
-	return this._rep.GetSaleSnapshotByKey(key)
+func (s *snapshotManagerImpl) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
+	return s._rep.GetSaleSnapshotByKey(key)
 }
 
 // 根据ID获取已销售商品的快照
-func (this *snapshotManagerImpl) GetSaleSnapshot(id int) *goods.SalesSnapshot {
-	return this._rep.GetSaleSnapshot(id)
+func (s *snapshotManagerImpl) GetSaleSnapshot(id int) *goods.SalesSnapshot {
+	return s._rep.GetSaleSnapshot(id)
 }
 
 // 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-func (this *snapshotManagerImpl) GetLatestSaleSnapshot() *goods.SalesSnapshot {
-	snap := this._rep.GetLatestSaleSnapshot(this._skuId)
-	snapBasis := this.GetLatestSnapshot()
+func (s *snapshotManagerImpl) GetLatestSaleSnapshot() *goods.SalesSnapshot {
+	snap := s._rep.GetLatestSaleSnapshot(s._skuId)
+	snapBasis := s.GetLatestSnapshot()
 	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
 		// 生成交易快照
-		snap = this.createNewSaleSnap(snapBasis)
-		snap.Id, _ = this._rep.SaveSaleSnapshot(snap)
+		snap = s.createNewSaleSnap(snapBasis)
+		snap.Id, _ = s._rep.SaveSaleSnapshot(snap)
 	}
 	return snap
 }
 
 // 通过商品快照创建新的商品销售快照
-func (this *snapshotManagerImpl) createNewSaleSnap(snap *goods.Snapshot) *goods.SalesSnapshot {
+func (s *snapshotManagerImpl) createNewSaleSnap(snap *goods.Snapshot) *goods.SalesSnapshot {
 	sn := &goods.SalesSnapshot{
 		//快照编号
 		Id: 0,
 		//商品SKU编号
-		SkuId: this._skuId,
+		SkuId: s._skuId,
 		// 卖家编号
 		SellerId: snap.VendorId,
 		//商品标题

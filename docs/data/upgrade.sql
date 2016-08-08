@@ -772,8 +772,14 @@ ALTER TABLE `flm`.`express_provider`
   CHANGE COLUMN `letter` `group_flag` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ;
 
 
+ALTER TABLE `flm`.`gs_item`
+  ADD COLUMN `express_tid` INT NULL COMMENT '快递模板编号' AFTER `sale_price`;
 
+ALTER TABLE `flm`.`gs_snapshot`
+  ADD COLUMN `express_tid` INT NULL AFTER `sale_price`;
 
+ALTER TABLE `flm`.`gs_item`
+  CHANGE COLUMN `img` `img` VARCHAR(120) NULL DEFAULT NULL ;
 
 
 
