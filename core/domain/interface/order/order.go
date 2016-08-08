@@ -541,7 +541,7 @@ type (
 		// 商店编号
 		ShopId int `db:"-"`
 		// 重量,用于生成订单时存储数据
-		Weight int `db:"-"`
+		Weight float32 `db:"-"`
 		// 快递模板编号
 		ExpressTplId int `db:"-"`
 	}

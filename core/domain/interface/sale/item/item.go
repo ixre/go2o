@@ -62,8 +62,8 @@ type (
 		Image string `db:"img"`
 		// 成本价
 		Cost float32 `db:"cost"`
-		// 单件重量,单位:克(g)
-		Weight int `db:"weight"`
+		// 单件重量,单位:千克(kg)
+		Weight float32 `db:"weight"`
 		//定价
 		Price float32 `db:"price"`
 		//参考销售价

@@ -114,12 +114,12 @@ func (e *expressService) DeleteTemplateAreaSet(userId, id, areaSetId int) error 
 	return t.DeleteAreaSet(areaSetId)
 }
 
-// 获取快递费,传入地区编码，根据单位值，如总重量。
-func (e *expressService) GetExpressFee(userId int, templateId int,
-	areaCode string, unit int) float32 {
-	u := e._rep.GetUserExpress(userId)
-	return u.GetExpressFee(templateId, areaCode, unit)
-}
+//// 获取快递费,传入地区编码，根据单位值，如总重量。
+//func (e *expressService) GetExpressFee(userId int, templateId int,
+//	areaCode string, basisUnit float32) float32 {
+//	u := e._rep.GetUserExpress(userId)
+//	return u.GetExpressFee(templateId, areaCode, basisUnit)
+//}
 
 // 根据地区编码获取运费模板
 func (e *expressService) GetAreaExpressTemplateByAreaCode(userId int,

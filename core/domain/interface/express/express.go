@@ -36,10 +36,12 @@ var (
 )
 
 const (
-	//根据重量计算面积
-	BasisByWeight = 1
 	//根据件数计算运费,通常大件物品,可以按件收费
-	BasisByNumber = 2
+	BasisByNumber = 1
+	//根据重量计算运费
+	BasisByWeight = 2
+	//按体积(容积)来计算运费,比如饮料
+	BasisByVolume = 3
 )
 
 var (
@@ -78,6 +80,21 @@ var (
 )
 
 type (
+	// 运费计算器
+	IExpressCalculator interface {
+		// 添加计算项,tplId为运费模板的编号
+		Add(tplId int, unit float32) error
+
+		// 计算运费
+		Calculate(areaCode string)
+
+		// 获取累计运费
+		Total() float32
+
+		// 获取运费模板编号与费用的集合
+		Fee() map[int]float32
+	}
+
 	// 物流快递
 	IUserExpress interface {
 		// 获取聚合根编号
@@ -95,8 +112,8 @@ type (
 		// 删除模板
 		DeleteTemplate(id int) error
 
-		// 获取快递费,传入地区编码，根据单位值，如总重量。
-		GetExpressFee(templateId int, areaCode string, unit int) float32
+		// 创建运费计算器
+		CreateCalculator() IExpressCalculator
 	}
 
 	// 快递模板
