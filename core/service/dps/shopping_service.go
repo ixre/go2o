@@ -12,6 +12,7 @@ package dps
 import (
 	"bytes"
 	"errors"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -54,16 +55,16 @@ func NewShoppingService(r order.IOrderRep,
 /*================ 购物车  ================*/
 
 //  获取购物车
-func (this *shoppingService) getShoppingCart(buyerId int,
+func (s *shoppingService) getShoppingCart(buyerId int,
 	cartKey string) cart.ICart {
 	var c cart.ICart
 	if len(cartKey) > 0 {
-		c = this._cartRep.GetShoppingCartByKey(cartKey)
+		c = s._cartRep.GetShoppingCartByKey(cartKey)
 	} else if buyerId > 0 {
-		c = this._cartRep.GetMemberCurrentCart(buyerId)
+		c = s._cartRep.GetMemberCurrentCart(buyerId)
 	}
 	if c == nil {
-		c = this._cartRep.NewCart()
+		c = s._cartRep.NewCart()
 		_, err := c.Save()
 		domain.HandleError(err, "service")
 	}
@@ -75,25 +76,26 @@ func (this *shoppingService) getShoppingCart(buyerId int,
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (this *shoppingService) GetShoppingCart(memberId int,
+func (s *shoppingService) GetShoppingCart(memberId int,
 	cartKey string) *dto.ShoppingCart {
-	c := this.getShoppingCart(memberId, cartKey)
-	return this.parseCart(c)
+	c := s.getShoppingCart(memberId, cartKey)
+	return s.parseCart(c)
 }
 
 // 创建一个新的购物车
-func (this *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
-	c := this._cartRep.NewCart()
+func (s *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
+	c := s._cartRep.NewCart()
 	c.SetBuyer(memberId)
 	return cart.ParseToDtoCart(c)
 }
 
-func (this *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
+func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Vendors {
-		mch, _ := this._mchRep.GetMerchant(v.VendorId)
+		mch, _ := s._mchRep.GetMerchant(v.VendorId)
 		v.VendorName = mch.GetValue().Name
 		if v.ShopId > 0 {
+			log.Println("---", v.ShopId)
 			v.ShopName = mch.ShopManager().GetShop(v.ShopId).GetValue().Name
 		}
 	}
@@ -101,9 +103,9 @@ func (this *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 }
 
 //todo: 这里响应较慢,性能?
-func (this *shoppingService) AddCartItem(memberId int, cartKey string,
+func (s *shoppingService) AddCartItem(memberId int, cartKey string,
 	skuId, num int, checked bool) (*dto.CartItem, error) {
-	c := this.getShoppingCart(memberId, cartKey)
+	c := s.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
 	var err error
 	// 从购物车中添加
@@ -115,14 +117,14 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	}
 	// 将新商品加入到购物车
 	if item == nil {
-		snap := this._goodsRep.GetLatestSnapshot(skuId)
+		snap := s._goodsRep.GetLatestSnapshot(skuId)
 		if snap == nil {
 			return nil, goods.ErrNoSuchGoods
 		}
-		tm := this._itemRep.GetValueItem(snap.ItemId)
+		tm := s._itemRep.GetValueItem(snap.ItemId)
 
 		// 检测是否开通商城
-		mch, err2 := this._mchRep.GetMerchant(tm.VendorId)
+		mch, err2 := s._mchRep.GetMerchant(tm.VendorId)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -149,9 +151,9 @@ func (this *shoppingService) AddCartItem(memberId int, cartKey string,
 	}
 	return nil, err
 }
-func (this *shoppingService) SubCartItem(memberId int,
+func (s *shoppingService) SubCartItem(memberId int,
 	cartKey string, goodsId, num int) error {
-	cart := this.getShoppingCart(memberId, cartKey)
+	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {
 		_, err = cart.Save()
@@ -160,16 +162,16 @@ func (this *shoppingService) SubCartItem(memberId int,
 }
 
 // 勾选商品结算
-func (this *shoppingService) CartCheckSign(memberId int,
+func (s *shoppingService) CartCheckSign(memberId int,
 	cartKey string, arr []int) error {
-	cart := this.getShoppingCart(memberId, cartKey)
+	cart := s.getShoppingCart(memberId, cartKey)
 	return cart.SignItemChecked(arr)
 }
 
 // 更新购物车结算
-func (this *shoppingService) PrepareSettlePersist(memberId, shopId,
+func (s *shoppingService) PrepareSettlePersist(memberId, shopId,
 	paymentOpt, deliverOpt, deliverId int) error {
-	var cart = this.getShoppingCart(memberId, "")
+	var cart = s.getShoppingCart(memberId, "")
 	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
 	if err == nil {
 		_, err = cart.Save()
@@ -177,9 +179,9 @@ func (this *shoppingService) PrepareSettlePersist(memberId, shopId,
 	return err
 }
 
-func (this *shoppingService) GetCartSettle(memberId int,
+func (s *shoppingService) GetCartSettle(memberId int,
 	cartKey string) *dto.SettleMeta {
-	var cart = this.getShoppingCart(memberId, cartKey)
+	var cart = s.getShoppingCart(memberId, cartKey)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
 	var st *dto.SettleMeta = new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
@@ -209,19 +211,19 @@ func (this *shoppingService) GetCartSettle(memberId int,
 
 /*================ 订单  ================*/
 
-func (this *shoppingService) PrepareOrder(buyerId int, cartKey string) *order.Order {
-	cart := this.getShoppingCart(buyerId, cartKey)
-	order, _, err := this._manager.PrepareOrder(cart, "", "")
+func (s *shoppingService) PrepareOrder(buyerId int, cartKey string) *order.Order {
+	cart := s.getShoppingCart(buyerId, cartKey)
+	order, _, err := s._manager.PrepareOrder(cart, "", "")
 	if err != nil {
 		return nil
 	}
 	return order.GetValue()
 }
 
-func (this *shoppingService) PrepareOrder2(buyerId int, cartKey string,
+func (s *shoppingService) PrepareOrder2(buyerId int, cartKey string,
 	subject string, couponCode string) (map[string]interface{}, error) {
-	cart := this.getShoppingCart(buyerId, cartKey)
-	order, py, err := this._manager.PrepareOrder(cart, subject, couponCode)
+	cart := s.getShoppingCart(buyerId, cartKey)
+	order, py, err := s._manager.PrepareOrder(cart, subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
@@ -261,20 +263,20 @@ func (this *shoppingService) PrepareOrder2(buyerId int, cartKey string,
 	return data, err
 }
 
-func (this *shoppingService) SubmitOrder(buyerId int, cartKey string,
+func (s *shoppingService) SubmitOrder(buyerId int, cartKey string,
 	subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
-	c := this.getShoppingCart(buyerId, cartKey)
-	od, py, err := this._manager.SubmitOrder(c, subject, couponCode, balanceDiscount)
+	c := s.getShoppingCart(buyerId, cartKey)
+	od, py, err := s._manager.SubmitOrder(c, subject, couponCode, balanceDiscount)
 	if err != nil {
 		return "", "", err
 	}
 	return od.GetOrderNo(), py.GetTradeNo(), err
 }
 
-func (this *shoppingService) SetDeliverShop(orderNo string,
+func (s *shoppingService) SetDeliverShop(orderNo string,
 	shopId int) (err error) {
-	o := this._manager.GetOrderByNo(orderNo)
+	o := s._manager.GetOrderByNo(orderNo)
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
@@ -287,12 +289,12 @@ func (this *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (this *shoppingService) GetOrderById(id int) *order.Order {
-	return this._rep.GetOrderById(id)
+func (s *shoppingService) GetOrderById(id int) *order.Order {
+	return s._rep.GetOrderById(id)
 }
 
-func (this *shoppingService) GetOrderByNo(orderNo string) *order.Order {
-	order := this._manager.GetOrderByNo(orderNo)
+func (s *shoppingService) GetOrderByNo(orderNo string) *order.Order {
+	order := s._manager.GetOrderByNo(orderNo)
 	if order != nil {
 		return order.GetValue()
 	}
@@ -309,8 +311,8 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 根据订单号获取订单
-func (this *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
-	return this._rep.GetValueOrderByNo(orderNo)
+func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
+	return s._rep.GetValueOrderByNo(orderNo)
 }
 
 // 获取子订单
@@ -419,6 +421,6 @@ func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int, snapshotId in
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }
 
-func (this *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
-	this._manager.OrderAutoSetup(f)
+func (s *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
+	s._manager.OrderAutoSetup(f)
 }
