@@ -447,7 +447,8 @@ func (a *accountImpl) FinishApplyCash(id int, tradeNo string) error {
 }
 
 // 冻结余额
-func (a *accountImpl) Freezes(title string, tradeNo string, amount float32, referId int) error {
+func (a *accountImpl) Freezes(title string, tradeNo string,
+	amount float32, referId int) error {
 	if a._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
@@ -472,7 +473,8 @@ func (a *accountImpl) Freezes(title string, tradeNo string, amount float32, refe
 }
 
 // 解冻金额
-func (a *accountImpl) Unfreezes(title string, tradeNo string, amount float32, referId int) error {
+func (a *accountImpl) Unfreezes(title string, tradeNo string,
+	amount float32, referId int) error {
 	if a._value.FreezesFee < amount {
 		return member.ErrNotEnoughAmount
 	}
@@ -498,7 +500,8 @@ func (a *accountImpl) Unfreezes(title string, tradeNo string, amount float32, re
 }
 
 // 冻结赠送金额
-func (a *accountImpl) FreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+func (a *accountImpl) FreezesPresent(title string, tradeNo string,
+	amount float32, referId int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -526,7 +529,8 @@ func (a *accountImpl) FreezesPresent(title string, tradeNo string, amount float3
 }
 
 // 解冻赠送金额
-func (a *accountImpl) UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error {
+func (a *accountImpl) UnfreezesPresent(title string, tradeNo string,
+	amount float32, referId int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
