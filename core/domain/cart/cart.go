@@ -54,22 +54,22 @@ func NewCart(buyerId int, rep cart.ICartRep, memberRep member.IMemberRep,
 	return CreateCart(value, rep, memberRep, goodsRep)
 }
 
-func (this *cartImpl) init() cart.ICart {
+func (c *cartImpl) init() cart.ICart {
 	// 初始化购物车的信息
-	if this._value != nil && this._value.Items != nil {
-		this.setAttachGoodsInfo(this._value.Items)
+	if c._value != nil && c._value.Items != nil {
+		c.setAttachGoodsInfo(c._value.Items)
 	}
-	return this
+	return c
 }
 
 // 检查购物车(仅结算商品)
-func (this *cartImpl) Check() error {
-	if this._value == nil || len(this._value.Items) == 0 {
+func (c *cartImpl) Check() error {
+	if c._value == nil || len(c._value.Items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
-	for _, v := range this._value.Items {
+	for _, v := range c._value.Items {
 		if v.Checked == 1 {
-			snap := this._goodsRep.GetLatestSnapshot(v.SkuId)
+			snap := c._goodsRep.GetLatestSnapshot(v.SkuId)
 			if snap == nil {
 				return goods.ErrNoSuchGoods // 没有商品
 			}
@@ -85,30 +85,30 @@ func (this *cartImpl) Check() error {
 }
 
 // 获取商品的快招列表
-func (this *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int]*goods.Snapshot {
-	if this._snapMap == nil {
+func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int]*goods.Snapshot {
+	if c._snapMap == nil {
 		if items != nil {
 			l := len(items)
-			this._snapMap = make(map[int]*goods.Snapshot, l)
+			c._snapMap = make(map[int]*goods.Snapshot, l)
 			if l > 0 {
 				var ids []int = make([]int, l)
 				for i, v := range items {
 					ids[i] = v.SkuId
 				}
-				snapList := this._goodsRep.GetSnapshots(ids)
+				snapList := c._goodsRep.GetSnapshots(ids)
 				for _, v := range snapList {
 					v2 := v
-					this._snapMap[v.SkuId] = &v2
+					c._snapMap[v.SkuId] = &v2
 				}
 			}
 		}
 	}
-	return this._snapMap
+	return c._snapMap
 }
 
-func (this *cartImpl) getBuyerLevelId() int {
-	if this._value.BuyerId > 0 {
-		m := this._memberRep.GetMember(this._value.BuyerId)
+func (c *cartImpl) getBuyerLevelId() int {
+	if c._value.BuyerId > 0 {
+		m := c._memberRep.GetMember(c._value.BuyerId)
 		if m != nil {
 			return m.GetValue().Level
 		}
@@ -116,17 +116,17 @@ func (this *cartImpl) getBuyerLevelId() int {
 	return -1
 }
 
-func (this *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int) {
+func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int) {
 	// 设置会员价
 	if level > 0 {
-		gds := this._goodsRep.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
+		gds := c._goodsRep.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
 		snap.SalePrice = gds.GetPromotionPrice(level)
 	}
 }
 
 // 设置附加的商品信息
-func (this *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
-	list := this.getSnapshotsMap(items)
+func (c *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
+	list := c.getSnapshotsMap(items)
 	if list == nil {
 		return
 	}
@@ -136,9 +136,9 @@ func (this *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 		//  会员价
 		if gv.LevelSales == 1 && level != -1 {
 			if level == 0 {
-				level = this.getBuyerLevelId()
+				level = c.getBuyerLevelId()
 			}
-			this.setGoodsInfo(gv, level)
+			c.setGoodsInfo(gv, level)
 		}
 		// 设置购物车项的数据
 		if ok {
@@ -153,42 +153,42 @@ func (this *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 }
 
 // 获取聚合根编号
-func (this *cartImpl) GetAggregateRootId() int {
-	return this._value.Id
+func (c *cartImpl) GetAggregateRootId() int {
+	return c._value.Id
 }
 
-func (this *cartImpl) GetValue() cart.ValueCart {
-	return *this._value
+func (c *cartImpl) GetValue() cart.ValueCart {
+	return *c._value
 }
 
 // 获取购物车中的商品
-func (this *cartImpl) GetCartGoods() []sale.IGoods {
+func (c *cartImpl) GetCartGoods() []sale.IGoods {
 	//todo: IMPL
-	//var gs []sale.IGoods = make([]sale.IGoods, len(this._value.Items))
-	//for i, v := range this._value.Items {
-	//    gs[i] = this._goodsRep.getGoods
+	//var gs []sale.IGoods = make([]sale.IGoods, len(c._value.Items))
+	//for i, v := range c._value.Items {
+	//    gs[i] = c._goodsRep.getGoods
 	//}
 	//return gs
 	return []sale.IGoods{}
 }
 
 // 获取商品编号与购物车项的集合
-func (this *cartImpl) Items() map[int]*cart.CartItem {
+func (c *cartImpl) Items() map[int]*cart.CartItem {
 	list := make(map[int]*cart.CartItem)
-	for _, v := range this._value.Items {
+	for _, v := range c._value.Items {
 		list[v.SkuId] = v
 	}
 	return list
 }
 
 // 添加项
-func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
+func (c *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 	num int, checked bool) (*cart.CartItem, error) {
 	var err error
-	if this._value.Items == nil {
-		this._value.Items = []*cart.CartItem{}
+	if c._value.Items == nil {
+		c._value.Items = []*cart.CartItem{}
 	}
-	snap := this._goodsRep.GetLatestSnapshot(skuId)
+	snap := c._goodsRep.GetLatestSnapshot(skuId)
 	if snap == nil {
 		return nil, goods.ErrNoSuchGoods // 没有商品
 	}
@@ -199,7 +199,7 @@ func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 		return nil, sale.ErrFullOfStock // 已经卖完了
 	}
 	// 添加数量
-	for _, v := range this._value.Items {
+	for _, v := range c._value.Items {
 		if v.SkuId == skuId {
 			if v.Quantity+num > snap.StockNum {
 				return v, sale.ErrOutOfStock // 库存不足
@@ -212,15 +212,16 @@ func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 		}
 	}
 
-	this._snapMap = nil //clean
+	c._snapMap = nil //clean
 
 	// 设置商品的相关信息
-	this.setGoodsInfo(snap, this.getBuyerLevelId())
+	c.setGoodsInfo(snap, c.getBuyerLevelId())
 
 	v := &cart.CartItem{
-		CartId:     this.GetAggregateRootId(),
+		CartId:     c.GetAggregateRootId(),
 		VendorId:   vendorId,
 		ShopId:     shopId,
+		Snapshot:   snap,
 		SnapshotId: snap.SkuId,
 		SkuId:      skuId,
 		Quantity:   num,
@@ -233,22 +234,22 @@ func (this *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 	if checked {
 		v.Checked = 1
 	}
-	this._value.Items = append(this._value.Items, v)
+	c._value.Items = append(c._value.Items, v)
 	return v, err
 }
 
 // 移出项
-func (this *cartImpl) RemoveItem(goodsId, num int) error {
-	if this._value.Items == nil {
+func (c *cartImpl) RemoveItem(goodsId, num int) error {
+	if c._value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
 
 	// 删除数量
-	for _, v := range this._value.Items {
+	for _, v := range c._value.Items {
 		if v.SkuId == goodsId {
 			if newNum := v.Quantity - num; newNum <= 0 {
 				// 移出购物车
-				//this.value.Items = append(this.value.Items[:i],this.value.Items[i+1:]...)
+				//c.value.Items = append(c.value.Items[:i],c.value.Items[i+1:]...)
 				v.Quantity = 0
 			} else {
 				v.Quantity = newNum
@@ -257,44 +258,44 @@ func (this *cartImpl) RemoveItem(goodsId, num int) error {
 		}
 	}
 
-	this._snapMap = nil //clean
+	c._snapMap = nil //clean
 
 	return nil
 }
 
 // 获取购物车的KEY
-func (this *cartImpl) Key() string {
-	return this._value.CartKey
+func (c *cartImpl) Key() string {
+	return c._value.CartKey
 }
 
 /*
-func (this *cartImpl) combineBuyerCart() cart.ICart {
+func (c *cartImpl) combineBuyerCart() cart.ICart {
 
     var hasOutCart = len(cartKey) != 0
-    var hasBuyer = this._value.BuyerId > 0
+    var hasBuyer = c._value.BuyerId > 0
 
     var memCart cart.ICart = nil // 消费者的购物车
-    var outCart cart.ICart = this // 当前购物车
+    var outCart cart.ICart = c // 当前购物车
 
     if hasBuyer {
         // 如果没有传递cartKey ，或者传递的cart和会员绑定的购物车相同，直接返回
-        if memCart = this._rep.GetMemberCurrentCart(this._value.BuyerId);
+        if memCart = c._rep.GetMemberCurrentCart(c._value.BuyerId);
             memCart != nil {
             if memCart.Key() == outCart.Key() {
                 return memCart
             }
         } else {
-            memCart = this.NewCart()
+            memCart = c.NewCart()
         }
     }
 
     if hasOutCart {
-        outCart, _ = this.GetCartByKey(cartKey)
+        outCart, _ = c.GetCartByKey(cartKey)
     }
 
     // 合并购物车
     if outCart != nil && hasBuyer {
-        if buyerId := outCart.GetValue().BuyerId; buyerId <= 0 || buyerId == this._buyerId {
+        if buyerId := outCart.GetValue().BuyerId; buyerId <= 0 || buyerId == c._buyerId {
             memCart, _ = memCart.Combine(outCart)
             outCart.Destroy()
             memCart.Save()
@@ -309,7 +310,7 @@ func (this *cartImpl) combineBuyerCart() cart.ICart {
         return outCart
     }
 
-    return this.NewCart()
+    return c.NewCart()
 
     //	if !hasOutCart {
     //		if c == nil {
@@ -341,44 +342,44 @@ func (this *cartImpl) combineBuyerCart() cart.ICart {
     //	}
 
     // 返回一个新的购物车
-    //	return this.NewCart(buyerId)
+    //	return c.NewCart(buyerId)
 }
 */
 
 // 合并购物车，并返回新的购物车
-func (this *cartImpl) Combine(c cart.ICart) cart.ICart {
-	if c.GetAggregateRootId() != this.GetAggregateRootId() {
-		for _, v := range c.GetValue().Items {
-			if item, err := this.AddItem(v.VendorId, v.ShopId,
+func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
+	if ic.GetAggregateRootId() != c.GetAggregateRootId() {
+		for _, v := range ic.GetValue().Items {
+			if item, err := c.AddItem(v.VendorId, v.ShopId,
 				v.SkuId, v.Quantity, v.Checked == 1); err == nil {
 				if v.Checked == 1 {
 					item.Checked = 1
 				}
 			}
 		}
-		c.Destroy() //合并后,需销毁购物车
+		ic.Destroy() //合并后,需销毁购物车
 	}
-	this._snapMap = nil //clean
-	return this
+	c._snapMap = nil //clean
+	return c
 }
 
 // 设置购买会员
-func (this *cartImpl) SetBuyer(buyerId int) error {
-	if this._value.BuyerId > 0 {
+func (c *cartImpl) SetBuyer(buyerId int) error {
+	if c._value.BuyerId > 0 {
 		return cart.ErrCartBuyerBinded
 	}
-	this._value.BuyerId = buyerId
-	memCart := this._rep.GetMemberCurrentCart(buyerId)
-	if memCart != nil && memCart.Key() != this.Key() {
-		this.Combine(memCart)
+	c._value.BuyerId = buyerId
+	memCart := c._rep.GetMemberCurrentCart(buyerId)
+	if memCart != nil && memCart.Key() != c.Key() {
+		c.Combine(memCart)
 	}
-	_, err := this.Save()
+	_, err := c.Save()
 	return err
 }
 
 // 标记商品结算
-func (this *cartImpl) SignItemChecked(skuArr []int) error {
-	mp := this.Items()
+func (c *cartImpl) SignItemChecked(skuArr []int) error {
+	mp := c.Items()
 	arrMap := make(map[int]int, len(skuArr))
 	for _, v := range skuArr {
 		arrMap[v] = 0
@@ -390,22 +391,22 @@ func (this *cartImpl) SignItemChecked(skuArr []int) error {
 			item.Checked = 0
 		}
 	}
-	err := this.Check()
+	err := c.Check()
 	if err == nil {
-		_, err = this.Save()
+		_, err = c.Save()
 	}
 	return err
 }
 
 // 结算数据持久化
-func (this *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
+func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
 	//var shop shop.IShop
 	var deliver member.IDeliverAddress
 	var err error
 
 	if shopId > 0 {
 		//var mch merchant.IMerchant
-		//mch, err = this._partnerRep.GetMerchant(this._merchantId)
+		//mch, err = c._partnerRep.GetMerchant(c._merchantId)
 		//if err != nil {
 		//	return err
 		//}
@@ -413,15 +414,15 @@ func (this *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId in
 		//if shop == nil {
 		//	return merchant.ErrNoSuchShop
 		//}
-		//this._shop = shop
-		//this._value.ShopId = shopId
+		//c._shop = shop
+		//c._value.ShopId = shopId
 
 		//todo: not implement
 		return err
 	}
 
-	if this._value.BuyerId > 0 && deliverId > 0 {
-		var m member.IMember = this._memberRep.GetMember(this._value.BuyerId)
+	if c._value.BuyerId > 0 && deliverId > 0 {
+		var m member.IMember = c._memberRep.GetMember(c._value.BuyerId)
 		if m == nil {
 			return member.ErrNoSuchMember
 		}
@@ -429,48 +430,48 @@ func (this *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId in
 		if deliver == nil {
 			return member.ErrInvalidSession
 		}
-		this._deliver = deliver
-		this._value.DeliverId = deliverId
+		c._deliver = deliver
+		c._value.DeliverId = deliverId
 	}
 
-	this._value.PaymentOpt = paymentOpt
-	this._value.DeliverOpt = deliverOpt
+	c._value.PaymentOpt = paymentOpt
+	c._value.DeliverOpt = deliverOpt
 	return nil
 }
 
 // 获取结算数据
-func (this *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
+func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 	paymentOpt, deliverOpt int) {
 	//var err error
-	if this._value.ShopId > 0 && this._shop == nil {
+	if c._value.ShopId > 0 && c._shop == nil {
 		//var pt merchant.IMerchant
-		//pt, err = this._partnerRep.GetMerchant(this._merchantId)
+		//pt, err = c._partnerRep.GetMerchant(c._merchantId)
 		//if err == nil {
-		//	this._shop = pt.ShopManager().GetShop(this._value.ShopId)
+		//	c._shop = pt.ShopManager().GetShop(c._value.ShopId)
 		//}
 		//todo: not implement
 	}
-	if this._value.DeliverId > 0 && this._deliver == nil {
+	if c._value.DeliverId > 0 && c._deliver == nil {
 		var m member.IMember
-		m = this._memberRep.GetMember(this._value.BuyerId)
+		m = c._memberRep.GetMember(c._value.BuyerId)
 		if m != nil {
-			this._deliver = m.Profile().GetDeliver(this._value.DeliverId)
+			c._deliver = m.Profile().GetDeliver(c._value.DeliverId)
 		}
 	}
-	return this._shop, this._deliver, this._value.PaymentOpt, this._value.DeliverOpt
+	return c._shop, c._deliver, c._value.PaymentOpt, c._value.DeliverOpt
 }
 
 // 保存购物车
-func (this *cartImpl) Save() (int, error) {
-	this._value.UpdateTime = time.Now().Unix()
-	id, err := this._rep.SaveShoppingCart(this._value)
-	this._value.Id = id
-	if this._value.Items != nil {
-		for _, v := range this._value.Items {
+func (c *cartImpl) Save() (int, error) {
+	c._value.UpdateTime = time.Now().Unix()
+	id, err := c._rep.SaveShoppingCart(c._value)
+	c._value.Id = id
+	if c._value.Items != nil {
+		for _, v := range c._value.Items {
 			if v.Quantity <= 0 {
-				this._rep.RemoveCartItem(v.Id)
+				c._rep.RemoveCartItem(v.Id)
 			} else {
-				v.Id, err = this._rep.SaveCartItem(v)
+				v.Id, err = c._rep.SaveCartItem(v)
 			}
 		}
 	}
@@ -478,45 +479,45 @@ func (this *cartImpl) Save() (int, error) {
 }
 
 // 释放购物车,如果购物车的商品全部结算,则返回true
-func (this *cartImpl) Release() bool {
+func (c *cartImpl) Release() bool {
 	checked := []int{}
-	for i, v := range this._value.Items {
+	for i, v := range c._value.Items {
 		if v.Checked == 1 {
 			checked = append(checked, i)
 		}
 	}
 	// 如果为部分结算,则移除商品并返回false
-	if len(checked) < len(this._value.Items) {
+	if len(checked) < len(c._value.Items) {
 		for _, i := range checked {
-			v := this._value.Items[i]
-			this.RemoveItem(v.SkuId, v.Quantity)
+			v := c._value.Items[i]
+			c.RemoveItem(v.SkuId, v.Quantity)
 		}
-		this.Save()
+		c.Save()
 		return false
 	}
 	return true
 }
 
 // 销毁购物车
-func (this *cartImpl) Destroy() (err error) {
-	this._snapMap = nil //clean
-	if err = this._rep.EmptyCartItems(this.GetAggregateRootId()); err == nil {
-		return this._rep.DeleteCart(this.GetAggregateRootId())
+func (c *cartImpl) Destroy() (err error) {
+	c._snapMap = nil //clean
+	if err = c._rep.EmptyCartItems(c.GetAggregateRootId()); err == nil {
+		return c._rep.DeleteCart(c.GetAggregateRootId())
 	}
 	return err
 }
 
 // 获取总览信息
-func (this *cartImpl) GetSummary() string {
-	if len(this._summary) != 0 {
-		return this._summary
+func (c *cartImpl) GetSummary() string {
+	if len(c._summary) != 0 {
+		return c._summary
 	}
 	buf := bytes.NewBufferString("")
 
-	list := this.getSnapshotsMap(this._value.Items)
+	list := c.getSnapshotsMap(c._value.Items)
 	if list != nil {
 		length := len(list)
-		for i, v := range this._value.Items {
+		for i, v := range c._value.Items {
 			snap := list[v.SkuId]
 			if snap != nil {
 				buf.WriteString(snap.GoodsTitle)
@@ -534,9 +535,9 @@ func (this *cartImpl) GetSummary() string {
 }
 
 // 获取Json格式的商品数据
-func (this *cartImpl) GetJsonItems() []byte {
-	var goods []*order.OrderGoods = make([]*order.OrderGoods, len(this._value.Items))
-	for i, v := range this._value.Items {
+func (c *cartImpl) GetJsonItems() []byte {
+	var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c._value.Items))
+	for i, v := range c._value.Items {
 		goods[i] = &order.OrderGoods{
 			GoodsId:    v.SkuId,
 			GoodsImage: v.Image,
@@ -550,9 +551,9 @@ func (this *cartImpl) GetJsonItems() []byte {
 
 // 获取订单金额,返回totalFee为总额，
 // orderFee为实际订单的金额(扣去促销优惠等后的金额)
-func (this *cartImpl) GetFee() (totalFee float32, orderFee float32) {
+func (c *cartImpl) GetFee() (totalFee float32, orderFee float32) {
 	var qua float32
-	for _, v := range this._value.Items {
+	for _, v := range c._value.Items {
 		if v.Checked == 1 {
 			qua = float32(v.Quantity)
 			totalFee += v.Price * qua

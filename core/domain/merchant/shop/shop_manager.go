@@ -9,6 +9,7 @@
 package shop
 
 import (
+	"errors"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -32,28 +33,28 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManag
 }
 
 // 新建商店
-func (this *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
+func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.MerchantId = this._merchant.GetAggregateRootId()
-	return newShop(this, v, this._rep)
+	v.MerchantId = s._merchant.GetAggregateRootId()
+	return newShop(s, v, s._rep)
 }
 
 // 获取所有商店
-func (this *shopManagerImpl) GetShops() []shop.IShop {
-	if this._shops == nil {
-		shops := this._rep.GetShopsOfMerchant(this._merchant.GetAggregateRootId())
-		this._shops = make([]shop.IShop, len(shops))
+func (s *shopManagerImpl) GetShops() []shop.IShop {
+	if s._shops == nil {
+		shops := s._rep.GetShopsOfMerchant(s._merchant.GetAggregateRootId())
+		s._shops = make([]shop.IShop, len(shops))
 		for i, v := range shops {
-			this._shops[i] = this.CreateShop(v)
+			s._shops[i] = s.CreateShop(v)
 		}
 	}
-	return this._shops
+	return s._shops
 }
 
 // 根据名称获取商店
-func (this *shopManagerImpl) GetShopByName(name string) shop.IShop {
+func (s *shopManagerImpl) GetShopByName(name string) shop.IShop {
 	name = strings.TrimSpace(name)
-	for _, v := range this.GetShops() {
+	for _, v := range s.GetShops() {
 		if strings.TrimSpace(v.GetValue().Name) == name {
 			return v
 		}
@@ -62,9 +63,9 @@ func (this *shopManagerImpl) GetShopByName(name string) shop.IShop {
 }
 
 // 获取营业中的商店
-func (this *shopManagerImpl) GetBusinessInShops() []shop.IShop {
+func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 	var list []shop.IShop = make([]shop.IShop, 0)
-	for _, v := range this.GetShops() {
+	for _, v := range s.GetShops() {
 		if v.GetValue().State == enum.ShopBusinessIn {
 			list = append(list, v)
 		}
@@ -73,13 +74,13 @@ func (this *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 }
 
 // 获取商店
-func (this *shopManagerImpl) GetShop(shopId int) shop.IShop {
-	//	v := this.rep.GetValueShop(this.GetAggregateRootId(), shopId)
+func (s *shopManagerImpl) GetShop(shopId int) shop.IShop {
+	//	v := s.rep.GetValueShop(s.GetAggregateRootId(), shopId)
 	//	if v == nil {
 	//		return nil
 	//	}
-	//	return this.CreateShop(v)
-	shops := this.GetShops()
+	//	return s.CreateShop(v)
+	shops := s.GetShops()
 
 	for _, v := range shops {
 		if v.GetValue().Id == shopId {
@@ -90,37 +91,37 @@ func (this *shopManagerImpl) GetShop(shopId int) shop.IShop {
 }
 
 // 删除门店
-func (this *shopManagerImpl) DeleteShop(shopId int) error {
+func (s *shopManagerImpl) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
-	mchId := this._merchant.GetAggregateRootId()
-	s := this.GetShop(shopId)
-	if s != nil {
-		this.Reload() //重新加载数据
-		switch s.Type() {
+	mchId := s._merchant.GetAggregateRootId()
+	sp := s.GetShop(shopId)
+	if sp != nil {
+		s.Reload() //重新加载数据
+		switch sp.Type() {
 		case shop.TypeOfflineShop:
-			return this.deleteOfflineShop(mchId, s)
-
+			return s.deleteOfflineShop(mchId, sp)
 		case shop.TypeOnlineShop:
-			return this.deleteOnlineShop(mchId, s)
+			return s.deleteOnlineShop(mchId, sp)
 		}
 	}
 	return nil
 }
 
-func (this *shopManagerImpl) deleteOnlineShop(mchId int, s shop.IShop) error {
-	shopId := s.GetDomainId()
-	err := this._rep.DeleteOnlineShop(mchId, shopId)
+func (s *shopManagerImpl) deleteOnlineShop(mchId int, sp shop.IShop) error {
+	return errors.New("暂不支持删除线上商店")
+	shopId := sp.GetDomainId()
+	err := s._rep.DeleteOnlineShop(mchId, shopId)
 	return err
 }
 
-func (this *shopManagerImpl) deleteOfflineShop(mchId int, s shop.IShop) error {
-	shopId := s.GetDomainId()
-	err := this._rep.DeleteOfflineShop(mchId, shopId)
+func (s *shopManagerImpl) deleteOfflineShop(mchId int, sp shop.IShop) error {
+	shopId := sp.GetDomainId()
+	err := s._rep.DeleteOfflineShop(mchId, shopId)
 	return err
 }
 
 // 重新加载数据
-func (this *shopManagerImpl) Reload() {
-	this._shops = nil
+func (s *shopManagerImpl) Reload() {
+	s._shops = nil
 	//todo:  如果系统后台和前台,无法同时清理缓存
 }

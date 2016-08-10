@@ -39,6 +39,11 @@ func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
 }
 
 func (o *subOrderImpl) handleCashBack() error {
+	gobConf := o._valRep.GetGlobMchSaleConf()
+	if !gobConf.FxSalesEnabled {
+		return nil
+	}
+
 	v := o._value
 	mch, err := o._mchRep.GetMerchant(v.VendorId)
 	if err != nil {
@@ -51,7 +56,7 @@ func (o *subOrderImpl) handleCashBack() error {
 	//******* 返现到账户  ************
 	var back_fee float32
 	saleConf := mch.ConfManager().GetSaleConf()
-	//globSaleConf := o._valRep.GetGlobNumberConf()
+
 	if saleConf.CashBackPercent > 0 {
 		back_fee = v.FinalAmount * saleConf.CashBackPercent
 		//将此次消费记入会员账户
