@@ -55,6 +55,8 @@ type (
 		OnShelves int `db:"on_shelves"`
 		//图片
 		Image string `db:"img"`
+		// 供货价
+		Cost float32 `db:"cost"`
 		//定价
 		Price float32 `db:"price"`
 		//销售价
@@ -97,6 +99,8 @@ type (
 		Sku string `db:"sku"`
 		//图片
 		Image string `db:"img"`
+		// 供货价
+		Cost float32 `db:"cost"`
 		//销售价
 		Price float32 `db:"price"`
 		// 快照时间

@@ -53,6 +53,7 @@ func (s *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 			latest.SmallTitle != snap.SmallTitle ||
 			latest.CategoryId != snap.CategoryId ||
 			latest.Image != snap.Image ||
+			latest.Cost != snap.Cost ||
 			latest.Price != snap.Price ||
 			latest.SalePrice != snap.SalePrice ||
 			latest.OnShelves != snap.OnShelves ||
@@ -107,6 +108,7 @@ func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		Image:        gi.Image,
 		Weight:       gi.Weight,
 		SalePrice:    gs.SalePrice,
+		Cost:         gi.Cost,
 		Price:        gi.Price,
 		SaleNum:      gs.SaleNum,
 		StockNum:     gs.StockNum,
@@ -168,6 +170,8 @@ func (s *snapshotManagerImpl) createNewSaleSnap(snap *goods.Snapshot) *goods.Sal
 		Sku: snap.Sku,
 		//图片
 		Image: snap.Image,
+		// 供货价
+		Cost: snap.Cost,
 		//销售价
 		Price: snap.SalePrice,
 		// 快照时间
