@@ -71,7 +71,9 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 	}
 	a._value.UpdateTime = time.Now().Unix()
 	id, err := orm.Save(tmp.Db().GetOrm(), a._value, a.GetDomainId())
-	a._value.Id = id
+	if err == nil {
+		a._value.Id = id
+	}
 	return err
 }
 
@@ -123,7 +125,8 @@ func (a *afterSalesOrderImpl) Submit() (int, error) {
 	a._value.BuyerId = ov.BuyerId
 	a._value.State = afterSales.StatAwaitingVendor
 	a._value.CreateTime = time.Now().Unix()
-	return a.GetDomainId(), a.saveAfterSalesOrder()
+	err := a.saveAfterSalesOrder()
+	return a.GetDomainId(), err
 }
 
 // 取消申请

@@ -12,7 +12,6 @@ package dps
 import (
 	"bytes"
 	"errors"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -95,7 +94,6 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 		mch, _ := s._mchRep.GetMerchant(v.VendorId)
 		v.VendorName = mch.GetValue().Name
 		if v.ShopId > 0 {
-			log.Println("---", v.ShopId)
 			v.ShopName = mch.ShopManager().GetShop(v.ShopId).GetValue().Name
 		}
 	}
