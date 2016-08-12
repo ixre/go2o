@@ -989,7 +989,7 @@ func (o *subOrderImpl) GetValue() *order.SubOrder {
 func (o *subOrderImpl) Items() []*order.OrderItem {
 	if (o._value.Items == nil || len(o._value.Items) == 0) &&
 		o.GetDomainId() > 0 {
-		o._value.Items = o._rep.GetOrderItems(o.GetDomainId())
+		o._value.Items = o._rep.GetSubOrderItems(o.GetDomainId())
 	}
 	return o._value.Items
 }

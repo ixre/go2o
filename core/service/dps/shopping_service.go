@@ -325,6 +325,11 @@ func (s *shoppingService) GetSubOrderByNo(orderNo string) *order.SubOrder {
 	return s._rep.GetSubOrderByNo(orderNo)
 }
 
+// 获取订单商品项
+func (s *shoppingService) GetSubOrderItems(subOrderId int) []*order.OrderItem {
+	return s._rep.GetSubOrderItems(subOrderId)
+}
+
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItems(id int) (*order.SubOrder, []*dto.OrderItem) {
 	o := s.GetSubOrder(id)
