@@ -85,6 +85,9 @@ var (
 
 	ErrNotReceive *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_not_receive", "尚未收货")
+
+	ErrRefundAfterShipped *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_refund_after_shipped", "订单已经发货,只能进行退货或换货操作")
 )
 
 type (

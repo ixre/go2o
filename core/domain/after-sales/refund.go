@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/tmp"
 )
 
@@ -82,11 +83,15 @@ func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
 
 // 提交退款申请
 func (r *refundOrderImpl) Submit() (int, error) {
+	o := r.GetOrder()
+	if o.GetValue().State >= order.StatShipped {
+		return 0, afterSales.ErrRefundAfterShipped
+	}
 	id, err := r.afterSalesOrderImpl.Submit()
 	// 提交退款单
 	if err == nil {
 		// 锁定退货数量
-		err = r.GetOrder().Return(r._value.SnapshotId, r._value.Quantity)
+		err = o.Return(r._value.SnapshotId, r._value.Quantity)
 		if err == nil {
 			// 生成退款单
 			err = r.submitRefundOrder()
