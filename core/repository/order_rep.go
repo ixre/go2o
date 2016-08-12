@@ -183,7 +183,7 @@ func (o *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (i
 }
 
 // 获取订单项
-func (o *orderRepImpl) GetOrderItems(orderId int) []*order.OrderItem {
+func (o *orderRepImpl) GetSubOrderItems(orderId int) []*order.OrderItem {
 	var items = []*order.OrderItem{}
 	o.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items

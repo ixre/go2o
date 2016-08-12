@@ -118,7 +118,7 @@ type (
 		SaveOrderItem(subOrderId int, value *OrderItem) (int, error)
 
 		// 获取订单项
-		GetOrderItems(orderId int) []*OrderItem
+		GetSubOrderItems(orderId int) []*OrderItem
 
 		// 根据父订单编号获取购买的商品项
 		GetItemsByParentOrderId(orderId int) []*OrderItem

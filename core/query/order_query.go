@@ -46,14 +46,14 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 }
 
 // 获取订单的商品项
-func (this *OrderQuery) QueryOrderItems(subOrderId int) []*dto.OrderItem {
-	return this.queryOrderItems(strconv.Itoa(subOrderId))
+func (o *OrderQuery) QueryOrderItems(subOrderId int) []*dto.OrderItem {
+	return o.queryOrderItems(strconv.Itoa(subOrderId))
 }
 
 // 查询分页订单
-func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bool,
+func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
-	d := this.Connector
+	d := o.Connector
 	orderList := []*dto.PagedMemberSubOrder{}
 	num := 0
 	if size == 0 || begin < 0 {
@@ -132,9 +132,9 @@ func (this *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bo
 }
 
 // 查询分页订单
-func (this *OrderQuery) PagedOrdersOfVendor(vendorId, begin, size int, pagination bool,
+func (o *OrderQuery) PagedOrdersOfVendor(vendorId, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
-	d := this.Connector
+	d := o.Connector
 	orderList := []*dto.PagedVendorOrder{}
 	num := 0
 	if size == 0 || begin < 0 {
