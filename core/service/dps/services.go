@@ -106,7 +106,6 @@ func Init(ctx gof.App) {
 	asRep := repository.NewAfterSalesRep(db, spRep, memberRep)
 
 	goodsRep.SetSaleRep(saleRep) //fixed
-	memberRep.SetMerchantRep(mchRep)
 	spRep.SetPaymentRep(payRep)
 
 	/** Query **/

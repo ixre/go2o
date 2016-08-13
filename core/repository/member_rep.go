@@ -18,7 +18,6 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
@@ -39,9 +38,8 @@ var (
 type MemberRep struct {
 	Storage storage.Interface
 	db.Connector
-	_partnerRep merchant.IMerchantRep
-	_valRep     valueobject.IValueRep
-	_mssRep     mss.IMssRep
+	_valRep valueobject.IValueRep
+	_mssRep mss.IMssRep
 }
 
 func NewMemberRep(sto storage.Interface, c db.Connector, mssRep mss.IMssRep,
@@ -159,10 +157,6 @@ func (m *MemberRep) SaveMemberLevel_New(v *member.Level) (int, error) {
 		PrefixDel(m.Storage, "go2o:rep:level:*")
 	}
 	return id, err
-}
-
-func (m *MemberRep) SetMerchantRep(partnerRep merchant.IMerchantRep) {
-	m._partnerRep = partnerRep
 }
 
 // 根据用户名获取会员
@@ -314,7 +308,7 @@ func (m *MemberRep) GetMemberIdByUser(user string) int {
 // 创建会员
 func (m *MemberRep) CreateMember(v *member.Member) member.IMember {
 	return memberImpl.NewMember(m.GetManager(), v, m,
-		m._mssRep, m._valRep, m._partnerRep)
+		m._mssRep, m._valRep)
 }
 
 // 创建会员,仅作为某些操作使用,不保存
@@ -327,54 +321,6 @@ func (m *MemberRep) GetMemberIdByInvitationCode(code string) int {
 	var memberId int
 	m.ExecScalar("SELECT id FROM mm_member WHERE invitation_code=?", &memberId, code)
 	return memberId
-}
-
-func (m *MemberRep) GetLevel(merchantId, levelValue int) *merchant.MemberLevel {
-	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", merchantId, levelValue)
-	if err != nil {
-		return nil
-	}
-	return &e
-}
-
-// 获取下一个等级
-func (m *MemberRep) GetNextLevel(merchantId, levelVal int) *merchant.MemberLevel {
-	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", merchantId, levelVal)
-	if err != nil {
-		return nil
-	}
-	return &e
-}
-
-// 获取会员等级
-func (m *MemberRep) GetMemberLevels(merchantId int) []*merchant.MemberLevel {
-	list := []*merchant.MemberLevel{}
-	m.Connector.GetOrm().Select(&list,
-		"merchant_id=?", merchantId)
-	return list
-}
-
-// 删除会员等级
-func (m *MemberRep) DeleteMemberLevel(merchantId, id int) error {
-	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
-		"id=? AND merchant_id=?", id, merchantId)
-	return err
-}
-
-// 保存等级
-func (m *MemberRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error) {
-	orm := m.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		m.Connector.ExecScalar(`SELECT MAX(id) FROM pt_member_level`, &v.Id)
-
-	}
-	return v.Id, err
 }
 
 // 获取会员最后更新时间

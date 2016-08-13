@@ -14,7 +14,6 @@ package member
 import (
 	"errors"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
@@ -34,7 +33,6 @@ type memberImpl struct {
 	_account         member.IAccount
 	_level           *member.Level
 	_rep             member.IMemberRep
-	_merchantRep     merchant.IMerchantRep
 	_relation        *member.Relation
 	_invitation      member.IInvitationManager
 	_mssRep          mss.IMssRep
@@ -45,14 +43,13 @@ type memberImpl struct {
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
-	mp mss.IMssRep, valRep valueobject.IValueRep, merchantRep merchant.IMerchantRep) member.IMember {
+	mp mss.IMssRep, valRep valueobject.IValueRep) member.IMember {
 	return &memberImpl{
-		_manager:     manager,
-		_value:       val,
-		_rep:         rep,
-		_mssRep:      mp,
-		_valRep:      valRep,
-		_merchantRep: merchantRep,
+		_manager: manager,
+		_value:   val,
+		_rep:     rep,
+		_mssRep:  mp,
+		_valRep:  valRep,
 	}
 }
 

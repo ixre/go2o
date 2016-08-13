@@ -11,6 +11,7 @@ package merchant
 
 import (
 	"fmt"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
@@ -18,6 +19,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
+	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
@@ -28,6 +30,7 @@ var _ merchant.IMerchant = new(MerchantImpl)
 
 type MerchantImpl struct {
 	_value           *merchant.Merchant
+	_account         merchant.IAccount
 	_host            string
 	_rep             merchant.IMerchantRep
 	_shopRep         shop.IShopRep
@@ -59,19 +62,19 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
 	return mch, mch.Stat()
 }
 
-func (this *MerchantImpl) GetRep() merchant.IMerchantRep {
-	return this._rep
+func (m *MerchantImpl) GetRep() merchant.IMerchantRep {
+	return m._rep
 }
 
-func (this *MerchantImpl) GetAggregateRootId() int {
-	return this._value.Id
+func (m *MerchantImpl) GetAggregateRootId() int {
+	return m._value.Id
 }
-func (this *MerchantImpl) GetValue() merchant.Merchant {
-	return *this._value
+func (m *MerchantImpl) GetValue() merchant.Merchant {
+	return *m._value
 }
 
-func (this *MerchantImpl) SetValue(v *merchant.Merchant) error {
-	tv := this._value
+func (m *MerchantImpl) SetValue(v *merchant.Merchant) error {
+	tv := m._value
 	if v.Id == tv.Id {
 		tv.Name = v.Name
 		tv.Province = v.Province
@@ -94,68 +97,79 @@ func (this *MerchantImpl) SetValue(v *merchant.Merchant) error {
 }
 
 // 保存
-func (this *MerchantImpl) Save() (int, error) {
-	var id int = this.GetAggregateRootId()
+func (m *MerchantImpl) Save() (int, error) {
+	var id int = m.GetAggregateRootId()
 
 	if id > 0 {
-		this.checkSelfSales()
-		return this._rep.SaveMerchant(this._value)
+		m.checkSelfSales()
+		return m._rep.SaveMerchant(m._value)
 	}
 
-	return this.createMerchant()
+	return m.createMerchant()
 }
 
 // 自营检测,并返回是否需要保存
-func (this *MerchantImpl) checkSelfSales() bool {
-	if this._value.SelfSales == 0 { //不为自营,但编号为1的商户
-		if this.GetAggregateRootId() == 1 {
-			this._value.SelfSales = 1
-			this._value.Usr = "-"
-			this._value.Pwd = "-"
+func (m *MerchantImpl) checkSelfSales() bool {
+	if m._value.SelfSales == 0 {
+		//不为自营,但编号为1的商户
+		if m.GetAggregateRootId() == 1 {
+			m._value.SelfSales = 1
+			m._value.Usr = "-"
+			m._value.Pwd = "-"
 			return true
 		}
-	} else if this.GetAggregateRootId() != 1 { //为自营,但ID不为0,异常数据
-		this._value.SelfSales = 0
-		this._value.Enabled = 0
+	} else if m.GetAggregateRootId() != 1 {
+		//为自营,但ID不为0,异常数据
+		m._value.SelfSales = 0
+		m._value.Enabled = 0
 		return true
 	}
 	return false
 }
 
 // 是否自营
-func (this *MerchantImpl) SelfSales() bool {
-	return this._value.SelfSales == 1 ||
-		this.GetAggregateRootId() == 1
+func (m *MerchantImpl) SelfSales() bool {
+	return m._value.SelfSales == 1 ||
+		m.GetAggregateRootId() == 1
 }
 
 // 获取商户的状态,判断 过期时间、判断是否停用。
 // 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
-func (this *MerchantImpl) Stat() error {
-	if this._value == nil {
+func (m *MerchantImpl) Stat() error {
+	if m._value == nil {
 		return merchant.ErrNoSuchMerchant
 	}
-	if this._value.Enabled == 0 {
-		//log.Println("[MERCHANT][ IMPL] - ",this._value)
+	if m._value.Enabled == 0 {
+		//log.Println("[MERCHANT][ IMPL] - ",m._value)
 		return merchant.ErrMerchantDisabled
 	}
-	if this._value.ExpiresTime < time.Now().Unix() {
+	if m._value.ExpiresTime < time.Now().Unix() {
 		return merchant.ErrMerchantExpires
 	}
 	return nil
 }
 
 // 返回对应的会员编号
-func (this *MerchantImpl) Member() int {
-	return this.GetValue().MemberId
+func (m *MerchantImpl) Member() int {
+	return m.GetValue().MemberId
+}
+
+// 获取商户账户
+func (m *MerchantImpl) Account() merchant.IAccount {
+	if m._account == nil {
+		v := m._rep.GetAccount(m.GetAggregateRootId())
+		m._account = newAccountImpl(m, v)
+	}
+	return m._account
 }
 
 // 创建商户
-func (this *MerchantImpl) createMerchant() (int, error) {
-	if id := this.GetAggregateRootId(); id > 0 {
+func (m *MerchantImpl) createMerchant() (int, error) {
+	if id := m.GetAggregateRootId(); id > 0 {
 		return id, nil
 	}
 
-	id, err := this._rep.SaveMerchant(this._value)
+	id, err := m._rep.SaveMerchant(m._value)
 	if err != nil {
 		return id, err
 	}
@@ -163,33 +177,33 @@ func (this *MerchantImpl) createMerchant() (int, error) {
 	//todo:事务
 
 	// 初始化商户信息
-	this._value.Id = id
+	m._value.Id = id
 
 	// 检测自营并保存
-	if this.checkSelfSales() {
-		this._rep.SaveMerchant(this._value)
+	if m.checkSelfSales() {
+		m._rep.SaveMerchant(m._value)
 	}
 
 	//todo:  初始化商店
 
 	// SiteConf
-	//this._siteConf = &shop.ShopSiteConf{
+	//m._siteConf = &shop.ShopSiteConf{
 	//	IndexTitle: "线上商店-" + v.Name,
 	//	SubTitle:   "线上商店-" + v.Name,
 	//	Logo:       v.Logo,
 	//	State:      1,
 	//	StateHtml:  "",
 	//}
-	//err = this._rep.SaveSiteConf(id, this._siteConf)
-	//this._siteConf.MerchantId = id
+	//err = m._rep.SaveSiteConf(id, m._siteConf)
+	//m._siteConf.MerchantId = id
 
 	// SaleConf
-	//this._saleConf = &merchant.SaleConf{
+	//m._saleConf = &merchant.SaleConf{
 	//	AutoSetupOrder:  1,
 	//	IntegralBackNum: 0,
 	//}
-	//err = this._rep.SaveSaleConf(id, this._saleConf)
-	//this._saleConf.MerchantId = id
+	//err = m._rep.SaveSaleConf(id, m._saleConf)
+	//m._saleConf.MerchantId = id
 
 	// 创建API
 	api := &merchant.ApiInfo{
@@ -198,95 +212,225 @@ func (this *MerchantImpl) createMerchant() (int, error) {
 		WhiteList: "*",
 		Enabled:   1,
 	}
-	err = this.ApiManager().SaveApiInfo(api)
+	err = m.ApiManager().SaveApiInfo(api)
 	return id, err
 }
 
 // 获取商户的域名
-func (this *MerchantImpl) GetMajorHost() string {
-	if len(this._host) == 0 {
-		host := this._rep.GetMerchantMajorHost(this.GetAggregateRootId())
+func (m *MerchantImpl) GetMajorHost() string {
+	if len(m._host) == 0 {
+		host := m._rep.GetMerchantMajorHost(m.GetAggregateRootId())
 		if len(host) == 0 {
-			host = fmt.Sprintf("%s.%s", this._value.Usr, infrastructure.GetApp().
+			host = fmt.Sprintf("%s.%s", m._value.Usr, infrastructure.GetApp().
 				Config().GetString(variable.ServerDomain))
 		}
-		this._host = host
+		m._host = host
 	}
-	return this._host
+	return m._host
 }
 
 // 返回用户服务
-func (this *MerchantImpl) UserManager() user.IUserManager {
-	if this._userManager == nil {
-		this._userManager = userImpl.NewUserManager(
-			this.GetAggregateRootId(),
-			this._userRep)
+func (m *MerchantImpl) UserManager() user.IUserManager {
+	if m._userManager == nil {
+		m._userManager = userImpl.NewUserManager(
+			m.GetAggregateRootId(),
+			m._userRep)
 	}
-	return this._userManager
+	return m._userManager
 }
 
 // 获取会员管理服务
-func (this *MerchantImpl) LevelManager() merchant.ILevelManager {
-	return nil
-	/*
-	   if this._levelManager == nil {
-	       this._levelManager = NewLevelManager(this.GetAggregateRootId(), this._memberRep)
-	   }
-	   return this._levelManager*/
+func (m *MerchantImpl) LevelManager() merchant.ILevelManager {
+	if m._levelManager == nil {
+		m._levelManager = NewLevelManager(m.GetAggregateRootId(), m._rep)
+	}
+	return m._levelManager
 }
 
 // 获取键值管理器
-func (this *MerchantImpl) KvManager() merchant.IKvManager {
-	if this._kvManager == nil {
-		this._kvManager = newKvManager(this, "kvset")
+func (m *MerchantImpl) KvManager() merchant.IKvManager {
+	if m._kvManager == nil {
+		m._kvManager = newKvManager(m, "kvset")
 	}
-	return this._kvManager
+	return m._kvManager
 }
 
 // 获取用户键值管理器
-func (this *MerchantImpl) MemberKvManager() merchant.IKvManager {
-	if this._memberKvManager == nil {
-		this._memberKvManager = newKvManager(this, "kvset_member")
+func (m *MerchantImpl) MemberKvManager() merchant.IKvManager {
+	if m._memberKvManager == nil {
+		m._memberKvManager = newKvManager(m, "kvset_member")
 	}
-	return this._memberKvManager
+	return m._memberKvManager
 }
 
 // 消息系统管理器
-//func (this *MerchantImpl) MssManager() mss.IMssManager {
-//	if this._mssManager == nil {
-//		this._mssManager = mssImpl.NewMssManager(this, this._mssRep, this._rep)
+//func (m *MerchantImpl) MssManager() mss.IMssManager {
+//	if m._mssManager == nil {
+//		m._mssManager = mssImpl.NewMssManager(m, m._mssRep, m._rep)
 //	}
-//	return this._mssManager
+//	return m._mssManager
 //}
 
 // 返回设置服务
-func (this *MerchantImpl) ConfManager() merchant.IConfManager {
-	if this._confManager == nil {
-		this._confManager = newConfigManagerImpl(this, this._rep, this._valRep)
+func (m *MerchantImpl) ConfManager() merchant.IConfManager {
+	if m._confManager == nil {
+		m._confManager = newConfigManagerImpl(m, m._rep, m._valRep)
 	}
-	return this._confManager
+	return m._confManager
 }
 
 // 企业资料管理器
-func (this *MerchantImpl) ProfileManager() merchant.IProfileManager {
-	if this._profileManager == nil {
-		this._profileManager = newProfileManager(this)
+func (m *MerchantImpl) ProfileManager() merchant.IProfileManager {
+	if m._profileManager == nil {
+		m._profileManager = newProfileManager(m)
 	}
-	return this._profileManager
+	return m._profileManager
 }
 
 // API服务
-func (this *MerchantImpl) ApiManager() merchant.IApiManager {
-	if this._apiManager == nil {
-		this._apiManager = newApiManagerImpl(this)
+func (m *MerchantImpl) ApiManager() merchant.IApiManager {
+	if m._apiManager == nil {
+		m._apiManager = newApiManagerImpl(m)
 	}
-	return this._apiManager
+	return m._apiManager
 }
 
 // 商店服务
-func (this *MerchantImpl) ShopManager() shop.IShopManager {
-	if this._shopManager == nil {
-		this._shopManager = si.NewShopManagerImpl(this, this._shopRep)
+func (m *MerchantImpl) ShopManager() shop.IShopManager {
+	if m._shopManager == nil {
+		m._shopManager = si.NewShopManagerImpl(m, m._shopRep)
 	}
-	return this._shopManager
+	return m._shopManager
+}
+
+var _ merchant.IAccount = new(accountImpl)
+
+type accountImpl struct {
+	mchImpl *MerchantImpl
+	value   *merchant.Account
+}
+
+func newAccountImpl(mchImpl *MerchantImpl, a *merchant.Account) merchant.IAccount {
+	return &accountImpl{
+		mchImpl: mchImpl,
+		value:   a,
+	}
+}
+
+// 获取领域对象编号
+func (a *accountImpl) GetDomainId() int {
+	return a.value.MchId
+}
+
+// 获取账户值
+func (a *accountImpl) GetValue() *merchant.Account {
+	return a.value
+}
+
+// 保存
+func (a *accountImpl) Save() error {
+	_, err := orm.Save(tmp.Db().GetOrm(), a.value, a.GetDomainId())
+	//_, err := a.mchImpl._rep.SaveMerchantAccount(a)
+	return err
+}
+
+// 根据编号获取余额变动信息
+func (a *accountImpl) GetBalanceLog(id int) *merchant.BalanceLog {
+	e := merchant.BalanceLog{}
+	if tmp.Db().GetOrm().Get(id, &e) == nil {
+		return &e
+	}
+	return nil
+	//return a.mchImpl._rep.GetBalanceLog(id)
+}
+
+// 根据号码获取余额变动信息
+func (a *accountImpl) GetBalanceLogByOuterNo(outerNo string) *merchant.BalanceLog {
+	e := merchant.BalanceLog{}
+	if tmp.Db().GetOrm().GetBy(&e, "outer_no=?", outerNo) == nil {
+		return &e
+	}
+	return nil
+	//return a.mchImpl._rep.GetBalanceLogByOuterNo(outerNo)
+}
+
+func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
+	amount float32, csn float32, state int) *merchant.BalanceLog {
+	unix := time.Now().Unix()
+	return &merchant.BalanceLog{
+		// 编号
+		Id: 0,
+		// 商户编号
+		MchId: a.GetDomainId(),
+		// 日志类型
+		Kind: kind,
+		// 标题
+		Title: title,
+		// 外部订单号
+		OuterNo: outerNo,
+		// 金额
+		Amount: amount,
+		// 手续费
+		CsnAmount: csn,
+		// 状态
+		State: state,
+		// 创建时间
+		CreateTime: unix,
+		// 更新时间
+		UpdateTime: unix,
+	}
+}
+
+// 保存余额变动信息
+func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
+	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
+	//return a.mchImpl._rep.SaveBalanceLog(v)
+}
+
+// 订单结账
+func (a *accountImpl) SettleOrder(orderNo string, amount float32,
+	csn float32, refundAmount float32, remark string) error {
+	if amount <= 0 {
+		return merchant.ErrAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountSettleOrder,
+		remark, orderNo, amount, csn, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		// 扣款
+		a.value.Balance += amount
+		a.value.SalesAmount += amount
+		a.value.RefundAmount += refundAmount
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+	}
+	return err
+}
+
+// 提现
+//todo:???
+
+// 转到会员账户
+func (a *accountImpl) TransferToMember(amount float32) error {
+	if amount <= 0 {
+		return merchant.ErrAmount
+	}
+	if a.value.Balance < amount {
+		return merchant.ErrNoMoreAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
+		"提取到会员账户", "", -amount, 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.Balance -= amount
+		a.value.TakeAmount += amount
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+	}
+	return err
+}
+
+// 赠送
+func (a *accountImpl) Present(amount float32, remark string) error {
+	return nil
 }

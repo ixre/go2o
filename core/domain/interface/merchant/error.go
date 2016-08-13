@@ -34,4 +34,10 @@ var (
 
 	ErrSalesPercent *domain.DomainError = domain.NewDomainError(
 		"err_sales_percent", "销售比例错误")
+
+	ErrAmount *domain.DomainError = domain.NewDomainError(
+		"err_mch_amount", "金额不正确")
+
+	ErrNoMoreAmount *domain.DomainError = domain.NewDomainError(
+		"err_mch_no_more_amount", "余额不足")
 )
