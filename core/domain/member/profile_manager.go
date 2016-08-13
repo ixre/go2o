@@ -10,7 +10,6 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain"
 	"go2o/core/domain/interface/member"
@@ -170,18 +169,18 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 
 //todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
-	rl := p._member.GetRelation()
-	pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMerchantId)
-	if err == nil {
-		key := fmt.Sprintf("profile:complete:id_%d", p._memberId)
-		if pt.MemberKvManager().GetInt(key) == 0 {
-			if err := p.sendNotifyMail(pt); err == nil {
-				pt.MemberKvManager().Set(key, "1")
-			} else {
-				fmt.Println(err.Error())
-			}
-		}
-	}
+	//rl := p._member.GetRelation()
+	//pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMerchantId)
+	//if err == nil {
+	//	key := fmt.Sprintf("profile:complete:id_%d", p._memberId)
+	//	if pt.MemberKvManager().GetInt(key) == 0 {
+	//		if err := p.sendNotifyMail(pt); err == nil {
+	//			pt.MemberKvManager().Set(key, "1")
+	//		} else {
+	//			fmt.Println(err.Error())
+	//		}
+	//	}
+	//}
 }
 
 func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {

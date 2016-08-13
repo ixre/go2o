@@ -161,7 +161,7 @@ func (this *Coupon) GetDescribe() string {
 	v := this._detailsValue
 
 	if v.MinLevel != 0 {
-		level := this._memberRep.GetLevel(this._value.MerchantId, v.MinLevel)
+		level := this._memberRep.GetManager().LevelManager().GetLevelById(v.MinLevel)
 		buf.WriteString("[*" + level.Name + "]")
 	}
 

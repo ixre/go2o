@@ -795,6 +795,47 @@ ALTER TABLE `flm`.`gs_sales_snapshot`
   ADD COLUMN `cost` DECIMAL(8,2) NULL COMMENT '供货价' AFTER `img`;
 
 
+CREATE TABLE mch_account (mch_id int(10) NOT NULL AUTO_INCREMENT comment '商户编号',
+  balance decimal(10, 2) NOT NULL comment '余额',
+  freeze_amount decimal(10, 2) NOT NULL comment '冻结金额',
+  await_amount decimal(10, 2) NOT NULL comment '待入账金额',
+  present_amount decimal(10, 2) NOT NULL comment '平台赠送金额',
+  sales_amount decimal(10, 2) NOT NULL comment '累计销售总额',
+  refund_amount decimal(10, 2) NOT NULL comment '累计退款金额',
+  take_amount decimal(10, 2) NOT NULL comment '已提取金额',
+  offline_sales decimal(10, 2) NOT NULL comment '线下销售金额',
+  update_time int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (mch_id)) comment='商户账户表';
+
+
+CREATE TABLE mch_balance_log (id int(10) NOT NULL AUTO_INCREMENT,
+                              mch_id int(10) NOT NULL comment '商户编号',
+                              kind int(10) NOT NULL comment '日志类型',
+                              title varchar(45) NOT NULL comment '标题',
+                              outer_no varchar(45) NOT NULL comment '外部订单号',
+                              amount float NOT NULL comment '金额',
+                              csn_amount float DEFAULT 0.00 NOT NULL comment '手续费',
+                              state tinyint(1) NOT NULL comment '状态',
+                              create_time int(10) NOT NULL comment '创建时间',
+                              update_time int(10) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='商户余额日志';
+
+CREATE TABLE mch_day_chart (id int(11) NOT NULL AUTO_INCREMENT comment '编号',
+                            mch_id int(11) NOT NULL comment '商户编号',
+                            order_number int(11) NOT NULL comment '新增订单数量',
+                            order_amount decimal(10, 2) NOT NULL comment '订单额',
+                            buyer_number int(11) NOT NULL comment '购物会员数',
+                            paid_number int(11) NOT NULL comment '支付单数量',
+                            paid_amount decimal(10, 2) NOT NULL comment '支付总金额',
+                            complete_orders int(11) NOT NULL comment '完成订单数',
+                            in_amount decimal(10, 2) NOT NULL comment '入帐金额',
+                            offline_orders int(11) NOT NULL comment '线下订单数量',
+                            offline_amount decimal(10, 2) NOT NULL comment '线下订单金额',
+                            `date` int(11) NOT NULL comment '日期',
+                            date_str varchar(10) NOT NULL comment '日期字符串',
+                            update_time int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='商户每日报表';
+
 
 
 

@@ -10,7 +10,6 @@
 package member
 
 import (
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/dto"
 )
 
@@ -136,24 +135,6 @@ type IMemberRep interface {
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int, balance, totalAmount,
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
-
-	//todo:商户需重构的等级方法
-	/************  商户需重构的等级方法  *************/
-
-	//获取等级
-	GetLevel(merchantId, levelValue int) *merchant.MemberLevel
-
-	// 获取下一个等级
-	GetNextLevel(merchantId, levelVal int) *merchant.MemberLevel
-
-	// 获取会员等级
-	GetMemberLevels(merchantId int) []*merchant.MemberLevel
-
-	// 删除会员等级
-	DeleteMemberLevel(merchantId, id int) error
-
-	// 保存等级
-	SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error)
 
 	//收藏,favType 为收藏类型, referId为关联的ID
 	Favorite(memberId, favType, referId int) error

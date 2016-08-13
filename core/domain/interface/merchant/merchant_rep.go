@@ -24,6 +24,9 @@ type IMerchantRep interface {
 	// 保存
 	SaveMerchant(*Merchant) (int, error)
 
+	// 获取账户
+	GetAccount(mchId int) *Account
+
 	// 获取销售配置
 	GetMerchantSaleConf(int) *SaleConf
 
@@ -53,4 +56,19 @@ type IMerchantRep interface {
 
 	// 根据关键字获取字典
 	GetKeyMapByChar(merchantId int, indent string, keyword string) map[string]string
+
+	//获取等级
+	GetLevel(merchantId, levelValue int) *MemberLevel
+
+	// 获取下一个等级
+	GetNextLevel(merchantId, levelVal int) *MemberLevel
+
+	// 获取会员等级
+	GetMemberLevels(merchantId int) []*MemberLevel
+
+	// 删除会员等级
+	DeleteMemberLevel(merchantId, id int) error
+
+	// 保存等级
+	SaveMemberLevel(merchantId int, v *MemberLevel) (int, error)
 }
