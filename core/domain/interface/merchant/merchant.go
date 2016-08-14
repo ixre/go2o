@@ -217,7 +217,7 @@ type (
 		// 线下订单金额
 		OfflineAmount float32 `db:"offline_amount"`
 		// 日期
-		Date int `db:"date"`
+		Date int64 `db:"date"`
 		// 日期字符串
 		DateStr string `db:"date_str"`
 		// 更新时间
