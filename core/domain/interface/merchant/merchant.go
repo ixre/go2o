@@ -16,7 +16,8 @@ import (
 
 const (
 	KindAccountSettleOrder      = 1
-	KindAccountTransferToMember = 2
+	KindAccountPresent          = 2
+	KindAccountTransferToMember = 5
 )
 
 type (
