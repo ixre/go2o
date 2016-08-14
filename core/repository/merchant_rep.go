@@ -30,27 +30,30 @@ var _ merchant.IMerchantRep = new(merchantRep)
 
 type merchantRep struct {
 	db.Connector
-	_cache   map[int]merchant.IMerchant
-	_userRep user.IUserRep
-	_mssRep  mss.IMssRep
-	_shopRep shop.IShopRep
-	_valRep  valueobject.IValueRep
+	_cache     map[int]merchant.IMerchant
+	_userRep   user.IUserRep
+	_mssRep    mss.IMssRep
+	_shopRep   shop.IShopRep
+	_valRep    valueobject.IValueRep
+	_memberRep member.IMemberRep
 }
 
 func NewMerchantRep(c db.Connector, shopRep shop.IShopRep, userRep user.IUserRep,
-	mssRep mss.IMssRep, valRep valueobject.IValueRep) merchant.IMerchantRep {
+	memberRep member.IMemberRep, mssRep mss.IMssRep, valRep valueobject.IValueRep) merchant.IMerchantRep {
 	return &merchantRep{
-		Connector: c,
-		_cache:    make(map[int]merchant.IMerchant),
-		_userRep:  userRep,
-		_mssRep:   mssRep,
-		_shopRep:  shopRep,
-		_valRep:   valRep,
+		Connector:  c,
+		_cache:     make(map[int]merchant.IMerchant),
+		_userRep:   userRep,
+		_mssRep:    mssRep,
+		_shopRep:   shopRep,
+		_valRep:    valRep,
+		_memberRep: memberRep,
 	}
 }
 
 func (m *merchantRep) CreateMerchant(v *merchant.Merchant) (merchant.IMerchant, error) {
-	return merchantImpl.NewMerchant(v, m, m._shopRep, m._userRep, m._mssRep, m._valRep)
+	return merchantImpl.NewMerchant(v, m, m._shopRep, m._userRep,
+		m._memberRep, m._mssRep, m._valRep)
 }
 
 func (m *merchantRep) renew(merchantId int) {

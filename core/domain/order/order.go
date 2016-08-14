@@ -1244,12 +1244,46 @@ func (o *subOrderImpl) BuyerReceived() error {
 	}
 	err = o.AppendLog(order.LogSetup, true, "{completed}")
 	if err == nil {
+		go o.vendorSettle()
 		// 执行其他的操作
 		if err2 := o.onOrderComplete(); err != nil {
 			domain.HandleError(err2, "domain")
 		}
 	}
 	return err
+}
+
+func (s *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
+	items := s.Items()
+	for _, item := range items {
+		if item.ReturnQuantity > 0 {
+			a := item.Amount / float32(item.Quantity) * float32(item.ReturnQuantity)
+			if item.ReturnQuantity != item.Quantity {
+				amount += item.Amount - a
+			}
+			refund += a
+		} else {
+			amount += item.Amount
+		}
+	}
+	//如果非全部退货、退款,则加上运费及包装费
+	if amount > 0 {
+		amount += s._value.ExpressFee + s._value.PackageFee
+	}
+	return amount, refund
+}
+
+// 商户结算
+func (s *subOrderImpl) vendorSettle() error {
+	vendor, _ := s._mchRep.GetMerchant(s._value.VendorId)
+	if vendor != nil {
+		amount, refund := s.getOrderAmount()
+		if amount > 0 {
+			return vendor.Account().SettleOrder(s._value.OrderNo,
+				amount, 0, refund, "订单结算")
+		}
+	}
+	return nil
 }
 
 // 获取订单的日志

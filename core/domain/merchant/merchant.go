@@ -12,6 +12,7 @@ package merchant
 import (
 	"fmt"
 	"github.com/jsix/gof/db/orm"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
@@ -36,6 +37,7 @@ type MerchantImpl struct {
 	_shopRep         shop.IShopRep
 	_userRep         user.IUserRep
 	_valRep          valueobject.IValueRep
+	_memberRep       member.IMemberRep
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_levelManager    merchant.ILevelManager
@@ -49,7 +51,7 @@ type MerchantImpl struct {
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
-	shopRep shop.IShopRep, userRep user.IUserRep,
+	shopRep shop.IShopRep, userRep user.IUserRep, memberRep member.IMemberRep,
 	mssRep mss.IMssRep, valRep valueobject.IValueRep) (merchant.IMerchant, error) {
 	mch := &MerchantImpl{
 		_value:   v,
@@ -57,7 +59,8 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
 		_shopRep: shopRep,
 		_userRep: userRep,
 		//_mssRep:  mssRep,
-		_valRep: valRep,
+		_valRep:    valRep,
+		_memberRep: memberRep,
 	}
 	return mch, mch.Stat()
 }
@@ -158,7 +161,7 @@ func (m *MerchantImpl) Member() int {
 func (m *MerchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._rep.GetAccount(m.GetAggregateRootId())
-		m._account = newAccountImpl(m, v)
+		m._account = newAccountImpl(m, v, m._memberRep)
 	}
 	return m._account
 }
@@ -306,14 +309,17 @@ func (m *MerchantImpl) ShopManager() shop.IShopManager {
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl *MerchantImpl
-	value   *merchant.Account
+	mchImpl   *MerchantImpl
+	value     *merchant.Account
+	memberRep member.IMemberRep
 }
 
-func newAccountImpl(mchImpl *MerchantImpl, a *merchant.Account) merchant.IAccount {
+func newAccountImpl(mchImpl *MerchantImpl, a *merchant.Account,
+	memberRep member.IMemberRep) merchant.IAccount {
 	return &accountImpl{
-		mchImpl: mchImpl,
-		value:   a,
+		mchImpl:   mchImpl,
+		value:     a,
+		memberRep: memberRep,
 	}
 }
 
@@ -418,19 +424,41 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 	if a.value.Balance < amount {
 		return merchant.ErrNoMoreAmount
 	}
+	if a.mchImpl._value.MemberId <= 0 {
+		return member.ErrNoSuchMember
+	}
+	m := a.memberRep.GetMember(a.mchImpl._value.MemberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
 	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
 		"提取到会员账户", "", -amount, 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		a.value.Balance -= amount
-		a.value.TakeAmount += amount
-		a.value.UpdateTime = time.Now().Unix()
-		err = a.Save()
+		err = m.GetAccount().PresentBalance("商户提现", "", amount)
+		if err == nil {
+			a.value.Balance -= amount
+			a.value.TakeAmount += amount
+			a.value.UpdateTime = time.Now().Unix()
+			err = a.Save()
+		}
+
 	}
 	return err
 }
 
 // 赠送
 func (a *accountImpl) Present(amount float32, remark string) error {
-	return nil
+	if amount <= 0 {
+		return merchant.ErrAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountPresent,
+		remark, "", amount, 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.PresentAmount += amount
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+	}
+	return err
 }
