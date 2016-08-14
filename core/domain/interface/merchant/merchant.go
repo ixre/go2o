@@ -173,15 +173,15 @@ type (
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 商户编号
-		MchId int `db:"Mchid"`
+		MchId int `db:"mch_id"`
 		// 日志类型
-		Kind int `db:"Kind"`
+		Kind int `db:"kind"`
 		// 标题
-		Title string `db:"Title"`
+		Title string `db:"title"`
 		// 外部订单号
-		OuterNo string `db:"Outerno"`
+		OuterNo string `db:"outer_no"`
 		// 金额
-		Amount float32 `db:"Amount"`
+		Amount float32 `db:"amount"`
 		// 手续费
 		CsnAmount float32 `db:"csn_amount"`
 		// 状态

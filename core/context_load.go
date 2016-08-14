@@ -143,6 +143,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shop.OfflineShop{}, "mch_offline_shop")
 	orm.Mapping(merchant.SaleConf{}, "mch_sale_conf")
 	orm.Mapping(merchant.MemberLevel{}, "pt_member_level")
+	orm.Mapping(merchant.Account{}, "mch_account")
+	orm.Mapping(merchant.BalanceLog{}, "mch_balance_log")
+	orm.Mapping(merchant.MchDayChart{}, "mch_day_chart")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
