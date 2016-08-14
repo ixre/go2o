@@ -113,9 +113,29 @@ func startTicker() {
 	}
 }
 
+// 今日是否已经处理
+func isHandled(key string, unix int64) bool {
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	unix2, err := redis.Int(conn.Do("GET", key))
+	if err != nil {
+		return false
+	}
+	return unix == int64(unix2)
+}
+
+// 标记最后处理时间
+func signHandled(key string, unix int64) {
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	conn.Do("SET", key, unix)
+}
+
 // 运行定时任务
 func startCronTab() {
-	//个人金融结算,每天2点更新数据
+	//商户每日报表
+	cronTab.AddFunc("0 0 0 * * *", mchDayChart)
+	//个人金融结算,每天1点更新数据
 	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle)
 	//检查订单过期,2分钟检测一次
 	cronTab.AddFunc("* 2 * * * *", detectOrderExpires)
@@ -159,6 +179,7 @@ func (d *defaultService) Start(a gof.App) {
 	go supervisePaymentOrderFinish(services)
 	go startMailQueue(services)
 	go personFinanceSettle() //启动时结算
+	go mchDayChart()         //商户每日报表
 }
 
 // 处理订单,需根据订单不同的状态,作不同的业务
