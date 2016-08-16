@@ -12,7 +12,9 @@ package daemon
 import (
 	"database/sql"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/tool"
 	"go2o/core/service/dps"
 	"log"
@@ -99,11 +101,25 @@ func genDayChartForMch(mchId int, dateStr string, start int64, end int64) {
 	}
 	//13826408857
 	db := appCtx.Db()
+	// 统计订单
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount),COUNT(distinct buyer_id)
  FROM sale_sub_order where vendor_id=? AND create_time BETWEEN ? AND ?`, func(r *sql.Row) {
 		r.Scan(&c.OrderNumber, &c.OrderAmount, &c.BuyerNumber)
 	}, mchId, start, end)
-
-	//db.QueryRow()
-	log.Println("---", c, start, end)
+	// 支付单汇总
+	db.QueryRow(`SELECT COUNT(0),SUM(sale_sub_order.final_amount) FROM sale_sub_order
+INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.parent_order
+where sale_sub_order.vendor_id=? AND pay_order.state = 1 AND pay_order.paid_time
+ BETWEEN ? AND >`, func(r *sql.Row) {
+		r.Scan(&c.PaidNumber, &c.PaidAmount)
+	}, mchId, start, end)
+	// 今日已完成订单,应进账数量
+	db.QueryRow(`SELECT COUNT(0),SUM(final_amount)
+ FROM sale_sub_order where vendor_id=? AND state=?
+ AND update_time BETWEEN ? AND ?`, func(r *sql.Row) {
+		r.Scan(&c.CompleteOrders, &c.InAmount)
+	}, mchId, order.StatCompleted, start, end)
+	// 保存
+	orm.Save(db.GetOrm(), c, 0)
+	//log.Println("---", c, start, end)
 }
