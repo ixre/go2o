@@ -74,7 +74,7 @@ func generateMchDayChart(start, end int64) {
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
 	for {
 		mchList = []int{}
-		appCtx.Db().Query("SELECT * FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
+		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
 			for rs.Next() {
 				rs.Scan(&tmp)
 				mchList = append(mchList, tmp)
@@ -97,11 +97,13 @@ func genDayChartForMch(mchId int, dateStr string, start int64, end int64) {
 		DateStr: dateStr,
 		Date:    start,
 	}
+	//13826408857
 	db := appCtx.Db()
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount),COUNT(distinct buyer_id)
  FROM sale_sub_order where vendor_id=? AND create_time BETWEEN ? AND ?`, func(r *sql.Row) {
 		r.Scan(&c.OrderNumber, &c.OrderAmount, &c.BuyerNumber)
 	}, mchId, start, end)
 
-	log.Println("---", c)
+	//db.QueryRow()
+	log.Println("---", c, start, end)
 }

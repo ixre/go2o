@@ -262,10 +262,10 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 	}
 	// 已经设置过旧密码
 	if len(p._member._value.TradePwd) != 0 &&
-		p._member._value.TradePwd != dm.MemberSha1Pwd(oldPwd) {
+		p._member._value.TradePwd != dm.TradePwd(oldPwd) {
 		return domain.ErrPwdOldPwdNotRight
 	}
-	p._member._value.TradePwd = dm.MemberSha1Pwd(newPwd)
+	p._member._value.TradePwd = dm.TradePwd(newPwd)
 	_, err = p._member.Save()
 	return err
 }
