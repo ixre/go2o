@@ -33,6 +33,11 @@ func MemberSha1Pwd(pwd string) string {
 	return crypto.Sha1([]byte(ShaPwd(pwd, "")))
 }
 
+// 交易密码
+func TradePwd(pwd string) string {
+	return crypto.Sha1([]byte(ShaPwd(pwd, "")))
+}
+
 //加密合作商密码
 func MerchantSha1Pwd(usr, pwd string) string {
 	return crypto.Sha1([]byte(ShaPwd(pwd, usr+":")))
