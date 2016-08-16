@@ -54,9 +54,20 @@ var (
 	mchDayChartKey string = "go2o:d:mch:day-chart-unix"
 )
 
+func testGenerateMchDayChart(){
+	dt := time.Now().Add(time.Hour * -24 * 15)
+	for i := 0; i < 15; i++ {
+		st, et := tool.GetTodayStartEndUnix(dt.Add(time.Hour * 24 * time.Duration(i)))
+		generateMchDayChart(st, et)
+	}
+}
+
+// 商户每日报表
 func mchDayChart() {
-	generateMchDayChart(0, time.Now().Unix())
-	//invokeSettle(now.Add(time.Hour * -24))
+	//test
+	//generateMchDayChart(0, time.Now().Unix())
+	//testGenerateMchDayChart()
+
 	unix := tool.GetStartDate(time.Now()).Unix()
 	if isHandled(mchDayChartKey, unix) {
 		log.Println("[ Mch][ Day][ Chart]: today chart is generated!")
@@ -68,12 +79,16 @@ func mchDayChart() {
 	signHandled(mchDayChartKey, unix)
 }
 
+// 生成每日报表
 func generateMchDayChart(start, end int64) {
 	begin := 0
 	size := 50
 	var mchList []int
 	tmp := 0
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
+	// 清理数据
+	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str=?`, dateStr)
+	// 开始统计数据
 	for {
 		mchList = []int{}
 		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
@@ -110,7 +125,7 @@ func genDayChartForMch(mchId int, dateStr string, start int64, end int64) {
 	db.QueryRow(`SELECT COUNT(0),SUM(sale_sub_order.final_amount) FROM sale_sub_order
 INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.parent_order
 where sale_sub_order.vendor_id=? AND pay_order.state = 1 AND pay_order.paid_time
- BETWEEN ? AND >`, func(r *sql.Row) {
+ BETWEEN ? AND ?`, func(r *sql.Row) {
 		r.Scan(&c.PaidNumber, &c.PaidAmount)
 	}, mchId, start, end)
 	// 今日已完成订单,应进账数量
