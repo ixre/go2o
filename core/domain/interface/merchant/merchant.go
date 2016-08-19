@@ -110,24 +110,23 @@ type (
 		Present(amount float32, remark string) error
 	}
 
-	//合作商
+	// 商户
 	Merchant struct {
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
 		MemberId int `db:"member_id"`
-
+		// 用户
 		Usr string `db:"usr"`
+		// 密码
 		Pwd string `db:"pwd"`
-
 		// 商户名称
 		Name string `db:"name"`
-
 		// 是否自营
 		SelfSales int `db:"self_sales"`
-
 		// 商户等级
-		Level int    `db:"level"`
-		Logo  string `db:"logo"`
+		Level int `db:"level"`
+		// 标志
+		Logo string `db:"logo"`
 		// 省
 		Province int `db:"province"`
 		// 市
@@ -136,11 +135,15 @@ type (
 		District int `db:"district"`
 		// 是否启用
 		Enabled int `db:"enabled"`
-
-		ExpiresTime   int64 `db:"expires_time"`
-		JoinTime      int64 `db:"join_time"`
-		UpdateTime    int64 `db:"update_time"`
-		LoginTime     int64 `db:"login_time"`
+		// 过期时间
+		ExpiresTime int64 `db:"expires_time"`
+		// 注册时间
+		JoinTime int64 `db:"join_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+		// 登陆时间
+		LoginTime int64 `db:"login_time"`
+		// 最后登陆时间
 		LastLoginTime int64 `db:"last_login_time"`
 	}
 

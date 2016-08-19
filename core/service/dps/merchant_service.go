@@ -18,6 +18,7 @@ import (
 	"go2o/core/query"
 	"log"
 	"strings"
+	"time"
 )
 
 type merchantService struct {
@@ -35,6 +36,53 @@ func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
 		_saleRep:    saleRep,
 		_orderQuery: orderQuery,
 	}
+}
+
+// 商户注册
+func (m *merchantService) SignUp(usr, pwd, companyName string,
+	province int, city int, district int) (int, error) {
+	unix := time.Now().Unix()
+	v := &merchant.Merchant{
+		MemberId: 0,
+		// 用户
+		Usr: usr,
+		// 密码
+		Pwd: pwd,
+		// 商户名称
+		Name: companyName,
+		// 是否自营
+		SelfSales: 0,
+		// 商户等级
+		Level: 1,
+		// 标志
+		Logo: "",
+		// 省
+		Province: province,
+		// 市
+		City: city,
+		// 区
+		District: district,
+		// 是否启用
+		Enabled: 1,
+		// 过期时间
+		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
+		// 注册时间
+		JoinTime: unix,
+		// 更新时间
+		UpdateTime: unix,
+		// 登陆时间
+		LoginTime: 0,
+		// 最后登陆时间
+		LastLoginTime: 0,
+	}
+	mch, err := m._mchRep.CreateMerchant(v)
+	if err == nil {
+		err = mch.SetValue(v)
+		if err == nil {
+			return mch.Save()
+		}
+	}
+	return -1, err
 }
 
 func (m *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant {
@@ -110,7 +158,7 @@ func (m *merchantService) GetMerchant(merchantId int) (*merchant.Merchant, error
 	return nil, err
 }
 
-func (m *merchantService) GetAccount(mchId int)*merchant.Account{
+func (m *merchantService) GetAccount(mchId int) *merchant.Account {
 	return m._mchRep.GetAccount(mchId)
 }
 

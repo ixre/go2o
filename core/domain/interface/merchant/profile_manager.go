@@ -50,7 +50,6 @@ type (
 		// 公司地址
 		Address string `db:"address"`
 
-
 		// 营业执照图片
 		CompanyImage string `db:"company_image"`
 
