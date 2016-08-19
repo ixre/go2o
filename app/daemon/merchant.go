@@ -54,7 +54,7 @@ var (
 	mchDayChartKey string = "go2o:d:mch:day-chart-unix"
 )
 
-func testGenerateMchDayChart(){
+func testGenerateMchDayChart() {
 	dt := time.Now().Add(time.Hour * -24 * 15)
 	for i := 0; i < 15; i++ {
 		st, et := tool.GetTodayStartEndUnix(dt.Add(time.Hour * 24 * time.Duration(i)))
