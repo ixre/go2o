@@ -85,9 +85,12 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	// 法人身份证
 	dst.PersonIdNo = src.PersonIdNo
 	// 身份证验证图片(人捧身份证照相)
-	dst.PersonImageUrl = src.PersonImageUrl
+	dst.PersonImage = src.PersonImage
 	// 营业执照图片
-	dst.CompanyImageUrl = src.CompanyImageUrl
+	dst.CompanyImage = src.CompanyImage
+	// 授权书
+	dst.AuthDoc = src.AuthDoc
+
 	//是否已审核
 	//dst.Reviewed = src.Reviewed
 	// 审核时间

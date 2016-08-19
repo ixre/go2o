@@ -29,6 +29,9 @@ type (
 		// 法人身份证编号
 		PersonIdNo string `db:"person_id"`
 
+		// 身份证验证图片(人捧身份证照相)
+		PersonImage string `db:"person_image"`
+
 		// 公司电话
 		Tel string `db:"tel"`
 
@@ -47,11 +50,12 @@ type (
 		// 公司地址
 		Address string `db:"address"`
 
-		// 身份证验证图片(人捧身份证照相)
-		PersonImageUrl string `db:"person_imageurl"`
 
 		// 营业执照图片
-		CompanyImageUrl string `db:"company_imageurl"`
+		CompanyImage string `db:"company_image"`
+
+		// 授权书
+		AuthDoc string `db:"auth_doc"`
 
 		// 是否已经处理
 		IsHandled int `db:"is_handled"`

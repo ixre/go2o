@@ -837,6 +837,12 @@ CREATE TABLE mch_day_chart (id int(11) NOT NULL AUTO_INCREMENT comment '编号',
   PRIMARY KEY (id)) comment='商户每日报表';
 
 
+ALTER TABLE `flm`.`mch_enterprise_info`
+  CHANGE COLUMN `person_imageurl` `person_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+  CHANGE COLUMN `company_imageurl` `company_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+  ADD COLUMN `auth_doc` VARCHAR(120) NULL COMMENT '授权书' AFTER `company_image`;
+
+
 
 
 
