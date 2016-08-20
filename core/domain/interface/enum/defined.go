@@ -12,3 +12,14 @@ const (
 	TRUE  int = 1
 	FALSE int = 0
 )
+
+const (
+	// 未设置
+	ReviewNotSet = 0
+	// 等待审核
+	ReviewAwaiting = 1
+	// 审核成功
+	ReviewPass = 2
+	// 审核失败
+	ReviewReject = 3
+)

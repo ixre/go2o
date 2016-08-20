@@ -11,7 +11,7 @@ package merchant
 
 type IMerchantRep interface {
 	// 获取商户管理器
-	GetManager()IMerchantManager
+	GetManager() IMerchantManager
 
 	CreateMerchant(*Merchant) (IMerchant, error)
 
