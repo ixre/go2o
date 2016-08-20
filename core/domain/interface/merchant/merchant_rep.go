@@ -10,6 +10,9 @@
 package merchant
 
 type IMerchantRep interface {
+	// 获取商户管理器
+	GetManager()IMerchantManager
+
 	CreateMerchant(*Merchant) (IMerchant, error)
 
 	// 创建会员申请商户密钥
