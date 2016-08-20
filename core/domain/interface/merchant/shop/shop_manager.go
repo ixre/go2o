@@ -23,7 +23,7 @@ type (
 		GetBusinessInShops() []IShop
 
 		// 获取商铺
-		GetOnlineShop()IShop
+		GetOnlineShop() IShop
 
 		// 获取商店
 		GetShop(int) IShop

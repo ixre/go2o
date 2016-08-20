@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -30,6 +31,7 @@ var _ merchant.IMerchantRep = new(merchantRep)
 
 type merchantRep struct {
 	db.Connector
+	storage    storage.Interface
 	_cache     map[int]merchant.IMerchant
 	_userRep   user.IUserRep
 	_mssRep    mss.IMssRep
@@ -38,10 +40,12 @@ type merchantRep struct {
 	_memberRep member.IMemberRep
 }
 
-func NewMerchantRep(c db.Connector, shopRep shop.IShopRep, userRep user.IUserRep,
-	memberRep member.IMemberRep, mssRep mss.IMssRep, valRep valueobject.IValueRep) merchant.IMerchantRep {
+func NewMerchantRep(c db.Connector, storage storage.Interface, shopRep shop.IShopRep,
+	userRep user.IUserRep, memberRep member.IMemberRep, mssRep mss.IMssRep,
+	valRep valueobject.IValueRep) merchant.IMerchantRep {
 	return &merchantRep{
 		Connector:  c,
+		storage:    storage,
 		_cache:     make(map[int]merchant.IMerchant),
 		_userRep:   userRep,
 		_mssRep:    mssRep,
@@ -49,6 +53,29 @@ func NewMerchantRep(c db.Connector, shopRep shop.IShopRep, userRep user.IUserRep
 		_valRep:    valRep,
 		_memberRep: memberRep,
 	}
+}
+
+// 创建会员申请商户密钥
+func (m *merchantRep) CreateSignUpToken(memberId int) string {
+	for {
+		token := domain.NewSecret(0)[8:14]
+		key := "go2o:rep:mch:signup:tk-" + token
+		if _, err := m.storage.GetInt(key); err != nil {
+			m.storage.SetExpire(key, memberId, int64(time.Hour*12))
+			return token
+		}
+	}
+	return ""
+}
+
+// 根据商户申请密钥获取会员编号
+func (m *merchantRep) GetMemberFromSignUpToken(token string) int {
+	key := "go2o:rep:mch:signup:tk-" + token
+	id, err := m.storage.GetInt(key)
+	if err == nil {
+		return id
+	}
+	return -1
 }
 
 func (m *merchantRep) CreateMerchant(v *merchant.Merchant) (merchant.IMerchant, error) {
