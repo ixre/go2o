@@ -267,7 +267,6 @@ CREATE TABLE `flm`.`mm_trusted_info` (
   `real_name` VARCHAR(10) NULL,
   `body_number` VARCHAR(20) NULL,
   `trust_image` VARCHAR(120) NULL,
-  `is_handle` TINYINT(1) NULL,
   `reviewed` TINYINT(1) NULL,
   `review_time` INT NULL,
   `remark` VARCHAR(120) NULL,

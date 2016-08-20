@@ -261,8 +261,6 @@ type (
 		CardId string `db:"card_id"`
 		//认证图片、身份证、人与身份证的图像等
 		TrustImage string `db:"trust_image"`
-		//是否处理
-		IsHandle int `db:"is_handle"`
 		//是否审核通过
 		Reviewed int `db:"reviewed"`
 		//审核时间

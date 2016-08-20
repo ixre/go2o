@@ -48,7 +48,7 @@ func (m *merchantService) GetMemberFromSignUpToken(token string) int {
 	return m._mchRep.GetMemberFromSignUpToken(token)
 }
 
-func (m *merchantService)GetMchSignUpInfoByMemberId(memberId int)*merchant.MchSignUp{
+func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int) *merchant.MchSignUp {
 	return m._mchRep.GetManager().GetSignUpInfoByMemberId(memberId)
 }
 

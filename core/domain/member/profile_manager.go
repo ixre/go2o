@@ -12,6 +12,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss"
@@ -372,7 +373,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	if p._trustedInfo == nil {
 		p._trustedInfo = &member.TrustedInfo{
 			MemberId: p._memberId,
-			IsHandle: 1,
+			Reviewed: enum.ReviewNotSet,
 		}
 		//如果还没有实名信息,则新建
 		orm := tmp.Db().GetOrm()
@@ -434,7 +435,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	p.GetTrustedInfo()
 	p.copyTrustedInfo(v, p._trustedInfo)
 	p._trustedInfo.Remark = ""
-	p._trustedInfo.IsHandle = 0 //标记为未处理
+	p._trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
 	p._trustedInfo.UpdateTime = time.Now().Unix()
 	_, err = orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
 		p._trustedInfo.MemberId)
@@ -445,15 +446,14 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.GetTrustedInfo()
 	if pass {
-		p._trustedInfo.Reviewed = 1
+		p._trustedInfo.Reviewed = enum.ReviewPass
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return member.ErrEmptyReviewRemark
 		}
-		p._trustedInfo.Reviewed = 0
+		p._trustedInfo.Reviewed = enum.ReviewReject
 	}
-	p._trustedInfo.IsHandle = 1 //标记为已处理
 	p._trustedInfo.Remark = remark
 	p._trustedInfo.ReviewTime = time.Now().Unix()
 	_, err := orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
