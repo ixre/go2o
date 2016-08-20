@@ -10,6 +10,7 @@
 package merchant
 
 import (
+	"errors"
 	"fmt"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
@@ -24,6 +25,7 @@ import (
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/domain/util"
 	"go2o/core/variable"
 	"time"
 )
@@ -55,8 +57,48 @@ func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int, error)
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 }
 
+// 检查商户注册信息是否正确
+func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
+	if v.MemberId <= 0 {
+		return errors.New("会员不存在")
+	}
+	//todo: validate and check merchant name exists
+	if v.MchName == "" {
+		return merchant.ErrMissingMerchantName
+	}
+	if v.CompanyName == "" {
+		return merchant.ErrMissingCompanyName
+	}
+	if v.CompanyNo == "" {
+		return merchant.ErrMissingCompanyNo
+	}
+	if v.Address == "" {
+		return merchant.ErrMissingAddress
+	}
+	if v.PersonName == "" {
+		return merchant.ErrMissingPersonName
+	}
+	if v.PersonId == "" {
+		return merchant.ErrMissingPersonId
+	}
+	if util.CheckChineseCardID(v.PersonId) != nil {
+		return merchant.ErrPersonCardId
+	}
+	if v.CompanyImage == "" {
+		return merchant.ErrMissingCompanyImage
+	}
+	if v.PersonImage == "" {
+		return merchant.ErrMissingPersonImage
+	}
+	return nil
+}
+
 // 提交商户注册信息
 func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, error) {
+	err := m.checkSignUpInfo(v)
+	if err != nil {
+		return 0, err
+	}
 	v.Reviewed = enum.ReviewAwaiting
 	v.SubmitTime = time.Now().Unix()
 	return m.saveSignUpInfo(v)

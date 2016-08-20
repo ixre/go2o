@@ -842,6 +842,22 @@ ALTER TABLE `flm`.`mch_enterprise_info`
   ADD COLUMN `auth_doc` VARCHAR(120) NULL COMMENT '授权书' AFTER `company_image`;
 
 
+CREATE TABLE mch_sign_up (id int(11) NOT NULL AUTO_INCREMENT,
+  member_id int(11) NOT NULL,
+  sign_no varchar(20) NOT NULL, usr varchar(45) NOT NULL,
+  pwd varchar(45) NOT NULL, name varchar(20) NOT NULL,
+  province int(10) NOT NULL, city int(10) NOT NULL,
+  district int(10) NOT NULL, shop_name varchar(20) NOT NULL,
+  company_name varchar(20) NOT NULL, company_no varchar(20) NOT NULL,
+  person_name varchar(10) NOT NULL, person_id varchar(20) NOT NULL,
+  tel varchar(20) NOT NULL, address varchar(120) NOT NULL,
+  person_image varchar(120) NOT NULL, company_image varchar(120) NOT NULL,
+  auth_doc varchar(120) NOT NULL, reviewed int(1) NOT NULL,
+  remark varchar(120) NOT NULL, submit_time int(11) NOT NULL,
+  update_time int(11) NOT NULL, PRIMARY KEY (id));
+
+
+
 
 
 

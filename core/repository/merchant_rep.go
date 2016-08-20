@@ -66,11 +66,17 @@ func (m *merchantRep) GetManager() merchant.IMerchantManager {
 
 // 创建会员申请商户密钥
 func (m *merchantRep) CreateSignUpToken(memberId int) string {
+	mKey := fmt.Sprintf("go2o:rep:mch:signup:mm-%d", memberId)
+	if token, err := m.storage.GetString(mKey); err == nil {
+		return token
+	}
 	for {
 		token := domain.NewSecret(0)[8:14]
 		key := "go2o:rep:mch:signup:tk-" + token
 		if _, err := m.storage.GetInt(key); err != nil {
-			m.storage.SetExpire(key, memberId, int64(time.Hour*12))
+			seconds := int64(time.Hour * 12)
+			m.storage.SetExpire(key, memberId, seconds)
+			m.storage.SetExpire(mKey, token, seconds)
 			return token
 		}
 	}

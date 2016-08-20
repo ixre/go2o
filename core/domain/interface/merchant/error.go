@@ -43,4 +43,23 @@ var (
 
 	ErrNoSuchSignUpInfo *domain.DomainError = domain.NewDomainError(
 		"err_no_such_sign_up_info", "商户申请信息不存在")
+
+	ErrMissingCompanyName *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_company_name", "请填写公司名称")
+	ErrMissingMerchantName *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_merchant_name", "请填写商户名称")
+	ErrMissingCompanyNo *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_company_no", "请填写营业执照编号")
+	ErrMissingAddress *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_address", "请填写详细地址")
+	ErrMissingPersonName *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_person_name", "请填写法人姓名")
+	ErrMissingPersonId *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_person_id", "请填写法人身份证")
+	ErrPersonCardId *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_person_card_id", "法人身份证号码不正确")
+	ErrMissingCompanyImage *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_company_image", "请上传营业执照复印件")
+	ErrMissingPersonImage *domain.DomainError = domain.NewDomainError(
+		"err_mch_missing_person_image", "请上传法人身份证复印件")
 )
