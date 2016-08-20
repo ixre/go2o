@@ -38,6 +38,16 @@ func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
 	}
 }
 
+// 创建会员申请商户密钥
+func (m *merchantService) CreateSignUpToken(memberId int) string {
+	return m._mchRep.CreateSignUpToken(memberId)
+}
+
+// 根据商户申请密钥获取会员编号
+func (m *merchantService) GetMemberFromSignUpToken(token string) int {
+	return m._mchRep.GetMemberFromSignUpToken(token)
+}
+
 // 商户注册
 func (m *merchantService) SignUp(usr, pwd, companyName string,
 	province int, city int, district int) (int, error) {

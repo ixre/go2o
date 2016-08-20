@@ -12,6 +12,12 @@ package merchant
 type IMerchantRep interface {
 	CreateMerchant(*Merchant) (IMerchant, error)
 
+	// 创建会员申请商户密钥
+	CreateSignUpToken(memberId int) string
+
+	// 根据商户申请密钥获取会员编号
+	GetMemberFromSignUpToken(token string) int
+
 	// 获取商户的编号
 	GetMerchantsId() []int
 
