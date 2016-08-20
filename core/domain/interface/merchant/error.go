@@ -40,4 +40,7 @@ var (
 
 	ErrNoMoreAmount *domain.DomainError = domain.NewDomainError(
 		"err_mch_no_more_amount", "余额不足")
+
+	ErrNoSuchSignUpInfo *domain.DomainError = domain.NewDomainError(
+		"err_no_such_sign_up_info", "商户申请信息不存在")
 )
