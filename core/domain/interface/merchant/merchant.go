@@ -128,6 +128,9 @@ type (
 
 		// 获取会员申请的商户信息
 		GetSignUpInfoByMemberId(memberId int) *MchSignUp
+
+		// 获取会员关联的商户
+		GetMerchantByMemberId(memberId int) IMerchant
 	}
 
 	// 商户申请信息
