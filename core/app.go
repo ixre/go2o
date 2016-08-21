@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
+	"go2o/core/variable"
 )
 
 var _ gof.App = new(MainApp)
@@ -65,6 +66,7 @@ func (a *MainApp) Config() *gof.Config {
 	if a._config == nil {
 		if cfg, err := gof.LoadConfig(a._confFilePath); err == nil {
 			a._config = cfg
+			variable.Domain = a._config.GetString(variable.ServerDomain)
 			cfg.Set("exp_fee_bit", float64(1))
 		} else {
 			log.Fatalln(err)

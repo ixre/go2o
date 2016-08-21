@@ -49,8 +49,19 @@ func (m *merchantService) GetMemberFromSignUpToken(token string) int {
 	return m._mchRep.GetMemberFromSignUpToken(token)
 }
 
+// 获取会员商户申请信息
 func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int) *merchant.MchSignUp {
 	return m._mchRep.GetManager().GetSignUpInfoByMemberId(memberId)
+}
+
+// 获取商户申请信息
+func (m *merchantService) GetSignUp(id int) *merchant.MchSignUp {
+	return m._mchRep.GetManager().GetSignUpInfo(id)
+}
+
+// 审核商户申请信息
+func (m *merchantService) ReviewSignUp(id int, pass bool, remark string) error {
+	return m._mchRep.GetManager().ReviewMchSignUp(id, pass, remark)
 }
 
 // 商户注册

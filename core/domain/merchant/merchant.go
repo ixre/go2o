@@ -27,18 +27,21 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/variable"
+	"strings"
 	"time"
 )
 
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
 
 type merchantManagerImpl struct {
-	_rep merchant.IMerchantRep
+	_rep   merchant.IMerchantRep
+	valRep valueobject.IValueRep
 }
 
-func NewMerchantManager(rep merchant.IMerchantRep) merchant.IMerchantManager {
+func NewMerchantManager(rep merchant.IMerchantRep, valRep valueobject.IValueRep) merchant.IMerchantManager {
 	return &merchantManagerImpl{
-		_rep: rep,
+		_rep:   rep,
+		valRep: valRep,
 	}
 }
 
@@ -106,17 +109,90 @@ func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, erro
 
 // 审核商户注册信息
 func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) error {
+	var err error
 	v := m.GetSignUpInfo(id)
 	if v == nil {
 		return merchant.ErrNoSuchSignUpInfo
 	}
 	if pass {
 		v.Reviewed = enum.ReviewPass
+		if err = m.createNewMerchant(v); err != nil {
+			return err
+		}
 	} else {
 		v.Reviewed = enum.ReviewReject
 	}
 	v.Remark = remark
-	_, err := m.saveSignUpInfo(v)
+	_, err = m.saveSignUpInfo(v)
+	return err
+}
+
+// 创建新商户
+func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
+	unix := time.Now().Unix()
+	mchVal := &merchant.Merchant{
+		MemberId: 0,
+		// 商户名称
+		Name: v.MchName,
+		// 是否自营
+		SelfSales: 0,
+		// 商户等级
+		Level: 1,
+		// 标志
+		Logo: "",
+		// 省
+		Province: v.Province,
+		// 市
+		City: v.City,
+		// 区
+		District: v.District,
+		// 是否启用
+		Enabled: 1,
+		// 过期时间
+		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
+		// 注册时间
+		JoinTime: unix,
+		// 更新时间
+		UpdateTime: unix,
+		// 登陆时间
+		LoginTime: 0,
+		// 最后登陆时间
+		LastLoginTime: 0,
+	}
+	mch, err := m._rep.CreateMerchant(mchVal)
+	if err != nil {
+		return err
+	}
+	err = mch.SetValue(mchVal)
+	if err != nil {
+		return err
+	}
+	mchId, err := mch.Save()
+	if err == nil {
+		names := m.valRep.GetAreaNames([]int{v.Province, v.City, v.District})
+		location := strings.Join(names, "")
+		ev := &merchant.EnterpriseInfo{
+			MerchantId:   mchId,
+			Name:         v.CompanyName,
+			CompanyNo:    v.CompanyNo,
+			PersonName:   v.PersonName,
+			PersonIdNo:   v.PersonId,
+			PersonImage:  v.PersonImage,
+			Tel:          v.Phone,
+			Province:     v.Province,
+			City:         v.City,
+			District:     v.District,
+			Location:     location,
+			Address:      v.Address,
+			CompanyImage: v.CompanyImage,
+			AuthDoc:      v.AuthDoc,
+			Reviewed:     v.Reviewed,
+			ReviewTime:   unix,
+			Remark:       "",
+			UpdateTime:   unix,
+		}
+		_, err = mch.ProfileManager().SaveEnterpriseInfo(ev)
+	}
 	return err
 }
 

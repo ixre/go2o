@@ -59,7 +59,7 @@ func NewMerchantRep(c db.Connector, storage storage.Interface, shopRep shop.ISho
 // 获取商户管理器
 func (m *merchantRep) GetManager() merchant.IMerchantManager {
 	if m.manager == nil {
-		m.manager = merchantImpl.NewMerchantManager(m)
+		m.manager = merchantImpl.NewMerchantManager(m, m._valRep)
 	}
 	return m.manager
 }
