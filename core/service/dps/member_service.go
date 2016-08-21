@@ -459,7 +459,12 @@ func (ms *memberService) DeleteDeliverAddress(memberId int, deliverId int) error
 func (ms *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
-		return m.Profile().ModifyPassword(newPwd, oldPwd)
+		newEncPwd := domain.MemberSha1Pwd(newPwd)
+		oldEncPwd := oldPwd
+		if oldEncPwd != "" {
+			oldEncPwd = domain.MemberSha1Pwd(oldPwd)
+		}
+		return m.Profile().ModifyPassword(newEncPwd, oldEncPwd)
 	}
 	return member.ErrNoSuchMember
 }
