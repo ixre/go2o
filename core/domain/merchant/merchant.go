@@ -192,6 +192,9 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 			UpdateTime:   unix,
 		}
 		_, err = mch.ProfileManager().SaveEnterpriseInfo(ev)
+		if err == nil {
+			mch.ProfileManager().ReviewEnterpriseInfo(true, "")
+		}
 	}
 	return err
 }

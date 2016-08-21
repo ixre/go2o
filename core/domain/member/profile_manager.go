@@ -241,12 +241,11 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		return err
 	}
 
-	if len(oldPwd) != 0 &&
-		dm.MemberSha1Pwd(oldPwd) != p._member._value.Pwd {
+	if len(oldPwd) != 0 && oldPwd != p._member._value.Pwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
 
-	p._member._value.Pwd = dm.MemberSha1Pwd(newPwd)
+	p._member._value.Pwd = newPwd
 	_, err = p._member.Save()
 
 	return err
