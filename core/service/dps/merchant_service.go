@@ -11,7 +11,6 @@ package dps
 
 import (
 	"errors"
-	"fmt"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
@@ -113,11 +112,15 @@ func (m *merchantService) SignUp(usr, pwd, companyName string,
 
 // 提交注册信息
 func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int, error) {
-	log.Println(fmt.Sprintf("%#v\n", e))
 	return m._mchRep.GetManager().CommitSignUpInfo(e)
 }
 
 func (m *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant {
+	mch := m._mchRep.GetManager().GetMerchantByMemberId(memberId)
+	if mch != nil {
+		v := mch.GetValue()
+		return &v
+	}
 	return nil
 }
 

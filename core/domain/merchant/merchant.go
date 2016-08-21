@@ -131,7 +131,7 @@ func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) 
 func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 	unix := time.Now().Unix()
 	mchVal := &merchant.Merchant{
-		MemberId: 0,
+		MemberId: v.MemberId,
 		// 商户名称
 		Name: v.MchName,
 		// 是否自营
@@ -212,6 +212,16 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.Mc
 		return nil
 	}
 	return &v
+}
+
+// 获取会员关联的商户
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+	v := merchant.Merchant{}
+	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
+		mch, _ := m._rep.CreateMerchant(&v)
+		return mch
+	}
+	return nil
 }
 
 var _ merchant.IMerchant = new(MerchantImpl)
