@@ -23,3 +23,13 @@ const (
 	// 审核失败
 	ReviewReject = 3
 )
+
+// 商户结算模式
+type MchSettleMode int
+
+const (
+	// 结算供货价
+	MchModeSettleByCost MchSettleMode = 1
+	// 按比例结算
+	MchModeSetttleByRate MchSettleMode = 2
+)

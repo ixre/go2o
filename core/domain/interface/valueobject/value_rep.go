@@ -8,6 +8,8 @@
  */
 package valueobject
 
+import "go2o/core/domain/interface/enum"
+
 var (
 	TradeCsnTypeByOrder = 1 //按订单笔数收取手续费
 	TradeCsnTypeByFee   = 2 //按交易金额收取手续费
@@ -153,6 +155,10 @@ type (
 
 	// 全局商户销售设置
 	GlobMchSaleConf struct {
+		// 商户订单结算模式
+		MchOrderSettleMode enum.MchSettleMode
+		// 商户订单结算比例
+		MchOrderSettleRate float32
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现

@@ -1273,15 +1273,55 @@ func (s *subOrderImpl) getOrderAmount() (amount float32, refund float32) {
 	return amount, refund
 }
 
+// 获取订单的成本
+func (s *subOrderImpl) getOrderCost() float32 {
+	var cost float32
+	items := s.Items()
+	for _, item := range items {
+		snap := s._goodsRep.GetSaleSnapshot(item.SnapshotId)
+		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
+	}
+	//如果非全部退货、退款,则加上运费及包装费
+	if cost > 0 {
+		cost += s._value.ExpressFee + s._value.PackageFee
+	}
+	return cost
+}
+
 // 商户结算
 func (s *subOrderImpl) vendorSettle() error {
 	vendor, _ := s._mchRep.GetMerchant(s._value.VendorId)
 	if vendor != nil {
-		amount, refund := s.getOrderAmount()
-		if amount > 0 {
-			return vendor.Account().SettleOrder(s._value.OrderNo,
-				amount, 0, refund, "订单结算")
+		conf := s._valRep.GetGlobMchSaleConf()
+		switch conf.MchOrderSettleMode {
+		case enum.MchModeSettleByCost:
+			return s.vendorSettleByCost(vendor)
+		case enum.MchModeSetttleByRate:
+			return s.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
 		}
+
+	}
+	return nil
+}
+
+// 根据供货价进行商户结算
+func (s *subOrderImpl) vendorSettleByCost(vendor merchant.IMerchant) error {
+	_, refund := s.getOrderAmount()
+	sAmount := s.getOrderCost()
+	if sAmount > 0 {
+		return vendor.Account().SettleOrder(s._value.OrderNo,
+			sAmount, 0, refund, "订单结算")
+	}
+	return nil
+}
+
+// 根据比例进行商户结算
+func (s *subOrderImpl) vendorSettleByRate(vendor merchant.IMerchant, rate float32) error {
+	amount, refund := s.getOrderAmount()
+	sAmount := amount * rate
+	if sAmount > 0 {
+		return vendor.Account().SettleOrder(s._value.OrderNo,
+			sAmount, 0, refund, "订单结算")
 	}
 	return nil
 }
@@ -1569,9 +1609,6 @@ func (o *subOrderImpl) Refund() error {
 
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
-	// now := time.Now().Unix()
-	// v := o._value
-
 	// 更新发货单
 	soList := o._shipRep.GetOrders(o.GetDomainId())
 	for _, v := range soList {

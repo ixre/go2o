@@ -452,15 +452,7 @@ func (m *MemberRep) SaveRelation(v *member.Relation) error {
 
 // 保存地址
 func (m *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
-	orm := m.Connector.GetOrm()
-	if v.Id <= 0 {
-		_, _, err := orm.Save(nil, v)
-		m.Connector.ExecScalar("SELECT MAX(id) FROM mm_delivery_addr", &v.Id)
-		return v.Id, err
-	} else {
-		_, _, err := orm.Save(v.Id, v)
-		return v.Id, err
-	}
+	return orm.Save(m.Connector.GetOrm(), v, v.Id)
 }
 
 // 获取全部配送地址

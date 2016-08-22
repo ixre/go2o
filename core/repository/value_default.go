@@ -9,6 +9,7 @@
 package repository
 
 import (
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 )
@@ -77,7 +78,11 @@ var (
 		TradeCsnPercentByFee: 0.01, // 1%收取
 	}
 
-	defaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
+	DefaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
+		// 商户订单结算模式
+		MchOrderSettleMode: enum.MchModeSetttleByRate,
+		// 商户订单结算比例
+		MchOrderSettleRate: 1,
 		// 是否启用分销模式
 		FxSalesEnabled: false,
 		// 返现比例,0则不返现

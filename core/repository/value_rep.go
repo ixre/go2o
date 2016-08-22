@@ -153,7 +153,7 @@ func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
 // 获取全局商户销售设置
 func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	if vp._globMchSaleConf == nil {
-		v := defaultGlobMchSaleConf
+		v := DefaultGlobMchSaleConf
 		vp._globMchSaleConf = &v
 		vp._mscGob.Unmarshal(vp._globMchSaleConf)
 	}
