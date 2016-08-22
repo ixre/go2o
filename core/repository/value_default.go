@@ -80,7 +80,7 @@ var (
 
 	DefaultGlobMchSaleConf = valueobject.GlobMchSaleConf{
 		// 商户订单结算模式
-		MchOrderSettleMode: enum.MchModeSetttleByRate,
+		MchOrderSettleMode: enum.MchModeSettleByRate,
 		// 商户订单结算比例
 		MchOrderSettleRate: 1,
 		// 是否启用分销模式

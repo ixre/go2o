@@ -1296,7 +1296,7 @@ func (s *subOrderImpl) vendorSettle() error {
 		switch conf.MchOrderSettleMode {
 		case enum.MchModeSettleByCost:
 			return s.vendorSettleByCost(vendor)
-		case enum.MchModeSetttleByRate:
+		case enum.MchModeSettleByRate:
 			return s.vendorSettleByRate(vendor, conf.MchOrderSettleRate)
 		}
 

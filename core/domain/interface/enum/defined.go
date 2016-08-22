@@ -31,5 +31,5 @@ const (
 	// 结算供货价
 	MchModeSettleByCost MchSettleMode = 1
 	// 按比例结算
-	MchModeSetttleByRate MchSettleMode = 2
+	MchModeSettleByRate MchSettleMode = 2
 )

@@ -9,8 +9,10 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
@@ -21,9 +23,9 @@ import (
 	"go2o/core/variable"
 )
 
-var _ mss.IMssRep = new(MssRep)
+var _ mss.IMssRep = new(mssRep)
 
-type MssRep struct {
+type mssRep struct {
 	_conn         db.Connector
 	_sysManger    mss.IMessageManager
 	_notifyManger notify.INotifyManager
@@ -34,7 +36,7 @@ type MssRep struct {
 
 func NewMssRep(conn db.Connector, notifyRep notify.INotifyRep,
 	valRep valueobject.IValueRep) mss.IMssRep {
-	return &MssRep{
+	return &mssRep{
 		_conn:      conn,
 		_notifyRep: notifyRep,
 		_valRep:    valRep,
@@ -42,31 +44,31 @@ func NewMssRep(conn db.Connector, notifyRep notify.INotifyRep,
 }
 
 // 系统消息服务
-func (this *MssRep) MessageManager() mss.IMessageManager {
-	if this._sysManger == nil {
-		this._sysManger = mssImpl.NewMessageManager(this)
+func (m *mssRep) MessageManager() mss.IMessageManager {
+	if m._sysManger == nil {
+		m._sysManger = mssImpl.NewMessageManager(m)
 	}
-	return this._sysManger
+	return m._sysManger
 }
 
 // 通知服务
-func (this *MssRep) NotifyManager() notify.INotifyManager {
-	if this._notifyManger == nil {
-		this._notifyManger = notifyImpl.NewNotifyManager(
-			this._notifyRep, this._valRep)
+func (m *mssRep) NotifyManager() notify.INotifyManager {
+	if m._notifyManger == nil {
+		m._notifyManger = notifyImpl.NewNotifyManager(
+			m._notifyRep, m._valRep)
 	}
-	return this._notifyManger
+	return m._notifyManger
 }
 
-func (this *MssRep) GetProvider() mss.IUserMessageManager {
-	if this._globMss == nil {
-		this._globMss = mssImpl.NewMssManager(0, this)
+func (m *mssRep) GetProvider() mss.IUserMessageManager {
+	if m._globMss == nil {
+		m._globMss = mssImpl.NewMssManager(0, m)
 	}
-	return this._globMss
+	return m._globMss
 }
 
 // 获取短信配置
-func (this *MssRep) GetConfig(userId int) *mss.Config {
+func (m *mssRep) GetConfig(userId int) *mss.Config {
 	conf := mss.Config{}
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
@@ -78,7 +80,7 @@ func (this *MssRep) GetConfig(userId int) *mss.Config {
 }
 
 // 保存消息设置
-func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
+func (m *mssRep) SaveConfig(userId int, conf *mss.Config) error {
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
 		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
@@ -88,49 +90,49 @@ func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
 }
 
 // 获取邮箱模板
-func (this *MssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
+func (m *mssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
 	var e mss.MailTemplate
-	if err := this._conn.GetOrm().Get(id, &e); err == nil {
+	if err := m._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
 	}
 	return nil
 }
 
 // 保存邮箱模版
-func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+func (m *mssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 	var err error
-	var orm = this._conn.GetOrm()
+	var orm = m._conn.GetOrm()
 	if v.Id > 0 {
 		_, _, err = orm.Save(v.Id, v)
 	} else {
 		_, _, err = orm.Save(nil, v)
-		this._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE merchant_id=?", &v.Id, v.MerchantId)
+		m._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE merchant_id=?", &v.Id, v.MerchantId)
 	}
 	return v.Id, err
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
+func (m *mssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	this._conn.GetOrm().Select(&list, "merchant_id=?", merchantId)
+	m._conn.GetOrm().Select(&list, "merchant_id=?", merchantId)
 	return list
 }
 
 // 删除邮件模板
-func (this *MssRep) DeleteMailTemplate(merchantId, id int) error {
-	_, err := this._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", merchantId, id)
+func (m *mssRep) DeleteMailTemplate(merchantId, id int) error {
+	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", merchantId, id)
 	return err
 }
 
 // 加入到发送对列
-func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
+func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 	var err error
 	if v.Id > 0 {
-		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+		_, _, err = m._conn.GetOrm().Save(v.Id, v)
 	} else {
-		_, _, err = this._conn.GetOrm().Save(nil, v)
+		_, _, err = m._conn.GetOrm().Save(nil, v)
 		if err == nil {
-			err = this._conn.ExecScalar("SELECT max(id) FROM pt_mail_queue", &v.Id)
+			err = m._conn.ExecScalar("SELECT max(id) FROM pt_mail_queue", &v.Id)
 		}
 	}
 
@@ -143,67 +145,67 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
+func (m *mssRep) SaveMessage(v *mss.Message) (int, error) {
 	var err error
 	if v.Id > 0 {
-		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+		_, _, err = m._conn.GetOrm().Save(v.Id, v)
 	} else {
 		var id int64
-		_, id, err = this._conn.GetOrm().Save(nil, v)
+		_, id, err = m._conn.GetOrm().Save(nil, v)
 		v.Id = int(id)
 	}
 	return v.Id, err
 }
 
 // 获取消息
-func (this *MssRep) GetMessage(id int) *mss.Message {
+func (m *mssRep) GetMessage(id int) *mss.Message {
 	e := mss.Message{}
-	if this._conn.GetOrm().Get(id, &e) == nil {
+	if m._conn.GetOrm().Get(id, &e) == nil {
+		e.To = []mss.User{}
+		m._conn.Query(`SELECT to_id,to_role FROM msg_to WHERE msg_id=?`, func(rs *sql.Rows) {
+			for rs.Next() {
+				u := mss.User{}
+				rs.Scan(&u.Id, &u.Role)
+				e.To = append(e.To, u)
+			}
+		}, id)
 		return &e
 	}
 	return nil
 }
 
 // 保存用户消息关联
-func (this *MssRep) SaveUserMsg(v *mss.To) (int, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = this._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = this._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+func (m *mssRep) SaveUserMsg(v *mss.To) (int, error) {
+	return orm.Save(m._conn.GetOrm(), v, v.Id)
 }
 
 // 保存消息内容
-func (this *MssRep) SaveMsgContent(v *mss.Content) (int, error) {
+func (m *mssRep) SaveMsgContent(v *mss.Content) (int, error) {
 	var err error
 	if v.Id > 0 {
-		_, _, err = this._conn.GetOrm().Save(v.Id, v)
+		_, _, err = m._conn.GetOrm().Save(v.Id, v)
 	} else {
 		var id int64
-		_, id, err = this._conn.GetOrm().Save(nil, v)
+		_, id, err = m._conn.GetOrm().Save(nil, v)
 		v.Id = int(id)
 	}
 	return v.Id, err
 }
 
 // 获取消息内容
-func (this *MssRep) GetMessageContent(msgId int) *mss.Content {
+func (m *mssRep) GetMessageContent(msgId int) *mss.Content {
 	e := mss.Content{}
-	if this._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
+	if m._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
 		return &e
 	}
 	return nil
 }
 
 // 获取消息目标
-func (this *MssRep) GetMessageTo(msgId, toUserId, toRole int) *mss.To {
+func (m *mssRep) GetMessageTo(msgId, toUserId, toRole int) *mss.To {
 	e := mss.To{}
-	if this._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to t INNER JOIN msg_content c ON c.id = t.id
-WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {
+	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
+		WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {
 		return &e
 	}
 	return nil

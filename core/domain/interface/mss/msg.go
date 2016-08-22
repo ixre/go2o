@@ -89,6 +89,8 @@ type (
 		ToId int `db:"to_id"`
 		// 接收者角色
 		ToRole int `db:"to_role"`
+		// 消息编号
+		MsgId int `db:"msg_id"`
 		// 内容编号
 		ContentId int `db:"content_id"`
 		// 是否阅读
