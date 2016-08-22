@@ -11,6 +11,7 @@ package mss
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
 	_ "go2o/core/testing"
@@ -123,15 +124,7 @@ func (this *MssRep) GetMessage(id int) *mss.Message {
 
 // 保存用户消息关联
 func (this *MssRep) SaveUserMsg(v *mss.To) (int, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = this._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = this._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+	return orm.Save(this._conn.GetOrm(), v, v.Id)
 }
 
 // 保存消息内容

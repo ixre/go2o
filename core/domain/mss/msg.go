@@ -20,7 +20,7 @@ import (
 var reg = regexp.MustCompile("\\{([^\\}]+)\\}")
 
 // 翻译标签
-func Transplate(c string, m map[string]string) string {
+func Translate(c string, m map[string]string) string {
 	return reg.ReplaceAllStringFunc(c, func(k string) string {
 		key := k[1 : len(k)-1]
 		if v, ok := m[key]; ok {
@@ -47,26 +47,26 @@ func newMessage(msg *mss.Message, rep mss.IMssRep) mss.IMessage {
 }
 
 // 获取领域编号
-func (this *messageImpl) GetDomainId() int {
-	return this._msg.Id
+func (m *messageImpl) GetDomainId() int {
+	return m._msg.Id
 }
 
-func (this *messageImpl) Type() int {
-	return this._msg.Type
+func (m *messageImpl) Type() int {
+	return m._msg.Type
 }
 
 // 是否向特定的人发送
-func (this *messageImpl) SpecialTo() bool {
-	return this._msg.To != nil && len(this._msg.To) > 0
+func (m *messageImpl) SpecialTo() bool {
+	return m._msg.To != nil && len(m._msg.To) > 0
 }
 
 // 检测是否有权限查看
-func (this *messageImpl) CheckPerm(toUserId int, toRole int) bool {
-	if this._msg.AllUser == 1 || this._msg.ToRole == toRole {
+func (m *messageImpl) CheckPerm(toUserId int, toRole int) bool {
+	if m._msg.AllUser == 1 || m._msg.ToRole == toRole {
 		return true
 	}
-	if this._msg.To != nil {
-		for _, v := range this._msg.To {
+	if m._msg.To != nil {
+		for _, v := range m._msg.To {
 			if v.Id == toUserId && v.Role == toRole {
 				return true
 			}
@@ -76,57 +76,57 @@ func (this *messageImpl) CheckPerm(toUserId int, toRole int) bool {
 }
 
 // 获取消息
-func (this *messageImpl) GetValue() mss.Message {
-	return *this._msg
+func (m *messageImpl) GetValue() mss.Message {
+	return *m._msg
 }
 
 // 获取消息发送目标
-func (this *messageImpl) GetTo(toUserId int, toRole int) *mss.To {
-	return this._rep.GetMessageTo(this.GetDomainId(), toUserId, toRole)
+func (m *messageImpl) GetTo(toUserId int, toRole int) *mss.To {
+	return m._rep.GetMessageTo(m.GetDomainId(), toUserId, toRole)
 }
 
 // 保存
 //todo: 会出现保存后不发送的情况
-func (this *messageImpl) Save() (int, error) {
-	if this.GetDomainId() > 0 {
-		return this._msg.Id, mss.ErrMessageUpdate
+func (m *messageImpl) Save() (int, error) {
+	if m.GetDomainId() > 0 {
+		return m._msg.Id, mss.ErrMessageUpdate
 	}
 	// 检查消息用途,SenderRole不做检查
-	if this._msg.UseFor != mss.UseForNotify &&
-		this._msg.UseFor != mss.UseForService &&
-		this._msg.UseFor != mss.UserForChat {
-		return this.GetDomainId(), mss.ErrUnknownMessageUseFor
+	if m._msg.UseFor != mss.UseForNotify &&
+		m._msg.UseFor != mss.UseForService &&
+		m._msg.UseFor != mss.UserForChat {
+		return m.GetDomainId(), mss.ErrUnknownMessageUseFor
 	}
 
 	// 检查发送目标群体
-	if this._msg.AllUser == 1 {
-		if this._msg.ToRole > 0 ||
-			(this._msg.To != nil && len(this._msg.To) > 0) {
+	if m._msg.AllUser == 1 {
+		if m._msg.ToRole > 0 ||
+			(m._msg.To != nil && len(m._msg.To) > 0) {
 			return 0, mss.ErrMessageAllUser
 		}
-	} else if this._msg.ToRole > 0 {
+	} else if m._msg.ToRole > 0 {
 		//检验用户类型
-		if this._msg.ToRole != mss.RoleMember &&
-			this._msg.ToRole != mss.RoleMerchant &&
-			this._msg.ToRole != mss.RoleSystem {
+		if m._msg.ToRole != mss.RoleMember &&
+			m._msg.ToRole != mss.RoleMerchant &&
+			m._msg.ToRole != mss.RoleSystem {
 			return 0, mss.ErrUnknownRole
 		}
-		if len(this._msg.To) > 0 {
+		if len(m._msg.To) > 0 {
 			return 0, mss.ErrMessageToRole
 		}
 
-	} else if len(this._msg.To) == 0 {
+	} else if len(m._msg.To) == 0 {
 		return 0, mss.ErrNoSuchReceiveUser
 	}
-	this._msg.CreateTime = time.Now().Unix()
-	id, err := this._rep.SaveMessage(this._msg)
-	this._msg.Id = id
+	m._msg.CreateTime = time.Now().Unix()
+	id, err := m._rep.SaveMessage(m._msg)
+	m._msg.Id = id
 	return id, err
 }
 
 // 发送
-func (this *messageImpl) Send(d mss.Data) error {
-	if this.GetDomainId() <= 0 {
+func (m *messageImpl) Send(d mss.Data) error {
+	if m.GetDomainId() <= 0 {
 		return mss.ErrMessageNotSave
 	}
 	//todo: 检查是否已经发送
@@ -134,7 +134,7 @@ func (this *messageImpl) Send(d mss.Data) error {
 }
 
 // 保存消息内容
-func (this *messageImpl) saveContent(v interface{}) (int, error) {
+func (m *messageImpl) saveContent(v interface{}) (int, error) {
 	content, ok := v.(string)
 	if !ok {
 		if d, err := json.Marshal(v); err != nil {
@@ -145,21 +145,23 @@ func (this *messageImpl) saveContent(v interface{}) (int, error) {
 	}
 	co := &mss.Content{
 		Id:    0,
-		MsgId: this.GetDomainId(),
+		MsgId: m.GetDomainId(),
 		Data:  content,
 	}
-	return this._rep.SaveMsgContent(co)
+	return m._rep.SaveMsgContent(co)
 }
 
-func (this *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
-	if len(this._msg.To) > 0 {
-		for _, v := range this._msg.To {
+func (m *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
+	if len(m._msg.To) > 0 {
+		for _, v := range m._msg.To {
 			to := &mss.To{
 				Id: 0,
 				// 接收者编号
 				ToId: v.Id,
 				// 接收者角色
 				ToRole: v.Role,
+				// 消息编号
+				MsgId: m.GetDomainId(),
 				// 内容编号
 				ContentId: contentId,
 				// 是否阅读
@@ -167,7 +169,7 @@ func (this *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
 				// 阅读时间
 				ReadTime: time.Now().Unix(),
 			}
-			this._rep.SaveUserMsg(to)
+			m._rep.SaveUserMsg(to)
 		}
 	}
 	return -1, nil
@@ -191,24 +193,24 @@ func newMailMessage(m *messageImpl, v *notify.MailMessage,
 	}
 }
 
-func (this *mailMessageImpl) Value() *notify.MailMessage {
-	return this._val
+func (m *mailMessageImpl) Value() *notify.MailMessage {
+	return m._val
 }
 
-func (this *mailMessageImpl) Save() (int, error) {
-	return this.messageImpl.Save()
+func (m *mailMessageImpl) Save() (int, error) {
+	return m.messageImpl.Save()
 }
 
 // 发送
-func (this *mailMessageImpl) Send(d mss.Data) error {
-	err := this.messageImpl.Send(d)
+func (m *mailMessageImpl) Send(d mss.Data) error {
+	err := m.messageImpl.Send(d)
 	if err == nil {
-		v := this._val
-		v.Body = Transplate(v.Body, d)
-		v.Subject = Transplate(v.Subject, d)
+		v := m._val
+		v.Body = Translate(v.Body, d)
+		v.Subject = Translate(v.Subject, d)
 
 		unix := time.Now().Unix()
-		for _, t := range this._msg.To {
+		for _, t := range m._msg.To {
 			task := &mss.MailTask{
 				MerchantId: 0,
 				Subject:    v.Subject,
@@ -216,12 +218,12 @@ func (this *mailMessageImpl) Send(d mss.Data) error {
 				SendTo:     strconv.Itoa(t.Id), //todo: mail address
 				CreateTime: unix,
 			}
-			this._rep.JoinMailTaskToQueen(task)
+			m._rep.JoinMailTaskToQueen(task)
 		}
 
 		//var contentId int //内容编号
-		//if contentId, err = this.saveContent(v);err == nil{
-		//	this.saveUserMsg(contentId,1) //短信默认已读
+		//if contentId, err = m.saveContent(v);err == nil{
+		//	m.saveUserMsg(contentId,1) //短信默认已读
 		//}
 	}
 	return err
@@ -245,23 +247,23 @@ func newPhoneMessage(m *messageImpl, v *notify.PhoneMessage,
 	}
 }
 
-func (this *phoneMessageImpl) Value() *notify.PhoneMessage {
-	return this._val
+func (p *phoneMessageImpl) Value() *notify.PhoneMessage {
+	return p._val
 }
 
-func (this *phoneMessageImpl) Save() (int, error) {
-	return this.messageImpl.Save()
+func (p *phoneMessageImpl) Save() (int, error) {
+	return p.messageImpl.Save()
 }
 
 // 发送
-func (this *phoneMessageImpl) Send(d mss.Data) error {
-	err := this.messageImpl.Send(d)
+func (p *phoneMessageImpl) Send(d mss.Data) error {
+	err := p.messageImpl.Send(d)
 	if err == nil {
-		v := *this._val
-		v = notify.PhoneMessage(Transplate(string(v), d))
+		v := *p._val
+		v = notify.PhoneMessage(Translate(string(v), d))
 		var contentId int //内容编号
-		if contentId, err = this.saveContent(string(v)); err == nil {
-			this.saveUserMsg(contentId, 1) //短信默认已读
+		if contentId, err = p.saveContent(string(v)); err == nil {
+			p.saveUserMsg(contentId, 1) //短信默认已读
 		}
 	}
 	return err
@@ -285,24 +287,24 @@ func newSiteMessage(m *messageImpl, v *notify.SiteMessage,
 	}
 }
 
-func (this *siteMessageImpl) Value() *notify.SiteMessage {
-	return this._val
+func (s *siteMessageImpl) Value() *notify.SiteMessage {
+	return s._val
 }
 
-func (this *siteMessageImpl) Save() (int, error) {
-	return this.messageImpl.Save()
+func (s *siteMessageImpl) Save() (int, error) {
+	return s.messageImpl.Save()
 }
 
 // 发送
-func (this *siteMessageImpl) Send(d mss.Data) error {
-	err := this.messageImpl.Send(d)
+func (s *siteMessageImpl) Send(d mss.Data) error {
+	err := s.messageImpl.Send(d)
 	if err == nil {
-		v := this._val
-		v.Subject = Transplate(v.Subject, d)
-		v.Message = Transplate(v.Message, d)
+		v := s._val
+		v.Subject = Translate(v.Subject, d)
+		v.Message = Translate(v.Message, d)
 		var contentId int //内容编号
-		if contentId, err = this.saveContent(v); err == nil {
-			this.saveUserMsg(contentId, 0) //站内信默认未读
+		if contentId, err = s.saveContent(v); err == nil {
+			s.saveUserMsg(contentId, 0) //站内信默认未读
 		}
 	}
 	return err

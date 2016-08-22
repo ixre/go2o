@@ -857,6 +857,16 @@ CREATE TABLE mch_sign_up (id int(11) NOT NULL AUTO_INCREMENT,
   update_time int(11) NOT NULL, PRIMARY KEY (id));
 
 
+ALTER TABLE `zxdb`.`msg_to`
+  CHANGE COLUMN `to_id` `to_id` INT(11) NOT NULL ,
+  CHANGE COLUMN `to_role` `to_role` TINYINT(2) NOT NULL ,
+  CHANGE COLUMN `content_id` `content_id` INT(11) NOT NULL ,
+  CHANGE COLUMN `has_read` `has_read` TINYINT(1) NOT NULL ,
+  CHANGE COLUMN `read_time` `read_time` INT(11) NOT NULL ,
+  ADD COLUMN `msg_id` INT(11) NOT NULL AFTER `to_role`;
+
+
+
 
 
 
