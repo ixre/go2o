@@ -16,7 +16,7 @@ var (
 	AliasPresentAccount    string = "奖金"
 	AliasGrowAccount       string = "增利金"
 	FlowConvertSlogan      string = "流通金作为可以转让的虚拟货币"
-	AliasIntegral          string = "积分"
+	AliasIntegral          string = "会员积分"
 	AliasMemberIM          string = "即时通讯"
 	MemberImNote           string = ""
 	MemberImRequired       bool   = true

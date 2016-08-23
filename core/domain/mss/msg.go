@@ -94,7 +94,7 @@ func (m *messageImpl) Save() (int, error) {
 	// 检查消息用途,SenderRole不做检查
 	if m._msg.UseFor != mss.UseForNotify &&
 		m._msg.UseFor != mss.UseForService &&
-		m._msg.UseFor != mss.UserForChat {
+		m._msg.UseFor != mss.UseForChat {
 		return m.GetDomainId(), mss.ErrUnknownMessageUseFor
 	}
 
