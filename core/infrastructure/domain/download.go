@@ -65,7 +65,7 @@ func DownloadToLocal(merchantId int, url string, guessExt string) string {
 				bufSize := 100
 				buffer := make([]byte, bufSize)
 				var n int
-				var leng int
+				var l int
 				for {
 					if n, err = src.Read(buffer); err == io.EOF {
 						break
@@ -77,7 +77,7 @@ func DownloadToLocal(merchantId int, url string, guessExt string) string {
 						buf.Write(buffer)
 					}
 
-					leng += n
+					l += n
 				}
 				buf.Flush()
 
