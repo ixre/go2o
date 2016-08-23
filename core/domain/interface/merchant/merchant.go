@@ -213,9 +213,9 @@ type (
 		JoinTime int64 `db:"join_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
-		// 登陆时间
+		// 登录时间
 		LoginTime int64 `db:"login_time"`
-		// 最后登陆时间
+		// 最后登录时间
 		LastLoginTime int64 `db:"last_login_time"`
 	}
 

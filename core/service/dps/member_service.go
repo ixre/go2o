@@ -312,7 +312,7 @@ func (ms *memberService) ResetPassword(memberId int) string {
 	return ""
 }
 
-// 检查凭据, update:是否更新登陆时间
+// 检查凭据, update:是否更新登录时间
 func (ms *memberService) TryLogin(usr, pwd string, update bool) (
 	*member.Member, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
