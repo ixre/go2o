@@ -21,7 +21,7 @@ var (
 	// 用于通知
 	UseForNotify = 1
 	// 用于好友交流
-	UserForChat = 2
+	UseForChat = 2
 	// 用于客服
 	UseForService = 3
 )

@@ -839,7 +839,7 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int
 	if kind == member.KindBalanceCharge {
 		tradeNo = domain.NewTradeNo(merchantId)
 		if amount > 0 {
-			tit2 = "[KF]客服充值卡"
+			tit2 = "[KF]客服充值"
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
