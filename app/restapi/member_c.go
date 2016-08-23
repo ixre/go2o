@@ -26,11 +26,11 @@ import (
 	"strings"
 )
 
-// 会员登陆后才能调用接口
+// 会员登录后才能调用接口
 type MemberC struct {
 }
 
-// 登陆
+// 登录
 func (this *MemberC) Login(ctx *echo.Context) error {
 	r := ctx.Request()
 	var usr, pwd string = r.FormValue("usr"), r.FormValue("pwd")

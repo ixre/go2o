@@ -154,9 +154,9 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		JoinTime: unix,
 		// 更新时间
 		UpdateTime: unix,
-		// 登陆时间
+		// 登录时间
 		LoginTime: 0,
-		// 最后登陆时间
+		// 最后登录时间
 		LastLoginTime: 0,
 	}
 	mch, err := m._rep.CreateMerchant(mchVal)

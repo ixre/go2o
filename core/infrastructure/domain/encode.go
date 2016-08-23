@@ -27,7 +27,7 @@ func ChkPwdRight(pwd string) (bool, error) {
 	return true, nil
 }
 
-// 加密会员密码,因为可能会使用手机号码登陆，
+// 加密会员密码,因为可能会使用手机号码登录，
 // 所以密码不能依据用户名作为生成凭据
 func MemberSha1Pwd(pwd string) string {
 	return crypto.Sha1([]byte(ShaPwd(pwd, "")))

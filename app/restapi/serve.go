@@ -62,7 +62,7 @@ func registerRoutes(s *echo.Echo) {
 	s.Get("/", ApiTest)
 	s.Get("/get/invite_qr", gc.Invite_qr) // 获取二维码
 	s.Get("/get/gen_qr", gc.GenQr)        //生成二维码
-	s.Post("/mm_login", mc.Login)         // 会员登陆接口
+	s.Post("/mm_login", mc.Login)         // 会员登录接口
 	s.Post("/mm_register", mc.Register)   // 会员注册接口
 	s.Post("/partner/get_ad", pc.Get_ad)  // 商户广告接口
 	//s.Post("/member/*",mc)  // 会员接口

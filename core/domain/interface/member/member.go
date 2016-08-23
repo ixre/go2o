@@ -185,11 +185,11 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 状态
 		State int `db:"state"`
-		// 最后登陆时间
+		// 最后登录时间
 		LastLoginTime int64 `db:"last_login_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
-		// 动态令牌，用于登陆或API调用
+		// 动态令牌，用于登录或API调用
 		DynamicToken string `db:"-"`
 		// 超时时间
 		TimeoutTime int64 `db:"-"`
