@@ -185,3 +185,14 @@ func (m *mssService) SendPhoneMessage(phone string,
 	mg := m._rep.NotifyManager()
 	return mg.SendPhoneMessage(phone, msg, data)
 }
+
+// 获取聊天会话编号
+func (m *mssService) GetChatSessionId(senderRole, senderId, toRole, toId int) int{
+	return m._rep.MessageManager().GetChatSessionId(senderRole,senderId,toRole,toId)
+}
+
+
+// 创建聊天会话
+func (m *mssService) CreateChatSession(senderRole,senderId,toRole,toId int)(mss.Message,error){
+	return m._rep.MessageManager().CreateChatSession(senderRole,senderId,toRole,toId)
+}
