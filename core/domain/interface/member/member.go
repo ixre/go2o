@@ -67,6 +67,9 @@ type (
 		// 更新会员绑定
 		SaveRelation(r *Relation) error
 
+		// 更改邀请人
+		ChangeReferees(memberId int) error
+
 		// 增加经验值
 		AddExp(exp int) error
 
@@ -250,6 +253,8 @@ type (
 		CardId string `db:"card_id"`
 		//推荐人（会员）
 		RefereesId int `db:"invi_member_id"`
+		// 会员关系字符串
+		ReferStr string `db:"refer_str"`
 		//注册关联商户编号
 		RegisterMerchantId int `db:"reg_merchant_id"`
 	}
