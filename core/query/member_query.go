@@ -27,7 +27,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (this *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
+func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
@@ -41,16 +41,16 @@ func (this *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
 				ON m.level = lv.id INNER JOIN mm_account a ON
 				 a.member_id = m.id AND m.id IN(%s) order by field(m.id,%s)`, inStr, inStr)
-		this.Connector.GetOrm().SelectByQuery(&list, query)
+		m.Connector.GetOrm().SelectByQuery(&list, query)
 	}
 	return list
 }
 
 // 获取返现记录
-func (this *MemberQuery) QueryBalanceLog(memberId, begin, end int,
+func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
-	d := this.Connector
+	d := m.Connector
 
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy
@@ -73,9 +73,9 @@ func (this *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfo {
+func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
-	if err := this.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
+	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {
 		return info
 	}
@@ -83,12 +83,12 @@ func (this *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *mem
 }
 
 // 筛选会员根据用户或者手机
-func (this *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
+func (m *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMember {
 	qp := "%" + key + "%"
 	var list []*dto.SimpleMember = make([]*dto.SimpleMember, 0)
 	var id int
 	var usr, name, phone string
-	this.Query(`SELECT id,usr,name,phone FROM mm_member WHERE
+	m.Query(`SELECT id,usr,name,phone FROM mm_member WHERE
 		usr LIKE ? OR name LIKE ? OR phone LIKE ?`, func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &phone)
@@ -104,7 +104,7 @@ func (this *MemberQuery) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMembe
 }
 
 // 会员推广排名
-func (this *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
+func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
 	var id int
@@ -120,7 +120,7 @@ func (this *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelCo
 	var levelCompStr string = fmt.Sprintf("%s%d", levelComp, level)
 	//{level_comp}{level_value}
 
-	this.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
+	m.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
   (m1.level%s) AND r.invi_member_id = m.id
 	AND r.reg_merchant_id=rl.reg_merchant_id  AND m1.reg_time BETWEEN
@@ -154,4 +154,13 @@ func (this *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelCo
 	}, startTime, endTime, startTime, endTime, startTime, endTime, merchantId, 1, num)
 
 	return list
+}
+
+// 查询有邀请关系的会员数量
+func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
+	total := 0
+	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
+	where := "refer_str LIKE '%" + keyword + ",%' OR refer_str LIKE '%" + keyword + "}"
+	m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
+	return total
 }
