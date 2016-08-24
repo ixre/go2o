@@ -160,7 +160,7 @@ func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp 
 func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
 	total := 0
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
-	where := "refer_str LIKE '%" + keyword + ",%' OR refer_str LIKE '%" + keyword + "}"
+	where := "refer_str LIKE '%" + keyword + ",%' OR refer_str LIKE '%" + keyword + "}'"
 	m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
 	return total
 }
