@@ -516,6 +516,11 @@ func (ms *memberService) GetMyPagedInvitationMembers(memberId int,
 	return total, rows
 }
 
+// 查询有邀请关系的会员数量
+func (m *memberService) GetReferNum(memberId int, layer int) int {
+	return m._query.GetReferNum(memberId, layer)
+}
+
 // 获取会员最后更新时间
 func (ms *memberService) GetMemberLatestUpdateTime(memberId int) int64 {
 	return ms._rep.GetMemberLatestUpdateTime(memberId)
