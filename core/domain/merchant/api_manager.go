@@ -16,13 +16,13 @@ import (
 var _ merchant.IApiManager = new(apiManagerImpl)
 
 type apiManagerImpl struct {
-	*MerchantImpl
+	*merchantImpl
 	_apiInfo *merchant.ApiInfo
 }
 
-func newApiManagerImpl(m *MerchantImpl) merchant.IApiManager {
+func newApiManagerImpl(m *merchantImpl) merchant.IApiManager {
 	return &apiManagerImpl{
-		MerchantImpl: m,
+		merchantImpl: m,
 	}
 }
 
