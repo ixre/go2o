@@ -433,7 +433,7 @@ func (ms *memberService) GetDeliverAddressById(memberId,
 }
 
 //保存配送地址
-func (ms *memberService) SaveDeliverAddress(memberId int, e *member.DeliverAddress) (int, error) {
+func (ms *memberService) SaveAddress(memberId int, e *member.DeliverAddress) (int, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error

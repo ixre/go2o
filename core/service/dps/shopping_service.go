@@ -22,6 +22,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"strings"
 )
 
 type shoppingService struct {
@@ -179,9 +180,9 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId,
 
 func (s *shoppingService) GetCartSettle(memberId int,
 	cartKey string) *dto.SettleMeta {
-	var cart = s.getShoppingCart(memberId, cartKey)
+	cart := s.getShoppingCart(memberId, cartKey)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
-	var st *dto.SettleMeta = new(dto.SettleMeta)
+	st := new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
 	st.DeliverOpt = dlvOpt
 	if sp != nil {
@@ -200,11 +201,16 @@ func (s *shoppingService) GetCartSettle(memberId int,
 			Id:         v.Id,
 			PersonName: v.RealName,
 			Phone:      v.Phone,
-			Address:    v.Address,
+			Address:    strings.Replace(v.Area, " ", "", -1) + v.Address,
 		}
 	}
 
 	return st
+}
+
+func (s *shoppingService) SetBuyerAddress(buyerId int, cartKey string, addressId int) error {
+	cart := s.getShoppingCart(buyerId, cartKey)
+	return cart.SetBuyerAddress(addressId)
 }
 
 /*================ 订单  ================*/

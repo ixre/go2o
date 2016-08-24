@@ -475,9 +475,9 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	return err
 }
 
-var _ member.IDeliverAddress = new(deliverAddressImpl)
+var _ member.IDeliverAddress = new(addressImpl)
 
-type deliverAddressImpl struct {
+type addressImpl struct {
 	_value     *member.DeliverAddress
 	_memberRep member.IMemberRep
 	_valRep    valueobject.IValueRep
@@ -485,7 +485,7 @@ type deliverAddressImpl struct {
 
 func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
 	valRep valueobject.IValueRep) member.IDeliverAddress {
-	d := &deliverAddressImpl{
+	d := &addressImpl{
 		_value:     v,
 		_memberRep: memberRep,
 		_valRep:    valRep,
@@ -493,15 +493,15 @@ func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
 	return d
 }
 
-func (p *deliverAddressImpl) GetDomainId() int {
+func (p *addressImpl) GetDomainId() int {
 	return p._value.Id
 }
 
-func (p *deliverAddressImpl) GetValue() member.DeliverAddress {
+func (p *addressImpl) GetValue() member.DeliverAddress {
 	return *p._value
 }
 
-func (p *deliverAddressImpl) SetValue(v *member.DeliverAddress) error {
+func (p *addressImpl) SetValue(v *member.DeliverAddress) error {
 	if p._value.MemberId == v.MemberId {
 		if err := p.checkValue(v); err != nil {
 			return err
@@ -512,16 +512,19 @@ func (p *deliverAddressImpl) SetValue(v *member.DeliverAddress) error {
 }
 
 // 设置地区中文名
-func (p *deliverAddressImpl) renewAreaName(v *member.DeliverAddress) string {
+func (p *addressImpl) renewAreaName(v *member.DeliverAddress) string {
 	names := p._valRep.GetAreaNames([]int{
 		v.Province,
 		v.City,
 		v.District,
 	})
+	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
+		return strings.Join([]string{names[0], names[2]}, " ")
+	}
 	return strings.Join(names, " ")
 }
 
-func (p *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
+func (p *addressImpl) checkValue(v *member.DeliverAddress) error {
 	v.Address = strings.TrimSpace(v.Address)
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.Phone = strings.TrimSpace(v.Phone)
@@ -546,7 +549,7 @@ func (p *deliverAddressImpl) checkValue(v *member.DeliverAddress) error {
 	return nil
 }
 
-func (p *deliverAddressImpl) Save() (int, error) {
+func (p *addressImpl) Save() (int, error) {
 	if err := p.checkValue(p._value); err != nil {
 		return p.GetDomainId(), err
 	}

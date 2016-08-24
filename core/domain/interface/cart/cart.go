@@ -23,11 +23,14 @@ var (
 	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_cart", "购物车没有商品")
 
-	ErrCartBuyerBinded *domain.DomainError = domain.NewDomainError(
-		"cart_buyer_binded ", "购物车已绑定")
+	ErrCartNoBuyer *domain.DomainError = domain.NewDomainError(
+		"err_cart_no_buyer", "购物车未绑定")
+
+	ErrCartBuyerBind *domain.DomainError = domain.NewDomainError(
+		"err_cart_buyer_binded", "购物车已绑定")
 
 	ErrDisallowBindForCart *domain.DomainError = domain.NewDomainError(
-		"cart_disallow_bind ", "无法为购物车绑定订单")
+		"err_cart_disallow_bind", "无法为购物车绑定订单")
 )
 
 type (
@@ -61,6 +64,9 @@ type (
 
 		// 设置购买会员
 		SetBuyer(buyerId int) error
+
+		// 设置购买会员收货地址
+		SetBuyerAddress(addressId int) error
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
