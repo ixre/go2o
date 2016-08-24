@@ -20,14 +20,14 @@ import (
 var _ merchant.IProfileManager = new(profileManagerImpl)
 
 type profileManagerImpl struct {
-	*MerchantImpl
+	*merchantImpl
 	//企业信息列表
 	_list []*merchant.EnterpriseInfo
 }
 
-func newProfileManager(m *MerchantImpl) merchant.IProfileManager {
+func newProfileManager(m *merchantImpl) merchant.IProfileManager {
 	return &profileManagerImpl{
-		MerchantImpl: m,
+		merchantImpl: m,
 	}
 }
 
@@ -137,13 +137,13 @@ func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) err
 			}
 			if err == nil {
 				// 保存省、市、区到Merchant
-				v := p.MerchantImpl.GetValue()
+				v := p.merchantImpl.GetValue()
 				v.Province = e.Province
 				v.City = e.City
 				v.District = e.District
 				err = p.SetValue(&v)
 				if err == nil {
-					_, err = p.MerchantImpl.Save()
+					_, err = p.merchantImpl.Save()
 				}
 			}
 		} else {
