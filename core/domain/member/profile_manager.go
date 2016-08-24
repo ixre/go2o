@@ -336,13 +336,28 @@ func (p *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) member.IDel
 
 // 获取配送地址
 func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
-	var vls []*member.DeliverAddress
-	vls = p._rep.GetDeliverAddress(p._memberId)
-	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(vls))
-	for i, v := range vls {
+	list := p._rep.GetDeliverAddress(p._memberId)
+	var arr []member.IDeliverAddress = make([]member.IDeliverAddress, len(list))
+	for i, v := range list {
 		arr[i] = p.CreateDeliver(v)
 	}
 	return arr
+}
+
+// 获取默认收货地址
+func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
+	list := p._rep.GetDeliverAddress(p._memberId)
+	// 查找是否有默认地址
+	for _, v := range list {
+		if v.IsDefault == 1 {
+			return p.CreateDeliver(v)
+		}
+	}
+	// 使用第一个地址
+	if len(list) > 0 {
+		return p.CreateDeliver(list[0])
+	}
+	return nil
 }
 
 // 获取配送地址

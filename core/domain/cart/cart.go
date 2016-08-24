@@ -451,11 +451,12 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 		//}
 		//todo: not implement
 	}
-	if c._value.DeliverId > 0 && c._deliver == nil {
-		var m member.IMember
-		m = c._memberRep.GetMember(c._value.BuyerId)
-		if m != nil {
-			c._deliver = m.Profile().GetDeliver(c._value.DeliverId)
+	if c._deliver == nil {
+		pm := c._memberRep.GetMember(c._value.BuyerId).Profile()
+		if c._value.DeliverId > 0 {
+			c._deliver = pm.GetDeliver(c._value.DeliverId)
+		} else {
+			c._deliver = pm.GetDefaultAddress()
 		}
 	}
 	return c._shop, c._deliver, c._value.PaymentOpt, c._value.DeliverOpt

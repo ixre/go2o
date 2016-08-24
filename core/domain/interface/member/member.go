@@ -124,6 +124,9 @@ type (
 		// 获取配送地址
 		GetDeliver(int) IDeliverAddress
 
+		// 获取默认收货地址
+		GetDefaultAddress() IDeliverAddress
+
 		// 删除配送地址
 		DeleteDeliver(int) error
 	}
