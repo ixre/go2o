@@ -366,13 +366,31 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 // 设置购买会员
 func (c *cartImpl) SetBuyer(buyerId int) error {
 	if c._value.BuyerId > 0 {
-		return cart.ErrCartBuyerBinded
+		return cart.ErrCartBuyerBind
 	}
 	c._value.BuyerId = buyerId
 	memCart := c._rep.GetMemberCurrentCart(buyerId)
 	if memCart != nil && memCart.Key() != c.Key() {
 		c.Combine(memCart)
 	}
+	_, err := c.Save()
+	return err
+}
+
+// 设置购买会员收货地址
+func (c *cartImpl) SetBuyerAddress(addressId int) error {
+	if c._value.BuyerId < 0 {
+		return cart.ErrCartNoBuyer
+	}
+	m := c._memberRep.GetMember(c._value.BuyerId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	addr := m.Profile().GetDeliver(addressId)
+	if addr == nil {
+		return member.ErrNoSuchDeliverAddress
+	}
+	c._value.DeliverId = addressId
 	_, err := c.Save()
 	return err
 }
