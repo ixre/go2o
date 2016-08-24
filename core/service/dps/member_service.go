@@ -12,6 +12,7 @@ package dps
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -32,12 +33,24 @@ type memberService struct {
 
 func NewMemberService(mchService *merchantService, rep member.IMemberRep,
 	q *query.MemberQuery, oq *query.OrderQuery) *memberService {
-	return &memberService{
+	ms := &memberService{
 		_rep:            rep,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
 	}
+	return ms
+	//return ms.init()
+}
+
+func (ms *memberService) init() *memberService {
+	db := gof.CurrentApp.Db()
+	list := []*member.Relation{}
+	db.GetOrm().Select(&list, "")
+	for _, v := range list {
+		ms._rep.GetMember(v.MemberId).SaveRelation(v)
+	}
+	return ms
 }
 
 // 获取资料

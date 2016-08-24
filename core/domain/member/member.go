@@ -12,7 +12,9 @@ package member
 //todo: 要注意UpdateTime的更新
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
@@ -20,6 +22,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/tool/sms"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -348,11 +351,86 @@ func (m *memberImpl) usrIsExist(usr string) bool {
 	return m._rep.CheckUsrExist(usr, m.GetAggregateRootId())
 }
 
-// 创建并初始化
+// 获取推荐数组
+func (m *memberImpl) getReferArr(memberId int, level int) []int {
+	arr := make([]int, level)
+	i := 0
+	referId := memberId
+	for i <= level-1 {
+		rl := m._rep.GetRelation(referId)
+		if rl == nil || rl.RefereesId <= 0 {
+			break
+		}
+		arr[i] = rl.RefereesId
+		referId = arr[i]
+		i++
+	}
+	return arr
+}
+
+// 强制更新邀请关系
+func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
+	level := m._valRep.GetRegistry().MemberReferLayer
+	arr := m.getReferArr(m.GetAggregateRootId(), level)
+	// 无邀请关系
+	if len(arr) == 0 || arr[0] <= 0 {
+		r.ReferStr = ""
+		return
+	}
+	// 有邀请关系
+	buf := bytes.NewBuffer([]byte("{"))
+	for i, v := range arr {
+		if v == 0 {
+			continue
+		}
+		if buf.Len() > 1 {
+			buf.WriteString(",")
+		}
+		buf.WriteString("'r")
+		buf.WriteString(strconv.Itoa(i))
+		buf.WriteString("':")
+		buf.WriteString(strconv.Itoa(v))
+	}
+	buf.WriteString("}")
+	r.ReferStr = buf.String()
+
+}
+
+// 更新邀请关系
+func (m *memberImpl) updateReferStr(r *member.Relation) {
+	prefix := fmt.Sprintf("{'r0':%d,", r.RefereesId)
+	//m.forceUpdateReferStr(r)
+	//return
+	if !strings.HasPrefix(r.ReferStr, prefix) {
+		m.forceUpdateReferStr(r)
+	}
+}
+
+// 保存关系
 func (m *memberImpl) SaveRelation(r *member.Relation) error {
 	m._relation = r
 	m._relation.MemberId = m._value.Id
+	m.updateReferStr(m._relation)
 	return m._rep.SaveRelation(m._relation)
+}
+
+// 更改邀请人
+func (m *memberImpl) ChangeReferees(memberId int) error {
+	if memberId > 0 {
+		rm := m._rep.GetMember(memberId)
+		if rm == nil {
+			return member.ErrNoSuchMember
+		}
+	}
+	rl := m.GetRelation()
+	if rl.RefereesId != memberId {
+		rl.RefereesId = memberId
+		if memberId == 0 {
+			rl.ReferStr = ""
+		}
+		return m.SaveRelation(rl)
+	}
+	return nil
 }
 
 var _ member.IFavoriteManager = new(favoriteManagerImpl)
