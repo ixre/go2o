@@ -870,6 +870,37 @@ ALTER TABLE `zxdb`.`msg_to`
 ALTER TABLE `zxdb`.`mm_account`
   ADD COLUMN `priority_pay` TINYINT(1) NULL COMMENT '优先（默认）支付账户' AFTER `total_consumption`;
 
+CREATE TABLE `mm_balance_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `kind` int(11) NOT NULL COMMENT '业务类型',
+  `title` varchar(45) NOT NULL COMMENT '标题',
+  `outer_no` varchar(45) NOT NULL COMMENT '外部订单号',
+  `amount` float(8,2) NOT NULL COMMENT '金额',
+  `csn_fee` float(8,2) NOT NULL COMMENT '手续费',
+  `state` tinyint(1) NOT NULL COMMENT '状态，比如提现需要确认等',
+  `rel_user` int(11) NOT NULL COMMENT '关联操作人员编号',
+  `create_time` int(11) NOT NULL,
+  `update_time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `mm_present_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) NOT NULL,
+  `kind` int(11) NOT NULL COMMENT '业务类型',
+  `title` varchar(45) NOT NULL COMMENT '标题',
+  `outer_no` varchar(45) NOT NULL COMMENT '外部订单号',
+  `amount` float(8,2) NOT NULL COMMENT '金额',
+  `csn_fee` float(8,2) NOT NULL COMMENT '手续费',
+  `state` tinyint(1) NOT NULL COMMENT '状态，比如提现需要确认等',
+  `rel_user` int(11) NOT NULL COMMENT '关联操作人员编号',
+  `create_time` int(11) NOT NULL,
+  `update_time` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 
 
 

@@ -15,6 +15,8 @@ const (
 	AccountIntegral = 2
 	// 赠送账户
 	AccountPresent = 3
+	// 流通金账户
+	AccountFlow = 4
 )
 
 const (
@@ -39,20 +41,31 @@ const (
 	KindBalanceShopping = 4
 	// 支付抵扣
 	KindBalanceDiscount = 5
+	// 客服扣件
+	KindBalanceServiceDiscount = 6
 	// 退款
-	KindBalanceRefund = 6
+	KindBalanceRefund = 7
 )
 
 const (
+	// 赠送金额
+	KindPresentAdd = 1
 	// 抵扣奖金
-	KindPresentDiscount = 6
+	KindPresentDiscount = 2
+	// 客服赠送
+	KindPresentServiceAdd = 3
+	// 客服扣减
+	KindPresentServiceDiscount = 4
+)
 
+const (
 	KindGrow = 7 // 增利
 
 	//KindCommission = 9 // 手续费
 
 	// 赠送
 	KindBalancePresent = 3
+
 	// 流通账户
 	KindBalanceFlow = 4 // 账户流通
 
@@ -132,17 +145,18 @@ type (
 		// 保存余额变动信息
 		SaveBalanceInfo(*BalanceInfo) (int, error)
 
-		// 充值,客服充值时,需提供操作人(relateUser)
-		ChargeBalance(chargeType int, title string, outerNo string, amount float32, relateUser int) error
+		// 充值,客服操作时,需提供操作人(relateUser)
+		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int) error
 
 		// 扣减余额
-		DiscountBalance(title string, outerNo string, amount float32) error
+		DiscountBalance(title string, outerNo string, amount float32, relateUser int) error
 
-		// 赠送金额
-		ChargeForPresent(title string, tradeNo string, amount float32) error
+		// 赠送金额,客服操作时,需提供操作人(relateUser)
+		ChargeForPresent(title string, outerNo string, amount float32, relateUser int) error
 
-		// 扣减奖金,mustLargeZero是否必须大于0
-		DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error
+		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
+		DiscountPresent(title string, outerNo string, amount float32,
+			relateUser int, mustLargeZero bool) error
 
 		// 流通账户余额变动，如扣除,amount传入负数金额
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
@@ -238,7 +252,26 @@ type (
 		Amount float32 `db:"amount"`
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
-		// 关联操作人,仅在客服充值时,记录操作人
+		// 关联操作人,仅在客服操作时,记录操作人
+		RelateUser int   `db:"rel_user"`
+		State      int   `db:"state"`
+		CreateTime int64 `db:"create_time"`
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 赠送账户日志
+	PresentLog struct {
+		Id       int    `db:"id" auto:"yes" pk:"yes"`
+		MemberId int    `db:"member_id"`
+		OuterNo  string `db:"outer_no"`
+		// 业务类型
+		BusinessKind int    `db:"kind"`
+		Title        string `db:"title"`
+		// 金额
+		Amount float32 `db:"amount"`
+		// 手续费
+		CsnFee float32 `db:"csn_fee"`
+		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int   `db:"rel_user"`
 		State      int   `db:"state"`
 		CreateTime int64 `db:"create_time"`

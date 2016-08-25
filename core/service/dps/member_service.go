@@ -589,12 +589,13 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int) *member.Balanc
 
 // 充值
 func (ms *memberService) Charge(memberId, chargeType int, title,
-	tradeNo string, amount float32, relateUser int) error {
+	outerNo string, amount float32, relateUser int) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().ChargeBalance(chargeType, title, tradeNo, amount, relateUser)
+	return m.GetAccount().ChargeForBalance(chargeType, title,
+		outerNo, amount, relateUser)
 }
 
 // 增加积分
@@ -609,12 +610,12 @@ func (ms *memberService) AddIntegral(memberId int, iType int,
 
 // 赠送金额充值
 func (ms *memberService) PresentBalance(memberId int, title string,
-	tradeNo string, amount float32) error {
+	outerNo string, amount float32, relateUser int) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().ChargeForPresent(title, tradeNo, amount)
+	return m.GetAccount().ChargeForPresent(title, outerNo, amount, relateUser)
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
@@ -644,7 +645,8 @@ func (ms *memberService) DiscountPresent(memberId int, title string,
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().DiscountPresent(title, tradeNo, amount, mustLargeZero)
+	return m.GetAccount().DiscountPresent(title, tradeNo, amount,
+		member.DefaultRelateUser, mustLargeZero)
 }
 
 // 流通账户
@@ -837,14 +839,14 @@ func (ms *memberService) GetMemberInviRank(merchantId int, allTeam bool, levelCo
 }
 
 // 生成会员账户人工单据
-func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int,
+func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, accountType int,
 	tit string, amount float32, relateUser int) (string, error) {
 	//todo: 暂时不记录人员,等支持系统多用户后再传入
 	if relateUser <= 0 {
 		relateUser = 1
 	}
 	var err error
-	var tradeNo string
+	var outerNo string
 	if amount == 0 {
 		return "", member.ErrIncorrectAmount
 	}
@@ -854,44 +856,46 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int
 	}
 	acc := m.GetAccount()
 	var tit2 string
-	if kind == member.KindBalancePresent {
-		tradeNo = domain.NewTradeNo(merchantId)
+	if accountType == member.AccountPresent {
+		outerNo = domain.NewTradeNo(merchantId)
 		if amount > 0 {
 			//增加奖金
 			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.ChargeForPresent(tit2, tradeNo, amount)
+			err = acc.ChargeForPresent(tit2, outerNo, amount, relateUser)
 		} else {
 			//扣减奖金
 			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.DiscountPresent(tit2, tradeNo, -amount, false)
+			err = acc.DiscountPresent(tit2, outerNo, -amount, relateUser, false)
 		}
+		return outerNo, err
 	}
 
-	if kind == member.KindBalanceCharge {
-		tradeNo = domain.NewTradeNo(merchantId)
+	if accountType == member.AccountBalance {
+		outerNo = domain.NewTradeNo(merchantId)
 		if amount > 0 {
 			tit2 = "[KF]客服充值"
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.ChargeBalance(member.ChargeByService,
-				tit2, tradeNo, amount, relateUser)
+			err = acc.ChargeForBalance(member.ChargeByService,
+				tit2, outerNo, amount, relateUser)
 		} else {
 			tit2 = "[KF]客服扣减"
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.DiscountBalance(tit2, tradeNo, -amount)
+			err = acc.DiscountBalance(tit2, outerNo, -amount, relateUser)
 		}
+		return outerNo, err
 	}
 
-	return tradeNo, err
+	return outerNo, err
 }
 
 //********* 促销  **********//

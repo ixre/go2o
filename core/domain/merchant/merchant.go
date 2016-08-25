@@ -635,7 +635,8 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 		"提取到会员账户", "", -amount, 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().ChargeForPresent("商户提现", "", amount)
+		err = m.GetAccount().ChargeForPresent("商户提现", "",
+			amount, member.DefaultRelateUser)
 		if err != nil {
 			return err
 		}
@@ -653,7 +654,8 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 			conf := a.mchImpl._valRep.GetGlobNumberConf()
 			if conf.ApplyCsn > 0 {
 				csn := amount * conf.ApplyCsn
-				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "", csn)
+				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
+					csn, member.DefaultRelateUser)
 			}
 		}
 	}
