@@ -76,23 +76,27 @@ func (p *personFinanceService) RiseTransferIn(personId int,
 		return member.ErrNoSuchMember
 	}
 	acc := m.GetAccount()
-	if transferWith == personfinance.TransferFromWithBalance { //从余额转入
+	if transferWith == personfinance.TransferFromWithBalance {
+		//从余额转入
 		if err = acc.DiscountBalance("理财转入",
-			domain.NewTradeNo(10000), amount); err != nil {
+			domain.NewTradeNo(10000), amount, member.DefaultRelateUser); err != nil {
 			return err
 		}
-		if err = r.TransferIn(amount, transferWith); err != nil { //转入
+		if err = r.TransferIn(amount, transferWith); err != nil {
+			//转入
 			return err
 		}
 		return pf.SyncToAccount() //同步到会员账户
 	}
 
-	if transferWith == personfinance.TransferFromWithPresent { //从奖金转入
-		if err := acc.DiscountPresent("理财转入",
-			domain.NewTradeNo(10000), amount, true); err != nil {
+	if transferWith == personfinance.TransferFromWithPresent {
+		//从奖金转入
+		if err := acc.DiscountPresent("理财转入", domain.NewTradeNo(10000),
+			amount, member.DefaultRelateUser, true); err != nil {
 			return err
 		}
-		if err = r.TransferIn(amount, transferWith); err != nil { //转入
+		if err = r.TransferIn(amount, transferWith); err != nil {
+			//转入
 			return err
 		}
 		return pf.SyncToAccount() //同步到会员账户
@@ -113,9 +117,10 @@ func (p *personFinanceService) RiseTransferOut(personId int,
 	}
 	acc := m.GetAccount()
 
-	if transferWith == personfinance.TransferOutWithBalance { //转入余额
+	if transferWith == personfinance.TransferOutWithBalance {
+		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
-			err = acc.ChargeBalance(member.ChargeBySystem, "理财转出",
+			err = acc.ChargeForBalance(member.ChargeBySystem, "理财转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())

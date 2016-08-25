@@ -869,9 +869,9 @@ func (o *orderImpl) GetOrderNo() string {
 
 // 更新返现到会员账户
 func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
-	m member.IMember, fee float32, unixTime int64) {
+	m member.IMember, fee float32, unixTime int64) error {
 	if fee == 0 {
-		return
+		return nil
 	}
 	v := o.GetValue()
 	pv := pt.GetValue()
@@ -884,11 +884,14 @@ func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
 	acv.PresentBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee
 	acv.UpdateTime = unixTime
-	acc.Save()
-
-	//给自己返现
-	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
-	acc.ChargeForPresent(tit, v.OrderNo, float32(fee))
+	_, err := acc.Save()
+	if err == nil {
+		//给自己返现
+		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
+		err = acc.ChargeForPresent(tit, v.OrderNo, float32(fee),
+			member.DefaultRelateUser)
+	}
+	return err
 }
 
 // 处理返现促销
@@ -933,7 +936,8 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, o._value.OrderNo)
-		err = acc.ChargeForPresent(tit, o.GetOrderNo(), float32(cpv.BackFee))
+		err = acc.ChargeForPresent(tit, o.GetOrderNo(), float32(cpv.BackFee),
+			member.DefaultRelateUser)
 	}
 	return err
 }
@@ -1441,7 +1445,7 @@ func (o *subOrderImpl) backupPayment() (err error) {
 	if pv := po.GetValue(); pv.BalanceDiscount > 0 {
 		//退回账户余额抵扣
 		acc := o.GetBuyer().GetAccount()
-		err = acc.ChargeBalance(member.ChargeByRefund, "订单退款",
+		err = acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
 			o._value.OrderNo, o._value.DiscountAmount, member.DefaultRelateUser)
 	}
 	if o._value.FinalAmount > 0 {
@@ -1635,22 +1639,23 @@ func (o *subOrderImpl) onOrderComplete() error {
 // 更新返现到会员账户
 func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	m member.IMember, fee float32, unixTime int64) error {
-	if fee > 0 {
-		v := o.GetValue()
-
-		//更新账户
-		acc := m.GetAccount()
-		acv := acc.GetValue()
-		//acc.TotalFee += o._value.Fee
-		//acc.TotalPay += o._value.PayFee
-		acv.PresentBalance += fee // 更新赠送余额
-		acv.TotalPresentFee += fee
-		acv.UpdateTime = unixTime
-		acc.Save()
-
-		//给自己返现
-		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-		return acc.ChargeForPresent(tit, v.OrderNo, float32(fee))
+	if fee <= 0 {
+		return nil
 	}
-	return nil
+	v := o.GetValue()
+
+	//更新账户
+	acc := m.GetAccount()
+	acv := acc.GetValue()
+	//acc.TotalFee += o._value.Fee
+	//acc.TotalPay += o._value.PayFee
+	acv.PresentBalance += fee // 更新赠送余额
+	acv.TotalPresentFee += fee
+	acv.UpdateTime = unixTime
+	acc.Save()
+
+	//给自己返现
+	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
+	return acc.ChargeForPresent(tit, v.OrderNo, float32(fee),
+		member.DefaultRelateUser)
 }

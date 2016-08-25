@@ -94,7 +94,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 }
 
 // 充值,客服充值时,需提供操作人(relateUser)
-func (a *accountImpl) ChargeBalance(chargeType int, title string, outerNo string,
+func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo string,
 	amount float32, relateUser int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
@@ -140,22 +140,33 @@ func (a *accountImpl) saveBalanceLog(v *member.BalanceLog) (int, error) {
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 }
 
+// 保存赠送账户日志
+func (a *accountImpl) savePresentLog(v *member.PresentLog) (int, error) {
+	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
+}
+
 // 扣减余额
-func (a *accountImpl) DiscountBalance(title string, outerNo string, amount float32) (err error) {
+func (a *accountImpl) DiscountBalance(title string, outerNo string,
+	amount float32, relateUser int) (err error) {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
+	kind := member.KindBalanceDiscount
+	if relateUser > 0 {
+		kind = member.KindBalanceServiceDiscount
+	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceDiscount,
+		BusinessKind: kind,
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       -amount,
 		State:        1,
+		RelateUser:   relateUser,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
@@ -167,28 +178,36 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string, amount float
 	return err
 }
 
-// 赠送金额
-func (a *accountImpl) ChargeForPresent(title string, tradeNo string, amount float32) error {
-	//todo:??客服调整
+// 赠送金额,客服操作时,需提供操作人(relateUser)
+func (a *accountImpl) ChargeForPresent(title string, outerNo string,
+	amount float32, relateUser int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	if len(title) == 0 {
+	if title == "" {
 		if amount < 0 {
 			title = "赠送账户出账"
 		} else {
 			title = "赠送账户入账"
 		}
 	}
-
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalancePresent,
-		Title:   title,
-		TradeNo: tradeNo,
-		Amount:  amount,
-		State:   1,
+	kind := member.KindPresentAdd
+	if relateUser > 0 {
+		kind = member.KindPresentServiceAdd
 	}
-	_, err := a.SaveBalanceInfo(v)
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: kind,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       amount,
+		State:        1,
+		RelateUser:   relateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.savePresentLog(v)
 	if err == nil {
 		a._value.PresentBalance += amount
 		if amount > 0 {
@@ -199,9 +218,9 @@ func (a *accountImpl) ChargeForPresent(title string, tradeNo string, amount floa
 	return err
 }
 
-// 扣减奖金
-func (a *accountImpl) DiscountPresent(title string, tradeNo string,
-	amount float32, mustLargeZero bool) error {
+// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
+func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float32,
+	relateUser int, mustLargeZero bool) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -212,15 +231,24 @@ func (a *accountImpl) DiscountPresent(title string, tradeNo string,
 	if len(title) == 0 {
 		title = "出账"
 	}
-
-	v := &member.BalanceInfo{
-		Kind:    member.KindPresentDiscount,
-		Title:   title,
-		TradeNo: tradeNo,
-		Amount:  -amount,
-		State:   1,
+	kind := member.KindPresentDiscount
+	if relateUser > 0 {
+		kind = member.KindPresentServiceDiscount
 	}
-	_, err := a.SaveBalanceInfo(v)
+
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: kind,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       -amount,
+		State:        1,
+		RelateUser:   relateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.savePresentLog(v)
 	if err == nil {
 		a._value.PresentBalance -= amount
 		_, err = a.Save()
