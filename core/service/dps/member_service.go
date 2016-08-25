@@ -422,8 +422,14 @@ func (ms *memberService) ReviewTrustedInfo(memberId int, pass bool, remark strin
 
 // 获取返现记录
 func (ms *memberService) QueryIncomeLog(memberId, begin, end int,
-	where, orderBy string) (num int, rows []map[string]interface{}) {
+	where, orderBy string) (int, []map[string]interface{}) {
 	return ms._query.QueryBalanceLog(memberId, begin, end, where, orderBy)
+}
+
+// 获取账户余额分页记录
+func (ms *memberService) PagedBalanceLog(memberId, begin, end int,
+	where, orderBy string) (int, []map[string]interface{}) {
+	return ms._query.PagedBalanceLog(memberId, begin, end, where, orderBy)
 }
 
 // 查询分页订单
@@ -583,12 +589,12 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int) *member.Balanc
 
 // 充值
 func (ms *memberService) Charge(memberId, chargeType int, title,
-	tradeNo string, amount float32) error {
+	tradeNo string, amount float32, relateUser int) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().ChargeBalance(chargeType, title, tradeNo, amount)
+	return m.GetAccount().ChargeBalance(chargeType, title, tradeNo, amount, relateUser)
 }
 
 // 增加积分
@@ -608,7 +614,7 @@ func (ms *memberService) PresentBalance(memberId int, title string,
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().PresentBalance(title, tradeNo, amount)
+	return m.GetAccount().ChargeForPresent(title, tradeNo, amount)
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
@@ -832,7 +838,11 @@ func (ms *memberService) GetMemberInviRank(merchantId int, allTeam bool, levelCo
 
 // 生成会员账户人工单据
 func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int,
-	tit string, amount float32) (string, error) {
+	tit string, amount float32, relateUser int) (string, error) {
+	//todo: 暂时不记录人员,等支持系统多用户后再传入
+	if relateUser <= 0 {
+		relateUser = 1
+	}
 	var err error
 	var tradeNo string
 	if amount == 0 {
@@ -852,7 +862,7 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.PresentBalance(tit2, tradeNo, amount)
+			err = acc.ChargeForPresent(tit2, tradeNo, amount)
 		} else {
 			//扣减奖金
 			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
@@ -870,7 +880,8 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, kind int
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.ChargeBalance(member.TypeBalanceServiceCharge, tit2, tradeNo, amount)
+			err = acc.ChargeBalance(member.ChargeByService,
+				tit2, tradeNo, amount, relateUser)
 		} else {
 			tit2 = "[KF]客服扣减"
 			if len(tit) > 0 {

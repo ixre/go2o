@@ -143,8 +143,14 @@ var (
 	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_not_enough_amount", "金额不足")
 
+	ErrNotSupportChargeMethod *domain.DomainError = domain.NewDomainError(
+		"err_account_not_support_charge_method", "不支持的充值方式")
+
 	ErrNotSupportTransfer *domain.DomainError = domain.NewDomainError(
-		"err_not_support_transfer", "不支持的转账方式")
+		"err_account_not_support_transfer", "不支持的转账方式")
+
+	ErrNoSuchRelateUser *domain.DomainError = domain.NewDomainError(
+		"err_account_no_such_relate_user", "未提供操作人编号")
 
 	ErrMissingTrustedInfo *domain.DomainError = domain.NewDomainError(
 		"err_missing_trusted_info", "信息不完整、无法完成实名认证")

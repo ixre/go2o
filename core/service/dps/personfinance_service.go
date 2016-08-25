@@ -32,28 +32,28 @@ func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
 	}
 }
 
-func (this *personFinanceService) GetRiseInfo(personId int) (
+func (p *personFinanceService) GetRiseInfo(personId int) (
 	personfinance.RiseInfoValue, error) {
-	pf := this._rep.GetPersonFinance(personId)
+	pf := p._rep.GetPersonFinance(personId)
 	return pf.GetRiseInfo().Value()
 }
 
 // 开通增利服务
-func (this *personFinanceService) OpenRiseService(personId int) error {
-	m := this._accRep.GetMember(personId)
+func (p *personFinanceService) OpenRiseService(personId int) error {
+	m := p._accRep.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	if m.GetValue().Level < variable.PersonFinanceMinLevelLimit {
 		return errors.New("会员等级不够,请升级后再开通理财账户！")
 	}
-	pf := this._rep.GetPersonFinance(personId)
+	pf := p._rep.GetPersonFinance(personId)
 	return pf.CreateRiseInfo()
 }
 
 // 提交转入/转出日志
-func (this *personFinanceService) CommitTransfer(personId, logId int) error {
-	pf := this._rep.GetPersonFinance(personId)
+func (p *personFinanceService) CommitTransfer(personId, logId int) error {
+	pf := p._rep.GetPersonFinance(personId)
 	rs := pf.GetRiseInfo()
 	if rs == nil {
 		return personfinance.ErrNoSuchRiseInfo
@@ -62,16 +62,16 @@ func (this *personFinanceService) CommitTransfer(personId, logId int) error {
 }
 
 // 转入(业务放在service,是为person_finance解耦)
-func (this *personFinanceService) RiseTransferIn(personId int,
+func (p *personFinanceService) RiseTransferIn(personId int,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
-	pf := this._rep.GetPersonFinance(personId)
+	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 	if amount < personfinance.RiseMinTransferInAmount {
 		//金额不足最低转入金额
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
 			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
 	}
-	m := this._accRep.GetMember(personId)
+	m := p._accRep.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -102,12 +102,12 @@ func (this *personFinanceService) RiseTransferIn(personId int,
 }
 
 // 转出
-func (this *personFinanceService) RiseTransferOut(personId int,
+func (p *personFinanceService) RiseTransferOut(personId int,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
-	pf := this._rep.GetPersonFinance(personId)
+	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 
-	m := this._accRep.GetMember(personId)
+	m := p._accRep.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -115,8 +115,8 @@ func (this *personFinanceService) RiseTransferOut(personId int,
 
 	if transferWith == personfinance.TransferOutWithBalance { //转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
-			err = acc.ChargeBalance(member.TypeBalanceServiceCharge, "理财转出",
-				domain.NewTradeNo(10000), amount)
+			err = acc.ChargeBalance(member.ChargeBySystem, "理财转出",
+				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
 			}
@@ -140,9 +140,9 @@ func (this *personFinanceService) RiseTransferOut(personId int,
 }
 
 // 结算收益(按日期每天结息)
-func (this *personFinanceService) RiseSettleByDay(personId int,
+func (p *personFinanceService) RiseSettleByDay(personId int,
 	settleUnix int64, dayRatio float32) (err error) {
-	pf := this._rep.GetPersonFinance(personId)
+	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 	if err = r.RiseSettleByDay(settleUnix, dayRatio); err != nil {
 		return err

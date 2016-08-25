@@ -46,6 +46,30 @@ func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 	return list
 }
 
+// 获取账户余额分页记录
+func (m *MemberQuery) PagedBalanceLog(memberId, begin, end int,
+	where, orderBy string) (num int, rows []map[string]interface{}) {
+	d := m.Connector
+	if orderBy != "" {
+		orderBy = "ORDER BY " + orderBy
+	}
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
+	 	INNER JOIN mm_member m ON m.id=bi.member_id
+			WHERE bi.member_id=? %s`, where), &num, memberId)
+
+	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_balance_log bi
+			INNER JOIN mm_member m ON m.id=bi.member_id
+			WHERE member_id=? %s %s LIMIT ?,?`,
+		where, orderBy)
+
+	d.Query(sqlLine, func(_rows *sql.Rows) {
+		rows = db.RowsToMarshalMap(_rows)
+		_rows.Close()
+	}, memberId, begin, end-begin)
+
+	return num, rows
+}
+
 // 获取返现记录
 func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
