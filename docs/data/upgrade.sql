@@ -873,7 +873,7 @@ ALTER TABLE `zxdb`.`mm_account`
 CREATE TABLE `mm_balance_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11) NOT NULL,
-  `kind` int(11) NOT NULL COMMENT '业务类型',
+  `kind` tinyint(2) NOT NULL COMMENT '业务类型',
   `title` varchar(45) NOT NULL COMMENT '标题',
   `outer_no` varchar(45) NOT NULL COMMENT '外部订单号',
   `amount` float(8,2) NOT NULL COMMENT '金额',
@@ -889,7 +889,7 @@ CREATE TABLE `mm_balance_log` (
 CREATE TABLE `mm_present_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `member_id` int(11) NOT NULL,
-  `kind` int(11) NOT NULL COMMENT '业务类型',
+  `kind` tinyint(2) NOT NULL COMMENT '业务类型',
   `title` varchar(45) NOT NULL COMMENT '标题',
   `outer_no` varchar(45) NOT NULL COMMENT '外部订单号',
   `amount` float(8,2) NOT NULL COMMENT '金额',

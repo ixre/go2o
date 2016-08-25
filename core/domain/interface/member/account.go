@@ -45,6 +45,10 @@ const (
 	KindBalanceServiceDiscount = 6
 	// 退款
 	KindBalanceRefund = 7
+	// 冻结
+	KindBalanceFreeze = 8
+	// 解冻
+	KindBalanceUnfreeze = 9
 )
 
 const (
@@ -56,6 +60,10 @@ const (
 	KindPresentServiceAdd = 3
 	// 客服扣减
 	KindPresentServiceDiscount = 4
+	// 冻结
+	KindPresentFreeze = 8
+	// 解冻
+	KindPresentUnfreeze = 9
 )
 
 const (
@@ -73,14 +81,6 @@ const (
 	KindBalanceApplyCash = 11
 	// 转账
 	KindBalanceTransfer = 12
-	// 冻结
-	KindBalanceFreezes = 13
-	// 解冻
-	KindBalanceUnfreezes = 14
-	// 冻结赠款
-	KindBalanceFreezesPresent = 15
-	// 解冻赠款
-	KindBalanceUnfreezesPresent = 16
 
 	// 提现并充值到余额
 	TypeApplyCashToCharge = 1
@@ -151,12 +151,24 @@ type (
 		// 扣减余额
 		DiscountBalance(title string, outerNo string, amount float32, relateUser int) error
 
+		// 冻结余额
+		Freeze(title string, outerNo string, amount float32, relateUser int) error
+
+		// 解冻金额
+		Unfreeze(title string, outerNo string, amount float32, relateUser int) error
+
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
 		ChargeForPresent(title string, outerNo string, amount float32, relateUser int) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
 			relateUser int, mustLargeZero bool) error
+
+		// 冻结赠送金额
+		FreezePresent(title string, outerNo string, amount float32, relateUser int) error
+
+		// 解冻赠送金额
+		UnfreezePresent(title string, outerNo string, amount float32, relateUser int) error
 
 		// 流通账户余额变动，如扣除,amount传入负数金额
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
@@ -190,18 +202,6 @@ type (
 
 		// 完成提现
 		FinishApplyCash(id int, tradeNo string) error
-
-		// 冻结余额
-		Freezes(title string, tradeNo string, amount float32, referId int) error
-
-		// 解冻金额
-		Unfreezes(title string, tradeNo string, amount float32, referId int) error
-
-		// 冻结赠送金额
-		FreezesPresent(title string, tradeNo string, amount float32, referId int) error
-
-		// 解冻赠送金额
-		UnfreezesPresent(title string, tradeNo string, amount float32, referId int) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
@@ -293,7 +293,7 @@ type (
 		//奖金账户余额
 		PresentBalance float32 `db:"present_balance" json:"presentBalance"`
 		//冻结赠送额
-		FreezesPresent float32 `db:"freezes_present" json:"freezesPresent"`
+		FreezePresent float32 `db:"freezes_present" json:"FreezePresent"`
 		//总赠送金额
 		TotalPresentFee float32 `db:"total_present_fee" json:"totalPresentFee"`
 		//流动账户余额

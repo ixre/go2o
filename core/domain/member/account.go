@@ -178,6 +178,73 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 	return err
 }
 
+// 冻结余额
+func (a *accountImpl) Freeze(title string, outerNo string,
+	amount float32, relateUser int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if a._value.Balance < amount {
+		return member.ErrNotEnoughAmount
+	}
+	if len(title) == 0 {
+		title = "资金冻结"
+	}
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceFreeze,
+		Title:        title,
+		Amount:       -amount,
+		OuterNo:      outerNo,
+		RelateUser:   relateUser,
+		State:        member.StatusOK,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	a._value.Balance -= amount
+	a._value.FreezesFee += amount
+	_, err := a.Save()
+	if err == nil {
+		_, err = a.saveBalanceLog(v)
+	}
+	return err
+}
+
+// 解冻金额
+func (a *accountImpl) Unfreeze(title string, outerNo string,
+	amount float32, relateUser int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if a._value.FreezesFee < amount {
+		return member.ErrNotEnoughAmount
+	}
+	if len(title) == 0 {
+		title = "资金解结"
+	}
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceUnfreeze,
+		Title:        title,
+		RelateUser:   relateUser,
+		Amount:       amount,
+		OuterNo:      outerNo,
+		State:        member.StatusOK,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	a._value.Balance += amount
+	a._value.FreezesFee -= amount
+	_, err := a.Save()
+	if err == nil {
+		_, err = a.saveBalanceLog(v)
+	}
+	return err
+
+}
+
 // 赠送金额,客服操作时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 	amount float32, relateUser int) error {
@@ -252,6 +319,72 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 	if err == nil {
 		a._value.PresentBalance -= amount
 		_, err = a.Save()
+	}
+	return err
+}
+
+// 冻结赠送金额
+func (a *accountImpl) FreezePresent(title string, outerNo string,
+	amount float32, relateUser int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if a._value.PresentBalance < amount {
+		return member.ErrNotEnoughAmount
+	}
+	if len(title) == 0 {
+		title = "(赠送)资金冻结"
+	}
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindPresentFreeze,
+		Title:        title,
+		RelateUser:   relateUser,
+		Amount:       -amount,
+		OuterNo:      outerNo,
+		State:        member.StatusOK,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	a._value.PresentBalance -= amount
+	a._value.FreezePresent += amount
+	_, err := a.Save()
+	if err == nil {
+		_, err = a.savePresentLog(v)
+	}
+	return err
+}
+
+// 解冻赠送金额
+func (a *accountImpl) UnfreezePresent(title string, outerNo string,
+	amount float32, relateUser int) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	if a._value.FreezePresent < amount {
+		return member.ErrNotEnoughAmount
+	}
+	if len(title) == 0 {
+		title = "(赠送)资金解冻"
+	}
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindPresentUnfreeze,
+		Title:        title,
+		RelateUser:   relateUser,
+		Amount:       amount,
+		OuterNo:      outerNo,
+		State:        member.StatusOK,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	a._value.PresentBalance += amount
+	a._value.FreezePresent -= amount
+	_, err := a.Save()
+	if err == nil {
+		_, err = a.savePresentLog(v)
 	}
 	return err
 }
@@ -518,117 +651,6 @@ func (a *accountImpl) FinishApplyCash(id int, tradeNo string) error {
 		return err
 	}
 	return errors.New("kind not match")
-}
-
-// 冻结余额
-func (a *accountImpl) Freezes(title string, tradeNo string,
-	amount float32, referId int) error {
-	if a._value.Balance < amount {
-		return member.ErrNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "资金冻结"
-	}
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceFreezes,
-		Title:   title,
-		RefId:   referId,
-		Amount:  amount,
-		TradeNo: tradeNo,
-		State:   member.StatusOK,
-	}
-	a._value.Balance -= amount
-	a._value.FreezesFee += amount
-	_, err := a.Save()
-	if err == nil {
-		_, err = a.SaveBalanceInfo(v)
-	}
-	return err
-}
-
-// 解冻金额
-func (a *accountImpl) Unfreezes(title string, tradeNo string,
-	amount float32, referId int) error {
-	if a._value.FreezesFee < amount {
-		return member.ErrNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "资金解结"
-	}
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceUnfreezes,
-		Title:   title,
-		RefId:   referId,
-		Amount:  amount,
-		TradeNo: tradeNo,
-		State:   member.StatusOK,
-	}
-	a._value.Balance += amount
-	a._value.FreezesFee -= amount
-	_, err := a.Save()
-	if err == nil {
-		_, err = a.SaveBalanceInfo(v)
-	}
-	return err
-
-}
-
-// 冻结赠送金额
-func (a *accountImpl) FreezesPresent(title string, tradeNo string,
-	amount float32, referId int) error {
-	if amount <= 0 {
-		return member.ErrIncorrectAmount
-	}
-	if a._value.PresentBalance < amount {
-		return member.ErrNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "(赠送)资金冻结"
-	}
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceFreezesPresent,
-		Title:   title,
-		RefId:   referId,
-		Amount:  -amount,
-		TradeNo: tradeNo,
-		State:   member.StatusOK,
-	}
-	a._value.PresentBalance -= amount
-	a._value.FreezesPresent += amount
-	_, err := a.Save()
-	if err == nil {
-		_, err = a.SaveBalanceInfo(v)
-	}
-	return err
-}
-
-// 解冻赠送金额
-func (a *accountImpl) UnfreezesPresent(title string, tradeNo string,
-	amount float32, referId int) error {
-	if amount <= 0 {
-		return member.ErrIncorrectAmount
-	}
-	if a._value.FreezesPresent < amount {
-		return member.ErrNotEnoughAmount
-	}
-	if len(title) == 0 {
-		title = "(赠送)资金解冻"
-	}
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceUnfreezesPresent,
-		Title:   title,
-		RefId:   referId,
-		Amount:  amount,
-		TradeNo: tradeNo,
-		State:   member.StatusOK,
-	}
-	a._value.PresentBalance += amount
-	a._value.FreezesPresent -= amount
-	_, err := a.Save()
-	if err == nil {
-		_, err = a.SaveBalanceInfo(v)
-	}
-	return err
 }
 
 // 转账余额到其他账户

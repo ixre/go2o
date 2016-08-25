@@ -743,43 +743,43 @@ func (ms *memberService) FinishApplyCash(memberId, id int, tradeNo string) error
 }
 
 // 冻结余额
-func (ms *memberService) Freezes(memberId int, title string,
+func (ms *memberService) Freeze(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Freezes(title, tradeNo, amount, referId)
+	return m.GetAccount().Freeze(title, tradeNo, amount, referId)
 }
 
 // 解冻金额
-func (ms *memberService) Unfreezes(memberId int, title string,
+func (ms *memberService) Unfreeze(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().Unfreezes(title, tradeNo, amount, referId)
+	return m.GetAccount().Unfreeze(title, tradeNo, amount, referId)
 }
 
 // 冻结赠送金额
-func (ms *memberService) FreezesPresent(memberId int, title string,
+func (ms *memberService) FreezePresent(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().FreezesPresent(title, tradeNo, amount, referId)
+	return m.GetAccount().FreezePresent(title, tradeNo, amount, referId)
 }
 
 // 解冻赠送金额
-func (ms *memberService) UnfreezesPresent(memberId int, title string,
+func (ms *memberService) UnfreezePresent(memberId int, title string,
 	tradeNo string, amount float32, referId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().UnfreezesPresent(title, tradeNo, amount, referId)
+	return m.GetAccount().UnfreezePresent(title, tradeNo, amount, referId)
 }
 
 // 转账余额到其他账户
