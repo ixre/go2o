@@ -513,15 +513,17 @@ func (p *addressImpl) SetValue(v *member.DeliverAddress) error {
 
 // 设置地区中文名
 func (p *addressImpl) renewAreaName(v *member.DeliverAddress) string {
-	names := p._valRep.GetAreaNames([]int{
-		v.Province,
-		v.City,
-		v.District,
-	})
-	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
-		return strings.Join([]string{names[0], names[2]}, " ")
-	}
-	return strings.Join(names, " ")
+	//names := p._valRep.GetAreaNames([]int{
+	//	v.Province,
+	//	v.City,
+	//	v.District,
+	//})
+	//if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
+	//	return strings.Join([]string{names[0], names[2]}, " ")
+	//}
+	//return strings.Join(names, " ")
+
+	return p._valRep.GetAreaString(v.Province, v.City, v.District)
 }
 
 func (p *addressImpl) checkValue(v *member.DeliverAddress) error {

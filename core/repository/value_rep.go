@@ -250,3 +250,12 @@ func (vp *valueRep) GetAreaNames(id []int) []string {
 		})
 	return strArr
 }
+
+// 获取省市区字符串
+func (vp *valueRep) GetAreaString(province, city, district int) string {
+	names := vp.GetAreaNames([]int{province, city, district})
+	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
+		return strings.Join([]string{names[0], names[2]}, " ")
+	}
+	return strings.Join(names, " ")
+}

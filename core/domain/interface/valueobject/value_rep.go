@@ -48,25 +48,25 @@ type (
 
 	Registry struct {
 		// 商户提现是否免费
-		MerchantTakeOutCashFree          bool
+		MerchantTakeOutCashFree bool
 		// 会员中心首页模板文件名称
-		UCenterIndexTplFile              string
+		UCenterIndexTplFile string
 		// 收货时的提示信息
-		OrderReceiveAlertMessage         string
+		OrderReceiveAlertMessage string
 		// 会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
 		// 会员实名提醒信息
-		MemberNotTrustedMessage          string
+		MemberNotTrustedMessage string
 		// 注册后赠送积分数量
-		PresentIntegralNumOfRegister     int
+		PresentIntegralNumOfRegister int
 		// 会员邀请关系级数
-		MemberReferLayer                 int
+		MemberReferLayer int
 		// 商品默认图片
-		GoodsDefaultImage                string
+		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
-		GoodsMinProfitRate               float32
+		GoodsMinProfitRate float32
 		// 其他扩展数据
-		Extend                           map[string]string
+		Extend map[string]string
 	}
 
 	// 微信API设置
@@ -235,6 +235,9 @@ type (
 
 		// 获取地区名称
 		GetAreaNames(id []int) []string
+
+		// 获取省市区字符串
+		GetAreaString(province, city, district int) string
 	}
 
 	// 短信接口
