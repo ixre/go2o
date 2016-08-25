@@ -47,6 +47,30 @@ func (a *accountImpl) Save() (int, error) {
 	return a._rep.SaveAccount(a._value)
 }
 
+// 设置优先(默认)支付方式, account 为账户类型
+func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
+	if enabled {
+		support := false
+		if account == member.AccountBalance ||
+			account == member.AccountPresent ||
+			account == member.AccountIntegral {
+			support = true
+		}
+		if support {
+			a._value.PriorityPay = account
+			_, err := a.Save()
+			return err
+		}
+		// 不支持支付的账号类型
+		return member.ErrNotSupportPaymentAccountType
+	}
+
+	// 关闭默认支付
+	a._value.PriorityPay = 0
+	_, err := a.Save()
+	return err
+}
+
 // 根据编号获取余额变动信息
 func (a *accountImpl) GetBalanceInfo(id int) *member.BalanceInfo {
 	return a._rep.GetBalanceInfo(id)

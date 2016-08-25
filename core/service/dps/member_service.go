@@ -491,6 +491,15 @@ func (ms *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string
 	return member.ErrNoSuchMember
 }
 
+//设置余额优先支付
+func (ms *memberService) BalancePriorityPay(memberId int, enabled bool) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().SetPriorityPay(member.AccountBalance, enabled)
+}
+
 //判断会员是否由指定会员邀请推荐的
 func (ms *memberService) IsInvitation(memberId int, invitationMemberId int) bool {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
