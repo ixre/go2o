@@ -177,6 +177,6 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 		return member.ErrNoSuchMember
 	}
 	acc := mm.GetAccount()
-	return acc.ChargeBalance(member.TypeBalanceOrderRefund, "订单退款",
-		o.OrderNo, amount)
+	return acc.ChargeBalance(member.ChargeByRefund, "订单退款",
+		o.OrderNo, amount, member.DefaultRelateUser)
 }

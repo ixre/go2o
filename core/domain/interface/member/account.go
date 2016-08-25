@@ -18,26 +18,43 @@ const (
 )
 
 const (
-	// 退款
-	KindBalanceBack = 0
-	// 消费
-	KindBalanceShopping = 1
-	// 充值
-	KindBalanceCharge = 2
+	// 用户充值
+	ChargeByUser = 1
+	// 系统自动充值
+	ChargeBySystem = 2
+	// 客服充值
+	ChargeByService = 3
+	// 退款充值
+	ChargeByRefund = 4
+)
 
-	// 赠送
-	KindBalancePresent = 3
-	// 流通账户
-	KindBalanceFlow = 4 // 账户流通
-
-	// 扣除余额
+const (
+	// 会员充值
+	KindBalanceCharge = 1
+	// 系统充值
+	KindBalanceSystemCharge = 2
+	// 客服充值
+	KindBalanceServiceCharge = 3
+	// 购物消费
+	KindBalanceShopping = 4
+	// 支付抵扣
 	KindBalanceDiscount = 5
+	// 退款
+	KindBalanceRefund = 6
+)
+
+const (
 	// 抵扣奖金
 	KindPresentDiscount = 6
 
 	KindGrow = 7 // 增利
 
 	//KindCommission = 9 // 手续费
+
+	// 赠送
+	KindBalancePresent = 3
+	// 流通账户
+	KindBalanceFlow = 4 // 账户流通
 
 	// 提现
 	KindBalanceApplyCash = 11
@@ -51,15 +68,6 @@ const (
 	KindBalanceFreezesPresent = 15
 	// 解冻赠款
 	KindBalanceUnfreezesPresent = 16
-
-	// 系统充值
-	TypeBalanceSystemCharge = 1
-	// 网银充值
-	TypeBalanceNetPayCharge = 2
-	// 客服充值
-	TypeBalanceServiceCharge = 3
-	// 订单退款
-	TypeBalanceOrderRefund = 4
 
 	// 提现并充值到余额
 	TypeApplyCashToCharge = 1
@@ -119,22 +127,19 @@ type (
 		GetBalanceInfo(id int) *BalanceInfo
 
 		// 根据号码获取余额变动信息
-		GetBalanceInfoByNo(no string) *BalanceInfo
+		// GetBalanceInfoByNo(no string) *BalanceInfo
 
 		// 保存余额变动信息
 		SaveBalanceInfo(*BalanceInfo) (int, error)
 
-		// 充值
-		// @title 充值标题说明
-		// @no    充值订单编号
-		// @amount 金额
-		ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error
+		// 充值,客服充值时,需提供操作人(relateUser)
+		ChargeBalance(chargeType int, title string, outerNo string, amount float32, relateUser int) error
 
 		// 扣减余额
-		DiscountBalance(title string, tradeNo string, amount float32) error
+		DiscountBalance(title string, outerNo string, amount float32) error
 
 		// 赠送金额
-		PresentBalance(title string, tradeNo string, amount float32) error
+		ChargeForPresent(title string, tradeNo string, amount float32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0
 		DiscountPresent(title string, tradeNo string, amount float32, mustLargeZero bool) error
@@ -221,6 +226,25 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
+	// 余额日志
+	BalanceLog struct {
+		Id       int    `db:"id" auto:"yes" pk:"yes"`
+		MemberId int    `db:"member_id"`
+		OuterNo  string `db:"outer_no"`
+		// 业务类型
+		BusinessKind int    `db:"kind"`
+		Title        string `db:"title"`
+		// 金额
+		Amount float32 `db:"amount"`
+		// 手续费
+		CsnFee float32 `db:"csn_fee"`
+		// 关联操作人,仅在客服充值时,记录操作人
+		RelateUser int   `db:"rel_user"`
+		State      int   `db:"state"`
+		CreateTime int64 `db:"create_time"`
+		UpdateTime int64 `db:"update_time"`
+	}
+
 	// 账户值对象
 	Account struct {
 		// 会员编号
@@ -256,9 +280,7 @@ type (
 		//总支付额
 		TotalPay float32 `db:"total_pay" json:"totalPay"`
 		// 优先(默认)支付选项
-		//PriorityPay int `db:"priority_pay"`
-
-		PriorityPay int `db:"-"`
+		PriorityPay int `db:"priority_pay"`
 		//更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}

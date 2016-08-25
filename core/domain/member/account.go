@@ -10,8 +10,10 @@ package member
 
 import (
 	"errors"
+	"github.com/jsix/gof/db/orm"
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"time"
 )
@@ -91,53 +93,73 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 	return a._rep.SaveBalanceInfo(v)
 }
 
-// 充值
-// @title 充值标题说明
-// @no    充值订单编号
-// @amount 金额
-func (a *accountImpl) ChargeBalance(chargeType int, title string, tradeNo string, amount float32) error {
-	//todo: 客服充值需记录操作人
+// 充值,客服充值时,需提供操作人(relateUser)
+func (a *accountImpl) ChargeBalance(chargeType int, title string, outerNo string,
+	amount float32, relateUser int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-
-	if chargeType == member.TypeBalanceNetPayCharge || chargeType == member.TypeBalanceSystemCharge ||
-		chargeType == member.TypeBalanceServiceCharge || chargeType == member.TypeBalanceOrderRefund {
-
-		v := &member.BalanceInfo{
-			Kind:    member.KindBalanceCharge,
-			Type:    chargeType,
-			Title:   title,
-			TradeNo: tradeNo,
-			Amount:  amount,
-			State:   1,
-		}
-		_, err := a.SaveBalanceInfo(v)
-		if err == nil {
-			a._value.Balance += amount
-			_, err = a.Save()
-		}
-		return err
+	if chargeType == member.ChargeByService && relateUser <= 0 {
+		return member.ErrNoSuchRelateUser
 	}
-	return errors.New("error charge type")
+	busKind := member.KindBalanceCharge
+	switch chargeType {
+	default:
+		return member.ErrNotSupportChargeMethod
+	case member.ChargeByUser:
+		busKind = member.KindBalanceCharge
+	case member.ChargeBySystem:
+		busKind = member.KindBalanceSystemCharge
+	case member.ChargeByService:
+		busKind = member.KindBalanceServiceCharge
+	case member.ChargeByRefund:
+		busKind = member.KindBalanceRefund
+	}
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: busKind,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       amount,
+		State:        1,
+		RelateUser:   relateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.saveBalanceLog(v)
+	if err == nil {
+		a._value.Balance += amount
+		_, err = a.Save()
+	}
+	return err
+}
+
+// 保存余额日志
+func (a *accountImpl) saveBalanceLog(v *member.BalanceLog) (int, error) {
+	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 }
 
 // 扣减余额
-func (a *accountImpl) DiscountBalance(title string, tradeNo string, amount float32) (err error) {
+func (a *accountImpl) DiscountBalance(title string, outerNo string, amount float32) (err error) {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
 		return member.ErrNotEnoughAmount
 	}
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceDiscount,
-		Title:   title,
-		TradeNo: tradeNo,
-		Amount:  -amount,
-		State:   1,
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceDiscount,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       -amount,
+		State:        1,
+		CreateTime:   unix,
+		UpdateTime:   unix,
 	}
-	_, err = a.SaveBalanceInfo(v)
+	_, err = a.saveBalanceLog(v)
 	if err == nil {
 		a._value.Balance -= amount
 		_, err = a.Save()
@@ -146,7 +168,7 @@ func (a *accountImpl) DiscountBalance(title string, tradeNo string, amount float
 }
 
 // 赠送金额
-func (a *accountImpl) PresentBalance(title string, tradeNo string, amount float32) error {
+func (a *accountImpl) ChargeForPresent(title string, tradeNo string, amount float32) error {
 	//todo:??客服调整
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
@@ -368,7 +390,7 @@ func (a *accountImpl) RequestBackBalance(backType int, title string,
 		return member.ErrOutOfBalance
 	}
 	v := &member.BalanceInfo{
-		Kind:   member.KindBalanceBack,
+		Kind:   member.KindBalanceRefund,
 		Type:   backType,
 		Title:  title,
 		Amount: amount,
@@ -385,7 +407,7 @@ func (a *accountImpl) RequestBackBalance(backType int, title string,
 // 完成退款
 func (a *accountImpl) FinishBackBalance(id int, tradeNo string) error {
 	v := a.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceBack {
+	if v.Kind == member.KindBalanceRefund {
 		v.TradeNo = tradeNo
 		v.State = 1
 		_, err := a.SaveBalanceInfo(v)

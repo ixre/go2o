@@ -888,7 +888,7 @@ func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
 
 	//给自己返现
 	tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
-	acc.PresentBalance(tit, v.OrderNo, float32(fee))
+	acc.ChargeForPresent(tit, v.OrderNo, float32(fee))
 }
 
 // 处理返现促销
@@ -933,7 +933,7 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, o._value.OrderNo)
-		err = acc.PresentBalance(tit, o.GetOrderNo(), float32(cpv.BackFee))
+		err = acc.ChargeForPresent(tit, o.GetOrderNo(), float32(cpv.BackFee))
 	}
 	return err
 }
@@ -1441,9 +1441,8 @@ func (o *subOrderImpl) backupPayment() (err error) {
 	if pv := po.GetValue(); pv.BalanceDiscount > 0 {
 		//退回账户余额抵扣
 		acc := o.GetBuyer().GetAccount()
-		err = acc.ChargeBalance(member.TypeBalanceOrderRefund, "订单退款",
-			o._value.OrderNo,
-			o._value.DiscountAmount)
+		err = acc.ChargeBalance(member.ChargeByRefund, "订单退款",
+			o._value.OrderNo, o._value.DiscountAmount, member.DefaultRelateUser)
 	}
 	if o._value.FinalAmount > 0 {
 		//todo: 其他支付方式退还,如网银???
@@ -1651,7 +1650,7 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 
 		//给自己返现
 		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, mchName, fee)
-		return acc.PresentBalance(tit, v.OrderNo, float32(fee))
+		return acc.ChargeForPresent(tit, v.OrderNo, float32(fee))
 	}
 	return nil
 }

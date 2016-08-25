@@ -867,6 +867,11 @@ ALTER TABLE `zxdb`.`msg_to`
 
 
 
+ALTER TABLE `zxdb`.`mm_account`
+  ADD COLUMN `priority_pay` TINYINT(1) NULL COMMENT '优先（默认）支付账户' AFTER `total_consumption`;
+
+
+
 
 
 

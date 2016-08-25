@@ -10,6 +10,10 @@
 package member
 
 const (
+	// 默认操作用户
+	DefaultRelateUser int = 0
+)
+const (
 	StateStopped = 0 //已停用
 	StateOk      = 1 //正常
 	BankNoLock   = 0
