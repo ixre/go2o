@@ -60,55 +60,55 @@ func New() *Echo {
 	}
 }
 
-func (this *Echo) chkApp() {
-	if this.app == nil {
+func (e *Echo) chkApp() {
+	if e.app == nil {
 		if gof.CurrentApp == nil {
 			panic(errors.New("not register or no global app instance for echox!"))
 		}
-		this.app = gof.CurrentApp
+		e.app = gof.CurrentApp
 	}
 }
 
 // 转换为Echo Handler
-func (this *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
+func (e *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
 	return func(ctx *echo.Context) error {
-		this.chkApp()
-		return h(ParseContext(ctx, this.app))
+		e.chkApp()
+		return h(ParseContext(ctx, e.app))
 	}
 }
 
 // 设置模板
-func (this *Echo) SetTemplateRender(basePath string, notify bool, files ...string) {
-	this.SetRenderer(newGoTemplateForEcho(basePath, notify, files...))
+func (e *Echo) SetTemplateRender(basePath string, notify bool, files ...string) {
+	e.SetRenderer(newGoTemplateForEcho(basePath, notify, files...))
 }
 
 // 注册自定义的GET处理程序
-func (this *Echo) Getx(path string, h Handler) {
-	this.Get(path, this.parseHandler(h))
+func (e *Echo) Getx(path string, h Handler) {
+	e.Get(path, e.parseHandler(h))
 }
 
 // 注册自定义的GET/POST处理程序
-func (this *Echo) Anyx(path string, h Handler) {
-	this.Any(path, this.parseHandler(h))
+func (e *Echo) Anyx(path string, h Handler) {
+	e.Any(path, e.parseHandler(h))
 }
 
 // 注册自定义的GET/POST处理程序
-func (this *Echo) Postx(path string, h Handler) {
-	this.Post(path, this.parseHandler(h))
+func (e *Echo) Postx(path string, h Handler) {
+	e.Post(path, e.parseHandler(h))
 }
 
-func (this *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
-	this.mux.Lock()
-	defer this.mux.Unlock()
+func (e *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
+	e.mux.Lock()
+	defer e.mux.Unlock()
 	a := c.Param("action")
 	k := route + a
-	if v, ok := this.dynamicHandlers[k]; ok {
+	if v, ok := e.dynamicHandlers[k]; ok {
 		//查找路由表
 		return v
 	}
 	if v, ok := getHandler(obj, a); ok {
 		//存储路由表
-		this.dynamicHandlers[k] = v
+		e.dynamicHandlers[k] = v
 		return v
 	}
 	return nil
@@ -116,34 +116,34 @@ func (this *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handl
 
 // 注册动态获取处理程序
 // todo:?? 应复写Any
-func (this *Echo) Aanyx(path string, obj interface{}) {
+func (e *Echo) Aanyx(path string, obj interface{}) {
 	h := func(c *Context) error {
-		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+		if hd := e.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
 		return c.String(http.StatusNotFound, "no such file")
 	}
-	this.Any(path, this.parseHandler(h))
+	e.Any(path, e.parseHandler(h))
 }
 
-func (this *Echo) Agetx(path string, obj interface{}) {
+func (e *Echo) Agetx(path string, obj interface{}) {
 	h := func(c *Context) error {
-		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+		if hd := e.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
 		return c.String(http.StatusNotFound, "no such file")
 	}
-	this.Get(path, this.parseHandler(h))
+	e.Get(path, e.parseHandler(h))
 }
 
-func (this *Echo) Apostx(path string, obj interface{}) {
+func (e *Echo) Apostx(path string, obj interface{}) {
 	h := func(c *Context) error {
-		if hd := this.getMvcHandler(path, c, obj); hd != nil {
+		if hd := e.getMvcHandler(path, c, obj); hd != nil {
 			return hd(c)
 		}
 		return c.String(http.StatusNotFound, "no such file")
 	}
-	this.Post(path, this.parseHandler(h))
+	e.Post(path, e.parseHandler(h))
 }
 
 func ParseContext(ctx *echo.Context, app gof.App) *Context {
@@ -158,43 +158,43 @@ func ParseContext(ctx *echo.Context, app gof.App) *Context {
 	}
 }
 
-func (this *Context) HttpResponse() http.ResponseWriter {
-	return this.response
+func (e *Context) HttpResponse() http.ResponseWriter {
+	return e.response
 }
-func (this *Context) HttpRequest() *http.Request {
-	return this.request
-}
-
-func (this *Context) IsPost() bool {
-	return this.request.Method == "POST"
+func (e *Context) HttpRequest() *http.Request {
+	return e.request
 }
 
-func (this *Context) StringOK(s string) error {
-	return this.debug(this.String(http.StatusOK, s))
+func (c *Context) IsPost() bool {
+	return c.request.Method == "POST"
 }
 
-func (this *Context) debug(err error) error {
+func (c *Context) StringOK(s string) error {
+	return c.debug(c.String(http.StatusOK, s))
+}
+
+func (c *Context) debug(err error) error {
 	if err != nil {
-		web.HttpError(this.HttpResponse(), err)
+		web.HttpError(c.HttpResponse(), err)
 		return nil
 	}
 	return err
 }
 
-func (this *Context) Debug(err error) error {
-	return this.debug(err)
+func (c *Context) Debug(err error) error {
+	return c.debug(err)
 }
 
 // 覆写Render方法
-func (this *Context) Render(code int, name string, data interface{}) error {
-	return this.debug(this.Context.Render(code, name, data))
+func (c *Context) Render(code int, name string, data interface{}) error {
+	return c.debug(c.Context.Render(code, name, data))
 }
 
-func (this *Context) RenderOK(name string, data interface{}) error {
-	return this.debug(this.Render(http.StatusOK, name, data))
+func (c *Context) RenderOK(name string, data interface{}) error {
+	return c.debug(c.Render(http.StatusOK, name, data))
 }
 
-func (this *Context) NewData() *TemplateData {
+func (c *Context) NewData() *TemplateData {
 	return &TemplateData{
 		Var:  _globTemplateVar,
 		Map:  make(map[string]interface{}),
@@ -233,8 +233,8 @@ type GoTemplateForEcho struct {
 	*gof.CachedTemplate
 }
 
-func (this *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
-	return this.Execute(w, name, data)
+func (g *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
+	return g.Execute(w, name, data)
 }
 
 //

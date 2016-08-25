@@ -107,3 +107,8 @@ func (p *platformService) GetChildAreas(id int) []*valueobject.Area {
 func (p *platformService) GetAreaNames(id []int) []string {
 	return p._rep.GetAreaNames(id)
 }
+
+// 获取省市区字符串
+func (p *platformService) GetAreaString(province, city, district int) string {
+	return p._rep.GetAreaString(province, city, district)
+}

@@ -205,7 +205,7 @@ type (
 	Profile struct {
 		//会员编号
 		MemberId int `db:"member_id" pk:"yes" auto:"no"`
-		//姓名
+		//昵称
 		Name string `db:"name"`
 		//头像
 		Avatar string `db:"avatar"`
