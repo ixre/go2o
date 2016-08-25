@@ -9,6 +9,15 @@
 package member
 
 const (
+	// 余额账户
+	AccountBalance = 1
+	// 积分账户
+	AccountIntegral = 2
+	// 赠送账户
+	AccountPresent = 3
+)
+
+const (
 	// 退款
 	KindBalanceBack = 0
 	// 消费
@@ -102,6 +111,9 @@ type (
 
 		// 保存
 		Save() (int, error)
+
+		// 设置优先(默认)支付方式, account 为账户类型
+		SetPriorityPay(account int, enabled bool) error
 
 		// 根据编号获取余额变动信息
 		GetBalanceInfo(id int) *BalanceInfo
@@ -243,6 +255,10 @@ type (
 		TotalCharge float32 `db:"total_charge" json:"totalCharge"`
 		//总支付额
 		TotalPay float32 `db:"total_pay" json:"totalPay"`
+		// 优先(默认)支付选项
+		//PriorityPay int `db:"priority_pay"`
+
+		PriorityPay int `db:"-"`
 		//更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}
