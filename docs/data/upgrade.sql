@@ -902,6 +902,24 @@ CREATE TABLE `mm_present_log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 
+ALTER TABLE `zxdb`.`mm_account`
+  CHANGE COLUMN `freezes_integral` `freeze_integral` INT(11) NOT NULL COMMENT '不可用积分' ,
+  CHANGE COLUMN `balance` `balance` DECIMAL(10,2) NOT NULL COMMENT '余额' ,
+  CHANGE COLUMN `freezes_balance` `freeze_balance` DECIMAL(10,2) NOT NULL COMMENT '冻结的账户余额' ,
+  CHANGE COLUMN `present_balance` `present_balance` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `freezes_present` `freeze_present` DECIMAL(10,2) NOT NULL COMMENT '冻结的赠送金额' ,
+  CHANGE COLUMN `total_present_fee` `total_present_fee` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `flow_balance` `flow_balance` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_balance` `grow_balance` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_amount` `grow_amount` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_earnings` `grow_earnings` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `grow_total_earnings` `grow_total_earnings` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `total_charge` `total_charge` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `total_pay` `total_pay` DECIMAL(10,2) NOT NULL ,
+  CHANGE COLUMN `total_consumption` `total_consumption` DECIMAL(10,2) NOT NULL COMMENT '总消费' ,
+  CHANGE COLUMN `priority_pay` `priority_pay` DECIMAL(10,2) NOT NULL COMMENT '优先（默认）支付账户' ,
+  ADD COLUMN `out_balance` DECIMAL(10,2) NOT NULL COMMENT '失效的账户余额' AFTER `freeze_balance`,
+  ADD COLUMN `out_present` DECIMAL(10,2) NOT NULL COMMENT '失效的赠送金额' AFTER `freeze_present`;
 
 
 

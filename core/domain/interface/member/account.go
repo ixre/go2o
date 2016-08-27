@@ -285,15 +285,19 @@ type (
 		// 积分
 		Integral int `db:"integral"`
 		// 不可用积分
-		FreezesIntegral int `db:"freezes_integral"`
+		FreezesIntegral int `db:"freeze_integral"`
 		// 余额
 		Balance float32 `db:"balance" json:"balance"`
 		// 不可用余额
-		FreezesFee float32 `db:"freezes_balance" json:"freezesFee"`
+		FreezesFee float32 `db:"freeze_balance" json:"freezesFee"`
+		// 失效的账户余额
+		OutOfBalance float32 `db:"out_balance"`
 		//奖金账户余额
 		PresentBalance float32 `db:"present_balance" json:"presentBalance"`
-		//冻结赠送额
-		FreezePresent float32 `db:"freezes_present" json:"FreezePresent"`
+		//冻结赠送金额
+		FreezePresent float32 `db:"freeze_present" json:"FreezePresent"`
+		//失效的赠送金额
+		OutOfPresent float32 `db:"out_present"`
 		//总赠送金额
 		TotalPresentFee float32 `db:"total_present_fee" json:"totalPresentFee"`
 		//流动账户余额
