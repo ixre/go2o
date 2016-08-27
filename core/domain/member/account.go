@@ -727,7 +727,7 @@ func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 	csnAmount := commission * amount
 	finalAmount := amount - csnAmount
 
-	if kind == member.KindBalancePresent {
+	if kind == member.KindPresentTransferIn {
 		if a._value.FlowBalance < finalAmount {
 			return member.ErrNotEnoughAmount
 		}
