@@ -285,11 +285,11 @@ type (
 		// 积分
 		Integral int `db:"integral"`
 		// 不可用积分
-		FreezesIntegral int `db:"freeze_integral"`
+		FreezeIntegral int `db:"freeze_integral"`
 		// 余额
 		Balance float32 `db:"balance" json:"balance"`
 		// 不可用余额
-		FreezesFee float32 `db:"freeze_balance" json:"freezesFee"`
+		FreezeBalance float32 `db:"freeze_balance" json:"freezesFee"`
 		// 失效的账户余额
 		OutOfBalance float32 `db:"out_balance"`
 		//奖金账户余额

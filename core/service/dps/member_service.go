@@ -426,10 +426,16 @@ func (ms *memberService) QueryIncomeLog(memberId, begin, end int,
 	return ms._query.QueryBalanceLog(memberId, begin, end, where, orderBy)
 }
 
-// 获取账户余额分页记录
-func (ms *memberService) PagedBalanceLog(memberId, begin, end int,
+// 获取余额账户分页记录
+func (ms *memberService) PagedBalanceAccountLog(memberId, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
-	return ms._query.PagedBalanceLog(memberId, begin, end, where, orderBy)
+	return ms._query.PagedBalanceAccountLog(memberId, begin, end, where, orderBy)
+}
+
+// 获取赠送账户分页记录
+func (ms *memberService) PagedPresentAccountLog(memberId, begin, end int,
+	where, orderBy string) (int, []map[string]interface{}) {
+	return ms._query.PagedPresentAccountLog(memberId, begin, end, where, orderBy)
 }
 
 // 查询分页订单
