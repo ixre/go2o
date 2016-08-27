@@ -203,7 +203,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 		UpdateTime:   unix,
 	}
 	a._value.Balance -= amount
-	a._value.FreezesFee += amount
+	a._value.FreezeBalance += amount
 	_, err := a.Save()
 	if err == nil {
 		_, err = a.saveBalanceLog(v)
@@ -217,7 +217,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.FreezesFee < amount {
+	if a._value.FreezeBalance < amount {
 		return member.ErrNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -236,7 +236,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 		UpdateTime:   unix,
 	}
 	a._value.Balance += amount
-	a._value.FreezesFee -= amount
+	a._value.FreezeBalance -= amount
 	_, err := a.Save()
 	if err == nil {
 		_, err = a.saveBalanceLog(v)
@@ -508,7 +508,7 @@ func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error 
 		}
 		a._value.Integral -= value
 	}
-	a._value.FreezesIntegral += value
+	a._value.FreezeIntegral += value
 	_, err := a.Save()
 	if err == nil {
 		l := &member.IntegralLog{
@@ -525,10 +525,10 @@ func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error 
 
 // 解冻积分
 func (a *accountImpl) UnfreezesIntegral(value int, remark string) error {
-	if a._value.FreezesIntegral < value {
+	if a._value.FreezeIntegral < value {
 		return member.ErrNoSuchIntegral
 	}
-	a._value.FreezesIntegral -= value
+	a._value.FreezeIntegral -= value
 	a._value.Integral += value
 	_, err := a.Save()
 	if err == nil {
