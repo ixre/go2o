@@ -60,6 +60,10 @@ const (
 	KindPresentServiceAdd = 3
 	// 客服扣减
 	KindPresentServiceDiscount = 4
+	// 其他账户转入
+	KindPresentTransferIn = 5
+	// 提现
+	KindPresentTakeOut = 6
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
@@ -72,7 +76,7 @@ const (
 	//KindCommission = 9 // 手续费
 
 	// 赠送
-	KindBalancePresent = 3
+	//KindBalancePresent = 3
 
 	// 流通账户
 	KindBalanceFlow = 4 // 账户流通
