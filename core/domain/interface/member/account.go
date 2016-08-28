@@ -164,6 +164,9 @@ type (
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
 		ChargeForPresent(title string, outerNo string, amount float32, relateUser int) error
 
+		// 赠送金额(指定业务类型)
+		ChargePresentByKind(kind int, title string, outerNo string, amount float32, relateUser int) error
+
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
 			relateUser int, mustLargeZero bool) error
