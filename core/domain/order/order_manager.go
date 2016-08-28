@@ -276,7 +276,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 
 		// 使用余额支付
 		if useBalanceDiscount {
-			err = py.BalanceDiscount()
+			err = py.BalanceDiscount("")
 			pyUpdate = true
 		}
 

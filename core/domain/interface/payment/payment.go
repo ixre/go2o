@@ -90,7 +90,7 @@ type (
 		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
 
 		// 使用会员的余额抵扣
-		BalanceDiscount() error
+		BalanceDiscount(remark string) error
 
 		// 使用会员积分抵扣,返回抵扣的金额及错误,ignoreOut:是否忽略超出订单金额的积分
 		IntegralDiscount(integral int, ignoreOut bool) (float32, error)

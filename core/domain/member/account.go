@@ -420,24 +420,31 @@ func (a *accountImpl) ChargeFlowBalance(title string, tradeNo string, amount flo
 }
 
 // 支付单抵扣消费,tradeNo为支付单单号
-func (a *accountImpl) PaymentDiscount(tradeNo string, amount float32) error {
+func (a *accountImpl) PaymentDiscount(tradeNo string,
+	amount float32, remark string) error {
 	if amount < 0 || len(tradeNo) == 0 {
 		return errors.New("amount error or missing trade no")
 	}
-
 	if amount > a._value.Balance {
 		return member.ErrOutOfBalance
 	}
-
-	v := &member.BalanceInfo{
-		Kind:    member.KindBalanceShopping,
-		Type:    1,
-		Title:   "订单抵扣",
-		TradeNo: tradeNo,
-		Amount:  -amount,
-		State:   1,
+	if remark == "" {
+		remark = "支付抵扣"
 	}
-	_, err := a.SaveBalanceInfo(v)
+
+	unix := time.Now().Unix()
+	v := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceDiscount,
+		Title:        remark,
+		OuterNo:      tradeNo,
+		Amount:       -amount,
+		State:        1,
+		RelateUser:   member.DefaultRelateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.saveBalanceLog(v)
 	if err == nil {
 		a._value.Balance -= amount
 		_, err = a.Save()

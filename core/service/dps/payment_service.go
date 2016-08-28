@@ -62,12 +62,16 @@ func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
 }
 
 // 余额抵扣
-func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int) error {
+func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark string) error {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
-	return o.BalanceDiscount()
+	err := o.BalanceDiscount(remark)
+	if err == nil {
+		_, err = o.Save()
+	}
+	return err
 }
 
 // 创建支付单
