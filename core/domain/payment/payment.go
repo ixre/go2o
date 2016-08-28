@@ -30,6 +30,8 @@ type paymentOrderImpl struct {
 	_coupons            []promotion.ICouponPromotion
 	_orderManager       order.IOrderManager
 	_firstFinishPayment bool //第一次完成支付
+	paymentUser         member.IMember
+	buyUser             member.IMember
 }
 
 func (p *paymentOrderImpl) GetAggregateRootId() int {
@@ -107,7 +109,7 @@ func (p *paymentOrderImpl) checkPayment() error {
 }
 
 // 应用余额支付
-func (p *paymentOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
+func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) float32 {
 	if p._value.FinalFee <= 0 {
 		return 0
 	}
@@ -120,23 +122,34 @@ func (p *paymentOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 	return 0
 }
 
+func (p *paymentOrderImpl) getPaymentUser() member.IMember {
+	if p.paymentUser == nil && p._value.PaymentUser > 0 {
+		p.paymentUser = p._mmRep.GetMember(p._value.PaymentUser)
+	}
+	return p.paymentUser
+}
+
 // 使用余额支付
-func (p *paymentOrderImpl) paymentWithBalance(buyerType int) error {
+func (p *paymentOrderImpl) paymentWithBalance(buyerType int, remark string) error {
 	if p._value.PaymentOpt&payment.OptBalanceDiscount == 0 {
 		return payment.ErrCanNotUseBalance
 	}
 	err := p.checkPayment()
 	if err == nil {
 		// 判断扣减金额,是否大于0
-		acc := p._mmRep.GetMember(p._value.BuyUser).GetAccount()
-		fee := p.getBalanceDiscountFee(acc)
-		if fee == 0 {
+		pu := p.getPaymentUser()
+		if pu == nil {
+			return member.ErrNoSuchMember
+		}
+		acc := pu.GetAccount()
+		amount := p.getBalanceDiscountAmount(acc)
+		if amount == 0 {
 			return member.ErrAccountBalanceNotEnough
 		}
 		// 从会员账户扣减,并更新支付单
-		err = acc.PaymentDiscount(p.GetValue().TradeNo, fee)
+		err = acc.PaymentDiscount(p._value.TradeNo, amount, remark)
 		if err == nil {
-			p._value.BalanceDiscount = fee
+			p._value.BalanceDiscount = amount
 			p.fixFee()
 		}
 	}
@@ -159,8 +172,8 @@ func (p *paymentOrderImpl) checkPaymentOk() (bool, error) {
 }
 
 // 使用会员的余额抵扣
-func (p *paymentOrderImpl) BalanceDiscount() error {
-	return p.paymentWithBalance(payment.PaymentByBuyer)
+func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
+	return p.paymentWithBalance(payment.PaymentByBuyer, remark)
 }
 
 // 计算积分折算后的金额

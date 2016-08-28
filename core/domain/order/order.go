@@ -774,7 +774,7 @@ func (o *orderImpl) paymentWithBalance(buyerType int) error {
 	} else {
 		o._value.DiscountAmount = fee
 		o._value.FinalAmount -= fee
-		err := acc.PaymentDiscount(o.GetOrderNo(), fee)
+		err := acc.PaymentDiscount(o.GetOrderNo(), fee, "")
 		if err != nil {
 			return err
 		}

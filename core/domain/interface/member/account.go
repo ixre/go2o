@@ -181,7 +181,7 @@ type (
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
 
 		// 支付单抵扣消费,tradeNo为支付单单号
-		PaymentDiscount(tradeNo string, amount float32) error
+		PaymentDiscount(tradeNo string, amount float32, remark string) error
 
 		//　增加积分
 		AddIntegral(iType int, outerNo string, value int, remark string) error
