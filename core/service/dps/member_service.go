@@ -624,6 +624,16 @@ func (ms *memberService) PresentBalance(memberId int, title string,
 	return m.GetAccount().ChargeForPresent(title, outerNo, amount, relateUser)
 }
 
+// 赠送金额充值
+func (ms *memberService) PresentBalanceByKind(memberId int, kind int, title string,
+	outerNo string, amount float32, relateUser int) error {
+	m, err := ms.getMember(memberId)
+	if err != nil {
+		return err
+	}
+	return m.GetAccount().ChargePresentByKind(kind, title, outerNo, amount, relateUser)
+}
+
 // 冻结积分,当new为true不扣除积分,反之扣除积分
 func (ms *memberService) FreezesIntegral(memberId int, value int,
 	new bool, remark string) error {

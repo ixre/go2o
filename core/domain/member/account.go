@@ -248,6 +248,16 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 // 赠送金额,客服操作时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 	amount float32, relateUser int) error {
+	kind := member.KindPresentAdd
+	if relateUser > 0 {
+		kind = member.KindPresentServiceAdd
+	}
+	return a.ChargePresentByKind(kind, title, outerNo, amount, relateUser)
+}
+
+// 赠送金额(指定业务类型)
+func (a *accountImpl) ChargePresentByKind(kind int, title string,
+	outerNo string, amount float32, relateUser int) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
@@ -257,10 +267,6 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 		} else {
 			title = "赠送账户入账"
 		}
-	}
-	kind := member.KindPresentAdd
-	if relateUser > 0 {
-		kind = member.KindPresentServiceAdd
 	}
 	unix := time.Now().Unix()
 	v := &member.PresentLog{
