@@ -65,7 +65,7 @@ func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
 func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int) error {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
-		return 0, payment.ErrNoSuchPaymentOrder
+		return payment.ErrNoSuchPaymentOrder
 	}
 	return o.BalanceDiscount()
 }
