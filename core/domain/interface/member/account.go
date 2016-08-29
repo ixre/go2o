@@ -60,10 +60,12 @@ const (
 	KindPresentServiceAdd = 3
 	// 客服扣减
 	KindPresentServiceDiscount = 4
-	// 其他账户转入
+	// 转入
 	KindPresentTransferIn = 5
+	// 转出
+	KindPresentTransferOut = 6
 	// 提现
-	KindPresentTakeOut = 6
+	KindPresentTakeOut = 7
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
