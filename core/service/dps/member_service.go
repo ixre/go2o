@@ -800,6 +800,19 @@ func (ms *memberService) UnfreezePresent(memberId int, title string,
 }
 
 // 转账余额到其他账户
+func (ms *memberService) TransferAccounts(accountKind int, fromMember int,
+	toMember int, amount float32) error {
+	m := ms._rep.GetMember(fromMember)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+
+	//todo: ???
+	//acc := m.GetAccount()
+	return nil
+}
+
+// 转账余额到其他账户
 func (ms *memberService) TransferBalance(memberId int, kind int, amount float32, tradeNo string,
 	toTitle, fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
