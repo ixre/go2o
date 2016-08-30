@@ -54,12 +54,13 @@ func (ms *memberService) init() *memberService {
 }
 
 // 获取资料
-func (ms *memberService) GetProfile(memberId int) member.Profile {
+func (ms *memberService) GetProfile(memberId int) *member.Profile {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
-		return m.Profile().GetProfile()
+		v := m.Profile().GetProfile()
+		return &v
 	}
-	return member.Profile{}
+	return nil
 }
 
 // 保存资料
@@ -849,7 +850,7 @@ func (ms *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMembe
 }
 
 // 根据用户名货手机获取会员
-func (ms *memberService) GetMemberByUserOrPhone(key string)*dto.SimpleMember{
+func (ms *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	return ms._query.GetMemberByUsrOrPhone(key)
 }
 
