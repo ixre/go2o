@@ -243,9 +243,9 @@ type (
 		// 扩展4
 		Ext4 string `db:"ext_4"`
 		// 扩展5
-		Ext5 string `db:"ext_4"`
+		Ext5 string `db:"ext_5"`
 		// 扩展6
-		Ext6 string `db:"ext_4"`
+		Ext6 string `db:"ext_6"`
 		//更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
