@@ -12,6 +12,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/db/orm"
 	dm "go2o/core/domain"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
@@ -143,6 +144,15 @@ func (a *accountImpl) saveBalanceLog(v *member.BalanceLog) (int, error) {
 // 保存赠送账户日志
 func (a *accountImpl) savePresentLog(v *member.PresentLog) (int, error) {
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
+}
+
+// 根据编号获取余额变动信息
+func (a *accountImpl) GetPresentLog(id int) *member.PresentLog {
+	e := member.PresentLog{}
+	if tmp.Db().GetOrm().Get(id, &e) == nil {
+		return &e
+	}
+	return nil
 }
 
 // 扣减余额
@@ -591,39 +601,47 @@ func (a *accountImpl) FinishBackBalance(id int, tradeNo string) error {
 }
 
 // 请求提现,返回info_id,交易号及错误
-func (a *accountImpl) RequestApplyCash(applyType int, title string,
+func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	amount float32, commission float32) (int, string, error) {
+	if businessKind != member.KindPresentTakeOutToBalance &&
+		businessKind != member.KindPresentTakeOutToBankCard &&
+		businessKind != member.KindPresentTakeOutToThirdPart {
+		return 0, "", member.ErrNotSupportTakeOutBusinessKind
+	}
 	if amount <= 0 {
 		return 0, "", member.ErrIncorrectAmount
 	}
 	if a._value.PresentBalance < amount {
 		return 0, "", member.ErrOutOfBalance
 	}
-
 	tradeNo := domain.NewTradeNo(00000)
-
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount
 	if finalAmount > 0 {
 		finalAmount = -finalAmount
 	}
-	v := &member.BalanceInfo{
-		Kind:      member.KindBalanceApplyCash,
-		Type:      applyType,
-		Title:     title,
-		TradeNo:   tradeNo,
-		Amount:    finalAmount,
-		CsnAmount: csnAmount,
-		State:     member.StateApplySubmitted,
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: businessKind,
+		Title:        title,
+		OuterNo:      tradeNo,
+		Amount:       finalAmount,
+		CsnFee:       csnAmount,
+		State:        enum.ReviewAwaiting,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       "",
+		CreateTime:   unix,
+		UpdateTime:   unix,
 	}
 
 	// 提现至余额
-	if applyType == member.TypeApplyCashToCharge {
+	if businessKind == member.KindPresentTakeOutToBalance {
 		a._value.Balance += amount
-		v.State = member.StateApplyOver
+		v.State = enum.ReviewPass
 	}
 
-	id, err := a.SaveBalanceInfo(v)
+	id, err := a.savePresentLog(v)
 	if err == nil {
 		a._value.PresentBalance -= amount
 		_, err = a.Save()
@@ -632,38 +650,42 @@ func (a *accountImpl) RequestApplyCash(applyType int, title string,
 }
 
 // 确认提现
-func (a *accountImpl) ConfirmApplyCash(id int, pass bool, remark string) error {
-	//todo: remark
-	v := a.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceApplyCash {
+func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
+	v := a.GetPresentLog(id)
+	if v.BusinessKind == member.KindPresentTakeOutToBankCard {
 		if pass {
-			v.State = member.StateApplyConfirmed
+			v.State = enum.ReviewPass
 		} else {
-			if v.State == member.StateApplyNotPass {
+			if v.State == enum.ReviewReject {
 				return dm.ErrState
 			}
-			v.State = member.StateApplyNotPass
-			a._value.PresentBalance += v.CsnAmount + (-v.Amount)
-			if _, err := a.Save(); err != nil {
+			v.Remark += "失败:" + remark
+			v.State = enum.ReviewReject
+			a._value.PresentBalance += v.CsnFee + (-v.Amount)
+			a._value.UpdateTime = time.Now().Unix()
+			_, err := a.Save()
+			if err != nil {
 				return err
 			}
 		}
-		_, err := a.SaveBalanceInfo(v)
+		v.UpdateTime = time.Now().Unix()
+		_, err := a.savePresentLog(v)
 		return err
 	}
-	return errors.New("kind not match")
+	return member.ErrNotSupportTakeOutBusinessKind
 }
 
 // 完成提现
-func (a *accountImpl) FinishApplyCash(id int, tradeNo string) error {
-	v := a.GetBalanceInfo(id)
-	if v.Kind == member.KindBalanceApplyCash {
-		v.TradeNo = tradeNo
-		v.State = member.StateApplyOver
-		_, err := a.SaveBalanceInfo(v)
+func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
+	v := a.GetPresentLog(id)
+	if v.BusinessKind == member.KindPresentTakeOutToBankCard {
+		v.OuterNo = tradeNo
+		v.State = enum.ReviewConfirm
+		v.Remark = "银行凭证:" + tradeNo
+		_, err := a.savePresentLog(v)
 		return err
 	}
-	return errors.New("kind not match")
+	return member.ErrNotSupportTakeOutBusinessKind
 }
 
 // 转账余额到其他账户

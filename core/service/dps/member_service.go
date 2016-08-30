@@ -688,6 +688,11 @@ func (ms *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, er
 	return true, nil
 }
 
+func (ms *memberService) GetPresentLog(memberId int, logId int) *member.PresentLog {
+	m := ms._rep.GetMember(memberId)
+	return m.GetAccount().GetPresentLog(logId)
+}
+
 // 提现并返回提现编号,交易号以及错误信息
 func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
@@ -699,19 +704,19 @@ func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 	acc := m.GetAccount()
 	var title string
 	switch applyType {
-	case member.TypeApplyCashToBank:
+	case member.KindPresentTakeOutToBankCard:
 		title = "提现到银行卡"
-	case member.TypeApplyCashToCharge:
+	case member.KindPresentTakeOutToBalance:
 		title = "充值账户"
-	case member.TypeApplyCashToServiceProvider:
+	case member.KindPresentTakeOutToThirdPart:
 		title = "充值到第三方账户"
 	}
-	return acc.RequestApplyCash(applyType, title, applyAmount, commission)
+	return acc.RequestTakeOut(applyType, title, applyAmount, commission)
 }
 
 // 获取最近的提现
 func (ms *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfo {
-	return ms._query.GetLatestBalanceInfoByKind(memberId, member.KindBalanceApplyCash)
+	return ms._query.GetLatestBalanceInfoByKind(memberId, member.KindPresentTakeOutToBankCard)
 }
 
 // 获取最近的提现描述
@@ -744,10 +749,10 @@ func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 // 确认提现
 func (ms *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, remark string) error {
 	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
+	if err == nil {
+		err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
 	}
-	return m.GetAccount().ConfirmApplyCash(infoId, pass, remark)
+	return err
 }
 
 // 完成提现
@@ -756,7 +761,7 @@ func (ms *memberService) FinishApplyCash(memberId, id int, tradeNo string) error
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().FinishApplyCash(id, tradeNo)
+	return m.GetAccount().FinishTakeOut(id, tradeNo)
 }
 
 // 冻结余额
