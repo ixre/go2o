@@ -71,6 +71,9 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	if len([]rune(v.Name)) < 1 {
 		return member.ErrNilNickName
 	}
+	if v.Province == 0 || v.City == 0 || v.District == 0 || len(v.Address) == 0 {
+		return member.ErrAddress
+	}
 
 	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
 		return member.ErrEmailValidErr
@@ -145,7 +148,7 @@ func (p *profileManagerImpl) ProfileCompleted() bool {
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
 		conf := p._valRep.GetRegistry()
-		if conf.MemberImRequired && len(v.Im) == 0{
+		if conf.MemberImRequired && len(v.Im) == 0 {
 			return false
 		}
 	}
