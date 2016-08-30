@@ -63,6 +63,8 @@ type (
 		PresentIntegralNumOfRegister int
 		// 会员邀请关系级数
 		MemberReferLayer int
+		// 会员即时通讯是否必须
+		MemberImRequired bool
 		// 商品默认图片
 		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
