@@ -140,9 +140,16 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 
 func (p *profileManagerImpl) ProfileCompleted() bool {
 	v := p.GetProfile()
-	return len(v.Name) != 0 && len(v.Im) != 0 &&
+	r := len(v.Name) != 0 &&
 		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Sex != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
+	if r {
+		conf := p._valRep.GetRegistry()
+		if conf.MemberImRequired && len(v.Im) == 0{
+			return false
+		}
+	}
+	return r
 }
 
 // 获取资料
