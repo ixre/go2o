@@ -64,12 +64,18 @@ const (
 	KindPresentTransferIn = 5
 	// 转出
 	KindPresentTransferOut = 6
-	// 提现
-	KindPresentTakeOut = 7
+
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
 	KindPresentUnfreeze = 9
+
+	// 提现到余额
+	KindPresentTakeOutToBalance = 11
+	// 提现到银行卡(人工提现)
+	KindPresentTakeOutToBankCard = 12
+	// 提现到第三方
+	KindPresentTakeOutToThirdPart = 13
 )
 
 const (
@@ -84,7 +90,7 @@ const (
 	KindBalanceFlow = 4 // 账户流通
 
 	// 提现
-	KindBalanceApplyCash = 11
+	//KindBalanceApplyCash = 11
 	// 转账
 	KindBalanceTransfer = 12
 
@@ -151,6 +157,9 @@ type (
 		// 保存余额变动信息
 		SaveBalanceInfo(*BalanceInfo) (int, error)
 
+		// 获取赠送账户日志
+		GetPresentLog(id int) *PresentLog
+
 		// 充值,客服操作时,需提供操作人(relateUser)
 		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int) error
 
@@ -203,14 +212,14 @@ type (
 		// 完成退款
 		FinishBackBalance(id int, tradeNo string) error
 
-		// 请求提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestApplyCash(applyType int, title string, amount float32, commission float32) (int, string, error)
+		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
+		RequestTakeOut(applyType int, title string, amount float32, commission float32) (int, string, error)
 
 		// 确认提现
-		ConfirmApplyCash(id int, pass bool, remark string) error
+		ConfirmTakeOut(id int, pass bool, remark string) error
 
 		// 完成提现
-		FinishApplyCash(id int, tradeNo string) error
+		FinishTakeOut(id int, tradeNo string) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
@@ -262,9 +271,14 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int   `db:"rel_user"`
-		State      int   `db:"state"`
+		RelateUser int `db:"rel_user"`
+		// 状态
+		State int `db:"state"`
+		// 备注
+		Remark string `db:"remark"`
+		// 创建时间
 		CreateTime int64 `db:"create_time"`
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 
@@ -281,9 +295,14 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int   `db:"rel_user"`
-		State      int   `db:"state"`
+		RelateUser int `db:"rel_user"`
+		// 状态
+		State int `db:"state"`
+		// 备注
+		Remark string `db:"remark"`
+		// 创建时间
 		CreateTime int64 `db:"create_time"`
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 

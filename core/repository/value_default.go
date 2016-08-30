@@ -83,6 +83,9 @@ var (
 		TradeCsnFeeByOrder: 1, // 每笔订单最低收取1元
 		// 按交易金额收取手续费的百分百
 		TradeCsnPercentByFee: 0.01, // 1%收取
+		MinApplyAmount:       0.01,
+		// 单笔最高提现金额
+		MaxApplyAmount: 1000,
 	}
 
 	DefaultGlobMchSaleConf = valueobject.GlobMchSaleConf{

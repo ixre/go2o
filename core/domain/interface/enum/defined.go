@@ -18,10 +18,12 @@ const (
 	ReviewNotSet = 0
 	// 等待审核
 	ReviewAwaiting = 1
-	// 审核成功
-	ReviewPass = 2
 	// 审核失败
-	ReviewReject = 3
+	ReviewReject = 2
+	// 审核成功
+	ReviewPass = 3
+	// 已确认
+	ReviewConfirm = 4
 )
 
 // 商户结算模式

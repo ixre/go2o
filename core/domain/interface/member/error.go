@@ -143,6 +143,9 @@ var (
 	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_not_enough_amount", "金额不足")
 
+	ErrNotSupportTakeOutBusinessKind *domain.DomainError = domain.NewDomainError(
+		"err_not_support_take_out_business_kind", "不支持的提现业务类型")
+
 	ErrNotSupportChargeMethod *domain.DomainError = domain.NewDomainError(
 		"err_account_not_support_charge_method", "不支持的充值方式")
 

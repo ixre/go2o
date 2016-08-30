@@ -880,6 +880,7 @@ CREATE TABLE `mm_balance_log` (
   `csn_fee` float(8,2) NOT NULL COMMENT '手续费',
   `state` tinyint(1) NOT NULL COMMENT '状态，比如提现需要确认等',
   `rel_user` int(11) NOT NULL COMMENT '关联操作人员编号',
+  `remark` varchar(45) DEFAULT NULL,
   `create_time` int(11) NOT NULL,
   `update_time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
@@ -896,6 +897,7 @@ CREATE TABLE `mm_present_log` (
   `csn_fee` float(8,2) NOT NULL COMMENT '手续费',
   `state` tinyint(1) NOT NULL COMMENT '状态，比如提现需要确认等',
   `rel_user` int(11) NOT NULL COMMENT '关联操作人员编号',
+  `remark` varchar(45) DEFAULT NULL,
   `create_time` int(11) NOT NULL,
   `update_time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
