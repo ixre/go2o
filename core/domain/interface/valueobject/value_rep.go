@@ -115,6 +115,8 @@ type (
 		RegisterMode int
 		// 是否允许匿名注册
 		AnonymousRegistered bool
+		// 手机号码作为用户名
+		PhoneAsUser bool
 		// 是否需要填写手机
 		NeedPhone bool
 		// 必须绑定手机

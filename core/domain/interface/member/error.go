@@ -110,6 +110,9 @@ var (
 	ErrNilNickName *domain.DomainError = domain.NewDomainError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
+	ErrAddress *domain.DomainError = domain.NewDomainError(
+		"err_member_address", "地址不正确")
+
 	ErrEmailValidErr *domain.DomainError = domain.NewDomainError(
 		"err_member_email_valid_err", "邮箱不正确")
 
