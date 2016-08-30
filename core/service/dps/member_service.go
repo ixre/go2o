@@ -848,6 +848,11 @@ func (ms *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMembe
 	return ms._query.FilterMemberByUsrOrPhone(key)
 }
 
+// 根据用户名货手机获取会员
+func (ms *memberService) GetMemberByUserOrPhone(key string)*dto.SimpleMember{
+	return ms._query.GetMemberByUsrOrPhone(key)
+}
+
 // 会员推广排名
 func (ms *memberService) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {

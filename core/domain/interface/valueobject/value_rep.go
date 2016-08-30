@@ -55,6 +55,8 @@ type (
 		OrderReceiveAlertMessage string
 		// 会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
+		// 会员转账提示信息
+		MemberTransferAccountsAlertMessage string
 		// 会员实名提醒信息
 		MemberNotTrustedMessage string
 		// 注册后赠送积分数量

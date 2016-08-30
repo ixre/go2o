@@ -14,6 +14,7 @@ type (
 		Name  string `json:"name"`
 		User  string `json:"user"`
 		Phone string `json:"phone"`
+		Avatar string `json:"avatar"`
 	}
 
 	// 邀请会员数据

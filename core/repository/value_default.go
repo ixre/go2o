@@ -23,6 +23,9 @@ var (
 		// 会员中心首页模板文件名称
 		UCenterIndexTplFile:              "index.html",
 		MemberProfileNotCompletedMessage: "您的个人资料未完善,是否立即完善?",
+		// 会员转账提示信息
+		MemberTransferAccountsAlertMessage:"平台仅提供转账功能，请尽量当面交易以保证安全！",
+		// 会员未实名认证提示信息
 		MemberNotTrustedMessage:          "您尚未实名认证!",
 		// 注册后赠送积分数量
 		PresentIntegralNumOfRegister: 0,
