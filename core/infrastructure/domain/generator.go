@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/jsix/gof/crypto"
+	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"math/rand"
 	"strconv"
@@ -87,4 +88,15 @@ func GenerateRandomPwd(n int) string {
 // 创建随机数字密码
 func GenerateRandomIntPwd(n int) string {
 	return strconv.Itoa(util.RandInt(n))
+}
+
+// 生成不重复的交易号(通过存储)
+func NewTradeNoFromStorage(s storage.Interface, prefix string) string {
+	for {
+		no := crypto.Md5([]byte(NewTradeNo(0) + GenerateRandomIntPwd(10)))
+		if !s.Exists(prefix + no) {
+			return no
+		}
+	}
+	return ""
 }
