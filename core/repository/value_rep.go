@@ -8,11 +8,14 @@
  */
 package repository
 
+//todo: 因配置缓存与本地存储问题,子系统不能分布式部署。
+
 import (
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
@@ -21,9 +24,13 @@ import (
 )
 
 var _ valueobject.IValueRep = new(valueRep)
+var (
+	valueRepCacheKey = "go2o:rep:value-rep:cache"
+)
 
 type valueRep struct {
 	db.Connector
+	storage          storage.Interface
 	_wxConf          *valueobject.WxApiConfig
 	_wxGob           *util.GobFile
 	_rpConf          *valueobject.RegisterPerm
@@ -42,9 +49,10 @@ type valueRep struct {
 	_areaMux         sync.Mutex
 }
 
-func NewValueRep(conn db.Connector) valueobject.IValueRep {
+func NewValueRep(conn db.Connector, storage storage.Interface) valueobject.IValueRep {
 	return &valueRep{
 		Connector: conn,
+		storage:   storage,
 		_rstGob:   util.NewGobFile("conf/core/registry"),
 		_wxGob:    util.NewGobFile("conf/core/wx_api"),
 		_rpGob:    util.NewGobFile("conf/core/register_perm"),
@@ -55,8 +63,27 @@ func NewValueRep(conn db.Connector) valueobject.IValueRep {
 	}
 }
 
+func (vp *valueRep) checkReload() error {
+	i, err := vp.storage.GetInt(valueRepCacheKey)
+	if i == 0 || err != nil {
+		vp._wxConf = nil
+		vp._numConf = nil
+		vp._rpConf = nil
+		vp._smsConf = nil
+		vp._globMchConf = nil
+		vp._globMchSaleConf = nil
+		vp._globRegistry = nil
+	}
+	return vp.storage.Set(valueRepCacheKey, 1)
+}
+
+func (vp *valueRep) signReload() {
+	vp.storage.Set(valueRepCacheKey, 0)
+}
+
 // 获取微信接口配置
 func (vp *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
+	vp.checkReload()
 	if vp._wxConf == nil {
 		vp._wxConf = &valueobject.WxApiConfig{}
 		vp._wxGob.Unmarshal(vp._wxConf)
@@ -67,6 +94,7 @@ func (vp *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
 // 保存微信接口配置
 func (vp *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	if v != nil {
+		defer vp.signReload()
 		//todo: 检查证书文件是否存在
 		vp._wxConf = v
 		return vp._wxGob.Save(vp._wxConf)
@@ -76,6 +104,7 @@ func (vp *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 
 // 获取注册权限
 func (vp *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
+	vp.checkReload()
 	if vp._rpConf == nil {
 		v := defaultRegisterPerm
 		vp._rpConf = &v
@@ -87,6 +116,7 @@ func (vp *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
 // 保存注册权限
 func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
+		defer vp.signReload()
 		vp._rpConf = v
 		return vp._rpGob.Save(vp._rpConf)
 	}
@@ -95,6 +125,7 @@ func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 
 // 获取全局系统销售设置
 func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
+	vp.checkReload()
 	if vp._numConf == nil {
 		v := DefaultGlobNumberConf
 		vp._numConf = &v
@@ -106,6 +137,7 @@ func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
 // 保存全局系统销售设置
 func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
+		defer vp.signReload()
 		vp._numConf = v
 		return vp._numGob.Save(vp._numConf)
 	}
@@ -114,6 +146,7 @@ func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 
 // 获取平台设置
 func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
+	vp.checkReload()
 	if vp._globMchConf == nil {
 		v := defaultPlatformConf
 		vp._globMchConf = &v
@@ -125,6 +158,7 @@ func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
 // 保存平台设置
 func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
+		defer vp.signReload()
 		vp._globMchConf = v
 		return vp._mchGob.Save(vp._globMchConf)
 	}
@@ -133,6 +167,7 @@ func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 
 // 获取数据存储
 func (v *valueRep) GetRegistry() valueobject.Registry {
+	v.checkReload()
 	if v._globRegistry == nil {
 		v2 := DefaultRegistry
 		v._globRegistry = &v2
@@ -144,6 +179,7 @@ func (v *valueRep) GetRegistry() valueobject.Registry {
 // 保存数据存储
 func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
 	if r != nil {
+		defer v.signReload()
 		v._globRegistry = r
 		return v._rstGob.Save(v._globRegistry)
 	}
@@ -152,6 +188,7 @@ func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
 
 // 获取全局商户销售设置
 func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
+	vp.checkReload()
 	if vp._globMchSaleConf == nil {
 		v := DefaultGlobMchSaleConf
 		vp._globMchSaleConf = &v
@@ -163,6 +200,7 @@ func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 // 保存全局商户销售设置
 func (vp *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	if v != nil {
+		defer vp.signReload()
 		vp._globMchSaleConf = v
 		return vp._mscGob.Save(vp._globMchSaleConf)
 	}
@@ -171,6 +209,7 @@ func (vp *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 
 // 获取短信设置
 func (vp *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
+	vp.checkReload()
 	if vp._smsConf == nil {
 		vp._smsConf = defaultSmsConf
 		vp._smsGob.Unmarshal(&vp._smsConf)

@@ -79,7 +79,7 @@ func Init(ctx gof.App) {
 	/** Repository **/
 
 	goodsRep := repository.NewGoodsRep(db)
-	valRep := repository.NewValueRep(db)
+	valRep := repository.NewValueRep(db, sto)
 	userRep := repository.NewUserRep(db)
 	notifyRep := repository.NewNotifyRep(db)
 	mssRep := repository.NewMssRep(db, notifyRep, valRep)

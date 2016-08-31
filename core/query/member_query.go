@@ -171,6 +171,15 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 	return nil
 }
 
+// 根据手机获取会员编号
+func (m *MemberQuery) GetMemberIdByPhone(phone string) int {
+	id := 0
+	m.ExecScalar(`SELECT id FROM mm_member
+        INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
+        WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)
+	return id
+}
+
 // 会员推广排名
 func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
