@@ -48,7 +48,7 @@ func (l *MemberManagerImpl) RegisterPerm(invitation bool) error {
 		return member.ErrRegOff
 	}
 	if conf.RegisterMode == member.RegisterModeMustInvitation && !invitation {
-		return member.ErrRegMustInvitation
+		return member.ErrRegMissingInvitationCode
 	}
 	if conf.RegisterMode == member.RegisterModeMustRedirect && invitation {
 		return member.ErrRegOffInvitation
@@ -85,20 +85,22 @@ func (l *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 }
 
 // 检查注册信息是否正确
-func (l *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
+func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int, err error) {
 	perm := l._valRep.GetRegisterPerm()
 
-	//验证用户名
+	//验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.Usr = strings.TrimSpace(v.Usr)
-	if len(v.Usr) < 6 {
-		return 0, member.ErrUsrLength
-	}
-	if !userRegex.MatchString(v.Usr) {
-		return 0, member.ErrUsrValidErr
-	}
-	if l._rep.CheckUsrExist(v.Usr, 0) {
-		return 0, member.ErrUsrExist
+	if v.Usr != "" || !perm.PhoneAsUser {
+		if len(v.Usr) < 6 {
+			return 0, member.ErrUsrLength
+		}
+		if !userRegex.MatchString(v.Usr) {
+			return 0, member.ErrUsrValidErr
+		}
+		if l._rep.CheckUsrExist(v.Usr, 0) {
+			return 0, member.ErrUsrExist
+		}
 	}
 
 	//验证密码
@@ -122,6 +124,14 @@ func (l *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
 		}
 	}
 
+	// 使用手机号作为用户名
+	if perm.PhoneAsUser && v.Usr == "" {
+		if l._rep.CheckUsrExist(pro.Phone, 0) {
+			return 0, member.ErrPhoneHasBind
+		}
+		v.Usr = pro.Phone
+	}
+
 	//验证IM
 	pro.Im = strings.TrimSpace(pro.Im)
 	if perm.NeedIm && len(pro.Im) == 0 {
@@ -134,6 +144,17 @@ func (l *MemberManagerImpl) CheckPostedRegisterInfo(v *member.Member,
 	if err == nil {
 		invitationId, err = l.checkInvitationCode(invitationCode)
 	}
+
+	pro.Name = strings.TrimSpace(pro.Name)
+	pro.Avatar = strings.TrimSpace(pro.Avatar)
+	if len(pro.Name) == 0 {
+		//如果未设置昵称,则默认为用户名
+		pro.Name = v.Usr
+	}
+	if len(pro.Avatar) == 0 {
+		pro.Avatar = "res/no_avatar.gif"
+	}
+
 	return invitationId, err
 }
 

@@ -29,7 +29,7 @@ type (
 		CheckPhoneBind(phone string, memberId int) error
 
 		// 检查注册信息是否正确
-		CheckPostedRegisterInfo(v *Member, pro *Profile,
+		PrepareRegister(v *Member, pro *Profile,
 			invitationCode string) (invitationId int, err error)
 
 		// IDocManager()IDocManager

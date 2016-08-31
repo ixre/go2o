@@ -62,28 +62,37 @@ func (p *profileManagerImpl) phoneIsExist(phone string) bool {
 	return p._rep.CheckPhoneBind(phone, p._memberId)
 }
 
-// 验证数据
+// 验证数据,用v.updateTime > 0 判断是否为新创建用户
 func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Name = strings.TrimSpace(v.Name)
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
 	v.Phone = strings.TrimSpace(v.Phone)
 
-	if len([]rune(v.Name)) < 1 {
+	if len([]rune(v.Name)) < 1 && v.UpdateTime > 0 {
 		return member.ErrNilNickName
 	}
-	if v.Province == 0 || v.City == 0 || v.District == 0 || len(v.Address) == 0 {
+	if (v.Province == 0 || v.City == 0 || v.District == 0 ||
+		len(v.Address) == 0) && v.UpdateTime > 0 {
 		return member.ErrAddress
 	}
 
 	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
 		return member.ErrEmailValidErr
 	}
+
 	if len(v.Phone) != 0 && !phoneRegex.MatchString(v.Phone) {
 		return member.ErrPhoneValidErr
 	}
 
 	if len(v.Phone) > 0 && p.phoneIsExist(v.Phone) {
 		return member.ErrPhoneHasBind
+	}
+
+	if v.UpdateTime > 0 {
+		conf := p._valRep.GetRegistry()
+		if conf.MemberImRequired && len(v.Im) == 0 {
+			return member.ErrMissingIM
+		}
 	}
 
 	//if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {

@@ -276,10 +276,6 @@ func (m *memberImpl) Save() (int, error) {
 	if m._value.Id > 0 {
 		return m._rep.SaveMember(m._value)
 	}
-
-	if err := validUsr(m._value.Usr); err != nil {
-		return m.GetAggregateRootId(), err
-	}
 	return m.create(m._value, nil)
 }
 
@@ -295,23 +291,19 @@ func (m *memberImpl) Unlock() error {
 
 // 创建会员
 func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) {
-	//todo: 获取推荐人编号
-	//todo: 检测是否有注册权限
-	//if err := m._manager.RegisterPerm(m._relation.RefereesId);err != nil{
-	//	return -1,err
-	//}
-	if m.usrIsExist(v.Usr) {
-		return -1, member.ErrUsrExist
+	if err := validUsr(m._value.Usr); err != nil {
+		return 0, err
 	}
-
+	if m.usrIsExist(v.Usr) {
+		return 0, member.ErrUsrExist
+	}
 	t := time.Now().Unix()
 	v.State = 1
 	v.RegTime = t
 	v.LastLoginTime = t
 	v.Level = 1
-	v.Exp = 1
-	v.DynamicToken = v.Pwd
 	v.Exp = 0
+	v.DynamicToken = v.Pwd
 	if len(v.RegFrom) == 0 {
 		v.RegFrom = "API-INTERNAL"
 	}

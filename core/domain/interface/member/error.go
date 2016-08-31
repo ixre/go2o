@@ -13,17 +13,17 @@ import (
 )
 
 var (
-	ErrInvitationCode *domain.DomainError = domain.NewDomainError(
-		"member_err_invation_code", "CODE:1011,邀请码错误")
-
 	ErrRegOff *domain.DomainError = domain.NewDomainError(
-		"err_reg_off", "CODE:1011,系统未开放注册")
+		"err_reg_off", "CODE:1010,系统暂停注册")
 
-	ErrRegMustInvitation *domain.DomainError = domain.NewDomainError(
-		"err_reg_must_invitation", "CODE:1011,系统只允许邀请注册")
+	ErrRegMissingInvitationCode *domain.DomainError = domain.NewDomainError(
+		"err_reg_must_invitation", "CODE:1011,请填写邀请码")
 
 	ErrRegOffInvitation *domain.DomainError = domain.NewDomainError(
-		"err_reg_off_invitation", "CODE:1011,系统关闭邀请注册")
+		"err_reg_off_invitation", "CODE:1012,系统关闭邀请注册")
+
+	ErrInvitationCode *domain.DomainError = domain.NewDomainError(
+		"member_err_invation_code", "CODE:1013,邀请码错误")
 
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
@@ -120,7 +120,7 @@ var (
 		"err_member_phone_valid_err", "手机号码不正确")
 
 	ErrPhoneHasBind *domain.DomainError = domain.NewDomainError(
-		"err_member_phone_has_bind", "手机号码已经绑定")
+		"err_member_phone_has_bind", "手机号码已经被使用")
 
 	ErrMissingPhone *domain.DomainError = domain.NewDomainError(
 		"err_member_missing_phone", "请填写手机号码")

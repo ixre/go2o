@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -251,21 +252,17 @@ func (ms *memberService) updateMember(v *member.Member) (int, error) {
 // 注册会员
 func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 	pro *member.Profile, cardId string, invitationCode string) (int, error) {
-	invitationId, err := ms._rep.GetManager().CheckPostedRegisterInfo(v, pro, invitationCode)
+	invitationId, err := ms._rep.GetManager().PrepareRegister(v, pro, invitationCode)
 	if err == nil {
 		m := ms._rep.CreateMember(v) //创建会员
 		id, err := m.Save()
+		log.Println("--- mlog", err)
 		if err == nil {
 			pro.Sex = 1
 			pro.MemberId = id
-			if len(pro.Name) == 0 {
-				//如果未设置昵称,则默认为用户名
-				pro.Name = "用户" + v.Usr
-			}
-			if len(pro.Avatar) == 0 {
-				pro.Avatar = "res/no_avatar.gif"
-			}
 			err = m.Profile().SaveProfile(pro)
+
+			log.Println("--- prolog", err)
 			if err == nil {
 				// 保存关联信息
 				rl := m.GetRelation()
@@ -870,6 +867,11 @@ func (ms *memberService) FilterMemberByUsrOrPhone(key string) []*dto.SimpleMembe
 // 根据用户名货手机获取会员
 func (ms *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 	return ms._query.GetMemberByUsrOrPhone(key)
+}
+
+// 根据手机获取会员编号
+func (ms *memberService) GetMemberIdByPhone(phone string) int {
+	return ms._query.GetMemberIdByPhone(phone)
 }
 
 // 会员推广排名
