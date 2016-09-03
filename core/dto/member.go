@@ -29,7 +29,6 @@ type (
 		Avatar string
 		// 昵称
 		NickName string
-		//RealName string
 		// 电话
 		Phone string
 		// 即时通讯

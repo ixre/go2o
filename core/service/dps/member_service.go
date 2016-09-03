@@ -259,16 +259,16 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 			pro.Sex = 1
 			pro.MemberId = id
 			err = m.Profile().SaveProfile(pro)
-
 			if err == nil {
 				// 保存关联信息
 				rl := m.GetRelation()
 				rl.RefereesId = invitationId
 				rl.RegisterMerchantId = merchantId
 				rl.CardId = cardId
-				return id, m.SaveRelation(rl)
+				err = m.SaveRelation(rl)
 			}
 		}
+		return id, err
 	}
 	return -1, err
 }

@@ -110,5 +110,8 @@ func (p *platformService) GetAreaNames(id []int) []string {
 
 // 获取省市区字符串
 func (p *platformService) GetAreaString(province, city, district int) string {
+	if province == 0 || city == 0 || district == 0 {
+		return ""
+	}
 	return p._rep.GetAreaString(province, city, district)
 }
