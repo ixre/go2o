@@ -114,6 +114,7 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
+
 	val.State = order.StatAwaitingPayment
 	o := t.CreateOrder(val)
 	err = o.RequireCart(c)
@@ -249,21 +250,17 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 	if err != nil {
 		return order, py, err
 	}
+
 	orderNo, err := order.Submit()
 	tradeNo := orderNo
 	if err == nil {
 		cv := c.GetValue()
 		cv.PaymentOpt = enum.PaymentOnlinePay
 		pyUpdate := false
-		//todo: 设置配送门店
-		//err = order.SetShop(cv.ShopId)
-		//err = order.SetDeliver(cv.DeliverId)
-
 		// 设置支付方式
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
 			return order, py, err
 		}
-
 		// 处理支付单
 		py.BindOrder(order.GetAggregateRootId(), tradeNo)
 		if _, err = py.Save(); err != nil {
@@ -273,13 +270,11 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 			domain.HandleError(err, "domain")
 			return order, py, err
 		}
-
-		// 使用余额支付
+		// 使用余额抵扣
 		if useBalanceDiscount {
 			err = py.BalanceDiscount("")
 			pyUpdate = true
 		}
-
 		// 如果已支付完成,则将订单设为支付完成
 		if v := py.GetValue(); v.FinalFee == 0 &&
 			v.State == payment.StateFinishPayment {
@@ -287,7 +282,6 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 				sub.PaymentFinishByOnlineTrade()
 			}
 		}
-
 		// 更新支付单
 		if err == nil && pyUpdate {
 			_, err = py.Save()

@@ -802,6 +802,16 @@ func (ms *memberService) UnfreezePresent(memberId int, title string,
 	return m.GetAccount().UnfreezePresent(title, tradeNo, amount, referId)
 }
 
+// 将冻结金额标记为失效
+func (ms *memberService) OutFreeze(memberId int, accountKind int, amount float32,
+	remark string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.GetAccount().OutFreeze(accountKind, amount, remark)
+}
+
 // 转账余额到其他账户
 func (ms *memberService) TransferAccounts(accountKind int, fromMember int,
 	toMember int, amount float32, csnRate float32, remark string) error {
