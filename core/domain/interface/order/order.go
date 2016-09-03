@@ -156,6 +156,9 @@ var (
 	ErrOrderNotPickUp *domain.DomainError = domain.NewDomainError(
 		"err_order_not_pick_up", "请等待商品备货")
 
+	ErrNoAddress *domain.DomainError = domain.NewDomainError(
+		"err_order_no_address", "请选择收货地址")
+
 	ErrOrderShipped *domain.DomainError = domain.NewDomainError(
 		"err_order_shipped", "订单已经发货")
 

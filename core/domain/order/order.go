@@ -28,6 +28,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -191,16 +192,29 @@ func (o *orderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee floa
 
 // 设置配送地址
 func (o *orderImpl) SetDeliver(deliverAddressId int) error {
-	d := o._memberRep.GetSingleDeliverAddress(o._value.BuyerId, deliverAddressId)
-	if d != nil {
-		v := o._value
-		v.ShippingAddress = d.Address
-		v.ConsigneePerson = d.RealName
-		v.ConsigneePhone = d.Phone
-		v.ShippingTime = time.Now().Add(-time.Hour).Unix()
-		return nil
+	return o.setAddress(deliverAddressId)
+}
+
+// 设置配送地址
+func (o *orderImpl) setAddress(addressId int) error {
+	if addressId <= 0 {
+		return order.ErrNoAddress
 	}
-	return member.ErrNoSuchDeliverAddress
+	buyer := o.GetBuyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	addr := buyer.Profile().GetDeliver(addressId)
+	if addr == nil {
+		return order.ErrNoAddress
+	}
+	d := addr.GetValue()
+	v := o._value
+	v.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
+	v.ConsigneePerson = d.RealName
+	v.ConsigneePhone = d.Phone
+	v.ShippingTime = time.Now().Add(-time.Hour).Unix()
+	return nil
 }
 
 // 获取购买的会员
@@ -378,12 +392,18 @@ func (o *orderImpl) Submit() (string, error) {
 	if o.GetAggregateRootId() != 0 {
 		return "", errors.New("订单不允许重复提交")
 	}
-	if err := o.checkCart(); err != nil {
+	err := o.checkCart()
+	if err != nil {
 		return "", err
 	}
 	buyer := o.GetBuyer()
 	if buyer == nil {
 		return "", member.ErrNoSuchMember
+	}
+	cv := o._cart.GetValue()
+	err = o.setAddress(cv.DeliverId)
+	if err != nil {
+		return "", err
 	}
 
 	v := o._value

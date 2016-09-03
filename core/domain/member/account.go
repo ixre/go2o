@@ -688,6 +688,76 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 	return member.ErrNotSupportTakeOutBusinessKind
 }
 
+// 将冻结金额标记为失效
+func (a *accountImpl) OutFreeze(accountKind int, amount float32, remark string) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	switch accountKind {
+	case member.AccountBalance:
+		return a.outFreezeBalance(amount, remark)
+	case member.AccountPresent:
+		return a.outFreezePresent(amount, remark)
+	}
+	return nil
+}
+
+func (a *accountImpl) outFreezeBalance(amount float32, remark string) error {
+	if a._value.FreezeBalance < amount {
+		return member.ErrIncorrectAmount
+	}
+	unix := time.Now().Unix()
+	a._value.FreezeBalance -= amount
+	a._value.OutOfBalance += amount
+	a._value.UpdateTime = unix
+	l := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceOut,
+		Title:        "过期失效",
+		OuterNo:      "",
+		Amount:       amount,
+		CsnFee:       0,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.saveBalanceLog(l)
+	if err == nil {
+		_, err = a.Save()
+	}
+	return err
+}
+
+func (a *accountImpl) outFreezePresent(amount float32, remark string) error {
+	if a._value.FreezePresent < amount {
+		return member.ErrIncorrectAmount
+	}
+	unix := time.Now().Unix()
+	a._value.FreezePresent -= amount
+	a._value.OutOfPresent += amount
+	a._value.UpdateTime = unix
+	l := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindPresentOut,
+		Title:        "过期失效",
+		OuterNo:      "",
+		Amount:       amount,
+		CsnFee:       0,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.savePresentLog(l)
+	if err == nil {
+		_, err = a.Save()
+	}
+	return err
+}
+
 // 获取会员名称
 func (a *accountImpl) getMemberName(m member.IMember) string {
 	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&

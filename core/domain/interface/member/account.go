@@ -43,6 +43,8 @@ const (
 	KindBalanceTransferIn = 5
 	// 转出
 	KindBalanceTransferOut = 6
+	// 失效
+	KindBalanceOut = 7
 	// 冻结
 	KindBalanceFreeze = 8
 	// 解冻
@@ -63,6 +65,8 @@ const (
 	KindPresentTransferIn = 5
 	// 转出
 	KindPresentTransferOut = 6
+	// 失效
+	KindPresentOut = 7
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
@@ -222,6 +226,9 @@ type (
 
 		// 完成提现
 		FinishTakeOut(id int, tradeNo string) error
+
+		// 将冻结金额标记为失效
+		OutFreeze(accountKind int, amount float32, remark string) error
 
 		// 转账
 		TransferAccounts(accountKind int, toMember int, amount float32,
