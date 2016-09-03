@@ -124,6 +124,11 @@ func (m *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant
 	return nil
 }
 
+// 删除会员的商户申请资料
+func (m *merchantService) RemoveMerchantSignUp(memberId int) error {
+	return m._mchRep.GetManager().RemoveSignUp(memberId)
+}
+
 // 验证用户密码并返回编号
 func (m *merchantService) Verify(usr, pwd string) int {
 	usr = strings.ToLower(strings.TrimSpace(usr))
