@@ -44,6 +44,9 @@ var (
 	ErrNoSuchSignUpInfo *domain.DomainError = domain.NewDomainError(
 		"err_no_such_sign_up_info", "商户申请信息不存在")
 
+	ErrRequireRejectRemark *domain.DomainError = domain.NewDomainError(
+		"err_mch_require_remark", "请填写退回的原因")
+
 	ErrMissingCompanyName *domain.DomainError = domain.NewDomainError(
 		"err_mch_missing_company_name", "请填写公司名称")
 

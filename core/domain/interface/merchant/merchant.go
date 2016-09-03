@@ -131,6 +131,9 @@ type (
 
 		// 获取会员关联的商户
 		GetMerchantByMemberId(memberId int) IMerchant
+
+		// 删除会员的商户申请资料
+		RemoveSignUp(memberId int) error
 	}
 
 	// 商户申请信息

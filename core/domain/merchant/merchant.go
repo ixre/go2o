@@ -55,6 +55,11 @@ func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int {
 	return m._rep.GetMemberFromSignUpToken(token)
 }
 
+// 删除会员的商户申请资料
+func (m *merchantManagerImpl) RemoveSignUp(memberId int) error {
+	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id=?", memberId)
+	return err
+}
 func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int, error) {
 	v.UpdateTime = time.Now().Unix()
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
@@ -116,13 +121,17 @@ func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) 
 	}
 	if pass {
 		v.Reviewed = enum.ReviewPass
+		v.Remark = ""
 		if err = m.createNewMerchant(v); err != nil {
 			return err
 		}
 	} else {
 		v.Reviewed = enum.ReviewReject
+		v.Remark = remark
+		if strings.TrimSpace(v.Remark) == "" {
+			return merchant.ErrRequireRejectRemark
+		}
 	}
-	v.Remark = remark
 	_, err = m.saveSignUpInfo(v)
 	return err
 }
