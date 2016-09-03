@@ -251,6 +251,14 @@ func (m *memberImpl) GetRelation() *member.Relation {
 	return m._relation
 }
 
+// 保存关系
+func (m *memberImpl) SaveRelation(r *member.Relation) error {
+	m._relation = r
+	m._relation.MemberId = m._value.Id
+	m.updateReferStr(m._relation)
+	return m._rep.SaveRelation(m._relation)
+}
+
 // 更换用户名
 func (m *memberImpl) ChangeUsr(usr string) error {
 	if usr == m._value.Usr {
@@ -362,48 +370,41 @@ func (m *memberImpl) getReferArr(memberId int, level int) []int {
 
 // 强制更新邀请关系
 func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
-	level := m._valRep.GetRegistry().MemberReferLayer
-	arr := m.getReferArr(m.GetAggregateRootId(), level)
 	// 无邀请关系
-	if len(arr) == 0 || arr[0] <= 0 {
+	if r.RefereesId == 0 {
 		r.ReferStr = ""
 		return
 	}
-	// 有邀请关系
-	buf := bytes.NewBuffer([]byte("{"))
-	for i, v := range arr {
-		if v == 0 {
-			continue
-		}
-		if buf.Len() > 1 {
-			buf.WriteString(",")
-		}
-		buf.WriteString("'r")
-		buf.WriteString(strconv.Itoa(i))
-		buf.WriteString("':")
-		buf.WriteString(strconv.Itoa(v))
-	}
-	buf.WriteString("}")
-	r.ReferStr = buf.String()
+	level := m._valRep.GetRegistry().MemberReferLayer
+	arr := m.getReferArr(m.GetAggregateRootId(), level)
+	if len(arr) > 0 {
 
+		arr[0] = r.RefereesId
+		// 有邀请关系
+		buf := bytes.NewBuffer([]byte("{"))
+		for i, v := range arr {
+			if v == 0 {
+				continue
+			}
+			if buf.Len() > 1 {
+				buf.WriteString(",")
+			}
+			buf.WriteString("'r")
+			buf.WriteString(strconv.Itoa(i))
+			buf.WriteString("':")
+			buf.WriteString(strconv.Itoa(v))
+		}
+		buf.WriteString("}")
+		r.ReferStr = buf.String()
+	}
 }
 
 // 更新邀请关系
 func (m *memberImpl) updateReferStr(r *member.Relation) {
 	prefix := fmt.Sprintf("{'r0':%d,", r.RefereesId)
-	//m.forceUpdateReferStr(r)
-	//return
 	if !strings.HasPrefix(r.ReferStr, prefix) {
 		m.forceUpdateReferStr(r)
 	}
-}
-
-// 保存关系
-func (m *memberImpl) SaveRelation(r *member.Relation) error {
-	m._relation = r
-	m._relation.MemberId = m._value.Id
-	m.updateReferStr(m._relation)
-	return m._rep.SaveRelation(m._relation)
 }
 
 // 更改邀请人
