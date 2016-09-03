@@ -143,8 +143,8 @@ var (
 	ErrNotSupportPaymentAccountType *domain.DomainError = domain.NewDomainError(
 		"err_account_not_support_payment", "不支持支付的账户类型")
 
-	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
-		"err_not_enough_amount", "金额不足")
+	ErrAccountNotEnoughAmount *domain.DomainError = domain.NewDomainError(
+		"err_not_enough_amount", "账户余额不足")
 
 	ErrNotSupportTakeOutBusinessKind *domain.DomainError = domain.NewDomainError(
 		"err_not_support_take_out_business_kind", "不支持的提现业务类型")

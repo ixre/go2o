@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -256,13 +255,11 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 	if err == nil {
 		m := ms._rep.CreateMember(v) //创建会员
 		id, err := m.Save()
-		log.Println("--- mlog", err)
 		if err == nil {
 			pro.Sex = 1
 			pro.MemberId = id
 			err = m.Profile().SaveProfile(pro)
 
-			log.Println("--- prolog", err)
 			if err == nil {
 				// 保存关联信息
 				rl := m.GetRelation()
@@ -594,6 +591,10 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int) *member.Balanc
 // 充值
 func (ms *memberService) Charge(memberId, chargeType int, title,
 	outerNo string, amount float32, relateUser int) error {
+	//todo: ???
+	if relateUser == 0 {
+		relateUser = 1
+	}
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -803,15 +804,13 @@ func (ms *memberService) UnfreezePresent(memberId int, title string,
 
 // 转账余额到其他账户
 func (ms *memberService) TransferAccounts(accountKind int, fromMember int,
-	toMember int, amount float32) error {
+	toMember int, amount float32, csnRate float32, remark string) error {
 	m := ms._rep.GetMember(fromMember)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-
-	//todo: ???
-	//acc := m.GetAccount()
-	return nil
+	return m.GetAccount().TransferAccounts(accountKind, toMember,
+		amount, csnRate, remark)
 }
 
 // 转账余额到其他账户

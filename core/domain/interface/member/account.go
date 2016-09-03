@@ -35,20 +35,23 @@ const (
 	KindBalanceCharge = 1
 	// 系统充值
 	KindBalanceSystemCharge = 2
-	// 客服充值
-	KindBalanceServiceCharge = 3
-	// 购物消费
-	KindBalanceShopping = 4
 	// 支付抵扣
-	KindBalanceDiscount = 5
-	// 客服扣件
-	KindBalanceServiceDiscount = 6
+	KindBalanceDiscount = 3
 	// 退款
-	KindBalanceRefund = 7
+	KindBalanceRefund = 4
+	// 转入
+	KindBalanceTransferIn = 5
+	// 转出
+	KindBalanceTransferOut = 6
 	// 冻结
 	KindBalanceFreeze = 8
 	// 解冻
 	KindBalanceUnfreeze = 9
+
+	// 客服充值
+	KindBalanceServiceCharge = 15
+	// 客服扣减
+	KindBalanceServiceDiscount = 16
 )
 
 const (
@@ -56,26 +59,25 @@ const (
 	KindPresentAdd = 1
 	// 抵扣奖金
 	KindPresentDiscount = 2
-	// 客服赠送
-	KindPresentServiceAdd = 3
-	// 客服扣减
-	KindPresentServiceDiscount = 4
 	// 转入
 	KindPresentTransferIn = 5
 	// 转出
 	KindPresentTransferOut = 6
-
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
 	KindPresentUnfreeze = 9
-
 	// 提现到余额
 	KindPresentTakeOutToBalance = 11
 	// 提现到银行卡(人工提现)
 	KindPresentTakeOutToBankCard = 12
 	// 提现到第三方
 	KindPresentTakeOutToThirdPart = 13
+
+	// 客服赠送
+	KindPresentServiceAdd = 15
+	// 客服扣减
+	KindPresentServiceDiscount = 16
 )
 
 const (
@@ -220,6 +222,14 @@ type (
 
 		// 完成提现
 		FinishTakeOut(id int, tradeNo string) error
+
+		// 转账
+		TransferAccounts(accountKind int, toMember int, amount float32,
+			csnRate float32, remark string) error
+
+		// 接收转账
+		ReceiveTransfer(accountKind int, fromMember int, tradeNo string,
+			amount float32, remark string) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
