@@ -162,7 +162,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 	kind := member.KindBalanceDiscount
 	if relateUser > 0 {
@@ -195,7 +195,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "资金冻结"
@@ -228,7 +228,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 		return member.ErrIncorrectAmount
 	}
 	if a._value.FreezeBalance < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "资金解结"
@@ -308,7 +308,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 		return member.ErrIncorrectAmount
 	}
 	if mustLargeZero && a._value.PresentBalance < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 
 	if len(title) == 0 {
@@ -346,7 +346,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 		return member.ErrIncorrectAmount
 	}
 	if a._value.PresentBalance < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "(赠送)资金冻结"
@@ -379,7 +379,7 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 		return member.ErrIncorrectAmount
 	}
 	if a._value.FreezePresent < amount {
-		return member.ErrNotEnoughAmount
+		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
 		title = "(赠送)资金解冻"
@@ -688,13 +688,177 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 	return member.ErrNotSupportTakeOutBusinessKind
 }
 
+// 获取会员名称
+func (a *accountImpl) getMemberName(m member.IMember) string {
+	if tr := m.Profile().GetTrustedInfo(); tr.RealName != "" &&
+		tr.Reviewed == enum.ReviewPass {
+		return tr.RealName
+	} else {
+		return m.GetValue().Usr
+	}
+}
+
+// 转账
+func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount float32,
+	csnRate float32, remark string) error {
+	if amount <= 0 {
+		return member.ErrIncorrectAmount
+	}
+	tm := a._rep.GetMember(toMember)
+	if tm == nil {
+		return member.ErrNoSuchMember
+	}
+	tradeNo := domain.NewTradeNo(00000)
+	csnFee := amount * csnRate
+
+	switch accountKind {
+	case member.AccountPresent:
+		return a.transferPresent(tm, tradeNo, amount, csnFee, remark)
+	case member.AccountBalance:
+		return a.transferBalance(tm, tradeNo, amount, csnFee, remark)
+	}
+	return nil
+}
+
+func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
+	amount, csnFee float32, remark string) error {
+	if a._value.Balance < amount+csnFee {
+		return member.ErrAccountNotEnoughAmount
+	}
+	unix := time.Now().Unix()
+	// 扣款
+	toName := a.getMemberName(tm)
+	l := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceTransferOut,
+		Title:        "转账给" + toName,
+		OuterNo:      tradeNo,
+		Amount:       -amount,
+		CsnFee:       csnFee,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.saveBalanceLog(l)
+	if err == nil {
+		a._value.Balance -= amount + csnFee
+		a._value.UpdateTime = unix
+		_, err = a.Save()
+		if err == nil {
+			err = tm.GetAccount().ReceiveTransfer(member.AccountBalance,
+				a.GetDomainId(), tradeNo, amount, remark)
+		}
+	}
+	return err
+}
+
+func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
+	amount, csnFee float32, remark string) error {
+	if a._value.PresentBalance < amount+csnFee {
+		return member.ErrAccountNotEnoughAmount
+	}
+	unix := time.Now().Unix()
+	// 扣款
+	toName := a.getMemberName(tm)
+	l := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindPresentTransferOut,
+		Title:        "转账给" + toName,
+		OuterNo:      tradeNo,
+		Amount:       -amount,
+		CsnFee:       csnFee,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.savePresentLog(l)
+	if err == nil {
+		a._value.PresentBalance -= amount + csnFee
+		a._value.UpdateTime = unix
+		_, err = a.Save()
+		if err == nil {
+			err = tm.GetAccount().ReceiveTransfer(member.AccountPresent,
+				a.GetDomainId(), tradeNo, amount, remark)
+		}
+	}
+	return err
+}
+
+// 接收转账
+func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int,
+	tradeNo string, amount float32, remark string) error {
+	switch accountKind {
+	case member.AccountPresent:
+		return a.receivePresentTransfer(fromMember, tradeNo, amount, remark)
+	case member.AccountBalance:
+		return a.receiveBalanceTransfer(fromMember, tradeNo, amount, remark)
+	}
+	return member.ErrNotSupportTransfer
+}
+
+func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
+	amount float32, remark string) error {
+	fromName := a.getMemberName(a._rep.GetMember(a.GetDomainId()))
+	unix := time.Now().Unix()
+	tl := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindPresentTransferIn,
+		Title:        "转账收款（" + fromName + "）",
+		OuterNo:      tradeNo,
+		Amount:       amount,
+		CsnFee:       0,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.savePresentLog(tl)
+	if err == nil {
+		a._value.PresentBalance += amount
+		a._value.UpdateTime = unix
+		_, err = a.Save()
+	}
+	return err
+}
+
+func (a *accountImpl) receiveBalanceTransfer(fromMember int, tradeNo string,
+	amount float32, remark string) error {
+	fromName := a.getMemberName(a._rep.GetMember(a.GetDomainId()))
+	unix := time.Now().Unix()
+	tl := &member.BalanceLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: member.KindBalanceTransferIn,
+		Title:        "转账收款（" + fromName + "）",
+		OuterNo:      tradeNo,
+		Amount:       amount,
+		CsnFee:       0,
+		State:        enum.ReviewPass,
+		RelateUser:   member.DefaultRelateUser,
+		Remark:       remark,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.saveBalanceLog(tl)
+	if err == nil {
+		a._value.Balance += amount
+		a._value.UpdateTime = unix
+		_, err = a.Save()
+	}
+	return err
+}
+
 // 转账余额到其他账户
 func (a *accountImpl) TransferBalance(kind int, amount float32,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
 		if a._value.Balance < amount {
-			return member.ErrNotEnoughAmount
+			return member.ErrAccountNotEnoughAmount
 		}
 		a._value.Balance -= amount
 		a._value.FlowBalance += amount
@@ -727,7 +891,7 @@ func (a *accountImpl) TransferPresent(kind int, amount float32, commission float
 	var err error
 	if kind == member.KindBalanceFlow {
 		if a._value.Balance < amount {
-			return member.ErrNotEnoughAmount
+			return member.ErrAccountNotEnoughAmount
 		}
 		a._value.Balance -= amount
 		a._value.FlowBalance += amount
@@ -764,7 +928,7 @@ func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 
 	if kind == member.KindPresentTransferIn {
 		if a._value.FlowBalance < finalAmount {
-			return member.ErrNotEnoughAmount
+			return member.ErrAccountNotEnoughAmount
 		}
 
 		a._value.FlowBalance -= amount
@@ -812,7 +976,7 @@ func (a *accountImpl) TransferFlowTo(memberId int, kind int,
 
 	if kind == member.KindBalanceFlow {
 		if a._value.FlowBalance < finalAmount {
-			return member.ErrNotEnoughAmount
+			return member.ErrAccountNotEnoughAmount
 		}
 
 		a._value.FlowBalance -= finalAmount
