@@ -421,6 +421,18 @@ func (ms *memberService) QueryIncomeLog(memberId, begin, end int,
 	return ms._query.QueryBalanceLog(memberId, begin, end, where, orderBy)
 }
 
+// 获取分页商铺收藏
+func (ms *memberService) PagedShopFav(memberId int, begin, end int,
+	where string) (int, []*dto.PagedShopFav) {
+	return ms._query.PagedShopFav(memberId, begin, end, where)
+}
+
+// 获取分页商铺收藏
+func (ms *memberService) PagedGoodsFav(memberId int, begin, end int,
+	where string) (int, []*dto.PagedGoodsFav) {
+	return ms._query.PagedGoodsFav(memberId, begin, end, where)
+}
+
 // 获取余额账户分页记录
 func (ms *memberService) PagedBalanceAccountLog(memberId, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {

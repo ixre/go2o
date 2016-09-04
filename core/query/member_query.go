@@ -84,15 +84,19 @@ func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id=? %s`, where), &num, memberId)
 
-	sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_present_log bi
+	if num > 0 {
+		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_present_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id=? %s %s LIMIT ?,?`,
-		where, orderBy)
+			where, orderBy)
 
-	d.Query(sqlLine, func(_rows *sql.Rows) {
-		rows = db.RowsToMarshalMap(_rows)
-		_rows.Close()
-	}, memberId, begin, end-begin)
+		d.Query(sqlLine, func(_rows *sql.Rows) {
+			rows = db.RowsToMarshalMap(_rows)
+			_rows.Close()
+		}, memberId, begin, end-begin)
+	} else {
+		rows = []map[string]interface{}{}
+	}
 
 	return num, rows
 }
@@ -247,4 +251,77 @@ func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
 		domain.HandleError(err, "[ Go2o][ Member][ Query]:")
 	}
 	return total
+}
+
+// 获取分页商铺收藏
+func (m *MemberQuery) PagedShopFav(memberId int, begin, end int,
+	where string) (num int, rows []*dto.PagedShopFav) {
+	d := m.Connector
+	if len(where) > 0 {
+		where = " AND " + where
+	}
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
+	INNER JOIN  mch_shop s ON f.refer_id =s.id
+    INNER JOIN mch_online_shop o ON s.id = o.shop_id
+    INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+    WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
+		memberId, member.FavTypeShop)
+
+	if num > 0 {
+		sqlLine := fmt.Sprintf(`SELECT f.id,s.id as shop_id,mch.id as mch_id,
+    s.name as shop_name,o.logo,f.update_time FROM mm_favorite f
+    INNER JOIN  mch_shop s ON f.refer_id =s.id
+    INNER JOIN mch_online_shop o ON s.id = o.shop_id
+    INNER JOIN mch_merchant mch ON mch.id = s.mch_id
+    WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC LIMIT ?,?`,
+			where)
+		d.Query(sqlLine, func(rs *sql.Rows) {
+			for rs.Next() {
+				e := dto.PagedShopFav{}
+				rs.Scan(&e.Id, &e.ShopId, &e.MchId, &e.ShopName,
+					&e.Logo, &e.UpdateTime)
+				e.Logo = format.GetResUrl(e.Logo)
+				rows = append(rows, &e)
+			}
+		}, memberId, member.FavTypeShop, begin, end-begin)
+	} else {
+		rows = make([]*dto.PagedShopFav, 0)
+	}
+	return num, rows
+}
+
+// 获取分页商铺收藏
+func (m *MemberQuery) PagedGoodsFav(memberId int, begin, end int,
+	where string) (num int, rows []*dto.PagedGoodsFav) {
+	d := m.Connector
+	if len(where) > 0 {
+		where = " AND " + where
+	}
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
+    INNER JOIN gs_goods gs ON gs.id = f.refer_id
+    INNER JOIN gs_item item ON gs.item_id=item.id
+    WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
+		memberId, member.FavTypeGoods)
+
+	if num > 0 {
+		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,item.name as goods_name,
+            img,sale_price,on_shelves,gs.stock_num,item.update_time
+            FROM mm_favorite f INNER JOIN gs_goods gs ON gs.id = f.refer_id
+            INNER JOIN gs_item item ON gs.item_id=item.id
+            WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC
+            LIMIT ?,?`,
+			where)
+		d.Query(sqlLine, func(rs *sql.Rows) {
+			for rs.Next() {
+				e := dto.PagedGoodsFav{}
+				rs.Scan(&e.Id, &e.SkuId, &e.GoodsName, &e.Image, &e.SalePrice,
+					&e.OnShelves, &e.StockNum, &e.UpdateTime)
+				e.Image = format.GetResUrl(e.Image)
+				rows = append(rows, &e)
+			}
+		}, memberId, member.FavTypeShop, begin, end-begin)
+	} else {
+		rows = make([]*dto.PagedGoodsFav, 0)
+	}
+	return num, rows
 }
