@@ -255,9 +255,12 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 	tradeNo := orderNo
 	if err == nil {
 		cv := c.GetValue()
+		// 更新默认收货地址为本地使用地址
+		order.GetBuyer().Profile().SetDefaultAddress(cv.DeliverId)
+
+		// 设置支付方式
 		cv.PaymentOpt = enum.PaymentOnlinePay
 		pyUpdate := false
-		// 设置支付方式
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
 			return order, py, err
 		}
