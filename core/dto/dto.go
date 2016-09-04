@@ -78,6 +78,7 @@ type (
 		StateText string `db:"-"`
 	}
 
+	// 分页商户售后单
 	PagedVendorAfterSalesOrder struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
@@ -104,5 +105,27 @@ type (
 		UpdateTime int64 `db:"update_time"`
 		// 订单状态
 		StateText string `db:"-"`
+	}
+
+	// 店铺收藏
+	PagedShopFav struct {
+		Id         int    `db:"id"`
+		ShopId     int    `db:"shop_id"`
+		ShopName   string `db:"shop_name"`
+		MchId      int    `db:"mch_id"`
+		Logo       string `db:"logo"`
+		UpdateTime int64  `db:"update_time"`
+	}
+
+	// 商品收藏
+	PagedGoodsFav struct {
+		Id         int    `db:"id"`
+		SkuId      int    `db:"sku_id"`
+		GoodsName  string `db:"goods_name"`
+		Image      string `db:"image"`
+		OnShelves  int    `db:"on_shelves"`
+		StockNum   int    `db:"stock_num"`
+		SalePrice  string `db:"sale_price"`
+		UpdateTime int64  `db:"update_time"`
 	}
 )
