@@ -21,7 +21,7 @@ var (
 		"err_enabled_fx_sales", "系统当前不允许启用分销")
 
 	ErrMerchantExpires *domain.DomainError = domain.NewDomainError(
-		"err_merchant_expires", "商户合作已过期")
+		"err_merchant_expires", "商户已过期")
 
 	ErrNoSuchMerchant *domain.DomainError = domain.NewDomainError(
 		"no_such_partner", "商户不存在")
