@@ -13,7 +13,7 @@ type IMerchantRep interface {
 	// 获取商户管理器
 	GetManager() IMerchantManager
 
-	CreateMerchant(*Merchant) (IMerchant, error)
+	CreateMerchant(*Merchant) IMerchant
 
 	// 创建会员申请商户密钥
 	CreateSignUpToken(memberId int) string
@@ -24,8 +24,8 @@ type IMerchantRep interface {
 	// 获取商户的编号
 	GetMerchantsId() []int
 
-	// 获取商户,并槛车商户状态,返回错误
-	GetMerchant(int) (IMerchant, error)
+	// 获取商户
+	GetMerchant(int) IMerchant
 
 	// 获取合作商主要的域名主机
 	GetMerchantMajorHost(int) string

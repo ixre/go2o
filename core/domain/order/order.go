@@ -1314,7 +1314,7 @@ func (s *subOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (s *subOrderImpl) vendorSettle() error {
-	vendor, _ := s._mchRep.GetMerchant(s._value.VendorId)
+	vendor := s._mchRep.GetMerchant(s._value.VendorId)
 	if vendor != nil {
 		conf := s._valRep.GetGlobMchSaleConf()
 		switch conf.MchOrderSettleMode {

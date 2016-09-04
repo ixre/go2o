@@ -18,7 +18,6 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
-	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
@@ -168,11 +167,9 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		// 最后登录时间
 		LastLoginTime: 0,
 	}
-	mch, err := m._rep.CreateMerchant(mchVal)
-	if err != nil {
-		return err
-	}
-	err = mch.SetValue(mchVal)
+	mch := m._rep.CreateMerchant(mchVal)
+
+	err := mch.SetValue(mchVal)
 	if err != nil {
 		return err
 	}
@@ -230,8 +227,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.Mc
 func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
-		mch, _ := m._rep.CreateMerchant(&v)
-		return mch
+		return m._rep.CreateMerchant(&v)
 	}
 	return nil
 }
@@ -261,17 +257,16 @@ type merchantImpl struct {
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
 	shopRep shop.IShopRep, userRep user.IUserRep, memberRep member.IMemberRep,
-	mssRep mss.IMssRep, valRep valueobject.IValueRep) (merchant.IMerchant, error) {
+	valRep valueobject.IValueRep) merchant.IMerchant {
 	mch := &merchantImpl{
-		_value:   v,
-		_rep:     rep,
-		_shopRep: shopRep,
-		_userRep: userRep,
-		//_mssRep:  mssRep,
+		_value:     v,
+		_rep:       rep,
+		_shopRep:   shopRep,
+		_userRep:   userRep,
 		_valRep:    valRep,
 		_memberRep: memberRep,
 	}
-	return mch, mch.Stat()
+	return mch
 }
 
 func (m *merchantImpl) GetRep() merchant.IMerchantRep {
@@ -352,7 +347,6 @@ func (m *merchantImpl) Stat() error {
 		return merchant.ErrNoSuchMerchant
 	}
 	if m._value.Enabled == 0 {
-		//log.Println("[MERCHANT][ IMPL] - ",m._value)
 		return merchant.ErrMerchantDisabled
 	}
 	if m._value.ExpiresTime < time.Now().Unix() {

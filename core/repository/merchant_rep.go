@@ -93,30 +93,27 @@ func (m *merchantRep) GetMemberFromSignUpToken(token string) int {
 	return -1
 }
 
-func (m *merchantRep) CreateMerchant(v *merchant.Merchant) (merchant.IMerchant, error) {
+func (m *merchantRep) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 	return merchantImpl.NewMerchant(v, m, m._shopRep, m._userRep,
-		m._memberRep, m._mssRep, m._valRep)
+		m._memberRep, m._valRep)
 }
 
 func (m *merchantRep) renew(merchantId int) {
 	delete(m._cache, merchantId)
 }
 
-func (m *merchantRep) GetMerchant(id int) (merchant.IMerchant, error) {
+func (m *merchantRep) GetMerchant(id int) merchant.IMerchant {
 	v, ok := m._cache[id]
-	var err error
 	if !ok {
-		e := new(merchant.Merchant)
-		err = m.Connector.GetOrm().Get(id, e)
-		if err == nil {
-			// 缓存到列表中
-			v, err = m.CreateMerchant(e)
-			if v != nil {
+		e := merchant.Merchant{}
+		// 获取并缓存到列表中
+		if err := m.Connector.GetOrm().Get(id, &e); err == nil {
+			if v = m.CreateMerchant(&e); v != nil {
 				m._cache[id] = v
 			}
 		}
 	}
-	return v, err
+	return v
 }
 
 // 获取账户
@@ -160,22 +157,8 @@ func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
 	return v.Id, err
 }
 
-func (m *merchantRep) doSomething() {
-	ms := []*member.Member{}
-	orm := m.Connector.GetOrm()
-	orm.Select(&ms, "1=1")
-
-	for _, v := range ms {
-		v.Pwd = domain.MemberSha1Pwd("123456")
-		orm.Save(v.Id, v)
-	}
-}
-
 // 获取商户的编号
 func (m *merchantRep) GetMerchantsId() []int {
-
-	//m.doSomething()
-
 	dst := []int{}
 	var i int
 
