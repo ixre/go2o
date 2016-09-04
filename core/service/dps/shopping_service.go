@@ -92,7 +92,7 @@ func (s *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
 func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Vendors {
-		mch, _ := s._mchRep.GetMerchant(v.VendorId)
+		mch := s._mchRep.GetMerchant(v.VendorId)
 		v.VendorName = mch.GetValue().Name
 		if v.ShopId > 0 {
 			v.ShopName = mch.ShopManager().GetShop(v.ShopId).GetValue().Name
@@ -121,11 +121,10 @@ func (s *shoppingService) AddCartItem(memberId int, cartKey string,
 			return nil, goods.ErrNoSuchGoods
 		}
 		tm := s._itemRep.GetValueItem(snap.ItemId)
-
 		// 检测是否开通商城
-		mch, err2 := s._mchRep.GetMerchant(tm.VendorId)
-		if err2 != nil {
-			return nil, err2
+		mch := s._mchRep.GetMerchant(tm.VendorId)
+		if mch == nil {
+			return nil, merchant.ErrNoSuchMerchant
 		}
 		shops := mch.ShopManager().GetShops()
 		shopId := 0

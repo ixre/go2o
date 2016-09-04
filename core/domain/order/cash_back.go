@@ -43,35 +43,35 @@ func (o *subOrderImpl) handleCashBack() error {
 	if !gobConf.FxSalesEnabled {
 		return nil
 	}
-
+	var err error
 	v := o._value
-	mch, err := o._mchRep.GetMerchant(v.VendorId)
-	if err != nil {
-		return err
-	}
+	mch := o._mchRep.GetMerchant(v.VendorId)
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		buyer := o.GetBuyer()
+		now := time.Now().Unix()
 
-	buyer := o.GetBuyer()
-	now := time.Now().Unix()
+		//******* 返现到账户  ************
+		var back_fee float32
+		saleConf := mch.ConfManager().GetSaleConf()
 
-	//******* 返现到账户  ************
-	var back_fee float32
-	saleConf := mch.ConfManager().GetSaleConf()
+		if saleConf.CashBackPercent > 0 {
+			back_fee = v.FinalAmount * saleConf.CashBackPercent
+			//将此次消费记入会员账户
+			err = o.updateShoppingMemberBackFee(mch.GetValue().Name, buyer,
+				back_fee*saleConf.CashBackMemberPercent, now)
+			domain.HandleError(err, "domain")
 
-	if saleConf.CashBackPercent > 0 {
-		back_fee = v.FinalAmount * saleConf.CashBackPercent
-		//将此次消费记入会员账户
-		err = o.updateShoppingMemberBackFee(mch.GetValue().Name, buyer,
-			back_fee*saleConf.CashBackMemberPercent, now)
-		domain.HandleError(err, "domain")
+		}
 
-	}
-
-	// 处理返现促销
-	//todo: ????
-	//o.handleCashBackPromotions(mch, m)
-	// 三级返现
-	if back_fee > 0 {
-		err = o.backFor3R(mch, buyer, back_fee, now)
+		// 处理返现促销
+		//todo: ????
+		//o.handleCashBackPromotions(mch, m)
+		// 三级返现
+		if back_fee > 0 {
+			err = o.backFor3R(mch, buyer, back_fee, now)
+		}
 	}
 	return err
 }

@@ -11,6 +11,7 @@ package shop
 
 import (
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/lbs"
 	"log"
 	"strings"
@@ -42,58 +43,68 @@ func newShop(manager *shopManagerImpl,
 	panic("未知的商店类型")
 }
 
-func (this *ShopImpl) GetDomainId() int {
-	return this._value.Id
+func (s *ShopImpl) GetDomainId() int {
+	return s._value.Id
 }
 
 // 商店类型
-func (this *ShopImpl) Type() int {
-	return this._value.ShopType
+func (s *ShopImpl) Type() int {
+	return s._value.ShopType
 }
 
-func (this *ShopImpl) GetValue() shop.Shop {
-	return *this._value
+func (s *ShopImpl) GetValue() shop.Shop {
+	return *s._value
 }
 
-func (this *ShopImpl) SetValue(v *shop.Shop) error {
-	//	if this.value.Address != v.Address ||
-	//		len(this.value.Location) == 0 {
+func (s *ShopImpl) SetValue(v *shop.Shop) error {
+	//	if s.value.Address != v.Address ||
+	//		len(s.value.Location) == 0 {
 	//		lng, lat, err := lbs.GetLocation(v.Address)
 	//		if err != nil {
 	//			return err
 	//		}
-	//		this.value.Location = fmt.Sprintf("%f,%f", lng, lat)
+	//		s.value.Location = fmt.Sprintf("%f,%f", lng, lat)
 	//}
-	//this.value.DeliverRadius = v.DeliverRadius
-	if err := this.check(v); err != nil {
+	//s.value.DeliverRadius = v.DeliverRadius
+	if err := s.check(v); err != nil {
 		return err
 	}
-	this._value.Name = v.Name
-	this._value.SortNumber = v.SortNumber
-	this._value.State = v.State
+	s._value.Name = v.Name
+	s._value.SortNumber = v.SortNumber
+	s._value.State = v.State
 	return nil
 }
 
-func (this *ShopImpl) check(v *shop.Shop) error {
+func (s *ShopImpl) check(v *shop.Shop) error {
 	v.Name = strings.TrimSpace(v.Name)
+	if s.checkNameExists(v) {
+		return shop.ErrSameNameShopExists
+	}
 	return nil
 }
 
-func (this *ShopImpl) Save() (int, error) {
-	if this._manager != nil {
-		this._manager.Reload() //清除缓存
+func (s *ShopImpl) checkNameExists(v *shop.Shop) bool {
+	i := 0
+	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mch_shop WHERE name=? AND id <> ?", &i,
+		v.Name, v.Id)
+	return i > 0
+}
+
+func (s *ShopImpl) Save() (int, error) {
+	if s._manager != nil {
+		s._manager.Reload() //清除缓存
 	}
-	return this._shopRep.SaveShop(this._value)
+	return s._shopRep.SaveShop(s._value)
 }
 
 // 数据
-func (this *ShopImpl) Data() *shop.ShopDto {
+func (s *ShopImpl) Data() *shop.ShopDto {
 	return &shop.ShopDto{
-		Id:         this.GetDomainId(),
-		MerchantId: this._value.MerchantId,
-		ShopType:   this.Type(),
-		Name:       this._value.Name,
-		State:      this._value.State,
+		Id:         s.GetDomainId(),
+		MerchantId: s._value.MerchantId,
+		ShopType:   s.Type(),
+		Name:       s._value.Name,
+		State:      s._value.State,
 		Data:       nil,
 	}
 }
@@ -124,74 +135,74 @@ func newOfflineShopImpl(s *ShopImpl) shop.IShop {
 }
 
 // 设置值
-func (this *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
-	this._shopVal.Address = v.Address
-	this._shopVal.Tel = v.Tel
-	this._shopVal.DeliverRadius = v.DeliverRadius
-	this._shopVal.Province = v.Province
-	this._shopVal.City = v.City
-	this._shopVal.District = v.District
+func (s *offlineShopImpl) SetShopValue(v *shop.OfflineShop) error {
+	s._shopVal.Address = v.Address
+	s._shopVal.Tel = v.Tel
+	s._shopVal.DeliverRadius = v.DeliverRadius
+	s._shopVal.Province = v.Province
+	s._shopVal.City = v.City
+	s._shopVal.District = v.District
 	if v.Lat > 0 && v.Lng > 0 {
-		this._shopVal.Lat = v.Lat
-		this._shopVal.Lng = v.Lng
+		s._shopVal.Lat = v.Lat
+		s._shopVal.Lng = v.Lng
 	}
 	return nil
 }
 
 // 获取值
-func (this *offlineShopImpl) GetShopValue() shop.OfflineShop {
-	return *this._shopVal
+func (s *offlineShopImpl) GetShopValue() shop.OfflineShop {
+	return *s._shopVal
 }
 
 // 获取经维度
-func (this *offlineShopImpl) GetLngLat() (float64, float64) {
-	if this._lng == 0 || this._lat == 0 {
+func (s *offlineShopImpl) GetLngLat() (float64, float64) {
+	if s._lng == 0 || s._lat == 0 {
 		//todo: 基于位置获取坐标,已经将坐标存储到数据库中了
 		var err error
-		this._lng, this._lat, err = lbs.GetLocation(this._shopVal.Location())
+		s._lng, s._lat, err = lbs.GetLocation(s._shopVal.Location())
 		if err != nil {
 			log.Println("[ Go2o][ LBS][ Error] -", err.Error())
 		}
 	}
-	return this._lng, this._lat
+	return s._lng, s._lat
 }
 
 // 是否可以配送
 // 返回是否可以配送，以及距离(米)
-func (this *offlineShopImpl) CanDeliver(lng, lat float64) (bool, int) {
-	shopLng, shopLat := this.GetLngLat()
+func (s *offlineShopImpl) CanDeliver(lng, lat float64) (bool, int) {
+	shopLng, shopLat := s.GetLngLat()
 	distance := lbs.GetLocDistance(shopLng, shopLat, lng, lat)
 	i := int(distance)
-	return i <= this._shopVal.DeliverRadius*1000, i
+	return i <= s._shopVal.DeliverRadius*1000, i
 }
 
 // 是否可以配送
 // 返回是否可以配送，以及距离(米)
-func (this *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
+func (s *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
 		log.Println("[ Go2o][ LBS][ Error] -", err.Error())
 		return false, -1
 	}
-	return this.CanDeliver(lng, lat)
+	return s.CanDeliver(lng, lat)
 }
 
 // 保存
-func (this *offlineShopImpl) Save() (int, error) {
-	create := this.GetDomainId() <= 0
-	id, err := this.ShopImpl.Save()
+func (s *offlineShopImpl) Save() (int, error) {
+	create := s.GetDomainId() <= 0
+	id, err := s.ShopImpl.Save()
 	if err == nil {
-		this._shopVal.ShopId = id
-		this._manager.Reload()
-		err = this._shopRep.SaveOfflineShop(this._shopVal, create)
+		s._shopVal.ShopId = id
+		s._manager.Reload()
+		err = s._shopRep.SaveOfflineShop(s._shopVal, create)
 	}
 	return id, err
 }
 
 // 数据
-func (this *offlineShopImpl) Data() *shop.ShopDto {
-	v := this.ShopImpl.Data()
-	v.Data = this.GetShopValue()
+func (s *offlineShopImpl) Data() *shop.ShopDto {
+	v := s.ShopImpl.Data()
+	v.Data = s.GetShopValue()
 	return v
 }
 
@@ -216,60 +227,60 @@ func newOnlineShopImpl(s *ShopImpl) shop.IShop {
 	}
 }
 
-func (this *onlineShopImpl) checkShopAlias(alias string) error {
-	if this._shopRep.ShopAliasExists(alias, this.GetDomainId()) {
+func (s *onlineShopImpl) checkShopAlias(alias string) error {
+	if s._shopRep.ShopAliasExists(alias, s.GetDomainId()) {
 		return shop.ErrShopAliasUsed
 	}
 	return nil
 }
 
 // 设置值
-func (this *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
-	this._shopVal.Tel = v.Tel
-	this._shopVal.Address = v.Address
+func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
+	s._shopVal.Tel = v.Tel
+	s._shopVal.Address = v.Address
 
-	if len(this._shopVal.Alias) == 0 {
+	if len(s._shopVal.Alias) == 0 {
 		if len(v.Alias) == 0 {
 			return shop.ErrNotSetAlias
 		}
-		if err := this.checkShopAlias(v.Alias); err != nil {
+		if err := s.checkShopAlias(v.Alias); err != nil {
 			return err
 		}
-		this._shopVal.Alias = v.Alias
+		s._shopVal.Alias = v.Alias
 	}
 	if len(v.Host) > 0 {
-		this._shopVal.Host = v.Host
+		s._shopVal.Host = v.Host
 	}
 	if len(v.Logo) > 0 {
-		this._shopVal.Logo = v.Logo
+		s._shopVal.Logo = v.Logo
 	}
 
-	this._shopVal.IndexTitle = v.IndexTitle
-	this._shopVal.SubTitle = v.SubTitle
-	this._shopVal.Notice = v.Notice
+	s._shopVal.IndexTitle = v.IndexTitle
+	s._shopVal.SubTitle = v.SubTitle
+	s._shopVal.Notice = v.Notice
 	return nil
 }
 
 // 获取值
-func (this *onlineShopImpl) GetShopValue() shop.OnlineShop {
-	return *this._shopVal
+func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
+	return *s._shopVal
 }
 
 // 保存
-func (this *onlineShopImpl) Save() (int, error) {
-	create := this.GetDomainId() <= 0
-	id, err := this.ShopImpl.Save()
+func (s *onlineShopImpl) Save() (int, error) {
+	create := s.GetDomainId() <= 0
+	id, err := s.ShopImpl.Save()
 	if err == nil {
-		this._shopVal.ShopId = id
-		this._manager.Reload()
-		err = this._shopRep.SaveOnlineShop(this._shopVal, create)
+		s._shopVal.ShopId = id
+		s._manager.Reload()
+		err = s._shopRep.SaveOnlineShop(s._shopVal, create)
 	}
 	return id, err
 }
 
 // 数据
-func (this *onlineShopImpl) Data() *shop.ShopDto {
-	v := this.ShopImpl.Data()
-	v.Data = this.GetShopValue()
+func (s *onlineShopImpl) Data() *shop.ShopDto {
+	v := s.ShopImpl.Data()
+	v.Data = s.GetShopValue()
 	return v
 }
