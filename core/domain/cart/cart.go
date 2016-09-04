@@ -390,6 +390,10 @@ func (c *cartImpl) SetBuyerAddress(addressId int) error {
 	if addr == nil {
 		return member.ErrNoSuchDeliverAddress
 	}
+	return c.setBuyerAddress(addressId)
+}
+
+func (c *cartImpl) setBuyerAddress(addressId int) error {
 	c._value.DeliverId = addressId
 	_, err := c.Save()
 	return err
@@ -475,6 +479,9 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 			c._deliver = pm.GetDeliver(c._value.DeliverId)
 		} else {
 			c._deliver = pm.GetDefaultAddress()
+			if c._deliver != nil {
+				c.setBuyerAddress(c._deliver.GetDomainId())
+			}
 		}
 	}
 	return c._shop, c._deliver, c._value.PaymentOpt, c._value.DeliverOpt

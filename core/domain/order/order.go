@@ -220,9 +220,6 @@ func (o *orderImpl) setAddress(addressId int) error {
 // 获取购买的会员
 func (o *orderImpl) GetBuyer() member.IMember {
 	if o._buyer == nil {
-		//if o._value.BuyerId <= 0 {
-		//    panic(errors.New("订单BuyerId非会员或未设置"))
-		//}
 		o._buyer = o._memberRep.GetMember(o._value.BuyerId)
 	}
 	return o._buyer
@@ -401,6 +398,7 @@ func (o *orderImpl) Submit() (string, error) {
 		return "", member.ErrNoSuchMember
 	}
 	cv := o._cart.GetValue()
+
 	err = o.setAddress(cv.DeliverId)
 	if err != nil {
 		return "", err

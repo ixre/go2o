@@ -131,6 +131,9 @@ type (
 		// 获取配送地址
 		GetDeliver(int) IDeliverAddress
 
+		// 设置默认地址
+		SetDefaultAddress(addressId int) error
+
 		// 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
 

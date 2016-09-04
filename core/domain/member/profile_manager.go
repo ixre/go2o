@@ -363,6 +363,20 @@ func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 	return arr
 }
 
+// 设置默认地址
+func (p *profileManagerImpl) SetDefaultAddress(addressId int) error {
+	for _, v := range p.GetDeliverAddress() {
+		vv := v.GetValue()
+		if v.GetDomainId() == addressId {
+			vv.IsDefault = 1
+		} else {
+			vv.IsDefault = 0
+		}
+		p._rep.SaveDeliver(&vv)
+	}
+	return nil
+}
+
 // 获取默认收货地址
 func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
 	list := p._rep.GetDeliverAddress(p._memberId)
