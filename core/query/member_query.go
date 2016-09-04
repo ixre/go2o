@@ -319,7 +319,8 @@ func (m *MemberQuery) PagedGoodsFav(memberId int, begin, end int,
 				e.Image = format.GetResUrl(e.Image)
 				rows = append(rows, &e)
 			}
-		}, memberId, member.FavTypeShop, begin, end-begin)
+		}, memberId, member.FavTypeGoods, begin, end-begin)
+
 	} else {
 		rows = make([]*dto.PagedGoodsFav, 0)
 	}
