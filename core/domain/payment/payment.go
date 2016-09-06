@@ -46,7 +46,7 @@ func (p *paymentOrderImpl) GetTradeNo() string {
 // 重新修正金额
 func (p *paymentOrderImpl) fixFee() {
 	v := p._value
-	v.FinalFee = v.TotalFee - v.CouponDiscount - v.BalanceDiscount -
+	v.FinalAmount = v.TotalFee - v.CouponDiscount - v.BalanceDiscount -
 		v.IntegralDiscount - v.SubAmount - v.SystemDiscount
 }
 
@@ -72,7 +72,7 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 
 func (p *paymentOrderImpl) CouponDiscount(coupon promotion.ICouponPromotion) (
 	float32, error) {
-	if p._value.PaymentOpt&payment.OptUseCoupon == 0 {
+	if p._value.PaymentSign&payment.OptUseCoupon == 0 {
 		return 0, payment.ErrCanNotUseCoupon
 	}
 	//todo: 如可以使用多张优惠券,那么初始化应该获取支付单的所有优惠券
@@ -97,7 +97,7 @@ func (p *paymentOrderImpl) checkPayment() error {
 	}
 	switch p._value.State {
 	case payment.StateAwaitingPayment:
-		if p._value.FinalFee == 0 {
+		if p._value.FinalAmount == 0 {
 			return payment.ErrFinalFee
 		}
 	case payment.StateFinishPayment:
@@ -110,12 +110,12 @@ func (p *paymentOrderImpl) checkPayment() error {
 
 // 应用余额支付
 func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) float32 {
-	if p._value.FinalFee <= 0 {
+	if p._value.FinalAmount <= 0 {
 		return 0
 	}
 	acv := acc.GetValue()
-	if acv.Balance >= p._value.FinalFee {
-		return p._value.FinalFee
+	if acv.Balance >= p._value.FinalAmount {
+		return p._value.FinalAmount
 	} else {
 		return acv.Balance
 	}
@@ -131,7 +131,7 @@ func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 
 // 使用余额支付
 func (p *paymentOrderImpl) paymentWithBalance(buyerType int, remark string) error {
-	if p._value.PaymentOpt&payment.OptBalanceDiscount == 0 {
+	if p._value.PaymentSign&payment.OptBalanceDiscount == 0 {
 		return payment.ErrCanNotUseBalance
 	}
 	err := p.checkPayment()
@@ -162,7 +162,7 @@ func (p *paymentOrderImpl) checkPaymentOk() (bool, error) {
 	if p._value.State == payment.StateAwaitingPayment {
 		unix := time.Now().Unix()
 		// 如果支付完成,则更新订单状态
-		if b = p._value.FinalFee == 0; b {
+		if b = p._value.FinalAmount == 0; b {
 			p._value.State = payment.StateFinishPayment
 			p._firstFinishPayment = true
 		}
@@ -190,7 +190,7 @@ func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
 func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (float32, error) {
 	var amount float32 = 0
-	if p._value.PaymentOpt&payment.OptIntegralDiscount != payment.OptIntegralDiscount {
+	if p._value.PaymentSign&payment.OptIntegralDiscount != payment.OptIntegralDiscount {
 		return 0, payment.ErrCanNotUseIntegral
 	}
 	err := p.checkPayment()
@@ -200,9 +200,9 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 	// 判断扣减金额是否大于0
 	amount = p.mathIntegralFee(integral)
 	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
-	if !ignoreAmount && amount > p._value.FinalFee {
+	if !ignoreAmount && amount > p._value.FinalAmount {
 		conf := p._valRep.GetGlobNumberConf()
-		amount = p._value.FinalFee
+		amount = p._value.FinalAmount
 		integral = int(amount * conf.IntegralDiscountRate)
 	}
 
@@ -225,7 +225,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 
 // 系统支付金额
 func (p *paymentOrderImpl) SystemPayment(fee float32) error {
-	if p._value.PaymentOpt&payment.OptSystemPayment == 0 {
+	if p._value.PaymentSign&payment.OptSystemPayment == 0 {
 		return payment.ErrCanNotSystemDiscount
 	}
 	err := p.checkPayment()
@@ -307,8 +307,8 @@ func (p *paymentOrderImpl) Cancel() error {
 // 调整金额,如果调整的金额与实付金额一致,则取消支付单
 func (p *paymentOrderImpl) Adjust(amount float32) error {
 	p._value.AdjustmentAmount += amount
-	p._value.FinalFee += amount
-	if p._value.FinalFee <= 0 {
+	p._value.FinalAmount += amount
+	if p._value.FinalAmount <= 0 {
 		_, err := p.checkPaymentOk()
 		return err
 	}

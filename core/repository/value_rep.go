@@ -57,7 +57,7 @@ func NewValueRep(conn db.Connector, storage storage.Interface) valueobject.IValu
 		_wxGob:    util.NewGobFile("conf/core/wx_api"),
 		_rpGob:    util.NewGobFile("conf/core/register_perm"),
 		_numGob:   util.NewGobFile("conf/core/number_conf"),
-		_mchGob:   util.NewGobFile("conf/core/mch_conf"),
+		_mchGob:   util.NewGobFile("conf/core/pm_conf"),
 		_mscGob:   util.NewGobFile("conf/core/mch_sale_conf"),
 		_smsGob:   util.NewGobFile("conf/core/sms_conf"),
 	}
