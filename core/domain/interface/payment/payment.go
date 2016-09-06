@@ -41,6 +41,15 @@ const (
 		OptSystemPayment | OptUseCoupon
 )
 
+const (
+	// 赠送账户支付
+	SignPresentAccount = "psa"
+	// 线上支付
+	SignOnlinePay = "onlinepay"
+	// 线下支付
+	SignOfflinePay = "offlinepay"
+)
+
 var (
 	ErrNoSuchPaymentOrder *domain.DomainError = domain.NewDomainError(
 		"err_no_such_payment_order", "支付单不存在")
@@ -174,9 +183,9 @@ type (
 		// 调整的金额
 		AdjustmentAmount float32 `db:"adjustment_amount"`
 		// 最终支付金额
-		FinalFee float32 `db:"final_fee"`
+		FinalAmount float32 `db:"final_fee"`
 		// 支付选项，位运算。可用优惠券，积分抵扣等运算
-		PaymentOpt int `db:"payment_opt"`
+		PaymentOptFlag int `db:"payment_opt"`
 		// 支付方式
 		PaymentSign int `db:"payment_sign"`
 		// 在线支付的交易单号

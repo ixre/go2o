@@ -246,7 +246,7 @@ func (s *shoppingService) PrepareOrder2(buyerId int, cartKey string,
 	//　取消优惠券
 	data["totalFee"] = v.GoodsAmount
 	data["fee"] = po.TotalFee
-	data["payFee"] = po.FinalFee
+	data["payFee"] = po.FinalAmount
 	data["discountFee"] = discountFee
 	data["expressFee"] = v.ExpressFee
 

@@ -190,7 +190,7 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 		// 调整的金额
 		AdjustmentAmount: 0,
 		// 支付选项
-		PaymentOpt: payment.OptPerm,
+		PaymentOptFlag: payment.OptPerm,
 		// 支付方式
 		PaymentSign: enum.PaymentOnlinePay,
 		//创建时间
@@ -202,7 +202,7 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 		// 状态:  0为未付款，1为已付款，2为已取消
 		State: payment.StateAwaitingPayment,
 	}
-	v.FinalFee = v.TotalFee - v.SubAmount - v.SystemDiscount -
+	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
 	return t._payRep.CreatePaymentOrder(v)
 }
@@ -279,7 +279,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 			pyUpdate = true
 		}
 		// 如果已支付完成,则将订单设为支付完成
-		if v := py.GetValue(); v.FinalFee == 0 &&
+		if v := py.GetValue(); v.FinalAmount == 0 &&
 			v.State == payment.StateFinishPayment {
 			for _, sub := range order.GetSubOrders() {
 				sub.PaymentFinishByOnlineTrade()

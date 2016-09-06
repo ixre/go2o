@@ -1446,7 +1446,7 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 	po := o.Parent().GetPaymentOrder()
 	if po != nil {
 		// 订单金额为0,则取消订单
-		if po.GetValue().FinalFee-o._value.FinalAmount == 0 {
+		if po.GetValue().FinalAmount-o._value.FinalAmount == 0 {
 			return po.Cancel()
 		}
 		return po.Adjust(o._value.FinalAmount)
