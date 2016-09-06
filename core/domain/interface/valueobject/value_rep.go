@@ -80,6 +80,10 @@ type (
 		PageUCenterPath string
 		// 会员中心移动首页模板文件名称
 		PageMobileUCenterPath string
+
+		// 广告缓存时间（秒）
+		CacheAdMaxAge int64
+
 		// 其他扩展数据
 		Extend map[string]string
 	}
