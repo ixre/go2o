@@ -35,7 +35,9 @@ var (
 		GoodsDefaultImage: "res/nopic.gif",
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate: 0,
-		Extend:             map[string]string{},
+		// 广告缓存时间（秒）
+		CacheAdMaxAge: 3600,
+		Extend:        map[string]string{},
 	}
 
 	// 默认平台设置

@@ -60,6 +60,13 @@ func (a *adManagerImpl) GetAdGroup(id int) ad.IAdGroup {
 
 // 删除广告组
 func (a *adManagerImpl) DelAdGroup(id int) error {
+	g := a.GetAdGroup(id)
+	if g == nil {
+		return ad.ErrNoSuchAdGroup
+	}
+	if len(g.GetPositions()) > 0 {
+		return ad.ErrNotEmptyGroup
+	}
 	a._groups = nil
 	return a._rep.DelAdGroup(id)
 }

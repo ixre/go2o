@@ -23,6 +23,9 @@ var (
 	ErrNoSuchAdGroup *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad_group", "广告组不存在")
 
+	ErrNotEmptyGroup *domain.DomainError = domain.NewDomainError(
+		"err_ad_not_empty_ad_group", "广告组包含广告位，无法删除")
+
 	ErrNoSuchAdPosition *domain.DomainError = domain.NewDomainError(
 		"err_no_such_ad_position", "广告位不存在")
 
