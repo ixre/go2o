@@ -31,7 +31,7 @@ type paymentOrderImpl struct {
 	_orderManager       order.IOrderManager
 	_firstFinishPayment bool //第一次完成支付
 	paymentUser         member.IMember
-	buyUser             member.IMember
+	buyer               member.IMember
 }
 
 func (p *paymentOrderImpl) GetAggregateRootId() int {
@@ -232,6 +232,37 @@ func (p *paymentOrderImpl) SystemPayment(fee float32) error {
 	if err == nil {
 		p._value.SystemDiscount += fee
 		p.fixFee()
+	}
+	return err
+}
+
+func (p *paymentOrderImpl) getBuyer() member.IMember {
+	if p.buyer == nil {
+		p.buyer = p._mmRep.GetMember(p._value.BuyUser)
+	}
+	return p.buyer
+}
+
+// 赠送账户支付
+func (p *paymentOrderImpl) PresentAccountPayment() error {
+	amount := p._value.FinalAmount
+	buyer := p.getBuyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := buyer.GetAccount()
+	av := acc.GetValue()
+	if av.PresentBalance < amount {
+		return payment.ErrNotEnughtAmount
+	}
+	err := acc.DiscountPresent("支付订单", p.GetTradeNo(), amount,
+		member.DefaultRelateUser, true)
+	if err == nil {
+		//todo: ???
+		//p._value.PaymentSign = payment.SignPresentAccount
+		p._value.FinalAmount = 0
+		p._value.PaidTime = time.Now().Unix()
+		_, err = p.save()
 	}
 	return err
 }

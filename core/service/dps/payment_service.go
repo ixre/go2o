@@ -74,6 +74,15 @@ func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark stri
 	return err
 }
 
+// 赠送账户支付
+func (p *paymentService) PresentAccountPayment(orderId int) error {
+	o := p._rep.GetPaymentOrder(orderId)
+	if o == nil {
+		return payment.ErrNoSuchPaymentOrder
+	}
+	return o.PresentAccountPayment()
+}
+
 // 创建支付单
 func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	outerNo string) error {
