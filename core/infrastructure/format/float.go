@@ -27,6 +27,10 @@ func FormatFloat(f float32) string {
 	return s
 }
 
+func FormatDecimal(f float32) string {
+	return fmt.Sprintf("%.2f", f)
+}
+
 func ToDiscountStr(discount int) string {
 	if discount == 0 || discount == 100 {
 		return ""
