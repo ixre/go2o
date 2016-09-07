@@ -117,14 +117,6 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	if err := p.validateProfile(v); err != nil {
 		return err
 	}
-
-	//pro.Avatar = "res/no_avatar.gif"
-	//pro.BirthDay = "1970-01-01"
-	//
-	//// 如果昵称为空，则跟用户名相同
-	//if len(pro.Name) == 0 {
-	//    pro.Name = m.Usr
-	//}
 	dst.Province = v.Province
 	dst.City = v.City
 	dst.District = v.District
@@ -132,7 +124,7 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.BirthDay = v.BirthDay
 	dst.Im = v.Im
 	dst.Email = v.Email
-	if dst.Phone != "" {
+	if dst.Phone == "" {
 		dst.Phone = v.Phone
 	}
 	dst.Name = v.Name
