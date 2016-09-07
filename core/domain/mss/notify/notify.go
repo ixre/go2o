@@ -54,8 +54,8 @@ func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
 func (n *notifyManagerImpl) SendPhoneMessage(phone string,
 	msg notify.PhoneMessage, data map[string]interface{}) error {
 	i, api := n._valueRep.GetDefaultSmsApiPerm()
-	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone, 
-		api.ApiUrl,api.SuccessChar, string(msg), data)
+	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone,
+		api.ApiUrl, api.SuccessChar, string(msg), data)
 }
 
 // 发送邮件
