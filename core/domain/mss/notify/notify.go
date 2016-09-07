@@ -29,36 +29,37 @@ func NewNotifyManager(rep notify.INotifyRep, valueRep valueobject.IValueRep) not
 }
 
 // 获取所有的通知项
-func (this *notifyManagerImpl) GetAllNotifyItem() []notify.NotifyItem {
-	return this._rep.GetAllNotifyItem()
+func (n *notifyManagerImpl) GetAllNotifyItem() []notify.NotifyItem {
+	return n._rep.GetAllNotifyItem()
 }
 
 // 获取通知项配置
-func (this *notifyManagerImpl) GetNotifyItem(key string) notify.NotifyItem {
-	return *this._rep.GetNotifyItem(key)
+func (n *notifyManagerImpl) GetNotifyItem(key string) notify.NotifyItem {
+	return *n._rep.GetNotifyItem(key)
 }
 
 // 保存通知项设置
-func (this *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
-	v := this._rep.GetNotifyItem(item.Key)
+func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
+	v := n._rep.GetNotifyItem(item.Key)
 	if v == nil {
 		return notify.ErrNoSuchNotifyItem
 	}
 	v.Content = item.Content
 	v.TplId = item.TplId
 	v.NotifyBy = item.NotifyBy
-	return this._rep.SaveNotifyItem(v)
+	return n._rep.SaveNotifyItem(v)
 }
 
 // 发送手机短信
-func (this *notifyManagerImpl) SendPhoneMessage(phone string,
+func (n *notifyManagerImpl) SendPhoneMessage(phone string,
 	msg notify.PhoneMessage, data map[string]interface{}) error {
-	i, api := this._valueRep.GetDefaultSmsApiPerm()
-	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone, string(msg), data)
+	i, api := n._valueRep.GetDefaultSmsApiPerm()
+	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone, 
+		api.ApiUrl,api.SuccessChar, string(msg), data)
 }
 
 // 发送邮件
-func (this *notifyManagerImpl) SendEmail(to string,
+func (n *notifyManagerImpl) SendEmail(to string,
 	msg *notify.MailMessage, data map[string]interface{}) error {
 	return nil
 }

@@ -16,18 +16,18 @@ var (
 )
 
 var (
-	SmsAli     = 1 //阿里大鱼
-	SmsNetEasy = 2 //网易
-	Sms253Com  = 3 //创蓝
-	SmsIndex   = []int{
+	SmsHttp   = 1
+	SmsAli    = 2 //阿里大鱼
+	Sms253Com = 3 //创蓝
+	SmsIndex  = []int{
 		SmsAli,
-		SmsNetEasy,
 		Sms253Com,
+		SmsHttp,
 	}
 	SmsTextMap = map[int]string{
-		SmsAli:     "阿里大鱼",
-		SmsNetEasy: "网易",
-		Sms253Com:  "创蓝",
+		SmsHttp:   "HTTP短信",
+		SmsAli:    "阿里大鱼",
+		Sms253Com: "创蓝",
 	}
 )
 
@@ -263,10 +263,18 @@ type (
 
 	// 短信接口
 	SmsApiPerm struct {
-		ApiKey    string //接口编号
-		ApiSecret string //接口密钥
-		Default   bool   //是否默认的接口使用
+		//接口编号
+		ApiKey string
+		//接口密钥
+		ApiSecret string
+		//接口地址
+		ApiUrl string
+		// 发送成功，包含的字符，用于检测是否发送成功
+		SuccessChar string
+		//是否默认的接口使用
+		Default bool
 	}
+
 	// 短信接口设置
 	SmsApiSet map[int]*SmsApiPerm
 

@@ -18,6 +18,7 @@ import (
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/tool/sms"
 	"strconv"
 	"strings"
 	"sync"
@@ -222,24 +223,28 @@ func (vp *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) erro
 	if _, ok := vp.GetSmsApiSet()[provider]; !ok {
 		return errors.New("系统不支持的短信接口")
 	}
-
-	if s.Default {
-		// 取消其他接口的默认选项
-		for p, v := range vp._smsConf {
-			if p == provider {
-				v.Default = true
-			} else {
-				v.Default = false
+	err := sms.CheckSmsApiPerm(provider, s)
+	if err == nil {
+		if s.Default {
+			// 取消其他接口的默认选项
+			for p, v := range vp._smsConf {
+				if p == provider {
+					v.Default = true
+				} else {
+					v.Default = false
+				}
+			}
+		} else {
+			//检验是否取消了正在使用的短信接口
+			if i, _ := vp.GetDefaultSmsApiPerm(); i == provider {
+				return errors.New("系统应启用一个短信接口")
 			}
 		}
-	} else {
-		//检验是否取消了正在使用的短信接口
-		if i, _ := vp.GetDefaultSmsApiPerm(); i == provider {
-			return errors.New("系统应启用一个短信接口")
-		}
+		defer vp.signReload()
+		vp._smsConf[provider] = s
+		err = vp._smsGob.Save(vp._smsConf)
 	}
-	vp._smsConf[provider] = s
-	return vp._smsGob.Save(vp._smsConf)
+	return err
 }
 
 // 获取默认的短信API
