@@ -30,7 +30,7 @@ func GetLocation(ip string) string {
 	data, _ := ioutil.ReadAll(rsp.Body)
 	out := make([]byte, len(data)*2)
 	trans := simplifiedchinese.GB18030.NewDecoder()
-	n, _, err := trans.Transform(out, data, true)
+	n, _, _ := trans.Transform(out, data, true)
 	m := ip138Regex.FindAllSubmatch(out[:n], 1)
 	if len(m) != 0 {
 		addr := string(m[0][1])

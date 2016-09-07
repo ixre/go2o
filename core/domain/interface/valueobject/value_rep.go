@@ -269,7 +269,9 @@ type (
 		ApiSecret string
 		//接口地址
 		ApiUrl string
-		// 发送成功，包含的字符，用于检测是否发送成功
+		//发送内容的编码
+		Encoding string
+		//发送成功，包含的字符，用于检测是否发送成功
 		SuccessChar string
 		//是否默认的接口使用
 		Default bool
