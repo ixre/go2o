@@ -10,12 +10,14 @@ package sms
 
 import (
 	"errors"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/iface/aliyu"
 	"go2o/core/infrastructure/iface/cl253"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -28,12 +30,12 @@ const (
 
 // 发送短信,tpl:短信内容模板
 func SendSms(provider int, appKey, appSecret, phoneNum string,
-	apiUrl string, successChar string, tpl string,
+	apiUrl string, enc string, successChar string, tpl string,
 	param map[string]interface{}) error {
 	switch provider {
 	case SmsHttp:
 		return sendPhoneMsgByHttpApi(apiUrl, appKey, appSecret, phoneNum,
-			compile(tpl, param), successChar)
+			compile(tpl, param), enc, successChar)
 	case SmsAli:
 		return aliyu.SendSms(appKey, appSecret, phoneNum, tpl, param)
 	case SmsCl253:
@@ -98,13 +100,22 @@ func CheckSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
 	return nil
 }
 
-// 通过HTTP-API发送短信,successChar为发送成功包含的字符
-func sendPhoneMsgByHttpApi(apiUrl, key, secret, phone, msg, successChar string) error {
+// 通过HTTP-API发送短信,successChar为发送成功包含的字符,enc：编码
+func sendPhoneMsgByHttpApi(apiUrl, key, secret, phone, msg,
+	enc, successChar string) error {
+	//如果指定了编码，则先编码内容
+	if enc != "" {
+		dst, err := util.EncodingTransform([]byte(msg), enc)
+		if err != nil {
+			return err
+		}
+		msg = string(dst)
+	}
 	strUrl := compile(apiUrl, map[string]interface{}{
 		"key":    key,
 		"secret": secret,
 		"phone":  phone,
-		"msg":    msg,
+		"msg":    url.QueryEscape(msg),
 	})
 	rsp, err := http.Get(strUrl)
 	if err == nil {
