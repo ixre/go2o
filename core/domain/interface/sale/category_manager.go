@@ -72,12 +72,11 @@ type (
 		Enabled int `db:"enabled"`
 		// 描述
 		Description string `db:"description"`
-		// 子分类
-		Child []*Category `db:"-"`
 	}
 	ICategoryRep interface {
 		// 获取系统的栏目服务
 		GetGlobManager() ICategoryManager
+
 		// 保存分类
 		SaveCategory(*Category) (int, error)
 
@@ -90,14 +89,11 @@ type (
 		// 获取分类
 		GetCategory(mchId, id int) *Category
 
+		// 创建分类
+		CreateCategory(v *Category) ICategory
+
 		// 获取所有分类
-		GetCategories(mchId int) CategoryList
-
-		// 获取与栏目相关的栏目
-		GetRelationCategories(mchId, categoryId int) CategoryList
-
-		// 获取子栏目
-		GetChildCategories(mchId, categoryId int) CategoryList
+		GetCategories(mchId int) []*Category
 	}
 
 	// 分类服务

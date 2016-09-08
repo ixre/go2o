@@ -128,4 +128,13 @@ type (
 		SalePrice  string `db:"sale_price"`
 		UpdateTime int64  `db:"update_time"`
 	}
+	// 分类
+	Category struct {
+		Id    int
+		Name  string
+		Icon  string
+		Url   string
+		Level int
+		Child []Category
+	}
 )

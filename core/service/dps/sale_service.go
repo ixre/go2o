@@ -326,40 +326,53 @@ func (s *saleService) getCategoryManager(mchId int) sale.ICategoryManager {
 	return s._cateRep.GetGlobManager()
 }
 
-func (s *saleService) GetBigCategories(mchId int) []*sale.Category {
+func (s *saleService) GetBigCategories(mchId int) []dto.Category {
 	cats := s.getCategoryManager(mchId).GetCategories()
-	list := []*sale.Category{}
+	list := []dto.Category{}
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
-			list = append(list, v2)
+			dv := dto.Category{}
+			CopyCategory(v2, &dv)
+			list = append(list, dv)
 		}
 	}
 	return list
 }
 
-func (s *saleService) GetChildCategories(mchId, parentId int) []*sale.Category {
+func (s *saleService) GetChildCategories(mchId, parentId int) []dto.Category {
 	cats := s.getCategoryManager(mchId).GetCategories()
-	list := []*sale.Category{}
+	list := []dto.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
-			v2 := *vv
-			v2.Icon = format.GetResUrl(v2.Icon)
-			list = append(list, &v2)
-			s.setChild(cats, &v2)
+			vv.Icon = format.GetResUrl(vv.Icon)
+			dv := dto.Category{}
+			CopyCategory(vv, &dv)
+			s.setChild(cats, &dv)
+			list = append(list, dv)
 		}
 	}
 	return list
 }
 
-func (s *saleService) setChild(list []sale.ICategory, dst *sale.Category) {
+func CopyCategory(src *sale.Category, dst *dto.Category) {
+	dst.Id = src.Id
+	dst.Name = src.Name
+	dst.Level = src.Level
+	dst.Icon = src.Icon
+	dst.Url = src.Url
+}
+
+func (s *saleService) setChild(list []sale.ICategory, dst *dto.Category) {
 	for _, v := range list {
 		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
 			if dst.Child == nil {
-				dst.Child = []*sale.Category{}
+				dst.Child = []dto.Category{}
 			}
 			vv.Icon = format.GetResUrl(vv.Icon)
-			dst.Child = append(dst.Child, vv)
+			dv := dto.Category{}
+			CopyCategory(vv, &dv)
+			dst.Child = append(dst.Child, dv)
 		}
 	}
 }
@@ -368,11 +381,11 @@ func (s *saleService) GetAllSaleLabels(merchantId int) []*sale.Label {
 	sl := s._rep.GetSale(merchantId)
 	tags := sl.LabelManager().GetAllSaleLabels()
 
-	var vtags []*sale.Label = make([]*sale.Label, len(tags))
+	lbs := make([]*sale.Label, len(tags))
 	for i, v := range tags {
-		vtags[i] = v.GetValue()
+		lbs[i] = v.GetValue()
 	}
-	return vtags
+	return lbs
 }
 
 // 获取销售标签

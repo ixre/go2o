@@ -115,7 +115,7 @@ func MemberHttpSessionConnect(ctx *echox.Context, call func(memberId int)) (ok b
 		}
 	}
 
-	//http://zs.ts.com/main/msc?device=1&return_url=/list/all_cate&member_id=30&token=25245e2640232df15db617473f59159c9d3d7c300ce349cb9a953b
+	//http://zs.ts.com/main/msc?device=1&return_url=/goods_cat&member_id=30&token=25245e2640232df15db617473f59159c9d3d7c300ce349cb9a953b
 	//SetMemberApiToken(ctx.App.Storage(),30,"f22e180335baf50c134ea5c1093de0a6")
 	//fmt.Println(GetMemberApiToken(ctx.App.Storage(),30))
 
