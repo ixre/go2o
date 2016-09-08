@@ -9,8 +9,10 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	adImpl "go2o/core/domain/ad"
 	"go2o/core/domain/interface/ad"
 	"sync"
@@ -21,12 +23,14 @@ var _ ad.IAdRep = new(advertisementRep)
 type advertisementRep struct {
 	db.Connector
 	sync.Mutex
+	storage storage.Interface
 }
 
 // 广告仓储
-func NewAdvertisementRep(c db.Connector) ad.IAdRep {
+func NewAdvertisementRep(c db.Connector, storage storage.Interface) ad.IAdRep {
 	return &advertisementRep{
 		Connector: c,
+		storage:   storage,
 	}
 }
 
@@ -75,32 +79,12 @@ func (a *advertisementRep) DelAdPosition(id int) error {
 
 // 保存广告位
 func (a *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
-	var err error
-	a.Mutex.Lock()
-	var orm = a.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		a.Connector.ExecScalar("SELECT MAX(id) FROM ad_position WHERE group_id=?", &v.Id, v.GroupId)
-	}
-	a.Mutex.Unlock()
-	return v.Id, err
+	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 保存
 func (a *advertisementRep) SaveAdGroup(v *ad.AdGroup) (int, error) {
-	var err error
-	a.Mutex.Lock()
-	var orm = a.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		a.Connector.ExecScalar("SELECT MAX(id) FROM ad_group", &v.Id)
-	}
-	a.Mutex.Unlock()
-	return v.Id, err
+	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 设置用户的广告
@@ -113,6 +97,10 @@ func (a *advertisementRep) SetUserAd(adUserId, posId, adId int) error {
 	a.ExecScalar("SELECT id FROM ad_userset WHERE user_id=? AND ad_id=?", &e.Id, adUserId, adId)
 	e.PosId = posId
 	_, err := orm.Save(a.GetOrm(), e, e.Id)
+	if err == nil {
+		//更新用户的广告缓存
+		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", adUserId))
+	}
 	return err
 }
 
@@ -126,18 +114,12 @@ func (a *advertisementRep) GetIdByName(userId int, name string) int {
 
 // 保存广告值
 func (a *advertisementRep) SaveAdValue(v *ad.Ad) (int, error) {
-	var err error
-	a.Mutex.Lock()
-	var orm = a.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		a.Connector.ExecScalar("SELECT MAX(id) FROM ad_list WHERE user_id=?",
-			&v.Id, v.UserId)
+	id, err := orm.Save(a.GetOrm(), v, v.Id)
+	if err == nil {
+		//更新用户的广告缓存
+		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", v.UserId))
 	}
-	a.Mutex.Unlock()
-	return v.Id, err
+	return id, err
 }
 
 // 获取超链接广告数据
@@ -152,30 +134,12 @@ func (a *advertisementRep) GetHyperLinkData(adId int) *ad.HyperLink {
 
 // 保存超链接广告数据
 func (a *advertisementRep) SaveHyperLinkData(v *ad.HyperLink) (int, error) {
-	var err error
-	a.Mutex.Lock()
-	var orm = a.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		a.Connector.ExecScalar("SELECT MAX(id) FROM ad_hyperlink WHERE ad_id=?", &v.Id, v.AdId)
-	}
-	a.Mutex.Unlock()
-	return v.Id, err
+	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 保存广告图片
 func (a *advertisementRep) SaveAdImageValue(v *ad.Image) (int, error) {
-	var err error
-	var orm = a.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		a.Connector.ExecScalar("SELECT MAX(id) FROM ad_image WHERE ad_id=?", &v.Id, v.AdId)
-	}
-	return v.Id, err
+	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 获取广告
@@ -227,6 +191,10 @@ func (a *advertisementRep) DelAdImage(advertisementId, id int) error {
 // 删除广告
 func (a *advertisementRep) DelAd(userId, advertisementId int) error {
 	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", userId, advertisementId)
+	if err == nil {
+		//更新用户的广告缓存
+		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", userId))
+	}
 	return err
 }
 
