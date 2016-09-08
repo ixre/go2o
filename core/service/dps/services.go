@@ -99,7 +99,7 @@ func Init(ctx gof.App) {
 	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
 	deliveryRep := repository.NewDeliverRep(db)
 	contentRep := repository.NewContentRep(db)
-	adRep := repository.NewAdvertisementRep(db)
+	adRep := repository.NewAdvertisementRep(db, sto)
 	spRep := repository.NewOrderRep(sto, db, mchRep, nil, saleRep, cartRep, goodsRep,
 		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
 	payRep := repository.NewPaymentRep(sto, db, memberRep, spRep, valRep)
@@ -132,7 +132,7 @@ func Init(ctx gof.App) {
 	ExpressService = NewExpressService(expressRep)
 	ShipmentService = NewShipmentService(shipRep, deliveryRep)
 	ContentService = NewContentService(contentRep, contentQue)
-	AdService = NewAdvertisementService(adRep)
+	AdService = NewAdvertisementService(adRep, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
 
 	//m := memberRep.GetMember(1)

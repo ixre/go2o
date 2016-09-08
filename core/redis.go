@@ -120,3 +120,12 @@ func CleanRedisCache(app gof.App) {
 	}
 	log.Println("[ Go2o][ Clean][ Cache]: clean ok !")
 }
+
+// 删除指定前缀的缓存
+func RemovePrefixKeys(sto storage.Interface, prefix string) {
+	rds := sto.(storage.IRedisStorage)
+	_, err := rds.PrefixDel(prefix)
+	if err != nil {
+		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
+	}
+}

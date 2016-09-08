@@ -10,18 +10,23 @@ package dps
 
 import (
 	"errors"
+	"fmt"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/infrastructure/format"
+	"go2o/core/repository"
 )
 
 type adService struct {
-	_rep ad.IAdRep
+	_rep    ad.IAdRep
+	storage storage.Interface
 	//_query     *query.ContentQuery
 }
 
-func NewAdvertisementService(rep ad.IAdRep) *adService {
+func NewAdvertisementService(rep ad.IAdRep, storage storage.Interface) *adService {
 	return &adService{
-		_rep: rep,
+		_rep:    rep,
+		storage: storage,
 	}
 }
 
@@ -85,6 +90,7 @@ func (a *adService) SetDefaultAd(groupId, posId, adId int) error {
 
 // 用户投放广告
 func (a *adService) SetUserAd(adUserId int, posId int, adId int) error {
+	defer a.cleanCache(adUserId)
 	ua := a._rep.GetAdManager().GetUserAd(adUserId)
 	return ua.SetAd(posId, adId)
 }
@@ -131,6 +137,7 @@ func (a *adService) GetAdDto(userId int, id int) *ad.AdDto {
 
 // 保存广告,更新时不允许修改类型
 func (a *adService) SaveAd(adUserId int, v *ad.Ad) (int, error) {
+	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv ad.IAd
 	if v.Id > 0 {
@@ -146,11 +153,13 @@ func (a *adService) SaveAd(adUserId int, v *ad.Ad) (int, error) {
 }
 
 func (a *adService) DeleteAd(adUserId, adId int) error {
+	defer a.cleanCache(adUserId)
 	return a.getUserAd(adUserId).DeleteAd(adId)
 }
 
 // 保存图片广告
 func (a *adService) SaveHyperLinkAd(adUserId int, v *ad.HyperLink) (int, error) {
+	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(v.AdId)
 	if adv.Type() == ad.TypeHyperLink {
@@ -175,6 +184,7 @@ func (a *adService) SaveImageAd(adUserId int, v *ad.Image) (int, error) {
 
 // 保存广告图片
 func (a *adService) SaveImage(adUserId int, advertisementId int, v *ad.Image) (int, error) {
+	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
@@ -206,6 +216,7 @@ func (a *adService) GetValueAdImage(adUserId, advertisementId, imgId int) *ad.Im
 
 // 删除广告图片
 func (a *adService) DelAdImage(adUserId, advertisementId, imgId int) error {
+	defer a.cleanCache(adUserId)
 	pa := a.getUserAd(adUserId)
 	var adv ad.IAd = pa.GetById(advertisementId)
 	if adv != nil {
@@ -215,4 +226,8 @@ func (a *adService) DelAdImage(adUserId, advertisementId, imgId int) error {
 		}
 	}
 	return nil
+}
+
+func (a *adService) cleanCache(adUserId int) error {
+	return repository.PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", adUserId))
 }
