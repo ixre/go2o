@@ -39,7 +39,7 @@ func Configure(app gof.App) {
 	variable.MemberExt6Show = false
 
 	// 注册后赠送100w积分
-	repository.DefaultRegistry.PresentIntegralNumOfRegister = 1000000
+	repository.DefaultRegistry.PresentIntegralNumOfRegister = 0
 	// 积分兑换率,兑换1元需要的积分
 	repository.DefaultGlobNumberConf.IntegralDiscountRate = 1
 }

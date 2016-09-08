@@ -9,11 +9,14 @@
 package repository
 
 import (
-	"github.com/jsix/gof/algorithm/iterator"
+	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
 	saleImpl "go2o/core/domain/sale"
+	"sort"
 )
 
 var _ sale.ICategoryRep = new(categoryRep)
@@ -22,124 +25,115 @@ type categoryRep struct {
 	db.Connector
 	_valRep          valueobject.IValueRep
 	_globCateManager sale.ICategoryManager
+	storage          storage.Interface
 }
 
-func NewCategoryRep(conn db.Connector, valRep valueobject.IValueRep) sale.ICategoryRep {
+func NewCategoryRep(conn db.Connector, valRep valueobject.IValueRep,
+	storage storage.Interface) sale.ICategoryRep {
 	return &categoryRep{
 		Connector: conn,
 		_valRep:   valRep,
+		storage:   storage,
 	}
 }
 
-func (this *categoryRep) GetGlobManager() sale.ICategoryManager {
-	if this._globCateManager == nil {
-		this._globCateManager = saleImpl.NewCategoryManager(0, this, this._valRep)
+func (c *categoryRep) GetGlobManager() sale.ICategoryManager {
+	if c._globCateManager == nil {
+		c._globCateManager = saleImpl.NewCategoryManager(0, c, c._valRep)
 	}
-	return this._globCateManager
+	return c._globCateManager
 }
 
-func (this *categoryRep) SaveCategory(v *sale.Category) (int, error) {
-	orm := this.Connector.GetOrm()
-	if v.Id <= 0 {
-		_, _, err := orm.Save(nil, v)
-		if err == nil {
-			this.Connector.ExecScalar(`SELECT MAX(id) FROM gs_category`, &v.Id)
-		}
-		return v.Id, err
-	} else {
-		_, _, err := orm.Save(v.Id, v)
-		return v.Id, err
+func (c *categoryRep) getCategoryCacheKey(id int) string {
+	return fmt.Sprintf("go2o:rep:cat:c:%d", id)
+}
+
+func (c *categoryRep) SaveCategory(v *sale.Category) (int, error) {
+	id, err := orm.Save(c.GetOrm(), v, v.Id)
+	// 清理缓存
+	if err == nil {
+		c.storage.Del(c.getCategoryCacheKey(id))
+		PrefixDel(c.storage, fmt.Sprintf("go2o:rep:cat:%d:*", v.MerchantId))
 	}
+	return id, err
 }
 
 // 检查分类是否关联商品
-func (this *categoryRep) CheckGoodsContain(mchId, id int) bool {
+func (c *categoryRep) CheckGoodsContain(mchId, id int) bool {
 	num := 0
 	//清理项
-	this.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
+	c.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
 		(SELECT Id FROM gs_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
 	return num > 0
 }
 
-func (this *categoryRep) DeleteCategory(merchantId, id int) error {
+func (c *categoryRep) DeleteCategory(mchId, id int) error {
 	//删除子类
-	_, _, err := this.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
-		merchantId, id)
+	_, _, err := c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
+		mchId, id)
 
 	//删除分类
-	_, _, err = this.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND id=?",
-		merchantId, id)
+	_, _, err = c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND id=?",
+		mchId, id)
+
+	// 清理缓存
+	if err == nil {
+		c.storage.Del(c.getCategoryCacheKey(id))
+		PrefixDel(c.storage, fmt.Sprintf("go2o:rep:cat:%d:*", mchId))
+	}
 
 	return err
 }
 
-func (this *categoryRep) GetCategory(merchantId, id int) *sale.Category {
-	var e *sale.Category = new(sale.Category)
-	err := this.Connector.GetOrm().Get(id, e)
-	if err == nil && e.MerchantId == merchantId {
-		return e
-	}
-	return nil
-}
-
-func (this *categoryRep) GetCategories(merchantId int) sale.CategoryList {
-	var e []*sale.Category = []*sale.Category{}
-	err := this.Connector.GetOrm().Select(&e, "mch_id=? ORDER BY id ASC", merchantId)
-	if err == nil {
-		return e
-	}
-	return nil
-}
-
-// 获取与栏目相关的栏目
-func (this *categoryRep) GetRelationCategories(merchantId, categoryId int) sale.CategoryList {
-	var all []*sale.Category = this.GetCategories(merchantId)
-	var newArr []*sale.Category = []*sale.Category{}
-	var isMatch bool
-	var pid int
-	var l int = len(all)
-
-	for i := 0; i < l; i++ {
-		if !isMatch && all[i].Id == categoryId {
-			isMatch = true
-			pid = all[i].ParentId
-			newArr = append(newArr, all[i])
-			i = -1
-		} else {
-			if all[i].Id == pid {
-				newArr = append(newArr, all[i])
-				pid = all[i].ParentId
-				i = -1
-				if pid == 0 {
-					break
-				}
-			}
+func (c *categoryRep) GetCategory(merchantId, id int) *sale.Category {
+	e := sale.Category{}
+	key := c.getCategoryCacheKey(id)
+	if c.storage.Get(key, &e) != nil {
+		err := c.Connector.GetOrm().Get(id, &e)
+		if err != nil {
+			return nil
 		}
+		c.storage.Set(key, &e)
 	}
-	return newArr
+	return &e
 }
 
-// 获取子栏目
-func (this *categoryRep) GetChildCategories(merchantId, categoryId int) sale.CategoryList {
-	var all []*sale.Category = this.GetCategories(merchantId)
-	var newArr []*sale.Category = []*sale.Category{}
+// 创建分类
+func (c *categoryRep) CreateCategory(v *sale.Category) sale.ICategory {
+	return saleImpl.NewCategory(c, v)
+}
 
-	var cdt iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*sale.Category).ParentId == v.(*sale.Category).Id
+func (c *categoryRep) convertICategory(list sale.CategoryList) []sale.ICategory {
+	sort.Sort(list)
+	slice := make([]sale.ICategory, len(list))
+	for i, v := range list {
+		slice[i] = c.CreateCategory(v)
 	}
-	var start iterator.WalkFunc = func(v interface{}, level int) {
-		c := v.(*sale.Category)
-		if c.Id != categoryId {
-			newArr = append(newArr, c)
-		}
+	return slice
+}
+
+func (c *categoryRep) redirectGetCats(mchId int) []*sale.Category {
+	list := []*sale.Category{}
+	err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
+	if err != nil {
+		handleError(err)
 	}
+	return list
+}
 
-	var arr []interface{} = make([]interface{}, len(all))
-	for i, _ := range arr {
-		arr[i] = all[i]
-	}
-
-	iterator.Walk(arr, &sale.Category{Id: categoryId}, cdt, start, nil, 1)
-
-	return newArr
+func (c *categoryRep) GetCategories(mchId int) []*sale.Category {
+	return c.redirectGetCats(mchId)
+	//todo: cache
+	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)
+	//list := []*sale.Category{}
+	//if err := c.storage.Get(key, &list);err != nil {
+	//    handleError(err)
+	//    err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
+	//    if err == nil {
+	//        c.storage.SetExpire(key,list, DefaultCacheSeconds)
+	//    } else {
+	//        handleError(err)
+	//    }
+	//}
+	//return list
 }

@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/algorithm/iterator"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -30,29 +31,26 @@ type categoryImpl struct {
 	_parentIdChanged bool
 	_childIdArr      []int
 	_opt             domain.IOptionStore
-	_manager         sale.ICategoryManager
 }
 
-func newCategory(rep sale.ICategoryRep, v *sale.Category,
-	manager sale.ICategoryManager) sale.ICategory {
+func NewCategory(rep sale.ICategoryRep, v *sale.Category) sale.ICategory {
 	return &categoryImpl{
-		_value:   v,
-		_rep:     rep,
-		_manager: manager,
+		_value: v,
+		_rep:   rep,
 	}
 }
 
-func (this *categoryImpl) GetDomainId() int {
-	return this._value.Id
+func (c *categoryImpl) GetDomainId() int {
+	return c._value.Id
 }
 
-func (this *categoryImpl) GetValue() *sale.Category {
-	return this._value
+func (c *categoryImpl) GetValue() *sale.Category {
+	return c._value
 }
 
-func (this *categoryImpl) GetOption() domain.IOptionStore {
-	if this._opt == nil {
-		opt := newCategoryOption(this)
+func (c *categoryImpl) GetOption() domain.IOptionStore {
+	if c._opt == nil {
+		opt := newCategoryOption(c)
 		if err := opt.Stat(); err != nil {
 			opt.Set(sale.C_OptionViewName, &domain.Option{
 				Key:   sale.C_OptionViewName,
@@ -70,13 +68,13 @@ func (this *categoryImpl) GetOption() domain.IOptionStore {
 			})
 			opt.Flush()
 		}
-		this._opt = opt
+		c._opt = opt
 	}
-	return this._opt
+	return c._opt
 }
 
-func (this *categoryImpl) SetValue(v *sale.Category) error {
-	val := this._value
+func (c *categoryImpl) SetValue(v *sale.Category) error {
+	val := c._value
 	if val.Id == v.Id {
 		val.Description = v.Description
 		val.Enabled = v.Enabled
@@ -84,75 +82,128 @@ func (this *categoryImpl) SetValue(v *sale.Category) error {
 		val.SortNumber = v.SortNumber
 		val.Icon = v.Icon
 		if val.ParentId != v.ParentId {
-			this._parentIdChanged = true
+			c._parentIdChanged = true
 			val.ParentId = v.ParentId
 		} else {
-			this._parentIdChanged = false
+			c._parentIdChanged = false
 		}
 	}
 	return nil
 }
 
 // 获取子栏目的编号
-func (this *categoryImpl) GetChildes() []int {
-	if this._childIdArr == nil {
-		childCats := this._rep.GetChildCategories(
-			this._value.MerchantId, this.GetDomainId())
-		this._childIdArr = make([]int, len(childCats))
+func (c *categoryImpl) GetChildes() []int {
+	if c._childIdArr == nil {
+		childCats := c.GetChildCategories(
+			c._value.MerchantId, c.GetDomainId())
+		c._childIdArr = make([]int, len(childCats))
 		for i, v := range childCats {
-			this._childIdArr[i] = v.Id
+			c._childIdArr[i] = v.Id
 		}
 	}
-	return this._childIdArr
+	return c._childIdArr
 }
-func (this *categoryImpl) setCategoryLevel() {
-	this.parentWalk(this._manager.GetCategories(),
-		this._value.ParentId,
-		&this._value.Level)
+func (c *categoryImpl) setCategoryLevel() {
+	mchId := c._value.MerchantId
+	list := c._rep.GetCategories(mchId)
+	c.parentWalk(list, mchId, &c._value.Level)
 }
 
-func (this *categoryImpl) parentWalk(list []sale.ICategory,
+func (c *categoryImpl) parentWalk(list []*sale.Category,
 	parentId int, level *int) {
 	*level += 1
-	if parentId > 0 {
-		for _, v := range list {
-			if v2 := v.GetValue(); v2.Id == v2.ParentId {
-				panic(errors.New(fmt.Sprintf(
-					"Bad category , id is same of parent id , id:%s",
-					v2.Id)))
-			} else if v2.Id == parentId {
-				this.parentWalk(list, v2.ParentId, level)
-				break
-			}
+	if parentId <= 0 {
+		return
+	}
+	for _, v := range list {
+		if v.Id == v.ParentId {
+			panic(errors.New(fmt.Sprintf(
+				"Bad category , id is same of parent id , id:%s",
+				v.Id)))
+		} else if v.Id == parentId {
+			c.parentWalk(list, v.ParentId, level)
+			break
 		}
 	}
 }
 
-func (this *categoryImpl) Save() (int, error) {
-	if this._manager.ReadOnly() {
-		return this.GetDomainId(), sale.ErrReadonlyCategory
-	}
-	this.setCategoryLevel()
-	id, err := this._rep.SaveCategory(this._value)
+func (c *categoryImpl) Save() (int, error) {
+	//if c._manager.ReadOnly() {
+	//    return c.GetDomainId(), sale.ErrReadonlyCategory
+	//}
+	c.setCategoryLevel()
+	id, err := c._rep.SaveCategory(c._value)
 	if err == nil {
-		this._manager.(*categoryManagerImpl).clean() //清理缓存
-		this._value.Id = id
-		if len(this._value.Url) == 0 || (this._parentIdChanged &&
-			strings.HasPrefix(this._value.Url, "/c-")) {
-			this._value.Url = this.getAutomaticUrl(this._value.MerchantId, id)
-			this._parentIdChanged = false
-			return this.Save()
+		c._value.Id = id
+		if len(c._value.Url) == 0 || (c._parentIdChanged &&
+			strings.HasPrefix(c._value.Url, "/c-")) {
+			c._value.Url = c.getAutomaticUrl(c._value.MerchantId, id)
+			c._parentIdChanged = false
+			return c.Save()
 		}
 	}
 	return id, err
 }
 
-func (this *categoryImpl) getAutomaticUrl(merchantId, id int) string {
-	var relCategories []*sale.Category = this._rep.GetRelationCategories(merchantId, id)
+// 获取子栏目
+func (c *categoryImpl) GetChildCategories(mchId, categoryId int) []*sale.Category {
+	var all []*sale.Category = c._rep.GetCategories(mchId)
+	var newArr []*sale.Category = []*sale.Category{}
+
+	var cdt iterator.Condition = func(v, v1 interface{}) bool {
+		return v1.(*sale.Category).ParentId == v.(*sale.Category).Id
+	}
+	var start iterator.WalkFunc = func(v interface{}, level int) {
+		c := v.(*sale.Category)
+		if c.Id != categoryId {
+			newArr = append(newArr, c)
+		}
+	}
+
+	var arr []interface{} = make([]interface{}, len(all))
+	for i := range arr {
+		arr[i] = all[i]
+	}
+
+	iterator.Walk(arr, &sale.Category{Id: categoryId}, cdt, start, nil, 1)
+
+	return newArr
+}
+
+// 获取与栏目相关的栏目
+func (c *categoryImpl) GetRelationCategories(mchId, categoryId int) []*sale.Category {
+	var all []*sale.Category = c._rep.GetCategories(mchId)
+	var newArr []*sale.Category = []*sale.Category{}
+	var isMatch bool
+	var pid int
+	var l int = len(all)
+
+	for i := 0; i < l; i++ {
+		if !isMatch && all[i].Id == categoryId {
+			isMatch = true
+			pid = all[i].ParentId
+			newArr = append(newArr, all[i])
+			i = -1
+		} else {
+			if all[i].Id == pid {
+				newArr = append(newArr, all[i])
+				pid = all[i].ParentId
+				i = -1
+				if pid == 0 {
+					break
+				}
+			}
+		}
+	}
+	return newArr
+}
+
+func (c *categoryImpl) getAutomaticUrl(merchantId, id int) string {
+	relCats := c.GetRelationCategories(merchantId, id)
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
-	var l int = len(relCategories)
+	var l int = len(relCats)
 	for i := l; i > 0; i-- {
-		buf.WriteString("-" + strconv.Itoa(relCategories[i-1].Id))
+		buf.WriteString("-" + strconv.Itoa(relCats[i-1].Id))
 	}
 	buf.WriteString(".htm")
 	return buf.String()
@@ -186,11 +237,12 @@ var _ sale.ICategoryManager = new(categoryManagerImpl)
 
 //当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
-	_readonly   bool
-	_rep        sale.ICategoryRep
-	_valRep     valueobject.IValueRep
-	_mchId      int
-	_categories []sale.ICategory
+	_readonly      bool
+	_rep           sale.ICategoryRep
+	_valRep        valueobject.IValueRep
+	_mchId         int
+	lastUpdateTime int64
+	_categories    []sale.ICategory
 }
 
 func NewCategoryManager(mchId int, rep sale.ICategoryRep,
@@ -203,80 +255,76 @@ func NewCategoryManager(mchId int, rep sale.ICategoryRep,
 	return c.init()
 }
 
-func (this *categoryManagerImpl) init() sale.ICategoryManager {
-	mchConf := this._valRep.GetPlatformConf()
-	if !mchConf.MchGoodsCategory && this._mchId > 0 {
-		this._readonly = true
-		this._mchId = 0
+func (c *categoryManagerImpl) init() sale.ICategoryManager {
+	mchConf := c._valRep.GetPlatformConf()
+	if !mchConf.MchGoodsCategory && c._mchId > 0 {
+		c._readonly = true
+		c._mchId = 0
 	}
-	return this
+	return c
 }
 
 // 获取栏目关联的编号,系统用0表示
-func (this *categoryManagerImpl) getRelationId() int {
-	return this._mchId
+func (c *categoryManagerImpl) getRelationId() int {
+	return c._mchId
 }
 
 // 清理缓存
-func (this *categoryManagerImpl) clean() {
-	this._categories = nil
+func (c *categoryManagerImpl) clean() {
+	c._categories = nil
 }
 
 // 是否只读,当商户共享系统的分类时,
 // 没有修改的权限,即只读!
-func (this *categoryManagerImpl) ReadOnly() bool {
-	return this._readonly
+func (c *categoryManagerImpl) ReadOnly() bool {
+	return c._readonly
 }
 
 // 创建分类
-func (this *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
+func (c *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	v.MerchantId = this.getRelationId()
-	return newCategory(this._rep, v, this)
+	v.MerchantId = c.getRelationId()
+	return NewCategory(c._rep, v)
 }
 
 // 获取分类
-func (this *categoryManagerImpl) GetCategory(id int) sale.ICategory {
-	v := this._rep.GetCategory(this.getRelationId(), id)
+func (c *categoryManagerImpl) GetCategory(id int) sale.ICategory {
+	v := c._rep.GetCategory(c.getRelationId(), id)
 	if v != nil {
-		return this.CreateCategory(v)
+		return c.CreateCategory(v)
 	}
 	return nil
 }
 
 // 获取所有分类
-func (this *categoryManagerImpl) GetCategories() []sale.ICategory {
-	if this._categories == nil {
-		list := this._rep.GetCategories(this.getRelationId())
-		sort.Sort(list)
-		this._categories = make([]sale.ICategory, len(list))
-		for i, v := range list {
-			this._categories[i] = this.CreateCategory(v)
-		}
+func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
+	var list sale.CategoryList = c._rep.GetCategories(c.getRelationId())
+	sort.Sort(list)
+	slice := make([]sale.ICategory, len(list))
+	for i, v := range list {
+		slice[i] = c.CreateCategory(v)
 	}
-	return this._categories
+	return slice
 }
 
 // 删除分类
-func (this *categoryManagerImpl) DeleteCategory(id int) error {
-	c := this.GetCategory(id)
-	if c == nil {
+func (c *categoryManagerImpl) DeleteCategory(id int) error {
+	cat := c.GetCategory(id)
+	if cat == nil {
 		return sale.ErrCategoryNotExist
 	}
-	if len(c.GetChildes()) > 0 {
+	if len(cat.GetChildes()) > 0 {
 		return sale.ErrHasChildCategories
 	}
-	if this._rep.CheckGoodsContain(this.getRelationId(), id) {
+	if c._rep.CheckGoodsContain(c.getRelationId(), id) {
 		return sale.ErrCategoryContainGoods
 	}
-
-	err := this._rep.DeleteCategory(this.getRelationId(), id)
+	err := c._rep.DeleteCategory(c.getRelationId(), id)
 	if err == nil {
-		this.clean() //清理缓存
-		err = c.GetOption().Destroy()
-		c = nil
+		err = cat.GetOption().Destroy()
+		cat = nil
 	}
 	return err
 }
