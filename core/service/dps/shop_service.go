@@ -12,7 +12,10 @@ import (
 	"errors"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/variable"
 )
 
 type shopService struct {
@@ -170,4 +173,18 @@ func (ss *shopService) GetOnlineShopConf(shopId int) *shop.OnlineShop {
 		}
 	}
 	return nil
+}
+
+// 获取指定的营业中的店铺
+func (ss *shopService) PagedOnBusinessOnlineShops(begin, end int, where, order string) (int, []*dto.ListOnlineShop) {
+	n, rows := ss._query.PagedOnBusinessOnlineShops(begin, end, where, order)
+	if len(rows) > 0 {
+		for _, v := range rows {
+			v.Logo = format.GetResUrl(v.Logo)
+			if v.Host == "" {
+				v.Host = v.Alias + "." + variable.Domain
+			}
+		}
+	}
+	return n, rows
 }

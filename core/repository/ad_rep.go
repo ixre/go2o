@@ -74,12 +74,22 @@ func (a *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPositi
 
 // 删除广告位
 func (a *advertisementRep) DelAdPosition(id int) error {
-	return a.Connector.GetOrm().DeleteByPk(&ad.AdPosition{}, id)
+	err := a.Connector.GetOrm().DeleteByPk(&ad.AdPosition{}, id)
+	if err == nil {
+		//更新用户的广告缓存
+		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", 0))
+	}
+	return err
 }
 
 // 保存广告位
 func (a *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
-	return orm.Save(a.GetOrm(), v, v.Id)
+	id, err := orm.Save(a.GetOrm(), v, v.Id)
+	if err == nil {
+		//更新用户的广告缓存
+		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", 0))
+	}
+	return id, err
 }
 
 // 保存
