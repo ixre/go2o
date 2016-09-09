@@ -105,6 +105,7 @@ func (s *ShopImpl) Data() *shop.ShopDto {
 		ShopType:   s.Type(),
 		Name:       s._value.Name,
 		State:      s._value.State,
+		CreateTime: s._value.CreateTime,
 		Data:       nil,
 	}
 }
