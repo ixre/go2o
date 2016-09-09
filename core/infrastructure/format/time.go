@@ -8,7 +8,9 @@
  */
 package format
 
-import "time"
+import (
+	"time"
+)
 
 func HanDateTime(t time.Time) string {
 	return t.Format("2006年01月02日 15:04")

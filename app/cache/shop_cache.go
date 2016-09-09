@@ -19,7 +19,7 @@ import (
 
 // 设置商户站点配置
 func GetShopDataKey(shopId int) string {
-	return fmt.Sprintf("cache:online-shop:siteconf:%d", shopId)
+	return fmt.Sprintf("go2o:cache:online-shop:siteconf:%d", shopId)
 }
 
 func DelShopCache(merchantId int) {

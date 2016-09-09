@@ -187,6 +187,7 @@ type (
 		ShopType   int
 		Name       string
 		State      int
+		CreateTime int64
 		// 线上/线下商店的数据
 		Data interface{}
 	}
