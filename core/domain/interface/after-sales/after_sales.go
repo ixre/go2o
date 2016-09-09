@@ -22,10 +22,10 @@ const (
 	StatIntercede
 	// 同意,等待退货
 	StatAwaitingReturnShip
-	// 已发货
-	StatReturnShipped
 	// 已收货,等待系统确认
 	StatAwaitingConfirm
+	// 已发货
+	StatReturnShipped
 	// 已退回
 	StateRejected
 	// 等待处理
