@@ -137,4 +137,12 @@ type (
 		Level int
 		Child []Category
 	}
+	ListOnlineShop struct {
+		Id         int    `db:"sp.id"`
+		Name       string `db:"sp.name"`
+		Alias      string `db:"alias"`
+		Host       string `db:"ol.host"`
+		Logo       string `db:"logo"`
+		CreateTime int64  `db:"sp.create_time" json:"-"`
+	}
 )

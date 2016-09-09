@@ -25,7 +25,7 @@ func NewGoodsQuery(c db.Connector) *GoodsQuery {
 	}
 }
 
-func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, end int,
+func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, end int,
 	keyword, where, orderBy string) (total int, goods []*valueobject.Goods) {
 	var sql string
 
@@ -37,7 +37,7 @@ func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, en
 		orderBy += ","
 	}
 
-	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
          INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.mch_id=? AND gs_item.state=1
@@ -51,19 +51,19 @@ func (this GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, en
 		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 
-		this.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, keyword, start, (end - start))
+		g.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, keyword, start, (end - start))
 	}
 
 	return total, e
 }
 
-func (this GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
+func (g GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
 	e := dto.GoodsComplex{}
 	sql := `SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE gs_category.mch_id=? AND gs_item.state=1
 		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`
 
-	this.Connector.GetOrm().GetByQuery(&e, sql, goodsId)
+	g.Connector.GetOrm().GetByQuery(&e, sql, goodsId)
 	return &e
 }
