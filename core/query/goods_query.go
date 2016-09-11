@@ -25,10 +25,11 @@ func NewGoodsQuery(c db.Connector) *GoodsQuery {
 	}
 }
 
-func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, end int,
-	keyword, where, orderBy string) (total int, goods []*valueobject.Goods) {
+//根据关键词搜索上架的商品
+func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int, start, end int,
+	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
-
+	total := 0
 	keyword = "%" + keyword + "%"
 	if len(where) != 0 {
 		where = " AND " + where
@@ -40,18 +41,20 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(merchantId int, start, end i
 	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
          INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		 WHERE gs_category.mch_id=? AND gs_item.state=1
-		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s`, where), &total, merchantId, keyword)
+		 WHERE gs_item.state=1 AND gs_item.on_shelves=1
+         AND (?=0 OR gs_item.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND gs_item.name LIKE ? %s`, where), &total, shopId, shopId, keyword)
 
 	e := []*valueobject.Goods{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		 WHERE gs_category.mch_id=? AND gs_item.state=1
-		 AND gs_item.on_shelves=1 AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
+		 WHERE gs_item.state=1 AND gs_item.on_shelves=1
+         AND (?=0 OR gs_item.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
+         AND gs_item.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 
-		g.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, keyword, start, (end - start))
+		g.Connector.GetOrm().SelectByQuery(&e, sql, shopId, shopId, keyword, start, (end - start))
 	}
 
 	return total, e

@@ -168,15 +168,18 @@ func (s *saleService) GetShopPagedOnShelvesGoods(merchantId, categoryId, start, 
 	return total, list
 }
 
+// 获取上架商品数据（分页）
 func (s *saleService) GetPagedOnShelvesGoods(shopId int, categoryId, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cate := s._cateRep.GetGlobManager().GetCategory(categoryId)
 		var ids []int = cate.GetChildes()
 		ids = append(ids, categoryId)
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
+		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
+			ids, start, end, "", sortBy)
 	} else {
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, []int{}, start, end, "", sortBy)
+		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
+			[]int{}, start, end, "", sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -185,8 +188,8 @@ func (s *saleService) GetPagedOnShelvesGoods(shopId int, categoryId, start, end 
 }
 
 // 获取分页上架的商品
-func (s *saleService) GetPagedOnShelvesGoodsByKeyword(merchantId,
-	start, end int, word, sortQuery string) (int, []*valueobject.Goods) {
+func (s *saleService) GetPagedOnShelvesGoodsByKeyword(shopId, start, end int,
+	word, sortQuery string) (int, []*valueobject.Goods) {
 	var where string
 	var orderBy string
 	switch sortQuery {
@@ -207,8 +210,7 @@ func (s *saleService) GetPagedOnShelvesGoodsByKeyword(merchantId,
 	case "rate_1":
 		//todo:
 	}
-
-	return s._goodsQuery.GetPagedOnShelvesGoodsByKeyword(merchantId,
+	return s._goodsQuery.GetPagedOnShelvesGoodsByKeyword(shopId,
 		start, end, word, where, orderBy)
 }
 
