@@ -164,7 +164,7 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 	typeParams := strings.TrimSpace(ctx.Form("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:sg:front:%d_%s", shopId, typeParams)
+	key := fmt.Sprint("go2o:rep:gs:fc3:%d_%s", shopId, typeParams)
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -180,7 +180,7 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 					-1, begin, begin+size, "gs_goods.sale_num DESC")
 			}
 		}
-		sto.SetExpire(key, result, maxSeconds)
+		//sto.SetExpire(key, result, maxSeconds)
 	}
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
