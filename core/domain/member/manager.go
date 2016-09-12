@@ -75,10 +75,7 @@ func (l *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
-	if !phoneRegex.MatchString(phone) {
-		return member.ErrBadPhoneFormat
-	}
-	if b := l._rep.CheckPhoneBind(phone, memberId); b {
+	if l._rep.CheckPhoneBind(phone, memberId) {
 		return member.ErrPhoneHasBind
 	}
 	return nil
@@ -88,6 +85,7 @@ func (l *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int, err error) {
 	perm := l._valRep.GetRegisterPerm()
+	conf := l._valRep.GetRegistry()
 
 	//验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.Usr = strings.TrimSpace(v.Usr)
@@ -116,10 +114,11 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 		return 0, member.ErrMissingPhone
 	}
 	if lp > 0 {
-		if !phoneRegex.MatchString(pro.Phone) {
+		if conf.MemberCheckPhoneFormat &&
+			!phoneRegex.MatchString(pro.Phone) {
 			return 0, member.ErrBadPhoneFormat
 		}
-		if b := l._rep.CheckPhoneBind(pro.Phone, v.Id); b {
+		if l.CheckPhoneBind(pro.Phone, v.Id) != nil {
 			return 0, member.ErrPhoneHasBind
 		}
 	}

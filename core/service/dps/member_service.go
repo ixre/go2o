@@ -157,6 +157,7 @@ func (ms *memberService) GetHighestLevel() member.Level {
 	return member.Level{}
 }
 
+// 根据会员编号获取会员
 func (ms *memberService) GetMember(id int) *member.Member {
 	if id <= 0 {
 		return nil
@@ -167,6 +168,11 @@ func (ms *memberService) GetMember(id int) *member.Member {
 		return &nv
 	}
 	return nil
+}
+
+// 根据用户名获取会员
+func (ms *memberService) GetMemberByUser(usr string) *member.Member {
+	return ms._rep.GetMemberByUsr(usr)
 }
 
 func (ms *memberService) getMember(memberId int) (
@@ -325,7 +331,7 @@ func (ms *memberService) TryLogin(usr, pwd string, update bool) (
 	*member.Member, error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 
-	val := ms._rep.GetMemberValueByUsr(usr)
+	val := ms._rep.GetMemberByUsr(usr)
 	if val == nil {
 		val = ms._rep.GetMemberValueByPhone(usr)
 	}

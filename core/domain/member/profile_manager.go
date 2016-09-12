@@ -80,8 +80,11 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrEmailValidErr
 	}
 
-	if len(v.Phone) != 0 && !phoneRegex.MatchString(v.Phone) {
-		return member.ErrPhoneValidErr
+	conf := p._valRep.GetRegistry()
+	if len(v.Phone) != 0 && conf.MemberCheckPhoneFormat {
+		if !phoneRegex.MatchString(v.Phone) {
+			return member.ErrPhoneValidErr
+		}
 	}
 
 	if len(v.Phone) > 0 && p.phoneIsExist(v.Phone) {
@@ -89,7 +92,6 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	}
 
 	if v.UpdateTime > 0 {
-		conf := p._valRep.GetRegistry()
 		if conf.MemberImRequired && len(v.Im) == 0 {
 			return member.ErrMissingIM
 		}

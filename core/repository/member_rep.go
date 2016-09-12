@@ -160,13 +160,13 @@ func (m *MemberRep) SaveMemberLevel_New(v *member.Level) (int, error) {
 }
 
 // 根据用户名获取会员
-func (m *MemberRep) GetMemberValueByUsr(usr string) *member.Member {
+func (m *MemberRep) GetMemberByUsr(usr string) *member.Member {
 	e := &member.Member{}
 	err := m.Connector.GetOrm().GetBy(e, "usr=?", usr)
-	if err != nil {
-		return nil
+	if err == nil {
+		return e
 	}
-	return e
+	return nil
 }
 
 // 根据手机号码获取会员
