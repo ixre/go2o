@@ -26,6 +26,8 @@ var (
 		MemberTransferAccountsAlertMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
 		// 会员未实名认证提示信息
 		MemberNotTrustedMessage: "您尚未实名认证!",
+		// 会员是否验证手机号码格式
+		MemberCheckPhoneFormat: true,
 		// 注册后赠送积分数量
 		PresentIntegralNumOfRegister: 0,
 		MemberReferLayer:             3,

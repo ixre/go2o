@@ -35,7 +35,7 @@ func chkStorage(sto storage.Interface) {
 
 // 获取会员API调用密钥Key
 func GetMemberApiTokenKey(memberId int) string {
-	return fmt.Sprintf("api:member:token:%d", memberId)
+	return fmt.Sprintf("go2o:api:member:token:%d", memberId)
 }
 
 // 设置令牌，并返回

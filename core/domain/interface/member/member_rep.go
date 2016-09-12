@@ -37,7 +37,7 @@ type IMemberRep interface {
 	SaveMemberLevel_New(v *Level) (int, error)
 
 	// 根据用户名获取会员
-	GetMemberValueByUsr(usr string) *Member
+	GetMemberByUsr(usr string) *Member
 
 	// 根据手机号码获取会员
 	GetMemberValueByPhone(phone string) *Member
