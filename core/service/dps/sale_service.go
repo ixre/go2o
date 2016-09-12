@@ -149,18 +149,15 @@ func (s *saleService) DeleteItem(merchantId int, id int) error {
 }
 
 // 获取分页上架的商品
-func (s *saleService) GetShopPagedOnShelvesGoods(merchantId, categoryId, start, end int,
+func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
-	var sl sale.ISale = s._rep.GetSale(merchantId)
-
 	if categoryId > 0 {
-		var cate sale.ICategory = sl.CategoryManager().GetCategory(categoryId)
-		var ids []int = cate.GetChildes()
+		cat := s._cateRep.GetGlobManager().GetCategory(categoryId)
+		ids := cat.GetChildes()
 		ids = append(ids, categoryId)
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(merchantId, ids, start, end, "", sortBy)
+		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
 	} else {
-		total = -1
-		list = sl.GoodsManager().GetOnShelvesGoods(start, end, sortBy)
+		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, nil, start, end, "", sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
