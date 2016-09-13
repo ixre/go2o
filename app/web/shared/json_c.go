@@ -208,6 +208,7 @@ func (j *JsonC) Mch_goods(ctx *echox.Context) error {
 			}
 		}
 		sto.SetExpire(key, result, maxSeconds)
+		/////////
 	}
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
