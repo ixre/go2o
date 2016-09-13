@@ -25,7 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"errors"
 )
 
 const (
@@ -125,11 +124,11 @@ func (j *JsonC) ShopCat(ctx *echox.Context) error {
 		} else {
 			list = dps.SaleService.GetChildCategories(shopId, parentId)
 		}
+		//sto.Set(key,list)
 		var d []byte
 		d, err = json.Marshal(list)
 		sto.Set(key, string(d))
-		//sto.Set(key,list)
-		log.Println("---- 更新分类缓存 ", err)
+		//log.Println("---- 更新分类缓存 ", err)
 	}
 	return ctx.JSON(http.StatusOK, list)
 }
@@ -156,7 +155,6 @@ func (j *JsonC) Get_shop(ctx *echox.Context) error {
 		}
 		sto.SetExpire(key, result, maxSeconds)
 	}
-	fmt.Errorf("","")
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
 
