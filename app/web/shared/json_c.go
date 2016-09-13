@@ -139,8 +139,8 @@ func (j *JsonC) Get_shop(ctx *echox.Context) error {
 	result := make(map[string]interface{}, len(types))
 	key := fmt.Sprint("go2o:rep:shop:front:glob_%s", typeParams)
 	sto := ctx.App.Storage()
+	//从缓存中读取
 	if err := sto.Get(key, &result); err != nil {
-		//从缓存中读取
 		ss := dps.ShopService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
