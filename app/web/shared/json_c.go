@@ -153,7 +153,8 @@ func (j *JsonC) Get_shop(ctx *echox.Context) error {
 					begin, begin+size, "", "")
 			}
 		}
-		//sto.SetExpire(key, result, maxSeconds)
+		// 将结果缓存到REDIS
+		sto.SetExpire(key, result, maxSeconds)
 	}
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
