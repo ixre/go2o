@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/dto"
 )
 
 func init() {
@@ -31,4 +32,5 @@ func registerTypes() {
 	gob.Register(&member.Account{})
 	gob.Register(&payment.PaymentOrderBean{})
 	gob.Register(&member.Relation{})
+	gob.Register(&dto.ListOnlineShop{})
 }
