@@ -182,7 +182,7 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 					-1, begin, begin+size, "gs_goods.sale_num DESC")
 			}
 		}
-		//sto.SetExpire(key, result, maxSeconds)
+		sto.SetExpire(key, result, maxSeconds)
 	}
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
