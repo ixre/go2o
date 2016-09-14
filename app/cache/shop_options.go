@@ -12,53 +12,52 @@ import (
 	"bytes"
 	"fmt"
 	"go2o/core/service/dps"
-	"strings"
 )
 
-func GetShopCheckboxs(mchId int, chks string) []byte {
-	shops := dps.MerchantService.GetOnlineShops(mchId)
-	buf := bytes.NewBufferString("")
-
-	if len(chks) == 0 {
-		for i, k := range shops {
-			buf.WriteString(fmt.Sprintf(
-				`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
-			 	<label for="shop%d">%s</label>`,
-				k.Id,
-				i,
-				i,
-				i,
-				k.Name,
-			))
-		}
-	} else {
-		chks = fmt.Sprintf(",%s,", chks)
-		for i, k := range shops {
-			if strings.Index(chks, fmt.Sprintf(",%d,", k.Id)) == -1 {
-				buf.WriteString(fmt.Sprintf(
-					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]"/>
-			 	<label for="shop%d">%s</label>`,
-					k.Id,
-					i,
-					i,
-					i,
-					k.Name,
-				))
-			} else {
-				buf.WriteString(fmt.Sprintf(
-					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
-			 	<label for="shop%d">%s</label>`,
-					k.Id,
-					i,
-					i,
-					i,
-					k.Name,
-				))
-			}
-		}
-	}
-	return buf.Bytes()
-}
+//func GetShopCheckboxs(mchId int, chks string) []byte {
+//	shops := dps.MerchantService.GetOnlineShops(mchId)
+//	buf := bytes.NewBufferString("")
+//
+//	if len(chks) == 0 {
+//		for i, k := range shops {
+//			buf.WriteString(fmt.Sprintf(
+//				`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
+//			 	<label for="shop%d">%s</label>`,
+//				k.Id,
+//				i,
+//				i,
+//				i,
+//				k.Name,
+//			))
+//		}
+//	} else {
+//		chks = fmt.Sprintf(",%s,", chks)
+//		for i, k := range shops {
+//			if strings.Index(chks, fmt.Sprintf(",%d,", k.Id)) == -1 {
+//				buf.WriteString(fmt.Sprintf(
+//					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]"/>
+//			 	<label for="shop%d">%s</label>`,
+//					k.Id,
+//					i,
+//					i,
+//					i,
+//					k.Name,
+//				))
+//			} else {
+//				buf.WriteString(fmt.Sprintf(
+//					`<input type="checkbox" value="%d" id="shop%d" field="ApplySubs[%d]" checked="checked"/>
+//			 	<label for="shop%d">%s</label>`,
+//					k.Id,
+//					i,
+//					i,
+//					i,
+//					k.Name,
+//				))
+//			}
+//		}
+//	}
+//	return buf.Bytes()
+//}
 
 func GetShopsJson(merchantId int) []byte {
 	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
