@@ -12,6 +12,7 @@ package sale
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
@@ -110,7 +111,7 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 
 // 是否上架
 func (i *itemImpl) IsOnShelves() bool {
-	return i._value.OnShelves == 1
+	return i._value.ShelveState == item.ShelvesOn
 }
 
 // 获取商品的销售标签
@@ -133,8 +134,7 @@ func (i *itemImpl) SaveSaleLabels(tagIds []int) error {
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i._value.HasReview = 0
-	i._value.ReviewPass = 0
+	i._value.ReviewState = enum.ReviewAwaiting
 }
 
 // 判断价格是否正确
@@ -166,12 +166,7 @@ func (i *itemImpl) Save() (int, error) {
 		l := len(cs)
 		i._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
-
 	i.resetReview()
-
-	//todo:  暂时自动审核通过
-	i._value.HasReview = 1
-	i._value.ReviewPass = 1
 
 	id, err := i._itemRep.SaveValueItem(i._value)
 	if err == nil {

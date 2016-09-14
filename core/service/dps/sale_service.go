@@ -490,9 +490,9 @@ func (s *saleService) SaveMemberPrices(merchantId int, goodsId int,
 	return nil
 }
 
-func (s *saleService) GetGoodsComplexInfo(goodsId int) *dto.GoodsComplex {
-	return s._goodsQuery.GetGoodsComplex(goodsId)
-}
+//func (s *saleService) GetGoodsComplexInfo(goodsId int) *dto.GoodsComplex {
+//	return s._goodsQuery.GetGoodsComplex(goodsId)
+//}
 
 // 获取商品详情
 func (s *saleService) GetGoodsDetails(mchId, goodsId,

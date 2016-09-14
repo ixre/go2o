@@ -12,8 +12,10 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
+	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 )
@@ -145,36 +147,37 @@ func (g *goodsRep) GetPagedOnShelvesGoods(shopId int, catIds []int, start, end i
 	}
 
 	list := []*valueobject.Goods{}
-
 	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
 	 INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE (?<=0 OR gs_item.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND gs_item.state=1 AND gs_item.on_shelves=1 %s`,
-		catIdStr, where), &total, shopId, shopId)
+		  %s AND gs_item.review_state=? AND gs_item.shelve_state=? %s`,
+		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
+
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		 WHERE (?<=0 OR gs_item.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND gs_item.state=1  AND gs_item.on_shelves=1 %s ORDER BY %s update_time DESC
-		  LIMIT %d,%d`, catIdStr, where, orderBy, start, (end - start))
-
-		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId)
+		  %s AND gs_item.review_state=? AND gs_item.shelve_state=?
+		  %s ORDER BY %s update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
+		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
+			enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
 
 	return total, list
 }
 
 // 获取指定数量已上架的商品
-func (g *goodsRep) GetOnShelvesGoods(merchantId int, start, end int, sortBy string) []*valueobject.Goods {
+func (g *goodsRep) GetOnShelvesGoods(mchId int, start, end int, sortBy string) []*valueobject.Goods {
 	e := []*valueobject.Goods{}
 	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		 WHERE supplier_id=? AND gs_item.state=1
-		 AND gs_item.on_shelves=1 ORDER BY %s,update_time DESC LIMIT ?,?`,
+		 WHERE supplier_id=? AND gs_item.review_state=? AND gs_item.shelve_state=?
+		 ORDER BY %s,update_time DESC LIMIT ?,?`,
 		sortBy)
 
-	g.Connector.GetOrm().SelectByQuery(&e, sql, merchantId, start, (end - start))
+	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
+		item.ShelvesOn, start, (end - start))
 	return e
 }
 

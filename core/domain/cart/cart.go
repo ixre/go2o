@@ -192,7 +192,7 @@ func (c *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 	if snap == nil {
 		return nil, goods.ErrNoSuchGoods // 没有商品
 	}
-	if snap.OnShelves != 1 {
+	if snap.ShelveState != 1 {
 		return nil, goods.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {

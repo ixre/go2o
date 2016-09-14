@@ -51,8 +51,6 @@ type (
 		Sku string `db:"-"`
 		//运费模板编号
 		ExpressTplId int `db:"express_tid"`
-		// 是否上架
-		OnShelves int `db:"on_shelves"`
 		//图片
 		Image string `db:"img"`
 		// 供货价
@@ -69,6 +67,8 @@ type (
 		SaleNum int `db:"sale_num"`
 		//库存
 		StockNum int `db:"stock_num"`
+		// 是否上架
+		ShelveState int `db:"shelve_state"`
 		//快照时间
 		UpdateTime int64 `db:"update_time"`
 	}

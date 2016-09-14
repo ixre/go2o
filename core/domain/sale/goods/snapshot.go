@@ -10,6 +10,7 @@ package goods
 
 import (
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/sale/item"
 	"time"
@@ -56,7 +57,7 @@ func (s *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 			latest.Cost != snap.Cost ||
 			latest.Price != snap.Price ||
 			latest.SalePrice != snap.SalePrice ||
-			latest.OnShelves != snap.OnShelves ||
+			latest.ShelveState != snap.ShelveState ||
 			latest.LevelSales != snap.LevelSales ||
 			latest.SaleNum != snap.SaleNum ||
 			latest.StockNum != snap.StockNum ||
@@ -76,25 +77,41 @@ func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) 
 	return s._gs, s._gi
 }
 
+//func (s *snapshotManagerImpl)
+
+// 检查快照
+func (s *snapshotManagerImpl) checkSnapshot(snap *goods.Snapshot, i *item.Item) (err error) {
+	// 检查是否更新了上架状态
+	if snap != nil && snap.ShelveState != i.ShelveState {
+		snap.ShelveState = i.ShelveState
+		_, err = s._rep.SaveSnapshot(snap)
+	}
+	return err
+}
+
 // 更新快照, 通过审核后,才会更新快照
 func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
-	ls := s.GetLatestSnapshot()
 	gs, gi := s.getGoodsAndItem()
-
 	if s._skuId <= 0 || gi == nil || gs == nil {
 		return -1, goods.ErrNoSuchGoods
 	}
-
-	// 是否审核通过
-	if gi.ReviewPass == 0 {
-		return -1, item.ErrNotBeReview
+	ls := s.GetLatestSnapshot()
+	// 检查快照
+	err := s.checkSnapshot(ls, gi)
+	// 审核通过后更新快照
+	if err == nil && gi.ReviewState == enum.ReviewPass {
+		return s.updateSnapshot(ls, gi, gs)
 	}
+	return 0, err
+}
 
+// 更新快照
+func (s *snapshotManagerImpl) updateSnapshot(ls *goods.Snapshot,
+	gi *item.Item, gs *goods.ValueGoods) (int, error) {
 	LevelSales := 0
 	if len(s._rep.GetGoodsLevelPrice(s._skuId)) > 0 {
 		LevelSales = 1
 	}
-
 	unix := time.Now().Unix()
 	var snap *goods.Snapshot = &goods.Snapshot{
 		SkuId:        s._skuId,
@@ -113,16 +130,15 @@ func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 		SaleNum:      gs.SaleNum,
 		StockNum:     gs.StockNum,
 		LevelSales:   LevelSales,
-		OnShelves:    gi.OnShelves,
+		ShelveState:  gi.ShelveState,
 		ExpressTplId: gi.ExpressTplId,
 		UpdateTime:   unix,
 	}
-
+	// 比较快照
 	if s.CompareSnapshot(snap, ls) {
 		s._latestSnapshot = snap
 		return s._rep.SaveSnapshot(snap)
 	}
-
 	return snap.SkuId, nil
 	//return 0, goods.ErrLatestSnapshot
 }
