@@ -13,6 +13,15 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
+const (
+	// 已下架
+	ShelvesDown = 1
+	// 已上架
+	ShelvesOn = 2
+	// 已拒绝上架 (不允许上架)
+	ShelvesReject = 3
+)
+
 var (
 	ErrVendor *domain.DomainError = domain.NewDomainError(
 		"err_not_be_review", "商品供应商不正确")
@@ -70,18 +79,14 @@ type (
 		SalePrice float32 `db:"sale_price"`
 		// 运费模板编号
 		ExpressTplId int `db:"express_tid"`
-		// 供应门店 //todo: 去掉
-		ApplySubs string `db:"apply_subs"`
-		//简单备注,如:(限时促销),todo: 去掉
-		Remark string `db:"remark"`
 		// 描述
 		Description string `db:"description"`
-		// 是否上架,1为上架
-		OnShelves int `db:"on_shelves"`
-		// 是否审核
-		HasReview int `db:"has_review"`
-		// 是否审核通过
-		ReviewPass int `db:"review_pass"`
+		// 上架状态
+		ShelveState int `db:"shelve_state"`
+		// 审核状态
+		ReviewState int `db:"review_state"`
+		// 备注
+		Remark string `db:"remark"`
 		// 状态
 		State int `db:"state"`
 		// 创建时间

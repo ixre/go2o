@@ -16,7 +16,6 @@ import (
 	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/valueobject"
 	goodsImpl "go2o/core/domain/sale/goods"
-	dm "go2o/core/infrastructure/domain"
 )
 
 var _ sale.IGoods = new(tmpGoodsImpl)
@@ -214,13 +213,11 @@ func (g *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
 func (g *tmpGoodsImpl) Save() (int, error) {
 	id, err := g._goodsRep.SaveValueGoods(g._value)
 	if err == nil {
-		_, err := g.SnapshotManager().GenerateSnapshot()
-		dm.HandleError(err, "domain")
+		g._value.Id = id
+		_, err = g.SnapshotManager().GenerateSnapshot()
 	}
-	g._value.Id = id
-	return id, err
 	//todo: save promotion
-	// return id,err
+	return id, err
 }
 
 // 更新销售数量
