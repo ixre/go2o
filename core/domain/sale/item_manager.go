@@ -140,7 +140,7 @@ func (i *itemImpl) resetReview() {
 // 判断价格是否正确
 func (i *itemImpl) checkPrice(v *item.Item) error {
 	rate := (v.SalePrice - v.Cost) / v.SalePrice
-	if rate < 0 {
+	if rate <= 0 {
 		return goods.ErrSalePriceLessThanCost
 	}
 	conf := i._valueRep.GetRegistry()
@@ -150,6 +150,17 @@ func (i *itemImpl) checkPrice(v *item.Item) error {
 			strconv.Itoa(int(minRate*100))+"%"))
 	}
 	return nil
+}
+
+// 设置上架
+func (i *itemImpl) SetShelve(state int, remark string) error {
+	if state == item.ShelvesReject && len(remark) == 0 {
+		return item.ErrNilRejectRemark
+	}
+	i._value.ShelveState = state
+	i._value.Remark = remark
+	_, err := i.Save()
+	return err
 }
 
 // 保存

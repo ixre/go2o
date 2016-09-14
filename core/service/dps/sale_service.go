@@ -520,3 +520,13 @@ func (s *saleService) GetItemDescriptionByGoodsId(merchantId, goodsId int) strin
 func (s *saleService) GetSnapshot(skuId int) *goods.Snapshot {
 	return s._goodsRep.GetLatestSnapshot(skuId)
 }
+
+// 设置商品货架状态
+func (s *saleService) SetShelveState(mchId int, id int, state int, remark string) error {
+	sl := s._rep.GetSale(mchId)
+	gi := sl.ItemManager().GetItem(id)
+	if gi == nil {
+		return goods.ErrNoSuchGoods
+	}
+	return gi.SetShelve(state, remark)
+}
