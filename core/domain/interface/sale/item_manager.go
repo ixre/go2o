@@ -31,6 +31,9 @@ type (
 		// 设置商品值
 		SetValue(*item.Item) error
 
+		// 设置上架
+		SetShelve(state int, remark string) error
+
 		// 保存
 		Save() (int, error)
 	}

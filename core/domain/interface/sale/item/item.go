@@ -31,6 +31,9 @@ var (
 
 	ErrNotUploadImage *domain.DomainError = domain.NewDomainError(
 		"err_goods_not_upload_image", "请上传商品图片")
+
+	ErrNilRejectRemark *domain.DomainError = domain.NewDomainError(
+		"err_item_nil_reject_remark", "原因不能为空")
 )
 
 type (
