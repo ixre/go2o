@@ -821,13 +821,13 @@ func (ms *memberService) UnfreezePresent(memberId int, title string,
 }
 
 // 将冻结金额标记为失效
-func (ms *memberService) OutFreeze(memberId int, accountKind int, amount float32,
+func (ms *memberService) FreezeExpired(memberId int, accountKind int, amount float32,
 	remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().OutFreeze(accountKind, amount, remark)
+	return m.GetAccount().FreezeExpired(accountKind, amount, remark)
 }
 
 // 转账余额到其他账户

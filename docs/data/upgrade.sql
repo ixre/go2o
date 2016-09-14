@@ -920,8 +920,8 @@ ALTER TABLE `zxdb`.`mm_account`
   CHANGE COLUMN `total_pay` `total_pay` DECIMAL(10,2) NOT NULL ,
   CHANGE COLUMN `total_consumption` `total_consumption` DECIMAL(10,2) NOT NULL COMMENT '总消费' ,
   CHANGE COLUMN `priority_pay` `priority_pay` DECIMAL(10,2) NOT NULL COMMENT '优先（默认）支付账户' ,
-  ADD COLUMN `out_balance` DECIMAL(10,2) NOT NULL COMMENT '失效的账户余额' AFTER `freeze_balance`,
-  ADD COLUMN `out_present` DECIMAL(10,2) NOT NULL COMMENT '失效的赠送金额' AFTER `freeze_present`;
+  ADD COLUMN `expired_balance` DECIMAL(10,2) NOT NULL COMMENT '失效的账户余额' AFTER `freeze_balance`,
+  ADD COLUMN `expired_present` DECIMAL(10,2) NOT NULL COMMENT '失效的赠送金额' AFTER `freeze_present`;
 
 
 

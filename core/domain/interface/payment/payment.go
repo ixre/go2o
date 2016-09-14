@@ -111,7 +111,7 @@ type (
 		SystemPayment(fee float32) error
 
 		// 赠送账户支付
-		PresentAccountPayment() error
+		PresentAccountPayment(remark string) error
 
 		// 设置支付方式
 		SetPaymentSign(paymentSign int) error

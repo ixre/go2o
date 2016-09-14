@@ -75,12 +75,12 @@ func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark stri
 }
 
 // 赠送账户支付
-func (p *paymentService) PresentAccountPayment(orderId int) error {
+func (p *paymentService) PresentAccountPayment(orderId int, remark string) error {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
-	return o.PresentAccountPayment()
+	return o.PresentAccountPayment(remark)
 }
 
 // 创建支付单

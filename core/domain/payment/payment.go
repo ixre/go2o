@@ -244,7 +244,7 @@ func (p *paymentOrderImpl) getBuyer() member.IMember {
 }
 
 // 赠送账户支付
-func (p *paymentOrderImpl) PresentAccountPayment() error {
+func (p *paymentOrderImpl) PresentAccountPayment(remark string) error {
 	amount := p._value.FinalAmount
 	buyer := p.getBuyer()
 	if buyer == nil {
@@ -255,7 +255,10 @@ func (p *paymentOrderImpl) PresentAccountPayment() error {
 	if av.PresentBalance < amount {
 		return payment.ErrNotEnughtAmount
 	}
-	err := acc.DiscountPresent("支付订单", p.GetTradeNo(), amount,
+	if remark == "" {
+		remark = "支付订单"
+	}
+	err := acc.DiscountPresent(remark, p.GetTradeNo(), amount,
 		member.DefaultRelateUser, true)
 	if err == nil {
 		//todo: ???

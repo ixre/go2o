@@ -44,7 +44,7 @@ const (
 	// 转出
 	KindBalanceTransferOut = 6
 	// 失效
-	KindBalanceOut = 7
+	KindBalanceExpired = 7
 	// 冻结
 	KindBalanceFreeze = 8
 	// 解冻
@@ -66,7 +66,7 @@ const (
 	// 转出
 	KindPresentTransferOut = 6
 	// 失效
-	KindPresentOut = 7
+	KindPresentExpired = 7
 	// 冻结
 	KindPresentFreeze = 8
 	// 解冻
@@ -228,7 +228,7 @@ type (
 		FinishTakeOut(id int, tradeNo string) error
 
 		// 将冻结金额标记为失效
-		OutFreeze(accountKind int, amount float32, remark string) error
+		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
 		TransferAccounts(accountKind int, toMember int, amount float32,
@@ -336,13 +336,13 @@ type (
 		// 不可用余额
 		FreezeBalance float32 `db:"freeze_balance" json:"freezesFee"`
 		// 失效的账户余额
-		OutOfBalance float32 `db:"out_balance"`
+		ExpiredBalance float32 `db:"expired_balance"`
 		//奖金账户余额
 		PresentBalance float32 `db:"present_balance" json:"presentBalance"`
 		//冻结赠送金额
 		FreezePresent float32 `db:"freeze_present" json:"FreezePresent"`
 		//失效的赠送金额
-		OutOfPresent float32 `db:"out_present"`
+		ExpiredPresent float32 `db:"expired_present"`
 		//总赠送金额
 		TotalPresentFee float32 `db:"total_present_fee" json:"totalPresentFee"`
 		//流动账户余额
