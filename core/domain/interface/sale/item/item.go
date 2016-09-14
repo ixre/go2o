@@ -19,7 +19,7 @@ const (
 	// 已上架
 	ShelvesOn = 2
 	// 已拒绝上架 (不允许上架)
-	ShelvesReject = 3
+	ShelvesIncorrect = 3
 )
 
 var (
