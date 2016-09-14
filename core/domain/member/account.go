@@ -689,30 +689,30 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 }
 
 // 将冻结金额标记为失效
-func (a *accountImpl) OutFreeze(accountKind int, amount float32, remark string) error {
+func (a *accountImpl) FreezeExpired(accountKind int, amount float32, remark string) error {
 	if amount <= 0 {
 		return member.ErrIncorrectAmount
 	}
 	switch accountKind {
 	case member.AccountBalance:
-		return a.outFreezeBalance(amount, remark)
+		return a.balanceFreezeExpired(amount, remark)
 	case member.AccountPresent:
-		return a.outFreezePresent(amount, remark)
+		return a.presentFreezeExpired(amount, remark)
 	}
 	return nil
 }
 
-func (a *accountImpl) outFreezeBalance(amount float32, remark string) error {
+func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error {
 	if a._value.FreezeBalance < amount {
 		return member.ErrIncorrectAmount
 	}
 	unix := time.Now().Unix()
 	a._value.FreezeBalance -= amount
-	a._value.OutOfBalance += amount
+	a._value.ExpiredBalance += amount
 	a._value.UpdateTime = unix
 	l := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindBalanceOut,
+		BusinessKind: member.KindBalanceExpired,
 		Title:        "过期失效",
 		OuterNo:      "",
 		Amount:       amount,
@@ -730,17 +730,17 @@ func (a *accountImpl) outFreezeBalance(amount float32, remark string) error {
 	return err
 }
 
-func (a *accountImpl) outFreezePresent(amount float32, remark string) error {
+func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error {
 	if a._value.FreezePresent < amount {
 		return member.ErrIncorrectAmount
 	}
 	unix := time.Now().Unix()
 	a._value.FreezePresent -= amount
-	a._value.OutOfPresent += amount
+	a._value.ExpiredPresent += amount
 	a._value.UpdateTime = unix
 	l := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentOut,
+		BusinessKind: member.KindPresentExpired,
 		Title:        "过期失效",
 		OuterNo:      "",
 		Amount:       amount,
