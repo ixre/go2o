@@ -289,7 +289,7 @@ func (m *merchantService) GetShopsOfMerchant(mchId int) []*shop.Shop {
 }
 
 // 获取商城
-func (m *merchantService) GetOnlineShops(mchId int) []*shop.Shop {
+func (m *merchantService) GetOnlineShops1(mchId int) []*shop.Shop {
 	mch := m._mchRep.GetMerchant(mchId)
 	shops := mch.ShopManager().GetShops()
 	sv := []*shop.Shop{}

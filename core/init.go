@@ -33,4 +33,5 @@ func registerTypes() {
 	gob.Register(&payment.PaymentOrderBean{})
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
+	gob.Register([]*dto.ListOnlineShop{})
 }

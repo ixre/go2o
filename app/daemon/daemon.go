@@ -224,6 +224,9 @@ func (d *defaultService) MemberObs(m *member.Member, create bool) bool {
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
 func (d *defaultService) PaymentOrderObs(order *payment.PaymentOrderBean) bool {
+	if order == nil {
+		return false
+	}
 	if d.app.Debug() {
 		d.app.Log().Println("---支付单", order.TradeNo, "支付完成")
 	}

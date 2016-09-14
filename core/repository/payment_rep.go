@@ -70,12 +70,9 @@ func (p *paymentRep) GetPaymentOrder(
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
-			panic(fmt.Sprintf("---%d", id))
 			return nil
 		}
 		p.Storage.SetExpire(k, *e, DefaultCacheSeconds)
-	} else {
-		// log.Println(fmt.Sprintf("--- payment: %d > %#v",id,e))
 	}
 	return p.CreatePaymentOrder(e)
 }
