@@ -41,8 +41,8 @@ func (cs *contentService) GetPage(merchantId, id int) *content.Page {
 
 // 根据标识获取页面
 //todo: 取消merchantId
-func (cs *contentService) GetPageByIndent(merchantId int, indent string) *content.Page {
-	c := cs._contentRep.GetContent(merchantId)
+func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Page {
+	c := cs._contentRep.GetContent(userId)
 	page := c.GetPageByStringIndent(indent)
 	if page != nil {
 		return page.GetValue()
