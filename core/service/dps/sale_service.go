@@ -522,11 +522,21 @@ func (s *saleService) GetSnapshot(skuId int) *goods.Snapshot {
 }
 
 // 设置商品货架状态
-func (s *saleService) SetShelveState(mchId int, id int, state int, remark string) error {
+func (s *saleService) SetShelveState(mchId int, itemId int, state int, remark string) error {
 	sl := s._rep.GetSale(mchId)
-	gi := sl.ItemManager().GetItem(id)
+	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
 		return goods.ErrNoSuchGoods
 	}
 	return gi.SetShelve(state, remark)
+}
+
+// 设置商品货架状态
+func (s *saleService) ReivewItem(mchId int, itemId int, pass bool, remark string) error {
+	sl := s._rep.GetSale(mchId)
+	gi := sl.ItemManager().GetItem(itemId)
+	if gi == nil {
+		return goods.ErrNoSuchGoods
+	}
+	return gi.Review(pass, remark)
 }
