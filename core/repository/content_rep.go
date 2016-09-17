@@ -10,9 +10,9 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	contentImpl "go2o/core/domain/content"
 	"go2o/core/domain/interface/content"
-	"github.com/jsix/gof/db/orm"
 )
 
 var _ content.IContentRep = new(contentRep)
@@ -59,7 +59,7 @@ func (c *contentRep) DeletePage(userId, id int) error {
 
 // 保存页面
 func (c *contentRep) SavePage(userId int, v *content.Page) (int, error) {
-	return orm.Save(c.GetOrm(),v,v.Id)	
+	return orm.Save(c.GetOrm(), v, v.Id)
 }
 
 // 获取文章数量
@@ -87,7 +87,7 @@ func (c *contentRep) CategoryExists(indent string, id int) bool {
 
 // 保存栏目
 func (c *contentRep) SaveCategory(v *content.ArticleCategory) (id int, err error) {
-	return orm.Save(c.GetOrm(),v,v.Id)
+	return orm.Save(c.GetOrm(), v, v.Id)
 }
 
 // 删除栏目
@@ -114,7 +114,7 @@ func (c *contentRep) GetArticleList(categoryId int, begin int, end int) []*conte
 
 // 保存文章
 func (c *contentRep) SaveArticle(v *content.Article) (i int, err error) {
- return orm.Save(c.GetOrm(),v,v.Id)
+	return orm.Save(c.GetOrm(), v, v.Id)
 }
 
 // 删除文章

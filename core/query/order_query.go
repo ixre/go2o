@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"strconv"
 )
 
@@ -127,6 +128,13 @@ func (o *OrderQuery) QueryPagerOrder(memberId, begin, size int, pagination bool,
 				orderList[orderMap[e.OrderId]].Items, e)
 		}
 	})
+
+	//
+	//for _,o := range orderList {
+	//	for _, i := range o.Items {
+	//		i.Image = format.GetGoodsImageUrl(i.Image)
+	//	}
+	//}
 
 	return num, orderList
 }
