@@ -22,7 +22,7 @@ type StaticHandler struct {
 }
 
 func (s *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin","*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	http.ServeFile(w, r, "./public/static"+r.URL.Path)
 }
 
