@@ -12,6 +12,7 @@ package sale
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/promotion"
@@ -98,15 +99,37 @@ func (i *itemImpl) checkValue(v *item.Item) error {
 
 // 设置值
 func (i *itemImpl) SetValue(v *item.Item) error {
+	if i.GetDomainId() <= 0 {
+		i._value.ShelveState = item.ShelvesDown
+		i._value.ReviewState = enum.ReviewAwaiting
+	}
+	if i._value.ShelveState == item.ShelvesIncorrect {
+		return item.ErrItemIncorrect
+	}
 	if err := i.checkValue(v); err != nil {
 		return err
 	}
 	if v.Id == i._value.Id {
-		v.CreateTime = i._value.CreateTime
-		v.GoodsNo = i._value.GoodsNo
-		i._value = v
+		//修改图片或描述后，要重新审核
+		if i._value.Image != v.Image || i._value.Description != v.Description {
+			i.resetReview()
+		}
+		i._value.SmallTitle = v.SmallTitle
+		i._value.Name = v.Name
+		if v.GoodsNo != "" {
+			i._value.GoodsNo = v.GoodsNo
+		}
+		i._value.Image = v.Image
+		i._value.Cost = v.Cost
+		i._value.SalePrice = v.SalePrice
+		i._value.Price = v.Price
+		i._value.Weight = v.Weight
+		i._value.ExpressTplId = v.ExpressTplId
+		if v.CategoryId > 0 {
+			i._value.CategoryId = v.CategoryId
+		}
 	}
-	i.resetReview()
+	log.Println("---", i._value.ShelveState)
 	i._value.UpdateTime = time.Now().Unix()
 	return nil
 }
@@ -177,6 +200,14 @@ func (i *itemImpl) Review(pass bool, remark string) error {
 		}
 		i._value.ReviewState = enum.ReviewReject
 	}
+	i._value.Remark = remark
+	_, err := i.Save()
+	return err
+}
+
+// 标记为违规
+func (i *itemImpl) Incorrect(remark string) error {
+	i._value.ShelveState = item.ShelvesIncorrect
 	i._value.Remark = remark
 	_, err := i.Save()
 	return err

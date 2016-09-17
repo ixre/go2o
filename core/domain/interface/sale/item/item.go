@@ -29,6 +29,9 @@ var (
 	ErrNotBeReview *domain.DomainError = domain.NewDomainError(
 		"err_not_be_review", "商品还未通过审核")
 
+	ErrItemIncorrect *domain.DomainError = domain.NewDomainError(
+		"err_item_incorrect", "商品已被违规下架")
+
 	ErrNotUploadImage *domain.DomainError = domain.NewDomainError(
 		"err_goods_not_upload_image", "请上传商品图片")
 
