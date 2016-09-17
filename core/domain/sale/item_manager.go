@@ -12,7 +12,6 @@ package sale
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/promotion"
@@ -129,7 +128,6 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 			i._value.CategoryId = v.CategoryId
 		}
 	}
-	log.Println("---", i._value.ShelveState)
 	i._value.UpdateTime = time.Now().Unix()
 	return nil
 }
