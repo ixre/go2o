@@ -419,11 +419,7 @@ func (m *MemberRep) GetLevelValueByExp(merchantId int, exp int) int {
 
 }
 
-// 锁定会员
-func (m *MemberRep) LockMember(id int, state int) error {
-	_, err := m.Connector.ExecNonQuery("update mm_member set state=? WHERE id=?", state, id)
-	return err
-}
+
 
 // 用户名是否存在
 func (m *MemberRep) CheckUsrExist(usr string, memberId int) bool {

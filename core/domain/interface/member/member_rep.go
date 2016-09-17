@@ -56,10 +56,7 @@ type IMemberRep interface {
 
 	// 获取会员最后更新时间
 	GetMemberLatestUpdateTime(int) int64
-
-	// 锁定会员
-	LockMember(id int, state int) error
-
+	
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int
 
