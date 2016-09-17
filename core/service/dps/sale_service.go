@@ -532,11 +532,21 @@ func (s *saleService) SetShelveState(mchId int, itemId int, state int, remark st
 }
 
 // 设置商品货架状态
-func (s *saleService) ReivewItem(mchId int, itemId int, pass bool, remark string) error {
+func (s *saleService) ReviewItem(mchId int, itemId int, pass bool, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
 		return goods.ErrNoSuchGoods
 	}
 	return gi.Review(pass, remark)
+}
+
+// 标记为违规
+func (s *saleService) SignIncorrect(supplierId int, itemId int, remark string) error {
+	sl := s._rep.GetSale(supplierId)
+	gi := sl.ItemManager().GetItem(itemId)
+	if gi == nil {
+		return goods.ErrNoSuchGoods
+	}
+	return gi.Incorrect(remark)
 }

@@ -37,6 +37,9 @@ type (
 		// 审核
 		Review(pass bool, remark string) error
 
+		// 标记为违规
+		Incorrect(remark string) error
+
 		// 保存
 		Save() (int, error)
 	}
