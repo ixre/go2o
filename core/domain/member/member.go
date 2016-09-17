@@ -291,14 +291,14 @@ func (m *memberImpl) Save() (int, error) {
 // 锁定会员
 func (m *memberImpl) Lock() error {
 	m._value.State = 0
-	_,err := m.Save()
+	_, err := m.Save()
 	return err
 }
 
 // 解锁会员
 func (m *memberImpl) Unlock() error {
 	m._value.State = 1
-	_,err := m.Save()
+	_, err := m.Save()
 	return err
 }
 

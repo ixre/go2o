@@ -419,8 +419,6 @@ func (m *MemberRep) GetLevelValueByExp(merchantId int, exp int) int {
 
 }
 
-
-
 // 用户名是否存在
 func (m *MemberRep) CheckUsrExist(usr string, memberId int) bool {
 	var c int

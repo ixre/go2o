@@ -56,7 +56,7 @@ type IMemberRep interface {
 
 	// 获取会员最后更新时间
 	GetMemberLatestUpdateTime(int) int64
-	
+
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int
 

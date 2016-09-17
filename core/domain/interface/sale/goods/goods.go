@@ -24,7 +24,7 @@ var (
 		"no_such_snapshot", "商品快照不存在")
 
 	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
-		"not_on_shelves", "商品未上架")
+		"not_on_shelves", "商品已下架")
 
 	ErrSalePriceLessThanCost *domain.DomainError = domain.NewDomainError(
 		"err_goods_sale_price_less_than_cost", "商品销售价必须高于供货价")
