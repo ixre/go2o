@@ -34,6 +34,9 @@ type (
 		// 设置上架
 		SetShelve(state int, remark string) error
 
+		// 审核
+		Review(pass bool, remark string) error
+
 		// 保存
 		Save() (int, error)
 	}

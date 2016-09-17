@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -105,6 +106,7 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 		v.GoodsNo = i._value.GoodsNo
 		i._value = v
 	}
+	i.resetReview()
 	i._value.UpdateTime = time.Now().Unix()
 	return nil
 }
@@ -163,6 +165,23 @@ func (i *itemImpl) SetShelve(state int, remark string) error {
 	return err
 }
 
+// 审核
+func (i *itemImpl) Review(pass bool, remark string) error {
+	if pass {
+		i._value.ReviewState = enum.ReviewPass
+
+	} else {
+		remark = strings.TrimSpace(remark)
+		if remark == "" {
+			return sale.ErrEmptyReviewRemark
+		}
+		i._value.ReviewState = enum.ReviewReject
+	}
+	i._value.Remark = remark
+	_, err := i.Save()
+	return err
+}
+
 // 保存
 func (i *itemImpl) Save() (int, error) {
 	i._sale.clearCache(i._value.Id)
@@ -177,7 +196,6 @@ func (i *itemImpl) Save() (int, error) {
 		l := len(cs)
 		i._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
-	i.resetReview()
 
 	id, err := i._itemRep.SaveValueItem(i._value)
 	if err == nil {

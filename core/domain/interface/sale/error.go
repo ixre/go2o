@@ -13,6 +13,9 @@ import (
 )
 
 var (
+	ErrEmptyReviewRemark *domain.DomainError = domain.NewDomainError(
+		"err_sale_empty_remark", "原因不能为空")
+
 	ErrGoodsNum *domain.DomainError = domain.NewDomainError(
 		"err_goods_num", "商品数量错误")
 
