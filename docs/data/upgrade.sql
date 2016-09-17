@@ -1209,6 +1209,12 @@ COMMENT '备注'
 ALTER TABLE `zxdb`.`gs_snapshot`
   CHANGE COLUMN `on_shelves` `shelve_state` TINYINT(1) NULL DEFAULT '1' AFTER `stock_num`;
 
+ALTER TABLE `go2o`.`mm_present_log`
+CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
+
+ALTER TABLE `go2o`.`mm_balance_log`
+CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
+
 
 
 
