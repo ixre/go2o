@@ -91,9 +91,6 @@ func (s *ShopImpl) checkNameExists(v *shop.Shop) bool {
 }
 
 func (s *ShopImpl) Save() (int, error) {
-	if s._manager != nil {
-		s._manager.Reload() //清除缓存
-	}
 	return s._shopRep.SaveShop(s._value)
 }
 
@@ -194,7 +191,6 @@ func (s *offlineShopImpl) Save() (int, error) {
 	id, err := s.ShopImpl.Save()
 	if err == nil {
 		s._shopVal.ShopId = id
-		s._manager.Reload()
 		err = s._shopRep.SaveOfflineShop(s._shopVal, create)
 	}
 	return id, err
@@ -273,7 +269,6 @@ func (s *onlineShopImpl) Save() (int, error) {
 	id, err := s.ShopImpl.Save()
 	if err == nil {
 		s._shopVal.ShopId = id
-		s._manager.Reload()
 		err = s._shopRep.SaveOnlineShop(s._shopVal, create)
 	}
 	return id, err

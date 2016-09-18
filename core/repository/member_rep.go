@@ -381,13 +381,7 @@ func (m *MemberRep) SaveBankInfo(v *member.BankInfo) error {
 
 // 保存积分记录
 func (m *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
-	orm := m.Connector.GetOrm()
-	var err error
-	if l.Id > 0 {
-		_, _, err = orm.Save(l.Id, l)
-	} else {
-		_, _, err = orm.Save(nil, l)
-	}
+	_, err := orm.Save(m.GetOrm(), l, l.Id)
 	return err
 }
 

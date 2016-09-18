@@ -10,7 +10,11 @@
 package repository
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 )
@@ -19,66 +23,68 @@ var _ shop.IShopRep = new(shopRep)
 
 type shopRep struct {
 	db.Connector
+	storage storage.Interface
 }
 
-func NewShopRep(c db.Connector) shop.IShopRep {
+func NewShopRep(c db.Connector, storage storage.Interface) shop.IShopRep {
 	return &shopRep{
 		Connector: c,
+		storage:   storage,
 	}
 }
 
 // 商店别名是否存在
-func (this *shopRep) ShopAliasExists(alias string, shopId int) bool {
+func (s *shopRep) ShopAliasExists(alias string, shopId int) bool {
 	num := 0
-	this.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
+	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
 		alias=? AND shop_id<>?`, &num, alias, shopId)
 	return num > 0
 }
 
 // 获取线上商店
-func (this *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
+func (s *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
 	e := shop.OnlineShop{}
-	if this.GetOrm().Get(shopId, &e) != nil {
+	if s.GetOrm().Get(shopId, &e) != nil {
 		return nil
 	}
 	return &e
 }
 
 // 保存线上商店
-func (this *shopRep) SaveOnlineShop(v *shop.OnlineShop, create bool) error {
+func (s *shopRep) SaveOnlineShop(v *shop.OnlineShop, create bool) error {
 	var err error
 	if create {
-		_, _, err = this.GetOrm().Save(nil, v)
+		_, _, err = s.GetOrm().Save(nil, v)
 	} else {
-		_, _, err = this.GetOrm().Save(v.ShopId, v)
+		_, _, err = s.GetOrm().Save(v.ShopId, v)
 	}
 	return err
 }
 
 // 获取线下商店
-func (this *shopRep) GetOfflineShop(shopId int) *shop.OfflineShop {
+func (s *shopRep) GetOfflineShop(shopId int) *shop.OfflineShop {
 	e := shop.OfflineShop{}
-	if this.GetOrm().Get(shopId, &e) != nil {
+	if s.GetOrm().Get(shopId, &e) != nil {
 		return nil
 	}
 	return &e
 }
 
 // 保存线下商店
-func (this *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
+func (s *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
 	var err error
 	if create {
-		_, _, err = this.GetOrm().Save(nil, v)
+		_, _, err = s.GetOrm().Save(nil, v)
 	} else {
-		_, _, err = this.GetOrm().Save(v.ShopId, v)
+		_, _, err = s.GetOrm().Save(v.ShopId, v)
 	}
 	return err
 }
 
 // 保存API信息
-func (this *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
+func (s *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
 	var err error
-	orm := this.GetOrm()
+	orm := s.GetOrm()
 	if v.MerchantId <= 0 {
 		_, _, err = orm.Save(nil, v)
 	} else {
@@ -88,30 +94,25 @@ func (this *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
 }
 
 // 获取API信息
-func (this *shopRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
+func (s *shopRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
-	if err := this.GetOrm().Get(merchantId, d); err == nil {
+	if err := s.GetOrm().Get(merchantId, d); err == nil {
 		return d
 	}
 	return nil
 }
 
-func (this *shopRep) SaveShop(v *shop.Shop) (int, error) {
-	orm := this.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = orm.Save(nil, v)
-		v.Id = int(id)
+func (s *shopRep) SaveShop(v *shop.Shop) (int, error) {
+	id, err := orm.Save(s.GetOrm(), v, v.Id)
+	if err == nil {
+		s.delCache(v.MerchantId)
 	}
-	return v.Id, err
+	return id, err
 }
 
-func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
+func (s *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 	var v *shop.Shop = new(shop.Shop)
-	err := this.Connector.GetOrm().Get(shopId, v)
+	err := s.Connector.GetOrm().Get(shopId, v)
 	if err == nil &&
 		v.MerchantId == merchantId {
 		return v
@@ -121,39 +122,58 @@ func (this *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 	return nil
 }
 
-func (this *shopRep) GetShopsOfMerchant(mchId int) []*shop.Shop {
-	shops := []*shop.Shop{}
-	err := this.Connector.GetOrm().SelectByQuery(&shops,
-		"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
+func (s *shopRep) delCache(mchId int) {
+	PrefixDel(s.storage, fmt.Sprintf("go2o:rep:shop:%d", mchId))
+}
 
-	if err != nil {
-		handleError(err)
-		return nil
+func (s *shopRep) getShopCacheKey(mchId int) string {
+	return fmt.Sprintf("go2o:rep:shop:%d:shops", mchId)
+}
+
+func (s *shopRep) GetShopsOfMerchant(mchId int) []shop.Shop {
+	shops := []shop.Shop{}
+	key := s.getShopCacheKey(mchId)
+	jsonStr, err := s.storage.GetString(key)
+	if err == nil {
+		err = json.Unmarshal([]byte(jsonStr), &shops)
 	}
-
+	if err != nil {
+		err = s.Connector.GetOrm().SelectByQuery(&shops,
+			"SELECT * FROM mch_shop WHERE mch_id=?", mchId)
+		if err != nil {
+			handleError(err)
+			return nil
+		} else {
+			b, _ := json.Marshal(shops)
+			s.storage.Set(key, string(b))
+		}
+	}
 	return shops
 }
 
-func (this *shopRep) deleteShop(mchId, shopId int) error {
-	_, err := this.Connector.GetOrm().Delete(shop.Shop{},
+func (s *shopRep) deleteShop(mchId, shopId int) error {
+	_, err := s.Connector.GetOrm().Delete(shop.Shop{},
 		"mch_id=? AND id=?", mchId, shopId)
+	s.delCache(mchId)
 	return err
 }
 
 // 删除线上商店
-func (this *shopRep) DeleteOnlineShop(mchId, shopId int) error {
-	err := this.deleteShop(mchId, shopId)
+func (s *shopRep) DeleteOnlineShop(mchId, shopId int) error {
+	err := s.deleteShop(mchId, shopId)
 	if err == nil {
-		err = this.Connector.GetOrm().DeleteByPk(shop.OnlineShop{}, shopId)
+		err = s.Connector.GetOrm().DeleteByPk(shop.OnlineShop{}, shopId)
+		s.delCache(mchId)
 	}
 	return err
 }
 
 // 删除线下门店
-func (this *shopRep) DeleteOfflineShop(mchId, shopId int) error {
-	err := this.deleteShop(mchId, shopId)
+func (s *shopRep) DeleteOfflineShop(mchId, shopId int) error {
+	err := s.deleteShop(mchId, shopId)
 	if err == nil {
-		err = this.Connector.GetOrm().DeleteByPk(shop.OfflineShop{}, shopId)
+		err = s.Connector.GetOrm().DeleteByPk(shop.OfflineShop{}, shopId)
+		s.delCache(mchId)
 	}
 	return err
 }

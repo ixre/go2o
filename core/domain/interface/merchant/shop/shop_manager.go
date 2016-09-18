@@ -33,9 +33,6 @@ type (
 
 		// 删除门店
 		DeleteShop(shopId int) error
-
-		// 重新加载数据
-		Reload()
 	}
 )
 

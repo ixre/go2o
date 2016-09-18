@@ -22,7 +22,6 @@ var _ shop.IShopManager = new(shopManagerImpl)
 type shopManagerImpl struct {
 	_merchant merchant.IMerchant
 	_rep      shop.IShopRep
-	_shops    []shop.IShop
 }
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManager {
@@ -41,14 +40,12 @@ func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	if s._shops == nil {
-		shops := s._rep.GetShopsOfMerchant(s._merchant.GetAggregateRootId())
-		s._shops = make([]shop.IShop, len(shops))
-		for i, v := range shops {
-			s._shops[i] = s.CreateShop(v)
-		}
+	shopList := s._rep.GetShopsOfMerchant(s._merchant.GetAggregateRootId())
+	shops := make([]shop.IShop, len(shopList))
+	for i, v := range shopList {
+		shops[i] = s.CreateShop(&v)
 	}
-	return s._shops
+	return shops
 }
 
 // 根据名称获取商店
@@ -64,7 +61,7 @@ func (s *shopManagerImpl) GetShopByName(name string) shop.IShop {
 
 // 获取营业中的商店
 func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
-	var list []shop.IShop = make([]shop.IShop, 0)
+	list := make([]shop.IShop, 0)
 	for _, v := range s.GetShops() {
 		if v.GetValue().State == enum.ShopBusinessIn {
 			list = append(list, v)
@@ -75,13 +72,7 @@ func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 
 // 获取商店
 func (s *shopManagerImpl) GetShop(shopId int) shop.IShop {
-	//	v := s.rep.GetValueShop(s.GetAggregateRootId(), shopId)
-	//	if v == nil {
-	//		return nil
-	//	}
-	//	return s.CreateShop(v)
 	shops := s.GetShops()
-
 	for _, v := range shops {
 		if v.GetValue().Id == shopId {
 			return v
@@ -106,7 +97,6 @@ func (s *shopManagerImpl) DeleteShop(shopId int) error {
 	mchId := s._merchant.GetAggregateRootId()
 	sp := s.GetShop(shopId)
 	if sp != nil {
-		s.Reload() //重新加载数据
 		switch sp.Type() {
 		case shop.TypeOfflineShop:
 			return s.deleteOfflineShop(mchId, sp)
@@ -128,10 +118,4 @@ func (s *shopManagerImpl) deleteOfflineShop(mchId int, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
 	err := s._rep.DeleteOfflineShop(mchId, shopId)
 	return err
-}
-
-// 重新加载数据
-func (s *shopManagerImpl) Reload() {
-	s._shops = nil
-	//todo:  如果系统后台和前台,无法同时清理缓存
 }
