@@ -305,7 +305,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int, begin, end int,
 
 	if num > 0 {
 		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,item.name as goods_name,
-            img,sale_price,on_shelves,gs.stock_num,item.update_time
+            img,sale_price,gs.stock_num,item.update_time
             FROM mm_favorite f INNER JOIN gs_goods gs ON gs.id = f.refer_id
             INNER JOIN gs_item item ON gs.item_id=item.id
             WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC
