@@ -84,7 +84,7 @@ func getRdShopData(shopId int) *shop.ShopDto {
 
 // 获取商城的数据
 func GetOnlineShopData(shopId int) *shop.ShopDto {
-	return getRdShopData(shopId)
+	//return getRdShopData(shopId)
 	var v shop.ShopDto
 	sto := GetKVS()
 	key := GetShopDataKey(shopId)

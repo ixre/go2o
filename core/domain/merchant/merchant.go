@@ -355,6 +355,17 @@ func (m *merchantImpl) Stat() error {
 	return nil
 }
 
+// 设置商户启用或停用
+func (m *merchantImpl) SetEnabled(enabled bool) error {
+	if enabled {
+		m._value.Enabled = 1
+	} else {
+		m._value.Enabled = 0
+	}
+	_, err := m.Save()
+	return err
+}
+
 // 返回对应的会员编号
 func (m *merchantImpl) Member() int {
 	return m.GetValue().MemberId

@@ -34,6 +34,9 @@ type (
 		// 过期时间通常按: 试合作期,即1个月, 后面每年延长一次。或者会员付费开通。
 		Stat() error
 
+		// 设置商户启用或停用
+		SetEnabled(enabled bool) error
+
 		// 是否自营
 		SelfSales() bool
 

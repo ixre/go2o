@@ -246,6 +246,15 @@ func (m *merchantService) Stat(mchId int) error {
 	return merchant.ErrNoSuchMerchant
 }
 
+// 设置商户启用或停用
+func (m *merchantService) SetEnabled(mchId int, enabled bool) error {
+	mch := m._mchRep.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.SetEnabled(enabled)
+}
+
 // 根据主机查询商户编号
 func (m *merchantService) GetMerchantIdByHost(host string) int {
 	return m._query.QueryMerchantIdByHost(host)
