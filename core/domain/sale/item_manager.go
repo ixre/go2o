@@ -69,17 +69,19 @@ func (i *itemImpl) GetValue() item.Item {
 
 func (i *itemImpl) checkValue(v *item.Item) error {
 	registry := i._valueRep.GetRegistry()
-
 	// 检测供应商
 	if v.VendorId <= 0 || v.VendorId != i._value.VendorId {
 		return item.ErrVendor
 	}
-
+	// 检测标题长度
+	v.Name = strings.TrimSpace(v.Name)
+	if len(v.Name) < 10 {
+		return item.ErrItemNameLength
+	}
 	// 检测是否上传图片
 	if v.Image == registry.GoodsDefaultImage {
 		return item.ErrNotUploadImage
 	}
-
 	// 检测运费模板
 	if v.ExpressTplId <= 0 {
 		return shipment.ErrNotSetExpressTemplate

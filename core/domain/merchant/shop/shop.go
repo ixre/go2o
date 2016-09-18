@@ -11,15 +11,20 @@ package shop
 
 import (
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/lbs"
 	"log"
+	"regexp"
 	"strings"
 )
 
 var _ shop.IShop = new(ShopImpl)
 var _ shop.IOfflineShop = new(offlineShopImpl)
 var _ shop.IOnlineShop = new(onlineShopImpl)
+var (
+	shopAliasRegexp = regexp.MustCompile("^[A-Za-z0-9-]{3,11}$")
+)
 
 type ShopImpl struct {
 	_manager *shopManagerImpl
@@ -28,7 +33,7 @@ type ShopImpl struct {
 }
 
 func newShop(manager *shopManagerImpl,
-	v *shop.Shop, shopRep shop.IShopRep) shop.IShop {
+	v *shop.Shop, shopRep shop.IShopRep, valRep valueobject.IValueRep) shop.IShop {
 	s := &ShopImpl{
 		_manager: manager,
 		_shopRep: shopRep,
@@ -36,7 +41,7 @@ func newShop(manager *shopManagerImpl,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:
-		return newOnlineShopImpl(s)
+		return newOnlineShopImpl(s, valRep)
 	case shop.TypeOfflineShop:
 		return newOfflineShopImpl(s)
 	}
@@ -206,9 +211,10 @@ func (s *offlineShopImpl) Data() *shop.ShopDto {
 type onlineShopImpl struct {
 	*ShopImpl
 	_shopVal *shop.OnlineShop
+	valRep   valueobject.IValueRep
 }
 
-func newOnlineShopImpl(s *ShopImpl) shop.IShop {
+func newOnlineShopImpl(s *ShopImpl, valRep valueobject.IValueRep) shop.IShop {
 	var v *shop.OnlineShop
 	if s.GetDomainId() > 0 {
 		v = s._shopRep.GetOnlineShop(s.GetDomainId())
@@ -221,10 +227,22 @@ func newOnlineShopImpl(s *ShopImpl) shop.IShop {
 	return &onlineShopImpl{
 		ShopImpl: s,
 		_shopVal: v,
+		valRep:   valRep,
 	}
 }
 
 func (s *onlineShopImpl) checkShopAlias(alias string) error {
+	alias = strings.ToLower(alias)
+	if !shopAliasRegexp.Match([]byte(alias)) {
+		return shop.ErrShopAliasFormat
+	}
+	conf := s.valRep.GetRegistry()
+	arr := strings.Split(conf.ShopIncorrectAliasWords, "|")
+	for _, v := range arr {
+		if strings.Index(alias, v) != -1 {
+			return shop.ErrShopAliasIncorrect
+		}
+	}
 	if s._shopRep.ShopAliasExists(alias, s.GetDomainId()) {
 		return shop.ErrShopAliasUsed
 	}
@@ -236,14 +254,14 @@ func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	s._shopVal.Tel = v.Tel
 	s._shopVal.Address = v.Address
 
-	if len(s._shopVal.Alias) == 0 {
+	if len(s._shopVal.Alias) == 0 { //未设置域名情况下可更新
 		if len(v.Alias) == 0 {
 			return shop.ErrNotSetAlias
 		}
 		if err := s.checkShopAlias(v.Alias); err != nil {
 			return err
 		}
-		s._shopVal.Alias = v.Alias
+		s._shopVal.Alias = strings.ToLower(v.Alias)
 	}
 	if len(v.Host) > 0 {
 		s._shopVal.Host = v.Host

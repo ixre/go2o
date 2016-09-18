@@ -29,6 +29,9 @@ var (
 	ErrNotBeReview *domain.DomainError = domain.NewDomainError(
 		"err_not_be_review", "商品还未通过审核")
 
+	ErrItemNameLength *domain.DomainError = domain.NewDomainError(
+		"err_item_name_length", "商品标题至少10个字")
+
 	ErrItemIncorrect *domain.DomainError = domain.NewDomainError(
 		"err_item_incorrect", "商品已被违规下架")
 

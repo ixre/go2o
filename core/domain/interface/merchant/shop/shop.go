@@ -15,9 +15,16 @@ import (
 
 var (
 	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
-		"err_not_set_alias", "请设置商城别名")
+		"err_not_set_alias", "请设置商城域名")
+
+	ErrShopAliasFormat *domain.DomainError = domain.NewDomainError(
+		"err_shop_alias_format", "域名前缀为3-11位的字母数字的组合")
+
+	ErrShopAliasIncorrect *domain.DomainError = domain.NewDomainError(
+		"err_shop_alias_incorrect", "域名前缀不允许使用")
+
 	ErrShopAliasUsed *domain.DomainError = domain.NewDomainError(
-		"err_shop_alias_used", "商城别名已被占用")
+		"err_shop_alias_used", "域名已被占用")
 )
 
 const (
