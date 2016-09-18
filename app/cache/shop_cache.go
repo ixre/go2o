@@ -22,6 +22,15 @@ func GetShopDataKey(shopId int) string {
 	return fmt.Sprintf("go2o:cache:online-shop:siteconf:%d", shopId)
 }
 
+// 清除在线商店缓存
+func CleanShopData(shopId int) {
+	if shopId > 0 {
+		key := GetShopDataKey(shopId)
+		GetKVS().Del(key)
+	}
+}
+
+// 删除商铺缓存
 func DelShopCache(merchantId int) {
 	kvs := GetKVS()
 	kvs.Del(GetValueMerchantCacheCK(merchantId))
@@ -58,12 +67,28 @@ func GetMchIdByShopId(shopId int) (mchId int) {
 	return mchId
 }
 
+func getRdShopData(shopId int) *shop.ShopDto {
+	mchId := GetMchIdByShopId(shopId)
+	v2 := dps.ShopService.GetShopData(mchId, shopId)
+	if v2 != nil {
+		v3 := v2.Data.(shop.OnlineShop)
+		v3.Logo = format.GetResUrl(v3.Logo)
+		v2.Data = &v3
+		if v2 != nil {
+			//sto.SetExpire(key, *v2, DefaultMaxSeconds)
+		}
+		return v2
+	}
+	return v2
+}
+
 // 获取商城的数据
 func GetOnlineShopData(shopId int) *shop.ShopDto {
+	return getRdShopData(shopId)
 	var v shop.ShopDto
 	sto := GetKVS()
 	key := GetShopDataKey(shopId)
-	if sto.Get(key, &v) != nil {
+	if err := sto.Get(key, &v); err != nil {
 		mchId := GetMchIdByShopId(shopId)
 		if v2 := dps.ShopService.GetShopData(mchId, shopId); v2 != nil {
 			v3 := v2.Data.(shop.OnlineShop)
@@ -76,12 +101,4 @@ func GetOnlineShopData(shopId int) *shop.ShopDto {
 		}
 	}
 	return &v
-}
-
-// 清除在线商店缓存
-func CleanShopData(shopId int) {
-	if shopId > 0 {
-		key := GetShopDataKey(shopId)
-		GetKVS().Del(key)
-	}
 }

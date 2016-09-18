@@ -17,7 +17,7 @@ type (
 
 		GetValueShop(merchantId, shopId int) *Shop
 
-		GetShopsOfMerchant(merchantId int) []*Shop
+		GetShopsOfMerchant(merchantId int) []Shop
 
 		// 删除线上商店
 		DeleteOnlineShop(mchId, shopId int) error

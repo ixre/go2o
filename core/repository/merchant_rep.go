@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -34,7 +35,6 @@ type merchantRep struct {
 	db.Connector
 	storage    storage.Interface
 	manager    merchant.IMerchantManager
-	_cache     map[int]merchant.IMerchant
 	_userRep   user.IUserRep
 	_mssRep    mss.IMssRep
 	_shopRep   shop.IShopRep
@@ -49,7 +49,6 @@ func NewMerchantRep(c db.Connector, storage storage.Interface, shopRep shop.ISho
 	return &merchantRep{
 		Connector:  c,
 		storage:    storage,
-		_cache:     make(map[int]merchant.IMerchant),
 		_userRep:   userRep,
 		_mssRep:    mssRep,
 		_shopRep:   shopRep,
@@ -101,26 +100,28 @@ func (m *merchantRep) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 		m._memberRep, m._valRep)
 }
 
-func (m *merchantRep) renew(merchantId int) {
-	delete(m._cache, merchantId)
+func (m *merchantRep) cleanCache(mchId int) {
+	key := m.getMchCacheKey(mchId)
+	m.storage.Del(key)
+	PrefixDel(m.storage, key+":*")
+}
+
+func (m *merchantRep) getMchCacheKey(mchId int) string {
+	return fmt.Sprintf("go2o:rep:mch:%d", mchId)
 }
 
 func (m *merchantRep) GetMerchant(id int) merchant.IMerchant {
-	m.mux.RLock()
-	v, ok := m._cache[id]
-	m.mux.RUnlock()
-	if !ok {
-		e := merchant.Merchant{}
+	e := merchant.Merchant{}
+	key := m.getMchCacheKey(id)
+	if m.storage.Get(key, &e) != nil {
+		log.Println("--- 获取商户")
 		// 获取并缓存到列表中
-		if err := m.Connector.GetOrm().Get(id, &e); err == nil {
-			if v = m.CreateMerchant(&e); v != nil {
-				m.mux.Lock()
-				m._cache[id] = v
-				m.mux.Unlock()
-			}
+		err := m.Connector.GetOrm().Get(id, &e)
+		if err == nil {
+			m.storage.Set(key, e)
 		}
 	}
-	return v
+	return m.CreateMerchant(&e)
 }
 
 // 获取账户
@@ -150,18 +151,11 @@ func (m *merchantRep) GetMerchantMajorHost(merchantId int) string {
 
 // 保存
 func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
-	var err error
-	if v.Id <= 0 {
-		orm := m.Connector.GetOrm()
-		_, _, err = orm.Save(nil, v)
-		err = m.Connector.ExecScalar(`SELECT MAX(id) FROM mch_merchant`, &v.Id)
-		if err != nil {
-			return 0, err
-		}
-	} else {
-		_, _, err = m.Connector.GetOrm().Save(v.Id, v)
+	id, err := orm.Save(m.GetOrm(), v, v.Id)
+	if err == nil {
+		m.cleanCache(id)
 	}
-	return v.Id, err
+	return id, err
 }
 
 // 获取商户的编号
@@ -193,7 +187,6 @@ func (m *merchantRep) GetMerchantSaleConf(merchantId int) *merchant.SaleConf {
 }
 
 func (m *merchantRep) SaveMerchantSaleConf(v *merchant.SaleConf) error {
-	defer m.renew(v.MerchantId)
 	var err error
 	if v.MerchantId > 0 {
 		_, _, err = m.Connector.GetOrm().Save(v.MerchantId, v)

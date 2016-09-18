@@ -94,7 +94,7 @@ func Init(ctx gof.App) {
 		itemRep, expressRep, goodsRep, promRep)
 	//afterSalesRep := repository.NewAfterSalesRep(db)
 	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
-	shopRep := repository.NewShopRep(db)
+	shopRep := repository.NewShopRep(db, sto)
 	mchRep := repository.NewMerchantRep(db, sto, shopRep, userRep, memberRep, mssRep, valRep)
 	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
 	deliveryRep := repository.NewDeliverRep(db)
