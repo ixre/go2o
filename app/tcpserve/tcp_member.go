@@ -41,8 +41,6 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 	if v != nil {
 		sto.SetExpire(key, v, 3600*360) // cache 15 hours
 		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
-	} else {
-		println("---", v, memberId, "-----")
 	}
 
 	return v

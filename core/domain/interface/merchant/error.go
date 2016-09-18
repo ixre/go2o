@@ -15,7 +15,7 @@ import (
 
 var (
 	ErrMerchantDisabled *domain.DomainError = domain.NewDomainError(
-		"err_merchant_disabled", "商户权限已取消")
+		"err_merchant_disabled", "商户已被停用")
 
 	ErrEnabledFxSales *domain.DomainError = domain.NewDomainError(
 		"err_enabled_fx_sales", "系统当前不允许启用分销")

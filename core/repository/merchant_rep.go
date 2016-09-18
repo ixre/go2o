@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
-	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
@@ -114,7 +113,6 @@ func (m *merchantRep) GetMerchant(id int) merchant.IMerchant {
 	e := merchant.Merchant{}
 	key := m.getMchCacheKey(id)
 	if m.storage.Get(key, &e) != nil {
-		log.Println("--- 获取商户")
 		// 获取并缓存到列表中
 		err := m.Connector.GetOrm().Get(id, &e)
 		if err == nil {
