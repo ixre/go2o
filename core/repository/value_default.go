@@ -39,8 +39,11 @@ var (
 		GoodsMinProfitRate: 0,
 		// 广告缓存时间（秒）
 		CacheAdMaxAge: 3600,
-		Extend:        map[string]string{},
+		// 商铺别名敏感词,以|分割
+		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
+		Extend:                  map[string]string{},
 	}
+	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
 	// 默认平台设置
 	//todo: 默认值

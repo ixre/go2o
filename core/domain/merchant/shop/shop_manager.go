@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/valueobject"
 	"strings"
 	"time"
 )
@@ -22,12 +23,15 @@ var _ shop.IShopManager = new(shopManagerImpl)
 type shopManagerImpl struct {
 	_merchant merchant.IMerchant
 	_rep      shop.IShopRep
+	valueRep  valueobject.IValueRep
 }
 
-func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManager {
+func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep,
+	valueRep valueobject.IValueRep) shop.IShopManager {
 	return &shopManagerImpl{
 		_merchant: m,
 		_rep:      rep,
+		valueRep:  valueRep,
 	}
 }
 
@@ -35,7 +39,7 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep) shop.IShopManag
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.MerchantId = s._merchant.GetAggregateRootId()
-	return newShop(s, v, s._rep)
+	return newShop(s, v, s._rep, s.valueRep)
 }
 
 // 获取所有商店

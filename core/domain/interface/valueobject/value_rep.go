@@ -49,7 +49,6 @@ type (
 	Registry struct {
 		// 商户提现是否免费
 		MerchantTakeOutCashFree bool
-
 		// 收货时的提示信息
 		OrderReceiveAlertMessage string
 		// 会员资料不完善提醒信息
@@ -82,9 +81,10 @@ type (
 		PageUCenterPath string
 		// 会员中心移动首页模板文件名称
 		PageMobileUCenterPath string
-
 		// 广告缓存时间（秒）
 		CacheAdMaxAge int64
+		// 敏感词,以|分割
+		ShopIncorrectAliasWords string
 
 		// 其他扩展数据
 		Extend map[string]string

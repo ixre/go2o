@@ -515,7 +515,7 @@ func (m *merchantImpl) ApiManager() merchant.IApiManager {
 // 商店服务
 func (m *merchantImpl) ShopManager() shop.IShopManager {
 	if m._shopManager == nil {
-		m._shopManager = si.NewShopManagerImpl(m, m._shopRep)
+		m._shopManager = si.NewShopManagerImpl(m, m._shopRep, m._valRep)
 	}
 	return m._shopManager
 }
