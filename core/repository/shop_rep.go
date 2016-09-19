@@ -123,7 +123,7 @@ func (s *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 }
 
 func (s *shopRep) delCache(mchId int) {
-	PrefixDel(s.storage, fmt.Sprintf("go2o:rep:shop:%d", mchId))
+	PrefixDel(s.storage, fmt.Sprintf("go2o:rep:shop:%d:*", mchId))
 }
 
 func (s *shopRep) getShopCacheKey(mchId int) string {
