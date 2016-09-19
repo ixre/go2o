@@ -264,8 +264,10 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 		if err == nil {
 			pro.Sex = 1
 			pro.MemberId = id
-			err = m.Profile().SaveProfile(pro)
-			if err == nil {
+			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
+			if err = m.Profile().SaveProfile(pro); err != nil {
+				ms._rep.DeleteMember(id)
+			} else {
 				// 保存关联信息
 				rl := m.GetRelation()
 				rl.RefereesId = invitationId

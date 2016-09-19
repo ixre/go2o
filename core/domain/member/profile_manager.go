@@ -67,39 +67,35 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 	v.Name = strings.TrimSpace(v.Name)
 	v.Email = strings.ToLower(strings.TrimSpace(v.Email))
 	v.Phone = strings.TrimSpace(v.Phone)
-
+	// 验证昵称
 	if len([]rune(v.Name)) < 1 && v.UpdateTime > 0 {
 		return member.ErrNilNickName
 	}
+	// 检查区域
 	if (v.Province == 0 || v.City == 0 || v.District == 0 ||
 		len(v.Address) == 0) && v.UpdateTime > 0 {
 		return member.ErrAddress
 	}
-
+	// 检查邮箱
 	if len(v.Email) != 0 && !emailRegex.MatchString(v.Email) {
 		return member.ErrEmailValidErr
 	}
-
+	// 检查手机
 	conf := p._valRep.GetRegistry()
 	if len(v.Phone) != 0 && conf.MemberCheckPhoneFormat {
 		if !phoneRegex.MatchString(v.Phone) {
 			return member.ErrPhoneValidErr
 		}
 	}
-
 	if len(v.Phone) > 0 && p.phoneIsExist(v.Phone) {
 		return member.ErrPhoneHasBind
 	}
-
+	// 检查IM
 	if v.UpdateTime > 0 {
 		if conf.MemberImRequired && len(v.Im) == 0 {
 			return member.ErrMissingIM
 		}
 	}
-
-	//if len(v.Qq) != 0 && !qqRegex.MatchString(v.Qq) {
-	//	return member.ErrQqValidErr
-	//}
 	return nil
 }
 
@@ -446,32 +442,26 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
 	}
-
 	// 验证姓名
 	if !zhNameRegexp.MatchString(v.RealName) {
 		return member.ErrRealName
 	}
-
 	// 校验身份证号是否正确
 	v.CardId = strings.ToUpper(v.CardId)
 	err := util.CheckChineseCardID(v.CardId)
 	if err != nil {
 		return member.ErrTrustCardId
 	}
-
 	// 检查身份证是否已被占用
 	if !p.checkCardId(v.CardId, p._memberId) {
-		//todo: 临时为了过测试
-		//return member.ErrCarIdExists
+		return member.ErrCarIdExists
 	}
-
 	// 检测上传认证图片
 	if v.TrustImage != "" {
 		if len(v.TrustImage) < 10 || v.TrustImage == exampleTrustImageUrl {
 			return member.ErrTrustMissingImage
 		}
 	}
-
 	// 保存
 	p.GetTrustedInfo()
 	p.copyTrustedInfo(v, p._trustedInfo)
