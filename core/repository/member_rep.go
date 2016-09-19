@@ -23,6 +23,7 @@ import (
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
 	"go2o/core/variable"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
@@ -297,6 +298,30 @@ func (m *MemberRep) initMember(v *member.Member) {
 		RefereesId:         0,
 		RegisterMerchantId: 0,
 	})
+}
+
+// 删除会员
+func (m *MemberRep) DeleteMember(id int) error {
+	m.Storage.Del(m.getMemberCk(id))
+	_, err := m.ExecNonQuery("delete from mm_member where id = ?", id)
+	sql := `
+    /* 清理会员 */
+     delete from mm_profile where member_id NOT IN (select id from mm_member) and member_id > 0;
+     delete from mm_bank where member_id NOT IN(SELECT id FROM mm_member) and member_id > 0;
+     delete from mm_account where member_id NOT IN(SELECT id FROM mm_member) and member_id > 0;
+     delete from mm_relation where member_id NOT IN(SELECT id FROM mm_member) and member_id > 0;
+     delete from mm_integral_log where member_id NOT IN (SELECT id FROM mm_member) and id > 0;
+     delete from pay_order where buy_user NOT IN(SELECT id FROM mm_member) and id > 0;
+    `
+	for _, v := range strings.Split(sql, ";") {
+		if v = strings.TrimSpace(v); len(v) > 5 {
+			_, err := m.ExecNonQuery(v)
+			if err != nil {
+				log.Println("执行清理出错:", err, " sql:", v)
+			}
+		}
+	}
+	return err
 }
 
 func (m *MemberRep) GetMemberIdByUser(user string) int {

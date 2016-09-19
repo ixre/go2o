@@ -14,7 +14,6 @@ import (
 )
 
 type IMemberRep interface {
-
 	// 获取管理服务
 	GetManager() IMemberManager
 
@@ -47,6 +46,9 @@ type IMemberRep interface {
 
 	// 创建会员
 	CreateMember(*Member) IMember
+
+	// 删除会员
+	DeleteMember(id int) error
 
 	// 创建会员,仅作为某些操作使用,不保存
 	CreateMemberById(memberId int) IMember

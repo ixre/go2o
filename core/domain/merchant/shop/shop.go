@@ -253,7 +253,6 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 func (s *onlineShopImpl) SetShopValue(v *shop.OnlineShop) error {
 	s._shopVal.Tel = v.Tel
 	s._shopVal.Address = v.Address
-
 	if len(s._shopVal.Alias) == 0 { //未设置域名情况下可更新
 		if len(v.Alias) == 0 {
 			return shop.ErrNotSetAlias
