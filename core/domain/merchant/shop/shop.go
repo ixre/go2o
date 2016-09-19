@@ -283,6 +283,11 @@ func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 // 保存
 func (s *onlineShopImpl) Save() (int, error) {
 	create := s.GetDomainId() <= 0
+	if create {
+		if s._manager.GetOnlineShop() != nil {
+			return 0, shop.ErrSupportSingleOnlineShop
+		}
+	}
 	id, err := s.ShopImpl.Save()
 	if err == nil {
 		s._shopVal.ShopId = id
