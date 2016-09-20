@@ -200,7 +200,7 @@ func (m *MemberRep) getMemberCk(memberId int) string {
 	return fmt.Sprintf("go2o:rep:mm:inf:%d", memberId)
 }
 func (m *MemberRep) getAccountCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:mm:acc:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:%d:acc", memberId)
 }
 func (m *MemberRep) getProfileCk(memberId int) string {
 	return fmt.Sprintf("go2o:rep:mm:pro:%d", memberId)
@@ -411,20 +411,20 @@ func (m *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 }
 
 func (m *MemberRep) getRelationCk(memberId int) string {
-	return fmt.Sprintf("go2o:rep:mm-relation:%d", memberId)
+	return fmt.Sprintf("go2o:rep:mm:%d:rel", memberId)
 }
 
 // 获取会员关联
 func (m *MemberRep) GetRelation(memberId int) *member.Relation {
-	e := &member.Relation{}
+	e := member.Relation{}
 	key := m.getRelationCk(memberId)
-	if m.Storage.Get(key, e) != nil {
-		if m.Connector.GetOrm().Get(memberId, e) != nil {
+	if m.Storage.Get(key, &e) != nil {
+		if err := m.Connector.GetOrm().Get(memberId, &e); err != nil {
 			return nil
 		}
-		m.Storage.Set(key, *e)
+		m.Storage.Set(key, e)
 	}
-	return e
+	return &e
 }
 
 // 获取积分对应的等级

@@ -380,11 +380,11 @@ func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
 		r.ReferStr = ""
 		return
 	}
-	level := m._valRep.GetRegistry().MemberReferLayer
-	arr := m.getReferArr(m.GetAggregateRootId(), level)
-	if len(arr) > 0 {
+	level := m._valRep.GetRegistry().MemberReferLayer - 1
+	arr := m.getReferArr(r.RefereesId, level)
+	arr = append([]int{r.RefereesId}, arr...)
 
-		arr[0] = r.RefereesId
+	if len(arr) > 0 {
 		// 有邀请关系
 		buf := bytes.NewBuffer([]byte("{"))
 		for i, v := range arr {

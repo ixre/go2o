@@ -73,7 +73,7 @@ var (
 		"err_can_not_use_balance", "不能使用余额支付")
 
 	ErrNotEnughtAmount *domain.DomainError = domain.NewDomainError(
-		"err_payment_not_enught_amount", "余额不足够")
+		"err_payment_not_enught_amount", "余额不足")
 
 	ErrCanNotUseIntegral *domain.DomainError = domain.NewDomainError(
 		"err_can_not_use_integral", "不能使用积分抵扣")
