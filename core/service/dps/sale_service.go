@@ -116,18 +116,12 @@ func (s *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
 
 // 保存货品描述
 func (s *saleService) SaveItemInfo(merchantId int, itemId int, info string) error {
-	var err error
 	sl := s._rep.GetSale(merchantId)
 	pro := sl.ItemManager().GetItem(itemId)
 	if pro == nil {
-		err = errors.New("产品不存在")
-	} else {
-		v := pro.GetValue()
-		v.Description = info
-		pro.SetValue(&v)
+		return goods.ErrNoSuchGoods
 	}
-	_, err = pro.Save()
-	return err
+	return pro.SetDescribe(info)
 }
 
 // 保存商品

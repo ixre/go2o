@@ -111,8 +111,8 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 		return err
 	}
 	if v.Id == i._value.Id {
-		//修改图片或描述后，要重新审核
-		if i._value.Image != v.Image || i._value.Description != v.Description {
+		//修改图片或标题后，要重新审核
+		if i._value.Image != v.Image || i._value.Name != v.Name {
 			i.resetReview()
 		}
 		i._value.SmallTitle = v.SmallTitle
@@ -131,6 +131,20 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 		}
 	}
 	i._value.UpdateTime = time.Now().Unix()
+	return nil
+}
+
+// 设置商品描述
+func (i *itemImpl) SetDescribe(describe string) error {
+	if len(describe) < 20 {
+		return item.ErrDescribeLength
+	}
+	if i._value.Description != describe {
+		i._value.Description = describe
+		i.resetReview()
+		_, err := i.Save()
+		return err
+	}
 	return nil
 }
 
