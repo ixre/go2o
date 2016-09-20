@@ -28,7 +28,7 @@ import (
 
 const (
 	//todo: ??? 设置为可配置
-	maxSeconds int64 = 10
+	maxSeconds int64 = 120
 )
 
 func init() {

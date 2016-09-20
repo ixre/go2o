@@ -47,7 +47,8 @@ func (s *shopManagerImpl) GetShops() []shop.IShop {
 	shopList := s._rep.GetShopsOfMerchant(s._merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
-		shops[i] = s.CreateShop(&v)
+		v2 := v
+		shops[i] = s.CreateShop(&v2)
 	}
 	return shops
 }
@@ -78,6 +79,7 @@ func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 func (s *shopManagerImpl) GetShop(shopId int) shop.IShop {
 	shops := s.GetShops()
 	for _, v := range shops {
+		time.Sleep(time.Microsecond * 5)
 		if v.GetValue().Id == shopId {
 			return v
 		}
