@@ -315,7 +315,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int, begin, end int,
 			for rs.Next() {
 				e := dto.PagedGoodsFav{}
 				rs.Scan(&e.Id, &e.SkuId, &e.GoodsName, &e.Image, &e.SalePrice,
-					&e.OnShelves, &e.StockNum, &e.UpdateTime)
+					 &e.StockNum, &e.UpdateTime)
 				e.Image = format.GetResUrl(e.Image)
 				rows = append(rows, &e)
 			}
