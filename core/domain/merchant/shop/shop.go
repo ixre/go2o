@@ -32,8 +32,12 @@ type ShopImpl struct {
 	_value   *shop.Shop
 }
 
-func newShop(manager *shopManagerImpl,
-	v *shop.Shop, shopRep shop.IShopRep, valRep valueobject.IValueRep) shop.IShop {
+var (
+	vs *shop.Shop
+)
+
+func newShop(manager *shopManagerImpl, v *shop.Shop,
+	shopRep shop.IShopRep, valRep valueobject.IValueRep) shop.IShop {
 	s := &ShopImpl{
 		_manager: manager,
 		_shopRep: shopRep,
