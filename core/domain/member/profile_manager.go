@@ -154,6 +154,8 @@ func (p *profileManagerImpl) ProfileCompleted() bool {
 	return r
 }
 
+//todo: 上传头像方法
+
 // 获取资料
 func (p *profileManagerImpl) GetProfile() member.Profile {
 	if p._profile == nil {
@@ -209,7 +211,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				SenderId: 0,
 				// 发送的目标
 				To: []mss.User{
-					mss.User{
+					{
 						Role: mss.RoleMember,
 						Id:   p._memberId,
 					},
