@@ -31,7 +31,7 @@ func SendSms(appKey, appSecret, phoneNum string,
 	tplName, ok := param[ParamKeyTplName]
 	tplId, ok1 := param[ParamKeyTplId]
 	if !ok || !ok1 {
-		panic(errors.New("param must contain ali_template and ali_template_id keys."))
+		return errors.New("param must contain \"ali_template\" and \"ali_template_id\" keys.")
 	}
 	delete(param, ParamKeyTplName)
 	delete(param, ParamKeyTplId)
