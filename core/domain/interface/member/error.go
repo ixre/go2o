@@ -79,6 +79,18 @@ var (
 	ErrBankInfo *domain.DomainError = domain.NewDomainError(
 		"err_member_bank_info", "银行卡信息不正确")
 
+	ErrBankName *domain.DomainError = domain.NewDomainError(
+		"err_member_bank_name", "请选择开户银行")
+
+	ErrBankAccountName *domain.DomainError = domain.NewDomainError(
+		"err_member_bank_account_name", "开户银行户名不正确")
+
+	ErrBankAccount *domain.DomainError = domain.NewDomainError(
+		"err_member_bank_account", "开户银行账号不正确")
+
+	ErrBankNetwork *domain.DomainError = domain.NewDomainError(
+		"err_member_bank_network", "开户银行支行不正确")
+
 	ErrBankInfoLocked *domain.DomainError = domain.NewDomainError(
 		"err_bank_info_locked", "银行卡信息已锁定,无法更改")
 
