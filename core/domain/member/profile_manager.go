@@ -316,18 +316,42 @@ func (p *profileManagerImpl) SaveBank(v *member.BankInfo) error {
 	if p._bank.IsLocked == member.BankLocked {
 		return member.ErrBankInfoLocked
 	}
-	p._bank.Account = v.Account
-	p._bank.AccountName = trustInfo.RealName
-	//p._bank.AccountName = v.AccountName
-	p._bank.Network = v.Network
-	p._bank.State = v.State
-	p._bank.Name = v.Name
+	err := p.checkBank(v)
+	if err == nil {
+		p._bank.Account = v.Account
+		p._bank.AccountName = trustInfo.RealName
+		//p._bank.AccountName = v.AccountName
+		p._bank.Network = v.Network
+		p._bank.Name = v.Name
+	}
 
 	p._bank.State = member.StateOk       //todo:???
 	p._bank.IsLocked = member.BankLocked //锁定
 	p._bank.UpdateTime = time.Now().Unix()
 	//p._bank.MemberId = p.value.Id
 	return p._rep.SaveBankInfo(p._bank)
+}
+
+// 检查银行信息
+func (p *profileManagerImpl) checkBank(v *member.BankInfo) error {
+	v.Account = strings.TrimSpace(v.Account)
+	v.AccountName = strings.TrimSpace(v.AccountName)
+	v.Network = strings.TrimSpace(v.Network)
+	v.Name = strings.TrimSpace(v.Name)
+
+	if v.Name == "" {
+		return member.ErrBankName
+	}
+	if v.AccountName == "" {
+		return member.ErrBankAccountName
+	}
+	if v.Account == "" || len(v.Account) < 16 {
+		return member.ErrBankAccount
+	}
+	if v.Network == "" {
+		return member.ErrBankNetwork
+	}
+	return nil
 }
 
 // 解锁提现银行卡信息
