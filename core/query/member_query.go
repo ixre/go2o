@@ -12,7 +12,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -245,7 +244,6 @@ func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
 	where := "refer_str LIKE '%" + keyword +
 		",%' OR refer_str LIKE '%" + keyword + "}'"
-	log.Println("SELECT COUNT(0) FROM mm_relation WHERE " + where)
 	err := m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
 	if err != nil {
 		domain.HandleError(err, "[ Go2o][ Member][ Query]:")

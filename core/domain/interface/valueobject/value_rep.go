@@ -175,9 +175,9 @@ type (
 		// 按交易金额收取手续费的百分百
 		TradeCsnPercentByFee float32
 		// 最低提现金额
-		MinApplyAmount float32
+		MinTakeAmount float32
 		// 单笔最高提现金额
-		MaxApplyAmount float32
+		MaxTakeAmount float32
 	}
 
 	// 全局商户销售设置
