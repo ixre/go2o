@@ -260,14 +260,13 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 
 		// 设置支付方式
 		cv.PaymentOpt = enum.PaymentOnlinePay
-		pyUpdate := false
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
 			return order, py, err
 		}
 		// 处理支付单
 		py.BindOrder(order.GetAggregateRootId(), tradeNo)
-		if _, err = py.Save(); err != nil {
-			err = errors.New("下单出错:" + err.Error())
+		if _, err = py.Commit(); err != nil {
+			err = errors.New("提交支付单出错:" + err.Error())
 			//todo: 取消订单
 			//order.Cancel(err.Error())
 			domain.HandleError(err, "domain")
@@ -276,7 +275,6 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 		// 使用余额抵扣
 		if useBalanceDiscount {
 			err = py.BalanceDiscount("")
-			pyUpdate = true
 		}
 		// 如果已支付完成,则将订单设为支付完成
 		if v := py.GetValue(); v.FinalAmount == 0 &&
@@ -284,10 +282,6 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 			for _, sub := range order.GetSubOrders() {
 				sub.PaymentFinishByOnlineTrade()
 			}
-		}
-		// 更新支付单
-		if err == nil && pyUpdate {
-			_, err = py.Save()
 		}
 	}
 	return order, py, err

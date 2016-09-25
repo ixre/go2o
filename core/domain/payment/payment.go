@@ -15,12 +15,16 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"regexp"
 	"strings"
 	"time"
 )
 
-//todo: ??? save 改为submit
 var _ payment.IPaymentOrder = new(paymentOrderImpl)
+var (
+	letterRegexp        = regexp.MustCompile("^[A-Z]+$")
+	tradeNoPrefixRegexp = regexp.MustCompile("^[A-Za-z]+\\d+$")
+)
 
 type paymentOrderImpl struct {
 	_rep                payment.IPaymentRep
@@ -41,6 +45,19 @@ func (p *paymentOrderImpl) GetAggregateRootId() int {
 // 获取交易号
 func (p *paymentOrderImpl) GetTradeNo() string {
 	return p._value.TradeNo
+}
+
+// 为交易号增加一个2位的前缀
+func (p *paymentOrderImpl) TradeNoPrefix(prefix string) error {
+	if tradeNoPrefixRegexp.MatchString(p._value.TradeNo) {
+		return payment.ErrTradeNoExistsPrefix
+	}
+	if !letterRegexp.MatchString(prefix) {
+		return payment.ErrTradeNoPrefix
+	}
+	p._value.TradeNo = prefix + p._value.TradeNo
+	_, err := p.save()
+	return err
 }
 
 // 重新修正金额
@@ -151,6 +168,7 @@ func (p *paymentOrderImpl) paymentWithBalance(buyerType int, remark string) erro
 		if err == nil {
 			p._value.BalanceDiscount = amount
 			p.fixFee()
+			_, err = p.save()
 		}
 	}
 	return err
@@ -217,7 +235,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 		if err == nil {
 			p._value.IntegralDiscount = amount
 			p.fixFee()
-			_, err = p.Save()
+			_, err = p.save()
 		}
 	}
 	return amount, err
@@ -253,7 +271,7 @@ func (p *paymentOrderImpl) PresentAccountPayment(remark string) error {
 	acc := buyer.GetAccount()
 	av := acc.GetValue()
 	if av.PresentBalance < amount {
-		return payment.ErrNotEnughtAmount
+		return payment.ErrNotEnoughAmount
 	}
 	if remark == "" {
 		remark = "支付订单"
@@ -287,7 +305,11 @@ func (p *paymentOrderImpl) BindOrder(orderId int, tradeNo string) error {
 	return nil
 }
 
-func (p *paymentOrderImpl) Save() (int, error) {
+// 提交支付订单
+func (p *paymentOrderImpl) Commit() (int, error) {
+	if id := p.GetAggregateRootId(); id > 0 {
+		return id, payment.ErrOrderCommitted
+	}
 	return p.save()
 }
 
@@ -346,7 +368,7 @@ func (p *paymentOrderImpl) Adjust(amount float32) error {
 		_, err := p.checkPaymentOk()
 		return err
 	}
-	_, err := p.Save()
+	_, err := p.save()
 	return err
 }
 
