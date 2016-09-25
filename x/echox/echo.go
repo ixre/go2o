@@ -97,15 +97,16 @@ func (e *Echo) Postx(path string, h Handler) {
     e.Post(path, e.parseHandler(h))
 }
 
-func (e *Echo) getMvcHandler(route string, action string, obj interface{}) Handler {
+func (e *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
     e.mux.Lock()
     defer e.mux.Unlock()
-    k := route + action
+    a := c.Param("action")
+    k := route + a
     if v, ok := e.dynamicHandlers[k]; ok {
         //查找路由表
         return v
     }
-    if v, ok := getHandler(obj, action); ok {
+    if v, ok := getHandler(obj, a); ok {
         //存储路由表
         e.dynamicHandlers[k] = v
         return v
@@ -117,12 +118,10 @@ func (e *Echo) getMvcHandler(route string, action string, obj interface{}) Handl
 // todo:?? 应复写Any
 func (e *Echo) Aanyx(path string, obj interface{}) {
     h := func(c *Context) error {
-        a := c.Param("action")
-        if a == "" {
-            return c.String(http.StatusInternalServerError,
-                "route must contain \":action\"")
+        if c.Param("action") == "" {
+            return c.String(http.StatusInternalServerError, "route must contain :action")
         }
-        if hd := e.getMvcHandler(path, a, obj); hd != nil {
+        if hd := e.getMvcHandler(path, c, obj); hd != nil {
             return hd(c)
         }
         return c.String(http.StatusNotFound, "no such file")
