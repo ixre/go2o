@@ -140,6 +140,7 @@ merchant-serve  ---- 14192
     server {
             listen          80;
             server_name     *.ts.com;
+            client_max_body_size    10m;  
             location / {
                     proxy_pass   http://localhost:14190;
                     proxy_set_header Host $host;

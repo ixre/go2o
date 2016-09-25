@@ -28,6 +28,7 @@ import (
 )
 
 //todo: 依赖商户的 MSS 发送通知消息,应去掉
+//todo: 会员升级 应单独来处理
 var _ member.IMember = new(memberImpl)
 
 type memberImpl struct {
@@ -106,8 +107,8 @@ func (m *memberImpl) GetValue() member.Member {
 var (
 	userRegex  = regexp.MustCompile("^[a-zA-Z0-9_]{6,}$")
 	emailRegex = regexp.MustCompile("\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*")
-	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|7]|15[0-9]|16[8]|"+
-			"18[0-9]|17[0|1|2|3|4|6|7|8])(\\d{8})$")
+	phoneRegex = regexp.MustCompile("^(13[0-9]|14[5|7]|15[0-9]|16[8]|" +
+		"18[0-9]|17[0|1|2|3|4|6|7|8])(\\d{8})$")
 )
 
 // 验证用户名
@@ -208,7 +209,7 @@ func (m *memberImpl) AddExp(exp int) error {
 	m._value.Exp += exp
 	_, err := m.Save()
 	//判断是否升级
-	m.checkUpLevel()
+	m.checkLevelUp()
 
 	return err
 }
@@ -223,7 +224,7 @@ func (m *memberImpl) GetLevel() *member.Level {
 }
 
 // 检查升级
-func (m *memberImpl) checkUpLevel() bool {
+func (m *memberImpl) checkLevelUp() bool {
 	lg := m._manager.LevelManager()
 	levelId := lg.GetLevelIdByExp(m._value.Exp)
 	if levelId == 0 {
