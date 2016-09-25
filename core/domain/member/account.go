@@ -10,27 +10,32 @@ package member
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jsix/gof/db/orm"
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 	"time"
 )
 
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	_value *member.Account
-	_rep   member.IMemberRep
+	_value   *member.Account
+	_rep     member.IMemberRep
+	valueRep valueobject.IValueRep
 }
 
 func NewAccount(value *member.Account,
-	rep member.IMemberRep) member.IAccount {
+	rep member.IMemberRep, valueRep valueobject.IValueRep) member.IAccount {
 	return &accountImpl{
-		_value: value,
-		_rep:   rep,
+		_value:   value,
+		_rep:     rep,
+		valueRep: valueRep,
 	}
 }
 
@@ -611,9 +616,21 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	if amount <= 0 {
 		return 0, "", member.ErrIncorrectAmount
 	}
+	// 检测余额
 	if a._value.PresentBalance < amount {
 		return 0, "", member.ErrOutOfBalance
 	}
+	// 检测提现金额是否超过限制
+	conf := a.valueRep.GetGlobNumberConf()
+	if amount < conf.MinTakeAmount {
+		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
+			format.FormatFloat(conf.MinTakeAmount)))
+	}
+	if amount > conf.MaxTakeAmount {
+		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
+			format.FormatFloat(conf.MaxTakeAmount)))
+	}
+
 	tradeNo := domain.NewTradeNo(00000)
 	csnAmount := amount * commission
 	finalAmount := amount - csnAmount

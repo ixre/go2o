@@ -100,6 +100,12 @@ var (
 	ErrIncorrectAmount *domain.DomainError = domain.NewDomainError(
 		"err_balance_amount", "金额错误")
 
+	ErrLessTakeAmount *domain.DomainError = domain.NewDomainError(
+		"err_account_less_take_amount", "单笔最低提现金额为%s")
+
+	ErrOutTakeAmount *domain.DomainError = domain.NewDomainError(
+		"err_account_out_take_amount", "单笔最高提现金额为%s")
+
 	ErrIncorrectQuota *domain.DomainError = domain.NewDomainError(
 		"err_member_incorrent_quote", "数量错误")
 
