@@ -60,6 +60,15 @@ var (
 	ErrFinalFee *domain.DomainError = domain.NewDomainError(
 		"err_final_fee", "支付单金额有误")
 
+	ErrTradeNoPrefix *domain.DomainError = domain.NewDomainError(
+		"err_payment_trade_no_prefix", "支付单号前缀不正确")
+
+	ErrTradeNoExistsPrefix *domain.DomainError = domain.NewDomainError(
+		"err_payment_trade_no_exists_prefix", "支付单号已存在前缀")
+
+	ErrOrderCommitted *domain.DomainError = domain.NewDomainError(
+		"err_payment_order_committed", "请勿重复提交支付订单")
+
 	ErrOrderPayed *domain.DomainError = domain.NewDomainError(
 		"err_payment_order_payed", "订单已支付")
 
@@ -72,7 +81,7 @@ var (
 	ErrCanNotUseBalance *domain.DomainError = domain.NewDomainError(
 		"err_can_not_use_balance", "不能使用余额支付")
 
-	ErrNotEnughtAmount *domain.DomainError = domain.NewDomainError(
+	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_payment_not_enught_amount", "余额不足")
 
 	ErrCanNotUseIntegral *domain.DomainError = domain.NewDomainError(
@@ -98,6 +107,9 @@ type (
 		// 获取交易号
 		GetTradeNo() string
 
+		// 为交易号增加一个2位的前缀
+		TradeNoPrefix(prefix string) error
+
 		// 优惠券抵扣
 		CouponDiscount(coupon promotion.ICouponPromotion) (float32, error)
 
@@ -121,7 +133,7 @@ type (
 		BindOrder(orderId int, tradeNo string) error
 
 		// 保存
-		Save() (int, error)
+		Commit() (int, error)
 
 		// 支付完成,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outerNo string) error

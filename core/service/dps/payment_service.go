@@ -45,10 +45,17 @@ func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentO
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean,
-) (int, error) {
+func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean) (int, error) {
 	o := p._rep.CreatePaymentOrder(v)
-	return o.Save()
+	return o.Commit()
+}
+
+func (p *paymentService) SetPrefixOfTradeNo(id int, prefix string) error {
+	o := p._rep.GetPaymentOrder(id)
+	if o == nil {
+		return payment.ErrNoSuchPaymentOrder
+	}
+	return o.TradeNoPrefix(prefix)
 }
 
 // 积分抵扣支付单
@@ -69,7 +76,7 @@ func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark stri
 	}
 	err := o.BalanceDiscount(remark)
 	if err == nil {
-		_, err = o.Save()
+		_, err = o.Commit()
 	}
 	return err
 }
@@ -92,7 +99,7 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	}
 	err := o.PaymentFinish(spName, outerNo)
 	if err == nil {
-		_, err = o.Save()
+		_, err = o.Commit()
 		//更改订单支付完成
 		if err == nil {
 			err = p._orderRep.Manager().PaymentForOnlineTrade(o.GetValue().OrderId)
