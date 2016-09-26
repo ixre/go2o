@@ -9,10 +9,11 @@
 package member
 
 const (
-	RegisterModeClosed         = 0 // 关闭注册
 	RegisterModeNormal         = 1 // 正常注册
-	RegisterModeMustInvitation = 2 // 必须邀请注册
+	RegisterModeClosed         = 2 // 关闭注册
 	RegisterModeMustRedirect   = 3 // 必须直接注册
+	RegisterModeMustInvitation = 4 // 必须邀请注册
+
 )
 
 type (
@@ -21,9 +22,6 @@ type (
 	IMemberManager interface {
 		// 等级服务
 		LevelManager() ILevelManager
-
-		// 检测注册权限
-		RegisterPerm(invitation bool) error
 
 		// 检查手机绑定,同时检查手机格式
 		CheckPhoneBind(phone string, memberId int) error
