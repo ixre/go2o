@@ -15,7 +15,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/db"
-	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
@@ -120,7 +119,6 @@ func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
 		defer vp.signReload()
 		vp._rpConf = v
-		log.Println("--- save ", vp._rpConf.RegisterMode)
 		return vp._rpGob.Save(vp._rpConf)
 	}
 	return nil
