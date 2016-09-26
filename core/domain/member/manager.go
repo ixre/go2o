@@ -11,6 +11,7 @@ package member
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
@@ -42,17 +43,17 @@ func (l *MemberManagerImpl) LevelManager() member.ILevelManager {
 }
 
 // 检测注册权限
-func (l *MemberManagerImpl) RegisterPerm(invitation bool) error {
-	conf := l._valRep.GetRegisterPerm()
-	if conf.RegisterMode == member.RegisterModeClosed {
+func (l *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
+	log.Println("---", perm.RegisterMode)
+	if perm.RegisterMode == member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
-	if conf.RegisterMode == member.RegisterModeMustInvitation && !invitation {
+	if perm.RegisterMode == member.RegisterModeMustInvitation && !invitation {
 		return member.ErrRegMissingInvitationCode
 	}
-	if conf.RegisterMode == member.RegisterModeMustRedirect && invitation {
+	if perm.RegisterMode == member.RegisterModeMustRedirect && invitation {
 		return member.ErrRegOffInvitation
-	} else if conf.RegisterMode == member.RegisterModeNormal {
+	} else if perm.RegisterMode == member.RegisterModeNormal {
 
 	}
 	return nil
@@ -87,7 +88,7 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 	perm := l._valRep.GetRegisterPerm()
 	conf := l._valRep.GetRegistry()
 
-	//验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
+	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.Usr = strings.TrimSpace(v.Usr)
 	if v.Usr != "" || !perm.PhoneAsUser {
 		if len(v.Usr) < 6 {
@@ -101,13 +102,13 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 		}
 	}
 
-	//验证密码
+	// 验证密码
 	v.Pwd = strings.TrimSpace(v.Pwd)
 	if len(v.Pwd) < 6 {
 		return 0, member.ErrPwdLength
 	}
 
-	//验证手机
+	// 验证手机
 	pro.Phone = strings.TrimSpace(pro.Phone)
 	lp := len(pro.Phone)
 	if perm.NeedPhone && lp == 0 {
@@ -131,17 +132,20 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 		v.Usr = pro.Phone
 	}
 
-	//验证IM
+	// 验证IM
 	pro.Im = strings.TrimSpace(pro.Im)
 	if perm.NeedIm && len(pro.Im) == 0 {
 		return 0, errors.New(strings.Replace(member.ErrMissingIM.Error(),
 			"IM", variable.AliasMemberIM, -1))
 	}
 
-	// 检查验证码
-	err = l.RegisterPerm(len(invitationCode) > 0)
+	// 检查注册模式及邀请码
+	err = l.registerPerm(&perm, len(invitationCode) > 0)
 	if err == nil {
 		invitationId, err = l.checkInvitationCode(invitationCode)
+	}
+	if err != nil {
+		return 0, err
 	}
 
 	pro.Name = strings.TrimSpace(pro.Name)
