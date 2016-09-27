@@ -17,7 +17,7 @@ import (
 
 var (
 	// Sha1算法的随机字符
-	Sha1OffSet string = "@k3f.net"
+	Sha1OffSet string = "@at3.net"
 )
 
 func ChkPwdRight(pwd string) (bool, error) {
