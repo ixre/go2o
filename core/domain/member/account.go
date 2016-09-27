@@ -889,7 +889,11 @@ func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int,
 
 func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 	amount float32, remark string) error {
-	fromName := a.getMemberName(a._rep.GetMember(a.GetDomainId()))
+	fm := a._rep.GetMember(fromMember)
+	if fm == nil {
+		return member.ErrNoSuchMember
+	}
+	fromName := a.getMemberName(fm)
 	unix := time.Now().Unix()
 	tl := &member.PresentLog{
 		MemberId:     a.GetDomainId(),

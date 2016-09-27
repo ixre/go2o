@@ -53,7 +53,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
+		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_balance_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
@@ -77,7 +77,7 @@ func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
-		orderBy = "ORDER BY " + orderBy
+		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_present_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
