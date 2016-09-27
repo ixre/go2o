@@ -11,7 +11,6 @@ package member
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
@@ -44,7 +43,6 @@ func (l *MemberManagerImpl) LevelManager() member.ILevelManager {
 
 // 检测注册权限
 func (l *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
-	log.Println("---", perm.RegisterMode)
 	if perm.RegisterMode == member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
