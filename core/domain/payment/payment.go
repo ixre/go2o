@@ -310,6 +310,9 @@ func (p *paymentOrderImpl) Commit() (int, error) {
 	if id := p.GetAggregateRootId(); id > 0 {
 		return id, payment.ErrOrderCommitted
 	}
+	if p.GetTradeNo() == "" {
+
+	}
 	return p.save()
 }
 

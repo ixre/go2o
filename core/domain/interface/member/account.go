@@ -77,11 +77,13 @@ const (
 	KindPresentTakeOutToBankCard = 12
 	// 提现到第三方
 	KindPresentTakeOutToThirdPart = 13
+	// 提现退还到银行卡
+	KindPresentTakOutRefund = 14
 
 	// 客服赠送
-	KindPresentServiceAdd = 15
+	KindPresentServiceAdd = 21
 	// 客服扣减
-	KindPresentServiceDiscount = 16
+	KindPresentServiceDiscount = 22
 )
 
 const (
