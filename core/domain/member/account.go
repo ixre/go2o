@@ -678,12 +678,15 @@ func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
 			}
 			v.Remark += "失败:" + remark
 			v.State = enum.ReviewReject
-			a._value.PresentBalance += v.CsnFee + (-v.Amount)
-			a._value.UpdateTime = time.Now().Unix()
-			_, err := a.Save()
+			err := a.ChargePresentByKind(member.KindPresentTakOutRefund,
+				"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
+				member.DefaultRelateUser)
 			if err != nil {
 				return err
 			}
+			// 将手续费修改到提现金额上
+			v.Amount -= v.CsnFee
+			v.CsnFee = 0
 		}
 		v.UpdateTime = time.Now().Unix()
 		_, err := a.savePresentLog(v)
