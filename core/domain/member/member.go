@@ -199,7 +199,7 @@ func (m *memberImpl) CompareCode(code string) error {
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m._account == nil {
 		v := m._rep.GetAccount(m._value.Id)
-		return NewAccount(v, m._rep, m._valRep)
+		return NewAccount(m, v, m._rep, m._manager, m._valRep)
 	}
 	return m._account
 }
