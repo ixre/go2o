@@ -152,8 +152,8 @@ func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICa
 
 	dt := c.GetDataTag()
 
-	var cm member.IMember = m
-	var pm member.IMember = m
+	cm := m
+	pm := m
 
 	// fmt.Println("------ START BACK ------")
 

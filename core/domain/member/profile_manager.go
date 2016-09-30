@@ -243,11 +243,9 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 
 // 修改密码,旧密码可为空
 func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
-	var err error
 	if newPwd == oldPwd {
 		return domain.ErrPwdCannotSame
 	}
-
 	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
@@ -257,14 +255,12 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 	}
 
 	p._member._value.Pwd = newPwd
-	_, err = p._member.Save()
-
+	_, err := p._member.Save()
 	return err
 }
 
 // 修改交易密码，旧密码可为空
 func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
-	var err error
 	if newPwd == oldPwd {
 		return domain.ErrPwdCannotSame
 	}
@@ -273,11 +269,11 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 	}
 	// 已经设置过旧密码
 	if len(p._member._value.TradePwd) != 0 &&
-		p._member._value.TradePwd != dm.TradePwd(oldPwd) {
+		p._member._value.TradePwd != oldPwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
-	p._member._value.TradePwd = dm.TradePwd(newPwd)
-	_, err = p._member.Save()
+	p._member._value.TradePwd = newPwd
+	_, err := p._member.Save()
 	return err
 }
 

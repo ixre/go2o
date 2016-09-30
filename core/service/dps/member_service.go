@@ -328,6 +328,28 @@ func (ms *memberService) ResetPassword(memberId int) string {
 	return ""
 }
 
+// 重置交易密码
+func (ms *memberService) ResetTradePwd(memberId int) string {
+	m := ms._rep.GetMember(memberId)
+	if m != nil {
+		newPwd := domain.GenerateRandomIntPwd(6)
+		newEncPwd := domain.TradePwd(newPwd)
+		if m.Profile().ModifyTradePassword(newEncPwd, "") == nil {
+			return newPwd
+		}
+	}
+	return ""
+}
+
+//修改密码,传入密文密码
+func (ms *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
+}
+
 // 检查凭据, update:是否更新登录时间
 func (ms *memberService) TryLogin(usr, pwd string, update bool) (
 	*member.Member, error) {
@@ -509,15 +531,6 @@ func (ms *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) err
 	return member.ErrNoSuchMember
 }
 
-//修改密码
-func (ms *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
-	m := ms._rep.GetMember(memberId)
-	if m != nil {
-		return m.Profile().ModifyTradePassword(newPwd, oldPwd)
-	}
-	return member.ErrNoSuchMember
-}
-
 //设置余额优先支付
 func (ms *memberService) BalancePriorityPay(memberId int, enabled bool) error {
 	m := ms._rep.GetMember(memberId)
@@ -572,7 +585,7 @@ func (ms *memberService) GetMemberList(ids []int) []*dto.MemberSummary {
 
 // 获取会员汇总信息
 func (ms *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
-	var m member.IMember = ms._rep.GetMember(memberId)
+	m := ms._rep.GetMember(memberId)
 	if m != nil {
 		mv := m.GetValue()
 		acv := m.GetAccount().GetValue()

@@ -350,8 +350,8 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	p._value.OuterNo = outerNo
 	p._value.PaidTime = time.Now().Unix()
 	p._firstFinishPayment = true
-
-	return nil
+	_, err := p.save()
+	return err
 }
 func (p *paymentOrderImpl) GetValue() payment.PaymentOrderBean {
 	return *p._value

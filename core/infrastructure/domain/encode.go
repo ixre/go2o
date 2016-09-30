@@ -30,16 +30,25 @@ func ChkPwdRight(pwd string) (bool, error) {
 // 加密会员密码,因为可能会使用手机号码登录，
 // 所以密码不能依据用户名作为生成凭据
 func MemberSha1Pwd(pwd string) string {
+	if pwd == "" {
+		return ""
+	}
 	return crypto.Sha1([]byte(ShaPwd(pwd, "")))
 }
 
 // 交易密码
 func TradePwd(pwd string) string {
+	if pwd == "" {
+		return ""
+	}
 	return crypto.Sha1([]byte(ShaPwd(pwd, "")))
 }
 
 //加密合作商密码
 func MerchantSha1Pwd(usr, pwd string) string {
+	if pwd == "" {
+		return ""
+	}
 	return crypto.Sha1([]byte(ShaPwd(pwd, usr+":")))
 }
 
