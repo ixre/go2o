@@ -106,11 +106,17 @@ var (
 	ErrOutTakeAmount *domain.DomainError = domain.NewDomainError(
 		"err_account_out_take_amount", "单笔最高提现金额为%s")
 
+	ErrTakeOutLevelNoPerm *domain.DomainError = domain.NewDomainError(
+		"err_account_take_out_level_no_perm", "%s不允许提现")
+
 	ErrIncorrectQuota *domain.DomainError = domain.NewDomainError(
 		"err_member_incorrent_quote", "数量错误")
 
 	ErrOutOfBalance *domain.DomainError = domain.NewDomainError(
 		"err_out_of_balance", "超出金额")
+
+	ErrTransferAccountsLevelNoPerm *domain.DomainError = domain.NewDomainError(
+		"err_account_transfer_accounts_level_no_perm", "%s不允许转账")
 
 	ErrUsrLength *domain.DomainError = domain.NewDomainError(
 		"err_user_length", "用户名至少6位",

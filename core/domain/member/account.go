@@ -25,16 +25,21 @@ import (
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
+	_member  *memberImpl
+	mm       member.IMemberManager
 	_value   *member.Account
 	_rep     member.IMemberRep
 	valueRep valueobject.IValueRep
 }
 
-func NewAccount(value *member.Account,
-	rep member.IMemberRep, valueRep valueobject.IValueRep) member.IAccount {
+func NewAccount(m *memberImpl, value *member.Account,
+	rep member.IMemberRep, mm member.IMemberManager,
+	valueRep valueobject.IValueRep) member.IAccount {
 	return &accountImpl{
+		_member:  m,
 		_value:   value,
 		_rep:     rep,
+		mm:       mm,
 		valueRep: valueRep,
 	}
 }
@@ -616,6 +621,12 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	if amount <= 0 {
 		return 0, "", member.ErrIncorrectAmount
 	}
+	// 检测非正式会员提现
+	lv := a.mm.LevelManager().GetLevelById(a._member.GetValue().Level)
+	if lv != nil && lv.IsOfficial == 0 {
+		return 0, "", errors.New(fmt.Sprintf(
+			member.ErrTakeOutLevelNoPerm.Error(), lv.Name))
+	}
 	// 检测余额
 	if a._value.PresentBalance < amount {
 		return 0, "", member.ErrOutOfBalance
@@ -798,6 +809,7 @@ func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount flo
 	if tm == nil {
 		return member.ErrNoSuchMember
 	}
+
 	tradeNo := domain.NewTradeNo(00000)
 	csnFee := amount * csnRate
 
@@ -846,6 +858,12 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 
 func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 	amount, csnFee float32, remark string) error {
+	// 检测非正式会员转账
+	lv := a.mm.LevelManager().GetLevelById(a._member.GetValue().Level)
+	if lv != nil && lv.IsOfficial == 0 {
+		return errors.New(fmt.Sprintf(
+			member.ErrTransferAccountsLevelNoPerm.Error(), lv.Name))
+	}
 	if a._value.PresentBalance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount
 	}
