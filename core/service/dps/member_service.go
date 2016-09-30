@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -22,7 +23,6 @@ import (
 	"go2o/core/variable"
 	"strings"
 	"time"
-	"github.com/jsix/gof/log"
 )
 
 type memberService struct {
@@ -322,10 +322,10 @@ func (ms *memberService) ResetPassword(memberId int) string {
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
-		if err := m.Profile().ModifyPassword(newEncPwd, "");err == nil {
+		if err := m.Profile().ModifyPassword(newEncPwd, ""); err == nil {
 			return newPwd
-		}else{
-			log.Println("--- 重置密码:",err)
+		} else {
+			log.Println("--- 重置密码:", err)
 		}
 	}
 	return ""
@@ -337,10 +337,10 @@ func (ms *memberService) ResetTradePwd(memberId int) string {
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.TradePwd(newPwd)
-		if err := m.Profile().ModifyTradePassword(newEncPwd, "");err == nil {
+		if err := m.Profile().ModifyTradePassword(newEncPwd, ""); err == nil {
 			return newPwd
-		}else{
-			log.Println("--- 重置交易密码:",err)
+		} else {
+			log.Println("--- 重置交易密码:", err)
 		}
 	}
 	return ""
