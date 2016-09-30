@@ -70,22 +70,15 @@ type (
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
 		// 平台首页模板文件
-		PagePlatformPath string
-		// 平台移动首页模板文件
-		PageMobilePlatformPath string
+		PagePlatformIndexPath string
 		// 商铺首页模板文件
-		PageShopPath string
-		// 商铺移动首页模板文件
-		PageMobileShopPath string
+		PageShopIndexPath string
 		// 会员中心首页模板文件名称
-		PageUCenterPath string
-		// 会员中心移动首页模板文件名称
-		PageMobileUCenterPath string
+		PageUCenterIndexPath string
 		// 广告缓存时间（秒）
 		CacheAdMaxAge int64
 		// 敏感词,以|分割
 		ShopIncorrectAliasWords string
-
 		// 其他扩展数据
 		Extend map[string]string
 	}
