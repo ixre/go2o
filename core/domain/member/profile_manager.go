@@ -268,8 +268,7 @@ func (p *profileManagerImpl) ModifyTradePassword(newPwd, oldPwd string) error {
 		return err
 	}
 	// 已经设置过旧密码
-	if len(p._member._value.TradePwd) != 0 &&
-		p._member._value.TradePwd != oldPwd {
+	if len(oldPwd) != 0 && p._member._value.TradePwd != oldPwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
 	p._member._value.TradePwd = newPwd
