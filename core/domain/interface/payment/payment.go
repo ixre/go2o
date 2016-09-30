@@ -135,7 +135,7 @@ type (
 		// 保存
 		Commit() (int, error)
 
-		// 支付完成,传入第三名支付名称,以及外部的交易号
+		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outerNo string) error
 
 		// 获取支付单的值

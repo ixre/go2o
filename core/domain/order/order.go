@@ -1086,6 +1086,9 @@ func (o *subOrderImpl) Save() (int, error) {
 
 // 订单完成支付
 func (o *subOrderImpl) orderFinishPaid() error {
+	if o._value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
 	if o._value.State == order.StatAwaitingPayment {
 		o._value.IsPaid = 1
 		o._value.State = order.StatAwaitingConfirm
@@ -1095,10 +1098,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 		}
 		return err
 	}
-	if o._value.IsPaid == 1 {
-		return order.ErrOrderPayed
-	}
-	return order.ErrOrderCanNotCancel
+	return order.ErrUnusualOrderStat
 }
 
 // 在线支付交易完成

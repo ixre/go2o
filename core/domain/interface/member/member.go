@@ -98,10 +98,10 @@ type (
 		// 资料是否完善
 		ProfileCompleted() bool
 
-		// 修改密码,旧密码可为空; 传入原始密码。
+		// 修改密码,旧密码可为空; 传入原始密码。密码均为密文
 		ModifyPassword(newPwd, oldPwd string) error
 
-		// 修改交易密码，旧密码可为空; 传入原始密码。
+		// 修改交易密码，旧密码可为空; 传入原始密码。密码均为密文
 		ModifyTradePassword(newPwd, oldPwd string) error
 
 		// 获取提现银行信息

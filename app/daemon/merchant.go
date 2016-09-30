@@ -18,6 +18,7 @@ import (
 	"go2o/core/infrastructure/tool"
 	"go2o/core/service/dps"
 	"log"
+	"sync"
 	"time"
 )
 
@@ -69,7 +70,7 @@ func mchDayChart() {
 	//testGenerateMchDayChart()
 
 	unix := tool.GetStartDate(time.Now()).Unix()
-	if isHandled(mchDayChartKey, unix) {
+	if CompareLastUnix(mchDayChartKey, unix) {
 		log.Println("[ Mch][ Day][ Chart]: today chart is generated!")
 		return
 	}
@@ -82,7 +83,7 @@ func mchDayChart() {
 // 生成每日报表
 func generateMchDayChart(start, end int64) {
 	begin := 0
-	size := 50
+	size := 20
 	var mchList []int
 	tmp := 0
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
@@ -97,9 +98,12 @@ func generateMchDayChart(start, end int64) {
 				mchList = append(mchList, tmp)
 			}
 		}, begin, size)
+		wg := &sync.WaitGroup{}
 		for _, v := range mchList {
-			genDayChartForMch(v, dateStr, start, end)
+			wg.Add(1)
+			genDayChartForMch(wg, v, dateStr, start, end)
 		}
+		wg.Wait()
 		if l := len(mchList); l == size {
 			begin += l
 		} else {
@@ -108,7 +112,8 @@ func generateMchDayChart(start, end int64) {
 	}
 }
 
-func genDayChartForMch(mchId int, dateStr string, start int64, end int64) {
+func genDayChartForMch(wg *sync.WaitGroup, mchId int, dateStr string, start int64, end int64) {
+	defer wg.Done()
 	c := &merchant.MchDayChart{
 		MchId:   mchId,
 		DateStr: dateStr,

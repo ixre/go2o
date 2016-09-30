@@ -90,7 +90,7 @@ func (p *paymentService) PresentAccountPayment(orderId int, remark string) error
 	return o.PresentAccountPayment(remark)
 }
 
-// 创建支付单
+// 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	outerNo string) error {
 	o := p._rep.GetPaymentOrderByNo(tradeNo)
@@ -99,10 +99,10 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	}
 	err := o.PaymentFinish(spName, outerNo)
 	if err == nil {
-		_, err = o.Commit()
 		//更改订单支付完成
-		if err == nil {
-			err = p._orderRep.Manager().PaymentForOnlineTrade(o.GetValue().OrderId)
+		if orderId := o.GetValue().OrderId; orderId > 0 {
+			m := p._orderRep.Manager()
+			err = m.PaymentForOnlineTrade(o.GetValue().OrderId)
 		}
 	}
 	return err

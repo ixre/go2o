@@ -195,16 +195,15 @@ func (d *defaultService) Start(a gof.App) {
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
 func (d *defaultService) OrderObs(o *order.SubOrder) bool {
-	defer Recover()
 	conn := core.GetRedisConn()
 	defer conn.Close()
+	defer Recover()
 	if d.app.Debug() {
-		d.app.Log().Println("---订单", o.OrderNo, "状态:", o.State)
+		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
 	}
-
 	if d.sOrder {
+		//确认订单
 		if o.State == enum.ORDER_WAIT_CONFIRM {
-			//确认订单
 			dps.ShoppingService.ConfirmOrder(o.Id)
 		}
 		d.updateOrderExpires(conn, o)

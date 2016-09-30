@@ -445,7 +445,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) 
 	}
 
 	if c._value.BuyerId > 0 && deliverId > 0 {
-		var m member.IMember = c._memberRep.GetMember(c._value.BuyerId)
+		m := c._memberRep.GetMember(c._value.BuyerId)
 		if m == nil {
 			return member.ErrNoSuchMember
 		}

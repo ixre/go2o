@@ -106,6 +106,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 	}
 }
 
+// 检测已过期的订单并标记
 func detectOrderExpires() {
 	conn := core.GetRedisConn()
 	defer conn.Close()
@@ -119,56 +120,11 @@ func detectOrderExpires() {
 			if unix < time.Now().Unix() {
 				//订单号
 				orderId, err = strconv.Atoi(v[len(variable.KvOrderExpiresTime):])
-				err = ss.CancelOrder(orderId, "订单超时,自动取消") //清除
-				conn.Do("DEL", v)                          //清除待取消记录
+				err = ss.CancelOrder(orderId, "订单超时,自动取消")
+				//清除待取消记录
+				conn.Do("DEL", v)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
 			}
 		}
 	}
 }
-
-//
-//func confirmNewOrder(app gof.App, dfs []Func) {
-//
-//	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCreatedOrder); i == enum.TRUE {
-//		appCtx.Log().Printf("[ DAEMON][ ORDER][ CONFIRM] - begin invoke confirm handler.")
-//		if dfs == nil || len(dfs) == 0 {
-//			confirmOrderQueue(app)
-//		} else {
-//			for _, v := range dfs {
-//				v(app)
-//			}
-//		}
-//		appCtx.Storage().Set(variable.KvHaveNewCreatedOrder, enum.FALSE)
-//	}
-//}
-//
-//func completedOrderObs(app gof.App, dfs []Func) {
-//	if len(dfs) < 0 {
-//		return
-//	}
-//	if i, _ := appCtx.Storage().GetInt(variable.KvHaveNewCompletedOrder); i == enum.TRUE {
-//		appCtx.Log().Printf("[ DAEMON][ ORDER][ FINISHED] - begin invoke finish handler.\n")
-//		for _, v := range dfs {
-//			v(app)
-//		}
-//		appCtx.Storage().Set(variable.KvHaveNewCompletedOrder, enum.FALSE)
-//	}
-//}
-//
-//type orderInfo struct {
-//	MerchantId int
-//	OrderNo   string
-//}
-//
-//func confirmOrderQueue(app gof.App) {
-//	var list []*orderInfo = []*orderInfo{}
-//	appCtx.Db().GetOrm().SelectByQuery(&list, fmt.Sprintf("SELECT merchant_id,order_no FROM pt_order WHERE status=%d",
-//		enum.ORDER_WAIT_CONFIRM))
-//	for _, v := range list {
-//		err := dps.ShoppingService.ConfirmOrder(v.MerchantId, v.OrderNo)
-//		if err != nil {
-//			appCtx.Log().Printf("[ DAEMON][ ORDER][ ERROR] - %s\n", err.Error())
-//		}
-//	}
-//}
