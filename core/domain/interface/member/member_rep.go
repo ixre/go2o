@@ -95,6 +95,9 @@ type IMemberRep interface {
 	// 保存积分记录
 	SaveIntegralLog(*IntegralLog) error
 
+	// 获取会员每日提现次数
+	GetTodayPresentTakeOutTimes(memberId int)int
+
 	// 获取会员关联
 	GetRelation(memberId int) *Relation
 

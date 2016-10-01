@@ -179,6 +179,8 @@ type (
 		MinTakeOutAmount float32
 		// 单笔最高提现金额
 		MaxTakeOutAmount float32
+		// 每日提现上限
+		MemberMaxOneDayTakeOutTimes int
 	}
 
 	// 全局商户销售设置

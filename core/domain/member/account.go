@@ -647,6 +647,13 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
 			format.FormatFloat(conf2.MaxTakeOutAmount)))
 	}
+	// 检测是否超过限制
+	if maxTimes := conf2.MemberMaxOneDayTakeOutTimes;maxTimes > 0 {
+		takeTimes := a._rep.GetTodayPresentTakeOutTimes(a.GetDomainId())
+		if takeTimes >= maxTimes{
+			return 0,"",member.ErrAccountOutOfTakeOutTimes
+		}
+	}
 
 	tradeNo := domain.NewTradeNo(00000)
 	csnAmount := amount * commission
