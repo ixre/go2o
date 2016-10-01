@@ -1216,6 +1216,11 @@ ALTER TABLE `go2o`.`mm_balance_log`
 CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
 
 
+ALTER TABLE mm_member
+  ADD COLUMN `login_time` INT(11) NULL AFTER `check_expires`;
+
+
+
 
 
 

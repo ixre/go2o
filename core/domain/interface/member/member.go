@@ -83,6 +83,9 @@ type (
 		// 更换用户名
 		ChangeUsr(string) error
 
+		// 更新登陆时间
+		UpdateLoginTime() error
+
 		// 保存
 		Save() (int, error)
 	}
@@ -198,6 +201,8 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 状态
 		State int `db:"state"`
+		// 登陆时间
+		LoginTime int64 `db:"login_time"`
 		// 最后登录时间
 		LastLoginTime int64 `db:"last_login_time"`
 		// 更新时间
