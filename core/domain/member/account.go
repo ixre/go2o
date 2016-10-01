@@ -648,10 +648,10 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 			format.FormatFloat(conf2.MaxTakeOutAmount)))
 	}
 	// 检测是否超过限制
-	if maxTimes := conf2.MemberMaxOneDayTakeOutTimes;maxTimes > 0 {
+	if maxTimes := conf2.MemberMaxOneDayTakeOutTimes; maxTimes > 0 {
 		takeTimes := a._rep.GetTodayPresentTakeOutTimes(a.GetDomainId())
-		if takeTimes >= maxTimes{
-			return 0,"",member.ErrAccountOutOfTakeOutTimes
+		if takeTimes >= maxTimes {
+			return 0, "", member.ErrAccountOutOfTakeOutTimes
 		}
 	}
 
