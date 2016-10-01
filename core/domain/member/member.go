@@ -280,6 +280,16 @@ func (m *memberImpl) ChangeUsr(usr string) error {
 	return err
 }
 
+// 更新登陆时间
+func (m *memberImpl) UpdateLoginTime() error {
+	unix := time.Now().Unix()
+	m._value.LastLoginTime = m._value.LoginTime
+	m._value.LoginTime = unix
+	m._value.UpdateTime = unix
+	_, err := m.Save()
+	return err
+}
+
 // 保存
 func (m *memberImpl) Save() (int, error) {
 	m._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发

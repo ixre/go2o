@@ -639,13 +639,13 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	}
 	// 检测提现金额是否超过限制
 	conf2 := a.valueRep.GetGlobNumberConf()
-	if amount < conf2.MinTakeAmount {
+	if amount < conf2.MinTakeOutAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
-			format.FormatFloat(conf2.MinTakeAmount)))
+			format.FormatFloat(conf2.MinTakeOutAmount)))
 	}
-	if amount > conf2.MaxTakeAmount {
+	if amount > conf2.MaxTakeOutAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
-			format.FormatFloat(conf2.MaxTakeAmount)))
+			format.FormatFloat(conf2.MaxTakeOutAmount)))
 	}
 
 	tradeNo := domain.NewTradeNo(00000)

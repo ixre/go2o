@@ -366,24 +366,20 @@ func (ms *memberService) TryLogin(usr, pwd string, update bool) (
 	}
 
 	if val == nil {
-		return nil, errors.New("会员不存在")
+		return nil, member.ErrNoSuchMember
 	}
 
 	if val.Pwd != pwd {
-		return nil, errors.New("会员用户或密码不正确")
+		return nil, member.ErrCredential
 	}
 
 	if val.State == member.StateStopped {
-		return nil, errors.New("会员已停用")
+		return nil, member.ErrDisabled
 	}
 
-	m := ms._rep.GetMember(val.Id)
-
 	if update {
-		unix := time.Now().Unix()
-		val.LastLoginTime = unix
-		val.UpdateTime = unix
-		m.Save()
+		m := ms._rep.GetMember(val.Id)
+		return val, m.UpdateLoginTime()
 	}
 
 	return val, nil
