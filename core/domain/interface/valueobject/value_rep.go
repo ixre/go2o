@@ -53,8 +53,10 @@ type (
 		OrderReceiveAlertMessage string
 		// 会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
+		// 会员转账开关
+		MemberTransferAccountsOn bool
 		// 会员转账提示信息
-		MemberTransferAccountsAlertMessage string
+		MemberTransferAccountsMessage string
 		// 会员实名提醒信息
 		MemberNotTrustedMessage string
 		// 注册后赠送积分数量
@@ -65,6 +67,12 @@ type (
 		MemberImRequired bool
 		// 会员是否验证手机号码格式
 		MemberCheckPhoneFormat bool
+
+		// 会员提现开关
+		MemberTakeOutOn bool
+		// 会员提现提示
+		MemberTakeOutMessage string
+
 		// 商品默认图片
 		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例

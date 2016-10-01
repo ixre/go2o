@@ -622,6 +622,11 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return 0, "", member.ErrIncorrectAmount
 	}
+	// 检测是否开启提现
+	conf := a.valueRep.GetRegistry()
+	if !conf.MemberTakeOutOn {
+		return 0, "", errors.New(conf.MemberTakeOutMessage)
+	}
 	// 检测非正式会员提现
 	lv := a.mm.LevelManager().GetLevelById(a._member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {
@@ -633,14 +638,14 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	conf := a.valueRep.GetGlobNumberConf()
-	if amount < conf.MinTakeAmount {
+	conf2 := a.valueRep.GetGlobNumberConf()
+	if amount < conf2.MinTakeAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
-			format.FormatFloat(conf.MinTakeAmount)))
+			format.FormatFloat(conf2.MinTakeAmount)))
 	}
-	if amount > conf.MaxTakeAmount {
+	if amount > conf2.MaxTakeAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrOutTakeAmount.Error(),
-			format.FormatFloat(conf.MaxTakeAmount)))
+			format.FormatFloat(conf2.MaxTakeAmount)))
 	}
 
 	tradeNo := domain.NewTradeNo(00000)
@@ -813,6 +818,12 @@ func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount flo
 
 	tradeNo := domain.NewTradeNo(00000)
 	csnFee := amount * csnRate
+
+	// 检测是否开启转账
+	conf := a.valueRep.GetRegistry()
+	if !conf.MemberTransferAccountsOn {
+		return errors.New(conf.MemberTransferAccountsMessage)
+	}
 
 	switch accountKind {
 	case member.AccountPresent:
