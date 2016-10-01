@@ -23,7 +23,7 @@ var (
 
 		MemberProfileNotCompletedMessage: "您的个人资料未完善,是否立即完善?",
 		// 会员转账提示信息
-		MemberTransferAccountsAlertMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
+		MemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
 		// 会员未实名认证提示信息
 		MemberNotTrustedMessage: "您尚未实名认证!",
 		// 会员是否验证手机号码格式
@@ -33,6 +33,11 @@ var (
 		MemberReferLayer:             3,
 		// 会员即时通讯是否必须
 		MemberImRequired: false,
+		// 会员提现开关
+		MemberTakeOutOn: true,
+		// 会员转账开关
+		MemberTransferAccountsOn: true,
+
 		// 商品默认图片
 		GoodsDefaultImage: "res/nopic.gif",
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
