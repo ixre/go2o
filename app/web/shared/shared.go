@@ -9,7 +9,9 @@
 package shared
 
 import (
+	"github.com/jsix/gof/web"
 	"go2o/x/echox"
+	"gopkg.in/labstack/echo.v1"
 	"html/template"
 )
 
@@ -36,4 +38,8 @@ func RenderMessagePage(c *echox.Context, msg string, btn string, url string) err
 		"Url":        url,
 	}
 	return c.RenderOK("message_page.html", d)
+}
+
+func HandleHttpError(err error, ctx *echo.Context) {
+	web.HttpError(ctx.Response(), err)
 }

@@ -13,16 +13,12 @@ import (
 	"fmt"
 	m "github.com/jsix/gof/math"
 	"log"
-	"math"
 	"strconv"
 	"strings"
 )
 
 func FormatFloat(f float32) string {
 	//regexp : ([^\.]+)(\.|(\.[1-9]))0*$  =>  $1$3
-	if math.IsNaN(float64(f)) {
-		return "0"
-	}
 	s := fmt.Sprintf("%.2f", f)
 	if s == "NaN" {
 		log.Println("----[float][Nan] ", f)

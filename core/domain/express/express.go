@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"math"
 	"strconv"
 	"strings"
 	"sync"
@@ -136,6 +137,7 @@ func (e *expressTemplateImpl) checkValue(v *express.ExpressTemplate) error {
 		if v.Basis <= 0 {
 			return express.ErrExpressBasis
 		}
+		// 不要求首重费用，因为可能存在首重免费、超出收费的情况
 		if v.FirstUnit <= 0 {
 			return express.ErrFirstUnitNotSet
 		}
@@ -143,7 +145,7 @@ func (e *expressTemplateImpl) checkValue(v *express.ExpressTemplate) error {
 		if v.AddUnit <= 0 {
 			return express.ErrAddUnitNotSet
 		}
-		if v.AddFee <= 0 {
+		if v.AddFee <= 0 || math.IsNaN(float64(v.AddFee)) {
 			return express.ErrAddFee
 		}
 	}

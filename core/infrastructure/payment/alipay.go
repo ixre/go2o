@@ -72,7 +72,10 @@ func (this *AliPay) Sign(param interface{}) string {
 		if detail[0] != "sign" && detail[0] != "sign_type" {
 			//total_fee转化为2位小数
 			if detail[0] == "total_fee" {
-				number, _ := strconv.ParseFloat(detail[1], 32)
+				number, err := strconv.ParseFloat(detail[1], 32)
+				if err != nil {
+					number = 0
+				}
 				detail[1] = strconv.FormatFloat(number, 'f', 2, 64)
 			}
 			if sign == "" {
@@ -178,7 +181,10 @@ func (this *AliPay) Return(r *http.Request) Result {
 
 	result.OrderNo = param["out_trade_no"]
 	result.TradeNo = param["trade_no"]
-	fee, _ := strconv.ParseFloat(param["total_fee"], 32)
+	fee, err := strconv.ParseFloat(param["total_fee"], 32)
+	if err != nil {
+		fee = 0
+	}
 	result.Fee = float32(fee)
 
 	//如果最基本的网站交易号为空，返回错误代码-1
@@ -316,7 +322,10 @@ func (this *AliPay) Notify(r *http.Request) Result {
 
 	result.OrderNo = urls.Get("out_trade_no")
 	result.TradeNo = urls.Get("trade_no")
-	//fee ,_ := strconv.ParseFloat(urls.Get("total_fee"),32)
+	//fee ,err := strconv.ParseFloat(urls.Get("total_fee"),32)
+	//if err != nil{
+	//	fee = 0
+	//}
 	//payResult.Fee = float32(fee)
 
 	if paramSign == sign { //传进的签名等于计算出的签名，说明请求合法

@@ -68,7 +68,10 @@ func CheckChineseCardID(sId string) error {
 	////aCity[parseInt(sId.substr(0,2))]+","+sBirthDay+","+ (sId.substr(16,1)%2?"男":"女")
 	var iSum int64 = 0
 	for i := 17; i >= 0; i-- {
-		b, _ := strconv.ParseInt(sId[17-i:17-i+1], 11, 32)
+		b, err := strconv.ParseInt(sId[17-i:17-i+1], 11, 32)
+		if err != nil {
+			b = 0
+		}
 		iSum += int64(math.Pow(2, float64(i))) % 11 * b
 	}
 	if iSum%11 != 1 {
