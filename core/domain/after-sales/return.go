@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/tmp"
+	"math"
 )
 
 var _ afterSales.IAfterSalesOrder = new(returnOrderImpl)
@@ -116,7 +117,7 @@ func (r *returnOrderImpl) submitReturnOrder() (err error) {
 			break
 		}
 	}
-	if r._returnValue.Amount <= 0 {
+	if r._returnValue.Amount <= 0 || math.IsNaN(float64(r._returnValue.Amount)) {
 		return afterSales.ErrOrderAmount
 	}
 	_, err = orm.Save(tmp.Db().GetOrm(), r._returnValue, 0)

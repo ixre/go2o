@@ -26,6 +26,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/variable"
+	"math"
 	"strings"
 	"time"
 )
@@ -610,7 +611,7 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
 // 订单结账
 func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 	csn float32, refundAmount float32, remark string) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
 	l := a.createBalanceLog(merchant.KindAccountSettleOrder,
@@ -634,7 +635,7 @@ func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 
 // 转到会员账户
 func (a *accountImpl) TransferToMember(amount float32) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
 	if a.value.Balance < amount || a.value.Balance <= 0 {
@@ -681,7 +682,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 
 // 赠送
 func (a *accountImpl) Present(amount float32, remark string) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
 	}
 	l := a.createBalanceLog(merchant.KindAccountPresent,

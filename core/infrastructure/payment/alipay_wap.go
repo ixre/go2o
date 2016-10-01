@@ -250,7 +250,10 @@ func (this *AliPayWap) Notify(r *http.Request) Result {
 	//	notify.Price, notify.Buyer_id, notify.Notify_id, notify.Use_coupon, notify.Trade_status)
 
 	result.OrderNo = notify.Out_trade_no
-	fee, _ := strconv.ParseFloat(notify.Total_fee, 32)
+	fee, err := strconv.ParseFloat(notify.Total_fee, 32)
+	if err != nil {
+		fee = 0
+	}
 	result.Fee = float32(fee)
 	result.TradeNo = notify.Trade_no
 	if notify.Trade_status == "TRADE_FINISHED" || notify.Trade_status == "TRADE_SUCCESS" { //交易成功

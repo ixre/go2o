@@ -19,6 +19,7 @@ import (
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"math"
 	"time"
 )
 
@@ -107,7 +108,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 // 充值,客服充值时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo string,
 	amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if chargeType == member.ChargeByService && relateUser <= 0 {
@@ -168,7 +169,7 @@ func (a *accountImpl) GetPresentLog(id int) *member.PresentLog {
 // 扣减余额
 func (a *accountImpl) DiscountBalance(title string, outerNo string,
 	amount float32, relateUser int) (err error) {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
@@ -201,7 +202,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 // 冻结余额
 func (a *accountImpl) Freeze(title string, outerNo string,
 	amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.Balance < amount {
@@ -234,7 +235,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 // 解冻金额
 func (a *accountImpl) Unfreeze(title string, outerNo string,
 	amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.FreezeBalance < amount {
@@ -278,7 +279,7 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 // 赠送金额(指定业务类型)
 func (a *accountImpl) ChargePresentByKind(kind int, title string,
 	outerNo string, amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if title == "" {
@@ -314,7 +315,7 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float32,
 	relateUser int, mustLargeZero bool) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if mustLargeZero && a._value.PresentBalance < amount {
@@ -352,7 +353,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 // 冻结赠送金额
 func (a *accountImpl) FreezePresent(title string, outerNo string,
 	amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.PresentBalance < amount {
@@ -385,7 +386,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 // 解冻赠送金额
 func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 	amount float32, relateUser int) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	if a._value.FreezePresent < amount {
@@ -474,7 +475,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 
 //　增加积分
 func (a *accountImpl) AddIntegral(logType int, outerNo string, value int, remark string) error {
-	if value <= 0 {
+	if value <= 0 || math.IsNaN(float64(value)) {
 		return member.ErrIncorrectQuota
 	}
 	if logType <= 0 {
@@ -618,7 +619,7 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 		businessKind != member.KindPresentTakeOutToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return 0, "", member.ErrIncorrectAmount
 	}
 	// 检测非正式会员提现
@@ -721,7 +722,7 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 
 // 将冻结金额标记为失效
 func (a *accountImpl) FreezeExpired(accountKind int, amount float32, remark string) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	switch accountKind {
@@ -802,7 +803,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 // 转账
 func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount float32,
 	csnRate float32, remark string) error {
-	if amount <= 0 {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
 	tm := a._rep.GetMember(toMember)

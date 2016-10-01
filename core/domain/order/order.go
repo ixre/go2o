@@ -27,6 +27,7 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -577,7 +578,7 @@ func (o *orderImpl) applyCouponOnSubmit(v *order.Order) error {
 
 // 应用余额支付
 func (o *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
-	if o._value.FinalAmount <= 0 {
+	if o._value.FinalAmount <= 0 || math.IsNaN(float64(o._value.FinalAmount)) {
 		return 0
 	}
 	acv := acc.GetValue()
@@ -1657,7 +1658,7 @@ func (o *subOrderImpl) onOrderComplete() error {
 // 更新返现到会员账户
 func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	m member.IMember, fee float32, unixTime int64) error {
-	if fee <= 0 {
+	if fee <= 0 || math.IsNaN(float64(fee)) {
 		return nil
 	}
 	v := o.GetValue()
