@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -21,6 +20,7 @@ import (
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/variable"
+	"log"
 	"strings"
 	"time"
 )
