@@ -21,39 +21,55 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
-	conn := core.GetRedisConn()
-	defer conn.Close()
 	var id int
 	sv := dps.ShoppingService
-
+	notify := func(ss []Service) {
+		o := sv.GetSubOrder(id)
+		if o != nil {
+			for _, v := range ss {
+				if !v.OrderObs(o) {
+					break
+				}
+			}
+		}
+	}
+	// 监听队列
+	conn := core.GetRedisConn()
+	defer conn.Close()
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
+			//通知订单更新
 			id, err = strconv.Atoi(string(arr[1]))
 			if err == nil {
-				//通知订单更新
-				if order := sv.GetSubOrder(id); order != nil {
-					for _, v := range ss {
-						if !v.OrderObs(order) {
-							break
-						}
-					}
-				}
+				go notify(ss)
 			}
 		} else {
-			appCtx.Log().Println("[ Daemon][ OrderQueue][ Error] - ",
-				err.Error())
-			break
+			appCtx.Log().Println("[ Daemon][ OrderQueue][ Error]:",
+				err.Error(), "; retry after 10 seconds.")
+			time.Sleep(time.Second * 10)
 		}
+
 	}
 }
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
+	var id int
+	sv := dps.MemberService
+	notify := func(id int, action string, ss []Service) {
+		m := sv.GetMember(id)
+		if m != nil {
+			for _, v := range ss {
+				if !v.MemberObs(m, action == "create") {
+					break
+				}
+			}
+		}
+	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	var id int
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvMemberUpdateQueue, 0))
@@ -63,45 +79,47 @@ func superviseMemberUpdate(ss []Service) {
 			mArr := strings.Split(s, "-")
 			id, err = strconv.Atoi(mArr[0])
 			if err == nil {
-				m := dps.MemberService.GetMember(id)
-				for _, v := range ss {
-					if !v.MemberObs(m, mArr[1] == "create") {
-						break
-					}
-				}
+				go notify(id, mArr[1], ss)
 			}
 		} else {
-			appCtx.Log().Println("[ Daemon][ MemberQueue][ Error] - ",
-				err.Error())
-			break
+			appCtx.Log().Println("[ Daemon][ MemberQueue][ Error]:",
+				err.Error(), "; retry after 10 seconds.")
+			time.Sleep(time.Second * 10)
 		}
 	}
 }
 
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
+	id := 0
+	sv := dps.PaymentService
+	notify := func(id int, ss []Service) {
+		order := sv.GetPaymentOrder(id)
+		if order != nil {
+			for _, v := range ss {
+				if !v.PaymentOrderObs(order) {
+					break
+				}
+			}
+		}
+	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
-	var id int
 	for {
 		arr, err := redis.ByteSlices(conn.Do("BLPOP",
 			variable.KvPaymentOrderFinishQueue, 0))
 		if err == nil {
-			//通知会员修改,格式如: 1-[create|update]
+			//通知服务
 			s := string(arr[1])
 			id, err = strconv.Atoi(s)
 			if err == nil {
-				order := dps.PaymentService.GetPaymentOrder(id)
-				for _, v := range ss {
-					if !v.PaymentOrderObs(order) {
-						break
-					}
-				}
+				go notify(id, ss)
 			}
 		} else {
-			appCtx.Log().Println("[ Daemon][ PaymentOrderQueue][ Error] - ",
-				err.Error())
-			break
+			appCtx.Log().Println("[ Daemon][ PaymentOrderQueue][ Error]:",
+				err.Error(), "; retry after 10 seconds.")
+			time.Sleep(time.Second * 10)
+			continue
 		}
 	}
 }
