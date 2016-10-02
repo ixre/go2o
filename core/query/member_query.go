@@ -88,7 +88,6 @@ func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id=? %s %s LIMIT ?,?`,
 			where, orderBy)
-
 		d.Query(sqlLine, func(_rows *sql.Rows) {
 			rows = db.RowsToMarshalMap(_rows)
 			_rows.Close()
