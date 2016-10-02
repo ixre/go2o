@@ -10,12 +10,10 @@ package core
 
 import (
     "errors"
-    "fmt"
     "github.com/garyburd/redigo/redis"
     "github.com/jsix/gof"
     "github.com/jsix/gof/storage"
     "log"
-    "time"
 )
 
 var (
@@ -26,7 +24,7 @@ var (
 
 func CreateRedisPool(c *gof.Config) *redis.Pool {
     host := c.GetString("redis_host")
-    db := c.GetString("redis_db")
+    db := c.GetInt("redis_db")
     port := c.GetInt("redis_port")
     auth := c.GetString("redis_auth")
 
@@ -41,41 +39,7 @@ func CreateRedisPool(c *gof.Config) *redis.Pool {
     if idleTimeout <= 0 {
         idleTimeout = 20000
     }
-
-    return &redis.Pool{
-        MaxIdle:     maxIdle,
-        IdleTimeout: time.Duration(idleTimeout) * time.Second,
-        Dial: func() (redis.Conn, error) {
-            var c redis.Conn
-            var err error
-            for {
-                c, err = redis.Dial("tcp", fmt.Sprintf("%s:%d", host, port))
-                if err == nil {
-                    break
-                }
-                log.Printf("[ Redis] - redis(%s:%d) dial failed - %s , Redial after 5 seconds\n",
-                    host, port, err.Error())
-                time.Sleep(time.Second * 5)
-            }
-
-            if len(auth) != 0 {
-                if _, err = c.Do("AUTH", auth); err != nil {
-                    c.Close()
-                    log.Fatalf("[ Redis][ AUTH] - %s\n", err.Error())
-                }
-            }
-            if _, err = c.Do("SELECT", db); err != nil {
-                c.Close()
-                log.Fatalf("[ Redis][ SELECT] - redis(%s:%d) select db failed - %s",
-                    host, port, err.Error())
-            }
-            return c, err
-        },
-        TestOnBorrow: func(c redis.Conn, t time.Time) error {
-            _, err := c.Do("PING")
-            return err
-        },
-    }
+    return storage.NewRedisPool(host,port,db,auth,maxIdle,idleTimeout)
 }
 
 // 获取Redis连接池
