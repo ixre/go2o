@@ -39,7 +39,7 @@ func PrefixDel(prefix string) {
 }
 
 func Initialize(kvStorage storage.Interface) {
-	if kvStorage.DriverName() == storage.DriveRedisStorage {
+	if kvStorage.Driver() == storage.DriveRedisStorage {
 		kvCacheStorage = kvStorage
 	} else {
 		panic(errors.New("only support redis storage now."))
