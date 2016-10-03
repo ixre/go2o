@@ -74,7 +74,7 @@ func CleanRedisCache(app gof.App) {
 	if rs != nil {
 		i, err := rs.PrefixDel("go2o:*")
 		if err != nil {
-			log.Println("[ Go2o][ Redis][ Clean]: happend error ", err.Error())
+			log.Println("[ Go2o][ Redis][ Clean]: Error ", err.Error())
 		} else {
 			log.Println("[ Go2o][ Redis][ Clean]: clean redis records :", i)
 		}
