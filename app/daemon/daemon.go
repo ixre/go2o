@@ -27,6 +27,7 @@ import (
 	"go2o/core/variable"
 	"log"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -64,10 +65,13 @@ var (
 	tickerInvokeFunc []Func         = []Func{}
 	cronTab          *cron.Cron     = cron.New()
 	ticker           *time.Ticker   = time.NewTicker(tickerDuration)
+	mux              sync.Mutex
 )
 
 // 注册服务
 func RegisterService(s Service) {
+	mux.Lock()
+	defer mux.Unlock()
 	if s == nil {
 		panic("service is nil")
 	}
