@@ -239,11 +239,6 @@ func (ms *memberService) SaveMember(v *member.Member) (int, error) {
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
-func (ms *memberService) SaveMemberProfile(id int, v *member.Member) (int, error) {
-	//todo:
-	return -1, nil
-}
-
 func (ms *memberService) updateMember(v *member.Member) (int, error) {
 	m := ms._rep.GetMember(v.Id)
 	if m == nil {
