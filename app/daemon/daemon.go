@@ -94,13 +94,11 @@ func Start() {
 		cronTab.Stop()
 		ticker.Stop()
 	}()
-
 	//运行自定义服务
 	for i, s := range services {
 		log.Println("** [ Go2o][ Daemon] - (", i, ")", s.Name(), "daemon running")
 		go s.Start(appCtx)
 	}
-
 	startCronTab() // 运行计划任务
 	startTicker()  // 阻塞
 }
