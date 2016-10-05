@@ -38,12 +38,14 @@ type (
 		Name string
 		// 标志
 		Logo string
+		// 系统是否开挂起状态
+		Suspend bool
+		// 系统挂起提示消息
+		SuspendMessage string
 		// 允许商户创建商品分类
 		MchGoodsCategory bool
 		// 允许商户创建页面分类
 		MchPageCategory bool
-		// 是否启用会员经验值
-		EnabledMemberExperience bool
 	}
 
 	Registry struct {
@@ -51,6 +53,8 @@ type (
 		MerchantTakeOutCashFree bool
 		// 收货时的提示信息
 		OrderReceiveAlertMessage string
+		// 是否启用会员经验值功能
+		MemberExperienceEnabled bool
 		// 会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage string
 		// 会员转账开关

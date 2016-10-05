@@ -20,7 +20,9 @@ var (
 		MerchantTakeOutCashFree: true,
 		// 收货提示信息
 		OrderReceiveAlertMessage: "确认收货后,款项将转给商户。请在收货前确保已经商品没有损坏和缺少!",
-
+		// 是否启用会员经验值功能
+		MemberExperienceEnabled: true,
+		//会员资料不完善提醒信息
 		MemberProfileNotCompletedMessage: "您的个人资料未完善,是否立即完善?",
 		// 会员转账提示信息
 		MemberTransferAccountsMessage: "平台仅提供转账功能，请尽量当面交易以保证安全！",
@@ -57,13 +59,15 @@ var (
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
 	// 默认平台设置
-	//todo: 默认值
 	defaultPlatformConf = valueobject.PlatformConf{
-		Name:                    "GO2O",
-		Logo:                    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-		MchGoodsCategory:        false,
-		MchPageCategory:         false,
-		EnabledMemberExperience: !true,
+		Name:             "GO2O",
+		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		MchGoodsCategory: false,
+		MchPageCategory:  false,
+		// 系统是否开挂起状态
+		Suspend: false,
+		// 系统挂起提示消息
+		SuspendMessage: "系统正在升级维护，请稍后再试!",
 	}
 
 	// 默认注册权限设置
