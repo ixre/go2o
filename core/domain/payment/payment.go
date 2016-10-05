@@ -363,7 +363,7 @@ func (p *paymentOrderImpl) Cancel() error {
 	return nil
 }
 
-// 调整金额,如果调整的金额与实付金额一致,则取消支付单
+// 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
 func (p *paymentOrderImpl) Adjust(amount float32) error {
 	p._value.AdjustmentAmount += amount
 	p._value.FinalAmount += amount
