@@ -961,6 +961,8 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	return err
 }
 
+//todo: ?? 自动收货功能
+
 var _ order.ISubOrder = new(subOrderImpl)
 
 // 子订单实现
