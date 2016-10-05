@@ -59,7 +59,7 @@ var (
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
 	// 默认平台设置
-	defaultPlatformConf = valueobject.PlatformConf{
+	DefaultPlatformConf = valueobject.PlatformConf{
 		Name:             "GO2O",
 		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
 		MchGoodsCategory: false,

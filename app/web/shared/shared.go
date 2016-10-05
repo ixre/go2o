@@ -9,10 +9,15 @@
 package shared
 
 import (
+	"fmt"
 	"github.com/jsix/gof/web"
+	"go2o/core/service/dps"
+	"go2o/core/variable"
 	"go2o/x/echox"
 	"gopkg.in/labstack/echo.v1"
 	"html/template"
+	"regexp"
+	"strings"
 )
 
 const (
@@ -43,4 +48,29 @@ func RenderMessagePage(c *echox.Context, msg string, btn string, url string) err
 // 处理HTTP错误
 func HandleHttpError(err error, ctx *echo.Context) {
 	web.HttpError(ctx.Response(), err)
+}
+
+var (
+	sysIgnoreRegex = regexp.MustCompile(".(gif|jpg|css|js|png|woff|ttf|woff2)$")
+)
+
+// 系统状态检测
+func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx *echo.Context) error {
+		conf := dps.BaseService.GetPlatformConf()
+		if conf.Suspend {
+			rsp := ctx.Response()
+			path := ctx.Request().URL.Path
+			// 访问挂起页面及相关的资源页面不跳转
+			if strings.Index(path, "suspend") == -1 &&
+				!sysIgnoreRegex.MatchString(path) {
+				url := fmt.Sprintf("http://%s%s/suspend", variable.DOMAIN_PREFIX_MAIN,
+					variable.Domain)
+				rsp.Header().Add("Location", url)
+				rsp.WriteHeader(302)
+				return nil
+			}
+		}
+		return h(ctx)
+	}
 }

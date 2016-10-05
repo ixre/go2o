@@ -149,7 +149,7 @@ func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
 	vp.checkReload()
 	if vp._globMchConf == nil {
-		v := defaultPlatformConf
+		v := DefaultPlatformConf
 		vp._globMchConf = &v
 		vp._mchGob.Unmarshal(vp._globMchConf)
 	}
