@@ -50,6 +50,15 @@ func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean) (int, e
 	return o.Commit()
 }
 
+// 销毁支付单
+func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
+	o := p._rep.GetPaymentOrderByNo(paymentNo)
+	if o == nil {
+		return payment.ErrNoSuchPaymentOrder
+	}
+	return o.Adjust(amount)
+}
+
 func (p *paymentService) SetPrefixOfTradeNo(id int, prefix string) error {
 	o := p._rep.GetPaymentOrder(id)
 	if o == nil {
