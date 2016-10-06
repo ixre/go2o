@@ -26,7 +26,7 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
+func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrder {
 	po := p._rep.GetPaymentOrder(id)
 	if po != nil {
 		v := po.GetValue()
@@ -36,7 +36,7 @@ func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrderBean {
 }
 
 // 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrderBean {
+func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrder {
 	if v := p._rep.GetPaymentOrderByNo(paymentNo); v != nil {
 		v2 := v.GetValue()
 		return &v2
@@ -45,12 +45,12 @@ func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentO
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrderBean) (int, error) {
+func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int, error) {
 	o := p._rep.CreatePaymentOrder(v)
 	return o.Commit()
 }
 
-// 销毁支付单
+// 调整支付单金额
 func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
 	o := p._rep.GetPaymentOrderByNo(paymentNo)
 	if o == nil {

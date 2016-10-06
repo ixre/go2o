@@ -30,7 +30,7 @@ func registerTypes() {
 	gob.Register(&shop.OfflineShop{})
 	gob.Register(&shop.ShopDto{})
 	gob.Register(&member.Account{})
-	gob.Register(&payment.PaymentOrderBean{})
+	gob.Register(&payment.PaymentOrder{})
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})

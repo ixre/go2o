@@ -139,7 +139,7 @@ type (
 		PaymentFinish(spName string, outerNo string) error
 
 		// 获取支付单的值
-		GetValue() PaymentOrderBean
+		GetValue() PaymentOrder
 
 		// 取消支付
 		Cancel() error
@@ -159,17 +159,17 @@ type (
 		GetPaymentBySalesOrderId(orderId int) IPaymentOrder
 
 		// 创建支付单
-		CreatePaymentOrder(p *PaymentOrderBean) IPaymentOrder
+		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder
 
 		// 保存支付单
-		SavePaymentOrder(v *PaymentOrderBean) (int, error)
+		SavePaymentOrder(v *PaymentOrder) (int, error)
 
 		// 通知支付单完成
 		//NotifyPaymentFinish(paymentOrderId int) error
 	}
 
 	// 支付单实体
-	PaymentOrderBean struct {
+	PaymentOrder struct {
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 支付单号

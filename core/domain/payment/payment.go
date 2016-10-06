@@ -28,7 +28,7 @@ var (
 
 type paymentOrderImpl struct {
 	_rep                payment.IPaymentRep
-	_value              *payment.PaymentOrderBean
+	_value              *payment.PaymentOrder
 	_mmRep              member.IMemberRep
 	_valRep             valueobject.IValueRep
 	_coupons            []promotion.ICouponPromotion
@@ -353,7 +353,7 @@ func (p *paymentOrderImpl) PaymentFinish(spName string, outerNo string) error {
 	_, err := p.save()
 	return err
 }
-func (p *paymentOrderImpl) GetValue() payment.PaymentOrderBean {
+func (p *paymentOrderImpl) GetValue() payment.PaymentOrder {
 	return *p._value
 }
 
@@ -379,7 +379,7 @@ type PaymentRepBase struct {
 }
 
 func (p *PaymentRepBase) CreatePaymentOrder(v *payment.
-	PaymentOrderBean, rep payment.IPaymentRep, mmRep member.IMemberRep,
+	PaymentOrder, rep payment.IPaymentRep, mmRep member.IMemberRep,
 	orderManager order.IOrderManager, valRep valueobject.IValueRep) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		_rep:          rep,
