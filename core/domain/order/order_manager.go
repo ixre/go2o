@@ -169,7 +169,7 @@ func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 	o order.IOrder) payment.IPaymentOrder {
 	val := o.GetValue()
-	v := &payment.PaymentOrderBean{
+	v := &payment.PaymentOrder{
 		BuyUser:     m.GetAggregateRootId(),
 		PaymentUser: m.GetAggregateRootId(),
 		VendorId:    0,

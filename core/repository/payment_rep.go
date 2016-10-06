@@ -46,7 +46,7 @@ func NewPaymentRep(sto storage.Interface, conn db.Connector, mmRep member.IMembe
 
 // 根据订单号获取支付单
 func (p *paymentRep) GetPaymentBySalesOrderId(orderId int) payment.IPaymentOrder {
-	e := &payment.PaymentOrderBean{}
+	e := &payment.PaymentOrder{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)
 	}
@@ -66,7 +66,7 @@ func (p *paymentRep) GetPaymentOrder(
 	if id <= 0 {
 		return nil
 	}
-	e := &payment.PaymentOrderBean{}
+	e := &payment.PaymentOrder{}
 	k := p.getPaymentOrderCk(id)
 	if err := p.Storage.Get(k, &e); err != nil {
 		if p.Connector.GetOrm().Get(id, e) != nil {
@@ -93,13 +93,13 @@ func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder
 
 // 创建支付单
 func (p *paymentRep) CreatePaymentOrder(
-	o *payment.PaymentOrderBean) payment.IPaymentOrder {
+	o *payment.PaymentOrder) payment.IPaymentOrder {
 	return p.PaymentRepBase.CreatePaymentOrder(o, p,
 		p._memberRep, p._orderRep.Manager(), p._valRep)
 }
 
 // 保存支付单
-func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrderBean) (int, error) {
+func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int, error) {
 	stat := v.State
 	if v.Id > 0 {
 		stat = p.GetPaymentOrder(v.Id).GetValue().State

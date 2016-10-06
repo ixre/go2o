@@ -152,7 +152,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
-	orm.Mapping(payment.PaymentOrderBean{}, "pay_order")
+	orm.Mapping(payment.PaymentOrder{}, "pay_order")
 
 	/** 促销 **/
 	orm.Mapping(promotion.ValueCoupon{}, "pm_coupon")
