@@ -1,6 +1,5 @@
 
 ![Go2o](https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif "GO2O")
-test
 
 ## What's Go2o? ##
 
