@@ -187,13 +187,13 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if phone == "" {
 		return member.ErrPhoneValidErr
 	}
-	err := p._rep.CheckPhoneBind(phone, p._memberId)
-	if err == nil {
+	used := p._rep.CheckPhoneBind(phone, p._memberId)
+	if !used {
 		v := p.GetProfile()
 		v.Phone = phone
-		err = p._rep.SaveProfile(p._memberId, v)
+		return p._rep.SaveProfile(p._memberId, v)
 	}
-	return err
+	return member.ErrPhoneHasBind
 }
 
 //todo: ?? 重构
