@@ -191,7 +191,7 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	if !used {
 		v := p.GetProfile()
 		v.Phone = phone
-		return p._rep.SaveProfile(v)
+		return p._rep.SaveProfile(&v)
 	}
 	return member.ErrPhoneHasBind
 }
