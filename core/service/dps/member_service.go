@@ -67,7 +67,19 @@ func (ms *memberService) GetProfile(memberId int) *member.Profile {
 // 保存资料
 func (ms *memberService) SaveProfile(memberId int, v *member.Profile) error {
 	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
 	return m.Profile().SaveProfile(v)
+}
+
+// 更改手机号码，不验证手机格式
+func (ms *memberService) ChangePhone(memberId int, phone string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.Profile().ChangePhone(phone)
 }
 
 // 是否已收藏
