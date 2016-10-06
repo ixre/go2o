@@ -3,6 +3,7 @@ platforms/
 bin
 pkg
 .a
+*~
 *.swp
 *.exe
 .DS_Store
