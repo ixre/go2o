@@ -330,19 +330,13 @@ func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (
 	return v.Id, err
 }
 
-
-func  (m *merchantRep)  UpdateMechOfflineRate(id int,rate float32) error{
-	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=?  WHERE  id=?",rate,id)
+func (m *merchantRep) UpdateMechOfflineRate(id int, rate float32) error {
+	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=?  WHERE  id=?", rate, id)
 	return err
 }
 
-func  (m *merchantRep)GetOfflineRate(id int)  (float32, error){
+func (m *merchantRep) GetOfflineRate(id int) (float32, error) {
 	var rate float32
 	err := m.Connector.ExecScalar("SELECT  offline_rate  FROM mch_merchant WHERE id=?", &rate, id)
-	return rate,err
+	return rate, err
 }
-
-
-
-
-
