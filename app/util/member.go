@@ -23,7 +23,7 @@ const offset string = "%$^&@#"
 // 生成推广二维码
 func GenerateInvitationQr(domain string,
 	code string, targetUrl string) []byte {
-	url := domain + "/t/" + code + "?device=3&return_url=" + targetUrl
+	url := domain + "/i/" + code + "?device=3&return_url=" + targetUrl
 	return gen.BuildQrCodeForUrl(url, 10)
 }
 

@@ -122,6 +122,8 @@ func (p *profileManagerImpl) copyProfile(v, dst *member.Profile) error {
 	dst.BirthDay = v.BirthDay
 	dst.Im = v.Im
 	dst.Email = v.Email
+
+	//todo: 如果手机不需要验证，则可以随意设置
 	if dst.Phone == "" {
 		dst.Phone = v.Phone
 	}
@@ -177,6 +179,21 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 		}
 	}
 	return err
+}
+
+// 更改手机号码
+func (p *profileManagerImpl) ChangePhone(phone string) error {
+	phone = strings.TrimSpace(phone)
+	if phone == "" {
+		return member.ErrPhoneValidErr
+	}
+	used := p._rep.CheckPhoneBind(phone, p._memberId)
+	if !used {
+		v := p.GetProfile()
+		v.Phone = phone
+		return p._rep.SaveProfile(&v)
+	}
+	return member.ErrPhoneHasBind
 }
 
 //todo: ?? 重构
