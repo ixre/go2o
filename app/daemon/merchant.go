@@ -52,7 +52,7 @@ func autoSetOrder(merchantId int) {
 }
 
 var (
-	mchDayChartKey string = "go2o:d:mch:day-chart-unix"
+	mchDayChartKey string = "cron:go2o:d:mch:day-chart-unix"
 )
 
 func testGenerateMchDayChart() {
