@@ -52,9 +52,10 @@ func RoundAmount(amount float32) float32 {
 
 // 普通近似值计算, 不四舍五入,n为小数点精度
 func FixedDecimalN(amount float64, n int) float64 {
-	return m.FixFloat32(amount, n)
+	return m.FixedFloat(amount, n)
 }
 
+// 精确到2位浮点数
 func FixedDecimal(amount float64) float64 {
-	return m.FixFloat32(amount, 2)
+	return m.FixedFloat(amount, 2)
 }
