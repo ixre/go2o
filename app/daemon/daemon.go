@@ -156,6 +156,8 @@ func startCronTab() {
 
 // 添加定时任务
 func AddCron(spec string, cmd func()) {
+	mux.Lock()
+	defer mux.Unlock()
 	cronTab.AddFunc(spec, cmd)
 }
 
