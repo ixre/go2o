@@ -457,14 +457,12 @@ func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-
 //商户利润修改
-func (m *merchantService) UpdateMechOfflineRate(id int,rate float32) error{
-	return m._mchRep.UpdateMechOfflineRate(id,rate)
+func (m *merchantService) UpdateMechOfflineRate(id int, rate float32) error {
+	return m._mchRep.UpdateMechOfflineRate(id, rate)
 }
 
-
 //获取当前商家的利润
-func (m *merchantService) GetOfflineRate(id int)  (float32, error){
+func (m *merchantService) GetOfflineRate(id int) (float32, error) {
 	return m._mchRep.GetOfflineRate(id)
 }
