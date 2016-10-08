@@ -78,7 +78,7 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
 
 	if total > 0 {
 		a.Query(`SELECT ao.id,ao.type,so.order_no,so.buyer_id,mp.name as buyer_name,
- ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,ao.vendor_id,
+ ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
  ao.create_time,ao.update_time FROM sale_after_order ao
 INNER JOIN sale_sub_order so ON so.id=ao.order_id
 INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
@@ -95,6 +95,6 @@ WHERE ao.vendor_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
 			}
 		}, vendorId, begin, size)
 	}
-	log.Print("=====================%s",list)
+	log.Print("=====================%s",len(list))
 	return total, list
 }
