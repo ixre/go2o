@@ -73,6 +73,23 @@ func (c *categoryImpl) GetOption() domain.IOptionStore {
 	return c._opt
 }
 
+// 检查上级分类是否正确
+func (c *categoryImpl) checkParent(parentId int) error {
+	if id := c.GetDomainId(); id > 0 && parentId > 0 {
+		//检查上级栏目是否存在
+		p := c._rep.GetGlobManager().GetCategory(parentId)
+		if p == nil {
+			return sale.ErrNoSuchCategory
+		}
+		// 检查上级分类
+		if p.GetValue().ParentId == id {
+			return sale.ErrCategoryCycleReference
+		}
+	}
+	return nil
+}
+
+// 设置值
 func (c *categoryImpl) SetValue(v *sale.Category) error {
 	val := c._value
 	if val.Id == v.Id {
@@ -83,9 +100,16 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 		val.Icon = v.Icon
 		if val.ParentId != v.ParentId {
 			c._parentIdChanged = true
-			val.ParentId = v.ParentId
 		} else {
 			c._parentIdChanged = false
+		}
+
+		if c._parentIdChanged {
+			err := c.checkParent(v.ParentId)
+			if err != nil {
+				return err
+			}
+			val.ParentId = v.ParentId
 		}
 	}
 	return nil
@@ -313,7 +337,7 @@ func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
 func (c *categoryManagerImpl) DeleteCategory(id int) error {
 	cat := c.GetCategory(id)
 	if cat == nil {
-		return sale.ErrCategoryNotExist
+		return sale.ErrNoSuchCategory
 	}
 	if len(cat.GetChildes()) > 0 {
 		return sale.ErrHasChildCategories
