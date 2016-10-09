@@ -201,9 +201,12 @@ func (p *profileManagerImpl) SetAvatar(avatar string) error {
 	if avatar == "" {
 		return member.ErrNullAvatar
 	}
-	v := p._profile
+	v := p.GetProfile()
+	if p._profile != nil {
+		p._profile.Avatar = avatar
+	}
 	v.Avatar = avatar
-	return p._rep.SaveProfile(v)
+	return p._rep.SaveProfile(&v)
 }
 
 //todo: ?? 重构
