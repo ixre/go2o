@@ -13,6 +13,9 @@ ALTER TABLE `gs_sale_label`
 ALTER TABLE `mm_relation`
   CHANGE COLUMN `reg_partner_id` `reg_merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '注册商户编号';
+ALTER TABLE `mm_relation`
+  ADD COLUMN `refer_str` VARCHAR(250) NULL AFTER `invi_member_id`;
+
 ALTER TABLE `pm_info`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
 ALTER TABLE `ad_list`
