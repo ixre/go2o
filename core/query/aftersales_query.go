@@ -11,10 +11,10 @@ package query
 import (
 	"database/sql"
 	"github.com/jsix/gof/db"
+	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
-	"github.com/labstack/gommon/log"
 )
 
 type AfterSalesQuery struct {
@@ -95,6 +95,6 @@ WHERE ao.vendor_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
 			}
 		}, vendorId, begin, size)
 	}
-	log.Print("=====================%s",len(list))
+	log.Print("=====================%s", len(list))
 	return total, list
 }
