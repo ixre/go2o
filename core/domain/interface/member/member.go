@@ -365,11 +365,11 @@ type (
 	}
 )
 
-func (this BankInfo) Right() bool {
-	return len(this.Name) > 0 && len(this.Account) > 0 &&
-		len(this.AccountName) > 0
+func (b BankInfo) Right() bool {
+	return len(b.Name) > 0 && len(b.Account) > 0 &&
+		len(b.AccountName) > 0
 }
 
-func (this BankInfo) Locked() bool {
-	return this.IsLocked == BankLocked
+func (b BankInfo) Locked() bool {
+	return b.IsLocked == BankLocked
 }
