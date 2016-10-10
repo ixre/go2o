@@ -243,6 +243,15 @@ func (ms *memberService) ChangeUsr(id int, usr string) error {
 	return m.ChangeUsr(usr)
 }
 
+// 上传会员头像
+func (ms *memberService) SetAvatar(id int, avatar string) error {
+	m := ms._rep.GetMember(id)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.Profile().SetAvatar(avatar)
+}
+
 // 保存用户
 func (ms *memberService) SaveMember(v *member.Member) (int, error) {
 	if v.Id > 0 {

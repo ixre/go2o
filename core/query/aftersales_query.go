@@ -11,6 +11,7 @@ package query
 import (
 	"database/sql"
 	"github.com/jsix/gof/db"
+	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -34,7 +35,11 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	a.ExecScalar("SELECT COUNT(0) FROM sale_after_order ao WHERE ao.buyer_id=?"+where, &total, memberId)
+	a.ExecScalar(`SELECT COUNT(0) FROM sale_after_order ao
+	INNER JOIN sale_sub_order so ON so.id=ao.order_id
+	INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
+	INNER JOIN gs_sales_snapshot sn ON sn.id = ao.snap_id
+	WHERE ao.buyer_id=?`+where, &total, memberId)
 	if total > 0 {
 		a.Query(`SELECT ao.id,ao.type,so.order_no,so.vendor_id,mch.name as vendor_name,
  ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
@@ -42,7 +47,7 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 INNER JOIN sale_sub_order so ON so.id=ao.order_id
 INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
 INNER JOIN gs_sales_snapshot sn ON sn.id = ao.snap_id
-WHERE ao.buyer_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
+WHERE ao.buyer_id=?   ORDER BY id DESC LIMIT ?,?`, func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.PagedMemberAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.VendorId, &e.VendorName,
@@ -65,7 +70,12 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
 	if len(where) > 0 {
 		where = " AND " + where
 	}
-	a.ExecScalar("SELECT COUNT(0) FROM sale_after_order ao WHERE ao.vendor_id=?"+where, &total, vendorId)
+	a.ExecScalar(`SELECT COUNT(0) FROM sale_after_order ao
+	INNER JOIN sale_sub_order so ON so.id=ao.order_id
+	INNER JOIN mm_profile mp ON mp.member_id = so.buyer_id
+	INNER JOIN gs_sales_snapshot sn ON sn.id = ao.snap_id
+	WHERE ao.vendor_id=?`+where, &total, vendorId)
+
 	if total > 0 {
 		a.Query(`SELECT ao.id,ao.type,so.order_no,so.buyer_id,mp.name as buyer_name,
  ao.snap_id,ao.quantity,sn.sku_id,sn.goods_title,sn.img,ao.state,
@@ -85,5 +95,6 @@ WHERE ao.vendor_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
 			}
 		}, vendorId, begin, size)
 	}
+	log.Print("=====================%s", len(list))
 	return total, list
 }

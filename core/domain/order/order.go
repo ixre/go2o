@@ -729,7 +729,7 @@ func (o *orderImpl) breakUpByVendor() []order.ISubOrder {
 func (o *orderImpl) applyGoodsNum() {
 	for _, v := range o._vendorItemsMap {
 		for _, v2 := range v {
-			o.addGoodsSaleNum(v2.VendorId, v2.SkuId, v2.Quantity)
+			o.takeGoodsStock(v2.VendorId, v2.SkuId, v2.Quantity)
 		}
 	}
 }
@@ -851,14 +851,13 @@ func (o *orderImpl) Confirm() error {
 	return nil
 }
 
-// 添加商品销售数量
-func (o *orderImpl) addGoodsSaleNum(vendorId, skuId, quantity int) error {
-	gds := o._saleRep.GetSale(vendorId).
-		GoodsManager().GetGoods(skuId)
+// 扣减商品库存
+func (o *orderImpl) takeGoodsStock(vendorId, skuId, quantity int) error {
+	gds := o._saleRep.GetSale(vendorId).GoodsManager().GetGoods(skuId)
 	if gds == nil {
 		return goods.ErrNoSuchGoods
 	}
-	return gds.AddSaleNum(quantity)
+	return gds.TakeStock(quantity)
 }
 
 // 配送订单
@@ -1160,9 +1159,19 @@ func (o *subOrderImpl) Confirm() (err error) {
 	o._value.UpdateTime = time.Now().Unix()
 	_, err = o.Save()
 	if err == nil {
+		go o.addSalesNum()
 		err = o.AppendLog(order.LogSetup, false, "{confirm}")
 	}
 	return err
+}
+
+// 增加商品的销售数量
+func (o *subOrderImpl) addSalesNum() {
+	gm := o._saleRep.GetSale(o._value.VendorId).GoodsManager()
+	for _, v := range o.Items() {
+		gds := gm.GetGoods(v.SkuId)
+		gds.AddSalesNum(v.Quantity)
+	}
 }
 
 // 捡货(备货)
@@ -1430,15 +1439,20 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
-	for _, v := range o._value.Items {
+	gm := o._saleRep.GetSale(o._value.VendorId).GoodsManager()
+	for _, v := range o.Items() {
 		snapshot := o._goodsRep.GetSaleSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return goods.ErrNoSuchSnapshot
 		}
-		var gds sale.IGoods = o._saleRep.GetSale(o._value.VendorId).
-			GoodsManager().GetGoods(snapshot.SkuId)
+		var gds sale.IGoods = gm.GetGoods(snapshot.SkuId)
 		if gds != nil {
-			gds.CancelSale(v.Quantity, o._value.OrderNo)
+			// 释放库存
+			gds.FreeStock(v.Quantity)
+			// 如果订单已付款，则取消销售数量
+			if o._value.IsPaid == 1 {
+				gds.CancelSale(snapshot.SkuId, o._value.OrderNo)
+			}
 		}
 	}
 	return nil

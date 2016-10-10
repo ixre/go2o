@@ -196,6 +196,19 @@ func (p *profileManagerImpl) ChangePhone(phone string) error {
 	return member.ErrPhoneHasBind
 }
 
+// 设置头像
+func (p *profileManagerImpl) SetAvatar(avatar string) error {
+	if avatar == "" {
+		return member.ErrNullAvatar
+	}
+	v := p.GetProfile()
+	if p._profile != nil {
+		p._profile.Avatar = avatar
+	}
+	v.Avatar = avatar
+	return p._rep.SaveProfile(&v)
+}
+
 //todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//rl := p._member.GetRelation()
