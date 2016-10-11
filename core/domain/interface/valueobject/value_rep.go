@@ -53,6 +53,8 @@ type (
 		AppName string
 		// APP图标地址
 		AppIcon string
+		// 描述
+		Description string
 		// 安卓APP版本
 		AndroidVersion string
 		// 安卓APP版发布地址
