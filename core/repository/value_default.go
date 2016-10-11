@@ -39,6 +39,8 @@ var (
 		MemberTakeOutOn: true,
 		// 会员转账开关
 		MemberTransferAccountsOn: true,
+		// 会员默认个人签名
+		MemberDefaultPersonRemark: "什么也没留下",
 
 		// 商品默认图片
 		GoodsDefaultImage: "res/nopic.gif",

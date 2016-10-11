@@ -71,6 +71,8 @@ type (
 		MemberImRequired bool
 		// 会员是否验证手机号码格式
 		MemberCheckPhoneFormat bool
+		// 会员默认个人签名
+		MemberDefaultPersonRemark string
 
 		// 会员提现开关
 		MemberTakeOutOn bool
