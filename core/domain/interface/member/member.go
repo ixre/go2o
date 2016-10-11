@@ -101,6 +101,9 @@ type (
 		// 更改手机号码,不验证手机格式
 		ChangePhone(string) error
 
+		// 设置头像
+		SetAvatar(string) error
+
 		// 资料是否完善
 		ProfileCompleted() bool
 
@@ -362,11 +365,11 @@ type (
 	}
 )
 
-func (this BankInfo) Right() bool {
-	return len(this.Name) > 0 && len(this.Account) > 0 &&
-		len(this.AccountName) > 0
+func (b BankInfo) Right() bool {
+	return len(b.Name) > 0 && len(b.Account) > 0 &&
+		len(b.AccountName) > 0
 }
 
-func (this BankInfo) Locked() bool {
-	return this.IsLocked == BankLocked
+func (b BankInfo) Locked() bool {
+	return b.IsLocked == BankLocked
 }

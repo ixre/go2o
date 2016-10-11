@@ -221,30 +221,49 @@ func (g *tmpGoodsImpl) Save() (int, error) {
 }
 
 // 更新销售数量
-func (g *tmpGoodsImpl) AddSaleNum(quantity int) error {
-	// 减去库存
-	if quantity > 0 {
-		if quantity > g._value.StockNum {
-			return sale.ErrOutOfStock
-		}
-		g._value.StockNum -= quantity
-		g._value.SaleNum += quantity
-		_, err := g.Save()
-		return err
+func (g *tmpGoodsImpl) AddSalesNum(quantity int) error {
+	if quantity <= 0 {
+		return sale.ErrGoodsNum
 	}
-	return sale.ErrGoodsNum
+	if quantity > g._value.StockNum {
+		return sale.ErrOutOfStock
+	}
+	g._value.SaleNum += quantity
+	_, err := g.Save()
+	return err
 }
 
 // 取消销售
 func (g *tmpGoodsImpl) CancelSale(quantity int, orderNo string) error {
-	// 减去库存
-	if quantity > 0 {
-		g._value.StockNum += quantity
-		g._value.SaleNum -= quantity
-		_, err := g.Save()
-		return err
+	if quantity <= 0 {
+		return sale.ErrGoodsNum
 	}
-	return sale.ErrGoodsNum
+	g._value.SaleNum -= quantity
+	_, err := g.Save()
+	return err
+}
+
+// 占用库存
+func (g *tmpGoodsImpl) TakeStock(quantity int) error {
+	if quantity <= 0 {
+		return sale.ErrGoodsNum
+	}
+	if quantity > g._value.StockNum {
+		return sale.ErrOutOfStock
+	}
+	g._value.StockNum -= quantity
+	_, err := g.Save()
+	return err
+}
+
+// 释放库存
+func (g *tmpGoodsImpl) FreeStock(quantity int) error {
+	if quantity <= 0 {
+		return sale.ErrGoodsNum
+	}
+	g._value.StockNum += quantity
+	_, err := g.Save()
+	return err
 }
 
 var _ sale.IGoodsManager = new(goodsManagerImpl)
