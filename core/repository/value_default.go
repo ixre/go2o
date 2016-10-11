@@ -78,6 +78,8 @@ var (
 		AppName: DefaultPlatformConf.Name,
 		// APP图标地址
 		AppIcon: DefaultPlatformConf.Logo,
+		// 描述
+		Description: "移动应用正在开发中",
 		// 安卓APP版本
 		AndroidVersion: "1.0",
 		// 安卓APP版发布地址
