@@ -47,6 +47,25 @@ type (
 		// 允许商户创建页面分类
 		MchPageCategory bool
 	}
+	// 移动应用配置
+	MoAppConf struct {
+		// 应用名称
+		AppName string
+		// APP图标地址
+		AppIcon string
+		// 安卓APP版本
+		AndroidVersion string
+		// 安卓APP版发布地址
+		AndroidReleaseUrl string
+		// 苹果APP版本
+		IosVersion string
+		// 苹果APP版发布地址
+		IosReleaseUrl string
+		// 微软APP版本
+		WpVersion string
+		// 微软APP版发布地址
+		WpReleaseUrl string
+	}
 
 	Registry struct {
 		// 商户提现是否免费
@@ -246,6 +265,12 @@ type (
 
 		// 保存数据存储
 		SaveRegistry(v *Registry) error
+
+		// 获取移动应用设置
+		GetMoAppConf() MoAppConf
+
+		// 保存移动应用设置
+		SaveMoAppConf(r *MoAppConf) error
 
 		// 获取全局商户销售设置
 		GetGlobMchSaleConf() GlobMchSaleConf
