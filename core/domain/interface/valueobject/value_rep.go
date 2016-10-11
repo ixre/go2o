@@ -55,6 +55,8 @@ type (
 		AppIcon string
 		// 描述
 		Description string
+		// 模板文件
+		ShowTplPath string
 		// 安卓APP版本
 		AndroidVersion string
 		// 安卓APP版发布地址
