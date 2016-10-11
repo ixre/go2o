@@ -46,6 +46,8 @@ type valueRep struct {
 	_mscGob          *util.GobFile
 	_smsConf         valueobject.SmsApiSet
 	_smsGob          *util.GobFile
+	_moAppConf       *valueobject.MoAppConf
+	_moAppGob        *util.GobFile
 	_areaCache       map[int][]*valueobject.Area
 	_areaMux         sync.Mutex
 }
@@ -61,6 +63,7 @@ func NewValueRep(conn db.Connector, storage storage.Interface) valueobject.IValu
 		_mchGob:   util.NewGobFile("conf/core/pm_conf"),
 		_mscGob:   util.NewGobFile("conf/core/mch_sale_conf"),
 		_smsGob:   util.NewGobFile("conf/core/sms_conf"),
+		_moAppGob: util.NewGobFile("conf/core/mo_app"),
 	}
 }
 
@@ -162,6 +165,27 @@ func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 		defer vp.signReload()
 		vp._globMchConf = v
 		return vp._mchGob.Save(vp._globMchConf)
+	}
+	return nil
+}
+
+// 获取移动应用设置
+func (v *valueRep) GetMoAppConf() valueobject.MoAppConf {
+	v.checkReload()
+	if v._moAppConf == nil {
+		v2 := DefaultMoAppConf
+		v._moAppConf = &v2
+		v._moAppGob.Unmarshal(v._moAppConf)
+	}
+	return *v._moAppConf
+}
+
+// 保存移动应用设置
+func (v *valueRep) SaveMoAppConf(r *valueobject.MoAppConf) error {
+	if r != nil {
+		defer v.signReload()
+		v._moAppConf = r
+		return v._moAppGob.Save(v._moAppConf)
 	}
 	return nil
 }

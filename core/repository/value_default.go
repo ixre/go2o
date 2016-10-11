@@ -72,6 +72,26 @@ var (
 		SuspendMessage: "系统正在升级维护，请稍后再试!",
 	}
 
+	// 移动应用配置
+	DefaultMoAppConf = valueobject.MoAppConf{
+		// 应用名称
+		AppName: DefaultPlatformConf.Name,
+		// APP图标地址
+		AppIcon: DefaultPlatformConf.Logo,
+		// 安卓APP版本
+		AndroidVersion: "1.0",
+		// 安卓APP版发布地址
+		AndroidReleaseUrl: "",
+		// 苹果APP版本
+		IosVersion: "1.0",
+		// 苹果APP版发布地址
+		IosReleaseUrl: "",
+		// 微软APP版本
+		WpVersion: "1.0",
+		// 微软APP版发布地址
+		WpReleaseUrl: "",
+	}
+
 	// 默认注册权限设置
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
