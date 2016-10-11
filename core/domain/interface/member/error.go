@@ -143,6 +143,9 @@ var (
 	ErrNilNickName *domain.DomainError = domain.NewDomainError(
 		"err_member_nil_nick_name", "昵称不能为空")
 
+	ErrNullAvatar *domain.DomainError = domain.NewDomainError(
+		"err_member_null_avatar", "请上传头像")
+
 	ErrAddress *domain.DomainError = domain.NewDomainError(
 		"err_member_address", "请填写详细地址")
 
