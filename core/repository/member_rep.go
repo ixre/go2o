@@ -411,8 +411,37 @@ func (m *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 	return err
 }
 
+// 保存余额日志
+func (m *MemberRep) SaveBalanceLog(v *member.BalanceLog) (int, error) {
+	return orm.Save(m.GetOrm(), v, v.Id)
+}
+
+// 保存赠送账户日志
+func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int, error) {
+	return orm.Save(m.GetOrm(), v, v.Id)
+}
+
+// 获取会员提现次数键
+func (m *MemberRep) getMemberTakeOutTimesKey(memberId int) string {
+	return fmt.Sprintf("sys:go2o:rep:mm:take-out-times:%d", memberId)
+}
+
+// 增加会员当天提现次数
+func (m *MemberRep) AddTodayTakeOutTimes(memberId int) error {
+	times := m.GetTodayTakeOutTimes(memberId)
+	key := m.getMemberTakeOutTimesKey(memberId)
+	// 保存到当天结束
+	t := time.Now()
+	d := (24-t.Hour())*3600 + (60-t.Minute())*60 + (60 - t.Second())
+	return m.Storage.SetExpire(key, times+1, int64(d))
+}
+
 // 获取会员每日提现次数
-func (m *MemberRep) GetTodayPresentTakeOutTimes(memberId int) int {
+func (m *MemberRep) GetTodayTakeOutTimes(memberId int) int {
+	key := m.getMemberTakeOutTimesKey(memberId)
+	applyTimes, _ := m.Storage.GetInt(key)
+	return applyTimes
+
 	total := 0
 	b, e := tool.GetTodayStartEndUnix(time.Now())
 	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_present_log WHERE

@@ -11,7 +11,6 @@ package member
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/db/orm"
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
@@ -139,22 +138,12 @@ func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo str
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.saveBalanceLog(v)
+	_, err := a._rep.SaveBalanceLog(v)
 	if err == nil {
 		a._value.Balance += amount
 		_, err = a.Save()
 	}
 	return err
-}
-
-// 保存余额日志
-func (a *accountImpl) saveBalanceLog(v *member.BalanceLog) (int, error) {
-	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
-}
-
-// 保存赠送账户日志
-func (a *accountImpl) savePresentLog(v *member.PresentLog) (int, error) {
-	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 }
 
 // 根据编号获取余额变动信息
@@ -191,7 +180,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err = a.saveBalanceLog(v)
+	_, err = a._rep.SaveBalanceLog(v)
 	if err == nil {
 		a._value.Balance -= amount
 		_, err = a.Save()
@@ -227,7 +216,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 	a._value.FreezeBalance += amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a.saveBalanceLog(v)
+		_, err = a._rep.SaveBalanceLog(v)
 	}
 	return err
 }
@@ -260,7 +249,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 	a._value.FreezeBalance -= amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a.saveBalanceLog(v)
+		_, err = a._rep.SaveBalanceLog(v)
 	}
 	return err
 
@@ -301,7 +290,7 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.savePresentLog(v)
+	_, err := a._rep.SavePresentLog(v)
 	if err == nil {
 		a._value.PresentBalance += amount
 		if amount > 0 {
@@ -342,7 +331,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.savePresentLog(v)
+	_, err := a._rep.SavePresentLog(v)
 	if err == nil {
 		a._value.PresentBalance -= amount
 		_, err = a.Save()
@@ -378,7 +367,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 	a._value.FreezePresent += amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a.savePresentLog(v)
+		_, err = a._rep.SavePresentLog(v)
 	}
 	return err
 }
@@ -411,7 +400,7 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 	a._value.FreezePresent -= amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a.savePresentLog(v)
+		_, err = a._rep.SavePresentLog(v)
 	}
 	return err
 }
@@ -465,7 +454,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.saveBalanceLog(v)
+	_, err := a._rep.SaveBalanceLog(v)
 	if err == nil {
 		a._value.Balance -= amount
 		_, err = a.Save()
@@ -648,8 +637,8 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 			format.FormatFloat(conf2.MaxTakeOutAmount)))
 	}
 	// 检测是否超过限制
-	if maxTimes := conf2.MemberMaxOneDayTakeOutTimes; maxTimes > 0 {
-		takeTimes := a._rep.GetTodayPresentTakeOutTimes(a.GetDomainId())
+	if maxTimes := conf2.MaxTakeOutTimesOfDay; maxTimes > 0 {
+		takeTimes := a._rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
 		}
@@ -682,8 +671,9 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 		v.State = enum.ReviewPass
 	}
 
-	id, err := a.savePresentLog(v)
+	id, err := a._rep.SavePresentLog(v)
 	if err == nil {
+		a._rep.AddTodayTakeOutTimes(a.GetDomainId())
 		a._value.PresentBalance -= amount
 		_, err = a.Save()
 	}
@@ -713,7 +703,7 @@ func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
 			v.CsnFee = 0
 		}
 		v.UpdateTime = time.Now().Unix()
-		_, err := a.savePresentLog(v)
+		_, err := a._rep.SavePresentLog(v)
 		return err
 	}
 	return member.ErrNotSupportTakeOutBusinessKind
@@ -726,7 +716,7 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 		v.OuterNo = tradeNo
 		v.State = enum.ReviewConfirm
 		v.Remark = "银行凭证:" + tradeNo
-		_, err := a.savePresentLog(v)
+		_, err := a._rep.SavePresentLog(v)
 		return err
 	}
 	return member.ErrNotSupportTakeOutBusinessKind
@@ -767,7 +757,7 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.saveBalanceLog(l)
+	_, err := a._rep.SaveBalanceLog(l)
 	if err == nil {
 		_, err = a.Save()
 	}
@@ -795,7 +785,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.savePresentLog(l)
+	_, err := a._rep.SavePresentLog(l)
 	if err == nil {
 		_, err = a.Save()
 	}
@@ -862,7 +852,7 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.saveBalanceLog(l)
+	_, err := a._rep.SaveBalanceLog(l)
 	if err == nil {
 		a._value.Balance -= amount + csnFee
 		a._value.UpdateTime = unix
@@ -902,7 +892,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.savePresentLog(l)
+	_, err := a._rep.SavePresentLog(l)
 	if err == nil {
 		a._value.PresentBalance -= amount + csnFee
 		a._value.UpdateTime = unix
@@ -948,7 +938,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.savePresentLog(tl)
+	_, err := a._rep.SavePresentLog(tl)
 	if err == nil {
 		a._value.PresentBalance += amount
 		a._value.UpdateTime = unix
@@ -974,7 +964,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a.saveBalanceLog(tl)
+	_, err := a._rep.SaveBalanceLog(tl)
 	if err == nil {
 		a._value.Balance += amount
 		a._value.UpdateTime = unix
