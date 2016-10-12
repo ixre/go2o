@@ -200,6 +200,19 @@ type (
 		// 订单状态
 		StateText string `db:"-"`
 	}
+
+	AfterSalesOrderNew struct{
+		OrderNo string `db:"order_no"`
+		ItemsInfo string `db:"items_info"`
+		BuyerName string `db:"name"`
+		BuyerId string `db:"usr"`
+		ConsigneePerson string `db:"consignee_person"`  //收货人
+		ConsigneePhone string `db:"consignee_phone"`    //电话
+		ShippingAddress string `db:"shipping_address"`  //地址
+		GoodsAmount int `db:"goods_amount"`
+		FinalAmount int `db:"final_amount"`
+		IsPaid int `db:"is_paid"`
+	}
 )
 
 // 返回售后状态说明
