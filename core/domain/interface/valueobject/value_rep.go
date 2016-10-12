@@ -191,9 +191,9 @@ type (
 		// 每单额外赠送
 		IntegralBackExtra int
 		// 提现手续费费率
-		ApplyCsn float32
+		TakeOutCsn float32
 		// 转账手续费费率
-		TransCsn float32
+		TransferCsn float32
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn float32
 		// 赠送账户转换手续费费率
@@ -209,7 +209,7 @@ type (
 		// 单笔最高提现金额
 		MaxTakeOutAmount float32
 		// 每日提现上限
-		MemberMaxOneDayTakeOutTimes int
+		MaxTakeOutTimesOfDay int
 	}
 
 	// 全局商户销售设置

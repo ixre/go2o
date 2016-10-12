@@ -120,9 +120,9 @@ var (
 		// 每单额外赠送
 		IntegralBackExtra: 0,
 		// 提现手续费费率
-		ApplyCsn: 0.01,
+		TakeOutCsn: 0.01,
 		// 转账手续费费率
-		TransCsn: 0.01,
+		TransferCsn: 0.01,
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn: 0.05,
 		// 赠送账户转换手续费费率
