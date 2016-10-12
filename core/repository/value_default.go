@@ -39,6 +39,8 @@ var (
 		MemberTakeOutOn: true,
 		// 会员转账开关
 		MemberTransferAccountsOn: true,
+		// 会员默认个人签名
+		MemberDefaultPersonRemark: "什么也没留下",
 
 		// 商品默认图片
 		GoodsDefaultImage: "res/nopic.gif",
@@ -70,6 +72,30 @@ var (
 		SuspendMessage: "系统正在升级维护，请稍后再试!",
 	}
 
+	// 移动应用配置
+	DefaultMoAppConf = valueobject.MoAppConf{
+		// 应用名称
+		AppName: DefaultPlatformConf.Name,
+		// APP图标地址
+		AppIcon: DefaultPlatformConf.Logo,
+		// 描述
+		Description: "移动应用正在开发中",
+		// 模板文件
+		ShowTplPath: "app.html",
+		// 安卓APP版本
+		AndroidVersion: "1.0",
+		// 安卓APP版发布地址
+		AndroidReleaseUrl: "",
+		// 苹果APP版本
+		IosVersion: "1.0",
+		// 苹果APP版发布地址
+		IosReleaseUrl: "",
+		// 微软APP版本
+		WpVersion: "1.0",
+		// 微软APP版发布地址
+		WpReleaseUrl: "",
+	}
+
 	// 默认注册权限设置
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
@@ -94,9 +120,9 @@ var (
 		// 每单额外赠送
 		IntegralBackExtra: 0,
 		// 提现手续费费率
-		ApplyCsn: 0.01,
+		TakeOutCsn: 0.01,
 		// 转账手续费费率
-		TransCsn: 0.01,
+		TransferCsn: 0.01,
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn: 0.05,
 		// 赠送账户转换手续费费率

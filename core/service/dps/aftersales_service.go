@@ -9,6 +9,7 @@
 package dps
 
 import (
+	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
@@ -20,6 +21,7 @@ type afterSalesService struct {
 	_orderRep order.IOrderRep
 	_rep      afterSales.IAfterSalesRep
 	_query    *query.AfterSalesQuery
+	db.Connector
 }
 
 func NewAfterSalesService(rep afterSales.IAfterSalesRep,
@@ -67,10 +69,17 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }
 
-// 获取会员的分页售后单
+// 获取商户的分页售后单
 func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
 	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfVendor(vendorId, begin, size, where)
+}
+
+//根据order_id获得订单号
+func (a *afterSalesService) GetAfterSalesOrder(order_id int) int {
+	id := 0
+	a.Connector.ExecScalar("SSELECT order_no FROM sale_order WHERE id=?", &id, order_id)
+	return id
 }
 
 // 获取售后单

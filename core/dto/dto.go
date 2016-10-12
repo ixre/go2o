@@ -83,7 +83,7 @@ type (
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
-		OrderNo int `db:"order_id"`
+		OrderNo string `db:"order_id"`
 		// 会员编号
 		BuyerId int `db:"vendor_id"`
 		// 会员名称
