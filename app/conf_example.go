@@ -6,8 +6,9 @@
  * description : 自定义调整
  * history :
  */
-package conf
+package app
 
+/*
 import (
 	"github.com/jsix/gof"
 	"go2o/core/repository"
@@ -43,3 +44,5 @@ func Configure(app gof.App) {
 	// 积分兑换率,兑换1元需要的积分
 	repository.DefaultGlobNumberConf.IntegralDiscountRate = 1
 }
+
+*/

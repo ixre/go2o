@@ -14,16 +14,13 @@ import (
 	"io"
 	"log"
 	"net"
-	"sync"
 	"testing"
 )
-
-var mux sync.Mutex
 
 func TestConn(t *testing.T) {
 	var ch chan bool = make(chan bool)
 	fmt.Println("---beigin test ---")
-	raddr, err := net.ResolveTCPAddr("tcp", ":1425")
+	raddr, err := net.ResolveTCPAddr("tcp", ":14197")
 	if err != nil {
 		t.Error(err)
 		t.Fail()

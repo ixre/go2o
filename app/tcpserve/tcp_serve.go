@@ -17,20 +17,22 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 var (
 	// 主动关闭没有活动的连接(当前减去最后活动时间)
 	disconnectDuration = time.Minute * 10
-
 	// 默认连接存活时间
-	defaultReadDeadLine                       = time.Second * 60
-	handlers            map[string]nc.CmdFunc = map[string]nc.CmdFunc{
+	defaultReadDeadLine = time.Second * 60
+	// 操作
+	handlers map[string]nc.CmdFunc = map[string]nc.CmdFunc{
 		"PRINT": cliPrint,
 		"MGET":  cliMGet,
 		"PING":  cliPing,
 	}
+	mux sync.Mutex
 )
 
 func NewServe(output bool) *nc.SocketServer {
@@ -62,6 +64,8 @@ func NewServe(output bool) *nc.SocketServer {
 
 // Add socket command handler
 func Handle(cmd string, handler nc.CmdFunc) {
+	mux.Lock()
+	defer mux.Unlock()
 	handlers[cmd] = handler
 }
 
@@ -108,7 +112,8 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 			return memberId, nil
 		}
 
-		if err = s.UAuth(id.Conn, f); err == nil { //验证成功
+		if err = s.UAuth(id.Conn, f); err == nil {
+			//验证成功
 			return []byte("ok"), nil
 		}
 	}
@@ -117,7 +122,8 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 
 // Handle command of client sending.
 func handleCommand(s *nc.SocketServer, ci *nc.Client, cmd string) ([]byte, error) {
-	if time.Now().Sub(ci.LatestConnectTime) > disconnectDuration { //主动关闭没有活动的连接
+	if time.Now().Sub(ci.LatestConnectTime) > disconnectDuration {
+		//主动关闭没有活动的连接
 		//s.Print("--disconnect ---",ci.Addr.String())
 		ci.Conn.Close()
 		return nil, nil
