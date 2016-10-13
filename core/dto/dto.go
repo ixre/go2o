@@ -54,7 +54,7 @@ type (
 		// 编号
 		Id int `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
-		OrderNo int `db:"order_id"`
+		OrderNo string `db:"order_id"`
 		// 运营商编号
 		VendorId int `db:"vendor_id"`
 		// 运营商名称
