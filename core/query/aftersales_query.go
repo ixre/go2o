@@ -47,7 +47,7 @@ func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId, begin,
 INNER JOIN sale_sub_order so ON so.id=ao.order_id
 INNER JOIN mch_merchant mch ON so.vendor_id = mch.id
 INNER JOIN gs_sales_snapshot sn ON sn.id = ao.snap_id
-WHERE ao.buyer_id=?   ORDER BY id DESC LIMIT ?,?`, func(rs *sql.Rows) {
+WHERE ao.buyer_id=? ORDER BY ao.create_time DESC LIMIT ?,?`, func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.PagedMemberAfterSalesOrder{}
 				rs.Scan(&e.Id, &e.Type, &e.OrderNo, &e.VendorId, &e.VendorName,
