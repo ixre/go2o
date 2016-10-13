@@ -652,8 +652,8 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 		"提取到会员"+variable.AliasPresentAccount, "", -amount, 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().ChargeForPresent("商户提现", "",
-			amount, member.DefaultRelateUser)
+		err = m.GetAccount().ChargeForPresent(variable.AliasMerchantBalanceAccount+
+			"提现", "", amount, member.DefaultRelateUser)
 		if err != nil {
 			return err
 		}
