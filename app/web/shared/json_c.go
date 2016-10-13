@@ -163,7 +163,7 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 	typeParams := strings.TrimSpace(ctx.Form("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:gs:fc3:%d_%s", shopId, typeParams)
+	key := fmt.Sprint("go2o:rep:gs:fc:%d_%s", shopId, typeParams)
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -189,7 +189,6 @@ func (j *JsonC) Mch_goods(ctx *echox.Context) error {
 	types := strings.Split(typeParams, "|")
 	mchId, _ := strconv.Atoi(ctx.Form("mch_id"))
 	result := make(map[string]interface{}, len(types))
-
 	key := fmt.Sprint("go2o:rep:sg:front:%d_%s", mchId, typeParams)
 	sto := ctx.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
