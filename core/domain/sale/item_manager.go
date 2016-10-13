@@ -179,12 +179,10 @@ func (i *itemImpl) resetReview() {
 // 判断价格是否正确
 func (i *itemImpl) checkPrice(v *item.Item) error {
 	rate := (v.SalePrice - v.Cost) / v.SalePrice
-	if rate <= 0 {
-		return goods.ErrSalePriceLessThanCost
-	}
 	conf := i._valueRep.GetRegistry()
 	minRate := conf.GoodsMinProfitRate
-	if rate < minRate {
+	// 如果未设定最低利润率，则可以与供货价一致
+	if minRate != 0 && rate < minRate {
 		return errors.New(fmt.Sprintf(goods.ErrGoodsMinProfitRate.Error(),
 			strconv.Itoa(int(minRate*100))+"%"))
 	}
