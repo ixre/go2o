@@ -122,7 +122,7 @@ var (
 		"err_out_of_balance", "超出金额")
 
 	ErrAccountOutOfTakeOutTimes *domain.DomainError = domain.NewDomainError(
-		"err_account_out_of_take_out_times", "今日已达到最高提现次数")
+		"err_account_out_of_take_out_times", "今日已达到提现次数上限")
 
 	ErrTransferAccountsLevelNoPerm *domain.DomainError = domain.NewDomainError(
 		"err_account_transfer_accounts_level_no_perm", "%s不允许转账")

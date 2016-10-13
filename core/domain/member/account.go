@@ -406,7 +406,8 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 }
 
 // 流通账户余额充值，如扣除,amount传入负数金额
-func (a *accountImpl) ChargeFlowBalance(title string, tradeNo string, amount float32) error {
+func (a *accountImpl) ChargeFlowBalance(title string,
+	tradeNo string, amount float32) error {
 	if len(title) == 0 {
 		if amount > 0 {
 			title = "流动账户入账"
@@ -463,7 +464,8 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 }
 
 //　增加积分
-func (a *accountImpl) AddIntegral(logType int, outerNo string, value int, remark string) error {
+func (a *accountImpl) AddIntegral(logType int, outerNo string,
+	value int, remark string) error {
 	if value <= 0 || math.IsNaN(float64(value)) {
 		return member.ErrIncorrectQuota
 	}
