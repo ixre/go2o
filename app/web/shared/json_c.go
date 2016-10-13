@@ -210,11 +210,12 @@ func (j *JsonC) Get_Newshop(ctx *echox.Context) error {
 }
 
 func (j *JsonC) Get_hotGoods(ctx *echox.Context) error {
+	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
+	ss := dps.SaleService
 	begin,_ :=strconv.Atoi(ctx.Form("begin"))
 	size,_ :=strconv.Atoi(ctx.Form("size"))
-	ss := dps.ShopService
-	_, result :=  ss.PagedOnBusinessOnlineShops(
-		begin, begin+size, "", "")
+	_, result :=  ss.GetPagedOnShelvesGoods(shopId,
+		-1, begin, begin+size, "gs_goods.sale_num DESC")
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
 
