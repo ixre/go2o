@@ -184,6 +184,41 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
 
+
+
+
+// 商品
+func (j *JsonC) Get_Newgoods(ctx *echox.Context) error {
+	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
+	begin,_ :=strconv.Atoi(ctx.Form("begin"))
+	size,_ :=strconv.Atoi(ctx.Form("size"))
+	ss := dps.SaleService
+	_, result := ss.GetPagedOnShelvesGoods(shopId,
+		-1, begin,begin+size, "gs_goods.id DESC")
+
+	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+}
+
+func (j *JsonC) Get_Newshop(ctx *echox.Context) error {
+	begin,_ :=strconv.Atoi(ctx.Form("begin"))
+	size,_ :=strconv.Atoi(ctx.Form("size"))
+	ss := dps.ShopService
+	_, result :=  ss.PagedOnBusinessOnlineShops(
+		begin, begin+size, "", "sp.create_time DESC")
+
+	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+}
+
+func (j *JsonC) Get_hotGoods(ctx *echox.Context) error {
+	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
+	ss := dps.SaleService
+	begin,_ :=strconv.Atoi(ctx.Form("begin"))
+	size,_ :=strconv.Atoi(ctx.Form("size"))
+	_, result :=  ss.GetPagedOnShelvesGoods(shopId,
+		-1, begin, begin+size, "gs_goods.sale_num DESC")
+	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+}
+
 func (j *JsonC) Mch_goods(ctx *echox.Context) error {
 	typeParams := strings.TrimSpace(ctx.Form("params"))
 	types := strings.Split(typeParams, "|")
