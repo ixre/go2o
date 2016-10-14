@@ -68,7 +68,6 @@ func (mc *MemberC) Register(ctx *echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-
 	m := &member.Member{}
 	pro := &member.Profile{}
 	m.Usr = usr

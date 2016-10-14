@@ -42,7 +42,6 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 		sto.SetExpire(key, v, 3600*360) // cache 15 hours
 		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
 	}
-
 	return v
 }
 
