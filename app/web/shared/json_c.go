@@ -187,7 +187,7 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 
 
 
-// 商品
+// 最新店铺
 func (j *JsonC) Get_Newgoods(ctx *echox.Context) error {
 	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
 	begin,_ :=strconv.Atoi(ctx.Form("begin"))
@@ -198,7 +198,7 @@ func (j *JsonC) Get_Newgoods(ctx *echox.Context) error {
 
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
-
+// 最新商品
 func (j *JsonC) Get_Newshop(ctx *echox.Context) error {
 	begin,_ :=strconv.Atoi(ctx.Form("begin"))
 	size,_ :=strconv.Atoi(ctx.Form("size"))
@@ -208,7 +208,7 @@ func (j *JsonC) Get_Newshop(ctx *echox.Context) error {
 
 	return ctx.Debug(ctx.JSON(http.StatusOK, result))
 }
-
+//最热商品
 func (j *JsonC) Get_hotGoods(ctx *echox.Context) error {
 	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
 	ss := dps.SaleService
