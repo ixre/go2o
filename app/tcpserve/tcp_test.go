@@ -61,10 +61,8 @@ func TestConn(t *testing.T) {
 
 func listenTcp(conn net.Conn) {
 	for {
-		mux.Lock()
 		buf := bufio.NewReader(conn)
 		line, err := buf.ReadString('\n')
-		mux.Unlock()
 		if err == io.EOF {
 			break
 		}
