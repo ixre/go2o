@@ -55,7 +55,7 @@ func Run(app gof.App, port int) {
 }
 
 func registerRoutes(s *echo.Echo) {
-	pc := &partnerC{}
+	pc := &merchantC{}
 	mc := &MemberC{}
 	gc := &getC{}
 
