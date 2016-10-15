@@ -9,6 +9,8 @@
 
 package merchant
 
+import "go2o/core/domain/interface/member"
+
 type IMerchantRep interface {
 	// 获取商户管理器
 	GetManager() IMerchantManager
@@ -41,6 +43,9 @@ type IMerchantRep interface {
 
 	// 保存销售配置
 	SaveMerchantSaleConf(v *SaleConf) error
+
+	// 保存商户账户信息
+	UpdateAccount(v *Account) error
 
 	// 保存API信息
 	SaveApiInfo(d *ApiInfo) error
@@ -84,6 +89,10 @@ type IMerchantRep interface {
 	  修改线下支付利润
 	*/
 	UpdateMechOfflineRate(id int, rate float32) error
+	//商户提现日志
+	SaveMachBlanceLog(v *BalanceLog) error
+	//个人提现日志
+	SavePresionBlanceLog(v *member.PresentLog) error
 
 	GetOfflineRate(id int) (float32, error)
 }

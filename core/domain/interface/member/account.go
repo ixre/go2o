@@ -8,6 +8,8 @@
  */
 package member
 
+import "go2o/core/domain/interface/merchant"
+
 const (
 	// 余额账户
 	AccountBalance = 1
@@ -17,6 +19,8 @@ const (
 	AccountPresent = 3
 	// 流通金账户
 	AccountFlow = 4
+
+
 )
 
 const (
@@ -84,6 +88,12 @@ const (
 	KindPresentServiceAdd = 21
 	// 客服扣减
 	KindPresentServiceDiscount = 22
+	//商户提现
+	KindＭachTakeOutToBankCard = 100
+	//商户提现失败返还给会员
+	KindＭachTakOutRefund = 101
+
+
 )
 
 const (
@@ -125,6 +135,10 @@ const (
 
 	//StatusNormal = 0
 	StatusOK = 1
+
+
+
+
 )
 
 const (
@@ -256,6 +270,14 @@ type (
 		// 将活动金转给其他人
 		TransferFlowTo(memberId int, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
+		//保存商户账户日志信息
+		SaveMachBlanceLog(o *merchant.BalanceLog)
+		//修改商户信息
+		UpdateMachAccount(*merchant.Account)
+		//获取商户账户信息
+		GetAccount(machId int) *merchant.Account
+		//通过用户ＩＤ获取商户信息
+		GetMerchantByMemberId(memberId int) *merchant.Merchant
 	}
 
 	// 余额变动信息
@@ -284,6 +306,7 @@ type (
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
 		BusinessKind int    `db:"kind"`
+
 		Title        string `db:"title"`
 		// 金额
 		Amount float32 `db:"amount"`
