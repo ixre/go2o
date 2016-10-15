@@ -25,4 +25,5 @@ type MemberSummary struct {
 	GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
 	GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
 	UpdateTime        int64   `db:"update_time"`
+	DynamicToken      string  `db:"-"`
 }
