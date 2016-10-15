@@ -74,6 +74,9 @@ type (
 		// 更改邀请人
 		ChangeReferees(memberId int) error
 
+		// 更改会员等级
+		ChangeLevel(level int) error
+
 		// 增加经验值
 		AddExp(exp int) error
 

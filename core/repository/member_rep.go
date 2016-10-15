@@ -235,7 +235,6 @@ func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
 		rc := core.GetRedisConn()
 		defer rc.Close()
 		// 保存最后更新时间
-		// todo: del
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
 		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
 		rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
