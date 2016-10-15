@@ -15,16 +15,17 @@ import (
 	"net/http"
 )
 
-type partnerC struct {
+type merchantC struct {
 }
 
 // 获取广告数据
-func (this *partnerC) Get_ad(ctx *echo.Context) error {
+func (m *merchantC) Get_ad(ctx *echo.Context) error {
 	merchantId := getMerchantId(ctx)
 	adName := ctx.Request().FormValue("ad_name")
 	dto := dps.AdService.GetAdAndDataByKey(merchantId, adName)
 	if dto != nil {
 		return ctx.JSON(http.StatusOK, dto)
 	}
-	return ctx.JSON(http.StatusOK, gof.Message{Message: "没有广告数据"})
+	return ctx.JSON(http.StatusOK,
+		gof.Message{Message: "没有广告数据"})
 }
