@@ -142,7 +142,7 @@ func (m *merchantRep) GetAccount(mchId int) *merchant.Account {
 func (m *merchantRep) GetMerchantMajorHost(merchantId int) string {
 	//todo:
 	var host string
-	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE merchant_id=? LIMIT 0,1`,
+	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
 		&host, merchantId)
 	return host
 }
@@ -216,7 +216,7 @@ func (m *merchantRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (m *merchantRep) GetMerchantIdByApiId(apiId string) int {
 	var merchantId int
-	m.ExecScalar("SELECT merchant_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
+	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
 	return merchantId
 }
 

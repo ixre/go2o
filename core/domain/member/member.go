@@ -215,6 +215,21 @@ func (m *memberImpl) AddExp(exp int) error {
 	return err
 }
 
+// 更改会员等级
+func (m *memberImpl) ChangeLevel(level int) error {
+	lg := m._manager.LevelManager()
+	lv := lg.GetLevelById(level)
+	// 判断等级是否启用
+	if lv == nil || lv.Enabled == 0 {
+		return member.ErrLevelDisabled
+	}
+	m._value.Exp = lv.RequireExp
+	m._value.Level = level
+	_, err := m.Save()
+	m._level = nil
+	return err
+}
+
 // 获取等级
 func (m *memberImpl) GetLevel() *member.Level {
 	if m._level == nil {
