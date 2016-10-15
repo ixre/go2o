@@ -82,11 +82,11 @@ func beforeRequest() echo.MiddlewareFunc {
 				//检查商户接口权限
 				ctx.Request().ParseForm()
 				if !chkMerchantApiSecret(ctx) {
-					return ctx.String(http.StatusOK, "{error:'secret incorrent'}")
+					return ctx.String(http.StatusOK, "{error:\"incorrent secret\"}")
 				}
 				//检查会员会话
 				if strings.HasPrefix(path, "/member") && !checkMemberToken(ctx) {
-					return ctx.String(http.StatusOK, "{error:'incorrent session'}")
+					return ctx.String(http.StatusOK, "{error:\"incorrent session\"}")
 				}
 			}
 
