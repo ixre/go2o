@@ -45,9 +45,12 @@ func (mc *MemberC) Login(ctx *echo.Context) error {
 			result.Message = err.Error()
 		} else {
 			// 登陆成功，生成令牌
-			sum := dps.MemberService.GetMemberSummary(e.Id)
-			sum.DynamicToken = util.SetMemberApiToken(sto, e.Id, e.Pwd)
-			result.Member = sum
+			token := util.SetMemberApiToken(sto, e.Id, e.Pwd)
+			result.Member = &dto.LoginMember{
+				Id:         e.Id,
+				Token:      token,
+				UpdateTime: e.UpdateTime,
+			}
 			result.Result = true
 		}
 	}
