@@ -8,7 +8,7 @@
  */
 package member
 
-import "go2o/core/domain/interface/merchant"
+
 
 const (
 	// 余额账户
@@ -270,14 +270,8 @@ type (
 		// 将活动金转给其他人
 		TransferFlowTo(memberId int, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
-		//保存商户账户日志信息
-		SaveMachBlanceLog(o *merchant.BalanceLog)
-		//修改商户信息
-		UpdateMachAccount(*merchant.Account)
-		//获取商户账户信息
-		GetAccount(machId int) *merchant.Account
-		//通过用户ＩＤ获取商户信息
-		GetMerchantByMemberId(memberId int) *merchant.Merchant
+
+
 	}
 
 	// 余额变动信息
