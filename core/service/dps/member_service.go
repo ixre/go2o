@@ -615,6 +615,8 @@ func (ms *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			Avatar:            format.GetResUrl(pro.Avatar),
 			Exp:               mv.Exp,
 			Level:             mv.Level,
+			LevelOfficial:     lv.IsOfficial,
+			LevelSign:         lv.ProgramSignal,
 			LevelName:         lv.Name,
 			Integral:          acv.Integral,
 			Balance:           acv.Balance,
