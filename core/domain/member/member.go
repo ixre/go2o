@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"go2o/core/domain/interface/merchant"
 )
 
 //todo: 依赖商户的 MSS 发送通知消息,应去掉
@@ -199,7 +200,7 @@ func (m *memberImpl) CompareCode(code string) error {
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m._account == nil {
 		v := m._rep.GetAccount(m._value.Id)
-		return NewAccount(m, v, m._rep, m._manager, m._valRep)
+		return NewAccount(m, v, m._rep, m._manager, m._valRep,)
 	}
 	return m._account
 }

@@ -466,3 +466,58 @@ func (m *merchantService) UpdateMechOfflineRate(id int, rate float32) error {
 func (m *merchantService) GetOfflineRate(id int) (float32, error) {
 	return m._mchRep.GetOfflineRate(id)
 }
+
+
+//修改当前账户信息
+func (m *merchantService) TakeOutBankCard(mchId int, amount float32)  error{
+	account :=m.GetAccount(mchId)
+	account.Balance=account.Balance-amount
+	err :=m._mchRep.UpdateAccount(account)
+	return err
+}
+
+
+//添加商户提取日志
+func (m *merchantService) TakeOutBankCardLog(memberId int,mchId int, amount float32){
+	o := &merchant.BalanceLog{
+		MchId:mchId,
+		Kind:100,
+		Title:"商户提现",
+		OuterNo:"00002",
+		Amount:amount*(-1),
+		CsnAmount:0,
+		State:1,
+		CreateTime:time.Now().Unix(),
+		UpdateTime:time.Now().Unix(),
+	}
+	m._mchRep.SaveMachBlanceLog(o)
+
+	v :=&member.PresentLog{
+		MemberId:memberId,
+		BusinessKind:member.KindＭachTakeOutToBankCard,
+		OuterNo:"00000000",
+		Title:"商户提现到银行卡",
+		Amount:amount*(-1),
+		CsnFee:0,
+		State:1,
+		CreateTime:time.Now().Unix(),
+		UpdateTime:time.Now().Unix(),
+	}
+	m._mchRep.SavePresionBlanceLog(v)
+}
+
+func (m *merchantService)  UpdateMachAccount(account *member.Account){
+	m._mchRep.UpdateAccount(account)
+}
+func (m *merchantService) SaveMachBlanceLog(v *merchant.BalanceLog)  {
+	m._mchRep.SaveMachBlanceLog(v)
+}
+
+
+
+
+
+
+
+
+
