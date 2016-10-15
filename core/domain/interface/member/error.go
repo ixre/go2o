@@ -52,6 +52,9 @@ var (
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
 		"member_level_used", "此等级已被会员使用")
 
+	ErrLevelDisabled *domain.DomainError = domain.NewDomainError(
+		"member_level_disabled", "等级未启用")
+
 	ErrExistsSameProgramSignalLevel *domain.DomainError = domain.NewDomainError(
 		"member_exists_same_program_signal_level", "存在相同可编程签名的等级")
 
