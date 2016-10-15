@@ -618,6 +618,7 @@ func (ms *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			LevelOfficial:     lv.IsOfficial,
 			LevelSign:         lv.ProgramSignal,
 			LevelName:         lv.Name,
+			InvitationCode:    mv.InvitationCode,
 			Integral:          acv.Integral,
 			Balance:           acv.Balance,
 			PresentBalance:    acv.PresentBalance,

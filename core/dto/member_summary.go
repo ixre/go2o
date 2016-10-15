@@ -27,6 +27,8 @@ type MemberSummary struct {
 	LevelSign string `db:"program_sign"`
 	// 等级是否为正式会员
 	LevelOfficial int `db:"is_official"`
+	// 邀请码
+	InvitationCode string `db:"invitation_code"`
 	// 积分
 	Integral int `db:"integral"`
 	// 账户余额
@@ -37,5 +39,4 @@ type MemberSummary struct {
 	GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额
 	GrowTotalEarnings float32 `db:"grow_total_earnings"` // 累积收益金额
 	UpdateTime        int64   `db:"update_time"`
-	DynamicToken      string  `db:"-"`
 }
