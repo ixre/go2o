@@ -243,6 +243,15 @@ func (ms *memberService) ChangeUsr(id int, usr string) error {
 	return m.ChangeUsr(usr)
 }
 
+// 更改会员等级
+func (ms *memberService) ChangeLevel(memberId int, levelId int) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.ChangeLevel(levelId)
+}
+
 // 上传会员头像
 func (ms *memberService) SetAvatar(id int, avatar string) error {
 	m := ms._rep.GetMember(id)
