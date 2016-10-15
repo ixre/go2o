@@ -173,8 +173,13 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 	if err == nil {
 		ptr.MemberId = p._memberId
 		err = p._rep.SaveProfile(&ptr)
+		// 更新会员资料更新时间
+		if err == nil {
+			p._member.Save()
+		}
+		// 完善资料通知
 		if p.ProfileCompleted() {
-			// 已完善资料
+
 			p.notifyOnProfileComplete()
 		}
 	}

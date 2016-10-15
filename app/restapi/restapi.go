@@ -86,13 +86,13 @@ func ApiTest(ctx *echo.Context) error {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) (ok bool, merchantId int) {
+func CheckApiPermission(apiId string, secret string) (bool, int) {
 	if len(apiId) != 0 && len(secret) != 0 {
-		var merchantId int = cache.GetMerchantIdByApiId(apiId)
-		var apiInfo *merchant.ApiInfo = cache.GetMerchantApiInfo(merchantId)
+		mchId := cache.GetMerchantIdByApiId(apiId)
+		var apiInfo *merchant.ApiInfo = cache.GetMerchantApiInfo(mchId)
 		if apiInfo != nil {
-			return apiInfo.ApiSecret == secret, merchantId
+			return apiInfo.ApiSecret == secret, mchId
 		}
 	}
-	return false, merchantId
+	return false, 0
 }

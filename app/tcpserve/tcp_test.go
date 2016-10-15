@@ -14,22 +14,19 @@ import (
 	"io"
 	"log"
 	"net"
-	"sync"
 	"testing"
 )
-
-var mux sync.Mutex
 
 func TestConn(t *testing.T) {
 	var ch chan bool = make(chan bool)
 	fmt.Println("---beigin test ---")
-	raddr, err := net.ResolveTCPAddr("tcp", ":1425")
+	rAddr, err := net.ResolveTCPAddr("tcp", ":14197")
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
-	cli, err := net.DialTCP("tcp", nil, raddr)
+	cli, err := net.DialTCP("tcp", nil, rAddr)
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -45,8 +42,8 @@ func TestConn(t *testing.T) {
 		return
 	}
 
-	log.Println("partner auth success")
-	cli.Write([]byte("MAUTH:1#123456\n"))
+	log.Println("merchant auth success")
+	cli.Write([]byte("MAUTH:1#25245e2640237ea0681ed8ce1542756543111b1e750e238eafa926\n"))
 	n, _ = cli.Read(buffer)
 	line = string(buffer[:n])
 	if line != "ok\n" {
@@ -64,10 +61,8 @@ func TestConn(t *testing.T) {
 
 func listenTcp(conn net.Conn) {
 	for {
-		mux.Lock()
 		buf := bufio.NewReader(conn)
 		line, err := buf.ReadString('\n')
-		mux.Unlock()
 		if err == io.EOF {
 			break
 		}
