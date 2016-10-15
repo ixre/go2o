@@ -506,12 +506,14 @@ func (m *merchantService) TakeOutBankCardLog(memberId int,mchId int, amount floa
 	m._mchRep.SavePresionBlanceLog(v)
 }
 
-func (m *merchantService)  UpdateMachAccount(account *member.Account){
+func (m *merchantService)  UpdateMachAccount(account *merchant.Account){
 	m._mchRep.UpdateAccount(account)
 }
 func (m *merchantService) SaveMachBlanceLog(v *merchant.BalanceLog)  {
 	m._mchRep.SaveMachBlanceLog(v)
 }
+
+
 
 
 

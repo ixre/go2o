@@ -303,46 +303,6 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 }
 
 
-// 赠送金额(指定业务类型)
-
-func (a *accountImpl) ChargeMachAccountByKind(machId int,kind int, title string, outerNo string, amount float32, relateUser int) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectAmount
-	}
-	unix := time.Now().Unix()
-	v := &member.PresentLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: kind,
-		Title:        title,
-		OuterNo:      outerNo,
-		Amount:       amount,
-		State:        1,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
-	}
-	o := &merchant.BalanceLog{
-		MchId:machId,
-		Kind:kind,
-		Title:title,
-		OuterNo:"00002",
-		Amount:amount,
-		CsnAmount:0,
-		State:1,
-		CreateTime:time.Now().Unix(),
-		UpdateTime:time.Now().Unix(),
-	}
-	member.IAccount.SaveMachBlanceLog(o)
-	_, err := a._rep.SavePresentLog(v)
-	if err == nil {
-		machAcc :=member.IAccount.GetAccount(machId)
-		machAcc.Balance=machAcc.Balance+amount
-		machAcc.UpdateTime=unix
-		member.IAccount.UpdateMachAccount(machAcc)
-	}
-	return err
-}
-
 
 
 
@@ -753,26 +713,6 @@ func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
 		v.UpdateTime = time.Now().Unix()
 		_, err := a._rep.SavePresentLog(v)
 		return err
-	}else if( v.BusinessKind == member.KindＭachTakeOutToBankCard){
-		if pass {
-			v.State = enum.ReviewPass
-		}else{
-			if v.State == enum.ReviewReject {
-				return dm.ErrState
-			}
-			v.Remark += "失败:" + remark
-			v.State = enum.ReviewReject
-			mach :=member.IAccount.GetMerchantByMemberId(v.MemberId)
-			err :=a.ChargeMachAccountByKind(mach.Id,member.KindＭachTakOutRefund,
-				"商户提现退回", v.OuterNo, (-v.Amount),
-				member.DefaultRelateUser)
-			if err != nil {
-				return err
-			}
-			v.UpdateTime = time.Now().Unix()
-			_, err1 := a._rep.SavePresentLog(v)
-			return err1
-		}
 	}
 	return member.ErrNotSupportTakeOutBusinessKind
 }

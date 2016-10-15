@@ -54,6 +54,8 @@ func NewMemberRep(sto storage.Interface, c db.Connector, mssRep mss.IMssRep,
 	}
 }
 
+
+
 // 获取管理服务
 func (m *MemberRep) GetManager() member.IMemberManager {
 	memberMux.Lock()
@@ -418,6 +420,14 @@ func (m *MemberRep) SaveBalanceLog(v *member.BalanceLog) (int, error) {
 // 保存赠送账户日志
 func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int, error) {
 	return orm.Save(m.GetOrm(), v, v.Id)
+}
+
+func (m *MemberRep) GetPresentLog(id int) *member.PresentLog{
+	e := member.PresentLog{}
+	if err := m.Connector.GetOrm().Get(id, &e); err != nil {
+		return nil
+	}
+	return  &e
 }
 
 // 获取会员提现次数键
