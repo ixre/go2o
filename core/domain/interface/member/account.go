@@ -84,6 +84,10 @@ const (
 	KindPresentServiceAdd = 21
 	// 客服扣减
 	KindPresentServiceDiscount = 22
+	//商户提现
+	KindＭachTakeOutToBankCard = 100
+	//商户提现失败返还给会员
+	KindＭachTakOutRefund = 101
 )
 
 const (
@@ -283,8 +287,9 @@ type (
 		MemberId int    `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int    `db:"kind"`
-		Title        string `db:"title"`
+		BusinessKind int `db:"kind"`
+
+		Title string `db:"title"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 手续费
