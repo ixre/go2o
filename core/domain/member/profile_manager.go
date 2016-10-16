@@ -525,7 +525,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	}
 	// 保存
 	p.GetTrustedInfo()
-	err := p.copyTrustedInfo(v, p._trustedInfo)
+	err = p.copyTrustedInfo(v, p._trustedInfo)
 	if err == nil {
 		p._trustedInfo.Remark = ""
 		p._trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
