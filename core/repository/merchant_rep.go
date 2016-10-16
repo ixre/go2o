@@ -330,3 +330,40 @@ func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (
 	return v.Id, err
 }
 
+func (m *merchantRep) UpdateMechOfflineRate(id int, rate float32) error {
+	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=?  WHERE  id=?", rate, id)
+	return err
+}
+
+func (m *merchantRep) GetOfflineRate(id int) (float32, error) {
+	var rate float32
+	err := m.Connector.ExecScalar("SELECT  offline_rate  FROM mch_merchant WHERE id=?", &rate, id)
+	return rate, err
+}
+
+// 保存销售配置
+func (m *merchantRep) UpdateAccount(v *merchant.Account) error {
+	orm := m.Connector.GetOrm()
+	var err error
+	if v.MchId > 0 {
+		_, _, err = orm.Save(v.MchId, v)
+	}
+	return err
+}
+
+/**
+保存账号信息
+*/
+func (m *merchantRep) SaveMachBlanceLog(v *merchant.BalanceLog) error {
+	orm := m.Connector.GetOrm()
+	var err error
+	_, _, err = orm.Save(nil, v)
+	return err
+}
+
+func (m *merchantRep) SavePresionBlanceLog(v *member.PresentLog) error {
+	orm := m.Connector.GetOrm()
+	var err error
+	_, _, err = orm.Save(nil, v)
+	return err
+}

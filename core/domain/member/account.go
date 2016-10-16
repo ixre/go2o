@@ -14,6 +14,7 @@ import (
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure/domain"
@@ -1132,4 +1133,19 @@ func (a *accountImpl) TransferFlowTo(memberId int, kind int,
 	}
 
 	return member.ErrNotSupportTransfer
+}
+
+//修改商户信息
+func (a *accountImpl) UpdateMachAccount(*merchant.Account) {
+
+}
+
+//获取商户账户信息
+func (a *accountImpl) GetAccount(machId int) *merchant.Account {
+	return nil
+}
+
+//通过用户ＩＤ获取商户信息
+func (a *accountImpl) GetMerchantByMemberId(memberId int) *merchant.Merchant {
+	return nil
 }

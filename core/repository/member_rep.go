@@ -420,6 +420,14 @@ func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int, error) {
 	return orm.Save(m.GetOrm(), v, v.Id)
 }
 
+func (m *MemberRep) GetPresentLog(id int) *member.PresentLog {
+	e := member.PresentLog{}
+	if err := m.Connector.GetOrm().Get(id, &e); err != nil {
+		return nil
+	}
+	return &e
+}
+
 // 获取会员提现次数键
 func (m *MemberRep) getMemberTakeOutTimesKey(memberId int) string {
 	return fmt.Sprintf("sys:go2o:rep:mm:take-out-times:%d", memberId)
