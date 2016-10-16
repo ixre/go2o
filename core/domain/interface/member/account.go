@@ -84,10 +84,6 @@ const (
 	KindPresentServiceAdd = 21
 	// 客服扣减
 	KindPresentServiceDiscount = 22
-	//商户提现
-	KindＭachTakeOutToBankCard = 100
-	//商户提现失败返还给会员
-	KindＭachTakOutRefund = 101
 )
 
 const (

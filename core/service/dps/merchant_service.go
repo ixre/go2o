@@ -10,12 +10,16 @@
 package dps
 
 import (
+	"errors"
+	dm "go2o/core/domain"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
 	"go2o/core/query"
+	"math"
 	"strings"
 	"time"
 )
@@ -25,15 +29,17 @@ type merchantService struct {
 	_saleRep    sale.ISaleRep
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
+	_memberRep  member.IMemberRep
 }
 
 func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
-	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
+	memberRep member.IMemberRep, q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
 		_mchRep:     r,
 		_query:      q,
 		_saleRep:    saleRep,
 		_orderQuery: orderQuery,
+		_memberRep:  memberRep,
 	}
 }
 
@@ -492,7 +498,7 @@ func (m *merchantService) TakeOutBankCardLog(memberId int, mchId int, amount flo
 
 	v := &member.PresentLog{
 		MemberId:     memberId,
-		BusinessKind: member.KindＭachTakeOutToBankCard,
+		BusinessKind: merchant.KindＭachTakeOutToBankCard,
 		OuterNo:      "00000000",
 		Title:        "商户提现到银行卡",
 		Amount:       amount * (-1),
@@ -509,4 +515,80 @@ func (m *merchantService) UpdateMachAccount(account *merchant.Account) {
 }
 func (m *merchantService) SaveMachBlanceLog(v *merchant.BalanceLog) {
 	m._mchRep.SaveMachBlanceLog(v)
+}
+
+// 充值到商户账户
+func (m *merchantService) ChargeMachAccountByKind(memberId, machId int,
+	kind int, title string, outerNo string, amount float32, relateUser int) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return member.ErrIncorrectAmount
+	}
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     memberId,
+		BusinessKind: kind,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       amount,
+		State:        1,
+		RelateUser:   relateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+
+	o := &merchant.BalanceLog{
+		MchId:      machId,
+		Kind:       kind,
+		Title:      title,
+		OuterNo:    "00002",
+		Amount:     amount,
+		CsnAmount:  0,
+		State:      1,
+		CreateTime: time.Now().Unix(),
+		UpdateTime: time.Now().Unix(),
+	}
+	m._mchRep.SaveMachBlanceLog(o)
+	_, err := m._memberRep.SavePresentLog(v)
+	if err == nil {
+		machAcc := m.GetAccount(machId)
+		machAcc.Balance = machAcc.Balance + amount
+		machAcc.UpdateTime = unix
+		m.UpdateMachAccount(machAcc)
+	}
+	return err
+}
+
+// 确认提现
+func (a *merchantService) ConfirmApplyCash(memberId int, infoId int,
+	pass bool, remark string) error {
+	m := a._memberRep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	v := a._memberRep.GetPresentLog(infoId)
+	if v.BusinessKind != merchant.KindＭachTakeOutToBankCard {
+		return errors.New("非商户提现")
+	}
+	if pass {
+		v.State = enum.ReviewPass
+	} else {
+		if v.State == enum.ReviewReject {
+			return dm.ErrState
+		}
+		v.Remark += "失败:" + remark
+		v.State = enum.ReviewReject
+		mach := a.GetMerchantByMemberId(v.MemberId)
+		err := a.ChargeMachAccountByKind(memberId, mach.Id,
+			merchant.KindＭachTakOutRefund,
+			"商户提现退回", v.OuterNo, (-v.Amount),
+			member.DefaultRelateUser)
+		if err != nil {
+			return err
+		}
+		v.UpdateTime = time.Now().Unix()
+		_, err1 := a._memberRep.SavePresentLog(v)
+		return err1
+	}
+
+	return nil
 }
