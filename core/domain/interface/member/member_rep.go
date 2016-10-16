@@ -100,7 +100,8 @@ type IMemberRep interface {
 
 	// 保存赠送账户日志
 	SavePresentLog(*PresentLog) (int, error)
-	//获取赠送账户信息
+
+	// 获取赠送账户日志信息
 	GetPresentLog(id int) *PresentLog
 
 	// 增加会员当天提现次数

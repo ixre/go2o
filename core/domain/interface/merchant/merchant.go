@@ -18,6 +18,11 @@ const (
 	KindAccountSettleOrder      = 1
 	KindAccountPresent          = 2
 	KindAccountTransferToMember = 5
+
+	//商户提现
+	KindＭachTakeOutToBankCard = 100
+	//商户提现失败返还给会员
+	KindＭachTakOutRefund = 101
 )
 
 type (

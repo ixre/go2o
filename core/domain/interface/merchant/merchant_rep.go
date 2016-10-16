@@ -85,15 +85,4 @@ type IMerchantRep interface {
 
 	// 保存等级
 	SaveMemberLevel(merchantId int, v *MemberLevel) (int, error)
-
-	/**
-	  修改线下支付利润
-	*/
-	UpdateMechOfflineRate(id int, rate float32) error
-	//商户提现日志
-	SaveMachBlanceLog(v *BalanceLog) error
-	//个人提现日志
-	SavePresionBlanceLog(v *member.PresentLog) error
-
-	GetOfflineRate(id int) (float32, error)
 }

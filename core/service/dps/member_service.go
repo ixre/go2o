@@ -13,10 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	dm "go2o/core/domain"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -24,7 +21,6 @@ import (
 	"go2o/core/query"
 	"go2o/core/variable"
 	"log"
-	"math"
 	"strings"
 	"time"
 )
@@ -758,7 +754,7 @@ func (ms *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, er
 }
 
 // 提现并返回提现编号,交易号以及错误信息
-func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
+func (ms *memberService) SubmitTakeOutRequest(memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
 	m, err := ms.getMember(memberId)
 	if err != nil {
@@ -779,14 +775,15 @@ func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 }
 
 // 获取最近的提现
-func (ms *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfo {
-	return ms._query.GetLatestBalanceInfoByKind(memberId, member.KindPresentTakeOutToBankCard)
+func (ms *memberService) GetLatestTakeOut(memberId int) *member.BalanceInfo {
+	return ms._query.GetLatestBalanceInfoByKind(memberId,
+		member.KindPresentTakeOutToBankCard)
 }
 
 // 获取最近的提现描述
 func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 	var latestInfo string
-	latestApplyInfo := ms.GetLatestApplyCash(memberId)
+	latestApplyInfo := ms.GetLatestTakeOut(memberId)
 	if latestApplyInfo != nil {
 		var sText string
 		switch latestApplyInfo.State {
@@ -811,78 +808,17 @@ func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 }
 
 // 确认提现
-func (a *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, remark string) error {
+func (a *memberService) ConfirmTakeOutRequest(memberId int,
+	infoId int, pass bool, remark string) error {
 	m, err := a.getMember(memberId)
 	if err == nil {
-		v := a.GetPresentLog(memberId, infoId)
-		if v.BusinessKind == member.KindＭachTakeOutToBankCard {
-			if pass {
-				v.State = enum.ReviewPass
-			} else {
-				if v.State == enum.ReviewReject {
-					return dm.ErrState
-				}
-				v.Remark += "失败:" + remark
-				v.State = enum.ReviewReject
-				mach := a._partnerService.GetMerchantByMemberId(v.MemberId)
-				err = a.ChargeMachAccountByKind(memberId, mach.Id, member.KindＭachTakOutRefund,
-					"商户提现退回", v.OuterNo, (-v.Amount),
-					member.DefaultRelateUser)
-				if err != nil {
-					return err
-				}
-				v.UpdateTime = time.Now().Unix()
-				_, err1 := a._rep.SavePresentLog(v)
-				return err1
-			}
-		} else {
-			err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
-		}
-	}
-	return err
-}
-
-func (a *memberService) ChargeMachAccountByKind(memberId, machId int, kind int, title string, outerNo string, amount float32, relateUser int) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectAmount
-	}
-	unix := time.Now().Unix()
-	v := &member.PresentLog{
-		MemberId:     memberId,
-		BusinessKind: kind,
-		Title:        title,
-		OuterNo:      outerNo,
-		Amount:       amount,
-		State:        1,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
-	}
-
-	o := &merchant.BalanceLog{
-		MchId:      machId,
-		Kind:       kind,
-		Title:      title,
-		OuterNo:    "00002",
-		Amount:     amount,
-		CsnAmount:  0,
-		State:      1,
-		CreateTime: time.Now().Unix(),
-		UpdateTime: time.Now().Unix(),
-	}
-	a._partnerService.SaveMachBlanceLog(o)
-	_, err := a._rep.SavePresentLog(v)
-	if err == nil {
-		machAcc := a._partnerService.GetAccount(machId)
-		machAcc.Balance = machAcc.Balance + amount
-		machAcc.UpdateTime = unix
-		a._partnerService.UpdateMachAccount(machAcc)
+		err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
 	}
 	return err
 }
 
 // 完成提现
-func (ms *memberService) FinishApplyCash(memberId, id int, tradeNo string) error {
+func (ms *memberService) FinishTakeOutRequest(memberId, id int, tradeNo string) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
