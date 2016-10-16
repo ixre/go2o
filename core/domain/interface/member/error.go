@@ -206,6 +206,9 @@ var (
 	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
 		"err_member_not_trusted", "尚未实名认证")
 
+	ErrNoChangedTrustInfo *domain.DomainError = domain.NewDomainError(
+		"err_member_no_changed_trust_info", "实名信息未更改,请修改后提交")
+
 	ErrRealName *domain.DomainError = domain.NewDomainError(
 		"err_real_name", "请输入真实姓名")
 

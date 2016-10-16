@@ -454,10 +454,15 @@ func (p *profileManagerImpl) DeleteDeliver(deliverId int) error {
 }
 
 // 拷贝认证信息
-func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) {
+func (p *profileManagerImpl) copyTrustedInfo(src, dst *member.TrustedInfo) error {
+	if dst.RealName == src.RealName && dst.CardId == src.CardId &&
+		dst.TrustImage == src.TrustImage {
+		return member.ErrNoChangedTrustInfo
+	}
 	dst.RealName = src.RealName
 	dst.CardId = src.CardId
 	dst.TrustImage = src.TrustImage
+	return nil
 }
 
 // 实名认证信息
@@ -493,6 +498,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	v.TrustImage = strings.TrimSpace(v.TrustImage)
 	v.CardId = strings.TrimSpace(v.CardId)
 	v.RealName = strings.TrimSpace(v.RealName)
+
 	if len(v.TrustImage) == 0 || len(v.RealName) == 0 ||
 		len(v.CardId) == 0 {
 		return member.ErrMissingTrustedInfo
@@ -519,12 +525,14 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 	}
 	// 保存
 	p.GetTrustedInfo()
-	p.copyTrustedInfo(v, p._trustedInfo)
-	p._trustedInfo.Remark = ""
-	p._trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
-	p._trustedInfo.UpdateTime = time.Now().Unix()
-	_, err = orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
-		p._trustedInfo.MemberId)
+	err := p.copyTrustedInfo(v, p._trustedInfo)
+	if err == nil {
+		p._trustedInfo.Remark = ""
+		p._trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
+		p._trustedInfo.UpdateTime = time.Now().Unix()
+		_, err = orm.Save(tmp.Db().GetOrm(), p._trustedInfo,
+			p._trustedInfo.MemberId)
+	}
 	return err
 }
 
