@@ -1133,4 +1133,3 @@ func (a *accountImpl) TransferFlowTo(memberId int, kind int,
 
 	return member.ErrNotSupportTransfer
 }
-
