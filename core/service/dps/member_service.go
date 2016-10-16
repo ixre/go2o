@@ -13,20 +13,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	dm "go2o/core/domain"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/variable"
-	dm "go2o/core/domain"
 	"log"
+	"math"
 	"strings"
 	"time"
-	"go2o/core/domain/interface/enum"
-	"math"
-	"go2o/core/domain/interface/merchant"
 )
 
 type memberService struct {
@@ -191,9 +191,6 @@ func (ms *memberService) GetMember(id int) *member.Member {
 func (ms *memberService) GetMemberByUser(usr string) *member.Member {
 	return ms._rep.GetMemberByUsr(usr)
 }
-
-
-
 
 func (ms *memberService) GetPresentLog(memberId int, logId int) *member.PresentLog {
 	m := ms._rep.GetMember(memberId)
@@ -760,7 +757,6 @@ func (ms *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, er
 	return true, nil
 }
 
-
 // 提现并返回提现编号,交易号以及错误信息
 func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
@@ -818,18 +814,18 @@ func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 func (a *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, remark string) error {
 	m, err := a.getMember(memberId)
 	if err == nil {
-		v :=a.GetPresentLog(memberId,infoId)
-		if v.BusinessKind==member.KindＭachTakeOutToBankCard{
+		v := a.GetPresentLog(memberId, infoId)
+		if v.BusinessKind == member.KindＭachTakeOutToBankCard {
 			if pass {
 				v.State = enum.ReviewPass
-			}else{
+			} else {
 				if v.State == enum.ReviewReject {
 					return dm.ErrState
 				}
 				v.Remark += "失败:" + remark
 				v.State = enum.ReviewReject
-				mach :=a._partnerService.GetMerchantByMemberId(v.MemberId)
-				err = a.ChargeMachAccountByKind(memberId,mach.Id,member.KindＭachTakOutRefund,
+				mach := a._partnerService.GetMerchantByMemberId(v.MemberId)
+				err = a.ChargeMachAccountByKind(memberId, mach.Id, member.KindＭachTakOutRefund,
 					"商户提现退回", v.OuterNo, (-v.Amount),
 					member.DefaultRelateUser)
 				if err != nil {
@@ -839,18 +835,14 @@ func (a *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, re
 				_, err1 := a._rep.SavePresentLog(v)
 				return err1
 			}
-		}else{
+		} else {
 			err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
 		}
 	}
 	return err
 }
 
-
-
-
-
-func (a *memberService) ChargeMachAccountByKind(memberId,machId int,kind int, title string, outerNo string, amount float32, relateUser int) error {
+func (a *memberService) ChargeMachAccountByKind(memberId, machId int, kind int, title string, outerNo string, amount float32, relateUser int) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -868,22 +860,22 @@ func (a *memberService) ChargeMachAccountByKind(memberId,machId int,kind int, ti
 	}
 
 	o := &merchant.BalanceLog{
-		MchId:machId,
-		Kind:kind,
-		Title:title,
-		OuterNo:"00002",
-		Amount:amount,
-		CsnAmount:0,
-		State:1,
-		CreateTime:time.Now().Unix(),
-		UpdateTime:time.Now().Unix(),
+		MchId:      machId,
+		Kind:       kind,
+		Title:      title,
+		OuterNo:    "00002",
+		Amount:     amount,
+		CsnAmount:  0,
+		State:      1,
+		CreateTime: time.Now().Unix(),
+		UpdateTime: time.Now().Unix(),
 	}
 	a._partnerService.SaveMachBlanceLog(o)
 	_, err := a._rep.SavePresentLog(v)
 	if err == nil {
-		machAcc :=a._partnerService.GetAccount(machId)
-		machAcc.Balance=machAcc.Balance+amount
-		machAcc.UpdateTime=unix
+		machAcc := a._partnerService.GetAccount(machId)
+		machAcc.Balance = machAcc.Balance + amount
+		machAcc.UpdateTime = unix
 		a._partnerService.UpdateMachAccount(machAcc)
 	}
 	return err
@@ -1084,9 +1076,6 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int, accountT
 
 	return outerNo, err
 }
-
-
-
 
 //********* 促销  **********//
 
