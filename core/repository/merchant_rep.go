@@ -342,27 +342,28 @@ func (m *merchantRep) GetOfflineRate(id int) (float32, error) {
 }
 
 // 保存销售配置
-func (m *merchantRep) UpdateAccount(v *merchant.Account) error{
+func (m *merchantRep) UpdateAccount(v *merchant.Account) error {
 	orm := m.Connector.GetOrm()
 	var err error
 	if v.MchId > 0 {
 		_, _, err = orm.Save(v.MchId, v)
 	}
-	return  err
-}
-/**
-保存账号信息
- */
-func (m *merchantRep) SaveMachBlanceLog(v *merchant.BalanceLog)error  {
-	orm := m.Connector.GetOrm()
-	var err error
-		_, _, err = orm.Save(nil, v)
-	return  err
+	return err
 }
 
-func (m *merchantRep) SavePresionBlanceLog(v  *member.PresentLog)error  {
+/**
+保存账号信息
+*/
+func (m *merchantRep) SaveMachBlanceLog(v *merchant.BalanceLog) error {
 	orm := m.Connector.GetOrm()
 	var err error
 	_, _, err = orm.Save(nil, v)
-	return  err
+	return err
+}
+
+func (m *merchantRep) SavePresionBlanceLog(v *member.PresentLog) error {
+	orm := m.Connector.GetOrm()
+	var err error
+	_, _, err = orm.Save(nil, v)
+	return err
 }

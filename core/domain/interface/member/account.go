@@ -8,8 +8,6 @@
  */
 package member
 
-
-
 const (
 	// 余额账户
 	AccountBalance = 1
@@ -19,8 +17,6 @@ const (
 	AccountPresent = 3
 	// 流通金账户
 	AccountFlow = 4
-
-
 )
 
 const (
@@ -92,8 +88,6 @@ const (
 	KindＭachTakeOutToBankCard = 100
 	//商户提现失败返还给会员
 	KindＭachTakOutRefund = 101
-
-
 )
 
 const (
@@ -135,10 +129,6 @@ const (
 
 	//StatusNormal = 0
 	StatusOK = 1
-
-
-
-
 )
 
 const (
@@ -270,8 +260,6 @@ type (
 		// 将活动金转给其他人
 		TransferFlowTo(memberId int, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
-
-
 	}
 
 	// 余额变动信息
@@ -299,9 +287,9 @@ type (
 		MemberId int    `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int    `db:"kind"`
+		BusinessKind int `db:"kind"`
 
-		Title        string `db:"title"`
+		Title string `db:"title"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 手续费
