@@ -106,18 +106,25 @@ type (
 		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
-		// 平台首页模板文件
-		PagePlatformIndexPath string
-		// 商铺首页模板文件
-		PageShopIndexPath string
-		// 会员中心首页模板文件名称
-		PageUCenterIndexPath string
+
 		// 广告缓存时间（秒）
 		CacheAdMaxAge int64
 		// 敏感词,以|分割
 		ShopIncorrectAliasWords string
 		// 其他扩展数据
 		Extend map[string]string
+	}
+
+	// 模板配置
+	TemplateConf struct {
+		// 平台首页模板文件路径
+		PlatformIndexPath string
+		// 商铺首页模板文件路径
+		ShopIndexPath string
+		// 会员中心首页模板文件路径
+		UCenterIndexPath string
+		// 会员中心个人资料模板文件路径
+		UCenterPersonInfoPath string
 	}
 
 	// 微信API设置
@@ -269,6 +276,12 @@ type (
 
 		// 保存数据存储
 		SaveRegistry(v *Registry) error
+
+		// 获取模板配置
+		GetTemplateConf() TemplateConf
+
+		// 保存模板配置
+		SaveTemplateConf(v *TemplateConf) error
 
 		// 获取移动应用设置
 		GetMoAppConf() MoAppConf

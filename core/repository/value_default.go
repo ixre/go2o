@@ -48,17 +48,24 @@ var (
 		GoodsMinProfitRate: 0,
 		// 广告缓存时间（秒）
 		CacheAdMaxAge: 3600,
-		// 平台首页文件
-		PagePlatformIndexPath: "index.html",
-		// 商铺首页模板文件
-		PageShopIndexPath: "index.html",
-		// 会员中心首页模板文件名称
-		PageUCenterIndexPath: "index.html",
+
 		// 商铺别名敏感词,以|分割
 		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
 		Extend:                  map[string]string{},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
+
+	// 默认模板设置
+	DefaultTemplateConf = valueobject.TemplateConf{
+		// 平台首页模板文件路径
+		PlatformIndexPath: "index.html",
+		// 商铺首页模板文件路径
+		ShopIndexPath: "index.html",
+		// 会员中心首页模板文件路径
+		UCenterIndexPath: "index.html",
+		// 会员中心个人资料模板文件路径
+		UCenterPersonInfoPath: "person_info.html",
+	}
 
 	// 默认平台设置
 	DefaultPlatformConf = valueobject.PlatformConf{
