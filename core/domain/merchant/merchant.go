@@ -680,6 +680,55 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 	return err
 }
 
+
+
+func (a *accountImpl) TransferToMember1(amount float32) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return merchant.ErrAmount
+	}
+	if a.value.Balance < amount || a.value.Balance <= 0 {
+		return merchant.ErrNoMoreAmount
+	}
+	if a.mchImpl._value.MemberId <= 0 {
+		return member.ErrNoSuchMember
+	}
+	m := a.memberRep.GetMember(a.mchImpl._value.MemberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
+		"提取到会员"+variable.AliasPresentAccount, "", -amount, 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		err = m.GetAccount().ChargeForPresent(variable.AliasMerchantBalanceAccount+
+			"提现", "", amount, member.DefaultRelateUser)
+		if err != nil {
+			return err
+		}
+		a.value.Balance -= amount
+		a.value.TakeAmount += amount
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+		if err != nil {
+			return err
+		}
+
+		// 判断是否提现免费,如果免费,则赠送手续费
+		registry := a.mchImpl._valRep.GetRegistry()
+		if registry.MerchantTakeOutCashFree {
+			conf := a.mchImpl._valRep.GetGlobNumberConf()
+			if conf.TakeOutCsn > 0 {
+				csn := float32(0)
+				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
+					csn, member.DefaultRelateUser)
+			}
+		}
+	}
+
+	return err
+}
+
+
 // 赠送
 func (a *accountImpl) Present(amount float32, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {

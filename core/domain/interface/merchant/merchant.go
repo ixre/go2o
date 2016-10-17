@@ -113,6 +113,8 @@ type (
 
 		// 转到会员账户
 		TransferToMember(amount float32) error
+		//商户积分转会员积分
+		TransferToMember1(amount float32) error
 
 		// 赠送
 		Present(amount float32, remark string) error
