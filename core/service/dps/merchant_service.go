@@ -463,6 +463,17 @@ func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
+
+// 提到会员账户
+func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error {
+	mch := m._mchRep.GetMerchant(mchId)
+	if mch != nil {
+		acc := mch.Account()
+		return acc.TransferToMember1(amount)
+	}
+	return merchant.ErrNoSuchMerchant
+}
+
 //商户利润修改
 func (m *merchantService) UpdateMechOfflineRate(id int, rate float32) error {
 	return m._mchRep.UpdateMechOfflineRate(id, rate)
