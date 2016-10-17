@@ -312,11 +312,13 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 	return -1, err
 }
 
+// 获取会员等级
 func (ms *memberService) GetMemberLevel(memberId int) *member.Level {
-	if m := ms._rep.GetMember(memberId); m != nil {
-		return m.GetLevel()
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return nil
 	}
-	return nil
+	return m.GetLevel()
 }
 
 func (ms *memberService) GetRelation(memberId int) *member.Relation {
@@ -458,6 +460,9 @@ func (ms *memberService) UnlockBankInfo(memberId int) error {
 // 实名认证信息
 func (ms *memberService) GetTrustedInfo(memberId int) member.TrustedInfo {
 	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.TrustedInfo{}
+	}
 	return m.Profile().GetTrustedInfo()
 }
 
