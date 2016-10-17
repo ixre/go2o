@@ -680,8 +680,6 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 	return err
 }
 
-
-
 func (a *accountImpl) TransferToMember1(amount float32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return merchant.ErrAmount
@@ -727,7 +725,6 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 
 	return err
 }
-
 
 // 赠送
 func (a *accountImpl) Present(amount float32, remark string) error {

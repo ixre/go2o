@@ -463,7 +463,6 @@ func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-
 // 提到会员账户
 func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error {
 	mch := m._mchRep.GetMerchant(mchId)
