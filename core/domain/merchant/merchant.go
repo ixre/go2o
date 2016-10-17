@@ -718,7 +718,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		if registry.MerchantTakeOutCashFree {
 			conf := a.mchImpl._valRep.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
-				csn := 0
+				csn := float32(0)
 				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)
 			}
