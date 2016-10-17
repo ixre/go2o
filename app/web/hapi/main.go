@@ -40,7 +40,7 @@ func (m *mainC) Test(ctx *echox.Context) error {
 	return ctx.JSONP(http.StatusOK, ctx.Query("callback"), d)
 }
 
-// 请求登陆
+// 请求登录
 func (m *mainC) RequestLogin(ctx *echox.Context) error {
 	url := ctx.Request().Referer()
 	return ctx.Redirect(http.StatusFound, fmt.Sprintf("%s://%s%s/auth?return_url=%s",

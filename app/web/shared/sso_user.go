@@ -27,6 +27,7 @@ type UserC struct {
 //@token  :  密钥/令牌
 //@device : 设备类型
 func (u *UserC) Connect(ctx *echox.Context) error {
+	// 获取回调函数方法
 	callback := ctx.Query("callback")
 	if callback == "" {
 		callback = "sso_callback"
@@ -55,6 +56,12 @@ func (u *UserC) Connect(ctx *echox.Context) error {
 
 //同步退出
 func (u *UserC) Disconnect(ctx *echox.Context) error {
+	// 获取回调函数方法
+	callback := ctx.Query("callback")
+	if callback == "" {
+		callback = "sso_callback"
+	}
+	// 消除会话
 	ctx.Session.Destroy()
 	rsp := ctx.Response()
 	// 清理以"_"开头的cookie
@@ -67,7 +74,6 @@ func (u *UserC) Disconnect(ctx *echox.Context) error {
 			http.SetCookie(rsp, ck)
 		}
 	}
-
 	// 清理购物车
 	//ck := &http.Cookie{
 	//    Name:     "_cart",
@@ -77,5 +83,5 @@ func (u *UserC) Disconnect(ctx *echox.Context) error {
 	//    Expires:  expires,
 	//}
 	//http.SetCookie(ctx.Response(), ck)
-	return ctx.StringOK("ok")
+	return ctx.JSONP(http.StatusOK, callback, "success")
 }

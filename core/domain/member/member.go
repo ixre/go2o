@@ -295,7 +295,7 @@ func (m *memberImpl) ChangeUsr(usr string) error {
 	return err
 }
 
-// 更新登陆时间
+// 更新登录时间
 func (m *memberImpl) UpdateLoginTime() error {
 	unix := time.Now().Unix()
 	m._value.LastLoginTime = m._value.LoginTime

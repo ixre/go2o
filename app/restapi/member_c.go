@@ -44,7 +44,7 @@ func (mc *MemberC) Login(ctx *echo.Context) error {
 		if err != nil {
 			result.Message = err.Error()
 		} else {
-			// 登陆成功，生成令牌
+			// 登录成功，生成令牌
 			token := util.SetMemberApiToken(sto, e.Id, e.Pwd)
 			result.Member = &dto.LoginMember{
 				Id:         e.Id,
