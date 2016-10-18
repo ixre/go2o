@@ -25,7 +25,7 @@ var (
 )
 
 func personFinanceSettle() {
-	//return
+	return
 	now := time.Now()
 	//invokeSettle(now.Add(time.Hour * -24))
 	unix := tool.GetStartDate(time.Now()).Unix()

@@ -15,6 +15,10 @@ const (
 	TagWebServe = 1 << iota
 	// 常驻程序
 	TagDaemon
+	// 单元测试
+	TagTesting
+	// 二进制程序
+	TagBin
 	// 系统后台
 	TagMasterServe
 	// Tcp服务
