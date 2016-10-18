@@ -65,6 +65,8 @@ var (
 		UCenterIndexPath: "index.html",
 		// 会员中心个人资料模板文件路径
 		UCenterPersonInfoPath: "person_info.html",
+		// 会员中心推广海报模板文件路径
+		UCenterInvitationDmPath: "user/invitation_dm.html",
 	}
 
 	// 默认平台设置
