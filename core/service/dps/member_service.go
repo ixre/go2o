@@ -379,7 +379,8 @@ func (ms *memberService) ResetTradePwd(memberId int) string {
 }
 
 //修改密码,传入密文密码
-func (ms *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
+func (ms *memberService) ModifyTradePassword(memberId int,
+	oldPwd, newPwd string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
