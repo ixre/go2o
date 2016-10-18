@@ -11,8 +11,6 @@ package domain
 import (
 	"bufio"
 	"fmt"
-	"github.com/jsix/gof"
-	"go2o/core/variable"
 	"io"
 	"log"
 	"math/rand"
