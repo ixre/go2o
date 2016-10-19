@@ -519,12 +519,12 @@ func (ms *memberService) QueryPagerOrder(memberId, begin, size int, pagination b
 }
 
 /*********** 收货地址 ***********/
-func (ms *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddress {
+func (ms *memberService) GetAddress(memberId int) []*member.DeliverAddress {
 	return ms._rep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
-func (ms *memberService) GetDeliverAddressById(memberId,
+func (ms *memberService) GetAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	v := m.Profile().GetDeliver(deliverId).GetValue()
@@ -549,13 +549,13 @@ func (ms *memberService) SaveAddress(memberId int, e *member.DeliverAddress) (in
 }
 
 //删除配送地址
-func (ms *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
+func (ms *memberService) DeleteAddress(memberId int, deliverId int) error {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().DeleteDeliver(deliverId)
 }
 
 // 修改密码
-func (ms *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
+func (ms *memberService) ModifyPassword(memberId int, newPwd, oldPwd string) error {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
 		newEncPwd := domain.MemberSha1Pwd(newPwd)

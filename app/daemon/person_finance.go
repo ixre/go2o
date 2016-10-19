@@ -21,11 +21,10 @@ import (
 
 const batGroupSize int = 50 //跑批每组数量
 var (
-	settleUnixKey string = "sys:go2o:d:pf:settled_unix"
+	settleUnixKey string = "sys:go2o:d:pf:date"
 )
 
 func personFinanceSettle() {
-	return
 	now := time.Now()
 	//invokeSettle(now.Add(time.Hour * -24))
 	unix := tool.GetStartDate(time.Now()).Unix()
