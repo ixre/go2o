@@ -18,33 +18,33 @@ import (
 var _ personfinance.IPersonFinance = new(PersonFinance)
 
 type PersonFinance struct {
-	_personId int
-	_accRep   member.IMemberRep
-	_rep      personfinance.IPersonFinanceRepository
+	personId int
+	accRep   member.IMemberRep
+	rep      personfinance.IPersonFinanceRepository
 }
 
 func NewPersonFinance(personId int, rep personfinance.IPersonFinanceRepository,
 	accRep member.IMemberRep) personfinance.IPersonFinance {
 	return &PersonFinance{
-		_personId: personId,
-		_accRep:   accRep,
-		_rep:      rep,
+		personId: personId,
+		accRep:   accRep,
+		rep:      rep,
 	}
 }
 
 // 获取聚合根
 func (this *PersonFinance) GetAggregateRootId() int {
-	return this._personId
+	return this.personId
 }
 
 // 获取账号
 func (this *PersonFinance) GetMemberAccount() member.IAccount {
-	return this._accRep.GetMember(this._personId).GetAccount()
+	return this.accRep.GetMember(this.personId).GetAccount()
 }
 
 // 获取增利账户信息(类:余额宝)
 func (this *PersonFinance) GetRiseInfo() personfinance.IRiseInfo {
-	return newRiseInfo(this.GetAggregateRootId(), this._rep, this._accRep)
+	return newRiseInfo(this.GetAggregateRootId(), this.rep, this.accRep)
 }
 
 // 创建增利账户信息
@@ -55,7 +55,7 @@ func (this *PersonFinance) CreateRiseInfo() error {
 			PersonId:   this.GetAggregateRootId(),
 			UpdateTime: time.Now().Unix(),
 		}
-		_, err = this._rep.SaveRiseInfo(v)
+		_, err = this.rep.SaveRiseInfo(v)
 		return err
 	}
 	return errors.New("rise info exists!")
@@ -76,6 +76,6 @@ func (this *PersonFinance) SyncToAccount() error {
 		growEarnings += r.Rise
 		totalGrowEarnings += r.TotalRise
 	}
-	return this._accRep.SaveGrowAccount(this.GetAggregateRootId(),
+	return this.accRep.SaveGrowAccount(this.GetAggregateRootId(),
 		balance, totalAmount, growEarnings, totalGrowEarnings, time.Now().Unix())
 }

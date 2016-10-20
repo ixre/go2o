@@ -30,39 +30,39 @@ func newCoverageArea(v *delivery.CoverageValue, rep delivery.IDeliveryRep) deliv
 
 // 是否可以配送
 // 返回是否可以配送，以及距离(米)
-func (this *CoverageArea) CanDeliver(lng, lat float64) (bool, int) {
+func (c *CoverageArea) CanDeliver(lng, lat float64) (bool, int) {
 	distance := lbs.GetLocDistance(
-		this.value.Lng, this.value.Lat, lng, lat)
+		c.value.Lng, c.value.Lat, lng, lat)
 	i := int(distance)
-	return i <= this.value.Radius*1000, i
+	return i <= c.value.Radius*1000, i
 }
 
 // 是否可以配送
 // 返回是否可以配送，以及距离(米)
-func (this *CoverageArea) CanDeliverTo(address string) (bool, int) {
+func (c *CoverageArea) CanDeliverTo(address string) (bool, int) {
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
 		return false, -1
 	}
-	return this.CanDeliver(lng, lat)
+	return c.CanDeliver(lng, lat)
 }
 
-func (this *CoverageArea) GetDomainId() int {
-	return this.value.Id
+func (c *CoverageArea) GetDomainId() int {
+	return c.value.Id
 }
 
-func (this *CoverageArea) GetValue() delivery.CoverageValue {
-	return *this.value
+func (c *CoverageArea) GetValue() delivery.CoverageValue {
+	return *c.value
 }
 
-func (this *CoverageArea) SetValue(v *delivery.CoverageValue) error {
-	if v.Id == this.value.Id && v.Id > 0 {
-		this.value = v
+func (c *CoverageArea) SetValue(v *delivery.CoverageValue) error {
+	if v.Id == c.value.Id && v.Id > 0 {
+		c.value = v
 		return nil
 	}
 	return errors.New("no such value")
 }
 
-func (this *CoverageArea) Save() (int, error) {
-	return this.rep.SaveCoverageArea(this.value)
+func (c *CoverageArea) Save() (int, error) {
+	return c.rep.SaveCoverageArea(c.value)
 }

@@ -22,7 +22,7 @@ var _ merchant.IProfileManager = new(profileManagerImpl)
 type profileManagerImpl struct {
 	*merchantImpl
 	//企业信息列表
-	_list []*merchant.EnterpriseInfo
+	list []*merchant.EnterpriseInfo
 }
 
 func newProfileManager(m *merchantImpl) merchant.IProfileManager {
@@ -32,11 +32,11 @@ func newProfileManager(m *merchantImpl) merchant.IProfileManager {
 }
 
 func (p *profileManagerImpl) getAll() []*merchant.EnterpriseInfo {
-	if p._list == nil {
-		p._list = []*merchant.EnterpriseInfo{}
-		tmp.Db().GetOrm().Select(&p._list, "mch_id=?", p.GetAggregateRootId())
+	if p.list == nil {
+		p.list = []*merchant.EnterpriseInfo{}
+		tmp.Db().GetOrm().Select(&p.list, "mch_id=?", p.GetAggregateRootId())
 	}
-	return p._list
+	return p.list
 }
 
 // 获取企业信息
@@ -111,7 +111,7 @@ func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int
 	e.IsHandled = 0
 	e.ReviewTime = dt
 	e.UpdateTime = dt
-	p._list = nil //clean cache
+	p.list = nil //clean cache
 	return orm.Save(tmp.Db().GetOrm(), e, e.Id)
 }
 

@@ -34,25 +34,25 @@ import (
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
 
 type merchantManagerImpl struct {
-	_rep   merchant.IMerchantRep
+	rep    merchant.IMerchantRep
 	valRep valueobject.IValueRep
 }
 
 func NewMerchantManager(rep merchant.IMerchantRep, valRep valueobject.IValueRep) merchant.IMerchantManager {
 	return &merchantManagerImpl{
-		_rep:   rep,
+		rep:    rep,
 		valRep: valRep,
 	}
 }
 
 // 创建会员申请商户密钥
 func (m *merchantManagerImpl) CreateSignUpToken(memberId int) string {
-	return m._rep.CreateSignUpToken(memberId)
+	return m.rep.CreateSignUpToken(memberId)
 }
 
 // 根据商户申请密钥获取会员编号
 func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int {
-	return m._rep.GetMemberFromSignUpToken(token)
+	return m.rep.GetMemberFromSignUpToken(token)
 }
 
 // 删除会员的商户申请资料
@@ -168,7 +168,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		// 最后登录时间
 		LastLoginTime: 0,
 	}
-	mch := m._rep.CreateMerchant(mchVal)
+	mch := m.rep.CreateMerchant(mchVal)
 
 	err := mch.SetValue(mchVal)
 	if err != nil {
@@ -228,7 +228,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.Mc
 func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
-		return m._rep.CreateMerchant(&v)
+		return m.rep.CreateMerchant(&v)
 	}
 	return nil
 }

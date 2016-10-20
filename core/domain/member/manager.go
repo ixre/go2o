@@ -22,27 +22,27 @@ var _ member.IMemberManager = new(MemberManagerImpl)
 var _ member.ILevelManager = new(levelManagerImpl)
 
 type MemberManagerImpl struct {
-	_levelManager member.ILevelManager
-	_valRep       valueobject.IValueRep
-	_rep          member.IMemberRep
+	levelManager member.ILevelManager
+	valRep       valueobject.IValueRep
+	rep          member.IMemberRep
 }
 
 func NewMemberManager(rep member.IMemberRep,
 	valRep valueobject.IValueRep) member.IMemberManager {
 	return &MemberManagerImpl{
-		_levelManager: newLevelManager(rep),
-		_valRep:       valRep,
-		_rep:          rep,
+		levelManager: newLevelManager(rep),
+		valRep:       valRep,
+		rep:          rep,
 	}
 }
 
 // 等级服务
-func (l *MemberManagerImpl) LevelManager() member.ILevelManager {
-	return l._levelManager
+func (m *MemberManagerImpl) LevelManager() member.ILevelManager {
+	return m.levelManager
 }
 
 // 检测注册权限
-func (l *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
+func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitation bool) error {
 	if perm.RegisterMode == member.RegisterModeClosed {
 		return member.ErrRegOff
 	}
@@ -57,11 +57,11 @@ func (l *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitat
 	return nil
 }
 
-func (l *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, error) {
+func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, error) {
 	var invitationId int = 0
 	if len(invitationCode) > 0 {
 		//判断邀请码是否正确
-		invitationId = l._rep.GetMemberIdByInvitationCode(invitationCode)
+		invitationId = m.rep.GetMemberIdByInvitationCode(invitationCode)
 		if invitationId <= 0 {
 			return -1, member.ErrInvitationCode
 		}
@@ -70,21 +70,21 @@ func (l *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, err
 }
 
 // 检查手机绑定,同时检查手机格式
-func (l *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
+func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
-	if l._rep.CheckPhoneBind(phone, memberId) {
+	if m.rep.CheckPhoneBind(phone, memberId) {
 		return member.ErrPhoneHasBind
 	}
 	return nil
 }
 
 // 检查注册信息是否正确
-func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
+func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int, err error) {
-	perm := l._valRep.GetRegisterPerm()
-	conf := l._valRep.GetRegistry()
+	perm := m.valRep.GetRegisterPerm()
+	conf := m.valRep.GetRegistry()
 
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.Usr = strings.TrimSpace(v.Usr)
@@ -95,7 +95,7 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 		if !userRegex.MatchString(v.Usr) {
 			return 0, member.ErrUsrValidErr
 		}
-		if l._rep.CheckUsrExist(v.Usr, 0) {
+		if m.rep.CheckUsrExist(v.Usr, 0) {
 			return 0, member.ErrUsrExist
 		}
 	}
@@ -117,14 +117,14 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 			!phoneRegex.MatchString(pro.Phone) {
 			return 0, member.ErrBadPhoneFormat
 		}
-		if l.CheckPhoneBind(pro.Phone, v.Id) != nil {
+		if m.CheckPhoneBind(pro.Phone, v.Id) != nil {
 			return 0, member.ErrPhoneHasBind
 		}
 	}
 
 	// 使用手机号作为用户名
 	if perm.PhoneAsUser && v.Usr == "" {
-		if l._rep.CheckUsrExist(pro.Phone, 0) {
+		if m.rep.CheckUsrExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}
 		v.Usr = pro.Phone
@@ -138,9 +138,9 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 	}
 
 	// 检查注册模式及邀请码
-	err = l.registerPerm(&perm, len(invitationCode) > 0)
+	err = m.registerPerm(&perm, len(invitationCode) > 0)
 	if err == nil {
-		invitationId, err = l.checkInvitationCode(invitationCode)
+		invitationId, err = m.checkInvitationCode(invitationCode)
 	}
 	if err != nil {
 		return 0, err
@@ -161,12 +161,12 @@ func (l *MemberManagerImpl) PrepareRegister(v *member.Member,
 
 // 等级服务实现
 type levelManagerImpl struct {
-	_rep member.IMemberRep
+	rep member.IMemberRep
 }
 
 func newLevelManager(rep member.IMemberRep) member.ILevelManager {
 	impl := &levelManagerImpl{
-		_rep: rep,
+		rep: rep,
 	}
 	return impl.init()
 }
@@ -228,7 +228,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 
 // 获取等级设置
 func (l *levelManagerImpl) GetLevelSet() []*member.Level {
-	return l._rep.GetMemberLevels_New()
+	return l.rep.GetMemberLevels_New()
 }
 
 // 获取等级
@@ -282,10 +282,10 @@ func (l *levelManagerImpl) DeleteLevel(id int) error {
 	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
 		// todo: 也可以更新到下一个等级
-		if n := l._rep.GetMemberNumByLevel_New(id); n > 0 {
+		if n := l.rep.GetMemberNumByLevel_New(id); n > 0 {
 			return member.ErrLevelUsed
 		}
-		return l._rep.DeleteMemberLevel_New(id)
+		return l.rep.DeleteMemberLevel_New(id)
 	}
 	return nil
 }
@@ -298,7 +298,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int, error) {
 	}
 	err := l.checkLevelExp(v)
 	if err == nil {
-		return l._rep.SaveMemberLevel_New(v)
+		return l.rep.SaveMemberLevel_New(v)
 	}
 	return v.Id, err
 }

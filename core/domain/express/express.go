@@ -25,30 +25,30 @@ const (
 var _ express.IUserExpress = new(userExpressImpl)
 
 type userExpressImpl struct {
-	_userId int
-	_arr    []express.IExpressTemplate
-	_rep    express.IExpressRep
-	_valRep valueobject.IValueRep
+	userId int
+	arr    []express.IExpressTemplate
+	rep    express.IExpressRep
+	valRep valueobject.IValueRep
 }
 
 func NewUserExpress(userId int, rep express.IExpressRep,
 	valRep valueobject.IValueRep) express.IUserExpress {
 	return &userExpressImpl{
-		_userId: userId,
-		_rep:    rep,
-		_valRep: valRep,
+		userId: userId,
+		rep:    rep,
+		valRep: valRep,
 	}
 }
 
 // 获取聚合根编号
 func (e *userExpressImpl) GetAggregateRootId() int {
-	return e._userId
+	return e.userId
 }
 
 // 创建快递模板
 func (e *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
 	t.UserId = e.GetAggregateRootId()
-	return newExpressTemplate(e, t, e._rep, e._valRep)
+	return newExpressTemplate(e, t, e.rep, e.valRep)
 }
 
 // 获取快递模板
@@ -63,24 +63,24 @@ func (e *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
 
 // 获取所有的快递模板
 func (e *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
-	if e._arr == nil {
-		list := e._rep.GetUserAllTemplate(e.GetAggregateRootId())
-		e._arr = make([]express.IExpressTemplate, len(list))
+	if e.arr == nil {
+		list := e.rep.GetUserAllTemplate(e.GetAggregateRootId())
+		e.arr = make([]express.IExpressTemplate, len(list))
 		for i, v := range list {
-			e._arr[i] = e.CreateTemplate(v)
+			e.arr[i] = e.CreateTemplate(v)
 		}
 	}
-	return e._arr
+	return e.arr
 }
 
 // 删除模板
 func (e *userExpressImpl) DeleteTemplate(id int) error {
 	for i, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
-			err := e._rep.DeleteExpressTemplate(
+			err := e.rep.DeleteExpressTemplate(
 				e.GetAggregateRootId(), v.GetDomainId())
 			if err == nil {
-				e._arr = append(e._arr[:i], e._arr[i+1:]...)
+				e.arr = append(e.arr[:i], e.arr[i+1:]...)
 			}
 			return err
 		}
@@ -175,7 +175,7 @@ func (e *expressTemplateImpl) Save() (int, error) {
 	id, err := e._rep.SaveExpressTemplate(e._value)
 	if err == nil {
 		e._value.Id = id
-		e._userExpress._arr = nil
+		e._userExpress.arr = nil
 	}
 	return id, err
 }

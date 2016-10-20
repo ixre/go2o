@@ -32,78 +32,76 @@ var _ promotion.ICouponPromotion = new(Coupon)
 // 是否允许绑定，如果不绑定。则可以任意使用.只要有绑定和使用后，就不允许修改此属性。
 type Coupon struct {
 	*promotionImpl
-	_detailsValue *promotion.ValueCoupon
-	_promRep      promotion.IPromotionRep
-	_memberRep    member.IMemberRep
-	_takes        []promotion.ValueCouponTake
-	_binds        []promotion.ValueCouponBind
-	_takes_loaded bool
-	_binds_loaded bool
+	detailsValue *promotion.ValueCoupon
+	promRep      promotion.IPromotionRep
+	memberRep    member.IMemberRep
+	takes        []promotion.ValueCouponTake
+	binds        []promotion.ValueCouponBind
+	takesLoaded  bool
+	bindsLoaded  bool
 }
 
 func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRep promotion.IPromotionRep,
 	memberRep member.IMemberRep) *Coupon {
-
 	cp := &Coupon{
-		_detailsValue: v,
+		detailsValue:  v,
 		promotionImpl: p,
-		_promRep:      promRep,
-		_memberRep:    memberRep,
+		promRep:       promRep,
+		memberRep:     memberRep,
 	}
-
 	cp.releaseCoupon()
 	return cp
 }
 
-func (this *Coupon) GetDomainId() int {
-	return this._detailsValue.Id
+func (c *Coupon) GetDomainId() int {
+	return c.detailsValue.Id
 }
 
 // 释放优惠券
-func (this *Coupon) releaseCoupon() {
+func (c *Coupon) releaseCoupon() {
 	// 仅在会员通用情况下才存在占用
-	if this._detailsValue.NeedBind == 0 &&
-		this._detailsValue.TotalAmount != this._detailsValue.Amount {
+	if c.detailsValue.NeedBind == 0 &&
+		c.detailsValue.TotalAmount != c.detailsValue.Amount {
 		now := time.Now().Unix()
-		oriAmount := this._detailsValue.Amount
-		for _, take := range this.GetTakes() {
+		oriAmount := c.detailsValue.Amount
+		for _, take := range c.GetTakes() {
 			// 未应用到订单，且释放时间小于当前时间，则释放
 			if take.IsApply == 0 && now > take.ExtraTime {
-				this._detailsValue.Amount = this._detailsValue.Amount + 1
+				c.detailsValue.Amount = c.detailsValue.Amount + 1
 			}
 		}
 
 		//保存新的可用数量
-		if oriAmount != this._detailsValue.Amount {
-			this.Save()
+		if oriAmount != c.detailsValue.Amount {
+			c.Save()
 		}
 	}
 }
 
 // 获取相关的值
-func (this *Coupon) GetRelationValue() interface{} {
-	return this._detailsValue
+func (c *Coupon) GetRelationValue() interface{} {
+	return c.detailsValue
 }
 
 // 促销类型
-func (this *Coupon) TypeName() string {
+func (c *Coupon) TypeName() string {
 	return "优惠券"
 }
 
 // 获取促销内容
-func (this *Coupon) GetDetailsValue() promotion.ValueCoupon {
-	return *this._detailsValue
+func (c *Coupon) GetDetailsValue() promotion.ValueCoupon {
+	return *c.detailsValue
 }
 
 // 设置促销内容
-func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
+func (c *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 
-	val := this._detailsValue
+	val := c.detailsValue
 	if v.TotalAmount < val.TotalAmount-val.Amount {
 		return errors.New("优惠券总数必须大于已使用张数")
 	}
-	//	if this._detailsValue.TotalAmount != this._detailsValue.Amount {
-	//		return this.GetAggregateRootId(), errors.New("优惠券已被绑定或使用，不允许修改数量。")
+	//	if c._detailsValue.TotalAmount != c._detailsValue.Amount {
+	//		return c.GetAggregateRootId(), errors.New("优惠券已被绑定或使用，不允许修改数量。")
 	//	}
 
 	val.OverTime = v.OverTime
@@ -119,49 +117,49 @@ func (this *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 	return nil
 }
 
-func (this *Coupon) GetBinds() []promotion.ValueCouponBind {
-	if !this._binds_loaded {
-		this._binds = this._promRep.GetCouponBinds(this._detailsValue.Id)
+func (c *Coupon) GetBinds() []promotion.ValueCouponBind {
+	if !c.bindsLoaded {
+		c.binds = c.promRep.GetCouponBinds(c.detailsValue.Id)
 	}
-	return this._binds
+	return c.binds
 }
 
-func (this *Coupon) GetTakes() []promotion.ValueCouponTake {
-	if !this._takes_loaded {
-		this._takes = this._promRep.GetCouponTakes(this._detailsValue.Id)
+func (c *Coupon) GetTakes() []promotion.ValueCouponTake {
+	if !c.takesLoaded {
+		c.takes = c.promRep.GetCouponTakes(c.detailsValue.Id)
 	}
-	return this._takes
+	return c.takes
 }
 
-func (this *Coupon) Save() (int, error) {
+func (c *Coupon) Save() (int, error) {
 
-	if this.GetRelationValue() == nil {
-		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
+	if c.GetRelationValue() == nil {
+		return c.GetAggregateRootId(), promotion.ErrCanNotApplied
 	}
 
-	if this._detailsValue.Id <= 0 {
-		this._detailsValue.Amount = this._detailsValue.TotalAmount
+	if c.detailsValue.Id <= 0 {
+		c.detailsValue.Amount = c.detailsValue.TotalAmount
 	}
 
-	var isCreate bool = this.GetAggregateRootId() == 0
+	var isCreate bool = c.GetAggregateRootId() == 0
 
-	id, err := this.promotionImpl.Save()
-	this._value.Id = id
+	id, err := c.promotionImpl.Save()
+	c.value.Id = id
 
 	if err == nil {
-		this._detailsValue.Id = this.GetAggregateRootId()
-		return this._promRep.SaveValueCoupon(this._detailsValue, isCreate)
+		c.detailsValue.Id = c.GetAggregateRootId()
+		return c.promRep.SaveValueCoupon(c.detailsValue, isCreate)
 	}
 	return id, err
 }
 
 // 获取优惠券描述
-func (this *Coupon) GetDescribe() string {
+func (c *Coupon) GetDescribe() string {
 	buf := bytes.NewBufferString("")
-	v := this._detailsValue
+	v := c.detailsValue
 
 	if v.MinLevel != 0 {
-		level := this._memberRep.GetManager().LevelManager().GetLevelById(v.MinLevel)
+		level := c.memberRep.GetManager().LevelManager().GetLevelById(v.MinLevel)
 		buf.WriteString("[*" + level.Name + "]")
 	}
 
@@ -189,29 +187,29 @@ func (this *Coupon) GetDescribe() string {
 }
 
 // 获取优惠的金额(四舍五入)
-func (this *Coupon) GetCouponFee(orderFee float32) float32 {
-	if float32(this._detailsValue.MinFee) > orderFee {
+func (c *Coupon) GetCouponFee(orderFee float32) float32 {
+	if float32(c.detailsValue.MinFee) > orderFee {
 		return 0
 	}
 	var couponFee float32
 
-	if this._detailsValue.Fee != 0 {
-		couponFee = couponFee + float32(this._detailsValue.Fee)
+	if c.detailsValue.Fee != 0 {
+		couponFee = couponFee + float32(c.detailsValue.Fee)
 	}
 
-	if this._detailsValue.Discount != 100 {
+	if c.detailsValue.Discount != 100 {
 		couponFee = couponFee + orderFee*
-			(float32(100-this._detailsValue.Discount)/100)
+			(float32(100-c.detailsValue.Discount)/100)
 	}
 	return math.Round32(couponFee, 2)
 }
 
 // 是否可用
-func (this *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
+func (c *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 	mv := m.GetValue()
-	cv := this.GetDetailsValue()
+	cv := c.GetDetailsValue()
 
-	if this._value.Enabled == 0 {
+	if c.value.Enabled == 0 {
 		return false, errors.New("无效的优惠券")
 	}
 
@@ -246,18 +244,18 @@ func (this *Coupon) CanUse(m member.IMember, fee float32) (bool, error) {
 /********  占用  *********/
 
 //是否允许占用
-func (this *Coupon) CanTake() bool {
-	return this._detailsValue.NeedBind == 0
+func (c *Coupon) CanTake() bool {
+	return c.detailsValue.NeedBind == 0
 }
 
 //获取占用
-func (this *Coupon) GetTake(memberId int) (*promotion.ValueCouponTake, error) {
-	return this._promRep.GetCouponTakeByMemberId(this._detailsValue.Id, memberId)
+func (c *Coupon) GetTake(memberId int) (*promotion.ValueCouponTake, error) {
+	return c.promRep.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
 }
 
 //占用
-func (this *Coupon) Take(memberId int) error {
-	if this._detailsValue.Amount == 0 {
+func (c *Coupon) Take(memberId int) error {
+	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足!")
 	}
 
@@ -265,24 +263,24 @@ func (this *Coupon) Take(memberId int) error {
 
 	valTake := &promotion.ValueCouponTake{
 		MemberId:  memberId,
-		CouponId:  this._detailsValue.Id,
+		CouponId:  c.detailsValue.Id,
 		TakeTime:  dt.Unix(),
 		ExtraTime: dt.Add(time.Hour * 4).Unix(), //4小时过期
 		IsApply:   0,
 		ApplyTime: dt.Add(-time.Hour).Unix(),
 	}
 
-	err := this._promRep.SaveCouponTake(valTake)
+	err := c.promRep.SaveCouponTake(valTake)
 	if err == nil {
-		this._detailsValue.Amount -= 1
-		this.Save()
+		c.detailsValue.Amount -= 1
+		c.Save()
 	}
 	return err
 }
 
 //应用到订单
-func (this *Coupon) ApplyTake(couponTakeId int) error {
-	valTake := this._promRep.GetCouponTake(this._detailsValue.Id, couponTakeId)
+func (c *Coupon) ApplyTake(couponTakeId int) error {
+	valTake := c.promRep.GetCouponTake(c.detailsValue.Id, couponTakeId)
 	if valTake == nil {
 		return errors.New("优惠券无效")
 	}
@@ -298,14 +296,14 @@ func (this *Coupon) ApplyTake(couponTakeId int) error {
 	valTake.IsApply = 1
 	valTake.ApplyTime = now
 
-	return this._promRep.SaveCouponTake(valTake)
+	return c.promRep.SaveCouponTake(valTake)
 }
 
 /********  绑定  *********/
 
 //绑定
-func (this *Coupon) Bind(memberId int) error {
-	if this._detailsValue.Amount == 0 {
+func (c *Coupon) Bind(memberId int) error {
+	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足")
 	}
 
@@ -313,29 +311,29 @@ func (this *Coupon) Bind(memberId int) error {
 
 	valBind := &promotion.ValueCouponBind{
 		MemberId: memberId,
-		CouponId: this._detailsValue.Id,
+		CouponId: c.detailsValue.Id,
 		BindTime: now.Unix(),
 		IsUsed:   0,
 		UseTime:  now.Add(-time.Hour * 24).Unix(),
 	}
 
-	err := this._promRep.SaveCouponBind(valBind)
+	err := c.promRep.SaveCouponBind(valBind)
 	if err == nil {
-		this._detailsValue.Amount -= 1
-		_, err = this.Save()
+		c.detailsValue.Amount -= 1
+		_, err = c.Save()
 	}
 	return err
 }
 
 //获取绑定
-func (this *Coupon) GetBind(memberId int) (*promotion.ValueCouponBind, error) {
-	return this._promRep.GetCouponBindByMemberId(this._detailsValue.Id, memberId)
+func (c *Coupon) GetBind(memberId int) (*promotion.ValueCouponBind, error) {
+	return c.promRep.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
 }
 
-func (this *Coupon) Binds(memberIds []string) error {
-	if len(memberIds) > this._detailsValue.Amount {
+func (c *Coupon) Binds(memberIds []string) error {
+	if len(memberIds) > c.detailsValue.Amount {
 		return errors.New(fmt.Sprintf("优惠券不足%s张，还剩%d张",
-			len(memberIds), this._detailsValue.Amount))
+			len(memberIds), c.detailsValue.Amount))
 	}
 
 	for _, v := range memberIds {
@@ -344,7 +342,7 @@ func (this *Coupon) Binds(memberIds []string) error {
 			return err
 		}
 
-		err = this.Bind(memberId)
+		err = c.Bind(memberId)
 		if err != nil {
 			return err
 		}
@@ -353,8 +351,8 @@ func (this *Coupon) Binds(memberIds []string) error {
 }
 
 //使用优惠券
-func (this *Coupon) UseCoupon(couponBindId int) error {
-	valBind := this._promRep.GetCouponBind(this._detailsValue.Id, couponBindId)
+func (c *Coupon) UseCoupon(couponBindId int) error {
+	valBind := c.promRep.GetCouponBind(c.detailsValue.Id, couponBindId)
 
 	if valBind == nil {
 		return errors.New("优惠券无效")
@@ -365,5 +363,5 @@ func (this *Coupon) UseCoupon(couponBindId int) error {
 
 	valBind.UseTime = time.Now().Unix()
 	valBind.IsUsed = 1
-	return this._promRep.SaveCouponBind(valBind)
+	return c.promRep.SaveCouponBind(valBind)
 }

@@ -16,34 +16,34 @@ import (
 var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
-	_rep   sale.ISaleLabelRep
-	_mchId int
-	_value *sale.Label
+	rep   sale.ISaleLabelRep
+	mchId int
+	value *sale.Label
 }
 
 func NewSaleLabel(mchId int, value *sale.Label,
 	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
-		_rep:   rep,
-		_mchId: mchId,
-		_value: value,
+		rep:   rep,
+		mchId: mchId,
+		value: value,
 	}
 }
 
 func (l *saleLabelImpl) GetDomainId() int {
-	if l._value != nil {
-		return l._value.Id
+	if l.value != nil {
+		return l.value.Id
 	}
 	return 0
 }
 
 func (l *saleLabelImpl) GetValue() *sale.Label {
-	return l._value
+	return l.value
 }
 
 // 是否为系统内置
 func (l *saleLabelImpl) System() bool {
-	return l._value.MerchantId == 0
+	return l.value.MerchantId == 0
 }
 
 // 设置值
@@ -51,21 +51,21 @@ func (l *saleLabelImpl) SetValue(v *sale.Label) error {
 	if v != nil {
 		// 如果为系统内置，不能修改名称
 		if !l.System() {
-			l._value.Enabled = v.Enabled
-			l._value.TagCode = v.TagCode
+			l.value.Enabled = v.Enabled
+			l.value.TagCode = v.TagCode
 		}
-		l._value.TagName = v.TagName
-		l._value.LabelImage = v.LabelImage
+		l.value.TagName = v.TagName
+		l.value.LabelImage = v.LabelImage
 		if len(v.TagCode) == 0 {
-			l._value.TagCode = v.TagCode
+			l.value.TagCode = v.TagCode
 		}
 	}
 	return nil
 }
 
 func (l *saleLabelImpl) Save() (int, error) {
-	l._value.MerchantId = l._mchId
-	return l._rep.SaveSaleLabel(l._mchId, l._value)
+	l.value.MerchantId = l.mchId
+	return l.rep.SaveSaleLabel(l.mchId, l.value)
 }
 
 // 获取标签下的商品
@@ -76,8 +76,8 @@ func (l *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*valueobj
 	if end <= 0 {
 		end = 5
 	}
-	return l._rep.GetValueGoodsBySaleLabel(l._mchId,
-		l._value.Id, sortBy, begin, end)
+	return l.rep.GetValueGoodsBySaleLabel(l.mchId,
+		l.value.Id, sortBy, begin, end)
 }
 
 // 获取标签下的分页商品
@@ -88,7 +88,7 @@ func (l *saleLabelImpl) GetPagedValueGoods(sortBy string, begin, end int) (int, 
 	if end <= 0 {
 		end = 5
 	}
-	return l._rep.GetPagedValueGoodsBySaleLabel(l._mchId,
+	return l.rep.GetPagedValueGoodsBySaleLabel(l.mchId,
 		l.GetDomainId(), sortBy, begin, end)
 }
 
