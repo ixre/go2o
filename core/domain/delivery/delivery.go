@@ -16,47 +16,47 @@ import (
 var _ delivery.IDelivery = new(Delivery)
 
 type Delivery struct {
-	_id  int
-	_rep delivery.IDeliveryRep
+	id  int
+	rep delivery.IDeliveryRep
 }
 
 func NewDelivery(id int, dlvRep delivery.IDeliveryRep) delivery.IDelivery {
 	return &Delivery{
-		_id:  id,
-		_rep: dlvRep,
+		id:  id,
+		rep: dlvRep,
 	}
 }
 
 // 返回聚合编号
-func (this *Delivery) GetAggregateRootId() int {
-	return this._id
+func (d *Delivery) GetAggregateRootId() int {
+	return d.id
 }
 
 // 等同于GetAggregateRootId()
-func (this *Delivery) GetMerchantId() int {
-	return this._id
+func (d *Delivery) GetMerchantId() int {
+	return d.id
 }
 
 // 根据地址获取地区(可能会有重复的区名)
-func (this *Delivery) GetArea(addr string) ([]*delivery.AreaValue, error) {
+func (d *Delivery) GetArea(addr string) ([]*delivery.AreaValue, error) {
 	name, err := domain.GetAreaName(addr)
 	if err != nil {
 		return nil, err
 	}
-	return this._rep.GetAreaByArea(name), nil
+	return d.rep.GetAreaByArea(name), nil
 }
 
 //　获取覆盖区域
-func (this *Delivery) GetCoverageArea(id int) delivery.ICoverageArea {
-	val := this._rep.GetCoverageArea(this._id, id)
-	return newCoverageArea(val, this._rep)
+func (d *Delivery) GetCoverageArea(id int) delivery.ICoverageArea {
+	val := d.rep.GetCoverageArea(d.id, id)
+	return newCoverageArea(val, d.rep)
 }
 
 // 获取最近的配送区域
-func (this *Delivery) GetNearestCoverage(lng, lat float64) delivery.ICoverageArea {
+func (d *Delivery) GetNearestCoverage(lng, lat float64) delivery.ICoverageArea {
 	var distance int
 	var nearest delivery.ICoverageArea = nil
-	areas := this.FindCoverageAreas(lng, lat)
+	areas := d.FindCoverageAreas(lng, lat)
 
 	// 获取最近的门店
 	for _, v := range areas {
@@ -73,21 +73,21 @@ func (this *Delivery) GetNearestCoverage(lng, lat float64) delivery.ICoverageAre
 }
 
 // 查看单个所在的区域
-func (this *Delivery) FindSingleCoverageArea(lng, lat float64) delivery.ICoverageArea {
-	var covers []*delivery.CoverageValue = this._rep.GetAllCoverageAreas(this._id)
+func (d *Delivery) FindSingleCoverageArea(lng, lat float64) delivery.ICoverageArea {
+	var covers []*delivery.CoverageValue = d.rep.GetAllCoverageAreas(d.id)
 	if covers != nil {
-		return newCoverageArea(covers[0], this._rep)
+		return newCoverageArea(covers[0], d.rep)
 	}
 	return nil
 }
 
 // 查找所有所在的区域
-func (this *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageArea {
-	var covers []*delivery.CoverageValue = this._rep.GetAllCoverageAreas(this._id)
+func (d *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageArea {
+	var covers []*delivery.CoverageValue = d.rep.GetAllCoverageAreas(d.id)
 	if covers != nil {
 		var list []delivery.ICoverageArea = make([]delivery.ICoverageArea, len(covers))
 		for i, v := range covers {
-			list[i] = newCoverageArea(v, this._rep)
+			list[i] = newCoverageArea(v, d.rep)
 		}
 		return list
 	}
@@ -95,8 +95,8 @@ func (this *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageAr
 }
 
 // 获取配送信息
-func (this *Delivery) GetDeliveryInfo(coverageId int) (shopId, deliverUsrId int, err error) {
-	v := this._rep.GetDeliveryBind(this.GetAggregateRootId(), coverageId)
+func (d *Delivery) GetDeliveryInfo(coverageId int) (shopId, deliverUsrId int, err error) {
+	v := d.rep.GetDeliveryBind(d.GetAggregateRootId(), coverageId)
 	if v != nil {
 		return v.ShopId, v.DeliverUsrId, nil
 	}

@@ -17,50 +17,50 @@ import (
 var _ merchant.IKvManager = new(KvManager)
 
 type KvManager struct {
-	_partner    *merchantImpl
-	_merchantId int
+	mch        *merchantImpl
+	merchantId int
 	// 标识
-	_indent string
+	indent string
 }
 
 func newKvManager(p *merchantImpl, indent string) merchant.IKvManager {
 	return &KvManager{
-		_partner:    p,
-		_merchantId: p.GetAggregateRootId(),
-		_indent:     indent,
+		mch:        p,
+		merchantId: p.GetAggregateRootId(),
+		indent:     indent,
 	}
 }
 
 // 获取键值
-func (this *KvManager) Get(k string) string {
-	return this._partner._rep.GetKeyValue(this._merchantId, this._indent, k)
+func (k *KvManager) Get(key string) string {
+	return k.mch._rep.GetKeyValue(k.merchantId, k.indent, key)
 }
 
 // 获取int类型的键值
-func (this *KvManager) GetInt(k string) int {
-	i, _ := strconv.Atoi(this.Get(k))
+func (k *KvManager) GetInt(key string) int {
+	i, _ := strconv.Atoi(k.Get(key))
 	return i
 }
 
 // 设置
-func (this *KvManager) Set(k, v string) {
-	this._partner._rep.SaveKeyValue(this._merchantId, this._indent, k, v, time.Now().Unix())
+func (k *KvManager) Set(key, v string) {
+	k.mch._rep.SaveKeyValue(k.merchantId, k.indent, key, v, time.Now().Unix())
 }
 
 // 获取多项
-func (this *KvManager) Gets(k []string) map[string]string {
-	return this._partner._rep.GetKeyMap(this._merchantId, this._indent, k)
+func (k *KvManager) Gets(key []string) map[string]string {
+	return k.mch._rep.GetKeyMap(k.merchantId, k.indent, key)
 }
 
 // 设置多项
-func (this *KvManager) Sets(v map[string]string) error {
-	for k, v := range v {
-		this.Set(k, v)
+func (k *KvManager) Sets(v map[string]string) error {
+	for key, val := range v {
+		k.Set(key, val)
 	}
 	return nil
 }
 
 // 根据关键字获取字典
-func (this *KvManager) GetsByChar(keyword string) map[string]string {
-	return this._partner._rep.GetKeyMapByChar(this._merchantId, this._indent, keyword)
+func (k *KvManager) GetsByChar(keyword string) map[string]string {
+	return k.mch._rep.GetKeyMapByChar(k.merchantId, k.indent, keyword)
 }

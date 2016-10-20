@@ -16,32 +16,32 @@ import (
 var _ ad.IImageAd = new(ImageAdImpl)
 
 type ImageAdImpl struct {
-	_extValue *ad.Image
+	extValue *ad.Image
 	*adImpl
 }
 
 // 获取链接广告值
-func (this *ImageAdImpl) getData() *ad.Image {
-	if this._extValue == nil {
-		gallery := this._rep.GetValueGallery(this.GetDomainId())
+func (i *ImageAdImpl) getData() *ad.Image {
+	if i.extValue == nil {
+		gallery := i._rep.GetValueGallery(i.GetDomainId())
 		if gallery.Len() > 0 {
-			this._extValue = gallery[0]
+			i.extValue = gallery[0]
 		}
 
 		//如果不存在,则创建一个新的对象
-		if this._extValue == nil {
-			this._extValue = &ad.Image{
-				AdId:     this.GetDomainId(),
+		if i.extValue == nil {
+			i.extValue = &ad.Image{
+				AdId:     i.GetDomainId(),
 				ImageUrl: format.GetNoPicPath(),
 				Enabled:  1,
 			}
 		}
 	}
-	return this._extValue
+	return i.extValue
 }
 
-func (this *ImageAdImpl) SetData(d *ad.Image) error {
-	v := this.getData()
+func (i *ImageAdImpl) SetData(d *ad.Image) error {
+	v := i.getData()
 	v.LinkUrl = d.LinkUrl
 	v.Title = d.Title
 	v.ImageUrl = d.ImageUrl
@@ -50,21 +50,21 @@ func (this *ImageAdImpl) SetData(d *ad.Image) error {
 }
 
 // 保存广告
-func (this *ImageAdImpl) Save() (int, error) {
-	id, err := this.adImpl.Save()
+func (i *ImageAdImpl) Save() (int, error) {
+	id, err := i.adImpl.Save()
 	if err == nil {
-		v := this.getData()
+		v := i.getData()
 		v.AdId = id
-		_, err = this._rep.SaveAdImageValue(v)
+		_, err = i._rep.SaveAdImageValue(v)
 	}
 	return id, err
 }
 
 // 转换为数据传输对象
-func (this *ImageAdImpl) Dto() *ad.AdDto {
+func (i *ImageAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.adImpl.GetDomainId(),
-		Type: this.adImpl.Type(),
-		Data: this.getData(),
+		Id:   i.adImpl.GetDomainId(),
+		Type: i.adImpl.Type(),
+		Data: i.getData(),
 	}
 }

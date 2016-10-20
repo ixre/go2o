@@ -23,18 +23,18 @@ var _ promotion.ICashBackPromotion = new(CashBackPromotion)
 
 type CashBackPromotion struct {
 	*promotionImpl
-	_cashBackValue *promotion.ValueCashBack
-	_dataTag       map[string]string
+	cashBackValue *promotion.ValueCashBack
+	dataTag       map[string]string
 }
 
 // 获取领域编号
-func (this *CashBackPromotion) GetDomainId() int {
-	return this._cashBackValue.Id
+func (c *CashBackPromotion) GetDomainId() int {
+	return c.cashBackValue.Id
 }
 
 // 设置详细的促销信息
-func (this *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
-	g := this._goodsRep.GetValueGoodsById(this._value.GoodsId)
+func (c *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
+	g := c.goodsRep.GetValueGoodsById(c.value.GoodsId)
 	if g == nil {
 		return goods.ErrNoSuchGoods
 	}
@@ -51,51 +51,51 @@ func (this *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error
 		}
 	}
 
-	this._cashBackValue = v
+	c.cashBackValue = v
 	return nil
 }
 
 // 获取相关的值
-func (this *CashBackPromotion) GetRelationValue() interface{} {
-	return this._cashBackValue
+func (c *CashBackPromotion) GetRelationValue() interface{} {
+	return c.cashBackValue
 }
 
 // 促销类型
-func (this *CashBackPromotion) TypeName() string {
+func (c *CashBackPromotion) TypeName() string {
 	return "返现"
 }
 
 // 获取自定义数据
-func (this *CashBackPromotion) GetDataTag() map[string]string {
-	if this._dataTag == nil {
-		this._dataTag = make(map[string]string)
-		if len(this._cashBackValue.DataTag) != 0 {
-			matches := tagRegexp.FindAllStringSubmatch(this._cashBackValue.DataTag, -1)
+func (c *CashBackPromotion) GetDataTag() map[string]string {
+	if c.dataTag == nil {
+		c.dataTag = make(map[string]string)
+		if len(c.cashBackValue.DataTag) != 0 {
+			matches := tagRegexp.FindAllStringSubmatch(c.cashBackValue.DataTag, -1)
 			for i := 0; i < len(matches); i++ {
-				this._dataTag[matches[i][1]] = matches[i][2]
+				c.dataTag[matches[i][1]] = matches[i][2]
 			}
 		}
 	}
-	return this._dataTag
+	return c.dataTag
 }
 
 // 保存
-func (this *CashBackPromotion) Save() (int, error) {
+func (c *CashBackPromotion) Save() (int, error) {
 
-	if this.GetRelationValue() == nil {
-		return this.GetAggregateRootId(), promotion.ErrCanNotApplied
+	if c.GetRelationValue() == nil {
+		return c.GetAggregateRootId(), promotion.ErrCanNotApplied
 	}
 
-	var isCreate bool = this.GetAggregateRootId() == 0
-	this._value.TypeFlag = promotion.TypeFlagCashBack
-	id, err := this.promotionImpl.Save()
+	var isCreate bool = c.GetAggregateRootId() == 0
+	c.value.TypeFlag = promotion.TypeFlagCashBack
+	id, err := c.promotionImpl.Save()
 	if err == nil {
-		this._value.Id = id
-		if this._cashBackValue == nil {
-			this._cashBackValue = new(promotion.ValueCashBack)
+		c.value.Id = id
+		if c.cashBackValue == nil {
+			c.cashBackValue = new(promotion.ValueCashBack)
 		}
-		this._cashBackValue.Id = this.GetAggregateRootId()
-		_, err = this._promRep.SaveValueCashBack(this._cashBackValue, isCreate)
+		c.cashBackValue.Id = c.GetAggregateRootId()
+		_, err = c.promRep.SaveValueCashBack(c.cashBackValue, isCreate)
 	}
 	return id, err
 }

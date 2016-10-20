@@ -25,10 +25,10 @@ import (
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	_member  *memberImpl
+	member   *memberImpl
 	mm       member.IMemberManager
-	_value   *member.Account
-	_rep     member.IMemberRep
+	value    *member.Account
+	rep      member.IMemberRep
 	valueRep valueobject.IValueRep
 }
 
@@ -36,9 +36,9 @@ func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRep, mm member.IMemberManager,
 	valueRep valueobject.IValueRep) member.IAccount {
 	return &accountImpl{
-		_member:  m,
-		_value:   value,
-		_rep:     rep,
+		member:   m,
+		value:    value,
+		rep:      rep,
 		mm:       mm,
 		valueRep: valueRep,
 	}
@@ -46,18 +46,18 @@ func NewAccount(m *memberImpl, value *member.Account,
 
 // 获取领域对象编号
 func (a *accountImpl) GetDomainId() int {
-	return a._value.MemberId
+	return a.value.MemberId
 }
 
 // 获取账户值
 func (a *accountImpl) GetValue() *member.Account {
-	return a._value
+	return a.value
 }
 
 // 保存
 func (a *accountImpl) Save() (int, error) {
-	a._value.UpdateTime = time.Now().Unix()
-	return a._rep.SaveAccount(a._value)
+	a.value.UpdateTime = time.Now().Unix()
+	return a.rep.SaveAccount(a.value)
 }
 
 // 设置优先(默认)支付方式, account 为账户类型
@@ -70,7 +70,7 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 			support = true
 		}
 		if support {
-			a._value.PriorityPay = account
+			a.value.PriorityPay = account
 			_, err := a.Save()
 			return err
 		}
@@ -79,19 +79,19 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 	}
 
 	// 关闭默认支付
-	a._value.PriorityPay = 0
+	a.value.PriorityPay = 0
 	_, err := a.Save()
 	return err
 }
 
 // 根据编号获取余额变动信息
 func (a *accountImpl) GetBalanceInfo(id int) *member.BalanceInfo {
-	return a._rep.GetBalanceInfo(id)
+	return a.rep.GetBalanceInfo(id)
 }
 
 // 根据号码获取余额变动信息
 func (a *accountImpl) GetBalanceInfoByNo(no string) *member.BalanceInfo {
-	return a._rep.GetBalanceInfoByNo(no)
+	return a.rep.GetBalanceInfoByNo(no)
 }
 
 // 保存余额变动信息
@@ -101,7 +101,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 	if v.CreateTime == 0 {
 		v.CreateTime = v.UpdateTime
 	}
-	return a._rep.SaveBalanceInfo(v)
+	return a.rep.SaveBalanceInfo(v)
 }
 
 // 充值,客服充值时,需提供操作人(relateUser)
@@ -138,9 +138,9 @@ func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo str
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SaveBalanceLog(v)
+	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
-		a._value.Balance += amount
+		a.value.Balance += amount
 		_, err = a.Save()
 	}
 	return err
@@ -161,7 +161,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.Balance < amount {
+	if a.value.Balance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	kind := member.KindBalanceDiscount
@@ -180,9 +180,9 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err = a._rep.SaveBalanceLog(v)
+	_, err = a.rep.SaveBalanceLog(v)
 	if err == nil {
-		a._value.Balance -= amount
+		a.value.Balance -= amount
 		_, err = a.Save()
 	}
 	return err
@@ -194,7 +194,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.Balance < amount {
+	if a.value.Balance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -212,11 +212,11 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	a._value.Balance -= amount
-	a._value.FreezeBalance += amount
+	a.value.Balance -= amount
+	a.value.FreezeBalance += amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a._rep.SaveBalanceLog(v)
+		_, err = a.rep.SaveBalanceLog(v)
 	}
 	return err
 }
@@ -227,7 +227,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.FreezeBalance < amount {
+	if a.value.FreezeBalance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -245,11 +245,11 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	a._value.Balance += amount
-	a._value.FreezeBalance -= amount
+	a.value.Balance += amount
+	a.value.FreezeBalance -= amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a._rep.SaveBalanceLog(v)
+		_, err = a.rep.SaveBalanceLog(v)
 	}
 	return err
 
@@ -290,11 +290,11 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SavePresentLog(v)
+	_, err := a.rep.SavePresentLog(v)
 	if err == nil {
-		a._value.PresentBalance += amount
+		a.value.PresentBalance += amount
 		if amount > 0 {
-			a._value.TotalPresentFee += amount
+			a.value.TotalPresentFee += amount
 		}
 		_, err = a.Save()
 	}
@@ -307,7 +307,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if mustLargeZero && a._value.PresentBalance < amount {
+	if mustLargeZero && a.value.PresentBalance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 
@@ -331,9 +331,9 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SavePresentLog(v)
+	_, err := a.rep.SavePresentLog(v)
 	if err == nil {
-		a._value.PresentBalance -= amount
+		a.value.PresentBalance -= amount
 		_, err = a.Save()
 	}
 	return err
@@ -345,7 +345,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.PresentBalance < amount {
+	if a.value.PresentBalance < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -363,11 +363,11 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	a._value.PresentBalance -= amount
-	a._value.FreezePresent += amount
+	a.value.PresentBalance -= amount
+	a.value.FreezePresent += amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a._rep.SavePresentLog(v)
+		_, err = a.rep.SavePresentLog(v)
 	}
 	return err
 }
@@ -378,7 +378,7 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a._value.FreezePresent < amount {
+	if a.value.FreezePresent < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -396,11 +396,11 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	a._value.PresentBalance += amount
-	a._value.FreezePresent -= amount
+	a.value.PresentBalance += amount
+	a.value.FreezePresent -= amount
 	_, err := a.Save()
 	if err == nil {
-		_, err = a._rep.SavePresentLog(v)
+		_, err = a.rep.SavePresentLog(v)
 	}
 	return err
 }
@@ -424,7 +424,7 @@ func (a *accountImpl) ChargeFlowBalance(title string,
 	}
 	_, err := a.SaveBalanceInfo(v)
 	if err == nil {
-		a._value.FlowBalance += amount
+		a.value.FlowBalance += amount
 		_, err = a.Save()
 	}
 	return err
@@ -436,7 +436,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 	if amount < 0 || len(tradeNo) == 0 {
 		return errors.New("amount error or missing trade no")
 	}
-	if amount > a._value.Balance {
+	if amount > a.value.Balance {
 		return member.ErrOutOfBalance
 	}
 	if remark == "" {
@@ -455,9 +455,9 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SaveBalanceLog(v)
+	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
-		a._value.Balance -= amount
+		a.value.Balance -= amount
 		_, err = a.Save()
 	}
 	return err
@@ -476,16 +476,16 @@ func (a *accountImpl) AddIntegral(logType int, outerNo string,
 		return member.ErrMissingOuterNo
 	}
 	l := &member.IntegralLog{
-		MemberId:   a._value.MemberId,
+		MemberId:   a.value.MemberId,
 		Type:       logType,
 		OuterNo:    outerNo,
 		Value:      value,
 		Remark:     remark,
 		CreateTime: time.Now().Unix(),
 	}
-	err := a._rep.SaveIntegralLog(l)
+	err := a.rep.SaveIntegralLog(l)
 	if err == nil {
-		a._value.Integral += value
+		a.value.Integral += value
 		_, err = a.Save()
 	}
 	return err
@@ -497,7 +497,7 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 	if value <= 0 {
 		return member.ErrIncorrectQuota
 	}
-	if a._value.Integral < value {
+	if a.value.Integral < value {
 		return member.ErrNoSuchIntegral
 	}
 
@@ -510,16 +510,16 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 	}
 
 	l := &member.IntegralLog{
-		MemberId:   a._value.MemberId,
+		MemberId:   a.value.MemberId,
 		Type:       logType,
 		Value:      -value,
 		OuterNo:    outerNo,
 		Remark:     remark,
 		CreateTime: time.Now().Unix(),
 	}
-	err := a._rep.SaveIntegralLog(l)
+	err := a.rep.SaveIntegralLog(l)
 	if err == nil {
-		a._value.Integral -= value
+		a.value.Integral -= value
 		_, err = a.Save()
 	}
 	return err
@@ -528,43 +528,43 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 // 冻结积分,当new为true不扣除积分,反之扣除积分
 func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error {
 	if !new {
-		if a._value.Integral < value {
+		if a.value.Integral < value {
 			return member.ErrNoSuchIntegral
 		}
-		a._value.Integral -= value
+		a.value.Integral -= value
 	}
-	a._value.FreezeIntegral += value
+	a.value.FreezeIntegral += value
 	_, err := a.Save()
 	if err == nil {
 		l := &member.IntegralLog{
-			MemberId:   a._value.MemberId,
+			MemberId:   a.value.MemberId,
 			Type:       member.TypeIntegralFreeze,
 			Value:      -value,
 			Remark:     remark,
 			CreateTime: time.Now().Unix(),
 		}
-		err = a._rep.SaveIntegralLog(l)
+		err = a.rep.SaveIntegralLog(l)
 	}
 	return err
 }
 
 // 解冻积分
 func (a *accountImpl) UnfreezesIntegral(value int, remark string) error {
-	if a._value.FreezeIntegral < value {
+	if a.value.FreezeIntegral < value {
 		return member.ErrNoSuchIntegral
 	}
-	a._value.FreezeIntegral -= value
-	a._value.Integral += value
+	a.value.FreezeIntegral -= value
+	a.value.Integral += value
 	_, err := a.Save()
 	if err == nil {
 		l := &member.IntegralLog{
-			MemberId:   a._value.MemberId,
+			MemberId:   a.value.MemberId,
 			Type:       member.TypeIntegralUnfreeze,
 			Value:      value,
 			Remark:     remark,
 			CreateTime: time.Now().Unix(),
 		}
-		err = a._rep.SaveIntegralLog(l)
+		err = a.rep.SaveIntegralLog(l)
 	}
 	return err
 }
@@ -572,7 +572,7 @@ func (a *accountImpl) UnfreezesIntegral(value int, remark string) error {
 // 退款
 func (a *accountImpl) RequestBackBalance(backType int, title string,
 	amount float32) error {
-	if amount > a._value.Balance {
+	if amount > a.value.Balance {
 		return member.ErrOutOfBalance
 	}
 	v := &member.BalanceInfo{
@@ -584,7 +584,7 @@ func (a *accountImpl) RequestBackBalance(backType int, title string,
 	}
 	_, err := a.SaveBalanceInfo(v)
 	if err == nil {
-		a._value.Balance -= amount
+		a.value.Balance -= amount
 		_, err = a.Save()
 	}
 	return err
@@ -619,13 +619,13 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 		return 0, "", errors.New(conf.MemberTakeOutMessage)
 	}
 	// 检测非正式会员提现
-	lv := a.mm.LevelManager().GetLevelById(a._member.GetValue().Level)
+	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {
 		return 0, "", errors.New(fmt.Sprintf(
 			member.ErrTakeOutLevelNoPerm.Error(), lv.Name))
 	}
 	// 检测余额
-	if a._value.PresentBalance < amount {
+	if a.value.PresentBalance < amount {
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
@@ -640,7 +640,7 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	}
 	// 检测是否超过限制
 	if maxTimes := conf2.MaxTakeOutTimesOfDay; maxTimes > 0 {
-		takeTimes := a._rep.GetTodayTakeOutTimes(a.GetDomainId())
+		takeTimes := a.rep.GetTodayTakeOutTimes(a.GetDomainId())
 		if takeTimes >= maxTimes {
 			return 0, "", member.ErrAccountOutOfTakeOutTimes
 		}
@@ -669,14 +669,14 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 
 	// 提现至余额
 	if businessKind == member.KindPresentTakeOutToBalance {
-		a._value.Balance += amount
+		a.value.Balance += amount
 		v.State = enum.ReviewPass
 	}
 
-	id, err := a._rep.SavePresentLog(v)
+	id, err := a.rep.SavePresentLog(v)
 	if err == nil {
-		a._rep.AddTodayTakeOutTimes(a.GetDomainId())
-		a._value.PresentBalance -= amount
+		a.rep.AddTodayTakeOutTimes(a.GetDomainId())
+		a.value.PresentBalance -= amount
 		_, err = a.Save()
 	}
 	return id, tradeNo, err
@@ -705,7 +705,7 @@ func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
 			v.CsnFee = 0
 		}
 		v.UpdateTime = time.Now().Unix()
-		_, err := a._rep.SavePresentLog(v)
+		_, err := a.rep.SavePresentLog(v)
 		return err
 	}
 	return member.ErrNotSupportTakeOutBusinessKind
@@ -718,7 +718,7 @@ func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
 		v.OuterNo = tradeNo
 		v.State = enum.ReviewConfirm
 		v.Remark = "银行凭证:" + tradeNo
-		_, err := a._rep.SavePresentLog(v)
+		_, err := a.rep.SavePresentLog(v)
 		return err
 	}
 	return member.ErrNotSupportTakeOutBusinessKind
@@ -739,13 +739,13 @@ func (a *accountImpl) FreezeExpired(accountKind int, amount float32, remark stri
 }
 
 func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error {
-	if a._value.FreezeBalance < amount {
+	if a.value.FreezeBalance < amount {
 		return member.ErrIncorrectAmount
 	}
 	unix := time.Now().Unix()
-	a._value.FreezeBalance -= amount
-	a._value.ExpiredBalance += amount
-	a._value.UpdateTime = unix
+	a.value.FreezeBalance -= amount
+	a.value.ExpiredBalance += amount
+	a.value.UpdateTime = unix
 	l := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindBalanceExpired,
@@ -759,7 +759,7 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SaveBalanceLog(l)
+	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
 		_, err = a.Save()
 	}
@@ -767,13 +767,13 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 }
 
 func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error {
-	if a._value.FreezePresent < amount {
+	if a.value.FreezePresent < amount {
 		return member.ErrIncorrectAmount
 	}
 	unix := time.Now().Unix()
-	a._value.FreezePresent -= amount
-	a._value.ExpiredPresent += amount
-	a._value.UpdateTime = unix
+	a.value.FreezePresent -= amount
+	a.value.ExpiredPresent += amount
+	a.value.UpdateTime = unix
 	l := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
 		BusinessKind: member.KindPresentExpired,
@@ -787,7 +787,7 @@ func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error 
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SavePresentLog(l)
+	_, err := a.rep.SavePresentLog(l)
 	if err == nil {
 		_, err = a.Save()
 	}
@@ -810,7 +810,7 @@ func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount flo
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	tm := a._rep.GetMember(toMember)
+	tm := a.rep.GetMember(toMember)
 	if tm == nil {
 		return member.ErrNoSuchMember
 	}
@@ -835,7 +835,7 @@ func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount flo
 
 func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 	amount, csnFee float32, remark string) error {
-	if a._value.Balance < amount+csnFee {
+	if a.value.Balance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount
 	}
 	unix := time.Now().Unix()
@@ -854,10 +854,10 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SaveBalanceLog(l)
+	_, err := a.rep.SaveBalanceLog(l)
 	if err == nil {
-		a._value.Balance -= amount + csnFee
-		a._value.UpdateTime = unix
+		a.value.Balance -= amount + csnFee
+		a.value.UpdateTime = unix
 		_, err = a.Save()
 		if err == nil {
 			err = tm.GetAccount().ReceiveTransfer(member.AccountBalance,
@@ -870,12 +870,12 @@ func (a *accountImpl) transferBalance(tm member.IMember, tradeNo string,
 func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 	amount, csnFee float32, remark string) error {
 	// 检测非正式会员转账
-	lv := a.mm.LevelManager().GetLevelById(a._member.GetValue().Level)
+	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {
 		return errors.New(fmt.Sprintf(
 			member.ErrTransferAccountsLevelNoPerm.Error(), lv.Name))
 	}
-	if a._value.PresentBalance < amount+csnFee {
+	if a.value.PresentBalance < amount+csnFee {
 		return member.ErrAccountNotEnoughAmount
 	}
 	unix := time.Now().Unix()
@@ -894,10 +894,10 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SavePresentLog(l)
+	_, err := a.rep.SavePresentLog(l)
 	if err == nil {
-		a._value.PresentBalance -= amount + csnFee
-		a._value.UpdateTime = unix
+		a.value.PresentBalance -= amount + csnFee
+		a.value.UpdateTime = unix
 		_, err = a.Save()
 		if err == nil {
 			err = tm.GetAccount().ReceiveTransfer(member.AccountPresent,
@@ -921,7 +921,7 @@ func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int,
 
 func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 	amount float32, remark string) error {
-	fm := a._rep.GetMember(fromMember)
+	fm := a.rep.GetMember(fromMember)
 	if fm == nil {
 		return member.ErrNoSuchMember
 	}
@@ -940,10 +940,10 @@ func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SavePresentLog(tl)
+	_, err := a.rep.SavePresentLog(tl)
 	if err == nil {
-		a._value.PresentBalance += amount
-		a._value.UpdateTime = unix
+		a.value.PresentBalance += amount
+		a.value.UpdateTime = unix
 		_, err = a.Save()
 	}
 	return err
@@ -951,7 +951,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 
 func (a *accountImpl) receiveBalanceTransfer(fromMember int, tradeNo string,
 	amount float32, remark string) error {
-	fromName := a.getMemberName(a._rep.GetMember(a.GetDomainId()))
+	fromName := a.getMemberName(a.rep.GetMember(a.GetDomainId()))
 	unix := time.Now().Unix()
 	tl := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
@@ -966,10 +966,10 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int, tradeNo string,
 		CreateTime:   unix,
 		UpdateTime:   unix,
 	}
-	_, err := a._rep.SaveBalanceLog(tl)
+	_, err := a.rep.SaveBalanceLog(tl)
 	if err == nil {
-		a._value.Balance += amount
-		a._value.UpdateTime = unix
+		a.value.Balance += amount
+		a.value.UpdateTime = unix
 		_, err = a.Save()
 	}
 	return err
@@ -980,11 +980,11 @@ func (a *accountImpl) TransferBalance(kind int, amount float32,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
-		if a._value.Balance < amount {
+		if a.value.Balance < amount {
 			return member.ErrAccountNotEnoughAmount
 		}
-		a._value.Balance -= amount
-		a._value.FlowBalance += amount
+		a.value.Balance -= amount
+		a.value.FlowBalance += amount
 		if _, err = a.Save(); err == nil {
 			a.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    member.KindBalanceTransfer,
@@ -1013,11 +1013,11 @@ func (a *accountImpl) TransferPresent(kind int, amount float32, commission float
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
-		if a._value.Balance < amount {
+		if a.value.Balance < amount {
 			return member.ErrAccountNotEnoughAmount
 		}
-		a._value.Balance -= amount
-		a._value.FlowBalance += amount
+		a.value.Balance -= amount
+		a.value.FlowBalance += amount
 		if _, err = a.Save(); err == nil {
 			a.SaveBalanceInfo(&member.BalanceInfo{
 				Kind:    member.KindBalanceTransfer,
@@ -1050,13 +1050,13 @@ func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 	finalAmount := amount - csnAmount
 
 	if kind == member.KindPresentTransferIn {
-		if a._value.FlowBalance < finalAmount {
+		if a.value.FlowBalance < finalAmount {
 			return member.ErrAccountNotEnoughAmount
 		}
 
-		a._value.FlowBalance -= amount
-		a._value.PresentBalance += finalAmount
-		a._value.TotalPresentFee += finalAmount
+		a.value.FlowBalance -= amount
+		a.value.PresentBalance += finalAmount
+		a.value.TotalPresentFee += finalAmount
 
 		if _, err = a.Save(); err == nil {
 			a.SaveBalanceInfo(&member.BalanceInfo{
@@ -1091,18 +1091,18 @@ func (a *accountImpl) TransferFlowTo(memberId int, kind int,
 	csnAmount := commission * amount
 	finalAmount := amount + csnAmount // 转账方付手续费
 
-	m := a._rep.GetMember(memberId)
+	m := a.rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
 	acc2 := m.GetAccount()
 
 	if kind == member.KindBalanceFlow {
-		if a._value.FlowBalance < finalAmount {
+		if a.value.FlowBalance < finalAmount {
 			return member.ErrAccountNotEnoughAmount
 		}
 
-		a._value.FlowBalance -= finalAmount
+		a.value.FlowBalance -= finalAmount
 		acc2.GetValue().FlowBalance += amount
 
 		if _, err = a.Save(); err == nil {
@@ -1122,7 +1122,7 @@ func (a *accountImpl) TransferFlowTo(memberId int, kind int,
 					Kind:    kind,
 					Title:   fromTitle,
 					Amount:  amount,
-					RefId:   a._value.MemberId,
+					RefId:   a.value.MemberId,
 					TradeNo: tradeNo,
 					State:   member.StatusOK,
 				})
