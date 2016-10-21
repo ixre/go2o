@@ -53,6 +53,13 @@ var (
 		TypeExchange,
 		TypeService,
 	}
+
+	ErrNoSuchOrder *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_no_such_order", "售后单不存在")
+
+	ErrAutoProcess *domain.DomainError = domain.NewDomainError(
+		"err_after_sales_auto_process", "售后单不能人工处理")
+
 	ErrAfterSalesOrderCompleted *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_completed", "售后单已完成,无法进行操作!")
 
