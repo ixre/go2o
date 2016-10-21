@@ -138,7 +138,7 @@ func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
 	switch v.State {
 	case afterSales.TypeRefund:
 		return as.Process()
-	case afterSales.TypeRefund:
+	case afterSales.TypeReturn:
 		return as.Process()
 	}
 	return afterSales.ErrAutoProcess
