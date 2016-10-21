@@ -130,7 +130,6 @@ func (a *afterSalesService) CompleteAfterSales(id int) error {
 	return as.Process()
 }
 
-
 // 售后收货
 func (a *afterSalesService) ReceiveReturnShipment(id int) error {
 	as := a._rep.GetAfterSalesOrder(id)
