@@ -124,12 +124,6 @@ func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
 	return as.Reject(remark)
 }
 
-// 退款完成
-func (a *afterSalesService) CompleteAfterSales(id int) error {
-	as := a._rep.GetAfterSalesOrder(id)
-	return as.Process()
-}
-
 // 售后收货
 func (a *afterSalesService) ReceiveReturnShipment(id int) error {
 	as := a._rep.GetAfterSalesOrder(id)
