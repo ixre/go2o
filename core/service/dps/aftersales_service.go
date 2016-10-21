@@ -121,7 +121,27 @@ func (a *afterSalesService) ConfirmAfterSales(id int) error {
 // 系统退回
 func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
 	as := a._rep.GetAfterSalesOrder(id)
+	if as == nil {
+		return afterSales.ErrNoSuchOrder
+	}
+
 	return as.Reject(remark)
+}
+
+// 处理退款/退货完成,一般是系统自动调用
+func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
+	as := a._rep.GetAfterSalesOrder(id)
+	if as == nil {
+		return afterSales.ErrNoSuchOrder
+	}
+	v := as.Value()
+	switch v.State {
+	case afterSales.TypeRefund:
+		return as.Process()
+	case afterSales.TypeRefund:
+		return as.Process()
+	}
+	return afterSales.ErrAutoProcess
 }
 
 // 售后收货
@@ -136,13 +156,13 @@ func (a *afterSalesService) ReceiveReturnShipment(id int) error {
 	return err
 }
 
-// 退货发货
+// 换货发货
 func (a *afterSalesService) ExchangeShipment(id int, spName string, spOrder string) error {
 	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
 	return ex.ExchangeShip(spName, spOrder)
 }
 
-// 退货收货
+// 换货收货
 func (a *afterSalesService) ReceiveExchange(id int) error {
 	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
 	return ex.ExchangeReceive()
