@@ -33,41 +33,41 @@ func NewPersonFinance(personId int, rep personfinance.IPersonFinanceRepository,
 }
 
 // 获取聚合根
-func (this *PersonFinance) GetAggregateRootId() int {
-	return this.personId
+func (p *PersonFinance) GetAggregateRootId() int {
+	return p.personId
 }
 
 // 获取账号
-func (this *PersonFinance) GetMemberAccount() member.IAccount {
-	return this.accRep.GetMember(this.personId).GetAccount()
+func (p *PersonFinance) GetMemberAccount() member.IAccount {
+	return p.accRep.GetMember(p.personId).GetAccount()
 }
 
 // 获取增利账户信息(类:余额宝)
-func (this *PersonFinance) GetRiseInfo() personfinance.IRiseInfo {
-	return newRiseInfo(this.GetAggregateRootId(), this.rep, this.accRep)
+func (p *PersonFinance) GetRiseInfo() personfinance.IRiseInfo {
+	return newRiseInfo(p.GetAggregateRootId(), p.rep, p.accRep)
 }
 
 // 创建增利账户信息
-func (this *PersonFinance) CreateRiseInfo() error {
-	_, err := this.GetRiseInfo().Value()
+func (p *PersonFinance) CreateRiseInfo() error {
+	_, err := p.GetRiseInfo().Value()
 	if err != nil {
 		v := &personfinance.RiseInfoValue{
-			PersonId:   this.GetAggregateRootId(),
+			PersonId:   p.GetAggregateRootId(),
 			UpdateTime: time.Now().Unix(),
 		}
-		_, err = this.rep.SaveRiseInfo(v)
+		_, err = p.rep.SaveRiseInfo(v)
 		return err
 	}
 	return errors.New("rise info exists!")
 }
 
 // 同步到会员账户理财数据
-func (this *PersonFinance) SyncToAccount() error {
+func (p *PersonFinance) SyncToAccount() error {
 	var balance float32
 	var totalAmount float32
 	var growEarnings float32      // 当前收益
 	var totalGrowEarnings float32 // 总收益
-	r := this.GetRiseInfo()
+	r := p.GetRiseInfo()
 	if r, err := r.Value(); err != nil {
 		return err
 	} else {
@@ -76,6 +76,7 @@ func (this *PersonFinance) SyncToAccount() error {
 		growEarnings += r.Rise
 		totalGrowEarnings += r.TotalRise
 	}
-	return this.accRep.SaveGrowAccount(this.GetAggregateRootId(),
-		balance, totalAmount, growEarnings, totalGrowEarnings, time.Now().Unix())
+	return p.accRep.SaveGrowAccount(p.GetAggregateRootId(),
+		balance, totalAmount, growEarnings, totalGrowEarnings,
+		time.Now().Unix())
 }
