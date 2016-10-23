@@ -147,8 +147,8 @@ func SetLastUnix(key string, unix int64) {
 func startCronTab() {
 	//商户每日报表
 	cronTab.AddFunc("0 0 0 * * *", mchDayChart)
-	//个人金融结算,每天1点更新数据
-	cronTab.AddFunc("0 0 1 * * *", personFinanceSettle)
+	//个人金融结算,每天00:20更新数据
+	cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
 	//检查订单过期,2分钟检测一次
 	cronTab.AddFunc("* 2 * * * *", detectOrderExpires)
 	cronTab.Start()
