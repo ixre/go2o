@@ -187,45 +187,41 @@ func (r *riseInfo) TransferOut(amount float32,
 
 // 结算收益(按天结息),settleUnix:结算日期的时间戳(不含时间),
 // dayRatio 为每天的收益比率
-func (r *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) (err error) {
-	if r.value == nil {
-		//判断会员是否存在
-		if _, err = r.Value(); err != nil {
-			return err
-		}
+func (r *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) error {
+	_, err := r.Value()
+	if err != nil {
+		return err
 	}
-
+	// 错误的收益率
 	if dayRatio < 0 {
 		return personfinance.ErrRatio
 	}
-
-	//dt := time.Now().Add(time.Hour * -24) //计算昨日的收益
-	//dtUnix := tool.GetStartDate(dt).Unix()
-
+	// 不是日期
 	if settleDateUnix%100 != 0 {
 		return personfinance.ErrUnixDate
 	}
-
-	settleDateStr := time.Unix(settleDateUnix, 0).Format("2006-01-02") //结算日期年月日
-
+	// 结算日期年月日
+	settleDateStr := time.Unix(settleDateUnix, 0).Format("2006-01-02")
+	// 判断是否已结算
 	if b, err := r.daySettled(settleDateUnix); b {
 		if err != nil {
 			return err
 		}
 		return personfinance.ErrHasSettled
 	}
-
+	// 开始结算
 	if r.value.SettlementAmount > 0 {
+		//按2位小数精度
 		amount := float32(format.FixedDecimal(float64(
-			r.value.SettlementAmount * dayRatio))) //按2位小数精度
+			r.value.SettlementAmount * dayRatio)))
 
 		// 有可能出现金额太小,收益为0的情况,这时应标记结算日期为最新;
 		// 但不增加收益日志
 		if amount > 0.00 {
-			if _, err = r.monthSettle(r.value, settleDateUnix); err != nil {
+			_, err = r.monthSettle(r.value, settleDateUnix)
+			if err != nil {
 				return err
 			}
-
 			r.value.Balance += amount
 			r.value.Rise += amount
 			r.value.TotalRise += amount
@@ -312,7 +308,7 @@ func (r *riseInfo) GetRiseByTime(begin, end int64) []*personfinance.RiseDayInfo 
 func (r *riseInfo) Value() (personfinance.RiseInfoValue, error) {
 	if r.value == nil {
 		if v, err := r.rep.GetRiseValueByPersonId(r.GetDomainId()); err != nil {
-			return personfinance.RiseInfoValue{}, personfinance.ErrNoSuchRiseInfo
+			return personfinance.RiseInfoValue{}, err
 		} else {
 			r.value = v
 		}
