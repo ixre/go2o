@@ -15,6 +15,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"github.com/labstack/gommon/log"
 )
 
 type afterSalesService struct {
@@ -135,7 +136,8 @@ func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
 		return afterSales.ErrNoSuchOrder
 	}
 	v := as.Value()
-	switch v.State {
+	log.Print("========================================%d",v.State)
+	switch v.Type {
 	case afterSales.TypeRefund:
 		return as.Process()
 	case afterSales.TypeReturn:
