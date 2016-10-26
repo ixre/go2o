@@ -109,7 +109,7 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	// 验证手机
 	pro.Phone = strings.TrimSpace(pro.Phone)
 	lp := len(pro.Phone)
-	if perm.NeedPhone && lp == 0 {
+	if perm.MustBindPhone && lp == 0 {
 		return 0, member.ErrMissingPhone
 	}
 	if lp > 0 {
