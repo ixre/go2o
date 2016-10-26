@@ -88,11 +88,11 @@ type IMerchantRep interface {
 	/**
 	  修改线下支付利润
 	*/
-	UpdateMechOfflineRate(id int, rate float32) error
+	UpdateMechOfflineRate(id int, rate float32,return_rate float32) error
 	//商户提现日志
 	SaveMachBlanceLog(v *BalanceLog) error
 	//个人提现日志
 	SavePresionBlanceLog(v *member.PresentLog) error
 
-	GetOfflineRate(id int) (float32, error)
+	GetOfflineRate(id int) (float32,float32, error)
 }
