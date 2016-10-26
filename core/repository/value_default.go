@@ -109,7 +109,7 @@ var (
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
 		NeedPhone:           false,
-		MustBinPhone:        false,
+		MustBindPhone:       false,
 		NeedIm:              false,
 		AnonymousRegistered: true,
 		PhoneAsUser:         false,

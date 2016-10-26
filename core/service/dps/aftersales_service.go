@@ -10,12 +10,12 @@ package dps
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
-	"github.com/labstack/gommon/log"
 )
 
 type afterSalesService struct {
@@ -136,7 +136,7 @@ func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
 		return afterSales.ErrNoSuchOrder
 	}
 	v := as.Value()
-	log.Print("========================================%d",v.State)
+	log.Print("========================================%d", v.State)
 	switch v.Type {
 	case afterSales.TypeRefund:
 		return as.Process()

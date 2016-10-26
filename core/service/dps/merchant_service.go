@@ -474,12 +474,12 @@ func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error 
 }
 
 //商户利润修改
-func (m *merchantService) UpdateMechOfflineRate(id int, rate float32,return_rate float32) error {
-	return m._mchRep.UpdateMechOfflineRate(id, rate,return_rate)
+func (m *merchantService) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+	return m._mchRep.UpdateMechOfflineRate(id, rate, return_rate)
 }
 
 //获取当前商家的利润
-func (m *merchantService) GetOfflineRate(id int) (float32,float32, error) {
+func (m *merchantService) GetOfflineRate(id int) (float32, float32, error) {
 	return m._mchRep.GetOfflineRate(id)
 }
 

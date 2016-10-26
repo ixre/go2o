@@ -176,7 +176,7 @@ type (
 		// 是否需要填写手机
 		NeedPhone bool
 		// 必须绑定手机
-		MustBinPhone bool
+		MustBindPhone bool
 		// 是否需要填写即时通讯
 		NeedIm bool
 		// 注册提示
