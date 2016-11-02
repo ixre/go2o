@@ -16,43 +16,43 @@ import (
 var _ merchant.IConfManager = new(confManagerImpl)
 
 type confManagerImpl struct {
-	_rep      merchant.IMerchantRep
-	_merchant merchant.IMerchant
-	_saleConf *merchant.SaleConf
-	_valRep   valueobject.IValueRep
+	rep      merchant.IMerchantRep
+	merchant merchant.IMerchant
+	saleConf *merchant.SaleConf
+	valRep   valueobject.IValueRep
 }
 
 func newConfigManagerImpl(m merchant.IMerchant,
 	rep merchant.IMerchantRep, valRep valueobject.IValueRep) merchant.IConfManager {
 	return &confManagerImpl{
-		_merchant: m,
-		_rep:      rep,
-		_valRep:   valRep,
+		merchant: m,
+		rep:      rep,
+		valRep:   valRep,
 	}
 }
 
-func (this *confManagerImpl) getMerchantId() int {
-	return this._merchant.GetAggregateRootId()
+func (c *confManagerImpl) getMerchantId() int {
+	return c.merchant.GetAggregateRootId()
 }
 
 // 获取销售配置
-func (this *confManagerImpl) GetSaleConf() merchant.SaleConf {
-	if this._saleConf == nil {
-		this._saleConf = this._rep.GetMerchantSaleConf(this.getMerchantId())
-		if this._saleConf != nil {
-			this.verifySaleConf(this._saleConf)
+func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
+	if c.saleConf == nil {
+		c.saleConf = c.rep.GetMerchantSaleConf(c.getMerchantId())
+		if c.saleConf != nil {
+			c.verifySaleConf(c.saleConf)
 		} else {
-			this._saleConf = &merchant.SaleConf{
-				MerchantId: this.getMerchantId(),
+			c.saleConf = &merchant.SaleConf{
+				MerchantId: c.getMerchantId(),
 			}
-			this.loadGlobSaleConf(this._saleConf)
+			c.loadGlobSaleConf(c.saleConf)
 		}
 	}
-	return *this._saleConf
+	return *c.saleConf
 }
 
-func (this *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
-	cfg := this._valRep.GetGlobMchSaleConf()
+func (c *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
+	cfg := c.valRep.GetGlobMchSaleConf()
 	// 是否启用分销
 	if cfg.FxSalesEnabled {
 		dst.FxSalesEnabled = 1
@@ -79,30 +79,30 @@ func (this *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
 }
 
 // 使用系统的配置并保存
-func (this *confManagerImpl) UseGlobSaleConf() error {
-	this.GetSaleConf()
-	this.loadGlobSaleConf(this._saleConf)
-	return this._rep.SaveMerchantSaleConf(this._saleConf)
+func (c *confManagerImpl) UseGlobSaleConf() error {
+	c.GetSaleConf()
+	c.loadGlobSaleConf(c.saleConf)
+	return c.rep.SaveMerchantSaleConf(c.saleConf)
 }
 
 // 保存销售配置
-func (this *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
+func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 	if v.CashBackPercent >= 1 || (v.CashBackTg1Percent+
 		v.CashBackTg2Percent+v.CashBackMemberPercent) > 1 {
 		return merchant.ErrSalesPercent
 	}
-	this.GetSaleConf()
-	if err := this.verifySaleConf(v); err != nil {
+	c.GetSaleConf()
+	if err := c.verifySaleConf(v); err != nil {
 		return err
 	}
-	this._saleConf = v
-	this._saleConf.MerchantId = this.getMerchantId()
-	return this._rep.SaveMerchantSaleConf(this._saleConf)
+	c.saleConf = v
+	c.saleConf.MerchantId = c.getMerchantId()
+	return c.rep.SaveMerchantSaleConf(c.saleConf)
 }
 
 // 验证销售设置
-func (this *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
-	cfg := this._valRep.GetGlobMchSaleConf()
+func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
+	cfg := c.valRep.GetGlobMchSaleConf()
 	if !cfg.FxSalesEnabled && v.FxSalesEnabled == 1 {
 		return merchant.ErrEnabledFxSales
 	}

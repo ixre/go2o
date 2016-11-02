@@ -15,49 +15,49 @@ import (
 var _ ad.IHyperLinkAd = new(HyperLinkAdImpl)
 
 type HyperLinkAdImpl struct {
-	_extValue *ad.HyperLink
+	extValue *ad.HyperLink
 	*adImpl
 }
 
 // 获取链接广告值
-func (this *HyperLinkAdImpl) getData() *ad.HyperLink {
-	if this._extValue == nil {
-		this._extValue = this._rep.GetHyperLinkData(this.GetDomainId())
+func (h *HyperLinkAdImpl) getData() *ad.HyperLink {
+	if h.extValue == nil {
+		h.extValue = h._rep.GetHyperLinkData(h.GetDomainId())
 
 		//如果不存在,则创建一个新的对象
-		if this._extValue == nil {
-			this._extValue = &ad.HyperLink{
-				AdId: this.GetDomainId(),
+		if h.extValue == nil {
+			h.extValue = &ad.HyperLink{
+				AdId: h.GetDomainId(),
 			}
 		}
 	}
-	return this._extValue
+	return h.extValue
 }
 
-func (this *HyperLinkAdImpl) SetData(d *ad.HyperLink) error {
-	v := this.getData()
-	v.AdId = this.adImpl.GetDomainId()
+func (h *HyperLinkAdImpl) SetData(d *ad.HyperLink) error {
+	v := h.getData()
+	v.AdId = h.adImpl.GetDomainId()
 	v.LinkUrl = d.LinkUrl
 	v.Title = d.Title
 	return nil
 }
 
 // 保存广告
-func (this *HyperLinkAdImpl) Save() (int, error) {
-	id, err := this.adImpl.Save()
+func (h *HyperLinkAdImpl) Save() (int, error) {
+	id, err := h.adImpl.Save()
 	if err == nil {
-		v := this.getData()
+		v := h.getData()
 		v.AdId = id
-		_, err = this._rep.SaveHyperLinkData(v)
+		_, err = h._rep.SaveHyperLinkData(v)
 	}
 	return id, err
 }
 
 // 转换为数据传输对象
-func (this *HyperLinkAdImpl) Dto() *ad.AdDto {
+func (h *HyperLinkAdImpl) Dto() *ad.AdDto {
 	return &ad.AdDto{
-		Id:   this.adImpl.GetDomainId(),
-		Type: this.adImpl.Type(),
-		Data: this.getData(),
+		Id:   h.adImpl.GetDomainId(),
+		Type: h.adImpl.Type(),
+		Data: h.getData(),
 	}
 }

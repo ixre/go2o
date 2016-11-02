@@ -93,23 +93,23 @@ func CompareMemberApiToken(sto storage.Interface, memberId int, token string) bo
 }
 
 // 会员Http请求会话链接
-func MemberHttpSessionConnect(ctx *echox.Context, call func(memberId int)) (ok bool, memberId int) {
+func MemberHttpSessionConnect(c *echox.Context, call func(memberId int)) (ok bool, memberId int) {
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
-	form := ctx.HttpRequest().URL.Query()
+	form := c.Request().URL.Query()
 	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
 		var token string = form.Get("token")
-		if CompareMemberApiToken(ctx.App.Storage(), memberId, token) {
+		if CompareMemberApiToken(c.App.Storage(), memberId, token) {
 			if call != nil {
 				call(memberId)
 			}
-			ctx.Session.Set("client_member_id", memberId)
-			ctx.Session.Save()
+			c.Session.Set("client_member_id", memberId)
+			c.Session.Save()
 			return true, memberId
 		}
 	} else {
 		// 如果没有传递参数从会话中获取
-		if v := ctx.Session.Get("client_member_id"); v != nil {
+		if v := c.Session.Get("client_member_id"); v != nil {
 			memberId = v.(int)
 			return true, memberId
 		}
@@ -123,11 +123,11 @@ func MemberHttpSessionConnect(ctx *echox.Context, call func(memberId int)) (ok b
 }
 
 // 会员Http请求会话链接
-func MemberHttpSessionDisconnect(ctx *echox.Context) bool {
-	form := ctx.HttpRequest().URL.Query()
+func MemberHttpSessionDisconnect(c *echox.Context) bool {
+	form := c.Request().URL.Query()
 	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
 		var token string = form.Get("token")
-		return RemoveMemberApiToken(ctx.App.Storage(), memberId, token)
+		return RemoveMemberApiToken(c.App.Storage(), memberId, token)
 	}
 	return false
 }

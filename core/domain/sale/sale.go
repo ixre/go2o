@@ -23,20 +23,20 @@ var _ sale.ISale = new(saleImpl)
 const MAX_CACHE_SIZE int = 5000
 
 type saleImpl struct {
-	_mchId        int
-	_saleRep      sale.ISaleRep
-	_labelRep     sale.ISaleLabelRep
-	_cateRep      sale.ICategoryRep
-	_goodsRep     goods.IGoodsRep
-	_valRep       valueobject.IValueRep
-	_expressRep   express.IExpressRep
-	_promRep      promotion.IPromotionRep
-	_proCache     map[int]sale.IItem
-	_cateManager  sale.ICategoryManager
-	_labelManager sale.ILabelManager
-	_itemManager  sale.IItemManager
-	_itemRep      item.IItemRep
-	_goodsManager sale.IGoodsManager
+	mchId        int
+	saleRep      sale.ISaleRep
+	labelRep     sale.ISaleLabelRep
+	cateRep      sale.ICategoryRep
+	goodsRep     goods.IGoodsRep
+	valRep       valueobject.IValueRep
+	expressRep   express.IExpressRep
+	promRep      promotion.IPromotionRep
+	proCache     map[int]sale.IItem
+	cateManager  sale.ICategoryManager
+	labelManager sale.ILabelManager
+	itemManager  sale.IItemManager
+	itemRep      item.IItemRep
+	goodsManager sale.IGoodsManager
 }
 
 func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
@@ -44,70 +44,70 @@ func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep
 	tagRep sale.ISaleLabelRep, expressRep express.IExpressRep,
 	promRep promotion.IPromotionRep) sale.ISale {
 	return (&saleImpl{
-		_mchId:      merchantId,
-		_cateRep:    cateRep,
-		_saleRep:    saleRep,
-		_labelRep:   tagRep,
-		_itemRep:    itemRep,
-		_goodsRep:   goodsRep,
-		_expressRep: expressRep,
-		_promRep:    promRep,
-		_valRep:     valRep,
+		mchId:      merchantId,
+		cateRep:    cateRep,
+		saleRep:    saleRep,
+		labelRep:   tagRep,
+		itemRep:    itemRep,
+		goodsRep:   goodsRep,
+		expressRep: expressRep,
+		promRep:    promRep,
+		valRep:     valRep,
 	}).init()
 }
 
 func (s *saleImpl) init() sale.ISale {
-	s._proCache = make(map[int]sale.IItem)
+	s.proCache = make(map[int]sale.IItem)
 	return s
 }
 
 // 分类服务
 func (s *saleImpl) CategoryManager() sale.ICategoryManager {
-	if s._cateManager == nil {
-		s._cateManager = NewCategoryManager(
-			s.GetAggregateRootId(), s._cateRep, s._valRep)
+	if s.cateManager == nil {
+		s.cateManager = NewCategoryManager(
+			s.GetAggregateRootId(), s.cateRep, s.valRep)
 	}
-	return s._cateManager
+	return s.cateManager
 }
 
 // 标签管理器
 func (s *saleImpl) LabelManager() sale.ILabelManager {
-	if s._labelManager == nil {
-		s._labelManager = NewLabelManager(
-			s.GetAggregateRootId(), s._labelRep, s._valRep)
+	if s.labelManager == nil {
+		s.labelManager = NewLabelManager(
+			s.GetAggregateRootId(), s.labelRep, s.valRep)
 	}
-	return s._labelManager
+	return s.labelManager
 }
 
 // 货品服务
 func (s *saleImpl) ItemManager() sale.IItemManager {
-	if s._itemManager == nil {
-		s._itemManager = NewItemManager(
-			s.GetAggregateRootId(), s, s._itemRep,
-			s._expressRep, s._valRep)
+	if s.itemManager == nil {
+		s.itemManager = NewItemManager(
+			s.GetAggregateRootId(), s, s.itemRep,
+			s.expressRep, s.valRep)
 	}
-	return s._itemManager
+	return s.itemManager
 }
 
 // 商品服务
 func (s *saleImpl) GoodsManager() sale.IGoodsManager {
-	if s._goodsManager == nil {
-		s._goodsManager = NewGoodsManager(
-			s.GetAggregateRootId(), s, s._valRep)
+	if s.goodsManager == nil {
+		s.goodsManager = NewGoodsManager(
+			s.GetAggregateRootId(), s, s.valRep)
 	}
-	return s._goodsManager
+	return s.goodsManager
 }
 
 func (s *saleImpl) clearCache(goodsId int) {
-	delete(s._proCache, goodsId)
+	delete(s.proCache, goodsId)
 }
 
 func (s *saleImpl) chkCache() {
-	if len(s._proCache) >= MAX_CACHE_SIZE {
-		s._proCache = make(map[int]sale.IItem)
+	if len(s.proCache) >= MAX_CACHE_SIZE {
+		s.proCache = make(map[int]sale.IItem)
 	}
 }
 
 func (s *saleImpl) GetAggregateRootId() int {
-	return s._mchId
+	return s.mchId
 }

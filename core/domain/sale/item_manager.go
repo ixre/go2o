@@ -28,17 +28,17 @@ import (
 var _ sale.IItem = new(itemImpl)
 
 type itemImpl struct {
-	_manager      *itemManagerImpl
-	_value        *item.Item
-	_saleRep      sale.ISaleRep
-	_itemRep      item.IItemRep
-	_saleLabelRep sale.ISaleLabelRep
-	_goodsRep     goods.IGoodsRep
-	_expressRep   express.IExpressRep
-	_promRep      promotion.IPromotionRep
-	_sale         *saleImpl
-	_saleLabels   []*sale.Label
-	_valueRep     valueobject.IValueRep
+	manager      *itemManagerImpl
+	value        *item.Item
+	saleRep      sale.ISaleRep
+	itemRep      item.IItemRep
+	saleLabelRep sale.ISaleLabelRep
+	goodsRep     goods.IGoodsRep
+	expressRep   express.IExpressRep
+	promRep      promotion.IPromotionRep
+	saleImpl     *saleImpl
+	saleLabels   []*sale.Label
+	valueRep     valueobject.IValueRep
 }
 
 func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
@@ -47,30 +47,30 @@ func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
 	valRep valueobject.IValueRep, expressRep express.IExpressRep,
 	promRep promotion.IPromotionRep) sale.IItem {
 	return &itemImpl{
-		_manager:      mgr,
-		_value:        v,
-		_itemRep:      itemRep,
-		_saleRep:      saleRep,
-		_saleLabelRep: saleLabelRep,
-		_sale:         sale,
-		_expressRep:   expressRep,
-		_goodsRep:     goodsRep,
-		_valueRep:     valRep,
+		manager:      mgr,
+		value:        v,
+		itemRep:      itemRep,
+		saleRep:      saleRep,
+		saleLabelRep: saleLabelRep,
+		saleImpl:     sale,
+		expressRep:   expressRep,
+		goodsRep:     goodsRep,
+		valueRep:     valRep,
 	}
 }
 
 func (i *itemImpl) GetDomainId() int {
-	return i._value.Id
+	return i.value.Id
 }
 
 func (i *itemImpl) GetValue() item.Item {
-	return *i._value
+	return *i.value
 }
 
 func (i *itemImpl) checkValue(v *item.Item) error {
-	registry := i._valueRep.GetRegistry()
+	registry := i.valueRep.GetRegistry()
 	// 检测供应商
-	if v.VendorId <= 0 || v.VendorId != i._value.VendorId {
+	if v.VendorId <= 0 || v.VendorId != i.value.VendorId {
 		return item.ErrVendor
 	}
 	// 检测标题长度
@@ -86,7 +86,7 @@ func (i *itemImpl) checkValue(v *item.Item) error {
 	if v.ExpressTplId <= 0 {
 		return shipment.ErrNotSetExpressTemplate
 	}
-	tpl := i._expressRep.GetUserExpress(v.VendorId).GetTemplate(v.ExpressTplId)
+	tpl := i.expressRep.GetUserExpress(v.VendorId).GetTemplate(v.ExpressTplId)
 	if tpl == nil {
 		return express.ErrNoSuchTemplate
 	}
@@ -101,36 +101,36 @@ func (i *itemImpl) checkValue(v *item.Item) error {
 // 设置值
 func (i *itemImpl) SetValue(v *item.Item) error {
 	if i.GetDomainId() <= 0 {
-		i._value.ShelveState = item.ShelvesDown
-		i._value.ReviewState = enum.ReviewAwaiting
+		i.value.ShelveState = item.ShelvesDown
+		i.value.ReviewState = enum.ReviewAwaiting
 	}
-	if i._value.ShelveState == item.ShelvesIncorrect {
+	if i.value.ShelveState == item.ShelvesIncorrect {
 		return item.ErrItemIncorrect
 	}
 	if err := i.checkValue(v); err != nil {
 		return err
 	}
-	if v.Id == i._value.Id {
+	if v.Id == i.value.Id {
 		//修改图片或标题后，要重新审核
-		if i._value.Image != v.Image || i._value.Name != v.Name {
+		if i.value.Image != v.Image || i.value.Name != v.Name {
 			i.resetReview()
 		}
-		i._value.SmallTitle = v.SmallTitle
-		i._value.Name = v.Name
+		i.value.SmallTitle = v.SmallTitle
+		i.value.Name = v.Name
 		if v.GoodsNo != "" {
-			i._value.GoodsNo = v.GoodsNo
+			i.value.GoodsNo = v.GoodsNo
 		}
-		i._value.Image = v.Image
-		i._value.Cost = v.Cost
-		i._value.SalePrice = v.SalePrice
-		i._value.Price = v.Price
-		i._value.Weight = v.Weight
-		i._value.ExpressTplId = v.ExpressTplId
+		i.value.Image = v.Image
+		i.value.Cost = v.Cost
+		i.value.SalePrice = v.SalePrice
+		i.value.Price = v.Price
+		i.value.Weight = v.Weight
+		i.value.ExpressTplId = v.ExpressTplId
 		if v.CategoryId > 0 {
-			i._value.CategoryId = v.CategoryId
+			i.value.CategoryId = v.CategoryId
 		}
 	}
-	i._value.UpdateTime = time.Now().Unix()
+	i.value.UpdateTime = time.Now().Unix()
 	return nil
 }
 
@@ -139,8 +139,8 @@ func (i *itemImpl) SetDescribe(describe string) error {
 	if len(describe) < 20 {
 		return item.ErrDescribeLength
 	}
-	if i._value.Description != describe {
-		i._value.Description = describe
+	if i.value.Description != describe {
+		i.value.Description = describe
 		i.resetReview()
 		_, err := i.Save()
 		return err
@@ -150,36 +150,36 @@ func (i *itemImpl) SetDescribe(describe string) error {
 
 // 是否上架
 func (i *itemImpl) IsOnShelves() bool {
-	return i._value.ShelveState == item.ShelvesOn
+	return i.value.ShelveState == item.ShelvesOn
 }
 
 // 获取商品的销售标签
 func (i *itemImpl) GetSaleLabels() []*sale.Label {
-	if i._saleLabels == nil {
-		i._saleLabels = i._saleLabelRep.GetItemSaleLabels(i.GetDomainId())
+	if i.saleLabels == nil {
+		i.saleLabels = i.saleLabelRep.GetItemSaleLabels(i.GetDomainId())
 	}
-	return i._saleLabels
+	return i.saleLabels
 }
 
 // 保存销售标签
 func (i *itemImpl) SaveSaleLabels(tagIds []int) error {
-	err := i._saleLabelRep.CleanItemSaleLabels(i.GetDomainId())
+	err := i.saleLabelRep.CleanItemSaleLabels(i.GetDomainId())
 	if err == nil {
-		err = i._saleLabelRep.SaveItemSaleLabels(i.GetDomainId(), tagIds)
-		i._saleLabels = nil
+		err = i.saleLabelRep.SaveItemSaleLabels(i.GetDomainId(), tagIds)
+		i.saleLabels = nil
 	}
 	return err
 }
 
 // 重置审核状态
 func (i *itemImpl) resetReview() {
-	i._value.ReviewState = enum.ReviewAwaiting
+	i.value.ReviewState = enum.ReviewAwaiting
 }
 
 // 判断价格是否正确
 func (i *itemImpl) checkPrice(v *item.Item) error {
 	rate := (v.SalePrice - v.Cost) / v.SalePrice
-	conf := i._valueRep.GetRegistry()
+	conf := i.valueRep.GetRegistry()
 	minRate := conf.GoodsMinProfitRate
 	// 如果未设定最低利润率，则可以与供货价一致
 	if minRate != 0 && rate < minRate {
@@ -194,8 +194,8 @@ func (i *itemImpl) SetShelve(state int, remark string) error {
 	if state == item.ShelvesIncorrect && len(remark) == 0 {
 		return item.ErrNilRejectRemark
 	}
-	i._value.ShelveState = state
-	i._value.Remark = remark
+	i.value.ShelveState = state
+	i.value.Remark = remark
 	_, err := i.Save()
 	return err
 }
@@ -203,46 +203,46 @@ func (i *itemImpl) SetShelve(state int, remark string) error {
 // 审核
 func (i *itemImpl) Review(pass bool, remark string) error {
 	if pass {
-		i._value.ReviewState = enum.ReviewPass
+		i.value.ReviewState = enum.ReviewPass
 
 	} else {
 		remark = strings.TrimSpace(remark)
 		if remark == "" {
 			return sale.ErrEmptyReviewRemark
 		}
-		i._value.ReviewState = enum.ReviewReject
+		i.value.ReviewState = enum.ReviewReject
 	}
-	i._value.Remark = remark
+	i.value.Remark = remark
 	_, err := i.Save()
 	return err
 }
 
 // 标记为违规
 func (i *itemImpl) Incorrect(remark string) error {
-	i._value.ShelveState = item.ShelvesIncorrect
-	i._value.Remark = remark
+	i.value.ShelveState = item.ShelvesIncorrect
+	i.value.Remark = remark
 	_, err := i.Save()
 	return err
 }
 
 // 保存
 func (i *itemImpl) Save() (int, error) {
-	i._sale.clearCache(i._value.Id)
+	i.saleImpl.clearCache(i.value.Id)
 	unix := time.Now().Unix()
-	i._value.UpdateTime = unix
+	i.value.UpdateTime = unix
 	if i.GetDomainId() <= 0 {
-		i._value.CreateTime = unix
+		i.value.CreateTime = unix
 	}
-	if i._value.GoodsNo == "" {
-		cs := strconv.Itoa(i._value.CategoryId)
+	if i.value.GoodsNo == "" {
+		cs := strconv.Itoa(i.value.CategoryId)
 		us := strconv.Itoa(int(unix))
 		l := len(cs)
-		i._value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
+		i.value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
-	id, err := i._itemRep.SaveValueItem(i._value)
+	id, err := i.itemRep.SaveValueItem(i.value)
 	if err == nil {
-		i._value.Id = id
+		i.value.Id = id
 
 		//todo: 保存商品
 		i.saveGoods()
@@ -255,7 +255,7 @@ func (i *itemImpl) Save() (int, error) {
 
 //todo: 过渡方法,应有SKU,不根据Item生成Goods
 func (i *itemImpl) saveGoods() {
-	val := i._goodsRep.GetValueGoods(i.GetDomainId(), 0)
+	val := i.goodsRep.GetValueGoods(i.GetDomainId(), 0)
 	if val == nil {
 		val = &goods.ValueGoods{
 			Id:            0,
@@ -267,8 +267,8 @@ func (i *itemImpl) saveGoods() {
 			SaleNum:       100,
 		}
 	}
-	goods := NewSaleGoods(nil, i._sale, i._itemRep, i, val,
-		i._saleRep, i._goodsRep, i._promRep)
+	goods := NewSaleGoods(nil, i.saleImpl, i.itemRep, i, val,
+		i.saleRep, i.goodsRep, i.promRep)
 	goods.Save()
 }
 
@@ -365,9 +365,9 @@ func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 		v.UpdateTime = v.CreateTime
 	} //todo: 判断category
 	return newItemImpl(i, i._sale, v, i._itemRep,
-		i._sale._saleRep, i._sale._labelRep,
-		i._sale._goodsRep, i._valRep, i._expressRep,
-		i._sale._promRep)
+		i._sale.saleRep, i._sale.labelRep,
+		i._sale.goodsRep, i._valRep, i._expressRep,
+		i._sale.promRep)
 }
 
 // 删除货品

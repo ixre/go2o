@@ -17,43 +17,44 @@ import (
 var _ notify.INotifyManager = new(notifyManagerImpl)
 
 type notifyManagerImpl struct {
-	_rep      notify.INotifyRep
-	_valueRep valueobject.IValueRep
+	rep      notify.INotifyRep
+	valueRep valueobject.IValueRep
 }
 
-func NewNotifyManager(rep notify.INotifyRep, valueRep valueobject.IValueRep) notify.INotifyManager {
+func NewNotifyManager(rep notify.INotifyRep,
+	valueRep valueobject.IValueRep) notify.INotifyManager {
 	return &notifyManagerImpl{
-		_rep:      rep,
-		_valueRep: valueRep,
+		rep:      rep,
+		valueRep: valueRep,
 	}
 }
 
 // 获取所有的通知项
 func (n *notifyManagerImpl) GetAllNotifyItem() []notify.NotifyItem {
-	return n._rep.GetAllNotifyItem()
+	return n.rep.GetAllNotifyItem()
 }
 
 // 获取通知项配置
 func (n *notifyManagerImpl) GetNotifyItem(key string) notify.NotifyItem {
-	return *n._rep.GetNotifyItem(key)
+	return *n.rep.GetNotifyItem(key)
 }
 
 // 保存通知项设置
 func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
-	v := n._rep.GetNotifyItem(item.Key)
+	v := n.rep.GetNotifyItem(item.Key)
 	if v == nil {
 		return notify.ErrNoSuchNotifyItem
 	}
 	v.Content = item.Content
 	v.TplId = item.TplId
 	v.NotifyBy = item.NotifyBy
-	return n._rep.SaveNotifyItem(v)
+	return n.rep.SaveNotifyItem(v)
 }
 
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string,
 	msg notify.PhoneMessage, data map[string]interface{}) error {
-	i, api := n._valueRep.GetDefaultSmsApiPerm()
+	i, api := n.valueRep.GetDefaultSmsApiPerm()
 	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone,
 		api.ApiUrl, api.Encoding, api.SuccessChar, string(msg), data)
 }

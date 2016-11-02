@@ -456,3 +456,145 @@ func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
 	}
 	return merchant.ErrNoSuchMerchant
 }
+
+
+// 提到会员账户
+func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error {
+	mch := m._mchRep.GetMerchant(mchId)
+	if mch != nil {
+		acc := mch.Account()
+		return acc.TransferToMember1(amount)
+	}
+	return merchant.ErrNoSuchMerchant
+}
+//
+////商户利润修改
+//func (m *merchantService) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+//	return m._mchRep.UpdateMechOfflineRate(id, rate, return_rate)
+//}
+//
+////获取当前商家的利润
+//func (m *merchantService) GetOfflineRate(id int) (float32, float32, error) {
+//	return m._mchRep.GetOfflineRate(id)
+//}
+//
+////修改当前账户信息
+//func (m *merchantService) TakeOutBankCard(mchId int, amount float32) error {
+//	account := m.GetAccount(mchId)
+//	account.Balance = account.Balance - amount
+//	err := m._mchRep.UpdateAccount(account)
+//	return err
+//}
+//
+////添加商户提取日志
+//func (m *merchantService) TakeOutBankCardLog(memberId int, mchId int, amount float32) {
+//	o := &merchant.BalanceLog{
+//		MchId:      mchId,
+//		Kind:       100,
+//		Title:      "商户提现",
+//		OuterNo:    "00002",
+//		Amount:     amount * (-1),
+//		CsnAmount:  0,
+//		State:      1,
+//		CreateTime: time.Now().Unix(),
+//		UpdateTime: time.Now().Unix(),
+//	}
+//	m._mchRep.SaveMachBlanceLog(o)
+//
+//	v := &member.PresentLog{
+//		MemberId:     memberId,
+//		BusinessKind: merchant.KindＭachTakeOutToBankCard,
+//		OuterNo:      "00000000",
+//		Title:        "商户提现到银行卡",
+//		Amount:       amount * (-1),
+//		CsnFee:       0,
+//		State:        1,
+//		CreateTime:   time.Now().Unix(),
+//		UpdateTime:   time.Now().Unix(),
+//	}
+//	m._mchRep.SavePresionBlanceLog(v)
+//}
+//
+//func (m *merchantService) UpdateMachAccount(account *merchant.Account) {
+//	m._mchRep.UpdateAccount(account)
+//}
+//func (m *merchantService) SaveMachBlanceLog(v *merchant.BalanceLog) {
+//	m._mchRep.SaveMachBlanceLog(v)
+//}
+//
+//// 充值到商户账户
+//func (m *merchantService) ChargeMachAccountByKind(memberId, machId int,
+//	kind int, title string, outerNo string, amount float32, relateUser int) error {
+//	if amount <= 0 || math.IsNaN(float64(amount)) {
+//		return member.ErrIncorrectAmount
+//	}
+//	unix := time.Now().Unix()
+//	v := &member.PresentLog{
+//		MemberId:     memberId,
+//		BusinessKind: kind,
+//		Title:        title,
+//		OuterNo:      outerNo,
+//		Amount:       amount,
+//		State:        1,
+//		RelateUser:   relateUser,
+//		CreateTime:   unix,
+//		UpdateTime:   unix,
+//	}
+//
+//	o := &merchant.BalanceLog{
+//		MchId:      machId,
+//		Kind:       kind,
+//		Title:      title,
+//		OuterNo:    "00002",
+//		Amount:     amount,
+//		CsnAmount:  0,
+//		State:      1,
+//		CreateTime: time.Now().Unix(),
+//		UpdateTime: time.Now().Unix(),
+//	}
+//	m._mchRep.SaveMachBlanceLog(o)
+//	_, err := m._memberRep.SavePresentLog(v)
+//	if err == nil {
+//		machAcc := m.GetAccount(machId)
+//		machAcc.Balance = machAcc.Balance + amount
+//		machAcc.UpdateTime = unix
+//		m.UpdateMachAccount(machAcc)
+//	}
+//	return err
+//}
+//
+//// 确认提现
+//func (a *merchantService) ConfirmApplyCash(memberId int, infoId int,
+//	pass bool, remark string) error {
+//	m := a._memberRep.GetMember(memberId)
+//	if m == nil {
+//		return member.ErrNoSuchMember
+//	}
+//	v := a._memberRep.GetPresentLog(infoId)
+//	if v.BusinessKind != merchant.KindＭachTakeOutToBankCard {
+//		return errors.New("非商户提现")
+//	}
+//	if pass {
+//		v.State = enum.ReviewPass
+//	} else {
+//		if v.State == enum.ReviewReject {
+//			return dm.ErrState
+//		}
+//		v.Remark += "失败:" + remark
+//		v.State = enum.ReviewReject
+//		mach := a.GetMerchantByMemberId(v.MemberId)
+//		err := a.ChargeMachAccountByKind(memberId, mach.Id,
+//			merchant.KindＭachTakOutRefund,
+//			"商户提现退回", v.OuterNo, (-v.Amount),
+//			member.DefaultRelateUser)
+//		if err != nil {
+//			return err
+//		}
+//		v.UpdateTime = time.Now().Unix()
+//		_, err1 := a._memberRep.SavePresentLog(v)
+//		return err1
+//	}
+//
+//	return nil
+//}
+//>>>>>>> echo3

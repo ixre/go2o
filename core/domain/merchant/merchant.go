@@ -34,25 +34,26 @@ import (
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
 
 type merchantManagerImpl struct {
-	_rep   merchant.IMerchantRep
+	rep    merchant.IMerchantRep
 	valRep valueobject.IValueRep
 }
 
-func NewMerchantManager(rep merchant.IMerchantRep, valRep valueobject.IValueRep) merchant.IMerchantManager {
+func NewMerchantManager(rep merchant.IMerchantRep,
+valRep valueobject.IValueRep) merchant.IMerchantManager {
 	return &merchantManagerImpl{
-		_rep:   rep,
+		rep:    rep,
 		valRep: valRep,
 	}
 }
 
 // 创建会员申请商户密钥
 func (m *merchantManagerImpl) CreateSignUpToken(memberId int) string {
-	return m._rep.CreateSignUpToken(memberId)
+	return m.rep.CreateSignUpToken(memberId)
 }
 
 // 根据商户申请密钥获取会员编号
 func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int {
-	return m._rep.GetMemberFromSignUpToken(token)
+	return m.rep.GetMemberFromSignUpToken(token)
 }
 
 // 删除会员的商户申请资料
@@ -168,7 +169,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		// 最后登录时间
 		LastLoginTime: 0,
 	}
-	mch := m._rep.CreateMerchant(mchVal)
+	mch := m.rep.CreateMerchant(mchVal)
 
 	err := mch.SetValue(mchVal)
 	if err != nil {
@@ -228,7 +229,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.Mc
 func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
-		return m._rep.CreateMerchant(&v)
+		return m.rep.CreateMerchant(&v)
 	}
 	return nil
 }
@@ -671,6 +672,52 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 			conf := a.mchImpl._valRep.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
 				csn := amount * conf.TakeOutCsn
+				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
+					csn, member.DefaultRelateUser)
+			}
+		}
+	}
+
+	return err
+}
+
+func (a *accountImpl) TransferToMember1(amount float32) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return merchant.ErrAmount
+	}
+	if a.value.Balance < amount || a.value.Balance <= 0 {
+		return merchant.ErrNoMoreAmount
+	}
+	if a.mchImpl._value.MemberId <= 0 {
+		return member.ErrNoSuchMember
+	}
+	m := a.memberRep.GetMember(a.mchImpl._value.MemberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	l := a.createBalanceLog(merchant.KindAccountTransferToMember,
+		"提取到会员"+variable.AliasPresentAccount, "", -amount, 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		err = m.GetAccount().ChargeForPresent(variable.AliasMerchantBalanceAccount+
+			"提现", "", amount, member.DefaultRelateUser)
+		if err != nil {
+			return err
+		}
+		a.value.Balance -= amount
+		a.value.TakeAmount += amount
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+		if err != nil {
+			return err
+		}
+
+		// 判断是否提现免费,如果免费,则赠送手续费
+		registry := a.mchImpl._valRep.GetRegistry()
+		if registry.MerchantTakeOutCashFree {
+			conf := a.mchImpl._valRep.GetGlobNumberConf()
+			if conf.TakeOutCsn > 0 {
+				csn := float32(0)
 				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)
 			}

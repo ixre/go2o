@@ -14,9 +14,6 @@ var (
 	ErrState *domain.DomainError = domain.NewDomainError(
 		"err_state", "state error")
 
-	ErrReviewed *domain.DomainError = domain.NewDomainError(
-		"err_reviewed", "已经审核通过")
-
 	ErrPwdCannotSame *domain.DomainError = domain.NewDomainError(
 		"Err_Pwd_Can_not_Same", "新密码不能与旧密码相同")
 

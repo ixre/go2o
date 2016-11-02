@@ -17,7 +17,7 @@ var _ merchant.IApiManager = new(apiManagerImpl)
 
 type apiManagerImpl struct {
 	*merchantImpl
-	_apiInfo *merchant.ApiInfo
+	apiInfo *merchant.ApiInfo
 }
 
 func newApiManagerImpl(m *merchantImpl) merchant.IApiManager {
@@ -27,47 +27,47 @@ func newApiManagerImpl(m *merchantImpl) merchant.IApiManager {
 }
 
 // 获取API信息
-func (this *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
-	if this._apiInfo == nil {
-		this._apiInfo = this._rep.GetApiInfo(this.GetAggregateRootId())
+func (a *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
+	if a.apiInfo == nil {
+		a.apiInfo = a._rep.GetApiInfo(a.GetAggregateRootId())
 		//没有API则生成
-		if this._apiInfo == nil {
-			mchId := this.GetAggregateRootId()
-			this._apiInfo = &merchant.ApiInfo{
+		if a.apiInfo == nil {
+			mchId := a.GetAggregateRootId()
+			a.apiInfo = &merchant.ApiInfo{
 				MerchantId: mchId,
 				ApiId:      domain.NewApiId(mchId),
 				ApiSecret:  domain.NewSecret(mchId),
 				WhiteList:  "*",
 				Enabled:    0,
 			}
-			this.SaveApiInfo(this._apiInfo)
+			a.SaveApiInfo(a.apiInfo)
 		}
 	}
-	return this._apiInfo
+	return a.apiInfo
 }
 
 // 获取API信息
-func (this *apiManagerImpl) GetApiInfo() merchant.ApiInfo {
-	return *this.getApiInfo()
+func (a *apiManagerImpl) GetApiInfo() merchant.ApiInfo {
+	return *a.getApiInfo()
 }
 
 // 保存API信息
-func (this *apiManagerImpl) SaveApiInfo(v *merchant.ApiInfo) error {
-	this._apiInfo = v
-	this._apiInfo.MerchantId = this.GetAggregateRootId()
-	return this._rep.SaveApiInfo(this._apiInfo)
+func (a *apiManagerImpl) SaveApiInfo(v *merchant.ApiInfo) error {
+	a.apiInfo = v
+	a.apiInfo.MerchantId = a.GetAggregateRootId()
+	return a._rep.SaveApiInfo(a.apiInfo)
 }
 
 // 启用API权限
-func (this *apiManagerImpl) EnableApiPerm() error {
-	v := this.getApiInfo()
+func (a *apiManagerImpl) EnableApiPerm() error {
+	v := a.getApiInfo()
 	v.Enabled = 1
-	return this.SaveApiInfo(v)
+	return a.SaveApiInfo(v)
 }
 
 // 禁用API权限
-func (this *apiManagerImpl) DisableApiPerm() error {
-	v := this.getApiInfo()
+func (a *apiManagerImpl) DisableApiPerm() error {
+	v := a.getApiInfo()
 	v.Enabled = 0
-	return this.SaveApiInfo(v)
+	return a.SaveApiInfo(v)
 }

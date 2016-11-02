@@ -33,6 +33,16 @@ func (s *platformService) SaveRegistry(v *valueobject.Registry) error {
 	return s._rep.SaveRegistry(v)
 }
 
+// 获取模板配置
+func (s *platformService) GetTemplateConf() valueobject.TemplateConf {
+	return s._rep.GetTemplateConf()
+}
+
+// 保存模板配置
+func (s *platformService) SaveTemplateConf(v *valueobject.TemplateConf) error {
+	return s._rep.SaveTemplateConf(v)
+}
+
 // 获取移动应用设置
 func (p *platformService) GetMoAppConf() valueobject.MoAppConf {
 	return p._rep.GetMoAppConf()
