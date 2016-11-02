@@ -20,31 +20,31 @@ var _ ad.IAdGroup = new(AdGroupImpl)
 var _ ad.IAdManager = new(adManagerImpl)
 
 type adManagerImpl struct {
-	_rep       ad.IAdRep
-	_defaultAd ad.IUserAd
-	_groups    []ad.IAdGroup
-	_mux       sync.Mutex
-	_cache     map[string]ad.IAd
+	rep       ad.IAdRep
+	defaultAd ad.IUserAd
+	groups    []ad.IAdGroup
+	mux       sync.Mutex
+	cache     map[string]ad.IAd
 }
 
 func NewAdManager(rep ad.IAdRep) ad.IAdManager {
 	a := &adManagerImpl{
-		_rep: rep,
+		rep: rep,
 	}
-	a._defaultAd = newUserAd(a, rep, 0)
+	a.defaultAd = newUserAd(a, rep, 0)
 	return a
 }
 
 // 获取广告分组
 func (a *adManagerImpl) GetAdGroups() []ad.IAdGroup {
-	if a._groups == nil {
-		list := a._rep.GetAdGroups()
-		a._groups = make([]ad.IAdGroup, len(list))
+	if a.groups == nil {
+		list := a.rep.GetAdGroups()
+		a.groups = make([]ad.IAdGroup, len(list))
 		for i, v := range list {
-			a._groups[i] = newAdGroup(a, a._rep, v)
+			a.groups[i] = newAdGroup(a, a.rep, v)
 		}
 	}
-	return a._groups
+	return a.groups
 }
 
 // 获取单个广告分组
@@ -67,13 +67,13 @@ func (a *adManagerImpl) DelAdGroup(id int) error {
 	if len(g.GetPositions()) > 0 {
 		return ad.ErrNotEmptyGroup
 	}
-	a._groups = nil
-	return a._rep.DelAdGroup(id)
+	a.groups = nil
+	return a.rep.DelAdGroup(id)
 }
 
 // 创建广告组
 func (a *adManagerImpl) CreateAdGroup(name string) ad.IAdGroup {
-	return newAdGroup(a, a._rep, &ad.AdGroup{
+	return newAdGroup(a, a.rep, &ad.AdGroup{
 		Id:      0,
 		Name:    name,
 		Opened:  1,
@@ -92,36 +92,36 @@ func (a *adManagerImpl) GetAdPositionById(id int) *ad.AdPosition {
 
 // 根据KEY获取广告位
 func (a *adManagerImpl) GetAdPositionByKey(key string) *ad.AdPosition {
-	return a._rep.GetAdPositionByKey(key)
+	return a.rep.GetAdPositionByKey(key)
 }
 
 // 根据广告位KEY获取默认广告
 func (a *adManagerImpl) GetAdByPositionKey(key string) ad.IAd {
-	a._mux.Lock()
-	defer a._mux.Unlock()
+	a.mux.Lock()
+	defer a.mux.Unlock()
 	ok := false
 	var iv ad.IAd
-	if a._cache == nil {
-		a._cache = make(map[string]ad.IAd)
+	if a.cache == nil {
+		a.cache = make(map[string]ad.IAd)
 	}
 	//从缓存中获取
-	if iv, ok = a._cache[key]; ok {
+	if iv, ok = a.cache[key]; ok {
 		return iv
 	}
 
 	pos := a.GetAdPositionByKey(key)
 	if pos != nil && pos.DefaultId > 0 {
-		iv = a._defaultAd.GetById(pos.DefaultId)
+		iv = a.defaultAd.GetById(pos.DefaultId)
 	}
 	if iv != nil {
-		a._cache[key] = iv
+		a.cache[key] = iv
 	}
 	return iv
 }
 
 // 获取用户的广告管理
 func (a *adManagerImpl) GetUserAd(adUserId int) ad.IUserAd {
-	return newUserAd(a, a._rep, adUserId)
+	return newUserAd(a, a.rep, adUserId)
 }
 
 type AdGroupImpl struct {
@@ -184,7 +184,7 @@ func (a *AdGroupImpl) DelPosition(id int) error {
 	//	return ad.err
 	//}
 	a._positions = nil
-	a._manager._cache = nil
+	a._manager.cache = nil
 	return a._rep.DelAdPosition(id)
 }
 
@@ -195,7 +195,7 @@ func (ag *AdGroupImpl) SavePosition(a *ad.AdPosition) (int, error) {
 	}
 	a.GroupId = ag.GetDomainId()
 	ag._positions = nil
-	ag._manager._cache = nil
+	ag._manager.cache = nil
 	return ag._rep.SaveAdPosition(a)
 }
 
@@ -235,7 +235,7 @@ func (a *AdGroupImpl) SetDefault(adPosId int, adId int) error {
 		//todo: 检测广告是否存在
 		v.DefaultId = adId
 		_, err := a.SavePosition(v)
-		a._manager._cache = nil
+		a._manager.cache = nil
 		return err
 	}
 	return ad.ErrNoSuchAd

@@ -78,7 +78,9 @@ const (
 	// 提现到第三方
 	KindPresentTakeOutToThirdPart = 13
 	// 提现退还到银行卡
-	KindPresentTakOutRefund = 14
+	KindPresentTakeOutRefund = 14
+	// 支付单退款
+	KindPresentPaymentRefund = 15
 
 	// 客服赠送
 	KindPresentServiceAdd = 21

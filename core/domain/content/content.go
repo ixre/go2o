@@ -13,39 +13,39 @@ import "go2o/core/domain/interface/content"
 var _ content.IContent = new(Content)
 
 type Content struct {
-	_contentRep     content.IContentRep
-	_userId         int
-	_articleManager content.IArticleManager
+	contentRep     content.IContentRep
+	userId         int
+	articleManager content.IArticleManager
 }
 
 func NewContent(userId int, rep content.IContentRep) content.IContent {
 	return &Content{
-		_contentRep: rep,
-		_userId:     userId,
+		contentRep: rep,
+		userId:     userId,
 	}
 }
 
 // 获取聚合根编号
 func (c *Content) GetAggregateRootId() int {
-	return c._userId
+	return c.userId
 }
 
 // 文章服务
 func (c *Content) ArticleManager() content.IArticleManager {
-	if c._articleManager == nil {
-		c._articleManager = newArticleManagerImpl(c._userId, c._contentRep)
+	if c.articleManager == nil {
+		c.articleManager = newArticleManagerImpl(c.userId, c.contentRep)
 	}
-	return c._articleManager
+	return c.articleManager
 }
 
 // 创建页面
 func (c *Content) CreatePage(v *content.Page) content.IPage {
-	return newPage(c.GetAggregateRootId(), c._contentRep, v)
+	return newPage(c.GetAggregateRootId(), c.contentRep, v)
 }
 
 // 获取页面
 func (c *Content) GetPage(id int) content.IPage {
-	v := c._contentRep.GetPageById(c.GetAggregateRootId(), id)
+	v := c.contentRep.GetPageById(c.GetAggregateRootId(), id)
 	if v != nil {
 		return c.CreatePage(v)
 	}
@@ -54,7 +54,7 @@ func (c *Content) GetPage(id int) content.IPage {
 
 // 根据字符串标识获取页面
 func (c *Content) GetPageByStringIndent(indent string) content.IPage {
-	v := c._contentRep.GetPageByStringIndent(c.GetAggregateRootId(), indent)
+	v := c.contentRep.GetPageByStringIndent(c.GetAggregateRootId(), indent)
 	if v != nil {
 		return c.CreatePage(v)
 	}
@@ -63,5 +63,5 @@ func (c *Content) GetPageByStringIndent(indent string) content.IPage {
 
 // 删除页面
 func (c *Content) DeletePage(id int) error {
-	return c._contentRep.DeletePage(c.GetAggregateRootId(), id)
+	return c.contentRep.DeletePage(c.GetAggregateRootId(), id)
 }

@@ -16,13 +16,13 @@ import (
 var _ member.IInvitationManager = new(invitationManager)
 
 type invitationManager struct {
-	_member       *memberImpl
-	_myInvMembers []*member.Member
+	member       *memberImpl
+	myInvMembers []*member.Member
 }
 
 // 判断是否推荐了某个会员
-func (this *invitationManager) InvitationBy(memberId int) bool {
-	rl := this._member.GetRelation()
+func (i *invitationManager) InvitationBy(memberId int) bool {
+	rl := i.member.GetRelation()
 	if rl != nil {
 		return rl.RefereesId == memberId
 	}
@@ -30,27 +30,27 @@ func (this *invitationManager) InvitationBy(memberId int) bool {
 }
 
 // 获取我邀请的会员
-func (this *invitationManager) GetInvitationMembers(begin, end int) (
+func (i *invitationManager) GetInvitationMembers(begin, end int) (
 	int, []*dto.InvitationMember) {
-	return this._member._rep.GetMyInvitationMembers(
-		this._member.GetAggregateRootId(), begin, end)
+	return i.member.rep.GetMyInvitationMembers(
+		i.member.GetAggregateRootId(), begin, end)
 }
 
 // 获取我的邀请码
-func (this *invitationManager) MyCode() string {
-	return this._member.GetValue().InvitationCode
+func (i *invitationManager) MyCode() string {
+	return i.member.GetValue().InvitationCode
 }
 
 // 获取邀请会员下级邀请数量
-func (this *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]int {
+func (i *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]int {
 	if memberIdArr == nil || len(memberIdArr) == 0 {
 		return map[int]int{}
 	}
-	return this._member._rep.GetSubInvitationNum(this._member.GetAggregateRootId(),
+	return i.member.rep.GetSubInvitationNum(i.member.GetAggregateRootId(),
 		memberIdArr)
 }
 
 // 获取邀请要的会员
-func (this *invitationManager) GetInvitationMeMember() *member.Member {
-	return this._member._rep.GetInvitationMeMember(this._member.GetAggregateRootId())
+func (i *invitationManager) GetInvitationMeMember() *member.Member {
+	return i.member.rep.GetInvitationMeMember(i.member.GetAggregateRootId())
 }

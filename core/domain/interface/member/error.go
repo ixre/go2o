@@ -185,6 +185,9 @@ var (
 	ErrAccountNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_not_enough_amount", "账户余额不足")
 
+	ErrTakeOutState *domain.DomainError = domain.NewDomainError(
+		"err_member_take_out_state", "提现申请状态错误")
+
 	ErrNotSupportTakeOutBusinessKind *domain.DomainError = domain.NewDomainError(
 		"err_not_support_take_out_business_kind", "不支持的提现业务类型")
 
@@ -205,6 +208,9 @@ var (
 
 	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
 		"err_member_not_trusted", "尚未实名认证")
+
+	ErrNoChangedTrustInfo *domain.DomainError = domain.NewDomainError(
+		"err_member_no_changed_trust_info", "请更改实名信息后再进行提交")
 
 	ErrRealName *domain.DomainError = domain.NewDomainError(
 		"err_real_name", "请输入真实姓名")

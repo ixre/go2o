@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/tmp"
 	"math"
 )
@@ -22,22 +23,25 @@ var _ afterSales.IRefundOrder = new(refundOrderImpl)
 
 type refundOrderImpl struct {
 	*afterSalesOrderImpl
-	_refValue  *afterSales.RefundOrder
-	_memberRep member.IMemberRep
+	refValue   *afterSales.RefundOrder
+	memberRep  member.IMemberRep
+	paymentRep payment.IPaymentRep
 }
 
-func newRefundOrder(v *afterSalesOrderImpl, memberRep member.IMemberRep) *refundOrderImpl {
-	if v._value.Type != afterSales.TypeRefund {
+func newRefundOrder(v *afterSalesOrderImpl, memberRep member.IMemberRep,
+	paymentRep payment.IPaymentRep) *refundOrderImpl {
+	if v.value.Type != afterSales.TypeRefund {
 		panic(errors.New("售后单类型不是退款单"))
 	}
 	return &refundOrderImpl{
 		afterSalesOrderImpl: v,
-		_memberRep:          memberRep,
+		memberRep:           memberRep,
+		paymentRep:          paymentRep,
 	}
 }
 
 func (r *refundOrderImpl) getValue() *afterSales.RefundOrder {
-	if r._refValue == nil {
+	if r.refValue == nil {
 		if r.GetDomainId() <= 0 {
 			panic(errors.New("退款单还未提交"))
 		}
@@ -45,9 +49,9 @@ func (r *refundOrderImpl) getValue() *afterSales.RefundOrder {
 		if tmp.Db().GetOrm().Get(r.GetDomainId(), v) != nil {
 			panic(errors.New("退款单不存在"))
 		}
-		r._refValue = v
+		r.refValue = v
 	}
-	return r._refValue
+	return r.refValue
 }
 
 // 获取售后单数据
@@ -60,7 +64,7 @@ func (r *refundOrderImpl) Value() afterSales.AfterSalesOrder {
 
 // 保存
 func (r *refundOrderImpl) saveRefundOrder() error {
-	_, err := orm.Save(tmp.Db().GetOrm(), r._refValue, r.GetDomainId())
+	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, r.GetDomainId())
 	return err
 }
 
@@ -74,8 +78,8 @@ func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
 				return afterSales.ErrOutOfQuantity
 			}
 			// 设置退回商品
-			r._value.SnapshotId = snapshotId
-			r._value.Quantity = quantity
+			r.value.SnapshotId = snapshotId
+			r.value.Quantity = quantity
 			return nil
 		}
 	}
@@ -92,7 +96,7 @@ func (r *refundOrderImpl) Submit() (int, error) {
 	// 提交退款单
 	if err == nil {
 		// 锁定退货数量
-		err = o.Return(r._value.SnapshotId, r._value.Quantity)
+		err = o.Return(r.value.SnapshotId, r.value.Quantity)
 		if err == nil {
 			// 生成退款单
 			err = r.submitRefundOrder()
@@ -103,23 +107,23 @@ func (r *refundOrderImpl) Submit() (int, error) {
 
 // 提交退款单
 func (r *refundOrderImpl) submitRefundOrder() (err error) {
-	r._refValue = &afterSales.RefundOrder{
+	r.refValue = &afterSales.RefundOrder{
 		Id:       r.afterSalesOrderImpl.GetDomainId(),
 		IsRefund: 0,
 	}
 	// 计算退款金额
 	o := r.GetOrder()
 	for _, v := range o.Items() {
-		if v.SnapshotId == r._value.SnapshotId {
+		if v.SnapshotId == r.value.SnapshotId {
 			price := v.FinalAmount / float32(v.Quantity) // 计算单价
-			r._refValue.Amount = price * float32(r._value.Quantity)
+			r.refValue.Amount = price * float32(r.value.Quantity)
 			break
 		}
 	}
-	if r._refValue.Amount <= 0 || math.IsNaN(float64(r._refValue.Amount)) {
+	if r.refValue.Amount <= 0 || math.IsNaN(float64(r.refValue.Amount)) {
 		return afterSales.ErrOrderAmount
 	}
-	_, err = orm.Save(tmp.Db().GetOrm(), r._refValue, 0)
+	_, err = orm.Save(tmp.Db().GetOrm(), r.refValue, 0)
 	return err
 }
 
@@ -128,7 +132,7 @@ func (r *refundOrderImpl) Cancel() error {
 	err := r.afterSalesOrderImpl.Cancel()
 	if err == nil {
 		// 撤销退货数量
-		err = r.GetOrder().RevertReturn(r._value.SnapshotId, r._value.Quantity)
+		err = r.GetOrder().RevertReturn(r.value.SnapshotId, r.value.Quantity)
 	}
 	return err
 }
@@ -138,7 +142,7 @@ func (r *refundOrderImpl) Reject(remark string) error {
 	err := r.afterSalesOrderImpl.Reject(remark)
 	if err == nil {
 		// 撤销退货数量
-		err = r.GetOrder().RevertReturn(r._value.SnapshotId, r._value.Quantity)
+		err = r.GetOrder().RevertReturn(r.value.SnapshotId, r.value.Quantity)
 	}
 	return err
 }
@@ -169,11 +173,40 @@ func (r *refundOrderImpl) handleReturn() error {
 // 退款
 func (r *refundOrderImpl) backAmount(amount float32) error {
 	o := r.GetOrder().GetValue()
-	mm := r._memberRep.GetMember(r._value.BuyerId)
+	mm := r.memberRep.GetMember(r.value.BuyerId)
 	if mm == nil {
 		return member.ErrNoSuchMember
 	}
 	acc := mm.GetAccount()
-	return acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
+	//支付单与父订单关联。多个子订单合并付款
+	po := r.paymentRep.GetPaymentBySalesOrderId(o.ParentId)
+	//如果支付单已清理数据，则全部退回到余额
+	if po == nil {
+		return acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
+			o.OrderNo, amount, member.DefaultRelateUser)
+	}
+	//原路退回
+	pv := po.GetValue()
+	if pv.BalanceDiscount > 0 {
+		if err := acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
+			o.OrderNo, pv.BalanceDiscount, member.DefaultRelateUser); err == nil {
+			amount -= pv.BalanceDiscount
+		}
+	}
+	//退积分
+	if pv.IntegralDiscount > 0 {
+		//todo : 退换积分,暂时积分抵扣的不退款
+	}
+	//多退少补
+	if pv.FinalAmount > amount {
+		amount = pv.FinalAmount
+	}
+	//退到赠送账户
+	if pv.PaymentSign == payment.SignPresentAccount {
+		return acc.ChargePresentByKind(member.KindPresentPaymentRefund, "订单退款",
+			o.OrderNo, amount, member.DefaultRelateUser)
+	}
+	//原路退回，暂时不实现。直接退到赠送账户
+	return acc.ChargePresentByKind(member.KindPresentPaymentRefund, "订单退款",
 		o.OrderNo, amount, member.DefaultRelateUser)
 }

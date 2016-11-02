@@ -27,7 +27,7 @@ func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
 	i := 0
 	referId := memberId
 	for i <= level-1 {
-		rl := o._memberRep.GetRelation(referId)
+		rl := o.memberRep.GetRelation(referId)
 		if rl == nil || rl.RefereesId <= 0 {
 			break
 		}
@@ -39,13 +39,13 @@ func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
 }
 
 func (o *subOrderImpl) handleCashBack() error {
-	gobConf := o._valRep.GetGlobMchSaleConf()
+	gobConf := o.valRep.GetGlobMchSaleConf()
 	if !gobConf.FxSalesEnabled {
 		return nil
 	}
 	var err error
-	v := o._value
-	mch := o._mchRep.GetMerchant(v.VendorId)
+	v := o.value
+	mch := o.mchRep.GetMerchant(v.VendorId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
@@ -89,8 +89,8 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 		if err == nil {
 			//给自己返现
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
-				o._value.OrderNo, ptName, mName, fee)
-			err = acc.ChargeForPresent(tit, o._value.OrderNo,
+				o.value.OrderNo, ptName, mName, fee)
+			err = acc.ChargeForPresent(tit, o.value.OrderNo,
 				fee, member.DefaultRelateUser)
 		}
 		return err
@@ -112,7 +112,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 				break
 			}
 
-			m = o._memberRep.GetMember(rl.RefereesId)
+			m = o.memberRep.GetMember(rl.RefereesId)
 			if m == nil {
 				break
 			}

@@ -16,80 +16,80 @@ import (
 var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
-	_rep   sale.ISaleLabelRep
-	_mchId int
-	_value *sale.Label
+	rep   sale.ISaleLabelRep
+	mchId int
+	value *sale.Label
 }
 
 func NewSaleLabel(mchId int, value *sale.Label,
 	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
-		_rep:   rep,
-		_mchId: mchId,
-		_value: value,
+		rep:   rep,
+		mchId: mchId,
+		value: value,
 	}
 }
 
-func (this *saleLabelImpl) GetDomainId() int {
-	if this._value != nil {
-		return this._value.Id
+func (l *saleLabelImpl) GetDomainId() int {
+	if l.value != nil {
+		return l.value.Id
 	}
 	return 0
 }
 
-func (this *saleLabelImpl) GetValue() *sale.Label {
-	return this._value
+func (l *saleLabelImpl) GetValue() *sale.Label {
+	return l.value
 }
 
 // 是否为系统内置
-func (this *saleLabelImpl) System() bool {
-	return this._value.MerchantId == 0
+func (l *saleLabelImpl) System() bool {
+	return l.value.MerchantId == 0
 }
 
 // 设置值
-func (this *saleLabelImpl) SetValue(v *sale.Label) error {
+func (l *saleLabelImpl) SetValue(v *sale.Label) error {
 	if v != nil {
 		// 如果为系统内置，不能修改名称
-		if !this.System() {
-			this._value.Enabled = v.Enabled
-			this._value.TagCode = v.TagCode
+		if !l.System() {
+			l.value.Enabled = v.Enabled
+			l.value.TagCode = v.TagCode
 		}
-		this._value.TagName = v.TagName
-		this._value.LabelImage = v.LabelImage
+		l.value.TagName = v.TagName
+		l.value.LabelImage = v.LabelImage
 		if len(v.TagCode) == 0 {
-			this._value.TagCode = v.TagCode
+			l.value.TagCode = v.TagCode
 		}
 	}
 	return nil
 }
 
-func (this *saleLabelImpl) Save() (int, error) {
-	this._value.MerchantId = this._mchId
-	return this._rep.SaveSaleLabel(this._mchId, this._value)
+func (l *saleLabelImpl) Save() (int, error) {
+	l.value.MerchantId = l.mchId
+	return l.rep.SaveSaleLabel(l.mchId, l.value)
 }
 
 // 获取标签下的商品
-func (this *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods {
+func (l *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetValueGoodsBySaleLabel(this._mchId,
-		this._value.Id, sortBy, begin, end)
+	return l.rep.GetValueGoodsBySaleLabel(l.mchId,
+		l.value.Id, sortBy, begin, end)
 }
 
 // 获取标签下的分页商品
-func (this *saleLabelImpl) GetPagedValueGoods(sortBy string, begin, end int) (int, []*valueobject.Goods) {
+func (l *saleLabelImpl) GetPagedValueGoods(sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
 	if end <= 0 {
 		end = 5
 	}
-	return this._rep.GetPagedValueGoodsBySaleLabel(this._mchId,
-		this.GetDomainId(), sortBy, begin, end)
+	return l.rep.GetPagedValueGoodsBySaleLabel(l.mchId,
+		l.GetDomainId(), sortBy, begin, end)
 }
 
 var _ sale.ILabelManager = new(labelManagerImpl)
@@ -110,40 +110,40 @@ func NewLabelManager(mchId int, rep sale.ISaleLabelRep,
 	return c.init()
 }
 
-func (this *labelManagerImpl) init() sale.ILabelManager {
-	//mchConf := this._valRep.GetPlatformConf()
-	//if !mchConf.MchGoodsCategory && this._mchId > 0 {
+func (l *labelManagerImpl) init() sale.ILabelManager {
+	//mchConf := l._valRep.GetPlatformConf()
+	//if !mchConf.MchGoodsCategory && l._mchId > 0 {
 
 	//todo: mch sale label
-	this._mchId = 0
+	l._mchId = 0
 	//}
-	return this
+	return l
 }
 
 // 初始化销售标签
-func (this *labelManagerImpl) InitSaleLabels() error {
-	if len(this.GetAllSaleLabels()) != 0 {
+func (l *labelManagerImpl) InitSaleLabels() error {
+	if len(l.GetAllSaleLabels()) != 0 {
 		return nil
 	}
 
 	arr := []sale.Label{
-		sale.Label{
+		{
 			TagName: "新品上架",
 			TagCode: "new-goods",
 		},
-		sale.Label{
+		{
 			TagName: "热销商品",
 			TagCode: "hot-sales",
 		},
-		sale.Label{
+		{
 			TagName: "特色商品",
 			TagCode: "special-goods",
 		},
-		sale.Label{
+		{
 			TagName: "优惠促销",
 			TagCode: "prom-sales",
 		},
-		sale.Label{
+		{
 			TagName: "尾品清仓",
 			TagCode: "clean-goods",
 		},
@@ -152,52 +152,52 @@ func (this *labelManagerImpl) InitSaleLabels() error {
 	var err error
 	for _, v := range arr {
 		v.Enabled = 1
-		v.MerchantId = this._mchId
-		_, err = this.CreateSaleLabel(&v).Save()
+		v.MerchantId = l._mchId
+		_, err = l.CreateSaleLabel(&v).Save()
 	}
 
 	return err
 }
 
 // 获取所有的销售标签
-func (this *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
-	arr := this._rep.GetAllValueSaleLabels(this._mchId)
+func (l *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
+	arr := l._rep.GetAllValueSaleLabels(l._mchId)
 	var tags = make([]sale.ISaleLabel, len(arr))
 
 	for i, v := range arr {
-		tags[i] = this.CreateSaleLabel(v)
+		tags[i] = l.CreateSaleLabel(v)
 	}
 	return tags
 }
 
 // 获取销售标签
-func (this *labelManagerImpl) GetSaleLabel(id int) sale.ISaleLabel {
-	return this._rep.GetSaleLabel(this._mchId, id)
+func (l *labelManagerImpl) GetSaleLabel(id int) sale.ISaleLabel {
+	return l._rep.GetSaleLabel(l._mchId, id)
 }
 
 // 根据Code获取销售标签
-func (this *labelManagerImpl) GetSaleLabelByCode(code string) sale.ISaleLabel {
-	v := this._rep.GetSaleLabelByCode(this._mchId, code)
-	return this.CreateSaleLabel(v)
+func (l *labelManagerImpl) GetSaleLabelByCode(code string) sale.ISaleLabel {
+	v := l._rep.GetSaleLabelByCode(l._mchId, code)
+	return l.CreateSaleLabel(v)
 }
 
 // 创建销售标签
-func (this *labelManagerImpl) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
+func (l *labelManagerImpl) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 	if v == nil {
 		return nil
 	}
-	v.MerchantId = this._mchId
-	return this._rep.CreateSaleLabel(v)
+	v.MerchantId = l._mchId
+	return l._rep.CreateSaleLabel(v)
 }
 
 // 删除销售标签
-func (this *labelManagerImpl) DeleteSaleLabel(id int) error {
-	v := this.GetSaleLabel(id)
+func (l *labelManagerImpl) DeleteSaleLabel(id int) error {
+	v := l.GetSaleLabel(id)
 	if v != nil {
 		if v.System() {
 			return sale.ErrInternalDisallow
 		}
-		return this._rep.DeleteSaleLabel(this._mchId, id)
+		return l._rep.DeleteSaleLabel(l._mchId, id)
 	}
 	return nil
 }

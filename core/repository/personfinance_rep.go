@@ -32,68 +32,68 @@ func NewPersonFinanceRepository(conn db.Connector, mRep member.IMemberRep) perso
 	}
 }
 
-func (this *personFinanceRepository) GetPersonFinance(personId int) personfinance.IPersonFinance {
-	return pf.NewPersonFinance(personId, this, this._accRep)
+func (p *personFinanceRepository) GetPersonFinance(personId int) personfinance.IPersonFinance {
+	return pf.NewPersonFinance(personId, p, p._accRep)
 }
 
-func (this *personFinanceRepository) GetRiseByTime(personId int, begin,
+func (p *personFinanceRepository) GetRiseByTime(personId int, begin,
 	end int64) []*personfinance.RiseDayInfo {
 	list := []*personfinance.RiseDayInfo{}
-	this._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
+	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
 	return list
 }
 
-func (this *personFinanceRepository) GetRiseValueByPersonId(id int) (
+func (p *personFinanceRepository) GetRiseValueByPersonId(id int) (
 	*personfinance.RiseInfoValue, error) {
 	e := &personfinance.RiseInfoValue{}
-	err := this._orm.Get(id, e)
+	err := p._orm.Get(id, e)
 	return e, err
 }
 
-func (this *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
+func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
 	id int, err error) {
-	if _, err = this.GetRiseValueByPersonId(v.PersonId); err == nil {
-		_, _, err = this._orm.Save(v.PersonId, v)
+	if _, err = p.GetRiseValueByPersonId(v.PersonId); err == nil {
+		_, _, err = p._orm.Save(v.PersonId, v)
 	} else {
-		_, _, err = this._orm.Save(nil, v)
+		_, _, err = p._orm.Save(nil, v)
 	}
 	return v.PersonId, err
 }
 
 // 获取日志
-func (this *personFinanceRepository) GetRiseLog(personId, logId int) *personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLog(personId, logId int) *personfinance.RiseLog {
 	e := &personfinance.RiseLog{}
-	if this._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
+	if p._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
 		return e
 	}
 	return nil
 }
 
 // 保存日志
-func (this *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (id int, err error) {
+func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (id int, err error) {
 	if v.Id > 0 {
-		_, _, err = this._orm.Save(v.Id, v)
+		_, _, err = p._orm.Save(v.Id, v)
 	} else {
-		_, _, err = this._orm.Save(nil, v)
-		this._db.ExecScalar("SELECT MAX(id) FROM pf_riselog", &v.Id)
+		_, _, err = p._orm.Save(nil, v)
+		p._db.ExecScalar("SELECT MAX(id) FROM pf_riselog", &v.Id)
 	}
 	return v.Id, err
 }
 
 // 获取日志
-func (this *personFinanceRepository) GetRiseLogs(personId int, date int64, riseType int) []*personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLogs(personId int, date int64, riseType int) []*personfinance.RiseLog {
 	list := []*personfinance.RiseLog{}
-	this._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
+	p._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
 	return list
 }
 
 // 保存每日收益
-func (this *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (id int, err error) {
+func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (id int, err error) {
 	if v.Id > 0 {
-		_, _, err = this._orm.Save(v.Id, v)
+		_, _, err = p._orm.Save(v.Id, v)
 	} else {
-		_, _, err = this._orm.Save(nil, v)
-		this._db.ExecScalar("SELECT MAX(id) FROM pf_riseday", &v.Id)
+		_, _, err = p._orm.Save(nil, v)
+		p._db.ExecScalar("SELECT MAX(id) FROM pf_riseday", &v.Id)
 	}
 	return v.Id, err
 }

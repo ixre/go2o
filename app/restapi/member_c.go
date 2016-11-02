@@ -11,6 +11,7 @@ package restapi
 import (
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/labstack/echo"
 	"go2o/app/cache"
 	"go2o/app/util"
 	"go2o/core/domain/interface/member"
@@ -19,7 +20,6 @@ import (
 	"go2o/core/service/dps"
 	"go2o/core/variable"
 	"go2o/x/echox"
-	"gopkg.in/labstack/echo.v1"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -31,9 +31,9 @@ type MemberC struct {
 }
 
 // 登录
-func (mc *MemberC) Login(ctx *echo.Context) error {
+func (mc *MemberC) Login(c echo.Context) error {
 	var result dto.MemberLoginResult
-	r := ctx.Request()
+	r := c.Request()
 	usr := strings.TrimSpace(r.FormValue("usr"))
 	pwd := strings.TrimSpace(r.FormValue("pwd"))
 	if len(usr) == 0 || len(pwd) == 0 {
@@ -44,7 +44,7 @@ func (mc *MemberC) Login(ctx *echo.Context) error {
 		if err != nil {
 			result.Message = err.Error()
 		} else {
-			// 登陆成功，生成令牌
+			// 登录成功，生成令牌
 			token := util.SetMemberApiToken(sto, e.Id, e.Pwd)
 			result.Member = &dto.LoginMember{
 				Id:         e.Id,
@@ -54,14 +54,14 @@ func (mc *MemberC) Login(ctx *echo.Context) error {
 			result.Result = true
 		}
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, result)
 }
 
 // 注册
-func (mc *MemberC) Register(ctx *echo.Context) error {
-	r := ctx.Request()
+func (mc *MemberC) Register(c echo.Context) error {
+	r := c.Request()
 	result := gof.Message{}
-	mchId := getMerchantId(ctx)
+	mchId := getMerchantId(c)
 	usr := r.FormValue("usr")
 	pwd := r.FormValue("pwd")
 	phone := r.FormValue("phone")
@@ -81,20 +81,20 @@ func (mc *MemberC) Register(ctx *echo.Context) error {
 	pro.Name = m.Usr
 	_, err := dps.MemberService.RegisterMember(mchId,
 		m, pro, "", invitationCode)
-	return ctx.JSON(http.StatusOK, result.Error(err))
+	return c.JSON(http.StatusOK, result.Error(err))
 }
 
-func (mc *MemberC) Ping(ctx *echo.Context) error {
+func (mc *MemberC) Ping(c echo.Context) error {
 	//log.Println("---", ctx.Request.FormValue("member_id"), ctx.Request.FormValue("member_token"))
-	return ctx.String(http.StatusOK, "PONG")
+	return c.String(http.StatusOK, "PONG")
 }
 
 // 同步
-func (mc *MemberC) Async(ctx *echo.Context) error {
+func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
-	var form = url.Values(ctx.Request().Form)
+	var form = url.Values(c.Request().Form)
 	var mut, aut, kvMut, kvAut int
-	memberId := GetMemberId(ctx)
+	memberId := GetMemberId(c)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -115,20 +115,20 @@ func (mc *MemberC) Async(ctx *echo.Context) error {
 	rlt.MemberId = memberId
 	rlt.MemberUpdated = kvMut != mut
 	rlt.AccountUpdated = kvAut != aut
-	return ctx.JSON(http.StatusOK, rlt)
+	return c.JSON(http.StatusOK, rlt)
 }
 
 // 获取最新的会员信息
-func (mc *MemberC) Get(ctx *echo.Context) error {
-	memberId := GetMemberId(ctx)
+func (mc *MemberC) Get(c echo.Context) error {
+	memberId := GetMemberId(c)
 	m := dps.MemberService.GetMember(memberId)
 	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
-	return ctx.JSON(http.StatusOK, m)
+	return c.JSON(http.StatusOK, m)
 }
 
 // 汇总信息
-func (mc *MemberC) Summary(ctx *echo.Context) error {
-	memberId := GetMemberId(ctx)
+func (mc *MemberC) Summary(c echo.Context) error {
+	memberId := GetMemberId(c)
 	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
 	var v *dto.MemberSummary = new(dto.MemberSummary)
 	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
@@ -136,23 +136,23 @@ func (mc *MemberC) Summary(ctx *echo.Context) error {
 		v = dps.MemberService.GetMemberSummary(memberId)
 		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
 	}
-	return ctx.JSON(http.StatusOK, v)
+	return c.JSON(http.StatusOK, v)
 }
 
 // 获取最新的会员账户信息
-func (mc *MemberC) Account(ctx *echo.Context) error {
-	memberId := GetMemberId(ctx)
+func (mc *MemberC) Account(c echo.Context) error {
+	memberId := GetMemberId(c)
 	m := dps.MemberService.GetAccount(memberId)
-	return ctx.JSON(http.StatusOK, m)
+	return c.JSON(http.StatusOK, m)
 }
 
 // 断开
-func (mc *MemberC) Disconnect(ctx *echox.Context) error {
+func (mc *MemberC) Disconnect(c *echox.Context) error {
 	var result gof.Message
-	if util.MemberHttpSessionDisconnect(ctx) {
+	if util.MemberHttpSessionDisconnect(c) {
 		result.Result = true
 	} else {
 		result.Message = "disconnect fail"
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, result)
 }

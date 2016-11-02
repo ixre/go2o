@@ -18,36 +18,36 @@ import (
 var _ shipment.IShipmentOrder = new(shipmentOrderImpl)
 
 type shipmentOrderImpl struct {
-	_value  *shipment.ShipmentOrder
-	_rep    shipment.IShipmentRep
-	_expRep express.IExpressRep
-	_expSp  *express.ExpressProvider
+	value  *shipment.ShipmentOrder
+	rep    shipment.IShipmentRep
+	expRep express.IExpressRep
+	expSp  *express.ExpressProvider
 }
 
 func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRep,
 	expRep express.IExpressRep) shipment.IShipmentOrder {
 	return &shipmentOrderImpl{
-		_value:  v,
-		_rep:    rep,
-		_expRep: expRep,
+		value:  v,
+		rep:    rep,
+		expRep: expRep,
 	}
 }
 
 // 获取聚合根编号
 func (s *shipmentOrderImpl) GetAggregateRootId() int {
-	return s._value.Id
+	return s.value.Id
 }
 
 // 获取值
 func (s *shipmentOrderImpl) Value() shipment.ShipmentOrder {
-	return *s._value
+	return *s.value
 }
 
 func (s *shipmentOrderImpl) getExpressProvider(spId int) *express.ExpressProvider {
-	if s._expSp == nil {
-		s._expSp = s._expRep.GetExpressProvider(spId)
+	if s.expSp == nil {
+		s.expSp = s.expRep.GetExpressProvider(spId)
 	}
-	return s._expSp
+	return s.expSp
 }
 
 // 发货
@@ -55,31 +55,31 @@ func (s *shipmentOrderImpl) Ship(spId int, spOrderNo string) error {
 	if e := s.getExpressProvider(spId); e == nil || e.Enabled != 1 {
 		return express.ErrNotSupportProvider
 	}
-	if s._value.SpId != spId {
-		s._expSp = nil
-		s._value.SpId = spId
+	if s.value.SpId != spId {
+		s.expSp = nil
+		s.value.SpId = spId
 	}
-	s._value.SpOrderNo = spOrderNo
-	s._value.Stat = shipment.StatShipped
-	s._value.ShipTime = time.Now().Unix()
+	s.value.SpOrderNo = spOrderNo
+	s.value.Stat = shipment.StatShipped
+	s.value.ShipTime = time.Now().Unix()
 	return s.save()
 }
 
 // 保存
 func (s *shipmentOrderImpl) save() error {
-	s._value.UpdateTime = time.Now().Unix()
+	s.value.UpdateTime = time.Now().Unix()
 	if s.GetAggregateRootId() > 0 {
-		_, err := s._rep.SaveShipmentOrder(s._value)
+		_, err := s.rep.SaveShipmentOrder(s.value)
 		return err
 	}
-	id, err := s._rep.SaveShipmentOrder(s._value)
+	id, err := s.rep.SaveShipmentOrder(s.value)
 	if err == nil {
-		s._value.Id = id
-		items := s._value.Items
+		s.value.Id = id
+		items := s.value.Items
 		if items != nil && len(items) > 0 {
 			for _, v := range items {
 				v.OrderId = id
-				v.Id, err = s._rep.SaveShipmentItem(v)
+				v.Id, err = s.rep.SaveShipmentItem(v)
 				if err != nil {
 					return err
 				}
@@ -91,7 +91,7 @@ func (s *shipmentOrderImpl) save() error {
 
 // 发货完成
 func (s *shipmentOrderImpl) Completed() error {
-	s._value.Stat = shipment.StatCompleted
+	s.value.Stat = shipment.StatCompleted
 	return s.save()
 }
 
