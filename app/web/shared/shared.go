@@ -11,10 +11,10 @@ package shared
 import (
 	"fmt"
 	"github.com/jsix/gof/web"
+	"github.com/labstack/echo"
 	"go2o/core/service/dps"
 	"go2o/core/variable"
 	"go2o/x/echox"
-	"gopkg.in/labstack/echo.v1"
 	"html/template"
 	"regexp"
 	"strings"
@@ -46,8 +46,8 @@ func RenderMessagePage(c *echox.Context, msg string, btn string, url string) err
 }
 
 // 处理HTTP错误
-func HandleHttpError(err error, ctx *echo.Context) {
-	web.HttpError(ctx.Response(), err)
+func HandleHttpError(err error, c echo.Context) {
+	web.HttpError(c.Response(), err)
 }
 
 var (
@@ -56,11 +56,11 @@ var (
 
 // 系统状态检测
 func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx *echo.Context) error {
+	return func(c echo.Context) error {
 		conf := dps.BaseService.GetPlatformConf()
 		if conf.Suspend {
-			rsp := ctx.Response()
-			path := ctx.Request().URL.Path
+			rsp := c.Response()
+			path := c.Request().URL.Path
 			// 访问挂起页面及相关的资源页面不跳转
 			if strings.Index(path, "suspend") == -1 &&
 				!sysIgnoreRegex.MatchString(path) {
@@ -71,6 +71,6 @@ func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
 				return nil
 			}
 		}
-		return h(ctx)
+		return h(c)
 	}
 }

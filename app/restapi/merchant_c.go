@@ -10,8 +10,8 @@ package restapi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/labstack/echo"
 	"go2o/core/service/dps"
-	"gopkg.in/labstack/echo.v1"
 	"net/http"
 )
 
@@ -19,13 +19,13 @@ type merchantC struct {
 }
 
 // 获取广告数据
-func (m *merchantC) Get_ad(ctx *echo.Context) error {
-	merchantId := getMerchantId(ctx)
-	adName := ctx.Request().FormValue("ad_name")
+func (m *merchantC) Get_ad(c echo.Context) error {
+	merchantId := getMerchantId(c)
+	adName := c.Request().FormValue("ad_name")
 	dto := dps.AdService.GetAdAndDataByKey(merchantId, adName)
 	if dto != nil {
-		return ctx.JSON(http.StatusOK, dto)
+		return c.JSON(http.StatusOK, dto)
 	}
-	return ctx.JSON(http.StatusOK,
+	return c.JSON(http.StatusOK,
 		gof.Message{Message: "没有广告数据"})
 }

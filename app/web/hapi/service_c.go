@@ -20,15 +20,15 @@ type serviceC struct {
 	gof.App
 }
 
-func (m *serviceC) Favorite(ctx *echox.Context) error {
-	memberId := getMemberId(ctx)
+func (m *serviceC) Favorite(c *echox.Context) error {
+	memberId := getMemberId(c)
 	if memberId <= 0 {
-		return requestLogin(ctx)
+		return requestLogin(c)
 	}
 	result := gof.Message{}
 
-	favType := ctx.Query("type")
-	id, _ := strconv.Atoi(ctx.Query("id"))
+	favType := c.QueryParam("type")
+	id, _ := strconv.Atoi(c.QueryParam("id"))
 	if id <= 0 || favType == "" {
 		result.Message = "收藏失败"
 	} else {
@@ -41,5 +41,5 @@ func (m *serviceC) Favorite(ctx *echox.Context) error {
 		}
 		result.Error(err)
 	}
-	return ctx.JSONP(http.StatusOK, ctx.Query("callback"), result)
+	return c.JSONP(http.StatusOK, c.QueryParam("callback"), result)
 }
