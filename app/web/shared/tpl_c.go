@@ -22,8 +22,8 @@ type TmlC struct {
 //@member_id : 会员编号
 //@token  :  密钥/令牌
 //@device : 设备类型
-func (this *TmlC) Blank(ctx *echox.Context) error {
-	path := ctx.Request().URL.Path
+func (t *TmlC) Blank(c *echox.Context) error {
+	path := c.Request().URL.Path
 	tpl := path[strings.Index(path[1:], "/")+1:]
-	return ctx.RenderOK(tpl, ctx.NewData())
+	return c.RenderOK(tpl, c.NewData())
 }

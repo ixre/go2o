@@ -13,7 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/web"
 	"github.com/jsix/gof/web/session"
-	"gopkg.in/labstack/echo.v1"
+	"github.com/labstack/echo"
 	"io"
 	"net/http"
 	"reflect"
@@ -35,7 +35,7 @@ type (
 		dynamicHandlers map[string]Handler // 动态处理程序
 	}
 	Context struct {
-		*echo.Context
+		echo.Context
 		App      gof.App
 		Session  *session.Session
 		response http.ResponseWriter
@@ -70,21 +70,21 @@ func (e *Echo) chkApp() {
 }
 
 // 转换为Echo Handler
-func (e *Echo) parseHandler(h Handler) func(ctx *echo.Context) error {
-	return func(ctx *echo.Context) error {
+func (e *Echo) parseHandler(h Handler) func(c echo.Context) error {
+	return func(c echo.Context) error {
 		e.chkApp()
-		return h(ParseContext(ctx, e.app))
+		return h(ParseContext(c, e.app))
 	}
 }
 
 // 设置模板
 func (e *Echo) SetTemplateRender(basePath string, notify bool, files ...string) {
-	e.SetRenderer(newGoTemplateForEcho(basePath, notify, files...))
+	e.Renderer = newGoTemplateForEcho(basePath, notify, files...)
 }
 
 // 注册自定义的GET处理程序
 func (e *Echo) Getx(path string, h Handler) {
-	e.Get(path, e.parseHandler(h))
+	e.GET(path, e.parseHandler(h))
 }
 
 // 注册自定义的GET/POST处理程序
@@ -94,7 +94,7 @@ func (e *Echo) Anyx(path string, h Handler) {
 
 // 注册自定义的GET/POST处理程序
 func (e *Echo) Postx(path string, h Handler) {
-	e.Post(path, e.parseHandler(h))
+	e.POST(path, e.parseHandler(h))
 }
 
 func (e *Echo) getMvcHandler(route string, c *Context, obj interface{}) Handler {
@@ -136,7 +136,7 @@ func (e *Echo) Agetx(path string, obj interface{}) {
 		}
 		return c.String(http.StatusNotFound, "no such file")
 	}
-	e.Get(path, e.parseHandler(h))
+	e.GET(path, e.parseHandler(h))
 }
 
 func (e *Echo) Apostx(path string, obj interface{}) {
@@ -146,14 +146,14 @@ func (e *Echo) Apostx(path string, obj interface{}) {
 		}
 		return c.String(http.StatusNotFound, "no such file")
 	}
-	e.Post(path, e.parseHandler(h))
+	e.POST(path, e.parseHandler(h))
 }
 
-func ParseContext(ctx *echo.Context, app gof.App) *Context {
-	req, rsp := ctx.Request(), ctx.Response()
+func ParseContext(c echo.Context, app gof.App) *Context {
+	req, rsp := c.Request(), c.Response()
 	s := session.Default(rsp, req)
 	return &Context{
-		Context:  ctx,
+		Context:  c,
 		Session:  s,
 		App:      app,
 		response: rsp,
@@ -161,12 +161,13 @@ func ParseContext(ctx *echo.Context, app gof.App) *Context {
 	}
 }
 
-func (e *Context) HttpResponse() http.ResponseWriter {
-	return e.response
-}
-func (e *Context) HttpRequest() *http.Request {
-	return e.request
-}
+//
+//func (e *Context) HttpResponse() http.ResponseWriter {
+//    return e.response
+//}
+//func (e *Context) HttpRequest() *http.Request {
+//    return e.request
+//}
 
 func (c *Context) IsPost() bool {
 	return c.request.Method == "POST"
@@ -178,7 +179,7 @@ func (c *Context) StringOK(s string) error {
 
 func (c *Context) debug(err error) error {
 	if err != nil {
-		web.HttpError(c.HttpResponse(), err)
+		web.HttpError(c.Response(), err)
 		return nil
 	}
 	return err
@@ -236,7 +237,8 @@ type GoTemplateForEcho struct {
 	*gof.CachedTemplate
 }
 
-func (g *GoTemplateForEcho) Render(w io.Writer, name string, data interface{}) error {
+func (g *GoTemplateForEcho) Render(w io.Writer, name string,
+	data interface{}, c echo.Context) error {
 	return g.Execute(w, name, data)
 }
 
@@ -272,21 +274,22 @@ var (
 
 // 防SQL注入
 func StopAttack(h echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx *echo.Context) error {
+	return func(c echo.Context) error {
+		req := c.Request()
 		badRequest := false
-		method := ctx.Request().Method
+		method := req.Method
 		switch method {
 		case "GET":
-			badRequest = requestFilter[method].MatchString(ctx.Request().URL.RawQuery)
+			badRequest = requestFilter[method].MatchString(req.URL.RawQuery)
 		case "POST":
-			badRequest = requestFilter["GET"].MatchString(ctx.Request().URL.RawQuery) ||
+			badRequest = requestFilter["GET"].MatchString(req.URL.RawQuery) ||
 				requestFilter[method].MatchString(
-					ctx.Request().Form.Encode())
+					req.Form.Encode())
 		}
 		if badRequest {
-			return ctx.HTML(http.StatusNotFound,
+			return c.HTML(http.StatusNotFound,
 				"<div style='color:red;'>您提交的参数非法,系统已记录您本次操作!</div>")
 		}
-		return h(ctx)
+		return h(c)
 	}
 }

@@ -11,9 +11,9 @@ package hapi
 import (
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/labstack/echo"
 	"go2o/core/variable"
 	"go2o/x/echox"
-	"gopkg.in/labstack/echo.v1"
 	"net/http"
 )
 
@@ -21,40 +21,40 @@ type mainC struct {
 	gof.App
 }
 
-func (m *mainC) Info(ctx *echo.Context) error {
-	return ctx.String(http.StatusOK, `
+func (m *mainC) Info(c echo.Context) error {
+	return c.String(http.StatusOK, `
         release : 2016-09-10
     `)
 }
 
 // 测试HAPI
-func (m *mainC) Test(ctx *echox.Context) error {
-	memberId := getMemberId(ctx)
+func (m *mainC) Test(c *echox.Context) error {
+	memberId := getMemberId(c)
 	if memberId <= 0 {
-		return requestLogin(ctx)
+		return requestLogin(c)
 	}
 	d := gof.Message{
 		Result: true,
 		Data:   memberId,
 	}
-	return ctx.JSONP(http.StatusOK, ctx.Query("callback"), d)
+	return c.JSONP(http.StatusOK, c.QueryParam("callback"), d)
 }
 
 // 请求登录
-func (m *mainC) RequestLogin(ctx *echox.Context) error {
-	url := ctx.Request().Referer()
-	return ctx.Redirect(http.StatusFound, fmt.Sprintf("%s://%s%s/auth?return_url=%s",
+func (m *mainC) RequestLogin(c *echox.Context) error {
+	url := c.Request().Referer()
+	return c.Redirect(http.StatusFound, fmt.Sprintf("%s://%s%s/auth?return_url=%s",
 		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,
 		variable.Domain, url))
 }
 
 // 跳转到用户中心
-func (m *mainC) RedirectUc(ctx *echox.Context) error {
-	returnUrl := ctx.Query("url")
+func (m *mainC) RedirectUc(c *echox.Context) error {
+	returnUrl := c.QueryParam("url")
 	if len(returnUrl) > 0 && returnUrl[0] != '/' {
 		returnUrl = "/" + returnUrl
 	}
 	target := fmt.Sprintf("http://%s%s%s", variable.DOMAIN_PREFIX_MEMBER,
 		variable.Domain, returnUrl)
-	return ctx.Redirect(302, target)
+	return c.Redirect(302, target)
 }

@@ -58,14 +58,14 @@ func getMd5(s string) string {
 }
 
 // 广告
-func (j *JsonC) Ad(ctx *echox.Context) error {
-	namesParams := strings.TrimSpace(ctx.Query("keys"))
+func (j *JsonC) Ad(c *echox.Context) error {
+	namesParams := strings.TrimSpace(c.QueryParam("keys"))
 	names := strings.Split(namesParams, "|")
-	userId, _ := strconv.Atoi(ctx.Query("ad_user"))
+	userId, _ := strconv.Atoi(c.QueryParam("ad_user"))
 	as := dps.AdService
 	result := make(map[string]*ad.AdDto, len(names))
 	key := fmt.Sprintf("go2o:rep:ad:%d:front:%s", userId, getMd5(namesParams))
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
 		for _, n := range names {
@@ -81,7 +81,7 @@ func (j *JsonC) Ad(ctx *echox.Context) error {
 		sto.SetExpire(key, result, seconds)
 		//log.Println("---- 更新广告缓存 ",err)
 	}
-	return ctx.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, result)
 }
 
 func (j *JsonC) getMultiParams(s string) (p string, size, begin int) {
@@ -110,12 +110,12 @@ func (j *JsonC) unmarshal(sto storage.Interface, key string, dst interface{}) er
 
 // 商城/商铺分类JSON，shop_id为0，则返回商城的分类
 // todo: ??? gob编码提示错误
-func (j *JsonC) ShopCat(ctx *echox.Context) error {
-	parentId, _ := strconv.Atoi(ctx.Form("parent_id"))
-	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
+func (j *JsonC) ShopCat(c *echox.Context) error {
+	parentId, _ := strconv.Atoi(c.FormValue("parent_id"))
+	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
 	list := []dto.Category{}
 	key := fmt.Sprintf("go2o:rep:cat:%d:json:%d", shopId, parentId)
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	if err := j.unmarshal(sto, key, &list); err != nil {
 		//if err := sto.Get(key,*list);err != nil{
 		if parentId == 0 {
@@ -129,15 +129,15 @@ func (j *JsonC) ShopCat(ctx *echox.Context) error {
 		sto.Set(key, string(d))
 		//log.Println("---- 更新分类缓存 ", err)
 	}
-	return ctx.JSON(http.StatusOK, list)
+	return c.JSON(http.StatusOK, list)
 }
 
-func (j *JsonC) Get_shop(ctx *echox.Context) error {
-	typeParams := strings.TrimSpace(ctx.Form("params"))
+func (j *JsonC) Get_shop(c *echox.Context) error {
+	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
 	key := fmt.Sprint("go2o:rep:shop:front:glob_%s", typeParams)
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	//从缓存中读取
 	if err := sto.Get(key, &result); err != nil {
 		ss := dps.ShopService
@@ -154,17 +154,17 @@ func (j *JsonC) Get_shop(ctx *echox.Context) error {
 		}
 		sto.SetExpire(key, result, maxSeconds)
 	}
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
 // 商品
-func (j *JsonC) Get_goods(ctx *echox.Context) error {
-	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
-	typeParams := strings.TrimSpace(ctx.Form("params"))
+func (j *JsonC) Get_goods(c *echox.Context) error {
+	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
 	key := fmt.Sprint("go2o:rep:gs:fc:%d_%s", shopId, typeParams)
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
 		ss := dps.SaleService
@@ -181,50 +181,50 @@ func (j *JsonC) Get_goods(ctx *echox.Context) error {
 		}
 		sto.SetExpire(key, result, maxSeconds)
 	}
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
 // 最新店铺
-func (j *JsonC) Get_Newgoods(ctx *echox.Context) error {
-	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
-	begin, _ := strconv.Atoi(ctx.Form("begin"))
-	size, _ := strconv.Atoi(ctx.Form("size"))
+func (j *JsonC) Get_Newgoods(c *echox.Context) error {
+	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	begin, _ := strconv.Atoi(c.FormValue("begin"))
+	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := dps.SaleService
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
 		-1, begin, begin+size, "gs_goods.id DESC")
 
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
 // 最新商品
-func (j *JsonC) Get_Newshop(ctx *echox.Context) error {
-	begin, _ := strconv.Atoi(ctx.Form("begin"))
-	size, _ := strconv.Atoi(ctx.Form("size"))
+func (j *JsonC) Get_Newshop(c *echox.Context) error {
+	begin, _ := strconv.Atoi(c.FormValue("begin"))
+	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := dps.ShopService
 	_, result := ss.PagedOnBusinessOnlineShops(
 		begin, begin+size, "", "sp.create_time DESC")
 
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
 //最热商品
-func (j *JsonC) Get_hotGoods(ctx *echox.Context) error {
-	shopId, _ := strconv.Atoi(ctx.Form("shop_id"))
+func (j *JsonC) Get_hotGoods(c *echox.Context) error {
+	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
 	ss := dps.SaleService
-	begin, _ := strconv.Atoi(ctx.Form("begin"))
-	size, _ := strconv.Atoi(ctx.Form("size"))
+	begin, _ := strconv.Atoi(c.FormValue("begin"))
+	size, _ := strconv.Atoi(c.FormValue("size"))
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
 		-1, begin, begin+size, "gs_goods.sale_num DESC")
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
-func (j *JsonC) Mch_goods(ctx *echox.Context) error {
-	typeParams := strings.TrimSpace(ctx.Form("params"))
+func (j *JsonC) Mch_goods(c *echox.Context) error {
+	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
-	mchId, _ := strconv.Atoi(ctx.Form("mch_id"))
+	mchId, _ := strconv.Atoi(c.FormValue("mch_id"))
 	result := make(map[string]interface{}, len(types))
 	key := fmt.Sprint("go2o:rep:sg:front:%d_%s", mchId, typeParams)
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
 		ss := dps.SaleService
@@ -241,18 +241,18 @@ func (j *JsonC) Mch_goods(ctx *echox.Context) error {
 		}
 		sto.SetExpire(key, result, maxSeconds)
 	}
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
 // 获取销售标签获取商品
-func (j *JsonC) SaleLabelGoods(ctx *echox.Context) error {
-	codeParams := strings.TrimSpace(ctx.Form("params"))
+func (j *JsonC) SaleLabelGoods(c *echox.Context) error {
+	codeParams := strings.TrimSpace(c.FormValue("params"))
 	codes := strings.Split(codeParams, "|")
-	mchId, _ := strconv.Atoi(ctx.Form("mch_id"))
+	mchId, _ := strconv.Atoi(c.FormValue("mch_id"))
 	result := make(map[string]interface{}, len(codes))
 
 	key := fmt.Sprint("go2o:rep:stg:front:%d--%s", mchId, getMd5(codeParams))
-	sto := ctx.App.Storage()
+	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
 		for _, param := range codes {
@@ -263,5 +263,5 @@ func (j *JsonC) SaleLabelGoods(ctx *echox.Context) error {
 		}
 		sto.SetExpire(key, result, maxSeconds)
 	}
-	return ctx.Debug(ctx.JSON(http.StatusOK, result))
+	return c.Debug(c.JSON(http.StatusOK, result))
 }

@@ -26,48 +26,48 @@ type UserC struct {
 //@member_id : 会员编号
 //@token  :  密钥/令牌
 //@device : 设备类型
-func (u *UserC) Connect(ctx *echox.Context) error {
+func (u *UserC) Connect(c *echox.Context) error {
 	// 获取回调函数方法
-	callback := ctx.Query("callback")
+	callback := c.QueryParam("callback")
 	if callback == "" {
 		callback = "sso_callback"
 	}
 	//设置访问设备
-	if device := ctx.Query("device"); len(device) > 0 {
-		util.SetBrownerDevice(ctx.Response(), ctx.Request(), device)
+	if device := c.QueryParam("device"); len(device) > 0 {
+		util.SetBrownerDevice(c.Response(), c.Request(), device)
 	}
 	// 第三方连接，传入memberId 和 token
-	memberId, err := strconv.Atoi(ctx.Query("member_id"))
+	memberId, err := strconv.Atoi(c.QueryParam("member_id"))
 	if err != nil {
 		memberId = 0
 	}
 	// 鉴权，如成功，则存储会话
-	token := ctx.Query("token")
-	sto := ctx.App.Storage()
+	token := c.QueryParam("token")
+	sto := c.App.Storage()
 	if util.CompareMemberApiToken(sto, memberId, token) {
 		m := dps.MemberService.GetMember(memberId)
-		ctx.Session.Set("member", m)
-		ctx.Session.Save()
-		return ctx.JSONP(http.StatusOK, callback, "success")
+		c.Session.Set("member", m)
+		c.Session.Save()
+		return c.JSONP(http.StatusOK, callback, "success")
 	}
 	// 鉴权失败
-	return ctx.JSONP(http.StatusOK, callback, "error credentital")
+	return c.JSONP(http.StatusOK, callback, "error credentital")
 }
 
 //同步退出
-func (u *UserC) Disconnect(ctx *echox.Context) error {
+func (u *UserC) Disconnect(c *echox.Context) error {
 	// 获取回调函数方法
-	callback := ctx.Query("callback")
+	callback := c.QueryParam("callback")
 	if callback == "" {
 		callback = "sso_callback"
 	}
 	// 消除会话
-	ctx.Session.Destroy()
-	rsp := ctx.Response()
+	c.Session.Destroy()
+	rsp := c.Response()
 	// 清理以"_"开头的cookie
 	d := time.Duration(-1e9)
 	expires := time.Now().Local().Add(d)
-	list := ctx.Request().Cookies()
+	list := c.Request().Cookies()
 	for _, ck := range list {
 		if ck.Name[0] == '_' {
 			ck.Expires = expires
@@ -82,6 +82,6 @@ func (u *UserC) Disconnect(ctx *echox.Context) error {
 	//    HttpOnly: true,
 	//    Expires:  expires,
 	//}
-	//http.SetCookie(ctx.Response(), ck)
-	return ctx.JSONP(http.StatusOK, callback, "success")
+	//http.SetCookie(c.Response(), ck)
+	return c.JSONP(http.StatusOK, callback, "success")
 }
