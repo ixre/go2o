@@ -643,6 +643,9 @@ func (m *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
 	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance=?,
 		grow_amount=?,grow_earnings=?,grow_total_earnings=?,update_time=? where member_id=?`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
+	//清除缓存
+	m.Storage.Del(m.getAccountCk(memberId))
+	//加入通知队列
 	m.pushToAccountUpdateQueue(memberId, updateTime)
 	return err
 }

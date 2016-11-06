@@ -91,6 +91,6 @@ type IMerchantRep interface {
 	//SaveMachBlanceLog(v *BalanceLog) error
 	////个人提现日志
 	//SavePresionBlanceLog(v *member.PresentLog) error
-    //
+	//
 	//GetOfflineRate(id int) (float32, float32, error)
 }
