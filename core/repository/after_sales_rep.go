@@ -14,29 +14,32 @@ import (
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/payment"
 )
 
 var _ afterSales.IAfterSalesRep = new(afterSalesRep)
 
 type afterSalesRep struct {
 	db.Connector
-	_orderRep  order.IOrderRep
-	_memberRep member.IMemberRep
+	orderRep   order.IOrderRep
+	memberRep  member.IMemberRep
+	paymentRep payment.IPaymentRep
 }
 
 func NewAfterSalesRep(conn db.Connector, orderRep order.IOrderRep,
-	memberRep member.IMemberRep) afterSales.IAfterSalesRep {
+	memberRep member.IMemberRep, paymentRep payment.IPaymentRep) afterSales.IAfterSalesRep {
 	return &afterSalesRep{
 		Connector:  conn,
-		_orderRep:  orderRep,
-		_memberRep: memberRep,
+		orderRep:   orderRep,
+		memberRep:  memberRep,
+		paymentRep: paymentRep,
 	}
 
 }
 
 // 创建售后单
 func (a *afterSalesRep) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrder {
-	return asImpl.NewAfterSalesOrder(v, a, a._orderRep, a._memberRep)
+	return asImpl.NewAfterSalesOrder(v, a, a.orderRep, a.memberRep, a.paymentRep)
 }
 
 // 获取售后单

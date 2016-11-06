@@ -57,10 +57,16 @@ type (
 		Save() (int, error)
 
 		// 更新销售数量,扣减库存
-		AddSaleNum(quantity int) error
+		AddSalesNum(quantity int) error
 
 		// 取消销售
 		CancelSale(quantity int, orderNo string) error
+
+		// 占用库存
+		TakeStock(quantity int) error
+
+		// 释放库存
+		FreeStock(quantity int) error
 
 		//// 生成快照
 		//GenerateSnapshot() (int, error)

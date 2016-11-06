@@ -21,30 +21,30 @@ import (
 var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
-	_merchant merchant.IMerchant
-	_rep      shop.IShopRep
-	valueRep  valueobject.IValueRep
+	merchant merchant.IMerchant
+	rep      shop.IShopRep
+	valueRep valueobject.IValueRep
 }
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep,
 	valueRep valueobject.IValueRep) shop.IShopManager {
 	return &shopManagerImpl{
-		_merchant: m,
-		_rep:      rep,
-		valueRep:  valueRep,
+		merchant: m,
+		rep:      rep,
+		valueRep: valueRep,
 	}
 }
 
 // 新建商店
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
-	v.MerchantId = s._merchant.GetAggregateRootId()
-	return newShop(s, v, s._rep, s.valueRep)
+	v.MerchantId = s.merchant.GetAggregateRootId()
+	return newShop(s, v, s.rep, s.valueRep)
 }
 
 // 获取所有商店
 func (s *shopManagerImpl) GetShops() []shop.IShop {
-	shopList := s._rep.GetShopsOfMerchant(s._merchant.GetAggregateRootId())
+	shopList := s.rep.GetShopsOfMerchant(s.merchant.GetAggregateRootId())
 	shops := make([]shop.IShop, len(shopList))
 	for i, v := range shopList {
 		v2 := v
@@ -100,7 +100,7 @@ func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
 // 删除门店
 func (s *shopManagerImpl) DeleteShop(shopId int) error {
 	//todo : 检测订单数量
-	mchId := s._merchant.GetAggregateRootId()
+	mchId := s.merchant.GetAggregateRootId()
 	sp := s.GetShop(shopId)
 	if sp != nil {
 		switch sp.Type() {
@@ -116,12 +116,12 @@ func (s *shopManagerImpl) DeleteShop(shopId int) error {
 func (s *shopManagerImpl) deleteOnlineShop(mchId int, sp shop.IShop) error {
 	return errors.New("暂不支持删除线上商店")
 	shopId := sp.GetDomainId()
-	err := s._rep.DeleteOnlineShop(mchId, shopId)
+	err := s.rep.DeleteOnlineShop(mchId, shopId)
 	return err
 }
 
 func (s *shopManagerImpl) deleteOfflineShop(mchId int, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
-	err := s._rep.DeleteOfflineShop(mchId, shopId)
+	err := s.rep.DeleteOfflineShop(mchId, shopId)
 	return err
 }

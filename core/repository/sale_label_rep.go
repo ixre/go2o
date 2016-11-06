@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/item"
@@ -58,17 +59,9 @@ func (t *saleLabelRep) GetSaleLabel(merchantId int, id int) sale.ISaleLabel {
 }
 
 // 保存销售标签
-func (t *saleLabelRep) SaveSaleLabel(merchantId int, v *sale.Label) (int, error) {
-	orm := t.GetOrm()
-	var err error
-	v.MerchantId = merchantId
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		t.Connector.ExecScalar("SELECT MAX(id) FROM gs_sale_label WHERE mch_id=?", &v.Id, merchantId)
-	}
-	return v.Id, err
+func (t *saleLabelRep) SaveSaleLabel(mchId int, v *sale.Label) (int, error) {
+	v.MerchantId = mchId
+	return orm.Save(t.GetOrm(), v, v.Id)
 }
 
 // 根据Code获取销售标签
@@ -95,9 +88,9 @@ func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId,
 	arr := []*valueobject.Goods{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN
 	       gs_item ON gs_item.id = gs_goods.item_id
-		 WHERE gs_item.review_state=? AND gs_item.shelve_state=?  AND gs_item.id IN (
-			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
-			WHERE t.mch_id=? AND t.id=?) `+sortBy+`
+		 WHERE gs_item.review_state=? AND gs_item.shelve_state=? AND gs_item.id IN (
+			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t
+			 ON t.id = g.sale_tag_id WHERE t.mch_id=? AND t.id=?) `+sortBy+`
 			LIMIT ?,?`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
 	return arr
 }

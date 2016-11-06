@@ -23,11 +23,11 @@ var _ afterSales.IAfterSalesOrder = new(exchangeOrderImpl)
 //todo: 是否也需要限制退货数量
 type exchangeOrderImpl struct {
 	*afterSalesOrderImpl
-	_excValue *afterSales.ExchangeOrder
+	refValue *afterSales.ExchangeOrder
 }
 
 func newExchangeOrderImpl(v *afterSalesOrderImpl) *exchangeOrderImpl {
-	if v._value.Type != afterSales.TypeExchange {
+	if v.value.Type != afterSales.TypeExchange {
 		panic(errors.New("售后单类型不是换货单"))
 	}
 	return &exchangeOrderImpl{
@@ -36,7 +36,7 @@ func newExchangeOrderImpl(v *afterSalesOrderImpl) *exchangeOrderImpl {
 }
 
 func (e *exchangeOrderImpl) getValue() *afterSales.ExchangeOrder {
-	if e._excValue == nil {
+	if e.refValue == nil {
 		if e.GetDomainId() <= 0 {
 			panic(errors.New("换货单还未提交"))
 		}
@@ -44,9 +44,9 @@ func (e *exchangeOrderImpl) getValue() *afterSales.ExchangeOrder {
 		if tmp.Db().GetOrm().Get(e.GetDomainId(), v) != nil {
 			panic(errors.New("换货单不存在"))
 		}
-		e._excValue = v
+		e.refValue = v
 	}
-	return e._excValue
+	return e.refValue
 }
 
 // 获取售后单数据
@@ -69,7 +69,7 @@ func (e *exchangeOrderImpl) Submit() (int, error) {
 	id, err := e.afterSalesOrderImpl.Submit()
 	// 提交换货单
 	if err == nil {
-		e._excValue = &afterSales.ExchangeOrder{
+		e.refValue = &afterSales.ExchangeOrder{
 			Id:          e.afterSalesOrderImpl.GetDomainId(),
 			IsShipped:   0,
 			ShipSpName:  "",
@@ -78,7 +78,7 @@ func (e *exchangeOrderImpl) Submit() (int, error) {
 			ShipTime:    0,
 			ReceiveTime: 0,
 		}
-		_, err = orm.Save(tmp.Db().GetOrm(), e._excValue, 0)
+		_, err = orm.Save(tmp.Db().GetOrm(), e.refValue, 0)
 	}
 	return id, err
 }

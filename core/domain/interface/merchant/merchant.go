@@ -18,6 +18,11 @@ const (
 	KindAccountSettleOrder      = 1
 	KindAccountPresent          = 2
 	KindAccountTransferToMember = 5
+
+	//商户提现
+	KindＭachTakeOutToBankCard = 100
+	//商户提现失败返还给会员
+	KindＭachTakOutRefund = 101
 )
 
 type (
@@ -108,6 +113,9 @@ type (
 
 		// 转到会员账户
 		TransferToMember(amount float32) error
+
+		//商户积分转会员积分
+		TransferToMember1(amount float32) error
 
 		// 赠送
 		Present(amount float32, remark string) error

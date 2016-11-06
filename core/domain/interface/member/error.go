@@ -52,6 +52,9 @@ var (
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
 		"member_level_used", "此等级已被会员使用")
 
+	ErrLevelDisabled *domain.DomainError = domain.NewDomainError(
+		"member_level_disabled", "等级未启用")
+
 	ErrExistsSameProgramSignalLevel *domain.DomainError = domain.NewDomainError(
 		"member_exists_same_program_signal_level", "存在相同可编程签名的等级")
 
@@ -122,7 +125,7 @@ var (
 		"err_out_of_balance", "超出金额")
 
 	ErrAccountOutOfTakeOutTimes *domain.DomainError = domain.NewDomainError(
-		"err_account_out_of_take_out_times", "今日已达到最高提现次数")
+		"err_account_out_of_take_out_times", "今日已达到提现次数上限")
 
 	ErrTransferAccountsLevelNoPerm *domain.DomainError = domain.NewDomainError(
 		"err_account_transfer_accounts_level_no_perm", "%s不允许转账")
@@ -142,6 +145,9 @@ var (
 
 	ErrNilNickName *domain.DomainError = domain.NewDomainError(
 		"err_member_nil_nick_name", "昵称不能为空")
+
+	ErrNullAvatar *domain.DomainError = domain.NewDomainError(
+		"err_member_null_avatar", "请上传头像")
 
 	ErrAddress *domain.DomainError = domain.NewDomainError(
 		"err_member_address", "请填写详细地址")
@@ -179,6 +185,9 @@ var (
 	ErrAccountNotEnoughAmount *domain.DomainError = domain.NewDomainError(
 		"err_not_enough_amount", "账户余额不足")
 
+	ErrTakeOutState *domain.DomainError = domain.NewDomainError(
+		"err_member_take_out_state", "提现申请状态错误")
+
 	ErrNotSupportTakeOutBusinessKind *domain.DomainError = domain.NewDomainError(
 		"err_not_support_take_out_business_kind", "不支持的提现业务类型")
 
@@ -199,6 +208,9 @@ var (
 
 	ErrNotTrusted *domain.DomainError = domain.NewDomainError(
 		"err_member_not_trusted", "尚未实名认证")
+
+	ErrNoChangedTrustInfo *domain.DomainError = domain.NewDomainError(
+		"err_member_no_changed_trust_info", "请更改实名信息后再进行提交")
 
 	ErrRealName *domain.DomainError = domain.NewDomainError(
 		"err_real_name", "请输入真实姓名")

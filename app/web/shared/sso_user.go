@@ -26,37 +26,62 @@ type UserC struct {
 //@member_id : 会员编号
 //@token  :  密钥/令牌
 //@device : 设备类型
-func (u *UserC) Connect(ctx *echox.Context) error {
+func (u *UserC) Connect(c *echox.Context) error {
+	// 获取回调函数方法
+	callback := c.QueryParam("callback")
+	if callback == "" {
+		callback = "sso_callback"
+	}
 	//设置访问设备
-	if device := ctx.Query("device"); len(device) > 0 {
-		util.SetBrownerDevice(ctx.Response(), ctx.Request(), device)
+	if device := c.QueryParam("device"); len(device) > 0 {
+		util.SetBrownerDevice(c.Response(), c.Request(), device)
 	}
 	// 第三方连接，传入memberId 和 token
-	memberId, err := strconv.Atoi(ctx.Query("member_id"))
-	token := ctx.Query("token")
-	if err != nil || token == "" {
-		return ctx.String(http.StatusOK, "会话不正确")
+	memberId, err := strconv.Atoi(c.QueryParam("member_id"))
+	if err != nil {
+		memberId = 0
 	}
-	// 存储会话状态
-	m := dps.MemberService.GetMember(memberId)
-	ctx.Session.Set("member", m)
-	ctx.Session.Save()
-	return ctx.StringOK("ok")
+	// 鉴权，如成功，则存储会话
+	token := c.QueryParam("token")
+	sto := c.App.Storage()
+	if util.CompareMemberApiToken(sto, memberId, token) {
+		m := dps.MemberService.GetMember(memberId)
+		c.Session.Set("member", m)
+		c.Session.Save()
+		return c.JSONP(http.StatusOK, callback, "success")
+	}
+	// 鉴权失败
+	return c.JSONP(http.StatusOK, callback, "error credentital")
 }
 
 //同步退出
-func (u *UserC) Disconnect(ctx *echox.Context) error {
-	ctx.Session.Destroy()
-
+func (u *UserC) Disconnect(c *echox.Context) error {
+	// 获取回调函数方法
+	callback := c.QueryParam("callback")
+	if callback == "" {
+		callback = "sso_callback"
+	}
+	// 消除会话
+	c.Session.Destroy()
+	rsp := c.Response()
+	// 清理以"_"开头的cookie
 	d := time.Duration(-1e9)
 	expires := time.Now().Local().Add(d)
-	ck := &http.Cookie{
-		Name:     "_cart",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Expires:  expires,
+	list := c.Request().Cookies()
+	for _, ck := range list {
+		if ck.Name[0] == '_' {
+			ck.Expires = expires
+			http.SetCookie(rsp, ck)
+		}
 	}
-	http.SetCookie(ctx.Response(), ck)
-	return ctx.StringOK("ok")
+	// 清理购物车
+	//ck := &http.Cookie{
+	//    Name:     "_cart",
+	//    Value:    "",
+	//    Path:     "/",
+	//    HttpOnly: true,
+	//    Expires:  expires,
+	//}
+	//http.SetCookie(c.Response(), ck)
+	return c.JSONP(http.StatusOK, callback, "success")
 }

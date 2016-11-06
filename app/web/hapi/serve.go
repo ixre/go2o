@@ -10,10 +10,10 @@ package hapi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/labstack/echo"
 	"go2o/app/web/shared"
 	"go2o/core/domain/interface/member"
 	"go2o/x/echox"
-	"gopkg.in/labstack/echo.v1"
 	"net/http"
 )
 
@@ -31,8 +31,7 @@ func registerRoutes(s *echox.Echo) {
 	mc := &mainC{app}
 	uc := &shared.UserC{App: app}
 	sc := &serviceC{app}
-
-	s.Get("/api_info", mc.Info)
+	s.GET("/api_info", mc.Info)
 	s.Getx("/test", mc.Test)
 	s.Getx("/request_login", mc.RequestLogin)
 	s.Getx("/r/uc", mc.RedirectUc)
@@ -41,15 +40,15 @@ func registerRoutes(s *echox.Echo) {
 }
 
 func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx *echo.Context) error {
+	return func(c echo.Context) error {
 		//todo: 同源验证,受信任的源
-		return h(ctx)
+		return h(c)
 	}
 }
 
 //检查会员编号
-func getMemberId(ctx *echox.Context) int {
-	v := ctx.Session.Get("member")
+func getMemberId(c *echox.Context) int {
+	v := c.Session.Get("member")
 	if v != nil {
 		m := v.(*member.Member)
 		if m != nil {
@@ -59,9 +58,9 @@ func getMemberId(ctx *echox.Context) int {
 	return -1
 }
 
-func requestLogin(ctx *echox.Context) error {
+func requestLogin(c *echox.Context) error {
 	msg := gof.Message{
 		Message: "not login",
 	}
-	return ctx.JSONP(http.StatusOK, ctx.Query("callback"), msg)
+	return c.JSONP(http.StatusOK, c.QueryParam("callback"), msg)
 }

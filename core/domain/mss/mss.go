@@ -21,27 +21,27 @@ var _ mss.IUserMessageManager = new(userMessageManagerImpl)
 var _ mss.IMessageManager = new(messageManagerImpl)
 
 type messageManagerImpl struct {
-	_rep mss.IMssRep
+	rep mss.IMssRep
 }
 
 func NewMessageManager(rep mss.IMssRep) mss.IMessageManager {
 	return &messageManagerImpl{
-		_rep: rep,
+		rep: rep,
 	}
 }
 
 // 创建消息模版对象
 func (mm *messageManagerImpl) CreateMessage(msg *mss.Message,
 	content interface{}) mss.IMessage {
-	m := newMessage(msg, mm._rep).(*messageImpl)
+	m := newMessage(msg, mm.rep).(*messageImpl)
 	if content != nil {
 		switch m.Type() {
 		case notify.TypeEmailMessage:
-			return newMailMessage(m, content.(*notify.MailMessage), m._rep)
+			return newMailMessage(m, content.(*notify.MailMessage), m.rep)
 		case notify.TypeSiteMessage:
-			return newSiteMessage(m, content.(*notify.SiteMessage), m._rep)
+			return newSiteMessage(m, content.(*notify.SiteMessage), m.rep)
 		case notify.TypePhoneMessage:
-			return newPhoneMessage(m, content.(*notify.PhoneMessage), m._rep)
+			return newPhoneMessage(m, content.(*notify.PhoneMessage), m.rep)
 		}
 	} else {
 		if m.Type() == notify.TypeEmailMessage ||
@@ -55,8 +55,8 @@ func (mm *messageManagerImpl) CreateMessage(msg *mss.Message,
 
 // 创建消息模版对象
 func (m *messageManagerImpl) GetMessage(id int) mss.IMessage {
-	if msg := m._rep.GetMessage(id); msg != nil {
-		con := m._rep.GetMessageContent(msg.Id)
+	if msg := m.rep.GetMessage(id); msg != nil {
+		con := m.rep.GetMessageContent(msg.Id)
 		switch msg.Type {
 		case notify.TypePhoneMessage:
 			v := notify.PhoneMessage(con.Data)

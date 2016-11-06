@@ -26,9 +26,6 @@ var (
 	ErrNotOnShelves *domain.DomainError = domain.NewDomainError(
 		"not_on_shelves", "商品已下架")
 
-	ErrSalePriceLessThanCost *domain.DomainError = domain.NewDomainError(
-		"err_goods_sale_price_less_than_cost", "商品销售价必须高于供货价")
-
 	ErrGoodsMinProfitRate *domain.DomainError = domain.NewDomainError(
 		"err_goods_min_profit_rate", "商品利润率不能低于%s")
 )

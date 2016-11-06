@@ -1,51 +1,54 @@
-ALTER TABLE `zxdb`.`pt_merchant`
-  RENAME TO `zxdb`.`pt_merchant`;
-ALTER TABLE `zxdb`.`pt_page`
+ALTER TABLE `pt_merchant`
+  RENAME TO `pt_merchant`;
+ALTER TABLE `pt_page`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`dlv_partner_bind`
+ALTER TABLE `dlv_partner_bind`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL,
-  RENAME TO `zxdb`.`dlv_merchant_bind`;
-ALTER TABLE `zxdb`.`gs_category`
+  RENAME TO `dlv_merchant_bind`;
+ALTER TABLE `gs_category`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '商户ID(pattern ID);如果为空，则表示模式分类';
-ALTER TABLE `zxdb`.`gs_sale_label`
+ALTER TABLE `gs_sale_label`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`mm_relation`
+ALTER TABLE `mm_relation`
   CHANGE COLUMN `reg_partner_id` `reg_merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '注册商户编号';
-ALTER TABLE `zxdb`.`pm_info`
+ALTER TABLE `mm_relation`
+  ADD COLUMN `refer_str` VARCHAR(250) NULL AFTER `invi_member_id`;
+
+ALTER TABLE `pm_info`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`ad_list`
+ALTER TABLE `ad_list`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_api`
+ALTER TABLE `pt_api`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL;
-ALTER TABLE `zxdb`.`pt_kvset`
+ALTER TABLE `pt_kvset`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_kvset_member`
+ALTER TABLE `pt_kvset_member`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_mail_queue`
+ALTER TABLE `pt_mail_queue`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_mail_template`
+ALTER TABLE `pt_mail_template`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_member_level`
+ALTER TABLE `pt_member_level`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_order`
+ALTER TABLE `pt_order`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL
 COMMENT '商户ID';
-ALTER TABLE `zxdb`.`pt_saleconf`
+ALTER TABLE `pt_saleconf`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL;
-ALTER TABLE `zxdb`.`pt_shop`
+ALTER TABLE `pt_shop`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NULL DEFAULT NULL;
-ALTER TABLE `zxdb`.`pt_siteconf`
+ALTER TABLE `pt_siteconf`
   CHANGE COLUMN `partner_id` `merchant_id` INT(11) NOT NULL;
-
 -- ---------------
 
-ALTER TABLE `zxdb`.`pt_ad`
-  RENAME TO `zxdb`.`ad_list`;
 
-ALTER TABLE `zxdb`.`pt_ad_image`
-  RENAME TO `zxdb`.`ad_image`;
+ALTER TABLE `pt_ad`
+  RENAME TO `ad_list`;
+
+ALTER TABLE `pt_ad_image`
+  RENAME TO `ad_image`;
 
 CREATE TABLE `ad_group` (
   `id`      INT(11) NOT NULL AUTO_INCREMENT,
@@ -84,7 +87,7 @@ CREATE TABLE `ad_userset` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-ALTER TABLE `zxdb`.`ad_list`
+ALTER TABLE `ad_list`
   DROP COLUMN `enabled`,
   DROP COLUMN `is_internal`,
   CHANGE COLUMN `merchant_id` `user_id` INT(11) NULL DEFAULT NULL,
@@ -98,7 +101,7 @@ COMMENT '点击次数'
 COMMENT '投放天数'
   AFTER `click_count`;
 
-CREATE TABLE `zxdb`.`ad_hyperlink` (
+CREATE TABLE `ad_hyperlink` (
   `id`       INT          NOT NULL AUTO_INCREMENT,
   `ad_id`    INT          NULL,
   `title`    VARCHAR(50)  NULL,
@@ -106,10 +109,10 @@ CREATE TABLE `zxdb`.`ad_hyperlink` (
   PRIMARY KEY (`id`)
 );
 
---------------------------------
 
 
-CREATE TABLE `zxdb`.`mm_level` (
+
+CREATE TABLE `mm_level` (
   `id`             INT         NOT NULL AUTO_INCREMENT,
   `name`           VARCHAR(45) NULL,
   `require_exp`    INT         NULL,
@@ -119,12 +122,12 @@ CREATE TABLE `zxdb`.`mm_level` (
 );
 
 
-ALTER TABLE `zxdb`.`pt_api`
+ALTER TABLE `pt_api`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NOT NULL,
-  RENAME TO `zxdb`.`mch_api`;
+  RENAME TO `mch_api`;
 
 
-CREATE TABLE `zxdb`.`mch_enterpriseinfo` (
+CREATE TABLE `mch_enterpriseinfo` (
   `id`               INT          NOT NULL AUTO_INCREMENT,
   `mch_id`           INT          NULL,
   `name`             VARCHAR(45)  NULL,
@@ -147,7 +150,7 @@ CREATE TABLE `zxdb`.`mch_enterpriseinfo` (
 );
 
 
-ALTER TABLE `zxdb`.`pt_merchant`
+ALTER TABLE `pt_merchant`
   DROP COLUMN `address`,
   DROP COLUMN `phone`,
   DROP COLUMN `tel`,
@@ -161,10 +164,10 @@ ALTER TABLE `zxdb`.`pt_merchant`
   AFTER `join_time`,
   ADD COLUMN `member_id` INT UNSIGNED NULL
   AFTER `id`,
-  RENAME TO `zxdb`.`mch_merchant`;
+  RENAME TO `mch_merchant`;
 
 
-ALTER TABLE `zxdb`.`pt_saleconf`
+ALTER TABLE `pt_saleconf`
   DROP COLUMN `present_convert_csn`,
   DROP COLUMN `flow_convert_csn`,
   DROP COLUMN `apply_csn`,
@@ -178,10 +181,10 @@ COMMENT '是否启用分销'
   AFTER `mch_id`,
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (`mch_id`),
-  RENAME TO `zxdb`.`mch_saleconf`;
+  RENAME TO `mch_saleconf`;
 
 
-CREATE TABLE `zxdb`.`mch_offline_shop` (
+CREATE TABLE `mch_offline_shop` (
   `shop_id`        INT         NOT NULL,
   `tel`            VARCHAR(45) NULL,
   `addr`           VARCHAR(45) NULL,
@@ -196,7 +199,7 @@ CREATE TABLE `zxdb`.`mch_offline_shop` (
 );
 
 
-ALTER TABLE `zxdb`.`pt_shop`
+ALTER TABLE `pt_shop`
   DROP COLUMN `deliver_radius`,
   DROP COLUMN `location`,
   DROP COLUMN `phone`,
@@ -204,10 +207,10 @@ ALTER TABLE `zxdb`.`pt_shop`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
   ADD COLUMN `shop_type` TINYINT(1) NULL
   AFTER `mch_id`,
-  RENAME TO `zxdb`.`mch_shop`;
+  RENAME TO `mch_shop`;
 
 
-CREATE TABLE `zxdb`.`mch_online_shop` (
+CREATE TABLE `mch_online_shop` (
   `shop_id`     INT          NOT NULL,
   `alias`       VARCHAR(20)  NULL,
   `tel`         VARCHAR(45)  NULL,
@@ -220,50 +223,50 @@ CREATE TABLE `zxdb`.`mch_online_shop` (
   PRIMARY KEY (`shop_id`)
 );
 
-ALTER TABLE `zxdb`.`mch_merchant`
+ALTER TABLE `mch_merchant`
   ADD COLUMN `level` INT NULL
 COMMENT '商户等级'
   AFTER `name`;
 
 
-ALTER TABLE `flm`.`gs_category`
+ALTER TABLE `gs_category`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL
   DEFAULT NULL
 COMMENT '商户ID(merhantId ID);如果为空，则表示系统的f分类 ';
 
-ALTER TABLE `flm`.`gs_category`
+ALTER TABLE `gs_category`
   ADD COLUMN `level` TINYINT(1) NULL
   AFTER `sort_number`;
 
-ALTER TABLE `flm`.`mch_merchant`
+ALTER TABLE `mch_merchant`
   ADD COLUMN `self_sales` TINYINT(1) NULL
   AFTER `name`;
 
 
-ALTER TABLE `flm`.`gs_sale_label`
+ALTER TABLE `gs_sale_label`
   DROP COLUMN `is_internal`,
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
   CHANGE COLUMN `goods_image` `label_image` VARCHAR(100) NULL DEFAULT NULL,
-  RENAME TO `flm`.`gs_sale_label`;
+  RENAME TO `gs_sale_label`;
 
 
-ALTER TABLE `flm`.`pt_page`
+ALTER TABLE `pt_page`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL,
-  RENAME TO `flm`.`mch_page`;
+  RENAME TO `mch_page`;
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   ADD COLUMN `supplier_id` INT NULL
   AFTER `category_id`;
 
-ALTER TABLE `flm`.`pm_info`
+ALTER TABLE `pm_info`
   CHANGE COLUMN `merchant_id` `mch_id` INT(11) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`ad_position`
+ALTER TABLE `ad_position`
   CHANGE COLUMN `description` `key` VARCHAR(45) NULL DEFAULT NULL
   AFTER `group_id`,
   CHANGE COLUMN `name` `name` VARCHAR(45) NULL DEFAULT NULL;
 
-CREATE TABLE `flm`.`msg_list` (
+CREATE TABLE `msg_list` (
   `id`          INT        NOT NULL AUTO_INCREMENT,
   `msg_type`    TINYINT(1) NULL,
   `use_for`     TINYINT(1) NULL,
@@ -276,14 +279,14 @@ CREATE TABLE `flm`.`msg_list` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`msg_content` (
+CREATE TABLE `msg_content` (
   `id`       INT  NOT NULL AUTO_INCREMENT,
   `msg_id`   INT  NULL,
   `msg_data` TEXT NULL,
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`msg_to` (
+CREATE TABLE `msg_to` (
   `id`         INT        NOT NULL AUTO_INCREMENT,
   `to_id`      INT        NULL,
   `to_role`    TINYINT(2) NULL,
@@ -293,7 +296,7 @@ CREATE TABLE `flm`.`msg_to` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`msg_replay` (
+CREATE TABLE `msg_replay` (
   `id`          INT        NOT NULL AUTO_INCREMENT,
   `refer_id`    INT        NULL,
   `sender_id`   INT        NULL,
@@ -303,17 +306,17 @@ CREATE TABLE `flm`.`msg_replay` (
 );
 
 
-ALTER TABLE `flm`.`sale_cart_item`
+ALTER TABLE `sale_cart_item`
   ADD COLUMN `mch_id` INT NULL
   AFTER `cart_id`,
   ADD COLUMN `shop_id` INT NULL
   AFTER `mch_id`;
 
-ALTER TABLE `flm`.`mm_level`
+ALTER TABLE `mm_level`
   ADD COLUMN `is_official` TINYINT(1) NULL
   AFTER `program_signal`;
 
-CREATE TABLE `flm`.`mm_trusted_info` (
+CREATE TABLE `mm_trusted_info` (
   `member_id`   INT          NOT NULL,
   `real_name`   VARCHAR(10)  NULL,
   `body_number` VARCHAR(20)  NULL,
@@ -376,7 +379,7 @@ INSERT INTO mm_profile SELECT
                          `update_time`
                        FROM mm_member;
 
-ALTER TABLE `flm`.`mm_profile`
+ALTER TABLE `mm_profile`
   ADD COLUMN `province` INT NULL
   AFTER `email`,
   ADD COLUMN `city` INT NULL
@@ -384,7 +387,7 @@ ALTER TABLE `flm`.`mm_profile`
   ADD COLUMN `district` INT NULL
   AFTER `city`;
 
-ALTER TABLE `flm`.`mm_member`
+ALTER TABLE `mm_member`
   DROP COLUMN `remark`,
   DROP COLUMN `email`,
   DROP COLUMN `ext_6`,
@@ -403,7 +406,7 @@ ALTER TABLE `flm`.`mm_member`
   DROP COLUMN `name`;
 
 
-CREATE TABLE `flm`.`mm_favorite` (
+CREATE TABLE `mm_favorite` (
   `id`          INT        NOT NULL AUTO_INCREMENT
   COMMENT '会员收藏表',
   `member_id`   INT        NULL,
@@ -414,7 +417,7 @@ CREATE TABLE `flm`.`mm_favorite` (
 );
 
 
-ALTER TABLE `flm`.`mm_deliver_addr`
+ALTER TABLE `mm_deliver_addr`
   CHANGE COLUMN `address` `address` VARCHAR(80) NULL DEFAULT NULL
 COMMENT '详细地址',
   ADD COLUMN `province` INT NULL
@@ -427,10 +430,10 @@ COMMENT '详细地址',
 COMMENT '省市区'
   AFTER `district`;
 
-ALTER TABLE `flm`.`mch_page`
-  RENAME TO `flm`.`con_page`;
+ALTER TABLE `mch_page`
+  RENAME TO `con_page`;
 
-CREATE TABLE `flm`.`con_article_category` (
+CREATE TABLE `con_article_category` (
   `id`          INT          NOT NULL AUTO_INCREMENT,
   `parent_id`   INT          NULL,
   `name`        VARCHAR(45)  NULL,
@@ -445,7 +448,7 @@ CREATE TABLE `flm`.`con_article_category` (
 );
 
 
-CREATE TABLE `flm`.`con_article` (
+CREATE TABLE `con_article` (
   `id`           INT          NOT NULL AUTO_INCREMENT,
   `cat_id`       INT          NULL,
   `title`        VARCHAR(120) NULL,
@@ -463,11 +466,11 @@ CREATE TABLE `flm`.`con_article` (
 );
 
 
-ALTER TABLE `zxdb`.`gs_snapshot`
-  RENAME TO `zxdb`.`gs_sale_snapshot`;
+ALTER TABLE `gs_snapshot`
+  RENAME TO `gs_sale_snapshot`;
 
 
-CREATE TABLE `zxdb`.`gs_snapshot` (
+CREATE TABLE `gs_snapshot` (
   `sku_id`       INT           NOT NULL,
   `vendor_id`    INT           NULL,
   `snapshot_key` VARCHAR(45)   NULL,
@@ -483,43 +486,43 @@ CREATE TABLE `zxdb`.`gs_snapshot` (
   PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   ADD COLUMN `has_review` TINYINT(1) NULL
   AFTER `state`,
   ADD COLUMN `review_pass` TINYINT(1) NULL
   AFTER `has_review`;
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   CHANGE COLUMN `category_id` `cat_id` INT(11) NULL DEFAULT NULL,
   ADD COLUMN `on_shelves` TINYINT(1) NULL DEFAULT 1
   AFTER `cat_id`;
 
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   ADD COLUMN `level_sales` TINYINT(1) NULL
 COMMENT '是否有会员价'
   AFTER `sale_price`;
 
-ALTER TABLE `flm`.`sale_cart_item`
+ALTER TABLE `sale_cart_item`
   CHANGE COLUMN `mch_id` `vendor_id` INT(11) NULL DEFAULT NULL,
   CHANGE COLUMN `quantity` `quantity` INT(8) NULL DEFAULT NULL,
   ADD COLUMN `checked` TINYINT(1) NULL
   AFTER `quantity`;
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   ADD COLUMN `sale_num` INT NULL
   AFTER `level_sales`,
   ADD COLUMN `stock_num` INT NULL
   AFTER `sale_num`;
 
 
-ALTER TABLE `flm`.`pt_order`
+ALTER TABLE `pt_order`
   CHANGE COLUMN `member_id` `buyner_id` INT(11) NULL DEFAULT NULL
 COMMENT '-1代表游客订餐',
   CHANGE COLUMN `merchant_id` `vendor_id` INT(11) NULL DEFAULT NULL
 COMMENT '商家ID';
 
-CREATE TABLE `flm`.`pay_order` (
+CREATE TABLE `pay_order` (
   `id`                INT           NOT NULL AUTO_INCREMENT,
   `trade_no`          VARCHAR(45)   NULL,
   `vendor_id`         INT           NULL,
@@ -544,11 +547,11 @@ CREATE TABLE `flm`.`pay_order` (
 );
 
 
-ALTER TABLE `zxdb`.`pt_order`
+ALTER TABLE `pt_order`
   CHANGE COLUMN `buyner_id` `buyer_id` INT(11) NULL DEFAULT NULL
 COMMENT '-1代表游客订餐';
 
-ALTER TABLE `zxdb`.`pt_order_item`
+ALTER TABLE `pt_order_item`
   CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL,
   CHANGE COLUMN `quantity` `quantity` INT(6) NULL DEFAULT NULL,
   CHANGE COLUMN `update_time` `update_time` INT NULL DEFAULT NULL,
@@ -561,7 +564,7 @@ ALTER TABLE `zxdb`.`pt_order_item`
   ADD COLUMN `final_fee` DECIMAL(8, 2) NULL
   AFTER `fee`;
 
-CREATE TABLE `flm`.`sale_order` (
+CREATE TABLE `sale_order` (
   `id`               INT           NOT NULL AUTO_INCREMENT,
   `order_no`         VARCHAR(20)   NULL,
   `buyer_id`         INT           NULL,
@@ -581,12 +584,12 @@ CREATE TABLE `flm`.`sale_order` (
   PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `flm`.`pt_order_pb`
+ALTER TABLE `pt_order_pb`
   CHANGE COLUMN `order_no` `order_id` INT NULL DEFAULT NULL
   AFTER `id`;
 
 
-CREATE TABLE `flm`.`sale_sub_order` (
+CREATE TABLE `sale_sub_order` (
   `id`           INT           NOT NULL AUTO_INCREMENT,
   `order_no`     VARCHAR(20)   NULL,
   `parent_order` INT           NULL,
@@ -606,22 +609,22 @@ CREATE TABLE `flm`.`sale_sub_order` (
 );
 
 
-ALTER TABLE `flm`.`pt_order_item`
+ALTER TABLE `pt_order_item`
   CHANGE COLUMN `update_time` `update_time` INT NULL DEFAULT NULL,
   ADD COLUMN `sku_id` INT NULL
   AFTER `order_id`,
   ADD COLUMN `final_fee` DECIMAL(8, 2) NULL
   AFTER `fee`,
-  RENAME TO `flm`.`sale_order_item`;
+  RENAME TO `sale_order_item`;
 
-ALTER TABLE `flm`.`sale_order_item`
+ALTER TABLE `sale_order_item`
   CHANGE COLUMN `snapshot_id` `snap_id` INT(11) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`sale_order_item`
+ALTER TABLE `sale_order_item`
   DROP COLUMN `sku`;
 
 
-CREATE TABLE `flm`.`express_template` (
+CREATE TABLE `express_template` (
   `id`         INT           NOT NULL AUTO_INCREMENT,
   `user_id`    INT           NULL,
   `name`       VARCHAR(45)   NULL,
@@ -636,7 +639,7 @@ CREATE TABLE `flm`.`express_template` (
 );
 
 
-CREATE TABLE `flm`.`express_area_set` (
+CREATE TABLE `express_area_set` (
   `id`          INT           NOT NULL AUTO_INCREMENT,
   `template_id` INT           NULL,
   `code_list`   VARCHAR(500)  NULL,
@@ -648,7 +651,7 @@ CREATE TABLE `flm`.`express_area_set` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`express_provider` (
+CREATE TABLE `express_provider` (
   `id`       INT         NOT NULL AUTO_INCREMENT,
   `name`     VARCHAR(45) NULL,
   `letter`   VARCHAR(1)  NULL,
@@ -658,30 +661,30 @@ CREATE TABLE `flm`.`express_provider` (
   PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   ADD COLUMN `weight` INT NULL
 COMMENT '重量,单位:克(g)'
   AFTER `cost`;
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   ADD COLUMN `weight` INT NULL
 COMMENT '单件重量,单位:克(g)'
   AFTER `img`;
 
-ALTER TABLE `flm`.`sale_order`
+ALTER TABLE `sale_order`
   ADD COLUMN `express_fee` DECIMAL(8, 2) NULL
 COMMENT '物流费'
   AFTER `discount_fee`;
 
 
-ALTER TABLE `flm`.`mm_member`
+ALTER TABLE `mm_member`
   ADD COLUMN `check_code` VARCHAR(8) NULL
   AFTER `reg_time`,
   ADD COLUMN `check_expires` INT NULL
   AFTER `check_code`;
 
 
-CREATE TABLE `flm`.`gs_sales_snapshot` (
+CREATE TABLE `gs_sales_snapshot` (
   `id`          INT           NOT NULL AUTO_INCREMENT,
   `snap_key`    VARCHAR(45)   NULL,
   `sku_id`      INT           NULL,
@@ -697,54 +700,54 @@ CREATE TABLE `flm`.`gs_sales_snapshot` (
   PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `flm`.`sale_order`
+ALTER TABLE `sale_order`
   CHANGE COLUMN `total_fee` `goods_fee` DECIMAL(8, 2) NULL DEFAULT NULL
 COMMENT '商品金额';
 
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   CHANGE COLUMN `total_fee` `goods_fee` DECIMAL(8, 2) NULL DEFAULT NULL,
   ADD COLUMN `express_fee` DECIMAL(4, 2) NULL
   AFTER `discount_fee`;
 
-ALTER TABLE `flm`.`sale_order`
+ALTER TABLE `sale_order`
   ADD COLUMN `package_fee` DECIMAL(4, 2) NULL
   AFTER `express_fee`;
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   ADD COLUMN `package_fee` DECIMAL(4, 2) NULL
   AFTER `express_fee`;
 
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   ADD COLUMN `buyer_id` INT NULL
   AFTER `parent_order`;
 
-ALTER TABLE `zxdb`.`pt_order_log`
+ALTER TABLE `pt_order_log`
   ADD COLUMN `order_state` TINYINT(2) NULL
   AFTER `type`,
-  RENAME TO `zxdb`.`sale_order_log`;
+  RENAME TO `sale_order_log`;
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   ADD COLUMN `is_paid` TINYINT(1) NULL
   AFTER `final_fee`;
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   CHANGE COLUMN `status` `state` TINYINT(1) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`sale_order`
+ALTER TABLE `sale_order`
   CHANGE COLUMN `status` `state` TINYINT(1) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`mch_enterprise_info`
+ALTER TABLE `mch_enterprise_info`
   ADD COLUMN `person_id` VARCHAR(20) NULL
 COMMENT '法人身份证号'
   AFTER `person_name`;
 
-ALTER TABLE `flm`.`mch_enterprise_info`
+ALTER TABLE `mch_enterprise_info`
   ADD COLUMN `is_handled` TINYINT(1) NULL
   AFTER `company_imageurl`;
 
-CREATE TABLE `flm`.`ship_order` (
+CREATE TABLE `ship_order` (
   `id`           INT           NOT NULL AUTO_INCREMENT,
   `order_id`     INT           NULL,
   `sp_id`        INT           NULL
@@ -763,7 +766,7 @@ CREATE TABLE `flm`.`ship_order` (
 );
 
 
-CREATE TABLE `flm`.`ship_item` (
+CREATE TABLE `ship_item` (
   `id`           INT           NOT NULL AUTO_INCREMENT,
   `ship_order`   INT           NULL,
   `snap_id`      INT           NULL,
@@ -772,29 +775,29 @@ CREATE TABLE `flm`.`ship_item` (
   `final_amount` DECIMAL(8, 2) NULL,
   PRIMARY KEY (`id`)
 );
-ALTER TABLE `flm`.`sale_order`
+ALTER TABLE `sale_order`
   CHANGE COLUMN `goods_fee` `goods_amount` DECIMAL(8, 2) NULL DEFAULT NULL
 COMMENT '商品金额',
   CHANGE COLUMN `discount_fee` `discount_amount` DECIMAL(8, 2) NULL DEFAULT NULL,
   CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8, 2) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`sale_order_item`
+ALTER TABLE `sale_order_item`
   CHANGE COLUMN `fee` `amount` DECIMAL(8, 2) NULL DEFAULT NULL,
   CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8, 2) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   CHANGE COLUMN `goods_fee` `goods_amount` DECIMAL(8, 2) NULL DEFAULT NULL,
   CHANGE COLUMN `discount_fee` `discount_amount` DECIMAL(8, 2) NULL DEFAULT NULL,
   CHANGE COLUMN `final_fee` `final_amount` DECIMAL(8, 2) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`sale_order_item`
+ALTER TABLE `sale_order_item`
   ADD COLUMN `is_shipped` TINYINT(1) NULL
   AFTER `final_amount`;
 
-ALTER TABLE `flm`.`mm_integral_log`
+ALTER TABLE `mm_integral_log`
   CHANGE COLUMN `partner_id` `mch_id` INT(11) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`pay_order`
+ALTER TABLE `pay_order`
   CHANGE COLUMN `sub_fee` `sub_amount` DECIMAL(8, 2) NULL DEFAULT NULL
 COMMENT '立减金额',
   ADD COLUMN `adjustment_amount` DECIMAL(8, 2) NULL
@@ -802,7 +805,7 @@ COMMENT '调整金额'
   AFTER `sub_amount`;
 
 
-CREATE TABLE `flm`.`sale_after_order` (
+CREATE TABLE `sale_after_order` (
   `id`            INT          NOT NULL AUTO_INCREMENT,
   `order_id`      INT          NULL,
   `vendor_id`     INT          NULL,
@@ -826,14 +829,14 @@ CREATE TABLE `flm`.`sale_after_order` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`sale_return` (
+CREATE TABLE `sale_return` (
   `id`        INT           NOT NULL,
   `amount`    DECIMAL(8, 2) NULL,
   `is_refund` TINYINT(1)    NULL,
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`sale_exchange` (
+CREATE TABLE `sale_exchange` (
   `id`           INT         NOT NULL,
   `is_shipped`   TINYINT(1)  NULL,
   `sp_name`      VARCHAR(20) NULL,
@@ -844,40 +847,40 @@ CREATE TABLE `flm`.`sale_exchange` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `flm`.`sale_refund` (
+CREATE TABLE `sale_refund` (
   `id`        INT           NOT NULL,
   `amount`    DECIMAL(8, 2) NULL,
   `is_refund` TINYINT(1)    NULL,
   PRIMARY KEY (`id`)
 );
 
-ALTER TABLE `flm`.`sale_order_item`
+ALTER TABLE `sale_order_item`
   ADD COLUMN `return_quantity` INT NULL
   AFTER `quantity`;
 
 
-ALTER TABLE `flm`.`sale_sub_order`
+ALTER TABLE `sale_sub_order`
   ADD COLUMN `create_time` INT NULL
   AFTER `remark`;
 
-ALTER TABLE `flm`.`mm_trusted_info`
+ALTER TABLE `mm_trusted_info`
   CHANGE COLUMN `body_number` `card_id` VARCHAR(20)
 CHARACTER SET 'utf8'
 COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL;
 
 
-ALTER TABLE `flm`.`pay_order`
+ALTER TABLE `pay_order`
   ADD COLUMN `order_type` INT NULL
 COMMENT '支付单的类型，如购物或其他'
   AFTER `vendor_id`;
 
-ALTER TABLE `flm`.`pay_order`
+ALTER TABLE `pay_order`
   ADD COLUMN `subject` VARCHAR(45) NULL
 COMMENT '支付单标题'
   AFTER `order_id`;
 
 
-ALTER TABLE `flm`.`mm_integral_log`
+ALTER TABLE `mm_integral_log`
   DROP COLUMN `mch_id`,
   CHANGE COLUMN `member_id` `member_id` INT(11) NOT NULL,
   CHANGE COLUMN `type` `type` INT(11) NOT NULL,
@@ -885,12 +888,12 @@ ALTER TABLE `flm`.`mm_integral_log`
   CHANGE COLUMN `log` `remark` VARCHAR(100) NULL DEFAULT NULL,
   CHANGE COLUMN `record_time` `create_time` INT(11) NOT NULL;
 
-ALTER TABLE `flm`.`mm_integral_log`
+ALTER TABLE `mm_integral_log`
   ADD COLUMN `outer_no` VARCHAR(45) NULL
   AFTER `type`;
 
 
-ALTER TABLE `flm`.`mm_account`
+ALTER TABLE `mm_account`
   CHANGE COLUMN `freezes_fee` `freezes_balance` FLOAT(10, 2) NOT NULL
   AFTER `balance`,
   CHANGE COLUMN `freezes_present` `freezes_present` FLOAT(10, 2) NOT NULL
@@ -916,10 +919,10 @@ COMMENT '不可用积分'
   AFTER `integral`;
 
 
-ALTER TABLE `flm`.`con_page`
+ALTER TABLE `con_page`
   CHANGE COLUMN `mch_id` `user_id` INT(11) NULL DEFAULT NULL;
 
-DROP TABLE `flm`.`gs_member_price`;
+DROP TABLE `gs_member_price`;
 
 CREATE TABLE `gs_member_price` (
   `id`        INT(11)       NOT NULL AUTO_INCREMENT,
@@ -935,38 +938,38 @@ CREATE TABLE `gs_member_price` (
   DEFAULT CHARSET = utf8;
 
 
-ALTER TABLE `flm`.`express_provider`
+ALTER TABLE `express_provider`
   CHANGE COLUMN `letter` `group_flag` VARCHAR(45)
 CHARACTER SET 'utf8'
 COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL;
 
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   ADD COLUMN `express_tid` INT NULL
 COMMENT '快递模板编号'
   AFTER `sale_price`;
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   ADD COLUMN `express_tid` INT NULL
   AFTER `sale_price`;
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   CHANGE COLUMN `img` `img` VARCHAR(120) NULL DEFAULT NULL;
 
-ALTER TABLE `flm`.`gs_item`
+ALTER TABLE `gs_item`
   CHANGE COLUMN `weight` `weight` FLOAT(6, 2) NULL DEFAULT NULL
 COMMENT '重量,单位:克(g)';
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   CHANGE COLUMN `weight` `weight` FLOAT(6, 2) NULL DEFAULT NULL
 COMMENT '单件重量,单位:克(g)';
 
-ALTER TABLE `flm`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   ADD COLUMN `cost` DECIMAL(8, 2) NULL
   AFTER `weight`;
 
 
-ALTER TABLE `flm`.`gs_sales_snapshot`
+ALTER TABLE `gs_sales_snapshot`
   ADD COLUMN `cost` DECIMAL(8, 2) NULL
 COMMENT '供货价'
   AFTER `img`;
@@ -1056,7 +1059,7 @@ CREATE TABLE mch_day_chart (
   COMMENT = '商户每日报表';
 
 
-ALTER TABLE `flm`.`mch_enterprise_info`
+ALTER TABLE `mch_enterprise_info`
   CHANGE COLUMN `person_imageurl` `person_image` VARCHAR(120)
 CHARACTER SET 'utf8'
 COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
@@ -1096,7 +1099,7 @@ CREATE TABLE mch_sign_up (
 );
 
 
-ALTER TABLE `zxdb`.`msg_to`
+ALTER TABLE `msg_to`
   CHANGE COLUMN `to_id` `to_id` INT(11) NOT NULL,
   CHANGE COLUMN `to_role` `to_role` TINYINT(2) NOT NULL,
   CHANGE COLUMN `content_id` `content_id` INT(11) NOT NULL,
@@ -1106,7 +1109,7 @@ ALTER TABLE `zxdb`.`msg_to`
   AFTER `to_role`;
 
 
-ALTER TABLE `zxdb`.`mm_account`
+ALTER TABLE `mm_account`
   ADD COLUMN `priority_pay` TINYINT(1) NULL
 COMMENT '优先（默认）支付账户'
   AFTER `total_consumption`;
@@ -1165,7 +1168,7 @@ CREATE TABLE `mm_present_log` (
   DEFAULT CHARSET = utf8;
 
 
-ALTER TABLE `zxdb`.`mm_account`
+ALTER TABLE `mm_account`
   CHANGE COLUMN `freezes_integral` `freeze_integral` INT(11) NOT NULL
 COMMENT '不可用积分',
   CHANGE COLUMN `balance` `balance` DECIMAL(10, 2) NOT NULL
@@ -1206,13 +1209,13 @@ COMMENT '备注'
   AFTER `review_state`,
   CHANGE COLUMN `has_review` `review_state` TINYINT(1) NULL DEFAULT NULL;
 
-ALTER TABLE `zxdb`.`gs_snapshot`
+ALTER TABLE `gs_snapshot`
   CHANGE COLUMN `on_shelves` `shelve_state` TINYINT(1) NULL DEFAULT '1' AFTER `stock_num`;
 
-ALTER TABLE `go2o`.`mm_present_log`
+ALTER TABLE `mm_present_log`
 CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
 
-ALTER TABLE `go2o`.`mm_balance_log`
+ALTER TABLE `mm_balance_log`
 CHANGE COLUMN `amount` `amount` FLOAT(12,2) NOT NULL COMMENT '金额' ;
 
 

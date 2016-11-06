@@ -188,6 +188,11 @@ func (ms *memberService) GetMemberByUser(usr string) *member.Member {
 	return ms._rep.GetMemberByUsr(usr)
 }
 
+func (ms *memberService) GetPresentLog(memberId int, logId int) *member.PresentLog {
+	m := ms._rep.GetMember(memberId)
+	return m.GetAccount().GetPresentLog(logId)
+}
+
 func (ms *memberService) getMember(memberId int) (
 	member.IMember, error) {
 	if memberId <= 0 {
@@ -243,6 +248,24 @@ func (ms *memberService) ChangeUsr(id int, usr string) error {
 	return m.ChangeUsr(usr)
 }
 
+// 更改会员等级
+func (ms *memberService) ChangeLevel(memberId int, levelId int) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.ChangeLevel(levelId)
+}
+
+// 上传会员头像
+func (ms *memberService) SetAvatar(id int, avatar string) error {
+	m := ms._rep.GetMember(id)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	return m.Profile().SetAvatar(avatar)
+}
+
 // 保存用户
 func (ms *memberService) SaveMember(v *member.Member) (int, error) {
 	if v.Id > 0 {
@@ -289,11 +312,13 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 	return -1, err
 }
 
+// 获取会员等级
 func (ms *memberService) GetMemberLevel(memberId int) *member.Level {
-	if m := ms._rep.GetMember(memberId); m != nil {
-		return m.GetLevel()
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return nil
 	}
-	return nil
+	return m.GetLevel()
 }
 
 func (ms *memberService) GetRelation(memberId int) *member.Relation {
@@ -354,7 +379,8 @@ func (ms *memberService) ResetTradePwd(memberId int) string {
 }
 
 //修改密码,传入密文密码
-func (ms *memberService) ModifyTradePassword(memberId int, oldPwd, newPwd string) error {
+func (ms *memberService) ModifyTradePassword(memberId int,
+	oldPwd, newPwd string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -435,6 +461,9 @@ func (ms *memberService) UnlockBankInfo(memberId int) error {
 // 实名认证信息
 func (ms *memberService) GetTrustedInfo(memberId int) member.TrustedInfo {
 	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.TrustedInfo{}
+	}
 	return m.Profile().GetTrustedInfo()
 }
 
@@ -490,12 +519,12 @@ func (ms *memberService) QueryPagerOrder(memberId, begin, size int, pagination b
 }
 
 /*********** 收货地址 ***********/
-func (ms *memberService) GetDeliverAddress(memberId int) []*member.DeliverAddress {
+func (ms *memberService) GetAddress(memberId int) []*member.DeliverAddress {
 	return ms._rep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
-func (ms *memberService) GetDeliverAddressById(memberId,
+func (ms *memberService) GetAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	v := m.Profile().GetDeliver(deliverId).GetValue()
@@ -520,13 +549,13 @@ func (ms *memberService) SaveAddress(memberId int, e *member.DeliverAddress) (in
 }
 
 //删除配送地址
-func (ms *memberService) DeleteDeliverAddress(memberId int, deliverId int) error {
+func (ms *memberService) DeleteAddress(memberId int, deliverId int) error {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().DeleteDeliver(deliverId)
 }
 
 // 修改密码
-func (ms *memberService) ModifyPassword(memberId int, oldPwd, newPwd string) error {
+func (ms *memberService) ModifyPassword(memberId int, newPwd, oldPwd string) error {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
@@ -606,7 +635,10 @@ func (ms *memberService) GetMemberSummary(memberId int) *dto.MemberSummary {
 			Avatar:            format.GetResUrl(pro.Avatar),
 			Exp:               mv.Exp,
 			Level:             mv.Level,
+			LevelOfficial:     lv.IsOfficial,
+			LevelSign:         lv.ProgramSignal,
 			LevelName:         lv.Name,
+			InvitationCode:    mv.InvitationCode,
 			Integral:          acv.Integral,
 			Balance:           acv.Balance,
 			PresentBalance:    acv.PresentBalance,
@@ -727,13 +759,8 @@ func (ms *memberService) VerifyTradePwd(memberId int, tradePwd string) (bool, er
 	return true, nil
 }
 
-func (ms *memberService) GetPresentLog(memberId int, logId int) *member.PresentLog {
-	m := ms._rep.GetMember(memberId)
-	return m.GetAccount().GetPresentLog(logId)
-}
-
 // 提现并返回提现编号,交易号以及错误信息
-func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
+func (ms *memberService) SubmitTakeOutRequest(memberId int, applyType int,
 	applyAmount float32, commission float32) (int, string, error) {
 	m, err := ms.getMember(memberId)
 	if err != nil {
@@ -754,14 +781,15 @@ func (ms *memberService) SubmitApplyPresentBalance(memberId int, applyType int,
 }
 
 // 获取最近的提现
-func (ms *memberService) GetLatestApplyCash(memberId int) *member.BalanceInfo {
-	return ms._query.GetLatestBalanceInfoByKind(memberId, member.KindPresentTakeOutToBankCard)
+func (ms *memberService) GetLatestTakeOut(memberId int) *member.BalanceInfo {
+	return ms._query.GetLatestBalanceInfoByKind(memberId,
+		member.KindPresentTakeOutToBankCard)
 }
 
 // 获取最近的提现描述
 func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 	var latestInfo string
-	latestApplyInfo := ms.GetLatestApplyCash(memberId)
+	latestApplyInfo := ms.GetLatestTakeOut(memberId)
 	if latestApplyInfo != nil {
 		var sText string
 		switch latestApplyInfo.State {
@@ -786,8 +814,9 @@ func (ms *memberService) GetLatestApplyCashText(memberId int) string {
 }
 
 // 确认提现
-func (ms *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, remark string) error {
-	m, err := ms.getMember(memberId)
+func (a *memberService) ConfirmTakeOutRequest(memberId int,
+	infoId int, pass bool, remark string) error {
+	m, err := a.getMember(memberId)
 	if err == nil {
 		err = m.GetAccount().ConfirmTakeOut(infoId, pass, remark)
 	}
@@ -795,7 +824,7 @@ func (ms *memberService) ConfirmApplyCash(memberId int, infoId int, pass bool, r
 }
 
 // 完成提现
-func (ms *memberService) FinishApplyCash(memberId, id int, tradeNo string) error {
+func (ms *memberService) FinishTakeOutRequest(memberId, id int, tradeNo string) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err

@@ -47,6 +47,29 @@ type (
 		// 允许商户创建页面分类
 		MchPageCategory bool
 	}
+	// 移动应用配置
+	MoAppConf struct {
+		// 应用名称
+		AppName string
+		// APP图标地址
+		AppIcon string
+		// 描述
+		Description string
+		// 模板文件
+		ShowTplPath string
+		// 安卓APP版本
+		AndroidVersion string
+		// 安卓APP版发布地址
+		AndroidReleaseUrl string
+		// 苹果APP版本
+		IosVersion string
+		// 苹果APP版发布地址
+		IosReleaseUrl string
+		// 微软APP版本
+		WpVersion string
+		// 微软APP版发布地址
+		WpReleaseUrl string
+	}
 
 	Registry struct {
 		// 商户提现是否免费
@@ -71,6 +94,8 @@ type (
 		MemberImRequired bool
 		// 会员是否验证手机号码格式
 		MemberCheckPhoneFormat bool
+		// 会员默认个人签名
+		MemberDefaultPersonRemark string
 
 		// 会员提现开关
 		MemberTakeOutOn bool
@@ -81,18 +106,27 @@ type (
 		GoodsDefaultImage string
 		// 商品最低利润率,既(销售价-供货价)/销售价的比例
 		GoodsMinProfitRate float32
-		// 平台首页模板文件
-		PagePlatformIndexPath string
-		// 商铺首页模板文件
-		PageShopIndexPath string
-		// 会员中心首页模板文件名称
-		PageUCenterIndexPath string
+
 		// 广告缓存时间（秒）
 		CacheAdMaxAge int64
 		// 敏感词,以|分割
 		ShopIncorrectAliasWords string
 		// 其他扩展数据
 		Extend map[string]string
+	}
+
+	// 模板配置
+	TemplateConf struct {
+		// 平台首页模板文件路径
+		PlatformIndexPath string
+		// 商铺首页模板文件路径
+		ShopIndexPath string
+		// 会员中心首页模板文件路径
+		UCenterIndexPath string
+		// 会员中心个人资料模板文件路径
+		UCenterPersonInfoPath string
+		// 会员中心推广海报模板文件路径
+		UCenterInvitationDmPath string
 	}
 
 	// 微信API设置
@@ -142,7 +176,7 @@ type (
 		// 是否需要填写手机
 		NeedPhone bool
 		// 必须绑定手机
-		MustBinPhone bool
+		MustBindPhone bool
 		// 是否需要填写即时通讯
 		NeedIm bool
 		// 注册提示
@@ -166,9 +200,9 @@ type (
 		// 每单额外赠送
 		IntegralBackExtra int
 		// 提现手续费费率
-		ApplyCsn float32
+		TakeOutCsn float32
 		// 转账手续费费率
-		TransCsn float32
+		TransferCsn float32
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn float32
 		// 赠送账户转换手续费费率
@@ -184,7 +218,7 @@ type (
 		// 单笔最高提现金额
 		MaxTakeOutAmount float32
 		// 每日提现上限
-		MemberMaxOneDayTakeOutTimes int
+		MaxTakeOutTimesOfDay int
 	}
 
 	// 全局商户销售设置
@@ -244,6 +278,18 @@ type (
 
 		// 保存数据存储
 		SaveRegistry(v *Registry) error
+
+		// 获取模板配置
+		GetTemplateConf() TemplateConf
+
+		// 保存模板配置
+		SaveTemplateConf(v *TemplateConf) error
+
+		// 获取移动应用设置
+		GetMoAppConf() MoAppConf
+
+		// 保存移动应用设置
+		SaveMoAppConf(r *MoAppConf) error
 
 		// 获取全局商户销售设置
 		GetGlobMchSaleConf() GlobMchSaleConf

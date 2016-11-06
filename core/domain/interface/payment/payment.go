@@ -42,12 +42,12 @@ const (
 )
 
 const (
-	// 赠送账户支付
-	SignPresentAccount = "psa"
 	// 线上支付
-	SignOnlinePay = "onlinepay"
+	SignOnlinePay int = 1
 	// 线下支付
-	SignOfflinePay = "offlinepay"
+	SignOfflinePay int = 2
+	// 赠送账户支付
+	SignPresentAccount int = 3
 )
 
 var (

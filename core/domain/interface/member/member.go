@@ -74,6 +74,9 @@ type (
 		// 更改邀请人
 		ChangeReferees(memberId int) error
 
+		// 更改会员等级
+		ChangeLevel(level int) error
+
 		// 增加经验值
 		AddExp(exp int) error
 
@@ -83,7 +86,7 @@ type (
 		// 更换用户名
 		ChangeUsr(string) error
 
-		// 更新登陆时间
+		// 更新登录时间
 		UpdateLoginTime() error
 
 		// 保存
@@ -100,6 +103,9 @@ type (
 
 		// 更改手机号码,不验证手机格式
 		ChangePhone(string) error
+
+		// 设置头像
+		SetAvatar(string) error
 
 		// 资料是否完善
 		ProfileCompleted() bool
@@ -204,7 +210,7 @@ type (
 		CheckExpires int64 `db:"check_expires"`
 		// 状态
 		State int `db:"state"`
-		// 登陆时间
+		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间
 		LastLoginTime int64 `db:"last_login_time"`
@@ -362,11 +368,11 @@ type (
 	}
 )
 
-func (this BankInfo) Right() bool {
-	return len(this.Name) > 0 && len(this.Account) > 0 &&
-		len(this.AccountName) > 0
+func (b BankInfo) Right() bool {
+	return len(b.Name) > 0 && len(b.Account) > 0 &&
+		len(b.AccountName) > 0
 }
 
-func (this BankInfo) Locked() bool {
-	return this.IsLocked == BankLocked
+func (b BankInfo) Locked() bool {
+	return b.IsLocked == BankLocked
 }
