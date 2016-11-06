@@ -39,7 +39,7 @@ type merchantManagerImpl struct {
 }
 
 func NewMerchantManager(rep merchant.IMerchantRep,
-valRep valueobject.IValueRep) merchant.IMerchantManager {
+	valRep valueobject.IValueRep) merchant.IMerchantManager {
 	return &merchantManagerImpl{
 		rep:    rep,
 		valRep: valRep,
