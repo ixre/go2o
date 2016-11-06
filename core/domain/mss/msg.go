@@ -33,40 +33,40 @@ func Translate(c string, m map[string]string) string {
 var _ mss.IMessage = new(messageImpl)
 
 type messageImpl struct {
-	_rep  mss.IMssRep
-	_msg  *mss.Message
-	_tpl  *mss.MailTemplate
-	_data mss.Data
+	rep  mss.IMssRep
+	msg  *mss.Message
+	tpl  *mss.MailTemplate
+	data mss.Data
 }
 
 func newMessage(msg *mss.Message, rep mss.IMssRep) mss.IMessage {
 	return &messageImpl{
-		_rep: rep,
-		_msg: msg,
+		rep: rep,
+		msg: msg,
 	}
 }
 
 // 获取领域编号
 func (m *messageImpl) GetDomainId() int {
-	return m._msg.Id
+	return m.msg.Id
 }
 
 func (m *messageImpl) Type() int {
-	return m._msg.Type
+	return m.msg.Type
 }
 
 // 是否向特定的人发送
 func (m *messageImpl) SpecialTo() bool {
-	return m._msg.To != nil && len(m._msg.To) > 0
+	return m.msg.To != nil && len(m.msg.To) > 0
 }
 
 // 检测是否有权限查看
 func (m *messageImpl) CheckPerm(toUserId int, toRole int) bool {
-	if m._msg.AllUser == 1 || m._msg.ToRole == toRole {
+	if m.msg.AllUser == 1 || m.msg.ToRole == toRole {
 		return true
 	}
-	if m._msg.To != nil {
-		for _, v := range m._msg.To {
+	if m.msg.To != nil {
+		for _, v := range m.msg.To {
 			if v.Id == toUserId && v.Role == toRole {
 				return true
 			}
@@ -77,50 +77,50 @@ func (m *messageImpl) CheckPerm(toUserId int, toRole int) bool {
 
 // 获取消息
 func (m *messageImpl) GetValue() mss.Message {
-	return *m._msg
+	return *m.msg
 }
 
 // 获取消息发送目标
 func (m *messageImpl) GetTo(toUserId int, toRole int) *mss.To {
-	return m._rep.GetMessageTo(m.GetDomainId(), toUserId, toRole)
+	return m.rep.GetMessageTo(m.GetDomainId(), toUserId, toRole)
 }
 
 // 保存
 //todo: 会出现保存后不发送的情况
 func (m *messageImpl) Save() (int, error) {
 	if m.GetDomainId() > 0 {
-		return m._msg.Id, mss.ErrMessageUpdate
+		return m.msg.Id, mss.ErrMessageUpdate
 	}
 	// 检查消息用途,SenderRole不做检查
-	if m._msg.UseFor != mss.UseForNotify &&
-		m._msg.UseFor != mss.UseForService &&
-		m._msg.UseFor != mss.UseForChat {
+	if m.msg.UseFor != mss.UseForNotify &&
+		m.msg.UseFor != mss.UseForService &&
+		m.msg.UseFor != mss.UseForChat {
 		return m.GetDomainId(), mss.ErrUnknownMessageUseFor
 	}
 
 	// 检查发送目标群体
-	if m._msg.AllUser == 1 {
-		if m._msg.ToRole > 0 ||
-			(m._msg.To != nil && len(m._msg.To) > 0) {
+	if m.msg.AllUser == 1 {
+		if m.msg.ToRole > 0 ||
+			(m.msg.To != nil && len(m.msg.To) > 0) {
 			return 0, mss.ErrMessageAllUser
 		}
-	} else if m._msg.ToRole > 0 {
+	} else if m.msg.ToRole > 0 {
 		//检验用户类型
-		if m._msg.ToRole != mss.RoleMember &&
-			m._msg.ToRole != mss.RoleMerchant &&
-			m._msg.ToRole != mss.RoleSystem {
+		if m.msg.ToRole != mss.RoleMember &&
+			m.msg.ToRole != mss.RoleMerchant &&
+			m.msg.ToRole != mss.RoleSystem {
 			return 0, mss.ErrUnknownRole
 		}
-		if len(m._msg.To) > 0 {
+		if len(m.msg.To) > 0 {
 			return 0, mss.ErrMessageToRole
 		}
 
-	} else if len(m._msg.To) == 0 {
+	} else if len(m.msg.To) == 0 {
 		return 0, mss.ErrNoSuchReceiveUser
 	}
-	m._msg.CreateTime = time.Now().Unix()
-	id, err := m._rep.SaveMessage(m._msg)
-	m._msg.Id = id
+	m.msg.CreateTime = time.Now().Unix()
+	id, err := m.rep.SaveMessage(m.msg)
+	m.msg.Id = id
 	return id, err
 }
 
@@ -148,12 +148,12 @@ func (m *messageImpl) saveContent(v interface{}) (int, error) {
 		MsgId: m.GetDomainId(),
 		Data:  content,
 	}
-	return m._rep.SaveMsgContent(co)
+	return m.rep.SaveMsgContent(co)
 }
 
 func (m *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
-	if len(m._msg.To) > 0 {
-		for _, v := range m._msg.To {
+	if len(m.msg.To) > 0 {
+		for _, v := range m.msg.To {
 			to := &mss.To{
 				Id: 0,
 				// 接收者编号
@@ -169,7 +169,7 @@ func (m *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
 				// 阅读时间
 				ReadTime: time.Now().Unix(),
 			}
-			m._rep.SaveUserMsg(to)
+			m.rep.SaveUserMsg(to)
 		}
 	}
 	return -1, nil
@@ -210,7 +210,7 @@ func (m *mailMessageImpl) Send(d mss.Data) error {
 		v.Subject = Translate(v.Subject, d)
 
 		unix := time.Now().Unix()
-		for _, t := range m._msg.To {
+		for _, t := range m.msg.To {
 			task := &mss.MailTask{
 				MerchantId: 0,
 				Subject:    v.Subject,

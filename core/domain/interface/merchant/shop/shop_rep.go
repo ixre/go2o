@@ -15,8 +15,10 @@ type (
 		// 商店别名是否存在
 		ShopAliasExists(alias string, shopId int) bool
 
+		// 获取商店值
 		GetValueShop(merchantId, shopId int) *Shop
 
+		// 获取商户所有商店
 		GetShopsOfMerchant(merchantId int) []Shop
 
 		// 删除线上商店

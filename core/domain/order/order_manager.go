@@ -36,19 +36,19 @@ import (
 var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	_rep         order.IOrderRep
-	_saleRep     sale.ISaleRep
-	_cartRep     cart.ICartRep
-	_goodsRep    goods.IGoodsRep
-	_promRep     promotion.IPromotionRep
-	_memberRep   member.IMemberRep
-	_mchRep      merchant.IMerchantRep
-	_deliveryRep delivery.IDeliveryRep
-	_valRep      valueobject.IValueRep
-	_payRep      payment.IPaymentRep
-	_expressRep  express.IExpressRep
-	_merchant    merchant.IMerchant
-	_shipRep     shipment.IShipmentRep
+	rep         order.IOrderRep
+	saleRep     sale.ISaleRep
+	cartRep     cart.ICartRep
+	goodsRep    goods.IGoodsRep
+	promRep     promotion.IPromotionRep
+	memberRep   member.IMemberRep
+	mchRep      merchant.IMerchantRep
+	deliveryRep delivery.IDeliveryRep
+	valRep      valueobject.IValueRep
+	paymentRep  payment.IPaymentRep
+	expressRep  express.IExpressRep
+	mch         merchant.IMerchant
+	shipRep     shipment.IShipmentRep
 }
 
 func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
@@ -58,33 +58,33 @@ func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
 	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
 	valRep valueobject.IValueRep) order.IOrderManager {
 	return &orderManagerImpl{
-		_rep:         rep,
-		_cartRep:     cartRep,
-		_saleRep:     saleRep,
-		_goodsRep:    goodsRep,
-		_promRep:     promRep,
-		_memberRep:   memberRep,
-		_payRep:      payRep,
-		_mchRep:      mchRep,
-		_deliveryRep: deliveryRep,
-		_valRep:      valRep,
-		_expressRep:  expressRep,
-		_shipRep:     shipRep,
+		rep:         rep,
+		cartRep:     cartRep,
+		saleRep:     saleRep,
+		goodsRep:    goodsRep,
+		promRep:     promRep,
+		memberRep:   memberRep,
+		paymentRep:  payRep,
+		mchRep:      mchRep,
+		deliveryRep: deliveryRep,
+		valRep:      valRep,
+		expressRep:  expressRep,
+		shipRep:     shipRep,
 	}
 }
 
 // 生成订单
 func (t *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
-	return newOrder(t, val, t._mchRep,
-		t._rep, t._goodsRep, t._saleRep, t._promRep,
-		t._memberRep, t._expressRep, t._payRep, t._valRep)
+	return newOrder(t, val, t.mchRep,
+		t.rep, t.goodsRep, t.saleRep, t.promRep,
+		t.memberRep, t.expressRep, t.paymentRep, t.valRep)
 }
 
 // 生成空白订单,并保存返回对象
 func (t *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
-	return NewSubOrder(v, t, t._rep, t._memberRep,
-		t._goodsRep, t._shipRep, t._saleRep,
-		t._valRep, t._mchRep)
+	return NewSubOrder(v, t, t.rep, t.memberRep,
+		t.goodsRep, t.shipRep, t.saleRep,
+		t.valRep, t.mchRep)
 }
 
 // 在下单前检查购物车
@@ -109,7 +109,7 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	buyerId := c.GetValue().BuyerId
 	if buyerId > 0 {
 		val.BuyerId = buyerId
-		m = t._memberRep.GetMember(val.BuyerId)
+		m = t.memberRep.GetMember(val.BuyerId)
 	}
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
@@ -144,14 +144,14 @@ func (t *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
 }
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int) string {
-	return t._rep.GetFreeOrderNo(vendorId)
+	return t.rep.GetFreeOrderNo(vendorId)
 }
 
 // 智能选择门店
 func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 	//todo: 应只选择线下实体店
 	//todo: AggregateRootId
-	dly := t._deliveryRep.GetDelivery(-1)
+	dly := t.deliveryRep.GetDelivery(-1)
 
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
@@ -162,7 +162,7 @@ func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 		return nil, delivery.ErrNotCoveragedArea
 	}
 	shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
-	return t._merchant.ShopManager().GetShop(shopId), err
+	return t.mch.ShopManager().GetShop(shopId), err
 }
 
 // 生成支付单
@@ -204,14 +204,14 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 	}
 	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
-	return t._payRep.CreatePaymentOrder(v)
+	return t.paymentRep.CreatePaymentOrder(v)
 }
 
 // 应用优惠券
 func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IOrder,
 	py payment.IPaymentOrder, couponCode string) error {
 	po := py.GetValue()
-	cp := t._promRep.GetCouponByCode(
+	cp := t.promRep.GetCouponByCode(
 		m.GetAggregateRootId(), couponCode)
 	// 如果优惠券不存在
 	if cp == nil {
@@ -289,7 +289,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 
 // 根据订单编号获取订单
 func (t *orderManagerImpl) GetOrderById(orderId int) order.IOrder {
-	val := t._rep.GetOrderById(orderId)
+	val := t.rep.GetOrderById(orderId)
 	if val != nil {
 		return t.CreateOrder(val)
 	}
@@ -298,7 +298,7 @@ func (t *orderManagerImpl) GetOrderById(orderId int) order.IOrder {
 
 // 根据订单号获取订单
 func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	val := t._rep.GetValueOrderByNo(orderNo)
+	val := t.rep.GetValueOrderByNo(orderNo)
 	if val != nil {
 		return t.CreateOrder(val)
 	}
@@ -316,7 +316,7 @@ func (t *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
 
 // 获取子订单
 func (t *orderManagerImpl) GetSubOrder(id int) order.ISubOrder {
-	if v := t._rep.GetSubOrder(id); v != nil {
+	if v := t.rep.GetSubOrder(id); v != nil {
 		return t.CreateSubOrder(v)
 	}
 	return nil
@@ -324,7 +324,7 @@ func (t *orderManagerImpl) GetSubOrder(id int) order.ISubOrder {
 
 // 根据父订单编号获取购买的商品项
 func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
-	return t._rep.GetItemsByParentOrderId(orderId)
+	return t.rep.GetItemsByParentOrderId(orderId)
 }
 
 var (
@@ -344,9 +344,9 @@ func (t *orderManagerImpl) OrderAutoSetup(f func(error)) {
 	biShops = nil
 	log.Println("[SETUP] start auto setup")
 
-	saleConf := t._merchant.ConfManager().GetSaleConf()
+	saleConf := t.mch.ConfManager().GetSaleConf()
 	if saleConf.AutoSetupOrder == 1 {
-		orders, err = t._rep.GetWaitingSetupOrders(-1)
+		orders, err = t.rep.GetWaitingSetupOrders(-1)
 		if err != nil {
 			f(err)
 			return
@@ -358,15 +358,6 @@ func (t *orderManagerImpl) OrderAutoSetup(f func(error)) {
 		}
 	}
 }
-
-const (
-	order_timeout_hour   = 24
-	order_confirm_minute = 4
-	order_process_minute = 11
-	order_sending_minute = 31
-	order_receive_hour   = 5
-	order_complete_hour  = 11
-)
 
 func (t *orderManagerImpl) SmartConfirmOrder(o order.IOrder) error {
 
@@ -381,7 +372,7 @@ func (t *orderManagerImpl) SmartConfirmOrder(o order.IOrder) error {
 		// /pay/return_alipay?out_trade_no=ZY1607375766&request_token=requestToken&result=success&trade_no
 		// =2016070221001004880246862127&sign=75a18ca0d75750ac22fedbbe6468c187&sign_type=MD5
 		//todo:  拆分订单
-		biShops = t._merchant.ShopManager().GetBusinessInShops()
+		biShops = t.mch.ShopManager().GetBusinessInShops()
 	}
 	if len(biShops) == 1 {
 		sp = biShops[0]

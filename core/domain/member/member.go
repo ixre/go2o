@@ -32,76 +32,76 @@ import (
 var _ member.IMember = new(memberImpl)
 
 type memberImpl struct {
-	_manager         member.IMemberManager
-	_value           *member.Member
-	_account         member.IAccount
-	_level           *member.Level
-	_rep             member.IMemberRep
-	_relation        *member.Relation
-	_invitation      member.IInvitationManager
-	_mssRep          mss.IMssRep
-	_valRep          valueobject.IValueRep
-	_profileManager  member.IProfileManager
-	_favoriteManager member.IFavoriteManager
-	_giftCardManager member.IGiftCardManager
+	manager         member.IMemberManager
+	value           *member.Member
+	account         member.IAccount
+	level           *member.Level
+	rep             member.IMemberRep
+	relation        *member.Relation
+	invitation      member.IInvitationManager
+	mssRep          mss.IMssRep
+	valRep          valueobject.IValueRep
+	profileManager  member.IProfileManager
+	favoriteManager member.IFavoriteManager
+	giftCardManager member.IGiftCardManager
 }
 
 func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
 	mp mss.IMssRep, valRep valueobject.IValueRep) member.IMember {
 	return &memberImpl{
-		_manager: manager,
-		_value:   val,
-		_rep:     rep,
-		_mssRep:  mp,
-		_valRep:  valRep,
+		manager: manager,
+		value:   val,
+		rep:     rep,
+		mssRep:  mp,
+		valRep:  valRep,
 	}
 }
 
 // 获取聚合根编号
 func (m *memberImpl) GetAggregateRootId() int {
-	return m._value.Id
+	return m.value.Id
 }
 
 // 会员资料服务
 func (m *memberImpl) Profile() member.IProfileManager {
-	if m._profileManager == nil {
-		m._profileManager = newProfileManagerImpl(m,
-			m.GetAggregateRootId(), m._rep, m._valRep)
+	if m.profileManager == nil {
+		m.profileManager = newProfileManagerImpl(m,
+			m.GetAggregateRootId(), m.rep, m.valRep)
 	}
-	return m._profileManager
+	return m.profileManager
 }
 
 // 会员收藏服务
 func (m *memberImpl) Favorite() member.IFavoriteManager {
-	if m._favoriteManager == nil {
-		m._favoriteManager = newFavoriteManagerImpl(
-			m.GetAggregateRootId(), m._rep)
+	if m.favoriteManager == nil {
+		m.favoriteManager = newFavoriteManagerImpl(
+			m.GetAggregateRootId(), m.rep)
 	}
-	return m._favoriteManager
+	return m.favoriteManager
 }
 
 // 礼品卡服务
 func (m *memberImpl) GiftCard() member.IGiftCardManager {
-	if m._giftCardManager == nil {
-		m._giftCardManager = newGiftCardManagerImpl(
-			m.GetAggregateRootId(), m._rep)
+	if m.giftCardManager == nil {
+		m.giftCardManager = newGiftCardManagerImpl(
+			m.GetAggregateRootId(), m.rep)
 	}
-	return m._giftCardManager
+	return m.giftCardManager
 }
 
 // 邀请管理
 func (m *memberImpl) Invitation() member.IInvitationManager {
-	if m._invitation == nil {
-		m._invitation = &invitationManager{
-			_member: m,
+	if m.invitation == nil {
+		m.invitation = &invitationManager{
+			member: m,
 		}
 	}
-	return m._invitation
+	return m.invitation
 }
 
 // 获取值
 func (m *memberImpl) GetValue() member.Member {
-	return *m._value
+	return *m.value
 }
 
 var (
@@ -125,18 +125,18 @@ func validUsr(usr string) error {
 
 // 设置值
 func (m *memberImpl) SetValue(v *member.Member) error {
-	v.Usr = m._value.Usr
-	if len(m._value.InvitationCode) == 0 {
-		m._value.InvitationCode = v.InvitationCode
+	v.Usr = m.value.Usr
+	if len(m.value.InvitationCode) == 0 {
+		m.value.InvitationCode = v.InvitationCode
 	}
 	if v.Exp != 0 {
-		m._value.Exp = v.Exp
+		m.value.Exp = v.Exp
 	}
 	if v.Level > 0 {
-		m._value.Level = v.Level
+		m.value.Level = v.Level
 	}
 	if len(v.TradePwd) == 0 {
-		m._value.TradePwd = v.TradePwd
+		m.value.TradePwd = v.TradePwd
 	}
 	return nil
 }
@@ -145,11 +145,11 @@ func (m *memberImpl) SetValue(v *member.Member) error {
 func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error) {
 	const expiresMinutes = 10 //10分钟生效
 	code := domain.NewCheckCode()
-	m._value.CheckCode = code
-	m._value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
+	m.value.CheckCode = code
+	m.value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
 	_, err := m.Save()
 	if err == nil {
-		mgr := m._mssRep.NotifyManager()
+		mgr := m.mssRep.NotifyManager()
 		pro := m.Profile().GetProfile()
 
 		// 创建参数
@@ -163,7 +163,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m._valRep.GetDefaultSmsApiPerm()
+			provider, _ := m.valRep.GetDefaultSmsApiPerm()
 			data = sms.AppendCheckPhoneParams(provider, data)
 
 			// 构造并发送短信
@@ -186,10 +186,10 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 
 // 对比验证码
 func (m *memberImpl) CompareCode(code string) error {
-	if m._value.CheckCode != strings.TrimSpace(code) {
+	if m.value.CheckCode != strings.TrimSpace(code) {
 		return member.ErrCheckCodeError
 	}
-	if m._value.CheckExpires < time.Now().Unix() {
+	if m.value.CheckExpires < time.Now().Unix() {
 		return member.ErrCheckCodeExpires
 	}
 	return nil
@@ -197,16 +197,16 @@ func (m *memberImpl) CompareCode(code string) error {
 
 // 获取账户
 func (m *memberImpl) GetAccount() member.IAccount {
-	if m._account == nil {
-		v := m._rep.GetAccount(m._value.Id)
-		return NewAccount(m, v, m._rep, m._manager, m._valRep)
+	if m.account == nil {
+		v := m.rep.GetAccount(m.value.Id)
+		return NewAccount(m, v, m.rep, m.manager, m.valRep)
 	}
-	return m._account
+	return m.account
 }
 
 // 增加经验值
 func (m *memberImpl) AddExp(exp int) error {
-	m._value.Exp += exp
+	m.value.Exp += exp
 	_, err := m.Save()
 	//判断是否升级
 	m.checkLevelUp()
@@ -214,24 +214,39 @@ func (m *memberImpl) AddExp(exp int) error {
 	return err
 }
 
+// 更改会员等级
+func (m *memberImpl) ChangeLevel(level int) error {
+	lg := m.manager.LevelManager()
+	lv := lg.GetLevelById(level)
+	// 判断等级是否启用
+	if lv == nil || lv.Enabled == 0 {
+		return member.ErrLevelDisabled
+	}
+	m.value.Exp = lv.RequireExp
+	m.value.Level = level
+	_, err := m.Save()
+	m.level = nil
+	return err
+}
+
 // 获取等级
 func (m *memberImpl) GetLevel() *member.Level {
-	if m._level == nil {
-		m._level = m._manager.LevelManager().
-			GetLevelById(m._value.Level)
+	if m.level == nil {
+		m.level = m.manager.LevelManager().
+			GetLevelById(m.value.Level)
 	}
-	return m._level
+	return m.level
 }
 
 // 检查升级
 func (m *memberImpl) checkLevelUp() bool {
-	lg := m._manager.LevelManager()
-	levelId := lg.GetLevelIdByExp(m._value.Exp)
+	lg := m.manager.LevelManager()
+	levelId := lg.GetLevelIdByExp(m.value.Exp)
 	if levelId == 0 {
 		return false
 	}
 	// 判断是否大于当前等级
-	if m._value.Level > levelId {
+	if m.value.Level > levelId {
 		return false
 	}
 	// 判断等级是否启用
@@ -239,31 +254,31 @@ func (m *memberImpl) checkLevelUp() bool {
 	if lv.Enabled == 0 {
 		return false
 	}
-	m._value.Level = levelId
+	m.value.Level = levelId
 	m.Save()
-	m._level = nil
+	m.level = nil
 	return true
 }
 
 // 获取会员关联
 func (m *memberImpl) GetRelation() *member.Relation {
-	if m._relation == nil {
-		m._relation = m._rep.GetRelation(m._value.Id)
+	if m.relation == nil {
+		m.relation = m.rep.GetRelation(m.value.Id)
 	}
-	return m._relation
+	return m.relation
 }
 
 // 保存关系
 func (m *memberImpl) SaveRelation(r *member.Relation) error {
-	m._relation = r
-	m._relation.MemberId = m._value.Id
-	m.updateReferStr(m._relation)
-	return m._rep.SaveRelation(m._relation)
+	m.relation = r
+	m.relation.MemberId = m.value.Id
+	m.updateReferStr(m.relation)
+	return m.rep.SaveRelation(m.relation)
 }
 
 // 更换用户名
 func (m *memberImpl) ChangeUsr(usr string) error {
-	if usr == m._value.Usr {
+	if usr == m.value.Usr {
 		return member.ErrSameUsr
 	}
 	if len([]rune(usr)) < 6 {
@@ -275,47 +290,47 @@ func (m *memberImpl) ChangeUsr(usr string) error {
 	if m.usrIsExist(usr) {
 		return member.ErrUsrExist
 	}
-	m._value.Usr = usr
+	m.value.Usr = usr
 	_, err := m.Save()
 	return err
 }
 
-// 更新登陆时间
+// 更新登录时间
 func (m *memberImpl) UpdateLoginTime() error {
 	unix := time.Now().Unix()
-	m._value.LastLoginTime = m._value.LoginTime
-	m._value.LoginTime = unix
-	m._value.UpdateTime = unix
+	m.value.LastLoginTime = m.value.LoginTime
+	m.value.LoginTime = unix
+	m.value.UpdateTime = unix
 	_, err := m.Save()
 	return err
 }
 
 // 保存
 func (m *memberImpl) Save() (int, error) {
-	m._value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
-	if m._value.Id > 0 {
-		return m._rep.SaveMember(m._value)
+	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
+	if m.value.Id > 0 {
+		return m.rep.SaveMember(m.value)
 	}
-	return m.create(m._value, nil)
+	return m.create(m.value, nil)
 }
 
 // 锁定会员
 func (m *memberImpl) Lock() error {
-	m._value.State = 0
+	m.value.State = 0
 	_, err := m.Save()
 	return err
 }
 
 // 解锁会员
 func (m *memberImpl) Unlock() error {
-	m._value.State = 1
+	m.value.State = 1
 	_, err := m.Save()
 	return err
 }
 
 // 创建会员
 func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) {
-	if err := validUsr(m._value.Usr); err != nil {
+	if err := validUsr(m.value.Usr); err != nil {
 		return 0, err
 	}
 	if m.usrIsExist(v.Usr) {
@@ -332,9 +347,9 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) 
 		v.RegFrom = "API-INTERNAL"
 	}
 	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
-	id, err := m._rep.SaveMember(v)
+	id, err := m.rep.SaveMember(v)
 	if err == nil {
-		m._value.Id = id
+		m.value.Id = id
 		go m.memberInit()
 	}
 	return id, err
@@ -342,7 +357,7 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int, error) 
 
 // 会员初始化
 func (m *memberImpl) memberInit() {
-	conf := m._valRep.GetRegistry()
+	conf := m.valRep.GetRegistry()
 	// 注册后赠送积分
 	if conf.PresentIntegralNumOfRegister > 0 {
 		m.GetAccount().AddIntegral(member.TypeIntegralPresent, "",
@@ -355,7 +370,7 @@ func (m *memberImpl) generateInvitationCode() string {
 	var code string
 	for {
 		code = domain.GenerateInvitationCode()
-		if memberId := m._rep.GetMemberIdByInvitationCode(code); memberId == 0 {
+		if memberId := m.rep.GetMemberIdByInvitationCode(code); memberId == 0 {
 			break
 		}
 	}
@@ -364,7 +379,7 @@ func (m *memberImpl) generateInvitationCode() string {
 
 // 用户是否已经存在
 func (m *memberImpl) usrIsExist(usr string) bool {
-	return m._rep.CheckUsrExist(usr, m.GetAggregateRootId())
+	return m.rep.CheckUsrExist(usr, m.GetAggregateRootId())
 }
 
 // 获取推荐数组
@@ -373,7 +388,7 @@ func (m *memberImpl) getReferArr(memberId int, level int) []int {
 	i := 0
 	referId := memberId
 	for i <= level-1 {
-		rl := m._rep.GetRelation(referId)
+		rl := m.rep.GetRelation(referId)
 		if rl == nil || rl.RefereesId <= 0 {
 			break
 		}
@@ -391,7 +406,7 @@ func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
 		r.ReferStr = ""
 		return
 	}
-	level := m._valRep.GetRegistry().MemberReferLayer - 1
+	level := m.valRep.GetRegistry().MemberReferLayer - 1
 	arr := m.getReferArr(r.RefereesId, level)
 	arr = append([]int{r.RefereesId}, arr...)
 
@@ -426,7 +441,7 @@ func (m *memberImpl) updateReferStr(r *member.Relation) {
 // 更改邀请人
 func (m *memberImpl) ChangeReferees(memberId int) error {
 	if memberId > 0 {
-		rm := m._rep.GetMember(memberId)
+		rm := m.rep.GetMember(memberId)
 		if rm == nil {
 			return member.ErrNoSuchMember
 		}

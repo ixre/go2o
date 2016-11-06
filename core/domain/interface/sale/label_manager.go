@@ -51,7 +51,8 @@ type (
 		GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods
 
 		// 获取标签下的分页商品
-		GetPagedValueGoods(sortBy string, begin, end int) (total int, goods []*valueobject.Goods)
+		GetPagedValueGoods(sortBy string, begin, end int) (total int,
+			goods []*valueobject.Goods)
 	}
 
 	// 标签服务

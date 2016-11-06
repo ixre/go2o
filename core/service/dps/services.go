@@ -102,11 +102,11 @@ func Init(ctx gof.App) {
 	adRep := repository.NewAdvertisementRep(db, sto)
 	spRep := repository.NewOrderRep(sto, db, mchRep, nil, saleRep, cartRep, goodsRep,
 		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
-	payRep := repository.NewPaymentRep(sto, db, memberRep, spRep, valRep)
-	asRep := repository.NewAfterSalesRep(db, spRep, memberRep)
+	paymentRep := repository.NewPaymentRep(sto, db, memberRep, spRep, valRep)
+	asRep := repository.NewAfterSalesRep(db, spRep, memberRep, paymentRep)
 
 	goodsRep.SetSaleRep(saleRep) //fixed
-	spRep.SetPaymentRep(payRep)
+	spRep.SetPaymentRep(paymentRep)
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -127,7 +127,7 @@ func Init(ctx gof.App) {
 	ShopService = NewShopService(shopRep, mchRep, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRep, memberQue, orderQuery)
 	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
-	PaymentService = NewPaymentService(payRep, spRep)
+	PaymentService = NewPaymentService(paymentRep, spRep)
 	MssService = NewMssService(mssRep)
 	ExpressService = NewExpressService(expressRep)
 	ShipmentService = NewShipmentService(shipRep, deliveryRep)

@@ -78,7 +78,9 @@ const (
 	// 提现到第三方
 	KindPresentTakeOutToThirdPart = 13
 	// 提现退还到银行卡
-	KindPresentTakOutRefund = 14
+	KindPresentTakeOutRefund = 14
+	// 支付单退款
+	KindPresentPaymentRefund = 15
 
 	// 客服赠送
 	KindPresentServiceAdd = 21
@@ -103,28 +105,28 @@ const (
 	KindBalanceTransfer = 12
 
 	// 提现并充值到余额
-	TypeApplyCashToCharge = 1
+	//TypeApplyCashToCharge = 1
 	// 提现到银行卡
-	TypeApplyCashToBank = 2
+	//TypeApplyCashToBank = 2
 	// 提现到第三方服务提供商（如：Paypal,支付宝等)
-	TypeApplyCashToServiceProvider = 3
+	//TypeApplyCashToServiceProvider = 3
 
 	// 退款到银行卡
-	TypeBackToBank = 1
+	//TypeBackToBank = 1
 	// 退款到第三方
-	TypeBackToServiceProvider = 2
+	//TypeBackToServiceProvider = 2
 
 	// 提现请求已提交
-	StateApplySubmitted = 0
+	//StateApplySubmitted = 0
 	// 提现已经确认
-	StateApplyConfirmed = 1
+	//StateApplyConfirmed = 1
 	// 提现未通过
-	StateApplyNotPass = 2
+	//StateApplyNotPass = 2
 	// 提现完成
-	StateApplyOver = 3
+	//StateApplyOver = 3
 
-	StatusNormal = 0
-	StatusOK     = 1
+	//StatusNormal = 0
+	StatusOK = 1
 )
 
 const (
@@ -283,8 +285,9 @@ type (
 		MemberId int    `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int    `db:"kind"`
-		Title        string `db:"title"`
+		BusinessKind int `db:"kind"`
+
+		Title string `db:"title"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 手续费

@@ -235,7 +235,6 @@ func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
 		rc := core.GetRedisConn()
 		defer rc.Close()
 		// 保存最后更新时间
-		// todo: del
 		mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, v.Id)
 		rc.Do("SETEX", mutKey, 3600*400, v.UpdateTime)
 		rc.Do("RPUSH", variable.KvMemberUpdateTcpNotifyQueue, v.Id) // push to tcp notify queue
@@ -411,8 +410,45 @@ func (m *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 	return err
 }
 
+// 保存余额日志
+func (m *MemberRep) SaveBalanceLog(v *member.BalanceLog) (int, error) {
+	return orm.Save(m.GetOrm(), v, v.Id)
+}
+
+// 保存赠送账户日志
+func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int, error) {
+	return orm.Save(m.GetOrm(), v, v.Id)
+}
+
+func (m *MemberRep) GetPresentLog(id int) *member.PresentLog {
+	e := member.PresentLog{}
+	if err := m.Connector.GetOrm().Get(id, &e); err != nil {
+		return nil
+	}
+	return &e
+}
+
+// 获取会员提现次数键
+func (m *MemberRep) getMemberTakeOutTimesKey(memberId int) string {
+	return fmt.Sprintf("sys:go2o:rep:mm:take-out-times:%d", memberId)
+}
+
+// 增加会员当天提现次数
+func (m *MemberRep) AddTodayTakeOutTimes(memberId int) error {
+	times := m.GetTodayTakeOutTimes(memberId)
+	key := m.getMemberTakeOutTimesKey(memberId)
+	// 保存到当天结束
+	t := time.Now()
+	d := (24-t.Hour())*3600 + (60-t.Minute())*60 + (60 - t.Second())
+	return m.Storage.SetExpire(key, times+1, int64(d))
+}
+
 // 获取会员每日提现次数
-func (m *MemberRep) GetTodayPresentTakeOutTimes(memberId int) int {
+func (m *MemberRep) GetTodayTakeOutTimes(memberId int) int {
+	key := m.getMemberTakeOutTimesKey(memberId)
+	applyTimes, _ := m.Storage.GetInt(key)
+	return applyTimes
+
 	total := 0
 	b, e := tool.GetTodayStartEndUnix(time.Now())
 	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_present_log WHERE
@@ -607,6 +643,9 @@ func (m *MemberRep) SaveGrowAccount(memberId int, balance, totalAmount,
 	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance=?,
 		grow_amount=?,grow_earnings=?,grow_total_earnings=?,update_time=? where member_id=?`,
 		balance, totalAmount, growEarnings, totalGrowEarnings, updateTime, memberId)
+	//清除缓存
+	m.Storage.Del(m.getAccountCk(memberId))
+	//加入通知队列
 	m.pushToAccountUpdateQueue(memberId, updateTime)
 	return err
 }

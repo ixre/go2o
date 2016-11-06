@@ -142,7 +142,7 @@ func (m *merchantRep) GetAccount(mchId int) *merchant.Account {
 func (m *merchantRep) GetMerchantMajorHost(merchantId int) string {
 	//todo:
 	var host string
-	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE merchant_id=? LIMIT 0,1`,
+	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
 		&host, merchantId)
 	return host
 }
@@ -216,7 +216,7 @@ func (m *merchantRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 // 根据API编号获取商户编号
 func (m *merchantRep) GetMerchantIdByApiId(apiId string) int {
 	var merchantId int
-	m.ExecScalar("SELECT merchant_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
+	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
 	return merchantId
 }
 
@@ -326,7 +326,30 @@ func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (
 	} else {
 		_, _, err = orm.Save(nil, v)
 		m.Connector.ExecScalar(`SELECT MAX(id) FROM pt_member_level`, &v.Id)
-
 	}
 	return v.Id, err
+}
+
+//
+//func (m *merchantRep) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+//	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=? ,return_rate=? WHERE  id=?", rate, return_rate, id)
+//	return err
+//}
+//
+//func (m *merchantRep) GetOfflineRate(id int) (float32, float32, error) {
+//	var rate float32
+//	var return_rate float32
+//	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id=?", &rate, id)
+//	m.Connector.ExecScalar("SELECT  return_rate  FROM mch_merchant WHERE id=?", &return_rate, id)
+//	return rate, return_rate, err
+//}
+//
+// 保存销售配置
+func (m *merchantRep) UpdateAccount(v *merchant.Account) error {
+	orm := m.Connector.GetOrm()
+	var err error
+	if v.MchId > 0 {
+		_, _, err = orm.Save(v.MchId, v)
+	}
+	return err
 }

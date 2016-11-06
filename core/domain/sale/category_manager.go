@@ -26,30 +26,30 @@ var _ sale.ICategory = new(categoryImpl)
 
 // 分类实现
 type categoryImpl struct {
-	_value           *sale.Category
-	_rep             sale.ICategoryRep
-	_parentIdChanged bool
-	_childIdArr      []int
-	_opt             domain.IOptionStore
+	value           *sale.Category
+	rep             sale.ICategoryRep
+	parentIdChanged bool
+	childIdArr      []int
+	opt             domain.IOptionStore
 }
 
 func NewCategory(rep sale.ICategoryRep, v *sale.Category) sale.ICategory {
 	return &categoryImpl{
-		_value: v,
-		_rep:   rep,
+		value: v,
+		rep:   rep,
 	}
 }
 
 func (c *categoryImpl) GetDomainId() int {
-	return c._value.Id
+	return c.value.Id
 }
 
 func (c *categoryImpl) GetValue() *sale.Category {
-	return c._value
+	return c.value
 }
 
 func (c *categoryImpl) GetOption() domain.IOptionStore {
-	if c._opt == nil {
+	if c.opt == nil {
 		opt := newCategoryOption(c)
 		if err := opt.Stat(); err != nil {
 			opt.Set(sale.C_OptionViewName, &domain.Option{
@@ -68,13 +68,30 @@ func (c *categoryImpl) GetOption() domain.IOptionStore {
 			})
 			opt.Flush()
 		}
-		c._opt = opt
+		c.opt = opt
 	}
-	return c._opt
+	return c.opt
 }
 
+// 检查上级分类是否正确
+func (c *categoryImpl) checkParent(parentId int) error {
+	if id := c.GetDomainId(); id > 0 && parentId > 0 {
+		//检查上级栏目是否存在
+		p := c.rep.GetGlobManager().GetCategory(parentId)
+		if p == nil {
+			return sale.ErrNoSuchCategory
+		}
+		// 检查上级分类
+		if p.GetValue().ParentId == id {
+			return sale.ErrCategoryCycleReference
+		}
+	}
+	return nil
+}
+
+// 设置值
 func (c *categoryImpl) SetValue(v *sale.Category) error {
-	val := c._value
+	val := c.value
 	if val.Id == v.Id {
 		val.Description = v.Description
 		val.Enabled = v.Enabled
@@ -82,10 +99,17 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 		val.SortNumber = v.SortNumber
 		val.Icon = v.Icon
 		if val.ParentId != v.ParentId {
-			c._parentIdChanged = true
-			val.ParentId = v.ParentId
+			c.parentIdChanged = true
 		} else {
-			c._parentIdChanged = false
+			c.parentIdChanged = false
+		}
+
+		if c.parentIdChanged {
+			err := c.checkParent(v.ParentId)
+			if err != nil {
+				return err
+			}
+			val.ParentId = v.ParentId
 		}
 	}
 	return nil
@@ -93,20 +117,20 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 
 // 获取子栏目的编号
 func (c *categoryImpl) GetChildes() []int {
-	if c._childIdArr == nil {
+	if c.childIdArr == nil {
 		childCats := c.GetChildCategories(
-			c._value.MerchantId, c.GetDomainId())
-		c._childIdArr = make([]int, len(childCats))
+			c.value.MerchantId, c.GetDomainId())
+		c.childIdArr = make([]int, len(childCats))
 		for i, v := range childCats {
-			c._childIdArr[i] = v.Id
+			c.childIdArr[i] = v.Id
 		}
 	}
-	return c._childIdArr
+	return c.childIdArr
 }
 func (c *categoryImpl) setCategoryLevel() {
-	mchId := c._value.MerchantId
-	list := c._rep.GetCategories(mchId)
-	c.parentWalk(list, mchId, &c._value.Level)
+	mchId := c.value.MerchantId
+	list := c.rep.GetCategories(mchId)
+	c.parentWalk(list, mchId, &c.value.Level)
 }
 
 func (c *categoryImpl) parentWalk(list []*sale.Category,
@@ -132,13 +156,13 @@ func (c *categoryImpl) Save() (int, error) {
 	//    return c.GetDomainId(), sale.ErrReadonlyCategory
 	//}
 	c.setCategoryLevel()
-	id, err := c._rep.SaveCategory(c._value)
+	id, err := c.rep.SaveCategory(c.value)
 	if err == nil {
-		c._value.Id = id
-		if len(c._value.Url) == 0 || (c._parentIdChanged &&
-			strings.HasPrefix(c._value.Url, "/c-")) {
-			c._value.Url = c.getAutomaticUrl(c._value.MerchantId, id)
-			c._parentIdChanged = false
+		c.value.Id = id
+		if len(c.value.Url) == 0 || (c.parentIdChanged &&
+			strings.HasPrefix(c.value.Url, "/c-")) {
+			c.value.Url = c.getAutomaticUrl(c.value.MerchantId, id)
+			c.parentIdChanged = false
 			return c.Save()
 		}
 	}
@@ -147,7 +171,7 @@ func (c *categoryImpl) Save() (int, error) {
 
 // 获取子栏目
 func (c *categoryImpl) GetChildCategories(mchId, categoryId int) []*sale.Category {
-	var all []*sale.Category = c._rep.GetCategories(mchId)
+	var all []*sale.Category = c.rep.GetCategories(mchId)
 	var newArr []*sale.Category = []*sale.Category{}
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {
@@ -172,7 +196,7 @@ func (c *categoryImpl) GetChildCategories(mchId, categoryId int) []*sale.Categor
 
 // 获取与栏目相关的栏目
 func (c *categoryImpl) GetRelationCategories(mchId, categoryId int) []*sale.Category {
-	var all []*sale.Category = c._rep.GetCategories(mchId)
+	var all []*sale.Category = c.rep.GetCategories(mchId)
 	var newArr []*sale.Category = []*sale.Category{}
 	var isMatch bool
 	var pid int
@@ -313,7 +337,7 @@ func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
 func (c *categoryManagerImpl) DeleteCategory(id int) error {
 	cat := c.GetCategory(id)
 	if cat == nil {
-		return sale.ErrCategoryNotExist
+		return sale.ErrNoSuchCategory
 	}
 	if len(cat.GetChildes()) > 0 {
 		return sale.ErrHasChildCategories

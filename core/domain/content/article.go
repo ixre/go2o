@@ -17,54 +17,54 @@ import (
 var _ content.ICategory = new(categoryImpl)
 
 type categoryImpl struct {
-	_contentRep content.IContentRep
-	_value      *content.ArticleCategory
-	_manager    *articleManagerImpl
+	contentRep content.IContentRep
+	value      *content.ArticleCategory
+	manager    *articleManagerImpl
 }
 
 func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
 	rep content.IContentRep) content.ICategory {
 	return &categoryImpl{
-		_contentRep: rep,
-		_value:      v,
-		_manager:    m,
+		contentRep: rep,
+		value:      v,
+		manager:    m,
 	}
 }
 
 // 获取领域编号
 func (c *categoryImpl) GetDomainId() int {
-	return c._value.Id
+	return c.value.Id
 }
 
 // 获取文章数量
 func (c *categoryImpl) ArticleNum() int {
-	return c._contentRep.GetArticleNumByCategory(c.GetDomainId())
+	return c.contentRep.GetArticleNumByCategory(c.GetDomainId())
 }
 
 // 获取值
 func (c *categoryImpl) GetValue() content.ArticleCategory {
-	return *c._value
+	return *c.value
 }
 
 // 设置值
 func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
-	if c._contentRep.CategoryExists(c._value.Alias, c.GetDomainId()) {
+	if c.contentRep.CategoryExists(c.value.Alias, c.GetDomainId()) {
 		return content.ErrCategoryAliasExists
 	}
 	v.Id = c.GetDomainId()
-	c._value = v
+	c.value = v
 	return nil
 }
 
 // 保存
 func (c *categoryImpl) Save() (int, error) {
-	c._value.UpdateTime = time.Now().Unix()
-	id, err := c._contentRep.SaveCategory(c._value)
+	c.value.UpdateTime = time.Now().Unix()
+	id, err := c.contentRep.SaveCategory(c.value)
 	if err == nil {
-		c._manager._categories = nil
-		c._manager._categoryMap = nil
+		c.manager._categories = nil
+		c.manager._categoryMap = nil
 	}
-	c._value.Id = id
+	c.value.Id = id
 	return id, err
 }
 

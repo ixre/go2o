@@ -9,10 +9,13 @@
 package cache
 
 import (
+	"encoding/json"
 	"go2o/core/domain/interface/member"
 	"go2o/core/service/dps"
+	"strconv"
 )
 
+// 获取最高等级
 func GetHighestLevel() *member.Level {
 	key := "go2o:rep:level:glob:max"
 	sto := GetKVS()
@@ -24,4 +27,24 @@ func GetHighestLevel() *member.Level {
 		}
 	}
 	return &lv
+}
+
+// 获取等级JSON
+func GetLevelMapJson() string {
+	key := "go2o:rep:level:mp-json"
+	sto := GetKVS()
+	str, err := sto.GetString(key)
+	if err != nil {
+		list := dps.MemberService.GetMemberLevels()
+		mp := make(map[string]string, 0)
+		for _, v := range list {
+			if v.Enabled == 1 {
+				mp[strconv.Itoa(v.Id)] = v.Name
+			}
+		}
+		data, _ := json.Marshal(mp)
+		str = string(data)
+		sto.SetExpire(key, str, DefaultMaxSeconds)
+	}
+	return str
 }
