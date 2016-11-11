@@ -514,6 +514,20 @@ func (m *MemberRep) SaveRelation(v *member.Relation) error {
 	return err
 }
 
+// 获取会员升级记录
+func (m *MemberRep) GetLevelUpLog(id int) *member.LevelUpLog {
+	e := member.LevelUpLog{}
+	if m.GetOrm().Get(id, &e) == nil {
+		return &e
+	}
+	return nil
+}
+
+// 保存会员升级记录
+func (m *MemberRep) SaveLevelUpLog(l *member.LevelUpLog) (int, error) {
+	return orm.Save(m.GetOrm(), l, l.Id)
+}
+
 // 保存地址
 func (m *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
 	return orm.Save(m.Connector.GetOrm(), v, v.Id)

@@ -98,6 +98,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.TrustedInfo{}, "mm_trusted_info")
 	orm.Mapping(member.Favorite{}, "mm_favorite")
 	orm.Mapping(member.BankInfo{}, "mm_bank")
+	orm.Mapping(member.LevelUpLog{}, "mm_levelup")
 
 	//** ORDER **//
 

@@ -74,14 +74,20 @@ type (
 		// 更改邀请人
 		ChangeReferees(memberId int) error
 
-		// 更改会员等级
-		ChangeLevel(level int) error
-
 		// 增加经验值
 		AddExp(exp int) error
 
 		// 获取等级
 		GetLevel() *Level
+
+		// 更改会员等级,@paymentId:支付单编号,@reivew:是否需要审核
+		ChangeLevel(level int, paymentId int, review bool) error
+
+		// 审核升级请求
+		ReviewLevelUp(id int, pass bool) error
+
+		// 标记已经处理升级
+		ConfirmLevelUp(id int) error
 
 		// 更换用户名
 		ChangeUsr(string) error
@@ -365,6 +371,25 @@ type (
 		Address string `db:"address"`
 		//是否默认
 		IsDefault int `db:"is_default"`
+	}
+
+	// 会员升级日志
+	LevelUpLog struct {
+		Id int `db:"id" pk:"yes" auto:"yes"`
+		// 会员编号
+		MemberId int `db:"member_id"`
+		// 原来等级
+		OriginLevel int `db:"origin_level"`
+		// 现在等级
+		TargetLevel int `db:"target_level"`
+		// 是否为免费升级的会员
+		IsFree int `db:"is_free"`
+		// 支付单编号
+		PaymentId int `db:"payment_id"`
+		// 是否审核及处理
+		Reviewed int `db:"reviewed"`
+		// 升级时间
+		CreateTime int64 `db:"create_time"`
 	}
 )
 
