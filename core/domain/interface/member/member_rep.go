@@ -116,6 +116,12 @@ type IMemberRep interface {
 	// 获取经验值对应的等级
 	GetLevelValueByExp(merchantId int, exp int) int
 
+	// 获取会员升级记录
+	GetLevelUpLog(id int) *LevelUpLog
+
+	// 保存会员升级记录
+	SaveLevelUpLog(l *LevelUpLog) (int, error)
+
 	// 保存地址
 	SaveDeliver(*DeliverAddress) (int, error)
 

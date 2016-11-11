@@ -52,6 +52,23 @@ var (
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
 		"member_level_used", "此等级已被会员使用")
 
+	ErrMaxLevel *domain.DomainError = domain.NewDomainError(
+		"err_member_max_level", "已经为最高等级")
+
+	ErrLevelUpPass *domain.DomainError = domain.NewDomainError(
+		"err_member_level_up_pass", "会员升级已经审核")
+
+	ErrLevelUpReject *domain.DomainError = domain.NewDomainError(
+		"err_member_level_up_reject", "会员升级已经被退回")
+
+	ErrLevelUpConfirm *domain.DomainError = domain.NewDomainError(
+		"err_member_level_up_confirm", "会员升级已经确认")
+	ErrLevelUpLaterConfirm *domain.DomainError = domain.NewDomainError(
+		"err_member_level_up_later_confirm", "请稍后二分钟后确认")
+
+	ErrNoSuchLevelUpLog *domain.DomainError = domain.NewDomainError(
+		"err_member_no_such_level_up_log", "不存在升级信息")
+
 	ErrLevelDisabled *domain.DomainError = domain.NewDomainError(
 		"member_level_disabled", "等级未启用")
 
