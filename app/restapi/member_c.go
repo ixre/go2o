@@ -10,6 +10,7 @@ package restapi
 
 import (
 	"fmt"
+	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
@@ -19,7 +20,6 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/dps"
 	"go2o/core/variable"
-	"go2o/x/echox"
 	"net/http"
 	"net/url"
 	"strconv"
