@@ -15,6 +15,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/mss/notify"
@@ -210,22 +211,6 @@ func (m *memberImpl) AddExp(exp int) error {
 	_, err := m.Save()
 	//判断是否升级
 	m.checkLevelUp()
-
-	return err
-}
-
-// 更改会员等级
-func (m *memberImpl) ChangeLevel(level int) error {
-	lg := m.manager.LevelManager()
-	lv := lg.GetLevelById(level)
-	// 判断等级是否启用
-	if lv == nil || lv.Enabled == 0 {
-		return member.ErrLevelDisabled
-	}
-	m.value.Exp = lv.RequireExp
-	m.value.Level = level
-	_, err := m.Save()
-	m.level = nil
 	return err
 }
 
@@ -254,10 +239,116 @@ func (m *memberImpl) checkLevelUp() bool {
 	if lv.Enabled == 0 {
 		return false
 	}
+	origin := m.value.Level
+	unix := time.Now().Unix()
 	m.value.Level = levelId
-	m.Save()
-	m.level = nil
+	m.value.UpdateTime = unix
+	_, err := m.Save()
+	if err == nil {
+		m.level = nil
+		lvLog := &member.LevelUpLog{
+			MemberId:    m.GetAggregateRootId(),
+			OriginLevel: origin,
+			TargetLevel: levelId,
+			IsFree:      1,
+			PaymentId:   0,
+			Reviewed:    enum.ReviewConfirm,
+			CreateTime:  unix,
+		}
+		_, err = m.rep.SaveLevelUpLog(lvLog)
+	}
 	return true
+}
+
+// 更改会员等级
+func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
+	lg := m.manager.LevelManager()
+	lv := lg.GetLevelById(level)
+	// 判断等级是否启用
+	if lv == nil || lv.Enabled == 0 {
+		return member.ErrLevelDisabled
+	}
+	origin := m.value.Level
+	unix := time.Now().Unix()
+	lvLog := &member.LevelUpLog{
+		MemberId:    m.GetAggregateRootId(),
+		OriginLevel: origin,
+		TargetLevel: level,
+		PaymentId:   paymentId,
+		Reviewed:    enum.ReviewNotSet,
+		CreateTime:  unix,
+	}
+	if paymentId == 0 {
+		lvLog.IsFree = 1
+	}
+	if !review {
+		lvLog.Reviewed = enum.ReviewConfirm
+	}
+	_, err := m.rep.SaveLevelUpLog(lvLog)
+	if err == nil && !review {
+		m.value.Exp = lv.RequireExp
+		m.value.Level = level
+		m.value.UpdateTime = unix
+		_, err = m.Save()
+		if err == nil {
+			m.level = nil
+		}
+	}
+	return err
+}
+
+// 审核升级请求
+func (m *memberImpl) ReviewLevelUp(id int, pass bool) error {
+	l := m.rep.GetLevelUpLog(id)
+	if l != nil && l.MemberId == m.GetAggregateRootId() {
+		if l.Reviewed == enum.ReviewPass {
+			return member.ErrLevelUpPass
+		}
+		if l.Reviewed == enum.ReviewReject {
+			return member.ErrLevelUpReject
+		}
+		if l.Reviewed == enum.ReviewConfirm {
+			return member.ErrLevelUpConfirm
+		}
+		if time.Now().Unix()-l.CreateTime < 120 {
+			return member.ErrLevelUpLaterConfirm
+		}
+		if pass {
+			l.Reviewed = enum.ReviewPass
+			_, err := m.rep.SaveLevelUpLog(l)
+			if err == nil {
+				lv := m.manager.LevelManager().GetLevelById(l.TargetLevel)
+				m.value.Exp = lv.RequireExp
+				m.value.Level = l.TargetLevel
+				m.value.UpdateTime = time.Now().Unix()
+				_, err = m.Save()
+			}
+			return err
+		} else {
+			l.Reviewed = enum.ReviewReject
+			_, err := m.rep.SaveLevelUpLog(l)
+			return err
+		}
+	}
+	return member.ErrNoSuchLevelUpLog
+
+}
+
+// 标记已经处理升级
+func (m *memberImpl) ConfirmLevelUp(id int) error {
+	l := m.rep.GetLevelUpLog(id)
+	if l != nil && l.MemberId == m.GetAggregateRootId() {
+		if l.Reviewed == enum.ReviewConfirm {
+			return member.ErrLevelUpConfirm
+		}
+		if l.Reviewed != enum.ReviewPass {
+			return member.ErrLevelUpReject
+		}
+		l.Reviewed = enum.ReviewConfirm
+		_, err := m.rep.SaveLevelUpLog(l)
+		return err
+	}
+	return member.ErrNoSuchLevelUpLog
 }
 
 // 获取会员关联

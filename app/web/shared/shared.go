@@ -10,11 +10,11 @@ package shared
 
 import (
 	"fmt"
+	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof/web"
 	"github.com/labstack/echo"
 	"go2o/core/service/dps"
 	"go2o/core/variable"
-	"go2o/x/echox"
 	"html/template"
 	"regexp"
 	"strings"

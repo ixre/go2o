@@ -249,12 +249,13 @@ func (ms *memberService) ChangeUsr(id int, usr string) error {
 }
 
 // 更改会员等级
-func (ms *memberService) ChangeLevel(memberId int, levelId int) error {
+func (ms *memberService) ChangeLevel(memberId int, levelId int,
+	review bool, paymentId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.ChangeLevel(levelId)
+	return m.ChangeLevel(levelId, paymentId, review)
 }
 
 // 上传会员头像
