@@ -9,8 +9,8 @@
 package shared
 
 import (
+	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
-	"go2o/x/echox"
 	"strings"
 )
 

@@ -9,10 +9,10 @@
 package shared
 
 import (
+	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"go2o/app/util"
 	"go2o/core/service/dps"
-	"go2o/x/echox"
 	"net/http"
 	"strconv"
 	"time"
