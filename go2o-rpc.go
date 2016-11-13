@@ -39,7 +39,7 @@ func main() {
 	gof.CurrentApp = newApp
 	dps.Init(newApp)
 
-	err := thrift.Listen(addr, false)
+	err := thrift.ListenAndServe(addr, false)
 	if err != nil {
 		log.Println("error running ", addr, " :", err.Error())
 	}

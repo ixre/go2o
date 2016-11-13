@@ -16,13 +16,11 @@ import (
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
-func Listen(addr string, secure bool) error {
+func ListenAndServe(addr string, secure bool) error {
 	var err error
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
-	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
-	//protocolFactory := thrift.NewTCompactProtocolFactory()
+	protocolFactory := thrift.NewTCompactProtocolFactory()
 	var transport thrift.TServerTransport
-
 	if secure {
 		cfg := new(tls.Config)
 		if cert, err := tls.LoadX509KeyPair("server.crt", "server.key"); err == nil {
@@ -38,8 +36,7 @@ func Listen(addr string, secure bool) error {
 	transport, err = thrift.NewTServerSocket(addr)
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
-		//processor.RegisterProcessor("abc",nil)
-		processor.RegisterProcessor("Member", define.NewMemberServiceProcessor(dps.MemberService))
+		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(dps.MemberService))
 		server := thrift.NewTSimpleServer4(processor, transport,
 			transportFactory, protocolFactory)
 		fmt.Println("Starting the thrift server... on ", addr)
