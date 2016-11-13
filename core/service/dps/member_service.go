@@ -19,11 +19,14 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"log"
 	"strings"
 	"time"
 )
+
+var _ define.MemberService = new(memberService)
 
 type memberService struct {
 	_rep            member.IMemberRep
@@ -389,34 +392,34 @@ func (ms *memberService) ModifyTradePassword(memberId int,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 检查凭据, update:是否更新登录时间
-func (ms *memberService) TryLogin(usr, pwd string, update bool) (
-	*member.Member, error) {
+// 登陆，返回结果(Result)和会员编号(Id);
+// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+func (ms *memberService) Login(usr string, pwd string, update bool) (r map[string]int32, err error) {
+	r = make(map[string]int32)
 	usr = strings.ToLower(strings.TrimSpace(usr))
-
 	val := ms._rep.GetMemberByUsr(usr)
 	if val == nil {
 		val = ms._rep.GetMemberValueByPhone(usr)
 	}
-
 	if val == nil {
-		return nil, member.ErrNoSuchMember
+		r["Result"] = -1
+		return r, nil
 	}
-
 	if val.Pwd != pwd {
-		return nil, member.ErrCredential
+		r["Result"] = -2
+		return r, nil
 	}
-
 	if val.State == member.StateStopped {
-		return nil, member.ErrDisabled
+		r["Result"] = -3
+		return r, nil
 	}
-
+	r["Id"] = int32(val.Id)
+	r["Result"] = 0
 	if update {
 		m := ms._rep.GetMember(val.Id)
-		return val, m.UpdateLoginTime()
+		m.UpdateLoginTime()
 	}
-
-	return val, nil
+	return r, nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
