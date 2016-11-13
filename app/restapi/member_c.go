@@ -40,18 +40,30 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		e, err := dps.MemberService.TryLogin(usr, encodePwd, true)
-		if err != nil {
-			result.Message = err.Error()
-		} else {
+		mp, _ := dps.MemberService.Login(usr, encodePwd, true)
+		id := int(mp["Id"])
+		rst := mp["Result"]
+		if id > 0 {
+			m := dps.MemberService.GetMember(id)
 			// 登录成功，生成令牌
-			token := util.SetMemberApiToken(sto, e.Id, e.Pwd)
+			token := util.SetMemberApiToken(sto, id, encodePwd)
 			result.Member = &dto.LoginMember{
-				Id:         e.Id,
+				Id:         id,
 				Token:      token,
-				UpdateTime: e.UpdateTime,
+				UpdateTime: m.UpdateTime,
 			}
 			result.Result = true
+		} else {
+			switch rst {
+			case -1:
+				result.Message = member.ErrNoSuchMember.Error()
+			case -2:
+				result.Message = member.ErrCredential.Error()
+			case -3:
+				result.Message = member.ErrDisabled.Error()
+			default:
+				result.Message = "登陆失败"
+			}
 		}
 	}
 	return c.JSON(http.StatusOK, result)
