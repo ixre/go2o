@@ -23,6 +23,8 @@ type (
 		OffsetY int `db:"offset_y"`
 		// 二维码模板文本
 		Comment string `db:"comment"`
+		// 回调地址
+		CallbackUrl string `db:"callback_url"`
 		// 是否启用
 		Enabled int `db:"enabled"`
 	}

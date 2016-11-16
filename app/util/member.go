@@ -20,10 +20,9 @@ import (
 
 const offset string = "%$^&@#"
 
-// 生成推广二维码
-func GenerateInvitationQr(domain string,
-	code string, targetUrl string) []byte {
-	url := domain + "/i/" + code + "?device=3&return_url=" + targetUrl
+// 生成推广二维码,query为附加的参数查询
+func GenerateInvitationQr(domain string, code string, query string) []byte {
+	url := domain + "/i/" + code + "?device=3&" + query
 	return gen.BuildQrCodeForUrl(url, 10)
 }
 

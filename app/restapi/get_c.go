@@ -35,9 +35,10 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	}
 	m := dps.MemberService.GetMember(memberId)
 	if m != nil {
+		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")
 		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InvitationCode))
-		c.Response().Write(util.GenerateInvitationQr(domain, m.InvitationCode, targetUrl))
+		c.Response().Write(util.GenerateInvitationQr(domain, m.InvitationCode, query))
 	}
 	return nil
 }
