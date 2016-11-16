@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/log"
+	"go2o/core/dao"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/cart"
@@ -176,6 +177,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(personfinance.RiseDayInfo{}, "pf_riseday")
 	orm.Mapping(personfinance.RiseLog{}, "pf_riselog")
 
+	/* 通用模块 */
+	orm.Mapping(dao.CommQrTemplate{}, "comm_qr_template")
 	orm.Mapping(valueobject.Goods{}, "")
 }
 
