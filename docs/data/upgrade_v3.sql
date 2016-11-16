@@ -20,3 +20,7 @@ CREATE TABLE `comm_qr_template` (
   `enabled` int(1) DEFAULT NULL COMMENT '是否启用',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci COMMENT='二维码模板';
+
+ALTER TABLE `go2o`.`comm_qr_template`
+ADD COLUMN `callback_url` VARCHAR(120) NULL COMMENT '回调地址' AFTER `comment`;
+
