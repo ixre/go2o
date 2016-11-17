@@ -9,8 +9,6 @@
 
 package shop
 
-import "fmt"
-
 type (
 	IShopManager interface {
 		// 新建商店
@@ -26,17 +24,12 @@ type (
 		GetOnlineShop() IShop
 
 		// 获取商店
-		GetShop(int) IShop
+		GetShop(id int64) IShop
 
 		// 根据名称获取商店
 		GetShopByName(name string) IShop
 
 		// 删除门店
-		DeleteShop(shopId int) error
+		DeleteShop(shopId int64) error
 	}
 )
-
-//位置(经度+"/"+纬度)
-func (this OfflineShop) Location() string {
-	return fmt.Sprintf("%f/%f", this.Lng, this.Lat)
-}

@@ -63,12 +63,12 @@ func (s *shipmentRep) GetOrders(orderId int) []shipment.IShipmentOrder {
 }
 
 // 保存发货单
-func (s *shipmentRep) SaveShipmentOrder(o *shipment.ShipmentOrder) (int, error) {
+func (s *shipmentRep) SaveShipmentOrder(o *shipment.ShipmentOrder) (int64, error) {
 	return orm.Save(s.GetOrm(), o, o.Id)
 }
 
 // 保存发货商品项
-func (s *shipmentRep) SaveShipmentItem(v *shipment.Item) (int, error) {
+func (s *shipmentRep) SaveShipmentItem(v *shipment.Item) (int64, error) {
 	return orm.Save(s.GetOrm(), v, v.Id)
 }
 

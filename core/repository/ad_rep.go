@@ -49,7 +49,7 @@ func (a *advertisementRep) GetAdGroups() []*ad.AdGroup {
 }
 
 // 删除广告组
-func (a *advertisementRep) DelAdGroup(id int) error {
+func (a *advertisementRep) DelAdGroup(id int64) error {
 	return a.Connector.GetOrm().DeleteByPk(&ad.AdGroup{}, id)
 }
 
@@ -64,7 +64,7 @@ func (a *advertisementRep) GetAdPositionByKey(key string) *ad.AdPosition {
 }
 
 // 获取广告位
-func (a *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPosition {
+func (a *advertisementRep) GetAdPositionsByGroupId(adGroupId int64) []*ad.AdPosition {
 	var list = []*ad.AdPosition{}
 	if err := a.Connector.GetOrm().Select(&list, "group_id=?", adGroupId); err != nil {
 		handleError(err)
@@ -73,7 +73,7 @@ func (a *advertisementRep) GetAdPositionsByGroupId(adGroupId int) []*ad.AdPositi
 }
 
 // 删除广告位
-func (a *advertisementRep) DelAdPosition(id int) error {
+func (a *advertisementRep) DelAdPosition(id int64) error {
 	err := a.Connector.GetOrm().DeleteByPk(&ad.AdPosition{}, id)
 	if err == nil {
 		//更新用户的广告缓存
@@ -83,7 +83,7 @@ func (a *advertisementRep) DelAdPosition(id int) error {
 }
 
 // 保存广告位
-func (a *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
+func (a *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int64, error) {
 	id, err := orm.Save(a.GetOrm(), v, v.Id)
 	if err == nil {
 		//更新用户的广告缓存
@@ -93,12 +93,12 @@ func (a *advertisementRep) SaveAdPosition(v *ad.AdPosition) (int, error) {
 }
 
 // 保存
-func (a *advertisementRep) SaveAdGroup(v *ad.AdGroup) (int, error) {
+func (a *advertisementRep) SaveAdGroup(v *ad.AdGroup) (int64, error) {
 	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 设置用户的广告
-func (a *advertisementRep) SetUserAd(adUserId, posId, adId int) error {
+func (a *advertisementRep) SetUserAd(adUserId, posId, adId int64) error {
 	e := &ad.AdUserSet{
 		AdUserId: adUserId,
 		PosId:    posId,
@@ -123,7 +123,7 @@ func (a *advertisementRep) GetIdByName(userId int, name string) int {
 }
 
 // 保存广告值
-func (a *advertisementRep) SaveAdValue(v *ad.Ad) (int, error) {
+func (a *advertisementRep) SaveAdValue(v *ad.Ad) (int64, error) {
 	id, err := orm.Save(a.GetOrm(), v, v.Id)
 	if err == nil {
 		//更新用户的广告缓存
@@ -133,7 +133,7 @@ func (a *advertisementRep) SaveAdValue(v *ad.Ad) (int, error) {
 }
 
 // 获取超链接广告数据
-func (a *advertisementRep) GetHyperLinkData(adId int) *ad.HyperLink {
+func (a *advertisementRep) GetHyperLinkData(adId int64) *ad.HyperLink {
 	e := ad.HyperLink{}
 	if err := a.GetOrm().GetBy(&e, "ad_id=?", adId); err != nil {
 		handleError(err)
@@ -143,17 +143,17 @@ func (a *advertisementRep) GetHyperLinkData(adId int) *ad.HyperLink {
 }
 
 // 保存超链接广告数据
-func (a *advertisementRep) SaveHyperLinkData(v *ad.HyperLink) (int, error) {
+func (a *advertisementRep) SaveHyperLinkData(v *ad.HyperLink) (int64, error) {
 	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 保存广告图片
-func (a *advertisementRep) SaveAdImageValue(v *ad.Image) (int, error) {
+func (a *advertisementRep) SaveAdImageValue(v *ad.Image) (int64, error) {
 	return orm.Save(a.GetOrm(), v, v.Id)
 }
 
 // 获取广告
-func (a *advertisementRep) GetValueAd(id int) *ad.Ad {
+func (a *advertisementRep) GetValueAd(id int64) *ad.Ad {
 	var e ad.Ad
 	if err := a.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -162,7 +162,7 @@ func (a *advertisementRep) GetValueAd(id int) *ad.Ad {
 }
 
 // 根据名称获取广告
-func (a *advertisementRep) GetAdByKey(userId int, key string) *ad.Ad {
+func (a *advertisementRep) GetAdByKey(userId int64, key string) *ad.Ad {
 	e := ad.Ad{}
 	const sql string = `select * FROM ad_list
         INNER JOIN ad_userset ON ad_userset.user_id = ad_list.user_id
@@ -209,13 +209,13 @@ func (a *advertisementRep) DelAd(userId, advertisementId int) error {
 }
 
 // 删除广告的图片数据
-func (a *advertisementRep) DelImageDataForAdvertisement(advertisementId int) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=?", advertisementId)
+func (a *advertisementRep) DelImageDataForAdvertisement(adId int64) error {
+	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=?", adId)
 	return err
 }
 
 // 删除广告的文字数据
-func (a *advertisementRep) DelTextDataForAdvertisement(advertisementId int) error {
-	_, err := a.Connector.GetOrm().Delete(ad.HyperLink{}, "ad_id=?", advertisementId)
+func (a *advertisementRep) DelTextDataForAdvertisement(adId int64) error {
+	_, err := a.Connector.GetOrm().Delete(ad.HyperLink{}, "ad_id=?", adId)
 	return err
 }

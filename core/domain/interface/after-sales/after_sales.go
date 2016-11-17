@@ -110,7 +110,7 @@ type (
 	// 售后单
 	IAfterSalesOrder interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取售后单数据
 		Value() AfterSalesOrder

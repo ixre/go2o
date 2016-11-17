@@ -33,7 +33,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	if len(targetUrl) == 0 {
 		targetUrl = dps.BaseService.GetRegisterPerm().CallBackUrl
 	}
-	m := dps.MemberService.GetMember(memberId)
+	m, _ := dps.MemberService.GetMember(int32(memberId))
 	if m != nil {
 		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")

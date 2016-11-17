@@ -14,11 +14,11 @@ var _ content.IContent = new(Content)
 
 type Content struct {
 	contentRep     content.IContentRep
-	userId         int
+	userId         int64
 	articleManager content.IArticleManager
 }
 
-func NewContent(userId int, rep content.IContentRep) content.IContent {
+func NewContent(userId int64, rep content.IContentRep) content.IContent {
 	return &Content{
 		contentRep: rep,
 		userId:     userId,
@@ -26,7 +26,7 @@ func NewContent(userId int, rep content.IContentRep) content.IContent {
 }
 
 // 获取聚合根编号
-func (c *Content) GetAggregateRootId() int {
+func (c *Content) GetAggregateRootId() int64 {
 	return c.userId
 }
 
@@ -44,7 +44,7 @@ func (c *Content) CreatePage(v *content.Page) content.IPage {
 }
 
 // 获取页面
-func (c *Content) GetPage(id int) content.IPage {
+func (c *Content) GetPage(id int64) content.IPage {
 	v := c.contentRep.GetPageById(c.GetAggregateRootId(), id)
 	if v != nil {
 		return c.CreatePage(v)
@@ -62,6 +62,6 @@ func (c *Content) GetPageByStringIndent(indent string) content.IPage {
 }
 
 // 删除页面
-func (c *Content) DeletePage(id int) error {
+func (c *Content) DeletePage(id int64) error {
 	return c.contentRep.DeletePage(c.GetAggregateRootId(), id)
 }

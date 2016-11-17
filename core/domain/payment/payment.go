@@ -38,7 +38,7 @@ type paymentOrderImpl struct {
 	buyer              member.IMember
 }
 
-func (p *paymentOrderImpl) GetAggregateRootId() int {
+func (p *paymentOrderImpl) GetAggregateRootId() int64 {
 	return p.value.Id
 }
 
@@ -315,7 +315,7 @@ func (p *paymentOrderImpl) Commit() (int, error) {
 	return p.save()
 }
 
-func (p *paymentOrderImpl) save() (int, error) {
+func (p *paymentOrderImpl) Save() (int64, error) {
 	_, err := p.checkPaymentOk()
 	if err == nil {
 		unix := time.Now().Unix()

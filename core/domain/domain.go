@@ -12,13 +12,13 @@ package domain
 //聚合根
 type IAggregateRoot interface {
 	// 获取聚合根编号
-	GetAggregateRootId() int
+	GetAggregateRootId() int64
 }
 
 //领域对象
 type IDomain interface {
 	// 获取领域对象编号
-	GetDomainId() int
+	GetDomainId() int64
 }
 
 //值对象

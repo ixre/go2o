@@ -48,12 +48,12 @@ var (
 type (
 	IItemRep interface {
 		// 获取货品
-		GetValueItem(itemId int) *Item
+		GetValueItem(itemId int64) *Item
 
 		// 根据id获取货品
 		GetItemByIds(ids ...int) ([]*Item, error)
 
-		SaveValueItem(*Item) (int, error)
+		SaveValueItem(*Item) (int64, error)
 
 		// 获取在货架上的商品
 		GetPagedOnShelvesItem(supplierId int, catIds []int, start, end int) (total int, goods []*Item)
@@ -68,13 +68,13 @@ type (
 	// 商品值
 	Item struct {
 		// 编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 分类
-		CategoryId int `db:"category_id"`
+		CategoryId int64 `db:"category_id"`
 		// 名称
 		Name string `db:"name"`
 		//供应商编号(暂时同mch_id)
-		VendorId int `db:"supplier_id"`
+		VendorId int64 `db:"supplier_id"`
 		// 货号
 		GoodsNo string `db:"goods_no"`
 		// 小标题

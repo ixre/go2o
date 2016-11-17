@@ -83,7 +83,7 @@ type (
 	// 运费计算器
 	IExpressCalculator interface {
 		// 添加计算项,tplId为运费模板的编号
-		Add(tplId int, unit float32) error
+		Add(tplId int64, unit float32) error
 
 		// 计算运费
 		Calculate(areaCode string)
@@ -92,25 +92,25 @@ type (
 		Total() float32
 
 		// 获取运费模板编号与费用的集合
-		Fee() map[int]float32
+		Fee() map[int64]float32
 	}
 
 	// 物流快递
 	IUserExpress interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 创建快递模板
 		CreateTemplate(t *ExpressTemplate) IExpressTemplate
 
 		// 获取快递模板
-		GetTemplate(id int) IExpressTemplate
+		GetTemplate(id int64) IExpressTemplate
 
 		// 获取所有的快递模板
 		GetAllTemplate() []IExpressTemplate
 
 		// 删除模板
-		DeleteTemplate(id int) error
+		DeleteTemplate(id int64) error
 
 		// 创建运费计算器
 		CreateCalculator() IExpressCalculator
@@ -119,7 +119,7 @@ type (
 	// 快递模板
 	IExpressTemplate interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取快递模板数据
 		Value() ExpressTemplate
@@ -131,22 +131,22 @@ type (
 		Enabled() bool
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 根据地区编码获取运费模板
 		GetAreaExpressTemplateByAreaCode(areaCode string) *ExpressAreaTemplate
 
 		// 根据编号获取地区的运费模板
-		GetAreaExpressTemplate(id int) *ExpressAreaTemplate
+		GetAreaExpressTemplate(id int64) *ExpressAreaTemplate
 
 		// 保存地区快递模板
-		SaveAreaTemplate(t *ExpressAreaTemplate) (int, error)
+		SaveAreaTemplate(t *ExpressAreaTemplate) (int64, error)
 
 		// 获取所有的地区快递模板
 		GetAllAreaTemplate() []ExpressAreaTemplate
 
 		// 删除模板地区设定
-		DeleteAreaSet(areaSetId int) error
+		DeleteAreaSet(areaSetId int64) error
 	}
 
 	IExpressRep interface {
@@ -154,37 +154,37 @@ type (
 		GetExpressProviders() []*ExpressProvider
 
 		// 获取快递公司
-		GetExpressProvider(id int) *ExpressProvider
+		GetExpressProvider(id int64) *ExpressProvider
 
 		// 保存快递公司
-		SaveExpressProvider(v *ExpressProvider) (int, error)
+		SaveExpressProvider(v *ExpressProvider) (int64, error)
 
 		// 获取用户的快递
-		GetUserExpress(userId int) IUserExpress
+		GetUserExpress(userId int64) IUserExpress
 
 		// 获取用户的快递模板
-		GetUserAllTemplate(userId int) []*ExpressTemplate
+		GetUserAllTemplate(userId int64) []*ExpressTemplate
 
 		// 删除快递模板
-		DeleteExpressTemplate(userId int, templateId int) error
+		DeleteExpressTemplate(userId int64, templateId int64) error
 
 		// 保存快递模板
-		SaveExpressTemplate(value *ExpressTemplate) (int, error)
+		SaveExpressTemplate(value *ExpressTemplate) (int64, error)
 
 		// 获取模板的所有地区设置
-		GetExpressTemplateAllAreaSet(templateId int) []ExpressAreaTemplate
+		GetExpressTemplateAllAreaSet(templateId int64) []ExpressAreaTemplate
 
 		// 保存模板的地区设置
-		SaveExpressTemplateAreaSet(t *ExpressAreaTemplate) (int, error)
+		SaveExpressTemplateAreaSet(t *ExpressAreaTemplate) (int64, error)
 
 		// 删除模板的地区设置
-		DeleteAreaExpressTemplate(templateId int, areaSetId int) error
+		DeleteAreaExpressTemplate(templateId int64, areaSetId int64) error
 	}
 
 	// 快递服务商
 	ExpressProvider struct {
 		// 快递公司编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 快递名称
 		Name string `db:"name"`
 		// 首字母，用于索引分组
@@ -202,9 +202,9 @@ type (
 	// 快递模板
 	ExpressTemplate struct {
 		// 快递模板编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 用户编号
-		UserId int `db:"user_id"`
+		UserId int64 `db:"user_id"`
 		// 快递模板名称
 		Name string `db:"name"`
 		// 是否卖家承担运费，0为顾客承担
@@ -226,9 +226,9 @@ type (
 	// 快递地区模板
 	ExpressAreaTemplate struct {
 		// 模板编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 运费模板编号
-		TemplateId int `db:"template_id"`
+		TemplateId int64 `db:"template_id"`
 		// 地区编号列表，通常精确到省即可
 		CodeList string `db:"code_list"`
 		// 地区名称列表

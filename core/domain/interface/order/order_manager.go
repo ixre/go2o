@@ -115,7 +115,7 @@ type (
 		SaveSubOrder(value *SubOrder) (int, error)
 
 		// 保存子订单的商品项,并返回编号和错误
-		SaveOrderItem(subOrderId int, value *OrderItem) (int, error)
+		SaveOrderItem(subOrderId int, value *OrderItem) (int64, error)
 
 		// 获取订单项
 		GetSubOrderItems(orderId int) []*OrderItem

@@ -18,7 +18,7 @@ type (
 	// 商品
 	IGoods interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 商品快照
 		SnapshotManager() goods.ISnapshotManager
@@ -54,7 +54,7 @@ type (
 		SetValue(*goods.ValueGoods) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 更新销售数量,扣减库存
 		AddSalesNum(quantity int) error

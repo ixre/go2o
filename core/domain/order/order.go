@@ -83,7 +83,7 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 	}
 }
 
-func (o *orderImpl) GetAggregateRootId() int {
+func (o *orderImpl) GetAggregateRootId() int64 {
 	return o.value.Id
 }
 
@@ -626,7 +626,7 @@ func (o *orderImpl) saveNewOrderOnSubmit() (int, error) {
 }
 
 // 保存订单
-func (o *orderImpl) Save() (int, error) {
+func (o *orderImpl) Save() (int64, error) {
 	// 有操作后解除挂起状态
 	// todo: ???
 	//if o._value.IsSuspend == 1 && !o._internalSuspend {
@@ -997,7 +997,7 @@ func NewSubOrder(v *order.SubOrder,
 }
 
 // 获取领域对象编号
-func (o *subOrderImpl) GetDomainId() int {
+func (o *subOrderImpl) GetDomainId() int64 {
 	return o.value.Id
 }
 
@@ -1065,7 +1065,7 @@ func (o *subOrderImpl) saveOrderItems() error {
 }
 
 // 保存订单
-func (o *subOrderImpl) Save() (int, error) {
+func (o *subOrderImpl) Save() (int64, error) {
 	unix := time.Now().Unix()
 	o.value.UpdateTime = unix
 	if o.GetDomainId() > 0 {
@@ -1189,7 +1189,7 @@ func (o *subOrderImpl) PickUp() error {
 }
 
 // 发货
-func (o *subOrderImpl) Ship(spId int, spOrder string) error {
+func (o *subOrderImpl) Ship(spId int64, spOrder string) error {
 	//so := o._shipRep.GetOrders()
 	//todo: 可进行发货修改
 	if o.value.State < order.StatAwaitingShipment {

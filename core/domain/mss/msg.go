@@ -47,7 +47,7 @@ func newMessage(msg *mss.Message, rep mss.IMssRep) mss.IMessage {
 }
 
 // 获取领域编号
-func (m *messageImpl) GetDomainId() int {
+func (m *messageImpl) GetDomainId() int64 {
 	return m.msg.Id
 }
 
@@ -61,7 +61,7 @@ func (m *messageImpl) SpecialTo() bool {
 }
 
 // 检测是否有权限查看
-func (m *messageImpl) CheckPerm(toUserId int, toRole int) bool {
+func (m *messageImpl) CheckPerm(toUserId int64, toRole int) bool {
 	if m.msg.AllUser == 1 || m.msg.ToRole == toRole {
 		return true
 	}
@@ -81,13 +81,13 @@ func (m *messageImpl) GetValue() mss.Message {
 }
 
 // 获取消息发送目标
-func (m *messageImpl) GetTo(toUserId int, toRole int) *mss.To {
+func (m *messageImpl) GetTo(toUserId int64, toRole int) *mss.To {
 	return m.rep.GetMessageTo(m.GetDomainId(), toUserId, toRole)
 }
 
 // 保存
 //todo: 会出现保存后不发送的情况
-func (m *messageImpl) Save() (int, error) {
+func (m *messageImpl) Save() (int64, error) {
 	if m.GetDomainId() > 0 {
 		return m.msg.Id, mss.ErrMessageUpdate
 	}
@@ -134,7 +134,7 @@ func (m *messageImpl) Send(d mss.Data) error {
 }
 
 // 保存消息内容
-func (m *messageImpl) saveContent(v interface{}) (int, error) {
+func (m *messageImpl) saveContent(v interface{}) (int64, error) {
 	content, ok := v.(string)
 	if !ok {
 		if d, err := json.Marshal(v); err != nil {
@@ -151,7 +151,7 @@ func (m *messageImpl) saveContent(v interface{}) (int, error) {
 	return m.rep.SaveMsgContent(co)
 }
 
-func (m *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
+func (m *messageImpl) saveUserMsg(contentId int64, read int) (int64, error) {
 	if len(m.msg.To) > 0 {
 		for _, v := range m.msg.To {
 			to := &mss.To{
@@ -169,7 +169,7 @@ func (m *messageImpl) saveUserMsg(contentId int, read int) (int, error) {
 				// 阅读时间
 				ReadTime: time.Now().Unix(),
 			}
-			m.rep.SaveUserMsg(to)
+			return m.rep.SaveUserMsg(to)
 		}
 	}
 	return -1, nil
@@ -197,7 +197,7 @@ func (m *mailMessageImpl) Value() *notify.MailMessage {
 	return m._val
 }
 
-func (m *mailMessageImpl) Save() (int, error) {
+func (m *mailMessageImpl) Save() (int64, error) {
 	return m.messageImpl.Save()
 }
 
@@ -215,7 +215,7 @@ func (m *mailMessageImpl) Send(d mss.Data) error {
 				MerchantId: 0,
 				Subject:    v.Subject,
 				Body:       v.Body,
-				SendTo:     strconv.Itoa(t.Id), //todo: mail address
+				SendTo:     strconv.Itoa(int(t.Id)), //todo: mail address
 				CreateTime: unix,
 			}
 			m._rep.JoinMailTaskToQueen(task)
@@ -251,7 +251,7 @@ func (p *phoneMessageImpl) Value() *notify.PhoneMessage {
 	return p._val
 }
 
-func (p *phoneMessageImpl) Save() (int, error) {
+func (p *phoneMessageImpl) Save() (int64, error) {
 	return p.messageImpl.Save()
 }
 
@@ -261,7 +261,7 @@ func (p *phoneMessageImpl) Send(d mss.Data) error {
 	if err == nil {
 		v := *p._val
 		v = notify.PhoneMessage(Translate(string(v), d))
-		var contentId int //内容编号
+		var contentId int64 //内容编号
 		if contentId, err = p.saveContent(string(v)); err == nil {
 			p.saveUserMsg(contentId, 1) //短信默认已读
 		}
@@ -291,7 +291,7 @@ func (s *siteMessageImpl) Value() *notify.SiteMessage {
 	return s._val
 }
 
-func (s *siteMessageImpl) Save() (int, error) {
+func (s *siteMessageImpl) Save() (int64, error) {
 	return s.messageImpl.Save()
 }
 
@@ -302,7 +302,7 @@ func (s *siteMessageImpl) Send(d mss.Data) error {
 		v := s._val
 		v.Subject = Translate(v.Subject, d)
 		v.Message = Translate(v.Message, d)
-		var contentId int //内容编号
+		var contentId int64 //内容编号
 		if contentId, err = s.saveContent(v); err == nil {
 			s.saveUserMsg(contentId, 0) //站内信默认未读
 		}

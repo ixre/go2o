@@ -59,7 +59,7 @@ func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
 	}
 }
 
-func (i *itemImpl) GetDomainId() int {
+func (i *itemImpl) GetDomainId() int64 {
 	return i.value.Id
 }
 
@@ -226,7 +226,7 @@ func (i *itemImpl) Incorrect(remark string) error {
 }
 
 // 保存
-func (i *itemImpl) Save() (int, error) {
+func (i *itemImpl) Save() (int64, error) {
 	i.saleImpl.clearCache(i.value.Id)
 	unix := time.Now().Unix()
 	i.value.UpdateTime = unix

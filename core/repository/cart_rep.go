@@ -104,7 +104,7 @@ func (this *cartRep) RemoveCartItem(id int) error {
 }
 
 // 保存购物车项
-func (this *cartRep) SaveCartItem(v *cart.CartItem) (int, error) {
+func (this *cartRep) SaveCartItem(v *cart.CartItem) (int64, error) {
 	_orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {

@@ -24,7 +24,7 @@ type (
 		LevelManager() ILevelManager
 
 		// 检查手机绑定,同时检查手机格式
-		CheckPhoneBind(phone string, memberId int) error
+		CheckPhoneBind(phone string, memberId int64) error
 
 		// 检查注册信息是否正确
 		PrepareRegister(v *Member, pro *Profile,
@@ -57,21 +57,21 @@ type (
 		GetHighestLevel() *Level
 
 		// 获取等级
-		GetLevelById(id int) *Level
+		GetLevelById(id int64) *Level
 
 		// 根据可编程字符获取会员等级
 		GetLevelByProgramSign(sign string) *Level
 
 		// 获取下一个等级
-		GetNextLevelById(int int) *Level
+		GetNextLevelById(id int64) *Level
 
 		// 删除等级
-		DeleteLevel(id int) error
+		DeleteLevel(id int64) error
 
 		// 保存等级
-		SaveLevel(*Level) (int, error)
+		SaveLevel(*Level) (int64, error)
 
 		// 根据经验值获取等级值
-		GetLevelIdByExp(exp int) int
+		GetLevelIdByExp(exp int) int64
 	}
 )

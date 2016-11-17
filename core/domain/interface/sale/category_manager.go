@@ -36,7 +36,7 @@ var (
 type (
 	ICategory interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		GetValue() *Category
@@ -49,7 +49,7 @@ type (
 		GetOption() domain.IOptionStore
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 获取子栏目的编号
 		GetChildes() []int

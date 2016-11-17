@@ -57,7 +57,7 @@ func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
 }
 
 // 获取领域编号
-func (a *afterSalesOrderImpl) GetDomainId() int {
+func (a *afterSalesOrderImpl) GetDomainId() int64 {
 	return a.value.Id
 }
 

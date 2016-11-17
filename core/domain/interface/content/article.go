@@ -13,7 +13,7 @@ type (
 	// 文章
 	IArticle interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		GetValue() Article
@@ -25,13 +25,13 @@ type (
 		Category() ICategory
 
 		// 保存文章
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	// 栏目
 	ICategory interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		GetValue() ArticleCategory
@@ -43,13 +43,13 @@ type (
 		SetValue(*ArticleCategory) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	// 文章服务bn
 	IArticleManager interface {
 		// 获取栏目
-		GetCategory(id int) ICategory
+		GetCategory(id int64) ICategory
 
 		// 根据标识获取文章栏目
 		GetCategoryByAlias(alias string) ICategory
@@ -61,28 +61,28 @@ type (
 		CreateCategory(*ArticleCategory) ICategory
 
 		// 删除栏目
-		DelCategory(id int) error
+		DelCategory(id int64) error
 
 		// 创建文章
 		CreateArticle(*Article) IArticle
 
 		// 获取文章
-		GetArticle(id int) IArticle
+		GetArticle(id int64) IArticle
 
 		// 获取文章列表
-		GetArticleList(categoryId int, begin, end int) []*Article
+		GetArticleList(categoryId int64, begin, end int) []*Article
 
 		// 删除文章
-		DeleteArticle(id int) error
+		DeleteArticle(id int64) error
 	}
 
 	//栏目
 	ArticleCategory struct {
 		//编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 
 		//父类编号,如为一级栏目则为0
-		ParentId int `db:"parent_id"`
+		ParentId int64 `db:"parent_id"`
 
 		//名称(唯一)
 		Name string `db:"name"`
@@ -111,10 +111,10 @@ type (
 	//文章
 	Article struct {
 		//编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 
 		// 栏目编号
-		CategoryId int `db:"cat_id"`
+		CategoryId int64 `db:"cat_id"`
 
 		//标题
 		Title string `db:"title"`

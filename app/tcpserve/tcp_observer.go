@@ -38,7 +38,7 @@ func AccountNotifyJob(s *nc.SocketServer) {
 }
 
 // push member summary to tcp client
-func pushMemberAccount(s *nc.SocketServer, connList []net.Conn, memberId int) {
+func pushMemberAccount(s *nc.SocketServer, connList []net.Conn, memberId int64) {
 	s.Printf("[ TCP][ NOTIFY] - notify account update - %d", memberId)
 	sm := getMemberAccount(memberId, 0)
 	if sm != nil {
@@ -70,7 +70,7 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
 }
 
 // push member summary to tcp client
-func pushMemberSummary(s *nc.SocketServer, connList []net.Conn, memberId int) {
+func pushMemberSummary(s *nc.SocketServer, connList []net.Conn, memberId int64) {
 	s.Printf("[ TCP][ NOTIFY] - notify member update - %d", memberId)
 	sm := GetMemberSummary(memberId, 0)
 	if d, err := json.Marshal(sm); err == nil {

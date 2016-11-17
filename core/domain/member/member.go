@@ -59,7 +59,7 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 }
 
 // 获取聚合根编号
-func (m *memberImpl) GetAggregateRootId() int {
+func (m *memberImpl) GetAggregateRootId() int64 {
 	return m.value.Id
 }
 
@@ -397,7 +397,7 @@ func (m *memberImpl) UpdateLoginTime() error {
 }
 
 // 保存
-func (m *memberImpl) Save() (int, error) {
+func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
 		return m.rep.SaveMember(m.value)
@@ -474,7 +474,7 @@ func (m *memberImpl) usrIsExist(usr string) bool {
 }
 
 // 获取推荐数组
-func (m *memberImpl) getReferArr(memberId int, level int) []int {
+func (m *memberImpl) getReferArr(memberId int64, level int) []int {
 	arr := make([]int, level)
 	i := 0
 	referId := memberId
@@ -530,7 +530,7 @@ func (m *memberImpl) updateReferStr(r *member.Relation) {
 }
 
 // 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int) error {
+func (m *memberImpl) ChangeReferees(memberId int64) error {
 	if memberId > 0 {
 		rm := m.rep.GetMember(memberId)
 		if rm == nil {
@@ -556,7 +556,7 @@ type favoriteManagerImpl struct {
 	_rep      member.IMemberRep
 }
 
-func newFavoriteManagerImpl(memberId int,
+func newFavoriteManagerImpl(memberId int64,
 	rep member.IMemberRep) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务

@@ -299,7 +299,7 @@ func (o *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int, error) {
 }
 
 // 保存子订单的商品项,并返回编号和错误
-func (o *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int, error) {
+func (o *orderRepImpl) SaveOrderItem(subOrderId int, v *order.OrderItem) (int64, error) {
 	v.OrderId = subOrderId
 	return orm.Save(o.GetOrm(), v, v.Id)
 }

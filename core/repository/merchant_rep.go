@@ -66,7 +66,7 @@ func (m *merchantRep) GetManager() merchant.IMerchantManager {
 }
 
 // 创建会员申请商户密钥
-func (m *merchantRep) CreateSignUpToken(memberId int) string {
+func (m *merchantRep) CreateSignUpToken(memberId int64) string {
 	mKey := fmt.Sprintf("go2o:rep:mch:signup:mm-%d", memberId)
 	if token, err := m.storage.GetString(mKey); err == nil {
 		return token
@@ -318,7 +318,7 @@ func (m *merchantRep) DeleteMemberLevel(merchantId, id int) error {
 }
 
 // 保存等级
-func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error) {
+func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int64, error) {
 	orm := m.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {

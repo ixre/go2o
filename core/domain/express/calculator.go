@@ -23,18 +23,18 @@ type expressComplex struct {
 // 运费计算实现
 type expressCalculatorImpl struct {
 	userExpress *userExpressImpl
-	tplMap      map[int]*expressComplex
+	tplMap      map[int64]*expressComplex
 }
 
 func newExpressCalculator(u *userExpressImpl) *expressCalculatorImpl {
 	return &expressCalculatorImpl{
 		userExpress: u,
-		tplMap:      make(map[int]*expressComplex),
+		tplMap:      make(map[int64]*expressComplex),
 	}
 }
 
 // 添加计算项,tplId为运费模板的编号
-func (e *expressCalculatorImpl) Add(tplId int, unit float32) error {
+func (e *expressCalculatorImpl) Add(tplId int64, unit float32) error {
 	ec, ok := e.tplMap[tplId]
 	if !ok {
 		tpl := e.userExpress.GetTemplate(tplId)
@@ -117,8 +117,8 @@ func (e *expressCalculatorImpl) Total() float32 {
 }
 
 // 获取运费模板编号与费用的集合
-func (e *expressCalculatorImpl) Fee() map[int]float32 {
-	mp := make(map[int]float32, len(e.tplMap))
+func (e *expressCalculatorImpl) Fee() map[int64]float32 {
+	mp := make(map[int64]float32, len(e.tplMap))
 	for k, v := range e.tplMap {
 		mp[k] = v.Fee
 	}

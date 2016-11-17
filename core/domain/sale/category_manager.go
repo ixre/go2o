@@ -40,7 +40,7 @@ func NewCategory(rep sale.ICategoryRep, v *sale.Category) sale.ICategory {
 	}
 }
 
-func (c *categoryImpl) GetDomainId() int {
+func (c *categoryImpl) GetDomainId() int64 {
 	return c.value.Id
 }
 
@@ -151,7 +151,7 @@ func (c *categoryImpl) parentWalk(list []*sale.Category,
 	}
 }
 
-func (c *categoryImpl) Save() (int, error) {
+func (c *categoryImpl) Save() (int64, error) {
 	//if c._manager.ReadOnly() {
 	//    return c.GetDomainId(), sale.ErrReadonlyCategory
 	//}
@@ -314,7 +314,7 @@ func (c *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
 }
 
 // 获取分类
-func (c *categoryManagerImpl) GetCategory(id int) sale.ICategory {
+func (c *categoryManagerImpl) GetCategory(id int64) sale.ICategory {
 	v := c._rep.GetCategory(c.getRelationId(), id)
 	if v != nil {
 		return c.CreateCategory(v)
@@ -334,7 +334,7 @@ func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
 }
 
 // 删除分类
-func (c *categoryManagerImpl) DeleteCategory(id int) error {
+func (c *categoryManagerImpl) DeleteCategory(id int64) error {
 	cat := c.GetCategory(id)
 	if cat == nil {
 		return sale.ErrNoSuchCategory

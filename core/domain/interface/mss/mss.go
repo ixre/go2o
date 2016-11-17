@@ -56,23 +56,23 @@ type (
 		CreateMessage(msg *Message, content interface{}) IMessage
 
 		// 创建用于会员通知的消息对象
-		CreateMemberNotifyMessage(memberId int, msgType int,
+		CreateMemberNotifyMessage(memberId int64, msgType int,
 			content interface{}) IMessage
 
 		// 获取消息
-		GetMessage(id int) IMessage
+		GetMessage(id int64) IMessage
 
 		// 获取聊天会话编号
-		GetChatSessionId(senderRole, senderId, toRole, toId int) int
+		GetChatSessionId(senderRole int, senderId int64, toRole int, toId int64) int64
 
 		// 创建聊天会话
-		CreateChatSession(senderRole, senderId, toRole, toId int) (Message, error)
+		CreateChatSession(senderRole int, senderId int64, toRole int, toId int64) (Message, error)
 	}
 
 	// Message manager,主要用于管理用户的模板
 	IUserMessageManager interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 获取配置
 		GetConfig() Config
@@ -81,7 +81,7 @@ type (
 		SaveConfig(conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(int) *MailTemplate
+		GetMailTemplate(id int64) *MailTemplate
 
 		// 保存邮箱模版
 		SaveMailTemplate(*MailTemplate) (int, error)
@@ -90,7 +90,7 @@ type (
 		GetMailTemplates() []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(int) error
+		DeleteMailTemplate(id int64) error
 	}
 
 	IMssRep interface {
@@ -104,43 +104,43 @@ type (
 		NotifyManager() notify.INotifyManager
 
 		// 获取消息设置
-		GetConfig(userId int) *Config
+		GetConfig(userId int64) *Config
 
 		// 保存消息设置
-		SaveConfig(userId int, conf *Config) error
+		SaveConfig(userId int64, conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(userId, id int) *MailTemplate
+		GetMailTemplate(userId, id int64) *MailTemplate
 
 		// 保存邮箱模版
 		SaveMailTemplate(*MailTemplate) (int, error)
 
 		// 获取所有的邮箱模版
-		GetMailTemplates(userId int) []*MailTemplate
+		GetMailTemplates(userId int64) []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(userId, id int) error
+		DeleteMailTemplate(userId, id int64) error
 
 		// 加入到发送对列
 		JoinMailTaskToQueen(*MailTask) error
 
 		// 保存消息
-		SaveMessage(msg *Message) (int, error)
+		SaveMessage(msg *Message) (int64, error)
 
 		// 获取消息
-		GetMessage(id int) *Message
+		GetMessage(id int64) *Message
 
 		// 保存用户消息关联
-		SaveUserMsg(to *To) (int, error)
+		SaveUserMsg(to *To) (int64, error)
 
 		// 保存消息内容
-		SaveMsgContent(co *Content) (int, error)
+		SaveMsgContent(co *Content) (int64, error)
 
 		// 获取消息内容
-		GetMessageContent(msgId int) *Content
+		GetMessageContent(msgId int64) *Content
 
 		// 获取消息目标
-		GetMessageTo(msgId, toUserId, toRole int) *To
+		GetMessageTo(msgId int64, toUserId int64, toRole int) *To
 	}
 
 	// 系统消息发送配置

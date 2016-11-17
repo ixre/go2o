@@ -22,7 +22,7 @@ import (
 )
 
 // 获取推荐数组
-func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
+func (o *subOrderImpl) getReferArr(memberId int64, level int) []int {
 	arr := make([]int, level)
 	i := 0
 	referId := memberId

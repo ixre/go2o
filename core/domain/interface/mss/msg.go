@@ -41,14 +41,14 @@ type (
 	Data map[string]string
 
 	User struct {
-		Id   int
+		Id   int64
 		Role int
 	}
 
 	// 消息,优先级为: AllUser ->  ToRole  ->  To
 	Message struct {
 		// 消息编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 消息类型
 		Type int `db:"msg_type"`
 		// 消息用途
@@ -56,7 +56,7 @@ type (
 		// 发送人角色
 		SenderRole int `db:"sender_role"`
 		// 发送人编号
-		SenderId int `db:"sender_id"`
+		SenderId int64 `db:"sender_id"`
 		// 发送的目标
 		To []User `db:"-"`
 		// 内容
@@ -74,9 +74,9 @@ type (
 	// 消息内容
 	Content struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 消息编号
-		MsgId int `db:"msg_id"`
+		MsgId int64 `db:"msg_id"`
 		// 数据
 		Data string `db:"msg_data"`
 	}
@@ -84,15 +84,15 @@ type (
 	// 用户消息绑定
 	To struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 接收者编号
-		ToId int `db:"to_id"`
+		ToId int64 `db:"to_id"`
 		// 接收者角色
 		ToRole int `db:"to_role"`
 		// 消息编号
-		MsgId int `db:"msg_id"`
+		MsgId int64 `db:"msg_id"`
 		// 内容编号
-		ContentId int `db:"content_id"`
+		ContentId int64 `db:"content_id"`
 		// 是否阅读
 		HasRead int `db:"has_read"`
 		// 阅读时间
@@ -102,11 +102,11 @@ type (
 	// 回复
 	Replay struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 关联回复编号
-		ReferId int `db:"refer_id"`
+		ReferId int64 `db:"refer_id"`
 		// 发送者编号
-		SenderId int `db:"sender_id"`
+		SenderId int64 `db:"sender_id"`
 		// 发送者角色
 		SenderRole int `db:"sender_role"`
 		// 内容
@@ -120,13 +120,13 @@ type (
 		//JoinQueen(to []string) error
 
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 消息类型
 		Type() int
 
 		// 检测是否有权限查看
-		CheckPerm(toUserId int, toRole int) bool
+		CheckPerm(toUserId int64, toRole int) bool
 
 		// 是否向特定的人发送
 		SpecialTo() bool
@@ -135,10 +135,10 @@ type (
 		GetValue() Message
 
 		// 获取消息发送目标
-		GetTo(toUserId, toRole int) *To
+		GetTo(toUserId int64, toRole int) *To
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 发送
 		Send(data Data) error

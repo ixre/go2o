@@ -16,7 +16,7 @@ type IMerchantRep interface {
 	CreateMerchant(*Merchant) IMerchant
 
 	// 创建会员申请商户密钥
-	CreateSignUpToken(memberId int) string
+	CreateSignUpToken(memberId int64) string
 
 	// 根据商户申请密钥获取会员编号
 	GetMemberFromSignUpToken(token string) int
@@ -82,7 +82,7 @@ type IMerchantRep interface {
 	DeleteMemberLevel(merchantId, id int) error
 
 	// 保存等级
-	SaveMemberLevel(merchantId int, v *MemberLevel) (int, error)
+	SaveMemberLevel(merchantId int, v *MemberLevel) (int64, error)
 
 	//
 	//  //修改线下支付利润

@@ -40,7 +40,7 @@ func (c *CommonDao) GetQrTemplates() []*CommQrTemplate {
 }
 
 // 获取二维码模板
-func (c *CommonDao) GetQrTemplate(id int) *CommQrTemplate {
+func (c *CommonDao) GetQrTemplate(id int64) *CommQrTemplate {
 	for _, v := range c.GetQrTemplates() {
 		if v.Id == id {
 			return v
@@ -68,7 +68,7 @@ func (c *CommonDao) SaveQrTemplate(q *CommQrTemplate) error {
 }
 
 // 删除二维码模板
-func (c *CommonDao) DelQrTemplate(id int) error {
+func (c *CommonDao) DelQrTemplate(id int64) error {
 	err := dOrm.DeleteByPk(CommQrTemplate{}, id)
 	if err == nil {
 		dSto.Del(qrStoKey)

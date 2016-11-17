@@ -31,7 +31,7 @@ func newConfigManagerImpl(m merchant.IMerchant,
 	}
 }
 
-func (c *confManagerImpl) getMerchantId() int {
+func (c *confManagerImpl) GetMerchantId() int64 {
 	return c.merchant.GetAggregateRootId()
 }
 

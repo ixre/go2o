@@ -30,7 +30,7 @@ func NewSaleLabel(mchId int, value *sale.Label,
 	}
 }
 
-func (l *saleLabelImpl) GetDomainId() int {
+func (l *saleLabelImpl) GetDomainId() int64 {
 	if l.value != nil {
 		return l.value.Id
 	}
@@ -63,7 +63,7 @@ func (l *saleLabelImpl) SetValue(v *sale.Label) error {
 	return nil
 }
 
-func (l *saleLabelImpl) Save() (int, error) {
+func (l *saleLabelImpl) Save() (int64, error) {
 	l.value.MerchantId = l.mchId
 	return l.rep.SaveSaleLabel(l.mchId, l.value)
 }
