@@ -26,7 +26,7 @@ func NewUserRep(c db.Connector) user.IUserRep {
 }
 
 // 保存角色
-func (this *userRep) SaveRole(v *user.RoleValue) (int, error) {
+func (this *userRep) SaveRole(v *user.RoleValue) (int64, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -39,7 +39,7 @@ func (this *userRep) SaveRole(v *user.RoleValue) (int, error) {
 }
 
 // 保存人员
-func (this *userRep) SavePerson(v *user.PersonValue) (int, error) {
+func (this *userRep) SavePerson(v *user.PersonValue) (int64, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
@@ -52,7 +52,7 @@ func (this *userRep) SavePerson(v *user.PersonValue) (int, error) {
 }
 
 // 保存凭据
-func (this *userRep) SaveCredential(v *user.CredentialValue) (int, error) {
+func (this *userRep) SaveCredential(v *user.CredentialValue) (int64, error) {
 	orm := this.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {

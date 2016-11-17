@@ -47,7 +47,7 @@ func NewMerchantManager(rep merchant.IMerchantRep,
 }
 
 // 创建会员申请商户密钥
-func (m *merchantManagerImpl) CreateSignUpToken(memberId int) string {
+func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 	return m.rep.CreateSignUpToken(memberId)
 }
 
@@ -57,7 +57,7 @@ func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int {
 }
 
 // 删除会员的商户申请资料
-func (m *merchantManagerImpl) RemoveSignUp(memberId int) error {
+func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
 	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id=?", memberId)
 	return err
 }
@@ -217,7 +217,7 @@ func (m *merchantManagerImpl) GetSignUpInfo(id int) *merchant.MchSignUp {
 }
 
 // 获取会员申请的商户信息
-func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.MchSignUp {
+func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) != nil {
 		return nil
@@ -226,7 +226,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int) *merchant.Mc
 }
 
 // 获取会员关联的商户
-func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int) merchant.IMerchant {
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
 		return m.rep.CreateMerchant(&v)
@@ -275,7 +275,7 @@ func (m *merchantImpl) GetRep() merchant.IMerchantRep {
 	return m._rep
 }
 
-func (m *merchantImpl) GetAggregateRootId() int {
+func (m *merchantImpl) GetAggregateRootId() int64 {
 	return m._value.Id
 }
 func (m *merchantImpl) GetValue() merchant.Merchant {
@@ -306,7 +306,7 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 }
 
 // 保存
-func (m *merchantImpl) Save() (int, error) {
+func (m *merchantImpl) Save() (int64, error) {
 	var id int = m.GetAggregateRootId()
 
 	if id > 0 {
@@ -540,7 +540,7 @@ func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int {
+func (a *accountImpl) GetDomainId() int64 {
 	return a.value.MchId
 }
 

@@ -147,13 +147,13 @@ const (
 type (
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取账户值
 		GetValue() *Account
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
@@ -256,7 +256,7 @@ type (
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int, kind int, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 

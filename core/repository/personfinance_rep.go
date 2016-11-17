@@ -32,18 +32,18 @@ func NewPersonFinanceRepository(conn db.Connector, mRep member.IMemberRep) perso
 	}
 }
 
-func (p *personFinanceRepository) GetPersonFinance(personId int) personfinance.IPersonFinance {
+func (p *personFinanceRepository) GetPersonFinance(personId int64) personfinance.IPersonFinance {
 	return pf.NewPersonFinance(personId, p, p._accRep)
 }
 
-func (p *personFinanceRepository) GetRiseByTime(personId int, begin,
+func (p *personFinanceRepository) GetRiseByTime(personId int64, begin,
 	end int64) []*personfinance.RiseDayInfo {
 	list := []*personfinance.RiseDayInfo{}
 	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
 	return list
 }
 
-func (p *personFinanceRepository) GetRiseValueByPersonId(id int) (
+func (p *personFinanceRepository) GetRiseValueByPersonId(id int64) (
 	*personfinance.RiseInfoValue, error) {
 	e := &personfinance.RiseInfoValue{}
 	err := p._orm.Get(id, e)
@@ -61,7 +61,7 @@ func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
 }
 
 // 获取日志
-func (p *personFinanceRepository) GetRiseLog(personId, logId int) *personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLog(personId, logId int64) *personfinance.RiseLog {
 	e := &personfinance.RiseLog{}
 	if p._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
 		return e
@@ -81,7 +81,7 @@ func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (id int,
 }
 
 // 获取日志
-func (p *personFinanceRepository) GetRiseLogs(personId int, date int64, riseType int) []*personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseType int) []*personfinance.RiseLog {
 	list := []*personfinance.RiseLog{}
 	p._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
 	return list

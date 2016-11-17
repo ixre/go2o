@@ -30,7 +30,7 @@ const (
 type (
 	IMember interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 会员资料服务
 		Profile() IProfileManager
@@ -72,16 +72,16 @@ type (
 		SaveRelation(r *Relation) error
 
 		// 更改邀请人
-		ChangeReferees(memberId int) error
+		ChangeReferees(memberId int64) error
 
 		// 增加经验值
-		AddExp(exp int) error
+		AddExp(exp int64) error
 
 		// 获取等级
 		GetLevel() *Level
 
 		// 更改会员等级,@paymentId:支付单编号,@reivew:是否需要审核
-		ChangeLevel(level int, paymentId int, review bool) error
+		ChangeLevel(level int64, paymentId int64, review bool) error
 
 		// 审核升级请求
 		ReviewLevelUp(id int, pass bool) error
@@ -96,7 +96,7 @@ type (
 		UpdateLoginTime() error
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	// 会员资料服务
@@ -191,7 +191,7 @@ type (
 
 	Member struct {
 		// 编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 用户名
 		Usr string `db:"usr"`
 		// 密码
@@ -199,9 +199,9 @@ type (
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
 		// 经验值
-		Exp int `db:"exp"`
+		Exp int64 `db:"exp"`
 		// 等级
-		Level int `db:"level"`
+		Level int64 `db:"level"`
 		// 邀请码
 		InvitationCode string `db:"invitation_code"`
 		// 注册来源
@@ -215,7 +215,7 @@ type (
 		// 校验码过期时间
 		CheckExpires int64 `db:"check_expires"`
 		// 状态
-		State int `db:"state"`
+		State int64 `db:"state"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间
@@ -231,13 +231,13 @@ type (
 	// 会员资料
 	Profile struct {
 		//会员编号
-		MemberId int `db:"member_id" pk:"yes" auto:"no"`
+		MemberId int64 `db:"member_id" pk:"yes" auto:"no"`
 		//昵称
 		Name string `db:"name"`
 		//头像
 		Avatar string `db:"avatar"`
 		//性别
-		Sex int `db:"sex"`
+		Sex int64 `db:"sex"`
 		//生日
 		BirthDay string `db:"birthday"`
 		//电话
@@ -249,11 +249,11 @@ type (
 		//电子邮件
 		Email string `db:"email"`
 		// 省
-		Province int `db:"province"`
+		Province int64 `db:"province"`
 		// 市
-		City int `db:"city"`
+		City int64 `db:"city"`
 		// 区
-		District int `db:"district"`
+		District int64 `db:"district"`
 		//备注
 		Remark string `db:"remark"`
 
@@ -343,10 +343,10 @@ type (
 
 	// 收货地址
 	IDeliverAddress interface {
-		GetDomainId() int
+		GetDomainId() int64
 		GetValue() DeliverAddress
 		SetValue(*DeliverAddress) error
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	// 收货地址

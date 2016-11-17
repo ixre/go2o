@@ -51,7 +51,7 @@ func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Pa
 }
 
 // 保存页面
-func (cs *contentService) SavePage(merchantId int, v *content.Page) (int, error) {
+func (cs *contentService) SavePage(merchantId int, v *content.Page) (int64, error) {
 	c := cs._contentRep.GetContent(merchantId)
 	var page content.IPage
 	var err error
@@ -107,7 +107,7 @@ func (cs *contentService) GetArticleCategoryByAlias(alias string) content.Articl
 }
 
 // 保存文章栏目
-func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int, error) {
+func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int64, error) {
 	m := cs._sysContent.ArticleManager()
 	c := m.GetCategory(v.Id)
 	if c == nil {
@@ -126,7 +126,7 @@ func (cs *contentService) DeleteArticleCategory(categoryId int) error {
 }
 
 // 获取文章
-func (cs *contentService) GetArticle(id int) *content.Article {
+func (cs *contentService) GetArticle(id int64) *content.Article {
 	a := cs._sysContent.ArticleManager().GetArticle(id)
 	if a != nil {
 		v := a.GetValue()
@@ -136,12 +136,12 @@ func (cs *contentService) GetArticle(id int) *content.Article {
 }
 
 // 删除文章
-func (cs *contentService) DeleteArticle(id int) error {
+func (cs *contentService) DeleteArticle(id int64) error {
 	return cs._sysContent.ArticleManager().DeleteArticle(id)
 }
 
 // 保存文章
-func (cs *contentService) SaveArticle(e *content.Article) (int, error) {
+func (cs *contentService) SaveArticle(e *content.Article) (int64, error) {
 	m := cs._sysContent.ArticleManager()
 	a := m.GetArticle(e.Id)
 	if a == nil {

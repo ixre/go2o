@@ -108,6 +108,6 @@ func (s *saleImpl) chkCache() {
 	}
 }
 
-func (s *saleImpl) GetAggregateRootId() int {
+func (s *saleImpl) GetAggregateRootId() int64 {
 	return s.mchId
 }

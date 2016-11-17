@@ -76,14 +76,14 @@ func (s *shoppingService) getShoppingCart(buyerId int,
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (s *shoppingService) GetShoppingCart(memberId int,
+func (s *shoppingService) GetShoppingCart(memberId int64,
 	cartKey string) *dto.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartKey)
 	return s.parseCart(c)
 }
 
 // 创建一个新的购物车
-func (s *shoppingService) CreateShoppingCart(memberId int) *dto.ShoppingCart {
+func (s *shoppingService) CreateShoppingCart(memberId int64) *dto.ShoppingCart {
 	c := s._cartRep.NewCart()
 	c.SetBuyer(memberId)
 	return cart.ParseToDtoCart(c)
@@ -102,7 +102,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 }
 
 //todo: 这里响应较慢,性能?
-func (s *shoppingService) AddCartItem(memberId int, cartKey string,
+func (s *shoppingService) AddCartItem(memberId int64, cartKey string,
 	skuId, num int, checked bool) (*dto.CartItem, error) {
 	c := s.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
@@ -149,7 +149,7 @@ func (s *shoppingService) AddCartItem(memberId int, cartKey string,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int,
+func (s *shoppingService) SubCartItem(memberId int64,
 	cartKey string, goodsId, num int) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
@@ -160,7 +160,7 @@ func (s *shoppingService) SubCartItem(memberId int,
 }
 
 // 勾选商品结算
-func (s *shoppingService) CartCheckSign(memberId int,
+func (s *shoppingService) CartCheckSign(memberId int64,
 	cartKey string, arr []int) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	return cart.SignItemChecked(arr)
@@ -177,7 +177,7 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId,
 	return err
 }
 
-func (s *shoppingService) GetCartSettle(memberId int,
+func (s *shoppingService) GetCartSettle(memberId int64,
 	cartKey string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartKey)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()

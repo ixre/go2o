@@ -32,14 +32,14 @@ func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
 	}
 }
 
-func (p *personFinanceService) GetRiseInfo(personId int) (
+func (p *personFinanceService) GetRiseInfo(personId int64) (
 	personfinance.RiseInfoValue, error) {
 	pf := p._rep.GetPersonFinance(personId)
 	return pf.GetRiseInfo().Value()
 }
 
 // 开通增利服务
-func (p *personFinanceService) OpenRiseService(personId int) error {
+func (p *personFinanceService) OpenRiseService(personId int64) error {
 	m := p._accRep.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -52,7 +52,7 @@ func (p *personFinanceService) OpenRiseService(personId int) error {
 }
 
 // 提交转入/转出日志
-func (p *personFinanceService) CommitTransfer(personId, logId int) error {
+func (p *personFinanceService) CommitTransfer(personId, logId int64) error {
 	pf := p._rep.GetPersonFinance(personId)
 	rs := pf.GetRiseInfo()
 	if rs == nil {
@@ -62,7 +62,7 @@ func (p *personFinanceService) CommitTransfer(personId, logId int) error {
 }
 
 // 转入(业务放在service,是为person_finance解耦)
-func (p *personFinanceService) RiseTransferIn(personId int,
+func (p *personFinanceService) RiseTransferIn(personId int64,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
@@ -106,7 +106,7 @@ func (p *personFinanceService) RiseTransferIn(personId int,
 }
 
 // 转出
-func (p *personFinanceService) RiseTransferOut(personId int,
+func (p *personFinanceService) RiseTransferOut(personId int64,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
@@ -145,7 +145,7 @@ func (p *personFinanceService) RiseTransferOut(personId int,
 }
 
 // 结算收益(按日期每天结息)
-func (p *personFinanceService) RiseSettleByDay(personId int,
+func (p *personFinanceService) RiseSettleByDay(personId int64,
 	settleUnix int64, dayRatio float32) (err error) {
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()

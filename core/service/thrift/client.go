@@ -15,10 +15,15 @@ import (
 )
 
 var (
-	hostPort         = "localhost:14288"
+	cliHostPort      = "localhost:14288"
 	transportFactory = thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
 	protocolFactory  = thrift.NewTCompactProtocolFactory()
 )
+
+// 客户端初始化
+func CliInit(hostPort string) {
+	cliHostPort = hostPort
+}
 
 func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, error) {
 	var err error
@@ -31,9 +36,9 @@ func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, erro
 		} else {
 			return nil, protocolFactory, err
 		}
-		serveTransport, err = thrift.NewTSSLSocket(hostPort, cfg)
+		serveTransport, err = thrift.NewTSSLSocket(cliHostPort, cfg)
 	} else {
-		serveTransport, err = thrift.NewTSocket(hostPort)
+		serveTransport, err = thrift.NewTSocket(cliHostPort)
 	}
 	transport := transportFactory.GetTransport(serveTransport)
 	return transport, protocolFactory, err

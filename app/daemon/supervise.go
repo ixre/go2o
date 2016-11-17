@@ -57,8 +57,8 @@ func superviseOrder(ss []Service) {
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
 	sv := dps.MemberService
-	notify := func(id int, action string, ss []Service) {
-		m := sv.GetMember(id)
+	notify := func(id int32, action string, ss []Service) {
+		m, _ := sv.GetMember(id)
 		if m != nil {
 			for _, v := range ss {
 				if !v.MemberObs(m, action == "create") {
@@ -79,7 +79,7 @@ func superviseMemberUpdate(ss []Service) {
 			mArr := strings.Split(s, "-")
 			id, err = strconv.Atoi(mArr[0])
 			if err == nil {
-				go notify(id, mArr[1], ss)
+				go notify(int32(id), mArr[1], ss)
 			}
 		} else {
 			appCtx.Log().Println("[ Daemon][ MemberQueue][ Error]:",

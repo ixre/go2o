@@ -90,7 +90,7 @@ func (l *LevelManager) GetLevelSet() []*merchant.MemberLevel {
 }
 
 // 获取等级
-func (l *LevelManager) GetLevelById(id int) *merchant.MemberLevel {
+func (l *LevelManager) GetLevelById(id int64) *merchant.MemberLevel {
 	for _, v := range l.GetLevelSet() {
 		if v.Id == id {
 			return v
@@ -115,7 +115,7 @@ func (l *LevelManager) GetNextLevel(value int) *merchant.MemberLevel {
 }
 
 // 删除等级
-func (l *LevelManager) DeleteLevel(id int) error {
+func (l *LevelManager) DeleteLevel(id int64) error {
 	var exists bool = true
 	if l.levelSet != nil {
 		exists = false
@@ -135,7 +135,7 @@ func (l *LevelManager) DeleteLevel(id int) error {
 }
 
 // 保存等级
-func (l *LevelManager) SaveLevel(v *merchant.MemberLevel) (int, error) {
+func (l *LevelManager) SaveLevel(v *merchant.MemberLevel) (int64, error) {
 	v.MerchantId = l.mchId
 	// 如果新增（非初始化）等级自动设置值
 	if v.Id <= 0 && len(l.levelSet) == 0 {
@@ -157,7 +157,7 @@ func (l *LevelManager) getMaxLevelValue() int {
 }
 
 // 根据经验值获取等级
-func (l *LevelManager) GetLevelValueByExp(exp int) int {
+func (l *LevelManager) GetLevelValueByExp(exp int) int64 {
 	var lv *merchant.MemberLevel
 	var levelVal int
 	for i := len(l.GetLevelSet()); i > 0; i-- {

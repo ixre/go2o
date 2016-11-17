@@ -20,7 +20,7 @@ var (
 	RiseSettleTValue         int     = 2            //T+? 开使计算收益
 	RiseNormalDayRatio       float32 = 0.0001369863 // 年化5%,按365天计算
 	// 比例提供者,默认为:personfinance.RiseNormalDayRatio
-	RiseDayRatioProvider func(personId int) float32 = func(personId int) float32 {
+	RiseDayRatioProvider func(personId int64) float32 = func(personId int64) float32 {
 		return RiseNormalDayRatio
 	}
 
@@ -98,7 +98,7 @@ type (
 	// 在此聚合下, 会员抽象为Person, PersonId 对应 MemberId
 	IPersonFinance interface {
 		// 获取聚合根
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 		// 获取账号
 		GetMemberAccount() member.IAccount
 		// 获取增利账户信息(类:余额宝)
@@ -111,7 +111,7 @@ type (
 
 	// 现金增利
 	IRiseInfo interface {
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		Value() (RiseInfoValue, error)
@@ -125,7 +125,7 @@ type (
 
 		// 根据日志记录提交转入转出,如果已经确认操作,则返回错误
 		// 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
-		CommitTransfer(logId int) error
+		CommitTransfer(logId int64) error
 
 		// 结算收益(按天结息),settleUnix:结算日期的时间戳(不含时间),
 		// dayRatio 为每天的收益比率
@@ -141,7 +141,7 @@ type (
 	// 收益总记录
 	RiseInfoValue struct {
 		//Id  int `db:"id" pk:"yes" auto:"no"`
-		PersonId         int     `db:"person_id" pk:"yes" auto:"no"` //人员编号
+		PersonId         int64   `db:"person_id" pk:"yes" auto:"no"` //人员编号
 		Balance          float32 `db:"balance"`                      //本金及收益的余额
 		SettlementAmount float32 `db:"settlement_amount"`            //结算金额,日日计息, 月月分红
 		Rise             float32 `db:"rise"`                         //当前的收益
@@ -154,8 +154,8 @@ type (
 
 	// 收益每日结算数据
 	RiseDayInfo struct {
-		Id               int     `db:"id" pk:"yes" auto:"yes"`
-		PersonId         int     `db:"person_id"`
+		Id               int64   `db:"id" pk:"yes" auto:"yes"`
+		PersonId         int64   `db:"person_id"`
 		Date             string  `db:"date"`
 		SettlementAmount float32 `db:"base_amount"` //本金
 		RiseAmount       float32 `db:"rise_amount"` //增加金额
@@ -165,8 +165,8 @@ type (
 
 	// 收益日志
 	RiseLog struct {
-		Id           int     `db:"id" pk:"yes" auto:"yes"`
-		PersonId     int     `db:"person_id"`     //会员编号
+		Id           int64   `db:"id" pk:"yes" auto:"yes"`
+		PersonId     int64   `db:"person_id"`     //会员编号
 		Title        string  `db:"title"`         //日志标题
 		Amount       float32 `db:"amount"`        //金额
 		Type         int     `db:"type"`          //类型
@@ -183,25 +183,25 @@ type (
 
 	IPersonFinanceRepository interface {
 		// 获取个人财富聚合根
-		GetPersonFinance(personId int) IPersonFinance
+		GetPersonFinance(personId int64) IPersonFinance
 
 		// 根据时间获取收益情况
-		GetRiseByTime(personId int, begin, end int64) []*RiseDayInfo
+		GetRiseByTime(personId int64, begin, end int64) []*RiseDayInfo
 
 		// 根据人员编号获取收益
-		GetRiseValueByPersonId(id int) (v *RiseInfoValue, err error)
+		GetRiseValueByPersonId(id int64) (v *RiseInfoValue, err error)
 
 		// 保存收益信息
 		SaveRiseInfo(*RiseInfoValue) (id int, err error)
 
 		// 获取日志
-		GetRiseLog(personId, logId int) *RiseLog
+		GetRiseLog(personId, logId int64) *RiseLog
 
 		// 保存日志
 		SaveRiseLog(*RiseLog) (int, error)
 
 		// 获取日志
-		GetRiseLogs(personId int, date int64, riseType int) []*RiseLog
+		GetRiseLogs(personId int64, date int64, riseType int) []*RiseLog
 
 		// 保存每日收益
 		SaveRiseDayInfo(*RiseDayInfo) (int, error)

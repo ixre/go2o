@@ -25,7 +25,7 @@ type (
 		GetLevelSet() []*MemberLevel
 
 		// 获取等级
-		GetLevelById(id int) *MemberLevel
+		GetLevelById(id int64) *MemberLevel
 
 		// 根据等级值获取等级
 		GetLevelByValue(value int) *MemberLevel
@@ -34,13 +34,13 @@ type (
 		GetNextLevel(value int) *MemberLevel
 
 		// 删除等级
-		DeleteLevel(id int) error
+		DeleteLevel(id int64) error
 
 		// 保存等级
-		SaveLevel(*MemberLevel) (int, error)
+		SaveLevel(*MemberLevel) (int64, error)
 
 		// 根据经验值获取等级值
-		GetLevelValueByExp(exp int) int
+		GetLevelValueByExp(exp int) int64
 
 		// 初始化默认等级
 		InitDefaultLevels() error

@@ -33,7 +33,7 @@ type (
 
 	// 销售标签接口
 	ISaleLabel interface {
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		GetValue() *Label
@@ -42,7 +42,7 @@ type (
 		SetValue(v *Label) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 是否为系统内置
 		System() bool

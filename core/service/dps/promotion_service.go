@@ -26,7 +26,7 @@ func NewPromotionService(rep promotion.IPromotionRep) *promotionService {
 }
 
 // 获取促销
-func (this *promotionService) GetPromotion(id int) (*promotion.PromotionInfo, interface{}) {
+func (this *promotionService) GetPromotion(id int64) (*promotion.PromotionInfo, interface{}) {
 	var prom promotion.IPromotion = this._rep.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
@@ -35,7 +35,7 @@ func (this *promotionService) GetPromotion(id int) (*promotion.PromotionInfo, in
 }
 
 // 保存促销
-func (this *promotionService) SavePromotion(v *promotion.PromotionInfo) (int, error) {
+func (this *promotionService) SavePromotion(v *promotion.PromotionInfo) (int64, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)

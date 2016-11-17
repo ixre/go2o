@@ -45,7 +45,7 @@ func (u *UserC) Connect(c *echox.Context) error {
 	token := c.QueryParam("token")
 	sto := c.App.Storage()
 	if util.CompareMemberApiToken(sto, memberId, token) {
-		m := dps.MemberService.GetMember(memberId)
+		m, _ := dps.MemberService.GetMember(int32(memberId))
 		c.Session.Set("member", m)
 		c.Session.Save()
 		return c.JSONP(http.StatusOK, callback, "success")

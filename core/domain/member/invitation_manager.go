@@ -21,7 +21,7 @@ type invitationManager struct {
 }
 
 // 判断是否推荐了某个会员
-func (i *invitationManager) InvitationBy(memberId int) bool {
+func (i *invitationManager) InvitationBy(memberId int64) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
 		return rl.RefereesId == memberId

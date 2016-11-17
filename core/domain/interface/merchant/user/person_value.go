@@ -10,7 +10,7 @@ package user
 
 // 人员资料
 type PersonValue struct {
-	Id       int    `db:"id" pk:"yes" auto:"yes"`
+	Id       int64  `db:"id" pk:"yes" auto:"yes"`
 	Name     string `db:"name"`
 	RealName string `db:"real_name"`
 	Phone    string `db:"phone"`

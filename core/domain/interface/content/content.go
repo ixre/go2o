@@ -30,7 +30,7 @@ var (
 type (
 	IContent interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 文章服务
 		ArticleManager() IArticleManager
@@ -39,18 +39,18 @@ type (
 		CreatePage(*Page) IPage
 
 		// 获取页面
-		GetPage(id int) IPage
+		GetPage(id int64) IPage
 
 		// 根据字符串标识获取页面
 		GetPageByStringIndent(indent string) IPage
 
 		// 删除页面
-		DeletePage(id int) error
+		DeletePage(id int64) error
 	}
 
 	IPage interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值
 		GetValue() *Page
@@ -59,59 +59,59 @@ type (
 		SetValue(*Page) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	IContentRep interface {
 		// 获取内容
-		GetContent(userId int) IContent
+		GetContent(userId int64) IContent
 
 		// 根据编号获取页面
-		GetPageById(userId, id int) *Page
+		GetPageById(userId, id int64) *Page
 
 		// 根据标识获取页面
-		GetPageByStringIndent(userId int, indent string) *Page
+		GetPageByStringIndent(userId int64, indent string) *Page
 
 		// 删除页面
-		DeletePage(userId, id int) error
+		DeletePage(userId, id int64) error
 
 		// 保存页面
-		SavePage(userId int, v *Page) (int, error)
+		SavePage(userId int64, v *Page) (int64, error)
 
 		// 获取所有栏目
 		GetAllArticleCategory() []*ArticleCategory
 
 		// 获取文章数量
-		GetArticleNumByCategory(categoryId int) int
+		GetArticleNumByCategory(categoryId int64) int
 
 		// 保存栏目
-		SaveCategory(v *ArticleCategory) (int, error)
+		SaveCategory(v *ArticleCategory) (int64, error)
 
 		// 判断栏目是否存在
-		CategoryExists(indent string, id int) bool
+		CategoryExists(indent string, id int64) bool
 
 		// 删除栏目
-		DeleteCategory(id int) error
+		DeleteCategory(id int64) error
 
 		// 获取文章
-		GetArticleById(id int) *Article
+		GetArticleById(id int64) *Article
 
 		// 获取文章列表
-		GetArticleList(categoryId int, begin int, end int) []*Article
+		GetArticleList(categoryId int64, begin int, end int) []*Article
 
 		// 保存文章
-		SaveArticle(v *Article) (int, error)
+		SaveArticle(v *Article) (int64, error)
 
 		// 删除文章
-		DeleteArticle(id int) error
+		DeleteArticle(id int64) error
 	}
 
 	Page struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 
 		// 商户编号
-		UserId int `db:"user_id"`
+		UserId int64 `db:"user_id"`
 
 		// 标题
 		Title string `db:"title"`

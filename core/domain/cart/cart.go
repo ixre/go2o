@@ -154,7 +154,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 }
 
 // 获取聚合根编号
-func (c *cartImpl) GetAggregateRootId() int {
+func (c *cartImpl) GetAggregateRootId() int64 {
 	return c.value.Id
 }
 
@@ -489,7 +489,7 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 }
 
 // 保存购物车
-func (c *cartImpl) Save() (int, error) {
+func (c *cartImpl) Save() (int64, error) {
 	c.value.UpdateTime = time.Now().Unix()
 	id, err := c.rep.SaveShoppingCart(c.value)
 	c.value.Id = id

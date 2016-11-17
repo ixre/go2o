@@ -36,7 +36,7 @@ var (
 type (
 	ICart interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 获取购物车的KEY
 		Key() string
@@ -79,7 +79,7 @@ type (
 		Combine(ICart) ICart
 
 		// 保存购物车
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 释放购物车,如果购物车的商品全部结算,则返回true
 		Release() bool
@@ -127,7 +127,7 @@ type (
 		RemoveCartItem(int) error
 
 		// 保存购物车项
-		SaveCartItem(*CartItem) (int, error)
+		SaveCartItem(*CartItem) (int64, error)
 
 		// 清空购物车项
 		EmptyCartItems(id int) error

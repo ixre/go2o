@@ -68,7 +68,7 @@ func (m *mssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (m *mssRep) GetConfig(userId int) *mss.Config {
+func (m *mssRep) GetConfig(userId int64) *mss.Config {
 	conf := mss.Config{}
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
@@ -145,7 +145,7 @@ func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (m *mssRep) SaveMessage(v *mss.Message) (int, error) {
+func (m *mssRep) SaveMessage(v *mss.Message) (int64, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = m._conn.GetOrm().Save(v.Id, v)
@@ -158,7 +158,7 @@ func (m *mssRep) SaveMessage(v *mss.Message) (int, error) {
 }
 
 // 获取消息
-func (m *mssRep) GetMessage(id int) *mss.Message {
+func (m *mssRep) GetMessage(id int64) *mss.Message {
 	e := mss.Message{}
 	if m._conn.GetOrm().Get(id, &e) == nil {
 		e.To = []mss.User{}
@@ -175,12 +175,12 @@ func (m *mssRep) GetMessage(id int) *mss.Message {
 }
 
 // 保存用户消息关联
-func (m *mssRep) SaveUserMsg(v *mss.To) (int, error) {
+func (m *mssRep) SaveUserMsg(v *mss.To) (int64, error) {
 	return orm.Save(m._conn.GetOrm(), v, v.Id)
 }
 
 // 保存消息内容
-func (m *mssRep) SaveMsgContent(v *mss.Content) (int, error) {
+func (m *mssRep) SaveMsgContent(v *mss.Content) (int64, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = m._conn.GetOrm().Save(v.Id, v)
@@ -193,7 +193,7 @@ func (m *mssRep) SaveMsgContent(v *mss.Content) (int, error) {
 }
 
 // 获取消息内容
-func (m *mssRep) GetMessageContent(msgId int) *mss.Content {
+func (m *mssRep) GetMessageContent(msgId int64) *mss.Content {
 	e := mss.Content{}
 	if m._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
 		return &e
@@ -202,7 +202,7 @@ func (m *mssRep) GetMessageContent(msgId int) *mss.Content {
 }
 
 // 获取消息目标
-func (m *mssRep) GetMessageTo(msgId, toUserId, toRole int) *mss.To {
+func (m *mssRep) GetMessageTo(msgId int64, toUserId int64, toRole int) *mss.To {
 	e := mss.To{}
 	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
 		WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {

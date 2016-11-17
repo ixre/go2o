@@ -27,7 +27,7 @@ func NewDeliverRep(c db.Connector) delivery.IDeliveryRep {
 }
 
 // 获取配送
-func (this *deliveryRep) GetDelivery(id int) delivery.IDelivery {
+func (this *deliveryRep) GetDelivery(id int64) delivery.IDelivery {
 	return deliverImpl.NewDelivery(id, this)
 }
 
@@ -41,7 +41,7 @@ func (this *deliveryRep) GetAreaByArea(name string) []*delivery.AreaValue {
 }
 
 // 保存覆盖区域
-func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int, error) {
+func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int64, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
 		_, _, err := orm.Save(nil, v)
@@ -56,7 +56,7 @@ func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int, error
 }
 
 // 获取覆盖区域
-func (this *deliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue {
+func (this *deliveryRep) GetCoverageArea(areaId, id int64) *delivery.CoverageValue {
 	e := new(delivery.CoverageValue)
 	err := this.Connector.GetOrm().GetBy(e, "id=? AND area_id=?", id, areaId)
 	if err != nil {
@@ -66,7 +66,7 @@ func (this *deliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue
 }
 
 // 获取所有的覆盖区域
-func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageValue {
+func (this *deliveryRep) GetAllCoverageAreas(areaId int64) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
 	err := this.Connector.GetOrm().Select(&e, "area_id=?", areaId)
 	if err != nil {
@@ -76,7 +76,7 @@ func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageVal
 }
 
 // 获取配送绑定
-func (this *deliveryRep) GetDeliveryBind(merchantId, coverageId int) *delivery.MerchantDeliverBind {
+func (this *deliveryRep) GetDeliveryBind(merchantId, coverageId int64) *delivery.MerchantDeliverBind {
 	e := new(delivery.MerchantDeliverBind)
 	err := this.Connector.GetOrm().GetBy(e, "merchant_id=? AND coverage_id=?", merchantId, coverageId)
 	if err != nil {

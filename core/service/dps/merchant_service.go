@@ -38,7 +38,7 @@ func NewMerchantService(r merchant.IMerchantRep, saleRep sale.ISaleRep,
 }
 
 // 创建会员申请商户密钥
-func (m *merchantService) CreateSignUpToken(memberId int) string {
+func (m *merchantService) CreateSignUpToken(memberId int64) string {
 	return m._mchRep.CreateSignUpToken(memberId)
 }
 
@@ -48,7 +48,7 @@ func (m *merchantService) GetMemberFromSignUpToken(token string) int {
 }
 
 // 获取会员商户申请信息
-func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int) *merchant.MchSignUp {
+func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	return m._mchRep.GetManager().GetSignUpInfoByMemberId(memberId)
 }
 
@@ -112,7 +112,7 @@ func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int, error) {
 	return m._mchRep.GetManager().CommitSignUpInfo(e)
 }
 
-func (m *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant {
+func (m *merchantService) GetMerchantByMemberId(memberId int64) *merchant.Merchant {
 	mch := m._mchRep.GetManager().GetMerchantByMemberId(memberId)
 	if mch != nil {
 		v := mch.GetValue()
@@ -122,7 +122,7 @@ func (m *merchantService) GetMerchantByMemberId(memberId int) *merchant.Merchant
 }
 
 // 删除会员的商户申请资料
-func (m *merchantService) RemoveMerchantSignUp(memberId int) error {
+func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRep.GetManager().RemoveSignUp(memberId)
 }
 
@@ -387,7 +387,7 @@ func (m *merchantService) GetMemberLevelById(merchantId, id int) *merchant.Membe
 }
 
 // 保存会员等级信息
-func (m *merchantService) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int, error) {
+func (m *merchantService) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int64, error) {
 	mch := m._mchRep.GetMerchant(merchantId)
 	if mch != nil {
 		return mch.LevelManager().SaveLevel(v)
@@ -487,7 +487,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error 
 //}
 //
 ////添加商户提取日志
-//func (m *merchantService) TakeOutBankCardLog(memberId int, mchId int, amount float32) {
+//func (m *merchantService) TakeOutBankCardLog(memberId int64, mchId int, amount float32) {
 //	o := &merchant.BalanceLog{
 //		MchId:      mchId,
 //		Kind:       100,
@@ -564,7 +564,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error 
 //}
 //
 //// 确认提现
-//func (a *merchantService) ConfirmApplyCash(memberId int, infoId int,
+//func (a *merchantService) ConfirmApplyCash(memberId int64, infoId int,
 //	pass bool, remark string) error {
 //	m := a._memberRep.GetMember(memberId)
 //	if m == nil {

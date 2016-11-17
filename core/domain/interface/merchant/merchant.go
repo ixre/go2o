@@ -29,7 +29,7 @@ type (
 	// 商户接口
 	//todo: 实现商户等级,商户的品牌
 	IMerchant interface {
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		GetValue() Merchant
 
@@ -49,7 +49,7 @@ type (
 		Member() int
 
 		// 保存
-		Save() (int, error)
+		Save() (int64, error)
 
 		// 获取商户的域名
 		GetMajorHost() string
@@ -88,7 +88,7 @@ type (
 	// 账户
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取账户值
 		GetValue() *Account
@@ -123,7 +123,7 @@ type (
 
 	IMerchantManager interface {
 		// 创建会员申请商户密钥
-		CreateSignUpToken(memberId int) string
+		CreateSignUpToken(memberId int64) string
 
 		// 根据商户申请密钥获取会员编号
 		GetMemberFromSignUpToken(token string) int
@@ -138,13 +138,13 @@ type (
 		GetSignUpInfo(id int) *MchSignUp
 
 		// 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int) *MchSignUp
+		GetSignUpInfoByMemberId(memberId int64) *MchSignUp
 
 		// 获取会员关联的商户
-		GetMerchantByMemberId(memberId int) IMerchant
+		GetMerchantByMemberId(memberId int64) IMerchant
 
 		// 删除会员的商户申请资料
-		RemoveSignUp(memberId int) error
+		RemoveSignUp(memberId int64) error
 	}
 
 	// 商户申请信息

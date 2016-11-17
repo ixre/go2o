@@ -94,7 +94,7 @@ func (s *saleService) GetSaleSnapshotById(snapshotId int) *goods.SalesSnapshot {
 }
 
 // 保存产品
-func (s *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
+func (s *saleService) SaveItem(vendorId int, v *item.Item) (int64, error) {
 	sl := s._rep.GetSale(vendorId)
 	var pro sale.IItem
 	v.VendorId = vendorId //设置供应商编号

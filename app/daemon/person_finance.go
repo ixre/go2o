@@ -91,7 +91,7 @@ func confirmTransferIn(t time.Time) {
 }
 
 // 分组确认转入数据
-func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int) {
+func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int64) {
 	//log.Println(fmt.Sprintf("[SQL]: select * FROM pf_riselog WHERE id BETWEEN %d AND %d AND unix_date=%d AND type=%d AND state=%d ORDER BY id ",
 	//	 idArr[0],idArr[len(idArr)-1], unixDate, personfinance.RiseTypeTransferIn,
 	//	personfinance.RiseStateDefault))
@@ -153,7 +153,7 @@ func settleRiseData(settleDate time.Time) {
 }
 
 // 结算每日数据
-func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int) {
+func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
 	err := dps.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
 		personfinance.RiseDayRatioProvider(personId))
 	if err != nil {

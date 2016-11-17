@@ -25,13 +25,13 @@ const (
 var _ express.IUserExpress = new(userExpressImpl)
 
 type userExpressImpl struct {
-	userId int
+	userId int64
 	arr    []express.IExpressTemplate
 	rep    express.IExpressRep
 	valRep valueobject.IValueRep
 }
 
-func NewUserExpress(userId int, rep express.IExpressRep,
+func NewUserExpress(userId int64, rep express.IExpressRep,
 	valRep valueobject.IValueRep) express.IUserExpress {
 	return &userExpressImpl{
 		userId: userId,
@@ -41,7 +41,7 @@ func NewUserExpress(userId int, rep express.IExpressRep,
 }
 
 // 获取聚合根编号
-func (e *userExpressImpl) GetAggregateRootId() int {
+func (e *userExpressImpl) GetAggregateRootId() int64 {
 	return e.userId
 }
 
@@ -52,7 +52,7 @@ func (e *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IEx
 }
 
 // 获取快递模板
-func (e *userExpressImpl) GetTemplate(id int) express.IExpressTemplate {
+func (e *userExpressImpl) GetTemplate(id int64) express.IExpressTemplate {
 	for _, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
 			return v
@@ -74,7 +74,7 @@ func (e *userExpressImpl) GetAllTemplate() []express.IExpressTemplate {
 }
 
 // 删除模板
-func (e *userExpressImpl) DeleteTemplate(id int) error {
+func (e *userExpressImpl) DeleteTemplate(id int64) error {
 	for i, v := range e.GetAllTemplate() {
 		if v.GetDomainId() == id {
 			err := e.rep.DeleteExpressTemplate(
@@ -116,7 +116,7 @@ func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
 }
 
 // 获取领域对象编号
-func (e *expressTemplateImpl) GetDomainId() int {
+func (e *expressTemplateImpl) GetDomainId() int64 {
 	return e._value.Id
 }
 
@@ -171,7 +171,7 @@ func (e *expressTemplateImpl) Enabled() bool {
 }
 
 // 保存
-func (e *expressTemplateImpl) Save() (int, error) {
+func (e *expressTemplateImpl) Save() (int64, error) {
 	id, err := e._rep.SaveExpressTemplate(e._value)
 	if err == nil {
 		e._value.Id = id
@@ -181,7 +181,7 @@ func (e *expressTemplateImpl) Save() (int, error) {
 }
 
 // 保存地区快递模板
-func (e *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (int, error) {
+func (e *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (int64, error) {
 	e.GetAllAreaTemplate()
 	arr := e.getAreaCodeArray(t.CodeList)
 	if arr == nil {
@@ -249,7 +249,7 @@ func (e *expressTemplateImpl) GetAllAreaTemplate() []express.ExpressAreaTemplate
 }
 
 // 删除模板地区设定
-func (e *expressTemplateImpl) DeleteAreaSet(areaSetId int) error {
+func (e *expressTemplateImpl) DeleteAreaSet(areaSetId int64) error {
 	e.GetAllAreaTemplate()
 	if e.GetAreaExpressTemplate(areaSetId) != nil {
 		err := e._rep.DeleteAreaExpressTemplate(e.GetDomainId(), areaSetId)
@@ -269,7 +269,7 @@ func (e *expressTemplateImpl) GetAreaExpressTemplateByAreaCode(areaCode string) 
 }
 
 // 根据编号获取地区的运费模板
-func (e *expressTemplateImpl) GetAreaExpressTemplate(id int) *express.ExpressAreaTemplate {
+func (e *expressTemplateImpl) GetAreaExpressTemplate(id int64) *express.ExpressAreaTemplate {
 	for _, v := range e.GetAllAreaTemplate() {
 		if v.Id == id {
 			return &v

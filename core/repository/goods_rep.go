@@ -57,7 +57,7 @@ func (g *goodsRep) GetValueGoods(itemId int, skuId int) *goods.ValueGoods {
 }
 
 // 获取商品
-func (g *goodsRep) GetValueGoodsById(goodsId int) *goods.ValueGoods {
+func (g *goodsRep) GetValueGoodsById(goodsId int64) *goods.ValueGoods {
 	var e *goods.ValueGoods = new(goods.ValueGoods)
 	if g.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e

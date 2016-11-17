@@ -53,7 +53,7 @@ func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRep promotion.IPr
 	return cp
 }
 
-func (c *Coupon) GetDomainId() int {
+func (c *Coupon) GetDomainId() int64 {
 	return c.detailsValue.Id
 }
 
@@ -131,7 +131,7 @@ func (c *Coupon) GetTakes() []promotion.ValueCouponTake {
 	return c.takes
 }
 
-func (c *Coupon) Save() (int, error) {
+func (c *Coupon) Save() (int64, error) {
 
 	if c.GetRelationValue() == nil {
 		return c.GetAggregateRootId(), promotion.ErrCanNotApplied
@@ -249,12 +249,12 @@ func (c *Coupon) CanTake() bool {
 }
 
 //获取占用
-func (c *Coupon) GetTake(memberId int) (*promotion.ValueCouponTake, error) {
+func (c *Coupon) GetTake(memberId int64) (*promotion.ValueCouponTake, error) {
 	return c.promRep.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
 }
 
 //占用
-func (c *Coupon) Take(memberId int) error {
+func (c *Coupon) Take(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足!")
 	}
@@ -279,7 +279,7 @@ func (c *Coupon) Take(memberId int) error {
 }
 
 //应用到订单
-func (c *Coupon) ApplyTake(couponTakeId int) error {
+func (c *Coupon) ApplyTake(couponTakeId int64) error {
 	valTake := c.promRep.GetCouponTake(c.detailsValue.Id, couponTakeId)
 	if valTake == nil {
 		return errors.New("优惠券无效")
@@ -302,7 +302,7 @@ func (c *Coupon) ApplyTake(couponTakeId int) error {
 /********  绑定  *********/
 
 //绑定
-func (c *Coupon) Bind(memberId int) error {
+func (c *Coupon) Bind(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足")
 	}
@@ -326,7 +326,7 @@ func (c *Coupon) Bind(memberId int) error {
 }
 
 //获取绑定
-func (c *Coupon) GetBind(memberId int) (*promotion.ValueCouponBind, error) {
+func (c *Coupon) GetBind(memberId int64) (*promotion.ValueCouponBind, error) {
 	return c.promRep.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
 }
 
@@ -342,7 +342,7 @@ func (c *Coupon) Binds(memberIds []string) error {
 			return err
 		}
 
-		err = c.Bind(memberId)
+		err = c.Bind(int64(memberId))
 		if err != nil {
 			return err
 		}
@@ -351,7 +351,7 @@ func (c *Coupon) Binds(memberIds []string) error {
 }
 
 //使用优惠券
-func (c *Coupon) UseCoupon(couponBindId int) error {
+func (c *Coupon) UseCoupon(couponBindId int64) error {
 	valBind := c.promRep.GetCouponBind(c.detailsValue.Id, couponBindId)
 
 	if valBind == nil {

@@ -44,7 +44,7 @@ func NewAccount(m *memberImpl, value *member.Account,
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int {
+func (a *accountImpl) GetDomainId() int64 {
 	return a.value.MemberId
 }
 
@@ -54,7 +54,7 @@ func (a *accountImpl) GetValue() *member.Account {
 }
 
 // 保存
-func (a *accountImpl) Save() (int, error) {
+func (a *accountImpl) Save() (int64, error) {
 	a.value.UpdateTime = time.Now().Unix()
 	return a.rep.SaveAccount(a.value)
 }
@@ -1112,7 +1112,7 @@ func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 }
 
 // 将活动金转给其他人
-func (a *accountImpl) TransferFlowTo(memberId int, kind int,
+func (a *accountImpl) TransferFlowTo(memberId int64, kind int,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
 

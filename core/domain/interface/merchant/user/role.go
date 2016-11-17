@@ -10,11 +10,11 @@ package user
 
 type IRole interface {
 	//获取领域对象编号
-	GetDomainId() int
+	GetDomainId() int64
 
 	GetValue() RoleValue
 
 	SetValue(*RoleValue) error
 
-	Save() (int, error)
+	Save() (int64, error)
 }

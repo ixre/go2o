@@ -27,7 +27,7 @@ type (
 	// 退款单,同退货单。只是不退货物。退款单需要付款后才能退款。
 	IRefundOrder interface {
 		//// 获取领域对象编号
-		//GetDomainId() int
+		//GetDomainId() int64
 		//
 		//// 获取值
 		//GetValue() RefundOrder

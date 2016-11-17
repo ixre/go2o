@@ -28,7 +28,7 @@ func NewItemRep(c db.Connector) item.IItemRep {
 	}
 }
 
-func (this *itemRep) GetValueItem(itemId int) *item.Item {
+func (this *itemRep) GetValueItem(itemId int64) *item.Item {
 	var e *item.Item = new(item.Item)
 	//todo: supplier_id  == -1
 	if this.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
@@ -50,7 +50,7 @@ func (this *itemRep) GetItemByIds(ids ...int) ([]*item.Item, error) {
 	return items, err
 }
 
-func (this *itemRep) SaveValueItem(v *item.Item) (int, error) {
+func (this *itemRep) SaveValueItem(v *item.Item) (int64, error) {
 	orm := this.Connector.GetOrm()
 	if v.Id <= 0 {
 		_, id, err := orm.Save(nil, v)

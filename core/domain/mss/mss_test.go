@@ -49,7 +49,7 @@ func (this *MssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (this *MssRep) GetConfig(userId int) *mss.Config {
+func (this *MssRep) GetConfig(userId int64) *mss.Config {
 	return nil
 }
 
@@ -103,7 +103,7 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
+func (this *MssRep) SaveMessage(v *mss.Message) (int64, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -116,19 +116,19 @@ func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
 }
 
 // 获取消息
-func (this *MssRep) GetMessage(id int) *mss.Message {
+func (this *MssRep) GetMessage(id int64) *mss.Message {
 	//todo:
 	msg := mss.Message{}
 	return &msg
 }
 
 // 保存用户消息关联
-func (this *MssRep) SaveUserMsg(v *mss.To) (int, error) {
+func (this *MssRep) SaveUserMsg(v *mss.To) (int64, error) {
 	return orm.Save(this._conn.GetOrm(), v, v.Id)
 }
 
 // 保存消息内容
-func (this *MssRep) SaveMsgContent(v *mss.Content) (int, error) {
+func (this *MssRep) SaveMsgContent(v *mss.Content) (int64, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)

@@ -22,12 +22,12 @@ func NewExpressService(rep express.IExpressRep) *expressService {
 }
 
 // 获取快递公司
-func (e *expressService) GetExpressProvider(id int) *express.ExpressProvider {
+func (e *expressService) GetExpressProvider(id int64) *express.ExpressProvider {
 	return e._rep.GetExpressProvider(id)
 }
 
 // 保存快递公司
-func (e *expressService) SaveExpressProvider(v *express.ExpressProvider) (int, error) {
+func (e *expressService) SaveExpressProvider(v *express.ExpressProvider) (int64, error) {
 	return e._rep.SaveExpressProvider(v)
 }
 
@@ -44,7 +44,7 @@ func (e *expressService) GetEnabledProviders() []*express.ExpressProvider {
 }
 
 // 保存快递模板
-func (ec *expressService) SaveTemplate(userId int, v *express.ExpressTemplate) (int, error) {
+func (ec *expressService) SaveTemplate(userId int, v *express.ExpressTemplate) (int64, error) {
 	u := ec._rep.GetUserExpress(userId)
 	var e express.IExpressTemplate
 	if v.Id > 0 {
@@ -73,7 +73,7 @@ func (e *expressService) GetTemplate(userId, id int) *express.ExpressTemplate {
 }
 
 // 获取所有的快递模板
-func (e *expressService) GetAllTemplate(userId int) []*express.ExpressTemplate {
+func (e *expressService) GetAllTemplate(userId int64) []*express.ExpressTemplate {
 	u := e._rep.GetUserExpress(userId)
 	list := u.GetAllTemplate()
 	arr := make([]*express.ExpressTemplate, len(list))
@@ -85,7 +85,7 @@ func (e *expressService) GetAllTemplate(userId int) []*express.ExpressTemplate {
 }
 
 // 获取可有的快递模板
-func (e *expressService) GetEnabledTemplates(userId int) []*express.ExpressTemplate {
+func (e *expressService) GetEnabledTemplates(userId int64) []*express.ExpressTemplate {
 	u := e._rep.GetUserExpress(userId)
 	list := u.GetAllTemplate()
 	arr := []*express.ExpressTemplate{}
@@ -145,7 +145,7 @@ func (e *expressService) GetAreaExpressTemplate(userId int,
 
 // 保存地区快递模板
 func (e *expressService) SaveAreaTemplate(userId int,
-	templateId int, v *express.ExpressAreaTemplate) (int, error) {
+	templateId int, v *express.ExpressAreaTemplate) (int64, error) {
 	u := e._rep.GetUserExpress(userId)
 	t := u.GetTemplate(templateId)
 	if t != nil {

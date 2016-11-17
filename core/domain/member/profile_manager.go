@@ -43,7 +43,7 @@ type profileManagerImpl struct {
 	profile     *member.Profile
 }
 
-func newProfileManagerImpl(m *memberImpl, memberId int,
+func newProfileManagerImpl(m *memberImpl, memberId int64,
 	rep member.IMemberRep, valRep valueobject.IValueRep) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
@@ -485,7 +485,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	return *p.trustedInfo
 }
 
-func (p *profileManagerImpl) checkCardId(cardId string, memberId int) bool {
+func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
 	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mm_trusted_info WHERE card_id=? AND member_id <> ?",
 		&mId, cardId, memberId)
@@ -573,7 +573,7 @@ func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
 	return d
 }
 
-func (p *addressImpl) GetDomainId() int {
+func (p *addressImpl) GetDomainId() int64 {
 	return p._value.Id
 }
 
@@ -631,7 +631,7 @@ func (p *addressImpl) checkValue(v *member.DeliverAddress) error {
 	return nil
 }
 
-func (p *addressImpl) Save() (int, error) {
+func (p *addressImpl) Save() (int64, error) {
 	if err := p.checkValue(p._value); err != nil {
 		return p.GetDomainId(), err
 	}

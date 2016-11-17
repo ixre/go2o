@@ -10,7 +10,7 @@
 package sale
 
 type ISale interface {
-	GetAggregateRootId() int
+	GetAggregateRootId() int64
 
 	// 类目服务
 	CategoryManager() ICategoryManager

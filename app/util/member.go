@@ -33,12 +33,12 @@ func chkStorage(sto storage.Interface) {
 }
 
 // 获取会员API调用密钥Key
-func GetMemberApiTokenKey(memberId int) string {
+func GetMemberApiTokenKey(memberId int64) string {
 	return fmt.Sprintf("go2o:api:member:token:%d", memberId)
 }
 
 // 设置令牌，并返回
-func SetMemberApiToken(sto storage.Interface, memberId int, pwd string) string {
+func SetMemberApiToken(sto storage.Interface, memberId int64, pwd string) string {
 	chkStorage(sto)
 	cyp := crypto.NewUnixCrypto(pwd+offset, offset)
 	var token string = string(cyp.Encode())
@@ -52,7 +52,7 @@ func SetMemberApiToken(sto storage.Interface, memberId int, pwd string) string {
 }
 
 // 获取会员的API令牌
-func GetMemberApiToken(sto storage.Interface, memberId int) (string, string) {
+func GetMemberApiToken(sto storage.Interface, memberId int64) (string, string) {
 	chkStorage(sto)
 
 	var key = GetMemberApiTokenKey(memberId)
@@ -64,7 +64,7 @@ func GetMemberApiToken(sto storage.Interface, memberId int) (string, string) {
 }
 
 // 移除会员令牌
-func RemoveMemberApiToken(sto storage.Interface, memberId int, token string) bool {
+func RemoveMemberApiToken(sto storage.Interface, memberId int64, token string) bool {
 	srcToken, _ := GetMemberApiToken(sto, memberId)
 	if len(srcToken) == 0 && srcToken == token {
 		var key string = GetMemberApiTokenKey(memberId)
@@ -76,7 +76,7 @@ func RemoveMemberApiToken(sto storage.Interface, memberId int, token string) boo
 }
 
 // 校验令牌
-func CompareMemberApiToken(sto storage.Interface, memberId int, token string) bool {
+func CompareMemberApiToken(sto storage.Interface, memberId int64, token string) bool {
 
 	if len(token) == 0 {
 		return false
@@ -92,11 +92,13 @@ func CompareMemberApiToken(sto storage.Interface, memberId int, token string) bo
 }
 
 // 会员Http请求会话链接
-func MemberHttpSessionConnect(c *echox.Context, call func(memberId int)) (ok bool, memberId int) {
+func MemberHttpSessionConnect(c *echox.Context, call func(memberId int64)) (bool, int64) {
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
 	form := c.Request().URL.Query()
-	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
+	mid, err := strconv.Atoi(form.Get("member_id"))
+	memberId := int64(mid)
+	if err == nil {
 		var token string = form.Get("token")
 		if CompareMemberApiToken(c.App.Storage(), memberId, token) {
 			if call != nil {
@@ -109,7 +111,7 @@ func MemberHttpSessionConnect(c *echox.Context, call func(memberId int)) (ok boo
 	} else {
 		// 如果没有传递参数从会话中获取
 		if v := c.Session.Get("client_member_id"); v != nil {
-			memberId = v.(int)
+			memberId = v.(int64)
 			return true, memberId
 		}
 	}
@@ -124,7 +126,9 @@ func MemberHttpSessionConnect(c *echox.Context, call func(memberId int)) (ok boo
 // 会员Http请求会话链接
 func MemberHttpSessionDisconnect(c *echox.Context) bool {
 	form := c.Request().URL.Query()
-	if memberId, err := strconv.Atoi(form.Get("member_id")); err == nil {
+	mid, err := strconv.Atoi(form.Get("member_id"))
+	if err == nil {
+		memberId := int64(mid)
 		var token string = form.Get("token")
 		return RemoveMemberApiToken(c.App.Storage(), memberId, token)
 	}

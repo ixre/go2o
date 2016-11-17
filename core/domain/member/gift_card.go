@@ -22,7 +22,7 @@ type giftCardManagerImpl struct {
 	rep      member.IMemberRep
 }
 
-func newGiftCardManagerImpl(memberId int, rep member.IMemberRep) member.IGiftCardManager {
+func newGiftCardManagerImpl(memberId int64, rep member.IMemberRep) member.IGiftCardManager {
 	return &giftCardManagerImpl{
 		memberId: memberId,
 		rep:      rep,

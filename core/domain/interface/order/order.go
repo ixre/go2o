@@ -193,7 +193,7 @@ var (
 type (
 	IOrder interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 获取订单号
 		GetOrderNo() string
@@ -253,7 +253,7 @@ type (
 
 		// 保存订单, 在生成支付单后,应该根据实际支付金额
 		// 进行拆单,并切均摊优惠抵扣金额
-		Save() (int, error)
+		Save() (int64, error)
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
@@ -302,7 +302,7 @@ type (
 
 	ISubOrder interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int64
 
 		// 获取值对象
 		GetValue() *SubOrder
@@ -332,7 +332,7 @@ type (
 		PickUp() error
 
 		// 发货
-		Ship(spId int, spOrder string) error
+		Ship(spId int64, spOrder string) error
 
 		// 已收货
 		BuyerReceived() error
@@ -366,7 +366,7 @@ type (
 		Refund() error
 
 		// 保存订单
-		Save() (int, error)
+		Save() (int64, error)
 	}
 
 	// 简单商品信息

@@ -63,7 +63,7 @@ func (g *tmpGoodsImpl) init() sale.IGoods {
 }
 
 //获取领域对象编号
-func (g *tmpGoodsImpl) GetDomainId() int {
+func (g *tmpGoodsImpl) GetDomainId() int64 {
 	return g.value.Id
 }
 
@@ -210,7 +210,7 @@ func (g *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
 }
 
 // 保存
-func (g *tmpGoodsImpl) Save() (int, error) {
+func (g *tmpGoodsImpl) Save() (int64, error) {
 	id, err := g.goodsRep.SaveValueGoods(g.value)
 	if err == nil {
 		g.value.Id = id

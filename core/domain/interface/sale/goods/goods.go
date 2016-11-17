@@ -41,7 +41,7 @@ type (
 		GetGoodsBySKuId(skuId int) interface{}
 
 		// 获取商品
-		GetValueGoodsById(goodsId int) *ValueGoods
+		GetValueGoodsById(goodsId int64) *ValueGoods
 
 		// 根据SKU获取商品
 		GetValueGoodsBySku(itemId, sku int) *ValueGoods

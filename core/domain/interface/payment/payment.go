@@ -102,7 +102,7 @@ type (
 	// 支付单接口
 	IPaymentOrder interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int64
 
 		// 获取交易号
 		GetTradeNo() string

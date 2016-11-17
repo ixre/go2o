@@ -41,14 +41,14 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
 		mp, _ := dps.MemberService.Login(usr, encodePwd, true)
-		id := int(mp["Id"])
+		id := int32(mp["Id"])
 		rst := mp["Result"]
 		if id > 0 {
-			m := dps.MemberService.GetMember(id)
+			m, _ := dps.MemberService.GetMember(id)
 			// 登录成功，生成令牌
-			token := util.SetMemberApiToken(sto, id, encodePwd)
+			token := util.SetMemberApiToken(sto, int(id), encodePwd)
 			result.Member = &dto.LoginMember{
-				Id:         id,
+				Id:         int(id),
 				Token:      token,
 				UpdateTime: m.UpdateTime,
 			}
@@ -106,7 +106,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
 	var form = url.Values(c.Request().Form)
 	var mut, aut, kvMut, kvAut int
-	memberId := GetMemberId(c)
+	memberId := int32(GetMemberId(c))
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -114,13 +114,13 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	sto.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		m := dps.MemberService.GetMember(memberId)
+		m, _ := dps.MemberService.GetMember(memberId)
 		kvMut = int(m.UpdateTime)
 		sto.Set(mutKey, kvMut)
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc := dps.MemberService.GetAccount(memberId)
+		acc := dps.MemberService.GetAccount(int(memberId))
 		kvAut = int(acc.UpdateTime)
 		sto.Set(autKey, kvAut)
 	}
@@ -132,8 +132,8 @@ func (mc *MemberC) Async(c echo.Context) error {
 
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
-	memberId := GetMemberId(c)
-	m := dps.MemberService.GetMember(memberId)
+	memberId := int32(GetMemberId(c))
+	m, _ := dps.MemberService.GetMember(memberId)
 	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
 	return c.JSON(http.StatusOK, m)
 }
