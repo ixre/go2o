@@ -54,7 +54,7 @@ func (mm *messageManagerImpl) CreateMessage(msg *mss.Message,
 }
 
 // 创建消息模版对象
-func (m *messageManagerImpl) GetMessage(id int64) mss.IMessage {
+func (m *messageManagerImpl) GetMessage(id int32) mss.IMessage {
 	if msg := m.rep.GetMessage(id); msg != nil {
 		con := m.rep.GetMessageContent(msg.Id)
 		switch msg.Type {
@@ -75,7 +75,7 @@ func (m *messageManagerImpl) GetMessage(id int64) mss.IMessage {
 }
 
 // 创建用于会员通知的消息对象
-func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int64, msgType int,
+func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int32, msgType int,
 	content interface{}) mss.IMessage {
 	msg := &mss.Message{
 		Type:       msgType,
@@ -95,8 +95,8 @@ func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int64, msgType i
 
 // 获取聊天会话编号
 func (m *messageManagerImpl) GetChatSessionId(senderRole int,
-	senderId int64, toRole int, toId int64) int64 {
-	var msgId int64 = 0
+	senderId int32, toRole int, toId int32) int32 {
+	var msgId int32 = 0
 	tmp.Db().ExecScalar(`SELECT msg_list.id FROM zxdb.msg_list INNER JOIN msg_to
         ON msg_to.msg_id = msg_list.id WHERE use_for=? AND msg_type=? AND sender_role=?
         AND sender_id= ? AND to_role=? AND to_id=?`, &msgId, mss.UseForChat,
@@ -105,8 +105,8 @@ func (m *messageManagerImpl) GetChatSessionId(senderRole int,
 }
 
 // 创建聊天会话
-func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int64,
-	toRole int, toId int64) (mss.Message, error) {
+func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
+	toRole int, toId int32) (mss.Message, error) {
 	msgId := m.GetChatSessionId(senderRole, senderId, toRole, toId)
 	if msgId > 0 {
 		return m.GetMessage(msgId).GetValue(), nil
@@ -145,14 +145,14 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int64,
 }
 
 type userMessageManagerImpl struct {
-	_appUserId     int64
+	_appUserId     int32
 	_userRole      int //todo: role
 	_mssRep        mss.IMssRep
 	_mailTemplates []*mss.MailTemplate
 	_config        *mss.Config
 }
 
-func NewMssManager(appUserId int64, rep mss.IMssRep) mss.IUserMessageManager {
+func NewMssManager(appUserId int32, rep mss.IMssRep) mss.IUserMessageManager {
 	return &userMessageManagerImpl{
 		_appUserId: appUserId,
 		_mssRep:    rep,
@@ -160,7 +160,7 @@ func NewMssManager(appUserId int64, rep mss.IMssRep) mss.IUserMessageManager {
 }
 
 // 获取聚合根编号
-func (u *userMessageManagerImpl) GetAggregateRootId() int64 {
+func (u *userMessageManagerImpl) GetAggregateRootId() int32 {
 	return u._appUserId
 }
 
@@ -182,12 +182,12 @@ func (u *userMessageManagerImpl) SaveConfig(conf *mss.Config) error {
 }
 
 // 获取邮箱模板
-func (u *userMessageManagerImpl) GetMailTemplate(id int64) *mss.MailTemplate {
+func (u *userMessageManagerImpl) GetMailTemplate(id int32) *mss.MailTemplate {
 	return u._mssRep.GetMailTemplate(u._appUserId, id)
 }
 
 // 保存邮箱模版
-func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
+func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	v.MerchantId = u._appUserId
 	v.UpdateTime = time.Now().Unix()
 	if v.CreateTime == 0 {
@@ -197,7 +197,7 @@ func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (int64, e
 }
 
 // 删除邮件模板
-func (u *userMessageManagerImpl) DeleteMailTemplate(id int64) error {
+func (u *userMessageManagerImpl) DeleteMailTemplate(id int32) error {
 	//mchId := this._partner.GetAggregateRootId()
 	//if this._partnerRep.CheckKvContainValue(mchId, "kvset", strconv.Itoa(id), "mail") > 0 {
 	//	return mss.ErrTemplateUsed

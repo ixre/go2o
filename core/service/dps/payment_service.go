@@ -26,7 +26,7 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrder(id int64) *payment.PaymentOrder {
+func (p *paymentService) GetPaymentOrder(id int32) *payment.PaymentOrder {
 	po := p._rep.GetPaymentOrder(id)
 	if po != nil {
 		v := po.GetValue()
@@ -45,7 +45,7 @@ func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentO
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int64, error) {
+func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int, error) {
 	o := p._rep.CreatePaymentOrder(v)
 	return o.Commit()
 }

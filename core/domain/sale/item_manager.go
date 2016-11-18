@@ -59,7 +59,7 @@ func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
 	}
 }
 
-func (i *itemImpl) GetDomainId() int64 {
+func (i *itemImpl) GetDomainId() int32 {
 	return i.value.Id
 }
 
@@ -226,7 +226,7 @@ func (i *itemImpl) Incorrect(remark string) error {
 }
 
 // 保存
-func (i *itemImpl) Save() (int64, error) {
+func (i *itemImpl) Save() (int32, error) {
 	unix := time.Now().Unix()
 	i.value.UpdateTime = unix
 	if i.GetDomainId() <= 0 {
@@ -336,10 +336,10 @@ type itemManagerImpl struct {
 	_itemRep    item.IItemRep
 	_valRep     valueobject.IValueRep
 	_expressRep express.IExpressRep
-	_vendorId   int64
+	_vendorId   int32
 }
 
-func NewItemManager(vendorId int64, s *saleImpl,
+func NewItemManager(vendorId int32, s *saleImpl,
 	itemRep item.IItemRep, expressRep express.IExpressRep,
 	valRep valueobject.IValueRep) sale.IItemManager {
 	c := &itemManagerImpl{
@@ -370,7 +370,7 @@ func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 }
 
 // 删除货品
-func (i *itemManagerImpl) DeleteItem(id int64) error {
+func (i *itemManagerImpl) DeleteItem(id int32) error {
 	var err error
 	num := i._itemRep.GetItemSaleNum(i._vendorId, id)
 
@@ -383,7 +383,7 @@ func (i *itemManagerImpl) DeleteItem(id int64) error {
 }
 
 // 根据产品编号获取产品
-func (i *itemManagerImpl) GetItem(itemId int64) sale.IItem {
+func (i *itemManagerImpl) GetItem(itemId int32) sale.IItem {
 	pv := i._itemRep.GetValueItem(itemId)
 	if pv != nil && pv.VendorId == i._vendorId {
 		return i.CreateItem(pv)

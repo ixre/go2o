@@ -42,7 +42,7 @@ func (s *ShopQuery) getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商店编号
-func (s *ShopQuery) QueryShopIdByHost(host string) (mchId int64, shopId int) {
+func (s *ShopQuery) QueryShopIdByHost(host string) (mchId int32, shopId int) {
 	//  $ 获取合作商ID
 	// $ hostname : 域名
 	// *.wdian.net  二级域名

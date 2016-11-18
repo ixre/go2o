@@ -26,7 +26,7 @@ func NewPromotionService(rep promotion.IPromotionRep) *promotionService {
 }
 
 // 获取促销
-func (this *promotionService) GetPromotion(id int64) (*promotion.PromotionInfo, interface{}) {
+func (this *promotionService) GetPromotion(id int32) (*promotion.PromotionInfo, interface{}) {
 	var prom promotion.IPromotion = this._rep.GetPromotion(id)
 	if prom != nil {
 		return prom.GetValue(), prom.GetRelationValue()
@@ -35,7 +35,7 @@ func (this *promotionService) GetPromotion(id int64) (*promotion.PromotionInfo, 
 }
 
 // 保存促销
-func (this *promotionService) SavePromotion(v *promotion.PromotionInfo) (int64, error) {
+func (this *promotionService) SavePromotion(v *promotion.PromotionInfo) (int, error) {
 	var prom promotion.IPromotion
 	if v.Id > 0 {
 		prom = this._rep.GetPromotion(v.Id)
@@ -50,7 +50,7 @@ func (this *promotionService) SavePromotion(v *promotion.PromotionInfo) (int64, 
 }
 
 // 删除促销
-func (this *promotionService) DelPromotion(mchId int64, promId int) error {
+func (this *promotionService) DelPromotion(mchId int32, promId int) error {
 	prom := this._rep.GetPromotion(promId)
 	if prom == nil {
 		return promotion.ErrNoSuchPromotion
@@ -62,7 +62,7 @@ func (this *promotionService) DelPromotion(mchId int64, promId int) error {
 	return promImpl.DeletePromotion(prom)
 }
 
-func (this *promotionService) SaveCashBackPromotion(mchId int64, v *promotion.PromotionInfo,
+func (this *promotionService) SaveCashBackPromotion(mchId int32, v *promotion.PromotionInfo,
 	v1 *promotion.ValueCashBack) (int, error) {
 	var prom promotion.IPromotion
 	var err error
@@ -88,7 +88,7 @@ func (this *promotionService) SaveCashBackPromotion(mchId int64, v *promotion.Pr
 }
 
 /**************   Coupon ************/
-func (this *promotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo, v1 *promotion.ValueCoupon) (int, error) {
+func (this *promotionService) SaveCoupon(mchId int32, v *promotion.PromotionInfo, v1 *promotion.ValueCoupon) (int, error) {
 	var prom promotion.IPromotion
 	var err error
 	if v.Id > 0 {
@@ -112,7 +112,7 @@ func (this *promotionService) SaveCoupon(mchId int64, v *promotion.PromotionInfo
 	return prom.Save()
 }
 
-func (this *promotionService) BindCoupons(mchId int64, id int, members []string) error {
+func (this *promotionService) BindCoupons(mchId int32, id int, members []string) error {
 	coupon := this._rep.GetPromotion(id).(promotion.ICouponPromotion)
 	return coupon.Binds(members)
 }

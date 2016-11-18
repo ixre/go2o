@@ -1,19 +1,19 @@
 namespace go define
 
 struct Member {
-    1: i64 Id
+    1: i32 Id
     2: string Usr
     3: string Pwd
     4: string TradePwd
-    5: i64 Exp
-    6: i64 Level
+    5: i32 Exp
+    6: i32 Level
     7: string InvitationCode
     8: string RegFrom
     9: string RegIp
     10: i64 RegTime
     11: string CheckCode
     12: i64 CheckExpires
-    13: i64 State
+    13: i32 State
     14: i64 LoginTime
     15: i64 LastLoginTime
     16: i64 UpdateTime
@@ -22,18 +22,18 @@ struct Member {
 }
 
 struct Profile {
-    1: i64 MemberId
+    1: i32 MemberId
     2: string Name
     3: string Avatar
-    4: i64 Sex
+    4: i32 Sex
     5: string BirthDay
     6: string Phone
     7: string Address
     8: string Im
     9: string Email
-    10: i64 Province
-    11: i64 City
-    12: i64 District
+    10: i32 Province
+    11: i32 City
+    12: i32 District
     13: string Remark
     14: string Ext1
     15: string Ext2

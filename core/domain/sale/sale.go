@@ -21,7 +21,7 @@ import (
 var _ sale.ISale = new(saleImpl)
 
 type saleImpl struct {
-	mchId        int64
+	mchId        int32
 	saleRep      sale.ISaleRep
 	labelRep     sale.ISaleLabelRep
 	cateRep      sale.ICategoryRep
@@ -36,7 +36,7 @@ type saleImpl struct {
 	goodsManager sale.IGoodsManager
 }
 
-func NewSale(mchId int64, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
+func NewSale(mchId int32, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
 	cateRep sale.ICategoryRep, itemRep item.IItemRep, goodsRep goods.IGoodsRep,
 	tagRep sale.ISaleLabelRep, expressRep express.IExpressRep,
 	promRep promotion.IPromotionRep) sale.ISale {
@@ -94,6 +94,6 @@ func (s *saleImpl) GoodsManager() sale.IGoodsManager {
 	return s.goodsManager
 }
 
-func (s *saleImpl) GetAggregateRootId() int64 {
+func (s *saleImpl) GetAggregateRootId() int32 {
 	return s.mchId
 }

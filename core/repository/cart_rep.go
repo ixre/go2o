@@ -10,6 +10,7 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	cartImpl "go2o/core/domain/cart"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/member"
@@ -53,7 +54,7 @@ func (c *cartRep) GetShoppingCartByKey(key string) cart.ICart {
 }
 
 // 获取会员没有结算的购物车
-func (c *cartRep) GetMemberCurrentCart(buyerId int64) cart.ICart {
+func (c *cartRep) GetMemberCurrentCart(buyerId int32) cart.ICart {
 	ca := c.GetLatestCart(buyerId)
 	if ca != nil {
 		return c.CreateCart(ca)
@@ -74,7 +75,7 @@ func (c *cartRep) GetShoppingCart(key string) *cart.ValueCart {
 }
 
 // 获取最新的购物车
-func (c *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
+func (c *cartRep) GetLatestCart(buyerId int32) *cart.ValueCart {
 	var v = &cart.ValueCart{}
 	if c.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
 		var items = []*cart.CartItem{}
@@ -86,44 +87,27 @@ func (c *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
 }
 
 // 保存购物车
-func (c *cartRep) SaveShoppingCart(v *cart.ValueCart) (int64, error) {
-	var err error
-	_orm := c.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = _orm.Save(v.Id, v)
-	} else {
-		_, _, err = _orm.Save(nil, v)
-		c.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart`, &v.Id)
-	}
-	return v.Id, err
+func (c *cartRep) SaveShoppingCart(v *cart.ValueCart) (int32, error) {
+	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 }
 
 // 移出购物车项
-func (c *cartRep) RemoveCartItem(id int64) error {
+func (c *cartRep) RemoveCartItem(id int32) error {
 	return c.Connector.GetOrm().DeleteByPk(cart.CartItem{}, id)
 }
 
 // 保存购物车项
-func (c *cartRep) SaveCartItem(v *cart.CartItem) (int64, error) {
-	_orm := c.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = _orm.Save(v.Id, v)
-	} else {
-		_, _, err = _orm.Save(nil, v)
-		c.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart_item where cart_id=?`, &v.Id, v.CartId)
-	}
-
-	return v.Id, err
+func (c *cartRep) SaveCartItem(v *cart.CartItem) (int32, error) {
+	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 }
 
 // 清空购物车项
-func (c *cartRep) EmptyCartItems(cartId int64) error {
+func (c *cartRep) EmptyCartItems(cartId int32) error {
 	_, err := c.Connector.GetOrm().Delete(cart.CartItem{}, "cart_id=?", cartId)
 	return err
 }
 
 // 删除购物车
-func (c *cartRep) DeleteCart(cartId int64) error {
+func (c *cartRep) DeleteCart(cartId int32) error {
 	return c.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, cartId)
 }

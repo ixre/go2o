@@ -19,5 +19,5 @@ type IUser interface {
 	SaveCredential(*CredentialValue) error
 
 	// 保存人员信息
-	//Save() (int, error)
+	//Save() (int32, error)
 }

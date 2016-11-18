@@ -10,6 +10,7 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/merchant/user"
 )
 
@@ -26,46 +27,22 @@ func NewUserRep(c db.Connector) user.IUserRep {
 }
 
 // 保存角色
-func (this *userRep) SaveRole(v *user.RoleValue) (int64, error) {
-	orm := this.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM usr_role", &v.Id)
-	}
-	return v.Id, err
+func (this *userRep) SaveRole(v *user.RoleValue) (int32, error) {
+	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 保存人员
-func (this *userRep) SavePerson(v *user.PersonValue) (int64, error) {
-	orm := this.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM usr_person", &v.Id)
-	}
-	return v.Id, err
+func (this *userRep) SavePerson(v *user.PersonValue) (int32, error) {
+	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 保存凭据
-func (this *userRep) SaveCredential(v *user.CredentialValue) (int64, error) {
-	orm := this.Connector.GetOrm()
-	var err error
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		this.Connector.ExecScalar("SELECT MAX(id) FROM usr_credential", &v.Id)
-	}
-	return v.Id, err
+func (this *userRep) SaveCredential(v *user.CredentialValue) (int32, error) {
+	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 获取人员
-func (this *userRep) GetPersonValue(id int64) *user.PersonValue {
+func (this *userRep) GetPersonValue(id int32) *user.PersonValue {
 	e := new(user.PersonValue)
 	err := this.Connector.GetOrm().Get(e, id)
 	if err != nil {
@@ -75,7 +52,7 @@ func (this *userRep) GetPersonValue(id int64) *user.PersonValue {
 }
 
 // 获取配送人员
-func (this *userRep) GetDeliveryStaffPersons(mchId int64) []*user.PersonValue {
+func (this *userRep) GetDeliveryStaffPersons(mchId int32) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
 	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
 	if err != nil {

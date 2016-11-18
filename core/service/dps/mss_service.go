@@ -25,12 +25,12 @@ func NewMssService(rep mss.IMssRep) *mssService {
 }
 
 // 获取邮件模版
-func (m *mssService) GetMailTemplate(id int64) *mss.MailTemplate {
+func (m *mssService) GetMailTemplate(id int32) *mss.MailTemplate {
 	return m._rep.GetProvider().GetMailTemplate(id)
 }
 
 // 保存邮件模板
-func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
+func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 	return m._rep.GetProvider().SaveMailTemplate(v)
 }
 
@@ -40,7 +40,7 @@ func (m *mssService) GetMailTemplates() []*mss.MailTemplate {
 }
 
 // 删除邮件模板
-func (m *mssService) DeleteMailTemplate(id int64) error {
+func (m *mssService) DeleteMailTemplate(id int32) error {
 	return m._rep.GetProvider().DeleteMailTemplate(id)
 }
 
@@ -187,11 +187,11 @@ func (m *mssService) SendPhoneMessage(phone string,
 }
 
 // 获取聊天会话编号
-func (m *mssService) GetChatSessionId(senderRole int, senderId int64, toRole int, toId int64) int64 {
+func (m *mssService) GetChatSessionId(senderRole int, senderId int32, toRole int, toId int32) int32 {
 	return m._rep.MessageManager().GetChatSessionId(senderRole, senderId, toRole, toId)
 }
 
 // 创建聊天会话
-func (m *mssService) CreateChatSession(senderRole int, senderId int64, toRole int, toId int64) (mss.Message, error) {
+func (m *mssService) CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error) {
 	return m._rep.MessageManager().CreateChatSession(senderRole, senderId, toRole, toId)
 }

@@ -76,14 +76,14 @@ func (s *shoppingService) getShoppingCart(buyerId int,
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (s *shoppingService) GetShoppingCart(memberId int64,
+func (s *shoppingService) GetShoppingCart(memberId int32,
 	cartKey string) *dto.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartKey)
 	return s.parseCart(c)
 }
 
 // 创建一个新的购物车
-func (s *shoppingService) CreateShoppingCart(memberId int64) *dto.ShoppingCart {
+func (s *shoppingService) CreateShoppingCart(memberId int32) *dto.ShoppingCart {
 	c := s._cartRep.NewCart()
 	c.SetBuyer(memberId)
 	return cart.ParseToDtoCart(c)
@@ -102,7 +102,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 }
 
 //todo: 这里响应较慢,性能?
-func (s *shoppingService) AddCartItem(memberId int64, cartKey string,
+func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	skuId, num int, checked bool) (*dto.CartItem, error) {
 	c := s.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
@@ -149,8 +149,8 @@ func (s *shoppingService) AddCartItem(memberId int64, cartKey string,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int64,
-	cartKey string, goodsId int64, num int) error {
+func (s *shoppingService) SubCartItem(memberId int32,
+	cartKey string, goodsId int32, num int) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {
@@ -160,7 +160,7 @@ func (s *shoppingService) SubCartItem(memberId int64,
 }
 
 // 勾选商品结算
-func (s *shoppingService) CartCheckSign(memberId int64,
+func (s *shoppingService) CartCheckSign(memberId int32,
 	cartKey string, arr []int) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	return cart.SignItemChecked(arr)
@@ -177,7 +177,7 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId,
 	return err
 }
 
-func (s *shoppingService) GetCartSettle(memberId int64,
+func (s *shoppingService) GetCartSettle(memberId int32,
 	cartKey string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartKey)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
@@ -292,7 +292,7 @@ func (s *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int64) *order.Order {
+func (s *shoppingService) GetOrderById(id int32) *order.Order {
 	return s._rep.GetOrderById(id)
 }
 
@@ -319,7 +319,7 @@ func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int64) *order.SubOrder {
+func (s *shoppingService) GetSubOrder(id int32) *order.SubOrder {
 	return s._rep.GetSubOrder(id)
 }
 
@@ -388,7 +388,7 @@ func (s *shoppingService) GetOrderLogString(id int) []byte {
 }
 
 // 根据父订单编号获取购买的商品项
-func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
+func (s *shoppingService) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
 	return s._manager.GetItemsByParentOrderId(orderId)
 }
 
@@ -420,15 +420,15 @@ func (s *shoppingService) BuyerReceived(subOrderId int) error {
 }
 
 // 根据商品快照获取订单项
-func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int64) *order.OrderItem {
+func (s *shoppingService) GetOrderItemBySnapshotId(orderId int32, snapshotId int32) *order.OrderItem {
 	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 
 // 根据商品快照获取订单项数据传输对象
-func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int64) *dto.OrderItem {
+func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int32, snapshotId int32) *dto.OrderItem {
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }
 
-func (s *shoppingService) OrderAutoSetup(mchId int64, f func(error)) {
+func (s *shoppingService) OrderAutoSetup(mchId int32, f func(error)) {
 	s._manager.OrderAutoSetup(f)
 }

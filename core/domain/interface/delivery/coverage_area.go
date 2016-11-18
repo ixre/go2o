@@ -9,7 +9,7 @@
 package delivery
 
 type ICoverageArea interface {
-	GetDomainId() int64
+	GetDomainId() int32
 
 	GetValue() CoverageValue
 
@@ -23,5 +23,5 @@ type ICoverageArea interface {
 	// 返回是否可以配送，以及距离(米)
 	CanDeliverTo(address string) (bool, int)
 
-	Save() (int64, error)
+	Save() (int32, error)
 }

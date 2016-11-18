@@ -42,7 +42,7 @@ func (ss *shopService) GetMerchantId(shopId int) int {
 }
 
 // 获取商铺
-func (s *shopService) GetOnlineShop(mchId int64) *shop.ShopDto {
+func (s *shopService) GetOnlineShop(mchId int32) *shop.ShopDto {
 	mch := s._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
@@ -54,7 +54,7 @@ func (s *shopService) GetOnlineShop(mchId int64) *shop.ShopDto {
 }
 
 // 根据主机查询商户编号
-func (ss *shopService) GetShopIdByHost(host string) (mchId int64, shopId int) {
+func (ss *shopService) GetShopIdByHost(host string) (mchId int32, shopId int) {
 	return ss._query.QueryShopIdByHost(host)
 }
 
@@ -132,7 +132,7 @@ func (ss *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error 
 	return merchant.ErrNoSuchMerchant
 }
 
-func (ss *shopService) SaveShop(mchId int64, v *shop.Shop) (int, error) {
+func (ss *shopService) SaveShop(mchId int32, v *shop.Shop) (int, error) {
 	mch := ss._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		var shop shop.IShop

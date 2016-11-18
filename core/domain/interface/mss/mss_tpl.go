@@ -11,9 +11,9 @@ package mss
 // 邮件模版
 type MailTemplate struct {
 	// 编号
-	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	Id int32 `db:"id" pk:"yes" auto:"yes"`
 	// 商户编号
-	MerchantId int64 `db:"merchant_id"`
+	MerchantId int32 `db:"merchant_id"`
 	// 名称
 	Name string `db:"name"`
 	// 主题
@@ -32,11 +32,11 @@ type MailTemplate struct {
 
 type MailTask struct {
 	// 编号
-	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	Id int32 `db:"id" pk:"yes" auto:"yes"`
 	// 任务编号,无任务为0
-	TaskId int64 `db:"task_id"`
+	TaskId int32 `db:"task_id"`
 	// 商户编号
-	MerchantId int64 `db:"merchant_id"`
+	MerchantId int32 `db:"merchant_id"`
 	// 发送至
 	SendTo string `db:"send_to"`
 	// 主题

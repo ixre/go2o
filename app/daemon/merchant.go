@@ -44,7 +44,7 @@ func orderDaemon(app gof.App) {
 	}
 }
 
-func autoSetOrder(mchId int64) {
+func autoSetOrder(mchId int32) {
 	f := func(err error) {
 		appCtx.Log().Error(err)
 	}
@@ -112,7 +112,7 @@ func generateMchDayChart(start, end int64) {
 	}
 }
 
-func genDayChartForMch(wg *sync.WaitGroup, mchId int64, dateStr string, start int64, end int64) {
+func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start int64, end int64) {
 	defer wg.Done()
 	c := &merchant.MchDayChart{
 		MchId:   mchId,

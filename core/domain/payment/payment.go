@@ -38,7 +38,7 @@ type paymentOrderImpl struct {
 	buyer              member.IMember
 }
 
-func (p *paymentOrderImpl) GetAggregateRootId() int64 {
+func (p *paymentOrderImpl) GetAggregateRootId() int32 {
 	return p.value.Id
 }
 
@@ -295,7 +295,7 @@ func (p *paymentOrderImpl) SetPaymentSign(paymentSign int) error {
 }
 
 // 绑定订单号,如果交易号为空则绑定参数中传递的交易号
-func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
+func (p *paymentOrderImpl) BindOrder(orderId int32, tradeNo string) error {
 	//todo: check order exists  and tradeNo exists
 	p.value.OrderId = orderId
 	if len(p.value.TradeNo) == 0 {
@@ -305,7 +305,7 @@ func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
 }
 
 // 提交支付订单
-func (p *paymentOrderImpl) Commit() (int64, error) {
+func (p *paymentOrderImpl) Commit() (int32, error) {
 	if id := p.GetAggregateRootId(); id > 0 {
 		return id, payment.ErrOrderCommitted
 	}
@@ -315,7 +315,7 @@ func (p *paymentOrderImpl) Commit() (int64, error) {
 	return p.save()
 }
 
-func (p *paymentOrderImpl) save() (int64, error) {
+func (p *paymentOrderImpl) save() (int32, error) {
 	_, err := p.checkPaymentOk()
 	if err == nil {
 		unix := time.Now().Unix()

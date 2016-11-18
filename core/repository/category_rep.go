@@ -44,12 +44,12 @@ func (c *categoryRep) GetGlobManager() sale.ICategoryManager {
 	return c._globCateManager
 }
 
-func (c *categoryRep) getCategoryCacheKey(id int64) string {
+func (c *categoryRep) getCategoryCacheKey(id int32) string {
 	return fmt.Sprintf("go2o:rep:cat:c:%d", id)
 }
 
-func (c *categoryRep) SaveCategory(v *sale.Category) (int64, error) {
-	id, err := orm.Save(c.GetOrm(), v, v.Id)
+func (c *categoryRep) SaveCategory(v *sale.Category) (int32, error) {
+	id, err := orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
@@ -59,7 +59,7 @@ func (c *categoryRep) SaveCategory(v *sale.Category) (int64, error) {
 }
 
 // 检查分类是否关联商品
-func (c *categoryRep) CheckGoodsContain(mchId, id int64) bool {
+func (c *categoryRep) CheckGoodsContain(mchId, id int32) bool {
 	num := 0
 	//清理项
 	c.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
@@ -67,7 +67,7 @@ func (c *categoryRep) CheckGoodsContain(mchId, id int64) bool {
 	return num > 0
 }
 
-func (c *categoryRep) DeleteCategory(mchId, id int64) error {
+func (c *categoryRep) DeleteCategory(mchId, id int32) error {
 	//删除子类
 	_, _, err := c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
 		mchId, id)
@@ -85,7 +85,7 @@ func (c *categoryRep) DeleteCategory(mchId, id int64) error {
 	return err
 }
 
-func (c *categoryRep) GetCategory(mchId, id int64) *sale.Category {
+func (c *categoryRep) GetCategory(mchId, id int32) *sale.Category {
 	e := sale.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
@@ -112,7 +112,7 @@ func (c *categoryRep) convertICategory(list sale.CategoryList) []sale.ICategory 
 	return slice
 }
 
-func (c *categoryRep) redirectGetCats(mchId int64) []*sale.Category {
+func (c *categoryRep) redirectGetCats(mchId int32) []*sale.Category {
 	list := []*sale.Category{}
 	err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
 	if err != nil {
@@ -121,7 +121,7 @@ func (c *categoryRep) redirectGetCats(mchId int64) []*sale.Category {
 	return list
 }
 
-func (c *categoryRep) GetCategories(mchId int64) []*sale.Category {
+func (c *categoryRep) GetCategories(mchId int32) []*sale.Category {
 	return c.redirectGetCats(mchId)
 	//todo: cache
 	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)

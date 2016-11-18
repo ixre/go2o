@@ -147,28 +147,28 @@ const (
 type (
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int64
+		GetDomainId() int32
 
 		// 获取账户值
 		GetValue() *Account
 
 		// 保存
-		Save() (int64, error)
+		Save() (int32, error)
 
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
 
 		// 根据编号获取余额变动信息
-		GetBalanceInfo(id int64) *BalanceInfo
+		GetBalanceInfo(id int32) *BalanceInfo
 
 		// 根据号码获取余额变动信息
 		// GetBalanceInfoByNo(no string) *BalanceInfo
 
 		// 保存余额变动信息
-		SaveBalanceInfo(*BalanceInfo) (int64, error)
+		SaveBalanceInfo(*BalanceInfo) (int32, error)
 
 		// 获取赠送账户日志
-		GetPresentLog(id int64) *PresentLog
+		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
 		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int64) error
@@ -220,26 +220,26 @@ type (
 		RequestBackBalance(backType int, title string, amount float32) error
 
 		// 完成退款
-		FinishBackBalance(id int64, tradeNo string) error
+		FinishBackBalance(id int32, tradeNo string) error
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestTakeOut(applyType int, title string, amount float32, commission float32) (int64, string, error)
+		RequestTakeOut(applyType int, title string, amount float32, commission float32) (int32, string, error)
 
 		// 确认提现
-		ConfirmTakeOut(id int64, pass bool, remark string) error
+		ConfirmTakeOut(id int32, pass bool, remark string) error
 
 		// 完成提现
-		FinishTakeOut(id int64, tradeNo string) error
+		FinishTakeOut(id int32, tradeNo string) error
 
 		// 将冻结金额标记为失效
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccounts(accountKind int, toMember int64, amount float32,
+		TransferAccounts(accountKind int, toMember int32, amount float32,
 			csnRate float32, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
+		ReceiveTransfer(accountKind int, fromMember int32, tradeNo string,
 			amount float32, remark string) error
 
 		// 转账余额到其他账户
@@ -256,14 +256,14 @@ type (
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int64, kind int, amount float32, commission float32,
+		TransferFlowTo(memberId int32, kind int, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
 	// 余额变动信息
 	BalanceInfo struct {
-		Id       int64  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int64  `db:"member_id"`
+		Id       int32  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int32  `db:"member_id"`
 		TradeNo  string `db:"trade_no"`
 		Kind     int    `db:"kind"`
 		Type     int    `db:"type"`
@@ -273,7 +273,7 @@ type (
 		// 手续费
 		CsnAmount float32 `db:"csn_amount"`
 		// 引用编号
-		RefId      int64 `db:"ref_id"`
+		RefId      int32 `db:"ref_id"`
 		State      int   `db:"state"`
 		CreateTime int64 `db:"create_time"`
 		UpdateTime int64 `db:"update_time"`
@@ -282,7 +282,7 @@ type (
 	// 账户值对象
 	Account struct {
 		// 会员编号
-		MemberId int64 `db:"member_id" pk:"yes" json:"memberId"`
+		MemberId int32 `db:"member_id" pk:"yes" json:"memberId"`
 		// 积分
 		Integral int `db:"integral"`
 		// 不可用积分
@@ -326,9 +326,9 @@ type (
 	// 积分记录
 	IntegralLog struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 		// 类型
 		Type int `db:"type"`
 		// 关联的编号
@@ -343,8 +343,8 @@ type (
 
 	// 余额日志
 	BalanceLog struct {
-		Id       int64  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int64  `db:"member_id"`
+		Id       int32  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int32  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
 		BusinessKind int `db:"kind"`
@@ -368,9 +368,9 @@ type (
 
 	// 赠送账户日志
 	PresentLog struct {
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型

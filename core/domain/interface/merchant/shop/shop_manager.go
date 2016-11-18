@@ -24,12 +24,12 @@ type (
 		GetOnlineShop() IShop
 
 		// 获取商店
-		GetShop(id int64) IShop
+		GetShop(id int32) IShop
 
 		// 根据名称获取商店
 		GetShopByName(name string) IShop
 
 		// 删除门店
-		DeleteShop(shopId int64) error
+		DeleteShop(shopId int32) error
 	}
 )

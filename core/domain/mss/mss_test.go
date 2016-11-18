@@ -49,7 +49,7 @@ func (this *MssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (this *MssRep) GetConfig(userId int64) *mss.Config {
+func (this *MssRep) GetConfig(userId int32) *mss.Config {
 	return nil
 }
 
@@ -83,12 +83,12 @@ func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
+func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return v.Id, nil
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(mchId int64) []*mss.MailTemplate {
+func (this *MssRep) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 
@@ -103,7 +103,7 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (this *MssRep) SaveMessage(v *mss.Message) (int64, error) {
+func (this *MssRep) SaveMessage(v *mss.Message) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -116,19 +116,19 @@ func (this *MssRep) SaveMessage(v *mss.Message) (int64, error) {
 }
 
 // 获取消息
-func (this *MssRep) GetMessage(id int64) *mss.Message {
+func (this *MssRep) GetMessage(id int32) *mss.Message {
 	//todo:
 	msg := mss.Message{}
 	return &msg
 }
 
 // 保存用户消息关联
-func (this *MssRep) SaveUserMsg(v *mss.To) (int64, error) {
-	return orm.Save(this._conn.GetOrm(), v, v.Id)
+func (this *MssRep) SaveUserMsg(v *mss.To) (int32, error) {
+	return orm.I32(orm.Save(this._conn.GetOrm(), v, v.Id))
 }
 
 // 保存消息内容
-func (this *MssRep) SaveMsgContent(v *mss.Content) (int64, error) {
+func (this *MssRep) SaveMsgContent(v *mss.Content) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)

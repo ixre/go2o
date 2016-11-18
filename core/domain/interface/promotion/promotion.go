@@ -33,7 +33,7 @@ var (
 // 促销聚合根
 type IPromotion interface {
 	// 获取聚合根编号
-	GetAggregateRootId() int64
+	GetAggregateRootId() int32
 
 	// 获取值
 	GetValue() *PromotionInfo
@@ -54,7 +54,7 @@ type IPromotion interface {
 	TypeName() string
 
 	// 保存
-	Save() (int64, error)
+	Save() (int32, error)
 
 	// 获取优惠券
 	//GetCoupon(id int) ICouponPromotion
@@ -65,10 +65,10 @@ type IPromotion interface {
 
 type PromotionInfo struct {
 	// 促销编号
-	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	Id int32 `db:"id" pk:"yes" auto:"yes"`
 
 	// 商户编号
-	MerchantId int64 `db:"mch_id"`
+	MerchantId int32 `db:"mch_id"`
 
 	// 促销简称
 	ShortName string `db:"short_name"`
@@ -80,7 +80,7 @@ type PromotionInfo struct {
 	TypeFlag int `db:"type_flag"`
 
 	// 商品编号(为0则应用订单)
-	GoodsId int64 `db:"goods_id"`
+	GoodsId int32 `db:"goods_id"`
 
 	// 是否启用
 	Enabled int `db:"enabled"`

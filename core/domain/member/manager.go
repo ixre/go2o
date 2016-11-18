@@ -57,8 +57,8 @@ func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitat
 	return nil
 }
 
-func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, error) {
-	var invitationId int = 0
+func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int32, error) {
+	var invitationId int32
 	if len(invitationCode) > 0 {
 		//判断邀请码是否正确
 		invitationId = m.rep.GetMemberIdByInvitationCode(invitationCode)
@@ -70,7 +70,7 @@ func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int, err
 }
 
 // 检查手机绑定,同时检查手机格式
-func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
+func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int32) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
@@ -82,7 +82,7 @@ func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 
 // 检查注册信息是否正确
 func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
-	pro *member.Profile, invitationCode string) (invitationId int, err error) {
+	pro *member.Profile, invitationCode string) (invitationId int32, err error) {
 	perm := m.valRep.GetRegisterPerm()
 	conf := m.valRep.GetRegistry()
 
@@ -232,7 +232,7 @@ func (l *levelManagerImpl) GetLevelSet() []*member.Level {
 }
 
 // 获取等级
-func (l *levelManagerImpl) GetLevelById(id int64) *member.Level {
+func (l *levelManagerImpl) GetLevelById(id int32) *member.Level {
 	if id == 0 {
 		return nil
 	}
@@ -259,7 +259,7 @@ func (l *levelManagerImpl) GetLevelByProgramSign(sign string) *member.Level {
 }
 
 // 获取下一个等级
-func (l *levelManagerImpl) GetNextLevelById(id int64) *member.Level {
+func (l *levelManagerImpl) GetNextLevelById(id int32) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
@@ -277,7 +277,7 @@ func (l *levelManagerImpl) GetNextLevelById(id int64) *member.Level {
 }
 
 // 删除等级
-func (l *levelManagerImpl) DeleteLevel(id int64) error {
+func (l *levelManagerImpl) DeleteLevel(id int32) error {
 	lv := l.GetLevelById(id)
 	if lv != nil {
 		// 获取等级对应的会员数, 如果 > 0不允许删除
@@ -291,7 +291,7 @@ func (l *levelManagerImpl) DeleteLevel(id int64) error {
 }
 
 // 保存等级
-func (l *levelManagerImpl) SaveLevel(v *member.Level) (int64, error) {
+func (l *levelManagerImpl) SaveLevel(v *member.Level) (int32, error) {
 	v.ProgramSignal = strings.TrimSpace(v.ProgramSignal)
 	if !l.checkProgramSignal(v.ProgramSignal, v.Id) {
 		return -1, member.ErrExistsSameProgramSignalLevel
@@ -304,7 +304,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int64, error) {
 }
 
 // 判断等级与等级可编程签名是否一致
-func (l *levelManagerImpl) checkProgramSignal(sign string, id int64) bool {
+func (l *levelManagerImpl) checkProgramSignal(sign string, id int32) bool {
 	if sign != "" {
 		for _, v := range l.GetLevelSet() {
 			if v.ProgramSignal == sign {
@@ -346,7 +346,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 
 // 检查保存等级区间经验值
 func (l *levelManagerImpl) checkBetweenRequireExp(arr []*member.Level,
-	i int, la int, exp int64) error {
+	i int, la int, exp int32) error {
 	// 如果小于前一个等级
 	if i > 0 && arr[i-1].RequireExp > exp {
 		return member.ErrLessThanLevelRequireExp
@@ -375,8 +375,8 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 }
 
 // 获取最大的等级值
-func (l *levelManagerImpl) getMaxLevelId() int64 {
-	var k int64
+func (l *levelManagerImpl) getMaxLevelId() int32 {
+	var k int32
 	for _, v := range l.GetLevelSet() {
 		if v.Id > k {
 			k = v.Id
@@ -386,9 +386,9 @@ func (l *levelManagerImpl) getMaxLevelId() int64 {
 }
 
 // 根据经验值获取等级
-func (l *levelManagerImpl) GetLevelIdByExp(exp int64) int64 {
+func (l *levelManagerImpl) GetLevelIdByExp(exp int32) int32 {
 	var lv *member.Level
-	var levelVal int64
+	var levelVal int32
 	arr := l.GetLevelSet()
 	for i := len(arr); i > 0; i-- {
 		lv = arr[i-1]

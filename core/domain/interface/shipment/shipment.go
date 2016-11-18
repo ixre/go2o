@@ -30,11 +30,11 @@ var (
 type (
 	IShipmentOrder interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int64
+		GetAggregateRootId() int32
 		// 获取值
 		Value() ShipmentOrder
 		// 发货
-		Ship(spId int64, spOrderNo string) error
+		Ship(spId int32, spOrderNo string) error
 		// 发货完成
 		Completed() error
 		// 更新快递记录
@@ -46,28 +46,28 @@ type (
 		CreateShipmentOrder(o *ShipmentOrder) IShipmentOrder
 
 		// 获取发货单
-		GetShipmentOrder(id int64) IShipmentOrder
+		GetShipmentOrder(id int32) IShipmentOrder
 
 		// 获取订单对应的发货单
-		GetOrders(orderId int64) []IShipmentOrder
+		GetOrders(orderId int32) []IShipmentOrder
 
 		// 保存发货单
-		SaveShipmentOrder(o *ShipmentOrder) (int64, error)
+		SaveShipmentOrder(o *ShipmentOrder) (int32, error)
 
 		// 保存发货商品项
-		SaveShipmentItem(v *Item) (int64, error)
+		SaveShipmentItem(v *Item) (int32, error)
 
 		// 删除发货单
-		DeleteShipmentOrder(id int64) error
+		DeleteShipmentOrder(id int32) error
 	}
 
 	ShipmentOrder struct {
 		//  发货单编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
-		OrderId int64 `db:"order_id"`
+		OrderId int32 `db:"order_id"`
 		// 快递服务商编号
-		SpId int64 `db:"sp_id"`
+		SpId int32 `db:"sp_id"`
 		// 快递单号
 		SpOrderNo string `db:"sp_order"`
 		// 物流日志
@@ -87,11 +87,11 @@ type (
 	}
 
 	Item struct {
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 发货单编号
-		OrderId int64 `db:"ship_order"`
+		OrderId int32 `db:"ship_order"`
 		// 商品销售快照编号
-		GoodsSnapId int64 `db:"snap_id"`
+		GoodsSnapId int32 `db:"snap_id"`
 		// 数量
 		Quantity int `db:"quantity"`
 		// 商品金额

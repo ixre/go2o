@@ -47,18 +47,18 @@ func (g *GalleryAd) GetEnabledAdValue() ad.ValueGallery {
 }
 
 // 保存广告图片
-func (g *GalleryAd) SaveImage(v *ad.Image) (int64, error) {
+func (g *GalleryAd) SaveImage(v *ad.Image) (int32, error) {
 	v.AdId = g.GetDomainId()
 	return g._rep.SaveAdImageValue(v)
 }
 
 // 获取图片项
-func (g *GalleryAd) GetImage(id int64) *ad.Image {
+func (g *GalleryAd) GetImage(id int32) *ad.Image {
 	return g._rep.GetValueAdImage(g.GetDomainId(), id)
 }
 
 // 删除图片项
-func (g *GalleryAd) DelImage(id int64) error {
+func (g *GalleryAd) DelImage(id int32) error {
 	return g._rep.DelAdImage(g.GetDomainId(), id)
 }
 

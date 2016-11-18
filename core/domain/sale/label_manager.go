@@ -17,11 +17,11 @@ var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
 	rep   sale.ISaleLabelRep
-	mchId int64
+	mchId int32
 	value *sale.Label
 }
 
-func NewSaleLabel(mchId int64, value *sale.Label,
+func NewSaleLabel(mchId int32, value *sale.Label,
 	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
 		rep:   rep,
@@ -30,7 +30,7 @@ func NewSaleLabel(mchId int64, value *sale.Label,
 	}
 }
 
-func (l *saleLabelImpl) GetDomainId() int64 {
+func (l *saleLabelImpl) GetDomainId() int32 {
 	if l.value != nil {
 		return l.value.Id
 	}
@@ -63,7 +63,7 @@ func (l *saleLabelImpl) SetValue(v *sale.Label) error {
 	return nil
 }
 
-func (l *saleLabelImpl) Save() (int64, error) {
+func (l *saleLabelImpl) Save() (int32, error) {
 	l.value.MerchantId = l.mchId
 	return l.rep.SaveSaleLabel(l.mchId, l.value)
 }
@@ -99,10 +99,10 @@ var _ sale.ILabelManager = new(labelManagerImpl)
 type labelManagerImpl struct {
 	_rep    sale.ISaleLabelRep
 	_valRep valueobject.IValueRep
-	_mchId  int64
+	_mchId  int32
 }
 
-func NewLabelManager(mchId int64, rep sale.ISaleLabelRep,
+func NewLabelManager(mchId int32, rep sale.ISaleLabelRep,
 	valRep valueobject.IValueRep) sale.ILabelManager {
 	c := &labelManagerImpl{
 		_rep:    rep,
@@ -173,7 +173,7 @@ func (l *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
 }
 
 // 获取销售标签
-func (l *labelManagerImpl) GetSaleLabel(id int64) sale.ISaleLabel {
+func (l *labelManagerImpl) GetSaleLabel(id int32) sale.ISaleLabel {
 	return l._rep.GetSaleLabel(l._mchId, id)
 }
 
@@ -193,7 +193,7 @@ func (l *labelManagerImpl) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 }
 
 // 删除销售标签
-func (l *labelManagerImpl) DeleteSaleLabel(id int64) error {
+func (l *labelManagerImpl) DeleteSaleLabel(id int32) error {
 	v := l.GetSaleLabel(id)
 	if v != nil {
 		if v.System() {

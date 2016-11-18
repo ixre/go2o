@@ -32,7 +32,7 @@ func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
 }
 
 // 获取领域编号
-func (c *categoryImpl) GetDomainId() int64 {
+func (c *categoryImpl) GetDomainId() int32 {
 	return c.value.Id
 }
 
@@ -57,7 +57,7 @@ func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
 }
 
 // 保存
-func (c *categoryImpl) Save() (int64, error) {
+func (c *categoryImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
 	id, err := c.contentRep.SaveCategory(c.value)
 	if err == nil {
@@ -87,7 +87,7 @@ func NewArticle(v *content.Article, m content.IArticleManager,
 }
 
 // 获取领域编号
-func (a *articleImpl) GetDomainId() int64 {
+func (a *articleImpl) GetDomainId() int32 {
 	return a._value.Id
 }
 
@@ -112,7 +112,7 @@ func (a *articleImpl) Category() content.ICategory {
 }
 
 // 保存文章
-func (a *articleImpl) Save() (int64, error) {
+func (a *articleImpl) Save() (int32, error) {
 	if a.Category() == nil {
 		return a.GetDomainId(), content.NotSetCategory
 	}
@@ -131,15 +131,15 @@ var _ content.IArticleManager = new(articleManagerImpl)
 type articleManagerImpl struct {
 	_rep         content.IContentRep
 	_categories  []content.ICategory
-	_categoryMap map[int64]content.ICategory
-	_userId      int64
+	_categoryMap map[int32]content.ICategory
+	_userId      int32
 }
 
-func newArticleManagerImpl(userId int64, rep content.IContentRep) content.IArticleManager {
+func newArticleManagerImpl(userId int32, rep content.IContentRep) content.IArticleManager {
 	return &articleManagerImpl{
 		_rep:         rep,
 		_userId:      userId,
-		_categoryMap: map[int64]content.ICategory{},
+		_categoryMap: map[int32]content.ICategory{},
 	}
 }
 
@@ -156,7 +156,7 @@ func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
 		}
 
 		a._categories = make([]content.ICategory, l)
-		a._categoryMap = make(map[int64]content.ICategory)
+		a._categoryMap = make(map[int32]content.ICategory)
 		for i, v := range list {
 			a._categories[i] = NewCategory(v, a, a._rep)
 			a._categoryMap[v.Id] = a._categories[i]
@@ -188,7 +188,7 @@ func (a *articleManagerImpl) initSystemCategory() {
 
 	// 因为保存会清除categoryMap 和categories
 	catList := make([]content.ICategory, len(list))
-	catMap := make(map[int64]content.ICategory)
+	catMap := make(map[int32]content.ICategory)
 
 	for i, v := range list {
 		c := NewCategory(v, a, a._rep)
@@ -204,7 +204,7 @@ func (a *articleManagerImpl) initSystemCategory() {
 }
 
 // 获取栏目
-func (a *articleManagerImpl) GetCategory(id int64) content.ICategory {
+func (a *articleManagerImpl) GetCategory(id int32) content.ICategory {
 	a.GetAllCategory()
 	return a._categoryMap[id]
 }
@@ -227,7 +227,7 @@ func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory 
 }
 
 // 删除栏目
-func (a *articleManagerImpl) DelCategory(id int64) error {
+func (a *articleManagerImpl) DelCategory(id int32) error {
 	c := a.GetCategory(id)
 	if c != nil {
 		if c.ArticleNum() > 0 {
@@ -250,7 +250,7 @@ func (a *articleManagerImpl) CreateArticle(v *content.Article) content.IArticle 
 }
 
 // 获取文章
-func (a *articleManagerImpl) GetArticle(id int64) content.IArticle {
+func (a *articleManagerImpl) GetArticle(id int32) content.IArticle {
 	v := a._rep.GetArticleById(id)
 	if v != nil {
 		return NewArticle(v, a, a._rep)
@@ -259,12 +259,12 @@ func (a *articleManagerImpl) GetArticle(id int64) content.IArticle {
 }
 
 // 获取文章列表
-func (a *articleManagerImpl) GetArticleList(categoryId int64,
+func (a *articleManagerImpl) GetArticleList(categoryId int32,
 	begin, end int) []*content.Article {
 	return a._rep.GetArticleList(categoryId, begin, end)
 }
 
 // 删除文章
-func (a *articleManagerImpl) DeleteArticle(id int64) error {
+func (a *articleManagerImpl) DeleteArticle(id int32) error {
 	return a._rep.DeleteArticle(id)
 }

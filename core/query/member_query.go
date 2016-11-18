@@ -126,7 +126,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int64, kind int) *member.BalanceInfo {
+func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int32, kind int) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
 	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {
@@ -185,7 +185,7 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 }
 
 // 会员推广排名
-func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp string, level int,
+func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
 	var id int
@@ -238,7 +238,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int64, allTeam bool, levelComp str
 }
 
 // 查询有邀请关系的会员数量
-func (m *MemberQuery) GetReferNum(memberId int64, layer int) int {
+func (m *MemberQuery) GetReferNum(memberId int32, layer int) int {
 	total := 0
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
 	where := "refer_str LIKE '%" + keyword +
@@ -251,7 +251,7 @@ func (m *MemberQuery) GetReferNum(memberId int64, layer int) int {
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
+func (m *MemberQuery) PagedShopFav(memberId int32, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {
 	d := m.Connector
 	if len(where) > 0 {
@@ -288,7 +288,7 @@ func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
+func (m *MemberQuery) PagedGoodsFav(memberId int32, begin, end int,
 	where string) (num int, rows []*dto.PagedGoodsFav) {
 	d := m.Connector
 	if len(where) > 0 {

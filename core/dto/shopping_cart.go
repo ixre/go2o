@@ -10,9 +10,9 @@
 package dto
 
 type ShoppingCart struct {
-	Id         int64  `json:"-"`
+	Id         int32  `json:"-"`
 	CartKey    string `json:"key"`
-	BuyerId    int64  `json:"buyer"`
+	BuyerId    int32  `json:"buyer"`
 	Summary    string `json:"summary"`
 	UpdateTime int64  `json:"update_time"`
 	//Items      []*CartItem `json:"items"`
@@ -24,9 +24,9 @@ type ShoppingCart struct {
 }
 
 type CartVendorGroup struct {
-	VendorId   int64       `json:"vendorId"`
+	VendorId   int32       `json:"vendorId"`
 	VendorName string      `json:"vendorName"`
-	ShopId     int64       `json:"shopId"`
+	ShopId     int32       `json:"shopId"`
 	ShopName   string      `json:"shopName"`
 	Items      []*CartItem `json:"items"`
 	//结算商品项数目
@@ -34,7 +34,7 @@ type CartVendorGroup struct {
 }
 
 type CartItem struct {
-	GoodsId    int64   `json:"skuId"`
+	GoodsId    int32   `json:"skuId"`
 	GoodsName  string  `json:"name"`
 	GoodsNo    string  `json:"no"`
 	SmallTitle string  `json:"title"`

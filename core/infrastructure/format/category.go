@@ -22,7 +22,7 @@ func IdArrJoinStr(ids []int) string {
 	return strings.Join(strIds, ",")
 }
 
-func IdArrJoinStr64(ids []int64) string {
+func IdArrJoinStr32(ids []int32) string {
 	var strIds []string = make([]string, len(ids))
 	for i, v := range ids {
 		strIds[i] = strconv.Itoa(int(v))

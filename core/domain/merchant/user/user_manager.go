@@ -15,11 +15,11 @@ import (
 var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
-	mchId int64
+	mchId int32
 	rep   user.IUserRep
 }
 
-func NewUserManager(mchId int64, rep user.IUserRep) user.IUserManager {
+func NewUserManager(mchId int32, rep user.IUserRep) user.IUserManager {
 	return &UserManager{
 		mchId: mchId,
 		rep:   rep,
@@ -27,7 +27,7 @@ func NewUserManager(mchId int64, rep user.IUserRep) user.IUserManager {
 }
 
 // 获取单个用户
-func (u *UserManager) GetUser(id int64) user.IUser {
+func (u *UserManager) GetUser(id int32) user.IUser {
 	v := u.rep.GetPersonValue(id)
 	if v != nil {
 		return newUser(v, u.rep)

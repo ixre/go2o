@@ -34,75 +34,75 @@ type (
 	// 商品仓储
 	IGoodsRep interface {
 		// 获取商品
-		GetValueGoods(itemId int64, skuId int64) *ValueGoods
+		GetValueGoods(itemId int32, skuId int32) *ValueGoods
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
-		GetGoodsBySKuId(skuId int64) interface{}
+		GetGoodsBySKuId(skuId int32) interface{}
 
 		// 获取商品
-		GetValueGoodsById(goodsId int64) *ValueGoods
+		GetValueGoodsById(goodsId int32) *ValueGoods
 
 		// 根据SKU获取商品
-		GetValueGoodsBySku(itemId, sku int64) *ValueGoods
+		GetValueGoodsBySku(itemId, sku int32) *ValueGoods
 
 		// 保存商品
-		SaveValueGoods(*ValueGoods) (int64, error)
+		SaveValueGoods(*ValueGoods) (int32, error)
 
 		// 获取在货架上的商品
-		GetOnShelvesGoods(mchId int64, start, end int,
+		GetOnShelvesGoods(mchId int32, start, end int,
 			sortBy string) []*valueobject.Goods
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesGoods(mchId int64, catIds []int64, start, end int,
+		GetPagedOnShelvesGoods(mchId int32, catIds []int64, start, end int,
 			where, orderBy string) (total int, goods []*valueobject.Goods)
 
 		// 根据编号获取商品
-		GetGoodsByIds(ids ...int64) ([]*valueobject.Goods, error)
+		GetGoodsByIds(ids ...int32) ([]*valueobject.Goods, error)
 
 		// 获取会员价
-		GetGoodsLevelPrice(goodsId int64) []*MemberPrice
+		GetGoodsLevelPrice(goodsId int32) []*MemberPrice
 
 		// 保存会员价
-		SaveGoodsLevelPrice(*MemberPrice) (int64, error)
+		SaveGoodsLevelPrice(*MemberPrice) (int32, error)
 
 		// 移除会员价
-		RemoveGoodsLevelPrice(id int64) error
+		RemoveGoodsLevelPrice(id int32) error
 
 		// 保存快照
-		SaveSnapshot(*Snapshot) (int64, error)
+		SaveSnapshot(*Snapshot) (int32, error)
 
 		// 根据指定商品快照
-		GetSnapshots(skuIdArr []int64) []Snapshot
+		GetSnapshots(skuIdArr []int32) []Snapshot
 
 		// 获取最新的商品快照
-		GetLatestSnapshot(skuId int64) *Snapshot
+		GetLatestSnapshot(skuId int32) *Snapshot
 
 		// 获取指定的商品快照
-		GetSaleSnapshot(id int64) *SalesSnapshot
+		GetSaleSnapshot(id int32) *SalesSnapshot
 
 		// 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
 		// 获取最新的商品销售快照
-		GetLatestSaleSnapshot(skuId int64) *SalesSnapshot
+		GetLatestSaleSnapshot(skuId int32) *SalesSnapshot
 
 		// 保存商品销售快照
-		SaveSaleSnapshot(*SalesSnapshot) (int64, error)
+		SaveSaleSnapshot(*SalesSnapshot) (int32, error)
 	}
 
 	// 商品
 	ValueGoods struct {
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 
 		// 货品编号
-		ItemId int64 `db:"item_id"`
+		ItemId int32 `db:"item_id"`
 
 		// 是否为赠品
 		IsPresent int `db:"is_present"`
 
 		// 规格
-		SkuId int64 `db:"sku_id"`
+		SkuId int32 `db:"sku_id"`
 
 		// 促销标志
 		PromotionFlag int `db:"prom_flag"`
@@ -125,9 +125,9 @@ type (
 
 	// 会员价
 	MemberPrice struct {
-		Id      int64   `db:"id" pk:"yes" auto:"yes"`
-		GoodsId int64   `db:"goods_id"`
-		Level   int64   `db:"level"`
+		Id      int32   `db:"id" pk:"yes" auto:"yes"`
+		GoodsId int32   `db:"goods_id"`
+		Level   int32   `db:"level"`
 		Price   float32 `db:"price"`
 		// 限购数量
 		MaxQuota int `db:"max_quota"`

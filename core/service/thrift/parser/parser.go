@@ -38,7 +38,7 @@ func Member(src *member.Member) *define.Member {
 
 func MemberProfile(src *member.Profile) *define.Profile {
 	return &define.Profile{
-		MemberId:   int64(src.MemberId),
+		MemberId:   src.MemberId,
 		Name:       src.Name,
 		Avatar:     src.Avatar,
 		Sex:        src.Sex,

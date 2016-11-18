@@ -9,10 +9,10 @@
 package delivery
 
 type MerchantDeliverBind struct {
-	Id           int64 `db:"id" auto:"yes" pk:"yes"`
-	MerchantId   int64 `db:"merchant_id"`
-	CoverageId   int64 `db:"coverage_id"`
-	ShopId       int64 `db:"shop_id"`
-	DeliverUsrId int64 `db:"delivery_usr_id"`
+	Id           int32 `db:"id" auto:"yes" pk:"yes"`
+	MerchantId   int32 `db:"merchant_id"`
+	CoverageId   int32 `db:"coverage_id"`
+	ShopId       int32 `db:"shop_id"`
+	DeliverUsrId int32 `db:"delivery_usr_id"`
 	Enabled      int   `db:"enabled"`
 }

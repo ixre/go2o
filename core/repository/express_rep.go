@@ -33,25 +33,25 @@ func NewExpressRep(conn db.Connector, valRep valueobject.IValueRep) express.IExp
 }
 
 // 获取所有快递公司
-func (this *expressRep) GetExpressProviders() []*express.ExpressProvider {
+func (er *expressRep) GetExpressProviders() []*express.ExpressProvider {
 	mux.Lock()
-	if this.ProvidersCache == nil {
-		this.ProvidersCache = []*express.ExpressProvider{}
-		err := this.GetOrm().Select(&this.ProvidersCache, "")
+	if er.ProvidersCache == nil {
+		er.ProvidersCache = []*express.ExpressProvider{}
+		err := er.GetOrm().Select(&er.ProvidersCache, "")
 		if err != nil {
 			panic(err)
 		}
-		if len(this.ProvidersCache) == 0 {
-			this.ProvidersCache = this.SaveDefaultExpressProviders(this)
+		if len(er.ProvidersCache) == 0 {
+			er.ProvidersCache = er.SaveDefaultExpressProviders(er)
 		}
 	}
 	mux.Unlock()
-	return this.ProvidersCache
+	return er.ProvidersCache
 }
 
 // 获取快递公司
-func (this *expressRep) GetExpressProvider(id int64) *express.ExpressProvider {
-	for _, v := range this.GetExpressProviders() {
+func (er *expressRep) GetExpressProvider(id int32) *express.ExpressProvider {
+	for _, v := range er.GetExpressProviders() {
 		if v.Id == id {
 			return v
 		}
@@ -60,50 +60,50 @@ func (this *expressRep) GetExpressProvider(id int64) *express.ExpressProvider {
 }
 
 // 保存快递公司
-func (this *expressRep) SaveExpressProvider(v *express.ExpressProvider) (int64, error) {
-	this.ProvidersCache = nil
-	return orm.Save(this.GetOrm(), v, v.Id)
+func (er *expressRep) SaveExpressProvider(v *express.ExpressProvider) (int32, error) {
+	er.ProvidersCache = nil
+	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
 }
 
 // 获取用户的快递
-func (this *expressRep) GetUserExpress(userId int64) express.IUserExpress {
-	return expImpl.NewUserExpress(userId, this, this._valRep)
+func (er *expressRep) GetUserExpress(userId int32) express.IUserExpress {
+	return expImpl.NewUserExpress(userId, er, er._valRep)
 }
 
 // 获取用户的快递模板
-func (this *expressRep) GetUserAllTemplate(userId int64) []*express.ExpressTemplate {
+func (er *expressRep) GetUserAllTemplate(userId int32) []*express.ExpressTemplate {
 	list := []*express.ExpressTemplate{}
-	this.GetOrm().Select(&list, "user_id=?", userId)
+	er.GetOrm().Select(&list, "user_id=?", userId)
 	return list
 }
 
 // 删除快递模板
-func (this *expressRep) DeleteExpressTemplate(userId int64, templateId int64) error {
-	_, err := this.GetOrm().Delete(express.ExpressTemplate{},
+func (er *expressRep) DeleteExpressTemplate(userId int32, templateId int32) error {
+	_, err := er.GetOrm().Delete(express.ExpressTemplate{},
 		"id=? AND user_id=?", templateId, userId)
 	return err
 }
 
 // 保存快递模板
-func (this *expressRep) SaveExpressTemplate(v *express.ExpressTemplate) (int64, error) {
-	return orm.Save(this.GetOrm(), v, v.Id)
+func (er *expressRep) SaveExpressTemplate(v *express.ExpressTemplate) (int32, error) {
+	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
 }
 
 // 获取模板的所有地区设置
-func (this *expressRep) GetExpressTemplateAllAreaSet(templateId int64) []express.ExpressAreaTemplate {
+func (er *expressRep) GetExpressTemplateAllAreaSet(templateId int32) []express.ExpressAreaTemplate {
 	list := []express.ExpressAreaTemplate{}
-	this.GetOrm().Select(&list, "template_id=?", templateId)
+	er.GetOrm().Select(&list, "template_id=?", templateId)
 	return list
 }
 
 // 保存模板的地区设置
-func (this *expressRep) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate) (int64, error) {
-	return orm.Save(this.GetOrm(), v, v.Id)
+func (er *expressRep) SaveExpressTemplateAreaSet(v *express.ExpressAreaTemplate) (int32, error) {
+	return orm.I32(orm.Save(er.GetOrm(), v, int(v.Id)))
 }
 
 // 删除模板的地区设置
-func (this *expressRep) DeleteAreaExpressTemplate(templateId int64, areaSetId int64) error {
-	_, err := this.Connector.GetOrm().Delete(express.ExpressAreaTemplate{},
+func (er *expressRep) DeleteAreaExpressTemplate(templateId int32, areaSetId int32) error {
+	_, err := er.Connector.GetOrm().Delete(express.ExpressAreaTemplate{},
 		"id= ? AND template_id=?", areaSetId, templateId)
 	return err
 }

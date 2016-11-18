@@ -59,7 +59,7 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 }
 
 // 获取聚合根编号
-func (m *memberImpl) GetAggregateRootId() int64 {
+func (m *memberImpl) GetAggregateRootId() int32 {
 	return m.value.Id
 }
 
@@ -206,7 +206,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 }
 
 // 增加经验值
-func (m *memberImpl) AddExp(exp int64) error {
+func (m *memberImpl) AddExp(exp int32) error {
 	m.value.Exp += exp
 	_, err := m.Save()
 	//判断是否升级
@@ -261,7 +261,7 @@ func (m *memberImpl) checkLevelUp() bool {
 }
 
 // 更改会员等级
-func (m *memberImpl) ChangeLevel(level int64, paymentId int64, review bool) error {
+func (m *memberImpl) ChangeLevel(level int32, paymentId int32, review bool) error {
 	lg := m.manager.LevelManager()
 	lv := lg.GetLevelById(level)
 	// 判断等级是否启用
@@ -298,7 +298,7 @@ func (m *memberImpl) ChangeLevel(level int64, paymentId int64, review bool) erro
 }
 
 // 审核升级请求
-func (m *memberImpl) ReviewLevelUp(id int64, pass bool) error {
+func (m *memberImpl) ReviewLevelUp(id int32, pass bool) error {
 	l := m.rep.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.Reviewed == enum.ReviewPass {
@@ -335,7 +335,7 @@ func (m *memberImpl) ReviewLevelUp(id int64, pass bool) error {
 }
 
 // 标记已经处理升级
-func (m *memberImpl) ConfirmLevelUp(id int64) error {
+func (m *memberImpl) ConfirmLevelUp(id int32) error {
 	l := m.rep.GetLevelUpLog(id)
 	if l != nil && l.MemberId == m.GetAggregateRootId() {
 		if l.Reviewed == enum.ReviewConfirm {
@@ -397,7 +397,7 @@ func (m *memberImpl) UpdateLoginTime() error {
 }
 
 // 保存
-func (m *memberImpl) Save() (int64, error) {
+func (m *memberImpl) Save() (int32, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
 		return m.rep.SaveMember(m.value)
@@ -420,7 +420,7 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
+func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error) {
 	if err := validUsr(m.value.Usr); err != nil {
 		return 0, err
 	}
@@ -474,9 +474,9 @@ func (m *memberImpl) usrIsExist(usr string) bool {
 }
 
 // 获取推荐数组
-func (m *memberImpl) getReferArr(memberId int64, level int) []int64 {
-	arr := make([]int64, level)
-	i := 0
+func (m *memberImpl) getReferArr(memberId int32, level int32) []int32 {
+	arr := make([]int32, level)
+	var i int32
 	referId := memberId
 	for i <= level-1 {
 		rl := m.rep.GetRelation(referId)
@@ -498,8 +498,8 @@ func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
 		return
 	}
 	level := m.valRep.GetRegistry().MemberReferLayer - 1
-	arr := m.getReferArr(r.RefereesId, level)
-	arr = append([]int64{r.RefereesId}, arr...)
+	arr := m.getReferArr(r.RefereesId, int32(level))
+	arr = append([]int32{r.RefereesId}, arr...)
 
 	if len(arr) > 0 {
 		// 有邀请关系
@@ -530,7 +530,7 @@ func (m *memberImpl) updateReferStr(r *member.Relation) {
 }
 
 // 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int64) error {
+func (m *memberImpl) ChangeReferees(memberId int32) error {
 	if memberId > 0 {
 		rm := m.rep.GetMember(memberId)
 		if rm == nil {
@@ -552,11 +552,11 @@ var _ member.IFavoriteManager = new(favoriteManagerImpl)
 
 // 收藏服务
 type favoriteManagerImpl struct {
-	_memberId int64
+	_memberId int32
 	_rep      member.IMemberRep
 }
 
-func newFavoriteManagerImpl(memberId int64,
+func newFavoriteManagerImpl(memberId int32,
 	rep member.IMemberRep) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
@@ -569,7 +569,7 @@ func newFavoriteManagerImpl(memberId int64,
 }
 
 // 收藏
-func (m *favoriteManagerImpl) Favorite(favType int, referId int64) error {
+func (m *favoriteManagerImpl) Favorite(favType int, referId int32) error {
 	if m.Favored(favType, referId) {
 		return member.ErrFavored
 	}
@@ -577,11 +577,11 @@ func (m *favoriteManagerImpl) Favorite(favType int, referId int64) error {
 }
 
 // 是否已收藏
-func (m *favoriteManagerImpl) Favored(favType int, referId int64) bool {
+func (m *favoriteManagerImpl) Favored(favType int, referId int32) bool {
 	return m._rep.Favored(m._memberId, favType, referId)
 }
 
 // 取消收藏
-func (m *favoriteManagerImpl) Cancel(favType int, referId int64) error {
+func (m *favoriteManagerImpl) Cancel(favType int, referId int32) error {
 	return m._rep.CancelFavorite(m._memberId, favType, referId)
 }

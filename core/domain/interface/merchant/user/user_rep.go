@@ -10,17 +10,17 @@ package user
 
 type IUserRep interface {
 	// 保存角色
-	SaveRole(*RoleValue) (int64, error)
+	SaveRole(*RoleValue) (int32, error)
 
 	// 保存人员
-	SavePerson(*PersonValue) (int64, error)
+	SavePerson(*PersonValue) (int32, error)
 
 	// 保存凭据
-	SaveCredential(*CredentialValue) (int64, error)
+	SaveCredential(*CredentialValue) (int32, error)
 
 	// 获取人员
-	GetPersonValue(id int64) *PersonValue
+	GetPersonValue(id int32) *PersonValue
 
 	// 获取配送人员
-	GetDeliveryStaffPersons(mchId int64) []*PersonValue
+	GetDeliveryStaffPersons(mchId int32) []*PersonValue
 }

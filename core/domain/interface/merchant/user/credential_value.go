@@ -10,7 +10,7 @@ package user
 
 // 用户凭据
 type CredentialValue struct {
-	Id       int64  `db:"id" auto:"yes" pk:"yes"`
+	Id       int32  `db:"id" auto:"yes" pk:"yes"`
 	Usr      string `db:"usr"`
 	Pwd      string `db:"pwd"`
 	PersonId int    `db:"person_id"`

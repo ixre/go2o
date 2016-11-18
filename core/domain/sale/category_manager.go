@@ -29,7 +29,7 @@ type categoryImpl struct {
 	value           *sale.Category
 	rep             sale.ICategoryRep
 	parentIdChanged bool
-	childIdArr      []int64
+	childIdArr      []int32
 	opt             domain.IOptionStore
 }
 
@@ -40,7 +40,7 @@ func NewCategory(rep sale.ICategoryRep, v *sale.Category) sale.ICategory {
 	}
 }
 
-func (c *categoryImpl) GetDomainId() int64 {
+func (c *categoryImpl) GetDomainId() int32 {
 	return c.value.Id
 }
 
@@ -74,7 +74,7 @@ func (c *categoryImpl) GetOption() domain.IOptionStore {
 }
 
 // 检查上级分类是否正确
-func (c *categoryImpl) checkParent(parentId int64) error {
+func (c *categoryImpl) checkParent(parentId int32) error {
 	if id := c.GetDomainId(); id > 0 && parentId > 0 {
 		//检查上级栏目是否存在
 		p := c.rep.GetGlobManager().GetCategory(parentId)
@@ -116,11 +116,11 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 }
 
 // 获取子栏目的编号
-func (c *categoryImpl) GetChildes() []int64 {
+func (c *categoryImpl) GetChildes() []int32 {
 	if c.childIdArr == nil {
 		childCats := c.GetChildCategories(
 			c.value.MerchantId, c.GetDomainId())
-		c.childIdArr = make([]int64, len(childCats))
+		c.childIdArr = make([]int32, len(childCats))
 		for i, v := range childCats {
 			c.childIdArr[i] = v.Id
 		}
@@ -134,7 +134,7 @@ func (c *categoryImpl) setCategoryLevel() {
 }
 
 func (c *categoryImpl) parentWalk(list []*sale.Category,
-	parentId int64, level *int) {
+	parentId int32, level *int) {
 	*level += 1
 	if parentId <= 0 {
 		return
@@ -151,7 +151,7 @@ func (c *categoryImpl) parentWalk(list []*sale.Category,
 	}
 }
 
-func (c *categoryImpl) Save() (int64, error) {
+func (c *categoryImpl) Save() (int32, error) {
 	//if c._manager.ReadOnly() {
 	//    return c.GetDomainId(), sale.ErrReadonlyCategory
 	//}
@@ -170,7 +170,7 @@ func (c *categoryImpl) Save() (int64, error) {
 }
 
 // 获取子栏目
-func (c *categoryImpl) GetChildCategories(mchId, categoryId int64) []*sale.Category {
+func (c *categoryImpl) GetChildCategories(mchId, categoryId int32) []*sale.Category {
 	var all []*sale.Category = c.rep.GetCategories(mchId)
 	var newArr []*sale.Category = []*sale.Category{}
 
@@ -195,11 +195,11 @@ func (c *categoryImpl) GetChildCategories(mchId, categoryId int64) []*sale.Categ
 }
 
 // 获取与栏目相关的栏目
-func (c *categoryImpl) GetRelationCategories(mchId, categoryId int64) []*sale.Category {
+func (c *categoryImpl) GetRelationCategories(mchId, categoryId int32) []*sale.Category {
 	var all []*sale.Category = c.rep.GetCategories(mchId)
 	var newArr []*sale.Category = []*sale.Category{}
 	var isMatch bool
-	var pid int64
+	var pid int32
 	var l int = len(all)
 
 	for i := 0; i < l; i++ {
@@ -222,7 +222,7 @@ func (c *categoryImpl) GetRelationCategories(mchId, categoryId int64) []*sale.Ca
 	return newArr
 }
 
-func (c *categoryImpl) getAutomaticUrl(mchId, id int64) string {
+func (c *categoryImpl) getAutomaticUrl(mchId, id int32) string {
 	relCats := c.GetRelationCategories(mchId, id)
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCats)
@@ -262,12 +262,12 @@ type categoryManagerImpl struct {
 	_readonly      bool
 	_rep           sale.ICategoryRep
 	_valRep        valueobject.IValueRep
-	_mchId         int64
+	_mchId         int32
 	lastUpdateTime int64
 	_categories    []sale.ICategory
 }
 
-func NewCategoryManager(mchId int64, rep sale.ICategoryRep,
+func NewCategoryManager(mchId int32, rep sale.ICategoryRep,
 	valRep valueobject.IValueRep) sale.ICategoryManager {
 	c := &categoryManagerImpl{
 		_rep:    rep,
@@ -287,7 +287,7 @@ func (c *categoryManagerImpl) init() sale.ICategoryManager {
 }
 
 // 获取栏目关联的编号,系统用0表示
-func (c *categoryManagerImpl) getRelationId() int64 {
+func (c *categoryManagerImpl) getRelationId() int32 {
 	return c._mchId
 }
 
@@ -312,7 +312,7 @@ func (c *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
 }
 
 // 获取分类
-func (c *categoryManagerImpl) GetCategory(id int64) sale.ICategory {
+func (c *categoryManagerImpl) GetCategory(id int32) sale.ICategory {
 	v := c._rep.GetCategory(c.getRelationId(), id)
 	if v != nil {
 		return c.CreateCategory(v)
@@ -332,7 +332,7 @@ func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
 }
 
 // 删除分类
-func (c *categoryManagerImpl) DeleteCategory(id int64) error {
+func (c *categoryManagerImpl) DeleteCategory(id int32) error {
 	cat := c.GetCategory(id)
 	if cat == nil {
 		return sale.ErrNoSuchCategory

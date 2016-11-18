@@ -28,7 +28,7 @@ type CashBackPromotion struct {
 }
 
 // 获取领域编号
-func (c *CashBackPromotion) GetDomainId() int64 {
+func (c *CashBackPromotion) GetDomainId() int32 {
 	return c.cashBackValue.Id
 }
 
@@ -80,7 +80,7 @@ func (c *CashBackPromotion) GetDataTag() map[string]string {
 }
 
 // 保存
-func (c *CashBackPromotion) Save() (int64, error) {
+func (c *CashBackPromotion) Save() (int32, error) {
 
 	if c.GetRelationValue() == nil {
 		return c.GetAggregateRootId(), promotion.ErrCanNotApplied
