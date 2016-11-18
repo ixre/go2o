@@ -34,7 +34,7 @@ func (c *contentRep) GetContent(userId int64) content.IContent {
 }
 
 // 根据编号获取页面
-func (c *contentRep) GetPageById(mchId, id int) *content.Page {
+func (c *contentRep) GetPageById(mchId, id int64) *content.Page {
 	var e content.Page
 	if err := c.Connector.GetOrm().Get(id, &e); err == nil && e.UserId == mchId {
 		return &e
@@ -86,7 +86,7 @@ func (c *contentRep) CategoryExists(indent string, id int64) bool {
 }
 
 // 保存栏目
-func (c *contentRep) SaveCategory(v *content.ArticleCategory) (id int, err error) {
+func (c *contentRep) SaveCategory(v *content.ArticleCategory) (int64, error) {
 	return orm.Save(c.GetOrm(), v, v.Id)
 }
 
@@ -113,7 +113,7 @@ func (c *contentRep) GetArticleList(categoryId int64, begin int, end int) []*con
 }
 
 // 保存文章
-func (c *contentRep) SaveArticle(v *content.Article) (i int, err error) {
+func (c *contentRep) SaveArticle(v *content.Article) (int64, error) {
 	return orm.Save(c.GetOrm(), v, v.Id)
 }
 

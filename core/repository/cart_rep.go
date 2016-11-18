@@ -34,39 +34,39 @@ func NewCartRep(conn db.Connector, memberRep member.IMemberRep,
 }
 
 // 创建购物车对象
-func (this *cartRep) CreateCart(v *cart.ValueCart) cart.ICart {
-	return cartImpl.CreateCart(v, this, this._memberRep, this._goodsRep)
+func (c *cartRep) CreateCart(v *cart.ValueCart) cart.ICart {
+	return cartImpl.CreateCart(v, c, c._memberRep, c._goodsRep)
 }
 
 // 创建一个购物车
-func (this *cartRep) NewCart() cart.ICart {
-	return cartImpl.NewCart(-1, this, this._memberRep, this._goodsRep)
+func (c *cartRep) NewCart() cart.ICart {
+	return cartImpl.NewCart(-1, c, c._memberRep, c._goodsRep)
 }
 
 // 获取购物车
-func (this *cartRep) GetShoppingCartByKey(key string) cart.ICart {
-	c := this.GetShoppingCart(key)
+func (c *cartRep) GetShoppingCartByKey(key string) cart.ICart {
+	c := c.GetShoppingCart(key)
 	if c != nil {
-		return this.CreateCart(c)
+		return c.CreateCart(c)
 	}
 	return nil
 }
 
 // 获取会员没有结算的购物车
-func (this *cartRep) GetMemberCurrentCart(buyerId int64) cart.ICart {
-	c := this.GetLatestCart(buyerId)
+func (c *cartRep) GetMemberCurrentCart(buyerId int64) cart.ICart {
+	c := c.GetLatestCart(buyerId)
 	if c != nil {
-		return this.CreateCart(c)
+		return c.CreateCart(c)
 	}
 	return nil
 }
 
 // 获取购物车
-func (this *cartRep) GetShoppingCart(key string) *cart.ValueCart {
+func (c *cartRep) GetShoppingCart(key string) *cart.ValueCart {
 	var v = &cart.ValueCart{}
-	if this.Connector.GetOrm().GetBy(v, "cart_key=?", key) == nil {
+	if c.Connector.GetOrm().GetBy(v, "cart_key=?", key) == nil {
 		items := []*cart.CartItem{}
-		this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
+		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
 		return v
 	}
@@ -74,11 +74,11 @@ func (this *cartRep) GetShoppingCart(key string) *cart.ValueCart {
 }
 
 // 获取最新的购物车
-func (this *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
+func (c *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
 	var v = &cart.ValueCart{}
-	if this.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
+	if c.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
 		var items = []*cart.CartItem{}
-		this.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
+		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
 		return v
 	}
@@ -86,44 +86,44 @@ func (this *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
 }
 
 // 保存购物车
-func (this *cartRep) SaveShoppingCart(v *cart.ValueCart) (int, error) {
+func (c *cartRep) SaveShoppingCart(v *cart.ValueCart) (int64, error) {
 	var err error
-	_orm := this.Connector.GetOrm()
+	_orm := c.Connector.GetOrm()
 	if v.Id > 0 {
 		_, _, err = _orm.Save(v.Id, v)
 	} else {
 		_, _, err = _orm.Save(nil, v)
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart`, &v.Id)
+		c.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart`, &v.Id)
 	}
 	return v.Id, err
 }
 
 // 移出购物车项
-func (this *cartRep) RemoveCartItem(id int64) error {
-	return this.Connector.GetOrm().DeleteByPk(cart.CartItem{}, id)
+func (c *cartRep) RemoveCartItem(id int64) error {
+	return c.Connector.GetOrm().DeleteByPk(cart.CartItem{}, id)
 }
 
 // 保存购物车项
-func (this *cartRep) SaveCartItem(v *cart.CartItem) (int64, error) {
-	_orm := this.Connector.GetOrm()
+func (c *cartRep) SaveCartItem(v *cart.CartItem) (int64, error) {
+	_orm := c.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {
 		_, _, err = _orm.Save(v.Id, v)
 	} else {
 		_, _, err = _orm.Save(nil, v)
-		this.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart_item where cart_id=?`, &v.Id, v.CartId)
+		c.Connector.ExecScalar(`SELECT MAX(id) FROM sale_cart_item where cart_id=?`, &v.Id, v.CartId)
 	}
 
 	return v.Id, err
 }
 
 // 清空购物车项
-func (this *cartRep) EmptyCartItems(cartId int64) error {
-	_, err := this.Connector.GetOrm().Delete(cart.CartItem{}, "cart_id=?", id)
+func (c *cartRep) EmptyCartItems(cartId int64) error {
+	_, err := c.Connector.GetOrm().Delete(cart.CartItem{}, "cart_id=?", cartId)
 	return err
 }
 
 // 删除购物车
-func (this *cartRep) DeleteCart(cartId int64) error {
-	return this.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, id)
+func (c *cartRep) DeleteCart(cartId int64) error {
+	return c.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, cartId)
 }

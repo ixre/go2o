@@ -55,7 +55,7 @@ func (s *saleRep) init() sale.ISaleRep {
 	return s
 }
 
-func (s *saleRep) GetSale(mchId int) sale.ISale {
+func (s *saleRep) GetSale(mchId int64) sale.ISale {
 	v, ok := s._cache[mchId]
 	if !ok {
 		v = saleImpl.NewSale(mchId, s, s._valRep, s._cateRep,

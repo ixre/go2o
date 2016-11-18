@@ -130,10 +130,10 @@ type (
 
 		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
 		// 支付单的交易号,可能是与订单号一样的
-		BindOrder(orderId int, tradeNo string) error
+		BindOrder(orderId int64, tradeNo string) error
 
 		// 保存
-		Commit() (int, error)
+		Commit() (int64, error)
 
 		// 支付完成并保存,传入第三名支付名称,以及外部的交易号
 		PaymentFinish(spName string, outerNo string) error
@@ -150,19 +150,19 @@ type (
 
 	IPaymentRep interface {
 		// 根据编号获取支付单
-		GetPaymentOrder(id int) IPaymentOrder
+		GetPaymentOrder(id int64) IPaymentOrder
 
 		// 根据支付单号获取支付单
 		GetPaymentOrderByNo(paymentNo string) IPaymentOrder
 
 		// 根据订单号获取支付单
-		GetPaymentBySalesOrderId(orderId int) IPaymentOrder
+		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
 
 		// 创建支付单
 		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder
 
 		// 保存支付单
-		SavePaymentOrder(v *PaymentOrder) (int, error)
+		SavePaymentOrder(v *PaymentOrder) (int64, error)
 
 		// 通知支付单完成
 		//NotifyPaymentFinish(paymentOrderId int) error
@@ -171,21 +171,21 @@ type (
 	// 支付单实体
 	PaymentOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 支付单号
 		TradeNo string `db:"trade_no"`
 		// 运营商编号，0表示无
-		VendorId int `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		// 支付单类型,如果购物或其他
 		Type int `db:"order_type"`
 		// 订单编号,0表示无
-		OrderId int `db:"order_id"`
+		OrderId int64 `db:"order_id"`
 		// 支付单主题
 		Subject string `db:"subject"`
 		// 购买用户
-		BuyUser int `db:"buy_user"`
+		BuyUser int64 `db:"buy_user"`
 		// 支付用户
-		PaymentUser int `db:"payment_user"`
+		PaymentUser int64 `db:"payment_user"`
 		// 支付单金额
 		TotalFee float32 `db:"total_fee"`
 		// 余额抵扣

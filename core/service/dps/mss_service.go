@@ -30,7 +30,7 @@ func (m *mssService) GetMailTemplate(id int64) *mss.MailTemplate {
 }
 
 // 保存邮件模板
-func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
 	return m._rep.GetProvider().SaveMailTemplate(v)
 }
 

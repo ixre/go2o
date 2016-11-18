@@ -84,7 +84,7 @@ type (
 		GetMailTemplate(id int64) *MailTemplate
 
 		// 保存邮箱模版
-		SaveMailTemplate(*MailTemplate) (int, error)
+		SaveMailTemplate(*MailTemplate) (int64, error)
 
 		// 获取所有的邮箱模版
 		GetMailTemplates() []*MailTemplate
@@ -113,7 +113,7 @@ type (
 		GetMailTemplate(userId, id int64) *MailTemplate
 
 		// 保存邮箱模版
-		SaveMailTemplate(*MailTemplate) (int, error)
+		SaveMailTemplate(*MailTemplate) (int64, error)
 
 		// 获取所有的邮箱模版
 		GetMailTemplates(userId int64) []*MailTemplate

@@ -95,7 +95,7 @@ func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 }
 
 // 设置要退回货物信息
-func (a *afterSalesOrderImpl) SetItem(snapshotId int, quantity int) error {
+func (a *afterSalesOrderImpl) SetItem(snapshotId int64, quantity int) error {
 	for _, v := range a.GetOrder().Items() {
 		if v.SnapshotId == snapshotId {
 			// 判断是否超过数量
@@ -112,7 +112,7 @@ func (a *afterSalesOrderImpl) SetItem(snapshotId int, quantity int) error {
 }
 
 // 提交售后申请
-func (a *afterSalesOrderImpl) Submit() (int, error) {
+func (a *afterSalesOrderImpl) Submit() (int64, error) {
 	if a.GetDomainId() > 0 {
 		panic(errors.New("售后单已提交"))
 	}

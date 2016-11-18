@@ -23,7 +23,7 @@ type cartImpl struct {
 	summary   string
 	shop      shop.IShop
 	deliver   member.IDeliverAddress
-	snapMap   map[int]*goods.Snapshot
+	snapMap   map[int64]*goods.Snapshot
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRep,
@@ -37,7 +37,7 @@ func CreateCart(val *cart.ValueCart, rep cart.ICartRep,
 }
 
 // 创建新的购物车
-func NewCart(buyerId int, rep cart.ICartRep, memberRep member.IMemberRep,
+func NewCart(buyerId int64, rep cart.ICartRep, memberRep member.IMemberRep,
 	goodsRep goods.IGoodsRep) cart.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
@@ -86,13 +86,13 @@ func (c *cartImpl) Check() error {
 }
 
 // 获取商品的快招列表
-func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int]*goods.Snapshot {
+func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int64]*goods.Snapshot {
 	if c.snapMap == nil {
 		if items != nil {
 			l := len(items)
-			c.snapMap = make(map[int]*goods.Snapshot, l)
+			c.snapMap = make(map[int64]*goods.Snapshot, l)
 			if l > 0 {
-				var ids []int = make([]int, l)
+				var ids []int64 = make([]int64, l)
 				for i, v := range items {
 					ids[i] = v.SkuId
 				}
@@ -183,7 +183,7 @@ func (c *cartImpl) Items() map[int64]*cart.CartItem {
 }
 
 // 添加项
-func (c *cartImpl) AddItem(vendorId int, shopId int, skuId int,
+func (c *cartImpl) AddItem(vendorId, shopId, skuId int64,
 	num int, checked bool) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
@@ -240,7 +240,7 @@ func (c *cartImpl) AddItem(vendorId int, shopId int, skuId int,
 }
 
 // 移出项
-func (c *cartImpl) RemoveItem(goodsId, num int) error {
+func (c *cartImpl) RemoveItem(goodsId int64, num int) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -394,7 +394,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int64) error {
 	return c.setBuyerAddress(addressId)
 }
 
-func (c *cartImpl) setBuyerAddress(addressId int) error {
+func (c *cartImpl) setBuyerAddress(addressId int64) error {
 	c.value.DeliverId = addressId
 	_, err := c.Save()
 	return err

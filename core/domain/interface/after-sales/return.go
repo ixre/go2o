@@ -17,7 +17,7 @@ type (
 	// 退款单
 	ReturnOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"no"`
+		Id int64 `db:"id" pk:"yes" auto:"no"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 是否已退款

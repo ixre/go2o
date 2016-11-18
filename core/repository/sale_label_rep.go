@@ -59,7 +59,7 @@ func (t *saleLabelRep) GetSaleLabel(mchId int64, id int) sale.ISaleLabel {
 }
 
 // 保存销售标签
-func (t *saleLabelRep) SaveSaleLabel(mchId int, v *sale.Label) (int64, error) {
+func (t *saleLabelRep) SaveSaleLabel(mchId int64, v *sale.Label) (int64, error) {
 	v.MerchantId = mchId
 	return orm.Save(t.GetOrm(), v, v.Id)
 }

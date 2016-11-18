@@ -91,7 +91,7 @@ func (m *MemberRep) SaveProfile(v *member.Profile) error {
 }
 
 //收藏,typeId 为类型编号, referId为关联的ID
-func (m *MemberRep) Favorite(memberId int64, favType, referId int) error {
+func (m *MemberRep) Favorite(memberId int64, favType int, referId int64) error {
 	_, _, err := m.Connector.GetOrm().Save(nil, &member.Favorite{
 		MemberId:   memberId,
 		FavType:    favType,
@@ -111,7 +111,7 @@ func (m *MemberRep) Favored(memberId int64, favType int, referId int64) bool {
 }
 
 //取消收藏
-func (m *MemberRep) CancelFavorite(memberId int64, favType int, referId int) error {
+func (m *MemberRep) CancelFavorite(memberId int64, favType int, referId int64) error {
 	_, err := m.Connector.GetOrm().Delete(&member.Favorite{},
 		"member_id=? AND fav_type=? AND refer_id=?",
 		memberId, favType, referId)
@@ -191,7 +191,7 @@ func (m *MemberRep) GetMemberIdByPhone(phone string) int64 {
 }
 
 // 根据邮箱地址获取会员编号
-func (m *MemberRep) GetMemberIdByEmail(email string) int {
+func (m *MemberRep) GetMemberIdByEmail(email string) int64 {
 	id := -1
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
 	return id

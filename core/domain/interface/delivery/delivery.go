@@ -31,5 +31,5 @@ type IDelivery interface {
 	FindCoverageAreas(lng, lat float64) []ICoverageArea
 
 	// 获取配送信息
-	GetDeliveryInfo(coverageId int64) (shopId, deliverUsrId int, err error)
+	GetDeliveryInfo(coverageId int64) (shopId, deliverUsrId int64, err error)
 }

@@ -142,7 +142,7 @@ func (m *merchantService) Verify(usr, pwd string) (int, error) {
 }
 
 // 获取企业信息
-func (m *merchantService) GetReviewedEnterpriseInfo(mchId int) *merchant.EnterpriseInfo {
+func (m *merchantService) GetReviewedEnterpriseInfo(mchId int64) *merchant.EnterpriseInfo {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ProfileManager().GetReviewedEnterpriseInfo()
@@ -151,7 +151,7 @@ func (m *merchantService) GetReviewedEnterpriseInfo(mchId int) *merchant.Enterpr
 }
 
 // 获取企业信息,并返回是否为提交的信息
-func (m *merchantService) GetReviewingEnterpriseInfo(mchId int) (
+func (m *merchantService) GetReviewingEnterpriseInfo(mchId int64) (
 	e *merchant.EnterpriseInfo, isPost bool) {
 	mch := m._mchRep.GetMerchant(mchId)
 	mg := mch.ProfileManager()
@@ -171,7 +171,7 @@ func (m *merchantService) GetReviewingEnterpriseInfo(mchId int) (
 }
 
 // 保存企业信息
-func (m *merchantService) SaveEnterpriseInfo(mchId int,
+func (m *merchantService) SaveEnterpriseInfo(mchId int64,
 	e *merchant.EnterpriseInfo) (int64, error) {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
@@ -181,7 +181,7 @@ func (m *merchantService) SaveEnterpriseInfo(mchId int,
 }
 
 // 审核企业信息
-func (m *merchantService) ReviewEnterpriseInfo(mchId int, pass bool,
+func (m *merchantService) ReviewEnterpriseInfo(mchId int64, pass bool,
 	remark string) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
@@ -190,7 +190,7 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) GetMerchant(mchId int) *merchant.Merchant {
+func (m *merchantService) GetMerchant(mchId int64) *merchant.Merchant {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		v := mch.GetValue()
@@ -203,7 +203,7 @@ func (m *merchantService) GetAccount(mchId int64) *merchant.Account {
 	return m._mchRep.GetAccount(mchId)
 }
 
-func (m *merchantService) SaveMerchant(mchId int, v *merchant.Merchant) (int64, error) {
+func (m *merchantService) SaveMerchant(mchId int64, v *merchant.Merchant) (int64, error) {
 	var mch merchant.IMerchant
 	var err error
 	var isCreate bool
@@ -228,7 +228,7 @@ func (m *merchantService) SaveMerchant(mchId int, v *merchant.Merchant) (int64, 
 	return mchId, err
 }
 
-func (m *merchantService) initializeMerchant(mchId int) {
+func (m *merchantService) initializeMerchant(mchId int64) {
 
 	// 初始化会员默认等级
 	// m._mchRep.GetMerchant(mchId)
@@ -243,7 +243,7 @@ func (m *merchantService) initializeMerchant(mchId int) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(mchId int) error {
+func (m *merchantService) Stat(mchId int64) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.Stat()
@@ -252,7 +252,7 @@ func (m *merchantService) Stat(mchId int) error {
 }
 
 // 设置商户启用或停用
-func (m *merchantService) SetEnabled(mchId int, enabled bool) error {
+func (m *merchantService) SetEnabled(mchId int64, enabled bool) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch == nil {
 		return merchant.ErrNoSuchMerchant
@@ -274,7 +274,7 @@ func (m *merchantService) GetMerchantMajorHost(mchId int64) string {
 	return ""
 }
 
-func (m *merchantService) SaveSaleConf(mchId int, v *merchant.SaleConf) error {
+func (m *merchantService) SaveSaleConf(mchId int64, v *merchant.SaleConf) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ConfManager().SaveSaleConf(v)
@@ -282,7 +282,7 @@ func (m *merchantService) SaveSaleConf(mchId int, v *merchant.SaleConf) error {
 	return merchant.ErrNoSuchMerchant
 }
 
-func (m *merchantService) GetSaleConf(mchId int) *merchant.SaleConf {
+func (m *merchantService) GetSaleConf(mchId int64) *merchant.SaleConf {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		conf := mch.ConfManager().GetSaleConf()
@@ -291,7 +291,7 @@ func (m *merchantService) GetSaleConf(mchId int) *merchant.SaleConf {
 	return nil
 }
 
-func (m *merchantService) GetShopsOfMerchant(mchId int) []*shop.Shop {
+func (m *merchantService) GetShopsOfMerchant(mchId int64) []*shop.Shop {
 	mch := m._mchRep.GetMerchant(mchId)
 	shops := mch.ShopManager().GetShops()
 	sv := make([]*shop.Shop, len(shops))
@@ -303,7 +303,7 @@ func (m *merchantService) GetShopsOfMerchant(mchId int) []*shop.Shop {
 }
 
 // 获取商城
-func (m *merchantService) GetOnlineShops1(mchId int) []*shop.Shop {
+func (m *merchantService) GetOnlineShops1(mchId int64) []*shop.Shop {
 	mch := m._mchRep.GetMerchant(mchId)
 	shops := mch.ShopManager().GetShops()
 	sv := []*shop.Shop{}
@@ -317,7 +317,7 @@ func (m *merchantService) GetOnlineShops1(mchId int) []*shop.Shop {
 }
 
 // 获取线上店铺
-func (m *merchantService) GetOnlineShopOfVendor(mchId int) *shop.ShopDto {
+func (m *merchantService) GetOnlineShopOfVendor(mchId int64) *shop.ShopDto {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ShopManager().GetOnlineShop().Data()
@@ -326,7 +326,7 @@ func (m *merchantService) GetOnlineShopOfVendor(mchId int) *shop.ShopDto {
 }
 
 // 修改密码
-func (m *merchantService) ModifyPassword(mchId int, oldPwd, newPwd string) error {
+func (m *merchantService) ModifyPassword(mchId int64, oldPwd, newPwd string) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ProfileManager().ModifyPassword(newPwd, oldPwd)
@@ -339,7 +339,7 @@ func (m *merchantService) GetMerchantsId() []int64 {
 }
 
 // 保存API信息
-func (m *merchantService) SaveApiInfo(mchId int, d *merchant.ApiInfo) error {
+func (m *merchantService) SaveApiInfo(mchId int64, d *merchant.ApiInfo) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ApiManager().SaveApiInfo(d)
@@ -348,7 +348,7 @@ func (m *merchantService) SaveApiInfo(mchId int, d *merchant.ApiInfo) error {
 }
 
 // 获取API接口
-func (m *merchantService) GetApiInfo(mchId int) *merchant.ApiInfo {
+func (m *merchantService) GetApiInfo(mchId int64) *merchant.ApiInfo {
 	mch := m._mchRep.GetMerchant(mchId)
 	v := mch.ApiManager().GetApiInfo()
 	return &v
@@ -448,7 +448,7 @@ func (m *merchantService) PagedOrdersOfVendor(vendorId, begin, size int, paginat
 }
 
 // 提到会员账户
-func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
+func (m *merchantService) TakeToMemberAccount(mchId int64, amount float32) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		acc := mch.Account()
@@ -458,7 +458,7 @@ func (m *merchantService) TakeToMemberAccount(mchId int, amount float32) error {
 }
 
 // 提到会员账户
-func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error {
+func (m *merchantService) TakeToMemberAccount1(mchId int64, amount float32) error {
 	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		acc := mch.Account()
@@ -479,7 +479,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error 
 //}
 //
 ////修改当前账户信息
-//func (m *merchantService) TakeOutBankCard(mchId int, amount float32) error {
+//func (m *merchantService) TakeOutBankCard(mchId int64, amount float32) error {
 //	account := m.GetAccount(mchId)
 //	account.Balance = account.Balance - amount
 //	err := m._mchRep.UpdateAccount(account)
@@ -487,7 +487,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int, amount float32) error 
 //}
 //
 ////添加商户提取日志
-//func (m *merchantService) TakeOutBankCardLog(memberId int64, mchId int, amount float32) {
+//func (m *merchantService) TakeOutBankCardLog(memberId int64, mchId int64, amount float32) {
 //	o := &merchant.BalanceLog{
 //		MchId:      mchId,
 //		Kind:       100,

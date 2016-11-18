@@ -55,9 +55,9 @@ type orderImpl struct {
 	promRep         promotion.IPromotionRep
 	valRep          valueobject.IValueRep
 	// 运营商商品映射,用于整理购物车
-	vendorItemsMap map[int][]*order.OrderItem
+	vendorItemsMap map[int64][]*order.OrderItem
 	// 运营商与邮费的MAP
-	vendorExpressMap map[int]float32
+	vendorExpressMap map[int64]float32
 	// 是否为内部挂起
 	internalSuspend bool
 	subList         []order.ISubOrder
@@ -163,7 +163,7 @@ func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 		//mchId := o._cart.VendorId
 
 		//todo: 将购物车中的vendor均获取出来
-		mchId := -1
+		var mchId int64 = -1
 		var vp []*promotion.PromotionInfo = o.promRep.GetPromotionOfMerchantOrder(mchId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
@@ -189,12 +189,12 @@ func (o *orderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee floa
 }
 
 // 设置配送地址
-func (o *orderImpl) SetDeliver(deliverAddressId int) error {
-	return o.setAddress(deliverAddressId)
+func (o *orderImpl) SetDeliver(addressId int64) error {
+	return o.setAddress(addressId)
 }
 
 // 设置配送地址
-func (o *orderImpl) setAddress(addressId int) error {
+func (o *orderImpl) setAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoAddress
 	}
@@ -279,10 +279,10 @@ func (o *orderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 }
 
 // 更新订单金额,并返回运费
-func (o *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float32 {
+func (o *orderImpl) updateOrderFee(mp map[int64][]*order.OrderItem) map[int64]float32 {
 	o.value.GoodsAmount = 0
-	expCul := make(map[int]express.IExpressCalculator)
-	expressMap := make(map[int]float32)
+	expCul := make(map[int64]express.IExpressCalculator)
+	expressMap := make(map[int64]float32)
 	for k, v := range mp {
 		userExpress := o.expressRep.GetUserExpress(k)
 		expCul[k] = userExpress.CreateCalculator()
@@ -308,8 +308,8 @@ func (o *orderImpl) updateOrderFee(mp map[int][]*order.OrderItem) map[int]float3
 }
 
 // 根据运营商获取商品和运费信息,限未生成的订单
-func (o *orderImpl) GetByVendor() (items map[int][]*order.OrderItem,
-	expressFeeMap map[int]float32) {
+func (o *orderImpl) GetByVendor() (items map[int64][]*order.OrderItem,
+	expressFeeMap map[int64]float32) {
 	if o.vendorItemsMap == nil {
 		panic("订单尚未读取购物车!")
 	}
@@ -330,15 +330,15 @@ func (o *orderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int][]*order.OrderItem {
-	mp := make(map[int][]*order.OrderItem)
+func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int64][]*order.OrderItem {
+	mp := make(map[int64][]*order.OrderItem)
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
 			item := o.parseCartToOrderItem(v)
 			if item == nil {
 				domain.HandleError(errors.New("转换购物车商品到订单商品时出错: 商品SKU"+
-					strconv.Itoa(v.SkuId)), "domain")
+					strconv.Itoa(int(v.SkuId))), "domain")
 				continue
 			}
 			list, ok := mp[v.VendorId]
@@ -360,7 +360,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
-			strconv.Itoa(c.SkuId)), "domain")
+			strconv.Itoa(int(c.SkuId))), "domain")
 		return nil
 	}
 	fee := c.SalePrice * float32(c.Quantity)
@@ -470,7 +470,7 @@ func (o *orderImpl) avgDiscountToItem() {
 
 // 绑定促销优惠
 func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
-	prom promotion.IPromotion) (int, error) {
+	prom promotion.IPromotion) (int64, error) {
 	var title string
 	var integral int
 	var fee int
@@ -607,7 +607,7 @@ func (o *orderImpl) checkNewOrderPayment() {
 }
 
 // 保存订单
-func (o *orderImpl) saveNewOrderOnSubmit() (int, error) {
+func (o *orderImpl) saveNewOrderOnSubmit() (int64, error) {
 	unix := time.Now().Unix()
 	o.value.ItemsInfo = string(o.cart.GetJsonItems())
 	o.value.OrderNo = o.manager.GetFreeOrderNo(0)
@@ -641,8 +641,8 @@ func (o *orderImpl) Save() (int64, error) {
 }
 
 // 根据运营商生成子订单
-func (o *orderImpl) createSubOrderByVendor(parentOrderId int, buyerId int,
-	vendorId int, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
+func (o *orderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int64,
+	vendorId int64, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
 	orderNo := o.GetOrderNo()
 	if newOrderNo {
 		orderNo = o.manager.GetFreeOrderNo(vendorId)
@@ -849,32 +849,12 @@ func (o *orderImpl) Confirm() error {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(vendorId, skuId, quantity int) error {
+func (o *orderImpl) takeGoodsStock(vendorId, skuId int64, quantity int) error {
 	gds := o.saleRep.GetSale(vendorId).GoodsManager().GetGoods(skuId)
 	if gds == nil {
 		return goods.ErrNoSuchGoods
 	}
 	return gds.TakeStock(quantity)
-}
-
-// 配送订单
-func (o *orderImpl) Deliver(spId int, spNo string) error {
-	//todo: 记录快递配送信息
-	dt := time.Now()
-	o.value.State += 1
-	o.value.ShippingTime = dt.Unix()
-	o.value.UpdateTime = dt.Unix()
-
-	_, err := o.Save()
-	if err == nil {
-		err = o.AppendLog(&order.OrderLog{
-			Type:       int(order.LogSetup),
-			OrderState: order.StatShipped,
-			IsSystem:   0,
-			Message:    "",
-		})
-	}
-	return err
 }
 
 // 获取订单号
@@ -1040,7 +1020,7 @@ func (o *subOrderImpl) AddRemark(remark string) {
 }
 
 // 设置Shop
-func (o *subOrderImpl) SetShop(shopId int) error {
+func (o *subOrderImpl) SetShop(shopId int64) error {
 	//todo:验证Shop
 	o.value.ShopId = shopId
 	if o.value.State == enum.ORDER_WAIT_CONFIRM {
@@ -1408,7 +1388,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	// 增加经验
 	if registry.MemberExperienceEnabled {
 		rate := conf.ExperienceRateByOrder
-		if exp := int(amount * rate); exp > 0 {
+		if exp := int64(amount * rate); exp > 0 {
 			if err = m.AddExp(exp); err != nil {
 				return err
 			}
@@ -1448,7 +1428,7 @@ func (o *subOrderImpl) cancelGoods() error {
 			gds.FreeStock(v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
-				gds.CancelSale(snapshot.SkuId, o.value.OrderNo)
+				gds.CancelSale(v.Quantity, o.value.OrderNo)
 			}
 		}
 	}
@@ -1513,7 +1493,7 @@ func (o *subOrderImpl) Cancel(reason string) error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int, quantity int) error {
+func (o *subOrderImpl) Return(snapshotId int64, quantity int) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1528,7 +1508,7 @@ func (o *subOrderImpl) Return(snapshotId int, quantity int) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int, quantity int) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int64, quantity int) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {

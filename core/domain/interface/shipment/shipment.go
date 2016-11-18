@@ -46,10 +46,10 @@ type (
 		CreateShipmentOrder(o *ShipmentOrder) IShipmentOrder
 
 		// 获取发货单
-		GetShipmentOrder(id int) IShipmentOrder
+		GetShipmentOrder(id int64) IShipmentOrder
 
 		// 获取订单对应的发货单
-		GetOrders(orderId int) []IShipmentOrder
+		GetOrders(orderId int64) []IShipmentOrder
 
 		// 保存发货单
 		SaveShipmentOrder(o *ShipmentOrder) (int64, error)
@@ -58,7 +58,7 @@ type (
 		SaveShipmentItem(v *Item) (int64, error)
 
 		// 删除发货单
-		DeleteShipmentOrder(id int) error
+		DeleteShipmentOrder(id int64) error
 	}
 
 	ShipmentOrder struct {

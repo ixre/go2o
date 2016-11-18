@@ -306,7 +306,7 @@ func (vp *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 }
 
 // 获取下级区域
-func (vp *valueRep) GetChildAreas(id int) []*valueobject.Area {
+func (vp *valueRep) GetChildAreas(id int64) []*valueobject.Area {
 	vp._areaMux.Lock()
 	defer vp._areaMux.Unlock()
 	if vp._areaCache == nil {
@@ -324,7 +324,7 @@ func (vp *valueRep) GetChildAreas(id int) []*valueobject.Area {
 }
 
 // 获取地区名称
-func (vp *valueRep) GetAreaNames(id []int) []string {
+func (vp *valueRep) GetAreaNames(id []int64) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
 		strArr[i] = strconv.Itoa(v)

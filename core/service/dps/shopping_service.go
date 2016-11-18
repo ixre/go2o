@@ -150,7 +150,7 @@ func (s *shoppingService) AddCartItem(memberId int64, cartKey string,
 	return nil, err
 }
 func (s *shoppingService) SubCartItem(memberId int64,
-	cartKey string, goodsId, num int) error {
+	cartKey string, goodsId int64, num int) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {
@@ -292,7 +292,7 @@ func (s *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int) *order.Order {
+func (s *shoppingService) GetOrderById(id int64) *order.Order {
 	return s._rep.GetOrderById(id)
 }
 
@@ -319,7 +319,7 @@ func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int) *order.SubOrder {
+func (s *shoppingService) GetSubOrder(id int64) *order.SubOrder {
 	return s._rep.GetSubOrder(id)
 }
 
@@ -388,7 +388,7 @@ func (s *shoppingService) GetOrderLogString(id int) []byte {
 }
 
 // 根据父订单编号获取购买的商品项
-func (s *shoppingService) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
+func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
 	return s._manager.GetItemsByParentOrderId(orderId)
 }
 
@@ -420,12 +420,12 @@ func (s *shoppingService) BuyerReceived(subOrderId int) error {
 }
 
 // 根据商品快照获取订单项
-func (s *shoppingService) GetOrderItemBySnapshotId(orderId int, snapshotId int) *order.OrderItem {
+func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int64) *order.OrderItem {
 	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 
 // 根据商品快照获取订单项数据传输对象
-func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem {
+func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int64) *dto.OrderItem {
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }
 

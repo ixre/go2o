@@ -94,7 +94,7 @@ func (s *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
 }
 
 // 获取API信息
-func (s *shopRep) GetApiInfo(mchId int) *merchant.ApiInfo {
+func (s *shopRep) GetApiInfo(mchId int64) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	if err := s.GetOrm().Get(mchId, d); err == nil {
 		return d
@@ -122,15 +122,15 @@ func (s *shopRep) GetValueShop(mchId, shopId int64) *shop.Shop {
 	return nil
 }
 
-func (s *shopRep) delCache(mchId int) {
+func (s *shopRep) delCache(mchId int64) {
 	PrefixDel(s.storage, fmt.Sprintf("go2o:rep:shop:%d:*", mchId))
 }
 
-func (s *shopRep) getShopCacheKey(mchId int) string {
+func (s *shopRep) getShopCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:rep:shop:%d:shops", mchId)
 }
 
-func (s *shopRep) GetShopsOfMerchant(mchId int) []shop.Shop {
+func (s *shopRep) GetShopsOfMerchant(mchId int64) []shop.Shop {
 	shops := []shop.Shop{}
 	key := s.getShopCacheKey(mchId)
 	jsonStr, err := s.storage.GetString(key)

@@ -39,16 +39,16 @@ type (
 			balanceDiscount bool) (IOrder, payment.IPaymentOrder, error)
 
 		// 获取可用的订单号, 系统直营传入vendor为0
-		GetFreeOrderNo(vendor int) string
+		GetFreeOrderNo(vendor int64) string
 
 		// 根据订单编号获取订单
-		GetOrderById(orderId int) IOrder
+		GetOrderById(orderId int64) IOrder
 
 		// 根据订单号获取订单
 		GetOrderByNo(orderNo string) IOrder
 
 		// 在线交易支付
-		PaymentForOnlineTrade(orderId int) error
+		PaymentForOnlineTrade(orderId int64) error
 
 		// 自动设置订单
 		OrderAutoSetup(f func(error))
@@ -60,12 +60,12 @@ type (
 		SmartConfirmOrder(order IOrder) error
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*OrderItem
 
 		//*********  子订单  *********//
 
 		// 获取子订单
-		GetSubOrder(id int) ISubOrder
+		GetSubOrder(id int64) ISubOrder
 	}
 
 	IOrderRep interface {
@@ -73,7 +73,7 @@ type (
 		Manager() IOrderManager
 
 		// 保存订单,返回订单编号
-		SaveOrder(v *Order) (int, error)
+		SaveOrder(v *Order) (int64, error)
 
 		// 保存订单优惠券绑定
 		SaveOrderCouponBind(*OrderCoupon) error
@@ -82,54 +82,54 @@ type (
 		GetOrderPromotionBinds(orderNo string) []*OrderPromotionBind
 
 		// 保存订单的促销绑定
-		SavePromotionBindForOrder(*OrderPromotionBind) (int, error)
+		SavePromotionBindForOrder(*OrderPromotionBind) (int64, error)
 
 		// 获取可用的订单号, 系统直营传入vendor为0
-		GetFreeOrderNo(vendorId int) string
+		GetFreeOrderNo(vendorId int64) string
 
 		// 根据编号获取订单
-		GetOrderById(id int) *Order
+		GetOrderById(id int64) *Order
 
 		// 根据订单号获取订单
 		GetValueOrderByNo(orderNo string) *Order
 
 		// 获取等待处理的订单
-		GetWaitingSetupOrders(vendorId int) ([]*Order, error)
+		GetWaitingSetupOrders(vendorId int64) ([]*Order, error)
 
 		// 保存订单日志
 		SaveSubOrderLog(*OrderLog) error
 
 		// 获取订单的所有子订单
-		GetSubOrdersByParentId(orderId int) []*SubOrder
+		GetSubOrdersByParentId(orderId int64) []*SubOrder
 
 		// 获取订单编号
 		GetOrderId(orderNo string, subOrder bool) int
 
 		// 获取子订单
-		GetSubOrder(id int) *SubOrder
+		GetSubOrder(id int64) *SubOrder
 
 		// 根据订单号获取子订单
 		GetSubOrderByNo(orderNo string) *SubOrder
 
 		// 保存子订单
-		SaveSubOrder(value *SubOrder) (int, error)
+		SaveSubOrder(value *SubOrder) (int64, error)
 
 		// 保存子订单的商品项,并返回编号和错误
-		SaveOrderItem(subOrderId int, value *OrderItem) (int64, error)
+		SaveOrderItem(subOrderId int64, value *OrderItem) (int64, error)
 
 		// 获取订单项
-		GetSubOrderItems(orderId int) []*OrderItem
+		GetSubOrderItems(orderId int64) []*OrderItem
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*OrderItem
 
 		// 获取订单的操作记录
-		GetSubOrderLogs(orderId int) []*OrderLog
+		GetSubOrderLogs(orderId int64) []*OrderLog
 
 		// 根据商品快照获取订单项
-		GetOrderItemBySnapshotId(orderId int, snapshotId int) *OrderItem
+		GetOrderItemBySnapshotId(orderId int64, snapshotId int64) *OrderItem
 
 		// 根据商品快照获取订单项数据传输对象
-		GetOrderItemDtoBySnapshotId(orderId int, snapshotId int) *dto.OrderItem
+		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int64) *dto.OrderItem
 	}
 )

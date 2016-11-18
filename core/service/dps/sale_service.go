@@ -252,7 +252,7 @@ func (s *saleService) SaveCategory(mchId int64, v *sale.Category) (int64, error)
 	return ca.Save()
 }
 
-func (s *saleService) GetCategoryTreeNode(mchId int) *tree.TreeNode {
+func (s *saleService) GetCategoryTreeNode(mchId int64) *tree.TreeNode {
 	sl := s._rep.GetSale(mchId)
 	cats := sl.CategoryManager().GetCategories()
 	rootNode := &tree.TreeNode{
@@ -284,7 +284,7 @@ func (s *saleService) walkCategoryTree(node *tree.TreeNode, parentId int, catego
 	}
 }
 
-func (s *saleService) GetCategories(mchId int) []*sale.Category {
+func (s *saleService) GetCategories(mchId int64) []*sale.Category {
 	sl := s._rep.GetSale(mchId)
 	cats := sl.CategoryManager().GetCategories()
 	var list []*sale.Category = make([]*sale.Category, len(cats))
@@ -310,7 +310,7 @@ func (s *saleService) GetCategoriesByParentId(mchId, parentId int) []*sale.Categ
 	return list
 }
 
-func (s *saleService) getCategoryManager(mchId int) sale.ICategoryManager {
+func (s *saleService) getCategoryManager(mchId int64) sale.ICategoryManager {
 	if mchId > 0 {
 		sl := s._rep.GetSale(mchId)
 		return sl.CategoryManager()
@@ -318,7 +318,7 @@ func (s *saleService) getCategoryManager(mchId int) sale.ICategoryManager {
 	return s._cateRep.GetGlobManager()
 }
 
-func (s *saleService) GetBigCategories(mchId int) []dto.Category {
+func (s *saleService) GetBigCategories(mchId int64) []dto.Category {
 	cats := s.getCategoryManager(mchId).GetCategories()
 	list := []dto.Category{}
 	for _, v := range cats {
@@ -369,7 +369,7 @@ func (s *saleService) setChild(list []sale.ICategory, dst *dto.Category) {
 	}
 }
 
-func (s *saleService) GetAllSaleLabels(mchId int) []*sale.Label {
+func (s *saleService) GetAllSaleLabels(mchId int64) []*sale.Label {
 	sl := s._rep.GetSale(mchId)
 	tags := sl.LabelManager().GetAllSaleLabels()
 
@@ -516,7 +516,7 @@ func (s *saleService) GetSnapshot(skuId int) *goods.Snapshot {
 }
 
 // 设置商品货架状态
-func (s *saleService) SetShelveState(mchId int, itemId int, state int, remark string) error {
+func (s *saleService) SetShelveState(mchId int64, itemId int, state int, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
@@ -526,7 +526,7 @@ func (s *saleService) SetShelveState(mchId int, itemId int, state int, remark st
 }
 
 // 设置商品货架状态
-func (s *saleService) ReviewItem(mchId int, itemId int, pass bool, remark string) error {
+func (s *saleService) ReviewItem(mchId int64, itemId int, pass bool, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
