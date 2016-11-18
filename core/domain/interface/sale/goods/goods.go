@@ -34,7 +34,7 @@ type (
 	// 商品仓储
 	IGoodsRep interface {
 		// 获取商品
-		GetValueGoods(itemId int64, sku int64) *ValueGoods
+		GetValueGoods(itemId int64, skuId int64) *ValueGoods
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}

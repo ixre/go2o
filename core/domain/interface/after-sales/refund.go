@@ -56,7 +56,7 @@ type (
 	// 退款单
 	RefundOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"no"`
+		Id int64 `db:"id" pk:"yes" auto:"no"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 退款方式：1.退回余额  2: 原路退回

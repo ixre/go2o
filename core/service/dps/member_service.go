@@ -114,7 +114,7 @@ func (ms *memberService) Favored(memberId int64, favType int, referId int64) boo
 }
 
 // 取消收藏
-func (ms *memberService) Cancel(memberId, favType, referId int) error {
+func (ms *memberService) Cancel(memberId, favType, referId int64) error {
 	return ms._rep.CreateMemberById(memberId).
 		Favorite().Cancel(favType, referId)
 }
@@ -217,7 +217,7 @@ func (ms *memberService) GetMemberIdByInvitationCode(code string) int {
 }
 
 // 根据信息获取会员编号
-func (ms *memberService) GetMemberIdByBasis(str string, basic int) int {
+func (ms *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 	switch basic {
 	default:
 	case notify.TypePhoneMessage:
@@ -846,7 +846,7 @@ func (ms *memberService) FinishTakeOutRequest(memberId, id int, tradeNo string) 
 
 // 冻结余额
 func (ms *memberService) Freeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -856,7 +856,7 @@ func (ms *memberService) Freeze(memberId int64, title string,
 
 // 解冻金额
 func (ms *memberService) Unfreeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -866,7 +866,7 @@ func (ms *memberService) Unfreeze(memberId int64, title string,
 
 // 冻结赠送金额
 func (ms *memberService) FreezePresent(memberId int64, title string,
-	tradeNo string, amount float32, referId int) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -876,7 +876,7 @@ func (ms *memberService) FreezePresent(memberId int64, title string,
 
 // 解冻赠送金额
 func (ms *memberService) UnfreezePresent(memberId int64, title string,
-	tradeNo string, amount float32, referId int) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember

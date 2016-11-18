@@ -115,7 +115,7 @@ func (a *advertisementRep) SetUserAd(adUserId, posId, adId int64) error {
 }
 
 // 根据名称获取广告编号
-func (a *advertisementRep) GetIdByName(userId int, name string) int {
+func (a *advertisementRep) GetIdByName(userId int64, name string) int {
 	var id int
 	a.Connector.ExecScalar("SELECT id FROM ad_list WHERE user_id=? AND name=?",
 		&id, userId, name)
@@ -175,32 +175,32 @@ func (a *advertisementRep) GetAdByKey(userId int64, key string) *ad.Ad {
 }
 
 // 获取轮播广告
-func (a *advertisementRep) GetValueGallery(advertisementId int) ad.ValueGallery {
+func (a *advertisementRep) GetValueGallery(adId int64) ad.ValueGallery {
 	var list = []*ad.Image{}
-	if err := a.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_number ASC", advertisementId); err == nil {
+	if err := a.Connector.GetOrm().Select(&list, "ad_id=? ORDER BY sort_number ASC", adId); err == nil {
 		return list
 	}
 	return nil
 }
 
 // 获取图片项
-func (a *advertisementRep) GetValueAdImage(advertisementId, id int) *ad.Image {
+func (a *advertisementRep) GetValueAdImage(adId, id int64) *ad.Image {
 	var e ad.Image
-	if err := a.Connector.GetOrm().GetBy(&e, "ad_id=? and id=?", advertisementId, id); err == nil {
+	if err := a.Connector.GetOrm().GetBy(&e, "ad_id=? and id=?", adId, id); err == nil {
 		return &e
 	}
 	return nil
 }
 
 // 删除图片项
-func (a *advertisementRep) DelAdImage(advertisementId, id int) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=? and id=?", advertisementId, id)
+func (a *advertisementRep) DelAdImage(adId, imgId int64) error {
+	_, err := a.Connector.GetOrm().Delete(ad.Image{}, "ad_id=? and id=?", adId, imgId)
 	return err
 }
 
 // 删除广告
-func (a *advertisementRep) DelAd(userId, advertisementId int) error {
-	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", userId, advertisementId)
+func (a *advertisementRep) DelAd(userId, adId int64) error {
+	_, err := a.Connector.GetOrm().Delete(ad.Ad{}, "user_id=? AND id=?", userId, adId)
 	if err == nil {
 		//更新用户的广告缓存
 		PrefixDel(a.storage, fmt.Sprintf("go2o:rep:ad:%d:*", userId))

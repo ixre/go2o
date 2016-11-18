@@ -70,7 +70,7 @@ func (p *personFinanceRepository) GetRiseLog(personId, logId int64) *personfinan
 }
 
 // 保存日志
-func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (id int, err error) {
+func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int64, error) {
 	if v.Id > 0 {
 		_, _, err = p._orm.Save(v.Id, v)
 	} else {
@@ -88,7 +88,7 @@ func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseTy
 }
 
 // 保存每日收益
-func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (id int, err error) {
+func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (int64, error) {
 	if v.Id > 0 {
 		_, _, err = p._orm.Save(v.Id, v)
 	} else {

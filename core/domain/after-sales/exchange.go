@@ -65,7 +65,7 @@ func (e *exchangeOrderImpl) Value() afterSales.AfterSalesOrder {
 }
 
 // 提交售后申请
-func (e *exchangeOrderImpl) Submit() (int, error) {
+func (e *exchangeOrderImpl) Submit() (int64, error) {
 	id, err := e.afterSalesOrderImpl.Submit()
 	// 提交换货单
 	if err == nil {

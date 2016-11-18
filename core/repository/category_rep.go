@@ -44,7 +44,7 @@ func (c *categoryRep) GetGlobManager() sale.ICategoryManager {
 	return c._globCateManager
 }
 
-func (c *categoryRep) getCategoryCacheKey(id int) string {
+func (c *categoryRep) getCategoryCacheKey(id int64) string {
 	return fmt.Sprintf("go2o:rep:cat:c:%d", id)
 }
 
@@ -85,7 +85,7 @@ func (c *categoryRep) DeleteCategory(mchId, id int64) error {
 	return err
 }
 
-func (c *categoryRep) GetCategory(mchId, id int) *sale.Category {
+func (c *categoryRep) GetCategory(mchId, id int64) *sale.Category {
 	e := sale.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
@@ -112,7 +112,7 @@ func (c *categoryRep) convertICategory(list sale.CategoryList) []sale.ICategory 
 	return slice
 }
 
-func (c *categoryRep) redirectGetCats(mchId int) []*sale.Category {
+func (c *categoryRep) redirectGetCats(mchId int64) []*sale.Category {
 	list := []*sale.Category{}
 	err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
 	if err != nil {

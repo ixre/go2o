@@ -21,7 +21,7 @@ import (
 )
 
 // 获取商户信息缓存
-func GetValueMerchantCache(mchId int) *merchant.Merchant {
+func GetValueMerchantCache(mchId int64) *merchant.Merchant {
 	var v merchant.Merchant
 	var sto storage.Interface = GetKVS()
 	var key string = GetValueMerchantCacheCK(mchId)
@@ -37,16 +37,16 @@ func GetValueMerchantCache(mchId int) *merchant.Merchant {
 }
 
 // 设置商户信息缓存
-func GetValueMerchantCacheCK(mchId int) string {
+func GetValueMerchantCacheCK(mchId int64) string {
 	return fmt.Sprintf("cache:partner:value:%d", mchId)
 }
 
 // 设置商户站点配置
-func GetMerchantSiteConfCK(mchId int) string {
+func GetMerchantSiteConfCK(mchId int64) string {
 	return fmt.Sprintf("cache:partner:siteconf:%d", mchId)
 }
 
-func DelMerchantCache(mchId int) {
+func DelMerchantCache(mchId int64) {
 	kvs := GetKVS()
 	kvs.Del(GetValueMerchantCacheCK(mchId))
 	kvs.Del(GetMerchantSiteConfCK(mchId))
@@ -83,7 +83,7 @@ func GetMerchantIdByApiId(apiId string) int {
 }
 
 // 获取API 信息
-func GetMerchantApiInfo(mchId int) *merchant.ApiInfo {
+func GetMerchantApiInfo(mchId int64) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)

@@ -48,7 +48,7 @@ func (g *goodsRep) GetGoodsBySKuId(skuId int64) interface{} {
 }
 
 // 获取商品
-func (g *goodsRep) GetValueGoods(itemId int, skuId int) *goods.ValueGoods {
+func (g *goodsRep) GetValueGoods(itemId int64, skuId int64) *goods.ValueGoods {
 	var e *goods.ValueGoods = new(goods.ValueGoods)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
@@ -95,20 +95,8 @@ func (g *goodsRep) GetGoodsLevelPrice(goodsId int64) []*goods.MemberPrice {
 }
 
 // 保存会员价
-func (g *goodsRep) SaveGoodsLevelPrice(v *goods.MemberPrice) (id int, err error) {
-	//if v.Id <= 0 {
-	//	g.Connector.ExecScalar(`SELECT MAX(id) FROM gs_member_price where goods_id=? and level=?`,
-	//		&v.Id, v.GoodsId, v.Level)
-	//}
-	if v.Id > 0 {
-		_, _, err = g.Connector.GetOrm().Save(v.Id, v)
-		id = v.Id
-	} else {
-		var id64 int64
-		_, id64, err = g.Connector.GetOrm().Save(nil, v)
-		v.Id = int(id64)
-	}
-	return id, err
+func (g *goodsRep) SaveGoodsLevelPrice(v *goods.MemberPrice) (int64, error) {
+	return orm.Save(g.GetOrm(), v, v.Id)
 }
 
 // 移除会员价
@@ -117,20 +105,13 @@ func (g *goodsRep) RemoveGoodsLevelPrice(id int64) error {
 }
 
 // 保存商品
-func (g *goodsRep) SaveValueGoods(v *goods.ValueGoods) (id int, err error) {
-	if v.Id > 0 {
-		_, _, err = g.Connector.GetOrm().Save(v.Id, v)
-	} else {
-		var id64 int64
-		_, id64, err = g.Connector.GetOrm().Save(nil, v)
-		v.Id = int(id64)
-	}
-	return v.Id, err
+func (g *goodsRep) SaveValueGoods(v *goods.ValueGoods) (int64, error) {
+	return orm.Save(g.GetOrm(), v, v.Id)
 }
 
 // 获取已上架的商品
-func (g *goodsRep) GetPagedOnShelvesGoods(shopId int, catIds []int, start, end int,
-	where, orderBy string) (int, []*valueobject.Goods) {
+func (g *goodsRep) GetPagedOnShelvesGoods(shopId int64, catIds []int64,
+	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0
 	catIdStr := ""
@@ -168,7 +149,7 @@ func (g *goodsRep) GetPagedOnShelvesGoods(shopId int, catIds []int, start, end i
 }
 
 // 获取指定数量已上架的商品
-func (g *goodsRep) GetOnShelvesGoods(mchId int, start, end int, sortBy string) []*valueobject.Goods {
+func (g *goodsRep) GetOnShelvesGoods(mchId int64, start, end int, sortBy string) []*valueobject.Goods {
 	e := []*valueobject.Goods{}
 	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
 		 INNER JOIN gs_category ON gs_item.category_id=gs_category.id

@@ -83,12 +83,12 @@ func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
 	return v.Id, nil
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(mchId int) []*mss.MailTemplate {
+func (this *MssRep) GetMailTemplates(mchId int64) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 

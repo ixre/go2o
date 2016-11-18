@@ -14,7 +14,7 @@ import (
 	"go2o/core/service/dps"
 )
 
-//func GetShopCheckboxs(mchId int, chks string) []byte {
+//func GetShopCheckboxs(mchId int64, chks string) []byte {
 //	shops := dps.MerchantService.GetOnlineShops(mchId)
 //	buf := bytes.NewBufferString("")
 //
@@ -59,7 +59,7 @@ import (
 //	return buf.Bytes()
 //}
 
-func GetShopsJson(mchId int) []byte {
+func GetShopsJson(mchId int64) []byte {
 	shops := dps.MerchantService.GetShopsOfMerchant(mchId)
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {

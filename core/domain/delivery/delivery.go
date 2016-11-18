@@ -95,7 +95,7 @@ func (d *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageArea 
 }
 
 // 获取配送信息
-func (d *Delivery) GetDeliveryInfo(coverageId int64) (shopId, deliverUsrId int, err error) {
+func (d *Delivery) GetDeliveryInfo(coverageId int64) (shopId, deliverUsrId int64, err error) {
 	v := d.rep.GetDeliveryBind(d.GetAggregateRootId(), coverageId)
 	if v != nil {
 		return v.ShopId, v.DeliverUsrId, nil

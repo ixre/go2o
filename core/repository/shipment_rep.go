@@ -44,7 +44,7 @@ func (s *shipmentRep) GetShipOrderById(id int) *shipment.ShipmentOrder {
 }
 
 // 获取发货单
-func (s *shipmentRep) GetShipmentOrder(id int) shipment.IShipmentOrder {
+func (s *shipmentRep) GetShipmentOrder(id int64) shipment.IShipmentOrder {
 	if e := s.GetShipOrderById(id); e != nil {
 		return s.CreateShipmentOrder(e)
 	}
@@ -52,7 +52,7 @@ func (s *shipmentRep) GetShipmentOrder(id int) shipment.IShipmentOrder {
 }
 
 // 获取订单对应的发货单
-func (s *shipmentRep) GetOrders(orderId int) []shipment.IShipmentOrder {
+func (s *shipmentRep) GetOrders(orderId int64) []shipment.IShipmentOrder {
 	list := []*shipment.ShipmentOrder{}
 	s.GetOrm().Select(&list, "order_id=?", orderId)
 	orders := make([]shipment.IShipmentOrder, len(list))
@@ -73,6 +73,6 @@ func (s *shipmentRep) SaveShipmentItem(v *shipment.Item) (int64, error) {
 }
 
 // 删除发货单
-func (s *shipmentRep) DeleteShipmentOrder(id int) error {
+func (s *shipmentRep) DeleteShipmentOrder(id int64) error {
 	return s.GetOrm().DeleteByPk(&shipment.ShipmentOrder{}, id)
 }

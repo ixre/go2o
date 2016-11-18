@@ -124,7 +124,7 @@ func (p *platformService) GetChildAreas(id int) []*valueobject.Area {
 }
 
 // 获取地区名称
-func (p *platformService) GetAreaNames(id []int) []string {
+func (p *platformService) GetAreaNames(id []int64) []string {
 	return p._rep.GetAreaNames(id)
 }
 

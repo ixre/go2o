@@ -192,18 +192,18 @@ type (
 		GetRiseValueByPersonId(id int64) (v *RiseInfoValue, err error)
 
 		// 保存收益信息
-		SaveRiseInfo(*RiseInfoValue) (id int, err error)
+		SaveRiseInfo(*RiseInfoValue) (int64, error)
 
 		// 获取日志
 		GetRiseLog(personId, logId int64) *RiseLog
 
 		// 保存日志
-		SaveRiseLog(*RiseLog) (int, error)
+		SaveRiseLog(*RiseLog) (int64, error)
 
 		// 获取日志
 		GetRiseLogs(personId int64, date int64, riseType int) []*RiseLog
 
 		// 保存每日收益
-		SaveRiseDayInfo(*RiseDayInfo) (int, error)
+		SaveRiseDayInfo(*RiseDayInfo) (int64, error)
 	}
 )

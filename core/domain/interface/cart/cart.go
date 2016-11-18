@@ -121,7 +121,7 @@ type (
 		GetLatestCart(buyerId int64) *ValueCart
 
 		// 保存购物车
-		SaveShoppingCart(*ValueCart) (int, error)
+		SaveShoppingCart(*ValueCart) (int64, error)
 
 		// 移出购物车项
 		RemoveCartItem(id int64) error

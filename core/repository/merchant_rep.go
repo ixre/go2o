@@ -99,13 +99,13 @@ func (m *merchantRep) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
 		m._memberRep, m._valRep)
 }
 
-func (m *merchantRep) cleanCache(mchId int) {
+func (m *merchantRep) cleanCache(mchId int64) {
 	key := m.getMchCacheKey(mchId)
 	m.storage.Del(key)
 	PrefixDel(m.storage, key+":*")
 }
 
-func (m *merchantRep) getMchCacheKey(mchId int) string {
+func (m *merchantRep) getMchCacheKey(mchId int64) string {
 	return fmt.Sprintf("go2o:rep:mch:%d", mchId)
 }
 
