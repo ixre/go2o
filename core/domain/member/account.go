@@ -302,7 +302,7 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float32,
-	relateUser int, mustLargeZero bool) error {
+	relateUser int64, mustLargeZero bool) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}

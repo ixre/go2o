@@ -10,7 +10,7 @@ package user
 
 type IUserManager interface {
 	// 获取单个用户
-	GetUser(id int) IUser
+	GetUser(id int64) IUser
 
 	// 获取所有配送员
 	GetDeliveryStaff() []IDeliveryStaff

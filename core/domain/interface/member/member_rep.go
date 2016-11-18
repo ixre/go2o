@@ -27,10 +27,10 @@ type IMemberRep interface {
 	GetMemberLevels_New() []*Level
 
 	// 获取等级对应的会员数
-	GetMemberNumByLevel_New(id int) int
+	GetMemberNumByLevel_New(id int64) int
 
 	// 删除会员等级
-	DeleteMemberLevel_New(id int) error
+	DeleteMemberLevel_New(id int64) error
 
 	// 保存会员等级
 	SaveMemberLevel_New(v *Level) (int64, error)
@@ -48,28 +48,28 @@ type IMemberRep interface {
 	CreateMember(*Member) IMember
 
 	// 删除会员
-	DeleteMember(id int) error
+	DeleteMember(id int64) error
 
 	// 创建会员,仅作为某些操作使用,不保存
 	CreateMemberById(memberId int64) IMember
 
 	// 保存
-	SaveMember(v *Member) (int, error)
+	SaveMember(v *Member) (int64, error)
 
 	// 获取会员最后更新时间
-	GetMemberLatestUpdateTime(int) int64
+	GetMemberLatestUpdateTime(id int64) int64
 
 	// 根据邀请码获取会员编号
 	GetMemberIdByInvitationCode(string) int
 
 	// 根据手机号获取会员编号
-	GetMemberIdByPhone(phone string) int
+	GetMemberIdByPhone(phone string) int64
 
 	// 根据邮箱地址获取会员编号
-	GetMemberIdByEmail(email string) int
+	GetMemberIdByEmail(email string) int64
 
 	// 获取会员编号
-	GetMemberIdByUser(string string) int
+	GetMemberIdByUser(user string) int64
 
 	// 用户名是否存在
 	CheckUsrExist(usr string, memberId int64) bool
@@ -87,7 +87,7 @@ type IMemberRep interface {
 	SaveAccount(*Account) (int64, error)
 
 	// 获取银行信息
-	GetBankInfo(int) *BankInfo
+	GetBankInfo(id int64) *BankInfo
 
 	// 保存银行信息
 	SaveBankInfo(*BankInfo) error
@@ -114,10 +114,10 @@ type IMemberRep interface {
 	GetRelation(memberId int64) *Relation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(mchId int64, exp int) int
+	GetLevelValueByExp(mchId int64, exp int64) int
 
 	// 获取会员升级记录
-	GetLevelUpLog(id int) *LevelUpLog
+	GetLevelUpLog(id int64) *LevelUpLog
 
 	// 保存会员升级记录
 	SaveLevelUpLog(l *LevelUpLog) (int64, error)
@@ -129,16 +129,16 @@ type IMemberRep interface {
 	GetDeliverAddress(memberId int64) []*DeliverAddress
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, deliverId int64) *DeliverAddress
+	GetSingleDeliverAddress(memberId, adressId int64) *DeliverAddress
 
 	// 删除配送地址
-	DeleteDeliver(memberId, deliverId int64) error
+	DeleteAddress(memberId, adressId int64) error
 
 	// 邀请
 	GetMyInvitationMembers(memberId int64, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
-	GetSubInvitationNum(memberId int64, memberIdArr []int) map[int]int
+	GetSubInvitationNum(memberId int64, memberIdArr []int64) map[int64]int
 
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int64) *Member
@@ -157,7 +157,7 @@ type IMemberRep interface {
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
-	Favorite(memberId, favType, referId int) error
+	Favorite(memberId int64, favType int, referId int64) error
 
 	//是否已收藏
 	Favored(memberId int64, favType int, referId int64) bool

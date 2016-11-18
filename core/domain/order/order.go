@@ -202,7 +202,7 @@ func (o *orderImpl) setAddress(addressId int) error {
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
-	addr := buyer.Profile().GetDeliver(addressId)
+	addr := buyer.Profile().GetAddress(addressId)
 	if addr == nil {
 		return order.ErrNoAddress
 	}

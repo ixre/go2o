@@ -19,25 +19,25 @@ type IMerchantRep interface {
 	CreateSignUpToken(memberId int64) string
 
 	// 根据商户申请密钥获取会员编号
-	GetMemberFromSignUpToken(token string) int
+	GetMemberFromSignUpToken(token string) int64
 
 	// 获取商户的编号
-	GetMerchantsId() []int
+	GetMerchantsId() []int64
 
 	// 获取商户
-	GetMerchant(int) IMerchant
+	GetMerchant(id int64) IMerchant
 
 	// 获取合作商主要的域名主机
-	GetMerchantMajorHost(int) string
+	GetMerchantMajorHost(mchId int64) string
 
 	// 保存
-	SaveMerchant(*Merchant) (int, error)
+	SaveMerchant(*Merchant) (int64, error)
 
 	// 获取账户
-	GetAccount(mchId int) *Account
+	GetAccount(mchId int64) *Account
 
 	// 获取销售配置
-	GetMerchantSaleConf(int) *SaleConf
+	GetMerchantSaleConf(mchId int64) *SaleConf
 
 	// 保存销售配置
 	SaveMerchantSaleConf(v *SaleConf) error
@@ -70,16 +70,16 @@ type IMerchantRep interface {
 	GetKeyMapByChar(mchId int64, indent string, keyword string) map[string]string
 
 	//获取等级
-	GetLevel(mchId, levelValue int) *MemberLevel
+	GetLevel(mchId, levelValue int64) *MemberLevel
 
 	// 获取下一个等级
-	GetNextLevel(mchId, levelVal int) *MemberLevel
+	GetNextLevel(mchId, levelVal int64) *MemberLevel
 
 	// 获取会员等级
-	GetMemberLevels(mchId int) []*MemberLevel
+	GetMemberLevels(mchId int64) []*MemberLevel
 
 	// 删除会员等级
-	DeleteMemberLevel(mchId, id int) error
+	DeleteMemberLevel(mchId, id int64) error
 
 	// 保存等级
 	SaveMemberLevel(mchId int64, v *MemberLevel) (int64, error)

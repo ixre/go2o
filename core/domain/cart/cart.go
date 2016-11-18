@@ -107,7 +107,7 @@ func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int]*goods.Snapsh
 	return c.snapMap
 }
 
-func (c *cartImpl) getBuyerLevelId() int {
+func (c *cartImpl) getBuyerLevelId() int64 {
 	if c.value.BuyerId > 0 {
 		m := c.memberRep.GetMember(c.value.BuyerId)
 		if m != nil {
@@ -117,7 +117,7 @@ func (c *cartImpl) getBuyerLevelId() int {
 	return -1
 }
 
-func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int) {
+func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int64) {
 	// 设置会员价
 	if level > 0 {
 		gds := c.goodsRep.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
@@ -131,7 +131,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 	if list == nil {
 		return
 	}
-	var level int
+	var level int64
 	for _, v := range items {
 		gv, ok := list[v.SkuId]
 		//  会员价
@@ -174,8 +174,8 @@ func (c *cartImpl) GetCartGoods() []sale.IGoods {
 }
 
 // 获取商品编号与购物车项的集合
-func (c *cartImpl) Items() map[int]*cart.CartItem {
-	list := make(map[int]*cart.CartItem)
+func (c *cartImpl) Items() map[int64]*cart.CartItem {
+	list := make(map[int64]*cart.CartItem)
 	for _, v := range c.value.Items {
 		list[v.SkuId] = v
 	}
@@ -365,7 +365,7 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 }
 
 // 设置购买会员
-func (c *cartImpl) SetBuyer(buyerId int) error {
+func (c *cartImpl) SetBuyer(buyerId int64) error {
 	if c.value.BuyerId > 0 {
 		return cart.ErrCartBuyerBind
 	}
@@ -379,7 +379,7 @@ func (c *cartImpl) SetBuyer(buyerId int) error {
 }
 
 // 设置购买会员收货地址
-func (c *cartImpl) SetBuyerAddress(addressId int) error {
+func (c *cartImpl) SetBuyerAddress(addressId int64) error {
 	if c.value.BuyerId < 0 {
 		return cart.ErrCartNoBuyer
 	}
@@ -387,7 +387,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int) error {
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	addr := m.Profile().GetDeliver(addressId)
+	addr := m.Profile().GetAddress(addressId)
 	if addr == nil {
 		return member.ErrNoSuchDeliverAddress
 	}
@@ -401,9 +401,9 @@ func (c *cartImpl) setBuyerAddress(addressId int) error {
 }
 
 // 标记商品结算
-func (c *cartImpl) SignItemChecked(skuArr []int) error {
+func (c *cartImpl) SignItemChecked(skuArr []int64) error {
 	mp := c.Items()
-	arrMap := make(map[int]int, len(skuArr))
+	arrMap := make(map[int64]int, len(skuArr))
 	for _, v := range skuArr {
 		arrMap[v] = 0
 	}
@@ -422,7 +422,7 @@ func (c *cartImpl) SignItemChecked(skuArr []int) error {
 }
 
 // 结算数据持久化
-func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error {
+func (c *cartImpl) SettlePersist(shopId int64, paymentOpt int, deliverOpt int, addressId int64) error {
 	//var shop shop.IShop
 	var deliver member.IDeliverAddress
 	var err error
@@ -444,17 +444,17 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) 
 		return err
 	}
 
-	if c.value.BuyerId > 0 && deliverId > 0 {
+	if c.value.BuyerId > 0 && addressId > 0 {
 		m := c.memberRep.GetMember(c.value.BuyerId)
 		if m == nil {
 			return member.ErrNoSuchMember
 		}
-		deliver = m.Profile().GetDeliver(deliverId)
+		deliver = m.Profile().GetAddress(addressId)
 		if deliver == nil {
 			return member.ErrInvalidSession
 		}
 		c.deliver = deliver
-		c.value.DeliverId = deliverId
+		c.value.DeliverId = addressId
 	}
 
 	c.value.PaymentOpt = paymentOpt
@@ -477,7 +477,7 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 	if c.deliver == nil {
 		pm := c.memberRep.GetMember(c.value.BuyerId).Profile()
 		if c.value.DeliverId > 0 {
-			c.deliver = pm.GetDeliver(c.value.DeliverId)
+			c.deliver = pm.GetAddress(c.value.DeliverId)
 		} else {
 			c.deliver = pm.GetDefaultAddress()
 			if c.deliver != nil {

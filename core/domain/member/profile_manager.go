@@ -35,7 +35,7 @@ var (
 
 type profileManagerImpl struct {
 	member      *memberImpl
-	memberId    int
+	memberId    int64
 	rep         member.IMemberRep
 	valRep      valueobject.IValueRep
 	bank        *member.BankInfo
@@ -233,7 +233,7 @@ func (p *profileManagerImpl) notifyOnProfileComplete() {
 func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := p.member.mssRep.GetProvider().GetMailTemplate(tplId)
+		mailTpl := p.member.mssRep.GetProvider().GetMailTemplate(int64(tplId))
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
@@ -409,7 +409,7 @@ func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 }
 
 // 设置默认地址
-func (p *profileManagerImpl) SetDefaultAddress(addressId int) error {
+func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 	for _, v := range p.GetDeliverAddress() {
 		vv := v.GetValue()
 		if v.GetDomainId() == addressId {
@@ -439,8 +439,8 @@ func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
 }
 
 // 获取配送地址
-func (p *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
-	v := p.rep.GetSingleDeliverAddress(p.memberId, deliverId)
+func (p *profileManagerImpl) GetAddress(addressId int64) member.IDeliverAddress {
+	v := p.rep.GetSingleDeliverAddress(p.memberId, addressId)
 	if v != nil {
 		return p.CreateDeliver(v)
 	}
@@ -448,9 +448,9 @@ func (p *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
 }
 
 // 删除配送地址
-func (p *profileManagerImpl) DeleteDeliver(deliverId int) error {
+func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 	//todo: 至少保留一个配送地址
-	return p.rep.DeleteDeliver(p.memberId, deliverId)
+	return p.rep.DeleteAddress(p.memberId, addressId)
 }
 
 // 拷贝认证信息

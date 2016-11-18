@@ -27,7 +27,7 @@ func NewUserManager(mchId int64, rep user.IUserRep) user.IUserManager {
 }
 
 // 获取单个用户
-func (u *UserManager) GetUser(id int) user.IUser {
+func (u *UserManager) GetUser(id int64) user.IUser {
 	v := u.rep.GetPersonValue(id)
 	if v != nil {
 		return newUser(v, u.rep)

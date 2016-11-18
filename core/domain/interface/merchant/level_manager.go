@@ -13,9 +13,9 @@ type (
 		Id         int64 `db:"id" auto:"yes" pk:"yes"`
 		MerchantId int64 `db:"merchant_id"`
 		// 等级值(1,2,4,8,16)
-		Value      int    `db:"value" `
+		Value      int64  `db:"value" `
 		Name       string `db:"name"`
-		RequireExp int    `db:"require_exp"`
+		RequireExp int64  `db:"require_exp"`
 		Enabled    int    `db:"enabled"`
 	}
 
@@ -28,7 +28,7 @@ type (
 		GetLevelById(id int64) *MemberLevel
 
 		// 根据等级值获取等级
-		GetLevelByValue(value int) *MemberLevel
+		GetLevelByValue(value int64) *MemberLevel
 
 		// 获取下一个等级
 		GetNextLevel(value int64) *MemberLevel

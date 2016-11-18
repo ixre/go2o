@@ -304,7 +304,7 @@ func (l *levelManagerImpl) SaveLevel(v *member.Level) (int64, error) {
 }
 
 // 判断等级与等级可编程签名是否一致
-func (l *levelManagerImpl) checkProgramSignal(sign string, id int) bool {
+func (l *levelManagerImpl) checkProgramSignal(sign string, id int64) bool {
 	if sign != "" {
 		for _, v := range l.GetLevelSet() {
 			if v.ProgramSignal == sign {
@@ -346,7 +346,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 
 // 检查保存等级区间经验值
 func (l *levelManagerImpl) checkBetweenRequireExp(arr []*member.Level,
-	i int, la int, exp int) error {
+	i int, la int, exp int64) error {
 	// 如果小于前一个等级
 	if i > 0 && arr[i-1].RequireExp > exp {
 		return member.ErrLessThanLevelRequireExp
@@ -375,8 +375,8 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 }
 
 // 获取最大的等级值
-func (l *levelManagerImpl) getMaxLevelId() int {
-	var k = 0
+func (l *levelManagerImpl) getMaxLevelId() int64 {
+	var k int64
 	for _, v := range l.GetLevelSet() {
 		if v.Id > k {
 			k = v.Id
@@ -386,9 +386,9 @@ func (l *levelManagerImpl) getMaxLevelId() int {
 }
 
 // 根据经验值获取等级
-func (l *levelManagerImpl) GetLevelIdByExp(exp int) int64 {
+func (l *levelManagerImpl) GetLevelIdByExp(exp int64) int64 {
 	var lv *member.Level
-	var levelVal int
+	var levelVal int64
 	arr := l.GetLevelSet()
 	for i := len(arr); i > 0; i-- {
 		lv = arr[i-1]

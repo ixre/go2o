@@ -190,7 +190,7 @@ type (
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
-			relateUser int, mustLargeZero bool) error
+			relateUser int64, mustLargeZero bool) error
 
 		// 冻结赠送金额
 		FreezePresent(title string, outerNo string, amount float32, relateUser int64) error

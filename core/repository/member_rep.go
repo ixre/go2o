@@ -137,14 +137,14 @@ func (m *MemberRep) GetMemberLevels_New() []*member.Level {
 }
 
 // 获取等级对应的会员数
-func (m *MemberRep) GetMemberNumByLevel_New(id int) int {
+func (m *MemberRep) GetMemberNumByLevel_New(id int64) int {
 	total := 0
 	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE level=?", &total, id)
 	return total
 }
 
 // 删除会员等级
-func (m *MemberRep) DeleteMemberLevel_New(id int) error {
+func (m *MemberRep) DeleteMemberLevel_New(id int64) error {
 	err := m.Connector.GetOrm().DeleteByPk(&member.Level{}, id)
 	if err == nil {
 		PrefixDel(m.Storage, "go2o:rep:level:*")
@@ -184,7 +184,7 @@ func (m *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 }
 
 // 根据手机号获取会员编号
-func (m *MemberRep) GetMemberIdByPhone(phone string) int {
+func (m *MemberRep) GetMemberIdByPhone(phone string) int64 {
 	id := -1
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
 	return id
@@ -230,7 +230,7 @@ func (m *MemberRep) GetMember(memberId int64) member.IMember {
 }
 
 // 保存会员
-func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
+func (m *MemberRep) SaveMember(v *member.Member) (int64, error) {
 	if v.Id > 0 {
 		rc := core.GetRedisConn()
 		defer rc.Close()
@@ -254,7 +254,7 @@ func (m *MemberRep) SaveMember(v *member.Member) (int, error) {
 	return m.createMember(v)
 }
 
-func (m *MemberRep) createMember(v *member.Member) (int, error) {
+func (m *MemberRep) createMember(v *member.Member) (int64, error) {
 	var id int64
 	_, id, err := m.Connector.GetOrm().Save(nil, v)
 	if err != nil {
@@ -301,7 +301,7 @@ func (m *MemberRep) initMember(v *member.Member) {
 }
 
 // 删除会员
-func (m *MemberRep) DeleteMember(id int) error {
+func (m *MemberRep) DeleteMember(id int64) error {
 	m.Storage.Del(m.getMemberCk(id))
 	_, err := m.ExecNonQuery("delete from mm_member where id = ?", id)
 	sql := `
@@ -312,6 +312,7 @@ func (m *MemberRep) DeleteMember(id int) error {
      delete from mm_relation where member_id NOT IN(SELECT id FROM mm_member) and member_id > 0;
      delete from mm_integral_log where member_id NOT IN (SELECT id FROM mm_member) and id > 0;
      delete from pay_order where buy_user NOT IN(SELECT id FROM mm_member) and id > 0;
+     delete from mm_levelup where member_id NOT IN(SELECT id FROM mm_member) and id > 0;
     `
 	for _, v := range strings.Split(sql, ";") {
 		if v = strings.TrimSpace(v); len(v) > 5 {
@@ -324,7 +325,7 @@ func (m *MemberRep) DeleteMember(id int) error {
 	return err
 }
 
-func (m *MemberRep) GetMemberIdByUser(user string) int {
+func (m *MemberRep) GetMemberIdByUser(user string) int64 {
 	var id int
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
@@ -479,7 +480,7 @@ func (m *MemberRep) GetRelation(memberId int64) *member.Relation {
 }
 
 // 获取积分对应的等级
-func (m *MemberRep) GetLevelValueByExp(mchId int64, exp int) int {
+func (m *MemberRep) GetLevelValueByExp(mchId int64, exp int64) int {
 	var levelId int
 	m.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.merchant_id=? AND lv.require_exp <= ? AND lv.enabled=1
@@ -515,7 +516,7 @@ func (m *MemberRep) SaveRelation(v *member.Relation) error {
 }
 
 // 获取会员升级记录
-func (m *MemberRep) GetLevelUpLog(id int) *member.LevelUpLog {
+func (m *MemberRep) GetLevelUpLog(id int64) *member.LevelUpLog {
 	e := member.LevelUpLog{}
 	if m.GetOrm().Get(id, &e) == nil {
 		return &e
@@ -552,7 +553,7 @@ func (m *MemberRep) GetSingleDeliverAddress(memberId, deliverId int64) *member.D
 }
 
 // 删除配送地址
-func (m *MemberRep) DeleteDeliver(memberId, deliverId int64) error {
+func (m *MemberRep) DeleteAddress(memberId, deliverId int64) error {
 	_, err := m.Connector.ExecNonQuery(
 		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
 		memberId, deliverId)
@@ -582,7 +583,7 @@ func (m *MemberRep) GetMyInvitationMembers(memberId int64, begin, end int) (
 }
 
 // 获取下级会员数量
-func (m *MemberRep) GetSubInvitationNum(memberId int64, memberIdArr []int) map[int]int {
+func (m *MemberRep) GetSubInvitationNum(memberId int64, memberIdArr []int64) map[int64]int {
 	if len(memberIdArr) == 0 {
 		return map[int]int{}
 	}

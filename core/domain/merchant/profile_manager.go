@@ -100,7 +100,7 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 }
 
 // 保存企业信息
-func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
+func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int64, error) {
 	e := p.GetReviewingEnterpriseInfo()
 	if e == nil {
 		e = &merchant.EnterpriseInfo{}

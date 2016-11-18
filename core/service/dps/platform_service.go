@@ -129,7 +129,7 @@ func (p *platformService) GetAreaNames(id []int) []string {
 }
 
 // 获取省市区字符串
-func (p *platformService) GetAreaString(province, city, district int) string {
+func (p *platformService) GetAreaString(province, city, district int64) string {
 	if province == 0 || city == 0 || district == 0 {
 		return ""
 	}

@@ -84,10 +84,10 @@ type (
 		ChangeLevel(level int64, paymentId int64, review bool) error
 
 		// 审核升级请求
-		ReviewLevelUp(id int, pass bool) error
+		ReviewLevelUp(id int64, pass bool) error
 
 		// 标记已经处理升级
-		ConfirmLevelUp(id int) error
+		ConfirmLevelUp(id int64) error
 
 		// 更换用户名
 		ChangeUsr(string) error
@@ -147,46 +147,28 @@ type (
 		GetDeliverAddress() []IDeliverAddress
 
 		// 获取配送地址
-		GetDeliver(int) IDeliverAddress
+		GetAddress(addressId int64) IDeliverAddress
 
 		// 设置默认地址
-		SetDefaultAddress(addressId int) error
+		SetDefaultAddress(addressId int64) error
 
 		// 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
 
 		// 删除配送地址
-		DeleteDeliver(int) error
+		DeleteAddress(addressId int64) error
 	}
 
 	// 收藏服务
 	IFavoriteManager interface {
 		// 收藏
-		Favorite(favType, referId int) error
+		Favorite(favType int, referId int64) error
 
 		// 是否已收藏
-		Favored(favType, referId int) bool
+		Favored(favType int, referId int64) bool
 
 		// 取消收藏
-		Cancel(favType, referId int) error
-
-		// 收藏商品
-		FavoriteGoods(goodsId int) error
-
-		// 取消收藏商品
-		CancelGoodsFavorite(goodsId int) error
-
-		// 收藏店铺
-		FavoriteShop(shopId int) error
-
-		// 取消收藏店铺
-		CancelShopFavorite(shopId int) error
-
-		// 商品是否已收藏
-		GoodsFavored(goodsId int) bool
-
-		// 商店是否已收藏
-		ShopFavored(shopId int) bool
+		Cancel(favType int, referId int64) error
 	}
 
 	Member struct {

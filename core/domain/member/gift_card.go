@@ -18,7 +18,7 @@ import (
 var _ member.IGiftCardManager = new(giftCardManagerImpl)
 
 type giftCardManagerImpl struct {
-	memberId int
+	memberId int64
 	rep      member.IMemberRep
 }
 

@@ -53,7 +53,7 @@ func (this *cartRep) GetShoppingCartByKey(key string) cart.ICart {
 }
 
 // 获取会员没有结算的购物车
-func (this *cartRep) GetMemberCurrentCart(buyerId int) cart.ICart {
+func (this *cartRep) GetMemberCurrentCart(buyerId int64) cart.ICart {
 	c := this.GetLatestCart(buyerId)
 	if c != nil {
 		return this.CreateCart(c)
@@ -74,7 +74,7 @@ func (this *cartRep) GetShoppingCart(key string) *cart.ValueCart {
 }
 
 // 获取最新的购物车
-func (this *cartRep) GetLatestCart(buyerId int) *cart.ValueCart {
+func (this *cartRep) GetLatestCart(buyerId int64) *cart.ValueCart {
 	var v = &cart.ValueCart{}
 	if this.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
 		var items = []*cart.CartItem{}
@@ -99,7 +99,7 @@ func (this *cartRep) SaveShoppingCart(v *cart.ValueCart) (int, error) {
 }
 
 // 移出购物车项
-func (this *cartRep) RemoveCartItem(id int) error {
+func (this *cartRep) RemoveCartItem(id int64) error {
 	return this.Connector.GetOrm().DeleteByPk(cart.CartItem{}, id)
 }
 
@@ -118,12 +118,12 @@ func (this *cartRep) SaveCartItem(v *cart.CartItem) (int64, error) {
 }
 
 // 清空购物车项
-func (this *cartRep) EmptyCartItems(id int) error {
+func (this *cartRep) EmptyCartItems(cartId int64) error {
 	_, err := this.Connector.GetOrm().Delete(cart.CartItem{}, "cart_id=?", id)
 	return err
 }
 
 // 删除购物车
-func (this *cartRep) DeleteCart(id int) error {
+func (this *cartRep) DeleteCart(cartId int64) error {
 	return this.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, id)
 }

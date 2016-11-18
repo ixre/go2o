@@ -187,13 +187,14 @@ func (e *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (
 	if arr == nil {
 		return 0, express.ErrExpressTemplateMissingAreaCode
 	}
-	intArr := make([]int, len(arr))
+	intArr := make([]int64, len(arr))
 	for i, code := range arr {
 		v, ok := e._areaMap[code]
 		if ok && v.Id != t.Id {
 			return 0, express.ErrExistsAreaTemplateSet
 		}
-		intArr[i], _ = strconv.Atoi(code)
+		i2, _ := strconv.Atoi(code)
+		intArr[i] = int64(i2)
 	}
 	// 获取对应的中文名称
 	names := e._valRep.GetAreaNames(intArr)
