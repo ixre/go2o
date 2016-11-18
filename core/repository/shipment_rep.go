@@ -35,7 +35,7 @@ func (s *shipmentRep) CreateShipmentOrder(o *shipment.ShipmentOrder) shipment.IS
 	return shipImpl.NewShipmentOrder(o, s, s._expRep)
 }
 
-func (s *shipmentRep) GetShipOrderById(id int) *shipment.ShipmentOrder {
+func (s *shipmentRep) GetShipOrderById(id int64) *shipment.ShipmentOrder {
 	e := &shipment.ShipmentOrder{}
 	if s.GetOrm().Get(id, &e) == nil {
 		return e

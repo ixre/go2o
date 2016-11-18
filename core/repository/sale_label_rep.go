@@ -54,7 +54,7 @@ func (t *saleLabelRep) GetValueSaleLabel(mchId int64, tagId int64) *sale.Label {
 }
 
 // 获取销售标签
-func (t *saleLabelRep) GetSaleLabel(mchId int64, id int) sale.ISaleLabel {
+func (t *saleLabelRep) GetSaleLabel(mchId int64, id int64) sale.ISaleLabel {
 	return t.CreateSaleLabel(t.GetValueSaleLabel(mchId, id))
 }
 
@@ -80,8 +80,8 @@ func (t *saleLabelRep) DeleteSaleLabel(mchId int64, id int64) error {
 }
 
 // 获取商品
-func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId,
-	tagId int, sortBy string, begin, end int) []*valueobject.Goods {
+func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId, tagId int64,
+	sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
 	}
@@ -96,8 +96,8 @@ func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId,
 }
 
 // 获取商品
-func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId,
-	tagId int, sortBy string, begin, end int) (int, []*valueobject.Goods) {
+func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId, tagId int64,
+	sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy

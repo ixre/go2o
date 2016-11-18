@@ -100,15 +100,7 @@ func (m *mssRep) GetMailTemplate(mchId, id int64) *mss.MailTemplate {
 
 // 保存邮箱模版
 func (m *mssRep) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
-	var err error
-	var orm = m._conn.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		m._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE merchant_id=?", &v.Id, v.MerchantId)
-	}
-	return v.Id, err
+	return orm.Save(m._conn.GetOrm(), v, v.Id)
 }
 
 // 获取所有的邮箱模版
@@ -146,15 +138,7 @@ func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 
 // 保存消息
 func (m *mssRep) SaveMessage(v *mss.Message) (int64, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = m._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = m._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+	return orm.Save(m._conn.GetOrm(), v, v.Id)
 }
 
 // 获取消息
@@ -181,15 +165,7 @@ func (m *mssRep) SaveUserMsg(v *mss.To) (int64, error) {
 
 // 保存消息内容
 func (m *mssRep) SaveMsgContent(v *mss.Content) (int64, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = m._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = m._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+	return orm.Save(m._conn.GetOrm(), v, v.Id)
 }
 
 // 获取消息内容

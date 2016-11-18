@@ -50,8 +50,8 @@ func (p *personFinanceRepository) GetRiseValueByPersonId(id int64) (
 	return e, err
 }
 
-func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (
-	id int, err error) {
+func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (int64, error) {
+	var err error
 	if _, err = p.GetRiseValueByPersonId(v.PersonId); err == nil {
 		_, _, err = p._orm.Save(v.PersonId, v)
 	} else {
@@ -71,13 +71,7 @@ func (p *personFinanceRepository) GetRiseLog(personId, logId int64) *personfinan
 
 // 保存日志
 func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int64, error) {
-	if v.Id > 0 {
-		_, _, err = p._orm.Save(v.Id, v)
-	} else {
-		_, _, err = p._orm.Save(nil, v)
-		p._db.ExecScalar("SELECT MAX(id) FROM pf_riselog", &v.Id)
-	}
-	return v.Id, err
+	return orm.Save(p._db.GetOrm(), v, v.Id)
 }
 
 // 获取日志
@@ -89,11 +83,5 @@ func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseTy
 
 // 保存每日收益
 func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (int64, error) {
-	if v.Id > 0 {
-		_, _, err = p._orm.Save(v.Id, v)
-	} else {
-		_, _, err = p._orm.Save(nil, v)
-		p._db.ExecScalar("SELECT MAX(id) FROM pf_riseday", &v.Id)
-	}
-	return v.Id, err
+	return orm.Save(p._db.GetOrm(), v, v.Id)
 }

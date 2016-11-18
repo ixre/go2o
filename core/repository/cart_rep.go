@@ -45,18 +45,18 @@ func (c *cartRep) NewCart() cart.ICart {
 
 // 获取购物车
 func (c *cartRep) GetShoppingCartByKey(key string) cart.ICart {
-	c := c.GetShoppingCart(key)
-	if c != nil {
-		return c.CreateCart(c)
+	ca := c.GetShoppingCart(key)
+	if ca != nil {
+		return c.CreateCart(ca)
 	}
 	return nil
 }
 
 // 获取会员没有结算的购物车
 func (c *cartRep) GetMemberCurrentCart(buyerId int64) cart.ICart {
-	c := c.GetLatestCart(buyerId)
-	if c != nil {
-		return c.CreateCart(c)
+	ca := c.GetLatestCart(buyerId)
+	if ca != nil {
+		return c.CreateCart(ca)
 	}
 	return nil
 }

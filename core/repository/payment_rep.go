@@ -53,7 +53,7 @@ func (p *paymentRep) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrd
 	return nil
 }
 
-func (p *paymentRep) getPaymentOrderCk(id int) string {
+func (p *paymentRep) getPaymentOrderCk(id int64) string {
 	return fmt.Sprintf("go2o:rep:pay:order:%d", id)
 }
 func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
@@ -79,7 +79,7 @@ func (p *paymentRep) GetPaymentOrder(id int64) payment.IPaymentOrder {
 // 根据支付单号获取支付单
 func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder {
 	k := p.getPaymentOrderCkByNo(paymentNo)
-	id, err := p.Storage.GetInt(k)
+	id, err := p.Storage.GetInt64(k)
 	if err != nil {
 		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
 		if id == 0 {
@@ -119,7 +119,7 @@ func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int64, error) {
 }
 
 // 通知支付单完成
-func (p *paymentRep) notifyPaymentFinish(paymentOrderId int) error {
+func (p *paymentRep) notifyPaymentFinish(paymentOrderId int64) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)

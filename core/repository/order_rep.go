@@ -102,7 +102,7 @@ func (o *orderRepImpl) GetFreeOrderNo(vendorId int64) string {
 	d := o.Connector
 	var order_no string
 	for {
-		order_no = domain.NewOrderNo(vendorId, "")
+		order_no = domain.NewOrderNo(int(vendorId), "")
 		var rec int
 		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`,
 			&rec, order_no); rec == 0 {
@@ -170,16 +170,7 @@ func (o *orderRepImpl) GetOrderPromotionBinds(orderNo string) []*order.OrderProm
 
 // 保存订单的促销绑定
 func (o *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (int64, error) {
-	var err error
-	var orm = o.Connector.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		var id64 int64
-		_, id64, err = orm.Save(nil, v)
-		v.Id = int(id64)
-	}
-	return v.Id, err
+	return orm.Save(o.GetOrm(), v, v.Id)
 }
 
 // 获取订单项
@@ -216,7 +207,7 @@ func (o *orderRepImpl) GetSubOrdersByParentId(orderId int64) []*order.SubOrder {
 }
 
 // 获取缓存订单的Key
-func (o *orderRepImpl) getOrderCk(id int, subOrder bool) string {
+func (o *orderRepImpl) getOrderCk(id int64, subOrder bool) string {
 	if subOrder {
 		return fmt.Sprintf("go2o:rep:order:s_%d", id)
 	}
@@ -232,10 +223,10 @@ func (o *orderRepImpl) getOrderCkByNo(orderNo string, subOrder bool) string {
 }
 
 // 获取订单编号
-func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int {
-	id := 0
+func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
+	var id int64
 	k := o.getOrderCkByNo(orderNo, subOrder)
-	id, err := o.Storage.GetInt(k)
+	id, err := o.Storage.GetInt64(k)
 	if err != nil {
 		if subOrder {
 			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)

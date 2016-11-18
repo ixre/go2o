@@ -187,8 +187,7 @@ func (u *userMessageManagerImpl) GetMailTemplate(id int64) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (
-	int, error) {
+func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (int64, error) {
 	v.MerchantId = u._appUserId
 	v.UpdateTime = time.Now().Unix()
 	if v.CreateTime == 0 {

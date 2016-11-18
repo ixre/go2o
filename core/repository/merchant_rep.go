@@ -87,7 +87,7 @@ func (m *merchantRep) CreateSignUpToken(memberId int64) string {
 // 根据商户申请密钥获取会员编号
 func (m *merchantRep) GetMemberFromSignUpToken(token string) int64 {
 	key := "go2o:rep:mch:signup:tk-" + token
-	id, err := m.storage.GetInt(key)
+	id, err := m.storage.GetInt64(key)
 	if err == nil {
 		return id
 	}
@@ -158,8 +158,8 @@ func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int64, error) {
 
 // 获取商户的编号
 func (m *merchantRep) GetMerchantsId() []int64 {
-	dst := []int{}
-	var i int
+	dst := []int64{}
+	var i int64
 
 	m.Connector.Query("SELECT id FROM mch_merchant", func(rows *sql.Rows) {
 		for rows.Next() {
