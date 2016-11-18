@@ -103,7 +103,7 @@ type (
 		GetBalanceLogByOuterNo(outerNo string) *BalanceLog
 
 		// 保存余额变动信息
-		SaveBalanceLog(*BalanceLog) (int, error)
+		SaveBalanceLog(*BalanceLog) (int64, error)
 
 		// 订单结账
 		SettleOrder(orderNo string, amount float32, csn float32, refundAmount float32, remark string) error

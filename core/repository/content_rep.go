@@ -34,9 +34,9 @@ func (c *contentRep) GetContent(userId int64) content.IContent {
 }
 
 // 根据编号获取页面
-func (c *contentRep) GetPageById(merchantId, id int) *content.Page {
+func (c *contentRep) GetPageById(mchId, id int) *content.Page {
 	var e content.Page
-	if err := c.Connector.GetOrm().Get(id, &e); err == nil && e.UserId == merchantId {
+	if err := c.Connector.GetOrm().Get(id, &e); err == nil && e.UserId == mchId {
 		return &e
 	}
 	return nil

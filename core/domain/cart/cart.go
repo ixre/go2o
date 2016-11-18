@@ -429,7 +429,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) 
 
 	if shopId > 0 {
 		//var mch merchant.IMerchant
-		//mch, err = c._partnerRep.GetMerchant(c._merchantId)
+		//mch, err = c._partnerRep.GetMerchant(c._mchId)
 		//if err != nil {
 		//	return err
 		//}
@@ -468,7 +468,7 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 	//var err error
 	if c.value.ShopId > 0 && c.shop == nil {
 		//var pt merchant.IMerchant
-		//pt, err = c._partnerRep.GetMerchant(c._merchantId)
+		//pt, err = c._partnerRep.GetMerchant(c._mchId)
 		//if err == nil {
 		//	c._shop = pt.ShopManager().GetShop(c._value.ShopId)
 		//}

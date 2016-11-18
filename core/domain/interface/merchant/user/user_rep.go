@@ -19,8 +19,8 @@ type IUserRep interface {
 	SaveCredential(*CredentialValue) (int64, error)
 
 	// 获取人员
-	GetPersonValue(int) *PersonValue
+	GetPersonValue(id int64) *PersonValue
 
 	// 获取配送人员
-	GetDeliveryStaffPersons(merchantId int) []*PersonValue
+	GetDeliveryStaffPersons(mchId int64) []*PersonValue
 }

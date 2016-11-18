@@ -127,7 +127,7 @@ func (g *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
 }
 
 // 获取会员价销价
-func (g *tmpGoodsImpl) GetLevelPrice(level int) (bool, float32) {
+func (g *tmpGoodsImpl) GetLevelPrice(level int64) (bool, float32) {
 	lvp := g.GetLevelPrices()
 	for _, v := range lvp {
 		if level == v.Level && v.Price < g.value.SalePrice {
@@ -138,7 +138,7 @@ func (g *tmpGoodsImpl) GetLevelPrice(level int) (bool, float32) {
 }
 
 // 获取促销价
-func (g *tmpGoodsImpl) GetPromotionPrice(level int) float32 {
+func (g *tmpGoodsImpl) GetPromotionPrice(level int64) float32 {
 	b, price := g.GetLevelPrice(level)
 	if b {
 		return price
@@ -188,7 +188,7 @@ func (g *tmpGoodsImpl) GetLevelPrices() []*goods.MemberPrice {
 }
 
 // 保存会员价
-func (g *tmpGoodsImpl) SaveLevelPrice(v *goods.MemberPrice) (int, error) {
+func (g *tmpGoodsImpl) SaveLevelPrice(v *goods.MemberPrice) (int64, error) {
 	v.GoodsId = g.GetDomainId()
 	if g.value.SalePrice == v.Price {
 		if v.Id > 0 {
@@ -271,10 +271,10 @@ var _ sale.IGoodsManager = new(goodsManagerImpl)
 type goodsManagerImpl struct {
 	_sale   *saleImpl
 	_valRep valueobject.IValueRep
-	_mchId  int
+	_mchId  int64
 }
 
-func NewGoodsManager(mchId int, s *saleImpl,
+func NewGoodsManager(mchId int64, s *saleImpl,
 	valRep valueobject.IValueRep) sale.IGoodsManager {
 	c := &goodsManagerImpl{
 		_sale:   s,
@@ -303,7 +303,7 @@ func (g *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGood
 }
 
 // 根据产品编号获取商品
-func (g *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
+func (g *goodsManagerImpl) GetGoods(goodsId int64) sale.IGoods {
 	var v *goods.ValueGoods = g._sale.goodsRep.GetValueGoodsById(goodsId)
 	if v != nil {
 		pv := g._sale.itemRep.GetValueItem(v.ItemId)
@@ -315,7 +315,7 @@ func (g *goodsManagerImpl) GetGoods(goodsId int) sale.IGoods {
 }
 
 // 根据产品SKU获取商品
-func (g *goodsManagerImpl) GetGoodsBySku(itemId, sku int) sale.IGoods {
+func (g *goodsManagerImpl) GetGoodsBySku(itemId, sku int64) sale.IGoods {
 	var v *goods.ValueGoods = g._sale.goodsRep.GetValueGoodsBySku(itemId, sku)
 	if v != nil {
 		pv := g._sale.itemRep.GetValueItem(v.ItemId)
@@ -327,18 +327,13 @@ func (g *goodsManagerImpl) GetGoodsBySku(itemId, sku int) sale.IGoods {
 }
 
 // 删除商品
-func (g *goodsManagerImpl) DeleteGoods(goodsId int) error {
+func (g *goodsManagerImpl) DeleteGoods(goodsId int64) error {
 	gs := g.GetGoods(goodsId)
 	if gs.GetValue().SaleNum > 0 {
 		return goods.ErrNoSuchSnapshot
 	}
-
 	//todo: delete goods
-	err := g._sale.itemRep.DeleteItem(g._mchId, goodsId)
-	if err != nil {
-		g._sale.clearCache(goodsId)
-	}
-	return err
+	return g._sale.itemRep.DeleteItem(g._mchId, goodsId)
 }
 
 // 获取指定数量已上架的商品

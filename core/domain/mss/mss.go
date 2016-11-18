@@ -199,8 +199,8 @@ func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (
 
 // 删除邮件模板
 func (u *userMessageManagerImpl) DeleteMailTemplate(id int64) error {
-	//merchantId := this._partner.GetAggregateRootId()
-	//if this._partnerRep.CheckKvContainValue(merchantId, "kvset", strconv.Itoa(id), "mail") > 0 {
+	//mchId := this._partner.GetAggregateRootId()
+	//if this._partnerRep.CheckKvContainValue(mchId, "kvset", strconv.Itoa(id), "mail") > 0 {
 	//	return mss.ErrTemplateUsed
 	//}
 	return u._mssRep.DeleteMailTemplate(u._appUserId, id)

@@ -48,7 +48,7 @@ func (c *categoryRep) getCategoryCacheKey(id int) string {
 	return fmt.Sprintf("go2o:rep:cat:c:%d", id)
 }
 
-func (c *categoryRep) SaveCategory(v *sale.Category) (int, error) {
+func (c *categoryRep) SaveCategory(v *sale.Category) (int64, error) {
 	id, err := orm.Save(c.GetOrm(), v, v.Id)
 	// 清理缓存
 	if err == nil {
@@ -59,7 +59,7 @@ func (c *categoryRep) SaveCategory(v *sale.Category) (int, error) {
 }
 
 // 检查分类是否关联商品
-func (c *categoryRep) CheckGoodsContain(mchId, id int) bool {
+func (c *categoryRep) CheckGoodsContain(mchId, id int64) bool {
 	num := 0
 	//清理项
 	c.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
@@ -67,7 +67,7 @@ func (c *categoryRep) CheckGoodsContain(mchId, id int) bool {
 	return num > 0
 }
 
-func (c *categoryRep) DeleteCategory(mchId, id int) error {
+func (c *categoryRep) DeleteCategory(mchId, id int64) error {
 	//删除子类
 	_, _, err := c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
 		mchId, id)
@@ -85,7 +85,7 @@ func (c *categoryRep) DeleteCategory(mchId, id int) error {
 	return err
 }
 
-func (c *categoryRep) GetCategory(merchantId, id int) *sale.Category {
+func (c *categoryRep) GetCategory(mchId, id int) *sale.Category {
 	e := sale.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
@@ -121,7 +121,7 @@ func (c *categoryRep) redirectGetCats(mchId int) []*sale.Category {
 	return list
 }
 
-func (c *categoryRep) GetCategories(mchId int) []*sale.Category {
+func (c *categoryRep) GetCategories(mchId int64) []*sale.Category {
 	return c.redirectGetCats(mchId)
 	//todo: cache
 	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)

@@ -12,7 +12,7 @@ type (
 	// 快照服务
 	ISnapshotManager interface {
 		// 生成商品快照
-		GenerateSnapshot() (int, error)
+		GenerateSnapshot() (int64, error)
 
 		// 获取最新的快照
 		GetLatestSnapshot() *Snapshot
@@ -24,17 +24,17 @@ type (
 		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
 		// 根据ID获取已销售商品的快照
-		GetSaleSnapshot(id int) *SalesSnapshot
+		GetSaleSnapshot(id int64) *SalesSnapshot
 	}
 
 	// 商品快照
 	Snapshot struct {
 		//SKU编号
-		SkuId int `db:"sku_id" auto:"no" pk:"no"`
+		SkuId int64 `db:"sku_id" auto:"no" pk:"no"`
 		//快照编号: 商户编号+g商品编号+快照时间戳
 		Key string `db:"snapshot_key"`
 		//供应商编号
-		VendorId int `db:"vendor_id"`
+		VendorId int64 `db:"vendor_id"`
 		//商品编号
 		//GoodsId int `db:"goods_id"`
 		//商品标题
@@ -44,13 +44,13 @@ type (
 		//货号
 		GoodsNo string `db:"goods_no"`
 		//货品编号
-		ItemId int `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		//分类编号
-		CategoryId int `db:"cat_id"`
+		CategoryId int64 `db:"cat_id"`
 		//SKU  todo:????
 		Sku string `db:"-"`
 		//运费模板编号
-		ExpressTplId int `db:"express_tid"`
+		ExpressTplId int64 `db:"express_tid"`
 		//图片
 		Image string `db:"img"`
 		// 供货价
@@ -76,13 +76,13 @@ type (
 	// 已销售商品快照
 	SalesSnapshot struct {
 		//快照编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		//商品SKU编号
-		SkuId int `db:"sku_id"`
+		SkuId int64 `db:"sku_id"`
 		//快照编码: 商户编号+g商品编号+快照时间戳
 		SnapshotKey string `db:"snap_key"`
 		// 卖家编号
-		SellerId int `db:"seller_id"`
+		SellerId int64 `db:"seller_id"`
 		// 卖家名称
 		//SellerName  string `db:"seller_name"`
 		//商品标题
@@ -92,9 +92,9 @@ type (
 		//货号
 		GoodsNo string `db:"goods_no"`
 		//货品编号
-		ItemId int `db:"item_id"`
+		ItemId int64 `db:"item_id"`
 		//分类编号
-		CategoryId int `db:"cat_id"`
+		CategoryId int64 `db:"cat_id"`
 		//SKU  todo:????
 		Sku string `db:"sku"`
 		//图片

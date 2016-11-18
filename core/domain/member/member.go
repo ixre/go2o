@@ -206,7 +206,7 @@ func (m *memberImpl) GetAccount() member.IAccount {
 }
 
 // 增加经验值
-func (m *memberImpl) AddExp(exp int) error {
+func (m *memberImpl) AddExp(exp int64) error {
 	m.value.Exp += exp
 	_, err := m.Save()
 	//判断是否升级
@@ -261,7 +261,7 @@ func (m *memberImpl) checkLevelUp() bool {
 }
 
 // 更改会员等级
-func (m *memberImpl) ChangeLevel(level int, paymentId int, review bool) error {
+func (m *memberImpl) ChangeLevel(level int64, paymentId int64, review bool) error {
 	lg := m.manager.LevelManager()
 	lv := lg.GetLevelById(level)
 	// 判断等级是否启用

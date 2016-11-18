@@ -23,14 +23,14 @@ import (
 )
 
 var (
-	merchantIds []int
+	mchIds []int
 )
 
 func getMerchants() []int {
-	if merchantIds == nil {
-		merchantIds = dps.MerchantService.GetMerchantsId()
+	if mchIds == nil {
+		mchIds = dps.MerchantService.GetMerchantsId()
 	}
-	return merchantIds
+	return mchIds
 }
 
 /***** OLD CODE *****/
@@ -44,11 +44,11 @@ func orderDaemon(app gof.App) {
 	}
 }
 
-func autoSetOrder(merchantId int) {
+func autoSetOrder(mchId int) {
 	f := func(err error) {
 		appCtx.Log().Error(err)
 	}
-	dps.ShoppingService.OrderAutoSetup(merchantId, f)
+	dps.ShoppingService.OrderAutoSetup(mchId, f)
 }
 
 var (

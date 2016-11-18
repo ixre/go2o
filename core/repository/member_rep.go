@@ -102,7 +102,7 @@ func (m *MemberRep) Favorite(memberId int64, favType, referId int) error {
 }
 
 //是否已收藏
-func (m *MemberRep) Favored(memberId, favType, referId int) bool {
+func (m *MemberRep) Favored(memberId int64, favType int, referId int64) bool {
 	num := 0
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
 	WHERE member_id=? AND fav_type=? AND refer_id=?`, &num,
@@ -111,7 +111,7 @@ func (m *MemberRep) Favored(memberId, favType, referId int) bool {
 }
 
 //取消收藏
-func (m *MemberRep) CancelFavorite(memberId int64, favType, referId int) error {
+func (m *MemberRep) CancelFavorite(memberId int64, favType int, referId int) error {
 	_, err := m.Connector.GetOrm().Delete(&member.Favorite{},
 		"member_id=? AND fav_type=? AND refer_id=?",
 		memberId, favType, referId)
@@ -371,7 +371,7 @@ func (m *MemberRep) GetAccount(memberId int64) *member.Account {
 }
 
 // 保存账户，传入会员编号
-func (m *MemberRep) SaveAccount(v *member.Account) (int, error) {
+func (m *MemberRep) SaveAccount(v *member.Account) (int64, error) {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
 		m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
@@ -411,16 +411,16 @@ func (m *MemberRep) SaveIntegralLog(l *member.IntegralLog) error {
 }
 
 // 保存余额日志
-func (m *MemberRep) SaveBalanceLog(v *member.BalanceLog) (int, error) {
+func (m *MemberRep) SaveBalanceLog(v *member.BalanceLog) (int64, error) {
 	return orm.Save(m.GetOrm(), v, v.Id)
 }
 
 // 保存赠送账户日志
-func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int, error) {
+func (m *MemberRep) SavePresentLog(v *member.PresentLog) (int64, error) {
 	return orm.Save(m.GetOrm(), v, v.Id)
 }
 
-func (m *MemberRep) GetPresentLog(id int) *member.PresentLog {
+func (m *MemberRep) GetPresentLog(id int64) *member.PresentLog {
 	e := member.PresentLog{}
 	if err := m.Connector.GetOrm().Get(id, &e); err != nil {
 		return nil
@@ -479,12 +479,12 @@ func (m *MemberRep) GetRelation(memberId int64) *member.Relation {
 }
 
 // 获取积分对应的等级
-func (m *MemberRep) GetLevelValueByExp(merchantId int, exp int) int {
+func (m *MemberRep) GetLevelValueByExp(mchId int64, exp int) int {
 	var levelId int
 	m.Connector.ExecScalar(`SELECT lv.value FROM pt_member_level lv
 	 	where lv.merchant_id=? AND lv.require_exp <= ? AND lv.enabled=1
 	 	 ORDER BY lv.require_exp DESC LIMIT 0,1`,
-		&levelId, merchantId, exp)
+		&levelId, mchId, exp)
 	return levelId
 
 }
@@ -524,12 +524,12 @@ func (m *MemberRep) GetLevelUpLog(id int) *member.LevelUpLog {
 }
 
 // 保存会员升级记录
-func (m *MemberRep) SaveLevelUpLog(l *member.LevelUpLog) (int, error) {
+func (m *MemberRep) SaveLevelUpLog(l *member.LevelUpLog) (int64, error) {
 	return orm.Save(m.GetOrm(), l, l.Id)
 }
 
 // 保存地址
-func (m *MemberRep) SaveDeliver(v *member.DeliverAddress) (int, error) {
+func (m *MemberRep) SaveDeliver(v *member.DeliverAddress) (int64, error) {
 	return orm.Save(m.Connector.GetOrm(), v, v.Id)
 }
 
@@ -541,7 +541,7 @@ func (m *MemberRep) GetDeliverAddress(memberId int64) []*member.DeliverAddress {
 }
 
 // 获取配送地址
-func (m *MemberRep) GetSingleDeliverAddress(memberId, deliverId int) *member.DeliverAddress {
+func (m *MemberRep) GetSingleDeliverAddress(memberId, deliverId int64) *member.DeliverAddress {
 	var address member.DeliverAddress
 	err := m.Connector.GetOrm().Get(deliverId, &address)
 
@@ -552,7 +552,7 @@ func (m *MemberRep) GetSingleDeliverAddress(memberId, deliverId int) *member.Del
 }
 
 // 删除配送地址
-func (m *MemberRep) DeleteDeliver(memberId, deliverId int) error {
+func (m *MemberRep) DeleteDeliver(memberId, deliverId int64) error {
 	_, err := m.Connector.ExecNonQuery(
 		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
 		memberId, deliverId)
@@ -560,7 +560,7 @@ func (m *MemberRep) DeleteDeliver(memberId, deliverId int) error {
 }
 
 // 邀请
-func (m *MemberRep) GetMyInvitationMembers(memberId, begin, end int) (
+func (m *MemberRep) GetMyInvitationMembers(memberId int64, begin, end int) (
 	total int, rows []*dto.InvitationMember) {
 	arr := []*dto.InvitationMember{}
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
@@ -621,7 +621,7 @@ func (m *MemberRep) GetInvitationMeMember(memberId int64) *member.Member {
 }
 
 // 根据编号获取余额变动信息
-func (m *MemberRep) GetBalanceInfo(id int) *member.BalanceInfo {
+func (m *MemberRep) GetBalanceInfo(id int64) *member.BalanceInfo {
 	var e member.BalanceInfo
 	if err := m.Connector.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -639,7 +639,7 @@ func (m *MemberRep) GetBalanceInfoByNo(tradeNo string) *member.BalanceInfo {
 }
 
 // 保存余额变动信息
-func (m *MemberRep) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
+func (m *MemberRep) SaveBalanceInfo(v *member.BalanceInfo) (int64, error) {
 	var err error
 	var orm = m.Connector.GetOrm()
 	if v.Id > 0 {
@@ -665,7 +665,7 @@ func (m *MemberRep) SaveGrowAccount(memberId int64, balance, totalAmount,
 }
 
 // 获取会员分页的优惠券列表
-func (m *MemberRep) GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
+func (m *MemberRep) GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
 	list := []*dto.SimpleCoupon{}
 	m.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
         FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id

@@ -17,11 +17,11 @@ var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
 	rep   sale.ISaleLabelRep
-	mchId int
+	mchId int64
 	value *sale.Label
 }
 
-func NewSaleLabel(mchId int, value *sale.Label,
+func NewSaleLabel(mchId int64, value *sale.Label,
 	rep sale.ISaleLabelRep) sale.ISaleLabel {
 	return &saleLabelImpl{
 		rep:   rep,
@@ -69,7 +69,8 @@ func (l *saleLabelImpl) Save() (int64, error) {
 }
 
 // 获取标签下的商品
-func (l *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*valueobject.Goods {
+func (l *saleLabelImpl) GetValueGoods(sortBy string,
+	begin, end int) []*valueobject.Goods {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
@@ -81,7 +82,8 @@ func (l *saleLabelImpl) GetValueGoods(sortBy string, begin, end int) []*valueobj
 }
 
 // 获取标签下的分页商品
-func (l *saleLabelImpl) GetPagedValueGoods(sortBy string, begin, end int) (int, []*valueobject.Goods) {
+func (l *saleLabelImpl) GetPagedValueGoods(sortBy string,
+	begin, end int) (int, []*valueobject.Goods) {
 	if begin < 0 || begin > end {
 		begin = 0
 	}
@@ -97,10 +99,10 @@ var _ sale.ILabelManager = new(labelManagerImpl)
 type labelManagerImpl struct {
 	_rep    sale.ISaleLabelRep
 	_valRep valueobject.IValueRep
-	_mchId  int
+	_mchId  int64
 }
 
-func NewLabelManager(mchId int, rep sale.ISaleLabelRep,
+func NewLabelManager(mchId int64, rep sale.ISaleLabelRep,
 	valRep valueobject.IValueRep) sale.ILabelManager {
 	c := &labelManagerImpl{
 		_rep:    rep,
@@ -171,7 +173,7 @@ func (l *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
 }
 
 // 获取销售标签
-func (l *labelManagerImpl) GetSaleLabel(id int) sale.ISaleLabel {
+func (l *labelManagerImpl) GetSaleLabel(id int64) sale.ISaleLabel {
 	return l._rep.GetSaleLabel(l._mchId, id)
 }
 
@@ -191,7 +193,7 @@ func (l *labelManagerImpl) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 }
 
 // 删除销售标签
-func (l *labelManagerImpl) DeleteSaleLabel(id int) error {
+func (l *labelManagerImpl) DeleteSaleLabel(id int64) error {
 	v := l.GetSaleLabel(id)
 	if v != nil {
 		if v.System() {

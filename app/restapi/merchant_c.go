@@ -20,9 +20,9 @@ type merchantC struct {
 
 // 获取广告数据
 func (m *merchantC) Get_ad(c echo.Context) error {
-	merchantId := getMerchantId(c)
+	mchId := getMerchantId(c)
 	adName := c.Request().FormValue("ad_name")
-	dto := dps.AdService.GetAdAndDataByKey(merchantId, adName)
+	dto := dps.AdService.GetAdAndDataByKey(mchId, adName)
 	if dto != nil {
 		return c.JSON(http.StatusOK, dto)
 	}

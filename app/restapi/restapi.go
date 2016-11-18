@@ -50,9 +50,9 @@ func getUserInfo(c echo.Context) (string, string) {
 // 检查是否有权限调用接口(商户)
 func chkMerchantApiSecret(c echo.Context) bool {
 	i, s := getUserInfo(c)
-	ok, merchantId := CheckApiPermission(i, s)
+	ok, mchId := CheckApiPermission(i, s)
 	if ok {
-		c.Set("merchant_id", merchantId)
+		c.Set("merchant_id", mchId)
 	}
 	return ok
 }

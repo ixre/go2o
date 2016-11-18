@@ -59,8 +59,8 @@ import (
 //	return buf.Bytes()
 //}
 
-func GetShopsJson(merchantId int) []byte {
-	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
+func GetShopsJson(mchId int) []byte {
+	shops := dps.MerchantService.GetShopsOfMerchant(mchId)
 	buf := bytes.NewBufferString("[")
 	for i, v := range shops {
 		if i != 0 {
@@ -72,9 +72,9 @@ func GetShopsJson(merchantId int) []byte {
 	return buf.Bytes()
 }
 
-func GetShopDropList(merchantId int, selected int) []byte {
+func GetShopDropList(mchId int64, selected int) []byte {
 	buf := bytes.NewBuffer([]byte{})
-	shops := dps.MerchantService.GetShopsOfMerchant(merchantId)
+	shops := dps.MerchantService.GetShopsOfMerchant(mchId)
 	for _, v := range shops {
 		if v.Id == selected {
 			buf.WriteString(fmt.Sprintf(`<option value="%d" selected="selected">%s</option>`, v.Id, v.Name))

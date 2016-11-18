@@ -52,15 +52,15 @@ type (
 		Save() (int64, error)
 
 		// 获取子栏目的编号
-		GetChildes() []int
+		GetChildes() []int64
 	}
 	//分类
 	Category struct {
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		//父分类
-		ParentId int `db:"parent_id"`
+		ParentId int64 `db:"parent_id"`
 		//供应商编号
-		MerchantId int `db:"mch_id"`
+		MerchantId int64 `db:"mch_id"`
 		//名称
 		Name       string `db:"name"`
 		SortNumber int    `db:"sort_number"`
@@ -82,22 +82,22 @@ type (
 		GetGlobManager() ICategoryManager
 
 		// 保存分类
-		SaveCategory(*Category) (int, error)
+		SaveCategory(*Category) (int64, error)
 
 		// 检查分类是否关联商品
-		CheckGoodsContain(mchId, id int) bool
+		CheckGoodsContain(mchId, id int64) bool
 
 		// 删除分类
-		DeleteCategory(mchId, id int) error
+		DeleteCategory(mchId, id int64) error
 
 		// 获取分类
-		GetCategory(mchId, id int) *Category
+		GetCategory(mchId, id int64) *Category
 
 		// 创建分类
 		CreateCategory(v *Category) ICategory
 
 		// 获取所有分类
-		GetCategories(mchId int) []*Category
+		GetCategories(mchId int64) []*Category
 	}
 
 	// 分类服务
@@ -110,13 +110,13 @@ type (
 		CreateCategory(*Category) ICategory
 
 		// 获取分类
-		GetCategory(int) ICategory
+		GetCategory(id int64) ICategory
 
 		// 获取所有分类
 		GetCategories() []ICategory
 
 		// 删除分类
-		DeleteCategory(int) error
+		DeleteCategory(id int64) error
 	}
 )
 

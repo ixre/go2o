@@ -139,11 +139,11 @@ func (m *merchantRep) GetAccount(mchId int) *merchant.Account {
 }
 
 // 获取合作商主要的域名主机
-func (m *merchantRep) GetMerchantMajorHost(merchantId int) string {
+func (m *merchantRep) GetMerchantMajorHost(mchId int) string {
 	//todo:
 	var host string
 	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
-		&host, merchantId)
+		&host, mchId)
 	return host
 }
 
@@ -172,13 +172,13 @@ func (m *merchantRep) GetMerchantsId() []int {
 }
 
 // 获取销售配置
-func (m *merchantRep) GetMerchantSaleConf(merchantId int) *merchant.SaleConf {
+func (m *merchantRep) GetMerchantSaleConf(mchId int) *merchant.SaleConf {
 	//10%分成
 	//0.2,         #上级
 	//0.1,         #上上级
 	//0.8          #消费者自己
 	var saleConf *merchant.SaleConf = new(merchant.SaleConf)
-	if m.Connector.GetOrm().Get(merchantId, saleConf) == nil {
+	if m.Connector.GetOrm().Get(mchId, saleConf) == nil {
 		return saleConf
 	}
 	return nil
@@ -205,9 +205,9 @@ func (m *merchantRep) SaveApiInfo(v *merchant.ApiInfo) error {
 }
 
 // 获取API信息
-func (m *merchantRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
+func (m *merchantRep) GetApiInfo(mchId int64) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
-	if err := m.GetOrm().Get(merchantId, d); err == nil {
+	if err := m.GetOrm().Get(mchId, d); err == nil {
 		return d
 	}
 	return nil
@@ -215,35 +215,35 @@ func (m *merchantRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
 
 // 根据API编号获取商户编号
 func (m *merchantRep) GetMerchantIdByApiId(apiId string) int {
-	var merchantId int
-	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &merchantId, apiId)
-	return merchantId
+	var mchId int
+	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &mchId, apiId)
+	return mchId
 }
 
 // 获取键值
-func (m *merchantRep) GetKeyValue(merchantId int, indent string, k string) string {
+func (m *merchantRep) GetKeyValue(mchId int64, indent string, k string) string {
 	var v string
 	m.Connector.ExecScalar(
 		fmt.Sprintf("SELECT value FROM pt_%s WHERE merchant_id=? AND `key`=?", indent),
-		&v, merchantId, k)
+		&v, mchId, k)
 	return v
 }
 
 // 设置键值
-func (m *merchantRep) SaveKeyValue(merchantId int, indent string, k, v string, updateTime int64) error {
+func (m *merchantRep) SaveKeyValue(mchId int64, indent string, k, v string, updateTime int64) error {
 	i, err := m.Connector.ExecNonQuery(
 		fmt.Sprintf("UPDATE pt_%s SET value=?,update_time=? WHERE merchant_id=? AND `key`=?", indent),
-		v, updateTime, merchantId, k)
+		v, updateTime, mchId, k)
 	if i == 0 {
 		_, err = m.Connector.ExecNonQuery(
 			fmt.Sprintf("INSERT INTO pt_%s(merchant_id,`key`,value,update_time)VALUES(?,?,?,?)", indent),
-			merchantId, k, v, updateTime)
+			mchId, k, v, updateTime)
 	}
 	return err
 }
 
 // 获取多个键值
-func (m *merchantRep) GetKeyMap(merchantId int, indent string, k []string) map[string]string {
+func (m *merchantRep) GetKeyMap(mchId int64, indent string, k []string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE merchant_id=? AND `key` IN (?)", indent),
@@ -252,16 +252,16 @@ func (m *merchantRep) GetKeyMap(merchantId int, indent string, k []string) map[s
 				rows.Scan(&k1, &v1)
 				mp[k1] = v1
 			}
-		}, merchantId, strings.Join(k, ","))
+		}, mchId, strings.Join(k, ","))
 	return mp
 }
 
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (m *merchantRep) CheckKvContainValue(merchantId int, indent string, value string, keyStr string) int {
+func (m *merchantRep) CheckKvContainValue(mchId int64, indent string, value string, keyStr string) int {
 	var i int
 	err := m.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
 		" WHERE merchant_id=? AND value=? AND `key` LIKE '%"+
-		keyStr+"%'", &i, merchantId, value)
+		keyStr+"%'", &i, mchId, value)
 	if err != nil {
 		return 999
 	}
@@ -269,7 +269,7 @@ func (m *merchantRep) CheckKvContainValue(merchantId int, indent string, value s
 }
 
 // 根据关键字获取字典
-func (m *merchantRep) GetKeyMapByChar(merchantId int, indent string, keyword string) map[string]string {
+func (m *merchantRep) GetKeyMapByChar(mchId int64, indent string, keyword string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query("SELECT `key`,value FROM pt_"+indent+
@@ -279,13 +279,13 @@ func (m *merchantRep) GetKeyMapByChar(merchantId int, indent string, keyword str
 				rows.Scan(&k1, &v1)
 				mp[k1] = v1
 			}
-		}, merchantId)
+		}, mchId)
 	return mp
 }
 
-func (m *merchantRep) GetLevel(merchantId, levelValue int) *merchant.MemberLevel {
+func (m *merchantRep) GetLevel(mchId, levelValue int) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", merchantId, levelValue)
+	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", mchId, levelValue)
 	if err != nil {
 		return nil
 	}
@@ -293,9 +293,9 @@ func (m *merchantRep) GetLevel(merchantId, levelValue int) *merchant.MemberLevel
 }
 
 // 获取下一个等级
-func (m *merchantRep) GetNextLevel(merchantId, levelVal int) *merchant.MemberLevel {
+func (m *merchantRep) GetNextLevel(mchId, levelVal int) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
-	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", merchantId, levelVal)
+	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", mchId, levelVal)
 	if err != nil {
 		return nil
 	}
@@ -303,22 +303,22 @@ func (m *merchantRep) GetNextLevel(merchantId, levelVal int) *merchant.MemberLev
 }
 
 // 获取会员等级
-func (m *merchantRep) GetMemberLevels(merchantId int) []*merchant.MemberLevel {
+func (m *merchantRep) GetMemberLevels(mchId int) []*merchant.MemberLevel {
 	list := []*merchant.MemberLevel{}
 	m.Connector.GetOrm().Select(&list,
-		"merchant_id=?", merchantId)
+		"merchant_id=?", mchId)
 	return list
 }
 
 // 删除会员等级
-func (m *merchantRep) DeleteMemberLevel(merchantId, id int) error {
+func (m *merchantRep) DeleteMemberLevel(mchId, id int) error {
 	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
-		"id=? AND merchant_id=?", id, merchantId)
+		"id=? AND merchant_id=?", id, mchId)
 	return err
 }
 
 // 保存等级
-func (m *merchantRep) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int64, error) {
+func (m *merchantRep) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (int64, error) {
 	orm := m.Connector.GetOrm()
 	var err error
 	if v.Id > 0 {

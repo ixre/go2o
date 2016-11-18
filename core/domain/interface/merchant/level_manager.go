@@ -10,8 +10,8 @@ package merchant
 
 type (
 	MemberLevel struct {
-		Id         int `db:"id" auto:"yes" pk:"yes"`
-		MerchantId int `db:"merchant_id"`
+		Id         int64 `db:"id" auto:"yes" pk:"yes"`
+		MerchantId int64 `db:"merchant_id"`
 		// 等级值(1,2,4,8,16)
 		Value      int    `db:"value" `
 		Name       string `db:"name"`
@@ -31,7 +31,7 @@ type (
 		GetLevelByValue(value int) *MemberLevel
 
 		// 获取下一个等级
-		GetNextLevel(value int) *MemberLevel
+		GetNextLevel(value int64) *MemberLevel
 
 		// 删除等级
 		DeleteLevel(id int64) error
@@ -40,7 +40,7 @@ type (
 		SaveLevel(*MemberLevel) (int64, error)
 
 		// 根据经验值获取等级值
-		GetLevelValueByExp(exp int) int64
+		GetLevelValueByExp(exp int64) int64
 
 		// 初始化默认等级
 		InitDefaultLevels() error

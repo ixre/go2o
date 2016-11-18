@@ -21,13 +21,13 @@ var _ goods.ISnapshotManager = new(snapshotManagerImpl)
 type snapshotManagerImpl struct {
 	rep            goods.IGoodsRep
 	itemRep        item.IItemRep
-	skuId          int
+	skuId          int64
 	gs             *goods.ValueGoods
 	gi             *item.Item
 	latestSnapshot *goods.Snapshot
 }
 
-func NewSnapshotManagerImpl(skuId int, rep goods.IGoodsRep,
+func NewSnapshotManagerImpl(skuId int64, rep goods.IGoodsRep,
 	itemRep item.IItemRep, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
 	return &snapshotManagerImpl{
 		rep:     rep,
@@ -90,7 +90,7 @@ func (s *snapshotManagerImpl) checkSnapshot(snap *goods.Snapshot, i *item.Item) 
 }
 
 // 更新快照, 通过审核后,才会更新快照
-func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
+func (s *snapshotManagerImpl) GenerateSnapshot() (int64, error) {
 	gs, gi := s.getGoodsAndItem()
 	if s.skuId <= 0 || gi == nil || gs == nil {
 		return -1, goods.ErrNoSuchGoods
@@ -107,7 +107,7 @@ func (s *snapshotManagerImpl) GenerateSnapshot() (int, error) {
 
 // 更新快照
 func (s *snapshotManagerImpl) updateSnapshot(ls *goods.Snapshot,
-	gi *item.Item, gs *goods.ValueGoods) (int, error) {
+	gi *item.Item, gs *goods.ValueGoods) (int64, error) {
 	LevelSales := 0
 	if len(s.rep.GetGoodsLevelPrice(s.skuId)) > 0 {
 		LevelSales = 1
@@ -149,7 +149,7 @@ func (s *snapshotManagerImpl) GetSaleSnapshotByKey(key string) *goods.SalesSnaps
 }
 
 // 根据ID获取已销售商品的快照
-func (s *snapshotManagerImpl) GetSaleSnapshot(id int) *goods.SalesSnapshot {
+func (s *snapshotManagerImpl) GetSaleSnapshot(id int64) *goods.SalesSnapshot {
 	return s.rep.GetSaleSnapshot(id)
 }
 

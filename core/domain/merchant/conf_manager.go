@@ -38,12 +38,12 @@ func (c *confManagerImpl) GetMerchantId() int64 {
 // 获取销售配置
 func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
 	if c.saleConf == nil {
-		c.saleConf = c.rep.GetMerchantSaleConf(c.getMerchantId())
+		c.saleConf = c.rep.GetMerchantSaleConf(c.GetMerchantId())
 		if c.saleConf != nil {
 			c.verifySaleConf(c.saleConf)
 		} else {
 			c.saleConf = &merchant.SaleConf{
-				MerchantId: c.getMerchantId(),
+				MerchantId: c.GetMerchantId(),
 			}
 			c.loadGlobSaleConf(c.saleConf)
 		}
@@ -96,7 +96,7 @@ func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 		return err
 	}
 	c.saleConf = v
-	c.saleConf.MerchantId = c.getMerchantId()
+	c.saleConf.MerchantId = c.GetMerchantId()
 	return c.rep.SaveMerchantSaleConf(c.saleConf)
 }
 

@@ -11,7 +11,7 @@ package member
 
 const (
 	// 默认操作用户
-	DefaultRelateUser int = 0
+	DefaultRelateUser int64 = 0
 )
 const (
 	StateStopped = 0 //已停用
@@ -275,21 +275,21 @@ type (
 
 	//会员关联表
 	Relation struct {
-		MemberId int `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//会员卡号
 		CardId string `db:"card_id"`
 		//推荐人（会员）
-		RefereesId int `db:"invi_member_id"`
+		RefereesId int64 `db:"invi_member_id"`
 		// 会员关系字符串
 		ReferStr string `db:"refer_str"`
 		//注册关联商户编号
-		RegisterMerchantId int `db:"reg_merchant_id"`
+		RegisterMerchantId int64 `db:"reg_merchant_id"`
 	}
 
 	// 实名认证信息
 	TrustedInfo struct {
 		//会员编号
-		MemberId int `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//真实姓名
 		RealName string `db:"real_name"`
 		//身份证号码
@@ -310,7 +310,7 @@ type (
 	// 所以需要用IsLocked来标记是否锁定
 	BankInfo struct {
 		//会员编号
-		MemberId int `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//名称
 		Name string `db:"name"`
 		//账号
@@ -330,13 +330,13 @@ type (
 	// 收藏
 	Favorite struct {
 		// 编号
-		Id int `db:"id"`
+		Id int64 `db:"id"`
 		// 会员编号
-		MemberId int `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 收藏类型
 		FavType int `db:"fav_type"`
 		// 引用编号
-		ReferId int `db:"refer_id"`
+		ReferId int64 `db:"refer_id"`
 		// 收藏时间
 		UpdateTime int64 `db:"update_time"`
 	}
@@ -352,19 +352,19 @@ type (
 	// 收货地址
 	DeliverAddress struct {
 		//编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
-		MemberId int `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		//收货人
 		RealName string `db:"real_name"`
 		//电话
 		Phone string `db:"phone"`
 		//省
-		Province int `db:"province"`
+		Province int64 `db:"province"`
 		//市
-		City int `db:"city"`
+		City int64 `db:"city"`
 		//区
-		District int `db:"district"`
+		District int64 `db:"district"`
 		//地区(省市区连接)
 		Area string `db:"area"`
 		//地址
@@ -375,17 +375,17 @@ type (
 
 	// 会员升级日志
 	LevelUpLog struct {
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 原来等级
-		OriginLevel int `db:"origin_level"`
+		OriginLevel int64 `db:"origin_level"`
 		// 现在等级
-		TargetLevel int `db:"target_level"`
+		TargetLevel int64 `db:"target_level"`
 		// 是否为免费升级的会员
 		IsFree int `db:"is_free"`
 		// 支付单编号
-		PaymentId int `db:"payment_id"`
+		PaymentId int64 `db:"payment_id"`
 		// 是否审核及处理
 		Reviewed int `db:"reviewed"`
 		// 升级时间
