@@ -122,37 +122,37 @@ func (ms *memberService) Cancel(memberId, favType, referId int) error {
 // 收藏商品
 func (ms *memberService) FavoriteGoods(memberId, goodsId int) error {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().FavoriteGoods(goodsId)
+		Favorite().Favorite(member.FavTypeGoods, goodsId)
 }
 
 // 取消收藏商品
 func (ms *memberService) CancelGoodsFavorite(memberId, goodsId int) error {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().CancelGoodsFavorite(goodsId)
+		Favorite().Cancel(member.FavTypeGoods, goodsId)
 }
 
 // 收藏店铺
 func (ms *memberService) FavoriteShop(memberId, shopId int) error {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().FavoriteShop(shopId)
+		Favorite().Favorite(member.FavTypeShop, shopId)
 }
 
 // 取消收藏店铺
 func (ms *memberService) CancelShopFavorite(memberId, shopId int) error {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().CancelShopFavorite(shopId)
+		Favorite().Cancel(member.FavTypeShop, shopId)
 }
 
 // 商品是否已收藏
 func (ms *memberService) GoodsFavored(memberId, goodsId int) bool {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().GoodsFavored(goodsId)
+		Favorite().Favored(member.FavTypeGoods, goodsId)
 }
 
 // 商店是否已收藏
 func (ms *memberService) ShopFavored(memberId, shopId int) bool {
 	return ms._rep.CreateMemberById(memberId).
-		Favorite().ShopFavored(shopId)
+		Favorite().Favored(member.FavTypeShop, shopId)
 }
 
 /**================ 会员等级 ==================**/
@@ -275,14 +275,14 @@ func (ms *memberService) SetAvatar(id int, avatar string) error {
 }
 
 // 保存用户
-func (ms *memberService) SaveMember(v *member.Member) (int, error) {
+func (ms *memberService) SaveMember(v *member.Member) (int64, error) {
 	if v.Id > 0 {
 		return ms.updateMember(v)
 	}
 	return -1, errors.New("Create member use \"RegisterMember\" method.")
 }
 
-func (ms *memberService) updateMember(v *member.Member) (int, error) {
+func (ms *memberService) updateMember(v *member.Member) (int64, error) {
 	m := ms._rep.GetMember(v.Id)
 	if m == nil {
 		return -1, member.ErrNoSuchMember
@@ -535,7 +535,7 @@ func (ms *memberService) GetAddress(memberId int64) []*member.DeliverAddress {
 func (ms *memberService) GetAddressById(memberId,
 	deliverId int) *member.DeliverAddress {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	v := m.Profile().GetDeliver(deliverId).GetValue()
+	v := m.Profile().GetAddress(deliverId).GetValue()
 	return &v
 }
 
@@ -545,7 +545,7 @@ func (ms *memberService) SaveAddress(memberId int64, e *member.DeliverAddress) (
 	var v member.IDeliverAddress
 	var err error
 	if e.Id > 0 {
-		v = m.Profile().GetDeliver(e.Id)
+		v = m.Profile().GetAddress(e.Id)
 		err = v.SetValue(e)
 	} else {
 		v = m.Profile().CreateDeliver(e)
@@ -559,7 +559,7 @@ func (ms *memberService) SaveAddress(memberId int64, e *member.DeliverAddress) (
 //删除配送地址
 func (ms *memberService) DeleteAddress(memberId int64, deliverId int) error {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	return m.Profile().DeleteDeliver(deliverId)
+	return m.Profile().DeleteAddress(deliverId)
 }
 
 // 修改密码
@@ -961,7 +961,7 @@ func (ms *memberService) GetMemberByUserOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (ms *memberService) GetMemberIdByPhone(phone string) int {
+func (ms *memberService) GetMemberIdByPhone(phone string) int64 {
 	return ms._query.GetMemberIdByPhone(phone)
 }
 

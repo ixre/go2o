@@ -36,11 +36,11 @@ type (
 	//会员等级
 	Level struct {
 		//编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		//等级名称
 		Name string `db:"name"`
 		//需要经验值
-		RequireExp int `db:"require_exp"`
+		RequireExp int64 `db:"require_exp"`
 		// 可编程等级签名,可根据此签名来进行编程
 		ProgramSignal string `db:"program_signal"`
 		//是否启用
@@ -72,6 +72,6 @@ type (
 		SaveLevel(*Level) (int64, error)
 
 		// 根据经验值获取等级值
-		GetLevelIdByExp(exp int) int64
+		GetLevelIdByExp(exp int64) int64
 	}
 )

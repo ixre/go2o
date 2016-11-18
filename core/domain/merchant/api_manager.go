@@ -34,7 +34,7 @@ func (a *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
 		if a.apiInfo == nil {
 			mchId := int(a.GetAggregateRootId())
 			a.apiInfo = &merchant.ApiInfo{
-				MerchantId: mchId,
+				MerchantId: a.GetAggregateRootId(),
 				ApiId:      domain.NewApiId(mchId),
 				ApiSecret:  domain.NewSecret(mchId),
 				WhiteList:  "*",

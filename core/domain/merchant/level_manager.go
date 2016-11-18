@@ -100,7 +100,7 @@ func (l *LevelManager) GetLevelById(id int64) *merchant.MemberLevel {
 }
 
 // 根据等级值获取等级
-func (l *LevelManager) GetLevelByValue(value int) *merchant.MemberLevel {
+func (l *LevelManager) GetLevelByValue(value int64) *merchant.MemberLevel {
 	for _, v := range l.GetLevelSet() {
 		if v.Value == value {
 			return v
@@ -146,8 +146,8 @@ func (l *LevelManager) SaveLevel(v *merchant.MemberLevel) (int64, error) {
 }
 
 // 获取最大的等级值
-func (l *LevelManager) getMaxLevelValue() int {
-	var k = 0
+func (l *LevelManager) getMaxLevelValue() int64 {
+	var k int64
 	for _, v := range l.GetLevelSet() {
 		if v.Value > k {
 			k = v.Value
@@ -159,7 +159,7 @@ func (l *LevelManager) getMaxLevelValue() int {
 // 根据经验值获取等级
 func (l *LevelManager) GetLevelValueByExp(exp int64) int64 {
 	var lv *merchant.MemberLevel
-	var levelVal int
+	var levelVal int64
 	for i := len(l.GetLevelSet()); i > 0; i-- {
 		lv = l.GetLevelSet()[i-1]
 		if exp >= lv.RequireExp && lv.Value > levelVal {

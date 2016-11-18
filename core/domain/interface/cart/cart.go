@@ -45,35 +45,35 @@ type (
 		GetValue() ValueCart
 
 		// 标记商品结算
-		SignItemChecked(skuArr []int) error
+		SignItemChecked(skuArr []int64) error
 
 		// 检查购物车(仅结算商品)
 		Check() error
 
 		// 获取商品编号与购物车项的集合
-		Items() map[int]*CartItem
+		Items() map[int64]*CartItem
 
 		// 获取购物车中的商品
 		GetCartGoods() []sale.IGoods
 
 		// 结算数据持久化
-		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int) error
+		SettlePersist(shopId int64, paymentOpt int, deliverOpt int, deliverId int64) error
 
 		// 获取结算数据
 		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt, deliverOpt int)
 
 		// 设置购买会员
-		SetBuyer(buyerId int) error
+		SetBuyer(buyerId int64) error
 
 		// 设置购买会员收货地址
-		SetBuyerAddress(addressId int) error
+		SetBuyerAddress(addressId int64) error
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(vendorId int, shopId int, skuId, num int, checked bool) (*CartItem, error)
+		AddItem(vendorId, shopId, skuId int64, num int, checked bool) (*CartItem, error)
 
 		// 移出项
-		RemoveItem(skuId, num int) error
+		RemoveItem(skuId int64, num int) error
 
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
@@ -112,40 +112,40 @@ type (
 		GetShoppingCartByKey(key string) ICart
 
 		// 获取会员没有结算的购物车
-		GetMemberCurrentCart(buyerId int) ICart
+		GetMemberCurrentCart(buyerId int64) ICart
 
 		// 获取购物车
 		GetShoppingCart(key string) *ValueCart
 
 		// 获取最新的购物车
-		GetLatestCart(buyerId int) *ValueCart
+		GetLatestCart(buyerId int64) *ValueCart
 
 		// 保存购物车
 		SaveShoppingCart(*ValueCart) (int, error)
 
 		// 移出购物车项
-		RemoveCartItem(int) error
+		RemoveCartItem(id int64) error
 
 		// 保存购物车项
 		SaveCartItem(*CartItem) (int64, error)
 
 		// 清空购物车项
-		EmptyCartItems(id int) error
+		EmptyCartItems(cartId int64) error
 
 		// 删除购物车
-		DeleteCart(id int) error
+		DeleteCart(cartId int64) error
 	}
 
 	//todo:  shopId应去掉,同时应存储邮费等信息
 	ValueCart struct {
-		Id      int    `db:"id" pk:"yes" auto:"yes"`
+		Id      int64  `db:"id" pk:"yes" auto:"yes"`
 		CartKey string `db:"cart_key"`
-		BuyerId int    `db:"buyer_id"`
+		BuyerId int64  `db:"buyer_id"`
 		//OrderNo    string           `db:"order_no"`
 		//IsBought   int              `db:"is_bought"`
 		PaymentOpt int         `db:"payment_opt"`
 		DeliverOpt int         `db:"deliver_opt"`
-		DeliverId  int         `db:"deliver_id"`
+		DeliverId  int64       `db:"deliver_id"`
 		ShopId     int         `db:"shop_id"`
 		CreateTime int64       `db:"create_time"`
 		UpdateTime int64       `db:"update_time"`
@@ -154,12 +154,12 @@ type (
 
 	// 购物车项
 	CartItem struct {
-		Id         int             `db:"id" pk:"yes" auto:"yes"`
-		CartId     int             `db:"cart_id"`
-		VendorId   int             `db:"vendor_id"`
-		ShopId     int             `db:"shop_id"`
-		SkuId      int             `db:"goods_id"`
-		SnapshotId int             `db:"snap_id"`
+		Id         int64           `db:"id" pk:"yes" auto:"yes"`
+		CartId     int64           `db:"cart_id"`
+		VendorId   int64           `db:"vendor_id"`
+		ShopId     int64           `db:"shop_id"`
+		SkuId      int64           `db:"goods_id"`
+		SnapshotId int64           `db:"snap_id"`
 		Quantity   int             `db:"quantity"`
 		Checked    int             `db:"checked" json:"checked"` // 是否结算
 		Snapshot   *goods.Snapshot `db:"-"`
@@ -206,7 +206,7 @@ func ParseToDtoCart(c ICart) *dto.ShoppingCart {
 
 	if v.Items != nil {
 		if l := len(v.Items); l > 0 {
-			mp := make(map[int]*dto.CartVendorGroup, 0) //保存运营商到map
+			mp := make(map[int64]*dto.CartVendorGroup, 0) //保存运营商到map
 			for _, v := range v.Items {
 				vendor, ok := mp[v.ShopId]
 				if !ok {

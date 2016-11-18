@@ -85,7 +85,7 @@ func (m *merchantRep) CreateSignUpToken(memberId int64) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantRep) GetMemberFromSignUpToken(token string) int {
+func (m *merchantRep) GetMemberFromSignUpToken(token string) int64 {
 	key := "go2o:rep:mch:signup:tk-" + token
 	id, err := m.storage.GetInt(key)
 	if err == nil {
@@ -109,7 +109,7 @@ func (m *merchantRep) getMchCacheKey(mchId int) string {
 	return fmt.Sprintf("go2o:rep:mch:%d", mchId)
 }
 
-func (m *merchantRep) GetMerchant(id int) merchant.IMerchant {
+func (m *merchantRep) GetMerchant(id int64) merchant.IMerchant {
 	e := merchant.Merchant{}
 	key := m.getMchCacheKey(id)
 	if m.storage.Get(key, &e) != nil {
@@ -123,7 +123,7 @@ func (m *merchantRep) GetMerchant(id int) merchant.IMerchant {
 }
 
 // 获取账户
-func (m *merchantRep) GetAccount(mchId int) *merchant.Account {
+func (m *merchantRep) GetAccount(mchId int64) *merchant.Account {
 	e := merchant.Account{}
 	err := m.Connector.GetOrm().Get(mchId, &e)
 	if err == nil {
@@ -139,7 +139,7 @@ func (m *merchantRep) GetAccount(mchId int) *merchant.Account {
 }
 
 // 获取合作商主要的域名主机
-func (m *merchantRep) GetMerchantMajorHost(mchId int) string {
+func (m *merchantRep) GetMerchantMajorHost(mchId int64) string {
 	//todo:
 	var host string
 	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
@@ -148,7 +148,7 @@ func (m *merchantRep) GetMerchantMajorHost(mchId int) string {
 }
 
 // 保存
-func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
+func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int64, error) {
 	id, err := orm.Save(m.GetOrm(), v, v.Id)
 	if err == nil {
 		m.cleanCache(id)
@@ -157,7 +157,7 @@ func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int, error) {
 }
 
 // 获取商户的编号
-func (m *merchantRep) GetMerchantsId() []int {
+func (m *merchantRep) GetMerchantsId() []int64 {
 	dst := []int{}
 	var i int
 
@@ -172,7 +172,7 @@ func (m *merchantRep) GetMerchantsId() []int {
 }
 
 // 获取销售配置
-func (m *merchantRep) GetMerchantSaleConf(mchId int) *merchant.SaleConf {
+func (m *merchantRep) GetMerchantSaleConf(mchId int64) *merchant.SaleConf {
 	//10%分成
 	//0.2,         #上级
 	//0.1,         #上上级
@@ -283,7 +283,7 @@ func (m *merchantRep) GetKeyMapByChar(mchId int64, indent string, keyword string
 	return mp
 }
 
-func (m *merchantRep) GetLevel(mchId, levelValue int) *merchant.MemberLevel {
+func (m *merchantRep) GetLevel(mchId, levelValue int64) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
 	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", mchId, levelValue)
 	if err != nil {
@@ -293,7 +293,7 @@ func (m *merchantRep) GetLevel(mchId, levelValue int) *merchant.MemberLevel {
 }
 
 // 获取下一个等级
-func (m *merchantRep) GetNextLevel(mchId, levelVal int) *merchant.MemberLevel {
+func (m *merchantRep) GetNextLevel(mchId, levelVal int64) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
 	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", mchId, levelVal)
 	if err != nil {
@@ -303,7 +303,7 @@ func (m *merchantRep) GetNextLevel(mchId, levelVal int) *merchant.MemberLevel {
 }
 
 // 获取会员等级
-func (m *merchantRep) GetMemberLevels(mchId int) []*merchant.MemberLevel {
+func (m *merchantRep) GetMemberLevels(mchId int64) []*merchant.MemberLevel {
 	list := []*merchant.MemberLevel{}
 	m.Connector.GetOrm().Select(&list,
 		"merchant_id=?", mchId)
@@ -311,7 +311,7 @@ func (m *merchantRep) GetMemberLevels(mchId int) []*merchant.MemberLevel {
 }
 
 // 删除会员等级
-func (m *merchantRep) DeleteMemberLevel(mchId, id int) error {
+func (m *merchantRep) DeleteMemberLevel(mchId, id int64) error {
 	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
 		"id=? AND merchant_id=?", id, mchId)
 	return err

@@ -12,10 +12,10 @@ type (
 	// 企业信息
 	EnterpriseInfo struct {
 		// 编号
-		Id int `db:"id"`
+		Id int64 `db:"id"`
 
 		// 商户编号
-		MerchantId int `db:"mch_id"`
+		MerchantId int64 `db:"mch_id"`
 
 		// 公司名称
 		Name string `db:"name"`
@@ -36,13 +36,13 @@ type (
 		Tel string `db:"tel"`
 
 		// 省
-		Province int `db:"province"`
+		Province int64 `db:"province"`
 
 		// 市
-		City int `db:"city"`
+		City int64 `db:"city"`
 
 		// 区
-		District int `db:"district"`
+		District int64 `db:"district"`
 
 		// 省+市+区字符串表示
 		Location string `db:"location"`
@@ -81,7 +81,7 @@ type (
 		GetReviewedEnterpriseInfo() *EnterpriseInfo
 
 		// 保存企业信息
-		SaveEnterpriseInfo(v *EnterpriseInfo) (int, error)
+		SaveEnterpriseInfo(v *EnterpriseInfo) (int64, error)
 
 		// 标记企业为审核通过
 		ReviewEnterpriseInfo(reviewed bool, message string) error

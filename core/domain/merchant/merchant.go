@@ -52,7 +52,7 @@ func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int {
+func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 	return m.rep.GetMemberFromSignUpToken(token)
 }
 
@@ -61,7 +61,7 @@ func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
 	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id=?", memberId)
 	return err
 }
-func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int, error) {
+func (m *merchantManagerImpl) saveSignUpInfo(v *merchant.MchSignUp) (int64, error) {
 	v.UpdateTime = time.Now().Unix()
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 }
@@ -103,7 +103,7 @@ func (m *merchantManagerImpl) checkSignUpInfo(v *merchant.MchSignUp) error {
 }
 
 // 提交商户注册信息
-func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, error) {
+func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int64, error) {
 	err := m.checkSignUpInfo(v)
 	if err != nil {
 		return 0, err
@@ -114,7 +114,7 @@ func (m *merchantManagerImpl) CommitSignUpInfo(v *merchant.MchSignUp) (int, erro
 }
 
 // 审核商户注册信息
-func (m *merchantManagerImpl) ReviewMchSignUp(id int, pass bool, remark string) error {
+func (m *merchantManagerImpl) ReviewMchSignUp(id int64, pass bool, remark string) error {
 	var err error
 	v := m.GetSignUpInfo(id)
 	if v == nil {
@@ -177,7 +177,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 	}
 	mchId, err := mch.Save()
 	if err == nil {
-		names := m.valRep.GetAreaNames([]int{v.Province, v.City, v.District})
+		names := m.valRep.GetAreaNames([]int64{v.Province, v.City, v.District})
 		location := strings.Join(names, "")
 		ev := &merchant.EnterpriseInfo{
 			MerchantId:   mchId,
@@ -208,7 +208,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 }
 
 // 获取商户申请信息
-func (m *merchantManagerImpl) GetSignUpInfo(id int) *merchant.MchSignUp {
+func (m *merchantManagerImpl) GetSignUpInfo(id int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Db().GetOrm().Get(id, &v) != nil {
 		return nil
@@ -307,13 +307,11 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 
 // 保存
 func (m *merchantImpl) Save() (int64, error) {
-	var id int = m.GetAggregateRootId()
-
+	id := m.GetAggregateRootId()
 	if id > 0 {
 		m.checkSelfSales()
 		return m._rep.SaveMerchant(m._value)
 	}
-
 	return m.createMerchant()
 }
 
@@ -369,7 +367,7 @@ func (m *merchantImpl) SetEnabled(enabled bool) error {
 }
 
 // 返回对应的会员编号
-func (m *merchantImpl) Member() int {
+func (m *merchantImpl) Member() int64 {
 	return m.GetValue().MemberId
 }
 
@@ -383,7 +381,7 @@ func (m *merchantImpl) Account() merchant.IAccount {
 }
 
 // 创建商户
-func (m *merchantImpl) createMerchant() (int, error) {
+func (m *merchantImpl) createMerchant() (int64, error) {
 	if id := m.GetAggregateRootId(); id > 0 {
 		return id, nil
 	}
@@ -426,8 +424,8 @@ func (m *merchantImpl) createMerchant() (int, error) {
 
 	// 创建API
 	api := &merchant.ApiInfo{
-		ApiId:     domain.NewApiId(id),
-		ApiSecret: domain.NewSecret(id),
+		ApiId:     domain.NewApiId(int(id)),
+		ApiSecret: domain.NewSecret(int(id)),
 		WhiteList: "*",
 		Enabled:   1,
 	}
@@ -557,7 +555,7 @@ func (a *accountImpl) Save() error {
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetBalanceLog(id int) *merchant.BalanceLog {
+func (a *accountImpl) GetBalanceLog(id int64) *merchant.BalanceLog {
 	e := merchant.BalanceLog{}
 	if tmp.Db().GetOrm().Get(id, &e) == nil {
 		return &e
