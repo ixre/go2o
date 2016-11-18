@@ -12,7 +12,7 @@ type (
 	// 二维码模板
 	CommQrTemplate struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 模板标题
 		Title string `db:"title"`
 		// 背景图片

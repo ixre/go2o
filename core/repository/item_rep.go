@@ -29,7 +29,7 @@ func NewItemRep(c db.Connector) item.IItemRep {
 	}
 }
 
-func (i *itemRep) GetValueItem(itemId int64) *item.Item {
+func (i *itemRep) GetValueItem(itemId int32) *item.Item {
 	var e *item.Item = new(item.Item)
 	//todo: supplier_id  == -1
 	if i.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
@@ -46,20 +46,20 @@ func (i *itemRep) GetItemByIds(ids ...int64) ([]*item.Item, error) {
 
 	//todo:改成database/sql方式，不使用orm
 	err := i.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr64(ids)+`)`)
+		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
 
 	return items, err
 }
 
-func (i *itemRep) SaveValueItem(v *item.Item) (int64, error) {
-	return orm.Save(i.GetOrm(), v, v.Id)
+func (i *itemRep) SaveValueItem(v *item.Item) (int32, error) {
+	return orm.I32(orm.Save(i.GetOrm(), v, int(v.Id)))
 }
 
-func (i *itemRep) GetPagedOnShelvesItem(mchId int64, catIds []int64,
+func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int64,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 
-	var catIdStr string = format.IdArrJoinStr64(catIds)
+	var catIdStr string = format.IdArrJoinStr32(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
@@ -73,14 +73,14 @@ func (i *itemRep) GetPagedOnShelvesItem(mchId int64, catIds []int64,
 }
 
 // 获取货品销售总数
-func (i *itemRep) GetItemSaleNum(mchId int64, id int64) int {
+func (i *itemRep) GetItemSaleNum(mchId int32, id int32) int {
 	var num int
 	i.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
 		&num, id)
 	return num
 }
 
-func (i *itemRep) DeleteItem(mchId, itemId int64) error {
+func (i *itemRep) DeleteItem(mchId, itemId int32) error {
 	_, _, err := i.Connector.Exec(`
 		DELETE f FROM gs_item AS f
 		INNER JOIN gs_category AS c ON f.category_id=c.id

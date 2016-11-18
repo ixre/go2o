@@ -76,7 +76,7 @@ func (s *shopManagerImpl) GetBusinessInShops() []shop.IShop {
 }
 
 // 获取商店
-func (s *shopManagerImpl) GetShop(shopId int64) shop.IShop {
+func (s *shopManagerImpl) GetShop(shopId int32) shop.IShop {
 	shops := s.GetShops()
 	for _, v := range shops {
 		if v.GetValue().Id == shopId {
@@ -97,7 +97,7 @@ func (s *shopManagerImpl) GetOnlineShop() shop.IShop {
 }
 
 // 删除门店
-func (s *shopManagerImpl) DeleteShop(shopId int64) error {
+func (s *shopManagerImpl) DeleteShop(shopId int32) error {
 	//todo : 检测订单数量
 	mchId := s.merchant.GetAggregateRootId()
 	sp := s.GetShop(shopId)
@@ -112,14 +112,14 @@ func (s *shopManagerImpl) DeleteShop(shopId int64) error {
 	return nil
 }
 
-func (s *shopManagerImpl) deleteOnlineShop(mchId int64, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOnlineShop(mchId int32, sp shop.IShop) error {
 	return errors.New("暂不支持删除线上商店")
 	shopId := sp.GetDomainId()
 	err := s.rep.DeleteOnlineShop(mchId, shopId)
 	return err
 }
 
-func (s *shopManagerImpl) deleteOfflineShop(mchId int64, sp shop.IShop) error {
+func (s *shopManagerImpl) deleteOfflineShop(mchId int32, sp shop.IShop) error {
 	shopId := sp.GetDomainId()
 	err := s.rep.DeleteOfflineShop(mchId, shopId)
 	return err

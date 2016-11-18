@@ -30,7 +30,7 @@ const (
 type (
 	IMember interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int64
+		GetAggregateRootId() int32
 
 		// 会员资料服务
 		Profile() IProfileManager
@@ -72,22 +72,22 @@ type (
 		SaveRelation(r *Relation) error
 
 		// 更改邀请人
-		ChangeReferees(memberId int64) error
+		ChangeReferees(memberId int32) error
 
 		// 增加经验值
-		AddExp(exp int64) error
+		AddExp(exp int32) error
 
 		// 获取等级
 		GetLevel() *Level
 
 		// 更改会员等级,@paymentId:支付单编号,@reivew:是否需要审核
-		ChangeLevel(level int64, paymentId int64, review bool) error
+		ChangeLevel(level int32, paymentId int32, review bool) error
 
 		// 审核升级请求
-		ReviewLevelUp(id int64, pass bool) error
+		ReviewLevelUp(id int32, pass bool) error
 
 		// 标记已经处理升级
-		ConfirmLevelUp(id int64) error
+		ConfirmLevelUp(id int32) error
 
 		// 更换用户名
 		ChangeUsr(string) error
@@ -96,7 +96,7 @@ type (
 		UpdateLoginTime() error
 
 		// 保存
-		Save() (int64, error)
+		Save() (int32, error)
 	}
 
 	// 会员资料服务
@@ -147,33 +147,33 @@ type (
 		GetDeliverAddress() []IDeliverAddress
 
 		// 获取配送地址
-		GetAddress(addressId int64) IDeliverAddress
+		GetAddress(addressId int32) IDeliverAddress
 
 		// 设置默认地址
-		SetDefaultAddress(addressId int64) error
+		SetDefaultAddress(addressId int32) error
 
 		// 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
 
 		// 删除配送地址
-		DeleteAddress(addressId int64) error
+		DeleteAddress(addressId int32) error
 	}
 
 	// 收藏服务
 	IFavoriteManager interface {
 		// 收藏
-		Favorite(favType int, referId int64) error
+		Favorite(favType int, referId int32) error
 
 		// 是否已收藏
-		Favored(favType int, referId int64) bool
+		Favored(favType int, referId int32) bool
 
 		// 取消收藏
-		Cancel(favType int, referId int64) error
+		Cancel(favType int, referId int32) error
 	}
 
 	Member struct {
 		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 用户名
 		Usr string `db:"usr"`
 		// 密码
@@ -181,9 +181,9 @@ type (
 		// 交易密码
 		TradePwd string `db:"trade_pwd"`
 		// 经验值
-		Exp int64 `db:"exp"`
+		Exp int32 `db:"exp"`
 		// 等级
-		Level int64 `db:"level"`
+		Level int32 `db:"level"`
 		// 邀请码
 		InvitationCode string `db:"invitation_code"`
 		// 注册来源
@@ -197,7 +197,7 @@ type (
 		// 校验码过期时间
 		CheckExpires int64 `db:"check_expires"`
 		// 状态
-		State int64 `db:"state"`
+		State int32 `db:"state"`
 		// 登录时间
 		LoginTime int64 `db:"login_time"`
 		// 最后登录时间
@@ -213,13 +213,13 @@ type (
 	// 会员资料
 	Profile struct {
 		//会员编号
-		MemberId int64 `db:"member_id" pk:"yes" auto:"no"`
+		MemberId int32 `db:"member_id" pk:"yes" auto:"no"`
 		//昵称
 		Name string `db:"name"`
 		//头像
 		Avatar string `db:"avatar"`
 		//性别
-		Sex int64 `db:"sex"`
+		Sex int32 `db:"sex"`
 		//生日
 		BirthDay string `db:"birthday"`
 		//电话
@@ -231,11 +231,11 @@ type (
 		//电子邮件
 		Email string `db:"email"`
 		// 省
-		Province int64 `db:"province"`
+		Province int32 `db:"province"`
 		// 市
-		City int64 `db:"city"`
+		City int32 `db:"city"`
 		// 区
-		District int64 `db:"district"`
+		District int32 `db:"district"`
 		//备注
 		Remark string `db:"remark"`
 
@@ -257,21 +257,21 @@ type (
 
 	//会员关联表
 	Relation struct {
-		MemberId int64 `db:"member_id" pk:"yes"`
+		MemberId int32 `db:"member_id" pk:"yes"`
 		//会员卡号
 		CardId string `db:"card_id"`
 		//推荐人（会员）
-		RefereesId int64 `db:"invi_member_id"`
+		RefereesId int32 `db:"invi_member_id"`
 		// 会员关系字符串
 		ReferStr string `db:"refer_str"`
 		//注册关联商户编号
-		RegisterMerchantId int64 `db:"reg_merchant_id"`
+		RegisterMerchantId int32 `db:"reg_merchant_id"`
 	}
 
 	// 实名认证信息
 	TrustedInfo struct {
 		//会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
+		MemberId int32 `db:"member_id" pk:"yes"`
 		//真实姓名
 		RealName string `db:"real_name"`
 		//身份证号码
@@ -292,7 +292,7 @@ type (
 	// 所以需要用IsLocked来标记是否锁定
 	BankInfo struct {
 		//会员编号
-		MemberId int64 `db:"member_id" pk:"yes"`
+		MemberId int32 `db:"member_id" pk:"yes"`
 		//名称
 		Name string `db:"name"`
 		//账号
@@ -312,41 +312,41 @@ type (
 	// 收藏
 	Favorite struct {
 		// 编号
-		Id int64 `db:"id"`
+		Id int32 `db:"id"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 		// 收藏类型
 		FavType int `db:"fav_type"`
 		// 引用编号
-		ReferId int64 `db:"refer_id"`
+		ReferId int32 `db:"refer_id"`
 		// 收藏时间
 		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 收货地址
 	IDeliverAddress interface {
-		GetDomainId() int64
+		GetDomainId() int32
 		GetValue() DeliverAddress
 		SetValue(*DeliverAddress) error
-		Save() (int64, error)
+		Save() (int32, error)
 	}
 
 	// 收货地址
 	DeliverAddress struct {
 		//编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 		//收货人
 		RealName string `db:"real_name"`
 		//电话
 		Phone string `db:"phone"`
 		//省
-		Province int64 `db:"province"`
+		Province int32 `db:"province"`
 		//市
-		City int64 `db:"city"`
+		City int32 `db:"city"`
 		//区
-		District int64 `db:"district"`
+		District int32 `db:"district"`
 		//地区(省市区连接)
 		Area string `db:"area"`
 		//地址
@@ -357,17 +357,17 @@ type (
 
 	// 会员升级日志
 	LevelUpLog struct {
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 		// 原来等级
-		OriginLevel int64 `db:"origin_level"`
+		OriginLevel int32 `db:"origin_level"`
 		// 现在等级
-		TargetLevel int64 `db:"target_level"`
+		TargetLevel int32 `db:"target_level"`
 		// 是否为免费升级的会员
 		IsFree int `db:"is_free"`
 		// 支付单编号
-		PaymentId int64 `db:"payment_id"`
+		PaymentId int32 `db:"payment_id"`
 		// 是否审核及处理
 		Reviewed int `db:"reviewed"`
 		// 升级时间

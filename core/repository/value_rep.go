@@ -306,7 +306,7 @@ func (vp *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 }
 
 // 获取下级区域
-func (vp *valueRep) GetChildAreas(id int64) []*valueobject.Area {
+func (vp *valueRep) GetChildAreas(id int32) []*valueobject.Area {
 	vp._areaMux.Lock()
 	defer vp._areaMux.Unlock()
 	if vp._areaCache == nil {
@@ -324,7 +324,7 @@ func (vp *valueRep) GetChildAreas(id int64) []*valueobject.Area {
 }
 
 // 获取地区名称
-func (vp *valueRep) GetAreaNames(id []int64) []string {
+func (vp *valueRep) GetAreaNames(id []int32) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
 		strArr[i] = strconv.Itoa(int(v))
@@ -344,7 +344,7 @@ func (vp *valueRep) GetAreaNames(id []int64) []string {
 }
 
 // 获取省市区字符串
-func (vp *valueRep) GetAreaString(province, city, district int64) string {
+func (vp *valueRep) GetAreaString(province, city, district int32) string {
 	names := vp.GetAreaNames([]int64{province, city, district})
 	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
 		return strings.Join([]string{names[0], names[2]}, " ")

@@ -56,23 +56,22 @@ type (
 		CreateMessage(msg *Message, content interface{}) IMessage
 
 		// 创建用于会员通知的消息对象
-		CreateMemberNotifyMessage(memberId int64, msgType int,
-			content interface{}) IMessage
+		CreateMemberNotifyMessage(memberId int32, msgType int, content interface{}) IMessage
 
 		// 获取消息
-		GetMessage(id int64) IMessage
+		GetMessage(id int32) IMessage
 
 		// 获取聊天会话编号
-		GetChatSessionId(senderRole int, senderId int64, toRole int, toId int64) int64
+		GetChatSessionId(senderRole int, senderId int32, toRole int, toId int32) int32
 
 		// 创建聊天会话
-		CreateChatSession(senderRole int, senderId int64, toRole int, toId int64) (Message, error)
+		CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (Message, error)
 	}
 
 	// Message manager,主要用于管理用户的模板
 	IUserMessageManager interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int64
+		GetAggregateRootId() int32
 
 		// 获取配置
 		GetConfig() Config
@@ -81,16 +80,16 @@ type (
 		SaveConfig(conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(id int64) *MailTemplate
+		GetMailTemplate(id int32) *MailTemplate
 
 		// 保存邮箱模版
-		SaveMailTemplate(*MailTemplate) (int64, error)
+		SaveMailTemplate(*MailTemplate) (int32, error)
 
 		// 获取所有的邮箱模版
 		GetMailTemplates() []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(id int64) error
+		DeleteMailTemplate(id int32) error
 	}
 
 	IMssRep interface {
@@ -104,43 +103,43 @@ type (
 		NotifyManager() notify.INotifyManager
 
 		// 获取消息设置
-		GetConfig(userId int64) *Config
+		GetConfig(userId int32) *Config
 
 		// 保存消息设置
-		SaveConfig(userId int64, conf *Config) error
+		SaveConfig(userId int32, conf *Config) error
 
 		// 获取邮箱模板
-		GetMailTemplate(userId, id int64) *MailTemplate
+		GetMailTemplate(userId, id int32) *MailTemplate
 
 		// 保存邮箱模版
-		SaveMailTemplate(*MailTemplate) (int64, error)
+		SaveMailTemplate(*MailTemplate) (int32, error)
 
 		// 获取所有的邮箱模版
-		GetMailTemplates(userId int64) []*MailTemplate
+		GetMailTemplates(userId int32) []*MailTemplate
 
 		// 删除邮件模板
-		DeleteMailTemplate(userId, id int64) error
+		DeleteMailTemplate(userId, id int32) error
 
 		// 加入到发送对列
 		JoinMailTaskToQueen(*MailTask) error
 
 		// 保存消息
-		SaveMessage(msg *Message) (int64, error)
+		SaveMessage(msg *Message) (int32, error)
 
 		// 获取消息
-		GetMessage(id int64) *Message
+		GetMessage(id int32) *Message
 
 		// 保存用户消息关联
-		SaveUserMsg(to *To) (int64, error)
+		SaveUserMsg(to *To) (int32, error)
 
 		// 保存消息内容
-		SaveMsgContent(co *Content) (int64, error)
+		SaveMsgContent(co *Content) (int32, error)
 
 		// 获取消息内容
-		GetMessageContent(msgId int64) *Content
+		GetMessageContent(msgId int32) *Content
 
 		// 获取消息目标
-		GetMessageTo(msgId int64, toUserId int64, toRole int) *To
+		GetMessageTo(msgId int32, toUserId int32, toRole int) *To
 	}
 
 	// 系统消息发送配置

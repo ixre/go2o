@@ -57,7 +57,7 @@ func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
 }
 
 // 获取领域编号
-func (a *afterSalesOrderImpl) GetDomainId() int64 {
+func (a *afterSalesOrderImpl) GetDomainId() int32 {
 	return a.value.Id
 }
 
@@ -74,7 +74,7 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 		panic(errors.New("售后单缺少商品"))
 	}
 	a.value.UpdateTime = time.Now().Unix()
-	id, err := orm.Save(tmp.Db().GetOrm(), a.value, a.GetDomainId())
+	id, err := orm.I32(orm.Save(tmp.Db().GetOrm(), a.value, int(a.GetDomainId())))
 	if err == nil {
 		a.value.Id = id
 	}
@@ -95,7 +95,7 @@ func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 }
 
 // 设置要退回货物信息
-func (a *afterSalesOrderImpl) SetItem(snapshotId int64, quantity int) error {
+func (a *afterSalesOrderImpl) SetItem(snapshotId int32, quantity int) error {
 	for _, v := range a.GetOrder().Items() {
 		if v.SnapshotId == snapshotId {
 			// 判断是否超过数量
@@ -112,7 +112,7 @@ func (a *afterSalesOrderImpl) SetItem(snapshotId int64, quantity int) error {
 }
 
 // 提交售后申请
-func (a *afterSalesOrderImpl) Submit() (int64, error) {
+func (a *afterSalesOrderImpl) Submit() (int32, error) {
 	if a.GetDomainId() > 0 {
 		panic(errors.New("售后单已提交"))
 	}

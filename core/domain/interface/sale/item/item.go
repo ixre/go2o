@@ -48,33 +48,33 @@ var (
 type (
 	IItemRep interface {
 		// 获取货品
-		GetValueItem(itemId int64) *Item
+		GetValueItem(itemId int32) *Item
 
 		// 根据id获取货品
 		GetItemByIds(ids ...int64) ([]*Item, error)
 
-		SaveValueItem(*Item) (int64, error)
+		SaveValueItem(*Item) (int32, error)
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesItem(supplierId int64, catIds []int64, start, end int) (total int, goods []*Item)
+		GetPagedOnShelvesItem(supplierId int32, catIds []int64, start, end int) (total int, goods []*Item)
 
 		// 获取货品销售总数
-		GetItemSaleNum(supplierId int64, id int64) int
+		GetItemSaleNum(supplierId int32, id int32) int
 
 		// 删除货品
-		DeleteItem(supplierId, goodsId int64) error
+		DeleteItem(supplierId, goodsId int32) error
 	}
 
 	// 商品值
 	Item struct {
 		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 分类
-		CategoryId int64 `db:"category_id"`
+		CategoryId int32 `db:"category_id"`
 		// 名称
 		Name string `db:"name"`
 		//供应商编号(暂时同mch_id)
-		VendorId int64 `db:"supplier_id"`
+		VendorId int32 `db:"supplier_id"`
 		// 货号
 		GoodsNo string `db:"goods_no"`
 		// 小标题
@@ -90,7 +90,7 @@ type (
 		//参考销售价
 		SalePrice float32 `db:"sale_price"`
 		// 运费模板编号
-		ExpressTplId int64 `db:"express_tid"`
+		ExpressTplId int32 `db:"express_tid"`
 		// 描述
 		Description string `db:"description"`
 		// 上架状态

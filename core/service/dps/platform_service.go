@@ -124,12 +124,12 @@ func (p *platformService) GetChildAreas(id int) []*valueobject.Area {
 }
 
 // 获取地区名称
-func (p *platformService) GetAreaNames(id []int64) []string {
+func (p *platformService) GetAreaNames(id []int32) []string {
 	return p._rep.GetAreaNames(id)
 }
 
 // 获取省市区字符串
-func (p *platformService) GetAreaString(province, city, district int64) string {
+func (p *platformService) GetAreaString(province, city, district int32) string {
 	if province == 0 || city == 0 || district == 0 {
 		return ""
 	}

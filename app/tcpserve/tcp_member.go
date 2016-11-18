@@ -24,7 +24,7 @@ import (
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int64, updateTime int) *dto.MemberSummary {
+func GetMemberSummary(memberId int32, updateTime int) *dto.MemberSummary {
 	sto := gof.CurrentApp.Storage()
 	var kvMut int
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -45,7 +45,7 @@ func GetMemberSummary(memberId int64, updateTime int) *dto.MemberSummary {
 	return v
 }
 
-func getMemberAccount(memberId int64, updateTime int) *member.Account {
+func getMemberAccount(memberId int32, updateTime int) *member.Account {
 	sto := gof.CurrentApp.Storage()
 	var kvAut int
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)

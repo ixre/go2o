@@ -43,7 +43,7 @@ func (h *HyperLinkAdImpl) SetData(d *ad.HyperLink) error {
 }
 
 // 保存广告
-func (h *HyperLinkAdImpl) Save() (int64, error) {
+func (h *HyperLinkAdImpl) Save() (int32, error) {
 	id, err := h.adImpl.Save()
 	if err == nil {
 		v := h.getData()

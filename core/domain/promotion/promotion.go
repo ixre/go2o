@@ -38,7 +38,7 @@ func newPromotion(rep promotion.IPromotionRep, goodsRep goods.IGoodsRep,
 }
 
 // 获取聚合根编号
-func (p *promotionImpl) GetAggregateRootId() int64 {
+func (p *promotionImpl) GetAggregateRootId() int32 {
 	if p.value != nil {
 		return p.value.Id
 	}
@@ -91,7 +91,7 @@ func (p *promotionImpl) TypeName() string {
 }
 
 // 保存
-func (p *promotionImpl) Save() (int64, error) {
+func (p *promotionImpl) Save() (int32, error) {
 	p.value.UpdateTime = time.Now().Unix()
 	return p.promRep.SaveValuePromotion(p.value)
 }

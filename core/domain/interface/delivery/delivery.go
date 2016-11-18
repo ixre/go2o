@@ -10,10 +10,10 @@ package delivery
 
 type IDelivery interface {
 	// 返回聚合编号
-	GetAggregateRootId() int64
+	GetAggregateRootId() int32
 
 	// 等同于GetAggregateRootId()
-	GetMerchantId() int64
+	GetMerchantId() int32
 
 	// 获取最近的配送区域
 	GetNearestCoverage(lng, lat float64) ICoverageArea
@@ -22,7 +22,7 @@ type IDelivery interface {
 	GetArea(addr string) ([]*AreaValue, error)
 
 	//　获取覆盖区域
-	GetCoverageArea(id int64) ICoverageArea
+	GetCoverageArea(id int32) ICoverageArea
 
 	// 查看单个所在的区域
 	FindSingleCoverageArea(lng, lat float64) ICoverageArea
@@ -31,5 +31,5 @@ type IDelivery interface {
 	FindCoverageAreas(lng, lat float64) []ICoverageArea
 
 	// 获取配送信息
-	GetDeliveryInfo(coverageId int64) (shopId, deliverUsrId int64, err error)
+	GetDeliveryInfo(coverageId int32) (shopId, deliverUsrId int32, err error)
 }

@@ -27,7 +27,7 @@ func newRole(v *user.RoleValue, rep user.IUserRep) user.IRole {
 	}
 }
 
-func (this *Role) GetDomainId() int64 {
+func (this *Role) GetDomainId() int32 {
 	return this.value.Id
 }
 
@@ -43,6 +43,6 @@ func (this *Role) SetValue(v *user.RoleValue) error {
 	return errors.New("no such value")
 }
 
-func (this *Role) Save() (int64, error) {
+func (this *Role) Save() (int32, error) {
 	return this.rep.SaveRole(this.value)
 }

@@ -27,16 +27,16 @@ type (
 		GetAdGroups() []IAdGroup
 
 		// 获取单个广告分组
-		GetAdGroup(id int64) IAdGroup
+		GetAdGroup(id int32) IAdGroup
 
 		// 删除广告组
-		DelAdGroup(id int64) error
+		DelAdGroup(id int32) error
 
 		// 创建广告组
 		CreateAdGroup(name string) IAdGroup
 
 		// 根据编号获取广告位
-		GetAdPositionById(id int64) *AdPosition
+		GetAdPositionById(id int32) *AdPosition
 
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *AdPosition
@@ -45,13 +45,13 @@ type (
 		GetAdByPositionKey(key string) IAd
 
 		// 获取用户的广告管理
-		GetUserAd(adUserId int64) IUserAd
+		GetUserAd(adUserId int32) IUserAd
 	}
 
 	// 广告分组
 	IAdGroup interface {
 		// 获取领域编号
-		GetDomainId() int64
+		GetDomainId() int32
 		// 获取值
 		GetValue() AdGroup
 		// 设置值
@@ -59,13 +59,13 @@ type (
 		// 获取广告位
 		GetPositions() []*AdPosition
 		// 根据Id获取广告位
-		GetPosition(id int64) *AdPosition
+		GetPosition(id int32) *AdPosition
 		// 删除广告位
-		DelPosition(id int64) error
+		DelPosition(id int32) error
 		// 保存广告位
-		SavePosition(a *AdPosition) (int64, error)
+		SavePosition(a *AdPosition) (int32, error)
 		// 保存,需调用Save()保存
-		Save() (int64, error)
+		Save() (int32, error)
 		// 开放,需调用Save()保存
 		Open() error
 		// 关闭,需调用Save()保存
@@ -75,22 +75,22 @@ type (
 		// 禁用,需调用Save()保存
 		Disabled() error
 		// 设置默认广告
-		SetDefault(posId int64, adId int64) error
+		SetDefault(posId int32, adId int32) error
 	}
 
 	// 商户广告聚合根
 	IUserAd interface {
 		// 获取聚合根标识
-		GetAggregateRootId() int64
+		GetAggregateRootId() int32
 
 		// 删除广告
-		DeleteAd(adId int64) error
+		DeleteAd(adId int32) error
 
 		//获取广告关联的广告位
-		GetAdPositionsByAdId(adId int64) []*AdPosition
+		GetAdPositionsByAdId(adId int32) []*AdPosition
 
 		// 根据编号获取广告
-		GetById(id int64) IAd
+		GetById(id int32) IAd
 
 		// 根据KEY获取广告
 		GetByPositionKey(key string) IAd
@@ -99,13 +99,13 @@ type (
 		CreateAd(*Ad) IAd
 
 		// 设置广告
-		SetAd(posId, adId int64) error
+		SetAd(posId, adId int32) error
 	}
 
 	// 广告接口
 	IAd interface {
 		// 获取领域对象编号
-		GetDomainId() int64
+		GetDomainId() int32
 
 		// 是否为系统发布的广告
 		System() bool
@@ -123,7 +123,7 @@ type (
 		GetValue() *Ad
 
 		// 保存广告
-		Save() (int64, error)
+		Save() (int32, error)
 
 		// 增加展现次数
 		AddShowTimes(times int) error
@@ -140,7 +140,7 @@ type (
 
 	// 广告分组
 	AdGroup struct {
-		Id      int64  `db:"id" auto:"yes" pk:"yes"`
+		Id      int32  `db:"id" auto:"yes" pk:"yes"`
 		Name    string `db:"name"`
 		Opened  int    `db:"opened"`
 		Enabled int    `db:"enabled"`
@@ -149,9 +149,9 @@ type (
 	// 广告位
 	AdPosition struct {
 		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 分组编号
-		GroupId int64 `db:"group_id"`
+		GroupId int32 `db:"group_id"`
 		// 引用键
 		Key string `db:"key"`
 		// 名称
@@ -164,31 +164,31 @@ type (
 		// 是否启用
 		Enabled int `db:"enabled"`
 		// 默认广告编号
-		DefaultId int64 `db:"default_id"`
+		DefaultId int32 `db:"default_id"`
 	}
 
 	// 广告用户设置
 	AdUserSet struct {
 		// 编号
-		Id int64 `db:"id"`
+		Id int32 `db:"id"`
 
 		// 广告位编号
-		PosId int64 `db:"pos_id"`
+		PosId int32 `db:"pos_id"`
 
 		//广告用户编号
-		AdUserId int64 `db:"user_id"`
+		AdUserId int32 `db:"user_id"`
 
 		// 广告编号
-		AdId int64 `db:"ad_id"`
+		AdId int32 `db:"ad_id"`
 	}
 
 	// 广告
 	Ad struct {
 		// 编号
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		//广告用户编号
-		UserId int64 `db:"user_id"`
+		UserId int32 `db:"user_id"`
 
 		// 名称
 		Name string `db:"name"`
@@ -211,7 +211,7 @@ type (
 
 	// 广告数据传输对象
 	AdDto struct {
-		Id   int64       `json:"id"`
+		Id   int32       `json:"id"`
 		Type int         `json:"type"`
 		Data interface{} `json:"data"`
 	}
@@ -225,65 +225,65 @@ type (
 		GetAdGroups() []*AdGroup
 
 		// 删除广告组
-		DelAdGroup(id int64) error
+		DelAdGroup(id int32) error
 
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *AdPosition
 
 		// 获取广告位
-		GetAdPositionsByGroupId(adGroupId int64) []*AdPosition
+		GetAdPositionsByGroupId(adGroupId int32) []*AdPosition
 
 		// 删除广告位
-		DelAdPosition(id int64) error
+		DelAdPosition(id int32) error
 
 		// 保存广告位
-		SaveAdPosition(a *AdPosition) (int64, error)
+		SaveAdPosition(a *AdPosition) (int32, error)
 
 		// 保存
-		SaveAdGroup(value *AdGroup) (int64, error)
+		SaveAdGroup(value *AdGroup) (int32, error)
 
 		// 设置用户的广告
-		SetUserAd(adUserId, posId, adId int64) error
+		SetUserAd(adUserId, posId, adId int32) error
 
 		// 根据名称获取广告编号
-		GetIdByName(mchId int64, name string) int
+		GetIdByName(mchId int32, name string) int
 
 		// 保存广告值
-		SaveAdValue(*Ad) (int64, error)
+		SaveAdValue(*Ad) (int32, error)
 
 		/* ===============  广告类型 ================*/
 
 		// 获取超链接广告数据
-		GetHyperLinkData(adId int64) *HyperLink
+		GetHyperLinkData(adId int32) *HyperLink
 
 		// 保存超链接广告数据
-		SaveHyperLinkData(value *HyperLink) (int64, error)
+		SaveHyperLinkData(value *HyperLink) (int32, error)
 
 		// 保存广告图片
-		SaveAdImageValue(*Image) (int64, error)
+		SaveAdImageValue(*Image) (int32, error)
 
 		// 获取广告
-		GetValueAd(id int64) *Ad
+		GetValueAd(id int32) *Ad
 
 		// 根据KEY获取广告
-		GetAdByKey(userId int64, name string) *Ad
+		GetAdByKey(userId int32, name string) *Ad
 
 		// 获取轮播广告
-		GetValueGallery(adId int64) ValueGallery
+		GetValueGallery(adId int32) ValueGallery
 
 		// 获取图片项
-		GetValueAdImage(adId, id int64) *Image
+		GetValueAdImage(adId, id int32) *Image
 
 		// 删除图片项
-		DelAdImage(adId, id int64) error
+		DelAdImage(adId, id int32) error
 
 		// 删除广告
-		DelAd(mchId, adId int64) error
+		DelAd(mchId, adId int32) error
 
 		// 删除广告的图片数据
-		DelImageDataForAdvertisement(adId int64) error
+		DelImageDataForAdvertisement(adId int32) error
 
 		// 删除广告的文字数据
-		DelTextDataForAdvertisement(adId int64) error
+		DelTextDataForAdvertisement(adId int32) error
 	}
 )

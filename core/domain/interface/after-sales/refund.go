@@ -27,7 +27,7 @@ type (
 	// 退款单,同退货单。只是不退货物。退款单需要付款后才能退款。
 	IRefundOrder interface {
 		//// 获取领域对象编号
-		//GetDomainId() int64
+		//GetDomainId() int32
 		//
 		//// 获取值
 		//GetValue() RefundOrder
@@ -56,7 +56,7 @@ type (
 	// 退款单
 	RefundOrder struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"no"`
+		Id int32 `db:"id" pk:"yes" auto:"no"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 退款方式：1.退回余额  2: 原路退回

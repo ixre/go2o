@@ -18,7 +18,7 @@ var _ merchant.IKvManager = new(KvManager)
 
 type KvManager struct {
 	mch   *merchantImpl
-	mchId int64
+	mchId int32
 	// 标识
 	indent string
 }

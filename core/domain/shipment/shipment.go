@@ -34,7 +34,7 @@ func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRep,
 }
 
 // 获取聚合根编号
-func (s *shipmentOrderImpl) GetAggregateRootId() int64 {
+func (s *shipmentOrderImpl) GetAggregateRootId() int32 {
 	return s.value.Id
 }
 
@@ -43,7 +43,7 @@ func (s *shipmentOrderImpl) Value() shipment.ShipmentOrder {
 	return *s.value
 }
 
-func (s *shipmentOrderImpl) getExpressProvider(spId int64) *express.ExpressProvider {
+func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.ExpressProvider {
 	if s.expSp == nil {
 		s.expSp = s.expRep.GetExpressProvider(spId)
 	}
@@ -51,7 +51,7 @@ func (s *shipmentOrderImpl) getExpressProvider(spId int64) *express.ExpressProvi
 }
 
 // 发货
-func (s *shipmentOrderImpl) Ship(spId int64, spOrderNo string) error {
+func (s *shipmentOrderImpl) Ship(spId int32, spOrderNo string) error {
 	if e := s.getExpressProvider(spId); e == nil || e.Enabled != 1 {
 		return express.ErrNotSupportProvider
 	}

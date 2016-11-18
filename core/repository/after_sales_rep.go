@@ -43,7 +43,7 @@ func (a *afterSalesRep) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) aft
 }
 
 // 获取售后单
-func (a *afterSalesRep) GetAfterSalesOrder(id int64) afterSales.IAfterSalesOrder {
+func (a *afterSalesRep) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder {
 	v := &afterSales.AfterSalesOrder{}
 	if a.GetOrm().Get(id, v) == nil {
 		return a.CreateAfterSalesOrder(v)
@@ -52,7 +52,7 @@ func (a *afterSalesRep) GetAfterSalesOrder(id int64) afterSales.IAfterSalesOrder
 }
 
 // 获取订单的售后单
-func (a *afterSalesRep) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrder {
+func (a *afterSalesRep) GetAllOfSaleOrder(orderId int32) []afterSales.IAfterSalesOrder {
 	list := []*afterSales.AfterSalesOrder{}
 	orders := []afterSales.IAfterSalesOrder{}
 	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {

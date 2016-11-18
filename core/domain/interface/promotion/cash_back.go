@@ -11,7 +11,7 @@ package promotion
 // 返现促销
 type ICashBackPromotion interface {
 	// 获取领域编号
-	GetDomainId() int64
+	GetDomainId() int32
 
 	// 设置详细的促销信息
 	SetDetailsValue(*ValueCashBack) error
@@ -22,7 +22,7 @@ type ICashBackPromotion interface {
 
 type ValueCashBack struct {
 	// 编号
-	Id int64 `db:"id" pk:"yes"`
+	Id int32 `db:"id" pk:"yes"`
 
 	// 最低金额要求
 	MinFee int `db:"min_fee"`

@@ -28,7 +28,7 @@ func NewShipmentService(rep shipment.IShipmentRep,
 }
 
 // 创建一个配送覆盖的区域
-func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int64, error) {
+func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int, error) {
 	return s._deliveryRep.SaveCoverageArea(c)
 }
 

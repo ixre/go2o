@@ -27,7 +27,7 @@ func newPerson(v *user.PersonValue, rep user.IUserRep) user.IPerson {
 	}
 }
 
-func (p *Person) GetDomainId() int64 {
+func (p *Person) GetDomainId() int32 {
 	return p.value.Id
 }
 
@@ -43,6 +43,6 @@ func (p *Person) SetValue(v *user.PersonValue) error {
 	return errors.New("no such value")
 }
 
-func (p *Person) Save() (int64, error) {
+func (p *Person) Save() (int32, error) {
 	return p.rep.SavePerson(p.value)
 }

@@ -110,7 +110,7 @@ type (
 	// 售后单
 	IAfterSalesOrder interface {
 		// 获取领域编号
-		GetDomainId() int64
+		GetDomainId() int32
 
 		// 获取售后单数据
 		Value() AfterSalesOrder
@@ -119,10 +119,10 @@ type (
 		GetOrder() order.ISubOrder
 
 		// 设置要退回货物信息
-		SetItem(snapshotId int64, quantity int) error
+		SetItem(snapshotId int32, quantity int) error
 
 		// 提交售后申请
-		Submit() (int64, error)
+		Submit() (int32, error)
 
 		// 取消申请
 		Cancel() error
@@ -157,26 +157,26 @@ type (
 		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
 
 		// 获取售后单
-		GetAfterSalesOrder(id int64) IAfterSalesOrder
+		GetAfterSalesOrder(id int32) IAfterSalesOrder
 
 		// 获取订单的售后单
-		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrder
+		GetAllOfSaleOrder(orderId int32) []IAfterSalesOrder
 	}
 
 	// 售后单
 	AfterSalesOrder struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
-		OrderId int64 `db:"order_id"`
+		OrderId int32 `db:"order_id"`
 		// 运营商编号
-		VendorId int64 `db:"vendor_id"`
+		VendorId int32 `db:"vendor_id"`
 		// 购买者编号
-		BuyerId int64 `db:"buyer_id"`
+		BuyerId int32 `db:"buyer_id"`
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号
-		SnapshotId int64 `db:"snap_id"`
+		SnapshotId int32 `db:"snap_id"`
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后原因

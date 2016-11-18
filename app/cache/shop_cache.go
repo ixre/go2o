@@ -31,7 +31,7 @@ func CleanShopData(shopId int) {
 }
 
 // 删除商铺缓存
-func DelShopCache(mchId int64) {
+func DelShopCache(mchId int32) {
 	kvs := GetKVS()
 	kvs.Del(GetValueMerchantCacheCK(mchId))
 	kvs.Del(GetMerchantSiteConfCK(mchId))
@@ -52,7 +52,7 @@ func GetShopIdByHost(host string) (shopId int) {
 }
 
 // 根据商城编号获取商户编号
-func GetMchIdByShopId(shopId int) (mchId int64) {
+func GetMchIdByShopId(shopId int) (mchId int32) {
 	key := "go2o:cache:mch-by-shop:" + strconv.Itoa(shopId)
 	sto := GetKVS()
 	var err error

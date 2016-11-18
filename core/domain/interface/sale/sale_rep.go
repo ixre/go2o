@@ -11,5 +11,5 @@ package sale
 
 // 销售仓库
 type ISaleRep interface {
-	GetSale(mchId int64) ISale
+	GetSale(mchId int32) ISale
 }

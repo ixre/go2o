@@ -15,7 +15,7 @@ import (
 
 // 优惠券促销
 type ICouponPromotion interface {
-	GetDomainId() int64
+	GetDomainId() int32
 
 	// 获取促销内容
 	GetDetailsValue() ValueCoupon
@@ -30,7 +30,7 @@ type ICouponPromotion interface {
 	GetTakes() []ValueCouponTake
 
 	// 保存
-	Save() (id int64, err error)
+	Save() (id int32, err error)
 
 	// 获取优惠券描述
 	GetDescribe() string
@@ -46,31 +46,31 @@ type ICouponPromotion interface {
 	CanTake() bool
 
 	// 获取占用
-	GetTake(memberId int64) (*ValueCouponTake, error)
+	GetTake(memberId int32) (*ValueCouponTake, error)
 
 	//占用
-	Take(memberId int64) error
+	Take(memberId int32) error
 
 	// 应用到订单
-	ApplyTake(couponTakeId int64) error
+	ApplyTake(couponTakeId int32) error
 
 	// 绑定
-	Bind(memberId int64) error
+	Bind(memberId int32) error
 
 	//获取绑定
-	GetBind(memberId int64) (*ValueCouponBind, error)
+	GetBind(memberId int32) (*ValueCouponBind, error)
 
 	//绑定
 	Binds(memberIds []string) error
 
 	//使用优惠券
-	UseCoupon(couponBindId int64) error
+	UseCoupon(couponBindId int32) error
 }
 
 type (
 	ValueCoupon struct {
 		// 优惠券编号
-		Id int64 `db:"id" pk:"yes"`
+		Id int32 `db:"id" pk:"yes"`
 
 		//优惠码
 		Code string `db:"code"`
@@ -91,7 +91,7 @@ type (
 		Discount int `db:"discount"`
 
 		//等级限制
-		MinLevel int64 `db:"min_level"`
+		MinLevel int32 `db:"min_level"`
 
 		//订单金额限制
 		MinFee int `db:"min_fee"`
@@ -107,13 +107,13 @@ type (
 
 	//优惠券绑定
 	ValueCouponBind struct {
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		//会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 
 		//优惠券编号
-		CouponId int64 `db:"coupon_id"`
+		CouponId int32 `db:"coupon_id"`
 
 		//绑定时间
 		BindTime int64 `db:"bind_time"`
@@ -126,13 +126,13 @@ type (
 	}
 
 	ValueCouponTake struct {
-		Id int64 `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		//会员编号
-		MemberId int64 `db:"member_id"`
+		MemberId int32 `db:"member_id"`
 
 		//优惠券编号
-		CouponId int64 `db:"coupon_id"`
+		CouponId int32 `db:"coupon_id"`
 
 		//占用时间
 		TakeTime int64 `db:"take_time"`

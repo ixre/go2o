@@ -48,7 +48,7 @@ func newShop(manager *shopManagerImpl, v *shop.Shop,
 	panic("未知的商店类型")
 }
 
-func (s *shopImpl) GetDomainId() int64 {
+func (s *shopImpl) GetDomainId() int32 {
 	return s.value.Id
 }
 
@@ -95,7 +95,7 @@ func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 	return i > 0
 }
 
-func (s *shopImpl) Save() (int64, error) {
+func (s *shopImpl) Save() (int32, error) {
 	return s.shopRep.SaveShop(s.value)
 }
 
@@ -191,7 +191,7 @@ func (s *offlineShopImpl) CanDeliverTo(address string) (bool, int) {
 }
 
 // 保存
-func (s *offlineShopImpl) Save() (int64, error) {
+func (s *offlineShopImpl) Save() (int32, error) {
 	create := s.GetDomainId() <= 0
 	id, err := s.shopImpl.Save()
 	if err == nil {
@@ -281,7 +281,7 @@ func (s *onlineShopImpl) GetShopValue() shop.OnlineShop {
 }
 
 // 保存
-func (s *onlineShopImpl) Save() (int64, error) {
+func (s *onlineShopImpl) Save() (int32, error) {
 	create := s.GetDomainId() <= 0
 	if create {
 		if s.manager.GetOnlineShop() != nil {

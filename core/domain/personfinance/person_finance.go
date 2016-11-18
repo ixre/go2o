@@ -18,12 +18,12 @@ import (
 var _ personfinance.IPersonFinance = new(PersonFinance)
 
 type PersonFinance struct {
-	personId int64
+	personId int32
 	accRep   member.IMemberRep
 	rep      personfinance.IPersonFinanceRepository
 }
 
-func NewPersonFinance(personId int64, rep personfinance.IPersonFinanceRepository,
+func NewPersonFinance(personId int32, rep personfinance.IPersonFinanceRepository,
 	accRep member.IMemberRep) personfinance.IPersonFinance {
 	return &PersonFinance{
 		personId: personId,
@@ -33,7 +33,7 @@ func NewPersonFinance(personId int64, rep personfinance.IPersonFinanceRepository
 }
 
 // 获取聚合根
-func (p *PersonFinance) GetAggregateRootId() int64 {
+func (p *PersonFinance) GetAggregateRootId() int32 {
 	return p.personId
 }
 

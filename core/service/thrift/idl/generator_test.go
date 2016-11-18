@@ -17,6 +17,20 @@ import (
 	"testing"
 )
 
+// 生成Golang的Thrift代码
+func TestGo(t *testing.T) {
+	for _, v := range getFiles() {
+		genCode(t, "go", v)
+	}
+}
+
+// 生成Golang的Thrift代码
+func TestJava(t *testing.T) {
+	for _, v := range getFiles() {
+		genCode(t, "java", v)
+	}
+}
+
 func getFiles() []string {
 	list := []string{}
 	filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
@@ -39,18 +53,4 @@ func genCode(t *testing.T, lang string, file string) {
 	}
 	t.Log(output + "\n")
 	t.Fail()
-}
-
-// 生成Golang的Thrift代码
-func TestGo(t *testing.T) {
-	for _, v := range getFiles() {
-		genCode(t, "go", v)
-	}
-}
-
-// 生成Golang的Thrift代码
-func TestJava(t *testing.T) {
-	for _, v := range getFiles() {
-		genCode(t, "java", v)
-	}
 }

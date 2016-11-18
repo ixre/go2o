@@ -307,13 +307,13 @@ type (
 		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
 
 		// 获取下级区域
-		GetChildAreas(id int64) []*Area
+		GetChildAreas(id int32) []*Area
 
 		// 获取地区名称
-		GetAreaNames(id []int64) []string
+		GetAreaNames(id []int32) []string
 
 		// 获取省市区字符串
-		GetAreaString(province, city, district int64) string
+		GetAreaString(province, city, district int32) string
 	}
 
 	// 短信接口

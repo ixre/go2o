@@ -22,9 +22,9 @@ import (
 )
 
 // 获取推荐数组
-func (o *subOrderImpl) getReferArr(memberId int64, level int64) []int64 {
-	arr := make([]int64, level)
-	var i int64
+func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
+	arr := make([]int32, level)
+	var i int32
 	referId := memberId
 	for i <= level-1 {
 		rl := o.memberRep.GetRelation(referId)
