@@ -21,7 +21,7 @@ type IInvitationManager interface {
 	MyCode() string
 
 	// 获取邀请会员下级邀请数量
-	GetSubInvitationNum(memberIdArr []int64) map[int64]int
+	GetSubInvitationNum(memberIdArr []int32) map[int32]int
 
 	// 获取邀请我的会员
 	GetInvitationMeMember() *Member

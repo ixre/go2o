@@ -584,17 +584,17 @@ func (m *MemberRep) GetMyInvitationMembers(memberId int32, begin, end int) (
 }
 
 // 获取下级会员数量
-func (m *MemberRep) GetSubInvitationNum(memberId int32, memberIdArr []int64) map[int64]int {
+func (m *MemberRep) GetSubInvitationNum(memberId int32, memberIdArr []int32) map[int32]int {
 	if len(memberIdArr) == 0 {
-		return map[int64]int{}
+		return map[int32]int{}
 	}
 	memberIds := format.IdArrJoinStr32(memberIdArr)
-	var d map[int64]int = make(map[int64]int)
+	var d map[int32]int = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 		func(rows *sql.Rows) {
-			var id int64
+			var id int32
 			var num int
 			for rows.Next() {
 				rows.Scan(&id, &num)

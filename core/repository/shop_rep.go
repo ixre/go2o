@@ -83,7 +83,8 @@ func (s *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
 
 // 保存API信息
 func (s *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
-	return orm.I32(orm.Save(s.GetOrm(), v, int(v.MerchantId)))
+	_, err := orm.Save(s.GetOrm(), v, int(v.MerchantId))
+	return err
 }
 
 // 获取API信息

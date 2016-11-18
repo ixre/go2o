@@ -50,7 +50,7 @@ type valueRep struct {
 	_moAppGob        *util.GobFile
 	_tplConf         *valueobject.TemplateConf
 	_tplGob          *util.GobFile
-	_areaCache       map[int64][]*valueobject.Area
+	_areaCache       map[int32][]*valueobject.Area
 	_areaMux         sync.Mutex
 }
 
@@ -310,7 +310,7 @@ func (vp *valueRep) GetChildAreas(id int32) []*valueobject.Area {
 	vp._areaMux.Lock()
 	defer vp._areaMux.Unlock()
 	if vp._areaCache == nil {
-		vp._areaCache = make(map[int64][]*valueobject.Area)
+		vp._areaCache = make(map[int32][]*valueobject.Area)
 	}
 	if v, ok := vp._areaCache[id]; ok {
 		return v
@@ -345,7 +345,7 @@ func (vp *valueRep) GetAreaNames(id []int32) []string {
 
 // 获取省市区字符串
 func (vp *valueRep) GetAreaString(province, city, district int32) string {
-	names := vp.GetAreaNames([]int64{province, city, district})
+	names := vp.GetAreaNames([]int32{province, city, district})
 	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
 		return strings.Join([]string{names[0], names[2]}, " ")
 	}
