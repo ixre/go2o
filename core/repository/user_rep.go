@@ -65,7 +65,7 @@ func (this *userRep) SaveCredential(v *user.CredentialValue) (int64, error) {
 }
 
 // 获取人员
-func (this *userRep) GetPersonValue(id int) *user.PersonValue {
+func (this *userRep) GetPersonValue(id int64) *user.PersonValue {
 	e := new(user.PersonValue)
 	err := this.Connector.GetOrm().Get(e, id)
 	if err != nil {
@@ -75,7 +75,7 @@ func (this *userRep) GetPersonValue(id int) *user.PersonValue {
 }
 
 // 获取配送人员
-func (this *userRep) GetDeliveryStaffPersons(merchantId int) []*user.PersonValue {
+func (this *userRep) GetDeliveryStaffPersons(mchId int64) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
 	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
 	if err != nil {

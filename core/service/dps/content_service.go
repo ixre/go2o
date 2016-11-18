@@ -29,9 +29,9 @@ func NewContentService(rep content.IContentRep, q *query.ContentQuery) *contentS
 }
 
 // 获取页面
-//todo: 取消merchantId
-func (cs *contentService) GetPage(merchantId, id int) *content.Page {
-	c := cs._contentRep.GetContent(merchantId)
+//todo: 取消mchId
+func (cs *contentService) GetPage(mchId, id int) *content.Page {
+	c := cs._contentRep.GetContent(mchId)
 	page := c.GetPage(id)
 	if page != nil {
 		return page.GetValue()
@@ -40,7 +40,7 @@ func (cs *contentService) GetPage(merchantId, id int) *content.Page {
 }
 
 // 根据标识获取页面
-//todo: 取消merchantId
+//todo: 取消mchId
 func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Page {
 	c := cs._contentRep.GetContent(userId)
 	page := c.GetPageByStringIndent(indent)
@@ -51,11 +51,11 @@ func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Pa
 }
 
 // 保存页面
-func (cs *contentService) SavePage(merchantId int, v *content.Page) (int64, error) {
-	c := cs._contentRep.GetContent(merchantId)
+func (cs *contentService) SavePage(mchId int64, v *content.Page) (int64, error) {
+	c := cs._contentRep.GetContent(mchId)
 	var page content.IPage
 	var err error
-	if v.UserId != merchantId {
+	if v.UserId != mchId {
 		return -1, merchant.ErrMerchantNotMatch
 	}
 
@@ -72,8 +72,8 @@ func (cs *contentService) SavePage(merchantId int, v *content.Page) (int64, erro
 }
 
 // 删除页面
-func (cs *contentService) DeletePage(merchantId int, pageId int) error {
-	c := cs._contentRep.GetContent(merchantId)
+func (cs *contentService) DeletePage(mchId int64, pageId int) error {
+	c := cs._contentRep.GetContent(mchId)
 	return c.DeletePage(pageId)
 }
 

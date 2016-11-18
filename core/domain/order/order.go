@@ -160,11 +160,11 @@ func (o *orderImpl) GetCoupons() []promotion.ICouponPromotion {
 // 获取可用的促销,不包含优惠券
 func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if o.availPromotions == nil {
-		//merchantId := o._cart.VendorId
+		//mchId := o._cart.VendorId
 
 		//todo: 将购物车中的vendor均获取出来
-		merchantId := -1
-		var vp []*promotion.PromotionInfo = o.promRep.GetPromotionOfMerchantOrder(merchantId)
+		mchId := -1
+		var vp []*promotion.PromotionInfo = o.promRep.GetPromotionOfMerchantOrder(mchId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
 			proms[i] = o.promRep.CreatePromotion(v)

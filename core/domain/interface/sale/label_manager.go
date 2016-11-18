@@ -13,10 +13,10 @@ import "go2o/core/domain/interface/valueobject"
 type (
 	// 销售标签
 	Label struct {
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 
 		// 商户编号
-		MerchantId int `db:"mch_id"`
+		MerchantId int64 `db:"mch_id"`
 
 		// 标签代码
 		TagCode string `db:"tag_code"`
@@ -64,7 +64,7 @@ type (
 		InitSaleLabels() error
 
 		// 获取销售标签
-		GetSaleLabel(id int) ISaleLabel
+		GetSaleLabel(id int64) ISaleLabel
 
 		// 根据Code获取销售标签
 		GetSaleLabelByCode(code string) ISaleLabel
@@ -73,7 +73,7 @@ type (
 		CreateSaleLabel(v *Label) ISaleLabel
 
 		// 删除销售标签
-		DeleteSaleLabel(id int) error
+		DeleteSaleLabel(id int64) error
 	}
 
 	ISaleLabelRep interface {
@@ -81,38 +81,38 @@ type (
 		CreateSaleLabel(v *Label) ISaleLabel
 
 		// 获取所有的销售标签
-		GetAllValueSaleLabels(merchantId int) []*Label
+		GetAllValueSaleLabels(mchId int64) []*Label
 
 		// 获取销售标签值
-		GetValueSaleLabel(merchantId int, tagId int) *Label
+		GetValueSaleLabel(mchId int64, tagId int64) *Label
 
 		// 根据Code获取销售标签
-		GetSaleLabelByCode(merchantId int, code string) *Label
+		GetSaleLabelByCode(mchId int64, code string) *Label
 
 		// 删除销售标签
-		DeleteSaleLabel(merchantId int, id int) error
+		DeleteSaleLabel(mchId int64, id int64) error
 
 		// 获取销售标签
-		GetSaleLabel(merchantId int, tagId int) ISaleLabel
+		GetSaleLabel(mchId int64, tagId int64) ISaleLabel
 
 		// 保存销售标签
-		SaveSaleLabel(merchantId int, v *Label) (int, error)
+		SaveSaleLabel(mchId int64, v *Label) (int64, error)
 
 		// 获取商品
-		GetValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
+		GetValueGoodsBySaleLabel(mchId int64, tagId int64, sortBy string,
 			begin, end int) []*valueobject.Goods
 
 		// 获取分页商品
-		GetPagedValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
+		GetPagedValueGoodsBySaleLabel(mchId int64, tagId int64, sortBy string,
 			begin, end int) (int, []*valueobject.Goods)
 
 		// 获取商品的销售标签
-		GetItemSaleLabels(itemId int) []*Label
+		GetItemSaleLabels(itemId int64) []*Label
 
 		// 清理商品的销售标签
-		CleanItemSaleLabels(itemId int) error
+		CleanItemSaleLabels(itemId int64) error
 
 		// 保存商品的销售标签
-		SaveItemSaleLabels(itemId int, tagIds []int) error
+		SaveItemSaleLabels(itemId int64, tagIds []int) error
 	}
 )

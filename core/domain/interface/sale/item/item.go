@@ -51,18 +51,18 @@ type (
 		GetValueItem(itemId int64) *Item
 
 		// 根据id获取货品
-		GetItemByIds(ids ...int) ([]*Item, error)
+		GetItemByIds(ids ...int64) ([]*Item, error)
 
 		SaveValueItem(*Item) (int64, error)
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesItem(supplierId int, catIds []int, start, end int) (total int, goods []*Item)
+		GetPagedOnShelvesItem(supplierId int64, catIds []int64, start, end int) (total int, goods []*Item)
 
 		// 获取货品销售总数
-		GetItemSaleNum(supplierId int, id int) int
+		GetItemSaleNum(supplierId int64, id int64) int
 
 		// 删除货品
-		DeleteItem(supplierId, goodsId int) error
+		DeleteItem(supplierId, goodsId int64) error
 	}
 
 	// 商品值
@@ -90,7 +90,7 @@ type (
 		//参考销售价
 		SalePrice float32 `db:"sale_price"`
 		// 运费模板编号
-		ExpressTplId int `db:"express_tid"`
+		ExpressTplId int64 `db:"express_tid"`
 		// 描述
 		Description string `db:"description"`
 		// 上架状态

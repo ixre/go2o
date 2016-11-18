@@ -108,7 +108,7 @@ func (ms *memberService) ChangePhone(memberId int64, phone string) error {
 }
 
 // 是否已收藏
-func (ms *memberService) Favored(memberId, favType, referId int) bool {
+func (ms *memberService) Favored(memberId int64, favType int, referId int64) bool {
 	return ms._rep.CreateMemberById(memberId).
 		Favorite().Favored(favType, referId)
 }
@@ -256,7 +256,7 @@ func (ms *memberService) ChangeUsr(id int, usr string) error {
 }
 
 // 更改会员等级
-func (ms *memberService) ChangeLevel(memberId int64, levelId int,
+func (ms *memberService) ChangeLevel(memberId int64, levelId int64,
 	review bool, paymentId int) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
@@ -294,7 +294,7 @@ func (ms *memberService) updateMember(v *member.Member) (int, error) {
 }
 
 // 注册会员
-func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
+func (ms *memberService) RegisterMember(mchId int64, v *member.Member,
 	pro *member.Profile, cardId string, invitationCode string) (int, error) {
 	invitationId, err := ms._rep.GetManager().PrepareRegister(v, pro, invitationCode)
 	if err == nil {
@@ -310,7 +310,7 @@ func (ms *memberService) RegisterMember(merchantId int, v *member.Member,
 				// 保存关联信息
 				rl := m.GetRelation()
 				rl.RefereesId = invitationId
-				rl.RegisterMerchantId = merchantId
+				rl.RegisterMerchantId = mchId
 				rl.CardId = cardId
 				err = m.SaveRelation(rl)
 			}
@@ -540,7 +540,7 @@ func (ms *memberService) GetAddressById(memberId,
 }
 
 //保存配送地址
-func (ms *memberService) SaveAddress(memberId int64, e *member.DeliverAddress) (int, error) {
+func (ms *memberService) SaveAddress(memberId int64, e *member.DeliverAddress) (int64, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error
@@ -671,7 +671,7 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int) *member.Balanc
 
 // 充值
 func (ms *memberService) Charge(memberId, chargeType int, title,
-	outerNo string, amount float32, relateUser int) error {
+	outerNo string, amount float32, relateUser int64) error {
 	//todo: ???
 	if relateUser == 0 {
 		relateUser = 1
@@ -696,7 +696,7 @@ func (ms *memberService) AddIntegral(memberId int64, iType int,
 
 // 赠送金额充值
 func (ms *memberService) PresentBalance(memberId int64, title string,
-	outerNo string, amount float32, relateUser int) error {
+	outerNo string, amount float32, relateUser int64) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -706,7 +706,7 @@ func (ms *memberService) PresentBalance(memberId int64, title string,
 
 // 赠送金额充值
 func (ms *memberService) PresentBalanceByKind(memberId int64, kind int, title string,
-	outerNo string, amount float32, relateUser int) error {
+	outerNo string, amount float32, relateUser int64) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
@@ -773,7 +773,7 @@ func (ms *memberService) VerifyTradePwd(memberId int64, tradePwd string) (bool, 
 
 // 提现并返回提现编号,交易号以及错误信息
 func (ms *memberService) SubmitTakeOutRequest(memberId int64, applyType int,
-	applyAmount float32, commission float32) (int, string, error) {
+	applyAmount float32, commission float32) (int64, string, error) {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return 0, "", err
@@ -966,14 +966,14 @@ func (ms *memberService) GetMemberIdByPhone(phone string) int {
 }
 
 // 会员推广排名
-func (ms *memberService) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
+func (ms *memberService) GetMemberInviRank(mchId int64, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
-	return ms._query.GetMemberInviRank(merchantId, allTeam, levelComp, level, startTime, endTime, num)
+	return ms._query.GetMemberInviRank(mchId, allTeam, levelComp, level, startTime, endTime, num)
 }
 
 // 生成会员账户人工单据
-func (ms *memberService) NewBalanceTicket(merchantId int, memberId int64, accountType int,
-	tit string, amount float32, relateUser int) (string, error) {
+func (ms *memberService) NewBalanceTicket(mchId int64, memberId int64, accountType int,
+	tit string, amount float32, relateUser int64) (string, error) {
 	//todo: 暂时不记录人员,等支持系统多用户后再传入
 	if relateUser <= 0 {
 		relateUser = 1
@@ -990,7 +990,7 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int64, accoun
 	acc := m.GetAccount()
 	var tit2 string
 	if accountType == member.AccountPresent {
-		outerNo = domain.NewTradeNo(merchantId)
+		outerNo = domain.NewTradeNo(mchId)
 		if amount > 0 {
 			//增加奖金
 			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
@@ -1010,7 +1010,7 @@ func (ms *memberService) NewBalanceTicket(merchantId int, memberId int64, accoun
 	}
 
 	if accountType == member.AccountBalance {
-		outerNo = domain.NewTradeNo(merchantId)
+		outerNo = domain.NewTradeNo(mchId)
 		if amount > 0 {
 			tit2 = "[KF]客服充值"
 			if len(tit) > 0 {

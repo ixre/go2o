@@ -227,14 +227,13 @@ func (i *itemImpl) Incorrect(remark string) error {
 
 // 保存
 func (i *itemImpl) Save() (int64, error) {
-	i.saleImpl.clearCache(i.value.Id)
 	unix := time.Now().Unix()
 	i.value.UpdateTime = unix
 	if i.GetDomainId() <= 0 {
 		i.value.CreateTime = unix
 	}
 	if i.value.GoodsNo == "" {
-		cs := strconv.Itoa(i.value.CategoryId)
+		cs := strconv.Itoa(int(i.value.CategoryId))
 		us := strconv.Itoa(int(unix))
 		l := len(cs)
 		i.value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
@@ -273,7 +272,7 @@ func (i *itemImpl) saveGoods() {
 }
 
 //// 生成快照
-//func (i *Goods) GenerateSnapshot() (int, error) {
+//func (i *Goods) GenerateSnapshot() (int64, error) {
 //	v := i._value
 //	if v.Id <= 0 {
 //		return 0, sale.ErrNoSuchGoods
@@ -283,11 +282,11 @@ func (i *itemImpl) saveGoods() {
 //		return 0, sale.ErrNotOnShelves
 //	}
 //
-//	merchantId := i._sale.GetAggregateRootId()
+//	mchId := i._sale.GetAggregateRootId()
 //	unix := time.Now().Unix()
-//	cate := i._saleRep.GetCategory(merchantId, v.CategoryId)
+//	cate := i._saleRep.GetCategory(mchId, v.CategoryId)
 //	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
-//		Key:          fmt.Sprintf("%d-g%d-%d", merchantId, v.Id, unix),
+//		Key:          fmt.Sprintf("%d-g%d-%d", mchId, v.Id, unix),
 //		GoodsId:      i.GetDomainId(),
 //		GoodsName:    v.Name,
 //		GoodsNo:      v.GoodsNo,
@@ -337,10 +336,10 @@ type itemManagerImpl struct {
 	_itemRep    item.IItemRep
 	_valRep     valueobject.IValueRep
 	_expressRep express.IExpressRep
-	_vendorId   int
+	_vendorId   int64
 }
 
-func NewItemManager(vendorId int, s *saleImpl,
+func NewItemManager(vendorId int64, s *saleImpl,
 	itemRep item.IItemRep, expressRep express.IExpressRep,
 	valRep valueobject.IValueRep) sale.IItemManager {
 	c := &itemManagerImpl{
@@ -371,15 +370,12 @@ func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 }
 
 // 删除货品
-func (i *itemManagerImpl) DeleteItem(id int) error {
+func (i *itemManagerImpl) DeleteItem(id int64) error {
 	var err error
 	num := i._itemRep.GetItemSaleNum(i._vendorId, id)
 
 	if num == 0 {
 		err = i._itemRep.DeleteItem(i._vendorId, id)
-		if err != nil {
-			i._sale.clearCache(id)
-		}
 	} else {
 		err = sale.ErrCanNotDeleteItem
 	}
@@ -387,7 +383,7 @@ func (i *itemManagerImpl) DeleteItem(id int) error {
 }
 
 // 根据产品编号获取产品
-func (i *itemManagerImpl) GetItem(itemId int) sale.IItem {
+func (i *itemManagerImpl) GetItem(itemId int64) sale.IItem {
 	pv := i._itemRep.GetValueItem(itemId)
 	if pv != nil && pv.VendorId == i._vendorId {
 		return i.CreateItem(pv)

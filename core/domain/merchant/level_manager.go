@@ -19,13 +19,13 @@ var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
 	mchRep   merchant.IMerchantRep
-	mchId    int
+	mchId    int64
 	levelSet []*merchant.MemberLevel
 }
 
-func NewLevelManager(merchantId int, rep merchant.IMerchantRep) merchant.ILevelManager {
+func NewLevelManager(mchId int64, rep merchant.IMerchantRep) merchant.ILevelManager {
 	return &LevelManager{
-		mchId:  merchantId,
+		mchId:  mchId,
 		mchRep: rep,
 	}
 }
@@ -110,7 +110,7 @@ func (l *LevelManager) GetLevelByValue(value int) *merchant.MemberLevel {
 }
 
 // 获取下一个等级
-func (l *LevelManager) GetNextLevel(value int) *merchant.MemberLevel {
+func (l *LevelManager) GetNextLevel(value int64) *merchant.MemberLevel {
 	return l.mchRep.GetNextLevel(l.mchId, value)
 }
 
@@ -157,7 +157,7 @@ func (l *LevelManager) getMaxLevelValue() int {
 }
 
 // 根据经验值获取等级
-func (l *LevelManager) GetLevelValueByExp(exp int) int64 {
+func (l *LevelManager) GetLevelValueByExp(exp int64) int64 {
 	var lv *merchant.MemberLevel
 	var levelVal int
 	for i := len(l.GetLevelSet()); i > 0; i-- {

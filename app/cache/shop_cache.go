@@ -31,10 +31,10 @@ func CleanShopData(shopId int) {
 }
 
 // 删除商铺缓存
-func DelShopCache(merchantId int) {
+func DelShopCache(mchId int) {
 	kvs := GetKVS()
-	kvs.Del(GetValueMerchantCacheCK(merchantId))
-	kvs.Del(GetMerchantSiteConfCK(merchantId))
+	kvs.Del(GetValueMerchantCacheCK(mchId))
+	kvs.Del(GetMerchantSiteConfCK(mchId))
 }
 
 // 根据主机头识别商店编号

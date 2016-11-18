@@ -153,8 +153,8 @@ func (ss *shopService) SaveShop(mchId int, v *shop.Shop) (int, error) {
 	return 0, merchant.ErrNoSuchMerchant
 }
 
-func (ss *shopService) DeleteShop(merchantId, shopId int) error {
-	mch := ss._mchRep.GetMerchant(merchantId)
+func (ss *shopService) DeleteShop(mchId, shopId int) error {
+	mch := ss._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ShopManager().DeleteShop(shopId)
 	}
@@ -163,8 +163,8 @@ func (ss *shopService) DeleteShop(merchantId, shopId int) error {
 
 // 获取线上商城配置
 func (ss *shopService) GetOnlineShopConf(shopId int) *shop.OnlineShop {
-	merchantId := ss.getMerchantId(shopId)
-	mch := ss._mchRep.GetMerchant(merchantId)
+	mchId := ss.getMerchantId(shopId)
+	mch := ss._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		s := mch.ShopManager().GetShop(shopId)
 		if s == nil {

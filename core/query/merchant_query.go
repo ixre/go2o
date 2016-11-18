@@ -48,24 +48,24 @@ func (m *MerchantQuery) QueryMerchantIdByHost(host string) int {
 	// *.wdian.net  二级域名
 	// www.dc1.com  顶级域名
 
-	var merchantId int
+	var mchId int
 	var err error
 
 	reg := getHostRegexp()
 	if reg.MatchString(host) {
 		matches := reg.FindAllStringSubmatch(host, 1)
 		usr := matches[0][1]
-		err = m.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE usr=?`, &merchantId, usr)
+		err = m.Connector.ExecScalar(`SELECT id FROM mch_merchant WHERE usr=?`, &mchId, usr)
 	} else {
 		err = m.Connector.ExecScalar(
 			`SELECT id FROM mch_merchant INNER JOIN pt_siteconf
                      ON pt_siteconf.merchant_id = mch_merchant.id
-                     WHERE host=?`, &merchantId, host)
+                     WHERE host=?`, &mchId, host)
 	}
 	if err != nil {
 		gof.CurrentApp.Log().Error(err)
 	}
-	return merchantId
+	return mchId
 }
 
 // 验证用户密码并返回编号

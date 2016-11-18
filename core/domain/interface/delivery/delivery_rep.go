@@ -25,5 +25,5 @@ type IDeliveryRep interface {
 	GetAllCoverageAreas(areaId int64) []*CoverageValue
 
 	// 获取配送绑定
-	GetDeliveryBind(merchantId, coverageId int64) *MerchantDeliverBind
+	GetDeliveryBind(mchId, coverageId int64) *MerchantDeliverBind
 }

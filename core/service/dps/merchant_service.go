@@ -231,7 +231,7 @@ func (m *merchantService) SaveMerchant(mchId int, v *merchant.Merchant) (int, er
 func (m *merchantService) initializeMerchant(mchId int) {
 
 	// 初始化会员默认等级
-	// m._mchRep.GetMerchant(merchantId)
+	// m._mchRep.GetMerchant(mchId)
 
 	//conf := merchant.DefaultSaleConf
 	//conf.MerchantId = mch.GetAggregateRootId()
@@ -355,8 +355,8 @@ func (m *merchantService) GetApiInfo(mchId int) *merchant.ApiInfo {
 }
 
 // 启用/停用接口权限
-func (m *merchantService) ApiPerm(merchantId int, enabled bool) error {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) ApiPerm(mchId int64, enabled bool) error {
+	mch := m._mchRep.GetMerchant(mchId)
 	if enabled {
 		return mch.ApiManager().EnableApiPerm()
 	}
@@ -369,8 +369,8 @@ func (m *merchantService) GetMerchantIdByApiId(apiId string) int {
 }
 
 // 获取所有会员等级
-func (m *merchantService) GetMemberLevels(merchantId int) []*merchant.MemberLevel {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) GetMemberLevels(mchId int) []*merchant.MemberLevel {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().GetLevelSet()
 	}
@@ -378,8 +378,8 @@ func (m *merchantService) GetMemberLevels(merchantId int) []*merchant.MemberLeve
 }
 
 // 根据编号获取会员等级信息
-func (m *merchantService) GetMemberLevelById(merchantId, id int) *merchant.MemberLevel {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) GetMemberLevelById(mchId, id int) *merchant.MemberLevel {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().GetLevelById(id)
 	}
@@ -387,8 +387,8 @@ func (m *merchantService) GetMemberLevelById(merchantId, id int) *merchant.Membe
 }
 
 // 保存会员等级信息
-func (m *merchantService) SaveMemberLevel(merchantId int, v *merchant.MemberLevel) (int64, error) {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) SaveMemberLevel(mchId int64, v *merchant.MemberLevel) (int64, error) {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().SaveLevel(v)
 	}
@@ -396,8 +396,8 @@ func (m *merchantService) SaveMemberLevel(merchantId int, v *merchant.MemberLeve
 }
 
 // 删除会员等级
-func (m *merchantService) DelMemberLevel(merchantId, levelId int) error {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) DelMemberLevel(mchId, levelId int) error {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().DeleteLevel(levelId)
 	}
@@ -405,8 +405,8 @@ func (m *merchantService) DelMemberLevel(merchantId, levelId int) error {
 }
 
 // 获取等级
-func (m *merchantService) GetLevel(merchantId, level int) *merchant.MemberLevel {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) GetLevel(mchId, level int) *merchant.MemberLevel {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().GetLevelByValue(level)
 	}
@@ -414,8 +414,8 @@ func (m *merchantService) GetLevel(merchantId, level int) *merchant.MemberLevel 
 }
 
 // 获取下一个等级
-func (m *merchantService) GetNextLevel(merchantId, levelValue int) *merchant.MemberLevel {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) GetNextLevel(mchId, levelValue int) *merchant.MemberLevel {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.LevelManager().GetNextLevel(levelValue)
 	}
@@ -424,8 +424,8 @@ func (m *merchantService) GetNextLevel(merchantId, levelValue int) *merchant.Mem
 }
 
 // 获取键值字典
-func (m *merchantService) GetKeyMapsByKeyword(merchantId int, keyword string) map[string]string {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) GetKeyMapsByKeyword(mchId int64, keyword string) map[string]string {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.KvManager().GetsByChar(keyword)
 	}
@@ -433,8 +433,8 @@ func (m *merchantService) GetKeyMapsByKeyword(merchantId int, keyword string) ma
 }
 
 // 保存键值字典
-func (m *merchantService) SaveKeyMaps(merchantId int, data map[string]string) error {
-	mch := m._mchRep.GetMerchant(merchantId)
+func (m *merchantService) SaveKeyMaps(mchId int64, data map[string]string) error {
+	mch := m._mchRep.GetMerchant(mchId)
 	if mch != nil {
 		return mch.KvManager().Sets(data)
 	}

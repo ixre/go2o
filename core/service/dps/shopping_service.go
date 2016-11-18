@@ -429,6 +429,6 @@ func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int, snapshotId in
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }
 
-func (s *shoppingService) OrderAutoSetup(merchantId int, f func(error)) {
+func (s *shoppingService) OrderAutoSetup(mchId int64, f func(error)) {
 	s._manager.OrderAutoSetup(f)
 }

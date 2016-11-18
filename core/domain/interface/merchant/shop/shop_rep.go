@@ -16,10 +16,10 @@ type (
 		ShopAliasExists(alias string, shopId int64) bool
 
 		// 获取商店值
-		GetValueShop(merchantId, shopId int64) *Shop
+		GetValueShop(mchId, shopId int64) *Shop
 
 		// 获取商户所有商店
-		GetShopsOfMerchant(merchantId int64) []Shop
+		GetShopsOfMerchant(mchId int64) []Shop
 
 		// 删除线上商店
 		DeleteOnlineShop(mchId, shopId int64) error

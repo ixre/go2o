@@ -21,12 +21,12 @@ import (
 )
 
 // 获取商户信息缓存
-func GetValueMerchantCache(merchantId int) *merchant.Merchant {
+func GetValueMerchantCache(mchId int) *merchant.Merchant {
 	var v merchant.Merchant
 	var sto storage.Interface = GetKVS()
-	var key string = GetValueMerchantCacheCK(merchantId)
+	var key string = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		v2 := dps.MerchantService.GetMerchant(merchantId)
+		v2 := dps.MerchantService.GetMerchant(mchId)
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -37,59 +37,59 @@ func GetValueMerchantCache(merchantId int) *merchant.Merchant {
 }
 
 // 设置商户信息缓存
-func GetValueMerchantCacheCK(merchantId int) string {
-	return fmt.Sprintf("cache:partner:value:%d", merchantId)
+func GetValueMerchantCacheCK(mchId int) string {
+	return fmt.Sprintf("cache:partner:value:%d", mchId)
 }
 
 // 设置商户站点配置
-func GetMerchantSiteConfCK(merchantId int) string {
-	return fmt.Sprintf("cache:partner:siteconf:%d", merchantId)
+func GetMerchantSiteConfCK(mchId int) string {
+	return fmt.Sprintf("cache:partner:siteconf:%d", mchId)
 }
 
-func DelMerchantCache(merchantId int) {
+func DelMerchantCache(mchId int) {
 	kvs := GetKVS()
-	kvs.Del(GetValueMerchantCacheCK(merchantId))
-	kvs.Del(GetMerchantSiteConfCK(merchantId))
+	kvs.Del(GetValueMerchantCacheCK(mchId))
+	kvs.Del(GetMerchantSiteConfCK(mchId))
 }
 
 // 根据主机头识别会员编号
 func GetMerchantIdByHost(host string) int {
-	merchantId := 0
+	mchId := 0
 	key := "cache:host-for:" + host
 	sto := GetKVS()
 	var err error
-	if merchantId, err = sto.GetInt(key); err != nil || merchantId <= 0 {
-		merchantId = dps.MerchantService.GetMerchantIdByHost(host)
-		if merchantId > 0 {
-			sto.SetExpire(key, merchantId, DefaultMaxSeconds)
+	if mchId, err = sto.GetInt(key); err != nil || mchId <= 0 {
+		mchId = dps.MerchantService.GetMerchantIdByHost(host)
+		if mchId > 0 {
+			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		}
 	}
-	return merchantId
+	return mchId
 }
 
 // 根据API ID获取商户ID
 func GetMerchantIdByApiId(apiId string) int {
-	var merchantId int
+	var mchId int
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
-	kvs.Get(key, &merchantId)
-	if merchantId == 0 {
-		merchantId = dps.MerchantService.GetMerchantIdByApiId(apiId)
-		if merchantId != 0 {
-			kvs.Set(key, merchantId)
+	kvs.Get(key, &mchId)
+	if mchId == 0 {
+		mchId = dps.MerchantService.GetMerchantIdByApiId(apiId)
+		if mchId != 0 {
+			kvs.Set(key, mchId)
 		}
 	}
-	return merchantId
+	return mchId
 }
 
 // 获取API 信息
-func GetMerchantApiInfo(merchantId int) *merchant.ApiInfo {
+func GetMerchantApiInfo(mchId int) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	kvs := GetKVS()
-	key := fmt.Sprintf("cache:partner:api:info-%d", merchantId)
+	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		if d = dps.MerchantService.GetApiInfo(merchantId); d != nil {
+		if d = dps.MerchantService.GetApiInfo(mchId); d != nil {
 			kvs.Set(key, d)
 		}
 	}

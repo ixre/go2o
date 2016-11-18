@@ -84,7 +84,7 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetBalanceInfo(id int) *member.BalanceInfo {
+func (a *accountImpl) GetBalanceInfo(id int64) *member.BalanceInfo {
 	return a.rep.GetBalanceInfo(id)
 }
 
@@ -94,7 +94,7 @@ func (a *accountImpl) GetBalanceInfoByNo(no string) *member.BalanceInfo {
 }
 
 // 保存余额变动信息
-func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
+func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int64, error) {
 	v.MemberId = a.GetDomainId()
 	v.UpdateTime = time.Now().Unix()
 	if v.CreateTime == 0 {
@@ -105,7 +105,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int, error) {
 
 // 充值,客服充值时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -146,7 +146,7 @@ func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo str
 }
 
 // 根据编号获取余额变动信息
-func (a *accountImpl) GetPresentLog(id int) *member.PresentLog {
+func (a *accountImpl) GetPresentLog(id int64) *member.PresentLog {
 	e := member.PresentLog{}
 	if tmp.Db().GetOrm().Get(id, &e) == nil {
 		return &e
@@ -156,7 +156,7 @@ func (a *accountImpl) GetPresentLog(id int) *member.PresentLog {
 
 // 扣减余额
 func (a *accountImpl) DiscountBalance(title string, outerNo string,
-	amount float32, relateUser int) (err error) {
+	amount float32, relateUser int64) (err error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -189,7 +189,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 
 // 冻结余额
 func (a *accountImpl) Freeze(title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -222,7 +222,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 
 // 解冻金额
 func (a *accountImpl) Unfreeze(title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -256,7 +256,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 
 // 赠送金额,客服操作时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForPresent(title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	kind := member.KindPresentAdd
 	if relateUser > 0 {
 		kind = member.KindPresentServiceAdd
@@ -266,7 +266,7 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 
 // 赠送金额(指定业务类型)
 func (a *accountImpl) ChargePresentByKind(kind int, title string,
-	outerNo string, amount float32, relateUser int) error {
+	outerNo string, amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -340,7 +340,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 
 // 冻结赠送金额
 func (a *accountImpl) FreezePresent(title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -373,7 +373,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 
 // 解冻赠送金额
 func (a *accountImpl) UnfreezePresent(title string, outerNo string,
-	amount float32, relateUser int) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -590,7 +590,7 @@ func (a *accountImpl) RequestBackBalance(backType int, title string,
 }
 
 // 完成退款
-func (a *accountImpl) FinishBackBalance(id int, tradeNo string) error {
+func (a *accountImpl) FinishBackBalance(id int64, tradeNo string) error {
 	v := a.GetBalanceInfo(id)
 	if v.Kind == member.KindBalanceRefund {
 		v.TradeNo = tradeNo
@@ -603,7 +603,7 @@ func (a *accountImpl) FinishBackBalance(id int, tradeNo string) error {
 
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestTakeOut(businessKind int, title string,
-	amount float32, commission float32) (int, string, error) {
+	amount float32, commission float32) (int64, string, error) {
 	if businessKind != member.KindPresentTakeOutToBalance &&
 		businessKind != member.KindPresentTakeOutToBankCard &&
 		businessKind != member.KindPresentTakeOutToThirdPart {
@@ -682,7 +682,7 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 }
 
 // 确认提现
-func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
+func (a *accountImpl) ConfirmTakeOut(id int64, pass bool, remark string) error {
 	v := a.GetPresentLog(id)
 	if v.State != enum.ReviewAwaiting {
 		return member.ErrTakeOutState
@@ -732,7 +732,7 @@ func (a *accountImpl) ConfirmTakeOut(id int, pass bool, remark string) error {
 }
 
 // 完成提现
-func (a *accountImpl) FinishTakeOut(id int, tradeNo string) error {
+func (a *accountImpl) FinishTakeOut(id int64, tradeNo string) error {
 	v := a.GetPresentLog(id)
 	if v.State != enum.ReviewPass {
 		return member.ErrTakeOutState
@@ -834,7 +834,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 }
 
 // 转账
-func (a *accountImpl) TransferAccounts(accountKind int, toMember int, amount float32,
+func (a *accountImpl) TransferAccounts(accountKind int, toMember int64, amount float32,
 	csnRate float32, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -937,7 +937,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 }
 
 // 接收转账
-func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int,
+func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int64,
 	tradeNo string, amount float32, remark string) error {
 	switch accountKind {
 	case member.AccountPresent:
@@ -948,7 +948,7 @@ func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int,
 	return member.ErrNotSupportTransfer
 }
 
-func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
+func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 	amount float32, remark string) error {
 	fm := a.rep.GetMember(fromMember)
 	if fm == nil {
@@ -978,7 +978,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int, tradeNo string,
 	return err
 }
 
-func (a *accountImpl) receiveBalanceTransfer(fromMember int, tradeNo string,
+func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 	amount float32, remark string) error {
 	fromName := a.getMemberName(a.rep.GetMember(a.GetDomainId()))
 	unix := time.Now().Unix()

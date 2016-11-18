@@ -604,7 +604,7 @@ func (a *accountImpl) createBalanceLog(kind int, title string, outerNo string,
 }
 
 // 保存余额变动信息
-func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int, error) {
+func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int64, error) {
 	return orm.Save(tmp.Db().GetOrm(), v, v.Id)
 	//return a.mchImpl._rep.SaveBalanceLog(v)
 }

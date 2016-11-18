@@ -39,8 +39,8 @@ func (this *itemRep) GetValueItem(itemId int64) *item.Item {
 	return nil
 }
 
-func (this *itemRep) GetItemByIds(ids ...int) ([]*item.Item, error) {
-	//todo: merchantId
+func (this *itemRep) GetItemByIds(ids ...int64) ([]*item.Item, error) {
+	//todo: mchId
 	var items []*item.Item
 
 	//todo:改成database/sql方式，不使用orm
@@ -61,16 +61,16 @@ func (this *itemRep) SaveValueItem(v *item.Item) (int64, error) {
 	}
 }
 
-func (this *itemRep) GetPagedOnShelvesItem(merchantId int, catIds []int,
+func (this *itemRep) GetPagedOnShelvesItem(mchId int64, catIds []int,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 
 	var catIdStr string = format.IdArrJoinStr(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, merchantId, catIdStr, start, (end - start))
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
 	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, merchantId, catIdStr), &total)
+		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
 
 	e = []*item.Item{}
 	this.Connector.GetOrm().SelectByQuery(&e, sql)
@@ -79,17 +79,17 @@ func (this *itemRep) GetPagedOnShelvesItem(merchantId int, catIds []int,
 }
 
 // 获取货品销售总数
-func (this *itemRep) GetItemSaleNum(merchantId int, id int) int {
+func (this *itemRep) GetItemSaleNum(mchId int64, id int) int {
 	var num int
 	this.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
 		&num, id)
 	return num
 }
 
-func (this *itemRep) DeleteItem(merchantId, itemId int) error {
+func (this *itemRep) DeleteItem(mchId, itemId int) error {
 	_, _, err := this.Connector.Exec(`
 		DELETE f FROM gs_item AS f
 		INNER JOIN gs_category AS c ON f.category_id=c.id
-		WHERE f.id=? AND c.merchant_id=?`, itemId, merchantId)
+		WHERE f.id=? AND c.merchant_id=?`, itemId, mchId)
 	return err
 }

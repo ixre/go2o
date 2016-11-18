@@ -49,40 +49,40 @@ type IMerchantRep interface {
 	SaveApiInfo(d *ApiInfo) error
 
 	// 获取API信息
-	GetApiInfo(merchantId int) *ApiInfo
+	GetApiInfo(mchId int64) *ApiInfo
 
 	// 根据API编号获取商户编号
 	GetMerchantIdByApiId(apiId string) int
 
 	// 获取键值
-	GetKeyValue(merchantId int, indent string, k string) string
+	GetKeyValue(mchId int64, indent string, k string) string
 
 	// 设置键值
-	SaveKeyValue(merchantId int, indent string, k, v string, updateTime int64) error
+	SaveKeyValue(mchId int64, indent string, k, v string, updateTime int64) error
 
 	// 获取多个键值
-	GetKeyMap(merchantId int, indent string, k []string) map[string]string
+	GetKeyMap(mchId int64, indent string, k []string) map[string]string
 
 	// 检查是否包含值的键数量,keyStr为键模糊匹配
-	CheckKvContainValue(merchantId int, indent string, value string, keyStr string) int
+	CheckKvContainValue(mchId int64, indent string, value string, keyStr string) int
 
 	// 根据关键字获取字典
-	GetKeyMapByChar(merchantId int, indent string, keyword string) map[string]string
+	GetKeyMapByChar(mchId int64, indent string, keyword string) map[string]string
 
 	//获取等级
-	GetLevel(merchantId, levelValue int) *MemberLevel
+	GetLevel(mchId, levelValue int) *MemberLevel
 
 	// 获取下一个等级
-	GetNextLevel(merchantId, levelVal int) *MemberLevel
+	GetNextLevel(mchId, levelVal int) *MemberLevel
 
 	// 获取会员等级
-	GetMemberLevels(merchantId int) []*MemberLevel
+	GetMemberLevels(mchId int) []*MemberLevel
 
 	// 删除会员等级
-	DeleteMemberLevel(merchantId, id int) error
+	DeleteMemberLevel(mchId, id int) error
 
 	// 保存等级
-	SaveMemberLevel(merchantId int, v *MemberLevel) (int64, error)
+	SaveMemberLevel(mchId int64, v *MemberLevel) (int64, error)
 
 	//
 	//  //修改线下支付利润

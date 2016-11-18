@@ -84,7 +84,7 @@ type IMemberRep interface {
 	GetAccount(memberId int64) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) (int, error)
+	SaveAccount(*Account) (int64, error)
 
 	// 获取银行信息
 	GetBankInfo(int) *BankInfo
@@ -96,13 +96,13 @@ type IMemberRep interface {
 	SaveIntegralLog(*IntegralLog) error
 
 	// 保存余额日志
-	SaveBalanceLog(*BalanceLog) (int, error)
+	SaveBalanceLog(*BalanceLog) (int64, error)
 
 	// 保存赠送账户日志
-	SavePresentLog(*PresentLog) (int, error)
+	SavePresentLog(*PresentLog) (int64, error)
 
 	// 获取赠送账户日志信息
-	GetPresentLog(id int) *PresentLog
+	GetPresentLog(id int64) *PresentLog
 
 	// 增加会员当天提现次数
 	AddTodayTakeOutTimes(memberId int64) error
@@ -114,28 +114,28 @@ type IMemberRep interface {
 	GetRelation(memberId int64) *Relation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(merchantId int, exp int) int
+	GetLevelValueByExp(mchId int64, exp int) int
 
 	// 获取会员升级记录
 	GetLevelUpLog(id int) *LevelUpLog
 
 	// 保存会员升级记录
-	SaveLevelUpLog(l *LevelUpLog) (int, error)
+	SaveLevelUpLog(l *LevelUpLog) (int64, error)
 
 	// 保存地址
-	SaveDeliver(*DeliverAddress) (int, error)
+	SaveDeliver(*DeliverAddress) (int64, error)
 
 	// 获取全部配送地址
 	GetDeliverAddress(memberId int64) []*DeliverAddress
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, deliverId int) *DeliverAddress
+	GetSingleDeliverAddress(memberId, deliverId int64) *DeliverAddress
 
 	// 删除配送地址
-	DeleteDeliver(memberId, deliverId int) error
+	DeleteDeliver(memberId, deliverId int64) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*dto.InvitationMember)
+	GetMyInvitationMembers(memberId int64, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
 	GetSubInvitationNum(memberId int64, memberIdArr []int) map[int]int
@@ -144,13 +144,13 @@ type IMemberRep interface {
 	GetInvitationMeMember(memberId int64) *Member
 
 	// 根据编号获取余额变动信息
-	GetBalanceInfo(id int) *BalanceInfo
+	GetBalanceInfo(id int64) *BalanceInfo
 
 	// 根据号码获取余额变动信息
 	GetBalanceInfoByNo(tradeNo string) *BalanceInfo
 
 	// 保存余额变动信息
-	SaveBalanceInfo(v *BalanceInfo) (int, error)
+	SaveBalanceInfo(v *BalanceInfo) (int64, error)
 
 	// 保存理财账户信息
 	SaveGrowAccount(memberId int64, balance, totalAmount,
@@ -160,11 +160,11 @@ type IMemberRep interface {
 	Favorite(memberId, favType, referId int) error
 
 	//是否已收藏
-	Favored(memberId, favType, referId int) bool
+	Favored(memberId int64, favType int, referId int64) bool
 
 	//取消收藏
-	CancelFavorite(memberId, favType, referId int) error
+	CancelFavorite(memberId int64, favType int, referId int64) error
 
 	// 获取会员分页的优惠券列表
-	GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
+	GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 }

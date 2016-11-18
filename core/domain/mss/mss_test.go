@@ -74,7 +74,7 @@ func (this *MssRep) SaveNotifyItem(v *notify.NotifyItem) error {
 }
 
 // 获取邮箱模板
-func (this *MssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
+func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -88,12 +88,12 @@ func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
+func (this *MssRep) GetMailTemplates(mchId int) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 
 // 删除邮件模板
-func (this *MssRep) DeleteMailTemplate(merchantId, id int) error {
+func (this *MssRep) DeleteMailTemplate(mchId, id int) error {
 	return nil
 }
 

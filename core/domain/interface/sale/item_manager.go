@@ -53,9 +53,9 @@ type (
 		CreateItem(*item.Item) IItem
 
 		// 根据产品编号获取货品
-		GetItem(int) IItem
+		GetItem(id int64) IItem
 
 		// 删除货品
-		DeleteItem(int) error
+		DeleteItem(id int64) error
 	}
 )
