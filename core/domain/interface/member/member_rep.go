@@ -138,7 +138,7 @@ type IMemberRep interface {
 	GetMyInvitationMembers(memberId int32, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
-	GetSubInvitationNum(memberId int32, memberIdArr []int64) map[int64]int
+	GetSubInvitationNum(memberId int32, memberIdArr []int32) map[int32]int
 
 	// 获取推荐我的人
 	GetInvitationMeMember(memberId int32) *Member

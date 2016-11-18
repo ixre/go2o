@@ -110,7 +110,7 @@ func (g *goodsRep) SaveValueGoods(v *goods.ValueGoods) (int32, error) {
 }
 
 // 获取已上架的商品
-func (g *goodsRep) GetPagedOnShelvesGoods(shopId int32, catIds []int64,
+func (g *goodsRep) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	start, end int, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0

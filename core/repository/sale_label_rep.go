@@ -61,7 +61,7 @@ func (t *saleLabelRep) GetSaleLabel(mchId int32, id int32) sale.ISaleLabel {
 // 保存销售标签
 func (t *saleLabelRep) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
 	v.MerchantId = mchId
-	return orm.I32(orm.I32(orm.Save(t.GetOrm(), v, int(v.Id))))
+	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
 }
 
 // 根据Code获取销售标签

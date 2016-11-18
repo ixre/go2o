@@ -40,7 +40,7 @@ func (i *itemRep) GetValueItem(itemId int32) *item.Item {
 	return nil
 }
 
-func (i *itemRep) GetItemByIds(ids ...int64) ([]*item.Item, error) {
+func (i *itemRep) GetItemByIds(ids ...int32) ([]*item.Item, error) {
 	//todo: mchId
 	var items []*item.Item
 
@@ -55,7 +55,7 @@ func (i *itemRep) SaveValueItem(v *item.Item) (int32, error) {
 	return orm.I32(orm.Save(i.GetOrm(), v, int(v.Id)))
 }
 
-func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int64,
+func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int32,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 

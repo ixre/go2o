@@ -51,12 +51,12 @@ type (
 		GetValueItem(itemId int32) *Item
 
 		// 根据id获取货品
-		GetItemByIds(ids ...int64) ([]*Item, error)
+		GetItemByIds(ids ...int32) ([]*Item, error)
 
 		SaveValueItem(*Item) (int32, error)
 
 		// 获取在货架上的商品
-		GetPagedOnShelvesItem(supplierId int32, catIds []int64, start, end int) (total int, goods []*Item)
+		GetPagedOnShelvesItem(supplierId int32, catIds []int32, start, end int) (total int, goods []*Item)
 
 		// 获取货品销售总数
 		GetItemSaleNum(supplierId int32, id int32) int

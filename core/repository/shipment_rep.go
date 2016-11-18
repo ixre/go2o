@@ -64,7 +64,7 @@ func (s *shipmentRep) GetOrders(orderId int32) []shipment.IShipmentOrder {
 
 // 保存发货单
 func (s *shipmentRep) SaveShipmentOrder(o *shipment.ShipmentOrder) (int32, error) {
-	return orm.I32(orm.Save(s.GetOrm(), o, o.Id))
+	return orm.I32(orm.Save(s.GetOrm(), o, int(o.Id)))
 }
 
 // 保存发货商品项
