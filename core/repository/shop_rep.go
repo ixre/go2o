@@ -151,7 +151,7 @@ func (s *shopRep) GetShopsOfMerchant(mchId int64) []shop.Shop {
 	return shops
 }
 
-func (s *shopRep) deleteShop(mchId, shopId int) error {
+func (s *shopRep) deleteShop(mchId, shopId int64) error {
 	_, err := s.Connector.GetOrm().Delete(shop.Shop{},
 		"mch_id=? AND id=?", mchId, shopId)
 	s.delCache(mchId)

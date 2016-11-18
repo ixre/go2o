@@ -24,7 +24,7 @@ var _ sale.ISaleRep = new(saleRep)
 
 type saleRep struct {
 	db.Connector
-	_cache      map[int]sale.ISale
+	_cache      map[int64]sale.ISale
 	_tagRep     sale.ISaleLabelRep
 	_promRep    promotion.IPromotionRep
 	_itemRep    item.IItemRep
@@ -51,7 +51,7 @@ func NewSaleRep(c db.Connector, cateRep sale.ICategoryRep,
 }
 
 func (s *saleRep) init() sale.ISaleRep {
-	s._cache = make(map[int]sale.ISale)
+	s._cache = make(map[int64]sale.ISale)
 	return s
 }
 

@@ -177,7 +177,7 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 
 // 根据手机获取会员编号
 func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
-	id := 0
+	var id int64
 	m.ExecScalar(`SELECT id FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)

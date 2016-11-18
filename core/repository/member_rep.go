@@ -22,10 +22,10 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	memberImpl "go2o/core/domain/member"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool"
 	"go2o/core/variable"
 	"log"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -185,14 +185,14 @@ func (m *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 
 // 根据手机号获取会员编号
 func (m *MemberRep) GetMemberIdByPhone(phone string) int64 {
-	id := -1
+	var id int64
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
 func (m *MemberRep) GetMemberIdByEmail(email string) int64 {
-	id := -1
+	var id int64
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
 	return id
 }
@@ -260,7 +260,7 @@ func (m *MemberRep) createMember(v *member.Member) (int64, error) {
 	if err != nil {
 		return -1, err
 	}
-	v.Id = int(id)
+	v.Id = id
 	m.initMember(v)
 
 	rc := core.GetRedisConn()
@@ -326,7 +326,7 @@ func (m *MemberRep) DeleteMember(id int64) error {
 }
 
 func (m *MemberRep) GetMemberIdByUser(user string) int64 {
-	var id int
+	var id int64
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
 }
@@ -350,9 +350,10 @@ func (m *MemberRep) GetMemberIdByInvitationCode(code string) int {
 }
 
 // 获取会员最后更新时间
-func (m *MemberRep) GetMemberLatestUpdateTime(id int) int64 {
+func (m *MemberRep) GetMemberLatestUpdateTime(memberId int64) int64 {
 	var updateTime int64
-	m.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`, &updateTime, id)
+	m.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`,
+		&updateTime, memberId)
 	return updateTime
 }
 
@@ -585,19 +586,16 @@ func (m *MemberRep) GetMyInvitationMembers(memberId int64, begin, end int) (
 // 获取下级会员数量
 func (m *MemberRep) GetSubInvitationNum(memberId int64, memberIdArr []int64) map[int64]int {
 	if len(memberIdArr) == 0 {
-		return map[int]int{}
+		return map[int64]int{}
 	}
-	var ids []string = make([]string, len(memberIdArr))
-	for i, v := range memberIdArr {
-		ids[i] = strconv.Itoa(v)
-	}
-	memberIds := strings.Join(ids, ",")
-	var d map[int]int = make(map[int]int)
+	memberIds := format.IdArrJoinStr64(memberIdArr)
+	var d map[int64]int = make(map[int64]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
 		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 		func(rows *sql.Rows) {
-			var id, num int
+			var id int64
+			var num int
 			for rows.Next() {
 				rows.Scan(&id, &num)
 				d[id] = num

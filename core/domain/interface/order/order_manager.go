@@ -103,7 +103,7 @@ type (
 		GetSubOrdersByParentId(orderId int64) []*SubOrder
 
 		// 获取订单编号
-		GetOrderId(orderNo string, subOrder bool) int
+		GetOrderId(orderNo string, subOrder bool) int64
 
 		// 获取子订单
 		GetSubOrder(id int64) *SubOrder

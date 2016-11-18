@@ -50,7 +50,7 @@ type valueRep struct {
 	_moAppGob        *util.GobFile
 	_tplConf         *valueobject.TemplateConf
 	_tplGob          *util.GobFile
-	_areaCache       map[int][]*valueobject.Area
+	_areaCache       map[int64][]*valueobject.Area
 	_areaMux         sync.Mutex
 }
 
@@ -310,7 +310,7 @@ func (vp *valueRep) GetChildAreas(id int64) []*valueobject.Area {
 	vp._areaMux.Lock()
 	defer vp._areaMux.Unlock()
 	if vp._areaCache == nil {
-		vp._areaCache = make(map[int][]*valueobject.Area)
+		vp._areaCache = make(map[int64][]*valueobject.Area)
 	}
 	if v, ok := vp._areaCache[id]; ok {
 		return v
@@ -327,7 +327,7 @@ func (vp *valueRep) GetChildAreas(id int64) []*valueobject.Area {
 func (vp *valueRep) GetAreaNames(id []int64) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
-		strArr[i] = strconv.Itoa(v)
+		strArr[i] = strconv.Itoa(int(v))
 	}
 	i := 0
 	vp.Connector.Query(fmt.Sprintf(
@@ -345,7 +345,7 @@ func (vp *valueRep) GetAreaNames(id []int64) []string {
 
 // 获取省市区字符串
 func (vp *valueRep) GetAreaString(province, city, district int64) string {
-	names := vp.GetAreaNames([]int{province, city, district})
+	names := vp.GetAreaNames([]int64{province, city, district})
 	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
 		return strings.Join([]string{names[0], names[2]}, " ")
 	}

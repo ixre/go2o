@@ -12,6 +12,7 @@ package repository
 import (
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/sale/item"
 	"go2o/core/infrastructure/format"
 )
@@ -45,27 +46,20 @@ func (i *itemRep) GetItemByIds(ids ...int64) ([]*item.Item, error) {
 
 	//todo:改成database/sql方式，不使用orm
 	err := i.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr(ids)+`)`)
+		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr64(ids)+`)`)
 
 	return items, err
 }
 
 func (i *itemRep) SaveValueItem(v *item.Item) (int64, error) {
-	orm := i.Connector.GetOrm()
-	if v.Id <= 0 {
-		_, id, err := orm.Save(nil, v)
-		return int(id), err
-	} else {
-		_, _, err := orm.Save(v.Id, v)
-		return v.Id, err
-	}
+	return orm.Save(i.GetOrm(), v, v.Id)
 }
 
 func (i *itemRep) GetPagedOnShelvesItem(mchId int64, catIds []int64,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 
-	var catIdStr string = format.IdArrJoinStr(catIds)
+	var catIdStr string = format.IdArrJoinStr64(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
 		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
