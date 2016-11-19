@@ -238,17 +238,16 @@ func (s *saleService) DeleteCategory(mchId, id int32) error {
 }
 
 func (s *saleService) SaveCategory(mchId int32, v *sale.Category) (int32, error) {
-	sl := s._rep.GetSale(mchId)
+	sl := s._rep.GetSale(mchId).CategoryManager()
 	var ca sale.ICategory
 	if v.Id > 0 {
-		ca = sl.CategoryManager().GetCategory(v.Id)
-		if err := ca.SetValue(v); err != nil {
-			return 0, err
-		}
+		ca = sl.GetCategory(v.Id)
 	} else {
-		ca = sl.CategoryManager().CreateCategory(v)
+		ca = sl.CreateCategory(v)
 	}
-
+	if err := ca.SetValue(v); err != nil {
+		return 0, err
+	}
 	return ca.Save()
 }
 
