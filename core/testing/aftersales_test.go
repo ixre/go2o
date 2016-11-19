@@ -57,12 +57,21 @@ func getMemberRep() member.IMemberRep {
 	return repository.NewMemberRep(app.Storage(), db, mssRep, valRep)
 }
 
+func getAfterSalesRep() afterSales.IAfterSalesRep {
+	db := include.GetApp().Db()
+	sto := include.GetApp().Storage()
+	memberRep := getMemberRep()
+	orderRep := getRep22()
+	valRep := repository.NewValueRep(db, sto)
+	paymentRep := repository.NewPaymentRep(sto, db, memberRep, orderRep, valRep)
+	return repository.NewAfterSalesRep(db, getRep22(), getMemberRep(), paymentRep)
+}
+
 // 测试退款
 func TestOrderRefund(t *testing.T) {
 	subOrderNo := "100000160304"
-	db := include.GetApp().Db()
 	orderRep := getRep22()
-	rep := repository.NewAfterSalesRep(db, getRep22(), getMemberRep())
+	rep := getAfterSalesRep()
 	v := orderRep.GetSubOrderByNo(subOrderNo)
 	od := orderRep.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -119,9 +128,8 @@ func TestOrderRefund(t *testing.T) {
 // 测试退货
 func TestOrderReturn(t *testing.T) {
 	subOrderNo := "100000160304"
-	db := include.GetApp().Db()
 	orderRep := getRep22()
-	rep := repository.NewAfterSalesRep(db, getRep22(), getMemberRep())
+	rep := getAfterSalesRep()
 	v := orderRep.GetSubOrderByNo(subOrderNo)
 	od := orderRep.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
@@ -177,9 +185,8 @@ func TestOrderReturn(t *testing.T) {
 // 测试换货
 func TestOrderExchange(t *testing.T) {
 	subOrderNo := "100000160304"
-	db := include.GetApp().Db()
 	orderRep := getRep22()
-	rep := repository.NewAfterSalesRep(db, getRep22(), getMemberRep())
+	rep := getAfterSalesRep()
 	v := orderRep.GetSubOrderByNo(subOrderNo)
 	od := orderRep.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{

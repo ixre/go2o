@@ -32,8 +32,8 @@ func main() {
 	flag.BoolVar(&trace, "trace", false, "Enable trace")
 	flag.Parse()
 
-	newApp := core.NewMainApp(conf)
-	if !newApp.Init(debug, trace) {
+	newApp := core.NewApp(conf)
+	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
 	gof.CurrentApp = newApp

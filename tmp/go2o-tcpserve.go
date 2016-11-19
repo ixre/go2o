@@ -39,7 +39,7 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
 
-	gof.CurrentApp = core.NewMainApp(conf)
+	gof.CurrentApp = core.NewApp(conf)
 	dps.Init(gof.CurrentApp)
 	cache.Initialize(gof.CurrentApp.Storage())
 	fix.CustomFix()

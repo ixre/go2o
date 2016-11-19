@@ -93,7 +93,6 @@ func (t *testingApp) Config() *gof.Config {
 		} else {
 			if cfg, err := gof.LoadConfig(t._confFilePath); err == nil {
 				t._config = cfg
-				cfg.Set("exp_fee_bit", float64(1))
 			} else {
 				log.Fatalln(err)
 			}
