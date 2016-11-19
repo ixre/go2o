@@ -64,13 +64,6 @@ func main() {
 	fix.CustomFix()
 	go fix.SignalNotify(ch)
 
-	if v := newApp.Config().GetInt("server_port"); v != 0 {
-		httpPort = v
-	}
-	if v := newApp.Config().GetInt("api_service_port"); v != 0 {
-		restPort = v
-	}
-
 	gof.CurrentApp = newApp
 	dps.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
