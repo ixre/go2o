@@ -12,7 +12,7 @@ const (
 	Version = "version"
 
 	//域名
-	ServerDomain = "server_domain"
+	ServerDomain = "domain"
 	ApiDomain    = "api_domain"
 
 	//静态服务器
