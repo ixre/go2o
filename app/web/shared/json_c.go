@@ -16,6 +16,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/storage"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
@@ -61,7 +62,7 @@ func getMd5(s string) string {
 func (j *JsonC) Ad(c *echox.Context) error {
 	namesParams := strings.TrimSpace(c.QueryParam("keys"))
 	names := strings.Split(namesParams, "|")
-	userId, _ := strconv.Atoi(c.QueryParam("ad_user"))
+	userId, _ := util.I32Err(strconv.Atoi(c.QueryParam("ad_user")))
 	as := dps.AdService
 	result := make(map[string]*ad.AdDto, len(names))
 	key := fmt.Sprintf("go2o:rep:ad:%d:front:%s", userId, getMd5(namesParams))
@@ -111,8 +112,8 @@ func (j *JsonC) unmarshal(sto storage.Interface, key string, dst interface{}) er
 // 商城/商铺分类JSON，shop_id为0，则返回商城的分类
 // todo: ??? gob编码提示错误
 func (j *JsonC) ShopCat(c *echox.Context) error {
-	parentId, _ := strconv.Atoi(c.FormValue("parent_id"))
-	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	parentId, _ := util.I32Err(strconv.Atoi(c.FormValue("parent_id")))
+	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	list := []dto.Category{}
 	key := fmt.Sprintf("go2o:rep:cat:%d:json:%d", shopId, parentId)
 	sto := c.App.Storage()
@@ -159,7 +160,7 @@ func (j *JsonC) Get_shop(c *echox.Context) error {
 
 // 商品
 func (j *JsonC) Get_goods(c *echox.Context) error {
-	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
@@ -186,7 +187,7 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 
 // 最新店铺
 func (j *JsonC) Get_Newgoods(c *echox.Context) error {
-	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := dps.SaleService
@@ -209,7 +210,7 @@ func (j *JsonC) Get_Newshop(c *echox.Context) error {
 
 //最热商品
 func (j *JsonC) Get_hotGoods(c *echox.Context) error {
-	shopId, _ := strconv.Atoi(c.FormValue("shop_id"))
+	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	ss := dps.SaleService
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
@@ -221,7 +222,7 @@ func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 func (j *JsonC) Mch_goods(c *echox.Context) error {
 	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
-	mchId, _ := strconv.Atoi(c.FormValue("mch_id"))
+	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
 	result := make(map[string]interface{}, len(types))
 	key := fmt.Sprint("go2o:rep:sg:front:%d_%s", mchId, typeParams)
 	sto := c.App.Storage()
@@ -248,7 +249,7 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 func (j *JsonC) SaleLabelGoods(c *echox.Context) error {
 	codeParams := strings.TrimSpace(c.FormValue("params"))
 	codes := strings.Split(codeParams, "|")
-	mchId, _ := strconv.Atoi(c.FormValue("mch_id"))
+	mchId, _ := util.I32Err(strconv.Atoi(c.FormValue("mch_id")))
 	result := make(map[string]interface{}, len(codes))
 
 	key := fmt.Sprint("go2o:rep:stg:front:%d--%s", mchId, getMd5(codeParams))

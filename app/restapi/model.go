@@ -10,8 +10,8 @@ package restapi
 
 type (
 	AsyncResult struct {
-		MemberId       int  // 会员编号
-		MemberUpdated  bool //会员已经更新
-		AccountUpdated bool //会员账户已经更新
+		MemberId       int32 // 会员编号
+		MemberUpdated  bool  //会员已经更新
+		AccountUpdated bool  //会员账户已经更新
 	}
 )

@@ -19,10 +19,10 @@ type IMerchantRep interface {
 	CreateSignUpToken(memberId int32) string
 
 	// 根据商户申请密钥获取会员编号
-	GetMemberFromSignUpToken(token string) int64
+	GetMemberFromSignUpToken(token string) int32
 
 	// 获取商户的编号
-	GetMerchantsId() []int64
+	GetMerchantsId() []int32
 
 	// 获取商户
 	GetMerchant(id int32) IMerchant
@@ -52,7 +52,7 @@ type IMerchantRep interface {
 	GetApiInfo(mchId int32) *ApiInfo
 
 	// 根据API编号获取商户编号
-	GetMerchantIdByApiId(apiId string) int
+	GetMerchantIdByApiId(apiId string) int32
 
 	// 获取键值
 	GetKeyValue(mchId int32, indent string, k string) string
@@ -92,5 +92,5 @@ type IMerchantRep interface {
 	////个人提现日志
 	//SavePresionBlanceLog(v *member.PresentLog) error
 	//
-	//GetOfflineRate(id int) (float32, float32, error)
+	//GetOfflineRate(id int32) (float32, float32, error)
 }

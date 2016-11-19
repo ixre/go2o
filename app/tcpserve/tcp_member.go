@@ -24,7 +24,7 @@ import (
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int32, updateTime int) *dto.MemberSummary {
+func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 	sto := gof.CurrentApp.Storage()
 	var kvMut int
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -37,7 +37,7 @@ func GetMemberSummary(memberId int32, updateTime int) *dto.MemberSummary {
 			return v
 		}
 	}
-	v = dps.MemberService.GetMemberSummary(memberId)
+	v = dps.MemberService.GetMemberSummary(int32(memberId))
 	if v != nil {
 		sto.SetExpire(key, v, 3600*360) // cache 15 hours
 		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
@@ -45,7 +45,7 @@ func GetMemberSummary(memberId int32, updateTime int) *dto.MemberSummary {
 	return v
 }
 
-func getMemberAccount(memberId int32, updateTime int) *member.Account {
+func getMemberAccount(memberId int, updateTime int) *member.Account {
 	sto := gof.CurrentApp.Storage()
 	var kvAut int
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
@@ -58,7 +58,7 @@ func getMemberAccount(memberId int32, updateTime int) *member.Account {
 			return v
 		}
 	}
-	v = dps.MemberService.GetAccount(memberId)
+	v = dps.MemberService.GetAccount(int32(memberId))
 	sto.SetExpire(key, v, 3600*360) // cache 15 hours
 	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
 

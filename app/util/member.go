@@ -14,6 +14,7 @@ import (
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/storage"
+	"github.com/jsix/gof/util"
 	"go2o/core/infrastructure/gen"
 	"strconv"
 )
@@ -96,8 +97,7 @@ func MemberHttpSessionConnect(c *echox.Context, call func(memberId int32)) (bool
 	//return true,30
 	// 如果传递会话参数正确，能存储到Session
 	form := c.Request().URL.Query()
-	mid, err := strconv.Atoi(form.Get("member_id"))
-	memberId := int32(mid)
+	memberId, err := util.I32Err(strconv.Atoi(form.Get("member_id")))
 	if err == nil {
 		var token string = form.Get("token")
 		if CompareMemberApiToken(c.App.Storage(), memberId, token) {
@@ -126,9 +126,8 @@ func MemberHttpSessionConnect(c *echox.Context, call func(memberId int32)) (bool
 // 会员Http请求会话链接
 func MemberHttpSessionDisconnect(c *echox.Context) bool {
 	form := c.Request().URL.Query()
-	mid, err := strconv.Atoi(form.Get("member_id"))
+	memberId, err := util.I32Err(strconv.Atoi(form.Get("member_id")))
 	if err == nil {
-		memberId := int32(mid)
 		var token string = form.Get("token")
 		return RemoveMemberApiToken(c.App.Storage(), memberId, token)
 	}

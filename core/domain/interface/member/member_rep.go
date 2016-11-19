@@ -63,13 +63,13 @@ type IMemberRep interface {
 	GetMemberIdByInvitationCode(code string) int32
 
 	// 根据手机号获取会员编号
-	GetMemberIdByPhone(phone string) int64
+	GetMemberIdByPhone(phone string) int32
 
 	// 根据邮箱地址获取会员编号
-	GetMemberIdByEmail(email string) int64
+	GetMemberIdByEmail(email string) int32
 
 	// 获取会员编号
-	GetMemberIdByUser(user string) int64
+	GetMemberIdByUser(user string) int32
 
 	// 用户名是否存在
 	CheckUsrExist(usr string, memberId int32) bool

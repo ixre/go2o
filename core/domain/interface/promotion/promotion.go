@@ -57,7 +57,7 @@ type IPromotion interface {
 	Save() (int32, error)
 
 	// 获取优惠券
-	//GetCoupon(id int) ICouponPromotion
+	//GetCoupon(id int32) ICouponPromotion
 
 	// 创建优惠券
 	//CreateCoupon(val *ValueCoupon) ICouponPromotion

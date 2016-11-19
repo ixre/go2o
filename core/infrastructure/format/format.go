@@ -24,7 +24,7 @@ func MustHtmlJson(v interface{}) template.JS {
 }
 
 // 获取性别
-func GetSex(sex int) string {
+func GetSex(sex int32) string {
 	switch sex {
 	case 1:
 		return "男性"

@@ -10,7 +10,7 @@ package dto
 
 // 会员概览信息
 type MemberSummary struct {
-	Id int `db:"id" auto:"yes" pk:"yes"`
+	Id int32 `db:"id" auto:"yes" pk:"yes"`
 	// 用户名
 	Usr string `db:"usr"`
 	// 昵称
@@ -18,9 +18,9 @@ type MemberSummary struct {
 	// 头像
 	Avatar string `db:"avatar"`
 	// 经验值
-	Exp int `db:"exp"`
+	Exp int32 `db:"exp"`
 	// 等级
-	Level int `db:"level"`
+	Level int32 `db:"level"`
 	// 等级名称
 	LevelName string `db:"level_name"`
 	// 等级标识

@@ -29,11 +29,11 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
+func (m *MemberQuery) GetMemberList(ids []int32) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
-		strIds[i] = strconv.Itoa(v)
+		strIds[i] = strconv.Itoa(int(v))
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
@@ -49,7 +49,7 @@ func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedBalanceAccountLog(memberId, begin, end int,
+func (m *MemberQuery) PagedBalanceAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
@@ -73,7 +73,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
+func (m *MemberQuery) PagedPresentAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
@@ -100,7 +100,7 @@ func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
 }
 
 // 获取返现记录
-func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
+func (m *MemberQuery) QueryBalanceLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
 	d := m.Connector
@@ -176,8 +176,8 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
-	var id int64
+func (m *MemberQuery) GetMemberIdByPhone(phone string) int32 {
+	var id int32
 	m.ExecScalar(`SELECT id FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)
@@ -188,7 +188,7 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
 func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
-	var id int
+	var id int32
 	var usr, name string
 	var inviNum, totalNum, regTime int
 	var rank int = 0

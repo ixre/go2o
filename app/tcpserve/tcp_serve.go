@@ -78,10 +78,10 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 				apiInfo := dps.MerchantService.GetApiInfo(mchId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
-						return mchId, errors.New("api has exipres")
+						return int(mchId), errors.New("api has exipres")
 					}
 				}
-				return mchId, nil
+				return int(mchId), nil
 			}
 			if err := s.Auth(conn, af); err != nil {
 				return err
@@ -102,7 +102,7 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 		f := func() (int, error) {
 			memberId, _ := strconv.Atoi(arr[0])
 			authOk := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
-				memberId, arr[1])
+				int32(memberId), arr[1])
 			if !authOk {
 				return memberId, errors.New("auth fail")
 			}

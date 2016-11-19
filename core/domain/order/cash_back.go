@@ -136,7 +136,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 func HandleCashBackDataTag(m member.IMember, order *order.Order,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 	data := c.GetDataTag()
-	var level int = 0
+	level := 0
 	for k, _ := range data {
 		if strings.HasPrefix(k, "G") {
 			if l, err := strconv.Atoi(k[1:]); err == nil && l > level {

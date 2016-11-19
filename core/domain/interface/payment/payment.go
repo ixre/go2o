@@ -165,7 +165,7 @@ type (
 		SavePaymentOrder(v *PaymentOrder) (int32, error)
 
 		// 通知支付单完成
-		//NotifyPaymentFinish(paymentOrderId int) error
+		//NotifyPaymentFinish(paymentOrderId int32) error
 	}
 
 	// 支付单实体

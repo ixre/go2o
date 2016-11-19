@@ -14,11 +14,12 @@ import (
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/app/util"
+	autil "go2o/app/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/dps"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
@@ -41,12 +42,12 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
 		mp, _ := dps.MemberService.Login(usr, encodePwd, true)
-		id := int32(mp["Id"])
+		id := mp["Id"]
 		rst := mp["Result"]
 		if id > 0 {
 			m, _ := dps.MemberService.GetMember(id)
 			// 登录成功，生成令牌
-			token := util.SetMemberApiToken(sto, int(id), encodePwd)
+			token := autil.SetMemberApiToken(sto, id, encodePwd)
 			result.Member = &dto.LoginMember{
 				Id:         int(id),
 				Token:      token,
@@ -83,8 +84,8 @@ func (mc *MemberC) Register(c echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-	m := &member.Member{}
-	pro := &member.Profile{}
+	m := &define.Member{}
+	pro := &define.Profile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp
@@ -120,7 +121,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc := dps.MemberService.GetAccount(int(memberId))
+		acc := dps.MemberService.GetAccount(memberId)
 		kvAut = int(acc.UpdateTime)
 		sto.Set(autKey, kvAut)
 	}
@@ -134,7 +135,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := int32(GetMemberId(c))
 	m, _ := dps.MemberService.GetMember(memberId)
-	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
+	m.DynamicToken, _ = autil.GetMemberApiToken(sto, memberId)
 	return c.JSON(http.StatusOK, m)
 }
 
@@ -161,7 +162,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 // 断开
 func (mc *MemberC) Disconnect(c *echox.Context) error {
 	var result gof.Message
-	if util.MemberHttpSessionDisconnect(c) {
+	if autil.MemberHttpSessionDisconnect(c) {
 		result.Result = true
 	} else {
 		result.Message = "disconnect fail"

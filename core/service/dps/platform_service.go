@@ -119,7 +119,7 @@ func (p *platformService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) 
 }
 
 // 获取下级区域
-func (p *platformService) GetChildAreas(id int) []*valueobject.Area {
+func (p *platformService) GetChildAreas(id int32) []*valueobject.Area {
 	return p._rep.GetChildAreas(id)
 }
 

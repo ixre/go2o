@@ -13,7 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/web/shared"
-	"go2o/core/domain/interface/member"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"net/http"
 )
 
@@ -47,12 +47,12 @@ func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {
 }
 
 //检查会员编号
-func getMemberId(c *echox.Context) int {
+func getMemberId(c *echox.Context) int32 {
 	v := c.Session.Get("member")
 	if v != nil {
-		m := v.(*member.Member)
+		m := v.(*define.Member)
 		if m != nil {
-			return m.Id
+			return m.ID
 		}
 	}
 	return -1

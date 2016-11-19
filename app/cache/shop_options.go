@@ -72,7 +72,7 @@ func GetShopsJson(mchId int32) []byte {
 	return buf.Bytes()
 }
 
-func GetShopDropList(mchId int32, selected int) []byte {
+func GetShopDropList(mchId int32, selected int32) []byte {
 	buf := bytes.NewBuffer([]byte{})
 	shops := dps.MerchantService.GetShopsOfMerchant(mchId)
 	for _, v := range shops {

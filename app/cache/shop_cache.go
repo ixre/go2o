@@ -14,16 +14,15 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/dps"
-	"strconv"
 )
 
 // 设置商户站点配置
-func GetShopDataKey(shopId int) string {
+func GetShopDataKey(shopId int32) string {
 	return fmt.Sprintf("go2o:cache:online-shop:siteconf:%d", shopId)
 }
 
 // 清除在线商店缓存
-func CleanShopData(shopId int) {
+func CleanShopData(shopId int32) {
 	if shopId > 0 {
 		key := GetShopDataKey(shopId)
 		GetKVS().Del(key)
@@ -38,11 +37,12 @@ func DelShopCache(mchId int32) {
 }
 
 // 根据主机头识别商店编号
-func GetShopIdByHost(host string) (shopId int) {
+func GetShopIdByHost(host string) int32 {
 	key := "go2o:cache:shop-host:" + host
 	sto := GetKVS()
-	var err error
-	if shopId, err = sto.GetInt(key); err != nil || shopId <= 0 {
+	id, err := sto.GetInt(key)
+	shopId := int32(id)
+	if err != nil || id <= 0 {
 		_, shopId = dps.ShopService.GetShopIdByHost(host)
 		if shopId > 0 {
 			sto.SetExpire(key, shopId, DefaultMaxSeconds)
@@ -52,11 +52,13 @@ func GetShopIdByHost(host string) (shopId int) {
 }
 
 // 根据商城编号获取商户编号
-func GetMchIdByShopId(shopId int) (mchId int32) {
-	key := "go2o:cache:mch-by-shop:" + strconv.Itoa(shopId)
+// todo: ?? int 和 int32
+func GetMchIdByShopId(shopId int32) int32 {
+	key := fmt.Sprintf("go2o:cache:mch-by-shop:%d", shopId)
 	sto := GetKVS()
-	var err error
-	if mchId, err = sto.GetInt(key); err != nil || mchId <= 0 {
+	tmpId, err := sto.GetInt(key)
+	mchId := int32(tmpId)
+	if err != nil || mchId <= 0 {
 		mchId = dps.ShopService.GetMerchantId(shopId)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
@@ -67,7 +69,7 @@ func GetMchIdByShopId(shopId int) (mchId int32) {
 	return mchId
 }
 
-func getRdShopData(shopId int) *shop.ShopDto {
+func getRdShopData(shopId int32) *shop.ShopDto {
 	mchId := GetMchIdByShopId(shopId)
 	v2 := dps.ShopService.GetShopData(mchId, shopId)
 	if v2 != nil {
@@ -83,7 +85,7 @@ func getRdShopData(shopId int) *shop.ShopDto {
 }
 
 // 获取商城的数据
-func GetOnlineShopData(shopId int) *shop.ShopDto {
+func GetOnlineShopData(shopId int32) *shop.ShopDto {
 	//return getRdShopData(shopId)
 	var v shop.ShopDto
 	sto := GetKVS()

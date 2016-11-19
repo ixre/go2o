@@ -11,7 +11,6 @@ package query
 import (
 	"database/sql"
 	"github.com/jsix/gof/db"
-	"github.com/labstack/gommon/log"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
@@ -28,7 +27,7 @@ func NewAfterSalesQuery(db db.Connector) *AfterSalesQuery {
 }
 
 // 获取分页售后单
-func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId, begin,
+func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int32, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	list := []*dto.PagedMemberAfterSalesOrder{}
 	total := 0
@@ -63,7 +62,7 @@ WHERE ao.buyer_id=? ORDER BY ao.create_time DESC LIMIT ?,?`, func(rs *sql.Rows) 
 }
 
 // 获取分页售后单
-func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
+func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfVendor(vendorId int32, begin,
 	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	list := []*dto.PagedVendorAfterSalesOrder{}
 	total := 0
@@ -95,6 +94,5 @@ WHERE ao.vendor_id=? `+where+" ORDER BY id DESC LIMIT ?,?", func(rs *sql.Rows) {
 			}
 		}, vendorId, begin, size)
 	}
-	log.Print("=====================%s", len(list))
 	return total, list
 }

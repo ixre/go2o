@@ -184,15 +184,15 @@ func (m *MemberRep) GetMemberValueByPhone(phone string) *member.Member {
 }
 
 // 根据手机号获取会员编号
-func (m *MemberRep) GetMemberIdByPhone(phone string) int64 {
-	var id int64
+func (m *MemberRep) GetMemberIdByPhone(phone string) int32 {
+	var id int32
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
-func (m *MemberRep) GetMemberIdByEmail(email string) int64 {
-	var id int64
+func (m *MemberRep) GetMemberIdByEmail(email string) int32 {
+	var id int32
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
 	return id
 }
@@ -325,8 +325,8 @@ func (m *MemberRep) DeleteMember(id int32) error {
 	return err
 }
 
-func (m *MemberRep) GetMemberIdByUser(user string) int64 {
-	var id int64
+func (m *MemberRep) GetMemberIdByUser(user string) int32 {
+	var id int32
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
 }

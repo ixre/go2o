@@ -9,7 +9,7 @@
 package dto
 
 type SettleShopMeta struct {
-	Id   int    `json:"id"`
+	Id   int32  `json:"id"`
 	Name string `json:"name"`
 	Tel  string `json:"tel"`
 }

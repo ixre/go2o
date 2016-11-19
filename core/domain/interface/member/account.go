@@ -171,32 +171,32 @@ type (
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
-		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int64) error
+		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减余额
-		DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
+		DiscountBalance(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 冻结余额
-		Freeze(title string, outerNo string, amount float32, relateUser int64) error
+		Freeze(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 解冻金额
-		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
+		Unfreeze(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
+		ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额(指定业务类型)
-		ChargePresentByKind(kind int, title string, outerNo string, amount float32, relateUser int64) error
+		ChargePresentByKind(kind int, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
-			relateUser int64, mustLargeZero bool) error
+			relateUser int32, mustLargeZero bool) error
 
 		// 冻结赠送金额
-		FreezePresent(title string, outerNo string, amount float32, relateUser int64) error
+		FreezePresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 解冻赠送金额
-		UnfreezePresent(title string, outerNo string, amount float32, relateUser int64) error
+		UnfreezePresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 流通账户余额变动，如扣除,amount传入负数金额
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
@@ -355,7 +355,7 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int64 `db:"rel_user"`
+		RelateUser int32 `db:"rel_user"`
 		// 状态
 		State int `db:"state"`
 		// 备注
@@ -382,7 +382,7 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int64 `db:"rel_user"`
+		RelateUser int32 `db:"rel_user"`
 		// 状态
 		State int `db:"state"`
 		// 备注
