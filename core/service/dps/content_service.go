@@ -30,7 +30,7 @@ func NewContentService(rep content.IContentRep, q *query.ContentQuery) *contentS
 
 // 获取页面
 //todo: 取消mchId
-func (cs *contentService) GetPage(mchId, id int) *content.Page {
+func (cs *contentService) GetPage(mchId, id int32) *content.Page {
 	c := cs._contentRep.GetContent(mchId)
 	page := c.GetPage(id)
 	if page != nil {
@@ -41,7 +41,7 @@ func (cs *contentService) GetPage(mchId, id int) *content.Page {
 
 // 根据标识获取页面
 //todo: 取消mchId
-func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Page {
+func (cs *contentService) GetPageByIndent(userId int32, indent string) *content.Page {
 	c := cs._contentRep.GetContent(userId)
 	page := c.GetPageByStringIndent(indent)
 	if page != nil {
@@ -51,7 +51,7 @@ func (cs *contentService) GetPageByIndent(userId int, indent string) *content.Pa
 }
 
 // 保存页面
-func (cs *contentService) SavePage(mchId int32, v *content.Page) (int, error) {
+func (cs *contentService) SavePage(mchId int32, v *content.Page) (int32, error) {
 	c := cs._contentRep.GetContent(mchId)
 	var page content.IPage
 	var err error
@@ -72,7 +72,7 @@ func (cs *contentService) SavePage(mchId int32, v *content.Page) (int, error) {
 }
 
 // 删除页面
-func (cs *contentService) DeletePage(mchId int32, pageId int) error {
+func (cs *contentService) DeletePage(mchId int32, pageId int32) error {
 	c := cs._contentRep.GetContent(mchId)
 	return c.DeletePage(pageId)
 }
@@ -89,7 +89,7 @@ func (cs *contentService) GetArticleCategories() []*content.ArticleCategory {
 }
 
 // 获取文章栏目
-func (cs *contentService) GetArticleCategory(id int) content.ArticleCategory {
+func (cs *contentService) GetArticleCategory(id int32) content.ArticleCategory {
 	m := cs._sysContent.ArticleManager().GetCategory(id)
 	if m != nil {
 		return m.GetValue()
@@ -107,7 +107,7 @@ func (cs *contentService) GetArticleCategoryByAlias(alias string) content.Articl
 }
 
 // 保存文章栏目
-func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int, error) {
+func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int32, error) {
 	m := cs._sysContent.ArticleManager()
 	c := m.GetCategory(v.Id)
 	if c == nil {
@@ -121,7 +121,7 @@ func (cs *contentService) SaveArticleCategory(v *content.ArticleCategory) (int, 
 }
 
 // 删除文章分类
-func (cs *contentService) DeleteArticleCategory(categoryId int) error {
+func (cs *contentService) DeleteArticleCategory(categoryId int32) error {
 	return cs._sysContent.ArticleManager().DelCategory(categoryId)
 }
 
@@ -141,7 +141,7 @@ func (cs *contentService) DeleteArticle(id int32) error {
 }
 
 // 保存文章
-func (cs *contentService) SaveArticle(e *content.Article) (int, error) {
+func (cs *contentService) SaveArticle(e *content.Article) (int32, error) {
 	m := cs._sysContent.ArticleManager()
 	a := m.GetArticle(e.Id)
 	if a == nil {
@@ -154,7 +154,7 @@ func (cs *contentService) SaveArticle(e *content.Article) (int, error) {
 	return -1, err
 }
 
-func (cs *contentService) PagedArticleList(catId, begin, size int,
+func (cs *contentService) PagedArticleList(catId int32, begin, size int,
 	where string) (int, []*content.Article) {
 	return cs._query.PagedArticleList(catId, begin, size, where)
 }

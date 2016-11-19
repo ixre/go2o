@@ -23,10 +23,10 @@ import (
 )
 
 var (
-	mchIds []int
+	mchIds []int32
 )
 
-func getMerchants() []int {
+func getMerchants() []int32 {
 	if mchIds == nil {
 		mchIds = dps.MerchantService.GetMerchantsId()
 	}
@@ -84,14 +84,14 @@ func mchDayChart() {
 func generateMchDayChart(start, end int64) {
 	begin := 0
 	size := 20
-	var mchList []int
-	tmp := 0
+	var mchList []int32
+	var tmp int32
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
 	// 清理数据
 	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str=?`, dateStr)
 	// 开始统计数据
 	for {
-		mchList = []int{}
+		mchList = []int32{}
 		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
 			for rs.Next() {
 				rs.Scan(&tmp)

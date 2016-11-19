@@ -11,7 +11,7 @@ package member
 
 const (
 	// 默认操作用户
-	DefaultRelateUser int64 = 0
+	DefaultRelateUser int32 = 0
 )
 const (
 	StateStopped = 0 //已停用

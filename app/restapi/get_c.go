@@ -11,8 +11,9 @@ package restapi
 import (
 	"crypto/sha1"
 	"fmt"
+	"github.com/jsix/gof/util"
 	"github.com/labstack/echo"
-	"go2o/app/util"
+	autil "go2o/app/util"
 	"go2o/core/infrastructure/gen"
 	"go2o/core/service/dps"
 	"io"
@@ -24,9 +25,9 @@ type getC struct {
 
 // 下载邀请二维码
 func (g *getC) Invite_qr(c echo.Context) error {
-	domain := c.QueryParam("domain")                       //域名
-	memberId, _ := strconv.Atoi(c.QueryParam("member_id")) //会员编号
-	targetUrl := c.QueryParam("target_url")                //目标跳转地址
+	domain := c.QueryParam("domain")                                    //域名
+	memberId, _ := util.I32Err(strconv.Atoi(c.QueryParam("member_id"))) //会员编号
+	targetUrl := c.QueryParam("target_url")                             //目标跳转地址
 	if len(domain) == 0 {
 		domain = "http://" + c.Request().Host
 	}
@@ -38,7 +39,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")
 		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment;filename=tgcode_%s.jpg", m.InvitationCode))
-		c.Response().Write(util.GenerateInvitationQr(domain, m.InvitationCode, query))
+		c.Response().Write(autil.GenerateInvitationQr(domain, m.InvitationCode, query))
 	}
 	return nil
 }

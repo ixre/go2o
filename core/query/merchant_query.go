@@ -42,13 +42,8 @@ func getHostRegexp() *regexp.Regexp {
 }
 
 // 根据主机查询商户编号
-func (m *MerchantQuery) QueryMerchantIdByHost(host string) int {
-	//  $ 获取合作商ID
-	// $ hostname : 域名
-	// *.wdian.net  二级域名
-	// www.dc1.com  顶级域名
-
-	var mchId int
+func (m *MerchantQuery) QueryMerchantIdByHost(host string) int32 {
+	var mchId int32
 	var err error
 
 	reg := getHostRegexp()
@@ -69,8 +64,8 @@ func (m *MerchantQuery) QueryMerchantIdByHost(host string) int {
 }
 
 // 验证用户密码并返回编号
-func (m *MerchantQuery) Verify(usr, pwd string) int {
-	var id int = -1
+func (m *MerchantQuery) Verify(usr, pwd string) int32 {
+	var id int32
 	m.Connector.ExecScalar("SELECT id FROM mch_merchant WHERE usr=? AND pwd=?", &id, usr, pwd)
 	return id
 }

@@ -53,12 +53,12 @@ func DelMerchantCache(mchId int32) {
 }
 
 // 根据主机头识别会员编号
-func GetMerchantIdByHost(host string) int {
-	mchId := 0
+func GetMerchantIdByHost(host string) int32 {
 	key := "cache:host-for:" + host
 	sto := GetKVS()
-	var err error
-	if mchId, err = sto.GetInt(key); err != nil || mchId <= 0 {
+	id, err := sto.GetInt(key)
+	mchId := int32(id)
+	if err != nil || mchId <= 0 {
 		mchId = dps.MerchantService.GetMerchantIdByHost(host)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
@@ -68,8 +68,8 @@ func GetMerchantIdByHost(host string) int {
 }
 
 // 根据API ID获取商户ID
-func GetMerchantIdByApiId(apiId string) int {
-	var mchId int
+func GetMerchantIdByApiId(apiId string) int32 {
+	var mchId int32
 	kvs := GetKVS()
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &mchId)
@@ -155,7 +155,7 @@ func getRealShipExpressTab() string {
 		for _, v := range iMap[l] {
 			i++
 			buf.WriteString("<li><input type=\"radio\" name=\"ProviderId\" field=\"ProviderId\" value=\"")
-			buf.WriteString(strconv.Itoa(v.Id))
+			buf.WriteString(strconv.Itoa(int(v.Id)))
 			buf.WriteString(`" id="provider_`)
 			buf.WriteString(strconv.Itoa(i))
 			buf.WriteString(`"/><label for="provider_`)

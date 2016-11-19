@@ -85,11 +85,11 @@ func (m *merchantRep) CreateSignUpToken(memberId int32) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantRep) GetMemberFromSignUpToken(token string) int64 {
+func (m *merchantRep) GetMemberFromSignUpToken(token string) int32 {
 	key := "go2o:rep:mch:signup:tk-" + token
-	id, err := m.storage.GetInt64(key)
+	id, err := m.storage.GetInt(key)
 	if err == nil {
-		return id
+		return int32(id)
 	}
 	return -1
 }
@@ -157,9 +157,9 @@ func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int32, error) {
 }
 
 // 获取商户的编号
-func (m *merchantRep) GetMerchantsId() []int64 {
-	dst := []int64{}
-	var i int64
+func (m *merchantRep) GetMerchantsId() []int32 {
+	dst := []int32{}
+	var i int32
 
 	m.Connector.Query("SELECT id FROM mch_merchant", func(rows *sql.Rows) {
 		for rows.Next() {
@@ -210,8 +210,8 @@ func (m *merchantRep) GetApiInfo(mchId int32) *merchant.ApiInfo {
 }
 
 // 根据API编号获取商户编号
-func (m *merchantRep) GetMerchantIdByApiId(apiId string) int {
-	var mchId int
+func (m *merchantRep) GetMerchantIdByApiId(apiId string) int32 {
+	var mchId int32
 	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &mchId, apiId)
 	return mchId
 }
@@ -324,7 +324,7 @@ func (m *merchantRep) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int
 //	return err
 //}
 //
-//func (m *merchantRep) GetOfflineRate(id int) (float32, float32, error) {
+//func (m *merchantRep) GetOfflineRate(id int32) (float32, float32, error) {
 //	var rate float32
 //	var return_rate float32
 //	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id=?", &rate, id)

@@ -42,7 +42,7 @@ func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
 }
 
 // 获取产品值
-func (s *saleService) GetValueItem(supplierId, itemId int) *item.Item {
+func (s *saleService) GetValueItem(supplierId, itemId int32) *item.Item {
 	sl := s._rep.GetSale(supplierId)
 	pro := sl.ItemManager().GetItem(itemId)
 	if pro != nil {
@@ -53,7 +53,7 @@ func (s *saleService) GetValueItem(supplierId, itemId int) *item.Item {
 }
 
 // 获取商品值
-func (s *saleService) GetValueGoods(mchId, goodsId int) *valueobject.Goods {
+func (s *saleService) GetValueGoods(mchId, goodsId int32) *valueobject.Goods {
 	sl := s._rep.GetSale(mchId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	if goods != nil {
@@ -63,14 +63,14 @@ func (s *saleService) GetValueGoods(mchId, goodsId int) *valueobject.Goods {
 }
 
 // 根据SKU获取商品
-func (s *saleService) GetGoodsBySku(mchId int32, itemId int, sku int) *valueobject.Goods {
+func (s *saleService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	sl := s._rep.GetSale(mchId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	return goods.GetPackedValue()
 }
 
 // 根据SKU获取商品
-func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int, sku int) *goods.ValueGoods {
+func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *goods.ValueGoods {
 	sl := s._rep.GetSale(mchId)
 	gs := sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	if gs != nil {
@@ -80,7 +80,7 @@ func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int, sku int) *good
 }
 
 // 根据快照编号获取商品
-func (s *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
+func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *goods.ValueGoods {
 	snap := s._goodsRep.GetSaleSnapshot(snapshotId)
 	if snap != nil {
 		return s._goodsRep.GetValueGoodsById(snap.SkuId)
@@ -89,12 +89,12 @@ func (s *saleService) GetGoodsBySnapshotId(snapshotId int) *goods.ValueGoods {
 }
 
 // 根据快照编号获取商品
-func (s *saleService) GetSaleSnapshotById(snapshotId int) *goods.SalesSnapshot {
+func (s *saleService) GetSaleSnapshotById(snapshotId int32) *goods.SalesSnapshot {
 	return s._goodsRep.GetSaleSnapshot(snapshotId)
 }
 
 // 保存产品
-func (s *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
+func (s *saleService) SaveItem(vendorId int32, v *item.Item) (int32, error) {
 	sl := s._rep.GetSale(vendorId)
 	var pro sale.IItem
 	v.VendorId = vendorId //设置供应商编号
@@ -115,7 +115,7 @@ func (s *saleService) SaveItem(vendorId int, v *item.Item) (int, error) {
 }
 
 // 保存货品描述
-func (s *saleService) SaveItemInfo(mchId int32, itemId int, info string) error {
+func (s *saleService) SaveItemInfo(mchId int32, itemId int32, info string) error {
 	sl := s._rep.GetSale(mchId)
 	pro := sl.ItemManager().GetItem(itemId)
 	if pro == nil {
@@ -125,7 +125,7 @@ func (s *saleService) SaveItemInfo(mchId int32, itemId int, info string) error {
 }
 
 // 保存商品
-func (s *saleService) SaveGoods(mchId int32, gs *goods.ValueGoods) (int, error) {
+func (s *saleService) SaveGoods(mchId int32, gs *goods.ValueGoods) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	if gs.Id > 0 {
 		g := sl.GoodsManager().GetGoods(gs.Id)
@@ -137,13 +137,13 @@ func (s *saleService) SaveGoods(mchId int32, gs *goods.ValueGoods) (int, error) 
 }
 
 // 删除货品
-func (s *saleService) DeleteItem(mchId int32, id int) error {
+func (s *saleService) DeleteItem(mchId int32, id int32) error {
 	sl := s._rep.GetSale(mchId)
 	return sl.ItemManager().DeleteItem(id)
 }
 
 // 获取分页上架的商品
-func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId, start, end int,
+func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cat := s._cateRep.GetGlobManager().GetCategory(categoryId)
@@ -160,17 +160,17 @@ func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId, start, end 
 }
 
 // 获取上架商品数据（分页）
-func (s *saleService) GetPagedOnShelvesGoods(shopId int, categoryId, start, end int,
+func (s *saleService) GetPagedOnShelvesGoods(shopId int32, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cate := s._cateRep.GetGlobManager().GetCategory(categoryId)
-		var ids []int = cate.GetChildes()
+		var ids []int32 = cate.GetChildes()
 		ids = append(ids, categoryId)
 		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
 			ids, start, end, "", sortBy)
 	} else {
 		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
-			[]int{}, start, end, "", sortBy)
+			[]int32{}, start, end, "", sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -179,7 +179,7 @@ func (s *saleService) GetPagedOnShelvesGoods(shopId int, categoryId, start, end 
 }
 
 // 获取分页上架的商品
-func (s *saleService) GetPagedOnShelvesGoodsByKeyword(shopId, start, end int,
+func (s *saleService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	word, sortQuery string) (int, []*valueobject.Goods) {
 	var where string
 	var orderBy string
@@ -206,13 +206,13 @@ func (s *saleService) GetPagedOnShelvesGoodsByKeyword(shopId, start, end int,
 }
 
 // 删除产品
-func (s *saleService) DeleteGoods(mchId, goodsId int) error {
+func (s *saleService) DeleteGoods(mchId, goodsId int32) error {
 	sl := s._rep.GetSale(mchId)
 	return sl.GoodsManager().DeleteGoods(goodsId)
 }
 
 // 获取商品分类
-func (s *saleService) GetCategory(mchId, id int) *sale.Category {
+func (s *saleService) GetCategory(mchId, id int32) *sale.Category {
 	sl := s._rep.GetSale(mchId)
 	c := sl.CategoryManager().GetCategory(id)
 	if c != nil {
@@ -222,7 +222,7 @@ func (s *saleService) GetCategory(mchId, id int) *sale.Category {
 }
 
 // 获取商品分类和选项
-func (s *saleService) GetCategoryAndOptions(mchId, id int) (*sale.Category,
+func (s *saleService) GetCategoryAndOptions(mchId, id int32) (*sale.Category,
 	domain.IOptionStore) {
 	sl := s._rep.GetSale(mchId)
 	c := sl.CategoryManager().GetCategory(id)
@@ -237,7 +237,7 @@ func (s *saleService) DeleteCategory(mchId, id int32) error {
 	return sl.CategoryManager().DeleteCategory(id)
 }
 
-func (s *saleService) SaveCategory(mchId int32, v *sale.Category) (int, error) {
+func (s *saleService) SaveCategory(mchId int32, v *sale.Category) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	var ca sale.ICategory
 	if v.Id > 0 {
@@ -266,14 +266,14 @@ func (s *saleService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 	return rootNode
 }
 
-func (s *saleService) walkCategoryTree(node *tree.TreeNode, parentId int, categories []sale.ICategory) {
+func (s *saleService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []sale.ICategory) {
 	node.Childs = []*tree.TreeNode{}
 	for _, v := range categories {
 		cate := v.GetValue()
 		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
 				Text:   cate.Name,
-				Value:  strconv.Itoa(cate.Id),
+				Value:  strconv.Itoa(int(cate.Id)),
 				Url:    "",
 				Icon:   "",
 				Open:   true,
@@ -297,7 +297,7 @@ func (s *saleService) GetCategories(mchId int32) []*sale.Category {
 }
 
 // 根据上级编号获取分类列表
-func (s *saleService) GetCategoriesByParentId(mchId, parentId int) []*sale.Category {
+func (s *saleService) GetCategoriesByParentId(mchId, parentId int32) []*sale.Category {
 	cats := s.getCategoryManager(mchId).GetCategories()
 	list := []*sale.Category{}
 	for _, v := range cats {
@@ -332,7 +332,7 @@ func (s *saleService) GetBigCategories(mchId int32) []dto.Category {
 	return list
 }
 
-func (s *saleService) GetChildCategories(mchId, parentId int) []dto.Category {
+func (s *saleService) GetChildCategories(mchId, parentId int32) []dto.Category {
 	cats := s.getCategoryManager(mchId).GetCategories()
 	list := []dto.Category{}
 	for _, v := range cats {
@@ -381,7 +381,7 @@ func (s *saleService) GetAllSaleLabels(mchId int32) []*sale.Label {
 }
 
 // 获取销售标签
-func (s *saleService) GetSaleLabel(mchId, id int) *sale.Label {
+func (s *saleService) GetSaleLabel(mchId, id int32) *sale.Label {
 	sl := s._rep.GetSale(mchId)
 	if tag := sl.LabelManager().GetSaleLabel(id); tag != nil {
 		return tag.GetValue()
@@ -399,7 +399,7 @@ func (s *saleService) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
 }
 
 // 保存销售标签
-func (s *saleService) SaveSaleLabel(mchId int32, v *sale.Label) (int, error) {
+func (s *saleService) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	if v.Id > 0 {
 		tag := sl.LabelManager().GetSaleLabel(v.Id)
@@ -410,7 +410,7 @@ func (s *saleService) SaveSaleLabel(mchId int32, v *sale.Label) (int, error) {
 }
 
 // 获取商品的销售标签
-func (s *saleService) GetItemSaleLabels(mchId, itemId int) []*sale.Label {
+func (s *saleService) GetItemSaleLabels(mchId, itemId int32) []*sale.Label {
 	var list = make([]*sale.Label, 0)
 	sl := s._rep.GetSale(mchId)
 	if goods := sl.ItemManager().GetItem(itemId); goods != nil {
@@ -420,7 +420,7 @@ func (s *saleService) GetItemSaleLabels(mchId, itemId int) []*sale.Label {
 }
 
 // 保存商品的销售标签
-func (s *saleService) SaveItemSaleLabels(mchId, itemId int, tagIds []int) error {
+func (s *saleService) SaveItemSaleLabels(mchId, itemId int32, tagIds []int) error {
 	var err error
 	sl := s._rep.GetSale(mchId)
 	if goods := sl.ItemManager().GetItem(itemId); goods != nil {
@@ -447,7 +447,7 @@ func (s *saleService) GetValueGoodsBySaleLabel(mchId int32,
 
 // 根据分页销售标签获取指定数目的商品
 func (s *saleService) GetPagedValueGoodsBySaleLabel(mchId int32,
-	tagId int, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
+	tagId int32, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
 	sl := s._rep.GetSale(mchId)
 	tag := sl.LabelManager().CreateSaleLabel(&sale.Label{
 		Id: tagId,
@@ -461,7 +461,7 @@ func (s *saleService) DeleteSaleLabel(mchId int32, id int32) error {
 }
 
 // 获取商品的会员价
-func (s *saleService) GetGoodsLevelPrices(mchId, goodsId int) []*goods.MemberPrice {
+func (s *saleService) GetGoodsLevelPrices(mchId, goodsId int32) []*goods.MemberPrice {
 	sl := s._rep.GetSale(mchId)
 	if goods := sl.GoodsManager().GetGoods(goodsId); goods != nil {
 		return goods.GetLevelPrices()
@@ -470,7 +470,7 @@ func (s *saleService) GetGoodsLevelPrices(mchId, goodsId int) []*goods.MemberPri
 }
 
 // 保存商品的会员价
-func (s *saleService) SaveMemberPrices(mchId int32, goodsId int,
+func (s *saleService) SaveMemberPrices(mchId int32, goodsId int32,
 	priceSet []*goods.MemberPrice) error {
 	sl := s._rep.GetSale(mchId)
 	var err error
@@ -484,13 +484,12 @@ func (s *saleService) SaveMemberPrices(mchId int32, goodsId int,
 	return nil
 }
 
-//func (s *saleService) GetGoodsComplexInfo(goodsId int) *dto.GoodsComplex {
+//func (s *saleService) GetGoodsComplexInfo(goodsId int32) *dto.GoodsComplex {
 //	return s._goodsQuery.GetGoodsComplex(goodsId)
 //}
 
 // 获取商品详情
-func (s *saleService) GetGoodsDetails(mchId, goodsId,
-	mLevel int) (*valueobject.Goods, map[string]string) {
+func (s *saleService) GetGoodsDetails(mchId, goodsId, mLevel int32) (*valueobject.Goods, map[string]string) {
 	sl := s._rep.GetSale(mchId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	gv := goods.GetPackedValue()
@@ -504,19 +503,19 @@ func (s *saleService) GetGoodsDetails(mchId, goodsId,
 }
 
 // 获取货品描述
-func (s *saleService) GetItemDescriptionByGoodsId(mchId, goodsId int) string {
+func (s *saleService) GetItemDescriptionByGoodsId(mchId, goodsId int32) string {
 	sl := s._rep.GetSale(mchId)
 	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	return goods.GetItem().GetValue().Description
 }
 
 // 获取商品快照
-func (s *saleService) GetSnapshot(skuId int) *goods.Snapshot {
+func (s *saleService) GetSnapshot(skuId int32) *goods.Snapshot {
 	return s._goodsRep.GetLatestSnapshot(skuId)
 }
 
 // 设置商品货架状态
-func (s *saleService) SetShelveState(mchId int32, itemId int, state int, remark string) error {
+func (s *saleService) SetShelveState(mchId int32, itemId int32, state int, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
@@ -526,7 +525,7 @@ func (s *saleService) SetShelveState(mchId int32, itemId int, state int, remark 
 }
 
 // 设置商品货架状态
-func (s *saleService) ReviewItem(mchId int32, itemId int, pass bool, remark string) error {
+func (s *saleService) ReviewItem(mchId int32, itemId int32, pass bool, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {
@@ -536,7 +535,7 @@ func (s *saleService) ReviewItem(mchId int32, itemId int, pass bool, remark stri
 }
 
 // 标记为违规
-func (s *saleService) SignIncorrect(supplierId int, itemId int, remark string) error {
+func (s *saleService) SignIncorrect(supplierId int32, itemId int32, remark string) error {
 	sl := s._rep.GetSale(supplierId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {

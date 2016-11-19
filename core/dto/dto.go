@@ -19,7 +19,7 @@ type (
 	// 站内信
 	SiteMessage struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 消息类型
 		Type int `db:"msg_type"`
 		// 消息用途
@@ -33,7 +33,7 @@ type (
 		// 数据
 		Data interface{}
 		// 接收者编号
-		ToId int `db:"to_id"`
+		ToId int32 `db:"to_id"`
 		// 接收者角色
 		ToRole int `db:"to_role"`
 		// 是否阅读
@@ -52,20 +52,20 @@ type (
 
 	PagedMemberAfterSalesOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
 		OrderNo string `db:"order_id"`
 		// 运营商编号
-		VendorId int `db:"vendor_id"`
+		VendorId int32 `db:"vendor_id"`
 		// 运营商名称
 		VendorName string `db:"vendor_name"`
 		// 类型，退货、换货、维修
 		Type       int `db:"type"`
-		SkuId      int
+		SkuId      int32
 		GoodsTitle string
 		GoodsImage string
 		// 退货的商品项编号
-		SnapshotId int `db:"snap_id"`
+		SnapshotId int32 `db:"snap_id"`
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后单状态
@@ -81,20 +81,20 @@ type (
 	// 分页商户售后单
 	PagedVendorAfterSalesOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
 		OrderNo string `db:"order_id"`
 		// 会员编号
-		BuyerId int `db:"vendor_id"`
+		BuyerId int32 `db:"vendor_id"`
 		// 会员名称
 		BuyerName string `db:"buyer_name"`
 		// 类型，退货、换货、维修
 		Type       int `db:"type"`
-		SkuId      int
+		SkuId      int32
 		GoodsTitle string
 		GoodsImage string
 		// 退货的商品项编号
-		SnapshotId int `db:"snap_id"`
+		SnapshotId int32 `db:"snap_id"`
 		// 商品数量
 		Quantity int `db:"quantity"`
 		// 售后单状态
@@ -109,18 +109,18 @@ type (
 
 	// 店铺收藏
 	PagedShopFav struct {
-		Id         int    `db:"id"`
-		ShopId     int    `db:"shop_id"`
+		Id         int32  `db:"id"`
+		ShopId     int32  `db:"shop_id"`
 		ShopName   string `db:"shop_name"`
-		MchId      int    `db:"mch_id"`
+		MchId      int32  `db:"mch_id"`
 		Logo       string `db:"logo"`
 		UpdateTime int64  `db:"update_time"`
 	}
 
 	// 商品收藏
 	PagedGoodsFav struct {
-		Id         int    `db:"id"`
-		SkuId      int    `db:"sku_id"`
+		Id         int32  `db:"id"`
+		SkuId      int32  `db:"sku_id"`
 		GoodsName  string `db:"goods_name"`
 		Image      string `db:"image"`
 		OnShelves  int    `db:"on_shelves"`
@@ -130,7 +130,7 @@ type (
 	}
 	// 分类
 	Category struct {
-		Id    int
+		Id    int32
 		Name  string
 		Icon  string
 		Url   string
@@ -138,7 +138,7 @@ type (
 		Child []Category
 	}
 	ListOnlineShop struct {
-		Id         int    `db:"sp.id"`
+		Id         int32  `db:"sp.id"`
 		Name       string `db:"sp.name"`
 		Alias      string `db:"alias"`
 		Host       string `db:"ol.host"`

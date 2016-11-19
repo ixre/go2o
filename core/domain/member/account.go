@@ -105,7 +105,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 
 // 充值,客服充值时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -156,7 +156,7 @@ func (a *accountImpl) GetPresentLog(id int32) *member.PresentLog {
 
 // 扣减余额
 func (a *accountImpl) DiscountBalance(title string, outerNo string,
-	amount float32, relateUser int64) (err error) {
+	amount float32, relateUser int32) (err error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -189,7 +189,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 
 // 冻结余额
 func (a *accountImpl) Freeze(title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -222,7 +222,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 
 // 解冻金额
 func (a *accountImpl) Unfreeze(title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -256,7 +256,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 
 // 赠送金额,客服操作时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForPresent(title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	kind := member.KindPresentAdd
 	if relateUser > 0 {
 		kind = member.KindPresentServiceAdd
@@ -266,7 +266,7 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 
 // 赠送金额(指定业务类型)
 func (a *accountImpl) ChargePresentByKind(kind int, title string,
-	outerNo string, amount float32, relateUser int64) error {
+	outerNo string, amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -302,7 +302,7 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float32,
-	relateUser int64, mustLargeZero bool) error {
+	relateUser int32, mustLargeZero bool) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -340,7 +340,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 
 // 冻结赠送金额
 func (a *accountImpl) FreezePresent(title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -373,7 +373,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 
 // 解冻赠送金额
 func (a *accountImpl) UnfreezePresent(title string, outerNo string,
-	amount float32, relateUser int64) error {
+	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}

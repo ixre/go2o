@@ -55,11 +55,11 @@ func confirmTransferIn(t time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int{}
+		idArr := []int32{}
 		err := _db.Query(`SELECT id FROM pf_riselog WHERE
 		unix_date=? AND type=? AND state=? LIMIT ?,?`,
 			func(rows *sql.Rows) {
-				i := 0
+				var i int32
 				for rows.Next() {
 					rows.Scan(&i)
 					if i > 0 {
@@ -119,11 +119,11 @@ func settleRiseData(settleDate time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int{}
+		idArr := []int32{}
 		err := _db.Query(`SELECT person_id FROM pf_riseinfo WHERE
             settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
 			func(rows *sql.Rows) {
-				i := 0
+				var i int32
 				for rows.Next() {
 					rows.Scan(&i)
 					if i > 0 {

@@ -23,7 +23,7 @@ import (
 func superviseOrder(ss []Service) {
 	sv := dps.ShoppingService
 	notify := func(id int, ss []Service) {
-		o := sv.GetSubOrder(id)
+		o := sv.GetSubOrder(int32(id))
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -93,7 +93,7 @@ func superviseMemberUpdate(ss []Service) {
 func supervisePaymentOrderFinish(ss []Service) {
 	sv := dps.PaymentService
 	notify := func(id int, ss []Service) {
-		order := sv.GetPaymentOrder(id)
+		order := sv.GetPaymentOrder(int32(id))
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {
@@ -138,7 +138,7 @@ func detectOrderExpires() {
 			if unix < time.Now().Unix() {
 				//订单号
 				orderId, err = strconv.Atoi(v[len(variable.KvOrderExpiresTime):])
-				err = ss.CancelOrder(orderId, "订单超时,自动取消")
+				err = ss.CancelOrder(int32(orderId), "订单超时,自动取消")
 				//清除待取消记录
 				conn.Do("DEL", v)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
