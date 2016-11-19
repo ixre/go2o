@@ -71,13 +71,6 @@ zhu***@126.com
 
     sudo sysctl -w kern.ipc.somaxconn=4096
 
-
-
-pub-serve   ---  14199
-merchant-serve  ---- 14192
-
-
-
 ## Deploy ##
 ### 1. Import database ###
 > Create new mysql db instance named "go2o"
@@ -96,7 +89,10 @@ merchant-serve  ---- 14192
 	Usage of ./go2o-server:
 		 -conf string
              	 (default "app.conf")
-           -d	run daemon
+           -d	
+                run daemon
+           -r   
+                run rpc server
            -debug
              	enable debug
            -trace
@@ -151,25 +147,24 @@ merchant-serve  ---- 14192
 
 
 ### 4.Add test hosts ###
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com u.ts.com passport.ts.com webmaster.ts.com  >> /etc/hosts
+> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com u.ts.com passport.ts.com master.ts.com  >> /etc/hosts
 
 ## Access Entry ##
 
 ### WebMaster ##
-webmaster.ts.com
+master.ts.com
 
 account: go2o / 123456
 
 ### Merchant Management ###
-merchant.ts.com
+mch.ts.com
 
 account: go2o / 123456
 
 ### Member Center ###
-member.ts.com
+u.ts.com
 
 ### Merchant Sales ###
 go2o.ts.com
 
-you can add host to table "pt_host" use MySql Workbench.
 
