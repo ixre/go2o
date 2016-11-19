@@ -9,7 +9,7 @@
 package user
 
 type RoleValue struct {
-	Id   int    `db:"id" pk:"yes" auto:"no"`
+	Id   int32  `db:"id" pk:"yes" auto:"no"`
 	Name string `db:"name"`
 	// 表示角色位值
 	Flag    int `db:"flag"`

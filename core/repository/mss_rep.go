@@ -68,7 +68,7 @@ func (m *mssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (m *mssRep) GetConfig(userId int) *mss.Config {
+func (m *mssRep) GetConfig(userId int32) *mss.Config {
 	conf := mss.Config{}
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
@@ -80,7 +80,7 @@ func (m *mssRep) GetConfig(userId int) *mss.Config {
 }
 
 // 保存消息设置
-func (m *mssRep) SaveConfig(userId int, conf *mss.Config) error {
+func (m *mssRep) SaveConfig(userId int32, conf *mss.Config) error {
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
 		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
@@ -90,7 +90,7 @@ func (m *mssRep) SaveConfig(userId int, conf *mss.Config) error {
 }
 
 // 获取邮箱模板
-func (m *mssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
+func (m *mssRep) GetMailTemplate(mchId, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := m._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -99,28 +99,20 @@ func (m *mssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (m *mssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
-	var err error
-	var orm = m._conn.GetOrm()
-	if v.Id > 0 {
-		_, _, err = orm.Save(v.Id, v)
-	} else {
-		_, _, err = orm.Save(nil, v)
-		m._conn.ExecScalar("SELECT MAX(id) FROM pt_mail_template WHERE merchant_id=?", &v.Id, v.MerchantId)
-	}
-	return v.Id, err
+func (m *mssRep) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
+	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取所有的邮箱模版
-func (m *mssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
+func (m *mssRep) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
-	m._conn.GetOrm().Select(&list, "merchant_id=?", merchantId)
+	m._conn.GetOrm().Select(&list, "merchant_id=?", mchId)
 	return list
 }
 
 // 删除邮件模板
-func (m *mssRep) DeleteMailTemplate(merchantId, id int) error {
-	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", merchantId, id)
+func (m *mssRep) DeleteMailTemplate(mchId, id int32) error {
+	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", mchId, id)
 	return err
 }
 
@@ -145,20 +137,12 @@ func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (m *mssRep) SaveMessage(v *mss.Message) (int, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = m._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = m._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+func (m *mssRep) SaveMessage(v *mss.Message) (int32, error) {
+	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取消息
-func (m *mssRep) GetMessage(id int) *mss.Message {
+func (m *mssRep) GetMessage(id int32) *mss.Message {
 	e := mss.Message{}
 	if m._conn.GetOrm().Get(id, &e) == nil {
 		e.To = []mss.User{}
@@ -175,25 +159,17 @@ func (m *mssRep) GetMessage(id int) *mss.Message {
 }
 
 // 保存用户消息关联
-func (m *mssRep) SaveUserMsg(v *mss.To) (int, error) {
-	return orm.Save(m._conn.GetOrm(), v, v.Id)
+func (m *mssRep) SaveUserMsg(v *mss.To) (int32, error) {
+	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 保存消息内容
-func (m *mssRep) SaveMsgContent(v *mss.Content) (int, error) {
-	var err error
-	if v.Id > 0 {
-		_, _, err = m._conn.GetOrm().Save(v.Id, v)
-	} else {
-		var id int64
-		_, id, err = m._conn.GetOrm().Save(nil, v)
-		v.Id = int(id)
-	}
-	return v.Id, err
+func (m *mssRep) SaveMsgContent(v *mss.Content) (int32, error) {
+	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取消息内容
-func (m *mssRep) GetMessageContent(msgId int) *mss.Content {
+func (m *mssRep) GetMessageContent(msgId int32) *mss.Content {
 	e := mss.Content{}
 	if m._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
 		return &e
@@ -202,7 +178,7 @@ func (m *mssRep) GetMessageContent(msgId int) *mss.Content {
 }
 
 // 获取消息目标
-func (m *mssRep) GetMessageTo(msgId, toUserId, toRole int) *mss.To {
+func (m *mssRep) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.To {
 	e := mss.To{}
 	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
 		WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {

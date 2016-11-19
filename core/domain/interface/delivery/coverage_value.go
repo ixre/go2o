@@ -10,11 +10,11 @@ package delivery
 
 // 覆盖区域
 type CoverageValue struct {
-	Id      int     `db:"id" auto:"yes" pk:"true"`
+	Id      int32   `db:"id" auto:"yes" pk:"true"`
 	Name    string  `db:"name"`
 	Lng     float64 `db:"lng"`
 	Lat     float64 `db:"lat"`
 	Radius  int     `db:"radius"`
 	Address string  `db:"address"`
-	AreaId  int     `db:"area_id"`
+	AreaId  int32   `db:"area_id"`
 }

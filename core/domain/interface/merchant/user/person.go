@@ -10,11 +10,11 @@ package user
 
 type IPerson interface {
 	//获取领域对象编号
-	GetDomainId() int
+	GetDomainId() int32
 
 	GetValue() PersonValue
 
 	SetValue(*PersonValue) error
 
-	Save() (int, error)
+	Save() (int32, error)
 }

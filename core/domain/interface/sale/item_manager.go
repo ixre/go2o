@@ -14,7 +14,7 @@ import "go2o/core/domain/interface/sale/item"
 type (
 	// 物品
 	IItem interface {
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 获取商品的值
 		GetValue() item.Item
@@ -44,7 +44,7 @@ type (
 		Incorrect(remark string) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int32, error)
 	}
 
 	// 货品服务
@@ -53,9 +53,9 @@ type (
 		CreateItem(*item.Item) IItem
 
 		// 根据产品编号获取货品
-		GetItem(int) IItem
+		GetItem(id int32) IItem
 
 		// 删除货品
-		DeleteItem(int) error
+		DeleteItem(id int32) error
 	}
 )

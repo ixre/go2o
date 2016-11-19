@@ -18,7 +18,7 @@ type IMemberRep interface {
 	GetManager() IMemberManager
 
 	// 获取资料或初始化
-	GetProfile(memberId int) *Profile
+	GetProfile(memberId int32) *Profile
 
 	// 保存资料
 	SaveProfile(v *Profile) error
@@ -27,13 +27,13 @@ type IMemberRep interface {
 	GetMemberLevels_New() []*Level
 
 	// 获取等级对应的会员数
-	GetMemberNumByLevel_New(id int) int
+	GetMemberNumByLevel_New(id int32) int
 
 	// 删除会员等级
-	DeleteMemberLevel_New(id int) error
+	DeleteMemberLevel_New(id int32) error
 
 	// 保存会员等级
-	SaveMemberLevel_New(v *Level) (int, error)
+	SaveMemberLevel_New(v *Level) (int32, error)
 
 	// 根据用户名获取会员
 	GetMemberByUsr(usr string) *Member
@@ -42,52 +42,52 @@ type IMemberRep interface {
 	GetMemberValueByPhone(phone string) *Member
 
 	// 获取会员
-	GetMember(memberId int) IMember
+	GetMember(memberId int32) IMember
 
 	// 创建会员
 	CreateMember(*Member) IMember
 
 	// 删除会员
-	DeleteMember(id int) error
+	DeleteMember(id int32) error
 
 	// 创建会员,仅作为某些操作使用,不保存
-	CreateMemberById(memberId int) IMember
+	CreateMemberById(memberId int32) IMember
 
 	// 保存
-	SaveMember(v *Member) (int, error)
+	SaveMember(v *Member) (int32, error)
 
 	// 获取会员最后更新时间
-	GetMemberLatestUpdateTime(int) int64
+	GetMemberLatestUpdateTime(id int32) int64
 
 	// 根据邀请码获取会员编号
-	GetMemberIdByInvitationCode(string) int
+	GetMemberIdByInvitationCode(code string) int32
 
 	// 根据手机号获取会员编号
-	GetMemberIdByPhone(phone string) int
+	GetMemberIdByPhone(phone string) int32
 
 	// 根据邮箱地址获取会员编号
-	GetMemberIdByEmail(email string) int
+	GetMemberIdByEmail(email string) int32
 
 	// 获取会员编号
-	GetMemberIdByUser(string string) int
+	GetMemberIdByUser(user string) int32
 
 	// 用户名是否存在
-	CheckUsrExist(usr string, memberId int) bool
+	CheckUsrExist(usr string, memberId int32) bool
 
 	// 手机号码是否使用
-	CheckPhoneBind(phone string, memberId int) bool
+	CheckPhoneBind(phone string, memberId int32) bool
 
 	// 保存绑定
 	SaveRelation(*Relation) error
 
 	// 获取账户
-	GetAccount(memberId int) *Account
+	GetAccount(memberId int32) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) (int, error)
+	SaveAccount(*Account) (int32, error)
 
 	// 获取银行信息
-	GetBankInfo(int) *BankInfo
+	GetBankInfo(id int32) *BankInfo
 
 	// 保存银行信息
 	SaveBankInfo(*BankInfo) error
@@ -96,75 +96,75 @@ type IMemberRep interface {
 	SaveIntegralLog(*IntegralLog) error
 
 	// 保存余额日志
-	SaveBalanceLog(*BalanceLog) (int, error)
+	SaveBalanceLog(*BalanceLog) (int32, error)
 
 	// 保存赠送账户日志
-	SavePresentLog(*PresentLog) (int, error)
+	SavePresentLog(*PresentLog) (int32, error)
 
 	// 获取赠送账户日志信息
-	GetPresentLog(id int) *PresentLog
+	GetPresentLog(id int32) *PresentLog
 
 	// 增加会员当天提现次数
-	AddTodayTakeOutTimes(memberId int) error
+	AddTodayTakeOutTimes(memberId int32) error
 
 	// 获取会员每日提现次数
-	GetTodayTakeOutTimes(memberId int) int
+	GetTodayTakeOutTimes(memberId int32) int
 
 	// 获取会员关联
-	GetRelation(memberId int) *Relation
+	GetRelation(memberId int32) *Relation
 
 	// 获取经验值对应的等级
-	GetLevelValueByExp(merchantId int, exp int) int
+	GetLevelValueByExp(mchId int32, exp int64) int
 
 	// 获取会员升级记录
-	GetLevelUpLog(id int) *LevelUpLog
+	GetLevelUpLog(id int32) *LevelUpLog
 
 	// 保存会员升级记录
-	SaveLevelUpLog(l *LevelUpLog) (int, error)
+	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*DeliverAddress) (int, error)
+	SaveDeliver(*DeliverAddress) (int32, error)
 
 	// 获取全部配送地址
-	GetDeliverAddress(memberId int) []*DeliverAddress
+	GetDeliverAddress(memberId int32) []*DeliverAddress
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, deliverId int) *DeliverAddress
+	GetSingleDeliverAddress(memberId, adressId int32) *DeliverAddress
 
 	// 删除配送地址
-	DeleteDeliver(memberId, deliverId int) error
+	DeleteAddress(memberId, adressId int32) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId, begin, end int) (total int, rows []*dto.InvitationMember)
+	GetMyInvitationMembers(memberId int32, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
-	GetSubInvitationNum(memberId int, memberIdArr []int) map[int]int
+	GetSubInvitationNum(memberId int32, memberIdArr []int32) map[int32]int
 
 	// 获取推荐我的人
-	GetInvitationMeMember(memberId int) *Member
+	GetInvitationMeMember(memberId int32) *Member
 
 	// 根据编号获取余额变动信息
-	GetBalanceInfo(id int) *BalanceInfo
+	GetBalanceInfo(id int32) *BalanceInfo
 
 	// 根据号码获取余额变动信息
 	GetBalanceInfoByNo(tradeNo string) *BalanceInfo
 
 	// 保存余额变动信息
-	SaveBalanceInfo(v *BalanceInfo) (int, error)
+	SaveBalanceInfo(v *BalanceInfo) (int32, error)
 
 	// 保存理财账户信息
-	SaveGrowAccount(memberId int, balance, totalAmount,
+	SaveGrowAccount(memberId int32, balance, totalAmount,
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
-	Favorite(memberId, favType, referId int) error
+	Favorite(memberId int32, favType int, referId int32) error
 
 	//是否已收藏
-	Favored(memberId, favType, referId int) bool
+	Favored(memberId int32, favType int, referId int32) bool
 
 	//取消收藏
-	CancelFavorite(memberId, favType, referId int) error
+	CancelFavorite(memberId int32, favType int, referId int32) error
 
 	// 获取会员分页的优惠券列表
-	GetMemberPagedCoupon(memberId, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
+	GetMemberPagedCoupon(memberId int32, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 }

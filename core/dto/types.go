@@ -17,7 +17,7 @@ type (
 
 	// 会员排名信息
 	RankMember struct {
-		Id       int
+		Id       int32
 		Name     string
 		Usr      string
 		RankNum  int

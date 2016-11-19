@@ -44,12 +44,12 @@ func NewOrderNo(vendorId int, prefix string) string {
 }
 
 // 新交易号(12位)
-func NewTradeNo(merchantId int) string {
+func NewTradeNo(mchId int) string {
 	unix := time.Now().UnixNano()
 	rand.Seed(unix)
 	rd := 10000 + rand.Intn(9999-1000)
 	timeStr := time.Now().Format("0602")
-	ptStr := strconv.Itoa(merchantId)
+	ptStr := strconv.Itoa(mchId)
 	return fmt.Sprintf("%s%s%d", ptStr, timeStr, rd)
 }
 

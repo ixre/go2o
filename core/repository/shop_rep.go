@@ -34,7 +34,7 @@ func NewShopRep(c db.Connector, storage storage.Interface) shop.IShopRep {
 }
 
 // 商店别名是否存在
-func (s *shopRep) ShopAliasExists(alias string, shopId int) bool {
+func (s *shopRep) ShopAliasExists(alias string, shopId int32) bool {
 	num := 0
 	s.Connector.ExecScalar(`SELECT COUNT(0) FROM mch_online_shop WHERE
 		alias=? AND shop_id<>?`, &num, alias, shopId)
@@ -42,7 +42,7 @@ func (s *shopRep) ShopAliasExists(alias string, shopId int) bool {
 }
 
 // 获取线上商店
-func (s *shopRep) GetOnlineShop(shopId int) *shop.OnlineShop {
+func (s *shopRep) GetOnlineShop(shopId int32) *shop.OnlineShop {
 	e := shop.OnlineShop{}
 	if s.GetOrm().Get(shopId, &e) != nil {
 		return nil
@@ -62,7 +62,7 @@ func (s *shopRep) SaveOnlineShop(v *shop.OnlineShop, create bool) error {
 }
 
 // 获取线下商店
-func (s *shopRep) GetOfflineShop(shopId int) *shop.OfflineShop {
+func (s *shopRep) GetOfflineShop(shopId int32) *shop.OfflineShop {
 	e := shop.OfflineShop{}
 	if s.GetOrm().Get(shopId, &e) != nil {
 		return nil
@@ -83,38 +83,32 @@ func (s *shopRep) SaveOfflineShop(v *shop.OfflineShop, create bool) error {
 
 // 保存API信息
 func (s *shopRep) SaveApiInfo(v *merchant.ApiInfo) error {
-	var err error
-	orm := s.GetOrm()
-	if v.MerchantId <= 0 {
-		_, _, err = orm.Save(nil, v)
-	} else {
-		_, _, err = orm.Save(v.MerchantId, v)
-	}
+	_, err := orm.Save(s.GetOrm(), v, int(v.MerchantId))
 	return err
 }
 
 // 获取API信息
-func (s *shopRep) GetApiInfo(merchantId int) *merchant.ApiInfo {
+func (s *shopRep) GetApiInfo(mchId int32) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
-	if err := s.GetOrm().Get(merchantId, d); err == nil {
+	if err := s.GetOrm().Get(mchId, d); err == nil {
 		return d
 	}
 	return nil
 }
 
-func (s *shopRep) SaveShop(v *shop.Shop) (int, error) {
-	id, err := orm.Save(s.GetOrm(), v, v.Id)
+func (s *shopRep) SaveShop(v *shop.Shop) (int32, error) {
+	id, err := orm.I32(orm.Save(s.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		s.delCache(v.MerchantId)
 	}
 	return id, err
 }
 
-func (s *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
+func (s *shopRep) GetValueShop(mchId, shopId int32) *shop.Shop {
 	var v *shop.Shop = new(shop.Shop)
 	err := s.Connector.GetOrm().Get(shopId, v)
 	if err == nil &&
-		v.MerchantId == merchantId {
+		v.MerchantId == mchId {
 		return v
 	} else {
 		handleError(err)
@@ -122,15 +116,15 @@ func (s *shopRep) GetValueShop(merchantId, shopId int) *shop.Shop {
 	return nil
 }
 
-func (s *shopRep) delCache(mchId int) {
+func (s *shopRep) delCache(mchId int32) {
 	PrefixDel(s.storage, fmt.Sprintf("go2o:rep:shop:%d:*", mchId))
 }
 
-func (s *shopRep) getShopCacheKey(mchId int) string {
+func (s *shopRep) getShopCacheKey(mchId int32) string {
 	return fmt.Sprintf("go2o:rep:shop:%d:shops", mchId)
 }
 
-func (s *shopRep) GetShopsOfMerchant(mchId int) []shop.Shop {
+func (s *shopRep) GetShopsOfMerchant(mchId int32) []shop.Shop {
 	shops := []shop.Shop{}
 	key := s.getShopCacheKey(mchId)
 	jsonStr, err := s.storage.GetString(key)
@@ -151,7 +145,7 @@ func (s *shopRep) GetShopsOfMerchant(mchId int) []shop.Shop {
 	return shops
 }
 
-func (s *shopRep) deleteShop(mchId, shopId int) error {
+func (s *shopRep) deleteShop(mchId, shopId int32) error {
 	_, err := s.Connector.GetOrm().Delete(shop.Shop{},
 		"mch_id=? AND id=?", mchId, shopId)
 	s.delCache(mchId)
@@ -159,7 +153,7 @@ func (s *shopRep) deleteShop(mchId, shopId int) error {
 }
 
 // 删除线上商店
-func (s *shopRep) DeleteOnlineShop(mchId, shopId int) error {
+func (s *shopRep) DeleteOnlineShop(mchId, shopId int32) error {
 	err := s.deleteShop(mchId, shopId)
 	if err == nil {
 		err = s.Connector.GetOrm().DeleteByPk(shop.OnlineShop{}, shopId)
@@ -169,7 +163,7 @@ func (s *shopRep) DeleteOnlineShop(mchId, shopId int) error {
 }
 
 // 删除线下门店
-func (s *shopRep) DeleteOfflineShop(mchId, shopId int) error {
+func (s *shopRep) DeleteOfflineShop(mchId, shopId int32) error {
 	err := s.deleteShop(mchId, shopId)
 	if err == nil {
 		err = s.Connector.GetOrm().DeleteByPk(shop.OfflineShop{}, shopId)

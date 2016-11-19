@@ -12,7 +12,7 @@ type (
 	// 商户接口信息
 	ApiInfo struct {
 		// 商户编号
-		MerchantId int `db:"mch_id" pk:"yes" auto:"no"`
+		MerchantId int32 `db:"mch_id" pk:"yes" auto:"no"`
 		// 商户接口编号(10位数字)
 		ApiId string `db:"api_id"`
 		// 密钥

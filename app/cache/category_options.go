@@ -18,8 +18,8 @@ import (
 	"go2o/core/service/dps"
 )
 
-func readToCategoryDropList(merchantId int) []byte {
-	categories := dps.SaleService.GetCategories(merchantId)
+func readToCategoryDropList(mchId int32) []byte {
+	categories := dps.SaleService.GetCategories(mchId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*sale.Category)
@@ -37,8 +37,8 @@ func readToCategoryDropList(merchantId int) []byte {
 }
 
 // 获取销售分类下拉选项
-func GetDropOptionsOfSaleCategory(merchantId int) []byte {
-	return readToCategoryDropList(merchantId)
+func GetDropOptionsOfSaleCategory(mchId int32) []byte {
+	return readToCategoryDropList(mchId)
 }
 
 func readToArticleCategoryDropList() []byte {

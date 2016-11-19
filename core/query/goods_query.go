@@ -27,7 +27,7 @@ func NewGoodsQuery(c db.Connector) *GoodsQuery {
 }
 
 //根据关键词搜索上架的商品
-func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int, start, end int,
+func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0

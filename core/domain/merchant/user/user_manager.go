@@ -15,32 +15,32 @@ import (
 var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
-	merchantId int
-	rep        user.IUserRep
+	mchId int32
+	rep   user.IUserRep
 }
 
-func NewUserManager(merchantId int, rep user.IUserRep) user.IUserManager {
+func NewUserManager(mchId int32, rep user.IUserRep) user.IUserManager {
 	return &UserManager{
-		merchantId: merchantId,
-		rep:        rep,
+		mchId: mchId,
+		rep:   rep,
 	}
 }
 
 // 获取单个用户
-func (this *UserManager) GetUser(id int) user.IUser {
-	v := this.rep.GetPersonValue(id)
+func (u *UserManager) GetUser(id int32) user.IUser {
+	v := u.rep.GetPersonValue(id)
 	if v != nil {
-		return newUser(v, this.rep)
+		return newUser(v, u.rep)
 	}
 	return nil
 }
 
 // 获取所有配送员
-func (this *UserManager) GetDeliveryStaff() []user.IDeliveryStaff {
-	list := this.rep.GetDeliveryStaffPersons(this.merchantId)
+func (u *UserManager) GetDeliveryStaff() []user.IDeliveryStaff {
+	list := u.rep.GetDeliveryStaffPersons(u.mchId)
 	var staffs = make([]user.IDeliveryStaff, len(list))
 	for i, v := range list {
-		staffs[i] = newUser(v, this.rep)
+		staffs[i] = newUser(v, u.rep)
 	}
 	return staffs
 }

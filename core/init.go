@@ -15,6 +15,7 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/dto"
+	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
 func init() {
@@ -34,4 +35,6 @@ func registerTypes() {
 	gob.Register(&member.Relation{})
 	gob.Register(&dto.ListOnlineShop{})
 	gob.Register([]*dto.ListOnlineShop{})
+	gob.Register(&define.Member{})
+	gob.Register(&define.Profile{})
 }

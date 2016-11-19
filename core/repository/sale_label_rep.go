@@ -37,16 +37,16 @@ func (t *saleLabelRep) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 }
 
 // 获取所有的销售标签
-func (t *saleLabelRep) GetAllValueSaleLabels(merchantId int) []*sale.Label {
+func (t *saleLabelRep) GetAllValueSaleLabels(mchId int32) []*sale.Label {
 	arr := []*sale.Label{}
-	t.Connector.GetOrm().Select(&arr, "mch_id=?", merchantId)
+	t.Connector.GetOrm().Select(&arr, "mch_id=?", mchId)
 	return arr
 }
 
 // 获取销售标签值
-func (t *saleLabelRep) GetValueSaleLabel(merchantId int, tagId int) *sale.Label {
+func (t *saleLabelRep) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label {
 	var v *sale.Label = new(sale.Label)
-	err := t.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", merchantId, tagId)
+	err := t.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", mchId, tagId)
 	if err == nil {
 		return v
 	}
@@ -54,34 +54,34 @@ func (t *saleLabelRep) GetValueSaleLabel(merchantId int, tagId int) *sale.Label 
 }
 
 // 获取销售标签
-func (t *saleLabelRep) GetSaleLabel(merchantId int, id int) sale.ISaleLabel {
-	return t.CreateSaleLabel(t.GetValueSaleLabel(merchantId, id))
+func (t *saleLabelRep) GetSaleLabel(mchId int32, id int32) sale.ISaleLabel {
+	return t.CreateSaleLabel(t.GetValueSaleLabel(mchId, id))
 }
 
 // 保存销售标签
-func (t *saleLabelRep) SaveSaleLabel(mchId int, v *sale.Label) (int, error) {
+func (t *saleLabelRep) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
 	v.MerchantId = mchId
-	return orm.Save(t.GetOrm(), v, v.Id)
+	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
 }
 
 // 根据Code获取销售标签
-func (t *saleLabelRep) GetSaleLabelByCode(merchantId int, code string) *sale.Label {
+func (t *saleLabelRep) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
 	var v *sale.Label = new(sale.Label)
-	if t.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", merchantId, code) == nil {
+	if t.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", mchId, code) == nil {
 		return v
 	}
 	return nil
 }
 
 // 删除销售标签
-func (t *saleLabelRep) DeleteSaleLabel(merchantId int, id int) error {
-	_, err := t.GetOrm().Delete(&sale.Label{}, "mch_id=? AND id=?", merchantId, id)
+func (t *saleLabelRep) DeleteSaleLabel(mchId int32, id int32) error {
+	_, err := t.GetOrm().Delete(&sale.Label{}, "mch_id=? AND id=?", mchId, id)
 	return err
 }
 
 // 获取商品
-func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId,
-	tagId int, sortBy string, begin, end int) []*valueobject.Goods {
+func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId, tagId int32,
+	sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
 	}
@@ -96,8 +96,8 @@ func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId,
 }
 
 // 获取商品
-func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId,
-	tagId int, sortBy string, begin, end int) (int, []*valueobject.Goods) {
+func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
+	sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
@@ -122,7 +122,7 @@ func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId,
 }
 
 // 获取商品的销售标签
-func (t *saleLabelRep) GetItemSaleLabels(itemId int) []*sale.Label {
+func (t *saleLabelRep) GetItemSaleLabels(itemId int32) []*sale.Label {
 	arr := []*sale.Label{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
 	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, itemId)
@@ -130,13 +130,13 @@ func (t *saleLabelRep) GetItemSaleLabels(itemId int) []*sale.Label {
 }
 
 // 清理商品的销售标签
-func (t *saleLabelRep) CleanItemSaleLabels(itemId int) error {
+func (t *saleLabelRep) CleanItemSaleLabels(itemId int32) error {
 	_, err := t.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", itemId)
 	return err
 }
 
 // 保存商品的销售标签
-func (t *saleLabelRep) SaveItemSaleLabels(itemId int, tagIds []int) error {
+func (t *saleLabelRep) SaveItemSaleLabels(itemId int32, tagIds []int) error {
 	var err error
 	if tagIds == nil {
 		return errors.New("SaleLabel Ids can't be null.")

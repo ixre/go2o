@@ -22,13 +22,13 @@ import (
 var _ personfinance.IRiseInfo = new(riseInfo)
 
 type riseInfo struct {
-	personId int
+	personId int32
 	value    *personfinance.RiseInfoValue
 	rep      personfinance.IPersonFinanceRepository
 	accRep   member.IMemberRep
 }
 
-func newRiseInfo(personId int, rep personfinance.IPersonFinanceRepository,
+func newRiseInfo(personId int32, rep personfinance.IPersonFinanceRepository,
 	accRep member.IMemberRep) personfinance.IRiseInfo {
 	return &riseInfo{
 		personId: personId,
@@ -37,13 +37,13 @@ func newRiseInfo(personId int, rep personfinance.IPersonFinanceRepository,
 	}
 }
 
-func (r *riseInfo) GetDomainId() int {
+func (r *riseInfo) GetDomainId() int32 {
 	return r.personId
 }
 
 // 根据日志记录提交转入转出,如果已经确认操作,则返回错误
 // 通常是由系统计划任务来完成此操作,转入和转出必须经过提交!
-func (r *riseInfo) CommitTransfer(logId int) (err error) {
+func (r *riseInfo) CommitTransfer(logId int32) (err error) {
 	if r.value == nil {
 		//判断会员是否存在
 		if _, err = r.Value(); err != nil {

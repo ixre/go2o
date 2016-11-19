@@ -10,6 +10,7 @@ package repository
 
 import (
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	deliverImpl "go2o/core/domain/delivery"
 	"go2o/core/domain/interface/delivery"
 )
@@ -27,7 +28,7 @@ func NewDeliverRep(c db.Connector) delivery.IDeliveryRep {
 }
 
 // 获取配送
-func (this *deliveryRep) GetDelivery(id int) delivery.IDelivery {
+func (this *deliveryRep) GetDelivery(id int32) delivery.IDelivery {
 	return deliverImpl.NewDelivery(id, this)
 }
 
@@ -41,22 +42,12 @@ func (this *deliveryRep) GetAreaByArea(name string) []*delivery.AreaValue {
 }
 
 // 保存覆盖区域
-func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int, error) {
-	orm := this.Connector.GetOrm()
-	if v.Id <= 0 {
-		_, _, err := orm.Save(nil, v)
-		if err == nil {
-			this.Connector.ExecScalar(`SELECT MAX(id) FROM dlv_coverage`, &v.Id)
-		}
-		return v.Id, err
-	} else {
-		_, _, err := orm.Save(nil, v)
-		return v.Id, err
-	}
+func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int32, error) {
+	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 获取覆盖区域
-func (this *deliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue {
+func (this *deliveryRep) GetCoverageArea(areaId, id int32) *delivery.CoverageValue {
 	e := new(delivery.CoverageValue)
 	err := this.Connector.GetOrm().GetBy(e, "id=? AND area_id=?", id, areaId)
 	if err != nil {
@@ -66,7 +57,7 @@ func (this *deliveryRep) GetCoverageArea(areaId, id int) *delivery.CoverageValue
 }
 
 // 获取所有的覆盖区域
-func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageValue {
+func (this *deliveryRep) GetAllCoverageAreas(areaId int32) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
 	err := this.Connector.GetOrm().Select(&e, "area_id=?", areaId)
 	if err != nil {
@@ -76,9 +67,9 @@ func (this *deliveryRep) GetAllCoverageAreas(areaId int) []*delivery.CoverageVal
 }
 
 // 获取配送绑定
-func (this *deliveryRep) GetDeliveryBind(merchantId, coverageId int) *delivery.MerchantDeliverBind {
+func (this *deliveryRep) GetDeliveryBind(mchId, coverageId int32) *delivery.MerchantDeliverBind {
 	e := new(delivery.MerchantDeliverBind)
-	err := this.Connector.GetOrm().GetBy(e, "merchant_id=? AND coverage_id=?", merchantId, coverageId)
+	err := this.Connector.GetOrm().GetBy(e, "merchant_id=? AND coverage_id=?", mchId, coverageId)
 	if err != nil {
 		return nil
 	}

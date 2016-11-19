@@ -45,7 +45,7 @@ func NewPaymentRep(sto storage.Interface, conn db.Connector, mmRep member.IMembe
 }
 
 // 根据订单号获取支付单
-func (p *paymentRep) GetPaymentBySalesOrderId(orderId int) payment.IPaymentOrder {
+func (p *paymentRep) GetPaymentBySalesOrderId(orderId int32) payment.IPaymentOrder {
 	e := &payment.PaymentOrder{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)
@@ -53,7 +53,7 @@ func (p *paymentRep) GetPaymentBySalesOrderId(orderId int) payment.IPaymentOrder
 	return nil
 }
 
-func (p *paymentRep) getPaymentOrderCk(id int) string {
+func (p *paymentRep) getPaymentOrderCk(id int32) string {
 	return fmt.Sprintf("go2o:rep:pay:order:%d", id)
 }
 func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
@@ -61,8 +61,7 @@ func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
 }
 
 // 根据编号获取支付单
-func (p *paymentRep) GetPaymentOrder(
-	id int) payment.IPaymentOrder {
+func (p *paymentRep) GetPaymentOrder(id int32) payment.IPaymentOrder {
 	if id <= 0 {
 		return nil
 	}
@@ -88,7 +87,7 @@ func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder
 		}
 		p.Storage.SetExpire(k, id, DefaultCacheSeconds*10)
 	}
-	return p.GetPaymentOrder(id)
+	return p.GetPaymentOrder(int32(id))
 }
 
 // 创建支付单
@@ -99,12 +98,12 @@ func (p *paymentRep) CreatePaymentOrder(
 }
 
 // 保存支付单
-func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int, error) {
+func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
 	stat := v.State
 	if v.Id > 0 {
 		stat = p.GetPaymentOrder(v.Id).GetValue().State
 	}
-	id, err := orm.Save(p.GetOrm(), v, v.Id)
+	id, err := orm.I32(orm.Save(p.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		v.Id = id
 		// 缓存订单
@@ -120,7 +119,7 @@ func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int, error) {
 }
 
 // 通知支付单完成
-func (p *paymentRep) notifyPaymentFinish(paymentOrderId int) error {
+func (p *paymentRep) notifyPaymentFinish(paymentOrderId int32) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)

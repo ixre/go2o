@@ -22,9 +22,9 @@ import (
 )
 
 // 获取推荐数组
-func (o *subOrderImpl) getReferArr(memberId int, level int) []int {
-	arr := make([]int, level)
-	i := 0
+func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
+	arr := make([]int32, level)
+	var i int32
 	referId := memberId
 	for i <= level-1 {
 		rl := o.memberRep.GetRelation(referId)
@@ -136,7 +136,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 func HandleCashBackDataTag(m member.IMember, order *order.Order,
 	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
 	data := c.GetDataTag()
-	var level int = 0
+	level := 0
 	for k, _ := range data {
 		if strings.HasPrefix(k, "G") {
 			if l, err := strconv.Atoi(k[1:]); err == nil && l > level {

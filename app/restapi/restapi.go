@@ -11,9 +11,10 @@ package restapi
 import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
+	"github.com/jsix/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/app/util"
+	autil "go2o/app/util"
 	"go2o/core/domain/interface/merchant"
 	"net/http"
 	"strconv"
@@ -50,9 +51,9 @@ func getUserInfo(c echo.Context) (string, string) {
 // 检查是否有权限调用接口(商户)
 func chkMerchantApiSecret(c echo.Context) bool {
 	i, s := getUserInfo(c)
-	ok, merchantId := CheckApiPermission(i, s)
+	ok, mchId := CheckApiPermission(i, s)
 	if ok {
-		c.Set("merchant_id", merchantId)
+		c.Set("merchant_id", mchId)
 	}
 	return ok
 }
@@ -61,10 +62,9 @@ func chkMerchantApiSecret(c echo.Context) bool {
 func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
 	sto := gof.CurrentApp.Storage()
-	memberId, _ := strconv.Atoi(r.FormValue("member_id"))
+	memberId, _ := util.I32Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-
-	if util.CompareMemberApiToken(sto, memberId, token) {
+	if autil.CompareMemberApiToken(sto, memberId, token) {
 		c.Set("member_id", memberId)
 		return true
 	}
@@ -72,13 +72,13 @@ func checkMemberToken(c echo.Context) bool {
 }
 
 // 获取商户编号
-func getMerchantId(c echo.Context) int {
-	return c.Get("merchant_id").(int)
+func getMerchantId(c echo.Context) int32 {
+	return c.Get("merchant_id").(int32)
 }
 
 // 获取会员编号
-func GetMemberId(c echo.Context) int {
-	return c.Get("member_id").(int)
+func GetMemberId(c echo.Context) int32 {
+	return c.Get("member_id").(int32)
 }
 
 func ApiTest(c echo.Context) error {
@@ -86,7 +86,7 @@ func ApiTest(c echo.Context) error {
 }
 
 // 检查是否有权限
-func CheckApiPermission(apiId string, secret string) (bool, int) {
+func CheckApiPermission(apiId string, secret string) (bool, int32) {
 	if len(apiId) != 0 && len(secret) != 0 {
 		mchId := cache.GetMerchantIdByApiId(apiId)
 		var apiInfo *merchant.ApiInfo = cache.GetMerchantApiInfo(mchId)

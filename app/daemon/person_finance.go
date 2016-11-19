@@ -55,11 +55,11 @@ func confirmTransferIn(t time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int{}
+		idArr := []int32{}
 		err := _db.Query(`SELECT id FROM pf_riselog WHERE
 		unix_date=? AND type=? AND state=? LIMIT ?,?`,
 			func(rows *sql.Rows) {
-				i := 0
+				var i int32
 				for rows.Next() {
 					rows.Scan(&i)
 					if i > 0 {
@@ -91,7 +91,7 @@ func confirmTransferIn(t time.Time) {
 }
 
 // 分组确认转入数据
-func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int) {
+func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int32) {
 	//log.Println(fmt.Sprintf("[SQL]: select * FROM pf_riselog WHERE id BETWEEN %d AND %d AND unix_date=%d AND type=%d AND state=%d ORDER BY id ",
 	//	 idArr[0],idArr[len(idArr)-1], unixDate, personfinance.RiseTypeTransferIn,
 	//	personfinance.RiseStateDefault))
@@ -119,11 +119,11 @@ func settleRiseData(settleDate time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int{}
+		idArr := []int32{}
 		err := _db.Query(`SELECT person_id FROM pf_riseinfo WHERE
             settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
 			func(rows *sql.Rows) {
-				i := 0
+				var i int32
 				for rows.Next() {
 					rows.Scan(&i)
 					if i > 0 {
@@ -153,7 +153,7 @@ func settleRiseData(settleDate time.Time) {
 }
 
 // 结算每日数据
-func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int) {
+func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int32) {
 	err := dps.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
 		personfinance.RiseDayRatioProvider(personId))
 	if err != nil {

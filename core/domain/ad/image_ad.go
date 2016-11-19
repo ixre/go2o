@@ -50,7 +50,7 @@ func (i *ImageAdImpl) SetData(d *ad.Image) error {
 }
 
 // 保存广告
-func (i *ImageAdImpl) Save() (int, error) {
+func (i *ImageAdImpl) Save() (int32, error) {
 	id, err := i.adImpl.Save()
 	if err == nil {
 		v := i.getData()

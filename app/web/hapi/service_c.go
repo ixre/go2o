@@ -11,6 +11,7 @@ package hapi
 import (
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/util"
 	"go2o/core/service/dps"
 	"net/http"
 	"strconv"
@@ -28,7 +29,7 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 	result := gof.Message{}
 
 	favType := c.QueryParam("type")
-	id, _ := strconv.Atoi(c.QueryParam("id"))
+	id, _ := util.I32Err(strconv.Atoi(c.QueryParam("id")))
 	if id <= 0 || favType == "" {
 		result.Message = "收藏失败"
 	} else {

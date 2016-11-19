@@ -21,7 +21,7 @@ type invitationManager struct {
 }
 
 // 判断是否推荐了某个会员
-func (i *invitationManager) InvitationBy(memberId int) bool {
+func (i *invitationManager) InvitationBy(memberId int32) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
 		return rl.RefereesId == memberId
@@ -42,9 +42,9 @@ func (i *invitationManager) MyCode() string {
 }
 
 // 获取邀请会员下级邀请数量
-func (i *invitationManager) GetSubInvitationNum(memberIdArr []int) map[int]int {
+func (i *invitationManager) GetSubInvitationNum(memberIdArr []int32) map[int32]int {
 	if memberIdArr == nil || len(memberIdArr) == 0 {
-		return map[int]int{}
+		return map[int32]int{}
 	}
 	return i.member.rep.GetSubInvitationNum(i.member.GetAggregateRootId(),
 		memberIdArr)

@@ -13,8 +13,8 @@ package valueobject
 
 // 完整的商品信息
 type Goods struct {
-	Item_Id    int    `db:"gs_goods.item_id"`
-	CategoryId int    `db:"gs_item.category_id"`
+	Item_Id    int32  `db:"gs_goods.item_id"`
+	CategoryId int32  `db:"gs_item.category_id"`
 	Name       string `db:"gs_item.name"`
 	// 货号
 	GoodsNo string `db:"gs_item.goods_no"`
@@ -29,9 +29,9 @@ type Goods struct {
 	// 促销价
 	PromPrice float32 `db:"-"`
 
-	GoodsId   int `db:"gs_goods.id"`
-	SkuId     int `db:"gs_goods.sku_id"`
-	IsPresent int `db:"gs_goods.is_present"`
+	GoodsId   int32 `db:"gs_goods.id"`
+	SkuId     int32 `db:"gs_goods.sku_id"`
+	IsPresent int   `db:"gs_goods.is_present"`
 
 	// 促销标志
 	PromotionFlag int `db:"gs_goods.prom_flag"`

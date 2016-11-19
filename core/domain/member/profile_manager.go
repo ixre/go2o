@@ -35,7 +35,7 @@ var (
 
 type profileManagerImpl struct {
 	member      *memberImpl
-	memberId    int
+	memberId    int32
 	rep         member.IMemberRep
 	valRep      valueobject.IValueRep
 	bank        *member.BankInfo
@@ -43,7 +43,7 @@ type profileManagerImpl struct {
 	profile     *member.Profile
 }
 
-func newProfileManagerImpl(m *memberImpl, memberId int,
+func newProfileManagerImpl(m *memberImpl, memberId int32,
 	rep member.IMemberRep, valRep valueobject.IValueRep) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
@@ -233,7 +233,7 @@ func (p *profileManagerImpl) notifyOnProfileComplete() {
 func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := p.member.mssRep.GetProvider().GetMailTemplate(tplId)
+		mailTpl := p.member.mssRep.GetProvider().GetMailTemplate(int32(tplId))
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
@@ -409,7 +409,7 @@ func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 }
 
 // 设置默认地址
-func (p *profileManagerImpl) SetDefaultAddress(addressId int) error {
+func (p *profileManagerImpl) SetDefaultAddress(addressId int32) error {
 	for _, v := range p.GetDeliverAddress() {
 		vv := v.GetValue()
 		if v.GetDomainId() == addressId {
@@ -439,8 +439,8 @@ func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
 }
 
 // 获取配送地址
-func (p *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
-	v := p.rep.GetSingleDeliverAddress(p.memberId, deliverId)
+func (p *profileManagerImpl) GetAddress(addressId int32) member.IDeliverAddress {
+	v := p.rep.GetSingleDeliverAddress(p.memberId, addressId)
 	if v != nil {
 		return p.CreateDeliver(v)
 	}
@@ -448,9 +448,9 @@ func (p *profileManagerImpl) GetDeliver(deliverId int) member.IDeliverAddress {
 }
 
 // 删除配送地址
-func (p *profileManagerImpl) DeleteDeliver(deliverId int) error {
+func (p *profileManagerImpl) DeleteAddress(addressId int32) error {
 	//todo: 至少保留一个配送地址
-	return p.rep.DeleteDeliver(p.memberId, deliverId)
+	return p.rep.DeleteAddress(p.memberId, addressId)
 }
 
 // 拷贝认证信息
@@ -485,7 +485,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	return *p.trustedInfo
 }
 
-func (p *profileManagerImpl) checkCardId(cardId string, memberId int) bool {
+func (p *profileManagerImpl) checkCardId(cardId string, memberId int32) bool {
 	mId := 0
 	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mm_trusted_info WHERE card_id=? AND member_id <> ?",
 		&mId, cardId, memberId)
@@ -531,7 +531,7 @@ func (p *profileManagerImpl) SaveTrustedInfo(v *member.TrustedInfo) error {
 		p.trustedInfo.Reviewed = enum.ReviewAwaiting //标记为待处理
 		p.trustedInfo.UpdateTime = time.Now().Unix()
 		_, err = orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
-			p.trustedInfo.MemberId)
+			int(p.trustedInfo.MemberId))
 	}
 	return err
 }
@@ -551,7 +551,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 	p.trustedInfo.Remark = remark
 	p.trustedInfo.ReviewTime = time.Now().Unix()
 	_, err := orm.Save(tmp.Db().GetOrm(), p.trustedInfo,
-		p.trustedInfo.MemberId)
+		int(p.trustedInfo.MemberId))
 	return err
 }
 
@@ -573,7 +573,7 @@ func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
 	return d
 }
 
-func (p *addressImpl) GetDomainId() int {
+func (p *addressImpl) GetDomainId() int32 {
 	return p._value.Id
 }
 
@@ -631,7 +631,7 @@ func (p *addressImpl) checkValue(v *member.DeliverAddress) error {
 	return nil
 }
 
-func (p *addressImpl) Save() (int, error) {
+func (p *addressImpl) Save() (int32, error) {
 	if err := p.checkValue(p._value); err != nil {
 		return p.GetDomainId(), err
 	}

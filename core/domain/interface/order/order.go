@@ -193,7 +193,7 @@ var (
 type (
 	IOrder interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int
+		GetAggregateRootId() int32
 
 		// 获取订单号
 		GetOrderNo() string
@@ -205,7 +205,7 @@ type (
 		RequireCart(c cart.ICart) error
 
 		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int][]*OrderItem, expressFee map[int]float32)
+		GetByVendor() (items map[int32][]*OrderItem, expressFee map[int32]float32)
 
 		// 获取购买的会员
 		GetBuyer() member.IMember
@@ -246,14 +246,14 @@ type (
 		OnlinePaymentTradeFinish() error
 
 		// 设置配送地址
-		SetDeliver(deliverAddressId int) error
+		SetDeliver(addressId int32) error
 
 		// 提交订单，返回订单号。如有错误则返回
 		Submit() (string, error)
 
 		// 保存订单, 在生成支付单后,应该根据实际支付金额
 		// 进行拆单,并切均摊优惠抵扣金额
-		Save() (int, error)
+		Save() (int32, error)
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
@@ -272,37 +272,11 @@ type (
 
 		// 确认订单
 		Confirm() error
-
-		// 配送订单,并记录配送服务商编号及单号
-		Deliver(spId int, spNo string) error
-
-		// 获取支付金额
-		//GetPaymentFee() float32
-
-		//*********** 删除  *************//
-
-		// 设置Shop,如果不需要记录日志，则remark传递空
-		//SetShop(shopId int) error
-
-		// 添加备注
-		//AddRemark(string)
-
-		// 挂起
-		//Suspend(reason string) error
-
-		// 标记收货
-		//SignReceived() error
-
-		// 完成订单
-		//Complete() error
-
-		// 取消订单
-		//Cancel(reason string) error
 	}
 
 	ISubOrder interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 获取值对象
 		GetValue() *SubOrder
@@ -320,7 +294,7 @@ type (
 		AppendLog(logType LogType, system bool, message string) error
 
 		// 设置Shop,如果不需要记录日志，则remark传递空
-		SetShop(shopId int) error
+		SetShop(shopId int32) error
 
 		// 添加备注
 		AddRemark(string)
@@ -332,7 +306,7 @@ type (
 		PickUp() error
 
 		// 发货
-		Ship(spId int, spOrder string) error
+		Ship(spId int32, spOrder string) error
 
 		// 已收货
 		BuyerReceived() error
@@ -347,10 +321,10 @@ type (
 		Cancel(reason string) error
 
 		// 退回商品
-		Return(snapshotId int, quantity int) error
+		Return(snapshotId int32, quantity int) error
 
 		// 撤销退回商品
-		RevertReturn(snapshotId int, quantity int) error
+		RevertReturn(snapshotId int32, quantity int) error
 
 		// 申请退款
 		// todo ???
@@ -366,21 +340,21 @@ type (
 		Refund() error
 
 		// 保存订单
-		Save() (int, error)
+		Save() (int32, error)
 	}
 
 	// 简单商品信息
 	OrderGoods struct {
-		GoodsId    int    `json:"id"`
+		GoodsId    int32  `json:"id"`
 		GoodsImage string `json:"img"`
 		Name       string `json:"name"`
 		Quantity   int    `json:"qty"`
 	}
 
 	OrderLog struct {
-		Id      int `db:"id" auto:"yes" pk:"yes"`
-		OrderId int `db:"order_id"`
-		Type    int `db:"type"`
+		Id      int32 `db:"id" auto:"yes" pk:"yes"`
+		OrderId int32 `db:"order_id"`
+		Type    int   `db:"type"`
 		// 订单状态
 		OrderState int    `db:"order_state"`
 		IsSystem   int    `db:"is_system"`
@@ -389,13 +363,13 @@ type (
 	}
 	OrderPromotionBind struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 
 		// 订单号
-		OrderId int `db:"order_id"`
+		OrderId int32 `db:"order_id"`
 
 		// 促销编号
-		PromotionId int `db:"promotion_id"`
+		PromotionId int32 `db:"promotion_id"`
 
 		// 促销类型
 		PromotionType int `db:"promotion_type"`
@@ -418,8 +392,8 @@ type (
 
 	// 应用到订单的优惠券
 	OrderCoupon struct {
-		OrderId      int     `db:"order_id"`
-		CouponId     int     `db:"coupon_id"`
+		OrderId      int32   `db:"order_id"`
+		CouponId     int32   `db:"coupon_id"`
 		CouponCode   string  `db:"coupon_code"`
 		Fee          float32 `db:"coupon_fee"`
 		Describe     string  `db:"coupon_describe"`
@@ -431,11 +405,11 @@ type (
 	// 订单
 	Order struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 购买人编号
-		BuyerId int `db:"buyer_id"`
+		BuyerId int32 `db:"buyer_id"`
 		// 订单详情
 		ItemsInfo string `db:"items_info" json:"itemsInfo"`
 		// 商品金额
@@ -472,17 +446,17 @@ type (
 	// 子订单
 	SubOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
-		ParentId int `db:"parent_order"`
+		ParentId int32 `db:"parent_order"`
 		// 购买人编号(冗余,便于商户处理数据)
-		BuyerId int `db:"buyer_id"`
+		BuyerId int32 `db:"buyer_id"`
 		// 运营商编号
-		VendorId int `db:"vendor_id" json:"vendorId"`
+		VendorId int32 `db:"vendor_id" json:"vendorId"`
 		// 店铺编号
-		ShopId int `db:"shop_id" json:"shopId"`
+		ShopId int32 `db:"shop_id" json:"shopId"`
 		// 订单标题
 		Subject string `db:"subject" json:"subject"`
 		// 订单详情
@@ -518,13 +492,13 @@ type (
 	// 订单商品项
 	OrderItem struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes" json:"id"`
+		Id int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
-		OrderId int `db:"order_id"`
+		OrderId int32 `db:"order_id"`
 		// 商品SKU编号
-		SkuId int `db:"sku_id"`
+		SkuId int32 `db:"sku_id"`
 		// 快照编号
-		SnapshotId int `db:"snap_id"`
+		SnapshotId int32 `db:"snap_id"`
 		// 数量
 		Quantity int `db:"quantity"`
 		// 退回数量(退货)
@@ -540,18 +514,18 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 		// 运营商编号
-		VendorId int `db:"-"`
+		VendorId int32 `db:"-"`
 		// 商店编号
-		ShopId int `db:"-"`
+		ShopId int32 `db:"-"`
 		// 重量,用于生成订单时存储数据
 		Weight float32 `db:"-"`
 		// 快递模板编号
-		ExpressTplId int `db:"-"`
+		ExpressTplId int32 `db:"-"`
 	}
 )
 
 func (o *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
-	orderId int, orderFee float32) *OrderCoupon {
+	orderId int32, orderFee float32) *OrderCoupon {
 	v := coupon.GetDetailsValue()
 	o.CouponCode = v.Code
 	o.CouponId = v.Id

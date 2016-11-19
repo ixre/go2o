@@ -27,22 +27,22 @@ func newPerson(v *user.PersonValue, rep user.IUserRep) user.IPerson {
 	}
 }
 
-func (this *Person) GetDomainId() int {
-	return this.value.Id
+func (p *Person) GetDomainId() int32 {
+	return p.value.Id
 }
 
-func (this *Person) GetValue() user.PersonValue {
-	return *this.value
+func (p *Person) GetValue() user.PersonValue {
+	return *p.value
 }
 
-func (this *Person) SetValue(v *user.PersonValue) error {
-	if v.Id == this.value.Id && v.Id > 0 {
-		this.value = v
+func (p *Person) SetValue(v *user.PersonValue) error {
+	if v.Id == p.value.Id && v.Id > 0 {
+		p.value = v
 		return nil
 	}
 	return errors.New("no such value")
 }
 
-func (this *Person) Save() (int, error) {
-	return this.rep.SavePerson(this.value)
+func (p *Person) Save() (int32, error) {
+	return p.rep.SavePerson(p.value)
 }
