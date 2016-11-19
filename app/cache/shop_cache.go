@@ -11,6 +11,7 @@ package cache
 import (
 	"fmt"
 	"github.com/jsix/gof/log"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/dps"
@@ -40,9 +41,8 @@ func DelShopCache(mchId int32) {
 func GetShopIdByHost(host string) int32 {
 	key := "go2o:cache:shop-host:" + host
 	sto := GetKVS()
-	id, err := sto.GetInt(key)
-	shopId := int32(id)
-	if err != nil || id <= 0 {
+	shopId, err := util.I32Err(sto.GetInt(key))
+	if err != nil || shopId <= 0 {
 		_, shopId = dps.ShopService.GetShopIdByHost(host)
 		if shopId > 0 {
 			sto.SetExpire(key, shopId, DefaultMaxSeconds)
