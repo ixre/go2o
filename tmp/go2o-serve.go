@@ -36,7 +36,7 @@ func main() {
 		trace     bool
 		runDaemon bool // 运行daemon
 		help      bool
-		newApp    *core.MainApp
+		newApp    *core.AppImpl
 	)
 
 	flag.IntVar(&httpPort, "port", 14190, "web server port")
@@ -57,8 +57,8 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	newApp = core.NewMainApp(confFile)
-	if !newApp.Init(debug, trace) {
+	newApp = core.NewApp(confFile)
+	if !core.Init(newApp, debug, trace) {
 		os.Exit(1)
 	}
 	fix.CustomFix()
