@@ -10,6 +10,8 @@ package util
 
 import (
 	"fmt"
+	"github.com/jsix/gof/storage"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -26,4 +28,13 @@ func GetRawUrl(r *http.Request) string {
 	}
 	return url.QueryEscape(fmt.Sprintf("%s://%s%s%s",
 		proto, r.Host, r.URL.Path, query))
+}
+
+// 删除指定前缀的缓存
+func RemovePrefixKeys(sto storage.Interface, prefix string) {
+	rds := sto.(storage.IRedisStorage)
+	_, err := rds.DelWith(prefix)
+	if err != nil {
+		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
+	}
 }
