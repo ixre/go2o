@@ -41,7 +41,6 @@ func TestConn(t *testing.T) {
 		log.Println(line)
 		return
 	}
-
 	log.Println("merchant auth success")
 	cli.Write([]byte("MAUTH:1#25245e2640237ea0681ed8ce1542756543111b1e750e238eafa926\n"))
 	n, _ = cli.Read(buffer)
@@ -50,13 +49,9 @@ func TestConn(t *testing.T) {
 		log.Println(line)
 		return
 	}
-
 	log.Println("member auth success")
-
 	go listenTcp(cli)
-
 	<-ch
-
 }
 
 func listenTcp(conn net.Conn) {
