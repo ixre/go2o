@@ -47,7 +47,7 @@ func (c *CoverageArea) CanDeliverTo(address string) (bool, int) {
 	return c.CanDeliver(lng, lat)
 }
 
-func (c *CoverageArea) GetDomainId() int {
+func (c *CoverageArea) GetDomainId() int32 {
 	return c.value.Id
 }
 
@@ -63,6 +63,6 @@ func (c *CoverageArea) SetValue(v *delivery.CoverageValue) error {
 	return errors.New("no such value")
 }
 
-func (c *CoverageArea) Save() (int, error) {
+func (c *CoverageArea) Save() (int32, error) {
 	return c.rep.SaveCoverageArea(c.value)
 }

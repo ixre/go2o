@@ -35,8 +35,8 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRep,
 }
 
 // 提交售后单
-func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
-	snapshotId int, quantity int, reason string, img string) (int, error) {
+func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
+	snapshotId int32, quantity int, reason string, img string) (int32, error) {
 	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
 		OrderId: orderId,
@@ -54,7 +54,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int, asType int,
 }
 
 // 获取订单的所有售后单
-func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int) []afterSales.AfterSalesOrder {
+func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int32) []afterSales.AfterSalesOrder {
 	list := a._rep.GetAllOfSaleOrder(orderId)
 	arr := make([]afterSales.AfterSalesOrder, len(list))
 	for i, v := range list {
@@ -65,26 +65,26 @@ func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int) []afte
 }
 
 // 获取会员的分页售后单
-func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId, begin,
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int32, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }
 
 // 获取商户的分页售后单
-func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId, begin,
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId int32, begin,
 	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfVendor(vendorId, begin, size, where)
 }
 
 //根据order_id获得订单号
-func (a *afterSalesService) GetAfterSalesOrder(order_id int) int {
+func (a *afterSalesService) GetAfterSalesOrder(order_id int32) int {
 	id := 0
 	a.Connector.ExecScalar("SSELECT order_no FROM sale_order WHERE id=?", &id, order_id)
 	return id
 }
 
 // 获取售后单
-func (a *afterSalesService) GetAfterSaleOrder(id int) *afterSales.AfterSalesOrder {
+func (a *afterSalesService) GetAfterSaleOrder(id int32) *afterSales.AfterSalesOrder {
 	as := a._rep.GetAfterSalesOrder(id)
 	if as != nil {
 		v := as.Value()
@@ -96,31 +96,31 @@ func (a *afterSalesService) GetAfterSaleOrder(id int) *afterSales.AfterSalesOrde
 }
 
 // 同意售后
-func (a *afterSalesService) AgreeAfterSales(id int, remark string) error {
+func (a *afterSalesService) AgreeAfterSales(id int32, remark string) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	return as.Agree()
 }
 
 // 拒绝售后
-func (a *afterSalesService) DeclineAfterSales(id int, reason string) error {
+func (a *afterSalesService) DeclineAfterSales(id int32, reason string) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	return as.Decline(reason)
 }
 
 // 申请调解
-func (a *afterSalesService) RequestIntercede(id int) error {
+func (a *afterSalesService) RequestIntercede(id int32) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	return as.RequestIntercede()
 }
 
 // 系统确认
-func (a *afterSalesService) ConfirmAfterSales(id int) error {
+func (a *afterSalesService) ConfirmAfterSales(id int32) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	return as.Confirm()
 }
 
 // 系统退回
-func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
+func (a *afterSalesService) RejectAfterSales(id int32, remark string) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	if as == nil {
 		return afterSales.ErrNoSuchOrder
@@ -130,7 +130,7 @@ func (a *afterSalesService) RejectAfterSales(id int, remark string) error {
 }
 
 // 处理退款/退货完成,一般是系统自动调用
-func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
+func (a *afterSalesService) ProcessAfterSalesOrder(id int32) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	if as == nil {
 		return afterSales.ErrNoSuchOrder
@@ -147,7 +147,7 @@ func (a *afterSalesService) ProcessAfterSalesOrder(id int) error {
 }
 
 // 售后收货
-func (a *afterSalesService) ReceiveReturnShipment(id int) error {
+func (a *afterSalesService) ReceiveReturnShipment(id int32) error {
 	as := a._rep.GetAfterSalesOrder(id)
 	err := as.ReturnReceive()
 	if err == nil {
@@ -159,13 +159,13 @@ func (a *afterSalesService) ReceiveReturnShipment(id int) error {
 }
 
 // 换货发货
-func (a *afterSalesService) ExchangeShipment(id int, spName string, spOrder string) error {
+func (a *afterSalesService) ExchangeShipment(id int32, spName string, spOrder string) error {
 	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
 	return ex.ExchangeShip(spName, spOrder)
 }
 
 // 换货收货
-func (a *afterSalesService) ReceiveExchange(id int) error {
+func (a *afterSalesService) ReceiveExchange(id int32) error {
 	ex := a._rep.GetAfterSalesOrder(id).(afterSales.IExchangeOrder)
 	return ex.ExchangeReceive()
 }

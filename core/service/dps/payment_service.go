@@ -26,7 +26,7 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrder(id int) *payment.PaymentOrder {
+func (p *paymentService) GetPaymentOrder(id int32) *payment.PaymentOrder {
 	po := p._rep.GetPaymentOrder(id)
 	if po != nil {
 		v := po.GetValue()
@@ -45,7 +45,7 @@ func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentO
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int, error) {
+func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int32, error) {
 	o := p._rep.CreatePaymentOrder(v)
 	return o.Commit()
 }
@@ -59,7 +59,7 @@ func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
 	return o.Adjust(amount)
 }
 
-func (p *paymentService) SetPrefixOfTradeNo(id int, prefix string) error {
+func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
 	o := p._rep.GetPaymentOrder(id)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
@@ -68,7 +68,7 @@ func (p *paymentService) SetPrefixOfTradeNo(id int, prefix string) error {
 }
 
 // 积分抵扣支付单
-func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
+func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int32,
 	integral int, ignoreOut bool) (float32, error) {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
@@ -78,7 +78,7 @@ func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int,
 }
 
 // 余额抵扣
-func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark string) error {
+func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int32, remark string) error {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
@@ -91,7 +91,7 @@ func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int, remark stri
 }
 
 // 赠送账户支付
-func (p *paymentService) PresentAccountPayment(orderId int, remark string) error {
+func (p *paymentService) PresentAccountPayment(orderId int32, remark string) error {
 	o := p._rep.GetPaymentOrder(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder

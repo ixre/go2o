@@ -20,10 +20,8 @@ import (
 
 var _ sale.ISale = new(saleImpl)
 
-const MAX_CACHE_SIZE int = 5000
-
 type saleImpl struct {
-	mchId        int
+	mchId        int32
 	saleRep      sale.ISaleRep
 	labelRep     sale.ISaleLabelRep
 	cateRep      sale.ICategoryRep
@@ -31,7 +29,6 @@ type saleImpl struct {
 	valRep       valueobject.IValueRep
 	expressRep   express.IExpressRep
 	promRep      promotion.IPromotionRep
-	proCache     map[int]sale.IItem
 	cateManager  sale.ICategoryManager
 	labelManager sale.ILabelManager
 	itemManager  sale.IItemManager
@@ -39,12 +36,12 @@ type saleImpl struct {
 	goodsManager sale.IGoodsManager
 }
 
-func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
+func NewSale(mchId int32, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
 	cateRep sale.ICategoryRep, itemRep item.IItemRep, goodsRep goods.IGoodsRep,
 	tagRep sale.ISaleLabelRep, expressRep express.IExpressRep,
 	promRep promotion.IPromotionRep) sale.ISale {
 	return (&saleImpl{
-		mchId:      merchantId,
+		mchId:      mchId,
 		cateRep:    cateRep,
 		saleRep:    saleRep,
 		labelRep:   tagRep,
@@ -57,7 +54,6 @@ func NewSale(merchantId int, saleRep sale.ISaleRep, valRep valueobject.IValueRep
 }
 
 func (s *saleImpl) init() sale.ISale {
-	s.proCache = make(map[int]sale.IItem)
 	return s
 }
 
@@ -98,16 +94,6 @@ func (s *saleImpl) GoodsManager() sale.IGoodsManager {
 	return s.goodsManager
 }
 
-func (s *saleImpl) clearCache(goodsId int) {
-	delete(s.proCache, goodsId)
-}
-
-func (s *saleImpl) chkCache() {
-	if len(s.proCache) >= MAX_CACHE_SIZE {
-		s.proCache = make(map[int]sale.IItem)
-	}
-}
-
-func (s *saleImpl) GetAggregateRootId() int {
+func (s *saleImpl) GetAggregateRootId() int32 {
 	return s.mchId
 }

@@ -119,17 +119,17 @@ func (p *platformService) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) 
 }
 
 // 获取下级区域
-func (p *platformService) GetChildAreas(id int) []*valueobject.Area {
+func (p *platformService) GetChildAreas(id int32) []*valueobject.Area {
 	return p._rep.GetChildAreas(id)
 }
 
 // 获取地区名称
-func (p *platformService) GetAreaNames(id []int) []string {
+func (p *platformService) GetAreaNames(id []int32) []string {
 	return p._rep.GetAreaNames(id)
 }
 
 // 获取省市区字符串
-func (p *platformService) GetAreaString(province, city, district int) string {
+func (p *platformService) GetAreaString(province, city, district int32) string {
 	if province == 0 || city == 0 || district == 0 {
 		return ""
 	}

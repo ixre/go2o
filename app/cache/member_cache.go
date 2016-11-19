@@ -39,7 +39,7 @@ func GetLevelMapJson() string {
 		mp := make(map[string]string, 0)
 		for _, v := range list {
 			if v.Enabled == 1 {
-				mp[strconv.Itoa(v.Id)] = v.Name
+				mp[strconv.Itoa(int(v.Id))] = v.Name
 			}
 		}
 		data, _ := json.Marshal(mp)

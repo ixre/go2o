@@ -22,18 +22,18 @@ func NewContentQuery(c db.Connector) *ContentQuery {
 	return &ContentQuery{c}
 }
 
-func (this *ContentQuery) PagedArticleList(catId, begin, size int, where string) (total int,
+func (cq *ContentQuery) PagedArticleList(catId int32, begin, size int, where string) (total int,
 	rows []*content.Article) {
 	if len(where) != 0 {
 		where = " AND " + where
 	}
 
-	this.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
+	cq.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM
 		con_article WHERE cat_id=? %s`, where), &total, catId)
 
 	rows = []*content.Article{}
 	if total > 0 {
-		this.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
+		cq.Connector.GetOrm().SelectByQuery(&rows, fmt.Sprintf(`SELECT * FROM
 		con_article WHERE cat_id=? %s ORDER BY update_time DESC LIMIT ?,?`, where),
 			catId, begin, size)
 	}
@@ -42,10 +42,10 @@ func (this *ContentQuery) PagedArticleList(catId, begin, size int, where string)
 }
 
 // 获取页面列表
-//func (this *MemberQuery) QueryPageList(memberId, page, size int,
+//func (cq *MemberQuery) QueryPageList(memberId, page, size int,
 //	where, orderBy string) (num int, rows []map[string]interface{}) {
 //
-//	d := this.Connector
+//	d := cq.Connector
 //
 //	if where != "" {
 //		where = "WHERE " + where

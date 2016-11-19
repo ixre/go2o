@@ -9,6 +9,7 @@
 package shop
 
 import (
+	"fmt"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 )
@@ -132,7 +133,7 @@ var (
 
 type (
 	IShop interface {
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 商店类型
 		Type() int
@@ -144,7 +145,7 @@ type (
 		SetValue(*Shop) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int32, error)
 
 		// 数据
 		Data() *ShopDto
@@ -181,8 +182,8 @@ type (
 
 	// 商店
 	Shop struct {
-		Id         int    `db:"id" pk:"yes" auto:"yes"`
-		MerchantId int    `db:"mch_id"`
+		Id         int32  `db:"id" pk:"yes" auto:"yes"`
+		MerchantId int32  `db:"mch_id"`
 		ShopType   int    `db:"shop_type"`
 		Name       string `db:"name"`
 		State      int    `db:"state"`
@@ -192,8 +193,8 @@ type (
 
 	// 商店数据传输对象
 	ShopDto struct {
-		Id         int
-		MerchantId int
+		Id         int32
+		MerchantId int32
 		ShopType   int
 		Name       string
 		State      int
@@ -205,7 +206,7 @@ type (
 	// 商城
 	OnlineShop struct {
 		// 商店编号
-		ShopId int `db:"shop_id" pk:"yes" auto:"no"`
+		ShopId int32 `db:"shop_id" pk:"yes" auto:"no"`
 		// 通讯地址
 		Address string `db:"addr"`
 		// 联系电话
@@ -233,7 +234,7 @@ type (
 	// 门店
 	OfflineShop struct {
 		// 商店编号
-		ShopId int `db:"shop_id" pk:"yes" auto:"no"`
+		ShopId int32 `db:"shop_id" pk:"yes" auto:"no"`
 
 		// 联系电话
 		Tel string `db:"tel"`
@@ -260,3 +261,8 @@ type (
 		DeliverRadius int `db:"deliver_radius"`
 	}
 )
+
+//位置(经度+"/"+纬度)
+func (o OfflineShop) Location() string {
+	return fmt.Sprintf("%f/%f", o.Lng, o.Lat)
+}

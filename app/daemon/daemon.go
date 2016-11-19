@@ -19,11 +19,11 @@ import (
 	"github.com/robfig/cron"
 	"go2o/core"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/service/dps"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"log"
 	"strings"
@@ -46,7 +46,7 @@ type Service interface {
 	OrderObs(*order.SubOrder) bool
 
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
-	MemberObs(m *member.Member, create bool) bool
+	MemberObs(m *define.Member, create bool) bool
 
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
 	PaymentOrderObs(order *payment.PaymentOrder) bool
@@ -217,7 +217,7 @@ func (d *defaultService) OrderObs(o *order.SubOrder) bool {
 
 // 监视会员修改,@create:是否为新注册会员
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) MemberObs(m *member.Member, create bool) bool {
+func (d *defaultService) MemberObs(m *define.Member, create bool) bool {
 	defer Recover()
 	if d.sMember {
 		//todo: 执行会员逻辑

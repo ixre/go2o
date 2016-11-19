@@ -18,11 +18,11 @@ import (
 var _ member.IGiftCardManager = new(giftCardManagerImpl)
 
 type giftCardManagerImpl struct {
-	memberId int
+	memberId int32
 	rep      member.IMemberRep
 }
 
-func newGiftCardManagerImpl(memberId int, rep member.IMemberRep) member.IGiftCardManager {
+func newGiftCardManagerImpl(memberId int32, rep member.IMemberRep) member.IGiftCardManager {
 	return &giftCardManagerImpl{
 		memberId: memberId,
 		rep:      rep,

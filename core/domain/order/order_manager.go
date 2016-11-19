@@ -143,7 +143,7 @@ func (t *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
 	return order, py, err
 }
 
-func (t *orderManagerImpl) GetFreeOrderNo(vendorId int) string {
+func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
 	return t.rep.GetFreeOrderNo(vendorId)
 }
 
@@ -288,7 +288,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 }
 
 // 根据订单编号获取订单
-func (t *orderManagerImpl) GetOrderById(orderId int) order.IOrder {
+func (t *orderManagerImpl) GetOrderById(orderId int32) order.IOrder {
 	val := t.rep.GetOrderById(orderId)
 	if val != nil {
 		return t.CreateOrder(val)
@@ -306,7 +306,7 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 }
 
 // 在线交易支付
-func (t *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
+func (t *orderManagerImpl) PaymentForOnlineTrade(orderId int32) error {
 	o := t.GetOrderById(orderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -315,7 +315,7 @@ func (t *orderManagerImpl) PaymentForOnlineTrade(orderId int) error {
 }
 
 // 获取子订单
-func (t *orderManagerImpl) GetSubOrder(id int) order.ISubOrder {
+func (t *orderManagerImpl) GetSubOrder(id int32) order.ISubOrder {
 	if v := t.rep.GetSubOrder(id); v != nil {
 		return t.CreateSubOrder(v)
 	}
@@ -323,7 +323,7 @@ func (t *orderManagerImpl) GetSubOrder(id int) order.ISubOrder {
 }
 
 // 根据父订单编号获取购买的商品项
-func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int) []*order.OrderItem {
+func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
 	return t.rep.GetItemsByParentOrderId(orderId)
 }
 

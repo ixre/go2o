@@ -20,11 +20,11 @@ type (
 	// 邀请会员数据
 	InvitationMember struct {
 		// 会员编号
-		MemberId int
+		MemberId int32
 		// 用户名
 		User string
 		// 等级
-		Level int
+		Level int32
 		// 头像
 		Avatar string
 		// 昵称

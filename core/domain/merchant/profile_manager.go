@@ -100,7 +100,7 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 }
 
 // 保存企业信息
-func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
+func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int32, error) {
 	e := p.GetReviewingEnterpriseInfo()
 	if e == nil {
 		e = &merchant.EnterpriseInfo{}
@@ -112,7 +112,7 @@ func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int
 	e.ReviewTime = dt
 	e.UpdateTime = dt
 	p.list = nil //clean cache
-	return orm.Save(tmp.Db().GetOrm(), e, e.Id)
+	return orm.I32(orm.Save(tmp.Db().GetOrm(), e, int(e.Id)))
 }
 
 // 标记企业为审核通过
@@ -173,6 +173,6 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 }
 
 func (p *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
-	_, err := orm.Save(tmp.Db().GetOrm(), e, e.Id)
+	_, err := orm.Save(tmp.Db().GetOrm(), e, int(e.Id))
 	return err
 }

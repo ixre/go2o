@@ -24,7 +24,7 @@ type (
 	// 换货单
 	ExchangeOrder struct {
 		// 编号
-		Id int `db:"id" pk:"yes" auto:"no"`
+		Id int32 `db:"id" pk:"yes" auto:"no"`
 		// 是否发货
 		IsShipped int `db:"is_shipped"`
 		// 快递名称

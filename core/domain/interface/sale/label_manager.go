@@ -13,10 +13,10 @@ import "go2o/core/domain/interface/valueobject"
 type (
 	// 销售标签
 	Label struct {
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		// 商户编号
-		MerchantId int `db:"mch_id"`
+		MerchantId int32 `db:"mch_id"`
 
 		// 标签代码
 		TagCode string `db:"tag_code"`
@@ -33,7 +33,7 @@ type (
 
 	// 销售标签接口
 	ISaleLabel interface {
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 获取值
 		GetValue() *Label
@@ -42,7 +42,7 @@ type (
 		SetValue(v *Label) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int32, error)
 
 		// 是否为系统内置
 		System() bool
@@ -64,7 +64,7 @@ type (
 		InitSaleLabels() error
 
 		// 获取销售标签
-		GetSaleLabel(id int) ISaleLabel
+		GetSaleLabel(id int32) ISaleLabel
 
 		// 根据Code获取销售标签
 		GetSaleLabelByCode(code string) ISaleLabel
@@ -73,7 +73,7 @@ type (
 		CreateSaleLabel(v *Label) ISaleLabel
 
 		// 删除销售标签
-		DeleteSaleLabel(id int) error
+		DeleteSaleLabel(id int32) error
 	}
 
 	ISaleLabelRep interface {
@@ -81,38 +81,38 @@ type (
 		CreateSaleLabel(v *Label) ISaleLabel
 
 		// 获取所有的销售标签
-		GetAllValueSaleLabels(merchantId int) []*Label
+		GetAllValueSaleLabels(mchId int32) []*Label
 
 		// 获取销售标签值
-		GetValueSaleLabel(merchantId int, tagId int) *Label
+		GetValueSaleLabel(mchId int32, tagId int32) *Label
 
 		// 根据Code获取销售标签
-		GetSaleLabelByCode(merchantId int, code string) *Label
+		GetSaleLabelByCode(mchId int32, code string) *Label
 
 		// 删除销售标签
-		DeleteSaleLabel(merchantId int, id int) error
+		DeleteSaleLabel(mchId int32, id int32) error
 
 		// 获取销售标签
-		GetSaleLabel(merchantId int, tagId int) ISaleLabel
+		GetSaleLabel(mchId int32, tagId int32) ISaleLabel
 
 		// 保存销售标签
-		SaveSaleLabel(merchantId int, v *Label) (int, error)
+		SaveSaleLabel(mchId int32, v *Label) (int32, error)
 
 		// 获取商品
-		GetValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
+		GetValueGoodsBySaleLabel(mchId int32, tagId int32, sortBy string,
 			begin, end int) []*valueobject.Goods
 
 		// 获取分页商品
-		GetPagedValueGoodsBySaleLabel(merchantId, tagId int, sortBy string,
+		GetPagedValueGoodsBySaleLabel(mchId int32, tagId int32, sortBy string,
 			begin, end int) (int, []*valueobject.Goods)
 
 		// 获取商品的销售标签
-		GetItemSaleLabels(itemId int) []*Label
+		GetItemSaleLabels(itemId int32) []*Label
 
 		// 清理商品的销售标签
-		CleanItemSaleLabels(itemId int) error
+		CleanItemSaleLabels(itemId int32) error
 
 		// 保存商品的销售标签
-		SaveItemSaleLabels(itemId int, tagIds []int) error
+		SaveItemSaleLabels(itemId int32, tagIds []int) error
 	}
 )

@@ -18,7 +18,7 @@ type (
 	// 商品
 	IGoods interface {
 		// 获取领域对象编号
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 商品快照
 		SnapshotManager() goods.ISnapshotManager
@@ -36,10 +36,10 @@ type (
 		GetPromotions() []promotion.IPromotion
 
 		// 获取促销价
-		GetPromotionPrice(level int) float32
+		GetPromotionPrice(level int32) float32
 
 		// 获取会员价销价,返回是否有会原价及价格
-		GetLevelPrice(level int) (bool, float32)
+		GetLevelPrice(level int32) (bool, float32)
 
 		// 获取促销描述
 		GetPromotionDescribe() map[string]string
@@ -48,13 +48,13 @@ type (
 		GetLevelPrices() []*goods.MemberPrice
 
 		// 保存会员价
-		SaveLevelPrice(*goods.MemberPrice) (int, error)
+		SaveLevelPrice(*goods.MemberPrice) (int32, error)
 
 		// 设置值
 		SetValue(*goods.ValueGoods) error
 
 		// 保存
-		Save() (int, error)
+		Save() (int32, error)
 
 		// 更新销售数量,扣减库存
 		AddSalesNum(quantity int) error
@@ -69,7 +69,7 @@ type (
 		FreeStock(quantity int) error
 
 		//// 生成快照
-		//GenerateSnapshot() (int, error)
+		//GenerateSnapshot() (int64, error)
 		//
 		//// 获取最新的快照
 		//GetLatestSnapshot() *goods.GoodsSnapshot
@@ -84,16 +84,16 @@ type (
 		CreateGoods(*goods.ValueGoods) IGoods
 
 		// 根据产品编号获取商品
-		GetGoods(int) IGoods
+		GetGoods(id int32) IGoods
 
 		// 根据产品SKU获取商品
-		GetGoodsBySku(itemId, sku int) IGoods
+		GetGoodsBySku(itemId, skuId int32) IGoods
 
 		// 删除商品
-		DeleteGoods(int) error
+		DeleteGoods(id int32) error
 
 		//// 获取指定的商品快照
-		//GetSaleSnapshot(id int) *goods.GoodsSnapshot
+		//GetSaleSnapshot(id int32) *goods.GoodsSnapshot
 		//
 		//// 根据Key获取商品快照
 		//GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot
@@ -104,7 +104,7 @@ type (
 
 	// 简单商品信息
 	SimpleGoods struct {
-		GoodsId    int    `json:"id"`
+		GoodsId    int32  `json:"id"`
 		GoodsImage string `json:"img"`
 		Name       string `json:"name"`
 		Quantity   string `json:"qty"`

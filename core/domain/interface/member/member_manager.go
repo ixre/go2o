@@ -24,11 +24,11 @@ type (
 		LevelManager() ILevelManager
 
 		// 检查手机绑定,同时检查手机格式
-		CheckPhoneBind(phone string, memberId int) error
+		CheckPhoneBind(phone string, memberId int32) error
 
 		// 检查注册信息是否正确
-		PrepareRegister(v *Member, pro *Profile,
-			invitationCode string) (invitationId int, err error)
+		PrepareRegister(v *Member, pro *Profile, invitationCode string) (
+			invitationId int32, err error)
 
 		// IDocManager()IDocManager
 	}
@@ -36,11 +36,11 @@ type (
 	//会员等级
 	Level struct {
 		//编号
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		//等级名称
 		Name string `db:"name"`
 		//需要经验值
-		RequireExp int `db:"require_exp"`
+		RequireExp int32 `db:"require_exp"`
 		// 可编程等级签名,可根据此签名来进行编程
 		ProgramSignal string `db:"program_signal"`
 		//是否启用
@@ -57,21 +57,21 @@ type (
 		GetHighestLevel() *Level
 
 		// 获取等级
-		GetLevelById(id int) *Level
+		GetLevelById(id int32) *Level
 
 		// 根据可编程字符获取会员等级
 		GetLevelByProgramSign(sign string) *Level
 
 		// 获取下一个等级
-		GetNextLevelById(int int) *Level
+		GetNextLevelById(id int32) *Level
 
 		// 删除等级
-		DeleteLevel(id int) error
+		DeleteLevel(id int32) error
 
 		// 保存等级
-		SaveLevel(*Level) (int, error)
+		SaveLevel(*Level) (int32, error)
 
 		// 根据经验值获取等级值
-		GetLevelIdByExp(exp int) int
+		GetLevelIdByExp(exp int32) int32
 	}
 )

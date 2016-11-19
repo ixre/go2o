@@ -14,10 +14,26 @@
 
 package promotion
 
+import "go2o/core/infrastructure/domain"
+
+var (
+	ErrCanNotApplied *domain.DomainError = domain.NewDomainError(
+		"name_exists", "无法应用此优惠")
+
+	ErrExistsSamePromotionFlag *domain.DomainError = domain.NewDomainError(
+		"exists_same_promotion_flag", "已存在相同的促销")
+
+	ErrNoSuchPromotion *domain.DomainError = domain.NewDomainError(
+		"no_such_promotion", "促销不存在")
+
+	ErrNoDetailsPromotion *domain.DomainError = domain.NewDomainError(
+		"no_details_promotion", "促销信息不完整")
+)
+
 // 促销聚合根
 type IPromotion interface {
 	// 获取聚合根编号
-	GetAggregateRootId() int
+	GetAggregateRootId() int32
 
 	// 获取值
 	GetValue() *PromotionInfo
@@ -38,11 +54,37 @@ type IPromotion interface {
 	TypeName() string
 
 	// 保存
-	Save() (int, error)
+	Save() (int32, error)
 
 	// 获取优惠券
-	//GetCoupon(id int) ICouponPromotion
+	//GetCoupon(id int32) ICouponPromotion
 
 	// 创建优惠券
 	//CreateCoupon(val *ValueCoupon) ICouponPromotion
+}
+
+type PromotionInfo struct {
+	// 促销编号
+	Id int32 `db:"id" pk:"yes" auto:"yes"`
+
+	// 商户编号
+	MerchantId int32 `db:"mch_id"`
+
+	// 促销简称
+	ShortName string `db:"short_name"`
+
+	// 促销描述
+	Description string `db:"description"`
+
+	// 类型位值
+	TypeFlag int `db:"type_flag"`
+
+	// 商品编号(为0则应用订单)
+	GoodsId int32 `db:"goods_id"`
+
+	// 是否启用
+	Enabled int `db:"enabled"`
+
+	// 修改时间
+	UpdateTime int64 `db:"update_time"`
 }

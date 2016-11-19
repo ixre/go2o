@@ -37,7 +37,7 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 			return v
 		}
 	}
-	v = dps.MemberService.GetMemberSummary(memberId)
+	v = dps.MemberService.GetMemberSummary(int32(memberId))
 	if v != nil {
 		sto.SetExpire(key, v, 3600*360) // cache 15 hours
 		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
@@ -58,7 +58,7 @@ func getMemberAccount(memberId int, updateTime int) *member.Account {
 			return v
 		}
 	}
-	v = dps.MemberService.GetAccount(memberId)
+	v = dps.MemberService.GetAccount(int32(memberId))
 	sto.SetExpire(key, v, 3600*360) // cache 15 hours
 	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
 

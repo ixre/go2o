@@ -14,11 +14,12 @@ import (
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/app/util"
+	autil "go2o/app/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/dps"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
@@ -40,18 +41,30 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		e, err := dps.MemberService.TryLogin(usr, encodePwd, true)
-		if err != nil {
-			result.Message = err.Error()
-		} else {
+		mp, _ := dps.MemberService.Login(usr, encodePwd, true)
+		id := mp["Id"]
+		rst := mp["Result"]
+		if id > 0 {
+			m, _ := dps.MemberService.GetMember(id)
 			// 登录成功，生成令牌
-			token := util.SetMemberApiToken(sto, e.Id, e.Pwd)
+			token := autil.SetMemberApiToken(sto, id, encodePwd)
 			result.Member = &dto.LoginMember{
-				Id:         e.Id,
+				Id:         int(id),
 				Token:      token,
-				UpdateTime: e.UpdateTime,
+				UpdateTime: m.UpdateTime,
 			}
 			result.Result = true
+		} else {
+			switch rst {
+			case -1:
+				result.Message = member.ErrNoSuchMember.Error()
+			case -2:
+				result.Message = member.ErrCredential.Error()
+			case -3:
+				result.Message = member.ErrDisabled.Error()
+			default:
+				result.Message = "登陆失败"
+			}
 		}
 	}
 	return c.JSON(http.StatusOK, result)
@@ -71,8 +84,8 @@ func (mc *MemberC) Register(c echo.Context) error {
 	if i := strings.Index(r.RemoteAddr, ":"); i != -1 {
 		regIp = r.RemoteAddr[:i]
 	}
-	m := &member.Member{}
-	pro := &member.Profile{}
+	m := &define.Member{}
+	pro := &define.Profile{}
 	m.Usr = usr
 	m.Pwd = domain.MemberSha1Pwd(pwd)
 	m.RegIp = regIp
@@ -94,7 +107,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
 	var form = url.Values(c.Request().Form)
 	var mut, aut, kvMut, kvAut int
-	memberId := GetMemberId(c)
+	memberId := int32(GetMemberId(c))
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -102,7 +115,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	sto.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		m := dps.MemberService.GetMember(memberId)
+		m, _ := dps.MemberService.GetMember(memberId)
 		kvMut = int(m.UpdateTime)
 		sto.Set(mutKey, kvMut)
 	}
@@ -120,9 +133,9 @@ func (mc *MemberC) Async(c echo.Context) error {
 
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
-	memberId := GetMemberId(c)
-	m := dps.MemberService.GetMember(memberId)
-	m.DynamicToken, _ = util.GetMemberApiToken(sto, memberId)
+	memberId := int32(GetMemberId(c))
+	m, _ := dps.MemberService.GetMember(memberId)
+	m.DynamicToken, _ = autil.GetMemberApiToken(sto, memberId)
 	return c.JSON(http.StatusOK, m)
 }
 
@@ -149,7 +162,7 @@ func (mc *MemberC) Account(c echo.Context) error {
 // 断开
 func (mc *MemberC) Disconnect(c *echox.Context) error {
 	var result gof.Message
-	if util.MemberHttpSessionDisconnect(c) {
+	if autil.MemberHttpSessionDisconnect(c) {
 		result.Result = true
 	} else {
 		result.Message = "disconnect fail"

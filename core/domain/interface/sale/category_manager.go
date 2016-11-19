@@ -36,7 +36,7 @@ var (
 type (
 	ICategory interface {
 		// 获取领域编号
-		GetDomainId() int
+		GetDomainId() int32
 
 		// 获取值
 		GetValue() *Category
@@ -49,18 +49,18 @@ type (
 		GetOption() domain.IOptionStore
 
 		// 保存
-		Save() (int, error)
+		Save() (int32, error)
 
 		// 获取子栏目的编号
-		GetChildes() []int
+		GetChildes() []int32
 	}
 	//分类
 	Category struct {
-		Id int `db:"id" auto:"yes" pk:"yes"`
+		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		//父分类
-		ParentId int `db:"parent_id"`
+		ParentId int32 `db:"parent_id"`
 		//供应商编号
-		MerchantId int `db:"mch_id"`
+		MerchantId int32 `db:"mch_id"`
 		//名称
 		Name       string `db:"name"`
 		SortNumber int    `db:"sort_number"`
@@ -82,22 +82,22 @@ type (
 		GetGlobManager() ICategoryManager
 
 		// 保存分类
-		SaveCategory(*Category) (int, error)
+		SaveCategory(*Category) (int32, error)
 
 		// 检查分类是否关联商品
-		CheckGoodsContain(mchId, id int) bool
+		CheckGoodsContain(mchId, id int32) bool
 
 		// 删除分类
-		DeleteCategory(mchId, id int) error
+		DeleteCategory(mchId, id int32) error
 
 		// 获取分类
-		GetCategory(mchId, id int) *Category
+		GetCategory(mchId, id int32) *Category
 
 		// 创建分类
 		CreateCategory(v *Category) ICategory
 
 		// 获取所有分类
-		GetCategories(mchId int) []*Category
+		GetCategories(mchId int32) []*Category
 	}
 
 	// 分类服务
@@ -110,13 +110,13 @@ type (
 		CreateCategory(*Category) ICategory
 
 		// 获取分类
-		GetCategory(int) ICategory
+		GetCategory(id int32) ICategory
 
 		// 获取所有分类
 		GetCategories() []ICategory
 
 		// 删除分类
-		DeleteCategory(int) error
+		DeleteCategory(id int32) error
 	}
 )
 

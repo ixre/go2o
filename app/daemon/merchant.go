@@ -23,14 +23,14 @@ import (
 )
 
 var (
-	merchantIds []int
+	mchIds []int32
 )
 
-func getMerchants() []int {
-	if merchantIds == nil {
-		merchantIds = dps.MerchantService.GetMerchantsId()
+func getMerchants() []int32 {
+	if mchIds == nil {
+		mchIds = dps.MerchantService.GetMerchantsId()
 	}
-	return merchantIds
+	return mchIds
 }
 
 /***** OLD CODE *****/
@@ -44,11 +44,11 @@ func orderDaemon(app gof.App) {
 	}
 }
 
-func autoSetOrder(merchantId int) {
+func autoSetOrder(mchId int32) {
 	f := func(err error) {
 		appCtx.Log().Error(err)
 	}
-	dps.ShoppingService.OrderAutoSetup(merchantId, f)
+	dps.ShoppingService.OrderAutoSetup(mchId, f)
 }
 
 var (
@@ -84,14 +84,14 @@ func mchDayChart() {
 func generateMchDayChart(start, end int64) {
 	begin := 0
 	size := 20
-	var mchList []int
-	tmp := 0
+	var mchList []int32
+	var tmp int32
 	dateStr := time.Unix(start, 0).Format("2006-01-02")
 	// 清理数据
 	appCtx.Db().ExecNonQuery(`DELETE FROM mch_day_chart WHERE date_str=?`, dateStr)
 	// 开始统计数据
 	for {
-		mchList = []int{}
+		mchList = []int32{}
 		appCtx.Db().Query("SELECT id FROM mch_merchant LIMIT ?,?", func(rs *sql.Rows) {
 			for rs.Next() {
 				rs.Scan(&tmp)
@@ -112,7 +112,7 @@ func generateMchDayChart(start, end int64) {
 	}
 }
 
-func genDayChartForMch(wg *sync.WaitGroup, mchId int, dateStr string, start int64, end int64) {
+func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start int64, end int64) {
 	defer wg.Done()
 	c := &merchant.MchDayChart{
 		MchId:   mchId,

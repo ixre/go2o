@@ -25,12 +25,12 @@ func NewMssService(rep mss.IMssRep) *mssService {
 }
 
 // 获取邮件模版
-func (m *mssService) GetMailTemplate(id int) *mss.MailTemplate {
+func (m *mssService) GetMailTemplate(id int32) *mss.MailTemplate {
 	return m._rep.GetProvider().GetMailTemplate(id)
 }
 
 // 保存邮件模板
-func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+func (m *mssService) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return m._rep.GetProvider().SaveMailTemplate(v)
 }
 
@@ -40,7 +40,7 @@ func (m *mssService) GetMailTemplates() []*mss.MailTemplate {
 }
 
 // 删除邮件模板
-func (m *mssService) DeleteMailTemplate(id int) error {
+func (m *mssService) DeleteMailTemplate(id int32) error {
 	return m._rep.GetProvider().DeleteMailTemplate(id)
 }
 
@@ -77,7 +77,7 @@ func (m *mssService) SaveNotifyItem(item *notify.NotifyItem) error {
 // 发送站内通知信息,
 // toRole: 为-1时发送给所有用户
 // sendNow: 是否马上发送
-func (ms *mssService) SendSiteNotifyMessage(senderId int, toRole int,
+func (ms *mssService) SendSiteNotifyMessage(senderId int32, toRole int,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -111,7 +111,7 @@ func (ms *mssService) SendSiteNotifyMessage(senderId int, toRole int,
 }
 
 // 对会用户发送站内信
-func (ms *mssService) SendSiteMessageToUser(senderId int, toRole int, toUser int,
+func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser int32,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -143,7 +143,7 @@ func (ms *mssService) SendSiteMessageToUser(senderId int, toRole int, toUser int
 }
 
 // 获取站内信
-func (m *mssService) GetSiteMessage(id, toUserId, toRole int) *dto.SiteMessage {
+func (m *mssService) GetSiteMessage(id, toUserId int32, toRole int) *dto.SiteMessage {
 	msg := m._rep.MessageManager().GetMessage(id)
 	if msg != nil && msg.CheckPerm(toUserId, toRole) {
 		val := msg.GetValue()
@@ -187,11 +187,11 @@ func (m *mssService) SendPhoneMessage(phone string,
 }
 
 // 获取聊天会话编号
-func (m *mssService) GetChatSessionId(senderRole, senderId, toRole, toId int) int {
+func (m *mssService) GetChatSessionId(senderRole int, senderId int32, toRole int, toId int32) int32 {
 	return m._rep.MessageManager().GetChatSessionId(senderRole, senderId, toRole, toId)
 }
 
 // 创建聊天会话
-func (m *mssService) CreateChatSession(senderRole, senderId, toRole, toId int) (mss.Message, error) {
+func (m *mssService) CreateChatSession(senderRole int, senderId int32, toRole int, toId int32) (mss.Message, error) {
 	return m._rep.MessageManager().CreateChatSession(senderRole, senderId, toRole, toId)
 }

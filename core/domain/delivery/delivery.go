@@ -16,11 +16,11 @@ import (
 var _ delivery.IDelivery = new(Delivery)
 
 type Delivery struct {
-	id  int
+	id  int32
 	rep delivery.IDeliveryRep
 }
 
-func NewDelivery(id int, dlvRep delivery.IDeliveryRep) delivery.IDelivery {
+func NewDelivery(id int32, dlvRep delivery.IDeliveryRep) delivery.IDelivery {
 	return &Delivery{
 		id:  id,
 		rep: dlvRep,
@@ -28,12 +28,12 @@ func NewDelivery(id int, dlvRep delivery.IDeliveryRep) delivery.IDelivery {
 }
 
 // 返回聚合编号
-func (d *Delivery) GetAggregateRootId() int {
+func (d *Delivery) GetAggregateRootId() int32 {
 	return d.id
 }
 
 // 等同于GetAggregateRootId()
-func (d *Delivery) GetMerchantId() int {
+func (d *Delivery) GetMerchantId() int32 {
 	return d.id
 }
 
@@ -47,7 +47,7 @@ func (d *Delivery) GetArea(addr string) ([]*delivery.AreaValue, error) {
 }
 
 //　获取覆盖区域
-func (d *Delivery) GetCoverageArea(id int) delivery.ICoverageArea {
+func (d *Delivery) GetCoverageArea(id int32) delivery.ICoverageArea {
 	val := d.rep.GetCoverageArea(d.id, id)
 	return newCoverageArea(val, d.rep)
 }
@@ -95,7 +95,7 @@ func (d *Delivery) FindCoverageAreas(lng, lat float64) []delivery.ICoverageArea 
 }
 
 // 获取配送信息
-func (d *Delivery) GetDeliveryInfo(coverageId int) (shopId, deliverUsrId int, err error) {
+func (d *Delivery) GetDeliveryInfo(coverageId int32) (shopId, deliverUsrId int32, err error) {
 	v := d.rep.GetDeliveryBind(d.GetAggregateRootId(), coverageId)
 	if v != nil {
 		return v.ShopId, v.DeliverUsrId, nil

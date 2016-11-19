@@ -64,12 +64,12 @@ func (r *refundOrderImpl) Value() afterSales.AfterSalesOrder {
 
 // 保存
 func (r *refundOrderImpl) saveRefundOrder() error {
-	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, r.GetDomainId())
+	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, int(r.GetDomainId()))
 	return err
 }
 
 // 设置要退回货物信息
-func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
+func (r *refundOrderImpl) SetItem(snapshotId int32, quantity int) error {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
@@ -87,7 +87,7 @@ func (r *refundOrderImpl) SetItem(snapshotId int, quantity int) error {
 }
 
 // 提交退款申请
-func (r *refundOrderImpl) Submit() (int, error) {
+func (r *refundOrderImpl) Submit() (int32, error) {
 	o := r.GetOrder()
 	if o.GetValue().State >= order.StatShipped {
 		return 0, afterSales.ErrRefundAfterShipped

@@ -32,9 +32,9 @@ func (a *apiManagerImpl) getApiInfo() *merchant.ApiInfo {
 		a.apiInfo = a._rep.GetApiInfo(a.GetAggregateRootId())
 		//没有API则生成
 		if a.apiInfo == nil {
-			mchId := a.GetAggregateRootId()
+			mchId := int(a.GetAggregateRootId())
 			a.apiInfo = &merchant.ApiInfo{
-				MerchantId: mchId,
+				MerchantId: a.GetAggregateRootId(),
 				ApiId:      domain.NewApiId(mchId),
 				ApiSecret:  domain.NewSecret(mchId),
 				WhiteList:  "*",

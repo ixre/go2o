@@ -18,11 +18,11 @@ var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
 	contentRep content.IContentRep
-	userId     int
+	userId     int32
 	value      *content.Page
 }
 
-func newPage(userId int, rep content.IContentRep,
+func newPage(userId int32, rep content.IContentRep,
 	v *content.Page) content.IPage {
 	return &pageImpl{
 		contentRep: rep,
@@ -32,7 +32,7 @@ func newPage(userId int, rep content.IContentRep,
 }
 
 // 获取领域编号
-func (p *pageImpl) GetDomainId() int {
+func (p *pageImpl) GetDomainId() int32 {
 	return p.value.Id
 }
 
@@ -63,7 +63,7 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 }
 
 // 保存
-func (p *pageImpl) Save() (int, error) {
+func (p *pageImpl) Save() (int32, error) {
 	p.value.UpdateTime = time.Now().Unix()
 	return p.contentRep.SavePage(p.userId, p.value)
 }

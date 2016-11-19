@@ -23,7 +23,7 @@ type (
 	// 销售设置为商户填写,同时可以恢复默认
 	SaleConf struct {
 		// 合作商编号
-		MerchantId int `db:"mch_id" auto:"no" pk:"yes"`
+		MerchantId int32 `db:"mch_id" auto:"no" pk:"yes"`
 		// 是否启用分销模式
 		FxSalesEnabled int `db:"fx_sales"`
 		// 返现比例,0则不返现

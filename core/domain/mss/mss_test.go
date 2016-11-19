@@ -49,7 +49,7 @@ func (this *MssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (this *MssRep) GetConfig(userId int) *mss.Config {
+func (this *MssRep) GetConfig(userId int32) *mss.Config {
 	return nil
 }
 
@@ -74,7 +74,7 @@ func (this *MssRep) SaveNotifyItem(v *notify.NotifyItem) error {
 }
 
 // 获取邮箱模板
-func (this *MssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
+func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -83,17 +83,17 @@ func (this *MssRep) GetMailTemplate(merchantId, id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int, error) {
+func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return v.Id, nil
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(merchantId int) []*mss.MailTemplate {
+func (this *MssRep) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 
 // 删除邮件模板
-func (this *MssRep) DeleteMailTemplate(merchantId, id int) error {
+func (this *MssRep) DeleteMailTemplate(mchId, id int) error {
 	return nil
 }
 
@@ -103,7 +103,7 @@ func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
+func (this *MssRep) SaveMessage(v *mss.Message) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -116,19 +116,19 @@ func (this *MssRep) SaveMessage(v *mss.Message) (int, error) {
 }
 
 // 获取消息
-func (this *MssRep) GetMessage(id int) *mss.Message {
+func (this *MssRep) GetMessage(id int32) *mss.Message {
 	//todo:
 	msg := mss.Message{}
 	return &msg
 }
 
 // 保存用户消息关联
-func (this *MssRep) SaveUserMsg(v *mss.To) (int, error) {
-	return orm.Save(this._conn.GetOrm(), v, v.Id)
+func (this *MssRep) SaveUserMsg(v *mss.To) (int32, error) {
+	return orm.I32(orm.Save(this._conn.GetOrm(), v, v.Id))
 }
 
 // 保存消息内容
-func (this *MssRep) SaveMsgContent(v *mss.Content) (int, error) {
+func (this *MssRep) SaveMsgContent(v *mss.Content) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)

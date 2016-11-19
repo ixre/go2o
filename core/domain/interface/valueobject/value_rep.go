@@ -307,13 +307,13 @@ type (
 		GetDefaultSmsApiPerm() (int, *SmsApiPerm)
 
 		// 获取下级区域
-		GetChildAreas(id int) []*Area
+		GetChildAreas(id int32) []*Area
 
 		// 获取地区名称
-		GetAreaNames(id []int) []string
+		GetAreaNames(id []int32) []string
 
 		// 获取省市区字符串
-		GetAreaString(province, city, district int) string
+		GetAreaString(province, city, district int32) string
 	}
 
 	// 短信接口
@@ -338,8 +338,8 @@ type (
 	//http://www.stats.gov.cn/tjsj/tjbz/xzqhdm/
 	// 区域,中国行政区划
 	Area struct {
-		Code   int    `db:"code" json:"code"`
-		Parent int    `db:"parent" json:"parent"`
+		Code   int64  `db:"code" json:"code"`
+		Parent int64  `db:"parent" json:"parent"`
 		Name   string `db:"name" json:"name"`
 	}
 )

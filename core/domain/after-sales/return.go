@@ -65,12 +65,12 @@ func (r *returnOrderImpl) Value() afterSales.AfterSalesOrder {
 
 // 保存
 func (r *returnOrderImpl) saveReturnOrder() error {
-	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, r.GetDomainId())
+	_, err := orm.Save(tmp.Db().GetOrm(), r.refValue, int(r.GetDomainId()))
 	return err
 }
 
 // 设置要退回货物信息
-func (r *returnOrderImpl) SetItem(snapshotId int, quantity int) error {
+func (r *returnOrderImpl) SetItem(snapshotId int32, quantity int) error {
 	o := r.GetOrder()
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
@@ -88,7 +88,7 @@ func (r *returnOrderImpl) SetItem(snapshotId int, quantity int) error {
 }
 
 // 提交售后申请
-func (r *returnOrderImpl) Submit() (int, error) {
+func (r *returnOrderImpl) Submit() (int32, error) {
 	o := r.GetOrder()
 	if o.GetValue().State == order.StatCompleted {
 		return 0, afterSales.ErrReturnAfterReceived

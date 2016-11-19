@@ -37,15 +37,16 @@ func (u *UserC) Connect(c *echox.Context) error {
 		util.SetBrownerDevice(c.Response(), c.Request(), device)
 	}
 	// 第三方连接，传入memberId 和 token
-	memberId, err := strconv.Atoi(c.QueryParam("member_id"))
+	mId, err := strconv.Atoi(c.QueryParam("member_id"))
 	if err != nil {
-		memberId = 0
+		mId = 0
 	}
+	memberId := int32(mId)
 	// 鉴权，如成功，则存储会话
 	token := c.QueryParam("token")
 	sto := c.App.Storage()
 	if util.CompareMemberApiToken(sto, memberId, token) {
-		m := dps.MemberService.GetMember(memberId)
+		m, _ := dps.MemberService.GetMember(int32(memberId))
 		c.Session.Set("member", m)
 		c.Session.Save()
 		return c.JSONP(http.StatusOK, callback, "success")

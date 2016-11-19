@@ -19,8 +19,8 @@ type (
 
 	//  超链接
 	HyperLink struct {
-		Id      int    `db:"id"`
-		AdId    int    `db:"ad_id"`
+		Id      int32  `db:"id"`
+		AdId    int32  `db:"ad_id"`
 		Title   string `db:"title"`
 		LinkUrl string `db:"link_url"`
 	}
@@ -33,10 +33,10 @@ type (
 	// 广告图片
 	Image struct {
 		// 图片编号
-		Id int `db:"id" auto:"yes" pk:"true"`
+		Id int32 `db:"id" auto:"yes" pk:"true"`
 
 		// 广告编号
-		AdId int `db:"ad_id"`
+		AdId int32 `db:"ad_id"`
 
 		// 图片标题
 		Title string `db:"title"`
@@ -63,13 +63,13 @@ type (
 		GetEnabledAdValue() ValueGallery
 
 		// 保存广告图片
-		SaveImage(v *Image) (int, error)
+		SaveImage(v *Image) (int32, error)
 
 		// 获取图片项
-		GetImage(id int) *Image
+		GetImage(id int32) *Image
 
 		// 删除图片项
-		DelImage(id int) error
+		DelImage(id int32) error
 	}
 )
 
@@ -78,18 +78,18 @@ var _ sort.Interface = ValueGallery{}
 // 轮播广告图片集合
 type ValueGallery []*Image
 
-func (this ValueGallery) Len() int {
-	return len(this)
+func (v ValueGallery) Len() int {
+	return len(v)
 }
 
 // Less reports whether the element with
 // index i should sort before the element with index j.
-func (this ValueGallery) Less(i, j int) bool {
-	return this[i].SortNumber < this[j].SortNumber || (this[i].SortNumber == this[j].SortNumber &&
-		this[i].Id < this[j].Id)
+func (v ValueGallery) Less(i, j int) bool {
+	return v[i].SortNumber < v[j].SortNumber || (v[i].SortNumber == v[j].SortNumber &&
+		v[i].Id < v[j].Id)
 }
 
 // Swap swaps the elements with indexes i and j.
-func (this ValueGallery) Swap(i, j int) {
-	this[i], this[j] = this[j], this[i]
+func (v ValueGallery) Swap(i, j int) {
+	v[i], v[j] = v[j], v[i]
 }

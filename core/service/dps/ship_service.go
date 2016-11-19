@@ -28,12 +28,12 @@ func NewShipmentService(rep shipment.IShipmentRep,
 }
 
 // 创建一个配送覆盖的区域
-func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int, error) {
+func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
 	return s._deliveryRep.SaveCoverageArea(c)
 }
 
 // 获取订单的发货单信息
-func (s *shipmentService) GetShipOrderOfOrder(orderId int) *shipment.ShipmentOrder {
+func (s *shipmentService) GetShipOrderOfOrder(orderId int32) *shipment.ShipmentOrder {
 	arr := s._rep.GetOrders(orderId)
 	if arr != nil && len(arr) > 0 {
 		v := arr[0].Value()
