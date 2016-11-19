@@ -32,7 +32,7 @@ func GetKVS() storage.Interface {
 // 删除指定前缀的缓存
 func PrefixDel(prefix string) {
 	sto := GetKVS().(storage.IRedisStorage)
-	_, err := sto.PrefixDel(prefix)
+	_, err := sto.DelWith(prefix)
 	if err != nil {
 		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
 	}

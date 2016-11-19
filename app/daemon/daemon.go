@@ -56,7 +56,7 @@ type Service interface {
 }
 
 var (
-	appCtx           *core.MainApp
+	appCtx           *core.AppImpl
 	_db              db.Connector
 	_orm             orm.Orm
 	services         []Service      = make([]Service, 0)
@@ -265,9 +265,9 @@ func (d *defaultService) HandleMailQueue(list []*mss.MailTask) bool {
 // 运行
 func Run(ctx gof.App) {
 	if ctx != nil {
-		appCtx = ctx.(*core.MainApp)
+		appCtx = ctx.(*core.AppImpl)
 	} else {
-		appCtx = core.NewMainApp("app.conf")
+		appCtx = core.NewApp("app.conf")
 	}
 	_db = appCtx.Db()
 	_orm = _db.GetOrm()
@@ -298,8 +298,8 @@ func FlagRun() {
 
 	flag.Parse()
 
-	appCtx = core.NewMainApp(conf)
-	appCtx.Init(debug, trace)
+	appCtx = core.NewApp(conf)
+	core.Init(appCtx, debug, trace)
 	gof.CurrentApp = appCtx
 
 	_db = appCtx.Db()

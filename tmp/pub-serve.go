@@ -26,7 +26,7 @@ func main() {
 		confFile string
 		httpPort int
 		help     bool
-		newApp   *core.MainApp
+		newApp   *core.AppImpl
 	)
 
 	flag.IntVar(&httpPort, "port", 14280, "web server port")
@@ -41,7 +41,7 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	newApp = core.NewMainApp(confFile)
+	newApp = core.NewApp(confFile)
 	go fix.SignalNotify(ch)
 	go pub.Listen(ch, newApp, fmt.Sprintf(":%d", httpPort))
 
