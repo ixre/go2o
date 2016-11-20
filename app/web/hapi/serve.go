@@ -32,11 +32,11 @@ func registerRoutes(s *echox.Echo) {
 	uc := &shared.UserC{App: app}
 	sc := &serviceC{app}
 	s.GET("/api_info", mc.Info)
-	s.XGet("/test", mc.Test)
-	s.XGet("/request_login", mc.RequestLogin)
-	s.XGet("/r/uc", mc.RedirectUc)
-	s.XaGet("/user/:action", uc)    //用户
-	s.XaGet("/service/:action", sc) //服务
+	s.GET("/test", mc.Test)
+	s.GET("/request_login", mc.RequestLogin)
+	s.GET("/r/uc", mc.RedirectUc)
+	s.Auto("/user", uc)    //用户
+	s.Auto("/service", sc) //服务
 }
 
 func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {
