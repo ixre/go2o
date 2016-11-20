@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
-	"github.com/labstack/echo"
 	"go2o/core/variable"
 	"net/http"
 )
@@ -21,7 +20,7 @@ type mainC struct {
 	gof.App
 }
 
-func (m *mainC) Info(c echo.Context) error {
+func (m *mainC) Info(c *echox.Context) error {
 	return c.String(http.StatusOK, `
         release : 2016-09-10
     `)
