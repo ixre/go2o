@@ -240,7 +240,7 @@ func (d *defaultService) PaymentOrderObs(order *payment.PaymentOrder) bool {
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
 	if o.State == order.StatAwaitingPayment {
 		//订单刚创建时,设置过期时间
-		ss := dps.BaseService.GetGlobMchSaleConf()
+		ss := dps.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		conn.Do("SET", d.getExpiresKey(o), unix)
 	} else if o.State == enum.ORDER_WAIT_CONFIRM {

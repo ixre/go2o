@@ -44,6 +44,8 @@ struct Profile {
     20: i64 UpdateTime
 }
 
+
+
 //会员服务
 service MemberService{
     // 登陆，返回结果(Result)和会员编号(Id);
@@ -55,4 +57,25 @@ service MemberService{
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
     Profile GetProfile(1:i32 id),
+}
+
+struct PlatformConf {
+    1: string Name
+    2: string Logo
+    3: bool Suspend
+    4: string SuspendMessage
+    5: bool MchGoodsCategory
+    6: bool MchPageCategory
+}
+
+// 基础服务
+service FoundationService{
+   // 格式化资源地址并返回
+   string ResourceUrl(1:string url)
+   PlatformConf GetPlatformConf()
+   // 验证超级用户账号和密码
+   bool ValidateSuper(1:string user,2:string pwd)
+   // 保存超级用户账号和密码
+   void FlushSuperPwd(1:string user,2:string pwd)
+   //string SavePlatformConf(1:PlatformConf c)
 }

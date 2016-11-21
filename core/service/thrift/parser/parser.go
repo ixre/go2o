@@ -10,6 +10,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
@@ -106,5 +107,27 @@ func MemberProfile2(src *define.Profile) *member.Profile {
 		Ext5:       src.Ext5,
 		Ext6:       src.Ext6,
 		UpdateTime: src.UpdateTime,
+	}
+}
+
+func PlatformConfDto(src *valueobject.PlatformConf) *define.PlatformConf {
+	return &define.PlatformConf{
+		Name:             src.Name,
+		Logo:             src.Logo,
+		Suspend:          src.Suspend,
+		SuspendMessage:   src.SuspendMessage,
+		MchGoodsCategory: src.MchGoodsCategory,
+		MchPageCategory:  src.MchPageCategory,
+	}
+}
+
+func PlatFromConf(src *define.PlatformConf) *valueobject.PlatformConf {
+	return &valueobject.PlatformConf{
+		Name:             src.Name,
+		Logo:             src.Logo,
+		Suspend:          src.Suspend,
+		SuspendMessage:   src.SuspendMessage,
+		MchGoodsCategory: src.MchGoodsCategory,
+		MchPageCategory:  src.MchPageCategory,
 	}
 }

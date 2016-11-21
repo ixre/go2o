@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
@@ -396,6 +397,23 @@ func (ms *memberService) ResetTradePwd(memberId int32) string {
 	return ""
 }
 
+// 修改密码
+func (ms *memberService) ModifyPassword(memberId int32, newPwd, oldPwd string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	//return m.Profile().ModifyPassword(newPwd, oldPwd)
+
+	// 兼容旧加密的密码
+	pro := m.Profile()
+	err := pro.ModifyPassword(newPwd, oldPwd)
+	if err == dm.ErrPwdOldPwdNotRight {
+		err = pro.ModifyPassword(newPwd, domain.Sha1(oldPwd))
+	}
+	return err
+}
+
 //修改密码,传入密文密码
 func (ms *memberService) ModifyTradePassword(memberId int32,
 	oldPwd, newPwd string) error {
@@ -420,8 +438,11 @@ func (ms *memberService) Login(usr string, pwd string, update bool) (r map[strin
 		return r, nil
 	}
 	if val.Pwd != pwd {
-		r["Result"] = -2
-		return r, nil
+		//todo: 兼容旧密码
+		if val.Pwd != domain.Sha1(pwd) {
+			r["Result"] = -2
+			return r, nil
+		}
 	}
 	if val.State == member.StateStopped {
 		r["Result"] = -3
@@ -570,20 +591,6 @@ func (ms *memberService) SaveAddress(memberId int32, e *member.DeliverAddress) (
 func (ms *memberService) DeleteAddress(memberId int32, deliverId int32) error {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().DeleteAddress(deliverId)
-}
-
-// 修改密码
-func (ms *memberService) ModifyPassword(memberId int32, newPwd, oldPwd string) error {
-	m := ms._rep.GetMember(memberId)
-	if m != nil {
-		newEncPwd := domain.MemberSha1Pwd(newPwd)
-		oldEncPwd := oldPwd
-		if oldEncPwd != "" {
-			oldEncPwd = domain.MemberSha1Pwd(oldPwd)
-		}
-		return m.Profile().ModifyPassword(newEncPwd, oldEncPwd)
-	}
-	return member.ErrNoSuchMember
 }
 
 //设置余额优先支付

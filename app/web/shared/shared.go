@@ -57,7 +57,7 @@ var (
 // 系统状态检测
 func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		conf := dps.BaseService.GetPlatformConf()
+		conf, _ := dps.FoundationService.GetPlatformConf()
 		if conf.Suspend {
 			rsp := c.Response()
 			path := c.Request().URL.Path
