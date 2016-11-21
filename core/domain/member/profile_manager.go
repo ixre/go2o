@@ -179,7 +179,6 @@ func (p *profileManagerImpl) SaveProfile(v *member.Profile) error {
 		}
 		// 完善资料通知
 		if p.ProfileCompleted() {
-
 			p.notifyOnProfileComplete()
 		}
 	}
