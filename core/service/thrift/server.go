@@ -37,6 +37,7 @@ func ListenAndServe(addr string, secure bool) error {
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
 		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(dps.MemberService))
+		processor.RegisterProcessor("foundation", define.NewFoundationServiceProcessor(dps.FoundationService))
 		server := thrift.NewTSimpleServer4(processor, transport,
 			transportFactory, protocolFactory)
 		fmt.Println("Starting the thrift server... on ", addr)

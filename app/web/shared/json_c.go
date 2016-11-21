@@ -78,7 +78,7 @@ func (j *JsonC) Ad(c *echox.Context) error {
 			}
 			result[n] = dto
 		}
-		seconds := dps.BaseService.GetRegistry().CacheAdMaxAge
+		seconds := dps.FoundationService.GetRegistry().CacheAdMaxAge
 		sto.SetExpire(key, result, seconds)
 		//log.Println("---- 更新广告缓存 ",err)
 	}

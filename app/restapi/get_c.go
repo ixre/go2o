@@ -32,7 +32,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 		domain = "http://" + c.Request().Host
 	}
 	if len(targetUrl) == 0 {
-		targetUrl = dps.BaseService.GetRegisterPerm().CallBackUrl
+		targetUrl = dps.FoundationService.GetRegisterPerm().CallBackUrl
 	}
 	m, _ := dps.MemberService.GetMember(int32(memberId))
 	if m != nil {

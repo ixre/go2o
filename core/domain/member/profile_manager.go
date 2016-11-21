@@ -285,6 +285,10 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 		return err
 	}
 
+	//log.Println("----",p.member.value.Pwd)
+	//log.Println("----",oldPwd)
+	//log.Println("---- 123000 / ",dm.MemberSha1Pwd("123000"))
+	//log.Println("---- 123456 / ",dm.MemberSha1Pwd("123456"))
 	if len(oldPwd) != 0 && oldPwd != p.member.value.Pwd {
 		return domain.ErrPwdOldPwdNotRight
 	}
