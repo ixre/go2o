@@ -112,7 +112,7 @@ echo "[ Setup 4 ]: restart server"
 ssh -t -p ${ssh_port} ${root_user}@${server} "${boot_sh}"
 
 echo "[ Setup 5 ]: cleaning ..."
-rm go2o-serve go2o-tcpserve master-serve go2o-rcp ../${package_name}
+rm go2o-serve go2o-tcpserve master-serve go2o-rpc ../${package_name}
 
 echo "Configurations, publish successfully!"
 
