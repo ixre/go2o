@@ -11,7 +11,7 @@ package restapi
 import (
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"net/http"
 )
 
@@ -22,7 +22,7 @@ type merchantC struct {
 func (m *merchantC) Get_ad(c echo.Context) error {
 	mchId := getMerchantId(c)
 	adName := c.Request().FormValue("ad_name")
-	dto := dps.AdService.GetAdAndDataByKey(mchId, adName)
+	dto := rsi.AdService.GetAdAndDataByKey(mchId, adName)
 	if dto != nil {
 		return c.JSON(http.StatusOK, dto)
 	}

@@ -9,32 +9,21 @@
 package util
 
 import (
-	"fmt"
-	"github.com/jsix/gof/storage"
-	"log"
-	"net/http"
-	"net/url"
+    "net/http"
+    "net/url"
+    "go2o/core/infrastructure/gen"
+    "github.com/jsix/gof/web"
 )
+
+
+// 生成推广二维码,query为附加的参数查询
+func GenerateInvitationQr(domain string, code string, query string) []byte {
+    url := domain + "/i/" + code + "?device=3&" + query
+    return gen.BuildQrCodeForUrl(url, 10)
+}
 
 //获取当前地址
 func GetRawUrl(r *http.Request) string {
-	query := r.URL.RawQuery
-	proto := "http"
-	if len(query) > 0 {
-		query = "?" + query
-	}
-	if r.Proto == "HTTPS" {
-		proto = "https"
-	}
-	return url.QueryEscape(fmt.Sprintf("%s://%s%s%s",
-		proto, r.Host, r.URL.Path, query))
+    return url.QueryEscape(web.RequestRawURI(r))
 }
 
-// 删除指定前缀的缓存
-func RemovePrefixKeys(sto storage.Interface, prefix string) {
-	rds := sto.(storage.IRedisStorage)
-	_, err := rds.DelWith(prefix)
-	if err != nil {
-		log.Println("[ Cache][ Clean]: clean by prefix ", prefix, " error:", err)
-	}
-}

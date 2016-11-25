@@ -12,7 +12,7 @@ import (
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/util"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"net/http"
 	"strconv"
 )
@@ -34,7 +34,7 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 		result.Message = "收藏失败"
 	} else {
 		var err error
-		ms := dps.MemberService
+		ms := rsi.MemberService
 		if favType == "shop" {
 			err = ms.FavoriteShop(memberId, id)
 		} else {

@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"sort"
 	"strconv"
 	"strings"
@@ -26,7 +26,7 @@ func GetValueMerchantCache(mchId int32) *merchant.Merchant {
 	var sto storage.Interface = GetKVS()
 	var key string = GetValueMerchantCacheCK(mchId)
 	if sto.Get(key, &v) != nil {
-		v2 := dps.MerchantService.GetMerchant(mchId)
+		v2 := rsi.MerchantService.GetMerchant(mchId)
 		if v2 != nil {
 			sto.SetExpire(key, *v2, DefaultMaxSeconds)
 			return v2
@@ -59,7 +59,7 @@ func GetMerchantIdByHost(host string) int32 {
 	id, err := sto.GetInt(key)
 	mchId := int32(id)
 	if err != nil || mchId <= 0 {
-		mchId = dps.MerchantService.GetMerchantIdByHost(host)
+		mchId = rsi.MerchantService.GetMerchantIdByHost(host)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		}
@@ -74,7 +74,7 @@ func GetMerchantIdByApiId(apiId string) int32 {
 	key := fmt.Sprintf("cache:partner:api:id-%s", apiId)
 	kvs.Get(key, &mchId)
 	if mchId == 0 {
-		mchId = dps.MerchantService.GetMerchantIdByApiId(apiId)
+		mchId = rsi.MerchantService.GetMerchantIdByApiId(apiId)
 		if mchId != 0 {
 			kvs.Set(key, mchId)
 		}
@@ -89,7 +89,7 @@ func GetMerchantApiInfo(mchId int32) *merchant.ApiInfo {
 	key := fmt.Sprintf("cache:partner:api:info-%d", mchId)
 	err := kvs.Get(key, &d)
 	if err != nil {
-		if d = dps.MerchantService.GetApiInfo(mchId); d != nil {
+		if d = rsi.MerchantService.GetApiInfo(mchId); d != nil {
 			kvs.Set(key, d)
 		}
 	}
@@ -113,7 +113,7 @@ func GetShipExpressTab() string {
 
 func getRealShipExpressTab() string {
 	buf := bytes.NewBuffer(nil)
-	list := dps.ExpressService.GetEnabledProviders()
+	list := rsi.ExpressService.GetEnabledProviders()
 	iMap := make(map[string][]*express.ExpressProvider, 0)
 	letArr := []string{}
 	for _, v := range list {

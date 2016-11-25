@@ -20,7 +20,7 @@ import (
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"net/http"
 	"strconv"
 	"strings"
@@ -63,7 +63,7 @@ func (j *JsonC) Ad(c *echox.Context) error {
 	namesParams := strings.TrimSpace(c.QueryParam("keys"))
 	names := strings.Split(namesParams, "|")
 	userId, _ := util.I32Err(strconv.Atoi(c.QueryParam("ad_user")))
-	as := dps.AdService
+	as := rsi.AdService
 	result := make(map[string]*ad.AdDto, len(names))
 	key := fmt.Sprintf("go2o:rep:ad:%d:front:%s", userId, getMd5(namesParams))
 	sto := c.App.Storage()
@@ -78,7 +78,7 @@ func (j *JsonC) Ad(c *echox.Context) error {
 			}
 			result[n] = dto
 		}
-		seconds := dps.FoundationService.GetRegistry().CacheAdMaxAge
+		seconds := rsi.FoundationService.GetRegistry().CacheAdMaxAge
 		sto.SetExpire(key, result, seconds)
 		//log.Println("---- 更新广告缓存 ",err)
 	}
@@ -120,9 +120,9 @@ func (j *JsonC) ShopCat(c *echox.Context) error {
 	if err := j.unmarshal(sto, key, &list); err != nil {
 		//if err := sto.Get(key,*list);err != nil{
 		if parentId == 0 {
-			list = dps.SaleService.GetBigCategories(shopId)
+			list = rsi.SaleService.GetBigCategories(shopId)
 		} else {
-			list = dps.SaleService.GetChildCategories(shopId, parentId)
+			list = rsi.SaleService.GetChildCategories(shopId, parentId)
 		}
 		//sto.Set(key,list)
 		var d []byte
@@ -141,7 +141,7 @@ func (j *JsonC) Get_shop(c *echox.Context) error {
 	sto := c.App.Storage()
 	//从缓存中读取
 	if err := sto.Get(key, &result); err != nil {
-		ss := dps.ShopService
+		ss := rsi.ShopService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
@@ -168,7 +168,7 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
-		ss := dps.SaleService
+		ss := rsi.SaleService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
@@ -190,7 +190,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
-	ss := dps.SaleService
+	ss := rsi.SaleService
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
 		-1, begin, begin+size, "gs_goods.id DESC")
 
@@ -201,7 +201,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 func (j *JsonC) Get_Newshop(c *echox.Context) error {
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
-	ss := dps.ShopService
+	ss := rsi.ShopService
 	_, result := ss.PagedOnBusinessOnlineShops(
 		begin, begin+size, "", "sp.create_time DESC")
 
@@ -211,7 +211,7 @@ func (j *JsonC) Get_Newshop(c *echox.Context) error {
 //最热商品
 func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
-	ss := dps.SaleService
+	ss := rsi.SaleService
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
@@ -228,7 +228,7 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
-		ss := dps.SaleService
+		ss := rsi.SaleService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
@@ -258,7 +258,7 @@ func (j *JsonC) SaleLabelGoods(c *echox.Context) error {
 		//从缓存中读取
 		for _, param := range codes {
 			code, size, begin := j.getMultiParams(param)
-			list := dps.SaleService.GetValueGoodsBySaleLabel(
+			list := rsi.SaleService.GetValueGoodsBySaleLabel(
 				mchId, code, "", begin, begin+size)
 			result[code] = list
 		}

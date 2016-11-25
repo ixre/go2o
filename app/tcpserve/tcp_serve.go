@@ -13,7 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
 	"go2o/app/util"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"net"
 	"strconv"
 	"strings"
@@ -74,8 +74,8 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int, error) {
-				mchId := dps.MerchantService.GetMerchantIdByApiId(arr[0])
-				apiInfo := dps.MerchantService.GetApiInfo(mchId)
+				mchId := rsi.MerchantService.GetMerchantIdByApiId(arr[0])
+				apiInfo := rsi.MerchantService.GetApiInfo(mchId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
 						return int(mchId), errors.New("api has exipres")

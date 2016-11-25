@@ -19,7 +19,7 @@ import (
 	"go2o/app/daemon"
 	"go2o/app/restapi"
 	"go2o/core"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/fix"
 	"log"
 	"os"
@@ -65,7 +65,7 @@ func main() {
 	go fix.SignalNotify(ch)
 
 	gof.CurrentApp = newApp
-	dps.Init(newApp)
+	rsi.Init(newApp)
 	cache.Initialize(storage.NewRedisStorage(newApp.Redis()))
 	session.Set(newApp.Storage(), "")
 

@@ -15,7 +15,7 @@ import (
 	"go2o/app/cache"
 	"go2o/app/tcpserve"
 	"go2o/core"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/fix"
 	"log"
 	"os"
@@ -40,7 +40,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Ltime | log.Ldate | log.Lshortfile)
 
 	gof.CurrentApp = core.NewApp(conf)
-	dps.Init(gof.CurrentApp)
+	rsi.Init(gof.CurrentApp)
 	cache.Initialize(gof.CurrentApp.Storage())
 	fix.CustomFix()
 

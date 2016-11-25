@@ -7,7 +7,7 @@
  * history :
  */
 
-package dps
+package rsi
 
 import (
 	"github.com/jsix/gof"
