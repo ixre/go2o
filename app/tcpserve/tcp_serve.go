@@ -10,10 +10,9 @@ package tcpserve
 
 import (
 	"errors"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
-	"go2o/app/util"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"net"
 	"strconv"
 	"strings"
@@ -101,12 +100,14 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 
 		f := func() (int, error) {
 			memberId, _ := strconv.Atoi(arr[0])
-			authOk := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
-				int32(memberId), arr[1])
-			if !authOk {
-				return memberId, errors.New("auth fail")
+			cli, err := thrift.MemberClient()
+			if err == nil {
+				defer cli.Transport.Close()
+				if b, _ := cli.CheckToken(int32(memberId), arr[1]); b {
+					return memberId, nil
+				}
 			}
-			return memberId, nil
+			return memberId, errors.New("auth fail")
 		}
 
 		if err = s.UAuth(id.Conn, f); err == nil {

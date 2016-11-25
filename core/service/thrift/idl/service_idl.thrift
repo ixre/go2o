@@ -57,12 +57,10 @@ service MemberService{
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
     Profile GetProfile(1:i32 id),
+    // 获取会员的会员Token,reset表示是否重置token
+    string GetToken(1:i32 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1
     bool CheckToken(1:i32 memberId,2:string token)
-    // 获取会员的会员Token
-    string GetToken(1:i32 memberId)
-    // 重设会员的会员Token，并返回
-    string ResetToken(1:i32 memberId)
     // 移除会员的Token
     void RemoveToken(1:i32 memberId)
 }
