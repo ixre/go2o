@@ -15,11 +15,11 @@ import (
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/infrastructure/domain/util"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 )
 
 func readToCategoryDropList(mchId int32) []byte {
-	categories := dps.SaleService.GetCategories(mchId)
+	categories := rsi.SaleService.GetCategories(mchId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*sale.Category)
@@ -42,7 +42,7 @@ func GetDropOptionsOfSaleCategory(mchId int32) []byte {
 }
 
 func readToArticleCategoryDropList() []byte {
-	categories := dps.ContentService.GetArticleCategories()
+	categories := rsi.ContentService.GetArticleCategories()
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*content.ArticleCategory)

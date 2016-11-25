@@ -7,7 +7,7 @@
  * history :
  */
 
-package dps
+package rsi
 
 import (
 	"github.com/jsix/gof"
@@ -20,7 +20,7 @@ var (
 	PromService *promotionService
 
 	// 基础服务
-	BaseService *platformService
+	FoundationService *foundationService
 
 	// 会员服务
 	MemberService *memberService
@@ -118,7 +118,7 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	BaseService = NewPlatformService(valRep)
+	FoundationService = NewFoundationService(valRep)
 	PromService = NewPromotionService(promRep)
 	ShoppingService = NewShoppingService(spRep, saleRep, cartRep,
 		itemRep, goodsRep, mchRep, orderQuery)

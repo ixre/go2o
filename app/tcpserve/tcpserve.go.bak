@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof"
 	"go2o/app/util"
 	"go2o/core"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"log"
 	"net"
 	"strconv"

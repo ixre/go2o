@@ -17,7 +17,7 @@ import (
 	"go2o/app/cache"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -37,7 +37,7 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 			return v
 		}
 	}
-	v = dps.MemberService.GetMemberSummary(int32(memberId))
+	v = rsi.MemberService.GetMemberSummary(int32(memberId))
 	if v != nil {
 		sto.SetExpire(key, v, 3600*360) // cache 15 hours
 		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
@@ -58,7 +58,7 @@ func getMemberAccount(memberId int, updateTime int) *member.Account {
 			return v
 		}
 	}
-	v = dps.MemberService.GetAccount(int32(memberId))
+	v = rsi.MemberService.GetAccount(int32(memberId))
 	sto.SetExpire(key, v, 3600*360) // cache 15 hours
 	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
 

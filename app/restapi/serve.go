@@ -97,10 +97,3 @@ func beforeRequest() echo.MiddlewareFunc {
 		}
 	}
 }
-
-func splitPath(w http.ResponseWriter, r *http.Request) {
-	preLen := len(PathPrefix)
-	if len(r.URL.Path) > preLen {
-		r.URL.Path = r.URL.Path[preLen:]
-	}
-}

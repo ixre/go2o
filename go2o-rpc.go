@@ -13,7 +13,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
 	"go2o/core"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"os"
 )
@@ -37,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 	gof.CurrentApp = newApp
-	dps.Init(newApp)
+	rsi.Init(newApp)
 
 	err := thrift.ListenAndServe(addr, false)
 	if err != nil {

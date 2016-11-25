@@ -7,17 +7,19 @@
  * history :
  */
 
-package dps
+package rsi
 
 import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/module"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
@@ -59,13 +61,22 @@ func (ms *memberService) init() *memberService {
 }
 
 // 根据会员编号获取会员
-func (ms *memberService) GetMember(id int32) (*define.Member, error) {
+func (ms *memberService) getValueMember(id int32) *member.Member {
 	if id > 0 {
 		v := ms._rep.GetMember(id)
 		if v != nil {
 			vv := v.GetValue()
-			return parser.Member(&vv), nil
+			return &vv
 		}
+	}
+	return nil
+}
+
+// 根据会员编号获取会员
+func (ms *memberService) GetMember(id int32) (*define.Member, error) {
+	v := ms.getValueMember(id)
+	if v != nil {
+		return parser.Member(v), nil
 	}
 	return nil, nil
 }
@@ -99,6 +110,35 @@ func (ms *memberService) SaveProfile(v *define.Profile) error {
 		}
 		return m.Profile().SaveProfile(v2)
 	}
+	return nil
+}
+
+// 检查会员的会话Token是否正确
+func (ms *memberService) CheckToken(memberId int32, token string) (r bool, err error) {
+	md := module.Get(module.M_MM).(*module.MemberModule)
+	return md.CheckToken(memberId, token), nil
+}
+
+// 获取会员的会员Token,reset表示是否重置会员的token
+func (ms *memberService) GetToken(memberId int32, reset bool) (r string, err error) {
+	pubToken := ""
+	md := module.Get(module.M_MM).(*module.MemberModule)
+	if !reset {
+		pubToken = md.GetToken(memberId)
+	}
+	if reset || (pubToken == "" && memberId > 0) {
+		m := ms.getValueMember(memberId)
+		if m != nil {
+			return md.ResetToken(memberId, m.Pwd), nil
+		}
+	}
+	return pubToken, nil
+}
+
+// 移除会员的Token
+func (ms *memberService) RemoveToken(memberId int32) (err error) {
+	md := module.Get(module.M_MM).(*module.MemberModule)
+	md.RemoveToken(memberId)
 	return nil
 }
 
@@ -396,6 +436,23 @@ func (ms *memberService) ResetTradePwd(memberId int32) string {
 	return ""
 }
 
+// 修改密码
+func (ms *memberService) ModifyPassword(memberId int32, newPwd, oldPwd string) error {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	//return m.Profile().ModifyPassword(newPwd, oldPwd)
+
+	// 兼容旧加密的密码
+	pro := m.Profile()
+	err := pro.ModifyPassword(newPwd, oldPwd)
+	if err == dm.ErrPwdOldPwdNotRight {
+		err = pro.ModifyPassword(newPwd, domain.Sha1(oldPwd))
+	}
+	return err
+}
+
 //修改密码,传入密文密码
 func (ms *memberService) ModifyTradePassword(memberId int32,
 	oldPwd, newPwd string) error {
@@ -420,8 +477,11 @@ func (ms *memberService) Login(usr string, pwd string, update bool) (r map[strin
 		return r, nil
 	}
 	if val.Pwd != pwd {
-		r["Result"] = -2
-		return r, nil
+		//todo: 兼容旧密码
+		if val.Pwd != domain.Sha1(pwd) {
+			r["Result"] = -2
+			return r, nil
+		}
 	}
 	if val.State == member.StateStopped {
 		r["Result"] = -3
@@ -570,20 +630,6 @@ func (ms *memberService) SaveAddress(memberId int32, e *member.DeliverAddress) (
 func (ms *memberService) DeleteAddress(memberId int32, deliverId int32) error {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().DeleteAddress(deliverId)
-}
-
-// 修改密码
-func (ms *memberService) ModifyPassword(memberId int32, newPwd, oldPwd string) error {
-	m := ms._rep.GetMember(memberId)
-	if m != nil {
-		newEncPwd := domain.MemberSha1Pwd(newPwd)
-		oldEncPwd := oldPwd
-		if oldEncPwd != "" {
-			oldEncPwd = domain.MemberSha1Pwd(oldPwd)
-		}
-		return m.Profile().ModifyPassword(newEncPwd, oldEncPwd)
-	}
-	return member.ErrNoSuchMember
 }
 
 //设置余额优先支付

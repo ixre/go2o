@@ -20,13 +20,13 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "   Login(string user, string pwd, bool update)")
-	fmt.Fprintln(os.Stderr, "  Member GetMember(i32 id)")
-	fmt.Fprintln(os.Stderr, "  Member GetMemberByUser(string user)")
-	fmt.Fprintln(os.Stderr, "  Profile GetProfile(i32 id)")
-	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId, bool reset)")
-	fmt.Fprintln(os.Stderr, "  bool CheckToken(i32 memberId, string token)")
-	fmt.Fprintln(os.Stderr, "  void RemoveToken(i32 memberId)")
+	fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
+	fmt.Fprintln(os.Stderr, "  PlatformConf GetPlatformConf()")
+	fmt.Fprintln(os.Stderr, "  string RegisterSsoApp(SsoApp app)")
+	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
+	fmt.Fprintln(os.Stderr, "  bool ValidateSuper(string user, string pwd)")
+	fmt.Fprintln(os.Stderr, "  void FlushSuperPwd(string user, string pwd)")
+	fmt.Fprintln(os.Stderr, "  string GetSyncLoginUrl(string returnUrl)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -114,114 +114,96 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewMemberServiceClientFactory(trans, protocolFactory)
+	client := define.NewFoundationServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "Login":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "Login requires 3 args")
+	case "ResourceUrl":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "ResourceUrl requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.ResourceUrl(value0))
+		fmt.Print("\n")
+		break
+	case "GetPlatformConf":
+		if flag.NArg()-1 != 0 {
+			fmt.Fprintln(os.Stderr, "GetPlatformConf requires 0 args")
+			flag.Usage()
+		}
+		fmt.Print(client.GetPlatformConf())
+		fmt.Print("\n")
+		break
+	case "RegisterSsoApp":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "RegisterSsoApp requires 1 args")
+			flag.Usage()
+		}
+		arg47 := flag.Arg(1)
+		mbTrans48 := thrift.NewTMemoryBufferLen(len(arg47))
+		defer mbTrans48.Close()
+		_, err49 := mbTrans48.WriteString(arg47)
+		if err49 != nil {
+			Usage()
+			return
+		}
+		factory50 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt51 := factory50.GetProtocol(mbTrans48)
+		argvalue0 := define.NewSsoApp()
+		err52 := argvalue0.Read(jsProt51)
+		if err52 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		fmt.Print(client.RegisterSsoApp(value0))
+		fmt.Print("\n")
+		break
+	case "GetAllSsoApp":
+		if flag.NArg()-1 != 0 {
+			fmt.Fprintln(os.Stderr, "GetAllSsoApp requires 0 args")
+			flag.Usage()
+		}
+		fmt.Print(client.GetAllSsoApp())
+		fmt.Print("\n")
+		break
+	case "ValidateSuper":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "ValidateSuper requires 2 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		argvalue2 := flag.Arg(3) == "true"
-		value2 := argvalue2
-		fmt.Print(client.Login(value0, value1, value2))
+		fmt.Print(client.ValidateSuper(value0, value1))
 		fmt.Print("\n")
 		break
-	case "GetMember":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
-		if err21 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetMember(value0))
-		fmt.Print("\n")
-		break
-	case "GetMemberByUser":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetMemberByUser requires 1 args")
+	case "FlushSuperPwd":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "FlushSuperPwd requires 2 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.GetMemberByUser(value0))
-		fmt.Print("\n")
-		break
-	case "GetProfile":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetProfile(value0))
-		fmt.Print("\n")
-		break
-	case "GetToken":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		fmt.Print(client.GetToken(value0, value1))
-		fmt.Print("\n")
-		break
-	case "CheckToken":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.CheckToken(value0, value1))
+		fmt.Print(client.FlushSuperPwd(value0, value1))
 		fmt.Print("\n")
 		break
-	case "RemoveToken":
+	case "GetSyncLoginUrl":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetSyncLoginUrl requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
+		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.RemoveToken(value0))
+		fmt.Print(client.GetSyncLoginUrl(value0))
 		fmt.Print("\n")
 		break
 	case "":
