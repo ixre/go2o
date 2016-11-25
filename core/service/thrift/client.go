@@ -44,6 +44,7 @@ func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, erro
 	return transport, protocolFactory, err
 }
 
+// 会员客户端
 func MemberClient() (*define.MemberServiceClient, error) {
 	transport, protocol, err := getTransportAndProtocol()
 	if err == nil {
@@ -53,6 +54,23 @@ func MemberClient() (*define.MemberServiceClient, error) {
 			proto := protocol.GetProtocol(transport)
 			opProto := thrift.NewTMultiplexedProtocol(proto, "member")
 			return define.NewMemberServiceClientProtocol(transport, proto, opProto), err
+			//单个服务
+			//return define.NewMemberServiceClientFactory(transport, protocol), err
+		}
+	}
+	return nil, err
+}
+
+// 基础服务
+func FoundationClient() (*define.FoundationServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			//多个服务
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "foundation")
+			return define.NewFoundationServiceClientProtocol(transport, proto, opProto), err
 			//单个服务
 			//return define.NewMemberServiceClientFactory(transport, protocol), err
 		}

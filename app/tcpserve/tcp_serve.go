@@ -10,10 +10,9 @@ package tcpserve
 
 import (
 	"errors"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
-	"go2o/app/util"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"net"
 	"strconv"
 	"strings"
@@ -74,8 +73,8 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
 			var af nc.AuthFunc = func() (int, error) {
-				mchId := dps.MerchantService.GetMerchantIdByApiId(arr[0])
-				apiInfo := dps.MerchantService.GetApiInfo(mchId)
+				mchId := rsi.MerchantService.GetMerchantIdByApiId(arr[0])
+				apiInfo := rsi.MerchantService.GetApiInfo(mchId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
 						return int(mchId), errors.New("api has exipres")
@@ -101,12 +100,14 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 
 		f := func() (int, error) {
 			memberId, _ := strconv.Atoi(arr[0])
-			authOk := util.CompareMemberApiToken(gof.CurrentApp.Storage(),
-				int32(memberId), arr[1])
-			if !authOk {
-				return memberId, errors.New("auth fail")
+			cli, err := thrift.MemberClient()
+			if err == nil {
+				defer cli.Transport.Close()
+				if b, _ := cli.CheckToken(int32(memberId), arr[1]); b {
+					return memberId, nil
+				}
 			}
-			return memberId, nil
+			return memberId, errors.New("auth fail")
 		}
 
 		if err = s.UAuth(id.Conn, f); err == nil {

@@ -22,7 +22,7 @@ import (
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"log"
@@ -208,7 +208,7 @@ func (d *defaultService) OrderObs(o *order.SubOrder) bool {
 	if d.sOrder {
 		//确认订单
 		if o.State == enum.ORDER_WAIT_CONFIRM {
-			dps.ShoppingService.ConfirmOrder(o.Id)
+			rsi.ShoppingService.ConfirmOrder(o.Id)
 		}
 		d.updateOrderExpires(conn, o)
 	}
@@ -240,7 +240,7 @@ func (d *defaultService) PaymentOrderObs(order *payment.PaymentOrder) bool {
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
 	if o.State == order.StatAwaitingPayment {
 		//订单刚创建时,设置过期时间
-		ss := dps.BaseService.GetGlobMchSaleConf()
+		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		conn.Do("SET", d.getExpiresKey(o), unix)
 	} else if o.State == enum.ORDER_WAIT_CONFIRM {
@@ -305,7 +305,7 @@ func FlagRun() {
 	_db = appCtx.Db()
 	_orm = _db.GetOrm()
 
-	dps.Init(appCtx)
+	rsi.Init(appCtx)
 
 	//todo:???
 	//	if service != "all" {

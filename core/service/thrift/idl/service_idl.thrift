@@ -44,6 +44,8 @@ struct Profile {
     20: i64 UpdateTime
 }
 
+
+
 //会员服务
 service MemberService{
     // 登陆，返回结果(Result)和会员编号(Id);
@@ -55,4 +57,53 @@ service MemberService{
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
     Profile GetProfile(1:i32 id),
+    // 获取会员的会员Token,reset表示是否重置token
+    string GetToken(1:i32 memberId,2:bool reset)
+    // 检查会员的会话Token是否正确，如正确返回: 1
+    bool CheckToken(1:i32 memberId,2:string token)
+    // 移除会员的Token
+    void RemoveToken(1:i32 memberId)
+}
+
+struct PlatformConf {
+    1: string Name
+    2: string Logo
+    3: bool Suspend
+    4: string SuspendMessage
+    5: bool MchGoodsCategory
+    6: bool MchPageCategory
+}
+
+// 单点登陆应用
+struct SsoApp{
+    // 编号
+    1: i32 Id
+    // 应用名称
+    2: string Name
+    // API地址
+    3: string ApiUrl
+    // 密钥
+    4: string Token
+}
+
+// 基础服务
+service FoundationService{
+   // 格式化资源地址并返回
+   string ResourceUrl(1:string url)
+   // 获取平台设置
+   PlatformConf GetPlatformConf()
+
+   // 注册单点登陆应用,返回值：
+   //   -  1. 成功，并返回token
+   //   - -1. 接口地址不正确
+   //   - -2. 已经注册
+   string RegisterSsoApp(1:SsoApp app)
+   // 获取单点登陆应用
+   list<string> GetAllSsoApp()
+   // 验证超级用户账号和密码
+   bool ValidateSuper(1:string user,2:string pwd)
+   // 保存超级用户账号和密码
+   void FlushSuperPwd(1:string user,2:string pwd)
+   // 创建同步登陆的地址
+   string GetSyncLoginUrl(1:string returnUrl)
 }

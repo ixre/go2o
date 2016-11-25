@@ -14,7 +14,7 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 )
 
 // 设置商户站点配置
@@ -43,7 +43,7 @@ func GetShopIdByHost(host string) int32 {
 	sto := GetKVS()
 	shopId, err := util.I32Err(sto.GetInt(key))
 	if err != nil || shopId <= 0 {
-		_, shopId = dps.ShopService.GetShopIdByHost(host)
+		_, shopId = rsi.ShopService.GetShopIdByHost(host)
 		if shopId > 0 {
 			sto.SetExpire(key, shopId, DefaultMaxSeconds)
 		}
@@ -59,7 +59,7 @@ func GetMchIdByShopId(shopId int32) int32 {
 	tmpId, err := sto.GetInt(key)
 	mchId := int32(tmpId)
 	if err != nil || mchId <= 0 {
-		mchId = dps.ShopService.GetMerchantId(shopId)
+		mchId = rsi.ShopService.GetMerchantId(shopId)
 		if mchId > 0 {
 			sto.SetExpire(key, mchId, DefaultMaxSeconds)
 		} else {
@@ -71,7 +71,7 @@ func GetMchIdByShopId(shopId int32) int32 {
 
 func getRdShopData(shopId int32) *shop.ShopDto {
 	mchId := GetMchIdByShopId(shopId)
-	v2 := dps.ShopService.GetShopData(mchId, shopId)
+	v2 := rsi.ShopService.GetShopData(mchId, shopId)
 	if v2 != nil {
 		v3 := v2.Data.(shop.OnlineShop)
 		v3.Logo = format.GetResUrl(v3.Logo)
@@ -92,7 +92,7 @@ func GetOnlineShopData(shopId int32) *shop.ShopDto {
 	key := GetShopDataKey(shopId)
 	if err := sto.Get(key, &v); err != nil {
 		mchId := GetMchIdByShopId(shopId)
-		if v2 := dps.ShopService.GetShopData(mchId, shopId); v2 != nil {
+		if v2 := rsi.ShopService.GetShopData(mchId, shopId); v2 != nil {
 			v3 := v2.Data.(shop.OnlineShop)
 			v3.Logo = format.GetResUrl(v3.Logo)
 			v2.Data = &v3

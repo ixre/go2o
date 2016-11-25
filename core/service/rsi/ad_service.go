@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package dps
+package rsi
 
 import (
 	"errors"

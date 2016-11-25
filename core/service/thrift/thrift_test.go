@@ -9,7 +9,11 @@
 package thrift
 
 import (
+	"errors"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"gp/src/controller"
+	"strings"
 	"testing"
 )
 
@@ -31,4 +35,26 @@ func TestLogin(t *testing.T) {
 	mp, _ = cli.Login("jarry6", pwd, false)
 	t.Logf("登陆(2)结果：\n MemberId:%d\n Result:%d", mp["Id"], mp["Result"])
 
+}
+
+func TestSSORegister(t *testing.T) {
+	cli, err := FoundationClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		sa := &define.SsoApp{
+			ID:     1,
+			Name:   "gp",
+			ApiUrl: "http://localhost:14281/member/sync_m.p",
+		}
+		s, _ := cli.RegisterSsoApp(sa)
+		arr := strings.Split(s, ":")
+		if arr[0] != "1" {
+			t.Error(errors.New("注册SSO-APP出错：" +
+				s + "; api-url:" + sa.ApiUrl))
+		} else {
+			controller.SetSsoToken(arr[1])
+		}
+	} else {
+		t.Log("连接失败：", err.Error())
+	}
 }

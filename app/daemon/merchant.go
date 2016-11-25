@@ -16,7 +16,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"log"
 	"sync"
 	"time"
@@ -28,7 +28,7 @@ var (
 
 func getMerchants() []int32 {
 	if mchIds == nil {
-		mchIds = dps.MerchantService.GetMerchantsId()
+		mchIds = rsi.MerchantService.GetMerchantsId()
 	}
 	return mchIds
 }
@@ -48,7 +48,7 @@ func autoSetOrder(mchId int32) {
 	f := func(err error) {
 		appCtx.Log().Error(err)
 	}
-	dps.ShoppingService.OrderAutoSetup(mchId, f)
+	rsi.ShoppingService.OrderAutoSetup(mchId, f)
 }
 
 var (

@@ -15,7 +15,7 @@ import (
 	"github.com/labstack/echo"
 	autil "go2o/app/util"
 	"go2o/core/infrastructure/gen"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"io"
 	"strconv"
 )
@@ -32,9 +32,9 @@ func (g *getC) Invite_qr(c echo.Context) error {
 		domain = "http://" + c.Request().Host
 	}
 	if len(targetUrl) == 0 {
-		targetUrl = dps.BaseService.GetRegisterPerm().CallBackUrl
+		targetUrl = rsi.FoundationService.GetRegisterPerm().CallBackUrl
 	}
-	m, _ := dps.MemberService.GetMember(int32(memberId))
+	m, _ := rsi.MemberService.GetMember(int32(memberId))
 	if m != nil {
 		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")

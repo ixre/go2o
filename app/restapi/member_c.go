@@ -10,21 +10,21 @@ package restapi
 
 import (
 	"fmt"
-	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	autil "go2o/app/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
+	"go2o/core/service/thrift"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // 会员登录后才能调用接口
@@ -41,19 +41,23 @@ func (mc *MemberC) Login(c echo.Context) error {
 		result.Message = "会员不存在"
 	} else {
 		encodePwd := domain.MemberSha1Pwd(pwd)
-		mp, _ := dps.MemberService.Login(usr, encodePwd, true)
+		mp, _ := rsi.MemberService.Login(usr, encodePwd, true)
 		id := mp["Id"]
 		rst := mp["Result"]
 		if id > 0 {
-			m, _ := dps.MemberService.GetMember(id)
-			// 登录成功，生成令牌
-			token := autil.SetMemberApiToken(sto, id, encodePwd)
-			result.Member = &dto.LoginMember{
-				Id:         int(id),
-				Token:      token,
-				UpdateTime: m.UpdateTime,
+			cli, err := thrift.MemberClient()
+			if err == nil {
+				defer cli.Transport.Close()
+				token, _ := cli.GetToken(id, false)
+				result.Member = &dto.LoginMember{
+					Id:         int(id),
+					Token:      token,
+					UpdateTime: time.Now().Unix(),
+				}
+				result.Result = true
+			} else {
+				result.Message = "网络连接失败"
 			}
-			result.Result = true
 		} else {
 			switch rst {
 			case -1:
@@ -92,7 +96,7 @@ func (mc *MemberC) Register(c echo.Context) error {
 	m.RegFrom = registerFrom
 	pro.Phone = phone
 	pro.Name = m.Usr
-	_, err := dps.MemberService.RegisterMember(mchId,
+	_, err := rsi.MemberService.RegisterMember(mchId,
 		m, pro, "", invitationCode)
 	return c.JSON(http.StatusOK, result.Error(err))
 }
@@ -115,13 +119,13 @@ func (mc *MemberC) Async(c echo.Context) error {
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	sto.Get(autKey, &kvAut)
 	if kvMut == 0 {
-		m, _ := dps.MemberService.GetMember(memberId)
+		m, _ := rsi.MemberService.GetMember(memberId)
 		kvMut = int(m.UpdateTime)
 		sto.Set(mutKey, kvMut)
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc := dps.MemberService.GetAccount(memberId)
+		acc := rsi.MemberService.GetAccount(memberId)
 		kvAut = int(acc.UpdateTime)
 		sto.Set(autKey, kvAut)
 	}
@@ -133,20 +137,24 @@ func (mc *MemberC) Async(c echo.Context) error {
 
 // 获取最新的会员信息
 func (mc *MemberC) Get(c echo.Context) error {
-	memberId := int32(GetMemberId(c))
-	m, _ := dps.MemberService.GetMember(memberId)
-	m.DynamicToken, _ = autil.GetMemberApiToken(sto, memberId)
+	memberId := GetMemberId(c)
+	m, _ := rsi.MemberService.GetMember(memberId)
+	cli, err := thrift.MemberClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		m.DynamicToken, _ = cli.GetToken(memberId, false)
+	}
 	return c.JSON(http.StatusOK, m)
 }
 
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	var updateTime int64 = dps.MemberService.GetMemberLatestUpdateTime(memberId)
+	var updateTime int64 = rsi.MemberService.GetMemberLatestUpdateTime(memberId)
 	var v *dto.MemberSummary = new(dto.MemberSummary)
 	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
 	if cache.GetKVS().Get(key, &v) != nil || v.UpdateTime < updateTime {
-		v = dps.MemberService.GetMemberSummary(memberId)
+		v = rsi.MemberService.GetMemberSummary(memberId)
 		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
 	}
 	return c.JSON(http.StatusOK, v)
@@ -155,17 +163,26 @@ func (mc *MemberC) Summary(c echo.Context) error {
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m := dps.MemberService.GetAccount(memberId)
+	m := rsi.MemberService.GetAccount(memberId)
 	return c.JSON(http.StatusOK, m)
 }
 
 // 断开
-func (mc *MemberC) Disconnect(c *echox.Context) error {
-	var result gof.Message
-	if autil.MemberHttpSessionDisconnect(c) {
-		result.Result = true
-	} else {
-		result.Message = "disconnect fail"
-	}
+// todo: token不允许删除，只能自动过期
+func (mc *MemberC) Disconnect(c echo.Context) error {
+	result := gof.Message{}
 	return c.JSON(http.StatusOK, result)
+	//mStr := c.QueryParam("member_id")
+	//memberId, err := util.I32Err(strconv.Atoi(mStr))
+	//token := c.QueryParam("token")
+	//cli, err := thrift.MemberClient()
+	//if err == nil {
+	//	defer cli.Transport.Close()
+	//	if b, _ := cli.CheckToken(memberId, token); b {
+	//		cli.RemoveToken(memberId)
+	//	} else {
+	//		err = errors.New("error credential")
+	//	}
+	//}
+	//return c.JSON(http.StatusOK, result.Error(err))
 }

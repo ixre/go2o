@@ -12,7 +12,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
@@ -36,7 +36,8 @@ func ListenAndServe(addr string, secure bool) error {
 	transport, err = thrift.NewTServerSocket(addr)
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
-		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(dps.MemberService))
+		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(rsi.MemberService))
+		processor.RegisterProcessor("foundation", define.NewFoundationServiceProcessor(rsi.FoundationService))
 		server := thrift.NewTSimpleServer4(processor, transport,
 			transportFactory, protocolFactory)
 		fmt.Println("Starting the thrift server... on ", addr)

@@ -7,7 +7,7 @@
  * history :
  */
 
-package dps
+package rsi
 
 import (
 	"go2o/core/domain/interface/member"
