@@ -112,16 +112,16 @@ func (p *FoundationServiceClient) recvResourceUrl() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error31 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error32 error
-		error32, err = error31.Read(iprot)
+		error29 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error30 error
+		error30, err = error29.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error32
+		err = error30
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -185,16 +185,16 @@ func (p *FoundationServiceClient) recvGetPlatformConf() (value *PlatformConf, er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error34 error
-		error34, err = error33.Read(iprot)
+		error31 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error32 error
+		error32, err = error31.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error34
+		err = error32
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -262,16 +262,16 @@ func (p *FoundationServiceClient) recvRegisterSsoApp() (value string, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error36 error
-		error36, err = error35.Read(iprot)
+		error33 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error34 error
+		error34, err = error33.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error36
+		err = error34
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -335,16 +335,16 @@ func (p *FoundationServiceClient) recvGetAllSsoApp() (value []string, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error38 error
-		error38, err = error37.Read(iprot)
+		error35 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error36 error
+		error36, err = error35.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error38
+		err = error36
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -414,16 +414,16 @@ func (p *FoundationServiceClient) recvValidateSuper() (value bool, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error40 error
-		error40, err = error39.Read(iprot)
+		error37 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error38 error
+		error38, err = error37.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error40
+		err = error38
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -493,16 +493,16 @@ func (p *FoundationServiceClient) recvFlushSuperPwd() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error42 error
-		error42, err = error41.Read(iprot)
+		error39 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error40 error
+		error40, err = error39.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error42
+		err = error40
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -569,16 +569,16 @@ func (p *FoundationServiceClient) recvGetSyncLoginUrl() (value string, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error43 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error44 error
-		error44, err = error43.Read(iprot)
+		error41 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error42 error
+		error42, err = error41.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error44
+		err = error42
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -616,15 +616,15 @@ func (p *FoundationServiceProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewFoundationServiceProcessor(handler FoundationService) *FoundationServiceProcessor {
 
-	self45 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self45.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
-	self45.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
-	self45.processorMap["RegisterSsoApp"] = &foundationServiceProcessorRegisterSsoApp{handler: handler}
-	self45.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
-	self45.processorMap["ValidateSuper"] = &foundationServiceProcessorValidateSuper{handler: handler}
-	self45.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
-	self45.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
-	return self45
+	self43 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self43.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
+	self43.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
+	self43.processorMap["RegisterSsoApp"] = &foundationServiceProcessorRegisterSsoApp{handler: handler}
+	self43.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
+	self43.processorMap["ValidateSuper"] = &foundationServiceProcessorValidateSuper{handler: handler}
+	self43.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
+	self43.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
+	return self43
 }
 
 func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -637,12 +637,12 @@ func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (suc
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x46 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x44 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x46.Write(oprot)
+	x44.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x46
+	return false, x44
 
 }
 
@@ -1642,13 +1642,13 @@ func (p *FoundationServiceGetAllSsoAppResult) readField0(iprot thrift.TProtocol)
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem47 string
+		var _elem45 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem47 = v
+			_elem45 = v
 		}
-		p.Success = append(p.Success, _elem47)
+		p.Success = append(p.Success, _elem45)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

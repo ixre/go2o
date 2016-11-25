@@ -9,13 +9,12 @@
 package restapi
 
 import (
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	autil "go2o/app/util"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/service/thrift"
 	"net/http"
 	"strconv"
 )
@@ -61,12 +60,15 @@ func chkMerchantApiSecret(c echo.Context) bool {
 // 检查会员令牌信息
 func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
-	sto := gof.CurrentApp.Storage()
 	memberId, _ := util.I32Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-	if autil.CompareMemberApiToken(sto, memberId, token) {
-		c.Set("member_id", memberId)
-		return true
+	cli, err := thrift.MemberClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		if b, _ := cli.CheckToken(memberId, token); b {
+			c.Set("member_id", memberId)
+			return true
+		}
 	}
 	return false
 }

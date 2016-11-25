@@ -9,63 +9,64 @@
 package module
 
 import (
-    "github.com/jsix/gof"
-    "errors"
-    "sync"
-    "github.com/jsix/gof/log"
+	"errors"
+	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
+	"sync"
 )
 
 var (
-    mux sync.Mutex
-    moduleMap map[string]Module
-    initOk = false //是否已初始化
-    M_SSO string = "sso"
-    M_MM string = "member"
+	mux       sync.Mutex
+	moduleMap map[string]Module
+	initOk           = false //是否已初始化
+	M_SSO     string = "sso"
+	M_MM      string = "member"
 )
+
 // 模块实现
 type Module interface {
-    // 模块数据
-    SetApp(app gof.App)
-    // 初始化模块
-    Init()
+	// 模块数据
+	SetApp(app gof.App)
+	// 初始化模块
+	Init()
 }
 
 // 注册模块
 func Register(name string, m Module) error {
-    mux.Lock()
-    defer mux.Unlock()
-    if _, ok := moduleMap[name]; ok {
-        return errors.New("已注册相同名称的模块")
-    }
-    moduleMap[ name ] = m
-    return nil
+	mux.Lock()
+	defer mux.Unlock()
+	if _, ok := moduleMap[name]; ok {
+		return errors.New("已注册相同名称的模块")
+	}
+	moduleMap[name] = m
+	return nil
 }
 
 // 初始化模块
 func initModule() {
-    app := gof.CurrentApp
-    moduleMap = map[string]Module{}
-    if app != nil {
-        registerInternal() //注册内置的模块
-        initOk = true // 标记为已加载
-        for k, v := range moduleMap {
-            log.Println(" [ Module][ Load]: module => ", k)
-            v.SetApp(app)
-            v.Init()
-        }
-    }
+	app := gof.CurrentApp
+	moduleMap = map[string]Module{}
+	if app != nil {
+		registerInternal() //注册内置的模块
+		initOk = true      // 标记为已加载
+		for k, v := range moduleMap {
+			log.Println(" [ Module][ Load]: module => ", k)
+			v.SetApp(app)
+			v.Init()
+		}
+	}
 }
 
 // 注册内置的模块
 func registerInternal() {
-    Register(M_SSO, &SSOModule{})
-    Register(M_MM, &MemberModule{})
+	Register(M_SSO, &SSOModule{})
+	Register(M_MM, &MemberModule{})
 }
 
 // 获取模块
 func Get(name string) Module {
-    if !initOk {
-        initModule()
-    }
-    return moduleMap[name]
+	if !initOk {
+		initModule()
+	}
+	return moduleMap[name]
 }

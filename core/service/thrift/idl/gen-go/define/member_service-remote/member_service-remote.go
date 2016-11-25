@@ -24,9 +24,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Member GetMember(i32 id)")
 	fmt.Fprintln(os.Stderr, "  Member GetMemberByUser(string user)")
 	fmt.Fprintln(os.Stderr, "  Profile GetProfile(i32 id)")
+	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId, bool reset)")
 	fmt.Fprintln(os.Stderr, "  bool CheckToken(i32 memberId, string token)")
-	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId)")
-	fmt.Fprintln(os.Stderr, "  string ResetToken(i32 memberId)")
 	fmt.Fprintln(os.Stderr, "  void RemoveToken(i32 memberId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -141,8 +140,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
+		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
+		if err21 != nil {
 			Usage()
 			return
 		}
@@ -166,14 +165,31 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err25 := (strconv.Atoi(flag.Arg(1)))
-		if err25 != nil {
+		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
+		if err23 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetProfile(value0))
+		fmt.Print("\n")
+		break
+	case "GetToken":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
+		if err24 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		fmt.Print(client.GetToken(value0, value1))
 		fmt.Print("\n")
 		break
 	case "CheckToken":
@@ -193,43 +209,13 @@ func main() {
 		fmt.Print(client.CheckToken(value0, value1))
 		fmt.Print("\n")
 		break
-	case "GetToken":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetToken requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetToken(value0))
-		fmt.Print("\n")
-		break
-	case "ResetToken":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "ResetToken requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err29 := (strconv.Atoi(flag.Arg(1)))
-		if err29 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.ResetToken(value0))
-		fmt.Print("\n")
-		break
 	case "RemoveToken":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err30 := (strconv.Atoi(flag.Arg(1)))
-		if err30 != nil {
+		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
+		if err28 != nil {
 			Usage()
 			return
 		}
