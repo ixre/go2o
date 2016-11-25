@@ -12,7 +12,7 @@ package daemon
 import (
 	"github.com/garyburd/redigo/redis"
 	"go2o/core"
-	"go2o/core/service/dps"
+	"go2o/core/service/rsi"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -21,7 +21,7 @@ import (
 
 // 监视新订单
 func superviseOrder(ss []Service) {
-	sv := dps.ShoppingService
+	sv := rsi.ShoppingService
 	notify := func(id int, ss []Service) {
 		o := sv.GetSubOrder(int32(id))
 		if o != nil {
@@ -56,7 +56,7 @@ func superviseOrder(ss []Service) {
 
 // 监视新会员
 func superviseMemberUpdate(ss []Service) {
-	sv := dps.MemberService
+	sv := rsi.MemberService
 	notify := func(id int32, action string, ss []Service) {
 		m, _ := sv.GetMember(id)
 		if m != nil {
@@ -91,7 +91,7 @@ func superviseMemberUpdate(ss []Service) {
 
 // 监视支付单完成
 func supervisePaymentOrderFinish(ss []Service) {
-	sv := dps.PaymentService
+	sv := rsi.PaymentService
 	notify := func(id int, ss []Service) {
 		order := sv.GetPaymentOrder(int32(id))
 		if order != nil {
@@ -130,7 +130,7 @@ func detectOrderExpires() {
 	//获取标记为等待过期的订单
 	orderId := 0
 	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*"))
-	ss := dps.ShoppingService
+	ss := rsi.ShoppingService
 	for _, v := range list {
 		unix, err := redis.Int64(conn.Do("GET", v))
 		if err == nil {

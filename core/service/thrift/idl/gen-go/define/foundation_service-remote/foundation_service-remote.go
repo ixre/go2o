@@ -22,8 +22,11 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
 	fmt.Fprintln(os.Stderr, "  PlatformConf GetPlatformConf()")
+	fmt.Fprintln(os.Stderr, "  string RegisterSsoApp(SsoApp app)")
+	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
 	fmt.Fprintln(os.Stderr, "  bool ValidateSuper(string user, string pwd)")
 	fmt.Fprintln(os.Stderr, "  void FlushSuperPwd(string user, string pwd)")
+	fmt.Fprintln(os.Stderr, "  string GetSyncLoginUrl(string returnUrl)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -136,6 +139,39 @@ func main() {
 		fmt.Print(client.GetPlatformConf())
 		fmt.Print("\n")
 		break
+	case "RegisterSsoApp":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "RegisterSsoApp requires 1 args")
+			flag.Usage()
+		}
+		arg49 := flag.Arg(1)
+		mbTrans50 := thrift.NewTMemoryBufferLen(len(arg49))
+		defer mbTrans50.Close()
+		_, err51 := mbTrans50.WriteString(arg49)
+		if err51 != nil {
+			Usage()
+			return
+		}
+		factory52 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt53 := factory52.GetProtocol(mbTrans50)
+		argvalue0 := define.NewSsoApp()
+		err54 := argvalue0.Read(jsProt53)
+		if err54 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		fmt.Print(client.RegisterSsoApp(value0))
+		fmt.Print("\n")
+		break
+	case "GetAllSsoApp":
+		if flag.NArg()-1 != 0 {
+			fmt.Fprintln(os.Stderr, "GetAllSsoApp requires 0 args")
+			flag.Usage()
+		}
+		fmt.Print(client.GetAllSsoApp())
+		fmt.Print("\n")
+		break
 	case "ValidateSuper":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "ValidateSuper requires 2 args")
@@ -158,6 +194,16 @@ func main() {
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
 		fmt.Print(client.FlushSuperPwd(value0, value1))
+		fmt.Print("\n")
+		break
+	case "GetSyncLoginUrl":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetSyncLoginUrl requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetSyncLoginUrl(value0))
 		fmt.Print("\n")
 		break
 	case "":
