@@ -292,7 +292,8 @@ func (a *accountImpl) ChargePresentByKind(kind int, title string,
 	_, err := a.rep.SavePresentLog(v)
 	if err == nil {
 		a.value.PresentBalance += amount
-		if amount > 0 {
+		// 退款不能加入到累计赠送金额
+		if amount > 0 && kind != member.KindPresentTakeOutRefund {
 			a.value.TotalPresentFee += amount
 		}
 		_, err = a.Save()

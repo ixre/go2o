@@ -44,6 +44,19 @@ struct Profile {
     20: i64 UpdateTime
 }
 
+struct Address {
+    1: i32 Id
+    2: i32 MemberId
+    3: string RealName
+    4: string Phone
+    5: i32 Province
+    6: i32 City
+    7: i32 District
+    8: string Area
+    9: string Address
+    10: i32 IsDefault
+}
+
 
 
 //会员服务
@@ -63,6 +76,8 @@ service MemberService{
     bool CheckToken(1:i32 memberId,2:string token)
     // 移除会员的Token
     void RemoveToken(1:i32 memberId)
+    // 获取地址，如果addrId为0，则返回默认地址
+    Address GetAddress(1:i32 memberId,2:i32 addrId)
 }
 
 struct PlatformConf {

@@ -141,7 +141,7 @@ type (
 		ReviewTrustedInfo(pass bool, remark string) error
 
 		// 创建配送地址
-		CreateDeliver(*DeliverAddress) IDeliverAddress
+		CreateDeliver(*Address) IDeliverAddress
 
 		// 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
@@ -326,13 +326,13 @@ type (
 	// 收货地址
 	IDeliverAddress interface {
 		GetDomainId() int32
-		GetValue() DeliverAddress
-		SetValue(*DeliverAddress) error
+		GetValue() Address
+		SetValue(*Address) error
 		Save() (int32, error)
 	}
 
 	// 收货地址
-	DeliverAddress struct {
+	Address struct {
 		//编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号

@@ -397,7 +397,7 @@ func (p *profileManagerImpl) UnlockBank() error {
 }
 
 // 创建配送地址
-func (p *profileManagerImpl) CreateDeliver(v *member.DeliverAddress) member.IDeliverAddress {
+func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
 	return newDeliver(v, p.rep, p.valRep)
 }
 
@@ -561,12 +561,12 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 var _ member.IDeliverAddress = new(addressImpl)
 
 type addressImpl struct {
-	_value     *member.DeliverAddress
+	_value     *member.Address
 	_memberRep member.IMemberRep
 	_valRep    valueobject.IValueRep
 }
 
-func newDeliver(v *member.DeliverAddress, memberRep member.IMemberRep,
+func newDeliver(v *member.Address, memberRep member.IMemberRep,
 	valRep valueobject.IValueRep) member.IDeliverAddress {
 	d := &addressImpl{
 		_value:     v,
@@ -580,11 +580,11 @@ func (p *addressImpl) GetDomainId() int32 {
 	return p._value.Id
 }
 
-func (p *addressImpl) GetValue() member.DeliverAddress {
+func (p *addressImpl) GetValue() member.Address {
 	return *p._value
 }
 
-func (p *addressImpl) SetValue(v *member.DeliverAddress) error {
+func (p *addressImpl) SetValue(v *member.Address) error {
 	if p._value.MemberId == v.MemberId {
 		if err := p.checkValue(v); err != nil {
 			return err
@@ -595,7 +595,7 @@ func (p *addressImpl) SetValue(v *member.DeliverAddress) error {
 }
 
 // 设置地区中文名
-func (p *addressImpl) renewAreaName(v *member.DeliverAddress) string {
+func (p *addressImpl) renewAreaName(v *member.Address) string {
 	//names := p._valRep.GetAreaNames([]int{
 	//	v.Province,
 	//	v.City,
@@ -609,7 +609,7 @@ func (p *addressImpl) renewAreaName(v *member.DeliverAddress) string {
 	return p._valRep.GetAreaString(v.Province, v.City, v.District)
 }
 
-func (p *addressImpl) checkValue(v *member.DeliverAddress) error {
+func (p *addressImpl) checkValue(v *member.Address) error {
 	v.Address = strings.TrimSpace(v.Address)
 	v.RealName = strings.TrimSpace(v.RealName)
 	v.Phone = strings.TrimSpace(v.Phone)

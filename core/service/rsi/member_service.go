@@ -16,6 +16,7 @@ import (
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -36,15 +37,17 @@ type memberService struct {
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 	_orderQuery     *query.OrderQuery
+	valRep          valueobject.IValueRep
 }
 
 func NewMemberService(mchService *merchantService, rep member.IMemberRep,
-	q *query.MemberQuery, oq *query.OrderQuery) *memberService {
+	q *query.MemberQuery, oq *query.OrderQuery, valRep valueobject.IValueRep) *memberService {
 	ms := &memberService{
 		_rep:            rep,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
+		valRep:          valRep,
 	}
 	return ms
 	//return ms.init()
@@ -597,20 +600,33 @@ func (ms *memberService) QueryPagerOrder(memberId int32, begin, size int, pagina
 }
 
 /*********** 收货地址 ***********/
-func (ms *memberService) GetAddress(memberId int32) []*member.DeliverAddress {
+func (ms *memberService) GetAddressList(memberId int32) []*member.Address {
 	return ms._rep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
-func (ms *memberService) GetAddressById(memberId,
-	deliverId int32) *member.DeliverAddress {
+func (ms *memberService) GetAddress(memberId, addrId int32) (
+	*define.Address, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	v := m.Profile().GetAddress(deliverId).GetValue()
-	return &v
+	pro := m.Profile()
+	var addr member.IDeliverAddress
+	if addrId > 0 {
+		addr = pro.GetAddress(addrId)
+	} else {
+		addr = pro.GetDefaultAddress()
+	}
+	if addr != nil {
+		v := addr.GetValue()
+		d := parser.AddressDto(&v)
+		d.Area = ms.valRep.GetAreaString(
+			v.Province, v.City, v.District)
+		return d, nil
+	}
+	return nil, nil
 }
 
 //保存配送地址
-func (ms *memberService) SaveAddress(memberId int32, e *member.DeliverAddress) (int32, error) {
+func (ms *memberService) SaveAddress(memberId int32, e *member.Address) (int32, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error

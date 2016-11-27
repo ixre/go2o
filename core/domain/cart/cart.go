@@ -389,7 +389,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int32) error {
 	}
 	addr := m.Profile().GetAddress(addressId)
 	if addr == nil {
-		return member.ErrNoSuchDeliverAddress
+		return member.ErrNoSuchAddress
 	}
 	return c.setBuyerAddress(addressId)
 }
