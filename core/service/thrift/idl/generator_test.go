@@ -10,14 +10,14 @@ package idl
 
 import (
 	"github.com/jsix/gof/generator"
-	"go2o/core/domain/interface/valueobject"
+	"go2o/core/domain/interface/member"
 	"testing"
 )
 
 var (
 	//v = &member.Member{}
 	//v = &member.Profile{}
-	v = valueobject.PlatformConf{}
+	v = member.Address{}
 )
 
 // 生成Thrift结构

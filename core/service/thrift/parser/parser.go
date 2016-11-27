@@ -131,3 +131,18 @@ func PlatFromConf(src *define.PlatformConf) *valueobject.PlatformConf {
 		MchPageCategory:  src.MchPageCategory,
 	}
 }
+
+func AddressDto(src *member.Address) *define.Address {
+	return &define.Address{
+		ID:        src.Id,
+		MemberId:  src.MemberId,
+		RealName:  src.RealName,
+		Phone:     src.Phone,
+		Province:  src.Province,
+		City:      src.City,
+		District:  src.District,
+		Area:      src.Area,
+		Address:   src.Address,
+		IsDefault: int32(src.IsDefault),
+	}
+}

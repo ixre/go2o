@@ -27,6 +27,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId, bool reset)")
 	fmt.Fprintln(os.Stderr, "  bool CheckToken(i32 memberId, string token)")
 	fmt.Fprintln(os.Stderr, "  void RemoveToken(i32 memberId)")
+	fmt.Fprintln(os.Stderr, "  Address GetAddress(i32 memberId, i32 addrId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -140,8 +141,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
-		if err21 != nil {
+		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
+		if err23 != nil {
 			Usage()
 			return
 		}
@@ -165,8 +166,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
+		tmp0, err25 := (strconv.Atoi(flag.Arg(1)))
+		if err25 != nil {
 			Usage()
 			return
 		}
@@ -180,8 +181,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
+		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
+		if err26 != nil {
 			Usage()
 			return
 		}
@@ -197,8 +198,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
+		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
+		if err28 != nil {
 			Usage()
 			return
 		}
@@ -214,14 +215,36 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
+		tmp0, err30 := (strconv.Atoi(flag.Arg(1)))
+		if err30 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.RemoveToken(value0))
+		fmt.Print("\n")
+		break
+	case "GetAddress":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err31 := (strconv.Atoi(flag.Arg(1)))
+		if err31 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err32 := (strconv.Atoi(flag.Arg(2)))
+		if err32 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		fmt.Print(client.GetAddress(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

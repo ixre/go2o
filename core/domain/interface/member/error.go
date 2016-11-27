@@ -46,7 +46,7 @@ var (
 	ErrPwdLength *domain.DomainError = domain.NewDomainError(
 		"err_member_pwd_length", "密码至少包含6个字符")
 
-	ErrNoSuchDeliverAddress *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAddress *domain.DomainError = domain.NewDomainError(
 		"member_no_such_deliver_address", "配送地址错误")
 
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(
