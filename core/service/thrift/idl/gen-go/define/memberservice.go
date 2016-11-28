@@ -19,7 +19,7 @@ type MemberService interface {
 	//  - User
 	//  - Pwd
 	//  - Update
-	Login(user string, pwd string, update bool) (r map[string]int32, err error)
+	Login(user string, pwd string, update bool) (r *Result_, err error)
 	// Parameters:
 	//  - ID
 	GetMember(id int32) (r *Member, err error)
@@ -76,7 +76,7 @@ func NewMemberServiceClientProtocol(t thrift.TTransport, iprot thrift.TProtocol,
 //  - User
 //  - Pwd
 //  - Update
-func (p *MemberServiceClient) Login(user string, pwd string, update bool) (r map[string]int32, err error) {
+func (p *MemberServiceClient) Login(user string, pwd string, update bool) (r *Result_, err error) {
 	if err = p.sendLogin(user, pwd, update); err != nil {
 		return
 	}
@@ -107,7 +107,7 @@ func (p *MemberServiceClient) sendLogin(user string, pwd string, update bool) (e
 	return oprot.Flush()
 }
 
-func (p *MemberServiceClient) recvLogin() (value map[string]int32, err error) {
+func (p *MemberServiceClient) recvLogin() (value *Result_, err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -766,7 +766,7 @@ func (p *memberServiceProcessorLogin) Process(seqId int32, iprot, oprot thrift.T
 
 	iprot.ReadMessageEnd()
 	result := MemberServiceLoginResult{}
-	var retval map[string]int32
+	var retval *Result_
 	var err2 error
 	if retval, err2 = p.handler.Login(args.User, args.Pwd, args.Update); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Login: "+err2.Error())
@@ -1295,16 +1295,19 @@ func (p *MemberServiceLoginArgs) String() string {
 // Attributes:
 //  - Success
 type MemberServiceLoginResult struct {
-	Success map[string]int32 `thrift:"success,0" json:"success,omitempty"`
+	Success *Result_ `thrift:"success,0" json:"success,omitempty"`
 }
 
 func NewMemberServiceLoginResult() *MemberServiceLoginResult {
 	return &MemberServiceLoginResult{}
 }
 
-var MemberServiceLoginResult_Success_DEFAULT map[string]int32
+var MemberServiceLoginResult_Success_DEFAULT *Result_
 
-func (p *MemberServiceLoginResult) GetSuccess() map[string]int32 {
+func (p *MemberServiceLoginResult) GetSuccess() *Result_ {
+	if !p.IsSetSuccess() {
+		return MemberServiceLoginResult_Success_DEFAULT
+	}
 	return p.Success
 }
 func (p *MemberServiceLoginResult) IsSetSuccess() bool {
@@ -1345,29 +1348,9 @@ func (p *MemberServiceLoginResult) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *MemberServiceLoginResult) readField0(iprot thrift.TProtocol) error {
-	_, _, size, err := iprot.ReadMapBegin()
-	if err != nil {
-		return thrift.PrependError("error reading map begin: ", err)
-	}
-	tMap := make(map[string]int32, size)
-	p.Success = tMap
-	for i := 0; i < size; i++ {
-		var _key18 string
-		if v, err := iprot.ReadString(); err != nil {
-			return thrift.PrependError("error reading field 0: ", err)
-		} else {
-			_key18 = v
-		}
-		var _val19 int32
-		if v, err := iprot.ReadI32(); err != nil {
-			return thrift.PrependError("error reading field 0: ", err)
-		} else {
-			_val19 = v
-		}
-		p.Success[_key18] = _val19
-	}
-	if err := iprot.ReadMapEnd(); err != nil {
-		return thrift.PrependError("error reading map end: ", err)
+	p.Success = &Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
 	}
 	return nil
 }
@@ -1390,22 +1373,11 @@ func (p *MemberServiceLoginResult) Write(oprot thrift.TProtocol) error {
 
 func (p *MemberServiceLoginResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
-		if err := oprot.WriteFieldBegin("success", thrift.MAP, 0); err != nil {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
 		}
-		if err := oprot.WriteMapBegin(thrift.STRING, thrift.I32, len(p.Success)); err != nil {
-			return thrift.PrependError("error writing map begin: ", err)
-		}
-		for k, v := range p.Success {
-			if err := oprot.WriteString(string(k)); err != nil {
-				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
-			}
-			if err := oprot.WriteI32(int32(v)); err != nil {
-				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
-			}
-		}
-		if err := oprot.WriteMapEnd(); err != nil {
-			return thrift.PrependError("error writing map end: ", err)
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
 		}
 		if err := oprot.WriteFieldEnd(); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)

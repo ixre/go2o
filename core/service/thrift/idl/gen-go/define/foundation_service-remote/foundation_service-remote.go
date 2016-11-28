@@ -144,19 +144,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RegisterSsoApp requires 1 args")
 			flag.Usage()
 		}
-		arg51 := flag.Arg(1)
-		mbTrans52 := thrift.NewTMemoryBufferLen(len(arg51))
-		defer mbTrans52.Close()
-		_, err53 := mbTrans52.WriteString(arg51)
-		if err53 != nil {
+		arg49 := flag.Arg(1)
+		mbTrans50 := thrift.NewTMemoryBufferLen(len(arg49))
+		defer mbTrans50.Close()
+		_, err51 := mbTrans50.WriteString(arg49)
+		if err51 != nil {
 			Usage()
 			return
 		}
-		factory54 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt55 := factory54.GetProtocol(mbTrans52)
+		factory52 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt53 := factory52.GetProtocol(mbTrans50)
 		argvalue0 := define.NewSsoApp()
-		err56 := argvalue0.Read(jsProt55)
-		if err56 != nil {
+		err54 := argvalue0.Read(jsProt53)
+		if err54 != nil {
 			Usage()
 			return
 		}

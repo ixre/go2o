@@ -43,11 +43,11 @@ const (
 
 const (
 	// 线上支付
-	SignOnlinePay int = 1
+	SignOnlinePay int32 = 1
 	// 线下支付
-	SignOfflinePay int = 2
+	SignOfflinePay int32 = 2
 	// 赠送账户支付
-	SignPresentAccount int = 3
+	SignPresentAccount int32 = 3
 )
 
 var (
@@ -126,7 +126,7 @@ type (
 		PresentAccountPayment(remark string) error
 
 		// 设置支付方式
-		SetPaymentSign(paymentSign int) error
+		SetPaymentSign(paymentSign int32) error
 
 		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
 		// 支付单的交易号,可能是与订单号一样的
@@ -150,10 +150,10 @@ type (
 
 	IPaymentRep interface {
 		// 根据编号获取支付单
-		GetPaymentOrder(id int32) IPaymentOrder
+		GetPaymentOrderById(id int32) IPaymentOrder
 
 		// 根据支付单号获取支付单
-		GetPaymentOrderByNo(paymentNo string) IPaymentOrder
+		GetPaymentOrder(paymentNo string) IPaymentOrder
 
 		// 根据订单号获取支付单
 		GetPaymentBySalesOrderId(orderId int32) IPaymentOrder
@@ -177,7 +177,7 @@ type (
 		// 运营商编号，0表示无
 		VendorId int32 `db:"vendor_id"`
 		// 支付单类型,如果购物或其他
-		Type int `db:"order_type"`
+		Type int32 `db:"order_type"`
 		// 订单编号,0表示无
 		OrderId int32 `db:"order_id"`
 		// 支付单主题
@@ -203,9 +203,9 @@ type (
 		// 最终支付金额
 		FinalAmount float32 `db:"final_fee"`
 		// 支付选项，位运算。可用优惠券，积分抵扣等运算
-		PaymentOptFlag int `db:"payment_opt"`
+		PaymentOptFlag int32 `db:"payment_opt"`
 		// 支付方式
-		PaymentSign int `db:"payment_sign"`
+		PaymentSign int32 `db:"payment_sign"`
 		// 在线支付的交易单号
 		OuterNo string `db:"outer_no"`
 		//创建时间
@@ -213,6 +213,6 @@ type (
 		//支付时间
 		PaidTime int64 `db:"paid_time"`
 		// 状态:  0为未付款，1为已付款，2为已取消
-		State int `db:"state"`
+		State int32 `db:"state"`
 	}
 )

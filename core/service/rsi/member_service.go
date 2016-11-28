@@ -468,30 +468,31 @@ func (ms *memberService) ModifyTradePassword(memberId int32,
 
 // 登陆，返回结果(Result)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (ms *memberService) Login(usr string, pwd string, update bool) (r map[string]int32, err error) {
-	r = make(map[string]int32)
+func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.Result_, err error) {
+
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._rep.GetMemberByUsr(usr)
 	if val == nil {
 		val = ms._rep.GetMemberValueByPhone(usr)
 	}
+	r = &define.Result_{}
 	if val == nil {
-		r["Result"] = -1
+		r.Message = member.ErrNoSuchMember.Error()
 		return r, nil
 	}
 	if val.Pwd != pwd {
 		//todo: 兼容旧密码
 		if val.Pwd != domain.Sha1(pwd) {
-			r["Result"] = -2
+			r.Message = member.ErrCredential.Error()
 			return r, nil
 		}
 	}
 	if val.State == member.StateStopped {
-		r["Result"] = -3
+		r.Message = member.ErrStopped.Error()
 		return r, nil
 	}
-	r["Id"] = int32(val.Id)
-	r["Result"] = 0
+	r.ID = val.Id
+	r.Result_ = true
 	if update {
 		m := ms._rep.GetMember(val.Id)
 		m.UpdateLoginTime()

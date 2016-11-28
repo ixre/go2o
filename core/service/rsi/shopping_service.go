@@ -168,7 +168,7 @@ func (s *shoppingService) CartCheckSign(memberId int32,
 
 // 更新购物车结算
 func (s *shoppingService) PrepareSettlePersist(memberId, shopId int32,
-	paymentOpt int, deliverOpt int, deliverId int32) error {
+	paymentOpt, deliverOpt, deliverId int32) error {
 	var cart = s.getShoppingCart(memberId, "")
 	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
 	if err == nil {
