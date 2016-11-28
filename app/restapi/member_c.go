@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
 	"go2o/app/cache"
-	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/rsi"
@@ -39,35 +38,23 @@ func (mc *MemberC) Login(c echo.Context) error {
 	pwd := strings.TrimSpace(r.FormValue("pwd"))
 	if len(usr) == 0 || len(pwd) == 0 {
 		result.Message = "会员不存在"
+		return c.JSON(http.StatusOK, result)
+	}
+	cli, err := thrift.MemberServeClient()
+	if err != nil {
+		result.Message = "网络连接失败"
 	} else {
-		encodePwd := domain.MemberSha1Pwd(pwd)
-		mp, _ := rsi.MemberService.Login(usr, encodePwd, true)
-		id := mp["Id"]
-		rst := mp["Result"]
-		if id > 0 {
-			cli, err := thrift.MemberClient()
-			if err == nil {
-				defer cli.Transport.Close()
-				token, _ := cli.GetToken(id, false)
-				result.Member = &dto.LoginMember{
-					Id:         int(id),
-					Token:      token,
-					UpdateTime: time.Now().Unix(),
-				}
-				result.Result = true
-			} else {
-				result.Message = "网络连接失败"
-			}
-		} else {
-			switch rst {
-			case -1:
-				result.Message = member.ErrNoSuchMember.Error()
-			case -2:
-				result.Message = member.ErrCredential.Error()
-			case -3:
-				result.Message = member.ErrDisabled.Error()
-			default:
-				result.Message = "登陆失败"
+		defer cli.Transport.Close()
+		encPwd := domain.MemberSha1Pwd(pwd)
+		r, _ := cli.Login(usr, encPwd, true)
+		result.Message = r.Message
+		result.Result = r.Result_
+		if r.Result_ {
+			token, _ := cli.GetToken(r.ID, false)
+			result.Member = &dto.LoginMember{
+				Id:         int(r.ID),
+				Token:      token,
+				UpdateTime: time.Now().Unix(),
 			}
 		}
 	}
@@ -139,7 +126,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 func (mc *MemberC) Get(c echo.Context) error {
 	memberId := GetMemberId(c)
 	m, _ := rsi.MemberService.GetMember(memberId)
-	cli, err := thrift.MemberClient()
+	cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		m.DynamicToken, _ = cli.GetToken(memberId, false)

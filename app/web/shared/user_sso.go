@@ -83,7 +83,7 @@ func (u *UserSync) ssoConnect(c *echox.Context, callback string) error {
 	mId, err := gu.I32Err(strconv.Atoi(mStr))
 	// 鉴权，如成功，则存储会话
 	token := c.QueryParam("token")
-	cli, err := thrift.MemberClient()
+	cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		b, _ := cli.CheckToken(mId, token)

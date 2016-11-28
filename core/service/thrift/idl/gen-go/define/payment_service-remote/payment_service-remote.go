@@ -20,14 +20,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Result Login(string user, string pwd, bool update)")
-	fmt.Fprintln(os.Stderr, "  Member GetMember(i32 id)")
-	fmt.Fprintln(os.Stderr, "  Member GetMemberByUser(string user)")
-	fmt.Fprintln(os.Stderr, "  Profile GetProfile(i32 id)")
-	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId, bool reset)")
-	fmt.Fprintln(os.Stderr, "  bool CheckToken(i32 memberId, string token)")
-	fmt.Fprintln(os.Stderr, "  void RemoveToken(i32 memberId)")
-	fmt.Fprintln(os.Stderr, "  Address GetAddress(i32 memberId, i32 addrId)")
+	fmt.Fprintln(os.Stderr, "  Result CreatePaymentOrder(PaymentOrder o)")
+	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrder(string paymentNo)")
+	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -115,136 +110,61 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewMemberServiceClientFactory(trans, protocolFactory)
+	client := define.NewPaymentServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "Login":
-		if flag.NArg()-1 != 3 {
-			fmt.Fprintln(os.Stderr, "Login requires 3 args")
+	case "CreatePaymentOrder":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
+			flag.Usage()
+		}
+		arg68 := flag.Arg(1)
+		mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
+		defer mbTrans69.Close()
+		_, err70 := mbTrans69.WriteString(arg68)
+		if err70 != nil {
+			Usage()
+			return
+		}
+		factory71 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt72 := factory71.GetProtocol(mbTrans69)
+		argvalue0 := define.NewPaymentOrder()
+		err73 := argvalue0.Read(jsProt72)
+		if err73 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		fmt.Print(client.CreatePaymentOrder(value0))
+		fmt.Print("\n")
+		break
+	case "GetPaymentOrder":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetPaymentOrder requires 1 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		argvalue2 := flag.Arg(3) == "true"
-		value2 := argvalue2
-		fmt.Print(client.Login(value0, value1, value2))
+		fmt.Print(client.GetPaymentOrder(value0))
 		fmt.Print("\n")
 		break
-	case "GetMember":
+	case "GetPaymentOrderById":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
-		if err21 != nil {
+		tmp0, err75 := (strconv.Atoi(flag.Arg(1)))
+		if err75 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.GetMember(value0))
-		fmt.Print("\n")
-		break
-	case "GetMemberByUser":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetMemberByUser requires 1 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		fmt.Print(client.GetMemberByUser(value0))
-		fmt.Print("\n")
-		break
-	case "GetProfile":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.GetProfile(value0))
-		fmt.Print("\n")
-		break
-	case "GetToken":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		fmt.Print(client.GetToken(value0, value1))
-		fmt.Print("\n")
-		break
-	case "CheckToken":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		fmt.Print(client.CheckToken(value0, value1))
-		fmt.Print("\n")
-		break
-	case "RemoveToken":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.RemoveToken(value0))
-		fmt.Print("\n")
-		break
-	case "GetAddress":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err29 := (strconv.Atoi(flag.Arg(1)))
-		if err29 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err30 := (strconv.Atoi(flag.Arg(2)))
-		if err30 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.GetAddress(value0, value1))
+		fmt.Print(client.GetPaymentOrderById(value0))
 		fmt.Print("\n")
 		break
 	case "":

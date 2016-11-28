@@ -1,5 +1,13 @@
 namespace go define
 
+//传输结果对象
+struct Result{
+   1:i32 Id
+   2:bool Result
+   3:i32 Code
+   4:string Message
+}
+
 struct Member {
     1: i32 Id
     2: string Usr
@@ -57,13 +65,37 @@ struct Address {
     10: i32 IsDefault
 }
 
-
+//支付单
+struct PaymentOrder {
+    1: i32 Id
+    2: string TradeNo
+    3: i32 VendorId
+    4: i32 Type
+    5: i32 OrderId
+    6: string Subject
+    7: i32 BuyUser
+    8: i32 PaymentUser
+    9: double TotalFee
+    10: double BalanceDiscount
+    11: double  IntegralDiscount
+    12: double SystemDiscount
+    13: double CouponDiscount
+    14: double SubAmount
+    15: double AdjustmentAmount
+    16: double FinalAmount
+    17: i32 PaymentOptFlag
+    18: i32 PaymentSign
+    19: string OuterNo
+    20: i64 CreateTime
+    21: i64 PaidTime
+    22: i32 State
+}
 
 //会员服务
 service MemberService{
     // 登陆，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    map<string,i32> Login(1:string user,2:string pwd,3:bool update),
+    Result Login(1:string user,2:string pwd,3:bool update),
     // 根据会员编号获取会员信息
     Member GetMember(1:i32 id),
     // 根据用户名获取会员信息
@@ -121,4 +153,14 @@ service FoundationService{
    void FlushSuperPwd(1:string user,2:string pwd)
    // 创建同步登陆的地址
    string GetSyncLoginUrl(1:string returnUrl)
+}
+
+// 支付服务
+service PaymentService{
+    // 创建支付单
+    Result CreatePaymentOrder(1:PaymentOrder o)
+    // 根据支付单号获取支付单
+    PaymentOrder GetPaymentOrder(1:string paymentNo)
+    // 根据编号获取支付单
+    PaymentOrder GetPaymentOrderById(1:i32 id)
 }

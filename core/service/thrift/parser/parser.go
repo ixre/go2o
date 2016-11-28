@@ -10,6 +10,7 @@ package parser
 
 import (
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
@@ -144,5 +145,59 @@ func AddressDto(src *member.Address) *define.Address {
 		Area:      src.Area,
 		Address:   src.Address,
 		IsDefault: int32(src.IsDefault),
+	}
+}
+
+func PaymentOrder(src *define.PaymentOrder) *payment.PaymentOrder {
+	return &payment.PaymentOrder{
+		Id:               src.ID,
+		TradeNo:          src.TradeNo,
+		VendorId:         src.VendorId,
+		Type:             src.Type,
+		OrderId:          src.OrderId,
+		Subject:          src.Subject,
+		BuyUser:          src.BuyUser,
+		PaymentUser:      src.PaymentUser,
+		TotalFee:         float32(src.TotalFee),
+		BalanceDiscount:  float32(src.BalanceDiscount),
+		IntegralDiscount: float32(src.IntegralDiscount),
+		SystemDiscount:   float32(src.SystemDiscount),
+		CouponDiscount:   float32(src.CouponDiscount),
+		SubAmount:        float32(src.SubAmount),
+		AdjustmentAmount: float32(src.AdjustmentAmount),
+		FinalAmount:      float32(src.FinalAmount),
+		PaymentOptFlag:   src.PaymentOptFlag,
+		PaymentSign:      src.PaymentSign,
+		OuterNo:          src.OuterNo,
+		CreateTime:       src.CreateTime,
+		PaidTime:         src.PaidTime,
+		State:            src.State,
+	}
+}
+
+func PaymentOrderDto(src *payment.PaymentOrder) *define.PaymentOrder {
+	return &define.PaymentOrder{
+		ID:               src.Id,
+		TradeNo:          src.TradeNo,
+		VendorId:         src.VendorId,
+		Type:             src.Type,
+		OrderId:          src.OrderId,
+		Subject:          src.Subject,
+		BuyUser:          src.BuyUser,
+		PaymentUser:      src.PaymentUser,
+		TotalFee:         float64(src.TotalFee),
+		BalanceDiscount:  float64(src.BalanceDiscount),
+		IntegralDiscount: float64(src.IntegralDiscount),
+		SystemDiscount:   float64(src.SystemDiscount),
+		CouponDiscount:   float64(src.CouponDiscount),
+		SubAmount:        float64(src.SubAmount),
+		AdjustmentAmount: float64(src.AdjustmentAmount),
+		FinalAmount:      float64(src.FinalAmount),
+		PaymentOptFlag:   src.PaymentOptFlag,
+		PaymentSign:      src.PaymentSign,
+		OuterNo:          src.OuterNo,
+		CreateTime:       src.CreateTime,
+		PaidTime:         src.PaidTime,
+		State:            src.State,
 	}
 }

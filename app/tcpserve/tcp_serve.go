@@ -100,7 +100,7 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 
 		f := func() (int, error) {
 			memberId, _ := strconv.Atoi(arr[0])
-			cli, err := thrift.MemberClient()
+			cli, err := thrift.MemberServeClient()
 			if err == nil {
 				defer cli.Transport.Close()
 				if b, _ := cli.CheckToken(int32(memberId), arr[1]); b {

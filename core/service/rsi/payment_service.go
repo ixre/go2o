@@ -11,6 +11,8 @@ package rsi
 import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 )
 
 type paymentService struct {
@@ -26,33 +28,42 @@ func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *payme
 }
 
 // 根据编号获取支付单
-func (p *paymentService) GetPaymentOrder(id int32) *payment.PaymentOrder {
-	po := p._rep.GetPaymentOrder(id)
+func (p *paymentService) GetPaymentOrderById(id int32) (*define.PaymentOrder, error) {
+	po := p._rep.GetPaymentOrderById(id)
 	if po != nil {
 		v := po.GetValue()
-		return &v
+		return parser.PaymentOrderDto(&v), nil
 	}
-	return nil
+	return nil, nil
 }
 
 // 根据支付单号获取支付单
-func (p *paymentService) GetPaymentOrderByNo(paymentNo string) *payment.PaymentOrder {
-	if v := p._rep.GetPaymentOrderByNo(paymentNo); v != nil {
-		v2 := v.GetValue()
-		return &v2
+func (p *paymentService) GetPaymentOrder(paymentNo string) (*define.PaymentOrder, error) {
+	if po := p._rep.GetPaymentOrder(paymentNo); po != nil {
+		v := po.GetValue()
+		return parser.PaymentOrderDto(&v), nil
 	}
-	return nil
+	return nil, nil
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(v *payment.PaymentOrder) (int32, error) {
+func (p *paymentService) CreatePaymentOrder(s *define.PaymentOrder) (*define.Result_, error) {
+	v := parser.PaymentOrder(s)
 	o := p._rep.CreatePaymentOrder(v)
-	return o.Commit()
+	id, err := o.Commit()
+	r := &define.Result_{
+		Result_: err == nil,
+		ID:      id,
+	}
+	if err != nil {
+		r.Message = err.Error()
+	}
+	return r, nil
 }
 
 // 调整支付单金额
 func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
-	o := p._rep.GetPaymentOrderByNo(paymentNo)
+	o := p._rep.GetPaymentOrder(paymentNo)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
@@ -60,7 +71,7 @@ func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
 }
 
 func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
-	o := p._rep.GetPaymentOrder(id)
+	o := p._rep.GetPaymentOrderById(id)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
@@ -70,7 +81,7 @@ func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
 // 积分抵扣支付单
 func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int32,
 	integral int, ignoreOut bool) (float32, error) {
-	o := p._rep.GetPaymentOrder(orderId)
+	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
 		return 0, payment.ErrNoSuchPaymentOrder
 	}
@@ -79,7 +90,7 @@ func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int32,
 
 // 余额抵扣
 func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int32, remark string) error {
-	o := p._rep.GetPaymentOrder(orderId)
+	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
@@ -92,7 +103,7 @@ func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int32, remark st
 
 // 赠送账户支付
 func (p *paymentService) PresentAccountPayment(orderId int32, remark string) error {
-	o := p._rep.GetPaymentOrder(orderId)
+	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}
@@ -102,7 +113,7 @@ func (p *paymentService) PresentAccountPayment(orderId int32, remark string) err
 // 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(tradeNo string, spName string,
 	outerNo string) error {
-	o := p._rep.GetPaymentOrderByNo(tradeNo)
+	o := p._rep.GetPaymentOrder(tradeNo)
 	if o == nil {
 		return payment.ErrNoSuchPaymentOrder
 	}

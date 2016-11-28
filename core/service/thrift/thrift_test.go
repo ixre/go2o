@@ -18,7 +18,7 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	cli, err := MemberClient()
+	cli, err := MemberServeClient()
 	if err != nil {
 		t.Error(err)
 		return
@@ -38,7 +38,7 @@ func TestLogin(t *testing.T) {
 }
 
 func TestSSORegister(t *testing.T) {
-	cli, err := FoundationClient()
+	cli, err := FoundationServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		sa := &define.SsoApp{
