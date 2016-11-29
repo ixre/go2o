@@ -516,11 +516,14 @@ func (ms *memberService) CheckPhone(phone string, memberId int32) error {
 	return ms._rep.GetManager().CheckPhoneBind(phone, memberId)
 }
 
-func (ms *memberService) GetAccount(memberId int32) *member.Account {
+// 获取会员账户
+func (ms *memberService) GetAccount(memberId int32) (*define.Account, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	//m, _ := ms._memberRep.GetMember(memberId)
-	//m.AddExp(300)
-	return m.GetAccount().GetValue()
+	acc := m.GetAccount()
+	if acc != nil {
+		return parser.AccountDto(acc.GetValue()), nil
+	}
+	return nil, nil
 }
 
 func (ms *memberService) GetBank(memberId int32) *member.BankInfo {

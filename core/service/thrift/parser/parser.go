@@ -111,6 +111,56 @@ func MemberProfile2(src *define.Profile) *member.Profile {
 	}
 }
 
+func AccountDto(src *member.Account) *define.Account {
+	return &define.Account{
+		MemberId:          src.MemberId,
+		Integral:          int64(src.Integral),
+		FreezeIntegral:    int64(src.FreezeIntegral),
+		Balance:           float64(src.Balance),
+		FreezeBalance:     float64(src.FreezeBalance),
+		ExpiredBalance:    float64(src.ExpiredBalance),
+		PresentBalance:    float64(src.PresentBalance),
+		FreezePresent:     float64(src.FreezePresent),
+		ExpiredPresent:    float64(src.ExpiredPresent),
+		TotalPresentFee:   float64(src.TotalPresentFee),
+		FlowBalance:       float64(src.FlowBalance),
+		GrowBalance:       float64(src.GrowBalance),
+		GrowAmount:        float64(src.GrowAmount),
+		GrowEarnings:      float64(src.GrowEarnings),
+		GrowTotalEarnings: float64(src.GrowTotalEarnings),
+		TotalConsumption:  float64(src.TotalConsumption),
+		TotalCharge:       float64(src.TotalCharge),
+		TotalPay:          float64(src.TotalPay),
+		PriorityPay:       int64(src.PriorityPay),
+		UpdateTime:        src.UpdateTime,
+	}
+}
+
+func Account(src *define.Account) *member.Account {
+	return &member.Account{
+		MemberId:          src.MemberId,
+		Integral:          int(src.Integral),
+		FreezeIntegral:    int(src.FreezeIntegral),
+		Balance:           float32(src.Balance),
+		FreezeBalance:     float32(src.FreezeBalance),
+		ExpiredBalance:    float32(src.ExpiredBalance),
+		PresentBalance:    float32(src.PresentBalance),
+		FreezePresent:     float32(src.FreezePresent),
+		ExpiredPresent:    float32(src.ExpiredPresent),
+		TotalPresentFee:   float32(src.TotalPresentFee),
+		FlowBalance:       float32(src.FlowBalance),
+		GrowBalance:       float32(src.GrowBalance),
+		GrowAmount:        float32(src.GrowAmount),
+		GrowEarnings:      float32(src.GrowEarnings),
+		GrowTotalEarnings: float32(src.GrowTotalEarnings),
+		TotalConsumption:  float32(src.TotalConsumption),
+		TotalCharge:       float32(src.TotalCharge),
+		TotalPay:          float32(src.TotalPay),
+		PriorityPay:       int(src.PriorityPay),
+		UpdateTime:        src.UpdateTime,
+	}
+}
+
 func PlatformConfDto(src *valueobject.PlatformConf) *define.PlatformConf {
 	return &define.PlatformConf{
 		Name:             src.Name,
