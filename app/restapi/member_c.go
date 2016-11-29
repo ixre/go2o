@@ -112,7 +112,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	}
 	//kvAut = 0
 	if kvAut == 0 {
-		acc := rsi.MemberService.GetAccount(memberId)
+		acc, _ := rsi.MemberService.GetAccount(memberId)
 		kvAut = int(acc.UpdateTime)
 		sto.Set(autKey, kvAut)
 	}
@@ -150,7 +150,7 @@ func (mc *MemberC) Summary(c echo.Context) error {
 // 获取最新的会员账户信息
 func (mc *MemberC) Account(c echo.Context) error {
 	memberId := GetMemberId(c)
-	m := rsi.MemberService.GetAccount(memberId)
+	m, _ := rsi.MemberService.GetAccount(memberId)
 	return c.JSON(http.StatusOK, m)
 }
 

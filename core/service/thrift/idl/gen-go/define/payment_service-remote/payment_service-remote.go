@@ -122,19 +122,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg68 := flag.Arg(1)
-		mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
-		defer mbTrans69.Close()
-		_, err70 := mbTrans69.WriteString(arg68)
-		if err70 != nil {
+		arg71 := flag.Arg(1)
+		mbTrans72 := thrift.NewTMemoryBufferLen(len(arg71))
+		defer mbTrans72.Close()
+		_, err73 := mbTrans72.WriteString(arg71)
+		if err73 != nil {
 			Usage()
 			return
 		}
-		factory71 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt72 := factory71.GetProtocol(mbTrans69)
+		factory74 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt75 := factory74.GetProtocol(mbTrans72)
 		argvalue0 := define.NewPaymentOrder()
-		err73 := argvalue0.Read(jsProt72)
-		if err73 != nil {
+		err76 := argvalue0.Read(jsProt75)
+		if err76 != nil {
 			Usage()
 			return
 		}
@@ -157,8 +157,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err75 := (strconv.Atoi(flag.Arg(1)))
-		if err75 != nil {
+		tmp0, err78 := (strconv.Atoi(flag.Arg(1)))
+		if err78 != nil {
 			Usage()
 			return
 		}

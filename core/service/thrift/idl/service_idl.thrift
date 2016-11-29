@@ -52,6 +52,29 @@ struct Profile {
     20: i64 UpdateTime
 }
 
+struct Account {
+    1: i32 MemberId
+    2: i64 Integral
+    3: i64 FreezeIntegral
+    4: double Balance
+    5: double FreezeBalance
+    6: double ExpiredBalance
+    7: double PresentBalance
+    8: double FreezePresent
+    9: double ExpiredPresent
+    10: double TotalPresentFee
+    11: double FlowBalance
+    12: double GrowBalance
+    13: double GrowAmount
+    14: double GrowEarnings
+    15: double GrowTotalEarnings
+    16: double TotalConsumption
+    17: double TotalCharge
+    18: double TotalPay
+    19: i64 PriorityPay
+    20: i64 UpdateTime
+}
+
 struct Address {
     1: i32 Id
     2: i32 MemberId
@@ -110,6 +133,8 @@ service MemberService{
     void RemoveToken(1:i32 memberId)
     // 获取地址，如果addrId为0，则返回默认地址
     Address GetAddress(1:i32 memberId,2:i32 addrId)
+    // 获取会员账户信息
+    Account GetAccount(1:i32 memberId)
 }
 
 struct PlatformConf {
