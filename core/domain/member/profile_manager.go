@@ -216,7 +216,7 @@ func (p *profileManagerImpl) SetAvatar(avatar string) error {
 //todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//rl := p._member.GetRelation()
-	//pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMerchantId)
+	//pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMchId)
 	//if err == nil {
 	//	key := fmt.Sprintf("profile:complete:id_%d", p._memberId)
 	//	if pt.MemberKvManager().GetInt(key) == 0 {

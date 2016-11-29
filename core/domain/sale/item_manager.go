@@ -190,7 +190,7 @@ func (i *itemImpl) checkPrice(v *item.Item) error {
 }
 
 // 设置上架
-func (i *itemImpl) SetShelve(state int, remark string) error {
+func (i *itemImpl) SetShelve(state int32, remark string) error {
 	if state == item.ShelvesIncorrect && len(remark) == 0 {
 		return item.ErrNilRejectRemark
 	}

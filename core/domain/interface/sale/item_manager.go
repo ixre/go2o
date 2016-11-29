@@ -35,7 +35,7 @@ type (
 		SetDescribe(describe string) error
 
 		// 设置上架
-		SetShelve(state int, remark string) error
+		SetShelve(state int32, remark string) error
 
 		// 审核
 		Review(pass bool, remark string) error

@@ -82,6 +82,26 @@ struct Account {
     20: i64 UpdateTime
 }
 
+struct MemberRelation {
+    1: i32 MemberId
+    2: string CardId
+    3: i32 InviterId
+    4: string InviterStr
+    5: i32 RegisterMchId
+}
+
+struct TrustedInfo {
+    1: i32 MemberId
+    2: string RealName
+    3: string CardId
+    4: string TrustImage
+    5: i32 Reviewed
+    6: i64 ReviewTime
+    7: string Remark
+    8: i64 UpdateTime
+}
+
+
 struct Address {
     1: i32 Id
     2: i32 MemberId
@@ -142,6 +162,11 @@ service MemberService{
     Address GetAddress(1:i32 memberId,2:i32 addrId)
     // 获取会员账户信息
     Account GetAccount(1:i32 memberId)
+    // 获取邀请人会员编号数组
+    list<i32> InviterArray(1:i32 memberId,2:i32 depth)
+    // 赠送金额充值
+    Result PresentBalanceByKind(1:i32 memberId ,2:i32 kind,
+      3:string title,4:string outerNo,5:double amount,6:i32 relateUser)
 }
 
 struct PlatformConf {

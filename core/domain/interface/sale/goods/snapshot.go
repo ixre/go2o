@@ -68,7 +68,7 @@ type (
 		//库存
 		StockNum int `db:"stock_num"`
 		// 是否上架
-		ShelveState int `db:"shelve_state"`
+		ShelveState int32 `db:"shelve_state"`
 		//快照时间
 		UpdateTime int64 `db:"update_time"`
 	}

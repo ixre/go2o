@@ -20,11 +20,28 @@ type invitationManager struct {
 	myInvMembers []*member.Member
 }
 
+// 获取推荐数组
+func (im *invitationManager) InviterArray(memberId int32, depth int32) []int32 {
+	arr := make([]int32, depth)
+	var i int32
+	inviterId := memberId
+	for i <= depth-1 {
+		rl := im.member.rep.GetRelation(inviterId)
+		if rl == nil || rl.InviterId <= 0 {
+			break
+		}
+		arr[i] = rl.InviterId
+		inviterId = arr[i]
+		i++
+	}
+	return arr
+}
+
 // 判断是否推荐了某个会员
 func (i *invitationManager) InvitationBy(memberId int32) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
-		return rl.RefereesId == memberId
+		return rl.InviterId == memberId
 	}
 	return false
 }

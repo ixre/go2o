@@ -17,7 +17,7 @@ import (
 var (
 	//v = &member.Member{}
 	//v = &member.Profile{}
-	v = member.Account{}
+	v = member.TrustedInfo{}
 )
 
 // 生成Thrift结构

@@ -11,6 +11,9 @@ package member
 import "go2o/core/dto"
 
 type IInvitationManager interface {
+	// 获取邀请人数组
+	InviterArray(memberId int32, depth int32) []int32
+
 	// 判断是否由会员邀请
 	InvitationBy(memberId int32) bool
 

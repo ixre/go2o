@@ -62,15 +62,15 @@ func (p *paymentService) CreatePaymentOrder(s *define.PaymentOrder) (*define.Res
 }
 
 // 调整支付单金额
-func (p *paymentService) AdjustOrder(paymentNo string, amount float32) *define.Result_ {
+func (p *paymentService) AdjustOrder(paymentNo string, amount float64) (*define.Result_, error) {
 	var err error
 	o := p._rep.GetPaymentOrder(paymentNo)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.Adjust(amount)
+		err = o.Adjust(float32(amount))
 	}
-	return parser.Result(err)
+	return parser.Result(err), nil
 }
 
 func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {

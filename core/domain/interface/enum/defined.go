@@ -15,19 +15,19 @@ const (
 
 const (
 	// 未设置
-	ReviewNotSet int = 0
+	ReviewNotSet int32 = 0
 	// 等待审核
-	ReviewAwaiting int = 1
+	ReviewAwaiting int32 = 1
 	// 审核失败
-	ReviewReject int = 2
+	ReviewReject int32 = 2
 	// 审核成功
-	ReviewPass int = 3
+	ReviewPass int32 = 3
 	// 已确认
-	ReviewConfirm int = 4
+	ReviewConfirm int32 = 4
 )
 
 // 审核文本字典
-var ReviewTextMap = map[int]string{
+var ReviewTextMap = map[int32]string{
 	ReviewNotSet:   "未提交",
 	ReviewAwaiting: "待审核",
 	ReviewReject:   "审核不通过",
@@ -36,7 +36,7 @@ var ReviewTextMap = map[int]string{
 }
 
 // 审核状态名称
-func ReviewString(r int) string {
+func ReviewString(r int32) string {
 	return ReviewTextMap[r]
 }
 

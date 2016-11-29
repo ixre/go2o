@@ -363,7 +363,7 @@ func (m *memberImpl) GetRelation() *member.Relation {
 func (m *memberImpl) SaveRelation(r *member.Relation) error {
 	m.relation = r
 	m.relation.MemberId = m.value.Id
-	m.updateReferStr(m.relation)
+	m.updateInviterStr(m.relation)
 	return m.rep.SaveRelation(m.relation)
 }
 
@@ -473,33 +473,16 @@ func (m *memberImpl) usrIsExist(usr string) bool {
 	return m.rep.CheckUsrExist(usr, m.GetAggregateRootId())
 }
 
-// 获取推荐数组
-func (m *memberImpl) getReferArr(memberId int32, level int32) []int32 {
-	arr := make([]int32, level)
-	var i int32
-	referId := memberId
-	for i <= level-1 {
-		rl := m.rep.GetRelation(referId)
-		if rl == nil || rl.RefereesId <= 0 {
-			break
-		}
-		arr[i] = rl.RefereesId
-		referId = arr[i]
-		i++
-	}
-	return arr
-}
-
 // 强制更新邀请关系
-func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
+func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 	// 无邀请关系
-	if r.RefereesId == 0 {
-		r.ReferStr = ""
+	if r.InviterId == 0 {
+		r.InviterStr = ""
 		return
 	}
 	level := m.valRep.GetRegistry().MemberReferLayer - 1
-	arr := m.getReferArr(r.RefereesId, int32(level))
-	arr = append([]int32{r.RefereesId}, arr...)
+	arr := m.Invitation().InviterArray(r.InviterId, int32(level))
+	arr = append([]int32{r.InviterId}, arr...)
 
 	if len(arr) > 0 {
 		// 有邀请关系
@@ -517,15 +500,15 @@ func (m *memberImpl) forceUpdateReferStr(r *member.Relation) {
 			buf.WriteString(strconv.Itoa(int(v)))
 		}
 		buf.WriteString("}")
-		r.ReferStr = buf.String()
+		r.InviterStr = buf.String()
 	}
 }
 
 // 更新邀请关系
-func (m *memberImpl) updateReferStr(r *member.Relation) {
-	prefix := fmt.Sprintf("{'r0':%d,", r.RefereesId)
-	if !strings.HasPrefix(r.ReferStr, prefix) {
-		m.forceUpdateReferStr(r)
+func (m *memberImpl) updateInviterStr(r *member.Relation) {
+	prefix := fmt.Sprintf("{'r0':%d,", r.InviterId)
+	if !strings.HasPrefix(r.InviterStr, prefix) {
+		m.forceUpdateInviterStr(r)
 	}
 }
 
@@ -538,10 +521,10 @@ func (m *memberImpl) ChangeReferees(memberId int32) error {
 		}
 	}
 	rl := m.GetRelation()
-	if rl.RefereesId != memberId {
-		rl.RefereesId = memberId
+	if rl.InviterId != memberId {
+		rl.InviterId = memberId
 		if memberId == 0 {
-			rl.ReferStr = ""
+			rl.InviterStr = ""
 		}
 		return m.SaveRelation(rl)
 	}
