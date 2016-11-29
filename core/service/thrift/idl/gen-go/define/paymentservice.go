@@ -24,6 +24,15 @@ type PaymentService interface {
 	// Parameters:
 	//  - ID
 	GetPaymentOrderById(id int32) (r *PaymentOrder, err error)
+	// Parameters:
+	//  - OrderId
+	//  - Remark
+	DiscountByBalance(orderId int32, remark string) (r *Result_, err error)
+	// Parameters:
+	//  - OrderId
+	//  - Integral
+	//  - IgnoreOut
+	DiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (r *DResult_, err error)
 }
 
 type PaymentServiceClient struct {
@@ -283,6 +292,166 @@ func (p *PaymentServiceClient) recvGetPaymentOrderById() (value *PaymentOrder, e
 	return
 }
 
+// Parameters:
+//  - OrderId
+//  - Remark
+func (p *PaymentServiceClient) DiscountByBalance(orderId int32, remark string) (r *Result_, err error) {
+	if err = p.sendDiscountByBalance(orderId, remark); err != nil {
+		return
+	}
+	return p.recvDiscountByBalance()
+}
+
+func (p *PaymentServiceClient) sendDiscountByBalance(orderId int32, remark string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("DiscountByBalance", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := PaymentServiceDiscountByBalanceArgs{
+		OrderId: orderId,
+		Remark:  remark,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *PaymentServiceClient) recvDiscountByBalance() (value *Result_, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "DiscountByBalance" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "DiscountByBalance failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "DiscountByBalance failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error69 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error70 error
+		error70, err = error69.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error70
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "DiscountByBalance failed: invalid message type")
+		return
+	}
+	result := PaymentServiceDiscountByBalanceResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - OrderId
+//  - Integral
+//  - IgnoreOut
+func (p *PaymentServiceClient) DiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (r *DResult_, err error) {
+	if err = p.sendDiscountByIntegral(orderId, integral, ignoreOut); err != nil {
+		return
+	}
+	return p.recvDiscountByIntegral()
+}
+
+func (p *PaymentServiceClient) sendDiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("DiscountByIntegral", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := PaymentServiceDiscountByIntegralArgs{
+		OrderId:   orderId,
+		Integral:  integral,
+		IgnoreOut: ignoreOut,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *PaymentServiceClient) recvDiscountByIntegral() (value *DResult_, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "DiscountByIntegral" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "DiscountByIntegral failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "DiscountByIntegral failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error71 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error72 error
+		error72, err = error71.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error72
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "DiscountByIntegral failed: invalid message type")
+		return
+	}
+	result := PaymentServiceDiscountByIntegralResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
 type PaymentServiceProcessor struct {
 	processorMap map[string]thrift.TProcessorFunction
 	handler      PaymentService
@@ -303,11 +472,13 @@ func (p *PaymentServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewPaymentServiceProcessor(handler PaymentService) *PaymentServiceProcessor {
 
-	self69 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self69.processorMap["CreatePaymentOrder"] = &paymentServiceProcessorCreatePaymentOrder{handler: handler}
-	self69.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
-	self69.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
-	return self69
+	self73 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self73.processorMap["CreatePaymentOrder"] = &paymentServiceProcessorCreatePaymentOrder{handler: handler}
+	self73.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
+	self73.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
+	self73.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
+	self73.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
+	return self73
 }
 
 func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -320,12 +491,12 @@ func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succes
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x70 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x74 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x70.Write(oprot)
+	x74.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x70
+	return false, x74
 
 }
 
@@ -456,6 +627,102 @@ func (p *paymentServiceProcessorGetPaymentOrderById) Process(seqId int32, iprot,
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetPaymentOrderById", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type paymentServiceProcessorDiscountByBalance struct {
+	handler PaymentService
+}
+
+func (p *paymentServiceProcessorDiscountByBalance) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := PaymentServiceDiscountByBalanceArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("DiscountByBalance", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := PaymentServiceDiscountByBalanceResult{}
+	var retval *Result_
+	var err2 error
+	if retval, err2 = p.handler.DiscountByBalance(args.OrderId, args.Remark); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DiscountByBalance: "+err2.Error())
+		oprot.WriteMessageBegin("DiscountByBalance", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("DiscountByBalance", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type paymentServiceProcessorDiscountByIntegral struct {
+	handler PaymentService
+}
+
+func (p *paymentServiceProcessorDiscountByIntegral) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := PaymentServiceDiscountByIntegralArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("DiscountByIntegral", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := PaymentServiceDiscountByIntegralResult{}
+	var retval *DResult_
+	var err2 error
+	if retval, err2 = p.handler.DiscountByIntegral(args.OrderId, args.Integral, args.IgnoreOut); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DiscountByIntegral: "+err2.Error())
+		oprot.WriteMessageBegin("DiscountByIntegral", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("DiscountByIntegral", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1057,4 +1324,493 @@ func (p *PaymentServiceGetPaymentOrderByIdResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("PaymentServiceGetPaymentOrderByIdResult(%+v)", *p)
+}
+
+// Attributes:
+//  - OrderId
+//  - Remark
+type PaymentServiceDiscountByBalanceArgs struct {
+	OrderId int32  `thrift:"orderId,1" json:"orderId"`
+	Remark  string `thrift:"remark,2" json:"remark"`
+}
+
+func NewPaymentServiceDiscountByBalanceArgs() *PaymentServiceDiscountByBalanceArgs {
+	return &PaymentServiceDiscountByBalanceArgs{}
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) GetOrderId() int32 {
+	return p.OrderId
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) GetRemark() string {
+	return p.Remark
+}
+func (p *PaymentServiceDiscountByBalanceArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.OrderId = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Remark = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("DiscountByBalance_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("orderId", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:orderId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.OrderId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.orderId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:orderId: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("remark", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:remark: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Remark)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.remark (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:remark: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByBalanceArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceDiscountByBalanceArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type PaymentServiceDiscountByBalanceResult struct {
+	Success *Result_ `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewPaymentServiceDiscountByBalanceResult() *PaymentServiceDiscountByBalanceResult {
+	return &PaymentServiceDiscountByBalanceResult{}
+}
+
+var PaymentServiceDiscountByBalanceResult_Success_DEFAULT *Result_
+
+func (p *PaymentServiceDiscountByBalanceResult) GetSuccess() *Result_ {
+	if !p.IsSetSuccess() {
+		return PaymentServiceDiscountByBalanceResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *PaymentServiceDiscountByBalanceResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PaymentServiceDiscountByBalanceResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceResult) readField0(iprot thrift.TProtocol) error {
+	p.Success = &Result_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("DiscountByBalance_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByBalanceResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByBalanceResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceDiscountByBalanceResult(%+v)", *p)
+}
+
+// Attributes:
+//  - OrderId
+//  - Integral
+//  - IgnoreOut
+type PaymentServiceDiscountByIntegralArgs struct {
+	OrderId   int32 `thrift:"orderId,1" json:"orderId"`
+	Integral  int32 `thrift:"integral,2" json:"integral"`
+	IgnoreOut bool  `thrift:"ignoreOut,3" json:"ignoreOut"`
+}
+
+func NewPaymentServiceDiscountByIntegralArgs() *PaymentServiceDiscountByIntegralArgs {
+	return &PaymentServiceDiscountByIntegralArgs{}
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) GetOrderId() int32 {
+	return p.OrderId
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) GetIntegral() int32 {
+	return p.Integral
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) GetIgnoreOut() bool {
+	return p.IgnoreOut
+}
+func (p *PaymentServiceDiscountByIntegralArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.OrderId = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Integral = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) readField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.IgnoreOut = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("DiscountByIntegral_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("orderId", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:orderId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.OrderId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.orderId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:orderId: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("integral", thrift.I32, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:integral: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Integral)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.integral (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:integral: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("ignoreOut", thrift.BOOL, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:ignoreOut: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.IgnoreOut)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.ignoreOut (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:ignoreOut: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByIntegralArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceDiscountByIntegralArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type PaymentServiceDiscountByIntegralResult struct {
+	Success *DResult_ `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewPaymentServiceDiscountByIntegralResult() *PaymentServiceDiscountByIntegralResult {
+	return &PaymentServiceDiscountByIntegralResult{}
+}
+
+var PaymentServiceDiscountByIntegralResult_Success_DEFAULT *DResult_
+
+func (p *PaymentServiceDiscountByIntegralResult) GetSuccess() *DResult_ {
+	if !p.IsSetSuccess() {
+		return PaymentServiceDiscountByIntegralResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *PaymentServiceDiscountByIntegralResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PaymentServiceDiscountByIntegralResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralResult) readField0(iprot thrift.TProtocol) error {
+	p.Success = &DResult_{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("DiscountByIntegral_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceDiscountByIntegralResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *PaymentServiceDiscountByIntegralResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceDiscountByIntegralResult(%+v)", *p)
 }

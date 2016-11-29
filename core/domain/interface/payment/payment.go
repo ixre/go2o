@@ -123,7 +123,7 @@ type (
 		SystemPayment(fee float32) error
 
 		// 赠送账户支付
-		PresentAccountPayment(remark string) error
+		PaymentByPresent(remark string) error
 
 		// 设置支付方式
 		SetPaymentSign(paymentSign int32) error

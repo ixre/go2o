@@ -8,6 +8,13 @@ struct Result{
    4:string Message
 }
 
+//传输结果对象(Double)
+struct DResult{
+   1:double Data
+   2:bool Result
+   3:string Message
+}
+
 struct Member {
     1: i32 Id
     2: string Usr
@@ -188,4 +195,14 @@ service PaymentService{
     PaymentOrder GetPaymentOrder(1:string paymentNo)
     // 根据编号获取支付单
     PaymentOrder GetPaymentOrderById(1:i32 id)
+    // 调整支付单金额
+    Result AdjustOrder(1:string paymentNo, 2:double amount)
+    // 余额抵扣
+    Result DiscountByBalance(1:i32 orderId,2:string remark )
+   // 积分抵扣支付单
+    DResult DiscountByIntegral(1:i32 orderId,2:i32 integral,3:bool ignoreOut)
+    // 赠送账户支付
+    Result PaymentByPresent(1:i32 orderId,2:string remark)
+    // 完成支付单支付，并传入支付方式及外部订单号
+    Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 }
