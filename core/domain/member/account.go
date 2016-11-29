@@ -104,7 +104,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 }
 
 // 充值,客服充值时,需提供操作人(relateUser)
-func (a *accountImpl) ChargeForBalance(chargeType int, title string, outerNo string,
+func (a *accountImpl) ChargeForBalance(chargeType int32, title string, outerNo string,
 	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -265,7 +265,7 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 }
 
 // 赠送金额(指定业务类型)
-func (a *accountImpl) ChargePresentByKind(kind int, title string,
+func (a *accountImpl) ChargePresentByKind(kind int32, title string,
 	outerNo string, amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -603,11 +603,11 @@ func (a *accountImpl) FinishBackBalance(id int32, tradeNo string) error {
 }
 
 // 请求提现,返回info_id,交易号及错误
-func (a *accountImpl) RequestTakeOut(businessKind int, title string,
+func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	amount float32, commission float32) (int32, string, error) {
-	if businessKind != member.KindPresentTakeOutToBalance &&
-		businessKind != member.KindPresentTakeOutToBankCard &&
-		businessKind != member.KindPresentTakeOutToThirdPart {
+	if takeKind != member.KindPresentTakeOutToBalance &&
+		takeKind != member.KindPresentTakeOutToBankCard &&
+		takeKind != member.KindPresentTakeOutToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -655,7 +655,7 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	unix := time.Now().Unix()
 	v := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: businessKind,
+		BusinessKind: takeKind,
 		Title:        title,
 		OuterNo:      tradeNo,
 		Amount:       finalAmount,
@@ -668,7 +668,7 @@ func (a *accountImpl) RequestTakeOut(businessKind int, title string,
 	}
 
 	// 提现至余额
-	if businessKind == member.KindPresentTakeOutToBalance {
+	if takeKind == member.KindPresentTakeOutToBalance {
 		a.value.Balance += amount
 		v.State = enum.ReviewPass
 	}
@@ -1006,7 +1006,7 @@ func (a *accountImpl) receiveBalanceTransfer(fromMember int32, tradeNo string,
 }
 
 // 转账余额到其他账户
-func (a *accountImpl) TransferBalance(kind int, amount float32,
+func (a *accountImpl) TransferBalance(kind int32, amount float32,
 	tradeNo string, toTitle, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -1039,7 +1039,7 @@ func (a *accountImpl) TransferBalance(kind int, amount float32,
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (a *accountImpl) TransferPresent(kind int, amount float32, commission float32,
+func (a *accountImpl) TransferPresent(kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -1072,7 +1072,7 @@ func (a *accountImpl) TransferPresent(kind int, amount float32, commission float
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
+func (a *accountImpl) TransferFlow(kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 
@@ -1113,7 +1113,7 @@ func (a *accountImpl) TransferFlow(kind int, amount float32, commission float32,
 }
 
 // 将活动金转给其他人
-func (a *accountImpl) TransferFlowTo(memberId int32, kind int,
+func (a *accountImpl) TransferFlowTo(memberId int32, kind int32,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
 

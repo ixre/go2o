@@ -23,8 +23,11 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Result CreatePaymentOrder(PaymentOrder o)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrder(string paymentNo)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
+	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
 	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i32 integral, bool ignoreOut)")
+	fmt.Fprintln(os.Stderr, "  Result PaymentByPresent(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -124,19 +127,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg75 := flag.Arg(1)
-		mbTrans76 := thrift.NewTMemoryBufferLen(len(arg75))
-		defer mbTrans76.Close()
-		_, err77 := mbTrans76.WriteString(arg75)
-		if err77 != nil {
+		arg94 := flag.Arg(1)
+		mbTrans95 := thrift.NewTMemoryBufferLen(len(arg94))
+		defer mbTrans95.Close()
+		_, err96 := mbTrans95.WriteString(arg94)
+		if err96 != nil {
 			Usage()
 			return
 		}
-		factory78 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt79 := factory78.GetProtocol(mbTrans76)
+		factory97 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt98 := factory97.GetProtocol(mbTrans95)
 		argvalue0 := define.NewPaymentOrder()
-		err80 := argvalue0.Read(jsProt79)
-		if err80 != nil {
+		err99 := argvalue0.Read(jsProt98)
+		if err99 != nil {
 			Usage()
 			return
 		}
@@ -159,8 +162,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err82 := (strconv.Atoi(flag.Arg(1)))
-		if err82 != nil {
+		tmp0, err101 := (strconv.Atoi(flag.Arg(1)))
+		if err101 != nil {
 			Usage()
 			return
 		}
@@ -169,13 +172,29 @@ func main() {
 		fmt.Print(client.GetPaymentOrderById(value0))
 		fmt.Print("\n")
 		break
+	case "AdjustOrder":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "AdjustOrder requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1, err103 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err103 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		fmt.Print(client.AdjustOrder(value0, value1))
+		fmt.Print("\n")
+		break
 	case "DiscountByBalance":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err83 := (strconv.Atoi(flag.Arg(1)))
-		if err83 != nil {
+		tmp0, err104 := (strconv.Atoi(flag.Arg(1)))
+		if err104 != nil {
 			Usage()
 			return
 		}
@@ -191,15 +210,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err85 := (strconv.Atoi(flag.Arg(1)))
-		if err85 != nil {
+		tmp0, err106 := (strconv.Atoi(flag.Arg(1)))
+		if err106 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err86 := (strconv.Atoi(flag.Arg(2)))
-		if err86 != nil {
+		tmp1, err107 := (strconv.Atoi(flag.Arg(2)))
+		if err107 != nil {
 			Usage()
 			return
 		}
@@ -208,6 +227,37 @@ func main() {
 		argvalue2 := flag.Arg(3) == "true"
 		value2 := argvalue2
 		fmt.Print(client.DiscountByIntegral(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "PaymentByPresent":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "PaymentByPresent requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err109 := (strconv.Atoi(flag.Arg(1)))
+		if err109 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.PaymentByPresent(value0, value1))
+		fmt.Print("\n")
+		break
+	case "FinishPayment":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "FinishPayment requires 3 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.FinishPayment(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":

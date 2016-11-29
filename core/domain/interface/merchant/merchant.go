@@ -191,7 +191,7 @@ type (
 		// 提交时间
 		SubmitTime int64 `db:"submit_time"`
 		// 是否通过
-		Reviewed int `db:"reviewed"`
+		Reviewed int32 `db:"reviewed"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}

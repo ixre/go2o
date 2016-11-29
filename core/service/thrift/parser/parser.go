@@ -251,3 +251,26 @@ func PaymentOrderDto(src *payment.PaymentOrder) *define.PaymentOrder {
 		State:            src.State,
 	}
 }
+
+func MemberRelationDto(src *member.Relation) *define.MemberRelation {
+	return &define.MemberRelation{
+		MemberId:      src.MemberId,
+		CardId:        src.CardId,
+		InviterId:     src.InviterId,
+		InviterStr:    src.InviterStr,
+		RegisterMchId: src.RegisterMchId,
+	}
+}
+
+func TrustedInfoDto(src *member.TrustedInfo) *define.TrustedInfo {
+	return &define.TrustedInfo{
+		MemberId:   src.MemberId,
+		RealName:   src.RealName,
+		CardId:     src.CardId,
+		TrustImage: src.TrustImage,
+		Reviewed:   src.Reviewed,
+		ReviewTime: src.ReviewTime,
+		Remark:     src.Remark,
+		UpdateTime: src.UpdateTime,
+	}
+}

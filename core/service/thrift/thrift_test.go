@@ -10,9 +10,9 @@ package thrift
 
 import (
 	"errors"
+	"github.com/jsix/gof/log"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/thrift/idl/gen-go/define"
-	"gp/src/controller"
 	"strings"
 	"testing"
 )
@@ -27,14 +27,15 @@ func TestLogin(t *testing.T) {
 	defer cli.Transport.Close()
 	t.Logf("连接开启：%v", cli.Transport.IsOpen())
 	pwd := domain.MemberSha1Pwd("123456")
-	mp, err := cli.Login("jarry6", pwd, false)
-	t.Logf("登陆(1)结果：\n MemberId:%d\n Result:%d", mp["Id"], mp["Result"])
+	r, _ := cli.Login("jarry6", pwd, false)
+	t.Logf("登陆(1)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
 
-	t.Logf("%#v", mp)
 	pwd = domain.MemberSha1Pwd("123000")
-	mp, _ = cli.Login("jarry6", pwd, false)
-	t.Logf("登陆(2)结果：\n MemberId:%d\n Result:%d", mp["Id"], mp["Result"])
+	r, _ = cli.Login("jarry6", pwd, false)
+	t.Logf("登陆(2)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
 
+	arr, _ := cli.InviterArray(16893, 5)
+	t.Log("邀请人：", arr)
 }
 
 func TestSSORegister(t *testing.T) {
@@ -52,7 +53,7 @@ func TestSSORegister(t *testing.T) {
 			t.Error(errors.New("注册SSO-APP出错：" +
 				s + "; api-url:" + sa.ApiUrl))
 		} else {
-			controller.SetSsoToken(arr[1])
+			log.Println("得到的token为：", arr[1])
 		}
 	} else {
 		t.Log("连接失败：", err.Error())
