@@ -60,7 +60,7 @@ type (
 		IsHandled int `db:"is_handled"`
 
 		//是否已审核
-		Reviewed int `db:"reviewed"`
+		Reviewed int32 `db:"reviewed"`
 
 		// 审核时间
 		ReviewTime int64 `db:"review_time"`

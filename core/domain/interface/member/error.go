@@ -28,8 +28,8 @@ var (
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 
-	ErrDisabled *domain.DomainError = domain.NewDomainError(
-		"err_member_disabled", "会员已被停用")
+	ErrStopped *domain.DomainError = domain.NewDomainError(
+		"err_member_stopped", "会员已被停用")
 
 	ErrCredential *domain.DomainError = domain.NewDomainError(
 		"err_member_credential", "会员用户或密码不正确")
@@ -46,7 +46,7 @@ var (
 	ErrPwdLength *domain.DomainError = domain.NewDomainError(
 		"err_member_pwd_length", "密码至少包含6个字符")
 
-	ErrNoSuchDeliverAddress *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAddress *domain.DomainError = domain.NewDomainError(
 		"member_no_such_deliver_address", "配送地址错误")
 
 	ErrLevelUsed *domain.DomainError = domain.NewDomainError(

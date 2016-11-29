@@ -18,14 +18,14 @@ var (
 )
 
 const (
-	PaymentOnlinePay      int = 1 // 线上付款
-	PaymentOfflineCashPay     = 2 // 线下现金付款
-	PaymentRemit          int = 3 // 转账汇款
+	PaymentOnlinePay      int32 = 1 // 线上付款
+	PaymentOfflineCashPay int32 = 2 // 线下现金付款
+	PaymentRemit          int32 = 3 // 转账汇款
 )
 
 // 获取支付帮助内容
 //todo: 需要商户可以自定义设置
-func GetPaymentHelpContent(opt int) string {
+func GetPaymentHelpContent(opt int32) string {
 	if opt-1 <= 0 {
 		opt = 1
 	}

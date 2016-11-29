@@ -262,7 +262,7 @@ func (p *paymentOrderImpl) getBuyer() member.IMember {
 }
 
 // 赠送账户支付
-func (p *paymentOrderImpl) PresentAccountPayment(remark string) error {
+func (p *paymentOrderImpl) PaymentByPresent(remark string) error {
 	amount := p.value.FinalAmount
 	buyer := p.getBuyer()
 	if buyer == nil {
@@ -288,7 +288,7 @@ func (p *paymentOrderImpl) PresentAccountPayment(remark string) error {
 }
 
 // 设置支付方式
-func (p *paymentOrderImpl) SetPaymentSign(paymentSign int) error {
+func (p *paymentOrderImpl) SetPaymentSign(paymentSign int32) error {
 	//todo: 某个支付方式被暂停
 	p.value.PaymentSign = paymentSign
 	return nil

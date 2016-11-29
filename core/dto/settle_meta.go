@@ -9,8 +9,8 @@
 package dto
 
 type SettleMeta struct {
-	PaymentOpt int                `json:"pay_opt"`
-	DeliverOpt int                `json:"deliver_opt"`
+	PaymentOpt int32              `json:"pay_opt"`
+	DeliverOpt int32              `json:"deliver_opt"`
 	Shop       *SettleShopMeta    `json:"shop"`
 	Deliver    *SettleDeliverMeta `json:"deliver"`
 }

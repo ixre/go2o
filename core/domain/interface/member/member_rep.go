@@ -123,13 +123,13 @@ type IMemberRep interface {
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*DeliverAddress) (int32, error)
+	SaveDeliver(*Address) (int32, error)
 
 	// 获取全部配送地址
-	GetDeliverAddress(memberId int32) []*DeliverAddress
+	GetDeliverAddress(memberId int32) []*Address
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, adressId int32) *DeliverAddress
+	GetSingleDeliverAddress(memberId, adressId int32) *Address
 
 	// 删除配送地址
 	DeleteAddress(memberId, adressId int32) error

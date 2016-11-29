@@ -62,7 +62,7 @@ func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
 	memberId, _ := util.I32Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
-	cli, err := thrift.MemberClient()
+	cli, err := thrift.MemberServeClient()
 	if err == nil {
 		defer cli.Transport.Close()
 		if b, _ := cli.CheckToken(memberId, token); b {

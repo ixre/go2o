@@ -389,7 +389,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int32) error {
 	}
 	addr := m.Profile().GetAddress(addressId)
 	if addr == nil {
-		return member.ErrNoSuchDeliverAddress
+		return member.ErrNoSuchAddress
 	}
 	return c.setBuyerAddress(addressId)
 }
@@ -422,7 +422,7 @@ func (c *cartImpl) SignItemChecked(skuArr []int32) error {
 }
 
 // 结算数据持久化
-func (c *cartImpl) SettlePersist(shopId int32, paymentOpt int, deliverOpt int, addressId int32) error {
+func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, addressId int32) error {
 	//var shop shop.IShop
 	var deliver member.IDeliverAddress
 	var err error
@@ -464,7 +464,7 @@ func (c *cartImpl) SettlePersist(shopId int32, paymentOpt int, deliverOpt int, a
 
 // 获取结算数据
 func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
-	paymentOpt, deliverOpt int) {
+	paymentOpt, deliverOpt int32) {
 	//var err error
 	if c.value.ShopId > 0 && c.shop == nil {
 		//var pt merchant.IMerchant

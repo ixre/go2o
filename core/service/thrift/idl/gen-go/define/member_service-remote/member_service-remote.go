@@ -20,13 +20,17 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "   Login(string user, string pwd, bool update)")
+	fmt.Fprintln(os.Stderr, "  Result Login(string user, string pwd, bool update)")
 	fmt.Fprintln(os.Stderr, "  Member GetMember(i32 id)")
 	fmt.Fprintln(os.Stderr, "  Member GetMemberByUser(string user)")
 	fmt.Fprintln(os.Stderr, "  Profile GetProfile(i32 id)")
 	fmt.Fprintln(os.Stderr, "  string GetToken(i32 memberId, bool reset)")
 	fmt.Fprintln(os.Stderr, "  bool CheckToken(i32 memberId, string token)")
 	fmt.Fprintln(os.Stderr, "  void RemoveToken(i32 memberId)")
+	fmt.Fprintln(os.Stderr, "  Address GetAddress(i32 memberId, i32 addrId)")
+	fmt.Fprintln(os.Stderr, "  Account GetAccount(i32 memberId)")
+	fmt.Fprintln(os.Stderr, "   InviterArray(i32 memberId, i32 depth)")
+	fmt.Fprintln(os.Stderr, "  Result PresentBalanceByKind(i32 memberId, i32 kind, string title, string outerNo, double amount, i32 relateUser)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -140,8 +144,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err21 := (strconv.Atoi(flag.Arg(1)))
-		if err21 != nil {
+		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
+		if err28 != nil {
 			Usage()
 			return
 		}
@@ -165,8 +169,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
-		if err23 != nil {
+		tmp0, err30 := (strconv.Atoi(flag.Arg(1)))
+		if err30 != nil {
 			Usage()
 			return
 		}
@@ -180,8 +184,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err24 := (strconv.Atoi(flag.Arg(1)))
-		if err24 != nil {
+		tmp0, err31 := (strconv.Atoi(flag.Arg(1)))
+		if err31 != nil {
 			Usage()
 			return
 		}
@@ -197,8 +201,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err26 := (strconv.Atoi(flag.Arg(1)))
-		if err26 != nil {
+		tmp0, err33 := (strconv.Atoi(flag.Arg(1)))
+		if err33 != nil {
 			Usage()
 			return
 		}
@@ -214,14 +218,112 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err28 := (strconv.Atoi(flag.Arg(1)))
-		if err28 != nil {
+		tmp0, err35 := (strconv.Atoi(flag.Arg(1)))
+		if err35 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.RemoveToken(value0))
+		fmt.Print("\n")
+		break
+	case "GetAddress":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err36 := (strconv.Atoi(flag.Arg(1)))
+		if err36 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err37 := (strconv.Atoi(flag.Arg(2)))
+		if err37 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		fmt.Print(client.GetAddress(value0, value1))
+		fmt.Print("\n")
+		break
+	case "GetAccount":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetAccount requires 1 args")
+			flag.Usage()
+		}
+		tmp0, err38 := (strconv.Atoi(flag.Arg(1)))
+		if err38 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		fmt.Print(client.GetAccount(value0))
+		fmt.Print("\n")
+		break
+	case "InviterArray":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "InviterArray requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err39 := (strconv.Atoi(flag.Arg(1)))
+		if err39 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err40 := (strconv.Atoi(flag.Arg(2)))
+		if err40 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		fmt.Print(client.InviterArray(value0, value1))
+		fmt.Print("\n")
+		break
+	case "PresentBalanceByKind":
+		if flag.NArg()-1 != 6 {
+			fmt.Fprintln(os.Stderr, "PresentBalanceByKind requires 6 args")
+			flag.Usage()
+		}
+		tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
+		if err41 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err42 := (strconv.Atoi(flag.Arg(2)))
+		if err42 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		argvalue4, err45 := (strconv.ParseFloat(flag.Arg(5), 64))
+		if err45 != nil {
+			Usage()
+			return
+		}
+		value4 := argvalue4
+		tmp5, err46 := (strconv.Atoi(flag.Arg(6)))
+		if err46 != nil {
+			Usage()
+			return
+		}
+		argvalue5 := int32(tmp5)
+		value5 := argvalue5
+		fmt.Print(client.PresentBalanceByKind(value0, value1, value2, value3, value4, value5))
 		fmt.Print("\n")
 		break
 	case "":

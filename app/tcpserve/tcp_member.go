@@ -15,9 +15,9 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
 	"go2o/app/cache"
-	"go2o/core/domain/interface/member"
 	"go2o/core/dto"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
 	"strconv"
 	"strings"
@@ -45,25 +45,23 @@ func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
 	return v
 }
 
-func getMemberAccount(memberId int, updateTime int) *member.Account {
+func getMemberAccount(memberId int, updateTime int) *define.Account {
 	sto := gof.CurrentApp.Storage()
 	var kvAut int
 	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
 	kvAut, _ = sto.GetInt(autKey)
 	//get from redis
-	var v *member.Account = new(member.Account)
+	var v *define.Account = &define.Account{}
 	var key = fmt.Sprintf("cac:mm:acc:%d", memberId)
 	if kvAut != 0 && kvAut == updateTime {
 		if cache.GetKVS().Get(key, v) == nil {
 			return v
 		}
 	}
-	v = rsi.MemberService.GetAccount(int32(memberId))
+	v, _ = rsi.MemberService.GetAccount(int32(memberId))
 	sto.SetExpire(key, v, 3600*360) // cache 15 hours
 	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
-
 	return v
-
 }
 
 // get profile of member

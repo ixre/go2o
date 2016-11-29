@@ -514,7 +514,7 @@ func (s *saleService) GetSnapshot(skuId int32) *goods.Snapshot {
 }
 
 // 设置商品货架状态
-func (s *saleService) SetShelveState(mchId int32, itemId int32, state int, remark string) error {
+func (s *saleService) SetShelveState(mchId int32, itemId int32, state int32, remark string) error {
 	sl := s._rep.GetSale(mchId)
 	gi := sl.ItemManager().GetItem(itemId)
 	if gi == nil {

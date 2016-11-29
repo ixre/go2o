@@ -125,7 +125,7 @@ func Init(ctx gof.App) {
 	AfterSalesService = NewAfterSalesService(asRep, afterSalesQuery, spRep)
 	MerchantService = NewMerchantService(mchRep, saleRep, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRep, mchRep, shopQuery)
-	MemberService = NewMemberService(MerchantService, memberRep, memberQue, orderQuery)
+	MemberService = NewMemberService(MerchantService, memberRep, memberQue, orderQuery, valRep)
 	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
 	PaymentService = NewPaymentService(paymentRep, spRep)
 	MssService = NewMssService(mssRep)
