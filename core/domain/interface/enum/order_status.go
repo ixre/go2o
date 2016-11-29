@@ -70,7 +70,7 @@ var (
 )
 
 // 获取支付方式名称
-func GetPaymentName(i int) string {
+func GetPaymentName(i int32) string {
 	switch i {
 	case 1:
 		return "在线支付"
@@ -83,6 +83,6 @@ func GetPaymentName(i int) string {
 	return ""
 }
 
-func GetFrontShopStateName(state int) string {
+func GetFrontShopStateName(state int32) string {
 	return FRONT_SHOP_STATE_TEXTS[state]
 }

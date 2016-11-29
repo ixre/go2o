@@ -57,10 +57,10 @@ type (
 		GetCartGoods() []sale.IGoods
 
 		// 结算数据持久化
-		SettlePersist(shopId int32, paymentOpt int, deliverOpt int, deliverId int32) error
+		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error
 
 		// 获取结算数据
-		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt, deliverOpt int)
+		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt, deliverOpt int32)
 
 		// 设置购买会员
 		SetBuyer(buyerId int32) error
@@ -143,10 +143,10 @@ type (
 		BuyerId int32  `db:"buyer_id"`
 		//OrderNo    string           `db:"order_no"`
 		//IsBought   int              `db:"is_bought"`
-		PaymentOpt int         `db:"payment_opt"`
-		DeliverOpt int         `db:"deliver_opt"`
+		PaymentOpt int32       `db:"payment_opt"`
+		DeliverOpt int32       `db:"deliver_opt"`
 		DeliverId  int32       `db:"deliver_id"`
-		ShopId     int         `db:"shop_id"`
+		ShopId     int32       `db:"shop_id"`
 		CreateTime int64       `db:"create_time"`
 		UpdateTime int64       `db:"update_time"`
 		Items      []*CartItem `db:"-"`

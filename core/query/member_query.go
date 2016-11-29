@@ -126,7 +126,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId int32, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int32, kind int) *member.BalanceInfo {
+func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int32, kind int32) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
 	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {

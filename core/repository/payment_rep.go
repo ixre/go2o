@@ -13,6 +13,7 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
+	"github.com/jsix/gof/util"
 	"go2o/core"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
@@ -61,7 +62,7 @@ func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
 }
 
 // 根据编号获取支付单
-func (p *paymentRep) GetPaymentOrder(id int32) payment.IPaymentOrder {
+func (p *paymentRep) GetPaymentOrderById(id int32) payment.IPaymentOrder {
 	if id <= 0 {
 		return nil
 	}
@@ -77,9 +78,9 @@ func (p *paymentRep) GetPaymentOrder(id int32) payment.IPaymentOrder {
 }
 
 // 根据支付单号获取支付单
-func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder {
+func (p *paymentRep) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
 	k := p.getPaymentOrderCkByNo(paymentNo)
-	id, err := p.Storage.GetInt(k)
+	id, err := util.I32Err(p.Storage.GetInt(k))
 	if err != nil {
 		p.ExecScalar("SELECT id FROM pay_order where trade_no=?", &id, paymentNo)
 		if id == 0 {
@@ -87,7 +88,7 @@ func (p *paymentRep) GetPaymentOrderByNo(paymentNo string) payment.IPaymentOrder
 		}
 		p.Storage.SetExpire(k, id, DefaultCacheSeconds*10)
 	}
-	return p.GetPaymentOrder(int32(id))
+	return p.GetPaymentOrderById(id)
 }
 
 // 创建支付单
@@ -101,7 +102,7 @@ func (p *paymentRep) CreatePaymentOrder(
 func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
 	stat := v.State
 	if v.Id > 0 {
-		stat = p.GetPaymentOrder(v.Id).GetValue().State
+		stat = p.GetPaymentOrderById(v.Id).GetValue().State
 	}
 	id, err := orm.I32(orm.Save(p.GetOrm(), v, int(v.Id)))
 	if err == nil {

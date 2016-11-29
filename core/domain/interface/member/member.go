@@ -141,7 +141,7 @@ type (
 		ReviewTrustedInfo(pass bool, remark string) error
 
 		// 创建配送地址
-		CreateDeliver(*DeliverAddress) IDeliverAddress
+		CreateDeliver(*Address) IDeliverAddress
 
 		// 获取配送地址
 		GetDeliverAddress() []IDeliverAddress
@@ -261,11 +261,11 @@ type (
 		//会员卡号
 		CardId string `db:"card_id"`
 		//推荐人（会员）
-		RefereesId int32 `db:"invi_member_id"`
+		InviterId int32 `db:"invi_member_id"`
 		// 会员关系字符串
-		ReferStr string `db:"refer_str"`
+		InviterStr string `db:"refer_str"`
 		//注册关联商户编号
-		RegisterMerchantId int32 `db:"reg_merchant_id"`
+		RegisterMchId int32 `db:"reg_merchant_id"`
 	}
 
 	// 实名认证信息
@@ -279,7 +279,7 @@ type (
 		//认证图片、身份证、人与身份证的图像等
 		TrustImage string `db:"trust_image"`
 		//是否审核通过
-		Reviewed int `db:"reviewed"`
+		Reviewed int32 `db:"reviewed"`
 		//审核时间
 		ReviewTime int64 `db:"review_time"`
 		//审核备注
@@ -326,13 +326,13 @@ type (
 	// 收货地址
 	IDeliverAddress interface {
 		GetDomainId() int32
-		GetValue() DeliverAddress
-		SetValue(*DeliverAddress) error
+		GetValue() Address
+		SetValue(*Address) error
 		Save() (int32, error)
 	}
 
 	// 收货地址
-	DeliverAddress struct {
+	Address struct {
 		//编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
@@ -369,7 +369,7 @@ type (
 		// 支付单编号
 		PaymentId int32 `db:"payment_id"`
 		// 是否审核及处理
-		Reviewed int `db:"reviewed"`
+		Reviewed int32 `db:"reviewed"`
 		// 升级时间
 		CreateTime int64 `db:"create_time"`
 	}

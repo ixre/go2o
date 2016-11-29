@@ -15,11 +15,11 @@ import (
 
 const (
 	// 已下架
-	ShelvesDown = 1
+	ShelvesDown int32 = 1
 	// 已上架
-	ShelvesOn = 2
+	ShelvesOn int32 = 2
 	// 已拒绝上架 (不允许上架)
-	ShelvesIncorrect = 3
+	ShelvesIncorrect int32 = 3
 )
 
 var (
@@ -94,13 +94,13 @@ type (
 		// 描述
 		Description string `db:"description"`
 		// 上架状态
-		ShelveState int `db:"shelve_state"`
+		ShelveState int32 `db:"shelve_state"`
 		// 审核状态
-		ReviewState int `db:"review_state"`
+		ReviewState int32 `db:"review_state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 状态
-		State int `db:"state"`
+		State int32 `db:"state"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间

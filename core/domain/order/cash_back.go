@@ -28,10 +28,10 @@ func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
 	referId := memberId
 	for i <= level-1 {
 		rl := o.memberRep.GetRelation(referId)
-		if rl == nil || rl.RefereesId <= 0 {
+		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
-		arr[i] = rl.RefereesId
+		arr[i] = rl.InviterId
 		referId = arr[i]
 		i++
 	}
@@ -108,11 +108,11 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 		percent := saleConf.CashBackTg2Percent
 		for i < 2 {
 			rl := m.GetRelation()
-			if rl == nil || rl.RefereesId == 0 {
+			if rl == nil || rl.InviterId == 0 {
 				break
 			}
 
-			m = o.memberRep.GetMember(rl.RefereesId)
+			m = o.memberRep.GetMember(rl.InviterId)
 			if m == nil {
 				break
 			}
@@ -165,11 +165,11 @@ func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICa
 	for true {
 		rl := cm.GetRelation()
 		// fmt.Println("-------- BACK - ID - ",rl.InvitationMemberId)
-		if rl == nil || rl.RefereesId == 0 {
+		if rl == nil || rl.InviterId == 0 {
 			break
 		}
 
-		cm = memberRep.GetMember(rl.RefereesId)
+		cm = memberRep.GetMember(rl.InviterId)
 
 		// fmt.Println("-------- BACK ",cm == nil)
 		if m == nil {

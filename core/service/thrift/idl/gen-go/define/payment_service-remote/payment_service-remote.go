@@ -20,13 +20,14 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
-	fmt.Fprintln(os.Stderr, "  PlatformConf GetPlatformConf()")
-	fmt.Fprintln(os.Stderr, "  string RegisterSsoApp(SsoApp app)")
-	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
-	fmt.Fprintln(os.Stderr, "  bool ValidateSuper(string user, string pwd)")
-	fmt.Fprintln(os.Stderr, "  void FlushSuperPwd(string user, string pwd)")
-	fmt.Fprintln(os.Stderr, "  string GetSyncLoginUrl(string returnUrl)")
+	fmt.Fprintln(os.Stderr, "  Result CreatePaymentOrder(PaymentOrder o)")
+	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrder(string paymentNo)")
+	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
+	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
+	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i32 integral, bool ignoreOut)")
+	fmt.Fprintln(os.Stderr, "  Result PaymentByPresent(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -114,96 +115,149 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewFoundationServiceClientFactory(trans, protocolFactory)
+	client := define.NewPaymentServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "ResourceUrl":
+	case "CreatePaymentOrder":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "ResourceUrl requires 1 args")
+			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
+			flag.Usage()
+		}
+		arg94 := flag.Arg(1)
+		mbTrans95 := thrift.NewTMemoryBufferLen(len(arg94))
+		defer mbTrans95.Close()
+		_, err96 := mbTrans95.WriteString(arg94)
+		if err96 != nil {
+			Usage()
+			return
+		}
+		factory97 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt98 := factory97.GetProtocol(mbTrans95)
+		argvalue0 := define.NewPaymentOrder()
+		err99 := argvalue0.Read(jsProt98)
+		if err99 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		fmt.Print(client.CreatePaymentOrder(value0))
+		fmt.Print("\n")
+		break
+	case "GetPaymentOrder":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetPaymentOrder requires 1 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.ResourceUrl(value0))
+		fmt.Print(client.GetPaymentOrder(value0))
 		fmt.Print("\n")
 		break
-	case "GetPlatformConf":
-		if flag.NArg()-1 != 0 {
-			fmt.Fprintln(os.Stderr, "GetPlatformConf requires 0 args")
-			flag.Usage()
-		}
-		fmt.Print(client.GetPlatformConf())
-		fmt.Print("\n")
-		break
-	case "RegisterSsoApp":
+	case "GetPaymentOrderById":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "RegisterSsoApp requires 1 args")
+			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		arg65 := flag.Arg(1)
-		mbTrans66 := thrift.NewTMemoryBufferLen(len(arg65))
-		defer mbTrans66.Close()
-		_, err67 := mbTrans66.WriteString(arg65)
-		if err67 != nil {
+		tmp0, err101 := (strconv.Atoi(flag.Arg(1)))
+		if err101 != nil {
 			Usage()
 			return
 		}
-		factory68 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt69 := factory68.GetProtocol(mbTrans66)
-		argvalue0 := define.NewSsoApp()
-		err70 := argvalue0.Read(jsProt69)
-		if err70 != nil {
-			Usage()
-			return
-		}
+		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.RegisterSsoApp(value0))
+		fmt.Print(client.GetPaymentOrderById(value0))
 		fmt.Print("\n")
 		break
-	case "GetAllSsoApp":
-		if flag.NArg()-1 != 0 {
-			fmt.Fprintln(os.Stderr, "GetAllSsoApp requires 0 args")
+	case "AdjustOrder":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "AdjustOrder requires 2 args")
 			flag.Usage()
 		}
-		fmt.Print(client.GetAllSsoApp())
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1, err103 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err103 != nil {
+			Usage()
+			return
+		}
+		value1 := argvalue1
+		fmt.Print(client.AdjustOrder(value0, value1))
 		fmt.Print("\n")
 		break
-	case "ValidateSuper":
+	case "DiscountByBalance":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "ValidateSuper requires 2 args")
+			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err104 := (strconv.Atoi(flag.Arg(1)))
+		if err104 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.DiscountByBalance(value0, value1))
+		fmt.Print("\n")
+		break
+	case "DiscountByIntegral":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err106 := (strconv.Atoi(flag.Arg(1)))
+		if err106 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err107 := (strconv.Atoi(flag.Arg(2)))
+		if err107 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3) == "true"
+		value2 := argvalue2
+		fmt.Print(client.DiscountByIntegral(value0, value1, value2))
+		fmt.Print("\n")
+		break
+	case "PaymentByPresent":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "PaymentByPresent requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err109 := (strconv.Atoi(flag.Arg(1)))
+		if err109 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.PaymentByPresent(value0, value1))
+		fmt.Print("\n")
+		break
+	case "FinishPayment":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "FinishPayment requires 3 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.ValidateSuper(value0, value1))
-		fmt.Print("\n")
-		break
-	case "FlushSuperPwd":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "FlushSuperPwd requires 2 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
-		value1 := argvalue1
-		fmt.Print(client.FlushSuperPwd(value0, value1))
-		fmt.Print("\n")
-		break
-	case "GetSyncLoginUrl":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSyncLoginUrl requires 1 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		fmt.Print(client.GetSyncLoginUrl(value0))
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		fmt.Print(client.FinishPayment(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":

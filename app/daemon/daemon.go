@@ -21,7 +21,6 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/payment"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
@@ -49,7 +48,7 @@ type Service interface {
 	MemberObs(m *define.Member, create bool) bool
 
 	// 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-	PaymentOrderObs(order *payment.PaymentOrder) bool
+	PaymentOrderObs(order *define.PaymentOrder) bool
 
 	// 处理邮件队列,返回布尔值,如果返回false,则不继续执行
 	HandleMailQueue([]*mss.MailTask) bool
@@ -226,7 +225,7 @@ func (d *defaultService) MemberObs(m *define.Member, create bool) bool {
 }
 
 // 通知支付单完成队列,返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) PaymentOrderObs(order *payment.PaymentOrder) bool {
+func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
 	if order == nil {
 		return false
 	}

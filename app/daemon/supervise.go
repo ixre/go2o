@@ -93,7 +93,7 @@ func superviseMemberUpdate(ss []Service) {
 func supervisePaymentOrderFinish(ss []Service) {
 	sv := rsi.PaymentService
 	notify := func(id int, ss []Service) {
-		order := sv.GetPaymentOrder(int32(id))
+		order, _ := sv.GetPaymentOrderById(int32(id))
 		if order != nil {
 			for _, v := range ss {
 				if !v.PaymentOrderObs(order) {

@@ -21,71 +21,71 @@ const (
 
 const (
 	// 用户充值
-	ChargeByUser = 1
+	ChargeByUser int32 = 1
 	// 系统自动充值
-	ChargeBySystem = 2
+	ChargeBySystem int32 = 2
 	// 客服充值
-	ChargeByService = 3
+	ChargeByService int32 = 3
 	// 退款充值
-	ChargeByRefund = 4
+	ChargeByRefund int32 = 4
 )
 
 const (
 	// 会员充值
-	KindBalanceCharge = 1
+	KindBalanceCharge int32 = 1
 	// 系统充值
-	KindBalanceSystemCharge = 2
+	KindBalanceSystemCharge int32 = 2
 	// 支付抵扣
-	KindBalanceDiscount = 3
+	KindBalanceDiscount int32 = 3
 	// 退款
-	KindBalanceRefund = 4
+	KindBalanceRefund int32 = 4
 	// 转入
-	KindBalanceTransferIn = 5
+	KindBalanceTransferIn int32 = 5
 	// 转出
-	KindBalanceTransferOut = 6
+	KindBalanceTransferOut int32 = 6
 	// 失效
-	KindBalanceExpired = 7
+	KindBalanceExpired int32 = 7
 	// 冻结
-	KindBalanceFreeze = 8
+	KindBalanceFreeze int32 = 8
 	// 解冻
-	KindBalanceUnfreeze = 9
+	KindBalanceUnfreeze int32 = 9
 
 	// 客服充值
-	KindBalanceServiceCharge = 15
+	KindBalanceServiceCharge int32 = 15
 	// 客服扣减
-	KindBalanceServiceDiscount = 16
+	KindBalanceServiceDiscount int32 = 16
 )
 
 const (
 	// 赠送金额
-	KindPresentAdd = 1
+	KindPresentAdd int32 = 1
 	// 抵扣奖金
-	KindPresentDiscount = 2
+	KindPresentDiscount int32 = 2
 	// 转入
-	KindPresentTransferIn = 5
+	KindPresentTransferIn int32 = 5
 	// 转出
-	KindPresentTransferOut = 6
+	KindPresentTransferOut int32 = 6
 	// 失效
-	KindPresentExpired = 7
+	KindPresentExpired int32 = 7
 	// 冻结
-	KindPresentFreeze = 8
+	KindPresentFreeze int32 = 8
 	// 解冻
-	KindPresentUnfreeze = 9
+	KindPresentUnfreeze int32 = 9
 	// 提现到余额
-	KindPresentTakeOutToBalance = 11
+	KindPresentTakeOutToBalance int32 = 11
 	// 提现到银行卡(人工提现)
-	KindPresentTakeOutToBankCard = 12
+	KindPresentTakeOutToBankCard int32 = 12
 	// 提现到第三方
-	KindPresentTakeOutToThirdPart = 13
+	KindPresentTakeOutToThirdPart int32 = 13
 	// 提现退还到银行卡
-	KindPresentTakeOutRefund = 14
+	KindPresentTakeOutRefund int32 = 14
 	// 支付单退款
-	KindPresentPaymentRefund = 15
+	KindPresentPaymentRefund int32 = 15
 
 	// 客服赠送
-	KindPresentServiceAdd = 21
+	KindPresentServiceAdd int32 = 21
 	// 客服扣减
-	KindPresentServiceDiscount = 22
+	KindPresentServiceDiscount int32 = 22
 )
 
 const (
@@ -97,36 +97,13 @@ const (
 	//KindBalancePresent = 3
 
 	// 流通账户
-	KindBalanceFlow = 4 // 账户流通
+	KindBalanceFlow int32 = 4 // 账户流通
 
 	// 提现
 	//KindBalanceApplyCash = 11
 	// 转账
-	KindBalanceTransfer = 12
-
-	// 提现并充值到余额
-	//TypeApplyCashToCharge = 1
-	// 提现到银行卡
-	//TypeApplyCashToBank = 2
-	// 提现到第三方服务提供商（如：Paypal,支付宝等)
-	//TypeApplyCashToServiceProvider = 3
-
-	// 退款到银行卡
-	//TypeBackToBank = 1
-	// 退款到第三方
-	//TypeBackToServiceProvider = 2
-
-	// 提现请求已提交
-	//StateApplySubmitted = 0
-	// 提现已经确认
-	//StateApplyConfirmed = 1
-	// 提现未通过
-	//StateApplyNotPass = 2
-	// 提现完成
-	//StateApplyOver = 3
-
-	//StatusNormal = 0
-	StatusOK = 1
+	KindBalanceTransfer int32 = 12
+	StatusOK                  = 1
 )
 
 const (
@@ -171,7 +148,7 @@ type (
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
-		ChargeForBalance(chargeType int, title string, outerNo string, amount float32, relateUser int32) error
+		ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减余额
 		DiscountBalance(title string, outerNo string, amount float32, relateUser int32) error
@@ -186,7 +163,7 @@ type (
 		ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额(指定业务类型)
-		ChargePresentByKind(kind int, title string, outerNo string, amount float32, relateUser int32) error
+		ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
@@ -223,7 +200,7 @@ type (
 		FinishBackBalance(id int32, tradeNo string) error
 
 		// 申请提现,applyType：提现方式,返回info_id,交易号 及错误
-		RequestTakeOut(applyType int, title string, amount float32, commission float32) (int32, string, error)
+		RequestTakeOut(takeKind int32, title string, amount float32, commission float32) (int32, string, error)
 
 		// 确认提现
 		ConfirmTakeOut(id int32, pass bool, remark string) error
@@ -243,20 +220,20 @@ type (
 			amount float32, remark string) error
 
 		// 转账余额到其他账户
-		TransferBalance(kind int, amount float32, tradeNo string, toTitle, fromTitle string) error
+		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error
 
 		// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferPresent(kind int, amount float32, commission float32, tradeNo string,
+		TransferPresent(kind int32, amount float32, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferFlow(kind int, amount float32, commission float32, tradeNo string,
+		TransferFlow(kind int32, amount float32, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int32, kind int, amount float32, commission float32,
+		TransferFlowTo(memberId int32, kind int32, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
@@ -265,7 +242,7 @@ type (
 		Id       int32  `db:"id" auto:"yes" pk:"yes"`
 		MemberId int32  `db:"member_id"`
 		TradeNo  string `db:"trade_no"`
-		Kind     int    `db:"kind"`
+		Kind     int32  `db:"kind"`
 		Type     int    `db:"type"`
 		Title    string `db:"title"`
 		// 金额
@@ -347,7 +324,7 @@ type (
 		MemberId int32  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int `db:"kind"`
+		BusinessKind int32 `db:"kind"`
 
 		Title string `db:"title"`
 		// 金额
@@ -357,7 +334,7 @@ type (
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int32 `db:"rel_user"`
 		// 状态
-		State int `db:"state"`
+		State int32 `db:"state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间
@@ -374,7 +351,7 @@ type (
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型
-		BusinessKind int `db:"kind"`
+		BusinessKind int32 `db:"kind"`
 		// 标题
 		Title string `db:"title"`
 		// 金额
@@ -384,7 +361,7 @@ type (
 		// 关联操作人,仅在客服操作时,记录操作人
 		RelateUser int32 `db:"rel_user"`
 		// 状态
-		State int `db:"state"`
+		State int32 `db:"state"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

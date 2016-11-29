@@ -16,6 +16,7 @@ import (
 	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -36,15 +37,17 @@ type memberService struct {
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 	_orderQuery     *query.OrderQuery
+	valRep          valueobject.IValueRep
 }
 
 func NewMemberService(mchService *merchantService, rep member.IMemberRep,
-	q *query.MemberQuery, oq *query.OrderQuery) *memberService {
+	q *query.MemberQuery, oq *query.OrderQuery, valRep valueobject.IValueRep) *memberService {
 	ms := &memberService{
 		_rep:            rep,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
+		valRep:          valRep,
 	}
 	return ms
 	//return ms.init()
@@ -359,8 +362,8 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 			} else {
 				// 保存关联信息
 				rl := m.GetRelation()
-				rl.RefereesId = invitationId
-				rl.RegisterMerchantId = mchId
+				rl.InviterId = invitationId
+				rl.RegisterMchId = mchId
 				rl.CardId = cardId
 				err = m.SaveRelation(rl)
 			}
@@ -465,30 +468,31 @@ func (ms *memberService) ModifyTradePassword(memberId int32,
 
 // 登陆，返回结果(Result)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (ms *memberService) Login(usr string, pwd string, update bool) (r map[string]int32, err error) {
-	r = make(map[string]int32)
+func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.Result_, err error) {
+
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._rep.GetMemberByUsr(usr)
 	if val == nil {
 		val = ms._rep.GetMemberValueByPhone(usr)
 	}
+	r = &define.Result_{}
 	if val == nil {
-		r["Result"] = -1
+		r.Message = member.ErrNoSuchMember.Error()
 		return r, nil
 	}
 	if val.Pwd != pwd {
 		//todo: 兼容旧密码
 		if val.Pwd != domain.Sha1(pwd) {
-			r["Result"] = -2
+			r.Message = member.ErrCredential.Error()
 			return r, nil
 		}
 	}
 	if val.State == member.StateStopped {
-		r["Result"] = -3
+		r.Message = member.ErrStopped.Error()
 		return r, nil
 	}
-	r["Id"] = int32(val.Id)
-	r["Result"] = 0
+	r.ID = val.Id
+	r.Result_ = true
 	if update {
 		m := ms._rep.GetMember(val.Id)
 		m.UpdateLoginTime()
@@ -512,11 +516,23 @@ func (ms *memberService) CheckPhone(phone string, memberId int32) error {
 	return ms._rep.GetManager().CheckPhoneBind(phone, memberId)
 }
 
-func (ms *memberService) GetAccount(memberId int32) *member.Account {
+// 获取会员账户
+func (ms *memberService) GetAccount(memberId int32) (*define.Account, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	//m, _ := ms._memberRep.GetMember(memberId)
-	//m.AddExp(300)
-	return m.GetAccount().GetValue()
+	acc := m.GetAccount()
+	if acc != nil {
+		return parser.AccountDto(acc.GetValue()), nil
+	}
+	return nil, nil
+}
+
+// 获取邀请人会员编号数组
+func (ms *memberService) InviterArray(memberId int32, depth int32) (r []int32, err error) {
+	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	if m != nil {
+		return m.Invitation().InviterArray(memberId, depth), nil
+	}
+	return []int32{}, nil
 }
 
 func (ms *memberService) GetBank(memberId int32) *member.BankInfo {
@@ -597,20 +613,33 @@ func (ms *memberService) QueryPagerOrder(memberId int32, begin, size int, pagina
 }
 
 /*********** 收货地址 ***********/
-func (ms *memberService) GetAddress(memberId int32) []*member.DeliverAddress {
+func (ms *memberService) GetAddressList(memberId int32) []*member.Address {
 	return ms._rep.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
-func (ms *memberService) GetAddressById(memberId,
-	deliverId int32) *member.DeliverAddress {
+func (ms *memberService) GetAddress(memberId, addrId int32) (
+	*define.Address, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
-	v := m.Profile().GetAddress(deliverId).GetValue()
-	return &v
+	pro := m.Profile()
+	var addr member.IDeliverAddress
+	if addrId > 0 {
+		addr = pro.GetAddress(addrId)
+	} else {
+		addr = pro.GetDefaultAddress()
+	}
+	if addr != nil {
+		v := addr.GetValue()
+		d := parser.AddressDto(&v)
+		d.Area = ms.valRep.GetAreaString(
+			v.Province, v.City, v.District)
+		return d, nil
+	}
+	return nil, nil
 }
 
 //保存配送地址
-func (ms *memberService) SaveAddress(memberId int32, e *member.DeliverAddress) (int32, error) {
+func (ms *memberService) SaveAddress(memberId int32, e *member.Address) (int32, error) {
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error
@@ -726,7 +755,7 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int32) *member.Bala
 }
 
 // 充值
-func (ms *memberService) Charge(memberId int32, chargeType int, title,
+func (ms *memberService) Charge(memberId int32, chargeType int32, title,
 	outerNo string, amount float32, relateUser int32) error {
 	//todo: ???
 	if relateUser == 0 {
@@ -761,13 +790,14 @@ func (ms *memberService) PresentBalance(memberId int32, title string,
 }
 
 // 赠送金额充值
-func (ms *memberService) PresentBalanceByKind(memberId int32, kind int, title string,
-	outerNo string, amount float32, relateUser int32) error {
+func (ms *memberService) PresentBalanceByKind(memberId int32, kind int32, title string,
+	outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
 	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
+	if err == nil {
+		err = m.GetAccount().ChargePresentByKind(kind,
+			title, outerNo, float32(amount), relateUser)
 	}
-	return m.GetAccount().ChargePresentByKind(kind, title, outerNo, amount, relateUser)
+	return parser.Result(err), nil
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
@@ -828,7 +858,7 @@ func (ms *memberService) VerifyTradePwd(memberId int32, tradePwd string) (bool, 
 }
 
 // 提现并返回提现编号,交易号以及错误信息
-func (ms *memberService) SubmitTakeOutRequest(memberId int32, applyType int,
+func (ms *memberService) SubmitTakeOutRequest(memberId int32, takeKind int32,
 	applyAmount float32, commission float32) (int32, string, error) {
 	m, err := ms.getMember(memberId)
 	if err != nil {
@@ -837,7 +867,7 @@ func (ms *memberService) SubmitTakeOutRequest(memberId int32, applyType int,
 
 	acc := m.GetAccount()
 	var title string
-	switch applyType {
+	switch takeKind {
 	case member.KindPresentTakeOutToBankCard:
 		title = "提现到银行卡"
 	case member.KindPresentTakeOutToBalance:
@@ -845,7 +875,7 @@ func (ms *memberService) SubmitTakeOutRequest(memberId int32, applyType int,
 	case member.KindPresentTakeOutToThirdPart:
 		title = "充值到第三方账户"
 	}
-	return acc.RequestTakeOut(applyType, title, applyAmount, commission)
+	return acc.RequestTakeOut(takeKind, title, applyAmount, commission)
 }
 
 // 获取最近的提现
@@ -962,7 +992,7 @@ func (ms *memberService) TransferAccounts(accountKind int, fromMember int32,
 }
 
 // 转账余额到其他账户
-func (ms *memberService) TransferBalance(memberId int32, kind int, amount float32, tradeNo string,
+func (ms *memberService) TransferBalance(memberId int32, kind int32, amount float32, tradeNo string,
 	toTitle, fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
@@ -973,7 +1003,7 @@ func (ms *memberService) TransferBalance(memberId int32, kind int, amount float3
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (ms *memberService) TransferPresent(memberId int32, kind int, amount float32, commission float32,
+func (ms *memberService) TransferPresent(memberId int32, kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
@@ -985,7 +1015,7 @@ func (ms *memberService) TransferPresent(memberId int32, kind int, amount float3
 
 // 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (ms *memberService) TransferFlow(memberId int32, kind int, amount float32,
+func (ms *memberService) TransferFlow(memberId int32, kind int32, amount float32,
 	commission float32, tradeNo string, toTitle string, fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
@@ -996,7 +1026,7 @@ func (ms *memberService) TransferFlow(memberId int32, kind int, amount float32,
 }
 
 // 将活动金转给其他人
-func (ms *memberService) TransferFlowTo(memberId int32, toMemberId int32, kind int,
+func (ms *memberService) TransferFlowTo(memberId int32, toMemberId int32, kind int32,
 	amount float32, commission float32, tradeNo string, toTitle string,
 	fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
