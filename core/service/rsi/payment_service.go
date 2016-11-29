@@ -62,12 +62,15 @@ func (p *paymentService) CreatePaymentOrder(s *define.PaymentOrder) (*define.Res
 }
 
 // 调整支付单金额
-func (p *paymentService) AdjustOrder(paymentNo string, amount float32) error {
+func (p *paymentService) AdjustOrder(paymentNo string, amount float32) *define.Result_ {
+	var err error
 	o := p._rep.GetPaymentOrder(paymentNo)
 	if o == nil {
-		return payment.ErrNoSuchPaymentOrder
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		err = o.Adjust(amount)
 	}
-	return o.Adjust(amount)
+	return parser.Result(err)
 }
 
 func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
@@ -79,51 +82,58 @@ func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
 }
 
 // 积分抵扣支付单
-func (p *paymentService) IntegralDiscountForPaymentOrder(orderId int32,
-	integral int, ignoreOut bool) (float32, error) {
+func (p *paymentService) DiscountByIntegral(orderId int32,
+	integral int32, ignoreOut bool) (r *define.DResult_, err error) {
+	var amount float32
 	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
-		return 0, payment.ErrNoSuchPaymentOrder
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
-	return o.IntegralDiscount(integral, ignoreOut)
+	r = parser.DResult(err)
+	r.Data = float64(amount)
+	return r, nil
 }
 
 // 余额抵扣
-func (p *paymentService) BalanceDiscountForPaymentOrder(orderId int32, remark string) error {
+func (p *paymentService) DiscountByBalance(orderId int32, remark string) (*define.Result_, error) {
+	var err error
 	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
-		return payment.ErrNoSuchPaymentOrder
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		err = o.BalanceDiscount(remark)
 	}
-	err := o.BalanceDiscount(remark)
-	if err == nil {
-		_, err = o.Commit()
-	}
-	return err
+	return parser.Result(err), nil
 }
 
 // 赠送账户支付
-func (p *paymentService) PresentAccountPayment(orderId int32, remark string) error {
+func (p *paymentService) PaymentByPresent(orderId int32, remark string) (r *define.Result_, err error) {
 	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
-		return payment.ErrNoSuchPaymentOrder
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		err = o.PaymentByPresent(remark)
 	}
-	return o.PresentAccountPayment(remark)
+	return parser.Result(err), nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
 func (p *paymentService) FinishPayment(tradeNo string, spName string,
-	outerNo string) error {
+	outerNo string) (r *define.Result_, err error) {
 	o := p._rep.GetPaymentOrder(tradeNo)
 	if o == nil {
-		return payment.ErrNoSuchPaymentOrder
-	}
-	err := o.PaymentFinish(spName, outerNo)
-	if err == nil {
-		//更改订单支付完成
-		if orderId := o.GetValue().OrderId; orderId > 0 {
-			m := p._orderRep.Manager()
-			err = m.PaymentForOnlineTrade(o.GetValue().OrderId)
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		err = o.PaymentFinish(spName, outerNo)
+		if err == nil {
+			//更改订单支付完成
+			if orderId := o.GetValue().OrderId; orderId > 0 {
+				m := p._orderRep.Manager()
+				err = m.PaymentForOnlineTrade(o.GetValue().OrderId)
+			}
 		}
 	}
-	return err
+	return parser.Result(err), nil
 }

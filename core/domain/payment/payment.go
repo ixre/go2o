@@ -262,7 +262,7 @@ func (p *paymentOrderImpl) getBuyer() member.IMember {
 }
 
 // 赠送账户支付
-func (p *paymentOrderImpl) PresentAccountPayment(remark string) error {
+func (p *paymentOrderImpl) PaymentByPresent(remark string) error {
 	amount := p.value.FinalAmount
 	buyer := p.getBuyer()
 	if buyer == nil {

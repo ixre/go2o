@@ -23,6 +23,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Result CreatePaymentOrder(PaymentOrder o)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrder(string paymentNo)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
+	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i32 integral, bool ignoreOut)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -122,19 +124,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg71 := flag.Arg(1)
-		mbTrans72 := thrift.NewTMemoryBufferLen(len(arg71))
-		defer mbTrans72.Close()
-		_, err73 := mbTrans72.WriteString(arg71)
-		if err73 != nil {
+		arg75 := flag.Arg(1)
+		mbTrans76 := thrift.NewTMemoryBufferLen(len(arg75))
+		defer mbTrans76.Close()
+		_, err77 := mbTrans76.WriteString(arg75)
+		if err77 != nil {
 			Usage()
 			return
 		}
-		factory74 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt75 := factory74.GetProtocol(mbTrans72)
+		factory78 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt79 := factory78.GetProtocol(mbTrans76)
 		argvalue0 := define.NewPaymentOrder()
-		err76 := argvalue0.Read(jsProt75)
-		if err76 != nil {
+		err80 := argvalue0.Read(jsProt79)
+		if err80 != nil {
 			Usage()
 			return
 		}
@@ -157,14 +159,55 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err78 := (strconv.Atoi(flag.Arg(1)))
-		if err78 != nil {
+		tmp0, err82 := (strconv.Atoi(flag.Arg(1)))
+		if err82 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetPaymentOrderById(value0))
+		fmt.Print("\n")
+		break
+	case "DiscountByBalance":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err83 := (strconv.Atoi(flag.Arg(1)))
+		if err83 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.DiscountByBalance(value0, value1))
+		fmt.Print("\n")
+		break
+	case "DiscountByIntegral":
+		if flag.NArg()-1 != 3 {
+			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
+			flag.Usage()
+		}
+		tmp0, err85 := (strconv.Atoi(flag.Arg(1)))
+		if err85 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err86 := (strconv.Atoi(flag.Arg(2)))
+		if err86 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3) == "true"
+		value2 := argvalue2
+		fmt.Print(client.DiscountByIntegral(value0, value1, value2))
 		fmt.Print("\n")
 		break
 	case "":
