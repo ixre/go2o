@@ -10,6 +10,7 @@ package util
 
 import (
 	gutil "github.com/jsix/gof/util"
+	"go2o/core/variable"
 	"net/http"
 	"time"
 )
@@ -28,6 +29,8 @@ const (
 
 // 获取浏览设备
 func GetBrownerDevice(r *http.Request) string {
+	return DeviceMobile
+	//return getDevice(r)
 	ck, err := r.Cookie(clientDeviceTypeCookieId)
 	if err == nil && ck != nil {
 		switch ck.Value {
@@ -41,6 +44,12 @@ func GetBrownerDevice(r *http.Request) string {
 			return DeviceAppEmbed
 		}
 	}
+	if gutil.IsMobileAgent(r.UserAgent()) {
+		return DeviceMobile
+	}
+	return DevicePC
+}
+func getDevice(r *http.Request) string {
 	if gutil.IsMobileAgent(r.UserAgent()) {
 		return DeviceMobile
 	}
@@ -69,6 +78,7 @@ func SetBrownerDevice(w http.ResponseWriter, r *http.Request, deviceType string)
 	if ck != nil {
 		ck.HttpOnly = false
 		ck.Path = "/"
+		ck.Domain = variable.Domain
 		http.SetCookie(w, ck)
 	}
 }
