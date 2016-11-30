@@ -12,6 +12,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/dto"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
@@ -108,6 +109,29 @@ func MemberProfile2(src *define.Profile) *member.Profile {
 		Ext5:       src.Ext5,
 		Ext6:       src.Ext6,
 		UpdateTime: src.UpdateTime,
+	}
+}
+
+func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
+	return &define.MemberSummary{
+		MemberId:          src.MemberId,
+		Usr:               src.Usr,
+		Name:              src.Name,
+		Avatar:            src.Avatar,
+		Exp:               src.Exp,
+		Level:             src.Level,
+		LevelName:         src.LevelName,
+		LevelSign:         src.LevelSign,
+		LevelOfficial:     int64(src.LevelOfficial),
+		InvitationCode:    src.InvitationCode,
+		Integral:          int64(src.Integral),
+		Balance:           float64(src.Balance),
+		PresentBalance:    float64(src.PresentBalance),
+		GrowBalance:       float64(src.GrowBalance),
+		GrowAmount:        float64(src.GrowAmount),
+		GrowEarnings:      float64(src.GrowEarnings),
+		GrowTotalEarnings: float64(src.GrowTotalEarnings),
+		UpdateTime:        src.UpdateTime,
 	}
 }
 

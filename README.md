@@ -86,7 +86,7 @@ zhu***@126.com
 	go build go2o-tcpserve.go
 
 ### 2.Running Service ###
-	Usage of ./go2o-server:
+	Usage of ./go2o-serve:
 		 -conf string
              	 (default "app.conf")
            -d	

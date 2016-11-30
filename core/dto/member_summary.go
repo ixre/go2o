@@ -10,7 +10,7 @@ package dto
 
 // 会员概览信息
 type MemberSummary struct {
-	Id int32 `db:"id" auto:"yes" pk:"yes"`
+	MemberId int32 `db:"id" auto:"yes" pk:"yes"`
 	// 用户名
 	Usr string `db:"usr"`
 	// 昵称
