@@ -109,7 +109,8 @@ func (img *Image) DrawString(font *truetype.Font, c color.Color, str string, fon
 	ctx.SetFontSize(fontsize)
 	ctx.SetFont(font)
 	// 写入文字的位置
-	ptf := int(math.Ceil(float64(ctx.PointToFixed(fontsize))))
+	ptf := int(ctx.PointToFixed(fontsize))
+	ptf = int(fontsize)
 	pt := freetype.Pt(0, int(-fontsize/6)+ptf)
 	ctx.DrawString(str, pt)
 }
