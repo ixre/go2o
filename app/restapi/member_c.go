@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/labstack/echo"
-	"go2o/app/cache"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/service/rsi"
@@ -137,13 +136,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	var updateTime int64 = rsi.MemberService.GetMemberLatestUpdateTime(memberId)
-	var v *dto.MemberSummary = new(dto.MemberSummary)
-	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
-	if cache.GetKVS().Get(key, &v) != nil || v.UpdateTime < updateTime {
-		v = rsi.MemberService.GetMemberSummary(memberId)
-		cache.GetKVS().SetExpire(key, v, 3600*48) // cache 48 hours
-	}
+	v, _ := rsi.MemberService.Summary(memberId)
 	return c.JSON(http.StatusOK, v)
 }
 

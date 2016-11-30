@@ -11,56 +11,24 @@ package tcpserve
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/net/nc"
-	"go2o/app/cache"
-	"go2o/core/dto"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift/idl/gen-go/define"
-	"go2o/core/variable"
 	"strconv"
 	"strings"
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int, updateTime int) *dto.MemberSummary {
-	sto := gof.CurrentApp.Storage()
-	var kvMut int
-	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
-	kvMut, _ = sto.GetInt(mutKey)
-	//get from redis
-	var v *dto.MemberSummary = new(dto.MemberSummary)
-	var key = fmt.Sprintf("cac:mm:summary:%d", memberId)
-	if kvMut != 0 && kvMut == updateTime {
-		if cache.GetKVS().Get(key, v) == nil {
-			return v
-		}
-	}
-	v = rsi.MemberService.GetMemberSummary(int32(memberId))
+func GetMemberSummary(memberId int, updateTime int) *define.MemberSummary {
+	v, _ := rsi.MemberService.Summary(int32(memberId))
 	if v != nil {
-		sto.SetExpire(key, v, 3600*360) // cache 15 hours
-		sto.SetExpire(mutKey, v.UpdateTime, 3600*400)
+		return v
 	}
-	return v
+	return nil
 }
 
 func getMemberAccount(memberId int, updateTime int) *define.Account {
-	sto := gof.CurrentApp.Storage()
-	var kvAut int
-	autKey := fmt.Sprintf("%s%d", variable.KvAccountUpdateTime, memberId)
-	kvAut, _ = sto.GetInt(autKey)
-	//get from redis
-	var v *define.Account = &define.Account{}
-	var key = fmt.Sprintf("cac:mm:acc:%d", memberId)
-	if kvAut != 0 && kvAut == updateTime {
-		if cache.GetKVS().Get(key, v) == nil {
-			return v
-		}
-	}
-	v, _ = rsi.MemberService.GetAccount(int32(memberId))
-	sto.SetExpire(key, v, 3600*360) // cache 15 hours
-	sto.SetExpire(autKey, v.UpdateTime, 3600*400)
+	v, _ := rsi.MemberService.GetAccount(int32(memberId))
 	return v
 }
 

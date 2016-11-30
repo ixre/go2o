@@ -2573,6 +2573,692 @@ func (p *Account) String() string {
 
 // Attributes:
 //  - MemberId
+//  - Usr
+//  - Name
+//  - Avatar
+//  - Exp
+//  - Level
+//  - LevelName
+//  - LevelSign
+//  - LevelOfficial
+//  - InvitationCode
+//  - Integral
+//  - Balance
+//  - PresentBalance
+//  - GrowBalance
+//  - GrowAmount
+//  - GrowEarnings
+//  - GrowTotalEarnings
+//  - UpdateTime
+type MemberSummary struct {
+	MemberId          int32   `thrift:"MemberId,1" json:"MemberId"`
+	Usr               string  `thrift:"Usr,2" json:"Usr"`
+	Name              string  `thrift:"Name,3" json:"Name"`
+	Avatar            string  `thrift:"Avatar,4" json:"Avatar"`
+	Exp               int32   `thrift:"Exp,5" json:"Exp"`
+	Level             int32   `thrift:"Level,6" json:"Level"`
+	LevelName         string  `thrift:"LevelName,7" json:"LevelName"`
+	LevelSign         string  `thrift:"LevelSign,8" json:"LevelSign"`
+	LevelOfficial     int64   `thrift:"LevelOfficial,9" json:"LevelOfficial"`
+	InvitationCode    string  `thrift:"InvitationCode,10" json:"InvitationCode"`
+	Integral          int64   `thrift:"Integral,11" json:"Integral"`
+	Balance           float64 `thrift:"Balance,12" json:"Balance"`
+	PresentBalance    float64 `thrift:"PresentBalance,13" json:"PresentBalance"`
+	GrowBalance       float64 `thrift:"GrowBalance,14" json:"GrowBalance"`
+	GrowAmount        float64 `thrift:"GrowAmount,15" json:"GrowAmount"`
+	GrowEarnings      float64 `thrift:"GrowEarnings,16" json:"GrowEarnings"`
+	GrowTotalEarnings float64 `thrift:"GrowTotalEarnings,17" json:"GrowTotalEarnings"`
+	UpdateTime        int64   `thrift:"UpdateTime,18" json:"UpdateTime"`
+}
+
+func NewMemberSummary() *MemberSummary {
+	return &MemberSummary{}
+}
+
+func (p *MemberSummary) GetMemberId() int32 {
+	return p.MemberId
+}
+
+func (p *MemberSummary) GetUsr() string {
+	return p.Usr
+}
+
+func (p *MemberSummary) GetName() string {
+	return p.Name
+}
+
+func (p *MemberSummary) GetAvatar() string {
+	return p.Avatar
+}
+
+func (p *MemberSummary) GetExp() int32 {
+	return p.Exp
+}
+
+func (p *MemberSummary) GetLevel() int32 {
+	return p.Level
+}
+
+func (p *MemberSummary) GetLevelName() string {
+	return p.LevelName
+}
+
+func (p *MemberSummary) GetLevelSign() string {
+	return p.LevelSign
+}
+
+func (p *MemberSummary) GetLevelOfficial() int64 {
+	return p.LevelOfficial
+}
+
+func (p *MemberSummary) GetInvitationCode() string {
+	return p.InvitationCode
+}
+
+func (p *MemberSummary) GetIntegral() int64 {
+	return p.Integral
+}
+
+func (p *MemberSummary) GetBalance() float64 {
+	return p.Balance
+}
+
+func (p *MemberSummary) GetPresentBalance() float64 {
+	return p.PresentBalance
+}
+
+func (p *MemberSummary) GetGrowBalance() float64 {
+	return p.GrowBalance
+}
+
+func (p *MemberSummary) GetGrowAmount() float64 {
+	return p.GrowAmount
+}
+
+func (p *MemberSummary) GetGrowEarnings() float64 {
+	return p.GrowEarnings
+}
+
+func (p *MemberSummary) GetGrowTotalEarnings() float64 {
+	return p.GrowTotalEarnings
+}
+
+func (p *MemberSummary) GetUpdateTime() int64 {
+	return p.UpdateTime
+}
+func (p *MemberSummary) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		case 3:
+			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.readField4(iprot); err != nil {
+				return err
+			}
+		case 5:
+			if err := p.readField5(iprot); err != nil {
+				return err
+			}
+		case 6:
+			if err := p.readField6(iprot); err != nil {
+				return err
+			}
+		case 7:
+			if err := p.readField7(iprot); err != nil {
+				return err
+			}
+		case 8:
+			if err := p.readField8(iprot); err != nil {
+				return err
+			}
+		case 9:
+			if err := p.readField9(iprot); err != nil {
+				return err
+			}
+		case 10:
+			if err := p.readField10(iprot); err != nil {
+				return err
+			}
+		case 11:
+			if err := p.readField11(iprot); err != nil {
+				return err
+			}
+		case 12:
+			if err := p.readField12(iprot); err != nil {
+				return err
+			}
+		case 13:
+			if err := p.readField13(iprot); err != nil {
+				return err
+			}
+		case 14:
+			if err := p.readField14(iprot); err != nil {
+				return err
+			}
+		case 15:
+			if err := p.readField15(iprot); err != nil {
+				return err
+			}
+		case 16:
+			if err := p.readField16(iprot); err != nil {
+				return err
+			}
+		case 17:
+			if err := p.readField17(iprot); err != nil {
+				return err
+			}
+		case 18:
+			if err := p.readField18(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Usr = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
+	} else {
+		p.Name = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
+		p.Avatar = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField5(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 5: ", err)
+	} else {
+		p.Exp = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 6: ", err)
+	} else {
+		p.Level = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 7: ", err)
+	} else {
+		p.LevelName = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField8(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 8: ", err)
+	} else {
+		p.LevelSign = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField9(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 9: ", err)
+	} else {
+		p.LevelOfficial = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField10(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 10: ", err)
+	} else {
+		p.InvitationCode = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField11(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 11: ", err)
+	} else {
+		p.Integral = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField12(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 12: ", err)
+	} else {
+		p.Balance = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField13(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 13: ", err)
+	} else {
+		p.PresentBalance = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField14(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 14: ", err)
+	} else {
+		p.GrowBalance = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField15(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 15: ", err)
+	} else {
+		p.GrowAmount = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField16(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 16: ", err)
+	} else {
+		p.GrowEarnings = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField17(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadDouble(); err != nil {
+		return thrift.PrependError("error reading field 17: ", err)
+	} else {
+		p.GrowTotalEarnings = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) readField18(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return thrift.PrependError("error reading field 18: ", err)
+	} else {
+		p.UpdateTime = v
+	}
+	return nil
+}
+
+func (p *MemberSummary) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("MemberSummary"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField5(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField6(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField7(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField8(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField9(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField10(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField11(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField12(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField13(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField14(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField15(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField16(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField17(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField18(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberSummary) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("MemberId", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:MemberId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.MemberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:MemberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Usr", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Usr: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Usr)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Usr (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Usr: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Name", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Name: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Name)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Name (3) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Name: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField4(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Avatar", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Avatar: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Avatar)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Avatar (4) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Avatar: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField5(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Exp", thrift.I32, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:Exp: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Exp)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Exp (5) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:Exp: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField6(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Level", thrift.I32, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:Level: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Level)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Level (6) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:Level: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField7(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("LevelName", thrift.STRING, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:LevelName: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.LevelName)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LevelName (7) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:LevelName: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField8(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("LevelSign", thrift.STRING, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:LevelSign: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.LevelSign)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LevelSign (8) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:LevelSign: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField9(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("LevelOfficial", thrift.I64, 9); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 9:LevelOfficial: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.LevelOfficial)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.LevelOfficial (9) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 9:LevelOfficial: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField10(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("InvitationCode", thrift.STRING, 10); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 10:InvitationCode: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.InvitationCode)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.InvitationCode (10) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 10:InvitationCode: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField11(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Integral", thrift.I64, 11); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 11:Integral: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.Integral)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Integral (11) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 11:Integral: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField12(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Balance", thrift.DOUBLE, 12); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 12:Balance: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.Balance)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Balance (12) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 12:Balance: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField13(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("PresentBalance", thrift.DOUBLE, 13); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 13:PresentBalance: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.PresentBalance)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.PresentBalance (13) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 13:PresentBalance: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField14(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("GrowBalance", thrift.DOUBLE, 14); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 14:GrowBalance: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.GrowBalance)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.GrowBalance (14) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 14:GrowBalance: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField15(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("GrowAmount", thrift.DOUBLE, 15); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 15:GrowAmount: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.GrowAmount)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.GrowAmount (15) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 15:GrowAmount: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField16(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("GrowEarnings", thrift.DOUBLE, 16); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 16:GrowEarnings: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.GrowEarnings)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.GrowEarnings (16) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 16:GrowEarnings: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField17(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("GrowTotalEarnings", thrift.DOUBLE, 17); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 17:GrowTotalEarnings: ", p), err)
+	}
+	if err := oprot.WriteDouble(float64(p.GrowTotalEarnings)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.GrowTotalEarnings (17) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 17:GrowTotalEarnings: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) writeField18(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 18); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 18:UpdateTime: ", p), err)
+	}
+	if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (18) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 18:UpdateTime: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberSummary) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberSummary(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
 //  - CardId
 //  - InviterId
 //  - InviterStr

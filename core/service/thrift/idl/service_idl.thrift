@@ -82,6 +82,27 @@ struct Account {
     20: i64 UpdateTime
 }
 
+struct MemberSummary {
+    1: i32 MemberId
+    2: string Usr
+    3: string Name
+    4: string Avatar
+    5: i32 Exp
+    6: i32 Level
+    7: string LevelName
+    8: string LevelSign
+    9: i64 LevelOfficial
+    10: string InvitationCode
+    11: i64 Integral
+    12: double Balance
+    13: double PresentBalance
+    14: double GrowBalance
+    15: double GrowAmount
+    16: double GrowEarnings
+    17: double GrowTotalEarnings
+    18: i64 UpdateTime
+}
+
 struct MemberRelation {
     1: i32 MemberId
     2: string CardId
@@ -152,6 +173,8 @@ service MemberService{
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
     Profile GetProfile(1:i32 id),
+    // 获取会员汇总信息
+    MemberSummary Summary(1:i32 memberId)
     // 获取会员的会员Token,reset表示是否重置token
     string GetToken(1:i32 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1
