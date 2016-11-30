@@ -9,6 +9,7 @@
 package parser
 
 import (
+	"github.com/jsix/gof/math"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
@@ -125,14 +126,18 @@ func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
 		LevelOfficial:     int64(src.LevelOfficial),
 		InvitationCode:    src.InvitationCode,
 		Integral:          int64(src.Integral),
-		Balance:           float64(src.Balance),
-		PresentBalance:    float64(src.PresentBalance),
-		GrowBalance:       float64(src.GrowBalance),
-		GrowAmount:        float64(src.GrowAmount),
-		GrowEarnings:      float64(src.GrowEarnings),
-		GrowTotalEarnings: float64(src.GrowTotalEarnings),
+		Balance:           round(src.Balance, 2),
+		PresentBalance:    round(src.PresentBalance, 2),
+		GrowBalance:       round(src.GrowBalance, 2),
+		GrowAmount:        round(src.GrowAmount, 2),
+		GrowEarnings:      round(src.GrowEarnings, 2),
+		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
 		UpdateTime:        src.UpdateTime,
 	}
+}
+
+func round(f float32, n int) float64 {
+	return math.Round(float64(f), n)
 }
 
 func AccountDto(src *member.Account) *define.Account {
@@ -140,21 +145,21 @@ func AccountDto(src *member.Account) *define.Account {
 		MemberId:          src.MemberId,
 		Integral:          int64(src.Integral),
 		FreezeIntegral:    int64(src.FreezeIntegral),
-		Balance:           float64(src.Balance),
-		FreezeBalance:     float64(src.FreezeBalance),
-		ExpiredBalance:    float64(src.ExpiredBalance),
-		PresentBalance:    float64(src.PresentBalance),
-		FreezePresent:     float64(src.FreezePresent),
-		ExpiredPresent:    float64(src.ExpiredPresent),
-		TotalPresentFee:   float64(src.TotalPresentFee),
-		FlowBalance:       float64(src.FlowBalance),
-		GrowBalance:       float64(src.GrowBalance),
-		GrowAmount:        float64(src.GrowAmount),
-		GrowEarnings:      float64(src.GrowEarnings),
-		GrowTotalEarnings: float64(src.GrowTotalEarnings),
-		TotalConsumption:  float64(src.TotalConsumption),
-		TotalCharge:       float64(src.TotalCharge),
-		TotalPay:          float64(src.TotalPay),
+		Balance:           round(src.Balance, 2),
+		FreezeBalance:     round(src.FreezeBalance, 2),
+		ExpiredBalance:    round(src.ExpiredBalance, 2),
+		PresentBalance:    round(src.PresentBalance, 2),
+		FreezePresent:     round(src.FreezePresent, 2),
+		ExpiredPresent:    round(src.ExpiredPresent, 2),
+		TotalPresentFee:   round(src.TotalPresentFee, 2),
+		FlowBalance:       round(src.FlowBalance, 2),
+		GrowBalance:       round(src.GrowBalance, 2),
+		GrowAmount:        round(src.GrowAmount, 2),
+		GrowEarnings:      round(src.GrowEarnings, 2),
+		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
+		TotalConsumption:  round(src.TotalConsumption, 2),
+		TotalCharge:       round(src.TotalCharge, 2),
+		TotalPay:          round(src.TotalPay, 2),
 		PriorityPay:       int64(src.PriorityPay),
 		UpdateTime:        src.UpdateTime,
 	}
@@ -259,14 +264,14 @@ func PaymentOrderDto(src *payment.PaymentOrder) *define.PaymentOrder {
 		Subject:          src.Subject,
 		BuyUser:          src.BuyUser,
 		PaymentUser:      src.PaymentUser,
-		TotalFee:         float64(src.TotalFee),
-		BalanceDiscount:  float64(src.BalanceDiscount),
-		IntegralDiscount: float64(src.IntegralDiscount),
-		SystemDiscount:   float64(src.SystemDiscount),
-		CouponDiscount:   float64(src.CouponDiscount),
-		SubAmount:        float64(src.SubAmount),
-		AdjustmentAmount: float64(src.AdjustmentAmount),
-		FinalAmount:      float64(src.FinalAmount),
+		TotalFee:         round(src.TotalFee, 2),
+		BalanceDiscount:  round(src.BalanceDiscount, 2),
+		IntegralDiscount: round(src.IntegralDiscount, 2),
+		SystemDiscount:   round(src.SystemDiscount, 2),
+		CouponDiscount:   round(src.CouponDiscount, 2),
+		SubAmount:        round(src.SubAmount, 2),
+		AdjustmentAmount: round(src.AdjustmentAmount, 2),
+		FinalAmount:      round(src.FinalAmount, 2),
 		PaymentOptFlag:   src.PaymentOptFlag,
 		PaymentSign:      src.PaymentSign,
 		OuterNo:          src.OuterNo,
