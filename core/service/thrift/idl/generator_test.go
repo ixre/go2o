@@ -10,14 +10,14 @@ package idl
 
 import (
 	"github.com/jsix/gof/generator"
-	"go2o/core/domain/interface/member"
+	"go2o/core/dto"
 	"testing"
 )
 
 var (
 	//v = &member.Member{}
 	//v = &member.Profile{}
-	v = member.TrustedInfo{}
+	v = dto.MemberSummary{}
 )
 
 // 生成Thrift结构

@@ -259,45 +259,45 @@ type (
 	// 账户值对象
 	Account struct {
 		// 会员编号
-		MemberId int32 `db:"member_id" pk:"yes" json:"memberId"`
+		MemberId int32 `db:"member_id" pk:"yes"`
 		// 积分
 		Integral int `db:"integral"`
 		// 不可用积分
 		FreezeIntegral int `db:"freeze_integral"`
 		// 余额
-		Balance float32 `db:"balance" json:"balance"`
+		Balance float32 `db:"balance"`
 		// 不可用余额
-		FreezeBalance float32 `db:"freeze_balance" json:"freezesFee"`
+		FreezeBalance float32 `db:"freeze_balance"`
 		// 失效的账户余额
 		ExpiredBalance float32 `db:"expired_balance"`
 		//奖金账户余额
-		PresentBalance float32 `db:"present_balance" json:"presentBalance"`
+		PresentBalance float32 `db:"present_balance"`
 		//冻结赠送金额
-		FreezePresent float32 `db:"freeze_present" json:"FreezePresent"`
+		FreezePresent float32 `db:"freeze_present"`
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_present"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_present_fee" json:"totalPresentFee"`
+		TotalPresentFee float32 `db:"total_present_fee"`
 		//流动账户余额
-		FlowBalance float32 `db:"flow_balance" json:"flowBalance"`
+		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额
-		GrowBalance float32 `db:"grow_balance" json:"growBalance"`
+		GrowBalance float32 `db:"grow_balance"`
 		//理财总投资金额,不含收益
-		GrowAmount float32 `db:"grow_amount" json:"growAmount"`
+		GrowAmount float32 `db:"grow_amount"`
 		//当前收益金额
-		GrowEarnings float32 `db:"grow_earnings" json:"growEarnings"`
+		GrowEarnings float32 `db:"grow_earnings"`
 		//累积收益金额
-		GrowTotalEarnings float32 `db:"grow_total_earnings" json:"growTotalEarnings"`
+		GrowTotalEarnings float32 `db:"grow_total_earnings"`
 		//总消费金额
-		TotalConsumption float32 `db:"total_consumption" json:"totalFee"`
+		TotalConsumption float32 `db:"total_consumption"`
 		//总充值金额
-		TotalCharge float32 `db:"total_charge" json:"totalCharge"`
+		TotalCharge float32 `db:"total_charge"`
 		//总支付额
-		TotalPay float32 `db:"total_pay" json:"totalPay"`
+		TotalPay float32 `db:"total_pay"`
 		// 优先(默认)支付选项
 		PriorityPay int `db:"priority_pay"`
 		//更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
+		UpdateTime int64 `db:"update_time"`
 	}
 
 	// 积分记录

@@ -714,15 +714,15 @@ func (ms *memberService) GetMemberList(ids []int32) []*dto.MemberSummary {
 }
 
 // 获取会员汇总信息
-func (ms *memberService) GetMemberSummary(memberId int32) *dto.MemberSummary {
+func (ms *memberService) Summary(memberId int32) (*define.MemberSummary, error) {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
 		mv := m.GetValue()
 		acv := m.GetAccount().GetValue()
 		lv := m.GetLevel()
 		pro := m.Profile().GetProfile()
-		return &dto.MemberSummary{
-			Id:                m.GetAggregateRootId(),
+		s := &dto.MemberSummary{
+			MemberId:          m.GetAggregateRootId(),
 			Usr:               mv.Usr,
 			Name:              pro.Name,
 			Avatar:            format.GetResUrl(pro.Avatar),
@@ -741,8 +741,9 @@ func (ms *memberService) GetMemberSummary(memberId int32) *dto.MemberSummary {
 			GrowTotalEarnings: acv.GrowTotalEarnings,
 			UpdateTime:        mv.UpdateTime,
 		}
+		return parser.SummaryDto(s), nil
 	}
-	return nil
+	return nil, nil
 }
 
 // 获取余额变动信息
