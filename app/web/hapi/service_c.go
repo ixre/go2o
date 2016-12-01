@@ -12,6 +12,7 @@ import (
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/util"
+	ut "go2o/app/util"
 	"go2o/core/service/rsi"
 	"net/http"
 	"strconv"
@@ -21,6 +22,20 @@ type serviceC struct {
 	gof.App
 }
 
+// 切换设备
+func (m *serviceC) Device(c *echox.Context) error {
+	device := c.QueryParam("device")
+	app := c.QueryParam("app")
+	if device != "" {
+		ut.SetBrownerDevice(c.Response(), c.Request(), device)
+	}
+	if app != "" {
+		//todo::
+	}
+	return c.JSONP(http.StatusOK, c.QueryParam("callback"), "ok")
+}
+
+// 收藏
 func (m *serviceC) Favorite(c *echox.Context) error {
 	memberId := getMemberId(c)
 	if memberId <= 0 {

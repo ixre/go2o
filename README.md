@@ -86,7 +86,7 @@ zhu***@126.com
 	go build go2o-tcpserve.go
 
 ### 2.Running Service ###
-	Usage of ./go2o-server:
+	Usage of ./go2o-serve:
 		 -conf string
              	 (default "app.conf")
            -d	
@@ -147,7 +147,9 @@ zhu***@126.com
 
 
 ### 4.Add test hosts ###
-> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com u.ts.com passport.ts.com master.ts.com  >> /etc/hosts
+> echo   127.0.0.1    go2o.ts.com static.ts.com img.ts.com mch.ts.com hapi.ts.com 
+u.ts.com u.m.ts.com passport.ts.com passport.m.ts.com
+ master.ts.com  >> /etc/hosts
 
 ## Access Entry ##
 

@@ -97,7 +97,6 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	var err error
 	arr := strings.Split(param, "#")
 	if len(arr) == 2 {
-
 		f := func() (int, error) {
 			memberId, _ := strconv.Atoi(arr[0])
 			cli, err := thrift.MemberServeClient()
@@ -106,8 +105,9 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 				if b, _ := cli.CheckToken(int32(memberId), arr[1]); b {
 					return memberId, nil
 				}
+				return memberId, errors.New("auth fail")
 			}
-			return memberId, errors.New("auth fail")
+			return memberId,errors.New("connect refused")
 		}
 
 		if err = s.UAuth(id.Conn, f); err == nil {

@@ -31,6 +31,9 @@ type MemberService interface {
 	GetProfile(id int32) (r *Profile, err error)
 	// Parameters:
 	//  - MemberId
+	Summary(memberId int32) (r *MemberSummary, err error)
+	// Parameters:
+	//  - MemberId
 	//  - Reset
 	GetToken(memberId int32, reset bool) (r string, err error)
 	// Parameters:
@@ -401,6 +404,83 @@ func (p *MemberServiceClient) recvGetProfile() (value *Profile, err error) {
 
 // Parameters:
 //  - MemberId
+func (p *MemberServiceClient) Summary(memberId int32) (r *MemberSummary, err error) {
+	if err = p.sendSummary(memberId); err != nil {
+		return
+	}
+	return p.recvSummary()
+}
+
+func (p *MemberServiceClient) sendSummary(memberId int32) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("Summary", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MemberServiceSummaryArgs{
+		MemberId: memberId,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MemberServiceClient) recvSummary() (value *MemberSummary, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "Summary" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "Summary failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "Summary failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error8 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error9 error
+		error9, err = error8.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error9
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "Summary failed: invalid message type")
+		return
+	}
+	result := MemberServiceSummaryResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - MemberId
 //  - Reset
 func (p *MemberServiceClient) GetToken(memberId int32, reset bool) (r string, err error) {
 	if err = p.sendGetToken(memberId, reset); err != nil {
@@ -451,16 +531,16 @@ func (p *MemberServiceClient) recvGetToken() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error8 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error9 error
-		error9, err = error8.Read(iprot)
+		error10 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error11 error
+		error11, err = error10.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error9
+		err = error11
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -530,16 +610,16 @@ func (p *MemberServiceClient) recvCheckToken() (value bool, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error10 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error11 error
-		error11, err = error10.Read(iprot)
+		error12 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error13 error
+		error13, err = error12.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error11
+		err = error13
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -607,16 +687,16 @@ func (p *MemberServiceClient) recvRemoveToken() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error12 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error13 error
-		error13, err = error12.Read(iprot)
+		error14 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error15 error
+		error15, err = error14.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error13
+		err = error15
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -685,16 +765,16 @@ func (p *MemberServiceClient) recvGetAddress() (value *Address, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error14 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error15 error
-		error15, err = error14.Read(iprot)
+		error16 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error17 error
+		error17, err = error16.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error15
+		err = error17
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -762,16 +842,16 @@ func (p *MemberServiceClient) recvGetAccount() (value *Account, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error16 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error17 error
-		error17, err = error16.Read(iprot)
+		error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error19 error
+		error19, err = error18.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error17
+		err = error19
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -841,16 +921,16 @@ func (p *MemberServiceClient) recvInviterArray() (value []int32, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error18 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error19 error
-		error19, err = error18.Read(iprot)
+		error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error21 error
+		error21, err = error20.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error19
+		err = error21
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -928,16 +1008,16 @@ func (p *MemberServiceClient) recvPresentBalanceByKind() (value *Result_, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error20 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error21 error
-		error21, err = error20.Read(iprot)
+		error22 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error23 error
+		error23, err = error22.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error21
+		err = error23
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -975,19 +1055,20 @@ func (p *MemberServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunc
 
 func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 
-	self22 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self22.processorMap["Login"] = &memberServiceProcessorLogin{handler: handler}
-	self22.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
-	self22.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
-	self22.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
-	self22.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
-	self22.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
-	self22.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
-	self22.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
-	self22.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
-	self22.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
-	self22.processorMap["PresentBalanceByKind"] = &memberServiceProcessorPresentBalanceByKind{handler: handler}
-	return self22
+	self24 := &MemberServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self24.processorMap["Login"] = &memberServiceProcessorLogin{handler: handler}
+	self24.processorMap["GetMember"] = &memberServiceProcessorGetMember{handler: handler}
+	self24.processorMap["GetMemberByUser"] = &memberServiceProcessorGetMemberByUser{handler: handler}
+	self24.processorMap["GetProfile"] = &memberServiceProcessorGetProfile{handler: handler}
+	self24.processorMap["Summary"] = &memberServiceProcessorSummary{handler: handler}
+	self24.processorMap["GetToken"] = &memberServiceProcessorGetToken{handler: handler}
+	self24.processorMap["CheckToken"] = &memberServiceProcessorCheckToken{handler: handler}
+	self24.processorMap["RemoveToken"] = &memberServiceProcessorRemoveToken{handler: handler}
+	self24.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
+	self24.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
+	self24.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
+	self24.processorMap["PresentBalanceByKind"] = &memberServiceProcessorPresentBalanceByKind{handler: handler}
+	return self24
 }
 
 func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1000,12 +1081,12 @@ func (p *MemberServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x23 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x25 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x23.Write(oprot)
+	x25.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x23
+	return false, x25
 
 }
 
@@ -1184,6 +1265,54 @@ func (p *memberServiceProcessorGetProfile) Process(seqId int32, iprot, oprot thr
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetProfile", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type memberServiceProcessorSummary struct {
+	handler MemberService
+}
+
+func (p *memberServiceProcessorSummary) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceSummaryArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("Summary", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MemberServiceSummaryResult{}
+	var retval *MemberSummary
+	var err2 error
+	if retval, err2 = p.handler.Summary(args.MemberId); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing Summary: "+err2.Error())
+		oprot.WriteMessageBegin("Summary", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("Summary", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -2372,6 +2501,198 @@ func (p *MemberServiceGetProfileResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MemberServiceGetProfileResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MemberId
+type MemberServiceSummaryArgs struct {
+	MemberId int32 `thrift:"memberId,1" json:"memberId"`
+}
+
+func NewMemberServiceSummaryArgs() *MemberServiceSummaryArgs {
+	return &MemberServiceSummaryArgs{}
+}
+
+func (p *MemberServiceSummaryArgs) GetMemberId() int32 {
+	return p.MemberId
+}
+func (p *MemberServiceSummaryArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MemberId = v
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Summary_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("memberId", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.MemberId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.memberId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:memberId: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceSummaryArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceSummaryArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MemberServiceSummaryResult struct {
+	Success *MemberSummary `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewMemberServiceSummaryResult() *MemberServiceSummaryResult {
+	return &MemberServiceSummaryResult{}
+}
+
+var MemberServiceSummaryResult_Success_DEFAULT *MemberSummary
+
+func (p *MemberServiceSummaryResult) GetSuccess() *MemberSummary {
+	if !p.IsSetSuccess() {
+		return MemberServiceSummaryResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *MemberServiceSummaryResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MemberServiceSummaryResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryResult) readField0(iprot thrift.TProtocol) error {
+	p.Success = &MemberSummary{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("Summary_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MemberServiceSummaryResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MemberServiceSummaryResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MemberServiceSummaryResult(%+v)", *p)
 }
 
 // Attributes:
@@ -3579,13 +3900,13 @@ func (p *MemberServiceInviterArrayResult) readField0(iprot thrift.TProtocol) err
 	tSlice := make([]int32, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem24 int32
+		var _elem26 int32
 		if v, err := iprot.ReadI32(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem24 = v
+			_elem26 = v
 		}
-		p.Success = append(p.Success, _elem24)
+		p.Success = append(p.Success, _elem26)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
