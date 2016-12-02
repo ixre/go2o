@@ -47,9 +47,9 @@ func GetMember(c *echox.Context) *define.Member {
 type UserSync struct {
 }
 
-// 同步登陆/登出
+// 同步登录/登出
 func (u *UserSync) Sync(c *echox.Context) (err error) {
-	// 获取登陆、登出
+	// 获取登录、登出
 	out := c.QueryParam("out") == "true"
 	// 获取回调函数方法
 	callback := c.QueryParam("callback")
@@ -60,7 +60,7 @@ func (u *UserSync) Sync(c *echox.Context) (err error) {
 	if device := c.QueryParam("device"); len(device) > 0 {
 		util.SetBrownerDevice(c.Response(), c.Request(), device)
 	}
-	// 处理登陆或登出
+	// 处理登录或登出
 	if out {
 		err = u.ssoDisconnect(c, callback)
 	} else {

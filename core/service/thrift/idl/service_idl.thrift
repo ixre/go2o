@@ -164,7 +164,7 @@ struct PaymentOrder {
 
 //会员服务
 service MemberService{
-    // 登陆，返回结果(Result)和会员编号(Id);
+    // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
     Result Login(1:string user,2:string pwd,3:bool update),
     // 根据会员编号获取会员信息
@@ -201,7 +201,7 @@ struct PlatformConf {
     6: bool MchPageCategory
 }
 
-// 单点登陆应用
+// 单点登录应用
 struct SsoApp{
     // 编号
     1: i32 Id
@@ -220,18 +220,18 @@ service FoundationService{
    // 获取平台设置
    PlatformConf GetPlatformConf()
 
-   // 注册单点登陆应用,返回值：
+   // 注册单点登录应用,返回值：
    //   -  1. 成功，并返回token
    //   - -1. 接口地址不正确
    //   - -2. 已经注册
    string RegisterSsoApp(1:SsoApp app)
-   // 获取单点登陆应用
+   // 获取单点登录应用
    list<string> GetAllSsoApp()
    // 验证超级用户账号和密码
    bool ValidateSuper(1:string user,2:string pwd)
    // 保存超级用户账号和密码
    void FlushSuperPwd(1:string user,2:string pwd)
-   // 创建同步登陆的地址
+   // 创建同步登录的地址
    string GetSyncLoginUrl(1:string returnUrl)
 }
 

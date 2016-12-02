@@ -48,7 +48,7 @@ func (s *foundationService) FlushSuperPwd(user string, pwd string) (err error) {
 	return errors.New("暂不支持保存")
 }
 
-// 注册单点登陆应用,返回值：
+// 注册单点登录应用,返回值：
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
@@ -61,13 +61,13 @@ func (s *foundationService) RegisterSsoApp(app *define.SsoApp) (r string, err er
 	return err.Error(), nil
 }
 
-// 获取单点登陆应用
+// 获取单点登录应用
 func (s *foundationService) GetAllSsoApp() (r []string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	return sso.Array(), nil
 }
 
-// 创建同步登陆的地址
+// 创建同步登录的地址
 func (s *foundationService) GetSyncLoginUrl(returnUrl string) (r string, err error) {
 	return fmt.Sprintf("%s://%s%s/auth?return_url=%s",
 		variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_PASSPORT,

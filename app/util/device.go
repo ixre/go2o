@@ -29,7 +29,7 @@ const (
 
 // 获取浏览设备
 func GetBrownerDevice(r *http.Request) string {
-	return DeviceMobile
+	//return DeviceMobile
 	//return getDevice(r)
 	ck, err := r.Cookie(clientDeviceTypeCookieId)
 	if err == nil && ck != nil {

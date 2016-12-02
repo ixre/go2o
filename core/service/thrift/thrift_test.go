@@ -28,11 +28,11 @@ func TestLogin(t *testing.T) {
 	t.Logf("连接开启：%v", cli.Transport.IsOpen())
 	pwd := domain.MemberSha1Pwd("123456")
 	r, _ := cli.Login("jarry6", pwd, false)
-	t.Logf("登陆(1)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
+	t.Logf("登录(1)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
 
 	pwd = domain.MemberSha1Pwd("123000")
 	r, _ = cli.Login("jarry6", pwd, false)
-	t.Logf("登陆(2)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
+	t.Logf("登录(2)结果：\n MemberId:%d\n Result:%v", r.ID, r.Result_)
 
 	arr, _ := cli.InviterArray(16893, 5)
 	t.Log("邀请人：", arr)
