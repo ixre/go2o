@@ -185,8 +185,10 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	po := r.paymentRep.GetPaymentBySalesOrderId(o.ParentId)
 	//如果支付单已清理数据，则全部退回到余额
 	if po == nil {
-		return acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
-			o.OrderNo, amount, member.DefaultRelateUser)
+		return acc.Refund(member.AccountBalance,
+			member.KindBalanceRefund, "订单退款",
+			o.OrderNo, amount,
+			member.DefaultRelateUser)
 	}
 	//原路退回
 	pv := po.GetValue()
@@ -206,10 +208,14 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	}
 	//退到赠送账户
 	if pv.PaymentSign == payment.SignPresentAccount {
-		return acc.Refund(member.AccountPresent, member.KindPresentPaymentRefund,
-			"订单退款", o.OrderNo, amount, member.DefaultRelateUser)
+		return acc.Refund(member.AccountPresent,
+			member.KindPresentPaymentRefund,
+			"订单退款", o.OrderNo, amount,
+			member.DefaultRelateUser)
 	}
 	//原路退回，暂时不实现。直接退到赠送账户
-	return acc.Refund(member.AccountPresent, member.KindPresentPaymentRefund, "订单退款",
-		o.OrderNo, amount, member.DefaultRelateUser)
+	return acc.Refund(member.AccountPresent,
+		member.KindPresentPaymentRefund,
+		"订单退款", o.OrderNo, amount,
+		member.DefaultRelateUser)
 }

@@ -150,7 +150,7 @@ type (
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
-		ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减余额
 		DiscountBalance(title string, outerNo string, amount float32, relateUser int32) error
@@ -162,10 +162,10 @@ type (
 		Unfreeze(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额(指定业务类型)
-		ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
@@ -223,6 +223,9 @@ type (
 
 		// 退款
 		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int32) error
+
+		// 充值
+		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int32) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error
