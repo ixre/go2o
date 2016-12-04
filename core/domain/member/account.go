@@ -254,6 +254,12 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 
 }
 
+// 退款
+func (a *accountImpl) Refund(accountKind int, kind int32, title string,
+	outerNo string, amount float32, relateUser int32) error {
+	return nil
+}
+
 // 赠送金额,客服操作时,需提供操作人(relateUser)
 func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 	amount float32, relateUser int32) error {
@@ -261,15 +267,21 @@ func (a *accountImpl) ChargeForPresent(title string, outerNo string,
 	if relateUser > 0 {
 		kind = member.KindPresentServiceAdd
 	}
-	return a.ChargePresentByKind(kind, title, outerNo, amount, relateUser)
+	return a.chargePresentByKind(kind, title, outerNo, amount, relateUser)
 }
 
 // 赠送金额(指定业务类型)
-func (a *accountImpl) ChargePresentByKind(kind int32, title string,
+func (a *accountImpl) chargePresentByKind(kind int32, title string,
 	outerNo string, amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
+	if kind < member.KindMine &&
+		kind != member.KindPresentServiceAdd &&
+		kind != member.KindPresentAdd {
+		return member.ErrBusinessKind
+	}
+
 	if title == "" {
 		if amount < 0 {
 			title = "赠送账户出账"
@@ -693,7 +705,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	} else {
 		v.Remark += "失败:" + remark
 		v.State = enum.ReviewReject
-		err := a.ChargePresentByKind(member.KindPresentTakeOutRefund,
+		err := a.chargePresentByKind(member.KindPresentTakeOutRefund,
 			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 			member.DefaultRelateUser)
 		if err != nil {
@@ -715,7 +727,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	//		}
 	//		v.Remark += "失败:" + remark
 	//		v.State = enum.ReviewReject
-	//		err := a.ChargePresentByKind(member.KindPresentTakOutRefund,
+	//		err := a.chargePresentByKind(member.KindPresentTakOutRefund,
 	//			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 	//			member.DefaultRelateUser)
 	//		if err != nil {
@@ -835,7 +847,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 }
 
 // 转账
-func (a *accountImpl) TransferAccounts(accountKind int, toMember int32, amount float32,
+func (a *accountImpl) TransferAccount(accountKind int, toMember int32, amount float32,
 	csnRate float32, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount

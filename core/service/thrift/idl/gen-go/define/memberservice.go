@@ -56,12 +56,13 @@ type MemberService interface {
 	InviterArray(memberId int32, depth int32) (r []int32, err error)
 	// Parameters:
 	//  - MemberId
+	//  - Account
 	//  - Kind
 	//  - Title
 	//  - OuterNo
 	//  - Amount
 	//  - RelateUser
-	PresentBalanceByKind(memberId int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error)
+	ChargeAccount(memberId int32, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error)
 }
 
 type MemberServiceClient struct {
@@ -950,30 +951,32 @@ func (p *MemberServiceClient) recvInviterArray() (value []int32, err error) {
 
 // Parameters:
 //  - MemberId
+//  - Account
 //  - Kind
 //  - Title
 //  - OuterNo
 //  - Amount
 //  - RelateUser
-func (p *MemberServiceClient) PresentBalanceByKind(memberId int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error) {
-	if err = p.sendPresentBalanceByKind(memberId, kind, title, outerNo, amount, relateUser); err != nil {
+func (p *MemberServiceClient) ChargeAccount(memberId int32, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error) {
+	if err = p.sendChargeAccount(memberId, account, kind, title, outerNo, amount, relateUser); err != nil {
 		return
 	}
-	return p.recvPresentBalanceByKind()
+	return p.recvChargeAccount()
 }
 
-func (p *MemberServiceClient) sendPresentBalanceByKind(memberId int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (err error) {
+func (p *MemberServiceClient) sendChargeAccount(memberId int32, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
 		p.OutputProtocol = oprot
 	}
 	p.SeqId++
-	if err = oprot.WriteMessageBegin("PresentBalanceByKind", thrift.CALL, p.SeqId); err != nil {
+	if err = oprot.WriteMessageBegin("ChargeAccount", thrift.CALL, p.SeqId); err != nil {
 		return
 	}
-	args := MemberServicePresentBalanceByKindArgs{
+	args := MemberServiceChargeAccountArgs{
 		MemberId:   memberId,
+		Account:    account,
 		Kind:       kind,
 		Title:      title,
 		OuterNo:    outerNo,
@@ -989,7 +992,7 @@ func (p *MemberServiceClient) sendPresentBalanceByKind(memberId int32, kind int3
 	return oprot.Flush()
 }
 
-func (p *MemberServiceClient) recvPresentBalanceByKind() (value *Result_, err error) {
+func (p *MemberServiceClient) recvChargeAccount() (value *Result_, err error) {
 	iprot := p.InputProtocol
 	if iprot == nil {
 		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -999,12 +1002,12 @@ func (p *MemberServiceClient) recvPresentBalanceByKind() (value *Result_, err er
 	if err != nil {
 		return
 	}
-	if method != "PresentBalanceByKind" {
-		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "PresentBalanceByKind failed: wrong method name")
+	if method != "ChargeAccount" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "ChargeAccount failed: wrong method name")
 		return
 	}
 	if p.SeqId != seqId {
-		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "PresentBalanceByKind failed: out of sequence response")
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "ChargeAccount failed: out of sequence response")
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
@@ -1021,10 +1024,10 @@ func (p *MemberServiceClient) recvPresentBalanceByKind() (value *Result_, err er
 		return
 	}
 	if mTypeId != thrift.REPLY {
-		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "PresentBalanceByKind failed: invalid message type")
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "ChargeAccount failed: invalid message type")
 		return
 	}
-	result := MemberServicePresentBalanceByKindResult{}
+	result := MemberServiceChargeAccountResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -1067,7 +1070,7 @@ func NewMemberServiceProcessor(handler MemberService) *MemberServiceProcessor {
 	self24.processorMap["GetAddress"] = &memberServiceProcessorGetAddress{handler: handler}
 	self24.processorMap["GetAccount"] = &memberServiceProcessorGetAccount{handler: handler}
 	self24.processorMap["InviterArray"] = &memberServiceProcessorInviterArray{handler: handler}
-	self24.processorMap["PresentBalanceByKind"] = &memberServiceProcessorPresentBalanceByKind{handler: handler}
+	self24.processorMap["ChargeAccount"] = &memberServiceProcessorChargeAccount{handler: handler}
 	return self24
 }
 
@@ -1615,16 +1618,16 @@ func (p *memberServiceProcessorInviterArray) Process(seqId int32, iprot, oprot t
 	return true, err
 }
 
-type memberServiceProcessorPresentBalanceByKind struct {
+type memberServiceProcessorChargeAccount struct {
 	handler MemberService
 }
 
-func (p *memberServiceProcessorPresentBalanceByKind) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := MemberServicePresentBalanceByKindArgs{}
+func (p *memberServiceProcessorChargeAccount) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MemberServiceChargeAccountArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("PresentBalanceByKind", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("ChargeAccount", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush()
@@ -1632,12 +1635,12 @@ func (p *memberServiceProcessorPresentBalanceByKind) Process(seqId int32, iprot,
 	}
 
 	iprot.ReadMessageEnd()
-	result := MemberServicePresentBalanceByKindResult{}
+	result := MemberServiceChargeAccountResult{}
 	var retval *Result_
 	var err2 error
-	if retval, err2 = p.handler.PresentBalanceByKind(args.MemberId, args.Kind, args.Title, args.OuterNo, args.Amount, args.RelateUser); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PresentBalanceByKind: "+err2.Error())
-		oprot.WriteMessageBegin("PresentBalanceByKind", thrift.EXCEPTION, seqId)
+	if retval, err2 = p.handler.ChargeAccount(args.MemberId, args.Account, args.Kind, args.Title, args.OuterNo, args.Amount, args.RelateUser); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ChargeAccount: "+err2.Error())
+		oprot.WriteMessageBegin("ChargeAccount", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush()
@@ -1645,7 +1648,7 @@ func (p *memberServiceProcessorPresentBalanceByKind) Process(seqId int32, iprot,
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("PresentBalanceByKind", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("ChargeAccount", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -3962,48 +3965,54 @@ func (p *MemberServiceInviterArrayResult) String() string {
 
 // Attributes:
 //  - MemberId
+//  - Account
 //  - Kind
 //  - Title
 //  - OuterNo
 //  - Amount
 //  - RelateUser
-type MemberServicePresentBalanceByKindArgs struct {
+type MemberServiceChargeAccountArgs struct {
 	MemberId   int32   `thrift:"memberId,1" json:"memberId"`
-	Kind       int32   `thrift:"kind,2" json:"kind"`
-	Title      string  `thrift:"title,3" json:"title"`
-	OuterNo    string  `thrift:"outerNo,4" json:"outerNo"`
-	Amount     float64 `thrift:"amount,5" json:"amount"`
-	RelateUser int32   `thrift:"relateUser,6" json:"relateUser"`
+	Account    int32   `thrift:"account,2" json:"account"`
+	Kind       int32   `thrift:"kind,3" json:"kind"`
+	Title      string  `thrift:"title,4" json:"title"`
+	OuterNo    string  `thrift:"outerNo,5" json:"outerNo"`
+	Amount     float64 `thrift:"amount,6" json:"amount"`
+	RelateUser int32   `thrift:"relateUser,7" json:"relateUser"`
 }
 
-func NewMemberServicePresentBalanceByKindArgs() *MemberServicePresentBalanceByKindArgs {
-	return &MemberServicePresentBalanceByKindArgs{}
+func NewMemberServiceChargeAccountArgs() *MemberServiceChargeAccountArgs {
+	return &MemberServiceChargeAccountArgs{}
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetMemberId() int32 {
+func (p *MemberServiceChargeAccountArgs) GetMemberId() int32 {
 	return p.MemberId
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetKind() int32 {
+func (p *MemberServiceChargeAccountArgs) GetAccount() int32 {
+	return p.Account
+}
+
+func (p *MemberServiceChargeAccountArgs) GetKind() int32 {
 	return p.Kind
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetTitle() string {
+func (p *MemberServiceChargeAccountArgs) GetTitle() string {
 	return p.Title
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetOuterNo() string {
+func (p *MemberServiceChargeAccountArgs) GetOuterNo() string {
 	return p.OuterNo
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetAmount() float64 {
+func (p *MemberServiceChargeAccountArgs) GetAmount() float64 {
 	return p.Amount
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) GetRelateUser() int32 {
+func (p *MemberServiceChargeAccountArgs) GetRelateUser() int32 {
 	return p.RelateUser
 }
-func (p *MemberServicePresentBalanceByKindArgs) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -4041,6 +4050,10 @@ func (p *MemberServicePresentBalanceByKindArgs) Read(iprot thrift.TProtocol) err
 			if err := p.readField6(iprot); err != nil {
 				return err
 			}
+		case 7:
+			if err := p.readField7(iprot); err != nil {
+				return err
+			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -4056,7 +4069,7 @@ func (p *MemberServicePresentBalanceByKindArgs) Read(iprot thrift.TProtocol) err
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField1(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
@@ -4065,53 +4078,62 @@ func (p *MemberServicePresentBalanceByKindArgs) readField1(iprot thrift.TProtoco
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField2(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.Account = v
+	}
+	return nil
+}
+
+func (p *MemberServiceChargeAccountArgs) readField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 3: ", err)
 	} else {
 		p.Kind = v
 	}
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField3(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField4(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 3: ", err)
+		return thrift.PrependError("error reading field 4: ", err)
 	} else {
 		p.Title = v
 	}
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField4(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField5(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 4: ", err)
+		return thrift.PrependError("error reading field 5: ", err)
 	} else {
 		p.OuterNo = v
 	}
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField5(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField6(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
-		return thrift.PrependError("error reading field 5: ", err)
+		return thrift.PrependError("error reading field 6: ", err)
 	} else {
 		p.Amount = v
 	}
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) readField6(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountArgs) readField7(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI32(); err != nil {
-		return thrift.PrependError("error reading field 6: ", err)
+		return thrift.PrependError("error reading field 7: ", err)
 	} else {
 		p.RelateUser = v
 	}
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("PresentBalanceByKind_args"); err != nil {
+func (p *MemberServiceChargeAccountArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ChargeAccount_args"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if err := p.writeField1(oprot); err != nil {
@@ -4132,6 +4154,9 @@ func (p *MemberServicePresentBalanceByKindArgs) Write(oprot thrift.TProtocol) er
 	if err := p.writeField6(oprot); err != nil {
 		return err
 	}
+	if err := p.writeField7(oprot); err != nil {
+		return err
+	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
 	}
@@ -4141,7 +4166,7 @@ func (p *MemberServicePresentBalanceByKindArgs) Write(oprot thrift.TProtocol) er
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceChargeAccountArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err := oprot.WriteFieldBegin("memberId", thrift.I32, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:memberId: ", p), err)
 	}
@@ -4154,101 +4179,114 @@ func (p *MemberServicePresentBalanceByKindArgs) writeField1(oprot thrift.TProtoc
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("kind", thrift.I32, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:kind: ", p), err)
+func (p *MemberServiceChargeAccountArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("account", thrift.I32, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:account: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.Account)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.account (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:account: ", p), err)
+	}
+	return err
+}
+
+func (p *MemberServiceChargeAccountArgs) writeField3(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("kind", thrift.I32, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:kind: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.Kind)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.kind (2) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.kind (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:kind: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:kind: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("title", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:title: ", p), err)
+func (p *MemberServiceChargeAccountArgs) writeField4(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("title", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:title: ", p), err)
 	}
 	if err := oprot.WriteString(string(p.Title)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.title (3) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.title (4) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:title: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:title: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField4(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("outerNo", thrift.STRING, 4); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:outerNo: ", p), err)
+func (p *MemberServiceChargeAccountArgs) writeField5(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("outerNo", thrift.STRING, 5); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:outerNo: ", p), err)
 	}
 	if err := oprot.WriteString(string(p.OuterNo)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.outerNo (4) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.outerNo (5) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:outerNo: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:outerNo: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField5(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("amount", thrift.DOUBLE, 5); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:amount: ", p), err)
+func (p *MemberServiceChargeAccountArgs) writeField6(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("amount", thrift.DOUBLE, 6); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:amount: ", p), err)
 	}
 	if err := oprot.WriteDouble(float64(p.Amount)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.amount (5) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.amount (6) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:amount: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:amount: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) writeField6(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("relateUser", thrift.I32, 6); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:relateUser: ", p), err)
+func (p *MemberServiceChargeAccountArgs) writeField7(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("relateUser", thrift.I32, 7); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:relateUser: ", p), err)
 	}
 	if err := oprot.WriteI32(int32(p.RelateUser)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.relateUser (6) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.relateUser (7) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:relateUser: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:relateUser: ", p), err)
 	}
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindArgs) String() string {
+func (p *MemberServiceChargeAccountArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServicePresentBalanceByKindArgs(%+v)", *p)
+	return fmt.Sprintf("MemberServiceChargeAccountArgs(%+v)", *p)
 }
 
 // Attributes:
 //  - Success
-type MemberServicePresentBalanceByKindResult struct {
+type MemberServiceChargeAccountResult struct {
 	Success *Result_ `thrift:"success,0" json:"success,omitempty"`
 }
 
-func NewMemberServicePresentBalanceByKindResult() *MemberServicePresentBalanceByKindResult {
-	return &MemberServicePresentBalanceByKindResult{}
+func NewMemberServiceChargeAccountResult() *MemberServiceChargeAccountResult {
+	return &MemberServiceChargeAccountResult{}
 }
 
-var MemberServicePresentBalanceByKindResult_Success_DEFAULT *Result_
+var MemberServiceChargeAccountResult_Success_DEFAULT *Result_
 
-func (p *MemberServicePresentBalanceByKindResult) GetSuccess() *Result_ {
+func (p *MemberServiceChargeAccountResult) GetSuccess() *Result_ {
 	if !p.IsSetSuccess() {
-		return MemberServicePresentBalanceByKindResult_Success_DEFAULT
+		return MemberServiceChargeAccountResult_Success_DEFAULT
 	}
 	return p.Success
 }
-func (p *MemberServicePresentBalanceByKindResult) IsSetSuccess() bool {
+func (p *MemberServiceChargeAccountResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *MemberServicePresentBalanceByKindResult) Read(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountResult) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
 	}
@@ -4281,7 +4319,7 @@ func (p *MemberServicePresentBalanceByKindResult) Read(iprot thrift.TProtocol) e
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindResult) readField0(iprot thrift.TProtocol) error {
+func (p *MemberServiceChargeAccountResult) readField0(iprot thrift.TProtocol) error {
 	p.Success = &Result_{}
 	if err := p.Success.Read(iprot); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
@@ -4289,8 +4327,8 @@ func (p *MemberServicePresentBalanceByKindResult) readField0(iprot thrift.TProto
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindResult) Write(oprot thrift.TProtocol) error {
-	if err := oprot.WriteStructBegin("PresentBalanceByKind_result"); err != nil {
+func (p *MemberServiceChargeAccountResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("ChargeAccount_result"); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
 	}
 	if err := p.writeField0(oprot); err != nil {
@@ -4305,7 +4343,7 @@ func (p *MemberServicePresentBalanceByKindResult) Write(oprot thrift.TProtocol) 
 	return nil
 }
 
-func (p *MemberServicePresentBalanceByKindResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *MemberServiceChargeAccountResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
@@ -4320,9 +4358,9 @@ func (p *MemberServicePresentBalanceByKindResult) writeField0(oprot thrift.TProt
 	return err
 }
 
-func (p *MemberServicePresentBalanceByKindResult) String() string {
+func (p *MemberServiceChargeAccountResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("MemberServicePresentBalanceByKindResult(%+v)", *p)
+	return fmt.Sprintf("MemberServiceChargeAccountResult(%+v)", *p)
 }

@@ -31,6 +31,8 @@ const (
 )
 
 const (
+	// 自定义的业务类型
+	KindMine int32 = 30
 	// 会员充值
 	KindBalanceCharge int32 = 1
 	// 系统充值
@@ -212,12 +214,15 @@ type (
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccounts(accountKind int, toMember int32, amount float32,
+		TransferAccount(accountKind int, toMember int32, amount float32,
 			csnRate float32, remark string) error
 
 		// 接收转账
 		ReceiveTransfer(accountKind int, fromMember int32, tradeNo string,
 			amount float32, remark string) error
+
+		// 退款
+		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error

@@ -755,21 +755,6 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int32) *member.Bala
 	return m.GetAccount().GetBalanceInfo(infoId)
 }
 
-// 充值
-func (ms *memberService) Charge(memberId int32, chargeType int32, title,
-	outerNo string, amount float32, relateUser int32) error {
-	//todo: ???
-	if relateUser == 0 {
-		relateUser = 1
-	}
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().ChargeForBalance(chargeType, title,
-		outerNo, amount, relateUser)
-}
-
 // 增加积分
 func (ms *memberService) AddIntegral(memberId int32, iType int,
 	orderNo string, value int, remark string) error {
@@ -790,8 +775,38 @@ func (ms *memberService) PresentBalance(memberId int32, title string,
 	return m.GetAccount().ChargeForPresent(title, outerNo, amount, relateUser)
 }
 
+// 充值
+func (ms *memberService) chargeBalance(memberId int32, chargeType int32, title,
+	outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
+	//todo: ???
+	if relateUser == 0 {
+		relateUser = 1
+	}
+	m, err := ms.getMember(memberId)
+	if err == nil {
+		err = m.GetAccount().ChargeForBalance(chargeType, title,
+			outerNo, float32(amount), relateUser)
+	}
+	return parser.Result(err), nil
+}
+
+// 充值,account为账户类型,kind为业务类型
+func (ms *memberService) ChargeAccount(memberId int32, account int32,
+	kind int32, title, outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
+	switch account {
+	case member.AccountBalance:
+		chargeType := kind
+		return ms.chargeBalance(memberId, chargeType, title, outerNo,
+			amount, relateUser)
+	case member.AccountPresent:
+		return ms.presentBalanceByKind(memberId, kind, title,
+			outerNo, amount, relateUser)
+	}
+	panic(errors.New("暂不支持的类型"))
+}
+
 // 赠送金额充值
-func (ms *memberService) PresentBalanceByKind(memberId int32, kind int32, title string,
+func (ms *memberService) presentBalanceByKind(memberId int32, kind int32, title string,
 	outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
 	m, err := ms.getMember(memberId)
 	if err == nil {
@@ -982,13 +997,13 @@ func (ms *memberService) FreezeExpired(memberId int32, accountKind int, amount f
 }
 
 // 转账余额到其他账户
-func (ms *memberService) TransferAccounts(accountKind int, fromMember int32,
+func (ms *memberService) TransferAccount(accountKind int, fromMember int32,
 	toMember int32, amount float32, csnRate float32, remark string) error {
 	m := ms._rep.GetMember(fromMember)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferAccounts(accountKind, toMember,
+	return m.GetAccount().TransferAccount(accountKind, toMember,
 		amount, csnRate, remark)
 }
 

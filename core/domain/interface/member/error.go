@@ -208,6 +208,9 @@ var (
 	ErrNotSupportTakeOutBusinessKind *domain.DomainError = domain.NewDomainError(
 		"err_not_support_take_out_business_kind", "不支持的提现业务类型")
 
+	ErrBusinessKind *domain.DomainError = domain.NewDomainError(
+		"err_not_support_business_kind", "不支持的业务类型")
+
 	ErrNotSupportChargeMethod *domain.DomainError = domain.NewDomainError(
 		"err_account_not_support_charge_method", "不支持的充值方式")
 
