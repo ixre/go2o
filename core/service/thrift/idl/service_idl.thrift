@@ -224,7 +224,9 @@ service FoundationService{
    //   -  1. 成功，并返回token
    //   - -1. 接口地址不正确
    //   - -2. 已经注册
-   string RegisterSsoApp(1:SsoApp app)
+   string RegisterApp(1:SsoApp app)
+   // 获取应用信息
+   SsoApp GetApp(1:string name)
    // 获取单点登录应用
    list<string> GetAllSsoApp()
    // 验证超级用户账号和密码

@@ -52,13 +52,19 @@ func (s *foundationService) FlushSuperPwd(user string, pwd string) (err error) {
 //   -  1. 成功，并返回token
 //   - -1. 接口地址不正确
 //   - -2. 已经注册
-func (s *foundationService) RegisterSsoApp(app *define.SsoApp) (r string, err error) {
+func (s *foundationService) RegisterApp(app *define.SsoApp) (r string, err error) {
 	sso := module.Get(module.M_SSO).(*module.SSOModule)
 	token, err := sso.Register(app)
 	if err == nil {
 		return "1:" + token, nil
 	}
 	return err.Error(), nil
+}
+
+// 获取应用信息
+func (s *foundationService) GetApp(name string) (r *define.SsoApp, err error) {
+	sso := module.Get(module.M_SSO).(*module.SSOModule)
+	return sso.Get(name), nil
 }
 
 // 获取单点登录应用
