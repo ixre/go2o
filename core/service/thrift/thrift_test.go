@@ -47,7 +47,7 @@ func TestSSORegister(t *testing.T) {
 			Name:   "gp",
 			ApiUrl: "http://localhost:14281/member/sync_m.p",
 		}
-		s, _ := cli.RegisterSsoApp(sa)
+		s, _ := cli.RegisterApp(sa)
 		arr := strings.Split(s, ":")
 		if arr[0] != "1" {
 			t.Error(errors.New("注册SSO-APP出错：" +

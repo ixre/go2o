@@ -79,10 +79,10 @@ func FsInit(debug bool) {
 func resetFsOnDarwin() {
 	webFs[FsMain] = false
 	webFs[FsMainMobile] = false
-	webFs[FsPassport] = !false
+	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
 	webFs[FsUCenter] = false
-	webFs[FsUCenterMobile] = false
+	webFs[FsUCenterMobile] = !false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
 	webFs[FsMch] = false

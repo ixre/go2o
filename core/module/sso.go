@@ -53,6 +53,14 @@ func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 	return app.Token, nil
 }
 
+// 获取APP的配置
+func (s *SSOModule) Get(name string) *define.SsoApp {
+	if s.appMap != nil {
+		return s.appMap[name]
+	}
+	return nil
+}
+
 // 返回同步的应用API地址
 func (s *SSOModule) Array() []string {
 	if s.apiArr == nil && s.appMap != nil && len(s.appMap) > 0 {
