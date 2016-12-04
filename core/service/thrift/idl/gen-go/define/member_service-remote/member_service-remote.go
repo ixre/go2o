@@ -31,7 +31,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Address GetAddress(i32 memberId, i32 addrId)")
 	fmt.Fprintln(os.Stderr, "  Account GetAccount(i32 memberId)")
 	fmt.Fprintln(os.Stderr, "   InviterArray(i32 memberId, i32 depth)")
-	fmt.Fprintln(os.Stderr, "  Result PresentBalanceByKind(i32 memberId, i32 kind, string title, string outerNo, double amount, i32 relateUser)")
+	fmt.Fprintln(os.Stderr, "  Result ChargeAccount(i32 memberId, i32 account, i32 kind, string title, string outerNo, double amount, i32 relateUser)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -303,9 +303,9 @@ func main() {
 		fmt.Print(client.InviterArray(value0, value1))
 		fmt.Print("\n")
 		break
-	case "PresentBalanceByKind":
-		if flag.NArg()-1 != 6 {
-			fmt.Fprintln(os.Stderr, "PresentBalanceByKind requires 6 args")
+	case "ChargeAccount":
+		if flag.NArg()-1 != 7 {
+			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
 			flag.Usage()
 		}
 		tmp0, err44 := (strconv.Atoi(flag.Arg(1)))
@@ -322,24 +322,31 @@ func main() {
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		argvalue2 := flag.Arg(3)
-		value2 := argvalue2
-		argvalue3 := flag.Arg(4)
-		value3 := argvalue3
-		argvalue4, err48 := (strconv.ParseFloat(flag.Arg(5), 64))
-		if err48 != nil {
+		tmp2, err46 := (strconv.Atoi(flag.Arg(3)))
+		if err46 != nil {
 			Usage()
 			return
 		}
+		argvalue2 := int32(tmp2)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		argvalue4 := flag.Arg(5)
 		value4 := argvalue4
-		tmp5, err49 := (strconv.Atoi(flag.Arg(6)))
+		argvalue5, err49 := (strconv.ParseFloat(flag.Arg(6), 64))
 		if err49 != nil {
 			Usage()
 			return
 		}
-		argvalue5 := int32(tmp5)
 		value5 := argvalue5
-		fmt.Print(client.PresentBalanceByKind(value0, value1, value2, value3, value4, value5))
+		tmp6, err50 := (strconv.Atoi(flag.Arg(7)))
+		if err50 != nil {
+			Usage()
+			return
+		}
+		argvalue6 := int32(tmp6)
+		value6 := argvalue6
+		fmt.Print(client.ChargeAccount(value0, value1, value2, value3, value4, value5, value6))
 		fmt.Print("\n")
 		break
 	case "":

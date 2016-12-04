@@ -187,9 +187,9 @@ service MemberService{
     Account GetAccount(1:i32 memberId)
     // 获取邀请人会员编号数组
     list<i32> InviterArray(1:i32 memberId,2:i32 depth)
-    // 赠送金额充值
-    Result PresentBalanceByKind(1:i32 memberId ,2:i32 kind,
-      3:string title,4:string outerNo,5:double amount,6:i32 relateUser)
+    // 账户充值
+    Result ChargeAccount(1:i32 memberId ,2:i32 account,3:i32 kind,
+      4:string title,5:string outerNo,6:double amount,7:i32 relateUser)
 }
 
 struct PlatformConf {

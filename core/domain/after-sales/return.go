@@ -191,7 +191,7 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	//原路退回
 	pv := po.GetValue()
 	if pv.BalanceDiscount > 0 {
-		if err := acc.ChargeForBalance(member.ChargeByRefund, "订单退款",
+		if err := acc.Refund(member.AccountBalance, member.ChargeByRefund, "订单退款",
 			o.OrderNo, pv.BalanceDiscount, member.DefaultRelateUser); err == nil {
 			amount -= pv.BalanceDiscount
 		}
@@ -206,10 +206,10 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	}
 	//退到赠送账户
 	if pv.PaymentSign == payment.SignPresentAccount {
-		return acc.ChargePresentByKind(member.KindPresentPaymentRefund, "订单退款",
-			o.OrderNo, amount, member.DefaultRelateUser)
+		return acc.Refund(member.AccountPresent, member.KindPresentPaymentRefund,
+			"订单退款", o.OrderNo, amount, member.DefaultRelateUser)
 	}
 	//原路退回，暂时不实现。直接退到赠送账户
-	return acc.ChargePresentByKind(member.KindPresentPaymentRefund, "订单退款",
+	return acc.Refund(member.AccountPresent, member.KindPresentPaymentRefund, "订单退款",
 		o.OrderNo, amount, member.DefaultRelateUser)
 }
