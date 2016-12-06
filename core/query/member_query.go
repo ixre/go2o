@@ -203,21 +203,21 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 
 	m.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_merchant_id=rl.reg_merchant_id  AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id = m.id
+	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
   ? AND ? ) as invi_num,
 	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id = m.id
+	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
   ? AND ? )+
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
-  ON m1.id = r.member_id WHERE (m1.level%s) AND invi_member_id IN
+  ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id =
-    m.id AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id =
+    m.id AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
   ? AND ? ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_merchant_id = ? AND state= ?) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_mchid = ? AND state= ?) t ORDER BY %s,t.reg_time asc
  LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)
@@ -241,8 +241,8 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 func (m *MemberQuery) GetReferNum(memberId int32, layer int) int {
 	total := 0
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
-	where := "refer_str LIKE '%" + keyword +
-		",%' OR refer_str LIKE '%" + keyword + "}'"
+	where := "inviter_str LIKE '%" + keyword +
+		",%' OR inviter_str LIKE '%" + keyword + "}'"
 	err := m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
 	if err != nil {
 		domain.HandleError(err, "[ Go2o][ Member][ Query]:")

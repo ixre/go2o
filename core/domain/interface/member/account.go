@@ -285,7 +285,7 @@ type (
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_present"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_present_fee"`
+		TotalPresentFee float32 `db:"total_present_amount"`
 		//流动账户余额
 		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额

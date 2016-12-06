@@ -45,7 +45,7 @@ func (c *categoryRep) GetGlobManager() sale.ICategoryManager {
 }
 
 func (c *categoryRep) getCategoryCacheKey(id int32) string {
-	return fmt.Sprintf("go2o:rep:cat:c:%d", id)
+	return fmt.Sprintf("go2o:rep:cat:c%d", id)
 }
 
 func (c *categoryRep) SaveCategory(v *sale.Category) (int32, error) {
@@ -53,7 +53,7 @@ func (c *categoryRep) SaveCategory(v *sale.Category) (int32, error) {
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, fmt.Sprintf("go2o:rep:cat:%d:*", v.MerchantId))
+		PrefixDel(c.storage, "go2o:rep:cat:*")
 	}
 	return id, err
 }
@@ -63,23 +63,23 @@ func (c *categoryRep) CheckGoodsContain(mchId, id int32) bool {
 	num := 0
 	//清理项
 	c.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
-		(SELECT Id FROM gs_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
+		(SELECT Id FROM cat_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
 	return num > 0
 }
 
 func (c *categoryRep) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, _, err := c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND parent_id=?",
+	_, _, err := c.Connector.Exec("DELETE FROM cat_category WHERE mch_id=? AND parent_id=?",
 		mchId, id)
 
 	//删除分类
-	_, _, err = c.Connector.Exec("DELETE FROM gs_category WHERE mch_id=? AND id=?",
+	_, _, err = c.Connector.Exec("DELETE FROM cat_category WHERE mch_id=? AND id=?",
 		mchId, id)
 
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, fmt.Sprintf("go2o:rep:cat:%d:*", mchId))
+		PrefixDel(c.storage, "go2o:rep:cat:*")
 	}
 
 	return err
@@ -112,9 +112,9 @@ func (c *categoryRep) convertICategory(list sale.CategoryList) []sale.ICategory 
 	return slice
 }
 
-func (c *categoryRep) redirectGetCats(mchId int32) []*sale.Category {
+func (c *categoryRep) redirectGetCats() []*sale.Category {
 	list := []*sale.Category{}
-	err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
+	err := c.Connector.GetOrm().Select(&list, "")
 	if err != nil {
 		handleError(err)
 	}
@@ -122,7 +122,7 @@ func (c *categoryRep) redirectGetCats(mchId int32) []*sale.Category {
 }
 
 func (c *categoryRep) GetCategories(mchId int32) []*sale.Category {
-	return c.redirectGetCats(mchId)
+	return c.redirectGetCats()
 	//todo: cache
 	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)
 	//list := []*sale.Category{}
