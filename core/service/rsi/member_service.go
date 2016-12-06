@@ -363,8 +363,8 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 				// 保存关联信息
 				rl := m.GetRelation()
 				rl.InviterId = invitationId
-				rl.RegisterMchId = mchId
-				rl.CardId = cardId
+				rl.RegMchId = mchId
+				rl.CardCard = cardId
 				err = m.SaveRelation(rl)
 			}
 		}

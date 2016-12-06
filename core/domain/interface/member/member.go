@@ -257,15 +257,16 @@ type (
 
 	//会员关联表
 	Relation struct {
+		// 会员编号
 		MemberId int32 `db:"member_id" pk:"yes"`
 		//会员卡号
-		CardId string `db:"card_id"`
+		CardCard string `db:"card_no"`
 		//推荐人（会员）
-		InviterId int32 `db:"invi_member_id"`
+		InviterId int32 `db:"inviter_id"`
 		// 会员关系字符串
-		InviterStr string `db:"refer_str"`
+		InviterStr string `db:"inviter_str"`
 		//注册关联商户编号
-		RegisterMchId int32 `db:"reg_merchant_id"`
+		RegMchId int32 `db:"reg_mchid"`
 	}
 
 	// 实名认证信息
