@@ -100,7 +100,7 @@ type (
 		Description string `db:"describe"`
 
 		// 排序编号
-		SortNumber int `db:"sort_number"`
+		SortNum int `db:"sort_number"`
 
 		// 定位路径（打开栏目页定位到的路径）
 		Location string `db:"location"`
@@ -144,7 +144,7 @@ type (
 		ViewCount int `db:"view_count"`
 
 		//排序序号
-		SortNumber int `db:"sort_number"`
+		SortNum int `db:"sort_number"`
 
 		//创建时间
 		CreateTime int64 `db:"create_time"`

@@ -75,7 +75,7 @@ func (s *shopImpl) SetValue(v *shop.Shop) error {
 		return err
 	}
 	s.value.Name = v.Name
-	s.value.SortNumber = v.SortNumber
+	s.value.SortNum = v.SortNum
 	s.value.State = v.State
 	return nil
 }

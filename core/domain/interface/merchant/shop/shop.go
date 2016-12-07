@@ -187,7 +187,7 @@ type (
 		ShopType   int    `db:"shop_type"`
 		Name       string `db:"name"`
 		State      int    `db:"state"`
-		SortNumber int    `db:"sort_number"`
+		SortNum    int    `db:"sort_number"`
 		CreateTime int64  `db:"create_time"`
 	}
 
