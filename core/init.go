@@ -143,7 +143,7 @@ func OrmMapping(conn db.Connector) {
 	/** 销售 **/
 	orm.Mapping(item.Item{}, "gs_item")
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
-	orm.Mapping(sale.Category{}, "gs_category")
+	orm.Mapping(sale.Category{}, "cat_category")
 	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
 	orm.Mapping(goods.SalesSnapshot{}, "gs_sales_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")

@@ -90,7 +90,9 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 			//给自己返现
 			tit := fmt.Sprintf("订单:%s(商户:%s,会员:%s)收入￥%.2f元",
 				o.value.OrderNo, ptName, mName, fee)
-			err = acc.ChargeForPresent(tit, o.value.OrderNo,
+			err = acc.Charge(member.AccountPresent,
+				member.KindPresentAdd,
+				tit, o.value.OrderNo,
 				fee, member.DefaultRelateUser)
 		}
 		return err
@@ -204,7 +206,8 @@ func backCashForMember(m member.IMember, order *order.Order,
 	if err == nil {
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
 			format.FormatFloat(bFee), order.OrderNo, refName)
-		err = acc.ChargeForPresent(tit, order.OrderNo,
+		err = acc.Charge(member.AccountPresent,
+			member.KindPresentAdd, tit, order.OrderNo,
 			float32(fee), member.DefaultRelateUser)
 	}
 	return err

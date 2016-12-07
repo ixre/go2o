@@ -93,10 +93,9 @@ func (c *categoryImpl) checkParent(parentId int32) error {
 func (c *categoryImpl) SetValue(v *sale.Category) error {
 	val := c.value
 	if val.Id == v.Id {
-		val.Description = v.Description
 		val.Enabled = v.Enabled
 		val.Name = v.Name
-		val.SortNumber = v.SortNumber
+		val.SortNum = v.SortNum
 		val.Icon = v.Icon
 		if val.ParentId != v.ParentId {
 			c.parentIdChanged = true
@@ -118,8 +117,7 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 // 获取子栏目的编号
 func (c *categoryImpl) GetChildes() []int32 {
 	if c.childIdArr == nil {
-		childCats := c.GetChildCategories(
-			c.value.MerchantId, c.GetDomainId())
+		childCats := c.getChildCategories(c.GetDomainId())
 		c.childIdArr = make([]int32, len(childCats))
 		for i, v := range childCats {
 			c.childIdArr[i] = v.Id
@@ -128,9 +126,10 @@ func (c *categoryImpl) GetChildes() []int32 {
 	return c.childIdArr
 }
 func (c *categoryImpl) setCategoryLevel() {
-	mchId := c.value.MerchantId
+	var mchId int32 = 0
 	list := c.rep.GetCategories(mchId)
 	c.parentWalk(list, mchId, &c.value.Level)
+	//todo: 未实现
 }
 
 func (c *categoryImpl) parentWalk(list []*sale.Category,
@@ -161,7 +160,7 @@ func (c *categoryImpl) Save() (int32, error) {
 		c.value.Id = id
 		if len(c.value.Url) == 0 || (c.parentIdChanged &&
 			strings.HasPrefix(c.value.Url, "/c-")) {
-			c.value.Url = c.getAutomaticUrl(c.value.MerchantId, id)
+			c.value.Url = c.getAutomaticUrl(id)
 			c.parentIdChanged = false
 			return c.Save()
 		}
@@ -170,8 +169,8 @@ func (c *categoryImpl) Save() (int32, error) {
 }
 
 // 获取子栏目
-func (c *categoryImpl) GetChildCategories(mchId, categoryId int32) []*sale.Category {
-	var all []*sale.Category = c.rep.GetCategories(mchId)
+func (c *categoryImpl) getChildCategories(catId int32) []*sale.Category {
+	var all []*sale.Category = c.rep.GetCategories(0)
 	var newArr []*sale.Category = []*sale.Category{}
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {
@@ -179,7 +178,7 @@ func (c *categoryImpl) GetChildCategories(mchId, categoryId int32) []*sale.Categ
 	}
 	var start iterator.WalkFunc = func(v interface{}, level int) {
 		c := v.(*sale.Category)
-		if c.Id != categoryId {
+		if c.Id != catId {
 			newArr = append(newArr, c)
 		}
 	}
@@ -189,21 +188,21 @@ func (c *categoryImpl) GetChildCategories(mchId, categoryId int32) []*sale.Categ
 		arr[i] = all[i]
 	}
 
-	iterator.Walk(arr, &sale.Category{Id: categoryId}, cdt, start, nil, 1)
+	iterator.Walk(arr, &sale.Category{Id: catId}, cdt, start, nil, 1)
 
 	return newArr
 }
 
 // 获取与栏目相关的栏目
-func (c *categoryImpl) GetRelationCategories(mchId, categoryId int32) []*sale.Category {
-	var all []*sale.Category = c.rep.GetCategories(mchId)
+func (c *categoryImpl) getRelationCategories(catId int32) []*sale.Category {
+	var all []*sale.Category = c.rep.GetCategories(0)
 	var newArr []*sale.Category = []*sale.Category{}
 	var isMatch bool
 	var pid int32
 	var l int = len(all)
 
 	for i := 0; i < l; i++ {
-		if !isMatch && all[i].Id == categoryId {
+		if !isMatch && all[i].Id == catId {
 			isMatch = true
 			pid = all[i].ParentId
 			newArr = append(newArr, all[i])
@@ -222,8 +221,8 @@ func (c *categoryImpl) GetRelationCategories(mchId, categoryId int32) []*sale.Ca
 	return newArr
 }
 
-func (c *categoryImpl) getAutomaticUrl(mchId, id int32) string {
-	relCats := c.GetRelationCategories(mchId, id)
+func (c *categoryImpl) getAutomaticUrl(id int32) string {
+	relCats := c.getRelationCategories(id)
 	var buf *bytes.Buffer = bytes.NewBufferString("/c")
 	var l int = len(relCats)
 	for i := l; i > 0; i-- {
@@ -242,13 +241,7 @@ type categoryOption struct {
 }
 
 func newCategoryOption(c *categoryImpl) domain.IOptionStore {
-	var file string
-	mchId := c.GetValue().MerchantId
-	if mchId > 0 {
-		file = fmt.Sprintf("conf/mch/%d/option/c/%d", mchId, c.GetDomainId())
-	} else {
-		file = fmt.Sprintf("conf/core/sale/cate_opt_%d", c.GetDomainId())
-	}
+	file := fmt.Sprintf("conf/core/sale/cate_opt_%d", c.GetDomainId())
 	return &categoryOption{
 		_c:           c,
 		IOptionStore: domain.NewOptionStoreWrapper(file),
@@ -307,7 +300,6 @@ func (c *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	v.MerchantId = c.getRelationId()
 	return NewCategory(c._rep, v)
 }
 

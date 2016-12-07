@@ -284,10 +284,10 @@ func PaymentOrderDto(src *payment.PaymentOrder) *define.PaymentOrder {
 func MemberRelationDto(src *member.Relation) *define.MemberRelation {
 	return &define.MemberRelation{
 		MemberId:      src.MemberId,
-		CardId:        src.CardId,
+		CardId:        src.CardCard,
 		InviterId:     src.InviterId,
 		InviterStr:    src.InviterStr,
-		RegisterMchId: src.RegisterMchId,
+		RegisterMchId: src.RegMchId,
 	}
 }
 

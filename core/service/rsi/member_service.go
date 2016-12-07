@@ -363,8 +363,8 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 				// 保存关联信息
 				rl := m.GetRelation()
 				rl.InviterId = invitationId
-				rl.RegisterMchId = mchId
-				rl.CardId = cardId
+				rl.RegMchId = mchId
+				rl.CardCard = cardId
 				err = m.SaveRelation(rl)
 			}
 		}
@@ -466,7 +466,7 @@ func (ms *memberService) ModifyTradePassword(memberId int32,
 	return m.Profile().ModifyTradePassword(newPwd, oldPwd)
 }
 
-// 登陆，返回结果(Result)和会员编号(Id);
+// 登录，返回结果(Result)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.Result_, err error) {
 
@@ -755,21 +755,6 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int32) *member.Bala
 	return m.GetAccount().GetBalanceInfo(infoId)
 }
 
-// 充值
-func (ms *memberService) Charge(memberId int32, chargeType int32, title,
-	outerNo string, amount float32, relateUser int32) error {
-	//todo: ???
-	if relateUser == 0 {
-		relateUser = 1
-	}
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().ChargeForBalance(chargeType, title,
-		outerNo, amount, relateUser)
-}
-
 // 增加积分
 func (ms *memberService) AddIntegral(memberId int32, iType int,
 	orderNo string, value int, remark string) error {
@@ -780,23 +765,16 @@ func (ms *memberService) AddIntegral(memberId int32, iType int,
 	return m.GetAccount().AddIntegral(iType, orderNo, value, remark)
 }
 
-// 赠送金额充值
-func (ms *memberService) PresentBalance(memberId int32, title string,
-	outerNo string, amount float32, relateUser int32) error {
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().ChargeForPresent(title, outerNo, amount, relateUser)
-}
-
-// 赠送金额充值
-func (ms *memberService) PresentBalanceByKind(memberId int32, kind int32, title string,
-	outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
-	m, err := ms.getMember(memberId)
-	if err == nil {
-		err = m.GetAccount().ChargePresentByKind(kind,
-			title, outerNo, float32(amount), relateUser)
+// 充值,account为账户类型,kind为业务类型
+func (ms *memberService) ChargeAccount(memberId int32, account int32,
+	kind int32, title, outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
+	var err error
+	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	acc := m.GetAccount()
+	if acc == nil {
+		err = member.ErrNoSuchMember
+	} else {
+		err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
 	}
 	return parser.Result(err), nil
 }
@@ -982,13 +960,13 @@ func (ms *memberService) FreezeExpired(memberId int32, accountKind int, amount f
 }
 
 // 转账余额到其他账户
-func (ms *memberService) TransferAccounts(accountKind int, fromMember int32,
+func (ms *memberService) TransferAccount(accountKind int, fromMember int32,
 	toMember int32, amount float32, csnRate float32, remark string) error {
 	m := ms._rep.GetMember(fromMember)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferAccounts(accountKind, toMember,
+	return m.GetAccount().TransferAccount(accountKind, toMember,
 		amount, csnRate, remark)
 }
 
@@ -1086,7 +1064,9 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int32, accountTy
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.ChargeForPresent(tit2, outerNo, amount, relateUser)
+			err = acc.Charge(member.AccountPresent,
+				member.KindPresentServiceAdd,
+				tit2, outerNo, amount, relateUser)
 		} else {
 			//扣减奖金
 			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
@@ -1105,7 +1085,8 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int32, accountTy
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.ChargeForBalance(member.ChargeByService,
+			err = acc.Charge(member.AccountBalance,
+				member.KindBalanceServiceCharge,
 				tit2, outerNo, amount, relateUser)
 		} else {
 			tit2 = "[KF]客服扣减"

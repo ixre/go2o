@@ -651,8 +651,10 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 		"提取到会员"+variable.AliasPresentAccount, "", -amount, 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().ChargeForPresent(variable.AliasMerchantBalanceAccount+
-			"提现", "", amount, member.DefaultRelateUser)
+		err = m.GetAccount().Charge(member.AccountPresent,
+			member.KindPresentAdd,
+			variable.AliasMerchantBalanceAccount+
+				"提现", "", amount, member.DefaultRelateUser)
 		if err != nil {
 			return err
 		}
@@ -670,7 +672,8 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 			conf := a.mchImpl._valRep.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
 				csn := amount * conf.TakeOutCsn
-				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
+				err = m.GetAccount().Charge(member.AccountPresent,
+					member.KindPresentAdd, "返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)
 			}
 		}
@@ -697,8 +700,9 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		"提取到会员"+variable.AliasPresentAccount, "", -amount, 0, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		err = m.GetAccount().ChargeForPresent(variable.AliasMerchantBalanceAccount+
-			"提现", "", amount, member.DefaultRelateUser)
+		err = m.GetAccount().Charge(member.AccountPresent,
+			member.KindPresentAdd, variable.AliasMerchantBalanceAccount+
+				"提现", "", amount, member.DefaultRelateUser)
 		if err != nil {
 			return err
 		}
@@ -716,7 +720,8 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 			conf := a.mchImpl._valRep.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
 				csn := float32(0)
-				err = m.GetAccount().ChargeForPresent("返还商户提现手续费", "",
+				err = m.GetAccount().Charge(member.AccountPresent,
+					member.KindPresentAdd, "返还商户提现手续费", "",
 					csn, member.DefaultRelateUser)
 			}
 		}

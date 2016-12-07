@@ -71,21 +71,21 @@ func FsInit(debug bool) {
 	}
 	// MAC OX 连接数限制,在这里指定部分应用更新模板
 	if debug && runtime.GOOS == "darwin" {
-		resetFsOnDarwin(webFs)
+		resetFsOnDarwin()
 	}
 }
 
 // 重设MAC OX下的文件监视更改
-func resetFsOnDarwin(fs map[int]bool) {
-	fs[FsMain] = false
-	fs[FsMainMobile] = false
-	fs[FsPassport] = !false
-	fs[FsPassportMobile] = !false
-	fs[FsUCenter] = !false
-	fs[FsUCenterMobile] = !false
-	fs[FsShop] = false
-	fs[FsShopMobile] = false
-	fs[FsMch] = false
+func resetFsOnDarwin() {
+	webFs[FsMain] = false
+	webFs[FsMainMobile] = false
+	webFs[FsPassport] = false
+	webFs[FsPassportMobile] = false
+	webFs[FsUCenter] = false
+	webFs[FsUCenterMobile] = !false
+	webFs[FsShop] = false
+	webFs[FsShopMobile] = false
+	webFs[FsMch] = false
 }
 
 // 获取模板是否监视更改

@@ -31,6 +31,8 @@ const (
 )
 
 const (
+	// 自定义的业务类型
+	KindMine int32 = 30
 	// 会员充值
 	KindBalanceCharge int32 = 1
 	// 系统充值
@@ -148,7 +150,7 @@ type (
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
-		ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减余额
 		DiscountBalance(title string, outerNo string, amount float32, relateUser int32) error
@@ -160,10 +162,10 @@ type (
 		Unfreeze(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 赠送金额(指定业务类型)
-		ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountPresent(title string, outerNo string, amount float32,
@@ -212,12 +214,18 @@ type (
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccounts(accountKind int, toMember int32, amount float32,
+		TransferAccount(accountKind int, toMember int32, amount float32,
 			csnRate float32, remark string) error
 
 		// 接收转账
 		ReceiveTransfer(accountKind int, fromMember int32, tradeNo string,
 			amount float32, remark string) error
+
+		// 退款
+		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int32) error
+
+		// 充值
+		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int32) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error
@@ -277,7 +285,7 @@ type (
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_present"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_present_fee"`
+		TotalPresentFee float32 `db:"total_present_amount"`
 		//流动账户余额
 		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额
