@@ -60,7 +60,7 @@ type (
 		//父分类
 		ParentId int32 `db:"parent_id"`
 		// 商品规格模型
-		SpecModel int32 `db:"spec_model"`
+		ProModel int32 `db:"pro_model"`
 		//名称
 		Name string `db:"name"`
 		//层级,用于判断2个分类是否为同一级
@@ -70,7 +70,7 @@ type (
 		// 地址
 		Url string `db:"url"`
 		// 排序序号
-		SortNumber int `db:"sort_number"`
+		SortNum int `db:"sort_num"`
 		// 是否启用,默认为不启用
 		Enabled int `db:"enabled"`
 		// 创建时间
@@ -133,9 +133,9 @@ func (c CategoryList) Len() int {
 }
 
 func (c CategoryList) Less(i, j int) bool {
-	return c[i].SortNumber < c[j].SortNumber ||
+	return c[i].SortNum < c[j].SortNum ||
 		// 如果序号相同,则判断ID
-		(c[i].SortNumber == c[j].SortNumber && c[i].Id < c[j].Id)
+		(c[i].SortNum == c[j].SortNum && c[i].Id < c[j].Id)
 }
 
 func (c CategoryList) Swap(i, j int) {

@@ -103,6 +103,11 @@ ADD COLUMN `spec_model` INT(11) NULL COMMENT '商品规格模型' AFTER `parent_
 COMMENT = '商品分类' , RENAME TO  `cat_category` ;
 
 
+ALTER TABLE `cat_category`
+CHANGE COLUMN `spec_model` `pro_model` INT(11) NOT NULL DEFAULT 0 COMMENT '产品模型' AFTER `parent_id`,
+CHANGE COLUMN `sort_number` `sort_num` INT(11) NOT NULL COMMENT '排序序号' ;
+
+
 
 
 /** ======== new table **/

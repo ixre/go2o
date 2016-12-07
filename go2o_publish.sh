@@ -1,5 +1,14 @@
 #!/bin/bash
 
+
+  ###   ###   ###   ###
+ #     #  ##    #  #  ##
+#     #    #    # #    #
+#  #  #   #   ##  #   #
+#  #  #   #  #    #   #
+ ###   ###   ###   ###
+
+
 package_name="go2o_deploy_tmp.tar.gz"
 
 goods=linux
