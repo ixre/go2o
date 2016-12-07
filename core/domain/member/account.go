@@ -103,32 +103,72 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 	return a.rep.SaveBalanceInfo(v)
 }
 
+// 充值
+func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
+	amount float32, relateUser int32) error {
+	switch account {
+	case member.AccountBalance:
+		return a.chargeBalance(kind, title, outerNo, amount, relateUser)
+	case member.AccountPresent:
+		return a.chargePresent(kind, title, outerNo, amount, relateUser)
+	}
+	panic(errors.New("不支持的账户类型操作"))
+}
+
+// 退款
+func (a *accountImpl) Refund(account int, kind int32, title string,
+	outerNo string, amount float32, relateUser int32) error {
+	switch account {
+	case member.AccountBalance:
+		if kind != member.KindBalanceRefund {
+			return member.ErrBusinessKind
+		}
+		return a.chargeBalanceNoLimit(kind, title, outerNo, amount, relateUser)
+	case member.AccountPresent:
+		if kind != member.KindPresentPaymentRefund &&
+			kind != member.KindPresentTakeOutRefund {
+			return member.ErrBusinessKind
+		}
+		return a.chargePresentNoLimit(kind, title, outerNo, amount, relateUser)
+	}
+	panic(errors.New("不支持的账户类型操作"))
+}
+
+func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
+	amount float32, relateUser int32) error {
+	switch kind {
+	case member.ChargeByUser:
+		kind = member.KindBalanceCharge
+	case member.ChargeBySystem:
+		kind = member.KindBalanceSystemCharge
+	case member.ChargeByService:
+		kind = member.KindBalanceServiceCharge
+	}
+
+	switch kind {
+	case member.KindBalanceCharge,
+		member.KindBalanceSystemCharge,
+		member.KindBalanceServiceCharge:
+		return a.chargeBalanceNoLimit(kind, title, outerNo,
+			amount, relateUser)
+	}
+	return member.ErrNotSupportChargeMethod
+
+}
+
 // 充值,客服充值时,需提供操作人(relateUser)
-func (a *accountImpl) ChargeForBalance(chargeType int32, title string, outerNo string,
+func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo string,
 	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if chargeType == member.ChargeByService && relateUser <= 0 {
+	if relateUser <= 0 && kind == member.KindBalanceServiceCharge {
 		return member.ErrNoSuchRelateUser
-	}
-	busKind := member.KindBalanceCharge
-	switch chargeType {
-	default:
-		return member.ErrNotSupportChargeMethod
-	case member.ChargeByUser:
-		busKind = member.KindBalanceCharge
-	case member.ChargeBySystem:
-		busKind = member.KindBalanceSystemCharge
-	case member.ChargeByService:
-		busKind = member.KindBalanceServiceCharge
-	case member.ChargeByRefund:
-		busKind = member.KindBalanceRefund
 	}
 	unix := time.Now().Unix()
 	v := &member.BalanceLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: busKind,
+		BusinessKind: kind,
 		Title:        title,
 		OuterNo:      outerNo,
 		Amount:       amount,
@@ -140,6 +180,67 @@ func (a *accountImpl) ChargeForBalance(chargeType int32, title string, outerNo s
 	_, err := a.rep.SaveBalanceLog(v)
 	if err == nil {
 		a.value.Balance += amount
+		_, err = a.Save()
+	}
+	return err
+}
+
+func (a *accountImpl) chargePresent(kind int32, title string,
+	outerNo string, amount float32, relateUser int32) error {
+	switch kind {
+	case member.ChargeBySystem:
+		kind = member.KindPresentAdd
+	case member.ChargeByService:
+		kind = member.KindPresentServiceAdd
+	}
+	if kind < member.KindMine &&
+		kind != member.KindPresentServiceAdd &&
+		kind != member.KindPresentAdd {
+		return member.ErrBusinessKind
+	}
+	return a.chargePresentNoLimit(kind, title, outerNo,
+		amount, relateUser)
+}
+
+// 赠送金额(指定业务类型)
+func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
+	outerNo string, amount float32, relateUser int32) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return member.ErrIncorrectAmount
+	}
+	// 客服操作
+	if relateUser == 0 && (kind == member.KindPresentServiceAdd) {
+		return member.ErrNoSuchRelateUser
+	}
+
+	if title == "" {
+		if amount < 0 {
+			title = "赠送账户出账"
+		} else {
+			title = "赠送账户入账"
+		}
+	}
+	unix := time.Now().Unix()
+	v := &member.PresentLog{
+		MemberId:     a.GetDomainId(),
+		BusinessKind: kind,
+		Title:        title,
+		OuterNo:      outerNo,
+		Amount:       amount,
+		State:        1,
+		RelateUser:   relateUser,
+		CreateTime:   unix,
+		UpdateTime:   unix,
+	}
+	_, err := a.rep.SavePresentLog(v)
+	if err == nil {
+		a.value.PresentBalance += amount
+		// 退款不能加入到累计赠送金额
+		if kind != member.KindPresentTakeOutRefund &&
+			kind != member.KindPresentPaymentRefund &&
+			amount > 0 {
+			a.value.TotalPresentFee += amount
+		}
 		_, err = a.Save()
 	}
 	return err
@@ -252,53 +353,6 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 	}
 	return err
 
-}
-
-// 赠送金额,客服操作时,需提供操作人(relateUser)
-func (a *accountImpl) ChargeForPresent(title string, outerNo string,
-	amount float32, relateUser int32) error {
-	kind := member.KindPresentAdd
-	if relateUser > 0 {
-		kind = member.KindPresentServiceAdd
-	}
-	return a.ChargePresentByKind(kind, title, outerNo, amount, relateUser)
-}
-
-// 赠送金额(指定业务类型)
-func (a *accountImpl) ChargePresentByKind(kind int32, title string,
-	outerNo string, amount float32, relateUser int32) error {
-	if amount <= 0 || math.IsNaN(float64(amount)) {
-		return member.ErrIncorrectAmount
-	}
-	if title == "" {
-		if amount < 0 {
-			title = "赠送账户出账"
-		} else {
-			title = "赠送账户入账"
-		}
-	}
-	unix := time.Now().Unix()
-	v := &member.PresentLog{
-		MemberId:     a.GetDomainId(),
-		BusinessKind: kind,
-		Title:        title,
-		OuterNo:      outerNo,
-		Amount:       amount,
-		State:        1,
-		RelateUser:   relateUser,
-		CreateTime:   unix,
-		UpdateTime:   unix,
-	}
-	_, err := a.rep.SavePresentLog(v)
-	if err == nil {
-		a.value.PresentBalance += amount
-		// 退款不能加入到累计赠送金额
-		if amount > 0 && kind != member.KindPresentTakeOutRefund {
-			a.value.TotalPresentFee += amount
-		}
-		_, err = a.Save()
-	}
-	return err
 }
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
@@ -693,7 +747,8 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	} else {
 		v.Remark += "失败:" + remark
 		v.State = enum.ReviewReject
-		err := a.ChargePresentByKind(member.KindPresentTakeOutRefund,
+		err := a.Refund(member.AccountPresent,
+			member.KindPresentTakeOutRefund,
 			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 			member.DefaultRelateUser)
 		if err != nil {
@@ -715,7 +770,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	//		}
 	//		v.Remark += "失败:" + remark
 	//		v.State = enum.ReviewReject
-	//		err := a.ChargePresentByKind(member.KindPresentTakOutRefund,
+	//		err := a.chargePresentByKind(member.KindPresentTakOutRefund,
 	//			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 	//			member.DefaultRelateUser)
 	//		if err != nil {
@@ -835,7 +890,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 }
 
 // 转账
-func (a *accountImpl) TransferAccounts(accountKind int, toMember int32, amount float32,
+func (a *accountImpl) TransferAccount(accountKind int, toMember int32, amount float32,
 	csnRate float32, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount

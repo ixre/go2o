@@ -107,7 +107,7 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 				}
 				return memberId, errors.New("auth fail")
 			}
-			return memberId,errors.New("connect refused")
+			return memberId, errors.New("connect refused")
 		}
 
 		if err = s.UAuth(id.Conn, f); err == nil {

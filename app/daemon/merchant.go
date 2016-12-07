@@ -58,7 +58,7 @@ var (
 func testGenerateMchDayChart() {
 	dt := time.Now().Add(time.Hour * -24 * 15)
 	for i := 0; i < 15; i++ {
-		st, et := tool.GetTodayStartEndUnix(dt.Add(time.Hour * 24 * time.Duration(i)))
+		st, et := tool.GetStartEndUnix(dt.Add(time.Hour * 24 * time.Duration(i)))
 		generateMchDayChart(st, et)
 	}
 }
@@ -75,7 +75,7 @@ func mchDayChart() {
 		return
 	}
 	now := time.Now().Add(time.Hour * -24)
-	st, et := tool.GetTodayStartEndUnix(now)
+	st, et := tool.GetStartEndUnix(now)
 	generateMchDayChart(st, et)
 	signHandled(mchDayChartKey, unix)
 }

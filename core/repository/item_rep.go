@@ -33,7 +33,7 @@ func (i *itemRep) GetValueItem(itemId int32) *item.Item {
 	var e *item.Item = new(item.Item)
 	//todo: supplier_id  == -1
 	if i.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
-			INNER JOIN gs_category c ON c.id = gs_item.category_id
+			INNER JOIN cat_category c ON c.id = gs_item.category_id
 			 WHERE gs_item.id=?`, itemId) == nil {
 		return e
 	}
@@ -60,11 +60,11 @@ func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int32,
 	var sql string
 
 	var catIdStr string = format.IdArrJoinStr32(catIds)
-	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
+	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN cat_category ON gs_item.category_id=cat_category.id
+		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN gs_category ON gs_item.category_id=gs_category.id
-		WHERE merchant_id=%d AND gs_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN cat_category ON gs_item.category_id=cat_category.id
+		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
 
 	e = []*item.Item{}
 	i.Connector.GetOrm().SelectByQuery(&e, sql)
@@ -83,7 +83,7 @@ func (i *itemRep) GetItemSaleNum(mchId int32, id int32) int {
 func (i *itemRep) DeleteItem(mchId, itemId int32) error {
 	_, _, err := i.Connector.Exec(`
 		DELETE f FROM gs_item AS f
-		INNER JOIN gs_category AS c ON f.category_id=c.id
+		INNER JOIN cat_category AS c ON f.category_id=c.id
 		WHERE f.id=? AND c.merchant_id=?`, itemId, mchId)
 	return err
 }

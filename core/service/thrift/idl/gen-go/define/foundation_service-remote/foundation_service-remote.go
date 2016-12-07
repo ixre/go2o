@@ -22,7 +22,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
 	fmt.Fprintln(os.Stderr, "  PlatformConf GetPlatformConf()")
-	fmt.Fprintln(os.Stderr, "  string RegisterSsoApp(SsoApp app)")
+	fmt.Fprintln(os.Stderr, "  string RegisterApp(SsoApp app)")
+	fmt.Fprintln(os.Stderr, "  SsoApp GetApp(string name)")
 	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
 	fmt.Fprintln(os.Stderr, "  bool ValidateSuper(string user, string pwd)")
 	fmt.Fprintln(os.Stderr, "  void FlushSuperPwd(string user, string pwd)")
@@ -139,29 +140,39 @@ func main() {
 		fmt.Print(client.GetPlatformConf())
 		fmt.Print("\n")
 		break
-	case "RegisterSsoApp":
+	case "RegisterApp":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "RegisterSsoApp requires 1 args")
+			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg68 := flag.Arg(1)
-		mbTrans69 := thrift.NewTMemoryBufferLen(len(arg68))
-		defer mbTrans69.Close()
-		_, err70 := mbTrans69.WriteString(arg68)
-		if err70 != nil {
-			Usage()
-			return
-		}
-		factory71 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt72 := factory71.GetProtocol(mbTrans69)
-		argvalue0 := define.NewSsoApp()
-		err73 := argvalue0.Read(jsProt72)
+		arg71 := flag.Arg(1)
+		mbTrans72 := thrift.NewTMemoryBufferLen(len(arg71))
+		defer mbTrans72.Close()
+		_, err73 := mbTrans72.WriteString(arg71)
 		if err73 != nil {
 			Usage()
 			return
 		}
+		factory74 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt75 := factory74.GetProtocol(mbTrans72)
+		argvalue0 := define.NewSsoApp()
+		err76 := argvalue0.Read(jsProt75)
+		if err76 != nil {
+			Usage()
+			return
+		}
 		value0 := argvalue0
-		fmt.Print(client.RegisterSsoApp(value0))
+		fmt.Print(client.RegisterApp(value0))
+		fmt.Print("\n")
+		break
+	case "GetApp":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetApp requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetApp(value0))
 		fmt.Print("\n")
 		break
 	case "GetAllSsoApp":

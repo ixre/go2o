@@ -293,10 +293,10 @@ func (m *MemberRep) initMember(v *member.Member) {
 	})
 
 	orm.Save(nil, &member.Relation{
-		MemberId:      v.Id,
-		CardId:        "",
-		InviterId:     0,
-		RegisterMchId: 0,
+		MemberId:  v.Id,
+		CardCard:  "",
+		InviterId: 0,
+		RegMchId:  0,
 	})
 }
 
@@ -452,7 +452,7 @@ func (m *MemberRep) GetTodayTakeOutTimes(memberId int32) int {
 	return applyTimes
 
 	total := 0
-	b, e := tool.GetTodayStartEndUnix(time.Now())
+	b, e := tool.GetStartEndUnix(time.Now())
 	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_present_log WHERE
         member_id=? AND kind IN(?,?) AND create_time BETWEEN ? AND ?`, &total,
 		memberId, member.KindPresentTakeOutToBankCard,
@@ -566,11 +566,11 @@ func (m *MemberRep) GetMyInvitationMembers(memberId int32, begin, end int) (
 	total int, rows []*dto.InvitationMember) {
 	arr := []*dto.InvitationMember{}
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
-	 (SELECT member_id FROM mm_relation WHERE invi_member_id=?)`, &total, memberId)
+	 (SELECT member_id FROM mm_relation WHERE inviter_id=?)`, &total, memberId)
 	if total > 0 {
 		m.Connector.Query(`SELECT m.id,m.usr,m.level,p.avatar,p.name,p.phone,p.im FROM
             (SELECT id,usr,level FROM mm_member WHERE id IN (SELECT member_id FROM
-             mm_relation WHERE invi_member_id=?) ORDER BY level DESC,id LIMIT ?,?) m
+             mm_relation WHERE inviter_id=?) ORDER BY level DESC,id LIMIT ?,?) m
              INNER JOIN mm_profile p ON p.member_id = m.id ORDER BY level DESC,id`,
 			func(rs *sql.Rows) {
 				for rs.Next() {
@@ -591,7 +591,7 @@ func (m *MemberRep) GetSubInvitationNum(memberId int32, memberIdArr []int32) map
 	memberIds := format.IdArrJoinStr32(memberIdArr)
 	var d map[int32]int = make(map[int32]int)
 	err := m.Connector.Query(fmt.Sprintf("SELECT r1.member_id,"+
-		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.invi_member_id=r1.member_id)"+
+		"(SELECT COUNT(0) FROM mm_relation r2 WHERE r2.inviter_id=r1.member_id)"+
 		"as num FROM mm_relation r1 WHERE r1.member_id IN(%s)", memberIds),
 		func(rows *sql.Rows) {
 			var id int32
@@ -610,7 +610,7 @@ func (m *MemberRep) GetSubInvitationNum(memberId int32, memberIdArr []int32) map
 func (m *MemberRep) GetInvitationMeMember(memberId int32) *member.Member {
 	var d *member.Member = new(member.Member)
 	err := m.Connector.GetOrm().GetByQuery(d,
-		"SELECT * FROM mm_member WHERE id =(SELECT invi_member_id FROM mm_relation  WHERE id=?)",
+		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id=?)",
 		memberId)
 
 	if err != nil {

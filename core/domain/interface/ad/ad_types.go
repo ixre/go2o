@@ -48,7 +48,7 @@ type (
 		ImageUrl string `db:"image_url"`
 
 		// 排列序号
-		SortNumber int `db:"sort_number"`
+		SortNum int `db:"sort_number"`
 
 		// 是否启用
 		Enabled int `db:"enabled"`
@@ -85,7 +85,7 @@ func (v ValueGallery) Len() int {
 // Less reports whether the element with
 // index i should sort before the element with index j.
 func (v ValueGallery) Less(i, j int) bool {
-	return v[i].SortNumber < v[j].SortNumber || (v[i].SortNumber == v[j].SortNumber &&
+	return v[i].SortNum < v[j].SortNum || (v[i].SortNum == v[j].SortNum &&
 		v[i].Id < v[j].Id)
 }
 

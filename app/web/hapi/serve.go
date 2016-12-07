@@ -34,7 +34,7 @@ func registerRoutes(s *echox.Echo) {
 	s.GET("/test", mc.Test)
 	s.GET("/request_login", mc.RequestLogin)
 	s.GET("/r/uc", mc.RedirectUc)
-	s.GET("/user/sync_m.p", us.Sync) //同步登陆登出
+	s.GET("/user/sync_m.p", us.Sync) //同步登录登出
 	s.Auto("/service", sc)           //服务
 }
 
