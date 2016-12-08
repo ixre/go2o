@@ -40,8 +40,8 @@ type memberImpl struct {
 	rep             member.IMemberRepo
 	relation        *member.Relation
 	invitation      member.IInvitationManager
-	mssRepo          mss.IMssRepo
-	valRepo          valueobject.IValueRepo
+	mssRepo         mss.IMssRepo
+	valRepo         valueobject.IValueRepo
 	profileManager  member.IProfileManager
 	favoriteManager member.IFavoriteManager
 	giftCardManager member.IGiftCardManager
@@ -53,8 +53,8 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 		manager: manager,
 		value:   val,
 		rep:     rep,
-		mssRepo:  mp,
-		valRepo:  valRepo,
+		mssRepo: mp,
+		valRepo: valRepo,
 	}
 }
 

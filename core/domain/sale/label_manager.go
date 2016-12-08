@@ -97,16 +97,16 @@ func (l *saleLabelImpl) GetPagedValueGoods(sortBy string,
 var _ sale.ILabelManager = new(labelManagerImpl)
 
 type labelManagerImpl struct {
-	_rep    sale.ISaleLabelRepo
+	_rep     sale.ISaleLabelRepo
 	_valRepo valueobject.IValueRepo
-	_mchId  int32
+	_mchId   int32
 }
 
 func NewLabelManager(mchId int32, rep sale.ISaleLabelRepo,
 	valRepo valueobject.IValueRepo) sale.ILabelManager {
 	c := &labelManagerImpl{
-		_rep:    rep,
-		_mchId:  mchId,
+		_rep:     rep,
+		_mchId:   mchId,
 		_valRepo: valRepo,
 	}
 	return c.init()

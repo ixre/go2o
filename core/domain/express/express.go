@@ -25,17 +25,17 @@ const (
 var _ express.IUserExpress = new(userExpressImpl)
 
 type userExpressImpl struct {
-	userId int32
-	arr    []express.IExpressTemplate
-	rep    express.IExpressRepo
+	userId  int32
+	arr     []express.IExpressTemplate
+	rep     express.IExpressRepo
 	valRepo valueobject.IValueRepo
 }
 
 func NewUserExpress(userId int32, rep express.IExpressRepo,
 	valRepo valueobject.IValueRepo) express.IUserExpress {
 	return &userExpressImpl{
-		userId: userId,
-		rep:    rep,
+		userId:  userId,
+		rep:     rep,
 		valRepo: valRepo,
 	}
 }
@@ -102,7 +102,7 @@ type expressTemplateImpl struct {
 	_areaList    []express.ExpressAreaTemplate
 	_areaMap     map[string]*express.ExpressAreaTemplate
 	_mux         sync.Mutex
-	_valRepo      valueobject.IValueRepo
+	_valRepo     valueobject.IValueRepo
 }
 
 func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
@@ -111,7 +111,7 @@ func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
 		_value:       v,
 		_userExpress: u,
 		_rep:         rep,
-		_valRepo:      valRepo,
+		_valRepo:     valRepo,
 	}
 }
 

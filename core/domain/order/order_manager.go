@@ -36,7 +36,7 @@ import (
 var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	rep         order.IOrderRepo
+	rep          order.IOrderRepo
 	saleRepo     sale.ISaleRepo
 	cartRepo     cart.ICartRepo
 	goodsRepo    goods.IGoodsRepo
@@ -47,7 +47,7 @@ type orderManagerImpl struct {
 	valRepo      valueobject.IValueRepo
 	paymentRepo  payment.IPaymentRepo
 	expressRepo  express.IExpressRepo
-	mch         merchant.IMerchant
+	mch          merchant.IMerchant
 	shipRepo     shipment.IShipmentRepo
 }
 
@@ -58,7 +58,7 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {
 	return &orderManagerImpl{
-		rep:         rep,
+		rep:          rep,
 		cartRepo:     cartRepo,
 		saleRepo:     saleRepo,
 		goodsRepo:    goodsRepo,

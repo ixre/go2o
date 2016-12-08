@@ -18,16 +18,16 @@ var _ content.ICategory = new(categoryImpl)
 
 type categoryImpl struct {
 	contentRepo content.IContentRepo
-	value      *content.ArticleCategory
-	manager    *articleManagerImpl
+	value       *content.ArticleCategory
+	manager     *articleManagerImpl
 }
 
 func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
 	rep content.IContentRepo) content.ICategory {
 	return &categoryImpl{
 		contentRepo: rep,
-		value:      v,
-		manager:    m,
+		value:       v,
+		manager:     m,
 	}
 }
 

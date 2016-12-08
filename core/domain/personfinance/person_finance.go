@@ -19,7 +19,7 @@ var _ personfinance.IPersonFinance = new(PersonFinance)
 
 type PersonFinance struct {
 	personId int32
-	accRepo   member.IMemberRepo
+	accRepo  member.IMemberRepo
 	rep      personfinance.IPersonFinanceRepository
 }
 
@@ -27,7 +27,7 @@ func NewPersonFinance(personId int32, rep personfinance.IPersonFinanceRepository
 	accRepo member.IMemberRepo) personfinance.IPersonFinance {
 	return &PersonFinance{
 		personId: personId,
-		accRepo:   accRepo,
+		accRepo:  accRepo,
 		rep:      rep,
 	}
 }

@@ -18,16 +18,16 @@ var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
 	contentRepo content.IContentRepo
-	userId     int32
-	value      *content.Page
+	userId      int32
+	value       *content.Page
 }
 
 func newPage(userId int32, rep content.IContentRepo,
 	v *content.Page) content.IPage {
 	return &pageImpl{
 		contentRepo: rep,
-		userId:     userId,
-		value:      v,
+		userId:      userId,
+		value:       v,
 	}
 }
 

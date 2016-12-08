@@ -16,21 +16,21 @@ import (
 )
 
 type cartImpl struct {
-	value     *cart.ValueCart
-	rep       cart.ICartRepo
+	value      *cart.ValueCart
+	rep        cart.ICartRepo
 	goodsRepo  goods.IGoodsRepo
 	memberRepo member.IMemberRepo
-	summary   string
-	shop      shop.IShop
-	deliver   member.IDeliverAddress
-	snapMap   map[int32]*goods.Snapshot
+	summary    string
+	shop       shop.IShop
+	deliver    member.IDeliverAddress
+	snapMap    map[int32]*goods.Snapshot
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
 	memberRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo) cart.ICart {
 	return (&cartImpl{
-		value:     val,
-		rep:       rep,
+		value:      val,
+		rep:        rep,
 		memberRepo: memberRepo,
 		goodsRepo:  goodsRepo,
 	}).init()

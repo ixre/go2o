@@ -29,8 +29,8 @@ var (
 type paymentOrderImpl struct {
 	rep                payment.IPaymentRepo
 	value              *payment.PaymentOrder
-	mmRepo              member.IMemberRepo
-	valRepo             valueobject.IValueRepo
+	mmRepo             member.IMemberRepo
+	valRepo            valueobject.IValueRepo
 	coupons            []promotion.ICouponPromotion
 	orderManager       order.IOrderManager
 	firstFinishPayment bool //第一次完成支付
@@ -383,8 +383,8 @@ func (p *PaymentRepBase) CreatePaymentOrder(v *payment.
 	return &paymentOrderImpl{
 		rep:          rep,
 		value:        v,
-		mmRepo:        mmRepo,
-		valRepo:       valRepo,
+		mmRepo:       mmRepo,
+		valRepo:      valRepo,
 		orderManager: orderManager,
 	}
 }

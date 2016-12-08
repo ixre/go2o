@@ -19,17 +19,17 @@ import (
 )
 
 type shopService struct {
-	_rep    shop.IShopRepo
+	_rep     shop.IShopRepo
 	_mchRepo merchant.IMerchantRepo
-	_query  *query.ShopQuery
+	_query   *query.ShopQuery
 }
 
 func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	query *query.ShopQuery) *shopService {
 	return &shopService{
-		_rep:    rep,
+		_rep:     rep,
 		_mchRepo: mchRepo,
-		_query:  query,
+		_query:   query,
 	}
 }
 

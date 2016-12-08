@@ -20,17 +20,17 @@ import (
 
 type afterSalesService struct {
 	_orderRepo order.IOrderRepo
-	_rep      afterSales.IAfterSalesRepo
-	_query    *query.AfterSalesQuery
+	_rep       afterSales.IAfterSalesRepo
+	_query     *query.AfterSalesQuery
 	db.Connector
 }
 
 func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
 	q *query.AfterSalesQuery, orderRepo order.IOrderRepo) *afterSalesService {
 	return &afterSalesService{
-		_rep:      rep,
+		_rep:       rep,
 		_orderRepo: orderRepo,
-		_query:    q,
+		_query:     q,
 	}
 }
 

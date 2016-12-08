@@ -33,7 +33,7 @@ type promotionRepo struct {
 func NewPromotionRepo(c db.Connector, goodsRepo goods.IGoodsRepo,
 	memberRepo member.IMemberRepo) promotion.IPromotionRepo {
 	return &promotionRepo{
-		Connector:  c,
+		Connector:   c,
 		_memberRepo: memberRepo,
 		_goodsRepo:  goodsRepo,
 	}

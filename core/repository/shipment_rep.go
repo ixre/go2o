@@ -26,7 +26,7 @@ type shipmentRepo struct {
 func NewShipmentRepo(conn db.Connector, expRepo express.IExpressRepo) *shipmentRepo {
 	return &shipmentRepo{
 		Connector: conn,
-		_expRepo:   expRepo,
+		_expRepo:  expRepo,
 	}
 }
 

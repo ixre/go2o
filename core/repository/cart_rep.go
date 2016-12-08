@@ -28,7 +28,7 @@ type cartRepo struct {
 func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 	goodsRepo goods.IGoodsRepo) cart.ICartRepo {
 	return &cartRepo{
-		Connector:  conn,
+		Connector:   conn,
 		_memberRepo: memberRepo,
 		_goodsRepo:  goodsRepo,
 	}

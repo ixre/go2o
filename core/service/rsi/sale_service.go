@@ -26,18 +26,18 @@ import (
 
 type saleService struct {
 	_rep        sale.ISaleRepo
-	_goodsRepo   goods.IGoodsRepo
+	_goodsRepo  goods.IGoodsRepo
 	_goodsQuery *query.GoodsQuery
-	_cateRepo    sale.ICategoryRepo
+	_cateRepo   sale.ICategoryRepo
 }
 
 func NewSaleService(r sale.ISaleRepo, cateRepo sale.ICategoryRepo,
 	goodsRepo goods.IGoodsRepo, goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
 		_rep:        r,
-		_goodsRepo:   goodsRepo,
+		_goodsRepo:  goodsRepo,
 		_goodsQuery: goodsQuery,
-		_cateRepo:    cateRepo,
+		_cateRepo:   cateRepo,
 	}
 }
 

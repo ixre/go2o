@@ -23,7 +23,7 @@ var _ sale.ICategoryRepo = new(categoryRepo)
 
 type categoryRepo struct {
 	db.Connector
-	_valRepo          valueobject.IValueRepo
+	_valRepo         valueobject.IValueRepo
 	_globCateManager sale.ICategoryManager
 	storage          storage.Interface
 }
@@ -32,7 +32,7 @@ func NewCategoryRepo(conn db.Connector, valRepo valueobject.IValueRepo,
 	storage storage.Interface) sale.ICategoryRepo {
 	return &categoryRepo{
 		Connector: conn,
-		_valRepo:   valRepo,
+		_valRepo:  valRepo,
 		storage:   storage,
 	}
 }

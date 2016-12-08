@@ -35,3 +35,32 @@ type IModel interface {
 	// 保存规格
 	SaveSpecs([]*Spec) error
 }
+
+type IProModelRepo interface {
+	//获取品牌服务
+	BrandService() IBrandService
+	// 设置产品模型的品牌
+	SetModelBrands(proModel int32, brandIds []int32) error
+
+	// Get ProBrand
+	GetProBrand(primary interface{}) *ProBrand
+	// Save ProBrand
+	SaveProBrand(v *ProBrand) (int, error)
+	// Delete ProBrand
+	DeleteProBrand(primary interface{}) error
+	// Select ProBrand
+	SelectProBrand(where string, v ...interface{}) []*ProBrand
+	// Batch Delete ProBrand
+	BatchDeleteProBrand(where string, v ...interface{}) (int64, error)
+
+	// Get ProModelBrand
+	GetProModelBrand(primary interface{}) *ProModelBrand
+	// Save ProModelBrand
+	SaveProModelBrand(v *ProModelBrand) (int, error)
+	// Delete ProModelBrand
+	DeleteProModelBrand(primary interface{}) error
+	// Select ProModelBrand
+	SelectProModelBrand(where string, v ...interface{}) []*ProModelBrand
+	// Batch Delete ProModelBrand
+	BatchDeleteProModelBrand(where string, v ...interface{}) (int64, error)
+}

@@ -23,7 +23,7 @@ var _ member.ILevelManager = new(levelManagerImpl)
 
 type MemberManagerImpl struct {
 	levelManager member.ILevelManager
-	valRepo       valueobject.IValueRepo
+	valRepo      valueobject.IValueRepo
 	rep          member.IMemberRepo
 }
 
@@ -31,7 +31,7 @@ func NewMemberManager(rep member.IMemberRepo,
 	valRepo valueobject.IValueRepo) member.IMemberManager {
 	return &MemberManagerImpl{
 		levelManager: newLevelManager(rep),
-		valRepo:       valRepo,
+		valRepo:      valRepo,
 		rep:          rep,
 	}
 }

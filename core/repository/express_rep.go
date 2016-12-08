@@ -20,7 +20,7 @@ import (
 type expressRepo struct {
 	db.Connector
 	*expImpl.ExpressRepBase
-	_valRepo        valueobject.IValueRepo
+	_valRepo       valueobject.IValueRepo
 	ProvidersCache []*express.ExpressProvider
 	mux            sync.Mutex
 }
@@ -28,7 +28,7 @@ type expressRepo struct {
 func NewExpressRepo(conn db.Connector, valRepo valueobject.IValueRepo) express.IExpressRepo {
 	return &expressRepo{
 		Connector: conn,
-		_valRepo:   valRepo,
+		_valRepo:  valRepo,
 	}
 }
 

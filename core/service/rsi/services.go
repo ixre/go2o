@@ -18,43 +18,32 @@ import (
 
 var (
 	PromService *promotionService
-
 	// 基础服务
 	FoundationService *foundationService
-
 	// 会员服务
 	MemberService *memberService
-
 	// 商户服务
 	MerchantService *merchantService
-
 	// 商店服务
 	ShopService *shopService
-
 	// 销售服务
 	SaleService *saleService
-
+	// 产品服务
+	ProductService *productService
 	// 购物服务
 	ShoppingService *shoppingService
-
 	// 售后服务
 	AfterSalesService *afterSalesService
-
 	// 支付服务
 	PaymentService *paymentService
-
 	// 消息服务
 	MssService *mssService
-
 	// 快递服务
 	ExpressService *expressService
-
 	// 配送服务
 	ShipmentService *shipmentService
-
 	// 内容服务
 	ContentService *contentService
-
 	// 广告服务
 	AdService *adService
 
@@ -74,10 +63,11 @@ func handleError(err error) error {
 func Init(ctx gof.App) {
 	Context := ctx
 	db := Context.Db()
+	orm := db.GetOrm()
 	sto := Context.Storage()
 
 	/** Repository **/
-
+	proMRepo := repository.NewProModelRepo(db, orm)
 	goodsRepo := repository.NewGoodsRepo(db)
 	valRepo := repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
@@ -118,6 +108,7 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
+	ProductService = NewProService(proMRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(spRepo, saleRepo, cartRepo,

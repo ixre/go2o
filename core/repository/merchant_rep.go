@@ -32,28 +32,28 @@ var _ merchant.IMerchantRepo = new(merchantRepo)
 
 type merchantRepo struct {
 	db.Connector
-	storage    storage.Interface
-	manager    merchant.IMerchantManager
+	storage     storage.Interface
+	manager     merchant.IMerchantManager
 	_userRepo   user.IUserRepo
 	_mssRepo    mss.IMssRepo
 	_shopRepo   shop.IShopRepo
 	_valRepo    valueobject.IValueRepo
 	_memberRepo member.IMemberRepo
-	mux        *sync.RWMutex
+	mux         *sync.RWMutex
 }
 
 func NewMerchantRepo(c db.Connector, storage storage.Interface, shopRepo shop.IShopRepo,
 	userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
-		Connector:  c,
-		storage:    storage,
+		Connector:   c,
+		storage:     storage,
 		_userRepo:   userRepo,
 		_mssRepo:    mssRepo,
 		_shopRepo:   shopRepo,
 		_valRepo:    valRepo,
 		_memberRepo: memberRepo,
-		mux:        &sync.RWMutex{},
+		mux:         &sync.RWMutex{},
 	}
 }
 

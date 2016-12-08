@@ -37,8 +37,8 @@ type paymentRepo struct {
 func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMemberRepo,
 	orderRepo order.IOrderRepo, valRepo valueobject.IValueRepo) payment.IPaymentRepo {
 	return &paymentRepo{
-		Storage:    sto,
-		Connector:  conn,
+		Storage:     sto,
+		Connector:   conn,
 		_memberRepo: mmRepo,
 		_valRepo:    valRepo,
 		_orderRepo:  orderRepo,
