@@ -18,14 +18,14 @@ import (
 var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
-	mchRepo   merchant.IMerchantRepo
+	mchRepo  merchant.IMerchantRepo
 	mchId    int32
 	levelSet []*merchant.MemberLevel
 }
 
 func NewLevelManager(mchId int32, rep merchant.IMerchantRepo) merchant.ILevelManager {
 	return &LevelManager{
-		mchId:  mchId,
+		mchId:   mchId,
 		mchRepo: rep,
 	}
 }

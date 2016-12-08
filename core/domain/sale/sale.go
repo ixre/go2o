@@ -22,17 +22,17 @@ var _ sale.ISale = new(saleImpl)
 
 type saleImpl struct {
 	mchId        int32
-	saleRepo      sale.ISaleRepo
-	labelRepo     sale.ISaleLabelRepo
-	cateRepo      sale.ICategoryRepo
-	goodsRepo     goods.IGoodsRepo
-	valRepo       valueobject.IValueRepo
-	expressRepo   express.IExpressRepo
-	promRepo      promotion.IPromotionRepo
+	saleRepo     sale.ISaleRepo
+	labelRepo    sale.ISaleLabelRepo
+	cateRepo     sale.ICategoryRepo
+	goodsRepo    goods.IGoodsRepo
+	valRepo      valueobject.IValueRepo
+	expressRepo  express.IExpressRepo
+	promRepo     promotion.IPromotionRepo
 	cateManager  sale.ICategoryManager
 	labelManager sale.ILabelManager
 	itemManager  sale.IItemManager
-	itemRepo      item.IItemRepo
+	itemRepo     item.IItemRepo
 	goodsManager sale.IGoodsManager
 }
 
@@ -41,7 +41,7 @@ func NewSale(mchId int32, saleRepo sale.ISaleRepo, valRepo valueobject.IValueRep
 	tagRepo sale.ISaleLabelRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.ISale {
 	return (&saleImpl{
-		mchId:      mchId,
+		mchId:       mchId,
 		cateRepo:    cateRepo,
 		saleRepo:    saleRepo,
 		labelRepo:   tagRepo,

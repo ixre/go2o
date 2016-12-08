@@ -14,7 +14,7 @@ import (
 )
 
 type shipmentService struct {
-	_rep         shipment.IShipmentRepo
+	_rep          shipment.IShipmentRepo
 	_deliveryRepo delivery.IDeliveryRepo
 }
 
@@ -22,7 +22,7 @@ type shipmentService struct {
 func NewShipmentService(rep shipment.IShipmentRepo,
 	deliveryRepo delivery.IDeliveryRepo) *shipmentService {
 	return &shipmentService{
-		_rep:         rep,
+		_rep:          rep,
 		_deliveryRepo: deliveryRepo,
 	}
 }

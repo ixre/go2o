@@ -21,9 +21,9 @@ var _ promotion.IPromotion = new(promotionImpl)
 
 type promotionImpl struct {
 	memberRepo member.IMemberRepo
-	mchId     int
+	mchId      int
 	promRepo   promotion.IPromotionRepo
-	value     *promotion.PromotionInfo
+	value      *promotion.PromotionInfo
 	goodsRepo  goods.IGoodsRepo
 }
 
@@ -33,7 +33,7 @@ func newPromotion(rep promotion.IPromotionRepo, goodsRepo goods.IGoodsRepo,
 		promRepo:   rep,
 		memberRepo: memRepo,
 		goodsRepo:  goodsRepo,
-		value:     v,
+		value:      v,
 	}
 }
 

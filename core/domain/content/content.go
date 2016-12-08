@@ -13,7 +13,7 @@ import "go2o/core/domain/interface/content"
 var _ content.IContent = new(Content)
 
 type Content struct {
-	contentRepo     content.IContentRepo
+	contentRepo    content.IContentRepo
 	userId         int32
 	articleManager content.IArticleManager
 }
@@ -21,7 +21,7 @@ type Content struct {
 func NewContent(userId int32, rep content.IContentRepo) content.IContent {
 	return &Content{
 		contentRepo: rep,
-		userId:     userId,
+		userId:      userId,
 	}
 }
 

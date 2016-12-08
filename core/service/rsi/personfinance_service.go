@@ -20,14 +20,14 @@ import (
 )
 
 type personFinanceService struct {
-	_rep    personfinance.IPersonFinanceRepository
+	_rep     personfinance.IPersonFinanceRepository
 	_accRepo member.IMemberRepo
 }
 
 func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
 	accRepo member.IMemberRepo) *personFinanceService {
 	return &personFinanceService{
-		_rep:    rep,
+		_rep:     rep,
 		_accRepo: accRepo,
 	}
 }

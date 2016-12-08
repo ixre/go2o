@@ -23,9 +23,9 @@ import (
 var _ afterSales.IAfterSalesOrder = new(afterSalesOrderImpl)
 
 type afterSalesOrderImpl struct {
-	value      *afterSales.AfterSalesOrder
-	rep        afterSales.IAfterSalesRepo
-	order      order.ISubOrder
+	value       *afterSales.AfterSalesOrder
+	rep         afterSales.IAfterSalesRepo
+	order       order.ISubOrder
 	orderRepo   order.IOrderRepo
 	paymentRepo payment.IPaymentRepo
 }
@@ -49,8 +49,8 @@ func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
 	rep afterSales.IAfterSalesRepo, orderRepo order.IOrderRepo,
 	paymentRepo payment.IPaymentRepo) *afterSalesOrderImpl {
 	return &afterSalesOrderImpl{
-		value:      v,
-		rep:        rep,
+		value:       v,
+		rep:         rep,
 		orderRepo:   orderRepo,
 		paymentRepo: paymentRepo,
 	}

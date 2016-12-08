@@ -48,9 +48,9 @@ type orderRepImpl struct {
 	_deliverRepo delivery.IDeliveryRepo
 	_cartRepo    cart.ICartRepo
 	_valRepo     valueobject.IValueRepo
-	_cache      map[int]order.IOrderManager
+	_cache       map[int]order.IOrderManager
 	_payRepo     payment.IPaymentRepo
-	_manager    order.IOrderManager
+	_manager     order.IOrderManager
 	_expressRepo express.IExpressRepo
 	_shipRepo    shipment.IShipmentRepo
 }
@@ -63,8 +63,8 @@ func NewOrderRepo(sto storage.Interface, c db.Connector,
 	shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) *orderRepImpl {
 	return &orderRepImpl{
-		Storage:     sto,
-		Connector:   c,
+		Storage:      sto,
+		Connector:    c,
 		_saleRepo:    saleRepo,
 		_goodsRepo:   goodsRepo,
 		_promRepo:    promRepo,

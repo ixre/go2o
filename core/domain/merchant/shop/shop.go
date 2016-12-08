@@ -27,17 +27,17 @@ var (
 )
 
 type shopImpl struct {
-	manager *shopManagerImpl
+	manager  *shopManagerImpl
 	shopRepo shop.IShopRepo
-	value   *shop.Shop
+	value    *shop.Shop
 }
 
 func newShop(manager *shopManagerImpl, v *shop.Shop,
 	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
 	s := &shopImpl{
-		manager: manager,
+		manager:  manager,
 		shopRepo: shopRepo,
-		value:   v,
+		value:    v,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:
@@ -211,7 +211,7 @@ func (s *offlineShopImpl) Data() *shop.ShopDto {
 type onlineShopImpl struct {
 	*shopImpl
 	_shopVal *shop.OnlineShop
-	valRepo   valueobject.IValueRepo
+	valRepo  valueobject.IValueRepo
 }
 
 func newOnlineShopImpl(s *shopImpl, valRepo valueobject.IValueRepo) shop.IShop {
@@ -227,7 +227,7 @@ func newOnlineShopImpl(s *shopImpl, valRepo valueobject.IValueRepo) shop.IShop {
 	return &onlineShopImpl{
 		shopImpl: s,
 		_shopVal: v,
-		valRepo:   valRepo,
+		valRepo:  valRepo,
 	}
 }
 

@@ -45,15 +45,15 @@ type orderImpl struct {
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
-	memberRepo       member.IMemberRepo
+	memberRepo      member.IMemberRepo
 	buyer           member.IMember
-	orderRepo        order.IOrderRepo
-	expressRepo      express.IExpressRepo
-	payRepo          payment.IPaymentRepo
-	goodsRepo        goods.IGoodsRepo
-	saleRepo         sale.ISaleRepo
-	promRepo         promotion.IPromotionRepo
-	valRepo          valueobject.IValueRepo
+	orderRepo       order.IOrderRepo
+	expressRepo     express.IExpressRepo
+	payRepo         payment.IPaymentRepo
+	goodsRepo       goods.IGoodsRepo
+	saleRepo        sale.ISaleRepo
+	promRepo        promotion.IPromotionRepo
+	valRepo         valueobject.IValueRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int32][]*order.OrderItem
 	// 运营商与邮费的MAP
@@ -70,8 +70,8 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
 	return &orderImpl{
-		manager:    shopping,
-		value:      value,
+		manager:     shopping,
+		value:       value,
 		memberRepo:  memberRepo,
 		promRepo:    promRepo,
 		orderRepo:   shoppingRepo,
@@ -950,13 +950,13 @@ type subOrderImpl struct {
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
 	rep             order.IOrderRepo
-	memberRepo       member.IMemberRepo
-	goodsRepo        goods.IGoodsRepo
-	saleRepo         sale.ISaleRepo
+	memberRepo      member.IMemberRepo
+	goodsRepo       goods.IGoodsRepo
+	saleRepo        sale.ISaleRepo
 	manager         order.IOrderManager
-	shipRepo         shipment.IShipmentRepo
-	valRepo          valueobject.IValueRepo
-	mchRepo          merchant.IMerchantRepo
+	shipRepo        shipment.IShipmentRepo
+	valRepo         valueobject.IValueRepo
+	mchRepo         merchant.IMerchantRepo
 }
 
 func NewSubOrder(v *order.SubOrder,
@@ -966,9 +966,9 @@ func NewSubOrder(v *order.SubOrder,
 	valRepo valueobject.IValueRepo,
 	mchRepo merchant.IMerchantRepo) order.ISubOrder {
 	return &subOrderImpl{
-		value:     v,
-		manager:   manager,
-		rep:       rep,
+		value:      v,
+		manager:    manager,
+		rep:        rep,
 		memberRepo: mmRepo,
 		goodsRepo:  goodsRepo,
 		saleRepo:   saleRepo,

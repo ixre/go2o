@@ -20,7 +20,7 @@ var _ goods.ISnapshotManager = new(snapshotManagerImpl)
 
 type snapshotManagerImpl struct {
 	rep            goods.IGoodsRepo
-	itemRepo        item.IItemRepo
+	itemRepo       item.IItemRepo
 	skuId          int32
 	gs             *goods.ValueGoods
 	gi             *item.Item
@@ -30,10 +30,10 @@ type snapshotManagerImpl struct {
 func NewSnapshotManagerImpl(skuId int32, rep goods.IGoodsRepo,
 	itemRepo item.IItemRepo, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
 	return &snapshotManagerImpl{
-		rep:     rep,
-		skuId:   skuId,
-		gs:      gs,
-		gi:      gi,
+		rep:      rep,
+		skuId:    skuId,
+		gs:       gs,
+		gi:       gi,
 		itemRepo: itemRepo,
 	}
 }

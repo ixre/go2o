@@ -34,14 +34,14 @@ import (
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
 
 type merchantManagerImpl struct {
-	rep    merchant.IMerchantRepo
+	rep     merchant.IMerchantRepo
 	valRepo valueobject.IValueRepo
 }
 
 func NewMerchantManager(rep merchant.IMerchantRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchantManager {
 	return &merchantManagerImpl{
-		rep:    rep,
+		rep:     rep,
 		valRepo: valRepo,
 	}
 }
@@ -241,10 +241,10 @@ type merchantImpl struct {
 	_account         merchant.IAccount
 	_host            string
 	_rep             merchant.IMerchantRepo
-	_shopRepo         shop.IShopRepo
-	_userRepo         user.IUserRepo
-	_valRepo          valueobject.IValueRepo
-	_memberRepo       member.IMemberRepo
+	_shopRepo        shop.IShopRepo
+	_userRepo        user.IUserRepo
+	_valRepo         valueobject.IValueRepo
+	_memberRepo      member.IMemberRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_levelManager    merchant.ILevelManager
@@ -261,8 +261,8 @@ func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
 	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
-		_value:     v,
-		_rep:       rep,
+		_value:      v,
+		_rep:        rep,
 		_shopRepo:   shopRepo,
 		_userRepo:   userRepo,
 		_valRepo:    valRepo,
@@ -523,16 +523,16 @@ func (m *merchantImpl) ShopManager() shop.IShopManager {
 var _ merchant.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	mchImpl   *merchantImpl
-	value     *merchant.Account
+	mchImpl    *merchantImpl
+	value      *merchant.Account
 	memberRepo member.IMemberRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
 	memberRepo member.IMemberRepo) merchant.IAccount {
 	return &accountImpl{
-		mchImpl:   mchImpl,
-		value:     a,
+		mchImpl:    mchImpl,
+		value:      a,
 		memberRepo: memberRepo,
 	}
 }

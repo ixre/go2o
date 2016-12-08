@@ -26,10 +26,10 @@ type tmpGoodsImpl struct {
 	manager       *goodsManagerImpl
 	goods         sale.IItem
 	value         *goods.ValueGoods
-	saleRepo       sale.ISaleRepo
-	goodsRepo      goods.IGoodsRepo
-	itemRepo       item.IItemRepo
-	promRepo       promotion.IPromotionRepo
+	saleRepo      sale.ISaleRepo
+	goodsRepo     goods.IGoodsRepo
+	itemRepo      item.IItemRepo
+	promRepo      promotion.IPromotionRepo
 	sale          sale.ISale
 	levelPrices   []*goods.MemberPrice
 	promDescribes map[string]string
@@ -41,14 +41,14 @@ func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
 	value *goods.ValueGoods, rep sale.ISaleRepo,
 	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.IGoods {
 	v := &tmpGoodsImpl{
-		manager:  m,
-		goods:    goods,
-		value:    value,
+		manager:   m,
+		goods:     goods,
+		value:     value,
 		saleRepo:  rep,
 		itemRepo:  itemRepo,
 		goodsRepo: goodsRepo,
 		promRepo:  promRepo,
-		sale:     s,
+		sale:      s,
 	}
 	return v.init()
 }
@@ -269,16 +269,16 @@ func (g *tmpGoodsImpl) FreeStock(quantity int) error {
 var _ sale.IGoodsManager = new(goodsManagerImpl)
 
 type goodsManagerImpl struct {
-	_sale   *saleImpl
+	_sale    *saleImpl
 	_valRepo valueobject.IValueRepo
-	_mchId  int32
+	_mchId   int32
 }
 
 func NewGoodsManager(mchId int32, s *saleImpl,
 	valRepo valueobject.IValueRepo) sale.IGoodsManager {
 	c := &goodsManagerImpl{
-		_sale:   s,
-		_mchId:  mchId,
+		_sale:    s,
+		_mchId:   mchId,
 		_valRepo: valRepo,
 	}
 	return c.init()

@@ -18,17 +18,17 @@ import (
 var _ shipment.IShipmentOrder = new(shipmentOrderImpl)
 
 type shipmentOrderImpl struct {
-	value  *shipment.ShipmentOrder
-	rep    shipment.IShipmentRepo
+	value   *shipment.ShipmentOrder
+	rep     shipment.IShipmentRepo
 	expRepo express.IExpressRepo
-	expSp  *express.ExpressProvider
+	expSp   *express.ExpressProvider
 }
 
 func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
 	expRepo express.IExpressRepo) shipment.IShipmentOrder {
 	return &shipmentOrderImpl{
-		value:  v,
-		rep:    rep,
+		value:   v,
+		rep:     rep,
 		expRepo: expRepo,
 	}
 }

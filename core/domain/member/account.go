@@ -24,10 +24,10 @@ import (
 var _ member.IAccount = new(accountImpl)
 
 type accountImpl struct {
-	member   *memberImpl
-	mm       member.IMemberManager
-	value    *member.Account
-	rep      member.IMemberRepo
+	member    *memberImpl
+	mm        member.IMemberManager
+	value     *member.Account
+	rep       member.IMemberRepo
 	valueRepo valueobject.IValueRepo
 }
 
@@ -35,10 +35,10 @@ func NewAccount(m *memberImpl, value *member.Account,
 	rep member.IMemberRepo, mm member.IMemberManager,
 	valueRepo valueobject.IValueRepo) member.IAccount {
 	return &accountImpl{
-		member:   m,
-		value:    value,
-		rep:      rep,
-		mm:       mm,
+		member:    m,
+		value:     value,
+		rep:       rep,
+		mm:        mm,
 		valueRepo: valueRepo,
 	}
 }

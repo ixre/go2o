@@ -19,15 +19,15 @@ import (
 var _ personfinance.IPersonFinanceRepository = new(personFinanceRepository)
 
 type personFinanceRepository struct {
-	_db     db.Connector
-	_orm    orm.Orm
+	_db      db.Connector
+	_orm     orm.Orm
 	_accRepo member.IMemberRepo
 }
 
 func NewPersonFinanceRepository(conn db.Connector, mRepo member.IMemberRepo) personfinance.IPersonFinanceRepository {
 	return &personFinanceRepository{
-		_db:     conn,
-		_orm:    conn.GetOrm(),
+		_db:      conn,
+		_orm:     conn.GetOrm(),
 		_accRepo: mRepo,
 	}
 }

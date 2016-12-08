@@ -21,8 +21,8 @@ import (
 )
 
 type merchantService struct {
-	_mchRepo     merchant.IMerchantRepo
-	_saleRepo    sale.ISaleRepo
+	_mchRepo    merchant.IMerchantRepo
+	_saleRepo   sale.ISaleRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 }
@@ -30,9 +30,9 @@ type merchantService struct {
 func NewMerchantService(r merchant.IMerchantRepo, saleRepo sale.ISaleRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
-		_mchRepo:     r,
+		_mchRepo:    r,
 		_query:      q,
-		_saleRepo:    saleRepo,
+		_saleRepo:   saleRepo,
 		_orderQuery: orderQuery,
 	}
 }

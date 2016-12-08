@@ -33,8 +33,8 @@ var _ promotion.ICouponPromotion = new(Coupon)
 type Coupon struct {
 	*promotionImpl
 	detailsValue *promotion.ValueCoupon
-	promRepo      promotion.IPromotionRepo
-	memberRepo    member.IMemberRepo
+	promRepo     promotion.IPromotionRepo
+	memberRepo   member.IMemberRepo
 	takes        []promotion.ValueCouponTake
 	binds        []promotion.ValueCouponBind
 	takesLoaded  bool
@@ -46,8 +46,8 @@ func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRepo promotion.IP
 	cp := &Coupon{
 		detailsValue:  v,
 		promotionImpl: p,
-		promRepo:       promRepo,
-		memberRepo:     memberRepo,
+		promRepo:      promRepo,
+		memberRepo:    memberRepo,
 	}
 	cp.releaseCoupon()
 	return cp

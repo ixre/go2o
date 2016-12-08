@@ -16,15 +16,15 @@ import (
 
 type contentService struct {
 	_contentRepo content.IContentRepo
-	_query      *query.ContentQuery
-	_sysContent content.IContent
+	_query       *query.ContentQuery
+	_sysContent  content.IContent
 }
 
 func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *contentService {
 	return &contentService{
 		_contentRepo: rep,
-		_query:      q,
-		_sysContent: rep.GetContent(0),
+		_query:       q,
+		_sysContent:  rep.GetContent(0),
 	}
 }
 

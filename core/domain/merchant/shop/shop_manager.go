@@ -21,16 +21,16 @@ import (
 var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
-	merchant merchant.IMerchant
-	rep      shop.IShopRepo
+	merchant  merchant.IMerchant
+	rep       shop.IShopRepo
 	valueRepo valueobject.IValueRepo
 }
 
 func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
 	valueRepo valueobject.IValueRepo) shop.IShopManager {
 	return &shopManagerImpl{
-		merchant: m,
-		rep:      rep,
+		merchant:  m,
+		rep:       rep,
 		valueRepo: valueRepo,
 	}
 }

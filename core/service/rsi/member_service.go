@@ -37,7 +37,7 @@ type memberService struct {
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 	_orderQuery     *query.OrderQuery
-	valRepo          valueobject.IValueRepo
+	valRepo         valueobject.IValueRepo
 }
 
 func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
@@ -47,7 +47,7 @@ func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
-		valRepo:          valRepo,
+		valRepo:         valRepo,
 	}
 	return ms
 	//return ms.init()

@@ -27,11 +27,11 @@ import (
 
 type shoppingService struct {
 	_rep        order.IOrderRepo
-	_itemRepo    item.IItemRepo
-	_goodsRepo   goods.IGoodsRepo
-	_saleRepo    sale.ISaleRepo
-	_cartRepo    cart.ICartRepo
-	_mchRepo     merchant.IMerchantRepo
+	_itemRepo   item.IItemRepo
+	_goodsRepo  goods.IGoodsRepo
+	_saleRepo   sale.ISaleRepo
+	_cartRepo   cart.ICartRepo
+	_mchRepo    merchant.IMerchantRepo
 	_manager    order.IOrderManager
 	_orderQuery *query.OrderQuery
 }
@@ -42,11 +42,11 @@ func NewShoppingService(r order.IOrderRepo,
 	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
 		_rep:        r,
-		_itemRepo:    itemRepo,
-		_cartRepo:    cartRepo,
-		_goodsRepo:   goodsRepo,
-		_saleRepo:    saleRepo,
-		_mchRepo:     mchRepo,
+		_itemRepo:   itemRepo,
+		_cartRepo:   cartRepo,
+		_goodsRepo:  goodsRepo,
+		_saleRepo:   saleRepo,
+		_mchRepo:    mchRepo,
 		_manager:    r.Manager(),
 		_orderQuery: orderQuery,
 	}

@@ -17,14 +17,14 @@ import (
 var _ notify.INotifyManager = new(notifyManagerImpl)
 
 type notifyManagerImpl struct {
-	rep      notify.INotifyRepo
+	rep       notify.INotifyRepo
 	valueRepo valueobject.IValueRepo
 }
 
 func NewNotifyManager(rep notify.INotifyRepo,
 	valueRepo valueobject.IValueRepo) notify.INotifyManager {
 	return &notifyManagerImpl{
-		rep:      rep,
+		rep:       rep,
 		valueRepo: valueRepo,
 	}
 }

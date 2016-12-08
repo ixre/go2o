@@ -23,7 +23,7 @@ var _ afterSales.IRefundOrder = new(refundOrderImpl)
 
 type refundOrderImpl struct {
 	*afterSalesOrderImpl
-	refValue   *afterSales.RefundOrder
+	refValue    *afterSales.RefundOrder
 	memberRepo  member.IMemberRepo
 	paymentRepo payment.IPaymentRepo
 }
@@ -35,8 +35,8 @@ func newRefundOrder(v *afterSalesOrderImpl, memberRepo member.IMemberRepo,
 	}
 	return &refundOrderImpl{
 		afterSalesOrderImpl: v,
-		memberRepo:           memberRepo,
-		paymentRepo:          paymentRepo,
+		memberRepo:          memberRepo,
+		paymentRepo:         paymentRepo,
 	}
 }
 

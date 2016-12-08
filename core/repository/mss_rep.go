@@ -29,15 +29,15 @@ type mssRepo struct {
 	_conn         db.Connector
 	_sysManger    mss.IMessageManager
 	_notifyManger notify.INotifyManager
-	_notifyRepo    notify.INotifyRepo
-	_valRepo       valueobject.IValueRepo
+	_notifyRepo   notify.INotifyRepo
+	_valRepo      valueobject.IValueRepo
 	_globMss      mss.IUserMessageManager
 }
 
 func NewMssRepo(conn db.Connector, notifyRepo notify.INotifyRepo,
 	valRepo valueobject.IValueRepo) mss.IMssRepo {
 	return &mssRepo{
-		_conn:      conn,
+		_conn:       conn,
 		_notifyRepo: notifyRepo,
 		_valRepo:    valRepo,
 	}

@@ -254,7 +254,7 @@ var _ sale.ICategoryManager = new(categoryManagerImpl)
 type categoryManagerImpl struct {
 	_readonly      bool
 	_rep           sale.ICategoryRepo
-	_valRepo        valueobject.IValueRepo
+	_valRepo       valueobject.IValueRepo
 	_mchId         int32
 	lastUpdateTime int64
 	_categories    []sale.ICategory
@@ -263,8 +263,8 @@ type categoryManagerImpl struct {
 func NewCategoryManager(mchId int32, rep sale.ICategoryRepo,
 	valRepo valueobject.IValueRepo) sale.ICategoryManager {
 	c := &categoryManagerImpl{
-		_rep:    rep,
-		_mchId:  mchId,
+		_rep:     rep,
+		_mchId:   mchId,
 		_valRepo: valRepo,
 	}
 	return c.init()

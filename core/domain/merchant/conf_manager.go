@@ -19,7 +19,7 @@ type confManagerImpl struct {
 	rep      merchant.IMerchantRepo
 	merchant merchant.IMerchant
 	saleConf *merchant.SaleConf
-	valRepo   valueobject.IValueRepo
+	valRepo  valueobject.IValueRepo
 }
 
 func newConfigManagerImpl(m merchant.IMerchant,
@@ -27,7 +27,7 @@ func newConfigManagerImpl(m merchant.IMerchant,
 	return &confManagerImpl{
 		merchant: m,
 		rep:      rep,
-		valRepo:   valRepo,
+		valRepo:  valRepo,
 	}
 }
 

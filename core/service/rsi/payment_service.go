@@ -16,13 +16,13 @@ import (
 )
 
 type paymentService struct {
-	_rep      payment.IPaymentRepo
+	_rep       payment.IPaymentRepo
 	_orderRepo order.IOrderRepo
 }
 
 func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo) *paymentService {
 	return &paymentService{
-		_rep:      rep,
+		_rep:       rep,
 		_orderRepo: orderRepo,
 	}
 }

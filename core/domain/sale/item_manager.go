@@ -28,16 +28,16 @@ import (
 var _ sale.IItem = new(itemImpl)
 
 type itemImpl struct {
-	manager      *itemManagerImpl
-	value        *item.Item
+	manager       *itemManagerImpl
+	value         *item.Item
 	saleRepo      sale.ISaleRepo
 	itemRepo      item.IItemRepo
 	saleLabelRepo sale.ISaleLabelRepo
 	goodsRepo     goods.IGoodsRepo
 	expressRepo   express.IExpressRepo
 	promRepo      promotion.IPromotionRepo
-	saleImpl     *saleImpl
-	saleLabels   []*sale.Label
+	saleImpl      *saleImpl
+	saleLabels    []*sale.Label
 	valueRepo     valueobject.IValueRepo
 }
 
@@ -47,12 +47,12 @@ func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
 	valRepo valueobject.IValueRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.IItem {
 	return &itemImpl{
-		manager:      mgr,
-		value:        v,
+		manager:       mgr,
+		value:         v,
 		itemRepo:      itemRepo,
 		saleRepo:      saleRepo,
 		saleLabelRepo: saleLabelRepo,
-		saleImpl:     sale,
+		saleImpl:      sale,
 		expressRepo:   expressRepo,
 		goodsRepo:     goodsRepo,
 		valueRepo:     valRepo,
@@ -332,19 +332,19 @@ func (i *itemImpl) saveGoods() {
 var _ sale.IItemManager = new(itemManagerImpl)
 
 type itemManagerImpl struct {
-	_sale       *saleImpl
+	_sale        *saleImpl
 	_itemRepo    item.IItemRepo
 	_valRepo     valueobject.IValueRepo
 	_expressRepo express.IExpressRepo
-	_vendorId   int32
+	_vendorId    int32
 }
 
 func NewItemManager(vendorId int32, s *saleImpl,
 	itemRepo item.IItemRepo, expressRepo express.IExpressRepo,
 	valRepo valueobject.IValueRepo) sale.IItemManager {
 	c := &itemManagerImpl{
-		_sale:       s,
-		_vendorId:   vendorId,
+		_sale:        s,
+		_vendorId:    vendorId,
 		_valRepo:     valRepo,
 		_itemRepo:    itemRepo,
 		_expressRepo: expressRepo,

@@ -49,8 +49,8 @@ func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 	return &MemberRepo{
 		Storage:   sto,
 		Connector: c,
-		_mssRepo:   mssRepo,
-		_valRepo:   valRepo,
+		_mssRepo:  mssRepo,
+		_valRepo:  valRepo,
 	}
 }
 

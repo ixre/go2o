@@ -37,7 +37,7 @@ type profileManagerImpl struct {
 	member      *memberImpl
 	memberId    int32
 	rep         member.IMemberRepo
-	valRepo      valueobject.IValueRepo
+	valRepo     valueobject.IValueRepo
 	bank        *member.BankInfo
 	trustedInfo *member.TrustedInfo
 	profile     *member.Profile
@@ -53,7 +53,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int32,
 		member:   m,
 		memberId: memberId,
 		rep:      rep,
-		valRepo:   valRepo,
+		valRepo:  valRepo,
 	}
 }
 
@@ -561,7 +561,7 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 var _ member.IDeliverAddress = new(addressImpl)
 
 type addressImpl struct {
-	_value     *member.Address
+	_value      *member.Address
 	_memberRepo member.IMemberRepo
 	_valRepo    valueobject.IValueRepo
 }
@@ -569,7 +569,7 @@ type addressImpl struct {
 func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) member.IDeliverAddress {
 	d := &addressImpl{
-		_value:     v,
+		_value:      v,
 		_memberRepo: memberRepo,
 		_valRepo:    valRepo,
 	}

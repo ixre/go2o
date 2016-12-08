@@ -29,7 +29,7 @@ type afterSalesRepo struct {
 func NewAfterSalesRepo(conn db.Connector, orderRepo order.IOrderRepo,
 	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesRepo {
 	return &afterSalesRepo{
-		Connector:  conn,
+		Connector:   conn,
 		orderRepo:   orderRepo,
 		memberRepo:  memberRepo,
 		paymentRepo: paymentRepo,
