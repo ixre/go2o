@@ -55,6 +55,14 @@ func getImageServe() string {
 	return s
 }
 
+// 获取资源前缀
+func GetResUrlPrefix() string {
+	if len(imageServe) == 0 {
+		imageServe = getImageServe()
+	}
+	return imageServe
+}
+
 // 获取商品图片地址
 func GetGoodsImageUrl(image string) string {
 	if !picCfgLoaded {
