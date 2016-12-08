@@ -69,12 +69,12 @@ func (c *categoryRepo) CheckGoodsContain(mchId, id int32) bool {
 
 func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	//删除子类
-	_, _, err := c.Connector.Exec("DELETE FROM cat_category WHERE mch_id=? AND parent_id=?",
-		mchId, id)
+	_, _, err := c.Connector.Exec("DELETE FROM cat_category WHERE parent_id=?",
+		id)
 
 	//删除分类
-	_, _, err = c.Connector.Exec("DELETE FROM cat_category WHERE mch_id=? AND id=?",
-		mchId, id)
+	_, _, err = c.Connector.Exec("DELETE FROM cat_category WHERE id=?",
+		id)
 
 	// 清理缓存
 	if err == nil {
