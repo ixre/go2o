@@ -9,7 +9,7 @@
 
 package merchant
 
-type IMerchantRep interface {
+type IMerchantRepo interface {
 	// 获取商户管理器
 	GetManager() IMerchantManager
 

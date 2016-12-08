@@ -21,14 +21,14 @@ import (
 
 type personFinanceService struct {
 	_rep    personfinance.IPersonFinanceRepository
-	_accRep member.IMemberRep
+	_accRepo member.IMemberRepo
 }
 
 func NewPersonFinanceService(rep personfinance.IPersonFinanceRepository,
-	accRep member.IMemberRep) *personFinanceService {
+	accRepo member.IMemberRepo) *personFinanceService {
 	return &personFinanceService{
 		_rep:    rep,
-		_accRep: accRep,
+		_accRepo: accRepo,
 	}
 }
 
@@ -40,7 +40,7 @@ func (p *personFinanceService) GetRiseInfo(personId int32) (
 
 // 开通增利服务
 func (p *personFinanceService) OpenRiseService(personId int32) error {
-	m := p._accRep.GetMember(personId)
+	m := p._accRepo.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -71,7 +71,7 @@ func (p *personFinanceService) RiseTransferIn(personId int32,
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
 			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
 	}
-	m := p._accRep.GetMember(personId)
+	m := p._accRepo.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -111,7 +111,7 @@ func (p *personFinanceService) RiseTransferOut(personId int32,
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 
-	m := p._accRep.GetMember(personId)
+	m := p._accRepo.GetMember(personId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}

@@ -46,7 +46,7 @@ var (
 )
 
 type (
-	IItemRep interface {
+	IItemRepo interface {
 		// 获取货品
 		GetValueItem(itemId int32) *Item
 

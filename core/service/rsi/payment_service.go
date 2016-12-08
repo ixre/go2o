@@ -16,14 +16,14 @@ import (
 )
 
 type paymentService struct {
-	_rep      payment.IPaymentRep
-	_orderRep order.IOrderRep
+	_rep      payment.IPaymentRepo
+	_orderRepo order.IOrderRepo
 }
 
-func NewPaymentService(rep payment.IPaymentRep, orderRep order.IOrderRep) *paymentService {
+func NewPaymentService(rep payment.IPaymentRepo, orderRepo order.IOrderRepo) *paymentService {
 	return &paymentService{
 		_rep:      rep,
-		_orderRep: orderRep,
+		_orderRepo: orderRepo,
 	}
 }
 
@@ -130,7 +130,7 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 		if err == nil {
 			//更改订单支付完成
 			if orderId := o.GetValue().OrderId; orderId > 0 {
-				m := p._orderRep.Manager()
+				m := p._orderRepo.Manager()
 				err = m.PaymentForOnlineTrade(o.GetValue().OrderId)
 			}
 		}

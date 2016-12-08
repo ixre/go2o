@@ -25,15 +25,15 @@ type riseInfo struct {
 	personId int32
 	value    *personfinance.RiseInfoValue
 	rep      personfinance.IPersonFinanceRepository
-	accRep   member.IMemberRep
+	accRepo   member.IMemberRepo
 }
 
 func newRiseInfo(personId int32, rep personfinance.IPersonFinanceRepository,
-	accRep member.IMemberRep) personfinance.IRiseInfo {
+	accRepo member.IMemberRepo) personfinance.IRiseInfo {
 	return &riseInfo{
 		personId: personId,
 		rep:      rep,
-		accRep:   accRep,
+		accRepo:   accRepo,
 	}
 }
 

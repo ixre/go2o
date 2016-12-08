@@ -8,7 +8,7 @@
  */
 package user
 
-type IUserRep interface {
+type IUserRepo interface {
 	// 保存角色
 	SaveRole(*RoleValue) (int32, error)
 

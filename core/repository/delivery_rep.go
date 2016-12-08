@@ -15,25 +15,25 @@ import (
 	"go2o/core/domain/interface/delivery"
 )
 
-var _ delivery.IDeliveryRep = new(deliveryRep)
+var _ delivery.IDeliveryRepo = new(deliveryRepo)
 
-type deliveryRep struct {
+type deliveryRepo struct {
 	db.Connector
 }
 
-func NewDeliverRep(c db.Connector) delivery.IDeliveryRep {
-	return &deliveryRep{
+func NewDeliverRepo(c db.Connector) delivery.IDeliveryRepo {
+	return &deliveryRepo{
 		Connector: c,
 	}
 }
 
 // 获取配送
-func (this *deliveryRep) GetDelivery(id int32) delivery.IDelivery {
+func (this *deliveryRepo) GetDelivery(id int32) delivery.IDelivery {
 	return deliverImpl.NewDelivery(id, this)
 }
 
 // 根据区名获取区域
-func (this *deliveryRep) GetAreaByArea(name string) []*delivery.AreaValue {
+func (this *deliveryRepo) GetAreaByArea(name string) []*delivery.AreaValue {
 	arr := make([]*delivery.AreaValue, 0)
 	if err := this.Connector.GetOrm().Select(&arr, "name LIKE '%?%'", name); err == nil {
 		return arr
@@ -42,12 +42,12 @@ func (this *deliveryRep) GetAreaByArea(name string) []*delivery.AreaValue {
 }
 
 // 保存覆盖区域
-func (this *deliveryRep) SaveCoverageArea(v *delivery.CoverageValue) (int32, error) {
+func (this *deliveryRepo) SaveCoverageArea(v *delivery.CoverageValue) (int32, error) {
 	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 获取覆盖区域
-func (this *deliveryRep) GetCoverageArea(areaId, id int32) *delivery.CoverageValue {
+func (this *deliveryRepo) GetCoverageArea(areaId, id int32) *delivery.CoverageValue {
 	e := new(delivery.CoverageValue)
 	err := this.Connector.GetOrm().GetBy(e, "id=? AND area_id=?", id, areaId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (this *deliveryRep) GetCoverageArea(areaId, id int32) *delivery.CoverageVal
 }
 
 // 获取所有的覆盖区域
-func (this *deliveryRep) GetAllCoverageAreas(areaId int32) []*delivery.CoverageValue {
+func (this *deliveryRepo) GetAllCoverageAreas(areaId int32) []*delivery.CoverageValue {
 	e := make([]*delivery.CoverageValue, 0)
 	err := this.Connector.GetOrm().Select(&e, "area_id=?", areaId)
 	if err != nil {
@@ -67,7 +67,7 @@ func (this *deliveryRep) GetAllCoverageAreas(areaId int32) []*delivery.CoverageV
 }
 
 // 获取配送绑定
-func (this *deliveryRep) GetDeliveryBind(mchId, coverageId int32) *delivery.MerchantDeliverBind {
+func (this *deliveryRepo) GetDeliveryBind(mchId, coverageId int32) *delivery.MerchantDeliverBind {
 	e := new(delivery.MerchantDeliverBind)
 	err := this.Connector.GetOrm().GetBy(e, "merchant_id=? AND coverage_id=?", mchId, coverageId)
 	if err != nil {

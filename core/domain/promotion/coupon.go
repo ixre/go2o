@@ -33,21 +33,21 @@ var _ promotion.ICouponPromotion = new(Coupon)
 type Coupon struct {
 	*promotionImpl
 	detailsValue *promotion.ValueCoupon
-	promRep      promotion.IPromotionRep
-	memberRep    member.IMemberRep
+	promRepo      promotion.IPromotionRepo
+	memberRepo    member.IMemberRepo
 	takes        []promotion.ValueCouponTake
 	binds        []promotion.ValueCouponBind
 	takesLoaded  bool
 	bindsLoaded  bool
 }
 
-func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRep promotion.IPromotionRep,
-	memberRep member.IMemberRep) *Coupon {
+func newCoupon(p *promotionImpl, v *promotion.ValueCoupon, promRepo promotion.IPromotionRepo,
+	memberRepo member.IMemberRepo) *Coupon {
 	cp := &Coupon{
 		detailsValue:  v,
 		promotionImpl: p,
-		promRep:       promRep,
-		memberRep:     memberRep,
+		promRepo:       promRepo,
+		memberRepo:     memberRepo,
 	}
 	cp.releaseCoupon()
 	return cp
@@ -119,14 +119,14 @@ func (c *Coupon) SetDetailsValue(v *promotion.ValueCoupon) error {
 
 func (c *Coupon) GetBinds() []promotion.ValueCouponBind {
 	if !c.bindsLoaded {
-		c.binds = c.promRep.GetCouponBinds(c.detailsValue.Id)
+		c.binds = c.promRepo.GetCouponBinds(c.detailsValue.Id)
 	}
 	return c.binds
 }
 
 func (c *Coupon) GetTakes() []promotion.ValueCouponTake {
 	if !c.takesLoaded {
-		c.takes = c.promRep.GetCouponTakes(c.detailsValue.Id)
+		c.takes = c.promRepo.GetCouponTakes(c.detailsValue.Id)
 	}
 	return c.takes
 }
@@ -148,7 +148,7 @@ func (c *Coupon) Save() (int32, error) {
 
 	if err == nil {
 		c.detailsValue.Id = c.GetAggregateRootId()
-		return c.promRep.SaveValueCoupon(c.detailsValue, isCreate)
+		return c.promRepo.SaveValueCoupon(c.detailsValue, isCreate)
 	}
 	return id, err
 }
@@ -159,7 +159,7 @@ func (c *Coupon) GetDescribe() string {
 	v := c.detailsValue
 
 	if v.MinLevel != 0 {
-		level := c.memberRep.GetManager().LevelManager().GetLevelById(v.MinLevel)
+		level := c.memberRepo.GetManager().LevelManager().GetLevelById(v.MinLevel)
 		buf.WriteString("[*" + level.Name + "]")
 	}
 
@@ -250,7 +250,7 @@ func (c *Coupon) CanTake() bool {
 
 //获取占用
 func (c *Coupon) GetTake(memberId int32) (*promotion.ValueCouponTake, error) {
-	return c.promRep.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
+	return c.promRepo.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
 }
 
 //占用
@@ -270,7 +270,7 @@ func (c *Coupon) Take(memberId int32) error {
 		ApplyTime: dt.Add(-time.Hour).Unix(),
 	}
 
-	err := c.promRep.SaveCouponTake(valTake)
+	err := c.promRepo.SaveCouponTake(valTake)
 	if err == nil {
 		c.detailsValue.Amount -= 1
 		c.Save()
@@ -280,7 +280,7 @@ func (c *Coupon) Take(memberId int32) error {
 
 //应用到订单
 func (c *Coupon) ApplyTake(couponTakeId int32) error {
-	valTake := c.promRep.GetCouponTake(c.detailsValue.Id, couponTakeId)
+	valTake := c.promRepo.GetCouponTake(c.detailsValue.Id, couponTakeId)
 	if valTake == nil {
 		return errors.New("优惠券无效")
 	}
@@ -296,7 +296,7 @@ func (c *Coupon) ApplyTake(couponTakeId int32) error {
 	valTake.IsApply = 1
 	valTake.ApplyTime = now
 
-	return c.promRep.SaveCouponTake(valTake)
+	return c.promRepo.SaveCouponTake(valTake)
 }
 
 /********  绑定  *********/
@@ -317,7 +317,7 @@ func (c *Coupon) Bind(memberId int32) error {
 		UseTime:  now.Add(-time.Hour * 24).Unix(),
 	}
 
-	err := c.promRep.SaveCouponBind(valBind)
+	err := c.promRepo.SaveCouponBind(valBind)
 	if err == nil {
 		c.detailsValue.Amount -= 1
 		_, err = c.Save()
@@ -327,7 +327,7 @@ func (c *Coupon) Bind(memberId int32) error {
 
 //获取绑定
 func (c *Coupon) GetBind(memberId int32) (*promotion.ValueCouponBind, error) {
-	return c.promRep.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
+	return c.promRepo.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
 }
 
 func (c *Coupon) Binds(memberIds []string) error {
@@ -352,7 +352,7 @@ func (c *Coupon) Binds(memberIds []string) error {
 
 //使用优惠券
 func (c *Coupon) UseCoupon(couponBindId int32) error {
-	valBind := c.promRep.GetCouponBind(c.detailsValue.Id, couponBindId)
+	valBind := c.promRepo.GetCouponBind(c.detailsValue.Id, couponBindId)
 
 	if valBind == nil {
 		return errors.New("优惠券无效")
@@ -363,5 +363,5 @@ func (c *Coupon) UseCoupon(couponBindId int32) error {
 
 	valBind.UseTime = time.Now().Unix()
 	valBind.IsUsed = 1
-	return c.promRep.SaveCouponBind(valBind)
+	return c.promRepo.SaveCouponBind(valBind)
 }

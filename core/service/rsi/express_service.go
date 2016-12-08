@@ -11,11 +11,11 @@ package rsi
 import "go2o/core/domain/interface/express"
 
 type expressService struct {
-	_rep express.IExpressRep
+	_rep express.IExpressRepo
 }
 
 // 获取快递服务
-func NewExpressService(rep express.IExpressRep) *expressService {
+func NewExpressService(rep express.IExpressRepo) *expressService {
 	return &expressService{
 		_rep: rep,
 	}

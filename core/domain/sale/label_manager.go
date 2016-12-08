@@ -16,13 +16,13 @@ import (
 var _ sale.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
-	rep   sale.ISaleLabelRep
+	rep   sale.ISaleLabelRepo
 	mchId int32
 	value *sale.Label
 }
 
 func NewSaleLabel(mchId int32, value *sale.Label,
-	rep sale.ISaleLabelRep) sale.ISaleLabel {
+	rep sale.ISaleLabelRepo) sale.ISaleLabel {
 	return &saleLabelImpl{
 		rep:   rep,
 		mchId: mchId,
@@ -97,23 +97,23 @@ func (l *saleLabelImpl) GetPagedValueGoods(sortBy string,
 var _ sale.ILabelManager = new(labelManagerImpl)
 
 type labelManagerImpl struct {
-	_rep    sale.ISaleLabelRep
-	_valRep valueobject.IValueRep
+	_rep    sale.ISaleLabelRepo
+	_valRepo valueobject.IValueRepo
 	_mchId  int32
 }
 
-func NewLabelManager(mchId int32, rep sale.ISaleLabelRep,
-	valRep valueobject.IValueRep) sale.ILabelManager {
+func NewLabelManager(mchId int32, rep sale.ISaleLabelRepo,
+	valRepo valueobject.IValueRepo) sale.ILabelManager {
 	c := &labelManagerImpl{
 		_rep:    rep,
 		_mchId:  mchId,
-		_valRep: valRep,
+		_valRepo: valRepo,
 	}
 	return c.init()
 }
 
 func (l *labelManagerImpl) init() sale.ILabelManager {
-	//mchConf := l._valRep.GetPlatformConf()
+	//mchConf := l._valRepo.GetPlatformConf()
 	//if !mchConf.MchGoodsCategory && l._mchId > 0 {
 
 	//todo: mch sale label

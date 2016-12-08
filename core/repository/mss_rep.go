@@ -23,28 +23,28 @@ import (
 	"go2o/core/variable"
 )
 
-var _ mss.IMssRep = new(mssRep)
+var _ mss.IMssRepo = new(mssRepo)
 
-type mssRep struct {
+type mssRepo struct {
 	_conn         db.Connector
 	_sysManger    mss.IMessageManager
 	_notifyManger notify.INotifyManager
-	_notifyRep    notify.INotifyRep
-	_valRep       valueobject.IValueRep
+	_notifyRepo    notify.INotifyRepo
+	_valRepo       valueobject.IValueRepo
 	_globMss      mss.IUserMessageManager
 }
 
-func NewMssRep(conn db.Connector, notifyRep notify.INotifyRep,
-	valRep valueobject.IValueRep) mss.IMssRep {
-	return &mssRep{
+func NewMssRepo(conn db.Connector, notifyRepo notify.INotifyRepo,
+	valRepo valueobject.IValueRepo) mss.IMssRepo {
+	return &mssRepo{
 		_conn:      conn,
-		_notifyRep: notifyRep,
-		_valRep:    valRep,
+		_notifyRepo: notifyRepo,
+		_valRepo:    valRepo,
 	}
 }
 
 // 系统消息服务
-func (m *mssRep) MessageManager() mss.IMessageManager {
+func (m *mssRepo) MessageManager() mss.IMessageManager {
 	if m._sysManger == nil {
 		m._sysManger = mssImpl.NewMessageManager(m)
 	}
@@ -52,15 +52,15 @@ func (m *mssRep) MessageManager() mss.IMessageManager {
 }
 
 // 通知服务
-func (m *mssRep) NotifyManager() notify.INotifyManager {
+func (m *mssRepo) NotifyManager() notify.INotifyManager {
 	if m._notifyManger == nil {
 		m._notifyManger = notifyImpl.NewNotifyManager(
-			m._notifyRep, m._valRep)
+			m._notifyRepo, m._valRepo)
 	}
 	return m._notifyManger
 }
 
-func (m *mssRep) GetProvider() mss.IUserMessageManager {
+func (m *mssRepo) GetProvider() mss.IUserMessageManager {
 	if m._globMss == nil {
 		m._globMss = mssImpl.NewMssManager(0, m)
 	}
@@ -68,7 +68,7 @@ func (m *mssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (m *mssRep) GetConfig(userId int32) *mss.Config {
+func (m *mssRepo) GetConfig(userId int32) *mss.Config {
 	conf := mss.Config{}
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
@@ -80,7 +80,7 @@ func (m *mssRep) GetConfig(userId int32) *mss.Config {
 }
 
 // 保存消息设置
-func (m *mssRep) SaveConfig(userId int32, conf *mss.Config) error {
+func (m *mssRepo) SaveConfig(userId int32, conf *mss.Config) error {
 	filePath := "conf/core/mss_conf"
 	if userId != 0 {
 		filePath = fmt.Sprintf("conf/mch/%d/mss_conf", userId)
@@ -90,7 +90,7 @@ func (m *mssRep) SaveConfig(userId int32, conf *mss.Config) error {
 }
 
 // 获取邮箱模板
-func (m *mssRep) GetMailTemplate(mchId, id int32) *mss.MailTemplate {
+func (m *mssRepo) GetMailTemplate(mchId, id int32) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := m._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -99,25 +99,25 @@ func (m *mssRep) GetMailTemplate(mchId, id int32) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (m *mssRep) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
+func (m *mssRepo) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取所有的邮箱模版
-func (m *mssRep) GetMailTemplates(mchId int32) []*mss.MailTemplate {
+func (m *mssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	var list = []*mss.MailTemplate{}
 	m._conn.GetOrm().Select(&list, "merchant_id=?", mchId)
 	return list
 }
 
 // 删除邮件模板
-func (m *mssRep) DeleteMailTemplate(mchId, id int32) error {
+func (m *mssRepo) DeleteMailTemplate(mchId, id int32) error {
 	_, err := m._conn.GetOrm().Delete(mss.MailTemplate{}, "merchant_id=? AND id=?", mchId, id)
 	return err
 }
 
 // 加入到发送对列
-func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
+func (m *mssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 	var err error
 	if v.Id > 0 {
 		_, _, err = m._conn.GetOrm().Save(v.Id, v)
@@ -137,12 +137,12 @@ func (m *mssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
 }
 
 // 保存消息
-func (m *mssRep) SaveMessage(v *mss.Message) (int32, error) {
+func (m *mssRepo) SaveMessage(v *mss.Message) (int32, error) {
 	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取消息
-func (m *mssRep) GetMessage(id int32) *mss.Message {
+func (m *mssRepo) GetMessage(id int32) *mss.Message {
 	e := mss.Message{}
 	if m._conn.GetOrm().Get(id, &e) == nil {
 		e.To = []mss.User{}
@@ -159,17 +159,17 @@ func (m *mssRep) GetMessage(id int32) *mss.Message {
 }
 
 // 保存用户消息关联
-func (m *mssRep) SaveUserMsg(v *mss.To) (int32, error) {
+func (m *mssRepo) SaveUserMsg(v *mss.To) (int32, error) {
 	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 保存消息内容
-func (m *mssRep) SaveMsgContent(v *mss.Content) (int32, error) {
+func (m *mssRepo) SaveMsgContent(v *mss.Content) (int32, error) {
 	return orm.I32(orm.Save(m._conn.GetOrm(), v, int(v.Id)))
 }
 
 // 获取消息内容
-func (m *mssRep) GetMessageContent(msgId int32) *mss.Content {
+func (m *mssRepo) GetMessageContent(msgId int32) *mss.Content {
 	e := mss.Content{}
 	if m._conn.GetOrm().GetBy(&e, "msg_id=?", msgId) == nil {
 		return &e
@@ -178,7 +178,7 @@ func (m *mssRep) GetMessageContent(msgId int32) *mss.Content {
 }
 
 // 获取消息目标
-func (m *mssRep) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.To {
+func (m *mssRepo) GetMessageTo(msgId int32, toUserId int32, toRole int) *mss.To {
 	e := mss.To{}
 	if m._conn.GetOrm().GetByQuery(&e, `SELECT * FROM msg_to
 		WHERE msg_id=? AND to_id =? AND to_role=?`, msgId, toUserId, toRole) == nil {

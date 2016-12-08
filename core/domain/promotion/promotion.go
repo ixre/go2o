@@ -20,19 +20,19 @@ import (
 var _ promotion.IPromotion = new(promotionImpl)
 
 type promotionImpl struct {
-	memberRep member.IMemberRep
+	memberRepo member.IMemberRepo
 	mchId     int
-	promRep   promotion.IPromotionRep
+	promRepo   promotion.IPromotionRepo
 	value     *promotion.PromotionInfo
-	goodsRep  goods.IGoodsRep
+	goodsRepo  goods.IGoodsRepo
 }
 
-func newPromotion(rep promotion.IPromotionRep, goodsRep goods.IGoodsRep,
-	memRep member.IMemberRep, v *promotion.PromotionInfo) *promotionImpl {
+func newPromotion(rep promotion.IPromotionRepo, goodsRepo goods.IGoodsRepo,
+	memRepo member.IMemberRepo, v *promotion.PromotionInfo) *promotionImpl {
 	return &promotionImpl{
-		promRep:   rep,
-		memberRep: memRep,
-		goodsRep:  goodsRep,
+		promRepo:   rep,
+		memberRepo: memRepo,
+		goodsRepo:  goodsRepo,
 		value:     v,
 	}
 }
@@ -62,7 +62,7 @@ func (p *promotionImpl) SetValue(v *promotion.PromotionInfo) error {
 	//todo: 每个商户设置不一样
 	if false {
 		if p.GetAggregateRootId() == 0 && p.value.GoodsId > 0 {
-			if p.promRep.GetGoodsPromotionId(p.value.GoodsId, p.value.TypeFlag) > 0 {
+			if p.promRepo.GetGoodsPromotionId(p.value.GoodsId, p.value.TypeFlag) > 0 {
 				return promotion.ErrExistsSamePromotionFlag
 			}
 		}
@@ -93,5 +93,5 @@ func (p *promotionImpl) TypeName() string {
 // 保存
 func (p *promotionImpl) Save() (int32, error) {
 	p.value.UpdateTime = time.Now().Unix()
-	return p.promRep.SaveValuePromotion(p.value)
+	return p.promRepo.SaveValuePromotion(p.value)
 }

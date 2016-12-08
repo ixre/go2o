@@ -19,10 +19,10 @@ var _ member.IGiftCardManager = new(giftCardManagerImpl)
 
 type giftCardManagerImpl struct {
 	memberId int32
-	rep      member.IMemberRep
+	rep      member.IMemberRepo
 }
 
-func newGiftCardManagerImpl(memberId int32, rep member.IMemberRep) member.IGiftCardManager {
+func newGiftCardManagerImpl(memberId int32, rep member.IMemberRepo) member.IGiftCardManager {
 	return &giftCardManagerImpl{
 		memberId: memberId,
 		rep:      rep,

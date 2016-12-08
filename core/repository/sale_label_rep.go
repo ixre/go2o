@@ -20,16 +20,16 @@ import (
 	saleImpl "go2o/core/domain/sale"
 )
 
-type saleLabelRep struct {
+type saleLabelRepo struct {
 	db.Connector
 }
 
-func NewTagSaleRep(c db.Connector) sale.ISaleLabelRep {
-	return &saleLabelRep{c}
+func NewTagSaleRepo(c db.Connector) sale.ISaleLabelRepo {
+	return &saleLabelRepo{c}
 }
 
 // 创建销售标签
-func (t *saleLabelRep) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
+func (t *saleLabelRepo) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 	if v != nil {
 		return saleImpl.NewSaleLabel(v.MerchantId, v, t)
 	}
@@ -37,14 +37,14 @@ func (t *saleLabelRep) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
 }
 
 // 获取所有的销售标签
-func (t *saleLabelRep) GetAllValueSaleLabels(mchId int32) []*sale.Label {
+func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int32) []*sale.Label {
 	arr := []*sale.Label{}
 	t.Connector.GetOrm().Select(&arr, "mch_id=?", mchId)
 	return arr
 }
 
 // 获取销售标签值
-func (t *saleLabelRep) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label {
+func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label {
 	var v *sale.Label = new(sale.Label)
 	err := t.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", mchId, tagId)
 	if err == nil {
@@ -54,18 +54,18 @@ func (t *saleLabelRep) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label {
 }
 
 // 获取销售标签
-func (t *saleLabelRep) GetSaleLabel(mchId int32, id int32) sale.ISaleLabel {
+func (t *saleLabelRepo) GetSaleLabel(mchId int32, id int32) sale.ISaleLabel {
 	return t.CreateSaleLabel(t.GetValueSaleLabel(mchId, id))
 }
 
 // 保存销售标签
-func (t *saleLabelRep) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
+func (t *saleLabelRepo) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
 	v.MerchantId = mchId
 	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
 }
 
 // 根据Code获取销售标签
-func (t *saleLabelRep) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
+func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
 	var v *sale.Label = new(sale.Label)
 	if t.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", mchId, code) == nil {
 		return v
@@ -74,13 +74,13 @@ func (t *saleLabelRep) GetSaleLabelByCode(mchId int32, code string) *sale.Label 
 }
 
 // 删除销售标签
-func (t *saleLabelRep) DeleteSaleLabel(mchId int32, id int32) error {
+func (t *saleLabelRepo) DeleteSaleLabel(mchId int32, id int32) error {
 	_, err := t.GetOrm().Delete(&sale.Label{}, "mch_id=? AND id=?", mchId, id)
 	return err
 }
 
 // 获取商品
-func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId, tagId int32,
+func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 	sortBy string, begin, end int) []*valueobject.Goods {
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
@@ -96,7 +96,7 @@ func (t *saleLabelRep) GetValueGoodsBySaleLabel(mchId, tagId int32,
 }
 
 // 获取商品
-func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
+func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 	sortBy string, begin, end int) (int, []*valueobject.Goods) {
 	var total int
 	if len(sortBy) > 0 {
@@ -122,7 +122,7 @@ func (t *saleLabelRep) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 }
 
 // 获取商品的销售标签
-func (t *saleLabelRep) GetItemSaleLabels(itemId int32) []*sale.Label {
+func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*sale.Label {
 	arr := []*sale.Label{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
 	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, itemId)
@@ -130,13 +130,13 @@ func (t *saleLabelRep) GetItemSaleLabels(itemId int32) []*sale.Label {
 }
 
 // 清理商品的销售标签
-func (t *saleLabelRep) CleanItemSaleLabels(itemId int32) error {
+func (t *saleLabelRepo) CleanItemSaleLabels(itemId int32) error {
 	_, err := t.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", itemId)
 	return err
 }
 
 // 保存商品的销售标签
-func (t *saleLabelRep) SaveItemSaleLabels(itemId int32, tagIds []int) error {
+func (t *saleLabelRepo) SaveItemSaleLabels(itemId int32, tagIds []int) error {
 	var err error
 	if tagIds == nil {
 		return errors.New("SaleLabel Ids can't be null.")

@@ -33,13 +33,13 @@ func Translate(c string, m map[string]string) string {
 var _ mss.IMessage = new(messageImpl)
 
 type messageImpl struct {
-	rep  mss.IMssRep
+	rep  mss.IMssRepo
 	msg  *mss.Message
 	tpl  *mss.MailTemplate
 	data mss.Data
 }
 
-func newMessage(msg *mss.Message, rep mss.IMssRep) mss.IMessage {
+func newMessage(msg *mss.Message, rep mss.IMssRepo) mss.IMessage {
 	return &messageImpl{
 		rep: rep,
 		msg: msg,
@@ -181,11 +181,11 @@ var _ mss.IMessage = new(mailMessageImpl)
 type mailMessageImpl struct {
 	*messageImpl
 	_val *notify.MailMessage
-	_rep mss.IMssRep
+	_rep mss.IMssRepo
 }
 
 func newMailMessage(m *messageImpl, v *notify.MailMessage,
-	rep mss.IMssRep) mss.IMessage {
+	rep mss.IMssRepo) mss.IMessage {
 	return &mailMessageImpl{
 		messageImpl: m,
 		_val:        v,
@@ -235,11 +235,11 @@ var _ mss.IMessage = new(phoneMessageImpl)
 type phoneMessageImpl struct {
 	*messageImpl
 	_val *notify.PhoneMessage
-	_rep mss.IMssRep
+	_rep mss.IMssRepo
 }
 
 func newPhoneMessage(m *messageImpl, v *notify.PhoneMessage,
-	rep mss.IMssRep) mss.IMessage {
+	rep mss.IMssRepo) mss.IMessage {
 	return &phoneMessageImpl{
 		messageImpl: m,
 		_val:        v,
@@ -275,11 +275,11 @@ var _ mss.IMessage = new(siteMessageImpl)
 type siteMessageImpl struct {
 	*messageImpl
 	_val *notify.SiteMessage
-	_rep mss.IMssRep
+	_rep mss.IMssRepo
 }
 
 func newSiteMessage(m *messageImpl, v *notify.SiteMessage,
-	rep mss.IMssRep) mss.IMessage {
+	rep mss.IMssRepo) mss.IMessage {
 	return &siteMessageImpl{
 		messageImpl: m,
 		_val:        v,

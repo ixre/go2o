@@ -24,35 +24,35 @@ var _ afterSales.IAfterSalesOrder = new(afterSalesOrderImpl)
 
 type afterSalesOrderImpl struct {
 	value      *afterSales.AfterSalesOrder
-	rep        afterSales.IAfterSalesRep
+	rep        afterSales.IAfterSalesRepo
 	order      order.ISubOrder
-	orderRep   order.IOrderRep
-	paymentRep payment.IPaymentRep
+	orderRepo   order.IOrderRepo
+	paymentRepo payment.IPaymentRepo
 }
 
 func NewAfterSalesOrder(v *afterSales.AfterSalesOrder,
-	rep afterSales.IAfterSalesRep, orderRep order.IOrderRep,
-	memberRep member.IMemberRep, paymentRep payment.IPaymentRep) afterSales.IAfterSalesOrder {
-	as := newAfterSalesOrder(v, rep, orderRep, paymentRep)
+	rep afterSales.IAfterSalesRepo, orderRepo order.IOrderRepo,
+	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesOrder {
+	as := newAfterSalesOrder(v, rep, orderRepo, paymentRepo)
 	switch v.Type {
 	case afterSales.TypeReturn:
-		return newReturnOrderImpl(as, memberRep, paymentRep)
+		return newReturnOrderImpl(as, memberRepo, paymentRepo)
 	case afterSales.TypeExchange:
 		return newExchangeOrderImpl(as)
 	case afterSales.TypeRefund:
-		return newRefundOrder(as, memberRep, paymentRep)
+		return newRefundOrder(as, memberRepo, paymentRepo)
 	}
 	panic(errors.New("不支持的售后单类型"))
 }
 
 func newAfterSalesOrder(v *afterSales.AfterSalesOrder,
-	rep afterSales.IAfterSalesRep, orderRep order.IOrderRep,
-	paymentRep payment.IPaymentRep) *afterSalesOrderImpl {
+	rep afterSales.IAfterSalesRepo, orderRepo order.IOrderRepo,
+	paymentRepo payment.IPaymentRepo) *afterSalesOrderImpl {
 	return &afterSalesOrderImpl{
 		value:      v,
 		rep:        rep,
-		orderRep:   orderRep,
-		paymentRep: paymentRep,
+		orderRepo:   orderRepo,
+		paymentRepo: paymentRepo,
 	}
 }
 
@@ -85,7 +85,7 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 	if a.order == nil {
 		if a.value.OrderId > 0 {
-			a.order = a.orderRep.Manager().GetSubOrder(a.value.OrderId)
+			a.order = a.orderRepo.Manager().GetSubOrder(a.value.OrderId)
 		}
 		if a.order == nil {
 			panic(errors.New("售后单对应的订单不存在"))

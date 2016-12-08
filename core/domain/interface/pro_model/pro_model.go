@@ -1,4 +1,4 @@
-package pm
+package promodel
 
 // 产品模型
 type ProModel struct {

@@ -9,7 +9,7 @@
 
 package promotion
 
-type IPromotionRep interface {
+type IPromotionRepo interface {
 	// 获取促销
 	GetPromotion(id int32) IPromotion
 

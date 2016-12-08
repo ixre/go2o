@@ -21,10 +21,10 @@ var _ mss.IUserMessageManager = new(userMessageManagerImpl)
 var _ mss.IMessageManager = new(messageManagerImpl)
 
 type messageManagerImpl struct {
-	rep mss.IMssRep
+	rep mss.IMssRepo
 }
 
-func NewMessageManager(rep mss.IMssRep) mss.IMessageManager {
+func NewMessageManager(rep mss.IMssRepo) mss.IMessageManager {
 	return &messageManagerImpl{
 		rep: rep,
 	}
@@ -147,15 +147,15 @@ func (m *messageManagerImpl) CreateChatSession(senderRole int, senderId int32,
 type userMessageManagerImpl struct {
 	_appUserId     int32
 	_userRole      int //todo: role
-	_mssRep        mss.IMssRep
+	_mssRepo        mss.IMssRepo
 	_mailTemplates []*mss.MailTemplate
 	_config        *mss.Config
 }
 
-func NewMssManager(appUserId int32, rep mss.IMssRep) mss.IUserMessageManager {
+func NewMssManager(appUserId int32, rep mss.IMssRepo) mss.IUserMessageManager {
 	return &userMessageManagerImpl{
 		_appUserId: appUserId,
-		_mssRep:    rep,
+		_mssRepo:    rep,
 	}
 }
 
@@ -167,14 +167,14 @@ func (u *userMessageManagerImpl) GetAggregateRootId() int32 {
 // 获取配置
 func (u *userMessageManagerImpl) GetConfig() mss.Config {
 	if u._config == nil {
-		u._config = u._mssRep.GetConfig(u._appUserId)
+		u._config = u._mssRepo.GetConfig(u._appUserId)
 	}
 	return *u._config
 }
 
 // 保存消息设置
 func (u *userMessageManagerImpl) SaveConfig(conf *mss.Config) error {
-	err := u._mssRep.SaveConfig(u._appUserId, conf)
+	err := u._mssRepo.SaveConfig(u._appUserId, conf)
 	if err == nil {
 		u._config = nil
 	}
@@ -183,7 +183,7 @@ func (u *userMessageManagerImpl) SaveConfig(conf *mss.Config) error {
 
 // 获取邮箱模板
 func (u *userMessageManagerImpl) GetMailTemplate(id int32) *mss.MailTemplate {
-	return u._mssRep.GetMailTemplate(u._appUserId, id)
+	return u._mssRepo.GetMailTemplate(u._appUserId, id)
 }
 
 // 保存邮箱模版
@@ -193,22 +193,22 @@ func (u *userMessageManagerImpl) SaveMailTemplate(v *mss.MailTemplate) (int32, e
 	if v.CreateTime == 0 {
 		v.CreateTime = v.UpdateTime
 	}
-	return u._mssRep.SaveMailTemplate(v)
+	return u._mssRepo.SaveMailTemplate(v)
 }
 
 // 删除邮件模板
 func (u *userMessageManagerImpl) DeleteMailTemplate(id int32) error {
 	//mchId := this._partner.GetAggregateRootId()
-	//if this._partnerRep.CheckKvContainValue(mchId, "kvset", strconv.Itoa(id), "mail") > 0 {
+	//if this._partnerRepo.CheckKvContainValue(mchId, "kvset", strconv.Itoa(id), "mail") > 0 {
 	//	return mss.ErrTemplateUsed
 	//}
-	return u._mssRep.DeleteMailTemplate(u._appUserId, id)
+	return u._mssRepo.DeleteMailTemplate(u._appUserId, id)
 }
 
 // 获取所有的邮箱模版
 func (u *userMessageManagerImpl) GetMailTemplates() []*mss.MailTemplate {
 	if u._mailTemplates == nil {
-		u._mailTemplates = u._mssRep.GetMailTemplates(u._appUserId)
+		u._mailTemplates = u._mssRepo.GetMailTemplates(u._appUserId)
 	}
 	return u._mailTemplates
 }

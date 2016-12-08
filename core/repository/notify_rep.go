@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : notify_rep.go
+ * name : notify_repo.go
  * author : jarryliu
  * date : 2016-07-06 18:45
  * description :
@@ -14,7 +14,7 @@ import (
 	"go2o/core/domain/interface/mss/notify"
 )
 
-var _ notify.INotifyRep = new(notifyRepImpl)
+var _ notify.INotifyRepo = new(notifyRepImpl)
 
 type notifyRepImpl struct {
 	_conn        db.Connector
@@ -22,7 +22,7 @@ type notifyRepImpl struct {
 	_notifyItems map[string]*notify.NotifyItem
 }
 
-func NewNotifyRep(conn db.Connector) notify.INotifyRep {
+func NewNotifyRepo(conn db.Connector) notify.INotifyRepo {
 	return &notifyRepImpl{
 		_conn:    conn,
 		_itemGob: util.NewGobFile("conf/core/mss_notify"),

@@ -10,6 +10,6 @@
 package sale
 
 // 销售仓库
-type ISaleRep interface {
+type ISaleRepo interface {
 	GetSale(mchId int32) ISale
 }

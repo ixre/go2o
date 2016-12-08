@@ -152,7 +152,7 @@ type (
 		Process() error
 	}
 
-	IAfterSalesRep interface {
+	IAfterSalesRepo interface {
 		// 创建售后单
 		CreateAfterSalesOrder(v *AfterSalesOrder) IAfterSalesOrder
 

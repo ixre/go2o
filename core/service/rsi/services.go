@@ -78,35 +78,35 @@ func Init(ctx gof.App) {
 
 	/** Repository **/
 
-	goodsRep := repository.NewGoodsRep(db)
-	valRep := repository.NewValueRep(db, sto)
-	userRep := repository.NewUserRep(db)
-	notifyRep := repository.NewNotifyRep(db)
-	mssRep := repository.NewMssRep(db, notifyRep, valRep)
-	expressRep := repository.NewExpressRep(db, valRep)
-	shipRep := repository.NewShipmentRep(db, expressRep)
-	memberRep := repository.NewMemberRep(sto, db, mssRep, valRep)
-	itemRep := repository.NewItemRep(db)
-	tagSaleRep := repository.NewTagSaleRep(db)
-	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
-	cateRep := repository.NewCategoryRep(db, valRep, sto)
-	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
-		itemRep, expressRep, goodsRep, promRep)
-	//afterSalesRep := repository.NewAfterSalesRep(db)
-	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
-	shopRep := repository.NewShopRep(db, sto)
-	mchRep := repository.NewMerchantRep(db, sto, shopRep, userRep, memberRep, mssRep, valRep)
-	personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
-	deliveryRep := repository.NewDeliverRep(db)
-	contentRep := repository.NewContentRep(db)
-	adRep := repository.NewAdvertisementRep(db, sto)
-	spRep := repository.NewOrderRep(sto, db, mchRep, nil, saleRep, cartRep, goodsRep,
-		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
-	paymentRep := repository.NewPaymentRep(sto, db, memberRep, spRep, valRep)
-	asRep := repository.NewAfterSalesRep(db, spRep, memberRep, paymentRep)
+	goodsRepo := repository.NewGoodsRepo(db)
+	valRepo := repository.NewValueRepo(db, sto)
+	userRepo := repository.NewUserRepo(db)
+	notifyRepo := repository.NewNotifyRepo(db)
+	mssRepo := repository.NewMssRepo(db, notifyRepo, valRepo)
+	expressRepo := repository.NewExpressRepo(db, valRepo)
+	shipRepo := repository.NewShipmentRepo(db, expressRepo)
+	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valRepo)
+	itemRepo := repository.NewItemRepo(db)
+	tagSaleRepo := repository.NewTagSaleRepo(db)
+	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
+	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
+	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
+		itemRepo, expressRepo, goodsRepo, promRepo)
+	//afterSalesRepo := repository.NewAfterSalesRepo(db)
+	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
+	shopRepo := repository.NewShopRepo(db, sto)
+	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo, memberRepo, mssRepo, valRepo)
+	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
+	deliveryRepo := repository.NewDeliverRepo(db)
+	contentRepo := repository.NewContentRepo(db)
+	adRepo := repository.NewAdvertisementRepo(db, sto)
+	spRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, saleRepo, cartRepo, goodsRepo,
+		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
+	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, spRepo, valRepo)
+	asRepo := repository.NewAfterSalesRepo(db, spRepo, memberRepo, paymentRepo)
 
-	goodsRep.SetSaleRep(saleRep) //fixed
-	spRep.SetPaymentRep(paymentRep)
+	goodsRepo.SetSaleRepo(saleRepo) //fixed
+	spRepo.SetPaymentRepo(paymentRepo)
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -118,24 +118,24 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	FoundationService = NewFoundationService(valRep)
-	PromService = NewPromotionService(promRep)
-	ShoppingService = NewShoppingService(spRep, saleRep, cartRep,
-		itemRep, goodsRep, mchRep, orderQuery)
-	AfterSalesService = NewAfterSalesService(asRep, afterSalesQuery, spRep)
-	MerchantService = NewMerchantService(mchRep, saleRep, mchQuery, orderQuery)
-	ShopService = NewShopService(shopRep, mchRep, shopQuery)
-	MemberService = NewMemberService(MerchantService, memberRep, memberQue, orderQuery, valRep)
-	SaleService = NewSaleService(saleRep, cateRep, goodsRep, goodsQuery)
-	PaymentService = NewPaymentService(paymentRep, spRep)
-	MssService = NewMssService(mssRep)
-	ExpressService = NewExpressService(expressRep)
-	ShipmentService = NewShipmentService(shipRep, deliveryRep)
-	ContentService = NewContentService(contentRep, contentQue)
-	AdService = NewAdvertisementService(adRep, sto)
-	PersonFinanceService = NewPersonFinanceService(personFinanceRep, memberRep)
+	FoundationService = NewFoundationService(valRepo)
+	PromService = NewPromotionService(promRepo)
+	ShoppingService = NewShoppingService(spRepo, saleRepo, cartRepo,
+		itemRepo, goodsRepo, mchRepo, orderQuery)
+	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, spRepo)
+	MerchantService = NewMerchantService(mchRepo, saleRepo, mchQuery, orderQuery)
+	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
+	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valRepo)
+	SaleService = NewSaleService(saleRepo, cateRepo, goodsRepo, goodsQuery)
+	PaymentService = NewPaymentService(paymentRepo, spRepo)
+	MssService = NewMssService(mssRepo)
+	ExpressService = NewExpressService(expressRepo)
+	ShipmentService = NewShipmentService(shipRepo, deliveryRepo)
+	ContentService = NewContentService(contentRepo, contentQue)
+	AdService = NewAdvertisementService(adRepo, sto)
+	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
-	//m := memberRep.GetMember(1)
+	//m := memberRepo.GetMember(1)
 	//d := m.ProfileManager().GetDeliverAddress()[0]
 	//v := d.GetValue()
 	//v.Province = 440000

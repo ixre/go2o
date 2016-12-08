@@ -27,13 +27,13 @@ var _ sale.ICategory = new(categoryImpl)
 // 分类实现
 type categoryImpl struct {
 	value           *sale.Category
-	rep             sale.ICategoryRep
+	rep             sale.ICategoryRepo
 	parentIdChanged bool
 	childIdArr      []int32
 	opt             domain.IOptionStore
 }
 
-func NewCategory(rep sale.ICategoryRep, v *sale.Category) sale.ICategory {
+func NewCategory(rep sale.ICategoryRepo, v *sale.Category) sale.ICategory {
 	return &categoryImpl{
 		value: v,
 		rep:   rep,
@@ -253,25 +253,25 @@ var _ sale.ICategoryManager = new(categoryManagerImpl)
 //当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
 	_readonly      bool
-	_rep           sale.ICategoryRep
-	_valRep        valueobject.IValueRep
+	_rep           sale.ICategoryRepo
+	_valRepo        valueobject.IValueRepo
 	_mchId         int32
 	lastUpdateTime int64
 	_categories    []sale.ICategory
 }
 
-func NewCategoryManager(mchId int32, rep sale.ICategoryRep,
-	valRep valueobject.IValueRep) sale.ICategoryManager {
+func NewCategoryManager(mchId int32, rep sale.ICategoryRepo,
+	valRepo valueobject.IValueRepo) sale.ICategoryManager {
 	c := &categoryManagerImpl{
 		_rep:    rep,
 		_mchId:  mchId,
-		_valRep: valRep,
+		_valRepo: valRepo,
 	}
 	return c.init()
 }
 
 func (c *categoryManagerImpl) init() sale.ICategoryManager {
-	mchConf := c._valRep.GetPlatformConf()
+	mchConf := c._valRepo.GetPlatformConf()
 	if !mchConf.MchGoodsCategory && c._mchId > 0 {
 		c._readonly = true
 		c._mchId = 0

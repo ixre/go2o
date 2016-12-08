@@ -20,9 +20,9 @@ func TestMssSendSms(t *testing.T) {
 	app := include.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	nRep := repository.NewNotifyRep(db)
-	vRep := repository.NewValueRep(db, sto)
-	rep := repository.NewMssRep(db, nRep, vRep)
+	nRepo := repository.NewNotifyRepo(db)
+	vRepo := repository.NewValueRepo(db, sto)
+	rep := repository.NewMssRepo(db, nRepo, vRepo)
 
 	data := map[string]interface{}{}
 	data = sms.AppendCheckPhoneParams(1, data)

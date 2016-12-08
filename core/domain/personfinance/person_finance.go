@@ -19,15 +19,15 @@ var _ personfinance.IPersonFinance = new(PersonFinance)
 
 type PersonFinance struct {
 	personId int32
-	accRep   member.IMemberRep
+	accRepo   member.IMemberRepo
 	rep      personfinance.IPersonFinanceRepository
 }
 
 func NewPersonFinance(personId int32, rep personfinance.IPersonFinanceRepository,
-	accRep member.IMemberRep) personfinance.IPersonFinance {
+	accRepo member.IMemberRepo) personfinance.IPersonFinance {
 	return &PersonFinance{
 		personId: personId,
-		accRep:   accRep,
+		accRepo:   accRepo,
 		rep:      rep,
 	}
 }
@@ -39,12 +39,12 @@ func (p *PersonFinance) GetAggregateRootId() int32 {
 
 // 获取账号
 func (p *PersonFinance) GetMemberAccount() member.IAccount {
-	return p.accRep.GetMember(p.personId).GetAccount()
+	return p.accRepo.GetMember(p.personId).GetAccount()
 }
 
 // 获取增利账户信息(类:余额宝)
 func (p *PersonFinance) GetRiseInfo() personfinance.IRiseInfo {
-	return newRiseInfo(p.GetAggregateRootId(), p.rep, p.accRep)
+	return newRiseInfo(p.GetAggregateRootId(), p.rep, p.accRepo)
 }
 
 // 创建增利账户信息
@@ -76,7 +76,7 @@ func (p *PersonFinance) SyncToAccount() error {
 		growEarnings += r.Rise
 		totalGrowEarnings += r.TotalRise
 	}
-	return p.accRep.SaveGrowAccount(p.GetAggregateRootId(),
+	return p.accRepo.SaveGrowAccount(p.GetAggregateRootId(),
 		balance, totalAmount, growEarnings, totalGrowEarnings,
 		time.Now().Unix())
 }

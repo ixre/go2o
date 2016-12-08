@@ -27,19 +27,19 @@ type accountImpl struct {
 	member   *memberImpl
 	mm       member.IMemberManager
 	value    *member.Account
-	rep      member.IMemberRep
-	valueRep valueobject.IValueRep
+	rep      member.IMemberRepo
+	valueRepo valueobject.IValueRepo
 }
 
 func NewAccount(m *memberImpl, value *member.Account,
-	rep member.IMemberRep, mm member.IMemberManager,
-	valueRep valueobject.IValueRep) member.IAccount {
+	rep member.IMemberRepo, mm member.IMemberManager,
+	valueRepo valueobject.IValueRepo) member.IAccount {
 	return &accountImpl{
 		member:   m,
 		value:    value,
 		rep:      rep,
 		mm:       mm,
-		valueRep: valueRep,
+		valueRepo: valueRepo,
 	}
 }
 
@@ -668,7 +668,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		return 0, "", member.ErrIncorrectAmount
 	}
 	// 检测是否开启提现
-	conf := a.valueRep.GetRegistry()
+	conf := a.valueRepo.GetRegistry()
 	if !conf.MemberTakeOutOn {
 		return 0, "", errors.New(conf.MemberTakeOutMessage)
 	}
@@ -683,7 +683,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 		return 0, "", member.ErrOutOfBalance
 	}
 	// 检测提现金额是否超过限制
-	conf2 := a.valueRep.GetGlobNumberConf()
+	conf2 := a.valueRepo.GetGlobNumberConf()
 	if amount < conf2.MinTakeOutAmount {
 		return 0, "", errors.New(fmt.Sprintf(member.ErrLessTakeAmount.Error(),
 			format.FormatFloat(conf2.MinTakeOutAmount)))
@@ -904,7 +904,7 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int32, amount fl
 	csnFee := amount * csnRate
 
 	// 检测是否开启转账
-	conf := a.valueRep.GetRegistry()
+	conf := a.valueRepo.GetRegistry()
 	if !conf.MemberTransferAccountsOn {
 		return errors.New(conf.MemberTransferAccountsMessage)
 	}

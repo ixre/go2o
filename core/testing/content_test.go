@@ -15,7 +15,7 @@ import (
 )
 
 func TestContentGetAllCategory(t *testing.T) {
-	rep := repository.NewContentRep(include.GetApp().Db())
+	rep := repository.NewContentRepo(include.GetApp().Db())
 	u := rep.GetContent(0)
 	list := u.ArticleManager().GetAllCategory()
 	for i, c := range list {

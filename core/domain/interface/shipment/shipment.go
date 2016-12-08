@@ -41,7 +41,7 @@ type (
 		UpdateLog() error
 	}
 
-	IShipmentRep interface {
+	IShipmentRepo interface {
 		// 创建发货单
 		CreateShipmentOrder(o *ShipmentOrder) IShipmentOrder
 

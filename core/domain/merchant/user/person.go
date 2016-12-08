@@ -17,10 +17,10 @@ var _ user.IPerson = new(Person)
 
 type Person struct {
 	value *user.PersonValue
-	rep   user.IUserRep
+	rep   user.IUserRepo
 }
 
-func newPerson(v *user.PersonValue, rep user.IUserRep) user.IPerson {
+func newPerson(v *user.PersonValue, rep user.IUserRepo) user.IPerson {
 	return &Person{
 		value: v,
 		rep:   rep,

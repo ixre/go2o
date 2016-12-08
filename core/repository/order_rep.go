@@ -35,63 +35,63 @@ import (
 	"go2o/core/variable"
 )
 
-var _ order.IOrderRep = new(orderRepImpl)
+var _ order.IOrderRepo = new(orderRepImpl)
 
 type orderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_saleRep    sale.ISaleRep
-	_goodsRep   goods.IGoodsRep
-	_promRep    promotion.IPromotionRep
-	_memberRep  member.IMemberRep
-	_mchRep     merchant.IMerchantRep
-	_deliverRep delivery.IDeliveryRep
-	_cartRep    cart.ICartRep
-	_valRep     valueobject.IValueRep
+	_saleRepo    sale.ISaleRepo
+	_goodsRepo   goods.IGoodsRepo
+	_promRepo    promotion.IPromotionRepo
+	_memberRepo  member.IMemberRepo
+	_mchRepo     merchant.IMerchantRepo
+	_deliverRepo delivery.IDeliveryRepo
+	_cartRepo    cart.ICartRepo
+	_valRepo     valueobject.IValueRepo
 	_cache      map[int]order.IOrderManager
-	_payRep     payment.IPaymentRep
+	_payRepo     payment.IPaymentRepo
 	_manager    order.IOrderManager
-	_expressRep express.IExpressRep
-	_shipRep    shipment.IShipmentRep
+	_expressRepo express.IExpressRepo
+	_shipRepo    shipment.IShipmentRepo
 }
 
-func NewOrderRep(sto storage.Interface, c db.Connector,
-	mchRep merchant.IMerchantRep, payRep payment.IPaymentRep,
-	saleRep sale.ISaleRep, cartRep cart.ICartRep, goodsRep goods.IGoodsRep,
-	promRep promotion.IPromotionRep, memRep member.IMemberRep,
-	deliverRep delivery.IDeliveryRep, expressRep express.IExpressRep,
-	shipRep shipment.IShipmentRep,
-	valRep valueobject.IValueRep) *orderRepImpl {
+func NewOrderRepo(sto storage.Interface, c db.Connector,
+	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
+	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo, goodsRepo goods.IGoodsRepo,
+	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
+	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
+	shipRepo shipment.IShipmentRepo,
+	valRepo valueobject.IValueRepo) *orderRepImpl {
 	return &orderRepImpl{
 		Storage:     sto,
 		Connector:   c,
-		_saleRep:    saleRep,
-		_goodsRep:   goodsRep,
-		_promRep:    promRep,
-		_payRep:     payRep,
-		_memberRep:  memRep,
-		_mchRep:     mchRep,
-		_cartRep:    cartRep,
-		_deliverRep: deliverRep,
-		_valRep:     valRep,
-		_expressRep: expressRep,
-		_shipRep:    shipRep,
+		_saleRepo:    saleRepo,
+		_goodsRepo:   goodsRepo,
+		_promRepo:    promRepo,
+		_payRepo:     payRepo,
+		_memberRepo:  memRepo,
+		_mchRepo:     mchRepo,
+		_cartRepo:    cartRepo,
+		_deliverRepo: deliverRepo,
+		_valRepo:     valRepo,
+		_expressRepo: expressRepo,
+		_shipRepo:    shipRepo,
 	}
 }
 
-func (o *orderRepImpl) SetPaymentRep(payRep payment.IPaymentRep) {
-	o._payRep = payRep
+func (o *orderRepImpl) SetPaymentRepo(payRepo payment.IPaymentRepo) {
+	o._payRepo = payRepo
 }
 
 func (o *orderRepImpl) Manager() order.IOrderManager {
-	if o._saleRep == nil {
-		panic("saleRep uninitialize!")
+	if o._saleRepo == nil {
+		panic("saleRepo uninitialize!")
 	}
 	if o._manager == nil {
-		o._manager = orderImpl.NewOrderManager(o._cartRep, o._mchRep,
-			o, o._payRep, o._saleRep, o._goodsRep, o._promRep,
-			o._memberRep, o._deliverRep, o._expressRep, o._shipRep,
-			o._valRep)
+		o._manager = orderImpl.NewOrderManager(o._cartRepo, o._mchRepo,
+			o, o._payRepo, o._saleRepo, o._goodsRepo, o._promRepo,
+			o._memberRepo, o._deliverRepo, o._expressRepo, o._shipRepo,
+			o._valRepo)
 	}
 	return o._manager
 }

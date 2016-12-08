@@ -23,10 +23,10 @@ import (
 
 // 基础服务
 type foundationService struct {
-	_rep valueobject.IValueRep
+	_rep valueobject.IValueRepo
 }
 
-func NewFoundationService(rep valueobject.IValueRep) *foundationService {
+func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
 	return &foundationService{
 		_rep: rep,
 	}

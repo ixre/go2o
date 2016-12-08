@@ -17,13 +17,13 @@ var _ delivery.IDelivery = new(Delivery)
 
 type Delivery struct {
 	id  int32
-	rep delivery.IDeliveryRep
+	rep delivery.IDeliveryRepo
 }
 
-func NewDelivery(id int32, dlvRep delivery.IDeliveryRep) delivery.IDelivery {
+func NewDelivery(id int32, dlvRepo delivery.IDeliveryRepo) delivery.IDelivery {
 	return &Delivery{
 		id:  id,
-		rep: dlvRep,
+		rep: dlvRepo,
 	}
 }
 

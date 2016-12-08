@@ -18,10 +18,10 @@ var _ delivery.ICoverageArea = new(CoverageArea)
 
 type CoverageArea struct {
 	value *delivery.CoverageValue
-	rep   delivery.IDeliveryRep
+	rep   delivery.IDeliveryRepo
 }
 
-func newCoverageArea(v *delivery.CoverageValue, rep delivery.IDeliveryRep) delivery.ICoverageArea {
+func newCoverageArea(v *delivery.CoverageValue, rep delivery.IDeliveryRepo) delivery.ICoverageArea {
 	return &CoverageArea{
 		value: v,
 		rep:   rep,

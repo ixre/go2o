@@ -19,16 +19,16 @@ import (
 )
 
 type shopService struct {
-	_rep    shop.IShopRep
-	_mchRep merchant.IMerchantRep
+	_rep    shop.IShopRepo
+	_mchRepo merchant.IMerchantRepo
 	_query  *query.ShopQuery
 }
 
-func NewShopService(rep shop.IShopRep, mchRep merchant.IMerchantRep,
+func NewShopService(rep shop.IShopRepo, mchRepo merchant.IMerchantRepo,
 	query *query.ShopQuery) *shopService {
 	return &shopService{
 		_rep:    rep,
-		_mchRep: mchRep,
+		_mchRepo: mchRepo,
 		_query:  query,
 	}
 }
@@ -43,7 +43,7 @@ func (ss *shopService) GetMerchantId(shopId int32) int32 {
 
 // 获取商铺
 func (s *shopService) GetOnlineShop(mchId int32) *shop.ShopDto {
-	mch := s._mchRep.GetMerchant(mchId)
+	mch := s._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		shop := mch.ShopManager().GetOnlineShop()
 		if shop != nil {
@@ -60,7 +60,7 @@ func (ss *shopService) GetShopIdByHost(host string) (mchId int32, shopId int32) 
 
 // 获取商店的数据
 func (ss *shopService) GetShopData(mchId, shopId int32) *shop.ShopDto {
-	mch := ss._mchRep.GetMerchant(mchId)
+	mch := ss._mchRepo.GetMerchant(mchId)
 	sp := mch.ShopManager().GetShop(shopId)
 	if sp != nil {
 		return sp.Data()
@@ -69,7 +69,7 @@ func (ss *shopService) GetShopData(mchId, shopId int32) *shop.ShopDto {
 }
 
 func (ss *shopService) GetShopValueById(mchId, shopId int32) *shop.Shop {
-	mch := ss._mchRep.GetMerchant(mchId)
+	mch := ss._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		v := mch.ShopManager().GetShop(shopId).GetValue()
 		return &v
@@ -79,7 +79,7 @@ func (ss *shopService) GetShopValueById(mchId, shopId int32) *shop.Shop {
 
 // 保存线上商店
 func (ss *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error {
-	mch := ss._mchRep.GetMerchant(s.MerchantId)
+	mch := ss._mchRepo.GetMerchant(s.MerchantId)
 	if mch != nil {
 		mgr := mch.ShopManager()
 		var sp shop.IShop
@@ -109,7 +109,7 @@ func (ss *shopService) SaveOnlineShop(s *shop.Shop, v *shop.OnlineShop) error {
 
 // 保存门店
 func (ss *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error {
-	mch := ss._mchRep.GetMerchant(s.MerchantId)
+	mch := ss._mchRepo.GetMerchant(s.MerchantId)
 	if mch != nil {
 		mgr := mch.ShopManager()
 		var sp shop.IShop
@@ -133,7 +133,7 @@ func (ss *shopService) SaveOfflineShop(s *shop.Shop, v *shop.OfflineShop) error 
 }
 
 func (ss *shopService) SaveShop(mchId int32, v *shop.Shop) (int32, error) {
-	mch := ss._mchRep.GetMerchant(mchId)
+	mch := ss._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		var shop shop.IShop
 		if v.Id > 0 {
@@ -154,7 +154,7 @@ func (ss *shopService) SaveShop(mchId int32, v *shop.Shop) (int32, error) {
 }
 
 func (ss *shopService) DeleteShop(mchId, shopId int32) error {
-	mch := ss._mchRep.GetMerchant(mchId)
+	mch := ss._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		return mch.ShopManager().DeleteShop(shopId)
 	}
@@ -164,7 +164,7 @@ func (ss *shopService) DeleteShop(mchId, shopId int32) error {
 // 获取线上商城配置
 func (ss *shopService) GetOnlineShopConf(shopId int32) *shop.OnlineShop {
 	mchId := ss.getMerchantId(shopId)
-	mch := ss._mchRep.GetMerchant(mchId)
+	mch := ss._mchRepo.GetMerchant(mchId)
 	if mch != nil {
 		s := mch.ShopManager().GetShop(shopId)
 		if s == nil {
