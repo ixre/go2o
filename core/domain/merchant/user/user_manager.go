@@ -16,10 +16,10 @@ var _ user.IUserManager = new(UserManager)
 
 type UserManager struct {
 	mchId int32
-	rep   user.IUserRep
+	rep   user.IUserRepo
 }
 
-func NewUserManager(mchId int32, rep user.IUserRep) user.IUserManager {
+func NewUserManager(mchId int32, rep user.IUserRepo) user.IUserManager {
 	return &UserManager{
 		mchId: mchId,
 		rep:   rep,

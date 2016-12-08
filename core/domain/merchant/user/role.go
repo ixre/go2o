@@ -17,10 +17,10 @@ var _ user.IRole = new(Role)
 
 type Role struct {
 	value *user.RoleValue
-	rep   user.IUserRep
+	rep   user.IUserRepo
 }
 
-func newRole(v *user.RoleValue, rep user.IUserRep) user.IRole {
+func newRole(v *user.RoleValue, rep user.IUserRepo) user.IRole {
 	return &Role{
 		value: v,
 		rep:   rep,

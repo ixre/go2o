@@ -26,27 +26,27 @@ import (
 )
 
 type shoppingService struct {
-	_rep        order.IOrderRep
-	_itemRep    item.IItemRep
-	_goodsRep   goods.IGoodsRep
-	_saleRep    sale.ISaleRep
-	_cartRep    cart.ICartRep
-	_mchRep     merchant.IMerchantRep
+	_rep        order.IOrderRepo
+	_itemRepo    item.IItemRepo
+	_goodsRepo   goods.IGoodsRepo
+	_saleRepo    sale.ISaleRepo
+	_cartRepo    cart.ICartRepo
+	_mchRepo     merchant.IMerchantRepo
 	_manager    order.IOrderManager
 	_orderQuery *query.OrderQuery
 }
 
-func NewShoppingService(r order.IOrderRep,
-	saleRep sale.ISaleRep, cartRep cart.ICartRep,
-	itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	mchRep merchant.IMerchantRep, orderQuery *query.OrderQuery) *shoppingService {
+func NewShoppingService(r order.IOrderRepo,
+	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo,
+	itemRepo item.IItemRepo, goodsRepo goods.IGoodsRepo,
+	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
 		_rep:        r,
-		_itemRep:    itemRep,
-		_cartRep:    cartRep,
-		_goodsRep:   goodsRep,
-		_saleRep:    saleRep,
-		_mchRep:     mchRep,
+		_itemRepo:    itemRepo,
+		_cartRepo:    cartRepo,
+		_goodsRepo:   goodsRepo,
+		_saleRepo:    saleRepo,
+		_mchRepo:     mchRepo,
 		_manager:    r.Manager(),
 		_orderQuery: orderQuery,
 	}
@@ -59,12 +59,12 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 	cartKey string) cart.ICart {
 	var c cart.ICart
 	if len(cartKey) > 0 {
-		c = s._cartRep.GetShoppingCartByKey(cartKey)
+		c = s._cartRepo.GetShoppingCartByKey(cartKey)
 	} else if buyerId > 0 {
-		c = s._cartRep.GetMemberCurrentCart(buyerId)
+		c = s._cartRepo.GetMemberCurrentCart(buyerId)
 	}
 	if c == nil {
-		c = s._cartRep.NewCart()
+		c = s._cartRepo.NewCart()
 		_, err := c.Save()
 		domain.HandleError(err, "service")
 	}
@@ -84,7 +84,7 @@ func (s *shoppingService) GetShoppingCart(memberId int32,
 
 // 创建一个新的购物车
 func (s *shoppingService) CreateShoppingCart(memberId int32) *dto.ShoppingCart {
-	c := s._cartRep.NewCart()
+	c := s._cartRepo.NewCart()
 	c.SetBuyer(memberId)
 	return cart.ParseToDtoCart(c)
 }
@@ -92,7 +92,7 @@ func (s *shoppingService) CreateShoppingCart(memberId int32) *dto.ShoppingCart {
 func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Vendors {
-		mch := s._mchRep.GetMerchant(v.VendorId)
+		mch := s._mchRepo.GetMerchant(v.VendorId)
 		v.VendorName = mch.GetValue().Name
 		if v.ShopId > 0 {
 			v.ShopName = mch.ShopManager().GetShop(v.ShopId).GetValue().Name
@@ -116,13 +116,13 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	}
 	// 将新商品加入到购物车
 	if item == nil {
-		snap := s._goodsRep.GetLatestSnapshot(skuId)
+		snap := s._goodsRepo.GetLatestSnapshot(skuId)
 		if snap == nil {
 			return nil, goods.ErrNoSuchGoods
 		}
-		tm := s._itemRep.GetValueItem(snap.ItemId)
+		tm := s._itemRepo.GetValueItem(snap.ItemId)
 		// 检测是否开通商城
-		mch := s._mchRep.GetMerchant(tm.VendorId)
+		mch := s._mchRepo.GetMerchant(tm.VendorId)
 		if mch == nil {
 			return nil, merchant.ErrNoSuchMerchant
 		}

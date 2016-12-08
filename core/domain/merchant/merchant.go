@@ -34,15 +34,15 @@ import (
 var _ merchant.IMerchantManager = new(merchantManagerImpl)
 
 type merchantManagerImpl struct {
-	rep    merchant.IMerchantRep
-	valRep valueobject.IValueRep
+	rep    merchant.IMerchantRepo
+	valRepo valueobject.IValueRepo
 }
 
-func NewMerchantManager(rep merchant.IMerchantRep,
-	valRep valueobject.IValueRep) merchant.IMerchantManager {
+func NewMerchantManager(rep merchant.IMerchantRepo,
+	valRepo valueobject.IValueRepo) merchant.IMerchantManager {
 	return &merchantManagerImpl{
 		rep:    rep,
-		valRep: valRep,
+		valRepo: valRepo,
 	}
 }
 
@@ -177,7 +177,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 	}
 	mchId, err := mch.Save()
 	if err == nil {
-		names := m.valRep.GetAreaNames([]int32{v.Province, v.City, v.District})
+		names := m.valRepo.GetAreaNames([]int32{v.Province, v.City, v.District})
 		location := strings.Join(names, "")
 		ev := &merchant.EnterpriseInfo{
 			MerchantId:   mchId,
@@ -240,38 +240,38 @@ type merchantImpl struct {
 	_value           *merchant.Merchant
 	_account         merchant.IAccount
 	_host            string
-	_rep             merchant.IMerchantRep
-	_shopRep         shop.IShopRep
-	_userRep         user.IUserRep
-	_valRep          valueobject.IValueRep
-	_memberRep       member.IMemberRep
+	_rep             merchant.IMerchantRepo
+	_shopRepo         shop.IShopRepo
+	_userRepo         user.IUserRepo
+	_valRepo          valueobject.IValueRepo
+	_memberRepo       member.IMemberRepo
 	_userManager     user.IUserManager
 	_confManager     merchant.IConfManager
 	_levelManager    merchant.ILevelManager
 	_kvManager       merchant.IKvManager
 	_memberKvManager merchant.IKvManager
 	//_mssManager      mss.IMssManager
-	//_mssRep          mss.IMssRep
+	//_mssRepo          mss.IMssRepo
 	_profileManager merchant.IProfileManager
 	_apiManager     merchant.IApiManager
 	_shopManager    shop.IShopManager
 }
 
-func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRep,
-	shopRep shop.IShopRep, userRep user.IUserRep, memberRep member.IMemberRep,
-	valRep valueobject.IValueRep) merchant.IMerchant {
+func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
+	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
+	valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:     v,
 		_rep:       rep,
-		_shopRep:   shopRep,
-		_userRep:   userRep,
-		_valRep:    valRep,
-		_memberRep: memberRep,
+		_shopRepo:   shopRepo,
+		_userRepo:   userRepo,
+		_valRepo:    valRepo,
+		_memberRepo: memberRepo,
 	}
 	return mch
 }
 
-func (m *merchantImpl) GetRep() merchant.IMerchantRep {
+func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 	return m._rep
 }
 
@@ -375,7 +375,7 @@ func (m *merchantImpl) Member() int32 {
 func (m *merchantImpl) Account() merchant.IAccount {
 	if m._account == nil {
 		v := m._rep.GetAccount(m.GetAggregateRootId())
-		m._account = newAccountImpl(m, v, m._memberRep)
+		m._account = newAccountImpl(m, v, m._memberRepo)
 	}
 	return m._account
 }
@@ -451,7 +451,7 @@ func (m *merchantImpl) UserManager() user.IUserManager {
 	if m._userManager == nil {
 		m._userManager = userImpl.NewUserManager(
 			m.GetAggregateRootId(),
-			m._userRep)
+			m._userRepo)
 	}
 	return m._userManager
 }
@@ -483,7 +483,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 // 消息系统管理器
 //func (m *MerchantImpl) MssManager() mss.IMssManager {
 //	if m._mssManager == nil {
-//		m._mssManager = mssImpl.NewMssManager(m, m._mssRep, m._rep)
+//		m._mssManager = mssImpl.NewMssManager(m, m._mssRepo, m._rep)
 //	}
 //	return m._mssManager
 //}
@@ -491,7 +491,7 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 // 返回设置服务
 func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	if m._confManager == nil {
-		m._confManager = newConfigManagerImpl(m, m._rep, m._valRep)
+		m._confManager = newConfigManagerImpl(m, m._rep, m._valRepo)
 	}
 	return m._confManager
 }
@@ -515,7 +515,7 @@ func (m *merchantImpl) ApiManager() merchant.IApiManager {
 // 商店服务
 func (m *merchantImpl) ShopManager() shop.IShopManager {
 	if m._shopManager == nil {
-		m._shopManager = si.NewShopManagerImpl(m, m._shopRep, m._valRep)
+		m._shopManager = si.NewShopManagerImpl(m, m._shopRepo, m._valRepo)
 	}
 	return m._shopManager
 }
@@ -525,15 +525,15 @@ var _ merchant.IAccount = new(accountImpl)
 type accountImpl struct {
 	mchImpl   *merchantImpl
 	value     *merchant.Account
-	memberRep member.IMemberRep
+	memberRepo member.IMemberRepo
 }
 
 func newAccountImpl(mchImpl *merchantImpl, a *merchant.Account,
-	memberRep member.IMemberRep) merchant.IAccount {
+	memberRepo member.IMemberRepo) merchant.IAccount {
 	return &accountImpl{
 		mchImpl:   mchImpl,
 		value:     a,
-		memberRep: memberRep,
+		memberRepo: memberRepo,
 	}
 }
 
@@ -643,7 +643,7 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 	if a.mchImpl._value.MemberId <= 0 {
 		return member.ErrNoSuchMember
 	}
-	m := a.memberRep.GetMember(a.mchImpl._value.MemberId)
+	m := a.memberRepo.GetMember(a.mchImpl._value.MemberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -667,9 +667,9 @@ func (a *accountImpl) TransferToMember(amount float32) error {
 		}
 
 		// 判断是否提现免费,如果免费,则赠送手续费
-		registry := a.mchImpl._valRep.GetRegistry()
+		registry := a.mchImpl._valRepo.GetRegistry()
 		if registry.MerchantTakeOutCashFree {
-			conf := a.mchImpl._valRep.GetGlobNumberConf()
+			conf := a.mchImpl._valRepo.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
 				csn := amount * conf.TakeOutCsn
 				err = m.GetAccount().Charge(member.AccountPresent,
@@ -692,7 +692,7 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 	if a.mchImpl._value.MemberId <= 0 {
 		return member.ErrNoSuchMember
 	}
-	m := a.memberRep.GetMember(a.mchImpl._value.MemberId)
+	m := a.memberRepo.GetMember(a.mchImpl._value.MemberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -715,9 +715,9 @@ func (a *accountImpl) TransferToMember1(amount float32) error {
 		}
 
 		// 判断是否提现免费,如果免费,则赠送手续费
-		registry := a.mchImpl._valRep.GetRegistry()
+		registry := a.mchImpl._valRepo.GetRegistry()
 		if registry.MerchantTakeOutCashFree {
-			conf := a.mchImpl._valRep.GetGlobNumberConf()
+			conf := a.mchImpl._valRepo.GetGlobNumberConf()
 			if conf.TakeOutCsn > 0 {
 				csn := float32(0)
 				err = m.GetAccount().Charge(member.AccountPresent,

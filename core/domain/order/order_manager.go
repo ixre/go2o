@@ -36,55 +36,55 @@ import (
 var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	rep         order.IOrderRep
-	saleRep     sale.ISaleRep
-	cartRep     cart.ICartRep
-	goodsRep    goods.IGoodsRep
-	promRep     promotion.IPromotionRep
-	memberRep   member.IMemberRep
-	mchRep      merchant.IMerchantRep
-	deliveryRep delivery.IDeliveryRep
-	valRep      valueobject.IValueRep
-	paymentRep  payment.IPaymentRep
-	expressRep  express.IExpressRep
+	rep         order.IOrderRepo
+	saleRepo     sale.ISaleRepo
+	cartRepo     cart.ICartRepo
+	goodsRepo    goods.IGoodsRepo
+	promRepo     promotion.IPromotionRepo
+	memberRepo   member.IMemberRepo
+	mchRepo      merchant.IMerchantRepo
+	deliveryRepo delivery.IDeliveryRepo
+	valRepo      valueobject.IValueRepo
+	paymentRepo  payment.IPaymentRepo
+	expressRepo  express.IExpressRepo
 	mch         merchant.IMerchant
-	shipRep     shipment.IShipmentRep
+	shipRepo     shipment.IShipmentRepo
 }
 
-func NewOrderManager(cartRep cart.ICartRep, mchRep merchant.IMerchantRep,
-	rep order.IOrderRep, payRep payment.IPaymentRep, saleRep sale.ISaleRep,
-	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep,
-	memberRep member.IMemberRep, deliveryRep delivery.IDeliveryRep,
-	expressRep express.IExpressRep, shipRep shipment.IShipmentRep,
-	valRep valueobject.IValueRep) order.IOrderManager {
+func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
+	rep order.IOrderRepo, payRepo payment.IPaymentRepo, saleRepo sale.ISaleRepo,
+	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo,
+	memberRepo member.IMemberRepo, deliveryRepo delivery.IDeliveryRepo,
+	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
+	valRepo valueobject.IValueRepo) order.IOrderManager {
 	return &orderManagerImpl{
 		rep:         rep,
-		cartRep:     cartRep,
-		saleRep:     saleRep,
-		goodsRep:    goodsRep,
-		promRep:     promRep,
-		memberRep:   memberRep,
-		paymentRep:  payRep,
-		mchRep:      mchRep,
-		deliveryRep: deliveryRep,
-		valRep:      valRep,
-		expressRep:  expressRep,
-		shipRep:     shipRep,
+		cartRepo:     cartRepo,
+		saleRepo:     saleRepo,
+		goodsRepo:    goodsRepo,
+		promRepo:     promRepo,
+		memberRepo:   memberRepo,
+		paymentRepo:  payRepo,
+		mchRepo:      mchRepo,
+		deliveryRepo: deliveryRepo,
+		valRepo:      valRepo,
+		expressRepo:  expressRepo,
+		shipRepo:     shipRepo,
 	}
 }
 
 // 生成订单
 func (t *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
-	return newOrder(t, val, t.mchRep,
-		t.rep, t.goodsRep, t.saleRep, t.promRep,
-		t.memberRep, t.expressRep, t.paymentRep, t.valRep)
+	return newOrder(t, val, t.mchRepo,
+		t.rep, t.goodsRepo, t.saleRepo, t.promRepo,
+		t.memberRepo, t.expressRepo, t.paymentRepo, t.valRepo)
 }
 
 // 生成空白订单,并保存返回对象
 func (t *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
-	return NewSubOrder(v, t, t.rep, t.memberRep,
-		t.goodsRep, t.shipRep, t.saleRep,
-		t.valRep, t.mchRep)
+	return NewSubOrder(v, t, t.rep, t.memberRepo,
+		t.goodsRepo, t.shipRepo, t.saleRepo,
+		t.valRepo, t.mchRepo)
 }
 
 // 在下单前检查购物车
@@ -109,7 +109,7 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	buyerId := c.GetValue().BuyerId
 	if buyerId > 0 {
 		val.BuyerId = buyerId
-		m = t.memberRep.GetMember(val.BuyerId)
+		m = t.memberRepo.GetMember(val.BuyerId)
 	}
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
@@ -151,7 +151,7 @@ func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
 func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 	//todo: 应只选择线下实体店
 	//todo: AggregateRootId
-	dly := t.deliveryRep.GetDelivery(-1)
+	dly := t.deliveryRepo.GetDelivery(-1)
 
 	lng, lat, err := lbs.GetLocation(address)
 	if err != nil {
@@ -204,14 +204,14 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 	}
 	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
-	return t.paymentRep.CreatePaymentOrder(v)
+	return t.paymentRepo.CreatePaymentOrder(v)
 }
 
 // 应用优惠券
 func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IOrder,
 	py payment.IPaymentOrder, couponCode string) error {
 	po := py.GetValue()
-	cp := t.promRep.GetCouponByCode(
+	cp := t.promRepo.GetCouponByCode(
 		m.GetAggregateRootId(), couponCode)
 	// 如果优惠券不存在
 	if cp == nil {

@@ -92,7 +92,7 @@ type (
 		DeleteMailTemplate(id int32) error
 	}
 
-	IMssRep interface {
+	IMssRepo interface {
 		// 获取消息提供者
 		GetProvider() IUserMessageManager
 

@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : payment_rep.go
+ * name : payment_repo.go
  * author : jarryliu
  * date : 2016-07-03 12:52
  * description :
@@ -23,30 +23,30 @@ import (
 	"go2o/core/variable"
 )
 
-var _ payment.IPaymentRep = new(paymentRep)
+var _ payment.IPaymentRepo = new(paymentRepo)
 
-type paymentRep struct {
+type paymentRepo struct {
 	db.Connector
 	Storage storage.Interface
 	*payImpl.PaymentRepBase
-	_memberRep member.IMemberRep
-	_valRep    valueobject.IValueRep
-	_orderRep  order.IOrderRep
+	_memberRepo member.IMemberRepo
+	_valRepo    valueobject.IValueRepo
+	_orderRepo  order.IOrderRepo
 }
 
-func NewPaymentRep(sto storage.Interface, conn db.Connector, mmRep member.IMemberRep,
-	orderRep order.IOrderRep, valRep valueobject.IValueRep) payment.IPaymentRep {
-	return &paymentRep{
+func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMemberRepo,
+	orderRepo order.IOrderRepo, valRepo valueobject.IValueRepo) payment.IPaymentRepo {
+	return &paymentRepo{
 		Storage:    sto,
 		Connector:  conn,
-		_memberRep: mmRep,
-		_valRep:    valRep,
-		_orderRep:  orderRep,
+		_memberRepo: mmRepo,
+		_valRepo:    valRepo,
+		_orderRepo:  orderRepo,
 	}
 }
 
 // 根据订单号获取支付单
-func (p *paymentRep) GetPaymentBySalesOrderId(orderId int32) payment.IPaymentOrder {
+func (p *paymentRepo) GetPaymentBySalesOrderId(orderId int32) payment.IPaymentOrder {
 	e := &payment.PaymentOrder{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)
@@ -54,15 +54,15 @@ func (p *paymentRep) GetPaymentBySalesOrderId(orderId int32) payment.IPaymentOrd
 	return nil
 }
 
-func (p *paymentRep) getPaymentOrderCk(id int32) string {
+func (p *paymentRepo) getPaymentOrderCk(id int32) string {
 	return fmt.Sprintf("go2o:rep:pay:order:%d", id)
 }
-func (p *paymentRep) getPaymentOrderCkByNo(orderNO string) string {
+func (p *paymentRepo) getPaymentOrderCkByNo(orderNO string) string {
 	return fmt.Sprintf("go2o:rep:pay:order:%s", orderNO)
 }
 
 // 根据编号获取支付单
-func (p *paymentRep) GetPaymentOrderById(id int32) payment.IPaymentOrder {
+func (p *paymentRepo) GetPaymentOrderById(id int32) payment.IPaymentOrder {
 	if id <= 0 {
 		return nil
 	}
@@ -78,7 +78,7 @@ func (p *paymentRep) GetPaymentOrderById(id int32) payment.IPaymentOrder {
 }
 
 // 根据支付单号获取支付单
-func (p *paymentRep) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
+func (p *paymentRepo) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
 	k := p.getPaymentOrderCkByNo(paymentNo)
 	id, err := util.I32Err(p.Storage.GetInt(k))
 	if err != nil {
@@ -92,14 +92,14 @@ func (p *paymentRep) GetPaymentOrder(paymentNo string) payment.IPaymentOrder {
 }
 
 // 创建支付单
-func (p *paymentRep) CreatePaymentOrder(
+func (p *paymentRepo) CreatePaymentOrder(
 	o *payment.PaymentOrder) payment.IPaymentOrder {
 	return p.PaymentRepBase.CreatePaymentOrder(o, p,
-		p._memberRep, p._orderRep.Manager(), p._valRep)
+		p._memberRepo, p._orderRepo.Manager(), p._valRepo)
 }
 
 // 保存支付单
-func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
+func (p *paymentRepo) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
 	stat := v.State
 	if v.Id > 0 {
 		stat = p.GetPaymentOrderById(v.Id).GetValue().State
@@ -120,7 +120,7 @@ func (p *paymentRep) SavePaymentOrder(v *payment.PaymentOrder) (int32, error) {
 }
 
 // 通知支付单完成
-func (p *paymentRep) notifyPaymentFinish(paymentOrderId int32) error {
+func (p *paymentRepo) notifyPaymentFinish(paymentOrderId int32) error {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	_, err := rc.Do("RPUSH", variable.KvPaymentOrderFinishQueue, paymentOrderId)

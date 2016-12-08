@@ -19,22 +19,22 @@ import (
 var _ goods.ISnapshotManager = new(snapshotManagerImpl)
 
 type snapshotManagerImpl struct {
-	rep            goods.IGoodsRep
-	itemRep        item.IItemRep
+	rep            goods.IGoodsRepo
+	itemRepo        item.IItemRepo
 	skuId          int32
 	gs             *goods.ValueGoods
 	gi             *item.Item
 	latestSnapshot *goods.Snapshot
 }
 
-func NewSnapshotManagerImpl(skuId int32, rep goods.IGoodsRep,
-	itemRep item.IItemRep, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
+func NewSnapshotManagerImpl(skuId int32, rep goods.IGoodsRepo,
+	itemRepo item.IItemRepo, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
 	return &snapshotManagerImpl{
 		rep:     rep,
 		skuId:   skuId,
 		gs:      gs,
 		gi:      gi,
-		itemRep: itemRep,
+		itemRepo: itemRepo,
 	}
 }
 
@@ -72,7 +72,7 @@ func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) 
 		s.gs = s.rep.GetValueGoodsById(s.skuId)
 	}
 	if s.gi == nil {
-		s.gi = s.itemRep.GetValueItem(s.gs.ItemId)
+		s.gi = s.itemRepo.GetValueItem(s.gs.ItemId)
 	}
 	return s.gs, s.gi
 }

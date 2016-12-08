@@ -16,18 +16,18 @@ import (
 var _ merchant.IConfManager = new(confManagerImpl)
 
 type confManagerImpl struct {
-	rep      merchant.IMerchantRep
+	rep      merchant.IMerchantRepo
 	merchant merchant.IMerchant
 	saleConf *merchant.SaleConf
-	valRep   valueobject.IValueRep
+	valRepo   valueobject.IValueRepo
 }
 
 func newConfigManagerImpl(m merchant.IMerchant,
-	rep merchant.IMerchantRep, valRep valueobject.IValueRep) merchant.IConfManager {
+	rep merchant.IMerchantRepo, valRepo valueobject.IValueRepo) merchant.IConfManager {
 	return &confManagerImpl{
 		merchant: m,
 		rep:      rep,
-		valRep:   valRep,
+		valRepo:   valRepo,
 	}
 }
 
@@ -52,7 +52,7 @@ func (c *confManagerImpl) GetSaleConf() merchant.SaleConf {
 }
 
 func (c *confManagerImpl) loadGlobSaleConf(dst *merchant.SaleConf) error {
-	cfg := c.valRep.GetGlobMchSaleConf()
+	cfg := c.valRepo.GetGlobMchSaleConf()
 	// 是否启用分销
 	if cfg.FxSalesEnabled {
 		dst.FxSalesEnabled = 1
@@ -102,7 +102,7 @@ func (c *confManagerImpl) SaveSaleConf(v *merchant.SaleConf) error {
 
 // 验证销售设置
 func (c *confManagerImpl) verifySaleConf(v *merchant.SaleConf) error {
-	cfg := c.valRep.GetGlobMchSaleConf()
+	cfg := c.valRepo.GetGlobMchSaleConf()
 	if !cfg.FxSalesEnabled && v.FxSalesEnabled == 1 {
 		return merchant.ErrEnabledFxSales
 	}

@@ -149,7 +149,7 @@ type (
 		DeleteAreaSet(areaSetId int32) error
 	}
 
-	IExpressRep interface {
+	IExpressRepo interface {
 		// 获取所有快递公司
 		GetExpressProviders() []*ExpressProvider
 

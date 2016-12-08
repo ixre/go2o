@@ -1,4 +1,4 @@
-package pm
+package promodel
 
 type (
 	// 属性
@@ -64,7 +64,7 @@ type IAttrService interface {
 	GetGoodsAttrs(proId int32) []*ProAttr
 }
 
-type IProAttrRep interface {
+type IProAttrRepo interface {
 	// Get ProAttr
 	GetProAttr(primary interface{}) *ProAttr
 	// Save ProAttr

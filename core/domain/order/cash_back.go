@@ -27,7 +27,7 @@ func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
 	var i int32
 	referId := memberId
 	for i <= level-1 {
-		rl := o.memberRep.GetRelation(referId)
+		rl := o.memberRepo.GetRelation(referId)
 		if rl == nil || rl.InviterId <= 0 {
 			break
 		}
@@ -39,13 +39,13 @@ func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
 }
 
 func (o *subOrderImpl) handleCashBack() error {
-	gobConf := o.valRep.GetGlobMchSaleConf()
+	gobConf := o.valRepo.GetGlobMchSaleConf()
 	if !gobConf.FxSalesEnabled {
 		return nil
 	}
 	var err error
 	v := o.value
-	mch := o.mchRep.GetMerchant(v.VendorId)
+	mch := o.mchRepo.GetMerchant(v.VendorId)
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
@@ -114,7 +114,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 				break
 			}
 
-			m = o.memberRep.GetMember(rl.InviterId)
+			m = o.memberRepo.GetMember(rl.InviterId)
 			if m == nil {
 				break
 			}
@@ -136,7 +136,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 }
 
 func HandleCashBackDataTag(m member.IMember, order *order.Order,
-	c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
+	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
 	for k, _ := range data {
@@ -147,10 +147,10 @@ func HandleCashBackDataTag(m member.IMember, order *order.Order,
 		}
 	}
 	//log.Println("[ Back][ Level] - ",level)
-	cashBack3R(level, m, order, c, memberRep)
+	cashBack3R(level, m, order, c, memberRepo)
 }
 
-func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICashBackPromotion, memberRep member.IMemberRep) {
+func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 
 	dt := c.GetDataTag()
 
@@ -171,7 +171,7 @@ func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICa
 			break
 		}
 
-		cm = memberRep.GetMember(rl.InviterId)
+		cm = memberRepo.GetMember(rl.InviterId)
 
 		// fmt.Println("-------- BACK ",cm == nil)
 		if m == nil {

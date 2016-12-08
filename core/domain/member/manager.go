@@ -23,15 +23,15 @@ var _ member.ILevelManager = new(levelManagerImpl)
 
 type MemberManagerImpl struct {
 	levelManager member.ILevelManager
-	valRep       valueobject.IValueRep
-	rep          member.IMemberRep
+	valRepo       valueobject.IValueRepo
+	rep          member.IMemberRepo
 }
 
-func NewMemberManager(rep member.IMemberRep,
-	valRep valueobject.IValueRep) member.IMemberManager {
+func NewMemberManager(rep member.IMemberRepo,
+	valRepo valueobject.IValueRepo) member.IMemberManager {
 	return &MemberManagerImpl{
 		levelManager: newLevelManager(rep),
-		valRep:       valRep,
+		valRepo:       valRepo,
 		rep:          rep,
 	}
 }
@@ -83,8 +83,8 @@ func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int32) error {
 // 检查注册信息是否正确
 func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	pro *member.Profile, invitationCode string) (invitationId int32, err error) {
-	perm := m.valRep.GetRegisterPerm()
-	conf := m.valRep.GetRegistry()
+	perm := m.valRepo.GetRegisterPerm()
+	conf := m.valRepo.GetRegistry()
 
 	// 验证用户名,如果填写了或非用手机号作为用户名,均验证用户名
 	v.Usr = strings.TrimSpace(v.Usr)
@@ -161,10 +161,10 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 
 // 等级服务实现
 type levelManagerImpl struct {
-	rep member.IMemberRep
+	rep member.IMemberRepo
 }
 
-func newLevelManager(rep member.IMemberRep) member.ILevelManager {
+func newLevelManager(rep member.IMemberRepo) member.ILevelManager {
 	impl := &levelManagerImpl{
 		rep: rep,
 	}

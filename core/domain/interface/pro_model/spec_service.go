@@ -1,4 +1,4 @@
-package pm
+package promodel
 
 type (
 	// 规格

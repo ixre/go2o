@@ -8,7 +8,7 @@
  */
 package delivery
 
-type IDeliveryRep interface {
+type IDeliveryRepo interface {
 	// 获取配送
 	GetDelivery(id int32) IDelivery
 

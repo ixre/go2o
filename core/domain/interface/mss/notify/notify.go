@@ -117,7 +117,7 @@ type (
 		SendEmail(to string, msg *MailMessage, data map[string]interface{}) error
 	}
 
-	INotifyRep interface {
+	INotifyRepo interface {
 		// 获取所有的通知项
 		GetAllNotifyItem() []NotifyItem
 

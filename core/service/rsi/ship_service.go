@@ -14,22 +14,22 @@ import (
 )
 
 type shipmentService struct {
-	_rep         shipment.IShipmentRep
-	_deliveryRep delivery.IDeliveryRep
+	_rep         shipment.IShipmentRepo
+	_deliveryRepo delivery.IDeliveryRepo
 }
 
 // 获取快递服务
-func NewShipmentService(rep shipment.IShipmentRep,
-	deliveryRep delivery.IDeliveryRep) *shipmentService {
+func NewShipmentService(rep shipment.IShipmentRepo,
+	deliveryRepo delivery.IDeliveryRepo) *shipmentService {
 	return &shipmentService{
 		_rep:         rep,
-		_deliveryRep: deliveryRep,
+		_deliveryRepo: deliveryRepo,
 	}
 }
 
 // 创建一个配送覆盖的区域
 func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int32, error) {
-	return s._deliveryRep.SaveCoverageArea(c)
+	return s._deliveryRepo.SaveCoverageArea(c)
 }
 
 // 获取订单的发货单信息

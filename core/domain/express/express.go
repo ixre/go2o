@@ -27,16 +27,16 @@ var _ express.IUserExpress = new(userExpressImpl)
 type userExpressImpl struct {
 	userId int32
 	arr    []express.IExpressTemplate
-	rep    express.IExpressRep
-	valRep valueobject.IValueRep
+	rep    express.IExpressRepo
+	valRepo valueobject.IValueRepo
 }
 
-func NewUserExpress(userId int32, rep express.IExpressRep,
-	valRep valueobject.IValueRep) express.IUserExpress {
+func NewUserExpress(userId int32, rep express.IExpressRepo,
+	valRepo valueobject.IValueRepo) express.IUserExpress {
 	return &userExpressImpl{
 		userId: userId,
 		rep:    rep,
-		valRep: valRep,
+		valRepo: valRepo,
 	}
 }
 
@@ -48,7 +48,7 @@ func (e *userExpressImpl) GetAggregateRootId() int32 {
 // 创建快递模板
 func (e *userExpressImpl) CreateTemplate(t *express.ExpressTemplate) express.IExpressTemplate {
 	t.UserId = e.GetAggregateRootId()
-	return newExpressTemplate(e, t, e.rep, e.valRep)
+	return newExpressTemplate(e, t, e.rep, e.valRepo)
 }
 
 // 获取快递模板
@@ -98,20 +98,20 @@ var _ express.IExpressTemplate = new(expressTemplateImpl)
 type expressTemplateImpl struct {
 	_value       *express.ExpressTemplate
 	_userExpress *userExpressImpl
-	_rep         express.IExpressRep
+	_rep         express.IExpressRepo
 	_areaList    []express.ExpressAreaTemplate
 	_areaMap     map[string]*express.ExpressAreaTemplate
 	_mux         sync.Mutex
-	_valRep      valueobject.IValueRep
+	_valRepo      valueobject.IValueRepo
 }
 
 func newExpressTemplate(u *userExpressImpl, v *express.ExpressTemplate,
-	rep express.IExpressRep, valRep valueobject.IValueRep) express.IExpressTemplate {
+	rep express.IExpressRepo, valRepo valueobject.IValueRepo) express.IExpressTemplate {
 	return &expressTemplateImpl{
 		_value:       v,
 		_userExpress: u,
 		_rep:         rep,
-		_valRep:      valRep,
+		_valRepo:      valRepo,
 	}
 }
 
@@ -197,7 +197,7 @@ func (e *expressTemplateImpl) SaveAreaTemplate(t *express.ExpressAreaTemplate) (
 		intArr[i] = int32(i2)
 	}
 	// 获取对应的中文名称
-	names := e._valRep.GetAreaNames(intArr)
+	names := e._valRepo.GetAreaNames(intArr)
 	t.NameList = strings.Join(names, ",")
 
 	// 保存,如果未出错,则更新缓存
@@ -283,7 +283,7 @@ type ExpressRepBase struct {
 }
 
 // 将默认的快递服务商保存
-func (e *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRep) []*express.ExpressProvider {
+func (e *ExpressRepBase) SaveDefaultExpressProviders(rep express.IExpressRepo) []*express.ExpressProvider {
 	var err error
 	for _, v := range express.SupportedExpressProvider {
 		if v.Id, err = rep.SaveExpressProvider(v); err != nil {

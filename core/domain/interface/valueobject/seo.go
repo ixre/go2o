@@ -16,5 +16,5 @@ type OSeo struct {
 	Description string `db:"description"`
 }
 
-type IOtherRep struct {
+type IOtherRepo struct {
 }

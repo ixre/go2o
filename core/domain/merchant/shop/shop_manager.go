@@ -22,16 +22,16 @@ var _ shop.IShopManager = new(shopManagerImpl)
 
 type shopManagerImpl struct {
 	merchant merchant.IMerchant
-	rep      shop.IShopRep
-	valueRep valueobject.IValueRep
+	rep      shop.IShopRepo
+	valueRepo valueobject.IValueRepo
 }
 
-func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep,
-	valueRep valueobject.IValueRep) shop.IShopManager {
+func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRepo,
+	valueRepo valueobject.IValueRepo) shop.IShopManager {
 	return &shopManagerImpl{
 		merchant: m,
 		rep:      rep,
-		valueRep: valueRep,
+		valueRepo: valueRepo,
 	}
 }
 
@@ -39,7 +39,7 @@ func NewShopManagerImpl(m merchant.IMerchant, rep shop.IShopRep,
 func (s *shopManagerImpl) CreateShop(v *shop.Shop) shop.IShop {
 	v.CreateTime = time.Now().Unix()
 	v.MerchantId = s.merchant.GetAggregateRootId()
-	return newShop(s, v, s.rep, s.valueRep)
+	return newShop(s, v, s.rep, s.valueRepo)
 }
 
 // 获取所有商店

@@ -20,14 +20,14 @@ var _ ad.IAdGroup = new(AdGroupImpl)
 var _ ad.IAdManager = new(adManagerImpl)
 
 type adManagerImpl struct {
-	rep       ad.IAdRep
+	rep       ad.IAdRepo
 	defaultAd ad.IUserAd
 	groups    []ad.IAdGroup
 	mux       sync.Mutex
 	cache     map[string]ad.IAd
 }
 
-func NewAdManager(rep ad.IAdRep) ad.IAdManager {
+func NewAdManager(rep ad.IAdRepo) ad.IAdManager {
 	a := &adManagerImpl{
 		rep: rep,
 	}
@@ -125,13 +125,13 @@ func (a *adManagerImpl) GetUserAd(adUserId int32) ad.IUserAd {
 }
 
 type AdGroupImpl struct {
-	_rep       ad.IAdRep
+	_rep       ad.IAdRepo
 	_manager   *adManagerImpl
 	_value     *ad.AdGroup
 	_positions []*ad.AdPosition
 }
 
-func newAdGroup(m *adManagerImpl, rep ad.IAdRep, v *ad.AdGroup) ad.IAdGroup {
+func newAdGroup(m *adManagerImpl, rep ad.IAdRepo, v *ad.AdGroup) ad.IAdGroup {
 	return &AdGroupImpl{
 		_rep:     rep,
 		_manager: m,
@@ -242,14 +242,14 @@ func (a *AdGroupImpl) SetDefault(adPosId int32, adId int32) error {
 }
 
 type userAdImpl struct {
-	_rep      ad.IAdRep
+	_rep      ad.IAdRepo
 	_manager  ad.IAdManager
 	_adUserId int32
 	_cache    map[string]ad.IAd
 	_mux      sync.Mutex
 }
 
-func newUserAd(m ad.IAdManager, rep ad.IAdRep, adUserId int32) ad.IUserAd {
+func newUserAd(m ad.IAdManager, rep ad.IAdRepo, adUserId int32) ad.IUserAd {
 	return &userAdImpl{
 		_rep:      rep,
 		_manager:  m,
@@ -388,7 +388,7 @@ func (a *userAdImpl) SetAd(posId, adId int32) error {
 var _ ad.IAd = new(adImpl)
 
 type adImpl struct {
-	_rep   ad.IAdRep
+	_rep   ad.IAdRepo
 	_value *ad.Ad
 }
 
@@ -434,7 +434,7 @@ func (a *adImpl) GetValue() *ad.Ad {
 
 // 保存广告
 func (a *adImpl) Save() (int32, error) {
-	//id := a.Rep.GetIdByName(a.Value.UserId, a.Value.Name)
+	//id := a.Repo.GetIdByName(a.Value.UserId, a.Value.Name)
 	//if id > 0 && id != a.GetDomainId() {
 	//	return a.GetDomainId(), ad.ErrNameExists
 	//}

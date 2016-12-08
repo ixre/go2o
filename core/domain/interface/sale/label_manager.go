@@ -76,7 +76,7 @@ type (
 		DeleteSaleLabel(id int32) error
 	}
 
-	ISaleLabelRep interface {
+	ISaleLabelRepo interface {
 		// 创建销售标签
 		CreateSaleLabel(v *Label) ISaleLabel
 
