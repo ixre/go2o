@@ -28,45 +28,45 @@ import (
 	"time"
 )
 
-var _ merchant.IMerchantRep = new(merchantRep)
+var _ merchant.IMerchantRepo = new(merchantRepo)
 
-type merchantRep struct {
+type merchantRepo struct {
 	db.Connector
-	storage    storage.Interface
-	manager    merchant.IMerchantManager
-	_userRep   user.IUserRep
-	_mssRep    mss.IMssRep
-	_shopRep   shop.IShopRep
-	_valRep    valueobject.IValueRep
-	_memberRep member.IMemberRep
-	mux        *sync.RWMutex
+	storage     storage.Interface
+	manager     merchant.IMerchantManager
+	_userRepo   user.IUserRepo
+	_mssRepo    mss.IMssRepo
+	_shopRepo   shop.IShopRepo
+	_valRepo    valueobject.IValueRepo
+	_memberRepo member.IMemberRepo
+	mux         *sync.RWMutex
 }
 
-func NewMerchantRep(c db.Connector, storage storage.Interface, shopRep shop.IShopRep,
-	userRep user.IUserRep, memberRep member.IMemberRep, mssRep mss.IMssRep,
-	valRep valueobject.IValueRep) merchant.IMerchantRep {
-	return &merchantRep{
-		Connector:  c,
-		storage:    storage,
-		_userRep:   userRep,
-		_mssRep:    mssRep,
-		_shopRep:   shopRep,
-		_valRep:    valRep,
-		_memberRep: memberRep,
-		mux:        &sync.RWMutex{},
+func NewMerchantRepo(c db.Connector, storage storage.Interface, shopRepo shop.IShopRepo,
+	userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
+	valRepo valueobject.IValueRepo) merchant.IMerchantRepo {
+	return &merchantRepo{
+		Connector:   c,
+		storage:     storage,
+		_userRepo:   userRepo,
+		_mssRepo:    mssRepo,
+		_shopRepo:   shopRepo,
+		_valRepo:    valRepo,
+		_memberRepo: memberRepo,
+		mux:         &sync.RWMutex{},
 	}
 }
 
 // 获取商户管理器
-func (m *merchantRep) GetManager() merchant.IMerchantManager {
+func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 	if m.manager == nil {
-		m.manager = merchantImpl.NewMerchantManager(m, m._valRep)
+		m.manager = merchantImpl.NewMerchantManager(m, m._valRepo)
 	}
 	return m.manager
 }
 
 // 创建会员申请商户密钥
-func (m *merchantRep) CreateSignUpToken(memberId int32) string {
+func (m *merchantRepo) CreateSignUpToken(memberId int32) string {
 	mKey := fmt.Sprintf("go2o:rep:mch:signup:mm-%d", memberId)
 	if token, err := m.storage.GetString(mKey); err == nil {
 		return token
@@ -85,7 +85,7 @@ func (m *merchantRep) CreateSignUpToken(memberId int32) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantRep) GetMemberFromSignUpToken(token string) int32 {
+func (m *merchantRepo) GetMemberFromSignUpToken(token string) int32 {
 	key := "go2o:rep:mch:signup:tk-" + token
 	id, err := m.storage.GetInt(key)
 	if err == nil {
@@ -94,22 +94,22 @@ func (m *merchantRep) GetMemberFromSignUpToken(token string) int32 {
 	return -1
 }
 
-func (m *merchantRep) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
-	return merchantImpl.NewMerchant(v, m, m._shopRep, m._userRep,
-		m._memberRep, m._valRep)
+func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
+	return merchantImpl.NewMerchant(v, m, m._shopRepo, m._userRepo,
+		m._memberRepo, m._valRepo)
 }
 
-func (m *merchantRep) cleanCache(mchId int32) {
+func (m *merchantRepo) cleanCache(mchId int32) {
 	key := m.getMchCacheKey(mchId)
 	m.storage.Del(key)
 	PrefixDel(m.storage, key+":*")
 }
 
-func (m *merchantRep) getMchCacheKey(mchId int32) string {
+func (m *merchantRepo) getMchCacheKey(mchId int32) string {
 	return fmt.Sprintf("go2o:rep:mch:%d", mchId)
 }
 
-func (m *merchantRep) GetMerchant(id int32) merchant.IMerchant {
+func (m *merchantRepo) GetMerchant(id int32) merchant.IMerchant {
 	e := merchant.Merchant{}
 	key := m.getMchCacheKey(id)
 	if m.storage.Get(key, &e) != nil {
@@ -123,7 +123,7 @@ func (m *merchantRep) GetMerchant(id int32) merchant.IMerchant {
 }
 
 // 获取账户
-func (m *merchantRep) GetAccount(mchId int32) *merchant.Account {
+func (m *merchantRepo) GetAccount(mchId int32) *merchant.Account {
 	e := merchant.Account{}
 	err := m.Connector.GetOrm().Get(mchId, &e)
 	if err == nil {
@@ -139,7 +139,7 @@ func (m *merchantRep) GetAccount(mchId int32) *merchant.Account {
 }
 
 // 获取合作商主要的域名主机
-func (m *merchantRep) GetMerchantMajorHost(mchId int32) string {
+func (m *merchantRepo) GetMerchantMajorHost(mchId int32) string {
 	//todo:
 	var host string
 	m.Connector.ExecScalar(`SELECT host FROM pt_siteconf WHERE mch_id=? LIMIT 0,1`,
@@ -148,7 +148,7 @@ func (m *merchantRep) GetMerchantMajorHost(mchId int32) string {
 }
 
 // 保存
-func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int32, error) {
+func (m *merchantRepo) SaveMerchant(v *merchant.Merchant) (int32, error) {
 	id, err := orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		m.cleanCache(id)
@@ -157,7 +157,7 @@ func (m *merchantRep) SaveMerchant(v *merchant.Merchant) (int32, error) {
 }
 
 // 获取商户的编号
-func (m *merchantRep) GetMerchantsId() []int32 {
+func (m *merchantRepo) GetMerchantsId() []int32 {
 	dst := []int32{}
 	var i int32
 
@@ -172,7 +172,7 @@ func (m *merchantRep) GetMerchantsId() []int32 {
 }
 
 // 获取销售配置
-func (m *merchantRep) GetMerchantSaleConf(mchId int32) *merchant.SaleConf {
+func (m *merchantRepo) GetMerchantSaleConf(mchId int32) *merchant.SaleConf {
 	//10%分成
 	//0.2,         #上级
 	//0.1,         #上上级
@@ -184,7 +184,7 @@ func (m *merchantRep) GetMerchantSaleConf(mchId int32) *merchant.SaleConf {
 	return nil
 }
 
-func (m *merchantRep) SaveMerchantSaleConf(v *merchant.SaleConf) error {
+func (m *merchantRepo) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 	var err error
 	if v.MerchantId > 0 {
 		_, _, err = m.Connector.GetOrm().Save(v.MerchantId, v)
@@ -195,13 +195,13 @@ func (m *merchantRep) SaveMerchantSaleConf(v *merchant.SaleConf) error {
 }
 
 // 保存API信息
-func (m *merchantRep) SaveApiInfo(v *merchant.ApiInfo) error {
+func (m *merchantRepo) SaveApiInfo(v *merchant.ApiInfo) error {
 	_, err := orm.Save(m.GetOrm(), v, int(v.MerchantId))
 	return err
 }
 
 // 获取API信息
-func (m *merchantRep) GetApiInfo(mchId int32) *merchant.ApiInfo {
+func (m *merchantRepo) GetApiInfo(mchId int32) *merchant.ApiInfo {
 	var d *merchant.ApiInfo = new(merchant.ApiInfo)
 	if err := m.GetOrm().Get(mchId, d); err == nil {
 		return d
@@ -210,14 +210,14 @@ func (m *merchantRep) GetApiInfo(mchId int32) *merchant.ApiInfo {
 }
 
 // 根据API编号获取商户编号
-func (m *merchantRep) GetMerchantIdByApiId(apiId string) int32 {
+func (m *merchantRepo) GetMerchantIdByApiId(apiId string) int32 {
 	var mchId int32
 	m.ExecScalar("SELECT mch_id FROM mch_api_info WHERE api_id=?", &mchId, apiId)
 	return mchId
 }
 
 // 获取键值
-func (m *merchantRep) GetKeyValue(mchId int32, indent string, k string) string {
+func (m *merchantRepo) GetKeyValue(mchId int32, indent string, k string) string {
 	var v string
 	m.Connector.ExecScalar(
 		fmt.Sprintf("SELECT value FROM pt_%s WHERE merchant_id=? AND `key`=?", indent),
@@ -226,7 +226,7 @@ func (m *merchantRep) GetKeyValue(mchId int32, indent string, k string) string {
 }
 
 // 设置键值
-func (m *merchantRep) SaveKeyValue(mchId int32, indent string, k, v string, updateTime int64) error {
+func (m *merchantRepo) SaveKeyValue(mchId int32, indent string, k, v string, updateTime int64) error {
 	i, err := m.Connector.ExecNonQuery(
 		fmt.Sprintf("UPDATE pt_%s SET value=?,update_time=? WHERE merchant_id=? AND `key`=?", indent),
 		v, updateTime, mchId, k)
@@ -239,7 +239,7 @@ func (m *merchantRep) SaveKeyValue(mchId int32, indent string, k, v string, upda
 }
 
 // 获取多个键值
-func (m *merchantRep) GetKeyMap(mchId int32, indent string, k []string) map[string]string {
+func (m *merchantRepo) GetKeyMap(mchId int32, indent string, k []string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query(fmt.Sprintf("SELECT `key`,value FROM pt_%s WHERE merchant_id=? AND `key` IN (?)", indent),
@@ -253,7 +253,7 @@ func (m *merchantRep) GetKeyMap(mchId int32, indent string, k []string) map[stri
 }
 
 // 检查是否包含值的键数量,keyStr为键模糊匹配
-func (m *merchantRep) CheckKvContainValue(mchId int32, indent string, value string, keyStr string) int {
+func (m *merchantRepo) CheckKvContainValue(mchId int32, indent string, value string, keyStr string) int {
 	var i int
 	err := m.Connector.ExecScalar("SELECT COUNT(0) FROM pt_"+indent+
 		" WHERE merchant_id=? AND value=? AND `key` LIKE '%"+
@@ -265,7 +265,7 @@ func (m *merchantRep) CheckKvContainValue(mchId int32, indent string, value stri
 }
 
 // 根据关键字获取字典
-func (m *merchantRep) GetKeyMapByChar(mchId int32, indent string, keyword string) map[string]string {
+func (m *merchantRepo) GetKeyMapByChar(mchId int32, indent string, keyword string) map[string]string {
 	mp := make(map[string]string)
 	var k1, v1 string
 	m.Connector.Query("SELECT `key`,value FROM pt_"+indent+
@@ -279,7 +279,7 @@ func (m *merchantRep) GetKeyMapByChar(mchId int32, indent string, keyword string
 	return mp
 }
 
-func (m *merchantRep) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
+func (m *merchantRepo) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
 	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value = ?", mchId, levelValue)
 	if err != nil {
@@ -289,7 +289,7 @@ func (m *merchantRep) GetLevel(mchId, levelValue int32) *merchant.MemberLevel {
 }
 
 // 获取下一个等级
-func (m *merchantRep) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel {
+func (m *merchantRepo) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel {
 	e := merchant.MemberLevel{}
 	err := m.Connector.GetOrm().GetBy(&e, "merchant_id=? AND value>? LIMIT 0,1", mchId, levelVal)
 	if err != nil {
@@ -299,7 +299,7 @@ func (m *merchantRep) GetNextLevel(mchId, levelVal int32) *merchant.MemberLevel 
 }
 
 // 获取会员等级
-func (m *merchantRep) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
+func (m *merchantRepo) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
 	list := []*merchant.MemberLevel{}
 	m.Connector.GetOrm().Select(&list,
 		"merchant_id=?", mchId)
@@ -307,24 +307,24 @@ func (m *merchantRep) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
 }
 
 // 删除会员等级
-func (m *merchantRep) DeleteMemberLevel(mchId, id int32) error {
+func (m *merchantRepo) DeleteMemberLevel(mchId, id int32) error {
 	_, err := m.Connector.GetOrm().Delete(&merchant.MemberLevel{},
 		"id=? AND merchant_id=?", id, mchId)
 	return err
 }
 
 // 保存等级
-func (m *merchantRep) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int32, error) {
+func (m *merchantRepo) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
 
 //
-//func (m *merchantRep) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
+//func (m *merchantRepo) UpdateMechOfflineRate(id int, rate float32, return_rate float32) error {
 //	_, err := m.Connector.ExecNonQuery("UPDATE mch_merchant SET offline_rate=? ,return_rate=? WHERE  id=?", rate, return_rate, id)
 //	return err
 //}
 //
-//func (m *merchantRep) GetOfflineRate(id int32) (float32, float32, error) {
+//func (m *merchantRepo) GetOfflineRate(id int32) (float32, float32, error) {
 //	var rate float32
 //	var return_rate float32
 //	err := m.Connector.ExecScalar("SELECT  offline_rate FROM mch_merchant WHERE id=?", &rate, id)
@@ -333,7 +333,7 @@ func (m *merchantRep) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int
 //}
 //
 // 保存销售配置
-func (m *merchantRep) UpdateAccount(v *merchant.Account) error {
+func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 	orm := m.Connector.GetOrm()
 	var err error
 	if v.MchId > 0 {

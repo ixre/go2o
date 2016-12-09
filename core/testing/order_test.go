@@ -15,41 +15,41 @@ import (
 	"testing"
 )
 
-func getRep() order.IOrderRep {
+func getRepo() order.IOrderRepo {
 	app := include.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	goodsRep := repository.NewGoodsRep(db)
-	valRep := repository.NewValueRep(db, sto)
-	userRep := repository.NewUserRep(db)
-	notifyRep := repository.NewNotifyRep(db)
-	mssRep := repository.NewMssRep(db, notifyRep, valRep)
-	expressRep := repository.NewExpressRep(db, valRep)
-	shipRep := repository.NewShipmentRep(db, expressRep)
-	memberRep := repository.NewMemberRep(app.Storage(), db, mssRep, valRep)
-	itemRep := repository.NewItemRep(db)
-	tagSaleRep := repository.NewTagSaleRep(db)
-	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
-	cateRep := repository.NewCategoryRep(db, valRep, sto)
-	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
-		itemRep, expressRep, goodsRep, promRep)
-	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
-	shopRep := repository.NewShopRep(db, sto)
-	mchRep := repository.NewMerchantRep(db, sto, shopRep, userRep,
-		memberRep, mssRep, valRep)
-	//personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
-	deliveryRep := repository.NewDeliverRep(db)
-	//contentRep := repository.NewContentRep(db)
-	//adRep := repository.NewAdvertisementRep(db)
-	return repository.NewOrderRep(app.Storage(), db, mchRep, nil, saleRep, cartRep, goodsRep,
-		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
+	goodsRepo := repository.NewGoodsRepo(db)
+	valRepo := repository.NewValueRepo(db, sto)
+	userRepo := repository.NewUserRepo(db)
+	notifyRepo := repository.NewNotifyRepo(db)
+	mssRepo := repository.NewMssRepo(db, notifyRepo, valRepo)
+	expressRepo := repository.NewExpressRepo(db, valRepo)
+	shipRepo := repository.NewShipmentRepo(db, expressRepo)
+	memberRepo := repository.NewMemberRepo(app.Storage(), db, mssRepo, valRepo)
+	itemRepo := repository.NewItemRepo(db)
+	tagSaleRepo := repository.NewTagSaleRepo(db)
+	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
+	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
+	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
+		itemRepo, expressRepo, goodsRepo, promRepo)
+	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
+	shopRepo := repository.NewShopRepo(db, sto)
+	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo,
+		memberRepo, mssRepo, valRepo)
+	//personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
+	deliveryRepo := repository.NewDeliverRepo(db)
+	//contentRepo := repository.NewContentRepo(db)
+	//adRepo := repository.NewAdvertisementRepo(db)
+	return repository.NewOrderRepo(app.Storage(), db, mchRepo, nil, saleRepo, cartRepo, goodsRepo,
+		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
 }
 
 func TestOrderSetup(t *testing.T) {
 	orderNo := "100000735578"
-	orderRep := getRep()
-	v := orderRep.GetSubOrderByNo(orderNo)
-	o := orderRep.Manager().GetSubOrder(v.Id)
+	orderRepo := getRepo()
+	v := orderRepo.GetSubOrderByNo(orderNo)
+	o := orderRepo.Manager().GetSubOrder(v.Id)
 
 	t.Log("-[ 订单状态为:" + order.OrderState(o.GetValue().State).String())
 

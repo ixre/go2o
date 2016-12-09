@@ -13,7 +13,7 @@ import (
 	"go2o/core/dto"
 )
 
-type IMemberRep interface {
+type IMemberRepo interface {
 	// 获取管理服务
 	GetManager() IMemberManager
 

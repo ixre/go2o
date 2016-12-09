@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : value_rep.go
+ * name : value_repo.go
  * author : jarryliu
  * date : 2016-05-27 15:28
  * description :
@@ -248,7 +248,7 @@ type (
 		OrderTimeOutReceiveHour int
 	}
 
-	IValueRep interface {
+	IValueRepo interface {
 		// 获取微信接口配置
 		GetWxApiConfig() WxApiConfig
 

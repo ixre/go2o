@@ -18,30 +18,30 @@ import (
 	"testing"
 )
 
-var _ mss.IMssRep = new(MssRep)
+var _ mss.IMssRepo = new(MssRepo)
 
-type MssRep struct {
+type MssRepo struct {
 	_conn        db.Connector
 	_globMss     mss.IUserMessageManager
 	_notifyItems map[string]*notify.NotifyItem
 	_sysManger   mss.IMessageManager
 }
 
-func NewMssRep(conn db.Connector) mss.IMssRep {
-	return &MssRep{
+func NewMssRepo(conn db.Connector) mss.IMssRepo {
+	return &MssRepo{
 		_conn: conn,
 	}
 }
 
 // 系统消息服务
-func (this *MssRep) GetManager() mss.IMessageManager {
+func (this *MssRepo) GetManager() mss.IMessageManager {
 	if this._sysManger == nil {
 		this._sysManger = NewMessageManager(this)
 	}
 	return this._sysManger
 }
 
-func (this *MssRep) GetProvider() mss.IUserMessageManager {
+func (this *MssRepo) GetProvider() mss.IUserMessageManager {
 	if this._globMss == nil {
 		this._globMss = NewMssManager(0, this)
 	}
@@ -49,32 +49,32 @@ func (this *MssRep) GetProvider() mss.IUserMessageManager {
 }
 
 // 获取短信配置
-func (this *MssRep) GetConfig(userId int32) *mss.Config {
+func (this *MssRepo) GetConfig(userId int32) *mss.Config {
 	return nil
 }
 
 // 保存消息设置
-func (this *MssRep) SaveConfig(userId int, conf *mss.Config) error {
+func (this *MssRepo) SaveConfig(userId int, conf *mss.Config) error {
 	return nil
 }
 
 // 获取所有的通知项
-func (this *MssRep) GetAllNotifyItem() []notify.NotifyItem {
+func (this *MssRepo) GetAllNotifyItem() []notify.NotifyItem {
 	return []notify.NotifyItem{}
 }
 
 // 获取通知项
-func (this *MssRep) GetNotifyItem(key string) *notify.NotifyItem {
+func (this *MssRepo) GetNotifyItem(key string) *notify.NotifyItem {
 	return nil
 }
 
 // 保存通知项
-func (this *MssRep) SaveNotifyItem(v *notify.NotifyItem) error {
+func (this *MssRepo) SaveNotifyItem(v *notify.NotifyItem) error {
 	return nil
 }
 
 // 获取邮箱模板
-func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
+func (this *MssRepo) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 	var e mss.MailTemplate
 	if err := this._conn.GetOrm().Get(id, &e); err == nil {
 		return &e
@@ -83,27 +83,27 @@ func (this *MssRep) GetMailTemplate(mchId, id int) *mss.MailTemplate {
 }
 
 // 保存邮箱模版
-func (this *MssRep) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
+func (this *MssRepo) SaveMailTemplate(v *mss.MailTemplate) (int32, error) {
 	return v.Id, nil
 }
 
 // 获取所有的邮箱模版
-func (this *MssRep) GetMailTemplates(mchId int32) []*mss.MailTemplate {
+func (this *MssRepo) GetMailTemplates(mchId int32) []*mss.MailTemplate {
 	return []*mss.MailTemplate{}
 }
 
 // 删除邮件模板
-func (this *MssRep) DeleteMailTemplate(mchId, id int) error {
+func (this *MssRepo) DeleteMailTemplate(mchId, id int) error {
 	return nil
 }
 
 // 加入到发送对列
-func (this *MssRep) JoinMailTaskToQueen(v *mss.MailTask) error {
+func (this *MssRepo) JoinMailTaskToQueen(v *mss.MailTask) error {
 	return nil
 }
 
 // 保存消息
-func (this *MssRep) SaveMessage(v *mss.Message) (int32, error) {
+func (this *MssRepo) SaveMessage(v *mss.Message) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -116,19 +116,19 @@ func (this *MssRep) SaveMessage(v *mss.Message) (int32, error) {
 }
 
 // 获取消息
-func (this *MssRep) GetMessage(id int32) *mss.Message {
+func (this *MssRepo) GetMessage(id int32) *mss.Message {
 	//todo:
 	msg := mss.Message{}
 	return &msg
 }
 
 // 保存用户消息关联
-func (this *MssRep) SaveUserMsg(v *mss.To) (int32, error) {
+func (this *MssRepo) SaveUserMsg(v *mss.To) (int32, error) {
 	return orm.I32(orm.Save(this._conn.GetOrm(), v, v.Id))
 }
 
 // 保存消息内容
-func (this *MssRep) SaveMsgContent(v *mss.Content) (int32, error) {
+func (this *MssRepo) SaveMsgContent(v *mss.Content) (int32, error) {
 	var err error
 	if v.Id > 0 {
 		_, _, err = this._conn.GetOrm().Save(v.Id, v)
@@ -141,7 +141,7 @@ func (this *MssRep) SaveMsgContent(v *mss.Content) (int32, error) {
 }
 
 func TestMessageManagerImpl_SendMessage(t *testing.T) {
-	mgr := NewMessageManager(NewMssRep(gof.CurrentApp.Db()))
+	mgr := NewMessageManager(NewMssRepo(gof.CurrentApp.Db()))
 	v := &mss.Message{
 		Id: 0,
 		// 消息类型

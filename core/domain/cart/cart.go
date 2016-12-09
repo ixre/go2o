@@ -16,29 +16,29 @@ import (
 )
 
 type cartImpl struct {
-	value     *cart.ValueCart
-	rep       cart.ICartRep
-	goodsRep  goods.IGoodsRep
-	memberRep member.IMemberRep
-	summary   string
-	shop      shop.IShop
-	deliver   member.IDeliverAddress
-	snapMap   map[int32]*goods.Snapshot
+	value      *cart.ValueCart
+	rep        cart.ICartRepo
+	goodsRepo  goods.IGoodsRepo
+	memberRepo member.IMemberRepo
+	summary    string
+	shop       shop.IShop
+	deliver    member.IDeliverAddress
+	snapMap    map[int32]*goods.Snapshot
 }
 
-func CreateCart(val *cart.ValueCart, rep cart.ICartRep,
-	memberRep member.IMemberRep, goodsRep goods.IGoodsRep) cart.ICart {
+func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
+	memberRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo) cart.ICart {
 	return (&cartImpl{
-		value:     val,
-		rep:       rep,
-		memberRep: memberRep,
-		goodsRep:  goodsRep,
+		value:      val,
+		rep:        rep,
+		memberRepo: memberRepo,
+		goodsRepo:  goodsRepo,
 	}).init()
 }
 
 // 创建新的购物车
-func NewCart(buyerId int32, rep cart.ICartRep, memberRep member.IMemberRep,
-	goodsRep goods.IGoodsRep) cart.ICart {
+func NewCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
+	goodsRepo goods.IGoodsRepo) cart.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &cart.ValueCart{
@@ -52,7 +52,7 @@ func NewCart(buyerId int32, rep cart.ICartRep, memberRep member.IMemberRep,
 		UpdateTime: unix,
 		Items:      nil,
 	}
-	return CreateCart(value, rep, memberRep, goodsRep)
+	return CreateCart(value, rep, memberRepo, goodsRepo)
 }
 
 func (c *cartImpl) init() cart.ICart {
@@ -70,7 +70,7 @@ func (c *cartImpl) Check() error {
 	}
 	for _, v := range c.value.Items {
 		if v.Checked == 1 {
-			snap := c.goodsRep.GetLatestSnapshot(v.SkuId)
+			snap := c.goodsRepo.GetLatestSnapshot(v.SkuId)
 			if snap == nil {
 				return goods.ErrNoSuchGoods // 没有商品
 			}
@@ -96,7 +96,7 @@ func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*goods.Snap
 				for i, v := range items {
 					ids[i] = v.SkuId
 				}
-				snapList := c.goodsRep.GetSnapshots(ids)
+				snapList := c.goodsRepo.GetSnapshots(ids)
 				for _, v := range snapList {
 					v2 := v
 					c.snapMap[v.SkuId] = &v2
@@ -109,7 +109,7 @@ func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*goods.Snap
 
 func (c *cartImpl) getBuyerLevelId() int32 {
 	if c.value.BuyerId > 0 {
-		m := c.memberRep.GetMember(c.value.BuyerId)
+		m := c.memberRepo.GetMember(c.value.BuyerId)
 		if m != nil {
 			return m.GetValue().Level
 		}
@@ -120,7 +120,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRep.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
+		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
 		snap.SalePrice = gds.GetPromotionPrice(level)
 	}
 }
@@ -167,7 +167,7 @@ func (c *cartImpl) GetCartGoods() []sale.IGoods {
 	//todo: IMPL
 	//var gs []sale.IGoods = make([]sale.IGoods, len(c._value.Items))
 	//for i, v := range c._value.Items {
-	//    gs[i] = c._goodsRep.getGoods
+	//    gs[i] = c._goodsRepo.getGoods
 	//}
 	//return gs
 	return []sale.IGoods{}
@@ -189,7 +189,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 	if c.value.Items == nil {
 		c.value.Items = []*cart.CartItem{}
 	}
-	snap := c.goodsRep.GetLatestSnapshot(skuId)
+	snap := c.goodsRepo.GetLatestSnapshot(skuId)
 	if snap == nil {
 		return nil, goods.ErrNoSuchGoods // 没有商品
 	}
@@ -383,7 +383,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int32) error {
 	if c.value.BuyerId < 0 {
 		return cart.ErrCartNoBuyer
 	}
-	m := c.memberRep.GetMember(c.value.BuyerId)
+	m := c.memberRepo.GetMember(c.value.BuyerId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -429,7 +429,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, addressId int32
 
 	if shopId > 0 {
 		//var mch merchant.IMerchant
-		//mch, err = c._partnerRep.GetMerchant(c._mchId)
+		//mch, err = c._partnerRepo.GetMerchant(c._mchId)
 		//if err != nil {
 		//	return err
 		//}
@@ -445,7 +445,7 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, addressId int32
 	}
 
 	if c.value.BuyerId > 0 && addressId > 0 {
-		m := c.memberRep.GetMember(c.value.BuyerId)
+		m := c.memberRepo.GetMember(c.value.BuyerId)
 		if m == nil {
 			return member.ErrNoSuchMember
 		}
@@ -468,14 +468,14 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 	//var err error
 	if c.value.ShopId > 0 && c.shop == nil {
 		//var pt merchant.IMerchant
-		//pt, err = c._partnerRep.GetMerchant(c._mchId)
+		//pt, err = c._partnerRepo.GetMerchant(c._mchId)
 		//if err == nil {
 		//	c._shop = pt.ShopManager().GetShop(c._value.ShopId)
 		//}
 		//todo: not implement
 	}
 	if c.deliver == nil {
-		pm := c.memberRep.GetMember(c.value.BuyerId).Profile()
+		pm := c.memberRepo.GetMember(c.value.BuyerId).Profile()
 		if c.value.DeliverId > 0 {
 			c.deliver = pm.GetAddress(c.value.DeliverId)
 		} else {

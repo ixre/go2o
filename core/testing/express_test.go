@@ -21,8 +21,8 @@ func TestExpressTemplateImpl_Save(t *testing.T) {
 	db := app.Db()
 	sto := app.Storage()
 
-	valRep := repository.NewValueRep(db, sto)
-	rep := repository.NewExpressRep(db, valRep)
+	valRepo := repository.NewValueRepo(db, sto)
+	rep := repository.NewExpressRepo(db, valRepo)
 
 	list := rep.GetExpressProviders()
 	for _, v := range list {
@@ -30,7 +30,7 @@ func TestExpressTemplateImpl_Save(t *testing.T) {
 	}
 
 	// 用户的快递设置
-	u := expressImpl.NewUserExpress(104, rep, valRep)
+	u := expressImpl.NewUserExpress(104, rep, valRepo)
 	//创建快递模板
 	tpl := u.CreateTemplate(&express.ExpressTemplate{
 		Name:      "普通快递运费模板",

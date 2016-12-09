@@ -217,7 +217,7 @@ type (
 	}
 
 	// 广告仓储
-	IAdRep interface {
+	IAdRepo interface {
 		// 获取广告管理器
 		GetAdManager() IAdManager
 

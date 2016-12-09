@@ -37,24 +37,24 @@ type memberImpl struct {
 	value           *member.Member
 	account         member.IAccount
 	level           *member.Level
-	rep             member.IMemberRep
+	rep             member.IMemberRepo
 	relation        *member.Relation
 	invitation      member.IInvitationManager
-	mssRep          mss.IMssRep
-	valRep          valueobject.IValueRep
+	mssRepo         mss.IMssRepo
+	valRepo         valueobject.IValueRepo
 	profileManager  member.IProfileManager
 	favoriteManager member.IFavoriteManager
 	giftCardManager member.IGiftCardManager
 }
 
-func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRep,
-	mp mss.IMssRep, valRep valueobject.IValueRep) member.IMember {
+func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMemberRepo,
+	mp mss.IMssRepo, valRepo valueobject.IValueRepo) member.IMember {
 	return &memberImpl{
 		manager: manager,
 		value:   val,
 		rep:     rep,
-		mssRep:  mp,
-		valRep:  valRep,
+		mssRepo: mp,
+		valRepo: valRepo,
 	}
 }
 
@@ -67,7 +67,7 @@ func (m *memberImpl) GetAggregateRootId() int32 {
 func (m *memberImpl) Profile() member.IProfileManager {
 	if m.profileManager == nil {
 		m.profileManager = newProfileManagerImpl(m,
-			m.GetAggregateRootId(), m.rep, m.valRep)
+			m.GetAggregateRootId(), m.rep, m.valRepo)
 	}
 	return m.profileManager
 }
@@ -150,7 +150,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 	m.value.CheckExpires = time.Now().Add(time.Minute * expiresMinutes).Unix()
 	_, err := m.Save()
 	if err == nil {
-		mgr := m.mssRep.NotifyManager()
+		mgr := m.mssRepo.NotifyManager()
 		pro := m.Profile().GetProfile()
 
 		// 创建参数
@@ -164,7 +164,7 @@ func (m *memberImpl) SendCheckCode(operation string, mssType int) (string, error
 		switch mssType {
 		case notify.TypePhoneMessage:
 			// 某些短信平台要求传入模板ID,在这里附加参数
-			provider, _ := m.valRep.GetDefaultSmsApiPerm()
+			provider, _ := m.valRepo.GetDefaultSmsApiPerm()
 			data = sms.AppendCheckPhoneParams(provider, data)
 
 			// 构造并发送短信
@@ -200,7 +200,7 @@ func (m *memberImpl) CompareCode(code string) error {
 func (m *memberImpl) GetAccount() member.IAccount {
 	if m.account == nil {
 		v := m.rep.GetAccount(m.value.Id)
-		return NewAccount(m, v, m.rep, m.manager, m.valRep)
+		return NewAccount(m, v, m.rep, m.manager, m.valRepo)
 	}
 	return m.account
 }
@@ -448,7 +448,7 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error
 
 // 会员初始化
 func (m *memberImpl) memberInit() {
-	conf := m.valRep.GetRegistry()
+	conf := m.valRepo.GetRegistry()
 	// 注册后赠送积分
 	if conf.PresentIntegralNumOfRegister > 0 {
 		m.GetAccount().AddIntegral(member.TypeIntegralPresent, "",
@@ -480,7 +480,7 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 		r.InviterStr = ""
 		return
 	}
-	level := m.valRep.GetRegistry().MemberReferLayer - 1
+	level := m.valRepo.GetRegistry().MemberReferLayer - 1
 	arr := m.Invitation().InviterArray(r.InviterId, int32(level))
 	arr = append([]int32{r.InviterId}, arr...)
 
@@ -536,11 +536,11 @@ var _ member.IFavoriteManager = new(favoriteManagerImpl)
 // 收藏服务
 type favoriteManagerImpl struct {
 	_memberId int32
-	_rep      member.IMemberRep
+	_rep      member.IMemberRepo
 }
 
 func newFavoriteManagerImpl(memberId int32,
-	rep member.IMemberRep) member.IFavoriteManager {
+	rep member.IMemberRepo) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
 		panic(errors.New("member not exists"))

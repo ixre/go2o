@@ -148,7 +148,7 @@ type (
 		Adjust(amount float32) error
 	}
 
-	IPaymentRep interface {
+	IPaymentRepo interface {
 		// 根据编号获取支付单
 		GetPaymentOrderById(id int32) IPaymentOrder
 

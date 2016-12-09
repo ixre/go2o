@@ -20,47 +20,47 @@ import (
 	saleImpl "go2o/core/domain/sale"
 )
 
-var _ sale.ISaleRep = new(saleRep)
+var _ sale.ISaleRepo = new(saleRepo)
 
-type saleRep struct {
+type saleRepo struct {
 	db.Connector
-	_cache      map[int32]sale.ISale
-	_tagRep     sale.ISaleLabelRep
-	_promRep    promotion.IPromotionRep
-	_itemRep    item.IItemRep
-	_goodsRep   goods.IGoodsRep
-	_cateRep    sale.ICategoryRep
-	_expressRep express.IExpressRep
-	_valRep     valueobject.IValueRep
+	_cache       map[int32]sale.ISale
+	_tagRepo     sale.ISaleLabelRepo
+	_promRepo    promotion.IPromotionRepo
+	_itemRepo    item.IItemRepo
+	_goodsRepo   goods.IGoodsRepo
+	_cateRepo    sale.ICategoryRepo
+	_expressRepo express.IExpressRepo
+	_valRepo     valueobject.IValueRepo
 }
 
-func NewSaleRep(c db.Connector, cateRep sale.ICategoryRep,
-	valRep valueobject.IValueRep, saleLabelRep sale.ISaleLabelRep,
-	itemRep item.IItemRep, expressRep express.IExpressRep,
-	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.ISaleRep {
-	return (&saleRep{
-		Connector:   c,
-		_tagRep:     saleLabelRep,
-		_promRep:    promRep,
-		_itemRep:    itemRep,
-		_goodsRep:   goodsRep,
-		_cateRep:    cateRep,
-		_expressRep: expressRep,
-		_valRep:     valRep,
+func NewSaleRepo(c db.Connector, cateRepo sale.ICategoryRepo,
+	valRepo valueobject.IValueRepo, saleLabelRepo sale.ISaleLabelRepo,
+	itemRepo item.IItemRepo, expressRepo express.IExpressRepo,
+	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.ISaleRepo {
+	return (&saleRepo{
+		Connector:    c,
+		_tagRepo:     saleLabelRepo,
+		_promRepo:    promRepo,
+		_itemRepo:    itemRepo,
+		_goodsRepo:   goodsRepo,
+		_cateRepo:    cateRepo,
+		_expressRepo: expressRepo,
+		_valRepo:     valRepo,
 	}).init()
 }
 
-func (s *saleRep) init() sale.ISaleRep {
+func (s *saleRepo) init() sale.ISaleRepo {
 	s._cache = make(map[int32]sale.ISale)
 	return s
 }
 
-func (s *saleRep) GetSale(mchId int32) sale.ISale {
+func (s *saleRepo) GetSale(mchId int32) sale.ISale {
 	v, ok := s._cache[mchId]
 	if !ok {
-		v = saleImpl.NewSale(mchId, s, s._valRep, s._cateRep,
-			s._itemRep, s._goodsRep, s._tagRep, s._expressRep,
-			s._promRep)
+		v = saleImpl.NewSale(mchId, s, s._valRepo, s._cateRepo,
+			s._itemRepo, s._goodsRepo, s._tagRepo, s._expressRepo,
+			s._promRepo)
 		s._cache[mchId] = v
 	}
 	return v

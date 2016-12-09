@@ -76,7 +76,7 @@ type (
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 	}
-	ICategoryRep interface {
+	ICategoryRepo interface {
 		// 获取系统的栏目服务
 		GetGlobManager() ICategoryManager
 

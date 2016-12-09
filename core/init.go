@@ -28,6 +28,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/personfinance"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
@@ -144,6 +145,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(item.Item{}, "gs_item")
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "cat_category")
+	orm.Mapping(promodel.ProBrand{}, "pro_brand")
 	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
 	orm.Mapping(goods.SalesSnapshot{}, "gs_sales_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")

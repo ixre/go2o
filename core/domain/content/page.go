@@ -17,17 +17,17 @@ import (
 var _ content.IPage = new(pageImpl)
 
 type pageImpl struct {
-	contentRep content.IContentRep
-	userId     int32
-	value      *content.Page
+	contentRepo content.IContentRepo
+	userId      int32
+	value       *content.Page
 }
 
-func newPage(userId int32, rep content.IContentRep,
+func newPage(userId int32, rep content.IContentRepo,
 	v *content.Page) content.IPage {
 	return &pageImpl{
-		contentRep: rep,
-		userId:     userId,
-		value:      v,
+		contentRepo: rep,
+		userId:      userId,
+		value:       v,
 	}
 }
 
@@ -65,5 +65,5 @@ func (p *pageImpl) SetValue(v *content.Page) error {
 // 保存
 func (p *pageImpl) Save() (int32, error) {
 	p.value.UpdateTime = time.Now().Unix()
-	return p.contentRep.SavePage(p.userId, p.value)
+	return p.contentRepo.SavePage(p.userId, p.value)
 }

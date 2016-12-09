@@ -15,10 +15,10 @@ import (
 )
 
 type mssService struct {
-	_rep mss.IMssRep
+	_rep mss.IMssRepo
 }
 
-func NewMssService(rep mss.IMssRep) *mssService {
+func NewMssService(rep mss.IMssRepo) *mssService {
 	return &mssService{
 		_rep: rep,
 	}

@@ -68,7 +68,7 @@ type (
 		GetSubOrder(id int32) ISubOrder
 	}
 
-	IOrderRep interface {
+	IOrderRepo interface {
 		// 获取订单服务
 		Manager() IOrderManager
 

@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : after_sales_rep.go
+ * name : after_sales_repo.go
  * author : jarryliu
  * date : 2016-07-17 08:36
  * description :
@@ -17,33 +17,33 @@ import (
 	"go2o/core/domain/interface/payment"
 )
 
-var _ afterSales.IAfterSalesRep = new(afterSalesRep)
+var _ afterSales.IAfterSalesRepo = new(afterSalesRepo)
 
-type afterSalesRep struct {
+type afterSalesRepo struct {
 	db.Connector
-	orderRep   order.IOrderRep
-	memberRep  member.IMemberRep
-	paymentRep payment.IPaymentRep
+	orderRepo   order.IOrderRepo
+	memberRepo  member.IMemberRepo
+	paymentRepo payment.IPaymentRepo
 }
 
-func NewAfterSalesRep(conn db.Connector, orderRep order.IOrderRep,
-	memberRep member.IMemberRep, paymentRep payment.IPaymentRep) afterSales.IAfterSalesRep {
-	return &afterSalesRep{
-		Connector:  conn,
-		orderRep:   orderRep,
-		memberRep:  memberRep,
-		paymentRep: paymentRep,
+func NewAfterSalesRepo(conn db.Connector, orderRepo order.IOrderRepo,
+	memberRepo member.IMemberRepo, paymentRepo payment.IPaymentRepo) afterSales.IAfterSalesRepo {
+	return &afterSalesRepo{
+		Connector:   conn,
+		orderRepo:   orderRepo,
+		memberRepo:  memberRepo,
+		paymentRepo: paymentRepo,
 	}
 
 }
 
 // 创建售后单
-func (a *afterSalesRep) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrder {
-	return asImpl.NewAfterSalesOrder(v, a, a.orderRep, a.memberRep, a.paymentRep)
+func (a *afterSalesRepo) CreateAfterSalesOrder(v *afterSales.AfterSalesOrder) afterSales.IAfterSalesOrder {
+	return asImpl.NewAfterSalesOrder(v, a, a.orderRepo, a.memberRepo, a.paymentRepo)
 }
 
 // 获取售后单
-func (a *afterSalesRep) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder {
 	v := &afterSales.AfterSalesOrder{}
 	if a.GetOrm().Get(id, v) == nil {
 		return a.CreateAfterSalesOrder(v)
@@ -52,7 +52,7 @@ func (a *afterSalesRep) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrder
 }
 
 // 获取订单的售后单
-func (a *afterSalesRep) GetAllOfSaleOrder(orderId int32) []afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int32) []afterSales.IAfterSalesOrder {
 	list := []*afterSales.AfterSalesOrder{}
 	orders := []afterSales.IAfterSalesOrder{}
 	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {

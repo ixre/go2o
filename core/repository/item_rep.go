@@ -17,19 +17,19 @@ import (
 	"go2o/core/infrastructure/format"
 )
 
-var _ item.IItemRep = new(itemRep)
+var _ item.IItemRepo = new(itemRepo)
 
-type itemRep struct {
+type itemRepo struct {
 	db.Connector
 }
 
-func NewItemRep(c db.Connector) item.IItemRep {
-	return &itemRep{
+func NewItemRepo(c db.Connector) item.IItemRepo {
+	return &itemRepo{
 		Connector: c,
 	}
 }
 
-func (i *itemRep) GetValueItem(itemId int32) *item.Item {
+func (i *itemRepo) GetValueItem(itemId int32) *item.Item {
 	var e *item.Item = new(item.Item)
 	//todo: supplier_id  == -1
 	if i.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
@@ -40,7 +40,7 @@ func (i *itemRep) GetValueItem(itemId int32) *item.Item {
 	return nil
 }
 
-func (i *itemRep) GetItemByIds(ids ...int32) ([]*item.Item, error) {
+func (i *itemRepo) GetItemByIds(ids ...int32) ([]*item.Item, error) {
 	//todo: mchId
 	var items []*item.Item
 
@@ -51,11 +51,11 @@ func (i *itemRep) GetItemByIds(ids ...int32) ([]*item.Item, error) {
 	return items, err
 }
 
-func (i *itemRep) SaveValueItem(v *item.Item) (int32, error) {
+func (i *itemRepo) SaveValueItem(v *item.Item) (int32, error) {
 	return orm.I32(orm.Save(i.GetOrm(), v, int(v.Id)))
 }
 
-func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int32,
+func (i *itemRepo) GetPagedOnShelvesItem(mchId int32, catIds []int32,
 	start, end int) (total int, e []*item.Item) {
 	var sql string
 
@@ -73,14 +73,14 @@ func (i *itemRep) GetPagedOnShelvesItem(mchId int32, catIds []int32,
 }
 
 // 获取货品销售总数
-func (i *itemRep) GetItemSaleNum(mchId int32, id int32) int {
+func (i *itemRepo) GetItemSaleNum(mchId int32, id int32) int {
 	var num int
 	i.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
 		&num, id)
 	return num
 }
 
-func (i *itemRep) DeleteItem(mchId, itemId int32) error {
+func (i *itemRepo) DeleteItem(mchId, itemId int32) error {
 	_, _, err := i.Connector.Exec(`
 		DELETE f FROM gs_item AS f
 		INNER JOIN cat_category AS c ON f.category_id=c.id

@@ -27,21 +27,21 @@ var (
 )
 
 type shopImpl struct {
-	manager *shopManagerImpl
-	shopRep shop.IShopRep
-	value   *shop.Shop
+	manager  *shopManagerImpl
+	shopRepo shop.IShopRepo
+	value    *shop.Shop
 }
 
 func newShop(manager *shopManagerImpl, v *shop.Shop,
-	shopRep shop.IShopRep, valRep valueobject.IValueRep) shop.IShop {
+	shopRepo shop.IShopRepo, valRepo valueobject.IValueRepo) shop.IShop {
 	s := &shopImpl{
-		manager: manager,
-		shopRep: shopRep,
-		value:   v,
+		manager:  manager,
+		shopRepo: shopRepo,
+		value:    v,
 	}
 	switch s.Type() {
 	case shop.TypeOnlineShop:
-		return newOnlineShopImpl(s, valRep)
+		return newOnlineShopImpl(s, valRepo)
 	case shop.TypeOfflineShop:
 		return newOfflineShopImpl(s)
 	}
@@ -96,7 +96,7 @@ func (s *shopImpl) checkNameExists(v *shop.Shop) bool {
 }
 
 func (s *shopImpl) Save() (int32, error) {
-	return s.shopRep.SaveShop(s.value)
+	return s.shopRepo.SaveShop(s.value)
 }
 
 // 数据
@@ -123,7 +123,7 @@ type offlineShopImpl struct {
 func newOfflineShopImpl(s *shopImpl) shop.IShop {
 	var v *shop.OfflineShop
 	if s.GetDomainId() > 0 {
-		v = s.shopRep.GetOfflineShop(s.GetDomainId())
+		v = s.shopRepo.GetOfflineShop(s.GetDomainId())
 	}
 	if v == nil {
 		dv := shop.DefaultOfflineShop
@@ -196,7 +196,7 @@ func (s *offlineShopImpl) Save() (int32, error) {
 	id, err := s.shopImpl.Save()
 	if err == nil {
 		s._shopVal.ShopId = id
-		err = s.shopRep.SaveOfflineShop(s._shopVal, create)
+		err = s.shopRepo.SaveOfflineShop(s._shopVal, create)
 	}
 	return id, err
 }
@@ -211,13 +211,13 @@ func (s *offlineShopImpl) Data() *shop.ShopDto {
 type onlineShopImpl struct {
 	*shopImpl
 	_shopVal *shop.OnlineShop
-	valRep   valueobject.IValueRep
+	valRepo  valueobject.IValueRepo
 }
 
-func newOnlineShopImpl(s *shopImpl, valRep valueobject.IValueRep) shop.IShop {
+func newOnlineShopImpl(s *shopImpl, valRepo valueobject.IValueRepo) shop.IShop {
 	var v *shop.OnlineShop
 	if s.GetDomainId() > 0 {
-		v = s.shopRep.GetOnlineShop(s.GetDomainId())
+		v = s.shopRepo.GetOnlineShop(s.GetDomainId())
 	}
 	if v == nil {
 		dv := shop.DefaultOnlineShop
@@ -227,7 +227,7 @@ func newOnlineShopImpl(s *shopImpl, valRep valueobject.IValueRep) shop.IShop {
 	return &onlineShopImpl{
 		shopImpl: s,
 		_shopVal: v,
-		valRep:   valRep,
+		valRepo:  valRepo,
 	}
 }
 
@@ -236,14 +236,14 @@ func (s *onlineShopImpl) checkShopAlias(alias string) error {
 	if !shopAliasRegexp.Match([]byte(alias)) {
 		return shop.ErrShopAliasFormat
 	}
-	conf := s.valRep.GetRegistry()
+	conf := s.valRepo.GetRegistry()
 	arr := strings.Split(conf.ShopIncorrectAliasWords, "|")
 	for _, v := range arr {
 		if strings.Index(alias, v) != -1 {
 			return shop.ErrShopAliasIncorrect
 		}
 	}
-	if s.shopRep.ShopAliasExists(alias, s.GetDomainId()) {
+	if s.shopRepo.ShopAliasExists(alias, s.GetDomainId()) {
 		return shop.ErrShopAliasUsed
 	}
 	return nil
@@ -291,7 +291,7 @@ func (s *onlineShopImpl) Save() (int32, error) {
 	id, err := s.shopImpl.Save()
 	if err == nil {
 		s._shopVal.ShopId = id
-		err = s.shopRep.SaveOnlineShop(s._shopVal, create)
+		err = s.shopRepo.SaveOnlineShop(s._shopVal, create)
 	}
 	return id, err
 }

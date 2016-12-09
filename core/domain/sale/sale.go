@@ -22,34 +22,34 @@ var _ sale.ISale = new(saleImpl)
 
 type saleImpl struct {
 	mchId        int32
-	saleRep      sale.ISaleRep
-	labelRep     sale.ISaleLabelRep
-	cateRep      sale.ICategoryRep
-	goodsRep     goods.IGoodsRep
-	valRep       valueobject.IValueRep
-	expressRep   express.IExpressRep
-	promRep      promotion.IPromotionRep
+	saleRepo     sale.ISaleRepo
+	labelRepo    sale.ISaleLabelRepo
+	cateRepo     sale.ICategoryRepo
+	goodsRepo    goods.IGoodsRepo
+	valRepo      valueobject.IValueRepo
+	expressRepo  express.IExpressRepo
+	promRepo     promotion.IPromotionRepo
 	cateManager  sale.ICategoryManager
 	labelManager sale.ILabelManager
 	itemManager  sale.IItemManager
-	itemRep      item.IItemRep
+	itemRepo     item.IItemRepo
 	goodsManager sale.IGoodsManager
 }
 
-func NewSale(mchId int32, saleRep sale.ISaleRep, valRep valueobject.IValueRep,
-	cateRep sale.ICategoryRep, itemRep item.IItemRep, goodsRep goods.IGoodsRep,
-	tagRep sale.ISaleLabelRep, expressRep express.IExpressRep,
-	promRep promotion.IPromotionRep) sale.ISale {
+func NewSale(mchId int32, saleRepo sale.ISaleRepo, valRepo valueobject.IValueRepo,
+	cateRepo sale.ICategoryRepo, itemRepo item.IItemRepo, goodsRepo goods.IGoodsRepo,
+	tagRepo sale.ISaleLabelRepo, expressRepo express.IExpressRepo,
+	promRepo promotion.IPromotionRepo) sale.ISale {
 	return (&saleImpl{
-		mchId:      mchId,
-		cateRep:    cateRep,
-		saleRep:    saleRep,
-		labelRep:   tagRep,
-		itemRep:    itemRep,
-		goodsRep:   goodsRep,
-		expressRep: expressRep,
-		promRep:    promRep,
-		valRep:     valRep,
+		mchId:       mchId,
+		cateRepo:    cateRepo,
+		saleRepo:    saleRepo,
+		labelRepo:   tagRepo,
+		itemRepo:    itemRepo,
+		goodsRepo:   goodsRepo,
+		expressRepo: expressRepo,
+		promRepo:    promRepo,
+		valRepo:     valRepo,
 	}).init()
 }
 
@@ -61,7 +61,7 @@ func (s *saleImpl) init() sale.ISale {
 func (s *saleImpl) CategoryManager() sale.ICategoryManager {
 	if s.cateManager == nil {
 		s.cateManager = NewCategoryManager(
-			s.GetAggregateRootId(), s.cateRep, s.valRep)
+			s.GetAggregateRootId(), s.cateRepo, s.valRepo)
 	}
 	return s.cateManager
 }
@@ -70,7 +70,7 @@ func (s *saleImpl) CategoryManager() sale.ICategoryManager {
 func (s *saleImpl) LabelManager() sale.ILabelManager {
 	if s.labelManager == nil {
 		s.labelManager = NewLabelManager(
-			s.GetAggregateRootId(), s.labelRep, s.valRep)
+			s.GetAggregateRootId(), s.labelRepo, s.valRepo)
 	}
 	return s.labelManager
 }
@@ -79,8 +79,8 @@ func (s *saleImpl) LabelManager() sale.ILabelManager {
 func (s *saleImpl) ItemManager() sale.IItemManager {
 	if s.itemManager == nil {
 		s.itemManager = NewItemManager(
-			s.GetAggregateRootId(), s, s.itemRep,
-			s.expressRep, s.valRep)
+			s.GetAggregateRootId(), s, s.itemRepo,
+			s.expressRepo, s.valRepo)
 	}
 	return s.itemManager
 }
@@ -89,7 +89,7 @@ func (s *saleImpl) ItemManager() sale.IItemManager {
 func (s *saleImpl) GoodsManager() sale.IGoodsManager {
 	if s.goodsManager == nil {
 		s.goodsManager = NewGoodsManager(
-			s.GetAggregateRootId(), s, s.valRep)
+			s.GetAggregateRootId(), s, s.valRepo)
 	}
 	return s.goodsManager
 }

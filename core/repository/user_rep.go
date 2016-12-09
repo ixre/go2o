@@ -14,35 +14,35 @@ import (
 	"go2o/core/domain/interface/merchant/user"
 )
 
-var _ user.IUserRep = new(userRep)
+var _ user.IUserRepo = new(userRepo)
 
-type userRep struct {
+type userRepo struct {
 	db.Connector
 }
 
-func NewUserRep(c db.Connector) user.IUserRep {
-	return &userRep{
+func NewUserRepo(c db.Connector) user.IUserRepo {
+	return &userRepo{
 		Connector: c,
 	}
 }
 
 // 保存角色
-func (this *userRep) SaveRole(v *user.RoleValue) (int32, error) {
+func (this *userRepo) SaveRole(v *user.RoleValue) (int32, error) {
 	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 保存人员
-func (this *userRep) SavePerson(v *user.PersonValue) (int32, error) {
+func (this *userRepo) SavePerson(v *user.PersonValue) (int32, error) {
 	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 保存凭据
-func (this *userRep) SaveCredential(v *user.CredentialValue) (int32, error) {
+func (this *userRepo) SaveCredential(v *user.CredentialValue) (int32, error) {
 	return orm.I32(orm.Save(this.GetOrm(), v, int(v.Id)))
 }
 
 // 获取人员
-func (this *userRep) GetPersonValue(id int32) *user.PersonValue {
+func (this *userRepo) GetPersonValue(id int32) *user.PersonValue {
 	e := new(user.PersonValue)
 	err := this.Connector.GetOrm().Get(e, id)
 	if err != nil {
@@ -52,7 +52,7 @@ func (this *userRep) GetPersonValue(id int32) *user.PersonValue {
 }
 
 // 获取配送人员
-func (this *userRep) GetDeliveryStaffPersons(mchId int32) []*user.PersonValue {
+func (this *userRepo) GetDeliveryStaffPersons(mchId int32) []*user.PersonValue {
 	e := make([]*user.PersonValue, 0)
 	err := this.Connector.GetOrm().Select(e, "select * from usr_person")
 	if err != nil {

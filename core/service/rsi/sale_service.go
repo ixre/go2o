@@ -25,19 +25,19 @@ import (
 )
 
 type saleService struct {
-	_rep        sale.ISaleRep
-	_goodsRep   goods.IGoodsRep
+	_rep        sale.ISaleRepo
+	_goodsRepo  goods.IGoodsRepo
 	_goodsQuery *query.GoodsQuery
-	_cateRep    sale.ICategoryRep
+	_cateRepo   sale.ICategoryRepo
 }
 
-func NewSaleService(r sale.ISaleRep, cateRep sale.ICategoryRep,
-	goodsRep goods.IGoodsRep, goodsQuery *query.GoodsQuery) *saleService {
+func NewSaleService(r sale.ISaleRepo, cateRepo sale.ICategoryRepo,
+	goodsRepo goods.IGoodsRepo, goodsQuery *query.GoodsQuery) *saleService {
 	return &saleService{
 		_rep:        r,
-		_goodsRep:   goodsRep,
+		_goodsRepo:  goodsRepo,
 		_goodsQuery: goodsQuery,
-		_cateRep:    cateRep,
+		_cateRepo:   cateRepo,
 	}
 }
 
@@ -81,16 +81,16 @@ func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 
 // 根据快照编号获取商品
 func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *goods.ValueGoods {
-	snap := s._goodsRep.GetSaleSnapshot(snapshotId)
+	snap := s._goodsRepo.GetSaleSnapshot(snapshotId)
 	if snap != nil {
-		return s._goodsRep.GetValueGoodsById(snap.SkuId)
+		return s._goodsRepo.GetValueGoodsById(snap.SkuId)
 	}
 	return nil
 }
 
 // 根据快照编号获取商品
 func (s *saleService) GetSaleSnapshotById(snapshotId int32) *goods.SalesSnapshot {
-	return s._goodsRep.GetSaleSnapshot(snapshotId)
+	return s._goodsRepo.GetSaleSnapshot(snapshotId)
 }
 
 // 保存产品
@@ -146,12 +146,12 @@ func (s *saleService) DeleteItem(mchId int32, id int32) error {
 func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cat := s._cateRep.GetGlobManager().GetCategory(categoryId)
+		cat := s._cateRepo.GetGlobManager().GetCategory(categoryId)
 		ids := cat.GetChildes()
 		ids = append(ids, categoryId)
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
+		total, list = s._goodsRepo.GetPagedOnShelvesGoods(shopId, ids, start, end, "", sortBy)
 	} else {
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId, nil, start, end, "", sortBy)
+		total, list = s._goodsRepo.GetPagedOnShelvesGoods(shopId, nil, start, end, "", sortBy)
 	}
 	for _, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -163,13 +163,13 @@ func (s *saleService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 func (s *saleService) GetPagedOnShelvesGoods(shopId int32, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
-		cate := s._cateRep.GetGlobManager().GetCategory(categoryId)
+		cate := s._cateRepo.GetGlobManager().GetCategory(categoryId)
 		var ids []int32 = cate.GetChildes()
 		ids = append(ids, categoryId)
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
+		total, list = s._goodsRepo.GetPagedOnShelvesGoods(shopId,
 			ids, start, end, "", sortBy)
 	} else {
-		total, list = s._goodsRep.GetPagedOnShelvesGoods(shopId,
+		total, list = s._goodsRepo.GetPagedOnShelvesGoods(shopId,
 			[]int32{}, start, end, "", sortBy)
 	}
 	for _, v := range list {
@@ -314,7 +314,7 @@ func (s *saleService) getCategoryManager(mchId int32) sale.ICategoryManager {
 		sl := s._rep.GetSale(mchId)
 		return sl.CategoryManager()
 	}
-	return s._cateRep.GetGlobManager()
+	return s._cateRepo.GetGlobManager()
 }
 
 func (s *saleService) GetBigCategories(mchId int32) []dto.Category {
@@ -510,7 +510,7 @@ func (s *saleService) GetItemDescriptionByGoodsId(mchId, goodsId int32) string {
 
 // 获取商品快照
 func (s *saleService) GetSnapshot(skuId int32) *goods.Snapshot {
-	return s._goodsRep.GetLatestSnapshot(skuId)
+	return s._goodsRepo.GetLatestSnapshot(skuId)
 }
 
 // 设置商品货架状态

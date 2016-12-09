@@ -97,7 +97,7 @@ CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
 CHANGE COLUMN `parent_id` `parent_id` INT(11) NOT NULL COMMENT '父分类' ,
 CHANGE COLUMN `name` `name` VARCHAR(20) NOT NULL COMMENT '分类名称' ,
 CHANGE COLUMN `url` `url` VARCHAR(120) NULL COMMENT '品牌链接地址' ,
-CHANGE COLUMN `enabled` `enabled` TINYINT(1) NOT NULL COMMENT '是否启用' ,
+CHANGE COLUMN `enabled` `enabled` INT(1) NOT NULL COMMENT '是否启用' ,
 CHANGE COLUMN `create_time` `create_time` INT(11) NOT NULL COMMENT '创建时间' ,
 ADD COLUMN `spec_model` INT(11) NULL COMMENT '商品规格模型' AFTER `parent_id`,
 COMMENT = '商品分类' , RENAME TO  `cat_category` ;

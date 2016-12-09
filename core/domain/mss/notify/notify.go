@@ -17,15 +17,15 @@ import (
 var _ notify.INotifyManager = new(notifyManagerImpl)
 
 type notifyManagerImpl struct {
-	rep      notify.INotifyRep
-	valueRep valueobject.IValueRep
+	rep       notify.INotifyRepo
+	valueRepo valueobject.IValueRepo
 }
 
-func NewNotifyManager(rep notify.INotifyRep,
-	valueRep valueobject.IValueRep) notify.INotifyManager {
+func NewNotifyManager(rep notify.INotifyRepo,
+	valueRepo valueobject.IValueRepo) notify.INotifyManager {
 	return &notifyManagerImpl{
-		rep:      rep,
-		valueRep: valueRep,
+		rep:       rep,
+		valueRepo: valueRepo,
 	}
 }
 
@@ -54,7 +54,7 @@ func (n *notifyManagerImpl) SaveNotifyItem(item *notify.NotifyItem) error {
 // 发送手机短信
 func (n *notifyManagerImpl) SendPhoneMessage(phone string,
 	msg notify.PhoneMessage, data map[string]interface{}) error {
-	i, api := n.valueRep.GetDefaultSmsApiPerm()
+	i, api := n.valueRepo.GetDefaultSmsApiPerm()
 	return sms.SendSms(i, api.ApiKey, api.ApiSecret, phone,
 		api.ApiUrl, api.Encoding, api.SuccessChar, string(msg), data)
 }

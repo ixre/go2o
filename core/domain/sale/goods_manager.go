@@ -26,10 +26,10 @@ type tmpGoodsImpl struct {
 	manager       *goodsManagerImpl
 	goods         sale.IItem
 	value         *goods.ValueGoods
-	saleRep       sale.ISaleRep
-	goodsRep      goods.IGoodsRep
-	itemRep       item.IItemRep
-	promRep       promotion.IPromotionRep
+	saleRepo      sale.ISaleRepo
+	goodsRepo     goods.IGoodsRepo
+	itemRepo      item.IItemRepo
+	promRepo      promotion.IPromotionRepo
 	sale          sale.ISale
 	levelPrices   []*goods.MemberPrice
 	promDescribes map[string]string
@@ -37,18 +37,18 @@ type tmpGoodsImpl struct {
 }
 
 func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
-	itemRep item.IItemRep, goods sale.IItem,
-	value *goods.ValueGoods, rep sale.ISaleRep,
-	goodsRep goods.IGoodsRep, promRep promotion.IPromotionRep) sale.IGoods {
+	itemRepo item.IItemRepo, goods sale.IItem,
+	value *goods.ValueGoods, rep sale.ISaleRepo,
+	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.IGoods {
 	v := &tmpGoodsImpl{
-		manager:  m,
-		goods:    goods,
-		value:    value,
-		saleRep:  rep,
-		itemRep:  itemRep,
-		goodsRep: goodsRep,
-		promRep:  promRep,
-		sale:     s,
+		manager:   m,
+		goods:     goods,
+		value:     value,
+		saleRepo:  rep,
+		itemRepo:  itemRepo,
+		goodsRepo: goodsRepo,
+		promRepo:  promRepo,
+		sale:      s,
 	}
 	return v.init()
 }
@@ -77,7 +77,7 @@ func (g *tmpGoodsImpl) SnapshotManager() goods.ISnapshotManager {
 			item = &v
 		}
 		g.snapManager = goodsImpl.NewSnapshotManagerImpl(g.GetDomainId(),
-			g.goodsRep, g.itemRep, g.GetValue(), item)
+			g.goodsRepo, g.itemRepo, g.GetValue(), item)
 	}
 	return g.snapManager
 }
@@ -117,11 +117,11 @@ func (g *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 
 // 获取促销信息
 func (g *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
-	var vp []*promotion.PromotionInfo = g.promRep.GetPromotionOfGoods(
+	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
 		g.GetDomainId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 	for i, v := range vp {
-		proms[i] = g.promRep.CreatePromotion(v)
+		proms[i] = g.promRepo.CreatePromotion(v)
 	}
 	return proms
 }
@@ -182,7 +182,7 @@ func (g *tmpGoodsImpl) GetPromotionDescribe() map[string]string {
 // 获取会员价
 func (g *tmpGoodsImpl) GetLevelPrices() []*goods.MemberPrice {
 	if g.levelPrices == nil {
-		g.levelPrices = g.goodsRep.GetGoodsLevelPrice(g.GetDomainId())
+		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetDomainId())
 	}
 	return g.levelPrices
 }
@@ -192,11 +192,11 @@ func (g *tmpGoodsImpl) SaveLevelPrice(v *goods.MemberPrice) (int32, error) {
 	v.GoodsId = g.GetDomainId()
 	if g.value.SalePrice == v.Price {
 		if v.Id > 0 {
-			g.goodsRep.RemoveGoodsLevelPrice(v.Id)
+			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
 		}
 		return -1, nil
 	}
-	return g.goodsRep.SaveGoodsLevelPrice(v)
+	return g.goodsRepo.SaveGoodsLevelPrice(v)
 }
 
 // 设置值
@@ -211,7 +211,7 @@ func (g *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
 
 // 保存
 func (g *tmpGoodsImpl) Save() (int32, error) {
-	id, err := g.goodsRep.SaveValueGoods(g.value)
+	id, err := g.goodsRepo.SaveValueGoods(g.value)
 	if err == nil {
 		g.value.Id = id
 		_, err = g.SnapshotManager().GenerateSnapshot()
@@ -269,17 +269,17 @@ func (g *tmpGoodsImpl) FreeStock(quantity int) error {
 var _ sale.IGoodsManager = new(goodsManagerImpl)
 
 type goodsManagerImpl struct {
-	_sale   *saleImpl
-	_valRep valueobject.IValueRep
-	_mchId  int32
+	_sale    *saleImpl
+	_valRepo valueobject.IValueRepo
+	_mchId   int32
 }
 
 func NewGoodsManager(mchId int32, s *saleImpl,
-	valRep valueobject.IValueRep) sale.IGoodsManager {
+	valRepo valueobject.IValueRepo) sale.IGoodsManager {
 	c := &goodsManagerImpl{
-		_sale:   s,
-		_mchId:  mchId,
-		_valRep: valRep,
+		_sale:    s,
+		_mchId:   mchId,
+		_valRepo: valRepo,
 	}
 	return c.init()
 }
@@ -290,23 +290,23 @@ func (g *goodsManagerImpl) init() sale.IGoodsManager {
 
 // 创建商品
 func (g *goodsManagerImpl) CreateGoods(s *goods.ValueGoods) sale.IGoods {
-	return NewSaleGoods(g, g._sale, g._sale.itemRep,
-		nil, s, g._sale.saleRep,
-		g._sale.goodsRep, g._sale.promRep)
+	return NewSaleGoods(g, g._sale, g._sale.itemRepo,
+		nil, s, g._sale.saleRepo,
+		g._sale.goodsRepo, g._sale.promRepo)
 }
 
 // 创建商品
 func (g *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGoods) sale.IGoods {
-	return NewSaleGoods(g, g._sale, g._sale.itemRep,
-		item, v, g._sale.saleRep, g._sale.goodsRep,
-		g._sale.promRep)
+	return NewSaleGoods(g, g._sale, g._sale.itemRepo,
+		item, v, g._sale.saleRepo, g._sale.goodsRepo,
+		g._sale.promRepo)
 }
 
 // 根据产品编号获取商品
 func (g *goodsManagerImpl) GetGoods(goodsId int32) sale.IGoods {
-	var v *goods.ValueGoods = g._sale.goodsRep.GetValueGoodsById(goodsId)
+	var v *goods.ValueGoods = g._sale.goodsRepo.GetValueGoodsById(goodsId)
 	if v != nil {
-		pv := g._sale.itemRep.GetValueItem(v.ItemId)
+		pv := g._sale.itemRepo.GetValueItem(v.ItemId)
 		if pv != nil {
 			return g.CreateGoodsByItem(g._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -316,9 +316,9 @@ func (g *goodsManagerImpl) GetGoods(goodsId int32) sale.IGoods {
 
 // 根据产品SKU获取商品
 func (g *goodsManagerImpl) GetGoodsBySku(itemId, skuId int32) sale.IGoods {
-	var v *goods.ValueGoods = g._sale.goodsRep.GetValueGoodsBySku(itemId, skuId)
+	var v *goods.ValueGoods = g._sale.goodsRepo.GetValueGoodsBySku(itemId, skuId)
 	if v != nil {
-		pv := g._sale.itemRep.GetValueItem(v.ItemId)
+		pv := g._sale.itemRepo.GetValueItem(v.ItemId)
 		if pv != nil {
 			return g.CreateGoodsByItem(g._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -333,12 +333,12 @@ func (g *goodsManagerImpl) DeleteGoods(goodsId int32) error {
 		return goods.ErrNoSuchSnapshot
 	}
 	//todo: delete goods
-	return g._sale.itemRep.DeleteItem(g._mchId, goodsId)
+	return g._sale.itemRepo.DeleteItem(g._mchId, goodsId)
 }
 
 // 获取指定数量已上架的商品
 func (g *goodsManagerImpl) GetOnShelvesGoods(start, end int,
 	sortBy string) []*valueobject.Goods {
-	return g._sale.goodsRep.GetOnShelvesGoods(g._mchId,
+	return g._sale.goodsRepo.GetOnShelvesGoods(g._mchId,
 		start, end, sortBy)
 }
