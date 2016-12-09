@@ -26,6 +26,20 @@ func NewProModelRepo(conn db.Connector, o orm.Orm) promodel.IProModelRepo {
 	}
 }
 
+// 创建商品模型
+func (p *proModelRepo) CreateModel(v *promodel.ProModel) promodel.IModel {
+	return pmImpl.NewModel(v, p)
+}
+
+// 获取商品模型
+func (p *proModelRepo) GetModel(id int32) promodel.IModel {
+	v := p.GetProModel(id)
+	if v != nil {
+		return p.CreateModel(v)
+	}
+	return nil
+}
+
 //获取品牌服务
 func (p *proModelRepo) BrandService() promodel.IBrandService {
 	if p.brandService == nil {
@@ -63,6 +77,56 @@ func (p *proModelRepo) SetModelBrands(proModel int32, brandIds []int32) error {
 		}
 	}
 	return nil
+}
+
+// Get ProModel
+func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProModel {
+	e := promodel.ProModel{}
+	err := p._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModel")
+	}
+	return nil
+}
+
+// Select ProModel
+func (p *proModelRepo) SelectProModel(where string, v ...interface{}) []*promodel.ProModel {
+	list := []*promodel.ProModel{}
+	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModel")
+	}
+	return list
+}
+
+// Save ProModel
+func (p *proModelRepo) SaveProModel(v *promodel.ProModel) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModel")
+	}
+	return id, err
+}
+
+// Delete ProModel
+func (p *proModelRepo) DeleteProModel(primary interface{}) error {
+	err := p._orm.DeleteByPk(promodel.ProModel{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModel")
+	}
+	return err
+}
+
+// Batch Delete ProModel
+func (p *proModelRepo) BatchDeleteProModel(where string, v ...interface{}) (int64, error) {
+	r, err := p._orm.Delete(promodel.ProModel{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModel")
+	}
+	return r, err
 }
 
 // Get ProBrand
