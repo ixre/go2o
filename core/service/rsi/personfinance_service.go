@@ -121,7 +121,7 @@ func (p *personFinanceService) RiseTransferOut(personId int32,
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceServiceCharge, "理财转出",
+				member.KindBalanceSystemCharge, "理财转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())

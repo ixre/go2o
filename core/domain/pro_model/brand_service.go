@@ -25,6 +25,11 @@ func (b *BrandServiceImpl) SaveBrand(v *promodel.ProBrand) (int32, error) {
 	return int32(id), err
 }
 
+// 删除品牌
+func (b *BrandServiceImpl) DeleteBrand(id int32) error {
+	return b.rep.DeleteProBrand(id)
+}
+
 // 获取所有品牌
 func (b *BrandServiceImpl) AllBrands() []*promodel.ProBrand {
 	return b.rep.SelectProBrand("")
