@@ -35,3 +35,23 @@ func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
 	err := p.pmRep.BrandService().DeleteBrand(id)
 	return parser.Result(err), nil
 }
+
+// 获取所有产品品牌
+func (p *productService) GetBrands() []*promodel.ProBrand {
+	return p.pmRep.BrandService().AllBrands()
+}
+
+// 获取产品模型
+func (p *productService) GetProModel_(id int32) *promodel.ProModel {
+	return nil
+}
+
+// 保存产品模型
+func (p *productService) SaveProModel_(v *promodel.ProModel) (*define.Result_, error) {
+	return &define.Result_{Result_: true}, nil
+}
+
+// 删除产品模型
+func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
+	return &define.Result_{Result_: true}, nil
+}
