@@ -14,7 +14,7 @@ type (
 		// 介绍
 		Intro string `db:"intro"`
 		// 是否审核
-		Review bool `db:"review"`
+		Review int32 `db:"review"`
 		// 加入时间
 		CreateTime int64 `db:"create_time"`
 	}
@@ -35,7 +35,7 @@ type IBrandService interface {
 	SaveBrand(*ProBrand) (int32, error)
 	// 删除品牌
 	DeleteBrand(id int32) error
-	// 获取所有品牌
+	// 获取所有(已审核的)品牌
 	AllBrands() []*ProBrand
 	// 获取关联的品牌编号
 	Brands(proModel int32) []*ProBrand
