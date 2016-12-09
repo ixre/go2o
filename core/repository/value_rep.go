@@ -24,12 +24,12 @@ import (
 	"sync"
 )
 
-var _ valueobject.IValueRep = new(valueRep)
+var _ valueobject.IValueRepo = new(valueRepo)
 var (
 	valueRepCacheKey = "go2o:rep:value-rep:cache"
 )
 
-type valueRep struct {
+type valueRepo struct {
 	db.Connector
 	storage          storage.Interface
 	_wxConf          *valueobject.WxApiConfig
@@ -54,8 +54,8 @@ type valueRep struct {
 	_areaMux         sync.Mutex
 }
 
-func NewValueRep(conn db.Connector, storage storage.Interface) valueobject.IValueRep {
-	return &valueRep{
+func NewValueRepo(conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
+	return &valueRepo{
 		Connector: conn,
 		storage:   storage,
 		_rstGob:   util.NewGobFile("conf/core/registry"),
@@ -70,7 +70,7 @@ func NewValueRep(conn db.Connector, storage storage.Interface) valueobject.IValu
 	}
 }
 
-func (vp *valueRep) checkReload() error {
+func (vp *valueRepo) checkReload() error {
 	i, err := vp.storage.GetInt(valueRepCacheKey)
 	if i == 0 || err != nil {
 		vp._wxConf = nil
@@ -84,12 +84,12 @@ func (vp *valueRep) checkReload() error {
 	return vp.storage.Set(valueRepCacheKey, 1)
 }
 
-func (vp *valueRep) signReload() {
+func (vp *valueRepo) signReload() {
 	vp.storage.Set(valueRepCacheKey, 0)
 }
 
 // 获取微信接口配置
-func (vp *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
+func (vp *valueRepo) GetWxApiConfig() valueobject.WxApiConfig {
 	vp.checkReload()
 	if vp._wxConf == nil {
 		vp._wxConf = &valueobject.WxApiConfig{}
@@ -99,7 +99,7 @@ func (vp *valueRep) GetWxApiConfig() valueobject.WxApiConfig {
 }
 
 // 保存微信接口配置
-func (vp *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
+func (vp *valueRepo) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 	if v != nil {
 		defer vp.signReload()
 		//todo: 检查证书文件是否存在
@@ -110,7 +110,7 @@ func (vp *valueRep) SaveWxApiConfig(v *valueobject.WxApiConfig) error {
 }
 
 // 获取注册权限
-func (vp *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
+func (vp *valueRepo) GetRegisterPerm() valueobject.RegisterPerm {
 	vp.checkReload()
 	if vp._rpConf == nil {
 		v := defaultRegisterPerm
@@ -121,7 +121,7 @@ func (vp *valueRep) GetRegisterPerm() valueobject.RegisterPerm {
 }
 
 // 保存注册权限
-func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
+func (vp *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
 		defer vp.signReload()
 		vp._rpConf = v
@@ -131,7 +131,7 @@ func (vp *valueRep) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 }
 
 // 获取全局系统销售设置
-func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
+func (vp *valueRepo) GetGlobNumberConf() valueobject.GlobNumberConf {
 	vp.checkReload()
 	if vp._numConf == nil {
 		v := DefaultGlobNumberConf
@@ -142,7 +142,7 @@ func (vp *valueRep) GetGlobNumberConf() valueobject.GlobNumberConf {
 }
 
 // 保存全局系统销售设置
-func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
+func (vp *valueRepo) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 	if v != nil {
 		defer vp.signReload()
 		vp._numConf = v
@@ -152,7 +152,7 @@ func (vp *valueRep) SaveGlobNumberConf(v *valueobject.GlobNumberConf) error {
 }
 
 // 获取平台设置
-func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
+func (vp *valueRepo) GetPlatformConf() valueobject.PlatformConf {
 	vp.checkReload()
 	if vp._globMchConf == nil {
 		v := DefaultPlatformConf
@@ -163,7 +163,7 @@ func (vp *valueRep) GetPlatformConf() valueobject.PlatformConf {
 }
 
 // 保存平台设置
-func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
+func (vp *valueRepo) SavePlatformConf(v *valueobject.PlatformConf) error {
 	if v != nil {
 		defer vp.signReload()
 		vp._globMchConf = v
@@ -173,7 +173,7 @@ func (vp *valueRep) SavePlatformConf(v *valueobject.PlatformConf) error {
 }
 
 // 获取模板配置
-func (v *valueRep) GetTemplateConf() valueobject.TemplateConf {
+func (v *valueRepo) GetTemplateConf() valueobject.TemplateConf {
 	v.checkReload()
 	if v._tplConf == nil {
 		v2 := DefaultTemplateConf
@@ -184,7 +184,7 @@ func (v *valueRep) GetTemplateConf() valueobject.TemplateConf {
 }
 
 // 保存模板配置
-func (v *valueRep) SaveTemplateConf(t *valueobject.TemplateConf) error {
+func (v *valueRepo) SaveTemplateConf(t *valueobject.TemplateConf) error {
 	if t != nil {
 		defer v.signReload()
 		v._tplConf = t
@@ -194,7 +194,7 @@ func (v *valueRep) SaveTemplateConf(t *valueobject.TemplateConf) error {
 }
 
 // 获取移动应用设置
-func (v *valueRep) GetMoAppConf() valueobject.MoAppConf {
+func (v *valueRepo) GetMoAppConf() valueobject.MoAppConf {
 	v.checkReload()
 	if v._moAppConf == nil {
 		v2 := DefaultMoAppConf
@@ -205,7 +205,7 @@ func (v *valueRep) GetMoAppConf() valueobject.MoAppConf {
 }
 
 // 保存移动应用设置
-func (v *valueRep) SaveMoAppConf(r *valueobject.MoAppConf) error {
+func (v *valueRepo) SaveMoAppConf(r *valueobject.MoAppConf) error {
 	if r != nil {
 		defer v.signReload()
 		v._moAppConf = r
@@ -215,7 +215,7 @@ func (v *valueRep) SaveMoAppConf(r *valueobject.MoAppConf) error {
 }
 
 // 获取数据存储
-func (v *valueRep) GetRegistry() valueobject.Registry {
+func (v *valueRepo) GetRegistry() valueobject.Registry {
 	v.checkReload()
 	if v._globRegistry == nil {
 		v2 := DefaultRegistry
@@ -226,7 +226,7 @@ func (v *valueRep) GetRegistry() valueobject.Registry {
 }
 
 // 保存数据存储
-func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
+func (v *valueRepo) SaveRegistry(r *valueobject.Registry) error {
 	if r != nil {
 		defer v.signReload()
 		v._globRegistry = r
@@ -236,7 +236,7 @@ func (v *valueRep) SaveRegistry(r *valueobject.Registry) error {
 }
 
 // 获取全局商户销售设置
-func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
+func (vp *valueRepo) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 	vp.checkReload()
 	if vp._globMchSaleConf == nil {
 		v := DefaultGlobMchSaleConf
@@ -247,7 +247,7 @@ func (vp *valueRep) GetGlobMchSaleConf() valueobject.GlobMchSaleConf {
 }
 
 // 保存全局商户销售设置
-func (vp *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
+func (vp *valueRepo) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 	if v != nil {
 		defer vp.signReload()
 		vp._globMchSaleConf = v
@@ -257,7 +257,7 @@ func (vp *valueRep) SaveGlobMchSaleConf(v *valueobject.GlobMchSaleConf) error {
 }
 
 // 获取短信设置
-func (vp *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
+func (vp *valueRepo) GetSmsApiSet() valueobject.SmsApiSet {
 	vp.checkReload()
 	if vp._smsConf == nil {
 		vp._smsConf = defaultSmsConf
@@ -267,7 +267,7 @@ func (vp *valueRep) GetSmsApiSet() valueobject.SmsApiSet {
 }
 
 // 保存短信API
-func (vp *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
+func (vp *valueRepo) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) error {
 	if _, ok := vp.GetSmsApiSet()[provider]; !ok {
 		return errors.New("系统不支持的短信接口")
 	}
@@ -296,7 +296,7 @@ func (vp *valueRep) SaveSmsApiPerm(provider int, s *valueobject.SmsApiPerm) erro
 }
 
 // 获取默认的短信API
-func (vp *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
+func (vp *valueRepo) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 	for i, v := range vp.GetSmsApiSet() {
 		if v.Default {
 			return i, v
@@ -306,7 +306,7 @@ func (vp *valueRep) GetDefaultSmsApiPerm() (int, *valueobject.SmsApiPerm) {
 }
 
 // 获取下级区域
-func (vp *valueRep) GetChildAreas(id int32) []*valueobject.Area {
+func (vp *valueRepo) GetChildAreas(id int32) []*valueobject.Area {
 	vp._areaMux.Lock()
 	defer vp._areaMux.Unlock()
 	if vp._areaCache == nil {
@@ -324,7 +324,7 @@ func (vp *valueRep) GetChildAreas(id int32) []*valueobject.Area {
 }
 
 // 获取地区名称
-func (vp *valueRep) GetAreaNames(id []int32) []string {
+func (vp *valueRepo) GetAreaNames(id []int32) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
 		strArr[i] = strconv.Itoa(int(v))
@@ -344,7 +344,7 @@ func (vp *valueRep) GetAreaNames(id []int32) []string {
 }
 
 // 获取省市区字符串
-func (vp *valueRep) GetAreaString(province, city, district int32) string {
+func (vp *valueRepo) GetAreaString(province, city, district int32) string {
 	names := vp.GetAreaNames([]int32{province, city, district})
 	if names[1] == "市辖区" || names[1] == "市辖县" || names[1] == "县" {
 		return strings.Join([]string{names[0], names[2]}, " ")

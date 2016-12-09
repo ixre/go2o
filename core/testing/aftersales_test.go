@@ -18,62 +18,62 @@ import (
 	"testing"
 )
 
-func getRep22() order.IOrderRep {
+func getRep22() order.IOrderRepo {
 	app := include.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	goodsRep := repository.NewGoodsRep(db)
-	valRep := repository.NewValueRep(db, sto)
-	userRep := repository.NewUserRep(db)
-	notifyRep := repository.NewNotifyRep(db)
-	mssRep := repository.NewMssRep(db, notifyRep, valRep)
-	expressRep := repository.NewExpressRep(db, valRep)
-	shipRep := repository.NewShipmentRep(db, expressRep)
-	memberRep := repository.NewMemberRep(app.Storage(), db, mssRep, valRep)
-	itemRep := repository.NewItemRep(db)
-	tagSaleRep := repository.NewTagSaleRep(db)
-	promRep := repository.NewPromotionRep(db, goodsRep, memberRep)
-	cateRep := repository.NewCategoryRep(db, valRep, sto)
-	saleRep := repository.NewSaleRep(db, cateRep, valRep, tagSaleRep,
-		itemRep, expressRep, goodsRep, promRep)
-	cartRep := repository.NewCartRep(db, memberRep, goodsRep)
-	shopRep := repository.NewShopRep(db, sto)
-	mchRep := repository.NewMerchantRep(db, sto, shopRep, userRep, memberRep, mssRep, valRep)
-	//personFinanceRep := repository.NewPersonFinanceRepository(db, memberRep)
-	deliveryRep := repository.NewDeliverRep(db)
-	//contentRep := repository.NewContentRep(db)
-	//adRep := repository.NewAdvertisementRep(db)
-	return repository.NewOrderRep(app.Storage(), db, mchRep, nil, saleRep, cartRep, goodsRep,
-		promRep, memberRep, deliveryRep, expressRep, shipRep, valRep)
+	goodsRepo := repository.NewGoodsRepo(db)
+	valRepo := repository.NewValueRepo(db, sto)
+	userRepo := repository.NewUserRepo(db)
+	notifyRepo := repository.NewNotifyRepo(db)
+	mssRepo := repository.NewMssRepo(db, notifyRepo, valRepo)
+	expressRepo := repository.NewExpressRepo(db, valRepo)
+	shipRepo := repository.NewShipmentRepo(db, expressRepo)
+	memberRepo := repository.NewMemberRepo(app.Storage(), db, mssRepo, valRepo)
+	itemRepo := repository.NewItemRepo(db)
+	tagSaleRepo := repository.NewTagSaleRepo(db)
+	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
+	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
+	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
+		itemRepo, expressRepo, goodsRepo, promRepo)
+	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
+	shopRepo := repository.NewShopRepo(db, sto)
+	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo, memberRepo, mssRepo, valRepo)
+	//personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
+	deliveryRepo := repository.NewDeliverRepo(db)
+	//contentRepo := repository.NewContentRepo(db)
+	//adRepo := repository.NewAdvertisementRepo(db)
+	return repository.NewOrderRepo(app.Storage(), db, mchRepo, nil, saleRepo, cartRepo, goodsRepo,
+		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
 }
 
-func getMemberRep() member.IMemberRep {
+func getMemberRepo() member.IMemberRepo {
 	app := include.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	valRep := repository.NewValueRep(db, sto)
-	notifyRep := repository.NewNotifyRep(db)
-	mssRep := repository.NewMssRep(db, notifyRep, valRep)
-	return repository.NewMemberRep(app.Storage(), db, mssRep, valRep)
+	valRepo := repository.NewValueRepo(db, sto)
+	notifyRepo := repository.NewNotifyRepo(db)
+	mssRepo := repository.NewMssRepo(db, notifyRepo, valRepo)
+	return repository.NewMemberRepo(app.Storage(), db, mssRepo, valRepo)
 }
 
-func getAfterSalesRep() afterSales.IAfterSalesRep {
+func getAfterSalesRepo() afterSales.IAfterSalesRepo {
 	db := include.GetApp().Db()
 	sto := include.GetApp().Storage()
-	memberRep := getMemberRep()
-	orderRep := getRep22()
-	valRep := repository.NewValueRep(db, sto)
-	paymentRep := repository.NewPaymentRep(sto, db, memberRep, orderRep, valRep)
-	return repository.NewAfterSalesRep(db, getRep22(), getMemberRep(), paymentRep)
+	memberRepo := getMemberRepo()
+	orderRepo := getRep22()
+	valRepo := repository.NewValueRepo(db, sto)
+	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, orderRepo, valRepo)
+	return repository.NewAfterSalesRepo(db, getRep22(), getMemberRepo(), paymentRepo)
 }
 
 // 测试退款
 func TestOrderRefund(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRep := getRep22()
-	rep := getAfterSalesRep()
-	v := orderRep.GetSubOrderByNo(subOrderNo)
-	od := orderRep.Manager().GetSubOrder(v.Id)
+	orderRepo := getRep22()
+	rep := getAfterSalesRepo()
+	v := orderRepo.GetSubOrderByNo(subOrderNo)
+	od := orderRepo.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
@@ -128,10 +128,10 @@ func TestOrderRefund(t *testing.T) {
 // 测试退货
 func TestOrderReturn(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRep := getRep22()
-	rep := getAfterSalesRep()
-	v := orderRep.GetSubOrderByNo(subOrderNo)
-	od := orderRep.Manager().GetSubOrder(v.Id)
+	orderRepo := getRep22()
+	rep := getAfterSalesRepo()
+	v := orderRepo.GetSubOrderByNo(subOrderNo)
+	od := orderRepo.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
@@ -185,10 +185,10 @@ func TestOrderReturn(t *testing.T) {
 // 测试换货
 func TestOrderExchange(t *testing.T) {
 	subOrderNo := "100000160304"
-	orderRep := getRep22()
-	rep := getAfterSalesRep()
-	v := orderRep.GetSubOrderByNo(subOrderNo)
-	od := orderRep.Manager().GetSubOrder(v.Id)
+	orderRepo := getRep22()
+	rep := getAfterSalesRepo()
+	v := orderRepo.GetSubOrderByNo(subOrderNo)
+	od := orderRepo.Manager().GetSubOrder(v.Id)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
 		OrderId: v.Id,

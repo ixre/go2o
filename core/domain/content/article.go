@@ -17,17 +17,17 @@ import (
 var _ content.ICategory = new(categoryImpl)
 
 type categoryImpl struct {
-	contentRep content.IContentRep
-	value      *content.ArticleCategory
-	manager    *articleManagerImpl
+	contentRepo content.IContentRepo
+	value       *content.ArticleCategory
+	manager     *articleManagerImpl
 }
 
 func NewCategory(v *content.ArticleCategory, m *articleManagerImpl,
-	rep content.IContentRep) content.ICategory {
+	rep content.IContentRepo) content.ICategory {
 	return &categoryImpl{
-		contentRep: rep,
-		value:      v,
-		manager:    m,
+		contentRepo: rep,
+		value:       v,
+		manager:     m,
 	}
 }
 
@@ -38,7 +38,7 @@ func (c *categoryImpl) GetDomainId() int32 {
 
 // 获取文章数量
 func (c *categoryImpl) ArticleNum() int {
-	return c.contentRep.GetArticleNumByCategory(c.GetDomainId())
+	return c.contentRepo.GetArticleNumByCategory(c.GetDomainId())
 }
 
 // 获取值
@@ -48,7 +48,7 @@ func (c *categoryImpl) GetValue() content.ArticleCategory {
 
 // 设置值
 func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
-	if c.contentRep.CategoryExists(c.value.Alias, c.GetDomainId()) {
+	if c.contentRepo.CategoryExists(c.value.Alias, c.GetDomainId()) {
 		return content.ErrCategoryAliasExists
 	}
 	v.Id = c.GetDomainId()
@@ -59,7 +59,7 @@ func (c *categoryImpl) SetValue(v *content.ArticleCategory) error {
 // 保存
 func (c *categoryImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
-	id, err := c.contentRep.SaveCategory(c.value)
+	id, err := c.contentRepo.SaveCategory(c.value)
 	if err == nil {
 		c.manager._categories = nil
 		c.manager._categoryMap = nil
@@ -71,14 +71,14 @@ func (c *categoryImpl) Save() (int32, error) {
 var _ content.IArticle = new(articleImpl)
 
 type articleImpl struct {
-	_rep      content.IContentRep
+	_rep      content.IContentRepo
 	_value    *content.Article
 	_category content.ICategory
 	_manager  content.IArticleManager
 }
 
 func NewArticle(v *content.Article, m content.IArticleManager,
-	rep content.IContentRep) content.IArticle {
+	rep content.IContentRepo) content.IArticle {
 	return &articleImpl{
 		_rep:     rep,
 		_value:   v,
@@ -129,13 +129,13 @@ func (a *articleImpl) Save() (int32, error) {
 var _ content.IArticleManager = new(articleManagerImpl)
 
 type articleManagerImpl struct {
-	_rep         content.IContentRep
+	_rep         content.IContentRepo
 	_categories  []content.ICategory
 	_categoryMap map[int32]content.ICategory
 	_userId      int32
 }
 
-func newArticleManagerImpl(userId int32, rep content.IContentRep) content.IArticleManager {
+func newArticleManagerImpl(userId int32, rep content.IContentRepo) content.IArticleManager {
 	return &articleManagerImpl{
 		_rep:         rep,
 		_userId:      userId,

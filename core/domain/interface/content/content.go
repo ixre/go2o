@@ -62,7 +62,7 @@ type (
 		Save() (int32, error)
 	}
 
-	IContentRep interface {
+	IContentRepo interface {
 		// 获取内容
 		GetContent(userId int32) IContent
 

@@ -34,7 +34,7 @@ func (c *CashBackPromotion) GetDomainId() int32 {
 
 // 设置详细的促销信息
 func (c *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
-	g := c.goodsRep.GetValueGoodsById(c.value.GoodsId)
+	g := c.goodsRepo.GetValueGoodsById(c.value.GoodsId)
 	if g == nil {
 		return goods.ErrNoSuchGoods
 	}
@@ -95,7 +95,7 @@ func (c *CashBackPromotion) Save() (int32, error) {
 			c.cashBackValue = new(promotion.ValueCashBack)
 		}
 		c.cashBackValue.Id = c.GetAggregateRootId()
-		_, err = c.promRep.SaveValueCashBack(c.cashBackValue, isCreate)
+		_, err = c.promRepo.SaveValueCashBack(c.cashBackValue, isCreate)
 	}
 	return id, err
 }

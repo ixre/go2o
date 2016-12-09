@@ -36,15 +36,15 @@ var (
 type profileManagerImpl struct {
 	member      *memberImpl
 	memberId    int32
-	rep         member.IMemberRep
-	valRep      valueobject.IValueRep
+	rep         member.IMemberRepo
+	valRepo     valueobject.IValueRepo
 	bank        *member.BankInfo
 	trustedInfo *member.TrustedInfo
 	profile     *member.Profile
 }
 
 func newProfileManagerImpl(m *memberImpl, memberId int32,
-	rep member.IMemberRep, valRep valueobject.IValueRep) member.IProfileManager {
+	rep member.IMemberRepo, valRepo valueobject.IValueRepo) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
 		panic(errors.New("member not exists"))
@@ -53,7 +53,7 @@ func newProfileManagerImpl(m *memberImpl, memberId int32,
 		member:   m,
 		memberId: memberId,
 		rep:      rep,
-		valRep:   valRep,
+		valRepo:  valRepo,
 	}
 }
 
@@ -81,7 +81,7 @@ func (p *profileManagerImpl) validateProfile(v *member.Profile) error {
 		return member.ErrEmailValidErr
 	}
 	// 检查手机
-	conf := p.valRep.GetRegistry()
+	conf := p.valRepo.GetRegistry()
 	if len(v.Phone) != 0 && conf.MemberCheckPhoneFormat {
 		if !phoneRegex.MatchString(v.Phone) {
 			return member.ErrPhoneValidErr
@@ -148,7 +148,7 @@ func (p *profileManagerImpl) ProfileCompleted() bool {
 		len(v.BirthDay) != 0 && len(v.Address) != 0 && v.Sex != 0 &&
 		v.Province != 0 && v.City != 0 && v.District != 0
 	if r {
-		conf := p.valRep.GetRegistry()
+		conf := p.valRepo.GetRegistry()
 		if conf.MemberImRequired && len(v.Im) == 0 {
 			return false
 		}
@@ -216,7 +216,7 @@ func (p *profileManagerImpl) SetAvatar(avatar string) error {
 //todo: ?? 重构
 func (p *profileManagerImpl) notifyOnProfileComplete() {
 	//rl := p._member.GetRelation()
-	//pt, err := p._member._merchantRep.GetMerchant(rl.RegisterMchId)
+	//pt, err := p._member._merchantRepo.GetMerchant(rl.RegisterMchId)
 	//if err == nil {
 	//	key := fmt.Sprintf("profile:complete:id_%d", p._memberId)
 	//	if pt.MemberKvManager().GetInt(key) == 0 {
@@ -232,7 +232,7 @@ func (p *profileManagerImpl) notifyOnProfileComplete() {
 func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 	tplId := pt.KvManager().GetInt(merchant.KeyMssTplIdOfProfileComplete)
 	if tplId > 0 {
-		mailTpl := p.member.mssRep.GetProvider().GetMailTemplate(int32(tplId))
+		mailTpl := p.member.mssRepo.GetProvider().GetMailTemplate(int32(tplId))
 		if mailTpl != nil {
 			v := &mss.Message{
 				// 消息类型
@@ -261,7 +261,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				Subject: mailTpl.Subject,
 				Body:    mailTpl.Body,
 			}
-			msg := p.member.mssRep.MessageManager().CreateMessage(v, val)
+			msg := p.member.mssRepo.MessageManager().CreateMessage(v, val)
 			//todo:?? data
 			var data = map[string]string{
 				"Name":           p.profile.Name,
@@ -398,7 +398,7 @@ func (p *profileManagerImpl) UnlockBank() error {
 
 // 创建配送地址
 func (p *profileManagerImpl) CreateDeliver(v *member.Address) member.IDeliverAddress {
-	return newDeliver(v, p.rep, p.valRep)
+	return newDeliver(v, p.rep, p.valRepo)
 }
 
 // 获取配送地址
@@ -561,17 +561,17 @@ func (p *profileManagerImpl) ReviewTrustedInfo(pass bool, remark string) error {
 var _ member.IDeliverAddress = new(addressImpl)
 
 type addressImpl struct {
-	_value     *member.Address
-	_memberRep member.IMemberRep
-	_valRep    valueobject.IValueRep
+	_value      *member.Address
+	_memberRepo member.IMemberRepo
+	_valRepo    valueobject.IValueRepo
 }
 
-func newDeliver(v *member.Address, memberRep member.IMemberRep,
-	valRep valueobject.IValueRep) member.IDeliverAddress {
+func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
+	valRepo valueobject.IValueRepo) member.IDeliverAddress {
 	d := &addressImpl{
-		_value:     v,
-		_memberRep: memberRep,
-		_valRep:    valRep,
+		_value:      v,
+		_memberRepo: memberRepo,
+		_valRepo:    valRepo,
 	}
 	return d
 }
@@ -596,7 +596,7 @@ func (p *addressImpl) SetValue(v *member.Address) error {
 
 // 设置地区中文名
 func (p *addressImpl) renewAreaName(v *member.Address) string {
-	//names := p._valRep.GetAreaNames([]int{
+	//names := p._valRepo.GetAreaNames([]int{
 	//	v.Province,
 	//	v.City,
 	//	v.District,
@@ -606,7 +606,7 @@ func (p *addressImpl) renewAreaName(v *member.Address) string {
 	//}
 	//return strings.Join(names, " ")
 
-	return p._valRep.GetAreaString(v.Province, v.City, v.District)
+	return p._valRepo.GetAreaString(v.Province, v.City, v.District)
 }
 
 func (p *addressImpl) checkValue(v *member.Address) error {
@@ -639,5 +639,5 @@ func (p *addressImpl) Save() (int32, error) {
 		return p.GetDomainId(), err
 	}
 	p._value.Area = p.renewAreaName(p._value)
-	return p._memberRep.SaveDeliver(p._value)
+	return p._memberRepo.SaveDeliver(p._value)
 }

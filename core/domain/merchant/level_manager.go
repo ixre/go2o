@@ -18,15 +18,15 @@ import (
 var _ merchant.ILevelManager = new(LevelManager)
 
 type LevelManager struct {
-	mchRep   merchant.IMerchantRep
+	mchRepo  merchant.IMerchantRepo
 	mchId    int32
 	levelSet []*merchant.MemberLevel
 }
 
-func NewLevelManager(mchId int32, rep merchant.IMerchantRep) merchant.ILevelManager {
+func NewLevelManager(mchId int32, rep merchant.IMerchantRepo) merchant.ILevelManager {
 	return &LevelManager{
-		mchId:  mchId,
-		mchRep: rep,
+		mchId:   mchId,
+		mchRepo: rep,
 	}
 }
 
@@ -84,7 +84,7 @@ func (l *LevelManager) InitDefaultLevels() error {
 func (l *LevelManager) GetLevelSet() []*merchant.MemberLevel {
 	if l.levelSet == nil {
 		// 已经排好序
-		l.levelSet = l.mchRep.GetMemberLevels(l.mchId)
+		l.levelSet = l.mchRepo.GetMemberLevels(l.mchId)
 	}
 	return l.levelSet
 }
@@ -111,7 +111,7 @@ func (l *LevelManager) GetLevelByValue(value int32) *merchant.MemberLevel {
 
 // 获取下一个等级
 func (l *LevelManager) GetNextLevel(value int32) *merchant.MemberLevel {
-	return l.mchRep.GetNextLevel(l.mchId, value)
+	return l.mchRepo.GetNextLevel(l.mchId, value)
 }
 
 // 删除等级
@@ -129,7 +129,7 @@ func (l *LevelManager) DeleteLevel(id int32) error {
 	}
 	if exists {
 		//todo: 更新会员的等级到下一级
-		return l.mchRep.DeleteMemberLevel(l.mchId, id)
+		return l.mchRepo.DeleteMemberLevel(l.mchId, id)
 	}
 	return errors.New("no such record")
 }
@@ -142,7 +142,7 @@ func (l *LevelManager) SaveLevel(v *merchant.MemberLevel) (int32, error) {
 		v.Value = l.getMaxLevelValue() + 1
 	}
 	l.levelSet = nil
-	return l.mchRep.SaveMemberLevel(l.mchId, v)
+	return l.mchRepo.SaveMemberLevel(l.mchId, v)
 }
 
 // 获取最大的等级值

@@ -19,21 +19,21 @@ import (
 var _ personfinance.IPersonFinanceRepository = new(personFinanceRepository)
 
 type personFinanceRepository struct {
-	_db     db.Connector
-	_orm    orm.Orm
-	_accRep member.IMemberRep
+	_db      db.Connector
+	_orm     orm.Orm
+	_accRepo member.IMemberRepo
 }
 
-func NewPersonFinanceRepository(conn db.Connector, mRep member.IMemberRep) personfinance.IPersonFinanceRepository {
+func NewPersonFinanceRepository(conn db.Connector, mRepo member.IMemberRepo) personfinance.IPersonFinanceRepository {
 	return &personFinanceRepository{
-		_db:     conn,
-		_orm:    conn.GetOrm(),
-		_accRep: mRep,
+		_db:      conn,
+		_orm:     conn.GetOrm(),
+		_accRepo: mRepo,
 	}
 }
 
 func (p *personFinanceRepository) GetPersonFinance(personId int32) personfinance.IPersonFinance {
-	return pf.NewPersonFinance(personId, p, p._accRep)
+	return pf.NewPersonFinance(personId, p, p._accRepo)
 }
 
 func (p *personFinanceRepository) GetRiseByTime(personId int32, begin,

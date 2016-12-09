@@ -27,10 +27,10 @@ var (
 )
 
 type paymentOrderImpl struct {
-	rep                payment.IPaymentRep
+	rep                payment.IPaymentRepo
 	value              *payment.PaymentOrder
-	mmRep              member.IMemberRep
-	valRep             valueobject.IValueRep
+	mmRepo             member.IMemberRepo
+	valRepo            valueobject.IValueRepo
 	coupons            []promotion.ICouponPromotion
 	orderManager       order.IOrderManager
 	firstFinishPayment bool //第一次完成支付
@@ -141,7 +141,7 @@ func (p *paymentOrderImpl) getBalanceDiscountAmount(acc member.IAccount) float32
 
 func (p *paymentOrderImpl) getPaymentUser() member.IMember {
 	if p.paymentUser == nil && p.value.PaymentUser > 0 {
-		p.paymentUser = p.mmRep.GetMember(p.value.PaymentUser)
+		p.paymentUser = p.mmRepo.GetMember(p.value.PaymentUser)
 	}
 	return p.paymentUser
 }
@@ -197,7 +197,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 // 计算积分折算后的金额
 func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
 	if integral > 0 {
-		conf := p.valRep.GetGlobNumberConf()
+		conf := p.valRepo.GetGlobNumberConf()
 		if conf.IntegralDiscountRate > 0 {
 			return float32(integral) / conf.IntegralDiscountRate
 		}
@@ -219,13 +219,13 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 	amount = p.mathIntegralFee(integral)
 	// 如果不忽略超出订单支付金额的积分,那么按实际来抵扣
 	if !ignoreAmount && amount > p.value.FinalAmount {
-		conf := p.valRep.GetGlobNumberConf()
+		conf := p.valRepo.GetGlobNumberConf()
 		amount = p.value.FinalAmount
 		integral = int(amount * conf.IntegralDiscountRate)
 	}
 
 	if amount > 0 {
-		acc := p.mmRep.GetMember(p.value.BuyUser).GetAccount()
+		acc := p.mmRepo.GetMember(p.value.BuyUser).GetAccount()
 		// 抵扣积分
 
 		//log.Println("----", p._value.BuyUser, acc.GetValue().Integral, "discount:", integral)
@@ -256,7 +256,7 @@ func (p *paymentOrderImpl) SystemPayment(fee float32) error {
 
 func (p *paymentOrderImpl) getBuyer() member.IMember {
 	if p.buyer == nil {
-		p.buyer = p.mmRep.GetMember(p.value.BuyUser)
+		p.buyer = p.mmRepo.GetMember(p.value.BuyUser)
 	}
 	return p.buyer
 }
@@ -378,13 +378,13 @@ type PaymentRepBase struct {
 }
 
 func (p *PaymentRepBase) CreatePaymentOrder(v *payment.
-	PaymentOrder, rep payment.IPaymentRep, mmRep member.IMemberRep,
-	orderManager order.IOrderManager, valRep valueobject.IValueRep) payment.IPaymentOrder {
+	PaymentOrder, rep payment.IPaymentRepo, mmRepo member.IMemberRepo,
+	orderManager order.IOrderManager, valRepo valueobject.IValueRepo) payment.IPaymentOrder {
 	return &paymentOrderImpl{
 		rep:          rep,
 		value:        v,
-		mmRep:        mmRep,
-		valRep:       valRep,
+		mmRepo:       mmRepo,
+		valRepo:      valRepo,
 		orderManager: orderManager,
 	}
 }

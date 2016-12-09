@@ -15,23 +15,23 @@ import (
 )
 
 type contentService struct {
-	_contentRep content.IContentRep
-	_query      *query.ContentQuery
-	_sysContent content.IContent
+	_contentRepo content.IContentRepo
+	_query       *query.ContentQuery
+	_sysContent  content.IContent
 }
 
-func NewContentService(rep content.IContentRep, q *query.ContentQuery) *contentService {
+func NewContentService(rep content.IContentRepo, q *query.ContentQuery) *contentService {
 	return &contentService{
-		_contentRep: rep,
-		_query:      q,
-		_sysContent: rep.GetContent(0),
+		_contentRepo: rep,
+		_query:       q,
+		_sysContent:  rep.GetContent(0),
 	}
 }
 
 // 获取页面
 //todo: 取消mchId
 func (cs *contentService) GetPage(mchId, id int32) *content.Page {
-	c := cs._contentRep.GetContent(mchId)
+	c := cs._contentRepo.GetContent(mchId)
 	page := c.GetPage(id)
 	if page != nil {
 		return page.GetValue()
@@ -42,7 +42,7 @@ func (cs *contentService) GetPage(mchId, id int32) *content.Page {
 // 根据标识获取页面
 //todo: 取消mchId
 func (cs *contentService) GetPageByIndent(userId int32, indent string) *content.Page {
-	c := cs._contentRep.GetContent(userId)
+	c := cs._contentRepo.GetContent(userId)
 	page := c.GetPageByStringIndent(indent)
 	if page != nil {
 		return page.GetValue()
@@ -52,7 +52,7 @@ func (cs *contentService) GetPageByIndent(userId int32, indent string) *content.
 
 // 保存页面
 func (cs *contentService) SavePage(mchId int32, v *content.Page) (int32, error) {
-	c := cs._contentRep.GetContent(mchId)
+	c := cs._contentRepo.GetContent(mchId)
 	var page content.IPage
 	var err error
 	if v.UserId != mchId {
@@ -73,7 +73,7 @@ func (cs *contentService) SavePage(mchId int32, v *content.Page) (int32, error) 
 
 // 删除页面
 func (cs *contentService) DeletePage(mchId int32, pageId int32) error {
-	c := cs._contentRep.GetContent(mchId)
+	c := cs._contentRepo.GetContent(mchId)
 	return c.DeletePage(pageId)
 }
 

@@ -1,6 +1,6 @@
 /**
  * Copyright 2015 @ z3q.net.
- * name : shop_rep.go
+ * name : shop_repo.go
  * author : jarryliu
  * date : 2016-05-28 13:10
  * description :
@@ -9,7 +9,7 @@
 package shop
 
 type (
-	IShopRep interface {
+	IShopRepo interface {
 		SaveShop(*Shop) (int32, error)
 
 		// 商店别名是否存在

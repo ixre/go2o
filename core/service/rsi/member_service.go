@@ -33,21 +33,21 @@ import (
 var _ define.MemberService = new(memberService)
 
 type memberService struct {
-	_rep            member.IMemberRep
+	_rep            member.IMemberRepo
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 	_orderQuery     *query.OrderQuery
-	valRep          valueobject.IValueRep
+	valRepo         valueobject.IValueRepo
 }
 
-func NewMemberService(mchService *merchantService, rep member.IMemberRep,
-	q *query.MemberQuery, oq *query.OrderQuery, valRep valueobject.IValueRep) *memberService {
+func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
+	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
 	ms := &memberService{
 		_rep:            rep,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
-		valRep:          valRep,
+		valRepo:         valRepo,
 	}
 	return ms
 	//return ms.init()
@@ -631,7 +631,7 @@ func (ms *memberService) GetAddress(memberId, addrId int32) (
 	if addr != nil {
 		v := addr.GetValue()
 		d := parser.AddressDto(&v)
-		d.Area = ms.valRep.GetAreaString(
+		d.Area = ms.valRepo.GetAreaString(
 			v.Province, v.City, v.District)
 		return d, nil
 	}

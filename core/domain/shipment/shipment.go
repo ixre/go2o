@@ -18,18 +18,18 @@ import (
 var _ shipment.IShipmentOrder = new(shipmentOrderImpl)
 
 type shipmentOrderImpl struct {
-	value  *shipment.ShipmentOrder
-	rep    shipment.IShipmentRep
-	expRep express.IExpressRep
-	expSp  *express.ExpressProvider
+	value   *shipment.ShipmentOrder
+	rep     shipment.IShipmentRepo
+	expRepo express.IExpressRepo
+	expSp   *express.ExpressProvider
 }
 
-func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRep,
-	expRep express.IExpressRep) shipment.IShipmentOrder {
+func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
+	expRepo express.IExpressRepo) shipment.IShipmentOrder {
 	return &shipmentOrderImpl{
-		value:  v,
-		rep:    rep,
-		expRep: expRep,
+		value:   v,
+		rep:     rep,
+		expRepo: expRepo,
 	}
 }
 
@@ -45,7 +45,7 @@ func (s *shipmentOrderImpl) Value() shipment.ShipmentOrder {
 
 func (s *shipmentOrderImpl) getExpressProvider(spId int32) *express.ExpressProvider {
 	if s.expSp == nil {
-		s.expSp = s.expRep.GetExpressProvider(spId)
+		s.expSp = s.expRepo.GetExpressProvider(spId)
 	}
 	return s.expSp
 }

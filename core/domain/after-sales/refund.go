@@ -23,20 +23,20 @@ var _ afterSales.IRefundOrder = new(refundOrderImpl)
 
 type refundOrderImpl struct {
 	*afterSalesOrderImpl
-	refValue   *afterSales.RefundOrder
-	memberRep  member.IMemberRep
-	paymentRep payment.IPaymentRep
+	refValue    *afterSales.RefundOrder
+	memberRepo  member.IMemberRepo
+	paymentRepo payment.IPaymentRepo
 }
 
-func newRefundOrder(v *afterSalesOrderImpl, memberRep member.IMemberRep,
-	paymentRep payment.IPaymentRep) *refundOrderImpl {
+func newRefundOrder(v *afterSalesOrderImpl, memberRepo member.IMemberRepo,
+	paymentRepo payment.IPaymentRepo) *refundOrderImpl {
 	if v.value.Type != afterSales.TypeRefund {
 		panic(errors.New("售后单类型不是退款单"))
 	}
 	return &refundOrderImpl{
 		afterSalesOrderImpl: v,
-		memberRep:           memberRep,
-		paymentRep:          paymentRep,
+		memberRepo:          memberRepo,
+		paymentRepo:         paymentRepo,
 	}
 }
 
@@ -173,13 +173,13 @@ func (r *refundOrderImpl) handleReturn() error {
 // 退款
 func (r *refundOrderImpl) backAmount(amount float32) error {
 	o := r.GetOrder().GetValue()
-	mm := r.memberRep.GetMember(r.value.BuyerId)
+	mm := r.memberRepo.GetMember(r.value.BuyerId)
 	if mm == nil {
 		return member.ErrNoSuchMember
 	}
 	acc := mm.GetAccount()
 	//支付单与父订单关联。多个子订单合并付款
-	po := r.paymentRep.GetPaymentBySalesOrderId(o.ParentId)
+	po := r.paymentRepo.GetPaymentBySalesOrderId(o.ParentId)
 	//如果支付单已清理数据，则全部退回到余额
 	if po == nil {
 		return acc.Refund(member.AccountBalance,

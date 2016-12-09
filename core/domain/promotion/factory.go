@@ -15,9 +15,9 @@ import (
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRep, goodsRep goods.IGoodsRep, memRep member.IMemberRep,
+func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo goods.IGoodsRepo, memRepo member.IMemberRepo,
 	v *promotion.PromotionInfo) promotion.IPromotion {
-	p := newPromotion(rep, goodsRep, memRep, v)
+	p := newPromotion(rep, goodsRepo, memRepo, v)
 
 	switch p.Type() {
 	case promotion.TypeFlagCashBack:
@@ -34,7 +34,7 @@ func createCashBackPromotion(p *promotionImpl) promotion.IPromotion {
 	var pv *promotion.ValueCashBack
 
 	if p.GetAggregateRootId() > 0 {
-		pv = p.promRep.GetValueCashBack(p.GetAggregateRootId())
+		pv = p.promRepo.GetValueCashBack(p.GetAggregateRootId())
 	}
 	if pv == nil {
 		pv = &promotion.ValueCashBack{
@@ -52,7 +52,7 @@ func createCouponPromotion(p *promotionImpl) promotion.IPromotion {
 	var pv *promotion.ValueCoupon
 
 	if p.GetAggregateRootId() > 0 {
-		pv = p.promRep.GetValueCoupon(p.GetAggregateRootId())
+		pv = p.promRepo.GetValueCoupon(p.GetAggregateRootId())
 	}
 	if pv == nil {
 		pv = &promotion.ValueCoupon{
@@ -66,19 +66,19 @@ func createCouponPromotion(p *promotionImpl) promotion.IPromotion {
 		pv.Amount = pv.TotalAmount
 	}
 
-	return newCoupon(p, pv, p.promRep, p.memberRep)
+	return newCoupon(p, pv, p.promRepo, p.memberRepo)
 }
 
 func DeletePromotion(p promotion.IPromotion) error {
 	var err error
-	var rep promotion.IPromotionRep = nil
+	var rep promotion.IPromotionRepo = nil
 	if p.Type() == promotion.TypeFlagCashBack {
 		v := p.(*CashBackPromotion)
-		rep = v.promRep
+		rep = v.promRepo
 		err = rep.DeleteValueCashBack(v.GetAggregateRootId())
 	} else if p.Type() == promotion.TypeFlagCoupon {
 		v := p.(*Coupon)
-		rep = v.promRep
+		rep = v.promRepo
 		err = rep.DeleteValueCoupon(v.GetAggregateRootId())
 	}
 	if err == nil && rep != nil {

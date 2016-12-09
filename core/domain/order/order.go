@@ -45,15 +45,15 @@ type orderImpl struct {
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
-	memberRep       member.IMemberRep
+	memberRepo      member.IMemberRepo
 	buyer           member.IMember
-	orderRep        order.IOrderRep
-	expressRep      express.IExpressRep
-	payRep          payment.IPaymentRep
-	goodsRep        goods.IGoodsRep
-	saleRep         sale.ISaleRep
-	promRep         promotion.IPromotionRep
-	valRep          valueobject.IValueRep
+	orderRepo       order.IOrderRepo
+	expressRepo     express.IExpressRepo
+	payRepo         payment.IPaymentRepo
+	goodsRepo       goods.IGoodsRepo
+	saleRepo        sale.ISaleRepo
+	promRepo        promotion.IPromotionRepo
+	valRepo         valueobject.IValueRepo
 	// 运营商商品映射,用于整理购物车
 	vendorItemsMap map[int32][]*order.OrderItem
 	// 运营商与邮费的MAP
@@ -64,22 +64,22 @@ type orderImpl struct {
 }
 
 func newOrder(shopping order.IOrderManager, value *order.Order,
-	mchRep merchant.IMerchantRep, shoppingRep order.IOrderRep,
-	goodsRep goods.IGoodsRep, saleRep sale.ISaleRep,
-	promRep promotion.IPromotionRep, memberRep member.IMemberRep,
-	expressRep express.IExpressRep, payRep payment.IPaymentRep,
-	valRep valueobject.IValueRep) order.IOrder {
+	mchRepo merchant.IMerchantRepo, shoppingRepo order.IOrderRepo,
+	goodsRepo goods.IGoodsRepo, saleRepo sale.ISaleRepo,
+	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
+	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
+	valRepo valueobject.IValueRepo) order.IOrder {
 	return &orderImpl{
-		manager:    shopping,
-		value:      value,
-		memberRep:  memberRep,
-		promRep:    promRep,
-		orderRep:   shoppingRep,
-		goodsRep:   goodsRep,
-		saleRep:    saleRep,
-		valRep:     valRep,
-		expressRep: expressRep,
-		payRep:     payRep,
+		manager:     shopping,
+		value:       value,
+		memberRepo:  memberRepo,
+		promRepo:    promRepo,
+		orderRepo:   shoppingRepo,
+		goodsRepo:   goodsRepo,
+		saleRepo:    saleRepo,
+		valRepo:     valRepo,
+		expressRepo: expressRepo,
+		payRepo:     payRepo,
 	}
 }
 
@@ -164,10 +164,10 @@ func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 
 		//todo: 将购物车中的vendor均获取出来
 		var mchId int32 = -1
-		var vp []*promotion.PromotionInfo = o.promRep.GetPromotionOfMerchantOrder(mchId)
+		var vp []*promotion.PromotionInfo = o.promRepo.GetPromotionOfMerchantOrder(mchId)
 		var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 		for i, v := range vp {
-			proms[i] = o.promRep.CreatePromotion(v)
+			proms[i] = o.promRepo.CreatePromotion(v)
 		}
 		return proms
 	}
@@ -177,7 +177,7 @@ func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 // 获取促销绑定
 func (o *orderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 	if o.orderPbs == nil {
-		o.orderPbs = o.orderRep.GetOrderPromotionBinds(o.value.OrderNo)
+		o.orderPbs = o.orderRepo.GetOrderPromotionBinds(o.value.OrderNo)
 	}
 	return o.orderPbs
 }
@@ -218,7 +218,7 @@ func (o *orderImpl) setAddress(addressId int32) error {
 // 获取购买的会员
 func (o *orderImpl) GetBuyer() member.IMember {
 	if o.buyer == nil {
-		o.buyer = o.memberRep.GetMember(o.value.BuyerId)
+		o.buyer = o.memberRepo.GetMember(o.value.BuyerId)
 	}
 	return o.buyer
 }
@@ -229,7 +229,7 @@ func (o *orderImpl) GetPaymentOrder() payment.IPaymentOrder {
 		if o.GetAggregateRootId() <= 0 {
 			panic(" Get payment order error ; because of order no yet created!")
 		}
-		o.paymentOrder = o.payRep.GetPaymentBySalesOrderId(o.GetAggregateRootId())
+		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(o.GetAggregateRootId())
 	}
 	return o.paymentOrder
 }
@@ -284,7 +284,7 @@ func (o *orderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[int32]fl
 	expCul := make(map[int32]express.IExpressCalculator)
 	expressMap := make(map[int32]float32)
 	for k, v := range mp {
-		userExpress := o.expressRep.GetUserExpress(k)
+		userExpress := o.expressRepo.GetUserExpress(k)
 		expCul[k] = userExpress.CreateCalculator()
 		for _, item := range v {
 			//计算商品总金额
@@ -354,7 +354,7 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
-	gs := o.saleRep.GetSale(c.VendorId).GoodsManager().CreateGoods(
+	gs := o.saleRepo.GetSale(c.VendorId).GoodsManager().CreateGoods(
 		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
 	// 获取商品已销售快照
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
@@ -491,7 +491,7 @@ func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
 		IsConfirm:       1,
 		IsApply:         0,
 	}
-	return o.orderRep.SavePromotionBindForOrder(v)
+	return o.orderRepo.SavePromotionBindForOrder(v)
 }
 
 // 应用购物车内商品的促销
@@ -543,7 +543,7 @@ func (o *orderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
 		oc.Clone(c, o.GetAggregateRootId(), o.value.FinalAmount)
-		o.orderRep.SaveOrderCouponBind(oc)
+		o.orderRepo.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
 	}
@@ -614,7 +614,7 @@ func (o *orderImpl) saveNewOrderOnSubmit() (int32, error) {
 	o.value.CreateTime = unix
 	o.value.UpdateTime = unix
 
-	id, err := o.orderRep.SaveOrder(o.value)
+	id, err := o.orderRepo.SaveOrder(o.value)
 	if err == nil {
 		o.value.Id = id
 		// 释放购物车并销毁
@@ -634,7 +634,7 @@ func (o *orderImpl) Save() (int32, error) {
 	//}
 
 	if o.value.Id > 0 {
-		return o.orderRep.SaveOrder(o.value)
+		return o.orderRepo.SaveOrder(o.value)
 	}
 	o.internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
@@ -744,7 +744,7 @@ func (o *orderImpl) GetSubOrders() []order.ISubOrder {
 		panic(order.ErrNoYetCreated)
 	}
 	if o.subList == nil {
-		subList := o.orderRep.GetSubOrdersByParentId(o.GetAggregateRootId())
+		subList := o.orderRepo.GetSubOrdersByParentId(o.GetAggregateRootId())
 		for _, v := range subList {
 			o.subList = append(o.subList,
 				o.manager.CreateSubOrder(v))
@@ -784,7 +784,7 @@ func (o *orderImpl) paymentWithBalance(buyerType int) error {
 	if o.value.IsPaid == 1 {
 		return order.ErrOrderPayed
 	}
-	acc := o.memberRep.GetMember(o.value.BuyerId).GetAccount()
+	acc := o.memberRepo.GetMember(o.value.BuyerId).GetAccount()
 	if fee := o.getBalanceDiscountFee(acc); fee == 0 {
 		return member.ErrAccountBalanceNotEnough
 	} else {
@@ -824,7 +824,7 @@ func (o *orderImpl) AppendLog(l *order.OrderLog) error {
 	}
 	l.OrderId = o.GetAggregateRootId()
 	l.RecordTime = time.Now().Unix()
-	return o.orderRep.SaveSubOrderLog(l)
+	return o.orderRepo.SaveSubOrderLog(l)
 }
 
 // 订单是否已完成
@@ -850,7 +850,7 @@ func (o *orderImpl) Confirm() error {
 
 // 扣减商品库存
 func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int) error {
-	gds := o.saleRep.GetSale(vendorId).GoodsManager().GetGoods(skuId)
+	gds := o.saleRepo.GetSale(vendorId).GoodsManager().GetGoods(skuId)
 	if gds == nil {
 		return goods.ErrNoSuchGoods
 	}
@@ -896,7 +896,7 @@ func (o *orderImpl) handleCashBackPromotions(pt merchant.IMerchant,
 	proms := o.GetPromotionBinds()
 	for _, v := range proms {
 		if v.PromotionType == promotion.TypeFlagCashBack {
-			c := o.promRep.GetPromotion(v.PromotionId)
+			c := o.promRepo.GetPromotion(v.PromotionId)
 			return o.handleCashBackPromotion(pt, m, v, c)
 		}
 	}
@@ -924,11 +924,11 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	if err == nil {
 		// 优惠绑定生效
 		v.IsApply = 1
-		o.orderRep.SavePromotionBindForOrder(v)
+		o.orderRepo.SavePromotionBindForOrder(v)
 
 		// 处理自定义返现
 		c := pm.(promotion.ICashBackPromotion)
-		HandleCashBackDataTag(m, o.value, c, o.memberRep)
+		HandleCashBackDataTag(m, o.value, c, o.memberRepo)
 
 		//给自己返现
 		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, o.value.OrderNo)
@@ -949,32 +949,32 @@ type subOrderImpl struct {
 	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
-	rep             order.IOrderRep
-	memberRep       member.IMemberRep
-	goodsRep        goods.IGoodsRep
-	saleRep         sale.ISaleRep
+	rep             order.IOrderRepo
+	memberRepo      member.IMemberRepo
+	goodsRepo       goods.IGoodsRepo
+	saleRepo        sale.ISaleRepo
 	manager         order.IOrderManager
-	shipRep         shipment.IShipmentRep
-	valRep          valueobject.IValueRep
-	mchRep          merchant.IMerchantRep
+	shipRepo        shipment.IShipmentRepo
+	valRepo         valueobject.IValueRepo
+	mchRepo         merchant.IMerchantRepo
 }
 
 func NewSubOrder(v *order.SubOrder,
-	manager order.IOrderManager, rep order.IOrderRep,
-	mmRep member.IMemberRep, goodsRep goods.IGoodsRep,
-	shipRep shipment.IShipmentRep, saleRep sale.ISaleRep,
-	valRep valueobject.IValueRep,
-	mchRep merchant.IMerchantRep) order.ISubOrder {
+	manager order.IOrderManager, rep order.IOrderRepo,
+	mmRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo,
+	shipRepo shipment.IShipmentRepo, saleRepo sale.ISaleRepo,
+	valRepo valueobject.IValueRepo,
+	mchRepo merchant.IMerchantRepo) order.ISubOrder {
 	return &subOrderImpl{
-		value:     v,
-		manager:   manager,
-		rep:       rep,
-		memberRep: mmRep,
-		goodsRep:  goodsRep,
-		saleRep:   saleRep,
-		shipRep:   shipRep,
-		valRep:    valRep,
-		mchRep:    mchRep,
+		value:      v,
+		manager:    manager,
+		rep:        rep,
+		memberRepo: mmRepo,
+		goodsRepo:  goodsRepo,
+		saleRepo:   saleRepo,
+		shipRepo:   shipRepo,
+		valRepo:    valRepo,
+		mchRepo:    mchRepo,
 	}
 }
 
@@ -1011,7 +1011,7 @@ func (o *subOrderImpl) GetBuyer() member.IMember {
 		//if o._value.BuyerId <= 0 {
 		//    panic(errors.New("订单BuyerId非会员或未设置"))
 		//}
-		o.buyer = o.memberRep.GetMember(o.value.BuyerId)
+		o.buyer = o.memberRepo.GetMember(o.value.BuyerId)
 	}
 	return o.buyer
 }
@@ -1146,7 +1146,7 @@ func (o *subOrderImpl) Confirm() (err error) {
 
 // 增加商品的销售数量
 func (o *subOrderImpl) addSalesNum() {
-	gm := o.saleRep.GetSale(o.value.VendorId).GoodsManager()
+	gm := o.saleRepo.GetSale(o.value.VendorId).GoodsManager()
 	for _, v := range o.Items() {
 		gds := gm.GetGoods(v.SkuId)
 		gds.AddSalesNum(v.Quantity)
@@ -1172,7 +1172,7 @@ func (o *subOrderImpl) PickUp() error {
 
 // 发货
 func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
-	//so := o._shipRep.GetOrders()
+	//so := o._shipRepo.GetOrders()
 	//todo: 可进行发货修改
 	if o.value.State < order.StatAwaitingShipment {
 		return order.ErrOrderNotPickUp
@@ -1181,7 +1181,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRep.GetOrders(o.GetDomainId()); len(list) > 0 {
+	if list := o.shipRepo.GetOrders(o.GetDomainId()); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1236,7 +1236,7 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.OrderItem) shipment.IS
 		})
 		v.IsShipped = 1
 	}
-	return o.shipRep.CreateShipmentOrder(so)
+	return o.shipRepo.CreateShipmentOrder(so)
 }
 
 // 已收货
@@ -1291,7 +1291,7 @@ func (s *subOrderImpl) getOrderCost() float32 {
 	var cost float32
 	items := s.Items()
 	for _, item := range items {
-		snap := s.goodsRep.GetSaleSnapshot(item.SnapshotId)
+		snap := s.goodsRepo.GetSaleSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
@@ -1303,9 +1303,9 @@ func (s *subOrderImpl) getOrderCost() float32 {
 
 // 商户结算
 func (s *subOrderImpl) vendorSettle() error {
-	vendor := s.mchRep.GetMerchant(s.value.VendorId)
+	vendor := s.mchRepo.GetMerchant(s.value.VendorId)
 	if vendor != nil {
-		conf := s.valRep.GetGlobMchSaleConf()
+		conf := s.valRepo.GetGlobMchSaleConf()
 		switch conf.MchOrderSettleMode {
 		case enum.MchModeSettleByCost:
 			return s.vendorSettleByCost(vendor)
@@ -1382,8 +1382,8 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	}
 	var err error
 	ov := o.value
-	conf := o.valRep.GetGlobNumberConf()
-	registry := o.valRep.GetRegistry()
+	conf := o.valRepo.GetGlobNumberConf()
+	registry := o.valRepo.GetRegistry()
 	amount := ov.FinalAmount
 	acc := m.GetAccount()
 
@@ -1418,9 +1418,9 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
-	gm := o.saleRep.GetSale(o.value.VendorId).GoodsManager()
+	gm := o.saleRepo.GetSale(o.value.VendorId).GoodsManager()
 	for _, v := range o.Items() {
-		snapshot := o.goodsRep.GetSaleSnapshot(v.SnapshotId)
+		snapshot := o.goodsRepo.GetSaleSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return goods.ErrNoSuchSnapshot
 		}
@@ -1622,14 +1622,14 @@ func (o *subOrderImpl) Refund() error {
 //        // 更新时间
 //        UpdateTime: unix,
 //    }
-//    ro := o._afterSalesRep.CreateRefundOrder(rv)
+//    ro := o._afterSalesRepo.CreateRefundOrder(rv)
 //    return ro.Submit()
 //}
 
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRep.GetOrders(o.GetDomainId())
+	soList := o.shipRepo.GetOrders(o.GetDomainId())
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}

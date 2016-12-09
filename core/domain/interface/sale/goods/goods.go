@@ -32,7 +32,7 @@ var (
 
 type (
 	// 商品仓储
-	IGoodsRep interface {
+	IGoodsRepo interface {
 		// 获取商品
 		GetValueGoods(itemId int32, skuId int32) *ValueGoods
 
