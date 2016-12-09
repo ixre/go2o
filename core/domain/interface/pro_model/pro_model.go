@@ -37,6 +37,7 @@ type IModel interface {
 }
 
 type IProModelRepo interface {
+	//CreateModel(v *ProModel)
 	//获取品牌服务
 	BrandService() IBrandService
 	// 设置产品模型的品牌
