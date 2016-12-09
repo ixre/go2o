@@ -1,15 +1,16 @@
 package promodel
 
-// 产品模型
 type ProModel struct {
 	// 编号
-	Id int64 `db:"id" pk:"yes" auto:"yes"`
+	Id int32 `db:"id" pk:"yes" auto:"yes"`
 	// 名称
 	Name string `db:"name"`
 	// 是否启用
 	Enabled int `db:"enabled"`
-	// 关联品牌数
-	Brands int64 `db:"brands"`
+	// 属性字符
+	AttrStr string `db:"attr_str"`
+	// 规格字符
+	SpecStr string `db:"spec_str"`
 }
 
 // 产品模型
@@ -37,7 +38,20 @@ type IModel interface {
 }
 
 type IProModelRepo interface {
-	//CreateModel(v *ProModel)
+	// 创建商品模型
+	CreateModel(v *ProModel) IModel
+	// 获取商品模型
+	GetModel(id int32) IModel
+
+	// Get ProModel
+	GetProModel(primary interface{}) *ProModel
+	// Select ProModel
+	SelectProModel(where string, v ...interface{}) []*ProModel
+	// Save ProModel
+	SaveProModel(v *ProModel) (int, error)
+	// Delete ProModel
+	DeleteProModel(primary interface{}) error
+
 	//获取品牌服务
 	BrandService() IBrandService
 	// 设置产品模型的品牌
