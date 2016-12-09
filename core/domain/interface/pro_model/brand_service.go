@@ -33,6 +33,8 @@ type IBrandService interface {
 	Get(brandId int32) *ProBrand
 	// 保存品牌
 	SaveBrand(*ProBrand) (int32, error)
+	// 删除品牌
+	DeleteBrand(id int32) error
 	// 获取所有品牌
 	AllBrands() []*ProBrand
 	// 获取关联的品牌编号
