@@ -22,6 +22,18 @@ func (p *productService) GetModel(id int32) *promodel.ProModel {
 	return p.pmRep.GetProModel(id)
 }
 
+// 获取模型属性
+func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
+	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	return m.Attrs()
+}
+
+// 获取模型规格
+func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
+	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	return m.Specs()
+}
+
 // 保存产品模型
 func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error) {
 	var pm promodel.IModel
