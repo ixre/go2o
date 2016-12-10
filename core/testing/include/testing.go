@@ -16,6 +16,7 @@ import (
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"go2o/core"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/repository"
 )
 
@@ -27,10 +28,10 @@ func GetApp() gof.App {
 	if app == nil {
 
 		app = new(testingApp)
-		app.Config().Set("redis_host", "rds.flm-dev.redvp.com")
-		app.Config().Set("redis_db", "2")
+		app.Config().Set("redis_host", "172.16.69.128")
+		app.Config().Set("redis_db", "10")
 		app.Config().Set("redis_port", "6379")
-		app.Config().Set("redis_auth", "")
+		app.Config().Set("redis_auth", "123456")
 		gof.CurrentApp = app
 	}
 	return app
@@ -62,10 +63,10 @@ func (t *testingApp) Db() db.Connector {
 	if t._dbConnector == nil {
 		connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
 			"root",
-			"123456",
-			"dbs.flm-dev.redvp.com",
+			"",
+			"172.16.69.128",
 			"3306",
-			"flm",
+			"txmall",
 			"utf8",
 		)
 		connector := db.NewSimpleConnector("mysql", connStr, t.Log(), 5000, false)
@@ -137,10 +138,17 @@ func (t *testingApp) Init(debug, trace bool) bool {
 	return true
 }
 
+var (
+	ProMRepo promodel.IProModelRepo
+)
+
 func init() {
 	app := GetApp()
 	db := app.Db()
+	orm := db.GetOrm()
 	sto := app.Storage()
+	ProMRepo = repository.NewProModelRepo(db, orm)
+
 	goodsRepo := repository.NewGoodsRepo(db)
 	valRepo := repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
