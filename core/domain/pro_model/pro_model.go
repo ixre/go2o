@@ -87,12 +87,12 @@ func (m *modelImpl) SetBrands(brandId []int32) error {
 
 // 保存
 func (m *modelImpl) Save() (id int32, err error) {
-	var id int
+	var i int
 	// 新增模型
 	if m.GetAggregateRootId() <= 0 {
-		id, err = m.rep.SaveProModel(m.value)
+		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.Id = int32(id)
+			m.value.Id = int32(i)
 		} else {
 			return 0, err
 		}
@@ -125,9 +125,9 @@ func (m *modelImpl) Save() (id int32, err error) {
 	}
 	// 保存商品模型
 	if err == nil {
-		id, err = m.rep.SaveProModel(m.value)
+		i, err = m.rep.SaveProModel(m.value)
 		if err == nil {
-			m.value.Id = int32(id)
+			m.value.Id = int32(i)
 		}
 	}
 	return m.GetAggregateRootId(), err
