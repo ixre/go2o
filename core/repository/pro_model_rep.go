@@ -6,7 +6,6 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/pro_model"
 	pmImpl "go2o/core/domain/pro_model"
-	"go2o/core/infrastructure/format"
 	"log"
 )
 
@@ -16,8 +15,8 @@ type proModelRepo struct {
 	_orm         orm.Orm
 	conn         db.Connector
 	brandService promodel.IBrandService
-	attrService promodel.IAttrService
-	specService promodel.ISpecService
+	attrService  promodel.IAttrService
+	specService  promodel.ISpecService
 }
 
 // Create new ProBrandRepo
@@ -30,7 +29,7 @@ func NewProModelRepo(conn db.Connector, o orm.Orm) promodel.IProModelRepo {
 
 // 创建商品模型
 func (p *proModelRepo) CreateModel(v *promodel.ProModel) promodel.IModel {
-	return pmImpl.NewModel(v, p,p.AttrService(),p.SpecService(),
+	return pmImpl.NewModel(v, p, p.AttrService(), p.SpecService(),
 		p.BrandService())
 }
 
@@ -43,17 +42,17 @@ func (p *proModelRepo) GetModel(id int32) promodel.IModel {
 	return nil
 }
 
-
 // 属性服务
-func (p *proModelRepo)AttrService()promodel.IAttrService{
-	if p.attrService == nil{
+func (p *proModelRepo) AttrService() promodel.IAttrService {
+	if p.attrService == nil {
 		p.attrService = pmImpl.NewAttrService(p)
 	}
 	return p.attrService
 }
+
 // 规格服务
-func (p *proModelRepo) SpecService()promodel.ISpecService{
-	if p.specService == nil{
+func (p *proModelRepo) SpecService() promodel.ISpecService {
+	if p.specService == nil {
 		p.specService = pmImpl.NewSpecService(p)
 	}
 	return p.specService
@@ -67,39 +66,11 @@ func (p *proModelRepo) BrandService() promodel.IBrandService {
 	return p.brandService
 }
 
-// 设置产品模型的品牌
-func (p *proModelRepo) SetModelBrands(proModel int32, brandIds []int32) error {
-	idArrStr := format.IdArrJoinStr32(brandIds)
-	//获取存在的品牌
-	old := p.SelectProModelBrand("pro_model=?", proModel)
-	//删除不包括的品牌
-	if len(old) > 0 {
-		p.BatchDeleteProModelBrand("pro_model = ? AND brand_id NOT IN(?)",
-			proModel, idArrStr)
-	}
-	//写入品牌
-	for _, v := range brandIds {
-		isExist := false
-		for _, vo := range old {
-			if vo.BrandId == v {
-				isExist = true
-				break
-			}
-		}
-		if isExist {
-			e := &promodel.ProModelBrand{
-				Id:       0,
-				BrandId:  v,
-				ProModel: proModel,
-			}
-			p.SaveProModelBrand(e)
-		}
-	}
-	return nil
+// 获取模型的商品品牌
+func (p *proModelRepo) GetModelBrands(proModel int32) []*promodel.ProBrand {
+	return p.selectProBrandByQuery(`SELECT * FROM pro_brand WHERE id IN (
+	SELECT brand_id FROM pro_model_brand WHERE pro_model=?)`, proModel)
 }
-
-
-
 
 // Get ProModel
 func (p *proModelRepo) GetProModel(primary interface{}) *promodel.ProModel {
@@ -167,7 +138,7 @@ func (p *proModelRepo) SelectAttr(where string, v ...interface{}) []*promodel.At
 
 // Save Attr
 func (p *proModelRepo) SaveAttr(v *promodel.Attr) (int, error) {
-	id, err := orm.Save(p._orm, v,int( v.Id))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Attr")
 	}
@@ -191,7 +162,6 @@ func (p *proModelRepo) BatchDeleteAttr(where string, v ...interface{}) (int64, e
 	}
 	return r, err
 }
-
 
 // Get AttrItem
 func (p *proModelRepo) GetAttrItem(primary interface{}) *promodel.AttrItem {
@@ -243,7 +213,6 @@ func (p *proModelRepo) BatchDeleteAttrItem(where string, v ...interface{}) (int6
 	return r, err
 }
 
-
 // Get Spec
 func (p *proModelRepo) GetSpec(primary interface{}) *promodel.Spec {
 	e := promodel.Spec{}
@@ -269,7 +238,7 @@ func (p *proModelRepo) SelectSpec(where string, v ...interface{}) []*promodel.Sp
 
 // Save Spec
 func (p *proModelRepo) SaveSpec(v *promodel.Spec) (int, error) {
-	id, err := orm.Save(p._orm, v,int( v.Id))
+	id, err := orm.Save(p._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Spec")
 	}
@@ -293,7 +262,6 @@ func (p *proModelRepo) BatchDeleteSpec(where string, v ...interface{}) (int64, e
 	}
 	return r, err
 }
-
 
 // Get SpecItem
 func (p *proModelRepo) GetSpecItem(primary interface{}) *promodel.SpecItem {
@@ -389,6 +357,16 @@ func (p *proModelRepo) BatchDeleteProBrand(where string, v ...interface{}) (int6
 func (p *proModelRepo) SelectProBrand(where string, v ...interface{}) []*promodel.ProBrand {
 	list := []*promodel.ProBrand{}
 	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
+	}
+	return list
+}
+
+// Select ProBrand
+func (p *proModelRepo) selectProBrandByQuery(query string, v ...interface{}) []*promodel.ProBrand {
+	list := []*promodel.ProBrand{}
+	err := p._orm.SelectByQuery(&list, query, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
 	}

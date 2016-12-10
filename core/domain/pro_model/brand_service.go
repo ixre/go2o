@@ -37,10 +37,5 @@ func (b *brandServiceImpl) AllBrands() []*promodel.ProBrand {
 
 // 获取关联的品牌编号
 func (b *brandServiceImpl) Brands(proModel int32) []*promodel.ProBrand {
-	return b.rep.SelectProBrand("pro_model=?", proModel)
-}
-
-// 关联品牌
-func (b *brandServiceImpl) SetBrands(proModel int32, brandId []int32) error {
-	return b.rep.SetModelBrands(proModel, brandId)
+	return b.rep.GetModelBrands(proModel)
 }
