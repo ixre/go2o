@@ -150,6 +150,7 @@ func (m *modelImpl) saveModelSpecs(specs []*promodel.Spec) (err error) {
 			delList = append(delList, v.Id)
 		}
 	}
+
 	// 删除项
 	for _, v := range delList {
 		m.specService.DeleteSpec(v)

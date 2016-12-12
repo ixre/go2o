@@ -71,9 +71,10 @@ func (a *specServiceImpl) saveSpecItems(specId int32, items []*promodel.SpecItem
 			delList = append(delList, v.Id)
 		}
 	}
+
 	// 删除项
 	for _, v := range delList {
-		a.rep.DeleteAttrItem(v)
+		a.rep.DeleteSpecItem(v)
 	}
 	// 保存项
 	for _, v := range items {

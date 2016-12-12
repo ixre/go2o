@@ -37,6 +37,8 @@ var (
 		MemberImRequired: false,
 		// 会员提现开关
 		MemberTakeOutOn: true,
+		// 提现是否必须实名制认证
+		TakeOutMustTrust: true,
 		// 会员转账开关
 		MemberTransferAccountsOn: true,
 		// 会员默认个人签名
