@@ -133,7 +133,10 @@ var (
 		"err_account_out_take_amount", "单笔最高提现金额为%s")
 
 	ErrTakeOutLevelNoPerm *domain.DomainError = domain.NewDomainError(
-		"err_account_take_out_level_no_perm", "%s不允许提现")
+		"err_account_take_out_level_no_perm", "%s会员无法提现")
+
+	ErrTakeOutNotTrust *domain.DomainError = domain.NewDomainError(
+		"err_account_take_out_not_trust", "必须通过实名认证后才可提现")
 
 	ErrIncorrectQuota *domain.DomainError = domain.NewDomainError(
 		"err_member_incorrent_quote", "数量错误")

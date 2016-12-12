@@ -672,6 +672,15 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	if !conf.MemberTakeOutOn {
 		return 0, "", errors.New(conf.MemberTakeOutMessage)
 	}
+
+	// 检测是否实名
+	if conf.TakeOutMustTrust {
+		trust := a.member.Profile().GetTrustedInfo()
+		if trust.Reviewed != enum.ReviewPass {
+			return 0, "", member.ErrTakeOutNotTrust
+		}
+	}
+
 	// 检测非正式会员提现
 	lv := a.mm.LevelManager().GetLevelById(a.member.GetValue().Level)
 	if lv != nil && lv.IsOfficial == 0 {

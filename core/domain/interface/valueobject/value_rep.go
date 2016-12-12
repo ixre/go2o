@@ -101,6 +101,8 @@ type (
 		MemberTakeOutOn bool
 		// 会员提现提示
 		MemberTakeOutMessage string
+		// 提现是否必须实名制认证
+		TakeOutMustTrust bool
 
 		// 商品默认图片
 		GoodsDefaultImage string

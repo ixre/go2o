@@ -22,6 +22,11 @@ func (p *productService) GetModel(id int32) *promodel.ProModel {
 	return p.pmRep.GetProModel(id)
 }
 
+// 获取产品模型
+func (p *productService) GetModels() []*promodel.ProModel {
+	return p.pmRep.SelectProModel("enabled=1")
+}
+
 // 获取模型属性
 func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
 	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
