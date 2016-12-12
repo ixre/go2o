@@ -70,11 +70,15 @@ type (
 		// 编号
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 分类
-		CategoryId int32 `db:"category_id"`
+		CategoryId int32 `db:"cat_id"`
 		// 名称
 		Name string `db:"name"`
 		//供应商编号(暂时同mch_id)
 		VendorId int32 `db:"supplier_id"`
+		// 商铺编号
+		ShopId int64 `db:"shop_id"`
+		// 品牌编号
+		BrandId int64 `db:"brand_id"`
 		// 货号
 		GoodsNo string `db:"goods_no"`
 		// 小标题
@@ -83,8 +87,10 @@ type (
 		Image string `db:"img"`
 		// 成本价
 		Cost float32 `db:"cost"`
-		// 单件重量,单位:千克(kg)
+		// 重量:克(g)
 		Weight float32 `db:"weight"`
+		// 体积:毫升(ml)
+		Bulk int64 `db:"bulk"`
 		//定价
 		Price float32 `db:"price"`
 		//参考销售价
