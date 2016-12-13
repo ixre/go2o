@@ -97,6 +97,7 @@ func (c *categoryImpl) SetValue(v *sale.Category) error {
 		val.Name = v.Name
 		val.SortNum = v.SortNum
 		val.Icon = v.Icon
+		val.ProModel = v.ProModel
 		if val.ParentId != v.ParentId {
 			c.parentIdChanged = true
 		} else {

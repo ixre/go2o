@@ -4,7 +4,7 @@ package promodel
 type (
 	ProBrand struct {
 		// 编号
-		Id int64 `db:"id" pk:"yes" auto:"yes"`
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 品牌名称
 		Name string `db:"name"`
 		// 品牌图片
@@ -39,6 +39,4 @@ type IBrandService interface {
 	AllBrands() []*ProBrand
 	// 获取关联的品牌编号
 	Brands(proModel int32) []*ProBrand
-	// 关联品牌
-	SetBrands(proModel int32, brandId []int32) error
 }

@@ -296,7 +296,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int32, begin, end int,
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
     INNER JOIN gs_goods gs ON gs.id = f.refer_id
-    INNER JOIN gs_item item ON gs.item_id=item.id
+    INNER JOIN pro_product item ON gs.item_id=item.id
     WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
 		memberId, member.FavTypeGoods)
 
@@ -304,7 +304,7 @@ func (m *MemberQuery) PagedGoodsFav(memberId int32, begin, end int,
 		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,item.name as goods_name,
             img,sale_price,gs.stock_num,item.update_time
             FROM mm_favorite f INNER JOIN gs_goods gs ON gs.id = f.refer_id
-            INNER JOIN gs_item item ON gs.item_id=item.id
+            INNER JOIN pro_product item ON gs.item_id=item.id
             WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC
             LIMIT ?,?`,
 			where)

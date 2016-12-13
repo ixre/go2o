@@ -9,22 +9,22 @@
 package valueobject
 
 // g.id,g.item_id,g.sku_id,g.is_present,g.prom_flag,g.stock_num,g.sale_num,
-//i.category_id,i.name as name,i.goods_no,i.img,i.price,i.sale_price
+//i.cat_id,i.name as name,i.goods_no,i.img,i.price,i.sale_price
 
 // 完整的商品信息
 type Goods struct {
 	Item_Id    int32  `db:"gs_goods.item_id"`
-	CategoryId int32  `db:"gs_item.category_id"`
-	Name       string `db:"gs_item.name"`
+	CategoryId int32  `db:"pro_product.cat_id"`
+	Name       string `db:"pro_product.name"`
 	// 货号
-	GoodsNo string `db:"gs_item.goods_no"`
-	Image   string `db:"gs_item.img"`
+	GoodsNo string `db:"pro_product.goods_no"`
+	Image   string `db:"pro_product.img"`
 
 	//定价
-	Price float32 `db:"gs_item.price"`
+	Price float32 `db:"pro_product.price"`
 
 	//销售价
-	SalePrice float32 `db:"gs_item.sale_price"`
+	SalePrice float32 `db:"pro_product.sale_price"`
 
 	// 促销价
 	PromPrice float32 `db:"-"`
