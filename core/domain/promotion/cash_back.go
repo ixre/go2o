@@ -10,8 +10,8 @@ package promotion
 
 import (
 	"errors"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale/goods"
 	"regexp"
 )
 
@@ -36,7 +36,7 @@ func (c *CashBackPromotion) GetDomainId() int32 {
 func (c *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
 	g := c.goodsRepo.GetValueGoodsById(c.value.GoodsId)
 	if g == nil {
-		return goods.ErrNoSuchGoods
+		return item.ErrNoSuchGoods
 	}
 
 	//todo: 商品SKU的原因，获取的价格为0，有BUG

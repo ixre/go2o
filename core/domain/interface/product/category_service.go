@@ -7,7 +7,7 @@
  * history :
  */
 
-package sale
+package product
 
 import (
 	"go2o/core/infrastructure/domain"
@@ -78,7 +78,7 @@ type (
 	}
 	ICategoryRepo interface {
 		// 获取系统的栏目服务
-		GetGlobManager() ICategoryManager
+		GlobCatService() IGlobCatService
 
 		// 保存分类
 		SaveCategory(*Category) (int32, error)
@@ -92,15 +92,12 @@ type (
 		// 获取分类
 		GetCategory(mchId, id int32) *Category
 
-		// 创建分类
-		CreateCategory(v *Category) ICategory
-
 		// 获取所有分类
 		GetCategories(mchId int32) []*Category
 	}
 
-	// 分类服务
-	ICategoryManager interface {
+	// 公共分类服务
+	IGlobCatService interface {
 		// 是否只读,当商户共享系统的分类时,
 		// 没有修改的权限,即只读!
 		ReadOnly() bool

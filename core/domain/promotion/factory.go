@@ -9,13 +9,13 @@
 package promotion
 
 import (
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale/goods"
 	"time"
 )
 
-func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo goods.IGoodsRepo, memRepo member.IMemberRepo,
+func FactoryPromotion(rep promotion.IPromotionRepo, goodsRepo item.IGoodsRepo, memRepo member.IMemberRepo,
 	v *promotion.PromotionInfo) promotion.IPromotion {
 	p := newPromotion(rep, goodsRepo, memRepo, v)
 

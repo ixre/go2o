@@ -11,11 +11,12 @@ package sale
 
 import (
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
+	productImpl "go2o/core/domain/product"
 )
 
 var _ sale.ISale = new(saleImpl)
@@ -24,12 +25,12 @@ type saleImpl struct {
 	mchId        int32
 	saleRepo     sale.ISaleRepo
 	labelRepo    sale.ISaleLabelRepo
-	cateRepo     sale.ICategoryRepo
-	goodsRepo    goods.IGoodsRepo
+	cateRepo     product.ICategoryRepo
+	goodsRepo    item.IGoodsRepo
 	valRepo      valueobject.IValueRepo
 	expressRepo  express.IExpressRepo
 	promRepo     promotion.IPromotionRepo
-	cateManager  sale.ICategoryManager
+	cateManager  product.IGlobCatService
 	labelManager sale.ILabelManager
 	itemManager  sale.IItemManager
 	itemRepo     product.IProductRepo
@@ -37,7 +38,7 @@ type saleImpl struct {
 }
 
 func NewSale(mchId int32, saleRepo sale.ISaleRepo, valRepo valueobject.IValueRepo,
-	cateRepo sale.ICategoryRepo, itemRepo product.IProductRepo, goodsRepo goods.IGoodsRepo,
+	cateRepo product.ICategoryRepo, itemRepo product.IProductRepo, goodsRepo item.IGoodsRepo,
 	tagRepo sale.ISaleLabelRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.ISale {
 	return (&saleImpl{
@@ -58,9 +59,9 @@ func (s *saleImpl) init() sale.ISale {
 }
 
 // 分类服务
-func (s *saleImpl) CategoryManager() sale.ICategoryManager {
+func (s *saleImpl) CategoryManager() product.IGlobCatService {
 	if s.cateManager == nil {
-		s.cateManager = NewCategoryManager(
+		s.cateManager = productImpl.NewCategoryManager(
 			s.GetAggregateRootId(), s.cateRepo, s.valRepo)
 	}
 	return s.cateManager

@@ -13,16 +13,16 @@ import (
 	"fmt"
 	"github.com/jsix/gof/algorithm/iterator"
 	"go2o/core/domain/interface/content"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain/util"
 	"go2o/core/service/rsi"
 )
 
 func readToCategoryDropList(mchId int32) []byte {
-	categories := rsi.SaleService.GetCategories(mchId)
+	categories := rsi.ProductService.GetCategories(mchId)
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
-		c := v1.(*sale.Category)
+		c := v1.(*product.Category)
 		if c.Id != 0 {
 			buf.WriteString(fmt.Sprintf(
 				`<option class="opt%d" value="%d">%s</option>`,
@@ -32,7 +32,7 @@ func readToCategoryDropList(mchId int32) []byte {
 			))
 		}
 	}
-	util.WalkSaleCategory(categories, &sale.Category{Id: 0}, f, nil)
+	util.WalkSaleCategory(categories, &product.Category{Id: 0}, f, nil)
 	return buf.Bytes()
 }
 

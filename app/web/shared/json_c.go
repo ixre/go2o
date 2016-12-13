@@ -120,9 +120,9 @@ func (j *JsonC) ShopCat(c *echox.Context) error {
 	if err := j.unmarshal(sto, key, &list); err != nil {
 		//if err := sto.Get(key,*list);err != nil{
 		if parentId == 0 {
-			list = rsi.SaleService.GetBigCategories(shopId)
+			list = rsi.ProductService.GetBigCategories(shopId)
 		} else {
-			list = rsi.SaleService.GetChildCategories(shopId, parentId)
+			list = rsi.ProductService.GetChildCategories(shopId, parentId)
 		}
 		//sto.Set(key,list)
 		var d []byte

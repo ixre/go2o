@@ -9,8 +9,8 @@
 package sale
 
 import (
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -21,13 +21,13 @@ type (
 		GetDomainId() int32
 
 		// 商品快照
-		SnapshotManager() goods.ISnapshotManager
+		SnapshotManager() item.ISnapshotManager
 
 		// 获取货品
 		GetItem() IItem
 
 		// 设置值
-		GetValue() *goods.ItemGoods
+		GetValue() *item.ItemGoods
 
 		// 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
@@ -45,13 +45,13 @@ type (
 		GetPromotionDescribe() map[string]string
 
 		// 获取会员价
-		GetLevelPrices() []*goods.MemberPrice
+		GetLevelPrices() []*item.MemberPrice
 
 		// 保存会员价
-		SaveLevelPrice(*goods.MemberPrice) (int32, error)
+		SaveLevelPrice(*item.MemberPrice) (int32, error)
 
 		// 设置值
-		SetValue(*goods.ItemGoods) error
+		SetValue(*item.ItemGoods) error
 
 		// 保存
 		Save() (int32, error)
@@ -78,10 +78,10 @@ type (
 	// 商品服务
 	IGoodsManager interface {
 		// 创建商品
-		CreateGoodsByItem(IItem, *goods.ItemGoods) IGoods
+		CreateGoodsByItem(IItem, *item.ItemGoods) IGoods
 
 		// 创建商品
-		CreateGoods(*goods.ItemGoods) IGoods
+		CreateGoods(*item.ItemGoods) IGoods
 
 		// 根据产品编号获取商品
 		GetGoods(id int32) IGoods

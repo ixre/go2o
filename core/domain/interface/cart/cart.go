@@ -10,10 +10,10 @@
 package cart
 
 import (
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -154,15 +154,15 @@ type (
 
 	// 购物车项
 	CartItem struct {
-		Id         int32           `db:"id" pk:"yes" auto:"yes"`
-		CartId     int32           `db:"cart_id"`
-		VendorId   int32           `db:"vendor_id"`
-		ShopId     int32           `db:"shop_id"`
-		SkuId      int32           `db:"goods_id"`
-		SnapshotId int32           `db:"snap_id"`
-		Quantity   int             `db:"quantity"`
-		Checked    int             `db:"checked" json:"checked"` // 是否结算
-		Snapshot   *goods.Snapshot `db:"-"`
+		Id         int32          `db:"id" pk:"yes" auto:"yes"`
+		CartId     int32          `db:"cart_id"`
+		VendorId   int32          `db:"vendor_id"`
+		ShopId     int32          `db:"shop_id"`
+		SkuId      int32          `db:"goods_id"`
+		SnapshotId int32          `db:"snap_id"`
+		Quantity   int            `db:"quantity"`
+		Checked    int            `db:"checked" json:"checked"` // 是否结算
+		Snapshot   *item.Snapshot `db:"-"`
 
 		Price      float32 `db:"-"`
 		SalePrice  float32 `db:"-"`
