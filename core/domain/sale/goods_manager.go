@@ -13,7 +13,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	goodsImpl "go2o/core/domain/sale/goods"
 )
@@ -25,10 +25,10 @@ var _ domain.IDomain = new(tmpGoodsImpl)
 type tmpGoodsImpl struct {
 	manager       *goodsManagerImpl
 	goods         sale.IItem
-	value         *goods.ValueGoods
+	value         *goods.ItemGoods
 	saleRepo      sale.ISaleRepo
 	goodsRepo     goods.IGoodsRepo
-	itemRepo      item.IItemRepo
+	itemRepo      product.IProductRepo
 	promRepo      promotion.IPromotionRepo
 	sale          sale.ISale
 	levelPrices   []*goods.MemberPrice
@@ -37,8 +37,8 @@ type tmpGoodsImpl struct {
 }
 
 func NewSaleGoods(m *goodsManagerImpl, s sale.ISale,
-	itemRepo item.IItemRepo, goods sale.IItem,
-	value *goods.ValueGoods, rep sale.ISaleRepo,
+	itemRepo product.IProductRepo, goods sale.IItem,
+	value *goods.ItemGoods, rep sale.ISaleRepo,
 	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.IGoods {
 	v := &tmpGoodsImpl{
 		manager:   m,
@@ -70,7 +70,7 @@ func (g *tmpGoodsImpl) GetDomainId() int32 {
 // 商品快照
 func (g *tmpGoodsImpl) SnapshotManager() goods.ISnapshotManager {
 	if g.snapManager == nil {
-		var item *item.Item
+		var item *product.Product
 		gi := g.GetItem()
 		if gi != nil {
 			v := gi.GetValue()
@@ -88,7 +88,7 @@ func (g *tmpGoodsImpl) GetItem() sale.IItem {
 }
 
 // 设置值
-func (g *tmpGoodsImpl) GetValue() *goods.ValueGoods {
+func (g *tmpGoodsImpl) GetValue() *goods.ItemGoods {
 	return g.value
 }
 
@@ -200,7 +200,7 @@ func (g *tmpGoodsImpl) SaveLevelPrice(v *goods.MemberPrice) (int32, error) {
 }
 
 // 设置值
-func (g *tmpGoodsImpl) SetValue(v *goods.ValueGoods) error {
+func (g *tmpGoodsImpl) SetValue(v *goods.ItemGoods) error {
 	g.value.IsPresent = v.IsPresent
 	g.value.SaleNum = v.SaleNum
 	g.value.StockNum = v.StockNum
@@ -289,14 +289,14 @@ func (g *goodsManagerImpl) init() sale.IGoodsManager {
 }
 
 // 创建商品
-func (g *goodsManagerImpl) CreateGoods(s *goods.ValueGoods) sale.IGoods {
+func (g *goodsManagerImpl) CreateGoods(s *goods.ItemGoods) sale.IGoods {
 	return NewSaleGoods(g, g._sale, g._sale.itemRepo,
 		nil, s, g._sale.saleRepo,
 		g._sale.goodsRepo, g._sale.promRepo)
 }
 
 // 创建商品
-func (g *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGoods) sale.IGoods {
+func (g *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ItemGoods) sale.IGoods {
 	return NewSaleGoods(g, g._sale, g._sale.itemRepo,
 		item, v, g._sale.saleRepo, g._sale.goodsRepo,
 		g._sale.promRepo)
@@ -304,9 +304,9 @@ func (g *goodsManagerImpl) CreateGoodsByItem(item sale.IItem, v *goods.ValueGood
 
 // 根据产品编号获取商品
 func (g *goodsManagerImpl) GetGoods(goodsId int32) sale.IGoods {
-	var v *goods.ValueGoods = g._sale.goodsRepo.GetValueGoodsById(goodsId)
+	var v *goods.ItemGoods = g._sale.goodsRepo.GetValueGoodsById(goodsId)
 	if v != nil {
-		pv := g._sale.itemRepo.GetValueItem(v.ItemId)
+		pv := g._sale.itemRepo.GetProductValue(v.ProductId)
 		if pv != nil {
 			return g.CreateGoodsByItem(g._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -316,9 +316,9 @@ func (g *goodsManagerImpl) GetGoods(goodsId int32) sale.IGoods {
 
 // 根据产品SKU获取商品
 func (g *goodsManagerImpl) GetGoodsBySku(itemId, skuId int32) sale.IGoods {
-	var v *goods.ValueGoods = g._sale.goodsRepo.GetValueGoodsBySku(itemId, skuId)
+	var v *goods.ItemGoods = g._sale.goodsRepo.GetValueGoodsBySku(itemId, skuId)
 	if v != nil {
-		pv := g._sale.itemRepo.GetValueItem(v.ItemId)
+		pv := g._sale.itemRepo.GetProductValue(v.ProductId)
 		if pv != nil {
 			return g.CreateGoodsByItem(g._sale.ItemManager().CreateItem(pv), v)
 		}
@@ -333,7 +333,7 @@ func (g *goodsManagerImpl) DeleteGoods(goodsId int32) error {
 		return goods.ErrNoSuchSnapshot
 	}
 	//todo: delete goods
-	return g._sale.itemRepo.DeleteItem(g._mchId, goodsId)
+	return g._sale.itemRepo.DeleteProduct(g._mchId, goodsId)
 }
 
 // 获取指定数量已上架的商品

@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	saleImpl "go2o/core/domain/sale"
 )
@@ -27,7 +27,7 @@ type saleRepo struct {
 	_cache       map[int32]sale.ISale
 	_tagRepo     sale.ISaleLabelRepo
 	_promRepo    promotion.IPromotionRepo
-	_itemRepo    item.IItemRepo
+	_itemRepo    product.IProductRepo
 	_goodsRepo   goods.IGoodsRepo
 	_cateRepo    sale.ICategoryRepo
 	_expressRepo express.IExpressRepo
@@ -36,7 +36,7 @@ type saleRepo struct {
 
 func NewSaleRepo(c db.Connector, cateRepo sale.ICategoryRepo,
 	valRepo valueobject.IValueRepo, saleLabelRepo sale.ISaleLabelRepo,
-	itemRepo item.IItemRepo, expressRepo express.IExpressRepo,
+	itemRepo product.IProductRepo, expressRepo express.IExpressRepo,
 	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.ISaleRepo {
 	return (&saleRepo{
 		Connector:    c,

@@ -9,7 +9,7 @@
 
 package sale
 
-import "go2o/core/domain/interface/sale/item"
+import "go2o/core/domain/interface/sale/product"
 
 type (
 	// 物品
@@ -17,7 +17,7 @@ type (
 		GetDomainId() int32
 
 		// 获取商品的值
-		GetValue() item.Item
+		GetValue() product.Product
 
 		// 是否上架
 		IsOnShelves() bool
@@ -29,7 +29,7 @@ type (
 		SaveSaleLabels([]int) error
 
 		// 设置商品值
-		SetValue(*item.Item) error
+		SetValue(*product.Product) error
 
 		// 设置商品描述
 		SetDescribe(describe string) error
@@ -50,7 +50,7 @@ type (
 	// 货品服务
 	IItemManager interface {
 		// 创建产品
-		CreateItem(*item.Item) IItem
+		CreateItem(*product.Product) IItem
 
 		// 根据产品编号获取货品
 		GetItem(id int32) IItem

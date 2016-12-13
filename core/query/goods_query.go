@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -45,7 +45,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s`, where), &total,
-		enum.ReviewPass, item.ShelvesOn, shopId, shopId, keyword)
+		enum.ReviewPass, product.ShelvesOn, shopId, shopId, keyword)
 
 	e := []*valueobject.Goods{}
 	if total > 0 {
@@ -56,7 +56,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
-			item.ShelvesOn, shopId, shopId, keyword, start, (end - start))
+			product.ShelvesOn, shopId, shopId, keyword, start, (end - start))
 	}
 
 	return total, e
@@ -70,6 +70,6 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 //		 pro_product.shelve_state=? AND pro_product.name LIKE ? %s
 //		 ORDER BY %s update_time DESC LIMIT ?,?`
 //
-//	g.Connector.GetOrm().GetByQuery(&e, sql,item.ShelvesOn, goodsId)
+//	g.Connector.GetOrm().GetByQuery(&e, sql,product.ShelvesOn, goodsId)
 //	return &e
 //}

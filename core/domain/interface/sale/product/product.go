@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package item
+package product
 
 import (
 	"go2o/core/domain/interface/valueobject"
@@ -46,27 +46,29 @@ var (
 )
 
 type (
-	IItemRepo interface {
+	IProductRepo interface {
 		// 获取货品
-		GetValueItem(itemId int32) *Item
+		GetProductValue(itemId int32) *Product
 
 		// 根据id获取货品
-		GetItemByIds(ids ...int32) ([]*Item, error)
+		GetProductsById(ids ...int32) ([]*Product, error)
 
-		SaveValueItem(*Item) (int32, error)
+		SaveProductValue(*Product) (int32, error)
 
+		//todo:  到商品
 		// 获取在货架上的商品
-		GetPagedOnShelvesItem(supplierId int32, catIds []int32, start, end int) (total int, goods []*Item)
+		GetPagedOnShelvesProduct(supplierId int32, catIds []int32, start, end int) (total int, goods []*Product)
 
+		//todo:  到商品
 		// 获取货品销售总数
-		GetItemSaleNum(supplierId int32, id int32) int
+		GetProductSaleNum(supplierId int32, id int32) int
 
 		// 删除货品
-		DeleteItem(supplierId, goodsId int32) error
+		DeleteProduct(supplierId, goodsId int32) error
 	}
 
-	// 商品值
-	Item struct {
+	// 产品
+	Product struct {
 		// 编号
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 分类
@@ -115,8 +117,8 @@ type (
 )
 
 // 转换包含部分数据的产品值对象
-func ParseToPartialValueItem(v *valueobject.Goods) *Item {
-	return &Item{
+func ParseToPartialValueItem(v *valueobject.Goods) *Product {
+	return &Product{
 		Id:         v.Item_Id,
 		CategoryId: v.CategoryId,
 		Name:       v.Name,

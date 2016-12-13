@@ -15,7 +15,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 )
@@ -48,8 +48,8 @@ func (g *goodsRepo) GetGoodsBySKuId(skuId int32) interface{} {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *goods.ValueGoods {
-	var e *goods.ValueGoods = new(goods.ValueGoods)
+func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *goods.ItemGoods {
+	var e *goods.ItemGoods = new(goods.ItemGoods)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
 	}
@@ -57,8 +57,8 @@ func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *goods.ValueGoods {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoodsById(goodsId int32) *goods.ValueGoods {
-	var e *goods.ValueGoods = new(goods.ValueGoods)
+func (g *goodsRepo) GetValueGoodsById(goodsId int32) *goods.ItemGoods {
+	var e *goods.ItemGoods = new(goods.ItemGoods)
 	if g.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
 	}
@@ -66,8 +66,8 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int32) *goods.ValueGoods {
 }
 
 // 根据SKU获取商品
-func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *goods.ValueGoods {
-	var e *goods.ValueGoods = new(goods.ValueGoods)
+func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *goods.ItemGoods {
+	var e *goods.ItemGoods = new(goods.ItemGoods)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
@@ -105,7 +105,7 @@ func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
 }
 
 // 保存商品
-func (g *goodsRepo) SaveValueGoods(v *goods.ValueGoods) (int32, error) {
+func (g *goodsRepo) SaveValueGoods(v *goods.ItemGoods) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
@@ -133,7 +133,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=? %s`,
-		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
+		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, product.ShelvesOn)
 
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
@@ -142,7 +142,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=?
 		  %s ORDER BY %s update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
-			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+			enum.ReviewPass, product.ShelvesOn, start, (end - start))
 	}
 
 	return total, list
@@ -158,7 +158,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string
 		sortBy)
 
 	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
-		item.ShelvesOn, start, (end - start))
+		product.ShelvesOn, start, (end - start))
 	return e
 }
 

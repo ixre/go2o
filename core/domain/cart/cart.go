@@ -9,7 +9,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -193,7 +193,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 	if snap == nil {
 		return nil, goods.ErrNoSuchGoods // 没有商品
 	}
-	if snap.ShelveState != item.ShelvesOn {
+	if snap.ShelveState != product.ShelvesOn {
 		return nil, goods.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {

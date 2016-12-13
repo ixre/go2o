@@ -13,26 +13,26 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/infrastructure/format"
 )
 
-var _ item.IItemRepo = new(itemRepo)
+var _ product.IProductRepo = new(productRepo)
 
-type itemRepo struct {
+type productRepo struct {
 	db.Connector
 }
 
-func NewItemRepo(c db.Connector) item.IItemRepo {
-	return &itemRepo{
+func NewProductRepo(c db.Connector) product.IProductRepo {
+	return &productRepo{
 		Connector: c,
 	}
 }
 
-func (i *itemRepo) GetValueItem(itemId int32) *item.Item {
-	var e *item.Item = new(item.Item)
+func (p *productRepo) GetProductValue(itemId int32) *product.Product {
+	var e *product.Product = new(product.Product)
 	//todo: supplier_id  == -1
-	if i.Connector.GetOrm().GetByQuery(e, `select * FROM pro_product
+	if p.Connector.GetOrm().GetByQuery(e, `select * FROM pro_product
 			INNER JOIN cat_category c ON c.id = pro_product.cat_id
 			 WHERE pro_product.id=?`, itemId) == nil {
 		return e
@@ -40,48 +40,48 @@ func (i *itemRepo) GetValueItem(itemId int32) *item.Item {
 	return nil
 }
 
-func (i *itemRepo) GetItemByIds(ids ...int32) ([]*item.Item, error) {
+func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) {
 	//todo: mchId
-	var items []*item.Item
+	var items []*product.Product
 
 	//todo:改成database/sql方式，不使用orm
-	err := i.Connector.GetOrm().SelectByQuery(&items,
+	err := p.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM pro_product WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
 
 	return items, err
 }
 
-func (i *itemRepo) SaveValueItem(v *item.Item) (int32, error) {
-	return orm.I32(orm.Save(i.GetOrm(), v, int(v.Id)))
+func (p *productRepo) SaveProductValue(v *product.Product) (int32, error) {
+	return orm.I32(orm.Save(p.GetOrm(), v, int(v.Id)))
 }
 
-func (i *itemRepo) GetPagedOnShelvesItem(mchId int32, catIds []int32,
-	start, end int) (total int, e []*item.Item) {
+func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
+	start, end int) (total int, e []*product.Product) {
 	var sql string
 
 	var catIdStr string = format.IdArrJoinStr32(catIds)
 	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
+	p.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
 
-	e = []*item.Item{}
-	i.Connector.GetOrm().SelectByQuery(&e, sql)
+	e = []*product.Product{}
+	p.Connector.GetOrm().SelectByQuery(&e, sql)
 
 	return total, e
 }
 
 // 获取货品销售总数
-func (i *itemRepo) GetItemSaleNum(mchId int32, id int32) int {
+func (p *productRepo) GetProductSaleNum(mchId int32, id int32) int {
 	var num int
-	i.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
+	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
 		&num, id)
 	return num
 }
 
-func (i *itemRepo) DeleteItem(mchId, itemId int32) error {
-	_, _, err := i.Connector.Exec(`
+func (p *productRepo) DeleteProduct(mchId, itemId int32) error {
+	_, _, err := p.Connector.Exec(`
 		DELETE f FROM pro_product AS f
 		INNER JOIN cat_category AS c ON f.cat_id=c.id
 		WHERE f.id=? AND c.merchant_id=?`, itemId, mchId)

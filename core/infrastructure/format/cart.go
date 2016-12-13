@@ -26,7 +26,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 					continue //只显示结账的
 				}
 				buf.WriteString(fmt.Sprintf(`
-			<div class="goods-item">
+			<div class="goods-product">
 				   <a target="_blank" href="/goods-%d.htm">
 				     <img src="%s" class="goods-thumb" />
 				   </a>

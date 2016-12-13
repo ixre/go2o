@@ -15,7 +15,7 @@ import (
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
@@ -42,7 +42,7 @@ func NewSaleService(r sale.ISaleRepo, cateRepo sale.ICategoryRepo,
 }
 
 // 获取产品值
-func (s *saleService) GetValueItem(supplierId, itemId int32) *item.Item {
+func (s *saleService) GetProductValue(supplierId, itemId int32) *product.Product {
 	sl := s._rep.GetSale(supplierId)
 	pro := sl.ItemManager().GetItem(itemId)
 	if pro != nil {
@@ -70,7 +70,7 @@ func (s *saleService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *value
 }
 
 // 根据SKU获取商品
-func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *goods.ValueGoods {
+func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *goods.ItemGoods {
 	sl := s._rep.GetSale(mchId)
 	gs := sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	if gs != nil {
@@ -80,7 +80,7 @@ func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 }
 
 // 根据快照编号获取商品
-func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *goods.ValueGoods {
+func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *goods.ItemGoods {
 	snap := s._goodsRepo.GetSaleSnapshot(snapshotId)
 	if snap != nil {
 		return s._goodsRepo.GetValueGoodsById(snap.SkuId)
@@ -94,7 +94,7 @@ func (s *saleService) GetSaleSnapshotById(snapshotId int32) *goods.SalesSnapshot
 }
 
 // 保存产品
-func (s *saleService) SaveItem(vendorId int32, v *item.Item) (int32, error) {
+func (s *saleService) SaveItem(vendorId int32, v *product.Product) (int32, error) {
 	sl := s._rep.GetSale(vendorId)
 	var pro sale.IItem
 	v.VendorId = vendorId //设置供应商编号
@@ -125,7 +125,7 @@ func (s *saleService) SaveItemInfo(mchId int32, itemId int32, info string) error
 }
 
 // 保存商品
-func (s *saleService) SaveGoods(mchId int32, gs *goods.ValueGoods) (int32, error) {
+func (s *saleService) SaveGoods(mchId int32, gs *goods.ItemGoods) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	if gs.Id > 0 {
 		g := sl.GoodsManager().GetGoods(gs.Id)
