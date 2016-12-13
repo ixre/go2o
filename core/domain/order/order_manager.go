@@ -22,8 +22,8 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -37,9 +37,9 @@ var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
 	rep          order.IOrderRepo
-	saleRepo     sale.ISaleRepo
+	productRepo  product.IProductRepo
 	cartRepo     cart.ICartRepo
-	goodsRepo    item.IGoodsRepo
+	goodsRepo    item.IGoodsItemRepo
 	promRepo     promotion.IPromotionRepo
 	memberRepo   member.IMemberRepo
 	mchRepo      merchant.IMerchantRepo
@@ -52,15 +52,15 @@ type orderManagerImpl struct {
 }
 
 func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
-	rep order.IOrderRepo, payRepo payment.IPaymentRepo, saleRepo sale.ISaleRepo,
-	goodsRepo item.IGoodsRepo, promRepo promotion.IPromotionRepo,
+	rep order.IOrderRepo, payRepo payment.IPaymentRepo, productRepo product.IProductRepo,
+	goodsRepo item.IGoodsItemRepo, promRepo promotion.IPromotionRepo,
 	memberRepo member.IMemberRepo, deliveryRepo delivery.IDeliveryRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {
 	return &orderManagerImpl{
 		rep:          rep,
 		cartRepo:     cartRepo,
-		saleRepo:     saleRepo,
+		productRepo:  productRepo,
 		goodsRepo:    goodsRepo,
 		promRepo:     promRepo,
 		memberRepo:   memberRepo,
@@ -76,14 +76,14 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 // 生成订单
 func (t *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 	return newOrder(t, val, t.mchRepo,
-		t.rep, t.goodsRepo, t.saleRepo, t.promRepo,
+		t.rep, t.goodsRepo, t.productRepo, t.promRepo,
 		t.memberRepo, t.expressRepo, t.paymentRepo, t.valRepo)
 }
 
 // 生成空白订单,并保存返回对象
 func (t *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
 	return NewSubOrder(v, t, t.rep, t.memberRepo,
-		t.goodsRepo, t.shipRepo, t.saleRepo,
+		t.goodsRepo, t.shipRepo, t.productRepo,
 		t.valRepo, t.mchRepo)
 }
 

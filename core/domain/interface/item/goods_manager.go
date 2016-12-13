@@ -16,9 +16,9 @@ import (
 
 type (
 	// 商品
-	IGoods interface {
-		// 获取领域对象编号
-		GetDomainId() int32
+	IGoodsItem interface {
+		// 获取聚合根编号
+		GetAggregateRootId() int32
 
 		// 商品快照
 		SnapshotManager() ISnapshotManager
@@ -73,21 +73,24 @@ type (
 		//
 		//// 获取最新的快照
 		//GetLatestSnapshot() *goods.GoodsSnapshot
+
+		// 删除商品
+		Destroy() error
 	}
 
 	// 商品服务
 	IGoodsManager interface {
 		// 创建商品
-		CreateGoodsByItem(product.IProduct, *GoodsItem) IGoods
+		CreateGoodsByItem(product.IProduct, *GoodsItem) IGoodsItem
 
 		// 创建商品
-		CreateGoods(*GoodsItem) IGoods
+		CreateGoods(*GoodsItem) IGoodsItem
 
 		// 根据产品编号获取商品
-		GetGoods(id int32) IGoods
+		GetGoods(id int32) IGoodsItem
 
 		// 根据产品SKU获取商品
-		GetGoodsBySku(itemId, skuId int32) IGoods
+		GetGoodsBySku(itemId, skuId int32) IGoodsItem
 
 		// 删除商品
 		DeleteGoods(id int32) error

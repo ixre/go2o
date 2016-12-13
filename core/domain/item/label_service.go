@@ -94,7 +94,7 @@ func (l *saleLabelImpl) GetPagedValueGoods(sortBy string,
 		l.GetDomainId(), sortBy, begin, end)
 }
 
-var _ item.ILabelManager = new(labelManagerImpl)
+var _ item.ILabelService = new(labelManagerImpl)
 
 type labelManagerImpl struct {
 	_rep     item.ISaleLabelRepo
@@ -103,7 +103,7 @@ type labelManagerImpl struct {
 }
 
 func NewLabelManager(mchId int32, rep item.ISaleLabelRepo,
-	valRepo valueobject.IValueRepo) item.ILabelManager {
+	valRepo valueobject.IValueRepo) item.ILabelService {
 	c := &labelManagerImpl{
 		_rep:     rep,
 		_mchId:   mchId,
@@ -112,7 +112,7 @@ func NewLabelManager(mchId int32, rep item.ISaleLabelRepo,
 	return c.init()
 }
 
-func (l *labelManagerImpl) init() item.ILabelManager {
+func (l *labelManagerImpl) init() item.ILabelService {
 	//mchConf := l._valRepo.GetPlatformConf()
 	//if !mchConf.MchGoodsCategory && l._mchId > 0 {
 

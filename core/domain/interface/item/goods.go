@@ -32,13 +32,19 @@ var (
 
 type (
 	// 商品仓储
-	IGoodsRepo interface {
+	IGoodsItemRepo interface {
+		// 创建商品
+		CreateItem(v *GoodsItem) IGoodsItem
+
+		// 获取商品
+		GetItem(itemId int32) IGoodsItem
+
 		// 获取商品
 		GetValueGoods(itemId int32, skuId int32) *GoodsItem
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
-		GetGoodsBySKuId(skuId int32) interface{}
+		GetGoodsBySkuId(skuId int32) interface{}
 
 		// 获取商品
 		GetValueGoodsById(goodsId int32) *GoodsItem

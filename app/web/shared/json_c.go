@@ -168,7 +168,7 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
-		ss := rsi.SaleService
+		ss := rsi.ItemService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
@@ -190,7 +190,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
-	ss := rsi.SaleService
+	ss := rsi.ItemService
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
 		-1, begin, begin+size, "item_info.id DESC")
 
@@ -211,7 +211,7 @@ func (j *JsonC) Get_Newshop(c *echox.Context) error {
 //最热商品
 func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
-	ss := rsi.SaleService
+	ss := rsi.ItemService
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
@@ -228,7 +228,7 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
-		ss := rsi.SaleService
+		ss := rsi.ItemService
 		for _, t := range types {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
@@ -258,8 +258,8 @@ func (j *JsonC) SaleLabelGoods(c *echox.Context) error {
 		//从缓存中读取
 		for _, param := range codes {
 			code, size, begin := j.getMultiParams(param)
-			list := rsi.SaleService.GetValueGoodsBySaleLabel(
-				mchId, code, "", begin, begin+size)
+			list := rsi.ItemService.GetValueGoodsBySaleLabel(
+				code, "", begin, begin+size)
 			result[code] = list
 		}
 		sto.SetExpire(key, result, maxSeconds)

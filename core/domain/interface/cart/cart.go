@@ -53,7 +53,7 @@ type (
 		Items() map[int32]*CartItem
 
 		// 获取购物车中的商品
-		GetCartGoods() []item.IGoods
+		GetCartGoods() []item.IGoodsItem
 
 		// 结算数据持久化
 		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error

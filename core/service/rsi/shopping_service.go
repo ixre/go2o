@@ -18,7 +18,6 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -28,8 +27,7 @@ import (
 type shoppingService struct {
 	_rep        order.IOrderRepo
 	_itemRepo   product.IProductRepo
-	_goodsRepo  proItem.IGoodsRepo
-	_saleRepo   sale.ISaleRepo
+	_goodsRepo  proItem.IGoodsItemRepo
 	_cartRepo   cart.ICartRepo
 	_mchRepo    merchant.IMerchantRepo
 	_manager    order.IOrderManager
@@ -37,15 +35,14 @@ type shoppingService struct {
 }
 
 func NewShoppingService(r order.IOrderRepo,
-	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo,
-	itemRepo product.IProductRepo, goodsRepo proItem.IGoodsRepo,
+	cartRepo cart.ICartRepo,
+	itemRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
 	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
 		_rep:        r,
 		_itemRepo:   itemRepo,
 		_cartRepo:   cartRepo,
 		_goodsRepo:  goodsRepo,
-		_saleRepo:   saleRepo,
 		_mchRepo:    mchRepo,
 		_manager:    r.Manager(),
 		_orderQuery: orderQuery,

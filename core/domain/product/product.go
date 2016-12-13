@@ -44,7 +44,8 @@ func NewProductImpl(v *product.Product,
 	}
 }
 
-func (i *productImpl) GetDomainId() int32 {
+// 获取聚合根编号
+func (i *productImpl) GetAggregateRootId() int32 {
 	return i.value.Id
 }
 
@@ -92,7 +93,7 @@ func (i *productImpl) checkValue(v *product.Product) error {
 
 // 设置值
 func (i *productImpl) SetValue(v *product.Product) error {
-	if i.GetDomainId() <= 0 {
+	if i.GetAggregateRootId() <= 0 {
 		i.value.ShelveState = product.ShelvesDown
 		i.value.ReviewState = enum.ReviewAwaiting
 	}
@@ -150,16 +151,16 @@ func (i *productImpl) IsOnShelves() bool {
 // 获取商品的销售标签
 //func (i *itemImpl) GetSaleLabels() []*item.Label {
 //    if i.saleLabels == nil {
-//        i.saleLabels = i.saleLabelRepo.GetItemSaleLabels(i.GetDomainId())
+//        i.saleLabels = i.saleLabelRepo.GetItemSaleLabels(i.GetAggregateRootId())
 //    }
 //    return i.saleLabels
 //}
 //
 //// 保存销售标签
 //func (i *itemImpl) SaveSaleLabels(tagIds []int) error {
-//    err := i.saleLabelRepo.CleanItemSaleLabels(i.GetDomainId())
+//    err := i.saleLabelRepo.CleanItemSaleLabels(i.GetAggregateRootId())
 //    if err == nil {
-//        err = i.saleLabelRepo.SaveItemSaleLabels(i.GetDomainId(), tagIds)
+//        err = i.saleLabelRepo.SaveItemSaleLabels(i.GetAggregateRootId(), tagIds)
 //        i.saleLabels = nil
 //    }
 //    return err
@@ -223,7 +224,7 @@ func (i *productImpl) Incorrect(remark string) error {
 func (i *productImpl) Save() (int32, error) {
 	unix := time.Now().Unix()
 	i.value.UpdateTime = unix
-	if i.GetDomainId() <= 0 {
+	if i.GetAggregateRootId() <= 0 {
 		i.value.CreateTime = unix
 	}
 	if i.value.Code == "" {
@@ -248,11 +249,11 @@ func (i *productImpl) Save() (int32, error) {
 
 //todo: 过渡方法,应有SKU,不根据Item生成Goods
 func (i *productImpl) saveGoods() {
-	//val := i.goodsRepo.GetValueGoods(i.GetDomainId(), 0)
+	//val := i.goodsRepo.GetValueGoods(i.GetAggregateRootId(), 0)
 	//if val == nil {
 	//    val = &item.ItemGoods{
 	//        Id:            0,
-	//        ProductId:     i.GetDomainId(),
+	//        ProductId:     i.GetAggregateRootId(),
 	//        IsPresent:     0,
 	//        SkuId:         0,
 	//        PromotionFlag: 0,
@@ -269,11 +270,11 @@ func (i *productImpl) saveGoods() {
 
 // 销毁产品
 func (i *productImpl) Destroy() error {
-	num := i.productRepo.GetProductSaleNum(i.GetDomainId())
+	num := i.productRepo.GetProductSaleNum(i.GetAggregateRootId())
 	if num > 0 {
 		return item.ErrCanNotDeleteItem
 	}
-	return i.productRepo.DeleteProduct(i.GetDomainId())
+	return i.productRepo.DeleteProduct(i.GetAggregateRootId())
 }
 
 //// 生成快照
@@ -292,7 +293,7 @@ func (i *productImpl) Destroy() error {
 //	cate := i._saleRepo.GetCategory(mchId, v.CategoryId)
 //	var gsn *goods.GoodsSnapshot = &goods.GoodsSnapshot{
 //		Key:          fmt.Sprintf("%d-g%d-%d", mchId, v.Id, unix),
-//		GoodsId:      i.GetDomainId(),
+//		GoodsId:      i.GetAggregateRootId(),
 //		GoodsName:    v.Name,
 //		GoodsNo:      v.GoodsNo,
 //		SmallTitle:   v.SmallTitle,
@@ -329,7 +330,7 @@ func (i *productImpl) Destroy() error {
 //// 获取最新的快照
 //func (i *Goods) GetLatestSnapshot() *goods.GoodsSnapshot {
 //	if i._latestSnapshot == nil {
-//		i._latestSnapshot = i._saleRepo.GetLatestGoodsSnapshot(i.GetDomainId())
+//		i._latestSnapshot = i._saleRepo.GetLatestGoodsSnapshot(i.GetAggregateRootId())
 //	}
 //	return i._latestSnapshot
 //}

@@ -17,7 +17,7 @@ import (
 type cartImpl struct {
 	value      *cart.ValueCart
 	rep        cart.ICartRepo
-	goodsRepo  item.IGoodsRepo
+	goodsRepo  item.IGoodsItemRepo
 	memberRepo member.IMemberRepo
 	summary    string
 	shop       shop.IShop
@@ -26,7 +26,7 @@ type cartImpl struct {
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo item.IGoodsRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	return (&cartImpl{
 		value:      val,
 		rep:        rep,
@@ -37,7 +37,7 @@ func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
 
 // 创建新的购物车
 func NewCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
-	goodsRepo item.IGoodsRepo) cart.ICart {
+	goodsRepo item.IGoodsItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &cart.ValueCart{
@@ -119,7 +119,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 func (c *cartImpl) setGoodsInfo(snap *item.Snapshot, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(item.IGoods)
+		gds := c.goodsRepo.GetGoodsBySkuId(snap.SkuId).(item.IGoodsItem)
 		snap.SalePrice = gds.GetPromotionPrice(level)
 	}
 }
@@ -162,14 +162,14 @@ func (c *cartImpl) GetValue() cart.ValueCart {
 }
 
 // 获取购物车中的商品
-func (c *cartImpl) GetCartGoods() []item.IGoods {
+func (c *cartImpl) GetCartGoods() []item.IGoodsItem {
 	//todo: IMPL
 	//var gs []item.IGoods = make([]item.IGoods, len(c._value.Items))
 	//for i, v := range c._value.Items {
 	//    gs[i] = c._goodsRepo.getGoods
 	//}
 	//return gs
-	return []item.IGoods{}
+	return []item.IGoodsItem{}
 }
 
 // 获取商品编号与购物车项的集合

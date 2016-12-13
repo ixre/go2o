@@ -19,7 +19,7 @@ import (
 var _ item.ISnapshotManager = new(snapshotManagerImpl)
 
 type snapshotManagerImpl struct {
-	rep            item.IGoodsRepo
+	rep            item.IGoodsItemRepo
 	itemRepo       product.IProductRepo
 	skuId          int32
 	gs             *item.GoodsItem
@@ -27,7 +27,7 @@ type snapshotManagerImpl struct {
 	latestSnapshot *item.Snapshot
 }
 
-func NewSnapshotManagerImpl(skuId int32, rep item.IGoodsRepo,
+func NewSnapshotManagerImpl(skuId int32, rep item.IGoodsItemRepo,
 	itemRepo product.IProductRepo, gs *item.GoodsItem, gi *product.Product) item.ISnapshotManager {
 	return &snapshotManagerImpl{
 		rep:      rep,
