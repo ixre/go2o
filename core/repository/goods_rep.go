@@ -50,7 +50,7 @@ func (g *goodsRepo) GetGoodsBySKuId(skuId int32) interface{} {
 // 获取商品
 func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *item.GoodsItem {
 	var e *item.GoodsItem = new(item.GoodsItem)
-	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
+	if g.Connector.GetOrm().GetBy(e, "product_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
 	}
 	return nil
@@ -68,7 +68,7 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int32) *item.GoodsItem {
 // 根据SKU获取商品
 func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *item.GoodsItem {
 	var e *item.GoodsItem = new(item.GoodsItem)
-	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
+	if g.Connector.GetOrm().GetBy(e, "product_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
 	return nil
@@ -78,8 +78,8 @@ func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *item.GoodsItem {
 func (g *goodsRepo) GetGoodsByIds(ids ...int32) ([]*valueobject.Goods, error) {
 	var items []*valueobject.Goods
 	err := g.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_goods INNER JOIN pro_product ON gs_goods.item_id=pro_product.id
-     WHERE gs_goods.id IN (`+format.IdArrJoinStr32(ids)+`)`)
+		`SELECT * FROM item_info INNER JOIN pro_product ON item_info.product_id=pro_product.id
+     WHERE item_info.id IN (`+format.IdArrJoinStr32(ids)+`)`)
 
 	return items, err
 }
@@ -129,14 +129,14 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 
 	list := []*valueobject.Goods{}
 	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
-	 INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+	 INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=? %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, product.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=?
@@ -151,7 +151,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 // 获取指定数量已上架的商品
 func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string) []*valueobject.Goods {
 	e := []*valueobject.Goods{}
-	sql := fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+	sql := fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE supplier_id=? AND pro_product.review_state=? AND pro_product.shelve_state=?
 		 ORDER BY %s,update_time DESC LIMIT ?,?`,

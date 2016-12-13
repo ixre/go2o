@@ -144,7 +144,7 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 		if ok {
 			v.Snapshot = gv
 			v.Name = gv.GoodsTitle
-			v.Price = gv.Price
+			v.Price = gv.RetailPrice
 			v.GoodsNo = gv.GoodsNo
 			v.Image = gv.Image
 			v.SalePrice = gv.SalePrice
@@ -183,7 +183,7 @@ func (c *cartImpl) Items() map[int32]*cart.CartItem {
 
 // 添加项
 func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
-	num int, checked bool) (*cart.CartItem, error) {
+	num int32, checked bool) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.CartItem{}
@@ -228,7 +228,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 		Name:       snap.GoodsTitle,
 		GoodsNo:    snap.GoodsNo,
 		Image:      snap.Image,
-		Price:      snap.Price,
+		Price:      snap.RetailPrice,
 		SalePrice:  snap.SalePrice,
 	}
 	if checked {
@@ -239,7 +239,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 }
 
 // 移出项
-func (c *cartImpl) RemoveItem(goodsId int32, num int) error {
+func (c *cartImpl) RemoveItem(goodsId int32, num int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -550,7 +550,7 @@ func (c *cartImpl) GetSummary() string {
 				if len(snap.SmallTitle) != 0 {
 					buf.WriteString("(" + snap.SmallTitle + ")")
 				}
-				buf.WriteString("*" + strconv.Itoa(v.Quantity))
+				buf.WriteString("*" + strconv.Itoa(int(v.Quantity)))
 				if i < length-1 {
 					buf.WriteString("\n")
 				}

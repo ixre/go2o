@@ -69,10 +69,10 @@ type (
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(vendorId, shopId, skuId int32, num int, checked bool) (*CartItem, error)
+		AddItem(vendorId, shopId, skuId int32, num int32, checked bool) (*CartItem, error)
 
 		// 移出项
-		RemoveItem(skuId int32, num int) error
+		RemoveItem(skuId int32, num int32) error
 
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
@@ -159,7 +159,7 @@ type (
 		ShopId     int32          `db:"shop_id"`
 		SkuId      int32          `db:"goods_id"`
 		SnapshotId int32          `db:"snap_id"`
-		Quantity   int            `db:"quantity"`
+		Quantity   int32          `db:"quantity"`
 		Checked    int            `db:"checked" json:"checked"` // 是否结算
 		Snapshot   *item.Snapshot `db:"-"`
 

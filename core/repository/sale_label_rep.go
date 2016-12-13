@@ -86,8 +86,8 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 		sortBy = "ORDER BY " + sortBy
 	}
 	arr := []*valueobject.Goods{}
-	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN
-	       pro_product ON pro_product.id = gs_goods.item_id
+	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info INNER JOIN
+	       pro_product ON pro_product.id = item_info.product_id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t
 			 ON t.id = g.sale_tag_id WHERE t.mch_id=? AND t.id=?) `+sortBy+`
@@ -103,7 +103,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 		sortBy = "ORDER BY " + sortBy
 	}
 	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
-	    INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+	    INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?)`), &total, enum.ReviewPass,
@@ -111,7 +111,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 	arr := []*valueobject.Goods{}
 	if total > 0 {
 		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods
-         INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`,

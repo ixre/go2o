@@ -174,10 +174,10 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 			switch p {
 			case "new-goods":
 				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
-					-1, begin, begin+size, "gs_goods.id DESC")
+					-1, begin, begin+size, "item_info.id DESC")
 			case "hot-sales":
 				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
-					-1, begin, begin+size, "gs_goods.sale_num DESC")
+					-1, begin, begin+size, "item_info.sale_num DESC")
 			}
 		}
 		sto.SetExpire(key, result, maxSeconds)
@@ -192,7 +192,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := rsi.SaleService
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
-		-1, begin, begin+size, "gs_goods.id DESC")
+		-1, begin, begin+size, "item_info.id DESC")
 
 	return c.Debug(c.JSON(http.StatusOK, result))
 }
@@ -215,7 +215,7 @@ func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
-		-1, begin, begin+size, "gs_goods.sale_num DESC")
+		-1, begin, begin+size, "item_info.sale_num DESC")
 	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
@@ -234,10 +234,10 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 			switch p {
 			case "new-goods":
 				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
-					-1, begin, begin+size, "gs_goods.id DESC")
+					-1, begin, begin+size, "item_info.id DESC")
 			case "hot-sales":
 				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
-					-1, begin, begin+size, "gs_goods.sale_num DESC")
+					-1, begin, begin+size, "item_info.sale_num DESC")
 			}
 		}
 		sto.SetExpire(key, result, maxSeconds)
