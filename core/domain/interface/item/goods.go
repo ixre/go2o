@@ -34,20 +34,20 @@ type (
 	// 商品仓储
 	IGoodsRepo interface {
 		// 获取商品
-		GetValueGoods(itemId int32, skuId int32) *ItemGoods
+		GetValueGoods(itemId int32, skuId int32) *GoodsItem
 
 		// 根据SKU-ID获取商品,SKU-ID为商品ID
 		//todo: 循环引有,故为interface{}
 		GetGoodsBySKuId(skuId int32) interface{}
 
 		// 获取商品
-		GetValueGoodsById(goodsId int32) *ItemGoods
+		GetValueGoodsById(goodsId int32) *GoodsItem
 
 		// 根据SKU获取商品
-		GetValueGoodsBySku(itemId, sku int32) *ItemGoods
+		GetValueGoodsBySku(itemId, sku int32) *GoodsItem
 
 		// 保存商品
-		SaveValueGoods(*ItemGoods) (int32, error)
+		SaveValueGoods(*GoodsItem) (int32, error)
 
 		// 获取在货架上的商品
 		GetOnShelvesGoods(mchId int32, start, end int,
@@ -92,7 +92,7 @@ type (
 	}
 
 	// 商品,临时改方便辨别
-	ItemGoods struct {
+	GoodsItem struct {
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 
 		// 货品编号
@@ -136,8 +136,8 @@ type (
 )
 
 // 转换为商品值对象
-func ParseToValueGoods(v *valueobject.Goods) *ItemGoods {
-	return &ItemGoods{
+func ParseToValueGoods(v *valueobject.Goods) *GoodsItem {
+	return &GoodsItem{
 		Id:            v.GoodsId,
 		ProductId:     v.Item_Id,
 		IsPresent:     v.IsPresent,

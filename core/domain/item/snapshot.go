@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package goods
+package item
 
 import (
 	"fmt"
@@ -22,13 +22,13 @@ type snapshotManagerImpl struct {
 	rep            item.IGoodsRepo
 	itemRepo       product.IProductRepo
 	skuId          int32
-	gs             *item.ItemGoods
+	gs             *item.GoodsItem
 	gi             *product.Product
 	latestSnapshot *item.Snapshot
 }
 
 func NewSnapshotManagerImpl(skuId int32, rep item.IGoodsRepo,
-	itemRepo product.IProductRepo, gs *item.ItemGoods, gi *product.Product) item.ISnapshotManager {
+	itemRepo product.IProductRepo, gs *item.GoodsItem, gi *product.Product) item.ISnapshotManager {
 	return &snapshotManagerImpl{
 		rep:      rep,
 		skuId:    skuId,
@@ -67,7 +67,7 @@ func (s *snapshotManagerImpl) CompareSnapshot(snap *item.Snapshot,
 	return true
 }
 
-func (s *snapshotManagerImpl) getGoodsAndItem() (*item.ItemGoods, *product.Product) {
+func (s *snapshotManagerImpl) getGoodsAndItem() (*item.GoodsItem, *product.Product) {
 	if s.gs == nil {
 		s.gs = s.rep.GetValueGoodsById(s.skuId)
 	}
@@ -107,7 +107,7 @@ func (s *snapshotManagerImpl) GenerateSnapshot() (int32, error) {
 
 // 更新快照
 func (s *snapshotManagerImpl) updateSnapshot(ls *item.Snapshot,
-	gi *product.Product, gs *item.ItemGoods) (int32, error) {
+	gi *product.Product, gs *item.GoodsItem) (int32, error) {
 	LevelSales := 0
 	if len(s.rep.GetGoodsLevelPrice(s.skuId)) > 0 {
 		LevelSales = 1
@@ -119,7 +119,7 @@ func (s *snapshotManagerImpl) updateSnapshot(ls *item.Snapshot,
 		Key:          fmt.Sprintf("%d-g%d-%d", gi.VendorId, s.skuId, unix),
 		ItemId:       gs.ProductId,
 		GoodsTitle:   gi.Name,
-		GoodsNo:      gi.GoodsNo,
+		GoodsNo:      gi.Code,
 		SmallTitle:   gi.SmallTitle,
 		CategoryId:   gi.CategoryId,
 		Image:        gi.Image,

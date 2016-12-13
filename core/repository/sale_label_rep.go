@@ -14,38 +14,38 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
-	saleImpl "go2o/core/domain/sale"
+	itemImpl "go2o/core/domain/item"
 )
 
 type saleLabelRepo struct {
 	db.Connector
 }
 
-func NewTagSaleRepo(c db.Connector) sale.ISaleLabelRepo {
+func NewTagSaleRepo(c db.Connector) item.ISaleLabelRepo {
 	return &saleLabelRepo{c}
 }
 
 // 创建销售标签
-func (t *saleLabelRepo) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
+func (t *saleLabelRepo) CreateSaleLabel(v *item.Label) item.ISaleLabel {
 	if v != nil {
-		return saleImpl.NewSaleLabel(v.MerchantId, v, t)
+		return itemImpl.NewSaleLabel(v.MerchantId, v, t)
 	}
 	return nil
 }
 
 // 获取所有的销售标签
-func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int32) []*sale.Label {
-	arr := []*sale.Label{}
+func (t *saleLabelRepo) GetAllValueSaleLabels(mchId int32) []*item.Label {
+	arr := []*item.Label{}
 	t.Connector.GetOrm().Select(&arr, "mch_id=?", mchId)
 	return arr
 }
 
 // 获取销售标签值
-func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label {
-	var v *sale.Label = new(sale.Label)
+func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *item.Label {
+	var v *item.Label = new(item.Label)
 	err := t.Connector.GetOrm().GetBy(v, "mch_id=? AND id=?", mchId, tagId)
 	if err == nil {
 		return v
@@ -54,19 +54,19 @@ func (t *saleLabelRepo) GetValueSaleLabel(mchId int32, tagId int32) *sale.Label 
 }
 
 // 获取销售标签
-func (t *saleLabelRepo) GetSaleLabel(mchId int32, id int32) sale.ISaleLabel {
+func (t *saleLabelRepo) GetSaleLabel(mchId int32, id int32) item.ISaleLabel {
 	return t.CreateSaleLabel(t.GetValueSaleLabel(mchId, id))
 }
 
 // 保存销售标签
-func (t *saleLabelRepo) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
+func (t *saleLabelRepo) SaveSaleLabel(mchId int32, v *item.Label) (int32, error) {
 	v.MerchantId = mchId
 	return orm.I32(orm.Save(t.GetOrm(), v, int(v.Id)))
 }
 
 // 根据Code获取销售标签
-func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
-	var v *sale.Label = new(sale.Label)
+func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *item.Label {
+	var v *item.Label = new(item.Label)
 	if t.GetOrm().GetBy(v, "mch_id=? AND tag_code=?", mchId, code) == nil {
 		return v
 	}
@@ -75,7 +75,7 @@ func (t *saleLabelRepo) GetSaleLabelByCode(mchId int32, code string) *sale.Label
 
 // 删除销售标签
 func (t *saleLabelRepo) DeleteSaleLabel(mchId int32, id int32) error {
-	_, err := t.GetOrm().Delete(&sale.Label{}, "mch_id=? AND id=?", mchId, id)
+	_, err := t.GetOrm().Delete(&item.Label{}, "mch_id=? AND id=?", mchId, id)
 	return err
 }
 
@@ -122,8 +122,8 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 }
 
 // 获取商品的销售标签
-func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*sale.Label {
-	arr := []*sale.Label{}
+func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*item.Label {
+	arr := []*item.Label{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
 	(SELECT sale_tag_id FROM pro_product_tag WHERE item_id=?) AND enabled=1`, itemId)
 	return arr

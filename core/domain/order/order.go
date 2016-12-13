@@ -355,7 +355,7 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	gs := o.saleRepo.GetSale(c.VendorId).GoodsManager().CreateGoods(
-		&item.ItemGoods{Id: c.SkuId, SkuId: c.SkuId})
+		&item.GoodsItem{Id: c.SkuId, SkuId: c.SkuId})
 	// 获取商品已销售快照
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {
@@ -1424,7 +1424,7 @@ func (o *subOrderImpl) cancelGoods() error {
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
-		var gds sale.IGoods = gm.GetGoods(snapshot.SkuId)
+		var gds item.IGoods = gm.GetGoods(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
 			gds.FreeStock(v.Quantity)

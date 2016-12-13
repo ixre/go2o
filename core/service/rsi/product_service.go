@@ -2,6 +2,7 @@ package rsi
 
 import (
 	"github.com/jsix/gof/web/ui/tree"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/dto"
@@ -16,13 +17,16 @@ import (
 type productService struct {
 	pmRep  promodel.IProModelRepo
 	catRep product.ICategoryRepo
+	proRep product.IProductRepo
 }
 
 func NewProService(pmRep promodel.IProModelRepo,
-	catRep product.ICategoryRepo) *productService {
+	catRep product.ICategoryRepo,
+	proRep product.IProductRepo) *productService {
 	return &productService{
 		pmRep:  pmRep,
 		catRep: catRep,
+		proRep: proRep,
 	}
 }
 
@@ -269,4 +273,82 @@ func (p *productService) setChild(list []product.ICategory, dst *dto.Category) {
 			dst.Child = append(dst.Child, dv)
 		}
 	}
+}
+
+/***** 产品 *****/
+
+// 获取产品值
+func (p *productService) GetProductValue(productId int32) *product.Product {
+	pro := p.proRep.GetProduct(productId)
+	if pro != nil {
+		v := pro.GetValue()
+		return &v
+	}
+	return nil
+}
+
+// 保存产品
+func (p *productService) SaveItem(v *product.Product) (int32, error) {
+	var pro product.IProduct
+	if v.Id > 0 {
+		pro = p.proRep.GetProduct(v.Id)
+		if pro == nil || pro.GetValue().VendorId != v.VendorId {
+			return 0, product.ErrNoSuchProduct
+		}
+		// 修改货品时，不会修改详情
+		v.Description = pro.GetValue().Description
+	} else {
+		pro = p.proRep.CreateProduct(v)
+	}
+	err := pro.SetValue(v)
+	if err == nil {
+		return pro.Save()
+	}
+	return v.Id, err
+}
+
+// 保存货品描述
+func (p *productService) SaveItemInfo(supplierId int32,
+	productId int32, info string) error {
+	pro := p.proRep.GetProduct(productId)
+	if pro == nil || pro.GetValue().VendorId != supplierId {
+		return product.ErrNoSuchProduct
+	}
+	return pro.SetDescribe(info)
+}
+
+// 删除货品
+func (p *productService) DeleteItem(supplierId int32, productId int32) error {
+	pro := p.proRep.GetProduct(productId)
+	if pro == nil || pro.GetValue().VendorId != supplierId {
+		return product.ErrNoSuchProduct
+	}
+	return pro.Destroy()
+}
+
+// 获取商品的销售标签
+func (p *productService) GetItemSaleLabels(mchId, itemId int32) []*item.Label {
+	var list = make([]*item.Label, 0)
+	//todo: refactor
+
+	//sl := s._rep.GetSale(mchId)
+	//if goods := sl.ItemManager().GetItem(itemId); goods != nil {
+	//	list = goods.GetSaleLabels()
+	//}
+	return list
+}
+
+// 保存商品的销售标签
+func (p *productService) SaveItemSaleLabels(mchId, itemId int32, tagIds []int) error {
+	var err error
+
+	//todo: refactor
+
+	//sl := s._rep.GetSale(mchId)
+	//if goods := sl.ItemManager().GetItem(itemId); goods != nil {
+	//	err = goods.SaveSaleLabels(tagIds)
+	//} else {
+	//	err = errors.New("商品不存在")
+	//}
+	return err
 }

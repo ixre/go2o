@@ -25,7 +25,7 @@ var _ sale.ISaleRepo = new(saleRepo)
 type saleRepo struct {
 	db.Connector
 	_cache       map[int32]sale.ISale
-	_tagRepo     sale.ISaleLabelRepo
+	_tagRepo     item.ISaleLabelRepo
 	_promRepo    promotion.IPromotionRepo
 	_itemRepo    product.IProductRepo
 	_goodsRepo   item.IGoodsRepo
@@ -35,7 +35,7 @@ type saleRepo struct {
 }
 
 func NewSaleRepo(c db.Connector, cateRepo product.ICategoryRepo,
-	valRepo valueobject.IValueRepo, saleLabelRepo sale.ISaleLabelRepo,
+	valRepo valueobject.IValueRepo, saleLabelRepo item.ISaleLabelRepo,
 	itemRepo product.IProductRepo, expressRepo express.IExpressRepo,
 	goodsRepo item.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.ISaleRepo {
 	return (&saleRepo{

@@ -48,8 +48,8 @@ func (g *goodsRepo) GetGoodsBySKuId(skuId int32) interface{} {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *item.ItemGoods {
-	var e *item.ItemGoods = new(item.ItemGoods)
+func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *item.GoodsItem {
+	var e *item.GoodsItem = new(item.GoodsItem)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
 	}
@@ -57,8 +57,8 @@ func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *item.ItemGoods {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoodsById(goodsId int32) *item.ItemGoods {
-	var e *item.ItemGoods = new(item.ItemGoods)
+func (g *goodsRepo) GetValueGoodsById(goodsId int32) *item.GoodsItem {
+	var e *item.GoodsItem = new(item.GoodsItem)
 	if g.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
 	}
@@ -66,8 +66,8 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int32) *item.ItemGoods {
 }
 
 // 根据SKU获取商品
-func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *item.ItemGoods {
-	var e *item.ItemGoods = new(item.ItemGoods)
+func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *item.GoodsItem {
+	var e *item.GoodsItem = new(item.GoodsItem)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
@@ -105,7 +105,7 @@ func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
 }
 
 // 保存商品
-func (g *goodsRepo) SaveValueGoods(v *item.ItemGoods) (int32, error) {
+func (g *goodsRepo) SaveValueGoods(v *item.GoodsItem) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 

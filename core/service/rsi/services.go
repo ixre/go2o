@@ -76,12 +76,12 @@ func Init(ctx gof.App) {
 	expressRepo := repository.NewExpressRepo(db, valRepo)
 	shipRepo := repository.NewShipmentRepo(db, expressRepo)
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valRepo)
-	itemRepo := repository.NewProductRepo(db)
+	productRepo := repository.NewProductRepo(db, valRepo)
 	tagSaleRepo := repository.NewTagSaleRepo(db)
 	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
 	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
 	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
-		itemRepo, expressRepo, goodsRepo, promRepo)
+		productRepo, expressRepo, goodsRepo, promRepo)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
 	shopRepo := repository.NewShopRepo(db, sto)
@@ -108,11 +108,11 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	ProductService = NewProService(proMRepo, cateRepo)
+	ProductService = NewProService(proMRepo, cateRepo, productRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(spRepo, saleRepo, cartRepo,
-		itemRepo, goodsRepo, mchRepo, orderQuery)
+		productRepo, goodsRepo, mchRepo, orderQuery)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, spRepo)
 	MerchantService = NewMerchantService(mchRepo, saleRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)

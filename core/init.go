@@ -32,7 +32,6 @@ import (
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
@@ -143,7 +142,7 @@ func OrmMapping(conn db.Connector) {
 
 	/** 产品 **/
 	orm.Mapping(product.Product{}, "pro_product")
-	orm.Mapping(item.ItemGoods{}, "gs_goods")
+	orm.Mapping(item.GoodsItem{}, "gs_goods")
 	orm.Mapping(product.Category{}, "cat_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
@@ -155,7 +154,7 @@ func OrmMapping(conn db.Connector) {
 	//orm.Mapping(promodel.pr{},"pro_attr")
 	orm.Mapping(item.Snapshot{}, "gs_snapshot")
 	orm.Mapping(item.SalesSnapshot{}, "gs_sales_snapshot")
-	orm.Mapping(sale.Label{}, "gs_sale_label")
+	orm.Mapping(item.Label{}, "gs_sale_label")
 	orm.Mapping(item.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/

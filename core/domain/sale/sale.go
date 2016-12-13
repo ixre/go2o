@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
+	itemImpl "go2o/core/domain/item"
 	productImpl "go2o/core/domain/product"
 )
 
@@ -24,29 +25,28 @@ var _ sale.ISale = new(saleImpl)
 type saleImpl struct {
 	mchId        int32
 	saleRepo     sale.ISaleRepo
-	labelRepo    sale.ISaleLabelRepo
+	labelRepo    item.ISaleLabelRepo
 	cateRepo     product.ICategoryRepo
 	goodsRepo    item.IGoodsRepo
 	valRepo      valueobject.IValueRepo
 	expressRepo  express.IExpressRepo
 	promRepo     promotion.IPromotionRepo
 	cateManager  product.IGlobCatService
-	labelManager sale.ILabelManager
-	itemManager  sale.IItemManager
-	itemRepo     product.IProductRepo
-	goodsManager sale.IGoodsManager
+	labelManager item.ILabelManager
+	productRepo  product.IProductRepo
+	goodsManager item.IGoodsManager
 }
 
 func NewSale(mchId int32, saleRepo sale.ISaleRepo, valRepo valueobject.IValueRepo,
 	cateRepo product.ICategoryRepo, itemRepo product.IProductRepo, goodsRepo item.IGoodsRepo,
-	tagRepo sale.ISaleLabelRepo, expressRepo express.IExpressRepo,
+	tagRepo item.ISaleLabelRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.ISale {
 	return (&saleImpl{
 		mchId:       mchId,
 		cateRepo:    cateRepo,
 		saleRepo:    saleRepo,
 		labelRepo:   tagRepo,
-		itemRepo:    itemRepo,
+		productRepo: itemRepo,
 		goodsRepo:   goodsRepo,
 		expressRepo: expressRepo,
 		promRepo:    promRepo,
@@ -68,29 +68,21 @@ func (s *saleImpl) CategoryManager() product.IGlobCatService {
 }
 
 // 标签管理器
-func (s *saleImpl) LabelManager() sale.ILabelManager {
+func (s *saleImpl) LabelManager() item.ILabelManager {
 	if s.labelManager == nil {
-		s.labelManager = NewLabelManager(
+		s.labelManager = itemImpl.NewLabelManager(
 			s.GetAggregateRootId(), s.labelRepo, s.valRepo)
 	}
 	return s.labelManager
 }
 
-// 货品服务
-func (s *saleImpl) ItemManager() sale.IItemManager {
-	if s.itemManager == nil {
-		s.itemManager = NewItemManager(
-			s.GetAggregateRootId(), s, s.itemRepo,
-			s.expressRepo, s.valRepo)
-	}
-	return s.itemManager
-}
-
 // 商品服务
-func (s *saleImpl) GoodsManager() sale.IGoodsManager {
+func (s *saleImpl) GoodsManager() item.IGoodsManager {
 	if s.goodsManager == nil {
-		s.goodsManager = NewGoodsManager(
-			s.GetAggregateRootId(), s, s.valRepo)
+		s.goodsManager = itemImpl.NewGoodsManager(
+			s.GetAggregateRootId(),
+			s.goodsRepo, s.productRepo, s.promRepo, s.valRepo)
+
 	}
 	return s.goodsManager
 }
