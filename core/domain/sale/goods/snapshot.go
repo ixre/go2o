@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"time"
 )
 
@@ -20,15 +20,15 @@ var _ goods.ISnapshotManager = new(snapshotManagerImpl)
 
 type snapshotManagerImpl struct {
 	rep            goods.IGoodsRepo
-	itemRepo       item.IItemRepo
+	itemRepo       product.IProductRepo
 	skuId          int32
-	gs             *goods.ValueGoods
-	gi             *item.Item
+	gs             *goods.ItemGoods
+	gi             *product.Product
 	latestSnapshot *goods.Snapshot
 }
 
 func NewSnapshotManagerImpl(skuId int32, rep goods.IGoodsRepo,
-	itemRepo item.IItemRepo, gs *goods.ValueGoods, gi *item.Item) goods.ISnapshotManager {
+	itemRepo product.IProductRepo, gs *goods.ItemGoods, gi *product.Product) goods.ISnapshotManager {
 	return &snapshotManagerImpl{
 		rep:      rep,
 		skuId:    skuId,
@@ -67,12 +67,12 @@ func (s *snapshotManagerImpl) CompareSnapshot(snap *goods.Snapshot,
 	return true
 }
 
-func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) {
+func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ItemGoods, *product.Product) {
 	if s.gs == nil {
 		s.gs = s.rep.GetValueGoodsById(s.skuId)
 	}
 	if s.gi == nil {
-		s.gi = s.itemRepo.GetValueItem(s.gs.ItemId)
+		s.gi = s.itemRepo.GetProductValue(s.gs.ProductId)
 	}
 	return s.gs, s.gi
 }
@@ -80,7 +80,7 @@ func (s *snapshotManagerImpl) getGoodsAndItem() (*goods.ValueGoods, *item.Item) 
 //func (s *snapshotManagerImpl)
 
 // 检查快照
-func (s *snapshotManagerImpl) checkSnapshot(snap *goods.Snapshot, i *item.Item) (err error) {
+func (s *snapshotManagerImpl) checkSnapshot(snap *goods.Snapshot, i *product.Product) (err error) {
 	// 检查是否更新了上架状态
 	if snap != nil && snap.ShelveState != i.ShelveState {
 		snap.ShelveState = i.ShelveState
@@ -107,7 +107,7 @@ func (s *snapshotManagerImpl) GenerateSnapshot() (int32, error) {
 
 // 更新快照
 func (s *snapshotManagerImpl) updateSnapshot(ls *goods.Snapshot,
-	gi *item.Item, gs *goods.ValueGoods) (int32, error) {
+	gi *product.Product, gs *goods.ItemGoods) (int32, error) {
 	LevelSales := 0
 	if len(s.rep.GetGoodsLevelPrice(s.skuId)) > 0 {
 		LevelSales = 1
@@ -117,7 +117,7 @@ func (s *snapshotManagerImpl) updateSnapshot(ls *goods.Snapshot,
 		SkuId:        s.skuId,
 		VendorId:     gi.VendorId,
 		Key:          fmt.Sprintf("%d-g%d-%d", gi.VendorId, s.skuId, unix),
-		ItemId:       gs.ItemId,
+		ItemId:       gs.ProductId,
 		GoodsTitle:   gi.Name,
 		GoodsNo:      gi.GoodsNo,
 		SmallTitle:   gi.SmallTitle,

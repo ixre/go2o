@@ -32,7 +32,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
@@ -142,8 +142,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shipment.Item{}, "ship_item")
 
 	/** 产品 **/
-	orm.Mapping(item.Item{}, "pro_product")
-	orm.Mapping(goods.ValueGoods{}, "gs_goods")
+	orm.Mapping(product.Product{}, "pro_product")
+	orm.Mapping(goods.ItemGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "cat_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")

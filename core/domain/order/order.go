@@ -355,7 +355,7 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 	gs := o.saleRepo.GetSale(c.VendorId).GoodsManager().CreateGoods(
-		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
+		&goods.ItemGoods{Id: c.SkuId, SkuId: c.SkuId})
 	// 获取商品已销售快照
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {

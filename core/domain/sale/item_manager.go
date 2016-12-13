@@ -17,7 +17,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
@@ -29,9 +29,9 @@ var _ sale.IItem = new(itemImpl)
 
 type itemImpl struct {
 	manager       *itemManagerImpl
-	value         *item.Item
+	value         *product.Product
 	saleRepo      sale.ISaleRepo
-	itemRepo      item.IItemRepo
+	itemRepo      product.IProductRepo
 	saleLabelRepo sale.ISaleLabelRepo
 	goodsRepo     goods.IGoodsRepo
 	expressRepo   express.IExpressRepo
@@ -41,8 +41,8 @@ type itemImpl struct {
 	valueRepo     valueobject.IValueRepo
 }
 
-func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *item.Item,
-	itemRepo item.IItemRepo, saleRepo sale.ISaleRepo,
+func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *product.Product,
+	itemRepo product.IProductRepo, saleRepo sale.ISaleRepo,
 	saleLabelRepo sale.ISaleLabelRepo, goodsRepo goods.IGoodsRepo,
 	valRepo valueobject.IValueRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.IItem {
@@ -63,24 +63,24 @@ func (i *itemImpl) GetDomainId() int32 {
 	return i.value.Id
 }
 
-func (i *itemImpl) GetValue() item.Item {
+func (i *itemImpl) GetValue() product.Product {
 	return *i.value
 }
 
-func (i *itemImpl) checkValue(v *item.Item) error {
+func (i *itemImpl) checkValue(v *product.Product) error {
 	registry := i.valueRepo.GetRegistry()
 	// 检测供应商
 	if v.VendorId <= 0 || v.VendorId != i.value.VendorId {
-		return item.ErrVendor
+		return product.ErrVendor
 	}
 	// 检测标题长度
 	v.Name = strings.TrimSpace(v.Name)
 	if len(v.Name) < 10 {
-		return item.ErrItemNameLength
+		return product.ErrItemNameLength
 	}
 	// 检测是否上传图片
 	if v.Image == registry.GoodsDefaultImage {
-		return item.ErrNotUploadImage
+		return product.ErrNotUploadImage
 	}
 	// 检测运费模板
 	if v.ExpressTplId <= 0 {
@@ -99,13 +99,13 @@ func (i *itemImpl) checkValue(v *item.Item) error {
 }
 
 // 设置值
-func (i *itemImpl) SetValue(v *item.Item) error {
+func (i *itemImpl) SetValue(v *product.Product) error {
 	if i.GetDomainId() <= 0 {
-		i.value.ShelveState = item.ShelvesDown
+		i.value.ShelveState = product.ShelvesDown
 		i.value.ReviewState = enum.ReviewAwaiting
 	}
-	if i.value.ShelveState == item.ShelvesIncorrect {
-		return item.ErrItemIncorrect
+	if i.value.ShelveState == product.ShelvesIncorrect {
+		return product.ErrItemIncorrect
 	}
 	if err := i.checkValue(v); err != nil {
 		return err
@@ -137,7 +137,7 @@ func (i *itemImpl) SetValue(v *item.Item) error {
 // 设置商品描述
 func (i *itemImpl) SetDescribe(describe string) error {
 	if len(describe) < 20 {
-		return item.ErrDescribeLength
+		return product.ErrDescribeLength
 	}
 	if i.value.Description != describe {
 		i.value.Description = describe
@@ -150,7 +150,7 @@ func (i *itemImpl) SetDescribe(describe string) error {
 
 // 是否上架
 func (i *itemImpl) IsOnShelves() bool {
-	return i.value.ShelveState == item.ShelvesOn
+	return i.value.ShelveState == product.ShelvesOn
 }
 
 // 获取商品的销售标签
@@ -177,7 +177,7 @@ func (i *itemImpl) resetReview() {
 }
 
 // 判断价格是否正确
-func (i *itemImpl) checkPrice(v *item.Item) error {
+func (i *itemImpl) checkPrice(v *product.Product) error {
 	rate := (v.SalePrice - v.Cost) / v.SalePrice
 	conf := i.valueRepo.GetRegistry()
 	minRate := conf.GoodsMinProfitRate
@@ -191,8 +191,8 @@ func (i *itemImpl) checkPrice(v *item.Item) error {
 
 // 设置上架
 func (i *itemImpl) SetShelve(state int32, remark string) error {
-	if state == item.ShelvesIncorrect && len(remark) == 0 {
-		return item.ErrNilRejectRemark
+	if state == product.ShelvesIncorrect && len(remark) == 0 {
+		return product.ErrNilRejectRemark
 	}
 	i.value.ShelveState = state
 	i.value.Remark = remark
@@ -219,7 +219,7 @@ func (i *itemImpl) Review(pass bool, remark string) error {
 
 // 标记为违规
 func (i *itemImpl) Incorrect(remark string) error {
-	i.value.ShelveState = item.ShelvesIncorrect
+	i.value.ShelveState = product.ShelvesIncorrect
 	i.value.Remark = remark
 	_, err := i.Save()
 	return err
@@ -239,7 +239,7 @@ func (i *itemImpl) Save() (int32, error) {
 		i.value.GoodsNo = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
 
-	id, err := i.itemRepo.SaveValueItem(i.value)
+	id, err := i.itemRepo.SaveProductValue(i.value)
 	if err == nil {
 		i.value.Id = id
 
@@ -256,9 +256,9 @@ func (i *itemImpl) Save() (int32, error) {
 func (i *itemImpl) saveGoods() {
 	val := i.goodsRepo.GetValueGoods(i.GetDomainId(), 0)
 	if val == nil {
-		val = &goods.ValueGoods{
+		val = &goods.ItemGoods{
 			Id:            0,
-			ItemId:        i.GetDomainId(),
+			ProductId:     i.GetDomainId(),
 			IsPresent:     0,
 			SkuId:         0,
 			PromotionFlag: 0,
@@ -333,14 +333,14 @@ var _ sale.IItemManager = new(itemManagerImpl)
 
 type itemManagerImpl struct {
 	_sale        *saleImpl
-	_itemRepo    item.IItemRepo
+	_itemRepo    product.IProductRepo
 	_valRepo     valueobject.IValueRepo
 	_expressRepo express.IExpressRepo
 	_vendorId    int32
 }
 
 func NewItemManager(vendorId int32, s *saleImpl,
-	itemRepo item.IItemRepo, expressRepo express.IExpressRepo,
+	itemRepo product.IProductRepo, expressRepo express.IExpressRepo,
 	valRepo valueobject.IValueRepo) sale.IItemManager {
 	c := &itemManagerImpl{
 		_sale:        s,
@@ -356,7 +356,7 @@ func (i *itemManagerImpl) init() sale.IItemManager {
 	return i
 }
 
-func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
+func (i *itemManagerImpl) CreateItem(v *product.Product) sale.IItem {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
@@ -372,10 +372,10 @@ func (i *itemManagerImpl) CreateItem(v *item.Item) sale.IItem {
 // 删除货品
 func (i *itemManagerImpl) DeleteItem(id int32) error {
 	var err error
-	num := i._itemRepo.GetItemSaleNum(i._vendorId, id)
+	num := i._itemRepo.GetProductSaleNum(i._vendorId, id)
 
 	if num == 0 {
-		err = i._itemRepo.DeleteItem(i._vendorId, id)
+		err = i._itemRepo.DeleteProduct(i._vendorId, id)
 	} else {
 		err = sale.ErrCanNotDeleteItem
 	}
@@ -384,7 +384,7 @@ func (i *itemManagerImpl) DeleteItem(id int32) error {
 
 // 根据产品编号获取产品
 func (i *itemManagerImpl) GetItem(itemId int32) sale.IItem {
-	pv := i._itemRepo.GetValueItem(itemId)
+	pv := i._itemRepo.GetProductValue(itemId)
 	if pv != nil && pv.VendorId == i._vendorId {
 		return i.CreateItem(pv)
 	}

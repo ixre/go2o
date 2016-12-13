@@ -18,7 +18,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -27,7 +27,7 @@ import (
 
 type shoppingService struct {
 	_rep        order.IOrderRepo
-	_itemRepo   item.IItemRepo
+	_itemRepo   product.IProductRepo
 	_goodsRepo  goods.IGoodsRepo
 	_saleRepo   sale.ISaleRepo
 	_cartRepo   cart.ICartRepo
@@ -38,7 +38,7 @@ type shoppingService struct {
 
 func NewShoppingService(r order.IOrderRepo,
 	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo,
-	itemRepo item.IItemRepo, goodsRepo goods.IGoodsRepo,
+	itemRepo product.IProductRepo, goodsRepo goods.IGoodsRepo,
 	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
 		_rep:        r,
@@ -120,7 +120,7 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 		if snap == nil {
 			return nil, goods.ErrNoSuchGoods
 		}
-		tm := s._itemRepo.GetValueItem(snap.ItemId)
+		tm := s._itemRepo.GetProductValue(snap.ItemId)
 		// 检测是否开通商城
 		mch := s._mchRepo.GetMerchant(tm.VendorId)
 		if mch == nil {

@@ -14,7 +14,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -32,12 +32,12 @@ type saleImpl struct {
 	cateManager  sale.ICategoryManager
 	labelManager sale.ILabelManager
 	itemManager  sale.IItemManager
-	itemRepo     item.IItemRepo
+	itemRepo     product.IProductRepo
 	goodsManager sale.IGoodsManager
 }
 
 func NewSale(mchId int32, saleRepo sale.ISaleRepo, valRepo valueobject.IValueRepo,
-	cateRepo sale.ICategoryRepo, itemRepo item.IItemRepo, goodsRepo goods.IGoodsRepo,
+	cateRepo sale.ICategoryRepo, itemRepo product.IProductRepo, goodsRepo goods.IGoodsRepo,
 	tagRepo sale.ISaleLabelRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.ISale {
 	return (&saleImpl{

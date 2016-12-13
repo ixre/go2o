@@ -27,7 +27,7 @@ type (
 		GetItem() IItem
 
 		// 设置值
-		GetValue() *goods.ValueGoods
+		GetValue() *goods.ItemGoods
 
 		// 获取包装过的商品信息
 		GetPackedValue() *valueobject.Goods
@@ -51,7 +51,7 @@ type (
 		SaveLevelPrice(*goods.MemberPrice) (int32, error)
 
 		// 设置值
-		SetValue(*goods.ValueGoods) error
+		SetValue(*goods.ItemGoods) error
 
 		// 保存
 		Save() (int32, error)
@@ -78,10 +78,10 @@ type (
 	// 商品服务
 	IGoodsManager interface {
 		// 创建商品
-		CreateGoodsByItem(IItem, *goods.ValueGoods) IGoods
+		CreateGoodsByItem(IItem, *goods.ItemGoods) IGoods
 
 		// 创建商品
-		CreateGoods(*goods.ValueGoods) IGoods
+		CreateGoods(*goods.ItemGoods) IGoods
 
 		// 根据产品编号获取商品
 		GetGoods(id int32) IGoods
