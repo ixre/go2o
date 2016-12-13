@@ -87,9 +87,9 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 	}
 	arr := []*valueobject.Goods{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods INNER JOIN
-	       gs_item ON gs_item.id = gs_goods.item_id
-		 WHERE gs_item.review_state=? AND gs_item.shelve_state=? AND gs_item.id IN (
-			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t
+	       pro_product ON pro_product.id = gs_goods.item_id
+		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t
 			 ON t.id = g.sale_tag_id WHERE t.mch_id=? AND t.id=?) `+sortBy+`
 			LIMIT ?,?`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
 	return arr
@@ -103,17 +103,17 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 		sortBy = "ORDER BY " + sortBy
 	}
 	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
-	    INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
-		 WHERE gs_item.review_state=? AND gs_item.shelve_state=? AND gs_item.id IN (
-			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
+	    INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?)`), &total, enum.ReviewPass,
 		item.ShelvesOn, mchId, tagId)
 	arr := []*valueobject.Goods{}
 	if total > 0 {
 		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods
-         INNER JOIN gs_item ON gs_item.id = gs_goods.item_id
-		 WHERE gs_item.review_state=? AND gs_item.shelve_state=? AND gs_item.id IN (
-			SELECT g.item_id FROM gs_item_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
+         INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
+			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`,
 			enum.ReviewPass, item.ShelvesOn,
 			mchId, tagId, begin, end)
@@ -125,13 +125,13 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 func (t *saleLabelRepo) GetItemSaleLabels(itemId int32) []*sale.Label {
 	arr := []*sale.Label{}
 	t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_sale_label WHERE id IN
-	(SELECT sale_tag_id FROM gs_item_tag WHERE item_id=?) AND enabled=1`, itemId)
+	(SELECT sale_tag_id FROM pro_product_tag WHERE item_id=?) AND enabled=1`, itemId)
 	return arr
 }
 
 // 清理商品的销售标签
 func (t *saleLabelRepo) CleanItemSaleLabels(itemId int32) error {
-	_, err := t.ExecNonQuery("DELETE FROM gs_item_tag WHERE item_id=?", itemId)
+	_, err := t.ExecNonQuery("DELETE FROM pro_product_tag WHERE item_id=?", itemId)
 	return err
 }
 
@@ -143,7 +143,7 @@ func (t *saleLabelRepo) SaveItemSaleLabels(itemId int32, tagIds []int) error {
 	}
 
 	for _, v := range tagIds {
-		_, err = t.ExecNonQuery("INSERT INTO gs_item_tag (item_id,sale_tag_id) VALUES(?,?)",
+		_, err = t.ExecNonQuery("INSERT INTO pro_product_tag (item_id,sale_tag_id) VALUES(?,?)",
 			itemId, v)
 	}
 

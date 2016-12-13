@@ -108,6 +108,20 @@ CHANGE COLUMN `spec_model` `pro_model` INT(11) NOT NULL DEFAULT 0 COMMENT '产�
 CHANGE COLUMN `sort_number` `sort_num` INT(11) NOT NULL COMMENT '排序序号' ;
 
 
+/** update **/
+
+ALTER TABLE `gs_item`
+CHANGE COLUMN `express_tid` `express_tid` INT(11) NULL COMMENT '快递模板编号' AFTER `supplier_id`,
+CHANGE COLUMN `goods_no` `goods_no` VARCHAR(45) NULL DEFAULT NULL AFTER `small_title`,
+CHANGE COLUMN `weight` `weight` FLOAT(6,2) NULL DEFAULT NULL COMMENT '重量:克(g)' AFTER `sale_price`,
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '产品编号' ,
+CHANGE COLUMN `category_id` `cat_id` INT(11) NULL DEFAULT NULL COMMENT '分类编号' ,
+CHANGE COLUMN `supplier_id` `supplier_id` INT(11) NULL DEFAULT NULL COMMENT '供货商编号' ,
+ADD COLUMN `brand_id` INT(11) NULL COMMENT '品牌编号' AFTER `supplier_id`,
+ADD COLUMN `shop_id` INT(11) NULL COMMENT '商铺编号' AFTER `supplier_id`,
+ADD COLUMN `bulk` INT(11) NULL COMMENT '体积:毫升(ml)' AFTER `weight`,
+COMMENT = '产品' , RENAME TO  `pro_product` ;
+
 
 
 /** ======== new table **/

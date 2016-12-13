@@ -41,6 +41,20 @@ func GetDropOptionsOfSaleCategory(mchId int32) []byte {
 	return readToCategoryDropList(mchId)
 }
 
+// 获取商品模型下拉选项
+func GetDropOptionsOfProModel() string {
+	buf := bytes.NewBuffer([]byte{})
+	list := rsi.ProductService.GetModels()
+	for _, v := range list {
+		buf.WriteString(fmt.Sprintf(
+			`<option value="%d">%s</option>`,
+			v.Id,
+			v.Name,
+		))
+	}
+	return buf.String()
+}
+
 func readToArticleCategoryDropList() []byte {
 	categories := rsi.ContentService.GetArticleCategories()
 	buf := bytes.NewBuffer([]byte{})

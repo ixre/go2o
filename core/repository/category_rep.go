@@ -62,7 +62,7 @@ func (c *categoryRepo) SaveCategory(v *sale.Category) (int32, error) {
 func (c *categoryRepo) CheckGoodsContain(mchId, id int32) bool {
 	num := 0
 	//清理项
-	c.Connector.ExecScalar(`SELECT COUNT(0) FROM gs_item WHERE category_id IN
+	c.Connector.ExecScalar(`SELECT COUNT(0) FROM pro_product WHERE cat_id IN
 		(SELECT Id FROM cat_category WHERE mch_id=? AND id=?)`, &num, mchId, id)
 	return num > 0
 }

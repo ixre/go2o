@@ -32,9 +32,9 @@ func NewItemRepo(c db.Connector) item.IItemRepo {
 func (i *itemRepo) GetValueItem(itemId int32) *item.Item {
 	var e *item.Item = new(item.Item)
 	//todo: supplier_id  == -1
-	if i.Connector.GetOrm().GetByQuery(e, `select * FROM gs_item
-			INNER JOIN cat_category c ON c.id = gs_item.category_id
-			 WHERE gs_item.id=?`, itemId) == nil {
+	if i.Connector.GetOrm().GetByQuery(e, `select * FROM pro_product
+			INNER JOIN cat_category c ON c.id = pro_product.cat_id
+			 WHERE pro_product.id=?`, itemId) == nil {
 		return e
 	}
 	return nil
@@ -46,7 +46,7 @@ func (i *itemRepo) GetItemByIds(ids ...int32) ([]*item.Item, error) {
 
 	//todo:改成database/sql方式，不使用orm
 	err := i.Connector.GetOrm().SelectByQuery(&items,
-		`SELECT * FROM gs_item WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
+		`SELECT * FROM pro_product WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
 
 	return items, err
 }
@@ -60,10 +60,10 @@ func (i *itemRepo) GetPagedOnShelvesItem(mchId int32, catIds []int32,
 	var sql string
 
 	var catIdStr string = format.IdArrJoinStr32(catIds)
-	sql = fmt.Sprintf(`SELECT * FROM gs_item INNER JOIN cat_category ON gs_item.category_id=cat_category.id
+	sql = fmt.Sprintf(`SELECT * FROM pro_product INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1 LIMIT %d,%d`, mchId, catIdStr, start, (end - start))
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_item INNER JOIN cat_category ON gs_item.category_id=cat_category.id
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM pro_product INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		WHERE merchant_id=%d AND cat_category.id IN (%s) AND on_shelves=1`, mchId, catIdStr), &total)
 
 	e = []*item.Item{}
@@ -82,8 +82,8 @@ func (i *itemRepo) GetItemSaleNum(mchId int32, id int32) int {
 
 func (i *itemRepo) DeleteItem(mchId, itemId int32) error {
 	_, _, err := i.Connector.Exec(`
-		DELETE f FROM gs_item AS f
-		INNER JOIN cat_category AS c ON f.category_id=c.id
+		DELETE f FROM pro_product AS f
+		INNER JOIN cat_category AS c ON f.cat_id=c.id
 		WHERE f.id=? AND c.merchant_id=?`, itemId, mchId)
 	return err
 }

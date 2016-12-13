@@ -141,11 +141,18 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shipment.ShipmentOrder{}, "ship_order")
 	orm.Mapping(shipment.Item{}, "ship_item")
 
-	/** 销售 **/
-	orm.Mapping(item.Item{}, "gs_item")
+	/** 产品 **/
+	orm.Mapping(item.Item{}, "pro_product")
 	orm.Mapping(goods.ValueGoods{}, "gs_goods")
 	orm.Mapping(sale.Category{}, "cat_category")
+	orm.Mapping(promodel.ProModel{}, "pro_model")
+	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")
+	orm.Mapping(promodel.Attr{}, "pro_attr")
+	orm.Mapping(promodel.AttrItem{}, "Pro_attr_item")
+	orm.Mapping(promodel.Spec{}, "pro_spec")
+	orm.Mapping(promodel.SpecItem{}, "pro_spec_item")
+	//orm.Mapping(promodel.pr{},"pro_attr")
 	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
 	orm.Mapping(goods.SalesSnapshot{}, "gs_sales_snapshot")
 	orm.Mapping(sale.Label{}, "gs_sale_label")
