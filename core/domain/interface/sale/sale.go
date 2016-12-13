@@ -9,7 +9,10 @@
 
 package sale
 
-import "go2o/core/domain/interface/product"
+import (
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
+)
 
 type ISale interface {
 	GetAggregateRootId() int32
@@ -18,11 +21,8 @@ type ISale interface {
 	CategoryManager() product.IGlobCatService
 
 	// 标签服务
-	LabelManager() ILabelManager
-
-	// 货品服务
-	ItemManager() IItemManager
+	LabelManager() item.ILabelManager
 
 	// 商品服务
-	GoodsManager() IGoodsManager
+	GoodsManager() item.IGoodsManager
 }

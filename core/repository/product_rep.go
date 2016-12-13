@@ -14,6 +14,8 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/valueobject"
+	proImpl "go2o/core/domain/product"
 	"go2o/core/infrastructure/format"
 )
 
@@ -21,20 +23,36 @@ var _ product.IProductRepo = new(productRepo)
 
 type productRepo struct {
 	db.Connector
+	valueRepo valueobject.IValueRepo
 }
 
-func NewProductRepo(c db.Connector) product.IProductRepo {
+func NewProductRepo(c db.Connector, valRepo valueobject.IValueRepo) product.IProductRepo {
 	return &productRepo{
 		Connector: c,
+		valueRepo: valRepo,
 	}
 }
 
-func (p *productRepo) GetProductValue(itemId int32) *product.Product {
+// 创建产品
+func (p *productRepo) CreateProduct(v *product.Product) product.IProduct {
+	return proImpl.NewProductImpl(v, p, p.valueRepo)
+}
+
+// 根据产品编号获取货品
+func (p *productRepo) GetProduct(id int32) product.IProduct {
+	v := p.GetProductValue(id)
+	if v != nil {
+		return p.CreateProduct(v)
+	}
+	return nil
+}
+
+func (p *productRepo) GetProductValue(productId int32) *product.Product {
 	var e *product.Product = new(product.Product)
 	//todo: supplier_id  == -1
 	if p.Connector.GetOrm().GetByQuery(e, `select * FROM pro_product
 			INNER JOIN cat_category c ON c.id = pro_product.cat_id
-			 WHERE pro_product.id=?`, itemId) == nil {
+			 WHERE pro_product.id=?`, productId) == nil {
 		return e
 	}
 	return nil
@@ -73,17 +91,13 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 }
 
 // 获取货品销售总数
-func (p *productRepo) GetProductSaleNum(mchId int32, id int32) int {
+func (p *productRepo) GetProductSaleNum(id int32) int {
 	var num int
 	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
 		&num, id)
 	return num
 }
 
-func (p *productRepo) DeleteProduct(mchId, itemId int32) error {
-	_, _, err := p.Connector.Exec(`
-		DELETE f FROM pro_product AS f
-		INNER JOIN cat_category AS c ON f.cat_id=c.id
-		WHERE f.id=? AND c.merchant_id=?`, itemId, mchId)
-	return err
+func (p *productRepo) DeleteProduct(productId int32) error {
+	return p.GetOrm().DeleteByPk(&product.Product{}, productId)
 }

@@ -123,6 +123,15 @@ ADD COLUMN `bulk` INT(11) NULL COMMENT '体积:毫升(ml)' AFTER `weight`,
 COMMENT = '产品' , RENAME TO  `pro_product` ;
 
 
+ALTER TABLE `pro_product`
+CHANGE COLUMN `goods_no` `code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '供货商编码' ;
+
+ALTER TABLE `txmall`.`pro_product`
+ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `update_time`;
+
+
+
+
 
 /** ======== new table **/
 

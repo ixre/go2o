@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package sale
+package promotion
 
 const (
 	// 优惠券

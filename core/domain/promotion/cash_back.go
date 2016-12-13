@@ -42,7 +42,7 @@ func (c *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
 	//todo: 商品SKU的原因，获取的价格为0，有BUG
 
 	//	if v.BackFee > int(g.SalePrice){
-	//		return sale.ErrOutOfSalePrice
+	//		return item.ErrOutOfSalePrice
 	//	}
 
 	if len(v.DataTag) != 0 {

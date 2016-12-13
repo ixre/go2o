@@ -23,6 +23,12 @@ const (
 )
 
 var (
+	ErrNoSuchProduct *domain.DomainError = domain.NewDomainError(
+		"err_product_no_such_product", "产品不存在",
+	)
+	ErrNoBrand *domain.DomainError = domain.NewDomainError(
+		"err_product_no_brand", "未设置商品品牌")
+
 	ErrVendor *domain.DomainError = domain.NewDomainError(
 		"err_not_be_review", "商品供应商不正确")
 
@@ -76,37 +82,29 @@ type (
 
 		// 保存
 		Save() (int32, error)
-	}
 
-	// 货品服务
-	IItemManager interface {
-		// 创建产品
-		CreateItem(*Product) IProduct
-		// 根据产品编号获取货品
-		GetItem(id int32) IProduct
-		// 删除货品
-		DeleteItem(id int32) error
+		// 销毁产品
+		Destroy() error
 	}
 
 	IProductRepo interface {
+		// 创建产品
+		CreateProduct(*Product) IProduct
+		// 根据产品编号获取货品
+		GetProduct(id int32) IProduct
 		// 获取货品
 		GetProductValue(itemId int32) *Product
-
 		// 根据id获取货品
 		GetProductsById(ids ...int32) ([]*Product, error)
-
 		SaveProductValue(*Product) (int32, error)
-
 		//todo:  到商品
 		// 获取在货架上的商品
 		GetPagedOnShelvesProduct(supplierId int32, catIds []int32, start, end int) (total int, goods []*Product)
-
 		//todo:  到商品
 		// 获取货品销售总数
-		GetProductSaleNum(supplierId int32, id int32) int
-
+		GetProductSaleNum(productId int32) int
 		// 删除货品
-		DeleteProduct(supplierId, goodsId int32) error
+		DeleteProduct(productId int32) error
 	}
 )
 
@@ -124,8 +122,8 @@ type Product struct {
 	ShopId int64 `db:"shop_id"`
 	// 品牌编号
 	BrandId int64 `db:"brand_id"`
-	// 货号
-	GoodsNo string `db:"goods_no"`
+	// 商家编码
+	Code string `db:"code"`
 	// 小标题
 	SmallTitle string `db:"small_title"`
 	// 图片
@@ -156,6 +154,8 @@ type Product struct {
 	CreateTime int64 `db:"create_time"`
 	// 更新时间
 	UpdateTime int64 `db:"update_time"`
+	// 排序编号
+	SortNum int32 `db:"sort_num"`
 }
 
 // 转换包含部分数据的产品值对象
@@ -164,7 +164,7 @@ func ParseToPartialValueItem(v *valueobject.Goods) *Product {
 		Id:         v.Item_Id,
 		CategoryId: v.CategoryId,
 		Name:       v.Name,
-		GoodsNo:    v.GoodsNo,
+		Code:       v.GoodsNo,
 		Image:      v.Image,
 		Price:      v.Price,
 		SalePrice:  v.SalePrice,

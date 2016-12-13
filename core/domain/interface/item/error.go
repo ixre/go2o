@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package sale
+package item
 
 import (
 	"go2o/core/infrastructure/domain"

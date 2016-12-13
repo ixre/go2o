@@ -10,7 +10,6 @@
 package rsi
 
 import (
-	"errors"
 	"fmt"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
@@ -37,21 +36,10 @@ func NewSaleService(r sale.ISaleRepo, cateRepo product.ICategoryRepo,
 	}
 }
 
-// 获取产品值
-func (s *saleService) GetProductValue(supplierId, itemId int32) *product.Product {
-	sl := s._rep.GetSale(supplierId)
-	pro := sl.ItemManager().GetItem(itemId)
-	if pro != nil {
-		v := pro.GetValue()
-		return &v
-	}
-	return nil
-}
-
 // 获取商品值
 func (s *saleService) GetValueGoods(mchId, goodsId int32) *valueobject.Goods {
 	sl := s._rep.GetSale(mchId)
-	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
+	var goods item.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	if goods != nil {
 		return goods.GetPackedValue()
 	}
@@ -61,12 +49,12 @@ func (s *saleService) GetValueGoods(mchId, goodsId int32) *valueobject.Goods {
 // 根据SKU获取商品
 func (s *saleService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	sl := s._rep.GetSale(mchId)
-	var goods sale.IGoods = sl.GoodsManager().GetGoodsBySku(itemId, sku)
+	var goods item.IGoods = sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	return goods.GetPackedValue()
 }
 
 // 根据SKU获取商品
-func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *item.ItemGoods {
+func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *item.GoodsItem {
 	sl := s._rep.GetSale(mchId)
 	gs := sl.GoodsManager().GetGoodsBySku(itemId, sku)
 	if gs != nil {
@@ -76,7 +64,7 @@ func (s *saleService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 }
 
 // 根据快照编号获取商品
-func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *item.ItemGoods {
+func (s *saleService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
 	snap := s._goodsRepo.GetSaleSnapshot(snapshotId)
 	if snap != nil {
 		return s._goodsRepo.GetValueGoodsById(snap.SkuId)
@@ -89,39 +77,8 @@ func (s *saleService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot 
 	return s._goodsRepo.GetSaleSnapshot(snapshotId)
 }
 
-// 保存产品
-func (s *saleService) SaveItem(vendorId int32, v *product.Product) (int32, error) {
-	sl := s._rep.GetSale(vendorId)
-	var pro sale.IItem
-	v.VendorId = vendorId //设置供应商编号
-	if v.Id > 0 {
-		pro = sl.ItemManager().GetItem(v.Id)
-		if pro == nil || pro.GetValue().VendorId != vendorId {
-			return 0, errors.New("产品不存在")
-		}
-		// 修改货品时，不会修改详情
-		v.Description = pro.GetValue().Description
-	} else {
-		pro = sl.ItemManager().CreateItem(v)
-	}
-	if err := pro.SetValue(v); err != nil {
-		return 0, err
-	}
-	return pro.Save()
-}
-
-// 保存货品描述
-func (s *saleService) SaveItemInfo(mchId int32, itemId int32, info string) error {
-	sl := s._rep.GetSale(mchId)
-	pro := sl.ItemManager().GetItem(itemId)
-	if pro == nil {
-		return item.ErrNoSuchGoods
-	}
-	return pro.SetDescribe(info)
-}
-
 // 保存商品
-func (s *saleService) SaveGoods(mchId int32, gs *item.ItemGoods) (int32, error) {
+func (s *saleService) SaveGoods(mchId int32, gs *item.GoodsItem) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	if gs.Id > 0 {
 		g := sl.GoodsManager().GetGoods(gs.Id)
@@ -130,12 +87,6 @@ func (s *saleService) SaveGoods(mchId int32, gs *item.ItemGoods) (int32, error) 
 	}
 	g := sl.GoodsManager().CreateGoods(gs)
 	return g.Save()
-}
-
-// 删除货品
-func (s *saleService) DeleteItem(mchId int32, id int32) error {
-	sl := s._rep.GetSale(mchId)
-	return sl.ItemManager().DeleteItem(id)
 }
 
 // 获取分页上架的商品
@@ -207,11 +158,11 @@ func (s *saleService) DeleteGoods(mchId, goodsId int32) error {
 	return sl.GoodsManager().DeleteGoods(goodsId)
 }
 
-func (s *saleService) GetAllSaleLabels(mchId int32) []*sale.Label {
+func (s *saleService) GetAllSaleLabels(mchId int32) []*item.Label {
 	sl := s._rep.GetSale(mchId)
 	tags := sl.LabelManager().GetAllSaleLabels()
 
-	lbs := make([]*sale.Label, len(tags))
+	lbs := make([]*item.Label, len(tags))
 	for i, v := range tags {
 		lbs[i] = v.GetValue()
 	}
@@ -219,7 +170,7 @@ func (s *saleService) GetAllSaleLabels(mchId int32) []*sale.Label {
 }
 
 // 获取销售标签
-func (s *saleService) GetSaleLabel(mchId, id int32) *sale.Label {
+func (s *saleService) GetSaleLabel(mchId, id int32) *item.Label {
 	sl := s._rep.GetSale(mchId)
 	if tag := sl.LabelManager().GetSaleLabel(id); tag != nil {
 		return tag.GetValue()
@@ -228,7 +179,7 @@ func (s *saleService) GetSaleLabel(mchId, id int32) *sale.Label {
 }
 
 // 获取销售标签
-func (s *saleService) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
+func (s *saleService) GetSaleLabelByCode(mchId int32, code string) *item.Label {
 	sl := s._rep.GetSale(mchId)
 	if tag := sl.LabelManager().GetSaleLabelByCode(code); tag != nil {
 		return tag.GetValue()
@@ -237,7 +188,7 @@ func (s *saleService) GetSaleLabelByCode(mchId int32, code string) *sale.Label {
 }
 
 // 保存销售标签
-func (s *saleService) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
+func (s *saleService) SaveSaleLabel(mchId int32, v *item.Label) (int32, error) {
 	sl := s._rep.GetSale(mchId)
 	if v.Id > 0 {
 		tag := sl.LabelManager().GetSaleLabel(v.Id)
@@ -245,28 +196,6 @@ func (s *saleService) SaveSaleLabel(mchId int32, v *sale.Label) (int32, error) {
 		return tag.Save()
 	}
 	return sl.LabelManager().CreateSaleLabel(v).Save()
-}
-
-// 获取商品的销售标签
-func (s *saleService) GetItemSaleLabels(mchId, itemId int32) []*sale.Label {
-	var list = make([]*sale.Label, 0)
-	sl := s._rep.GetSale(mchId)
-	if goods := sl.ItemManager().GetItem(itemId); goods != nil {
-		list = goods.GetSaleLabels()
-	}
-	return list
-}
-
-// 保存商品的销售标签
-func (s *saleService) SaveItemSaleLabels(mchId, itemId int32, tagIds []int) error {
-	var err error
-	sl := s._rep.GetSale(mchId)
-	if goods := sl.ItemManager().GetItem(itemId); goods != nil {
-		err = goods.SaveSaleLabels(tagIds)
-	} else {
-		err = errors.New("商品不存在")
-	}
-	return err
 }
 
 // 根据销售标签获取指定数目的商品
@@ -287,7 +216,7 @@ func (s *saleService) GetValueGoodsBySaleLabel(mchId int32,
 func (s *saleService) GetPagedValueGoodsBySaleLabel(mchId int32,
 	tagId int32, sortBy string, begin int, end int) (int, []*valueobject.Goods) {
 	sl := s._rep.GetSale(mchId)
-	tag := sl.LabelManager().CreateSaleLabel(&sale.Label{
+	tag := sl.LabelManager().CreateSaleLabel(&item.Label{
 		Id: tagId,
 	})
 	return tag.GetPagedValueGoods(sortBy, begin, end)
@@ -329,7 +258,7 @@ func (s *saleService) SaveMemberPrices(mchId int32, goodsId int32,
 // 获取商品详情
 func (s *saleService) GetGoodsDetails(mchId, goodsId, mLevel int32) (*valueobject.Goods, map[string]string) {
 	sl := s._rep.GetSale(mchId)
-	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
+	var goods item.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	gv := goods.GetPackedValue()
 	proMap := goods.GetPromotionDescribe()
 	if b, price := goods.GetLevelPrice(mLevel); b {
@@ -343,7 +272,7 @@ func (s *saleService) GetGoodsDetails(mchId, goodsId, mLevel int32) (*valueobjec
 // 获取货品描述
 func (s *saleService) GetItemDescriptionByGoodsId(mchId, goodsId int32) string {
 	sl := s._rep.GetSale(mchId)
-	var goods sale.IGoods = sl.GoodsManager().GetGoods(goodsId)
+	var goods item.IGoods = sl.GoodsManager().GetGoods(goodsId)
 	return goods.GetItem().GetValue().Description
 }
 
@@ -354,30 +283,34 @@ func (s *saleService) GetSnapshot(skuId int32) *item.Snapshot {
 
 // 设置商品货架状态
 func (s *saleService) SetShelveState(mchId int32, itemId int32, state int32, remark string) error {
-	sl := s._rep.GetSale(mchId)
-	gi := sl.ItemManager().GetItem(itemId)
-	if gi == nil {
-		return item.ErrNoSuchGoods
-	}
-	return gi.SetShelve(state, remark)
+	panic("应上架商品")
+	//sl := s._rep.GetSale(mchId)
+	//gi := sl.ItemManager().GetItem(itemId)
+	//if gi == nil {
+	//	return item.ErrNoSuchGoods
+	//}
+	//return gi.SetShelve(state, remark)
 }
 
 // 设置商品货架状态
 func (s *saleService) ReviewItem(mchId int32, itemId int32, pass bool, remark string) error {
-	sl := s._rep.GetSale(mchId)
-	gi := sl.ItemManager().GetItem(itemId)
-	if gi == nil {
-		return item.ErrNoSuchGoods
-	}
-	return gi.Review(pass, remark)
+	panic("应申请商品")
+
+	//sl := s._rep.GetSale(mchId)
+	//gi := sl.ItemManager().GetItem(itemId)
+	//if gi == nil {
+	//	return item.ErrNoSuchGoods
+	//}
+	//return gi.Review(pass, remark)
 }
 
 // 标记为违规
 func (s *saleService) SignIncorrect(supplierId int32, itemId int32, remark string) error {
-	sl := s._rep.GetSale(supplierId)
-	gi := sl.ItemManager().GetItem(itemId)
-	if gi == nil {
-		return item.ErrNoSuchGoods
-	}
-	return gi.Incorrect(remark)
+	panic("应标记商品")
+	//sl := s._rep.GetSale(supplierId)
+	//gi := sl.ItemManager().GetItem(itemId)
+	//if gi == nil {
+	//	return item.ErrNoSuchGoods
+	//}
+	//return gi.Incorrect(remark)
 }

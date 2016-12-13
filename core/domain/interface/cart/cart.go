@@ -13,7 +13,6 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -54,7 +53,7 @@ type (
 		Items() map[int32]*CartItem
 
 		// 获取购物车中的商品
-		GetCartGoods() []sale.IGoods
+		GetCartGoods() []item.IGoods
 
 		// 结算数据持久化
 		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error

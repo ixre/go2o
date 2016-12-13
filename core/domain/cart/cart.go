@@ -9,7 +9,6 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -75,10 +74,10 @@ func (c *cartImpl) Check() error {
 				return item.ErrNoSuchGoods // 没有商品
 			}
 			if snap.StockNum == 0 {
-				return sale.ErrFullOfStock // 已经卖完了
+				return item.ErrFullOfStock // 已经卖完了
 			}
 			if snap.StockNum < v.Quantity {
-				return sale.ErrOutOfStock // 超出库存
+				return item.ErrOutOfStock // 超出库存
 			}
 		}
 	}
@@ -120,7 +119,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 func (c *cartImpl) setGoodsInfo(snap *item.Snapshot, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
+		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(item.IGoods)
 		snap.SalePrice = gds.GetPromotionPrice(level)
 	}
 }
@@ -163,14 +162,14 @@ func (c *cartImpl) GetValue() cart.ValueCart {
 }
 
 // 获取购物车中的商品
-func (c *cartImpl) GetCartGoods() []sale.IGoods {
+func (c *cartImpl) GetCartGoods() []item.IGoods {
 	//todo: IMPL
-	//var gs []sale.IGoods = make([]sale.IGoods, len(c._value.Items))
+	//var gs []item.IGoods = make([]item.IGoods, len(c._value.Items))
 	//for i, v := range c._value.Items {
 	//    gs[i] = c._goodsRepo.getGoods
 	//}
 	//return gs
-	return []sale.IGoods{}
+	return []item.IGoods{}
 }
 
 // 获取商品编号与购物车项的集合
@@ -197,13 +196,13 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 		return nil, item.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {
-		return nil, sale.ErrFullOfStock // 已经卖完了
+		return nil, item.ErrFullOfStock // 已经卖完了
 	}
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.SkuId == skuId {
 			if v.Quantity+num > snap.StockNum {
-				return v, sale.ErrOutOfStock // 库存不足
+				return v, item.ErrOutOfStock // 库存不足
 			}
 			v.Quantity += num
 			if checked {
