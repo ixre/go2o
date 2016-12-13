@@ -13,14 +13,14 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 )
 
-var _ goods.IGoodsRepo = new(goodsRepo)
+var _ item.IGoodsRepo = new(goodsRepo)
 
 type goodsRepo struct {
 	db.Connector
@@ -48,8 +48,8 @@ func (g *goodsRepo) GetGoodsBySKuId(skuId int32) interface{} {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *goods.ItemGoods {
-	var e *goods.ItemGoods = new(goods.ItemGoods)
+func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *item.ItemGoods {
+	var e *item.ItemGoods = new(item.ItemGoods)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, skuId) == nil {
 		return e
 	}
@@ -57,8 +57,8 @@ func (g *goodsRepo) GetValueGoods(itemId int32, skuId int32) *goods.ItemGoods {
 }
 
 // 获取商品
-func (g *goodsRepo) GetValueGoodsById(goodsId int32) *goods.ItemGoods {
-	var e *goods.ItemGoods = new(goods.ItemGoods)
+func (g *goodsRepo) GetValueGoodsById(goodsId int32) *item.ItemGoods {
+	var e *item.ItemGoods = new(item.ItemGoods)
 	if g.Connector.GetOrm().Get(goodsId, e) == nil {
 		return e
 	}
@@ -66,8 +66,8 @@ func (g *goodsRepo) GetValueGoodsById(goodsId int32) *goods.ItemGoods {
 }
 
 // 根据SKU获取商品
-func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *goods.ItemGoods {
-	var e *goods.ItemGoods = new(goods.ItemGoods)
+func (g *goodsRepo) GetValueGoodsBySku(itemId, sku int32) *item.ItemGoods {
+	var e *item.ItemGoods = new(item.ItemGoods)
 	if g.Connector.GetOrm().GetBy(e, "item_id=? AND sku_id=?", itemId, sku) == nil {
 		return e
 	}
@@ -85,8 +85,8 @@ func (g *goodsRepo) GetGoodsByIds(ids ...int32) ([]*valueobject.Goods, error) {
 }
 
 // 获取会员价
-func (g *goodsRepo) GetGoodsLevelPrice(goodsId int32) []*goods.MemberPrice {
-	var items []*goods.MemberPrice
+func (g *goodsRepo) GetGoodsLevelPrice(goodsId int32) []*item.MemberPrice {
+	var items []*item.MemberPrice
 	if g.Connector.GetOrm().SelectByQuery(&items,
 		`SELECT * FROM gs_member_price WHERE goods_id = ?`, goodsId) == nil {
 		return items
@@ -95,17 +95,17 @@ func (g *goodsRepo) GetGoodsLevelPrice(goodsId int32) []*goods.MemberPrice {
 }
 
 // 保存会员价
-func (g *goodsRepo) SaveGoodsLevelPrice(v *goods.MemberPrice) (int32, error) {
+func (g *goodsRepo) SaveGoodsLevelPrice(v *item.MemberPrice) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
 // 移除会员价
 func (g *goodsRepo) RemoveGoodsLevelPrice(id int32) error {
-	return g.Connector.GetOrm().DeleteByPk(goods.MemberPrice{}, id)
+	return g.Connector.GetOrm().DeleteByPk(item.MemberPrice{}, id)
 }
 
 // 保存商品
-func (g *goodsRepo) SaveValueGoods(v *goods.ItemGoods) (int32, error) {
+func (g *goodsRepo) SaveValueGoods(v *item.ItemGoods) (int32, error) {
 	return orm.I32(orm.Save(g.GetOrm(), v, int(v.Id)))
 }
 
@@ -163,7 +163,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string
 }
 
 // 保存快照
-func (g *goodsRepo) SaveSnapshot(v *goods.Snapshot) (int32, error) {
+func (g *goodsRepo) SaveSnapshot(v *item.Snapshot) (int32, error) {
 	var i int64
 	var err error
 	i, _, err = g.Connector.GetOrm().Save(v.SkuId, v)
@@ -174,8 +174,8 @@ func (g *goodsRepo) SaveSnapshot(v *goods.Snapshot) (int32, error) {
 }
 
 // 获取最新的商品快照
-func (g *goodsRepo) GetLatestSnapshot(skuId int32) *goods.Snapshot {
-	e := &goods.Snapshot{}
+func (g *goodsRepo) GetLatestSnapshot(skuId int32) *item.Snapshot {
+	e := &item.Snapshot{}
 	if g.Connector.GetOrm().Get(skuId, e) == nil {
 		return e
 	}
@@ -183,8 +183,8 @@ func (g *goodsRepo) GetLatestSnapshot(skuId int32) *goods.Snapshot {
 }
 
 // 根据指定商品快照
-func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []goods.Snapshot {
-	list := []goods.Snapshot{}
+func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
+	list := []item.Snapshot{}
 	g.Connector.GetOrm().SelectByQuery(&list,
 		`SELECT * FROM gs_snapshot WHERE sku_id IN (`+
 			format.IdArrJoinStr32(skuIdArr)+`)`)
@@ -192,8 +192,8 @@ func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []goods.Snapshot {
 }
 
 // 获取最新的商品销售快照
-func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *goods.SalesSnapshot {
-	e := new(goods.SalesSnapshot)
+func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *item.SalesSnapshot {
+	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
 		return e
 	}
@@ -201,8 +201,8 @@ func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *goods.SalesSnapshot {
 }
 
 // 获取指定的商品销售快照
-func (g *goodsRepo) GetSaleSnapshot(id int32) *goods.SalesSnapshot {
-	e := new(goods.SalesSnapshot)
+func (g *goodsRepo) GetSaleSnapshot(id int32) *item.SalesSnapshot {
+	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().Get(id, e) == nil {
 		return e
 	}
@@ -210,8 +210,8 @@ func (g *goodsRepo) GetSaleSnapshot(id int32) *goods.SalesSnapshot {
 }
 
 // 根据Key获取商品销售快照
-func (g *goodsRepo) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
-	var e *goods.SalesSnapshot = new(goods.SalesSnapshot)
+func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
+	var e *item.SalesSnapshot = new(item.SalesSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
 		return e
 	}
@@ -219,6 +219,6 @@ func (g *goodsRepo) GetSaleSnapshotByKey(key string) *goods.SalesSnapshot {
 }
 
 // 保存商品销售快照
-func (g *goodsRepo) SaveSaleSnapshot(v *goods.SalesSnapshot) (int32, error) {
+func (g *goodsRepo) SaveSaleSnapshot(v *item.SalesSnapshot) (int32, error) {
 	return orm.I32(orm.Save(g.Connector.GetOrm(), v, int(v.Id)))
 }

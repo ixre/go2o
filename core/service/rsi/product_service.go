@@ -1,19 +1,28 @@
 package rsi
 
 import (
+	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/pro_model"
+	"go2o/core/domain/interface/product"
+	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 )
 
 // 产品服务
 type productService struct {
-	pmRep promodel.IProModelRepo
+	pmRep  promodel.IProModelRepo
+	catRep product.ICategoryRepo
 }
 
-func NewProService(pmRep promodel.IProModelRepo) *productService {
+func NewProService(pmRep promodel.IProModelRepo,
+	catRep product.ICategoryRepo) *productService {
 	return &productService{
-		pmRep: pmRep,
+		pmRep:  pmRep,
+		catRep: catRep,
 	}
 }
 
@@ -80,6 +89,8 @@ func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
 	return &define.Result_{Result_: true}, nil
 }
 
+/***** 品牌  *****/
+
 // Get 产品品牌
 func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 	return p.pmRep.BrandService().Get(id)
@@ -108,4 +119,154 @@ func (p *productService) GetBrands() []*promodel.ProBrand {
 func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
 	pm := p.pmRep.CreateModel(&promodel.ProModel{Id: id})
 	return pm.Brands()
+}
+
+/***** 分类 *****/
+
+// 获取商品分类
+func (p *productService) GetCategory(mchId, id int32) *product.Category {
+	c := p.catRep.GlobCatService().GetCategory(id)
+	if c != nil {
+		return c.GetValue()
+	}
+	return nil
+}
+
+// 获取商品分类和选项
+func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Category,
+	domain.IOptionStore) {
+	c := p.catRep.GlobCatService().GetCategory(id)
+	if c != nil {
+		return c.GetValue(), c.GetOption()
+	}
+	return nil, nil
+}
+
+func (p *productService) DeleteCategory(mchId, id int32) error {
+	return p.catRep.GlobCatService().DeleteCategory(id)
+}
+
+func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, error) {
+	sl := p.catRep.GlobCatService()
+	var ca product.ICategory
+	if v.Id > 0 {
+		ca = sl.GetCategory(v.Id)
+	} else {
+		ca = sl.CreateCategory(v)
+	}
+	if err := ca.SetValue(v); err != nil {
+		return 0, err
+	}
+	return ca.Save()
+}
+
+func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
+	cats := p.catRep.GlobCatService().GetCategories()
+	rootNode := &tree.TreeNode{
+		Text:   "根节点",
+		Value:  "",
+		Url:    "",
+		Icon:   "",
+		Open:   true,
+		Childs: nil}
+	p.walkCategoryTree(rootNode, 0, cats)
+	return rootNode
+}
+
+func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []product.ICategory) {
+	node.Childs = []*tree.TreeNode{}
+	for _, v := range categories {
+		cate := v.GetValue()
+		if cate.ParentId == parentId {
+			cNode := &tree.TreeNode{
+				Text:   cate.Name,
+				Value:  strconv.Itoa(int(cate.Id)),
+				Url:    "",
+				Icon:   "",
+				Open:   true,
+				Childs: nil}
+			node.Childs = append(node.Childs, cNode)
+			p.walkCategoryTree(cNode, cate.Id, categories)
+		}
+	}
+}
+
+func (p *productService) GetCategories(mchId int32) []*product.Category {
+	cats := p.catRep.GlobCatService().GetCategories()
+	var list []*product.Category = make([]*product.Category, len(cats))
+	for i, v := range cats {
+		vv := v.GetValue()
+		vv.Icon = format.GetResUrl(vv.Icon)
+		list[i] = vv
+	}
+	return list
+}
+
+// 根据上级编号获取分类列表
+func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*product.Category {
+	cats := p.catRep.GlobCatService().GetCategories()
+	list := []*product.Category{}
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+			v2 := *vv
+			v2.Icon = format.GetResUrl(v2.Icon)
+			list = append(list, &v2)
+		}
+	}
+	return list
+}
+
+func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService {
+	return p.catRep.GlobCatService()
+}
+
+func (p *productService) GetBigCategories(mchId int32) []dto.Category {
+	cats := p.catRep.GlobCatService().GetCategories()
+	list := []dto.Category{}
+	for _, v := range cats {
+		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
+			v2.Icon = format.GetResUrl(v2.Icon)
+			dv := dto.Category{}
+			CopyCategory(v2, &dv)
+			list = append(list, dv)
+		}
+	}
+	return list
+}
+
+func (p *productService) GetChildCategories(mchId, parentId int32) []dto.Category {
+	cats := p.catRep.GlobCatService().GetCategories()
+	list := []dto.Category{}
+	for _, v := range cats {
+		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
+			vv.Icon = format.GetResUrl(vv.Icon)
+			dv := dto.Category{}
+			CopyCategory(vv, &dv)
+			p.setChild(cats, &dv)
+			list = append(list, dv)
+		}
+	}
+	return list
+}
+
+func CopyCategory(src *product.Category, dst *dto.Category) {
+	dst.Id = src.Id
+	dst.Name = src.Name
+	dst.Level = src.Level
+	dst.Icon = src.Icon
+	dst.Url = src.Url
+}
+
+func (p *productService) setChild(list []product.ICategory, dst *dto.Category) {
+	for _, v := range list {
+		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
+			if dst.Child == nil {
+				dst.Child = []dto.Category{}
+			}
+			vv.Icon = format.GetResUrl(vv.Icon)
+			dv := dto.Category{}
+			CopyCategory(vv, &dv)
+			dst.Child = append(dst.Child, dv)
+		}
+	}
 }

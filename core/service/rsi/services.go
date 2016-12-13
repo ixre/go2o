@@ -108,7 +108,7 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	ProductService = NewProService(proMRepo)
+	ProductService = NewProService(proMRepo, cateRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(spRepo, saleRepo, cartRepo,

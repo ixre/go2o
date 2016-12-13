@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package goods
+package item
 
 type (
 	// 快照服务

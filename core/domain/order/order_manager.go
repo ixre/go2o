@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -23,7 +24,6 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -39,7 +39,7 @@ type orderManagerImpl struct {
 	rep          order.IOrderRepo
 	saleRepo     sale.ISaleRepo
 	cartRepo     cart.ICartRepo
-	goodsRepo    goods.IGoodsRepo
+	goodsRepo    item.IGoodsRepo
 	promRepo     promotion.IPromotionRepo
 	memberRepo   member.IMemberRepo
 	mchRepo      merchant.IMerchantRepo
@@ -53,7 +53,7 @@ type orderManagerImpl struct {
 
 func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 	rep order.IOrderRepo, payRepo payment.IPaymentRepo, saleRepo sale.ISaleRepo,
-	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo,
+	goodsRepo item.IGoodsRepo, promRepo promotion.IPromotionRepo,
 	memberRepo member.IMemberRepo, deliveryRepo delivery.IDeliveryRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {

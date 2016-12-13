@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"go2o/core/domain/interface/cart"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -18,16 +18,16 @@ import (
 type cartImpl struct {
 	value      *cart.ValueCart
 	rep        cart.ICartRepo
-	goodsRepo  goods.IGoodsRepo
+	goodsRepo  item.IGoodsRepo
 	memberRepo member.IMemberRepo
 	summary    string
 	shop       shop.IShop
 	deliver    member.IDeliverAddress
-	snapMap    map[int32]*goods.Snapshot
+	snapMap    map[int32]*item.Snapshot
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IGoodsRepo) cart.ICart {
 	return (&cartImpl{
 		value:      val,
 		rep:        rep,
@@ -38,7 +38,7 @@ func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
 
 // 创建新的购物车
 func NewCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
-	goodsRepo goods.IGoodsRepo) cart.ICart {
+	goodsRepo item.IGoodsRepo) cart.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &cart.ValueCart{
@@ -72,7 +72,7 @@ func (c *cartImpl) Check() error {
 		if v.Checked == 1 {
 			snap := c.goodsRepo.GetLatestSnapshot(v.SkuId)
 			if snap == nil {
-				return goods.ErrNoSuchGoods // 没有商品
+				return item.ErrNoSuchGoods // 没有商品
 			}
 			if snap.StockNum == 0 {
 				return sale.ErrFullOfStock // 已经卖完了
@@ -86,11 +86,11 @@ func (c *cartImpl) Check() error {
 }
 
 // 获取商品的快招列表
-func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*goods.Snapshot {
+func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*item.Snapshot {
 	if c.snapMap == nil {
 		if items != nil {
 			l := len(items)
-			c.snapMap = make(map[int32]*goods.Snapshot, l)
+			c.snapMap = make(map[int32]*item.Snapshot, l)
 			if l > 0 {
 				var ids []int32 = make([]int32, l)
 				for i, v := range items {
@@ -117,7 +117,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 	return 0
 }
 
-func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int32) {
+func (c *cartImpl) setGoodsInfo(snap *item.Snapshot, level int32) {
 	// 设置会员价
 	if level > 0 {
 		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
@@ -191,10 +191,10 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 	}
 	snap := c.goodsRepo.GetLatestSnapshot(skuId)
 	if snap == nil {
-		return nil, goods.ErrNoSuchGoods // 没有商品
+		return nil, item.ErrNoSuchGoods // 没有商品
 	}
 	if snap.ShelveState != product.ShelvesOn {
-		return nil, goods.ErrNotOnShelves //未上架
+		return nil, item.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {
 		return nil, sale.ErrFullOfStock // 已经卖完了

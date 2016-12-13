@@ -12,10 +12,10 @@ package repository
 import (
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	saleImpl "go2o/core/domain/sale"
 )
@@ -28,16 +28,16 @@ type saleRepo struct {
 	_tagRepo     sale.ISaleLabelRepo
 	_promRepo    promotion.IPromotionRepo
 	_itemRepo    product.IProductRepo
-	_goodsRepo   goods.IGoodsRepo
-	_cateRepo    sale.ICategoryRepo
+	_goodsRepo   item.IGoodsRepo
+	_cateRepo    product.ICategoryRepo
 	_expressRepo express.IExpressRepo
 	_valRepo     valueobject.IValueRepo
 }
 
-func NewSaleRepo(c db.Connector, cateRepo sale.ICategoryRepo,
+func NewSaleRepo(c db.Connector, cateRepo product.ICategoryRepo,
 	valRepo valueobject.IValueRepo, saleLabelRepo sale.ISaleLabelRepo,
 	itemRepo product.IProductRepo, expressRepo express.IExpressRepo,
-	goodsRepo goods.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.ISaleRepo {
+	goodsRepo item.IGoodsRepo, promRepo promotion.IPromotionRepo) sale.ISaleRepo {
 	return (&saleRepo{
 		Connector:    c,
 		_tagRepo:     saleLabelRepo,

@@ -9,7 +9,7 @@
 
 package sale
 
-import "go2o/core/domain/interface/sale/product"
+import "go2o/core/domain/interface/product"
 
 type (
 	// 物品

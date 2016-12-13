@@ -14,10 +14,10 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
@@ -33,7 +33,7 @@ type itemImpl struct {
 	saleRepo      sale.ISaleRepo
 	itemRepo      product.IProductRepo
 	saleLabelRepo sale.ISaleLabelRepo
-	goodsRepo     goods.IGoodsRepo
+	goodsRepo     item.IGoodsRepo
 	expressRepo   express.IExpressRepo
 	promRepo      promotion.IPromotionRepo
 	saleImpl      *saleImpl
@@ -43,7 +43,7 @@ type itemImpl struct {
 
 func newItemImpl(mgr *itemManagerImpl, sale *saleImpl, v *product.Product,
 	itemRepo product.IProductRepo, saleRepo sale.ISaleRepo,
-	saleLabelRepo sale.ISaleLabelRepo, goodsRepo goods.IGoodsRepo,
+	saleLabelRepo sale.ISaleLabelRepo, goodsRepo item.IGoodsRepo,
 	valRepo valueobject.IValueRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) sale.IItem {
 	return &itemImpl{
@@ -183,7 +183,7 @@ func (i *itemImpl) checkPrice(v *product.Product) error {
 	minRate := conf.GoodsMinProfitRate
 	// 如果未设定最低利润率，则可以与供货价一致
 	if minRate != 0 && rate < minRate {
-		return errors.New(fmt.Sprintf(goods.ErrGoodsMinProfitRate.Error(),
+		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
 			strconv.Itoa(int(minRate*100))+"%"))
 	}
 	return nil
@@ -256,7 +256,7 @@ func (i *itemImpl) Save() (int32, error) {
 func (i *itemImpl) saveGoods() {
 	val := i.goodsRepo.GetValueGoods(i.GetDomainId(), 0)
 	if val == nil {
-		val = &goods.ItemGoods{
+		val = &item.ItemGoods{
 			Id:            0,
 			ProductId:     i.GetDomainId(),
 			IsPresent:     0,

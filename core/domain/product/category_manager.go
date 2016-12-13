@@ -6,14 +6,14 @@
  * description :
  * history :
  */
-package sale
+package product
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/algorithm/iterator"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"sort"
@@ -22,18 +22,19 @@ import (
 	"time"
 )
 
-var _ sale.ICategory = new(categoryImpl)
+var _ product.ICategory = new(categoryImpl)
 
 // 分类实现
 type categoryImpl struct {
-	value           *sale.Category
-	rep             sale.ICategoryRepo
+	value           *product.Category
+	rep             product.ICategoryRepo
 	parentIdChanged bool
 	childIdArr      []int32
 	opt             domain.IOptionStore
 }
 
-func NewCategory(rep sale.ICategoryRepo, v *sale.Category) sale.ICategory {
+func newCategory(rep product.ICategoryRepo,
+	v *product.Category) product.ICategory {
 	return &categoryImpl{
 		value: v,
 		rep:   rep,
@@ -44,7 +45,7 @@ func (c *categoryImpl) GetDomainId() int32 {
 	return c.value.Id
 }
 
-func (c *categoryImpl) GetValue() *sale.Category {
+func (c *categoryImpl) GetValue() *product.Category {
 	return c.value
 }
 
@@ -52,15 +53,15 @@ func (c *categoryImpl) GetOption() domain.IOptionStore {
 	if c.opt == nil {
 		opt := newCategoryOption(c)
 		if err := opt.Stat(); err != nil {
-			opt.Set(sale.C_OptionViewName, &domain.Option{
-				Key:   sale.C_OptionViewName,
+			opt.Set(product.C_OptionViewName, &domain.Option{
+				Key:   product.C_OptionViewName,
 				Type:  domain.OptionTypeString,
 				Must:  false,
 				Title: "显示页面",
 				Value: "goods_list.html",
 			})
-			opt.Set(sale.C_OptionDescribe, &domain.Option{
-				Key:   sale.C_OptionDescribe,
+			opt.Set(product.C_OptionDescribe, &domain.Option{
+				Key:   product.C_OptionDescribe,
 				Type:  domain.OptionTypeString,
 				Must:  false,
 				Title: "描述",
@@ -77,20 +78,20 @@ func (c *categoryImpl) GetOption() domain.IOptionStore {
 func (c *categoryImpl) checkParent(parentId int32) error {
 	if id := c.GetDomainId(); id > 0 && parentId > 0 {
 		//检查上级栏目是否存在
-		p := c.rep.GetGlobManager().GetCategory(parentId)
+		p := c.rep.GlobCatService().GetCategory(parentId)
 		if p == nil {
-			return sale.ErrNoSuchCategory
+			return product.ErrNoSuchCategory
 		}
 		// 检查上级分类
 		if p.GetValue().ParentId == id {
-			return sale.ErrCategoryCycleReference
+			return product.ErrCategoryCycleReference
 		}
 	}
 	return nil
 }
 
 // 设置值
-func (c *categoryImpl) SetValue(v *sale.Category) error {
+func (c *categoryImpl) SetValue(v *product.Category) error {
 	val := c.value
 	if val.Id == v.Id {
 		val.Enabled = v.Enabled
@@ -133,7 +134,7 @@ func (c *categoryImpl) setCategoryLevel() {
 	//todo: 未实现
 }
 
-func (c *categoryImpl) parentWalk(list []*sale.Category,
+func (c *categoryImpl) parentWalk(list []*product.Category,
 	parentId int32, level *int) {
 	*level += 1
 	if parentId <= 0 {
@@ -153,7 +154,7 @@ func (c *categoryImpl) parentWalk(list []*sale.Category,
 
 func (c *categoryImpl) Save() (int32, error) {
 	//if c._manager.ReadOnly() {
-	//    return c.GetDomainId(), sale.ErrReadonlyCategory
+	//    return c.GetDomainId(), product.ErrReadonlyCategory
 	//}
 	c.setCategoryLevel()
 	id, err := c.rep.SaveCategory(c.value)
@@ -170,15 +171,15 @@ func (c *categoryImpl) Save() (int32, error) {
 }
 
 // 获取子栏目
-func (c *categoryImpl) getChildCategories(catId int32) []*sale.Category {
-	var all []*sale.Category = c.rep.GetCategories(0)
-	var newArr []*sale.Category = []*sale.Category{}
+func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
+	var all []*product.Category = c.rep.GetCategories(0)
+	var newArr []*product.Category = []*product.Category{}
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*sale.Category).ParentId == v.(*sale.Category).Id
+		return v1.(*product.Category).ParentId == v.(*product.Category).Id
 	}
 	var start iterator.WalkFunc = func(v interface{}, level int) {
-		c := v.(*sale.Category)
+		c := v.(*product.Category)
 		if c.Id != catId {
 			newArr = append(newArr, c)
 		}
@@ -189,15 +190,15 @@ func (c *categoryImpl) getChildCategories(catId int32) []*sale.Category {
 		arr[i] = all[i]
 	}
 
-	iterator.Walk(arr, &sale.Category{Id: catId}, cdt, start, nil, 1)
+	iterator.Walk(arr, &product.Category{Id: catId}, cdt, start, nil, 1)
 
 	return newArr
 }
 
 // 获取与栏目相关的栏目
-func (c *categoryImpl) getRelationCategories(catId int32) []*sale.Category {
-	var all []*sale.Category = c.rep.GetCategories(0)
-	var newArr []*sale.Category = []*sale.Category{}
+func (c *categoryImpl) getRelationCategories(catId int32) []*product.Category {
+	var all []*product.Category = c.rep.GetCategories(0)
+	var newArr []*product.Category = []*product.Category{}
 	var isMatch bool
 	var pid int32
 	var l int = len(all)
@@ -249,20 +250,20 @@ func newCategoryOption(c *categoryImpl) domain.IOptionStore {
 	}
 }
 
-var _ sale.ICategoryManager = new(categoryManagerImpl)
+var _ product.IGlobCatService = new(categoryManagerImpl)
 
 //当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
 	_readonly      bool
-	_rep           sale.ICategoryRepo
+	_rep           product.ICategoryRepo
 	_valRepo       valueobject.IValueRepo
 	_mchId         int32
 	lastUpdateTime int64
-	_categories    []sale.ICategory
+	_categories    []product.ICategory
 }
 
-func NewCategoryManager(mchId int32, rep sale.ICategoryRepo,
-	valRepo valueobject.IValueRepo) sale.ICategoryManager {
+func NewCategoryManager(mchId int32, rep product.ICategoryRepo,
+	valRepo valueobject.IValueRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
 		_rep:     rep,
 		_mchId:   mchId,
@@ -271,7 +272,7 @@ func NewCategoryManager(mchId int32, rep sale.ICategoryRepo,
 	return c.init()
 }
 
-func (c *categoryManagerImpl) init() sale.ICategoryManager {
+func (c *categoryManagerImpl) init() product.IGlobCatService {
 	mchConf := c._valRepo.GetPlatformConf()
 	if !mchConf.MchGoodsCategory && c._mchId > 0 {
 		c._readonly = true
@@ -297,15 +298,15 @@ func (c *categoryManagerImpl) ReadOnly() bool {
 }
 
 // 创建分类
-func (c *categoryManagerImpl) CreateCategory(v *sale.Category) sale.ICategory {
+func (c *categoryManagerImpl) CreateCategory(v *product.Category) product.ICategory {
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	return NewCategory(c._rep, v)
+	return newCategory(c._rep, v)
 }
 
 // 获取分类
-func (c *categoryManagerImpl) GetCategory(id int32) sale.ICategory {
+func (c *categoryManagerImpl) GetCategory(id int32) product.ICategory {
 	v := c._rep.GetCategory(c.getRelationId(), id)
 	if v != nil {
 		return c.CreateCategory(v)
@@ -314,10 +315,10 @@ func (c *categoryManagerImpl) GetCategory(id int32) sale.ICategory {
 }
 
 // 获取所有分类
-func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
-	var list sale.CategoryList = c._rep.GetCategories(c.getRelationId())
+func (c *categoryManagerImpl) GetCategories() []product.ICategory {
+	var list product.CategoryList = c._rep.GetCategories(c.getRelationId())
 	sort.Sort(list)
-	slice := make([]sale.ICategory, len(list))
+	slice := make([]product.ICategory, len(list))
 	for i, v := range list {
 		slice[i] = c.CreateCategory(v)
 	}
@@ -328,13 +329,13 @@ func (c *categoryManagerImpl) GetCategories() []sale.ICategory {
 func (c *categoryManagerImpl) DeleteCategory(id int32) error {
 	cat := c.GetCategory(id)
 	if cat == nil {
-		return sale.ErrNoSuchCategory
+		return product.ErrNoSuchCategory
 	}
 	if len(cat.GetChildes()) > 0 {
-		return sale.ErrHasChildCategories
+		return product.ErrHasChildCategories
 	}
 	if c._rep.CheckGoodsContain(c.getRelationId(), id) {
-		return sale.ErrCategoryContainGoods
+		return product.ErrCategoryContainGoods
 	}
 	err := c._rep.DeleteCategory(c.getRelationId(), id)
 	if err == nil {

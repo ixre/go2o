@@ -14,8 +14,8 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/product"
 	"go2o/core/domain/interface/valueobject"
 	saleImpl "go2o/core/domain/sale"
 )

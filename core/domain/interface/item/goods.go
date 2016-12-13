@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package goods
+package item
 
 import (
 	"go2o/core/domain/interface/valueobject"

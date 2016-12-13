@@ -46,6 +46,48 @@ var (
 )
 
 type (
+	IProduct interface {
+		// 获取领域对象编号
+		GetDomainId() int32
+		// 获取商品的值
+		GetValue() Product
+		// 设置产品的值
+		SetValue(v *Product) error
+		// 是否上架
+		IsOnShelves() bool
+
+		// 获取销售标签
+		//GetSaleLabels() []*Label
+
+		// 保存销售标签
+		//SaveSaleLabels([]int) error
+
+		// 设置商品描述
+		SetDescribe(describe string) error
+
+		// 设置上架
+		SetShelve(state int32, remark string) error
+
+		// 审核
+		Review(pass bool, remark string) error
+
+		// 标记为违规
+		Incorrect(remark string) error
+
+		// 保存
+		Save() (int32, error)
+	}
+
+	// 货品服务
+	IItemManager interface {
+		// 创建产品
+		CreateItem(*Product) IProduct
+		// 根据产品编号获取货品
+		GetItem(id int32) IProduct
+		// 删除货品
+		DeleteItem(id int32) error
+	}
+
 	IProductRepo interface {
 		// 获取货品
 		GetProductValue(itemId int32) *Product
@@ -66,55 +108,55 @@ type (
 		// 删除货品
 		DeleteProduct(supplierId, goodsId int32) error
 	}
-
-	// 产品
-	Product struct {
-		// 编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
-		// 分类
-		CategoryId int32 `db:"cat_id"`
-		// 名称
-		Name string `db:"name"`
-		//供应商编号(暂时同mch_id)
-		VendorId int32 `db:"supplier_id"`
-		// 商铺编号
-		ShopId int64 `db:"shop_id"`
-		// 品牌编号
-		BrandId int64 `db:"brand_id"`
-		// 货号
-		GoodsNo string `db:"goods_no"`
-		// 小标题
-		SmallTitle string `db:"small_title"`
-		// 图片
-		Image string `db:"img"`
-		// 成本价
-		Cost float32 `db:"cost"`
-		// 重量:克(g)
-		Weight float32 `db:"weight"`
-		// 体积:毫升(ml)
-		Bulk int64 `db:"bulk"`
-		//定价
-		Price float32 `db:"price"`
-		//参考销售价
-		SalePrice float32 `db:"sale_price"`
-		// 运费模板编号
-		ExpressTplId int32 `db:"express_tid"`
-		// 描述
-		Description string `db:"description"`
-		// 上架状态
-		ShelveState int32 `db:"shelve_state"`
-		// 审核状态
-		ReviewState int32 `db:"review_state"`
-		// 备注
-		Remark string `db:"remark"`
-		// 状态
-		State int32 `db:"state"`
-		// 创建时间
-		CreateTime int64 `db:"create_time"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time"`
-	}
 )
+
+// 产品
+type Product struct {
+	// 编号
+	Id int32 `db:"id" auto:"yes" pk:"yes"`
+	// 分类
+	CategoryId int32 `db:"cat_id"`
+	// 名称
+	Name string `db:"name"`
+	//供应商编号(暂时同mch_id)
+	VendorId int32 `db:"supplier_id"`
+	// 商铺编号
+	ShopId int64 `db:"shop_id"`
+	// 品牌编号
+	BrandId int64 `db:"brand_id"`
+	// 货号
+	GoodsNo string `db:"goods_no"`
+	// 小标题
+	SmallTitle string `db:"small_title"`
+	// 图片
+	Image string `db:"img"`
+	// 成本价
+	Cost float32 `db:"cost"`
+	// 重量:克(g)
+	Weight float32 `db:"weight"`
+	// 体积:毫升(ml)
+	Bulk int64 `db:"bulk"`
+	//定价
+	Price float32 `db:"price"`
+	//参考销售价
+	SalePrice float32 `db:"sale_price"`
+	// 运费模板编号
+	ExpressTplId int32 `db:"express_tid"`
+	// 描述
+	Description string `db:"description"`
+	// 上架状态
+	ShelveState int32 `db:"shelve_state"`
+	// 审核状态
+	ReviewState int32 `db:"review_state"`
+	// 备注
+	Remark string `db:"remark"`
+	// 状态
+	State int32 `db:"state"`
+	// 创建时间
+	CreateTime int64 `db:"create_time"`
+	// 更新时间
+	UpdateTime int64 `db:"update_time"`
+}
 
 // 转换包含部分数据的产品值对象
 func ParseToPartialValueItem(v *valueobject.Goods) *Product {
