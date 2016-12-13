@@ -22,10 +22,24 @@ import (
 
 type saleLabelRepo struct {
 	db.Connector
+	_service item.ILabelService
+	valRep   valueobject.IValueRepo
 }
 
-func NewTagSaleRepo(c db.Connector) item.ISaleLabelRepo {
-	return &saleLabelRepo{c}
+func NewTagSaleRepo(c db.Connector,
+	valRep valueobject.IValueRepo) item.ISaleLabelRepo {
+	return &saleLabelRepo{
+		Connector: c,
+		valRep:    valRep,
+	}
+}
+
+// 获取商品标签服务
+func (t *saleLabelRepo) LabelService() item.ILabelService {
+	if t._service == nil {
+		t._service = itemImpl.NewLabelManager(0, t, t.valRep)
+	}
+	return t._service
 }
 
 // 创建销售标签
@@ -102,7 +116,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 	if len(sortBy) > 0 {
 		sortBy = "ORDER BY " + sortBy
 	}
-	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
+	t.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
 	    INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
@@ -110,7 +124,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 		product.ShelvesOn, mchId, tagId)
 	arr := []*valueobject.Goods{}
 	if total > 0 {
-		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM gs_goods
+		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id

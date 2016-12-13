@@ -15,34 +15,45 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/domain/interface/valueobject"
+	itemImpl "go2o/core/domain/item"
 	"go2o/core/infrastructure/format"
 )
 
-var _ item.IGoodsRepo = new(goodsRepo)
+var _ item.IGoodsItemRepo = new(goodsRepo)
 
 type goodsRepo struct {
 	db.Connector
-	_saleRepo sale.ISaleRepo
+	proRepo product.IProductRepo
 }
 
 // 商品仓储
-func NewGoodsRepo(c db.Connector) *goodsRepo {
+func NewGoodsRepo(c db.Connector, proRepo product.IProductRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector: c,
+		proRepo:   proRepo,
 	}
 }
-func (g *goodsRepo) SetSaleRepo(saleRepo sale.ISaleRepo) {
-	g._saleRepo = saleRepo
+
+// 创建商品
+func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
+	return itemImpl.NewSaleGoods(nil, g.proRepo, nil, v, g, nil)
+}
+
+// 获取商品
+func (g *goodsRepo) GetItem(itemId int32) item.IGoodsItem {
+	v := g.GetValueGoodsById(itemId)
+	if v != nil {
+		return g.CreateItem(v)
+	}
+	return nil
 }
 
 // 根据SKU-ID获取商品,SKU-ID为商品ID
-func (g *goodsRepo) GetGoodsBySKuId(skuId int32) interface{} {
+func (g *goodsRepo) GetGoodsBySkuId(skuId int32) interface{} {
 	snap := g.GetLatestSnapshot(skuId)
 	if snap != nil {
-		return g._saleRepo.GetSale(snap.VendorId).
-			GoodsManager().GetGoods(skuId)
+		return g.GetItem(skuId)
 	}
 	return nil
 }
@@ -128,7 +139,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	}
 
 	list := []*valueobject.Goods{}
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
 	 INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))

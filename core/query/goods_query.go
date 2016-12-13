@@ -39,7 +39,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 		orderBy += ","
 	}
 
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?

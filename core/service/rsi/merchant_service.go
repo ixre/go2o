@@ -13,7 +13,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/sale"
 	"go2o/core/dto"
 	"go2o/core/query"
 	"strings"
@@ -22,17 +21,15 @@ import (
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
-	_saleRepo   sale.ISaleRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 }
 
-func NewMerchantService(r merchant.IMerchantRepo, saleRepo sale.ISaleRepo,
+func NewMerchantService(r merchant.IMerchantRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
 		_mchRepo:    r,
 		_query:      q,
-		_saleRepo:   saleRepo,
 		_orderQuery: orderQuery,
 	}
 }
@@ -239,7 +236,7 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 	//mch.ConfManager().SaveSaleConf(&conf)
 
 	// 初始化销售标签
-	m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
+	//m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
 }
 
 // 获取商户的状态

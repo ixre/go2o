@@ -53,8 +53,8 @@ var (
 
 type (
 	IProduct interface {
-		// 获取领域对象编号
-		GetDomainId() int32
+		// 获取聚合根编号
+		GetAggregateRootId() int32
 		// 获取商品的值
 		GetValue() Product
 		// 设置产品的值

@@ -9,22 +9,20 @@
 package item
 
 import (
-	"go2o/core/domain"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
 )
 
-var _ item.IGoods = new(tmpGoodsImpl)
-var _ domain.IDomain = new(tmpGoodsImpl)
+var _ item.IGoodsItem = new(tmpGoodsImpl)
 
 // 临时的商品实现  todo: 要与item分开
 type tmpGoodsImpl struct {
 	manager       *goodsManagerImpl
 	pro           product.IProduct
 	value         *item.GoodsItem
-	goodsRepo     item.IGoodsRepo
+	goodsRepo     item.IGoodsItemRepo
 	productRepo   product.IProductRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
@@ -32,10 +30,12 @@ type tmpGoodsImpl struct {
 	snapManager   item.ISnapshotManager
 }
 
+//todo:??? 去掉依赖promotion.IPromotionRepo
+
 func NewSaleGoods(m *goodsManagerImpl,
 	itemRepo product.IProductRepo, pro product.IProduct,
 	value *item.GoodsItem,
-	goodsRepo item.IGoodsRepo, promRepo promotion.IPromotionRepo) item.IGoods {
+	goodsRepo item.IGoodsItemRepo, promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &tmpGoodsImpl{
 		manager:     m,
 		pro:         pro,
@@ -47,7 +47,7 @@ func NewSaleGoods(m *goodsManagerImpl,
 	return v.init()
 }
 
-func (g *tmpGoodsImpl) init() item.IGoods {
+func (g *tmpGoodsImpl) init() item.IGoodsItem {
 	g.value.Price = g.value.Price
 	if g.pro != nil {
 		g.value.Price = g.pro.GetValue().SalePrice
@@ -56,8 +56,8 @@ func (g *tmpGoodsImpl) init() item.IGoods {
 	return g
 }
 
-//获取领域对象编号
-func (g *tmpGoodsImpl) GetDomainId() int32 {
+//获取聚合根编号
+func (g *tmpGoodsImpl) GetAggregateRootId() int32 {
 	return g.value.Id
 }
 
@@ -70,7 +70,7 @@ func (g *tmpGoodsImpl) SnapshotManager() item.ISnapshotManager {
 			v := gi.GetValue()
 			item = &v
 		}
-		g.snapManager = NewSnapshotManagerImpl(g.GetDomainId(),
+		g.snapManager = NewSnapshotManagerImpl(g.GetAggregateRootId(),
 			g.goodsRepo, g.productRepo, g.GetValue(), item)
 	}
 	return g.snapManager
@@ -99,7 +99,7 @@ func (g *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 		Price:         item.Price,
 		SalePrice:     item.SalePrice,
 		PromPrice:     item.SalePrice,
-		GoodsId:       g.GetDomainId(),
+		GoodsId:       g.GetAggregateRootId(),
 		SkuId:         gv.SkuId,
 		IsPresent:     gv.IsPresent,
 		PromotionFlag: gv.PromFlag,
@@ -112,7 +112,7 @@ func (g *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 // 获取促销信息
 func (g *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
 	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
-		g.GetDomainId())
+		g.GetAggregateRootId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
 	for i, v := range vp {
 		proms[i] = g.promRepo.CreatePromotion(v)
@@ -176,14 +176,14 @@ func (g *tmpGoodsImpl) GetPromotionDescribe() map[string]string {
 // 获取会员价
 func (g *tmpGoodsImpl) GetLevelPrices() []*item.MemberPrice {
 	if g.levelPrices == nil {
-		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetDomainId())
+		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetAggregateRootId())
 	}
 	return g.levelPrices
 }
 
 // 保存会员价
 func (g *tmpGoodsImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
-	v.GoodsId = g.GetDomainId()
+	v.GoodsId = g.GetAggregateRootId()
 	if g.value.Price == v.Price {
 		if v.Id > 0 {
 			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
@@ -260,18 +260,24 @@ func (g *tmpGoodsImpl) FreeStock(quantity int32) error {
 	return err
 }
 
+// 删除商品
+func (g *tmpGoodsImpl) Destroy() error {
+	//g.goodsRepo.
+	return nil
+}
+
 var _ item.IGoodsManager = new(goodsManagerImpl)
 
 type goodsManagerImpl struct {
 	_productRepo product.IProductRepo
-	_itemRepo    item.IGoodsRepo
+	_itemRepo    item.IGoodsItemRepo
 	_promRepo    promotion.IPromotionRepo
 	_valRepo     valueobject.IValueRepo
 	_mchId       int32
 }
 
 func NewGoodsManager(mchId int32,
-	itemRepo item.IGoodsRepo,
+	itemRepo item.IGoodsItemRepo,
 	productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo,
 	valRepo valueobject.IValueRepo) item.IGoodsManager {
@@ -290,19 +296,19 @@ func (g *goodsManagerImpl) init() item.IGoodsManager {
 }
 
 // 创建商品
-func (g *goodsManagerImpl) CreateGoods(v *item.GoodsItem) item.IGoods {
+func (g *goodsManagerImpl) CreateGoods(v *item.GoodsItem) item.IGoodsItem {
 	return NewSaleGoods(g, g._productRepo,
 		nil, v, g._itemRepo, g._promRepo)
 }
 
 // 创建商品
-func (g *goodsManagerImpl) CreateGoodsByItem(pro product.IProduct, v *item.GoodsItem) item.IGoods {
+func (g *goodsManagerImpl) CreateGoodsByItem(pro product.IProduct, v *item.GoodsItem) item.IGoodsItem {
 	return NewSaleGoods(g, g._productRepo,
 		pro, v, g._itemRepo, g._promRepo)
 }
 
 // 根据产品编号获取商品
-func (g *goodsManagerImpl) GetGoods(goodsId int32) item.IGoods {
+func (g *goodsManagerImpl) GetGoods(goodsId int32) item.IGoodsItem {
 	var v *item.GoodsItem = g._itemRepo.GetValueGoodsById(goodsId)
 	if v != nil {
 		pro := g._productRepo.GetProduct(v.ProductId)
@@ -314,7 +320,7 @@ func (g *goodsManagerImpl) GetGoods(goodsId int32) item.IGoods {
 }
 
 // 根据产品SKU获取商品
-func (g *goodsManagerImpl) GetGoodsBySku(itemId, skuId int32) item.IGoods {
+func (g *goodsManagerImpl) GetGoodsBySku(itemId, skuId int32) item.IGoodsItem {
 	var v *item.GoodsItem = g._itemRepo.GetValueGoodsBySku(itemId, skuId)
 	if v != nil {
 		pro := g._productRepo.GetProduct(v.ProductId)
