@@ -849,7 +849,7 @@ func (o *orderImpl) Confirm() error {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int) error {
+func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int32) error {
 	gds := o.saleRepo.GetSale(vendorId).GoodsManager().GetGoods(skuId)
 	if gds == nil {
 		return item.ErrNoSuchGoods
@@ -1497,7 +1497,7 @@ func (o *subOrderImpl) Cancel(reason string) error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int32, quantity int) error {
+func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1512,7 +1512,7 @@ func (o *subOrderImpl) Return(snapshotId int32, quantity int) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {

@@ -93,7 +93,7 @@ func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
 // 获取货品销售总数
 func (p *productRepo) GetProductSaleNum(id int32) int {
 	var num int
-	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM gs_goods WHERE item_id=?`,
+	p.Connector.ExecScalar(`SELECT SUM(sale_num) FROM item_info WHERE product_id=?`,
 		&num, id)
 	return num
 }

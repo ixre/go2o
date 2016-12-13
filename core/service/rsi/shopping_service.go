@@ -103,7 +103,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 
 //todo: 这里响应较慢,性能?
 func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
-	skuId int32, num int, checked bool) (*dto.CartItem, error) {
+	skuId int32, num int32, checked bool) (*dto.CartItem, error) {
 	c := s.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
 	var err error
@@ -150,7 +150,7 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	return nil, err
 }
 func (s *shoppingService) SubCartItem(memberId int32,
-	cartKey string, goodsId int32, num int) error {
+	cartKey string, goodsId int32, num int32) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {

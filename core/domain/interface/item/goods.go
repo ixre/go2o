@@ -93,34 +93,66 @@ type (
 
 	// 商品,临时改方便辨别
 	GoodsItem struct {
+		// 商品编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
-
-		// 货品编号
-		ProductId int32 `db:"item_id"`
-
-		// 是否为赠品
-		IsPresent int `db:"is_present"`
-
-		// 规格
-		SkuId int32 `db:"sku_id"`
-
+		// 产品编号
+		ProductId int32 `db:"product_id"`
 		// 促销标志
-		PromotionFlag int `db:"prom_flag"`
-
-		// 库存
-		StockNum int `db:"stock_num"`
-
-		// 已售件数
-		SaleNum int `db:"sale_num"`
-
+		PromFlag int32 `db:"prom_flag"`
+		// 分类编号
+		CatId int32 `db:"cat_id"`
+		// 供货商编号
+		VendorId int32 `db:"vendor_id"`
+		// 品牌编号(冗余)
+		BrandId int32 `db:"brand_id"`
+		// 商铺编号
+		ShopId int32 `db:"shop_id"`
+		// 商铺分类编号
+		ShopCatId int32 `db:"shop_cat_id"`
+		// 快递模板编号
+		ExpressTid int32 `db:"express_tid"`
+		// 商品标题
+		Title string `db:"title"`
+		// 供货商编码
+		Code string `db:"code"`
+		// 主图
+		Image string `db:"image"`
+		// 是否为赠品
+		IsPresent int32 `db:"is_present"`
+		// 销售价格区间
+		PriceRange string `db:"price_range"`
+		// 总库存
+		StockNum int32 `db:"stock_num"`
+		// 销售数量
+		SaleNum int32 `db:"sale_num"`
+		// SKU数量
+		SkuNum int32 `db:"sku_num"`
+		// 默认SKU编号
+		SkuId int32 `db:"sku_id"`
+		// 成本价
+		Cost float32 `db:"cost"`
 		// 销售价
-		SalePrice float32 `db:"-"`
-
+		Price float32 `db:"price"`
+		// 零售价
+		RetailPrice float32 `db:"retail_price"`
+		// 重量:克(g)
+		Weight int32 `db:"weight"`
+		// 体积:毫升(ml)
+		Bulk int32 `db:"bulk"`
+		// 是否上架
+		ShelveState int32 `db:"shelve_state"`
+		// 审核状态
+		ReviewState int32 `db:"review_state"`
+		// 审核备注
+		ReviewRemark string `db:"review_remark"`
+		// 排序序号
+		SortNum int32 `db:"sort_num"`
+		// 创建时间
+		CreateTime int64 `db:"create_time"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
 		// 促销价
 		PromPrice float32 `db:"-"`
-
-		// 成交价
-		Price float32 `db:"-"`
 	}
 
 	// 会员价
@@ -138,15 +170,15 @@ type (
 // 转换为商品值对象
 func ParseToValueGoods(v *valueobject.Goods) *GoodsItem {
 	return &GoodsItem{
-		Id:            v.GoodsId,
-		ProductId:     v.Item_Id,
-		IsPresent:     v.IsPresent,
-		SkuId:         v.SkuId,
-		PromotionFlag: v.PromotionFlag,
-		StockNum:      v.StockNum,
-		SaleNum:       v.SaleNum,
-		SalePrice:     v.SalePrice,
-		PromPrice:     v.PromPrice,
-		Price:         v.Price,
+		Id:          v.GoodsId,
+		ProductId:   v.ProductId,
+		IsPresent:   v.IsPresent,
+		SkuId:       v.SkuId,
+		PromFlag:    v.PromotionFlag,
+		StockNum:    v.StockNum,
+		SaleNum:     v.SaleNum,
+		Price:       v.SalePrice,
+		PromPrice:   v.PromPrice,
+		RetailPrice: v.Price,
 	}
 }

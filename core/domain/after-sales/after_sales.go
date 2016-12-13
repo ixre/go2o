@@ -95,7 +95,7 @@ func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 }
 
 // 设置要退回货物信息
-func (a *afterSalesOrderImpl) SetItem(snapshotId int32, quantity int) error {
+func (a *afterSalesOrderImpl) SetItem(snapshotId int32, quantity int32) error {
 	for _, v := range a.GetOrder().Items() {
 		if v.SnapshotId == snapshotId {
 			// 判断是否超过数量

@@ -321,10 +321,10 @@ type (
 		Cancel(reason string) error
 
 		// 退回商品
-		Return(snapshotId int32, quantity int) error
+		Return(snapshotId int32, quantity int32) error
 
 		// 撤销退回商品
-		RevertReturn(snapshotId int32, quantity int) error
+		RevertReturn(snapshotId int32, quantity int32) error
 
 		// 申请退款
 		// todo ???
@@ -348,7 +348,7 @@ type (
 		GoodsId    int32  `json:"id"`
 		GoodsImage string `json:"img"`
 		Name       string `json:"name"`
-		Quantity   int    `json:"qty"`
+		Quantity   int32  `json:"qty"`
 	}
 
 	OrderLog struct {
@@ -500,9 +500,9 @@ type (
 		// 快照编号
 		SnapshotId int32 `db:"snap_id"`
 		// 数量
-		Quantity int `db:"quantity"`
+		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)
-		ReturnQuantity int `db:"return_quantity"`
+		ReturnQuantity int32 `db:"return_quantity"`
 		// SKU描述
 		//Sku string `db:"sku"`
 		// 金额

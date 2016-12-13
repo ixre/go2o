@@ -16,7 +16,7 @@ type ShoppingCart struct {
 	Summary    string `json:"summary"`
 	UpdateTime int64  `json:"update_time"`
 	//Items      []*CartItem `json:"items"`
-	TotalNum int     `json:"total_num"` // 总数量
+	TotalNum int32   `json:"total_num"` // 总数量
 	TotalFee float32 `json:"total"`
 	OrderFee float32 `json:"fee"`
 	// 运营商
@@ -39,7 +39,7 @@ type CartItem struct {
 	GoodsNo    string  `json:"no"`
 	SmallTitle string  `json:"title"`
 	GoodsImage string  `json:"image"`
-	Quantity   int     `json:"num"`
+	Quantity   int32   `json:"num"`
 	Price      float32 `json:"price"`
 	SalePrice  float32 `json:"salePrice"`
 	// 是否结算

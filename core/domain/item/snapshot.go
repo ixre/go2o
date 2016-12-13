@@ -55,7 +55,7 @@ func (s *snapshotManagerImpl) CompareSnapshot(snap *item.Snapshot,
 			latest.CategoryId != snap.CategoryId ||
 			latest.Image != snap.Image ||
 			latest.Cost != snap.Cost ||
-			latest.Price != snap.Price ||
+			latest.RetailPrice != snap.RetailPrice ||
 			latest.SalePrice != snap.SalePrice ||
 			latest.ShelveState != snap.ShelveState ||
 			latest.LevelSales != snap.LevelSales ||
@@ -124,9 +124,9 @@ func (s *snapshotManagerImpl) updateSnapshot(ls *item.Snapshot,
 		CategoryId:   gi.CategoryId,
 		Image:        gi.Image,
 		Weight:       gi.Weight,
-		SalePrice:    gs.SalePrice,
+		SalePrice:    gs.Price,
 		Cost:         gi.Cost,
-		Price:        gi.Price,
+		RetailPrice:  gs.RetailPrice,
 		SaleNum:      gs.SaleNum,
 		StockNum:     gs.StockNum,
 		LevelSales:   LevelSales,

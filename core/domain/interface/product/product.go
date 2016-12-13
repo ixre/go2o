@@ -161,7 +161,7 @@ type Product struct {
 // 转换包含部分数据的产品值对象
 func ParseToPartialValueItem(v *valueobject.Goods) *Product {
 	return &Product{
-		Id:         v.Item_Id,
+		Id:         v.ProductId,
 		CategoryId: v.CategoryId,
 		Name:       v.Name,
 		Code:       v.GoodsNo,

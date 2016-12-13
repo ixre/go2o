@@ -50,7 +50,7 @@ func NewSaleGoods(m *goodsManagerImpl,
 func (g *tmpGoodsImpl) init() item.IGoods {
 	g.value.Price = g.value.Price
 	if g.pro != nil {
-		g.value.SalePrice = g.pro.GetValue().SalePrice
+		g.value.Price = g.pro.GetValue().SalePrice
 		g.value.PromPrice = g.pro.GetValue().SalePrice
 	}
 	return g
@@ -91,7 +91,7 @@ func (g *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 	item := g.GetItem().GetValue()
 	gv := g.GetValue()
 	goods := &valueobject.Goods{
-		Item_Id:       item.Id,
+		ProductId:     item.Id,
 		CategoryId:    item.CategoryId,
 		Name:          item.Name,
 		GoodsNo:       item.Code,
@@ -102,7 +102,7 @@ func (g *tmpGoodsImpl) GetPackedValue() *valueobject.Goods {
 		GoodsId:       g.GetDomainId(),
 		SkuId:         gv.SkuId,
 		IsPresent:     gv.IsPresent,
-		PromotionFlag: gv.PromotionFlag,
+		PromotionFlag: gv.PromFlag,
 		StockNum:      gv.StockNum,
 		SaleNum:       gv.SaleNum,
 	}
@@ -124,11 +124,11 @@ func (g *tmpGoodsImpl) GetPromotions() []promotion.IPromotion {
 func (g *tmpGoodsImpl) GetLevelPrice(level int32) (bool, float32) {
 	lvp := g.GetLevelPrices()
 	for _, v := range lvp {
-		if level == v.Level && v.Price < g.value.SalePrice {
+		if level == v.Level && v.Price < g.value.Price {
 			return true, v.Price
 		}
 	}
-	return false, g.value.SalePrice
+	return false, g.value.Price
 }
 
 // 获取促销价
@@ -137,7 +137,7 @@ func (g *tmpGoodsImpl) GetPromotionPrice(level int32) float32 {
 	if b {
 		return price
 	}
-	return g.value.SalePrice
+	return g.value.Price
 }
 
 // 获取促销描述
@@ -184,7 +184,7 @@ func (g *tmpGoodsImpl) GetLevelPrices() []*item.MemberPrice {
 // 保存会员价
 func (g *tmpGoodsImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 	v.GoodsId = g.GetDomainId()
-	if g.value.SalePrice == v.Price {
+	if g.value.Price == v.Price {
 		if v.Id > 0 {
 			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
 		}
@@ -215,7 +215,7 @@ func (g *tmpGoodsImpl) Save() (int32, error) {
 }
 
 // 更新销售数量
-func (g *tmpGoodsImpl) AddSalesNum(quantity int) error {
+func (g *tmpGoodsImpl) AddSalesNum(quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -228,7 +228,7 @@ func (g *tmpGoodsImpl) AddSalesNum(quantity int) error {
 }
 
 // 取消销售
-func (g *tmpGoodsImpl) CancelSale(quantity int, orderNo string) error {
+func (g *tmpGoodsImpl) CancelSale(quantity int32, orderNo string) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -238,7 +238,7 @@ func (g *tmpGoodsImpl) CancelSale(quantity int, orderNo string) error {
 }
 
 // 占用库存
-func (g *tmpGoodsImpl) TakeStock(quantity int) error {
+func (g *tmpGoodsImpl) TakeStock(quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -251,7 +251,7 @@ func (g *tmpGoodsImpl) TakeStock(quantity int) error {
 }
 
 // 释放库存
-func (g *tmpGoodsImpl) FreeStock(quantity int) error {
+func (g *tmpGoodsImpl) FreeStock(quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}

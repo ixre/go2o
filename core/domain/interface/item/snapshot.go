@@ -56,7 +56,7 @@ type (
 		// 供货价
 		Cost float32 `db:"cost"`
 		//定价
-		Price float32 `db:"price"`
+		RetailPrice float32 `db:"retail_price"`
 		//销售价
 		SalePrice float32 `db:"sale_price"`
 		// 单件重量,单位:千克(kg)
@@ -64,9 +64,9 @@ type (
 		//是否有会员价
 		LevelSales int `db:"level_sales"`
 		//销售数量
-		SaleNum int `db:"sale_num"`
+		SaleNum int32 `db:"sale_num"`
 		//库存
-		StockNum int `db:"stock_num"`
+		StockNum int32 `db:"stock_num"`
 		// 是否上架
 		ShelveState int32 `db:"shelve_state"`
 		//快照时间

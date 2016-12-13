@@ -139,10 +139,10 @@ func (s *saleService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 		orderBy = "pro_product.sale_price DESC"
 	case "sale_0":
 		where = ""
-		orderBy = "gs_goods.sale_num ASC"
+		orderBy = "item_info.sale_num ASC"
 	case "sale_1":
 		where = ""
-		orderBy = "gs_goods.sale_num DESC"
+		orderBy = "item_info.sale_num DESC"
 	case "rate_0":
 	//todo:
 	case "rate_1":
