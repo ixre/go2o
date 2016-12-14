@@ -520,7 +520,7 @@ type (
 		// 重量,用于生成订单时存储数据
 		Weight int32 `db:"-"`
 		// 体积:毫升(ml)
-		Bulk   int32 `db:"-"`
+		Bulk int32 `db:"-"`
 		// 快递模板编号
 		ExpressTplId int32 `db:"-"`
 	}

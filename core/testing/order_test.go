@@ -19,7 +19,7 @@ func getRepo() order.IOrderRepo {
 	app := include.GetApp()
 	db := app.Db()
 	sto := app.Storage()
-	goodsRepo :=repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
+	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
 	valRepo := repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
 	notifyRepo := repository.NewNotifyRepo(db)

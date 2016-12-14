@@ -776,7 +776,7 @@ func (ms *memberService) ChargeAccount(memberId int32, account int32,
 	} else {
 		err = acc.Charge(account, kind, title, outerNo, float32(amount), relateUser)
 	}
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分

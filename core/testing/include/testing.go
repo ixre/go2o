@@ -149,7 +149,7 @@ func init() {
 	sto := app.Storage()
 	ProMRepo = repository.NewProModelRepo(db, orm)
 
-	goodsRepo :=repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
+	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
 	valRepo := repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
 	notifyRepo := repository.NewNotifyRepo(db)

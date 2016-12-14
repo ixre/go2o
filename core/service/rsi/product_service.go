@@ -1,6 +1,7 @@
 package rsi
 
 import (
+	"errors"
 	"github.com/jsix/gof/web/ui/tree"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
@@ -59,7 +60,8 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 	if v.Id > 0 {
 		ev := p.GetModel(v.Id)
 		if ev == nil {
-			return &define.Result_{Message: "模型不存在"}, nil
+			err = errors.New("模型不存在")
+			goto R
 		}
 		ev.Name = v.Name
 		ev.Enabled = v.Enabled
@@ -83,9 +85,8 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 	if err == nil {
 		v.Id, err = pm.Save()
 	}
-	r := parser.Result(err)
-	r.ID = v.Id
-	return r, nil
+R:
+	return parser.Result(v.Id, err), nil
 }
 
 // 删除产品模型
@@ -103,15 +104,13 @@ func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
 // Save 产品品牌
 func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*define.Result_, error) {
 	id, err := p.pmRep.BrandService().SaveBrand(v)
-	r := parser.Result(err)
-	r.ID = id
-	return r, nil
+	return parser.Result(id, err), nil
 }
 
 // Delete 产品品牌
 func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
 	err := p.pmRep.BrandService().DeleteBrand(id)
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }
 
 // 获取所有产品品牌
@@ -288,27 +287,30 @@ func (p *productService) GetProductValue(productId int32) *product.Product {
 }
 
 // 保存产品
-func (p *productService) SaveItem(v *product.Product) (int32, error) {
+func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
 		pro = p.proRep.GetProduct(v.Id)
 		if pro == nil || pro.GetValue().VendorId != v.VendorId {
-			return 0, product.ErrNoSuchProduct
+			err = product.ErrNoSuchProduct
+			goto R
 		}
 		// 修改货品时，不会修改详情
 		v.Description = pro.GetValue().Description
 	} else {
 		pro = p.proRep.CreateProduct(v)
 	}
-	err := pro.SetValue(v)
+	// 保存
+	err = pro.SetValue(v)
 	if err == nil {
-		return pro.Save()
+		v.Id, err = pro.Save()
 	}
-	return v.Id, err
+R:
+	return parser.Result(v.Id, err), nil
 }
 
 // 保存货品描述
-func (p *productService) SaveItemInfo(supplierId int32,
+func (p *productService) SaveProductInfo(supplierId int32,
 	productId int32, info string) error {
 	pro := p.proRep.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
