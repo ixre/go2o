@@ -13,6 +13,15 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
+const (
+	// 已下架
+	ShelvesDown int32 = 1
+	// 已上架
+	ShelvesOn int32 = 2
+	// 已拒绝上架 (不允许上架)
+	ShelvesIncorrect int32 = 3
+)
+
 var (
 	ErrNoSuchGoods *domain.DomainError = domain.NewDomainError(
 		"no_such_goods", "商品不存在")

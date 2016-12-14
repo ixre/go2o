@@ -11,6 +11,7 @@ package item
 import (
 	"errors"
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
@@ -18,6 +19,7 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
+	"strings"
 )
 
 var _ item.IGoodsItem = new(goodsItemImpl)
@@ -199,26 +201,25 @@ func (g *goodsItemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 	return g.goodsRepo.SaveGoodsLevelPrice(v)
 }
 
-// 判断价格是否正确
-func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
-	rate := (v.Price - v.Cost) / v.Price
-	conf := i.valRepo.GetRegistry()
-	minRate := conf.GoodsMinProfitRate
-	// 如果未设定最低利润率，则可以与供货价一致
-	if minRate != 0 && rate < minRate {
-		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
-			strconv.Itoa(int(minRate*100))+"%"))
-	}
-	return nil
-}
-
 // 设置值
 func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
 	g.value.IsPresent = v.IsPresent
 	g.value.SaleNum = v.SaleNum
 	g.value.StockNum = v.StockNum
 	g.value.SkuId = v.SkuId
-	return g.checkItemValue(v)
+	err := g.checkItemValue(v)
+	if err == nil {
+		//修改图片或标题后，要重新审核
+		if g.value.Image != v.Image || g.value.Title != v.Title {
+			g.resetReview()
+		}
+	}
+	return err
+}
+
+// 重置审核状态
+func (i *goodsItemImpl) resetReview() {
+	i.value.ReviewState = enum.ReviewAwaiting
 }
 
 // 检查商品数据是否正确
@@ -243,6 +244,19 @@ func (g *goodsItemImpl) checkItemValue(v *item.GoodsItem) error {
 	}
 	// 检测价格
 	return g.checkPrice(v)
+}
+
+// 判断价格是否正确
+func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
+	rate := (v.Price - v.Cost) / v.Price
+	conf := i.valRepo.GetRegistry()
+	minRate := conf.GoodsMinProfitRate
+	// 如果未设定最低利润率，则可以与供货价一致
+	if minRate != 0 && rate < minRate {
+		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
+			strconv.Itoa(int(minRate*100))+"%"))
+	}
+	return nil
 }
 
 // 保存商品SKU
@@ -271,6 +285,48 @@ func (g *goodsItemImpl) Save() (_ int32, err error) {
 		_, err = g.SnapshotManager().GenerateSnapshot()
 	}
 	return g.value.Id, err
+}
+
+
+// 是否上架
+func (g *goodsItemImpl) IsOnShelves() bool {
+    return g.value.ShelveState == item.ShelvesOn
+}
+
+// 设置上架
+func (g *goodsItemImpl) SetShelve(state int32, remark string) error {
+	if state == item.ShelvesIncorrect && len(remark) == 0 {
+		return product.ErrNilRejectRemark
+	}
+	g.value.ShelveState = state
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 标记为违规
+func (g *goodsItemImpl) Incorrect(remark string) error {
+	g.value.ShelveState = item.ShelvesIncorrect
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 审核
+func (g *goodsItemImpl) Review(pass bool, remark string) error {
+	if pass {
+		g.value.ReviewState = enum.ReviewPass
+
+	} else {
+		remark = strings.TrimSpace(remark)
+		if remark == "" {
+			return item.ErrEmptyReviewRemark
+		}
+		g.value.ReviewState = enum.ReviewReject
+	}
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
 }
 
 // 更新销售数量
