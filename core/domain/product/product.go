@@ -10,103 +10,102 @@
 package product
 
 import (
-    "fmt"
-    "go2o/core/domain/interface/enum"
-    "go2o/core/domain/interface/item"
-    "go2o/core/domain/interface/product"
-    "go2o/core/domain/interface/valueobject"
-    "strconv"
-    "strings"
-    "time"
+	"fmt"
+	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/valueobject"
+	"strconv"
+	"strings"
+	"time"
 )
 
 var _ product.IProduct = new(productImpl)
 
 type productImpl struct {
-    value     *product.Product
-    repo      product.IProductRepo
-    valueRepo valueobject.IValueRepo
+	value     *product.Product
+	repo      product.IProductRepo
+	valueRepo valueobject.IValueRepo
 }
 
 func NewProductImpl(v *product.Product,
-itemRepo product.IProductRepo,
-valRepo valueobject.IValueRepo) product.IProduct {
-    return &productImpl{
-        value:     v,
-        repo:      itemRepo,
-        valueRepo: valRepo,
-    }
+	itemRepo product.IProductRepo,
+	valRepo valueobject.IValueRepo) product.IProduct {
+	return &productImpl{
+		value:     v,
+		repo:      itemRepo,
+		valueRepo: valRepo,
+	}
 }
 
 // 获取聚合根编号
 func (i *productImpl) GetAggregateRootId() int32 {
-    return i.value.Id
+	return i.value.Id
 }
 
 func (i *productImpl) GetValue() product.Product {
-    return *i.value
+	return *i.value
 }
 
 func (i *productImpl) checkValue(v *product.Product) error {
 
-    // 检测供应商
-    if v.VendorId <= 0 || v.VendorId != i.value.VendorId {
-        return product.ErrVendor
-    }
-    // 检测标题长度
-    v.Name = strings.TrimSpace(v.Name)
-    if len(v.Name) < 10 {
-        return product.ErrItemNameLength
-    }
+	// 检测供应商
+	if v.VendorId <= 0 || v.VendorId != i.value.VendorId {
+		return product.ErrVendor
+	}
+	// 检测标题长度
+	v.Name = strings.TrimSpace(v.Name)
+	if len(v.Name) < 10 {
+		return product.ErrItemNameLength
+	}
 
-    // 检测品牌
-    if v.BrandId <= 0 {
-        //todo: 检测是否有效，与模型是否匹配
-        return product.ErrNoBrand
-    }
-    return nil
+	// 检测品牌
+	if v.BrandId <= 0 {
+		//todo: 检测是否有效，与模型是否匹配
+		return product.ErrNoBrand
+	}
+	return nil
 
 }
 
 // 设置值
 func (i *productImpl) SetValue(v *product.Product) error {
-    if i.GetAggregateRootId() <= 0 {
-        i.value.ShelveState = item.ShelvesDown
-        i.value.ReviewState = enum.ReviewAwaiting
-    }
-    if i.value.ShelveState == item.ShelvesIncorrect {
-        return product.ErrItemIncorrect
-    }
-    if err := i.checkValue(v); err != nil {
-        return err
-    }
-    if v.Id == i.value.Id {
-        i.value.Name = v.Name
-        i.value.Code = v.Code
-        i.value.BrandId = v.BrandId
-        i.value.Image = v.Image
-        if v.CategoryId > 0 {
-            i.value.CategoryId = v.CategoryId
-        }
-        i.value.SortNum = v.SortNum
-    }
-    i.value.UpdateTime = time.Now().Unix()
-    return nil
+	if i.GetAggregateRootId() <= 0 {
+		i.value.ShelveState = item.ShelvesDown
+		i.value.ReviewState = enum.ReviewAwaiting
+	}
+	if i.value.ShelveState == item.ShelvesIncorrect {
+		return product.ErrItemIncorrect
+	}
+	if err := i.checkValue(v); err != nil {
+		return err
+	}
+	if v.Id == i.value.Id {
+		i.value.Name = v.Name
+		i.value.Code = v.Code
+		i.value.BrandId = v.BrandId
+		i.value.Image = v.Image
+		if v.CategoryId > 0 {
+			i.value.CategoryId = v.CategoryId
+		}
+		i.value.SortNum = v.SortNum
+	}
+	i.value.UpdateTime = time.Now().Unix()
+	return nil
 }
 
 // 设置商品描述
 func (i *productImpl) SetDescribe(describe string) error {
-    if len(describe) < 20 {
-        return product.ErrDescribeLength
-    }
-    if i.value.Description != describe {
-        i.value.Description = describe
-        _, err := i.Save()
-        return err
-    }
-    return nil
+	if len(describe) < 20 {
+		return product.ErrDescribeLength
+	}
+	if i.value.Description != describe {
+		i.value.Description = describe
+		_, err := i.Save()
+		return err
+	}
+	return nil
 }
-
 
 // 获取商品的销售标签
 //func (i *itemImpl) GetSaleLabels() []*item.Label {
@@ -126,31 +125,30 @@ func (i *productImpl) SetDescribe(describe string) error {
 //    return err
 //}
 
-
 // 保存
 func (i *productImpl) Save() (int32, error) {
-    unix := time.Now().Unix()
-    i.value.UpdateTime = unix
-    if i.GetAggregateRootId() <= 0 {
-        i.value.CreateTime = unix
-    }
-    // 自动生成货号
-    if i.value.Code == "" {
-        cs := strconv.Itoa(int(i.value.CategoryId))
-        us := strconv.Itoa(int(unix))
-        l := len(cs)
-        i.value.Code = fmt.Sprintf("%s%s", cs, us[4 + l:])
-    }
-    return i.repo.SaveProductValue(i.value)
+	unix := time.Now().Unix()
+	i.value.UpdateTime = unix
+	if i.GetAggregateRootId() <= 0 {
+		i.value.CreateTime = unix
+	}
+	// 自动生成货号
+	if i.value.Code == "" {
+		cs := strconv.Itoa(int(i.value.CategoryId))
+		us := strconv.Itoa(int(unix))
+		l := len(cs)
+		i.value.Code = fmt.Sprintf("%s%s", cs, us[4+l:])
+	}
+	return i.repo.SaveProductValue(i.value)
 }
 
 // 销毁产品
 func (i *productImpl) Destroy() error {
-    num := i.repo.GetProductSaleNum(i.GetAggregateRootId())
-    if num > 0 {
-        return item.ErrCanNotDeleteItem
-    }
-    return i.repo.DeleteProduct(i.GetAggregateRootId())
+	num := i.repo.GetProductSaleNum(i.GetAggregateRootId())
+	if num > 0 {
+		return item.ErrCanNotDeleteItem
+	}
+	return i.repo.DeleteProduct(i.GetAggregateRootId())
 }
 
 //// 生成快照

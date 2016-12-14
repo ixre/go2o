@@ -25,7 +25,7 @@ type cartImpl struct {
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
-memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	return (&cartImpl{
 		value:      val,
 		rep:        rep,
