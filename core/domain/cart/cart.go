@@ -547,8 +547,8 @@ func (c *cartImpl) GetSummary() string {
 			snap := list[v.SkuId]
 			if snap != nil {
 				buf.WriteString(snap.GoodsTitle)
-				if len(snap.SmallTitle) != 0 {
-					buf.WriteString("(" + snap.SmallTitle + ")")
+				if len(snap.ShortTitle) != 0 {
+					buf.WriteString("(" + snap.ShortTitle + ")")
 				}
 				buf.WriteString("*" + strconv.Itoa(int(v.Quantity)))
 				if i < length-1 {

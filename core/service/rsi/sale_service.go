@@ -37,10 +37,10 @@ func NewSaleService(cateRepo product.ICategoryRepo,
 }
 
 // 获取商品值
-func (s *itemService) GetValueGoods(mchId, itemId int32) *valueobject.Goods {
+func (s *itemService) GetItemValue(itemId int32) *item.GoodsItem {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
-		return item.GetPackedValue()
+		return item.GetValue()
 	}
 	return nil
 }

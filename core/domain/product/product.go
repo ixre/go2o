@@ -10,13 +10,10 @@
 package product
 
 import (
-	"errors"
 	"fmt"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"strings"
@@ -28,10 +25,7 @@ var _ product.IProduct = new(productImpl)
 type productImpl struct {
 	value       *product.Product
 	productRepo product.IProductRepo
-	expressRepo express.IExpressRepo
-	//saleImpl      *saleImpl
-	// saleLabels    []*item.Label
-	valueRepo valueobject.IValueRepo
+	valueRepo   valueobject.IValueRepo
 }
 
 func NewProductImpl(v *product.Product,
@@ -54,7 +48,7 @@ func (i *productImpl) GetValue() product.Product {
 }
 
 func (i *productImpl) checkValue(v *product.Product) error {
-	registry := i.valueRepo.GetRegistry()
+
 	// 检测供应商
 	if v.VendorId <= 0 || v.VendorId != i.value.VendorId {
 		return product.ErrVendor
@@ -64,31 +58,14 @@ func (i *productImpl) checkValue(v *product.Product) error {
 	if len(v.Name) < 10 {
 		return product.ErrItemNameLength
 	}
+
 	// 检测品牌
 	if v.BrandId <= 0 {
 		//todo: 检测是否有效，与模型是否匹配
 		return product.ErrNoBrand
 	}
+	return nil
 
-	// 检测是否上传图片
-	if v.Image == registry.GoodsDefaultImage {
-		return product.ErrNotUploadImage
-	}
-	// 检测运费模板
-	if v.ExpressTplId <= 0 {
-		return shipment.ErrNotSetExpressTemplate
-	}
-
-	tpl := i.expressRepo.GetUserExpress(v.VendorId).GetTemplate(v.ExpressTplId)
-	if tpl == nil {
-		return express.ErrNoSuchTemplate
-	}
-	if !tpl.Enabled() {
-		return express.ErrTemplateNotEnabled
-	}
-
-	// 检测价格
-	return i.checkPrice(v)
 }
 
 // 设置值
@@ -108,18 +85,10 @@ func (i *productImpl) SetValue(v *product.Product) error {
 		if i.value.Image != v.Image || i.value.Name != v.Name {
 			i.resetReview()
 		}
-		i.value.SmallTitle = v.SmallTitle
 		i.value.Name = v.Name
 		i.value.Code = v.Code
 		i.value.BrandId = v.BrandId
-		i.value.ShopId = v.ShopId
-		i.value.Bulk = v.Bulk
 		i.value.Image = v.Image
-		i.value.Cost = v.Cost
-		i.value.SalePrice = v.SalePrice
-		i.value.Price = v.Price
-		i.value.Weight = v.Weight
-		i.value.ExpressTplId = v.ExpressTplId
 		if v.CategoryId > 0 {
 			i.value.CategoryId = v.CategoryId
 		}
@@ -169,19 +138,6 @@ func (i *productImpl) IsOnShelves() bool {
 // 重置审核状态
 func (i *productImpl) resetReview() {
 	i.value.ReviewState = enum.ReviewAwaiting
-}
-
-// 判断价格是否正确
-func (i *productImpl) checkPrice(v *product.Product) error {
-	rate := (v.SalePrice - v.Cost) / v.SalePrice
-	conf := i.valueRepo.GetRegistry()
-	minRate := conf.GoodsMinProfitRate
-	// 如果未设定最低利润率，则可以与供货价一致
-	if minRate != 0 && rate < minRate {
-		return errors.New(fmt.Sprintf(item.ErrGoodsMinProfitRate.Error(),
-			strconv.Itoa(int(minRate*100))+"%"))
-	}
-	return nil
 }
 
 // 设置上架
@@ -263,7 +219,7 @@ func (i *productImpl) saveGoods() {
 	//}
 
 	panic(" save goods ")
-	//goods := NewSaleGoods(nil, i.saleImpl, i.itemRepo, i, val,
+	//goods := NewSaleItem(i.itemRepo, i, val,
 	//    i.saleRepo, i.goodsRepo, i.promRepo)
 	//goods.Save()
 }

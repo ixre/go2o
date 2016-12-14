@@ -83,7 +83,7 @@ type (
 	// 运费计算器
 	IExpressCalculator interface {
 		// 添加计算项,tplId为运费模板的编号
-		Add(tplId int32, unit float32) error
+		Add(tplId int32, unit int32) error
 
 		// 计算运费
 		Calculate(areaCode string)
@@ -208,15 +208,15 @@ type (
 		// 快递模板名称
 		Name string `db:"name"`
 		// 是否卖家承担运费，0为顾客承担
-		IsFree int `db:"is_free"`
+		IsFree int32 `db:"is_free"`
 		// 计价方式:1:按重量;2:按数量;3:按体积
 		Basis int `db:"basis"`
 		// 首次数值，如 首重为2kg
-		FirstUnit int `db:"first_unit"`
+		FirstUnit int32 `db:"first_unit"`
 		// 首次金额，如首重10元
 		FirstFee float32 `db:"first_fee"`
 		// 增加数值，如续重1kg
-		AddUnit int `db:"add_unit"`
+		AddUnit int32 `db:"add_unit"`
 		// 增加产生费用，如续重1kg 10元
 		AddFee float32 `db:"add_fee"`
 		// 是否启用
@@ -234,11 +234,11 @@ type (
 		// 地区名称列表
 		NameList string `db:"name_list"`
 		// 首次数值，如 首重为2kg
-		FirstUnit int `db:"first_unit"`
+		FirstUnit int32 `db:"first_unit"`
 		// 首次金额，如首重10元
 		FirstFee float32 `db:"first_fee"`
 		// 增加数值，如续重1kg
-		AddUnit int `db:"add_unit"`
+		AddUnit int32 `db:"add_unit"`
 		// 增加产生费用，如续重1kg 10元
 		AddFee float32 `db:"add_fee"`
 	}

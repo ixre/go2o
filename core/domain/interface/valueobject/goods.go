@@ -14,6 +14,8 @@ package valueobject
 // 完整的商品信息
 type Goods struct {
 	ProductId  int32  `db:"item_info.product_id"`
+	VendorId   int32  `db:"-"`
+	ShopId     int32  `db:"-"`
 	CategoryId int32  `db:"pro_product.cat_id"`
 	Name       string `db:"pro_product.name"`
 	// 货号
