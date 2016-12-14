@@ -150,7 +150,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=? %s`,
-		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, product.ShelvesOn)
+		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
@@ -159,7 +159,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 		  %s AND pro_product.review_state=? AND pro_product.shelve_state=?
 		  %s ORDER BY %s update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
-			enum.ReviewPass, product.ShelvesOn, start, (end - start))
+			enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
 
 	return total, list
@@ -175,7 +175,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string
 		sortBy)
 
 	g.Connector.GetOrm().SelectByQuery(&e, sql, mchId, enum.ReviewPass,
-		product.ShelvesOn, start, (end - start))
+		item.ShelvesOn, start, (end - start))
 	return e
 }
 

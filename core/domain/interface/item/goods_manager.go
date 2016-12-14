@@ -55,7 +55,14 @@ type (
 
 		// 保存
 		Save() (int32, error)
-
+		// 是否上架
+		IsOnShelves() bool
+		// 设置上架
+		SetShelve(state int32, remark string) error
+		// 审核
+		Review(pass bool, remark string) error
+		// 标记为违规
+		Incorrect(remark string) error
 		// 更新销售数量,扣减库存
 		AddSalesNum(quantity int32) error
 

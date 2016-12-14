@@ -15,7 +15,6 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
-	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	itemImpl "go2o/core/domain/item"
 )
@@ -105,7 +104,7 @@ func (t *saleLabelRepo) GetValueGoodsBySaleLabel(mchId, tagId int32,
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t
 			 ON t.id = g.sale_tag_id WHERE t.mch_id=? AND t.id=?) `+sortBy+`
-			LIMIT ?,?`, enum.ReviewPass, product.ShelvesOn, mchId, tagId, begin, end)
+			LIMIT ?,?`, enum.ReviewPass, item.ShelvesOn, mchId, tagId, begin, end)
 	return arr
 }
 
@@ -121,7 +120,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?)`), &total, enum.ReviewPass,
-		product.ShelvesOn, mchId, tagId)
+		item.ShelvesOn, mchId, tagId)
 	arr := []*valueobject.Goods{}
 	if total > 0 {
 		t.Connector.GetOrm().SelectByQuery(&arr, `SELECT * FROM item_info
@@ -129,7 +128,7 @@ func (t *saleLabelRepo) GetPagedValueGoodsBySaleLabel(mchId, tagId int32,
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=? AND pro_product.id IN (
 			SELECT g.item_id FROM pro_product_tag g INNER JOIN gs_sale_label t ON t.id = g.sale_tag_id
 			WHERE t.mch_id=? AND t.id=?) `+sortBy+` LIMIT ?,?`,
-			enum.ReviewPass, product.ShelvesOn,
+			enum.ReviewPass, item.ShelvesOn,
 			mchId, tagId, begin, end)
 	}
 	return total, arr

@@ -12,14 +12,7 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
-const (
-	// 已下架
-	ShelvesDown int32 = 1
-	// 已上架
-	ShelvesOn int32 = 2
-	// 已拒绝上架 (不允许上架)
-	ShelvesIncorrect int32 = 3
-)
+
 
 var (
 	ErrNoSuchProduct *domain.DomainError = domain.NewDomainError(
@@ -58,9 +51,6 @@ type (
 		GetValue() Product
 		// 设置产品的值
 		SetValue(v *Product) error
-		// 是否上架
-		IsOnShelves() bool
-
 		// 获取销售标签
 		//GetSaleLabels() []*Label
 
@@ -69,16 +59,6 @@ type (
 
 		// 设置商品描述
 		SetDescribe(describe string) error
-
-		// 设置上架
-		SetShelve(state int32, remark string) error
-
-		// 审核
-		Review(pass bool, remark string) error
-
-		// 标记为违规
-		Incorrect(remark string) error
-
 		// 保存
 		Save() (int32, error)
 

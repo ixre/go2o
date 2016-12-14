@@ -8,7 +8,6 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -26,7 +25,7 @@ type cartImpl struct {
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
+memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	return (&cartImpl{
 		value:      val,
 		rep:        rep,
@@ -192,7 +191,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 	if snap == nil {
 		return nil, item.ErrNoSuchGoods // 没有商品
 	}
-	if snap.ShelveState != product.ShelvesOn {
+	if snap.ShelveState != item.ShelvesOn {
 		return nil, item.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {
