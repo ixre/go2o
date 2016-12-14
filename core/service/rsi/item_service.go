@@ -16,6 +16,8 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 )
 
 type itemService struct {
@@ -78,21 +80,24 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot 
 }
 
 // 保存商品
-func (s *itemService) SaveGoods(mchId int32, gs *item.GoodsItem) (int32, error) {
+func (s *itemService) SaveItem(gs *item.GoodsItem, vendorId int32) (*define.Result_, error) {
 	var gi item.IGoodsItem
 	if gs.Id > 0 {
 		gi = s.itemRepo.GetItem(gs.Id)
-		if gi == nil || gi.GetValue().VendorId != mchId {
-			return gs.Id, item.ErrNoSuchGoods
+		if gi == nil || gi.GetValue().VendorId != vendorId {
+			return &define.Result_{Message: item.ErrNoSuchGoods.Error()}, nil
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(gs)
 	}
 	err := gi.SetValue(gs)
 	if err == nil {
-		return gi.Save()
+		if gs.SkuArray != nil {
+			//err = gi.SetSkus(gs.SkuArray)
+		}
+		gs.Id, err = gi.Save()
 	}
-	return gs.Id, err
+	return parser.Result(gs.Id, err), nil
 }
 
 // 获取分页上架的商品
