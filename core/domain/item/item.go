@@ -287,10 +287,9 @@ func (g *goodsItemImpl) Save() (_ int32, err error) {
 	return g.value.Id, err
 }
 
-
 // 是否上架
 func (g *goodsItemImpl) IsOnShelves() bool {
-    return g.value.ShelveState == item.ShelvesOn
+	return g.value.ShelveState == item.ShelvesOn
 }
 
 // 设置上架

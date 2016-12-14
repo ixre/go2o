@@ -12,8 +12,8 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/valueobject"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/valueobject"
 )
 
 type GoodsQuery struct {

@@ -12,8 +12,6 @@ import (
 	"go2o/core/infrastructure/domain"
 )
 
-
-
 var (
 	ErrNoSuchProduct *domain.DomainError = domain.NewDomainError(
 		"err_product_no_such_product", "产品不存在",
