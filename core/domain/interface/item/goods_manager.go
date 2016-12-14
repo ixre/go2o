@@ -78,33 +78,6 @@ type (
 		Destroy() error
 	}
 
-	// 商品服务
-	IGoodsManager interface {
-		// 创建商品
-		CreateGoodsByItem(product.IProduct, *GoodsItem) IGoodsItem
-
-		// 创建商品
-		CreateGoods(*GoodsItem) IGoodsItem
-
-		// 根据产品编号获取商品
-		GetGoods(id int32) IGoodsItem
-
-		// 根据产品SKU获取商品
-		GetGoodsBySku(itemId, skuId int32) IGoodsItem
-
-		// 删除商品
-		DeleteGoods(id int32) error
-
-		//// 获取指定的商品快照
-		//GetSaleSnapshot(id int32) *goods.GoodsSnapshot
-		//
-		//// 根据Key获取商品快照
-		//GetSaleSnapshotByKey(key string) *goods.GoodsSnapshot
-
-		// 获取指定数量已上架的商品
-		GetOnShelvesGoods(start, end int, sortBy string) []*valueobject.Goods
-	}
-
 	// 简单商品信息
 	SimpleGoods struct {
 		GoodsId    int32  `json:"id"`

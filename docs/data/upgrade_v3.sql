@@ -181,6 +181,17 @@ CHANGE COLUMN `retail_price` `retail_price` DECIMAL(8,2) NULL DEFAULT NULL COMME
 ALTER TABLE `txmall`.`gs_sale_snapshot`
 CHANGE COLUMN `price` `retail_price` DECIMAL(8,2) NULL DEFAULT '0.00' COMMENT '售价(市场价)' ;
 
+ALTER TABLE `txmall`.`pro_product`
+DROP COLUMN `description`,
+DROP COLUMN `bulk`,
+DROP COLUMN `weight`,
+DROP COLUMN `price`,
+DROP COLUMN `cost`,
+DROP COLUMN `small_title`,
+DROP COLUMN `express_tid`,
+DROP COLUMN `shop_id`;
+
+
 
 
 /** ======== new table **/
