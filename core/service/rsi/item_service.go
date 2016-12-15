@@ -80,23 +80,25 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot 
 }
 
 // 保存商品
-func (s *itemService) SaveItem(gs *item.GoodsItem, vendorId int32) (*define.Result_, error) {
+func (s *itemService) SaveItem(gs *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
 	var gi item.IGoodsItem
 	if gs.Id > 0 {
 		gi = s.itemRepo.GetItem(gs.Id)
 		if gi == nil || gi.GetValue().VendorId != vendorId {
-			return &define.Result_{Message: item.ErrNoSuchGoods.Error()}, nil
+			err = item.ErrNoSuchGoods
+			goto R
 		}
 	} else {
 		gi = s.itemRepo.CreateItem(gs)
 	}
-	err := gi.SetValue(gs)
+	err = gi.SetValue(gs)
 	if err == nil {
 		if gs.SkuArray != nil {
 			//err = gi.SetSkus(gs.SkuArray)
 		}
 		gs.Id, err = gi.Save()
 	}
+R:
 	return parser.Result(gs.Id, err), nil
 }
 

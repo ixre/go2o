@@ -377,7 +377,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
-		ExpressTplId:   c.Snapshot.ExpressTplId,
+		ExpressTplId:   c.Snapshot.ExpressTid,
 		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
 		Bulk:           c.Snapshot.Bulk * c.Quantity,   //计算体积
 	}

@@ -181,13 +181,11 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string
 
 // 保存快照
 func (g *goodsRepo) SaveSnapshot(v *item.Snapshot) (int32, error) {
-	var i int64
-	var err error
-	i, _, err = g.Connector.GetOrm().Save(v.SkuId, v)
+	i, _, err := g.Connector.GetOrm().Save(v.SkuId, v)
 	if i == 0 {
 		_, _, err = g.Connector.GetOrm().Save(nil, v)
 	}
-	return v.SkuId, err
+	return v.ItemId, err
 }
 
 // 获取最新的商品快照
@@ -203,7 +201,7 @@ func (g *goodsRepo) GetLatestSnapshot(skuId int32) *item.Snapshot {
 func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
 	list := []item.Snapshot{}
 	g.Connector.GetOrm().SelectByQuery(&list,
-		`SELECT * FROM gs_snapshot WHERE sku_id IN (`+
+		`SELECT * FROM item_snapshot WHERE sku_id IN (`+
 			format.IdArrJoinStr32(skuIdArr)+`)`)
 	return list
 }
