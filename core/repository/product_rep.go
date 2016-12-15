@@ -10,6 +10,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
@@ -17,18 +18,21 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	proImpl "go2o/core/domain/product"
 	"go2o/core/infrastructure/format"
+	"log"
 )
 
 var _ product.IProductRepo = new(productRepo)
 
 type productRepo struct {
 	db.Connector
+	_orm      orm.Orm
 	valueRepo valueobject.IValueRepo
 }
 
 func NewProductRepo(c db.Connector, valRepo valueobject.IValueRepo) product.IProductRepo {
 	return &productRepo{
 		Connector: c,
+		_orm:      c.GetOrm(),
 		valueRepo: valRepo,
 	}
 }
@@ -47,17 +51,6 @@ func (p *productRepo) GetProduct(id int32) product.IProduct {
 	return nil
 }
 
-func (p *productRepo) GetProductValue(productId int32) *product.Product {
-	var e *product.Product = new(product.Product)
-	//todo: supplier_id  == -1
-	if p.Connector.GetOrm().GetByQuery(e, `select * FROM pro_product
-			INNER JOIN cat_category c ON c.id = pro_product.cat_id
-			 WHERE pro_product.id=?`, productId) == nil {
-		return e
-	}
-	return nil
-}
-
 func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) {
 	//todo: mchId
 	var items []*product.Product
@@ -67,10 +60,6 @@ func (p *productRepo) GetProductsById(ids ...int32) ([]*product.Product, error) 
 		`SELECT * FROM pro_product WHERE id IN (`+format.IdArrJoinStr32(ids)+`)`)
 
 	return items, err
-}
-
-func (p *productRepo) SaveProductValue(v *product.Product) (int32, error) {
-	return orm.I32(orm.Save(p.GetOrm(), v, int(v.Id)))
 }
 
 func (p *productRepo) GetPagedOnShelvesProduct(mchId int32, catIds []int32,
@@ -98,6 +87,52 @@ func (p *productRepo) GetProductSaleNum(id int32) int {
 	return num
 }
 
-func (p *productRepo) DeleteProduct(productId int32) error {
-	return p.GetOrm().DeleteByPk(&product.Product{}, productId)
+// Get Product
+func (p *productRepo) GetProductValue(id int32) *product.Product {
+	e := product.Product{}
+	err := p._orm.Get(id, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
+	}
+	return nil
+}
+
+// Select Product
+func (p *productRepo) SelectProduct(where string, v ...interface{}) []*product.Product {
+	list := []*product.Product{}
+	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
+	}
+	return list
+}
+
+// Save Product
+func (p *productRepo) SaveProduct(v *product.Product) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
+	}
+	return id, err
+}
+
+// Delete Product
+func (p *productRepo) DeleteProduct(id int32) error {
+	err := p._orm.DeleteByPk(product.Product{}, id)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
+	}
+	return err
+}
+
+// Batch Delete Product
+func (p *productRepo) BatchDeleteProduct(where string, v ...interface{}) (int64, error) {
+	r, err := p._orm.Delete(product.Product{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:Product")
+	}
+	return r, err
 }

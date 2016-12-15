@@ -15,7 +15,7 @@ import (
 )
 
 //func GetShopCheckboxs(mchId  int32, chks string) []byte {
-//	shops := dps.MerchantService.GetOnlineShops(mchId)
+//	shops := dps.ShopService.GetOnlineShops(mchId)
 //	buf := bytes.NewBufferString("")
 //
 //	if len(chks) == 0 {

@@ -11,7 +11,7 @@ package product
 
 import (
 	"fmt"
-	"go2o/core/domain/interface/enum"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
@@ -70,13 +70,13 @@ func (i *productImpl) checkValue(v *product.Product) error {
 
 // 设置值
 func (i *productImpl) SetValue(v *product.Product) error {
-	if i.GetAggregateRootId() <= 0 {
-		i.value.ShelveState = item.ShelvesDown
-		i.value.ReviewState = enum.ReviewAwaiting
-	}
-	if i.value.ShelveState == item.ShelvesIncorrect {
-		return product.ErrItemIncorrect
-	}
+	//if i.GetAggregateRootId() <= 0 {
+	//    i.value.ShelveState = item.ShelvesDown
+	//    i.value.ReviewState = enum.ReviewAwaiting
+	//}
+	//if i.value.ShelveState == item.ShelvesIncorrect {
+	//    return product.ErrItemIncorrect
+	//}
 	if err := i.checkValue(v); err != nil {
 		return err
 	}
@@ -85,8 +85,8 @@ func (i *productImpl) SetValue(v *product.Product) error {
 		i.value.Code = v.Code
 		i.value.BrandId = v.BrandId
 		i.value.Image = v.Image
-		if v.CategoryId > 0 {
-			i.value.CategoryId = v.CategoryId
+		if v.CatId > 0 {
+			i.value.CatId = v.CatId
 		}
 		i.value.SortNum = v.SortNum
 	}
@@ -134,12 +134,12 @@ func (i *productImpl) Save() (int32, error) {
 	}
 	// 自动生成货号
 	if i.value.Code == "" {
-		cs := strconv.Itoa(int(i.value.CategoryId))
+		cs := strconv.Itoa(int(i.value.CatId))
 		us := strconv.Itoa(int(unix))
 		l := len(cs)
 		i.value.Code = fmt.Sprintf("%s%s", cs, us[4+l:])
 	}
-	return i.repo.SaveProductValue(i.value)
+	return util.I32Err(i.repo.SaveProduct(i.value))
 }
 
 // 销毁产品

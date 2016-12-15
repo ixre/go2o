@@ -73,7 +73,7 @@ type (
 		GetProductValue(itemId int32) *Product
 		// 根据id获取货品
 		GetProductsById(ids ...int32) ([]*Product, error)
-		SaveProductValue(*Product) (int32, error)
+		SaveProduct(*Product) (int, error)
 		//todo:  到商品
 		// 获取在货架上的商品
 		GetPagedOnShelvesProduct(supplierId int32, catIds []int32, start, end int) (total int, goods []*Product)
@@ -90,13 +90,13 @@ type Product struct {
 	// 编号
 	Id int32 `db:"id" auto:"yes" pk:"yes"`
 	// 分类
-	CategoryId int32 `db:"cat_id"`
+	CatId int32 `db:"cat_id"`
 	// 名称
 	Name string `db:"name"`
 	//供应商编号(暂时同mch_id)
 	VendorId int32 `db:"supplier_id"`
 	// 品牌编号
-	BrandId int64 `db:"brand_id"`
+	BrandId int32 `db:"brand_id"`
 	// 商家编码
 	Code string `db:"code"`
 	// 图片
@@ -104,9 +104,9 @@ type Product struct {
 	// 描述
 	Description string `db:"description"`
 	// 上架状态
-	ShelveState int32 `db:"-"`
+	//ShelveState int32 `db:"-"`
 	// 审核状态
-	ReviewState int32 `db:"-"`
+	//ReviewState int32 `db:"-"`
 	// 备注
 	Remark string `db:"remark"`
 	// 状态

@@ -299,20 +299,6 @@ func (m *merchantService) GetShopsOfMerchant(mchId int32) []*shop.Shop {
 	return sv
 }
 
-// 获取商城
-func (m *merchantService) GetOnlineShops1(mchId int32) []*shop.Shop {
-	mch := m._mchRepo.GetMerchant(mchId)
-	shops := mch.ShopManager().GetShops()
-	sv := []*shop.Shop{}
-	for _, v := range shops {
-		if v.Type() == shop.TypeOnlineShop {
-			vv := v.GetValue()
-			sv = append(sv, &vv)
-		}
-	}
-	return sv
-}
-
 // 获取线上店铺
 func (m *merchantService) GetOnlineShopOfVendor(mchId int32) *shop.ShopDto {
 	mch := m._mchRepo.GetMerchant(mchId)

@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var _ item.IGoodsItem = new(goodsItemImpl)
@@ -72,14 +73,8 @@ func (g *goodsItemImpl) GetAggregateRootId() int32 {
 // 商品快照
 func (g *goodsItemImpl) SnapshotManager() item.ISnapshotManager {
 	if g.snapManager == nil {
-		var item *product.Product
-		gi := g.GetItem()
-		if gi != nil {
-			v := gi.GetValue()
-			item = &v
-		}
 		g.snapManager = NewSnapshotManagerImpl(g.GetAggregateRootId(),
-			g.goodsRepo, g.productRepo, g.GetValue(), item)
+			g.goodsRepo, g.GetValue())
 	}
 	return g.snapManager
 }
@@ -203,18 +198,57 @@ func (g *goodsItemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 
 // 设置值
 func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
-	g.value.IsPresent = v.IsPresent
-	g.value.SaleNum = v.SaleNum
-	g.value.StockNum = v.StockNum
-	g.value.SkuId = v.SkuId
 	err := g.checkItemValue(v)
 	if err == nil {
-		//修改图片或标题后，要重新审核
-		if g.value.Image != v.Image || g.value.Title != v.Title {
-			g.resetReview()
+		err = g.copyFromProduct(v)
+		if err == nil {
+			g.value.ShopId = v.ShopId
+			g.value.IsPresent = v.IsPresent
+			//g.value.Title = v.Title
+			g.value.ShopCatId = v.ShopCatId
+			g.value.IsPresent = v.IsPresent
+			g.value.ProductId = v.ProductId
+			g.value.PromFlag = v.PromFlag
+			g.value.ShopCatId = v.ShopId
+			g.value.ExpressTid = v.ExpressTid
+			g.value.ShortTitle = v.ShortTitle
+			g.value.Code = v.Code
+			g.value.SaleNum = v.SaleNum
+			g.value.StockNum = v.StockNum
+			g.value.Cost = v.Cost
+			g.value.RetailPrice = v.RetailPrice
+			g.value.Price = v.Price
+			g.value.Weight = v.Weight
+			g.value.Bulk = v.Bulk
+			if g.value.CreateTime == 0 {
+				g.value.CreateTime = time.Now().Unix()
+			}
+			//修改图片或标题后，要重新审核
+			if g.value.Image != v.Image || g.value.Title != v.Title {
+				g.resetReview()
+			}
 		}
 	}
 	return err
+}
+
+// 从产品中拷贝信息
+//todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
+func (g *goodsItemImpl) copyFromProduct(v *item.GoodsItem) error {
+	pro := g.productRepo.GetProductValue(v.ProductId)
+	if pro == nil {
+		return product.ErrNoSuchProduct
+	}
+	g.value.CatId = pro.CatId
+	g.value.VendorId = pro.VendorId
+	g.value.BrandId = pro.BrandId
+	g.value.Title = pro.Name
+	g.value.Code = pro.Code
+	g.value.Image = pro.Image
+	g.value.SortNum = pro.SortNum
+	g.value.CreateTime = pro.CreateTime
+	g.value.UpdateTime = pro.UpdateTime
+	return nil
 }
 
 // 重置审核状态
@@ -229,6 +263,13 @@ func (g *goodsItemImpl) checkItemValue(v *item.GoodsItem) error {
 	if v.Image == registry.GoodsDefaultImage {
 		return product.ErrNotUploadImage
 	}
+	if v.ShopId <= 0 {
+		return item.ErrNotBindShop
+	} else {
+		//todo: 判断商铺是否为本商家的
+		// return item.ErrIncorrectShopOfItem
+	}
+
 	// 检测运费模板
 	if v.ExpressTid > 0 {
 		ve := g.expressRepo.GetUserExpress(v.VendorId)
