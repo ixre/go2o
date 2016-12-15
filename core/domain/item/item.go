@@ -11,6 +11,7 @@ package item
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
@@ -80,7 +81,7 @@ func (g *goodsItemImpl) SnapshotManager() item.ISnapshotManager {
 }
 
 // 获取货品
-func (g *goodsItemImpl) GetItem() product.IProduct {
+func (g *goodsItemImpl) Product() product.IProduct {
 	return g.pro
 }
 
@@ -110,90 +111,6 @@ func (g *goodsItemImpl) GetPackedValue() *valueobject.Goods {
 		SaleNum:       gv.SaleNum,
 	}
 	return goods
-}
-
-// 获取促销信息
-func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
-	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
-		g.GetAggregateRootId())
-	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
-	for i, v := range vp {
-		proms[i] = g.promRepo.CreatePromotion(v)
-	}
-	return proms
-}
-
-// 获取会员价销价
-func (g *goodsItemImpl) GetLevelPrice(level int32) (bool, float32) {
-	lvp := g.GetLevelPrices()
-	for _, v := range lvp {
-		if level == v.Level && v.Price < g.value.Price {
-			return true, v.Price
-		}
-	}
-	return false, g.value.Price
-}
-
-// 获取促销价
-func (g *goodsItemImpl) GetPromotionPrice(level int32) float32 {
-	b, price := g.GetLevelPrice(level)
-	if b {
-		return price
-	}
-	return g.value.Price
-}
-
-// 获取促销描述
-func (g *goodsItemImpl) GetPromotionDescribe() map[string]string {
-	if g.promDescribes == nil {
-		proms := g.GetPromotions()
-		g.promDescribes = make(map[string]string, len(proms))
-		for _, v := range proms {
-			key := v.TypeName()
-			if txt, ok := g.promDescribes[key]; !ok {
-				g.promDescribes[key] = v.GetValue().ShortName
-			} else {
-				g.promDescribes[key] = txt + "；" + v.GetValue().ShortName
-			}
-
-			//			if v.Type() == promotion.TypeFlagCashBack {
-			//				if txt, ok := g._promDescribes[key]; !ok {
-			//					g._promDescribes[key] = v.GetValue().ShortName
-			//				} else {
-			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
-			//				}
-			//			} else if v.Type() == promotion.TypeFlagCoupon {
-			//				if txt, ok := g._promDescribes[key]; !ok {
-			//					g._promDescribes[key] = v.GetValue().ShortName
-			//				} else {
-			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
-			//				}
-			//			}
-
-			//todo: other promotion implement
-		}
-	}
-	return g.promDescribes
-}
-
-// 获取会员价
-func (g *goodsItemImpl) GetLevelPrices() []*item.MemberPrice {
-	if g.levelPrices == nil {
-		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetAggregateRootId())
-	}
-	return g.levelPrices
-}
-
-// 保存会员价
-func (g *goodsItemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
-	v.GoodsId = g.GetAggregateRootId()
-	if g.value.Price == v.Price {
-		if v.Id > 0 {
-			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
-		}
-		return -1, nil
-	}
-	return g.goodsRepo.SaveGoodsLevelPrice(v)
 }
 
 // 设置值
@@ -300,8 +217,9 @@ func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
 	return nil
 }
 
-// 保存商品SKU
-func (g *goodsItemImpl) saveItemSku(i interface{}) error {
+// 设置SKU
+func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
+	g.value.SkuArray = arr
 	return nil
 }
 
@@ -326,6 +244,96 @@ func (g *goodsItemImpl) Save() (_ int32, err error) {
 		_, err = g.SnapshotManager().GenerateSnapshot()
 	}
 	return g.value.Id, err
+}
+
+// 保存商品SKU
+func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) error {
+	log.Println("--保存SKU:", len(arr))
+	return nil
+}
+
+// 获取促销信息
+func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
+	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
+		g.GetAggregateRootId())
+	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
+	for i, v := range vp {
+		proms[i] = g.promRepo.CreatePromotion(v)
+	}
+	return proms
+}
+
+// 获取会员价销价
+func (g *goodsItemImpl) GetLevelPrice(level int32) (bool, float32) {
+	lvp := g.GetLevelPrices()
+	for _, v := range lvp {
+		if level == v.Level && v.Price < g.value.Price {
+			return true, v.Price
+		}
+	}
+	return false, g.value.Price
+}
+
+// 获取促销价
+func (g *goodsItemImpl) GetPromotionPrice(level int32) float32 {
+	b, price := g.GetLevelPrice(level)
+	if b {
+		return price
+	}
+	return g.value.Price
+}
+
+// 获取促销描述
+func (g *goodsItemImpl) GetPromotionDescribe() map[string]string {
+	if g.promDescribes == nil {
+		proms := g.GetPromotions()
+		g.promDescribes = make(map[string]string, len(proms))
+		for _, v := range proms {
+			key := v.TypeName()
+			if txt, ok := g.promDescribes[key]; !ok {
+				g.promDescribes[key] = v.GetValue().ShortName
+			} else {
+				g.promDescribes[key] = txt + "；" + v.GetValue().ShortName
+			}
+
+			//			if v.Type() == promotion.TypeFlagCashBack {
+			//				if txt, ok := g._promDescribes[key]; !ok {
+			//					g._promDescribes[key] = v.GetValue().ShortName
+			//				} else {
+			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+			//				}
+			//			} else if v.Type() == promotion.TypeFlagCoupon {
+			//				if txt, ok := g._promDescribes[key]; !ok {
+			//					g._promDescribes[key] = v.GetValue().ShortName
+			//				} else {
+			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+			//				}
+			//			}
+
+			//todo: other promotion implement
+		}
+	}
+	return g.promDescribes
+}
+
+// 获取会员价
+func (g *goodsItemImpl) GetLevelPrices() []*item.MemberPrice {
+	if g.levelPrices == nil {
+		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetAggregateRootId())
+	}
+	return g.levelPrices
+}
+
+// 保存会员价
+func (g *goodsItemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
+	v.GoodsId = g.GetAggregateRootId()
+	if g.value.Price == v.Price {
+		if v.Id > 0 {
+			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
+		}
+		return -1, nil
+	}
+	return g.goodsRepo.SaveGoodsLevelPrice(v)
 }
 
 // 是否上架

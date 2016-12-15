@@ -11,18 +11,13 @@ package testing
 import (
 	expressImpl "go2o/core/domain/express"
 	"go2o/core/domain/interface/express"
-	"go2o/core/repository"
 	"go2o/core/testing/include"
 	"testing"
 )
 
 func TestExpressTemplateImpl_Save(t *testing.T) {
-	app := include.GetApp()
-	db := app.Db()
-	sto := app.Storage()
-
-	valRepo := repository.NewValueRepo(db, sto)
-	rep := repository.NewExpressRepo(db, valRepo)
+	valRepo := include.ValueRepo
+	rep := include.ExpressRepo
 
 	list := rep.GetExpressProviders()
 	for _, v := range list {

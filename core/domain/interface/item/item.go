@@ -9,6 +9,8 @@
 package item
 
 import (
+	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 )
@@ -171,7 +173,39 @@ type (
 		// 促销价
 		PromPrice float32 `db:"-"`
 
-		SkuArray []int `db:"-"`
+		SkuArray []*Sku `db:"-"`
+	}
+
+	// 商品SKU
+	Sku struct {
+		// 编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		// 产品编号
+		ProductId int32 `db:"product_id"`
+		// 商品编号
+		ItemId int32 `db:"item_id"`
+		// 标题
+		Title string `db:"title"`
+		// 图片
+		Image string `db:"image"`
+		// 规格数据
+		SpecData string `db:"spec_data"`
+		// 规格字符
+		SpecWord string `db:"spec_word"`
+		// 产品编码
+		Code string `db:"code"`
+		// 价格（分)
+		Price float32 `db:"price"`
+		// 成本（分)
+		Cost float32 `db:"cost"`
+		// 重量(克)
+		Weight int32 `db:"weight"`
+		// 体积（毫升)
+		Bulk int32 `db:"bulk"`
+		// 库存
+		Stock int32 `db:"stock"`
+		// 已销售数量
+		SaleNum int32 `db:"sale_num"`
 	}
 
 	// 会员价
@@ -186,18 +220,61 @@ type (
 	}
 )
 
-// 转换为商品值对象
-func ParseToValueGoods(v *valueobject.Goods) *GoodsItem {
-	return &GoodsItem{
-		Id:          v.GoodsId,
-		ProductId:   v.ProductId,
-		IsPresent:   v.IsPresent,
-		SkuId:       v.SkuId,
-		PromFlag:    v.PromotionFlag,
-		StockNum:    v.StockNum,
-		SaleNum:     v.SaleNum,
-		Price:       v.SalePrice,
-		PromPrice:   v.PromPrice,
-		RetailPrice: v.Price,
+type (
+	// 商品
+	IGoodsItem interface {
+		// 获取聚合根编号
+		GetAggregateRootId() int32
+		// 商品快照
+		SnapshotManager() ISnapshotManager
+		// 获取货品
+		Product() product.IProduct
+		// 设置值
+		GetValue() *GoodsItem
+		// 获取包装过的商品信息
+		GetPackedValue() *valueobject.Goods
+		// 设置值
+		SetValue(*GoodsItem) error
+		// 设置SKU
+		SetSku(arr []*Sku) error
+		// 保存
+		Save() (int32, error)
+
+		// 获取促销信息
+		GetPromotions() []promotion.IPromotion
+		// 获取促销价
+		GetPromotionPrice(level int32) float32
+		// 获取会员价销价,返回是否有会原价及价格
+		GetLevelPrice(level int32) (bool, float32)
+		// 获取促销描述
+		GetPromotionDescribe() map[string]string
+		// 获取会员价
+		GetLevelPrices() []*MemberPrice
+		// 保存会员价
+		SaveLevelPrice(*MemberPrice) (int32, error)
+		// 是否上架
+		IsOnShelves() bool
+		// 设置上架
+		SetShelve(state int32, remark string) error
+		// 审核
+		Review(pass bool, remark string) error
+		// 标记为违规
+		Incorrect(remark string) error
+		// 更新销售数量,扣减库存
+		AddSalesNum(quantity int32) error
+		// 取消销售
+		CancelSale(quantity int32, orderNo string) error
+		// 占用库存
+		TakeStock(quantity int32) error
+		// 释放库存
+		FreeStock(quantity int32) error
+		//// 生成快照
+		//GenerateSnapshot() (int64, error)
+		//
+		//// 获取最新的快照
+		//GetLatestSnapshot() *goods.GoodsSnapshot
+
+		// 删除商品
+		Destroy() error
 	}
-}
+)

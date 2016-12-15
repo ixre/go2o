@@ -16,7 +16,13 @@ import (
 	"github.com/jsix/gof/log"
 	"github.com/jsix/gof/storage"
 	"go2o/core"
+	"go2o/core/domain/interface/after-sales"
+	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/pro_model"
+	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/repository"
 )
 
@@ -139,7 +145,14 @@ func (t *testingApp) Init(debug, trace bool) bool {
 }
 
 var (
-	ProMRepo promodel.IProModelRepo
+	ProMRepo       promodel.IProModelRepo
+	AfterSalesRepo afterSales.IAfterSalesRepo
+	OrderRepo      order.IOrderRepo
+	ExpressRepo    express.IExpressRepo
+	ValueRepo      valueobject.IValueRepo
+	ItemRepo       item.IGoodsItemRepo
+	ProductRepo    product.IProductRepo
+	CatRepo        product.ICategoryRepo
 )
 
 func init() {
@@ -148,32 +161,28 @@ func init() {
 	orm := db.GetOrm()
 	sto := app.Storage()
 	ProMRepo = repository.NewProModelRepo(db, orm)
-
-	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
-	valRepo := repository.NewValueRepo(db, sto)
+	ValueRepo = repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
 	notifyRepo := repository.NewNotifyRepo(db)
-	mssRepo := repository.NewMssRepo(db, notifyRepo, valRepo)
-	expressRepo := repository.NewExpressRepo(db, valRepo)
-	shipRepo := repository.NewShipmentRepo(db, expressRepo)
-	memberRepo := repository.NewMemberRepo(app.Storage(), db, mssRepo, valRepo)
-	itemRepo := repository.NewProductRepo(db)
-	tagSaleRepo := repository.NewTagSaleRepo(db)
-	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
-	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
-	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
-		itemRepo, expressRepo, goodsRepo, promRepo)
-	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
+	mssRepo := repository.NewMssRepo(db, notifyRepo, ValueRepo)
+	ExpressRepo = repository.NewExpressRepo(db, ValueRepo)
+	shipRepo := repository.NewShipmentRepo(db, ExpressRepo)
+	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, ValueRepo)
+	ProductRepo = repository.NewProductRepo(db, ValueRepo)
+	ItemRepo = repository.NewGoodsItemRepo(db, ProductRepo, ExpressRepo, ValueRepo)
+	//tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
+	promRepo := repository.NewPromotionRepo(db, ItemRepo, memberRepo)
+	CatRepo = repository.NewCategoryRepo(db, ValueRepo, sto)
+	//afterSalesRepo := repository.NewAfterSalesRepo(db)
+	cartRepo := repository.NewCartRepo(db, memberRepo, ItemRepo)
 	shopRepo := repository.NewShopRepo(db, sto)
-	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo, memberRepo, mssRepo, valRepo)
+	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo, memberRepo, mssRepo, ValueRepo)
 	//personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
 	deliveryRepo := repository.NewDeliverRepo(db)
 	//contentRepo := repository.NewContentRepo(db)
-	//adRepo := repository.NewAdvertisementRepo(db)
-	spRepo := repository.NewOrderRepo(app.Storage(), db, mchRepo, nil, saleRepo, cartRepo, goodsRepo,
-		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
-	payRepo := repository.NewPaymentRepo(app.Storage(), db, memberRepo, spRepo, valRepo)
-
-	goodsRepo.SetSaleRepo(saleRepo) //fixed
-	spRepo.SetPaymentRepo(payRepo)
+	//adRepo := repository.NewAdvertisementRepo(db, sto)
+	OrderRepo = repository.NewOrderRepo(sto, db, mchRepo, nil, ProductRepo, cartRepo, ItemRepo,
+		promRepo, memberRepo, deliveryRepo, ExpressRepo, shipRepo, ValueRepo)
+	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, OrderRepo, ValueRepo)
+	AfterSalesRepo = repository.NewAfterSalesRepo(db, OrderRepo, memberRepo, paymentRepo)
 }
