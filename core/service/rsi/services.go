@@ -76,7 +76,7 @@ func Init(ctx gof.App) {
 	shipRepo := repository.NewShipmentRepo(db, expressRepo)
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valRepo)
 	productRepo := repository.NewProductRepo(db, valRepo)
-	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, expressRepo, valRepo)
+	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, proMRepo, expressRepo, valRepo)
 	tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
 	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
 	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)

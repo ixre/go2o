@@ -11,10 +11,11 @@ package item
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
@@ -32,6 +33,7 @@ type goodsItemImpl struct {
 	value         *item.GoodsItem
 	goodsRepo     item.IGoodsItemRepo
 	productRepo   product.IProductRepo
+	proMRepo      promodel.IProModelRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
 	promDescribes map[string]string
@@ -45,13 +47,15 @@ type goodsItemImpl struct {
 func NewSaleItem(
 	itemRepo product.IProductRepo, pro product.IProduct,
 	value *item.GoodsItem, valRepo valueobject.IValueRepo,
-	goodsRepo item.IGoodsItemRepo, expressRepo express.IExpressRepo,
+	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
+	expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &goodsItemImpl{
 		pro:         pro,
 		value:       value,
 		productRepo: itemRepo,
 		goodsRepo:   goodsRepo,
+		proMRepo:    proMRepo,
 		promRepo:    promRepo,
 		valRepo:     valRepo,
 		expressRepo: expressRepo,
@@ -246,11 +250,103 @@ func (g *goodsItemImpl) Save() (_ int32, err error) {
 	return g.value.Id, err
 }
 
+// ========== [# SKU处理开始 ]  ===========//
+
 // 保存商品SKU
-func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) error {
-	log.Println("--保存SKU:", len(arr))
-	return nil
+func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) (err error) {
+	pk := g.GetAggregateRootId()
+	// 格式化数据
+	g.rebuildSkuArray(&arr)
+	//log.Println(fmt.Sprintf("%#v", arr[0]))
+	// 获取之前的SKU设置
+	old := g.goodsRepo.SelectItemSku("item_id=?", pk)
+	// 分析当前项目并加入到MAP中
+	delList := []int32{}
+	currMap := make(map[int32]*item.Sku, len(arr))
+	for _, v := range arr {
+		currMap[v.Id] = v
+	}
+	// 筛选出要删除的项
+	for _, v := range old {
+		if currMap[v.Id] == nil {
+			delList = append(delList, v.Id)
+		}
+	}
+	// 删除项
+	for _, v := range delList {
+		g.goodsRepo.DeleteItemSku(v)
+	}
+	// 保存项
+	for _, v := range arr {
+		if v.ItemId == 0 {
+			v.ItemId = pk
+		}
+		if v.ItemId == pk {
+			v.Id, err = util.I32Err(g.goodsRepo.SaveItemSku(v))
+		}
+	}
+	return err
 }
+
+// 重建SKU数组，将信息附加
+func (g *goodsItemImpl) rebuildSkuArray(sku *[]*item.Sku) {
+	skuArr := *sku
+	// 获取规格及规格项存储于map中
+	skMap := map[int]*promodel.Spec{}
+	siMap := map[int]*promodel.SpecItem{}
+	sa, ia := g.goodsRepo.SkuService().GetSpecItemArray(skuArr)
+	for _, v := range sa {
+		s := g.proMRepo.GetSpec(v)
+		skMap[v] = s
+	}
+	for _, v := range ia {
+		s := g.proMRepo.GetSpecItem(v)
+		siMap[v] = s
+	}
+	// 赋值SpecWord
+	for _, v := range skuArr {
+		// 图片
+		if strings.TrimSpace(v.Image) == "" {
+			v.Image = g.value.Image
+		}
+
+		arr := strings.Split(v.SpecData, ";")
+		l := len(skuArr)
+		if l == 0 {
+			continue
+		}
+		// 设置规格字符
+		items := make([]string, l)
+		for i, v := range arr {
+			ii := strings.Index(v, ":")
+			isi, _ := strconv.Atoi(v[:ii])
+			if spec := skMap[isi]; spec != nil {
+				items[i] = spec.Name + "："
+			}
+			iid, _ := strconv.Atoi(v[ii+1:])
+			if im := siMap[iid]; im != nil {
+				items[i] += im.Value
+			}
+		}
+		v.SpecWord = strings.TrimSpace(strings.Join(items, " "))
+
+		// 标题为空，则自动设置
+		if strings.TrimSpace(v.Title) == "" {
+			titArr := make([]string, l+1)
+			titArr[0] = g.value.Title
+			for i, v := range arr {
+				ii := strings.Index(v, ":")
+				iid, _ := strconv.Atoi(v[ii+1:])
+				if im := siMap[iid]; im != nil {
+					titArr[i+1] = im.Value
+				}
+			}
+			v.Title = strings.TrimSpace(strings.Join(titArr, " "))
+		}
+	}
+}
+
+// ========== [/ SKU处理结束 ] ===========//
 
 // 获取促销信息
 func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
