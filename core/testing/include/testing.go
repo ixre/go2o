@@ -169,7 +169,7 @@ func init() {
 	shipRepo := repository.NewShipmentRepo(db, ExpressRepo)
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, ValueRepo)
 	ProductRepo = repository.NewProductRepo(db, ValueRepo)
-	ItemRepo = repository.NewGoodsItemRepo(db, ProductRepo, ExpressRepo, ValueRepo)
+	ItemRepo = repository.NewGoodsItemRepo(db, ProductRepo, ProMRepo, ExpressRepo, ValueRepo)
 	//tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
 	promRepo := repository.NewPromotionRepo(db, ItemRepo, memberRepo)
 	CatRepo = repository.NewCategoryRepo(db, ValueRepo, sto)

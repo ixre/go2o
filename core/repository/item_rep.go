@@ -9,41 +9,59 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	itemImpl "go2o/core/domain/item"
 	"go2o/core/infrastructure/format"
+	"log"
 )
 
 var _ item.IGoodsItemRepo = new(goodsRepo)
 
 type goodsRepo struct {
 	db.Connector
+	_orm        orm.Orm
+	_skuService item.ISkuService
 	proRepo     product.IProductRepo
 	expressRepo express.IExpressRepo
 	valRepo     valueobject.IValueRepo
+	proMRepo    promodel.IProModelRepo
 }
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, proRepo product.IProductRepo,
-	expressRepo express.IExpressRepo, valRepo valueobject.IValueRepo) *goodsRepo {
+	proMRepo promodel.IProModelRepo, expressRepo express.IExpressRepo,
+	valRepo valueobject.IValueRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector:   c,
+		_orm:        c.GetOrm(),
 		proRepo:     proRepo,
+		proMRepo:    proMRepo,
 		expressRepo: expressRepo,
 		valRepo:     valRepo,
 	}
 }
 
+// 获取SKU服务
+func (g *goodsRepo) SkuService() item.ISkuService {
+	if g._skuService == nil {
+		g._skuService = itemImpl.NewSkuServiceImpl(g)
+	}
+	return g._skuService
+}
+
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
-	return itemImpl.NewSaleItem(g.proRepo, nil, v, g.valRepo, g, g.expressRepo, nil)
+	return itemImpl.NewSaleItem(g.proRepo, nil, v, g.valRepo, g,
+		g.proMRepo, g.expressRepo, nil)
 }
 
 // 获取商品
@@ -236,4 +254,54 @@ func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
 // 保存商品销售快照
 func (g *goodsRepo) SaveSaleSnapshot(v *item.SalesSnapshot) (int32, error) {
 	return orm.I32(orm.Save(g.Connector.GetOrm(), v, int(v.Id)))
+}
+
+// Get ItemSku
+func (i *goodsRepo) GetItemSku(primary interface{}) *item.Sku {
+	e := item.Sku{}
+	err := i._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
+	}
+	return nil
+}
+
+// Select ItemSku
+func (i *goodsRepo) SelectItemSku(where string, v ...interface{}) []*item.Sku {
+	list := []*item.Sku{}
+	err := i._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
+	}
+	return list
+}
+
+// Save ItemSku
+func (i *goodsRepo) SaveItemSku(v *item.Sku) (int, error) {
+	id, err := orm.Save(i._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
+	}
+	return id, err
+}
+
+// Delete ItemSku
+func (i *goodsRepo) DeleteItemSku(primary interface{}) error {
+	err := i._orm.DeleteByPk(item.Sku{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
+	}
+	return err
+}
+
+// Batch Delete ItemSku
+func (i *goodsRepo) BatchDeleteItemSku(where string, v ...interface{}) (int64, error) {
+	r, err := i._orm.Delete(item.Sku{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
+	}
+	return r, err
 }
