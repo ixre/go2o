@@ -218,6 +218,8 @@ type (
 		SetValue(*GoodsItem) error
 		// 设置SKU
 		SetSku(arr []*Sku) error
+		// 获取SKU数组
+		SkuArray() []*Sku
 		// 保存
 		Save() (int32, error)
 

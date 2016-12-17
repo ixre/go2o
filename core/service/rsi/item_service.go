@@ -47,6 +47,15 @@ func (s *itemService) GetItemValue(itemId int32) *item.GoodsItem {
 	return nil
 }
 
+// 获取SKU数组
+func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
+	it := s.itemRepo.GetItem(itemId)
+	if it != nil {
+		return it.SkuArray()
+	}
+	return []*item.Sku{}
+}
+
 // 根据SKU获取商品
 func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
@@ -80,26 +89,26 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot 
 }
 
 // 保存商品
-func (s *itemService) SaveItem(gs *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
+func (s *itemService) SaveItem(it *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
 	var gi item.IGoodsItem
-	if gs.Id > 0 {
-		gi = s.itemRepo.GetItem(gs.Id)
+	if it.Id > 0 {
+		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != vendorId {
 			err = item.ErrNoSuchGoods
 			goto R
 		}
 	} else {
-		gi = s.itemRepo.CreateItem(gs)
+		gi = s.itemRepo.CreateItem(it)
 	}
-	err = gi.SetValue(gs)
+	err = gi.SetValue(it)
 	if err == nil {
-		if gs.SkuArray != nil {
-			//err = gi.SetSkus(gs.SkuArray)
+		err = gi.SetSku(it.SkuArray)
+		if err == nil {
+			it.Id, err = gi.Save()
 		}
-		gs.Id, err = gi.Save()
 	}
 R:
-	return parser.Result(gs.Id, err), nil
+	return parser.Result(it.Id, err), nil
 }
 
 // 获取分页上架的商品

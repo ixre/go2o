@@ -26,6 +26,8 @@ type (
 		SpecWord string `db:"spec_word"`
 		// 产品编码
 		Code string `db:"code"`
+		// 参考价
+		RetailPrice float32 `db:"-"`
 		// 价格（分)
 		Price float32 `db:"price"`
 		// 成本（分)

@@ -321,7 +321,7 @@ func (g *goodsItemImpl) rebuildSkuArray(sku *[]*item.Sku) {
 			ii := strings.Index(v, ":")
 			isi, _ := strconv.Atoi(v[:ii])
 			if spec := skMap[isi]; spec != nil {
-				items[i] = spec.Name + "："
+				items[i] = spec.Name + ":"
 			}
 			iid, _ := strconv.Atoi(v[ii+1:])
 			if im := siMap[iid]; im != nil {
@@ -344,6 +344,15 @@ func (g *goodsItemImpl) rebuildSkuArray(sku *[]*item.Sku) {
 			v.Title = strings.TrimSpace(strings.Join(titArr, " "))
 		}
 	}
+}
+
+// 获取SKU数组
+func (g *goodsItemImpl) SkuArray() []*item.Sku {
+	if g.value.SkuArray == nil {
+		g.value.SkuArray = g.goodsRepo.SelectItemSku("item_id=?",
+			g.GetAggregateRootId())
+	}
+	return g.value.SkuArray
 }
 
 // ========== [/ SKU处理结束 ] ===========//
@@ -389,20 +398,20 @@ func (g *goodsItemImpl) GetPromotionDescribe() map[string]string {
 			if txt, ok := g.promDescribes[key]; !ok {
 				g.promDescribes[key] = v.GetValue().ShortName
 			} else {
-				g.promDescribes[key] = txt + "；" + v.GetValue().ShortName
+				g.promDescribes[key] = txt + ";" + v.GetValue().ShortName
 			}
 
 			//			if v.Type() == promotion.TypeFlagCashBack {
 			//				if txt, ok := g._promDescribes[key]; !ok {
 			//					g._promDescribes[key] = v.GetValue().ShortName
 			//				} else {
-			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+			//					g._promDescribes[key] = txt + ";" + v.GetValue().ShortName
 			//				}
 			//			} else if v.Type() == promotion.TypeFlagCoupon {
 			//				if txt, ok := g._promDescribes[key]; !ok {
 			//					g._promDescribes[key] = v.GetValue().ShortName
 			//				} else {
-			//					g._promDescribes[key] = txt + "；" + v.GetValue().ShortName
+			//					g._promDescribes[key] = txt + ";" + v.GetValue().ShortName
 			//				}
 			//			}
 
