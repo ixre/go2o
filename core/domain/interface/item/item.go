@@ -16,6 +16,8 @@ import (
 )
 
 const (
+	// 仓库中的商品
+	ShelvesInWarehouse int32 = 0
 	// 已下架
 	ShelvesDown int32 = 1
 	// 已上架

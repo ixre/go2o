@@ -231,6 +231,7 @@ func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
 func (g *goodsItemImpl) Save() (_ int32, err error) {
 	// 创建商品
 	if g.GetAggregateRootId() <= 0 {
+		g.value.ShelveState = item.ShelvesDown
 		g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
 		if err != nil {
 			return g.value.Id, err
