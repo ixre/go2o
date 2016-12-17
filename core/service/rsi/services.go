@@ -26,10 +26,10 @@ var (
 	MerchantService *merchantService
 	// 商店服务
 	ShopService *shopService
-	// 销售服务
-	SaleService *saleService
 	// 产品服务
 	ProductService *productService
+	// 商品服务
+	ItemService *itemService
 	// 购物服务
 	ShoppingService *shoppingService
 	// 售后服务
@@ -68,7 +68,6 @@ func Init(ctx gof.App) {
 
 	/** Repository **/
 	proMRepo := repository.NewProModelRepo(db, orm)
-	goodsRepo := repository.NewGoodsRepo(db)
 	valRepo := repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
 	notifyRepo := repository.NewNotifyRepo(db)
@@ -76,12 +75,11 @@ func Init(ctx gof.App) {
 	expressRepo := repository.NewExpressRepo(db, valRepo)
 	shipRepo := repository.NewShipmentRepo(db, expressRepo)
 	memberRepo := repository.NewMemberRepo(sto, db, mssRepo, valRepo)
-	itemRepo := repository.NewItemRepo(db)
-	tagSaleRepo := repository.NewTagSaleRepo(db)
+	productRepo := repository.NewProductRepo(db, valRepo)
+	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, proMRepo, expressRepo, valRepo)
+	tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
 	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
 	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
-	saleRepo := repository.NewSaleRepo(db, cateRepo, valRepo, tagSaleRepo,
-		itemRepo, expressRepo, goodsRepo, promRepo)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
 	shopRepo := repository.NewShopRepo(db, sto)
@@ -90,12 +88,11 @@ func Init(ctx gof.App) {
 	deliveryRepo := repository.NewDeliverRepo(db)
 	contentRepo := repository.NewContentRepo(db)
 	adRepo := repository.NewAdvertisementRepo(db, sto)
-	spRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, saleRepo, cartRepo, goodsRepo,
+	spRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, productRepo, cartRepo, goodsRepo,
 		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
 	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, spRepo, valRepo)
 	asRepo := repository.NewAfterSalesRepo(db, spRepo, memberRepo, paymentRepo)
 
-	goodsRepo.SetSaleRepo(saleRepo) //fixed
 	spRepo.SetPaymentRepo(paymentRepo)
 
 	/** Query **/
@@ -108,16 +105,16 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	ProductService = NewProService(proMRepo)
+	ProductService = NewProService(proMRepo, cateRepo, productRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
-	ShoppingService = NewShoppingService(spRepo, saleRepo, cartRepo,
-		itemRepo, goodsRepo, mchRepo, orderQuery)
+	ShoppingService = NewShoppingService(spRepo, cartRepo,
+		productRepo, goodsRepo, mchRepo, orderQuery)
 	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, spRepo)
-	MerchantService = NewMerchantService(mchRepo, saleRepo, mchQuery, orderQuery)
+	MerchantService = NewMerchantService(mchRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valRepo)
-	SaleService = NewSaleService(saleRepo, cateRepo, goodsRepo, goodsQuery)
+	ItemService = NewSaleService(cateRepo, goodsRepo, goodsQuery, tagSaleRepo)
 	PaymentService = NewPaymentService(paymentRepo, spRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)

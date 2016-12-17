@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package sale
+package item
 
 import "go2o/core/domain/interface/valueobject"
 
@@ -56,7 +56,7 @@ type (
 	}
 
 	// 标签服务
-	ILabelManager interface {
+	ILabelService interface {
 		// 获取所有的销售标签
 		GetAllSaleLabels() []ISaleLabel
 
@@ -77,6 +77,9 @@ type (
 	}
 
 	ISaleLabelRepo interface {
+		// 获取商品标签服务
+		LabelService() ILabelService
+
 		// 创建销售标签
 		CreateSaleLabel(v *Label) ISaleLabel
 

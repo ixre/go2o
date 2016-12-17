@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/enum"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
 )
 
@@ -39,8 +39,8 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 		orderBy += ","
 	}
 
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM gs_goods
-         INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
@@ -49,7 +49,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 
 	e := []*valueobject.Goods{}
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT * FROM gs_goods INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
          AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
@@ -64,7 +64,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 
 //func (g GoodsQuery) GetGoodsComplex(goodsId int) *dto.GoodsComplex {
 //	e := dto.GoodsComplex{}
-//	sql := `SELECT * FROM gs_goods INNER JOIN pro_product ON pro_product.id = gs_goods.item_id
+//	sql := `SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
 //		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 //		 WHERE cat_category.mch_id=? AND pro_product.review_state=? AND
 //		 pro_product.shelve_state=? AND pro_product.name LIKE ? %s

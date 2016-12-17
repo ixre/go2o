@@ -6,23 +6,23 @@
  * description :
  * history :
  */
-package sale
+package item
 
 import (
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
 )
 
-var _ sale.ISaleLabel = new(saleLabelImpl)
+var _ item.ISaleLabel = new(saleLabelImpl)
 
 type saleLabelImpl struct {
-	rep   sale.ISaleLabelRepo
+	rep   item.ISaleLabelRepo
 	mchId int32
-	value *sale.Label
+	value *item.Label
 }
 
-func NewSaleLabel(mchId int32, value *sale.Label,
-	rep sale.ISaleLabelRepo) sale.ISaleLabel {
+func NewSaleLabel(mchId int32, value *item.Label,
+	rep item.ISaleLabelRepo) item.ISaleLabel {
 	return &saleLabelImpl{
 		rep:   rep,
 		mchId: mchId,
@@ -37,7 +37,7 @@ func (l *saleLabelImpl) GetDomainId() int32 {
 	return 0
 }
 
-func (l *saleLabelImpl) GetValue() *sale.Label {
+func (l *saleLabelImpl) GetValue() *item.Label {
 	return l.value
 }
 
@@ -47,7 +47,7 @@ func (l *saleLabelImpl) System() bool {
 }
 
 // 设置值
-func (l *saleLabelImpl) SetValue(v *sale.Label) error {
+func (l *saleLabelImpl) SetValue(v *item.Label) error {
 	if v != nil {
 		// 如果为系统内置，不能修改名称
 		if !l.System() {
@@ -94,16 +94,16 @@ func (l *saleLabelImpl) GetPagedValueGoods(sortBy string,
 		l.GetDomainId(), sortBy, begin, end)
 }
 
-var _ sale.ILabelManager = new(labelManagerImpl)
+var _ item.ILabelService = new(labelManagerImpl)
 
 type labelManagerImpl struct {
-	_rep     sale.ISaleLabelRepo
+	_rep     item.ISaleLabelRepo
 	_valRepo valueobject.IValueRepo
 	_mchId   int32
 }
 
-func NewLabelManager(mchId int32, rep sale.ISaleLabelRepo,
-	valRepo valueobject.IValueRepo) sale.ILabelManager {
+func NewLabelManager(mchId int32, rep item.ISaleLabelRepo,
+	valRepo valueobject.IValueRepo) item.ILabelService {
 	c := &labelManagerImpl{
 		_rep:     rep,
 		_mchId:   mchId,
@@ -112,7 +112,7 @@ func NewLabelManager(mchId int32, rep sale.ISaleLabelRepo,
 	return c.init()
 }
 
-func (l *labelManagerImpl) init() sale.ILabelManager {
+func (l *labelManagerImpl) init() item.ILabelService {
 	//mchConf := l._valRepo.GetPlatformConf()
 	//if !mchConf.MchGoodsCategory && l._mchId > 0 {
 
@@ -128,7 +128,7 @@ func (l *labelManagerImpl) InitSaleLabels() error {
 		return nil
 	}
 
-	arr := []sale.Label{
+	arr := []item.Label{
 		{
 			TagName: "新品上架",
 			TagCode: "new-goods",
@@ -162,9 +162,9 @@ func (l *labelManagerImpl) InitSaleLabels() error {
 }
 
 // 获取所有的销售标签
-func (l *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
+func (l *labelManagerImpl) GetAllSaleLabels() []item.ISaleLabel {
 	arr := l._rep.GetAllValueSaleLabels(l._mchId)
-	var tags = make([]sale.ISaleLabel, len(arr))
+	var tags = make([]item.ISaleLabel, len(arr))
 
 	for i, v := range arr {
 		tags[i] = l.CreateSaleLabel(v)
@@ -173,18 +173,18 @@ func (l *labelManagerImpl) GetAllSaleLabels() []sale.ISaleLabel {
 }
 
 // 获取销售标签
-func (l *labelManagerImpl) GetSaleLabel(id int32) sale.ISaleLabel {
+func (l *labelManagerImpl) GetSaleLabel(id int32) item.ISaleLabel {
 	return l._rep.GetSaleLabel(l._mchId, id)
 }
 
 // 根据Code获取销售标签
-func (l *labelManagerImpl) GetSaleLabelByCode(code string) sale.ISaleLabel {
+func (l *labelManagerImpl) GetSaleLabelByCode(code string) item.ISaleLabel {
 	v := l._rep.GetSaleLabelByCode(l._mchId, code)
 	return l.CreateSaleLabel(v)
 }
 
 // 创建销售标签
-func (l *labelManagerImpl) CreateSaleLabel(v *sale.Label) sale.ISaleLabel {
+func (l *labelManagerImpl) CreateSaleLabel(v *item.Label) item.ISaleLabel {
 	if v == nil {
 		return nil
 	}
@@ -197,7 +197,7 @@ func (l *labelManagerImpl) DeleteSaleLabel(id int32) error {
 	v := l.GetSaleLabel(id)
 	if v != nil {
 		if v.System() {
-			return sale.ErrInternalDisallow
+			return item.ErrInternalDisallow
 		}
 		return l._rep.DeleteSaleLabel(l._mchId, id)
 	}

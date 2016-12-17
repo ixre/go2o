@@ -13,20 +13,20 @@ import (
 	"github.com/jsix/gof/db/orm"
 	cartImpl "go2o/core/domain/cart"
 	"go2o/core/domain/interface/cart"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/sale/goods"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
 
 type cartRepo struct {
 	db.Connector
-	_goodsRepo  goods.IGoodsRepo
+	_goodsRepo  item.IGoodsItemRepo
 	_memberRepo member.IMemberRepo
 }
 
 func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
-	goodsRepo goods.IGoodsRepo) cart.ICartRepo {
+	goodsRepo item.IGoodsItemRepo) cart.ICartRepo {
 	return &cartRepo{
 		Connector:   conn,
 		_memberRepo: memberRepo,

@@ -123,6 +123,119 @@ ADD COLUMN `bulk` INT(11) NULL COMMENT '体积:毫升(ml)' AFTER `weight`,
 COMMENT = '产品' , RENAME TO  `pro_product` ;
 
 
+ALTER TABLE `pro_product`
+CHANGE COLUMN `goods_no` `code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '供货商编码' ;
+
+ALTER TABLE `pro_product`
+ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `update_time`;
+
+ALTER TABLE `gs_goods` 
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '商品编号' ,
+CHANGE COLUMN `item_id` `product_id` INT(11) NULL DEFAULT NULL COMMENT '产品编号' ,
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' ,
+ADD COLUMN `cat_id` INT(11) NULL COMMENT '分类编号' AFTER `sale_num`,
+ADD COLUMN `vendor_id` INT(11) NULL COMMENT '供货商编号' AFTER `cat_id`,
+ADD COLUMN `brand_id` INT(11) NULL COMMENT '品牌编号(冗余)\n' AFTER `vendor_id`,
+ADD COLUMN `shop_id` INT(11) NULL COMMENT '商铺编号' AFTER `brand_id`,
+ADD COLUMN `shop_cat_id` INT(11) NULL COMMENT '商铺分类编号' AFTER `shop_id`,
+ADD COLUMN `express_tid` INT(11) NULL COMMENT '快递模板编号' AFTER `shop_cat_id`,
+ADD COLUMN `title` VARCHAR(120) NULL COMMENT '商品标题' AFTER `express_tid`,
+ADD COLUMN `code` VARCHAR(45) NULL COMMENT '供货商编码' AFTER `title`,
+ADD COLUMN `image` VARCHAR(120) NULL COMMENT '主图' AFTER `code`,
+ADD COLUMN `cost` INT(11) NULL COMMENT '成本价' AFTER `image`,
+ADD COLUMN `retail_price` INT(11) NULL COMMENT '零售价' AFTER `cost`,
+ADD COLUMN `price` INT(11) NULL COMMENT '销售价' AFTER `retail_price`,
+ADD COLUMN `price_range` VARCHAR(120) NULL COMMENT '销售价格区间' AFTER `price`,
+ADD COLUMN `sku_num` INT(2) NULL COMMENT 'SKU数量' AFTER `price_range`,
+ADD COLUMN `weight` INT(6) NULL COMMENT '重量:克(g)' AFTER `sku_num`,
+ADD COLUMN `bulk` INT(6) NULL COMMENT '体积:毫升(ml)' AFTER `weight`,
+ADD COLUMN `shelve_state` INT(1) NULL COMMENT '是否上架' AFTER `bulk`,
+ADD COLUMN `review_state` INT(1) NULL COMMENT '审核状态' AFTER `shelve_state`,
+ADD COLUMN `review_remark` VARCHAR(120) NULL COMMENT '审核备注' AFTER `review_state`,
+ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `review_remark`,
+ADD COLUMN `create_time` INT(11) NULL COMMENT '创建时间' AFTER `sort_num`,
+ADD COLUMN `update_time` INT(11) NULL COMMENT '更新时间' AFTER `create_time`;
+
+ALTER TABLE `gs_goods` 
+COMMENT = '商品' , RENAME TO  `item_info` ;
+
+ALTER TABLE `txmall`.`item_info`
+CHANGE COLUMN `is_present` `is_present` INT(1) NULL DEFAULT NULL COMMENT '是否为赠品\n' AFTER `image`,
+CHANGE COLUMN `price_range` `price_range` VARCHAR(120) NULL DEFAULT NULL COMMENT '销售价格区间' AFTER `is_present`,
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' AFTER `sku_num`,
+CHANGE COLUMN `stock_num` `stock_num` INT(11) NULL DEFAULT NULL AFTER `bulk`,
+CHANGE COLUMN `sale_num` `sale_num` INT(11) NULL DEFAULT NULL AFTER `stock_num`;
+
+ALTER TABLE `txmall`.`item_info`
+CHANGE COLUMN `stock_num` `stock_num` INT(11) NULL DEFAULT NULL COMMENT '总库存' AFTER `price_range`,
+CHANGE COLUMN `sale_num` `sale_num` INT(11) NULL DEFAULT NULL COMMENT '销售数量' AFTER `stock_num`,
+CHANGE COLUMN `sku_num` `sku_num` INT(2) NULL DEFAULT NULL COMMENT 'SKU数量' AFTER `sale_num`,
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' AFTER `sku_num`,
+CHANGE COLUMN `price` `price` INT(11) NULL DEFAULT NULL COMMENT '销售价' AFTER `cost`;
+
+ALTER TABLE `txmall`.`item_info`
+CHANGE COLUMN `cost` `cost` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '成本价' ,
+CHANGE COLUMN `price` `price` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '销售价' ,
+CHANGE COLUMN `retail_price` `retail_price` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '零售价' ;
+
+ALTER TABLE `txmall`.`gs_sale_snapshot`
+CHANGE COLUMN `price` `retail_price` DECIMAL(8,2) NULL DEFAULT '0.00' COMMENT '售价(市场价)' ;
+
+ALTER TABLE `txmall`.`pro_product`
+DROP COLUMN `description`,
+DROP COLUMN `bulk`,
+DROP COLUMN `weight`,
+DROP COLUMN `price`,
+DROP COLUMN `cost`,
+DROP COLUMN `small_title`,
+DROP COLUMN `express_tid`,
+DROP COLUMN `shop_id`;
+
+
+ALTER TABLE `txmall`.`gs_snapshot`
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NOT NULL COMMENT '商品快照' , RENAME TO  `txmall`.`item_snapshot` ;
+
+ALTER TABLE `txmall`.`item_snapshot`
+DROP COLUMN `shelve_state`,
+DROP COLUMN `stock_num`,
+DROP COLUMN `sale_num`,
+DROP COLUMN `level_sales`,
+CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '供货商编号' ,
+ADD COLUMN `brand_id` INT(11) NULL COMMENT '编号' AFTER `vendor_id`,
+ADD COLUMN `shop_id` INT(11) NULL COMMENT '商铺编号' AFTER `brand_id`,
+ADD COLUMN `shop_cat_id` INT(11) NULL COMMENT '编号分类编号' AFTER `shop_id`,
+ADD COLUMN `is_present` INT(1) NULL COMMENT '是否为赠品' AFTER `image`,
+ADD COLUMN `price_range` VARCHAR(20) NULL COMMENT '价格区间' AFTER `is_present`,
+CHANGE COLUMN `item_id` `item_id` INT(11) NOT NULL COMMENT '商品编号' FIRST,
+CHANGE COLUMN `cat_id` `cat_id` INT(11) NULL DEFAULT NULL COMMENT '分类编号' AFTER `snapshot_key`,
+CHANGE COLUMN `express_tid` `express_tid` INT(11) NULL COMMENT '运费模板' AFTER `shop_cat_id`,
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL COMMENT '默认SKU' AFTER `price_range`,
+CHANGE COLUMN `weight` `weight` INT(11) NULL DEFAULT NULL COMMENT '重量(g)' AFTER `retail_price`,
+CHANGE COLUMN `snapshot_key` `snapshot_key` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '快照编码' ,
+CHANGE COLUMN `goods_title` `title` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '商品标题' ,
+CHANGE COLUMN `small_title` `short_title` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '短标题' ,
+CHANGE COLUMN `goods_no` `code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '商户编码' ,
+CHANGE COLUMN `img` `image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '商品图片' ,
+CHANGE COLUMN `cost` `cost` DECIMAL(8,2) NULL COMMENT '成本' ,
+CHANGE COLUMN `price` `price` DECIMAL(8,2) NULL DEFAULT '0.00' COMMENT '售价' ,
+CHANGE COLUMN `sale_price` `retail_price` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '零售价' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NULL DEFAULT NULL COMMENT '更新时间' ,
+
+DROP PRIMARY KEY,
+ADD PRIMARY KEY (`item_id`);
+
+ALTER TABLE `txmall`.`item_snapshot`
+ADD COLUMN `bulk` INT(11) NULL COMMENT '体积(ml)' AFTER `weight`;
+
+ALTER TABLE `txmall`.`item_snapshot`
+ADD COLUMN `shelve_state` INT(1) NULL COMMENT '上架状态' AFTER `bulk`;
+
+ALTER TABLE `txmall`.`item_snapshot`
+ADD COLUMN `product_id` INT(11) NULL COMMENT '产品编号' AFTER `item_id`;
+
+ALTER TABLE `txmall`.`item_snapshot`
+ADD COLUMN `level_sales` INT(1) NULL COMMENT '会员价' AFTER `bulk`;
+
 
 /** ======== new table **/
 

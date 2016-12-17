@@ -17,13 +17,13 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -50,8 +50,8 @@ type orderImpl struct {
 	orderRepo       order.IOrderRepo
 	expressRepo     express.IExpressRepo
 	payRepo         payment.IPaymentRepo
-	goodsRepo       goods.IGoodsRepo
-	saleRepo        sale.ISaleRepo
+	goodsRepo       item.IGoodsItemRepo
+	productRepo     product.IProductRepo
 	promRepo        promotion.IPromotionRepo
 	valRepo         valueobject.IValueRepo
 	// 运营商商品映射,用于整理购物车
@@ -65,7 +65,7 @@ type orderImpl struct {
 
 func newOrder(shopping order.IOrderManager, value *order.Order,
 	mchRepo merchant.IMerchantRepo, shoppingRepo order.IOrderRepo,
-	goodsRepo goods.IGoodsRepo, saleRepo sale.ISaleRepo,
+	goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
@@ -76,7 +76,7 @@ func newOrder(shopping order.IOrderManager, value *order.Order,
 		promRepo:    promRepo,
 		orderRepo:   shoppingRepo,
 		goodsRepo:   goodsRepo,
-		saleRepo:    saleRepo,
+		productRepo: productRepo,
 		valRepo:     valRepo,
 		expressRepo: expressRepo,
 		payRepo:     payRepo,
@@ -266,7 +266,7 @@ func (o *orderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 		v := tpl.Value()
 		switch v.Basis {
 		case express.BasisByNumber:
-			err = cul.Add(item.ExpressTplId, float32(item.Quantity))
+			err = cul.Add(item.ExpressTplId, item.Quantity)
 		case express.BasisByWeight:
 			err = cul.Add(item.ExpressTplId, item.Weight)
 		case express.BasisByVolume:
@@ -354,8 +354,8 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
-	gs := o.saleRepo.GetSale(c.VendorId).GoodsManager().CreateGoods(
-		&goods.ValueGoods{Id: c.SkuId, SkuId: c.SkuId})
+	gs := o.goodsRepo.CreateItem(
+		&item.GoodsItem{Id: c.SkuId, SkuId: c.SkuId})
 	// 获取商品已销售快照
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {
@@ -377,8 +377,9 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
-		ExpressTplId:   c.Snapshot.ExpressTplId,
-		Weight:         c.Snapshot.Weight * float32(c.Quantity), //计算重量
+		ExpressTplId:   c.Snapshot.ExpressTid,
+		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
+		Bulk:           c.Snapshot.Bulk * c.Quantity,   //计算体积
 	}
 }
 
@@ -849,10 +850,10 @@ func (o *orderImpl) Confirm() error {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int) error {
-	gds := o.saleRepo.GetSale(vendorId).GoodsManager().GetGoods(skuId)
+func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int32) error {
+	gds := o.goodsRepo.GetItem(skuId)
 	if gds == nil {
-		return goods.ErrNoSuchGoods
+		return item.ErrNoSuchGoods
 	}
 	return gds.TakeStock(quantity)
 }
@@ -951,8 +952,8 @@ type subOrderImpl struct {
 	internalSuspend bool //内部挂起
 	rep             order.IOrderRepo
 	memberRepo      member.IMemberRepo
-	goodsRepo       goods.IGoodsRepo
-	saleRepo        sale.ISaleRepo
+	goodsRepo       item.IGoodsItemRepo
+	productRepo     product.IProductRepo
 	manager         order.IOrderManager
 	shipRepo        shipment.IShipmentRepo
 	valRepo         valueobject.IValueRepo
@@ -961,20 +962,20 @@ type subOrderImpl struct {
 
 func NewSubOrder(v *order.SubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
-	mmRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo,
-	shipRepo shipment.IShipmentRepo, saleRepo sale.ISaleRepo,
+	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
+	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
 	valRepo valueobject.IValueRepo,
 	mchRepo merchant.IMerchantRepo) order.ISubOrder {
 	return &subOrderImpl{
-		value:      v,
-		manager:    manager,
-		rep:        rep,
-		memberRepo: mmRepo,
-		goodsRepo:  goodsRepo,
-		saleRepo:   saleRepo,
-		shipRepo:   shipRepo,
-		valRepo:    valRepo,
-		mchRepo:    mchRepo,
+		value:       v,
+		manager:     manager,
+		rep:         rep,
+		memberRepo:  mmRepo,
+		goodsRepo:   goodsRepo,
+		productRepo: productRepo,
+		shipRepo:    shipRepo,
+		valRepo:     valRepo,
+		mchRepo:     mchRepo,
 	}
 }
 
@@ -1146,9 +1147,8 @@ func (o *subOrderImpl) Confirm() (err error) {
 
 // 增加商品的销售数量
 func (o *subOrderImpl) addSalesNum() {
-	gm := o.saleRepo.GetSale(o.value.VendorId).GoodsManager()
 	for _, v := range o.Items() {
-		gds := gm.GetGoods(v.SkuId)
+		gds := o.goodsRepo.GetItem(v.SkuId)
 		gds.AddSalesNum(v.Quantity)
 	}
 }
@@ -1418,13 +1418,12 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
-	gm := o.saleRepo.GetSale(o.value.VendorId).GoodsManager()
 	for _, v := range o.Items() {
 		snapshot := o.goodsRepo.GetSaleSnapshot(v.SnapshotId)
 		if snapshot == nil {
-			return goods.ErrNoSuchSnapshot
+			return item.ErrNoSuchSnapshot
 		}
-		var gds sale.IGoods = gm.GetGoods(snapshot.SkuId)
+		var gds item.IGoodsItem = o.goodsRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
 			gds.FreeStock(v.Quantity)
@@ -1497,7 +1496,7 @@ func (o *subOrderImpl) Cancel(reason string) error {
 }
 
 // 退回商品
-func (o *subOrderImpl) Return(snapshotId int32, quantity int) error {
+func (o *subOrderImpl) Return(snapshotId int32, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.Quantity-v.ReturnQuantity < quantity {
@@ -1512,7 +1511,7 @@ func (o *subOrderImpl) Return(snapshotId int32, quantity int) error {
 }
 
 // 撤销退回商品
-func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int) error {
+func (o *subOrderImpl) RevertReturn(snapshotId int32, quantity int32) error {
 	for _, v := range o.Items() {
 		if v.SnapshotId == snapshotId {
 			if v.ReturnQuantity < quantity {

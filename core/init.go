@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/content"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
@@ -29,10 +30,8 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/domain/interface/pro_model"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/dto"
@@ -142,9 +141,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(shipment.Item{}, "ship_item")
 
 	/** 产品 **/
-	orm.Mapping(item.Item{}, "pro_product")
-	orm.Mapping(goods.ValueGoods{}, "gs_goods")
-	orm.Mapping(sale.Category{}, "cat_category")
+	orm.Mapping(product.Product{}, "pro_product")
+	orm.Mapping(item.GoodsItem{}, "item_info")
+	orm.Mapping(item.Sku{}, "item_sku")
+	orm.Mapping(product.Category{}, "cat_category")
 	orm.Mapping(promodel.ProModel{}, "pro_model")
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")
@@ -153,10 +153,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(promodel.Spec{}, "pro_spec")
 	orm.Mapping(promodel.SpecItem{}, "pro_spec_item")
 	//orm.Mapping(promodel.pr{},"pro_attr")
-	orm.Mapping(goods.Snapshot{}, "gs_snapshot")
-	orm.Mapping(goods.SalesSnapshot{}, "gs_sales_snapshot")
-	orm.Mapping(sale.Label{}, "gs_sale_label")
-	orm.Mapping(goods.MemberPrice{}, "gs_member_price")
+	orm.Mapping(item.Snapshot{}, "item_snapshot")
+	orm.Mapping(item.SalesSnapshot{}, "gs_sales_snapshot")
+	orm.Mapping(item.Label{}, "gs_sale_label")
+	orm.Mapping(item.MemberPrice{}, "gs_member_price")
 
 	/** 商户 **/
 	orm.Mapping(merchant.Merchant{}, "mch_merchant")
