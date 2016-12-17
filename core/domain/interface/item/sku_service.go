@@ -6,6 +6,10 @@ type (
 		SpecDataToMap(specData string) map[int]int
 		// 获取规格和项的数组
 		GetSpecItemArray(sku []*Sku) ([]int, []int)
+		// 合并SKU数组；主要是SKU编号的复制
+		Merge(from []*Sku, to *[]*Sku)
+		// 重建SKU数组，将信息附加
+		RebuildSkuArray(sku *[]*Sku, it *GoodsItem) error
 	}
 
 	// 商品SKU

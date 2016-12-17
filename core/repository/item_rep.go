@@ -53,7 +53,7 @@ func NewGoodsItemRepo(c db.Connector, proRepo product.IProductRepo,
 // 获取SKU服务
 func (g *goodsRepo) SkuService() item.ISkuService {
 	if g._skuService == nil {
-		g._skuService = itemImpl.NewSkuServiceImpl(g)
+		g._skuService = itemImpl.NewSkuServiceImpl(g, g.proMRepo)
 	}
 	return g._skuService
 }
