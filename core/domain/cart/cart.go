@@ -4,12 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"go2o/core/domain/interface/cart"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
 	"go2o/core/infrastructure/domain"
 	"strconv"
 	"time"
@@ -18,16 +16,16 @@ import (
 type cartImpl struct {
 	value      *cart.ValueCart
 	rep        cart.ICartRepo
-	goodsRepo  goods.IGoodsRepo
+	goodsRepo  item.IGoodsItemRepo
 	memberRepo member.IMemberRepo
 	summary    string
 	shop       shop.IShop
 	deliver    member.IDeliverAddress
-	snapMap    map[int32]*goods.Snapshot
+	snapMap    map[int32]*item.Snapshot
 }
 
 func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo goods.IGoodsRepo) cart.ICart {
+	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
 	return (&cartImpl{
 		value:      val,
 		rep:        rep,
@@ -38,7 +36,7 @@ func CreateCart(val *cart.ValueCart, rep cart.ICartRepo,
 
 // 创建新的购物车
 func NewCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
-	goodsRepo goods.IGoodsRepo) cart.ICart {
+	goodsRepo item.IGoodsItemRepo) cart.ICart {
 	unix := time.Now().Unix()
 	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
 	value := &cart.ValueCart{
@@ -70,27 +68,28 @@ func (c *cartImpl) Check() error {
 	}
 	for _, v := range c.value.Items {
 		if v.Checked == 1 {
-			snap := c.goodsRepo.GetLatestSnapshot(v.SkuId)
+			//todo: ???
+			snap := c.goodsRepo.GetItem(v.SkuId).GetValue()
 			if snap == nil {
-				return goods.ErrNoSuchGoods // 没有商品
+				return item.ErrNoSuchGoods // 没有商品
 			}
 			if snap.StockNum == 0 {
-				return sale.ErrFullOfStock // 已经卖完了
+				return item.ErrFullOfStock // 已经卖完了
 			}
 			if snap.StockNum < v.Quantity {
-				return sale.ErrOutOfStock // 超出库存
+				return item.ErrOutOfStock // 超出库存
 			}
 		}
 	}
 	return nil
 }
 
-// 获取商品的快招列表
-func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*goods.Snapshot {
+// 获取商品的快照列表
+func (c *cartImpl) getSnapshotsMap(items []*cart.CartItem) map[int32]*item.Snapshot {
 	if c.snapMap == nil {
 		if items != nil {
 			l := len(items)
-			c.snapMap = make(map[int32]*goods.Snapshot, l)
+			c.snapMap = make(map[int32]*item.Snapshot, l)
 			if l > 0 {
 				var ids []int32 = make([]int32, l)
 				for i, v := range items {
@@ -117,11 +116,11 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 	return 0
 }
 
-func (c *cartImpl) setGoodsInfo(snap *goods.Snapshot, level int32) {
+func (c *cartImpl) setGoodsInfo(snap *item.GoodsItem, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRepo.GetGoodsBySKuId(snap.SkuId).(sale.IGoods)
-		snap.SalePrice = gds.GetPromotionPrice(level)
+		gds := c.goodsRepo.GetGoodsBySkuId(snap.SkuId).(item.IGoodsItem)
+		snap.Price = gds.GetPromotionPrice(level)
 	}
 }
 
@@ -139,16 +138,18 @@ func (c *cartImpl) setAttachGoodsInfo(items []*cart.CartItem) {
 			if level == 0 {
 				level = c.getBuyerLevelId()
 			}
-			c.setGoodsInfo(gv, level)
+
+			//todo: ???
+			//c.setGoodsInfo(gv, level)
 		}
 		// 设置购物车项的数据
 		if ok {
 			v.Snapshot = gv
-			v.Name = gv.GoodsTitle
-			v.Price = gv.Price
-			v.GoodsNo = gv.GoodsNo
+			v.Name = gv.Title
+			v.Price = gv.RetailPrice
+			v.GoodsNo = gv.Code
 			v.Image = gv.Image
-			v.SalePrice = gv.SalePrice
+			v.SalePrice = gv.Price
 		}
 	}
 }
@@ -163,14 +164,14 @@ func (c *cartImpl) GetValue() cart.ValueCart {
 }
 
 // 获取购物车中的商品
-func (c *cartImpl) GetCartGoods() []sale.IGoods {
+func (c *cartImpl) GetCartGoods() []item.IGoodsItem {
 	//todo: IMPL
-	//var gs []sale.IGoods = make([]sale.IGoods, len(c._value.Items))
+	//var gs []item.IGoods = make([]item.IGoods, len(c._value.Items))
 	//for i, v := range c._value.Items {
 	//    gs[i] = c._goodsRepo.getGoods
 	//}
 	//return gs
-	return []sale.IGoods{}
+	return []item.IGoodsItem{}
 }
 
 // 获取商品编号与购物车项的集合
@@ -184,26 +185,28 @@ func (c *cartImpl) Items() map[int32]*cart.CartItem {
 
 // 添加项
 func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
-	num int, checked bool) (*cart.CartItem, error) {
+	num int32, checked bool) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.CartItem{}
 	}
-	snap := c.goodsRepo.GetLatestSnapshot(skuId)
+	//todo: ???
+	//snap := c.goodsRepo.GetLatestSnapshot(skuId)
+	snap := c.goodsRepo.GetItem(skuId).GetValue()
 	if snap == nil {
-		return nil, goods.ErrNoSuchGoods // 没有商品
+		return nil, item.ErrNoSuchGoods // 没有商品
 	}
 	if snap.ShelveState != item.ShelvesOn {
-		return nil, goods.ErrNotOnShelves //未上架
+		return nil, item.ErrNotOnShelves //未上架
 	}
 	if snap.StockNum == 0 {
-		return nil, sale.ErrFullOfStock // 已经卖完了
+		return nil, item.ErrFullOfStock // 已经卖完了
 	}
 	// 添加数量
 	for _, v := range c.value.Items {
 		if v.SkuId == skuId {
 			if v.Quantity+num > snap.StockNum {
-				return v, sale.ErrOutOfStock // 库存不足
+				return v, item.ErrOutOfStock // 库存不足
 			}
 			v.Quantity += num
 			if checked {
@@ -219,18 +222,19 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 	c.setGoodsInfo(snap, c.getBuyerLevelId())
 
 	v := &cart.CartItem{
-		CartId:     c.GetAggregateRootId(),
-		VendorId:   vendorId,
-		ShopId:     shopId,
-		Snapshot:   snap,
+		CartId:   c.GetAggregateRootId(),
+		VendorId: vendorId,
+		ShopId:   shopId,
+		//todo:???
+		//Snapshot:   snap,
 		SnapshotId: snap.SkuId,
 		SkuId:      skuId,
 		Quantity:   num,
-		Name:       snap.GoodsTitle,
-		GoodsNo:    snap.GoodsNo,
+		Name:       snap.Title,
+		GoodsNo:    snap.Code,
 		Image:      snap.Image,
-		Price:      snap.Price,
-		SalePrice:  snap.SalePrice,
+		Price:      snap.RetailPrice,
+		SalePrice:  snap.Price,
 	}
 	if checked {
 		v.Checked = 1
@@ -240,7 +244,7 @@ func (c *cartImpl) AddItem(vendorId, shopId, skuId int32,
 }
 
 // 移出项
-func (c *cartImpl) RemoveItem(goodsId int32, num int) error {
+func (c *cartImpl) RemoveItem(goodsId int32, num int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -547,11 +551,11 @@ func (c *cartImpl) GetSummary() string {
 		for i, v := range c.value.Items {
 			snap := list[v.SkuId]
 			if snap != nil {
-				buf.WriteString(snap.GoodsTitle)
-				if len(snap.SmallTitle) != 0 {
-					buf.WriteString("(" + snap.SmallTitle + ")")
+				buf.WriteString(snap.Title)
+				if len(snap.ShortTitle) != 0 {
+					buf.WriteString("(" + snap.ShortTitle + ")")
 				}
-				buf.WriteString("*" + strconv.Itoa(v.Quantity))
+				buf.WriteString("*" + strconv.Itoa(int(v.Quantity)))
 				if i < length-1 {
 					buf.WriteString("\n")
 				}

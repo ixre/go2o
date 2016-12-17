@@ -14,9 +14,9 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale/goods"
 	promImpl "go2o/core/domain/promotion"
 	"go2o/core/infrastructure/log"
 	"time"
@@ -27,10 +27,10 @@ var _ promotion.IPromotionRepo = new(promotionRepo)
 type promotionRepo struct {
 	db.Connector
 	_memberRepo member.IMemberRepo
-	_goodsRepo  goods.IGoodsRepo
+	_goodsRepo  item.IGoodsItemRepo
 }
 
-func NewPromotionRepo(c db.Connector, goodsRepo goods.IGoodsRepo,
+func NewPromotionRepo(c db.Connector, goodsRepo item.IGoodsItemRepo,
 	memberRepo member.IMemberRepo) promotion.IPromotionRepo {
 	return &promotionRepo{
 		Connector:   c,

@@ -6,13 +6,19 @@
  * description :
  * history :
  */
-package sale
+package item
 
 import (
 	"go2o/core/infrastructure/domain"
 )
 
 var (
+	ErrNotBindShop *domain.DomainError = domain.NewDomainError(
+		"err_item_not_bind_shop", "请选择商品上架的商铺")
+
+	ErrIncorrectShopOfItem *domain.DomainError = domain.NewDomainError(
+		"err_item_not_bind_shop", "商品绑定的商铺非法")
+
 	ErrEmptyReviewRemark *domain.DomainError = domain.NewDomainError(
 		"err_sale_empty_remark", "原因不能为空")
 

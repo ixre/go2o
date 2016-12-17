@@ -20,13 +20,13 @@ import (
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	orderImpl "go2o/core/domain/order"
@@ -40,8 +40,8 @@ var _ order.IOrderRepo = new(orderRepImpl)
 type orderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
-	_saleRepo    sale.ISaleRepo
-	_goodsRepo   goods.IGoodsRepo
+	_productRepo product.IProductRepo
+	_goodsRepo   item.IGoodsItemRepo
 	_promRepo    promotion.IPromotionRepo
 	_memberRepo  member.IMemberRepo
 	_mchRepo     merchant.IMerchantRepo
@@ -57,7 +57,7 @@ type orderRepImpl struct {
 
 func NewOrderRepo(sto storage.Interface, c db.Connector,
 	mchRepo merchant.IMerchantRepo, payRepo payment.IPaymentRepo,
-	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo, goodsRepo goods.IGoodsRepo,
+	proRepo product.IProductRepo, cartRepo cart.ICartRepo, goodsRepo item.IGoodsItemRepo,
 	promRepo promotion.IPromotionRepo, memRepo member.IMemberRepo,
 	deliverRepo delivery.IDeliveryRepo, expressRepo express.IExpressRepo,
 	shipRepo shipment.IShipmentRepo,
@@ -65,7 +65,7 @@ func NewOrderRepo(sto storage.Interface, c db.Connector,
 	return &orderRepImpl{
 		Storage:      sto,
 		Connector:    c,
-		_saleRepo:    saleRepo,
+		_productRepo: proRepo,
 		_goodsRepo:   goodsRepo,
 		_promRepo:    promRepo,
 		_payRepo:     payRepo,
@@ -84,12 +84,12 @@ func (o *orderRepImpl) SetPaymentRepo(payRepo payment.IPaymentRepo) {
 }
 
 func (o *orderRepImpl) Manager() order.IOrderManager {
-	if o._saleRepo == nil {
+	if o._productRepo == nil {
 		panic("saleRepo uninitialize!")
 	}
 	if o._manager == nil {
 		o._manager = orderImpl.NewOrderManager(o._cartRepo, o._mchRepo,
-			o, o._payRepo, o._saleRepo, o._goodsRepo, o._promRepo,
+			o, o._payRepo, o._productRepo, o._goodsRepo, o._promRepo,
 			o._memberRepo, o._deliverRepo, o._expressRepo, o._shipRepo,
 			o._valRepo)
 	}

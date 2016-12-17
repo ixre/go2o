@@ -10,10 +10,9 @@
 package cart
 
 import (
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -54,7 +53,7 @@ type (
 		Items() map[int32]*CartItem
 
 		// 获取购物车中的商品
-		GetCartGoods() []sale.IGoods
+		GetCartGoods() []item.IGoodsItem
 
 		// 结算数据持久化
 		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error
@@ -70,10 +69,10 @@ type (
 
 		// 添加项,需传递商户编号、店铺编号
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(vendorId, shopId, skuId int32, num int, checked bool) (*CartItem, error)
+		AddItem(vendorId, shopId, skuId int32, num int32, checked bool) (*CartItem, error)
 
 		// 移出项
-		RemoveItem(skuId int32, num int) error
+		RemoveItem(skuId int32, num int32) error
 
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
@@ -154,15 +153,15 @@ type (
 
 	// 购物车项
 	CartItem struct {
-		Id         int32           `db:"id" pk:"yes" auto:"yes"`
-		CartId     int32           `db:"cart_id"`
-		VendorId   int32           `db:"vendor_id"`
-		ShopId     int32           `db:"shop_id"`
-		SkuId      int32           `db:"goods_id"`
-		SnapshotId int32           `db:"snap_id"`
-		Quantity   int             `db:"quantity"`
-		Checked    int             `db:"checked" json:"checked"` // 是否结算
-		Snapshot   *goods.Snapshot `db:"-"`
+		Id         int32          `db:"id" pk:"yes" auto:"yes"`
+		CartId     int32          `db:"cart_id"`
+		VendorId   int32          `db:"vendor_id"`
+		ShopId     int32          `db:"shop_id"`
+		SkuId      int32          `db:"goods_id"`
+		SnapshotId int32          `db:"snap_id"`
+		Quantity   int32          `db:"quantity"`
+		Checked    int            `db:"checked" json:"checked"` // 是否结算
+		Snapshot   *item.Snapshot `db:"-"`
 
 		Price      float32 `db:"-"`
 		SalePrice  float32 `db:"-"`

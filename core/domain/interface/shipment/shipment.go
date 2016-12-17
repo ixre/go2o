@@ -93,7 +93,7 @@ type (
 		// 商品销售快照编号
 		GoodsSnapId int32 `db:"snap_id"`
 		// 数量
-		Quantity int `db:"quantity"`
+		Quantity int32 `db:"quantity"`
 		// 商品金额
 		Amount float32 `db:"amount"`
 		// 商品实际金额

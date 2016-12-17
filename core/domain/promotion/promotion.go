@@ -11,9 +11,9 @@ package promotion
 
 import (
 	"errors"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/sale/goods"
 	"time"
 )
 
@@ -24,10 +24,10 @@ type promotionImpl struct {
 	mchId      int
 	promRepo   promotion.IPromotionRepo
 	value      *promotion.PromotionInfo
-	goodsRepo  goods.IGoodsRepo
+	goodsRepo  item.IGoodsItemRepo
 }
 
-func newPromotion(rep promotion.IPromotionRepo, goodsRepo goods.IGoodsRepo,
+func newPromotion(rep promotion.IPromotionRepo, goodsRepo item.IGoodsItemRepo,
 	memRepo member.IMemberRepo, v *promotion.PromotionInfo) *promotionImpl {
 	return &promotionImpl{
 		promRepo:   rep,

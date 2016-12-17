@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package goods
+package item
 
 type (
 	// 快照服务
@@ -27,53 +27,59 @@ type (
 		GetSaleSnapshot(id int32) *SalesSnapshot
 	}
 
-	// 商品快照
+	// 商品快照(暂用于系统内部计算)
 	Snapshot struct {
-		//SKU编号
-		SkuId int32 `db:"sku_id" auto:"no" pk:"no"`
-		//快照编号: 商户编号+g商品编号+快照时间戳
+		// 商品编号
+		ItemId int32 `db:"item_id" pk:"yes"`
+		// 产品编号
+		ProductId int32 `db:"product_id"`
+		// 快照编码
 		Key string `db:"snapshot_key"`
-		//供应商编号
+		// 分类编号
+		CatId int32 `db:"cat_id"`
+		// 供货商编号
 		VendorId int32 `db:"vendor_id"`
-		//商品编号
-		//GoodsId int `db:"goods_id"`
-		//商品标题
-		GoodsTitle string `db:"goods_title"`
-		//小标题
-		SmallTitle string `db:"small_title"`
-		//货号
-		GoodsNo string `db:"goods_no"`
-		//货品编号
-		ItemId int32 `db:"item_id"`
-		//分类编号
-		CategoryId int32 `db:"cat_id"`
-		//SKU  todo:????
-		Sku string `db:"-"`
-		//运费模板编号
-		ExpressTplId int32 `db:"express_tid"`
-		//图片
-		Image string `db:"img"`
-		// 供货价
+		// 编号
+		BrandId int32 `db:"brand_id"`
+		// 商铺编号
+		ShopId int32 `db:"shop_id"`
+		// 编号分类编号
+		ShopCatId int32 `db:"shop_cat_id"`
+		// 运费模板
+		ExpressTid int32 `db:"express_tid"`
+		// 商品标题
+		Title string `db:"title"`
+		// 短标题
+		ShortTitle string `db:"short_title"`
+		// 商户编码
+		Code string `db:"code"`
+		// 商品图片
+		Image string `db:"image"`
+		// 是否为赠品
+		IsPresent int32 `db:"is_present"`
+		// 价格区间
+		PriceRange string `db:"price_range"`
+		// 默认SKU
+		SkuId int32 `db:"sku_id"`
+		// 成本
 		Cost float32 `db:"cost"`
-		//定价
+		// 售价
 		Price float32 `db:"price"`
-		//销售价
-		SalePrice float32 `db:"sale_price"`
-		// 单件重量,单位:千克(kg)
-		Weight float32 `db:"weight"`
-		//是否有会员价
-		LevelSales int `db:"level_sales"`
-		//销售数量
-		SaleNum int `db:"sale_num"`
-		//库存
-		StockNum int `db:"stock_num"`
-		// 是否上架
+		// 零售价
+		RetailPrice float32 `db:"retail_price"`
+		// 重量(g)
+		Weight int32 `db:"weight"`
+		// 体积(ml)
+		Bulk int32 `db:"weight"`
+		// 会员价
+		LevelSales int32 `db:"level_sales"`
+		// 上架状态
 		ShelveState int32 `db:"shelve_state"`
-		//快照时间
+		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 已销售商品快照
+	// 已销售(交易)商品快照
 	SalesSnapshot struct {
 		//快照编号
 		Id int32 `db:"id" auto:"yes" pk:"yes"`

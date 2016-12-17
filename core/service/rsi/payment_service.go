@@ -70,7 +70,7 @@ func (p *paymentService) AdjustOrder(paymentNo string, amount float64) (*define.
 	} else {
 		err = o.Adjust(float32(amount))
 	}
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }
 
 func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
@@ -91,9 +91,7 @@ func (p *paymentService) DiscountByIntegral(orderId int32,
 	} else {
 		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
 	}
-	r = parser.DResult(err)
-	r.Data = float64(amount)
-	return r, nil
+	return parser.DResult(float64(amount), err), nil
 }
 
 // 余额抵扣
@@ -105,7 +103,7 @@ func (p *paymentService) DiscountByBalance(orderId int32, remark string) (*defin
 	} else {
 		err = o.BalanceDiscount(remark)
 	}
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }
 
 // 赠送账户支付
@@ -116,7 +114,7 @@ func (p *paymentService) PaymentByPresent(orderId int32, remark string) (r *defi
 	} else {
 		err = o.PaymentByPresent(remark)
 	}
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }
 
 // 完成支付单支付，并传入支付方式及外部订单号
@@ -135,5 +133,5 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 			}
 		}
 	}
-	return parser.Result(err), nil
+	return parser.Result(0, err), nil
 }

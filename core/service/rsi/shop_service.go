@@ -175,6 +175,20 @@ func (ss *shopService) GetOnlineShopConf(shopId int32) *shop.OnlineShop {
 	return nil
 }
 
+// 获取商城
+func (m *shopService) GetOnlineShops(vendorId int32) []*shop.Shop {
+	mch := m._mchRepo.GetMerchant(vendorId)
+	shops := mch.ShopManager().GetShops()
+	sv := []*shop.Shop{}
+	for _, v := range shops {
+		if v.Type() == shop.TypeOnlineShop {
+			vv := v.GetValue()
+			sv = append(sv, &vv)
+		}
+	}
+	return sv
+}
+
 // 获取指定的营业中的店铺
 func (ss *shopService) PagedOnBusinessOnlineShops(begin, end int, where, order string) (int, []*dto.ListOnlineShop) {
 	n, rows := ss._query.PagedOnBusinessOnlineShops(begin, end, where, order)

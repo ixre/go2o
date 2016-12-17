@@ -13,23 +13,23 @@ import (
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
-	"go2o/core/domain/interface/sale"
+	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
-	saleImpl "go2o/core/domain/sale"
+	productImpl "go2o/core/domain/product"
 	"sort"
 )
 
-var _ sale.ICategoryRepo = new(categoryRepo)
+var _ product.ICategoryRepo = new(categoryRepo)
 
 type categoryRepo struct {
 	db.Connector
-	_valRepo         valueobject.IValueRepo
-	_globCateManager sale.ICategoryManager
-	storage          storage.Interface
+	_valRepo     valueobject.IValueRepo
+	_globService product.IGlobCatService
+	storage      storage.Interface
 }
 
 func NewCategoryRepo(conn db.Connector, valRepo valueobject.IValueRepo,
-	storage storage.Interface) sale.ICategoryRepo {
+	storage storage.Interface) product.ICategoryRepo {
 	return &categoryRepo{
 		Connector: conn,
 		_valRepo:  valRepo,
@@ -37,18 +37,18 @@ func NewCategoryRepo(conn db.Connector, valRepo valueobject.IValueRepo,
 	}
 }
 
-func (c *categoryRepo) GetGlobManager() sale.ICategoryManager {
-	if c._globCateManager == nil {
-		c._globCateManager = saleImpl.NewCategoryManager(0, c, c._valRepo)
+func (c *categoryRepo) GlobCatService() product.IGlobCatService {
+	if c._globService == nil {
+		c._globService = productImpl.NewCategoryManager(0, c, c._valRepo)
 	}
-	return c._globCateManager
+	return c._globService
 }
 
 func (c *categoryRepo) getCategoryCacheKey(id int32) string {
 	return fmt.Sprintf("go2o:rep:cat:c%d", id)
 }
 
-func (c *categoryRepo) SaveCategory(v *sale.Category) (int32, error) {
+func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 	id, err := orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 	// 清理缓存
 	if err == nil {
@@ -85,8 +85,8 @@ func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	return err
 }
 
-func (c *categoryRepo) GetCategory(mchId, id int32) *sale.Category {
-	e := sale.Category{}
+func (c *categoryRepo) GetCategory(mchId, id int32) *product.Category {
+	e := product.Category{}
 	key := c.getCategoryCacheKey(id)
 	if c.storage.Get(key, &e) != nil {
 		err := c.Connector.GetOrm().Get(id, &e)
@@ -98,22 +98,17 @@ func (c *categoryRepo) GetCategory(mchId, id int32) *sale.Category {
 	return &e
 }
 
-// 创建分类
-func (c *categoryRepo) CreateCategory(v *sale.Category) sale.ICategory {
-	return saleImpl.NewCategory(c, v)
-}
-
-func (c *categoryRepo) convertICategory(list sale.CategoryList) []sale.ICategory {
+func (c *categoryRepo) convertICategory(list product.CategoryList) []product.ICategory {
 	sort.Sort(list)
-	slice := make([]sale.ICategory, len(list))
+	slice := make([]product.ICategory, len(list))
 	for i, v := range list {
-		slice[i] = c.CreateCategory(v)
+		slice[i] = c.GlobCatService().CreateCategory(v)
 	}
 	return slice
 }
 
-func (c *categoryRepo) redirectGetCats() []*sale.Category {
-	list := []*sale.Category{}
+func (c *categoryRepo) redirectGetCats() []*product.Category {
+	list := []*product.Category{}
 	err := c.Connector.GetOrm().Select(&list, "")
 	if err != nil {
 		handleError(err)
@@ -121,11 +116,11 @@ func (c *categoryRepo) redirectGetCats() []*sale.Category {
 	return list
 }
 
-func (c *categoryRepo) GetCategories(mchId int32) []*sale.Category {
+func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
 	return c.redirectGetCats()
 	//todo: cache
 	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)
-	//list := []*sale.Category{}
+	//list := []*product.Category{}
 	//if err := c.storage.Get(key, &list);err != nil {
 	//    handleError(err)
 	//    err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)

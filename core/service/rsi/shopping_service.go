@@ -13,12 +13,11 @@ import (
 	"bytes"
 	"errors"
 	"go2o/core/domain/interface/cart"
+	proItem "go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/sale"
-	"go2o/core/domain/interface/sale/goods"
-	"go2o/core/domain/interface/sale/item"
+	"go2o/core/domain/interface/product"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -27,9 +26,8 @@ import (
 
 type shoppingService struct {
 	_rep        order.IOrderRepo
-	_itemRepo   item.IItemRepo
-	_goodsRepo  goods.IGoodsRepo
-	_saleRepo   sale.ISaleRepo
+	_itemRepo   product.IProductRepo
+	_goodsRepo  proItem.IGoodsItemRepo
 	_cartRepo   cart.ICartRepo
 	_mchRepo    merchant.IMerchantRepo
 	_manager    order.IOrderManager
@@ -37,15 +35,14 @@ type shoppingService struct {
 }
 
 func NewShoppingService(r order.IOrderRepo,
-	saleRepo sale.ISaleRepo, cartRepo cart.ICartRepo,
-	itemRepo item.IItemRepo, goodsRepo goods.IGoodsRepo,
+	cartRepo cart.ICartRepo,
+	itemRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
 	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
 		_rep:        r,
 		_itemRepo:   itemRepo,
 		_cartRepo:   cartRepo,
 		_goodsRepo:  goodsRepo,
-		_saleRepo:   saleRepo,
 		_mchRepo:    mchRepo,
 		_manager:    r.Manager(),
 		_orderQuery: orderQuery,
@@ -103,7 +100,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 
 //todo: 这里响应较慢,性能?
 func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
-	skuId int32, num int, checked bool) (*dto.CartItem, error) {
+	skuId int32, num int32, checked bool) (*dto.CartItem, error) {
 	c := s.getShoppingCart(memberId, cartKey)
 	var item *cart.CartItem
 	var err error
@@ -118,9 +115,9 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	if item == nil {
 		snap := s._goodsRepo.GetLatestSnapshot(skuId)
 		if snap == nil {
-			return nil, goods.ErrNoSuchGoods
+			return nil, proItem.ErrNoSuchGoods
 		}
-		tm := s._itemRepo.GetValueItem(snap.ItemId)
+		tm := s._itemRepo.GetProductValue(snap.ItemId)
 		// 检测是否开通商城
 		mch := s._mchRepo.GetMerchant(tm.VendorId)
 		if mch == nil {
@@ -150,7 +147,7 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	return nil, err
 }
 func (s *shoppingService) SubCartItem(memberId int32,
-	cartKey string, goodsId int32, num int) error {
+	cartKey string, goodsId int32, num int32) error {
 	cart := s.getShoppingCart(memberId, cartKey)
 	err := cart.RemoveItem(goodsId, num)
 	if err == nil {
