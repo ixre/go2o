@@ -300,8 +300,12 @@ func (s *itemService) GetGoodsDetails(itemId, mLevel int32) (
 
 // 获取货品描述
 func (s *itemService) GetItemDescriptionByGoodsId(itemId int32) string {
-	goods := s.itemRepo.GetItem(itemId)
-	return goods.Product().GetValue().Description
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	pro := it.Product()
+	if pro != nil {
+		return pro.GetValue().Description
+	}
+	return ""
 }
 
 // 获取商品快照

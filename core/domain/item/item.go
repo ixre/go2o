@@ -86,6 +86,9 @@ func (g *goodsItemImpl) SnapshotManager() item.ISnapshotManager {
 
 // 获取货品
 func (g *goodsItemImpl) Product() product.IProduct {
+	if g.pro == nil && g.value.ProductId > 0 {
+		g.pro = g.productRepo.GetProduct(g.value.ProductId)
+	}
 	return g.pro
 }
 
@@ -123,6 +126,10 @@ func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
 	if err == nil {
 		err = g.copyFromProduct(v)
 		if err == nil {
+			// 创建商品时，设为已下架
+			if g.GetAggregateRootId() <= 0 {
+				g.value.ShelveState = item.ShelvesDown
+			}
 			g.value.ShopId = v.ShopId
 			g.value.IsPresent = v.IsPresent
 			//g.value.Title = v.Title
@@ -229,18 +236,24 @@ func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
 
 // 保存
 func (g *goodsItemImpl) Save() (_ int32, err error) {
-	// 创建商品
-	if g.GetAggregateRootId() <= 0 {
-		g.value.ShelveState = item.ShelvesDown
-		g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
+	ss := g.goodsRepo.SkuService()
+
+	// 保存SKU
+	if g.value.SkuArray != nil {
+		err = ss.UpgradeBySku(g.value, g.value.SkuArray)
+		if err == nil {
+			// 创建商品
+			if g.GetAggregateRootId() <= 0 {
+				g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
+			}
+			// 保存商品SKU
+			if err == nil {
+				err = g.saveItemSku(g.value.SkuArray)
+			}
+		}
 		if err != nil {
 			return g.value.Id, err
 		}
-	}
-	// 保存商品SKU
-	if g.value.SkuArray != nil {
-		g.saveItemSku(g.value.SkuArray)
-		g.value.SkuNum = int32(len(g.value.SkuArray))
 	}
 	// 保存商品
 	g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
@@ -309,6 +322,9 @@ func (g *goodsItemImpl) SkuArray() []*item.Sku {
 
 // 获取促销信息
 func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
+	//todo: 商品促销
+	return []promotion.IPromotion{}
+
 	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
 		g.GetAggregateRootId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))

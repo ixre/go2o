@@ -27,7 +27,7 @@ func CartDetails(c *dto.ShoppingCart) string {
 				}
 				buf.WriteString(fmt.Sprintf(`
 			<div class="goods-product">
-				   <a target="_blank" href="/goods-%d.htm">
+				   <a target="_blank" href="/item-%d.htm">
 				     <img src="%s" class="goods-thumb" />
 				   </a>
 				   	<span class="goods-title">%s
