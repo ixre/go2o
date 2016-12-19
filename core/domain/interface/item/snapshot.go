@@ -70,7 +70,7 @@ type (
 		// 重量(g)
 		Weight int32 `db:"weight"`
 		// 体积(ml)
-		Bulk int32 `db:"weight"`
+		Bulk int32 `db:"bulk"`
 		// 会员价
 		LevelSales int32 `db:"level_sales"`
 		// 上架状态

@@ -151,7 +151,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	total := 0
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
-		catIdStr = fmt.Sprintf(" AND cat_category.id IN (%s)",
+		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
 			format.IdArrJoinStr32(catIds))
 	}
 
@@ -163,19 +163,16 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	}
 
 	list := []*valueobject.Goods{}
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
-	 INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND pro_product.review_state=? AND pro_product.shelve_state=? %s`,
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
+	  INNER JOIN cat_category cat ON it.cat_id=cat.id
+		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=?
+		  AND it.shelve_state=? %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND pro_product.review_state=? AND pro_product.shelve_state=?
-		  %s ORDER BY %s update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN cat_category cat ON it.cat_id=cat.id
+		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
+		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
 			enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}

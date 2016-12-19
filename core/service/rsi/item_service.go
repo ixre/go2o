@@ -155,16 +155,16 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 	switch sortQuery {
 	case "price_0":
 		where = ""
-		orderBy = "pro_product.sale_price ASC"
+		orderBy = "it.price ASC"
 	case "price_1":
 		where = ""
-		orderBy = "pro_product.sale_price DESC"
+		orderBy = "it.price DESC"
 	case "sale_0":
 		where = ""
-		orderBy = "item_info.sale_num ASC"
+		orderBy = "it.sale_num ASC"
 	case "sale_1":
 		where = ""
-		orderBy = "item_info.sale_num DESC"
+		orderBy = "it.sale_num DESC"
 	case "rate_0":
 	//todo:
 	case "rate_1":

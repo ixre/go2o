@@ -13,34 +13,34 @@ package valueobject
 
 // 完整的商品信息
 type Goods struct {
-	ProductId  int32  `db:"item_info.product_id"`
+	ProductId  int32  `db:"product_id"`
 	VendorId   int32  `db:"-"`
 	ShopId     int32  `db:"-"`
-	CategoryId int32  `db:"pro_product.cat_id"`
-	Name       string `db:"pro_product.name"`
+	CategoryId int32  `db:"cat_id"`
+	Name       string `db:"title"`
 	// 货号
-	GoodsNo string `db:"pro_product.code"`
-	Image   string `db:"pro_product.img"`
+	GoodsNo string `db:"code"`
+	Image   string `db:"image"`
 
 	//定价
-	Price float32 `db:"pro_product.price"`
+	RetailPrice float32 `db:"retail_price"`
 
 	//销售价
-	SalePrice float32 `db:"pro_product.sale_price"`
+	Price float32 `db:"price"`
 
 	// 促销价
 	PromPrice float32 `db:"-"`
 
-	GoodsId   int32 `db:"item_info.id"`
-	SkuId     int32 `db:"item_info.sku_id"`
-	IsPresent int32 `db:"item_info.is_present"`
+	GoodsId   int32 `db:"it.id"`
+	SkuId     int32 `db:"sku_id"`
+	IsPresent int32 `db:"is_present"`
 
 	// 促销标志
-	PromotionFlag int32 `db:"item_info.prom_flag"`
+	PromotionFlag int32 `db:"prom_flag"`
 
 	// 库存
-	StockNum int32 `db:"item_info.stock_num"`
+	StockNum int32 `db:"stock_num"`
 
 	// 已售件数
-	SaleNum int32 `db:"item_info.sale_num"`
+	SaleNum int32 `db:"sale_num"`
 }
