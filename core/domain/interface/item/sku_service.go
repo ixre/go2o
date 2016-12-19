@@ -1,5 +1,9 @@
 package item
 
+import (
+	"go2o/core/domain/interface/pro_model"
+)
+
 type (
 	ISkuService interface {
 		// 将SKU字符串转为字典,如: 1:2;2:3
@@ -12,6 +16,12 @@ type (
 		RebuildSkuArray(sku *[]*Sku, it *GoodsItem) error
 		// 根据SKU更新商品的信息
 		UpgradeBySku(it *GoodsItem, arr []*Sku) error
+		// 获取SKU的JSON字符串
+		GetSkuJson(skuArr []*Sku) []byte
+		// 获取商品的规格(从SKU中读取)
+		GetSpecArray(skuArr []*Sku) []*promodel.Spec
+		// 获取规格选择HTML
+		GetSpecHtm(spec []*promodel.Spec) string
 	}
 
 	// 商品SKU

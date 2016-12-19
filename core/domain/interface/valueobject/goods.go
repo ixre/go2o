@@ -30,6 +30,8 @@ type Goods struct {
 
 	// 促销价
 	PromPrice float32 `db:"-"`
+	// 价格区间
+	PriceRange string `db:"price_range"`
 
 	GoodsId   int32 `db:"it.id"`
 	SkuId     int32 `db:"sku_id"`

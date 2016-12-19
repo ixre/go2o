@@ -56,6 +56,18 @@ func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
 	return []*item.Sku{}
 }
 
+// 获取商品规格HTML信息
+func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
+	specHtm string) {
+	ss := s.itemRepo.SkuService()
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	skuBytes := ss.GetSkuJson(it.SkuArray())
+	specJson = string(skuBytes)
+	specArr := it.SpecArray()
+	specHtm = ss.GetSpecHtm(specArr)
+	return specJson, specHtm
+}
+
 // 根据SKU获取商品
 func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)

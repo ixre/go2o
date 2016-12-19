@@ -109,6 +109,7 @@ func (g *goodsItemImpl) GetPackedValue() *valueobject.Goods {
 		Image:         gv.Image,
 		RetailPrice:   gv.RetailPrice,
 		Price:         gv.Price,
+		PriceRange:    gv.PriceRange,
 		PromPrice:     gv.Price,
 		GoodsId:       g.GetAggregateRootId(),
 		SkuId:         gv.SkuId,
@@ -159,6 +160,73 @@ func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
 	}
 	return err
 }
+
+// 设置SKU
+func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
+	g.value.SkuArray = arr
+	return nil
+}
+
+// ========== [# SKU处理开始 ]  ===========//
+
+// 获取商品的规格
+func (g *goodsItemImpl) SpecArray() []*promodel.Spec {
+	return g.goodsRepo.SkuService().GetSpecArray(g.SkuArray())
+}
+
+// 保存商品SKU
+func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) (err error) {
+	pk := g.GetAggregateRootId()
+	ss := g.goodsRepo.SkuService()
+	// 格式化数据
+	err = ss.RebuildSkuArray(&arr, g.value)
+	if err == nil {
+		// 获取之前的SKU设置
+		old := g.goodsRepo.SelectItemSku("item_id=?", pk)
+		// 合并SKU
+		ss.Merge(old, &arr)
+		// 分析当前项目并加入到MAP中
+		delList := []int32{}
+		currMap := make(map[int32]*item.Sku, len(arr))
+		for _, v := range arr {
+			currMap[v.Id] = v
+		}
+		// 筛选出要删除的项
+		for _, v := range old {
+			if currMap[v.Id] == nil {
+				delList = append(delList, v.Id)
+			}
+		}
+		// 删除项
+		for _, v := range delList {
+			g.goodsRepo.DeleteItemSku(v)
+		}
+		// 保存项
+		for _, v := range arr {
+			if v.ItemId == 0 {
+				v.ItemId = pk
+			}
+			if proId := g.value.ProductId; v.ProductId != proId {
+				v.ProductId = proId
+			}
+			if v.ItemId == pk {
+				v.Id, err = util.I32Err(g.goodsRepo.SaveItemSku(v))
+			}
+		}
+	}
+	return err
+}
+
+// 获取SKU数组
+func (g *goodsItemImpl) SkuArray() []*item.Sku {
+	if g.value.SkuArray == nil {
+		g.value.SkuArray = g.goodsRepo.SelectItemSku("item_id=?",
+			g.GetAggregateRootId())
+	}
+	return g.value.SkuArray
+}
+
+// ========== [/ SKU处理结束 ] ===========//
 
 // 从产品中拷贝信息
 //todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
@@ -228,12 +296,6 @@ func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
 	return nil
 }
 
-// 设置SKU
-func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
-	g.value.SkuArray = arr
-	return nil
-}
-
 // 保存
 func (g *goodsItemImpl) Save() (_ int32, err error) {
 	ss := g.goodsRepo.SkuService()
@@ -263,62 +325,6 @@ func (g *goodsItemImpl) Save() (_ int32, err error) {
 	}
 	return g.value.Id, err
 }
-
-// ========== [# SKU处理开始 ]  ===========//
-
-// 保存商品SKU
-func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) (err error) {
-	pk := g.GetAggregateRootId()
-	ss := g.goodsRepo.SkuService()
-	// 格式化数据
-	err = ss.RebuildSkuArray(&arr, g.value)
-	if err == nil {
-		// 获取之前的SKU设置
-		old := g.goodsRepo.SelectItemSku("item_id=?", pk)
-		// 合并SKU
-		ss.Merge(old, &arr)
-		// 分析当前项目并加入到MAP中
-		delList := []int32{}
-		currMap := make(map[int32]*item.Sku, len(arr))
-		for _, v := range arr {
-			currMap[v.Id] = v
-		}
-		// 筛选出要删除的项
-		for _, v := range old {
-			if currMap[v.Id] == nil {
-				delList = append(delList, v.Id)
-			}
-		}
-		// 删除项
-		for _, v := range delList {
-			g.goodsRepo.DeleteItemSku(v)
-		}
-		// 保存项
-		for _, v := range arr {
-			if v.ItemId == 0 {
-				v.ItemId = pk
-			}
-			if proId := g.value.ProductId; v.ProductId != proId {
-				v.ProductId = proId
-			}
-			if v.ItemId == pk {
-				v.Id, err = util.I32Err(g.goodsRepo.SaveItemSku(v))
-			}
-		}
-	}
-	return err
-}
-
-// 获取SKU数组
-func (g *goodsItemImpl) SkuArray() []*item.Sku {
-	if g.value.SkuArray == nil {
-		g.value.SkuArray = g.goodsRepo.SelectItemSku("item_id=?",
-			g.GetAggregateRootId())
-	}
-	return g.value.SkuArray
-}
-
-// ========== [/ SKU处理结束 ] ===========//
 
 // 获取促销信息
 func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {

@@ -9,6 +9,7 @@
 package item
 
 import (
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
@@ -222,6 +223,8 @@ type (
 		SetSku(arr []*Sku) error
 		// 获取SKU数组
 		SkuArray() []*Sku
+		// 获取商品的规格
+		SpecArray() []*promodel.Spec
 		// 保存
 		Save() (int32, error)
 
