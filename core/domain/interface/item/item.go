@@ -97,7 +97,7 @@ type (
 		GetSnapshots(skuIdArr []int32) []Snapshot
 
 		// 获取最新的商品快照
-		GetLatestSnapshot(skuId int32) *Snapshot
+		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取指定的商品快照
 		GetSaleSnapshot(id int32) *SalesSnapshot

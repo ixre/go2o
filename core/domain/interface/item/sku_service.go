@@ -10,6 +10,8 @@ type (
 		Merge(from []*Sku, to *[]*Sku)
 		// 重建SKU数组，将信息附加
 		RebuildSkuArray(sku *[]*Sku, it *GoodsItem) error
+		// 根据SKU更新商品的信息
+		UpgradeBySku(it *GoodsItem, arr []*Sku) error
 	}
 
 	// 商品SKU
