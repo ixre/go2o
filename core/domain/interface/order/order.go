@@ -495,6 +495,8 @@ type (
 		Id int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int32 `db:"order_id"`
+		// 商品编号
+		ItemId int32 `db:"item_id"`
 		// 商品SKU编号
 		SkuId int32 `db:"sku_id"`
 		// 快照编号

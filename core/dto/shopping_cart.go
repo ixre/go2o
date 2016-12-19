@@ -40,6 +40,7 @@ type CartItem struct {
 	SmallTitle string  `json:"title"`
 	GoodsImage string  `json:"image"`
 	Quantity   int32   `json:"num"`
+	SpecWord   string  `json:"specWord"`
 	Price      float32 `json:"price"`
 	SalePrice  float32 `json:"salePrice"`
 	// 是否结算

@@ -236,6 +236,26 @@ ADD COLUMN `product_id` INT(11) NULL COMMENT '产品编号' AFTER `item_id`;
 ALTER TABLE `txmall`.`item_snapshot`
 ADD COLUMN `level_sales` INT(1) NULL COMMENT '会员价' AFTER `bulk`;
 
+ALTER TABLE `txmall`.`item_sku`
+ADD COLUMN `retail_price` DECIMAL(10,2) NULL COMMENT '零售价格' AFTER `code`;
+
+ALTER TABLE `txmall`.`sale_cart_item`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `cart_id` `cart_id` INT(11) NULL DEFAULT NULL COMMENT '购物车编号' ,
+CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '运营商编号' ,
+CHANGE COLUMN `shop_id` `shop_id` INT(11) NULL DEFAULT NULL COMMENT '店铺编号' ,
+CHANGE COLUMN `goods_id` `item_id` INT(11) NULL DEFAULT NULL COMMENT '商品编号' ,
+CHANGE COLUMN `snap_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT 'SKU编号' ,
+CHANGE COLUMN `quantity` `quantity` INT(8) NULL DEFAULT NULL COMMENT '数量' ,
+CHANGE COLUMN `checked` `checked` TINYINT(1) NULL DEFAULT NULL COMMENT '是否勾选结算' ,
+COMMENT = '购物车商品项' ;
+
+ALTER TABLE `txmall`.`sale_order_item`
+ADD COLUMN `item_id` INT(11) NULL COMMENT '商品编号' AFTER `order_id`;
+
+
+
+
 
 /** ======== new table **/
 
