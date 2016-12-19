@@ -354,8 +354,12 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
+
+	//todo: 交易快照 , 应延后支付完成后生成
+
 	gs := o.goodsRepo.CreateItem(
-		&item.GoodsItem{Id: c.SkuId, SkuId: c.SkuId})
+		&item.GoodsItem{Id: c.ItemId, SkuId: c.SkuId})
+
 	// 获取商品已销售快照
 	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
 	if snap == nil {
@@ -363,13 +367,15 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 			strconv.Itoa(int(c.SkuId))), "domain")
 		return nil
 	}
-	fee := c.SalePrice * float32(c.Quantity)
+
+	fee := c.Sku.Price * float32(c.Quantity)
 	return &order.OrderItem{
 		Id:          0,
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
-		SnapshotId:  snap.Id,
+		ItemId:      c.ItemId,
+		SnapshotId:  -1, //snap.Id,
 		Quantity:    c.Quantity,
 		Amount:      fee,
 		FinalAmount: fee,
@@ -377,9 +383,9 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
-		ExpressTplId:   c.Snapshot.ExpressTid,
-		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
-		Bulk:           c.Snapshot.Bulk * c.Quantity,   //计算体积
+		ExpressTplId:   c.Sku.ExpressTid,
+		Weight:         c.Sku.Weight * c.Quantity, //计算重量
+		Bulk:           c.Sku.Bulk * c.Quantity,   //计算体积
 	}
 }
 
@@ -727,7 +733,7 @@ func (o *orderImpl) breakUpByVendor() []order.ISubOrder {
 func (o *orderImpl) applyGoodsNum() {
 	for _, v := range o.vendorItemsMap {
 		for _, v2 := range v {
-			o.takeGoodsStock(v2.VendorId, v2.SkuId, v2.Quantity)
+			o.takeGoodsStock(v2.ItemId, v2.SkuId, v2.Quantity)
 		}
 	}
 }
@@ -850,12 +856,12 @@ func (o *orderImpl) Confirm() error {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int32) error {
-	gds := o.goodsRepo.GetItem(skuId)
+func (o *orderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchGoods
 	}
-	return gds.TakeStock(quantity)
+	return gds.TakeStock(skuId, quantity)
 }
 
 // 获取订单号
@@ -1148,8 +1154,8 @@ func (o *subOrderImpl) Confirm() (err error) {
 // 增加商品的销售数量
 func (o *subOrderImpl) addSalesNum() {
 	for _, v := range o.Items() {
-		gds := o.goodsRepo.GetItem(v.SkuId)
-		gds.AddSalesNum(v.Quantity)
+		it := o.goodsRepo.CreateItem(&item.GoodsItem{Id: v.ItemId})
+		it.AddSalesNum(v.SkuId, v.Quantity)
 	}
 }
 
@@ -1426,10 +1432,10 @@ func (o *subOrderImpl) cancelGoods() error {
 		var gds item.IGoodsItem = o.goodsRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
-			gds.FreeStock(v.Quantity)
+			gds.FreeStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
-				gds.CancelSale(v.Quantity, o.value.OrderNo)
+				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
 	}

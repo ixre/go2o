@@ -215,9 +215,8 @@ func (g *goodsRepo) GetLatestSnapshot(itemId int32) *item.Snapshot {
 // 根据指定商品快照
 func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
 	list := []item.Snapshot{}
-	g.Connector.GetOrm().SelectByQuery(&list,
-		`SELECT * FROM item_snapshot WHERE sku_id IN (`+
-			format.IdArrJoinStr32(skuIdArr)+`)`)
+	g.Connector.GetOrm().Select(&list, `item_id IN (`+
+		format.IdArrJoinStr32(skuIdArr)+`)`)
 	return list
 }
 

@@ -221,12 +221,14 @@ type (
 		SetValue(*GoodsItem) error
 		// 设置SKU
 		SetSku(arr []*Sku) error
+		// 保存
+		Save() (int32, error)
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格
 		SpecArray() []*promodel.Spec
-		// 保存
-		Save() (int32, error)
+		// 获取SKU
+		GetSku(skuId int32) *Sku
 
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
@@ -249,13 +251,13 @@ type (
 		// 标记为违规
 		Incorrect(remark string) error
 		// 更新销售数量,扣减库存
-		AddSalesNum(quantity int32) error
+		AddSalesNum(skuId, quantity int32) error
 		// 取消销售
-		CancelSale(quantity int32, orderNo string) error
+		CancelSale(skuId, quantity int32, orderNo string) error
 		// 占用库存
-		TakeStock(quantity int32) error
+		TakeStock(skuId, quantity int32) error
 		// 释放库存
-		FreeStock(quantity int32) error
+		FreeStock(skuId, quantity int32) error
 		//// 生成快照
 		//GenerateSnapshot() (int64, error)
 		//

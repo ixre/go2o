@@ -169,11 +169,6 @@ func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
 
 // ========== [# SKU处理开始 ]  ===========//
 
-// 获取商品的规格
-func (g *goodsItemImpl) SpecArray() []*promodel.Spec {
-	return g.goodsRepo.SkuService().GetSpecArray(g.SkuArray())
-}
-
 // 保存商品SKU
 func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) (err error) {
 	pk := g.GetAggregateRootId()
@@ -226,6 +221,23 @@ func (g *goodsItemImpl) SkuArray() []*item.Sku {
 	return g.value.SkuArray
 }
 
+// 获取商品的规格
+func (g *goodsItemImpl) SpecArray() []*promodel.Spec {
+	return g.goodsRepo.SkuService().GetSpecArray(g.SkuArray())
+}
+
+// 获取SKU
+func (g *goodsItemImpl) GetSku(skuId int32) *item.Sku {
+	if g.value.SkuArray != nil {
+		for _, v := range g.value.SkuArray {
+			if v.Id == skuId {
+				return v
+			}
+		}
+	}
+	return g.goodsRepo.GetItemSku(skuId)
+}
+
 // ========== [/ SKU处理结束 ] ===========//
 
 // 从产品中拷贝信息
@@ -238,8 +250,12 @@ func (g *goodsItemImpl) copyFromProduct(v *item.GoodsItem) error {
 	g.value.CatId = pro.CatId
 	g.value.VendorId = pro.VendorId
 	g.value.BrandId = pro.BrandId
-	g.value.Title = pro.Name
-	g.value.Code = pro.Code
+	if g.value.Title == "" {
+		g.value.Title = pro.Name
+	}
+	if g.value.Code == "" {
+		g.value.Code = pro.Code
+	}
 	g.value.Image = pro.Image
 	g.value.SortNum = pro.SortNum
 	g.value.CreateTime = pro.CreateTime
@@ -455,7 +471,7 @@ func (g *goodsItemImpl) Review(pass bool, remark string) error {
 }
 
 // 更新销售数量
-func (g *goodsItemImpl) AddSalesNum(quantity int32) error {
+func (g *goodsItemImpl) AddSalesNum(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -468,7 +484,7 @@ func (g *goodsItemImpl) AddSalesNum(quantity int32) error {
 }
 
 // 取消销售
-func (g *goodsItemImpl) CancelSale(quantity int32, orderNo string) error {
+func (g *goodsItemImpl) CancelSale(skuId, quantity int32, orderNo string) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -478,7 +494,7 @@ func (g *goodsItemImpl) CancelSale(quantity int32, orderNo string) error {
 }
 
 // 占用库存
-func (g *goodsItemImpl) TakeStock(quantity int32) error {
+func (g *goodsItemImpl) TakeStock(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -491,7 +507,7 @@ func (g *goodsItemImpl) TakeStock(quantity int32) error {
 }
 
 // 释放库存
-func (g *goodsItemImpl) FreeStock(quantity int32) error {
+func (g *goodsItemImpl) FreeStock(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}

@@ -30,6 +30,9 @@ var (
 
 	ErrDisallowBindForCart *domain.DomainError = domain.NewDomainError(
 		"err_cart_disallow_bind", "无法为购物车绑定订单")
+
+	ErrItemNoSku *domain.DomainError = domain.NewDomainError(
+		"err_cart_item_no_sku", "请选择商品规格")
 )
 
 type (
@@ -67,9 +70,9 @@ type (
 		// 设置购买会员收货地址
 		SetBuyerAddress(addressId int32) error
 
-		// 添加项,需传递商户编号、店铺编号
-		// todo: 这里有问题、如果是线下店的购物车,如何实现?
-		AddItem(vendorId, shopId, skuId int32, num int32, checked bool) (*CartItem, error)
+		// 添加商品到购物车,如商品没有SKU,则skuId传入0
+		// todo: 这里有问题、如果是线下店的购物车,如何实现? 暂时以店铺区分
+		AddItem(itemId, skuId int32, num int32, checked bool) (*CartItem, error)
 
 		// 移出项
 		RemoveItem(skuId int32, num int32) error
@@ -153,39 +156,40 @@ type (
 
 	// 购物车项
 	CartItem struct {
-		Id         int32          `db:"id" pk:"yes" auto:"yes"`
-		CartId     int32          `db:"cart_id"`
-		VendorId   int32          `db:"vendor_id"`
-		ShopId     int32          `db:"shop_id"`
-		SkuId      int32          `db:"goods_id"`
-		SnapshotId int32          `db:"snap_id"`
-		Quantity   int32          `db:"quantity"`
-		Checked    int            `db:"checked" json:"checked"` // 是否结算
-		Snapshot   *item.Snapshot `db:"-"`
-
-		Price      float32 `db:"-"`
-		SalePrice  float32 `db:"-"`
-		Sku        string  `db:"-"`
-		Name       string  `db:"-"`
-		GoodsNo    string  `db:"-"`
-		SmallTitle string  `db:"-"`
-		Image      string  `db:"-"`
+		// 编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		// 购物车编号
+		CartId int32 `db:"cart_id"`
+		// 运营商编号
+		VendorId int32 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int32 `db:"shop_id"`
+		// 商品编号
+		ItemId int32 `db:"item_id"`
+		// SKU编号
+		SkuId int32 `db:"sku_id"`
+		// 数量
+		Quantity int32 `db:"quantity"`
+		// 是否勾选结算
+		Checked int32 `db:"checked"`
+		// 订单依赖的SKU媒介
+		Sku *item.SkuMedia `db:"-"`
 	}
 )
 
 func ParseCartItem(item *CartItem) *dto.CartItem {
 	i := &dto.CartItem{
-		GoodsId:    item.SkuId,
-		GoodsName:  item.Name,
-		GoodsNo:    item.GoodsNo,
-		SmallTitle: item.SmallTitle,
-		GoodsImage: format.GetGoodsImageUrl(item.Image),
-		Quantity:   item.Quantity,
-		Price:      item.Price,
-		SalePrice:  item.SalePrice,
+		GoodsId:  item.SkuId,
+		Quantity: item.Quantity,
+		Checked:  item.Checked == 1,
 	}
-	if item.Checked == 1 {
-		i.Checked = true
+	if item.Sku != nil {
+		i.GoodsImage = format.GetGoodsImageUrl(item.Sku.Image)
+		i.Price = item.Sku.RetailPrice
+		i.SalePrice = item.Sku.Price
+		i.SpecWord = item.Sku.SpecWord
+		i.GoodsName = item.Sku.Title
+		i.GoodsNo = item.Sku.ItemCode
 	}
 	return i
 }

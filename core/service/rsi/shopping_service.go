@@ -11,7 +11,6 @@ package rsi
 
 import (
 	"bytes"
-	"errors"
 	"go2o/core/domain/interface/cart"
 	proItem "go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
@@ -86,6 +85,7 @@ func (s *shoppingService) CreateShoppingCart(memberId int32) *dto.ShoppingCart {
 	return cart.ParseToDtoCart(c)
 }
 
+// 转换购物车数据
 func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
 	for _, v := range dto.Vendors {
@@ -100,45 +100,49 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 
 //todo: 这里响应较慢,性能?
 func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
-	skuId int32, num int32, checked bool) (*dto.CartItem, error) {
+	itemId, skuId, num int32, checked bool) (*dto.CartItem, error) {
 	c := s.getShoppingCart(memberId, cartKey)
-	var item *cart.CartItem
-	var err error
+
+	//todo:  以下注释删除？？？
+
+	//var item *cart.CartItem
+	//var err error
 	// 从购物车中添加
-	for k, v := range c.Items() {
-		if k == skuId {
-			item, err = c.AddItem(v.VendorId, v.ShopId, skuId, num, checked)
-			break
-		}
-	}
+	//for k, v := range c.Items() {
+	//	if k == skuId {
+	//		item, err = c.AddItem(v.SnapshotId,skuId, num, checked)
+	//		break
+	//	}
+	//}
+
 	// 将新商品加入到购物车
-	if item == nil {
-		snap := s._goodsRepo.GetLatestSnapshot(skuId)
-		if snap == nil {
-			return nil, proItem.ErrNoSuchGoods
-		}
-		tm := s._itemRepo.GetProductValue(snap.ItemId)
-		// 检测是否开通商城
-		mch := s._mchRepo.GetMerchant(tm.VendorId)
-		if mch == nil {
-			return nil, merchant.ErrNoSuchMerchant
-		}
-		shops := mch.ShopManager().GetShops()
-		var shopId int32
-		for _, v := range shops {
-			if v.Type() == shop.TypeOnlineShop {
-				shopId = v.GetDomainId()
-				break
-			}
-		}
-		if shopId == 0 {
-			return nil, errors.New("商户还未开通商城")
-		}
+	//if item == nil {
+	//    snap := s._goodsRepo.GetLatestSnapshot(skuId)
+	//    if snap == nil {
+	//        return nil, proItem.ErrNoSuchGoods
+	//    }
+	//    tm := s._itemRepo.GetProductValue(snap.ItemId)
+	//    // 检测是否开通商城
+	//    mch := s._mchRepo.GetMerchant(tm.VendorId)
+	//    if mch == nil {
+	//        return nil, merchant.ErrNoSuchMerchant
+	//    }
+	//    shops := mch.ShopManager().GetShops()
+	//    var shopId int32
+	//    for _, v := range shops {
+	//        if v.Type() == shop.TypeOnlineShop {
+	//            shopId = v.GetDomainId()
+	//            break
+	//        }
+	//    }
+	//    if shopId == 0 {
+	//        return nil, errors.New("商户还未开通商城")
+	//    }
+	//    // 加入购物车
+	//    item, err = c.AddItem(itemId, skuId, num, checked)
+	//}
 
-		// 加入购物车
-		item, err = c.AddItem(snap.VendorId, shopId, skuId, num, checked)
-	}
-
+	item, err := c.AddItem(itemId, skuId, num, checked)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			return cart.ParseCartItem(item), err
