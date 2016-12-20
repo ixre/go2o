@@ -354,14 +354,8 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
-
-	//todo: 交易快照 , 应延后支付完成后生成
-
-	gs := o.goodsRepo.CreateItem(
-		&item.GoodsItem{Id: c.ItemId, SkuId: c.SkuId})
-
 	// 获取商品已销售快照
-	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
+	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
 			strconv.Itoa(int(c.SkuId))), "domain")
@@ -375,7 +369,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
 		ItemId:      c.ItemId,
-		SnapshotId:  -1, //snap.Id,
+		SnapshotId:  snap.Id,
 		Quantity:    c.Quantity,
 		Amount:      fee,
 		FinalAmount: fee,
@@ -1297,7 +1291,7 @@ func (s *subOrderImpl) getOrderCost() float32 {
 	var cost float32
 	items := s.Items()
 	for _, item := range items {
-		snap := s.goodsRepo.GetSaleSnapshot(item.SnapshotId)
+		snap := s.goodsRepo.GetSalesSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
@@ -1425,7 +1419,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
 	for _, v := range o.Items() {
-		snapshot := o.goodsRepo.GetSaleSnapshot(v.SnapshotId)
+		snapshot := o.goodsRepo.GetSalesSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}

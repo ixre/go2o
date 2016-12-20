@@ -88,7 +88,7 @@ func (s *itemService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 
 // 根据快照编号获取商品
 func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
-	snap := s.itemRepo.GetSaleSnapshot(snapshotId)
+	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
 	if snap != nil {
 		return s.itemRepo.GetValueGoodsById(snap.SkuId)
 	}
@@ -97,7 +97,7 @@ func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
 
 // 根据快照编号获取商品
 func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot {
-	return s.itemRepo.GetSaleSnapshot(snapshotId)
+	return s.itemRepo.GetSalesSnapshot(snapshotId)
 }
 
 // 保存商品

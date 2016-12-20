@@ -49,6 +49,9 @@ type (
 	IGoodsItemRepo interface {
 		// 获取SKU服务
 		SkuService() ISkuService
+		// 获取快照服务
+		SnapshotService() ISnapshotService
+
 		// 创建商品
 		CreateItem(v *GoodsItem) IGoodsItem
 
@@ -101,16 +104,16 @@ type (
 		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取指定的商品快照
-		GetSaleSnapshot(id int32) *SalesSnapshot
+		GetSalesSnapshot(id int32) *SalesSnapshot
 
 		// 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
 		// 获取最新的商品销售快照
-		GetLatestSaleSnapshot(skuId int32) *SalesSnapshot
+		GetLatestSalesSnapshot(skuId int32) *SalesSnapshot
 
 		// 保存商品销售快照
-		SaveSaleSnapshot(*SalesSnapshot) (int32, error)
+		SaveSalesSnapshot(*SalesSnapshot) (int32, error)
 
 		// Get ItemSku
 		GetItemSku(primary interface{}) *Sku
@@ -209,10 +212,6 @@ type (
 	IGoodsItem interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
-		// 商品快照
-		SnapshotManager() ISnapshotManager
-		// 获取货品
-		Product() product.IProduct
 		// 设置值
 		GetValue() *GoodsItem
 		// 获取包装过的商品信息
@@ -223,6 +222,10 @@ type (
 		SetSku(arr []*Sku) error
 		// 保存
 		Save() (int32, error)
+		// 获取产品
+		Product() product.IProduct
+		// 商品快照
+		Snapshot() *Snapshot
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格

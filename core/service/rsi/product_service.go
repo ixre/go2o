@@ -310,6 +310,13 @@ func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err
 	// 保存
 	err = pro.SetValue(v)
 	if err == nil {
+		// 保存属性
+		if v.Attr != nil {
+			err = pro.SetAttr(v.Attr)
+			if err != nil {
+				goto R
+			}
+		}
 		v.Id, err = pro.Save()
 	}
 R:
