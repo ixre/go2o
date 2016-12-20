@@ -124,7 +124,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 func (c *cartImpl) setGoodsInfo(snap *item.GoodsItem, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRepo.GetGoodsBySkuId(snap.SkuId).(item.IGoodsItem)
+		gds := c.goodsRepo.CreateItem(snap)
 		snap.Price = gds.GetPromotionPrice(level)
 	}
 }
