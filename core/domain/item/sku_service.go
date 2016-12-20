@@ -88,31 +88,33 @@ func (s *skuServiceImpl) UpgradeBySku(it *item.GoodsItem,
 	arr []*item.Sku) error {
 	//更新SKU数量
 	it.SkuNum = int32(len(arr))
-	//更新库存
-	it.StockNum = 0
-	//更新销售数量
-	it.SaleNum = 0
-	var pl, ph float32
-	for i := 0; i < len(arr); i++ {
-		it.StockNum += arr[i].Stock
-		it.SaleNum += arr[i].SaleNum
-		price := arr[i].Price
-		if price < pl || pl == 0 {
-			pl = price
+	//如果包含SKU，则更新库存和价格区间
+	if it.SkuNum > 0 {
+		//更新库存
+		it.StockNum = 0
+		//更新销售数量
+		it.SaleNum = 0
+		var pl, ph float32
+		for i := 0; i < len(arr); i++ {
+			it.StockNum += arr[i].Stock
+			it.SaleNum += arr[i].SaleNum
+			price := arr[i].Price
+			if price < pl || pl == 0 {
+				pl = price
+			}
+			if price > ph || ph == 0 {
+				ph = price
+			}
 		}
-		if price > ph || ph == 0 {
-			ph = price
+		//更新价格区间
+		it.Price = pl
+		if pl == ph {
+			it.PriceRange = format.FormatFloat(pl)
+		} else {
+			it.PriceRange = format.FormatFloat(pl) +
+				"~" + format.FormatFloat(ph)
 		}
 	}
-	//更新价格区间
-	it.Price = pl
-	if pl == ph {
-		it.PriceRange = format.FormatFloat(pl)
-	} else {
-		it.PriceRange = format.FormatFloat(pl) +
-			"~" + format.FormatFloat(ph)
-	}
-
 	return nil
 }
 

@@ -112,6 +112,7 @@ func ParseSkuMedia(it *GoodsItem, sku *Sku) *SkuMedia {
 		ItemCode:   it.Code,
 		Stock:      it.StockNum,
 		Image:      it.Image,
+		Title:      it.Title,
 	}
 	if sku != nil {
 		media.SpecData = sku.SpecData

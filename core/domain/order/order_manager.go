@@ -11,7 +11,6 @@ package order
 
 import (
 	"errors"
-	"fmt"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
 	"go2o/core/domain/interface/enum"
@@ -276,13 +275,6 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
 		if useBalanceDiscount {
 			err = py.BalanceDiscount("")
 		}
-		// 如果已支付完成,则将订单设为支付完成
-		if v := py.GetValue(); v.FinalAmount == 0 &&
-			v.State == payment.StateFinishPayment {
-			for _, sub := range order.GetSubOrders() {
-				sub.PaymentFinishByOnlineTrade()
-			}
-		}
 	}
 	return order, py, err
 }
@@ -305,8 +297,8 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 	return nil
 }
 
-// 在线交易支付
-func (t *orderManagerImpl) PaymentForOnlineTrade(orderId int32) error {
+// 接收在线交易支付的通知，不主动调用
+func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int32) error {
 	o := t.GetOrderById(orderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -387,18 +379,18 @@ func (t *orderManagerImpl) SmartConfirmOrder(o order.IOrder) error {
 	}
 
 	if sp != nil && sp.Type() == shop.TypeOfflineShop {
-		sv := sp.GetValue()
+		//sv := sp.GetValue()
 		//todo: set shop
 		panic("not impl")
 		//order.SetShop(sp.GetDomainId())
 		err = o.Confirm()
 		//err = order.Process()
-		ofs := sp.(shop.IOfflineShop).GetShopValue()
-		o.AppendLog(&order.OrderLog{
-			Type:     int(order.LogSetup),
-			IsSystem: 1,
-			Message:  fmt.Sprintf("自动分配门店:%s,电话：%s", sv.Name, ofs.Tel),
-		})
+		//ofs := sp.(shop.IOfflineShop).GetShopValue()
+		//o.AppendLog(&order.OrderLog{
+		//	Type:     int(order.LogSetup),
+		//	IsSystem: 1,
+		//	Message:  fmt.Sprintf("自动分配门店:%s,电话：%s", sv.Name, ofs.Tel),
+		//})
 	}
 	return err
 }
