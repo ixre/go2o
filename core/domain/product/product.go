@@ -90,7 +90,11 @@ func (p *productImpl) SetValue(v *product.Product) error {
 		}
 		p.value.SortNum = v.SortNum
 	}
-	p.value.UpdateTime = time.Now().Unix()
+	unix := time.Now().Unix()
+	if p.value.CreateTime <= 0 {
+		p.value.CreateTime = unix
+	}
+	p.value.UpdateTime = unix
 	return nil
 }
 
@@ -145,11 +149,8 @@ func (p *productImpl) SetDescribe(describe string) error {
 
 // 保存
 func (p *productImpl) Save() (i int32, err error) {
-	unix := time.Now().Unix()
-	p.value.UpdateTime = unix
 	if p.value.Attr != nil {
 		if p.GetAggregateRootId() <= 0 {
-			p.value.CreateTime = unix
 			p.value.Id, err = util.I32Err(p.repo.SaveProduct(p.value))
 			if err != nil {
 				goto R
@@ -161,6 +162,7 @@ func (p *productImpl) Save() (i int32, err error) {
 	}
 	// 自动生成货号
 	if p.value.Code == "" {
+		unix := time.Now().Unix()
 		cs := strconv.Itoa(int(p.value.CatId))
 		us := strconv.Itoa(int(unix))
 		l := len(cs)

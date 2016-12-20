@@ -756,6 +756,9 @@ func (o *orderImpl) GetSubOrders() []order.ISubOrder {
 
 // 在线支付交易完成
 func (o *orderImpl) OnlinePaymentTradeFinish() (err error) {
+	if o.value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
 	for _, o := range o.GetSubOrders() {
 		err = o.PaymentFinishByOnlineTrade()
 		if err != nil {
@@ -816,16 +819,6 @@ func (o *orderImpl) PaymentWithBalance() error {
 // 客服使用余额支付
 func (o *orderImpl) CmPaymentWithBalance() error {
 	return o.paymentWithBalance(payment.PaymentByCM)
-}
-
-// 添加日志
-func (o *orderImpl) AppendLog(l *order.OrderLog) error {
-	if o.GetAggregateRootId() <= 0 {
-		return errors.New("order not created.")
-	}
-	l.OrderId = o.GetAggregateRootId()
-	l.RecordTime = time.Now().Unix()
-	return o.orderRepo.SaveSubOrderLog(l)
 }
 
 // 订单是否已完成

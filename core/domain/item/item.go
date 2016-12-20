@@ -20,6 +20,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
 	"time"
@@ -131,6 +132,9 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			// 创建商品时，设为已下架
 			if g.GetAggregateRootId() <= 0 {
 				g.value.ShelveState = item.ShelvesDown
+				// 分类在创建后，不允许再进行修改。
+				// 如果修改，则所有SKU和属性应删除。
+				g.value.CatId = v.CatId
 			}
 			g.value.ShopId = v.ShopId
 			g.value.IsPresent = v.IsPresent
@@ -150,9 +154,14 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			g.value.Price = v.Price
 			g.value.Weight = v.Weight
 			g.value.Bulk = v.Bulk
+			//设置默认的价格区间
+			if g.value.PriceRange == "0" || g.value.PriceRange == "" {
+				g.value.PriceRange = format.FormatFloat(v.Price)
+			}
 			if g.value.CreateTime == 0 {
 				g.value.CreateTime = time.Now().Unix()
 			}
+
 			//修改图片或标题后，要重新审核
 			if g.value.Image != v.Image || g.value.Title != v.Title {
 				g.resetReview()
@@ -248,7 +257,7 @@ func (g *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	if pro == nil {
 		return product.ErrNoSuchProduct
 	}
-	g.value.CatId = pro.CatId
+	//g.value.CatId = pro.CatId
 	g.value.VendorId = pro.VendorId
 	g.value.BrandId = pro.BrandId
 	if g.value.Title == "" {
@@ -316,7 +325,6 @@ func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 // 保存
 func (g *itemImpl) Save() (_ int32, err error) {
 	ss := g.repo.SkuService()
-
 	// 保存SKU
 	if g.value.SkuArray != nil {
 		err = ss.UpgradeBySku(g.value, g.value.SkuArray)
@@ -482,6 +490,12 @@ func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
 	}
 	g.value.SaleNum += quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.SaleNum += quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
@@ -492,6 +506,12 @@ func (g *itemImpl) CancelSale(skuId, quantity int32, orderNo string) error {
 	}
 	g.value.SaleNum -= quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.SaleNum -= quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
@@ -505,7 +525,18 @@ func (g *itemImpl) TakeStock(skuId, quantity int32) error {
 	}
 	g.value.StockNum -= quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.Stock -= quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
+}
+
+func (g *itemImpl) saveSku(sku *item.Sku) (_ int32, err error) {
+	sku.Id, err = util.I32Err(g.repo.SaveItemSku(sku))
+	return sku.Id, err
 }
 
 // 释放库存
@@ -515,6 +546,12 @@ func (g *itemImpl) FreeStock(skuId, quantity int32) error {
 	}
 	g.value.StockNum += quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.Stock += quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 

@@ -47,8 +47,8 @@ type (
 		// 根据订单号获取订单
 		GetOrderByNo(orderNo string) IOrder
 
-		// 在线交易支付
-		PaymentForOnlineTrade(orderId int32) error
+		// 接收在线交易支付的通知，不主动调用
+		ReceiveNotifyOfOnlineTrade(orderId int32) error
 
 		// 自动设置订单
 		OrderAutoSetup(f func(error))
