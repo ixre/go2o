@@ -10,24 +10,24 @@ package item
 
 type (
 	// 快照服务
-	ISnapshotManager interface {
+	ISnapshotService interface {
 		// 生成商品快照
-		GenerateSnapshot() (int32, error)
+		GenerateSnapshot(it *GoodsItem) (int32, error)
 
 		// 获取最新的快照
-		GetLatestSnapshot() *Snapshot
+		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-		GetLatestSaleSnapshot() *SalesSnapshot
+		GetLatestSalesSnapshot(itemId, skuId int32) *SalesSnapshot
 
 		// 根据KEY获取已销售商品的快照
 		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
 		// 根据ID获取已销售商品的快照
-		GetSaleSnapshot(id int32) *SalesSnapshot
+		GetSalesSnapshot(id int32) *SalesSnapshot
 	}
 
-	// 商品快照(暂用于系统内部计算)
+	// 商品快照(针对商品)
 	Snapshot struct {
 		// 商品编号
 		ItemId int32 `db:"item_id" pk:"yes"`
@@ -70,7 +70,7 @@ type (
 		// 重量(g)
 		Weight int32 `db:"weight"`
 		// 体积(ml)
-		Bulk int32 `db:"weight"`
+		Bulk int32 `db:"bulk"`
 		// 会员价
 		LevelSales int32 `db:"level_sales"`
 		// 上架状态
@@ -79,10 +79,12 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 已销售(交易)商品快照
+	// 已销售(交易)商品快照(针对SKU)
 	SalesSnapshot struct {
 		//快照编号
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		//商品编号
+		ItemId int32 `db:"item_id"`
 		//商品SKU编号
 		SkuId int32 `db:"sku_id"`
 		//快照编码: 商户编号+g商品编号+快照时间戳
@@ -97,8 +99,6 @@ type (
 		//SmallTitle  string `db:"-"`
 		//货号
 		GoodsNo string `db:"goods_no"`
-		//货品编号
-		ItemId int32 `db:"item_id"`
 		//分类编号
 		CategoryId int32 `db:"cat_id"`
 		//SKU  todo:????

@@ -125,13 +125,6 @@ func (p *paymentService) FinishPayment(tradeNo string, spName string,
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.PaymentFinish(spName, outerNo)
-		if err == nil {
-			//更改订单支付完成
-			if orderId := o.GetValue().OrderId; orderId > 0 {
-				m := p._orderRepo.Manager()
-				err = m.PaymentForOnlineTrade(o.GetValue().OrderId)
-			}
-		}
 	}
 	return parser.Result(0, err), nil
 }

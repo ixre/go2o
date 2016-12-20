@@ -47,6 +47,13 @@ func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
 	return m.Attrs()
 }
 
+// 获取模型属性Html
+func (p *productService) GetModelAttrsHtml(proModel int32) string {
+	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	attrs := m.Attrs()
+	return p.pmRep.AttrService().AttrsHtml(attrs)
+}
+
 // 获取模型规格
 func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
 	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
@@ -303,6 +310,13 @@ func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err
 	// 保存
 	err = pro.SetValue(v)
 	if err == nil {
+		// 保存属性
+		if v.Attr != nil {
+			err = pro.SetAttr(v.Attr)
+			if err != nil {
+				goto R
+			}
+		}
 		v.Id, err = pro.Save()
 	}
 R:
@@ -326,6 +340,12 @@ func (p *productService) DeleteItem(supplierId int32, productId int32) error {
 		return product.ErrNoSuchProduct
 	}
 	return pro.Destroy()
+}
+
+// 获取产品属性
+func (p *productService) GetAttrArray(productId int32) []*product.Attr {
+	pro := p.proRep.CreateProduct(&product.Product{Id: productId})
+	return pro.Attr()
 }
 
 // 获取商品的销售标签

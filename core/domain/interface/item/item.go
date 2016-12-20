@@ -9,6 +9,7 @@
 package item
 
 import (
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
@@ -48,6 +49,9 @@ type (
 	IGoodsItemRepo interface {
 		// 获取SKU服务
 		SkuService() ISkuService
+		// 获取快照服务
+		SnapshotService() ISnapshotService
+
 		// 创建商品
 		CreateItem(v *GoodsItem) IGoodsItem
 
@@ -97,19 +101,19 @@ type (
 		GetSnapshots(skuIdArr []int32) []Snapshot
 
 		// 获取最新的商品快照
-		GetLatestSnapshot(skuId int32) *Snapshot
+		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取指定的商品快照
-		GetSaleSnapshot(id int32) *SalesSnapshot
+		GetSalesSnapshot(id int32) *SalesSnapshot
 
 		// 根据Key获取商品快照
 		GetSaleSnapshotByKey(key string) *SalesSnapshot
 
 		// 获取最新的商品销售快照
-		GetLatestSaleSnapshot(skuId int32) *SalesSnapshot
+		GetLatestSalesSnapshot(skuId int32) *SalesSnapshot
 
 		// 保存商品销售快照
-		SaveSaleSnapshot(*SalesSnapshot) (int32, error)
+		SaveSalesSnapshot(*SalesSnapshot) (int32, error)
 
 		// Get ItemSku
 		GetItemSku(primary interface{}) *Sku
@@ -208,10 +212,6 @@ type (
 	IGoodsItem interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
-		// 商品快照
-		SnapshotManager() ISnapshotManager
-		// 获取货品
-		Product() product.IProduct
 		// 设置值
 		GetValue() *GoodsItem
 		// 获取包装过的商品信息
@@ -220,10 +220,18 @@ type (
 		SetValue(*GoodsItem) error
 		// 设置SKU
 		SetSku(arr []*Sku) error
-		// 获取SKU数组
-		SkuArray() []*Sku
 		// 保存
 		Save() (int32, error)
+		// 获取产品
+		Product() product.IProduct
+		// 商品快照
+		Snapshot() *Snapshot
+		// 获取SKU数组
+		SkuArray() []*Sku
+		// 获取商品的规格
+		SpecArray() []*promodel.Spec
+		// 获取SKU
+		GetSku(skuId int32) *Sku
 
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
@@ -246,13 +254,13 @@ type (
 		// 标记为违规
 		Incorrect(remark string) error
 		// 更新销售数量,扣减库存
-		AddSalesNum(quantity int32) error
+		AddSalesNum(skuId, quantity int32) error
 		// 取消销售
-		CancelSale(quantity int32, orderNo string) error
+		CancelSale(skuId, quantity int32, orderNo string) error
 		// 占用库存
-		TakeStock(quantity int32) error
+		TakeStock(skuId, quantity int32) error
 		// 释放库存
-		FreeStock(quantity int32) error
+		FreeStock(skuId, quantity int32) error
 		//// 生成快照
 		//GenerateSnapshot() (int64, error)
 		//
