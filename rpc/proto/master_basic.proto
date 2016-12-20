@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.go2o.master";
+option java_outer_classname = "MasterProto";
+option objc_class_prefix = "MP";
+
+package master;
+
+// The master service definition.
+service basic {
+  rpc Login (Credential) returns (Message) {}
+  rpc Passwd(NewCredential)returns(Message){}
+}
+
+// 凭据
+message Credential{
+  string usr = 1;
+  string pwd = 2;
+}
+// 新凭据
+message NewCredential{
+  string usr = 1;
+  string oldPwd = 2;
+  string pwd = 3;
+}
+// 消息
+message Message {
+  bool result =1 ;
+  int32 code =2;
+  string data =3;
+  string message =4;
+}
+
+
