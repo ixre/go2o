@@ -171,11 +171,30 @@ R:
 	return p.value.Id, err
 }
 
+// 合并属性
+func (p *productImpl) mergeAttr(src []*product.Attr, dst *[]*product.Attr) {
+	if src == nil || dst == nil || len(src) == 0 || len(*dst) == 0 {
+		return
+	}
+	to := *dst
+	sMap := make(map[int32]int32, len(src))
+	for _, v := range src {
+		sMap[v.AttrId] = v.Id
+	}
+	for _, v := range to {
+		if id, ok := sMap[v.AttrId]; ok {
+			v.Id = id
+		}
+	}
+}
+
 // 保存属性
 func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	pk := p.GetAggregateRootId()
 	// 获取之前的SKU设置
 	old := p.repo.SelectAttr("product_id=?", pk)
+	// 合并属性
+	p.mergeAttr(old, &p.value.Attr)
 	// 分析当前项目并加入到MAP中
 	delList := []int32{}
 	currMap := make(map[int32]*product.Attr, len(arr))

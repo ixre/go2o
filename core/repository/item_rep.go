@@ -28,12 +28,13 @@ var _ item.IGoodsItemRepo = new(goodsRepo)
 
 type goodsRepo struct {
 	db.Connector
-	_orm        orm.Orm
-	_skuService item.ISkuService
-	proRepo     product.IProductRepo
-	expressRepo express.IExpressRepo
-	valRepo     valueobject.IValueRepo
-	proMRepo    promodel.IProModelRepo
+	_orm         orm.Orm
+	_skuService  item.ISkuService
+	_snapService item.ISnapshotService
+	proRepo      product.IProductRepo
+	expressRepo  express.IExpressRepo
+	valRepo      valueobject.IValueRepo
+	proMRepo     promodel.IProModelRepo
 }
 
 // 商品仓储
@@ -56,6 +57,14 @@ func (g *goodsRepo) SkuService() item.ISkuService {
 		g._skuService = itemImpl.NewSkuServiceImpl(g, g.proMRepo)
 	}
 	return g._skuService
+}
+
+// 获取快照服务
+func (g *goodsRepo) SnapshotService() item.ISnapshotService {
+	if g._snapService == nil {
+		g._snapService = itemImpl.NewSnapshotServiceImpl(g)
+	}
+	return g._snapService
 }
 
 // 创建商品
@@ -221,7 +230,7 @@ func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
 }
 
 // 获取最新的商品销售快照
-func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *item.SalesSnapshot {
+func (g *goodsRepo) GetLatestSalesSnapshot(skuId int32) *item.SalesSnapshot {
 	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
 		return e
@@ -230,7 +239,7 @@ func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *item.SalesSnapshot {
 }
 
 // 获取指定的商品销售快照
-func (g *goodsRepo) GetSaleSnapshot(id int32) *item.SalesSnapshot {
+func (g *goodsRepo) GetSalesSnapshot(id int32) *item.SalesSnapshot {
 	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().Get(id, e) == nil {
 		return e
@@ -248,7 +257,7 @@ func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
 }
 
 // 保存商品销售快照
-func (g *goodsRepo) SaveSaleSnapshot(v *item.SalesSnapshot) (int32, error) {
+func (g *goodsRepo) SaveSalesSnapshot(v *item.SalesSnapshot) (int32, error) {
 	return orm.I32(orm.Save(g.Connector.GetOrm(), v, int(v.Id)))
 }
 
