@@ -149,7 +149,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(promodel.ProModelBrand{}, "pro_model_brand")
 	orm.Mapping(promodel.ProBrand{}, "pro_brand")
 	orm.Mapping(promodel.Attr{}, "pro_attr")
-	orm.Mapping(promodel.AttrItem{}, "Pro_attr_item")
+	orm.Mapping(promodel.AttrItem{}, "pro_attr_item")
 	orm.Mapping(promodel.Spec{}, "pro_spec")
 	orm.Mapping(promodel.SpecItem{}, "pro_spec_item")
 	orm.Mapping(product.Attr{}, "pro_attr_info")
