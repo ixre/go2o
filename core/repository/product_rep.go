@@ -136,3 +136,53 @@ func (p *productRepo) BatchDeleteProduct(where string, v ...interface{}) (int64,
 	}
 	return r, err
 }
+
+// Get ProAttrInfo
+func (p *productRepo) GetAttr(primary interface{}) *product.Attr {
+	e := product.Attr{}
+	err := p._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
+	}
+	return nil
+}
+
+// Select ProAttrInfo
+func (p *productRepo) SelectAttr(where string, v ...interface{}) []*product.Attr {
+	list := []*product.Attr{}
+	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
+	}
+	return list
+}
+
+// Save ProAttrInfo
+func (p *productRepo) SaveAttr(v *product.Attr) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
+	}
+	return id, err
+}
+
+// Delete ProAttrInfo
+func (p *productRepo) DeleteAttr(primary interface{}) error {
+	err := p._orm.DeleteByPk(product.Attr{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
+	}
+	return err
+}
+
+// Batch Delete ProAttrInfo
+func (p *productRepo) BatchDeleteAttr(where string, v ...interface{}) (int64, error) {
+	r, err := p._orm.Delete(product.Attr{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProAttrInfo")
+	}
+	return r, err
+}
