@@ -28,12 +28,13 @@ var _ item.IGoodsItemRepo = new(goodsRepo)
 
 type goodsRepo struct {
 	db.Connector
-	_orm        orm.Orm
-	_skuService item.ISkuService
-	proRepo     product.IProductRepo
-	expressRepo express.IExpressRepo
-	valRepo     valueobject.IValueRepo
-	proMRepo    promodel.IProModelRepo
+	_orm         orm.Orm
+	_skuService  item.ISkuService
+	_snapService item.ISnapshotService
+	proRepo      product.IProductRepo
+	expressRepo  express.IExpressRepo
+	valRepo      valueobject.IValueRepo
+	proMRepo     promodel.IProModelRepo
 }
 
 // 商品仓储
@@ -56,6 +57,14 @@ func (g *goodsRepo) SkuService() item.ISkuService {
 		g._skuService = itemImpl.NewSkuServiceImpl(g, g.proMRepo)
 	}
 	return g._skuService
+}
+
+// 获取快照服务
+func (g *goodsRepo) SnapshotService() item.ISnapshotService {
+	if g._snapService == nil {
+		g._snapService = itemImpl.NewSnapshotServiceImpl(g)
+	}
+	return g._snapService
 }
 
 // 创建商品
@@ -151,7 +160,7 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	total := 0
 	catIdStr := ""
 	if catIds != nil && len(catIds) > 0 {
-		catIdStr = fmt.Sprintf(" AND cat_category.id IN (%s)",
+		catIdStr = fmt.Sprintf(" AND cat.id IN (%s)",
 			format.IdArrJoinStr32(catIds))
 	}
 
@@ -163,19 +172,16 @@ func (g *goodsRepo) GetPagedOnShelvesGoods(shopId int32, catIds []int32,
 	}
 
 	list := []*valueobject.Goods{}
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
-	 INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND pro_product.review_state=? AND pro_product.shelve_state=? %s`,
+	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info it
+	  INNER JOIN cat_category cat ON it.cat_id=cat.id
+		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=?
+		  AND it.shelve_state=? %s`,
 		catIdStr, where), &total, shopId, shopId, enum.ReviewPass, item.ShelvesOn)
 
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT * FROM item_info INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
-		 WHERE (?<=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
-		  %s AND pro_product.review_state=? AND pro_product.shelve_state=?
-		  %s ORDER BY %s update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
+		sql = fmt.Sprintf(`SELECT it.* FROM item_info it INNER JOIN cat_category cat ON it.cat_id=cat.id
+		 WHERE (?<=0 OR it.shop_id =?) %s AND it.review_state=? AND it.shelve_state=?
+		  %s ORDER BY %s it.sort_num DESC,it.update_time DESC LIMIT ?,?`, catIdStr, where, orderBy)
 		g.Connector.GetOrm().SelectByQuery(&list, sql, shopId, shopId,
 			enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
@@ -199,7 +205,7 @@ func (g *goodsRepo) GetOnShelvesGoods(mchId int32, start, end int, sortBy string
 
 // 保存快照
 func (g *goodsRepo) SaveSnapshot(v *item.Snapshot) (int32, error) {
-	i, _, err := g.Connector.GetOrm().Save(v.SkuId, v)
+	i, _, err := g.Connector.GetOrm().Save(v.ItemId, v)
 	if i == 0 {
 		_, _, err = g.Connector.GetOrm().Save(nil, v)
 	}
@@ -207,9 +213,9 @@ func (g *goodsRepo) SaveSnapshot(v *item.Snapshot) (int32, error) {
 }
 
 // 获取最新的商品快照
-func (g *goodsRepo) GetLatestSnapshot(skuId int32) *item.Snapshot {
+func (g *goodsRepo) GetLatestSnapshot(itemId int32) *item.Snapshot {
 	e := &item.Snapshot{}
-	if g.Connector.GetOrm().Get(skuId, e) == nil {
+	if g.Connector.GetOrm().Get(itemId, e) == nil {
 		return e
 	}
 	return nil
@@ -218,14 +224,13 @@ func (g *goodsRepo) GetLatestSnapshot(skuId int32) *item.Snapshot {
 // 根据指定商品快照
 func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
 	list := []item.Snapshot{}
-	g.Connector.GetOrm().SelectByQuery(&list,
-		`SELECT * FROM item_snapshot WHERE sku_id IN (`+
-			format.IdArrJoinStr32(skuIdArr)+`)`)
+	g.Connector.GetOrm().Select(&list, `item_id IN (`+
+		format.IdArrJoinStr32(skuIdArr)+`)`)
 	return list
 }
 
 // 获取最新的商品销售快照
-func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *item.SalesSnapshot {
+func (g *goodsRepo) GetLatestSalesSnapshot(skuId int32) *item.SalesSnapshot {
 	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
 		return e
@@ -234,7 +239,7 @@ func (g *goodsRepo) GetLatestSaleSnapshot(skuId int32) *item.SalesSnapshot {
 }
 
 // 获取指定的商品销售快照
-func (g *goodsRepo) GetSaleSnapshot(id int32) *item.SalesSnapshot {
+func (g *goodsRepo) GetSalesSnapshot(id int32) *item.SalesSnapshot {
 	e := new(item.SalesSnapshot)
 	if g.Connector.GetOrm().Get(id, e) == nil {
 		return e
@@ -252,7 +257,7 @@ func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
 }
 
 // 保存商品销售快照
-func (g *goodsRepo) SaveSaleSnapshot(v *item.SalesSnapshot) (int32, error) {
+func (g *goodsRepo) SaveSalesSnapshot(v *item.SalesSnapshot) (int32, error) {
 	return orm.I32(orm.Save(g.Connector.GetOrm(), v, int(v.Id)))
 }
 

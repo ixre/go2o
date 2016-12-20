@@ -164,7 +164,7 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 	typeParams := strings.TrimSpace(c.FormValue("params"))
 	types := strings.Split(typeParams, "|")
 	result := make(map[string]interface{}, len(types))
-	key := fmt.Sprint("go2o:rep:gs:fc:%d_%s", shopId, typeParams)
+	key := fmt.Sprint("go2o:rep:item:fc:%d_%s", shopId, typeParams)
 	sto := c.App.Storage()
 	if err := sto.Get(key, &result); err != nil {
 		//从缓存中读取
@@ -174,13 +174,13 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 			switch p {
 			case "new-goods":
 				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
-					-1, begin, begin+size, "item_info.id DESC")
+					-1, begin, begin+size, "it.id DESC")
 			case "hot-sales":
 				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
-					-1, begin, begin+size, "item_info.sale_num DESC")
+					-1, begin, begin+size, "it.sale_num DESC")
 			}
 		}
-		sto.SetExpire(key, result, maxSeconds)
+		//sto.SetExpire(key, result, maxSeconds)
 	}
 	return c.Debug(c.JSON(http.StatusOK, result))
 }
@@ -192,7 +192,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := rsi.ItemService
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
-		-1, begin, begin+size, "item_info.id DESC")
+		-1, begin, begin+size, "it.id DESC")
 
 	return c.Debug(c.JSON(http.StatusOK, result))
 }
@@ -215,7 +215,7 @@ func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	_, result := ss.GetPagedOnShelvesGoods(shopId,
-		-1, begin, begin+size, "item_info.sale_num DESC")
+		-1, begin, begin+size, "it.sale_num DESC")
 	return c.Debug(c.JSON(http.StatusOK, result))
 }
 
@@ -234,10 +234,10 @@ func (j *JsonC) Mch_goods(c *echox.Context) error {
 			switch p {
 			case "new-goods":
 				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
-					-1, begin, begin+size, "item_info.id DESC")
+					-1, begin, begin+size, "it.id DESC")
 			case "hot-sales":
 				_, result[p] = ss.GetShopPagedOnShelvesGoods(mchId,
-					-1, begin, begin+size, "item_info.sale_num DESC")
+					-1, begin, begin+size, "it.sale_num DESC")
 			}
 		}
 		sto.SetExpire(key, result, maxSeconds)

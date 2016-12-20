@@ -56,6 +56,18 @@ func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
 	return []*item.Sku{}
 }
 
+// 获取商品规格HTML信息
+func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
+	specHtm string) {
+	ss := s.itemRepo.SkuService()
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	skuBytes := ss.GetSkuJson(it.SkuArray())
+	specJson = string(skuBytes)
+	specArr := it.SpecArray()
+	specHtm = ss.GetSpecHtm(specArr)
+	return specJson, specHtm
+}
+
 // 根据SKU获取商品
 func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
@@ -76,7 +88,7 @@ func (s *itemService) GetValueGoodsBySku(mchId int32, itemId int32, sku int32) *
 
 // 根据快照编号获取商品
 func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
-	snap := s.itemRepo.GetSaleSnapshot(snapshotId)
+	snap := s.itemRepo.GetSalesSnapshot(snapshotId)
 	if snap != nil {
 		return s.itemRepo.GetValueGoodsById(snap.SkuId)
 	}
@@ -85,7 +97,7 @@ func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
 
 // 根据快照编号获取商品
 func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot {
-	return s.itemRepo.GetSaleSnapshot(snapshotId)
+	return s.itemRepo.GetSalesSnapshot(snapshotId)
 }
 
 // 保存商品
@@ -155,16 +167,16 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 	switch sortQuery {
 	case "price_0":
 		where = ""
-		orderBy = "pro_product.sale_price ASC"
+		orderBy = "it.price ASC"
 	case "price_1":
 		where = ""
-		orderBy = "pro_product.sale_price DESC"
+		orderBy = "it.price DESC"
 	case "sale_0":
 		where = ""
-		orderBy = "item_info.sale_num ASC"
+		orderBy = "it.sale_num ASC"
 	case "sale_1":
 		where = ""
-		orderBy = "item_info.sale_num DESC"
+		orderBy = "it.sale_num DESC"
 	case "rate_0":
 	//todo:
 	case "rate_1":
@@ -300,8 +312,12 @@ func (s *itemService) GetGoodsDetails(itemId, mLevel int32) (
 
 // 获取货品描述
 func (s *itemService) GetItemDescriptionByGoodsId(itemId int32) string {
-	goods := s.itemRepo.GetItem(itemId)
-	return goods.Product().GetValue().Description
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	pro := it.Product()
+	if pro != nil {
+		return pro.GetValue().Description
+	}
+	return ""
 }
 
 // 获取商品快照

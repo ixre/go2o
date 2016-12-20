@@ -15,6 +15,7 @@ import (
 	"github.com/jsix/gof/db"
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/format"
 	"strconv"
 )
 
@@ -123,6 +124,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 				&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity,
 				&e.Amount, &e.FinalAmount, &e.IsShipped)
 			e.FinalPrice = e.FinalAmount / float32(e.Quantity)
+			e.Image = format.GetResUrl(e.Image)
 			orderList[orderMap[e.OrderId]].Items = append(
 				orderList[orderMap[e.OrderId]].Items, e)
 		}

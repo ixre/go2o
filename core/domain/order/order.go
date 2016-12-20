@@ -354,21 +354,21 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 
 // 转换购物车的商品项为订单项目
 func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
-	gs := o.goodsRepo.CreateItem(
-		&item.GoodsItem{Id: c.SkuId, SkuId: c.SkuId})
 	// 获取商品已销售快照
-	snap := gs.SnapshotManager().GetLatestSaleSnapshot()
+	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
 			strconv.Itoa(int(c.SkuId))), "domain")
 		return nil
 	}
-	fee := c.SalePrice * float32(c.Quantity)
+
+	fee := c.Sku.Price * float32(c.Quantity)
 	return &order.OrderItem{
 		Id:          0,
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
+		ItemId:      c.ItemId,
 		SnapshotId:  snap.Id,
 		Quantity:    c.Quantity,
 		Amount:      fee,
@@ -377,9 +377,9 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 		IsShipped: 0,
 		// 退回数量
 		ReturnQuantity: 0,
-		ExpressTplId:   c.Snapshot.ExpressTid,
-		Weight:         c.Snapshot.Weight * c.Quantity, //计算重量
-		Bulk:           c.Snapshot.Bulk * c.Quantity,   //计算体积
+		ExpressTplId:   c.Sku.ExpressTid,
+		Weight:         c.Sku.Weight * c.Quantity, //计算重量
+		Bulk:           c.Sku.Bulk * c.Quantity,   //计算体积
 	}
 }
 
@@ -727,7 +727,7 @@ func (o *orderImpl) breakUpByVendor() []order.ISubOrder {
 func (o *orderImpl) applyGoodsNum() {
 	for _, v := range o.vendorItemsMap {
 		for _, v2 := range v {
-			o.takeGoodsStock(v2.VendorId, v2.SkuId, v2.Quantity)
+			o.takeGoodsStock(v2.ItemId, v2.SkuId, v2.Quantity)
 		}
 	}
 }
@@ -756,6 +756,9 @@ func (o *orderImpl) GetSubOrders() []order.ISubOrder {
 
 // 在线支付交易完成
 func (o *orderImpl) OnlinePaymentTradeFinish() (err error) {
+	if o.value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
 	for _, o := range o.GetSubOrders() {
 		err = o.PaymentFinishByOnlineTrade()
 		if err != nil {
@@ -818,16 +821,6 @@ func (o *orderImpl) CmPaymentWithBalance() error {
 	return o.paymentWithBalance(payment.PaymentByCM)
 }
 
-// 添加日志
-func (o *orderImpl) AppendLog(l *order.OrderLog) error {
-	if o.GetAggregateRootId() <= 0 {
-		return errors.New("order not created.")
-	}
-	l.OrderId = o.GetAggregateRootId()
-	l.RecordTime = time.Now().Unix()
-	return o.orderRepo.SaveSubOrderLog(l)
-}
-
 // 订单是否已完成
 func (o *orderImpl) IsOver() bool {
 	s := o.value.State
@@ -850,12 +843,12 @@ func (o *orderImpl) Confirm() error {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(vendorId, skuId int32, quantity int32) error {
-	gds := o.goodsRepo.GetItem(skuId)
+func (o *orderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchGoods
 	}
-	return gds.TakeStock(quantity)
+	return gds.TakeStock(skuId, quantity)
 }
 
 // 获取订单号
@@ -1148,8 +1141,8 @@ func (o *subOrderImpl) Confirm() (err error) {
 // 增加商品的销售数量
 func (o *subOrderImpl) addSalesNum() {
 	for _, v := range o.Items() {
-		gds := o.goodsRepo.GetItem(v.SkuId)
-		gds.AddSalesNum(v.Quantity)
+		it := o.goodsRepo.CreateItem(&item.GoodsItem{Id: v.ItemId})
+		it.AddSalesNum(v.SkuId, v.Quantity)
 	}
 }
 
@@ -1291,7 +1284,7 @@ func (s *subOrderImpl) getOrderCost() float32 {
 	var cost float32
 	items := s.Items()
 	for _, item := range items {
-		snap := s.goodsRepo.GetSaleSnapshot(item.SnapshotId)
+		snap := s.goodsRepo.GetSalesSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
@@ -1419,17 +1412,17 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
 	for _, v := range o.Items() {
-		snapshot := o.goodsRepo.GetSaleSnapshot(v.SnapshotId)
+		snapshot := o.goodsRepo.GetSalesSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
 		var gds item.IGoodsItem = o.goodsRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
-			gds.FreeStock(v.Quantity)
+			gds.FreeStock(v.SkuId, v.Quantity)
 			// 如果订单已付款，则取消销售数量
 			if o.value.IsPaid == 1 {
-				gds.CancelSale(v.Quantity, o.value.OrderNo)
+				gds.CancelSale(v.SkuId, v.Quantity, o.value.OrderNo)
 			}
 		}
 	}

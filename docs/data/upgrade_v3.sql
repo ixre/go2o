@@ -156,33 +156,32 @@ ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `review_remark`,
 ADD COLUMN `create_time` INT(11) NULL COMMENT '创建时间' AFTER `sort_num`,
 ADD COLUMN `update_time` INT(11) NULL COMMENT '更新时间' AFTER `create_time`;
 
-ALTER TABLE `gs_goods` 
+ALTER TABLE `gs_goods`
 COMMENT = '商品' , RENAME TO  `item_info` ;
 
-ALTER TABLE `txmall`.`item_info`
+ALTER TABLE `item_info`
 CHANGE COLUMN `is_present` `is_present` INT(1) NULL DEFAULT NULL COMMENT '是否为赠品\n' AFTER `image`,
 CHANGE COLUMN `price_range` `price_range` VARCHAR(120) NULL DEFAULT NULL COMMENT '销售价格区间' AFTER `is_present`,
 CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' AFTER `sku_num`,
 CHANGE COLUMN `stock_num` `stock_num` INT(11) NULL DEFAULT NULL AFTER `bulk`,
 CHANGE COLUMN `sale_num` `sale_num` INT(11) NULL DEFAULT NULL AFTER `stock_num`;
 
-ALTER TABLE `txmall`.`item_info`
+ALTER TABLE `item_info`
 CHANGE COLUMN `stock_num` `stock_num` INT(11) NULL DEFAULT NULL COMMENT '总库存' AFTER `price_range`,
 CHANGE COLUMN `sale_num` `sale_num` INT(11) NULL DEFAULT NULL COMMENT '销售数量' AFTER `stock_num`,
 CHANGE COLUMN `sku_num` `sku_num` INT(2) NULL DEFAULT NULL COMMENT 'SKU数量' AFTER `sale_num`,
 CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' AFTER `sku_num`,
 CHANGE COLUMN `price` `price` INT(11) NULL DEFAULT NULL COMMENT '销售价' AFTER `cost`;
 
-ALTER TABLE `txmall`.`item_info`
+ALTER TABLE `item_info`
 CHANGE COLUMN `cost` `cost` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '成本价' ,
 CHANGE COLUMN `price` `price` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '销售价' ,
 CHANGE COLUMN `retail_price` `retail_price` DECIMAL(8,2) NULL DEFAULT NULL COMMENT '零售价' ;
 
-ALTER TABLE `txmall`.`gs_sale_snapshot`
+ALTER TABLE `gs_sale_snapshot`
 CHANGE COLUMN `price` `retail_price` DECIMAL(8,2) NULL DEFAULT '0.00' COMMENT '售价(市场价)' ;
 
-ALTER TABLE `txmall`.`pro_product`
-DROP COLUMN `description`,
+ALTER TABLE `pro_product`
 DROP COLUMN `bulk`,
 DROP COLUMN `weight`,
 DROP COLUMN `price`,
@@ -192,10 +191,10 @@ DROP COLUMN `express_tid`,
 DROP COLUMN `shop_id`;
 
 
-ALTER TABLE `txmall`.`gs_snapshot`
-CHANGE COLUMN `sku_id` `sku_id` INT(11) NOT NULL COMMENT '商品快照' , RENAME TO  `txmall`.`item_snapshot` ;
+ALTER TABLE `gs_snapshot`
+CHANGE COLUMN `sku_id` `sku_id` INT(11) NOT NULL COMMENT '商品快照' , RENAME TO  `item_snapshot` ;
 
-ALTER TABLE `txmall`.`item_snapshot`
+ALTER TABLE `item_snapshot`
 DROP COLUMN `shelve_state`,
 DROP COLUMN `stock_num`,
 DROP COLUMN `sale_num`,
@@ -224,47 +223,112 @@ CHANGE COLUMN `update_time` `update_time` INT(11) NULL DEFAULT NULL COMMENT '更
 DROP PRIMARY KEY,
 ADD PRIMARY KEY (`item_id`);
 
-ALTER TABLE `txmall`.`item_snapshot`
+ALTER TABLE `item_snapshot`
 ADD COLUMN `bulk` INT(11) NULL COMMENT '体积(ml)' AFTER `weight`;
 
-ALTER TABLE `txmall`.`item_snapshot`
+ALTER TABLE `item_snapshot`
 ADD COLUMN `shelve_state` INT(1) NULL COMMENT '上架状态' AFTER `bulk`;
 
-ALTER TABLE `txmall`.`item_snapshot`
+ALTER TABLE `item_snapshot`
 ADD COLUMN `product_id` INT(11) NULL COMMENT '产品编号' AFTER `item_id`;
 
-ALTER TABLE `txmall`.`item_snapshot`
+ALTER TABLE `item_snapshot`
 ADD COLUMN `level_sales` INT(1) NULL COMMENT '会员价' AFTER `bulk`;
+
+CREATE TABLE item_sku (
+  id           int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  product_id   int(10) NOT NULL comment '产品编号',
+  item_id      int(10) NOT NULL comment '商品编号',
+  title        varchar(120) comment '标题',
+  image        varchar(200) comment '图片',
+  spec_data    varchar(200) NOT NULL comment '规格数据',
+  spec_word    varchar(200) NOT NULL comment '规格字符',
+  code         varchar(45) NOT NULL comment '产品编码',
+  retail_price decimal(10, 2) NOT NULL comment '参考价',
+  price        decimal(10, 2) NOT NULL comment '价格（分)',
+  cost         decimal(10, 2) NOT NULL comment '成本（分)',
+  weight       int(11) NOT NULL comment '重量(克)',
+  `bulk`       int(11) NOT NULL comment '体积（毫升)',
+  stock        int(11) NOT NULL comment '库存',
+  sale_num     int(11) NOT NULL comment '已销售数量',
+  PRIMARY KEY (id));
+
+
+ALTER TABLE `sale_cart_item`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `cart_id` `cart_id` INT(11) NULL DEFAULT NULL COMMENT '购物车编号' ,
+CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NULL DEFAULT NULL COMMENT '运营商编号' ,
+CHANGE COLUMN `shop_id` `shop_id` INT(11) NULL DEFAULT NULL COMMENT '店铺编号' ,
+CHANGE COLUMN `goods_id` `item_id` INT(11) NULL DEFAULT NULL COMMENT '商品编号' ,
+CHANGE COLUMN `snap_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT 'SKU编号' ,
+CHANGE COLUMN `quantity` `quantity` INT(8) NULL DEFAULT NULL COMMENT '数量' ,
+CHANGE COLUMN `checked` `checked` TINYINT(1) NULL DEFAULT NULL COMMENT '是否勾选结算' ,
+COMMENT = '购物车商品项' ;
+
+ALTER TABLE `sale_order_item`
+ADD COLUMN `item_id` INT(11) NULL COMMENT '商品编号' AFTER `order_id`;
 
 
 /** ======== new table **/
 
-CREATE TABLE spec_model (
-  id      int(10) NOT NULL AUTO_INCREMENT comment '编号',
-  name    varchar(10) NOT NULL comment '名称',
-  enabled int(1) NOT NULL comment '是否启用',
-  PRIMARY KEY (id)) comment='规格模型';
-CREATE TABLE o_seo (
+CREATE TABLE pro_model (
+  id       int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  name     varchar(10) NOT NULL comment '名称',
+  attr_str varchar(200) comment '属性字符',
+  spec_str varchar(200) comment '规格字符',
+  enabled  int(1) NOT NULL comment '是否启用',
+  PRIMARY KEY (id)) comment='产品模型';
+CREATE TABLE pro_attr_info (
+  id         int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  product_id int(10) NOT NULL comment '产品编号',
+  attr_id    int(10) NOT NULL comment '属性编号',
+  attr_data  varchar(100) NOT NULL comment '属性值',
+  PRIMARY KEY (id)) comment='产品属性';
+CREATE TABLE pro_attr_item (
+  id        int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  attr_id   int(10) NOT NULL comment '属性编号',
+  pro_model int(10) NOT NULL comment '产品模型',
+  value     varchar(20) NOT NULL comment '属性值',
+  sort_num  int(2) NOT NULL comment '排列序号',
+  PRIMARY KEY (id)) comment='产品属性项';
+CREATE TABLE pro_attr (
   id          int(10) NOT NULL AUTO_INCREMENT comment '编号',
-  use_id      int(10) NOT NULL comment '使用者编号',
-  use_type    int(10) NOT NULL comment '使用者类型',
-  title       varchar(120) comment '标题',
-  keywords    varchar(120) comment '关键词',
-  description varchar(200) comment '描述',
-  PRIMARY KEY (id)) comment='SEO信息表';
-CREATE TABLE cat_brand (
-  Id       int(10) NOT NULL AUTO_INCREMENT,
-  brand_id int(10) NOT NULL,
-  cat_id   int(10) NOT NULL,
-  PRIMARY KEY (Id)) comment='分类品牌关联';
-CREATE TABLE brand (
+  pro_model   int(10) NOT NULL comment '产品模型',
+  name        varchar(20) NOT NULL comment '属性名称',
+  is_filter   int(1) NOT NULL comment '是否作为筛选条件',
+  multi_chk   int(1) NOT NULL comment '是否多选',
+  item_values varchar(200) comment '属性项值',
+  sort_num    int(2) NOT NULL comment '排列序号',
+  PRIMARY KEY (id)) comment='属性';
+CREATE TABLE pro_spec (
+  id          int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  pro_model   int(10) NOT NULL comment '产品模型',
+  name        varchar(20) NOT NULL comment '规格名称',
+  item_values varchar(200) comment '规格项值',
+  sort_num    int(2) NOT NULL comment '排列序号',
+  PRIMARY KEY (id)) comment='规格';
+CREATE TABLE pro_spec_item (
+  id        int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  spec_id   int(10) NOT NULL comment '规格编号',
+  pro_model int(10) NOT NULL comment '产品模型（冗余)',
+  value     varchar(20) NOT NULL comment '规格项值',
+  color     varchar(20) NOT NULL comment '规格项颜色',
+  sort_num  int(2) NOT NULL comment '排列序号',
+  PRIMARY KEY (id)) comment='规格项';
+
+CREATE TABLE pro_model_brand (
+  id        int(10) NOT NULL AUTO_INCREMENT,
+  brand_id  int(10) NOT NULL comment '品牌编号',
+  pro_model int(10) NOT NULL comment '产品模型',
+  PRIMARY KEY (id)) comment='产品模型与品牌关联';
+CREATE TABLE pro_brand (
   id          int(11) NOT NULL AUTO_INCREMENT comment '编号',
   name        varchar(45) NOT NULL comment '品牌名称',
   image       varchar(200) NOT NULL comment '品牌图片',
   site_url    varchar(120) comment '品牌网址',
   intro       varchar(255) comment '介绍',
-  review      bit(1) NOT NULL comment '是否审核',
+  review      int(1) NOT NULL comment '是否审核',
   create_time int(11) comment '加入时间',
-  PRIMARY KEY (id)) comment='品牌';
+  PRIMARY KEY (id)) comment='产品品牌';
 
 

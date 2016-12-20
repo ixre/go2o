@@ -20,26 +20,28 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/format"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var _ item.IGoodsItem = new(goodsItemImpl)
+var _ item.IGoodsItem = new(itemImpl)
 
-// 临时的商品实现  todo: 要与item分开
-type goodsItemImpl struct {
+// 商品实现
+type itemImpl struct {
 	pro           product.IProduct
 	value         *item.GoodsItem
-	goodsRepo     item.IGoodsItemRepo
+	snapshot      *item.Snapshot
+	repo          item.IGoodsItemRepo
 	productRepo   product.IProductRepo
 	proMRepo      promodel.IProModelRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
 	promDescribes map[string]string
-	snapManager   item.ISnapshotManager
-	valRepo       valueobject.IValueRepo
-	expressRepo   express.IExpressRepo
+
+	valRepo     valueobject.IValueRepo
+	expressRepo express.IExpressRepo
 }
 
 //todo:??? 去掉依赖promotion.IPromotionRepo
@@ -50,11 +52,11 @@ func NewSaleItem(
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
 	expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
-	v := &goodsItemImpl{
+	v := &itemImpl{
 		pro:         pro,
 		value:       value,
 		productRepo: itemRepo,
-		goodsRepo:   goodsRepo,
+		repo:        goodsRepo,
 		proMRepo:    proMRepo,
 		promRepo:    promRepo,
 		valRepo:     valRepo,
@@ -63,7 +65,7 @@ func NewSaleItem(
 	return v.init()
 }
 
-func (g *goodsItemImpl) init() item.IGoodsItem {
+func (g *itemImpl) init() item.IGoodsItem {
 	if g.pro != nil {
 		g.value.PromPrice = g.value.Price
 	}
@@ -71,31 +73,34 @@ func (g *goodsItemImpl) init() item.IGoodsItem {
 }
 
 //获取聚合根编号
-func (g *goodsItemImpl) GetAggregateRootId() int32 {
+func (g *itemImpl) GetAggregateRootId() int32 {
 	return g.value.Id
 }
 
 // 商品快照
-func (g *goodsItemImpl) SnapshotManager() item.ISnapshotManager {
-	if g.snapManager == nil {
-		g.snapManager = NewSnapshotManagerImpl(g.GetAggregateRootId(),
-			g.goodsRepo, g.GetValue())
+func (g *itemImpl) Snapshot() *item.Snapshot {
+	if g.snapshot == nil {
+		g.snapshot = g.repo.SnapshotService().GetLatestSnapshot(
+			g.GetAggregateRootId())
 	}
-	return g.snapManager
+	return g.snapshot
 }
 
 // 获取货品
-func (g *goodsItemImpl) Product() product.IProduct {
+func (g *itemImpl) Product() product.IProduct {
+	if g.pro == nil && g.value.ProductId > 0 {
+		g.pro = g.productRepo.GetProduct(g.value.ProductId)
+	}
 	return g.pro
 }
 
 // 设置值
-func (g *goodsItemImpl) GetValue() *item.GoodsItem {
+func (g *itemImpl) GetValue() *item.GoodsItem {
 	return g.value
 }
 
 // 获取包装过的商品信息
-func (g *goodsItemImpl) GetPackedValue() *valueobject.Goods {
+func (g *itemImpl) GetPackedValue() *valueobject.Goods {
 	//item := g.GetItem().GetValue()
 	gv := g.GetValue()
 	goods := &valueobject.Goods{
@@ -104,8 +109,9 @@ func (g *goodsItemImpl) GetPackedValue() *valueobject.Goods {
 		Name:          gv.Title,
 		GoodsNo:       gv.Code,
 		Image:         gv.Image,
-		Price:         gv.RetailPrice,
-		SalePrice:     gv.Price,
+		RetailPrice:   gv.RetailPrice,
+		Price:         gv.Price,
+		PriceRange:    gv.PriceRange,
 		PromPrice:     gv.Price,
 		GoodsId:       g.GetAggregateRootId(),
 		SkuId:         gv.SkuId,
@@ -118,11 +124,18 @@ func (g *goodsItemImpl) GetPackedValue() *valueobject.Goods {
 }
 
 // 设置值
-func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
+func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 	err := g.checkItemValue(v)
 	if err == nil {
 		err = g.copyFromProduct(v)
 		if err == nil {
+			// 创建商品时，设为已下架
+			if g.GetAggregateRootId() <= 0 {
+				g.value.ShelveState = item.ShelvesDown
+				// 分类在创建后，不允许再进行修改。
+				// 如果修改，则所有SKU和属性应删除。
+				g.value.CatId = v.CatId
+			}
 			g.value.ShopId = v.ShopId
 			g.value.IsPresent = v.IsPresent
 			//g.value.Title = v.Title
@@ -141,9 +154,14 @@ func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
 			g.value.Price = v.Price
 			g.value.Weight = v.Weight
 			g.value.Bulk = v.Bulk
+			//设置默认的价格区间
+			if g.value.PriceRange == "0" || g.value.PriceRange == "" {
+				g.value.PriceRange = format.FormatFloat(v.Price)
+			}
 			if g.value.CreateTime == 0 {
 				g.value.CreateTime = time.Now().Unix()
 			}
+
 			//修改图片或标题后，要重新审核
 			if g.value.Image != v.Image || g.value.Title != v.Title {
 				g.resetReview()
@@ -153,18 +171,101 @@ func (g *goodsItemImpl) SetValue(v *item.GoodsItem) error {
 	return err
 }
 
+// 设置SKU
+func (g *itemImpl) SetSku(arr []*item.Sku) error {
+	g.value.SkuArray = arr
+	return nil
+}
+
+// ========== [# SKU处理开始 ]  ===========//
+
+// 保存商品SKU
+func (g *itemImpl) saveItemSku(arr []*item.Sku) (err error) {
+	pk := g.GetAggregateRootId()
+	ss := g.repo.SkuService()
+	// 格式化数据
+	err = ss.RebuildSkuArray(&arr, g.value)
+	if err == nil {
+		// 获取之前的SKU设置
+		old := g.repo.SelectItemSku("item_id=?", pk)
+		// 合并SKU
+		ss.Merge(old, &arr)
+		// 分析当前项目并加入到MAP中
+		delList := []int32{}
+		currMap := make(map[int32]*item.Sku, len(arr))
+		for _, v := range arr {
+			currMap[v.Id] = v
+		}
+		// 筛选出要删除的项
+		for _, v := range old {
+			if currMap[v.Id] == nil {
+				delList = append(delList, v.Id)
+			}
+		}
+		// 删除项
+		for _, v := range delList {
+			g.repo.DeleteItemSku(v)
+		}
+		// 保存项
+		for _, v := range arr {
+			if v.ItemId == 0 {
+				v.ItemId = pk
+			}
+			if proId := g.value.ProductId; v.ProductId != proId {
+				v.ProductId = proId
+			}
+			if v.ItemId == pk {
+				v.Id, err = util.I32Err(g.repo.SaveItemSku(v))
+			}
+		}
+	}
+	return err
+}
+
+// 获取SKU数组
+func (g *itemImpl) SkuArray() []*item.Sku {
+	if g.value.SkuArray == nil {
+		g.value.SkuArray = g.repo.SelectItemSku("item_id=?",
+			g.GetAggregateRootId())
+	}
+	return g.value.SkuArray
+}
+
+// 获取商品的规格
+func (g *itemImpl) SpecArray() []*promodel.Spec {
+	return g.repo.SkuService().GetSpecArray(g.SkuArray())
+}
+
+// 获取SKU
+func (g *itemImpl) GetSku(skuId int32) *item.Sku {
+	if g.value.SkuArray != nil {
+		for _, v := range g.value.SkuArray {
+			if v.Id == skuId {
+				return v
+			}
+		}
+	}
+	return g.repo.GetItemSku(skuId)
+}
+
+// ========== [/ SKU处理结束 ] ===========//
+
 // 从产品中拷贝信息
 //todo: 如后期弄成公共产品，则应保持产品与商品的数据独立。
-func (g *goodsItemImpl) copyFromProduct(v *item.GoodsItem) error {
+func (g *itemImpl) copyFromProduct(v *item.GoodsItem) error {
 	pro := g.productRepo.GetProductValue(v.ProductId)
 	if pro == nil {
 		return product.ErrNoSuchProduct
 	}
-	g.value.CatId = pro.CatId
+	//g.value.CatId = pro.CatId
 	g.value.VendorId = pro.VendorId
 	g.value.BrandId = pro.BrandId
-	g.value.Title = pro.Name
-	g.value.Code = pro.Code
+	if g.value.Title == "" {
+		g.value.Title = pro.Name
+	}
+	if g.value.Code == "" {
+		g.value.Code = pro.Code
+	}
 	g.value.Image = pro.Image
 	g.value.SortNum = pro.SortNum
 	g.value.CreateTime = pro.CreateTime
@@ -173,12 +274,12 @@ func (g *goodsItemImpl) copyFromProduct(v *item.GoodsItem) error {
 }
 
 // 重置审核状态
-func (i *goodsItemImpl) resetReview() {
+func (i *itemImpl) resetReview() {
 	i.value.ReviewState = enum.ReviewAwaiting
 }
 
 // 检查商品数据是否正确
-func (g *goodsItemImpl) checkItemValue(v *item.GoodsItem) error {
+func (g *itemImpl) checkItemValue(v *item.GoodsItem) error {
 	registry := g.valRepo.GetRegistry()
 	// 检测是否上传图片
 	if v.Image == registry.GoodsDefaultImage {
@@ -209,7 +310,7 @@ func (g *goodsItemImpl) checkItemValue(v *item.GoodsItem) error {
 }
 
 // 判断价格是否正确
-func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
+func (i *itemImpl) checkPrice(v *item.GoodsItem) error {
 	rate := (v.Price - v.Cost) / v.Price
 	conf := i.valRepo.GetRegistry()
 	minRate := conf.GoodsMinProfitRate
@@ -221,94 +322,41 @@ func (i *goodsItemImpl) checkPrice(v *item.GoodsItem) error {
 	return nil
 }
 
-// 设置SKU
-func (g *goodsItemImpl) SetSku(arr []*item.Sku) error {
-	g.value.SkuArray = arr
-	return nil
-}
-
 // 保存
-func (g *goodsItemImpl) Save() (_ int32, err error) {
-	// 创建商品
-	if g.GetAggregateRootId() <= 0 {
-		g.value.ShelveState = item.ShelvesDown
-		g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
+func (g *itemImpl) Save() (_ int32, err error) {
+	ss := g.repo.SkuService()
+	// 保存SKU
+	if g.value.SkuArray != nil {
+		err = ss.UpgradeBySku(g.value, g.value.SkuArray)
+		if err == nil {
+			// 创建商品
+			if g.GetAggregateRootId() <= 0 {
+				g.value.Id, err = g.repo.SaveValueGoods(g.value)
+			}
+			// 保存商品SKU
+			if err == nil {
+				err = g.saveItemSku(g.value.SkuArray)
+			}
+		}
 		if err != nil {
 			return g.value.Id, err
 		}
 	}
-	// 保存商品SKU
-	if g.value.SkuArray != nil {
-		g.saveItemSku(g.value.SkuArray)
-		g.value.SkuNum = int32(len(g.value.SkuArray))
-	}
 	// 保存商品
-	g.value.Id, err = g.goodsRepo.SaveValueGoods(g.value)
+	g.value.Id, err = g.repo.SaveValueGoods(g.value)
 	if err == nil {
+		g.snapshot = nil
 		// 保存商品快照
-		_, err = g.SnapshotManager().GenerateSnapshot()
+		_, err = g.repo.SnapshotService().GenerateSnapshot(g.value)
 	}
 	return g.value.Id, err
 }
 
-// ========== [# SKU处理开始 ]  ===========//
-
-// 保存商品SKU
-func (g *goodsItemImpl) saveItemSku(arr []*item.Sku) (err error) {
-	pk := g.GetAggregateRootId()
-	ss := g.goodsRepo.SkuService()
-	// 格式化数据
-	err = ss.RebuildSkuArray(&arr, g.value)
-	if err == nil {
-		// 获取之前的SKU设置
-		old := g.goodsRepo.SelectItemSku("item_id=?", pk)
-		// 合并SKU
-		ss.Merge(old, &arr)
-		// 分析当前项目并加入到MAP中
-		delList := []int32{}
-		currMap := make(map[int32]*item.Sku, len(arr))
-		for _, v := range arr {
-			currMap[v.Id] = v
-		}
-		// 筛选出要删除的项
-		for _, v := range old {
-			if currMap[v.Id] == nil {
-				delList = append(delList, v.Id)
-			}
-		}
-		// 删除项
-		for _, v := range delList {
-			g.goodsRepo.DeleteItemSku(v)
-		}
-		// 保存项
-		for _, v := range arr {
-			if v.ItemId == 0 {
-				v.ItemId = pk
-			}
-			if proId := g.value.ProductId; v.ProductId != proId {
-				v.ProductId = proId
-			}
-			if v.ItemId == pk {
-				v.Id, err = util.I32Err(g.goodsRepo.SaveItemSku(v))
-			}
-		}
-	}
-	return err
-}
-
-// 获取SKU数组
-func (g *goodsItemImpl) SkuArray() []*item.Sku {
-	if g.value.SkuArray == nil {
-		g.value.SkuArray = g.goodsRepo.SelectItemSku("item_id=?",
-			g.GetAggregateRootId())
-	}
-	return g.value.SkuArray
-}
-
-// ========== [/ SKU处理结束 ] ===========//
-
 // 获取促销信息
-func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
+func (g *itemImpl) GetPromotions() []promotion.IPromotion {
+	//todo: 商品促销
+	return []promotion.IPromotion{}
+
 	var vp []*promotion.PromotionInfo = g.promRepo.GetPromotionOfGoods(
 		g.GetAggregateRootId())
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, len(vp))
@@ -319,7 +367,7 @@ func (g *goodsItemImpl) GetPromotions() []promotion.IPromotion {
 }
 
 // 获取会员价销价
-func (g *goodsItemImpl) GetLevelPrice(level int32) (bool, float32) {
+func (g *itemImpl) GetLevelPrice(level int32) (bool, float32) {
 	lvp := g.GetLevelPrices()
 	for _, v := range lvp {
 		if level == v.Level && v.Price < g.value.Price {
@@ -330,7 +378,7 @@ func (g *goodsItemImpl) GetLevelPrice(level int32) (bool, float32) {
 }
 
 // 获取促销价
-func (g *goodsItemImpl) GetPromotionPrice(level int32) float32 {
+func (g *itemImpl) GetPromotionPrice(level int32) float32 {
 	b, price := g.GetLevelPrice(level)
 	if b {
 		return price
@@ -339,7 +387,7 @@ func (g *goodsItemImpl) GetPromotionPrice(level int32) float32 {
 }
 
 // 获取促销描述
-func (g *goodsItemImpl) GetPromotionDescribe() map[string]string {
+func (g *itemImpl) GetPromotionDescribe() map[string]string {
 	if g.promDescribes == nil {
 		proms := g.GetPromotions()
 		g.promDescribes = make(map[string]string, len(proms))
@@ -372,32 +420,32 @@ func (g *goodsItemImpl) GetPromotionDescribe() map[string]string {
 }
 
 // 获取会员价
-func (g *goodsItemImpl) GetLevelPrices() []*item.MemberPrice {
+func (g *itemImpl) GetLevelPrices() []*item.MemberPrice {
 	if g.levelPrices == nil {
-		g.levelPrices = g.goodsRepo.GetGoodsLevelPrice(g.GetAggregateRootId())
+		g.levelPrices = g.repo.GetGoodsLevelPrice(g.GetAggregateRootId())
 	}
 	return g.levelPrices
 }
 
 // 保存会员价
-func (g *goodsItemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
+func (g *itemImpl) SaveLevelPrice(v *item.MemberPrice) (int32, error) {
 	v.GoodsId = g.GetAggregateRootId()
 	if g.value.Price == v.Price {
 		if v.Id > 0 {
-			g.goodsRepo.RemoveGoodsLevelPrice(v.Id)
+			g.repo.RemoveGoodsLevelPrice(v.Id)
 		}
 		return -1, nil
 	}
-	return g.goodsRepo.SaveGoodsLevelPrice(v)
+	return g.repo.SaveGoodsLevelPrice(v)
 }
 
 // 是否上架
-func (g *goodsItemImpl) IsOnShelves() bool {
+func (g *itemImpl) IsOnShelves() bool {
 	return g.value.ShelveState == item.ShelvesOn
 }
 
 // 设置上架
-func (g *goodsItemImpl) SetShelve(state int32, remark string) error {
+func (g *itemImpl) SetShelve(state int32, remark string) error {
 	if state == item.ShelvesIncorrect && len(remark) == 0 {
 		return product.ErrNilRejectRemark
 	}
@@ -408,7 +456,7 @@ func (g *goodsItemImpl) SetShelve(state int32, remark string) error {
 }
 
 // 标记为违规
-func (g *goodsItemImpl) Incorrect(remark string) error {
+func (g *itemImpl) Incorrect(remark string) error {
 	g.value.ShelveState = item.ShelvesIncorrect
 	g.value.ReviewRemark = remark
 	_, err := g.Save()
@@ -416,7 +464,7 @@ func (g *goodsItemImpl) Incorrect(remark string) error {
 }
 
 // 审核
-func (g *goodsItemImpl) Review(pass bool, remark string) error {
+func (g *itemImpl) Review(pass bool, remark string) error {
 	if pass {
 		g.value.ReviewState = enum.ReviewPass
 
@@ -433,7 +481,7 @@ func (g *goodsItemImpl) Review(pass bool, remark string) error {
 }
 
 // 更新销售数量
-func (g *goodsItemImpl) AddSalesNum(quantity int32) error {
+func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -442,21 +490,33 @@ func (g *goodsItemImpl) AddSalesNum(quantity int32) error {
 	}
 	g.value.SaleNum += quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.SaleNum += quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
 // 取消销售
-func (g *goodsItemImpl) CancelSale(quantity int32, orderNo string) error {
+func (g *itemImpl) CancelSale(skuId, quantity int32, orderNo string) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
 	g.value.SaleNum -= quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.SaleNum -= quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
 // 占用库存
-func (g *goodsItemImpl) TakeStock(quantity int32) error {
+func (g *itemImpl) TakeStock(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
@@ -465,21 +525,38 @@ func (g *goodsItemImpl) TakeStock(quantity int32) error {
 	}
 	g.value.StockNum -= quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.Stock -= quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
+func (g *itemImpl) saveSku(sku *item.Sku) (_ int32, err error) {
+	sku.Id, err = util.I32Err(g.repo.SaveItemSku(sku))
+	return sku.Id, err
+}
+
 // 释放库存
-func (g *goodsItemImpl) FreeStock(quantity int32) error {
+func (g *itemImpl) FreeStock(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
 	g.value.StockNum += quantity
 	_, err := g.Save()
+	if err == nil {
+		if sku := g.GetSku(skuId); sku != nil {
+			sku.Stock += quantity
+			_, err = g.saveSku(sku)
+		}
+	}
 	return err
 }
 
 // 删除商品
-func (g *goodsItemImpl) Destroy() error {
+func (g *itemImpl) Destroy() error {
 	//g.goodsRepo.
 	return nil
 }
