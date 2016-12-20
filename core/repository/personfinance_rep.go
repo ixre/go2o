@@ -1,0 +1,87 @@
+/**
+ * Copyright 2015 @ z3q.net.
+ * name : personfinance_rep
+ * author : jarryliu
+ * date : 2016-04-01 09:30
+ * description :
+ * history :
+ */
+package repository
+
+import (
+	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/personfinance"
+	pf "go2o/core/domain/personfinance"
+)
+
+var _ personfinance.IPersonFinanceRepository = new(personFinanceRepository)
+
+type personFinanceRepository struct {
+	_db      db.Connector
+	_orm     orm.Orm
+	_accRepo member.IMemberRepo
+}
+
+func NewPersonFinanceRepository(conn db.Connector, mRepo member.IMemberRepo) personfinance.IPersonFinanceRepository {
+	return &personFinanceRepository{
+		_db:      conn,
+		_orm:     conn.GetOrm(),
+		_accRepo: mRepo,
+	}
+}
+
+func (p *personFinanceRepository) GetPersonFinance(personId int32) personfinance.IPersonFinance {
+	return pf.NewPersonFinance(personId, p, p._accRepo)
+}
+
+func (p *personFinanceRepository) GetRiseByTime(personId int32, begin,
+	end int64) []*personfinance.RiseDayInfo {
+	list := []*personfinance.RiseDayInfo{}
+	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
+	return list
+}
+
+func (p *personFinanceRepository) GetRiseValueByPersonId(id int32) (
+	*personfinance.RiseInfoValue, error) {
+	e := &personfinance.RiseInfoValue{}
+	err := p._orm.Get(id, e)
+	return e, err
+}
+
+func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (int32, error) {
+	var err error
+	if _, err = p.GetRiseValueByPersonId(v.PersonId); err == nil {
+		_, _, err = p._orm.Save(v.PersonId, v)
+	} else {
+		_, _, err = p._orm.Save(nil, v)
+	}
+	return v.PersonId, err
+}
+
+// 获取日志
+func (p *personFinanceRepository) GetRiseLog(personId, logId int32) *personfinance.RiseLog {
+	e := &personfinance.RiseLog{}
+	if p._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
+		return e
+	}
+	return nil
+}
+
+// 保存日志
+func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int32, error) {
+	return orm.I32(orm.Save(p._db.GetOrm(), v, int(v.Id)))
+}
+
+// 获取日志
+func (p *personFinanceRepository) GetRiseLogs(personId int32, date int64, riseType int) []*personfinance.RiseLog {
+	list := []*personfinance.RiseLog{}
+	p._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
+	return list
+}
+
+// 保存每日收益
+func (p *personFinanceRepository) SaveRiseDayInfo(v *personfinance.RiseDayInfo) (int32, error) {
+	return orm.I32(orm.Save(p._db.GetOrm(), v, int(v.Id)))
+}
