@@ -9,6 +9,7 @@ pkg
 .DS_Store
 .idea
 app_*.conf
+go2o_publish_*.conf
 *.psd
 *.zip
 uploads

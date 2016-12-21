@@ -121,7 +121,7 @@ QQ群：**338164725**
 	server {
             listen          80;
             server_name     static.ts.com;
-            root    /home/usr/go/src/go2o/public/static;
+            root    /home/usr/go/src/go2o/static;
     	location ~* \.(eot|ttf|woff|woff2|svg)$ {
           		add_header Access-Control-Allow-Origin *;
       	}
