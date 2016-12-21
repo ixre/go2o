@@ -23,7 +23,7 @@ type StaticHandler struct {
 
 func (s *StaticHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	http.ServeFile(w, r, "./public/static"+r.URL.Path)
+	http.ServeFile(w, r, "./static"+r.URL.Path)
 }
 
 // 图片处理
@@ -41,7 +41,7 @@ func NewImageFileHandler(a gof.App) *ImageFileHandler {
 func (i *ImageFileHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	//if strings.HasPrefix(path, "/res/") {
-	//	http.ServeFile(w, r, "public/static"+path)
+	//	http.ServeFile(w, r, "static"+path)
 	//} else {
 	if len(i.upSaveDir) == 0 {
 		i.upSaveDir = i.app.Config().GetString(variable.UploadSaveDir)
