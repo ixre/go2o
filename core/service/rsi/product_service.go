@@ -183,6 +183,16 @@ func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 	return rootNode
 }
 
+// 分类树形
+func (p *productService) CategoryTree(parentId int32) *product.Category {
+	return p.catRep.GlobCatService().CategoryTree(parentId)
+}
+
+// 获取分类关联的品牌
+func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
+	return p.catRep.GlobCatService().RelationBrands(catId)
+}
+
 func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []product.ICategory) {
 	node.Childs = []*tree.TreeNode{}
 	for _, v := range categories {

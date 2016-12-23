@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/algorithm/iterator"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
@@ -255,7 +256,7 @@ var _ product.IGlobCatService = new(categoryManagerImpl)
 //当商户共享系统的分类时,没有修改的权限,既只读!
 type categoryManagerImpl struct {
 	_readonly      bool
-	_rep           product.ICategoryRepo
+	_repo          product.ICategoryRepo
 	_valRepo       valueobject.IValueRepo
 	_mchId         int32
 	lastUpdateTime int64
@@ -265,7 +266,7 @@ type categoryManagerImpl struct {
 func NewCategoryManager(mchId int32, rep product.ICategoryRepo,
 	valRepo valueobject.IValueRepo) product.IGlobCatService {
 	c := &categoryManagerImpl{
-		_rep:     rep,
+		_repo:    rep,
 		_mchId:   mchId,
 		_valRepo: valRepo,
 	}
@@ -302,12 +303,12 @@ func (c *categoryManagerImpl) CreateCategory(v *product.Category) product.ICateg
 	if v.CreateTime == 0 {
 		v.CreateTime = time.Now().Unix()
 	}
-	return newCategory(c._rep, v)
+	return newCategory(c._repo, v)
 }
 
 // 获取分类
 func (c *categoryManagerImpl) GetCategory(id int32) product.ICategory {
-	v := c._rep.GetCategory(c.getRelationId(), id)
+	v := c._repo.GetCategory(c.getRelationId(), id)
 	if v != nil {
 		return c.CreateCategory(v)
 	}
@@ -316,7 +317,7 @@ func (c *categoryManagerImpl) GetCategory(id int32) product.ICategory {
 
 // 获取所有分类
 func (c *categoryManagerImpl) GetCategories() []product.ICategory {
-	var list product.CategoryList = c._rep.GetCategories(c.getRelationId())
+	var list product.CategoryList = c._repo.GetCategories(c.getRelationId())
 	sort.Sort(list)
 	slice := make([]product.ICategory, len(list))
 	for i, v := range list {
@@ -334,13 +335,65 @@ func (c *categoryManagerImpl) DeleteCategory(id int32) error {
 	if len(cat.GetChildes()) > 0 {
 		return product.ErrHasChildCategories
 	}
-	if c._rep.CheckGoodsContain(c.getRelationId(), id) {
+	if c._repo.CheckGoodsContain(c.getRelationId(), id) {
 		return product.ErrCategoryContainGoods
 	}
-	err := c._rep.DeleteCategory(c.getRelationId(), id)
+	err := c._repo.DeleteCategory(c.getRelationId(), id)
 	if err == nil {
 		err = cat.GetOption().Destroy()
 		cat = nil
 	}
 	return err
+}
+
+// 递归获取下级分类
+func (c *categoryManagerImpl) CategoryTree(parentId int32) *product.Category {
+	list := c._repo.GetCategories(0)
+	var cat *product.Category
+	if parentId == 0 {
+		cat = &product.Category{Id: parentId}
+	} else {
+		for _, v := range list {
+			if v.Id == parentId {
+				cat = v
+			}
+		}
+		if cat == nil {
+			return nil
+		}
+	}
+	c.walkCategoryTree(cat, list)
+	return cat
+}
+
+func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
+	categories []*product.Category) {
+	node.Childes = []*product.Category{}
+	for _, v := range categories {
+		if v.ParentId == node.Id {
+			node.Childes = append(node.Childes, v)
+			c.walkCategoryTree(v, categories)
+		}
+	}
+}
+
+// 获取分类关联的品牌
+func (c *categoryManagerImpl) RelationBrands(catId int32) []*promodel.ProBrand {
+	p := c.GetCategory(catId)
+	if p != nil {
+		idArr := []int32{}
+		c.childWalk(p, &idArr)
+		return c._repo.GetRelationBrands(idArr)
+	}
+	return []*promodel.ProBrand{}
+}
+
+func (c *categoryManagerImpl) childWalk(p product.ICategory, idArr *[]int32) {
+	childes := p.GetChildes()
+	if len(childes) > 0 {
+		*idArr = append(*idArr, childes...)
+		for _, v := range childes {
+			c.childWalk(c.GetCategory(v), idArr)
+		}
+	}
 }

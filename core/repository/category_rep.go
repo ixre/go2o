@@ -9,13 +9,17 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	productImpl "go2o/core/domain/product"
+	"go2o/core/infrastructure/format"
+	"log"
 	"sort"
 )
 
@@ -25,6 +29,7 @@ type categoryRepo struct {
 	db.Connector
 	_valRepo     valueobject.IValueRepo
 	_globService product.IGlobCatService
+	_orm         orm.Orm
 	storage      storage.Interface
 }
 
@@ -32,6 +37,7 @@ func NewCategoryRepo(conn db.Connector, valRepo valueobject.IValueRepo,
 	storage storage.Interface) product.ICategoryRepo {
 	return &categoryRepo{
 		Connector: conn,
+		_orm:      conn.GetOrm(),
 		_valRepo:  valRepo,
 		storage:   storage,
 	}
@@ -131,4 +137,18 @@ func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
 	//    }
 	//}
 	//return list
+}
+
+// 获取关联的品牌
+func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
+	list := []*promodel.ProBrand{}
+	if len(idArr) > 0 {
+		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
+        WHERE pro_model IN (SELECT pro_model FROM cat_category WHERE id IN(`+
+			format.IdArrJoinStr32(idArr)+`)))`)
+		if err != nil && err != sql.ErrNoRows {
+			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
+		}
+	}
+	return list
 }
