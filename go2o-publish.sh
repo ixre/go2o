@@ -96,14 +96,14 @@ sleep 1
 
 zipRes="go2o-serve go2o-tcpserve master-serve public mobile conf/query uploads/res go2o.sh"
 
-echo "Include \"conf\" folder [Y/N] ? "
+echo "Include ""conf"" folder [Y/N] ? "
 read zipConf
 
 if [ ${zipConf} = "Y" ]||[ ${zipConf} = "y" ];then
     zipRes=${zipRes}" conf/core"
 fi
 
-echo "Include \"static\" folder [Y/N] ? "
+echo "Include ""static"" folder [Y/N] ? "
 read zipStatic
 if [ ${zipStatic} = "Y" ]||[ ${zipStatic} = "y" ];then
     zipRes=${zipRes}" static"

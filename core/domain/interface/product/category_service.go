@@ -10,6 +10,7 @@
 package product
 
 import (
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/infrastructure/domain"
 	"sort"
 )
@@ -75,6 +76,8 @@ type (
 		Enabled int `db:"enabled"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
+		// 子分类
+		Childes []*Category `db:"-"`
 	}
 	ICategoryRepo interface {
 		// 获取系统的栏目服务
@@ -94,6 +97,8 @@ type (
 
 		// 获取所有分类
 		GetCategories(mchId int32) []*Category
+		// 获取关联的品牌
+		GetRelationBrands(idArr []int32) []*promodel.ProBrand
 	}
 
 	// 公共分类服务
@@ -101,18 +106,18 @@ type (
 		// 是否只读,当商户共享系统的分类时,
 		// 没有修改的权限,即只读!
 		ReadOnly() bool
-
 		// 创建分类
 		CreateCategory(*Category) ICategory
-
 		// 获取分类
 		GetCategory(id int32) ICategory
-
 		// 获取所有分类
 		GetCategories() []ICategory
-
 		// 删除分类
 		DeleteCategory(id int32) error
+		// 递归获取下级分类
+		CategoryTree(parentId int32) *Category
+		// 获取分类关联的品牌
+		RelationBrands(catId int32) []*promodel.ProBrand
 	}
 )
 
