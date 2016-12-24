@@ -63,7 +63,7 @@ func Comm() *CommonDao {
 			return d
 		}
 	}
-	d := &CommonDao{}
+	d := &CommonDao{_orm: dOrm}
 	setDao(key, d)
 	return d
 }

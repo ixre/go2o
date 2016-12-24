@@ -332,3 +332,18 @@ CREATE TABLE pro_brand (
   PRIMARY KEY (id)) comment='产品品牌';
 
 
+CREATE TABLE portal_nav_type (
+  id   int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  name varchar(20) NOT NULL comment '名称',
+  PRIMARY KEY (id)) comment='导航类型';
+CREATE TABLE portal_nav (
+  id       int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  text     varchar(20) NOT NULL comment '文本',
+  url      varchar(120) NOT NULL comment '地址',
+  target   varchar(10) NOT NULL comment '打开目标',
+  image    varchar(120) NOT NULL,
+  nav_type int(2) NOT NULL comment '导航类型: 1为电脑，2为手机端',
+  PRIMARY KEY (id)) comment='门户导航';
+
+INSERT INTO `txmall`.`portal_nav_type` (`id`, `name`) VALUES ('1', 'PC商城');
+INSERT INTO `txmall`.`portal_nav_type` (`id`, `name`) VALUES ('2', '移动商城');
