@@ -11,6 +11,7 @@ package rsi
 
 import (
 	"github.com/jsix/gof"
+	"go2o/core/dao"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/repository"
@@ -49,6 +50,8 @@ var (
 
 	// 个人金融服务
 	PersonFinanceService *personFinanceService
+	// 门户数据服务
+	PortalService *portalService
 )
 
 // 处理错误
@@ -122,6 +125,8 @@ func Init(ctx gof.App) {
 	ContentService = NewContentService(contentRepo, contentQue)
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
+
+	PortalService = NewPortalService(dao.NewCommDao(orm))
 
 	//m := memberRepo.GetMember(1)
 	//d := m.ProfileManager().GetDeliverAddress()[0]
