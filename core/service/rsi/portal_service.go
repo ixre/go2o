@@ -34,6 +34,11 @@ func (p *portalService) DeletePortalNav_(id int32) (*define.Result_, error) {
 	return parser.Result(0, err), nil
 }
 
+// 获取门户导航
+func (p *portalService) SelectPortalNav(navType int32) []*model.PortalNav {
+	return p.repo.SelectPortalNav("nav_type=?", navType)
+}
+
 // 获取导航类型
 func (p *portalService) GetPortalNavType_(id int32) *model.PortalNavType {
 	return p.repo.GetPortalNavType(id)
