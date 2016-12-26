@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"strconv"
@@ -25,15 +26,17 @@ var _ product.IProduct = new(productImpl)
 type productImpl struct {
 	value     *product.Product
 	repo      product.IProductRepo
+	pmRepo    promodel.IProModelRepo
 	valueRepo valueobject.IValueRepo
 }
 
 func NewProductImpl(v *product.Product,
-	itemRepo product.IProductRepo,
+	itemRepo product.IProductRepo, pmRepo promodel.IProModelRepo,
 	valRepo valueobject.IValueRepo) product.IProduct {
 	return &productImpl{
 		value:     v,
 		repo:      itemRepo,
+		pmRepo:    pmRepo,
 		valueRepo: valRepo,
 	}
 }
@@ -190,6 +193,24 @@ func (p *productImpl) mergeAttr(src []*product.Attr, dst *[]*product.Attr) {
 	}
 }
 
+// 重建Attr数组，将信息附加
+func (p *productImpl) RebuildAttrArray(arr *[]*product.Attr) error {
+	for _, v := range *arr {
+		vArr := util.StrExt.I32Slice(v.AttrData, ",")
+		for i, v2 := range vArr {
+			if i != 0 {
+				v.AttrWord += ","
+			}
+			item := p.pmRepo.GetAttrItem(v2)
+			if item == nil {
+				return product.ErrNoSuchAttr
+			}
+			v.AttrWord += item.Value
+		}
+	}
+	return nil
+}
+
 // 保存属性
 func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	pk := p.GetAggregateRootId()
@@ -197,6 +218,10 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 	old := p.repo.SelectAttr("product_id=?", pk)
 	// 合并属性
 	p.mergeAttr(old, &p.value.Attr)
+	// 设置属性值
+	if err = p.RebuildAttrArray(&arr); err != nil {
+		return err
+	}
 	// 分析当前项目并加入到MAP中
 	delList := []int32{}
 	currMap := make(map[int32]*product.Attr, len(arr))
@@ -218,7 +243,7 @@ func (p *productImpl) saveAttr(arr []*product.Attr) (err error) {
 		if v.ProductId == 0 {
 			v.ProductId = pk
 		}
-		if v.ProductId == pk {
+		if v.ProductId == pk && v.AttrData != "" {
 			v.Id, err = util.I32Err(p.repo.SaveAttr(v))
 		}
 	}

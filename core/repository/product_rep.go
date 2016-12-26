@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	proImpl "go2o/core/domain/product"
@@ -26,20 +27,23 @@ var _ product.IProductRepo = new(productRepo)
 type productRepo struct {
 	db.Connector
 	_orm      orm.Orm
+	pmRepo    promodel.IProModelRepo
 	valueRepo valueobject.IValueRepo
 }
 
-func NewProductRepo(c db.Connector, valRepo valueobject.IValueRepo) product.IProductRepo {
+func NewProductRepo(c db.Connector, pmRepo promodel.IProModelRepo,
+	valRepo valueobject.IValueRepo) product.IProductRepo {
 	return &productRepo{
 		Connector: c,
 		_orm:      c.GetOrm(),
+		pmRepo:    pmRepo,
 		valueRepo: valRepo,
 	}
 }
 
 // 创建产品
 func (p *productRepo) CreateProduct(v *product.Product) product.IProduct {
-	return proImpl.NewProductImpl(v, p, p.valueRepo)
+	return proImpl.NewProductImpl(v, p, p.pmRepo, p.valueRepo)
 }
 
 // 根据产品编号获取货品

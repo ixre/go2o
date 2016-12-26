@@ -161,7 +161,7 @@ func (a *attrHtmlBuilder) buildDropDown(buf *bytes.Buffer,
 	buf.WriteString("<select class=\"attr-val\" _field=\"_AttrData\">")
 	for _, v := range attr.Items {
 		buf.WriteString("<option value=\"")
-		buf.WriteString(v.Value)
+		buf.WriteString(strconv.Itoa(int(v.Id)))
 		buf.WriteString("\">")
 		buf.WriteString(v.Value)
 		buf.WriteString("</option>")
@@ -175,7 +175,7 @@ func (a *attrHtmlBuilder) buildCheckBox(buf *bytes.Buffer,
 		buf.WriteString("<input type=\"checkbox\" class=\"attr-val\" _field=\"_AttrData[")
 		buf.WriteString(str)
 		buf.WriteString("]\" value=\"")
-		buf.WriteString(v.Value)
+		buf.WriteString(strconv.Itoa(int(v.Id)))
 		buf.WriteString("\" id=\"ck_attr_")
 		buf.WriteString(str)
 		buf.WriteString("\"/><label class=\"ck_label\" for=\"ck_attr_")

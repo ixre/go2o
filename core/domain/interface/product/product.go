@@ -133,7 +133,6 @@ type (
 		UpdateTime int64 `db:"update_time"`
 		// 排序编号
 		SortNum int32 `db:"sort_num"`
-
 		// 产品属性
 		Attr []*Attr `db:"-"`
 	}
@@ -148,5 +147,7 @@ type (
 		AttrId int32 `db:"attr_id"`
 		// 属性值
 		AttrData string `db:"attr_data"`
+		// 属性文本
+		AttrWord string `db:"attr_word"`
 	}
 )
