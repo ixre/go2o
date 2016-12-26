@@ -31,9 +31,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 	start, end int, where, orderBy string) (int, []*item.GoodsItem) {
 	var sql string
 	total := 0
-	if len(where) != 0 {
-		where = " AND " + where
-	}
+
 	if len(orderBy) != 0 {
 		orderBy += ","
 	}
