@@ -136,6 +136,59 @@ struct Address {
     10: i32 IsDefault
 }
 
+struct Item {
+    1: i32 ItemId
+    2: i32 ProductId
+    3: i32 PromFlag
+    4: i32 CatId
+    5: i32 VendorId
+    6: i32 BrandId
+    7: i32 ShopId
+    8: i32 ShopCatId
+    9: i32 ExpressTid
+    10: string Title
+    11: string ShortTitle
+    12: string Code
+    13: string Image
+    14: i32 IsPresent
+    15: string PriceRange
+    16: i32 StockNum
+    17: i32 SaleNum
+    18: i32 SkuNum
+    19: i32 SkuId
+    20: double Cost
+    21: double Price
+    22: double RetailPrice
+    23: i32 Weight
+    24: i32 Bulk
+    25: i32 ShelveState
+    26: i32 ReviewState
+    27: string ReviewRemark
+    28: i32 SortNum
+    29: i64 CreateTime
+    30: i64 UpdateTime
+    31: double PromPrice
+    32: list<Sku> SkuArray
+}
+
+struct Sku {
+    1: i32 SkuId
+    2: i32 ItemId
+    3: i32 ProductId
+    4: string Title
+    5: string Image
+    6: string SpecData
+    7: string SpecWord
+    8: string Code
+    9: double RetailPrice
+    10: double Price
+    11: double Cost
+    12: i32 Weight
+    13: i32 Bulk
+    14: i32 Stock
+    15: i32 SaleNum
+}
+
 //支付单
 struct PaymentOrder {
     1: i32 Id

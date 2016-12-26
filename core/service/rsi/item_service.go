@@ -22,13 +22,13 @@ import (
 
 type itemService struct {
 	itemRepo    item.IGoodsItemRepo
-	_goodsQuery *query.GoodsQuery
+	_goodsQuery *query.ItemQuery
 	_cateRepo   product.ICategoryRepo
 	labelRepo   item.ISaleLabelRepo
 }
 
 func NewSaleService(cateRepo product.ICategoryRepo,
-	goodsRepo item.IGoodsItemRepo, goodsQuery *query.GoodsQuery,
+	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo) *itemService {
 	return &itemService{
 		itemRepo:    goodsRepo,
@@ -68,6 +68,42 @@ func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
 	return specJson, specHtm
 }
 
+// 保存商品
+func (s *itemService) SaveItem(it *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
+	var gi item.IGoodsItem
+	if it.Id > 0 {
+		gi = s.itemRepo.GetItem(it.Id)
+		if gi == nil || gi.GetValue().VendorId != vendorId {
+			err = item.ErrNoSuchGoods
+			goto R
+		}
+	} else {
+		gi = s.itemRepo.CreateItem(it)
+	}
+	err = gi.SetValue(it)
+	if err == nil {
+		err = gi.SetSku(it.SkuArray)
+		if err == nil {
+			it.Id, err = gi.Save()
+		}
+	}
+R:
+	return parser.Result(it.Id, err), nil
+}
+
+// 获取上架商品数据（分页）
+func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
+	end int, where, sortBy string) (int, []*define.Item) {
+	total, list := s._goodsQuery.GetPagedOnShelvesItem(catId,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ItemDto(v)
+	}
+	return total, arr
+}
+
 // 根据SKU获取商品
 func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)
@@ -100,29 +136,6 @@ func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot 
 	return s.itemRepo.GetSalesSnapshot(snapshotId)
 }
 
-// 保存商品
-func (s *itemService) SaveItem(it *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
-	var gi item.IGoodsItem
-	if it.Id > 0 {
-		gi = s.itemRepo.GetItem(it.Id)
-		if gi == nil || gi.GetValue().VendorId != vendorId {
-			err = item.ErrNoSuchGoods
-			goto R
-		}
-	} else {
-		gi = s.itemRepo.CreateItem(it)
-	}
-	err = gi.SetValue(it)
-	if err == nil {
-		err = gi.SetSku(it.SkuArray)
-		if err == nil {
-			it.Id, err = gi.Save()
-		}
-	}
-R:
-	return parser.Result(it.Id, err), nil
-}
-
 // 获取分页上架的商品
 func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
@@ -141,7 +154,7 @@ func (s *itemService) GetShopPagedOnShelvesGoods(shopId, categoryId int32, start
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesGoods(shopId int32, categoryId int32, start, end int,
+func (s *itemService) GetPagedOnShelvesGoods__(shopId int32, categoryId int32, start, end int,
 	sortBy string) (total int, list []*valueobject.Goods) {
 	if categoryId > 0 {
 		cate := s._cateRepo.GlobCatService().GetCategory(categoryId)

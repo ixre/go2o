@@ -19,7 +19,6 @@ import (
 	"go2o/core/infrastructure/domain"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -161,8 +160,7 @@ func (c *categoryImpl) Save() (int32, error) {
 	id, err := c.rep.SaveCategory(c.value)
 	if err == nil {
 		c.value.Id = id
-		if len(c.value.Url) == 0 || (c.parentIdChanged &&
-			strings.HasPrefix(c.value.Url, "/c-")) {
+		if len(c.value.Url) == 0 || c.parentIdChanged {
 			c.value.Url = c.getAutomaticUrl(id)
 			c.parentIdChanged = false
 			return c.Save()
@@ -226,12 +224,13 @@ func (c *categoryImpl) getRelationCategories(catId int32) []*product.Category {
 
 func (c *categoryImpl) getAutomaticUrl(id int32) string {
 	relCats := c.getRelationCategories(id)
-	var buf *bytes.Buffer = bytes.NewBufferString("/c")
+	var buf *bytes.Buffer = bytes.NewBufferString("/list")
 	var l int = len(relCats)
 	for i := l; i > 0; i-- {
-		buf.WriteString("-" + strconv.Itoa(int(relCats[i-1].Id)))
+		buf.WriteString("-")
+		buf.WriteString(strconv.Itoa(int(relCats[i-1].Id)))
 	}
-	buf.WriteString(".htm")
+	buf.WriteString(".html")
 	return buf.String()
 }
 

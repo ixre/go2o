@@ -13,11 +13,16 @@ package valueobject
 
 // 完整的商品信息
 type Goods struct {
-	ProductId  int32  `db:"product_id"`
-	VendorId   int32  `db:"-"`
-	ShopId     int32  `db:"-"`
-	CategoryId int32  `db:"cat_id"`
+	ItemId     int32 `db:"id"`
+	ProductId  int32 `db:"product_id"`
+	VendorId   int32 `db:"-"`
+	ShopId     int32 `db:"-"`
+	CategoryId int32 `db:"cat_id"`
+
+	// 过渡的标题
 	Name       string `db:"title"`
+	Title      string `db:"title"`
+	ShortTitle string `db:"-"`
 	// 货号
 	GoodsNo string `db:"code"`
 	Image   string `db:"image"`

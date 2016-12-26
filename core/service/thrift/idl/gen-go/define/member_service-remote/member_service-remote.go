@@ -145,8 +145,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err30 := (strconv.Atoi(flag.Arg(1)))
-		if err30 != nil {
+		tmp0, err31 := (strconv.Atoi(flag.Arg(1)))
+		if err31 != nil {
 			Usage()
 			return
 		}
@@ -170,8 +170,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err32 := (strconv.Atoi(flag.Arg(1)))
-		if err32 != nil {
+		tmp0, err33 := (strconv.Atoi(flag.Arg(1)))
+		if err33 != nil {
 			Usage()
 			return
 		}
@@ -185,8 +185,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Summary requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err33 := (strconv.Atoi(flag.Arg(1)))
-		if err33 != nil {
+		tmp0, err34 := (strconv.Atoi(flag.Arg(1)))
+		if err34 != nil {
 			Usage()
 			return
 		}
@@ -200,8 +200,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err34 := (strconv.Atoi(flag.Arg(1)))
-		if err34 != nil {
+		tmp0, err35 := (strconv.Atoi(flag.Arg(1)))
+		if err35 != nil {
 			Usage()
 			return
 		}
@@ -217,8 +217,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err36 := (strconv.Atoi(flag.Arg(1)))
-		if err36 != nil {
+		tmp0, err37 := (strconv.Atoi(flag.Arg(1)))
+		if err37 != nil {
 			Usage()
 			return
 		}
@@ -234,8 +234,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err38 := (strconv.Atoi(flag.Arg(1)))
-		if err38 != nil {
+		tmp0, err39 := (strconv.Atoi(flag.Arg(1)))
+		if err39 != nil {
 			Usage()
 			return
 		}
@@ -249,15 +249,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err39 := (strconv.Atoi(flag.Arg(1)))
-		if err39 != nil {
+		tmp0, err40 := (strconv.Atoi(flag.Arg(1)))
+		if err40 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err40 := (strconv.Atoi(flag.Arg(2)))
-		if err40 != nil {
+		tmp1, err41 := (strconv.Atoi(flag.Arg(2)))
+		if err41 != nil {
 			Usage()
 			return
 		}
@@ -271,8 +271,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAccount requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
-		if err41 != nil {
+		tmp0, err42 := (strconv.Atoi(flag.Arg(1)))
+		if err42 != nil {
 			Usage()
 			return
 		}
@@ -286,15 +286,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "InviterArray requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err42 := (strconv.Atoi(flag.Arg(1)))
-		if err42 != nil {
+		tmp0, err43 := (strconv.Atoi(flag.Arg(1)))
+		if err43 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err43 := (strconv.Atoi(flag.Arg(2)))
-		if err43 != nil {
+		tmp1, err44 := (strconv.Atoi(flag.Arg(2)))
+		if err44 != nil {
 			Usage()
 			return
 		}
@@ -308,22 +308,22 @@ func main() {
 			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
 			flag.Usage()
 		}
-		tmp0, err44 := (strconv.Atoi(flag.Arg(1)))
-		if err44 != nil {
+		tmp0, err45 := (strconv.Atoi(flag.Arg(1)))
+		if err45 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err45 := (strconv.Atoi(flag.Arg(2)))
-		if err45 != nil {
+		tmp1, err46 := (strconv.Atoi(flag.Arg(2)))
+		if err46 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		tmp2, err46 := (strconv.Atoi(flag.Arg(3)))
-		if err46 != nil {
+		tmp2, err47 := (strconv.Atoi(flag.Arg(3)))
+		if err47 != nil {
 			Usage()
 			return
 		}
@@ -333,14 +333,14 @@ func main() {
 		value3 := argvalue3
 		argvalue4 := flag.Arg(5)
 		value4 := argvalue4
-		argvalue5, err49 := (strconv.ParseFloat(flag.Arg(6), 64))
-		if err49 != nil {
+		argvalue5, err50 := (strconv.ParseFloat(flag.Arg(6), 64))
+		if err50 != nil {
 			Usage()
 			return
 		}
 		value5 := argvalue5
-		tmp6, err50 := (strconv.Atoi(flag.Arg(7)))
-		if err50 != nil {
+		tmp6, err51 := (strconv.Atoi(flag.Arg(7)))
+		if err51 != nil {
 			Usage()
 			return
 		}

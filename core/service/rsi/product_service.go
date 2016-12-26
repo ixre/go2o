@@ -16,7 +16,7 @@ import (
 
 // 产品服务
 type productService struct {
-	pmRep  promodel.IProModelRepo
+	pmRepo promodel.IProModelRepo
 	catRep product.ICategoryRepo
 	proRep product.IProductRepo
 }
@@ -25,7 +25,7 @@ func NewProService(pmRep promodel.IProModelRepo,
 	catRep product.ICategoryRepo,
 	proRep product.IProductRepo) *productService {
 	return &productService{
-		pmRep:  pmRep,
+		pmRepo: pmRep,
 		catRep: catRep,
 		proRep: proRep,
 	}
@@ -33,30 +33,40 @@ func NewProService(pmRep promodel.IProModelRepo,
 
 // 获取产品模型
 func (p *productService) GetModel(id int32) *promodel.ProModel {
-	return p.pmRep.GetProModel(id)
+	return p.pmRepo.GetProModel(id)
 }
 
 // 获取产品模型
 func (p *productService) GetModels() []*promodel.ProModel {
-	return p.pmRep.SelectProModel("enabled=1")
+	return p.pmRepo.SelectProModel("enabled=1")
+}
+
+// 获取属性
+func (p *productService) GetAttr(id int32) *promodel.Attr {
+	return p.pmRepo.GetAttr(id)
+}
+
+// 获取属性项
+func (p *productService) GetAttrItem(id int32) *promodel.AttrItem {
+	return p.pmRepo.GetAttrItem(id)
 }
 
 // 获取模型属性
 func (p *productService) GetModelAttrs(proModel int32) []*promodel.Attr {
-	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
 	return m.Attrs()
 }
 
 // 获取模型属性Html
 func (p *productService) GetModelAttrsHtml(proModel int32) string {
-	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
 	attrs := m.Attrs()
-	return p.pmRep.AttrService().AttrsHtml(attrs)
+	return p.pmRepo.AttrService().AttrsHtml(attrs)
 }
 
 // 获取模型规格
 func (p *productService) GetModelSpecs(proModel int32) []*promodel.Spec {
-	m := p.pmRep.CreateModel(&promodel.ProModel{Id: proModel})
+	m := p.pmRepo.CreateModel(&promodel.ProModel{Id: proModel})
 	return m.Specs()
 }
 
@@ -72,9 +82,9 @@ func (p *productService) SaveModel(v *promodel.ProModel) (*define.Result_, error
 		}
 		ev.Name = v.Name
 		ev.Enabled = v.Enabled
-		pm = p.pmRep.CreateModel(ev)
+		pm = p.pmRepo.CreateModel(ev)
 	} else {
-		pm = p.pmRep.CreateModel(v)
+		pm = p.pmRepo.CreateModel(v)
 	}
 	// 保存属性
 	if err == nil && v.Attrs != nil {
@@ -105,29 +115,29 @@ func (p *productService) DeleteProModel_(id int32) (*define.Result_, error) {
 
 // Get 产品品牌
 func (p *productService) GetProBrand_(id int32) *promodel.ProBrand {
-	return p.pmRep.BrandService().Get(id)
+	return p.pmRepo.BrandService().Get(id)
 }
 
 // Save 产品品牌
 func (p *productService) SaveProBrand_(v *promodel.ProBrand) (*define.Result_, error) {
-	id, err := p.pmRep.BrandService().SaveBrand(v)
+	id, err := p.pmRepo.BrandService().SaveBrand(v)
 	return parser.Result(id, err), nil
 }
 
 // Delete 产品品牌
 func (p *productService) DeleteProBrand_(id int32) (*define.Result_, error) {
-	err := p.pmRep.BrandService().DeleteBrand(id)
+	err := p.pmRepo.BrandService().DeleteBrand(id)
 	return parser.Result(0, err), nil
 }
 
 // 获取所有产品品牌
 func (p *productService) GetBrands() []*promodel.ProBrand {
-	return p.pmRep.BrandService().AllBrands()
+	return p.pmRepo.BrandService().AllBrands()
 }
 
 // 获取模型关联的产品品牌
 func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
-	pm := p.pmRep.CreateModel(&promodel.ProModel{Id: id})
+	pm := p.pmRepo.CreateModel(&promodel.ProModel{Id: id})
 	return pm.Brands()
 }
 
