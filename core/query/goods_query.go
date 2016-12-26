@@ -16,18 +16,49 @@ import (
 	"go2o/core/domain/interface/valueobject"
 )
 
-type GoodsQuery struct {
+type ItemQuery struct {
 	db.Connector
 }
 
-func NewGoodsQuery(c db.Connector) *GoodsQuery {
-	return &GoodsQuery{
+func NewItemQuery(c db.Connector) *ItemQuery {
+	return &ItemQuery{
 		Connector: c,
 	}
 }
 
 //根据关键词搜索上架的商品
-func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
+func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
+	start, end int, where, orderBy string) (int, []*item.GoodsItem) {
+	var sql string
+	total := 0
+	if len(where) != 0 {
+		where = " AND " + where
+	}
+	if len(orderBy) != 0 {
+		orderBy += ","
+	}
+
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND item_info.review_state=?
+		 AND item_info.shelve_state=? %s`, where), &total,
+		catId, enum.ReviewPass, item.ShelvesOn)
+	e := []*item.GoodsItem{}
+	if total > 0 {
+		sql = fmt.Sprintf(`SELECT * FROM item_info
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND item_info.review_state=?
+		 AND item_info.shelve_state=? %s
+		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+			where, orderBy)
+		i.Connector.GetOrm().SelectByQuery(&e, sql,
+			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+	}
+	return total, e
+}
+
+//根据关键词搜索上架的商品
+func (i ItemQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int,
 	keyword, where, orderBy string) (int, []*valueobject.Goods) {
 	var sql string
 	total := 0
@@ -39,7 +70,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
 		orderBy += ","
 	}
 
-	g.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 INNER JOIN cat_category ON pro_product.cat_id=cat_category.id
 		 WHERE pro_product.review_state=? AND pro_product.shelve_state=?
@@ -55,7 +86,7 @@ func (g GoodsQuery) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end int
          AND (?=0 OR pro_product.supplier_id IN (SELECT mch_id FROM mch_shop WHERE id=?))
          AND pro_product.name LIKE ? %s ORDER BY %s update_time DESC LIMIT ?,?`,
 			where, orderBy)
-		g.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
+		i.Connector.GetOrm().SelectByQuery(&e, sql, enum.ReviewPass,
 			item.ShelvesOn, shopId, shopId, keyword, start, (end - start))
 	}
 

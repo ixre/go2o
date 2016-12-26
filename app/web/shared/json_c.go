@@ -173,10 +173,10 @@ func (j *JsonC) Get_goods(c *echox.Context) error {
 			p, size, begin := j.getMultiParams(t)
 			switch p {
 			case "new-goods":
-				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
+				_, result[p] = ss.GetPagedOnShelvesGoods__(shopId,
 					-1, begin, begin+size, "it.id DESC")
 			case "hot-sales":
-				_, result[p] = ss.GetPagedOnShelvesGoods(shopId,
+				_, result[p] = ss.GetPagedOnShelvesGoods__(shopId,
 					-1, begin, begin+size, "it.sale_num DESC")
 			}
 		}
@@ -191,7 +191,7 @@ func (j *JsonC) Get_Newgoods(c *echox.Context) error {
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
 	ss := rsi.ItemService
-	_, result := ss.GetPagedOnShelvesGoods(shopId,
+	_, result := ss.GetPagedOnShelvesGoods__(shopId,
 		-1, begin, begin+size, "it.id DESC")
 
 	return c.Debug(c.JSON(http.StatusOK, result))
@@ -214,7 +214,7 @@ func (j *JsonC) Get_hotGoods(c *echox.Context) error {
 	ss := rsi.ItemService
 	begin, _ := strconv.Atoi(c.FormValue("begin"))
 	size, _ := strconv.Atoi(c.FormValue("size"))
-	_, result := ss.GetPagedOnShelvesGoods(shopId,
+	_, result := ss.GetPagedOnShelvesGoods__(shopId,
 		-1, begin, begin+size, "it.sale_num DESC")
 	return c.Debug(c.JSON(http.StatusOK, result))
 }

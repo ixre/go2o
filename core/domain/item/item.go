@@ -106,7 +106,7 @@ func (g *itemImpl) GetPackedValue() *valueobject.Goods {
 	goods := &valueobject.Goods{
 		ProductId:     gv.ProductId,
 		CategoryId:    gv.CatId,
-		Name:          gv.Title,
+		Title:         gv.Title,
 		GoodsNo:       gv.Code,
 		Image:         gv.Image,
 		RetailPrice:   gv.RetailPrice,

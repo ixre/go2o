@@ -102,7 +102,7 @@ func Init(ctx gof.App) {
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)
 	contentQue := query.NewContentQuery(db)
-	goodsQuery := query.NewGoodsQuery(db)
+	goodsQuery := query.NewItemQuery(db)
 	shopQuery := query.NewShopQuery(ctx)
 	orderQuery := query.NewOrderQuery(db)
 	afterSalesQuery := query.NewAfterSalesQuery(db)
