@@ -189,7 +189,7 @@ func (c *cartImpl) Items() map[int32]*cart.CartItem {
 }
 
 // 添加项
-func (c *cartImpl) AddItem(itemId, skuId int32, num int32,
+func (c *cartImpl) Put(itemId, skuId int32, num int32,
 	checked bool) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
@@ -371,7 +371,7 @@ func (c *cartImpl) combineBuyerCart() cart.ICart {
 func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 	if ic.GetAggregateRootId() != c.GetAggregateRootId() {
 		for _, v := range ic.GetValue().Items {
-			if item, err := c.AddItem(v.ItemId,
+			if item, err := c.Put(v.ItemId,
 				v.SkuId, v.Quantity, v.Checked == 1); err == nil {
 				if v.Checked == 1 {
 					item.Checked = 1

@@ -41,7 +41,7 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 WHERE item_info.cat_id=? AND item_info.review_state=?
 		 AND item_info.shelve_state=? %s`, where), &total,
 		catId, enum.ReviewPass, item.ShelvesOn)
-	e := []*item.GoodsItem{}
+	list := []*item.GoodsItem{}
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT * FROM item_info
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
@@ -49,10 +49,41 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 		 AND item_info.shelve_state=? %s
 		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
 			where, orderBy)
-		i.Connector.GetOrm().SelectByQuery(&e, sql,
+		i.Connector.GetOrm().SelectByQuery(&list, sql,
 			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
-	return total, e
+	return total, list
+}
+
+// 搜索随机的商品列表
+func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.GoodsItem {
+	/*
+	       随机查询： 要减去获取的条数，以确保至少有2条数据
+	   SELECT * FROM item_info
+
+	   JOIN (SELECT ROUND(RAND() * (
+	     SELECT MAX(id)-2 FROM item_info
+	        )) AS id) AS r2
+
+	        WHERE item_info.id > r2.id LIMIT 2
+
+	*/
+
+	list := []*item.GoodsItem{}
+	sql := fmt.Sprintf(`SELECT * FROM item_info
+
+    JOIN (SELECT ROUND(RAND() * (
+      SELECT MAX(id)-? FROM item_info WHERE item_info.cat_id=?
+        AND item_info.review_state=? AND item_info.shelve_state=? %s
+         )) AS id) AS r2
+		 WHERE item_info.Id > r2.id AND item_info.cat_id=?
+		  AND item_info.review_state=?
+		 AND item_info.shelve_state=? %s LIMIT ?`,
+		where, where)
+	i.Connector.GetOrm().SelectByQuery(&list, sql,
+		quantity, catId, enum.ReviewPass, item.ShelvesOn,
+		catId, enum.ReviewPass, item.ShelvesOn, quantity)
+	return list
 }
 
 //根据关键词搜索上架的商品

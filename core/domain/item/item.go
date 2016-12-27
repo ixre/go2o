@@ -180,7 +180,8 @@ func (g *itemImpl) SetSku(arr []*item.Sku) error {
 // ========== [# SKU处理开始 ]  ===========//
 
 // 保存商品SKU
-func (g *itemImpl) saveItemSku(arr []*item.Sku) (err error) {
+func (g *itemImpl) saveItemSku(arrPtr *[]*item.Sku) (err error) {
+	arr := *arrPtr
 	pk := g.GetAggregateRootId()
 	ss := g.repo.SkuService()
 	// 格式化数据
@@ -335,7 +336,12 @@ func (g *itemImpl) Save() (_ int32, err error) {
 			}
 			// 保存商品SKU
 			if err == nil {
-				err = g.saveItemSku(g.value.SkuArray)
+				err = g.saveItemSku(&g.value.SkuArray)
+				// 设置默认SKU
+				g.value.SkuId = 0
+				if l := len(g.value.SkuArray); l > 0 && err == nil {
+					g.value.SkuId = g.value.SkuArray[0].Id
+				}
 			}
 		}
 		if err != nil {

@@ -39,10 +39,10 @@ func NewSaleService(cateRepo product.ICategoryRepo,
 }
 
 // 获取商品值
-func (s *itemService) GetItemValue(itemId int32) *item.GoodsItem {
+func (s *itemService) GetItemValue(itemId int32) *define.Item {
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
-		return item.GetValue()
+		return parser.ItemDto(item.GetValue())
 	}
 	return nil
 }
@@ -69,8 +69,9 @@ func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
 }
 
 // 保存商品
-func (s *itemService) SaveItem(it *item.GoodsItem, vendorId int32) (_ *define.Result_, err error) {
+func (s *itemService) SaveItem(di *define.Item, vendorId int32) (_ *define.Result_, err error) {
 	var gi item.IGoodsItem
+	it := parser.Item(di)
 	if it.Id > 0 {
 		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != vendorId {
@@ -102,6 +103,17 @@ func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
 		arr[i] = parser.ItemDto(v)
 	}
 	return total, arr
+}
+
+// 获取上架商品数据（分页）
+func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*define.Item {
+	list := s._goodsQuery.GetRandomItem(catId, quantity, where)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ItemDto(v)
+	}
+	return arr
 }
 
 // 根据SKU获取商品
