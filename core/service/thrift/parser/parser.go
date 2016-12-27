@@ -348,6 +348,49 @@ func ItemDto(src *item.GoodsItem) *define.Item {
 	return it
 }
 
+func Item(src *define.Item) *item.GoodsItem {
+	it := &item.GoodsItem{
+		Id:           src.ItemId,
+		ProductId:    src.ProductId,
+		PromFlag:     src.PromFlag,
+		CatId:        src.CatId,
+		VendorId:     src.VendorId,
+		BrandId:      src.BrandId,
+		ShopId:       src.ShopId,
+		ShopCatId:    src.ShopCatId,
+		ExpressTid:   src.ExpressTid,
+		Title:        src.Title,
+		ShortTitle:   src.ShortTitle,
+		Code:         src.Code,
+		Image:        src.Image,
+		IsPresent:    src.IsPresent,
+		PriceRange:   src.PriceRange,
+		StockNum:     src.StockNum,
+		SaleNum:      src.SaleNum,
+		SkuNum:       src.SkuNum,
+		SkuId:        src.SkuId,
+		Cost:         float32(src.Cost),
+		Price:        float32(src.Price),
+		RetailPrice:  float32(src.RetailPrice),
+		Weight:       src.Weight,
+		Bulk:         src.Bulk,
+		ShelveState:  src.ShelveState,
+		ReviewState:  src.ReviewState,
+		ReviewRemark: src.ReviewRemark,
+		SortNum:      src.SortNum,
+		CreateTime:   src.CreateTime,
+		UpdateTime:   src.UpdateTime,
+		PromPrice:    float32(src.PromPrice),
+	}
+	if src.SkuArray != nil {
+		it.SkuArray = make([]*item.Sku, len(src.SkuArray))
+		for i, v := range src.SkuArray {
+			it.SkuArray[i] = Sku(v)
+		}
+	}
+	return it
+}
+
 func SkuDto(src *item.Sku) *define.Sku {
 	return &define.Sku{
 		SkuId:       src.Id,
@@ -361,6 +404,26 @@ func SkuDto(src *item.Sku) *define.Sku {
 		RetailPrice: float64(src.RetailPrice),
 		Price:       float64(src.Price),
 		Cost:        float64(src.Cost),
+		Weight:      src.Weight,
+		Bulk:        src.Bulk,
+		Stock:       src.Stock,
+		SaleNum:     src.SaleNum,
+	}
+}
+
+func Sku(src *define.Sku) *item.Sku {
+	return &item.Sku{
+		Id:          src.SkuId,
+		ProductId:   src.ProductId,
+		ItemId:      src.ItemId,
+		Title:       src.Title,
+		Image:       src.Image,
+		SpecData:    src.SpecData,
+		SpecWord:    src.SpecWord,
+		Code:        src.Code,
+		RetailPrice: float32(src.RetailPrice),
+		Price:       float32(src.Price),
+		Cost:        float32(src.Cost),
 		Weight:      src.Weight,
 		Bulk:        src.Bulk,
 		Stock:       src.Stock,

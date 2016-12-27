@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-func FormatFloat(f float32) string {
+func FormatFloat64(f float64) string {
 	//regexp : ([^\.]+)(\.|(\.[1-9]))0*$  =>  $1$3
 	s := fmt.Sprintf("%.2f", f)
 	if s == "NaN" {
@@ -29,6 +29,10 @@ func FormatFloat(f float32) string {
 		return s[:len(s)-1]
 	}
 	return s
+}
+
+func FormatFloat(f float32) string {
+	return FormatFloat64(float64(f))
 }
 
 func FormatDecimal(f float32) string {

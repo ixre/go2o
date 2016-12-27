@@ -64,7 +64,7 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 		_, err := c.Save()
 		domain.HandleError(err, "service")
 	}
-	if c.GetValue().BuyerId <= 0 {
+	if c.GetValue().BuyerId <= 0 && buyerId > 0 {
 		err := c.SetBuyer(buyerId)
 		domain.HandleError(err, "service")
 	}
@@ -99,9 +99,11 @@ func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
 }
 
 //todo: 这里响应较慢,性能?
-func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
-	itemId, skuId, num int32, checked bool) (*dto.CartItem, error) {
-	c := s.getShoppingCart(memberId, cartKey)
+func (s *shoppingService) PutInCart(cartId int32, itemId, skuId, num int32, checked bool) (*dto.CartItem, error) {
+	c := s._cartRepo.GetCart(cartId)
+	if c == nil {
+		return nil, cart.ErrNoSuchCart
+	}
 
 	//todo:  以下注释删除？？？
 
@@ -110,7 +112,7 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	// 从购物车中添加
 	//for k, v := range c.Items() {
 	//	if k == skuId {
-	//		item, err = c.AddItem(v.SnapshotId,skuId, num, checked)
+	//		item, err = c.Put(v.SnapshotId,skuId, num, checked)
 	//		break
 	//	}
 	//}
@@ -139,10 +141,10 @@ func (s *shoppingService) AddCartItem(memberId int32, cartKey string,
 	//        return nil, errors.New("商户还未开通商城")
 	//    }
 	//    // 加入购物车
-	//    item, err = c.AddItem(itemId, skuId, num, checked)
+	//    item, err = c.Put(itemId, skuId, num, checked)
 	//}
 
-	item, err := c.AddItem(itemId, skuId, num, checked)
+	item, err := c.Put(itemId, skuId, num, checked)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			return cart.ParseCartItem(item), err

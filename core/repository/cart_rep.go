@@ -9,18 +9,21 @@
 package repository
 
 import (
+	"database/sql"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	cartImpl "go2o/core/domain/cart"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"log"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
 
 type cartRepo struct {
 	db.Connector
+	_orm        orm.Orm
 	_goodsRepo  item.IGoodsItemRepo
 	_memberRepo member.IMemberRepo
 }
@@ -29,6 +32,7 @@ func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 	goodsRepo item.IGoodsItemRepo) cart.ICartRepo {
 	return &cartRepo{
 		Connector:   conn,
+		_orm:        conn.GetOrm(),
 		_memberRepo: memberRepo,
 		_goodsRepo:  goodsRepo,
 	}
@@ -42,6 +46,65 @@ func (c *cartRepo) CreateCart(v *cart.ValueCart) cart.ICart {
 // 创建一个购物车
 func (c *cartRepo) NewCart() cart.ICart {
 	return cartImpl.NewCart(-1, c, c._memberRepo, c._goodsRepo)
+}
+
+// 获取购物车
+func (c *cartRepo) GetCart(id int32) cart.ICart {
+	v := c.GetSaleCart(id)
+	if v != nil {
+		return c.CreateCart(v)
+	}
+	return nil
+}
+
+// Get SaleCart
+func (s *cartRepo) GetSaleCart(primary interface{}) *cart.ValueCart {
+	e := cart.ValueCart{}
+	err := s._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return nil
+}
+
+// Select SaleCart
+func (s *cartRepo) SelectSaleCart(where string, v ...interface{}) []*cart.ValueCart {
+	list := []*cart.ValueCart{}
+	err := s._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return list
+}
+
+// Save SaleCart
+func (s *cartRepo) SaveSaleCart(v *cart.ValueCart) (int, error) {
+	id, err := orm.Save(s._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return id, err
+}
+
+// Delete SaleCart
+func (s *cartRepo) DeleteSaleCart(primary interface{}) error {
+	err := s._orm.DeleteByPk(cart.ValueCart{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return err
+}
+
+// Batch Delete SaleCart
+func (s *cartRepo) BatchDeleteSaleCart(where string, v ...interface{}) (int64, error) {
+	r, err := s._orm.Delete(cart.ValueCart{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return r, err
 }
 
 // 获取购物车

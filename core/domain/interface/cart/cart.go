@@ -19,6 +19,8 @@ import (
 )
 
 var (
+	ErrNoSuchCart *domain.DomainError = domain.NewDomainError(
+		"empty_shopping_no_such_cart", "购物车无法使用")
 	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_cart", "购物车没有商品")
 
@@ -72,7 +74,7 @@ type (
 
 		// 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现? 暂时以店铺区分
-		AddItem(itemId, skuId int32, num int32, checked bool) (*CartItem, error)
+		Put(itemId, skuId int32, num int32, checked bool) (*CartItem, error)
 
 		// 移出项
 		RemoveItem(skuId int32, num int32) error
@@ -104,11 +106,23 @@ type (
 	// 如果会员没有购物车，则绑定为key的购物车
 	// 如果都没有，则创建一个购物车
 	ICartRepo interface {
-		// 创建购物车对象
-		CreateCart(v *ValueCart) ICart
-
 		// 创建一个购物车
 		NewCart() ICart
+		// 创建购物车对象
+		CreateCart(v *ValueCart) ICart
+		// 获取购物车
+		GetCart(id int32) ICart
+
+		// Get SaleCart
+		GetSaleCart(primary interface{}) *ValueCart
+		// Select SaleCart
+		SelectSaleCart(where string, v ...interface{}) []*ValueCart
+		// Save SaleCart
+		SaveSaleCart(v *ValueCart) (int, error)
+		// Delete SaleCart
+		DeleteSaleCart(primary interface{}) error
+		// Batch Delete SaleCart
+		BatchDeleteSaleCart(where string, v ...interface{}) (int64, error)
 
 		// 获取购物车
 		GetShoppingCartByKey(key string) ICart

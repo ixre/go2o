@@ -332,6 +332,17 @@ CREATE TABLE pro_brand (
   PRIMARY KEY (id)) comment='产品品牌';
 
 
+
+
+/** 2016-12-30 **/
+
+
+DROP TABLE `txmall`.`gc_member`, `txmall`.`gc_order_confirm`;
+DROP TABLE `txmall`.`gs_category`;
+DROP TABLE `txmall`.`sg_bonus`, `txmall`.`sg_bonus_log`, `txmall`.`sg_day_total`, `txmall`.`sg_member`;
+DROP TABLE `txmall`.`pt_order`, `txmall`.`pt_order_item`;
+DROP TABLE `txmall`.`t_ips`, `txmall`.`t_members`, `txmall`.`t_usrcount`;
+
 CREATE TABLE portal_nav_type (
   id   int(10) NOT NULL AUTO_INCREMENT comment '编号',
   name varchar(20) NOT NULL comment '名称',

@@ -80,7 +80,7 @@ func (c *contentRepo) GetAllArticleCategory() []*content.ArticleCategory {
 // 判断栏目是否存在
 func (c *contentRepo) CategoryExists(indent string, id int32) bool {
 	num := 0
-	c.Connector.ExecScalar("SELECT COUNT(0) FROM con_category WHERE indent=? and id<>id",
+	c.Connector.ExecScalar("SELECT COUNT(0) FROM con_article_category WHERE indent=? and id<>id",
 		&num, indent, id)
 	return num > 0
 }
