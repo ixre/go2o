@@ -52,6 +52,7 @@ func (c *cartRepo) NewCart() cart.ICart {
 func (c *cartRepo) GetCart(id int32) cart.ICart {
 	v := c.GetSaleCart(id)
 	if v != nil {
+		v.Items = c.SelectSaleCartItem("cart_id=?", id)
 		return c.CreateCart(v)
 	}
 	return nil
@@ -98,11 +99,52 @@ func (s *cartRepo) DeleteSaleCart(primary interface{}) error {
 	return err
 }
 
-// Batch Delete SaleCart
-func (s *cartRepo) BatchDeleteSaleCart(where string, v ...interface{}) (int64, error) {
-	r, err := s._orm.Delete(cart.ValueCart{}, where, v...)
+// Get SaleCartItem
+func (s *cartRepo) GetSaleCartItem(primary interface{}) *cart.CartItem {
+	e := cart.CartItem{}
+	err := s._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
+	}
+	return nil
+}
+
+// Select SaleCartItem
+func (s *cartRepo) SelectSaleCartItem(where string, v ...interface{}) []*cart.CartItem {
+	list := []*cart.CartItem{}
+	err := s._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
+	}
+	return list
+}
+
+// Save SaleCartItem
+func (s *cartRepo) SaveSaleCartItem(v *cart.CartItem) (int, error) {
+	id, err := orm.Save(s._orm, v, int(v.Id))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
+	}
+	return id, err
+}
+
+// Delete SaleCartItem
+func (s *cartRepo) DeleteSaleCartItem(primary interface{}) error {
+	err := s._orm.DeleteByPk(cart.CartItem{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
+	}
+	return err
+}
+
+// Batch Delete SaleCartItem
+func (s *cartRepo) BatchDeleteSaleCartItem(where string, v ...interface{}) (int64, error) {
+	r, err := s._orm.Delete(cart.CartItem{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
 	}
 	return r, err
 }

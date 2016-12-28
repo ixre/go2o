@@ -11,18 +11,18 @@ package format
 import (
 	"bytes"
 	"fmt"
-	"go2o/core/dto"
+	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
 // 购物车详情
-func CartDetails(c *dto.ShoppingCart) string {
+func CartDetails(c *define.ShoppingCart) string {
 	buf := bytes.NewBufferString("")
-	for _, vendor := range c.Vendors {
-		if vendor.CheckedNum > 0 {
+	for _, shop := range c.Shops {
+		if shop.Checked {
 			buf.WriteString(fmt.Sprintf(`<div class="vendor"><div class="tit">%s</div>`,
-				vendor.ShopName))
-			for _, item := range vendor.Items {
-				if !item.Checked {
+				shop.ShopName))
+			for _, it := range shop.Items {
+				if !it.Checked {
 					continue //只显示结账的
 				}
 				buf.WriteString(fmt.Sprintf(`
@@ -37,8 +37,8 @@ func CartDetails(c *dto.ShoppingCart) string {
 				<span class="price">￥%s</span>
 				<span class="fee">￥%s</span>
 			</div>`,
-					item.GoodsId, GetGoodsImageUrl(item.GoodsImage), item.GoodsName, item.Quantity, item.GoodsNo,
-					FormatFloat(item.SalePrice), FormatFloat(item.SalePrice*float32(item.Quantity)),
+					it.ItemId, GetGoodsImageUrl(it.Image), it.Title, it.Quantity, it.Code,
+					FormatFloat64(it.Price), FormatFloat64(it.Price*float64(it.Quantity)),
 				))
 			}
 			buf.WriteString("</div>")

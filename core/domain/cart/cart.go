@@ -226,7 +226,7 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 
 	// 添加数量
 	for _, v := range c.value.Items {
-		if v.SkuId == skuId {
+		if v.ItemId == itemId {
 			if v.Quantity+num > stock {
 				return v, item.ErrOutOfStock // 库存不足
 			}
@@ -238,7 +238,7 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 		}
 	}
 
-	c.snapMap = nil //clean
+	c.snapMap = nil
 
 	// 设置商品的相关信息
 	c.setGoodsInfo(iv, c.getBuyerLevelId())
@@ -260,17 +260,14 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 }
 
 // 移出项
-func (c *cartImpl) RemoveItem(goodsId int32, num int32) error {
+func (c *cartImpl) Remove(itemId, skuId, num int32) error {
 	if c.value.Items == nil {
 		return cart.ErrEmptyShoppingCart
 	}
-
 	// 删除数量
 	for _, v := range c.value.Items {
-		if v.SkuId == goodsId {
+		if v.ItemId == itemId && v.SkuId == skuId {
 			if newNum := v.Quantity - num; newNum <= 0 {
-				// 移出购物车
-				//c.value.Items = append(c.value.Items[:i],c.value.Items[i+1:]...)
 				v.Quantity = 0
 			} else {
 				v.Quantity = newNum
@@ -278,7 +275,6 @@ func (c *cartImpl) RemoveItem(goodsId int32, num int32) error {
 			break
 		}
 	}
-
 	c.snapMap = nil //clean
 
 	return nil
@@ -537,7 +533,7 @@ func (c *cartImpl) Release() bool {
 	if len(checked) < len(c.value.Items) {
 		for _, i := range checked {
 			v := c.value.Items[i]
-			c.RemoveItem(v.SkuId, v.Quantity)
+			c.Remove(v.ItemId, v.SkuId, v.Quantity)
 		}
 		c.Save()
 		return false
