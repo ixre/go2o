@@ -189,6 +189,54 @@ struct Sku {
     15: i32 SaleNum
 }
 
+// 购物车
+struct ShoppingCart {
+    //编号
+    1: i32 CartId
+    //购物车KEY
+    2: string Key
+    //店铺分组
+    3: list<ShoppingCartGroup> Shops
+}
+// 购物车商铺分组
+struct ShoppingCartGroup {
+    //商铺编号
+    1: i32 ShopId
+    //供货商编号
+    2: i32 VendorId
+    //商铺名称
+    3: string ShopName
+    //是否结算
+    4: bool Checked
+    //商品
+    5: list<ShoppingCartItem> Items
+}
+// 购物车商品
+struct ShoppingCartItem {
+    //商品编号
+    1: i32 ItemId
+    //SKU编号
+    2: i32 SkuId
+    //商品标题
+    3: string Title
+    //商品图片
+    4: string Image
+    //规格文本
+    5: string SpecWord
+    //商品编码
+    6: string Code
+    //零售价
+    7: double RetailPrice
+    //销售价
+    8: double Price
+    //数量
+    9: i32 Quantity
+    //是否结算
+    10: bool Checked
+    //库存文本
+    11: string StockText
+}
+
 //支付单
 struct PaymentOrder {
     1: i32 Id

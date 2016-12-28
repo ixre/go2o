@@ -20,6 +20,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"strings"
 )
 
@@ -73,78 +74,43 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 func (s *shoppingService) GetShoppingCart(memberId int32,
-	cartKey string) *dto.ShoppingCart {
+	cartKey string) *define.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartKey)
 	return s.parseCart(c)
 }
 
 // 创建一个新的购物车
-func (s *shoppingService) CreateShoppingCart(memberId int32) *dto.ShoppingCart {
+func (s *shoppingService) CreateShoppingCart(memberId int32) *define.ShoppingCart {
 	c := s._cartRepo.NewCart()
 	c.SetBuyer(memberId)
 	return cart.ParseToDtoCart(c)
 }
 
 // 转换购物车数据
-func (s *shoppingService) parseCart(c cart.ICart) *dto.ShoppingCart {
+func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 	dto := cart.ParseToDtoCart(c)
-	for _, v := range dto.Vendors {
+	for _, v := range dto.Shops {
+
+		//todo: 改为不依赖vendor
+
 		mch := s._mchRepo.GetMerchant(v.VendorId)
-		v.VendorName = mch.GetValue().Name
 		if v.ShopId > 0 {
-			v.ShopName = mch.ShopManager().GetShop(v.ShopId).GetValue().Name
+			v.ShopName = mch.ShopManager().
+				GetShop(v.ShopId).GetValue().Name
 		}
 	}
 	return dto
 }
 
-//todo: 这里响应较慢,性能?
-func (s *shoppingService) PutInCart(cartId int32, itemId, skuId, num int32, checked bool) (*dto.CartItem, error) {
+// 放入购物车
+func (s *shoppingService) PutInCart(cartId, itemId, skuId,
+	quantity int32, checked bool) (*define.ShoppingCartItem, error) {
 	c := s._cartRepo.GetCart(cartId)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
 
-	//todo:  以下注释删除？？？
-
-	//var item *cart.CartItem
-	//var err error
-	// 从购物车中添加
-	//for k, v := range c.Items() {
-	//	if k == skuId {
-	//		item, err = c.Put(v.SnapshotId,skuId, num, checked)
-	//		break
-	//	}
-	//}
-
-	// 将新商品加入到购物车
-	//if item == nil {
-	//    snap := s._goodsRepo.GetLatestSnapshot(skuId)
-	//    if snap == nil {
-	//        return nil, proItem.ErrNoSuchGoods
-	//    }
-	//    tm := s._itemRepo.GetProductValue(snap.ItemId)
-	//    // 检测是否开通商城
-	//    mch := s._mchRepo.GetMerchant(tm.VendorId)
-	//    if mch == nil {
-	//        return nil, merchant.ErrNoSuchMerchant
-	//    }
-	//    shops := mch.ShopManager().GetShops()
-	//    var shopId int32
-	//    for _, v := range shops {
-	//        if v.Type() == shop.TypeOnlineShop {
-	//            shopId = v.GetDomainId()
-	//            break
-	//        }
-	//    }
-	//    if shopId == 0 {
-	//        return nil, errors.New("商户还未开通商城")
-	//    }
-	//    // 加入购物车
-	//    item, err = c.Put(itemId, skuId, num, checked)
-	//}
-
-	item, err := c.Put(itemId, skuId, num, checked)
+	item, err := c.Put(itemId, skuId, quantity, checked)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			return cart.ParseCartItem(item), err
@@ -152,12 +118,15 @@ func (s *shoppingService) PutInCart(cartId int32, itemId, skuId, num int32, chec
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int32,
-	cartKey string, goodsId int32, num int32) error {
-	cart := s.getShoppingCart(memberId, cartKey)
-	err := cart.RemoveItem(goodsId, num)
+func (s *shoppingService) SubCartItem(cartId, itemId, skuId,
+	quantity int32) error {
+	c := s._cartRepo.GetCart(cartId)
+	if c == nil {
+		return cart.ErrNoSuchCart
+	}
+	err := c.Remove(itemId, skuId, quantity)
 	if err == nil {
-		_, err = cart.Save()
+		_, err = c.Save()
 	}
 	return err
 }

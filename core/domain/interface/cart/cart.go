@@ -10,12 +10,13 @@
 package cart
 
 import (
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
 var (
@@ -74,10 +75,10 @@ type (
 
 		// 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现? 暂时以店铺区分
-		Put(itemId, skuId int32, num int32, checked bool) (*CartItem, error)
+		Put(itemId, skuId, num int32, checked bool) (*CartItem, error)
 
 		// 移出项
-		RemoveItem(skuId int32, num int32) error
+		Remove(itemId, skuId, num int32) error
 
 		// 合并购物车，并返回新的购物车
 		Combine(ICart) ICart
@@ -121,8 +122,6 @@ type (
 		SaveSaleCart(v *ValueCart) (int, error)
 		// Delete SaleCart
 		DeleteSaleCart(primary interface{}) error
-		// Batch Delete SaleCart
-		BatchDeleteSaleCart(where string, v ...interface{}) (int64, error)
 
 		// 获取购物车
 		GetShoppingCartByKey(key string) ICart
@@ -191,55 +190,58 @@ type (
 	}
 )
 
-func ParseCartItem(item *CartItem) *dto.CartItem {
-	i := &dto.CartItem{
-		GoodsId:  item.SkuId,
+func ParseCartItem(item *CartItem) *define.ShoppingCartItem {
+	i := &define.ShoppingCartItem{
+		ItemId:   item.ItemId,
+		SkuId:    item.SkuId,
 		Quantity: item.Quantity,
 		Checked:  item.Checked == 1,
 	}
 	if item.Sku != nil {
-		i.GoodsImage = format.GetGoodsImageUrl(item.Sku.Image)
-		i.Price = item.Sku.RetailPrice
-		i.SalePrice = item.Sku.Price
+		i.Image = format.GetGoodsImageUrl(item.Sku.Image)
+		i.RetailPrice = float64(item.Sku.RetailPrice)
+		i.Price = float64(item.Sku.Price)
 		i.SpecWord = item.Sku.SpecWord
-		i.GoodsName = item.Sku.Title
-		i.GoodsNo = item.Sku.ItemCode
+		i.Title = item.Sku.Title
+		i.Code = item.Sku.ItemCode
+		i.StockText = util.BoolExt.TString(item.Sku.Stock > 0,
+			"有货", "无货")
 	}
 	return i
 }
 
-func ParseToDtoCart(c ICart) *dto.ShoppingCart {
-	cart := &dto.ShoppingCart{}
+func ParseToDtoCart(c ICart) *define.ShoppingCart {
+	cart := &define.ShoppingCart{}
 	v := c.GetValue()
-	cart.Id = c.GetAggregateRootId()
-	cart.BuyerId = v.BuyerId
-	cart.CartKey = v.CartKey
-	cart.UpdateTime = v.UpdateTime
-	t, f := c.GetFee()
-	cart.TotalFee = t
-	cart.OrderFee = f
-	cart.Summary = c.GetSummary()
-	cart.Vendors = []*dto.CartVendorGroup{}
+	cart.CartId = c.GetAggregateRootId()
+	//cart.BuyerId = v.BuyerId
+	cart.Key = v.CartKey
+	//cart.UpdateTime = v.UpdateTime
+	//t, f := c.GetFee()
+	//cart.TotalAmount = t
+	//cart.OrderAmount = f
+	//cart.Summary = c.GetSummary()
+	cart.Shops = []*define.ShoppingCartGroup{}
 
 	if v.Items != nil {
 		if l := len(v.Items); l > 0 {
-			mp := make(map[int32]*dto.CartVendorGroup, 0) //保存运营商到map
+			mp := make(map[int32]*define.ShoppingCartGroup, 0) //保存运营商到map
 			for _, v := range v.Items {
 				vendor, ok := mp[v.ShopId]
 				if !ok {
-					vendor = &dto.CartVendorGroup{
+					vendor = &define.ShoppingCartGroup{
 						VendorId: v.VendorId,
 						ShopId:   v.ShopId,
-						Items:    []*dto.CartItem{},
+						Items:    []*define.ShoppingCartItem{},
 					}
 					mp[v.ShopId] = vendor
-					cart.Vendors = append(cart.Vendors, vendor)
+					cart.Shops = append(cart.Shops, vendor)
 				}
 				if v.Checked == 1 {
-					vendor.CheckedNum += 1
+					vendor.Checked = true
 				}
 				vendor.Items = append(vendor.Items, ParseCartItem(v))
-				cart.TotalNum += v.Quantity
+				//cart.TotalNum += v.Quantity
 			}
 		}
 	}
