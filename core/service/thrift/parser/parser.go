@@ -10,6 +10,8 @@ package parser
 
 import (
 	"github.com/jsix/gof/math"
+	"github.com/jsix/gof/util"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/payment"
@@ -429,4 +431,15 @@ func Sku(src *define.Sku) *item.Sku {
 		Stock:       src.Stock,
 		SaleNum:     src.SaleNum,
 	}
+}
+
+func ShoppingCartItem(src *define.ShoppingCartItem) *cart.CartItem {
+	i := &cart.CartItem{
+		ItemId:   src.ItemId,
+		SkuId:    src.SkuId,
+		Quantity: src.Quantity,
+		Checked:  util.BoolExt.TInt32(src.Checked, 1, 0),
+		ShopId:   src.ShopId,
+	}
+	return i
 }

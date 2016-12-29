@@ -235,6 +235,8 @@ struct ShoppingCartItem {
     10: bool Checked
     //库存文本
     11: string StockText
+    //店铺编号
+    12: i32 ShopId
 }
 
 //支付单
