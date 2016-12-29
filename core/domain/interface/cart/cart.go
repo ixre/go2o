@@ -50,7 +50,7 @@ type (
 		GetValue() ValueCart
 
 		// 标记商品结算
-		SignItemChecked(skuArr []int32) error
+		SignItemChecked(items []*CartItem) error
 
 		// 检查购物车(仅结算商品)
 		Check() error
@@ -196,6 +196,7 @@ func ParseCartItem(item *CartItem) *define.ShoppingCartItem {
 		SkuId:    item.SkuId,
 		Quantity: item.Quantity,
 		Checked:  item.Checked == 1,
+		ShopId:   item.ShopId,
 	}
 	if item.Sku != nil {
 		i.Image = format.GetGoodsImageUrl(item.Sku.Image)

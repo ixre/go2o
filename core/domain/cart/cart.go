@@ -188,6 +188,10 @@ func (c *cartImpl) Items() map[int32]*cart.CartItem {
 	return list
 }
 
+func (c *cartImpl) getItems() []*cart.CartItem {
+	return c.value.Items
+}
+
 // 添加项
 func (c *cartImpl) Put(itemId, skuId int32, num int32,
 	checked bool) (*cart.CartItem, error) {
@@ -417,17 +421,15 @@ func (c *cartImpl) setBuyerAddress(addressId int32) error {
 }
 
 // 标记商品结算
-func (c *cartImpl) SignItemChecked(skuArr []int32) error {
-	mp := c.Items()
-	arrMap := make(map[int32]int, len(skuArr))
-	for _, v := range skuArr {
-		arrMap[v] = 0
-	}
-	for skuId, item := range mp {
-		if _, ok := arrMap[skuId]; ok {
-			item.Checked = 1
-		} else {
-			item.Checked = 0
+func (c *cartImpl) SignItemChecked(items []*cart.CartItem) error {
+	mp := c.getItems()
+	for _, item := range mp {
+		item.Checked = 0
+		for _, v := range items {
+			if v.SkuId == item.SkuId && v.ItemId == item.ItemId {
+				item.Checked = 1
+				break
+			}
 		}
 	}
 	err := c.Check()

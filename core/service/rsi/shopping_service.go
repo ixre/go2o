@@ -21,6 +21,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 	"strings"
 )
 
@@ -133,9 +134,13 @@ func (s *shoppingService) SubCartItem(cartId, itemId, skuId,
 
 // 勾选商品结算
 func (s *shoppingService) CartCheckSign(memberId int32,
-	cartKey string, arr []int32) error {
-	cart := s.getShoppingCart(memberId, cartKey)
-	return cart.SignItemChecked(arr)
+	cartKey string, arr []*define.ShoppingCartItem) error {
+	c := s.getShoppingCart(memberId, cartKey)
+	list := make([]*cart.CartItem, len(arr))
+	for i, v := range arr {
+		list[i] = parser.ShoppingCartItem(v)
+	}
+	return c.SignItemChecked(list)
 }
 
 // 更新购物车结算
