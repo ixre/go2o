@@ -15,6 +15,8 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/rsi"
+	"go2o/core/variable"
+	"strings"
 )
 
 // 设置商户站点配置
@@ -39,6 +41,8 @@ func DelShopCache(mchId int32) {
 
 // 根据主机头识别商店编号
 func GetShopIdByHost(host string) int32 {
+	//去除"m."
+	host = strings.Replace(host, variable.DOMAIN_PREFIX_MOBILE, "", -1)
 	key := "go2o:cache:shop-host:" + host
 	sto := GetKVS()
 	shopId, err := util.I32Err(sto.GetInt(key))
