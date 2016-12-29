@@ -337,11 +337,11 @@ CREATE TABLE pro_brand (
 /** 2016-12-30 **/
 
 
-DROP TABLE `txmall`.`gc_member`, `txmall`.`gc_order_confirm`;
-DROP TABLE `txmall`.`gs_category`;
-DROP TABLE `txmall`.`sg_bonus`, `txmall`.`sg_bonus_log`, `txmall`.`sg_day_total`, `txmall`.`sg_member`;
-DROP TABLE `txmall`.`pt_order`, `txmall`.`pt_order_item`;
-DROP TABLE `txmall`.`t_ips`, `txmall`.`t_members`, `txmall`.`t_usrcount`;
+DROP TABLE `gc_member`, `gc_order_confirm`;
+DROP TABLE `gs_category`;
+DROP TABLE `sg_bonus`, `sg_bonus_log`, `sg_day_total`, `sg_member`;
+DROP TABLE `pt_order`, `pt_order_item`;
+DROP TABLE `t_ips`, `t_members`, `t_usrcount`;
 
 CREATE TABLE portal_nav_type (
   id   int(10) NOT NULL AUTO_INCREMENT comment '编号',
@@ -356,9 +356,9 @@ CREATE TABLE portal_nav (
   nav_type int(2) NOT NULL comment '导航类型: 1为电脑，2为手机端',
   PRIMARY KEY (id)) comment='门户导航';
 
-INSERT INTO `txmall`.`portal_nav_type` (`id`, `name`) VALUES ('1', 'PC商城');
-INSERT INTO `txmall`.`portal_nav_type` (`id`, `name`) VALUES ('2', '移动商城');
+INSERT INTO `portal_nav_type` (`id`, `name`) VALUES ('1', 'PC商城');
+INSERT INTO `portal_nav_type` (`id`, `name`) VALUES ('2', '移动商城');
 
-ALTER TABLE `txmall`.`pro_attr_info`
+ALTER TABLE `pro_attr_info`
 CHANGE COLUMN `product_id` `product_id` INT(10) NOT NULL COMMENT '产品编号' AFTER `id`,
 ADD COLUMN `attr_word` VARCHAR(200) NOT NULL COMMENT '属性文本' AFTER `attr_data`;
