@@ -64,7 +64,7 @@ func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
 	skuBytes := ss.GetSkuJson(it.SkuArray())
 	specJson = string(skuBytes)
 	specArr := it.SpecArray()
-	specHtm = ss.GetSpecHtm(specArr)
+	specHtm = ss.GetSpecHtml(specArr)
 	return specJson, specHtm
 }
 

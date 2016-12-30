@@ -203,7 +203,9 @@ func ParseCartItem(item *CartItem) *define.ShoppingCartItem {
 		i.RetailPrice = float64(item.Sku.RetailPrice)
 		i.Price = float64(item.Sku.Price)
 		i.SpecWord = item.Sku.SpecWord
-		i.Title = item.Sku.Title
+		if i.Title == "" {
+			i.Title = item.Sku.Title
+		}
 		i.Code = item.Sku.ItemCode
 		i.StockText = util.BoolExt.TString(item.Sku.Stock > 0,
 			"有货", "无货")
