@@ -42,7 +42,7 @@ func newCategory(rep product.ICategoryRepo,
 }
 
 func (c *categoryImpl) GetDomainId() int32 {
-	return c.value.Id
+	return c.value.ID
 }
 
 func (c *categoryImpl) GetValue() *product.Category {
@@ -93,7 +93,7 @@ func (c *categoryImpl) checkParent(parentId int32) error {
 // 设置值
 func (c *categoryImpl) SetValue(v *product.Category) error {
 	val := c.value
-	if val.Id == v.Id {
+	if val.ID == v.ID {
 		val.Enabled = v.Enabled
 		val.Name = v.Name
 		val.SortNum = v.SortNum
@@ -122,7 +122,7 @@ func (c *categoryImpl) GetChildes() []int32 {
 		childCats := c.getChildCategories(c.GetDomainId())
 		c.childIdArr = make([]int32, len(childCats))
 		for i, v := range childCats {
-			c.childIdArr[i] = v.Id
+			c.childIdArr[i] = v.ID
 		}
 	}
 	return c.childIdArr
@@ -135,17 +135,17 @@ func (c *categoryImpl) setCategoryLevel() {
 }
 
 func (c *categoryImpl) parentWalk(list []*product.Category,
-	parentId int32, level *int) {
+	parentId int32, level *int32) {
 	*level += 1
 	if parentId <= 0 {
 		return
 	}
 	for _, v := range list {
-		if v.Id == v.ParentId {
+		if v.ID == v.ParentId {
 			panic(errors.New(fmt.Sprintf(
 				"Bad category , id is same of parent id , id:%s",
-				v.Id)))
-		} else if v.Id == parentId {
+				v.ID)))
+		} else if v.ID == parentId {
 			c.parentWalk(list, v.ParentId, level)
 			break
 		}
@@ -159,9 +159,9 @@ func (c *categoryImpl) Save() (int32, error) {
 	c.setCategoryLevel()
 	id, err := c.rep.SaveCategory(c.value)
 	if err == nil {
-		c.value.Id = id
-		if len(c.value.Url) == 0 || c.parentIdChanged {
-			c.value.Url = c.getAutomaticUrl(id)
+		c.value.ID = id
+		if len(c.value.CatUrl) == 0 || c.parentIdChanged {
+			c.value.CatUrl = c.getAutomaticUrl(id)
 			c.parentIdChanged = false
 			return c.Save()
 		}
@@ -175,11 +175,11 @@ func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
 	var newArr []*product.Category = []*product.Category{}
 
 	var cdt iterator.Condition = func(v, v1 interface{}) bool {
-		return v1.(*product.Category).ParentId == v.(*product.Category).Id
+		return v1.(*product.Category).ParentId == v.(*product.Category).ID
 	}
 	var start iterator.WalkFunc = func(v interface{}, level int) {
 		c := v.(*product.Category)
-		if c.Id != catId {
+		if c.ID != catId {
 			newArr = append(newArr, c)
 		}
 	}
@@ -189,7 +189,7 @@ func (c *categoryImpl) getChildCategories(catId int32) []*product.Category {
 		arr[i] = all[i]
 	}
 
-	iterator.Walk(arr, &product.Category{Id: catId}, cdt, start, nil, 1)
+	iterator.Walk(arr, &product.Category{ID: catId}, cdt, start, nil, 1)
 
 	return newArr
 }
@@ -203,13 +203,13 @@ func (c *categoryImpl) getRelationCategories(catId int32) []*product.Category {
 	var l int = len(all)
 
 	for i := 0; i < l; i++ {
-		if !isMatch && all[i].Id == catId {
+		if !isMatch && all[i].ID == catId {
 			isMatch = true
 			pid = all[i].ParentId
 			newArr = append(newArr, all[i])
 			i = -1
 		} else {
-			if all[i].Id == pid {
+			if all[i].ID == pid {
 				newArr = append(newArr, all[i])
 				pid = all[i].ParentId
 				i = -1
@@ -228,7 +228,7 @@ func (c *categoryImpl) getAutomaticUrl(id int32) string {
 	var l int = len(relCats)
 	for i := l; i > 0; i-- {
 		buf.WriteString("-")
-		buf.WriteString(strconv.Itoa(int(relCats[i-1].Id)))
+		buf.WriteString(strconv.Itoa(int(relCats[i-1].ID)))
 	}
 	buf.WriteString(".html")
 	return buf.String()
@@ -350,11 +350,12 @@ func (c *categoryManagerImpl) CategoryTree(parentId int32) *product.Category {
 	list := c._repo.GetCategories(0)
 	var cat *product.Category
 	if parentId == 0 {
-		cat = &product.Category{Id: parentId}
+		cat = &product.Category{ID: parentId}
 	} else {
 		for _, v := range list {
-			if v.Id == parentId {
+			if v.ID == parentId {
 				cat = v
+				break
 			}
 		}
 		if cat == nil {
@@ -367,10 +368,10 @@ func (c *categoryManagerImpl) CategoryTree(parentId int32) *product.Category {
 
 func (c *categoryManagerImpl) walkCategoryTree(node *product.Category,
 	categories []*product.Category) {
-	node.Childes = []*product.Category{}
+	node.Children = []*product.Category{}
 	for _, v := range categories {
-		if v.ParentId == node.Id {
-			node.Childes = append(node.Childes, v)
+		if v.ID != 0 && v.ParentId == node.ID {
+			node.Children = append(node.Children, v)
 			c.walkCategoryTree(v, categories)
 		}
 	}

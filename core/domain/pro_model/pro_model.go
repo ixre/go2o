@@ -222,7 +222,7 @@ func (m *modelImpl) saveModelBrand(brandIds []int32) (err error) {
 		}
 		if !isExist {
 			e := &promodel.ProModelBrand{
-				Id:       0,
+				ID:       0,
 				BrandId:  v,
 				ProModel: pk,
 			}

@@ -57,7 +57,7 @@ type (
 	}
 	//分类
 	Category struct {
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		ID int32 `db:"id" auto:"yes" pk:"yes"`
 		//父分类
 		ParentId int32 `db:"parent_id"`
 		// 商品规格模型
@@ -65,19 +65,19 @@ type (
 		//名称
 		Name string `db:"name"`
 		//层级,用于判断2个分类是否为同一级
-		Level int `db:"level"`
+		Level int32 `db:"level"`
 		// 图标
 		Icon string `db:"icon"`
 		// 地址
-		Url string `db:"url"`
+		CatUrl string `db:"url"`
 		// 排序序号
-		SortNum int `db:"sort_num"`
+		SortNum int32 `db:"sort_num"`
 		// 是否启用,默认为不启用
-		Enabled int `db:"enabled"`
+		Enabled int32 `db:"enabled"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 子分类
-		Childes []*Category `db:"-"`
+		Children []*Category `db:"-"`
 	}
 	ICategoryRepo interface {
 		// 获取系统的栏目服务
@@ -137,7 +137,7 @@ func (c CategoryList) Len() int {
 func (c CategoryList) Less(i, j int) bool {
 	return c[i].SortNum < c[j].SortNum ||
 		// 如果序号相同,则判断ID
-		(c[i].SortNum == c[j].SortNum && c[i].Id < c[j].Id)
+		(c[i].SortNum == c[j].SortNum && c[i].ID < c[j].ID)
 }
 
 func (c CategoryList) Swap(i, j int) {
