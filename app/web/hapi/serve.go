@@ -36,6 +36,7 @@ func registerRoutes(s *echox.Echo) {
 	s.GET("/r/uc", mc.RedirectUc)
 	s.GET("/user/sync_m.p", us.Sync) //同步登录登出
 	s.Auto("/service", sc)           //服务
+	s.AutoGET("/!s", sc)             //服务
 }
 
 func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {

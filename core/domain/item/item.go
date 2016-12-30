@@ -138,13 +138,13 @@ func (g *itemImpl) SetValue(v *item.GoodsItem) error {
 			}
 			g.value.ShopId = v.ShopId
 			g.value.IsPresent = v.IsPresent
-			//g.value.Title = v.Title
 			g.value.ShopCatId = v.ShopCatId
 			g.value.IsPresent = v.IsPresent
 			g.value.ProductId = v.ProductId
 			g.value.PromFlag = v.PromFlag
 			g.value.ShopCatId = v.ShopId
 			g.value.ExpressTid = v.ExpressTid
+			g.value.Title = v.Title
 			g.value.ShortTitle = v.ShortTitle
 			g.value.Code = v.Code
 			g.value.SaleNum = v.SaleNum

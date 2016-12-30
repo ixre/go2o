@@ -13,9 +13,13 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/util"
 	ut "go2o/app/util"
+	"go2o/core/infrastructure/gen"
 	"go2o/core/service/rsi"
+	"go2o/core/variable"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 )
 
 type serviceC struct {
@@ -58,4 +62,17 @@ func (m *serviceC) Favorite(c *echox.Context) error {
 		result.Error(err)
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), result)
+}
+
+// 二维码
+func (s *serviceC) QrCode(c *echox.Context) error {
+	qurl := c.QueryParam("url")
+	u, err := url.Parse(qurl)
+	if err != nil || !strings.HasSuffix(u.Host, variable.Domain) {
+		return c.StringOK("not service")
+	}
+	data := gen.BuildQrCodeForUrl(qurl, 20)
+	c.Response().Write(data)
+	c.Response().Header().Add("Content-Type", "attachment;filename=qr.jpg")
+	return nil
 }

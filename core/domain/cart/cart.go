@@ -230,7 +230,7 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 
 	// 添加数量
 	for _, v := range c.value.Items {
-		if v.ItemId == itemId {
+		if v.ItemId == itemId && v.SkuId == skuId {
 			if v.Quantity+num > stock {
 				return v, item.ErrOutOfStock // 库存不足
 			}

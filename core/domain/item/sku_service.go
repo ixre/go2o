@@ -230,7 +230,10 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 			for i, v := range arr {
 				ii := strings.Index(v, ":")
 				iid, _ := util.I32Err(strconv.Atoi(v[ii+1:]))
-				if im := siMap[iid]; im != nil {
+				//先从自定义规格值获取文本，再从规格项获取
+				if n, ok := iName[iid]; ok && n != "" {
+					titArr[i+1] = n
+				} else if im := siMap[iid]; im != nil {
 					titArr[i+1] = im.Value
 				}
 			}
@@ -278,7 +281,7 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 }
 
 // 获取规格选择HTML
-func (s *skuServiceImpl) GetSpecHtm(spec []*promodel.Spec) string {
+func (s *skuServiceImpl) GetSpecHtml(spec []*promodel.Spec) string {
 	return s.su.GetSpecHtml(spec)
 }
 
