@@ -6,7 +6,6 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
-	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/thrift/idl/gen-go/define"
@@ -169,8 +168,8 @@ func (p *productService) DeleteCategory(mchId, id int32) error {
 func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, error) {
 	sl := p.catRep.GlobCatService()
 	var ca product.ICategory
-	if v.Id > 0 {
-		ca = sl.GetCategory(v.Id)
+	if v.ID > 0 {
+		ca = sl.GetCategory(v.ID)
 	} else {
 		ca = sl.CreateCategory(v)
 	}
@@ -210,13 +209,13 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, c
 		if cate.ParentId == parentId {
 			cNode := &tree.TreeNode{
 				Text:   cate.Name,
-				Value:  strconv.Itoa(int(cate.Id)),
+				Value:  strconv.Itoa(int(cate.ID)),
 				Url:    "",
 				Icon:   "",
 				Open:   true,
 				Childs: nil}
 			node.Childs = append(node.Childs, cNode)
-			p.walkCategoryTree(cNode, cate.Id, categories)
+			p.walkCategoryTree(cNode, cate.ID, categories)
 		}
 	}
 }
@@ -250,53 +249,48 @@ func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService
 	return p.catRep.GlobCatService()
 }
 
-func (p *productService) GetBigCategories(mchId int32) []dto.Category {
+func (p *productService) GetBigCategories(mchId int32) []*define.Category {
 	cats := p.catRep.GlobCatService().GetCategories()
-	list := []dto.Category{}
+	list := []*define.Category{}
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
 			v2.Icon = format.GetResUrl(v2.Icon)
-			dv := dto.Category{}
-			CopyCategory(v2, &dv)
-			list = append(list, dv)
+			list = append(list, parser.CategoryDto(v2))
 		}
 	}
 	return list
 }
 
-func (p *productService) GetChildCategories(mchId, parentId int32) []dto.Category {
+func (p *productService) GetChildCategories(mchId, parentId int32) []*define.Category {
 	cats := p.catRep.GlobCatService().GetCategories()
-	list := []dto.Category{}
+	list := []*define.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
 			vv.Icon = format.GetResUrl(vv.Icon)
-			dv := dto.Category{}
-			CopyCategory(vv, &dv)
-			p.setChild(cats, &dv)
-			list = append(list, dv)
+			p.setChild(cats, vv)
+			list = append(list, parser.CategoryDto(vv))
 		}
 	}
 	return list
 }
 
-func CopyCategory(src *product.Category, dst *dto.Category) {
-	dst.Id = src.Id
-	dst.Name = src.Name
-	dst.Level = src.Level
-	dst.Icon = src.Icon
-	dst.Url = src.Url
-}
+//
+//func CopyCategory(src *product.Category, dst *dto.Category) {
+//	dst.Id = src.ID
+//	dst.Name = src.Name
+//	dst.Level = src.Level
+//	dst.Icon = src.Icon
+//	dst.Url = src.CatUrl
+//}
 
-func (p *productService) setChild(list []product.ICategory, dst *dto.Category) {
+func (p *productService) setChild(list []product.ICategory, dst *product.Category) {
 	for _, v := range list {
-		if vv := v.GetValue(); vv.ParentId == dst.Id && vv.Enabled == 1 {
-			if dst.Child == nil {
-				dst.Child = []dto.Category{}
+		if vv := v.GetValue(); vv.ParentId == dst.ID && vv.Enabled == 1 {
+			if dst.Children == nil {
+				dst.Children = []*product.Category{}
 			}
 			vv.Icon = format.GetResUrl(vv.Icon)
-			dv := dto.Category{}
-			CopyCategory(vv, &dv)
-			dst.Child = append(dst.Child, dv)
+			dst.Children = append(dst.Children, vv)
 		}
 	}
 }

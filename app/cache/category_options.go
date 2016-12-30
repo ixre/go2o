@@ -23,16 +23,16 @@ func readToCategoryDropList(mchId int32) []byte {
 	buf := bytes.NewBuffer([]byte{})
 	var f iterator.WalkFunc = func(v1 interface{}, level int) {
 		c := v1.(*product.Category)
-		if c.Id != 0 {
+		if c.ID != 0 {
 			buf.WriteString(fmt.Sprintf(
 				`<option class="opt%d" value="%d">%s</option>`,
 				level,
-				c.Id,
+				c.ID,
 				c.Name,
 			))
 		}
 	}
-	util.WalkSaleCategory(categories, &product.Category{Id: 0}, f, nil)
+	util.WalkSaleCategory(categories, &product.Category{ID: 0}, f, nil)
 	return buf.Bytes()
 }
 

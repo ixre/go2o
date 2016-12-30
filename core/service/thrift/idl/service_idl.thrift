@@ -15,6 +15,12 @@ struct DResult{
    3:string Message
 }
 
+// 键值对
+struct Pair{
+   1:string Key
+   2:string Value
+}
+
 struct Member {
     1: i32 Id
     2: string Usr
@@ -134,6 +140,21 @@ struct Address {
     8: string Area
     9: string Address
     10: i32 IsDefault
+}
+
+//商品分类
+struct Category {
+    1: i32 ID
+    2: i32 ParentId
+    3: i32 ProModel
+    4: string Name
+    5: i32 Level
+    6: string Icon
+    7: string CatUrl
+    8: i32 SortNum
+    9: i32 Enabled
+    10: i64 CreateTime
+    11: list<Category> Children
 }
 
 struct Item {

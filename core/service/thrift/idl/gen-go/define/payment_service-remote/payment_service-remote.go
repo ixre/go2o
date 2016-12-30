@@ -127,19 +127,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg104 := flag.Arg(1)
-		mbTrans105 := thrift.NewTMemoryBufferLen(len(arg104))
-		defer mbTrans105.Close()
-		_, err106 := mbTrans105.WriteString(arg104)
-		if err106 != nil {
+		arg105 := flag.Arg(1)
+		mbTrans106 := thrift.NewTMemoryBufferLen(len(arg105))
+		defer mbTrans106.Close()
+		_, err107 := mbTrans106.WriteString(arg105)
+		if err107 != nil {
 			Usage()
 			return
 		}
-		factory107 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt108 := factory107.GetProtocol(mbTrans105)
+		factory108 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt109 := factory108.GetProtocol(mbTrans106)
 		argvalue0 := define.NewPaymentOrder()
-		err109 := argvalue0.Read(jsProt108)
-		if err109 != nil {
+		err110 := argvalue0.Read(jsProt109)
+		if err110 != nil {
 			Usage()
 			return
 		}
@@ -162,8 +162,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err111 := (strconv.Atoi(flag.Arg(1)))
-		if err111 != nil {
+		tmp0, err112 := (strconv.Atoi(flag.Arg(1)))
+		if err112 != nil {
 			Usage()
 			return
 		}
@@ -179,8 +179,8 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1, err113 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err113 != nil {
+		argvalue1, err114 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err114 != nil {
 			Usage()
 			return
 		}
@@ -193,8 +193,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err114 := (strconv.Atoi(flag.Arg(1)))
-		if err114 != nil {
+		tmp0, err115 := (strconv.Atoi(flag.Arg(1)))
+		if err115 != nil {
 			Usage()
 			return
 		}
@@ -210,15 +210,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err116 := (strconv.Atoi(flag.Arg(1)))
-		if err116 != nil {
+		tmp0, err117 := (strconv.Atoi(flag.Arg(1)))
+		if err117 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err117 := (strconv.Atoi(flag.Arg(2)))
-		if err117 != nil {
+		tmp1, err118 := (strconv.Atoi(flag.Arg(2)))
+		if err118 != nil {
 			Usage()
 			return
 		}
@@ -234,8 +234,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "PaymentByPresent requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err119 := (strconv.Atoi(flag.Arg(1)))
-		if err119 != nil {
+		tmp0, err120 := (strconv.Atoi(flag.Arg(1)))
+		if err120 != nil {
 			Usage()
 			return
 		}

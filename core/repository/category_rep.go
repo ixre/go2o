@@ -55,7 +55,7 @@ func (c *categoryRepo) getCategoryCacheKey(id int32) string {
 }
 
 func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
-	id, err := orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
+	id, err := orm.I32(orm.Save(c.GetOrm(), v, int(v.ID)))
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))

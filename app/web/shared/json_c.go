@@ -19,8 +19,8 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/ad"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/dto"
 	"go2o/core/service/rsi"
+	"go2o/core/service/thrift/idl/gen-go/define"
 	"net/http"
 	"strconv"
 	"strings"
@@ -114,7 +114,7 @@ func (j *JsonC) unmarshal(sto storage.Interface, key string, dst interface{}) er
 func (j *JsonC) ShopCat(c *echox.Context) error {
 	parentId, _ := util.I32Err(strconv.Atoi(c.FormValue("parent_id")))
 	shopId, _ := util.I32Err(strconv.Atoi(c.FormValue("shop_id")))
-	list := []dto.Category{}
+	list := []*define.Category{}
 	key := fmt.Sprintf("go2o:rep:cat:%d:json:%d", shopId, parentId)
 	sto := c.App.Storage()
 	if err := j.unmarshal(sto, key, &list); err != nil {

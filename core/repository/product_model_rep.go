@@ -328,7 +328,7 @@ func (p *proModelRepo) GetProBrand(primary interface{}) *promodel.ProBrand {
 
 // Save ProBrand
 func (p *proModelRepo) SaveProBrand(v *promodel.ProBrand) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProBrand")
 	}
@@ -388,7 +388,7 @@ func (p *proModelRepo) GetProModelBrand(primary interface{}) *promodel.ProModelB
 
 // Save ProModelBrand
 func (p *proModelRepo) SaveProModelBrand(v *promodel.ProModelBrand) (int, error) {
-	id, err := orm.Save(p._orm, v, int(v.Id))
+	id, err := orm.Save(p._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
 	}

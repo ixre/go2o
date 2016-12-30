@@ -129,14 +129,14 @@ type (
 		UpdateTime int64  `db:"update_time"`
 	}
 	// 分类
-	Category struct {
-		Id    int32
-		Name  string
-		Icon  string
-		Url   string
-		Level int
-		Child []Category
-	}
+	//Category struct {
+	//	Id    int32
+	//	Name  string
+	//	Icon  string
+	//	Url   string
+	//	Level int
+	//	Child []Category
+	//}
 	ListOnlineShop struct {
 		Id         int32  `db:"sp.id"`
 		Name       string `db:"sp.name"`
