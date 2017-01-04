@@ -31,11 +31,11 @@ type (
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
 
 		// 预生成订单及支付单
-		PrepareOrder(c cart.ICart, subject string, couponCode string) (IOrder,
+		PrepareOrder(c cart.ICart, addressId int32, subject string, couponCode string) (IOrder,
 			payment.IPaymentOrder, error)
 
 		// 提交订单
-		SubmitOrder(c cart.ICart, subject string, couponCode string,
+		SubmitOrder(c cart.ICart, addressId int32, subject string, couponCode string,
 			balanceDiscount bool) (IOrder, payment.IPaymentOrder, error)
 
 		// 获取可用的订单号, 系统直营传入vendor为0

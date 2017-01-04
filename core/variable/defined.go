@@ -13,7 +13,7 @@ var (
 	AliasBalanceAccount         string = "账户余额"
 	AliasFlowAccount            string = "流通金"
 	AliasRisePersonFinance      string = "余额宝"
-	AliasPresentAccount         string = "奖金"
+	AliasPresentAccount         string = "钱包"
 	AliasMerchantBalanceAccount string = "商户余额"
 	AliasGrowAccount            string = "增利金"
 	FlowConvertSlogan           string = "流通金作为可以转让的虚拟货币"

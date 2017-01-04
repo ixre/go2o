@@ -16,6 +16,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/module"
+	"go2o/core/module/bank"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
 	"go2o/core/variable"
@@ -197,4 +198,10 @@ func (p *foundationService) GetAreaString(province, city, district int32) string
 		return ""
 	}
 	return p._rep.GetAreaString(province, city, district)
+}
+
+// 获取支付平台
+func (p *foundationService) GetPayPlatform() []*bank.PaymentPlatform {
+	m := module.Get(module.M_PAY).(*module.PaymentModule)
+	return m.GetPayPlatform()
 }

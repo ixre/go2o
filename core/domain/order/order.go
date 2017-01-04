@@ -396,13 +396,6 @@ func (o *orderImpl) Submit() (string, error) {
 	if buyer == nil {
 		return "", member.ErrNoSuchMember
 	}
-	cv := o.cart.GetValue()
-
-	err = o.setAddress(cv.DeliverId)
-	if err != nil {
-		return "", err
-	}
-
 	v := o.value
 
 	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
