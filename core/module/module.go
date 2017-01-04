@@ -21,6 +21,7 @@ var (
 	initOk           = false //是否已初始化
 	M_SSO     string = "sso"
 	M_MM      string = "member"
+	M_PAY     string = "payment"
 )
 
 // 模块实现
@@ -61,6 +62,7 @@ func initModule() {
 func registerInternal() {
 	Register(M_SSO, &SSOModule{})
 	Register(M_MM, &MemberModule{})
+	Register(M_PAY, &PaymentModule{})
 }
 
 // 获取模块

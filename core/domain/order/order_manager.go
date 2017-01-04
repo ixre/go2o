@@ -122,8 +122,8 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 }
 
 // 预生成订单及支付单
-func (t *orderManagerImpl) PrepareOrder(c cart.ICart, subject string,
-	couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
+func (t *orderManagerImpl) PrepareOrder(c cart.ICart, addressId int32,
+	subject string, couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
 	//todo: subject 或备注先不理会,可能是多个note。且在下单后再提交备注
 	order, m, err := t.ParseToOrder(c)
 	var py payment.IPaymentOrder
@@ -242,26 +242,28 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IOrder,
 	return err
 }
 
-func (t *orderManagerImpl) SubmitOrder(c cart.ICart, subject string,
-	couponCode string, useBalanceDiscount bool) (order.IOrder,
+func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
+	subject string, couponCode string, useBalanceDiscount bool) (order.IOrder,
 	payment.IPaymentOrder, error) {
-	order, py, err := t.PrepareOrder(c, subject, couponCode)
+	order, py, err := t.PrepareOrder(c, addressId, subject, couponCode)
+	if err == nil {
+		err = order.SetDeliver(addressId)
+	}
 	if err != nil {
 		return order, py, err
 	}
-
 	orderNo, err := order.Submit()
 	tradeNo := orderNo
 	if err == nil {
 		cv := c.GetValue()
 		// 更新默认收货地址为本地使用地址
-		order.GetBuyer().Profile().SetDefaultAddress(cv.DeliverId)
-
+		order.GetBuyer().Profile().SetDefaultAddress(addressId)
 		// 设置支付方式
 		cv.PaymentOpt = enum.PaymentOnlinePay
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
 			return order, py, err
 		}
+
 		// 处理支付单
 		py.BindOrder(order.GetAggregateRootId(), tradeNo)
 		if _, err = py.Commit(); err != nil {

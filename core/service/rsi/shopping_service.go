@@ -191,9 +191,9 @@ func (s *shoppingService) SetBuyerAddress(buyerId int32, cartKey string, address
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, cartKey string) *order.Order {
+func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartKey string) *order.Order {
 	cart := s.getShoppingCart(buyerId, cartKey)
-	order, _, err := s._manager.PrepareOrder(cart, "", "")
+	order, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
 	if err != nil {
 		return nil
 	}
@@ -201,9 +201,10 @@ func (s *shoppingService) PrepareOrder(buyerId int32, cartKey string) *order.Ord
 }
 
 func (s *shoppingService) PrepareOrder2(buyerId int32, cartKey string,
-	subject string, couponCode string) (map[string]interface{}, error) {
+	addressId int32, subject string, couponCode string) (map[string]interface{}, error) {
 	cart := s.getShoppingCart(buyerId, cartKey)
-	order, py, err := s._manager.PrepareOrder(cart, subject, couponCode)
+	order, py, err := s._manager.PrepareOrder(cart, addressId,
+		subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
@@ -244,10 +245,10 @@ func (s *shoppingService) PrepareOrder2(buyerId int32, cartKey string,
 }
 
 func (s *shoppingService) SubmitOrder(buyerId int32, cartKey string,
-	subject string, couponCode string, balanceDiscount bool) (
+	addressId int32, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	c := s.getShoppingCart(buyerId, cartKey)
-	od, py, err := s._manager.SubmitOrder(c, subject, couponCode, balanceDiscount)
+	od, py, err := s._manager.SubmitOrder(c, addressId, subject, couponCode, balanceDiscount)
 	if err != nil {
 		return "", "", err
 	}
