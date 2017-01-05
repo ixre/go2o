@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/format"
 )
 
 type ItemQuery struct {
@@ -53,6 +54,23 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
 			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
 	}
 	return total, list
+}
+
+//根据分类获取上架的商品
+func (i ItemQuery) GetOnShelvesItem(catIdArr []int32, start, end int32,
+	where string) []*item.GoodsItem {
+	list := []*item.GoodsItem{}
+	if len(catIdArr) > 0 {
+		catIdStr := format.IdArrJoinStr32(catIdArr)
+		sql := fmt.Sprintf(`SELECT * FROM item_info
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id IN(%s) AND item_info.review_state=?
+		 AND item_info.shelve_state=? %s
+		 ORDER BY item_info.update_time DESC LIMIT ?,?`, catIdStr, where)
+		i.Connector.GetOrm().SelectByQuery(&list, sql,
+			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+	}
+	return list
 }
 
 // 搜索随机的商品列表
