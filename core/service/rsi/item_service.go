@@ -116,6 +116,22 @@ func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) [
 	return arr
 }
 
+// 获取上架商品数据（分页）
+func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*define.Item {
+	c := s._cateRepo.GlobCatService().GetCategory(catId)
+	if c != nil {
+		ids := c.GetChildes()
+		list := s._goodsQuery.GetOnShelvesItem(ids, 0, quantity, where)
+		arr := make([]*define.Item, len(list))
+		for i, v := range list {
+			v.Image = format.GetGoodsImageUrl(v.Image)
+			arr[i] = parser.ItemDto(v)
+		}
+		return arr
+	}
+	return []*define.Item{}
+}
+
 // 根据SKU获取商品
 func (s *itemService) GetGoodsBySku(mchId int32, itemId int32, sku int32) *valueobject.Goods {
 	v := s.itemRepo.GetValueGoodsBySku(itemId, sku)

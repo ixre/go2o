@@ -199,7 +199,11 @@ func (p *productService) CategoryTree(parentId int32) *product.Category {
 
 // 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
-	return p.catRep.GlobCatService().RelationBrands(catId)
+	arr := p.catRep.GlobCatService().RelationBrands(catId)
+	for _, v := range arr {
+		v.Image = format.GetResUrl(v.Image)
+	}
+	return arr
 }
 
 func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, categories []product.ICategory) {

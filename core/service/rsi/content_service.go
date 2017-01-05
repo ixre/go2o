@@ -97,13 +97,14 @@ func (cs *contentService) GetArticleCategory(id int32) content.ArticleCategory {
 	return content.ArticleCategory{}
 }
 
-// 根据标识获取文章栏目
-func (cs *contentService) GetArticleCategoryByAlias(alias string) content.ArticleCategory {
-	m := cs._sysContent.ArticleManager().GetCategoryByAlias(alias)
+// 根据别名获取文章分类
+func (cs *contentService) GetArticleCatByAlias(cat string) *content.ArticleCategory {
+	m := cs._sysContent.ArticleManager().GetCategoryByAlias(cat)
 	if m != nil {
-		return m.GetValue()
+		v := m.GetValue()
+		return &v
 	}
-	return content.ArticleCategory{}
+	return nil
 }
 
 // 保存文章栏目
