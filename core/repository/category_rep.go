@@ -10,6 +10,7 @@ package repository
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
@@ -59,7 +60,7 @@ func (c *categoryRepo) SaveCategory(v *product.Category) (int32, error) {
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:rep:cat:*")
+		PrefixDel(c.storage, "go2o:rep:cat:list")
 	}
 	return id, err
 }
@@ -85,7 +86,7 @@ func (c *categoryRepo) DeleteCategory(mchId, id int32) error {
 	// 清理缓存
 	if err == nil {
 		c.storage.Del(c.getCategoryCacheKey(id))
-		PrefixDel(c.storage, "go2o:rep:cat:*")
+		PrefixDel(c.storage, "go2o:rep:cat:list")
 	}
 
 	return err
@@ -123,20 +124,21 @@ func (c *categoryRepo) redirectGetCats() []*product.Category {
 }
 
 func (c *categoryRepo) GetCategories(mchId int32) []*product.Category {
-	return c.redirectGetCats()
-	//todo: cache
-	//key := fmt.Sprintf("go2o:rep:cat:list9:%d", mchId)
-	//list := []*product.Category{}
-	//if err := c.storage.Get(key, &list);err != nil {
-	//    handleError(err)
-	//    err := c.Connector.GetOrm().Select(&list, "mch_id=? ORDER BY id ASC", mchId)
-	//    if err == nil {
-	//        c.storage.SetExpire(key,list, DefaultCacheSeconds)
-	//    } else {
-	//        handleError(err)
-	//    }
-	//}
-	//return list
+	key := "go2o:rep:cat:list"
+	list := []*product.Category{}
+	jsonStr, err := c.storage.GetBytes(key)
+	if err == nil {
+		err = json.Unmarshal(jsonStr, &list)
+	}
+	if err != nil {
+		handleError(err)
+		err := c.Connector.GetOrm().Select(&list, "true ORDER BY sort_num DESC,id ASC")
+		if err == nil {
+			b, _ := json.Marshal(list)
+			c.storage.Set(key, b)
+		}
+	}
+	return list
 }
 
 // 获取关联的品牌
@@ -144,7 +146,7 @@ func (c *categoryRepo) GetRelationBrands(idArr []int32) []*promodel.ProBrand {
 	list := []*promodel.ProBrand{}
 	if len(idArr) > 0 {
 		err := c._orm.Select(&list, `id IN (SELECT brand_id FROM pro_model_brand
-        WHERE pro_model IN (SELECT pro_model FROM cat_category WHERE id IN(`+
+        WHERE pro_model IN (SELECT distinct pro_model FROM cat_category WHERE id IN(`+
 			format.IdArrJoinStr32(idArr)+`)))`)
 		if err != nil && err != sql.ErrNoRows {
 			log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ProModelBrand")
