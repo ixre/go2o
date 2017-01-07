@@ -150,7 +150,7 @@ type (
 		// 商品标题
 		Title string `db:"title"`
 		// 短标题
-		ShortTitle string `db:"-"`
+		ShortTitle string `db:"short_title"`
 		// 供货商编码
 		Code string `db:"code"`
 		// 主图

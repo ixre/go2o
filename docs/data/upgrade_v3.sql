@@ -362,3 +362,8 @@ INSERT INTO `portal_nav_type` (`id`, `name`) VALUES ('2', '移动商城');
 ALTER TABLE `pro_attr_info`
 CHANGE COLUMN `product_id` `product_id` INT(10) NOT NULL COMMENT '产品编号' AFTER `id`,
 ADD COLUMN `attr_word` VARCHAR(200) NOT NULL COMMENT '属性文本' AFTER `attr_data`;
+
+/** 2017-01-08 **/
+
+ALTER TABLE `txmall`.`item_info`
+ADD COLUMN `short_title` VARCHAR(120) NULL COMMENT '短标题' AFTER `title`;
