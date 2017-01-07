@@ -202,10 +202,9 @@ func (p *productImpl) RebuildAttrArray(arr *[]*product.Attr) error {
 				v.AttrWord += ","
 			}
 			item := p.pmRepo.GetAttrItem(v2)
-			if item == nil {
-				return product.ErrNoSuchAttr
+			if item != nil {
+				v.AttrWord += item.Value
 			}
-			v.AttrWord += item.Value
 		}
 	}
 	return nil

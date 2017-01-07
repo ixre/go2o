@@ -254,13 +254,17 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 		specArr = make([]*promodel.Spec, l)
 		imp := make(map[int32]int, l) //记录规格对应数组的索引
 		for i, v := range sa {
-			specArr[i] = s.proMRepo.GetSpec(v)
-			imp[specArr[i].Id] = i
-			specArr[i].Items = []*promodel.SpecItem{}
-			//重新绑定规格名字
-			if n, ok := sName[specArr[i].Id]; ok && n != "" {
-				specArr[i].Name = n
+			spec := s.proMRepo.GetSpec(v)
+			if spec == nil {
+				continue
 			}
+			spec.Items = []*promodel.SpecItem{}
+			//重新绑定规格名字
+			if n, ok := sName[spec.Id]; ok && n != "" {
+				spec.Name = n
+			}
+			specArr[i] = spec
+			imp[spec.Id] = i
 		}
 		// 绑定规格项
 		for _, v := range ia {
