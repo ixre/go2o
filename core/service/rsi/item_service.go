@@ -21,20 +21,20 @@ import (
 )
 
 type itemService struct {
-	itemRepo    item.IGoodsItemRepo
-	_goodsQuery *query.ItemQuery
-	_cateRepo   product.ICategoryRepo
-	labelRepo   item.ISaleLabelRepo
+	itemRepo  item.IGoodsItemRepo
+	itemQuery *query.ItemQuery
+	_cateRepo product.ICategoryRepo
+	labelRepo item.ISaleLabelRepo
 }
 
 func NewSaleService(cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo) *itemService {
 	return &itemService{
-		itemRepo:    goodsRepo,
-		_goodsQuery: goodsQuery,
-		_cateRepo:   cateRepo,
-		labelRepo:   labelRepo,
+		itemRepo:  goodsRepo,
+		itemQuery: goodsQuery,
+		_cateRepo: cateRepo,
+		labelRepo: labelRepo,
 	}
 }
 
@@ -95,7 +95,20 @@ R:
 // 获取上架商品数据（分页）
 func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
 	end int, where, sortBy string) (int, []*define.Item) {
-	total, list := s._goodsQuery.GetPagedOnShelvesItem(catId,
+	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ItemDto(v)
+	}
+	return total, arr
+}
+
+// 获取上架商品数据（分页）
+func (s *itemService) SearchOnShelvesItem(word string, start,
+	end int, where, sortBy string) (int, []*define.Item) {
+	total, list := s.itemQuery.SearchOnShelvesItem(word,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {
@@ -107,7 +120,7 @@ func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*define.Item {
-	list := s._goodsQuery.GetRandomItem(catId, quantity, where)
+	list := s.itemQuery.GetRandomItem(catId, quantity, where)
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
@@ -121,7 +134,7 @@ func (s *itemService) GetBigCatItems(catId, quantity int32, where string) []*def
 	c := s._cateRepo.GlobCatService().GetCategory(catId)
 	if c != nil {
 		ids := c.GetChildes()
-		list := s._goodsQuery.GetOnShelvesItem(ids, 0, quantity, where)
+		list := s.itemQuery.GetOnShelvesItem(ids, 0, quantity, where)
 		arr := make([]*define.Item, len(list))
 		for i, v := range list {
 			v.Image = format.GetGoodsImageUrl(v.Image)
@@ -223,7 +236,7 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 	case "rate_1":
 		//todo:
 	}
-	return s._goodsQuery.GetPagedOnShelvesGoodsByKeyword(shopId,
+	return s.itemQuery.GetPagedOnShelvesGoodsByKeyword(shopId,
 		start, end, word, where, orderBy)
 }
 
