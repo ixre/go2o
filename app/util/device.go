@@ -12,6 +12,7 @@ import (
 	gutil "github.com/jsix/gof/util"
 	"go2o/core/variable"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -88,6 +89,20 @@ func SetDeviceByUrlQuery(w http.ResponseWriter, r *http.Request) bool {
 	if len(dvType) != 0 {
 		SetBrownerDevice(w, r, dvType)
 		return true
+	}
+	return false
+}
+
+// 是否为移动设备请求
+func MobileRequest(r *http.Request) bool {
+	//判断是否来自移动请求
+	referrer := r.Referer()
+	i := strings.Index(referrer, variable.DOMAIN_PREFIX_MOBILE)
+	if i != -1 {
+		preChar := referrer[i-1]
+		if preChar == '.' || preChar == '/' {
+			return true
+		}
 	}
 	return false
 }

@@ -75,6 +75,7 @@ var (
 	DefaultPlatformConf = valueobject.PlatformConf{
 		Name:             "GO2O",
 		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+		Telephone:        "021-88888888",
 		MchGoodsCategory: false,
 		MchPageCategory:  false,
 		// 系统是否开挂起状态

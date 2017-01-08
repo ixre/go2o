@@ -9,6 +9,7 @@
 package hapi
 
 import (
+	"fmt"
 	"github.com/jsix/goex/echox"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/util"
@@ -37,6 +38,33 @@ func (m *serviceC) Device(c *echox.Context) error {
 		//todo::
 	}
 	return c.JSONP(http.StatusOK, c.QueryParam("callback"), "ok")
+}
+
+// 登陆状态
+func (s *serviceC) LoginState(c *echox.Context) error {
+	mp := make(map[string]interface{})
+	proto := util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http")
+	mobileReq := ut.MobileRequest(c.Request())
+	mPrefix := util.BoolExt.TString(mobileReq, variable.DOMAIN_PREFIX_MOBILE, "")
+	pstUrl := fmt.Sprintf("%s://%s%s%s", proto,
+		variable.DOMAIN_PREFIX_PASSPORT, mPrefix, variable.Domain)
+	memberId := getMemberId(c)
+	if memberId <= 0 {
+		conf, _ := rsi.FoundationService.GetPlatformConf()
+		mp["PFName"] = conf.Name
+		mp["LoginUrl"] = pstUrl + "/auth/login"
+		mp["RegisterUrl"] = pstUrl + "/register"
+		mp["Login"] = 0
+	} else {
+		mmUrl := fmt.Sprintf("%s://%s%s", proto,
+			variable.DOMAIN_PREFIX_MEMBER, mPrefix, variable.Domain)
+		m, _ := rsi.MemberService.GetProfile(memberId)
+		mp["MMName"] = m.Name
+		mp["LogoutUrl"] = pstUrl + "/auth/logout"
+		mp["MMUrl"] = mmUrl
+		mp["Login"] = 1
+	}
+	return c.JSONP(http.StatusOK, c.QueryParam("callback"), mp)
 }
 
 // 收藏

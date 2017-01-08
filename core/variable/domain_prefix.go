@@ -26,6 +26,8 @@ var (
 
 	// 通行证域名协议,默认为http,可以使用https安全加密
 	DOMAIN_PASSPORT_PROTO = "http"
+	// 是否启用安全连接
+	DOMAIN_PREFIX_SSL = false
 	// HTTP API应用前缀
 	DOMAIN_PREFIX_HAPI = "hapi."
 	// 静态服务器前缀

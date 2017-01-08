@@ -9,8 +9,15 @@
 package app
 
 import (
+	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/log"
+	"github.com/jsix/gof/util"
+	"go2o/core/variable"
+	"io/ioutil"
+	"os"
 	"runtime"
+	"strings"
 )
 
 const (
@@ -61,7 +68,40 @@ type CustomConfig func(gof.App, int) error
 
 // 自定义配置应用系统
 func Configure(c CustomConfig, app gof.App, tag int) error {
-	return c(app, tag)
+	err := c(app, tag)
+	if tag&TagWebServe == TagWebServe {
+		defer flushJsGlob()
+	}
+	return err
+}
+
+// 将变量输出到JS中
+func flushJsGlob() {
+	filePath := "static/assets/js/base.js"
+	fi, err := os.Open(filePath)
+	if err == nil {
+		defer fi.Close()
+		data, err := ioutil.ReadAll(fi)
+		if err == nil {
+			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='%s://%s'+domain;",
+				variable.Domain,
+				util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http"),
+				variable.DOMAIN_PREFIX_HAPI,
+			))
+			txt := string(data)
+			delimer := "/*~*/"
+			i := strings.Index(txt, delimer)
+			if i == -1 {
+				newBytes = append(newBytes, delimer...)
+				newBytes = append(newBytes, txt...)
+			} else {
+				newBytes = append(newBytes, txt[i:]...)
+			}
+			ioutil.WriteFile(filePath, newBytes, os.ModePerm)
+		}
+	} else {
+		log.Println("[ Flush][ JS][ Error]:", err)
+	}
 }
 
 // 初始化，如果不调用此操作。则默认全部不监视。
