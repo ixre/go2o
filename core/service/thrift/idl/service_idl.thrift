@@ -319,10 +319,11 @@ service MemberService{
 struct PlatformConf {
     1: string Name
     2: string Logo
-    3: bool Suspend
-    4: string SuspendMessage
-    5: bool MchGoodsCategory
-    6: bool MchPageCategory
+    3: string Telephone
+    4: bool Suspend
+    5: string SuspendMessage
+    6: bool MchGoodsCategory
+    7: bool MchPageCategory
 }
 
 // 单点登录应用

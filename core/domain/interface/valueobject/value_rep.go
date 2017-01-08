@@ -38,6 +38,8 @@ type (
 		Name string
 		// 标志
 		Logo string
+		// 客服电话
+		Telephone string
 		// 系统是否开挂起状态
 		Suspend bool
 		// 系统挂起提示消息
