@@ -486,6 +486,7 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 		//}
 		//todo: not implement
 	}
+
 	if c.deliver == nil {
 		pm := c.memberRepo.GetMember(c.value.BuyerId).Profile()
 		if c.value.DeliverId > 0 {

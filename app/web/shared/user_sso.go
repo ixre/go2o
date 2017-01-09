@@ -11,6 +11,7 @@ package shared
 import (
 	"errors"
 	"github.com/jsix/goex/echox"
+	"github.com/jsix/gof/log"
 	gu "github.com/jsix/gof/util"
 	"go2o/app/util"
 	"go2o/core/service/rsi"
@@ -103,13 +104,14 @@ func (u *UserSync) ssoDisconnect(c *echox.Context, callback string) error {
 	c.Session.Destroy()
 	rsp := c.Response()
 	// 清理以"_"开头的cookie,假定以"_"开头均为与业务相关重要的cookie信息
-	d := time.Duration(-1e9)
-	expires := time.Now().Local().Add(d)
+	expires := time.Now().Local().Add(time.Hour * -1e5)
 	list := c.Request().Cookies()
 	for _, ck := range list {
 		if ck.Name[0] == '_' {
+			ck.Path = "/"
 			ck.Expires = expires
 			http.SetCookie(rsp, ck)
+			log.Println(expires.Format("2006-01-02 15:04:05"))
 		}
 	}
 	return nil

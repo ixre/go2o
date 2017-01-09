@@ -17,7 +17,7 @@ server="127.0.0.1"
 user=root
 root_user=root
 ssh_port=22
-env = "0"
+env="0"
 
 echo "---------------------------"
 echo "*** GO2O PUBLISH SCRIPT ***"
