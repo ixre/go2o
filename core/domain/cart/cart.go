@@ -121,7 +121,7 @@ func (c *cartImpl) getBuyerLevelId() int32 {
 	return 0
 }
 
-func (c *cartImpl) setGoodsInfo(snap *item.GoodsItem, level int32) {
+func (c *cartImpl) setItemInfo(snap *item.GoodsItem, level int32) {
 	// 设置会员价
 	if level > 0 {
 		gds := c.goodsRepo.CreateItem(snap)
@@ -193,8 +193,7 @@ func (c *cartImpl) getItems() []*cart.CartItem {
 }
 
 // 添加项
-func (c *cartImpl) Put(itemId, skuId int32, num int32,
-	checked bool) (*cart.CartItem, error) {
+func (c *cartImpl) Put(itemId, skuId int32, num int32) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.CartItem{}
@@ -235,9 +234,6 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 				return v, item.ErrOutOfStock // 库存不足
 			}
 			v.Quantity += num
-			if checked {
-				v.Checked = 1
-			}
 			return v, err
 		}
 	}
@@ -245,7 +241,7 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 	c.snapMap = nil
 
 	// 设置商品的相关信息
-	c.setGoodsInfo(iv, c.getBuyerLevelId())
+	c.setItemInfo(iv, c.getBuyerLevelId())
 
 	v := &cart.CartItem{
 		CartId:   c.GetAggregateRootId(),
@@ -255,9 +251,7 @@ func (c *cartImpl) Put(itemId, skuId int32, num int32,
 		SkuId:    skuId,
 		Quantity: num,
 		Sku:      item.ParseSkuMedia(iv, sku),
-	}
-	if checked {
-		v.Checked = 1
+		Checked:  1,
 	}
 	c.value.Items = append(c.value.Items, v)
 	return v, err
@@ -372,7 +366,7 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 	if ic.GetAggregateRootId() != c.GetAggregateRootId() {
 		for _, v := range ic.GetValue().Items {
 			if item, err := c.Put(v.ItemId,
-				v.SkuId, v.Quantity, v.Checked == 1); err == nil {
+				v.SkuId, v.Quantity); err == nil {
 				if v.Checked == 1 {
 					item.Checked = 1
 				}

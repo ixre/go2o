@@ -337,7 +337,7 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 	var err error
 	s.skuTemp = &template.Template{}
 	htm := `{{range $i,$v := .Spec}}
-        <div class="spec_arr clearfix">
+        <div class="spec_arr">
             <span class="spec_lab">{{$v.Name}}</span>
             <p class="spec_opt">
                 {{range $i2,$vi := $v.Items}}
