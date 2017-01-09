@@ -61,6 +61,7 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 	} else if buyerId > 0 {
 		c = s._cartRepo.GetMemberCurrentCart(buyerId)
 	}
+
 	if c == nil {
 		c = s._cartRepo.NewCart()
 		_, err := c.Save()
@@ -110,7 +111,6 @@ func (s *shoppingService) PutInCart(cartId, itemId, skuId,
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-
 	item, err := c.Put(itemId, skuId, quantity)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
