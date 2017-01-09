@@ -105,13 +105,13 @@ func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 
 // 放入购物车
 func (s *shoppingService) PutInCart(cartId, itemId, skuId,
-	quantity int32, checked bool) (*define.ShoppingCartItem, error) {
+	quantity int32) (*define.ShoppingCartItem, error) {
 	c := s._cartRepo.GetCart(cartId)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
 
-	item, err := c.Put(itemId, skuId, quantity, checked)
+	item, err := c.Put(itemId, skuId, quantity)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
 			return cart.ParseCartItem(item), err

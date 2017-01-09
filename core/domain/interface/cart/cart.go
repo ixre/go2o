@@ -75,7 +75,7 @@ type (
 
 		// 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现? 暂时以店铺区分
-		Put(itemId, skuId, num int32, checked bool) (*CartItem, error)
+		Put(itemId, skuId, num int32) (*CartItem, error)
 
 		// 移出项
 		Remove(itemId, skuId, num int32) error
