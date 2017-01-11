@@ -458,7 +458,7 @@ func Category(src *define.Category) *product.Category {
 		CatUrl:     src.CatUrl,
 		SortNum:    src.SortNum,
 		Enabled:    src.Enabled,
-		FloorShow: src.FloorShow,
+		FloorShow:  src.FloorShow,
 		CreateTime: src.CreateTime,
 	}
 	if src.Children != nil {
@@ -480,7 +480,7 @@ func CategoryDto(src *product.Category) *define.Category {
 		Icon:       src.Icon,
 		CatUrl:     src.CatUrl,
 		SortNum:    src.SortNum,
-		FloorShow: src.FloorShow,
+		FloorShow:  src.FloorShow,
 		Enabled:    src.Enabled,
 		CreateTime: src.CreateTime,
 	}

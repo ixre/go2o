@@ -379,7 +379,9 @@ CHANGE COLUMN `pro_model` `pro_model` INT(11) NOT NULL COMMENT '商品模型' AF
 ADD COLUMN `floor_show` INT(1) NOT NULL COMMENT '楼层显示' AFTER `sort_num`;
 
 CREATE TABLE sys_kv (
+  id          int(10) NOT NULL AUTO_INCREMENT comment '编号',
   `key`       varchar(100) NOT NULL comment '键',
   value       text NOT NULL comment '值',
   update_time int(10) NOT NULL comment '更新时间',
-  PRIMARY KEY (`key`)) comment='系统键值';
+  PRIMARY KEY (id)) comment='系统键值';
+;

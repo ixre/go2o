@@ -22,6 +22,8 @@ import (
 	"go2o/core/variable"
 )
 
+var _ define.FoundationService = new(foundationService)
+
 // 基础服务
 type foundationService struct {
 	_rep valueobject.IValueRepo
@@ -31,6 +33,28 @@ func NewFoundationService(rep valueobject.IValueRepo) *foundationService {
 	return &foundationService{
 		_rep: rep,
 	}
+}
+
+// 根据键获取值
+func (s *foundationService) GetValue(key string) (r string, err error) {
+	return s._rep.GetValue(key), nil
+}
+
+// 设置键值
+func (s *foundationService) SetValue(key string, value string) (r *define.Result_, err error) {
+	err = s._rep.SetValue(key, value)
+	return parser.Result(0, err), nil
+}
+
+// 删除值
+func (s *foundationService) DeleteValue(key string) (r *define.Result_, err error) {
+	err = s._rep.DeleteValue(key)
+	return parser.Result(0, err), nil
+}
+
+// 根据前缀获取值
+func (s *foundationService) GetValuesByPrefix(prefix string) (r map[string]string, err error) {
+	return s._rep.GetValues(prefix), nil
 }
 
 // 验证超级用户账号和密码
