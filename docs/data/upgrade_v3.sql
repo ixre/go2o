@@ -367,3 +367,19 @@ ADD COLUMN `attr_word` VARCHAR(200) NOT NULL COMMENT '属性文本' AFTER `attr_
 
 ALTER TABLE `txmall`.`item_info`
 ADD COLUMN `short_title` VARCHAR(120) NULL COMMENT '短标题' AFTER `title`;
+
+
+/** 2017-01-10 **/
+DROP TABLE `txmall`.`pt_merchant`;
+DROP TABLE `txmall`.`pt_shop`;
+DROP TABLE `txmall`.`pt_api`;
+
+ALTER TABLE `cat_category`
+CHANGE COLUMN `pro_model` `pro_model` INT(11) NOT NULL COMMENT '商品模型' AFTER `parent_id`,
+ADD COLUMN `floor_show` INT(1) NOT NULL COMMENT '楼层显示' AFTER `sort_num`;
+
+CREATE TABLE sys_kv (
+  `key`       varchar(100) NOT NULL comment '键',
+  value       text NOT NULL comment '值',
+  update_time int(10) NOT NULL comment '更新时间',
+  PRIMARY KEY (`key`)) comment='系统键值';
