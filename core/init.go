@@ -201,6 +201,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(model.PortalNav{}, "portal_nav")
 	orm.Mapping(model.PortalNavType{}, "portal_nav_type")
 	orm.Mapping(valueobject.Goods{}, "")
+
+	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
 }
 
 func initTemplate(c *gof.Config) *gof.Template {

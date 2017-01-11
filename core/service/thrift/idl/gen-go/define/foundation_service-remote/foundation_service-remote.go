@@ -22,6 +22,10 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  string ResourceUrl(string url)")
 	fmt.Fprintln(os.Stderr, "  PlatformConf GetPlatformConf()")
+	fmt.Fprintln(os.Stderr, "  string GetValue(string key)")
+	fmt.Fprintln(os.Stderr, "  Result SetValue(string key, string value)")
+	fmt.Fprintln(os.Stderr, "  Result DeleteValue(string key)")
+	fmt.Fprintln(os.Stderr, "   GetValuesByPrefix(string prefix)")
 	fmt.Fprintln(os.Stderr, "  string RegisterApp(SsoApp app)")
 	fmt.Fprintln(os.Stderr, "  SsoApp GetApp(string name)")
 	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
@@ -140,24 +144,66 @@ func main() {
 		fmt.Print(client.GetPlatformConf())
 		fmt.Print("\n")
 		break
+	case "GetValue":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetValue requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetValue(value0))
+		fmt.Print("\n")
+		break
+	case "SetValue":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "SetValue requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.SetValue(value0, value1))
+		fmt.Print("\n")
+		break
+	case "DeleteValue":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "DeleteValue requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.DeleteValue(value0))
+		fmt.Print("\n")
+		break
+	case "GetValuesByPrefix":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetValuesByPrefix requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetValuesByPrefix(value0))
+		fmt.Print("\n")
+		break
 	case "RegisterApp":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg75 := flag.Arg(1)
-		mbTrans76 := thrift.NewTMemoryBufferLen(len(arg75))
-		defer mbTrans76.Close()
-		_, err77 := mbTrans76.WriteString(arg75)
-		if err77 != nil {
+		arg90 := flag.Arg(1)
+		mbTrans91 := thrift.NewTMemoryBufferLen(len(arg90))
+		defer mbTrans91.Close()
+		_, err92 := mbTrans91.WriteString(arg90)
+		if err92 != nil {
 			Usage()
 			return
 		}
-		factory78 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt79 := factory78.GetProtocol(mbTrans76)
+		factory93 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt94 := factory93.GetProtocol(mbTrans91)
 		argvalue0 := define.NewSsoApp()
-		err80 := argvalue0.Read(jsProt79)
-		if err80 != nil {
+		err95 := argvalue0.Read(jsProt94)
+		if err95 != nil {
 			Usage()
 			return
 		}

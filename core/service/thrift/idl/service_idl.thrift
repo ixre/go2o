@@ -345,7 +345,14 @@ service FoundationService{
    string ResourceUrl(1:string url)
    // 获取平台设置
    PlatformConf GetPlatformConf()
-
+   // 根据键获取值
+   string GetValue(1:string key)
+   // 设置键值
+   Result SetValue(1:string key,2:string value)
+   // 删除值
+   Result DeleteValue(1:string key)
+   // 根据前缀获取值
+   map<string,string> GetValuesByPrefix(1:string prefix)
    // 注册单点登录应用,返回值：
    //   -  1. 成功，并返回token
    //   - -1. 接口地址不正确

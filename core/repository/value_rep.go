@@ -15,13 +15,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/tool/sms"
+	"log"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 var _ valueobject.IValueRepo = new(valueRepo)
@@ -31,6 +34,10 @@ var (
 
 type valueRepo struct {
 	db.Connector
+	_orm   orm.Orm
+	_kvMap map[string]int32
+	_kvMux *sync.RWMutex
+
 	storage          storage.Interface
 	_wxConf          *valueobject.WxApiConfig
 	_wxGob           *util.GobFile
@@ -57,7 +64,9 @@ type valueRepo struct {
 func NewValueRepo(conn db.Connector, storage storage.Interface) valueobject.IValueRepo {
 	return &valueRepo{
 		Connector: conn,
+		_orm:      conn.GetOrm(),
 		storage:   storage,
+		_kvMux:    &sync.RWMutex{},
 		_rstGob:   util.NewGobFile("conf/core/registry"),
 		_wxGob:    util.NewGobFile("conf/core/wx_api"),
 		_rpGob:    util.NewGobFile("conf/core/register_perm"),
@@ -86,6 +95,115 @@ func (vp *valueRepo) checkReload() error {
 
 func (vp *valueRepo) signReload() {
 	vp.storage.Set(valueRepCacheKey, 0)
+}
+
+// 加载所有的键
+func (s *valueRepo) loadAllKeys() {
+	s._kvMux.Lock()
+	s._kvMap = make(map[string]int32)
+	list := s.selectSysKv("")
+	for _, v := range list {
+		s._kvMap[v.Key] = v.ID
+		s.storage.Set("go2o:rep:kv:"+v.Key, v.Value)
+	}
+	s._kvMux.Unlock()
+}
+
+// 根据条件获取键值
+func (s *valueRepo) selectSysKv(where string, v ...interface{}) []*valueobject.SysKeyValue {
+	list := []*valueobject.SysKeyValue{}
+	err := s._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
+	}
+	return list
+}
+
+// 检查KEY与编号MAP
+func (s *valueRepo) checkKvMap() {
+	if s._kvMap == nil {
+		s.loadAllKeys()
+	}
+}
+
+// 根据键获取值
+func (s *valueRepo) GetValue(key string) string {
+	s.checkKvMap()
+	s._kvMux.RLock()
+	id, ok := s._kvMap[key]
+	s._kvMux.RUnlock()
+	if ok {
+		rdsKey := "go2o:rep:kv:" + key
+		r, err := s.storage.GetString(rdsKey)
+		if err != nil {
+			e := valueobject.SysKeyValue{}
+			err := s._orm.Get(id, &e)
+			if err != sql.ErrNoRows {
+				log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
+			}
+			r = e.Value
+			if err == nil {
+				s.storage.Set(rdsKey, r)
+			}
+		}
+		return r
+	}
+	return ""
+}
+
+// 根据前缀获取值
+func (s *valueRepo) GetValues(prefix string) map[string]string {
+	s.checkKvMap()
+	result := make(map[string]string)
+	for k, _ := range s._kvMap {
+		if strings.HasPrefix(k, prefix) {
+			result[k] = s.GetValue(k)
+		}
+	}
+	return result
+}
+
+// Save SysKv
+func (s *valueRepo) SetValue(key string, v interface{}) error {
+	s.checkKvMap()
+	s._kvMux.RLock()
+	id, ok := s._kvMap[key]
+	s._kvMux.RUnlock()
+	kv := &valueobject.SysKeyValue{
+		ID:         id,
+		Key:        key,
+		Value:      util.Str(v),
+		UpdateTime: time.Now().Unix(),
+	}
+	id2, err := orm.Save(s._orm, kv, int(kv.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
+	}
+	if err == nil {
+		id = int32(id2)
+		s.storage.Set("go2o:rep:kv:"+kv.Key, kv.Value)
+		if !ok {
+			s._kvMux.Lock()
+			s._kvMap[key] = id
+			s._kvMux.Unlock()
+		}
+	}
+	return err
+}
+
+// Delete SysKv
+func (s *valueRepo) DeleteValue(key string) error {
+	err := s._orm.DeleteByPk(valueobject.SysKeyValue{}, key)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
+	}
+	if err == nil {
+		s._kvMux.Lock()
+		delete(s._kvMap, key)
+		s._kvMux.Unlock()
+		s.storage.Del("go2o:rep:kv:" + key)
+	}
+	return err
 }
 
 // 获取微信接口配置
