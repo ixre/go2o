@@ -152,9 +152,10 @@ struct Category {
     6: string Icon
     7: string CatUrl
     8: i32 SortNum
-    9: i32 Enabled
-    10: i64 CreateTime
-    11: list<Category> Children
+    9: i32 FloorShow
+    10: i32 Enabled
+    11: i64 CreateTime
+    12: list<Category> Children
 }
 
 struct Item {
