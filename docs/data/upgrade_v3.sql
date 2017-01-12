@@ -384,4 +384,20 @@ CREATE TABLE sys_kv (
   value       text NOT NULL comment '值',
   update_time int(10) NOT NULL comment '更新时间',
   PRIMARY KEY (id)) comment='系统键值';
-;
+
+
+CREATE TABLE portal_floor_ad (
+  id       int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  cat_id   int(10) NOT NULL comment '分类编号',
+  pos_id   int(10) NOT NULL comment '广告位编号',
+  ad_index int(10) NOT NULL comment '广告顺序',
+  PRIMARY KEY (id)) comment='楼层广告设置';
+
+CREATE TABLE portal_floor_link (
+  id       int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  cat_id   int(10) NOT NULL comment '分类编号',
+  text     varchar(50) NOT NULL comment '文本',
+  link_url varchar(150) NOT NULL comment '链接地址',
+  target   varchar(10) NOT NULL comment '打开方式',
+  sort_num int(10) NOT NULL comment '序号',
+  PRIMARY KEY (id)) comment='楼层链接';

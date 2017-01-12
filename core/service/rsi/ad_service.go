@@ -71,6 +71,10 @@ func (a *adService) GetPosition(groupId, adPosId int32) *ad.AdPosition {
 	return a._rep.GetAdManager().GetAdGroup(groupId).GetPosition(adPosId)
 }
 
+func (a *adService) GetPositionById(adPosId int32) *ad.AdPosition {
+	return a._rep.GetAdPositionById(adPosId)
+}
+
 func (a *adService) SaveAdPosition(e *ad.AdPosition) (int32, error) {
 	group := a._rep.GetAdManager().GetAdGroup(e.GroupId)
 	if group == nil {

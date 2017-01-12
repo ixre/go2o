@@ -138,7 +138,7 @@ func (s *valueRepo) GetValue(key string) string {
 		if err != nil {
 			e := valueobject.SysKeyValue{}
 			err := s._orm.Get(id, &e)
-			if err != sql.ErrNoRows {
+			if err != nil && err != sql.ErrNoRows {
 				log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SysKv")
 			}
 			r = e.Value

@@ -41,4 +41,31 @@ type (
 		// 是否启用
 		Enabled int `db:"enabled"`
 	}
+	// 楼层广告设置
+	PortalFloorAd struct {
+		// 编号
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		// 分类编号
+		CatId int32 `db:"cat_id"`
+		// 广告位编号
+		PosId int32 `db:"pos_id"`
+		// 广告顺序
+		AdIndex int32 `db:"ad_index"`
+	}
+
+	// 楼层链接
+	PortalFloorLink struct {
+		// 编号
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		// 分类编号
+		CatId int32 `db:"cat_id"`
+		// 文本
+		Text string `db:"text"`
+		// 链接地址
+		LinkUrl string `db:"link_url"`
+		// 打开方式
+		Target string `db:"target"`
+		// 序号
+		SortNum int32 `db:"sort_num"`
+	}
 )

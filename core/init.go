@@ -200,6 +200,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(model.CommQrTemplate{}, "comm_qr_template")
 	orm.Mapping(model.PortalNav{}, "portal_nav")
 	orm.Mapping(model.PortalNavType{}, "portal_nav_type")
+	orm.Mapping(model.PortalFloorAd{}, "portal_floor_ad")
+	orm.Mapping(model.PortalFloorLink{}, "portal_floor_link")
 	orm.Mapping(valueobject.Goods{}, "")
 
 	orm.Mapping(valueobject.SysKeyValue{}, "sys_kv")
