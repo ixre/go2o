@@ -52,6 +52,8 @@ var (
 	PersonFinanceService *personFinanceService
 	// 门户数据服务
 	PortalService *portalService
+
+	CommonDao *dao.CommonDao
 )
 
 // 处理错误
@@ -82,7 +84,7 @@ func Init(ctx gof.App) {
 	goodsRepo := repository.NewGoodsItemRepo(db, productRepo, proMRepo, expressRepo, valRepo)
 	tagSaleRepo := repository.NewTagSaleRepo(db, valRepo)
 	promRepo := repository.NewPromotionRepo(db, goodsRepo, memberRepo)
-	cateRepo := repository.NewCategoryRepo(db, valRepo, sto)
+	catRepo := repository.NewCategoryRepo(db, valRepo, sto)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
 	shopRepo := repository.NewShopRepo(db, sto)
@@ -108,7 +110,7 @@ func Init(ctx gof.App) {
 	afterSalesQuery := query.NewAfterSalesQuery(db)
 
 	/** Service **/
-	ProductService = NewProService(proMRepo, cateRepo, productRepo)
+	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
 	ShoppingService = NewShoppingService(spRepo, cartRepo,
@@ -117,7 +119,7 @@ func Init(ctx gof.App) {
 	MerchantService = NewMerchantService(mchRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valRepo)
-	ItemService = NewSaleService(cateRepo, goodsRepo, goodsQuery, tagSaleRepo)
+	ItemService = NewSaleService(catRepo, goodsRepo, goodsQuery, tagSaleRepo)
 	PaymentService = NewPaymentService(paymentRepo, spRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
@@ -125,8 +127,6 @@ func Init(ctx gof.App) {
 	ContentService = NewContentService(contentRepo, contentQue)
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
-
-	PortalService = NewPortalService(dao.NewCommDao(orm))
 
 	//m := memberRepo.GetMember(1)
 	//d := m.ProfileManager().GetDeliverAddress()[0]
@@ -136,4 +136,7 @@ func Init(ctx gof.App) {
 	//v.District = 440605
 	//d.SetValue(&v)
 	//d.Save()
+
+	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
+	PortalService = NewPortalService(CommonDao)
 }

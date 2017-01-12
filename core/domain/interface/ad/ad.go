@@ -230,6 +230,9 @@ type (
 		// 根据KEY获取广告位
 		GetAdPositionByKey(key string) *AdPosition
 
+		// 根据ID获取广告位
+		GetAdPositionById(adPosId int32) *AdPosition
+
 		// 获取广告位
 		GetAdPositionsByGroupId(adGroupId int32) []*AdPosition
 

@@ -11,8 +11,12 @@ package dao
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
 	"go2o/core/dao/model"
+	"go2o/core/domain/interface/ad"
+	"go2o/core/domain/interface/product"
 	"gopkg.in/square/go-jose.v1/json"
 	"log"
 	"strings"
@@ -23,25 +27,34 @@ const (
 )
 
 type CommonDao struct {
-	_orm orm.Orm
+	_orm    orm.Orm
+	storage storage.Interface
+	adRepo  ad.IAdRepo
+	catRepo product.ICategoryRepo
 }
 
-func NewCommDao(o orm.Orm) *CommonDao {
-	return &CommonDao{_orm: o}
+func NewCommDao(o orm.Orm, sto storage.Interface,
+	adRepo ad.IAdRepo, catRepo product.ICategoryRepo) *CommonDao {
+	return &CommonDao{
+		_orm:    o,
+		storage: sto,
+		adRepo:  adRepo,
+		catRepo: catRepo,
+	}
 }
 
 // 获取二维码所有模板
 func (c *CommonDao) GetQrTemplates() []*model.CommQrTemplate {
 	list := []*model.CommQrTemplate{}
-	str, err := dSto.GetString(qrStoKey)
+	str, err := c.storage.GetString(qrStoKey)
 	if err == nil {
 		err = json.Unmarshal([]byte(str), &list)
 	}
 	if err != nil {
-		err = dOrm.Select(&list, "")
+		err = c._orm.Select(&list, "")
 		if err == nil {
 			d, _ := json.Marshal(list)
-			dSto.Set(qrStoKey, string(d))
+			c.storage.Set(qrStoKey, string(d))
 		}
 	}
 	return list
@@ -68,18 +81,18 @@ func (c *CommonDao) SaveQrTemplate(q *model.CommQrTemplate) error {
 	if q.BgImage == "" {
 		return errors.New("二维码背景图片为空")
 	}
-	_, err := orm.Save(dOrm, q, int(q.Id))
+	_, err := orm.Save(c._orm, q, int(q.Id))
 	if err == nil {
-		dSto.Del(qrStoKey)
+		c.storage.Del(qrStoKey)
 	}
 	return err
 }
 
 // 删除二维码模板
 func (c *CommonDao) DelQrTemplate(id int32) error {
-	err := dOrm.DeleteByPk(model.CommQrTemplate{}, id)
+	err := c._orm.DeleteByPk(model.CommQrTemplate{}, id)
 	if err == nil {
-		dSto.Del(qrStoKey)
+		c.storage.Del(qrStoKey)
 	}
 	return err
 }
@@ -180,6 +193,123 @@ func (p *CommonDao) BatchDeletePortalNav(where string, v ...interface{}) (int64,
 	r, err := p._orm.Delete(model.PortalNav{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalNav")
+	}
+	return r, err
+}
+
+func (p *CommonDao) GetFloorAdPos(catId int32) string {
+	key := fmt.Sprintf("go2o:portal:floor-ad:%d", catId)
+	r, err := p.storage.GetString(key)
+	if err != nil {
+		e := model.PortalFloorAd{}
+		err := p._orm.GetBy(&e, "cat_id=?", catId)
+		if err == nil {
+			pos := p.adRepo.GetAdPositionById(e.PosId)
+			if pos != nil {
+				r = pos.Key
+			}
+		}
+		p.storage.Set(key, r)
+	}
+	return r
+}
+
+func (p *CommonDao) SetFloorAd(catId int32, posId int32) (err error) {
+	cat := p.catRepo.GetCategory(0, catId)
+	if cat == nil {
+		err = product.ErrNoSuchCategory
+	} else if cat.FloorShow != 1 {
+		err = errors.New("商品分类设置楼层显示")
+	}
+	e := model.PortalFloorAd{}
+	p._orm.GetBy(&e, "cat_id=?", catId)
+	e.CatId = catId
+	e.PosId = posId
+	e.AdIndex = 0
+	_, err = p.SavePortalFloorAd(&e)
+	if err == nil {
+		p.storage.Del(fmt.Sprintf("go2o:portal:floor-ad:%d", catId))
+	}
+	return err
+}
+
+// Get PortalFloorAd
+func (p *CommonDao) GetPortalFloorAd(primary interface{}) *model.PortalFloorAd {
+	e := model.PortalFloorAd{}
+	err := p._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorAd")
+	}
+	return nil
+}
+
+// Save PortalFloorAd
+func (p *CommonDao) SavePortalFloorAd(v *model.PortalFloorAd) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorAd")
+	}
+	return id, err
+}
+
+// Batch Delete PortalFloorAd
+func (p *CommonDao) BatchDeletePortalFloorAd(where string, v ...interface{}) (int64, error) {
+	r, err := p._orm.Delete(model.PortalFloorAd{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorAd")
+	}
+	return r, err
+}
+
+// Get PortalFloorLink
+func (p *CommonDao) GetPortalFloorLink(primary interface{}) *model.PortalFloorLink {
+	e := model.PortalFloorLink{}
+	err := p._orm.Get(primary, &e)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorLink")
+	}
+	return nil
+}
+
+// Select PortalFloorLink
+func (p *CommonDao) SelectPortalFloorLink(where string, v ...interface{}) []*model.PortalFloorLink {
+	list := []*model.PortalFloorLink{}
+	err := p._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorLink")
+	}
+	return list
+}
+
+// Save PortalFloorLink
+func (p *CommonDao) SavePortalFloorLink(v *model.PortalFloorLink) (int, error) {
+	id, err := orm.Save(p._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorLink")
+	}
+	return id, err
+}
+
+// Delete PortalFloorLink
+func (p *CommonDao) DeletePortalFloorLink(primary interface{}) error {
+	err := p._orm.DeleteByPk(model.PortalFloorLink{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorLink")
+	}
+	return err
+}
+
+// Batch Delete PortalFloorLink
+func (p *CommonDao) BatchDeletePortalFloorLink(where string, v ...interface{}) (int64, error) {
+	r, err := p._orm.Delete(model.PortalFloorLink{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:PortalFloorLink")
 	}
 	return r, err
 }

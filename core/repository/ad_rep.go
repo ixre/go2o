@@ -63,6 +63,16 @@ func (a *advertisementRepo) GetAdPositionByKey(key string) *ad.AdPosition {
 	return &e
 }
 
+// 根据ID获取广告位
+func (a *advertisementRepo) GetAdPositionById(adPosId int32) *ad.AdPosition {
+	e := ad.AdPosition{}
+	if err := a.GetOrm().Get(adPosId, &e); err != nil {
+		handleError(err)
+		return nil
+	}
+	return &e
+}
+
 // 获取广告位
 func (a *advertisementRepo) GetAdPositionsByGroupId(adGroupId int32) []*ad.AdPosition {
 	var list = []*ad.AdPosition{}
