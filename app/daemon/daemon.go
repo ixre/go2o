@@ -42,7 +42,7 @@ type Service interface {
 	Start(gof.App)
 
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
-	OrderObs(*order.SubOrder) bool
+	OrderObs(*define.SubOrder) bool
 
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *define.Member, create bool) bool
@@ -197,7 +197,7 @@ func (d *defaultService) Start(a gof.App) {
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) OrderObs(o *order.SubOrder) bool {
+func (d *defaultService) OrderObs(o *define.SubOrder) bool {
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	defer Recover()
@@ -207,7 +207,7 @@ func (d *defaultService) OrderObs(o *order.SubOrder) bool {
 	if d.sOrder {
 		//确认订单
 		if o.State == enum.ORDER_WAIT_CONFIRM {
-			rsi.ShoppingService.ConfirmOrder(o.Id)
+			rsi.ShoppingService.ConfirmOrder(o.ID)
 		}
 		d.updateOrderExpires(conn, o)
 	}
@@ -236,7 +236,7 @@ func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
 }
 
 //设置订单过期时间
-func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) {
+func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SubOrder) {
 	if o.State == order.StatAwaitingPayment {
 		//订单刚创建时,设置过期时间
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
@@ -247,8 +247,8 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *order.SubOrder) 
 		conn.Do("DEL", d.getExpiresKey(o))
 	}
 }
-func (d *defaultService) getExpiresKey(o *order.SubOrder) string {
-	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.Id)
+func (d *defaultService) getExpiresKey(o *define.SubOrder) string {
+	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.ID)
 }
 
 // 处理邮件队列

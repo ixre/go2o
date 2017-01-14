@@ -364,7 +364,7 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
 
 	fee := c.Sku.Price * float32(c.Quantity)
 	return &order.OrderItem{
-		Id:          0,
+		ID:          0,
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
 		SkuId:       c.SkuId,
@@ -967,7 +967,7 @@ func NewSubOrder(v *order.SubOrder,
 
 // 获取领域对象编号
 func (o *subOrderImpl) GetDomainId() int32 {
-	return o.value.Id
+	return o.value.ID
 }
 
 // 获取值对象
@@ -1045,7 +1045,7 @@ func (o *subOrderImpl) Save() (int32, error) {
 	}
 	id, err := o.rep.SaveSubOrder(o.value)
 	if err == nil {
-		o.value.Id = id
+		o.value.ID = id
 		err = o.saveOrderItems()
 		o.AppendLog(order.LogSetup, true, "{created}")
 	}

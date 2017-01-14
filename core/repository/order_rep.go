@@ -265,33 +265,33 @@ func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.SubOrder {
 func (o *orderRepImpl) SaveSubOrder(v *order.SubOrder) (int32, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
-	if v.Id <= 0 {
+	if v.ID <= 0 {
 		statusIsChanged = true
 	} else {
-		origin := o.GetSubOrder(v.Id)
+		origin := o.GetSubOrder(v.ID)
 		statusIsChanged = origin.State != v.State // 业务状态是否改变
 	}
-	v.Id, err = orm.I32(orm.Save(o.GetOrm(), v, int(v.Id)))
+	v.ID, err = orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
 
 	// 缓存订单号
-	o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.Id)
+	o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
 	// 缓存订单
-	o.Storage.SetExpire(o.getOrderCk(v.Id, true), *v, DefaultCacheSeconds*10)
+	o.Storage.SetExpire(o.getOrderCk(v.ID, true), *v, DefaultCacheSeconds*10)
 
 	//如果业务状态已经发生改变,则提交到队列
-	if statusIsChanged && v.Id > 0 {
+	if statusIsChanged && v.ID > 0 {
 		rc := core.GetRedisConn()
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.Id)
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.ID)
 		rc.Close()
 		//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
 	}
-	return v.Id, err
+	return v.ID, err
 }
 
 // 保存子订单的商品项,并返回编号和错误
 func (o *orderRepImpl) SaveOrderItem(subOrderId int32, v *order.OrderItem) (int32, error) {
 	v.OrderId = subOrderId
-	return orm.I32(orm.Save(o.GetOrm(), v, int(v.Id)))
+	return orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
 }
 
 // 获取订单的操作记录
