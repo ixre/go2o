@@ -112,12 +112,14 @@ func (m *merchantRepo) getMchCacheKey(mchId int32) string {
 func (m *merchantRepo) GetMerchant(id int32) merchant.IMerchant {
 	e := merchant.Merchant{}
 	key := m.getMchCacheKey(id)
-	if m.storage.Get(key, &e) != nil {
+	err := m.storage.Get(key, &e)
+	if err != nil {
 		// 获取并缓存到列表中
-		err := m.Connector.GetOrm().Get(id, &e)
-		if err == nil {
-			m.storage.Set(key, e)
+		err = m.Connector.GetOrm().Get(id, &e)
+		if err != nil {
+			return nil
 		}
+		m.storage.Set(key, e)
 	}
 	return m.CreateMerchant(&e)
 }

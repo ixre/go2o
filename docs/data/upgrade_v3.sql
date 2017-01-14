@@ -365,14 +365,14 @@ ADD COLUMN `attr_word` VARCHAR(200) NOT NULL COMMENT '属性文本' AFTER `attr_
 
 /** 2017-01-08 **/
 
-ALTER TABLE `txmall`.`item_info`
+ALTER TABLE `item_info`
 ADD COLUMN `short_title` VARCHAR(120) NULL COMMENT '短标题' AFTER `title`;
 
 
 /** 2017-01-10 **/
-DROP TABLE `txmall`.`pt_merchant`;
-DROP TABLE `txmall`.`pt_shop`;
-DROP TABLE `txmall`.`pt_api`;
+DROP TABLE `pt_merchant`;
+DROP TABLE `pt_shop`;
+DROP TABLE `pt_api`;
 
 ALTER TABLE `cat_category`
 CHANGE COLUMN `pro_model` `pro_model` INT(11) NOT NULL COMMENT '商品模型' AFTER `parent_id`,
