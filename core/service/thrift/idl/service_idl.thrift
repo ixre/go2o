@@ -287,6 +287,47 @@ struct PaymentOrder {
     22: i32 State
 }
 
+// 订单项
+struct OrderItem {
+    1: i32 Id
+    2: i32 OrderId
+    3: i32 ItemId
+    4: i32 SkuId
+    5: i32 SnapshotId
+    6: i32 Quantity
+    7: i32 ReturnQuantity
+    8: double Amount
+    9: double FinalAmount
+    10: i64 IsShipped
+    11: i64 UpdateTime
+}
+
+// 子订单
+struct SubOrder {
+    1: i32 Id
+    2: string OrderNo
+    3: i32 ParentId
+    4: i32 BuyerId
+    5: i32 VendorId
+    6: i32 ShopId
+    7: string Subject
+    8: double GoodsAmount
+    9: double DiscountAmount
+    10: double ExpressFee
+    11: double PackageFee
+    12: double FinalAmount
+    13: i64 IsPaid
+    14: i64 IsSuspend
+    15: string Note
+    16: string Remark
+    17: i64 CreateTime
+    18: i64 UpdateTime
+    19: i32 State
+    20: list<OrderItem> Items
+}
+
+
+
 //会员服务
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
@@ -388,4 +429,14 @@ service PaymentService{
     Result PaymentByPresent(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
+}
+
+// 销售服务
+service SaleService {
+  // 获取子订单
+  SubOrder GetSubOrder(1:i32 id)
+  // 根据订单号获取子订单
+  SubOrder GetSubOrderByNo(1:string orderNo)
+  // 获取订单商品项
+  list<OrderItem> GetSubOrderItems(1:i32 subOrderId)
 }

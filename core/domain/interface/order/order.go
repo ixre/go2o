@@ -443,7 +443,7 @@ type (
 	// 子订单
 	SubOrder struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
@@ -489,7 +489,7 @@ type (
 	// 订单商品项
 	OrderItem struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
 		OrderId int32 `db:"order_id"`
 		// 商品编号

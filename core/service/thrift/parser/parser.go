@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
@@ -491,4 +492,49 @@ func CategoryDto(src *product.Category) *define.Category {
 		}
 	}
 	return s
+}
+
+func OrderItemDto(src *order.OrderItem) *define.OrderItem {
+	return &define.OrderItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         float64(src.Amount),
+		FinalAmount:    float64(src.FinalAmount),
+		IsShipped:      int64(src.IsShipped),
+		UpdateTime:     src.UpdateTime,
+	}
+}
+
+func SubOrderDto(src *order.SubOrder) *define.SubOrder {
+	o := &define.SubOrder{
+		ID:             src.ID,
+		OrderNo:        src.OrderNo,
+		ParentId:       src.ParentId,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		GoodsAmount:    float64(src.GoodsAmount),
+		DiscountAmount: float64(src.DiscountAmount),
+		ExpressFee:     float64(src.ExpressFee),
+		PackageFee:     float64(src.PackageFee),
+		FinalAmount:    float64(src.FinalAmount),
+		IsPaid:         int64(src.IsPaid),
+		IsSuspend:      int64(src.IsSuspend),
+		Note:           src.Note,
+		Remark:         src.Remark,
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          int32(src.State),
+		Items:          make([]*define.OrderItem, len(src.Items)),
+	}
+	for i, v := range src.Items {
+		o.Items[i] = OrderItemDto(v)
+	}
+	return o
 }

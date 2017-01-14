@@ -25,6 +25,8 @@ import (
 	"strings"
 )
 
+var _ define.SaleService = new(shoppingService)
+
 type shoppingService struct {
 	_rep        order.IOrderRepo
 	_itemRepo   product.IProductRepo
@@ -297,23 +299,36 @@ func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.Order {
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int32) *order.SubOrder {
-	return s._rep.GetSubOrder(id)
+func (s *shoppingService) GetSubOrder(id int32) (r *define.SubOrder, err error) {
+	o := s._rep.GetSubOrder(id)
+	if o != nil {
+		return parser.SubOrderDto(o), nil
+	}
+	return nil, nil
 }
 
-// 获取子订单
-func (s *shoppingService) GetSubOrderByNo(orderNo string) *order.SubOrder {
-	return s._rep.GetSubOrderByNo(orderNo)
+// 根据订单号获取子订单
+func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, err error) {
+	o := s._rep.GetSubOrderByNo(orderNo)
+	if o != nil {
+		return parser.SubOrderDto(o), nil
+	}
+	return nil, nil
 }
 
 // 获取订单商品项
-func (s *shoppingService) GetSubOrderItems(subOrderId int32) []*order.OrderItem {
-	return s._rep.GetSubOrderItems(subOrderId)
+func (s *shoppingService) GetSubOrderItems(subOrderId int32) ([]*define.OrderItem, error) {
+	list := s._rep.GetSubOrderItems(subOrderId)
+	arr := make([]*define.OrderItem, len(list))
+	for i, v := range list {
+		arr[i] = parser.OrderItemDto(v)
+	}
+	return arr, nil
 }
 
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItems(id int32) (*order.SubOrder, []*dto.OrderItem) {
-	o := s.GetSubOrder(id)
+	o := s._rep.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
 	}
@@ -322,11 +337,11 @@ func (s *shoppingService) GetSubOrderAndItems(id int32) (*order.SubOrder, []*dto
 
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.SubOrder, []*dto.OrderItem) {
-	o := s.GetSubOrderByNo(orderNo)
+	o := s._rep.GetSubOrderByNo(orderNo)
 	if o == nil {
 		return o, []*dto.OrderItem{}
 	}
-	return o, s._orderQuery.QueryOrderItems(o.Id)
+	return o, s._orderQuery.QueryOrderItems(o.ID)
 }
 
 // 取消订单

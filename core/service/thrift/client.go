@@ -91,3 +91,17 @@ func PaymentServeClient() (*define.PaymentServiceClient, error) {
 	}
 	return nil, err
 }
+
+// 基础服务
+func SaleServeClient() (*define.SaleServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "sale")
+			return define.NewSaleServiceClientProtocol(transport, proto, opProto), err
+		}
+	}
+	return nil, err
+}

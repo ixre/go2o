@@ -23,7 +23,7 @@ import (
 func superviseOrder(ss []Service) {
 	sv := rsi.ShoppingService
 	notify := func(id int, ss []Service) {
-		o := sv.GetSubOrder(int32(id))
+		o, _ := sv.GetSubOrder(int32(id))
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
