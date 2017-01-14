@@ -472,6 +472,7 @@ func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.R
 
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._rep.GetMemberByUsr(usr)
+
 	if val == nil {
 		val = ms._rep.GetMemberValueByPhone(usr)
 	}

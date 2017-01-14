@@ -15,6 +15,8 @@ import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
 	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
 	"strings"
 	"time"
 )
@@ -124,18 +126,19 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int32) error {
 }
 
 // 验证用户密码并返回编号
-func (m *merchantService) Verify(usr, pwd string) (int32, error) {
+func (m *merchantService) Verify(usr, pwd string) (r *define.Result_, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	pwd = strings.TrimSpace(pwd)
+	var mchId int32
 	if usr == "" || pwd == "" {
-		return 0, member.ErrCredential
+		err = member.ErrCredential
+	} else {
+		mchId = m._query.Verify(usr, pwd)
+		if mchId <= 0 {
+			err = merchant.ErrNoSuchMerchant
+		}
 	}
-	mchId := m._query.Verify(usr, pwd)
-	if mchId <= 0 {
-		return mchId, merchant.ErrNoSuchMerchant
-	}
-	mch := m._mchRepo.GetMerchant(mchId)
-	return mchId, mch.Stat()
+	return parser.Result(mchId, err), nil
 }
 
 // 获取企业信息
