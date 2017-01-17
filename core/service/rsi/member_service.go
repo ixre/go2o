@@ -800,6 +800,21 @@ func (ms *memberService) UnfreezesIntegral(memberId int32,
 	return m.GetAccount().UnfreezesIntegral(value, remark)
 }
 
+// 抵扣账户
+func (ms *memberService) DiscountAccount(memberId int32, account int32, title string,
+	outerNo string, amount float64, relateUser int32, mustLargeZero bool) (r *define.Result_, err error) {
+	m, err := ms.getMember(memberId)
+	if err == nil {
+		acc := m.GetAccount()
+		switch int(account) {
+		case member.AccountPresent:
+			err = acc.DiscountPresent(title, outerNo, float32(amount),
+				member.DefaultRelateUser, mustLargeZero)
+		}
+	}
+	return parser.Result(memberId, err), nil
+}
+
 // 扣减奖金
 func (ms *memberService) DiscountPresent(memberId int32, title string,
 	tradeNo string, amount float32, mustLargeZero bool) error {

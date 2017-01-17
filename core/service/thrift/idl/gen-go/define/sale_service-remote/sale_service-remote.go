@@ -122,8 +122,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err150 := (strconv.Atoi(flag.Arg(1)))
-		if err150 != nil {
+		tmp0, err159 := (strconv.Atoi(flag.Arg(1)))
+		if err159 != nil {
 			Usage()
 			return
 		}
@@ -147,8 +147,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err152 := (strconv.Atoi(flag.Arg(1)))
-		if err152 != nil {
+		tmp0, err161 := (strconv.Atoi(flag.Arg(1)))
+		if err161 != nil {
 			Usage()
 			return
 		}
