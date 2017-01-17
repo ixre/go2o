@@ -32,6 +32,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Account GetAccount(i32 memberId)")
 	fmt.Fprintln(os.Stderr, "   InviterArray(i32 memberId, i32 depth)")
 	fmt.Fprintln(os.Stderr, "  Result ChargeAccount(i32 memberId, i32 account, i32 kind, string title, string outerNo, double amount, i32 relateUser)")
+	fmt.Fprintln(os.Stderr, "  Result DiscountAccount(i32 memberId, i32 account, string title, string outerNo, double amount, i32 relateUser, bool mustLargeZero)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -145,8 +146,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err35 := (strconv.Atoi(flag.Arg(1)))
-		if err35 != nil {
+		tmp0, err37 := (strconv.Atoi(flag.Arg(1)))
+		if err37 != nil {
 			Usage()
 			return
 		}
@@ -170,8 +171,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err37 := (strconv.Atoi(flag.Arg(1)))
-		if err37 != nil {
+		tmp0, err39 := (strconv.Atoi(flag.Arg(1)))
+		if err39 != nil {
 			Usage()
 			return
 		}
@@ -185,8 +186,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Summary requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err38 := (strconv.Atoi(flag.Arg(1)))
-		if err38 != nil {
+		tmp0, err40 := (strconv.Atoi(flag.Arg(1)))
+		if err40 != nil {
 			Usage()
 			return
 		}
@@ -200,8 +201,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err39 := (strconv.Atoi(flag.Arg(1)))
-		if err39 != nil {
+		tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
+		if err41 != nil {
 			Usage()
 			return
 		}
@@ -217,8 +218,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err41 := (strconv.Atoi(flag.Arg(1)))
-		if err41 != nil {
+		tmp0, err43 := (strconv.Atoi(flag.Arg(1)))
+		if err43 != nil {
 			Usage()
 			return
 		}
@@ -234,8 +235,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err43 := (strconv.Atoi(flag.Arg(1)))
-		if err43 != nil {
+		tmp0, err45 := (strconv.Atoi(flag.Arg(1)))
+		if err45 != nil {
 			Usage()
 			return
 		}
@@ -249,15 +250,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err44 := (strconv.Atoi(flag.Arg(1)))
-		if err44 != nil {
+		tmp0, err46 := (strconv.Atoi(flag.Arg(1)))
+		if err46 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err45 := (strconv.Atoi(flag.Arg(2)))
-		if err45 != nil {
+		tmp1, err47 := (strconv.Atoi(flag.Arg(2)))
+		if err47 != nil {
 			Usage()
 			return
 		}
@@ -271,8 +272,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAccount requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err46 := (strconv.Atoi(flag.Arg(1)))
-		if err46 != nil {
+		tmp0, err48 := (strconv.Atoi(flag.Arg(1)))
+		if err48 != nil {
 			Usage()
 			return
 		}
@@ -284,28 +285,6 @@ func main() {
 	case "InviterArray":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "InviterArray requires 2 args")
-			flag.Usage()
-		}
-		tmp0, err47 := (strconv.Atoi(flag.Arg(1)))
-		if err47 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		tmp1, err48 := (strconv.Atoi(flag.Arg(2)))
-		if err48 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.InviterArray(value0, value1))
-		fmt.Print("\n")
-		break
-	case "ChargeAccount":
-		if flag.NArg()-1 != 7 {
-			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
 			flag.Usage()
 		}
 		tmp0, err49 := (strconv.Atoi(flag.Arg(1)))
@@ -322,8 +301,30 @@ func main() {
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		tmp2, err51 := (strconv.Atoi(flag.Arg(3)))
+		fmt.Print(client.InviterArray(value0, value1))
+		fmt.Print("\n")
+		break
+	case "ChargeAccount":
+		if flag.NArg()-1 != 7 {
+			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
+			flag.Usage()
+		}
+		tmp0, err51 := (strconv.Atoi(flag.Arg(1)))
 		if err51 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err52 := (strconv.Atoi(flag.Arg(2)))
+		if err52 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		tmp2, err53 := (strconv.Atoi(flag.Arg(3)))
+		if err53 != nil {
 			Usage()
 			return
 		}
@@ -333,20 +334,61 @@ func main() {
 		value3 := argvalue3
 		argvalue4 := flag.Arg(5)
 		value4 := argvalue4
-		argvalue5, err54 := (strconv.ParseFloat(flag.Arg(6), 64))
-		if err54 != nil {
+		argvalue5, err56 := (strconv.ParseFloat(flag.Arg(6), 64))
+		if err56 != nil {
 			Usage()
 			return
 		}
 		value5 := argvalue5
-		tmp6, err55 := (strconv.Atoi(flag.Arg(7)))
-		if err55 != nil {
+		tmp6, err57 := (strconv.Atoi(flag.Arg(7)))
+		if err57 != nil {
 			Usage()
 			return
 		}
 		argvalue6 := int32(tmp6)
 		value6 := argvalue6
 		fmt.Print(client.ChargeAccount(value0, value1, value2, value3, value4, value5, value6))
+		fmt.Print("\n")
+		break
+	case "DiscountAccount":
+		if flag.NArg()-1 != 7 {
+			fmt.Fprintln(os.Stderr, "DiscountAccount requires 7 args")
+			flag.Usage()
+		}
+		tmp0, err58 := (strconv.Atoi(flag.Arg(1)))
+		if err58 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err59 := (strconv.Atoi(flag.Arg(2)))
+		if err59 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		argvalue2 := flag.Arg(3)
+		value2 := argvalue2
+		argvalue3 := flag.Arg(4)
+		value3 := argvalue3
+		argvalue4, err62 := (strconv.ParseFloat(flag.Arg(5), 64))
+		if err62 != nil {
+			Usage()
+			return
+		}
+		value4 := argvalue4
+		tmp5, err63 := (strconv.Atoi(flag.Arg(6)))
+		if err63 != nil {
+			Usage()
+			return
+		}
+		argvalue5 := int32(tmp5)
+		value5 := argvalue5
+		argvalue6 := flag.Arg(7) == "true"
+		value6 := argvalue6
+		fmt.Print(client.DiscountAccount(value0, value1, value2, value3, value4, value5, value6))
 		fmt.Print("\n")
 		break
 	case "":
