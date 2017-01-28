@@ -491,6 +491,8 @@ func (g *itemImpl) AddSalesNum(skuId, quantity int32) error {
 	if quantity <= 0 {
 		return item.ErrGoodsNum
 	}
+	//log.Println("--商品：",g.value.Id,"; 库存：",
+	// g.value.StockNum,"; 数量:",quantity)
 	if quantity > g.value.StockNum {
 		return item.ErrOutOfStock
 	}

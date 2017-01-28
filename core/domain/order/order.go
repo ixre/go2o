@@ -685,7 +685,7 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int32, buyerId int32,
 	v.FinalAmount = v.GoodsAmount - v.DiscountAmount + v.PackageFee + v.ExpressFee
 	// 判断是否已支付
 	if o.value.IsPaid == 1 {
-		v.State = enum.ORDER_WAIT_CONFIRM
+		v.State = order.StatAwaitingConfirm
 	}
 	return o.manager.CreateSubOrder(v)
 }
@@ -796,7 +796,7 @@ func (o *orderImpl) paymentWithBalance(buyerType int) error {
 	if o.value.FinalAmount == 0 {
 		o.value.IsPaid = 1
 		// o._value.PaymentSign = buyerType
-		o.value.State = enum.ORDER_WAIT_CONFIRM
+		o.value.State = order.StatAwaitingConfirm
 	}
 	o.value.UpdateTime = unix
 	o.value.PaidTime = unix
@@ -817,7 +817,7 @@ func (o *orderImpl) CmPaymentWithBalance() error {
 // 订单是否已完成
 func (o *orderImpl) IsOver() bool {
 	s := o.value.State
-	return s == enum.ORDER_CANCEL || s == enum.ORDER_COMPLETED
+	return s == order.StatCancelled || s == order.StatCompleted
 }
 
 // 处理订单
@@ -1012,7 +1012,7 @@ func (o *subOrderImpl) AddRemark(remark string) {
 func (o *subOrderImpl) SetShop(shopId int32) error {
 	//todo:验证Shop
 	o.value.ShopId = shopId
-	if o.value.State == enum.ORDER_WAIT_CONFIRM {
+	if o.value.State == order.StatAwaitingShipment {
 		panic("not impl")
 		// o.Confirm()
 	}
@@ -1133,9 +1133,14 @@ func (o *subOrderImpl) Confirm() (err error) {
 
 // 增加商品的销售数量
 func (o *subOrderImpl) addSalesNum() {
+	//log.Println("---订单：",o.value.OrderNo," 商品：",len(o.Items()))
 	for _, v := range o.Items() {
-		it := o.goodsRepo.CreateItem(&item.GoodsItem{Id: v.ItemId})
-		it.AddSalesNum(v.SkuId, v.Quantity)
+		it := o.goodsRepo.GetItem(v.ItemId)
+		err := it.AddSalesNum(v.SkuId, v.Quantity)
+		if err != nil {
+			log.Println("---增加销售数量：", v.ItemId,
+				" sku:", v.SkuId, " error:", err.Error())
+		}
 	}
 }
 
