@@ -18,7 +18,6 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"github.com/robfig/cron"
 	"go2o/core"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
 	"go2o/core/service/rsi"
@@ -205,11 +204,18 @@ func (d *defaultService) OrderObs(o *define.SubOrder) bool {
 		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
 	}
 	if d.sOrder {
-		//确认订单
-		if o.State == enum.ORDER_WAIT_CONFIRM {
+		switch o.State {
+		//订单未支付，则超时自动取消
+		case order.StatAwaitingPayment:
+			d.updateOrderExpires(conn, o)
+		//自动确认订单
+		case order.StatAwaitingConfirm:
 			rsi.ShoppingService.ConfirmOrder(o.ID)
+			d.cancelOrderExpires(conn, o) //付款后取消自动取消
+		//订单自动收货
+		case order.StatShipped:
+			d.orderAutoReceive(conn, o)
 		}
-		d.updateOrderExpires(conn, o)
 	}
 	return true
 }
@@ -237,18 +243,34 @@ func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
 
 //设置订单过期时间
 func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SubOrder) {
+	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
-		//订单刚创建时,设置过期时间
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		conn.Do("SET", d.getExpiresKey(o), unix)
-	} else if o.State == enum.ORDER_WAIT_CONFIRM {
-		//删除过期时间
-		conn.Do("DEL", d.getExpiresKey(o))
 	}
 }
+
+//取消订单过期时间
+func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.SubOrder) {
+	conn.Do("DEL", d.getExpiresKey(o))
+}
+
 func (d *defaultService) getExpiresKey(o *define.SubOrder) string {
 	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.ID)
+}
+
+// 订单自动收货
+func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.SubOrder) {
+	//if o.State == order.StatAwaitingPayment {
+	//    //订单刚创建时,设置过期时间
+	//    ss := rsi.FoundationService.GetGlobMchSaleConf()
+	//    unix := o.UpdateTime + int64(ss.OrderTimeOutMinute) * 60
+	//    conn.Do("SET", d.getExpiresKey(o), unix)
+	//} else if o.State == enum.ORDER_WAIT_CONFIRM {
+	//    //删除过期时间
+	//    conn.Do("DEL", d.getExpiresKey(o))
+	//}
 }
 
 // 处理邮件队列

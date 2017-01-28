@@ -412,7 +412,7 @@ func (t *orderManagerImpl) setupOrder(v *order.Order,
 			log.Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
 		}
 
-	case enum.ORDER_WAIT_CONFIRM:
+	case order.StatAwaitingConfirm:
 		if dur > time.Minute*time.Duration(conf.OrderConfirmAfterMinute) {
 			err = t.SmartConfirmOrder(od)
 		}
@@ -432,7 +432,7 @@ func (t *orderManagerImpl) setupOrder(v *order.Order,
 	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Sending \n", v.OrderNo)
 	//				}
 	//			}
-	case enum.ORDER_WAIT_RECEIVE:
+	case order.StatShipped:
 		if dur > time.Hour*time.Duration(conf.OrderTimeOutReceiveHour) {
 			//todo:
 			panic("not impl")
@@ -447,7 +447,7 @@ func (t *orderManagerImpl) setupOrder(v *order.Order,
 			}
 		}
 
-		//		case enum.ORDER_COMPLETED:
+		//		case order.StatCompleted:
 		//			if dur > time.Hour*order_complete_hour {
 		//				err = order.Complete()
 		//				if ctx.Debug() {
