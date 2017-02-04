@@ -116,16 +116,12 @@ echo "[ Setup 3 ]: upload tar package to server ..."
 
 scp ../${package_name} ${user}@${server}:/home/${user}/
 
-echo "[ Setup 4 ]: clean build and packages [Y/N],default Y ? "
-read clean
-if [ ${clean} = "Y" ]||[ ${clean} = "y" ]||[ ${clean} = "" ];then
-    rm go2o-serve go2o-tcpserve master-serve go2o-rpc ../${package_name}
-fi
-
-echo "[ Setup 5 ]: restart server"
+echo "[ Setup 4 ]: restart server"
 
 ssh -t -p ${ssh_port} ${root_user}@${server} "${boot_sh}"
 
+echo "[ Setup 5 ]: cleaning ..."
+rm go2o-serve go2o-tcpserve master-serve go2o-rpc ../${package_name}
 
 echo "Configurations, publish successfully!"
 
