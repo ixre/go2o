@@ -13,8 +13,8 @@ const (
 	AccountBalance = 1
 	// 积分账户
 	AccountIntegral = 2
-	// 赠送账户
-	AccountPresent = 3
+	// 钱包账户
+	AccountWallet = 3
 	// 流通金账户
 	AccountFlow = 4
 )
@@ -60,34 +60,34 @@ const (
 
 const (
 	// 赠送金额
-	KindPresentAdd int32 = 1
+	KindWalletAdd int32 = 1
 	// 抵扣奖金
-	KindPresentDiscount int32 = 2
+	KindWalletDiscount int32 = 2
 	// 转入
-	KindPresentTransferIn int32 = 5
+	KindWalletTransferIn int32 = 5
 	// 转出
-	KindPresentTransferOut int32 = 6
+	KindWalletTransferOut int32 = 6
 	// 失效
-	KindPresentExpired int32 = 7
+	KindWalletExpired int32 = 7
 	// 冻结
-	KindPresentFreeze int32 = 8
+	KindWalletFreeze int32 = 8
 	// 解冻
-	KindPresentUnfreeze int32 = 9
+	KindWalletUnfreeze int32 = 9
 	// 提现到余额
-	KindPresentTakeOutToBalance int32 = 11
+	KindWalletTakeOutToBalance int32 = 11
 	// 提现到银行卡(人工提现)
-	KindPresentTakeOutToBankCard int32 = 12
+	KindWalletTakeOutToBankCard int32 = 12
 	// 提现到第三方
-	KindPresentTakeOutToThirdPart int32 = 13
+	KindWalletTakeOutToThirdPart int32 = 13
 	// 提现退还到银行卡
-	KindPresentTakeOutRefund int32 = 14
+	KindWalletTakeOutRefund int32 = 14
 	// 支付单退款
-	KindPresentPaymentRefund int32 = 15
+	KindWalletPaymentRefund int32 = 15
 
 	// 客服赠送
-	KindPresentServiceAdd int32 = 21
+	KindWalletServiceAdd int32 = 21
 	// 客服扣减
-	KindPresentServiceDiscount int32 = 22
+	KindWalletServiceDiscount int32 = 22
 )
 
 const (
@@ -146,7 +146,7 @@ type (
 		// 保存余额变动信息
 		SaveBalanceInfo(*BalanceInfo) (int32, error)
 
-		// 获取赠送账户日志
+		// 获取钱包账户日志
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
@@ -168,14 +168,14 @@ type (
 		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-		DiscountPresent(title string, outerNo string, amount float32,
+		DiscountWallet(title string, outerNo string, amount float32,
 			relateUser int32, mustLargeZero bool) error
 
 		// 冻结赠送金额
-		FreezePresent(title string, outerNo string, amount float32, relateUser int32) error
+		FreezeWallet(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 解冻赠送金额
-		UnfreezePresent(title string, outerNo string, amount float32, relateUser int32) error
+		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int32) error
 
 		// 流通账户余额变动，如扣除,amount传入负数金额
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
@@ -232,7 +232,7 @@ type (
 
 		// 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 		// commission手续费
-		TransferPresent(kind int32, amount float32, commission float32, tradeNo string,
+		TransferWallet(kind int32, amount float32, commission float32, tradeNo string,
 			toTitle string, fromTitle string) error
 
 		// 转账活动账户,kind为转账类型，如 KindBalanceTransfer等
@@ -281,7 +281,7 @@ type (
 		//奖金账户余额
 		PresentBalance float32 `db:"present_balance"`
 		//冻结赠送金额
-		FreezePresent float32 `db:"freeze_present"`
+		FreezeWallet float32 `db:"freeze_present"`
 		//失效的赠送金额
 		ExpiredPresent float32 `db:"expired_present"`
 		//总赠送金额
@@ -351,7 +351,7 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
-	// 赠送账户日志
+	// 钱包账户日志
 	PresentLog struct {
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号

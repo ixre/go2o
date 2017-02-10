@@ -106,13 +106,13 @@ func (p *paymentService) DiscountByBalance(orderId int32, remark string) (*defin
 	return parser.Result(0, err), nil
 }
 
-// 赠送账户支付
-func (p *paymentService) PaymentByPresent(orderId int32, remark string) (r *define.Result_, err error) {
+// 钱包账户支付
+func (p *paymentService) PaymentByWallet(orderId int32, remark string) (r *define.Result_, err error) {
 	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		err = o.PaymentByPresent(remark)
+		err = o.PaymentByWallet(remark)
 	}
 	return parser.Result(0, err), nil
 }

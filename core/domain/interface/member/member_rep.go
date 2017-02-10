@@ -98,10 +98,10 @@ type IMemberRepo interface {
 	// 保存余额日志
 	SaveBalanceLog(*BalanceLog) (int32, error)
 
-	// 保存赠送账户日志
+	// 保存钱包账户日志
 	SavePresentLog(*PresentLog) (int32, error)
 
-	// 获取赠送账户日志信息
+	// 获取钱包账户日志信息
 	GetPresentLog(id int32) *PresentLog
 
 	// 增加会员当天提现次数

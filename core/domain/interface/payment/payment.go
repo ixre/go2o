@@ -46,8 +46,8 @@ const (
 	SignOnlinePay int32 = 1
 	// 线下支付
 	SignOfflinePay int32 = 2
-	// 赠送账户支付
-	SignPresentAccount int32 = 3
+	// 钱包账户支付
+	SignWalletAccount int32 = 3
 )
 
 var (
@@ -122,8 +122,8 @@ type (
 		// 系统支付金额
 		SystemPayment(fee float32) error
 
-		// 赠送账户支付
-		PaymentByPresent(remark string) error
+		// 钱包账户支付
+		PaymentByWallet(remark string) error
 
 		// 设置支付方式
 		SetPaymentSign(paymentSign int32) error

@@ -601,10 +601,10 @@ func (ms *memberService) PagedBalanceAccountLog(memberId int32, begin, end int,
 	return ms._query.PagedBalanceAccountLog(memberId, begin, end, where, orderBy)
 }
 
-// 获取赠送账户分页记录
-func (ms *memberService) PagedPresentAccountLog(memberId int32, begin, end int,
+// 获取钱包账户分页记录
+func (ms *memberService) PagedWalletAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (int, []map[string]interface{}) {
-	return ms._query.PagedPresentAccountLog(memberId, begin, end, where, orderBy)
+	return ms._query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
 
 // 查询分页订单
@@ -807,8 +807,8 @@ func (ms *memberService) DiscountAccount(memberId int32, account int32, title st
 	if err == nil {
 		acc := m.GetAccount()
 		switch int(account) {
-		case member.AccountPresent:
-			err = acc.DiscountPresent(title, outerNo, float32(amount),
+		case member.AccountWallet:
+			err = acc.DiscountWallet(title, outerNo, float32(amount),
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
@@ -816,13 +816,13 @@ func (ms *memberService) DiscountAccount(memberId int32, account int32, title st
 }
 
 // 扣减奖金
-func (ms *memberService) DiscountPresent(memberId int32, title string,
+func (ms *memberService) DiscountWallet(memberId int32, title string,
 	tradeNo string, amount float32, mustLargeZero bool) error {
 	m, err := ms.getMember(memberId)
 	if err != nil {
 		return err
 	}
-	return m.GetAccount().DiscountPresent(title, tradeNo, amount,
+	return m.GetAccount().DiscountWallet(title, tradeNo, amount,
 		member.DefaultRelateUser, mustLargeZero)
 }
 
@@ -863,11 +863,11 @@ func (ms *memberService) SubmitTakeOutRequest(memberId int32, takeKind int32,
 	acc := m.GetAccount()
 	var title string
 	switch takeKind {
-	case member.KindPresentTakeOutToBankCard:
+	case member.KindWalletTakeOutToBankCard:
 		title = "提现到银行卡"
-	case member.KindPresentTakeOutToBalance:
+	case member.KindWalletTakeOutToBalance:
 		title = "充值账户"
-	case member.KindPresentTakeOutToThirdPart:
+	case member.KindWalletTakeOutToThirdPart:
 		title = "充值到第三方账户"
 	}
 	return acc.RequestTakeOut(takeKind, title, applyAmount, commission)
@@ -876,7 +876,7 @@ func (ms *memberService) SubmitTakeOutRequest(memberId int32, takeKind int32,
 // 获取最近的提现
 func (ms *memberService) GetLatestTakeOut(memberId int32) *member.BalanceInfo {
 	return ms._query.GetLatestBalanceInfoByKind(memberId,
-		member.KindPresentTakeOutToBankCard)
+		member.KindWalletTakeOutToBankCard)
 }
 
 // 获取最近的提现描述
@@ -946,23 +946,23 @@ func (ms *memberService) Unfreeze(memberId int32, title string,
 }
 
 // 冻结赠送金额
-func (ms *memberService) FreezePresent(memberId int32, title string,
+func (ms *memberService) FreezeWallet(memberId int32, title string,
 	tradeNo string, amount float32, referId int32) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().FreezePresent(title, tradeNo, amount, referId)
+	return m.GetAccount().FreezeWallet(title, tradeNo, amount, referId)
 }
 
 // 解冻赠送金额
-func (ms *memberService) UnfreezePresent(memberId int32, title string,
+func (ms *memberService) UnfreezeWallet(memberId int32, title string,
 	tradeNo string, amount float32, referId int32) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().UnfreezePresent(title, tradeNo, amount, referId)
+	return m.GetAccount().UnfreezeWallet(title, tradeNo, amount, referId)
 }
 
 // 将冻结金额标记为失效
@@ -998,13 +998,13 @@ func (ms *memberService) TransferBalance(memberId int32, kind int32, amount floa
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (ms *memberService) TransferPresent(memberId int32, kind int32, amount float32, commission float32,
+func (ms *memberService) TransferWallet(memberId int32, kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	return m.GetAccount().TransferPresent(kind, amount, commission,
+	return m.GetAccount().TransferWallet(kind, amount, commission,
 		tradeNo, toTitle, fromTitle)
 }
 
@@ -1072,24 +1072,24 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int32, accountTy
 	}
 	acc := m.GetAccount()
 	var tit2 string
-	if accountType == member.AccountPresent {
+	if accountType == member.AccountWallet {
 		outerNo = domain.NewTradeNo(int(mchId))
 		if amount > 0 {
 			//增加奖金
-			tit2 = "[KF]客服调整-" + variable.AliasPresentAccount
+			tit2 = "[KF]客服调整-" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.Charge(member.AccountPresent,
-				member.KindPresentServiceAdd,
+			err = acc.Charge(member.AccountWallet,
+				member.KindWalletServiceAdd,
 				tit2, outerNo, amount, relateUser)
 		} else {
 			//扣减奖金
-			tit2 = "[KF]客服扣减-" + variable.AliasPresentAccount
+			tit2 = "[KF]客服扣减-" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
-			err = acc.DiscountPresent(tit2, outerNo, -amount, relateUser, false)
+			err = acc.DiscountWallet(tit2, outerNo, -amount, relateUser, false)
 		}
 		return outerNo, err
 	}

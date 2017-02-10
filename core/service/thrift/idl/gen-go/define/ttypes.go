@@ -1949,7 +1949,7 @@ func (p *Profile) String() string {
 //  - FreezeBalance
 //  - ExpiredBalance
 //  - PresentBalance
-//  - FreezePresent
+//  - FreezeWallet
 //  - ExpiredPresent
 //  - TotalPresentFee
 //  - FlowBalance
@@ -1970,7 +1970,7 @@ type Account struct {
 	FreezeBalance     float64 `thrift:"FreezeBalance,5" json:"FreezeBalance"`
 	ExpiredBalance    float64 `thrift:"ExpiredBalance,6" json:"ExpiredBalance"`
 	PresentBalance    float64 `thrift:"PresentBalance,7" json:"PresentBalance"`
-	FreezePresent     float64 `thrift:"FreezePresent,8" json:"FreezePresent"`
+	FreezeWallet      float64 `thrift:"FreezeWallet,8" json:"FreezeWallet"`
 	ExpiredPresent    float64 `thrift:"ExpiredPresent,9" json:"ExpiredPresent"`
 	TotalPresentFee   float64 `thrift:"TotalPresentFee,10" json:"TotalPresentFee"`
 	FlowBalance       float64 `thrift:"FlowBalance,11" json:"FlowBalance"`
@@ -2017,8 +2017,8 @@ func (p *Account) GetPresentBalance() float64 {
 	return p.PresentBalance
 }
 
-func (p *Account) GetFreezePresent() float64 {
-	return p.FreezePresent
+func (p *Account) GetFreezeWallet() float64 {
+	return p.FreezeWallet
 }
 
 func (p *Account) GetExpiredPresent() float64 {
@@ -2244,7 +2244,7 @@ func (p *Account) readField8(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadDouble(); err != nil {
 		return thrift.PrependError("error reading field 8: ", err)
 	} else {
-		p.FreezePresent = v
+		p.FreezeWallet = v
 	}
 	return nil
 }
@@ -2522,14 +2522,14 @@ func (p *Account) writeField7(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *Account) writeField8(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("FreezePresent", thrift.DOUBLE, 8); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:FreezePresent: ", p), err)
+	if err := oprot.WriteFieldBegin("FreezeWallet", thrift.DOUBLE, 8); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 8:FreezeWallet: ", p), err)
 	}
-	if err := oprot.WriteDouble(float64(p.FreezePresent)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.FreezePresent (8) field write error: ", p), err)
+	if err := oprot.WriteDouble(float64(p.FreezeWallet)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.FreezeWallet (8) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:FreezePresent: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 8:FreezeWallet: ", p), err)
 	}
 	return err
 }

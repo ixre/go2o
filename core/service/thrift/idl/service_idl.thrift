@@ -73,7 +73,7 @@ struct Account {
     5: double FreezeBalance
     6: double ExpiredBalance
     7: double PresentBalance
-    8: double FreezePresent
+    8: double FreezeWallet
     9: double ExpiredPresent
     10: double TotalPresentFee
     11: double FlowBalance
@@ -428,8 +428,8 @@ service PaymentService{
     Result DiscountByBalance(1:i32 orderId,2:string remark )
    // 积分抵扣支付单
     DResult DiscountByIntegral(1:i32 orderId,2:i32 integral,3:bool ignoreOut)
-    // 赠送账户支付
-    Result PaymentByPresent(1:i32 orderId,2:string remark)
+    // 钱包账户支付
+    Result PaymentByWallet(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 }

@@ -261,8 +261,8 @@ func (p *paymentOrderImpl) getBuyer() member.IMember {
 	return p.buyer
 }
 
-// 赠送账户支付
-func (p *paymentOrderImpl) PaymentByPresent(remark string) error {
+// 钱包账户支付
+func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	amount := p.value.FinalAmount
 	buyer := p.getBuyer()
 	if buyer == nil {
@@ -276,10 +276,10 @@ func (p *paymentOrderImpl) PaymentByPresent(remark string) error {
 	if remark == "" {
 		remark = "支付订单"
 	}
-	err := acc.DiscountPresent(remark, p.GetTradeNo(), amount,
+	err := acc.DiscountWallet(remark, p.GetTradeNo(), amount,
 		member.DefaultRelateUser, true)
 	if err == nil {
-		p.value.PaymentSign = payment.SignPresentAccount
+		p.value.PaymentSign = payment.SignWalletAccount
 		p.value.FinalAmount = 0
 		p.value.PaidTime = time.Now().Unix()
 		_, err = p.save()
@@ -368,10 +368,10 @@ func (p *paymentOrderImpl) Cancel() error {
 		}
 		acc := mm.GetAccount()
 		pv := p.GetValue()
-		//退到赠送账户
-		if pv.PaymentSign == payment.SignPresentAccount {
-			return acc.Refund(member.AccountPresent,
-				member.KindPresentPaymentRefund,
+		//退到钱包账户
+		if pv.PaymentSign == payment.SignWalletAccount {
+			return acc.Refund(member.AccountWallet,
+				member.KindWalletPaymentRefund,
 				"订单退款", pv.TradeNo, pv.FinalAmount,
 				member.DefaultRelateUser)
 		}

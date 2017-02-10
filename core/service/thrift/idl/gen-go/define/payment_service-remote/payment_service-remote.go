@@ -26,7 +26,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
 	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i32 integral, bool ignoreOut)")
-	fmt.Fprintln(os.Stderr, "  Result PaymentByPresent(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -229,9 +229,9 @@ func main() {
 		fmt.Print(client.DiscountByIntegral(value0, value1, value2))
 		fmt.Print("\n")
 		break
-	case "PaymentByPresent":
+	case "PaymentByWallet":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "PaymentByPresent requires 2 args")
+			fmt.Fprintln(os.Stderr, "PaymentByWallet requires 2 args")
 			flag.Usage()
 		}
 		tmp0, err145 := (strconv.Atoi(flag.Arg(1)))
@@ -243,7 +243,7 @@ func main() {
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.PaymentByPresent(value0, value1))
+		fmt.Print(client.PaymentByWallet(value0, value1))
 		fmt.Print("\n")
 		break
 	case "FinishPayment":
