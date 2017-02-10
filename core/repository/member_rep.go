@@ -417,7 +417,7 @@ func (m *MemberRepo) SaveBalanceLog(v *member.BalanceLog) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
 
-// 保存赠送账户日志
+// 保存钱包账户日志
 func (m *MemberRepo) SavePresentLog(v *member.PresentLog) (int32, error) {
 	return orm.I32(orm.Save(m.GetOrm(), v, int(v.Id)))
 }
@@ -455,8 +455,8 @@ func (m *MemberRepo) GetTodayTakeOutTimes(memberId int32) int {
 	b, e := tool.GetStartEndUnix(time.Now())
 	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_present_log WHERE
         member_id=? AND kind IN(?,?) AND create_time BETWEEN ? AND ?`, &total,
-		memberId, member.KindPresentTakeOutToBankCard,
-		member.KindPresentTakeOutToThirdPart, b, e)
+		memberId, member.KindWalletTakeOutToBankCard,
+		member.KindWalletTakeOutToThirdPart, b, e)
 	if err != nil {
 		handleError(err)
 	}

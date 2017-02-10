@@ -29,8 +29,8 @@ var (
 		switch w {
 		case TransferFromWithBalance:
 			return variable.AliasBalanceAccount
-		case TransferFromWithPresent:
-			return variable.AliasPresentAccount
+		case TransferFromWithWallet:
+			return variable.AliasWalletAccount
 		}
 		return "nil"
 	}
@@ -40,8 +40,8 @@ var (
 		switch w {
 		case TransferOutWithBalance:
 			return variable.AliasBalanceAccount
-		case TransferOutWithPresent:
-			return variable.AliasPresentAccount
+		case TransferOutWithWallet:
+			return variable.AliasWalletAccount
 		case TransferOutWithBank:
 			return "银行账户"
 		}
@@ -52,11 +52,11 @@ var (
 const (
 	//转入方式
 	TransferFromWithBalance = 1 //通过余额转入
-	TransferFromWithPresent = 2 //通过创业金转入
+	TransferFromWithWallet  = 2 //通过创业金转入
 
 	//转出方式
 	TransferOutWithBalance = 1
-	TransferOutWithPresent = 2
+	TransferOutWithWallet  = 2
 	TransferOutWithBank    = 3
 
 	RiseStateOk      int = 1 //OK

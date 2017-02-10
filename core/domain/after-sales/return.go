@@ -206,16 +206,16 @@ func (r *returnOrderImpl) backAmount(amount float32) error {
 	if pv.FinalAmount > amount {
 		amount = pv.FinalAmount
 	}
-	//退到赠送账户
-	if pv.PaymentSign == payment.SignPresentAccount {
-		return acc.Refund(member.AccountPresent,
-			member.KindPresentPaymentRefund,
+	//退到钱包账户
+	if pv.PaymentSign == payment.SignWalletAccount {
+		return acc.Refund(member.AccountWallet,
+			member.KindWalletPaymentRefund,
 			"订单退款", o.OrderNo, amount,
 			member.DefaultRelateUser)
 	}
-	//原路退回，暂时不实现。直接退到赠送账户
-	return acc.Refund(member.AccountPresent,
-		member.KindPresentPaymentRefund,
+	//原路退回，暂时不实现。直接退到钱包账户
+	return acc.Refund(member.AccountWallet,
+		member.KindWalletPaymentRefund,
 		"订单退款", o.OrderNo, amount,
 		member.DefaultRelateUser)
 }

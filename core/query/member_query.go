@@ -73,7 +73,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int32, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedPresentAccountLog(memberId int32, begin, end int,
+func (m *MemberQuery) PagedWalletAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {

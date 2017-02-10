@@ -64,7 +64,7 @@ func (a *accountImpl) SetPriorityPay(account int, enabled bool) error {
 	if enabled {
 		support := false
 		if account == member.AccountBalance ||
-			account == member.AccountPresent ||
+			account == member.AccountWallet ||
 			account == member.AccountIntegral {
 			support = true
 		}
@@ -109,7 +109,7 @@ func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
 	switch account {
 	case member.AccountBalance:
 		return a.chargeBalance(kind, title, outerNo, amount, relateUser)
-	case member.AccountPresent:
+	case member.AccountWallet:
 		return a.chargePresent(kind, title, outerNo, amount, relateUser)
 	}
 	panic(errors.New("不支持的账户类型操作"))
@@ -124,9 +124,9 @@ func (a *accountImpl) Refund(account int, kind int32, title string,
 			return member.ErrBusinessKind
 		}
 		return a.chargeBalanceNoLimit(kind, title, outerNo, amount, relateUser)
-	case member.AccountPresent:
-		if kind != member.KindPresentPaymentRefund &&
-			kind != member.KindPresentTakeOutRefund {
+	case member.AccountWallet:
+		if kind != member.KindWalletPaymentRefund &&
+			kind != member.KindWalletTakeOutRefund {
 			return member.ErrBusinessKind
 		}
 		return a.chargePresentNoLimit(kind, title, outerNo, amount, relateUser)
@@ -189,13 +189,13 @@ func (a *accountImpl) chargePresent(kind int32, title string,
 	outerNo string, amount float32, relateUser int32) error {
 	switch kind {
 	case member.ChargeBySystem:
-		kind = member.KindPresentAdd
+		kind = member.KindWalletAdd
 	case member.ChargeByService:
-		kind = member.KindPresentServiceAdd
+		kind = member.KindWalletServiceAdd
 	}
 	if kind < member.KindMine &&
-		kind != member.KindPresentServiceAdd &&
-		kind != member.KindPresentAdd {
+		kind != member.KindWalletServiceAdd &&
+		kind != member.KindWalletAdd {
 		return member.ErrBusinessKind
 	}
 	return a.chargePresentNoLimit(kind, title, outerNo,
@@ -209,15 +209,15 @@ func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
 		return member.ErrIncorrectAmount
 	}
 	// 客服操作
-	if relateUser == 0 && (kind == member.KindPresentServiceAdd) {
+	if relateUser == 0 && (kind == member.KindWalletServiceAdd) {
 		return member.ErrNoSuchRelateUser
 	}
 
 	if title == "" {
 		if amount < 0 {
-			title = "赠送账户出账"
+			title = "钱包账户出账"
 		} else {
-			title = "赠送账户入账"
+			title = "钱包账户入账"
 		}
 	}
 	unix := time.Now().Unix()
@@ -236,8 +236,8 @@ func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
 	if err == nil {
 		a.value.PresentBalance += amount
 		// 退款不能加入到累计赠送金额
-		if kind != member.KindPresentTakeOutRefund &&
-			kind != member.KindPresentPaymentRefund &&
+		if kind != member.KindWalletTakeOutRefund &&
+			kind != member.KindWalletPaymentRefund &&
 			amount > 0 {
 			a.value.TotalPresentFee += amount
 		}
@@ -356,7 +356,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 }
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
-func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float32,
+func (a *accountImpl) DiscountWallet(title string, outerNo string, amount float32,
 	relateUser int32, mustLargeZero bool) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -368,9 +368,9 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 	if len(title) == 0 {
 		title = "出账"
 	}
-	kind := member.KindPresentDiscount
+	kind := member.KindWalletDiscount
 	if relateUser > 0 {
-		kind = member.KindPresentServiceDiscount
+		kind = member.KindWalletServiceDiscount
 	}
 
 	unix := time.Now().Unix()
@@ -394,7 +394,7 @@ func (a *accountImpl) DiscountPresent(title string, outerNo string, amount float
 }
 
 // 冻结赠送金额
-func (a *accountImpl) FreezePresent(title string, outerNo string,
+func (a *accountImpl) FreezeWallet(title string, outerNo string,
 	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -408,7 +408,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 	unix := time.Now().Unix()
 	v := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentFreeze,
+		BusinessKind: member.KindWalletFreeze,
 		Title:        title,
 		RelateUser:   relateUser,
 		Amount:       -amount,
@@ -418,7 +418,7 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 		UpdateTime:   unix,
 	}
 	a.value.PresentBalance -= amount
-	a.value.FreezePresent += amount
+	a.value.FreezeWallet += amount
 	_, err := a.Save()
 	if err == nil {
 		_, err = a.rep.SavePresentLog(v)
@@ -427,12 +427,12 @@ func (a *accountImpl) FreezePresent(title string, outerNo string,
 }
 
 // 解冻赠送金额
-func (a *accountImpl) UnfreezePresent(title string, outerNo string,
+func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 	amount float32, relateUser int32) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
-	if a.value.FreezePresent < amount {
+	if a.value.FreezeWallet < amount {
 		return member.ErrAccountNotEnoughAmount
 	}
 	if len(title) == 0 {
@@ -441,7 +441,7 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 	unix := time.Now().Unix()
 	v := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentUnfreeze,
+		BusinessKind: member.KindWalletUnfreeze,
 		Title:        title,
 		RelateUser:   relateUser,
 		Amount:       amount,
@@ -451,7 +451,7 @@ func (a *accountImpl) UnfreezePresent(title string, outerNo string,
 		UpdateTime:   unix,
 	}
 	a.value.PresentBalance += amount
-	a.value.FreezePresent -= amount
+	a.value.FreezeWallet -= amount
 	_, err := a.Save()
 	if err == nil {
 		_, err = a.rep.SavePresentLog(v)
@@ -659,9 +659,9 @@ func (a *accountImpl) FinishBackBalance(id int32, tradeNo string) error {
 // 请求提现,返回info_id,交易号及错误
 func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	amount float32, commission float32) (int32, string, error) {
-	if takeKind != member.KindPresentTakeOutToBalance &&
-		takeKind != member.KindPresentTakeOutToBankCard &&
-		takeKind != member.KindPresentTakeOutToThirdPart {
+	if takeKind != member.KindWalletTakeOutToBalance &&
+		takeKind != member.KindWalletTakeOutToBankCard &&
+		takeKind != member.KindWalletTakeOutToThirdPart {
 		return 0, "", member.ErrNotSupportTakeOutBusinessKind
 	}
 	if amount <= 0 || math.IsNaN(float64(amount)) {
@@ -731,7 +731,7 @@ func (a *accountImpl) RequestTakeOut(takeKind int32, title string,
 	}
 
 	// 提现至余额
-	if takeKind == member.KindPresentTakeOutToBalance {
+	if takeKind == member.KindWalletTakeOutToBalance {
 		a.value.Balance += amount
 		v.State = enum.ReviewPass
 	}
@@ -756,8 +756,8 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	} else {
 		v.Remark += "失败:" + remark
 		v.State = enum.ReviewReject
-		err := a.Refund(member.AccountPresent,
-			member.KindPresentTakeOutRefund,
+		err := a.Refund(member.AccountWallet,
+			member.KindWalletTakeOutRefund,
 			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 			member.DefaultRelateUser)
 		if err != nil {
@@ -770,7 +770,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	v.UpdateTime = time.Now().Unix()
 	_, err := a.rep.SavePresentLog(v)
 	return err
-	//if v.BusinessKind == member.KindPresentTakeOutToBankCard {
+	//if v.BusinessKind == member.KindWalletTakeOutToBankCard {
 	//	if pass {
 	//		v.State = enum.ReviewPass
 	//	} else {
@@ -779,7 +779,7 @@ func (a *accountImpl) ConfirmTakeOut(id int32, pass bool, remark string) error {
 	//		}
 	//		v.Remark += "失败:" + remark
 	//		v.State = enum.ReviewReject
-	//		err := a.chargePresentByKind(member.KindPresentTakOutRefund,
+	//		err := a.chargePresentByKind(member.KindWalletTakOutRefund,
 	//			"提现退回", v.OuterNo, v.CsnFee+(-v.Amount),
 	//			member.DefaultRelateUser)
 	//		if err != nil {
@@ -808,7 +808,7 @@ func (a *accountImpl) FinishTakeOut(id int32, tradeNo string) error {
 	_, err := a.rep.SavePresentLog(v)
 	return err
 
-	//if v.BusinessKind == member.KindPresentTakeOutToBankCard {
+	//if v.BusinessKind == member.KindWalletTakeOutToBankCard {
 	//    v.OuterNo = tradeNo
 	//    v.State = enum.ReviewConfirm
 	//    v.Remark = "银行凭证:" + tradeNo
@@ -826,7 +826,7 @@ func (a *accountImpl) FreezeExpired(accountKind int, amount float32, remark stri
 	switch accountKind {
 	case member.AccountBalance:
 		return a.balanceFreezeExpired(amount, remark)
-	case member.AccountPresent:
+	case member.AccountWallet:
 		return a.presentFreezeExpired(amount, remark)
 	}
 	return nil
@@ -861,16 +861,16 @@ func (a *accountImpl) balanceFreezeExpired(amount float32, remark string) error 
 }
 
 func (a *accountImpl) presentFreezeExpired(amount float32, remark string) error {
-	if a.value.FreezePresent < amount {
+	if a.value.FreezeWallet < amount {
 		return member.ErrIncorrectAmount
 	}
 	unix := time.Now().Unix()
-	a.value.FreezePresent -= amount
+	a.value.FreezeWallet -= amount
 	a.value.ExpiredPresent += amount
 	a.value.UpdateTime = unix
 	l := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentExpired,
+		BusinessKind: member.KindWalletExpired,
 		Title:        "过期失效",
 		OuterNo:      "",
 		Amount:       amount,
@@ -919,7 +919,7 @@ func (a *accountImpl) TransferAccount(accountKind int, toMember int32, amount fl
 	}
 
 	switch accountKind {
-	case member.AccountPresent:
+	case member.AccountWallet:
 		return a.transferPresent(tm, tradeNo, amount, csnFee, remark)
 	case member.AccountBalance:
 		return a.transferBalance(tm, tradeNo, amount, csnFee, remark)
@@ -977,7 +977,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 	toName := a.getMemberName(tm)
 	l := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentTransferOut,
+		BusinessKind: member.KindWalletTransferOut,
 		Title:        "转账给" + toName,
 		OuterNo:      tradeNo,
 		Amount:       -amount,
@@ -994,7 +994,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 		a.value.UpdateTime = unix
 		_, err = a.Save()
 		if err == nil {
-			err = tm.GetAccount().ReceiveTransfer(member.AccountPresent,
+			err = tm.GetAccount().ReceiveTransfer(member.AccountWallet,
 				a.GetDomainId(), tradeNo, amount, remark)
 		}
 	}
@@ -1005,7 +1005,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int32,
 	tradeNo string, amount float32, remark string) error {
 	switch accountKind {
-	case member.AccountPresent:
+	case member.AccountWallet:
 		return a.receivePresentTransfer(fromMember, tradeNo, amount, remark)
 	case member.AccountBalance:
 		return a.receiveBalanceTransfer(fromMember, tradeNo, amount, remark)
@@ -1023,7 +1023,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int32, tradeNo string,
 	unix := time.Now().Unix()
 	tl := &member.PresentLog{
 		MemberId:     a.GetDomainId(),
-		BusinessKind: member.KindPresentTransferIn,
+		BusinessKind: member.KindWalletTransferIn,
 		Title:        "转账收款（" + fromName + "）",
 		OuterNo:      tradeNo,
 		Amount:       amount,
@@ -1103,7 +1103,7 @@ func (a *accountImpl) TransferBalance(kind int32, amount float32,
 
 // 转账返利账户,kind为转账类型，如 KindBalanceTransfer等
 // commission手续费
-func (a *accountImpl) TransferPresent(kind int32, amount float32, commission float32,
+func (a *accountImpl) TransferWallet(kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
 	var err error
 	if kind == member.KindBalanceFlow {
@@ -1143,7 +1143,7 @@ func (a *accountImpl) TransferFlow(kind int32, amount float32, commission float3
 	csnAmount := commission * amount
 	finalAmount := amount - csnAmount
 
-	if kind == member.KindPresentTransferIn {
+	if kind == member.KindWalletTransferIn {
 		if a.value.FlowBalance < finalAmount {
 			return member.ErrAccountNotEnoughAmount
 		}

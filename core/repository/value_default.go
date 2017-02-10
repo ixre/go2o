@@ -137,7 +137,7 @@ var (
 		TransferCsn: 0.01,
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn: 0.05,
-		// 赠送账户转换手续费费率
+		// 钱包账户转换手续费费率
 		PresentConvertCsn: 0.05,
 		// 交易手续费类型
 		TradeCsnType: valueobject.TradeCsnTypeByFee,

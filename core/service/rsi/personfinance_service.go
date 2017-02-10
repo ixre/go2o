@@ -89,9 +89,9 @@ func (p *personFinanceService) RiseTransferIn(personId int32,
 		return pf.SyncToAccount() //同步到会员账户
 	}
 
-	if transferWith == personfinance.TransferFromWithPresent {
+	if transferWith == personfinance.TransferFromWithWallet {
 		//从奖金转入
-		if err := acc.DiscountPresent("理财转入", domain.NewTradeNo(10000),
+		if err := acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
 			amount, member.DefaultRelateUser, true); err != nil {
 			return err
 		}
