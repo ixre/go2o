@@ -148,7 +148,9 @@ func startCronTab() {
 	//个人金融结算,每天00:20更新数据
 	cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
 	//检查订单过期,2分钟检测一次
-	cronTab.AddFunc("* 2 * * * *", detectOrderExpires)
+	cronTab.AddFunc("0 2 * * * *", detectOrderExpires)
+	//订单自动收货
+	cronTab.AddFunc("0 1 * * * *", orderAutoRecive)
 	cronTab.Start()
 }
 
@@ -192,6 +194,13 @@ func (d *defaultService) Start(a gof.App) {
 	go startMailQueue(services)
 	go personFinanceSettle() //启动时结算
 	go mchDayChart()         //商户每日报表
+
+	//go func() {
+	//    time.Sleep(time.Second * 6)
+	//    o, _ := rsi.ShoppingService.GetSubOrderByNo("100000021289")
+	//    d.OrderObs(o)
+	//    detectOrderExpires()
+	//}()
 }
 
 // 处理订单,需根据订单不同的状态,作不同的业务
@@ -215,6 +224,9 @@ func (d *defaultService) OrderObs(o *define.SubOrder) bool {
 		//订单自动收货
 		case order.StatShipped:
 			d.orderAutoReceive(conn, o)
+		//订单已经收货
+		case order.StatCompleted:
+			d.orderReceived(conn, o)
 		}
 	}
 	return true
@@ -247,30 +259,37 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SubOrder)
 	if o.State == order.StatAwaitingPayment {
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
-		conn.Do("SET", d.getExpiresKey(o), unix)
+		t := time.Unix(unix, 0)
+		tk := getTick(t)
+		key := fmt.Sprintf("%s:%s:%d", variable.KvOrderExpiresTime, tk, o.ID)
+		conn.Do("SET", key, unix)
 	}
 }
 
 //取消订单过期时间
 func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.SubOrder) {
-	conn.Do("DEL", d.getExpiresKey(o))
-}
-
-func (d *defaultService) getExpiresKey(o *define.SubOrder) string {
-	return fmt.Sprintf("%s%d", variable.KvOrderExpiresTime, o.ID)
+	key := fmt.Sprintf("%s:*:%d", variable.KvOrderExpiresTime, o.ID)
+	conn.Do("DEL", key)
 }
 
 // 订单自动收货
 func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.SubOrder) {
-	//if o.State == order.StatAwaitingPayment {
-	//    //订单刚创建时,设置过期时间
-	//    ss := rsi.FoundationService.GetGlobMchSaleConf()
-	//    unix := o.UpdateTime + int64(ss.OrderTimeOutMinute) * 60
-	//    conn.Do("SET", d.getExpiresKey(o), unix)
-	//} else if o.State == enum.ORDER_WAIT_CONFIRM {
-	//    //删除过期时间
-	//    conn.Do("DEL", d.getExpiresKey(o))
-	//}
+	if o.State == order.StatShipped {
+		ss := rsi.FoundationService.GetGlobMchSaleConf()
+		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
+		t := time.Unix(unix, 0)
+		tk := getTick(t)
+		key := fmt.Sprintf("%s:%s:%d", variable.KvOrderAutoReceive, tk, o.ID)
+		conn.Do("SET", key, unix)
+	}
+}
+
+// 完成订单自动收货
+func (d *defaultService) orderReceived(conn redis.Conn, o *define.SubOrder) {
+	if o.State == order.StatCompleted {
+		key := fmt.Sprintf("%s:*:%d", variable.KvOrderAutoReceive, o.ID)
+		conn.Do("DEL", key)
+	}
 }
 
 // 处理邮件队列

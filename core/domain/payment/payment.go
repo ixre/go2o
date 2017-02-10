@@ -358,8 +358,35 @@ func (p *paymentOrderImpl) GetValue() payment.PaymentOrder {
 
 // 取消支付
 func (p *paymentOrderImpl) Cancel() error {
+	//log.Println("--- 支付单取消:", p.value.TradeNo)
 	p.value.State = payment.StateHasCancel
-	return nil
+	_, err := p.save()
+	if err == nil {
+		mm := p.getBuyer()
+		if mm == nil {
+			return member.ErrNoSuchMember
+		}
+		acc := mm.GetAccount()
+		pv := p.GetValue()
+		//退到赠送账户
+		if pv.PaymentSign == payment.SignPresentAccount {
+			return acc.Refund(member.AccountPresent,
+				member.KindPresentPaymentRefund,
+				"订单退款", pv.TradeNo, pv.FinalAmount,
+				member.DefaultRelateUser)
+		}
+		//退回到余额
+		if p.value.BalanceDiscount > 0 {
+			err = acc.Refund(member.AccountBalance,
+				member.KindBalanceRefund, "订单退款", pv.TradeNo,
+				pv.BalanceDiscount, member.DefaultRelateUser)
+		}
+		//退积分
+		if pv.IntegralDiscount > 0 {
+			//todo : 退换积分,暂时积分抵扣的不退款
+		}
+	}
+	return err
 }
 
 // 调整金额,如调整金额与实付金额相加小于等于零,则支付成功。
