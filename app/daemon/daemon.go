@@ -148,9 +148,9 @@ func startCronTab() {
 	//个人金融结算,每天00:20更新数据
 	cronTab.AddFunc("0 20 0 * * *", personFinanceSettle)
 	//检查订单过期,2分钟检测一次
-	cronTab.AddFunc("0 2 * * * *", detectOrderExpires)
+	cronTab.AddFunc("* 2 * * * *", detectOrderExpires)
 	//订单自动收货
-	cronTab.AddFunc("0 1 * * * *", orderAutoRecive)
+	cronTab.AddFunc("* 2 * * * *", orderAutoRecive)
 	cronTab.Start()
 }
 
@@ -200,6 +200,7 @@ func (d *defaultService) Start(a gof.App) {
 	//    o, _ := rsi.ShoppingService.GetSubOrderByNo("100000021289")
 	//    d.OrderObs(o)
 	//    detectOrderExpires()
+     //   orderAutoRecive()
 	//}()
 }
 
