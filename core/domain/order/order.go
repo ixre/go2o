@@ -1429,13 +1429,19 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
+	log.Println("[ Order]: 取消支付单")
 	po := o.Parent().GetPaymentOrder()
 	if po != nil {
+		if true {
+			v := po.GetValue()
+			log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
+				"; 订单金额:", o.value.FinalAmount)
+		}
 		// 订单金额为0,则取消订单
-		if po.GetValue().FinalAmount-o.value.FinalAmount == 0 {
+		if po.GetValue().FinalAmount-o.value.FinalAmount <= 0 {
 			return po.Cancel()
 		}
-		return po.Adjust(o.value.FinalAmount)
+		return po.Adjust(-o.value.FinalAmount)
 	}
 	return nil
 }
@@ -1460,7 +1466,7 @@ func (o *subOrderImpl) backupPayment() (err error) {
 	return nil
 }
 
-// 取消订单
+// 取消订单,todo:?? 单独取消一个子订单如何处理?
 func (o *subOrderImpl) Cancel(reason string) error {
 	if o.value.State == order.StatCancelled {
 		return order.ErrOrderCanNotCancel

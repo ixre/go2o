@@ -10,6 +10,7 @@
 package daemon
 
 import (
+	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"go2o/core"
 	"go2o/core/service/rsi"
@@ -125,28 +126,63 @@ func supervisePaymentOrderFinish(ss []Service) {
 
 // 检测已过期的订单并标记
 func detectOrderExpires() {
+	if appCtx.Debug() {
+		appCtx.Log().Println("[ Order]: detect order time out...")
+	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
+	t := time.Now()
+	key := fmt.Sprintf("%s:%s:*", variable.KvOrderExpiresTime, getTick(t))
+	//key = "go2o:order:timeout:11-0-2:*"
 	//获取标记为等待过期的订单
 	orderId := 0
-	list, _ := redis.Strings(conn.Do("KEYS", variable.KvOrderExpiresTime+"*"))
 	ss := rsi.ShoppingService
-	for _, v := range list {
-		unix, err := redis.Int64(conn.Do("GET", v))
-		if err == nil {
-			//获取过期时间
-			if unix < time.Now().Unix() {
-				//订单号
-				orderId, err = strconv.Atoi(v[len(variable.KvOrderExpiresTime):])
+	list, err := redis.Strings(conn.Do("KEYS", key))
+	if err == nil {
+		for _, oKey := range list {
+			//订单号
+			i := strings.LastIndex(oKey, ":")
+			orderId, err = strconv.Atoi(oKey[i+1:])
+			if err == nil && orderId > 0 {
 				err = ss.CancelOrder(int32(orderId), "订单超时,自动取消")
 				//清除待取消记录
-				conn.Do("DEL", v)
+				conn.Do("DEL", oKey)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
 			}
-		} else {
-			appCtx.Log().Println("[ Daemon][ Order][ Cancel][ Error]:",
-				err.Error(), "; retry after 10 seconds.")
-			time.Sleep(time.Second * 10)
 		}
+	} else {
+		appCtx.Log().Println("[ Daemon][ Order][ Cancel][ Error]:",
+			err.Error(), "; retry after 10 seconds.")
+		time.Sleep(time.Second * 10)
+	}
+}
+
+// 订单自动收货
+func orderAutoRecive() {
+	if appCtx.Debug() {
+		appCtx.Log().Println("[ Order]: order auto receive ...")
+	}
+	conn := core.GetRedisConn()
+	defer conn.Close()
+	t := time.Now()
+	key := fmt.Sprintf("%s:%s:*", variable.KvOrderAutoReceive, getTick(t))
+	//key = "go2o:order:autoreceive:11-0-2:*"
+	//获取标记为自动收货的订单
+	orderId := 0
+	ss := rsi.ShoppingService
+	list, err := redis.Strings(conn.Do("KEYS", key))
+	if err == nil {
+		for _, oKey := range list {
+			//订单号
+			i := strings.LastIndex(oKey, ":")
+			orderId, err = strconv.Atoi(oKey[i+1:])
+			if err == nil && orderId > 0 {
+				err = ss.BuyerReceived(int32(orderId))
+			}
+		}
+	} else {
+		appCtx.Log().Println("[ Daemon][ Order][ Receive][ Error]:",
+			err.Error(), "; retry after 10 seconds.")
+		time.Sleep(time.Second * 10)
 	}
 }

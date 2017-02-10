@@ -116,8 +116,10 @@ type (
 		OrderId int
 		// 商品快照编号
 		SnapshotId int
-		// 商品SKU编号
+		// Sku编号
 		SkuId int
+		// 商品编号
+		ItemId int32
 		// 商品标题
 		GoodsTitle string
 		// 商品图片
