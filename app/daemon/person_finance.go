@@ -73,12 +73,11 @@ func confirmTransferIn(t time.Time) {
 			break
 		}
 		// 将IdArr按指定size切片处理
-		wg := sync.WaitGroup{}
+		//wg := sync.WaitGroup{}
 		for _, v := range idArr {
-			wg.Add(1)
-			go confirmTransferInByCursor(&wg, unixDate, v)
+			//wg.Add(1)
+			confirmTransferInByCursor(unixDate, v)
 		}
-		wg.Wait()
 		log.Println("[ PersonFinance][ RiseSettle][ Job]:begin:", begin,
 			"; size:", size, "; len:", len(idArr), "; unix date =", unixDate)
 		time.Sleep(time.Second / 4)
@@ -91,7 +90,7 @@ func confirmTransferIn(t time.Time) {
 }
 
 // 分组确认转入数据
-func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int32) {
+func confirmTransferInByCursor(unixDate int64, logId int32) {
 	//log.Println(fmt.Sprintf("[SQL]: select * FROM pf_riselog WHERE id BETWEEN %d AND %d AND unix_date=%d AND type=%d AND state=%d ORDER BY id ",
 	//	 idArr[0],idArr[len(idArr)-1], unixDate, personfinance.RiseTypeTransferIn,
 	//	personfinance.RiseStateDefault))
@@ -109,7 +108,6 @@ func confirmTransferInByCursor(wg *sync.WaitGroup, unixDate int64, logId int32) 
 			_orm.Save(v.Id, v) //标记为异常
 		}
 	}
-	wg.Done()
 }
 
 // 结算增利数据,t为结算日
