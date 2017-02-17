@@ -103,7 +103,7 @@ type (
 		// 会员实名提醒信息
 		MemberNotTrustedMessage string
 		// 注册后赠送积分数量
-		PresentIntegralNumOfRegister int
+		PresentIntegralNumOfRegister int64
 		// 会员邀请关系级数
 		MemberReferLayer int
 		// 会员即时通讯是否必须
@@ -216,7 +216,7 @@ type (
 		// 消费1元产生的积分
 		IntegralRateByConsumption float32
 		// 每单额外赠送
-		IntegralBackExtra int
+		IntegralBackExtra int64
 		// 提现手续费费率
 		TakeOutCsn float32
 		// 转账手续费费率

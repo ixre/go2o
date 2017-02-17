@@ -1390,7 +1390,7 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 
 	// 增加积分
 	//todo: 增加阶梯的返积分,比如订单满30送100积分
-	integral := int(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
+	integral := int64(amount*conf.IntegralRateByConsumption) + conf.IntegralBackExtra
 	// 赠送积分
 	if integral > 0 {
 		err = m.GetAccount().AddIntegral(member.TypeIntegralShoppingPresent,

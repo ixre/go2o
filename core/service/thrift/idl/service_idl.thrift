@@ -427,7 +427,7 @@ service PaymentService{
     // 余额抵扣
     Result DiscountByBalance(1:i32 orderId,2:string remark )
    // 积分抵扣支付单
-    DResult DiscountByIntegral(1:i32 orderId,2:i32 integral,3:bool ignoreOut)
+    DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
     Result PaymentByWallet(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号

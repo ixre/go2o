@@ -30,10 +30,10 @@ type MemberSummary struct {
 	// 邀请码
 	InvitationCode string `db:"invitation_code"`
 	// 积分
-	Integral int `db:"integral"`
+	Integral int64 `db:"integral"`
 	// 账户余额
 	Balance           float32 `db:"balance"`
-	PresentBalance    float32 `db:"present_balance"`
+	PresentBalance    float32 `db:"wallet_balance"`
 	GrowBalance       float32 `db:"grow_balance"`
 	GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
 	GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额

@@ -83,13 +83,13 @@ func (p *paymentService) SetPrefixOfTradeNo(id int32, prefix string) error {
 
 // 积分抵扣支付单
 func (p *paymentService) DiscountByIntegral(orderId int32,
-	integral int32, ignoreOut bool) (r *define.DResult_, err error) {
+	integral int64, ignoreOut bool) (r *define.DResult_, err error) {
 	var amount float32
 	o := p._rep.GetPaymentOrderById(orderId)
 	if o == nil {
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
-		amount, err = o.IntegralDiscount(int(integral), ignoreOut)
+		amount, err = o.IntegralDiscount(integral, ignoreOut)
 	}
 	return parser.DResult(float64(amount), err), nil
 }

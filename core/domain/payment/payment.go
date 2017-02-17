@@ -195,7 +195,7 @@ func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
 }
 
 // 计算积分折算后的金额
-func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
+func (p *paymentOrderImpl) mathIntegralFee(integral int64) float32 {
 	if integral > 0 {
 		conf := p.valRepo.GetGlobNumberConf()
 		if conf.IntegralDiscountRate > 0 {
@@ -206,7 +206,7 @@ func (p *paymentOrderImpl) mathIntegralFee(integral int) float32 {
 }
 
 // 积分抵扣,返回抵扣的金额及错误,ignoreAmount:是否忽略超出订单金额的积分
-func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (float32, error) {
+func (p *paymentOrderImpl) IntegralDiscount(integral int64, ignoreAmount bool) (float32, error) {
 	var amount float32 = 0
 	if p.value.PaymentSign&payment.OptIntegralDiscount != payment.OptIntegralDiscount {
 		return 0, payment.ErrCanNotUseIntegral
@@ -221,7 +221,7 @@ func (p *paymentOrderImpl) IntegralDiscount(integral int, ignoreAmount bool) (fl
 	if !ignoreAmount && amount > p.value.FinalAmount {
 		conf := p.valRepo.GetGlobNumberConf()
 		amount = p.value.FinalAmount
-		integral = int(amount * conf.IntegralDiscountRate)
+		integral = int64(amount * conf.IntegralDiscountRate)
 	}
 
 	if amount > 0 {

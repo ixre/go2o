@@ -36,7 +36,7 @@ type PaymentService interface {
 	//  - OrderId
 	//  - Integral
 	//  - IgnoreOut
-	DiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (r *DResult_, err error)
+	DiscountByIntegral(orderId int32, integral int64, ignoreOut bool) (r *DResult_, err error)
 	// Parameters:
 	//  - OrderId
 	//  - Remark
@@ -467,14 +467,14 @@ func (p *PaymentServiceClient) recvDiscountByBalance() (value *Result_, err erro
 //  - OrderId
 //  - Integral
 //  - IgnoreOut
-func (p *PaymentServiceClient) DiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (r *DResult_, err error) {
+func (p *PaymentServiceClient) DiscountByIntegral(orderId int32, integral int64, ignoreOut bool) (r *DResult_, err error) {
 	if err = p.sendDiscountByIntegral(orderId, integral, ignoreOut); err != nil {
 		return
 	}
 	return p.recvDiscountByIntegral()
 }
 
-func (p *PaymentServiceClient) sendDiscountByIntegral(orderId int32, integral int32, ignoreOut bool) (err error) {
+func (p *PaymentServiceClient) sendDiscountByIntegral(orderId int32, integral int64, ignoreOut bool) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -2185,7 +2185,7 @@ func (p *PaymentServiceDiscountByBalanceResult) String() string {
 //  - IgnoreOut
 type PaymentServiceDiscountByIntegralArgs struct {
 	OrderId   int32 `thrift:"orderId,1" json:"orderId"`
-	Integral  int32 `thrift:"integral,2" json:"integral"`
+	Integral  int64 `thrift:"integral,2" json:"integral"`
 	IgnoreOut bool  `thrift:"ignoreOut,3" json:"ignoreOut"`
 }
 
@@ -2197,7 +2197,7 @@ func (p *PaymentServiceDiscountByIntegralArgs) GetOrderId() int32 {
 	return p.OrderId
 }
 
-func (p *PaymentServiceDiscountByIntegralArgs) GetIntegral() int32 {
+func (p *PaymentServiceDiscountByIntegralArgs) GetIntegral() int64 {
 	return p.Integral
 }
 
@@ -2255,7 +2255,7 @@ func (p *PaymentServiceDiscountByIntegralArgs) readField1(iprot thrift.TProtocol
 }
 
 func (p *PaymentServiceDiscountByIntegralArgs) readField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
 		p.Integral = v
@@ -2308,10 +2308,10 @@ func (p *PaymentServiceDiscountByIntegralArgs) writeField1(oprot thrift.TProtoco
 }
 
 func (p *PaymentServiceDiscountByIntegralArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("integral", thrift.I32, 2); err != nil {
+	if err := oprot.WriteFieldBegin("integral", thrift.I64, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:integral: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Integral)); err != nil {
+	if err := oprot.WriteI64(int64(p.Integral)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.integral (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {

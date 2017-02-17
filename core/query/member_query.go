@@ -38,7 +38,7 @@ func (m *MemberQuery) GetMemberList(ids []int32) []*dto.MemberSummary {
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
 		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
-				lv.name as level_name,a.integral,a.balance,a.present_balance,
+				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
 				ON m.level = lv.id INNER JOIN mm_account a ON
@@ -79,12 +79,12 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int32, begin, end int,
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_present_log bi
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_wallet_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id=? %s`, where), &num, memberId)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_present_log bi
+		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_wallet_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id=? %s %s LIMIT ?,?`,
 			where, orderBy)

@@ -758,7 +758,7 @@ func (ms *memberService) GetBalanceInfoById(memberId, infoId int32) *member.Bala
 
 // 增加积分
 func (ms *memberService) AddIntegral(memberId int32, iType int,
-	orderNo string, value int, remark string) error {
+	orderNo string, value int64, remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -781,7 +781,7 @@ func (ms *memberService) ChargeAccount(memberId int32, account int32,
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
-func (ms *memberService) FreezesIntegral(memberId int32, value int,
+func (ms *memberService) FreezesIntegral(memberId int32, value int64,
 	new bool, remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
@@ -792,7 +792,7 @@ func (ms *memberService) FreezesIntegral(memberId int32, value int,
 
 // 解冻积分
 func (ms *memberService) UnfreezesIntegral(memberId int32,
-	value int, remark string) error {
+	value int64, remark string) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember

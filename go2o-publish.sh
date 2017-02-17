@@ -79,12 +79,12 @@ echo "Please confirm compile : [Y/N]"
 read compile
 if [ ${compile} = "Y" ]||[ ${compile} = "y" ];then
     echo "program compiling ..."
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v go2o-serve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v go2o-tcpserve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v master-serve.go
-    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v go2o-rpc.go
-    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v merchant-serve.go
-    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build -v pub-serve.go
+    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-serve.go
+    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-tcpserve.go
+    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build master-serve.go
+    CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-rpc.go
+    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build merchant-serve.go
+    #CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build pub-serve.go
 else
     echo "  skipping compile"
 fi

@@ -184,16 +184,16 @@ type (
 		PaymentDiscount(tradeNo string, amount float32, remark string) error
 
 		//　增加积分
-		AddIntegral(iType int, outerNo string, value int, remark string) error
+		AddIntegral(iType int, outerNo string, value int64, remark string) error
 
 		// 积分抵扣
-		IntegralDiscount(logType int, outerNo string, value int, remark string) error
+		IntegralDiscount(logType int, outerNo string, value int64, remark string) error
 
 		// 冻结积分,当new为true不扣除积分,反之扣除积分
-		FreezesIntegral(value int, new bool, remark string) error
+		FreezesIntegral(value int64, new bool, remark string) error
 
 		// 解冻积分
-		UnfreezesIntegral(value int, remark string) error
+		UnfreezesIntegral(value int64, remark string) error
 
 		// 退款
 		RequestBackBalance(backType int, title string, amount float32) error
@@ -269,9 +269,9 @@ type (
 		// 会员编号
 		MemberId int32 `db:"member_id" pk:"yes"`
 		// 积分
-		Integral int `db:"integral"`
+		Integral int64 `db:"integral"`
 		// 不可用积分
-		FreezeIntegral int `db:"freeze_integral"`
+		FreezeIntegral int64 `db:"freeze_integral"`
 		// 余额
 		Balance float32 `db:"balance"`
 		// 不可用余额
@@ -279,13 +279,13 @@ type (
 		// 失效的账户余额
 		ExpiredBalance float32 `db:"expired_balance"`
 		//奖金账户余额
-		PresentBalance float32 `db:"present_balance"`
+		PresentBalance float32 `db:"wallet_balance"`
 		//冻结赠送金额
-		FreezeWallet float32 `db:"freeze_present"`
+		FreezeWallet float32 `db:"freeze_wallet"`
 		//失效的赠送金额
-		ExpiredPresent float32 `db:"expired_present"`
+		ExpiredPresent float32 `db:"expired_wallet"`
 		//总赠送金额
-		TotalPresentFee float32 `db:"total_present_amount"`
+		TotalPresentFee float32 `db:"total_wallet_amount"`
 		//流动账户余额
 		FlowBalance float32 `db:"flow_balance"`
 		//当前理财账户余额
@@ -319,7 +319,7 @@ type (
 		// 关联的编号
 		OuterNo string `db:"outer_no"`
 		// 积分值
-		Value int `db:"value"`
+		Value int64 `db:"value"`
 		// 备注
 		Remark string `db:"remark"`
 		// 创建时间

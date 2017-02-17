@@ -148,8 +148,8 @@ func round(f float32, n int) float64 {
 func AccountDto(src *member.Account) *define.Account {
 	return &define.Account{
 		MemberId:          src.MemberId,
-		Integral:          int64(src.Integral),
-		FreezeIntegral:    int64(src.FreezeIntegral),
+		Integral:          src.Integral,
+		FreezeIntegral:    src.FreezeIntegral,
 		Balance:           round(src.Balance, 2),
 		FreezeBalance:     round(src.FreezeBalance, 2),
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
@@ -173,8 +173,8 @@ func AccountDto(src *member.Account) *define.Account {
 func Account(src *define.Account) *member.Account {
 	return &member.Account{
 		MemberId:          src.MemberId,
-		Integral:          int(src.Integral),
-		FreezeIntegral:    int(src.FreezeIntegral),
+		Integral:          src.Integral,
+		FreezeIntegral:    src.FreezeIntegral,
 		Balance:           float32(src.Balance),
 		FreezeBalance:     float32(src.FreezeBalance),
 		ExpiredBalance:    float32(src.ExpiredBalance),
