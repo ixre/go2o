@@ -453,7 +453,7 @@ func (m *MemberRepo) GetTodayTakeOutTimes(memberId int32) int {
 
 	total := 0
 	b, e := tool.GetStartEndUnix(time.Now())
-	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_present_log WHERE
+	err := m.ExecScalar(`SELECT COUNT(0) FROM mm_wallet_log WHERE
         member_id=? AND kind IN(?,?) AND create_time BETWEEN ? AND ?`, &total,
 		memberId, member.KindWalletTakeOutToBankCard,
 		member.KindWalletTakeOutToThirdPart, b, e)

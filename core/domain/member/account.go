@@ -519,7 +519,7 @@ func (a *accountImpl) PaymentDiscount(tradeNo string,
 
 //　增加积分
 func (a *accountImpl) AddIntegral(logType int, outerNo string,
-	value int, remark string) error {
+	value int64, remark string) error {
 	if value <= 0 || math.IsNaN(float64(value)) {
 		return member.ErrIncorrectQuota
 	}
@@ -547,7 +547,7 @@ func (a *accountImpl) AddIntegral(logType int, outerNo string,
 
 // 积分抵扣
 func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
-	value int, remark string) error {
+	value int64, remark string) error {
 	if value <= 0 {
 		return member.ErrIncorrectQuota
 	}
@@ -580,7 +580,7 @@ func (a *accountImpl) IntegralDiscount(logType int, outerNo string,
 }
 
 // 冻结积分,当new为true不扣除积分,反之扣除积分
-func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error {
+func (a *accountImpl) FreezesIntegral(value int64, new bool, remark string) error {
 	if !new {
 		if a.value.Integral < value {
 			return member.ErrNoSuchIntegral
@@ -603,7 +603,7 @@ func (a *accountImpl) FreezesIntegral(value int, new bool, remark string) error 
 }
 
 // 解冻积分
-func (a *accountImpl) UnfreezesIntegral(value int, remark string) error {
+func (a *accountImpl) UnfreezesIntegral(value int64, remark string) error {
 	if a.value.FreezeIntegral < value {
 		return member.ErrNoSuchIntegral
 	}

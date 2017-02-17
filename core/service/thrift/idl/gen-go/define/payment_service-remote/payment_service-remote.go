@@ -25,7 +25,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
 	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
 	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
-	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i32 integral, bool ignoreOut)")
+	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i64 integral, bool ignoreOut)")
 	fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
 	fmt.Fprintln(os.Stderr)
@@ -217,12 +217,11 @@ func main() {
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err143 := (strconv.Atoi(flag.Arg(2)))
+		argvalue1, err143 := (strconv.ParseInt(flag.Arg(2), 10, 64))
 		if err143 != nil {
 			Usage()
 			return
 		}
-		argvalue1 := int32(tmp1)
 		value1 := argvalue1
 		argvalue2 := flag.Arg(3) == "true"
 		value2 := argvalue2

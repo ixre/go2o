@@ -401,3 +401,15 @@ CREATE TABLE portal_floor_link (
   target   varchar(10) NOT NULL comment '打开方式',
   sort_num int(10) NOT NULL comment '序号',
   PRIMARY KEY (id)) comment='楼层链接';
+
+
+/** 2017-02-17 **/
+ALTER TABLE `txmall`.`mm_account`
+CHANGE COLUMN `present_balance` `wallet_balance` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '钱包余额' ,
+CHANGE COLUMN `freeze_present` `freeze_wallet` DECIMAL(10,2) NOT NULL COMMENT '冻结的钱包金额' ,
+CHANGE COLUMN `expired_present` `expired_wallet` DECIMAL(10,2) NOT NULL COMMENT '过期的钱包金额' ,
+CHANGE COLUMN `total_present_amount` `total_wallet_amount` DECIMAL(10,2) NOT NULL DEFAULT '0.00' COMMENT '累计钱包金额' ;
+
+
+ALTER TABLE `txmall`.`mm_present_log`
+RENAME TO  `txmall`.`mm_wallet_log` ;
