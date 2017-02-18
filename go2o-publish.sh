@@ -78,7 +78,7 @@ echo "Please confirm compile : [Y/N]"
 
 read compile
 if [ ${compile} = "Y" ]||[ ${compile} = "y" ];then
-    echo "program compiling ..."
+    echo "compiling ..."
     CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-serve.go
     CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build go2o-tcpserve.go
     CGO_ENABLED=0 GOOS=${goods} GOARCH=${arch} go build master-serve.go
