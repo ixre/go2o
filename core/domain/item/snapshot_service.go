@@ -125,17 +125,17 @@ func (s *snapshotServiceImpl) updateSnapshot(ls *item.Snapshot,
 }
 
 // 根据KEY获取已销售商品的快照
-func (s *snapshotServiceImpl) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
+func (s *snapshotServiceImpl) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
 	return s.itemRepo.GetSaleSnapshotByKey(key)
 }
 
 // 根据ID获取已销售商品的快照
-func (s *snapshotServiceImpl) GetSalesSnapshot(id int32) *item.SalesSnapshot {
+func (s *snapshotServiceImpl) GetSalesSnapshot(id int32) *item.TradeSnapshot {
 	return s.itemRepo.GetSalesSnapshot(id)
 }
 
 // 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId int32, skuId int32) *item.SalesSnapshot {
+func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId int32, skuId int32) *item.TradeSnapshot {
 	snap := s.itemRepo.GetLatestSalesSnapshot(skuId)
 	snapBasis := s.GetLatestSnapshot(itemId)
 	if snap == nil || snap.CreateTime != snapBasis.UpdateTime {
@@ -147,8 +147,8 @@ func (s *snapshotServiceImpl) GetLatestSalesSnapshot(itemId int32, skuId int32) 
 }
 
 // 通过商品快照创建新的商品销售快照
-func (s *snapshotServiceImpl) createNewSaleSnap(skuId int32, snap *item.Snapshot) *item.SalesSnapshot {
-	sn := &item.SalesSnapshot{
+func (s *snapshotServiceImpl) createNewSaleSnap(skuId int32, snap *item.Snapshot) *item.TradeSnapshot {
+	sn := &item.TradeSnapshot{
 		//快照编号
 		Id: 0,
 		//商品编号

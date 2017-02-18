@@ -13,7 +13,6 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
 	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/tmp"
 	"math"
@@ -89,10 +88,10 @@ func (r *returnOrderImpl) SetItem(snapshotId int32, quantity int32) error {
 
 // 提交售后申请
 func (r *returnOrderImpl) Submit() (int32, error) {
-	o := r.GetOrder()
-	if o.GetValue().State == order.StatCompleted {
-		return 0, afterSales.ErrReturnAfterReceived
-	}
+	//o := r.GetOrder()
+	//if o.GetValue().State == order.StatCompleted {
+	//    return 0, afterSales.ErrReturnAfterReceived
+	//}
 	id, err := r.afterSalesOrderImpl.Submit()
 	// 提交退货单
 	if err == nil {

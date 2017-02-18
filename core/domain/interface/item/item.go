@@ -104,16 +104,16 @@ type (
 		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取指定的商品快照
-		GetSalesSnapshot(id int32) *SalesSnapshot
+		GetSalesSnapshot(id int32) *TradeSnapshot
 
 		// 根据Key获取商品快照
-		GetSaleSnapshotByKey(key string) *SalesSnapshot
+		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
 		// 获取最新的商品销售快照
-		GetLatestSalesSnapshot(skuId int32) *SalesSnapshot
+		GetLatestSalesSnapshot(skuId int32) *TradeSnapshot
 
 		// 保存商品销售快照
-		SaveSalesSnapshot(*SalesSnapshot) (int32, error)
+		SaveSalesSnapshot(*TradeSnapshot) (int32, error)
 
 		// Get ItemSku
 		GetItemSku(primary interface{}) *Sku

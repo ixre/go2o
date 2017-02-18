@@ -12,6 +12,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/after-sales"
+	"go2o/core/domain/interface/order"
 	"go2o/core/domain/tmp"
 	"time"
 )
@@ -66,6 +67,10 @@ func (e *exchangeOrderImpl) Value() afterSales.AfterSalesOrder {
 
 // 提交售后申请
 func (e *exchangeOrderImpl) Submit() (int32, error) {
+	o := e.GetOrder()
+	if o.GetValue().State != order.StatCompleted {
+		return 0, afterSales.ErrExchangeNotReceiveItems
+	}
 	id, err := e.afterSalesOrderImpl.Submit()
 	// 提交换货单
 	if err == nil {

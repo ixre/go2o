@@ -18,13 +18,13 @@ type (
 		GetLatestSnapshot(itemId int32) *Snapshot
 
 		// 获取最新的商品销售快照,如果商品有更新,则更新销售快照
-		GetLatestSalesSnapshot(itemId, skuId int32) *SalesSnapshot
+		GetLatestSalesSnapshot(itemId, skuId int32) *TradeSnapshot
 
 		// 根据KEY获取已销售商品的快照
-		GetSaleSnapshotByKey(key string) *SalesSnapshot
+		GetSaleSnapshotByKey(key string) *TradeSnapshot
 
 		// 根据ID获取已销售商品的快照
-		GetSalesSnapshot(id int32) *SalesSnapshot
+		GetSalesSnapshot(id int32) *TradeSnapshot
 	}
 
 	// 商品快照(针对商品)
@@ -80,7 +80,7 @@ type (
 	}
 
 	// 已销售(交易)商品快照(针对SKU)
-	SalesSnapshot struct {
+	TradeSnapshot struct {
 		//快照编号
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 		//商品编号
@@ -101,7 +101,7 @@ type (
 		GoodsNo string `db:"goods_no"`
 		//分类编号
 		CategoryId int32 `db:"cat_id"`
-		//SKU  todo:????
+		//SKU
 		Sku string `db:"sku"`
 		//图片
 		Image string `db:"img"`

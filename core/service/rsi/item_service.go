@@ -173,7 +173,7 @@ func (s *itemService) GetGoodsBySnapshotId(snapshotId int32) *item.GoodsItem {
 }
 
 // 根据快照编号获取商品
-func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.SalesSnapshot {
+func (s *itemService) GetSaleSnapshotById(snapshotId int32) *item.TradeSnapshot {
 	return s.itemRepo.GetSalesSnapshot(snapshotId)
 }
 
