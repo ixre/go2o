@@ -1414,7 +1414,7 @@ func (o *subOrderImpl) cancelGoods() error {
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
-		var gds item.IGoodsItem = o.goodsRepo.GetItem(snapshot.SkuId)
+		gds := o.goodsRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
 			gds.FreeStock(v.SkuId, v.Quantity)
@@ -1452,27 +1452,46 @@ func (o *subOrderImpl) backupPayment() (err error) {
 	if po == nil {
 		panic(errors.New("无法获取支付单,订单号:" + o.Parent().GetOrderNo()))
 	}
-	if pv := po.GetValue(); pv.BalanceDiscount > 0 {
-		//退回账户余额抵扣
-		acc := o.GetBuyer().GetAccount()
+	acc := o.GetBuyer().GetAccount()
+	pv := po.GetValue()
+	// log.Println(fmt.Sprintf("--------- %#v", pv))
+	//退回账户余额抵扣
+	if pv.BalanceDiscount > 0 {
 		err = acc.Refund(member.AccountBalance,
 			member.KindBalanceRefund, "订单退款",
-			o.value.OrderNo, o.value.DiscountAmount,
+			o.value.OrderNo, pv.BalanceDiscount,
 			member.DefaultRelateUser)
+		if err != nil {
+			log.Println("--- 订单退款到余额发生错误：", err)
+		}
 	}
-	if o.value.FinalAmount > 0 {
-		//todo: 其他支付方式退还,如网银???
+
+	if pv.FinalAmount > 0 {
+		//退到钱包账户
+		if pv.PaymentSign == payment.SignWalletAccount {
+			err = acc.Refund(member.AccountWallet,
+				member.KindWalletPaymentRefund,
+				"订单退款", o.value.OrderNo, pv.FinalAmount,
+				member.DefaultRelateUser)
+		} else {
+			//原路退回，暂时不实现。直接退到钱包账户
+			err = acc.Refund(member.AccountWallet,
+				member.KindWalletPaymentRefund,
+				"订单退款", o.value.OrderNo, pv.FinalAmount,
+				member.DefaultRelateUser)
+		}
 	}
-	return nil
+	return err
 }
 
-// 取消订单,todo:?? 单独取消一个子订单如何处理?
+// 取消订单
 func (o *subOrderImpl) Cancel(reason string) error {
 	if o.value.State == order.StatCancelled {
-		return order.ErrOrderCanNotCancel
+		return order.ErrOrderCancelled
 	}
-	if o.value.State > order.StatAwaitingPayment {
-		return order.ErrDisallowCancel
+	// 已发货订单无法取消
+	if o.value.State >= order.StatShipped {
+		return order.ErrOrderShippedCancel
 	}
 
 	o.value.State = order.StatCancelled
@@ -1529,7 +1548,7 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 	}
 	if o.value.State >= order.StatShipped ||
 		o.value.State >= order.StatCancelled {
-		return order.ErrOrderCanNotCancel
+		return order.ErrOrderCancelled
 	}
 	o.value.State = order.StatAwaitingCancel
 	o.value.UpdateTime = time.Now().Unix()
@@ -1555,7 +1574,7 @@ func (o *subOrderImpl) Decline(reason string) error {
 	}
 	if o.value.State >= order.StatShipped ||
 		o.value.State >= order.StatCancelled {
-		return order.ErrOrderCanNotCancel
+		return order.ErrOrderCancelled
 	}
 	o.value.State = order.StatDeclined
 	o.value.UpdateTime = time.Now().Unix()

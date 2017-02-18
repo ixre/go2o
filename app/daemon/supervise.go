@@ -15,6 +15,7 @@ import (
 	"go2o/core"
 	"go2o/core/service/rsi"
 	"go2o/core/variable"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -127,7 +128,7 @@ func supervisePaymentOrderFinish(ss []Service) {
 // 检测已过期的订单并标记
 func detectOrderExpires() {
 	if appCtx.Debug() {
-		appCtx.Log().Println("[ Order]: detect order time out...")
+		log.Println("[ Order]: detect order time out...")
 	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
@@ -151,7 +152,7 @@ func detectOrderExpires() {
 			}
 		}
 	} else {
-		appCtx.Log().Println("[ Daemon][ Order][ Cancel][ Error]:",
+		log.Println("[ Daemon][ Order][ Cancel][ Error]:",
 			err.Error(), "; retry after 10 seconds.")
 		time.Sleep(time.Second * 10)
 	}
@@ -160,7 +161,7 @@ func detectOrderExpires() {
 // 订单自动收货
 func orderAutoRecive() {
 	if appCtx.Debug() {
-		appCtx.Log().Println("[ Order]: order auto receive ...")
+		log.Println("[ Order]: order auto receive ...")
 	}
 	conn := core.GetRedisConn()
 	defer conn.Close()
@@ -181,7 +182,7 @@ func orderAutoRecive() {
 			}
 		}
 	} else {
-		appCtx.Log().Println("[ Daemon][ Order][ Receive][ Error]:",
+		log.Println("[ Daemon][ Order][ Receive][ Error]:",
 			err.Error(), "; retry after 10 seconds.")
 		time.Sleep(time.Second * 10)
 	}
