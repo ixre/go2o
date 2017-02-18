@@ -177,8 +177,11 @@ var (
 	ErrEmptyReason *domain.DomainError = domain.NewDomainError(
 		"err_order_empty_reason", "原因不能为空")
 
-	ErrOrderCanNotCancel *domain.DomainError = domain.NewDomainError(
-		"err_order_can_not_cancel", "订单无法取消")
+	ErrOrderCancelled *domain.DomainError = domain.NewDomainError(
+		"err_order_can_not_cancel", "订单已经取消")
+
+	ErrOrderShippedCancel *domain.DomainError = domain.NewDomainError(
+		"err_order_shipped_cancel", "订单已发货，无法取消")
 
 	ErrDisallowCancel *domain.DomainError = domain.NewDomainError(
 		"err_order_can_not_cancel", "订单已付款、无法取消")

@@ -41,6 +41,7 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
 					&e.Image, &e.Price, &e.Quantity, &e.ReturnQuantity, &e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = e.FinalAmount / float32(e.Quantity)
+				e.Image = format.GetGoodsImageUrl(e.Image)
 				list = append(list, e)
 			}
 		})
