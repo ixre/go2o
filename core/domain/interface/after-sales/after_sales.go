@@ -87,6 +87,9 @@ var (
 	ErrOrderAmount *domain.DomainError = domain.NewDomainError(
 		"err_after_sales_order_amount", "售后单金额不能为零")
 
+	ErrExchangeNotReceiveItems *domain.DomainError = domain.NewDomainError(
+		"err_exhange_order_no_shipping", "订单尚未收货，无法进行换货")
+
 	ErrExchangeOrderNoShipping *domain.DomainError = domain.NewDomainError(
 		"err_exhange_order_no_shipping", "换货单尚未发货给顾客")
 

@@ -33,7 +33,7 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 		// 查询分页订单的Item
 		o.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,si.amount,si.final_amount,
-            si.is_shipped FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN(%s)
             ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
@@ -120,7 +120,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 		d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.return_quantity,
             si.amount,si.final_amount,
-            si.is_shipped FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            si.is_shipped FROM sale_order_item si INNER JOIN item_trade_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN(%s)
             ORDER BY si.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
@@ -200,7 +200,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 	// 查询分页订单的Item
 	d.Query(fmt.Sprintf(`SELECT si.id,si.order_id,si.snap_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,sn.price,si.quantity,si.amount,si.final_amount
-            FROM sale_order_item si INNER JOIN gs_sales_snapshot sn
+            FROM sale_order_item si INNER JOIN item_trade_snapshot sn
             ON sn.id=si.snap_id WHERE si.order_id IN(%s)
             ORDER BY si.id ASC`, idBuf.String()), func(rs *sql.Rows) {
 		for rs.Next() {

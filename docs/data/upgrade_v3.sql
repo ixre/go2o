@@ -413,3 +413,8 @@ CHANGE COLUMN `total_present_amount` `total_wallet_amount` DECIMAL(10,2) NOT NUL
 
 ALTER TABLE `mm_present_log`
 RENAME TO  `mm_wallet_log` ;
+
+ALTER TABLE `txmall`.`gs_sales_snapshot`
+RENAME TO  `txmall`.`item_trade_snapshot` ;
+
+DROP TABLE `txmall`.`gs_sale_snapshot`;

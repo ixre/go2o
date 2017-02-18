@@ -230,8 +230,8 @@ func (g *goodsRepo) GetSnapshots(skuIdArr []int32) []item.Snapshot {
 }
 
 // 获取最新的商品销售快照
-func (g *goodsRepo) GetLatestSalesSnapshot(skuId int32) *item.SalesSnapshot {
-	e := new(item.SalesSnapshot)
+func (g *goodsRepo) GetLatestSalesSnapshot(skuId int32) *item.TradeSnapshot {
+	e := new(item.TradeSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "sku_id=? ORDER BY id DESC", skuId) == nil {
 		return e
 	}
@@ -239,8 +239,8 @@ func (g *goodsRepo) GetLatestSalesSnapshot(skuId int32) *item.SalesSnapshot {
 }
 
 // 获取指定的商品销售快照
-func (g *goodsRepo) GetSalesSnapshot(id int32) *item.SalesSnapshot {
-	e := new(item.SalesSnapshot)
+func (g *goodsRepo) GetSalesSnapshot(id int32) *item.TradeSnapshot {
+	e := new(item.TradeSnapshot)
 	if g.Connector.GetOrm().Get(id, e) == nil {
 		return e
 	}
@@ -248,8 +248,8 @@ func (g *goodsRepo) GetSalesSnapshot(id int32) *item.SalesSnapshot {
 }
 
 // 根据Key获取商品销售快照
-func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
-	var e *item.SalesSnapshot = new(item.SalesSnapshot)
+func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.TradeSnapshot {
+	var e *item.TradeSnapshot = new(item.TradeSnapshot)
 	if g.Connector.GetOrm().GetBy(e, "key=?", key) == nil {
 		return e
 	}
@@ -257,7 +257,7 @@ func (g *goodsRepo) GetSaleSnapshotByKey(key string) *item.SalesSnapshot {
 }
 
 // 保存商品销售快照
-func (g *goodsRepo) SaveSalesSnapshot(v *item.SalesSnapshot) (int32, error) {
+func (g *goodsRepo) SaveSalesSnapshot(v *item.TradeSnapshot) (int32, error) {
 	return orm.I32(orm.Save(g.Connector.GetOrm(), v, int(v.Id)))
 }
 
