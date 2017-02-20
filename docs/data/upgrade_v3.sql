@@ -418,3 +418,6 @@ ALTER TABLE `gs_sales_snapshot`
 RENAME TO  `item_trade_snapshot` ;
 
 DROP TABLE `gs_sale_snapshot`;
+
+ALTER TABLE `sale_after_order`
+ADD COLUMN `image_url` VARCHAR(255) NULL COMMENT '商品售后图片凭证' AFTER `reason`;

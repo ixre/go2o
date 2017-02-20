@@ -184,6 +184,8 @@ type (
 		Quantity int32 `db:"quantity"`
 		// 售后原因
 		Reason string `db:"reason"`
+		// 商品售后图片凭证
+		ImageUrl string `db:"image_url"`
 		// 联系人
 		PersonName string `db:"person_name"`
 		// 联系电话
@@ -204,7 +206,6 @@ type (
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
-
 		// 售后单数据,如退款单、退货单、换货单等
 		Data interface{} `db:"-"`
 		// 订单状态
