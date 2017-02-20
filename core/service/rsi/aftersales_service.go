@@ -36,15 +36,16 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
 
 // 提交售后单
 func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
-	snapshotId int32, quantity int32, reason string, img string) (int32, error) {
+	snapshotId int32, quantity int32, reason string, imgUrl string) (int32, error) {
 	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
 		OrderId: orderId,
 		// 类型，退货、换货、维修
 		Type: asType,
 		// 售后原因
-		Reason:        reason,
-		ReturnSpImage: img,
+		Reason: reason,
+		// 上传截图
+		ImageUrl: imgUrl,
 	})
 	err := ro.SetItem(snapshotId, quantity)
 	if err == nil {
