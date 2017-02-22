@@ -167,4 +167,8 @@ type IMemberRepo interface {
 
 	// 获取会员分页的优惠券列表
 	GetMemberPagedCoupon(memberId int32, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
+	// Select MmBuyerGroup
+	SelectMmBuyerGroup(where string, v ...interface{}) []*BuyerGroup
+	// Save MmBuyerGroup
+	SaveMmBuyerGroup(v *BuyerGroup) (int, error)
 }

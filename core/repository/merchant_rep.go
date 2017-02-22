@@ -23,6 +23,7 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	merchantImpl "go2o/core/domain/merchant"
 	"go2o/core/infrastructure/domain"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -32,6 +33,7 @@ var _ merchant.IMerchantRepo = new(merchantRepo)
 
 type merchantRepo struct {
 	db.Connector
+	_orm        orm.Orm
 	storage     storage.Interface
 	manager     merchant.IMerchantManager
 	_userRepo   user.IUserRepo
@@ -47,6 +49,7 @@ func NewMerchantRepo(c db.Connector, storage storage.Interface, shopRepo shop.IS
 	valRepo valueobject.IValueRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
 		Connector:   c,
+		_orm:        c.GetOrm(),
 		storage:     storage,
 		_userRepo:   userRepo,
 		_mssRepo:    mssRepo,
@@ -342,4 +345,36 @@ func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 		_, _, err = orm.Save(v.MchId, v)
 	}
 	return err
+}
+
+// Get MchBuyerGroup
+func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroup {
+	e := merchant.MchBuyerGroup{}
+	err := m._orm.GetBy(&e, "mch_id=? AND group_id=?", mchId, groupId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+	}
+	return nil
+}
+
+// Select MchBuyerGroup
+func (m *merchantRepo) SelectMchBuyerGroup(mchId int32) []*merchant.MchBuyerGroup {
+	list := []*merchant.MchBuyerGroup{}
+	err := m._orm.Select(&list, "mch_id=?", mchId)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+	}
+	return list
+}
+
+// Save MchBuyerGroup
+func (m *merchantRepo) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchBuyerGroup")
+	}
+	return id, err
 }

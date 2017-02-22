@@ -111,6 +111,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(member.Favorite{}, "mm_favorite")
 	orm.Mapping(member.BankInfo{}, "mm_bank")
 	orm.Mapping(member.LevelUpLog{}, "mm_levelup")
+	orm.Mapping(member.BuyerGroup{}, "mm_buyer_group")
 
 	//** ORDER **//
 
@@ -170,6 +171,7 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(merchant.BalanceLog{}, "mch_balance_log")
 	orm.Mapping(merchant.MchDayChart{}, "mch_day_chart")
 	orm.Mapping(merchant.MchSignUp{}, "mch_sign_up")
+	orm.Mapping(merchant.MchBuyerGroup{}, "mch_buyer_group")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
 
