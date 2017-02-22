@@ -421,3 +421,56 @@ DROP TABLE `gs_sale_snapshot`;
 
 ALTER TABLE `sale_after_order`
 ADD COLUMN `image_url` VARCHAR(255) NULL COMMENT '商品售后图片凭证' AFTER `reason`;
+
+
+CREATE TABLE mm_buyer_group (
+  id         int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  name       int(10) comment '名称',
+  is_default int(2) comment '是否为默认分组,未设置分组的客户作为该分组。',
+  PRIMARY KEY (id)) comment='买家（客户）分组';
+
+CREATE TABLE mch_buyer_group (
+  id               int(10) NOT NULL AUTO_INCREMENT,
+  mch_id           int(10) NOT NULL,
+  group_id         int(10) NOT NULL,
+  alias            int(10) NOT NULL,
+  enable_retail    int(2) NOT NULL comment '是否启用零售',
+  enable_wholesale int(2) NOT NULL comment '是否启用批发',
+  rebate_period    int(2) NOT NULL comment '批发返点周期',
+  PRIMARY KEY (id));
+
+CREATE TABLE ws_wholesaler (
+  mch_id       int(10) NOT NULL AUTO_INCREMENT comment '供货商编号等于供货商（等同与商户编号)',
+  rate         int(2) NOT NULL comment '批发商评级',
+  review_state int(2) NOT NULL comment '批发商审核状态',
+  PRIMARY KEY (mch_id));
+
+CREATE TABLE ws_rebate_rate (
+  id             int(10) NOT NULL AUTO_INCREMENT,
+  wss_id         int(10) NOT NULL comment '批发商编号',
+  buyer_gid      int(10) NOT NULL comment '客户分组编号',
+  require_amount int(10) NOT NULL comment '下限金额',
+  rebate_rate    decimal(6, 4) NOT NULL comment '返点率',
+  PRIMARY KEY (id)) comment='批发客户分组返点比例设置';
+
+CREATE TABLE ws_item (
+  item_id          int(10) NOT NULL AUTO_INCREMENT comment '产品编号',
+  enable_wholesale int(2) NOT NULL comment '是否启用批发',
+  PRIMARY KEY (item_id));
+
+CREATE TABLE ws_sku_price (
+  id               int(10) NOT NULL AUTO_INCREMENT,
+  item_id          int(10) NOT NULL comment '商品编号',
+  sku_id           int(10) NOT NULL comment 'SKU编号',
+  require_quantity int(10) NOT NULL comment '需要数量以上',
+  wholesale_price  decimal(10, 2) NOT NULL comment '批发价',
+  PRIMARY KEY (id)) comment='商品批发价';
+  
+CREATE TABLE ws_item_discount (
+  id             int(10) NOT NULL AUTO_INCREMENT,
+  item_id        int(10) NOT NULL comment '商品编号',
+  buyer_gid      int(10) NOT NULL comment '客户分组',
+  require_amount int(10) NOT NULL comment '要求金额，默认为0',
+  discount_rate  decimal(4, 2) NOT NULL comment '折扣率',
+  PRIMARY KEY (id)) comment='批发商品折扣';
+
