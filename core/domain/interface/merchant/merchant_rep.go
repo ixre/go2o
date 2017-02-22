@@ -83,6 +83,12 @@ type IMerchantRepo interface {
 
 	// 保存等级
 	SaveMemberLevel(mchId int32, v *MemberLevel) (int32, error)
+	// Get MchBuyerGroup
+	GetMchBuyerGroupByGroupId(mchId, groupId int32) *MchBuyerGroup
+	// Select MchBuyerGroup
+	SelectMchBuyerGroup(mchId int32) []*MchBuyerGroup
+	// Save MchBuyerGroup
+	SaveMchBuyerGroup(v *MchBuyerGroup) (int, error)
 
 	//
 	//  //修改线下支付利润

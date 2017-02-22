@@ -491,7 +491,8 @@ func (m *merchantImpl) MemberKvManager() merchant.IKvManager {
 // 返回设置服务
 func (m *merchantImpl) ConfManager() merchant.IConfManager {
 	if m._confManager == nil {
-		m._confManager = newConfigManagerImpl(m, m._rep, m._valRepo)
+		m._confManager = newConfigManagerImpl(m.GetAggregateRootId(),
+			m._rep, m._memberRepo, m._valRepo)
 	}
 	return m._confManager
 }

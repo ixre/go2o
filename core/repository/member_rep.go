@@ -40,6 +40,7 @@ var (
 type MemberRepo struct {
 	Storage storage.Interface
 	db.Connector
+	_orm     orm.Orm
 	_valRepo valueobject.IValueRepo
 	_mssRepo mss.IMssRepo
 }
@@ -49,6 +50,7 @@ func NewMemberRepo(sto storage.Interface, c db.Connector, mssRepo mss.IMssRepo,
 	return &MemberRepo{
 		Storage:   sto,
 		Connector: c,
+		_orm:      c.GetOrm(),
 		_mssRepo:  mssRepo,
 		_valRepo:  valRepo,
 	}
@@ -672,4 +674,23 @@ func (m *MemberRepo) GetMemberPagedCoupon(memberId int32, start, end int, where 
 			memberId, start, end-start)
 	}
 	return total, list
+}
+
+// Select MmBuyerGroup
+func (m *MemberRepo) SelectMmBuyerGroup(where string, v ...interface{}) []*member.BuyerGroup {
+	list := []*member.BuyerGroup{}
+	err := m._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")
+	}
+	return list
+}
+
+// Save MmBuyerGroup
+func (m *MemberRepo) SaveMmBuyerGroup(v *member.BuyerGroup) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MmBuyerGroup")
+	}
+	return id, err
 }

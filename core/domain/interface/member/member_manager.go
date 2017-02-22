@@ -22,15 +22,27 @@ type (
 	IMemberManager interface {
 		// 等级服务
 		LevelManager() ILevelManager
-
 		// 检查手机绑定,同时检查手机格式
 		CheckPhoneBind(phone string, memberId int32) error
-
 		// 检查注册信息是否正确
 		PrepareRegister(v *Member, pro *Profile, invitationCode string) (
 			invitationId int32, err error)
+		// 获取所有买家分组
+		GetAllBuyerGroups() []*BuyerGroup
+		// 获取买家分组
+		GetBuyerGroup(id int32) *BuyerGroup
+		// 保存买家分组
+		SaveBuyerGroup(*BuyerGroup) (int32, error)
 
 		// IDocManager()IDocManager
+	}
+
+	// 买家（客户）分组
+	BuyerGroup struct {
+		// 编号
+		ID        int32  `db:"id" pk:"yes" auto:"yes"`
+		Name      string `db:"name"`
+		IsDefault int32  `db:"is_default"`
 	}
 
 	//会员等级

@@ -12,12 +12,42 @@ type (
 	IConfManager interface {
 		// 获取销售配置
 		GetSaleConf() SaleConf
-
 		// 保存销售配置
 		SaveSaleConf(*SaleConf) error
-
 		// 使用系统的配置并保存
 		UseGlobSaleConf() error
+		// 保存客户分组
+		SaveMchBuyerGroup(v *MchBuyerGroup) (int32, error)
+		// 获取商户的全部客户分组
+		SelectBuyerGroup() []*BuyerGroup
+		// 根据分组编号获取分组设置
+		GetGroupByGroupId(groupId int32) *MchBuyerGroup
+	}
+
+	// 商户客户分组设置
+	MchBuyerGroup struct {
+		//编号
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		//商家编号
+		MchId int32 `db:"mch_id"`
+		//客户分组编号
+		GroupId int32 `db:"group_id"`
+		//分组别名
+		Alias string `db:"alias"`
+		// 是否启用零售
+		EnableRetail int32 `db:"enable_retail"`
+		// 是否启用批发
+		EnableWholesale int32 `db:"enable_wholesale"`
+		// 批发返点周期
+		RebatePeriod int32 `db:"rebate_period"`
+	}
+
+	// 商户客户分组设置
+	BuyerGroup struct {
+		//编号
+		GroupId int32 `db:"id" pk:"yes" auto:"yes"`
+		//分组别名
+		Name string `db:"alias"`
 	}
 
 	// 销售设置为商户填写,同时可以恢复默认

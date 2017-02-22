@@ -422,12 +422,14 @@ DROP TABLE `gs_sale_snapshot`;
 ALTER TABLE `sale_after_order`
 ADD COLUMN `image_url` VARCHAR(255) NULL COMMENT '商品售后图片凭证' AFTER `reason`;
 
+/* 2017-02-23 */
 
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',
-  name       int(10) comment '名称',
-  is_default int(2) comment '是否为默认分组,未设置分组的客户作为该分组。',
+  name       varchar(45) NOT NULL comment '名称',
+  is_default int(2) NOT NULL comment '是否为默认分组,未设置分组的客户作为该分组。',
   PRIMARY KEY (id)) comment='买家（客户）分组';
+
 
 CREATE TABLE mch_buyer_group (
   id               int(10) NOT NULL AUTO_INCREMENT,
@@ -465,7 +467,7 @@ CREATE TABLE ws_sku_price (
   require_quantity int(10) NOT NULL comment '需要数量以上',
   wholesale_price  decimal(10, 2) NOT NULL comment '批发价',
   PRIMARY KEY (id)) comment='商品批发价';
-  
+
 CREATE TABLE ws_item_discount (
   id             int(10) NOT NULL AUTO_INCREMENT,
   item_id        int(10) NOT NULL comment '商品编号',

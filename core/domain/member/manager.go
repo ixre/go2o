@@ -11,6 +11,7 @@ package member
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/variable"
@@ -155,8 +156,72 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	if len(pro.Avatar) == 0 {
 		pro.Avatar = "res/no_avatar.gif"
 	}
-
 	return invitationId, err
+}
+
+// 获取所有买家分组
+func (m *MemberManagerImpl) GetAllBuyerGroups() []*member.BuyerGroup {
+	list := m.rep.SelectMmBuyerGroup("")
+	if len(list) == 0 {
+		m.initBuyerGroups()
+		list = m.rep.SelectMmBuyerGroup("")
+	}
+	return list
+}
+
+// 初始化买家分组
+func (m *MemberManagerImpl) initBuyerGroups() {
+	arr := []*member.BuyerGroup{
+		{
+			Name:      "默认分组",
+			IsDefault: 1,
+		},
+		{
+			Name: "自定义分组1",
+		},
+		{
+			Name: "自定义分组2",
+		},
+		{
+			Name: "自定义分组3",
+		},
+		{
+			Name: "自定义分组4",
+		},
+		{
+			Name: "自定义分组5",
+		},
+		{
+			Name: "自定义分组6",
+		},
+		{
+			Name: "自定义分组7",
+		},
+		{
+			Name: "自定义分组8",
+		},
+		{
+			Name: "自定义分组9",
+		},
+	}
+	for _, v := range arr {
+		m.rep.SaveMmBuyerGroup(v)
+	}
+}
+
+// 获取买家分组
+func (m *MemberManagerImpl) GetBuyerGroup(id int32) *member.BuyerGroup {
+	for _, v := range m.GetAllBuyerGroups() {
+		if v.ID == id {
+			return v
+		}
+	}
+	return nil
+}
+
+// 保存买家分组
+func (m *MemberManagerImpl) SaveBuyerGroup(v *member.BuyerGroup) (int32, error) {
+	return util.I32Err(m.rep.SaveMmBuyerGroup(v))
 }
 
 // 等级服务实现
