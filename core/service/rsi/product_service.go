@@ -15,18 +15,18 @@ import (
 
 // 产品服务
 type productService struct {
-	pmRepo promodel.IProModelRepo
-	catRep product.ICategoryRepo
-	proRep product.IProductRepo
+	pmRepo  promodel.IProModelRepo
+	catRepo product.ICategoryRepo
+	proRepo product.IProductRepo
 }
 
-func NewProService(pmRep promodel.IProModelRepo,
-	catRep product.ICategoryRepo,
-	proRep product.IProductRepo) *productService {
+func NewProService(pmRepo promodel.IProModelRepo,
+	catRepo product.ICategoryRepo,
+	proRepo product.IProductRepo) *productService {
 	return &productService{
-		pmRepo: pmRep,
-		catRep: catRep,
-		proRep: proRep,
+		pmRepo:  pmRepo,
+		catRepo: catRepo,
+		proRepo: proRepo,
 	}
 }
 
