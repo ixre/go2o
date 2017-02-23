@@ -12,6 +12,7 @@ package merchant
 import (
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/merchant/wholesaler"
 )
 
 const (
@@ -56,7 +57,10 @@ type (
 
 		// 获取商户账户
 		Account() IAccount
-
+		// 启用批发
+		EnableWholesale() error
+		// 获取批发商实例
+		Wholesaler() wholesaler.IWholesaler
 		// 返回用户服务
 		UserManager() user.IUserManager
 

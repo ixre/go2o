@@ -18,9 +18,11 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/domain/interface/valueobject"
 	si "go2o/core/domain/merchant/shop"
 	userImpl "go2o/core/domain/merchant/user"
+	wsImpl "go2o/core/domain/merchant/wholesale"
 	"go2o/core/domain/tmp"
 	"go2o/core/infrastructure"
 	"go2o/core/infrastructure/domain"
@@ -239,8 +241,10 @@ var _ merchant.IMerchant = new(merchantImpl)
 type merchantImpl struct {
 	_value           *merchant.Merchant
 	_account         merchant.IAccount
+	_wholesaler      wholesaler.IWholesaler
 	_host            string
 	_rep             merchant.IMerchantRepo
+	_wsRepo          wholesaler.IWholesaleRepo
 	_shopRepo        shop.IShopRepo
 	_userRepo        user.IUserRepo
 	_valRepo         valueobject.IValueRepo
@@ -258,11 +262,13 @@ type merchantImpl struct {
 }
 
 func NewMerchant(v *merchant.Merchant, rep merchant.IMerchantRepo,
-	shopRepo shop.IShopRepo, userRepo user.IUserRepo, memberRepo member.IMemberRepo,
+	wsRepo wholesaler.IWholesaleRepo, shopRepo shop.IShopRepo,
+	userRepo user.IUserRepo, memberRepo member.IMemberRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchant {
 	mch := &merchantImpl{
 		_value:      v,
 		_rep:        rep,
+		_wsRepo:     wsRepo,
 		_shopRepo:   shopRepo,
 		_userRepo:   userRepo,
 		_valRepo:    valRepo,
@@ -378,6 +384,32 @@ func (m *merchantImpl) Account() merchant.IAccount {
 		m._account = newAccountImpl(m, v, m._memberRepo)
 	}
 	return m._account
+}
+
+// 获取批发商实例
+func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
+	if m._wholesaler == nil {
+		mchId := m.GetAggregateRootId()
+		v := m._wsRepo.GetWsWholesaler(mchId)
+		if v != nil {
+			m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
+		}
+	}
+	return m._wholesaler
+}
+
+// 启用批发
+func (m *merchantImpl) EnableWholesale() error {
+	if m.Wholesaler() != nil {
+		return errors.New("wholesale for merchant enabled!")
+	}
+	v := &wholesaler.WsWholesaler{
+		MchId:       m.GetAggregateRootId(),
+		Rate:        1,
+		ReviewState: enum.ReviewAwaiting,
+	}
+	_, err := m._wsRepo.SaveWsWholesaler(v, true)
+	return err
 }
 
 // 创建商户

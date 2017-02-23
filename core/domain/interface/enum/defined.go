@@ -24,6 +24,8 @@ const (
 	ReviewPass int32 = 3
 	// 已确认
 	ReviewConfirm int32 = 4
+	// 审核终止
+	ReviewAbort int32 = 5
 )
 
 // 审核文本字典
