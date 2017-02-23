@@ -423,6 +423,7 @@ ALTER TABLE `sale_after_order`
 ADD COLUMN `image_url` VARCHAR(255) NULL COMMENT '商品售后图片凭证' AFTER `reason`;
 
 /* 2017-02-23 */
+DROP TABLE `txmall`.`pt_order_log`;
 
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',

@@ -88,17 +88,18 @@ func Init(ctx gof.App) {
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
 	cartRepo := repository.NewCartRepo(db, memberRepo, goodsRepo)
 	shopRepo := repository.NewShopRepo(db, sto)
-	mchRepo := repository.NewMerchantRepo(db, sto, shopRepo, userRepo, memberRepo, mssRepo, valRepo)
+	wholesaleRepo := repository.NewWholesaleRepo(db)
+	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valRepo)
 	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
 	deliveryRepo := repository.NewDeliverRepo(db)
 	contentRepo := repository.NewContentRepo(db)
 	adRepo := repository.NewAdvertisementRepo(db, sto)
-	spRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, productRepo, cartRepo, goodsRepo,
+	orderRepo := repository.NewOrderRepo(sto, db, mchRepo, nil, productRepo, cartRepo, goodsRepo,
 		promRepo, memberRepo, deliveryRepo, expressRepo, shipRepo, valRepo)
-	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, spRepo, valRepo)
-	asRepo := repository.NewAfterSalesRepo(db, spRepo, memberRepo, paymentRepo)
+	paymentRepo := repository.NewPaymentRepo(sto, db, memberRepo, orderRepo, valRepo)
+	asRepo := repository.NewAfterSalesRepo(db, orderRepo, memberRepo, paymentRepo)
 
-	spRepo.SetPaymentRepo(paymentRepo)
+	orderRepo.SetPaymentRepo(paymentRepo)
 
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
@@ -113,14 +114,14 @@ func Init(ctx gof.App) {
 	ProductService = NewProService(proMRepo, catRepo, productRepo)
 	FoundationService = NewFoundationService(valRepo)
 	PromService = NewPromotionService(promRepo)
-	ShoppingService = NewShoppingService(spRepo, cartRepo,
+	ShoppingService = NewShoppingService(orderRepo, cartRepo,
 		productRepo, goodsRepo, mchRepo, orderQuery)
-	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, spRepo)
+	AfterSalesService = NewAfterSalesService(asRepo, afterSalesQuery, orderRepo)
 	MerchantService = NewMerchantService(mchRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valRepo)
 	ItemService = NewSaleService(catRepo, goodsRepo, goodsQuery, tagSaleRepo)
-	PaymentService = NewPaymentService(paymentRepo, spRepo)
+	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
 	ShipmentService = NewShipmentService(shipRepo, deliveryRepo)

@@ -25,6 +25,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
@@ -174,6 +175,10 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(merchant.MchBuyerGroup{}, "mch_buyer_group")
 	orm.Mapping(mss.MailTemplate{}, "pt_mail_template")
 	orm.Mapping(mss.MailTask{}, "pt_mail_queue")
+
+	/* 批发 */
+	orm.Mapping(wholesaler.WsWholesaler{}, "ws_wholesaler")
+	orm.Mapping(wholesaler.WsRebateRate{}, "ws_rebate_rate")
 
 	orm.Mapping(payment.PaymentOrder{}, "pay_order")
 

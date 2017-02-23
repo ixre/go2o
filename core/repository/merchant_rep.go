@@ -19,6 +19,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/merchant/user"
+	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/valueobject"
 	merchantImpl "go2o/core/domain/merchant"
@@ -36,6 +37,7 @@ type merchantRepo struct {
 	_orm        orm.Orm
 	storage     storage.Interface
 	manager     merchant.IMerchantManager
+	_wsRepo     wholesaler.IWholesaleRepo
 	_userRepo   user.IUserRepo
 	_mssRepo    mss.IMssRepo
 	_shopRepo   shop.IShopRepo
@@ -44,13 +46,15 @@ type merchantRepo struct {
 	mux         *sync.RWMutex
 }
 
-func NewMerchantRepo(c db.Connector, storage storage.Interface, shopRepo shop.IShopRepo,
+func NewMerchantRepo(c db.Connector, storage storage.Interface,
+	wsRepo wholesaler.IWholesaleRepo, shopRepo shop.IShopRepo,
 	userRepo user.IUserRepo, memberRepo member.IMemberRepo, mssRepo mss.IMssRepo,
 	valRepo valueobject.IValueRepo) merchant.IMerchantRepo {
 	return &merchantRepo{
 		Connector:   c,
 		_orm:        c.GetOrm(),
 		storage:     storage,
+		_wsRepo:     wsRepo,
 		_userRepo:   userRepo,
 		_mssRepo:    mssRepo,
 		_shopRepo:   shopRepo,
@@ -98,8 +102,8 @@ func (m *merchantRepo) GetMemberFromSignUpToken(token string) int32 {
 }
 
 func (m *merchantRepo) CreateMerchant(v *merchant.Merchant) merchant.IMerchant {
-	return merchantImpl.NewMerchant(v, m, m._shopRepo, m._userRepo,
-		m._memberRepo, m._valRepo)
+	return merchantImpl.NewMerchant(v, m, m._wsRepo,
+		m._shopRepo, m._userRepo, m._memberRepo, m._valRepo)
 }
 
 func (m *merchantRepo) cleanCache(mchId int32) {
