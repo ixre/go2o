@@ -15,10 +15,12 @@ type (
 		Abort() error
 		// 保存
 		Save() (int32, error)
-		// 保存批发返点率
-		SaveRebateRate(*WsRebateRate) (int32, error)
+		// 保存客户分组的批发返点率
+		SaveGroupRebateRate(groupId int32, arr []*WsRebateRate) error
+		// 获取客户分组的批发返点率
+		GetGroupRebateRate(groupId int32) []*WsRebateRate
 		// 获取批发返点率
-		RebateRates() []*WsRebateRate
+		GetRebateRate(groupId int32, amount int32) float64
 	}
 
 	IWholesaleRepo interface {

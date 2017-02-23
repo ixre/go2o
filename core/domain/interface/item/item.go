@@ -226,13 +226,14 @@ type (
 		Product() product.IProduct
 		// 商品快照
 		Snapshot() *Snapshot
+		// 批发
+		//Wholesale() IWholesaleItem
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格
 		SpecArray() []*promodel.Spec
 		// 获取SKU
 		GetSku(skuId int32) *Sku
-
 		// 获取促销信息
 		GetPromotions() []promotion.IPromotion
 		// 获取促销价
@@ -269,5 +270,99 @@ type (
 
 		// 删除商品
 		Destroy() error
+	}
+
+	// 商品批发
+	IWholesaleItem interface {
+		// 获取领域编号
+		GetDomainId() int32
+		// 开启批发功能
+		TurnWholesale(off bool) error
+		// 保存
+		Save() (int32, error)
+
+		// 根据商品金额获取折扣
+		GetWholesaleDiscount(groupId int32, amount float64) float64
+		// 获取全部批发折扣
+		GetItemDiscount(groupId int32) []*WsItemDiscount
+		// 保存批发折扣
+		SaveItemDiscount(groupId int32, arr []*WsItemDiscount) error
+
+		// 获取批发价格
+		GetWholesalePrice(skuId, quantity int32) float64
+		// 根据SKU获取价格设置
+		GetSkuPrice(skuId int32) []*WsSkuPrice
+		// 保存批发SKU价格设置
+		SaveSkuPrice(skuId int32, arr []*WsSkuPrice) error
+	}
+
+	IItemWholesaleRepo interface {
+		// Get WsItem
+		GetWsItem(primary interface{}) *WsItem
+		// Select WsItem
+		SelectWsItem(where string, v ...interface{}) []*WsItem
+		// Save WsItem
+		SaveWsItem(v *WsItem) (int, error)
+		// Delete WsItem
+		DeleteWsItem(primary interface{}) error
+		// Batch Delete WsItem
+		BatchDeleteWsItem(where string, v ...interface{}) (int64, error)
+
+		// Get WsSkuPrice
+		GetWsSkuPrice(primary interface{}) *WsSkuPrice
+		// Select WsSkuPrice
+		SelectWsSkuPrice(where string, v ...interface{}) []*WsSkuPrice
+		// Save WsSkuPrice
+		SaveWsSkuPrice(v *WsSkuPrice) (int, error)
+		// Delete WsSkuPrice
+		DeleteWsSkuPrice(primary interface{}) error
+		// Batch Delete WsSkuPrice
+		BatchDeleteWsSkuPrice(where string, v ...interface{}) (int64, error)
+
+		// Get WsItemDiscount
+		GetWsItemDiscount(primary interface{}) *WsItemDiscount
+		// Select WsItemDiscount
+		SelectWsItemDiscount(where string, v ...interface{}) []*WsItemDiscount
+		// Save WsItemDiscount
+		SaveWsItemDiscount(v *WsItemDiscount) (int, error)
+		// Delete WsItemDiscount
+		DeleteWsItemDiscount(primary interface{}) error
+		// Batch Delete WsItemDiscount
+		BatchDeleteWsItemDiscount(where string, v ...interface{}) (int64, error)
+	}
+
+	// 批发商品
+	WsItem struct {
+		// 商品编号
+		ItemId int32 `db:"item_id" pk:"yes" auto:"yes"`
+		// 是否启用批发
+		EnableWholesale int32 `db:"enable_wholesale"`
+	}
+	// 商品批发价
+	WsSkuPrice struct {
+		// 编号
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
+		ItemId int32 `db:"item_id"`
+		// SKU编号
+		SkuId int32 `db:"sku_id"`
+		// 需要数量以上
+		RequireQuantity int32 `db:"require_quantity"`
+		// 批发价
+		WholesalePrice float64 `db:"wholesale_price"`
+	}
+
+	// 批发商品折扣
+	WsItemDiscount struct {
+		// 编号
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		// 商品编号
+		ItemId int32 `db:"item_id"`
+		// 客户分组
+		BuyerGid int32 `db:"buyer_gid"`
+		// 要求金额，默认为0
+		RequireAmount int32 `db:"require_amount"`
+		// 折扣率
+		DiscountRate float64 `db:"discount_rate"`
 	}
 )

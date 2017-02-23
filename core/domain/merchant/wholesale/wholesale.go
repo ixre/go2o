@@ -60,27 +60,58 @@ func (w *wholesalerImpl) Save() (int32, error) {
 	return util.I32Err(w.repo.SaveWsWholesaler(w.value, false))
 }
 
-// 保存批发返点率
-func (w *wholesalerImpl) SaveRebateRate(v *wholesaler.WsRebateRate) (int32, error) {
-	if v.WsId != w.mchId {
-		return 0, errors.New("wsid not match")
+// 保存客户分组的批发返点率
+func (w *wholesalerImpl) SaveGroupRebateRate(groupId int32, arr []*wholesaler.WsRebateRate) error {
+	// 获取存在的项
+	old := w.GetGroupRebateRate(groupId)
+	// 分析当前数据并加入到MAP中
+	delList := []int32{}
+	currMap := make(map[int32]*wholesaler.WsRebateRate, len(arr))
+	for _, v := range arr {
+		currMap[v.RequireAmount] = v
 	}
-	list := w.repo.SelectWsRebateRate(
-		"ws_id=? AND buyer_gid=? AND require_amount=?",
-		w.mchId, v.BuyerGid, v.RequireAmount)
-	if len(list) > 0 {
-		if rId := list[0].ID; v.ID != rId {
-			if v.ID <= 0 {
-				v.ID = rId
-			} else {
-				return 0, errors.New("require amount exists")
-			}
+	// 筛选出要删除的项,如存在，则赋予ID
+	for _, v := range old {
+		new := currMap[v.RequireAmount]
+		if new == nil {
+			delList = append(delList, v.ID)
+		} else {
+			new.ID = v.ID
 		}
 	}
-	return util.I32Err(w.repo.SaveWsRebateRate(v))
+	// 删除项
+	for _, v := range delList {
+		w.repo.BatchDeleteWsRebateRate("id=?", v)
+	}
+	// 保存项
+	for _, v := range arr {
+		v.WsId = w.mchId
+		v.BuyerGid = groupId
+		i, err := util.I32Err(w.repo.SaveWsRebateRate(v))
+		if err == nil {
+			v.ID = i
+		}
+	}
+	return nil
+}
+
+// 获取客户分组的批发返点率
+func (w *wholesalerImpl) GetGroupRebateRate(groupId int32) []*wholesaler.WsRebateRate {
+	return w.repo.SelectWsRebateRate("ws_id=? AND buyer_gid=?", w.mchId, groupId)
 }
 
 // 获取批发返点率
-func (w *wholesalerImpl) RebateRates() []*wholesaler.WsRebateRate {
-	return w.repo.SelectWsRebateRate("ws_id=?", w.mchId)
+func (w *wholesalerImpl) GetRebateRate(groupId int32, amount int32) float64 {
+	var disRate float64 = 0
+	arr := w.GetGroupRebateRate(groupId)
+	if len(arr) > 0 {
+		var maxRequire int32
+		for _, v := range arr {
+			if v.RequireAmount > maxRequire && amount >= v.RequireAmount {
+				maxRequire = v.RequireAmount
+				disRate = v.RebateRate
+			}
+		}
+	}
+	return disRate
 }
