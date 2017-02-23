@@ -179,6 +179,9 @@ func OrmMapping(conn db.Connector) {
 	/* 批发 */
 	orm.Mapping(wholesaler.WsWholesaler{}, "ws_wholesaler")
 	orm.Mapping(wholesaler.WsRebateRate{}, "ws_rebate_rate")
+	orm.Mapping(item.WsItem{}, "ws_item")
+	orm.Mapping(item.WsItemDiscount{}, "ws_item_discount")
+	orm.Mapping(item.WsSkuPrice{}, "ws_sku_price")
 
 	orm.Mapping(payment.PaymentOrder{}, "pay_order")
 
