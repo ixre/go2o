@@ -5,6 +5,8 @@ package wholesaler
 type (
 	// 批发商
 	IWholesaler interface {
+		// 获取领域编号
+		GetDomainId() int32
 		// 获取值
 		Value() *WsWholesaler
 		// 审核批发商
@@ -43,13 +45,13 @@ type (
 	// 批发客户分组返点比例设置
 	WsRebateRate struct {
 		// 编号
-		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		ID int32 `db:"id" pk:"yes" auto:"yes"`
 		// 批发商编号
-		WsId int64 `db:"ws_id"`
+		WsId int32 `db:"ws_id"`
 		// 客户分组编号
-		BuyerGid int64 `db:"buyer_gid"`
+		BuyerGid int32 `db:"buyer_gid"`
 		// 下限金额
-		RequireAmount int64 `db:"require_amount"`
+		RequireAmount int32 `db:"require_amount"`
 		// 返点率
 		RebateRate float64 `db:"rebate_rate"`
 	}
