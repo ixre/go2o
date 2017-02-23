@@ -32,9 +32,11 @@ var _ item.IGoodsItem = new(itemImpl)
 type itemImpl struct {
 	pro           product.IProduct
 	value         *item.GoodsItem
+	wholesale     item.IWholesaleItem
 	snapshot      *item.Snapshot
 	repo          item.IGoodsItemRepo
 	productRepo   product.IProductRepo
+	itemWsRepo    item.IItemWholesaleRepo
 	proMRepo      promodel.IProModelRepo
 	promRepo      promotion.IPromotionRepo
 	levelPrices   []*item.MemberPrice
@@ -50,7 +52,7 @@ func NewSaleItem(
 	itemRepo product.IProductRepo, pro product.IProduct,
 	value *item.GoodsItem, valRepo valueobject.IValueRepo,
 	goodsRepo item.IGoodsItemRepo, proMRepo promodel.IProModelRepo,
-	expressRepo express.IExpressRepo,
+	itemWsRepo item.IItemWholesaleRepo, expressRepo express.IExpressRepo,
 	promRepo promotion.IPromotionRepo) item.IGoodsItem {
 	v := &itemImpl{
 		pro:         pro,
@@ -58,6 +60,7 @@ func NewSaleItem(
 		productRepo: itemRepo,
 		repo:        goodsRepo,
 		proMRepo:    proMRepo,
+		itemWsRepo:  itemWsRepo,
 		promRepo:    promRepo,
 		valRepo:     valRepo,
 		expressRepo: expressRepo,
@@ -92,6 +95,15 @@ func (g *itemImpl) Product() product.IProduct {
 		g.pro = g.productRepo.GetProduct(g.value.ProductId)
 	}
 	return g.pro
+}
+
+// 批发
+func (i *itemImpl) Wholesale() item.IWholesaleItem {
+	if i.wholesale == nil {
+		i.wholesale = newWholesaleItem(i.GetAggregateRootId(),
+			i, i.itemWsRepo)
+	}
+	return i.wholesale
 }
 
 // 设置值

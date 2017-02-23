@@ -32,6 +32,7 @@ type goodsRepo struct {
 	_skuService  item.ISkuService
 	_snapService item.ISnapshotService
 	proRepo      product.IProductRepo
+	itemWsRepo   item.IItemWholesaleRepo
 	expressRepo  express.IExpressRepo
 	valRepo      valueobject.IValueRepo
 	proMRepo     promodel.IProModelRepo
@@ -39,13 +40,15 @@ type goodsRepo struct {
 
 // 商品仓储
 func NewGoodsItemRepo(c db.Connector, proRepo product.IProductRepo,
-	proMRepo promodel.IProModelRepo, expressRepo express.IExpressRepo,
+	proMRepo promodel.IProModelRepo, itemWsRepo item.IItemWholesaleRepo,
+	expressRepo express.IExpressRepo,
 	valRepo valueobject.IValueRepo) *goodsRepo {
 	return &goodsRepo{
 		Connector:   c,
 		_orm:        c.GetOrm(),
 		proRepo:     proRepo,
 		proMRepo:    proMRepo,
+		itemWsRepo:  itemWsRepo,
 		expressRepo: expressRepo,
 		valRepo:     valRepo,
 	}
@@ -70,7 +73,7 @@ func (g *goodsRepo) SnapshotService() item.ISnapshotService {
 // 创建商品
 func (g *goodsRepo) CreateItem(v *item.GoodsItem) item.IGoodsItem {
 	return itemImpl.NewSaleItem(g.proRepo, nil, v, g.valRepo, g,
-		g.proMRepo, g.expressRepo, nil)
+		g.proMRepo, g.itemWsRepo, g.expressRepo, nil)
 }
 
 // 获取商品

@@ -227,7 +227,7 @@ type (
 		// 商品快照
 		Snapshot() *Snapshot
 		// 批发
-		//Wholesale() IWholesaleItem
+		Wholesale() IWholesaleItem
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格
@@ -282,7 +282,7 @@ type (
 		Save() (int32, error)
 
 		// 根据商品金额获取折扣
-		GetWholesaleDiscount(groupId int32, amount float64) float64
+		GetWholesaleDiscount(groupId int32, amount int32) float64
 		// 获取全部批发折扣
 		GetItemDiscount(groupId int32) []*WsItemDiscount
 		// 保存批发折扣
