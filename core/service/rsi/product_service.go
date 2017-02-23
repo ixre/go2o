@@ -145,7 +145,7 @@ func (p *productService) GetModelBrands(id int32) []*promodel.ProBrand {
 
 // 获取商品分类
 func (p *productService) GetCategory(mchId, id int32) *product.Category {
-	c := p.catRep.GlobCatService().GetCategory(id)
+	c := p.catRepo.GlobCatService().GetCategory(id)
 	if c != nil {
 		return c.GetValue()
 	}
@@ -155,7 +155,7 @@ func (p *productService) GetCategory(mchId, id int32) *product.Category {
 // 获取商品分类和选项
 func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Category,
 	domain.IOptionStore) {
-	c := p.catRep.GlobCatService().GetCategory(id)
+	c := p.catRepo.GlobCatService().GetCategory(id)
 	if c != nil {
 		return c.GetValue(), c.GetOption()
 	}
@@ -163,11 +163,11 @@ func (p *productService) GetCategoryAndOptions(mchId, id int32) (*product.Catego
 }
 
 func (p *productService) DeleteCategory(mchId, id int32) error {
-	return p.catRep.GlobCatService().DeleteCategory(id)
+	return p.catRepo.GlobCatService().DeleteCategory(id)
 }
 
 func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, error) {
-	sl := p.catRep.GlobCatService()
+	sl := p.catRepo.GlobCatService()
 	var ca product.ICategory
 	if v.ID > 0 {
 		ca = sl.GetCategory(v.ID)
@@ -181,7 +181,7 @@ func (p *productService) SaveCategory(mchId int32, v *product.Category) (int32, 
 }
 
 func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
-	cats := p.catRep.GlobCatService().GetCategories()
+	cats := p.catRepo.GlobCatService().GetCategories()
 	rootNode := &tree.TreeNode{
 		Text:   "根节点",
 		Value:  "",
@@ -195,12 +195,12 @@ func (p *productService) GetCategoryTreeNode(mchId int32) *tree.TreeNode {
 
 // 分类树形
 func (p *productService) CategoryTree(parentId int32) *product.Category {
-	return p.catRep.GlobCatService().CategoryTree(parentId)
+	return p.catRepo.GlobCatService().CategoryTree(parentId)
 }
 
 // 获取分类关联的品牌
 func (p *productService) GetCatBrands(catId int32) []*promodel.ProBrand {
-	arr := p.catRep.GlobCatService().RelationBrands(catId)
+	arr := p.catRepo.GlobCatService().RelationBrands(catId)
 	for _, v := range arr {
 		v.Image = format.GetResUrl(v.Image)
 	}
@@ -226,7 +226,7 @@ func (p *productService) walkCategoryTree(node *tree.TreeNode, parentId int32, c
 }
 
 func (p *productService) GetCategories(mchId int32) []*product.Category {
-	cats := p.catRep.GlobCatService().GetCategories()
+	cats := p.catRepo.GlobCatService().GetCategories()
 	var list []*product.Category = make([]*product.Category, len(cats))
 	for i, v := range cats {
 		vv := v.GetValue()
@@ -238,7 +238,7 @@ func (p *productService) GetCategories(mchId int32) []*product.Category {
 
 // 根据上级编号获取分类列表
 func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*product.Category {
-	cats := p.catRep.GlobCatService().GetCategories()
+	cats := p.catRepo.GlobCatService().GetCategories()
 	list := []*product.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
@@ -251,11 +251,11 @@ func (p *productService) GetCategoriesByParentId(mchId, parentId int32) []*produ
 }
 
 func (p *productService) getCategoryManager(mchId int32) product.IGlobCatService {
-	return p.catRep.GlobCatService()
+	return p.catRepo.GlobCatService()
 }
 
 func (p *productService) GetBigCategories(mchId int32) []*define.Category {
-	cats := p.catRep.GlobCatService().GetCategories()
+	cats := p.catRepo.GlobCatService().GetCategories()
 	list := []*define.Category{}
 	for _, v := range cats {
 		if v2 := v.GetValue(); v2.ParentId == 0 && v2.Enabled == 1 {
@@ -267,7 +267,7 @@ func (p *productService) GetBigCategories(mchId int32) []*define.Category {
 }
 
 func (p *productService) GetChildCategories(mchId, parentId int32) []*define.Category {
-	cats := p.catRep.GlobCatService().GetCategories()
+	cats := p.catRepo.GlobCatService().GetCategories()
 	list := []*define.Category{}
 	for _, v := range cats {
 		if vv := v.GetValue(); vv.ParentId == parentId && vv.Enabled == 1 {
@@ -304,7 +304,7 @@ func (p *productService) setChild(list []product.ICategory, dst *product.Categor
 
 // 获取产品值
 func (p *productService) GetProductValue(productId int32) *product.Product {
-	pro := p.proRep.GetProduct(productId)
+	pro := p.proRepo.GetProduct(productId)
 	if pro != nil {
 		v := pro.GetValue()
 		return &v
@@ -316,7 +316,7 @@ func (p *productService) GetProductValue(productId int32) *product.Product {
 func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err error) {
 	var pro product.IProduct
 	if v.Id > 0 {
-		pro = p.proRep.GetProduct(v.Id)
+		pro = p.proRepo.GetProduct(v.Id)
 		if pro == nil || pro.GetValue().VendorId != v.VendorId {
 			err = product.ErrNoSuchProduct
 			goto R
@@ -324,7 +324,7 @@ func (p *productService) SaveProduct(v *product.Product) (r *define.Result_, err
 		// 修改货品时，不会修改详情
 		v.Description = pro.GetValue().Description
 	} else {
-		pro = p.proRep.CreateProduct(v)
+		pro = p.proRepo.CreateProduct(v)
 	}
 	// 保存
 	err = pro.SetValue(v)
@@ -345,7 +345,7 @@ R:
 // 保存货品描述
 func (p *productService) SaveProductInfo(supplierId int32,
 	productId int32, info string) error {
-	pro := p.proRep.GetProduct(productId)
+	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
 	}
@@ -354,7 +354,7 @@ func (p *productService) SaveProductInfo(supplierId int32,
 
 // 删除货品
 func (p *productService) DeleteItem(supplierId int32, productId int32) error {
-	pro := p.proRep.GetProduct(productId)
+	pro := p.proRepo.GetProduct(productId)
 	if pro == nil || pro.GetValue().VendorId != supplierId {
 		return product.ErrNoSuchProduct
 	}
@@ -363,7 +363,7 @@ func (p *productService) DeleteItem(supplierId int32, productId int32) error {
 
 // 获取产品属性
 func (p *productService) GetAttrArray(productId int32) []*product.Attr {
-	pro := p.proRep.CreateProduct(&product.Product{Id: productId})
+	pro := p.proRepo.CreateProduct(&product.Product{Id: productId})
 	return pro.Attr()
 }
 
