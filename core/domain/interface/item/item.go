@@ -277,7 +277,7 @@ type (
 		// 获取领域编号
 		GetDomainId() int32
 		// 开启批发功能
-		TurnWholesale(off bool) error
+		TurnWholesale(on bool) error
 		// 保存
 		Save() (int32, error)
 
@@ -302,7 +302,7 @@ type (
 		// Select WsItem
 		SelectWsItem(where string, v ...interface{}) []*WsItem
 		// Save WsItem
-		SaveWsItem(v *WsItem) (int, error)
+		SaveWsItem(v *WsItem, create bool) (int, error)
 		// Delete WsItem
 		DeleteWsItem(primary interface{}) error
 		// Batch Delete WsItem
