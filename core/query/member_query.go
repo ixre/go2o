@@ -29,16 +29,16 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
+func (m *MemberQuery) GetMemberList(ids []int32) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
-		strIds[i] = strconv.Itoa(v)
+		strIds[i] = strconv.Itoa(int(v))
 	}
 	if len(ids) > 0 {
 		inStr := strings.Join(strIds, ",") // order by field(field,val1,val2,val3)按IN的顺序排列
 		query := fmt.Sprintf(`SELECT m.id,m.usr,m.name,m.avatar,m.exp,m.level,
-				lv.name as level_name,a.integral,a.balance,a.present_balance,
+				lv.name as level_name,a.integral,a.balance,a.wallet_balance,
 				a.grow_balance,a.grow_amount,a.grow_earnings,a.grow_total_earnings,
 				m.update_time FROM mm_member m INNER JOIN mm_level lv
 				ON m.level = lv.id INNER JOIN mm_account a ON
@@ -49,7 +49,7 @@ func (m *MemberQuery) GetMemberList(ids []int) []*dto.MemberSummary {
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedBalanceAccountLog(memberId, begin, end int,
+func (m *MemberQuery) PagedBalanceAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
@@ -73,18 +73,18 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
+func (m *MemberQuery) PagedWalletAccountLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
 		orderBy = "ORDER BY " + orderBy + ",bi.id DESC"
 	}
-	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_present_log bi
+	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_wallet_log bi
 	 	INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE bi.member_id=? %s`, where), &num, memberId)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_present_log bi
+		sqlLine := fmt.Sprintf(`SELECT bi.* FROM mm_wallet_log bi
 			INNER JOIN mm_member m ON m.id=bi.member_id
 			WHERE member_id=? %s %s LIMIT ?,?`,
 			where, orderBy)
@@ -100,7 +100,7 @@ func (m *MemberQuery) PagedPresentAccountLog(memberId, begin, end int,
 }
 
 // 获取返现记录
-func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
+func (m *MemberQuery) QueryBalanceLog(memberId int32, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
 	d := m.Connector
@@ -126,7 +126,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int, kind int) *member.BalanceInfo {
+func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int32, kind int32) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
 	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {
@@ -176,8 +176,8 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (m *MemberQuery) GetMemberIdByPhone(phone string) int {
-	id := 0
+func (m *MemberQuery) GetMemberIdByPhone(phone string) int32 {
+	var id int32
 	m.ExecScalar(`SELECT id FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)
@@ -185,10 +185,10 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int {
 }
 
 // 会员推广排名
-func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp string, level int,
+func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
-	var id int
+	var id int32
 	var usr, name string
 	var inviNum, totalNum, regTime int
 	var rank int = 0
@@ -203,21 +203,21 @@ func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp 
 
 	m.Query(fmt.Sprintf(`SELECT id,usr,name,invi_num,all_num,reg_time FROM ( SELECT m.*,
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_merchant_id=rl.reg_merchant_id  AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id = m.id
+	AND r.reg_mchid=rl.reg_mchid  AND m1.reg_time BETWEEN
   ? AND ? ) as invi_num,
 	((SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id = m.id
-	AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id = m.id
+	AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
   ? AND ? )+
  (SELECT COUNT(0) FROM mm_relation r INNER JOIN mm_member m1
-  ON m1.id = r.member_id WHERE (m1.level%s) AND invi_member_id IN
+  ON m1.id = r.member_id WHERE (m1.level%s) AND inviter_id IN
 	(SELECT member_id FROM mm_relation r INNER JOIN mm_member m1 ON m1.id = r.member_id WHERE
-  (m1.level%s) AND r.invi_member_id =
-    m.id AND r.reg_merchant_id=rl.reg_merchant_id AND m1.reg_time BETWEEN
+  (m1.level%s) AND r.inviter_id =
+    m.id AND r.reg_mchid=rl.reg_mchid AND m1.reg_time BETWEEN
   ? AND ? ))) as all_num
  FROM mm_member m INNER JOIN mm_relation rl ON m.id= rl.member_id
- WHERE rl.reg_merchant_id = ? AND state= ?) t ORDER BY %s,t.reg_time asc
+ WHERE rl.reg_mchid = ? AND state= ?) t ORDER BY %s,t.reg_time asc
  LIMIT 0,?`, levelCompStr, levelCompStr, levelCompStr, levelCompStr, sortField), func(rows *sql.Rows) {
 		for rows.Next() {
 			rows.Scan(&id, &usr, &name, &inviNum, &totalNum, &regTime)
@@ -232,17 +232,17 @@ func (m *MemberQuery) GetMemberInviRank(merchantId int, allTeam bool, levelComp 
 				RegTime:  regTime,
 			})
 		}
-	}, startTime, endTime, startTime, endTime, startTime, endTime, merchantId, 1, num)
+	}, startTime, endTime, startTime, endTime, startTime, endTime, mchId, 1, num)
 
 	return list
 }
 
 // 查询有邀请关系的会员数量
-func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
+func (m *MemberQuery) GetReferNum(memberId int32, layer int) int {
 	total := 0
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
-	where := "refer_str LIKE '%" + keyword +
-		",%' OR refer_str LIKE '%" + keyword + "}'"
+	where := "inviter_str LIKE '%" + keyword +
+		",%' OR inviter_str LIKE '%" + keyword + "}'"
 	err := m.ExecScalar("SELECT COUNT(0) FROM mm_relation WHERE "+where, &total)
 	if err != nil {
 		domain.HandleError(err, "[ Go2o][ Member][ Query]:")
@@ -251,7 +251,7 @@ func (m *MemberQuery) GetReferNum(memberId int, layer int) int {
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedShopFav(memberId int, begin, end int,
+func (m *MemberQuery) PagedShopFav(memberId int32, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {
 	d := m.Connector
 	if len(where) > 0 {
@@ -288,23 +288,23 @@ func (m *MemberQuery) PagedShopFav(memberId int, begin, end int,
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedGoodsFav(memberId int, begin, end int,
+func (m *MemberQuery) PagedGoodsFav(memberId int32, begin, end int,
 	where string) (num int, rows []*dto.PagedGoodsFav) {
 	d := m.Connector
 	if len(where) > 0 {
 		where = " AND " + where
 	}
 	d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM mm_favorite f
-    INNER JOIN gs_goods gs ON gs.id = f.refer_id
-    INNER JOIN gs_item item ON gs.item_id=item.id
+    INNER JOIN item_info gs ON gs.id = f.refer_id
+    INNER JOIN pro_product product ON gs.product_id=product.id
     WHERE f.member_id=? AND f.fav_type=? %s`, where), &num,
 		memberId, member.FavTypeGoods)
 
 	if num > 0 {
-		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,item.name as goods_name,
-            img,sale_price,gs.stock_num,item.update_time
-            FROM mm_favorite f INNER JOIN gs_goods gs ON gs.id = f.refer_id
-            INNER JOIN gs_item item ON gs.item_id=item.id
+		sqlLine := fmt.Sprintf(`SELECT f.id,gs.id as goods_id,product.name as goods_name,
+            img,sale_price,gs.stock_num,product.update_time
+            FROM mm_favorite f INNER JOIN item_info gs ON gs.id = f.refer_id
+            INNER JOIN pro_product product ON gs.product_id=product.id
             WHERE f.member_id=? AND f.fav_type=? %s ORDER BY f.update_time DESC
             LIMIT ?,?`,
 			where)

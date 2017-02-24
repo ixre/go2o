@@ -22,7 +22,7 @@ func GetYesterdayStartDate() time.Time {
 }
 
 // 获取一天开始和结束的时间戳
-func GetTodayStartEndUnix(t time.Time) (int64, int64) {
+func GetStartEndUnix(t time.Time) (int64, int64) {
 	y, m, d := t.Date()
 	return time.Date(y, m, d, 0, 0, 0, 0, time.Local).Unix(),
 		time.Date(y, m, d, 24, 59, 59, 999, time.Local).Unix()

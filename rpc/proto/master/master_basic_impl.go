@@ -6,7 +6,7 @@
  * description :
  * history :
  */
-package master
+package admin
 
 import (
 	"golang.org/x/net/context"

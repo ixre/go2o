@@ -9,6 +9,8 @@
 package format
 
 import (
+	"fmt"
+	"github.com/jsix/gof"
 	"go2o/core/infrastructure"
 	"go2o/core/variable"
 	"strconv"
@@ -43,12 +45,30 @@ func GetNoPicPath() string {
 	return _noPicUrl
 }
 
+func getImageServe() string {
+	app := gof.CurrentApp
+	cfg := app.Config()
+	s := cfg.GetString(variable.ImageServer)
+	if s[0] == '/' {
+		s = fmt.Sprintf("http://www.%s%s", cfg.GetString(variable.ServerDomain), s)
+	}
+	return s
+}
+
+// 获取资源前缀
+func GetResUrlPrefix() string {
+	if len(imageServe) == 0 {
+		imageServe = getImageServe()
+	}
+	return imageServe
+}
+
 // 获取商品图片地址
 func GetGoodsImageUrl(image string) string {
 	if !picCfgLoaded {
 		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
-			imageServe = ctx.Config().GetString(variable.ImageServer)
+			imageServe = getImageServe()
 		}
 
 		if len(noPicUrl) == 0 {
@@ -72,7 +92,7 @@ func GetResUrl(image string) string {
 	if !picCfgLoaded {
 		ctx := infrastructure.GetApp()
 		if len(imageServe) == 0 {
-			imageServe = ctx.Config().GetString(variable.ImageServer)
+			imageServe = getImageServe()
 		}
 
 		if len(noPicUrl) == 0 {
