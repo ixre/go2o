@@ -16,7 +16,7 @@ import (
 )
 
 // 参数参数自定义设置
-func Configure(app gof.App) {
+func HookUp(app gof.App) {
 	variable.AliasMemberIM = "微信"
 	variable.MemberImNote = "填写微信后才可领取红包"
 	variable.MemberImRequired = true
