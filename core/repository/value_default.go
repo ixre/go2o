@@ -37,12 +37,8 @@ var (
 		MemberImRequired: false,
 		// 会员提现开关
 		MemberTakeOutOn: true,
-		// 提现是否必须实名制认证
-		TakeOutMustTrust: true,
 		// 会员转账开关
 		MemberTransferAccountsOn: true,
-		// 会员默认个人签名
-		MemberDefaultPersonRemark: "什么也没留下",
 
 		// 商品默认图片
 		GoodsDefaultImage: "res/nopic.gif",
@@ -50,32 +46,22 @@ var (
 		GoodsMinProfitRate: 0,
 		// 广告缓存时间（秒）
 		CacheAdMaxAge: 3600,
-
+		// 平台首页文件
+		PagePlatformIndexPath: "index.html",
+		// 商铺首页模板文件
+		PageShopIndexPath: "index.html",
+		// 会员中心首页模板文件名称
+		PageUCenterIndexPath: "index.html",
 		// 商铺别名敏感词,以|分割
 		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
 		Extend:                  map[string]string{},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
-	// 默认模板设置
-	DefaultTemplateConf = valueobject.TemplateConf{
-		// 平台首页模板文件路径
-		PlatformIndexPath: "index.html",
-		// 商铺首页模板文件路径
-		ShopIndexPath: "index.html",
-		// 会员中心首页模板文件路径
-		UCenterIndexPath: "index.html",
-		// 会员中心个人资料模板文件路径
-		UCenterPersonInfoPath: "person_info.html",
-		// 会员中心推广海报模板文件路径
-		UCenterInvitationDmPath: "user/invitation_dm.html",
-	}
-
 	// 默认平台设置
 	DefaultPlatformConf = valueobject.PlatformConf{
 		Name:             "GO2O",
 		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-		Telephone:        "021-88888888",
 		MchGoodsCategory: false,
 		MchPageCategory:  false,
 		// 系统是否开挂起状态
@@ -84,35 +70,11 @@ var (
 		SuspendMessage: "系统正在升级维护，请稍后再试!",
 	}
 
-	// 移动应用配置
-	DefaultMoAppConf = valueobject.MoAppConf{
-		// 应用名称
-		AppName: DefaultPlatformConf.Name,
-		// APP图标地址
-		AppIcon: DefaultPlatformConf.Logo,
-		// 描述
-		Description: "移动应用正在开发中",
-		// 模板文件
-		ShowTplPath: "app.html",
-		// 安卓APP版本
-		AndroidVersion: "1.0",
-		// 安卓APP版发布地址
-		AndroidReleaseUrl: "",
-		// 苹果APP版本
-		IosVersion: "1.0",
-		// 苹果APP版发布地址
-		IosReleaseUrl: "",
-		// 微软APP版本
-		WpVersion: "1.0",
-		// 微软APP版发布地址
-		WpReleaseUrl: "",
-	}
-
 	// 默认注册权限设置
 	defaultRegisterPerm = valueobject.RegisterPerm{
 		RegisterMode:        member.RegisterModeNormal,
 		NeedPhone:           false,
-		MustBindPhone:       false,
+		MustBinPhone:        false,
 		NeedIm:              false,
 		AnonymousRegistered: true,
 		PhoneAsUser:         false,
@@ -132,12 +94,12 @@ var (
 		// 每单额外赠送
 		IntegralBackExtra: 0,
 		// 提现手续费费率
-		TakeOutCsn: 0.01,
+		ApplyCsn: 0.01,
 		// 转账手续费费率
-		TransferCsn: 0.01,
+		TransCsn: 0.01,
 		// 活动账户转为赠送可提现奖金手续费费率
 		FlowConvertCsn: 0.05,
-		// 钱包账户转换手续费费率
+		// 赠送账户转换手续费费率
 		PresentConvertCsn: 0.05,
 		// 交易手续费类型
 		TradeCsnType: valueobject.TradeCsnTypeByFee,

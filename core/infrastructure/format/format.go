@@ -8,8 +8,23 @@
  */
 package format
 
+import (
+	"encoding/json"
+	"github.com/jsix/gof/log"
+	"html/template"
+)
+
+// 强制序列化为可用于HTML的JSON
+func MustHtmlJson(v interface{}) template.JS {
+	d, err := json.Marshal(v)
+	if err != nil {
+		log.Println("[ Go2o][ Json] - ", err.Error())
+	}
+	return template.JS(d)
+}
+
 // 获取性别
-func GetSex(sex int32) string {
+func GetSex(sex int) string {
 	switch sex {
 	case 1:
 		return "男性"

@@ -13,7 +13,7 @@ It has these top-level messages:
 	NewCredential
 	Message
 */
-package admin
+package master
 
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
