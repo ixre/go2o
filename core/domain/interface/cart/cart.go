@@ -38,7 +38,17 @@ var (
 		"err_cart_item_no_sku", "请选择商品规格")
 )
 
+const (
+	// 零售购物车
+	KRetail CartKind = 1
+	// 批发购物车
+	KWholesale CartKind = 2
+)
+
 type (
+	// 购物车类型
+	CartKind int
+	// 购物车
 	ICart interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
@@ -102,6 +112,10 @@ type (
 		GetFee() (totalFee float32, orderFee float32)
 	}
 
+	//商品批发购物车
+	IWholesaleCart interface {
+	}
+
 	// 根据数据获取购物车,
 	// 如果member的cart与key不一致，则合并购物车；
 	// 如果会员没有购物车，则绑定为key的购物车
@@ -113,6 +127,9 @@ type (
 		CreateCart(v *ValueCart) ICart
 		// 获取购物车
 		GetCart(id int32) ICart
+
+		// 获取会员购物车(批发)
+		GetWholesaleCart(buyerId int32) ICart
 
 		// Get SaleCart
 		GetSaleCart(primary interface{}) *ValueCart

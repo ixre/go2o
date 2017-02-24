@@ -216,3 +216,14 @@ func (c *cartRepo) EmptyCartItems(cartId int32) error {
 func (c *cartRepo) DeleteCart(cartId int32) error {
 	return c.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, cartId)
 }
+
+// 获取会员购物车(批发)
+func (c *cartRepo) GetWholesaleCart(buyerId int32) cart.ICart {
+	//todo: ???
+	v := c.GetSaleCart(0)
+	if v != nil {
+		v.Items = c.SelectSaleCartItem("cart_id=?", 0)
+		return c.CreateCart(v)
+	}
+	return nil
+}
