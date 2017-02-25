@@ -10,12 +10,10 @@ package rsi
 
 import (
 	"errors"
-	"fmt"
 	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/format"
 	"go2o/core/variable"
 )
 
@@ -66,43 +64,45 @@ func (p *personFinanceService) RiseTransferIn(personId int32,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
-	if amount < personfinance.RiseMinTransferInAmount {
-		//金额不足最低转入金额
-		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
-			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
-	}
-	m := p._accRepo.GetMember(personId)
-	if m == nil {
-		return member.ErrNoSuchMember
-	}
-	acc := m.GetAccount()
-	if transferWith == personfinance.TransferFromWithBalance {
-		//从余额转入
-		if err = acc.DiscountBalance("理财转入",
-			domain.NewTradeNo(10000), amount, member.DefaultRelateUser); err != nil {
-			return err
-		}
-		if err = r.TransferIn(amount, transferWith); err != nil {
-			//转入
-			return err
-		}
-		return pf.SyncToAccount() //同步到会员账户
-	}
+	return r.TransferIn(amount, transferWith)
 
-	if transferWith == personfinance.TransferFromWithWallet {
-		//从奖金转入
-		if err := acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
-			amount, member.DefaultRelateUser, true); err != nil {
-			return err
-		}
-		if err = r.TransferIn(amount, transferWith); err != nil {
-			//转入
-			return err
-		}
-		return pf.SyncToAccount() //同步到会员账户
-	}
-
-	return errors.New("暂时无法提供服务")
+	//if amount < personfinance.RiseMinTransferInAmount {
+	//	//金额不足最低转入金额
+	//	return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
+	//		format.FormatFloat(personfinance.RiseMinTransferInAmount)))
+	//}
+	//m := p._accRepo.GetMember(personId)
+	//if m == nil {
+	//	return member.ErrNoSuchMember
+	//}
+	//acc := m.GetAccount()
+	//if transferWith == personfinance.TransferFromWithBalance {
+	//	//从余额转入
+	//	if err = acc.DiscountBalance("理财转入",
+	//		domain.NewTradeNo(10000), amount, member.DefaultRelateUser); err != nil {
+	//		return err
+	//	}
+	//	if err = r.TransferIn(amount, transferWith); err != nil {
+	//		//转入
+	//		return err
+	//	}
+	//	return pf.SyncToAccount() //同步到会员账户
+	//}
+	//
+	//if transferWith == personfinance.TransferFromWithWallet {
+	//	//从奖金转入
+	//	if err := acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
+	//		amount, member.DefaultRelateUser, true); err != nil {
+	//		return err
+	//	}
+	//	if err = r.TransferIn(amount, transferWith); err != nil {
+	//		//转入
+	//		return err
+	//	}
+	//	return pf.SyncToAccount() //同步到会员账户
+	//}
+	//
+	//return errors.New("暂时无法提供服务")
 }
 
 // 转出

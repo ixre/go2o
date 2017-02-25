@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/personfinance"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool"
 	"math"
@@ -25,15 +26,18 @@ type riseInfo struct {
 	personId int32
 	value    *personfinance.RiseInfoValue
 	rep      personfinance.IPersonFinanceRepository
-	accRepo  member.IMemberRepo
+	mmRepo   member.IMemberRepo
+	pf       *PersonFinance
 }
 
-func newRiseInfo(personId int32, rep personfinance.IPersonFinanceRepository,
-	accRepo member.IMemberRepo) personfinance.IRiseInfo {
+func newRiseInfo(personId int32, pf *PersonFinance,
+	rep personfinance.IPersonFinanceRepository,
+	mmRepo member.IMemberRepo) personfinance.IRiseInfo {
 	return &riseInfo{
 		personId: personId,
 		rep:      rep,
-		accRepo:  accRepo,
+		mmRepo:   mmRepo,
+		pf:       pf,
 	}
 }
 
@@ -77,42 +81,81 @@ func (r *riseInfo) CommitTransfer(logId int32) (err error) {
 	return err
 }
 
+// 转入扣款
+func (r *riseInfo) transferInPayment(amount float32,
+	transferWith personfinance.TransferWith) (err error) {
+	m := r.mmRepo.GetMember(r.personId)
+	if m == nil {
+		return member.ErrNoSuchMember
+	}
+	acc := m.GetAccount()
+	switch transferWith {
+	//从余额转入
+	case personfinance.TransferFromWithBalance:
+		err = acc.DiscountBalance("理财转入", domain.NewTradeNo(10000),
+			amount, member.DefaultRelateUser)
+		if err != nil {
+			return err
+		}
+	//从钱包转入
+	case personfinance.TransferFromWithWallet:
+		err = acc.DiscountWallet("理财转入", domain.NewTradeNo(10000),
+			amount, member.DefaultRelateUser, true)
+		if err != nil {
+			return err
+		}
+	//其他方式转入
+	default:
+		return errors.New("暂时无法提供服务")
+	}
+	return nil
+}
+
 // 转入
 func (r *riseInfo) TransferIn(amount float32,
-	w personfinance.TransferWith) (err error) {
+	transferWith personfinance.TransferWith) (err error) {
 	if r.value == nil {
 		//判断会员是否存在
 		if _, err = r.Value(); err != nil {
 			return err
 		}
 	}
-
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return personfinance.ErrIncorrectAmount
 	}
-
 	if amount < personfinance.RiseMinTransferInAmount {
 		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
 			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
 	}
 
-	dt := time.Now()
-	r.value.TransferIn += amount
-	r.value.TotalAmount += amount
-	r.value.UpdateTime = dt.Unix()
-	if err = r.Save(); err == nil {
-		//保存并记录日志
-		_, err = r.rep.SaveRiseLog(&personfinance.RiseLog{
-			PersonId:     r.GetDomainId(),
-			Title:        "[转入]从" + personfinance.TransferInWithText(w) + "转入",
-			Amount:       amount,
-			Type:         personfinance.RiseTypeTransferIn,
-			TransferWith: int(w),
-			State:        personfinance.RiseStateDefault,
-			UnixDate:     tool.GetStartDate(dt).Unix(),
-			LogTime:      r.value.UpdateTime,
-			UpdateTime:   r.value.UpdateTime,
-		})
+	if amount < personfinance.RiseMinTransferInAmount {
+		//金额不足最低转入金额
+		return errors.New(fmt.Sprintf(personfinance.ErrLessThanMinTransferIn.Error(),
+			format.FormatFloat(personfinance.RiseMinTransferInAmount)))
+	}
+	err = r.transferInPayment(amount, transferWith)
+	if err == nil {
+		r.value.TransferIn += amount
+		r.value.TotalAmount += amount
+		dt := time.Now()
+		r.value.UpdateTime = dt.Unix()
+		if err = r.Save(); err == nil {
+			//保存并记录日志
+			_, err = r.rep.SaveRiseLog(&personfinance.RiseLog{
+				PersonId:     r.GetDomainId(),
+				Title:        "[转入]从" + personfinance.TransferInWithText(transferWith) + "转入",
+				Amount:       amount,
+				Type:         personfinance.RiseTypeTransferIn,
+				TransferWith: int(transferWith),
+				State:        personfinance.RiseStateDefault,
+				UnixDate:     tool.GetStartDate(dt).Unix(),
+				LogTime:      r.value.UpdateTime,
+				UpdateTime:   r.value.UpdateTime,
+			})
+			if err == nil {
+				return r.pf.SyncToAccount() //同步到会员账户
+			}
+		}
 	}
 	return err
 }
@@ -256,7 +299,8 @@ func (r *riseInfo) RiseSettleByDay(settleDateUnix int64, dayRatio float32) error
 }
 
 // 月结
-func (r *riseInfo) monthSettle(v *personfinance.RiseInfoValue, settleDateUnix int64) (settled bool, err error) {
+func (r *riseInfo) monthSettle(v *personfinance.RiseInfoValue,
+	settleDateUnix int64) (settled bool, err error) {
 	if settleDateUnix%100 != 0 {
 		return false, personfinance.ErrUnixDate
 	}
