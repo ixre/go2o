@@ -40,7 +40,7 @@ func CartCookieFmt(s string) string {
 }
 
 // 生成16位唯一的md5购物车码
-func GenerateCartKey(unix int64, nano int) string {
+func GenerateCartCode(unix int64, nano int) string {
 	str := fmt.Sprintf("%d-%d*%d", unix, nano, unix%int64(nano))
 	result := crypto.Md5([]byte(str))
 	return result[8:24]

@@ -170,13 +170,14 @@ type (
 
 	//todo:  shopId应去掉,同时应存储邮费等信息
 	ValueCart struct {
-		Id      int32  `db:"id" pk:"yes" auto:"yes"`
-		CartKey string `db:"cart_key"`
-		BuyerId int32  `db:"buyer_id"`
+		Id       int32  `db:"id" pk:"yes" auto:"yes"`
+		CartCode string `db:"code"`
+		BuyerId  int32  `db:"buyer_id"`
 		//OrderNo    string           `db:"order_no"`
 		//IsBought   int              `db:"is_bought"`
-		PaymentOpt int32       `db:"payment_opt"`
-		DeliverOpt int32       `db:"deliver_opt"`
+		PaymentOpt int32 `db:"payment_opt"`
+		//todo: del???
+		DeliverOpt int32       `db:"_"` //   `db:"deliver_opt"`
 		DeliverId  int32       `db:"deliver_id"`
 		ShopId     int32       `db:"shop_id"`
 		CreateTime int64       `db:"create_time"`
@@ -235,7 +236,7 @@ func ParseToDtoCart(c ICart) *define.ShoppingCart {
 	v := c.GetValue()
 	cart.CartId = c.GetAggregateRootId()
 	//cart.BuyerId = v.BuyerId
-	cart.Key = v.CartKey
+	cart.Key = v.CartCode
 	//cart.UpdateTime = v.UpdateTime
 	//t, f := c.GetFee()
 	//cart.TotalAmount = t

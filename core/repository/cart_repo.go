@@ -170,7 +170,7 @@ func (c *cartRepo) GetMemberCurrentCart(buyerId int32) cart.ICart {
 // 获取购物车
 func (c *cartRepo) GetShoppingCart(key string) *cart.ValueCart {
 	var v = &cart.ValueCart{}
-	if c.Connector.GetOrm().GetBy(v, "cart_key=?", key) == nil {
+	if c.Connector.GetOrm().GetBy(v, "code=?", key) == nil {
 		items := []*cart.CartItem{}
 		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
