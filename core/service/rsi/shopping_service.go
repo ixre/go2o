@@ -56,10 +56,10 @@ func NewShoppingService(r order.IOrderRepo,
 
 //  获取购物车
 func (s *shoppingService) getShoppingCart(buyerId int32,
-	cartKey string) cart.ICart {
+	cartCode string) cart.ICart {
 	var c cart.ICart
-	if len(cartKey) > 0 {
-		c = s._cartRepo.GetShoppingCartByKey(cartKey)
+	if len(cartCode) > 0 {
+		c = s._cartRepo.GetShoppingCartByKey(cartCode)
 	} else if buyerId > 0 {
 		c = s._cartRepo.GetMemberCurrentCart(buyerId)
 	}
@@ -78,8 +78,8 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
 func (s *shoppingService) GetShoppingCart(memberId int32,
-	cartKey string) *define.ShoppingCart {
-	c := s.getShoppingCart(memberId, cartKey)
+	cartCode string) *define.ShoppingCart {
+	c := s.getShoppingCart(memberId, cartCode)
 	return s.parseCart(c)
 }
 
@@ -136,8 +136,8 @@ func (s *shoppingService) SubCartItem(cartId, itemId, skuId,
 
 // 勾选商品结算
 func (s *shoppingService) CartCheckSign(memberId int32,
-	cartKey string, arr []*define.ShoppingCartItem) error {
-	c := s.getShoppingCart(memberId, cartKey)
+	cartCode string, arr []*define.ShoppingCartItem) error {
+	c := s.getShoppingCart(memberId, cartCode)
 	list := make([]*cart.CartItem, len(arr))
 	for i, v := range arr {
 		list[i] = parser.ShoppingCartItem(v)
@@ -157,8 +157,8 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId int32,
 }
 
 func (s *shoppingService) GetCartSettle(memberId int32,
-	cartKey string) *dto.SettleMeta {
-	cart := s.getShoppingCart(memberId, cartKey)
+	cartCode string) *dto.SettleMeta {
+	cart := s.getShoppingCart(memberId, cartCode)
 	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
 	st := new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
@@ -186,15 +186,15 @@ func (s *shoppingService) GetCartSettle(memberId int32,
 	return st
 }
 
-func (s *shoppingService) SetBuyerAddress(buyerId int32, cartKey string, addressId int32) error {
-	cart := s.getShoppingCart(buyerId, cartKey)
+func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addressId int32) error {
+	cart := s.getShoppingCart(buyerId, cartCode)
 	return cart.SetBuyerAddress(addressId)
 }
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartKey string) *order.Order {
-	cart := s.getShoppingCart(buyerId, cartKey)
+func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.Order {
+	cart := s.getShoppingCart(buyerId, cartCode)
 	order, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
 	if err != nil {
 		return nil
@@ -202,9 +202,9 @@ func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartKey s
 	return order.GetValue()
 }
 
-func (s *shoppingService) PrepareOrder2(buyerId int32, cartKey string,
+func (s *shoppingService) PrepareOrder2(buyerId int32, cartCode string,
 	addressId int32, subject string, couponCode string) (map[string]interface{}, error) {
-	cart := s.getShoppingCart(buyerId, cartKey)
+	cart := s.getShoppingCart(buyerId, cartCode)
 	order, py, err := s._manager.PrepareOrder(cart, addressId,
 		subject, couponCode)
 	if err != nil {
@@ -246,10 +246,10 @@ func (s *shoppingService) PrepareOrder2(buyerId int32, cartKey string,
 	return data, err
 }
 
-func (s *shoppingService) SubmitOrder(buyerId int32, cartKey string,
+func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 	addressId int32, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
-	c := s.getShoppingCart(buyerId, cartKey)
+	c := s.getShoppingCart(buyerId, cartCode)
 	od, py, err := s._manager.SubmitOrder(c, addressId, subject, couponCode, balanceDiscount)
 	if err != nil {
 		return "", "", err

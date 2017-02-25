@@ -44,7 +44,7 @@ func (p *PersonFinance) GetMemberAccount() member.IAccount {
 
 // 获取增利账户信息(类:余额宝)
 func (p *PersonFinance) GetRiseInfo() personfinance.IRiseInfo {
-	return newRiseInfo(p.GetAggregateRootId(), p.rep, p.accRepo)
+	return newRiseInfo(p.GetAggregateRootId(), p, p.rep, p.accRepo)
 }
 
 // 创建增利账户信息

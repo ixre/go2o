@@ -17,6 +17,7 @@ import (
 	"github.com/jsix/gof/storage"
 	"go2o/core"
 	"go2o/core/domain/interface/after-sales"
+	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -157,6 +158,7 @@ var (
 	CatRepo        product.ICategoryRepo
 	MemberRepo     member.IMemberRepo
 	MchRepo        merchant.IMerchantRepo
+	CartRepo       cart.ICartRepo
 )
 
 func init() {
@@ -205,4 +207,5 @@ func init() {
 	CatRepo = catRepo
 	MemberRepo = memberRepo
 	MchRepo = mchRepo
+	CartRepo = cartRepo
 }
