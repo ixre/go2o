@@ -41,9 +41,9 @@ func CreateWholesaleCart(val *cart.ValueCart, rep cart.ICartRepo,
 func NewWholesaleCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	goodsRepo item.IGoodsItemRepo) cart.ICart {
 	unix := time.Now().Unix()
-	cartKey := domain.GenerateCartKey(unix, time.Now().Nanosecond())
+	cartCode := domain.GenerateCartCode(unix, time.Now().Nanosecond())
 	value := &cart.ValueCart{
-		CartKey:    cartKey,
+		CartCode:   cartCode,
 		BuyerId:    buyerId,
 		ShopId:     0,
 		DeliverId:  0,
@@ -281,20 +281,20 @@ func (c *wholesaleCartImpl) Remove(itemId, skuId, num int32) error {
 
 // 获取购物车的KEY
 func (c *wholesaleCartImpl) Key() string {
-	return c.value.CartKey
+	return c.value.CartCode
 }
 
 /*
 func (c *wholesaleCartImpl) combineBuyerCart() cart.ICart {
 
-    var hasOutCart = len(cartKey) != 0
+    var hasOutCart = len(cartCode) != 0
     var hasBuyer = c._value.BuyerId > 0
 
     var memCart cart.ICart = nil // 消费者的购物车
     var outCart cart.ICart = c // 当前购物车
 
     if hasBuyer {
-        // 如果没有传递cartKey ，或者传递的cart和会员绑定的购物车相同，直接返回
+        // 如果没有传递cartCode ，或者传递的cart和会员绑定的购物车相同，直接返回
         if memCart = c._rep.GetMemberCurrentCart(c._value.BuyerId);
             memCart != nil {
             if memCart.Key() == outCart.Key() {
@@ -306,7 +306,7 @@ func (c *wholesaleCartImpl) combineBuyerCart() cart.ICart {
     }
 
     if hasOutCart {
-        outCart, _ = c.GetCartByKey(cartKey)
+        outCart, _ = c.GetCartByKey(cartCode)
     }
 
     // 合并购物车
