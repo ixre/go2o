@@ -1,15 +1,11 @@
 package cart
 
 import (
-	"bytes"
-	"encoding/json"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant/shop"
-	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/domain"
-	"strconv"
 	"time"
 )
 
@@ -44,10 +40,8 @@ func NewCart(buyerId int32, rep cart.ICartRepo, memberRepo member.IMemberRepo,
 	value := &cart.ValueCart{
 		CartCode:   cartCode,
 		BuyerId:    buyerId,
-		ShopId:     0,
 		DeliverId:  0,
 		PaymentOpt: 1,
-		DeliverOpt: 1,
 		CreateTime: unix,
 		UpdateTime: unix,
 		Items:      nil,
@@ -61,6 +55,16 @@ func (c *cartImpl) init() cart.ICart {
 		c.setAttachGoodsInfo(c.value.Items)
 	}
 	return c
+}
+
+// 购物车种类
+func (c *cartImpl) Kind() cart.CartKind {
+	return cart.KRetail
+}
+
+// 获取买家编号
+func (c *cartImpl) BuyerId() int32 {
+	return c.value.BuyerId
 }
 
 // 检查购物车(仅结算商品)
@@ -193,12 +197,17 @@ func (c *cartImpl) getItems() []*cart.CartItem {
 }
 
 // 添加项
-func (c *cartImpl) Put(itemId, skuId int32, num int32) (*cart.CartItem, error) {
+func (c *cartImpl) Put(itemId, skuId int32, num int32) error {
+	_, err := c.put(itemId, skuId, num)
+	return err
+}
+
+// 添加项
+func (c *cartImpl) put(itemId, skuId int32, num int32) (*cart.CartItem, error) {
 	var err error
 	if c.value.Items == nil {
 		c.value.Items = []*cart.CartItem{}
 	}
-
 	var sku *item.Sku
 	it := c.goodsRepo.GetItem(itemId)
 	if it == nil {
@@ -275,6 +284,18 @@ func (c *cartImpl) Remove(itemId, skuId, num int32) error {
 	}
 	c.snapMap = nil //clean
 
+	return nil
+}
+
+// 获取项
+func (c *cartImpl) GetItem(itemId, skuId int32) *cart.CartItem {
+	if c.value != nil && c.value.Items != nil {
+		for _, v := range c.value.Items {
+			if v.ItemId == itemId && v.SkuId == skuId {
+				return v
+			}
+		}
+	}
 	return nil
 }
 
@@ -363,9 +384,14 @@ func (c *cartImpl) combineBuyerCart() cart.ICart {
 
 // 合并购物车，并返回新的购物车
 func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
+	if ic.Kind() != cart.KRetail {
+		panic("only retail cart can be combine!")
+	}
+
 	if ic.GetAggregateRootId() != c.GetAggregateRootId() {
-		for _, v := range ic.GetValue().Items {
-			if item, err := c.Put(v.ItemId,
+		rc := ic.(cart.IRetailCart)
+		for _, v := range rc.Items() {
+			if item, err := c.put(v.ItemId,
 				v.SkuId, v.Quantity); err == nil {
 				if v.Checked == 1 {
 					item.Checked = 1
@@ -470,22 +496,12 @@ func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, addressId int32
 	}
 
 	c.value.PaymentOpt = paymentOpt
-	c.value.DeliverOpt = deliverOpt
 	return nil
 }
 
 // 获取结算数据
 func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
-	paymentOpt, deliverOpt int32) {
-	//var err error
-	if c.value.ShopId > 0 && c.shop == nil {
-		//var pt merchant.IMerchant
-		//pt, err = c._partnerRepo.GetMerchant(c._mchId)
-		//if err == nil {
-		//	c._shop = pt.ShopManager().GetShop(c._value.ShopId)
-		//}
-		//todo: not implement
-	}
+	paymentOpt int32) {
 
 	if c.deliver == nil {
 		pm := c.memberRepo.GetMember(c.value.BuyerId).Profile()
@@ -498,7 +514,7 @@ func (c *cartImpl) GetSettleData() (s shop.IShop, d member.IDeliverAddress,
 			}
 		}
 	}
-	return c.shop, c.deliver, c.value.PaymentOpt, c.value.DeliverOpt
+	return c.shop, c.deliver, c.value.PaymentOpt
 }
 
 // 保存购物车
@@ -545,48 +561,6 @@ func (c *cartImpl) Destroy() (err error) {
 		return c.rep.DeleteCart(c.GetAggregateRootId())
 	}
 	return err
-}
-
-// 获取总览信息
-func (c *cartImpl) GetSummary() string {
-	if len(c.summary) != 0 {
-		return c.summary
-	}
-	buf := bytes.NewBufferString("")
-
-	list := c.getSnapshotsMap(c.value.Items)
-	if list != nil {
-		length := len(list)
-		for i, v := range c.value.Items {
-			snap := list[v.SkuId]
-			if snap != nil {
-				buf.WriteString(snap.Title)
-				if len(snap.ShortTitle) != 0 {
-					buf.WriteString("(" + snap.ShortTitle + ")")
-				}
-				buf.WriteString("*" + strconv.Itoa(int(v.Quantity)))
-				if i < length-1 {
-					buf.WriteString("\n")
-				}
-			}
-		}
-	}
-	return buf.String()
-}
-
-// 获取Json格式的商品数据
-func (c *cartImpl) GetJsonItems() []byte {
-	var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
-	for i, v := range c.value.Items {
-		goods[i] = &order.OrderGoods{
-			GoodsId:    v.SkuId,
-			GoodsImage: v.Sku.Image,
-			Quantity:   v.Quantity,
-			Name:       v.Sku.Title,
-		}
-	}
-	d, _ := json.Marshal(goods)
-	return d
 }
 
 // 获取订单金额,返回totalFee为总额，

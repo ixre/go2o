@@ -69,7 +69,7 @@ func (s *shoppingService) getShoppingCart(buyerId int32,
 		_, err := c.Save()
 		domain.HandleError(err, "service")
 	}
-	if c.GetValue().BuyerId <= 0 && buyerId > 0 {
+	if c.BuyerId() <= 0 && buyerId > 0 {
 		err := c.SetBuyer(buyerId)
 		domain.HandleError(err, "service")
 	}
@@ -113,9 +113,11 @@ func (s *shoppingService) PutInCart(cartId, itemId, skuId,
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
-	item, err := c.Put(itemId, skuId, quantity)
+	err := c.Put(itemId, skuId, quantity)
 	if err == nil {
 		if _, err = c.Save(); err == nil {
+			rc := c.(cart.IRetailCart)
+			item := rc.GetItem(itemId, skuId)
 			return cart.ParseCartItem(item), err
 		}
 	}
@@ -159,10 +161,9 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId int32,
 func (s *shoppingService) GetCartSettle(memberId int32,
 	cartCode string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartCode)
-	sp, deliver, payOpt, dlvOpt := cart.GetSettleData()
+	sp, deliver, payOpt := cart.GetSettleData()
 	st := new(dto.SettleMeta)
 	st.PaymentOpt = payOpt
-	st.DeliverOpt = dlvOpt
 	if sp != nil {
 		v := sp.GetValue()
 		ols := sp.(shop.IOnlineShop)

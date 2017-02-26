@@ -103,9 +103,8 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 		return nil, m, err
 	}
 	val := &order.Order{}
-
 	// 判断购买会员
-	buyerId := c.GetValue().BuyerId
+	buyerId := c.BuyerId()
 	if buyerId > 0 {
 		val.BuyerId = buyerId
 		m = t.memberRepo.GetMember(val.BuyerId)
@@ -113,7 +112,6 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
-
 	val.State = order.StatAwaitingPayment
 	o := t.CreateOrder(val)
 	err = o.RequireCart(c)
@@ -255,7 +253,11 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 	orderNo, err := order.Submit()
 	tradeNo := orderNo
 	if err == nil {
-		cv := c.GetValue()
+		if c.Kind() != cart.KRetail {
+			panic("购物车非零售")
+		}
+		rc := c.(cart.IRetailCart)
+		cv := rc.GetValue()
 		// 更新默认收货地址为本地使用地址
 		order.GetBuyer().Profile().SetDefaultAddress(addressId)
 		// 设置支付方式

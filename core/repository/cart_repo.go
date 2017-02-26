@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"log"
+	"time"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
@@ -36,6 +37,36 @@ func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 		_memberRepo: memberRepo,
 		_goodsRepo:  goodsRepo,
 	}
+}
+
+// 获取买家的购物车
+func (c *cartRepo) GetMyCart(buyerId int32, k cart.CartKind) cart.ICart {
+	if k == cart.KWholesale {
+		v := c.getWholesaleCart(buyerId)
+		if v == nil {
+			unix := time.Now().Unix()
+			v = &cart.WsCart{
+				BuyerId:    buyerId,
+				CreateTime: unix,
+				UpdateTime: unix,
+			}
+		}
+		return cartImpl.CreateWholesaleCart(v, c,
+			c._memberRepo, c._goodsRepo)
+	}
+	return nil
+}
+
+func (w *cartRepo) getWholesaleCart(buyerId int32) *cart.WsCart {
+	e := cart.WsCart{}
+	err := w._orm.GetBy(&e, "buyer_id=?", buyerId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCart")
+	}
+	return nil
 }
 
 // 创建购物车对象
