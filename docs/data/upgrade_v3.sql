@@ -430,7 +430,6 @@ CREATE TABLE sale_cart (
   id          int(11) NOT NULL AUTO_INCREMENT comment '编号',
   code        varchar(32) comment '购物车编码',
   buyer_id    int(11) comment '买家编号',
-  shop_id     int(11) comment '店铺编号',
   deliver_id  int(11) comment '送货地址',
   payment_opt int(11) comment '支付选项',
   create_time int(11) comment '创建时间',
@@ -448,9 +447,6 @@ CREATE TABLE sale_cart (
   quantity  int(8) comment '数量',
   checked   bit(1) comment '是否勾选结算',
   PRIMARY KEY (id)) comment='购物车商品项';
-
-
-
 
 
 

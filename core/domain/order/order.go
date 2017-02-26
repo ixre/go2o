@@ -241,7 +241,11 @@ func (o *orderImpl) RequireCart(c cart.ICart) error {
 	if o.GetAggregateRootId() > 0 || o.cart != nil {
 		return order.ErrRequireCart
 	}
-	items := c.GetValue().Items
+	if o.cart.Kind() != cart.KRetail {
+		panic("购物车非零售")
+	}
+	rc := o.cart.(cart.IRetailCart)
+	items := rc.GetValue().Items
 	if len(items) == 0 {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -323,8 +327,17 @@ func (o *orderImpl) GetByVendor() (items map[int32][]*order.OrderItem,
 
 // 检查购物车
 func (o *orderImpl) checkCart() error {
-	if o.cart == nil || len(o.cart.GetValue().Items) == 0 {
+	if o.cart == nil {
 		return cart.ErrEmptyShoppingCart
+	}
+	switch o.cart.Kind() {
+	case cart.KRetail:
+		rc := o.cart.(cart.IRetailCart)
+		if l := len(rc.Items()); l == 0 {
+			return cart.ErrEmptyShoppingCart
+		}
+	default:
+		panic("购物车非零售")
 	}
 	return o.cart.Check()
 }
@@ -600,10 +613,27 @@ func (o *orderImpl) checkNewOrderPayment() {
 	}
 }
 
+// 获取Json格式的商品数据
+func (c *orderImpl) GetJsonItems() []byte {
+	//todo:??? 订单商品JSON表示
+	return []byte("{}")
+	//var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
+	//for i, v := range c.cart.Items {
+	//	goods[i] = &order.OrderGoods{
+	//		GoodsId:    v.SkuId,
+	//		GoodsImage: v.Sku.Image,
+	//		Quantity:   v.Quantity,
+	//		Name:       v.Sku.Title,
+	//	}
+	//}
+	//d, _ := json.Marshal(goods)
+	//return d
+}
+
 // 保存订单
 func (o *orderImpl) saveNewOrderOnSubmit() (int32, error) {
 	unix := time.Now().Unix()
-	o.value.ItemsInfo = string(o.cart.GetJsonItems())
+	o.value.ItemsInfo = string(o.GetJsonItems())
 	o.value.OrderNo = o.manager.GetFreeOrderNo(0)
 	o.value.CreateTime = unix
 	o.value.UpdateTime = unix
