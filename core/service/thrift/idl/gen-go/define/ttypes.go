@@ -6629,11 +6629,11 @@ func (p *Sku) String() string {
 
 // Attributes:
 //  - CartId
-//  - Key
+//  - Code
 //  - Shops
 type ShoppingCart struct {
 	CartId int32                `thrift:"CartId,1" json:"CartId"`
-	Key    string               `thrift:"Key,2" json:"Key"`
+	Code   string               `thrift:"Code,2" json:"Code"`
 	Shops  []*ShoppingCartGroup `thrift:"Shops,3" json:"Shops"`
 }
 
@@ -6645,8 +6645,8 @@ func (p *ShoppingCart) GetCartId() int32 {
 	return p.CartId
 }
 
-func (p *ShoppingCart) GetKey() string {
-	return p.Key
+func (p *ShoppingCart) GetCode() string {
+	return p.Code
 }
 
 func (p *ShoppingCart) GetShops() []*ShoppingCartGroup {
@@ -6706,7 +6706,7 @@ func (p *ShoppingCart) readField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
-		p.Key = v
+		p.Code = v
 	}
 	return nil
 }
@@ -6767,14 +6767,14 @@ func (p *ShoppingCart) writeField1(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *ShoppingCart) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Key", thrift.STRING, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Key: ", p), err)
+	if err := oprot.WriteFieldBegin("Code", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Code: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Key)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Key (2) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Code)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Code (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Key: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Code: ", p), err)
 	}
 	return err
 }

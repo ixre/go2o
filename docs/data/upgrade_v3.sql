@@ -428,25 +428,25 @@ DROP TABLE `sale_cart`;
 DROP TABLE `sale_cart_item`;
 CREATE TABLE sale_cart (
   id          int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  code        varchar(32) comment '购物车编码',
-  buyer_id    int(11) comment '买家编号',
-  deliver_id  int(11) comment '送货地址',
-  payment_opt int(11) comment '支付选项',
-  create_time int(11) comment '创建时间',
-  update_time int(11) comment '修改时间',
+  code        varchar(32) NOT NULL comment '购物车编码',
+  buyer_id    int(11) NOT NULL comment '买家编号',
+  deliver_id  int(11) NOT NULL comment '送货地址',
+  payment_opt int(11) NOT NULL comment '支付选项',
+  create_time int(11) NOT NULL comment '创建时间',
+  update_time int(11) NOT NULL comment '修改时间',
   PRIMARY KEY (id)) comment='购物车';
 
-
-  CREATE TABLE sale_cart_item (
+CREATE TABLE sale_cart_item (
   id        int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  cart_id   int(11) comment '购物车编号',
-  vendor_id int(11) comment '运营商编号',
-  shop_id   int(11) comment '店铺编号',
-  item_id   int(11) comment '商品编号',
-  sku_id    int(11) comment 'SKU编号',
-  quantity  int(8) comment '数量',
-  checked   bit(1) comment '是否勾选结算',
+  cart_id   int(11) NOT NULL comment '购物车编号',
+  vendor_id int(11) NOT NULL comment '运营商编号',
+  shop_id   int(11) NOT NULL comment '店铺编号',
+  item_id   int(11) NOT NULL comment '商品编号',
+  sku_id    int(11) NOT NULL comment 'SKU编号',
+  quantity  int(8) NOT NULL comment '数量',
+  checked   int(2) NOT NULL comment '是否勾选结算',
   PRIMARY KEY (id)) comment='购物车商品项';
+
 
 
 

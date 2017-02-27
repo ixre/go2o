@@ -55,24 +55,30 @@ func NewShoppingService(r order.IOrderRepo,
 /*================ 购物车  ================*/
 
 //  获取购物车
-func (s *shoppingService) getShoppingCart(buyerId int32,
-	cartCode string) cart.ICart {
+func (s *shoppingService) getShoppingCart(buyerId int32, code string) cart.ICart {
 	var c cart.ICart
-	if len(cartCode) > 0 {
-		c = s._cartRepo.GetShoppingCartByKey(cartCode)
-	} else if buyerId > 0 {
-		c = s._cartRepo.GetMemberCurrentCart(buyerId)
+	var cc cart.ICart
+	if len(code) > 0 {
+		cc = s._cartRepo.GetShoppingCartByKey(code)
 	}
-
-	if c == nil {
-		c = s._cartRepo.NewCart()
-		_, err := c.Save()
-		domain.HandleError(err, "service")
+	// 如果传入会员编号，则合并购物车
+	if buyerId > 0 {
+		c = s._cartRepo.GetMyCart(buyerId, cart.KRetail)
+		if cc != nil {
+			rc := c.(cart.IRetailCart)
+			rc.Combine(cc)
+			c.Save()
+		}
+		return c
 	}
-	if c.BuyerId() <= 0 && buyerId > 0 {
-		err := c.SetBuyer(buyerId)
-		domain.HandleError(err, "service")
+	// 如果只传入code,且购物车存在，直接返回。
+	if cc != nil {
+		return cc
 	}
+	// 不存在，则新建购物车
+	c = s._cartRepo.NewCart()
+	_, err := c.Save()
+	domain.HandleError(err, "service")
 	return c
 }
 
@@ -107,9 +113,9 @@ func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 }
 
 // 放入购物车
-func (s *shoppingService) PutInCart(cartId, itemId, skuId,
+func (s *shoppingService) PutInCart(memberId int32, code string, itemId, skuId,
 	quantity int32) (*define.ShoppingCartItem, error) {
-	c := s._cartRepo.GetCart(cartId)
+	c := s.getShoppingCart(memberId, code)
 	if c == nil {
 		return nil, cart.ErrNoSuchCart
 	}
@@ -123,9 +129,9 @@ func (s *shoppingService) PutInCart(cartId, itemId, skuId,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(cartId, itemId, skuId,
+func (s *shoppingService) SubCartItem(memberId int32, code string, itemId, skuId,
 	quantity int32) error {
-	c := s._cartRepo.GetCart(cartId)
+	c := s.getShoppingCart(memberId, code)
 	if c == nil {
 		return cart.ErrNoSuchCart
 	}
@@ -140,7 +146,7 @@ func (s *shoppingService) SubCartItem(cartId, itemId, skuId,
 func (s *shoppingService) CartCheckSign(memberId int32,
 	cartCode string, arr []*define.ShoppingCartItem) error {
 	c := s.getShoppingCart(memberId, cartCode)
-	list := make([]*cart.CartItem, len(arr))
+	list := make([]*cart.RetailCartItem, len(arr))
 	for i, v := range arr {
 		list[i] = parser.ShoppingCartItem(v)
 	}
