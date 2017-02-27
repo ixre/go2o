@@ -182,6 +182,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(item.WsItem{}, "ws_item")
 	orm.Mapping(item.WsItemDiscount{}, "ws_item_discount")
 	orm.Mapping(item.WsSkuPrice{}, "ws_sku_price")
+	orm.Mapping(cart.WsCart{}, "ws_cart")
+	orm.Mapping(cart.WsCartItem{}, "ws_cart_item")
 
 	orm.Mapping(payment.PaymentOrder{}, "pay_order")
 
