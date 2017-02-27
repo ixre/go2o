@@ -123,8 +123,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(order.OrderCoupon{}, "pt_order_coupon")
 	orm.Mapping(order.OrderPromotionBind{}, "pt_order_pb")
 	orm.Mapping(order.OrderLog{}, "sale_order_log")
-	orm.Mapping(cart.ValueCart{}, "sale_cart")
-	orm.Mapping(cart.CartItem{}, "sale_cart_item")
+	orm.Mapping(cart.RetailCart{}, "sale_cart")
+	orm.Mapping(cart.RetailCartItem{}, "sale_cart_item")
 
 	//** After Sales **/
 	orm.Mapping(afterSales.AfterSalesOrder{}, "sale_after_order")

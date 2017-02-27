@@ -216,7 +216,7 @@ struct ShoppingCart {
     //编号
     1: i32 CartId
     //购物车KEY
-    2: string Key
+    2: string Code
     //店铺分组
     3: list<ShoppingCartGroup> Shops
 }

@@ -241,10 +241,10 @@ func (o *orderImpl) RequireCart(c cart.ICart) error {
 	if o.GetAggregateRootId() > 0 || o.cart != nil {
 		return order.ErrRequireCart
 	}
-	if o.cart.Kind() != cart.KRetail {
+	if c.Kind() != cart.KRetail {
 		panic("购物车非零售")
 	}
-	rc := o.cart.(cart.IRetailCart)
+	rc := c.(cart.IRetailCart)
 	items := rc.GetValue().Items
 	if len(items) == 0 {
 		return cart.ErrEmptyShoppingCart
@@ -343,7 +343,7 @@ func (o *orderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*order.OrderItem {
+func (o *orderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.OrderItem {
 	mp := make(map[int32][]*order.OrderItem)
 	for _, v := range items {
 		//必须勾选为结算
@@ -366,7 +366,7 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.CartItem) map[int32][]*orde
 }
 
 // 转换购物车的商品项为订单项目
-func (o *orderImpl) parseCartToOrderItem(c *cart.CartItem) *order.OrderItem {
+func (o *orderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.OrderItem {
 	// 获取商品已销售快照
 	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
