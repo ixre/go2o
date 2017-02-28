@@ -18,7 +18,6 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/product"
 	"go2o/core/dto"
-	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
@@ -76,9 +75,9 @@ func (s *shoppingService) getShoppingCart(buyerId int32, code string) cart.ICart
 		return cc
 	}
 	// 不存在，则新建购物车
-	c = s._cartRepo.NewCart()
-	_, err := c.Save()
-	domain.HandleError(err, "service")
+	c = s._cartRepo.NewRetailCart(code)
+	//_, err := c.Save()
+	//domain.HandleError(err, "service")
 	return c
 }
 
@@ -87,13 +86,6 @@ func (s *shoppingService) GetShoppingCart(memberId int32,
 	cartCode string) *define.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartCode)
 	return s.parseCart(c)
-}
-
-// 创建一个新的购物车
-func (s *shoppingService) CreateShoppingCart(memberId int32) *define.ShoppingCart {
-	c := s._cartRepo.NewCart()
-	c.SetBuyer(memberId)
-	return cart.ParseToDtoCart(c)
 }
 
 // 转换购物车数据
@@ -146,11 +138,19 @@ func (s *shoppingService) SubCartItem(memberId int32, code string, itemId, skuId
 func (s *shoppingService) CartCheckSign(memberId int32,
 	cartCode string, arr []*define.ShoppingCartItem) error {
 	c := s.getShoppingCart(memberId, cartCode)
-	list := make([]*cart.RetailCartItem, len(arr))
+	items := make([]*cart.ItemPair, len(arr))
 	for i, v := range arr {
-		list[i] = parser.ShoppingCartItem(v)
+		items[i] = &cart.ItemPair{
+			ItemId:  v.ItemId,
+			SkuId:   v.SkuId,
+			Checked: 1,
+		}
 	}
-	return c.SignItemChecked(list)
+	err := c.SignItemChecked(items)
+	if err == nil {
+		_, err = c.Save()
+	}
+	return err
 }
 
 // 更新购物车结算
