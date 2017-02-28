@@ -504,43 +504,44 @@ func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
 // 应用购物车内商品的促销
 func (o *orderImpl) applyCartPromotionOnSubmit(vo *order.Order,
 	cart cart.ICart) ([]promotion.IPromotion, int) {
+	//todo: 促销
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, 0)
-	var prom promotion.IPromotion
-	var saveFee int
+	//var prom promotion.IPromotion
+	//var saveFee int
 	var totalSaveFee int
-	var intOrderFee = int(vo.FinalAmount)
-	var rightBack bool
-
-	for _, v := range cart.GetCartGoods() {
-		prom = nil
-		saveFee = 0
-		rightBack = false
-
-		// 判断商品的最省促销
-		for _, v1 := range v.GetPromotions() {
-
-			// 返现
-			if v1.Type() == promotion.TypeFlagCashBack {
-				vc := v1.GetRelationValue().(*promotion.ValueCashBack)
-				if vc.MinFee < intOrderFee {
-					if vc.BackFee > saveFee {
-						prom = v1
-						saveFee = vc.BackFee
-						rightBack = vc.BackType == promotion.BackUseForOrder // 是否立即抵扣
-					}
-				}
-			}
-
-			//todo: 其他促销
-		}
-
-		if prom != nil {
-			proms = append(proms, prom)
-			if rightBack {
-				totalSaveFee += saveFee
-			}
-		}
-	}
+	//var intOrderFee = int(vo.FinalAmount)
+	//var rightBack bool
+	//
+	//for _, v := range cart.GetCartGoods() {
+	//	prom = nil
+	//	saveFee = 0
+	//	rightBack = false
+	//
+	//	// 判断商品的最省促销
+	//	for _, v1 := range v.GetPromotions() {
+	//
+	//		// 返现
+	//		if v1.Type() == promotion.TypeFlagCashBack {
+	//			vc := v1.GetRelationValue().(*promotion.ValueCashBack)
+	//			if vc.MinFee < intOrderFee {
+	//				if vc.BackFee > saveFee {
+	//					prom = v1
+	//					saveFee = vc.BackFee
+	//					rightBack = vc.BackType == promotion.BackUseForOrder // 是否立即抵扣
+	//				}
+	//			}
+	//		}
+	//
+	//		//todo: 其他促销
+	//	}
+	//
+	//	if prom != nil {
+	//		proms = append(proms, prom)
+	//		if rightBack {
+	//			totalSaveFee += saveFee
+	//		}
+	//	}
+	//}
 
 	return proms, totalSaveFee
 }

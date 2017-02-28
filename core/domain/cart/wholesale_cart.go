@@ -165,17 +165,6 @@ func (c *wholesaleCartImpl) GetValue() cart.WsCart {
 	return *c.value
 }
 
-// 获取购物车中的商品
-func (c *wholesaleCartImpl) GetCartGoods() []item.IGoodsItem {
-	//todo: IMPL
-	//var gs []item.IGoods = make([]item.IGoods, len(c._value.Items))
-	//for i, v := range c._value.Items {
-	//    gs[i] = c._goodsRepo.getGoods
-	//}
-	//return gs
-	return []item.IGoodsItem{}
-}
-
 // 获取商品编号与购物车项的集合
 func (c *wholesaleCartImpl) Items() map[int32]*cart.WsCartItem {
 	list := make(map[int32]*cart.WsCartItem)
@@ -286,16 +275,6 @@ func (c *wholesaleCartImpl) Code() string {
 	return c.value.Code
 }
 
-// 设置购买会员
-func (c *wholesaleCartImpl) SetBuyer(buyerId int32) error {
-	if c.value.BuyerId > 0 {
-		return cart.ErrCartBuyerBind
-	}
-	c.value.BuyerId = buyerId
-	_, err := c.Save()
-	return err
-}
-
 // 设置购买会员收货地址
 func (c *wholesaleCartImpl) SetBuyerAddress(addressId int32) error {
 	if c.value.BuyerId < 0 {
@@ -319,22 +298,20 @@ func (c *wholesaleCartImpl) setBuyerAddress(addressId int32) error {
 }
 
 // 标记商品结算
-func (c *wholesaleCartImpl) SignItemChecked(items []*cart.RetailCartItem) error {
+func (c *wholesaleCartImpl) SignItemChecked(items []*cart.ItemPair) error {
 	mp := c.getItems()
+	// 遍历购物车商品，默认不结算。
 	for _, item := range mp {
 		item.Checked = 0
+		// 如果传入结算商品信息，则标记购物车项结算状态
 		for _, v := range items {
 			if v.SkuId == item.SkuId && v.ItemId == item.ItemId {
-				item.Checked = 1
+				item.Checked = v.Checked
 				break
 			}
 		}
 	}
-	err := c.Check()
-	if err == nil {
-		_, err = c.Save()
-	}
-	return err
+	return c.Check()
 }
 
 // 结算数据持久化
@@ -440,18 +417,4 @@ func (c *wholesaleCartImpl) Destroy() (err error) {
 		return c.rep.DeleteCart(c.GetAggregateRootId())
 	}
 	return err
-}
-
-// 获取订单金额,返回totalFee为总额，
-// orderFee为实际订单的金额(扣去促销优惠等后的金额)
-func (c *wholesaleCartImpl) GetFee() (totalFee float32, orderFee float32) {
-	var qua float32
-	for _, v := range c.value.Items {
-		if v.Checked == 1 {
-			qua = float32(v.Quantity)
-			totalFee += v.Sku.RetailPrice * qua
-			orderFee += v.Sku.Price * qua
-		}
-	}
-	return totalFee, orderFee
 }

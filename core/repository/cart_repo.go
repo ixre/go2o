@@ -110,8 +110,8 @@ func (c *cartRepo) createRetailCart(v *cart.RetailCart) cart.ICart {
 }
 
 // 创建一个购物车
-func (c *cartRepo) NewCart() cart.ICart {
-	return cartImpl.NewCart(-1, c, c._memberRepo, c._goodsRepo)
+func (c *cartRepo) NewRetailCart(code string) cart.ICart {
+	return cartImpl.NewRetailCart(code, c, c._memberRepo, c._goodsRepo)
 }
 
 // 获取购物车

@@ -22,17 +22,12 @@ import (
 var (
 	ErrNoSuchCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_no_such_cart", "购物车无法使用")
+
 	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_cart", "购物车没有商品")
 
 	ErrCartNoBuyer *domain.DomainError = domain.NewDomainError(
 		"err_cart_no_buyer", "购物车未绑定")
-
-	ErrCartBuyerBind *domain.DomainError = domain.NewDomainError(
-		"err_cart_buyer_binded", "购物车已绑定")
-
-	ErrDisallowBindForCart *domain.DomainError = domain.NewDomainError(
-		"err_cart_disallow_bind", "无法为购物车绑定订单")
 
 	ErrItemNoSku *domain.DomainError = domain.NewDomainError(
 		"err_cart_item_no_sku", "请选择商品规格")
@@ -61,7 +56,7 @@ type (
 		// 检查购物车(仅结算商品)
 		Check() error
 		// 标记商品结算
-		SignItemChecked(items []*RetailCartItem) error
+		SignItemChecked(items []*ItemPair) error
 
 		// 添加商品到购物车,如商品没有SKU,则skuId传入0
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
@@ -76,19 +71,13 @@ type (
 		// 销毁购物车
 		Destroy() error
 
-		// 获取购物车中的商品
-		GetCartGoods() []item.IGoodsItem
 		// 结算数据持久化
 		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error
 		// 获取结算数据
 		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt int32)
-		// 设置购买会员
-		SetBuyer(buyerId int32) error
+
 		// 设置购买会员收货地址
 		SetBuyerAddress(addressId int32) error
-
-		// 获取金额
-		GetFee() (totalFee float32, orderFee float32)
 	}
 
 	//商品零售购物车,未登陆时以code标识，登陆后以买家编号标识
@@ -118,7 +107,7 @@ type (
 		// 获取买家的购物车
 		GetMyCart(buyerId int32, k CartKind) ICart
 		// 创建一个购物车
-		NewCart() ICart
+		NewRetailCart(code string) ICart
 		// 获取购物车
 		GetRetailCart(id int32) ICart
 
@@ -157,6 +146,17 @@ type (
 		// Batch Delete WsCartItem
 		BatchDeleteWsCartItem(where string, v ...interface{}) (int64, error)
 	}
+
+	// 购物车商品
+	ItemPair struct {
+		// 商品编号
+		ItemId int32
+		// SKU编号
+		SkuId int32
+		// 是否勾选结算
+		Checked int32
+	}
+
 	// 购物车
 	RetailCart struct {
 		Id         int32  `db:"id" pk:"yes" auto:"yes"`
