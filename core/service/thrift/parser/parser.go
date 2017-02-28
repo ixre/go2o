@@ -510,7 +510,7 @@ func OrderItemDto(src *order.OrderItem) *define.OrderItem {
 	}
 }
 
-func SubOrderDto(src *order.SubOrder) *define.SubOrder {
+func SubOrderDto(src *order.ValueSubOrder) *define.SubOrder {
 	o := &define.SubOrder{
 		ID:             src.ID,
 		OrderNo:        src.OrderNo,
@@ -519,14 +519,14 @@ func SubOrderDto(src *order.SubOrder) *define.SubOrder {
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
 		Subject:        src.Subject,
-		GoodsAmount:    float64(src.GoodsAmount),
+		ItemAmount:     float64(src.ItemAmount),
 		DiscountAmount: float64(src.DiscountAmount),
 		ExpressFee:     float64(src.ExpressFee),
 		PackageFee:     float64(src.PackageFee),
 		FinalAmount:    float64(src.FinalAmount),
 		IsPaid:         int64(src.IsPaid),
 		IsSuspend:      int64(src.IsSuspend),
-		Note:           src.Note,
+		BuyerRemark:    src.BuyerRemark,
 		Remark:         src.Remark,
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,

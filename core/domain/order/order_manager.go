@@ -27,8 +27,6 @@ import (
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/lbs"
-	"go2o/core/infrastructure/log"
-	"sync"
 	"time"
 )
 
@@ -73,14 +71,14 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 生成订单
-func (t *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
+func (t *orderManagerImpl) CreateOrder(val *order.ValueOrder) order.IOrder {
 	return newOrder(t, val, t.mchRepo,
 		t.rep, t.goodsRepo, t.productRepo, t.promRepo,
 		t.memberRepo, t.expressRepo, t.paymentRepo, t.valRepo)
 }
 
 // 生成空白订单,并保存返回对象
-func (t *orderManagerImpl) CreateSubOrder(v *order.SubOrder) order.ISubOrder {
+func (t *orderManagerImpl) CreateSubOrder(v *order.ValueSubOrder) order.ISubOrder {
 	return NewSubOrder(v, t, t.rep, t.memberRepo,
 		t.goodsRepo, t.shipRepo, t.productRepo,
 		t.valRepo, t.mchRepo)
@@ -102,7 +100,7 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if err != nil {
 		return nil, m, err
 	}
-	val := &order.Order{}
+	val := &order.ValueOrder{}
 	// 判断购买会员
 	buyerId := c.BuyerId()
 	if buyerId > 0 {
@@ -112,7 +110,6 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
-	val.State = order.StatAwaitingPayment
 	o := t.CreateOrder(val)
 	err = o.RequireCart(c)
 	o.GetByVendor()
@@ -245,7 +242,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 	payment.IPaymentOrder, error) {
 	order, py, err := t.PrepareOrder(c, addressId, subject, couponCode)
 	if err == nil {
-		err = order.SetDeliver(addressId)
+		err = order.SetDeliveryAddress(addressId)
 	}
 	if err != nil {
 		return order, py, err
@@ -321,144 +318,4 @@ func (t *orderManagerImpl) GetSubOrder(id int32) order.ISubOrder {
 // 根据父订单编号获取购买的商品项
 func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
 	return t.rep.GetItemsByParentOrderId(orderId)
-}
-
-var (
-	shopLocker sync.Mutex
-	biShops    []shop.IShop
-)
-
-// 自动设置订单
-func (t *orderManagerImpl) OrderAutoSetup(f func(error)) {
-	var orders []*order.Order
-	var err error
-
-	shopLocker.Lock()
-	defer func() {
-		shopLocker.Unlock()
-	}()
-	biShops = nil
-	log.Println("[SETUP] start auto setup")
-
-	saleConf := t.mch.ConfManager().GetSaleConf()
-	if saleConf.AutoSetupOrder == 1 {
-		orders, err = t.rep.GetWaitingSetupOrders(-1)
-		if err != nil {
-			f(err)
-			return
-		}
-
-		dt := time.Now()
-		for _, v := range orders {
-			t.setupOrder(v, &saleConf, dt, f)
-		}
-	}
-}
-
-func (t *orderManagerImpl) SmartConfirmOrder(o order.IOrder) error {
-
-	return nil
-
-	//todo:  自动确认订单
-	var err error
-	v := o.GetValue()
-	log.Printf("[ AUTO][OrderSetup]:%s - Confirm \n", v.OrderNo)
-	var sp shop.IShop
-	if biShops == nil {
-		// /pay/return_alipay?out_trade_no=ZY1607375766&request_token=requestToken&result=success&trade_no
-		// =2016070221001004880246862127&sign=75a18ca0d75750ac22fedbbe6468c187&sign_type=MD5
-		//todo:  拆分订单
-		biShops = t.mch.ShopManager().GetBusinessInShops()
-	}
-	if len(biShops) == 1 {
-		sp = biShops[0]
-	} else {
-		sp, err = t.SmartChoiceShop(v.ShippingAddress)
-		if err != nil {
-			//todo:
-			panic("not impl")
-			//order.Suspend("智能分配门店失败！原因：" + err.Error())
-			return err
-		}
-	}
-
-	if sp != nil && sp.Type() == shop.TypeOfflineShop {
-		//sv := sp.GetValue()
-		//todo: set shop
-		panic("not impl")
-		//order.SetShop(sp.GetDomainId())
-		err = o.Confirm()
-		//err = order.Process()
-		//ofs := sp.(shop.IOfflineShop).GetShopValue()
-		//o.AppendLog(&order.OrderLog{
-		//	Type:     int(order.LogSetup),
-		//	IsSystem: 1,
-		//	Message:  fmt.Sprintf("自动分配门店:%s,电话：%s", sv.Name, ofs.Tel),
-		//})
-	}
-	return err
-}
-
-func (t *orderManagerImpl) setupOrder(v *order.Order,
-	conf *merchant.SaleConf, unix time.Time, f func(error)) {
-	var err error
-	od := t.CreateOrder(v)
-	dur := time.Duration(unix.Unix()-v.CreateTime) * time.Second
-
-	switch v.State {
-	case order.StatAwaitingPayment:
-		if v.IsPaid == 0 && dur > time.Minute*time.Duration(conf.OrderTimeOutMinute) {
-			//todo: del
-
-			//order.Cancel("超时未付款，系统取消")
-			log.Printf("[ AUTO][OrderSetup]:%s - Payment Timeout\n", v.OrderNo)
-		}
-
-	case order.StatAwaitingConfirm:
-		if dur > time.Minute*time.Duration(conf.OrderConfirmAfterMinute) {
-			err = t.SmartConfirmOrder(od)
-		}
-
-	//		case enum.ORDER_WAIT_DELIVERY:
-	//			if dur > time.Minute*order_process_minute {
-	//				err = order.Process()
-	//				if ctx.Debug() {
-	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Processing \n", v.OrderNo)
-	//				}
-	//			}
-
-	//		case enum.ORDER_WAIT_RECEIVE:
-	//			if dur > time.Hour * conf.OrderTimeOutReceiveHour {
-	//				err = order.Deliver()
-	//				if ctx.Debug() {
-	//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Sending \n", v.OrderNo)
-	//				}
-	//			}
-	case order.StatShipped:
-		if dur > time.Hour*time.Duration(conf.OrderTimeOutReceiveHour) {
-			//todo:
-			panic("not impl")
-			//err = order.SignReceived()
-
-			log.Printf("[ AUTO][OrderSetup]:%s - Received \n", v.OrderNo)
-			if err == nil {
-				//todo: del
-				panic("not impl")
-				//err = order.Complete()
-				log.Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
-			}
-		}
-
-		//		case order.StatCompleted:
-		//			if dur > time.Hour*order_complete_hour {
-		//				err = order.Complete()
-		//				if ctx.Debug() {
-		//					ctx.Log().Printf("[ AUTO][OrderSetup]:%s - Complete \n", v.OrderNo)
-		//				}
-		//			}
-	}
-
-	if err != nil {
-		f(err)
-	}
 }
