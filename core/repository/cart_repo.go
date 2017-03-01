@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"log"
+	"time"
 )
 
 var _ cart.ICartRepo = new(cartRepo)
@@ -38,29 +39,93 @@ func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 	}
 }
 
+// 获取买家的购物车
+func (c *cartRepo) GetMyCart(buyerId int32, k cart.CartKind) cart.ICart {
+	switch k {
+	case cart.KRetail:
+		return c.getMyRetailCart(buyerId)
+	case cart.KWholesale:
+		return c.getMyWholesaleCart(buyerId)
+	}
+	return nil
+}
+
+// 获取零售购物车
+func (c *cartRepo) getMyRetailCart(buyerId int32) cart.ICart {
+	v := c.getRetailCart(buyerId)
+	if v == nil {
+		unix := time.Now().Unix()
+		v = &cart.RetailCart{
+			BuyerId:    buyerId,
+			CreateTime: unix,
+			UpdateTime: unix,
+		}
+	}
+	return cartImpl.CreateCart(v, c,
+		c._memberRepo, c._goodsRepo)
+}
+
+// 获取批发购物车
+func (c *cartRepo) getMyWholesaleCart(buyerId int32) cart.ICart {
+	v := c.getWholesaleCart(buyerId)
+	if v == nil {
+		unix := time.Now().Unix()
+		v = &cart.WsCart{
+			BuyerId:    buyerId,
+			CreateTime: unix,
+			UpdateTime: unix,
+		}
+	}
+	return cartImpl.CreateWholesaleCart(v, c,
+		c._memberRepo, c._goodsRepo)
+}
+
+func (c *cartRepo) getRetailCart(buyerId int32) *cart.RetailCart {
+	e := cart.RetailCart{}
+	err := c._orm.GetBy(&e, "buyer_id=?", buyerId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
+	}
+	return nil
+}
+
+func (w *cartRepo) getWholesaleCart(buyerId int32) *cart.WsCart {
+	e := cart.WsCart{}
+	err := w._orm.GetBy(&e, "buyer_id=?", buyerId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCart")
+	}
+	return nil
+}
+
 // 创建购物车对象
-func (c *cartRepo) CreateCart(v *cart.ValueCart) cart.ICart {
+func (c *cartRepo) createRetailCart(v *cart.RetailCart) cart.ICart {
 	return cartImpl.CreateCart(v, c, c._memberRepo, c._goodsRepo)
 }
 
 // 创建一个购物车
-func (c *cartRepo) NewCart() cart.ICart {
-	return cartImpl.NewCart(-1, c, c._memberRepo, c._goodsRepo)
+func (c *cartRepo) NewRetailCart(code string) cart.ICart {
+	return cartImpl.NewRetailCart(code, c, c._memberRepo, c._goodsRepo)
 }
 
 // 获取购物车
-func (c *cartRepo) GetCart(id int32) cart.ICart {
-	v := c.GetSaleCart(id)
+func (c *cartRepo) GetRetailCart(id int32) cart.ICart {
+	v := c.getSaleCart(id)
 	if v != nil {
-		v.Items = c.SelectSaleCartItem("cart_id=?", id)
-		return c.CreateCart(v)
+		return c.createRetailCart(v)
 	}
 	return nil
 }
 
 // Get SaleCart
-func (s *cartRepo) GetSaleCart(primary interface{}) *cart.ValueCart {
-	e := cart.ValueCart{}
+func (s *cartRepo) getSaleCart(primary interface{}) *cart.RetailCart {
+	e := cart.RetailCart{}
 	err := s._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -71,18 +136,8 @@ func (s *cartRepo) GetSaleCart(primary interface{}) *cart.ValueCart {
 	return nil
 }
 
-// Select SaleCart
-func (s *cartRepo) SelectSaleCart(where string, v ...interface{}) []*cart.ValueCart {
-	list := []*cart.ValueCart{}
-	err := s._orm.Select(&list, where, v...)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
-	}
-	return list
-}
-
 // Save SaleCart
-func (s *cartRepo) SaveSaleCart(v *cart.ValueCart) (int, error) {
+func (s *cartRepo) SaveRetailCart(v *cart.RetailCart) (int, error) {
 	id, err := orm.Save(s._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
@@ -91,8 +146,8 @@ func (s *cartRepo) SaveSaleCart(v *cart.ValueCart) (int, error) {
 }
 
 // Delete SaleCart
-func (s *cartRepo) DeleteSaleCart(primary interface{}) error {
-	err := s._orm.DeleteByPk(cart.ValueCart{}, primary)
+func (s *cartRepo) DeleteRetailCart(primary interface{}) error {
+	err := s._orm.DeleteByPk(cart.RetailCart{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCart")
 	}
@@ -100,8 +155,8 @@ func (s *cartRepo) DeleteSaleCart(primary interface{}) error {
 }
 
 // Get SaleCartItem
-func (s *cartRepo) GetSaleCartItem(primary interface{}) *cart.CartItem {
-	e := cart.CartItem{}
+func (s *cartRepo) GetSaleCartItem(primary interface{}) *cart.RetailCartItem {
+	e := cart.RetailCartItem{}
 	err := s._orm.Get(primary, &e)
 	if err == nil {
 		return &e
@@ -113,8 +168,8 @@ func (s *cartRepo) GetSaleCartItem(primary interface{}) *cart.CartItem {
 }
 
 // Select SaleCartItem
-func (s *cartRepo) SelectSaleCartItem(where string, v ...interface{}) []*cart.CartItem {
-	list := []*cart.CartItem{}
+func (s *cartRepo) SelectRetailCartItem(where string, v ...interface{}) []*cart.RetailCartItem {
+	list := []*cart.RetailCartItem{}
 	err := s._orm.Select(&list, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
@@ -123,7 +178,7 @@ func (s *cartRepo) SelectSaleCartItem(where string, v ...interface{}) []*cart.Ca
 }
 
 // Save SaleCartItem
-func (s *cartRepo) SaveSaleCartItem(v *cart.CartItem) (int, error) {
+func (s *cartRepo) SaveRetailCartItem(v *cart.RetailCartItem) (int, error) {
 	id, err := orm.Save(s._orm, v, int(v.Id))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
@@ -132,8 +187,8 @@ func (s *cartRepo) SaveSaleCartItem(v *cart.CartItem) (int, error) {
 }
 
 // Delete SaleCartItem
-func (s *cartRepo) DeleteSaleCartItem(primary interface{}) error {
-	err := s._orm.DeleteByPk(cart.CartItem{}, primary)
+func (s *cartRepo) DeleteRetailCartItem(primary interface{}) error {
+	err := s._orm.DeleteByPk(cart.RetailCartItem{}, primary)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
 	}
@@ -141,8 +196,8 @@ func (s *cartRepo) DeleteSaleCartItem(primary interface{}) error {
 }
 
 // Batch Delete SaleCartItem
-func (s *cartRepo) BatchDeleteSaleCartItem(where string, v ...interface{}) (int64, error) {
-	r, err := s._orm.Delete(cart.CartItem{}, where, v...)
+func (s *cartRepo) BatchDeleteRetailCartItem(where string, v ...interface{}) (int64, error) {
+	r, err := s._orm.Delete(cart.RetailCartItem{}, where, v...)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleCartItem")
 	}
@@ -153,25 +208,16 @@ func (s *cartRepo) BatchDeleteSaleCartItem(where string, v ...interface{}) (int6
 func (c *cartRepo) GetShoppingCartByKey(key string) cart.ICart {
 	ca := c.GetShoppingCart(key)
 	if ca != nil {
-		return c.CreateCart(ca)
-	}
-	return nil
-}
-
-// 获取会员没有结算的购物车
-func (c *cartRepo) GetMemberCurrentCart(buyerId int32) cart.ICart {
-	ca := c.GetLatestCart(buyerId)
-	if ca != nil {
-		return c.CreateCart(ca)
+		return c.createRetailCart(ca)
 	}
 	return nil
 }
 
 // 获取购物车
-func (c *cartRepo) GetShoppingCart(key string) *cart.ValueCart {
-	var v = &cart.ValueCart{}
+func (c *cartRepo) GetShoppingCart(key string) *cart.RetailCart {
+	var v = &cart.RetailCart{}
 	if c.Connector.GetOrm().GetBy(v, "code=?", key) == nil {
-		items := []*cart.CartItem{}
+		items := []*cart.RetailCartItem{}
 		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
 		return v
@@ -180,10 +226,10 @@ func (c *cartRepo) GetShoppingCart(key string) *cart.ValueCart {
 }
 
 // 获取最新的购物车
-func (c *cartRepo) GetLatestCart(buyerId int32) *cart.ValueCart {
-	var v = &cart.ValueCart{}
+func (c *cartRepo) GetLatestCart(buyerId int32) *cart.RetailCart {
+	var v = &cart.RetailCart{}
 	if c.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
-		var items = []*cart.CartItem{}
+		var items = []*cart.RetailCartItem{}
 		c.Connector.GetOrm().Select(&items, "cart_id=?", v.Id)
 		v.Items = items
 		return v
@@ -192,38 +238,73 @@ func (c *cartRepo) GetLatestCart(buyerId int32) *cart.ValueCart {
 }
 
 // 保存购物车
-func (c *cartRepo) SaveShoppingCart(v *cart.ValueCart) (int32, error) {
+func (c *cartRepo) SaveShoppingCart(v *cart.RetailCart) (int32, error) {
 	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 }
 
 // 移出购物车项
 func (c *cartRepo) RemoveCartItem(id int32) error {
-	return c.Connector.GetOrm().DeleteByPk(cart.CartItem{}, id)
+	return c.Connector.GetOrm().DeleteByPk(cart.RetailCartItem{}, id)
 }
 
 // 保存购物车项
-func (c *cartRepo) SaveCartItem(v *cart.CartItem) (int32, error) {
+func (c *cartRepo) SaveCartItem(v *cart.RetailCartItem) (int32, error) {
 	return orm.I32(orm.Save(c.GetOrm(), v, int(v.Id)))
 }
 
 // 清空购物车项
 func (c *cartRepo) EmptyCartItems(cartId int32) error {
-	_, err := c.Connector.GetOrm().Delete(cart.CartItem{}, "cart_id=?", cartId)
+	_, err := c.Connector.GetOrm().Delete(cart.RetailCartItem{}, "cart_id=?", cartId)
 	return err
 }
 
 // 删除购物车
 func (c *cartRepo) DeleteCart(cartId int32) error {
-	return c.Connector.GetOrm().DeleteByPk(cart.ValueCart{}, cartId)
+	return c.Connector.GetOrm().DeleteByPk(cart.RetailCart{}, cartId)
 }
 
-// 获取会员购物车(批发)
-func (c *cartRepo) GetWholesaleCart(buyerId int32) cart.ICart {
-	//todo: ???
-	v := c.GetSaleCart(0)
-	if v != nil {
-		v.Items = c.SelectSaleCartItem("cart_id=?", 0)
-		return c.CreateCart(v)
+// Save WsCart
+func (w *cartRepo) SaveWsCart(v *cart.WsCart) (int, error) {
+	id, err := orm.Save(w._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCart")
 	}
-	return nil
+	return id, err
+}
+
+// Delete WsCart
+func (w *cartRepo) DeleteWsCart(primary interface{}) error {
+	err := w._orm.DeleteByPk(cart.WsCart{}, primary)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCart")
+	}
+	return err
+}
+
+// Select WsCartItem
+func (w *cartRepo) SelectWsCartItem(where string, v ...interface{}) []*cart.WsCartItem {
+	list := []*cart.WsCartItem{}
+	err := w._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCartItem")
+	}
+	return list
+}
+
+// Save WsCartItem
+func (w *cartRepo) SaveWsCartItem(v *cart.WsCartItem) (int, error) {
+	id, err := orm.Save(w._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCartItem")
+	}
+	return id, err
+}
+
+// Batch Delete WsCartItem
+func (w *cartRepo) BatchDeleteWsCartItem(where string, v ...interface{}) (int64, error) {
+	r, err := w._orm.Delete(cart.WsCartItem{}, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsCartItem")
+	}
+	return r, err
 }

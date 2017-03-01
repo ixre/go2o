@@ -116,15 +116,15 @@ func OrmMapping(conn db.Connector) {
 
 	//** ORDER **//
 
-	orm.Mapping(order.Order{}, "sale_order")
-	orm.Mapping(order.SubOrder{}, "sale_sub_order")
+	orm.Mapping(order.ValueOrder{}, "sale_order")
+	orm.Mapping(order.ValueSubOrder{}, "sale_sub_order")
 
 	orm.Mapping(order.OrderItem{}, "sale_order_item")
 	orm.Mapping(order.OrderCoupon{}, "pt_order_coupon")
 	orm.Mapping(order.OrderPromotionBind{}, "pt_order_pb")
 	orm.Mapping(order.OrderLog{}, "sale_order_log")
-	orm.Mapping(cart.ValueCart{}, "sale_cart")
-	orm.Mapping(cart.CartItem{}, "sale_cart_item")
+	orm.Mapping(cart.RetailCart{}, "sale_cart")
+	orm.Mapping(cart.RetailCartItem{}, "sale_cart_item")
 
 	//** After Sales **/
 	orm.Mapping(afterSales.AfterSalesOrder{}, "sale_after_order")
@@ -182,6 +182,8 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(item.WsItem{}, "ws_item")
 	orm.Mapping(item.WsItemDiscount{}, "ws_item_discount")
 	orm.Mapping(item.WsSkuPrice{}, "ws_sku_price")
+	orm.Mapping(cart.WsCart{}, "ws_cart")
+	orm.Mapping(cart.WsCartItem{}, "ws_cart_item")
 
 	orm.Mapping(payment.PaymentOrder{}, "pay_order")
 

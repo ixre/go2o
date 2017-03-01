@@ -216,7 +216,7 @@ struct ShoppingCart {
     //编号
     1: i32 CartId
     //购物车KEY
-    2: string Key
+    2: string Code
     //店铺分组
     3: list<ShoppingCartGroup> Shops
 }
@@ -311,14 +311,14 @@ struct SubOrder {
     5: i32 VendorId
     6: i32 ShopId
     7: string Subject
-    8: double GoodsAmount
+    8: double ItemAmount
     9: double DiscountAmount
     10: double ExpressFee
     11: double PackageFee
     12: double FinalAmount
     13: i64 IsPaid
     14: i64 IsSuspend
-    15: string Note
+    15: string BuyerRemark
     16: string Remark
     17: i64 CreateTime
     18: i64 UpdateTime
