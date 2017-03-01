@@ -33,6 +33,7 @@ import (
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/variable"
+	"log"
 )
 
 var _ order.IOrderRepo = new(orderRepImpl)
@@ -40,6 +41,7 @@ var _ order.IOrderRepo = new(orderRepImpl)
 type orderRepImpl struct {
 	Storage storage.Interface
 	db.Connector
+	_orm         orm.Orm
 	_productRepo product.IProductRepo
 	_goodsRepo   item.IGoodsItemRepo
 	_promRepo    promotion.IPromotionRepo
@@ -65,6 +67,7 @@ func NewOrderRepo(sto storage.Interface, c db.Connector,
 	return &orderRepImpl{
 		Storage:      sto,
 		Connector:    c,
+		_orm:         c.GetOrm(),
 		_productRepo: proRepo,
 		_goodsRepo:   goodsRepo,
 		_promRepo:    promRepo,
@@ -119,8 +122,8 @@ func (o *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 }
 
 // 根据编号获取订单
-func (o *orderRepImpl) GetOrderById(id int32) *order.ValueOrder {
-	e := &order.ValueOrder{}
+func (o *orderRepImpl) GetOrderById(id int32) *order.ItemOrder {
+	e := &order.ItemOrder{}
 	k := o.getOrderCk(id, false)
 	if o.Storage.Get(k, e) != nil {
 		if o.Connector.GetOrm().Get(id, e) != nil {
@@ -132,7 +135,7 @@ func (o *orderRepImpl) GetOrderById(id int32) *order.ValueOrder {
 }
 
 // 根据订单号获取订单
-func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ValueOrder {
+func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ItemOrder {
 	id := o.GetOrderId(orderNo, false)
 	if id > 0 {
 		return o.GetOrderById(id)
@@ -141,8 +144,8 @@ func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ValueOrder {
 }
 
 // 获取等待处理的订单
-func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int32) ([]*order.ValueOrder, error) {
-	dst := []*order.ValueOrder{}
+func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int32) ([]*order.ItemOrder, error) {
+	dst := []*order.ItemOrder{}
 	err := o.Connector.GetOrm().Select(&dst,
 		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+
 			enum.ORDER_SETUP_STATE+")", vendorId)
@@ -188,7 +191,7 @@ func (o *orderRepImpl) GetItemsByParentOrderId(orderId int32) []*order.OrderItem
 	return items
 }
 
-func (o *orderRepImpl) SaveOrder(v *order.ValueOrder) (int32, error) {
+func (o *orderRepImpl) SaveOrder(v *order.ItemOrder) (int32, error) {
 	id, err := orm.I32(orm.Save(o.GetOrm(), v, int(v.Id)))
 	if err == nil {
 		v.Id = id
@@ -325,4 +328,26 @@ func (o *orderRepImpl) GetOrderItemDtoBySnapshotId(orderId int32, snapshotId int
 		return e
 	}
 	return nil
+}
+
+// Get OrderList
+func (o *orderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
+	e := order.Order{}
+	err := o._orm.GetBy(&e, where, arg...)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderList")
+	}
+	return nil
+}
+
+// Save OrderList
+func (o *orderRepImpl) SaveOrderList(v *order.Order) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderList")
+	}
+	return id, err
 }

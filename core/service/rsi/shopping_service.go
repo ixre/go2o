@@ -200,7 +200,7 @@ func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addres
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.ValueOrder {
+func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.ItemOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	order, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
 	if err != nil {
@@ -280,11 +280,11 @@ func (s *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int32) *order.ValueOrder {
+func (s *shoppingService) GetOrderById(id int32) *order.ItemOrder {
 	return s._rep.GetOrderById(id)
 }
 
-func (s *shoppingService) GetOrderByNo(orderNo string) *order.ValueOrder {
+func (s *shoppingService) GetOrderByNo(orderNo string) *order.ItemOrder {
 	order := s._manager.GetOrderByNo(orderNo)
 	if order != nil {
 		return order.GetValue()
@@ -304,7 +304,7 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 根据订单号获取订单
-func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.ValueOrder {
+func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.ItemOrder {
 	return s._rep.GetValueOrderByNo(orderNo)
 }
 

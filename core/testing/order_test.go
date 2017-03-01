@@ -86,7 +86,7 @@ func TestCancelOrder(t *testing.T) {
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
 	o, py, err := manager.SubmitOrder(c, addressId, "", "", !true)
-	err = py.PaymentByWallet("支付订单")
+	//err = py.PaymentByWallet("支付订单")
 	pv := py.GetValue()
 	payState := pv.State
 	if payState == payment.StateFinishPayment {

@@ -130,7 +130,7 @@ type (
 
 		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
 		// 支付单的交易号,可能是与订单号一样的
-		BindOrder(orderId int32, tradeNo string) error
+		BindOrder(orderId int64, tradeNo string) error
 
 		// 保存
 		Commit() (int32, error)

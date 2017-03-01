@@ -24,19 +24,19 @@ import (
 //http://www.zhihu.com/question/31640837
 
 type OrderState int
-type OrderKind int32
+type OrderType int32
 
 const (
-	// 零售单
-	KRetail OrderKind = 1
-	// 批发单
-	KWholesale OrderKind = 2
-	// 虚拟单,如：手机充值
-	KVirtual OrderKind = 3
-	// 交易单,如：线下订单支付。
-	KTrade OrderKind = 4
-	// 服务单
-	KService OrderKind = 5
+	// 零售订单(线上/线下)
+	TRetail OrderType = 1
+	// 批发订单
+	TWholesale OrderType = 2
+	// 虚拟订单,如：手机充值
+	TVirtual OrderType = 3
+	// 交易订单,如：线下订单支付。
+	TTrade OrderType = 4
+	// 服务订单
+	TService OrderType = 5
 )
 
 const (
@@ -209,12 +209,24 @@ var (
 
 type (
 	IOrder interface {
+		// 获取编号
+		GetAggregateRootId() int64
+		// 订单类型
+		Type() OrderType
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
+		// 获取订单号
+		OrderNo() string
+	}
+
+	IItemOrder interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		//GetAggregateRootId() int32
 		// 获取订单号
 		GetOrderNo() string
+
 		// 获生成值
-		GetValue() *ValueOrder
+		GetValue() *ItemOrder
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
@@ -238,58 +250,47 @@ type (
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
 		SetDeliveryAddress(addressId int32) error
-		// 提交订单，返回订单号。如有错误则返回，在生成支付单后,应该根据实际支付金额
-		// 进行拆单,并切均摊优惠抵扣金额
-		Submit() (string, error)
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
 		// 获取子订单列表
 		GetSubOrders() []ISubOrder
 	}
 
+	// 零售订单
+	IRetailOrder interface {
+	}
+
 	ISubOrder interface {
 		// 获取领域对象编号
 		GetDomainId() int32
-
 		// 获取值对象
 		GetValue() *ValueSubOrder
-
 		// 获取商品项
 		Items() []*OrderItem
-
 		// 获取父订单
-		Parent() IOrder
-
+		Parent() IItemOrder
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
-
 		// 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-
 		// 设置Shop,如果不需要记录日志，则remark传递空
 		SetShop(shopId int32) error
-
 		// 添加备注
 		AddRemark(string)
-
 		// 确认订单
 		Confirm() error
-
 		// 捡货(备货)
 		PickUp() error
-
 		// 发货
 		Ship(spId int32, spOrder string) error
-
 		// 已收货
 		BuyerReceived() error
-
 		// 获取订单的日志
 		LogBytes() []byte
-
 		// 挂起
 		Suspend(reason string) error
-
 		// 取消订单/退款
 		Cancel(reason string) error
 		// 退回商品
@@ -359,6 +360,19 @@ type (
 		SendIntegral int     `db:"send_integral"`
 	}
 
+	// 订单
+	Order struct {
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderNo string `db:"order_no"`
+		// 买家编号
+		BuyerId int32 `db:"buyer_id"`
+		// 订单类型
+		OrderType int32 `db:"order_type"`
+		// 下单时间
+		CreateTime int64 `db:"create_time"`
+	}
+
 	//todo: ??? 父订单的金额,是否可不用?
 
 	// 暂存的订单
@@ -397,8 +411,8 @@ type (
 		UpdateTime int64
 	}
 
-	// 订单
-	ValueOrder struct {
+	// 商品订单
+	ItemOrder struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
