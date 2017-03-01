@@ -290,28 +290,14 @@ type (
 		// 挂起
 		Suspend(reason string) error
 
-		// 取消订单
+		// 取消订单/退款
 		Cancel(reason string) error
-
 		// 退回商品
 		Return(snapshotId int32, quantity int32) error
-
 		// 撤销退回商品
 		RevertReturn(snapshotId int32, quantity int32) error
-
-		// 申请退款
-		// todo ???
-		SubmitRefund(reason string) error
-
-		// 取消退款申请
-		CancelRefund() error
-
 		// 谢绝订单
 		Decline(reason string) error
-
-		// 退款
-		Refund() error
-
 		// 保存订单
 		Save() (int32, error)
 	}

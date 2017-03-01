@@ -62,6 +62,7 @@ func (p *personFinanceService) CommitTransfer(personId, logId int32) error {
 // 转入(业务放在service,是为person_finance解耦)
 func (p *personFinanceService) RiseTransferIn(personId int32,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
+	//return errors.New("服务暂时不可用")
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 	return r.TransferIn(amount, transferWith)
