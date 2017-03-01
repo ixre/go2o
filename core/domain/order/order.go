@@ -13,7 +13,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -27,6 +26,7 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -1344,59 +1344,20 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
-	log.Println("[ Order]: 取消支付单")
 	po := o.Parent().GetPaymentOrder()
 	if po != nil {
-		if true {
-			v := po.GetValue()
-			log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
-				"; 订单金额:", o.value.FinalAmount)
-		}
+		v := po.GetValue()
+		//if true {
+		//	log.Println("支付单号为：", v.TradeNo, "; 金额：", v.FinalAmount,
+		//		"; 订单金额:", o.value.FinalAmount)
+		//}
 		// 订单金额为0,则取消订单
-		if po.GetValue().FinalAmount-o.value.FinalAmount <= 0 {
+		if v.FinalAmount-o.value.FinalAmount <= 0 {
 			return po.Cancel()
 		}
 		return po.Adjust(-o.value.FinalAmount)
 	}
 	return nil
-}
-
-// 订单退款
-func (o *subOrderImpl) backupPayment() (err error) {
-	po := o.Parent().GetPaymentOrder()
-	if po == nil {
-		panic(errors.New("无法获取支付单,订单号:" + o.Parent().GetOrderNo()))
-	}
-	acc := o.GetBuyer().GetAccount()
-	pv := po.GetValue()
-	// log.Println(fmt.Sprintf("--------- %#v", pv))
-	//退回账户余额抵扣
-	if pv.BalanceDiscount > 0 {
-		err = acc.Refund(member.AccountBalance,
-			member.KindBalanceRefund, "订单退款",
-			o.value.OrderNo, pv.BalanceDiscount,
-			member.DefaultRelateUser)
-		if err != nil {
-			log.Println("--- 订单退款到余额发生错误：", err)
-		}
-	}
-
-	if pv.FinalAmount > 0 {
-		//退到钱包账户
-		if pv.PaymentSign == payment.SignWalletAccount {
-			err = acc.Refund(member.AccountWallet,
-				member.KindWalletPaymentRefund,
-				"订单退款", o.value.OrderNo, pv.FinalAmount,
-				member.DefaultRelateUser)
-		} else {
-			//原路退回，暂时不实现。直接退到钱包账户
-			err = acc.Refund(member.AccountWallet,
-				member.KindWalletPaymentRefund,
-				"订单退款", o.value.OrderNo, pv.FinalAmount,
-				member.DefaultRelateUser)
-		}
-	}
-	return err
 }
 
 // 取消订单
@@ -1415,12 +1376,10 @@ func (o *subOrderImpl) Cancel(reason string) error {
 	if err == nil {
 		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
 		// 取消支付单
-		domain.HandleError(o.cancelPaymentOrder(), "domain")
-		// 取消商品
-		err = o.cancelGoods()
-		//如果已付款,则取消订单
+		err = o.cancelPaymentOrder()
 		if err == nil {
-			err = o.backupPayment()
+			// 取消商品
+			err = o.cancelGoods()
 		}
 	}
 	return err
@@ -1471,17 +1430,6 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 	return err
 }
 
-// 取消退款申请
-func (o *subOrderImpl) CancelRefund() error {
-	if o.value.State != order.StatAwaitingCancel || o.value.IsPaid == 0 {
-		panic(errors.New("订单已经取消,不允许再退款"))
-	}
-	o.value.State = order.StatAwaitingConfirm
-	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
-	return err
-}
-
 // 谢绝订单
 func (o *subOrderImpl) Decline(reason string) error {
 	if o.value.State == order.StatAwaitingPayment {
@@ -1497,8 +1445,8 @@ func (o *subOrderImpl) Decline(reason string) error {
 	return err
 }
 
-// 退款
-func (o *subOrderImpl) Refund() error {
+// 退款 todo: will delete,代码供取消订单参考
+func (o *subOrderImpl) refund() error {
 	// 已退款
 	if o.value.State == order.StatRefunded ||
 		o.value.State == order.StatCancelled {
@@ -1513,8 +1461,19 @@ func (o *subOrderImpl) Refund() error {
 	o.value.UpdateTime = time.Now().Unix()
 	_, err := o.Save()
 	if err == nil {
-		err = o.backupPayment()
+		err = o.cancelPaymentOrder()
 	}
+	return err
+}
+
+// 取消退款申请
+func (o *subOrderImpl) CancelRefund() error {
+	if o.value.State != order.StatAwaitingCancel || o.value.IsPaid == 0 {
+		panic(errors.New("订单已经取消,不允许再退款"))
+	}
+	o.value.State = order.StatAwaitingConfirm
+	o.value.UpdateTime = time.Now().Unix()
+	_, err := o.Save()
 	return err
 }
 

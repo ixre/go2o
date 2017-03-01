@@ -104,7 +104,7 @@ func (o *orderRepImpl) GetFreeOrderNo(vendorId int32) string {
 	for {
 		order_no = domain.NewOrderNo(int(vendorId), "")
 		var rec int
-		if d.ExecScalar(`SELECT COUNT(0) FROM pt_order where order_no=?`,
+		if d.ExecScalar(`SELECT COUNT(0) FROM sale_order where order_no=?`,
 			&rec, order_no); rec == 0 {
 			break
 		}
