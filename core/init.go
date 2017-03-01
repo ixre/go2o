@@ -116,7 +116,7 @@ func OrmMapping(conn db.Connector) {
 
 	//** ORDER **//
 
-	orm.Mapping(order.ValueOrder{}, "sale_order")
+	orm.Mapping(order.ItemOrder{}, "sale_order")
 	orm.Mapping(order.ValueSubOrder{}, "sale_sub_order")
 
 	orm.Mapping(order.OrderItem{}, "sale_order_item")

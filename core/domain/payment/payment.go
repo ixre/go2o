@@ -297,9 +297,9 @@ func (p *paymentOrderImpl) SetPaymentSign(paymentSign int32) error {
 }
 
 // 绑定订单号,如果交易号为空则绑定参数中传递的交易号
-func (p *paymentOrderImpl) BindOrder(orderId int32, tradeNo string) error {
+func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
 	//todo: check order exists  and tradeNo exists
-	p.value.OrderId = orderId
+	p.value.OrderId = int32(orderId)
 	if len(p.value.TradeNo) == 0 {
 		p.value.TradeNo = tradeNo
 	}
