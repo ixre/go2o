@@ -22,10 +22,10 @@ type (
 	IOrderManager interface {
 		// 创建订单,如果为已存在的订单则没有Cart.
 		// todo:需重构为单独的类型
-		CreateOrder(*Order) IOrder
+		CreateOrder(*ValueOrder) IOrder
 
 		// 生成空白订单,并保存返回对象
-		CreateSubOrder(*SubOrder) ISubOrder
+		CreateSubOrder(*ValueSubOrder) ISubOrder
 
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
@@ -50,19 +50,11 @@ type (
 		// 接收在线交易支付的通知，不主动调用
 		ReceiveNotifyOfOnlineTrade(orderId int32) error
 
-		// 自动设置订单
-		OrderAutoSetup(f func(error))
-
 		// 智能选择门店
 		SmartChoiceShop(address string) (shop.IShop, error)
 
-		// 智能确定订单
-		SmartConfirmOrder(order IOrder) error
-
 		// 根据父订单编号获取购买的商品项
 		GetItemsByParentOrderId(orderId int32) []*OrderItem
-
-		//*********  子订单  *********//
 
 		// 获取子订单
 		GetSubOrder(id int32) ISubOrder
@@ -73,7 +65,7 @@ type (
 		Manager() IOrderManager
 
 		// 保存订单,返回订单编号
-		SaveOrder(v *Order) (int32, error)
+		SaveOrder(v *ValueOrder) (int32, error)
 
 		// 保存订单优惠券绑定
 		SaveOrderCouponBind(*OrderCoupon) error
@@ -88,31 +80,31 @@ type (
 		GetFreeOrderNo(vendorId int32) string
 
 		// 根据编号获取订单
-		GetOrderById(id int32) *Order
+		GetOrderById(id int32) *ValueOrder
 
 		// 根据订单号获取订单
-		GetValueOrderByNo(orderNo string) *Order
+		GetValueOrderByNo(orderNo string) *ValueOrder
 
 		// 获取等待处理的订单
-		GetWaitingSetupOrders(vendorId int32) ([]*Order, error)
+		GetWaitingSetupOrders(vendorId int32) ([]*ValueOrder, error)
 
 		// 保存订单日志
 		SaveSubOrderLog(*OrderLog) error
 
 		// 获取订单的所有子订单
-		GetSubOrdersByParentId(orderId int32) []*SubOrder
+		GetSubOrdersByParentId(orderId int32) []*ValueSubOrder
 
 		// 获取订单编号
 		GetOrderId(orderNo string, subOrder bool) int32
 
 		// 获取子订单
-		GetSubOrder(id int32) *SubOrder
+		GetSubOrder(id int32) *ValueSubOrder
 
 		// 根据订单号获取子订单
-		GetSubOrderByNo(orderNo string) *SubOrder
+		GetSubOrderByNo(orderNo string) *ValueSubOrder
 
 		// 保存子订单
-		SaveSubOrder(value *SubOrder) (int32, error)
+		SaveSubOrder(value *ValueSubOrder) (int32, error)
 
 		// 保存子订单的商品项,并返回编号和错误
 		SaveOrderItem(subOrderId int32, value *OrderItem) (int32, error)

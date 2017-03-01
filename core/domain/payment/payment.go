@@ -280,7 +280,9 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 		member.DefaultRelateUser, true)
 	if err == nil {
 		p.value.PaymentSign = payment.SignWalletAccount
-		p.value.FinalAmount = 0
+		// 标记为第一次支付
+		p.firstFinishPayment = true
+		p.value.State = payment.StateFinishPayment
 		p.value.PaidTime = time.Now().Unix()
 		_, err = p.save()
 	}
@@ -358,23 +360,17 @@ func (p *paymentOrderImpl) GetValue() payment.PaymentOrder {
 
 // 取消支付
 func (p *paymentOrderImpl) Cancel() error {
-	//log.Println("--- 支付单取消:", p.value.TradeNo)
+	oriState := p.value.State //支付单原始状态
 	p.value.State = payment.StateHasCancel
 	_, err := p.save()
 	if err == nil {
+		// log.Println(fmt.Sprintf("-- 支付单详情：%#v",p.value))
 		mm := p.getBuyer()
 		if mm == nil {
 			return member.ErrNoSuchMember
 		}
-		acc := mm.GetAccount()
 		pv := p.GetValue()
-		//退到钱包账户
-		if pv.PaymentSign == payment.SignWalletAccount {
-			return acc.Refund(member.AccountWallet,
-				member.KindWalletPaymentRefund,
-				"订单退款", pv.TradeNo, pv.FinalAmount,
-				member.DefaultRelateUser)
-		}
+		acc := mm.GetAccount()
 		//退回到余额
 		if p.value.BalanceDiscount > 0 {
 			err = acc.Refund(member.AccountBalance,
@@ -384,6 +380,16 @@ func (p *paymentOrderImpl) Cancel() error {
 		//退积分
 		if pv.IntegralDiscount > 0 {
 			//todo : 退换积分,暂时积分抵扣的不退款
+		}
+		// 如果已经支付，则将支付的款项退回到账户
+		if oriState == payment.StateFinishPayment {
+			//退到钱包账户
+			if pv.PaymentSign == payment.SignWalletAccount {
+				return acc.Refund(member.AccountWallet,
+					member.KindWalletPaymentRefund,
+					"订单退款", pv.TradeNo, pv.FinalAmount,
+					member.DefaultRelateUser)
+			}
 		}
 	}
 	return err

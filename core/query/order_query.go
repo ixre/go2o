@@ -87,7 +87,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
         vendor_id,o.shop_id,s.name as shop_name,
-        o.goods_amount,o.discount_amount,o.express_fee,
+        o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
             INNER JOIN mch_shop s ON o.shop_id=s.id
@@ -100,7 +100,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 					Items: []*dto.OrderItem{},
 				}
 				rs.Scan(&e.Id, &e.OrderNo, &e.ParentNo, &e.VendorId, &e.ShopId,
-					&e.ShopName, &e.GoodsAmount, &e.DiscountAmount, &e.ExpressFee,
+					&e.ShopName, &e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
 					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.State, &e.CreateTime)
 				e.StateText = order.OrderState(e.State).String()
 				orderList = append(orderList, e)
@@ -170,7 +170,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 
 	// 查询分页的订单
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
-		o.buyer_id,mp.name as buyer_name,o.goods_amount,o.discount_amount,o.express_fee,
+		o.buyer_id,mp.name as buyer_name,o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
          FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
          INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
@@ -183,7 +183,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 					Items: []*dto.OrderItem{},
 				}
 				rs.Scan(&e.Id, &e.OrderNo, &e.ParentNo, &e.BuyerId, &e.BuyerName,
-					&e.GoodsAmount, &e.DiscountAmount, &e.ExpressFee,
+					&e.ItemAmount, &e.DiscountAmount, &e.ExpressFee,
 					&e.PackageFee, &e.FinalAmount, &e.IsPaid, &e.State, &e.CreateTime)
 				e.StateText = order.OrderState(e.State).String()
 				orderList = append(orderList, e)

@@ -100,3 +100,11 @@ func NewTradeNoFromStorage(s storage.Interface, prefix string) string {
 	}
 	return ""
 }
+
+// 生成16位唯一的md5购物车码
+func GenerateCartCode(unix int64, nano int) string {
+	str := fmt.Sprintf("%d-%d*%d-%d", unix, nano,
+		unix%int64(nano), util.RandInt(1000))
+	result := crypto.Md5([]byte(str))
+	return result[8:24]
+}

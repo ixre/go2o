@@ -220,7 +220,7 @@ type (
 		ConsigneePerson string `db:"consignee_person"` //收货人
 		ConsigneePhone  string `db:"consignee_phone"`  //电话
 		ShippingAddress string `db:"shipping_address"` //地址
-		GoodsAmount     int    `db:"goods_amount"`
+		ItemAmount      int    `db:"item_amount"`
 		FinalAmount     int    `db:"final_amount"`
 		IsPaid          int    `db:"is_paid"`
 	}

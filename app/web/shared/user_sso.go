@@ -11,7 +11,6 @@ package shared
 import (
 	"errors"
 	"github.com/jsix/goex/echox"
-	"github.com/jsix/gof/log"
 	gu "github.com/jsix/gof/util"
 	"go2o/app/util"
 	"go2o/core/service/rsi"
@@ -111,7 +110,6 @@ func (u *UserSync) ssoDisconnect(c *echox.Context, callback string) error {
 			ck.Path = "/"
 			ck.Expires = expires
 			http.SetCookie(rsp, ck)
-			log.Println(expires.Format("2006-01-02 15:04:05"))
 		}
 	}
 	return nil

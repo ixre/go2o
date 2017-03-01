@@ -11,57 +11,18 @@ package daemon
 
 import (
 	"database/sql"
-	"github.com/jsix/gof"
 	"github.com/jsix/gof/db/orm"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/infrastructure/tool"
-	"go2o/core/service/rsi"
 	"log"
 	"sync"
 	"time"
 )
 
 var (
-	mchIds []int32
-)
-
-func getMerchants() []int32 {
-	if mchIds == nil {
-		mchIds = rsi.MerchantService.GetMerchantsId()
-	}
-	return mchIds
-}
-
-/***** OLD CODE *****/
-// todo: 等待重构
-
-func orderDaemon(app gof.App) {
-	defer recoverDaemon()
-	ids := getMerchants()
-	for _, v := range ids {
-		autoSetOrder(v)
-	}
-}
-
-func autoSetOrder(mchId int32) {
-	f := func(err error) {
-		appCtx.Log().Error(err)
-	}
-	rsi.ShoppingService.OrderAutoSetup(mchId, f)
-}
-
-var (
 	mchDayChartKey string = "cron:go2o:d:mch:day-chart-unix"
 )
-
-func testGenerateMchDayChart() {
-	dt := time.Now().Add(time.Hour * -24 * 15)
-	for i := 0; i < 15; i++ {
-		st, et := tool.GetStartEndUnix(dt.Add(time.Hour * 24 * time.Duration(i)))
-		generateMchDayChart(st, et)
-	}
-}
 
 // 商户每日报表
 func mchDayChart() {

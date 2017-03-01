@@ -428,31 +428,93 @@ DROP TABLE `sale_cart`;
 DROP TABLE `sale_cart_item`;
 CREATE TABLE sale_cart (
   id          int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  code        varchar(32) comment '购物车编码',
-  buyer_id    int(11) comment '买家编号',
-  shop_id     int(11) comment '店铺编号',
-  deliver_id  int(11) comment '送货地址',
-  payment_opt int(11) comment '支付选项',
-  create_time int(11) comment '创建时间',
-  update_time int(11) comment '修改时间',
+  code        varchar(32) NOT NULL comment '购物车编码',
+  buyer_id    int(11) NOT NULL comment '买家编号',
+  deliver_id  int(11) NOT NULL comment '送货地址',
+  payment_opt int(11) NOT NULL comment '支付选项',
+  create_time int(11) NOT NULL comment '创建时间',
+  update_time int(11) NOT NULL comment '修改时间',
   PRIMARY KEY (id)) comment='购物车';
 
-
-  CREATE TABLE sale_cart_item (
+CREATE TABLE sale_cart_item (
   id        int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  cart_id   int(11) comment '购物车编号',
-  vendor_id int(11) comment '运营商编号',
-  shop_id   int(11) comment '店铺编号',
-  item_id   int(11) comment '商品编号',
-  sku_id    int(11) comment 'SKU编号',
-  quantity  int(8) comment '数量',
-  checked   bit(1) comment '是否勾选结算',
+  cart_id   int(11) NOT NULL comment '购物车编号',
+  vendor_id int(11) NOT NULL comment '运营商编号',
+  shop_id   int(11) NOT NULL comment '店铺编号',
+  item_id   int(11) NOT NULL comment '商品编号',
+  sku_id    int(11) NOT NULL comment 'SKU编号',
+  quantity  int(8) NOT NULL comment '数量',
+  checked   int(2) NOT NULL comment '是否勾选结算',
   PRIMARY KEY (id)) comment='购物车商品项';
 
+/* 2017-02-28 */
+
+/* 订单表更名或者删除后，再重新创建订单 */
+CREATE TABLE sale_order (
+  id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_no         varchar(20) NOT NULL comment '订单号',
+  buyer_id         int(11) NOT NULL comment '买家编号',
+  item_amount     decimal(8, 2) NOT NULL comment '商品金额',
+  discount_amount  decimal(8, 2) NOT NULL comment '抵扣金额',
+  express_fee      decimal(8, 2) NOT NULL comment '物流费',
+  package_fee      decimal(4, 2) NOT NULL comment '包装费',
+  final_amount     decimal(8, 2) NOT NULL comment '订单最终金额',
+  consignee_person varchar(45) NOT NULL comment '收货人姓名',
+  consignee_phone  varchar(45) NOT NULL comment '收货人电话',
+  shipping_address varchar(120) NOT NULL comment '收货人地址',
+  create_time      int(11) NOT NULL comment '创建时间',
+  update_time      int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='订单';
 
 
+CREATE TABLE sale_sub_order (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_no        varchar(20) NOT NULL comment '订单号',
+  parent_order    int(11) NOT NULL comment '父订单编号',
+  buyer_id        int(11) NOT NULL comment '买家编号',
+  vendor_id       int(11) NOT NULL comment '商家编号',
+  shop_id         int(11) NOT NULL comment '店铺编号',
+  subject         varchar(45) NOT NULL comment '主题',
+  item_amount     decimal(8, 2) NOT NULL comment '商品总价',
+  discount_amount decimal(8, 2) NOT NULL comment '抵扣金额',
+  express_fee     decimal(4, 2) NOT NULL comment '运费',
+  package_fee     decimal(4, 2) NOT NULL comment '包装费',
+  final_amount    decimal(8, 2) NOT NULL comment '订单最终金额',
+  is_paid         int(2) NOT NULL comment '是否支付',
+  is_suspend      int(2) NOT NULL comment '是否挂起',
+  remark          varchar(120) NOT NULL comment '订单备注',
+  buyer_remark    varchar(120) NOT NULL comment '订单买家备注',
+  state           int(2) NOT NULL comment '订单状态',
+  create_time     int(11) NOT NULL comment '订单创建时间',
+  update_time     int(11) NOT NULL comment '订单更新时间',
+  PRIMARY KEY (id)) comment='子订单';
 
+/*
+ALTER TABLE `sale_sub_order`
+DROP COLUMN `items_info`,
+CHANGE COLUMN `remark` `remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单备注' AFTER `is_suspend`,
+CHANGE COLUMN `state` `state` INT(2) NOT NULL COMMENT '订单状态' AFTER `buyer_remark`,
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `order_no` `order_no` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单号' ,
+CHANGE COLUMN `parent_order` `parent_order` INT(11) NOT NULL COMMENT '父订单编号' ,
+CHANGE COLUMN `buyer_id` `buyer_id` INT(11) NOT NULL COMMENT '买家编号' ,
+CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NOT NULL COMMENT '商家编号' ,
+CHANGE COLUMN `shop_id` `shop_id` INT(11) NOT NULL COMMENT '店铺编号' ,
+CHANGE COLUMN `subject` `subject` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '主题' ,
+CHANGE COLUMN `goods_amount` `item_amount` DECIMAL(8,2) NOT NULL COMMENT '商品总价' ,
+CHANGE COLUMN `discount_amount` `discount_amount` DECIMAL(8,2) NOT NULL COMMENT '抵扣金额' ,
+CHANGE COLUMN `express_fee` `express_fee` DECIMAL(4,2) NOT NULL COMMENT '运费' ,
+CHANGE COLUMN `package_fee` `package_fee` DECIMAL(4,2) NOT NULL COMMENT '包装费' ,
+CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '订单最终金额' ,
+CHANGE COLUMN `is_paid` `is_paid` INT(2) NOT NULL COMMENT '是否支付' ,
+CHANGE COLUMN `is_suspend` `is_suspend` INT(2) NOT NULL COMMENT '是否挂起' ,
+CHANGE COLUMN `note` `buyer_remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单买家备注' ,
+CHANGE COLUMN `create_time` `create_time` INT(11) NOT NULL COMMENT '订单创建时间' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '订单更新时间' ,
+COMMENT = '子订单' ;
+*/
 
+/* 2017-03-01 */
 
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',

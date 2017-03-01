@@ -28,7 +28,7 @@ type (
 		// 订单详情
 		ItemsInfo string `db:"items_info" json:"itemsInfo"`
 		// 商品金额
-		GoodsAmount float32 `db:"goods_amount"`
+		ItemAmount float32 `db:"item_amount"`
 		// 优惠减免金额
 		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
 		// 运费
@@ -58,7 +58,7 @@ type (
 	/*
 	   o.order_no,po.order_no as parent_no,
 	       vendor_id,o.shop_id,s.name as shop_name,
-	       o.goods_amount,o.discount_amount,o.express_fee,
+	       o.item_amount,o.discount_amount,o.express_fee,
 	       o.package_fee,o.final_fee,o.status
 	*/
 	// 会员分页子订单
@@ -69,7 +69,7 @@ type (
 		VendorId       int
 		ShopId         int
 		ShopName       string
-		GoodsAmount    float32
+		ItemAmount     float32
 		DiscountAmount float32
 		ExpressFee     float32
 		PackageFee     float32
@@ -91,7 +91,7 @@ type (
 		//VendorId    int
 		//ShopId      int
 		//ShopName    string
-		GoodsAmount    float32
+		ItemAmount     float32
 		DiscountAmount float32
 		ExpressFee     float32
 		PackageFee     float32
@@ -152,14 +152,14 @@ func ParseSubOrder(v *order.SubOrder) *SubOrder {
         ShopId:v.ShopId,
         Subject:v.Subject,
         ItemsInfo:v.ItemsInfo,
-        GoodsAmount:v.GoodsAmount,
+        ItemAmount:v.ItemAmount,
         DiscountAmount:v.DiscountAmount,
         ExpressFee:v.ExpressFee,
         PackageFee:v.PackageFee,
         FinalAmount:v.FinalAmount,
         IsPaid:v.IsPaid,
         IsSuspend:v.IsSuspend,
-        Note:v.Note,
+        Note:v.BuyerRemark,
         Remark:v.Remark,
         UpdateTime:v.UpdateTime,
         State:v.State,

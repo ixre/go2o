@@ -135,7 +135,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 	return err
 }
 
-func HandleCashBackDataTag(m member.IMember, order *order.Order,
+func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
@@ -150,7 +150,7 @@ func HandleCashBackDataTag(m member.IMember, order *order.Order,
 	cashBack3R(level, m, order, c, memberRepo)
 }
 
-func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
+func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 
 	dt := c.GetDataTag()
 
@@ -192,7 +192,7 @@ func cashBack3R(level int, m member.IMember, order *order.Order, c promotion.ICa
 	}
 }
 
-func backCashForMember(m member.IMember, order *order.Order,
+func backCashForMember(m member.IMember, order *order.ValueOrder,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()

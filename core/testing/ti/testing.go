@@ -30,18 +30,18 @@ import (
 )
 
 var (
-	app gof.App
+	app *testingApp
 )
 
 func GetApp() gof.App {
 	if app == nil {
-
 		app = new(testingApp)
 		app.Config().Set("redis_host", "172.16.69.128")
 		app.Config().Set("redis_db", "10")
 		app.Config().Set("redis_port", "6379")
 		app.Config().Set("redis_auth", "123456")
 		gof.CurrentApp = app
+		app.Init(true, true)
 	}
 	return app
 }
