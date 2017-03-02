@@ -18,7 +18,6 @@ import (
 	"go2o/core"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/delivery"
-	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -99,6 +98,20 @@ func (o *orderRepImpl) Manager() order.IOrderManager {
 	return o._manager
 }
 
+// 生成订单
+func (o *orderRepImpl) CreateOrder(val *order.Order) order.IOrder {
+	return orderImpl.FactoryNew(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
+		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
+		o._payRepo, o._valRepo)
+}
+
+// 生成空白订单,并保存返回对象
+func (o *orderRepImpl) CreateNormalSubOrder(v *order.NormalSubOrder) order.ISubOrder {
+	return orderImpl.NewSubNormalOrder(v, o.Manager(), o, o._memberRepo,
+		o._goodsRepo, o._shipRepo, o._productRepo,
+		o._valRepo, o._mchRepo)
+}
+
 // 获取可用的订单号
 func (o *orderRepImpl) GetFreeOrderNo(vendorId int32) string {
 	//todo:实际应用需要预先生成订单号
@@ -122,7 +135,7 @@ func (o *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 }
 
 // 根据编号获取订单
-func (o *orderRepImpl) GetOrderById(id int64) *order.NormalOrder {
+func (o *orderRepImpl) GetNormalOrderById(id int64) *order.NormalOrder {
 	e := &order.NormalOrder{}
 	k := o.getOrderCk(id, false)
 	if o.Storage.Get(k, e) != nil {
@@ -135,28 +148,16 @@ func (o *orderRepImpl) GetOrderById(id int64) *order.NormalOrder {
 }
 
 // 根据订单号获取订单
-func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.NormalOrder {
+func (o *orderRepImpl) GetNormalOrderByNo(orderNo string) *order.NormalOrder {
 	id := o.GetOrderId(orderNo, false)
 	if id > 0 {
-		return o.GetOrderById(id)
+		return o.GetNormalOrderById(id)
 	}
 	return nil
 }
 
-// 获取等待处理的订单
-func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int32) ([]*order.NormalOrder, error) {
-	dst := []*order.NormalOrder{}
-	err := o.Connector.GetOrm().Select(&dst,
-		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+
-			enum.ORDER_SETUP_STATE+")", vendorId)
-	if err != nil {
-		return nil, err
-	}
-	return dst, err
-}
-
 // 保存订单日志
-func (o *orderRepImpl) SaveSubOrderLog(v *order.OrderLog) error {
+func (o *orderRepImpl) SaveNormalSubOrderLog(v *order.OrderLog) error {
 	_, _, err := o.Connector.GetOrm().Save(nil, v)
 	return err
 }
@@ -183,14 +184,6 @@ func (o *orderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
 	return items
 }
 
-// 根据父订单编号获取购买的商品项
-func (o *orderRepImpl) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
-	var items = []*order.SubOrderItem{}
-	o.Connector.GetOrm().SelectByQuery(&items,
-		"order_id IN (SELECT id FROM sale_sub_order WHERE order_pid=?)", orderId)
-	return items
-}
-
 func (o *orderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 	id, err := orm.Save(o.GetOrm(), v, int(v.ID))
 	if err == nil {
@@ -203,9 +196,9 @@ func (o *orderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
 }
 
 // 获取订单的所有子订单
-func (o *orderRepImpl) GetSubOrdersByParentId(orderId int64) []*order.NormalSubOrder {
+func (o *orderRepImpl) GetNormalSubOrders(orderId int64) []*order.NormalSubOrder {
 	list := []*order.NormalSubOrder{}
-	o.GetOrm().Select(&list, "order_pid=?", orderId)
+	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list
 }
 

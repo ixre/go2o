@@ -18,7 +18,6 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
-	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
@@ -26,14 +25,13 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
-	"go2o/core/infrastructure/lbs"
 	"time"
 )
 
 var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
-	rep          order.IOrderRepo
+	repo         order.IOrderRepo
 	productRepo  product.IProductRepo
 	cartRepo     cart.ICartRepo
 	goodsRepo    item.IGoodsItemRepo
@@ -55,7 +53,7 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {
 	return &orderManagerImpl{
-		rep:          rep,
+		repo:         rep,
 		cartRepo:     cartRepo,
 		productRepo:  productRepo,
 		goodsRepo:    goodsRepo,
@@ -68,20 +66,6 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 		expressRepo:  expressRepo,
 		shipRepo:     shipRepo,
 	}
-}
-
-// 生成订单
-func (o *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
-	return FactoryNew(val, o, o.rep, o.mchRepo, o.goodsRepo,
-		o.productRepo, o.promRepo, o.memberRepo, o.expressRepo,
-		o.paymentRepo, o.valRepo)
-}
-
-// 生成空白订单,并保存返回对象
-func (t *orderManagerImpl) CreateSubOrder(v *order.NormalSubOrder) order.ISubOrder {
-	return NewSubOrder(v, t, t.rep, t.memberRepo,
-		t.goodsRepo, t.shipRepo, t.productRepo,
-		t.valRepo, t.mchRepo)
 }
 
 // 在下单前检查购物车
@@ -117,7 +101,7 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
-	o := t.CreateOrder(val)
+	o := t.repo.CreateOrder(val)
 	if o.Type() != order.TRetail {
 		panic("unknown order type")
 	}
@@ -149,25 +133,7 @@ func (t *orderManagerImpl) PrepareOrder(c cart.ICart, addressId int32,
 }
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
-	return t.rep.GetFreeOrderNo(vendorId)
-}
-
-// 智能选择门店
-func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
-	//todo: 应只选择线下实体店
-	//todo: AggregateRootId
-	dly := t.deliveryRepo.GetDelivery(-1)
-
-	lng, lat, err := lbs.GetLocation(address)
-	if err != nil {
-		return nil, errors.New("无法识别的地址：" + address)
-	}
-	var cov delivery.ICoverageArea = dly.GetNearestCoverage(lng, lat)
-	if cov == nil {
-		return nil, delivery.ErrNotCoveragedArea
-	}
-	shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
-	return t.mch.ShopManager().GetShop(shopId), err
+	return t.repo.GetFreeOrderNo(vendorId)
 }
 
 // 生成支付单
@@ -308,18 +274,18 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 
 // 根据订单编号获取订单
 func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
-	val := t.rep.GetOrder("id=?", orderId)
+	val := t.repo.GetOrder("id=?", orderId)
 	if val != nil {
-		return t.CreateOrder(val)
+		return t.repo.CreateOrder(val)
 	}
 	return nil
 }
 
 // 根据订单号获取订单
 func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
-	val := t.rep.GetOrder("order_no=?", orderNo)
+	val := t.repo.GetOrder("order_no=?", orderNo)
 	if val != nil {
-		return t.CreateOrder(val)
+		return t.repo.CreateOrder(val)
 	}
 	return nil
 }
@@ -339,13 +305,8 @@ func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int64) error {
 
 // 获取子订单
 func (t *orderManagerImpl) GetSubOrder(id int64) order.ISubOrder {
-	if v := t.rep.GetSubOrder(id); v != nil {
-		return t.CreateSubOrder(v)
+	if v := t.repo.GetSubOrder(id); v != nil {
+		return t.repo.CreateNormalSubOrder(v)
 	}
 	return nil
-}
-
-// 根据父订单编号获取购买的商品项
-func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
-	return t.rep.GetItemsByParentOrderId(orderId)
 }

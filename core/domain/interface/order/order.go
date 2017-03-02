@@ -70,6 +70,8 @@ const (
 	StatShipped = 6
 	// 订单完成
 	StatCompleted = 7
+	// 订单已拆分
+	StatBreak = 8
 
 	/****** 售后状态 ******/
 
@@ -197,9 +199,6 @@ var (
 	ErrOrderShippedCancel *domain.DomainError = domain.NewDomainError(
 		"err_order_shipped_cancel", "订单已发货，无法取消")
 
-	ErrDisallowCancel *domain.DomainError = domain.NewDomainError(
-		"err_order_can_not_cancel", "订单已付款、无法取消")
-
 	ErrHasRefund *domain.DomainError = domain.NewDomainError(
 		"err_order_has_refund", "订单已经退款")
 
@@ -229,9 +228,19 @@ type (
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
-
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
+		// 在线支付交易完成
+		OnlinePaymentTradeFinish() error
+		// 设置配送地址
+		SetDeliveryAddress(addressId int32) error
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
+		//根据运营商拆单,返回拆单结果,及拆分的订单数组
+		//BreakUpByVendor() ([]IOrder, error)
+		// 获取子订单列表
+		GetSubOrders() []ISubOrder
+
 		// 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
 		// 获取应用的优惠券
@@ -243,20 +252,6 @@ type (
 			saveFee float32, integral int)
 		// 获取促销绑定
 		GetPromotionBinds() []*OrderPromotionBind
-		// 在线支付交易完成
-		OnlinePaymentTradeFinish() error
-		// 设置配送地址
-		SetDeliveryAddress(addressId int32) error
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
-		Submit() error
-		//根据运营商拆单,返回拆单结果,及拆分的订单数组
-		//BreakUpByVendor() ([]IOrder, error)
-		// 获取子订单列表
-		GetSubOrders() []ISubOrder
-	}
-
-	// 零售订单
-	IRetailOrder interface {
 	}
 
 	ISubOrder interface {
@@ -270,8 +265,6 @@ type (
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-		// 设置Shop,如果不需要记录日志，则remark传递空
-		SetShop(shopId int32) error
 		// 添加备注
 		AddRemark(string)
 		// 确认订单
@@ -294,16 +287,8 @@ type (
 		RevertReturn(snapshotId int32, quantity int32) error
 		// 谢绝订单
 		Decline(reason string) error
-		// 保存订单
-		Save() (int64, error)
-	}
-
-	// 简单商品信息
-	OrderGoods struct {
-		GoodsId    int32  `json:"id"`
-		GoodsImage string `json:"img"`
-		Name       string `json:"name"`
-		Quantity   int32  `json:"qty"`
+		// 提交子订单
+		Submit() (int64, error)
 	}
 
 	// 订单
@@ -393,8 +378,6 @@ type (
 		OrderNo string `db:"order_no"`
 		// 订单编号
 		OrderId int64 `db:"order_id"`
-		// 父订单编号
-		OrderPid int64 `db:"order_pid"`
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int32 `db:"buyer_id"`
 		// 运营商编号

@@ -85,7 +85,7 @@ func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	if o.value == nil {
 		id := o.GetAggregateRootId()
 		if id > 0 {
-			o.value = o.repo.GetOrderById(id)
+			o.value = o.repo.GetNormalOrderById(id)
 		}
 	}
 	return o.value
@@ -647,19 +647,16 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	if newOrderNo {
 		orderNo = o.manager.GetFreeOrderNo(vendorId)
 	}
-
 	if len(items) == 0 {
 		domain.HandleError(errors.New("拆分订单,运营商下未获取到商品,订单:"+
 			orderNo), "domain")
 		return nil
 	}
-
 	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
 		VendorId: vendorId,
 		OrderId:  o.GetAggregateRootId(),
-		OrderPid: parentOrderId,
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,
 		// 总金额
@@ -690,7 +687,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 	// 最终金额 = 商品金额 - 商品抵扣金额(促销折扣) + 包装费 + 快递费
 	v.FinalAmount = v.ItemAmount - v.DiscountAmount +
 		v.PackageFee + v.ExpressFee
-	return o.manager.CreateSubOrder(v)
+	return o.repo.CreateNormalSubOrder(v)
 }
 
 //根据运营商拆单,返回拆单结果,及拆分的订单数组
@@ -711,10 +708,14 @@ func (o *normalOrderImpl) breakUpByVendor() []order.ISubOrder {
 	for k, v := range o.vendorItemsMap {
 		//log.Println("----- vendor ", k, len(v),l)
 		list[i] = o.createSubOrderByVendor(parentOrderId, buyerId, k, l > 1, v)
-		if _, err := list[i].Save(); err != nil {
+		if _, err := list[i].Submit(); err != nil {
 			domain.HandleError(err, "domain")
 		}
 		i++
+	}
+	// 设置订单为已拆分状态
+	if l > 1 {
+		o.saveOrderState(order.StatBreak)
 	}
 	return list
 }
@@ -742,9 +743,10 @@ func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
 		panic(order.ErrNoYetCreated)
 	}
 	if o.subList == nil {
-		subList := o.orderRepo.GetSubOrdersByParentId(orderId)
+		subList := o.orderRepo.GetNormalSubOrders(orderId)
 		for _, v := range subList {
-			o.subList = append(o.subList, o.manager.CreateSubOrder(v))
+			sub := o.repo.CreateNormalSubOrder(v)
+			o.subList = append(o.subList, sub)
 		}
 	}
 	return o.subList
@@ -867,7 +869,7 @@ type subOrderImpl struct {
 	mchRepo         merchant.IMerchantRepo
 }
 
-func NewSubOrder(v *order.NormalSubOrder,
+func NewSubNormalOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
 	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
@@ -923,17 +925,6 @@ func (o *subOrderImpl) AddRemark(remark string) {
 	o.value.Remark = remark
 }
 
-// 设置Shop
-func (o *subOrderImpl) SetShop(shopId int32) error {
-	//todo:验证Shop
-	o.value.ShopId = shopId
-	if o.value.State == order.StatAwaitingShipment {
-		panic("not impl")
-		// o.Confirm()
-	}
-	return nil
-}
-
 func (o *subOrderImpl) saveOrderItems() error {
 	unix := time.Now().Unix()
 	id := o.GetDomainId()
@@ -948,15 +939,15 @@ func (o *subOrderImpl) saveOrderItems() error {
 	return nil
 }
 
-// 保存订单
-func (o *subOrderImpl) Save() (int64, error) {
-	unix := time.Now().Unix()
-	o.value.UpdateTime = unix
+// 提交子订单
+func (o *subOrderImpl) Submit() (int64, error) {
 	if o.GetDomainId() > 0 {
-		return o.rep.SaveSubOrder(o.value)
+		panic("suborder is created!")
 	}
 	if o.value.CreateTime <= 0 {
+		unix := time.Now().Unix()
 		o.value.CreateTime = unix
+		o.value.UpdateTime = unix
 	}
 	id, err := o.rep.SaveSubOrder(o.value)
 	if err == nil {
@@ -965,6 +956,31 @@ func (o *subOrderImpl) Save() (int64, error) {
 		o.AppendLog(order.LogSetup, true, "{created}")
 	}
 	return id, err
+}
+
+// 保存订单
+func (o *subOrderImpl) saveSubOrder() error {
+	unix := time.Now().Unix()
+	o.value.UpdateTime = unix
+	if o.GetDomainId() <= 0 {
+		panic("please use Submit() to create new suborder!")
+	}
+	_, err := o.rep.SaveSubOrder(o.value)
+	if err == nil {
+		o.syncOrderState()
+	}
+	return err
+}
+
+// 同步订单状态
+func (o *subOrderImpl) syncOrderState() {
+	if bo := o.baseOrder(); bo != nil {
+		oi := bo.(*baseOrderImpl)
+		if oi.baseValue.State != int32(order.StatBreak) {
+			oi.saveOrderState(order.OrderState(o.value.State))
+		}
+	}
+
 }
 
 // 订单完成支付
@@ -977,7 +993,7 @@ func (o *subOrderImpl) orderFinishPaid() error {
 		o.value.State = order.StatAwaitingConfirm
 		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
 		if err == nil {
-			_, err = o.Save()
+			err = o.saveSubOrder()
 		}
 		return err
 	}
@@ -994,7 +1010,7 @@ func (o *subOrderImpl) Suspend(reason string) error {
 	o.value.IsSuspend = 1
 	o.internalSuspend = true
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
+	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "订单已锁定"+reason)
 	}
@@ -1020,7 +1036,7 @@ func (o *subOrderImpl) AppendLog(logType order.LogType, system bool, message str
 		Message:    message,
 		RecordTime: time.Now().Unix(),
 	}
-	return o.rep.SaveSubOrderLog(l)
+	return o.rep.SaveNormalSubOrderLog(l)
 }
 
 // 确认订单
@@ -1038,7 +1054,7 @@ func (o *subOrderImpl) Confirm() (err error) {
 	}
 	o.value.State = order.StatAwaitingPickup
 	o.value.UpdateTime = time.Now().Unix()
-	_, err = o.Save()
+	err = o.saveSubOrder()
 	if err == nil {
 		go o.addSalesNum()
 		err = o.AppendLog(order.LogSetup, false, "{confirm}")
@@ -1069,7 +1085,7 @@ func (o *subOrderImpl) PickUp() error {
 	}
 	o.value.State = order.StatAwaitingShipment
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
+	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "{pickup}")
 	}
@@ -1103,12 +1119,12 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	if err == nil {
 		o.value.State = order.StatShipped
 		o.value.UpdateTime = time.Now().Unix()
-		if _, err = o.Save(); err != nil {
-			return err
+		err = o.saveSubOrder()
+		if err == nil {
+			// 保存商品的发货状态
+			err = o.saveOrderItems()
+			o.AppendLog(order.LogSetup, true, "{shipped}")
 		}
-		// 保存商品的发货状态
-		err = o.saveOrderItems()
-		o.AppendLog(order.LogSetup, true, "{shipped}")
 	}
 	return err
 }
@@ -1158,15 +1174,15 @@ func (o *subOrderImpl) BuyerReceived() error {
 	o.value.State = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
 	o.value.IsSuspend = 0
-	if _, err = o.Save(); err != nil {
-		return err
-	}
-	err = o.AppendLog(order.LogSetup, true, "{completed}")
+	err = o.saveSubOrder()
 	if err == nil {
-		go o.vendorSettle()
-		// 执行其他的操作
-		if err2 := o.onOrderComplete(); err != nil {
-			domain.HandleError(err2, "domain")
+		err = o.AppendLog(order.LogSetup, true, "{completed}")
+		if err == nil {
+			go o.vendorSettle()
+			// 执行其他的操作
+			if err2 := o.onOrderComplete(); err != nil {
+				domain.HandleError(err2, "domain")
+			}
 		}
 	}
 	return err
@@ -1377,7 +1393,7 @@ func (o *subOrderImpl) Cancel(reason string) error {
 
 	o.value.State = order.StatCancelled
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
+	err := o.saveSubOrder()
 	if err == nil {
 		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
 		// 取消支付单
@@ -1431,8 +1447,7 @@ func (o *subOrderImpl) SubmitRefund(reason string) error {
 	}
 	o.value.State = order.StatAwaitingCancel
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
-	return err
+	return o.saveSubOrder()
 }
 
 // 谢绝订单
@@ -1446,8 +1461,7 @@ func (o *subOrderImpl) Decline(reason string) error {
 	}
 	o.value.State = order.StatDeclined
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
-	return err
+	return o.saveSubOrder()
 }
 
 // 退款 todo: will delete,代码供取消订单参考
@@ -1464,7 +1478,7 @@ func (o *subOrderImpl) refund() error {
 	}
 	o.value.State = order.StatRefunded
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
+	err := o.saveSubOrder()
 	if err == nil {
 		err = o.cancelPaymentOrder()
 	}
@@ -1478,8 +1492,7 @@ func (o *subOrderImpl) CancelRefund() error {
 	}
 	o.value.State = order.StatAwaitingConfirm
 	o.value.UpdateTime = time.Now().Unix()
-	_, err := o.Save()
-	return err
+	return o.saveSubOrder()
 }
 
 // 退款申请

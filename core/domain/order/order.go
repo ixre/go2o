@@ -66,6 +66,14 @@ func (o *baseOrderImpl) saveOrder() error {
 	return err
 }
 
+// 设置并订单状态
+func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
+	if o.baseValue.State != int32(order.StatBreak) {
+		o.baseValue.State = int32(state)
+		o.saveOrder()
+	}
+}
+
 // 复合的订单信息
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {

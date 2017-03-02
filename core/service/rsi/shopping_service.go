@@ -27,7 +27,7 @@ import (
 var _ define.SaleService = new(shoppingService)
 
 type shoppingService struct {
-	_rep        order.IOrderRepo
+	_repo       order.IOrderRepo
 	_itemRepo   product.IProductRepo
 	_goodsRepo  proItem.IGoodsItemRepo
 	_cartRepo   cart.ICartRepo
@@ -41,7 +41,7 @@ func NewShoppingService(r order.IOrderRepo,
 	itemRepo product.IProductRepo, goodsRepo proItem.IGoodsItemRepo,
 	mchRepo merchant.IMerchantRepo, orderQuery *query.OrderQuery) *shoppingService {
 	return &shoppingService{
-		_rep:        r,
+		_repo:       r,
 		_itemRepo:   itemRepo,
 		_cartRepo:   cartRepo,
 		_goodsRepo:  goodsRepo,
@@ -270,20 +270,6 @@ func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 	return od.OrderNo(), py.GetTradeNo(), err
 }
 
-func (s *shoppingService) SetDeliverShop(orderNo string,
-	shopId int32) (err error) {
-	o := s._manager.GetOrderByNo(orderNo)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-
-	panic("not implement")
-	//if err = o.SetShop(shopId); err == nil {
-	//	_, err = o.Save()
-	//}
-	return err
-}
-
 // 根据编号获取订单
 func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
 	o := s._manager.GetOrderById(id)
@@ -313,13 +299,13 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 根据订单号获取订单
-func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.NormalOrder {
-	return s._rep.GetValueOrderByNo(orderNo)
+func (s *shoppingService) GetNormalOrderByNo(orderNo string) *order.NormalOrder {
+	return s._repo.GetNormalOrderByNo(orderNo)
 }
 
 // 获取子订单
 func (s *shoppingService) GetSubOrder(id int64) (r *define.SubOrder, err error) {
-	o := s._rep.GetSubOrder(id)
+	o := s._repo.GetSubOrder(id)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
 	}
@@ -328,7 +314,7 @@ func (s *shoppingService) GetSubOrder(id int64) (r *define.SubOrder, err error) 
 
 // 根据订单号获取子订单
 func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, err error) {
-	o := s._rep.GetSubOrderByNo(orderNo)
+	o := s._repo.GetSubOrderByNo(orderNo)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
 	}
@@ -337,7 +323,7 @@ func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, e
 
 // 获取订单商品项
 func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.OrderItem, error) {
-	list := s._rep.GetSubOrderItems(subOrderId)
+	list := s._repo.GetSubOrderItems(subOrderId)
 	arr := make([]*define.OrderItem, len(list))
 	for i, v := range list {
 		arr[i] = parser.OrderItemDto(v)
@@ -347,7 +333,7 @@ func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.OrderIte
 
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
-	o := s._rep.GetSubOrder(id)
+	o := s._repo.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
 	}
@@ -356,7 +342,7 @@ func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, 
 
 // 获取子订单及商品项
 func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
-	o := s._rep.GetSubOrderByNo(orderNo)
+	o := s._repo.GetSubOrderByNo(orderNo)
 	if o == nil {
 		return o, []*dto.OrderItem{}
 	}
@@ -390,11 +376,6 @@ func (s *shoppingService) GetOrderLogString(id int64) []byte {
 	return o.LogBytes()
 }
 
-// 根据父订单编号获取购买的商品项
-func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
-	return s._manager.GetItemsByParentOrderId(orderId)
-}
-
 // 备货完成
 func (s *shoppingService) PickUp(subOrderId int64) error {
 	o := s._manager.GetSubOrder(subOrderId)
@@ -424,10 +405,10 @@ func (s *shoppingService) BuyerReceived(subOrderId int64) error {
 
 // 根据商品快照获取订单项
 func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
-	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
+	return s._repo.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 
 // 根据商品快照获取订单项数据传输对象
 func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
-	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
+	return s._repo.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }

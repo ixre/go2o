@@ -9,51 +9,6 @@
 package dto
 
 type (
-	// 子订单
-	SubOrder struct {
-		// 编号
-		Id int `db:"id" pk:"yes" auto:"yes"`
-		// 订单号
-		OrderNo string `db:"order_no"`
-		// 订单编号
-		ParentId int `db:"order_pid"`
-		// 购买人编号(冗余,便于商户处理数据)
-		BuyerId int `db:"buyer_id"`
-		// 运营商编号
-		VendorId int `db:"vendor_id" json:"vendorId"`
-		// 店铺编号
-		ShopId int `db:"shop_id" json:"shopId"`
-		// 订单标题
-		Subject string `db:"subject" json:"subject"`
-		// 订单详情
-		ItemsInfo string `db:"items_info" json:"itemsInfo"`
-		// 商品金额
-		ItemAmount float32 `db:"item_amount"`
-		// 优惠减免金额
-		DiscountAmount float32 `db:"discount_amount" json:"discountFee"`
-		// 运费
-		ExpressFee float32 `db:"express_fee"`
-		// 包装费用
-		PackageFee float32 `db:"package_fee"`
-		// 实际金额
-		FinalAmount float32 `db:"final_amount" json:"fee"`
-		// 是否支付
-		IsPaid int `db:"is_paid"`
-		// 是否挂起，如遇到无法自动进行的时挂起，来提示人工确认。
-		IsSuspend int `db:"is_suspend" json:"is_suspend"`
-		// 顾客备注
-		Note string `db:"note" json:"note"`
-		// 系统备注
-		Remark string `db:"remark" json:"remark"`
-		// 更新时间
-		UpdateTime int64 `db:"update_time" json:"updateTime"`
-		// 订单状态
-		State int `db:"state" json:"state"`
-		// 状态文本
-		StateText string
-		// 订单项
-		Items []*OrderItem `db:"-"`
-	}
 
 	/*
 	   o.order_no,po.order_no as parent_no,

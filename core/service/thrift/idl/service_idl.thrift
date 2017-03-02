@@ -324,7 +324,6 @@ struct SubOrder {
     18: i64 UpdateTime
     19: i32 State
     20: list<OrderItem> Items
-    21: i64 ParentId
 }
 
 

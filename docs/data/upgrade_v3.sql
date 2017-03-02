@@ -515,6 +515,8 @@ CREATE TABLE sale_order_item (
 
 /* 2017-03-03 */
 
+ALTER TABLE `sale_sub_order` 
+DROP COLUMN `order_pid`;
 
 
 CREATE TABLE mm_buyer_group (
