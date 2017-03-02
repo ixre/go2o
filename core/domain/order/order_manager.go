@@ -78,7 +78,7 @@ func (o *orderManagerImpl) CreateOrder(val *order.Order) order.IOrder {
 }
 
 // 生成空白订单,并保存返回对象
-func (t *orderManagerImpl) CreateSubOrder(v *order.ValueSubOrder) order.ISubOrder {
+func (t *orderManagerImpl) CreateSubOrder(v *order.NormalSubOrder) order.ISubOrder {
 	return NewSubOrder(v, t, t.rep, t.memberRepo,
 		t.goodsRepo, t.shipRepo, t.productRepo,
 		t.valRepo, t.mchRepo)
@@ -176,9 +176,8 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 	if o.Type() != order.TRetail {
 		panic("not support order type")
 	}
-	io := o.(order.INormalOrder)
 
-	val := io.GetValue()
+	val := o.Complex()
 	v := &payment.PaymentOrder{
 		BuyUser:     m.GetAggregateRootId(),
 		PaymentUser: m.GetAggregateRootId(),

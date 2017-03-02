@@ -163,7 +163,7 @@ type (
 		GetAfterSalesOrder(id int32) IAfterSalesOrder
 
 		// 获取订单的售后单
-		GetAllOfSaleOrder(orderId int32) []IAfterSalesOrder
+		GetAllOfSaleOrder(orderId int64) []IAfterSalesOrder
 	}
 
 	// 售后单
@@ -171,7 +171,7 @@ type (
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号
-		OrderId int32 `db:"order_id"`
+		OrderId int64 `db:"order_id"`
 		// 运营商编号
 		VendorId int32 `db:"vendor_id"`
 		// 购买者编号

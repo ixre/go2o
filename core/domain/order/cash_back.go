@@ -49,7 +49,7 @@ func (o *subOrderImpl) handleCashBack() error {
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		buyer := o.GetBuyer()
+		buyer := o.getBuyer()
 		now := time.Now().Unix()
 
 		//******* 返现到账户  ************

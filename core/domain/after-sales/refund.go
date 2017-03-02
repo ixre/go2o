@@ -179,7 +179,7 @@ func (r *refundOrderImpl) backAmount(amount float32) error {
 	}
 	acc := mm.GetAccount()
 	//支付单与父订单关联。多个子订单合并付款
-	po := r.paymentRepo.GetPaymentBySalesOrderId(int32(o.ParentId))
+	po := r.paymentRepo.GetPaymentBySalesOrderId(o.OrderId)
 	//如果支付单已清理数据，则全部退回到余额
 	if po == nil {
 		return acc.Refund(member.AccountBalance,

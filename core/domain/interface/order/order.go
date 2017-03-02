@@ -219,12 +219,12 @@ type (
 		Submit() error
 		// 获取订单号
 		OrderNo() string
+		// 复合的订单信息
+		Complex() *ComplexOrder
 	}
 
 	// 普通订单
 	INormalOrder interface {
-		// 获生成值
-		GetValue() *NormalOrder
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
@@ -263,11 +263,9 @@ type (
 		// 获取领域对象编号
 		GetDomainId() int64
 		// 获取值对象
-		GetValue() *ValueSubOrder
+		GetValue() *NormalSubOrder
 		// 获取商品项
 		Items() []*OrderItem
-		// 获取父订单
-		Parent() INormalOrder
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
@@ -375,13 +373,15 @@ type (
 	//todo: ??? 父订单的金额,是否可不用?
 
 	// 暂存的订单
-	OrderHolder struct {
+	ComplexOrder struct {
 		// 编号
 		Id int64
-		// 订单号
-		OrderNo string
+		// 订单类型
+		OrderType int32
 		// 购买人编号
 		BuyerId int32
+		// 订单号
+		OrderNo string
 		// 商品金额
 		ItemAmount float32
 		// 优惠减免金额
@@ -392,22 +392,20 @@ type (
 		PackageFee float32
 		// 实际金额
 		FinalAmount float32
-		// 是否支付
-		IsPaid int
-		// 支付时间
-		PaidTime int64
 		// 收货人
 		ConsigneePerson string
 		// 收货人联系电话
 		ConsigneePhone string
 		// 收货地址
 		ShippingAddress string
-		// 发货时间
-		ShippingTime int64
+		// 订单是否拆分
+		IsBreak int32
 		// 订单生成时间
 		CreateTime int64
 		// 更新时间
 		UpdateTime int64
+		// 订单状态
+		State int32
 	}
 
 	// 普通订单
@@ -439,13 +437,15 @@ type (
 	}
 
 	// 子订单
-	ValueSubOrder struct {
+	NormalSubOrder struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
-		ParentId int64 `db:"parent_order"`
+		OrderId int64 `db:"order_id"`
+		// 父订单编号
+		OrderPid int64 `db:"order_pid"`
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int32 `db:"buyer_id"`
 		// 运营商编号

@@ -200,30 +200,35 @@ func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addres
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.NormalOrder {
+func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32,
+	cartCode string) *order.ComplexOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
-	order, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
+	o, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
 	if err != nil {
 		return nil
 	}
-	return order.GetValue()
+	return o.Complex()
 }
 
 // 预生成订单，使用优惠券
 func (s *shoppingService) PrepareOrderWithCoupon(buyerId int32, cartCode string,
 	addressId int32, subject string, couponCode string) (map[string]interface{}, error) {
 	cart := s.getShoppingCart(buyerId, cartCode)
-	order, py, err := s._manager.PrepareOrder(cart, addressId,
+	o, py, err := s._manager.PrepareOrder(cart, addressId,
 		subject, couponCode)
 	if err != nil {
 		return nil, err
 	}
 
-	v := order.GetValue()
+	v := o.Complex()
 	po := py.GetValue()
 	buf := bytes.NewBufferString("")
 
-	for _, v := range order.GetCoupons() {
+	if o.Type() != order.TRetail {
+		panic("not support order type")
+	}
+	io := o.(order.INormalOrder)
+	for _, v := range io.GetCoupons() {
 		buf.WriteString(v.GetDescribe())
 		buf.WriteString("\n")
 	}
@@ -262,7 +267,7 @@ func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 	if err != nil {
 		return "", "", err
 	}
-	return od.GetOrderNo(), py.GetTradeNo(), err
+	return od.OrderNo(), py.GetTradeNo(), err
 }
 
 func (s *shoppingService) SetDeliverShop(orderNo string,
@@ -280,14 +285,18 @@ func (s *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int64) *order.NormalOrder {
-	return s._rep.GetOrderById(id)
+func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
+	o := s._manager.GetOrderById(id)
+	if o != nil {
+		return o.Complex()
+	}
+	return nil
 }
 
-func (s *shoppingService) GetOrderByNo(orderNo string) *order.NormalOrder {
-	order := s._manager.GetOrderByNo(orderNo)
-	if order != nil {
-		return order.GetValue()
+func (s *shoppingService) GetOrderByNo(orderNo string) *order.ComplexOrder {
+	o := s._manager.GetOrderByNo(orderNo)
+	if o != nil {
+		return o.Complex()
 	}
 	return nil
 }
@@ -337,7 +346,7 @@ func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.OrderIte
 }
 
 // 获取子订单及商品项
-func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.ValueSubOrder, []*dto.OrderItem) {
+func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.NormalSubOrder, []*dto.OrderItem) {
 	o := s._rep.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
@@ -346,7 +355,7 @@ func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.ValueSubOrder, [
 }
 
 // 获取子订单及商品项
-func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.ValueSubOrder, []*dto.OrderItem) {
+func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.NormalSubOrder, []*dto.OrderItem) {
 	o := s._rep.GetSubOrderByNo(orderNo)
 	if o == nil {
 		return o, []*dto.OrderItem{}
@@ -355,7 +364,7 @@ func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.ValueS
 }
 
 // 取消订单
-func (s *shoppingService) CancelOrder(subOrderId int32, reason string) error {
+func (s *shoppingService) CancelOrder(subOrderId int64, reason string) error {
 	o := s._manager.GetSubOrder(subOrderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -364,7 +373,7 @@ func (s *shoppingService) CancelOrder(subOrderId int32, reason string) error {
 }
 
 // 确定订单
-func (s *shoppingService) ConfirmOrder(id int32) error {
+func (s *shoppingService) ConfirmOrder(id int64) error {
 	o := s._manager.GetSubOrder(id)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -373,7 +382,7 @@ func (s *shoppingService) ConfirmOrder(id int32) error {
 }
 
 // 获取订单日志
-func (s *shoppingService) GetOrderLogString(id int32) []byte {
+func (s *shoppingService) GetOrderLogString(id int64) []byte {
 	o := s._manager.GetSubOrder(id)
 	if o == nil {
 		return []byte("")
@@ -387,7 +396,7 @@ func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.OrderI
 }
 
 // 备货完成
-func (s *shoppingService) PickUp(subOrderId int32) error {
+func (s *shoppingService) PickUp(subOrderId int64) error {
 	o := s._manager.GetSubOrder(subOrderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -396,7 +405,7 @@ func (s *shoppingService) PickUp(subOrderId int32) error {
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *shoppingService) Ship(subOrderId int32, spId int32, spOrder string) error {
+func (s *shoppingService) Ship(subOrderId int64, spId int32, spOrder string) error {
 	o := s._manager.GetSubOrder(subOrderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -405,7 +414,7 @@ func (s *shoppingService) Ship(subOrderId int32, spId int32, spOrder string) err
 }
 
 // 消费者收货
-func (s *shoppingService) BuyerReceived(subOrderId int32) error {
+func (s *shoppingService) BuyerReceived(subOrderId int64) error {
 	o := s._manager.GetSubOrder(subOrderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -414,11 +423,11 @@ func (s *shoppingService) BuyerReceived(subOrderId int32) error {
 }
 
 // 根据商品快照获取订单项
-func (s *shoppingService) GetOrderItemBySnapshotId(orderId int32, snapshotId int32) *order.OrderItem {
+func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.OrderItem {
 	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 
 // 根据商品快照获取订单项数据传输对象
-func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int32, snapshotId int32) *dto.OrderItem {
+func (s *shoppingService) GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem {
 	return s._rep.GetOrderItemDtoBySnapshotId(orderId, snapshotId)
 }

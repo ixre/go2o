@@ -85,7 +85,7 @@ func (o *normalOrderImpl) getNormalOrderId() int64 {
 	return o.value.ID
 }
 
-func (o *normalOrderImpl) GetValue() *order.NormalOrder {
+func (o *normalOrderImpl) getValue() *order.NormalOrder {
 	return o.value
 }
 
@@ -94,6 +94,23 @@ func (o *normalOrderImpl) SetValue(v *order.NormalOrder) error {
 	v.ID = o.getNormalOrderId()
 	o.value = v
 	return nil
+}
+
+// 复合的订单信息
+func (o *normalOrderImpl) Complex() *order.ComplexOrder {
+	v := o.getValue()
+	co := o.baseOrderImpl.Complex()
+	co.ConsigneePerson = v.ConsigneePerson
+	co.ConsigneePhone = v.ConsigneePhone
+	co.ShippingAddress = v.ShippingAddress
+	co.DiscountAmount = v.DiscountAmount
+	co.ItemAmount = v.ItemAmount
+	co.ExpressFee = v.ExpressFee
+	co.PackageFee = v.PackageFee
+	co.FinalAmount = v.FinalAmount
+	co.IsBreak = v.IsBreak
+	co.UpdateTime = v.UpdateTime
+	return co
 }
 
 // 应用优惠券
@@ -215,14 +232,14 @@ func (o *normalOrderImpl) setAddress(addressId int32) error {
 
 // 获取支付单
 func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	panic(" not implement")
-	//if o.paymentOrder == nil {
-	//    if o.getAggregateRootId() <= 0 {
-	//        panic(" Get payment order error ; because of order no yet created!")
-	//    }
-	//    o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(o.getAggregateRootId())
-	//}
-	//return o.paymentOrder
+	if o.paymentOrder == nil {
+		id := o.GetAggregateRootId()
+		if id <= 0 {
+			panic(" Get payment order error ; because of order no yet created!")
+		}
+		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(id)
+	}
+	return o.paymentOrder
 }
 
 //************* 订单提交 ***************//
@@ -642,11 +659,12 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 		return nil
 	}
 
-	v := &order.ValueSubOrder{
+	v := &order.NormalSubOrder{
 		OrderNo:  orderNo,
 		BuyerId:  buyerId,
 		VendorId: vendorId,
-		ParentId: parentOrderId,
+		OrderId:  o.GetAggregateRootId(),
+		OrderPid: parentOrderId,
 		Subject:  "子订单",
 		ShopId:   items[0].ShopId,
 		// 总金额
@@ -724,15 +742,14 @@ func (o *normalOrderImpl) applyItemStock() {
 
 // 获取子订单列表
 func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
-	parentId := o.getNormalOrderId()
-	if parentId <= 0 {
+	orderId := o.GetAggregateRootId()
+	if orderId <= 0 {
 		panic(order.ErrNoYetCreated)
 	}
 	if o.subList == nil {
-		subList := o.orderRepo.GetSubOrdersByParentId(parentId)
+		subList := o.orderRepo.GetSubOrdersByParentId(orderId)
 		for _, v := range subList {
-			o.subList = append(o.subList,
-				o.manager.CreateSubOrder(v))
+			o.subList = append(o.subList, o.manager.CreateSubOrder(v))
 		}
 	}
 	return o.subList
@@ -841,8 +858,8 @@ var _ order.ISubOrder = new(subOrderImpl)
 
 // 子订单实现
 type subOrderImpl struct {
-	value           *order.ValueSubOrder
-	parent          order.INormalOrder
+	value           *order.NormalSubOrder
+	parent          order.IOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
 	rep             order.IOrderRepo
@@ -855,7 +872,7 @@ type subOrderImpl struct {
 	mchRepo         merchant.IMerchantRepo
 }
 
-func NewSubOrder(v *order.ValueSubOrder,
+func NewSubOrder(v *order.NormalSubOrder,
 	manager order.IOrderManager, rep order.IOrderRepo,
 	mmRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo,
 	shipRepo shipment.IShipmentRepo, productRepo product.IProductRepo,
@@ -880,7 +897,7 @@ func (o *subOrderImpl) GetDomainId() int64 {
 }
 
 // 获取值对象
-func (o *subOrderImpl) GetValue() *order.ValueSubOrder {
+func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
@@ -893,24 +910,17 @@ func (o *subOrderImpl) Items() []*order.OrderItem {
 	return o.value.Items
 }
 
-// 获取父订单
-func (o *subOrderImpl) Parent() order.INormalOrder {
+// 获取订单
+func (o *subOrderImpl) baseOrder() order.IOrder {
 	if o.parent == nil {
-		panic("not impl")
-		//  o.parent = o.manager.GetOrderById(o.value.ParentId)
+		o.parent = o.manager.GetOrderById(o.value.OrderId)
 	}
 	return o.parent
 }
 
 // 获取购买的会员
-func (o *subOrderImpl) GetBuyer() member.IMember {
-	if o.buyer == nil {
-		//if o._value.BuyerId <= 0 {
-		//    panic(errors.New("订单BuyerId非会员或未设置"))
-		//}
-		o.buyer = o.memberRepo.GetMember(o.value.BuyerId)
-	}
-	return o.buyer
+func (o *subOrderImpl) getBuyer() member.IMember {
+	return o.baseOrder().Buyer()
 }
 
 // 添加备注
@@ -1082,7 +1092,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRepo.GetOrders(int32(o.GetDomainId())); len(list) > 0 {
+	if list := o.shipRepo.GetShipOrders(o.GetDomainId()); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1339,7 +1349,12 @@ func (o *subOrderImpl) cancelGoods() error {
 
 // 取消支付单
 func (o *subOrderImpl) cancelPaymentOrder() error {
-	po := o.Parent().GetPaymentOrder()
+	od := o.baseOrder()
+	if od.Type() != order.TRetail {
+		panic("not support order type")
+	}
+	io := od.(order.INormalOrder)
+	po := io.GetPaymentOrder()
 	if po != nil {
 		v := po.GetValue()
 		//if true {
@@ -1513,13 +1528,13 @@ func (o *subOrderImpl) CancelRefund() error {
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRepo.GetOrders(int32(o.GetDomainId()))
+	soList := o.shipRepo.GetShipOrders(o.GetDomainId())
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}
 
 	// 获取消费者消息
-	m := o.GetBuyer()
+	m := o.getBuyer()
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
