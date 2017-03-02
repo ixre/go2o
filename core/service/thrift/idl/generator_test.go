@@ -17,7 +17,7 @@ import (
 var (
 	//v = &member.Member{}
 	//v = &member.Profile{}
-	v = order.ValueSubOrder{}
+	v = order.NormalSubOrder{}
 )
 
 // 生成Thrift结构

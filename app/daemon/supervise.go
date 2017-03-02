@@ -25,7 +25,7 @@ import (
 func superviseOrder(ss []Service) {
 	sv := rsi.ShoppingService
 	notify := func(id int, ss []Service) {
-		o, _ := sv.GetSubOrder(int32(id))
+		o, _ := sv.GetSubOrder(int64(id))
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -145,7 +145,7 @@ func detectOrderExpires() {
 			i := strings.LastIndex(oKey, ":")
 			orderId, err = strconv.Atoi(oKey[i+1:])
 			if err == nil && orderId > 0 {
-				err = ss.CancelOrder(int32(orderId), "订单超时,自动取消")
+				err = ss.CancelOrder(int64(orderId), "订单超时,自动取消")
 				//清除待取消记录
 				conn.Do("DEL", oKey)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
@@ -178,7 +178,7 @@ func orderAutoRecive() {
 			i := strings.LastIndex(oKey, ":")
 			orderId, err = strconv.Atoi(oKey[i+1:])
 			if err == nil && orderId > 0 {
-				err = ss.BuyerReceived(int32(orderId))
+				err = ss.BuyerReceived(int64(orderId))
 			}
 		}
 	} else {

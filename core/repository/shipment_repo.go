@@ -52,7 +52,7 @@ func (s *shipmentRepo) GetShipmentOrder(id int32) shipment.IShipmentOrder {
 }
 
 // 获取订单对应的发货单
-func (s *shipmentRepo) GetOrders(orderId int32) []shipment.IShipmentOrder {
+func (s *shipmentRepo) GetShipOrders(orderId int64) []shipment.IShipmentOrder {
 	list := []*shipment.ShipmentOrder{}
 	s.GetOrm().Select(&list, "order_id=?", orderId)
 	orders := make([]shipment.IShipmentOrder, len(list))

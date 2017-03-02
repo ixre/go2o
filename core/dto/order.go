@@ -16,7 +16,7 @@ type (
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
-		ParentId int `db:"parent_order"`
+		ParentId int `db:"order_pid"`
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int `db:"buyer_id"`
 		// 运营商编号

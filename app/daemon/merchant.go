@@ -89,7 +89,7 @@ func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start in
 	}, mchId, start, end)
 	// 支付单汇总
 	db.QueryRow(`SELECT COUNT(0),SUM(sale_sub_order.final_amount) FROM sale_sub_order
-INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.parent_order
+INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.order_pid
 where sale_sub_order.vendor_id=? AND pay_order.state = 1 AND pay_order.paid_time
  BETWEEN ? AND ?`, func(r *sql.Row) {
 		r.Scan(&c.PaidNumber, &c.PaidAmount)

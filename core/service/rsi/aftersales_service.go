@@ -35,7 +35,7 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
 }
 
 // 提交售后单
-func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
+func (a *afterSalesService) SubmitAfterSalesOrder(orderId int64, asType int,
 	snapshotId int32, quantity int32, reason string, imgUrl string) (int32, error) {
 	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
@@ -55,7 +55,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
 }
 
 // 获取订单的所有售后单
-func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int32) []afterSales.AfterSalesOrder {
+func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int64) []afterSales.AfterSalesOrder {
 	list := a._rep.GetAllOfSaleOrder(orderId)
 	arr := make([]afterSales.AfterSalesOrder, len(list))
 	for i, v := range list {

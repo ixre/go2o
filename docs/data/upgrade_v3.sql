@@ -522,6 +522,11 @@ DROP COLUMN `buyer_id`,
 CHANGE COLUMN `order_no` `order_id` INT(11) NOT NULL ,
 ADD COLUMN `is_break` INT(2) NOT NULL COMMENT '是否拆分' AFTER `shipping_address`;
 
+ALTER TABLE `txmall`.`sale_sub_order`
+CHANGE COLUMN `parent_order` `order_pid` INT(11) NOT NULL COMMENT '父订单编号',
+ADD COLUMN `order_id` INT(11) NOT NULL COMMENT '订单编号' AFTER `order_no`;
+
+
 
 
 CREATE TABLE mm_buyer_group (

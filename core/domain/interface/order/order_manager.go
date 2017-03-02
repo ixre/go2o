@@ -23,7 +23,7 @@ type (
 		// 创建订单
 		CreateOrder(*Order) IOrder
 		// 生成空白订单,并保存返回对象
-		CreateSubOrder(*ValueSubOrder) ISubOrder
+		CreateSubOrder(*NormalSubOrder) ISubOrder
 
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
@@ -90,19 +90,19 @@ type (
 		SaveSubOrderLog(*OrderLog) error
 
 		// 获取订单的所有子订单
-		GetSubOrdersByParentId(orderId int64) []*ValueSubOrder
+		GetSubOrdersByParentId(orderId int64) []*NormalSubOrder
 
 		// 获取订单编号
 		GetOrderId(orderNo string, subOrder bool) int64
 
 		// 获取子订单
-		GetSubOrder(id int64) *ValueSubOrder
+		GetSubOrder(id int64) *NormalSubOrder
 
 		// 根据订单号获取子订单
-		GetSubOrderByNo(orderNo string) *ValueSubOrder
+		GetSubOrderByNo(orderNo string) *NormalSubOrder
 
 		// 保存子订单
-		SaveSubOrder(value *ValueSubOrder) (int64, error)
+		SaveSubOrder(value *NormalSubOrder) (int64, error)
 
 		// 保存子订单的商品项,并返回编号和错误
 		SaveOrderItem(subOrderId int64, value *OrderItem) (int32, error)
@@ -117,10 +117,10 @@ type (
 		GetSubOrderLogs(orderId int64) []*OrderLog
 
 		// 根据商品快照获取订单项
-		GetOrderItemBySnapshotId(orderId int32, snapshotId int32) *OrderItem
+		GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *OrderItem
 
 		// 根据商品快照获取订单项数据传输对象
-		GetOrderItemDtoBySnapshotId(orderId int32, snapshotId int32) *dto.OrderItem
+		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem
 
 		// Get OrderList
 		GetOrder(where string, arg ...interface{}) *Order

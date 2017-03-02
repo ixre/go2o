@@ -156,7 +156,7 @@ type (
 		GetPaymentOrder(paymentNo string) IPaymentOrder
 
 		// 根据订单号获取支付单
-		GetPaymentBySalesOrderId(orderId int32) IPaymentOrder
+		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
 
 		// 创建支付单
 		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder

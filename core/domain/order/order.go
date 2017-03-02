@@ -21,6 +21,7 @@ type baseOrderImpl struct {
 	repo       order.IOrderRepo
 	memberRepo member.IMemberRepo
 	manager    order.IOrderManager
+	complex    *order.ComplexOrder
 }
 
 // 获取编号
@@ -63,6 +64,21 @@ func (o *baseOrderImpl) saveOrder() error {
 		o.baseValue.ID = int64(id)
 	}
 	return err
+}
+
+// 复合的订单信息
+func (o *baseOrderImpl) Complex() *order.ComplexOrder {
+	if o.complex == nil {
+		o.complex = &order.ComplexOrder{
+			Id:         o.GetAggregateRootId(),
+			OrderType:  o.baseValue.OrderType,
+			OrderNo:    o.OrderNo(),
+			BuyerId:    o.baseValue.BuyerId,
+			State:      o.baseValue.State,
+			CreateTime: o.baseValue.CreateTime,
+		}
+	}
+	return o.complex
 }
 
 // 工厂方法生成订单
