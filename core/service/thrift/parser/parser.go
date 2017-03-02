@@ -494,7 +494,7 @@ func CategoryDto(src *product.Category) *define.Category {
 	return s
 }
 
-func OrderItemDto(src *order.OrderItem) *define.OrderItem {
+func OrderItemDto(src *order.SubOrderItem) *define.OrderItem {
 	return &define.OrderItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,
@@ -515,6 +515,7 @@ func SubOrderDto(src *order.NormalSubOrder) *define.SubOrder {
 		ID:             src.ID,
 		OrderNo:        src.OrderNo,
 		ParentId:       src.OrderPid,
+		OrderId:        src.OrderId,
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,

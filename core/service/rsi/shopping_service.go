@@ -391,7 +391,7 @@ func (s *shoppingService) GetOrderLogString(id int64) []byte {
 }
 
 // 根据父订单编号获取购买的商品项
-func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
+func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
 	return s._manager.GetItemsByParentOrderId(orderId)
 }
 
@@ -423,7 +423,7 @@ func (s *shoppingService) BuyerReceived(subOrderId int64) error {
 }
 
 // 根据商品快照获取订单项
-func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.OrderItem {
+func (s *shoppingService) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
 	return s._rep.GetOrderItemBySnapshotId(orderId, snapshotId)
 }
 

@@ -228,7 +228,7 @@ type (
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int32][]*OrderItem, expressFee map[int32]float32)
+		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
 
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
@@ -265,7 +265,7 @@ type (
 		// 获取值对象
 		GetValue() *NormalSubOrder
 		// 获取商品项
-		Items() []*OrderItem
+		Items() []*SubOrderItem
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
@@ -306,55 +306,6 @@ type (
 		Quantity   int32  `json:"qty"`
 	}
 
-	OrderLog struct {
-		Id      int32 `db:"id" auto:"yes" pk:"yes"`
-		OrderId int64 `db:"order_id"`
-		Type    int   `db:"type"`
-		// 订单状态
-		OrderState int    `db:"order_state"`
-		IsSystem   int    `db:"is_system"`
-		Message    string `db:"message"`
-		RecordTime int64  `db:"record_time"`
-	}
-	OrderPromotionBind struct {
-		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
-
-		// 订单号
-		OrderId int32 `db:"order_id"`
-
-		// 促销编号
-		PromotionId int32 `db:"promotion_id"`
-
-		// 促销类型
-		PromotionType int `db:"promotion_type"`
-
-		// 标题
-		Title string `db:"title"`
-
-		// 节省金额
-		SaveFee float32 `db:"save_fee"`
-
-		// 赠送积分
-		PresentIntegral int `db:"present_integral"`
-
-		// 是否应用
-		IsApply int `db:"is_apply"`
-
-		// 是否确认
-		IsConfirm int `db:"is_confirm"`
-	}
-
-	// 应用到订单的优惠券
-	OrderCoupon struct {
-		OrderId      int32   `db:"order_id"`
-		CouponId     int32   `db:"coupon_id"`
-		CouponCode   string  `db:"coupon_code"`
-		Fee          float32 `db:"coupon_fee"`
-		Describe     string  `db:"coupon_describe"`
-		SendIntegral int     `db:"send_integral"`
-	}
-
 	// 订单
 	Order struct {
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
@@ -370,9 +321,7 @@ type (
 		CreateTime int64 `db:"create_time"`
 	}
 
-	//todo: ??? 父订单的金额,是否可不用?
-
-	// 暂存的订单
+	// 订单复合信息
 	ComplexOrder struct {
 		// 编号
 		Id int64
@@ -479,11 +428,11 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单项
-		Items []*OrderItem `db:"-"`
+		Items []*SubOrderItem `db:"-"`
 	}
 
 	// 订单商品项
-	OrderItem struct {
+	SubOrderItem struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
@@ -518,6 +467,55 @@ type (
 		Bulk int32 `db:"-"`
 		// 快递模板编号
 		ExpressTplId int32 `db:"-"`
+	}
+
+	OrderLog struct {
+		Id      int32 `db:"id" auto:"yes" pk:"yes"`
+		OrderId int64 `db:"order_id"`
+		Type    int   `db:"type"`
+		// 订单状态
+		OrderState int    `db:"order_state"`
+		IsSystem   int    `db:"is_system"`
+		Message    string `db:"message"`
+		RecordTime int64  `db:"record_time"`
+	}
+	OrderPromotionBind struct {
+		// 编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+
+		// 订单号
+		OrderId int32 `db:"order_id"`
+
+		// 促销编号
+		PromotionId int32 `db:"promotion_id"`
+
+		// 促销类型
+		PromotionType int `db:"promotion_type"`
+
+		// 标题
+		Title string `db:"title"`
+
+		// 节省金额
+		SaveFee float32 `db:"save_fee"`
+
+		// 赠送积分
+		PresentIntegral int `db:"present_integral"`
+
+		// 是否应用
+		IsApply int `db:"is_apply"`
+
+		// 是否确认
+		IsConfirm int `db:"is_confirm"`
+	}
+
+	// 应用到订单的优惠券
+	OrderCoupon struct {
+		OrderId      int32   `db:"order_id"`
+		CouponId     int32   `db:"coupon_id"`
+		CouponCode   string  `db:"coupon_code"`
+		Fee          float32 `db:"coupon_fee"`
+		Describe     string  `db:"coupon_describe"`
+		SendIntegral int     `db:"send_integral"`
 	}
 )
 

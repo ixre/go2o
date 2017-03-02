@@ -346,6 +346,6 @@ func (t *orderManagerImpl) GetSubOrder(id int64) order.ISubOrder {
 }
 
 // 根据父订单编号获取购买的商品项
-func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
+func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
 	return t.rep.GetItemsByParentOrderId(orderId)
 }

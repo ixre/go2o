@@ -52,7 +52,7 @@ type (
 		SmartChoiceShop(address string) (shop.IShop, error)
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int64) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*SubOrderItem
 
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
@@ -105,19 +105,19 @@ type (
 		SaveSubOrder(value *NormalSubOrder) (int64, error)
 
 		// 保存子订单的商品项,并返回编号和错误
-		SaveOrderItem(subOrderId int64, value *OrderItem) (int32, error)
+		SaveOrderItem(subOrderId int64, value *SubOrderItem) (int32, error)
 
 		// 获取订单项
-		GetSubOrderItems(orderId int64) []*OrderItem
+		GetSubOrderItems(orderId int64) []*SubOrderItem
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int64) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*SubOrderItem
 
 		// 获取订单的操作记录
 		GetSubOrderLogs(orderId int64) []*OrderLog
 
 		// 根据商品快照获取订单项
-		GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *OrderItem
+		GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *SubOrderItem
 
 		// 根据商品快照获取订单项数据传输对象
 		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem

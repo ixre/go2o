@@ -74,7 +74,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN sale_order po ON o.order_pid = po.id WHERE o.buyer_id=? %s`,
+		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id=? %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -89,7 +89,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
         vendor_id,o.shop_id,s.name as shop_name,
         o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
-         FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.order_pid
+         FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id
             INNER JOIN mch_shop s ON o.shop_id=s.id
          WHERE o.buyer_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
@@ -158,7 +158,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN sale_order po ON o.order_pid = po.id WHERE o.vendor_id=? %s`,
+		  INNER JOIN order_list po ON po.id=o.order_id WHERE o.vendor_id=? %s`,
 			where), &num, vendorId)
 		if num == 0 {
 			return num, orderList
@@ -172,7 +172,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
 		o.buyer_id,mp.name as buyer_name,o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
-         FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.order_pid
+         FROM sale_sub_order o INNER JOIN order_list po ON po.id=o.order_id
          INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
          WHERE o.vendor_id=? %s %s LIMIT ?,?`,
 		where, orderBy),

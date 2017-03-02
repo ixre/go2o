@@ -55,7 +55,7 @@ type normalOrderImpl struct {
 	promRepo        promotion.IPromotionRepo
 	valRepo         valueobject.IValueRepo
 	// 运营商商品映射,用于整理购物车
-	vendorItemsMap map[int32][]*order.OrderItem
+	vendorItemsMap map[int32][]*order.SubOrderItem
 	// 运营商与邮费的MAP
 	vendorExpressMap map[int32]float32
 	// 是否为内部挂起
@@ -81,19 +81,14 @@ func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	}
 }
 
-func (o *normalOrderImpl) getNormalOrderId() int64 {
-	return o.value.ID
-}
-
 func (o *normalOrderImpl) getValue() *order.NormalOrder {
+	if o.value == nil {
+		id := o.GetAggregateRootId()
+		if id > 0 {
+			o.value = o.repo.GetOrderById(id)
+		}
+	}
 	return o.value
-}
-
-// 设置订单值
-func (o *normalOrderImpl) SetValue(v *order.NormalOrder) error {
-	v.ID = o.getNormalOrderId()
-	o.value = v
-	return nil
 }
 
 // 复合的订单信息
@@ -270,7 +265,7 @@ func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
 
 // 加入运费计算器
 func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
-	item *order.OrderItem, cul express.IExpressCalculator) {
+	item *order.SubOrderItem, cul express.IExpressCalculator) {
 	tpl := ue.GetTemplate(item.ExpressTplId)
 	if tpl != nil {
 		var err error
@@ -290,7 +285,7 @@ func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 }
 
 // 更新订单金额,并返回运费
-func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[int32]float32 {
+func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.SubOrderItem) map[int32]float32 {
 	o.value.ItemAmount = 0
 	expCul := make(map[int32]express.IExpressCalculator)
 	expressMap := make(map[int32]float32)
@@ -319,7 +314,7 @@ func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[in
 }
 
 // 根据运营商获取商品和运费信息,限未生成的订单
-func (o *normalOrderImpl) GetByVendor() (items map[int32][]*order.OrderItem,
+func (o *normalOrderImpl) GetByVendor() (items map[int32][]*order.SubOrderItem,
 	expressFeeMap map[int32]float32) {
 	if o.vendorItemsMap == nil {
 		panic("订单尚未读取购物车!")
@@ -350,8 +345,8 @@ func (o *normalOrderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.OrderItem {
-	mp := make(map[int32][]*order.OrderItem)
+func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.SubOrderItem {
+	mp := make(map[int32][]*order.SubOrderItem)
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
@@ -363,7 +358,7 @@ func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[i
 			}
 			list, ok := mp[v.VendorId]
 			if !ok {
-				list = []*order.OrderItem{}
+				list = []*order.SubOrderItem{}
 			}
 			mp[v.VendorId] = append(list, item)
 			//log.Println("--- vendor map len:", len(mp[v.VendorId]))
@@ -373,7 +368,7 @@ func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[i
 }
 
 // 转换购物车的商品项为订单项目
-func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.OrderItem {
+func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.SubOrderItem {
 	// 获取商品已销售快照
 	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
@@ -383,7 +378,7 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.Or
 	}
 
 	fee := c.Sku.Price * float32(c.Quantity)
-	return &order.OrderItem{
+	return &order.SubOrderItem{
 		ID:          0,
 		VendorId:    c.VendorId,
 		ShopId:      c.ShopId,
@@ -405,7 +400,7 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.Or
 
 // 提交订单，返回订单号。如有错误则返回
 func (o *normalOrderImpl) Submit() error {
-	if o.GetAggregateRootId() > 0 || o.getNormalOrderId() > 0 {
+	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
 	}
 	err := o.checkCart()
@@ -647,7 +642,7 @@ func (o *normalOrderImpl) save() (int, error) {
 
 // 根据运营商生成子订单
 func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int32,
-	vendorId int32, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
+	vendorId int32, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
 	orderNo := o.OrderNo()
 	if newOrderNo {
 		orderNo = o.manager.GetFreeOrderNo(vendorId)
@@ -700,7 +695,7 @@ func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId in
 
 //根据运营商拆单,返回拆单结果,及拆分的订单数组
 func (o *normalOrderImpl) breakUpByVendor() []order.ISubOrder {
-	parentOrderId := o.getNormalOrderId()
+	parentOrderId := o.getValue().ID
 	if parentOrderId <= 0 ||
 		o.vendorItemsMap == nil ||
 		len(o.vendorItemsMap) == 0 {
@@ -902,7 +897,7 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 }
 
 // 获取商品项
-func (o *subOrderImpl) Items() []*order.OrderItem {
+func (o *subOrderImpl) Items() []*order.SubOrderItem {
 	if (o.value.Items == nil || len(o.value.Items) == 0) &&
 		o.GetDomainId() > 0 {
 		o.value.Items = o.rep.GetSubOrderItems(o.GetDomainId())
@@ -1118,7 +1113,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 	return err
 }
 
-func (o *subOrderImpl) createShipmentOrder(items []*order.OrderItem) shipment.IShipmentOrder {
+func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment.IShipmentOrder {
 	if items == nil || len(items) == 0 {
 		return nil
 	}

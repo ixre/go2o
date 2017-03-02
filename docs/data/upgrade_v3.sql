@@ -449,12 +449,21 @@ CREATE TABLE sale_cart_item (
 
 /* 2017-02-28 */
 
+CREATE TABLE order_list (
+  id          int(10) NOT NULL AUTO_INCREMENT,
+  order_no    varchar(45) NOT NULL comment '订单号',
+  buyer_id    int(10) NOT NULL comment '买家编号',
+  order_type  int(2) NOT NULL comment '订单类型',
+  create_time int(10) NOT NULL comment '下单时间',
+  state       int(2) NOT NULL comment '订单状态',
+  PRIMARY KEY (id)) comment='订单';
+
+
 /* 订单表更名或者删除后，再重新创建订单 */
 CREATE TABLE sale_order (
   id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  order_no         varchar(20) NOT NULL comment '订单号',
-  buyer_id         int(11) NOT NULL comment '买家编号',
-  item_amount     decimal(8, 2) NOT NULL comment '商品金额',
+  order_id         int(11) NOT NULL comment '订单编号',
+  item_amount      decimal(8, 2) NOT NULL comment '商品金额',
   discount_amount  decimal(8, 2) NOT NULL comment '抵扣金额',
   express_fee      decimal(8, 2) NOT NULL comment '物流费',
   package_fee      decimal(4, 2) NOT NULL comment '包装费',
@@ -462,15 +471,15 @@ CREATE TABLE sale_order (
   consignee_person varchar(45) NOT NULL comment '收货人姓名',
   consignee_phone  varchar(45) NOT NULL comment '收货人电话',
   shipping_address varchar(120) NOT NULL comment '收货人地址',
-  create_time      int(11) NOT NULL comment '创建时间',
+  is_break         int(2) NOT NULL comment '是否拆分',
   update_time      int(11) NOT NULL comment '更新时间',
-  PRIMARY KEY (id)) comment='订单';
-
+  PRIMARY KEY (id)) comment='普通订单';
 
 CREATE TABLE sale_sub_order (
   id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
   order_no        varchar(20) NOT NULL comment '订单号',
-  parent_order    int(11) NOT NULL comment '父订单编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  order_pid       int(11) NOT NULL comment '父订单编号',
   buyer_id        int(11) NOT NULL comment '买家编号',
   vendor_id       int(11) NOT NULL comment '商家编号',
   shop_id         int(11) NOT NULL comment '店铺编号',
@@ -489,43 +498,22 @@ CREATE TABLE sale_sub_order (
   update_time     int(11) NOT NULL comment '订单更新时间',
   PRIMARY KEY (id)) comment='子订单';
 
-/*
-ALTER TABLE `sale_sub_order`
-DROP COLUMN `items_info`,
-CHANGE COLUMN `remark` `remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单备注' AFTER `is_suspend`,
-CHANGE COLUMN `state` `state` INT(2) NOT NULL COMMENT '订单状态' AFTER `buyer_remark`,
-CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
-CHANGE COLUMN `order_no` `order_no` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单号' ,
-CHANGE COLUMN `parent_order` `parent_order` INT(11) NOT NULL COMMENT '父订单编号' ,
-CHANGE COLUMN `buyer_id` `buyer_id` INT(11) NOT NULL COMMENT '买家编号' ,
-CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NOT NULL COMMENT '商家编号' ,
-CHANGE COLUMN `shop_id` `shop_id` INT(11) NOT NULL COMMENT '店铺编号' ,
-CHANGE COLUMN `subject` `subject` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '主题' ,
-CHANGE COLUMN `goods_amount` `item_amount` DECIMAL(8,2) NOT NULL COMMENT '商品总价' ,
-CHANGE COLUMN `discount_amount` `discount_amount` DECIMAL(8,2) NOT NULL COMMENT '抵扣金额' ,
-CHANGE COLUMN `express_fee` `express_fee` DECIMAL(4,2) NOT NULL COMMENT '运费' ,
-CHANGE COLUMN `package_fee` `package_fee` DECIMAL(4,2) NOT NULL COMMENT '包装费' ,
-CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '订单最终金额' ,
-CHANGE COLUMN `is_paid` `is_paid` INT(2) NOT NULL COMMENT '是否支付' ,
-CHANGE COLUMN `is_suspend` `is_suspend` INT(2) NOT NULL COMMENT '是否挂起' ,
-CHANGE COLUMN `note` `buyer_remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单买家备注' ,
-CHANGE COLUMN `create_time` `create_time` INT(11) NOT NULL COMMENT '订单创建时间' ,
-CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '订单更新时间' ,
-COMMENT = '子订单' ;
-*/
+CREATE TABLE sale_order_item (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) comment '子订单编号',
+  item_id         int(11) comment '商品编号',
+  sku_id          int(11) comment 'SKU编号',
+  snap_id         int(11) comment '商品快照编号',
+  quantity        int(11) comment '销售数量',
+  return_quantity int(11) comment '退货数量',
+  amount          decimal(8, 2) comment '商品总金额',
+  final_amount    decimal(8, 2) comment '商品实际金额',
+  is_shipped      bit(1) comment '是否已发货',
+  update_time     int(11) comment '更新时间',
+  PRIMARY KEY (id)) comment='普通订单商品项';
 
-/* 2017-03-01 */
 
-ALTER TABLE sale_order`
-DROP COLUMN `create_time`,
-DROP COLUMN `buyer_id`,
-CHANGE COLUMN `order_no` `order_id` INT(11) NOT NULL ,
-ADD COLUMN `is_break` INT(2) NOT NULL COMMENT '是否拆分' AFTER `shipping_address`;
-
-ALTER TABLE `txmall`.`sale_sub_order`
-CHANGE COLUMN `parent_order` `order_pid` INT(11) NOT NULL COMMENT '父订单编号',
-ADD COLUMN `order_id` INT(11) NOT NULL COMMENT '订单编号' AFTER `order_no`;
-
+/* 2017-03-03 */
 
 
 
