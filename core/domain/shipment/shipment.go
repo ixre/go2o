@@ -11,6 +11,7 @@ package shipment
 import (
 	"errors"
 	"go2o/core/domain/interface/express"
+	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/shipment"
 	"time"
 )
@@ -98,4 +99,27 @@ func (s *shipmentOrderImpl) Completed() error {
 // 更新快递记录
 func (s *shipmentOrderImpl) UpdateLog() error {
 	panic(errors.New("not implement!"))
+}
+
+// 智能选择门店
+func (t *shipmentOrderImpl) SmartChoiceShop(address string) (shop.IShop, error) {
+	panic("not implement")
+	/*
+
+	   //todo: 应只选择线下实体店
+	   //todo: AggregateRootId
+	   dly := t.deliveryRepo.GetDelivery(-1)
+
+	   lng, lat, err := lbs.GetLocation(address)
+	   if err != nil {
+	       return nil, errors.New("无法识别的地址：" + address)
+	   }
+	   var cov delivery.ICoverageArea = dly.GetNearestCoverage(lng, lat)
+	   if cov == nil {
+	       return nil, delivery.ErrNotCoveragedArea
+	   }
+	   shopId, _, err := dly.GetDeliveryInfo(cov.GetDomainId())
+	   return t.mch.ShopManager().GetShop(shopId), err
+	*/
+
 }

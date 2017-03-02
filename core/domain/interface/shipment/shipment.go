@@ -8,7 +8,10 @@
  */
 package shipment
 
-import "go2o/core/infrastructure/domain"
+import (
+	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/infrastructure/domain"
+)
 
 const (
 	// 等待发货
@@ -39,6 +42,8 @@ type (
 		Completed() error
 		// 更新快递记录
 		UpdateLog() error
+		// 智能选择门店
+		SmartChoiceShop(address string) (shop.IShop, error)
 	}
 
 	IShipmentRepo interface {

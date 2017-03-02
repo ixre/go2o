@@ -514,7 +514,6 @@ func SubOrderDto(src *order.NormalSubOrder) *define.SubOrder {
 	o := &define.SubOrder{
 		ID:             src.ID,
 		OrderNo:        src.OrderNo,
-		ParentId:       src.OrderPid,
 		OrderId:        src.OrderId,
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,
