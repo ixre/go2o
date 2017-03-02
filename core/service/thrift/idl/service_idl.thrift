@@ -290,7 +290,7 @@ struct PaymentOrder {
 // 订单项
 struct OrderItem {
     1: i32 Id
-    2: i32 OrderId
+    2: i64 OrderId
     3: i32 ItemId
     4: i32 SkuId
     5: i32 SnapshotId
@@ -304,9 +304,9 @@ struct OrderItem {
 
 // 子订单
 struct SubOrder {
-    1: i32 Id
+    1: i64 Id
     2: string OrderNo
-    3: i32 ParentId
+    3: i64 ParentId
     4: i32 BuyerId
     5: i32 VendorId
     6: i32 ShopId
@@ -437,9 +437,9 @@ service PaymentService{
 // 销售服务
 service SaleService {
   // 获取子订单
-  SubOrder GetSubOrder(1:i32 id)
+  SubOrder GetSubOrder(1:i64 id)
   // 根据订单号获取子订单
   SubOrder GetSubOrderByNo(1:string orderNo)
   // 获取订单商品项
-  list<OrderItem> GetSubOrderItems(1:i32 subOrderId)
+  list<OrderItem> GetSubOrderItems(1:i64 subOrderId)
 }

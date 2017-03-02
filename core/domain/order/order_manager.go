@@ -93,20 +93,27 @@ func (t *orderManagerImpl) checkCartForOrder(c cart.ICart) error {
 }
 
 // 将购物车转换为订单
-func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IItemOrder,
+func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IOrder,
 	member.IMember, error) {
 	var m member.IMember
 	err := t.checkCartForOrder(c)
 	if err != nil {
 		return nil, m, err
 	}
-	val := &order.Order{}
-	// 判断购买会员
-	buyerId := c.BuyerId()
-	if buyerId > 0 {
-		val.BuyerId = buyerId
-		m = t.memberRepo.GetMember(val.BuyerId)
+	orderType := order.TRetail
+	switch c.Kind() {
+	case cart.KRetail:
+		orderType = order.TRetail
+	case cart.KWholesale:
+		orderType = order.TWholesale
+	default:
+		panic("not support cart kind parse to order")
 	}
+	val := &order.Order{
+		BuyerId:   c.BuyerId(),
+		OrderType: int32(orderType),
+	}
+	m = t.memberRepo.GetMember(val.BuyerId)
 	if m == nil {
 		return nil, m, member.ErrNoSuchMember
 	}
@@ -114,15 +121,15 @@ func (t *orderManagerImpl) ParseToOrder(c cart.ICart) (order.IItemOrder,
 	if o.Type() != order.TRetail {
 		panic("unknown order type")
 	}
-	io := o.(order.IItemOrder)
+	io := o.(order.INormalOrder)
 	err = io.RequireCart(c)
 	io.GetByVendor()
-	return io, m, err
+	return o, m, err
 }
 
 // 预生成订单及支付单
 func (t *orderManagerImpl) PrepareOrder(c cart.ICart, addressId int32,
-	subject string, couponCode string) (order.IItemOrder, payment.IPaymentOrder, error) {
+	subject string, couponCode string) (order.IOrder, payment.IPaymentOrder, error) {
 	//todo: subject 或备注先不理会,可能是多个note。且在下单后再提交备注
 	order, m, err := t.ParseToOrder(c)
 	var py payment.IPaymentOrder
@@ -165,8 +172,13 @@ func (t *orderManagerImpl) SmartChoiceShop(address string) (shop.IShop, error) {
 
 // 生成支付单
 func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
-	o order.IItemOrder) payment.IPaymentOrder {
-	val := o.GetValue()
+	o order.IOrder) payment.IPaymentOrder {
+	if o.Type() != order.TRetail {
+		panic("not support order type")
+	}
+	io := o.(order.INormalOrder)
+
+	val := io.GetValue()
 	v := &payment.PaymentOrder{
 		BuyUser:     m.GetAggregateRootId(),
 		PaymentUser: m.GetAggregateRootId(),
@@ -206,8 +218,12 @@ func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
 }
 
 // 应用优惠券
-func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IItemOrder,
+func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	py payment.IPaymentOrder, couponCode string) error {
+	if o.Type() != order.TRetail {
+		return errors.New("不支持优惠券")
+	}
+	io := o.(order.INormalOrder)
 	po := py.GetValue()
 	cp := t.promRepo.GetCouponByCode(
 		m.GetAggregateRootId(), couponCode)
@@ -233,7 +249,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IItemOrder,
 			err = errors.New("优惠券无效")
 		} else {
 			//应用优惠券
-			if err = order.ApplyCoupon(coupon); err == nil {
+			if err = io.ApplyCoupon(coupon); err == nil {
 				_, err = py.CouponDiscount(coupon)
 			}
 		}
@@ -242,18 +258,21 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, order order.IItemOrder,
 }
 
 func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
-	subject string, couponCode string, useBalanceDiscount bool) (order.IItemOrder,
+	subject string, couponCode string, useBalanceDiscount bool) (order.IOrder,
 	payment.IPaymentOrder, error) {
 	o, py, err := t.PrepareOrder(c, addressId, subject, couponCode)
 	if err == nil {
-		err = o.SetDeliveryAddress(addressId)
+		switch o.Type() {
+		case order.TRetail:
+			io := o.(order.INormalOrder)
+			err = io.SetDeliveryAddress(addressId)
+		}
 	}
 	if err != nil {
 		return o, py, err
 	}
 	err = o.Submit()
-	orderNo := o.(order.IOrder).OrderNo()
-	tradeNo := orderNo
+	tradeNo := o.OrderNo()
 	if err == nil {
 		if c.Kind() != cart.KRetail {
 			panic("购物车非零售")
@@ -261,7 +280,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 		rc := c.(cart.IRetailCart)
 		cv := rc.GetValue()
 		// 更新默认收货地址为本地使用地址
-		o.GetBuyer().Profile().SetDefaultAddress(addressId)
+		o.Buyer().Profile().SetDefaultAddress(addressId)
 		// 设置支付方式
 		cv.PaymentOpt = enum.PaymentOnlinePay
 		if err = py.SetPaymentSign(cv.PaymentOpt); err != nil {
@@ -289,7 +308,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 }
 
 // 根据订单编号获取订单
-func (t *orderManagerImpl) GetOrderById(orderId int32) order.IOrder {
+func (t *orderManagerImpl) GetOrderById(orderId int64) order.IOrder {
 	val := t.rep.GetOrder("id=?", orderId)
 	if val != nil {
 		return t.CreateOrder(val)
@@ -307,7 +326,7 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 }
 
 // 接收在线交易支付的通知，不主动调用
-func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int32) error {
+func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int64) error {
 	o := t.GetOrderById(orderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
@@ -315,12 +334,12 @@ func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int32) error {
 	if o.Type() != order.TRetail {
 		panic("unknown order type")
 	}
-	io := o.(order.IItemOrder)
+	io := o.(order.INormalOrder)
 	return io.OnlinePaymentTradeFinish()
 }
 
 // 获取子订单
-func (t *orderManagerImpl) GetSubOrder(id int32) order.ISubOrder {
+func (t *orderManagerImpl) GetSubOrder(id int64) order.ISubOrder {
 	if v := t.rep.GetSubOrder(id); v != nil {
 		return t.CreateSubOrder(v)
 	}
@@ -328,6 +347,6 @@ func (t *orderManagerImpl) GetSubOrder(id int32) order.ISubOrder {
 }
 
 // 根据父订单编号获取购买的商品项
-func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
+func (t *orderManagerImpl) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
 	return t.rep.GetItemsByParentOrderId(orderId)
 }

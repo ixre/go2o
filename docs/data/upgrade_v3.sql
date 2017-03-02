@@ -516,6 +516,14 @@ COMMENT = '子订单' ;
 
 /* 2017-03-01 */
 
+ALTER TABLE sale_order`
+DROP COLUMN `create_time`,
+DROP COLUMN `buyer_id`,
+CHANGE COLUMN `order_no` `order_id` INT(11) NOT NULL ,
+ADD COLUMN `is_break` INT(2) NOT NULL COMMENT '是否拆分' AFTER `shipping_address`;
+
+
+
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',
   name       varchar(45) NOT NULL comment '名称',

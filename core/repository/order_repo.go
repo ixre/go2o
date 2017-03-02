@@ -122,8 +122,8 @@ func (o *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 }
 
 // 根据编号获取订单
-func (o *orderRepImpl) GetOrderById(id int32) *order.ItemOrder {
-	e := &order.ItemOrder{}
+func (o *orderRepImpl) GetOrderById(id int64) *order.NormalOrder {
+	e := &order.NormalOrder{}
 	k := o.getOrderCk(id, false)
 	if o.Storage.Get(k, e) != nil {
 		if o.Connector.GetOrm().Get(id, e) != nil {
@@ -135,7 +135,7 @@ func (o *orderRepImpl) GetOrderById(id int32) *order.ItemOrder {
 }
 
 // 根据订单号获取订单
-func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ItemOrder {
+func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.NormalOrder {
 	id := o.GetOrderId(orderNo, false)
 	if id > 0 {
 		return o.GetOrderById(id)
@@ -144,8 +144,8 @@ func (o *orderRepImpl) GetValueOrderByNo(orderNo string) *order.ItemOrder {
 }
 
 // 获取等待处理的订单
-func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int32) ([]*order.ItemOrder, error) {
-	dst := []*order.ItemOrder{}
+func (o *orderRepImpl) GetWaitingSetupOrders(vendorId int32) ([]*order.NormalOrder, error) {
+	dst := []*order.NormalOrder{}
 	err := o.Connector.GetOrm().Select(&dst,
 		"(vendor_id <= 0 OR vendor_id=?) AND is_suspend=0 AND status IN("+
 			enum.ORDER_SETUP_STATE+")", vendorId)
@@ -177,40 +177,40 @@ func (o *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (i
 }
 
 // 获取订单项
-func (o *orderRepImpl) GetSubOrderItems(orderId int32) []*order.OrderItem {
+func (o *orderRepImpl) GetSubOrderItems(orderId int64) []*order.OrderItem {
 	var items = []*order.OrderItem{}
 	o.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items
 }
 
 // 根据父订单编号获取购买的商品项
-func (o *orderRepImpl) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
+func (o *orderRepImpl) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
 	var items = []*order.OrderItem{}
 	o.Connector.GetOrm().SelectByQuery(&items,
 		"order_id IN (SELECT id FROM sale_sub_order WHERE parent_order=?)", orderId)
 	return items
 }
 
-func (o *orderRepImpl) SaveOrder(v *order.ItemOrder) (int32, error) {
-	id, err := orm.I32(orm.Save(o.GetOrm(), v, int(v.Id)))
+func (o *orderRepImpl) SaveNormalOrder(v *order.NormalOrder) (int, error) {
+	id, err := orm.Save(o.GetOrm(), v, int(v.ID))
 	if err == nil {
-		v.Id = id
+		v.ID = int64(id)
 		// 缓存
-		o.Storage.SetExpire(o.getOrderCk(v.Id, false), *v, DefaultCacheSeconds*10)
-		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.Id)
+		o.Storage.SetExpire(o.getOrderCk(v.ID, false), *v, DefaultCacheSeconds*10)
+		//o.Storage.Set(o.getOrderCkByNo(v.OrderNo, false), v.ID)
 	}
 	return id, err
 }
 
 // 获取订单的所有子订单
-func (o *orderRepImpl) GetSubOrdersByParentId(orderId int32) []*order.ValueSubOrder {
+func (o *orderRepImpl) GetSubOrdersByParentId(orderId int64) []*order.ValueSubOrder {
 	list := []*order.ValueSubOrder{}
 	o.GetOrm().Select(&list, "parent_order=?", orderId)
 	return list
 }
 
 // 获取缓存订单的Key
-func (o *orderRepImpl) getOrderCk(id int32, subOrder bool) string {
+func (o *orderRepImpl) getOrderCk(id int64, subOrder bool) string {
 	if subOrder {
 		return fmt.Sprintf("go2o:rep:order:s_%d", id)
 	}
@@ -226,7 +226,7 @@ func (o *orderRepImpl) getOrderCkByNo(orderNo string, subOrder bool) string {
 }
 
 // 获取订单编号
-func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int32 {
+func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
 	k := o.getOrderCkByNo(orderNo, subOrder)
 	id, err := o.Storage.GetInt(k)
 	if err != nil {
@@ -239,11 +239,11 @@ func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int32 {
 			o.Storage.Set(k, id)
 		}
 	}
-	return int32(id)
+	return int64(id)
 }
 
 // 获取子订单
-func (o *orderRepImpl) GetSubOrder(id int32) *order.ValueSubOrder {
+func (o *orderRepImpl) GetSubOrder(id int64) *order.ValueSubOrder {
 	e := &order.ValueSubOrder{}
 	k := o.getOrderCk(id, true)
 	if o.Storage.Get(k, e) != nil {
@@ -265,7 +265,7 @@ func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.ValueSubOrder {
 }
 
 // 保存子订单
-func (o *orderRepImpl) SaveSubOrder(v *order.ValueSubOrder) (int32, error) {
+func (o *orderRepImpl) SaveSubOrder(v *order.ValueSubOrder) (int64, error) {
 	var err error
 	var statusIsChanged bool //业务状态是否改变
 	if v.ID <= 0 {
@@ -274,7 +274,7 @@ func (o *orderRepImpl) SaveSubOrder(v *order.ValueSubOrder) (int32, error) {
 		origin := o.GetSubOrder(v.ID)
 		statusIsChanged = origin.State != v.State // 业务状态是否改变
 	}
-	v.ID, err = orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
+	v.ID, err = orm.I64(orm.Save(o.GetOrm(), v, int(v.ID)))
 
 	// 缓存订单号
 	o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
@@ -292,13 +292,13 @@ func (o *orderRepImpl) SaveSubOrder(v *order.ValueSubOrder) (int32, error) {
 }
 
 // 保存子订单的商品项,并返回编号和错误
-func (o *orderRepImpl) SaveOrderItem(subOrderId int32, v *order.OrderItem) (int32, error) {
+func (o *orderRepImpl) SaveOrderItem(subOrderId int64, v *order.OrderItem) (int32, error) {
 	v.OrderId = subOrderId
 	return orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
 }
 
 // 获取订单的操作记录
-func (o *orderRepImpl) GetSubOrderLogs(orderId int32) []*order.OrderLog {
+func (o *orderRepImpl) GetSubOrderLogs(orderId int64) []*order.OrderLog {
 	list := []*order.OrderLog{}
 	o.GetOrm().Select(&list, "order_id=?", orderId)
 	return list

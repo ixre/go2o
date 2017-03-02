@@ -10,13 +10,17 @@ import (
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/valueobject"
+	"time"
 )
 
 var _ order.IOrder = new(baseOrderImpl)
 
 type baseOrderImpl struct {
-	baseValue *order.Order
-	repo      order.IOrderRepo
+	baseValue  *order.Order
+	buyer      member.IMember
+	repo       order.IOrderRepo
+	memberRepo member.IMemberRepo
+	manager    order.IOrderManager
 }
 
 // 获取编号
@@ -29,9 +33,22 @@ func (o *baseOrderImpl) Type() order.OrderType {
 	return order.OrderType(o.baseValue.OrderType)
 }
 
+// 获取购买的会员
+func (o *baseOrderImpl) Buyer() member.IMember {
+	if o.buyer == nil {
+		o.buyer = o.memberRepo.GetMember(o.baseValue.BuyerId)
+	}
+	return o.buyer
+}
+
 // 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 func (o *baseOrderImpl) Submit() error {
-	panic("not implement!")
+	if o.GetAggregateRootId() <= 0 {
+		o.baseValue.OrderNo = o.manager.GetFreeOrderNo(0)
+		o.baseValue.CreateTime = time.Now().Unix()
+		o.baseValue.State = order.StatAwaitingPayment
+	}
+	return o.saveOrder()
 }
 
 // 获取订单号
@@ -56,14 +73,16 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
 	b := &baseOrderImpl{
-		baseValue: v,
-		repo:      repo,
+		baseValue:  v,
+		repo:       repo,
+		memberRepo: memberRepo,
+		manager:    manager,
 	}
 	t := order.OrderType(v.OrderType)
 	switch t {
 	case order.TRetail:
-		return newOrder(manager, b, mchRepo, repo, goodsRepo,
-			productRepo, promRepo, memberRepo, expressRepo,
+		return newNormalOrder(manager, b, repo, goodsRepo,
+			productRepo, promRepo, expressRepo,
 			payRepo, valRepo)
 	}
 	return nil

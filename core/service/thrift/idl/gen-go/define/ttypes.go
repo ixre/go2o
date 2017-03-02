@@ -8373,7 +8373,7 @@ func (p *PaymentOrder) String() string {
 //  - UpdateTime
 type OrderItem struct {
 	ID             int32   `thrift:"Id,1" json:"Id"`
-	OrderId        int32   `thrift:"OrderId,2" json:"OrderId"`
+	OrderId        int64   `thrift:"OrderId,2" json:"OrderId"`
 	ItemId         int32   `thrift:"ItemId,3" json:"ItemId"`
 	SkuId          int32   `thrift:"SkuId,4" json:"SkuId"`
 	SnapshotId     int32   `thrift:"SnapshotId,5" json:"SnapshotId"`
@@ -8393,7 +8393,7 @@ func (p *OrderItem) GetID() int32 {
 	return p.ID
 }
 
-func (p *OrderItem) GetOrderId() int32 {
+func (p *OrderItem) GetOrderId() int64 {
 	return p.OrderId
 }
 
@@ -8515,7 +8515,7 @@ func (p *OrderItem) readField1(iprot thrift.TProtocol) error {
 }
 
 func (p *OrderItem) readField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
 		p.OrderId = v
@@ -8664,10 +8664,10 @@ func (p *OrderItem) writeField1(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *OrderItem) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("OrderId", thrift.I32, 2); err != nil {
+	if err := oprot.WriteFieldBegin("OrderId", thrift.I64, 2); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:OrderId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.OrderId)); err != nil {
+	if err := oprot.WriteI64(int64(p.OrderId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.OrderId (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -8822,9 +8822,9 @@ func (p *OrderItem) String() string {
 //  - State
 //  - Items
 type SubOrder struct {
-	ID             int32        `thrift:"Id,1" json:"Id"`
+	ID             int64        `thrift:"Id,1" json:"Id"`
 	OrderNo        string       `thrift:"OrderNo,2" json:"OrderNo"`
-	ParentId       int32        `thrift:"ParentId,3" json:"ParentId"`
+	ParentId       int64        `thrift:"ParentId,3" json:"ParentId"`
 	BuyerId        int32        `thrift:"BuyerId,4" json:"BuyerId"`
 	VendorId       int32        `thrift:"VendorId,5" json:"VendorId"`
 	ShopId         int32        `thrift:"ShopId,6" json:"ShopId"`
@@ -8848,7 +8848,7 @@ func NewSubOrder() *SubOrder {
 	return &SubOrder{}
 }
 
-func (p *SubOrder) GetID() int32 {
+func (p *SubOrder) GetID() int64 {
 	return p.ID
 }
 
@@ -8856,7 +8856,7 @@ func (p *SubOrder) GetOrderNo() string {
 	return p.OrderNo
 }
 
-func (p *SubOrder) GetParentId() int32 {
+func (p *SubOrder) GetParentId() int64 {
 	return p.ParentId
 }
 
@@ -9037,7 +9037,7 @@ func (p *SubOrder) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *SubOrder) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.ID = v
@@ -9055,7 +9055,7 @@ func (p *SubOrder) readField2(iprot thrift.TProtocol) error {
 }
 
 func (p *SubOrder) readField3(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
 		p.ParentId = v
@@ -9301,10 +9301,10 @@ func (p *SubOrder) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SubOrder) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Id", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("Id", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Id: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ID)); err != nil {
+	if err := oprot.WriteI64(int64(p.ID)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.Id (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -9327,10 +9327,10 @@ func (p *SubOrder) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *SubOrder) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("ParentId", thrift.I32, 3); err != nil {
+	if err := oprot.WriteFieldBegin("ParentId", thrift.I64, 3); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:ParentId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ParentId)); err != nil {
+	if err := oprot.WriteI64(int64(p.ParentId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.ParentId (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {

@@ -26,36 +26,36 @@ type (
 		CreateSubOrder(*ValueSubOrder) ISubOrder
 
 		// 将购物车转换为订单
-		ParseToOrder(c cart.ICart) (IItemOrder, member.IMember, error)
+		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
 
 		// 预生成订单及支付单
-		PrepareOrder(c cart.ICart, addressId int32, subject string, couponCode string) (IItemOrder,
+		PrepareOrder(c cart.ICart, addressId int32, subject string, couponCode string) (IOrder,
 			payment.IPaymentOrder, error)
 
 		// 提交订单
 		SubmitOrder(c cart.ICart, addressId int32, subject string, couponCode string,
-			balanceDiscount bool) (IItemOrder, payment.IPaymentOrder, error)
+			balanceDiscount bool) (IOrder, payment.IPaymentOrder, error)
 
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendor int32) string
 
 		// 根据订单编号获取订单
-		GetOrderById(orderId int32) IOrder
+		GetOrderById(orderId int64) IOrder
 
 		// 根据订单号获取订单
 		GetOrderByNo(orderNo string) IOrder
 
 		// 接收在线交易支付的通知，不主动调用
-		ReceiveNotifyOfOnlineTrade(orderId int32) error
+		ReceiveNotifyOfOnlineTrade(orderId int64) error
 
 		// 智能选择门店
 		SmartChoiceShop(address string) (shop.IShop, error)
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int32) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*OrderItem
 
 		// 获取子订单
-		GetSubOrder(id int32) ISubOrder
+		GetSubOrder(id int64) ISubOrder
 	}
 
 	IOrderRepo interface {
@@ -63,7 +63,7 @@ type (
 		Manager() IOrderManager
 
 		// 保存订单,返回订单编号
-		SaveOrder(v *ItemOrder) (int32, error)
+		SaveNormalOrder(v *NormalOrder) (int, error)
 
 		// 保存订单优惠券绑定
 		SaveOrderCouponBind(*OrderCoupon) error
@@ -78,43 +78,43 @@ type (
 		GetFreeOrderNo(vendorId int32) string
 
 		// 根据编号获取订单
-		GetOrderById(id int32) *ItemOrder
+		GetOrderById(id int64) *NormalOrder
 
 		// 根据订单号获取订单
-		GetValueOrderByNo(orderNo string) *ItemOrder
+		GetValueOrderByNo(orderNo string) *NormalOrder
 
 		// 获取等待处理的订单
-		GetWaitingSetupOrders(vendorId int32) ([]*ItemOrder, error)
+		GetWaitingSetupOrders(vendorId int32) ([]*NormalOrder, error)
 
 		// 保存订单日志
 		SaveSubOrderLog(*OrderLog) error
 
 		// 获取订单的所有子订单
-		GetSubOrdersByParentId(orderId int32) []*ValueSubOrder
+		GetSubOrdersByParentId(orderId int64) []*ValueSubOrder
 
 		// 获取订单编号
-		GetOrderId(orderNo string, subOrder bool) int32
+		GetOrderId(orderNo string, subOrder bool) int64
 
 		// 获取子订单
-		GetSubOrder(id int32) *ValueSubOrder
+		GetSubOrder(id int64) *ValueSubOrder
 
 		// 根据订单号获取子订单
 		GetSubOrderByNo(orderNo string) *ValueSubOrder
 
 		// 保存子订单
-		SaveSubOrder(value *ValueSubOrder) (int32, error)
+		SaveSubOrder(value *ValueSubOrder) (int64, error)
 
 		// 保存子订单的商品项,并返回编号和错误
-		SaveOrderItem(subOrderId int32, value *OrderItem) (int32, error)
+		SaveOrderItem(subOrderId int64, value *OrderItem) (int32, error)
 
 		// 获取订单项
-		GetSubOrderItems(orderId int32) []*OrderItem
+		GetSubOrderItems(orderId int64) []*OrderItem
 
 		// 根据父订单编号获取购买的商品项
-		GetItemsByParentOrderId(orderId int32) []*OrderItem
+		GetItemsByParentOrderId(orderId int64) []*OrderItem
 
 		// 获取订单的操作记录
-		GetSubOrderLogs(orderId int32) []*OrderLog
+		GetSubOrderLogs(orderId int64) []*OrderLog
 
 		// 根据商品快照获取订单项
 		GetOrderItemBySnapshotId(orderId int32, snapshotId int32) *OrderItem

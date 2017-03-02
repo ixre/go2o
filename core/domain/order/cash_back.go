@@ -135,7 +135,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 	return err
 }
 
-func HandleCashBackDataTag(m member.IMember, order *order.ItemOrder,
+func HandleCashBackDataTag(m member.IMember, o order.IOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
@@ -147,10 +147,11 @@ func HandleCashBackDataTag(m member.IMember, order *order.ItemOrder,
 		}
 	}
 	//log.Println("[ Back][ Level] - ",level)
-	cashBack3R(level, m, order, c, memberRepo)
+	cashBack3R(level, m, o, c, memberRepo)
 }
 
-func cashBack3R(level int, m member.IMember, order *order.ItemOrder, c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
+func cashBack3R(level int, m member.IMember, o order.IOrder,
+	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 
 	dt := c.GetDataTag()
 
@@ -161,7 +162,7 @@ func cashBack3R(level int, m member.IMember, order *order.ItemOrder, c promotion
 
 	var backFunc = func(m member.IMember, parentM member.IMember, fee int) {
 		// fmt.Println("---------[ back ]",parentM.GetValue().Name,fee)
-		backCashForMember(m, order, fee, parentM.Profile().GetProfile().Name)
+		backCashForMember(m, o, fee, parentM.Profile().GetProfile().Name)
 	}
 	var i int = 0
 	for true {
@@ -192,7 +193,7 @@ func cashBack3R(level int, m member.IMember, order *order.ItemOrder, c promotion
 	}
 }
 
-func backCashForMember(m member.IMember, order *order.ItemOrder,
+func backCashForMember(m member.IMember, o order.IOrder,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
@@ -204,10 +205,11 @@ func backCashForMember(m member.IMember, order *order.ItemOrder,
 	_, err := acc.Save()
 
 	if err == nil {
+		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatFloat(bFee), order.OrderNo, refName)
+			format.FormatFloat(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, order.OrderNo,
+			member.KindWalletAdd, tit, orderNo,
 			float32(fee), member.DefaultRelateUser)
 	}
 	return err

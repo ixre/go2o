@@ -25,7 +25,7 @@ func TestOrderRefund(t *testing.T) {
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: int32(v.ID),
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeRefund,
 		// 售后原因
@@ -83,7 +83,7 @@ func TestOrderReturn(t *testing.T) {
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		Id: 0,
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: int32(v.ID),
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeReturn,
 		// 售后原因
@@ -139,7 +139,7 @@ func TestOrderExchange(t *testing.T) {
 	od := orderRepo.Manager().GetSubOrder(v.ID)
 	ro := rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
-		OrderId: v.ID,
+		OrderId: int32(v.ID),
 		// 类型，退货、换货、维修
 		Type: afterSales.TypeExchange,
 		// 售后原因

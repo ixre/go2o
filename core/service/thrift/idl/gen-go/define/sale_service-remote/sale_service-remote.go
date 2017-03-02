@@ -20,9 +20,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  SubOrder GetSubOrder(i32 id)")
+	fmt.Fprintln(os.Stderr, "  SubOrder GetSubOrder(i64 id)")
 	fmt.Fprintln(os.Stderr, "  SubOrder GetSubOrderByNo(string orderNo)")
-	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i32 subOrderId)")
+	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -122,12 +122,11 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err159 := (strconv.Atoi(flag.Arg(1)))
+		argvalue0, err159 := (strconv.ParseInt(flag.Arg(1), 10, 64))
 		if err159 != nil {
 			Usage()
 			return
 		}
-		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetSubOrder(value0))
 		fmt.Print("\n")
@@ -147,12 +146,11 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err161 := (strconv.Atoi(flag.Arg(1)))
+		argvalue0, err161 := (strconv.ParseInt(flag.Arg(1), 10, 64))
 		if err161 != nil {
 			Usage()
 			return
 		}
-		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.GetSubOrderItems(value0))
 		fmt.Print("\n")

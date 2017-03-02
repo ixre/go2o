@@ -33,22 +33,20 @@ import (
 	"time"
 )
 
-var _ order.IOrder = new(orderImpl)
-var _ order.IItemOrder = new(orderImpl)
+var _ order.IOrder = new(normalOrderImpl)
+var _ order.INormalOrder = new(normalOrderImpl)
 
 //todo: 促销
 
-type orderImpl struct {
+type normalOrderImpl struct {
 	*baseOrderImpl
 	manager         order.IOrderManager
-	value           *order.ItemOrder
+	value           *order.NormalOrder
 	cart            cart.ICart //购物车,仅在订单生成时设置
 	paymentOrder    payment.IPaymentOrder
 	coupons         []promotion.ICouponPromotion
 	availPromotions []promotion.IPromotion
 	orderPbs        []*order.OrderPromotionBind
-	memberRepo      member.IMemberRepo
-	buyer           member.IMember
 	orderRepo       order.IOrderRepo
 	expressRepo     express.IExpressRepo
 	payRepo         payment.IPaymentRepo
@@ -65,17 +63,14 @@ type orderImpl struct {
 	subList         []order.ISubOrder
 }
 
-func newOrder(shopping order.IOrderManager, base *baseOrderImpl,
-	mchRepo merchant.IMerchantRepo, shoppingRepo order.IOrderRepo,
-	goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
-	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
-	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
+func newNormalOrder(shopping order.IOrderManager, base *baseOrderImpl,
+	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
+	promRepo promotion.IPromotionRepo, expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	valRepo valueobject.IValueRepo) order.IOrder {
-	return &orderImpl{
+	return &normalOrderImpl{
 		baseOrderImpl: base,
 		manager:       shopping,
 		//value:       value,
-		memberRepo:  memberRepo,
 		promRepo:    promRepo,
 		orderRepo:   shoppingRepo,
 		goodsRepo:   goodsRepo,
@@ -86,23 +81,23 @@ func newOrder(shopping order.IOrderManager, base *baseOrderImpl,
 	}
 }
 
-func (o *orderImpl) getAggregateRootId() int32 {
-	return o.value.Id
+func (o *normalOrderImpl) getNormalOrderId() int64 {
+	return o.value.ID
 }
 
-func (o *orderImpl) GetValue() *order.ItemOrder {
+func (o *normalOrderImpl) GetValue() *order.NormalOrder {
 	return o.value
 }
 
 // 设置订单值
-func (o *orderImpl) SetValue(v *order.ItemOrder) error {
-	v.Id = o.getAggregateRootId()
+func (o *normalOrderImpl) SetValue(v *order.NormalOrder) error {
+	v.ID = o.getNormalOrderId()
 	o.value = v
 	return nil
 }
 
 // 应用优惠券
-func (o *orderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
+func (o *normalOrderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 	//if o._coupons == nil {
 	//	o._coupons = []promotion.ICouponPromotion{}
 	//}
@@ -153,7 +148,7 @@ func (o *orderImpl) ApplyCoupon(coupon promotion.ICouponPromotion) error {
 //}
 
 // 获取应用的优惠券
-func (o *orderImpl) GetCoupons() []promotion.ICouponPromotion {
+func (o *normalOrderImpl) GetCoupons() []promotion.ICouponPromotion {
 	if o.coupons == nil {
 		return make([]promotion.ICouponPromotion, 0)
 	}
@@ -161,7 +156,7 @@ func (o *orderImpl) GetCoupons() []promotion.ICouponPromotion {
 }
 
 // 获取可用的促销,不包含优惠券
-func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
+func (o *normalOrderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 	if o.availPromotions == nil {
 		//mchId := o._cart.VendorId
 
@@ -178,30 +173,31 @@ func (o *orderImpl) GetAvailableOrderPromotions() []promotion.IPromotion {
 }
 
 // 获取促销绑定
-func (o *orderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
+func (o *normalOrderImpl) GetPromotionBinds() []*order.OrderPromotionBind {
 	if o.orderPbs == nil {
-		o.orderPbs = o.orderRepo.GetOrderPromotionBinds(o.value.OrderNo)
+		orderNo := o.OrderNo()
+		o.orderPbs = o.orderRepo.GetOrderPromotionBinds(orderNo)
 	}
 	return o.orderPbs
 }
 
 // 获取最省的促销
-func (o *orderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
+func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFee float32, integral int) {
 	//todo: not implement
 	return nil, 0, 0
 }
 
 // 设置配送地址
-func (o *orderImpl) SetDeliveryAddress(addressId int32) error {
+func (o *normalOrderImpl) SetDeliveryAddress(addressId int32) error {
 	return o.setAddress(addressId)
 }
 
 // 设置配送地址
-func (o *orderImpl) setAddress(addressId int32) error {
+func (o *normalOrderImpl) setAddress(addressId int32) error {
 	if addressId <= 0 {
 		return order.ErrNoAddress
 	}
-	buyer := o.GetBuyer()
+	buyer := o.Buyer()
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
@@ -217,32 +213,27 @@ func (o *orderImpl) setAddress(addressId int32) error {
 	return nil
 }
 
-// 获取购买的会员
-func (o *orderImpl) GetBuyer() member.IMember {
-	if o.buyer == nil {
-		o.buyer = o.memberRepo.GetMember(o.value.BuyerId)
-	}
-	return o.buyer
-}
-
 // 获取支付单
-func (o *orderImpl) GetPaymentOrder() payment.IPaymentOrder {
-	if o.paymentOrder == nil {
-		if o.getAggregateRootId() <= 0 {
-			panic(" Get payment order error ; because of order no yet created!")
-		}
-		o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(o.getAggregateRootId())
-	}
-	return o.paymentOrder
+func (o *normalOrderImpl) GetPaymentOrder() payment.IPaymentOrder {
+	panic(" not implement")
+	//if o.paymentOrder == nil {
+	//    if o.getAggregateRootId() <= 0 {
+	//        panic(" Get payment order error ; because of order no yet created!")
+	//    }
+	//    o.paymentOrder = o.payRepo.GetPaymentBySalesOrderId(o.getAggregateRootId())
+	//}
+	//return o.paymentOrder
 }
 
 //************* 订单提交 ***************//
 
 // 读取购物车数据,用于预生成订单
-func (o *orderImpl) RequireCart(c cart.ICart) error {
-	if o.getAggregateRootId() > 0 || o.cart != nil {
+func (o *normalOrderImpl) RequireCart(c cart.ICart) error {
+	if o.GetAggregateRootId() > 0 || o.cart != nil {
 		return order.ErrRequireCart
 	}
+	o.value = &order.NormalOrder{}
+
 	if c.Kind() != cart.KRetail {
 		panic("购物车非零售")
 	}
@@ -261,7 +252,7 @@ func (o *orderImpl) RequireCart(c cart.ICart) error {
 }
 
 // 加入运费计算器
-func (o *orderImpl) addItemToExpressCalculator(ue express.IUserExpress,
+func (o *normalOrderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 	item *order.OrderItem, cul express.IExpressCalculator) {
 	tpl := ue.GetTemplate(item.ExpressTplId)
 	if tpl != nil {
@@ -282,7 +273,7 @@ func (o *orderImpl) addItemToExpressCalculator(ue express.IUserExpress,
 }
 
 // 更新订单金额,并返回运费
-func (o *orderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[int32]float32 {
+func (o *normalOrderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[int32]float32 {
 	o.value.ItemAmount = 0
 	expCul := make(map[int32]express.IExpressCalculator)
 	expressMap := make(map[int32]float32)
@@ -311,7 +302,7 @@ func (o *orderImpl) updateOrderFee(mp map[int32][]*order.OrderItem) map[int32]fl
 }
 
 // 根据运营商获取商品和运费信息,限未生成的订单
-func (o *orderImpl) GetByVendor() (items map[int32][]*order.OrderItem,
+func (o *normalOrderImpl) GetByVendor() (items map[int32][]*order.OrderItem,
 	expressFeeMap map[int32]float32) {
 	if o.vendorItemsMap == nil {
 		panic("订单尚未读取购物车!")
@@ -325,7 +316,7 @@ func (o *orderImpl) GetByVendor() (items map[int32][]*order.OrderItem,
 }
 
 // 检查购物车
-func (o *orderImpl) checkCart() error {
+func (o *normalOrderImpl) checkCart() error {
 	if o.cart == nil {
 		return cart.ErrEmptyShoppingCart
 	}
@@ -342,7 +333,7 @@ func (o *orderImpl) checkCart() error {
 }
 
 // 生成运营商与订单商品的映射
-func (o *orderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.OrderItem {
+func (o *normalOrderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][]*order.OrderItem {
 	mp := make(map[int32][]*order.OrderItem)
 	for _, v := range items {
 		//必须勾选为结算
@@ -365,7 +356,7 @@ func (o *orderImpl) buildVendorItemMap(items []*cart.RetailCartItem) map[int32][
 }
 
 // 转换购物车的商品项为订单项目
-func (o *orderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.OrderItem {
+func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.OrderItem {
 	// 获取商品已销售快照
 	snap := o.goodsRepo.SnapshotService().GetLatestSalesSnapshot(c.ItemId, c.SkuId)
 	if snap == nil {
@@ -396,20 +387,19 @@ func (o *orderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.OrderIte
 }
 
 // 提交订单，返回订单号。如有错误则返回
-func (o *orderImpl) Submit() error {
-	if o.getAggregateRootId() != 0 {
+func (o *normalOrderImpl) Submit() error {
+	if o.GetAggregateRootId() > 0 || o.getNormalOrderId() > 0 {
 		return errors.New("订单不允许重复提交")
 	}
 	err := o.checkCart()
 	if err != nil {
 		return err
 	}
-	buyer := o.GetBuyer()
+	buyer := o.Buyer()
 	if buyer == nil {
 		return member.ErrNoSuchMember
 	}
 	v := o.value
-
 	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
 	//prom,fee,integral := o.GetBestSavePromotion()
 
@@ -431,14 +421,22 @@ func (o *orderImpl) Submit() error {
 	// 均摊优惠折扣到商品
 	o.avgDiscountToItem()
 	// 保存订单
-	orderId, err := o.saveNewOrderOnSubmit()
-	v.Id = orderId
+	err = o.baseOrderImpl.Submit()
+	if err != nil {
+		return err
+	}
+	// 保存订单信息到常规订单
+	o.value.OrderId = o.GetAggregateRootId()
+	// 保存订单
+	norOrderId, err := o.saveNewOrderOnSubmit()
+	v.ID = norOrderId
+	orderNo := o.OrderNo()
 	if err == nil {
 		// 绑定优惠券促销
-		o.bindCouponOnSubmit(v.OrderNo)
+		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
 		for _, p := range proms {
-			o.bindPromotionOnSubmit(v.OrderNo, p)
+			o.bindPromotionOnSubmit(orderNo, p)
 		}
 		// 扣除库存
 		o.applyItemStock()
@@ -451,14 +449,11 @@ func (o *orderImpl) Submit() error {
 		//	err = acc.PaymentDiscount(v.OrderNo, v.BalanceDiscount)
 		//}
 	}
-
-	o.baseOrderImpl.baseValue.OrderNo = v.OrderNo
-
 	return err
 }
 
 // 平均优惠抵扣金额到商品
-func (o *orderImpl) avgDiscountToItem() {
+func (o *normalOrderImpl) avgDiscountToItem() {
 	if o.vendorItemsMap == nil {
 		panic(errors.New("仅能在下单时进行商品抵扣均分"))
 	}
@@ -474,7 +469,7 @@ func (o *orderImpl) avgDiscountToItem() {
 }
 
 // 绑定促销优惠
-func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
+func (o *normalOrderImpl) bindPromotionOnSubmit(orderNo string,
 	prom promotion.IPromotion) (int32, error) {
 	var title string
 	var integral int
@@ -489,7 +484,7 @@ func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
 	v := &order.OrderPromotionBind{
 		PromotionId:     prom.GetAggregateRootId(),
 		PromotionType:   prom.Type(),
-		OrderId:         o.getAggregateRootId(),
+		OrderId:         int32(o.GetAggregateRootId()),
 		Title:           title,
 		SaveFee:         float32(fee),
 		PresentIntegral: integral,
@@ -500,7 +495,7 @@ func (o *orderImpl) bindPromotionOnSubmit(orderNo string,
 }
 
 // 应用购物车内商品的促销
-func (o *orderImpl) applyCartPromotionOnSubmit(vo *order.ItemOrder,
+func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 	cart cart.ICart) ([]promotion.IPromotion, int) {
 	//todo: 促销
 	var proms []promotion.IPromotion = make([]promotion.IPromotion, 0)
@@ -545,10 +540,10 @@ func (o *orderImpl) applyCartPromotionOnSubmit(vo *order.ItemOrder,
 }
 
 // 绑定订单与优惠券
-func (o *orderImpl) bindCouponOnSubmit(orderNo string) {
+func (o *normalOrderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
-		oc.Clone(c, o.getAggregateRootId(), o.value.FinalAmount)
+		oc.Clone(c, int32(o.GetAggregateRootId()), o.value.FinalAmount)
 		o.orderRepo.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))
@@ -556,18 +551,19 @@ func (o *orderImpl) bindCouponOnSubmit(orderNo string) {
 }
 
 // 在提交订单时应用优惠券
-func (o *orderImpl) applyCouponOnSubmit(v *order.ItemOrder) error {
+func (o *normalOrderImpl) applyCouponOnSubmit(v *order.NormalOrder) error {
 	var err error
 	var t *promotion.ValueCouponTake
 	var b *promotion.ValueCouponBind
+	buyerId := o.buyer.GetAggregateRootId()
 	for _, c := range o.GetCoupons() {
 		if c.CanTake() {
-			t, err = c.GetTake(v.BuyerId)
+			t, err = c.GetTake(buyerId)
 			if err == nil {
 				err = c.ApplyTake(t.Id)
 			}
 		} else {
-			b, err = c.GetBind(v.BuyerId)
+			b, err = c.GetBind(buyerId)
 			if err == nil {
 				err = c.UseCoupon(b.Id)
 			}
@@ -580,7 +576,7 @@ func (o *orderImpl) applyCouponOnSubmit(v *order.ItemOrder) error {
 }
 
 // 应用余额支付
-func (o *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
+func (o *normalOrderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 	if o.value.FinalAmount <= 0 || math.IsNaN(float64(o.value.FinalAmount)) {
 		return 0
 	}
@@ -594,7 +590,7 @@ func (o *orderImpl) getBalanceDiscountFee(acc member.IAccount) float32 {
 }
 
 // 获取Json格式的商品数据
-func (c *orderImpl) getJsonItems() []byte {
+func (c *normalOrderImpl) getJsonItems() []byte {
 	//todo:??? 订单商品JSON表示
 	return []byte("{}")
 	//var goods []*order.OrderGoods = make([]*order.OrderGoods, len(c.value.Items))
@@ -611,43 +607,38 @@ func (c *orderImpl) getJsonItems() []byte {
 }
 
 // 保存订单
-func (o *orderImpl) saveNewOrderOnSubmit() (int32, error) {
-	unix := time.Now().Unix()
-	o.value.OrderNo = o.manager.GetFreeOrderNo(0)
-	o.value.CreateTime = unix
-	o.value.UpdateTime = unix
-
-	id, err := o.orderRepo.SaveOrder(o.value)
+func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
+	o.value.UpdateTime = o.baseValue.CreateTime
+	id, err := o.orderRepo.SaveNormalOrder(o.value)
 	if err == nil {
-		o.value.Id = id
 		// 释放购物车并销毁
 		if o.cart.Release() {
 			o.cart.Destroy()
 		}
 	}
-	return id, err
+	return int64(id), err
 }
 
 // 保存订单
-func (o *orderImpl) save() (int32, error) {
-	if o.value.Id > 0 {
-		return o.orderRepo.SaveOrder(o.value)
+func (o *normalOrderImpl) save() (int, error) {
+	if o.value.ID > 0 {
+		return o.orderRepo.SaveNormalOrder(o.value)
 	}
 	o.internalSuspend = false
 	return 0, errors.New("please use Order.Submit() save new order.")
 }
 
 // 根据运营商生成子订单
-func (o *orderImpl) createSubOrderByVendor(parentOrderId int32, buyerId int32,
+func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int32,
 	vendorId int32, newOrderNo bool, items []*order.OrderItem) order.ISubOrder {
-	orderNo := o.GetOrderNo()
+	orderNo := o.OrderNo()
 	if newOrderNo {
 		orderNo = o.manager.GetFreeOrderNo(vendorId)
 	}
 
 	if len(items) == 0 {
 		domain.HandleError(errors.New("拆分订单,运营商下未获取到商品,订单:"+
-			o.GetOrderNo()), "domain")
+			orderNo), "domain")
 		return nil
 	}
 
@@ -690,15 +681,15 @@ func (o *orderImpl) createSubOrderByVendor(parentOrderId int32, buyerId int32,
 }
 
 //根据运营商拆单,返回拆单结果,及拆分的订单数组
-func (o *orderImpl) breakUpByVendor() []order.ISubOrder {
-	parentOrderId := o.getAggregateRootId()
+func (o *normalOrderImpl) breakUpByVendor() []order.ISubOrder {
+	parentOrderId := o.getNormalOrderId()
 	if parentOrderId <= 0 ||
 		o.vendorItemsMap == nil ||
 		len(o.vendorItemsMap) == 0 {
 		//todo: 订单要取消掉
 		panic(fmt.Sprintf("订单异常: 订单未生成或VendorItemMap为空,"+
 			"订单编号:%d,订单号:%s,vendor len:%d",
-			parentOrderId, o.value.OrderNo, len(o.vendorItemsMap)))
+			parentOrderId, o.OrderNo(), len(o.vendorItemsMap)))
 	}
 	l := len(o.vendorItemsMap)
 	list := make([]order.ISubOrder, l)
@@ -716,7 +707,7 @@ func (o *orderImpl) breakUpByVendor() []order.ISubOrder {
 }
 
 // 扣除库存
-func (o *orderImpl) applyItemStock() {
+func (o *normalOrderImpl) applyItemStock() {
 	for _, v := range o.vendorItemsMap {
 		for _, v2 := range v {
 			o.takeGoodsStock(v2.ItemId, v2.SkuId, v2.Quantity)
@@ -732,12 +723,13 @@ func (o *orderImpl) applyItemStock() {
 //}
 
 // 获取子订单列表
-func (o *orderImpl) GetSubOrders() []order.ISubOrder {
-	if o.getAggregateRootId() <= 0 {
+func (o *normalOrderImpl) GetSubOrders() []order.ISubOrder {
+	parentId := o.getNormalOrderId()
+	if parentId <= 0 {
 		panic(order.ErrNoYetCreated)
 	}
 	if o.subList == nil {
-		subList := o.orderRepo.GetSubOrdersByParentId(o.getAggregateRootId())
+		subList := o.orderRepo.GetSubOrdersByParentId(parentId)
 		for _, v := range subList {
 			o.subList = append(o.subList,
 				o.manager.CreateSubOrder(v))
@@ -747,7 +739,7 @@ func (o *orderImpl) GetSubOrders() []order.ISubOrder {
 }
 
 // 在线支付交易完成
-func (o *orderImpl) OnlinePaymentTradeFinish() (err error) {
+func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 	for _, o := range o.GetSubOrders() {
 		if err = o.PaymentFinishByOnlineTrade(); err != nil {
 			return err
@@ -757,7 +749,7 @@ func (o *orderImpl) OnlinePaymentTradeFinish() (err error) {
 }
 
 // 扣减商品库存
-func (o *orderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
+func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
 	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
 		return item.ErrNoSuchGoods
@@ -765,19 +757,13 @@ func (o *orderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
 	return gds.TakeStock(skuId, quantity)
 }
 
-// 获取订单号
-func (o *orderImpl) GetOrderNo() string {
-	return o.GetValue().OrderNo
-}
-
 // 更新返现到会员账户
-func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
+func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	m member.IMember, fee float32, unixTime int64) error {
 	if fee == 0 {
 		return nil
 	}
-	v := o.GetValue()
-	pv := pt.GetValue()
+	pv := mch.GetValue()
 
 	//更新账户
 	acc := m.GetAccount()
@@ -789,17 +775,18 @@ func (o *orderImpl) updateShoppingMemberBackFee(pt merchant.IMerchant,
 	acv.UpdateTime = unixTime
 	_, err := acc.Save()
 	if err == nil {
+		orderNo := o.OrderNo()
 		//给自己返现
-		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", v.OrderNo, pv.Name, fee)
+		tit := fmt.Sprintf("订单:%s(商户:%s)返现￥%.2f元", orderNo, pv.Name, fee)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, v.OrderNo, float32(fee),
+			member.KindWalletAdd, tit, orderNo, float32(fee),
 			member.DefaultRelateUser)
 	}
 	return err
 }
 
 // 处理返现促销
-func (o *orderImpl) handleCashBackPromotions(pt merchant.IMerchant,
+func (o *normalOrderImpl) handleCashBackPromotions(pt merchant.IMerchant,
 	m member.IMember) error {
 	proms := o.GetPromotionBinds()
 	for _, v := range proms {
@@ -812,7 +799,7 @@ func (o *orderImpl) handleCashBackPromotions(pt merchant.IMerchant,
 }
 
 // 处理返现促销
-func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
+func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	m member.IMember,
 	v *order.OrderPromotionBind, pm promotion.IPromotion) error {
 	cpv := pm.GetRelationValue().(*promotion.ValueCashBack)
@@ -830,18 +817,19 @@ func (o *orderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	_, err := acc.Save()
 
 	if err == nil {
+		orderNo := o.OrderNo()
 		// 优惠绑定生效
 		v.IsApply = 1
 		o.orderRepo.SavePromotionBindForOrder(v)
 
 		// 处理自定义返现
 		c := pm.(promotion.ICashBackPromotion)
-		HandleCashBackDataTag(m, o.value, c, o.memberRepo)
+		HandleCashBackDataTag(m, o, c, o.memberRepo)
 
 		//给自己返现
-		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, o.value.OrderNo)
+		tit := fmt.Sprintf("返现￥%d元,订单号:%s", cpv.BackFee, orderNo)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, o.GetOrderNo(), float32(cpv.BackFee),
+			member.KindWalletAdd, tit, orderNo, float32(cpv.BackFee),
 			member.DefaultRelateUser)
 	}
 	return err
@@ -854,7 +842,7 @@ var _ order.ISubOrder = new(subOrderImpl)
 // 子订单实现
 type subOrderImpl struct {
 	value           *order.ValueSubOrder
-	parent          order.IItemOrder
+	parent          order.INormalOrder
 	buyer           member.IMember
 	internalSuspend bool //内部挂起
 	rep             order.IOrderRepo
@@ -887,7 +875,7 @@ func NewSubOrder(v *order.ValueSubOrder,
 }
 
 // 获取领域对象编号
-func (o *subOrderImpl) GetDomainId() int32 {
+func (o *subOrderImpl) GetDomainId() int64 {
 	return o.value.ID
 }
 
@@ -906,7 +894,7 @@ func (o *subOrderImpl) Items() []*order.OrderItem {
 }
 
 // 获取父订单
-func (o *subOrderImpl) Parent() order.IItemOrder {
+func (o *subOrderImpl) Parent() order.INormalOrder {
 	if o.parent == nil {
 		panic("not impl")
 		//  o.parent = o.manager.GetOrderById(o.value.ParentId)
@@ -956,7 +944,7 @@ func (o *subOrderImpl) saveOrderItems() error {
 }
 
 // 保存订单
-func (o *subOrderImpl) Save() (int32, error) {
+func (o *subOrderImpl) Save() (int64, error) {
 	unix := time.Now().Unix()
 	o.value.UpdateTime = unix
 	if o.GetDomainId() > 0 {
@@ -1094,7 +1082,7 @@ func (o *subOrderImpl) Ship(spId int32, spOrder string) error {
 		return order.ErrOrderShipped
 	}
 
-	if list := o.shipRepo.GetOrders(o.GetDomainId()); len(list) > 0 {
+	if list := o.shipRepo.GetOrders(int32(o.GetDomainId())); len(list) > 0 {
 		return order.ErrPartialShipment
 	}
 	if spId <= 0 || spOrder == "" {
@@ -1127,7 +1115,7 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.OrderItem) shipment.IS
 	unix := time.Now().Unix()
 	so := &shipment.ShipmentOrder{
 		Id:         0,
-		OrderId:    o.GetDomainId(),
+		OrderId:    int32(o.GetDomainId()),
 		ExpressLog: "",
 		ShipTime:   unix,
 		Stat:       shipment.StatAwaitingShipment,
@@ -1525,7 +1513,7 @@ func (o *subOrderImpl) CancelRefund() error {
 // 完成订单
 func (o *subOrderImpl) onOrderComplete() error {
 	// 更新发货单
-	soList := o.shipRepo.GetOrders(o.GetDomainId())
+	soList := o.shipRepo.GetOrders(int32(o.GetDomainId()))
 	for _, v := range soList {
 		domain.HandleError(v.Completed(), "domain")
 	}
