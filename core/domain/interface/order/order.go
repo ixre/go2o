@@ -213,26 +213,23 @@ type (
 		GetAggregateRootId() int64
 		// 订单类型
 		Type() OrderType
+		// 获取购买的会员
+		Buyer() member.IMember
 		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 		// 获取订单号
 		OrderNo() string
 	}
 
-	IItemOrder interface {
-		// 获取聚合根编号
-		//GetAggregateRootId() int32
-		// 获取订单号
-		GetOrderNo() string
-
+	// 普通订单
+	INormalOrder interface {
 		// 获生成值
-		GetValue() *ItemOrder
+		GetValue() *NormalOrder
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
 		GetByVendor() (items map[int32][]*OrderItem, expressFee map[int32]float32)
-		// 获取购买的会员
-		GetBuyer() member.IMember
+
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
 		// 应用优惠券
@@ -264,13 +261,13 @@ type (
 
 	ISubOrder interface {
 		// 获取领域对象编号
-		GetDomainId() int32
+		GetDomainId() int64
 		// 获取值对象
 		GetValue() *ValueSubOrder
 		// 获取商品项
 		Items() []*OrderItem
 		// 获取父订单
-		Parent() IItemOrder
+		Parent() INormalOrder
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
@@ -300,7 +297,7 @@ type (
 		// 谢绝订单
 		Decline(reason string) error
 		// 保存订单
-		Save() (int32, error)
+		Save() (int64, error)
 	}
 
 	// 简单商品信息
@@ -313,7 +310,7 @@ type (
 
 	OrderLog struct {
 		Id      int32 `db:"id" auto:"yes" pk:"yes"`
-		OrderId int32 `db:"order_id"`
+		OrderId int64 `db:"order_id"`
 		Type    int   `db:"type"`
 		// 订单状态
 		OrderState int    `db:"order_state"`
@@ -369,6 +366,8 @@ type (
 		BuyerId int32 `db:"buyer_id"`
 		// 订单类型
 		OrderType int32 `db:"order_type"`
+		// 订单状态
+		State int32 `db:"state"`
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 	}
@@ -411,14 +410,12 @@ type (
 		UpdateTime int64
 	}
 
-	// 商品订单
-	ItemOrder struct {
+	// 普通订单
+	NormalOrder struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
-		// 订单号
-		OrderNo string `db:"order_no"`
-		// 购买人编号
-		BuyerId int32 `db:"buyer_id"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
 		// 商品金额
 		ItemAmount float32 `db:"item_amount"`
 		// 优惠减免金额
@@ -435,8 +432,8 @@ type (
 		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
 		// 收货地址
 		ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-		// 订单生成时间
-		CreateTime int64 `db:"create_time" json:"createTime"`
+		// 订单是否拆分
+		IsBreak int32 `db:"is_break"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}
@@ -444,11 +441,11 @@ type (
 	// 子订单
 	ValueSubOrder struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
-		ParentId int32 `db:"parent_order"`
+		ParentId int64 `db:"parent_order"`
 		// 购买人编号(冗余,便于商户处理数据)
 		BuyerId int32 `db:"buyer_id"`
 		// 运营商编号
@@ -490,7 +487,7 @@ type (
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
-		OrderId int32 `db:"order_id"`
+		OrderId int64 `db:"order_id"`
 		// 商品编号
 		ItemId int32 `db:"item_id"`
 		// 商品SKU编号

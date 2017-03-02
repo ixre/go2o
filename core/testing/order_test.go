@@ -99,7 +99,10 @@ func TestCancelOrder(t *testing.T) {
 	//t.Log(py.Cancel())
 	//return
 	time.Sleep(time.Second * 2)
-	subs := o.GetSubOrders()
+
+	io := o.(order.INormalOrder)
+
+	subs := io.GetSubOrders()
 	for _, v := range subs {
 		err = v.Cancel("买多了，不想要了!")
 		if err != nil {

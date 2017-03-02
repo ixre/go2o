@@ -200,7 +200,7 @@ func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addres
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.ItemOrder {
+func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32, cartCode string) *order.NormalOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	order, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
 	if err != nil {
@@ -280,11 +280,11 @@ func (s *shoppingService) SetDeliverShop(orderNo string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrderById(id int32) *order.ItemOrder {
+func (s *shoppingService) GetOrderById(id int64) *order.NormalOrder {
 	return s._rep.GetOrderById(id)
 }
 
-func (s *shoppingService) GetOrderByNo(orderNo string) *order.ItemOrder {
+func (s *shoppingService) GetOrderByNo(orderNo string) *order.NormalOrder {
 	order := s._manager.GetOrderByNo(orderNo)
 	if order != nil {
 		return order.GetValue()
@@ -304,12 +304,12 @@ func (s *shoppingService) PayForOrderByManager(orderNo string) error {
 }
 
 // 根据订单号获取订单
-func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.ItemOrder {
+func (s *shoppingService) GetValueOrderByNo(orderNo string) *order.NormalOrder {
 	return s._rep.GetValueOrderByNo(orderNo)
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int32) (r *define.SubOrder, err error) {
+func (s *shoppingService) GetSubOrder(id int64) (r *define.SubOrder, err error) {
 	o := s._rep.GetSubOrder(id)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -327,7 +327,7 @@ func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, e
 }
 
 // 获取订单商品项
-func (s *shoppingService) GetSubOrderItems(subOrderId int32) ([]*define.OrderItem, error) {
+func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.OrderItem, error) {
 	list := s._rep.GetSubOrderItems(subOrderId)
 	arr := make([]*define.OrderItem, len(list))
 	for i, v := range list {
@@ -337,7 +337,7 @@ func (s *shoppingService) GetSubOrderItems(subOrderId int32) ([]*define.OrderIte
 }
 
 // 获取子订单及商品项
-func (s *shoppingService) GetSubOrderAndItems(id int32) (*order.ValueSubOrder, []*dto.OrderItem) {
+func (s *shoppingService) GetSubOrderAndItems(id int64) (*order.ValueSubOrder, []*dto.OrderItem) {
 	o := s._rep.GetSubOrder(id)
 	if o == nil {
 		return o, []*dto.OrderItem{}
@@ -382,7 +382,7 @@ func (s *shoppingService) GetOrderLogString(id int32) []byte {
 }
 
 // 根据父订单编号获取购买的商品项
-func (s *shoppingService) GetItemsByParentOrderId(orderId int32) []*order.OrderItem {
+func (s *shoppingService) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
 	return s._manager.GetItemsByParentOrderId(orderId)
 }
 

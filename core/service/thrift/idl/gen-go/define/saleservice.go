@@ -17,13 +17,13 @@ var _ = bytes.Equal
 type SaleService interface {
 	// Parameters:
 	//  - ID
-	GetSubOrder(id int32) (r *SubOrder, err error)
+	GetSubOrder(id int64) (r *SubOrder, err error)
 	// Parameters:
 	//  - OrderNo
 	GetSubOrderByNo(orderNo string) (r *SubOrder, err error)
 	// Parameters:
 	//  - SubOrderId
-	GetSubOrderItems(subOrderId int32) (r []*OrderItem, err error)
+	GetSubOrderItems(subOrderId int64) (r []*OrderItem, err error)
 }
 
 type SaleServiceClient struct {
@@ -54,14 +54,14 @@ func NewSaleServiceClientProtocol(t thrift.TTransport, iprot thrift.TProtocol, o
 
 // Parameters:
 //  - ID
-func (p *SaleServiceClient) GetSubOrder(id int32) (r *SubOrder, err error) {
+func (p *SaleServiceClient) GetSubOrder(id int64) (r *SubOrder, err error) {
 	if err = p.sendGetSubOrder(id); err != nil {
 		return
 	}
 	return p.recvGetSubOrder()
 }
 
-func (p *SaleServiceClient) sendGetSubOrder(id int32) (err error) {
+func (p *SaleServiceClient) sendGetSubOrder(id int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -208,14 +208,14 @@ func (p *SaleServiceClient) recvGetSubOrderByNo() (value *SubOrder, err error) {
 
 // Parameters:
 //  - SubOrderId
-func (p *SaleServiceClient) GetSubOrderItems(subOrderId int32) (r []*OrderItem, err error) {
+func (p *SaleServiceClient) GetSubOrderItems(subOrderId int64) (r []*OrderItem, err error) {
 	if err = p.sendGetSubOrderItems(subOrderId); err != nil {
 		return
 	}
 	return p.recvGetSubOrderItems()
 }
 
-func (p *SaleServiceClient) sendGetSubOrderItems(subOrderId int32) (err error) {
+func (p *SaleServiceClient) sendGetSubOrderItems(subOrderId int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -478,14 +478,14 @@ func (p *saleServiceProcessorGetSubOrderItems) Process(seqId int32, iprot, oprot
 // Attributes:
 //  - ID
 type SaleServiceGetSubOrderArgs struct {
-	ID int32 `thrift:"id,1" json:"id"`
+	ID int64 `thrift:"id,1" json:"id"`
 }
 
 func NewSaleServiceGetSubOrderArgs() *SaleServiceGetSubOrderArgs {
 	return &SaleServiceGetSubOrderArgs{}
 }
 
-func (p *SaleServiceGetSubOrderArgs) GetID() int32 {
+func (p *SaleServiceGetSubOrderArgs) GetID() int64 {
 	return p.ID
 }
 func (p *SaleServiceGetSubOrderArgs) Read(iprot thrift.TProtocol) error {
@@ -522,7 +522,7 @@ func (p *SaleServiceGetSubOrderArgs) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *SaleServiceGetSubOrderArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.ID = v
@@ -547,10 +547,10 @@ func (p *SaleServiceGetSubOrderArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SaleServiceGetSubOrderArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("id", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("id", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:id: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.ID)); err != nil {
+	if err := oprot.WriteI64(int64(p.ID)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.id (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -862,14 +862,14 @@ func (p *SaleServiceGetSubOrderByNoResult) String() string {
 // Attributes:
 //  - SubOrderId
 type SaleServiceGetSubOrderItemsArgs struct {
-	SubOrderId int32 `thrift:"subOrderId,1" json:"subOrderId"`
+	SubOrderId int64 `thrift:"subOrderId,1" json:"subOrderId"`
 }
 
 func NewSaleServiceGetSubOrderItemsArgs() *SaleServiceGetSubOrderItemsArgs {
 	return &SaleServiceGetSubOrderItemsArgs{}
 }
 
-func (p *SaleServiceGetSubOrderItemsArgs) GetSubOrderId() int32 {
+func (p *SaleServiceGetSubOrderItemsArgs) GetSubOrderId() int64 {
 	return p.SubOrderId
 }
 func (p *SaleServiceGetSubOrderItemsArgs) Read(iprot thrift.TProtocol) error {
@@ -906,7 +906,7 @@ func (p *SaleServiceGetSubOrderItemsArgs) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *SaleServiceGetSubOrderItemsArgs) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
 		p.SubOrderId = v
@@ -931,10 +931,10 @@ func (p *SaleServiceGetSubOrderItemsArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SaleServiceGetSubOrderItemsArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("subOrderId", thrift.I32, 1); err != nil {
+	if err := oprot.WriteFieldBegin("subOrderId", thrift.I64, 1); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:subOrderId: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.SubOrderId)); err != nil {
+	if err := oprot.WriteI64(int64(p.SubOrderId)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.subOrderId (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
