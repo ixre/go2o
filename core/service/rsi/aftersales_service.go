@@ -77,13 +77,6 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId int32, be
 	return a._query.QueryPagerAfterSalesOrderOfVendor(vendorId, begin, size, where)
 }
 
-//根据order_id获得订单号
-func (a *afterSalesService) GetAfterSalesOrder(order_id int32) int {
-	id := 0
-	a.Connector.ExecScalar("SSELECT order_no FROM sale_order WHERE id=?", &id, order_id)
-	return id
-}
-
 // 获取售后单
 func (a *afterSalesService) GetAfterSaleOrder(id int32) *afterSales.AfterSalesOrder {
 	as := a._rep.GetAfterSalesOrder(id)

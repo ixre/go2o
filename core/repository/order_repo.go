@@ -177,15 +177,15 @@ func (o *orderRepImpl) SavePromotionBindForOrder(v *order.OrderPromotionBind) (i
 }
 
 // 获取订单项
-func (o *orderRepImpl) GetSubOrderItems(orderId int64) []*order.OrderItem {
-	var items = []*order.OrderItem{}
+func (o *orderRepImpl) GetSubOrderItems(orderId int64) []*order.SubOrderItem {
+	var items = []*order.SubOrderItem{}
 	o.Connector.GetOrm().Select(&items, "order_id=?", orderId)
 	return items
 }
 
 // 根据父订单编号获取购买的商品项
-func (o *orderRepImpl) GetItemsByParentOrderId(orderId int64) []*order.OrderItem {
-	var items = []*order.OrderItem{}
+func (o *orderRepImpl) GetItemsByParentOrderId(orderId int64) []*order.SubOrderItem {
+	var items = []*order.SubOrderItem{}
 	o.Connector.GetOrm().SelectByQuery(&items,
 		"order_id IN (SELECT id FROM sale_sub_order WHERE order_pid=?)", orderId)
 	return items
@@ -233,7 +233,7 @@ func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
 		if subOrder {
 			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
 		} else {
-			o.Connector.ExecScalar("SELECT id FROM sale_order where order_no=?", &id, orderNo)
+			o.Connector.ExecScalar("SELECT id FROM order_list where order_no=?", &id, orderNo)
 		}
 		if id > 0 {
 			o.Storage.Set(k, id)
@@ -292,7 +292,7 @@ func (o *orderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int64, error) {
 }
 
 // 保存子订单的商品项,并返回编号和错误
-func (o *orderRepImpl) SaveOrderItem(subOrderId int64, v *order.OrderItem) (int32, error) {
+func (o *orderRepImpl) SaveOrderItem(subOrderId int64, v *order.SubOrderItem) (int32, error) {
 	v.OrderId = subOrderId
 	return orm.I32(orm.Save(o.GetOrm(), v, int(v.ID)))
 }
@@ -305,8 +305,8 @@ func (o *orderRepImpl) GetSubOrderLogs(orderId int64) []*order.OrderLog {
 }
 
 // 根据商品快照获取订单项
-func (o *orderRepImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.OrderItem {
-	e := &order.OrderItem{}
+func (o *orderRepImpl) GetOrderItemBySnapshotId(orderId int64, snapshotId int32) *order.SubOrderItem {
+	e := &order.SubOrderItem{}
 	if o.GetOrm().GetBy(e, "order_id=? AND snap_id=?", orderId, snapshotId) == nil {
 		return e
 	}

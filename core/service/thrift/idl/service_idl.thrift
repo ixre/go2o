@@ -306,7 +306,7 @@ struct OrderItem {
 struct SubOrder {
     1: i64 Id
     2: string OrderNo
-    3: i64 ParentId
+    3: i64 OrderId
     4: i32 BuyerId
     5: i32 VendorId
     6: i32 ShopId
@@ -324,6 +324,7 @@ struct SubOrder {
     18: i64 UpdateTime
     19: i32 State
     20: list<OrderItem> Items
+    21: i64 ParentId
 }
 
 
