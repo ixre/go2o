@@ -171,8 +171,19 @@ func TestWholesaleOrder(t *testing.T) {
 	//t.Log(py.Cancel())
 	//return
 	time.Sleep(time.Second * 2)
+
+	addressId := orders[0].Buyer().Profile().GetDefaultAddress().GetDomainId()
+
 	for _, o := range orders {
 		io := o.(order.IWholesaleOrder)
+		err = io.SetAddress(addressId)
+		if err == nil {
+			err = o.Submit()
+		}
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
 		logState(t, io.Confirm(), o)
 		logState(t, io.PickUp(), o)
 		logState(t, io.Ship(1, "123456"), o)

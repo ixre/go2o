@@ -28,7 +28,7 @@ const (
 )
 
 var (
-	ErrNoSuchGoods *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchItem *domain.DomainError = domain.NewDomainError(
 		"no_such_goods", "商品不存在")
 
 	ErrItemWholesaleOff *domain.DomainError = domain.NewDomainError(

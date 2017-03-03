@@ -1,6 +1,8 @@
 package order
 
 import (
+	"errors"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -87,11 +89,16 @@ func (o *baseOrderImpl) Buyer() member.IMember {
 
 // 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 func (o *baseOrderImpl) Submit() error {
-	if o.GetAggregateRootId() <= 0 {
+	if o.GetAggregateRootId() > 0 {
+		return errors.New("订单不允许重复提交")
+	}
+	if o.baseValue.OrderNo == "" {
 		o.baseValue.OrderNo = o.manager.GetFreeOrderNo(0)
-		o.baseValue.CreateTime = time.Now().Unix()
+	}
+	if o.baseValue.State == 0 {
 		o.baseValue.State = order.StatAwaitingPayment
 	}
+	o.baseValue.CreateTime = time.Now().Unix()
 	return o.saveOrder()
 }
 
@@ -132,6 +139,30 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	return o.complex
 }
 
+// 生成支付单
+func (o *baseOrderImpl) createPaymentOrder() *payment.PaymentOrder {
+	orderId := o.GetAggregateRootId()
+	if orderId <= 0 {
+		panic("payment order must create after order submit!")
+	}
+	buyerId := o.Buyer().GetAggregateRootId()
+	v := &payment.PaymentOrder{
+		BuyUser:        buyerId,
+		PaymentUser:    buyerId,
+		VendorId:       0,
+		OrderId:        int32(orderId),
+		Type:           payment.TypeShopping,
+		PaymentOptFlag: payment.OptPerm,
+		PaymentSign:    enum.PaymentOnlinePay,
+		CreateTime:     o.baseValue.CreateTime,
+		TradeNo:        o.OrderNo(),
+		State:          payment.StateAwaitingPayment,
+	}
+	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+		v.IntegralDiscount - v.BalanceDiscount
+	return v
+}
+
 // 工厂方法生成订单
 func FactoryNew(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
@@ -152,9 +183,8 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 			productRepo, promRepo, expressRepo,
 			payRepo, valRepo)
 	case order.TWholesale:
-		return newWholesaleOrder(manager, b, repo, goodsRepo,
-			productRepo, promRepo, expressRepo,
-			payRepo, valRepo)
+		return newWholesaleOrder(b, repo, goodsRepo,
+			expressRepo, payRepo)
 	}
 	return nil
 }

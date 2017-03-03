@@ -147,6 +147,9 @@ var (
 	ErrUnusualOrder *domain.DomainError = domain.NewDomainError(
 		"err_unusual_order", "订单异常")
 
+	ErrMissingShipAddress *domain.DomainError = domain.NewDomainError(
+		"err_missing_ship_address", "未设置收货地址")
+
 	ErrUnusualOrderStat *domain.DomainError = domain.NewDomainError(
 		"err_except_order_stat", "订单状态不匹配、无法执行此操作!")
 
@@ -172,7 +175,7 @@ var (
 	ErrOrderNotPickUp *domain.DomainError = domain.NewDomainError(
 		"err_order_not_pick_up", "请等待商品备货")
 
-	ErrNoAddress *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAddress *domain.DomainError = domain.NewDomainError(
 		"err_order_no_address", "请选择收货地址")
 
 	ErrOrderShipped *domain.DomainError = domain.NewDomainError(
@@ -235,7 +238,7 @@ type (
 		// 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
-		SetDeliveryAddress(addressId int32) error
+		SetAddress(addressId int32) error
 		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
@@ -302,9 +305,11 @@ type (
 
 		// 设置商品项
 		SetItems(items []*MinifyItem)
+		// 设置配送地址
+		SetAddress(addressId int32) error
 
 		// 获取商品项
-		Items() []*OrderWholesaleItem
+		Items() []*WholesaleItem
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
@@ -329,7 +334,6 @@ type (
 		//Return(snapshotId int32, quantity int32) error
 		// 撤销退回商品
 		//RevertReturn(snapshotId int32, quantity int32) error
-
 	}
 
 	// 交易订单
@@ -548,7 +552,7 @@ type (
 	}
 
 	// 批发订单商品
-	OrderWholesaleItem struct {
+	WholesaleItem struct {
 		// 编号
 		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单编号

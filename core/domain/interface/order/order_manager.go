@@ -106,5 +106,12 @@ type (
 
 		// Delete OrderList
 		//DeleteOrderList(primary interface{}) error
+
+		// Get WholesaleOrder
+		GetWholesaleOrder(where string, v ...interface{}) *WholesaleOrder
+		// Save WholesaleOrder
+		SaveWholesaleOrder(v *WholesaleOrder) (int, error)
+		// Save WholesaleItem
+		SaveWholesaleItem(v *WholesaleItem) (int, error)
 	}
 )

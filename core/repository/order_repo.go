@@ -344,3 +344,34 @@ func (o *orderRepImpl) SaveOrderList(v *order.Order) (int, error) {
 	}
 	return id, err
 }
+
+// Get WholesaleOrder
+func (o *orderRepImpl) GetWholesaleOrder(where string, v ...interface{}) *order.WholesaleOrder {
+	e := order.WholesaleOrder{}
+	err := o._orm.GetBy(&e, where, v...)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleOrder")
+	}
+	return nil
+}
+
+// Save WholesaleOrder
+func (o *orderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleOrder")
+	}
+	return id, err
+}
+
+// Save WholesaleItem
+func (o *orderRepImpl) SaveWholesaleItem(v *order.WholesaleItem) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
+	}
+	return id, err
+}

@@ -69,7 +69,7 @@ func (c *wholesaleCartImpl) Check() error {
 		if v.Checked == 1 {
 			it := c.goodsRepo.GetItem(v.ItemId)
 			if it == nil {
-				return item.ErrNoSuchGoods // 没有商品
+				return item.ErrNoSuchItem // 没有商品
 			}
 			// 验证批发权限
 			wsIt := it.Wholesale()
@@ -104,7 +104,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartIte
 	var sku *item.Sku
 	it := c.goodsRepo.GetItem(itemId)
 	if it == nil {
-		return nil, item.ErrNoSuchGoods // 没有商品
+		return nil, item.ErrNoSuchItem // 没有商品
 	}
 	iv := it.GetValue()
 	// 库存,如有SKU，则使用SKU的库存

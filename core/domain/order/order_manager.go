@@ -237,7 +237,7 @@ func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
 		switch o.Type() {
 		case order.TRetail:
 			io := o.(order.INormalOrder)
-			err = io.SetDeliveryAddress(addressId)
+			err = io.SetAddress(addressId)
 		}
 	}
 	if err != nil {
