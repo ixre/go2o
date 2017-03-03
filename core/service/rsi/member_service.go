@@ -489,7 +489,7 @@ func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.R
 		}
 	}
 	if val.State == member.StateStopped {
-		r.Message = member.ErrStopped.Error()
+		r.Message = member.ErrMemberDisabled.Error()
 		return r, nil
 	}
 	r.ID = val.Id

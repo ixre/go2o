@@ -2,17 +2,17 @@ package order
 
 import (
 	"errors"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
-	"go2o/core/domain/interface/product"
-	"go2o/core/domain/interface/promotion"
-	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"log"
 	"strconv"
+	"strings"
 )
 
 var _ order.IOrder = new(wholesaleOrderImpl)
@@ -20,48 +20,35 @@ var _ order.IWholesaleOrder = new(wholesaleOrderImpl)
 
 type wholesaleOrderImpl struct {
 	*baseOrderImpl
-	manager order.IOrderManager
-	value   *order.WholesaleOrder
-	items   []*orderItem
-
-	cart            cart.ICart //购物车,仅在订单生成时设置
-	paymentOrder    payment.IPaymentOrder
-	coupons         []promotion.ICouponPromotion
-	availPromotions []promotion.IPromotion
-	orderPbs        []*order.OrderPromotionBind
-	orderRepo       order.IOrderRepo
-	expressRepo     express.IExpressRepo
-	payRepo         payment.IPaymentRepo
-	goodsRepo       item.IGoodsItemRepo
-	productRepo     product.IProductRepo
-	promRepo        promotion.IPromotionRepo
-	valRepo         valueobject.IValueRepo
-	// 运营商商品映射,用于整理购物车
-	vendorItemsMap map[int32][]*order.SubOrderItem
-	// 运营商与邮费的MAP
-	vendorExpressMap map[int32]float32
-	// 是否为内部挂起
-	internalSuspend bool
-	subList         []order.ISubOrder
+	value        *order.WholesaleOrder
+	items        []*orderItem
+	paymentOrder payment.IPaymentOrder
+	orderRepo    order.IOrderRepo
+	expressRepo  express.IExpressRepo
+	payRepo      payment.IPaymentRepo
+	itemRepo     item.IGoodsItemRepo
 }
 
-func newWholesaleOrder(shopping order.IOrderManager, base *baseOrderImpl,
+func newWholesaleOrder(base *baseOrderImpl,
 	shoppingRepo order.IOrderRepo, goodsRepo item.IGoodsItemRepo,
-	productRepo product.IProductRepo, promRepo promotion.IPromotionRepo,
-	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	valRepo valueobject.IValueRepo) order.IOrder {
+	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo) order.IOrder {
 	return &wholesaleOrderImpl{
 		baseOrderImpl: base,
-		manager:       shopping,
-		//value:       value,
-		promRepo:    promRepo,
-		orderRepo:   shoppingRepo,
-		goodsRepo:   goodsRepo,
-		productRepo: productRepo,
-		valRepo:     valRepo,
-		expressRepo: expressRepo,
-		payRepo:     payRepo,
+		orderRepo:     shoppingRepo,
+		itemRepo:      goodsRepo,
+		expressRepo:   expressRepo,
+		payRepo:       payRepo,
 	}
+}
+
+func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
+	if o.value == nil {
+		id := o.GetAggregateRootId()
+		if id > 0 {
+			o.value = o.repo.GetWholesaleOrder("order_id=?", id)
+		}
+	}
+	return o.value
 }
 
 // 设置商品项
@@ -114,11 +101,11 @@ func (w *wholesaleOrderImpl) parseOrder(items []*order.MinifyItem) {
 // 创建商品信息,并读取价格及运费信息
 func (w *wholesaleOrderImpl) createItem(i *order.MinifyItem) *orderItem {
 	// 获取商品信息
-	it := w.goodsRepo.GetItem(i.ItemId)
+	it := w.itemRepo.GetItem(i.ItemId)
 	sku := it.GetSku(i.SkuId)
 	iv := it.GetValue()
 	// 获取商品已销售快照
-	snap := w.goodsRepo.SnapshotService().GetLatestSalesSnapshot(
+	snap := w.itemRepo.SnapshotService().GetLatestSalesSnapshot(
 		i.ItemId, i.SkuId)
 	if snap == nil {
 		domain.HandleError(errors.New("商品快照生成失败："+
@@ -172,9 +159,9 @@ func (w *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 }
 
 // 复合的订单信息
-func (w *wholesaleOrderImpl) Complex() *order.ComplexOrder {
-	v := w.value
-	co := w.baseOrderImpl.Complex()
+func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
+	v := o.getValue()
+	co := o.baseOrderImpl.Complex()
 	co.ConsigneePerson = v.ConsigneePerson
 	co.ConsigneePhone = v.ConsigneePhone
 	co.ShippingAddress = v.ShippingAddress
@@ -189,14 +176,168 @@ func (w *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 }
 
 // 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
-func (w *wholesaleOrderImpl) Submit() error {
-	err := w.baseOrderImpl.Submit()
+func (o *wholesaleOrderImpl) Submit() error {
+	if o.GetAggregateRootId() > 0 {
+		return errors.New("订单不允许重复提交")
+	}
+	err := o.checkBuyer()
+	if err == nil {
+		err = o.takeItemStock(o.items)
+	}
+	if err != nil {
+		return err
+	}
+	// 提交订单
+	err = o.baseOrderImpl.Submit()
+	if err == nil {
+		// 均摊优惠折扣到商品
+		o.avgDiscountForItem()
+		// 保存订单信息到常规订单
+		o.value.OrderId = o.GetAggregateRootId()
+		o.value.OrderNo = o.OrderNo()
+		o.value.State = int32(order.StatAwaitingPayment)
+		o.value.CreateTime = o.baseValue.CreateTime
+		o.value.UpdateTime = o.baseValue.CreateTime
+		// 保存订单
+		o.value.ID, err = util.I64Err(o.repo.SaveWholesaleOrder(o.value))
+		if err == nil {
+			// 存储Items
+			err = o.saveOrderItemsOnSubmit()
+			// 生成支付单
+			err = o.createPaymentForOrder()
+		}
+	}
+
 	return err
 }
 
+// 检查买家及收货地址
+func (o *wholesaleOrderImpl) checkBuyer() error {
+	buyer := o.Buyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	if buyer.GetValue().State == 0 {
+		return member.ErrMemberDisabled
+	}
+	if o.value.ShippingAddress == "" ||
+		o.value.ConsigneePhone == "" ||
+		o.value.ConsigneePerson == "" {
+		return order.ErrMissingShipAddress
+	}
+	return nil
+}
+
+// 扣除库存
+func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
+	okIndex := 0
+	// 占用库存，并记录库存占用成功索引
+	for _, v := range items {
+		it := o.itemRepo.GetItem(v.ItemId)
+		if it == nil {
+			err = item.ErrNoSuchItem
+		} else {
+			err = it.TakeStock(v.SkuId, v.Quantity)
+		}
+		if err != nil {
+			break
+		}
+		okIndex++
+	}
+	// 如果库存占用失败，则释放库存
+	if err != nil {
+		for i := 0; i < okIndex; i++ {
+			v := items[i]
+			it := o.itemRepo.GetItem(v.ItemId)
+			it.FreeStock(v.SkuId, v.Quantity)
+		}
+	}
+	return err
+}
+
+// 平均优惠抵扣金额到商品
+func (o *wholesaleOrderImpl) avgDiscountForItem() {
+	if o.items == nil {
+		panic(errors.New("仅能在下单时进行商品抵扣平均"))
+	}
+	if o.value.DiscountAmount > 0 {
+		totalFee := o.value.ItemAmount
+		disFee := o.value.DiscountAmount
+		for _, v := range o.items {
+			b := (v.Amount / totalFee)
+			v.FinalAmount = v.Amount - b*disFee
+		}
+	}
+}
+
+// 保存商品项
+func (o *wholesaleOrderImpl) saveOrderItemsOnSubmit() (err error) {
+	orderId := o.GetAggregateRootId()
+	for _, v := range o.items {
+		v.OrderId = orderId
+		item := o.parseOrderItem(v)
+		_, err = o.repo.SaveWholesaleItem(item)
+		if err != nil {
+			break
+		}
+	}
+	return err
+}
+
+// 转换订单商品
+func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
+	return &order.WholesaleItem{
+		ID:             0,
+		OrderId:        i.OrderId,
+		ItemId:         int64(i.ItemId),
+		SkuId:          int64(i.SkuId),
+		SnapId:         int64(i.SnapshotId),
+		Quantity:       i.Quantity,
+		ReturnQuantity: i.ReturnQuantity,
+		Amount:         i.Amount,
+		FinalAmount:    i.FinalAmount,
+		IsShipped:      0,
+		UpdateTime:     i.UpdateTime,
+	}
+}
+
 // 获取商品项
-func (w *wholesaleOrderImpl) Items() []*order.OrderWholesaleItem {
+func (w *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 	panic("not implement")
+}
+
+// 设置配送地址
+func (o *wholesaleOrderImpl) SetAddress(addressId int32) error {
+	if addressId <= 0 {
+		return order.ErrNoSuchAddress
+	}
+	buyer := o.Buyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	addr := buyer.Profile().GetAddress(addressId)
+	if addr == nil {
+		return order.ErrNoSuchAddress
+	}
+	d := addr.GetValue()
+	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
+	o.value.ConsigneePerson = d.RealName
+	o.value.ConsigneePhone = d.Phone
+	return nil
+}
+
+// 生成支付单
+func (o *wholesaleOrderImpl) createPaymentForOrder() error {
+	v := o.baseOrderImpl.createPaymentOrder()
+	v.VendorId = o.value.VendorId
+	v.TotalFee = o.value.FinalAmount
+	v.CouponDiscount = 0
+	v.IntegralDiscount = 0
+	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+		v.IntegralDiscount - v.BalanceDiscount
+	po := o.payRepo.CreatePaymentOrder(v)
+	_, err := po.Commit()
+	return err
 }
 
 // 在线支付交易完成

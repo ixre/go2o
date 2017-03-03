@@ -200,14 +200,9 @@ func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFe
 }
 
 // 设置配送地址
-func (o *normalOrderImpl) SetDeliveryAddress(addressId int32) error {
-	return o.setAddress(addressId)
-}
-
-// 设置配送地址
-func (o *normalOrderImpl) setAddress(addressId int32) error {
+func (o *normalOrderImpl) SetAddress(addressId int32) error {
 	if addressId <= 0 {
-		return order.ErrNoAddress
+		return order.ErrNoSuchAddress
 	}
 	buyer := o.Buyer()
 	if buyer == nil {
@@ -215,13 +210,12 @@ func (o *normalOrderImpl) setAddress(addressId int32) error {
 	}
 	addr := buyer.Profile().GetAddress(addressId)
 	if addr == nil {
-		return order.ErrNoAddress
+		return order.ErrNoSuchAddress
 	}
 	d := addr.GetValue()
-	v := o.value
-	v.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
-	v.ConsigneePerson = d.RealName
-	v.ConsigneePhone = d.Phone
+	o.value.ShippingAddress = strings.Replace(d.Area, " ", "", -1) + d.Address
+	o.value.ConsigneePerson = d.RealName
+	o.value.ConsigneePhone = d.Phone
 	return nil
 }
 
@@ -398,19 +392,36 @@ func (o *normalOrderImpl) parseCartToOrderItem(c *cart.RetailCartItem) *order.Su
 	}
 }
 
+// 检查买家及收货地址
+func (o *normalOrderImpl) checkBuyer() error {
+	buyer := o.Buyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	if buyer.GetValue().State == 0 {
+		return member.ErrMemberDisabled
+	}
+	if o.value.ShippingAddress == "" ||
+		o.value.ConsigneePhone == "" ||
+		o.value.ConsigneePerson == "" {
+		return order.ErrMissingShipAddress
+	}
+	return nil
+}
+
 // 提交订单，返回订单号。如有错误则返回
 func (o *normalOrderImpl) Submit() error {
 	if o.GetAggregateRootId() > 0 {
 		return errors.New("订单不允许重复提交")
 	}
-	err := o.checkCart()
+	err := o.checkBuyer()
+	if err == nil {
+		err = o.checkCart()
+	}
 	if err != nil {
 		return err
 	}
-	buyer := o.Buyer()
-	if buyer == nil {
-		return member.ErrNoSuchMember
-	}
+
 	v := o.value
 	//todo: best promotion , 优惠券和返现这里需要重构,直接影响到订单金额
 	//prom,fee,integral := o.GetBestSavePromotion()
@@ -766,7 +777,7 @@ func (o *normalOrderImpl) OnlinePaymentTradeFinish() (err error) {
 func (o *normalOrderImpl) takeGoodsStock(itemId, skuId int32, quantity int32) error {
 	gds := o.goodsRepo.GetItem(itemId)
 	if gds == nil {
-		return item.ErrNoSuchGoods
+		return item.ErrNoSuchItem
 	}
 	return gds.TakeStock(skuId, quantity)
 }

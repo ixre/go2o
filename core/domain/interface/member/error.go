@@ -28,7 +28,7 @@ var (
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 
-	ErrStopped *domain.DomainError = domain.NewDomainError(
+	ErrMemberDisabled *domain.DomainError = domain.NewDomainError(
 		"err_member_stopped", "会员已被停用")
 
 	ErrCredential *domain.DomainError = domain.NewDomainError(
