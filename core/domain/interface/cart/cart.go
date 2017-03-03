@@ -26,6 +26,9 @@ var (
 	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_cart", "购物车没有商品")
 
+	ErrNoChecked *domain.DomainError = domain.NewDomainError(
+		"empty_shopping_cart_no_checked", "购物车没有结算的商品")
+
 	ErrCartNoBuyer *domain.DomainError = domain.NewDomainError(
 		"err_cart_no_buyer", "购物车未绑定")
 

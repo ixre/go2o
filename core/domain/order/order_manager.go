@@ -44,16 +44,17 @@ type orderManagerImpl struct {
 	expressRepo  express.IExpressRepo
 	mch          merchant.IMerchant
 	shipRepo     shipment.IShipmentRepo
+	breaker      *wholesaleOrderBreaker
 }
 
 func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
-	rep order.IOrderRepo, payRepo payment.IPaymentRepo, productRepo product.IProductRepo,
+	repo order.IOrderRepo, payRepo payment.IPaymentRepo, productRepo product.IProductRepo,
 	goodsRepo item.IGoodsItemRepo, promRepo promotion.IPromotionRepo,
 	memberRepo member.IMemberRepo, deliveryRepo delivery.IDeliveryRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	valRepo valueobject.IValueRepo) order.IOrderManager {
 	return &orderManagerImpl{
-		repo:         rep,
+		repo:         repo,
 		cartRepo:     cartRepo,
 		productRepo:  productRepo,
 		goodsRepo:    goodsRepo,
@@ -65,6 +66,7 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 		valRepo:      valRepo,
 		expressRepo:  expressRepo,
 		shipRepo:     shipRepo,
+		breaker:      newWholesaleOrderBreaker(repo),
 	}
 }
 
@@ -130,6 +132,11 @@ func (t *orderManagerImpl) PrepareOrder(c cart.ICart, addressId int32,
 		}
 	}
 	return order, py, err
+}
+
+// 预创建批发订单
+func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.IWholesaleCart) ([]order.IOrder, error) {
+	return o.breaker.BreakUp(c)
 }
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {

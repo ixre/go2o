@@ -519,6 +519,9 @@ ALTER TABLE `sale_sub_order`
 DROP COLUMN `order_pid`;
 
 
+
+
+
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',
   name       varchar(45) NOT NULL comment '名称',

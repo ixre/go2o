@@ -17,6 +17,15 @@ import (
 	"time"
 )
 
+func logState(t *testing.T, err error, o order.IOrder) {
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	} else {
+		t.Log(order.OrderState(o.State()).String())
+	}
+}
+
 func TestOrderSetup(t *testing.T) {
 	orderNo := "100000735578"
 	orderRepo := ti.OrderRepo
@@ -111,4 +120,62 @@ func TestCancelOrder(t *testing.T) {
 		}
 	}
 	t.Log("退货成功")
+}
+
+// 测试批发订单
+func TestWholesaleOrder(t *testing.T) {
+	repo := ti.CartRepo
+	var buyerId int32 = 1
+	c := repo.GetMyCart(buyerId, cart.KWholesale)
+	joinItemsToCart(c, t)
+	rc := c.(cart.IWholesaleCart)
+
+	t.Log("购物车如下:")
+	for _, v := range rc.Items() {
+		t.Logf("商品：%d-%d 数量：%d\n", v.ItemId, v.SkuId, v.Quantity)
+	}
+	if len(rc.GetValue().Items) == 0 {
+		t.Log("购物车是空的")
+		t.FailNow()
+	}
+
+	_, err := c.Save()
+	if err != nil {
+		t.Error("保存购物车失败:", err.Error())
+		t.Fail()
+	}
+
+	orderRepo := ti.OrderRepo
+	manager := orderRepo.Manager()
+
+	orders, err := manager.PrepareWholesaleOrder(rc)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("批发单拆分数量：%d", len(orders))
+
+	//m := mmRepo.GetMember(buyerId)
+	//addressId := m.Profile().GetDefaultAddress().GetDomainId()
+	//o, py, err := manager.SubmitOrder(c, addressId, "", "", true)
+	////err = py.PaymentByWallet("支付订单")
+	//pv := py.GetValue()
+	//payState := pv.State
+	//if payState == payment.StateFinishPayment {
+	//    t.Logf("订单支付完成,金额：%.2f", pv.FinalAmount)
+	//} else {
+	//    t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.GetTradeNo())
+	//}
+	//t.Logf("支付单信息：%#v", pv)
+	//t.Log("调价：",py.Adjust(-pv.FinalAmount))
+	//t.Log(py.Cancel())
+	//return
+	time.Sleep(time.Second * 2)
+	for _, o := range orders {
+		io := o.(order.IWholesaleOrder)
+		logState(t, io.Confirm(), o)
+		logState(t, io.PickUp(), o)
+		logState(t, io.Ship(1, "123456"), o)
+		logState(t, io.BuyerReceived(), o)
+	}
 }

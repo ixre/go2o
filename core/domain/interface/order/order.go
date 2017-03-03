@@ -212,14 +212,16 @@ type (
 		GetAggregateRootId() int64
 		// 订单类型
 		Type() OrderType
+		// 获取订单状态
+		State() OrderState
 		// 获取购买的会员
 		Buyer() member.IMember
-		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
-		Submit() error
 		// 获取订单号
 		OrderNo() string
 		// 复合的订单信息
 		Complex() *ComplexOrder
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
 	}
 
 	// 普通订单
@@ -240,7 +242,6 @@ type (
 		//BreakUpByVendor() ([]IOrder, error)
 		// 获取子订单列表
 		GetSubOrders() []ISubOrder
-
 		// 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
 		// 获取应用的优惠券
@@ -254,6 +255,7 @@ type (
 		GetPromotionBinds() []*OrderPromotionBind
 	}
 
+	// 子订单(普通订单拆分)
 	ISubOrder interface {
 		// 获取领域对象编号
 		GetDomainId() int64
@@ -290,6 +292,48 @@ type (
 		// 提交子订单
 		Submit() (int64, error)
 	}
+
+	// 批发订单
+	IWholesaleOrder interface {
+		// 获取领域对象编号
+		//GetDomainId() int64
+		// 获取值对象
+		//GetValue() *NormalSubOrder
+
+		// 设置商品项
+		SetItems(items []*MinifyItem)
+
+		// 获取商品项
+		Items() []*OrderWholesaleItem
+		// 在线支付交易完成
+		PaymentFinishByOnlineTrade() error
+		// 记录订单日志
+		AppendLog(logType LogType, system bool, message string) error
+		// 添加备注
+		AddRemark(string)
+		// 确认订单
+		Confirm() error
+		// 捡货(备货)
+		PickUp() error
+		// 发货
+		Ship(spId int32, spOrder string) error
+		// 已收货
+		BuyerReceived() error
+		// 获取订单的日志
+		LogBytes() []byte
+		// 取消订单/退款
+		Cancel(reason string) error
+		// 谢绝订单
+		Decline(reason string) error
+		// 退回商品
+		//Return(snapshotId int32, quantity int32) error
+		// 撤销退回商品
+		//RevertReturn(snapshotId int32, quantity int32) error
+
+	}
+
+	// 交易订单
+	ITradeOrder interface{}
 
 	// 订单
 	Order struct {
@@ -415,6 +459,13 @@ type (
 	}
 
 	// 订单商品项
+	MinifyItem struct {
+		ItemId   int32
+		SkuId    int32
+		Quantity int32
+	}
+
+	// 订单商品项
 	SubOrderItem struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
@@ -450,6 +501,76 @@ type (
 		Bulk int32 `db:"-"`
 		// 快递模板编号
 		ExpressTplId int32 `db:"-"`
+	}
+
+	// 批发订单
+	WholesaleOrder struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderNo string `db:"order_no"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 买家编号
+		BuyerId int32 `db:"buyer_id"`
+		// 商家编号
+		VendorId int32 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int32 `db:"shop_id"`
+		// 商品总价
+		ItemAmount float32 `db:"item_amount"`
+		// 抵扣金额
+		DiscountAmount float32 `db:"discount_amount"`
+		// 运费
+		ExpressFee float32 `db:"express_fee"`
+		// 包装费
+		PackageFee float32 `db:"package_fee"`
+		// 订单最终金额
+		FinalAmount float32 `db:"final_amount"`
+		// 收货人姓名
+		ConsigneePerson string `db:"consignee_person"`
+		// 收货人电话
+		ConsigneePhone string `db:"consignee_phone"`
+		// 收货人地址
+		ShippingAddress string `db:"shipping_address"`
+		// 是否支付
+		IsPaid int32 `db:"is_paid"`
+		// 订单备注
+		Remark string `db:"remark"`
+		// 订单买家备注
+		BuyerRemark string `db:"buyer_remark"`
+		// 订单状态
+		State int32 `db:"state"`
+		// 订单创建时间
+		CreateTime int64 `db:"create_time"`
+		// 订单更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 批发订单商品
+	OrderWholesaleItem struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// SKU编号
+		SkuId int64 `db:"sku_id"`
+		// 商品快照编号
+		SnapId int64 `db:"snap_id"`
+		// 销售数量
+		Quantity int32 `db:"quantity"`
+		// 退货数量
+		ReturnQuantity int32 `db:"return_quantity"`
+		// 商品总金额
+		Amount float32 `db:"amount"`
+		// 商品实际金额
+		FinalAmount float32 `db:"final_amount"`
+		// 是否已发货
+		IsShipped int32 `db:"is_shipped"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
 	}
 
 	OrderLog struct {
