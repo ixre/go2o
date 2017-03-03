@@ -178,7 +178,10 @@ func TestWholesaleOrder(t *testing.T) {
 		io := o.(order.IWholesaleOrder)
 		err = io.SetAddress(addressId)
 		if err == nil {
-			err = o.Submit()
+			if err = o.Submit(); err == nil {
+				//po := io.GetPaymentOrder()
+				//err = po.PaymentFinish("alipay","1234567899000")
+			}
 		}
 		if err != nil {
 			t.Error(err)

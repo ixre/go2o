@@ -102,7 +102,7 @@ func (o *orderRepImpl) Manager() order.IOrderManager {
 func (o *orderRepImpl) CreateOrder(val *order.Order) order.IOrder {
 	return orderImpl.FactoryNew(val, o.Manager(), o, o._mchRepo, o._goodsRepo,
 		o._productRepo, o._promRepo, o._memberRepo, o._expressRepo,
-		o._payRepo, o._valRepo)
+		o._shipRepo, o._payRepo, o._valRepo)
 }
 
 // 生成空白订单,并保存返回对象
@@ -365,6 +365,16 @@ func (o *orderRepImpl) SaveWholesaleOrder(v *order.WholesaleOrder) (int, error) 
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleOrder")
 	}
 	return id, err
+}
+
+// Select WholesaleItem
+func (o *orderRepImpl) SelectWholesaleItem(where string, v ...interface{}) []*order.WholesaleItem {
+	list := []*order.WholesaleItem{}
+	err := o._orm.Select(&list, where, v...)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
+	}
+	return list
 }
 
 // Save WholesaleItem

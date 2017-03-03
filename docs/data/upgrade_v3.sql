@@ -518,6 +518,42 @@ CREATE TABLE sale_order_item (
 ALTER TABLE `sale_sub_order` 
 DROP COLUMN `order_pid`;
 
+CREATE TABLE order_wholesale_item (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  item_id         int(11) NOT NULL comment '商品编号',
+  sku_id          int(11) NOT NULL comment 'SKU编号',
+  snapshot_id     int(11) NOT NULL comment '商品快照编号',
+  quantity        int(11) NOT NULL comment '销售数量',
+  return_quantity int(11) NOT NULL comment '退货数量',
+  amount          decimal(8, 2) NOT NULL comment '商品总金额',
+  final_amount    decimal(8, 2) NOT NULL comment '商品实际金额',
+  is_shipped      int(2) NOT NULL comment '是否已发货',
+  update_time     int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='批发订单商品';
+
+CREATE TABLE order_wholesale_order (
+  id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_no         varchar(20) NOT NULL comment '订单号',
+  order_id         int(11) NOT NULL comment '订单编号',
+  buyer_id         int(11) NOT NULL comment '买家编号',
+  vendor_id        int(11) NOT NULL comment '商家编号',
+  shop_id          int(11) NOT NULL comment '店铺编号',
+  item_amount      decimal(8, 2) NOT NULL comment '商品总价',
+  discount_amount  decimal(8, 2) NOT NULL comment '抵扣金额',
+  express_fee      decimal(4, 2) NOT NULL comment '运费',
+  package_fee      decimal(4, 2) NOT NULL comment '包装费',
+  final_amount     decimal(8, 2) NOT NULL comment '订单最终金额',
+  consignee_person varchar(45) NOT NULL comment '收货人姓名',
+  consignee_phone  varchar(45) NOT NULL comment '收货人电话',
+  shipping_address varchar(120) NOT NULL comment '收货人地址',
+  is_paid          int(2) NOT NULL comment '是否支付',
+  remark           varchar(120) NOT NULL comment '订单备注',
+  buyer_remark     varchar(120) NOT NULL comment '订单买家备注',
+  state            int(2) NOT NULL comment '订单状态',
+  create_time      int(11) NOT NULL comment '订单创建时间',
+  update_time      int(11) NOT NULL comment '订单更新时间',
+  PRIMARY KEY (id)) comment='批发订单';
 
 
 
