@@ -71,6 +71,12 @@ func (c *wholesaleCartImpl) Check() error {
 			if it == nil {
 				return item.ErrNoSuchGoods // 没有商品
 			}
+			// 验证批发权限
+			wsIt := it.Wholesale()
+			if wsIt == nil || !wsIt.Wholesale() {
+				return item.ErrItemWholesaleOff
+			}
+			// 验证库存
 			stock := it.GetValue().StockNum
 			if v.SkuId > 0 {
 				if sku := it.GetSku(v.SkuId); sku != nil {
@@ -86,6 +92,75 @@ func (c *wholesaleCartImpl) Check() error {
 		}
 	}
 	return nil
+}
+
+// 添加项
+func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartItem, error) {
+	var err error
+	if c.value.Items == nil {
+		c.value.Items = []*cart.WsCartItem{}
+	}
+
+	var sku *item.Sku
+	it := c.goodsRepo.GetItem(itemId)
+	if it == nil {
+		return nil, item.ErrNoSuchGoods // 没有商品
+	}
+	iv := it.GetValue()
+	// 库存,如有SKU，则使用SKU的库存
+	stock := iv.StockNum
+	// 判断是否上架
+	if iv.ShelveState != item.ShelvesOn {
+		return nil, item.ErrNotOnShelves //未上架
+	}
+	// 验证批发权限
+	wsIt := it.Wholesale()
+	if wsIt == nil || !wsIt.Wholesale() {
+		return nil, item.ErrItemWholesaleOff
+	}
+	// 判断商品SkuId
+	if skuId > 0 {
+		sku = it.GetSku(skuId)
+		if sku == nil {
+			return nil, item.ErrNoSuchItemSku
+		}
+		stock = sku.Stock
+	} else if iv.SkuNum > 0 {
+		return nil, cart.ErrItemNoSku
+	}
+	// 检查是否已经卖完了
+	if stock == 0 {
+		return nil, item.ErrFullOfStock
+	}
+
+	// 添加数量
+	for _, v := range c.value.Items {
+		if v.ItemId == itemId && v.SkuId == skuId {
+			if v.Quantity+num > stock {
+				return v, item.ErrOutOfStock // 库存不足
+			}
+			v.Quantity += num
+			return v, err
+		}
+	}
+
+	c.snapMap = nil
+
+	// 设置商品的相关信息
+	c.setItemInfo(iv, c.getBuyerLevelId())
+
+	v := &cart.WsCartItem{
+		CartId:   c.GetAggregateRootId(),
+		VendorId: iv.VendorId,
+		ShopId:   iv.ShopId,
+		ItemId:   iv.Id,
+		SkuId:    skuId,
+		Quantity: num,
+		Sku:      item.ParseSkuMedia(iv, sku),
+		Checked:  1,
+	}
+	c.value.Items = append(c.value.Items, v)
+	return v, err
 }
 
 // 获取商品的快照列表
@@ -182,71 +257,6 @@ func (c *wholesaleCartImpl) getItems() []*cart.WsCartItem {
 func (c *wholesaleCartImpl) Put(itemId, skuId int32, num int32) error {
 	_, err := c.put(itemId, skuId, num)
 	return err
-}
-
-// 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartItem, error) {
-	var err error
-	if c.value.Items == nil {
-		c.value.Items = []*cart.WsCartItem{}
-	}
-
-	var sku *item.Sku
-	it := c.goodsRepo.GetItem(itemId)
-	if it == nil {
-		return nil, item.ErrNoSuchGoods // 没有商品
-	}
-	iv := it.GetValue()
-	// 库存,如有SKU，则使用SKU的库存
-	stock := iv.StockNum
-	// 判断是否上架
-
-	if iv.ShelveState != item.ShelvesOn {
-		return nil, item.ErrNotOnShelves //未上架
-	}
-	// 判断商品SkuId
-	if skuId > 0 {
-		sku = it.GetSku(skuId)
-		if sku == nil {
-			return nil, item.ErrNoSuchItemSku
-		}
-		stock = sku.Stock
-	} else if iv.SkuNum > 0 {
-		return nil, cart.ErrItemNoSku
-	}
-	// 检查是否已经卖完了
-	if stock == 0 {
-		return nil, item.ErrFullOfStock
-	}
-
-	// 添加数量
-	for _, v := range c.value.Items {
-		if v.ItemId == itemId && v.SkuId == skuId {
-			if v.Quantity+num > stock {
-				return v, item.ErrOutOfStock // 库存不足
-			}
-			v.Quantity += num
-			return v, err
-		}
-	}
-
-	c.snapMap = nil
-
-	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
-
-	v := &cart.WsCartItem{
-		CartId:   c.GetAggregateRootId(),
-		VendorId: iv.VendorId,
-		ShopId:   iv.ShopId,
-		ItemId:   iv.Id,
-		SkuId:    skuId,
-		Quantity: num,
-		Sku:      item.ParseSkuMedia(iv, sku),
-		Checked:  1,
-	}
-	c.value.Items = append(c.value.Items, v)
-	return v, err
 }
 
 // 移出项

@@ -13,6 +13,44 @@ import (
 	"time"
 )
 
+// 订单商品项(领域内部使用)
+type orderItem struct {
+	// 编号
+	ID int32
+	// 订单编号
+	OrderId int64
+	// 商品编号
+	ItemId int32
+	// 商品SKU编号
+	SkuId int32
+	// 快照编号
+	SnapshotId int32
+	// 数量
+	Quantity int32
+	// 退回数量(退货)
+	ReturnQuantity int32
+	// SKU描述
+	//Sku string `db:"sku"`
+	// 金额
+	Amount float32
+	// 最终金额, 可能会有优惠均摊抵扣的金额
+	FinalAmount float32
+	// 是否发货
+	IsShipped int
+	// 更新时间
+	UpdateTime int64
+	// 运营商编号
+	VendorId int32
+	// 商店编号
+	ShopId int32
+	// 重量,用于生成订单时存储数据
+	Weight int32
+	// 体积:毫升(ml)
+	Bulk int32
+	// 快递模板编号
+	ExpressTplId int32
+}
+
 var _ order.IOrder = new(baseOrderImpl)
 
 type baseOrderImpl struct {
@@ -32,6 +70,11 @@ func (o *baseOrderImpl) GetAggregateRootId() int64 {
 // 订单类型
 func (o *baseOrderImpl) Type() order.OrderType {
 	return order.OrderType(o.baseValue.OrderType)
+}
+
+// 获取订单状态
+func (o *baseOrderImpl) State() order.OrderState {
+	return order.OrderState(o.baseValue.State)
 }
 
 // 获取购买的会员
@@ -106,6 +149,10 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 	switch t {
 	case order.TRetail:
 		return newNormalOrder(manager, b, repo, goodsRepo,
+			productRepo, promRepo, expressRepo,
+			payRepo, valRepo)
+	case order.TWholesale:
+		return newWholesaleOrder(manager, b, repo, goodsRepo,
 			productRepo, promRepo, expressRepo,
 			payRepo, valRepo)
 	}

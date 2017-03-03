@@ -22,6 +22,9 @@ type (
 
 		// 将购物车转换为订单
 		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
+		// 预创建批发订单
+		PrepareWholesaleOrder(c cart.IWholesaleCart) ([]IOrder, error)
+
 		// 预生成订单及支付单
 		PrepareOrder(c cart.ICart, addressId int32, subject string, couponCode string) (IOrder,
 			payment.IPaymentOrder, error)
