@@ -11,6 +11,7 @@ import (
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/promotion"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"time"
 )
@@ -168,8 +169,8 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
 	goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
-	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
-	valRepo valueobject.IValueRepo) order.IOrder {
+	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
+	payRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
@@ -184,7 +185,7 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 			payRepo, valRepo)
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, goodsRepo,
-			expressRepo, payRepo)
+			expressRepo, payRepo, shipRepo, mchRepo, valRepo)
 	}
 	return nil
 }

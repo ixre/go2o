@@ -307,9 +307,11 @@ type (
 		SetItems(items []*MinifyItem)
 		// 设置配送地址
 		SetAddress(addressId int32) error
-
 		// 获取商品项
 		Items() []*WholesaleItem
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
+
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
 		// 记录订单日志
@@ -562,7 +564,7 @@ type (
 		// SKU编号
 		SkuId int64 `db:"sku_id"`
 		// 商品快照编号
-		SnapId int64 `db:"snap_id"`
+		SnapshotId int64 `db:"snapshot_id"`
 		// 销售数量
 		Quantity int32 `db:"quantity"`
 		// 退货数量

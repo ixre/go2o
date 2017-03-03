@@ -113,5 +113,7 @@ type (
 		SaveWholesaleOrder(v *WholesaleOrder) (int, error)
 		// Save WholesaleItem
 		SaveWholesaleItem(v *WholesaleItem) (int, error)
+		// Select WholesaleItem
+		SelectWholesaleItem(where string, v ...interface{}) []*WholesaleItem
 	}
 )

@@ -872,7 +872,7 @@ type subOrderImpl struct {
 	internalSuspend bool //内部挂起
 	rep             order.IOrderRepo
 	memberRepo      member.IMemberRepo
-	goodsRepo       item.IGoodsItemRepo
+	itemRepo        item.IGoodsItemRepo
 	productRepo     product.IProductRepo
 	manager         order.IOrderManager
 	shipRepo        shipment.IShipmentRepo
@@ -891,7 +891,7 @@ func NewSubNormalOrder(v *order.NormalSubOrder,
 		manager:     manager,
 		rep:         rep,
 		memberRepo:  mmRepo,
-		goodsRepo:   goodsRepo,
+		itemRepo:    goodsRepo,
 		productRepo: productRepo,
 		shipRepo:    shipRepo,
 		valRepo:     valRepo,
@@ -987,7 +987,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 func (o *subOrderImpl) syncOrderState() {
 	if bo := o.baseOrder(); bo != nil {
 		oi := bo.(*baseOrderImpl)
-		if oi.baseValue.State != int32(order.StatBreak) {
+		if oi.State() != order.StatBreak {
 			oi.saveOrderState(order.OrderState(o.value.State))
 		}
 	}
@@ -1067,17 +1067,17 @@ func (o *subOrderImpl) Confirm() (err error) {
 	o.value.UpdateTime = time.Now().Unix()
 	err = o.saveSubOrder()
 	if err == nil {
-		go o.addSalesNum()
+		go o.addItemSalesNum()
 		err = o.AppendLog(order.LogSetup, false, "{confirm}")
 	}
 	return err
 }
 
 // 增加商品的销售数量
-func (o *subOrderImpl) addSalesNum() {
+func (o *subOrderImpl) addItemSalesNum() {
 	//log.Println("---订单：",o.value.OrderNo," 商品：",len(o.Items()))
 	for _, v := range o.Items() {
-		it := o.goodsRepo.GetItem(v.ItemId)
+		it := o.itemRepo.GetItem(v.ItemId)
 		err := it.AddSalesNum(v.SkuId, v.Quantity)
 		if err != nil {
 			log.Println("---增加销售数量：", v.ItemId,
@@ -1174,7 +1174,6 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 
 // 已收货
 func (o *subOrderImpl) BuyerReceived() error {
-	var err error
 	if o.value.State < order.StatShipped {
 		return order.ErrOrderNotShipped
 	}
@@ -1185,7 +1184,7 @@ func (o *subOrderImpl) BuyerReceived() error {
 	o.value.State = order.StatCompleted
 	o.value.UpdateTime = dt.Unix()
 	o.value.IsSuspend = 0
-	err = o.saveSubOrder()
+	err := o.saveSubOrder()
 	if err == nil {
 		err = o.AppendLog(order.LogSetup, true, "{completed}")
 		if err == nil {
@@ -1224,7 +1223,7 @@ func (s *subOrderImpl) getOrderCost() float32 {
 	var cost float32
 	items := s.Items()
 	for _, item := range items {
-		snap := s.goodsRepo.GetSalesSnapshot(item.SnapshotId)
+		snap := s.itemRepo.GetSalesSnapshot(item.SnapshotId)
 		cost += snap.Cost * float32(item.Quantity-item.ReturnQuantity)
 	}
 	//如果非全部退货、退款,则加上运费及包装费
@@ -1349,14 +1348,39 @@ func (o *subOrderImpl) updateAccountForOrder(m member.IMember) error {
 	return err
 }
 
+// 取消订单
+func (o *subOrderImpl) Cancel(reason string) error {
+	if o.value.State == order.StatCancelled {
+		return order.ErrOrderCancelled
+	}
+	// 已发货订单无法取消
+	if o.value.State >= order.StatShipped {
+		return order.ErrOrderShippedCancel
+	}
+
+	o.value.State = order.StatCancelled
+	o.value.UpdateTime = time.Now().Unix()
+	err := o.saveSubOrder()
+	if err == nil {
+		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
+		// 取消支付单
+		err = o.cancelPaymentOrder()
+		if err == nil {
+			// 取消商品
+			err = o.cancelGoods()
+		}
+	}
+	return err
+}
+
 // 取消商品
 func (o *subOrderImpl) cancelGoods() error {
 	for _, v := range o.Items() {
-		snapshot := o.goodsRepo.GetSalesSnapshot(v.SnapshotId)
+		snapshot := o.itemRepo.GetSalesSnapshot(v.SnapshotId)
 		if snapshot == nil {
 			return item.ErrNoSuchSnapshot
 		}
-		gds := o.goodsRepo.GetItem(snapshot.SkuId)
+		gds := o.itemRepo.GetItem(snapshot.SkuId)
 		if gds != nil {
 			// 释放库存
 			gds.FreeStock(v.SkuId, v.Quantity)
@@ -1390,31 +1414,6 @@ func (o *subOrderImpl) cancelPaymentOrder() error {
 		return po.Adjust(-o.value.FinalAmount)
 	}
 	return nil
-}
-
-// 取消订单
-func (o *subOrderImpl) Cancel(reason string) error {
-	if o.value.State == order.StatCancelled {
-		return order.ErrOrderCancelled
-	}
-	// 已发货订单无法取消
-	if o.value.State >= order.StatShipped {
-		return order.ErrOrderShippedCancel
-	}
-
-	o.value.State = order.StatCancelled
-	o.value.UpdateTime = time.Now().Unix()
-	err := o.saveSubOrder()
-	if err == nil {
-		domain.HandleError(o.AppendLog(order.LogSetup, true, reason), "domain")
-		// 取消支付单
-		err = o.cancelPaymentOrder()
-		if err == nil {
-			// 取消商品
-			err = o.cancelGoods()
-		}
-	}
-	return err
 }
 
 // 退回商品
