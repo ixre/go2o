@@ -243,6 +243,7 @@ type (
 		SetAddress(addressId int32) error
 		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
+
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
 		// 获取子订单列表
@@ -266,6 +267,9 @@ type (
 		GetDomainId() int64
 		// 获取值对象
 		GetValue() *NormalSubOrder
+		// 复合的订单信息
+		Complex() *ComplexOrder
+
 		// 获取商品项
 		Items() []*SubOrderItem
 		// 在线支付交易完成
@@ -360,24 +364,30 @@ type (
 
 	// 订单复合信息
 	ComplexOrder struct {
-		// 编号
-		Id int64
+		// 订单编号
+		OrderId int64
+		// 子订单编号
+		SubOrderId int64
 		// 订单类型
 		OrderType int32
-		// 购买人编号
-		BuyerId int32
 		// 订单号
 		OrderNo string
+		// 购买人编号
+		BuyerId int32
+		// 运营商编号
+		VendorId int32
+		// 店铺编号
+		ShopId int32
 		// 商品金额
-		ItemAmount float32
+		ItemAmount float64
 		// 优惠减免金额
-		DiscountAmount float32
+		DiscountAmount float64
 		// 运费
-		ExpressFee float32
+		ExpressFee float64
 		// 包装费用
-		PackageFee float32
+		PackageFee float64
 		// 实际金额
-		FinalAmount float32
+		FinalAmount float64
 		// 收货人
 		ConsigneePerson string
 		// 收货人联系电话
@@ -386,12 +396,44 @@ type (
 		ShippingAddress string
 		// 订单是否拆分
 		IsBreak int32
+		// 订单状态
+		State int32
 		// 订单生成时间
 		CreateTime int64
 		// 更新时间
 		UpdateTime int64
-		// 订单状态
-		State int32
+		// 商品项
+		Items []*ComplexItem
+	}
+	// 符合的订单项
+	ComplexItem struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// 商品SKU编号
+		SkuId int64 `db:"sku_id"`
+		// 快照编号
+		SnapshotId int64 `db:"snap_id"`
+		// 数量
+		Quantity int32 `db:"quantity"`
+		// 退回数量(退货)
+		ReturnQuantity int32 `db:"return_quantity"`
+		// 金额
+		Amount float64 `db:"amount"`
+		// 最终金额, 可能会有优惠均摊抵扣的金额
+		FinalAmount float64 `db:"final_amount"`
+		// 是否发货
+		IsShipped int32 `db:"is_shipped"`
+	}
+
+	// 订单商品项
+	MinifyItem struct {
+		ItemId   int32
+		SkuId    int32
+		Quantity int32
 	}
 
 	// 普通订单
@@ -457,20 +499,13 @@ type (
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
-		State int `db:"state" json:"state"`
+		State int32 `db:"state" json:"state"`
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单项
 		Items []*SubOrderItem `db:"-"`
-	}
-
-	// 订单商品项
-	MinifyItem struct {
-		ItemId   int32
-		SkuId    int32
-		Quantity int32
 	}
 
 	// 订单商品项
@@ -594,28 +629,20 @@ type (
 	OrderPromotionBind struct {
 		// 编号
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
-
 		// 订单号
 		OrderId int32 `db:"order_id"`
-
 		// 促销编号
 		PromotionId int32 `db:"promotion_id"`
-
 		// 促销类型
 		PromotionType int `db:"promotion_type"`
-
 		// 标题
 		Title string `db:"title"`
-
 		// 节省金额
 		SaveFee float32 `db:"save_fee"`
-
 		// 赠送积分
 		PresentIntegral int `db:"present_integral"`
-
 		// 是否应用
 		IsApply int `db:"is_apply"`
-
 		// 是否确认
 		IsConfirm int `db:"is_confirm"`
 	}

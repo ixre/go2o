@@ -121,6 +121,8 @@ func TestCancelOrder(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	o = manager.GetOrderById(o.GetAggregateRootId())
+
 	py := o.(order.INormalOrder).GetPaymentOrder()
 	//err = py.PaymentByWallet("支付订单")
 	pv := py.GetValue()
@@ -221,7 +223,8 @@ func TestWholesaleOrder(t *testing.T) {
 		o = manager.GetOrderById(o.GetAggregateRootId())
 		io = o.(order.IWholesaleOrder)
 
-		logState(t, io.Confirm(), o)
+		// 可能会自动完成
+		//logState(t, io.Confirm(), o)
 		logState(t, io.PickUp(), o)
 		logState(t, io.Ship(1, "123456"), o)
 		logState(t, io.BuyerReceived(), o)

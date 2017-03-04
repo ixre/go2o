@@ -494,8 +494,47 @@ func CategoryDto(src *product.Category) *define.Category {
 	return s
 }
 
-func OrderItemDto(src *order.SubOrderItem) *define.OrderItem {
-	return &define.OrderItem{
+func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
+	return &define.ComplexItem{
+		ID:             int64(src.ID),
+		OrderId:        src.OrderId,
+		ItemId:         int64(src.ItemId),
+		SkuId:          int64(src.SkuId),
+		SnapshotId:     int64(src.SnapshotId),
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         float64(src.Amount),
+		FinalAmount:    float64(src.FinalAmount),
+		IsShipped:      int32(src.IsShipped),
+	}
+}
+
+func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
+	o := &define.ComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.OrderId,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		ItemAmount:     float64(src.ItemAmount),
+		DiscountAmount: float64(src.DiscountAmount),
+		ExpressFee:     float64(src.ExpressFee),
+		PackageFee:     float64(src.PackageFee),
+		FinalAmount:    float64(src.FinalAmount),
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          int32(src.State),
+		Items:          make([]*define.ComplexItem, len(src.Items)),
+	}
+	for i, v := range src.Items {
+		o.Items[i] = SubOrderItemDto(v)
+	}
+	return o
+}
+
+func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
+	return &define.ComplexItem{
 		ID:             src.ID,
 		OrderId:        src.OrderId,
 		ItemId:         src.ItemId,
@@ -503,38 +542,34 @@ func OrderItemDto(src *order.SubOrderItem) *define.OrderItem {
 		SnapshotId:     src.SnapshotId,
 		Quantity:       src.Quantity,
 		ReturnQuantity: src.ReturnQuantity,
-		Amount:         float64(src.Amount),
-		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      int64(src.IsShipped),
-		UpdateTime:     src.UpdateTime,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
 	}
 }
 
-func SubOrderDto(src *order.NormalSubOrder) *define.SubOrder {
-	o := &define.SubOrder{
-		ID:             src.ID,
-		OrderNo:        src.OrderNo,
+func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
+	o := &define.ComplexOrder{
 		OrderId:        src.OrderId,
+		SubOrderId:     src.SubOrderId,
+		OrderNo:        src.OrderNo,
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
-		Subject:        src.Subject,
-		ItemAmount:     float64(src.ItemAmount),
-		DiscountAmount: float64(src.DiscountAmount),
-		ExpressFee:     float64(src.ExpressFee),
-		PackageFee:     float64(src.PackageFee),
-		FinalAmount:    float64(src.FinalAmount),
-		IsPaid:         int64(src.IsPaid),
-		IsSuspend:      int64(src.IsSuspend),
-		BuyerRemark:    src.BuyerRemark,
-		Remark:         src.Remark,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          int32(src.State),
-		Items:          make([]*define.OrderItem, len(src.Items)),
+		Items:          make([]*define.ComplexItem, len(src.Items)),
 	}
-	for i, v := range src.Items {
-		o.Items[i] = OrderItemDto(v)
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItemDto(v)
+		}
 	}
 	return o
 }

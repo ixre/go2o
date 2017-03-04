@@ -25,7 +25,6 @@ import (
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
-	"time"
 )
 
 var _ order.IOrderManager = new(orderManagerImpl)
@@ -114,52 +113,6 @@ func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.IWholesaleCart) ([]order
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
 	return t.repo.GetFreeOrderNo(vendorId)
-}
-
-// 生成支付单
-func (t *orderManagerImpl) createPaymentOrder(m member.IMember,
-	o order.IOrder) payment.IPaymentOrder {
-	if o.Type() != order.TRetail {
-		panic("not support order type")
-	}
-
-	val := o.Complex()
-	v := &payment.PaymentOrder{
-		BuyUser:     m.GetAggregateRootId(),
-		PaymentUser: m.GetAggregateRootId(),
-		VendorId:    0,
-		OrderId:     0,
-		Type:        payment.TypeShopping,
-		// 支付单金额
-		TotalFee: val.FinalAmount,
-		// 余额抵扣
-		BalanceDiscount: 0,
-		// 积分抵扣
-		IntegralDiscount: 0,
-		// 系统支付抵扣金额
-		SystemDiscount: 0,
-		// 优惠券金额
-		CouponDiscount: 0,
-		// 立减金额
-		SubAmount: 0,
-		// 调整的金额
-		AdjustmentAmount: 0,
-		// 支付选项
-		PaymentOptFlag: payment.OptPerm,
-		// 支付方式
-		PaymentSign: enum.PaymentOnlinePay,
-		//创建时间
-		CreateTime: time.Now().Unix(),
-		// 在线支付的交易单号
-		OuterNo: "",
-		//支付时间
-		PaidTime: 0,
-		// 状态:  0为未付款，1为已付款，2为已取消
-		State: payment.StateAwaitingPayment,
-	}
-	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
-		v.IntegralDiscount - v.BalanceDiscount
-	return t.paymentRepo.CreatePaymentOrder(v)
 }
 
 // 应用优惠券

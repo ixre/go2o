@@ -135,11 +135,11 @@ func (o *orderRepImpl) SaveOrderCouponBind(val *order.OrderCoupon) error {
 }
 
 // 根据编号获取订单
-func (o *orderRepImpl) GetNormalOrderById(id int64) *order.NormalOrder {
+func (o *orderRepImpl) GetNormalOrderById(orderId int64) *order.NormalOrder {
 	e := &order.NormalOrder{}
-	k := o.getOrderCk(id, false)
+	k := o.getOrderCk(orderId, false)
 	if o.Storage.Get(k, e) != nil {
-		if o.Connector.GetOrm().Get(id, e) != nil {
+		if o.Connector.GetOrm().GetBy(e, "order_id=?", orderId) != nil {
 			return nil
 		}
 		o.Storage.SetExpire(k, *e, DefaultCacheSeconds*10)
@@ -257,33 +257,6 @@ func (o *orderRepImpl) GetSubOrderByNo(orderNo string) *order.NormalSubOrder {
 	return nil
 }
 
-// 保存子订单
-func (o *orderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int64, error) {
-	var err error
-	var statusIsChanged bool //业务状态是否改变
-	if v.ID <= 0 {
-		statusIsChanged = true
-	} else {
-		origin := o.GetSubOrder(v.ID)
-		statusIsChanged = origin.State != v.State // 业务状态是否改变
-	}
-	v.ID, err = orm.I64(orm.Save(o.GetOrm(), v, int(v.ID)))
-
-	// 缓存订单号
-	o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
-	// 缓存订单
-	o.Storage.SetExpire(o.getOrderCk(v.ID, true), *v, DefaultCacheSeconds*10)
-
-	//如果业务状态已经发生改变,则提交到队列
-	if statusIsChanged && v.ID > 0 {
-		rc := core.GetRedisConn()
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, v.ID)
-		rc.Close()
-		//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
-	}
-	return v.ID, err
-}
-
 // 保存子订单的商品项,并返回编号和错误
 func (o *orderRepImpl) SaveOrderItem(subOrderId int64, v *order.SubOrderItem) (int32, error) {
 	v.OrderId = subOrderId
@@ -336,11 +309,86 @@ func (o *orderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 	return nil
 }
 
+// 加入到订单通知队列,如果为子订单,则带上sub
+func (o *orderRepImpl) pushOrderQueue(id int64, sub bool) {
+	rc := core.GetRedisConn()
+	if sub {
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, fmt.Sprintf("sub!%d", id))
+	} else {
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, id)
+	}
+	rc.Close()
+	//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
+}
+
 // Save OrderList
-func (o *orderRepImpl) SaveOrderList(v *order.Order) (int, error) {
+func (o *orderRepImpl) saveOrder(v *order.Order) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderList")
+	}
+	return id, err
+}
+
+// Save OrderList
+func (o *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
+	// 零售订单或已拆单的订单不进行通知
+	if v.OrderType == int32(order.TRetail) ||
+		v.State == int32(order.StatBreak) {
+		return o.saveOrder(v)
+	}
+	// 判断业务状态是否改变
+	statusIsChanged := true
+	if v.ID <= 0 {
+		statusIsChanged = true
+	} else {
+		origin := o.GetOrder("id=?", v.ID)
+		statusIsChanged = origin.State != v.State
+	}
+	// log.Println("--- save order:", v.ID, "; state:",
+	// v.State, ";", statusIsChanged)
+	id, err := o.saveOrder(v)
+	if err == nil {
+		v.ID = int64(id)
+		//如果业务状态已经发生改变,则提交到队列
+		if statusIsChanged {
+			o.pushOrderQueue(v.ID, false)
+		}
+	}
+	return id, err
+}
+
+func (o *orderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleSubOrder")
+	}
+	if err == nil {
+		// 缓存订单号
+		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
+		// 缓存订单
+		o.Storage.SetExpire(o.getOrderCk(v.ID, true), *v, DefaultCacheSeconds*10)
+	}
+	return id, err
+}
+
+// 保存子订单
+func (o *orderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
+	// 判断业务状态是否改变
+	statusIsChanged := true
+	if v.ID <= 0 {
+		statusIsChanged = true
+	} else {
+		origin := o.GetSubOrder(v.ID)
+		statusIsChanged = origin.State != v.State
+	}
+	id, err := o.saveSubOrder(v)
+	if err == nil {
+		v.ID = int64(id)
+		//如果业务状态已经发生改变,则提交到队列
+		if statusIsChanged {
+			o.pushOrderQueue(v.ID, true)
+		}
 	}
 	return id, err
 }
