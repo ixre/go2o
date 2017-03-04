@@ -17,6 +17,28 @@ import (
 	"time"
 )
 
+/*
+
+清理订单数据：
+
+TRUNCATE `pay_order`;
+TRUNCATE `ship_item`;
+TRUNCATE `ship_order`;
+TRUNCATE `sale_cart`;
+TRUNCATE `sale_cart_item`;
+TRUNCATE `sale_order`;
+TRUNCATE `sale_sub_order`;
+TRUNCATE `sale_order_item`;
+TRUNCATE `sale_order_log`;
+TRUNCATE `sale_refund`;
+TRUNCATE `sale_return`;
+TRUNCATE `sale_exchange`;
+TRUNCATE `order_list`;
+TRUNCATE `order_wholesale_item`;
+TRUNCATE `order_wholesale_order`;
+
+*/
+
 func logState(t *testing.T, err error, o order.IOrder) {
 	if err != nil {
 		t.Log(err)
@@ -86,7 +108,7 @@ func TestCancelOrder(t *testing.T) {
 	_, err := c.Save()
 	if err != nil {
 		t.Error("保存购物车失败:", err.Error())
-		t.Fail()
+		t.FailNow()
 	}
 
 	orderRepo := ti.OrderRepo
@@ -94,7 +116,12 @@ func TestCancelOrder(t *testing.T) {
 	manager := orderRepo.Manager()
 	m := mmRepo.GetMember(buyerId)
 	addressId := m.Profile().GetDefaultAddress().GetDomainId()
-	o, py, err := manager.SubmitOrder(c, addressId, "", "", !true)
+	o, err := manager.SubmitOrder(c, addressId, "", !true)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	py := o.(order.INormalOrder).GetPaymentOrder()
 	//err = py.PaymentByWallet("支付订单")
 	pv := py.GetValue()
 	payState := pv.State

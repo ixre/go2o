@@ -11,34 +11,27 @@ package order
 
 import (
 	"go2o/core/domain/interface/cart"
-	"go2o/core/domain/interface/member"
-	"go2o/core/domain/interface/payment"
 	"go2o/core/dto"
 )
 
 type (
 	//　购物聚合根
 	IOrderManager interface {
-
-		// 将购物车转换为订单
-		ParseToOrder(c cart.ICart) (IOrder, member.IMember, error)
+		// 预创建普通订单
+		PrepareNormalOrder(c cart.ICart) (IOrder, error)
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.IWholesaleCart) ([]IOrder, error)
-
-		// 预生成订单及支付单
-		PrepareOrder(c cart.ICart, addressId int32, subject string, couponCode string) (IOrder,
-			payment.IPaymentOrder, error)
+		// 接收在线交易支付的通知，不主动调用
+		ReceiveNotifyOfOnlineTrade(orderId int64) error
 		// 提交订单
-		SubmitOrder(c cart.ICart, addressId int32, subject string, couponCode string,
-			balanceDiscount bool) (IOrder, payment.IPaymentOrder, error)
+		SubmitOrder(c cart.ICart, addressId int32, couponCode string,
+			balanceDiscount bool) (IOrder, error)
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendor int32) string
 		// 根据订单编号获取订单
 		GetOrderById(orderId int64) IOrder
 		// 根据订单号获取订单
 		GetOrderByNo(orderNo string) IOrder
-		// 接收在线交易支付的通知，不主动调用
-		ReceiveNotifyOfOnlineTrade(orderId int64) error
 
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder

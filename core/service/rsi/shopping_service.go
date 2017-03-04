@@ -203,9 +203,10 @@ func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addres
 func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32,
 	cartCode string) *order.ComplexOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
-	o, _, err := s._manager.PrepareOrder(cart, addressId, "", "")
-	if err != nil {
-		return nil
+	o, err := s._manager.PrepareNormalOrder(cart)
+	if err == nil {
+		no := o.(order.INormalOrder)
+		err = no.SetAddress(addressId)
 	}
 	return o.Complex()
 }
@@ -214,14 +215,14 @@ func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32,
 func (s *shoppingService) PrepareOrderWithCoupon(buyerId int32, cartCode string,
 	addressId int32, subject string, couponCode string) (map[string]interface{}, error) {
 	cart := s.getShoppingCart(buyerId, cartCode)
-	o, py, err := s._manager.PrepareOrder(cart, addressId,
-		subject, couponCode)
+	o, err := s._manager.PrepareNormalOrder(cart)
 	if err != nil {
 		return nil, err
 	}
-
+	no := o.(order.INormalOrder)
+	no.SetAddress(addressId)
+	//todo: 应用优惠码
 	v := o.Complex()
-	po := py.GetValue()
 	buf := bytes.NewBufferString("")
 
 	if o.Type() != order.TRetail {
@@ -233,25 +234,25 @@ func (s *shoppingService) PrepareOrderWithCoupon(buyerId int32, cartCode string,
 		buf.WriteString("\n")
 	}
 
-	discountFee := v.ItemAmount - po.TotalFee + po.SubAmount
+	discountFee := v.ItemAmount - v.FinalAmount + v.DiscountAmount
 	data := make(map[string]interface{})
 
 	//　取消优惠券
 	data["totalFee"] = v.ItemAmount
-	data["fee"] = po.TotalFee
-	data["payFee"] = po.FinalAmount
+	data["fee"] = v.ItemAmount
+	data["payFee"] = v.FinalAmount
 	data["discountFee"] = discountFee
 	data["expressFee"] = v.ExpressFee
 
 	// 设置优惠券的信息
 	if couponCode != "" {
 		// 优惠券没有减金额
-		if po.CouponDiscount == 0 {
-			data["result"] = po.CouponDiscount != 0
+		if v.DiscountAmount == 0 {
+			data["result"] = v.DiscountAmount != 0
 			data["message"] = "优惠券无效"
 		} else {
 			// 成功应用优惠券
-			data["couponFee"] = po.CouponDiscount
+			data["couponFee"] = v.DiscountAmount
 			data["couponDescribe"] = buf.String()
 		}
 	}
@@ -263,10 +264,11 @@ func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 	addressId int32, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	c := s.getShoppingCart(buyerId, cartCode)
-	od, py, err := s._manager.SubmitOrder(c, addressId, subject, couponCode, balanceDiscount)
+	od, err := s._manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
 	if err != nil {
 		return "", "", err
 	}
+	py := od.(order.INormalOrder).GetPaymentOrder()
 	return od.OrderNo(), py.GetTradeNo(), err
 }
 

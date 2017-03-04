@@ -77,7 +77,6 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	//	err = errors.New("Notify payment finish error :" + err.Error())
 	//	domain.HandleError(err, "domain")
 	//}
-
 	// 通知订单支付完成
 	if p.value.OrderId > 0 {
 		err := p.orderManager.ReceiveNotifyOfOnlineTrade(int64(p.value.OrderId))
