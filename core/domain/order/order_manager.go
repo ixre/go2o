@@ -31,6 +31,7 @@ var _ order.IOrderManager = new(orderManagerImpl)
 
 type orderManagerImpl struct {
 	repo         order.IOrderRepo
+	caller       order.IUnifiedOrderAdapter
 	productRepo  product.IProductRepo
 	cartRepo     cart.ICartRepo
 	goodsRepo    item.IGoodsItemRepo
@@ -67,6 +68,15 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 		shipRepo:     shipRepo,
 		breaker:      newWholesaleOrderBreaker(repo),
 	}
+}
+
+// 统一调用
+func (o *orderManagerImpl) Unified(orderId int64, sub bool) order.IUnifiedOrderAdapter {
+	u := &unifiedOrderAdapterImpl{
+		repo:    o.repo,
+		manager: o,
+	}
+	return u.adapter(orderId, sub)
 }
 
 // 在下单前检查购物车
@@ -243,4 +253,160 @@ func (t *orderManagerImpl) GetSubOrder(id int64) order.ISubOrder {
 		return t.repo.CreateNormalSubOrder(v)
 	}
 	return nil
+}
+
+var _ order.IUnifiedOrderAdapter = new(unifiedOrderAdapterImpl)
+
+type unifiedOrderAdapterImpl struct {
+	repo     order.IOrderRepo
+	manager  order.IOrderManager
+	bigOrder order.IOrder
+	subOrder order.ISubOrder
+	sub      bool
+}
+
+func (u *unifiedOrderAdapterImpl) adapter(orderId int64, sub bool) order.IUnifiedOrderAdapter {
+	u.sub = sub
+	if u.sub {
+		u.subOrder = u.manager.GetSubOrder(orderId)
+	} else {
+		u.bigOrder = u.manager.GetOrderById(orderId)
+	}
+	return u
+}
+
+func (u *unifiedOrderAdapterImpl) check() error {
+	if u.sub && u.subOrder == nil {
+		return order.ErrNoSuchOrder
+	}
+	if !u.sub && u.bigOrder == nil {
+		return order.ErrNoSuchOrder
+	}
+	return nil
+}
+
+// 复合的订单信息
+func (u *unifiedOrderAdapterImpl) Complex() *order.ComplexOrder {
+	err := u.check()
+	if err == nil {
+		if u.sub {
+			return u.subOrder.Complex()
+		}
+		return u.bigOrder.Complex()
+	}
+	return nil
+}
+
+// 取消订单
+func (u *unifiedOrderAdapterImpl) Cancel(reason string) error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	if u.sub {
+		return u.subOrder.Cancel(reason)
+	}
+	return u.cancel(reason)
+}
+
+func (u *unifiedOrderAdapterImpl) cancel(reason string) error {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).Cancel(reason)
+	}
+	return nil
+}
+
+// 确定订单
+func (u *unifiedOrderAdapterImpl) Confirm() error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	if u.sub {
+		return u.subOrder.Confirm()
+	}
+	return u.confirm()
+}
+
+func (u *unifiedOrderAdapterImpl) confirm() error {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).Confirm()
+	}
+	return nil
+}
+
+// 备货完成
+func (u *unifiedOrderAdapterImpl) PickUp() error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	if u.sub {
+		return u.subOrder.PickUp()
+	}
+	return u.pickup()
+}
+
+func (u *unifiedOrderAdapterImpl) pickup() error {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).PickUp()
+	}
+	return nil
+}
+
+// 订单发货,并记录配送服务商编号及单号
+func (u *unifiedOrderAdapterImpl) Ship(spId int32, spOrder string) error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	if u.sub {
+		return u.subOrder.Ship(spId, spOrder)
+	}
+	return u.ship(spId, spOrder)
+}
+
+func (u *unifiedOrderAdapterImpl) ship(spId int32, spOrder string) error {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).Ship(spId, spOrder)
+	}
+	return nil
+}
+
+// 消费者收货
+func (u *unifiedOrderAdapterImpl) BuyerReceived() error {
+	if err := u.check(); err != nil {
+		return err
+	}
+	if u.sub {
+		return u.subOrder.BuyerReceived()
+	}
+	return u.buyerReceived()
+}
+
+func (u *unifiedOrderAdapterImpl) buyerReceived() error {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).BuyerReceived()
+	}
+	return nil
+}
+
+// 获取订单日志
+func (u *unifiedOrderAdapterImpl) LogBytes() []byte {
+	if err := u.check(); err != nil {
+		return []byte(nil)
+	}
+	if u.sub {
+		return u.subOrder.LogBytes()
+	}
+	return u.logBytes()
+}
+
+func (u *unifiedOrderAdapterImpl) logBytes() []byte {
+	switch u.bigOrder.Type() {
+	case order.TWholesale:
+		return u.bigOrder.(order.IWholesaleOrder).LogBytes()
+	}
+	return []byte(nil)
 }

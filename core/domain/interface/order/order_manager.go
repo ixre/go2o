@@ -17,6 +17,8 @@ import (
 type (
 	//　购物聚合根
 	IOrderManager interface {
+		// 统一调用
+		Unified(orderId int64, sub bool) IUnifiedOrderAdapter
 		// 预创建普通订单
 		PrepareNormalOrder(c cart.ICart) (IOrder, error)
 		// 预创建批发订单
@@ -35,6 +37,24 @@ type (
 
 		// 获取子订单
 		GetSubOrder(id int64) ISubOrder
+	}
+
+	// 统一订单适配器
+	IUnifiedOrderAdapter interface {
+		// 复合的订单信息
+		Complex() *ComplexOrder
+		// 取消订单
+		Cancel(reason string) error
+		// 订单确认
+		Confirm() error
+		// 备货完成
+		PickUp() error
+		// 订单发货,并记录配送服务商编号及单号
+		Ship(spId int32, spOrder string) error
+		// 消费者收货
+		BuyerReceived() error
+		// 获取订单日志
+		LogBytes() []byte
 	}
 
 	IOrderRepo interface {
