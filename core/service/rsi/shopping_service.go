@@ -273,6 +273,32 @@ func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 }
 
 // 根据编号获取订单
+func (s *shoppingService) GetOrder(id int64, sub bool) (*define.ComplexOrder, error) {
+	var c *order.ComplexOrder
+	if sub {
+		c = s.getComplexSubOrder(id)
+	} else {
+		o := s._manager.GetOrderById(id)
+		if o != nil {
+			c = o.Complex()
+		}
+	}
+	if c != nil {
+		return parser.OrderDto(c), nil
+	}
+	return nil, nil
+}
+
+// 根据编号获取订单
+func (s *shoppingService) getComplexSubOrder(id int64) *order.ComplexOrder {
+	o := s._manager.GetSubOrder(id)
+	if o != nil {
+		return o.Complex()
+	}
+	return nil
+}
+
+// 根据编号获取订单
 func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
 	o := s._manager.GetOrderById(id)
 	if o != nil {
@@ -306,7 +332,7 @@ func (s *shoppingService) GetNormalOrderByNo(orderNo string) *order.NormalOrder 
 }
 
 // 获取子订单
-func (s *shoppingService) GetSubOrder(id int64) (r *define.SubOrder, err error) {
+func (s *shoppingService) GetSubOrder(id int64) (r *define.ComplexOrder, err error) {
 	o := s._repo.GetSubOrder(id)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -315,7 +341,7 @@ func (s *shoppingService) GetSubOrder(id int64) (r *define.SubOrder, err error) 
 }
 
 // 根据订单号获取子订单
-func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, err error) {
+func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.ComplexOrder, err error) {
 	o := s._repo.GetSubOrderByNo(orderNo)
 	if o != nil {
 		return parser.SubOrderDto(o), nil
@@ -324,11 +350,11 @@ func (s *shoppingService) GetSubOrderByNo(orderNo string) (r *define.SubOrder, e
 }
 
 // 获取订单商品项
-func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.OrderItem, error) {
+func (s *shoppingService) GetSubOrderItems(subOrderId int64) ([]*define.ComplexItem, error) {
 	list := s._repo.GetSubOrderItems(subOrderId)
-	arr := make([]*define.OrderItem, len(list))
+	arr := make([]*define.ComplexItem, len(list))
 	for i, v := range list {
-		arr[i] = parser.OrderItemDto(v)
+		arr[i] = parser.SubOrderItemDto(v)
 	}
 	return arr, nil
 }
@@ -361,7 +387,22 @@ func (s *shoppingService) CancelOrder(subOrderId int64, reason string) error {
 }
 
 // 确定订单
-func (s *shoppingService) ConfirmOrder(id int64) error {
+func (s *shoppingService) ConfirmOrder(id int64, sub bool) error {
+	if sub {
+		return s.confirmSubOrder(id)
+	}
+	o := s._manager.GetOrderById(id)
+	if o != nil {
+		switch o.Type() {
+		case order.TWholesale:
+			return o.(order.IWholesaleOrder).Confirm()
+		}
+	}
+	return order.ErrNoSuchOrder
+}
+
+// 确定订单
+func (s *shoppingService) confirmSubOrder(id int64) error {
 	o := s._manager.GetSubOrder(id)
 	if o == nil {
 		return order.ErrNoSuchOrder

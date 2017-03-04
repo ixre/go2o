@@ -110,7 +110,7 @@ func (o *baseOrderImpl) OrderNo() string {
 
 // 保存订单信息
 func (o *baseOrderImpl) saveOrder() error {
-	id, err := o.repo.SaveOrderList(o.baseValue)
+	id, err := o.repo.SaveOrder(o.baseValue)
 	if err == nil {
 		o.baseValue.ID = int64(id)
 	}
@@ -129,7 +129,7 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {
 		o.complex = &order.ComplexOrder{
-			Id:         o.GetAggregateRootId(),
+			OrderId:    o.GetAggregateRootId(),
 			OrderType:  o.baseValue.OrderType,
 			OrderNo:    o.OrderNo(),
 			BuyerId:    o.baseValue.BuyerId,

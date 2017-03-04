@@ -52,7 +52,7 @@ type (
 		// Get OrderList
 		GetOrder(where string, arg ...interface{}) *Order
 		// Save OrderList
-		SaveOrderList(v *Order) (int, error)
+		SaveOrder(v *Order) (int, error)
 
 		// 保存订单优惠券绑定
 		SaveOrderCouponBind(*OrderCoupon) error
@@ -62,7 +62,7 @@ type (
 		SavePromotionBindForOrder(*OrderPromotionBind) (int32, error)
 
 		// 根据编号获取订单
-		GetNormalOrderById(id int64) *NormalOrder
+		GetNormalOrderById(orderId int64) *NormalOrder
 		// 根据订单号获取订单
 		GetNormalOrderByNo(orderNo string) *NormalOrder
 		// 保存订单,返回订单编号
@@ -80,7 +80,7 @@ type (
 		GetSubOrderByNo(orderNo string) *NormalSubOrder
 
 		// 保存子订单
-		SaveSubOrder(value *NormalSubOrder) (int64, error)
+		SaveSubOrder(value *NormalSubOrder) (int, error)
 
 		// 保存子订单的商品项,并返回编号和错误
 		SaveOrderItem(subOrderId int64, value *SubOrderItem) (int32, error)

@@ -20,8 +20,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  SubOrder GetSubOrder(i64 id)")
-	fmt.Fprintln(os.Stderr, "  SubOrder GetSubOrderByNo(string orderNo)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(i64 id, bool sub_order)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrder(i64 id)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrderByNo(string orderNo)")
 	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -117,13 +118,29 @@ func main() {
 	}
 
 	switch cmd {
+	case "GetOrder":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetOrder requires 2 args")
+			flag.Usage()
+		}
+		argvalue0, err161 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err161 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		fmt.Print(client.GetOrder(value0, value1))
+		fmt.Print("\n")
+		break
 	case "GetSubOrder":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err159 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err159 != nil {
+		argvalue0, err163 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err163 != nil {
 			Usage()
 			return
 		}
@@ -146,8 +163,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err161 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err161 != nil {
+		argvalue0, err165 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err165 != nil {
 			Usage()
 			return
 		}

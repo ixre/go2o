@@ -288,42 +288,41 @@ struct PaymentOrder {
 }
 
 // 订单项
-struct OrderItem {
-    1: i32 Id
+struct ComplexItem {
+    1: i64 ID
     2: i64 OrderId
-    3: i32 ItemId
-    4: i32 SkuId
-    5: i32 SnapshotId
+    3: i64 ItemId
+    4: i64 SkuId
+    5: i64 SnapshotId
     6: i32 Quantity
     7: i32 ReturnQuantity
     8: double Amount
     9: double FinalAmount
-    10: i64 IsShipped
-    11: i64 UpdateTime
+    10: i32 IsShipped
 }
 
 // 子订单
-struct SubOrder {
-    1: i64 Id
-    2: string OrderNo
-    3: i64 OrderId
-    4: i32 BuyerId
-    5: i32 VendorId
-    6: i32 ShopId
-    7: string Subject
+struct ComplexOrder {
+    1: i64 OrderId
+    2: i64 SubOrderId
+    3: i32 OrderType
+    4: string OrderNo
+    5: i32 BuyerId
+    6: i32 VendorId
+    7: i32 ShopId
     8: double ItemAmount
     9: double DiscountAmount
     10: double ExpressFee
     11: double PackageFee
     12: double FinalAmount
-    13: i64 IsPaid
-    14: i64 IsSuspend
-    15: string BuyerRemark
-    16: string Remark
-    17: i64 CreateTime
-    18: i64 UpdateTime
-    19: i32 State
-    20: list<OrderItem> Items
+    13: string ConsigneePerson
+    14: string ConsigneePhone
+    15: string ShippingAddress
+    16: i32 IsBreak
+    17: i32 State
+    18: i64 CreateTime
+    19: i64 UpdateTime
+    20: list<ComplexItem> Items
 }
 
 
@@ -436,10 +435,12 @@ service PaymentService{
 
 // 销售服务
 service SaleService {
+  // 获取订单信息
+  ComplexOrder GetOrder(1:i64 id,2:bool sub_order)
   // 获取子订单
-  SubOrder GetSubOrder(1:i64 id)
+  ComplexOrder GetSubOrder(1:i64 id)
   // 根据订单号获取子订单
-  SubOrder GetSubOrderByNo(1:string orderNo)
+  ComplexOrder GetSubOrderByNo(1:string orderNo)
   // 获取订单商品项
-  list<OrderItem> GetSubOrderItems(1:i64 subOrderId)
+  list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
 }

@@ -13,6 +13,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
@@ -95,14 +96,17 @@ func (o *normalOrderImpl) getValue() *order.NormalOrder {
 func (o *normalOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
+	co.VendorId = 0
+	co.ShopId = 0
+	co.SubOrderId = 0
 	co.ConsigneePerson = v.ConsigneePerson
 	co.ConsigneePhone = v.ConsigneePhone
 	co.ShippingAddress = v.ShippingAddress
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
+	co.DiscountAmount = float64(v.DiscountAmount)
+	co.ItemAmount = float64(v.ItemAmount)
+	co.ExpressFee = float64(v.ExpressFee)
+	co.PackageFee = float64(v.PackageFee)
+	co.FinalAmount = float64(v.FinalAmount)
 	co.IsBreak = v.IsBreak
 	co.UpdateTime = v.UpdateTime
 	return co
@@ -925,6 +929,23 @@ func (o *subOrderImpl) GetValue() *order.NormalSubOrder {
 	return o.value
 }
 
+// 复合的订单信息
+func (o *subOrderImpl) Complex() *order.ComplexOrder {
+	v := o.GetValue()
+	co := o.baseOrder().Complex()
+	co.VendorId = v.VendorId
+	co.ShopId = v.ShopId
+	co.SubOrderId = o.GetDomainId()
+	co.DiscountAmount = float64(v.DiscountAmount)
+	co.ItemAmount = float64(v.ItemAmount)
+	co.ExpressFee = float64(v.ExpressFee)
+	co.PackageFee = float64(v.PackageFee)
+	co.FinalAmount = float64(v.FinalAmount)
+	co.UpdateTime = v.UpdateTime
+	co.State = v.State
+	return co
+}
+
 // 获取商品项
 func (o *subOrderImpl) Items() []*order.SubOrderItem {
 	if (o.value.Items == nil || len(o.value.Items) == 0) &&
@@ -976,7 +997,7 @@ func (o *subOrderImpl) Submit() (int64, error) {
 		o.value.CreateTime = unix
 		o.value.UpdateTime = unix
 	}
-	id, err := o.rep.SaveSubOrder(o.value)
+	id, err := util.I64Err(o.rep.SaveSubOrder(o.value))
 	if err == nil {
 		o.value.ID = id
 		err = o.saveOrderItems()

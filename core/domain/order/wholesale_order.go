@@ -183,14 +183,17 @@ func (w *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
+	co.SubOrderId = 0
+	co.VendorId = v.VendorId
+	co.ShopId = v.ShopId
 	co.ConsigneePerson = v.ConsigneePerson
 	co.ConsigneePhone = v.ConsigneePhone
 	co.ShippingAddress = v.ShippingAddress
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.ItemAmount
-	co.ExpressFee = v.ExpressFee
-	co.PackageFee = v.PackageFee
-	co.FinalAmount = v.FinalAmount
+	co.DiscountAmount = float64(v.DiscountAmount)
+	co.ItemAmount = float64(v.ItemAmount)
+	co.ExpressFee = float64(v.ExpressFee)
+	co.PackageFee = float64(v.PackageFee)
+	co.FinalAmount = float64(v.FinalAmount)
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
 	return co

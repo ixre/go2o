@@ -24,8 +24,8 @@ import (
 // 监视新订单
 func superviseOrder(ss []Service) {
 	sv := rsi.ShoppingService
-	notify := func(id int, ss []Service) {
-		o, _ := sv.GetSubOrder(int64(id))
+	notify := func(id int64, isSub bool, ss []Service) {
+		o, _ := sv.GetOrder(id, isSub)
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -43,10 +43,17 @@ func superviseOrder(ss []Service) {
 			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
 			//通知订单更新
-			id, err = strconv.Atoi(string(arr[1]))
-			if err == nil {
-				go notify(id, ss)
+			str := string(arr[1])
+			isSub := strings.HasPrefix(str, "sub!")
+			if isSub {
+				str = str[4:]
 			}
+			//log.Println("----- 订单编号：", str, "; 是否子订单：", isSub)
+			id, err = strconv.Atoi(str)
+			if err == nil {
+				go notify(int64(id), isSub, ss)
+			}
+
 		} else {
 			appCtx.Log().Println("[ Daemon][ OrderQueue][ Error]:",
 				err.Error(), "; retry after 10 seconds.")
