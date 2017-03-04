@@ -556,6 +556,35 @@ CREATE TABLE order_wholesale_order (
   PRIMARY KEY (id)) comment='批发订单';
 
 
+ALTER TABLE `ship_order`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `order_id` `order_id` INT(11) NOT NULL COMMENT '订单编号' ,
+CHANGE COLUMN `sp_id` `sp_id` INT(11) NOT NULL COMMENT '快递SP编号' ,
+CHANGE COLUMN `sp_order` `sp_order` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '快递SP单号' ,
+CHANGE COLUMN `exporess_log` `exporess_log` VARCHAR(512) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '物流日志' ,
+CHANGE COLUMN `amount` `amount` DECIMAL(8,2) NOT NULL COMMENT '运费' ,
+CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '实际运费' ,
+CHANGE COLUMN `ship_time` `ship_time` INT(11) NOT NULL COMMENT '发货时间' ,
+CHANGE COLUMN `state` `state` INT(2) NOT NULL COMMENT '状态' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '更新时间' ,
+ADD COLUMN `sub_orderid` INT(11) NOT NULL COMMENT '子订单编号' AFTER `order_id`,
+COMMENT = '发货单' ;
+
+ALTER TABLE `ship_order`
+CHANGE COLUMN `exporess_log` `shipment_log` VARCHAR(512) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '物流日志' ;
+
+
+ALTER TABLE ship_item`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `ship_order` `ship_order` INT(11) NOT NULL COMMENT '发货单编号' ,
+CHANGE COLUMN `snap_id` `snapshot_id` INT(11) NOT NULL COMMENT '商品交易快照编号' ,
+CHANGE COLUMN `quantity` `quantity` INT(11) NOT NULL COMMENT '商品数量' ,
+CHANGE COLUMN `amount` `amount` DECIMAL(8,2) NOT NULL COMMENT '运费' ,
+CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '实际运费' ,
+COMMENT = '发货单详情' ;
+
+
+
 
 
 CREATE TABLE mm_buyer_group (

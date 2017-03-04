@@ -1161,27 +1161,30 @@ func (o *subOrderImpl) createShipmentOrder(items []*order.SubOrderItem) shipment
 		return nil
 	}
 	unix := time.Now().Unix()
+	orderId := o.baseOrder().GetAggregateRootId()
+	subOrderId := o.GetDomainId()
 	so := &shipment.ShipmentOrder{
-		Id:         0,
-		OrderId:    int32(o.GetDomainId()),
-		ExpressLog: "",
-		ShipTime:   unix,
-		Stat:       shipment.StatAwaitingShipment,
-		UpdateTime: unix,
-		Items:      []*shipment.Item{},
+		ID:          0,
+		OrderId:     orderId,
+		SubOrderId:  subOrderId,
+		ShipmentLog: "",
+		ShipTime:    unix,
+		State:       shipment.StatAwaitingShipment,
+		UpdateTime:  unix,
+		Items:       []*shipment.Item{},
 	}
 	for _, v := range items {
 		if v.IsShipped == 1 {
 			continue
 		}
-		so.Amount += v.Amount
-		so.FinalAmount += v.FinalAmount
+		so.Amount += float64(v.Amount)
+		so.FinalAmount += float64(v.FinalAmount)
 		so.Items = append(so.Items, &shipment.Item{
-			Id:          0,
-			GoodsSnapId: v.SnapshotId,
+			ID:          0,
+			SnapshotId:  int64(v.SnapshotId),
 			Quantity:    v.Quantity,
-			Amount:      v.Amount,
-			FinalAmount: v.FinalAmount,
+			Amount:      float64(v.Amount),
+			FinalAmount: float64(v.FinalAmount),
 		})
 		v.IsShipped = 1
 	}

@@ -22,7 +22,7 @@ type (
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.IWholesaleCart) ([]IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
-		ReceiveNotifyOfOnlineTrade(orderId int64) error
+		NotifyOrderTradeSuccess(orderId int64) error
 		// 提交订单
 		SubmitOrder(c cart.ICart, addressId int32, couponCode string,
 			balanceDiscount bool) (IOrder, error)

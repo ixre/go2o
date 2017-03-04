@@ -267,16 +267,21 @@ func (t *orderManagerImpl) GetOrderByNo(orderNo string) order.IOrder {
 }
 
 // 接收在线交易支付的通知，不主动调用
-func (t *orderManagerImpl) ReceiveNotifyOfOnlineTrade(orderId int64) error {
+func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderId int64) error {
 	o := t.GetOrderById(orderId)
 	if o == nil {
 		return order.ErrNoSuchOrder
 	}
-	if o.Type() != order.TRetail {
-		panic("unknown order type")
+
+	switch o.Type() {
+	case order.TRetail:
+		io := o.(order.INormalOrder)
+		return io.OnlinePaymentTradeFinish()
+	case order.TWholesale:
+		io := o.(order.IWholesaleOrder)
+		return io.OnlinePaymentTradeFinish()
 	}
-	io := o.(order.INormalOrder)
-	return io.OnlinePaymentTradeFinish()
+	panic("unknown order type")
 }
 
 // 获取子订单

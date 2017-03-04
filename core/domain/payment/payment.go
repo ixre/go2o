@@ -72,6 +72,7 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	if p.GetAggregateRootId() <= 0 {
 		panic(payment.ErrNoSuchPaymentOrder)
 	}
+
 	//err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
 	//if err != nil {
 	//	err = errors.New("Notify payment finish error :" + err.Error())
@@ -79,7 +80,7 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	//}
 	// 通知订单支付完成
 	if p.value.OrderId > 0 {
-		err := p.orderManager.ReceiveNotifyOfOnlineTrade(int64(p.value.OrderId))
+		err := p.orderManager.NotifyOrderTradeSuccess(int64(p.value.OrderId))
 		domain.HandleError(err, "domain")
 	}
 }
