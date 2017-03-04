@@ -313,9 +313,9 @@ type (
 		Items() []*WholesaleItem
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
-
 		// 在线支付交易完成
-		PaymentFinishByOnlineTrade() error
+		OnlinePaymentTradeFinish() error
+
 		// 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
 		// 添加备注

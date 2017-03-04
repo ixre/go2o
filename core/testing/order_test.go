@@ -197,23 +197,30 @@ func TestWholesaleOrder(t *testing.T) {
 	//t.Log("调价：",py.Adjust(-pv.FinalAmount))
 	//t.Log(py.Cancel())
 	//return
-	time.Sleep(time.Second * 2)
 
 	addressId := orders[0].Buyer().Profile().GetDefaultAddress().GetDomainId()
 
 	for _, o := range orders {
 		io := o.(order.IWholesaleOrder)
 		err = io.SetAddress(addressId)
-		if err == nil {
-			if err = o.Submit(); err == nil {
-				//po := io.GetPaymentOrder()
-				//err = po.PaymentFinish("alipay","1234567899000")
-			}
-		}
 		if err != nil {
-			t.Error(err)
+			t.Error("设置收货地址：", err)
 			t.FailNow()
 		}
+		err = o.Submit()
+		if err == nil {
+			//po := io.GetPaymentOrder()
+			//err = po.PaymentFinish("alipay","1234567899000")
+		} else {
+			t.Error("提交订单：", err)
+			t.FailNow()
+		}
+
+		time.Sleep(time.Second * 2)
+		// 重新获取订单
+		o = manager.GetOrderById(o.GetAggregateRootId())
+		io = o.(order.IWholesaleOrder)
+
 		logState(t, io.Confirm(), o)
 		logState(t, io.PickUp(), o)
 		logState(t, io.Ship(1, "123456"), o)

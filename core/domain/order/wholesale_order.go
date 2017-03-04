@@ -44,7 +44,7 @@ func newWholesaleOrder(base *baseOrderImpl,
 	expressRepo express.IExpressRepo, payRepo payment.IPaymentRepo,
 	shipRepo shipment.IShipmentRepo, mchRepo merchant.IMerchantRepo,
 	valueRepo valueobject.IValueRepo) order.IOrder {
-	return &wholesaleOrderImpl{
+	o := &wholesaleOrderImpl{
 		baseOrderImpl: base,
 		orderRepo:     shoppingRepo,
 		itemRepo:      goodsRepo,
@@ -54,6 +54,12 @@ func newWholesaleOrder(base *baseOrderImpl,
 		mchRepo:       mchRepo,
 		valueRepo:     valueRepo,
 	}
+	return o.init()
+}
+
+func (o *wholesaleOrderImpl) init() order.IOrder {
+	o.getValue()
+	return o
 }
 
 func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
@@ -375,8 +381,20 @@ func (w *wholesaleOrderImpl) Items() []*order.WholesaleItem {
 }
 
 // 在线支付交易完成
-func (w *wholesaleOrderImpl) PaymentFinishByOnlineTrade() error {
-	panic("not implement")
+func (o *wholesaleOrderImpl) OnlinePaymentTradeFinish() error {
+	if o.value.IsPaid == 1 {
+		return order.ErrOrderPayed
+	}
+	if o.value.State == order.StatAwaitingPayment {
+		o.value.IsPaid = 1
+		o.value.State = order.StatAwaitingConfirm
+		err := o.AppendLog(order.LogSetup, true, "{finish_pay}")
+		if err == nil {
+			err = o.saveWholesaleOrder()
+		}
+		return err
+	}
+	return order.ErrUnusualOrderStat
 }
 
 // 记录订单日志
@@ -484,26 +502,27 @@ func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) s
 	}
 	unix := time.Now().Unix()
 	so := &shipment.ShipmentOrder{
-		Id:         0,
-		OrderId:    int32(o.GetAggregateRootId()),
-		ExpressLog: "",
-		ShipTime:   unix,
-		Stat:       shipment.StatAwaitingShipment,
-		UpdateTime: unix,
-		Items:      []*shipment.Item{},
+		ID:          0,
+		OrderId:     o.GetAggregateRootId(),
+		SubOrderId:  0,
+		ShipmentLog: "",
+		ShipTime:    unix,
+		State:       shipment.StatAwaitingShipment,
+		UpdateTime:  unix,
+		Items:       []*shipment.Item{},
 	}
 	for _, v := range items {
 		if v.IsShipped == 1 {
 			continue
 		}
-		so.Amount += v.Amount
-		so.FinalAmount += v.FinalAmount
+		so.Amount += float64(v.Amount)
+		so.FinalAmount += float64(v.FinalAmount)
 		so.Items = append(so.Items, &shipment.Item{
-			Id:          0,
-			GoodsSnapId: int32(v.SnapshotId),
+			ID:          0,
+			SnapshotId:  v.SnapshotId,
 			Quantity:    v.Quantity,
-			Amount:      v.Amount,
-			FinalAmount: v.FinalAmount,
+			Amount:      float64(v.Amount),
+			FinalAmount: float64(v.FinalAmount),
 		})
 		v.IsShipped = 1
 	}

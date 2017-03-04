@@ -10,6 +10,7 @@ package shipment
 
 import (
 	"errors"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/domain/interface/shipment"
@@ -35,8 +36,8 @@ func NewShipmentOrder(v *shipment.ShipmentOrder, rep shipment.IShipmentRepo,
 }
 
 // 获取聚合根编号
-func (s *shipmentOrderImpl) GetAggregateRootId() int32 {
-	return s.value.Id
+func (s *shipmentOrderImpl) GetAggregateRootId() int64 {
+	return s.value.ID
 }
 
 // 获取值
@@ -60,8 +61,8 @@ func (s *shipmentOrderImpl) Ship(spId int32, spOrderNo string) error {
 		s.expSp = nil
 		s.value.SpId = spId
 	}
-	s.value.SpOrderNo = spOrderNo
-	s.value.Stat = shipment.StatShipped
+	s.value.SpOrder = spOrderNo
+	s.value.State = shipment.StatShipped
 	s.value.ShipTime = time.Now().Unix()
 	return s.save()
 }
@@ -73,14 +74,21 @@ func (s *shipmentOrderImpl) save() error {
 		_, err := s.rep.SaveShipmentOrder(s.value)
 		return err
 	}
-	id, err := s.rep.SaveShipmentOrder(s.value)
+	return s.submit()
+}
+
+func (s *shipmentOrderImpl) submit() error {
+	if s.GetAggregateRootId() > 0 {
+		panic("shipment order created!")
+	}
+	id, err := util.I64Err(s.rep.SaveShipmentOrder(s.value))
 	if err == nil {
-		s.value.Id = id
+		s.value.ID = id
 		items := s.value.Items
 		if items != nil && len(items) > 0 {
 			for _, v := range items {
-				v.OrderId = id
-				v.Id, err = s.rep.SaveShipmentItem(v)
+				v.ShipOrder = id
+				v.ID, err = util.I64Err(s.rep.SaveShipmentItem(v))
 				if err != nil {
 					return err
 				}
@@ -92,7 +100,7 @@ func (s *shipmentOrderImpl) save() error {
 
 // 发货完成
 func (s *shipmentOrderImpl) Completed() error {
-	s.value.Stat = shipment.StatCompleted
+	s.value.State = shipment.StatCompleted
 	return s.save()
 }
 
