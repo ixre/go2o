@@ -273,29 +273,12 @@ func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrder(id int64, sub bool) (*define.ComplexOrder, error) {
-	var c *order.ComplexOrder
-	if sub {
-		c = s.getComplexSubOrder(id)
-	} else {
-		o := s._manager.GetOrderById(id)
-		if o != nil {
-			c = o.Complex()
-		}
-	}
+func (s *shoppingService) GetOrder(orderId int64, sub bool) (*define.ComplexOrder, error) {
+	c := s._manager.Unified(orderId, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
 	return nil, nil
-}
-
-// 根据编号获取订单
-func (s *shoppingService) getComplexSubOrder(id int64) *order.ComplexOrder {
-	o := s._manager.GetSubOrder(id)
-	if o != nil {
-		return o.Complex()
-	}
-	return nil
 }
 
 // 根据编号获取订单
@@ -377,73 +360,40 @@ func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.Normal
 	return o, s._orderQuery.QueryOrderItems(o.ID)
 }
 
-// 取消订单
-func (s *shoppingService) CancelOrder(subOrderId int64, reason string) error {
-	o := s._manager.GetSubOrder(subOrderId)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.Cancel(reason)
-}
-
-// 确定订单
-func (s *shoppingService) ConfirmOrder(id int64, sub bool) error {
-	if sub {
-		return s.confirmSubOrder(id)
-	}
-	o := s._manager.GetOrderById(id)
-	if o != nil {
-		switch o.Type() {
-		case order.TWholesale:
-			return o.(order.IWholesaleOrder).Confirm()
-		}
-	}
-	return order.ErrNoSuchOrder
-}
-
-// 确定订单
-func (s *shoppingService) confirmSubOrder(id int64) error {
-	o := s._manager.GetSubOrder(id)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.Confirm()
-}
-
 // 获取订单日志
-func (s *shoppingService) GetOrderLogString(id int64) []byte {
-	o := s._manager.GetSubOrder(id)
-	if o == nil {
-		return []byte("")
-	}
-	return o.LogBytes()
+func (s *shoppingService) LogBytes(orderId int64, sub bool) []byte {
+	c := s._manager.Unified(orderId, sub)
+	return c.LogBytes()
+}
+
+// 取消订单
+func (s *shoppingService) CancelOrder(orderId int64, sub bool, reason string) error {
+	c := s._manager.Unified(orderId, sub)
+	return c.Cancel(reason)
+}
+
+// 确定订单
+func (s *shoppingService) ConfirmOrder(orderId int64, sub bool) error {
+	c := s._manager.Unified(orderId, sub)
+	return c.Confirm()
 }
 
 // 备货完成
-func (s *shoppingService) PickUp(subOrderId int64) error {
-	o := s._manager.GetSubOrder(subOrderId)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.PickUp()
+func (s *shoppingService) PickUp(orderId int64, sub bool) error {
+	c := s._manager.Unified(orderId, sub)
+	return c.PickUp()
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *shoppingService) Ship(subOrderId int64, spId int32, spOrder string) error {
-	o := s._manager.GetSubOrder(subOrderId)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.Ship(spId, spOrder)
+func (s *shoppingService) Ship(orderId int64, sub bool, spId int32, spOrder string) error {
+	c := s._manager.Unified(orderId, sub)
+	return c.Ship(spId, spOrder)
 }
 
 // 消费者收货
-func (s *shoppingService) BuyerReceived(subOrderId int64) error {
-	o := s._manager.GetSubOrder(subOrderId)
-	if o == nil {
-		return order.ErrNoSuchOrder
-	}
-	return o.BuyerReceived()
+func (s *shoppingService) BuyerReceived(orderId int64, sub bool) error {
+	c := s._manager.Unified(orderId, sub)
+	return c.BuyerReceived()
 }
 
 // 根据商品快照获取订单项
