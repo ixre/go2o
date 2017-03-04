@@ -455,6 +455,8 @@ func (o *normalOrderImpl) Submit() error {
 	v.ID = norOrderId
 	orderNo := o.OrderNo()
 	if err == nil {
+		// 生成支付单
+		o.createPaymentForOrder()
 		// 绑定优惠券促销
 		o.bindCouponOnSubmit(orderNo)
 		// 绑定购物车商品的促销
@@ -489,6 +491,20 @@ func (o *normalOrderImpl) avgDiscountToItem() {
 			}
 		}
 	}
+}
+
+// 生成支付单
+func (o *normalOrderImpl) createPaymentForOrder() error {
+	v := o.baseOrderImpl.createPaymentOrder()
+	//v.VendorId = o.value.VendorId
+	v.TotalFee = o.value.FinalAmount
+	v.CouponDiscount = 0
+	v.IntegralDiscount = 0
+	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
+		v.IntegralDiscount - v.BalanceDiscount
+	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
+	_, err := o.paymentOrder.Commit()
+	return err
 }
 
 // 绑定促销优惠
@@ -986,7 +1002,7 @@ func (o *subOrderImpl) saveSubOrder() error {
 // 同步订单状态
 func (o *subOrderImpl) syncOrderState() {
 	if bo := o.baseOrder(); bo != nil {
-		oi := bo.(*baseOrderImpl)
+		oi := bo.(*normalOrderImpl).baseOrderImpl
 		if oi.State() != order.StatBreak {
 			oi.saveOrderState(order.OrderState(o.value.State))
 		}

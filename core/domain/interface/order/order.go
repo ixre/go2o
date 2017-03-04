@@ -23,6 +23,8 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
+// 拆分为子订单单暂时不拆分支付单
+
 type OrderState int
 type OrderType int32
 

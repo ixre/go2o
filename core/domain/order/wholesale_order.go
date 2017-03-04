@@ -360,8 +360,8 @@ func (o *wholesaleOrderImpl) createPaymentForOrder() error {
 	v.IntegralDiscount = 0
 	v.FinalAmount = v.TotalFee - v.SubAmount - v.SystemDiscount -
 		v.IntegralDiscount - v.BalanceDiscount
-	po := o.payRepo.CreatePaymentOrder(v)
-	_, err := po.Commit()
+	o.paymentOrder = o.payRepo.CreatePaymentOrder(v)
+	_, err := o.paymentOrder.Commit()
 	return err
 }
 
@@ -477,6 +477,7 @@ func (o *wholesaleOrderImpl) PickUp() error {
 	return err
 }
 
+// 创建发货单
 func (o *wholesaleOrderImpl) createShipmentOrder(items []*order.WholesaleItem) shipment.IShipmentOrder {
 	if items == nil || len(items) == 0 {
 		return nil
