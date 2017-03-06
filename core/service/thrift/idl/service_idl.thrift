@@ -415,8 +415,8 @@ service FoundationService{
 
 // 支付服务
 service PaymentService{
-    // 创建支付单
-    Result CreatePaymentOrder(1:PaymentOrder o)
+    // 创建支付单并提交
+    Result SubmitPaymentOrder(1:PaymentOrder o)
     // 根据支付单号获取支付单
     PaymentOrder GetPaymentOrder(1:string paymentNo)
     // 根据编号获取支付单
@@ -429,6 +429,8 @@ service PaymentService{
     DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
     Result PaymentByWallet(1:i32 orderId,2:string remark)
+    // 余额钱包混合支付，优先扣除余额。
+    Result HybridPayment(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 }

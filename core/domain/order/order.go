@@ -186,6 +186,8 @@ func FactoryNew(v *order.Order, manager order.IOrderManager,
 	case order.TWholesale:
 		return newWholesaleOrder(b, repo, goodsRepo,
 			expressRepo, payRepo, shipRepo, mchRepo, valRepo)
+	case order.TTrade:
+		return newTradeOrder(b, payRepo, mchRepo, valRepo)
 	}
 	return nil
 }

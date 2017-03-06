@@ -35,7 +35,7 @@ const (
 	TWholesale OrderType = 2
 	// 虚拟订单,如：手机充值
 	TVirtual OrderType = 3
-	// 交易订单,如：线下订单支付。
+	// 交易订单,如：线下支付。
 	TTrade OrderType = 4
 	// 服务订单
 	TService OrderType = 5
@@ -105,6 +105,8 @@ func (t OrderState) String() string {
 		return "待收货"
 	case StatCompleted:
 		return "交易完成"
+	case StatBreak:
+		return "已拆单"
 	case StatGoodsRefunded:
 		return "已退货"
 	}
@@ -209,6 +211,15 @@ var (
 
 	ErrDisallowRefund *domain.DomainError = domain.NewDomainError(
 		"err_order_disallow_refund", "订单不允许退款")
+
+	ErrTradeRateLessZero *domain.DomainError = domain.NewDomainError(
+		"err_order_trade_rate_less_zero", "交易类订单结算比例不能小于零")
+
+	ErrTradeRateMoreThan100 *domain.DomainError = domain.NewDomainError(
+		"err_order_trade_rate_more_than_100", "交易类订单结算比例必须小于或等于100%")
+
+	ErrMissingSubject *domain.DomainError = domain.NewDomainError(
+		"err_order_missing_subject", "缺少订单标题")
 )
 
 type (
@@ -246,6 +257,7 @@ type (
 
 		//根据运营商拆单,返回拆单结果,及拆分的订单数组
 		//BreakUpByVendor() ([]IOrder, error)
+
 		// 获取子订单列表
 		GetSubOrders() []ISubOrder
 		// 应用优惠券
@@ -304,11 +316,6 @@ type (
 
 	// 批发订单
 	IWholesaleOrder interface {
-		// 获取领域对象编号
-		//GetDomainId() int64
-		// 获取值对象
-		//GetValue() *NormalSubOrder
-
 		// 设置商品项
 		SetItems(items []*MinifyItem)
 		// 设置配送地址
@@ -338,14 +345,19 @@ type (
 		Cancel(reason string) error
 		// 谢绝订单
 		Decline(reason string) error
-		// 退回商品
-		//Return(snapshotId int32, quantity int32) error
-		// 撤销退回商品
-		//RevertReturn(snapshotId int32, quantity int32) error
 	}
 
 	// 交易订单
-	ITradeOrder interface{}
+	ITradeOrder interface {
+		// 从订单信息中拷贝相应的数据,并设置订单结算比例
+		Set(o *ComplexOrder, rate float64) error
+		// 现金支付
+		CashPay() error
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
+		// 交易支付完成
+		TradePaymentFinish() error
+	}
 
 	// 订单
 	Order struct {
@@ -378,6 +390,8 @@ type (
 		VendorId int32
 		// 店铺编号
 		ShopId int32
+		// 订单标题
+		Subject string
 		// 商品金额
 		ItemAmount float64
 		// 优惠减免金额
@@ -524,8 +538,6 @@ type (
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)
 		ReturnQuantity int32 `db:"return_quantity"`
-		// SKU描述
-		//Sku string `db:"sku"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
@@ -616,6 +628,38 @@ type (
 		UpdateTime int64 `db:"update_time"`
 	}
 
+	// 交易类订单
+	TradeOrder struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商家编号
+		VendorId int32 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int32 `db:"shop_id"`
+		// 订单标题
+		Subject string `db:"subject"`
+		// 订单金额
+		OrderAmount float64 `db:"order_amount"`
+		// 抵扣金额
+		DiscountAmount float64 `db:"discount_amount"`
+		// 订单最终金额
+		FinalAmount float64 `db:"final_amount"`
+		// 交易结算比例（商户)，允许为0和1
+		TradeRate float64 `db:"trade_rate"`
+		// 是否现金支付
+		CashPay int32 `db:"cash_pay"`
+		// 订单备注
+		Remark string `db:"remark"`
+		// 订单状态
+		State int32 `db:"state"`
+		// 订单创建时间
+		CreateTime int64 `db:"create_time"`
+		// 订单更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
 	OrderLog struct {
 		Id      int32 `db:"id" auto:"yes" pk:"yes"`
 		OrderId int64 `db:"order_id"`
@@ -657,15 +701,3 @@ type (
 		SendIntegral int     `db:"send_integral"`
 	}
 )
-
-func (o *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
-	orderId int32, orderFee float32) *OrderCoupon {
-	v := coupon.GetDetailsValue()
-	o.CouponCode = v.Code
-	o.CouponId = v.Id
-	o.OrderId = orderId
-	o.Fee = coupon.GetCouponFee(orderFee)
-	o.Describe = coupon.GetDescribe()
-	o.SendIntegral = v.Integral
-	return o
-}

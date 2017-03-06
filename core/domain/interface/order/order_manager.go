@@ -15,14 +15,19 @@ import (
 )
 
 type (
-	//　购物聚合根
+	//　订单服务
 	IOrderManager interface {
 		// 统一调用
 		Unified(orderId int64, sub bool) IUnifiedOrderAdapter
 		// 预创建普通订单
 		PrepareNormalOrder(c cart.ICart) (IOrder, error)
 		// 预创建批发订单
-		PrepareWholesaleOrder(c cart.IWholesaleCart) ([]IOrder, error)
+		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
+		// 提交批发订单
+		SubmitWholesaleOrder(c cart.ICart, addressId int32,
+			balanceDiscount bool) ([]IOrder, error)
+		// 提交交易类订单
+		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderId int64) error
 		// 提交订单
@@ -117,9 +122,6 @@ type (
 		// 根据商品快照获取订单项数据传输对象
 		GetOrderItemDtoBySnapshotId(orderId int64, snapshotId int32) *dto.OrderItem
 
-		// Delete OrderList
-		//DeleteOrderList(primary interface{}) error
-
 		// Get WholesaleOrder
 		GetWholesaleOrder(where string, v ...interface{}) *WholesaleOrder
 		// Save WholesaleOrder
@@ -128,5 +130,10 @@ type (
 		SaveWholesaleItem(v *WholesaleItem) (int, error)
 		// Select WholesaleItem
 		SelectWholesaleItem(where string, v ...interface{}) []*WholesaleItem
+
+		// Get TradeOrder
+		GetTradeOrder(where string, v ...interface{}) *TradeOrder
+		// Save TradeOrder
+		SaveTradeOrder(v *TradeOrder) (int, error)
 	}
 )

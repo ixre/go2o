@@ -18,6 +18,7 @@ import (
 const (
 	KindAccountSettleOrder      = 1
 	KindAccountPresent          = 2
+	KindAccountTakePayment      = 3
 	KindAccountTransferToMember = 5
 
 	//商户提现
@@ -93,24 +94,20 @@ type (
 	IAccount interface {
 		// 获取领域对象编号
 		GetDomainId() int32
-
 		// 获取账户值
 		GetValue() *Account
-
 		// 保存
 		Save() error
-
 		// 根据编号获取余额变动信息
 		GetBalanceLog(id int32) *BalanceLog
-
 		// 根据号码获取余额变动信息
 		GetBalanceLogByOuterNo(outerNo string) *BalanceLog
-
 		// 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int32, error)
-
 		// 订单结账
 		SettleOrder(orderNo string, amount float32, csn float32, refundAmount float32, remark string) error
+		// 支出
+		TakePayment(outerNo string, amount float64, csn float64, remark string) error
 
 		// 提现
 		//todo:???

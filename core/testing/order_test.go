@@ -179,51 +179,21 @@ func TestWholesaleOrder(t *testing.T) {
 	orderRepo := ti.OrderRepo
 	manager := orderRepo.Manager()
 
-	orders, err := manager.PrepareWholesaleOrder(rc)
+	buyer := ti.MemberRepo.GetMember(buyerId)
+	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
+	orders, err := manager.PrepareWholesaleOrder(c)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Logf("批发单拆分数量：%d", len(orders))
 
-	//m := mmRepo.GetMember(buyerId)
-	//addressId := m.Profile().GetDefaultAddress().GetDomainId()
-	//o, py, err := manager.SubmitOrder(c, addressId, "", "", true)
-	////err = py.PaymentByWallet("支付订单")
-	//pv := py.GetValue()
-	//payState := pv.State
-	//if payState == payment.StateFinishPayment {
-	//    t.Logf("订单支付完成,金额：%.2f", pv.FinalAmount)
-	//} else {
-	//    t.Logf("订单未完成支付,状态：%d;订单号：%s", pv.State, py.GetTradeNo())
-	//}
-	//t.Logf("支付单信息：%#v", pv)
-	//t.Log("调价：",py.Adjust(-pv.FinalAmount))
-	//t.Log(py.Cancel())
-	//return
-
-	addressId := orders[0].Buyer().Profile().GetDefaultAddress().GetDomainId()
-
+	orders, err = manager.SubmitWholesaleOrder(c, addressId, true)
+	time.Sleep(time.Second * 2)
 	for _, o := range orders {
-		io := o.(order.IWholesaleOrder)
-		err = io.SetAddress(addressId)
-		if err != nil {
-			t.Error("设置收货地址：", err)
-			t.FailNow()
-		}
-		err = o.Submit()
-		if err == nil {
-			//po := io.GetPaymentOrder()
-			//err = po.PaymentFinish("alipay","1234567899000")
-		} else {
-			t.Error("提交订单：", err)
-			t.FailNow()
-		}
-
-		time.Sleep(time.Second * 2)
 		// 重新获取订单
 		o = manager.GetOrderById(o.GetAggregateRootId())
-		io = o.(order.IWholesaleOrder)
+		io := o.(order.IWholesaleOrder)
 
 		// 可能会自动完成
 		//logState(t, io.Confirm(), o)
@@ -231,4 +201,42 @@ func TestWholesaleOrder(t *testing.T) {
 		logState(t, io.Ship(1, "123456"), o)
 		//logState(t, io.BuyerReceived(), o)
 	}
+}
+
+func TestTradeOrder(t *testing.T) {
+	repo := ti.OrderRepo
+	manager := repo.Manager()
+	cashPay := !true
+	c := &order.ComplexOrder{
+		VendorId:   1,
+		ShopId:     1,
+		BuyerId:    1,
+		ItemAmount: 100,
+		Subject:    "万宁佛山祖庙店",
+	}
+	var rate float64 = 0.8 // 结算给商家80%
+	o, err := manager.SubmitTradeOrder(c, rate)
+	if err != nil {
+		t.Errorf("提交订单错误：%s", err.Error())
+		t.FailNow()
+	}
+	io := o.(order.ITradeOrder)
+	// 使用现金支付或者使用钱包支付
+	if cashPay {
+		err = io.CashPay()
+		if err != nil {
+			t.Errorf("现金支付错误：%s", err.Error())
+			t.FailNow()
+		}
+	} else {
+		py := io.GetPaymentOrder()
+		err = py.PaymentByWallet("订单支付")
+		if err != nil {
+			t.Errorf("钱包支付错误：%s", err.Error())
+			t.FailNow()
+		}
+	}
+	time.Sleep(time.Second * 2)
+	o = manager.GetOrderById(o.GetAggregateRootId())
+	t.Log("订单状态为：", o.State().String())
 }

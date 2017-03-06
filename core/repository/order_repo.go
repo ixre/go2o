@@ -364,6 +364,7 @@ func (o *orderRepImpl) saveSubOrder(v *order.NormalSubOrder) (int, error) {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:SaleSubOrder")
 	}
 	if err == nil {
+		v.ID = int64(id)
 		// 缓存订单号
 		o.Storage.Set(o.getOrderCkByNo(v.OrderNo, true), v.ID)
 		// 缓存订单
@@ -430,6 +431,28 @@ func (o *orderRepImpl) SaveWholesaleItem(v *order.WholesaleItem) (int, error) {
 	id, err := orm.Save(o._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WholesaleItem")
+	}
+	return id, err
+}
+
+// Get OrderTradeOrder
+func (o *orderRepImpl) GetTradeOrder(where string, v ...interface{}) *order.TradeOrder {
+	e := order.TradeOrder{}
+	err := o._orm.GetBy(&e, where, v...)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderTradeOrder")
+	}
+	return nil
+}
+
+// Save OrderTradeOrder
+func (o *orderRepImpl) SaveTradeOrder(v *order.TradeOrder) (int, error) {
+	id, err := orm.Save(o._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:OrderTradeOrder")
 	}
 	return id, err
 }

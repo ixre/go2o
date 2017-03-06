@@ -23,6 +23,9 @@ var (
 	ErrNoSuchCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_no_such_cart", "购物车无法使用")
 
+	ErrKindNotMatch *domain.DomainError = domain.NewDomainError(
+		"err_cart_kind_not_match", "购物车类型不匹配")
+
 	ErrEmptyShoppingCart *domain.DomainError = domain.NewDomainError(
 		"empty_shopping_cart", "购物车没有商品")
 

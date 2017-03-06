@@ -117,8 +117,68 @@ func (t *orderManagerImpl) PrepareNormalOrder(c cart.ICart) (order.IOrder, error
 }
 
 // 预创建批发订单
-func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.IWholesaleCart) ([]order.IOrder, error) {
-	return o.breaker.BreakUp(c)
+func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, error) {
+	if c.Kind() != cart.KWholesale {
+		return nil, cart.ErrKindNotMatch
+	}
+	return o.breaker.BreakUp(c.(cart.IWholesaleCart))
+}
+
+// 提交批发订单
+func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
+	addressId int32, useBalanceDiscount bool) ([]order.IOrder, error) {
+	if c.Kind() != cart.KWholesale {
+		return nil, cart.ErrKindNotMatch
+	}
+	list, err := o.breaker.BreakUp(c.(cart.IWholesaleCart))
+	if err == nil {
+		for _, v := range list {
+			err = o.submitWholesaleOrder(v, addressId, useBalanceDiscount)
+			if err != nil {
+				return list, err
+			}
+		}
+	}
+	// 清空购物车
+	if err == nil {
+		if c.Release() {
+			c.Destroy()
+		}
+	}
+	return list, err
+}
+
+func (o *orderManagerImpl) submitWholesaleOrder(v order.IOrder,
+	addressId int32, useBalanceDiscount bool) error {
+	io := v.(order.IWholesaleOrder)
+	err := io.SetAddress(addressId)
+	if err == nil {
+		if err = v.Submit(); err != nil {
+			return err
+		}
+		// 余额支付
+		py := io.GetPaymentOrder()
+		if useBalanceDiscount {
+			py.BalanceDiscount("")
+		}
+	}
+	return err
+}
+
+// 提交交易类订单
+func (t *orderManagerImpl) SubmitTradeOrder(c *order.ComplexOrder,
+	tradeRate float64) (order.IOrder, error) {
+	val := &order.Order{
+		BuyerId:   c.BuyerId,
+		OrderType: int32(order.TTrade),
+	}
+	o := t.repo.CreateOrder(val)
+	io := o.(order.ITradeOrder)
+	err := io.Set(c, tradeRate)
+	if err == nil {
+		err = o.Submit()
+	}
+	return o, err
 }
 
 func (t *orderManagerImpl) GetFreeOrderNo(vendorId int32) string {
@@ -243,6 +303,9 @@ func (t *orderManagerImpl) NotifyOrderTradeSuccess(orderId int64) error {
 	case order.TWholesale:
 		io := o.(order.IWholesaleOrder)
 		return io.OnlinePaymentTradeFinish()
+	case order.TTrade:
+		io := o.(order.ITradeOrder)
+		return io.TradePaymentFinish()
 	}
 	panic("unknown order type")
 }

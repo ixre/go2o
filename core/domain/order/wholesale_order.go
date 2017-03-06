@@ -73,11 +73,15 @@ func (o *wholesaleOrderImpl) getValue() *order.WholesaleOrder {
 }
 
 // 设置商品项
-func (w *wholesaleOrderImpl) SetItems(items []*order.MinifyItem) {
-	if w.GetAggregateRootId() > 0 {
+func (o *wholesaleOrderImpl) SetItems(items []*order.MinifyItem) {
+	if o.GetAggregateRootId() > 0 {
 		panic("wholesale has created. can't use SetItems!")
 	}
-	w.parseOrder(items)
+	o.parseOrder(items)
+	// 计算折扣
+	o.applyGroupDiscount()
+	// 均摊优惠折扣到商品
+	o.avgDiscountForItem()
 }
 
 // 转换为订单相关对象
@@ -115,8 +119,7 @@ func (w *wholesaleOrderImpl) parseOrder(items []*order.MinifyItem) {
 	w.value.ExpressFee = ec.Total()
 	w.value.PackageFee = 0
 	//计算最终金额
-	w.value.FinalAmount = w.value.ItemAmount - w.value.DiscountAmount +
-		w.value.ExpressFee + w.value.PackageFee
+	w.fixFinalAmount()
 }
 
 // 创建商品信息,并读取价格及运费信息
@@ -214,8 +217,6 @@ func (o *wholesaleOrderImpl) Submit() error {
 	// 提交订单
 	err = o.baseOrderImpl.Submit()
 	if err == nil {
-		// 均摊优惠折扣到商品
-		o.avgDiscountForItem()
 		// 保存订单信息到常规订单
 		o.value.OrderId = o.GetAggregateRootId()
 		o.value.OrderNo = o.OrderNo()
@@ -279,6 +280,22 @@ func (o *wholesaleOrderImpl) takeItemStock(items []*orderItem) (err error) {
 	return err
 }
 
+// 计算折扣
+func (o *wholesaleOrderImpl) applyGroupDiscount() {
+	var groupId int32 = 1
+	mch := o.mchRepo.GetMerchant(o.value.VendorId)
+	if mch != nil {
+		basisAmount := int32(o.value.ItemAmount)
+		ws := mch.Wholesaler()
+		rate := ws.GetRebateRate(groupId, basisAmount)
+		disAmount := rate * float64(basisAmount)
+		if disAmount > 0 {
+			o.value.DiscountAmount += float32(disAmount)
+			o.fixFinalAmount()
+		}
+	}
+}
+
 // 平均优惠抵扣金额到商品
 func (o *wholesaleOrderImpl) avgDiscountForItem() {
 	if o.items == nil {
@@ -292,6 +309,12 @@ func (o *wholesaleOrderImpl) avgDiscountForItem() {
 			v.FinalAmount = v.Amount - b*disFee
 		}
 	}
+}
+
+// 修正订单实际金额
+func (o *wholesaleOrderImpl) fixFinalAmount() {
+	o.value.FinalAmount = o.value.ItemAmount - o.value.DiscountAmount +
+		o.value.ExpressFee + o.value.PackageFee
 }
 
 // 保存商品项
