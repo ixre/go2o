@@ -27,41 +27,41 @@ const (
 	FavTypeGoods
 )
 
+const (
+	// 普通会员
+	PremiumNormal int32 = 0
+	// 金会员
+	PremiumGold int32 = 1
+	// 白金会员
+	PremiumWhiteGold int32 = 2
+	// 黑钻会员
+	PremiumSuper int32 = 3
+)
+
 type (
 	IMember interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
-
 		// 会员资料服务
 		Profile() IProfileManager
-
 		// 会员收藏服务
 		Favorite() IFavoriteManager
-
 		// 礼品卡服务
 		GiftCard() IGiftCardManager
-
 		// 邀请管理
 		Invitation() IInvitationManager
-
 		// 获取值
 		GetValue() Member
-
 		// 设置值
 		SetValue(*Member) error
-
 		// 获取账户
 		GetAccount() IAccount
-
 		// 发送验证码,传入操作及消息类型,并返回验证码,及错误
 		SendCheckCode(operation string, mssType int) (string, error)
-
 		// 对比验证码
 		CompareCode(code string) error
-
 		// 锁定会员
 		Lock() error
-
 		// 解锁会员
 		Unlock() error
 
@@ -76,7 +76,8 @@ type (
 
 		// 增加经验值
 		AddExp(exp int32) error
-
+		// 升级为高级会员
+		Premium(v int32, expires int64) error
 		// 获取等级
 		GetLevel() *Level
 
@@ -186,6 +187,10 @@ type (
 		Level int32 `db:"level"`
 		// 邀请码
 		InvitationCode string `db:"invitation_code"`
+		// 高级用户类型
+		PremiumUser int32 `db:"premium_user"`
+		// 高级用户过期时间
+		PremiumExpires int64 `db:"premium_expires"`
 		// 注册来源
 		RegFrom string `db:"reg_from"`
 		// 注册IP

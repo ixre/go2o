@@ -331,7 +331,7 @@ func (o *tradeOrderImpl) updateAccountForOrder() error {
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalConsumption += float32(ov.FinalAmount)
+	acv.TotalExpense += float32(ov.FinalAmount)
 	acv.TotalPay += float32(ov.FinalAmount)
 	acv.UpdateTime = time.Now().Unix()
 	_, err = acc.Save()

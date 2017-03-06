@@ -9,10 +9,12 @@
 package testing
 
 import (
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/testing/ti"
+	"go2o/core/variable"
 	"testing"
 	"time"
 )
@@ -239,4 +241,12 @@ func TestTradeOrder(t *testing.T) {
 	time.Sleep(time.Second * 2)
 	o = manager.GetOrderById(o.GetAggregateRootId())
 	t.Log("订单状态为：", o.State().String())
+}
+
+// 通知交易单
+func TestNotifyTradeOrder(t *testing.T) {
+	rds := ti.GetApp().Storage().(storage.IRedisStorage)
+	conn := rds.GetConn()
+	defer conn.Close()
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 55)
 }

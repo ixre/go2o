@@ -22,7 +22,7 @@ import (
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
-func Member(src *member.Member) *define.Member {
+func MemberDto(src *member.Member) *define.Member {
 	return &define.Member{
 		ID:             src.Id,
 		Usr:            src.Usr,
@@ -31,6 +31,8 @@ func Member(src *member.Member) *define.Member {
 		Exp:            src.Exp,
 		Level:          src.Level,
 		InvitationCode: src.InvitationCode,
+		PremiumUser:    src.PremiumUser,
+		PremiumExpires: src.PremiumExpires,
 		RegFrom:        src.RegFrom,
 		RegIp:          src.RegIp,
 		RegTime:        src.RegTime,
@@ -45,7 +47,7 @@ func Member(src *member.Member) *define.Member {
 	}
 }
 
-func Member2(src *define.Member) *member.Member {
+func Member(src *define.Member) *member.Member {
 	return &member.Member{
 		Id:             src.ID,
 		Usr:            src.Usr,
@@ -54,6 +56,8 @@ func Member2(src *define.Member) *member.Member {
 		Exp:            src.Exp,
 		Level:          src.Level,
 		InvitationCode: src.InvitationCode,
+		PremiumUser:    src.PremiumUser,
+		PremiumExpires: src.PremiumExpires,
 		RegFrom:        src.RegFrom,
 		RegIp:          src.RegIp,
 		RegTime:        src.RegTime,
@@ -162,7 +166,7 @@ func AccountDto(src *member.Account) *define.Account {
 		GrowAmount:        round(src.GrowAmount, 2),
 		GrowEarnings:      round(src.GrowEarnings, 2),
 		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
-		TotalConsumption:  round(src.TotalConsumption, 2),
+		TotalExpense:      round(src.TotalExpense, 2),
 		TotalCharge:       round(src.TotalCharge, 2),
 		TotalPay:          round(src.TotalPay, 2),
 		PriorityPay:       int64(src.PriorityPay),
@@ -187,7 +191,7 @@ func Account(src *define.Account) *member.Account {
 		GrowAmount:        float32(src.GrowAmount),
 		GrowEarnings:      float32(src.GrowEarnings),
 		GrowTotalEarnings: float32(src.GrowTotalEarnings),
-		TotalConsumption:  float32(src.TotalConsumption),
+		TotalExpense:      float32(src.TotalExpense),
 		TotalCharge:       float32(src.TotalCharge),
 		TotalPay:          float32(src.TotalPay),
 		PriorityPay:       int(src.PriorityPay),
@@ -552,6 +556,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 	o := &define.ComplexOrder{
 		OrderId:        src.OrderId,
 		SubOrderId:     src.SubOrderId,
+		OrderType:      src.OrderType,
 		OrderNo:        src.OrderNo,
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,

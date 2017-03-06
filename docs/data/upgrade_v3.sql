@@ -587,6 +587,44 @@ COMMENT = '发货单详情' ;
 
 /* 2017-03-05 */
 
+CREATE TABLE order_trade_order (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  vendor_id       int(11) NOT NULL comment '商家编号',
+  shop_id         int(11) NOT NULL comment '店铺编号',
+  subject         varchar(45) NOT NULL comment '订单标题',
+  order_amount    decimal(8, 2) NOT NULL comment '订单金额',
+  discount_amount decimal(8, 2) NOT NULL comment '抵扣金额',
+  final_amount    decimal(8, 2) NOT NULL comment '订单最终金额',
+  trade_rate      decimal(8, 2) NOT NULL comment '交易结算比例（商户)',
+  cash_pay        int(2) NOT NULL comment '是否现金支付',
+  remark          varchar(120) NOT NULL comment '订单备注',
+  state           int(2) NOT NULL comment '订单状态',
+  create_time     int(11) NOT NULL comment '订单创建时间',
+  update_time     int(11) NOT NULL comment '订单更新时间',
+  PRIMARY KEY (id)) comment='交易类订单';
+
+ALTER TABLE `mm_account`
+CHANGE COLUMN `total_consumption` `total_expense` DECIMAL(10,2) NOT NULL COMMENT '总消费金额' ;
+
+ALTER TABLE `mm_member`
+CHANGE COLUMN `usr` `usr` VARCHAR(20) NOT NULL COMMENT '用户名' ,
+CHANGE COLUMN `pwd` `pwd` VARCHAR(45) NOT NULL COMMENT '密码' ,
+CHANGE COLUMN `trade_pwd` `trade_pwd` VARCHAR(45) NOT NULL COMMENT '交易密码' ,
+CHANGE COLUMN `exp` `exp` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '经验值' ,
+CHANGE COLUMN `level` `level` INT(11) NOT NULL DEFAULT '1' COMMENT '等级' ,
+CHANGE COLUMN `invitation_code` `invitation_code` VARCHAR(10) NOT NULL COMMENT '邀请码' ,
+CHANGE COLUMN `reg_ip` `reg_ip` VARCHAR(20) NOT NULL COMMENT '注册IP' ,
+CHANGE COLUMN `reg_from` `reg_from` VARCHAR(20) NOT NULL COMMENT '注册来源' ,
+CHANGE COLUMN `reg_time` `reg_time` INT(11) NOT NULL COMMENT '注册时间' ,
+CHANGE COLUMN `check_code` `check_code` VARCHAR(8) NOT NULL COMMENT '校验码' ,
+CHANGE COLUMN `check_expires` `check_expires` INT(11) NOT NULL COMMENT '校验码过期时间' ,
+CHANGE COLUMN `login_time` `login_time` INT(11) NOT NULL COMMENT '登陆时间' ,
+CHANGE COLUMN `last_login_time` `last_login_time` INT(11) NOT NULL COMMENT '最后登录时间' ,
+CHANGE COLUMN `state` `state` INT(1) NOT NULL DEFAULT '1' COMMENT '状态' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '更新时间' ,
+ADD COLUMN `premium_user` INT(2) NOT NULL COMMENT '高级用户,0表示非高级' AFTER `level`,
+ADD COLUMN `premium_expires` INT(11) NOT NULL COMMENT '高级会员过期时间' AFTER `premium_user`;
 
 
 
