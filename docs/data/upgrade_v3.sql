@@ -518,19 +518,6 @@ CREATE TABLE sale_order_item (
 ALTER TABLE `sale_sub_order` 
 DROP COLUMN `order_pid`;
 
-CREATE TABLE order_wholesale_item (
-  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  order_id        int(11) NOT NULL comment '订单编号',
-  item_id         int(11) NOT NULL comment '商品编号',
-  sku_id          int(11) NOT NULL comment 'SKU编号',
-  snapshot_id     int(11) NOT NULL comment '商品快照编号',
-  quantity        int(11) NOT NULL comment '销售数量',
-  return_quantity int(11) NOT NULL comment '退货数量',
-  amount          decimal(8, 2) NOT NULL comment '商品总金额',
-  final_amount    decimal(8, 2) NOT NULL comment '商品实际金额',
-  is_shipped      int(2) NOT NULL comment '是否已发货',
-  update_time     int(11) NOT NULL comment '更新时间',
-  PRIMARY KEY (id)) comment='批发订单商品';
 
 CREATE TABLE order_wholesale_order (
   id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
@@ -555,6 +542,20 @@ CREATE TABLE order_wholesale_order (
   update_time      int(11) NOT NULL comment '订单更新时间',
   PRIMARY KEY (id)) comment='批发订单';
 
+CREATE TABLE order_wholesale_item (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  item_id         int(11) NOT NULL comment '商品编号',
+  sku_id          int(11) NOT NULL comment 'SKU编号',
+  snapshot_id     int(11) NOT NULL comment '商品快照编号',
+  quantity        int(11) NOT NULL comment '销售数量',
+  return_quantity int(11) NOT NULL comment '退货数量',
+  amount          decimal(8, 2) NOT NULL comment '商品总金额',
+  final_amount    decimal(8, 2) NOT NULL comment '商品实际金额',
+  is_shipped      int(2) NOT NULL comment '是否已发货',
+  update_time     int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='批发订单商品';
+
 
 ALTER TABLE `ship_order`
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
@@ -574,7 +575,7 @@ ALTER TABLE `ship_order`
 CHANGE COLUMN `exporess_log` `shipment_log` VARCHAR(512) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '物流日志' ;
 
 
-ALTER TABLE ship_item`
+ALTER TABLE `ship_item`
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
 CHANGE COLUMN `ship_order` `ship_order` INT(11) NOT NULL COMMENT '发货单编号' ,
 CHANGE COLUMN `snap_id` `snapshot_id` INT(11) NOT NULL COMMENT '商品交易快照编号' ,
@@ -582,6 +583,9 @@ CHANGE COLUMN `quantity` `quantity` INT(11) NOT NULL COMMENT '商品数量' ,
 CHANGE COLUMN `amount` `amount` DECIMAL(8,2) NOT NULL COMMENT '运费' ,
 CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '实际运费' ,
 COMMENT = '发货单详情' ;
+
+
+/* 2017-03-05 */
 
 
 

@@ -582,11 +582,24 @@ func (o *normalOrderImpl) applyCartPromotionOnSubmit(vo *order.NormalOrder,
 	return proms, totalSaveFee
 }
 
+func (o *normalOrderImpl) cloneCoupon(src *order.OrderCoupon, coupon promotion.ICouponPromotion,
+	orderId int32, orderFee float32) *order.OrderCoupon {
+	v := coupon.GetDetailsValue()
+	src.CouponCode = v.Code
+	src.CouponId = v.Id
+	src.OrderId = orderId
+	src.Fee = coupon.GetCouponFee(orderFee)
+	src.Describe = coupon.GetDescribe()
+	src.SendIntegral = v.Integral
+	return src
+}
+
 // 绑定订单与优惠券
 func (o *normalOrderImpl) bindCouponOnSubmit(orderNo string) {
 	var oc *order.OrderCoupon = new(order.OrderCoupon)
 	for _, c := range o.GetCoupons() {
-		oc.Clone(c, int32(o.GetAggregateRootId()), o.value.FinalAmount)
+		o.cloneCoupon(oc, c, int32(o.GetAggregateRootId()),
+			o.value.FinalAmount)
 		o.orderRepo.SaveOrderCouponBind(oc)
 		// 绑定促销
 		o.bindPromotionOnSubmit(orderNo, c.(promotion.IPromotion))

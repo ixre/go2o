@@ -31,13 +31,15 @@ const (
 	OptBalanceDiscount = 1 << iota
 	// 允许积分抵扣
 	OptIntegralDiscount
+	// 允许钱包支付
+	OptWalletPayment
 	// 允许系统支付
 	OptSystemPayment
 	// 允许使用优惠券
 	OptUseCoupon
 
 	// 全部支付权限
-	OptPerm = OptBalanceDiscount | OptIntegralDiscount |
+	OptPerm = OptBalanceDiscount | OptWalletPayment | OptIntegralDiscount |
 		OptSystemPayment | OptUseCoupon
 )
 
@@ -59,6 +61,9 @@ var (
 
 	ErrFinalFee *domain.DomainError = domain.NewDomainError(
 		"err_final_fee", "支付单金额有误")
+
+	ErrNotSupportPaymentOpt *domain.DomainError = domain.NewDomainError(
+		"err_payment_not_support_opt", "不支持此支付方式,无法完成付款")
 
 	ErrTradeNoPrefix *domain.DomainError = domain.NewDomainError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
@@ -82,7 +87,7 @@ var (
 		"err_can_not_use_balance", "不能使用余额支付")
 
 	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
-		"err_payment_not_enught_amount", "余额不足")
+		"err_payment_not_enught_amount", "余额不足,无法完成支付")
 
 	ErrCanNotUseIntegral *domain.DomainError = domain.NewDomainError(
 		"err_can_not_use_integral", "不能使用积分抵扣")
@@ -103,10 +108,8 @@ type (
 	IPaymentOrder interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
-
 		// 获取交易号
 		GetTradeNo() string
-
 		// 为交易号增加一个2位的前缀
 		TradeNoPrefix(prefix string) error
 
@@ -124,6 +127,8 @@ type (
 
 		// 钱包账户支付
 		PaymentByWallet(remark string) error
+		// 余额钱包混合支付，优先扣除余额。
+		HybridPayment(remark string) error
 
 		// 设置支付方式
 		SetPaymentSign(paymentSign int32) error

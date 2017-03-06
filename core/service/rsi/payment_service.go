@@ -47,18 +47,10 @@ func (p *paymentService) GetPaymentOrder(paymentNo string) (*define.PaymentOrder
 }
 
 // 创建支付单
-func (p *paymentService) CreatePaymentOrder(s *define.PaymentOrder) (*define.Result_, error) {
+func (p *paymentService) SubmitPaymentOrder(s *define.PaymentOrder) (*define.Result_, error) {
 	v := parser.PaymentOrder(s)
 	o := p._rep.CreatePaymentOrder(v)
-	id, err := o.Commit()
-	r := &define.Result_{
-		Result_: err == nil,
-		ID:      id,
-	}
-	if err != nil {
-		r.Message = err.Error()
-	}
-	return r, nil
+	return parser.Result(o.Commit()), nil
 }
 
 // 调整支付单金额
@@ -113,6 +105,17 @@ func (p *paymentService) PaymentByWallet(orderId int32, remark string) (r *defin
 		err = payment.ErrNoSuchPaymentOrder
 	} else {
 		err = o.PaymentByWallet(remark)
+	}
+	return parser.Result(0, err), nil
+}
+
+// 余额钱包混合支付，优先扣除余额。
+func (p *paymentService) HybridPayment(orderId int32, remark string) (r *define.Result_, err error) {
+	o := p._rep.GetPaymentOrderById(orderId)
+	if o == nil {
+		err = payment.ErrNoSuchPaymentOrder
+	} else {
+		err = o.HybridPayment(remark)
 	}
 	return parser.Result(0, err), nil
 }

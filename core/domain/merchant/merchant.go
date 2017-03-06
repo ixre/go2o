@@ -640,6 +640,25 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int32, error) {
 	//return a.mchImpl._rep.SaveBalanceLog(v)
 }
 
+// 支出
+func (a *accountImpl) TakePayment(outerNo string, amount float64, csn float64, remark string) error {
+	if amount <= 0 || math.IsNaN(amount) {
+		return merchant.ErrAmount
+	}
+	if float64(a.value.Balance) < amount {
+		return merchant.ErrNoMoreAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountTakePayment,
+		remark, outerNo, float32(-amount), float32(csn), 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.Balance -= float32(amount)
+		a.value.UpdateTime = time.Now().Unix()
+		return a.Save()
+	}
+	return err
+}
+
 // 订单结账
 func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 	csn float32, refundAmount float32, remark string) error {
@@ -650,7 +669,6 @@ func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 		remark, orderNo, amount, csn, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		// 扣款
 		a.value.Balance += amount
 		a.value.SalesAmount += amount
 		a.value.RefundAmount += refundAmount
