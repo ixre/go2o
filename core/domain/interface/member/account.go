@@ -297,7 +297,7 @@ type (
 		//累积收益金额
 		GrowTotalEarnings float32 `db:"grow_total_earnings"`
 		//总消费金额
-		TotalConsumption float32 `db:"total_consumption"`
+		TotalExpense float32 `db:"total_expense"`
 		//总充值金额
 		TotalCharge float32 `db:"total_charge"`
 		//总支付额

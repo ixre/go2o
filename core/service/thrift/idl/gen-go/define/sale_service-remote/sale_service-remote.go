@@ -123,8 +123,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetOrder requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err165 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err165 != nil {
+		argvalue0, err170 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err170 != nil {
 			Usage()
 			return
 		}
@@ -139,8 +139,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err167 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err167 != nil {
+		argvalue0, err172 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err172 != nil {
 			Usage()
 			return
 		}
@@ -163,8 +163,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err169 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err169 != nil {
+		argvalue0, err174 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err174 != nil {
 			Usage()
 			return
 		}

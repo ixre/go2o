@@ -214,6 +214,23 @@ func (m *memberImpl) AddExp(exp int32) error {
 	return err
 }
 
+// 升级为高级会员
+
+func (m *memberImpl) Premium(v int32, expires int64) error {
+	switch v {
+	case member.PremiumNormal:
+		m.value.PremiumUser = v
+		m.value.PremiumExpires = 0
+	case member.PremiumGold, member.PremiumWhiteGold, member.PremiumSuper:
+		m.value.PremiumUser = v
+		m.value.PremiumExpires = expires
+	default:
+		return member.ErrPremiumValue
+	}
+	_, err := m.Save()
+	return err
+}
+
 // 获取等级
 func (m *memberImpl) GetLevel() *member.Level {
 	if m.level == nil {
@@ -437,6 +454,8 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error
 	if len(v.RegFrom) == 0 {
 		v.RegFrom = "API-INTERNAL"
 	}
+	v.PremiumUser = member.PremiumNormal
+	v.PremiumExpires = 0
 	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
 	id, err := m.rep.SaveMember(v)
 	if err == nil {

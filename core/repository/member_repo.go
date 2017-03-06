@@ -281,12 +281,12 @@ func (m *MemberRepo) createMember(v *member.Member) (int32, error) {
 func (m *MemberRepo) initMember(v *member.Member) {
 	orm := m.Connector.GetOrm()
 	orm.Save(nil, &member.Account{
-		MemberId:         v.Id,
-		Balance:          0,
-		TotalConsumption: 0,
-		TotalCharge:      0,
-		TotalPay:         0,
-		UpdateTime:       v.RegTime,
+		MemberId:     v.Id,
+		Balance:      0,
+		TotalExpense: 0,
+		TotalCharge:  0,
+		TotalPay:     0,
+		UpdateTime:   v.RegTime,
 	})
 
 	orm.Save(nil, &member.BankInfo{

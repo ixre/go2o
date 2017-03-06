@@ -741,7 +741,7 @@ func (o *wholesaleOrderImpl) updateAccountForOrder() error {
 		}
 	}
 	acv := acc.GetValue()
-	acv.TotalConsumption += ov.ItemAmount
+	acv.TotalExpense += ov.ItemAmount
 	acv.TotalPay += ov.FinalAmount
 	acv.UpdateTime = time.Now().Unix()
 	_, err = acc.Save()

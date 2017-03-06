@@ -29,17 +29,21 @@ struct Member {
     5: i32 Exp
     6: i32 Level
     7: string InvitationCode
-    8: string RegFrom
-    9: string RegIp
-    10: i64 RegTime
-    11: string CheckCode
-    12: i64 CheckExpires
-    13: i32 State
-    14: i64 LoginTime
-    15: i64 LastLoginTime
-    16: i64 UpdateTime
-    17: string DynamicToken
-    18: i64 TimeoutTime
+    // 高级用户类型
+    8:i32   PremiumUser
+    // 高级用户过期时间
+    9:i64   PremiumExpires
+    10: string RegFrom
+    11: string RegIp
+    12: i64 RegTime
+    13: string CheckCode
+    14: i64 CheckExpires
+    15: i32 State
+    16: i64 LoginTime
+    17: i64 LastLoginTime
+    18: i64 UpdateTime
+    19: string DynamicToken
+    20: i64 TimeoutTime
 }
 
 struct Profile {
@@ -81,7 +85,7 @@ struct Account {
     13: double GrowAmount
     14: double GrowEarnings
     15: double GrowTotalEarnings
-    16: double TotalConsumption
+    16: double TotalExpense
     17: double TotalCharge
     18: double TotalPay
     19: i64 PriorityPay
@@ -340,6 +344,8 @@ service MemberService{
     Profile GetProfile(1:i32 id),
     // 获取会员汇总信息
     MemberSummary Summary(1:i32 memberId)
+     // 升级为高级会员
+    Result Premium(1:i32 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
     string GetToken(1:i32 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1

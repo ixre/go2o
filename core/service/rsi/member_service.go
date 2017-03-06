@@ -79,7 +79,7 @@ func (ms *memberService) getValueMember(id int32) *member.Member {
 func (ms *memberService) GetMember(id int32) (*define.Member, error) {
 	v := ms.getValueMember(id)
 	if v != nil {
-		return parser.Member(v), nil
+		return parser.MemberDto(v), nil
 	}
 	return nil, nil
 }
@@ -88,7 +88,7 @@ func (ms *memberService) GetMember(id int32) (*define.Member, error) {
 func (ms *memberService) GetMemberByUser(usr string) (*define.Member, error) {
 	v := ms._rep.GetMemberByUsr(usr)
 	if v != nil {
-		return parser.Member(v), nil
+		return parser.MemberDto(v), nil
 	}
 	return nil, nil
 }
@@ -114,6 +114,16 @@ func (ms *memberService) SaveProfile(v *define.Profile) error {
 		return m.Profile().SaveProfile(v2)
 	}
 	return nil
+}
+
+// 升级为高级会员
+func (ms *memberService) Premium(memberId int32, v int32, expires int64) (*define.Result_, error) {
+	m := ms._rep.GetMember(memberId)
+	if m == nil {
+		return parser.Result(memberId, member.ErrNoSuchMember), nil
+	}
+	err := m.Premium(v, expires)
+	return parser.Result(memberId, err), nil
 }
 
 // 检查会员的会话Token是否正确
@@ -334,7 +344,7 @@ func (ms *memberService) updateMember(v *define.Member) (int32, error) {
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
-	mv := parser.Member2(v)
+	mv := parser.Member(v)
 	if err := m.SetValue(mv); err != nil {
 		return m.GetAggregateRootId(), err
 	}
@@ -347,7 +357,7 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 	if v1 == nil || pro1 == nil {
 		return 0, errors.New("missing data")
 	}
-	v := parser.Member2(v1)
+	v := parser.Member(v1)
 	pro := parser.MemberProfile2(pro1)
 	invitationId, err := ms._rep.GetManager().PrepareRegister(v, pro, invitationCode)
 	if err == nil {
