@@ -248,5 +248,5 @@ func TestNotifyTradeOrder(t *testing.T) {
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 55)
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 56)
 }

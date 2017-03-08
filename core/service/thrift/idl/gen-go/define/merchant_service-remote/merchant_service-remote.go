@@ -20,10 +20,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(i64 id, bool sub_order)")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrder(i64 id)")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrderByNo(string orderNo)")
-	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
+	fmt.Fprintln(os.Stderr, "  ComplexMerchant Complex(i32 mchId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -111,65 +108,26 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewSaleServiceClientFactory(trans, protocolFactory)
+	client := define.NewMerchantServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "GetOrder":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetOrder requires 2 args")
+	case "Complex":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err175 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err175 != nil {
+		tmp0, err9 := (strconv.Atoi(flag.Arg(1)))
+		if err9 != nil {
 			Usage()
 			return
 		}
+		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		fmt.Print(client.GetOrder(value0, value1))
-		fmt.Print("\n")
-		break
-	case "GetSubOrder":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
-			flag.Usage()
-		}
-		argvalue0, err177 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err177 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		fmt.Print(client.GetSubOrder(value0))
-		fmt.Print("\n")
-		break
-	case "GetSubOrderByNo":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrderByNo requires 1 args")
-			flag.Usage()
-		}
-		argvalue0 := flag.Arg(1)
-		value0 := argvalue0
-		fmt.Print(client.GetSubOrderByNo(value0))
-		fmt.Print("\n")
-		break
-	case "GetSubOrderItems":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
-			flag.Usage()
-		}
-		argvalue0, err179 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err179 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		fmt.Print(client.GetSubOrderItems(value0))
+		fmt.Print(client.Complex(value0))
 		fmt.Print("\n")
 		break
 	case "":

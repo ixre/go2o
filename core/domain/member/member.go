@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool/sms"
 	"regexp"
 	"strconv"
@@ -61,6 +62,47 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 // 获取聚合根编号
 func (m *memberImpl) GetAggregateRootId() int32 {
 	return m.value.Id
+}
+
+// 会员汇总信息
+func (m *memberImpl) Complex() *member.ComplexMember {
+	mv := m.GetValue()
+	lv := m.GetLevel()
+	pf := m.Profile()
+	pro := pf.GetProfile()
+	acv := m.GetAccount().GetValue()
+	// 实名信息
+	tr := pf.GetTrustedInfo()
+	taState := tr.Reviewed
+	if tr.Reviewed == 1 {
+		taState = enum.ReviewPass
+	} else {
+		taState = enum.ReviewAwaiting
+	}
+
+	s := &member.ComplexMember{
+		MemberId:          m.GetAggregateRootId(),
+		Usr:               mv.Usr,
+		Name:              pro.Name,
+		Avatar:            format.GetResUrl(pro.Avatar),
+		Exp:               mv.Exp,
+		Level:             mv.Level,
+		LevelOfficial:     lv.IsOfficial,
+		LevelSign:         lv.ProgramSignal,
+		LevelName:         lv.Name,
+		InvitationCode:    mv.InvitationCode,
+		TrustAuthState:    taState,
+		State:             mv.State,
+		Integral:          acv.Integral,
+		Balance:           float64(acv.Balance),
+		WalletBalance:     float64(acv.WalletBalance),
+		GrowBalance:       float64(acv.GrowBalance),
+		GrowAmount:        float64(acv.GrowAmount),
+		GrowEarnings:      float64(acv.GrowEarnings),
+		GrowTotalEarnings: float64(acv.GrowTotalEarnings),
+		UpdateTime:        mv.UpdateTime,
+	}
+	return s
 }
 
 // 会员资料服务

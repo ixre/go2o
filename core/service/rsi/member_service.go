@@ -725,34 +725,11 @@ func (ms *memberService) GetMemberList(ids []int32) []*dto.MemberSummary {
 }
 
 // 获取会员汇总信息
-func (ms *memberService) Summary(memberId int32) (*define.MemberSummary, error) {
+func (ms *memberService) Complex(memberId int32) (*define.ComplexMember, error) {
 	m := ms._rep.GetMember(memberId)
 	if m != nil {
-		mv := m.GetValue()
-		acv := m.GetAccount().GetValue()
-		lv := m.GetLevel()
-		pro := m.Profile().GetProfile()
-		s := &dto.MemberSummary{
-			MemberId:          m.GetAggregateRootId(),
-			Usr:               mv.Usr,
-			Name:              pro.Name,
-			Avatar:            format.GetResUrl(pro.Avatar),
-			Exp:               mv.Exp,
-			Level:             mv.Level,
-			LevelOfficial:     lv.IsOfficial,
-			LevelSign:         lv.ProgramSignal,
-			LevelName:         lv.Name,
-			InvitationCode:    mv.InvitationCode,
-			Integral:          acv.Integral,
-			Balance:           acv.Balance,
-			PresentBalance:    acv.PresentBalance,
-			GrowBalance:       acv.GrowBalance,
-			GrowAmount:        acv.GrowAmount,
-			GrowEarnings:      acv.GrowEarnings,
-			GrowTotalEarnings: acv.GrowTotalEarnings,
-			UpdateTime:        mv.UpdateTime,
-		}
-		return parser.SummaryDto(s), nil
+		s := m.Complex()
+		return parser.ComplexMemberDto(s), nil
 	}
 	return nil, nil
 }

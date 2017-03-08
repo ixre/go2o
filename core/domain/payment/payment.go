@@ -278,7 +278,7 @@ func (p *paymentOrderImpl) HybridPayment(remark string) error {
 		return payment.ErrNotSupportPaymentOpt
 	}
 	// 判断是否余额不足
-	if acc.Balance+acc.PresentBalance < v.FinalAmount {
+	if acc.Balance+acc.WalletBalance < v.FinalAmount {
 		return payment.ErrNotEnoughAmount
 	}
 	err := p.BalanceDiscount(remark)
@@ -302,7 +302,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	}
 	acc := buyer.GetAccount()
 	av := acc.GetValue()
-	if av.PresentBalance < amount {
+	if av.WalletBalance < amount {
 		return payment.ErrNotEnoughAmount
 	}
 	if remark == "" {

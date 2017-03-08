@@ -189,6 +189,7 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.SubOrderId = 0
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
+	co.Subject = ""
 	co.ConsigneePerson = v.ConsigneePerson
 	co.ConsigneePhone = v.ConsigneePhone
 	co.ShippingAddress = v.ShippingAddress

@@ -14,13 +14,35 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/dto"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
+
+func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {
+	return &define.ComplexMerchant{
+		ID:            src.Id,
+		MemberId:      src.MemberId,
+		Usr:           src.Usr,
+		Pwd:           src.Pwd,
+		Name:          src.Name,
+		SelfSales:     src.SelfSales,
+		Level:         src.Level,
+		Logo:          src.Logo,
+		Province:      src.Province,
+		City:          src.City,
+		District:      src.District,
+		Enabled:       src.Enabled,
+		ExpiresTime:   src.ExpiresTime,
+		JoinTime:      src.JoinTime,
+		UpdateTime:    src.UpdateTime,
+		LoginTime:     src.LoginTime,
+		LastLoginTime: src.LastLoginTime,
+	}
+}
 
 func MemberDto(src *member.Member) *define.Member {
 	return &define.Member{
@@ -122,8 +144,8 @@ func MemberProfile2(src *define.Profile) *member.Profile {
 	}
 }
 
-func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
-	return &define.MemberSummary{
+func ComplexMemberDto(src *member.ComplexMember) *define.ComplexMember {
+	return &define.ComplexMember{
 		MemberId:          src.MemberId,
 		Usr:               src.Usr,
 		Name:              src.Name,
@@ -132,15 +154,17 @@ func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
 		Level:             src.Level,
 		LevelName:         src.LevelName,
 		LevelSign:         src.LevelSign,
-		LevelOfficial:     int64(src.LevelOfficial),
+		LevelOfficial:     src.LevelOfficial,
 		InvitationCode:    src.InvitationCode,
+		TrustAuthState:    src.TrustAuthState,
+		State:             src.State,
 		Integral:          int64(src.Integral),
-		Balance:           round(src.Balance, 2),
-		PresentBalance:    round(src.PresentBalance, 2),
-		GrowBalance:       round(src.GrowBalance, 2),
-		GrowAmount:        round(src.GrowAmount, 2),
-		GrowEarnings:      round(src.GrowEarnings, 2),
-		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
+		Balance:           src.Balance,
+		WalletBalance:     src.WalletBalance,
+		GrowBalance:       src.GrowBalance,
+		GrowAmount:        src.GrowAmount,
+		GrowEarnings:      src.GrowEarnings,
+		GrowTotalEarnings: src.GrowTotalEarnings,
 		UpdateTime:        src.UpdateTime,
 	}
 }
@@ -157,7 +181,7 @@ func AccountDto(src *member.Account) *define.Account {
 		Balance:           round(src.Balance, 2),
 		FreezeBalance:     round(src.FreezeBalance, 2),
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
-		PresentBalance:    round(src.PresentBalance, 2),
+		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
 		ExpiredPresent:    round(src.ExpiredPresent, 2),
 		TotalPresentFee:   round(src.TotalPresentFee, 2),
@@ -182,7 +206,7 @@ func Account(src *define.Account) *member.Account {
 		Balance:           float32(src.Balance),
 		FreezeBalance:     float32(src.FreezeBalance),
 		ExpiredBalance:    float32(src.ExpiredBalance),
-		PresentBalance:    float32(src.PresentBalance),
+		WalletBalance:     float32(src.WalletBalance),
 		FreezeWallet:      float32(src.FreezeWallet),
 		ExpiredPresent:    float32(src.ExpiredPresent),
 		TotalPresentFee:   float32(src.TotalPresentFee),
@@ -521,6 +545,7 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
+		Subject:        src.Subject,
 		ItemAmount:     float64(src.ItemAmount),
 		DiscountAmount: float64(src.DiscountAmount),
 		ExpressFee:     float64(src.ExpressFee),
@@ -561,6 +586,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 		BuyerId:        src.BuyerId,
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
+		Subject:        src.Subject,
 		ItemAmount:     src.ItemAmount,
 		DiscountAmount: src.DiscountAmount,
 		ExpressFee:     src.ExpressFee,

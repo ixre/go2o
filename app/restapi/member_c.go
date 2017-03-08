@@ -136,7 +136,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := rsi.MemberService.Summary(memberId)
+	v, _ := rsi.MemberService.Complex(memberId)
 	return c.JSON(http.StatusOK, v)
 }
 

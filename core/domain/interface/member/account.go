@@ -279,7 +279,7 @@ type (
 		// 失效的账户余额
 		ExpiredBalance float32 `db:"expired_balance"`
 		//奖金账户余额
-		PresentBalance float32 `db:"wallet_balance"`
+		WalletBalance float32 `db:"wallet_balance"`
 		//冻结赠送金额
 		FreezeWallet float32 `db:"freeze_wallet"`
 		//失效的赠送金额

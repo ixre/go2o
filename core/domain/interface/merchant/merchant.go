@@ -34,6 +34,8 @@ type (
 		GetAggregateRootId() int32
 
 		GetValue() Merchant
+		// 获取符合的商家信息
+		Complex() *ComplexMerchant
 
 		SetValue(*Merchant) error
 
@@ -196,6 +198,42 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
+	// 商户
+	ComplexMerchant struct {
+		Id int32
+		// 关联的会员编号,作为结算账户
+		MemberId int32
+		// 用户
+		Usr string
+		// 密码
+		Pwd string
+		// 商户名称
+		Name string
+		// 是否自营
+		SelfSales int32
+		// 商户等级
+		Level int32
+		// 标志
+		Logo string
+		// 省
+		Province int32
+		// 市
+		City int32
+		// 区
+		District int32
+		// 是否启用
+		Enabled int32
+		// 过期时间
+		ExpiresTime int64
+		// 注册时间
+		JoinTime int64
+		// 更新时间
+		UpdateTime int64
+		// 登录时间
+		LoginTime int64
+		// 最后登录时间
+		LastLoginTime int64
+	}
 
 	// 商户
 	Merchant struct {
@@ -209,9 +247,9 @@ type (
 		// 商户名称
 		Name string `db:"name"`
 		// 是否自营
-		SelfSales int `db:"self_sales"`
+		SelfSales int32 `db:"self_sales"`
 		// 商户等级
-		Level int `db:"level"`
+		Level int32 `db:"level"`
 		// 标志
 		Logo string `db:"logo"`
 		// 省
@@ -221,7 +259,7 @@ type (
 		// 区
 		District int32 `db:"district"`
 		// 是否启用
-		Enabled int `db:"enabled"`
+		Enabled int32 `db:"enabled"`
 		// 过期时间
 		ExpiresTime int64 `db:"expires_time"`
 		// 注册时间

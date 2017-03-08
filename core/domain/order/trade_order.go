@@ -97,6 +97,7 @@ func (w *tradeOrderImpl) parseOrder(v *order.ComplexOrder, rate float64) error {
 		OrderId:        v.OrderId,
 		VendorId:       v.VendorId,
 		ShopId:         v.ShopId,
+		Subject:        v.Subject,
 		OrderAmount:    v.ItemAmount,
 		DiscountAmount: v.DiscountAmount,
 		FinalAmount:    0,

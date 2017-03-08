@@ -21,6 +21,27 @@ struct Pair{
    2:string Value
 }
 
+// 商家
+struct ComplexMerchant {
+    1: i32 Id
+    2: i32 MemberId
+    3: string Usr
+    4: string Pwd
+    5: string Name
+    6: i32 SelfSales
+    7: i32 Level
+    8: string Logo
+    9: i32 Province
+    10: i32 City
+    11: i32 District
+    12: i32 Enabled
+    13: i64 ExpiresTime
+    14: i64 JoinTime
+    15: i64 UpdateTime
+    16: i64 LoginTime
+    17: i64 LastLoginTime
+}
+
 struct Member {
     1: i32 Id
     2: string Usr
@@ -76,7 +97,7 @@ struct Account {
     4: double Balance
     5: double FreezeBalance
     6: double ExpiredBalance
-    7: double PresentBalance
+    7: double WalletBalance
     8: double FreezeWallet
     9: double ExpiredPresent
     10: double TotalPresentFee
@@ -92,7 +113,7 @@ struct Account {
     20: i64 UpdateTime
 }
 
-struct MemberSummary {
+struct ComplexMember {
     1: i32 MemberId
     2: string Usr
     3: string Name
@@ -101,16 +122,18 @@ struct MemberSummary {
     6: i32 Level
     7: string LevelName
     8: string LevelSign
-    9: i64 LevelOfficial
+    9: i32 LevelOfficial
     10: string InvitationCode
-    11: i64 Integral
-    12: double Balance
-    13: double PresentBalance
-    14: double GrowBalance
-    15: double GrowAmount
-    16: double GrowEarnings
-    17: double GrowTotalEarnings
-    18: i64 UpdateTime
+    11: i32 TrustAuthState
+    12: i32 State
+    13: i64 Integral
+    14: double Balance
+    15: double WalletBalance
+    16: double GrowBalance
+    17: double GrowAmount
+    18: double GrowEarnings
+    19: double GrowTotalEarnings
+    20: i64 UpdateTime
 }
 
 struct MemberRelation {
@@ -314,22 +337,27 @@ struct ComplexOrder {
     5: i32 BuyerId
     6: i32 VendorId
     7: i32 ShopId
-    8: double ItemAmount
-    9: double DiscountAmount
-    10: double ExpressFee
-    11: double PackageFee
-    12: double FinalAmount
-    13: string ConsigneePerson
-    14: string ConsigneePhone
-    15: string ShippingAddress
-    16: i32 IsBreak
-    17: i32 State
-    18: i64 CreateTime
-    19: i64 UpdateTime
-    20: list<ComplexItem> Items
+    8: string Subject
+    9: double ItemAmount
+    10: double DiscountAmount
+    11: double ExpressFee
+    12: double PackageFee
+    13: double FinalAmount
+    14: string ConsigneePerson
+    15: string ConsigneePhone
+    16: string ShippingAddress
+    17: i32 IsBreak
+    18: i32 State
+    19: i64 CreateTime
+    20: i64 UpdateTime
+    21: list<ComplexItem> Items
 }
 
-
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   ComplexMerchant Complex(1:i32 mchId),
+}
 
 //会员服务
 service MemberService{
@@ -343,7 +371,7 @@ service MemberService{
     // 根据会员编号获取会员资料
     Profile GetProfile(1:i32 id),
     // 获取会员汇总信息
-    MemberSummary Summary(1:i32 memberId)
+    ComplexMember Complex(1:i32 memberId)
      // 升级为高级会员
     Result Premium(1:i32 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token

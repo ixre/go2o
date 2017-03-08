@@ -828,7 +828,7 @@ func (o *normalOrderImpl) updateShoppingMemberBackFee(mch merchant.IMerchant,
 	acv := acc.GetValue()
 	//acc.TotalFee += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
-	acv.PresentBalance += fee // 更新赠送余额
+	acv.WalletBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee
 	acv.UpdateTime = unixTime
 	_, err := acc.Save()
@@ -866,7 +866,7 @@ func (o *normalOrderImpl) handleCashBackPromotion(pt merchant.IMerchant,
 	bFee := float32(cpv.BackFee)
 	acc := m.GetAccount()
 	acv := acc.GetValue()
-	acv.PresentBalance += bFee // 更新赠送余额
+	acv.WalletBalance += bFee // 更新赠送余额
 	acv.TotalPresentFee += bFee
 	// 赠送金额，不应该计入到余额，可采取充值到余额
 	//acc.Balance += float32(cpv.BackFee)                            // 更新账户余额
@@ -948,6 +948,7 @@ func (o *subOrderImpl) Complex() *order.ComplexOrder {
 	co := o.baseOrder().Complex()
 	co.VendorId = v.VendorId
 	co.ShopId = v.ShopId
+	co.Subject = v.Subject
 	co.SubOrderId = o.GetDomainId()
 	co.DiscountAmount = float64(v.DiscountAmount)
 	co.ItemAmount = float64(v.ItemAmount)
@@ -1635,7 +1636,7 @@ func (o *subOrderImpl) updateShoppingMemberBackFee(mchName string,
 	acv := acc.GetValue()
 	//acc.TotalFee += o._value.Fee
 	//acc.TotalPay += o._value.PayFee
-	acv.PresentBalance += fee // 更新赠送余额
+	acv.WalletBalance += fee // 更新赠送余额
 	acv.TotalPresentFee += fee
 	acv.UpdateTime = unixTime
 	acc.Save()

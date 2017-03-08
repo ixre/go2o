@@ -42,6 +42,8 @@ type (
 	IMember interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
+		// 会员汇总信息
+		Complex() *ComplexMember
 		// 会员资料服务
 		Profile() IProfileManager
 		// 会员收藏服务
@@ -170,6 +172,49 @@ type (
 
 		// 取消收藏
 		Cancel(favType int, referId int32) error
+	}
+
+	// 会员概览信息
+	ComplexMember struct {
+		MemberId int32
+		// 用户名
+		Usr string
+		// 昵称
+		Name string
+		// 头像
+		Avatar string
+		// 经验值
+		Exp int32
+		// 等级
+		Level int32
+		// 等级名称
+		LevelName string
+		// 等级标识
+		LevelSign string
+		// 等级是否为正式会员
+		LevelOfficial int32
+		// 邀请码
+		InvitationCode string
+		// 实名认证状态
+		TrustAuthState int32
+		// 是否启用
+		State int32
+		// 积分
+		Integral int64
+		// 账户余额
+		Balance float64
+		// 钱包余额
+		WalletBalance float64
+		// 理财金余额
+		GrowBalance float64
+		// 理财总投资金额,不含收益
+		GrowAmount float64
+		// 当前收益金额
+		GrowEarnings float64
+		// 累积收益金额
+		GrowTotalEarnings float64
+		// 更新时间
+		UpdateTime int64
 	}
 
 	Member struct {

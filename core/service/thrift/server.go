@@ -36,6 +36,7 @@ func ListenAndServe(addr string, secure bool) error {
 	transport, err = thrift.NewTServerSocket(addr)
 	if err == nil {
 		processor := thrift.NewTMultiplexedProcessor()
+		processor.RegisterProcessor("merchant", define.NewMerchantServiceProcessor(rsi.MerchantService))
 		processor.RegisterProcessor("member", define.NewMemberServiceProcessor(rsi.MemberService))
 		processor.RegisterProcessor("foundation", define.NewFoundationServiceProcessor(rsi.FoundationService))
 		processor.RegisterProcessor("payment", define.NewPaymentServiceProcessor(rsi.PaymentService))

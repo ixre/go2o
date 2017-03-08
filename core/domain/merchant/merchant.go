@@ -284,6 +284,31 @@ func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 func (m *merchantImpl) GetAggregateRootId() int32 {
 	return m._value.Id
 }
+
+// 获取符合的商家信息
+func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
+	src := m.GetValue()
+	return &merchant.ComplexMerchant{
+		Id:            src.Id,
+		MemberId:      src.MemberId,
+		Usr:           src.Usr,
+		Pwd:           src.Pwd,
+		Name:          src.Name,
+		SelfSales:     src.SelfSales,
+		Level:         src.Level,
+		Logo:          src.Logo,
+		Province:      src.Province,
+		City:          src.City,
+		District:      src.District,
+		Enabled:       src.Enabled,
+		ExpiresTime:   src.ExpiresTime,
+		JoinTime:      src.JoinTime,
+		UpdateTime:    src.UpdateTime,
+		LoginTime:     src.LoginTime,
+		LastLoginTime: src.LastLoginTime,
+	}
+}
+
 func (m *merchantImpl) GetValue() merchant.Merchant {
 	return *m._value
 }
