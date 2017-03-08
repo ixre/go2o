@@ -105,7 +105,7 @@ func (a *accountImpl) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 
 // 充值
 func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	switch account {
 	case member.AccountBalance:
 		return a.chargeBalance(kind, title, outerNo, amount, relateUser)
@@ -117,7 +117,7 @@ func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
 
 // 退款
 func (a *accountImpl) Refund(account int, kind int32, title string,
-	outerNo string, amount float32, relateUser int32) error {
+	outerNo string, amount float32, relateUser int64) error {
 	switch account {
 	case member.AccountBalance:
 		if kind != member.KindBalanceRefund {
@@ -135,7 +135,7 @@ func (a *accountImpl) Refund(account int, kind int32, title string,
 }
 
 func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	switch kind {
 	case member.ChargeByUser:
 		kind = member.KindBalanceCharge
@@ -158,7 +158,7 @@ func (a *accountImpl) chargeBalance(kind int32, title string, outerNo string,
 
 // 充值,客服充值时,需提供操作人(relateUser)
 func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -186,7 +186,7 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo str
 }
 
 func (a *accountImpl) chargePresent(kind int32, title string,
-	outerNo string, amount float32, relateUser int32) error {
+	outerNo string, amount float32, relateUser int64) error {
 	switch kind {
 	case member.ChargeBySystem:
 		kind = member.KindWalletAdd
@@ -204,7 +204,7 @@ func (a *accountImpl) chargePresent(kind int32, title string,
 
 // 赠送金额(指定业务类型)
 func (a *accountImpl) chargePresentNoLimit(kind int32, title string,
-	outerNo string, amount float32, relateUser int32) error {
+	outerNo string, amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -257,7 +257,7 @@ func (a *accountImpl) GetPresentLog(id int32) *member.PresentLog {
 
 // 扣减余额
 func (a *accountImpl) DiscountBalance(title string, outerNo string,
-	amount float32, relateUser int32) (err error) {
+	amount float32, relateUser int64) (err error) {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -290,7 +290,7 @@ func (a *accountImpl) DiscountBalance(title string, outerNo string,
 
 // 冻结余额
 func (a *accountImpl) Freeze(title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -323,7 +323,7 @@ func (a *accountImpl) Freeze(title string, outerNo string,
 
 // 解冻金额
 func (a *accountImpl) Unfreeze(title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -357,7 +357,7 @@ func (a *accountImpl) Unfreeze(title string, outerNo string,
 
 // 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 func (a *accountImpl) DiscountWallet(title string, outerNo string, amount float32,
-	relateUser int32, mustLargeZero bool) error {
+	relateUser int64, mustLargeZero bool) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -395,7 +395,7 @@ func (a *accountImpl) DiscountWallet(title string, outerNo string, amount float3
 
 // 冻结赠送金额
 func (a *accountImpl) FreezeWallet(title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}
@@ -428,7 +428,7 @@ func (a *accountImpl) FreezeWallet(title string, outerNo string,
 
 // 解冻赠送金额
 func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
-	amount float32, relateUser int32) error {
+	amount float32, relateUser int64) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
 	}

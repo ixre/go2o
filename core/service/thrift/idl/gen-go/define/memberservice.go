@@ -67,7 +67,7 @@ type MemberService interface {
 	//  - OuterNo
 	//  - Amount
 	//  - RelateUser
-	ChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error)
+	ChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int64) (r *Result_, err error)
 	// Parameters:
 	//  - MemberId
 	//  - Account
@@ -76,7 +76,7 @@ type MemberService interface {
 	//  - Amount
 	//  - RelateUser
 	//  - MustLargeZero
-	DiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int32, mustLargeZero bool) (r *Result_, err error)
+	DiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *Result_, err error)
 }
 
 type MemberServiceClient struct {
@@ -1052,14 +1052,14 @@ func (p *MemberServiceClient) recvInviterArray() (value []int64, err error) {
 //  - OuterNo
 //  - Amount
 //  - RelateUser
-func (p *MemberServiceClient) ChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (r *Result_, err error) {
+func (p *MemberServiceClient) ChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int64) (r *Result_, err error) {
 	if err = p.sendChargeAccount(memberId, account, kind, title, outerNo, amount, relateUser); err != nil {
 		return
 	}
 	return p.recvChargeAccount()
 }
 
-func (p *MemberServiceClient) sendChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int32) (err error) {
+func (p *MemberServiceClient) sendChargeAccount(memberId int64, account int32, kind int32, title string, outerNo string, amount float64, relateUser int64) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -1141,14 +1141,14 @@ func (p *MemberServiceClient) recvChargeAccount() (value *Result_, err error) {
 //  - Amount
 //  - RelateUser
 //  - MustLargeZero
-func (p *MemberServiceClient) DiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int32, mustLargeZero bool) (r *Result_, err error) {
+func (p *MemberServiceClient) DiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *Result_, err error) {
 	if err = p.sendDiscountAccount(memberId, account, title, outerNo, amount, relateUser, mustLargeZero); err != nil {
 		return
 	}
 	return p.recvDiscountAccount()
 }
 
-func (p *MemberServiceClient) sendDiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int32, mustLargeZero bool) (err error) {
+func (p *MemberServiceClient) sendDiscountAccount(memberId int64, account int32, title string, outerNo string, amount float64, relateUser int64, mustLargeZero bool) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -4522,7 +4522,7 @@ type MemberServiceChargeAccountArgs struct {
 	Title      string  `thrift:"title,4" json:"title"`
 	OuterNo    string  `thrift:"outerNo,5" json:"outerNo"`
 	Amount     float64 `thrift:"amount,6" json:"amount"`
-	RelateUser int32   `thrift:"relateUser,7" json:"relateUser"`
+	RelateUser int64   `thrift:"relateUser,7" json:"relateUser"`
 }
 
 func NewMemberServiceChargeAccountArgs() *MemberServiceChargeAccountArgs {
@@ -4553,7 +4553,7 @@ func (p *MemberServiceChargeAccountArgs) GetAmount() float64 {
 	return p.Amount
 }
 
-func (p *MemberServiceChargeAccountArgs) GetRelateUser() int32 {
+func (p *MemberServiceChargeAccountArgs) GetRelateUser() int64 {
 	return p.RelateUser
 }
 func (p *MemberServiceChargeAccountArgs) Read(iprot thrift.TProtocol) error {
@@ -4668,7 +4668,7 @@ func (p *MemberServiceChargeAccountArgs) readField6(iprot thrift.TProtocol) erro
 }
 
 func (p *MemberServiceChargeAccountArgs) readField7(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 7: ", err)
 	} else {
 		p.RelateUser = v
@@ -4789,10 +4789,10 @@ func (p *MemberServiceChargeAccountArgs) writeField6(oprot thrift.TProtocol) (er
 }
 
 func (p *MemberServiceChargeAccountArgs) writeField7(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("relateUser", thrift.I32, 7); err != nil {
+	if err := oprot.WriteFieldBegin("relateUser", thrift.I64, 7); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:relateUser: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.RelateUser)); err != nil {
+	if err := oprot.WriteI64(int64(p.RelateUser)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.relateUser (7) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -4923,7 +4923,7 @@ type MemberServiceDiscountAccountArgs struct {
 	Title         string  `thrift:"title,3" json:"title"`
 	OuterNo       string  `thrift:"outerNo,4" json:"outerNo"`
 	Amount        float64 `thrift:"amount,5" json:"amount"`
-	RelateUser    int32   `thrift:"relateUser,6" json:"relateUser"`
+	RelateUser    int64   `thrift:"relateUser,6" json:"relateUser"`
 	MustLargeZero bool    `thrift:"mustLargeZero,7" json:"mustLargeZero"`
 }
 
@@ -4951,7 +4951,7 @@ func (p *MemberServiceDiscountAccountArgs) GetAmount() float64 {
 	return p.Amount
 }
 
-func (p *MemberServiceDiscountAccountArgs) GetRelateUser() int32 {
+func (p *MemberServiceDiscountAccountArgs) GetRelateUser() int64 {
 	return p.RelateUser
 }
 
@@ -5061,7 +5061,7 @@ func (p *MemberServiceDiscountAccountArgs) readField5(iprot thrift.TProtocol) er
 }
 
 func (p *MemberServiceDiscountAccountArgs) readField6(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 6: ", err)
 	} else {
 		p.RelateUser = v
@@ -5178,10 +5178,10 @@ func (p *MemberServiceDiscountAccountArgs) writeField5(oprot thrift.TProtocol) (
 }
 
 func (p *MemberServiceDiscountAccountArgs) writeField6(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("relateUser", thrift.I32, 6); err != nil {
+	if err := oprot.WriteFieldBegin("relateUser", thrift.I64, 6); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:relateUser: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.RelateUser)); err != nil {
+	if err := oprot.WriteI64(int64(p.RelateUser)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.relateUser (6) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {

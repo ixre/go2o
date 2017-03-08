@@ -208,11 +208,11 @@ func TestWholesaleOrder(t *testing.T) {
 func TestTradeOrder(t *testing.T) {
 	repo := ti.OrderRepo
 	manager := repo.Manager()
-	cashPay := !true
+	cashPay := true
 	c := &order.ComplexOrder{
-		VendorId:   1,
+		VendorId:   104, //1,
 		ShopId:     1,
-		BuyerId:    1,
+		BuyerId:    397, //1,
 		ItemAmount: 100,
 		Subject:    "万宁佛山祖庙店",
 	}
@@ -248,5 +248,5 @@ func TestNotifyTradeOrder(t *testing.T) {
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 56)
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 58)
 }

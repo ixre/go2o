@@ -32,8 +32,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  Address GetAddress(i64 memberId, i64 addrId)")
 	fmt.Fprintln(os.Stderr, "  Account GetAccount(i64 memberId)")
 	fmt.Fprintln(os.Stderr, "   InviterArray(i64 memberId, i32 depth)")
-	fmt.Fprintln(os.Stderr, "  Result ChargeAccount(i64 memberId, i32 account, i32 kind, string title, string outerNo, double amount, i32 relateUser)")
-	fmt.Fprintln(os.Stderr, "  Result DiscountAccount(i64 memberId, i32 account, string title, string outerNo, double amount, i32 relateUser, bool mustLargeZero)")
+	fmt.Fprintln(os.Stderr, "  Result ChargeAccount(i64 memberId, i32 account, i32 kind, string title, string outerNo, double amount, i64 relateUser)")
+	fmt.Fprintln(os.Stderr, "  Result DiscountAccount(i64 memberId, i32 account, string title, string outerNo, double amount, i64 relateUser, bool mustLargeZero)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -357,12 +357,11 @@ func main() {
 			return
 		}
 		value5 := argvalue5
-		tmp6, err67 := (strconv.Atoi(flag.Arg(7)))
+		argvalue6, err67 := (strconv.ParseInt(flag.Arg(7), 10, 64))
 		if err67 != nil {
 			Usage()
 			return
 		}
-		argvalue6 := int32(tmp6)
 		value6 := argvalue6
 		fmt.Print(client.ChargeAccount(value0, value1, value2, value3, value4, value5, value6))
 		fmt.Print("\n")
@@ -395,12 +394,11 @@ func main() {
 			return
 		}
 		value4 := argvalue4
-		tmp5, err73 := (strconv.Atoi(flag.Arg(6)))
+		argvalue5, err73 := (strconv.ParseInt(flag.Arg(6), 10, 64))
 		if err73 != nil {
 			Usage()
 			return
 		}
-		argvalue5 := int32(tmp5)
 		value5 := argvalue5
 		argvalue6 := flag.Arg(7) == "true"
 		value6 := argvalue6

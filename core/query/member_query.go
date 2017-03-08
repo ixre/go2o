@@ -29,7 +29,7 @@ func NewMemberQuery(c db.Connector) *MemberQuery {
 }
 
 // 获取会员列表
-func (m *MemberQuery) GetMemberList(ids []int32) []*dto.MemberSummary {
+func (m *MemberQuery) GetMemberList(ids []int64) []*dto.MemberSummary {
 	list := []*dto.MemberSummary{}
 	strIds := make([]string, len(ids))
 	for i, v := range ids {
