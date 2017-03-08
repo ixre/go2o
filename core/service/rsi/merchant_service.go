@@ -190,6 +190,15 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 	return merchant.ErrNoSuchMerchant
 }
 
+func (m *merchantService) Complex(mchId int32) (*define.ComplexMerchant, error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		c := mch.Complex()
+		return parser.MerchantDto(c), nil
+	}
+	return nil, nil
+}
+
 func (m *merchantService) GetMerchant(mchId int32) *merchant.Merchant {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {

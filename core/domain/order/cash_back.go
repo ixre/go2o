@@ -82,7 +82,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 		//更新账户
 		acc := m.GetAccount()
 		acv := acc.GetValue()
-		acv.PresentBalance += fee
+		acv.WalletBalance += fee
 		acv.TotalPresentFee += fee
 		acv.UpdateTime = unixTime
 		_, err := acc.Save()
@@ -199,7 +199,7 @@ func backCashForMember(m member.IMember, o order.IOrder,
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	bFee := float32(fee)
-	acv.PresentBalance += bFee // 更新赠送余额
+	acv.WalletBalance += bFee // 更新赠送余额
 	acv.TotalPresentFee += bFee
 	acv.UpdateTime = time.Now().Unix()
 	_, err := acc.Save()

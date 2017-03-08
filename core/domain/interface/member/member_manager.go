@@ -58,7 +58,7 @@ type (
 		//是否启用
 		Enabled int `db:"enabled"`
 		//是否为正式会员/非正式
-		IsOfficial int `db:"is_official"`
+		IsOfficial int32 `db:"is_official"`
 	}
 
 	ILevelManager interface {
