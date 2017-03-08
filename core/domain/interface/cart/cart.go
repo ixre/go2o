@@ -58,7 +58,7 @@ type (
 		// 获取购物车编码
 		Code() string
 		// 获取买家编号
-		BuyerId() int32
+		BuyerId() int64
 		// 检查购物车(仅结算商品)
 		Check() error
 		// 标记商品结算
@@ -78,12 +78,12 @@ type (
 		Destroy() error
 
 		// 结算数据持久化
-		SettlePersist(shopId, paymentOpt, deliverOpt, deliverId int32) error
+		SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId int64) error
 		// 获取结算数据
 		GetSettleData() (s shop.IShop, d member.IDeliverAddress, paymentOpt int32)
 
 		// 设置购买会员收货地址
-		SetBuyerAddress(addressId int32) error
+		SetBuyerAddress(addressId int64) error
 	}
 
 	//商品零售购物车,未登陆时以code标识，登陆后以买家编号标识
@@ -111,7 +111,7 @@ type (
 	// 如果都没有，则创建一个购物车
 	ICartRepo interface {
 		// 获取买家的购物车
-		GetMyCart(buyerId int32, k CartKind) ICart
+		GetMyCart(buyerId int64, k CartKind) ICart
 		// 创建一个购物车
 		NewRetailCart(code string) ICart
 		// 获取购物车
@@ -122,7 +122,7 @@ type (
 		// 获取购物车
 		GetShoppingCart(key string) *RetailCart
 		// 获取最新的购物车
-		GetLatestCart(buyerId int32) *RetailCart
+		GetLatestCart(buyerId int64) *RetailCart
 		// 保存购物车
 		SaveShoppingCart(*RetailCart) (int32, error)
 		// 移出购物车项
@@ -167,10 +167,10 @@ type (
 	RetailCart struct {
 		Id         int32  `db:"id" pk:"yes" auto:"yes"`
 		CartCode   string `db:"code"`
-		BuyerId    int32  `db:"buyer_id"`
+		BuyerId    int64  `db:"buyer_id"`
 		PaymentOpt int32  `db:"payment_opt"`
 		//todo: del???
-		DeliverId  int32             `db:"deliver_id"`
+		DeliverId  int64             `db:"deliver_id"`
 		CreateTime int64             `db:"create_time"`
 		UpdateTime int64             `db:"update_time"`
 		Items      []*RetailCartItem `db:"-"`
@@ -205,9 +205,9 @@ type (
 		// 购物车编码
 		Code string `db:"code"`
 		// 买家编号
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 送货地址
-		DeliverId int32 `db:"deliver_id"`
+		DeliverId int64 `db:"deliver_id"`
 		// 创建时间
 		CreateTime int64 `db:"create_time"`
 		// 修改时间

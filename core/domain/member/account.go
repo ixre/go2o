@@ -44,7 +44,7 @@ func NewAccount(m *memberImpl, value *member.Account,
 }
 
 // 获取领域对象编号
-func (a *accountImpl) GetDomainId() int32 {
+func (a *accountImpl) GetDomainId() int64 {
 	return a.value.MemberId
 }
 
@@ -54,7 +54,7 @@ func (a *accountImpl) GetValue() *member.Account {
 }
 
 // 保存
-func (a *accountImpl) Save() (int32, error) {
+func (a *accountImpl) Save() (int64, error) {
 	a.value.UpdateTime = time.Now().Unix()
 	return a.rep.SaveAccount(a.value)
 }
@@ -899,7 +899,7 @@ func (a *accountImpl) getMemberName(m member.IMember) string {
 }
 
 // 转账
-func (a *accountImpl) TransferAccount(accountKind int, toMember int32, amount float32,
+func (a *accountImpl) TransferAccount(accountKind int, toMember int64, amount float32,
 	csnRate float32, remark string) error {
 	if amount <= 0 || math.IsNaN(float64(amount)) {
 		return member.ErrIncorrectAmount
@@ -1002,7 +1002,7 @@ func (a *accountImpl) transferPresent(tm member.IMember, tradeNo string,
 }
 
 // 接收转账
-func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int32,
+func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int64,
 	tradeNo string, amount float32, remark string) error {
 	switch accountKind {
 	case member.AccountWallet:
@@ -1013,7 +1013,7 @@ func (a *accountImpl) ReceiveTransfer(accountKind int, fromMember int32,
 	return member.ErrNotSupportTransfer
 }
 
-func (a *accountImpl) receivePresentTransfer(fromMember int32, tradeNo string,
+func (a *accountImpl) receivePresentTransfer(fromMember int64, tradeNo string,
 	amount float32, remark string) error {
 	fm := a.rep.GetMember(fromMember)
 	if fm == nil {
@@ -1043,7 +1043,7 @@ func (a *accountImpl) receivePresentTransfer(fromMember int32, tradeNo string,
 	return err
 }
 
-func (a *accountImpl) receiveBalanceTransfer(fromMember int32, tradeNo string,
+func (a *accountImpl) receiveBalanceTransfer(fromMember int64, tradeNo string,
 	amount float32, remark string) error {
 	fromName := a.getMemberName(a.rep.GetMember(a.GetDomainId()))
 	unix := time.Now().Unix()
@@ -1177,7 +1177,7 @@ func (a *accountImpl) TransferFlow(kind int32, amount float32, commission float3
 }
 
 // 将活动金转给其他人
-func (a *accountImpl) TransferFlowTo(memberId int32, kind int32,
+func (a *accountImpl) TransferFlowTo(memberId int64, kind int32,
 	amount float32, commission float32, tradeNo string,
 	toTitle string, fromTitle string) error {
 

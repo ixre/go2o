@@ -16,7 +16,7 @@ type IMerchantRepo interface {
 	CreateMerchant(*Merchant) IMerchant
 
 	// 创建会员申请商户密钥
-	CreateSignUpToken(memberId int32) string
+	CreateSignUpToken(memberId int64) string
 
 	// 根据商户申请密钥获取会员编号
 	GetMemberFromSignUpToken(token string) int32

@@ -49,7 +49,7 @@ func NewMerchantManager(rep merchant.IMerchantRepo,
 }
 
 // 创建会员申请商户密钥
-func (m *merchantManagerImpl) CreateSignUpToken(memberId int32) string {
+func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 	return m.rep.CreateSignUpToken(memberId)
 }
 
@@ -59,7 +59,7 @@ func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int32 {
 }
 
 // 删除会员的商户申请资料
-func (m *merchantManagerImpl) RemoveSignUp(memberId int32) error {
+func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
 	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id=?", memberId)
 	return err
 }
@@ -219,7 +219,7 @@ func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 }
 
 // 获取会员申请的商户信息
-func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int32) *merchant.MchSignUp {
+func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) != nil {
 		return nil
@@ -228,7 +228,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int32) *merchant.
 }
 
 // 获取会员关联的商户
-func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int32) merchant.IMerchant {
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
 		return m.rep.CreateMerchant(&v)
@@ -398,7 +398,7 @@ func (m *merchantImpl) SetEnabled(enabled bool) error {
 }
 
 // 返回对应的会员编号
-func (m *merchantImpl) Member() int32 {
+func (m *merchantImpl) Member() int64 {
 	return m.GetValue().MemberId
 }
 

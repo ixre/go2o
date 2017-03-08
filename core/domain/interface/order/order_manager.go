@@ -24,14 +24,14 @@ type (
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
 		// 提交批发订单
-		SubmitWholesaleOrder(c cart.ICart, addressId int32,
+		SubmitWholesaleOrder(c cart.ICart, addressId int64,
 			balanceDiscount bool) ([]IOrder, error)
 		// 提交交易类订单
 		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用
 		NotifyOrderTradeSuccess(orderId int64) error
 		// 提交订单
-		SubmitOrder(c cart.ICart, addressId int32, couponCode string,
+		SubmitOrder(c cart.ICart, addressId int64, couponCode string,
 			balanceDiscount bool) (IOrder, error)
 		// 获取可用的订单号, 系统直营传入vendor为0
 		GetFreeOrderNo(vendor int32) string

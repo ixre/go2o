@@ -37,7 +37,7 @@ func NewMerchantService(r merchant.IMerchantRepo,
 }
 
 // 创建会员申请商户密钥
-func (m *merchantService) CreateSignUpToken(memberId int32) string {
+func (m *merchantService) CreateSignUpToken(memberId int64) string {
 	return m._mchRepo.CreateSignUpToken(memberId)
 }
 
@@ -47,7 +47,7 @@ func (m *merchantService) GetMemberFromSignUpToken(token string) int32 {
 }
 
 // 获取会员商户申请信息
-func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int32) *merchant.MchSignUp {
+func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	return m._mchRepo.GetManager().GetSignUpInfoByMemberId(memberId)
 }
 
@@ -111,7 +111,7 @@ func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int32, error) {
 	return m._mchRepo.GetManager().CommitSignUpInfo(e)
 }
 
-func (m *merchantService) GetMerchantByMemberId(memberId int32) *merchant.Merchant {
+func (m *merchantService) GetMerchantByMemberId(memberId int64) *merchant.Merchant {
 	mch := m._mchRepo.GetManager().GetMerchantByMemberId(memberId)
 	if mch != nil {
 		v := mch.GetValue()
@@ -121,7 +121,7 @@ func (m *merchantService) GetMerchantByMemberId(memberId int32) *merchant.Mercha
 }
 
 // 删除会员的商户申请资料
-func (m *merchantService) RemoveMerchantSignUp(memberId int32) error {
+func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 

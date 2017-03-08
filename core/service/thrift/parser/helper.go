@@ -21,6 +21,17 @@ func Result(id int32, err error) *define.Result_ {
 	return r
 }
 
+func I64Result(id int64, err error) *define.Result_ {
+	r := &define.Result_{}
+	if err != nil {
+		r.Message = err.Error()
+	} else {
+		r.Result_ = true
+		r.ID = int32(id)
+	}
+	return r
+}
+
 func DResult(data float64, err error) *define.DResult_ {
 	r := &define.DResult_{}
 	if err != nil {

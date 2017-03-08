@@ -126,7 +126,7 @@ func (o *orderManagerImpl) PrepareWholesaleOrder(c cart.ICart) ([]order.IOrder, 
 
 // 提交批发订单
 func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
-	addressId int32, useBalanceDiscount bool) ([]order.IOrder, error) {
+	addressId int64, useBalanceDiscount bool) ([]order.IOrder, error) {
 	if c.Kind() != cart.KWholesale {
 		return nil, cart.ErrKindNotMatch
 	}
@@ -149,7 +149,7 @@ func (o *orderManagerImpl) SubmitWholesaleOrder(c cart.ICart,
 }
 
 func (o *orderManagerImpl) submitWholesaleOrder(v order.IOrder,
-	addressId int32, useBalanceDiscount bool) error {
+	addressId int64, useBalanceDiscount bool) error {
 	io := v.(order.IWholesaleOrder)
 	err := io.SetAddress(addressId)
 	if err == nil {
@@ -193,8 +193,9 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	}
 	io := o.(order.INormalOrder)
 	po := py.GetValue()
+	//todo: ?? 重构
 	cp := t.promRepo.GetCouponByCode(
-		m.GetAggregateRootId(), couponCode)
+		int32(m.GetAggregateRootId()), couponCode)
 	// 如果优惠券不存在
 	if cp == nil {
 		return errors.New("优惠券无效")
@@ -225,7 +226,7 @@ func (t *orderManagerImpl) applyCoupon(m member.IMember, o order.IOrder,
 	return err
 }
 
-func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int32,
+func (t *orderManagerImpl) SubmitOrder(c cart.ICart, addressId int64,
 	couponCode string, useBalanceDiscount bool) (order.IOrder, error) {
 	o, err := t.PrepareNormalOrder(c)
 	if err == nil {

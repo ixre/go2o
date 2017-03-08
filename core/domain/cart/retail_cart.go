@@ -74,7 +74,7 @@ func (c *cartImpl) Kind() cart.CartKind {
 }
 
 // 获取买家编号
-func (c *cartImpl) BuyerId() int32 {
+func (c *cartImpl) BuyerId() int64 {
 	return c.value.BuyerId
 }
 
@@ -326,7 +326,7 @@ func (c *cartImpl) Combine(ic cart.ICart) cart.ICart {
 }
 
 // 设置购买会员收货地址
-func (c *cartImpl) SetBuyerAddress(addressId int32) error {
+func (c *cartImpl) SetBuyerAddress(addressId int64) error {
 	if c.value.BuyerId < 0 {
 		return cart.ErrCartNoBuyer
 	}
@@ -341,7 +341,7 @@ func (c *cartImpl) SetBuyerAddress(addressId int32) error {
 	return c.setBuyerAddress(addressId)
 }
 
-func (c *cartImpl) setBuyerAddress(addressId int32) error {
+func (c *cartImpl) setBuyerAddress(addressId int64) error {
 	c.value.DeliverId = addressId
 	_, err := c.Save()
 	return err
@@ -365,7 +365,7 @@ func (c *cartImpl) SignItemChecked(items []*cart.ItemPair) error {
 }
 
 // 结算数据持久化
-func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt, addressId int32) error {
+func (c *cartImpl) SettlePersist(shopId, paymentOpt, deliverOpt int32, addressId int64) error {
 	//var shop shop.IShop
 	var deliver member.IDeliverAddress
 	var err error

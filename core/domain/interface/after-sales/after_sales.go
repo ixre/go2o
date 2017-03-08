@@ -175,7 +175,7 @@ type (
 		// 运营商编号
 		VendorId int32 `db:"vendor_id"`
 		// 购买者编号
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 类型，退货、换货、维修
 		Type int `db:"type"`
 		// 退货的商品项编号

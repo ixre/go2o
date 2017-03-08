@@ -35,7 +35,7 @@ var (
 
 type profileManagerImpl struct {
 	member      *memberImpl
-	memberId    int32
+	memberId    int64
 	rep         member.IMemberRepo
 	valRepo     valueobject.IValueRepo
 	bank        *member.BankInfo
@@ -43,7 +43,7 @@ type profileManagerImpl struct {
 	profile     *member.Profile
 }
 
-func newProfileManagerImpl(m *memberImpl, memberId int32,
+func newProfileManagerImpl(m *memberImpl, memberId int64,
 	rep member.IMemberRepo, valRepo valueobject.IValueRepo) member.IProfileManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务
@@ -247,7 +247,7 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 				To: []mss.User{
 					{
 						Role: mss.RoleMember,
-						Id:   p.memberId,
+						Id:   int32(p.memberId),
 					},
 				},
 				// 发送的用户角色
@@ -412,7 +412,7 @@ func (p *profileManagerImpl) GetDeliverAddress() []member.IDeliverAddress {
 }
 
 // 设置默认地址
-func (p *profileManagerImpl) SetDefaultAddress(addressId int32) error {
+func (p *profileManagerImpl) SetDefaultAddress(addressId int64) error {
 	for _, v := range p.GetDeliverAddress() {
 		vv := v.GetValue()
 		if v.GetDomainId() == addressId {
@@ -442,7 +442,7 @@ func (p *profileManagerImpl) GetDefaultAddress() member.IDeliverAddress {
 }
 
 // 获取配送地址
-func (p *profileManagerImpl) GetAddress(addressId int32) member.IDeliverAddress {
+func (p *profileManagerImpl) GetAddress(addressId int64) member.IDeliverAddress {
 	v := p.rep.GetSingleDeliverAddress(p.memberId, addressId)
 	if v != nil {
 		return p.CreateDeliver(v)
@@ -451,7 +451,7 @@ func (p *profileManagerImpl) GetAddress(addressId int32) member.IDeliverAddress 
 }
 
 // 删除配送地址
-func (p *profileManagerImpl) DeleteAddress(addressId int32) error {
+func (p *profileManagerImpl) DeleteAddress(addressId int64) error {
 	//todo: 至少保留一个配送地址
 	return p.rep.DeleteAddress(p.memberId, addressId)
 }
@@ -488,7 +488,7 @@ func (p *profileManagerImpl) GetTrustedInfo() member.TrustedInfo {
 	return *p.trustedInfo
 }
 
-func (p *profileManagerImpl) checkCardId(cardId string, memberId int32) bool {
+func (p *profileManagerImpl) checkCardId(cardId string, memberId int64) bool {
 	mId := 0
 	tmp.Db().ExecScalar("SELECT COUNT(0) FROM mm_trusted_info WHERE card_id=? AND member_id <> ?",
 		&mId, cardId, memberId)
@@ -576,7 +576,7 @@ func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
 	return d
 }
 
-func (p *addressImpl) GetDomainId() int32 {
+func (p *addressImpl) GetDomainId() int64 {
 	return p._value.Id
 }
 
@@ -634,7 +634,7 @@ func (p *addressImpl) checkValue(v *member.Address) error {
 	return nil
 }
 
-func (p *addressImpl) Save() (int32, error) {
+func (p *addressImpl) Save() (int64, error) {
 	if err := p.checkValue(p._value); err != nil {
 		return p.GetDomainId(), err
 	}

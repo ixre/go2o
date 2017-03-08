@@ -46,19 +46,19 @@ type ICouponPromotion interface {
 	CanTake() bool
 
 	// 获取占用
-	GetTake(memberId int32) (*ValueCouponTake, error)
+	GetTake(memberId int64) (*ValueCouponTake, error)
 
 	//占用
-	Take(memberId int32) error
+	Take(memberId int64) error
 
 	// 应用到订单
 	ApplyTake(couponTakeId int32) error
 
 	// 绑定
-	Bind(memberId int32) error
+	Bind(memberId int64) error
 
 	//获取绑定
-	GetBind(memberId int32) (*ValueCouponBind, error)
+	GetBind(memberId int64) (*ValueCouponBind, error)
 
 	//绑定
 	Binds(memberIds []string) error
@@ -110,7 +110,7 @@ type (
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		//会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 
 		//优惠券编号
 		CouponId int32 `db:"coupon_id"`
@@ -129,7 +129,7 @@ type (
 		Id int32 `db:"id" auto:"yes" pk:"yes"`
 
 		//会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 
 		//优惠券编号
 		CouponId int32 `db:"coupon_id"`

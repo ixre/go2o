@@ -365,7 +365,7 @@ func (o *wholesaleOrderImpl) parseOrderItem(i *orderItem) *order.WholesaleItem {
 }
 
 // 设置配送地址
-func (o *wholesaleOrderImpl) SetAddress(addressId int32) error {
+func (o *wholesaleOrderImpl) SetAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoSuchAddress
 	}
@@ -907,7 +907,7 @@ func (w *wholesaleOrderBreaker) BreakUp(c cart.IWholesaleCart) ([]order.IOrder, 
 }
 
 // 创建批发订单
-func (w *wholesaleOrderBreaker) createOrder(buyerId int32, items []*cart.WsCartItem) order.IOrder {
+func (w *wholesaleOrderBreaker) createOrder(buyerId int64, items []*cart.WsCartItem) order.IOrder {
 	v := &order.Order{
 		BuyerId:   buyerId,
 		OrderType: int32(order.TWholesale),

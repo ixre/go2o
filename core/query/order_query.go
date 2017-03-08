@@ -55,7 +55,7 @@ func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 }
 
 // 查询分页订单
-func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination bool,
+func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	orderList := []*dto.PagedMemberSubOrder{}

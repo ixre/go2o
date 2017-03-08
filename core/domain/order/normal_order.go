@@ -204,7 +204,7 @@ func (o *normalOrderImpl) GetBestSavePromotion() (p promotion.IPromotion, saveFe
 }
 
 // 设置配送地址
-func (o *normalOrderImpl) SetAddress(addressId int32) error {
+func (o *normalOrderImpl) SetAddress(addressId int64) error {
 	if addressId <= 0 {
 		return order.ErrNoSuchAddress
 	}
@@ -685,7 +685,7 @@ func (o *normalOrderImpl) save() (int, error) {
 }
 
 // 根据运营商生成子订单
-func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int32,
+func (o *normalOrderImpl) createSubOrderByVendor(parentOrderId int64, buyerId int64,
 	vendorId int32, newOrderNo bool, items []*order.SubOrderItem) order.ISubOrder {
 	orderNo := o.OrderNo()
 	if newOrderNo {

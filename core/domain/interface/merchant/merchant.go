@@ -50,7 +50,7 @@ type (
 		SelfSales() bool
 
 		// 返回对应的会员编号
-		Member() int32
+		Member() int64
 
 		// 保存
 		Save() (int32, error)
@@ -126,7 +126,7 @@ type (
 
 	IMerchantManager interface {
 		// 创建会员申请商户密钥
-		CreateSignUpToken(memberId int32) string
+		CreateSignUpToken(memberId int64) string
 
 		// 根据商户申请密钥获取会员编号
 		GetMemberFromSignUpToken(token string) int32
@@ -141,13 +141,13 @@ type (
 		GetSignUpInfo(id int32) *MchSignUp
 
 		// 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int32) *MchSignUp
+		GetSignUpInfoByMemberId(memberId int64) *MchSignUp
 
 		// 获取会员关联的商户
-		GetMerchantByMemberId(memberId int32) IMerchant
+		GetMerchantByMemberId(memberId int64) IMerchant
 
 		// 删除会员的商户申请资料
-		RemoveSignUp(memberId int32) error
+		RemoveSignUp(memberId int64) error
 	}
 
 	// 商户申请信息
@@ -156,7 +156,7 @@ type (
 		// 申请单号
 		SignNo string `db:"sign_no"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 用户名
 		Usr string `db:"usr"`
 		// 密码
@@ -202,7 +202,7 @@ type (
 	ComplexMerchant struct {
 		Id int32
 		// 关联的会员编号,作为结算账户
-		MemberId int32
+		MemberId int64
 		// 用户
 		Usr string
 		// 密码
@@ -239,7 +239,7 @@ type (
 	Merchant struct {
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 用户
 		Usr string `db:"usr"`
 		// 密码

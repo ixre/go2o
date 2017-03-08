@@ -23,14 +23,14 @@ import (
 var _ personfinance.IRiseInfo = new(riseInfo)
 
 type riseInfo struct {
-	personId int32
+	personId int64
 	value    *personfinance.RiseInfoValue
 	rep      personfinance.IPersonFinanceRepository
 	mmRepo   member.IMemberRepo
 	pf       *PersonFinance
 }
 
-func newRiseInfo(personId int32, pf *PersonFinance,
+func newRiseInfo(personId int64, pf *PersonFinance,
 	rep personfinance.IPersonFinanceRepository,
 	mmRepo member.IMemberRepo) personfinance.IRiseInfo {
 	return &riseInfo{
@@ -41,7 +41,7 @@ func newRiseInfo(personId int32, pf *PersonFinance,
 	}
 }
 
-func (r *riseInfo) GetDomainId() int32 {
+func (r *riseInfo) GetDomainId() int64 {
 	return r.personId
 }
 
