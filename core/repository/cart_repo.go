@@ -40,7 +40,7 @@ func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
 }
 
 // 获取买家的购物车
-func (c *cartRepo) GetMyCart(buyerId int32, k cart.CartKind) cart.ICart {
+func (c *cartRepo) GetMyCart(buyerId int64, k cart.CartKind) cart.ICart {
 	switch k {
 	case cart.KRetail:
 		return c.getMyRetailCart(buyerId)
@@ -51,7 +51,7 @@ func (c *cartRepo) GetMyCart(buyerId int32, k cart.CartKind) cart.ICart {
 }
 
 // 获取零售购物车
-func (c *cartRepo) getMyRetailCart(buyerId int32) cart.ICart {
+func (c *cartRepo) getMyRetailCart(buyerId int64) cart.ICart {
 	v := c.getRetailCart(buyerId)
 	if v == nil {
 		unix := time.Now().Unix()
@@ -66,7 +66,7 @@ func (c *cartRepo) getMyRetailCart(buyerId int32) cart.ICart {
 }
 
 // 获取批发购物车
-func (c *cartRepo) getMyWholesaleCart(buyerId int32) cart.ICart {
+func (c *cartRepo) getMyWholesaleCart(buyerId int64) cart.ICart {
 	v := c.getWholesaleCart(buyerId)
 	if v == nil {
 		unix := time.Now().Unix()
@@ -80,7 +80,7 @@ func (c *cartRepo) getMyWholesaleCart(buyerId int32) cart.ICart {
 		c._memberRepo, c._goodsRepo)
 }
 
-func (c *cartRepo) getRetailCart(buyerId int32) *cart.RetailCart {
+func (c *cartRepo) getRetailCart(buyerId int64) *cart.RetailCart {
 	e := cart.RetailCart{}
 	err := c._orm.GetBy(&e, "buyer_id=?", buyerId)
 	if err == nil {
@@ -92,7 +92,7 @@ func (c *cartRepo) getRetailCart(buyerId int32) *cart.RetailCart {
 	return nil
 }
 
-func (w *cartRepo) getWholesaleCart(buyerId int32) *cart.WsCart {
+func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 	e := cart.WsCart{}
 	err := w._orm.GetBy(&e, "buyer_id=?", buyerId)
 	if err == nil {
@@ -226,7 +226,7 @@ func (c *cartRepo) GetShoppingCart(key string) *cart.RetailCart {
 }
 
 // 获取最新的购物车
-func (c *cartRepo) GetLatestCart(buyerId int32) *cart.RetailCart {
+func (c *cartRepo) GetLatestCart(buyerId int64) *cart.RetailCart {
 	var v = &cart.RetailCart{}
 	if c.Connector.GetOrm().GetBy(v, "buyer_id=? ORDER BY id DESC", buyerId) == nil {
 		var items = []*cart.RetailCartItem{}

@@ -542,7 +542,7 @@ func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
 		OrderId:        src.OrderId,
 		SubOrderId:     src.OrderId,
 		OrderNo:        src.OrderNo,
-		BuyerId:        src.BuyerId,
+		BuyerId:        int64(src.BuyerId),
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
 		Subject:        src.Subject,

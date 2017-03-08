@@ -126,13 +126,13 @@ const (
 type (
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int32
+		GetDomainId() int64
 
 		// 获取账户值
 		GetValue() *Account
 
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
@@ -214,11 +214,11 @@ type (
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccount(accountKind int, toMember int32, amount float32,
+		TransferAccount(accountKind int, toMember int64, amount float32,
 			csnRate float32, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(accountKind int, fromMember int32, tradeNo string,
+		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
 			amount float32, remark string) error
 
 		// 退款
@@ -241,14 +241,14 @@ type (
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int32, kind int32, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int32, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
 	// 余额变动信息
 	BalanceInfo struct {
-		Id       int32  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int32  `db:"member_id"`
+		Id       int64  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int64  `db:"member_id"`
 		TradeNo  string `db:"trade_no"`
 		Kind     int32  `db:"kind"`
 		Type     int    `db:"type"`
@@ -258,7 +258,7 @@ type (
 		// 手续费
 		CsnAmount float32 `db:"csn_amount"`
 		// 引用编号
-		RefId      int32 `db:"ref_id"`
+		RefId      int64 `db:"ref_id"`
 		State      int   `db:"state"`
 		CreateTime int64 `db:"create_time"`
 		UpdateTime int64 `db:"update_time"`
@@ -267,7 +267,7 @@ type (
 	// 账户值对象
 	Account struct {
 		// 会员编号
-		MemberId int32 `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		// 积分
 		Integral int64 `db:"integral"`
 		// 不可用积分
@@ -311,9 +311,9 @@ type (
 	// 积分记录
 	IntegralLog struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 类型
 		Type int `db:"type"`
 		// 关联的编号
@@ -328,8 +328,8 @@ type (
 
 	// 余额日志
 	BalanceLog struct {
-		Id       int32  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int32  `db:"member_id"`
+		Id       int64  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int64  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
 		BusinessKind int32 `db:"kind"`
@@ -353,9 +353,9 @@ type (
 
 	// 钱包账户日志
 	PresentLog struct {
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型

@@ -12,10 +12,10 @@ import "go2o/core/dto"
 
 type IInvitationManager interface {
 	// 获取邀请人数组
-	InviterArray(memberId int32, depth int32) []int32
+	InviterArray(memberId int64, depth int32) []int64
 
 	// 判断是否由会员邀请
-	InvitationBy(memberId int32) bool
+	InvitationBy(memberId int64) bool
 
 	// 获取我邀请的会员
 	GetInvitationMembers(begin, end int) (total int, rows []*dto.InvitationMember)

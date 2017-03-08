@@ -97,7 +97,7 @@ func TestOrderSetup(t *testing.T) {
 
 func TestCancelOrder(t *testing.T) {
 	repo := ti.CartRepo
-	var buyerId int32 = 1
+	var buyerId int64 = 1
 	c := repo.GetMyCart(buyerId, cart.KRetail)
 	joinItemsToCart(c, t)
 	if c.Kind() == cart.KRetail {
@@ -158,7 +158,7 @@ func TestCancelOrder(t *testing.T) {
 // 测试批发订单
 func TestWholesaleOrder(t *testing.T) {
 	repo := ti.CartRepo
-	var buyerId int32 = 1
+	var buyerId int64 = 1
 	c := repo.GetMyCart(buyerId, cart.KWholesale)
 	joinItemsToCart(c, t)
 	rc := c.(cart.IWholesaleCart)

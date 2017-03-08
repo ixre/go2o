@@ -251,7 +251,7 @@ type (
 		// 在线支付交易完成
 		OnlinePaymentTradeFinish() error
 		// 设置配送地址
-		SetAddress(addressId int32) error
+		SetAddress(addressId int64) error
 		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
 		Submit() error
 
@@ -319,7 +319,7 @@ type (
 		// 设置商品项
 		SetItems(items []*MinifyItem)
 		// 设置配送地址
-		SetAddress(addressId int32) error
+		SetAddress(addressId int64) error
 		// 获取商品项
 		Items() []*WholesaleItem
 		// 获取支付单
@@ -365,7 +365,7 @@ type (
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 买家编号
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 订单类型
 		OrderType int32 `db:"order_type"`
 		// 订单状态
@@ -385,7 +385,7 @@ type (
 		// 订单号
 		OrderNo string
 		// 购买人编号
-		BuyerId int32
+		BuyerId int64
 		// 运营商编号
 		VendorId int32
 		// 店铺编号
@@ -487,7 +487,7 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 购买人编号(冗余,便于商户处理数据)
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 运营商编号
 		VendorId int32 `db:"vendor_id" json:"vendorId"`
 		// 店铺编号
@@ -567,7 +567,7 @@ type (
 		// 订单编号
 		OrderId int64 `db:"order_id"`
 		// 买家编号
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 商家编号
 		VendorId int32 `db:"vendor_id"`
 		// 店铺编号

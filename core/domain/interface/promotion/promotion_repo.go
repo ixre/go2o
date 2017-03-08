@@ -73,8 +73,8 @@ type IPromotionRepo interface {
 	GetCouponByCode(mchId int32, code string) IPromotion
 
 	// 获取会员的优惠券绑定
-	GetCouponBindByMemberId(couponId, memberId int32) (*ValueCouponBind, error)
+	GetCouponBindByMemberId(couponId int32, memberId int64) (*ValueCouponBind, error)
 
 	// 获取会员的优惠券占用
-	GetCouponTakeByMemberId(couponId, memberId int32) (*ValueCouponTake, error)
+	GetCouponTakeByMemberId(couponId int32, memberId int64) (*ValueCouponTake, error)
 }

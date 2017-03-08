@@ -27,7 +27,7 @@ func NewAfterSalesQuery(db db.Connector) *AfterSalesQuery {
 }
 
 // 获取分页售后单
-func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int32, begin,
+func (a *AfterSalesQuery) QueryPagerAfterSalesOrderOfMember(memberId int64, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	list := []*dto.PagedMemberAfterSalesOrder{}
 	total := 0

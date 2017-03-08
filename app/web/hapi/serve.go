@@ -48,7 +48,7 @@ func beforeHanding(h echo.HandlerFunc) echo.HandlerFunc {
 }
 
 //检查会员编号
-func getMemberId(c *echox.Context) int32 {
+func getMemberId(c *echox.Context) int64 {
 	return shared.GetMemberId(c)
 }
 

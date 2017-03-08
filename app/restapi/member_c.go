@@ -97,7 +97,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
 	var form = url.Values(c.Request().Form)
 	var mut, aut, kvMut, kvAut int
-	memberId := int32(GetMemberId(c))
+	memberId := GetMemberId(c)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)

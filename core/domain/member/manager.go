@@ -58,8 +58,8 @@ func (m *MemberManagerImpl) registerPerm(perm *valueobject.RegisterPerm, invitat
 	return nil
 }
 
-func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int32, error) {
-	var invitationId int32
+func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int64, error) {
+	var invitationId int64
 	if len(invitationCode) > 0 {
 		//判断邀请码是否正确
 		invitationId = m.rep.GetMemberIdByInvitationCode(invitationCode)
@@ -71,7 +71,7 @@ func (m *MemberManagerImpl) checkInvitationCode(invitationCode string) (int32, e
 }
 
 // 检查手机绑定,同时检查手机格式
-func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int32) error {
+func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int64) error {
 	if len(phone) <= 0 {
 		return member.ErrMissingPhone
 	}
@@ -83,7 +83,7 @@ func (m *MemberManagerImpl) CheckPhoneBind(phone string, memberId int32) error {
 
 // 检查注册信息是否正确
 func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
-	pro *member.Profile, invitationCode string) (invitationId int32, err error) {
+	pro *member.Profile, invitationCode string) (invitationId int64, err error) {
 	perm := m.valRepo.GetRegisterPerm()
 	conf := m.valRepo.GetRegistry()
 

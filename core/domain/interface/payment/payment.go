@@ -188,9 +188,9 @@ type (
 		// 支付单主题
 		Subject string `db:"subject"`
 		// 购买用户
-		BuyUser int32 `db:"buy_user"`
+		BuyUser int64 `db:"buy_user"`
 		// 支付用户
-		PaymentUser int32 `db:"payment_user"`
+		PaymentUser int64 `db:"payment_user"`
 		// 支付单金额
 		TotalFee float32 `db:"total_fee"`
 		// 余额抵扣

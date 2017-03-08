@@ -151,7 +151,7 @@ func settleRiseData(settleDate time.Time) {
 }
 
 // 结算每日数据
-func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int32) {
+func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
 	err := rsi.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
 		personfinance.RiseDayRatioProvider(personId))
 	if err != nil {

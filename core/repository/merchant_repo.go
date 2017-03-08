@@ -73,7 +73,7 @@ func (m *merchantRepo) GetManager() merchant.IMerchantManager {
 }
 
 // 创建会员申请商户密钥
-func (m *merchantRepo) CreateSignUpToken(memberId int32) string {
+func (m *merchantRepo) CreateSignUpToken(memberId int64) string {
 	mKey := fmt.Sprintf("go2o:rep:mch:signup:mm-%d", memberId)
 	if token, err := m.storage.GetString(mKey); err == nil {
 		return token

@@ -49,7 +49,7 @@ func (m *MemberQuery) GetMemberList(ids []int32) []*dto.MemberSummary {
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedBalanceAccountLog(memberId int32, begin, end int,
+func (m *MemberQuery) PagedBalanceAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
@@ -73,7 +73,7 @@ func (m *MemberQuery) PagedBalanceAccountLog(memberId int32, begin, end int,
 }
 
 // 获取账户余额分页记录
-func (m *MemberQuery) PagedWalletAccountLog(memberId int32, begin, end int,
+func (m *MemberQuery) PagedWalletAccountLog(memberId int64, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 	d := m.Connector
 	if orderBy != "" {
@@ -100,7 +100,7 @@ func (m *MemberQuery) PagedWalletAccountLog(memberId int32, begin, end int,
 }
 
 // 获取返现记录
-func (m *MemberQuery) QueryBalanceLog(memberId int32, begin, end int,
+func (m *MemberQuery) QueryBalanceLog(memberId int64, begin, end int,
 	where, orderBy string) (num int, rows []map[string]interface{}) {
 
 	d := m.Connector
@@ -126,7 +126,7 @@ func (m *MemberQuery) QueryBalanceLog(memberId int32, begin, end int,
 }
 
 // 获取最近的余额变动信息
-func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int32, kind int32) *member.BalanceInfo {
+func (m *MemberQuery) GetLatestBalanceInfoByKind(memberId int64, kind int32) *member.BalanceInfo {
 	var info = new(member.BalanceInfo)
 	if err := m.GetOrm().GetBy(info, "member_id=? AND kind=? ORDER BY create_time DESC",
 		memberId, kind); err == nil {
@@ -176,8 +176,8 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 }
 
 // 根据手机获取会员编号
-func (m *MemberQuery) GetMemberIdByPhone(phone string) int32 {
-	var id int32
+func (m *MemberQuery) GetMemberIdByPhone(phone string) int64 {
+	var id int64
 	m.ExecScalar(`SELECT id FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
         WHERE mm_profile.phone = ? LIMIT 0,1`, &id, phone)
@@ -188,7 +188,7 @@ func (m *MemberQuery) GetMemberIdByPhone(phone string) int32 {
 func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp string, level int,
 	startTime int64, endTime int64, num int) []*dto.RankMember {
 	var list []*dto.RankMember = make([]*dto.RankMember, 0)
-	var id int32
+	var id int64
 	var usr, name string
 	var inviNum, totalNum, regTime int
 	var rank int = 0
@@ -238,7 +238,7 @@ func (m *MemberQuery) GetMemberInviRank(mchId int32, allTeam bool, levelComp str
 }
 
 // 查询有邀请关系的会员数量
-func (m *MemberQuery) GetReferNum(memberId int32, layer int) int {
+func (m *MemberQuery) GetReferNum(memberId int64, layer int) int {
 	total := 0
 	keyword := fmt.Sprintf("''r%d'':%d", layer, memberId)
 	where := "inviter_str LIKE '%" + keyword +
@@ -251,7 +251,7 @@ func (m *MemberQuery) GetReferNum(memberId int32, layer int) int {
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedShopFav(memberId int32, begin, end int,
+func (m *MemberQuery) PagedShopFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedShopFav) {
 	d := m.Connector
 	if len(where) > 0 {
@@ -288,7 +288,7 @@ func (m *MemberQuery) PagedShopFav(memberId int32, begin, end int,
 }
 
 // 获取分页商铺收藏
-func (m *MemberQuery) PagedGoodsFav(memberId int32, begin, end int,
+func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	where string) (num int, rows []*dto.PagedGoodsFav) {
 	d := m.Connector
 	if len(where) > 0 {

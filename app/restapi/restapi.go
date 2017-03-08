@@ -60,7 +60,7 @@ func chkMerchantApiSecret(c echo.Context) bool {
 // 检查会员令牌信息
 func checkMemberToken(c echo.Context) bool {
 	r := c.Request()
-	memberId, _ := util.I32Err(strconv.Atoi(r.FormValue("member_id")))
+	memberId, _ := util.I64Err(strconv.Atoi(r.FormValue("member_id")))
 	token := r.FormValue("member_token")
 	cli, err := thrift.MemberServeClient()
 	if err == nil {
@@ -79,8 +79,8 @@ func getMerchantId(c echo.Context) int32 {
 }
 
 // 获取会员编号
-func GetMemberId(c echo.Context) int32 {
-	return c.Get("member_id").(int32)
+func GetMemberId(c echo.Context) int64 {
+	return c.Get("member_id").(int64)
 }
 
 func ApiTest(c echo.Context) error {

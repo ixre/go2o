@@ -60,7 +60,7 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 }
 
 // 获取聚合根编号
-func (m *memberImpl) GetAggregateRootId() int32 {
+func (m *memberImpl) GetAggregateRootId() int64 {
 	return m.value.Id
 }
 
@@ -413,7 +413,7 @@ func (m *memberImpl) ConfirmLevelUp(id int32) error {
 // 获取会员关联
 func (m *memberImpl) GetRelation() *member.Relation {
 	if m.relation == nil {
-		m.relation = m.rep.GetRelation(m.value.Id)
+		m.relation = m.rep.GetRelation(m.GetAggregateRootId())
 	}
 	return m.relation
 }
@@ -456,7 +456,7 @@ func (m *memberImpl) UpdateLoginTime() error {
 }
 
 // 保存
-func (m *memberImpl) Save() (int32, error) {
+func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
 		return m.rep.SaveMember(m.value)
@@ -479,7 +479,7 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error) {
+func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
 	if err := validUsr(m.value.Usr); err != nil {
 		return 0, err
 	}
@@ -543,7 +543,7 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 	}
 	level := m.valRepo.GetRegistry().MemberReferLayer - 1
 	arr := m.Invitation().InviterArray(r.InviterId, int32(level))
-	arr = append([]int32{r.InviterId}, arr...)
+	arr = append([]int64{r.InviterId}, arr...)
 
 	if len(arr) > 0 {
 		// 有邀请关系
@@ -574,7 +574,7 @@ func (m *memberImpl) updateInviterStr(r *member.Relation) {
 }
 
 // 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int32) error {
+func (m *memberImpl) ChangeReferees(memberId int64) error {
 	if memberId > 0 {
 		rm := m.rep.GetMember(memberId)
 		if rm == nil {
@@ -596,11 +596,11 @@ var _ member.IFavoriteManager = new(favoriteManagerImpl)
 
 // 收藏服务
 type favoriteManagerImpl struct {
-	_memberId int32
+	_memberId int64
 	_rep      member.IMemberRepo
 }
 
-func newFavoriteManagerImpl(memberId int32,
+func newFavoriteManagerImpl(memberId int64,
 	rep member.IMemberRepo) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务

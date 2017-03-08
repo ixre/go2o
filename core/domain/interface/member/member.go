@@ -41,7 +41,7 @@ const (
 type (
 	IMember interface {
 		// 获取聚合根编号
-		GetAggregateRootId() int32
+		GetAggregateRootId() int64
 		// 会员汇总信息
 		Complex() *ComplexMember
 		// 会员资料服务
@@ -74,7 +74,7 @@ type (
 		SaveRelation(r *Relation) error
 
 		// 更改邀请人
-		ChangeReferees(memberId int32) error
+		ChangeReferees(memberId int64) error
 
 		// 增加经验值
 		AddExp(exp int32) error
@@ -99,7 +99,7 @@ type (
 		UpdateLoginTime() error
 
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 	}
 
 	// 会员资料服务
@@ -150,16 +150,16 @@ type (
 		GetDeliverAddress() []IDeliverAddress
 
 		// 获取配送地址
-		GetAddress(addressId int32) IDeliverAddress
+		GetAddress(addressId int64) IDeliverAddress
 
 		// 设置默认地址
-		SetDefaultAddress(addressId int32) error
+		SetDefaultAddress(addressId int64) error
 
 		// 获取默认收货地址
 		GetDefaultAddress() IDeliverAddress
 
 		// 删除配送地址
-		DeleteAddress(addressId int32) error
+		DeleteAddress(addressId int64) error
 	}
 
 	// 收藏服务
@@ -176,7 +176,7 @@ type (
 
 	// 会员概览信息
 	ComplexMember struct {
-		MemberId int32
+		MemberId int64
 		// 用户名
 		Usr string
 		// 昵称
@@ -219,7 +219,7 @@ type (
 
 	Member struct {
 		// 编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 用户名
 		Usr string `db:"usr"`
 		// 密码
@@ -263,7 +263,7 @@ type (
 	// 会员资料
 	Profile struct {
 		//会员编号
-		MemberId int32 `db:"member_id" pk:"yes" auto:"no"`
+		MemberId int64 `db:"member_id" pk:"yes" auto:"no"`
 		//昵称
 		Name string `db:"name"`
 		//头像
@@ -308,11 +308,11 @@ type (
 	//会员关联表
 	Relation struct {
 		// 会员编号
-		MemberId int32 `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//会员卡号
 		CardCard string `db:"card_no"`
 		//推荐人（会员）
-		InviterId int32 `db:"inviter_id"`
+		InviterId int64 `db:"inviter_id"`
 		// 会员关系字符串
 		InviterStr string `db:"inviter_str"`
 		//注册关联商户编号
@@ -322,7 +322,7 @@ type (
 	// 实名认证信息
 	TrustedInfo struct {
 		//会员编号
-		MemberId int32 `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//真实姓名
 		RealName string `db:"real_name"`
 		//身份证号码
@@ -343,7 +343,7 @@ type (
 	// 所以需要用IsLocked来标记是否锁定
 	BankInfo struct {
 		//会员编号
-		MemberId int32 `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		//名称
 		Name string `db:"name"`
 		//账号
@@ -365,7 +365,7 @@ type (
 		// 编号
 		Id int32 `db:"id"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 收藏类型
 		FavType int `db:"fav_type"`
 		// 引用编号
@@ -376,18 +376,18 @@ type (
 
 	// 收货地址
 	IDeliverAddress interface {
-		GetDomainId() int32
+		GetDomainId() int64
 		GetValue() Address
 		SetValue(*Address) error
-		Save() (int32, error)
+		Save() (int64, error)
 	}
 
 	// 收货地址
 	Address struct {
 		//编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		//会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		//收货人
 		RealName string `db:"real_name"`
 		//电话
@@ -410,7 +410,7 @@ type (
 	LevelUpLog struct {
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 原来等级
 		OriginLevel int32 `db:"origin_level"`
 		// 现在等级

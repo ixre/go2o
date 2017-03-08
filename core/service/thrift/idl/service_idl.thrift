@@ -7,7 +7,13 @@ struct Result{
    3:i32 Code
    4:string Message
 }
-
+//传输结果对象
+struct Result64{
+   1:i64 Id
+   2:bool Result
+   3:i32 Code
+   4:string Message
+}
 //传输结果对象(Double)
 struct DResult{
    1:double Data
@@ -24,7 +30,7 @@ struct Pair{
 // 商家
 struct ComplexMerchant {
     1: i32 Id
-    2: i32 MemberId
+    2: i64 MemberId
     3: string Usr
     4: string Pwd
     5: string Name
@@ -43,7 +49,7 @@ struct ComplexMerchant {
 }
 
 struct Member {
-    1: i32 Id
+    1: i64 Id
     2: string Usr
     3: string Pwd
     4: string TradePwd
@@ -68,7 +74,7 @@ struct Member {
 }
 
 struct Profile {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string Name
     3: string Avatar
     4: i32 Sex
@@ -91,7 +97,7 @@ struct Profile {
 }
 
 struct Account {
-    1: i32 MemberId
+    1: i64 MemberId
     2: i64 Integral
     3: i64 FreezeIntegral
     4: double Balance
@@ -114,7 +120,7 @@ struct Account {
 }
 
 struct ComplexMember {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string Usr
     3: string Name
     4: string Avatar
@@ -137,15 +143,15 @@ struct ComplexMember {
 }
 
 struct MemberRelation {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string CardId
-    3: i32 InviterId
+    3: i64 InviterId
     4: string InviterStr
     5: i32 RegisterMchId
 }
 
 struct TrustedInfo {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string RealName
     3: string CardId
     4: string TrustImage
@@ -157,8 +163,8 @@ struct TrustedInfo {
 
 
 struct Address {
-    1: i32 Id
-    2: i32 MemberId
+    1: i64 Id
+    2: i64 MemberId
     3: string RealName
     4: string Phone
     5: i32 Province
@@ -296,8 +302,8 @@ struct PaymentOrder {
     4: i32 Type
     5: i32 OrderId
     6: string Subject
-    7: i32 BuyUser
-    8: i32 PaymentUser
+    7: i64 BuyUser
+    8: i64 PaymentUser
     9: double TotalFee
     10: double BalanceDiscount
     11: double  IntegralDiscount
@@ -334,7 +340,7 @@ struct ComplexOrder {
     2: i64 SubOrderId
     3: i32 OrderType
     4: string OrderNo
-    5: i32 BuyerId
+    5: i64 BuyerId
     6: i32 VendorId
     7: i32 ShopId
     8: string Subject
@@ -363,34 +369,34 @@ service MerchantService{
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    Result Login(1:string user,2:string pwd,3:bool update),
+    Result64 Login(1:string user,2:string pwd,3:bool update),
     // 根据会员编号获取会员信息
-    Member GetMember(1:i32 id),
+    Member GetMember(1:i64 id),
     // 根据用户名获取会员信息
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
-    Profile GetProfile(1:i32 id),
+    Profile GetProfile(1:i64 id),
     // 获取会员汇总信息
-    ComplexMember Complex(1:i32 memberId)
+    ComplexMember Complex(1:i64 memberId)
      // 升级为高级会员
-    Result Premium(1:i32 memberId,2:i32 v,3:i64 expires)
+    Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
-    string GetToken(1:i32 memberId,2:bool reset)
+    string GetToken(1:i64 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1
-    bool CheckToken(1:i32 memberId,2:string token)
+    bool CheckToken(1:i64 memberId,2:string token)
     // 移除会员的Token
-    void RemoveToken(1:i32 memberId)
+    void RemoveToken(1:i64 memberId)
     // 获取地址，如果addrId为0，则返回默认地址
-    Address GetAddress(1:i32 memberId,2:i32 addrId)
+    Address GetAddress(1:i64 memberId,2:i64 addrId)
     // 获取会员账户信息
-    Account GetAccount(1:i32 memberId)
+    Account GetAccount(1:i64 memberId)
     // 获取邀请人会员编号数组
-    list<i32> InviterArray(1:i32 memberId,2:i32 depth)
+    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
     // 账户充值
-    Result ChargeAccount(1:i32 memberId ,2:i32 account,3:i32 kind,
+    Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
       4:string title,5:string outerNo,6:double amount,7:i32 relateUser)
     // 抵扣账户
-    Result DiscountAccount(1:i32 memberId,2:i32 account,3:string title,
+    Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
       4:string outerNo,5:double amount,6:i32 relateUser,7:bool mustLargeZero)
 }
 

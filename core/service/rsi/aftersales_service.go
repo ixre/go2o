@@ -66,7 +66,7 @@ func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int64) []af
 }
 
 // 获取会员的分页售后单
-func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int32, begin,
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int64, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }

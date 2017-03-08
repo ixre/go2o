@@ -54,7 +54,7 @@ func NewShoppingService(r order.IOrderRepo,
 /*================ 购物车  ================*/
 
 //  获取购物车
-func (s *shoppingService) getShoppingCart(buyerId int32, code string) cart.ICart {
+func (s *shoppingService) getShoppingCart(buyerId int64, code string) cart.ICart {
 	var c cart.ICart
 	var cc cart.ICart
 	if len(code) > 0 {
@@ -82,7 +82,7 @@ func (s *shoppingService) getShoppingCart(buyerId int32, code string) cart.ICart
 }
 
 // 获取购物车,当购物车编号不存在时,将返回一个新的购物车
-func (s *shoppingService) GetShoppingCart(memberId int32,
+func (s *shoppingService) GetShoppingCart(memberId int64,
 	cartCode string) *define.ShoppingCart {
 	c := s.getShoppingCart(memberId, cartCode)
 	return s.parseCart(c)
@@ -105,7 +105,7 @@ func (s *shoppingService) parseCart(c cart.ICart) *define.ShoppingCart {
 }
 
 // 放入购物车
-func (s *shoppingService) PutInCart(memberId int32, code string, itemId, skuId,
+func (s *shoppingService) PutInCart(memberId int64, code string, itemId, skuId,
 	quantity int32) (*define.ShoppingCartItem, error) {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
@@ -121,7 +121,7 @@ func (s *shoppingService) PutInCart(memberId int32, code string, itemId, skuId,
 	}
 	return nil, err
 }
-func (s *shoppingService) SubCartItem(memberId int32, code string, itemId, skuId,
+func (s *shoppingService) SubCartItem(memberId int64, code string, itemId, skuId,
 	quantity int32) error {
 	c := s.getShoppingCart(memberId, code)
 	if c == nil {
@@ -135,7 +135,7 @@ func (s *shoppingService) SubCartItem(memberId int32, code string, itemId, skuId
 }
 
 // 勾选商品结算
-func (s *shoppingService) CartCheckSign(memberId int32,
+func (s *shoppingService) CartCheckSign(memberId int64,
 	cartCode string, arr []*define.ShoppingCartItem) error {
 	c := s.getShoppingCart(memberId, cartCode)
 	items := make([]*cart.ItemPair, len(arr))
@@ -154,8 +154,8 @@ func (s *shoppingService) CartCheckSign(memberId int32,
 }
 
 // 更新购物车结算
-func (s *shoppingService) PrepareSettlePersist(memberId, shopId int32,
-	paymentOpt, deliverOpt, deliverId int32) error {
+func (s *shoppingService) PrepareSettlePersist(memberId int64, shopId int32,
+	paymentOpt, deliverOpt int32, deliverId int64) error {
 	var cart = s.getShoppingCart(memberId, "")
 	err := cart.SettlePersist(shopId, paymentOpt, deliverOpt, deliverId)
 	if err == nil {
@@ -164,7 +164,7 @@ func (s *shoppingService) PrepareSettlePersist(memberId, shopId int32,
 	return err
 }
 
-func (s *shoppingService) GetCartSettle(memberId int32,
+func (s *shoppingService) GetCartSettle(memberId int64,
 	cartCode string) *dto.SettleMeta {
 	cart := s.getShoppingCart(memberId, cartCode)
 	sp, deliver, payOpt := cart.GetSettleData()
@@ -193,14 +193,14 @@ func (s *shoppingService) GetCartSettle(memberId int32,
 	return st
 }
 
-func (s *shoppingService) SetBuyerAddress(buyerId int32, cartCode string, addressId int32) error {
+func (s *shoppingService) SetBuyerAddress(buyerId int64, cartCode string, addressId int64) error {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	return cart.SetBuyerAddress(addressId)
 }
 
 /*================ 订单  ================*/
 
-func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32,
+func (s *shoppingService) PrepareOrder(buyerId int64, addressId int64,
 	cartCode string) *order.ComplexOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	o, err := s._manager.PrepareNormalOrder(cart)
@@ -212,8 +212,8 @@ func (s *shoppingService) PrepareOrder(buyerId int32, addressId int32,
 }
 
 // 预生成订单，使用优惠券
-func (s *shoppingService) PrepareOrderWithCoupon(buyerId int32, cartCode string,
-	addressId int32, subject string, couponCode string) (map[string]interface{}, error) {
+func (s *shoppingService) PrepareOrderWithCoupon(buyerId int64, cartCode string,
+	addressId int64, subject string, couponCode string) (map[string]interface{}, error) {
 	cart := s.getShoppingCart(buyerId, cartCode)
 	o, err := s._manager.PrepareNormalOrder(cart)
 	if err != nil {
@@ -260,8 +260,8 @@ func (s *shoppingService) PrepareOrderWithCoupon(buyerId int32, cartCode string,
 	return data, err
 }
 
-func (s *shoppingService) SubmitOrder(buyerId int32, cartCode string,
-	addressId int32, subject string, couponCode string, balanceDiscount bool) (
+func (s *shoppingService) SubmitOrder(buyerId int64, cartCode string,
+	addressId int64, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	c := s.getShoppingCart(buyerId, cartCode)
 	od, err := s._manager.SubmitOrder(c, addressId, couponCode, balanceDiscount)
