@@ -394,10 +394,10 @@ service MemberService{
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
     // 账户充值
     Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
-      4:string title,5:string outerNo,6:double amount,7:i32 relateUser)
+      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
     // 抵扣账户
     Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
-      4:string outerNo,5:double amount,6:i32 relateUser,7:bool mustLargeZero)
+      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
 }
 
 struct PlatformConf {

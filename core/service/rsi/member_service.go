@@ -717,7 +717,7 @@ func (ms *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
 	return ms._rep.GetMemberLatestUpdateTime(memberId)
 }
 
-func (ms *memberService) GetMemberList(ids []int32) []*dto.MemberSummary {
+func (ms *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 	list := ms._query.GetMemberList(ids)
 	for _, v := range list {
 		v.Avatar = format.GetResUrl(v.Avatar)
@@ -756,7 +756,7 @@ func (ms *memberService) AddIntegral(memberId int64, iType int,
 
 // 充值,account为账户类型,kind为业务类型
 func (ms *memberService) ChargeAccount(memberId int64, account int32,
-	kind int32, title, outerNo string, amount float64, relateUser int32) (*define.Result_, error) {
+	kind int32, title, outerNo string, amount float64, relateUser int64) (*define.Result_, error) {
 	var err error
 	m := ms._rep.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
@@ -790,7 +790,7 @@ func (ms *memberService) UnfreezesIntegral(memberId int64,
 
 // 抵扣账户
 func (ms *memberService) DiscountAccount(memberId int64, account int32, title string,
-	outerNo string, amount float64, relateUser int32, mustLargeZero bool) (r *define.Result_, err error) {
+	outerNo string, amount float64, relateUser int64, mustLargeZero bool) (r *define.Result_, err error) {
 	m, err := ms.getMember(memberId)
 	if err == nil {
 		acc := m.GetAccount()
@@ -915,7 +915,7 @@ func (ms *memberService) FinishTakeOutRequest(memberId int64, id int32, tradeNo 
 
 // 冻结余额
 func (ms *memberService) Freeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int32) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -925,7 +925,7 @@ func (ms *memberService) Freeze(memberId int64, title string,
 
 // 解冻金额
 func (ms *memberService) Unfreeze(memberId int64, title string,
-	tradeNo string, amount float32, referId int32) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -935,7 +935,7 @@ func (ms *memberService) Unfreeze(memberId int64, title string,
 
 // 冻结赠送金额
 func (ms *memberService) FreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int32) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -945,7 +945,7 @@ func (ms *memberService) FreezeWallet(memberId int64, title string,
 
 // 解冻赠送金额
 func (ms *memberService) UnfreezeWallet(memberId int64, title string,
-	tradeNo string, amount float32, referId int32) error {
+	tradeNo string, amount float32, referId int64) error {
 	m := ms._rep.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
@@ -1044,7 +1044,7 @@ func (ms *memberService) GetMemberInviRank(mchId int32, allTeam bool,
 
 // 生成会员账户人工单据
 func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountType int,
-	tit string, amount float32, relateUser int32) (string, error) {
+	tit string, amount float32, relateUser int64) (string, error) {
 	//todo: 暂时不记录人员,等支持系统多用户后再传入
 	if relateUser <= 0 {
 		relateUser = 1
