@@ -366,6 +366,36 @@ func (s *shoppingService) LogBytes(orderId int64, sub bool) []byte {
 	return c.LogBytes()
 }
 
+// 提交订单
+func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64) (r *define.Result64, err error) {
+	if o.ShopId <= 0 {
+		mch := s._mchRepo.GetMerchant(o.VendorId)
+		if mch != nil {
+			o.ShopId = mch.ShopManager().GetOnlineShop().GetDomainId()
+		}
+	}
+	io, err := s._manager.SubmitTradeOrder(parser.Order(o), rate)
+	r = parser.Result64(io.GetAggregateRootId(), err)
+	if err == nil {
+		// 返回支付单号
+		ro := io.(order.ITradeOrder)
+		r.Message = ro.GetPaymentOrder().GetTradeNo()
+	}
+	return r, nil
+}
+
+// 提交订单
+func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, err error) {
+	o := s._manager.GetOrderById(orderId)
+	if o == nil || o.Type() != order.TTrade {
+		err = order.ErrNoSuchOrder
+	} else {
+		io := o.(order.ITradeOrder)
+		err = io.CashPay()
+	}
+	return parser.Result64(o.GetAggregateRootId(), err), nil
+}
+
 // 取消订单
 func (s *shoppingService) CancelOrder(orderId int64, sub bool, reason string) error {
 	c := s._manager.Unified(orderId, sub)

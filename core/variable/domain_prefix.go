@@ -11,7 +11,7 @@ package variable
 
 var (
 	// 主站域名前缀
-	DOMAIN_PREFIX_MAIN = "www."
+	DOMAIN_PREFIX_PORTAL = "www."
 	// 手机端域名前缀
 	DOMAIN_PREFIX_MOBILE = "m."
 	// 系统管理域名前缀

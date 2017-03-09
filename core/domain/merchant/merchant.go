@@ -54,7 +54,7 @@ func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int32 {
+func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 	return m.rep.GetMemberFromSignUpToken(token)
 }
 

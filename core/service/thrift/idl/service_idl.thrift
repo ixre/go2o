@@ -485,4 +485,8 @@ service SaleService {
   ComplexOrder GetSubOrderByNo(1:string orderNo)
   // 获取订单商品项
   list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
+  // 提交交易订单
+  Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
+  // 交易单现金支付
+  Result64 TradeOrderCashPay(1:i64 orderId)
 }
