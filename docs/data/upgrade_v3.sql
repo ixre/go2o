@@ -627,6 +627,9 @@ ADD COLUMN `premium_user` INT(2) NOT NULL COMMENT '高级用户,0表示非高级
 ADD COLUMN `premium_expires` INT(11) NOT NULL COMMENT '高级会员过期时间' AFTER `premium_user`;
 
 
+/* 2017-03-09 */
+
+
 
 
 CREATE TABLE mm_buyer_group (

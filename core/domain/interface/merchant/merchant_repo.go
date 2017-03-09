@@ -19,7 +19,7 @@ type IMerchantRepo interface {
 	CreateSignUpToken(memberId int64) string
 
 	// 根据商户申请密钥获取会员编号
-	GetMemberFromSignUpToken(token string) int32
+	GetMemberFromSignUpToken(token string) int64
 
 	// 获取商户的编号
 	GetMerchantsId() []int32

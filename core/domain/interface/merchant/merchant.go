@@ -129,7 +129,7 @@ type (
 		CreateSignUpToken(memberId int64) string
 
 		// 根据商户申请密钥获取会员编号
-		GetMemberFromSignUpToken(token string) int32
+		GetMemberFromSignUpToken(token string) int64
 
 		// 提交商户注册信息
 		CommitSignUpInfo(*MchSignUp) (int32, error)

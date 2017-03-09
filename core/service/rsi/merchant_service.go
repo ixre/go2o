@@ -42,7 +42,7 @@ func (m *merchantService) CreateSignUpToken(memberId int64) string {
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantService) GetMemberFromSignUpToken(token string) int32 {
+func (m *merchantService) GetMemberFromSignUpToken(token string) int64 {
 	return m._mchRepo.GetMemberFromSignUpToken(token)
 }
 

@@ -117,8 +117,8 @@ func FsInit(debug bool) {
 
 // 重设MAC OX下的文件监视更改
 func resetFsOnDarwin() {
-	webFs[FsMain] = !false
-	webFs[FsMainMobile] = false
+	webFs[FsMain] = false
+	webFs[FsMainMobile] = !false
 	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
 	webFs[FsUCenter] = false
