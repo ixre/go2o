@@ -412,6 +412,8 @@ type (
 		IsBreak int32
 		// 订单状态
 		State int32
+		// 状态文本
+		StateText string
 		// 订单生成时间
 		CreateTime int64
 		// 更新时间
