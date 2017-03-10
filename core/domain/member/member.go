@@ -92,6 +92,8 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		LevelName:         lv.Name,
 		InvitationCode:    mv.InvitationCode,
 		TrustAuthState:    taState,
+		PremiumUser:       mv.PremiumUser,
+		PremiumExpires:    mv.PremiumExpires,
 		State:             mv.State,
 		Integral:          acv.Integral,
 		Balance:           float64(acv.Balance),

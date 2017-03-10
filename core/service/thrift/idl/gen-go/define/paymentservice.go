@@ -22,6 +22,9 @@ type PaymentService interface {
 	//  - PaymentNo
 	GetPaymentOrder(paymentNo string) (r *PaymentOrder, err error)
 	// Parameters:
+	//  - TradeNo
+	GetPaymentOrderId(tradeNo string) (r int32, err error)
+	// Parameters:
 	//  - ID
 	GetPaymentOrderById(id int32) (r *PaymentOrder, err error)
 	// Parameters:
@@ -233,6 +236,83 @@ func (p *PaymentServiceClient) recvGetPaymentOrder() (value *PaymentOrder, err e
 }
 
 // Parameters:
+//  - TradeNo
+func (p *PaymentServiceClient) GetPaymentOrderId(tradeNo string) (r int32, err error) {
+	if err = p.sendGetPaymentOrderId(tradeNo); err != nil {
+		return
+	}
+	return p.recvGetPaymentOrderId()
+}
+
+func (p *PaymentServiceClient) sendGetPaymentOrderId(tradeNo string) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("GetPaymentOrderId", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := PaymentServiceGetPaymentOrderIdArgs{
+		TradeNo: tradeNo,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *PaymentServiceClient) recvGetPaymentOrderId() (value int32, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "GetPaymentOrderId" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "GetPaymentOrderId failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "GetPaymentOrderId failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error126 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error127 error
+		error127, err = error126.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error127
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "GetPaymentOrderId failed: invalid message type")
+		return
+	}
+	result := PaymentServiceGetPaymentOrderIdResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
 //  - ID
 func (p *PaymentServiceClient) GetPaymentOrderById(id int32) (r *PaymentOrder, err error) {
 	if err = p.sendGetPaymentOrderById(id); err != nil {
@@ -282,16 +362,16 @@ func (p *PaymentServiceClient) recvGetPaymentOrderById() (value *PaymentOrder, e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error126 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error127 error
-		error127, err = error126.Read(iprot)
+		error128 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error129 error
+		error129, err = error128.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error127
+		err = error129
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -361,16 +441,16 @@ func (p *PaymentServiceClient) recvAdjustOrder() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error128 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error129 error
-		error129, err = error128.Read(iprot)
+		error130 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error131 error
+		error131, err = error130.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error129
+		err = error131
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -440,16 +520,16 @@ func (p *PaymentServiceClient) recvDiscountByBalance() (value *Result_, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error130 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error131 error
-		error131, err = error130.Read(iprot)
+		error132 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error133 error
+		error133, err = error132.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error131
+		err = error133
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -521,16 +601,16 @@ func (p *PaymentServiceClient) recvDiscountByIntegral() (value *DResult_, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error132 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error133 error
-		error133, err = error132.Read(iprot)
+		error134 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error135 error
+		error135, err = error134.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error133
+		err = error135
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -600,16 +680,16 @@ func (p *PaymentServiceClient) recvPaymentByWallet() (value *Result_, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error134 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error135 error
-		error135, err = error134.Read(iprot)
+		error136 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error137 error
+		error137, err = error136.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error135
+		err = error137
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -679,16 +759,16 @@ func (p *PaymentServiceClient) recvHybridPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error136 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error137 error
-		error137, err = error136.Read(iprot)
+		error138 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error139 error
+		error139, err = error138.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error137
+		err = error139
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -760,16 +840,16 @@ func (p *PaymentServiceClient) recvFinishPayment() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error138 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error139 error
-		error139, err = error138.Read(iprot)
+		error140 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error141 error
+		error141, err = error140.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error139
+		err = error141
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -807,17 +887,18 @@ func (p *PaymentServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFun
 
 func NewPaymentServiceProcessor(handler PaymentService) *PaymentServiceProcessor {
 
-	self140 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self140.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
-	self140.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
-	self140.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
-	self140.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
-	self140.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
-	self140.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
-	self140.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
-	self140.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
-	self140.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
-	return self140
+	self142 := &PaymentServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self142.processorMap["SubmitPaymentOrder"] = &paymentServiceProcessorSubmitPaymentOrder{handler: handler}
+	self142.processorMap["GetPaymentOrder"] = &paymentServiceProcessorGetPaymentOrder{handler: handler}
+	self142.processorMap["GetPaymentOrderId"] = &paymentServiceProcessorGetPaymentOrderId{handler: handler}
+	self142.processorMap["GetPaymentOrderById"] = &paymentServiceProcessorGetPaymentOrderById{handler: handler}
+	self142.processorMap["AdjustOrder"] = &paymentServiceProcessorAdjustOrder{handler: handler}
+	self142.processorMap["DiscountByBalance"] = &paymentServiceProcessorDiscountByBalance{handler: handler}
+	self142.processorMap["DiscountByIntegral"] = &paymentServiceProcessorDiscountByIntegral{handler: handler}
+	self142.processorMap["PaymentByWallet"] = &paymentServiceProcessorPaymentByWallet{handler: handler}
+	self142.processorMap["HybridPayment"] = &paymentServiceProcessorHybridPayment{handler: handler}
+	self142.processorMap["FinishPayment"] = &paymentServiceProcessorFinishPayment{handler: handler}
+	return self142
 }
 
 func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -830,12 +911,12 @@ func (p *PaymentServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succes
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x141 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x143 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x141.Write(oprot)
+	x143.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x141
+	return false, x143
 
 }
 
@@ -918,6 +999,54 @@ func (p *paymentServiceProcessorGetPaymentOrder) Process(seqId int32, iprot, opr
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetPaymentOrder", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type paymentServiceProcessorGetPaymentOrderId struct {
+	handler PaymentService
+}
+
+func (p *paymentServiceProcessorGetPaymentOrderId) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := PaymentServiceGetPaymentOrderIdArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GetPaymentOrderId", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := PaymentServiceGetPaymentOrderIdResult{}
+	var retval int32
+	var err2 error
+	if retval, err2 = p.handler.GetPaymentOrderId(args.TradeNo); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetPaymentOrderId: "+err2.Error())
+		oprot.WriteMessageBegin("GetPaymentOrderId", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = &retval
+	}
+	if err2 = oprot.WriteMessageBegin("GetPaymentOrderId", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1663,6 +1792,199 @@ func (p *PaymentServiceGetPaymentOrderResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("PaymentServiceGetPaymentOrderResult(%+v)", *p)
+}
+
+// Attributes:
+//  - TradeNo
+type PaymentServiceGetPaymentOrderIdArgs struct {
+	TradeNo string `thrift:"tradeNo,1" json:"tradeNo"`
+}
+
+func NewPaymentServiceGetPaymentOrderIdArgs() *PaymentServiceGetPaymentOrderIdArgs {
+	return &PaymentServiceGetPaymentOrderIdArgs{}
+}
+
+func (p *PaymentServiceGetPaymentOrderIdArgs) GetTradeNo() string {
+	return p.TradeNo
+}
+func (p *PaymentServiceGetPaymentOrderIdArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.TradeNo = v
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetPaymentOrderId_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("tradeNo", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:tradeNo: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.TradeNo)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.tradeNo (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:tradeNo: ", p), err)
+	}
+	return err
+}
+
+func (p *PaymentServiceGetPaymentOrderIdArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceGetPaymentOrderIdArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type PaymentServiceGetPaymentOrderIdResult struct {
+	Success *int32 `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewPaymentServiceGetPaymentOrderIdResult() *PaymentServiceGetPaymentOrderIdResult {
+	return &PaymentServiceGetPaymentOrderIdResult{}
+}
+
+var PaymentServiceGetPaymentOrderIdResult_Success_DEFAULT int32
+
+func (p *PaymentServiceGetPaymentOrderIdResult) GetSuccess() int32 {
+	if !p.IsSetSuccess() {
+		return PaymentServiceGetPaymentOrderIdResult_Success_DEFAULT
+	}
+	return *p.Success
+}
+func (p *PaymentServiceGetPaymentOrderIdResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdResult) readField0(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 0: ", err)
+	} else {
+		p.Success = &v
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetPaymentOrderId_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *PaymentServiceGetPaymentOrderIdResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.I32, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteI32(int32(*p.Success)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T.success (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *PaymentServiceGetPaymentOrderIdResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PaymentServiceGetPaymentOrderIdResult(%+v)", *p)
 }
 
 // Attributes:

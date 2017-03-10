@@ -197,6 +197,10 @@ type (
 		InvitationCode string
 		// 实名认证状态
 		TrustAuthState int32
+		// 高级会员类型
+		PremiumUser int32
+		// 高级会员是否过期
+		PremiumExpires int64
 		// 是否启用
 		State int32
 		// 积分

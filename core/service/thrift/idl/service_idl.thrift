@@ -129,17 +129,19 @@ struct ComplexMember {
     7: string LevelName
     8: string LevelSign
     9: i32 LevelOfficial
-    10: string InvitationCode
-    11: i32 TrustAuthState
-    12: i32 State
-    13: i64 Integral
-    14: double Balance
-    15: double WalletBalance
-    16: double GrowBalance
-    17: double GrowAmount
-    18: double GrowEarnings
-    19: double GrowTotalEarnings
-    20: i64 UpdateTime
+    10: i32	PremiumUser
+    11: i64	PremiumExpires
+    12: string InvitationCode
+    13: i32 TrustAuthState
+    14: i32 State
+    15: i64 Integral
+    16: double Balance
+    17: double WalletBalance
+    18: double GrowBalance
+    19: double GrowAmount
+    20: double GrowEarnings
+    21: double GrowTotalEarnings
+    22: i64 UpdateTime
 }
 
 struct MemberRelation {
@@ -459,6 +461,8 @@ service PaymentService{
     Result SubmitPaymentOrder(1:PaymentOrder o)
     // 根据支付单号获取支付单
     PaymentOrder GetPaymentOrder(1:string paymentNo)
+    // 根据交易号获取支付单编号
+    i32 GetPaymentOrderId(1:string tradeNo)
     // 根据编号获取支付单
     PaymentOrder GetPaymentOrderById(1:i32 id)
     // 调整支付单金额
