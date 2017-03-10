@@ -242,6 +242,10 @@ func (vp *valueRepo) GetRegisterPerm() valueobject.RegisterPerm {
 func (vp *valueRepo) SaveRegisterPerm(v *valueobject.RegisterPerm) error {
 	if v != nil {
 		defer vp.signReload()
+		// 如果要验证手机，则必须开启填写手机
+		if v.MustBindPhone {
+			v.NeedPhone = true
+		}
 		vp._rpConf = v
 		return vp._rpGob.Save(vp._rpConf)
 	}

@@ -37,6 +37,15 @@ func (p *paymentService) GetPaymentOrderById(id int32) (*define.PaymentOrder, er
 	return nil, nil
 }
 
+// 根据交易号获取支付单编号
+func (p *paymentService) GetPaymentOrderId(tradeNo string) (int32, error) {
+	po := p._rep.GetPaymentOrder(tradeNo)
+	if po != nil {
+		return po.GetAggregateRootId(), nil
+	}
+	return 0, nil
+}
+
 // 根据支付单号获取支付单
 func (p *paymentService) GetPaymentOrder(paymentNo string) (*define.PaymentOrder, error) {
 	if po := p._rep.GetPaymentOrder(paymentNo); po != nil {

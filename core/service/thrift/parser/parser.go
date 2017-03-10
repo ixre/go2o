@@ -155,6 +155,8 @@ func ComplexMemberDto(src *member.ComplexMember) *define.ComplexMember {
 		LevelName:         src.LevelName,
 		LevelSign:         src.LevelSign,
 		LevelOfficial:     src.LevelOfficial,
+		PremiumUser:       src.PremiumUser,
+		PremiumExpires:    src.PremiumExpires,
 		InvitationCode:    src.InvitationCode,
 		TrustAuthState:    src.TrustAuthState,
 		State:             src.State,
