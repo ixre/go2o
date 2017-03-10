@@ -43,5 +43,5 @@ const (
 
 var (
 	// 域名
-	Domain string = ".at3.net"
+	Domain string = "at3.net"
 )
