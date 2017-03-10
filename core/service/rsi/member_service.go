@@ -624,6 +624,12 @@ func (ms *memberService) QueryPagerOrder(memberId int64, begin, size int, pagina
 	return ms._orderQuery.QueryPagerOrder(memberId, begin, size, pagination, where, orderBy)
 }
 
+// 查询分页订单
+func (ms *memberService) QueryPagerTradeOrder(memberId int64, begin, size int,
+	pagination bool, where, orderBy string) (num int, rows []*define.ComplexOrder) {
+	return ms._orderQuery.QueryPagerTradeOrder(memberId, begin, size, pagination, where, orderBy)
+}
+
 /*********** 收货地址 ***********/
 func (ms *memberService) GetAddressList(memberId int64) []*member.Address {
 	return ms._rep.GetDeliverAddress(memberId)

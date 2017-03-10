@@ -597,6 +597,7 @@ func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          src.State,
+		StateText:      src.StateText,
 		Items:          make([]*define.ComplexItem, len(src.Items)),
 	}
 	if src.Items != nil {
@@ -625,6 +626,7 @@ func Order(src *define.ComplexOrder) *order.ComplexOrder {
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          src.State,
+		StateText:      src.StateText,
 		Items:          make([]*order.ComplexItem, len(src.Items)),
 	}
 	if src.Items != nil {

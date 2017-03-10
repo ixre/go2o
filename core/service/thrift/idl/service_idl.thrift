@@ -356,9 +356,10 @@ struct ComplexOrder {
     16: string ShippingAddress
     17: i32 IsBreak
     18: i32 State
-    19: i64 CreateTime
-    20: i64 UpdateTime
-    21: list<ComplexItem> Items
+    19: string StateText
+    20: i64 CreateTime
+    21: i64 UpdateTime
+    22: list<ComplexItem> Items
 }
 
 //商家服务
