@@ -245,6 +245,8 @@ type (
 		MchOrderSettleMode enum.MchSettleMode
 		// 商户订单结算比例
 		MchOrderSettleRate float32
+		// 商户交易单是否需上传发票
+		TradeOrderRequireTicket bool
 		// 是否启用分销模式
 		FxSalesEnabled bool
 		// 返现比例,0则不返现

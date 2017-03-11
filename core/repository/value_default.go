@@ -155,6 +155,8 @@ var (
 		MchOrderSettleMode: enum.MchModeSettleByRate,
 		// 商户订单结算比例
 		MchOrderSettleRate: 1,
+		// 商户交易单是否需上传发票
+		TradeOrderRequireTicket: false,
 		// 是否启用分销模式
 		FxSalesEnabled: false,
 		// 返现比例,0则不返现

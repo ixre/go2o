@@ -24,7 +24,7 @@ var GoUnusedProtection__ int
 type Result_ struct {
 	ID      int32  `thrift:"Id,1" json:"Id"`
 	Result_ bool   `thrift:"Result,2" json:"Result"`
-	Code    int32  `thrift:"Code,3" json:"Code"`
+	Code    string `thrift:"Code,3" json:"Code"`
 	Message string `thrift:"Message,4" json:"Message"`
 }
 
@@ -40,7 +40,7 @@ func (p *Result_) GetResult_() bool {
 	return p.Result_
 }
 
-func (p *Result_) GetCode() int32 {
+func (p *Result_) GetCode() string {
 	return p.Code
 }
 
@@ -111,7 +111,7 @@ func (p *Result_) readField2(iprot thrift.TProtocol) error {
 }
 
 func (p *Result_) readField3(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
 		p.Code = v
@@ -180,10 +180,10 @@ func (p *Result_) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *Result_) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Code", thrift.I32, 3); err != nil {
+	if err := oprot.WriteFieldBegin("Code", thrift.STRING, 3); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Code: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Code)); err != nil {
+	if err := oprot.WriteString(string(p.Code)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.Code (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -220,7 +220,7 @@ func (p *Result_) String() string {
 type Result64 struct {
 	ID      int64  `thrift:"Id,1" json:"Id"`
 	Result_ bool   `thrift:"Result,2" json:"Result"`
-	Code    int32  `thrift:"Code,3" json:"Code"`
+	Code    string `thrift:"Code,3" json:"Code"`
 	Message string `thrift:"Message,4" json:"Message"`
 }
 
@@ -236,7 +236,7 @@ func (p *Result64) GetResult_() bool {
 	return p.Result_
 }
 
-func (p *Result64) GetCode() int32 {
+func (p *Result64) GetCode() string {
 	return p.Code
 }
 
@@ -307,7 +307,7 @@ func (p *Result64) readField2(iprot thrift.TProtocol) error {
 }
 
 func (p *Result64) readField3(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
+	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
 		p.Code = v
@@ -376,10 +376,10 @@ func (p *Result64) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *Result64) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Code", thrift.I32, 3); err != nil {
+	if err := oprot.WriteFieldBegin("Code", thrift.STRING, 3); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Code: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Code)); err != nil {
+	if err := oprot.WriteString(string(p.Code)); err != nil {
 		return thrift.PrependError(fmt.Sprintf("%T.Code (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
@@ -411,11 +411,13 @@ func (p *Result64) String() string {
 // Attributes:
 //  - Data
 //  - Result_
+//  - Code
 //  - Message
 type DResult_ struct {
 	Data    float64 `thrift:"Data,1" json:"Data"`
 	Result_ bool    `thrift:"Result,2" json:"Result"`
-	Message string  `thrift:"Message,3" json:"Message"`
+	Code    string  `thrift:"Code,3" json:"Code"`
+	Message string  `thrift:"Message,4" json:"Message"`
 }
 
 func NewDResult_() *DResult_ {
@@ -428,6 +430,10 @@ func (p *DResult_) GetData() float64 {
 
 func (p *DResult_) GetResult_() bool {
 	return p.Result_
+}
+
+func (p *DResult_) GetCode() string {
+	return p.Code
 }
 
 func (p *DResult_) GetMessage() string {
@@ -457,6 +463,10 @@ func (p *DResult_) Read(iprot thrift.TProtocol) error {
 			}
 		case 3:
 			if err := p.readField3(iprot); err != nil {
+				return err
+			}
+		case 4:
+			if err := p.readField4(iprot); err != nil {
 				return err
 			}
 		default:
@@ -496,6 +506,15 @@ func (p *DResult_) readField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
+		p.Code = v
+	}
+	return nil
+}
+
+func (p *DResult_) readField4(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 4: ", err)
+	} else {
 		p.Message = v
 	}
 	return nil
@@ -512,6 +531,9 @@ func (p *DResult_) Write(oprot thrift.TProtocol) error {
 		return err
 	}
 	if err := p.writeField3(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField4(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -550,14 +572,27 @@ func (p *DResult_) writeField2(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *DResult_) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Message", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Message: ", p), err)
+	if err := oprot.WriteFieldBegin("Code", thrift.STRING, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Code: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Message)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Message (3) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.Code)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Code (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Message: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Code: ", p), err)
+	}
+	return err
+}
+
+func (p *DResult_) writeField4(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Message", thrift.STRING, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Message: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.Message)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Message (4) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Message: ", p), err)
 	}
 	return err
 }
@@ -9841,33 +9876,33 @@ func (p *ComplexItem) String() string {
 //  - ShippingAddress
 //  - IsBreak
 //  - State
-//  - StateText
 //  - CreateTime
 //  - UpdateTime
 //  - Items
+//  - Extend
 type ComplexOrder struct {
-	OrderId         int64          `thrift:"OrderId,1" json:"OrderId"`
-	SubOrderId      int64          `thrift:"SubOrderId,2" json:"SubOrderId"`
-	OrderType       int32          `thrift:"OrderType,3" json:"OrderType"`
-	OrderNo         string         `thrift:"OrderNo,4" json:"OrderNo"`
-	BuyerId         int64          `thrift:"BuyerId,5" json:"BuyerId"`
-	VendorId        int32          `thrift:"VendorId,6" json:"VendorId"`
-	ShopId          int32          `thrift:"ShopId,7" json:"ShopId"`
-	Subject         string         `thrift:"Subject,8" json:"Subject"`
-	ItemAmount      float64        `thrift:"ItemAmount,9" json:"ItemAmount"`
-	DiscountAmount  float64        `thrift:"DiscountAmount,10" json:"DiscountAmount"`
-	ExpressFee      float64        `thrift:"ExpressFee,11" json:"ExpressFee"`
-	PackageFee      float64        `thrift:"PackageFee,12" json:"PackageFee"`
-	FinalAmount     float64        `thrift:"FinalAmount,13" json:"FinalAmount"`
-	ConsigneePerson string         `thrift:"ConsigneePerson,14" json:"ConsigneePerson"`
-	ConsigneePhone  string         `thrift:"ConsigneePhone,15" json:"ConsigneePhone"`
-	ShippingAddress string         `thrift:"ShippingAddress,16" json:"ShippingAddress"`
-	IsBreak         int32          `thrift:"IsBreak,17" json:"IsBreak"`
-	State           int32          `thrift:"State,18" json:"State"`
-	StateText       string         `thrift:"StateText,19" json:"StateText"`
-	CreateTime      int64          `thrift:"CreateTime,20" json:"CreateTime"`
-	UpdateTime      int64          `thrift:"UpdateTime,21" json:"UpdateTime"`
-	Items           []*ComplexItem `thrift:"Items,22" json:"Items"`
+	OrderId         int64             `thrift:"OrderId,1" json:"OrderId"`
+	SubOrderId      int64             `thrift:"SubOrderId,2" json:"SubOrderId"`
+	OrderType       int32             `thrift:"OrderType,3" json:"OrderType"`
+	OrderNo         string            `thrift:"OrderNo,4" json:"OrderNo"`
+	BuyerId         int64             `thrift:"BuyerId,5" json:"BuyerId"`
+	VendorId        int32             `thrift:"VendorId,6" json:"VendorId"`
+	ShopId          int32             `thrift:"ShopId,7" json:"ShopId"`
+	Subject         string            `thrift:"Subject,8" json:"Subject"`
+	ItemAmount      float64           `thrift:"ItemAmount,9" json:"ItemAmount"`
+	DiscountAmount  float64           `thrift:"DiscountAmount,10" json:"DiscountAmount"`
+	ExpressFee      float64           `thrift:"ExpressFee,11" json:"ExpressFee"`
+	PackageFee      float64           `thrift:"PackageFee,12" json:"PackageFee"`
+	FinalAmount     float64           `thrift:"FinalAmount,13" json:"FinalAmount"`
+	ConsigneePerson string            `thrift:"ConsigneePerson,14" json:"ConsigneePerson"`
+	ConsigneePhone  string            `thrift:"ConsigneePhone,15" json:"ConsigneePhone"`
+	ShippingAddress string            `thrift:"ShippingAddress,16" json:"ShippingAddress"`
+	IsBreak         int32             `thrift:"IsBreak,17" json:"IsBreak"`
+	State           int32             `thrift:"State,18" json:"State"`
+	CreateTime      int64             `thrift:"CreateTime,19" json:"CreateTime"`
+	UpdateTime      int64             `thrift:"UpdateTime,20" json:"UpdateTime"`
+	Items           []*ComplexItem    `thrift:"Items,21" json:"Items"`
+	Extend          map[string]string `thrift:"Extend,22" json:"Extend"`
 }
 
 func NewComplexOrder() *ComplexOrder {
@@ -9946,10 +9981,6 @@ func (p *ComplexOrder) GetState() int32 {
 	return p.State
 }
 
-func (p *ComplexOrder) GetStateText() string {
-	return p.StateText
-}
-
 func (p *ComplexOrder) GetCreateTime() int64 {
 	return p.CreateTime
 }
@@ -9960,6 +9991,10 @@ func (p *ComplexOrder) GetUpdateTime() int64 {
 
 func (p *ComplexOrder) GetItems() []*ComplexItem {
 	return p.Items
+}
+
+func (p *ComplexOrder) GetExtend() map[string]string {
+	return p.Extend
 }
 func (p *ComplexOrder) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
@@ -10241,10 +10276,10 @@ func (p *ComplexOrder) readField18(iprot thrift.TProtocol) error {
 }
 
 func (p *ComplexOrder) readField19(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 19: ", err)
 	} else {
-		p.StateText = v
+		p.CreateTime = v
 	}
 	return nil
 }
@@ -10253,21 +10288,12 @@ func (p *ComplexOrder) readField20(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return thrift.PrependError("error reading field 20: ", err)
 	} else {
-		p.CreateTime = v
-	}
-	return nil
-}
-
-func (p *ComplexOrder) readField21(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
-		return thrift.PrependError("error reading field 21: ", err)
-	} else {
 		p.UpdateTime = v
 	}
 	return nil
 }
 
-func (p *ComplexOrder) readField22(iprot thrift.TProtocol) error {
+func (p *ComplexOrder) readField21(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return thrift.PrependError("error reading list begin: ", err)
@@ -10283,6 +10309,34 @@ func (p *ComplexOrder) readField22(iprot thrift.TProtocol) error {
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)
+	}
+	return nil
+}
+
+func (p *ComplexOrder) readField22(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]string, size)
+	p.Extend = tMap
+	for i := 0; i < size; i++ {
+		var _key5 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key5 = v
+		}
+		var _val6 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val6 = v
+		}
+		p.Extend[_key5] = _val6
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
 	}
 	return nil
 }
@@ -10601,47 +10655,34 @@ func (p *ComplexOrder) writeField18(oprot thrift.TProtocol) (err error) {
 }
 
 func (p *ComplexOrder) writeField19(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("StateText", thrift.STRING, 19); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 19:StateText: ", p), err)
+	if err := oprot.WriteFieldBegin("CreateTime", thrift.I64, 19); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 19:CreateTime: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.StateText)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.StateText (19) field write error: ", p), err)
+	if err := oprot.WriteI64(int64(p.CreateTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.CreateTime (19) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 19:StateText: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 19:CreateTime: ", p), err)
 	}
 	return err
 }
 
 func (p *ComplexOrder) writeField20(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("CreateTime", thrift.I64, 20); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 20:CreateTime: ", p), err)
+	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 20); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 20:UpdateTime: ", p), err)
 	}
-	if err := oprot.WriteI64(int64(p.CreateTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.CreateTime (20) field write error: ", p), err)
+	if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (20) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 20:CreateTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 20:UpdateTime: ", p), err)
 	}
 	return err
 }
 
 func (p *ComplexOrder) writeField21(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("UpdateTime", thrift.I64, 21); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 21:UpdateTime: ", p), err)
-	}
-	if err := oprot.WriteI64(int64(p.UpdateTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.UpdateTime (21) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 21:UpdateTime: ", p), err)
-	}
-	return err
-}
-
-func (p *ComplexOrder) writeField22(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Items", thrift.LIST, 22); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 22:Items: ", p), err)
+	if err := oprot.WriteFieldBegin("Items", thrift.LIST, 21); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 21:Items: ", p), err)
 	}
 	if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Items)); err != nil {
 		return thrift.PrependError("error writing list begin: ", err)
@@ -10655,7 +10696,31 @@ func (p *ComplexOrder) writeField22(oprot thrift.TProtocol) (err error) {
 		return thrift.PrependError("error writing list end: ", err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 22:Items: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 21:Items: ", p), err)
+	}
+	return err
+}
+
+func (p *ComplexOrder) writeField22(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("Extend", thrift.MAP, 22); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 22:Extend: ", p), err)
+	}
+	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Extend)); err != nil {
+		return thrift.PrependError("error writing map begin: ", err)
+	}
+	for k, v := range p.Extend {
+		if err := oprot.WriteString(string(k)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+	}
+	if err := oprot.WriteMapEnd(); err != nil {
+		return thrift.PrependError("error writing map end: ", err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 22:Extend: ", p), err)
 	}
 	return err
 }

@@ -4,21 +4,22 @@ namespace go define
 struct Result{
    1:i32 Id
    2:bool Result
-   3:i32 Code
+   3:string Code
    4:string Message
 }
 //传输结果对象
 struct Result64{
    1:i64 Id
    2:bool Result
-   3:i32 Code
+   3:string Code
    4:string Message
 }
 //传输结果对象(Double)
 struct DResult{
    1:double Data
    2:bool Result
-   3:string Message
+   3:string Code
+   4:string Message
 }
 
 // 键值对
@@ -356,10 +357,11 @@ struct ComplexOrder {
     16: string ShippingAddress
     17: i32 IsBreak
     18: i32 State
-    19: string StateText
-    20: i64 CreateTime
-    21: i64 UpdateTime
-    22: list<ComplexItem> Items
+    19: i64 CreateTime
+    20: i64 UpdateTime
+    21: list<ComplexItem> Items
+    // 扩展信息
+    22: map<string,string> Extend
 }
 
 //商家服务
@@ -487,7 +489,7 @@ service PaymentService{
 // 销售服务
 service SaleService {
   // 获取订单信息
-  ComplexOrder GetOrder(1:i64 id,2:bool sub_order)
+  ComplexOrder GetOrder(1:string order_id,2:bool sub_order)
   // 获取子订单
   ComplexOrder GetSubOrder(1:i64 id)
   // 根据订单号获取子订单
@@ -498,4 +500,6 @@ service SaleService {
   Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
   // 交易单现金支付
   Result64 TradeOrderCashPay(1:i64 orderId)
+  // 上传交易单发票
+  Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
 }

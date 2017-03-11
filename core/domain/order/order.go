@@ -135,6 +135,7 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 			BuyerId:    o.baseValue.BuyerId,
 			State:      o.baseValue.State,
 			CreateTime: o.baseValue.CreateTime,
+			Extend:     make(map[string]string),
 		}
 	}
 	return o.complex

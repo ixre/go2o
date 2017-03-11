@@ -122,8 +122,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err13 := (strconv.Atoi(flag.Arg(1)))
-		if err13 != nil {
+		tmp0, err15 := (strconv.Atoi(flag.Arg(1)))
+		if err15 != nil {
 			Usage()
 			return
 		}
@@ -149,8 +149,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err16 := (strconv.Atoi(flag.Arg(1)))
-		if err16 != nil {
+		tmp0, err18 := (strconv.Atoi(flag.Arg(1)))
+		if err18 != nil {
 			Usage()
 			return
 		}

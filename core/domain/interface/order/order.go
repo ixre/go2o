@@ -220,6 +220,9 @@ var (
 
 	ErrMissingSubject *domain.DomainError = domain.NewDomainError(
 		"err_order_missing_subject", "缺少订单标题")
+
+	ErrTicketImage *domain.DomainError = domain.NewDomainError(
+		"err_order_ticket_image", "请上传正确的发票凭证")
 )
 
 type (
@@ -357,6 +360,8 @@ type (
 		GetPaymentOrder() payment.IPaymentOrder
 		// 交易支付完成
 		TradePaymentFinish() error
+		// 更新发票数据
+		UpdateTicket(img string) error
 	}
 
 	// 订单
@@ -420,6 +425,8 @@ type (
 		UpdateTime int64
 		// 商品项
 		Items []*ComplexItem
+		// 扩展数据
+		Extend map[string]string
 	}
 	// 符合的订单项
 	ComplexItem struct {
@@ -652,6 +659,8 @@ type (
 		TradeRate float64 `db:"trade_rate"`
 		// 是否现金支付
 		CashPay int32 `db:"cash_pay"`
+		// 发票图片
+		TicketImage string `db:"ticket_image"`
 		// 订单备注
 		Remark string `db:"remark"`
 		// 订单状态

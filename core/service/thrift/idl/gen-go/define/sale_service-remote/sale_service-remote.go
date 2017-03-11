@@ -20,12 +20,13 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(i64 id, bool sub_order)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(string order_id, bool sub_order)")
 	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrder(i64 id)")
 	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrderByNo(string orderNo)")
 	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
 	fmt.Fprintln(os.Stderr, "  Result64 SubmitTradeOrder(ComplexOrder o, double rate)")
 	fmt.Fprintln(os.Stderr, "  Result64 TradeOrderCashPay(i64 orderId)")
+	fmt.Fprintln(os.Stderr, "  Result64 TradeOrderUpdateTicket(i64 orderId, string img)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -125,11 +126,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetOrder requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err189 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err189 != nil {
-			Usage()
-			return
-		}
+		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2) == "true"
 		value1 := argvalue1
@@ -141,8 +138,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err191 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err191 != nil {
+		argvalue0, err195 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err195 != nil {
 			Usage()
 			return
 		}
@@ -165,8 +162,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err193 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err193 != nil {
+		argvalue0, err197 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err197 != nil {
 			Usage()
 			return
 		}
@@ -179,25 +176,25 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SubmitTradeOrder requires 2 args")
 			flag.Usage()
 		}
-		arg194 := flag.Arg(1)
-		mbTrans195 := thrift.NewTMemoryBufferLen(len(arg194))
-		defer mbTrans195.Close()
-		_, err196 := mbTrans195.WriteString(arg194)
-		if err196 != nil {
+		arg198 := flag.Arg(1)
+		mbTrans199 := thrift.NewTMemoryBufferLen(len(arg198))
+		defer mbTrans199.Close()
+		_, err200 := mbTrans199.WriteString(arg198)
+		if err200 != nil {
 			Usage()
 			return
 		}
-		factory197 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt198 := factory197.GetProtocol(mbTrans195)
+		factory201 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt202 := factory201.GetProtocol(mbTrans199)
 		argvalue0 := define.NewComplexOrder()
-		err199 := argvalue0.Read(jsProt198)
-		if err199 != nil {
+		err203 := argvalue0.Read(jsProt202)
+		if err203 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		argvalue1, err200 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err200 != nil {
+		argvalue1, err204 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err204 != nil {
 			Usage()
 			return
 		}
@@ -210,13 +207,29 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TradeOrderCashPay requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err201 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err201 != nil {
+		argvalue0, err205 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err205 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
 		fmt.Print(client.TradeOrderCashPay(value0))
+		fmt.Print("\n")
+		break
+	case "TradeOrderUpdateTicket":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "TradeOrderUpdateTicket requires 2 args")
+			flag.Usage()
+		}
+		argvalue0, err206 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err206 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.TradeOrderUpdateTicket(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

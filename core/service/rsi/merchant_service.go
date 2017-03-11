@@ -483,6 +483,12 @@ func (m *merchantService) PagedOrdersOfVendor(vendorId int32, begin, size int, p
 	return m._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
+// 查询分页订单
+func (m *merchantService) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+	where, orderBy string) (int32, []*define.ComplexOrder) {
+	return m._orderQuery.PagedTradeOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+}
+
 // 提到会员账户
 func (m *merchantService) TakeToMemberAccount(mchId int32, amount float32) error {
 	mch := m._mchRepo.GetMerchant(mchId)

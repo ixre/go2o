@@ -273,8 +273,11 @@ func (s *shoppingService) SubmitOrder(buyerId int64, cartCode string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrder(orderId int64, sub bool) (*define.ComplexOrder, error) {
+func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrder, error) {
+	orderId := s._repo.GetOrderId(orderNo, sub)
+
 	c := s._manager.Unified(orderId, sub).Complex()
+
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
@@ -379,12 +382,13 @@ func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64)
 	if err == nil {
 		// 返回支付单号
 		ro := io.(order.ITradeOrder)
+		r.Code = io.OrderNo()
 		r.Message = ro.GetPaymentOrder().GetTradeNo()
 	}
 	return r, nil
 }
 
-// 提交订单
+// 交易单现金支付
 func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, err error) {
 	o := s._manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
@@ -392,6 +396,18 @@ func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, 
 	} else {
 		io := o.(order.ITradeOrder)
 		err = io.CashPay()
+	}
+	return parser.Result64(o.GetAggregateRootId(), err), nil
+}
+
+// 上传交易单发票
+func (s *shoppingService) TradeOrderUpdateTicket(orderId int64, img string) (r *define.Result64, err error) {
+	o := s._manager.GetOrderById(orderId)
+	if o == nil || o.Type() != order.TTrade {
+		err = order.ErrNoSuchOrder
+	} else {
+		io := o.(order.ITradeOrder)
+		err = io.UpdateTicket(img)
 	}
 	return parser.Result64(o.GetAggregateRootId(), err), nil
 }
