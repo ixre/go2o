@@ -18,7 +18,7 @@ type IMemberRepo interface {
 	GetManager() IMemberManager
 
 	// 获取资料或初始化
-	GetProfile(memberId int32) *Profile
+	GetProfile(memberId int64) *Profile
 
 	// 保存资料
 	SaveProfile(v *Profile) error
@@ -42,52 +42,52 @@ type IMemberRepo interface {
 	GetMemberValueByPhone(phone string) *Member
 
 	// 获取会员
-	GetMember(memberId int32) IMember
+	GetMember(memberId int64) IMember
 
 	// 创建会员
 	CreateMember(*Member) IMember
 
 	// 删除会员
-	DeleteMember(id int32) error
+	DeleteMember(memberId int64) error
 
 	// 创建会员,仅作为某些操作使用,不保存
-	CreateMemberById(memberId int32) IMember
+	CreateMemberById(memberId int64) IMember
 
 	// 保存
-	SaveMember(v *Member) (int32, error)
+	SaveMember(v *Member) (int64, error)
 
 	// 获取会员最后更新时间
-	GetMemberLatestUpdateTime(id int32) int64
+	GetMemberLatestUpdateTime(id int64) int64
 
 	// 根据邀请码获取会员编号
-	GetMemberIdByInvitationCode(code string) int32
+	GetMemberIdByInvitationCode(code string) int64
 
 	// 根据手机号获取会员编号
-	GetMemberIdByPhone(phone string) int32
+	GetMemberIdByPhone(phone string) int64
 
 	// 根据邮箱地址获取会员编号
-	GetMemberIdByEmail(email string) int32
+	GetMemberIdByEmail(email string) int64
 
 	// 获取会员编号
-	GetMemberIdByUser(user string) int32
+	GetMemberIdByUser(user string) int64
 
 	// 用户名是否存在
-	CheckUsrExist(usr string, memberId int32) bool
+	CheckUsrExist(usr string, memberId int64) bool
 
 	// 手机号码是否使用
-	CheckPhoneBind(phone string, memberId int32) bool
+	CheckPhoneBind(phone string, memberId int64) bool
 
 	// 保存绑定
 	SaveRelation(*Relation) error
 
 	// 获取账户
-	GetAccount(memberId int32) *Account
+	GetAccount(memberId int64) *Account
 
 	// 保存账户，传入会员编号
-	SaveAccount(*Account) (int32, error)
+	SaveAccount(*Account) (int64, error)
 
 	// 获取银行信息
-	GetBankInfo(id int32) *BankInfo
+	GetBankInfo(memberId int64) *BankInfo
 
 	// 保存银行信息
 	SaveBankInfo(*BankInfo) error
@@ -105,13 +105,13 @@ type IMemberRepo interface {
 	GetPresentLog(id int32) *PresentLog
 
 	// 增加会员当天提现次数
-	AddTodayTakeOutTimes(memberId int32) error
+	AddTodayTakeOutTimes(memberId int64) error
 
 	// 获取会员每日提现次数
-	GetTodayTakeOutTimes(memberId int32) int
+	GetTodayTakeOutTimes(memberId int64) int
 
 	// 获取会员关联
-	GetRelation(memberId int32) *Relation
+	GetRelation(memberId int64) *Relation
 
 	// 获取经验值对应的等级
 	GetLevelValueByExp(mchId int32, exp int64) int
@@ -123,25 +123,25 @@ type IMemberRepo interface {
 	SaveLevelUpLog(l *LevelUpLog) (int32, error)
 
 	// 保存地址
-	SaveDeliver(*Address) (int32, error)
+	SaveDeliver(*Address) (int64, error)
 
 	// 获取全部配送地址
-	GetDeliverAddress(memberId int32) []*Address
+	GetDeliverAddress(memberId int64) []*Address
 
 	// 获取配送地址
-	GetSingleDeliverAddress(memberId, adressId int32) *Address
+	GetSingleDeliverAddress(memberId, addressId int64) *Address
 
 	// 删除配送地址
-	DeleteAddress(memberId, adressId int32) error
+	DeleteAddress(memberId, addressId int64) error
 
 	// 邀请
-	GetMyInvitationMembers(memberId int32, begin, end int) (total int, rows []*dto.InvitationMember)
+	GetMyInvitationMembers(memberId int64, begin, end int) (total int, rows []*dto.InvitationMember)
 
 	// 获取下级会员数量
-	GetSubInvitationNum(memberId int32, memberIdArr []int32) map[int32]int
+	GetSubInvitationNum(memberId int64, memberIdArr []int32) map[int32]int
 
 	// 获取推荐我的人
-	GetInvitationMeMember(memberId int32) *Member
+	GetInvitationMeMember(memberId int64) *Member
 
 	// 根据编号获取余额变动信息
 	GetBalanceInfo(id int32) *BalanceInfo
@@ -153,20 +153,20 @@ type IMemberRepo interface {
 	SaveBalanceInfo(v *BalanceInfo) (int32, error)
 
 	// 保存理财账户信息
-	SaveGrowAccount(memberId int32, balance, totalAmount,
+	SaveGrowAccount(memberId int64, balance, totalAmount,
 		growEarnings, totalGrowEarnings float32, updateTime int64) error
 
 	//收藏,favType 为收藏类型, referId为关联的ID
-	Favorite(memberId int32, favType int, referId int32) error
+	Favorite(memberId int64, favType int, referId int32) error
 
 	//是否已收藏
-	Favored(memberId int32, favType int, referId int32) bool
+	Favored(memberId int64, favType int, referId int32) bool
 
 	//取消收藏
-	CancelFavorite(memberId int32, favType int, referId int32) error
+	CancelFavorite(memberId int64, favType int, referId int32) error
 
 	// 获取会员分页的优惠券列表
-	GetMemberPagedCoupon(memberId int32, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
+	GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon)
 	// Select MmBuyerGroup
 	SelectMmBuyerGroup(where string, v ...interface{}) []*BuyerGroup
 	// Save MmBuyerGroup

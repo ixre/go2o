@@ -16,6 +16,8 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/format"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"log"
 	"strconv"
 )
 
@@ -50,12 +52,12 @@ func (o *OrderQuery) queryOrderItems(idArr string) []*dto.OrderItem {
 }
 
 // 获取订单的商品项
-func (o *OrderQuery) QueryOrderItems(subOrderId int32) []*dto.OrderItem {
+func (o *OrderQuery) QueryOrderItems(subOrderId int64) []*dto.OrderItem {
 	return o.queryOrderItems(strconv.Itoa(int(subOrderId)))
 }
 
 // 查询分页订单
-func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination bool,
+func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedMemberSubOrder) {
 	d := o.Connector
 	orderList := []*dto.PagedMemberSubOrder{}
@@ -74,7 +76,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN sale_order po ON o.parent_order = po.id WHERE o.buyer_id=? %s`,
+		  INNER JOIN order_list po ON o.order_id = po.id WHERE o.buyer_id=? %s`,
 			where), &num, memberId)
 		if num == 0 {
 			return num, orderList
@@ -89,7 +91,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int32, begin, size int, pagination
         vendor_id,o.shop_id,s.name as shop_name,
         o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
-         FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
+         FROM sale_sub_order o INNER JOIN order_list po ON o.order_id = po.id
             INNER JOIN mch_shop s ON o.shop_id=s.id
          WHERE o.buyer_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
@@ -158,7 +160,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM sale_sub_order o
-		  INNER JOIN sale_order po ON o.parent_order = po.id WHERE o.vendor_id=? %s`,
+		  INNER JOIN order_list po ON po.id=o.order_id WHERE o.vendor_id=? %s`,
 			where), &num, vendorId)
 		if num == 0 {
 			return num, orderList
@@ -172,7 +174,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 	d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,po.order_no as parent_no,
 		o.buyer_id,mp.name as buyer_name,o.item_amount,o.discount_amount,o.express_fee,
         o.package_fee,o.final_amount,o.is_paid,o.state,po.create_time
-         FROM sale_sub_order o INNER JOIN sale_order po ON po.id=o.parent_order
+         FROM sale_sub_order o INNER JOIN order_list po ON po.id=o.order_id
          INNER JOIN mm_profile mp ON mp.member_id=o.buyer_id
          WHERE o.vendor_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
@@ -213,5 +215,67 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 		}
 	})
 
+	return num, orderList
+}
+
+// 查询分页订单
+func (o *OrderQuery) QueryPagerTradeOrder(memberId int64, begin, size int, pagination bool,
+	where, orderBy string) (int, []*define.ComplexOrder) {
+	d := o.Connector
+	orderList := []*define.ComplexOrder{}
+	num := 0
+	if size == 0 || begin < 0 {
+		return 0, orderList
+	}
+	if where != "" {
+		where = "AND " + where
+	}
+	if orderBy != "" {
+		orderBy = "ORDER BY " + orderBy
+	} else {
+		orderBy = " ORDER BY o.create_time desc "
+	}
+
+	log.Println(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id=? %s`,
+		where), memberId)
+	if pagination {
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id=? %s`,
+			where), &num, memberId)
+		if num == 0 {
+			return num, orderList
+		}
+	}
+
+	// 查询分页的订单
+	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
+        ot.order_amount,ot.discount_amount,
+        ot.final_amount,o.state,ot.create_time
+         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
+		where, orderBy),
+		func(rs *sql.Rows) {
+			for rs.Next() {
+				e := &define.ComplexOrder{}
+				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
+					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
+					&e.State, &e.CreateTime)
+				e.StateText = order.OrderState(e.State).String()
+				orderList = append(orderList, e)
+			}
+			rs.Close()
+		}, memberId, begin, size)
+
+	log.Println(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
+        ot.order_amount,ot.discount_amount,
+        ot.final_amount,o.state,ot.create_time
+         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
+		where, orderBy))
+
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("QueryPagerTradeOrder: ", err)
+	}
 	return num, orderList
 }

@@ -7,7 +7,13 @@ struct Result{
    3:i32 Code
    4:string Message
 }
-
+//传输结果对象
+struct Result64{
+   1:i64 Id
+   2:bool Result
+   3:i32 Code
+   4:string Message
+}
 //传输结果对象(Double)
 struct DResult{
    1:double Data
@@ -21,29 +27,54 @@ struct Pair{
    2:string Value
 }
 
-struct Member {
+// 商家
+struct ComplexMerchant {
     1: i32 Id
+    2: i64 MemberId
+    3: string Usr
+    4: string Pwd
+    5: string Name
+    6: i32 SelfSales
+    7: i32 Level
+    8: string Logo
+    9: i32 Province
+    10: i32 City
+    11: i32 District
+    12: i32 Enabled
+    13: i64 ExpiresTime
+    14: i64 JoinTime
+    15: i64 UpdateTime
+    16: i64 LoginTime
+    17: i64 LastLoginTime
+}
+
+struct Member {
+    1: i64 Id
     2: string Usr
     3: string Pwd
     4: string TradePwd
     5: i32 Exp
     6: i32 Level
     7: string InvitationCode
-    8: string RegFrom
-    9: string RegIp
-    10: i64 RegTime
-    11: string CheckCode
-    12: i64 CheckExpires
-    13: i32 State
-    14: i64 LoginTime
-    15: i64 LastLoginTime
-    16: i64 UpdateTime
-    17: string DynamicToken
-    18: i64 TimeoutTime
+    // 高级用户类型
+    8:i32   PremiumUser
+    // 高级用户过期时间
+    9:i64   PremiumExpires
+    10: string RegFrom
+    11: string RegIp
+    12: i64 RegTime
+    13: string CheckCode
+    14: i64 CheckExpires
+    15: i32 State
+    16: i64 LoginTime
+    17: i64 LastLoginTime
+    18: i64 UpdateTime
+    19: string DynamicToken
+    20: i64 TimeoutTime
 }
 
 struct Profile {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string Name
     3: string Avatar
     4: i32 Sex
@@ -66,13 +97,13 @@ struct Profile {
 }
 
 struct Account {
-    1: i32 MemberId
+    1: i64 MemberId
     2: i64 Integral
     3: i64 FreezeIntegral
     4: double Balance
     5: double FreezeBalance
     6: double ExpiredBalance
-    7: double PresentBalance
+    7: double WalletBalance
     8: double FreezeWallet
     9: double ExpiredPresent
     10: double TotalPresentFee
@@ -81,15 +112,15 @@ struct Account {
     13: double GrowAmount
     14: double GrowEarnings
     15: double GrowTotalEarnings
-    16: double TotalConsumption
+    16: double TotalExpense
     17: double TotalCharge
     18: double TotalPay
     19: i64 PriorityPay
     20: i64 UpdateTime
 }
 
-struct MemberSummary {
-    1: i32 MemberId
+struct ComplexMember {
+    1: i64 MemberId
     2: string Usr
     3: string Name
     4: string Avatar
@@ -97,28 +128,32 @@ struct MemberSummary {
     6: i32 Level
     7: string LevelName
     8: string LevelSign
-    9: i64 LevelOfficial
-    10: string InvitationCode
-    11: i64 Integral
-    12: double Balance
-    13: double PresentBalance
-    14: double GrowBalance
-    15: double GrowAmount
-    16: double GrowEarnings
-    17: double GrowTotalEarnings
-    18: i64 UpdateTime
+    9: i32 LevelOfficial
+    10: i32	PremiumUser
+    11: i64	PremiumExpires
+    12: string InvitationCode
+    13: i32 TrustAuthState
+    14: i32 State
+    15: i64 Integral
+    16: double Balance
+    17: double WalletBalance
+    18: double GrowBalance
+    19: double GrowAmount
+    20: double GrowEarnings
+    21: double GrowTotalEarnings
+    22: i64 UpdateTime
 }
 
 struct MemberRelation {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string CardId
-    3: i32 InviterId
+    3: i64 InviterId
     4: string InviterStr
     5: i32 RegisterMchId
 }
 
 struct TrustedInfo {
-    1: i32 MemberId
+    1: i64 MemberId
     2: string RealName
     3: string CardId
     4: string TrustImage
@@ -130,8 +165,8 @@ struct TrustedInfo {
 
 
 struct Address {
-    1: i32 Id
-    2: i32 MemberId
+    1: i64 Id
+    2: i64 MemberId
     3: string RealName
     4: string Phone
     5: i32 Province
@@ -269,8 +304,8 @@ struct PaymentOrder {
     4: i32 Type
     5: i32 OrderId
     6: string Subject
-    7: i32 BuyUser
-    8: i32 PaymentUser
+    7: i64 BuyUser
+    8: i64 PaymentUser
     9: double TotalFee
     10: double BalanceDiscount
     11: double  IntegralDiscount
@@ -288,77 +323,88 @@ struct PaymentOrder {
 }
 
 // 订单项
-struct OrderItem {
-    1: i32 Id
-    2: i32 OrderId
-    3: i32 ItemId
-    4: i32 SkuId
-    5: i32 SnapshotId
+struct ComplexItem {
+    1: i64 ID
+    2: i64 OrderId
+    3: i64 ItemId
+    4: i64 SkuId
+    5: i64 SnapshotId
     6: i32 Quantity
     7: i32 ReturnQuantity
     8: double Amount
     9: double FinalAmount
-    10: i64 IsShipped
-    11: i64 UpdateTime
+    10: i32 IsShipped
 }
 
 // 子订单
-struct SubOrder {
-    1: i32 Id
-    2: string OrderNo
-    3: i32 ParentId
-    4: i32 BuyerId
-    5: i32 VendorId
-    6: i32 ShopId
-    7: string Subject
-    8: double ItemAmount
-    9: double DiscountAmount
-    10: double ExpressFee
-    11: double PackageFee
-    12: double FinalAmount
-    13: i64 IsPaid
-    14: i64 IsSuspend
-    15: string BuyerRemark
-    16: string Remark
-    17: i64 CreateTime
-    18: i64 UpdateTime
-    19: i32 State
-    20: list<OrderItem> Items
+struct ComplexOrder {
+    1: i64 OrderId
+    2: i64 SubOrderId
+    3: i32 OrderType
+    4: string OrderNo
+    5: i64 BuyerId
+    6: i32 VendorId
+    7: i32 ShopId
+    8: string Subject
+    9: double ItemAmount
+    10: double DiscountAmount
+    11: double ExpressFee
+    12: double PackageFee
+    13: double FinalAmount
+    14: string ConsigneePerson
+    15: string ConsigneePhone
+    16: string ShippingAddress
+    17: i32 IsBreak
+    18: i32 State
+    19: string StateText
+    20: i64 CreateTime
+    21: i64 UpdateTime
+    22: list<ComplexItem> Items
 }
 
-
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   ComplexMerchant Complex(1:i32 mchId),
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   Result CheckLogin(1:string usr,2:string oriPwd),
+   // 验证商户状态
+   Result Stat(1:i32 mchId),
+}
 
 //会员服务
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    Result Login(1:string user,2:string pwd,3:bool update),
+    Result64 CheckLogin(1:string user,2:string pwd,3:bool update),
     // 根据会员编号获取会员信息
-    Member GetMember(1:i32 id),
+    Member GetMember(1:i64 id),
     // 根据用户名获取会员信息
     Member GetMemberByUser(1:string user),
     // 根据会员编号获取会员资料
-    Profile GetProfile(1:i32 id),
+    Profile GetProfile(1:i64 id),
     // 获取会员汇总信息
-    MemberSummary Summary(1:i32 memberId)
+    ComplexMember Complex(1:i64 memberId)
+     // 升级为高级会员
+    Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
     // 获取会员的会员Token,reset表示是否重置token
-    string GetToken(1:i32 memberId,2:bool reset)
+    string GetToken(1:i64 memberId,2:bool reset)
     // 检查会员的会话Token是否正确，如正确返回: 1
-    bool CheckToken(1:i32 memberId,2:string token)
+    bool CheckToken(1:i64 memberId,2:string token)
     // 移除会员的Token
-    void RemoveToken(1:i32 memberId)
+    void RemoveToken(1:i64 memberId)
     // 获取地址，如果addrId为0，则返回默认地址
-    Address GetAddress(1:i32 memberId,2:i32 addrId)
+    Address GetAddress(1:i64 memberId,2:i64 addrId)
     // 获取会员账户信息
-    Account GetAccount(1:i32 memberId)
+    Account GetAccount(1:i64 memberId)
     // 获取邀请人会员编号数组
-    list<i32> InviterArray(1:i32 memberId,2:i32 depth)
+    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
     // 账户充值
-    Result ChargeAccount(1:i32 memberId ,2:i32 account,3:i32 kind,
-      4:string title,5:string outerNo,6:double amount,7:i32 relateUser)
+    Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
+      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
     // 抵扣账户
-    Result DiscountAccount(1:i32 memberId,2:i32 account,3:string title,
-      4:string outerNo,5:double amount,6:i32 relateUser,7:bool mustLargeZero)
+    Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
+      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
 }
 
 struct PlatformConf {
@@ -416,10 +462,12 @@ service FoundationService{
 
 // 支付服务
 service PaymentService{
-    // 创建支付单
-    Result CreatePaymentOrder(1:PaymentOrder o)
+    // 创建支付单并提交
+    Result SubmitPaymentOrder(1:PaymentOrder o)
     // 根据支付单号获取支付单
     PaymentOrder GetPaymentOrder(1:string paymentNo)
+    // 根据交易号获取支付单编号
+    i32 GetPaymentOrderId(1:string tradeNo)
     // 根据编号获取支付单
     PaymentOrder GetPaymentOrderById(1:i32 id)
     // 调整支付单金额
@@ -430,16 +478,24 @@ service PaymentService{
     DResult DiscountByIntegral(1:i32 orderId,2:i64 integral,3:bool ignoreOut)
     // 钱包账户支付
     Result PaymentByWallet(1:i32 orderId,2:string remark)
+    // 余额钱包混合支付，优先扣除余额。
+    Result HybridPayment(1:i32 orderId,2:string remark)
     // 完成支付单支付，并传入支付方式及外部订单号
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 }
 
 // 销售服务
 service SaleService {
+  // 获取订单信息
+  ComplexOrder GetOrder(1:i64 id,2:bool sub_order)
   // 获取子订单
-  SubOrder GetSubOrder(1:i32 id)
+  ComplexOrder GetSubOrder(1:i64 id)
   // 根据订单号获取子订单
-  SubOrder GetSubOrderByNo(1:string orderNo)
+  ComplexOrder GetSubOrderByNo(1:string orderNo)
   // 获取订单商品项
-  list<OrderItem> GetSubOrderItems(1:i32 subOrderId)
+  list<ComplexItem> GetSubOrderItems(1:i64 subOrderId)
+  // 提交交易订单
+  Result64 SubmitTradeOrder(1:ComplexOrder o,2:double rate)
+  // 交易单现金支付
+  Result64 TradeOrderCashPay(1:i64 orderId)
 }

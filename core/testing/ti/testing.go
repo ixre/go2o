@@ -25,6 +25,7 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
+	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/repository"
 )
@@ -159,6 +160,7 @@ var (
 	MemberRepo     member.IMemberRepo
 	MchRepo        merchant.IMerchantRepo
 	CartRepo       cart.ICartRepo
+	ShipmentRepo   shipment.IShipmentRepo
 )
 
 func init() {
@@ -208,4 +210,5 @@ func init() {
 	MemberRepo = memberRepo
 	MchRepo = mchRepo
 	CartRepo = cartRepo
+	ShipmentRepo = shipRepo
 }

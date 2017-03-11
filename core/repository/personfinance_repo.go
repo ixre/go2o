@@ -32,36 +32,36 @@ func NewPersonFinanceRepository(conn db.Connector, mRepo member.IMemberRepo) per
 	}
 }
 
-func (p *personFinanceRepository) GetPersonFinance(personId int32) personfinance.IPersonFinance {
+func (p *personFinanceRepository) GetPersonFinance(personId int64) personfinance.IPersonFinance {
 	return pf.NewPersonFinance(personId, p, p._accRepo)
 }
 
-func (p *personFinanceRepository) GetRiseByTime(personId int32, begin,
+func (p *personFinanceRepository) GetRiseByTime(personId int64, begin,
 	end int64) []*personfinance.RiseDayInfo {
 	list := []*personfinance.RiseDayInfo{}
 	p._orm.Select(&list, "person_id=? AND unix_date BETWEEN ? AND ?", personId, begin, end)
 	return list
 }
 
-func (p *personFinanceRepository) GetRiseValueByPersonId(id int32) (
+func (p *personFinanceRepository) GetRiseValueByPersonId(id int64) (
 	*personfinance.RiseInfoValue, error) {
 	e := &personfinance.RiseInfoValue{}
 	err := p._orm.Get(id, e)
 	return e, err
 }
 
-func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (int32, error) {
+func (p *personFinanceRepository) SaveRiseInfo(v *personfinance.RiseInfoValue) (int, error) {
 	var err error
 	if _, err = p.GetRiseValueByPersonId(v.PersonId); err == nil {
 		_, _, err = p._orm.Save(v.PersonId, v)
 	} else {
 		_, _, err = p._orm.Save(nil, v)
 	}
-	return v.PersonId, err
+	return int(v.PersonId), err
 }
 
 // 获取日志
-func (p *personFinanceRepository) GetRiseLog(personId, logId int32) *personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLog(personId int64, logId int32) *personfinance.RiseLog {
 	e := &personfinance.RiseLog{}
 	if p._orm.GetBy(e, "person_id=? AND id=?", personId, logId) == nil {
 		return e
@@ -75,7 +75,7 @@ func (p *personFinanceRepository) SaveRiseLog(v *personfinance.RiseLog) (int32, 
 }
 
 // 获取日志
-func (p *personFinanceRepository) GetRiseLogs(personId int32, date int64, riseType int) []*personfinance.RiseLog {
+func (p *personFinanceRepository) GetRiseLogs(personId int64, date int64, riseType int) []*personfinance.RiseLog {
 	list := []*personfinance.RiseLog{}
 	p._orm.Select(&list, "person_id=? AND unix_date=? AND type=?", personId, date, riseType)
 	return list

@@ -35,7 +35,7 @@ func NewAfterSalesService(rep afterSales.IAfterSalesRepo,
 }
 
 // 提交售后单
-func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
+func (a *afterSalesService) SubmitAfterSalesOrder(orderId int64, asType int,
 	snapshotId int32, quantity int32, reason string, imgUrl string) (int32, error) {
 	ro := a._rep.CreateAfterSalesOrder(&afterSales.AfterSalesOrder{
 		// 订单编号
@@ -55,7 +55,7 @@ func (a *afterSalesService) SubmitAfterSalesOrder(orderId int32, asType int,
 }
 
 // 获取订单的所有售后单
-func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int32) []afterSales.AfterSalesOrder {
+func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int64) []afterSales.AfterSalesOrder {
 	list := a._rep.GetAllOfSaleOrder(orderId)
 	arr := make([]afterSales.AfterSalesOrder, len(list))
 	for i, v := range list {
@@ -66,7 +66,7 @@ func (a *afterSalesService) GetAllAfterSalesOrderOfSaleOrder(orderId int32) []af
 }
 
 // 获取会员的分页售后单
-func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int32, begin,
+func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int64, begin,
 	size int, where string) (int, []*dto.PagedMemberAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfMember(memberId, begin, size, where)
 }
@@ -75,13 +75,6 @@ func (a *afterSalesService) QueryPagerAfterSalesOrderOfMember(memberId int32, be
 func (a *afterSalesService) QueryPagerAfterSalesOrderOfVendor(vendorId int32, begin,
 	size int, where string) (int, []*dto.PagedVendorAfterSalesOrder) {
 	return a._query.QueryPagerAfterSalesOrderOfVendor(vendorId, begin, size, where)
-}
-
-//根据order_id获得订单号
-func (a *afterSalesService) GetAfterSalesOrder(order_id int32) int {
-	id := 0
-	a.Connector.ExecScalar("SSELECT order_no FROM sale_order WHERE id=?", &id, order_id)
-	return id
 }
 
 // 获取售后单

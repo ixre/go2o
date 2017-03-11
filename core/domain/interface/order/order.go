@@ -23,20 +23,22 @@ import (
 //http://www.pmcaff.com/discuss?id=1000000000138488
 //http://www.zhihu.com/question/31640837
 
+// 拆分为子订单单暂时不拆分支付单
+
 type OrderState int
-type OrderKind int32
+type OrderType int32
 
 const (
-	// 零售单
-	KRetail OrderKind = 1
-	// 批发单
-	KWholesale OrderKind = 2
-	// 虚拟单,如：手机充值
-	KVirtual OrderKind = 3
-	// 交易单,如：线下订单支付。
-	KTrade OrderKind = 4
-	// 服务单
-	KService OrderKind = 5
+	// 零售订单(线上/线下)
+	TRetail OrderType = 1
+	// 批发订单
+	TWholesale OrderType = 2
+	// 虚拟订单,如：手机充值
+	TVirtual OrderType = 3
+	// 交易订单,如：线下支付。
+	TTrade OrderType = 4
+	// 服务订单
+	TService OrderType = 5
 )
 
 const (
@@ -70,6 +72,8 @@ const (
 	StatShipped = 6
 	// 订单完成
 	StatCompleted = 7
+	// 订单已拆分
+	StatBreak = 8
 
 	/****** 售后状态 ******/
 
@@ -101,6 +105,8 @@ func (t OrderState) String() string {
 		return "待收货"
 	case StatCompleted:
 		return "交易完成"
+	case StatBreak:
+		return "已拆单"
 	case StatGoodsRefunded:
 		return "已退货"
 	}
@@ -145,6 +151,9 @@ var (
 	ErrUnusualOrder *domain.DomainError = domain.NewDomainError(
 		"err_unusual_order", "订单异常")
 
+	ErrMissingShipAddress *domain.DomainError = domain.NewDomainError(
+		"err_missing_ship_address", "未设置收货地址")
+
 	ErrUnusualOrderStat *domain.DomainError = domain.NewDomainError(
 		"err_except_order_stat", "订单状态不匹配、无法执行此操作!")
 
@@ -170,7 +179,7 @@ var (
 	ErrOrderNotPickUp *domain.DomainError = domain.NewDomainError(
 		"err_order_not_pick_up", "请等待商品备货")
 
-	ErrNoAddress *domain.DomainError = domain.NewDomainError(
+	ErrNoSuchAddress *domain.DomainError = domain.NewDomainError(
 		"err_order_no_address", "请选择收货地址")
 
 	ErrOrderShipped *domain.DomainError = domain.NewDomainError(
@@ -197,32 +206,60 @@ var (
 	ErrOrderShippedCancel *domain.DomainError = domain.NewDomainError(
 		"err_order_shipped_cancel", "订单已发货，无法取消")
 
-	ErrDisallowCancel *domain.DomainError = domain.NewDomainError(
-		"err_order_can_not_cancel", "订单已付款、无法取消")
-
 	ErrHasRefund *domain.DomainError = domain.NewDomainError(
 		"err_order_has_refund", "订单已经退款")
 
 	ErrDisallowRefund *domain.DomainError = domain.NewDomainError(
 		"err_order_disallow_refund", "订单不允许退款")
+
+	ErrTradeRateLessZero *domain.DomainError = domain.NewDomainError(
+		"err_order_trade_rate_less_zero", "交易类订单结算比例不能小于零")
+
+	ErrTradeRateMoreThan100 *domain.DomainError = domain.NewDomainError(
+		"err_order_trade_rate_more_than_100", "交易类订单结算比例必须小于或等于100%")
+
+	ErrMissingSubject *domain.DomainError = domain.NewDomainError(
+		"err_order_missing_subject", "缺少订单标题")
 )
 
 type (
 	IOrder interface {
-		// 获取聚合根编号
-		GetAggregateRootId() int32
+		// 获取编号
+		GetAggregateRootId() int64
+		// 订单类型
+		Type() OrderType
+		// 获取订单状态
+		State() OrderState
+		// 获取购买的会员
+		Buyer() member.IMember
 		// 获取订单号
-		GetOrderNo() string
-		// 获生成值
-		GetValue() *ValueOrder
+		OrderNo() string
+		// 复合的订单信息
+		Complex() *ComplexOrder
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
+	}
+
+	// 普通订单
+	INormalOrder interface {
 		// 读取购物车数据,用于预生成订单
 		RequireCart(c cart.ICart) error
 		// 根据运营商获取商品和运费信息,限未生成的订单
-		GetByVendor() (items map[int32][]*OrderItem, expressFee map[int32]float32)
-		// 获取购买的会员
-		GetBuyer() member.IMember
+		GetByVendor() (items map[int32][]*SubOrderItem, expressFee map[int32]float32)
 		// 获取支付单
 		GetPaymentOrder() payment.IPaymentOrder
+		// 在线支付交易完成
+		OnlinePaymentTradeFinish() error
+		// 设置配送地址
+		SetAddress(addressId int64) error
+		// 提交订单。如遇拆单,需均摊优惠抵扣金额到商品
+		Submit() error
+
+		//根据运营商拆单,返回拆单结果,及拆分的订单数组
+		//BreakUpByVendor() ([]IOrder, error)
+
+		// 获取子订单列表
+		GetSubOrders() []ISubOrder
 		// 应用优惠券
 		ApplyCoupon(coupon promotion.ICouponPromotion) error
 		// 获取应用的优惠券
@@ -234,62 +271,37 @@ type (
 			saveFee float32, integral int)
 		// 获取促销绑定
 		GetPromotionBinds() []*OrderPromotionBind
-		// 在线支付交易完成
-		OnlinePaymentTradeFinish() error
-		// 设置配送地址
-		SetDeliveryAddress(addressId int32) error
-		// 提交订单，返回订单号。如有错误则返回，在生成支付单后,应该根据实际支付金额
-		// 进行拆单,并切均摊优惠抵扣金额
-		Submit() (string, error)
-		//根据运营商拆单,返回拆单结果,及拆分的订单数组
-		//BreakUpByVendor() ([]IOrder, error)
-		// 获取子订单列表
-		GetSubOrders() []ISubOrder
 	}
 
+	// 子订单(普通订单拆分)
 	ISubOrder interface {
 		// 获取领域对象编号
-		GetDomainId() int32
-
+		GetDomainId() int64
 		// 获取值对象
-		GetValue() *ValueSubOrder
+		GetValue() *NormalSubOrder
+		// 复合的订单信息
+		Complex() *ComplexOrder
 
 		// 获取商品项
-		Items() []*OrderItem
-
-		// 获取父订单
-		Parent() IOrder
-
+		Items() []*SubOrderItem
 		// 在线支付交易完成
 		PaymentFinishByOnlineTrade() error
-
 		// 记录订单日志
 		AppendLog(logType LogType, system bool, message string) error
-
-		// 设置Shop,如果不需要记录日志，则remark传递空
-		SetShop(shopId int32) error
-
 		// 添加备注
 		AddRemark(string)
-
 		// 确认订单
 		Confirm() error
-
 		// 捡货(备货)
 		PickUp() error
-
 		// 发货
 		Ship(spId int32, spOrder string) error
-
 		// 已收货
 		BuyerReceived() error
-
 		// 获取订单的日志
 		LogBytes() []byte
-
 		// 挂起
 		Suspend(reason string) error
-
 		// 取消订单/退款
 		Cancel(reason string) error
 		// 退回商品
@@ -298,113 +310,154 @@ type (
 		RevertReturn(snapshotId int32, quantity int32) error
 		// 谢绝订单
 		Decline(reason string) error
-		// 保存订单
-		Save() (int32, error)
+		// 提交子订单
+		Submit() (int64, error)
 	}
 
-	// 简单商品信息
-	OrderGoods struct {
-		GoodsId    int32  `json:"id"`
-		GoodsImage string `json:"img"`
-		Name       string `json:"name"`
-		Quantity   int32  `json:"qty"`
+	// 批发订单
+	IWholesaleOrder interface {
+		// 设置商品项
+		SetItems(items []*MinifyItem)
+		// 设置配送地址
+		SetAddress(addressId int64) error
+		// 获取商品项
+		Items() []*WholesaleItem
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
+		// 在线支付交易完成
+		OnlinePaymentTradeFinish() error
+
+		// 记录订单日志
+		AppendLog(logType LogType, system bool, message string) error
+		// 添加备注
+		AddRemark(string)
+		// 确认订单
+		Confirm() error
+		// 捡货(备货)
+		PickUp() error
+		// 发货
+		Ship(spId int32, spOrder string) error
+		// 已收货
+		BuyerReceived() error
+		// 获取订单的日志
+		LogBytes() []byte
+		// 取消订单/退款
+		Cancel(reason string) error
+		// 谢绝订单
+		Decline(reason string) error
 	}
 
-	OrderLog struct {
-		Id      int32 `db:"id" auto:"yes" pk:"yes"`
-		OrderId int32 `db:"order_id"`
-		Type    int   `db:"type"`
-		// 订单状态
-		OrderState int    `db:"order_state"`
-		IsSystem   int    `db:"is_system"`
-		Message    string `db:"message"`
-		RecordTime int64  `db:"record_time"`
+	// 交易订单
+	ITradeOrder interface {
+		// 从订单信息中拷贝相应的数据,并设置订单结算比例
+		Set(o *ComplexOrder, rate float64) error
+		// 现金支付
+		CashPay() error
+		// 获取支付单
+		GetPaymentOrder() payment.IPaymentOrder
+		// 交易支付完成
+		TradePaymentFinish() error
 	}
-	OrderPromotionBind struct {
-		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
 
+	// 订单
+	Order struct {
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
-		OrderId int32 `db:"order_id"`
-
-		// 促销编号
-		PromotionId int32 `db:"promotion_id"`
-
-		// 促销类型
-		PromotionType int `db:"promotion_type"`
-
-		// 标题
-		Title string `db:"title"`
-
-		// 节省金额
-		SaveFee float32 `db:"save_fee"`
-
-		// 赠送积分
-		PresentIntegral int `db:"present_integral"`
-
-		// 是否应用
-		IsApply int `db:"is_apply"`
-
-		// 是否确认
-		IsConfirm int `db:"is_confirm"`
+		OrderNo string `db:"order_no"`
+		// 买家编号
+		BuyerId int64 `db:"buyer_id"`
+		// 订单类型
+		OrderType int32 `db:"order_type"`
+		// 订单状态
+		State int32 `db:"state"`
+		// 下单时间
+		CreateTime int64 `db:"create_time"`
 	}
 
-	// 应用到订单的优惠券
-	OrderCoupon struct {
-		OrderId      int32   `db:"order_id"`
-		CouponId     int32   `db:"coupon_id"`
-		CouponCode   string  `db:"coupon_code"`
-		Fee          float32 `db:"coupon_fee"`
-		Describe     string  `db:"coupon_describe"`
-		SendIntegral int     `db:"send_integral"`
-	}
-
-	//todo: ??? 父订单的金额,是否可不用?
-
-	// 暂存的订单
-	OrderHolder struct {
-		// 编号
-		Id int64
+	// 订单复合信息
+	ComplexOrder struct {
+		// 订单编号
+		OrderId int64
+		// 子订单编号
+		SubOrderId int64
+		// 订单类型
+		OrderType int32
 		// 订单号
 		OrderNo string
 		// 购买人编号
-		BuyerId int32
+		BuyerId int64
+		// 运营商编号
+		VendorId int32
+		// 店铺编号
+		ShopId int32
+		// 订单标题
+		Subject string
 		// 商品金额
-		ItemAmount float32
+		ItemAmount float64
 		// 优惠减免金额
-		DiscountAmount float32
+		DiscountAmount float64
 		// 运费
-		ExpressFee float32
+		ExpressFee float64
 		// 包装费用
-		PackageFee float32
+		PackageFee float64
 		// 实际金额
-		FinalAmount float32
-		// 是否支付
-		IsPaid int
-		// 支付时间
-		PaidTime int64
+		FinalAmount float64
 		// 收货人
 		ConsigneePerson string
 		// 收货人联系电话
 		ConsigneePhone string
 		// 收货地址
 		ShippingAddress string
-		// 发货时间
-		ShippingTime int64
+		// 订单是否拆分
+		IsBreak int32
+		// 订单状态
+		State int32
+		// 状态文本
+		StateText string
 		// 订单生成时间
 		CreateTime int64
 		// 更新时间
 		UpdateTime int64
+		// 商品项
+		Items []*ComplexItem
+	}
+	// 符合的订单项
+	ComplexItem struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes" json:"id"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// 商品SKU编号
+		SkuId int64 `db:"sku_id"`
+		// 快照编号
+		SnapshotId int64 `db:"snap_id"`
+		// 数量
+		Quantity int32 `db:"quantity"`
+		// 退回数量(退货)
+		ReturnQuantity int32 `db:"return_quantity"`
+		// 金额
+		Amount float64 `db:"amount"`
+		// 最终金额, 可能会有优惠均摊抵扣的金额
+		FinalAmount float64 `db:"final_amount"`
+		// 是否发货
+		IsShipped int32 `db:"is_shipped"`
 	}
 
-	// 订单
-	ValueOrder struct {
+	// 订单商品项
+	MinifyItem struct {
+		ItemId   int32
+		SkuId    int32
+		Quantity int32
+	}
+
+	// 普通订单
+	NormalOrder struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
-		// 订单号
-		OrderNo string `db:"order_no"`
-		// 购买人编号
-		BuyerId int32 `db:"buyer_id"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
 		// 商品金额
 		ItemAmount float32 `db:"item_amount"`
 		// 优惠减免金额
@@ -421,22 +474,22 @@ type (
 		ConsigneePhone string `db:"consignee_phone" json:"deliverPhone"`
 		// 收货地址
 		ShippingAddress string `db:"shipping_address" json:"deliverAddress"`
-		// 订单生成时间
-		CreateTime int64 `db:"create_time" json:"createTime"`
+		// 订单是否拆分
+		IsBreak int32 `db:"is_break"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 	}
 
 	// 子订单
-	ValueSubOrder struct {
+	NormalSubOrder struct {
 		// 编号
-		ID int32 `db:"id" pk:"yes" auto:"yes"`
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
 		// 订单号
 		OrderNo string `db:"order_no"`
 		// 订单编号
-		ParentId int32 `db:"parent_order"`
+		OrderId int64 `db:"order_id"`
 		// 购买人编号(冗余,便于商户处理数据)
-		BuyerId int32 `db:"buyer_id"`
+		BuyerId int64 `db:"buyer_id"`
 		// 运营商编号
 		VendorId int32 `db:"vendor_id" json:"vendorId"`
 		// 店铺编号
@@ -462,21 +515,21 @@ type (
 		// 系统备注
 		Remark string `db:"remark" json:"remark"`
 		// 订单状态
-		State int `db:"state" json:"state"`
+		State int32 `db:"state" json:"state"`
 		// 下单时间
 		CreateTime int64 `db:"create_time"`
 		// 更新时间
 		UpdateTime int64 `db:"update_time" json:"updateTime"`
 		// 订单项
-		Items []*OrderItem `db:"-"`
+		Items []*SubOrderItem `db:"-"`
 	}
 
 	// 订单商品项
-	OrderItem struct {
+	SubOrderItem struct {
 		// 编号
 		ID int32 `db:"id" pk:"yes" auto:"yes" json:"id"`
 		// 订单编号
-		OrderId int32 `db:"order_id"`
+		OrderId int64 `db:"order_id"`
 		// 商品编号
 		ItemId int32 `db:"item_id"`
 		// 商品SKU编号
@@ -487,8 +540,6 @@ type (
 		Quantity int32 `db:"quantity"`
 		// 退回数量(退货)
 		ReturnQuantity int32 `db:"return_quantity"`
-		// SKU描述
-		//Sku string `db:"sku"`
 		// 金额
 		Amount float32 `db:"amount"`
 		// 最终金额, 可能会有优惠均摊抵扣的金额
@@ -508,16 +559,147 @@ type (
 		// 快递模板编号
 		ExpressTplId int32 `db:"-"`
 	}
-)
 
-func (o *OrderCoupon) Clone(coupon promotion.ICouponPromotion,
-	orderId int32, orderFee float32) *OrderCoupon {
-	v := coupon.GetDetailsValue()
-	o.CouponCode = v.Code
-	o.CouponId = v.Id
-	o.OrderId = orderId
-	o.Fee = coupon.GetCouponFee(orderFee)
-	o.Describe = coupon.GetDescribe()
-	o.SendIntegral = v.Integral
-	return o
-}
+	// 批发订单
+	WholesaleOrder struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderNo string `db:"order_no"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 买家编号
+		BuyerId int64 `db:"buyer_id"`
+		// 商家编号
+		VendorId int32 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int32 `db:"shop_id"`
+		// 商品总价
+		ItemAmount float32 `db:"item_amount"`
+		// 抵扣金额
+		DiscountAmount float32 `db:"discount_amount"`
+		// 运费
+		ExpressFee float32 `db:"express_fee"`
+		// 包装费
+		PackageFee float32 `db:"package_fee"`
+		// 订单最终金额
+		FinalAmount float32 `db:"final_amount"`
+		// 收货人姓名
+		ConsigneePerson string `db:"consignee_person"`
+		// 收货人电话
+		ConsigneePhone string `db:"consignee_phone"`
+		// 收货人地址
+		ShippingAddress string `db:"shipping_address"`
+		// 是否支付
+		IsPaid int32 `db:"is_paid"`
+		// 订单备注
+		Remark string `db:"remark"`
+		// 订单买家备注
+		BuyerRemark string `db:"buyer_remark"`
+		// 订单状态
+		State int32 `db:"state"`
+		// 订单创建时间
+		CreateTime int64 `db:"create_time"`
+		// 订单更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 批发订单商品
+	WholesaleItem struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商品编号
+		ItemId int64 `db:"item_id"`
+		// SKU编号
+		SkuId int64 `db:"sku_id"`
+		// 商品快照编号
+		SnapshotId int64 `db:"snapshot_id"`
+		// 销售数量
+		Quantity int32 `db:"quantity"`
+		// 退货数量
+		ReturnQuantity int32 `db:"return_quantity"`
+		// 商品总金额
+		Amount float32 `db:"amount"`
+		// 商品实际金额
+		FinalAmount float32 `db:"final_amount"`
+		// 是否已发货
+		IsShipped int32 `db:"is_shipped"`
+		// 更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	// 交易类订单
+	TradeOrder struct {
+		// 编号
+		ID int64 `db:"id" pk:"yes" auto:"yes"`
+		// 订单编号
+		OrderId int64 `db:"order_id"`
+		// 商家编号
+		VendorId int32 `db:"vendor_id"`
+		// 店铺编号
+		ShopId int32 `db:"shop_id"`
+		// 订单标题
+		Subject string `db:"subject"`
+		// 订单金额
+		OrderAmount float64 `db:"order_amount"`
+		// 抵扣金额
+		DiscountAmount float64 `db:"discount_amount"`
+		// 订单最终金额
+		FinalAmount float64 `db:"final_amount"`
+		// 交易结算比例（商户)，允许为0和1
+		TradeRate float64 `db:"trade_rate"`
+		// 是否现金支付
+		CashPay int32 `db:"cash_pay"`
+		// 订单备注
+		Remark string `db:"remark"`
+		// 订单状态
+		State int32 `db:"state"`
+		// 订单创建时间
+		CreateTime int64 `db:"create_time"`
+		// 订单更新时间
+		UpdateTime int64 `db:"update_time"`
+	}
+
+	OrderLog struct {
+		Id      int32 `db:"id" auto:"yes" pk:"yes"`
+		OrderId int64 `db:"order_id"`
+		Type    int   `db:"type"`
+		// 订单状态
+		OrderState int    `db:"order_state"`
+		IsSystem   int    `db:"is_system"`
+		Message    string `db:"message"`
+		RecordTime int64  `db:"record_time"`
+	}
+	OrderPromotionBind struct {
+		// 编号
+		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		// 订单号
+		OrderId int32 `db:"order_id"`
+		// 促销编号
+		PromotionId int32 `db:"promotion_id"`
+		// 促销类型
+		PromotionType int `db:"promotion_type"`
+		// 标题
+		Title string `db:"title"`
+		// 节省金额
+		SaveFee float32 `db:"save_fee"`
+		// 赠送积分
+		PresentIntegral int `db:"present_integral"`
+		// 是否应用
+		IsApply int `db:"is_apply"`
+		// 是否确认
+		IsConfirm int `db:"is_confirm"`
+	}
+
+	// 应用到订单的优惠券
+	OrderCoupon struct {
+		OrderId      int32   `db:"order_id"`
+		CouponId     int32   `db:"coupon_id"`
+		CouponCode   string  `db:"coupon_code"`
+		Fee          float32 `db:"coupon_fee"`
+		Describe     string  `db:"coupon_describe"`
+		SendIntegral int     `db:"send_integral"`
+	}
+)

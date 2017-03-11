@@ -44,6 +44,21 @@ func getTransportAndProtocol() (thrift.TTransport, thrift.TProtocolFactory, erro
 	return transport, protocolFactory, err
 }
 
+// 商户客户端
+func MerchantServeClient() (*define.MerchantServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			//多个服务
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "merchant")
+			return define.NewMerchantServiceClientProtocol(transport, proto, opProto), err
+		}
+	}
+	return nil, err
+}
+
 // 会员客户端
 func MemberServeClient() (*define.MemberServiceClient, error) {
 	transport, protocol, err := getTransportAndProtocol()

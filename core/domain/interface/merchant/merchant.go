@@ -18,6 +18,7 @@ import (
 const (
 	KindAccountSettleOrder      = 1
 	KindAccountPresent          = 2
+	KindAccountTakePayment      = 3
 	KindAccountTransferToMember = 5
 
 	//商户提现
@@ -33,6 +34,8 @@ type (
 		GetAggregateRootId() int32
 
 		GetValue() Merchant
+		// 获取符合的商家信息
+		Complex() *ComplexMerchant
 
 		SetValue(*Merchant) error
 
@@ -47,7 +50,7 @@ type (
 		SelfSales() bool
 
 		// 返回对应的会员编号
-		Member() int32
+		Member() int64
 
 		// 保存
 		Save() (int32, error)
@@ -93,24 +96,20 @@ type (
 	IAccount interface {
 		// 获取领域对象编号
 		GetDomainId() int32
-
 		// 获取账户值
 		GetValue() *Account
-
 		// 保存
 		Save() error
-
 		// 根据编号获取余额变动信息
 		GetBalanceLog(id int32) *BalanceLog
-
 		// 根据号码获取余额变动信息
 		GetBalanceLogByOuterNo(outerNo string) *BalanceLog
-
 		// 保存余额变动信息
 		SaveBalanceLog(*BalanceLog) (int32, error)
-
 		// 订单结账
 		SettleOrder(orderNo string, amount float32, csn float32, refundAmount float32, remark string) error
+		// 支出
+		TakePayment(outerNo string, amount float64, csn float64, remark string) error
 
 		// 提现
 		//todo:???
@@ -127,10 +126,10 @@ type (
 
 	IMerchantManager interface {
 		// 创建会员申请商户密钥
-		CreateSignUpToken(memberId int32) string
+		CreateSignUpToken(memberId int64) string
 
 		// 根据商户申请密钥获取会员编号
-		GetMemberFromSignUpToken(token string) int32
+		GetMemberFromSignUpToken(token string) int64
 
 		// 提交商户注册信息
 		CommitSignUpInfo(*MchSignUp) (int32, error)
@@ -142,13 +141,13 @@ type (
 		GetSignUpInfo(id int32) *MchSignUp
 
 		// 获取会员申请的商户信息
-		GetSignUpInfoByMemberId(memberId int32) *MchSignUp
+		GetSignUpInfoByMemberId(memberId int64) *MchSignUp
 
 		// 获取会员关联的商户
-		GetMerchantByMemberId(memberId int32) IMerchant
+		GetMerchantByMemberId(memberId int64) IMerchant
 
 		// 删除会员的商户申请资料
-		RemoveSignUp(memberId int32) error
+		RemoveSignUp(memberId int64) error
 	}
 
 	// 商户申请信息
@@ -157,7 +156,7 @@ type (
 		// 申请单号
 		SignNo string `db:"sign_no"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 用户名
 		Usr string `db:"usr"`
 		// 密码
@@ -199,12 +198,48 @@ type (
 		// 更新时间
 		UpdateTime int64 `db:"update_time"`
 	}
+	// 商户
+	ComplexMerchant struct {
+		Id int32
+		// 关联的会员编号,作为结算账户
+		MemberId int64
+		// 用户
+		Usr string
+		// 密码
+		Pwd string
+		// 商户名称
+		Name string
+		// 是否自营
+		SelfSales int32
+		// 商户等级
+		Level int32
+		// 标志
+		Logo string
+		// 省
+		Province int32
+		// 市
+		City int32
+		// 区
+		District int32
+		// 是否启用
+		Enabled int32
+		// 过期时间
+		ExpiresTime int64
+		// 注册时间
+		JoinTime int64
+		// 更新时间
+		UpdateTime int64
+		// 登录时间
+		LoginTime int64
+		// 最后登录时间
+		LastLoginTime int64
+	}
 
 	// 商户
 	Merchant struct {
 		Id int32 `db:"id" pk:"yes" auto:"yes"`
 		// 关联的会员编号,作为结算账户
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 用户
 		Usr string `db:"usr"`
 		// 密码
@@ -212,9 +247,9 @@ type (
 		// 商户名称
 		Name string `db:"name"`
 		// 是否自营
-		SelfSales int `db:"self_sales"`
+		SelfSales int32 `db:"self_sales"`
 		// 商户等级
-		Level int `db:"level"`
+		Level int32 `db:"level"`
 		// 标志
 		Logo string `db:"logo"`
 		// 省
@@ -224,7 +259,7 @@ type (
 		// 区
 		District int32 `db:"district"`
 		// 是否启用
-		Enabled int `db:"enabled"`
+		Enabled int32 `db:"enabled"`
 		// 过期时间
 		ExpiresTime int64 `db:"expires_time"`
 		// 注册时间

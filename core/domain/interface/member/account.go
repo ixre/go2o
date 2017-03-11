@@ -126,13 +126,13 @@ const (
 type (
 	IAccount interface {
 		// 获取领域对象编号
-		GetDomainId() int32
+		GetDomainId() int64
 
 		// 获取账户值
 		GetValue() *Account
 
 		// 保存
-		Save() (int32, error)
+		Save() (int64, error)
 
 		// 设置优先(默认)支付方式, account 为账户类型
 		SetPriorityPay(account int, enabled bool) error
@@ -150,32 +150,32 @@ type (
 		GetPresentLog(id int32) *PresentLog
 
 		// 充值,客服操作时,需提供操作人(relateUser)
-		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForBalance(chargeType int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 扣减余额
-		DiscountBalance(title string, outerNo string, amount float32, relateUser int32) error
+		DiscountBalance(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 冻结余额
-		Freeze(title string, outerNo string, amount float32, relateUser int32) error
+		Freeze(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 解冻金额
-		Unfreeze(title string, outerNo string, amount float32, relateUser int32) error
+		Unfreeze(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 赠送金额,客服操作时,需提供操作人(relateUser)
-		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int32) error
+		//ChargeForPresent(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 赠送金额(指定业务类型)
-		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int32) error
+		//ChargePresentByKind(kind int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 扣减奖金,mustLargeZero是否必须大于0, 赠送金额存在扣为负数的情况
 		DiscountWallet(title string, outerNo string, amount float32,
-			relateUser int32, mustLargeZero bool) error
+			relateUser int64, mustLargeZero bool) error
 
 		// 冻结赠送金额
-		FreezeWallet(title string, outerNo string, amount float32, relateUser int32) error
+		FreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 解冻赠送金额
-		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int32) error
+		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
 
 		// 流通账户余额变动，如扣除,amount传入负数金额
 		ChargeFlowBalance(title string, tradeNo string, amount float32) error
@@ -214,18 +214,18 @@ type (
 		FreezeExpired(accountKind int, amount float32, remark string) error
 
 		// 转账
-		TransferAccount(accountKind int, toMember int32, amount float32,
+		TransferAccount(accountKind int, toMember int64, amount float32,
 			csnRate float32, remark string) error
 
 		// 接收转账
-		ReceiveTransfer(accountKind int, fromMember int32, tradeNo string,
+		ReceiveTransfer(accountKind int, fromMember int64, tradeNo string,
 			amount float32, remark string) error
 
 		// 退款
-		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int32) error
+		Refund(accountKind int, kind int32, title string, outerNo string, amount float32, relateUser int64) error
 
 		// 充值
-		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int32) error
+		Charge(account int32, kind int32, title, outerNo string, amount float32, relateUser int64) error
 
 		// 转账余额到其他账户
 		TransferBalance(kind int32, amount float32, tradeNo string, toTitle, fromTitle string) error
@@ -241,14 +241,14 @@ type (
 			toTitle string, fromTitle string) error
 
 		// 将活动金转给其他人
-		TransferFlowTo(memberId int32, kind int32, amount float32, commission float32,
+		TransferFlowTo(memberId int64, kind int32, amount float32, commission float32,
 			tradeNo string, toTitle string, fromTitle string) error
 	}
 
 	// 余额变动信息
 	BalanceInfo struct {
-		Id       int32  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int32  `db:"member_id"`
+		Id       int64  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int64  `db:"member_id"`
 		TradeNo  string `db:"trade_no"`
 		Kind     int32  `db:"kind"`
 		Type     int    `db:"type"`
@@ -258,7 +258,7 @@ type (
 		// 手续费
 		CsnAmount float32 `db:"csn_amount"`
 		// 引用编号
-		RefId      int32 `db:"ref_id"`
+		RefId      int64 `db:"ref_id"`
 		State      int   `db:"state"`
 		CreateTime int64 `db:"create_time"`
 		UpdateTime int64 `db:"update_time"`
@@ -267,7 +267,7 @@ type (
 	// 账户值对象
 	Account struct {
 		// 会员编号
-		MemberId int32 `db:"member_id" pk:"yes"`
+		MemberId int64 `db:"member_id" pk:"yes"`
 		// 积分
 		Integral int64 `db:"integral"`
 		// 不可用积分
@@ -279,7 +279,7 @@ type (
 		// 失效的账户余额
 		ExpiredBalance float32 `db:"expired_balance"`
 		//奖金账户余额
-		PresentBalance float32 `db:"wallet_balance"`
+		WalletBalance float32 `db:"wallet_balance"`
 		//冻结赠送金额
 		FreezeWallet float32 `db:"freeze_wallet"`
 		//失效的赠送金额
@@ -297,7 +297,7 @@ type (
 		//累积收益金额
 		GrowTotalEarnings float32 `db:"grow_total_earnings"`
 		//总消费金额
-		TotalConsumption float32 `db:"total_consumption"`
+		TotalExpense float32 `db:"total_expense"`
 		//总充值金额
 		TotalCharge float32 `db:"total_charge"`
 		//总支付额
@@ -311,9 +311,9 @@ type (
 	// 积分记录
 	IntegralLog struct {
 		// 编号
-		Id int32 `db:"id" pk:"yes" auto:"yes"`
+		Id int64 `db:"id" pk:"yes" auto:"yes"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 类型
 		Type int `db:"type"`
 		// 关联的编号
@@ -328,8 +328,8 @@ type (
 
 	// 余额日志
 	BalanceLog struct {
-		Id       int32  `db:"id" auto:"yes" pk:"yes"`
-		MemberId int32  `db:"member_id"`
+		Id       int64  `db:"id" auto:"yes" pk:"yes"`
+		MemberId int64  `db:"member_id"`
 		OuterNo  string `db:"outer_no"`
 		// 业务类型
 		BusinessKind int32 `db:"kind"`
@@ -340,7 +340,7 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int32 `db:"rel_user"`
+		RelateUser int64 `db:"rel_user"`
 		// 状态
 		State int32 `db:"state"`
 		// 备注
@@ -353,9 +353,9 @@ type (
 
 	// 钱包账户日志
 	PresentLog struct {
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		Id int64 `db:"id" auto:"yes" pk:"yes"`
 		// 会员编号
-		MemberId int32 `db:"member_id"`
+		MemberId int64 `db:"member_id"`
 		// 外部单号
 		OuterNo string `db:"outer_no"`
 		// 业务类型
@@ -367,7 +367,7 @@ type (
 		// 手续费
 		CsnFee float32 `db:"csn_fee"`
 		// 关联操作人,仅在客服操作时,记录操作人
-		RelateUser int32 `db:"rel_user"`
+		RelateUser int64 `db:"rel_user"`
 		// 状态
 		State int32 `db:"state"`
 		// 备注

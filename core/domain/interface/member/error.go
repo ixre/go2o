@@ -28,8 +28,11 @@ var (
 	ErrSessionTimeout *domain.DomainError = domain.NewDomainError(
 		"member_session_time_out", "会员会话超时")
 
-	ErrStopped *domain.DomainError = domain.NewDomainError(
+	ErrMemberDisabled *domain.DomainError = domain.NewDomainError(
 		"err_member_stopped", "会员已被停用")
+
+	ErrPremiumValue *domain.DomainError = domain.NewDomainError(
+		"err_member_premium_value", "premium not match")
 
 	ErrCredential *domain.DomainError = domain.NewDomainError(
 		"err_member_credential", "会员用户或密码不正确")

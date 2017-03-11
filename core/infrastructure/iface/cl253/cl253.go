@@ -11,17 +11,21 @@ package cl253
 import (
 	"errors"
 	"fmt"
+	"github.com/jsix/gof/log"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 )
 
-const url = "http://222.73.117.169/msg/HttpBatchSendSM"
+//https://www.253.com/api-docs-10.html
+// 签名要在后台添加，并在短信中包含。
+const url = "http://sms.253.com/msg/send"
 
 func SendMsgToMobile(account, pwd, phone, content string) error {
-	strUrl := fmt.Sprintf("%s?account=%s&pswd=%s&mobile=%s&msg=%s",
+	strUrl := fmt.Sprintf("%s?un=%s&pw=%s&phone=%s&msg=%s&rd=1",
 		url, account, pwd, phone, content)
+	log.Println("--", strUrl)
 	rsp, err := http.Get(strUrl)
 	if err == nil {
 		defer rsp.Body.Close()

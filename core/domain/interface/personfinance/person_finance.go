@@ -20,7 +20,7 @@ var (
 	RiseSettleTValue         int     = 2            //T+? 开使计算收益
 	RiseNormalDayRatio       float32 = 0.0001369863 // 年化5%,按365天计算
 	// 比例提供者,默认为:personfinance.RiseNormalDayRatio
-	RiseDayRatioProvider func(personId int32) float32 = func(personId int32) float32 {
+	RiseDayRatioProvider func(personId int64) float32 = func(personId int64) float32 {
 		return RiseNormalDayRatio
 	}
 
@@ -98,7 +98,7 @@ type (
 	// 在此聚合下, 会员抽象为Person, PersonId 对应 MemberId
 	IPersonFinance interface {
 		// 获取聚合根
-		GetAggregateRootId() int32
+		GetAggregateRootId() int64
 		// 获取账号
 		GetMemberAccount() member.IAccount
 		// 获取增利账户信息(类:余额宝)
@@ -111,7 +111,7 @@ type (
 
 	// 现金增利
 	IRiseInfo interface {
-		GetDomainId() int32
+		GetDomainId() int64
 
 		// 获取值
 		Value() (RiseInfoValue, error)
@@ -141,7 +141,7 @@ type (
 	// 收益总记录
 	RiseInfoValue struct {
 		//Id  int `db:"id" pk:"yes" auto:"no"`
-		PersonId         int32   `db:"person_id" pk:"yes" auto:"no"` //人员编号
+		PersonId         int64   `db:"person_id" pk:"yes" auto:"no"` //人员编号
 		Balance          float32 `db:"balance"`                      //本金及收益的余额
 		SettlementAmount float32 `db:"settlement_amount"`            //结算金额,日日计息, 月月分红
 		Rise             float32 `db:"rise"`                         //当前的收益
@@ -155,7 +155,7 @@ type (
 	// 收益每日结算数据
 	RiseDayInfo struct {
 		Id               int32   `db:"id" pk:"yes" auto:"yes"`
-		PersonId         int32   `db:"person_id"`
+		PersonId         int64   `db:"person_id"`
 		Date             string  `db:"date"`
 		SettlementAmount float32 `db:"base_amount"` //本金
 		RiseAmount       float32 `db:"rise_amount"` //增加金额
@@ -166,7 +166,7 @@ type (
 	// 收益日志
 	RiseLog struct {
 		Id           int32   `db:"id" pk:"yes" auto:"yes"`
-		PersonId     int32   `db:"person_id"`     //会员编号
+		PersonId     int64   `db:"person_id"`     //会员编号
 		Title        string  `db:"title"`         //日志标题
 		Amount       float32 `db:"amount"`        //金额
 		Type         int     `db:"type"`          //类型
@@ -183,25 +183,25 @@ type (
 
 	IPersonFinanceRepository interface {
 		// 获取个人财富聚合根
-		GetPersonFinance(personId int32) IPersonFinance
+		GetPersonFinance(personId int64) IPersonFinance
 
 		// 根据时间获取收益情况
-		GetRiseByTime(personId int32, begin, end int64) []*RiseDayInfo
+		GetRiseByTime(personId int64, begin, end int64) []*RiseDayInfo
 
 		// 根据人员编号获取收益
-		GetRiseValueByPersonId(id int32) (v *RiseInfoValue, err error)
+		GetRiseValueByPersonId(id int64) (v *RiseInfoValue, err error)
 
 		// 保存收益信息
-		SaveRiseInfo(*RiseInfoValue) (int32, error)
+		SaveRiseInfo(*RiseInfoValue) (int, error)
 
 		// 获取日志
-		GetRiseLog(personId, logId int32) *RiseLog
+		GetRiseLog(personId int64, logId int32) *RiseLog
 
 		// 保存日志
 		SaveRiseLog(*RiseLog) (int32, error)
 
 		// 获取日志
-		GetRiseLogs(personId int32, date int64, riseType int) []*RiseLog
+		GetRiseLogs(personId int64, date int64, riseType int) []*RiseLog
 
 		// 保存每日收益
 		SaveRiseDayInfo(*RiseDayInfo) (int32, error)

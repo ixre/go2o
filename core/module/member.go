@@ -39,12 +39,12 @@ func (m *MemberModule) Init() {
 }
 
 // 获取会员Token-Key
-func (m *MemberModule) getMemberTokenKey(memberId int32) string {
+func (m *MemberModule) getMemberTokenKey(memberId int64) string {
 	return fmt.Sprintf("go2o:module:member:token:%d", memberId)
 }
 
 // 获取会员的Token
-func (m *MemberModule) getMemberToken(memberId int32) (string, string) {
+func (m *MemberModule) getMemberToken(memberId int64) (string, string) {
 	var key = m.getMemberTokenKey(memberId)
 	var pubToken, tokenBase string
 	pubToken, _ = m.storage.GetString(key)
@@ -53,13 +53,13 @@ func (m *MemberModule) getMemberToken(memberId int32) (string, string) {
 }
 
 // 获取会员Token
-func (m *MemberModule) GetToken(memberId int32) string {
+func (m *MemberModule) GetToken(memberId int64) string {
 	pubToken, _ := m.getMemberToken(memberId)
 	return pubToken
 }
 
 // 检查会员的会话Token是否正确，
-func (m *MemberModule) CheckToken(memberId int32, token string) bool {
+func (m *MemberModule) CheckToken(memberId int64, token string) bool {
 	token = strings.TrimSpace(token)
 	if len(token) == 0 {
 		return false
@@ -95,14 +95,14 @@ func (m *MemberModule) CheckToken(memberId int32, token string) bool {
 }
 
 // 移除会员Token
-func (m *MemberModule) RemoveToken(memberId int32) {
+func (m *MemberModule) RemoveToken(memberId int64) {
 	key := m.getMemberTokenKey(memberId)
 	m.storage.Del(key)
 	m.storage.Del(key + "base")
 }
 
 // 重设并返回会员的会员Token，token有效时间默认为60天
-func (m *MemberModule) ResetToken(memberId int32, pwd string) string {
+func (m *MemberModule) ResetToken(memberId int64, pwd string) string {
 	cyp := crypto.NewUnixCrypto(pwd+m.tokenOffset, m.tokenOffset)
 	var token string = string(cyp.Encode())
 	var key string = m.getMemberTokenKey(memberId)

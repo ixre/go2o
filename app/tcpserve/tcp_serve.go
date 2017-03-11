@@ -11,6 +11,7 @@ package tcpserve
 import (
 	"errors"
 	"github.com/jsix/gof/net/nc"
+	"github.com/jsix/gof/util"
 	"go2o/core/service/rsi"
 	"go2o/core/service/thrift"
 	"net"
@@ -72,15 +73,15 @@ func connAuth(s *nc.SocketServer, conn net.Conn, line string) error {
 	if strings.HasPrefix(line, "AUTH:") {
 		arr := strings.Split(line[5:], "#") // AUTH:API_ID#SECRET#VERSION
 		if len(arr) == 3 {
-			var af nc.AuthFunc = func() (int, error) {
+			var af nc.AuthFunc = func() (int64, error) {
 				mchId := rsi.MerchantService.GetMerchantIdByApiId(arr[0])
 				apiInfo := rsi.MerchantService.GetApiInfo(mchId)
 				if apiInfo != nil && apiInfo.ApiSecret == arr[1] {
 					if apiInfo.Enabled == 0 {
-						return int(mchId), errors.New("api has exipres")
+						return int64(mchId), errors.New("api has exipres")
 					}
 				}
-				return int(mchId), nil
+				return int64(mchId), nil
 			}
 			if err := s.Auth(conn, af); err != nil {
 				return err
@@ -97,12 +98,12 @@ func memberAuth(s *nc.SocketServer, id *nc.Client, param string) ([]byte, error)
 	var err error
 	arr := strings.Split(param, "#")
 	if len(arr) == 2 {
-		f := func() (int, error) {
-			memberId, _ := strconv.Atoi(arr[0])
+		f := func() (int64, error) {
+			memberId, _ := util.I64Err(strconv.Atoi(arr[0]))
 			cli, err := thrift.MemberServeClient()
 			if err == nil {
 				defer cli.Transport.Close()
-				if b, _ := cli.CheckToken(int32(memberId), arr[1]); b {
+				if b, _ := cli.CheckToken(memberId, arr[1]); b {
 					return memberId, nil
 				}
 				return memberId, errors.New("auth fail")

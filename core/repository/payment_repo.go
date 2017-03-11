@@ -46,7 +46,7 @@ func NewPaymentRepo(sto storage.Interface, conn db.Connector, mmRepo member.IMem
 }
 
 // 根据订单号获取支付单
-func (p *paymentRepo) GetPaymentBySalesOrderId(orderId int32) payment.IPaymentOrder {
+func (p *paymentRepo) GetPaymentBySalesOrderId(orderId int64) payment.IPaymentOrder {
 	e := &payment.PaymentOrder{}
 	if p.Connector.GetOrm().GetBy(e, "order_id=?", orderId) == nil {
 		return p.CreatePaymentOrder(e)

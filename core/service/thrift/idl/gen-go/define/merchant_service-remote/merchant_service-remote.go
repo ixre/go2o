@@ -20,12 +20,9 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(i64 id, bool sub_order)")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrder(i64 id)")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrderByNo(string orderNo)")
-	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
-	fmt.Fprintln(os.Stderr, "  Result64 SubmitTradeOrder(ComplexOrder o, double rate)")
-	fmt.Fprintln(os.Stderr, "  Result64 TradeOrderCashPay(i64 orderId)")
+	fmt.Fprintln(os.Stderr, "  ComplexMerchant Complex(i32 mchId)")
+	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
+	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -113,110 +110,53 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewSaleServiceClientFactory(trans, protocolFactory)
+	client := define.NewMerchantServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "GetOrder":
+	case "Complex":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
+			flag.Usage()
+		}
+		tmp0, err13 := (strconv.Atoi(flag.Arg(1)))
+		if err13 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		fmt.Print(client.Complex(value0))
+		fmt.Print("\n")
+		break
+	case "CheckLogin":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "GetOrder requires 2 args")
-			flag.Usage()
-		}
-		argvalue0, err189 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err189 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		argvalue1 := flag.Arg(2) == "true"
-		value1 := argvalue1
-		fmt.Print(client.GetOrder(value0, value1))
-		fmt.Print("\n")
-		break
-	case "GetSubOrder":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
-			flag.Usage()
-		}
-		argvalue0, err191 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err191 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		fmt.Print(client.GetSubOrder(value0))
-		fmt.Print("\n")
-		break
-	case "GetSubOrderByNo":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrderByNo requires 1 args")
+			fmt.Fprintln(os.Stderr, "CheckLogin requires 2 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		fmt.Print(client.GetSubOrderByNo(value0))
-		fmt.Print("\n")
-		break
-	case "GetSubOrderItems":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
-			flag.Usage()
-		}
-		argvalue0, err193 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err193 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		fmt.Print(client.GetSubOrderItems(value0))
-		fmt.Print("\n")
-		break
-	case "SubmitTradeOrder":
-		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "SubmitTradeOrder requires 2 args")
-			flag.Usage()
-		}
-		arg194 := flag.Arg(1)
-		mbTrans195 := thrift.NewTMemoryBufferLen(len(arg194))
-		defer mbTrans195.Close()
-		_, err196 := mbTrans195.WriteString(arg194)
-		if err196 != nil {
-			Usage()
-			return
-		}
-		factory197 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt198 := factory197.GetProtocol(mbTrans195)
-		argvalue0 := define.NewComplexOrder()
-		err199 := argvalue0.Read(jsProt198)
-		if err199 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		argvalue1, err200 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err200 != nil {
-			Usage()
-			return
-		}
+		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.SubmitTradeOrder(value0, value1))
+		fmt.Print(client.CheckLogin(value0, value1))
 		fmt.Print("\n")
 		break
-	case "TradeOrderCashPay":
+	case "Stat":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "TradeOrderCashPay requires 1 args")
+			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err201 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err201 != nil {
+		tmp0, err16 := (strconv.Atoi(flag.Arg(1)))
+		if err16 != nil {
 			Usage()
 			return
 		}
+		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		fmt.Print(client.TradeOrderCashPay(value0))
+		fmt.Print(client.Stat(value0))
 		fmt.Print("\n")
 		break
 	case "":

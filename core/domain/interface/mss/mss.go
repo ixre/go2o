@@ -56,7 +56,7 @@ type (
 		CreateMessage(msg *Message, content interface{}) IMessage
 
 		// 创建用于会员通知的消息对象
-		CreateMemberNotifyMessage(memberId int32, msgType int, content interface{}) IMessage
+		CreateMemberNotifyMessage(memberId int64, msgType int, content interface{}) IMessage
 
 		// 获取消息
 		GetMessage(id int32) IMessage

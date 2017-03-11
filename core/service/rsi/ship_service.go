@@ -33,8 +33,8 @@ func (s *shipmentService) CreateCoverageArea(c *delivery.CoverageValue) (int32, 
 }
 
 // 获取订单的发货单信息
-func (s *shipmentService) GetShipOrderOfOrder(orderId int32) *shipment.ShipmentOrder {
-	arr := s._rep.GetOrders(orderId)
+func (s *shipmentService) GetShipOrderOfOrder(orderId int64) *shipment.ShipmentOrder {
+	arr := s._rep.GetShipOrders(orderId)
 	if arr != nil && len(arr) > 0 {
 		v := arr[0].Value()
 		return &v

@@ -111,7 +111,7 @@ func (ms *mssService) SendSiteNotifyMessage(senderId int32, toRole int,
 }
 
 // 对会用户发送站内信
-func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser int32,
+func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser int64,
 	msg *notify.SiteMessage, sendNow bool) error {
 	v := &mss.Message{
 		Id: 0,
@@ -124,7 +124,7 @@ func (ms *mssService) SendSiteMessageToUser(senderId int32, toRole int, toUser i
 		// 发送人编号
 		SenderId: senderId,
 		To: []mss.User{
-			{Id: toUser, Role: toRole},
+			{Id: int32(toUser), Role: toRole},
 		},
 		// 发送的用户角色
 		ToRole: -1,

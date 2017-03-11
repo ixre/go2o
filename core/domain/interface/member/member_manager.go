@@ -23,10 +23,10 @@ type (
 		// 等级服务
 		LevelManager() ILevelManager
 		// 检查手机绑定,同时检查手机格式
-		CheckPhoneBind(phone string, memberId int32) error
+		CheckPhoneBind(phone string, memberId int64) error
 		// 检查注册信息是否正确
 		PrepareRegister(v *Member, pro *Profile, invitationCode string) (
-			invitationId int32, err error)
+			invitationId int64, err error)
 		// 获取所有买家分组
 		GetAllBuyerGroups() []*BuyerGroup
 		// 获取买家分组
@@ -58,7 +58,7 @@ type (
 		//是否启用
 		Enabled int `db:"enabled"`
 		//是否为正式会员/非正式
-		IsOfficial int `db:"is_official"`
+		IsOfficial int32 `db:"is_official"`
 	}
 
 	ILevelManager interface {

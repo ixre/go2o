@@ -26,10 +26,10 @@ var (
 )
 
 // 获取会员编号
-func GetMemberId(c *echox.Context) int32 {
+func GetMemberId(c *echox.Context) int64 {
 	v := c.Session.Get("member_id")
 	if v != nil {
-		return v.(int32)
+		return v.(int64)
 	}
 	return 0
 }
@@ -80,7 +80,7 @@ func (u *UserSync) Sync(c *echox.Context) (err error) {
 func (u *UserSync) ssoConnect(c *echox.Context, callback string) error {
 	// 第三方连接，传入memberId 和 token
 	mStr := c.QueryParam("member_id")
-	mId, err := gu.I32Err(strconv.Atoi(mStr))
+	mId, err := gu.I64Err(strconv.Atoi(mStr))
 	// 鉴权，如成功，则存储会话
 	token := c.QueryParam("token")
 	cli, err := thrift.MemberServeClient()

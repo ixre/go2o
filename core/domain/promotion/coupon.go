@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof/math"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/infrastructure/format"
@@ -249,12 +250,12 @@ func (c *Coupon) CanTake() bool {
 }
 
 //获取占用
-func (c *Coupon) GetTake(memberId int32) (*promotion.ValueCouponTake, error) {
+func (c *Coupon) GetTake(memberId int64) (*promotion.ValueCouponTake, error) {
 	return c.promRepo.GetCouponTakeByMemberId(c.detailsValue.Id, memberId)
 }
 
 //占用
-func (c *Coupon) Take(memberId int32) error {
+func (c *Coupon) Take(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足!")
 	}
@@ -302,7 +303,7 @@ func (c *Coupon) ApplyTake(couponTakeId int32) error {
 /********  绑定  *********/
 
 //绑定
-func (c *Coupon) Bind(memberId int32) error {
+func (c *Coupon) Bind(memberId int64) error {
 	if c.detailsValue.Amount == 0 {
 		return errors.New("优惠券不足")
 	}
@@ -326,7 +327,7 @@ func (c *Coupon) Bind(memberId int32) error {
 }
 
 //获取绑定
-func (c *Coupon) GetBind(memberId int32) (*promotion.ValueCouponBind, error) {
+func (c *Coupon) GetBind(memberId int64) (*promotion.ValueCouponBind, error) {
 	return c.promRepo.GetCouponBindByMemberId(c.detailsValue.Id, memberId)
 }
 
@@ -337,12 +338,12 @@ func (c *Coupon) Binds(memberIds []string) error {
 	}
 
 	for _, v := range memberIds {
-		memberId, err := strconv.Atoi(v)
+		memberId, err := util.I64Err(strconv.Atoi(v))
 		if err != nil {
 			return err
 		}
 
-		err = c.Bind(int32(memberId))
+		err = c.Bind(memberId)
 		if err != nil {
 			return err
 		}

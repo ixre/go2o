@@ -52,7 +52,7 @@ func (a *afterSalesRepo) GetAfterSalesOrder(id int32) afterSales.IAfterSalesOrde
 }
 
 // 获取订单的售后单
-func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int32) []afterSales.IAfterSalesOrder {
+func (a *afterSalesRepo) GetAllOfSaleOrder(orderId int64) []afterSales.IAfterSalesOrder {
 	list := []*afterSales.AfterSalesOrder{}
 	orders := []afterSales.IAfterSalesOrder{}
 	if a.GetOrm().Select(&list, "order_id=?", orderId) == nil {

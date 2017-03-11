@@ -35,6 +35,7 @@ var ReviewTextMap = map[int32]string{
 	ReviewReject:   "审核不通过",
 	ReviewPass:     "审核通过",
 	ReviewConfirm:  "已确认",
+	ReviewAbort:    "已取消",
 }
 
 // 审核状态名称

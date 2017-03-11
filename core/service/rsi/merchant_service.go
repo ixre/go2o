@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
@@ -23,31 +24,33 @@ import (
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
+	_memberRepo member.IMemberRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 }
 
-func NewMerchantService(r merchant.IMerchantRepo,
+func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
 		_mchRepo:    r,
+		_memberRepo: memberRepo,
 		_query:      q,
 		_orderQuery: orderQuery,
 	}
 }
 
 // 创建会员申请商户密钥
-func (m *merchantService) CreateSignUpToken(memberId int32) string {
+func (m *merchantService) CreateSignUpToken(memberId int64) string {
 	return m._mchRepo.CreateSignUpToken(memberId)
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantService) GetMemberFromSignUpToken(token string) int32 {
+func (m *merchantService) GetMemberFromSignUpToken(token string) int64 {
 	return m._mchRepo.GetMemberFromSignUpToken(token)
 }
 
 // 获取会员商户申请信息
-func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int32) *merchant.MchSignUp {
+func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	return m._mchRepo.GetManager().GetSignUpInfoByMemberId(memberId)
 }
 
@@ -111,7 +114,7 @@ func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int32, error) {
 	return m._mchRepo.GetManager().CommitSignUpInfo(e)
 }
 
-func (m *merchantService) GetMerchantByMemberId(memberId int32) *merchant.Merchant {
+func (m *merchantService) GetMerchantByMemberId(memberId int64) *merchant.Merchant {
 	mch := m._mchRepo.GetManager().GetMerchantByMemberId(memberId)
 	if mch != nil {
 		v := mch.GetValue()
@@ -121,22 +124,58 @@ func (m *merchantService) GetMerchantByMemberId(memberId int32) *merchant.Mercha
 }
 
 // 删除会员的商户申请资料
-func (m *merchantService) RemoveMerchantSignUp(memberId int32) error {
+func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
-// 验证用户密码并返回编号
-func (m *merchantService) Verify(usr, pwd string) (r *define.Result_, err error) {
+// 登录，返回结果(Result)和会员编号(Id);
+// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
-	pwd = strings.TrimSpace(pwd)
-	var mchId int32
-	if usr == "" || pwd == "" {
-		err = member.ErrCredential
-	} else {
-		mchId = m._query.Verify(usr, pwd)
-		if mchId <= 0 {
-			err = merchant.ErrNoSuchMerchant
+	val := ms._memberRepo.GetMemberByUsr(usr)
+	if val == nil {
+		val = ms._memberRepo.GetMemberValueByPhone(usr)
+	}
+	if val == nil {
+		return 0, member.ErrNoSuchMember
+	}
+	if val.Pwd != pwd {
+		//todo: 兼容旧密码
+		if val.Pwd != domain.Sha1(pwd) {
+			return 0, member.ErrCredential
 		}
+	}
+	if val.State == member.StateStopped {
+		return 0, member.ErrMemberDisabled
+	}
+	return val.Id, nil
+}
+
+// 验证用户密码,并返回编号。可传入商户或会员的账号密码
+func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err error) {
+	usr = strings.ToLower(strings.TrimSpace(usr))
+	oriPwd = strings.TrimSpace(oriPwd)
+	var mchId int32
+	if usr == "" || oriPwd == "" {
+		return parser.Result(mchId, member.ErrCredential), nil
+	}
+	//尝试作为独立的商户账号登陆
+	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
+	mchId = m._query.Verify(usr, encPwd)
+	if mchId <= 0 {
+		// 使用会员身份登录
+		var id int64
+		mEncPwd := domain.MemberSha1Pwd(oriPwd)
+		id, err = m.testMemberLogin(usr, mEncPwd)
+		if err == nil {
+			mch := m.GetMerchantByMemberId(id)
+			if mch != nil {
+				mchId = mch.Id
+			}
+		}
+	}
+	if mchId < 0 && err == nil {
+		err = merchant.ErrNoSuchMerchant
 	}
 	return parser.Result(mchId, err), nil
 }
@@ -188,6 +227,15 @@ func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
 		return mch.ProfileManager().ReviewEnterpriseInfo(pass, remark)
 	}
 	return merchant.ErrNoSuchMerchant
+}
+
+func (m *merchantService) Complex(mchId int32) (*define.ComplexMerchant, error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		c := mch.Complex()
+		return parser.MerchantDto(c), nil
+	}
+	return nil, nil
 }
 
 func (m *merchantService) GetMerchant(mchId int32) *merchant.Merchant {
@@ -243,12 +291,14 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(mchId int32) error {
+func (m *merchantService) Stat(mchId int32) (r *define.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.Stat()
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		err = mch.Stat()
 	}
-	return merchant.ErrNoSuchMerchant
+	return parser.Result(mchId, err), nil
 }
 
 // 设置商户启用或停用
