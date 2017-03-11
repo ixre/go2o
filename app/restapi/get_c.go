@@ -26,7 +26,7 @@ type getC struct {
 // 下载邀请二维码
 func (g *getC) Invite_qr(c echo.Context) error {
 	domain := c.QueryParam("domain")                                    //域名
-	memberId, _ := util.I32Err(strconv.Atoi(c.QueryParam("member_id"))) //会员编号
+	memberId, _ := util.I64Err(strconv.Atoi(c.QueryParam("member_id"))) //会员编号
 	targetUrl := c.QueryParam("target_url")                             //目标跳转地址
 	if len(domain) == 0 {
 		domain = "http://" + c.Request().Host
@@ -34,7 +34,7 @@ func (g *getC) Invite_qr(c echo.Context) error {
 	if len(targetUrl) == 0 {
 		targetUrl = rsi.FoundationService.GetRegisterPerm().CallBackUrl
 	}
-	m, _ := rsi.MemberService.GetMember(int32(memberId))
+	m, _ := rsi.MemberService.GetMember(memberId)
 	if m != nil {
 		query := "return_url=" + targetUrl
 		c.Response().Header().Add("Content-Type", "Image/Jpeg")

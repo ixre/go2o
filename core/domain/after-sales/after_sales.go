@@ -85,7 +85,7 @@ func (a *afterSalesOrderImpl) saveAfterSalesOrder() error {
 func (a *afterSalesOrderImpl) GetOrder() order.ISubOrder {
 	if a.order == nil {
 		if a.value.OrderId > 0 {
-			a.order = a.orderRepo.Manager().GetSubOrder(a.value.OrderId)
+			a.order = a.orderRepo.Manager().GetSubOrder(int64(a.value.OrderId))
 		}
 		if a.order == nil {
 			panic(errors.New("售后单对应的订单不存在"))

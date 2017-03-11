@@ -45,7 +45,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		defer cli.Transport.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.Login(usr, encPwd, true)
+		r, _ := cli.CheckLogin(usr, encPwd, true)
 		result.Message = r.Message
 		result.Result = r.Result_
 		if r.Result_ {
@@ -97,7 +97,7 @@ func (mc *MemberC) Async(c echo.Context) error {
 	var rlt AsyncResult
 	var form = url.Values(c.Request().Form)
 	var mut, aut, kvMut, kvAut int
-	memberId := int32(GetMemberId(c))
+	memberId := GetMemberId(c)
 	mut, _ = strconv.Atoi(form.Get("member_update_time"))
 	aut, _ = strconv.Atoi(form.Get("account_update_time"))
 	mutKey := fmt.Sprintf("%s%d", variable.KvMemberUpdateTime, memberId)
@@ -136,7 +136,7 @@ func (mc *MemberC) Get(c echo.Context) error {
 // 汇总信息
 func (mc *MemberC) Summary(c echo.Context) error {
 	memberId := GetMemberId(c)
-	v, _ := rsi.MemberService.Summary(memberId)
+	v, _ := rsi.MemberService.Complex(memberId)
 	return c.JSON(http.StatusOK, v)
 }
 

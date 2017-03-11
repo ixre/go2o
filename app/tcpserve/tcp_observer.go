@@ -28,9 +28,9 @@ func AccountNotifyJob(s *nc.SocketServer) {
 		if err == nil {
 			id, err := strconv.Atoi(string(values[1].([]byte)))
 			if err == nil {
-				connList := s.GetConnections(id)
+				connList := s.GetConnections(int64(id))
 				if len(connList) > 0 {
-					go pushMemberAccount(s, connList, id)
+					go pushMemberAccount(s, connList, int64(id))
 				}
 			}
 		}
@@ -38,7 +38,7 @@ func AccountNotifyJob(s *nc.SocketServer) {
 }
 
 // push member summary to tcp client
-func pushMemberAccount(s *nc.SocketServer, connList []net.Conn, memberId int) {
+func pushMemberAccount(s *nc.SocketServer, connList []net.Conn, memberId int64) {
 	s.Printf("[ TCP][ NOTIFY] - notify account update - %d", memberId)
 	sm := getMemberAccount(memberId, 0)
 	if sm != nil {
@@ -60,9 +60,9 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
 		if err == nil {
 			id, err := strconv.Atoi(string(values[1].([]byte)))
 			if err == nil {
-				connList := s.GetConnections(id)
+				connList := s.GetConnections(int64(id))
 				if len(connList) > 0 {
-					go pushMemberSummary(s, connList, id)
+					go pushMemberSummary(s, connList, int64(id))
 				}
 			}
 		}
@@ -70,7 +70,7 @@ func MemberSummaryNotifyJob(s *nc.SocketServer) {
 }
 
 // push member summary to tcp client
-func pushMemberSummary(s *nc.SocketServer, connList []net.Conn, memberId int) {
+func pushMemberSummary(s *nc.SocketServer, connList []net.Conn, memberId int64) {
 	s.Printf("[ TCP][ NOTIFY] - notify member update - %d", memberId)
 	sm := GetMemberSummary(memberId, 0)
 	if d, err := json.Marshal(sm); err == nil {

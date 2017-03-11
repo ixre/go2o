@@ -35,7 +35,7 @@ func (s *shipmentRepo) CreateShipmentOrder(o *shipment.ShipmentOrder) shipment.I
 	return shipImpl.NewShipmentOrder(o, s, s._expRepo)
 }
 
-func (s *shipmentRepo) GetShipOrderById(id int32) *shipment.ShipmentOrder {
+func (s *shipmentRepo) getShipOrderById(id int64) *shipment.ShipmentOrder {
 	e := &shipment.ShipmentOrder{}
 	if s.GetOrm().Get(id, &e) == nil {
 		return e
@@ -44,15 +44,15 @@ func (s *shipmentRepo) GetShipOrderById(id int32) *shipment.ShipmentOrder {
 }
 
 // 获取发货单
-func (s *shipmentRepo) GetShipmentOrder(id int32) shipment.IShipmentOrder {
-	if e := s.GetShipOrderById(id); e != nil {
+func (s *shipmentRepo) GetShipmentOrder(id int64) shipment.IShipmentOrder {
+	if e := s.getShipOrderById(id); e != nil {
 		return s.CreateShipmentOrder(e)
 	}
 	return nil
 }
 
 // 获取订单对应的发货单
-func (s *shipmentRepo) GetOrders(orderId int32) []shipment.IShipmentOrder {
+func (s *shipmentRepo) GetShipOrders(orderId int64) []shipment.IShipmentOrder {
 	list := []*shipment.ShipmentOrder{}
 	s.GetOrm().Select(&list, "order_id=?", orderId)
 	orders := make([]shipment.IShipmentOrder, len(list))
@@ -63,16 +63,16 @@ func (s *shipmentRepo) GetOrders(orderId int32) []shipment.IShipmentOrder {
 }
 
 // 保存发货单
-func (s *shipmentRepo) SaveShipmentOrder(o *shipment.ShipmentOrder) (int32, error) {
-	return orm.I32(orm.Save(s.GetOrm(), o, int(o.Id)))
+func (s *shipmentRepo) SaveShipmentOrder(o *shipment.ShipmentOrder) (int, error) {
+	return orm.Save(s.GetOrm(), o, int(o.ID))
 }
 
 // 保存发货商品项
-func (s *shipmentRepo) SaveShipmentItem(v *shipment.Item) (int32, error) {
-	return orm.I32(orm.Save(s.GetOrm(), v, int(v.Id)))
+func (s *shipmentRepo) SaveShipmentItem(v *shipment.Item) (int, error) {
+	return orm.Save(s.GetOrm(), v, int(v.ID))
 }
 
 // 删除发货单
-func (s *shipmentRepo) DeleteShipmentOrder(id int32) error {
+func (s *shipmentRepo) DeleteShipmentOrder(id int64) error {
 	return s.GetOrm().DeleteByPk(&shipment.ShipmentOrder{}, id)
 }

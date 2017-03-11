@@ -117,11 +117,11 @@ func settleRiseData(settleDate time.Time) {
 	begin := 0
 	size := 20
 	for {
-		idArr := []int32{}
+		idArr := []int64{}
 		err := _db.Query(`SELECT person_id FROM pf_riseinfo WHERE
             settlement_amount > 0 AND settled_date < ? LIMIT ?,?`,
 			func(rows *sql.Rows) {
-				var i int32
+				var i int64
 				for rows.Next() {
 					rows.Scan(&i)
 					if i > 0 {
@@ -151,7 +151,7 @@ func settleRiseData(settleDate time.Time) {
 }
 
 // 结算每日数据
-func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int32) {
+func riseGroupSettle(wg *sync.WaitGroup, settleUnix int64, personId int64) {
 	err := rsi.PersonFinanceService.RiseSettleByDay(personId, settleUnix,
 		personfinance.RiseDayRatioProvider(personId))
 	if err != nil {

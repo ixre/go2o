@@ -16,6 +16,7 @@ import (
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/util"
 	"github.com/robfig/cron"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
@@ -41,7 +42,7 @@ type Service interface {
 	Start(gof.App)
 
 	// 处理订单,需根据订单不同的状态,作不同的业务,返回布尔值,如果返回false,则不继续执行
-	OrderObs(*define.SubOrder) bool
+	OrderObs(*define.ComplexOrder) bool
 
 	// 监视会员修改,@create:是否为新注册会员,返回布尔值,如果返回false,则不继续执行
 	MemberObs(m *define.Member, create bool) bool
@@ -150,7 +151,7 @@ func startCronTab() {
 	//检查订单过期,1分钟检测一次
 	cronTab.AddFunc("0 * * * * *", detectOrderExpires)
 	//订单自动收货,2分钟检测一次
-	cronTab.AddFunc("0 */2 * * * *", orderAutoRecive)
+	cronTab.AddFunc("0 */2 * * * *", orderAutoReceive)
 	cronTab.Start()
 }
 
@@ -206,22 +207,22 @@ func (d *defaultService) Start(a gof.App) {
 
 // 处理订单,需根据订单不同的状态,作不同的业务
 // 返回布尔值,如果返回false,则不继续执行
-func (d *defaultService) OrderObs(o *define.SubOrder) bool {
-	conn := core.GetRedisConn()
-	defer conn.Close()
-	defer Recover()
+func (d *defaultService) OrderObs(o *define.ComplexOrder) bool {
 	if d.app.Debug() {
 		d.app.Log().Println("-- 订单", o.OrderNo, "状态:", o.State)
 	}
 	if d.sOrder {
+		conn := core.GetRedisConn()
+		defer conn.Close()
+		defer Recover()
+
 		switch o.State {
 		//订单未支付，则超时自动取消
 		case order.StatAwaitingPayment:
 			d.updateOrderExpires(conn, o)
 		//自动确认订单
 		case order.StatAwaitingConfirm:
-			rsi.ShoppingService.ConfirmOrder(o.ID)
-			d.cancelOrderExpires(conn, o) //付款后取消自动取消
+			d.orderAutoConfirm(conn, o)
 		//订单自动收货
 		case order.StatShipped:
 			d.orderAutoReceive(conn, o)
@@ -254,42 +255,76 @@ func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
 	return true
 }
 
+// 测试是否为子订单,并返回编号
+func (d *defaultService) testSubId(o *define.ComplexOrder) (int64, bool) {
+	if id := o.SubOrderId; id > 0 {
+		return o.SubOrderId, true
+	}
+	return o.OrderId, false
+}
+
+// 批量删除REDIS KEY
+func (d *defaultService) batchDelKeys(conn redis.Conn, key string) {
+	list, err := redis.Strings(conn.Do("KEYS", key))
+	if err == nil {
+		for _, oKey := range list {
+			conn.Do("DEL", oKey)
+		}
+	}
+}
+
 //设置订单过期时间
-func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.SubOrder) {
+func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.ComplexOrder) {
 	//订单刚创建时,设置过期时间
 	if o.State == order.StatAwaitingPayment {
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
-		key := fmt.Sprintf("%s:%s:%d", variable.KvOrderExpiresTime, tk, o.ID)
+		id, sub := d.testSubId(o)
+		prefix := util.BoolExt.TString(sub, "sub!", "")
+		key := fmt.Sprintf("%s:%s%d:%s", variable.KvOrderExpiresTime, prefix, id, tk)
+		//log.Println(" [Daemon][Exprire][ Key]:", key)
 		conn.Do("SET", key, unix)
 	}
 }
 
 //取消订单过期时间
-func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.SubOrder) {
-	key := fmt.Sprintf("%s:*:%d", variable.KvOrderExpiresTime, o.ID)
-	conn.Do("DEL", key)
+func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.ComplexOrder) {
+	id, sub := d.testSubId(o)
+	prefix := util.BoolExt.TString(sub, "sub!", "")
+	key := fmt.Sprintf("%s:%s%d:*", variable.KvOrderExpiresTime, prefix, id)
+	d.batchDelKeys(conn, key)
+}
+
+// 确认订单
+func (d *defaultService) orderAutoConfirm(conn redis.Conn, o *define.ComplexOrder) {
+	rsi.ShoppingService.ConfirmOrder(d.testSubId(o))
+	d.cancelOrderExpires(conn, o) //付款后取消自动取消
 }
 
 // 订单自动收货
-func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.SubOrder) {
+func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.ComplexOrder) {
 	if o.State == order.StatShipped {
 		ss := rsi.FoundationService.GetGlobMchSaleConf()
 		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
-		key := fmt.Sprintf("%s:%s:%d", variable.KvOrderAutoReceive, tk, o.ID)
+		id, sub := d.testSubId(o)
+		prefix := util.BoolExt.TString(sub, "sub!", "")
+		key := fmt.Sprintf("%s:%s%d:%s", variable.KvOrderAutoReceive, prefix, id, tk)
+		//log.Println(" [Daemon][AutoReceive][ Key]:", key)
 		conn.Do("SET", key, unix)
 	}
 }
 
 // 完成订单自动收货
-func (d *defaultService) orderReceived(conn redis.Conn, o *define.SubOrder) {
+func (d *defaultService) orderReceived(conn redis.Conn, o *define.ComplexOrder) {
 	if o.State == order.StatCompleted {
-		key := fmt.Sprintf("%s:*:%d", variable.KvOrderAutoReceive, o.ID)
-		conn.Do("DEL", key)
+		id, sub := d.testSubId(o)
+		prefix := util.BoolExt.TString(sub, "sub!", "")
+		key := fmt.Sprintf("%s:%s%d:*", variable.KvOrderAutoReceive, prefix, id)
+		d.batchDelKeys(conn, key)
 	}
 }
 

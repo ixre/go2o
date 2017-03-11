@@ -204,7 +204,7 @@ func (this *promotionRepo) SaveCouponBind(v *promotion.ValueCouponBind) error {
 }
 
 // 获取会员的优惠券绑定
-func (this *promotionRepo) GetCouponBindByMemberId(couponId, memberId int32) (
+func (this *promotionRepo) GetCouponBindByMemberId(couponId int32, memberId int64) (
 	*promotion.ValueCouponBind, error) {
 	var bind promotion.ValueCouponBind
 	err := this.Connector.GetOrm().GetByQuery(&bind,
@@ -219,7 +219,7 @@ func (this *promotionRepo) GetCouponBindByMemberId(couponId, memberId int32) (
 }
 
 // 获取会员的优惠券占用
-func (this *promotionRepo) GetCouponTakeByMemberId(couponId, memberId int32) (*promotion.ValueCouponTake, error) {
+func (this *promotionRepo) GetCouponTakeByMemberId(couponId int32, memberId int64) (*promotion.ValueCouponTake, error) {
 	var take promotion.ValueCouponTake
 	unix := time.Now().Unix()
 	err := this.Connector.GetOrm().GetByQuery(&take,

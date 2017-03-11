@@ -72,15 +72,15 @@ func (p *paymentOrderImpl) notifyPaymentFinish() {
 	if p.GetAggregateRootId() <= 0 {
 		panic(payment.ErrNoSuchPaymentOrder)
 	}
+
 	//err := p._rep.NotifyPaymentFinish(p.GetAggregateRootId())
 	//if err != nil {
 	//	err = errors.New("Notify payment finish error :" + err.Error())
 	//	domain.HandleError(err, "domain")
 	//}
-
 	// 通知订单支付完成
 	if p.value.OrderId > 0 {
-		err := p.orderManager.ReceiveNotifyOfOnlineTrade(p.value.OrderId)
+		err := p.orderManager.NotifyOrderTradeSuccess(int64(p.value.OrderId))
 		domain.HandleError(err, "domain")
 	}
 }
@@ -189,11 +189,6 @@ func (p *paymentOrderImpl) checkPaymentOk() (bool, error) {
 	return b, nil
 }
 
-// 使用会员的余额抵扣
-func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
-	return p.paymentWithBalance(payment.PaymentByBuyer, remark)
-}
-
 // 计算积分折算后的金额
 func (p *paymentOrderImpl) mathIntegralFee(integral int64) float32 {
 	if integral > 0 {
@@ -261,6 +256,43 @@ func (p *paymentOrderImpl) getBuyer() member.IMember {
 	return p.buyer
 }
 
+// 余额钱包混合支付，优先扣除余额。
+func (p *paymentOrderImpl) HybridPayment(remark string) error {
+	buyer := p.getBuyer()
+	if buyer == nil {
+		return member.ErrNoSuchMember
+	}
+	v := p.GetValue()
+	acc := buyer.GetAccount().GetValue()
+	optFlag := int(v.PaymentOptFlag)
+	// 判断是否能余额支付
+	if p := payment.OptBalanceDiscount; optFlag&p != p {
+		return payment.ErrNotSupportPaymentOpt
+	}
+	// 如果余额够支付，则优先余额支付
+	if acc.Balance >= v.FinalAmount {
+		return p.BalanceDiscount(remark)
+	}
+	// 判断是否能钱包支付
+	if p := payment.OptWalletPayment; optFlag&p != p {
+		return payment.ErrNotSupportPaymentOpt
+	}
+	// 判断是否余额不足
+	if acc.Balance+acc.WalletBalance < v.FinalAmount {
+		return payment.ErrNotEnoughAmount
+	}
+	err := p.BalanceDiscount(remark)
+	if err == nil {
+		err = p.PaymentByWallet(remark)
+	}
+	return err
+}
+
+// 使用会员的余额抵扣
+func (p *paymentOrderImpl) BalanceDiscount(remark string) error {
+	return p.paymentWithBalance(payment.PaymentByBuyer, remark)
+}
+
 // 钱包账户支付
 func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	amount := p.value.FinalAmount
@@ -270,7 +302,7 @@ func (p *paymentOrderImpl) PaymentByWallet(remark string) error {
 	}
 	acc := buyer.GetAccount()
 	av := acc.GetValue()
-	if av.PresentBalance < amount {
+	if av.WalletBalance < amount {
 		return payment.ErrNotEnoughAmount
 	}
 	if remark == "" {
@@ -297,9 +329,9 @@ func (p *paymentOrderImpl) SetPaymentSign(paymentSign int32) error {
 }
 
 // 绑定订单号,如果交易号为空则绑定参数中传递的交易号
-func (p *paymentOrderImpl) BindOrder(orderId int32, tradeNo string) error {
+func (p *paymentOrderImpl) BindOrder(orderId int64, tradeNo string) error {
 	//todo: check order exists  and tradeNo exists
-	p.value.OrderId = orderId
+	p.value.OrderId = int32(orderId)
 	if len(p.value.TradeNo) == 0 {
 		p.value.TradeNo = tradeNo
 	}

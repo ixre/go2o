@@ -20,13 +20,15 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  Result CreatePaymentOrder(PaymentOrder o)")
+	fmt.Fprintln(os.Stderr, "  Result SubmitPaymentOrder(PaymentOrder o)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrder(string paymentNo)")
+	fmt.Fprintln(os.Stderr, "  i32 GetPaymentOrderId(string tradeNo)")
 	fmt.Fprintln(os.Stderr, "  PaymentOrder GetPaymentOrderById(i32 id)")
 	fmt.Fprintln(os.Stderr, "  Result AdjustOrder(string paymentNo, double amount)")
 	fmt.Fprintln(os.Stderr, "  Result DiscountByBalance(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  DResult DiscountByIntegral(i32 orderId, i64 integral, bool ignoreOut)")
 	fmt.Fprintln(os.Stderr, "  Result PaymentByWallet(i32 orderId, string remark)")
+	fmt.Fprintln(os.Stderr, "  Result HybridPayment(i32 orderId, string remark)")
 	fmt.Fprintln(os.Stderr, "  Result FinishPayment(string tradeNo, string spName, string outerNo)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
@@ -122,29 +124,29 @@ func main() {
 	}
 
 	switch cmd {
-	case "CreatePaymentOrder":
+	case "SubmitPaymentOrder":
 		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "CreatePaymentOrder requires 1 args")
+			fmt.Fprintln(os.Stderr, "SubmitPaymentOrder requires 1 args")
 			flag.Usage()
 		}
-		arg130 := flag.Arg(1)
-		mbTrans131 := thrift.NewTMemoryBufferLen(len(arg130))
-		defer mbTrans131.Close()
-		_, err132 := mbTrans131.WriteString(arg130)
-		if err132 != nil {
+		arg151 := flag.Arg(1)
+		mbTrans152 := thrift.NewTMemoryBufferLen(len(arg151))
+		defer mbTrans152.Close()
+		_, err153 := mbTrans152.WriteString(arg151)
+		if err153 != nil {
 			Usage()
 			return
 		}
-		factory133 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt134 := factory133.GetProtocol(mbTrans131)
+		factory154 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt155 := factory154.GetProtocol(mbTrans152)
 		argvalue0 := define.NewPaymentOrder()
-		err135 := argvalue0.Read(jsProt134)
-		if err135 != nil {
+		err156 := argvalue0.Read(jsProt155)
+		if err156 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		fmt.Print(client.CreatePaymentOrder(value0))
+		fmt.Print(client.SubmitPaymentOrder(value0))
 		fmt.Print("\n")
 		break
 	case "GetPaymentOrder":
@@ -157,13 +159,23 @@ func main() {
 		fmt.Print(client.GetPaymentOrder(value0))
 		fmt.Print("\n")
 		break
+	case "GetPaymentOrderId":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetPaymentOrderId requires 1 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		fmt.Print(client.GetPaymentOrderId(value0))
+		fmt.Print("\n")
+		break
 	case "GetPaymentOrderById":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetPaymentOrderById requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err137 := (strconv.Atoi(flag.Arg(1)))
-		if err137 != nil {
+		tmp0, err159 := (strconv.Atoi(flag.Arg(1)))
+		if err159 != nil {
 			Usage()
 			return
 		}
@@ -179,8 +191,8 @@ func main() {
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
-		argvalue1, err139 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err139 != nil {
+		argvalue1, err161 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err161 != nil {
 			Usage()
 			return
 		}
@@ -193,8 +205,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByBalance requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err140 := (strconv.Atoi(flag.Arg(1)))
-		if err140 != nil {
+		tmp0, err162 := (strconv.Atoi(flag.Arg(1)))
+		if err162 != nil {
 			Usage()
 			return
 		}
@@ -210,15 +222,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountByIntegral requires 3 args")
 			flag.Usage()
 		}
-		tmp0, err142 := (strconv.Atoi(flag.Arg(1)))
-		if err142 != nil {
+		tmp0, err164 := (strconv.Atoi(flag.Arg(1)))
+		if err164 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		argvalue1, err143 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-		if err143 != nil {
+		argvalue1, err165 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err165 != nil {
 			Usage()
 			return
 		}
@@ -233,8 +245,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "PaymentByWallet requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err145 := (strconv.Atoi(flag.Arg(1)))
-		if err145 != nil {
+		tmp0, err167 := (strconv.Atoi(flag.Arg(1)))
+		if err167 != nil {
 			Usage()
 			return
 		}
@@ -243,6 +255,23 @@ func main() {
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
 		fmt.Print(client.PaymentByWallet(value0, value1))
+		fmt.Print("\n")
+		break
+	case "HybridPayment":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "HybridPayment requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err169 := (strconv.Atoi(flag.Arg(1)))
+		if err169 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2)
+		value1 := argvalue1
+		fmt.Print(client.HybridPayment(value0, value1))
 		fmt.Print("\n")
 		break
 	case "FinishPayment":

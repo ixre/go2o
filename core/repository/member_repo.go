@@ -67,7 +67,7 @@ func (m *MemberRepo) GetManager() member.IMemberManager {
 }
 
 // 获取资料或初始化
-func (m *MemberRepo) GetProfile(memberId int32) *member.Profile {
+func (m *MemberRepo) GetProfile(memberId int64) *member.Profile {
 	e := &member.Profile{}
 	key := m.getProfileCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
@@ -93,7 +93,7 @@ func (m *MemberRepo) SaveProfile(v *member.Profile) error {
 }
 
 //收藏,typeId 为类型编号, referId为关联的ID
-func (m *MemberRepo) Favorite(memberId int32, favType int, referId int32) error {
+func (m *MemberRepo) Favorite(memberId int64, favType int, referId int32) error {
 	_, _, err := m.Connector.GetOrm().Save(nil, &member.Favorite{
 		MemberId:   memberId,
 		FavType:    favType,
@@ -104,7 +104,7 @@ func (m *MemberRepo) Favorite(memberId int32, favType int, referId int32) error 
 }
 
 //是否已收藏
-func (m *MemberRepo) Favored(memberId int32, favType int, referId int32) bool {
+func (m *MemberRepo) Favored(memberId int64, favType int, referId int32) bool {
 	num := 0
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_favorite
 	WHERE member_id=? AND fav_type=? AND refer_id=?`, &num,
@@ -113,7 +113,7 @@ func (m *MemberRepo) Favored(memberId int32, favType int, referId int32) bool {
 }
 
 //取消收藏
-func (m *MemberRepo) CancelFavorite(memberId int32, favType int, referId int32) error {
+func (m *MemberRepo) CancelFavorite(memberId int64, favType int, referId int32) error {
 	_, err := m.Connector.GetOrm().Delete(&member.Favorite{},
 		"member_id=? AND fav_type=? AND refer_id=?",
 		memberId, favType, referId)
@@ -186,29 +186,29 @@ func (m *MemberRepo) GetMemberValueByPhone(phone string) *member.Member {
 }
 
 // 根据手机号获取会员编号
-func (m *MemberRepo) GetMemberIdByPhone(phone string) int32 {
-	var id int32
+func (m *MemberRepo) GetMemberIdByPhone(phone string) int64 {
+	var id int64
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE phone=?", &id, phone)
 	return id
 }
 
 // 根据邮箱地址获取会员编号
-func (m *MemberRepo) GetMemberIdByEmail(email string) int32 {
-	var id int32
+func (m *MemberRepo) GetMemberIdByEmail(email string) int64 {
+	var id int64
 	m.Connector.ExecScalar("SELECT member_id FROM mm_profile WHERE email=?", &id, email)
 	return id
 }
 
-func (m *MemberRepo) getMemberCk(memberId int32) string {
+func (m *MemberRepo) getMemberCk(memberId int64) string {
 	return fmt.Sprintf("go2o:rep:mm:inf:%d", memberId)
 }
-func (m *MemberRepo) getAccountCk(memberId int32) string {
+func (m *MemberRepo) getAccountCk(memberId int64) string {
 	return fmt.Sprintf("go2o:rep:mm:%d:acc", memberId)
 }
-func (m *MemberRepo) getProfileCk(memberId int32) string {
+func (m *MemberRepo) getProfileCk(memberId int64) string {
 	return fmt.Sprintf("go2o:rep:mm:pro:%d", memberId)
 }
-func (m *MemberRepo) getTrustCk(memberId int32) string {
+func (m *MemberRepo) getTrustCk(memberId int64) string {
 	return fmt.Sprintf("go2o:rep:mm:trust:%d", memberId)
 }
 func (m *MemberRepo) getGlobLevelsCk() string {
@@ -216,7 +216,7 @@ func (m *MemberRepo) getGlobLevelsCk() string {
 }
 
 // 获取会员
-func (m *MemberRepo) GetMember(memberId int32) member.IMember {
+func (m *MemberRepo) GetMember(memberId int64) member.IMember {
 	e := &member.Member{}
 	key := m.getMemberCk(memberId)
 	if err := m.Storage.Get(key, &e); err != nil {
@@ -232,7 +232,7 @@ func (m *MemberRepo) GetMember(memberId int32) member.IMember {
 }
 
 // 保存会员
-func (m *MemberRepo) SaveMember(v *member.Member) (int32, error) {
+func (m *MemberRepo) SaveMember(v *member.Member) (int64, error) {
 	if v.Id > 0 {
 		rc := core.GetRedisConn()
 		defer rc.Close()
@@ -256,13 +256,13 @@ func (m *MemberRepo) SaveMember(v *member.Member) (int32, error) {
 	return m.createMember(v)
 }
 
-func (m *MemberRepo) createMember(v *member.Member) (int32, error) {
+func (m *MemberRepo) createMember(v *member.Member) (int64, error) {
 	var id int64
 	_, id, err := m.Connector.GetOrm().Save(nil, v)
 	if err != nil {
 		return -1, err
 	}
-	v.Id = int32(id)
+	v.Id = id
 	m.initMember(v)
 
 	rc := core.GetRedisConn()
@@ -281,12 +281,12 @@ func (m *MemberRepo) createMember(v *member.Member) (int32, error) {
 func (m *MemberRepo) initMember(v *member.Member) {
 	orm := m.Connector.GetOrm()
 	orm.Save(nil, &member.Account{
-		MemberId:         v.Id,
-		Balance:          0,
-		TotalConsumption: 0,
-		TotalCharge:      0,
-		TotalPay:         0,
-		UpdateTime:       v.RegTime,
+		MemberId:     v.Id,
+		Balance:      0,
+		TotalExpense: 0,
+		TotalCharge:  0,
+		TotalPay:     0,
+		UpdateTime:   v.RegTime,
 	})
 
 	orm.Save(nil, &member.BankInfo{
@@ -303,7 +303,7 @@ func (m *MemberRepo) initMember(v *member.Member) {
 }
 
 // 删除会员
-func (m *MemberRepo) DeleteMember(id int32) error {
+func (m *MemberRepo) DeleteMember(id int64) error {
 	m.Storage.Del(m.getMemberCk(id))
 	_, err := m.ExecNonQuery("delete from mm_member where id = ?", id)
 	sql := `
@@ -327,8 +327,8 @@ func (m *MemberRepo) DeleteMember(id int32) error {
 	return err
 }
 
-func (m *MemberRepo) GetMemberIdByUser(user string) int32 {
-	var id int32
+func (m *MemberRepo) GetMemberIdByUser(user string) int64 {
+	var id int64
 	m.Connector.ExecScalar("SELECT id FROM mm_member WHERE usr = ?", &id, user)
 	return id
 }
@@ -340,19 +340,19 @@ func (m *MemberRepo) CreateMember(v *member.Member) member.IMember {
 }
 
 // 创建会员,仅作为某些操作使用,不保存
-func (m *MemberRepo) CreateMemberById(memberId int32) member.IMember {
+func (m *MemberRepo) CreateMemberById(memberId int64) member.IMember {
 	return m.CreateMember(&member.Member{Id: memberId})
 }
 
 // 根据邀请码获取会员编号
-func (m *MemberRepo) GetMemberIdByInvitationCode(code string) int32 {
-	var memberId int32
+func (m *MemberRepo) GetMemberIdByInvitationCode(code string) int64 {
+	var memberId int64
 	m.ExecScalar("SELECT id FROM mm_member WHERE invitation_code=?", &memberId, code)
 	return memberId
 }
 
 // 获取会员最后更新时间
-func (m *MemberRepo) GetMemberLatestUpdateTime(memberId int32) int64 {
+func (m *MemberRepo) GetMemberLatestUpdateTime(memberId int64) int64 {
 	var updateTime int64
 	m.Connector.ExecScalar(`SELECT update_time FROM mm_member where id=?`,
 		&updateTime, memberId)
@@ -360,7 +360,7 @@ func (m *MemberRepo) GetMemberLatestUpdateTime(memberId int32) int64 {
 }
 
 // 获取账户
-func (m *MemberRepo) GetAccount(memberId int32) *member.Account {
+func (m *MemberRepo) GetAccount(memberId int64) *member.Account {
 	e := &member.Account{}
 	key := m.getAccountCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
@@ -375,7 +375,7 @@ func (m *MemberRepo) GetAccount(memberId int32) *member.Account {
 }
 
 // 保存账户，传入会员编号
-func (m *MemberRepo) SaveAccount(v *member.Account) (int32, error) {
+func (m *MemberRepo) SaveAccount(v *member.Account) (int64, error) {
 	_, _, err := m.Connector.GetOrm().Save(v.MemberId, v)
 	if err == nil {
 		m.pushToAccountUpdateQueue(v.MemberId, v.UpdateTime)
@@ -384,7 +384,7 @@ func (m *MemberRepo) SaveAccount(v *member.Account) (int32, error) {
 	return v.MemberId, err
 }
 
-func (m *MemberRepo) pushToAccountUpdateQueue(memberId int32, updateTime int64) {
+func (m *MemberRepo) pushToAccountUpdateQueue(memberId int64, updateTime int64) {
 	rc := core.GetRedisConn()
 	defer rc.Close()
 	// 保存最后更新时间
@@ -395,7 +395,7 @@ func (m *MemberRepo) pushToAccountUpdateQueue(memberId int32, updateTime int64) 
 }
 
 // 获取银行信息
-func (m *MemberRepo) GetBankInfo(memberId int32) *member.BankInfo {
+func (m *MemberRepo) GetBankInfo(memberId int64) *member.BankInfo {
 	e := new(member.BankInfo)
 	m.Connector.GetOrm().Get(memberId, e)
 	return e
@@ -433,12 +433,12 @@ func (m *MemberRepo) GetPresentLog(id int32) *member.PresentLog {
 }
 
 // 获取会员提现次数键
-func (m *MemberRepo) getMemberTakeOutTimesKey(memberId int32) string {
+func (m *MemberRepo) getMemberTakeOutTimesKey(memberId int64) string {
 	return fmt.Sprintf("sys:go2o:rep:mm:take-out-times:%d", memberId)
 }
 
 // 增加会员当天提现次数
-func (m *MemberRepo) AddTodayTakeOutTimes(memberId int32) error {
+func (m *MemberRepo) AddTodayTakeOutTimes(memberId int64) error {
 	times := m.GetTodayTakeOutTimes(memberId)
 	key := m.getMemberTakeOutTimesKey(memberId)
 	// 保存到当天结束
@@ -448,7 +448,7 @@ func (m *MemberRepo) AddTodayTakeOutTimes(memberId int32) error {
 }
 
 // 获取会员每日提现次数
-func (m *MemberRepo) GetTodayTakeOutTimes(memberId int32) int {
+func (m *MemberRepo) GetTodayTakeOutTimes(memberId int64) int {
 	key := m.getMemberTakeOutTimesKey(memberId)
 	applyTimes, _ := m.Storage.GetInt(key)
 	return applyTimes
@@ -465,12 +465,12 @@ func (m *MemberRepo) GetTodayTakeOutTimes(memberId int32) int {
 	return total
 }
 
-func (m *MemberRepo) getRelationCk(memberId int32) string {
+func (m *MemberRepo) getRelationCk(memberId int64) string {
 	return fmt.Sprintf("go2o:rep:mm:%d:rel", memberId)
 }
 
 // 获取会员关联
-func (m *MemberRepo) GetRelation(memberId int32) *member.Relation {
+func (m *MemberRepo) GetRelation(memberId int64) *member.Relation {
 	e := member.Relation{}
 	key := m.getRelationCk(memberId)
 	if m.Storage.Get(key, &e) != nil {
@@ -494,7 +494,7 @@ func (m *MemberRepo) GetLevelValueByExp(mchId int32, exp int64) int {
 }
 
 // 用户名是否存在
-func (m *MemberRepo) CheckUsrExist(usr string, memberId int32) bool {
+func (m *MemberRepo) CheckUsrExist(usr string, memberId int64) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_member WHERE usr=? AND id<>?",
 		&c, usr, memberId)
@@ -502,7 +502,7 @@ func (m *MemberRepo) CheckUsrExist(usr string, memberId int32) bool {
 }
 
 // 手机号码是否使用
-func (m *MemberRepo) CheckPhoneBind(phone string, memberId int32) bool {
+func (m *MemberRepo) CheckPhoneBind(phone string, memberId int64) bool {
 	var c int
 	m.Connector.ExecScalar("SELECT COUNT(0) FROM mm_profile WHERE phone=? AND member_id<>?",
 		&c, phone, memberId)
@@ -533,19 +533,19 @@ func (m *MemberRepo) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 }
 
 // 保存地址
-func (m *MemberRepo) SaveDeliver(v *member.Address) (int32, error) {
-	return orm.I32(orm.Save(m.Connector.GetOrm(), v, int(v.Id)))
+func (m *MemberRepo) SaveDeliver(v *member.Address) (int64, error) {
+	return orm.I64(orm.Save(m.Connector.GetOrm(), v, int(v.Id)))
 }
 
 // 获取全部配送地址
-func (m *MemberRepo) GetDeliverAddress(memberId int32) []*member.Address {
+func (m *MemberRepo) GetDeliverAddress(memberId int64) []*member.Address {
 	addresses := []*member.Address{}
 	m.Connector.GetOrm().Select(&addresses, "member_id=?", memberId)
 	return addresses
 }
 
 // 获取配送地址
-func (m *MemberRepo) GetSingleDeliverAddress(memberId, deliverId int32) *member.Address {
+func (m *MemberRepo) GetSingleDeliverAddress(memberId, deliverId int64) *member.Address {
 	var address member.Address
 	err := m.Connector.GetOrm().Get(deliverId, &address)
 
@@ -556,7 +556,7 @@ func (m *MemberRepo) GetSingleDeliverAddress(memberId, deliverId int32) *member.
 }
 
 // 删除配送地址
-func (m *MemberRepo) DeleteAddress(memberId, deliverId int32) error {
+func (m *MemberRepo) DeleteAddress(memberId, deliverId int64) error {
 	_, err := m.Connector.ExecNonQuery(
 		"DELETE FROM mm_deliver_addr WHERE member_id=? AND id=?",
 		memberId, deliverId)
@@ -564,7 +564,7 @@ func (m *MemberRepo) DeleteAddress(memberId, deliverId int32) error {
 }
 
 // 邀请
-func (m *MemberRepo) GetMyInvitationMembers(memberId int32, begin, end int) (
+func (m *MemberRepo) GetMyInvitationMembers(memberId int64, begin, end int) (
 	total int, rows []*dto.InvitationMember) {
 	arr := []*dto.InvitationMember{}
 	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_member WHERE id IN
@@ -586,7 +586,7 @@ func (m *MemberRepo) GetMyInvitationMembers(memberId int32, begin, end int) (
 }
 
 // 获取下级会员数量
-func (m *MemberRepo) GetSubInvitationNum(memberId int32, memberIdArr []int32) map[int32]int {
+func (m *MemberRepo) GetSubInvitationNum(memberId int64, memberIdArr []int32) map[int32]int {
 	if len(memberIdArr) == 0 {
 		return map[int32]int{}
 	}
@@ -609,7 +609,7 @@ func (m *MemberRepo) GetSubInvitationNum(memberId int32, memberIdArr []int32) ma
 }
 
 // 获取推荐我的人
-func (m *MemberRepo) GetInvitationMeMember(memberId int32) *member.Member {
+func (m *MemberRepo) GetInvitationMeMember(memberId int64) *member.Member {
 	var d *member.Member = new(member.Member)
 	err := m.Connector.GetOrm().GetByQuery(d,
 		"SELECT * FROM mm_member WHERE id =(SELECT inviter_id FROM mm_relation  WHERE id=?)",
@@ -645,7 +645,7 @@ func (m *MemberRepo) SaveBalanceInfo(v *member.BalanceInfo) (int32, error) {
 }
 
 // 保存理财账户信息
-func (m *MemberRepo) SaveGrowAccount(memberId int32, balance, totalAmount,
+func (m *MemberRepo) SaveGrowAccount(memberId int64, balance, totalAmount,
 	growEarnings, totalGrowEarnings float32, updateTime int64) error {
 	_, err := m.Connector.ExecNonQuery(`UPDATE mm_account SET grow_balance=?,
 		grow_amount=?,grow_earnings=?,grow_total_earnings=?,update_time=? where member_id=?`,
@@ -658,7 +658,7 @@ func (m *MemberRepo) SaveGrowAccount(memberId int32, balance, totalAmount,
 }
 
 // 获取会员分页的优惠券列表
-func (m *MemberRepo) GetMemberPagedCoupon(memberId int32, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
+func (m *MemberRepo) GetMemberPagedCoupon(memberId int64, start, end int, where string) (total int, rows []*dto.SimpleCoupon) {
 	list := []*dto.SimpleCoupon{}
 	m.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(distinct pi.id)
         FROM pm_info pi INNER JOIN pm_coupon c ON c.id = pi.id

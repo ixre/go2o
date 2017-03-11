@@ -49,17 +49,17 @@ func NewMerchantManager(rep merchant.IMerchantRepo,
 }
 
 // 创建会员申请商户密钥
-func (m *merchantManagerImpl) CreateSignUpToken(memberId int32) string {
+func (m *merchantManagerImpl) CreateSignUpToken(memberId int64) string {
 	return m.rep.CreateSignUpToken(memberId)
 }
 
 // 根据商户申请密钥获取会员编号
-func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int32 {
+func (m *merchantManagerImpl) GetMemberFromSignUpToken(token string) int64 {
 	return m.rep.GetMemberFromSignUpToken(token)
 }
 
 // 删除会员的商户申请资料
-func (m *merchantManagerImpl) RemoveSignUp(memberId int32) error {
+func (m *merchantManagerImpl) RemoveSignUp(memberId int64) error {
 	_, err := tmp.Db().GetOrm().Delete(merchant.MchSignUp{}, "member_id=?", memberId)
 	return err
 }
@@ -219,7 +219,7 @@ func (m *merchantManagerImpl) GetSignUpInfo(id int32) *merchant.MchSignUp {
 }
 
 // 获取会员申请的商户信息
-func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int32) *merchant.MchSignUp {
+func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
 	v := merchant.MchSignUp{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) != nil {
 		return nil
@@ -228,7 +228,7 @@ func (m *merchantManagerImpl) GetSignUpInfoByMemberId(memberId int32) *merchant.
 }
 
 // 获取会员关联的商户
-func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int32) merchant.IMerchant {
+func (m *merchantManagerImpl) GetMerchantByMemberId(memberId int64) merchant.IMerchant {
 	v := merchant.Merchant{}
 	if tmp.Db().GetOrm().GetBy(&v, "member_id=?", memberId) == nil {
 		return m.rep.CreateMerchant(&v)
@@ -284,6 +284,31 @@ func (m *merchantImpl) GetRepo() merchant.IMerchantRepo {
 func (m *merchantImpl) GetAggregateRootId() int32 {
 	return m._value.Id
 }
+
+// 获取符合的商家信息
+func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
+	src := m.GetValue()
+	return &merchant.ComplexMerchant{
+		Id:            src.Id,
+		MemberId:      src.MemberId,
+		Usr:           src.Usr,
+		Pwd:           src.Pwd,
+		Name:          src.Name,
+		SelfSales:     src.SelfSales,
+		Level:         src.Level,
+		Logo:          src.Logo,
+		Province:      src.Province,
+		City:          src.City,
+		District:      src.District,
+		Enabled:       src.Enabled,
+		ExpiresTime:   src.ExpiresTime,
+		JoinTime:      src.JoinTime,
+		UpdateTime:    src.UpdateTime,
+		LoginTime:     src.LoginTime,
+		LastLoginTime: src.LastLoginTime,
+	}
+}
+
 func (m *merchantImpl) GetValue() merchant.Merchant {
 	return *m._value
 }
@@ -373,7 +398,7 @@ func (m *merchantImpl) SetEnabled(enabled bool) error {
 }
 
 // 返回对应的会员编号
-func (m *merchantImpl) Member() int32 {
+func (m *merchantImpl) Member() int64 {
 	return m.GetValue().MemberId
 }
 
@@ -640,6 +665,25 @@ func (a *accountImpl) SaveBalanceLog(v *merchant.BalanceLog) (int32, error) {
 	//return a.mchImpl._rep.SaveBalanceLog(v)
 }
 
+// 支出
+func (a *accountImpl) TakePayment(outerNo string, amount float64, csn float64, remark string) error {
+	if amount <= 0 || math.IsNaN(amount) {
+		return merchant.ErrAmount
+	}
+	if float64(a.value.Balance) < amount {
+		return merchant.ErrNoMoreAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountTakePayment,
+		remark, outerNo, float32(-amount), float32(csn), 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.Balance -= float32(amount)
+		a.value.UpdateTime = time.Now().Unix()
+		return a.Save()
+	}
+	return err
+}
+
 // 订单结账
 func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 	csn float32, refundAmount float32, remark string) error {
@@ -650,7 +694,6 @@ func (a *accountImpl) SettleOrder(orderNo string, amount float32,
 		remark, orderNo, amount, csn, 1)
 	_, err := a.SaveBalanceLog(l)
 	if err == nil {
-		// 扣款
 		a.value.Balance += amount
 		a.value.SalesAmount += amount
 		a.value.RefundAmount += refundAmount

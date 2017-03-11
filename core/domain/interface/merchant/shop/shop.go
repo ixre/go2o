@@ -15,6 +15,9 @@ import (
 )
 
 var (
+	ErrNoSuchShop *domain.DomainError = domain.NewDomainError(
+		"err_shop_no_such_shop", "未指定店铺")
+
 	ErrNotSetAlias *domain.DomainError = domain.NewDomainError(
 		"err_not_set_alias", "请设置商城域名")
 

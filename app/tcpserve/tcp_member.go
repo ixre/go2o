@@ -19,16 +19,16 @@ import (
 )
 
 // get summary of member,if dbGet will get summary from database.
-func GetMemberSummary(memberId int, updateTime int) *define.MemberSummary {
-	v, _ := rsi.MemberService.Summary(int32(memberId))
+func GetMemberSummary(memberId int64, updateTime int) *define.ComplexMember {
+	v, _ := rsi.MemberService.Complex(memberId)
 	if v != nil {
 		return v
 	}
 	return nil
 }
 
-func getMemberAccount(memberId int, updateTime int) *define.Account {
-	v, _ := rsi.MemberService.GetAccount(int32(memberId))
+func getMemberAccount(memberId int64, updateTime int) *define.Account {
+	v, _ := rsi.MemberService.GetAccount(memberId)
 	return v
 }
 

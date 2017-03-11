@@ -64,7 +64,7 @@ func SystemCheck(h echo.HandlerFunc) echo.HandlerFunc {
 			// 访问挂起页面及相关的资源页面不跳转
 			if strings.Index(path, "suspend") == -1 &&
 				!sysIgnoreRegex.MatchString(path) {
-				url := fmt.Sprintf("http://%s%s/suspend", variable.DOMAIN_PREFIX_MAIN,
+				url := fmt.Sprintf("http://%s%s/suspend", variable.DOMAIN_PREFIX_PORTAL,
 					variable.Domain)
 				rsp.Header().Add("Location", url)
 				rsp.WriteHeader(302)

@@ -22,8 +22,8 @@ import (
 )
 
 // 获取推荐数组
-func (o *subOrderImpl) getReferArr(memberId int32, level int32) []int32 {
-	arr := make([]int32, level)
+func (o *subOrderImpl) getReferArr(memberId int64, level int32) []int64 {
+	arr := make([]int64, level)
 	var i int32
 	referId := memberId
 	for i <= level-1 {
@@ -49,7 +49,7 @@ func (o *subOrderImpl) handleCashBack() error {
 	if mch == nil {
 		err = merchant.ErrNoSuchMerchant
 	} else {
-		buyer := o.GetBuyer()
+		buyer := o.getBuyer()
 		now := time.Now().Unix()
 
 		//******* 返现到账户  ************
@@ -82,7 +82,7 @@ func (o *subOrderImpl) updateMemberAccount(m member.IMember,
 		//更新账户
 		acc := m.GetAccount()
 		acv := acc.GetValue()
-		acv.PresentBalance += fee
+		acv.WalletBalance += fee
 		acv.TotalPresentFee += fee
 		acv.UpdateTime = unixTime
 		_, err := acc.Save()
@@ -135,7 +135,7 @@ func (o *subOrderImpl) backFor3R(mch merchant.IMerchant, m member.IMember,
 	return err
 }
 
-func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
+func HandleCashBackDataTag(m member.IMember, o order.IOrder,
 	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 	data := c.GetDataTag()
 	level := 0
@@ -147,10 +147,11 @@ func HandleCashBackDataTag(m member.IMember, order *order.ValueOrder,
 		}
 	}
 	//log.Println("[ Back][ Level] - ",level)
-	cashBack3R(level, m, order, c, memberRepo)
+	cashBack3R(level, m, o, c, memberRepo)
 }
 
-func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
+func cashBack3R(level int, m member.IMember, o order.IOrder,
+	c promotion.ICashBackPromotion, memberRepo member.IMemberRepo) {
 
 	dt := c.GetDataTag()
 
@@ -161,7 +162,7 @@ func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotio
 
 	var backFunc = func(m member.IMember, parentM member.IMember, fee int) {
 		// fmt.Println("---------[ back ]",parentM.GetValue().Name,fee)
-		backCashForMember(m, order, fee, parentM.Profile().GetProfile().Name)
+		backCashForMember(m, o, fee, parentM.Profile().GetProfile().Name)
 	}
 	var i int = 0
 	for true {
@@ -192,22 +193,23 @@ func cashBack3R(level int, m member.IMember, order *order.ValueOrder, c promotio
 	}
 }
 
-func backCashForMember(m member.IMember, order *order.ValueOrder,
+func backCashForMember(m member.IMember, o order.IOrder,
 	fee int, refName string) error {
 	//更新账户
 	acc := m.GetAccount()
 	acv := acc.GetValue()
 	bFee := float32(fee)
-	acv.PresentBalance += bFee // 更新赠送余额
+	acv.WalletBalance += bFee // 更新赠送余额
 	acv.TotalPresentFee += bFee
 	acv.UpdateTime = time.Now().Unix()
 	_, err := acc.Save()
 
 	if err == nil {
+		orderNo := o.OrderNo()
 		tit := fmt.Sprintf("推广返现￥%s元,订单号:%s,来源：%s",
-			format.FormatFloat(bFee), order.OrderNo, refName)
+			format.FormatFloat(bFee), orderNo, refName)
 		err = acc.Charge(member.AccountWallet,
-			member.KindWalletAdd, tit, order.OrderNo,
+			member.KindWalletAdd, tit, orderNo,
 			float32(fee), member.DefaultRelateUser)
 	}
 	return err

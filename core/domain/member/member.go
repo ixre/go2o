@@ -21,6 +21,7 @@ import (
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
+	"go2o/core/infrastructure/format"
 	"go2o/core/infrastructure/tool/sms"
 	"regexp"
 	"strconv"
@@ -59,8 +60,51 @@ func NewMember(manager member.IMemberManager, val *member.Member, rep member.IMe
 }
 
 // 获取聚合根编号
-func (m *memberImpl) GetAggregateRootId() int32 {
+func (m *memberImpl) GetAggregateRootId() int64 {
 	return m.value.Id
+}
+
+// 会员汇总信息
+func (m *memberImpl) Complex() *member.ComplexMember {
+	mv := m.GetValue()
+	lv := m.GetLevel()
+	pf := m.Profile()
+	pro := pf.GetProfile()
+	acv := m.GetAccount().GetValue()
+	// 实名信息
+	tr := pf.GetTrustedInfo()
+	taState := tr.Reviewed
+	if tr.Reviewed == 1 {
+		taState = enum.ReviewPass
+	} else {
+		taState = enum.ReviewAwaiting
+	}
+
+	s := &member.ComplexMember{
+		MemberId:          m.GetAggregateRootId(),
+		Usr:               mv.Usr,
+		Name:              pro.Name,
+		Avatar:            format.GetResUrl(pro.Avatar),
+		Exp:               mv.Exp,
+		Level:             mv.Level,
+		LevelOfficial:     lv.IsOfficial,
+		LevelSign:         lv.ProgramSignal,
+		LevelName:         lv.Name,
+		InvitationCode:    mv.InvitationCode,
+		TrustAuthState:    taState,
+		PremiumUser:       mv.PremiumUser,
+		PremiumExpires:    mv.PremiumExpires,
+		State:             mv.State,
+		Integral:          acv.Integral,
+		Balance:           float64(acv.Balance),
+		WalletBalance:     float64(acv.WalletBalance),
+		GrowBalance:       float64(acv.GrowBalance),
+		GrowAmount:        float64(acv.GrowAmount),
+		GrowEarnings:      float64(acv.GrowEarnings),
+		GrowTotalEarnings: float64(acv.GrowTotalEarnings),
+		UpdateTime:        mv.UpdateTime,
+	}
+	return s
 }
 
 // 会员资料服务
@@ -214,6 +258,23 @@ func (m *memberImpl) AddExp(exp int32) error {
 	return err
 }
 
+// 升级为高级会员
+
+func (m *memberImpl) Premium(v int32, expires int64) error {
+	switch v {
+	case member.PremiumNormal:
+		m.value.PremiumUser = v
+		m.value.PremiumExpires = 0
+	case member.PremiumGold, member.PremiumWhiteGold, member.PremiumSuper:
+		m.value.PremiumUser = v
+		m.value.PremiumExpires = expires
+	default:
+		return member.ErrPremiumValue
+	}
+	_, err := m.Save()
+	return err
+}
+
 // 获取等级
 func (m *memberImpl) GetLevel() *member.Level {
 	if m.level == nil {
@@ -354,7 +415,7 @@ func (m *memberImpl) ConfirmLevelUp(id int32) error {
 // 获取会员关联
 func (m *memberImpl) GetRelation() *member.Relation {
 	if m.relation == nil {
-		m.relation = m.rep.GetRelation(m.value.Id)
+		m.relation = m.rep.GetRelation(m.GetAggregateRootId())
 	}
 	return m.relation
 }
@@ -397,7 +458,7 @@ func (m *memberImpl) UpdateLoginTime() error {
 }
 
 // 保存
-func (m *memberImpl) Save() (int32, error) {
+func (m *memberImpl) Save() (int64, error) {
 	m.value.UpdateTime = time.Now().Unix() // 更新时间，数据以更新时间触发
 	if m.value.Id > 0 {
 		return m.rep.SaveMember(m.value)
@@ -420,7 +481,7 @@ func (m *memberImpl) Unlock() error {
 }
 
 // 创建会员
-func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error) {
+func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int64, error) {
 	if err := validUsr(m.value.Usr); err != nil {
 		return 0, err
 	}
@@ -437,6 +498,8 @@ func (m *memberImpl) create(v *member.Member, pro *member.Profile) (int32, error
 	if len(v.RegFrom) == 0 {
 		v.RegFrom = "API-INTERNAL"
 	}
+	v.PremiumUser = member.PremiumNormal
+	v.PremiumExpires = 0
 	v.InvitationCode = m.generateInvitationCode() // 创建一个邀请码
 	id, err := m.rep.SaveMember(v)
 	if err == nil {
@@ -482,7 +545,7 @@ func (m *memberImpl) forceUpdateInviterStr(r *member.Relation) {
 	}
 	level := m.valRepo.GetRegistry().MemberReferLayer - 1
 	arr := m.Invitation().InviterArray(r.InviterId, int32(level))
-	arr = append([]int32{r.InviterId}, arr...)
+	arr = append([]int64{r.InviterId}, arr...)
 
 	if len(arr) > 0 {
 		// 有邀请关系
@@ -513,7 +576,7 @@ func (m *memberImpl) updateInviterStr(r *member.Relation) {
 }
 
 // 更改邀请人
-func (m *memberImpl) ChangeReferees(memberId int32) error {
+func (m *memberImpl) ChangeReferees(memberId int64) error {
 	if memberId > 0 {
 		rm := m.rep.GetMember(memberId)
 		if rm == nil {
@@ -535,11 +598,11 @@ var _ member.IFavoriteManager = new(favoriteManagerImpl)
 
 // 收藏服务
 type favoriteManagerImpl struct {
-	_memberId int32
+	_memberId int64
 	_rep      member.IMemberRepo
 }
 
-func newFavoriteManagerImpl(memberId int32,
+func newFavoriteManagerImpl(memberId int64,
 	rep member.IMemberRepo) member.IFavoriteManager {
 	if memberId == 0 {
 		//如果会员不存在,则不应创建服务

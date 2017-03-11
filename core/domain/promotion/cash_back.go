@@ -36,7 +36,7 @@ func (c *CashBackPromotion) GetDomainId() int32 {
 func (c *CashBackPromotion) SetDetailsValue(v *promotion.ValueCashBack) error {
 	g := c.goodsRepo.GetValueGoodsById(c.value.GoodsId)
 	if g == nil {
-		return item.ErrNoSuchGoods
+		return item.ErrNoSuchItem
 	}
 
 	//todo: 商品SKU的原因，获取的价格为0，有BUG

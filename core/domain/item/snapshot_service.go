@@ -70,7 +70,7 @@ func (s *snapshotServiceImpl) checkSnapshot(snap *item.Snapshot, it *item.GoodsI
 // 更新快照, 通过审核后,才会更新快照
 func (s *snapshotServiceImpl) GenerateSnapshot(it *item.GoodsItem) (int32, error) {
 	if it.Id <= 0 || it == nil {
-		return -1, item.ErrNoSuchGoods
+		return -1, item.ErrNoSuchItem
 	}
 	ls := s.GetLatestSnapshot(it.Id)
 	// 检查快照

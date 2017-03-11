@@ -21,8 +21,8 @@ type invitationManager struct {
 }
 
 // 获取推荐数组
-func (im *invitationManager) InviterArray(memberId int32, depth int32) []int32 {
-	arr := make([]int32, depth)
+func (im *invitationManager) InviterArray(memberId int64, depth int32) []int64 {
+	arr := make([]int64, depth)
 	var i int32
 	inviterId := memberId
 	for i <= depth-1 {
@@ -38,7 +38,7 @@ func (im *invitationManager) InviterArray(memberId int32, depth int32) []int32 {
 }
 
 // 判断是否推荐了某个会员
-func (i *invitationManager) InvitationBy(memberId int32) bool {
+func (i *invitationManager) InvitationBy(memberId int64) bool {
 	rl := i.member.GetRelation()
 	if rl != nil {
 		return rl.InviterId == memberId

@@ -75,7 +75,7 @@ func (m *messageManagerImpl) GetMessage(id int32) mss.IMessage {
 }
 
 // 创建用于会员通知的消息对象
-func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int32, msgType int,
+func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int64, msgType int,
 	content interface{}) mss.IMessage {
 	msg := &mss.Message{
 		Type:       msgType,
@@ -84,7 +84,7 @@ func (m *messageManagerImpl) CreateMemberNotifyMessage(memberId int32, msgType i
 		SenderId:   0,
 		To: []mss.User{
 			{
-				Id:   memberId,
+				Id:   int32(memberId),
 				Role: mss.RoleMember,
 			},
 		},

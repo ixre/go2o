@@ -449,12 +449,21 @@ CREATE TABLE sale_cart_item (
 
 /* 2017-02-28 */
 
+CREATE TABLE order_list (
+  id          int(10) NOT NULL AUTO_INCREMENT,
+  order_no    varchar(45) NOT NULL comment '订单号',
+  buyer_id    int(10) NOT NULL comment '买家编号',
+  order_type  int(2) NOT NULL comment '订单类型',
+  create_time int(10) NOT NULL comment '下单时间',
+  state       int(2) NOT NULL comment '订单状态',
+  PRIMARY KEY (id)) comment='订单';
+
+
 /* 订单表更名或者删除后，再重新创建订单 */
 CREATE TABLE sale_order (
   id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
-  order_no         varchar(20) NOT NULL comment '订单号',
-  buyer_id         int(11) NOT NULL comment '买家编号',
-  item_amount     decimal(8, 2) NOT NULL comment '商品金额',
+  order_id         int(11) NOT NULL comment '订单编号',
+  item_amount      decimal(8, 2) NOT NULL comment '商品金额',
   discount_amount  decimal(8, 2) NOT NULL comment '抵扣金额',
   express_fee      decimal(8, 2) NOT NULL comment '物流费',
   package_fee      decimal(4, 2) NOT NULL comment '包装费',
@@ -462,15 +471,15 @@ CREATE TABLE sale_order (
   consignee_person varchar(45) NOT NULL comment '收货人姓名',
   consignee_phone  varchar(45) NOT NULL comment '收货人电话',
   shipping_address varchar(120) NOT NULL comment '收货人地址',
-  create_time      int(11) NOT NULL comment '创建时间',
+  is_break         int(2) NOT NULL comment '是否拆分',
   update_time      int(11) NOT NULL comment '更新时间',
-  PRIMARY KEY (id)) comment='订单';
-
+  PRIMARY KEY (id)) comment='普通订单';
 
 CREATE TABLE sale_sub_order (
   id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
   order_no        varchar(20) NOT NULL comment '订单号',
-  parent_order    int(11) NOT NULL comment '父订单编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  order_pid       int(11) NOT NULL comment '父订单编号',
   buyer_id        int(11) NOT NULL comment '买家编号',
   vendor_id       int(11) NOT NULL comment '商家编号',
   shop_id         int(11) NOT NULL comment '店铺编号',
@@ -489,32 +498,139 @@ CREATE TABLE sale_sub_order (
   update_time     int(11) NOT NULL comment '订单更新时间',
   PRIMARY KEY (id)) comment='子订单';
 
-/*
-ALTER TABLE `sale_sub_order`
-DROP COLUMN `items_info`,
-CHANGE COLUMN `remark` `remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单备注' AFTER `is_suspend`,
-CHANGE COLUMN `state` `state` INT(2) NOT NULL COMMENT '订单状态' AFTER `buyer_remark`,
-CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
-CHANGE COLUMN `order_no` `order_no` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单号' ,
-CHANGE COLUMN `parent_order` `parent_order` INT(11) NOT NULL COMMENT '父订单编号' ,
-CHANGE COLUMN `buyer_id` `buyer_id` INT(11) NOT NULL COMMENT '买家编号' ,
-CHANGE COLUMN `vendor_id` `vendor_id` INT(11) NOT NULL COMMENT '商家编号' ,
-CHANGE COLUMN `shop_id` `shop_id` INT(11) NOT NULL COMMENT '店铺编号' ,
-CHANGE COLUMN `subject` `subject` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '主题' ,
-CHANGE COLUMN `goods_amount` `item_amount` DECIMAL(8,2) NOT NULL COMMENT '商品总价' ,
-CHANGE COLUMN `discount_amount` `discount_amount` DECIMAL(8,2) NOT NULL COMMENT '抵扣金额' ,
-CHANGE COLUMN `express_fee` `express_fee` DECIMAL(4,2) NOT NULL COMMENT '运费' ,
-CHANGE COLUMN `package_fee` `package_fee` DECIMAL(4,2) NOT NULL COMMENT '包装费' ,
-CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '订单最终金额' ,
-CHANGE COLUMN `is_paid` `is_paid` INT(2) NOT NULL COMMENT '是否支付' ,
-CHANGE COLUMN `is_suspend` `is_suspend` INT(2) NOT NULL COMMENT '是否挂起' ,
-CHANGE COLUMN `note` `buyer_remark` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '订单买家备注' ,
-CHANGE COLUMN `create_time` `create_time` INT(11) NOT NULL COMMENT '订单创建时间' ,
-CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '订单更新时间' ,
-COMMENT = '子订单' ;
-*/
+CREATE TABLE sale_order_item (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) comment '子订单编号',
+  item_id         int(11) comment '商品编号',
+  sku_id          int(11) comment 'SKU编号',
+  snap_id         int(11) comment '商品快照编号',
+  quantity        int(11) comment '销售数量',
+  return_quantity int(11) comment '退货数量',
+  amount          decimal(8, 2) comment '商品总金额',
+  final_amount    decimal(8, 2) comment '商品实际金额',
+  is_shipped      bit(1) comment '是否已发货',
+  update_time     int(11) comment '更新时间',
+  PRIMARY KEY (id)) comment='普通订单商品项';
 
-/* 2017-03-01 */
+
+/* 2017-03-03 */
+
+ALTER TABLE `sale_sub_order` 
+DROP COLUMN `order_pid`;
+
+
+CREATE TABLE order_wholesale_order (
+  id               int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_no         varchar(20) NOT NULL comment '订单号',
+  order_id         int(11) NOT NULL comment '订单编号',
+  buyer_id         int(11) NOT NULL comment '买家编号',
+  vendor_id        int(11) NOT NULL comment '商家编号',
+  shop_id          int(11) NOT NULL comment '店铺编号',
+  item_amount      decimal(8, 2) NOT NULL comment '商品总价',
+  discount_amount  decimal(8, 2) NOT NULL comment '抵扣金额',
+  express_fee      decimal(4, 2) NOT NULL comment '运费',
+  package_fee      decimal(4, 2) NOT NULL comment '包装费',
+  final_amount     decimal(8, 2) NOT NULL comment '订单最终金额',
+  consignee_person varchar(45) NOT NULL comment '收货人姓名',
+  consignee_phone  varchar(45) NOT NULL comment '收货人电话',
+  shipping_address varchar(120) NOT NULL comment '收货人地址',
+  is_paid          int(2) NOT NULL comment '是否支付',
+  remark           varchar(120) NOT NULL comment '订单备注',
+  buyer_remark     varchar(120) NOT NULL comment '订单买家备注',
+  state            int(2) NOT NULL comment '订单状态',
+  create_time      int(11) NOT NULL comment '订单创建时间',
+  update_time      int(11) NOT NULL comment '订单更新时间',
+  PRIMARY KEY (id)) comment='批发订单';
+
+CREATE TABLE order_wholesale_item (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  item_id         int(11) NOT NULL comment '商品编号',
+  sku_id          int(11) NOT NULL comment 'SKU编号',
+  snapshot_id     int(11) NOT NULL comment '商品快照编号',
+  quantity        int(11) NOT NULL comment '销售数量',
+  return_quantity int(11) NOT NULL comment '退货数量',
+  amount          decimal(8, 2) NOT NULL comment '商品总金额',
+  final_amount    decimal(8, 2) NOT NULL comment '商品实际金额',
+  is_shipped      int(2) NOT NULL comment '是否已发货',
+  update_time     int(11) NOT NULL comment '更新时间',
+  PRIMARY KEY (id)) comment='批发订单商品';
+
+
+ALTER TABLE `ship_order`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `order_id` `order_id` INT(11) NOT NULL COMMENT '订单编号' ,
+CHANGE COLUMN `sp_id` `sp_id` INT(11) NOT NULL COMMENT '快递SP编号' ,
+CHANGE COLUMN `sp_order` `sp_order` VARCHAR(20) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '快递SP单号' ,
+CHANGE COLUMN `exporess_log` `exporess_log` VARCHAR(512) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '物流日志' ,
+CHANGE COLUMN `amount` `amount` DECIMAL(8,2) NOT NULL COMMENT '运费' ,
+CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '实际运费' ,
+CHANGE COLUMN `ship_time` `ship_time` INT(11) NOT NULL COMMENT '发货时间' ,
+CHANGE COLUMN `state` `state` INT(2) NOT NULL COMMENT '状态' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '更新时间' ,
+ADD COLUMN `sub_orderid` INT(11) NOT NULL COMMENT '子订单编号' AFTER `order_id`,
+COMMENT = '发货单' ;
+
+ALTER TABLE `ship_order`
+CHANGE COLUMN `exporess_log` `shipment_log` VARCHAR(512) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NOT NULL COMMENT '物流日志' ;
+
+
+ALTER TABLE `ship_item`
+CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '编号' ,
+CHANGE COLUMN `ship_order` `ship_order` INT(11) NOT NULL COMMENT '发货单编号' ,
+CHANGE COLUMN `snap_id` `snapshot_id` INT(11) NOT NULL COMMENT '商品交易快照编号' ,
+CHANGE COLUMN `quantity` `quantity` INT(11) NOT NULL COMMENT '商品数量' ,
+CHANGE COLUMN `amount` `amount` DECIMAL(8,2) NOT NULL COMMENT '运费' ,
+CHANGE COLUMN `final_amount` `final_amount` DECIMAL(8,2) NOT NULL COMMENT '实际运费' ,
+COMMENT = '发货单详情' ;
+
+
+/* 2017-03-05 */
+
+CREATE TABLE order_trade_order (
+  id              int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  order_id        int(11) NOT NULL comment '订单编号',
+  vendor_id       int(11) NOT NULL comment '商家编号',
+  shop_id         int(11) NOT NULL comment '店铺编号',
+  subject         varchar(45) NOT NULL comment '订单标题',
+  order_amount    decimal(8, 2) NOT NULL comment '订单金额',
+  discount_amount decimal(8, 2) NOT NULL comment '抵扣金额',
+  final_amount    decimal(8, 2) NOT NULL comment '订单最终金额',
+  trade_rate      decimal(8, 2) NOT NULL comment '交易结算比例（商户)',
+  cash_pay        int(2) NOT NULL comment '是否现金支付',
+  remark          varchar(120) NOT NULL comment '订单备注',
+  state           int(2) NOT NULL comment '订单状态',
+  create_time     int(11) NOT NULL comment '订单创建时间',
+  update_time     int(11) NOT NULL comment '订单更新时间',
+  PRIMARY KEY (id)) comment='交易类订单';
+
+ALTER TABLE `mm_account`
+CHANGE COLUMN `total_consumption` `total_expense` DECIMAL(10,2) NOT NULL COMMENT '总消费金额' ;
+
+ALTER TABLE `mm_member`
+CHANGE COLUMN `usr` `usr` VARCHAR(20) NOT NULL COMMENT '用户名' ,
+CHANGE COLUMN `pwd` `pwd` VARCHAR(45) NOT NULL COMMENT '密码' ,
+CHANGE COLUMN `trade_pwd` `trade_pwd` VARCHAR(45) NOT NULL COMMENT '交易密码' ,
+CHANGE COLUMN `exp` `exp` INT(11) UNSIGNED NOT NULL DEFAULT '0' COMMENT '经验值' ,
+CHANGE COLUMN `level` `level` INT(11) NOT NULL DEFAULT '1' COMMENT '等级' ,
+CHANGE COLUMN `invitation_code` `invitation_code` VARCHAR(10) NOT NULL COMMENT '邀请码' ,
+CHANGE COLUMN `reg_ip` `reg_ip` VARCHAR(20) NOT NULL COMMENT '注册IP' ,
+CHANGE COLUMN `reg_from` `reg_from` VARCHAR(20) NOT NULL COMMENT '注册来源' ,
+CHANGE COLUMN `reg_time` `reg_time` INT(11) NOT NULL COMMENT '注册时间' ,
+CHANGE COLUMN `check_code` `check_code` VARCHAR(8) NOT NULL COMMENT '校验码' ,
+CHANGE COLUMN `check_expires` `check_expires` INT(11) NOT NULL COMMENT '校验码过期时间' ,
+CHANGE COLUMN `login_time` `login_time` INT(11) NOT NULL COMMENT '登陆时间' ,
+CHANGE COLUMN `last_login_time` `last_login_time` INT(11) NOT NULL COMMENT '最后登录时间' ,
+CHANGE COLUMN `state` `state` INT(1) NOT NULL DEFAULT '1' COMMENT '状态' ,
+CHANGE COLUMN `update_time` `update_time` INT(11) NOT NULL COMMENT '更新时间' ,
+ADD COLUMN `premium_user` INT(2) NOT NULL COMMENT '高级用户,0表示非高级' AFTER `level`,
+ADD COLUMN `premium_expires` INT(11) NOT NULL COMMENT '高级会员过期时间' AFTER `premium_user`;
+
+
+/* 2017-03-09 */
+
+
+
 
 CREATE TABLE mm_buyer_group (
   id         int(10) NOT NULL AUTO_INCREMENT comment '编号',

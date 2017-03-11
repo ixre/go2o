@@ -33,7 +33,7 @@ type MemberSummary struct {
 	Integral int64 `db:"integral"`
 	// 账户余额
 	Balance           float32 `db:"balance"`
-	PresentBalance    float32 `db:"wallet_balance"`
+	WalletBalance     float32 `db:"wallet_balance"`
 	GrowBalance       float32 `db:"grow_balance"`
 	GrowAmount        float32 `db:"grow_amount"`         // 理财总投资金额,不含收益
 	GrowEarnings      float32 `db:"grow_earnings"`       // 当前收益金额

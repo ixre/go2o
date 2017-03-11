@@ -41,6 +41,11 @@ func (w *wholesaleItemImpl) GetDomainId() int32 {
 	return w.itemId
 }
 
+// 是否允许批发
+func (w *wholesaleItemImpl) Wholesale() bool {
+	return w.value.EnableWholesale == 1
+}
+
 // 开启批发功能
 func (w *wholesaleItemImpl) TurnWholesale(on bool) error {
 	var iv int32 = util.BoolExt.TInt32(on, 1, 0)

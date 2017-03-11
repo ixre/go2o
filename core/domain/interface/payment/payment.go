@@ -31,13 +31,15 @@ const (
 	OptBalanceDiscount = 1 << iota
 	// 允许积分抵扣
 	OptIntegralDiscount
+	// 允许钱包支付
+	OptWalletPayment
 	// 允许系统支付
 	OptSystemPayment
 	// 允许使用优惠券
 	OptUseCoupon
 
 	// 全部支付权限
-	OptPerm = OptBalanceDiscount | OptIntegralDiscount |
+	OptPerm = OptBalanceDiscount | OptWalletPayment | OptIntegralDiscount |
 		OptSystemPayment | OptUseCoupon
 )
 
@@ -59,6 +61,9 @@ var (
 
 	ErrFinalFee *domain.DomainError = domain.NewDomainError(
 		"err_final_fee", "支付单金额有误")
+
+	ErrNotSupportPaymentOpt *domain.DomainError = domain.NewDomainError(
+		"err_payment_not_support_opt", "不支持此支付方式,无法完成付款")
 
 	ErrTradeNoPrefix *domain.DomainError = domain.NewDomainError(
 		"err_payment_trade_no_prefix", "支付单号前缀不正确")
@@ -82,7 +87,7 @@ var (
 		"err_can_not_use_balance", "不能使用余额支付")
 
 	ErrNotEnoughAmount *domain.DomainError = domain.NewDomainError(
-		"err_payment_not_enught_amount", "余额不足")
+		"err_payment_not_enught_amount", "余额不足,无法完成支付")
 
 	ErrCanNotUseIntegral *domain.DomainError = domain.NewDomainError(
 		"err_can_not_use_integral", "不能使用积分抵扣")
@@ -103,10 +108,8 @@ type (
 	IPaymentOrder interface {
 		// 获取聚合根编号
 		GetAggregateRootId() int32
-
 		// 获取交易号
 		GetTradeNo() string
-
 		// 为交易号增加一个2位的前缀
 		TradeNoPrefix(prefix string) error
 
@@ -124,13 +127,15 @@ type (
 
 		// 钱包账户支付
 		PaymentByWallet(remark string) error
+		// 余额钱包混合支付，优先扣除余额。
+		HybridPayment(remark string) error
 
 		// 设置支付方式
 		SetPaymentSign(paymentSign int32) error
 
 		// 绑定订单号,如果交易号为空则绑定参数中传递的交易号,
 		// 支付单的交易号,可能是与订单号一样的
-		BindOrder(orderId int32, tradeNo string) error
+		BindOrder(orderId int64, tradeNo string) error
 
 		// 保存
 		Commit() (int32, error)
@@ -156,7 +161,7 @@ type (
 		GetPaymentOrder(paymentNo string) IPaymentOrder
 
 		// 根据订单号获取支付单
-		GetPaymentBySalesOrderId(orderId int32) IPaymentOrder
+		GetPaymentBySalesOrderId(orderId int64) IPaymentOrder
 
 		// 创建支付单
 		CreatePaymentOrder(p *PaymentOrder) IPaymentOrder
@@ -183,9 +188,9 @@ type (
 		// 支付单主题
 		Subject string `db:"subject"`
 		// 购买用户
-		BuyUser int32 `db:"buy_user"`
+		BuyUser int64 `db:"buy_user"`
 		// 支付用户
-		PaymentUser int32 `db:"payment_user"`
+		PaymentUser int64 `db:"payment_user"`
 		// 支付单金额
 		TotalFee float32 `db:"total_fee"`
 		// 余额抵扣

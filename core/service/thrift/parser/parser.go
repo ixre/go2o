@@ -14,15 +14,37 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
-	"go2o/core/dto"
 	"go2o/core/service/thrift/idl/gen-go/define"
 )
 
-func Member(src *member.Member) *define.Member {
+func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {
+	return &define.ComplexMerchant{
+		ID:            src.Id,
+		MemberId:      src.MemberId,
+		Usr:           src.Usr,
+		Pwd:           src.Pwd,
+		Name:          src.Name,
+		SelfSales:     src.SelfSales,
+		Level:         src.Level,
+		Logo:          src.Logo,
+		Province:      src.Province,
+		City:          src.City,
+		District:      src.District,
+		Enabled:       src.Enabled,
+		ExpiresTime:   src.ExpiresTime,
+		JoinTime:      src.JoinTime,
+		UpdateTime:    src.UpdateTime,
+		LoginTime:     src.LoginTime,
+		LastLoginTime: src.LastLoginTime,
+	}
+}
+
+func MemberDto(src *member.Member) *define.Member {
 	return &define.Member{
 		ID:             src.Id,
 		Usr:            src.Usr,
@@ -31,6 +53,8 @@ func Member(src *member.Member) *define.Member {
 		Exp:            src.Exp,
 		Level:          src.Level,
 		InvitationCode: src.InvitationCode,
+		PremiumUser:    src.PremiumUser,
+		PremiumExpires: src.PremiumExpires,
 		RegFrom:        src.RegFrom,
 		RegIp:          src.RegIp,
 		RegTime:        src.RegTime,
@@ -45,7 +69,7 @@ func Member(src *member.Member) *define.Member {
 	}
 }
 
-func Member2(src *define.Member) *member.Member {
+func Member(src *define.Member) *member.Member {
 	return &member.Member{
 		Id:             src.ID,
 		Usr:            src.Usr,
@@ -54,6 +78,8 @@ func Member2(src *define.Member) *member.Member {
 		Exp:            src.Exp,
 		Level:          src.Level,
 		InvitationCode: src.InvitationCode,
+		PremiumUser:    src.PremiumUser,
+		PremiumExpires: src.PremiumExpires,
 		RegFrom:        src.RegFrom,
 		RegIp:          src.RegIp,
 		RegTime:        src.RegTime,
@@ -118,8 +144,8 @@ func MemberProfile2(src *define.Profile) *member.Profile {
 	}
 }
 
-func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
-	return &define.MemberSummary{
+func ComplexMemberDto(src *member.ComplexMember) *define.ComplexMember {
+	return &define.ComplexMember{
 		MemberId:          src.MemberId,
 		Usr:               src.Usr,
 		Name:              src.Name,
@@ -128,15 +154,19 @@ func SummaryDto(src *dto.MemberSummary) *define.MemberSummary {
 		Level:             src.Level,
 		LevelName:         src.LevelName,
 		LevelSign:         src.LevelSign,
-		LevelOfficial:     int64(src.LevelOfficial),
+		LevelOfficial:     src.LevelOfficial,
+		PremiumUser:       src.PremiumUser,
+		PremiumExpires:    src.PremiumExpires,
 		InvitationCode:    src.InvitationCode,
+		TrustAuthState:    src.TrustAuthState,
+		State:             src.State,
 		Integral:          int64(src.Integral),
-		Balance:           round(src.Balance, 2),
-		PresentBalance:    round(src.PresentBalance, 2),
-		GrowBalance:       round(src.GrowBalance, 2),
-		GrowAmount:        round(src.GrowAmount, 2),
-		GrowEarnings:      round(src.GrowEarnings, 2),
-		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
+		Balance:           src.Balance,
+		WalletBalance:     src.WalletBalance,
+		GrowBalance:       src.GrowBalance,
+		GrowAmount:        src.GrowAmount,
+		GrowEarnings:      src.GrowEarnings,
+		GrowTotalEarnings: src.GrowTotalEarnings,
 		UpdateTime:        src.UpdateTime,
 	}
 }
@@ -153,7 +183,7 @@ func AccountDto(src *member.Account) *define.Account {
 		Balance:           round(src.Balance, 2),
 		FreezeBalance:     round(src.FreezeBalance, 2),
 		ExpiredBalance:    round(src.ExpiredBalance, 2),
-		PresentBalance:    round(src.PresentBalance, 2),
+		WalletBalance:     round(src.WalletBalance, 2),
 		FreezeWallet:      round(src.FreezeWallet, 2),
 		ExpiredPresent:    round(src.ExpiredPresent, 2),
 		TotalPresentFee:   round(src.TotalPresentFee, 2),
@@ -162,7 +192,7 @@ func AccountDto(src *member.Account) *define.Account {
 		GrowAmount:        round(src.GrowAmount, 2),
 		GrowEarnings:      round(src.GrowEarnings, 2),
 		GrowTotalEarnings: round(src.GrowTotalEarnings, 2),
-		TotalConsumption:  round(src.TotalConsumption, 2),
+		TotalExpense:      round(src.TotalExpense, 2),
 		TotalCharge:       round(src.TotalCharge, 2),
 		TotalPay:          round(src.TotalPay, 2),
 		PriorityPay:       int64(src.PriorityPay),
@@ -178,7 +208,7 @@ func Account(src *define.Account) *member.Account {
 		Balance:           float32(src.Balance),
 		FreezeBalance:     float32(src.FreezeBalance),
 		ExpiredBalance:    float32(src.ExpiredBalance),
-		PresentBalance:    float32(src.PresentBalance),
+		WalletBalance:     float32(src.WalletBalance),
 		FreezeWallet:      float32(src.FreezeWallet),
 		ExpiredPresent:    float32(src.ExpiredPresent),
 		TotalPresentFee:   float32(src.TotalPresentFee),
@@ -187,7 +217,7 @@ func Account(src *define.Account) *member.Account {
 		GrowAmount:        float32(src.GrowAmount),
 		GrowEarnings:      float32(src.GrowEarnings),
 		GrowTotalEarnings: float32(src.GrowTotalEarnings),
-		TotalConsumption:  float32(src.TotalConsumption),
+		TotalExpense:      float32(src.TotalExpense),
 		TotalCharge:       float32(src.TotalCharge),
 		TotalPay:          float32(src.TotalPay),
 		PriorityPay:       int(src.PriorityPay),
@@ -494,28 +524,27 @@ func CategoryDto(src *product.Category) *define.Category {
 	return s
 }
 
-func OrderItemDto(src *order.OrderItem) *define.OrderItem {
-	return &define.OrderItem{
-		ID:             src.ID,
+func SubOrderItemDto(src *order.SubOrderItem) *define.ComplexItem {
+	return &define.ComplexItem{
+		ID:             int64(src.ID),
 		OrderId:        src.OrderId,
-		ItemId:         src.ItemId,
-		SkuId:          src.SkuId,
-		SnapshotId:     src.SnapshotId,
+		ItemId:         int64(src.ItemId),
+		SkuId:          int64(src.SkuId),
+		SnapshotId:     int64(src.SnapshotId),
 		Quantity:       src.Quantity,
 		ReturnQuantity: src.ReturnQuantity,
 		Amount:         float64(src.Amount),
 		FinalAmount:    float64(src.FinalAmount),
-		IsShipped:      int64(src.IsShipped),
-		UpdateTime:     src.UpdateTime,
+		IsShipped:      int32(src.IsShipped),
 	}
 }
 
-func SubOrderDto(src *order.ValueSubOrder) *define.SubOrder {
-	o := &define.SubOrder{
-		ID:             src.ID,
+func SubOrderDto(src *order.NormalSubOrder) *define.ComplexOrder {
+	o := &define.ComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.OrderId,
 		OrderNo:        src.OrderNo,
-		ParentId:       src.ParentId,
-		BuyerId:        src.BuyerId,
+		BuyerId:        int64(src.BuyerId),
 		VendorId:       src.VendorId,
 		ShopId:         src.ShopId,
 		Subject:        src.Subject,
@@ -524,17 +553,101 @@ func SubOrderDto(src *order.ValueSubOrder) *define.SubOrder {
 		ExpressFee:     float64(src.ExpressFee),
 		PackageFee:     float64(src.PackageFee),
 		FinalAmount:    float64(src.FinalAmount),
-		IsPaid:         int64(src.IsPaid),
-		IsSuspend:      int64(src.IsSuspend),
-		BuyerRemark:    src.BuyerRemark,
-		Remark:         src.Remark,
 		CreateTime:     src.CreateTime,
 		UpdateTime:     src.UpdateTime,
 		State:          int32(src.State),
-		Items:          make([]*define.OrderItem, len(src.Items)),
+		Items:          make([]*define.ComplexItem, len(src.Items)),
 	}
 	for i, v := range src.Items {
-		o.Items[i] = OrderItemDto(v)
+		o.Items[i] = SubOrderItemDto(v)
 	}
 	return o
+}
+
+func OrderItemDto(src *order.ComplexItem) *define.ComplexItem {
+	return &define.ComplexItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
+	}
+}
+
+func OrderDto(src *order.ComplexOrder) *define.ComplexOrder {
+	o := &define.ComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.SubOrderId,
+		OrderType:      src.OrderType,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          src.State,
+		StateText:      src.StateText,
+		Items:          make([]*define.ComplexItem, len(src.Items)),
+	}
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItemDto(v)
+		}
+	}
+	return o
+}
+
+func Order(src *define.ComplexOrder) *order.ComplexOrder {
+	o := &order.ComplexOrder{
+		OrderId:        src.OrderId,
+		SubOrderId:     src.SubOrderId,
+		OrderType:      src.OrderType,
+		OrderNo:        src.OrderNo,
+		BuyerId:        src.BuyerId,
+		VendorId:       src.VendorId,
+		ShopId:         src.ShopId,
+		Subject:        src.Subject,
+		ItemAmount:     src.ItemAmount,
+		DiscountAmount: src.DiscountAmount,
+		ExpressFee:     src.ExpressFee,
+		PackageFee:     src.PackageFee,
+		FinalAmount:    src.FinalAmount,
+		CreateTime:     src.CreateTime,
+		UpdateTime:     src.UpdateTime,
+		State:          src.State,
+		StateText:      src.StateText,
+		Items:          make([]*order.ComplexItem, len(src.Items)),
+	}
+	if src.Items != nil {
+		for i, v := range src.Items {
+			o.Items[i] = OrderItem(v)
+		}
+	}
+	return o
+}
+
+func OrderItem(src *define.ComplexItem) *order.ComplexItem {
+	return &order.ComplexItem{
+		ID:             src.ID,
+		OrderId:        src.OrderId,
+		ItemId:         src.ItemId,
+		SkuId:          src.SkuId,
+		SnapshotId:     src.SnapshotId,
+		Quantity:       src.Quantity,
+		ReturnQuantity: src.ReturnQuantity,
+		Amount:         src.Amount,
+		FinalAmount:    src.FinalAmount,
+		IsShipped:      src.IsShipped,
+	}
 }

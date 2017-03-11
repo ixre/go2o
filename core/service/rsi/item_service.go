@@ -75,7 +75,7 @@ func (s *itemService) SaveItem(di *define.Item, vendorId int32) (_ *define.Resul
 	if it.Id > 0 {
 		gi = s.itemRepo.GetItem(it.Id)
 		if gi == nil || gi.GetValue().VendorId != vendorId {
-			err = item.ErrNoSuchGoods
+			err = item.ErrNoSuchItem
 			goto R
 		}
 	} else {
@@ -244,7 +244,7 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 func (s *itemService) DeleteGoods(mchId, goodsId int32) error {
 	gi := s.itemRepo.GetItem(goodsId)
 	if gi == nil || gi.GetValue().VendorId != mchId {
-		return item.ErrNoSuchGoods
+		return item.ErrNoSuchItem
 	}
 	return gi.Destroy()
 }
@@ -384,7 +384,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int32,
 	state int32, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
-		err = item.ErrNoSuchGoods
+		err = item.ErrNoSuchItem
 	} else {
 		err = it.SetShelve(state, remark)
 	}
@@ -396,7 +396,7 @@ func (s *itemService) ReviewItem(vendorId int32, itemId int32,
 	pass bool, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
-		err = item.ErrNoSuchGoods
+		err = item.ErrNoSuchItem
 	} else {
 		err = it.Review(pass, remark)
 	}
@@ -408,7 +408,7 @@ func (s *itemService) SignIncorrect(vendorId int32, itemId int32,
 	remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
-		err = item.ErrNoSuchGoods
+		err = item.ErrNoSuchItem
 	} else {
 		err = it.Incorrect(remark)
 	}
