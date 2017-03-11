@@ -291,12 +291,14 @@ func (m *merchantService) initializeMerchant(mchId int32) {
 }
 
 // 获取商户的状态
-func (m *merchantService) Stat(mchId int32) error {
+func (m *merchantService) Stat(mchId int32) (r *define.Result_, err error) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.Stat()
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		err = mch.Stat()
 	}
-	return merchant.ErrNoSuchMerchant
+	return parser.Result(mchId, err), nil
 }
 
 // 设置商户启用或停用

@@ -22,6 +22,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  ComplexMerchant Complex(i32 mchId)")
 	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
+	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -121,8 +122,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err11 := (strconv.Atoi(flag.Arg(1)))
-		if err11 != nil {
+		tmp0, err13 := (strconv.Atoi(flag.Arg(1)))
+		if err13 != nil {
 			Usage()
 			return
 		}
@@ -141,6 +142,21 @@ func main() {
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
 		fmt.Print(client.CheckLogin(value0, value1))
+		fmt.Print("\n")
+		break
+	case "Stat":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
+			flag.Usage()
+		}
+		tmp0, err16 := (strconv.Atoi(flag.Arg(1)))
+		if err16 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		fmt.Print(client.Stat(value0))
 		fmt.Print("\n")
 		break
 	case "":
