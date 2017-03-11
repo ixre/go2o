@@ -14,6 +14,7 @@ import (
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
 	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
@@ -23,14 +24,16 @@ import (
 
 type merchantService struct {
 	_mchRepo    merchant.IMerchantRepo
+	_memberRepo member.IMemberRepo
 	_query      *query.MerchantQuery
 	_orderQuery *query.OrderQuery
 }
 
-func NewMerchantService(r merchant.IMerchantRepo,
+func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
 	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
 	return &merchantService{
 		_mchRepo:    r,
+		_memberRepo: memberRepo,
 		_query:      q,
 		_orderQuery: orderQuery,
 	}
@@ -125,18 +128,54 @@ func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
 	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
-// 验证用户密码并返回编号
-func (m *merchantService) Verify(usr, pwd string) (r *define.Result_, err error) {
+// 登录，返回结果(Result)和会员编号(Id);
+// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
-	pwd = strings.TrimSpace(pwd)
-	var mchId int32
-	if usr == "" || pwd == "" {
-		err = member.ErrCredential
-	} else {
-		mchId = m._query.Verify(usr, pwd)
-		if mchId <= 0 {
-			err = merchant.ErrNoSuchMerchant
+	val := ms._memberRepo.GetMemberByUsr(usr)
+	if val == nil {
+		val = ms._memberRepo.GetMemberValueByPhone(usr)
+	}
+	if val == nil {
+		return 0, member.ErrNoSuchMember
+	}
+	if val.Pwd != pwd {
+		//todo: 兼容旧密码
+		if val.Pwd != domain.Sha1(pwd) {
+			return 0, member.ErrCredential
 		}
+	}
+	if val.State == member.StateStopped {
+		return 0, member.ErrMemberDisabled
+	}
+	return val.Id, nil
+}
+
+// 验证用户密码,并返回编号。可传入商户或会员的账号密码
+func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err error) {
+	usr = strings.ToLower(strings.TrimSpace(usr))
+	oriPwd = strings.TrimSpace(oriPwd)
+	var mchId int32
+	if usr == "" || oriPwd == "" {
+		return parser.Result(mchId, member.ErrCredential), nil
+	}
+	//尝试作为独立的商户账号登陆
+	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
+	mchId = m._query.Verify(usr, encPwd)
+	if mchId <= 0 {
+		// 使用会员身份登录
+		var id int64
+		mEncPwd := domain.MemberSha1Pwd(oriPwd)
+		id, err = m.testMemberLogin(usr, mEncPwd)
+		if err == nil {
+			mch := m.GetMerchantByMemberId(id)
+			if mch != nil {
+				mchId = mch.Id
+			}
+		}
+	}
+	if mchId < 0 && err == nil {
+		err = merchant.ErrNoSuchMerchant
 	}
 	return parser.Result(mchId, err), nil
 }
