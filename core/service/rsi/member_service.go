@@ -33,7 +33,7 @@ import (
 var _ define.MemberService = new(memberService)
 
 type memberService struct {
-	_rep            member.IMemberRepo
+	_repo           member.IMemberRepo
 	_partnerService *merchantService
 	_query          *query.MemberQuery
 	_orderQuery     *query.OrderQuery
@@ -43,7 +43,7 @@ type memberService struct {
 func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
 	ms := &memberService{
-		_rep:            rep,
+		_repo:           rep,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
@@ -58,7 +58,7 @@ func (ms *memberService) init() *memberService {
 	list := []*member.Relation{}
 	db.GetOrm().Select(&list, "")
 	for _, v := range list {
-		ms._rep.GetMember(v.MemberId).SaveRelation(v)
+		ms._repo.GetMember(v.MemberId).SaveRelation(v)
 	}
 	return ms
 }
@@ -66,7 +66,7 @@ func (ms *memberService) init() *memberService {
 // 根据会员编号获取会员
 func (ms *memberService) getValueMember(memberId int64) *member.Member {
 	if memberId > 0 {
-		v := ms._rep.GetMember(memberId)
+		v := ms._repo.GetMember(memberId)
 		if v != nil {
 			vv := v.GetValue()
 			return &vv
@@ -86,7 +86,7 @@ func (ms *memberService) GetMember(id int64) (*define.Member, error) {
 
 // 根据用户名获取会员
 func (ms *memberService) GetMemberByUser(usr string) (*define.Member, error) {
-	v := ms._rep.GetMemberByUsr(usr)
+	v := ms._repo.GetMemberByUsr(usr)
 	if v != nil {
 		return parser.MemberDto(v), nil
 	}
@@ -95,7 +95,7 @@ func (ms *memberService) GetMemberByUser(usr string) (*define.Member, error) {
 
 // 获取资料
 func (ms *memberService) GetProfile(memberId int64) (*define.Profile, error) {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m != nil {
 		v := m.Profile().GetProfile()
 		return parser.MemberProfile(&v), nil
@@ -107,7 +107,7 @@ func (ms *memberService) GetProfile(memberId int64) (*define.Profile, error) {
 func (ms *memberService) SaveProfile(v *define.Profile) error {
 	if v.MemberId > 0 {
 		v2 := parser.MemberProfile2(v)
-		m := ms._rep.GetMember(v.MemberId)
+		m := ms._repo.GetMember(v.MemberId)
 		if m == nil {
 			return member.ErrNoSuchMember
 		}
@@ -118,7 +118,7 @@ func (ms *memberService) SaveProfile(v *define.Profile) error {
 
 // 升级为高级会员
 func (ms *memberService) Premium(memberId int64, v int32, expires int64) (*define.Result_, error) {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return parser.I64Result(memberId, member.ErrNoSuchMember), nil
 	}
@@ -157,7 +157,7 @@ func (ms *memberService) RemoveToken(memberId int64) (err error) {
 
 // 更改手机号码，不验证手机格式
 func (ms *memberService) ChangePhone(memberId int64, phone string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -166,86 +166,86 @@ func (ms *memberService) ChangePhone(memberId int64, phone string) error {
 
 // 是否已收藏
 func (ms *memberService) Favored(memberId int64, favType int, referId int32) bool {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Favored(favType, referId)
 }
 
 // 取消收藏
 func (ms *memberService) Cancel(memberId int64, favType int, referId int32) error {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Cancel(favType, referId)
 }
 
 // 收藏商品
 func (ms *memberService) FavoriteGoods(memberId int64, goodsId int32) error {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Favorite(member.FavTypeGoods, goodsId)
 }
 
 // 取消收藏商品
 func (ms *memberService) CancelGoodsFavorite(memberId int64, goodsId int32) error {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Cancel(member.FavTypeGoods, goodsId)
 }
 
 // 收藏店铺
 func (ms *memberService) FavoriteShop(memberId int64, shopId int32) error {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Favorite(member.FavTypeShop, shopId)
 }
 
 // 取消收藏店铺
 func (ms *memberService) CancelShopFavorite(memberId int64, shopId int32) error {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Cancel(member.FavTypeShop, shopId)
 }
 
 // 商品是否已收藏
 func (ms *memberService) GoodsFavored(memberId int64, goodsId int32) bool {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Favored(member.FavTypeGoods, goodsId)
 }
 
 // 商店是否已收藏
 func (ms *memberService) ShopFavored(memberId int64, shopId int32) bool {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		Favorite().Favored(member.FavTypeShop, shopId)
 }
 
 /**================ 会员等级 ==================**/
 // 获取所有会员等级
 func (ms *memberService) GetMemberLevels() []*member.Level {
-	return ms._rep.GetManager().LevelManager().GetLevelSet()
+	return ms._repo.GetManager().LevelManager().GetLevelSet()
 }
 
 // 根据编号获取会员等级信息
 func (ms *memberService) GetLevelById(id int32) *member.Level {
-	return ms._rep.GetManager().LevelManager().GetLevelById(id)
+	return ms._repo.GetManager().LevelManager().GetLevelById(id)
 }
 
 // 根据可编程字符获取会员等级
 func (ms *memberService) GetLevelByProgramSign(sign string) *member.Level {
-	return ms._rep.GetManager().LevelManager().GetLevelByProgramSign(sign)
+	return ms._repo.GetManager().LevelManager().GetLevelByProgramSign(sign)
 }
 
 // 保存会员等级信息
 func (ms *memberService) SaveMemberLevel(v *member.Level) (int32, error) {
-	return ms._rep.GetManager().LevelManager().SaveLevel(v)
+	return ms._repo.GetManager().LevelManager().SaveLevel(v)
 }
 
 // 删除会员等级
 func (ms *memberService) DelMemberLevel(levelId int32) error {
-	return ms._rep.GetManager().LevelManager().DeleteLevel(levelId)
+	return ms._repo.GetManager().LevelManager().DeleteLevel(levelId)
 }
 
 // 获取下一个等级
 func (ms *memberService) GetNextLevel(levelId int32) *member.Level {
-	return ms._rep.GetManager().LevelManager().GetNextLevelById(levelId)
+	return ms._repo.GetManager().LevelManager().GetNextLevelById(levelId)
 }
 
 // 获取启用中的最大等级,用于判断是否可以升级
 func (ms *memberService) GetHighestLevel() member.Level {
-	lv := ms._rep.GetManager().LevelManager().GetHighestLevel()
+	lv := ms._repo.GetManager().LevelManager().GetHighestLevel()
 	if lv != nil {
 		return *lv
 	}
@@ -253,7 +253,7 @@ func (ms *memberService) GetHighestLevel() member.Level {
 }
 
 func (ms *memberService) GetPresentLog(memberId int64, logId int32) *member.PresentLog {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	return m.GetAccount().GetPresentLog(logId)
 }
 
@@ -262,7 +262,7 @@ func (ms *memberService) getMember(memberId int64) (
 	if memberId <= 0 {
 		return nil, member.ErrNoSuchMember
 	}
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return m, member.ErrNoSuchMember
 	}
@@ -270,7 +270,7 @@ func (ms *memberService) getMember(memberId int64) (
 }
 
 func (ms *memberService) GetMemberIdByInvitationCode(code string) int64 {
-	return ms._rep.GetMemberIdByInvitationCode(code)
+	return ms._repo.GetMemberIdByInvitationCode(code)
 }
 
 // 根据信息获取会员编号
@@ -278,16 +278,16 @@ func (ms *memberService) GetMemberIdByBasis(str string, basic int) int64 {
 	switch basic {
 	default:
 	case notify.TypePhoneMessage:
-		return ms._rep.GetMemberIdByPhone(str)
+		return ms._repo.GetMemberIdByPhone(str)
 	case notify.TypeEmailMessage:
-		return ms._rep.GetMemberIdByEmail(str)
+		return ms._repo.GetMemberIdByEmail(str)
 	}
 	return -1
 }
 
 // 发送验证码
 func (ms *memberService) SendCode(memberId int64, operation string, msgType int) (string, error) {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return "", member.ErrNoSuchMember
 	}
@@ -296,7 +296,7 @@ func (ms *memberService) SendCode(memberId int64, operation string, msgType int)
 
 // 对比验证码
 func (ms *memberService) CompareCode(memberId int64, code string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -305,7 +305,7 @@ func (ms *memberService) CompareCode(memberId int64, code string) error {
 
 // 更改会员用户名
 func (ms *memberService) ChangeUsr(memberId int64, usr string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -315,7 +315,7 @@ func (ms *memberService) ChangeUsr(memberId int64, usr string) error {
 // 更改会员等级
 func (ms *memberService) ChangeLevel(memberId int64, levelId int32,
 	review bool, paymentId int32) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -324,7 +324,7 @@ func (ms *memberService) ChangeLevel(memberId int64, levelId int32,
 
 // 上传会员头像
 func (ms *memberService) SetAvatar(memberId int64, avatar string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -340,7 +340,7 @@ func (ms *memberService) SaveMember(v *define.Member) (int64, error) {
 }
 
 func (ms *memberService) updateMember(v *define.Member) (int64, error) {
-	m := ms._rep.GetMember(v.ID)
+	m := ms._repo.GetMember(v.ID)
 	if m == nil {
 		return -1, member.ErrNoSuchMember
 	}
@@ -359,17 +359,17 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 	}
 	v := parser.Member(v1)
 	pro := parser.MemberProfile2(pro1)
-	invitationId, err := ms._rep.GetManager().PrepareRegister(
+	invitationId, err := ms._repo.GetManager().PrepareRegister(
 		v, pro, invitationCode)
 	if err == nil {
-		m := ms._rep.CreateMember(v) //创建会员
+		m := ms._repo.CreateMember(v) //创建会员
 		id, err := m.Save()
 		if err == nil {
 			pro.Sex = 1
 			pro.MemberId = id
 			//todo: 如果注册失败，则删除。应使用SQL-TRANSFER
 			if err = m.Profile().SaveProfile(pro); err != nil {
-				ms._rep.DeleteMember(id)
+				ms._repo.DeleteMember(id)
 			} else {
 				// 保存关联信息
 				rl := m.GetRelation()
@@ -386,7 +386,7 @@ func (ms *memberService) RegisterMember(mchId int32, v1 *define.Member,
 
 // 获取会员等级
 func (ms *memberService) GetMemberLevel(memberId int64) *member.Level {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return nil
 	}
@@ -394,12 +394,12 @@ func (ms *memberService) GetMemberLevel(memberId int64) *member.Level {
 }
 
 func (ms *memberService) GetRelation(memberId int64) *member.Relation {
-	return ms._rep.GetRelation(memberId)
+	return ms._repo.GetRelation(memberId)
 }
 
 // 锁定/解锁会员
 func (ms *memberService) LockMember(memberId int64) (bool, error) {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return false, member.ErrNoSuchMember
 	}
@@ -413,7 +413,7 @@ func (ms *memberService) LockMember(memberId int64) (bool, error) {
 
 // 判断资料是否完善
 func (ms *memberService) ProfileCompleted(memberId int64) bool {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m != nil {
 		return m.Profile().ProfileCompleted()
 	}
@@ -422,7 +422,7 @@ func (ms *memberService) ProfileCompleted(memberId int64) bool {
 
 // 重置密码
 func (ms *memberService) ResetPassword(memberId int64) string {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.MemberSha1Pwd(newPwd)
@@ -437,7 +437,7 @@ func (ms *memberService) ResetPassword(memberId int64) string {
 
 // 重置交易密码
 func (ms *memberService) ResetTradePwd(memberId int64) string {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m != nil {
 		newPwd := domain.GenerateRandomIntPwd(6)
 		newEncPwd := domain.TradePwd(newPwd)
@@ -452,7 +452,7 @@ func (ms *memberService) ResetTradePwd(memberId int64) string {
 
 // 修改密码
 func (ms *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -470,7 +470,7 @@ func (ms *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) e
 //修改密码,传入密文密码
 func (ms *memberService) ModifyTradePassword(memberId int64,
 	oldPwd, newPwd string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -479,37 +479,36 @@ func (ms *memberService) ModifyTradePassword(memberId int64,
 
 // 登录，返回结果(Result)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-func (ms *memberService) Login(usr string, pwd string, update bool) (r *define.Result64, err error) {
-
+func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error) {
 	usr = strings.ToLower(strings.TrimSpace(usr))
-	val := ms._rep.GetMemberByUsr(usr)
-
+	val := ms._repo.GetMemberByUsr(usr)
 	if val == nil {
-		val = ms._rep.GetMemberValueByPhone(usr)
+		val = ms._repo.GetMemberValueByPhone(usr)
 	}
-	r = &define.Result64{}
 	if val == nil {
-		r.Message = member.ErrNoSuchMember.Error()
-		return r, nil
+		return 0, member.ErrNoSuchMember
 	}
 	if val.Pwd != pwd {
 		//todo: 兼容旧密码
 		if val.Pwd != domain.Sha1(pwd) {
-			r.Message = member.ErrCredential.Error()
-			return r, nil
+			return 0, member.ErrCredential
 		}
 	}
 	if val.State == member.StateStopped {
-		r.Message = member.ErrMemberDisabled.Error()
-		return r, nil
+		return 0, member.ErrMemberDisabled
 	}
-	r.ID = val.Id
-	r.Result_ = true
-	if update {
-		m := ms._rep.GetMember(val.Id)
-		m.UpdateLoginTime()
+	return val.Id, nil
+}
+
+// 登录，返回结果(Result)和会员编号(Id);
+// Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *define.Result64, err error) {
+	id, err := ms.testLogin(usr, pwd)
+	if update && err == nil {
+		m := ms._repo.GetMember(id)
+		err = m.UpdateLoginTime()
 	}
-	return r, nil
+	return parser.Result64(id, err), nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
@@ -517,7 +516,7 @@ func (ms *memberService) CheckUsr(usr string, memberId int64) error {
 	if len(usr) < 6 {
 		return member.ErrUsrLength
 	}
-	if ms._rep.CheckUsrExist(usr, memberId) {
+	if ms._repo.CheckUsrExist(usr, memberId) {
 		return member.ErrUsrExist
 	}
 	return nil
@@ -525,12 +524,12 @@ func (ms *memberService) CheckUsr(usr string, memberId int64) error {
 
 // 检查手机号码是否与会员一致
 func (ms *memberService) CheckPhone(phone string, memberId int64) error {
-	return ms._rep.GetManager().CheckPhoneBind(phone, memberId)
+	return ms._repo.GetManager().CheckPhoneBind(phone, memberId)
 }
 
 // 获取会员账户
 func (ms *memberService) GetAccount(memberId int64) (*define.Account, error) {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
 	if acc != nil {
 		return parser.AccountDto(acc.GetValue()), nil
@@ -540,7 +539,7 @@ func (ms *memberService) GetAccount(memberId int64) (*define.Account, error) {
 
 // 获取邀请人会员编号数组
 func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, err error) {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	if m != nil {
 		return m.Invitation().InviterArray(memberId, depth), nil
 	}
@@ -548,25 +547,25 @@ func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, e
 }
 
 func (ms *memberService) GetBank(memberId int64) *member.BankInfo {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	b := m.Profile().GetBank()
 	return &b
 }
 
 func (ms *memberService) SaveBankInfo(v *member.BankInfo) error {
-	m := ms._rep.CreateMember(&member.Member{Id: v.MemberId})
+	m := ms._repo.CreateMember(&member.Member{Id: v.MemberId})
 	return m.Profile().SaveBank(v)
 }
 
 // 解锁银行卡信息
 func (ms *memberService) UnlockBankInfo(memberId int64) error {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().UnlockBank()
 }
 
 // 实名认证信息
 func (ms *memberService) GetTrustedInfo(memberId int64) member.TrustedInfo {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.TrustedInfo{}
 	}
@@ -575,7 +574,7 @@ func (ms *memberService) GetTrustedInfo(memberId int64) member.TrustedInfo {
 
 // 保存实名认证信息
 func (ms *memberService) SaveTrustedInfo(memberId int64, v *member.TrustedInfo) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -584,7 +583,7 @@ func (ms *memberService) SaveTrustedInfo(memberId int64, v *member.TrustedInfo) 
 
 // 审核实名认证,若重复审核将返回错误
 func (ms *memberService) ReviewTrustedInfo(memberId int64, pass bool, remark string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	return m.Profile().ReviewTrustedInfo(pass, remark)
 }
 
@@ -632,13 +631,13 @@ func (ms *memberService) QueryPagerTradeOrder(memberId int64, begin, size int,
 
 /*********** 收货地址 ***********/
 func (ms *memberService) GetAddressList(memberId int64) []*member.Address {
-	return ms._rep.GetDeliverAddress(memberId)
+	return ms._repo.GetDeliverAddress(memberId)
 }
 
 //获取配送地址
 func (ms *memberService) GetAddress(memberId int64, addrId int64) (
 	*define.Address, error) {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	pro := m.Profile()
 	var addr member.IDeliverAddress
 	if addrId > 0 {
@@ -658,7 +657,7 @@ func (ms *memberService) GetAddress(memberId int64, addrId int64) (
 
 //保存配送地址
 func (ms *memberService) SaveAddress(memberId int64, e *member.Address) (int64, error) {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error
 	if e.Id > 0 {
@@ -675,13 +674,13 @@ func (ms *memberService) SaveAddress(memberId int64, e *member.Address) (int64, 
 
 //删除配送地址
 func (ms *memberService) DeleteAddress(memberId int64, deliverId int64) error {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	return m.Profile().DeleteAddress(deliverId)
 }
 
 //设置余额优先支付
 func (ms *memberService) BalancePriorityPay(memberId int64, enabled bool) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -690,14 +689,14 @@ func (ms *memberService) BalancePriorityPay(memberId int64, enabled bool) error 
 
 //判断会员是否由指定会员邀请推荐的
 func (ms *memberService) IsInvitation(memberId int64, invitationMemberId int64) bool {
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	return m.Invitation().InvitationBy(invitationMemberId)
 }
 
 // 获取我邀请的会员及会员邀请的人数
 func (ms *memberService) GetMyPagedInvitationMembers(memberId int64,
 	begin, end int) (total int, rows []*dto.InvitationMember) {
-	iv := ms._rep.CreateMember(&member.Member{Id: memberId}).Invitation()
+	iv := ms._repo.CreateMember(&member.Member{Id: memberId}).Invitation()
 	total, rows = iv.GetInvitationMembers(begin, end)
 	if l := len(rows); l > 0 {
 		arr := make([]int32, l)
@@ -720,7 +719,7 @@ func (m *memberService) GetReferNum(memberId int64, layer int) int {
 
 // 获取会员最后更新时间
 func (ms *memberService) GetMemberLatestUpdateTime(memberId int64) int64 {
-	return ms._rep.GetMemberLatestUpdateTime(memberId)
+	return ms._repo.GetMemberLatestUpdateTime(memberId)
 }
 
 func (ms *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
@@ -733,7 +732,7 @@ func (ms *memberService) GetMemberList(ids []int64) []*dto.MemberSummary {
 
 // 获取会员汇总信息
 func (ms *memberService) Complex(memberId int64) (*define.ComplexMember, error) {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m != nil {
 		s := m.Complex()
 		return parser.ComplexMemberDto(s), nil
@@ -743,7 +742,7 @@ func (ms *memberService) Complex(memberId int64) (*define.ComplexMember, error) 
 
 // 获取余额变动信息
 func (ms *memberService) GetBalanceInfoById(memberId int64, infoId int32) *member.BalanceInfo {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return nil
 	}
@@ -753,7 +752,7 @@ func (ms *memberService) GetBalanceInfoById(memberId int64, infoId int32) *membe
 // 增加积分
 func (ms *memberService) AddIntegral(memberId int64, iType int,
 	orderNo string, value int64, remark string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -764,7 +763,7 @@ func (ms *memberService) AddIntegral(memberId int64, iType int,
 func (ms *memberService) ChargeAccount(memberId int64, account int32,
 	kind int32, title, outerNo string, amount float64, relateUser int64) (*define.Result_, error) {
 	var err error
-	m := ms._rep.CreateMember(&member.Member{Id: memberId})
+	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	acc := m.GetAccount()
 	if acc == nil {
 		err = member.ErrNoSuchMember
@@ -777,7 +776,7 @@ func (ms *memberService) ChargeAccount(memberId int64, account int32,
 // 冻结积分,当new为true不扣除积分,反之扣除积分
 func (ms *memberService) FreezesIntegral(memberId int64, value int64,
 	new bool, remark string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -787,7 +786,7 @@ func (ms *memberService) FreezesIntegral(memberId int64, value int64,
 // 解冻积分
 func (ms *memberService) UnfreezesIntegral(memberId int64,
 	value int64, remark string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -922,7 +921,7 @@ func (ms *memberService) FinishTakeOutRequest(memberId int64, id int32, tradeNo 
 // 冻结余额
 func (ms *memberService) Freeze(memberId int64, title string,
 	tradeNo string, amount float32, referId int64) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -932,7 +931,7 @@ func (ms *memberService) Freeze(memberId int64, title string,
 // 解冻金额
 func (ms *memberService) Unfreeze(memberId int64, title string,
 	tradeNo string, amount float32, referId int64) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -942,7 +941,7 @@ func (ms *memberService) Unfreeze(memberId int64, title string,
 // 冻结赠送金额
 func (ms *memberService) FreezeWallet(memberId int64, title string,
 	tradeNo string, amount float32, referId int64) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -952,7 +951,7 @@ func (ms *memberService) FreezeWallet(memberId int64, title string,
 // 解冻赠送金额
 func (ms *memberService) UnfreezeWallet(memberId int64, title string,
 	tradeNo string, amount float32, referId int64) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -962,7 +961,7 @@ func (ms *memberService) UnfreezeWallet(memberId int64, title string,
 // 将冻结金额标记为失效
 func (ms *memberService) FreezeExpired(memberId int64, accountKind int, amount float32,
 	remark string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -972,7 +971,7 @@ func (ms *memberService) FreezeExpired(memberId int64, accountKind int, amount f
 // 转账余额到其他账户
 func (ms *memberService) TransferAccount(accountKind int, fromMember int64,
 	toMember int64, amount float32, csnRate float32, remark string) error {
-	m := ms._rep.GetMember(fromMember)
+	m := ms._repo.GetMember(fromMember)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -983,7 +982,7 @@ func (ms *memberService) TransferAccount(accountKind int, fromMember int64,
 // 转账余额到其他账户
 func (ms *memberService) TransferBalance(memberId int64, kind int32, amount float32, tradeNo string,
 	toTitle, fromTitle string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -994,7 +993,7 @@ func (ms *memberService) TransferBalance(memberId int64, kind int32, amount floa
 // commission手续费
 func (ms *memberService) TransferWallet(memberId int64, kind int32, amount float32, commission float32,
 	tradeNo string, toTitle string, fromTitle string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -1006,7 +1005,7 @@ func (ms *memberService) TransferWallet(memberId int64, kind int32, amount float
 // commission手续费
 func (ms *memberService) TransferFlow(memberId int64, kind int32, amount float32,
 	commission float32, tradeNo string, toTitle string, fromTitle string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -1018,7 +1017,7 @@ func (ms *memberService) TransferFlow(memberId int64, kind int32, amount float32
 func (ms *memberService) TransferFlowTo(memberId int64, toMemberId int64, kind int32,
 	amount float32, commission float32, tradeNo string, toTitle string,
 	fromTitle string) error {
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
@@ -1060,7 +1059,7 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 	if amount == 0 {
 		return "", member.ErrIncorrectAmount
 	}
-	m := ms._rep.GetMember(memberId)
+	m := ms._repo.GetMember(memberId)
 	if m == nil {
 		return "", member.ErrNoSuchMember
 	}
@@ -1115,18 +1114,18 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 
 // 可用的优惠券分页数据
 func (ms *memberService) PagedAvailableCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		GiftCard().PagedAvailableCoupon(start, end)
 }
 
 // 已使用的优惠券
 func (ms *memberService) PagedAllCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		GiftCard().PagedAllCoupon(start, end)
 }
 
 // 过期的优惠券
 func (ms *memberService) PagedExpiresCoupon(memberId int64, start, end int) (int, []*dto.SimpleCoupon) {
-	return ms._rep.CreateMemberById(memberId).
+	return ms._repo.CreateMemberById(memberId).
 		GiftCard().PagedExpiresCoupon(start, end)
 }

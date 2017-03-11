@@ -366,13 +366,15 @@ struct ComplexOrder {
 service MerchantService{
    // 获取商家符合的信息
    ComplexMerchant Complex(1:i32 mchId),
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   Result CheckLogin(1:string usr,2:string oriPwd),
 }
 
 //会员服务
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    Result64 Login(1:string user,2:string pwd,3:bool update),
+    Result64 CheckLogin(1:string user,2:string pwd,3:bool update),
     // 根据会员编号获取会员信息
     Member GetMember(1:i64 id),
     // 根据用户名获取会员信息

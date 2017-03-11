@@ -128,16 +128,16 @@ func (p *FoundationServiceClient) recvResourceUrl() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error75 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error76 error
-		error76, err = error75.Read(iprot)
+		error79 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error80 error
+		error80, err = error79.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error76
+		err = error80
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -201,16 +201,16 @@ func (p *FoundationServiceClient) recvGetPlatformConf() (value *PlatformConf, er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error77 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error78 error
-		error78, err = error77.Read(iprot)
+		error81 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error82 error
+		error82, err = error81.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error78
+		err = error82
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -278,16 +278,16 @@ func (p *FoundationServiceClient) recvGetValue() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error79 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error80 error
-		error80, err = error79.Read(iprot)
+		error83 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error84 error
+		error84, err = error83.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error80
+		err = error84
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -357,16 +357,16 @@ func (p *FoundationServiceClient) recvSetValue() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error81 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error82 error
-		error82, err = error81.Read(iprot)
+		error85 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error86 error
+		error86, err = error85.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error82
+		err = error86
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -434,16 +434,16 @@ func (p *FoundationServiceClient) recvDeleteValue() (value *Result_, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error83 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error84 error
-		error84, err = error83.Read(iprot)
+		error87 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error88 error
+		error88, err = error87.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error84
+		err = error88
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -511,16 +511,16 @@ func (p *FoundationServiceClient) recvGetValuesByPrefix() (value map[string]stri
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error85 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error86 error
-		error86, err = error85.Read(iprot)
+		error89 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error90 error
+		error90, err = error89.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error86
+		err = error90
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -588,16 +588,16 @@ func (p *FoundationServiceClient) recvRegisterApp() (value string, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error87 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error88 error
-		error88, err = error87.Read(iprot)
+		error91 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error92 error
+		error92, err = error91.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error88
+		err = error92
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -665,16 +665,16 @@ func (p *FoundationServiceClient) recvGetApp() (value *SsoApp, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error89 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error90 error
-		error90, err = error89.Read(iprot)
+		error93 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error94 error
+		error94, err = error93.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error90
+		err = error94
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -738,16 +738,16 @@ func (p *FoundationServiceClient) recvGetAllSsoApp() (value []string, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error91 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error92 error
-		error92, err = error91.Read(iprot)
+		error95 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error96 error
+		error96, err = error95.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error92
+		err = error96
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -817,16 +817,16 @@ func (p *FoundationServiceClient) recvValidateSuper() (value bool, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error93 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error94 error
-		error94, err = error93.Read(iprot)
+		error97 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error98 error
+		error98, err = error97.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error94
+		err = error98
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -896,16 +896,16 @@ func (p *FoundationServiceClient) recvFlushSuperPwd() (err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error95 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error96 error
-		error96, err = error95.Read(iprot)
+		error99 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error100 error
+		error100, err = error99.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error96
+		err = error100
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -972,16 +972,16 @@ func (p *FoundationServiceClient) recvGetSyncLoginUrl() (value string, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error97 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error98 error
-		error98, err = error97.Read(iprot)
+		error101 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error102 error
+		error102, err = error101.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error98
+		err = error102
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -1019,20 +1019,20 @@ func (p *FoundationServiceProcessor) ProcessorMap() map[string]thrift.TProcessor
 
 func NewFoundationServiceProcessor(handler FoundationService) *FoundationServiceProcessor {
 
-	self99 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self99.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
-	self99.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
-	self99.processorMap["GetValue"] = &foundationServiceProcessorGetValue{handler: handler}
-	self99.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
-	self99.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
-	self99.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
-	self99.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
-	self99.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
-	self99.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
-	self99.processorMap["ValidateSuper"] = &foundationServiceProcessorValidateSuper{handler: handler}
-	self99.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
-	self99.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
-	return self99
+	self103 := &FoundationServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self103.processorMap["ResourceUrl"] = &foundationServiceProcessorResourceUrl{handler: handler}
+	self103.processorMap["GetPlatformConf"] = &foundationServiceProcessorGetPlatformConf{handler: handler}
+	self103.processorMap["GetValue"] = &foundationServiceProcessorGetValue{handler: handler}
+	self103.processorMap["SetValue"] = &foundationServiceProcessorSetValue{handler: handler}
+	self103.processorMap["DeleteValue"] = &foundationServiceProcessorDeleteValue{handler: handler}
+	self103.processorMap["GetValuesByPrefix"] = &foundationServiceProcessorGetValuesByPrefix{handler: handler}
+	self103.processorMap["RegisterApp"] = &foundationServiceProcessorRegisterApp{handler: handler}
+	self103.processorMap["GetApp"] = &foundationServiceProcessorGetApp{handler: handler}
+	self103.processorMap["GetAllSsoApp"] = &foundationServiceProcessorGetAllSsoApp{handler: handler}
+	self103.processorMap["ValidateSuper"] = &foundationServiceProcessorValidateSuper{handler: handler}
+	self103.processorMap["FlushSuperPwd"] = &foundationServiceProcessorFlushSuperPwd{handler: handler}
+	self103.processorMap["GetSyncLoginUrl"] = &foundationServiceProcessorGetSyncLoginUrl{handler: handler}
+	return self103
 }
 
 func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -1045,12 +1045,12 @@ func (p *FoundationServiceProcessor) Process(iprot, oprot thrift.TProtocol) (suc
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x100 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x104 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x100.Write(oprot)
+	x104.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x100
+	return false, x104
 
 }
 
@@ -2739,19 +2739,19 @@ func (p *FoundationServiceGetValuesByPrefixResult) readField0(iprot thrift.TProt
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key101 string
+		var _key105 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key101 = v
+			_key105 = v
 		}
-		var _val102 string
+		var _val106 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val102 = v
+			_val106 = v
 		}
-		p.Success[_key101] = _val102
+		p.Success[_key105] = _val106
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -3314,13 +3314,13 @@ func (p *FoundationServiceGetAllSsoAppResult) readField0(iprot thrift.TProtocol)
 	tSlice := make([]string, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		var _elem103 string
+		var _elem107 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_elem103 = v
+			_elem107 = v
 		}
-		p.Success = append(p.Success, _elem103)
+		p.Success = append(p.Success, _elem107)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

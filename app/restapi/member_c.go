@@ -45,7 +45,7 @@ func (mc *MemberC) Login(c echo.Context) error {
 	} else {
 		defer cli.Transport.Close()
 		encPwd := domain.MemberSha1Pwd(pwd)
-		r, _ := cli.Login(usr, encPwd, true)
+		r, _ := cli.CheckLogin(usr, encPwd, true)
 		result.Message = r.Message
 		result.Result = r.Result_
 		if r.Result_ {
