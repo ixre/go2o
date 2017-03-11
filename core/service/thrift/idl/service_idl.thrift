@@ -368,6 +368,8 @@ service MerchantService{
    ComplexMerchant Complex(1:i32 mchId),
    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
    Result CheckLogin(1:string usr,2:string oriPwd),
+   // 验证商户状态
+   Result Stat(1:i32 mchId),
 }
 
 //会员服务
