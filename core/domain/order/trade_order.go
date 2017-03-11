@@ -9,6 +9,8 @@ import (
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
 	"go2o/core/domain/interface/valueobject"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -63,6 +65,8 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	co.FinalAmount = v.FinalAmount
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
+	co.Extend["TicketImage"] = v.TicketImage
+	co.Extend["CashPay"] = strconv.Itoa(int(v.CashPay))
 	return co
 }
 
@@ -231,14 +235,40 @@ func (o *tradeOrderImpl) CashPay() error {
 // 在线支付交易完成,交易单付款后直接完成
 func (o *tradeOrderImpl) TradePaymentFinish() error {
 	if o.value.State == order.StatAwaitingPayment {
+		conf := o.valueRepo.GetGlobMchSaleConf()
+		// 如果交易单需要上传发票，则变为待确认。否则直接完成
+		if conf.TradeOrderRequireTicket {
+			o.value.State = order.StatAwaitingConfirm
+			return o.saveTradeOrder()
+		}
+		return o.updateOrderComplete()
+	}
+	return order.ErrOrderPayed
+}
+
+// 更新发票数据
+func (o *tradeOrderImpl) UpdateTicket(img string) error {
+	o.getValue()
+	img = strings.TrimSpace(img)
+	if len(img) < 10 {
+		return order.ErrTicketImage
+	}
+	o.value.TicketImage = img
+	if o.State() == order.StatAwaitingConfirm {
+		return o.updateOrderComplete()
+	}
+	return o.saveTradeOrder()
+}
+
+func (o *tradeOrderImpl) updateOrderComplete() (err error) {
+	if o.State() != order.StatCompleted {
 		o.value.State = order.StatCompleted
 		err := o.saveTradeOrder()
 		if err == nil {
 			err = o.onOrderComplete()
 		}
-		return err
 	}
-	return order.ErrOrderPayed
+	return err
 }
 
 // 完成订单

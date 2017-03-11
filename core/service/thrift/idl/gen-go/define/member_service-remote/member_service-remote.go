@@ -147,8 +147,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetMember requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err51 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err51 != nil {
+		argvalue0, err53 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err53 != nil {
 			Usage()
 			return
 		}
@@ -171,8 +171,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetProfile requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err53 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err53 != nil {
+		argvalue0, err55 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err55 != nil {
 			Usage()
 			return
 		}
@@ -185,8 +185,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err54 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err54 != nil {
+		argvalue0, err56 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err56 != nil {
 			Usage()
 			return
 		}
@@ -199,21 +199,21 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Premium requires 3 args")
 			flag.Usage()
 		}
-		argvalue0, err55 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err55 != nil {
+		argvalue0, err57 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err57 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err56 := (strconv.Atoi(flag.Arg(2)))
-		if err56 != nil {
+		tmp1, err58 := (strconv.Atoi(flag.Arg(2)))
+		if err58 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		argvalue2, err57 := (strconv.ParseInt(flag.Arg(3), 10, 64))
-		if err57 != nil {
+		argvalue2, err59 := (strconv.ParseInt(flag.Arg(3), 10, 64))
+		if err59 != nil {
 			Usage()
 			return
 		}
@@ -226,8 +226,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetToken requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err58 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err58 != nil {
+		argvalue0, err60 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err60 != nil {
 			Usage()
 			return
 		}
@@ -242,8 +242,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "CheckToken requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err60 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err60 != nil {
+		argvalue0, err62 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err62 != nil {
 			Usage()
 			return
 		}
@@ -258,8 +258,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RemoveToken requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err62 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err62 != nil {
+		argvalue0, err64 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err64 != nil {
 			Usage()
 			return
 		}
@@ -272,14 +272,14 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAddress requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err63 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err63 != nil {
+		argvalue0, err65 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err65 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		argvalue1, err64 := (strconv.ParseInt(flag.Arg(2), 10, 64))
-		if err64 != nil {
+		argvalue1, err66 := (strconv.ParseInt(flag.Arg(2), 10, 64))
+		if err66 != nil {
 			Usage()
 			return
 		}
@@ -292,8 +292,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetAccount requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err65 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err65 != nil {
+		argvalue0, err67 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err67 != nil {
 			Usage()
 			return
 		}
@@ -304,27 +304,6 @@ func main() {
 	case "InviterArray":
 		if flag.NArg()-1 != 2 {
 			fmt.Fprintln(os.Stderr, "InviterArray requires 2 args")
-			flag.Usage()
-		}
-		argvalue0, err66 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err66 != nil {
-			Usage()
-			return
-		}
-		value0 := argvalue0
-		tmp1, err67 := (strconv.Atoi(flag.Arg(2)))
-		if err67 != nil {
-			Usage()
-			return
-		}
-		argvalue1 := int32(tmp1)
-		value1 := argvalue1
-		fmt.Print(client.InviterArray(value0, value1))
-		fmt.Print("\n")
-		break
-	case "ChargeAccount":
-		if flag.NArg()-1 != 7 {
-			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
 			flag.Usage()
 		}
 		argvalue0, err68 := (strconv.ParseInt(flag.Arg(1), 10, 64))
@@ -340,8 +319,29 @@ func main() {
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		tmp2, err70 := (strconv.Atoi(flag.Arg(3)))
+		fmt.Print(client.InviterArray(value0, value1))
+		fmt.Print("\n")
+		break
+	case "ChargeAccount":
+		if flag.NArg()-1 != 7 {
+			fmt.Fprintln(os.Stderr, "ChargeAccount requires 7 args")
+			flag.Usage()
+		}
+		argvalue0, err70 := (strconv.ParseInt(flag.Arg(1), 10, 64))
 		if err70 != nil {
+			Usage()
+			return
+		}
+		value0 := argvalue0
+		tmp1, err71 := (strconv.Atoi(flag.Arg(2)))
+		if err71 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		tmp2, err72 := (strconv.Atoi(flag.Arg(3)))
+		if err72 != nil {
 			Usage()
 			return
 		}
@@ -351,14 +351,14 @@ func main() {
 		value3 := argvalue3
 		argvalue4 := flag.Arg(5)
 		value4 := argvalue4
-		argvalue5, err73 := (strconv.ParseFloat(flag.Arg(6), 64))
-		if err73 != nil {
+		argvalue5, err75 := (strconv.ParseFloat(flag.Arg(6), 64))
+		if err75 != nil {
 			Usage()
 			return
 		}
 		value5 := argvalue5
-		argvalue6, err74 := (strconv.ParseInt(flag.Arg(7), 10, 64))
-		if err74 != nil {
+		argvalue6, err76 := (strconv.ParseInt(flag.Arg(7), 10, 64))
+		if err76 != nil {
 			Usage()
 			return
 		}
@@ -371,14 +371,14 @@ func main() {
 			fmt.Fprintln(os.Stderr, "DiscountAccount requires 7 args")
 			flag.Usage()
 		}
-		argvalue0, err75 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err75 != nil {
+		argvalue0, err77 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err77 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err76 := (strconv.Atoi(flag.Arg(2)))
-		if err76 != nil {
+		tmp1, err78 := (strconv.Atoi(flag.Arg(2)))
+		if err78 != nil {
 			Usage()
 			return
 		}
@@ -388,14 +388,14 @@ func main() {
 		value2 := argvalue2
 		argvalue3 := flag.Arg(4)
 		value3 := argvalue3
-		argvalue4, err79 := (strconv.ParseFloat(flag.Arg(5), 64))
-		if err79 != nil {
+		argvalue4, err81 := (strconv.ParseFloat(flag.Arg(5), 64))
+		if err81 != nil {
 			Usage()
 			return
 		}
 		value4 := argvalue4
-		argvalue5, err80 := (strconv.ParseInt(flag.Arg(6), 10, 64))
-		if err80 != nil {
+		argvalue5, err82 := (strconv.ParseInt(flag.Arg(6), 10, 64))
+		if err82 != nil {
 			Usage()
 			return
 		}

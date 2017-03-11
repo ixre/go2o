@@ -25,8 +25,8 @@ import (
 // 监视新订单
 func superviseOrder(ss []Service) {
 	sv := rsi.ShoppingService
-	notify := func(id int64, isSub bool, ss []Service) {
-		o, _ := sv.GetOrder(id, isSub)
+	notify := func(orderNo string, sub bool, ss []Service) {
+		o, _ := sv.GetOrder(orderNo, sub)
 		if o != nil {
 			for _, v := range ss {
 				if !v.OrderObs(o) {
@@ -36,7 +36,6 @@ func superviseOrder(ss []Service) {
 		}
 	}
 	// 监听队列
-	id := 0
 	conn := core.GetRedisConn()
 	defer conn.Close()
 	for {
@@ -44,23 +43,19 @@ func superviseOrder(ss []Service) {
 			variable.KvOrderBusinessQueue, 0)) //取出队列的一个元素
 		if err == nil {
 			//通知订单更新
-			str := string(arr[1])
-			isSub := strings.HasPrefix(str, "sub!")
-			if isSub {
-				str = str[4:]
+			orderNo := string(arr[1])
+			sub := strings.HasPrefix(orderNo, "sub!")
+			if sub {
+				orderNo = orderNo[4:]
 			}
-			//log.Println("----- 订单编号：", str, "; 是否子订单：", isSub)
-			id, err = strconv.Atoi(str)
-			if err == nil {
-				go notify(int64(id), isSub, ss)
-			}
+			//log.Println("----- 订单号：",orderNo, "; 是否子订单：", isSub)
+			go notify(orderNo, sub, ss)
 
 		} else {
 			appCtx.Log().Println("[ Daemon][ OrderQueue][ Error]:",
 				err.Error(), "; retry after 10 seconds.")
 			time.Sleep(time.Second * 10)
 		}
-
 	}
 }
 
@@ -131,6 +126,18 @@ func supervisePaymentOrderFinish(ss []Service) {
 			time.Sleep(time.Second * 10)
 		}
 	}
+}
+
+// 从RDS键中找到订单编号，如：go2o:queue:sub!1 , go2o:queue:2
+func testIdFromRdsKey2(key string) (orderNo string, sub bool, err error) {
+	arr := strings.Split(key, ":")
+	orderNo = arr[len(arr)-1]
+	//orderNo = arr[len(arr) - 2]
+	sub = strings.HasPrefix(orderNo, "sub!")
+	if sub {
+		orderNo = orderNo[4:]
+	}
+	return orderNo, sub, err
 }
 
 // 从RDS键中找到订单编号，如：go2o:queue:sub!1 , go2o:queue:2

@@ -629,6 +629,9 @@ ADD COLUMN `premium_expires` INT(11) NOT NULL COMMENT '高级会员过期时间'
 
 /* 2017-03-09 */
 
+ALTER TABLE `order_trade_order`
+ADD COLUMN `ticket_image` VARCHAR(150) NOT NULL COMMENT '发票图片' AFTER `cash_pay`;
+
 
 
 

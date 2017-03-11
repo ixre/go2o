@@ -221,7 +221,7 @@ func (o *orderRepImpl) getOrderCkByNo(orderNo string, subOrder bool) string {
 // 获取订单编号
 func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
 	k := o.getOrderCkByNo(orderNo, subOrder)
-	id, err := o.Storage.GetInt(k)
+	id, err := o.Storage.GetInt64(k)
 	if err != nil {
 		if subOrder {
 			o.Connector.ExecScalar("SELECT id FROM sale_sub_order where order_no=?", &id, orderNo)
@@ -232,7 +232,7 @@ func (o *orderRepImpl) GetOrderId(orderNo string, subOrder bool) int64 {
 			o.Storage.Set(k, id)
 		}
 	}
-	return int64(id)
+	return id
 }
 
 // 获取子订单
@@ -310,12 +310,12 @@ func (o *orderRepImpl) GetOrder(where string, arg ...interface{}) *order.Order {
 }
 
 // 加入到订单通知队列,如果为子订单,则带上sub
-func (o *orderRepImpl) pushOrderQueue(id int64, sub bool) {
+func (o *orderRepImpl) pushOrderQueue(orderNo string, sub bool) {
 	rc := core.GetRedisConn()
 	if sub {
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, fmt.Sprintf("sub!%d", id))
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, fmt.Sprintf("sub!%d", orderNo))
 	} else {
-		rc.Do("RPUSH", variable.KvOrderBusinessQueue, id)
+		rc.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
 	}
 	rc.Close()
 	//log.Println("-----order ",v.Id,v.Status,statusIsChanged,err)
@@ -352,7 +352,7 @@ func (o *orderRepImpl) SaveOrder(v *order.Order) (int, error) {
 		v.ID = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
-			o.pushOrderQueue(v.ID, false)
+			o.pushOrderQueue(v.OrderNo, false)
 		}
 	}
 	return id, err
@@ -388,7 +388,7 @@ func (o *orderRepImpl) SaveSubOrder(v *order.NormalSubOrder) (int, error) {
 		v.ID = int64(id)
 		//如果业务状态已经发生改变,则提交到队列
 		if statusIsChanged {
-			o.pushOrderQueue(v.ID, true)
+			o.pushOrderQueue(v.OrderNo, true)
 		}
 	}
 	return id, err

@@ -103,16 +103,16 @@ func (p *MerchantServiceClient) recvComplex() (value *ComplexMerchant, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error6 error
-		error6, err = error5.Read(iprot)
+		error7 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error8 error
+		error8, err = error7.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error6
+		err = error8
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -182,16 +182,16 @@ func (p *MerchantServiceClient) recvCheckLogin() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error7 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error8 error
-		error8, err = error7.Read(iprot)
+		error9 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error10 error
+		error10, err = error9.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error8
+		err = error10
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -259,16 +259,16 @@ func (p *MerchantServiceClient) recvStat() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error9 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error10 error
-		error10, err = error9.Read(iprot)
+		error11 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error12 error
+		error12, err = error11.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error10
+		err = error12
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -306,11 +306,11 @@ func (p *MerchantServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewMerchantServiceProcessor(handler MerchantService) *MerchantServiceProcessor {
 
-	self11 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self11.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
-	self11.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
-	self11.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
-	return self11
+	self13 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self13.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
+	self13.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
+	self13.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
+	return self13
 }
 
 func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -323,12 +323,12 @@ func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succe
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x12 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x14 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x12.Write(oprot)
+	x14.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x12
+	return false, x14
 
 }
 

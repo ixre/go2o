@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/order"
 	"go2o/core/domain/interface/payment"
+	"go2o/core/repository"
 	"go2o/core/testing/ti"
 	"go2o/core/variable"
 	"testing"
@@ -209,6 +210,10 @@ func TestTradeOrder(t *testing.T) {
 	repo := ti.OrderRepo
 	manager := repo.Manager()
 	cashPay := true
+	requireTicket := true
+	if requireTicket {
+		repository.DefaultGlobMchSaleConf.TradeOrderRequireTicket = true
+	}
 	c := &order.ComplexOrder{
 		VendorId:   104, //1,
 		ShopId:     1,
@@ -241,6 +246,16 @@ func TestTradeOrder(t *testing.T) {
 	time.Sleep(time.Second * 2)
 	o = manager.GetOrderById(o.GetAggregateRootId())
 	t.Log("订单状态为：", o.State().String())
+	if requireTicket {
+		t.Log("上传发票")
+		io = o.(order.ITradeOrder)
+		err := io.UpdateTicket("http://img.ts.com/res/nopic.gif")
+		if err != nil {
+			t.Errorf("上传发票出错：%s", err.Error())
+			t.FailNow()
+		}
+		t.Log("订单状态为：", o.State().String())
+	}
 }
 
 // 通知交易单
@@ -248,5 +263,6 @@ func TestNotifyTradeOrder(t *testing.T) {
 	rds := ti.GetApp().Storage().(storage.IRedisStorage)
 	conn := rds.GetConn()
 	defer conn.Close()
-	conn.Do("RPUSH", variable.KvOrderBusinessQueue, 58)
+	orderNo := "100000582254"
+	conn.Do("RPUSH", variable.KvOrderBusinessQueue, orderNo)
 }
