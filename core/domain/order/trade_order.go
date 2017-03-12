@@ -56,18 +56,21 @@ func (o *tradeOrderImpl) getValue() *order.TradeOrder {
 func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
-	co.SubOrderId = 0
-	co.VendorId = v.VendorId
-	co.ShopId = v.ShopId
-	co.Subject = v.Subject
-	co.DiscountAmount = v.DiscountAmount
-	co.ItemAmount = v.OrderAmount
-	co.FinalAmount = v.FinalAmount
-	co.IsBreak = 0
-	co.UpdateTime = v.UpdateTime
-	co.Extend["TicketImage"] = v.TicketImage
-	co.Extend["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
-	co.Extend["CashPay"] = strconv.Itoa(int(v.CashPay))
+	if v != nil {
+
+		co.SubOrderId = 0
+		co.VendorId = v.VendorId
+		co.ShopId = v.ShopId
+		co.Subject = v.Subject
+		co.DiscountAmount = v.DiscountAmount
+		co.ItemAmount = v.OrderAmount
+		co.FinalAmount = v.FinalAmount
+		co.IsBreak = 0
+		co.UpdateTime = v.UpdateTime
+		co.Extend["TicketImage"] = v.TicketImage
+		co.Extend["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
+		co.Extend["CashPay"] = strconv.Itoa(int(v.CashPay))
+	}
 	return co
 }
 

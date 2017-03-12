@@ -374,7 +374,12 @@ func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64)
 	if o.ShopId <= 0 {
 		mch := s._mchRepo.GetMerchant(o.VendorId)
 		if mch != nil {
-			o.ShopId = mch.ShopManager().GetOnlineShop().GetDomainId()
+			sp := mch.ShopManager().GetOnlineShop()
+			if sp != nil {
+				o.ShopId = sp.GetDomainId()
+			} else {
+				o.ShopId = 1
+			}
 		}
 	}
 	io, err := s._manager.SubmitTradeOrder(parser.Order(o), rate)
