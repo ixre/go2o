@@ -16,9 +16,10 @@ import (
 )
 
 const (
-	KindAccountSettleOrder      = 1
-	KindAccountPresent          = 2
-	KindAccountTakePayment      = 3
+	KindAccountCharge           = 1
+	KindAccountSettleOrder      = 2
+	KindAccountPresent          = 3
+	KindAccountTakePayment      = 4
 	KindAccountTransferToMember = 5
 
 	//商户提现
@@ -122,6 +123,10 @@ type (
 
 		// 赠送
 		Present(amount float32, remark string) error
+
+		// 充值
+		Charge(kind int32, amount float64, title, outerNo string,
+			relateUser int64) error
 	}
 
 	IMerchantManager interface {

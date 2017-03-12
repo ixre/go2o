@@ -509,6 +509,16 @@ func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) erro
 	return merchant.ErrNoSuchMerchant
 }
 
+// 账户充值xxxx
+func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
+	outerNo string, amount float64, relateUser int64) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.Account().Charge(kind, amount, title, outerNo, relateUser)
+}
+
 //
 ////商户利润修改
 //func (m *merchantService) UpdateMechOfflineRate(id int32, rate float32, return_rate float32) error {
