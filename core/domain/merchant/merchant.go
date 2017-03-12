@@ -821,3 +821,23 @@ func (a *accountImpl) Present(amount float32, remark string) error {
 	}
 	return err
 }
+
+// 充值
+func (a *accountImpl) Charge(kind int32, amount float64,
+	title, outerNo string, relateUser int64) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return merchant.ErrAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountCharge,
+		title, outerNo, float32(amount), 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.Balance += float32(amount)
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+		if err != nil {
+			return err
+		}
+	}
+	return err
+}
