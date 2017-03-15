@@ -182,7 +182,7 @@ var (
 		"err_member_phone_valid_err", "手机号码不正确")
 
 	ErrPhoneHasBind *domain.DomainError = domain.NewDomainError(
-		"err_member_phone_has_bind", "手机号码已经被使用")
+		"err_member_phone_has_bind", "手机号码已经使用")
 
 	ErrMissingPhone *domain.DomainError = domain.NewDomainError(
 		"err_member_missing_phone", "请填写手机号码")

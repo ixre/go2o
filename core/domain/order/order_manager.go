@@ -71,12 +71,12 @@ func NewOrderManager(cartRepo cart.ICartRepo, mchRepo merchant.IMerchantRepo,
 }
 
 // 统一调用
-func (o *orderManagerImpl) Unified(orderId int64, sub bool) order.IUnifiedOrderAdapter {
+func (o *orderManagerImpl) Unified(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u := &unifiedOrderAdapterImpl{
 		repo:    o.repo,
 		manager: o,
 	}
-	return u.adapter(orderId, sub)
+	return u.adapter(orderNo, sub)
 }
 
 // 在下单前检查购物车
@@ -329,8 +329,9 @@ type unifiedOrderAdapterImpl struct {
 	sub      bool
 }
 
-func (u *unifiedOrderAdapterImpl) adapter(orderId int64, sub bool) order.IUnifiedOrderAdapter {
+func (u *unifiedOrderAdapterImpl) adapter(orderNo string, sub bool) order.IUnifiedOrderAdapter {
 	u.sub = sub
+	orderId := u.repo.GetOrderId(orderNo, sub)
 	if u.sub {
 		u.subOrder = u.manager.GetSubOrder(orderId)
 	} else {

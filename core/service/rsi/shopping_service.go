@@ -274,10 +274,7 @@ func (s *shoppingService) SubmitOrder(buyerId int64, cartCode string,
 
 // 根据编号获取订单
 func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrder, error) {
-	orderId := s._repo.GetOrderId(orderNo, sub)
-
-	c := s._manager.Unified(orderId, sub).Complex()
-
+	c := s._manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
@@ -364,8 +361,8 @@ func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.Normal
 }
 
 // 获取订单日志
-func (s *shoppingService) LogBytes(orderId int64, sub bool) []byte {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) LogBytes(orderNo string, sub bool) []byte {
+	c := s._manager.Unified(orderNo, sub)
 	return c.LogBytes()
 }
 
@@ -418,32 +415,32 @@ func (s *shoppingService) TradeOrderUpdateTicket(orderId int64, img string) (r *
 }
 
 // 取消订单
-func (s *shoppingService) CancelOrder(orderId int64, sub bool, reason string) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) CancelOrder(orderNo string, sub bool, reason string) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Cancel(reason)
 }
 
 // 确定订单
-func (s *shoppingService) ConfirmOrder(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) ConfirmOrder(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Confirm()
 }
 
 // 备货完成
-func (s *shoppingService) PickUp(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) PickUp(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.PickUp()
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *shoppingService) Ship(orderId int64, sub bool, spId int32, spOrder string) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) Ship(orderNo string, sub bool, spId int32, spOrder string) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Ship(spId, spOrder)
 }
 
 // 消费者收货
-func (s *shoppingService) BuyerReceived(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) BuyerReceived(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.BuyerReceived()
 }
 
