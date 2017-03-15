@@ -256,11 +256,11 @@ func (d *defaultService) PaymentOrderObs(order *define.PaymentOrder) bool {
 }
 
 // 测试是否为子订单,并返回编号
-func (d *defaultService) testSubId(o *define.ComplexOrder) (int64, bool) {
-	if id := o.SubOrderId; id > 0 {
-		return o.SubOrderId, true
+func (d *defaultService) testSubId(o *define.ComplexOrder) (string, bool) {
+	if o.SubOrderId > 0 {
+		return o.OrderNo, true
 	}
-	return o.OrderId, false
+	return o.OrderNo, false
 }
 
 // 批量删除REDIS KEY
@@ -281,9 +281,9 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.ComplexOr
 		unix := o.UpdateTime + int64(ss.OrderTimeOutMinute)*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
-		id, sub := d.testSubId(o)
+		orderNo, sub := d.testSubId(o)
 		prefix := util.BoolExt.TString(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%d:%s", variable.KvOrderExpiresTime, prefix, id, tk)
+		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderExpiresTime, prefix, orderNo, tk)
 		//log.Println(" [Daemon][Exprire][ Key]:", key)
 		conn.Do("SET", key, unix)
 	}
@@ -291,9 +291,9 @@ func (d *defaultService) updateOrderExpires(conn redis.Conn, o *define.ComplexOr
 
 //取消订单过期时间
 func (d *defaultService) cancelOrderExpires(conn redis.Conn, o *define.ComplexOrder) {
-	id, sub := d.testSubId(o)
+	orderNo, sub := d.testSubId(o)
 	prefix := util.BoolExt.TString(sub, "sub!", "")
-	key := fmt.Sprintf("%s:%s%d:*", variable.KvOrderExpiresTime, prefix, id)
+	key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderExpiresTime, prefix, orderNo)
 	d.batchDelKeys(conn, key)
 }
 
@@ -310,9 +310,9 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.ComplexOrde
 		unix := o.UpdateTime + int64(ss.OrderTimeOutReceiveHour)*60*60
 		t := time.Unix(unix, 0)
 		tk := getTick(t)
-		id, sub := d.testSubId(o)
+		orderNo, sub := d.testSubId(o)
 		prefix := util.BoolExt.TString(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%d:%s", variable.KvOrderAutoReceive, prefix, id, tk)
+		key := fmt.Sprintf("%s:%s%s:%s", variable.KvOrderAutoReceive, prefix, orderNo, tk)
 		//log.Println(" [Daemon][AutoReceive][ Key]:", key)
 		conn.Do("SET", key, unix)
 	}
@@ -321,9 +321,9 @@ func (d *defaultService) orderAutoReceive(conn redis.Conn, o *define.ComplexOrde
 // 完成订单自动收货
 func (d *defaultService) orderReceived(conn redis.Conn, o *define.ComplexOrder) {
 	if o.State == order.StatCompleted {
-		id, sub := d.testSubId(o)
+		orderNo, sub := d.testSubId(o)
 		prefix := util.BoolExt.TString(sub, "sub!", "")
-		key := fmt.Sprintf("%s:%s%d:*", variable.KvOrderAutoReceive, prefix, id)
+		key := fmt.Sprintf("%s:%s%s:*", variable.KvOrderAutoReceive, prefix, orderNo)
 		d.batchDelKeys(conn, key)
 	}
 }

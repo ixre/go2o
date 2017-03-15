@@ -124,7 +124,7 @@ func (m *MemberManagerImpl) PrepareRegister(v *member.Member,
 	}
 
 	// 使用手机号作为用户名
-	if perm.PhoneAsUser && v.Usr == "" {
+	if perm.PhoneAsUser {
 		if m.rep.CheckUsrExist(pro.Phone, 0) {
 			return 0, member.ErrPhoneHasBind
 		}

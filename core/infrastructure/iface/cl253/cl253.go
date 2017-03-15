@@ -11,7 +11,6 @@ package cl253
 import (
 	"errors"
 	"fmt"
-	"github.com/jsix/gof/log"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -25,7 +24,6 @@ const url = "http://sms.253.com/msg/send"
 func SendMsgToMobile(account, pwd, phone, content string) error {
 	strUrl := fmt.Sprintf("%s?un=%s&pw=%s&phone=%s&msg=%s&rd=1",
 		url, account, pwd, phone, content)
-	log.Println("--", strUrl)
 	rsp, err := http.Get(strUrl)
 	if err == nil {
 		defer rsp.Body.Close()

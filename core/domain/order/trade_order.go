@@ -57,7 +57,6 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
 	co := o.baseOrderImpl.Complex()
 	if v != nil {
-
 		co.SubOrderId = 0
 		co.VendorId = v.VendorId
 		co.ShopId = v.ShopId

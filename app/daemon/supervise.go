@@ -167,9 +167,9 @@ func detectOrderExpires() {
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
-			orderId, isSub, err := testIdFromRdsKey(oKey)
-			if err == nil && orderId > 0 {
-				err = ss.CancelOrder(orderId, isSub, "订单超时,自动取消")
+			orderNo, isSub, err := testIdFromRdsKey2(oKey)
+			if err == nil && orderNo != "" {
+				err = ss.CancelOrder(orderNo, isSub, "订单超时,自动取消")
 				//清除待取消记录
 				conn.Do("DEL", oKey)
 				//log.Println("---",orderId,"---",unix, "--", time.Now().Unix(), v, err)
@@ -197,10 +197,10 @@ func orderAutoReceive() {
 	list, err := redis.Strings(conn.Do("KEYS", key))
 	if err == nil {
 		for _, oKey := range list {
-			orderId, isSub, err := testIdFromRdsKey(oKey)
+			orderNo, isSub, err := testIdFromRdsKey2(oKey)
 			//log.Println("----",oKey,orderId,isSub,err)
-			if err == nil && orderId > 0 {
-				err = ss.BuyerReceived(orderId, isSub)
+			if err == nil && orderNo != "" {
+				err = ss.BuyerReceived(orderNo, isSub)
 			}
 		}
 	} else {

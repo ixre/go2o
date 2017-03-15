@@ -307,22 +307,25 @@ func (o *OrderQuery) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, p
 	// 查询分页的订单
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
         ot.order_amount,ot.discount_amount,
-        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time
-        FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
+        m.usr FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        LEFT JOIN mm_member m ON m.id = o.buyer_id
          WHERE ot.vendor_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
 		func(rs *sql.Rows) {
 			var cashPay int
 			var ticket string
+			var usr string
 			for rs.Next() {
 				e := &define.ComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&cashPay, &ticket, &e.State, &e.CreateTime)
+					&cashPay, &ticket, &e.State, &e.CreateTime, &usr)
 				e.Extend = map[string]string{
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
+					"Usr":         usr,
 				}
 				orderList = append(orderList, e)
 			}
