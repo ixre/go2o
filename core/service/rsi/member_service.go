@@ -474,7 +474,8 @@ func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error)
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._repo.GetMemberByUsr(usr)
 	if val == nil {
-		val = ms._repo.GetMemberValueByPhone(usr)
+		//todo: 界面加上使用手机号码登陆
+		//val = ms._repo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
