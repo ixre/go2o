@@ -1061,7 +1061,7 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 		outerNo = domain.NewTradeNo(int(mchId))
 		if amount > 0 {
 			//增加奖金
-			tit2 = "[KF]客服调整-" + variable.AliasWalletAccount
+			tit2 = "[KF]系统" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
@@ -1070,7 +1070,7 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 				tit2, outerNo, amount, relateUser)
 		} else {
 			//扣减奖金
-			tit2 = "[KF]客服扣减-" + variable.AliasWalletAccount
+			tit2 = "[KF]系统" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
