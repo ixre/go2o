@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
@@ -456,15 +455,7 @@ func (ms *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) e
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	//return m.Profile().ModifyPassword(newPwd, oldPwd)
-
-	// 兼容旧加密的密码
-	pro := m.Profile()
-	err := pro.ModifyPassword(newPwd, oldPwd)
-	if err == dm.ErrPwdOldPwdNotRight {
-		err = pro.ModifyPassword(newPwd, domain.Sha1(oldPwd))
-	}
-	return err
+	return m.Profile().ModifyPassword(newPwd, oldPwd)
 }
 
 //修改密码,传入密文密码
