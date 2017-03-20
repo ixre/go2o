@@ -61,10 +61,8 @@ func (c *categoryImpl) Save() (int32, error) {
 	c.value.UpdateTime = time.Now().Unix()
 	id, err := c.contentRepo.SaveCategory(c.value)
 	if err == nil {
-		c.manager._categories = nil
-		c.manager._categoryMap = nil
+		c.value.Id = id
 	}
-	c.value.Id = id
 	return id, err
 }
 
@@ -129,41 +127,31 @@ func (a *articleImpl) Save() (int32, error) {
 var _ content.IArticleManager = new(articleManagerImpl)
 
 type articleManagerImpl struct {
-	_rep         content.IContentRepo
-	_categories  []content.ICategory
-	_categoryMap map[int32]content.ICategory
-	_userId      int32
+	_rep    content.IContentRepo
+	_userId int32
 }
 
 func newArticleManagerImpl(userId int32, rep content.IContentRepo) content.IArticleManager {
 	return &articleManagerImpl{
-		_rep:         rep,
-		_userId:      userId,
-		_categoryMap: map[int32]content.ICategory{},
+		_rep:    rep,
+		_userId: userId,
 	}
 }
 
 // 获取所有的栏目
 func (a *articleManagerImpl) GetAllCategory() []content.ICategory {
-	if a._categories == nil {
-		list := a._rep.GetAllArticleCategory()
-		l := len(list)
-
-		//如果没有分类,则为系统初始化数据
-		if l == 0 && a._userId <= 0 {
-			a.initSystemCategory()
-			return []content.ICategory{}
-		}
-
-		a._categories = make([]content.ICategory, l)
-		a._categoryMap = make(map[int32]content.ICategory)
-		for i, v := range list {
-			a._categories[i] = NewCategory(v, a, a._rep)
-			a._categoryMap[v.Id] = a._categories[i]
-		}
+	list := a._rep.GetAllArticleCategory()
+	l := len(list)
+	//如果没有分类,则为系统初始化数据
+	if l == 0 && a._userId <= 0 {
+		a.initSystemCategory()
+		list = a._rep.GetAllArticleCategory()
 	}
-
-	return a._categories
+	catList := make([]content.ICategory, l)
+	for i, v := range list {
+		catList[i] = NewCategory(v, a, a._rep)
+	}
+	return catList
 }
 
 // 初始化系统数据
@@ -171,42 +159,52 @@ func (a *articleManagerImpl) initSystemCategory() {
 	list := []*content.ArticleCategory{
 		{
 			Id:    0,
-			Alias: "mch-notice",
+			Alias: "mch-news",
 			Name:  "商户公告",
 		},
 		{
 			Id:    0,
-			Alias: "mall-activity",
-			Name:  "商城活动",
+			Alias: "news",
+			Name:  "商城公告",
 		},
 		{
 			Id:    0,
-			Alias: "mem-notice",
+			Alias: "mm-news",
 			Name:  "会员公告",
 		},
+		{
+			Id:    0,
+			Alias: "service",
+			Name:  "客户服务",
+		},
+		{
+			Id:    0,
+			Alias: "help",
+			Name:  "帮助中心",
+		},
+		{
+			Id:    0,
+			Alias: "about",
+			Name:  "关于商城",
+		},
 	}
-
-	// 因为保存会清除categoryMap 和categories
-	catList := make([]content.ICategory, len(list))
-	catMap := make(map[int32]content.ICategory)
-
-	for i, v := range list {
+	for _, v := range list {
 		c := NewCategory(v, a, a._rep)
 		if c.GetDomainId() == 0 {
 			c.Save() //如果为新建的分类,则保存
 		}
-		catList[i] = c
-		catMap[v.Id] = c
 	}
-	//赋值
-	a._categories = catList
-	a._categoryMap = catMap
 }
 
 // 获取栏目
 func (a *articleManagerImpl) GetCategory(id int32) content.ICategory {
-	a.GetAllCategory()
-	return a._categoryMap[id]
+	list := a.GetAllCategory()
+	for _, v := range list {
+		if v.GetDomainId() == id {
+			return v
+		}
+	}
+	return nil
 }
 
 // 创建栏目
@@ -216,8 +214,8 @@ func (a *articleManagerImpl) CreateCategory(v *content.ArticleCategory) content.
 
 // 根据标识获取文章栏目
 func (a *articleManagerImpl) GetCategoryByAlias(alias string) content.ICategory {
-	a.GetAllCategory()
-	for _, v := range a._categories {
+	list := a.GetAllCategory()
+	for _, v := range list {
 		if v2 := v.GetValue(); v2.Alias == alias ||
 			strconv.Itoa(int(v2.Id)) == alias {
 			return v
@@ -233,12 +231,7 @@ func (a *articleManagerImpl) DelCategory(id int32) error {
 		if c.ArticleNum() > 0 {
 			return content.ErrCategoryContainArchive
 		}
-		err := a._rep.DeleteCategory(id)
-		if err == nil {
-			a._categories = nil
-			a._categoryMap = nil
-		}
-		return err
+		return a._rep.DeleteCategory(id)
 	}
 	return nil
 
