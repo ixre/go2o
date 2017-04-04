@@ -47,7 +47,7 @@ func TestStartMchWholesale(t *testing.T) {
 	t.Fail()
 }
 
-// 测试设置分红比例
+// 测试设置返点比例
 func TestGroupRebateRate(t *testing.T) {
 	mmRepo := ti.MemberRepo
 	groups := mmRepo.GetManager().GetAllBuyerGroups()

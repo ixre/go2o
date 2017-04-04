@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -509,7 +510,7 @@ func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) erro
 	return merchant.ErrNoSuchMerchant
 }
 
-// 账户充值xxxx
+// 账户充值
 func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 	outerNo string, amount float64, relateUser int64) error {
 	mch := m._mchRepo.GetMerchant(mchId)
@@ -650,3 +651,32 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //	return nil
 //}
 //>>>>>>> echo3
+
+// 获取
+func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerGroup {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().GetGroupByGroupId(id)
+	}
+	return nil
+}
+
+// 保存
+func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *define.Result_, err error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
+	}
+	return parser.Result(v.ID, err), nil
+}
+
+// 获取批发返点率
+func (m *merchantService) GetRebateRate(mchId, groupId int32) []*wholesaler.WsRebateRate {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.Wholesaler().GetGroupRebateRate(groupId)
+	}
+	return []*wholesaler.WsRebateRate{}
+}
