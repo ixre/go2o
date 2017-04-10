@@ -103,6 +103,9 @@ func Init(ctx gof.App) {
 
 	orderRepo.SetPaymentRepo(paymentRepo)
 
+	/* 初始化数据 */
+	memberRepo.GetManager().GetAllBuyerGroups()
+
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)

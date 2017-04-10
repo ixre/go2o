@@ -2,8 +2,8 @@ package item
 
 import (
 	"github.com/jsix/gof/util"
-	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
 )
 
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
@@ -27,13 +27,13 @@ func newWholesaleItem(itemId int32, it item.IGoodsItem,
 func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 	v := w.repo.GetWsItem(w.itemId)
 	if v == nil {
+		iv := w.it.GetValue()
 		v = &item.WsItem{
-			ItemId:          w.itemId,
+			ItemId:      w.itemId,
+			VendorId:    iv.VendorId,
+			ShelveState: item.ShelvesInWarehouse,
 			//todo: test
-			//ShelveState:item.ShelvesInWarehouse,
-			//Reviewed:enum.ReviewPass,
-			ShelveState:item.ShelvesOn,
-			Reviewed:enum.ReviewPass,
+			ReviewState:     enum.ReviewPass,
 			EnableWholesale: 0,
 		}
 		w.repo.SaveWsItem(v, true)

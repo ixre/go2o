@@ -11,13 +11,15 @@ import (
 var _ wholesaler.IWholesaleRepo = new(wholesaleRepo)
 
 type wholesaleRepo struct {
-	_orm orm.Orm
+	_orm  orm.Orm
+	_conn db.Connector
 }
 
 // Create new WsWholesalerRepo
 func NewWholesaleRepo(conn db.Connector) *wholesaleRepo {
 	return &wholesaleRepo{
-		_orm: conn.GetOrm(),
+		_orm:  conn.GetOrm(),
+		_conn: conn,
 	}
 }
 
@@ -45,6 +47,24 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:WsWholesaler")
 	}
 	return id, err
+}
+
+// 同步商品
+func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int, del int) {
+	add, _, err1 := w._conn.Exec(`INSERT INTO ws_item (item_id,shelve_state,review_state)
+    SELECT item_info.id,?,? FROM item_info WHERE item_info.vendor_id=?
+    AND item_info.id NOT IN (SELECT item_id FROM ws_item WHERE vendor_id=?)`,
+		shelve, review, vendorId, vendorId)
+	if err1 != nil {
+		log.Println("wholesale item sync fail:", err1.Error())
+	}
+	del, _, err2 := w._conn.Exec(`DELETE FROM ws_item WHERE
+    vendor_id=? AND item_id NOT IN (SELECT id FROM item_info
+    WHERE vendor_id=?)`, vendorId, vendorId)
+	if err2 != nil {
+		log.Println("wholesale item sync fail:", err2.Error())
+	}
+	return add, del
 }
 
 // Select WsRebateRate

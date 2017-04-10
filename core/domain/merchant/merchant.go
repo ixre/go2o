@@ -416,9 +416,10 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 	if m._wholesaler == nil {
 		mchId := m.GetAggregateRootId()
 		v := m._wsRepo.GetWsWholesaler(mchId)
-		if v != nil {
-			m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
+		if v == nil {
+			v, _ = m.createWholesaler()
 		}
+		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
 	}
 	return m._wholesaler
 }
@@ -428,13 +429,19 @@ func (m *merchantImpl) EnableWholesale() error {
 	if m.Wholesaler() != nil {
 		return errors.New("wholesale for merchant enabled!")
 	}
+	_, err := m.createWholesaler()
+	return err
+}
+
+func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
 		MchId:       m.GetAggregateRootId(),
 		Rate:        1,
-		ReviewState: enum.ReviewAwaiting,
+		ReviewState: enum.ReviewPass,
+		//ReviewState: enum.ReviewAwaiting,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)
-	return err
+	return v, err
 }
 
 // 创建商户

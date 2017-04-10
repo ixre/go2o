@@ -129,7 +129,7 @@ CHANGE COLUMN `goods_no` `code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_u
 ALTER TABLE `pro_product`
 ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `update_time`;
 
-ALTER TABLE `gs_goods` 
+ALTER TABLE `gs_goods`
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '商品编号' ,
 CHANGE COLUMN `item_id` `product_id` INT(11) NULL DEFAULT NULL COMMENT '产品编号' ,
 CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' ,
@@ -515,7 +515,7 @@ CREATE TABLE sale_order_item (
 
 /* 2017-03-03 */
 
-ALTER TABLE `sale_sub_order` 
+ALTER TABLE `sale_sub_order`
 DROP COLUMN `order_pid`;
 
 
@@ -668,10 +668,12 @@ CREATE TABLE ws_rebate_rate (
 
 CREATE TABLE ws_item (
   id           int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  vendor_id    int(10) NOT NULL comment '运营商编号',
   item_id      int(10) NOT NULL comment '商品编号',
   shelve_state int(2) NOT NULL comment '上架状态',
-  reviewed     int(2) NOT NULL comment '是否审核通过',
+  review_state int(2) NOT NULL comment '是否审核通过',
   PRIMARY KEY (id)) comment='批发商品';
+
 
 
 CREATE TABLE ws_sku_price (
