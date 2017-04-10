@@ -10,514 +10,514 @@
 package rsi
 
 import (
-    "go2o/core/domain/interface/member"
-    "go2o/core/domain/interface/merchant"
-    "go2o/core/domain/interface/merchant/shop"
-    "go2o/core/domain/interface/merchant/wholesaler"
-    "go2o/core/dto"
-    "go2o/core/infrastructure/domain"
-    "go2o/core/query"
-    "go2o/core/service/thrift/idl/gen-go/define"
-    "go2o/core/service/thrift/parser"
-    "strings"
-    "time"
+	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/merchant/wholesaler"
+	"go2o/core/dto"
+	"go2o/core/infrastructure/domain"
+	"go2o/core/query"
+	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/service/thrift/parser"
+	"strings"
+	"time"
 )
 
 type merchantService struct {
-    _mchRepo    merchant.IMerchantRepo
-    _memberRepo member.IMemberRepo
-    _query      *query.MerchantQuery
-    _orderQuery *query.OrderQuery
+	_mchRepo    merchant.IMerchantRepo
+	_memberRepo member.IMemberRepo
+	_query      *query.MerchantQuery
+	_orderQuery *query.OrderQuery
 }
 
 func NewMerchantService(r merchant.IMerchantRepo, memberRepo member.IMemberRepo,
-q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
-    return &merchantService{
-        _mchRepo:    r,
-        _memberRepo: memberRepo,
-        _query:      q,
-        _orderQuery: orderQuery,
-    }
+	q *query.MerchantQuery, orderQuery *query.OrderQuery) *merchantService {
+	return &merchantService{
+		_mchRepo:    r,
+		_memberRepo: memberRepo,
+		_query:      q,
+		_orderQuery: orderQuery,
+	}
 }
 
 // 创建会员申请商户密钥
 func (m *merchantService) CreateSignUpToken(memberId int64) string {
-    return m._mchRepo.CreateSignUpToken(memberId)
+	return m._mchRepo.CreateSignUpToken(memberId)
 }
 
 // 根据商户申请密钥获取会员编号
 func (m *merchantService) GetMemberFromSignUpToken(token string) int64 {
-    return m._mchRepo.GetMemberFromSignUpToken(token)
+	return m._mchRepo.GetMemberFromSignUpToken(token)
 }
 
 // 获取会员商户申请信息
 func (m *merchantService) GetMchSignUpInfoByMemberId(memberId int64) *merchant.MchSignUp {
-    return m._mchRepo.GetManager().GetSignUpInfoByMemberId(memberId)
+	return m._mchRepo.GetManager().GetSignUpInfoByMemberId(memberId)
 }
 
 // 获取商户申请信息
 func (m *merchantService) GetSignUp(id int32) *merchant.MchSignUp {
-    return m._mchRepo.GetManager().GetSignUpInfo(id)
+	return m._mchRepo.GetManager().GetSignUpInfo(id)
 }
 
 // 审核商户申请信息
 func (m *merchantService) ReviewSignUp(id int32, pass bool, remark string) error {
-    return m._mchRepo.GetManager().ReviewMchSignUp(id, pass, remark)
+	return m._mchRepo.GetManager().ReviewMchSignUp(id, pass, remark)
 }
 
 // 商户注册
 func (m *merchantService) SignUp(usr, pwd, companyName string,
-province int32, city int32, district int32) (int32, error) {
-    unix := time.Now().Unix()
-    v := &merchant.Merchant{
-        MemberId: 0,
-        // 用户
-        Usr: usr,
-        // 密码
-        Pwd: pwd,
-        // 商户名称
-        Name: companyName,
-        // 是否自营
-        SelfSales: 0,
-        // 商户等级
-        Level: 1,
-        // 标志
-        Logo: "",
-        // 省
-        Province: province,
-        // 市
-        City: city,
-        // 区
-        District: district,
-        // 是否启用
-        Enabled: 1,
-        // 过期时间
-        ExpiresTime: time.Now().Add(time.Hour * time.Duration(24 * 365)).Unix(),
-        // 注册时间
-        JoinTime: unix,
-        // 更新时间
-        UpdateTime: unix,
-        // 登录时间
-        LoginTime: 0,
-        // 最后登录时间
-        LastLoginTime: 0,
-    }
-    mch := m._mchRepo.CreateMerchant(v)
-    err := mch.SetValue(v)
-    if err == nil {
-        return mch.Save()
-    }
-    return -1, err
+	province int32, city int32, district int32) (int32, error) {
+	unix := time.Now().Unix()
+	v := &merchant.Merchant{
+		MemberId: 0,
+		// 用户
+		Usr: usr,
+		// 密码
+		Pwd: pwd,
+		// 商户名称
+		Name: companyName,
+		// 是否自营
+		SelfSales: 0,
+		// 商户等级
+		Level: 1,
+		// 标志
+		Logo: "",
+		// 省
+		Province: province,
+		// 市
+		City: city,
+		// 区
+		District: district,
+		// 是否启用
+		Enabled: 1,
+		// 过期时间
+		ExpiresTime: time.Now().Add(time.Hour * time.Duration(24*365)).Unix(),
+		// 注册时间
+		JoinTime: unix,
+		// 更新时间
+		UpdateTime: unix,
+		// 登录时间
+		LoginTime: 0,
+		// 最后登录时间
+		LastLoginTime: 0,
+	}
+	mch := m._mchRepo.CreateMerchant(v)
+	err := mch.SetValue(v)
+	if err == nil {
+		return mch.Save()
+	}
+	return -1, err
 }
 
 // 提交注册信息
 func (m *merchantService) SignUpPost(e *merchant.MchSignUp) (int32, error) {
-    return m._mchRepo.GetManager().CommitSignUpInfo(e)
+	return m._mchRepo.GetManager().CommitSignUpInfo(e)
 }
 
 func (m *merchantService) GetMerchantByMemberId(memberId int64) *merchant.Merchant {
-    mch := m._mchRepo.GetManager().GetMerchantByMemberId(memberId)
-    if mch != nil {
-        v := mch.GetValue()
-        return &v
-    }
-    return nil
+	mch := m._mchRepo.GetManager().GetMerchantByMemberId(memberId)
+	if mch != nil {
+		v := mch.GetValue()
+		return &v
+	}
+	return nil
 }
 
 // 删除会员的商户申请资料
 func (m *merchantService) RemoveMerchantSignUp(memberId int64) error {
-    return m._mchRepo.GetManager().RemoveSignUp(memberId)
+	return m._mchRepo.GetManager().RemoveSignUp(memberId)
 }
 
 // 登录，返回结果(Result)和会员编号(Id);
 // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
 func (ms *merchantService) testMemberLogin(usr string, pwd string) (id int64, err error) {
-    usr = strings.ToLower(strings.TrimSpace(usr))
-    val := ms._memberRepo.GetMemberByUsr(usr)
-    if val == nil {
-        val = ms._memberRepo.GetMemberValueByPhone(usr)
-    }
-    if val == nil {
-        return 0, member.ErrNoSuchMember
-    }
-    if val.Pwd != pwd {
-        //todo: 兼容旧密码
-        if val.Pwd != domain.Sha1(pwd) {
-            return 0, member.ErrCredential
-        }
-    }
-    if val.State == member.StateStopped {
-        return 0, member.ErrMemberDisabled
-    }
-    return val.Id, nil
+	usr = strings.ToLower(strings.TrimSpace(usr))
+	val := ms._memberRepo.GetMemberByUsr(usr)
+	if val == nil {
+		val = ms._memberRepo.GetMemberValueByPhone(usr)
+	}
+	if val == nil {
+		return 0, member.ErrNoSuchMember
+	}
+	if val.Pwd != pwd {
+		//todo: 兼容旧密码
+		if val.Pwd != domain.Sha1(pwd) {
+			return 0, member.ErrCredential
+		}
+	}
+	if val.State == member.StateStopped {
+		return 0, member.ErrMemberDisabled
+	}
+	return val.Id, nil
 }
 
 // 验证用户密码,并返回编号。可传入商户或会员的账号密码
 func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err error) {
-    usr = strings.ToLower(strings.TrimSpace(usr))
-    oriPwd = strings.TrimSpace(oriPwd)
-    var mchId int32
-    if usr == "" || oriPwd == "" {
-        return parser.Result(mchId, member.ErrCredential), nil
-    }
-    //尝试作为独立的商户账号登陆
-    encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
-    mchId = m._query.Verify(usr, encPwd)
-    if mchId <= 0 {
-        // 使用会员身份登录
-        var id int64
-        mEncPwd := domain.MemberSha1Pwd(oriPwd)
-        id, err = m.testMemberLogin(usr, mEncPwd)
-        if err == nil {
-            mch := m.GetMerchantByMemberId(id)
-            if mch != nil {
-                mchId = mch.Id
-            }
-        }
-    }
-    if mchId < 0 && err == nil {
-        err = merchant.ErrNoSuchMerchant
-    }
-    return parser.Result(mchId, err), nil
+	usr = strings.ToLower(strings.TrimSpace(usr))
+	oriPwd = strings.TrimSpace(oriPwd)
+	var mchId int32
+	if usr == "" || oriPwd == "" {
+		return parser.Result(mchId, member.ErrCredential), nil
+	}
+	//尝试作为独立的商户账号登陆
+	encPwd := domain.MerchantSha1Pwd(usr, oriPwd)
+	mchId = m._query.Verify(usr, encPwd)
+	if mchId <= 0 {
+		// 使用会员身份登录
+		var id int64
+		mEncPwd := domain.MemberSha1Pwd(oriPwd)
+		id, err = m.testMemberLogin(usr, mEncPwd)
+		if err == nil {
+			mch := m.GetMerchantByMemberId(id)
+			if mch != nil {
+				mchId = mch.Id
+			}
+		}
+	}
+	if mchId < 0 && err == nil {
+		err = merchant.ErrNoSuchMerchant
+	}
+	return parser.Result(mchId, err), nil
 }
 
 // 获取企业信息
 func (m *merchantService) GetReviewedEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ProfileManager().GetReviewedEnterpriseInfo()
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ProfileManager().GetReviewedEnterpriseInfo()
+	}
+	return nil
 }
 
 // 获取企业信息,并返回是否为提交的信息
 func (m *merchantService) GetReviewingEnterpriseInfo(mchId int32) (
-e *merchant.EnterpriseInfo, isPost bool) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    mg := mch.ProfileManager()
-    e = mg.GetReviewingEnterpriseInfo()
-    if e != nil {
-        return e, true
-    }
-    e = mg.GetReviewedEnterpriseInfo()
-    if e != nil {
-        v := *e
-        v.IsHandled = 0
-        v.Reviewed = 0
-        return &v, false
-    }
-    return nil, false
+	e *merchant.EnterpriseInfo, isPost bool) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	mg := mch.ProfileManager()
+	e = mg.GetReviewingEnterpriseInfo()
+	if e != nil {
+		return e, true
+	}
+	e = mg.GetReviewedEnterpriseInfo()
+	if e != nil {
+		v := *e
+		v.IsHandled = 0
+		v.Reviewed = 0
+		return &v, false
+	}
+	return nil, false
 
 }
 
 // 保存企业信息
 func (m *merchantService) SaveEnterpriseInfo(mchId int32,
-e *merchant.EnterpriseInfo) (int32, error) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ProfileManager().SaveEnterpriseInfo(e)
-    }
-    return 0, merchant.ErrNoSuchMerchant
+	e *merchant.EnterpriseInfo) (int32, error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ProfileManager().SaveEnterpriseInfo(e)
+	}
+	return 0, merchant.ErrNoSuchMerchant
 }
 
 // 审核企业信息
 func (m *merchantService) ReviewEnterpriseInfo(mchId int32, pass bool,
-remark string) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ProfileManager().ReviewEnterpriseInfo(pass, remark)
-    }
-    return merchant.ErrNoSuchMerchant
+	remark string) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ProfileManager().ReviewEnterpriseInfo(pass, remark)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 func (m *merchantService) Complex(mchId int32) (*define.ComplexMerchant, error) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        c := mch.Complex()
-        return parser.MerchantDto(c), nil
-    }
-    return nil, nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		c := mch.Complex()
+		return parser.MerchantDto(c), nil
+	}
+	return nil, nil
 }
 
 func (m *merchantService) GetMerchant(mchId int32) *merchant.Merchant {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        v := mch.GetValue()
-        return &v
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		v := mch.GetValue()
+		return &v
+	}
+	return nil
 }
 
 func (m *merchantService) GetAccount(mchId int32) *merchant.Account {
-    return m._mchRepo.GetAccount(mchId)
+	return m._mchRepo.GetAccount(mchId)
 }
 
 func (m *merchantService) SaveMerchant(mchId int32, v *merchant.Merchant) (int32, error) {
-    var mch merchant.IMerchant
-    var err error
-    var isCreate bool
-    v.Id = mchId
+	var mch merchant.IMerchant
+	var err error
+	var isCreate bool
+	v.Id = mchId
 
-    if mchId > 0 {
-        mch = m._mchRepo.GetMerchant(mchId)
-    } else {
-        isCreate = true
-        mch = m._mchRepo.CreateMerchant(v)
-    }
-    if mch == nil {
-        return 0, merchant.ErrNoSuchMerchant
-    }
-    err = mch.SetValue(v)
-    if err == nil {
-        mchId, err = mch.Save()
-        if isCreate {
-            m.initializeMerchant(mchId)
-        }
-    }
-    return mchId, err
+	if mchId > 0 {
+		mch = m._mchRepo.GetMerchant(mchId)
+	} else {
+		isCreate = true
+		mch = m._mchRepo.CreateMerchant(v)
+	}
+	if mch == nil {
+		return 0, merchant.ErrNoSuchMerchant
+	}
+	err = mch.SetValue(v)
+	if err == nil {
+		mchId, err = mch.Save()
+		if isCreate {
+			m.initializeMerchant(mchId)
+		}
+	}
+	return mchId, err
 }
 
 func (m *merchantService) initializeMerchant(mchId int32) {
 
-    // 初始化会员默认等级
-    // m._mchRepo.GetMerchant(mchId)
+	// 初始化会员默认等级
+	// m._mchRepo.GetMerchant(mchId)
 
-    //conf := merchant.DefaultSaleConf
-    //conf.MerchantId = mch.GetAggregateRootId()
-    // 保存销售设置
-    //mch.ConfManager().SaveSaleConf(&conf)
+	//conf := merchant.DefaultSaleConf
+	//conf.MerchantId = mch.GetAggregateRootId()
+	// 保存销售设置
+	//mch.ConfManager().SaveSaleConf(&conf)
 
-    // 初始化销售标签
-    //m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
+	// 初始化销售标签
+	//m._saleRepo.GetSale(mchId).LabelManager().InitSaleLabels()
 }
 
 // 获取商户的状态
 func (m *merchantService) Stat(mchId int32) (r *define.Result_, err error) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch == nil {
-        err = merchant.ErrNoSuchMerchant
-    } else {
-        err = mch.Stat()
-    }
-    return parser.Result(mchId, err), nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		err = mch.Stat()
+	}
+	return parser.Result(mchId, err), nil
 }
 
 // 设置商户启用或停用
 func (m *merchantService) SetEnabled(mchId int32, enabled bool) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch == nil {
-        return merchant.ErrNoSuchMerchant
-    }
-    return mch.SetEnabled(enabled)
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.SetEnabled(enabled)
 }
 
 // 根据主机查询商户编号
 func (m *merchantService) GetMerchantIdByHost(host string) int32 {
-    return m._query.QueryMerchantIdByHost(host)
+	return m._query.QueryMerchantIdByHost(host)
 }
 
 // 获取商户的域名
 func (m *merchantService) GetMerchantMajorHost(mchId int32) string {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.GetMajorHost()
-    }
-    return ""
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.GetMajorHost()
+	}
+	return ""
 }
 
 func (m *merchantService) SaveSaleConf(mchId int32, v *merchant.SaleConf) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ConfManager().SaveSaleConf(v)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().SaveSaleConf(v)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 func (m *merchantService) GetSaleConf(mchId int32) *merchant.SaleConf {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        conf := mch.ConfManager().GetSaleConf()
-        return &conf
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		conf := mch.ConfManager().GetSaleConf()
+		return &conf
+	}
+	return nil
 }
 
 func (m *merchantService) GetShopsOfMerchant(mchId int32) []*shop.Shop {
-    mch := m._mchRepo.GetMerchant(mchId)
-    shops := mch.ShopManager().GetShops()
-    sv := make([]*shop.Shop, len(shops))
-    for i, v := range shops {
-        vv := v.GetValue()
-        sv[i] = &vv
-    }
-    return sv
+	mch := m._mchRepo.GetMerchant(mchId)
+	shops := mch.ShopManager().GetShops()
+	sv := make([]*shop.Shop, len(shops))
+	for i, v := range shops {
+		vv := v.GetValue()
+		sv[i] = &vv
+	}
+	return sv
 }
 
 // 获取线上店铺
 func (m *merchantService) GetOnlineShopOfVendor(mchId int32) *shop.ShopDto {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ShopManager().GetOnlineShop().Data()
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ShopManager().GetOnlineShop().Data()
+	}
+	return nil
 }
 
 // 修改密码
 func (m *merchantService) ModifyPassword(mchId int32, oldPwd, newPwd string) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ProfileManager().ModifyPassword(newPwd, oldPwd)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ProfileManager().ModifyPassword(newPwd, oldPwd)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 func (m *merchantService) GetMerchantsId() []int32 {
-    return m._mchRepo.GetMerchantsId()
+	return m._mchRepo.GetMerchantsId()
 }
 
 // 保存API信息
 func (m *merchantService) SaveApiInfo(mchId int32, d *merchant.ApiInfo) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ApiManager().SaveApiInfo(d)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ApiManager().SaveApiInfo(d)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 // 获取API接口
 func (m *merchantService) GetApiInfo(mchId int32) *merchant.ApiInfo {
-    mch := m._mchRepo.GetMerchant(mchId)
-    v := mch.ApiManager().GetApiInfo()
-    return &v
+	mch := m._mchRepo.GetMerchant(mchId)
+	v := mch.ApiManager().GetApiInfo()
+	return &v
 }
 
 // 启用/停用接口权限
 func (m *merchantService) ApiPerm(mchId int32, enabled bool) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if enabled {
-        return mch.ApiManager().EnableApiPerm()
-    }
-    return mch.ApiManager().DisableApiPerm()
+	mch := m._mchRepo.GetMerchant(mchId)
+	if enabled {
+		return mch.ApiManager().EnableApiPerm()
+	}
+	return mch.ApiManager().DisableApiPerm()
 }
 
 // 根据API ID获取MerchantId
 func (m *merchantService) GetMerchantIdByApiId(apiId string) int32 {
-    return m._mchRepo.GetMerchantIdByApiId(apiId)
+	return m._mchRepo.GetMerchantIdByApiId(apiId)
 }
 
 // 获取所有会员等级
 func (m *merchantService) GetMemberLevels(mchId int32) []*merchant.MemberLevel {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().GetLevelSet()
-    }
-    return []*merchant.MemberLevel{}
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().GetLevelSet()
+	}
+	return []*merchant.MemberLevel{}
 }
 
 // 根据编号获取会员等级信息
 func (m *merchantService) GetMemberLevelById(mchId, id int32) *merchant.MemberLevel {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().GetLevelById(id)
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().GetLevelById(id)
+	}
+	return nil
 }
 
 // 保存会员等级信息
 func (m *merchantService) SaveMemberLevel(mchId int32, v *merchant.MemberLevel) (int32, error) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().SaveLevel(v)
-    }
-    return 0, merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().SaveLevel(v)
+	}
+	return 0, merchant.ErrNoSuchMerchant
 }
 
 // 删除会员等级
 func (m *merchantService) DelMemberLevel(mchId, levelId int32) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().DeleteLevel(levelId)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().DeleteLevel(levelId)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 // 获取等级
 func (m *merchantService) GetLevel(mchId, level int32) *merchant.MemberLevel {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().GetLevelByValue(level)
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().GetLevelByValue(level)
+	}
+	return nil
 }
 
 // 获取下一个等级
 func (m *merchantService) GetNextLevel(mchId, levelValue int32) *merchant.MemberLevel {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.LevelManager().GetNextLevel(levelValue)
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.LevelManager().GetNextLevel(levelValue)
+	}
+	return nil
 
 }
 
 // 获取键值字典
 func (m *merchantService) GetKeyMapsByKeyword(mchId int32, keyword string) map[string]string {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.KvManager().GetsByChar(keyword)
-    }
-    return map[string]string{}
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.KvManager().GetsByChar(keyword)
+	}
+	return map[string]string{}
 }
 
 // 保存键值字典
 func (m *merchantService) SaveKeyMaps(mchId int32, data map[string]string) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.KvManager().Sets(data)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.KvManager().Sets(data)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 // 查询分页订单
 func (m *merchantService) PagedOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
-where, orderBy string) (int, []*dto.PagedVendorOrder) {
-    return m._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+	where, orderBy string) (int, []*dto.PagedVendorOrder) {
+	return m._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 查询分页订单
 func (m *merchantService) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
-where, orderBy string) (int32, []*define.ComplexOrder) {
-    return m._orderQuery.PagedTradeOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+	where, orderBy string) (int32, []*define.ComplexOrder) {
+	return m._orderQuery.PagedTradeOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 提到会员账户
 func (m *merchantService) TakeToMemberAccount(mchId int32, amount float32) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        acc := mch.Account()
-        return acc.TransferToMember(amount)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		acc := mch.Account()
+		return acc.TransferToMember(amount)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 // 提到会员账户
 func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        acc := mch.Account()
-        return acc.TransferToMember1(amount)
-    }
-    return merchant.ErrNoSuchMerchant
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		acc := mch.Account()
+		return acc.TransferToMember1(amount)
+	}
+	return merchant.ErrNoSuchMerchant
 }
 
 // 账户充值
 func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
-outerNo string, amount float64, relateUser int64) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch == nil {
-        return merchant.ErrNoSuchMerchant
-    }
-    return mch.Account().Charge(kind, amount, title, outerNo, relateUser)
+	outerNo string, amount float64, relateUser int64) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.Account().Charge(kind, amount, title, outerNo, relateUser)
 }
 
 //
@@ -654,39 +654,39 @@ outerNo string, amount float64, relateUser int64) error {
 
 // 获取
 func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerGroup {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.ConfManager().GetGroupByGroupId(id)
-    }
-    return nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().GetGroupByGroupId(id)
+	}
+	return nil
 }
 
 // 保存
 func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *define.Result_, err error) {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch == nil {
-        err = merchant.ErrNoSuchMerchant
-    } else {
-        _, err = mch.ConfManager().SaveMchBuyerGroup(v)
-    }
-    return parser.Result(v.ID, err), nil
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
+	}
+	return parser.Result(v.ID, err), nil
 }
 
 // 获取批发返点率
 func (m *merchantService) GetRebateRate(mchId, groupId int32) []*wholesaler.WsRebateRate {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch != nil {
-        return mch.Wholesaler().GetGroupRebateRate(groupId)
-    }
-    return []*wholesaler.WsRebateRate{}
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.Wholesaler().GetGroupRebateRate(groupId)
+	}
+	return []*wholesaler.WsRebateRate{}
 }
 
 // 保存分组返点率
-func (m *merchantService)SaveGroupRebateRate(mchId, groupId int32,
-arr []*wholesaler.WsRebateRate) error {
-    mch := m._mchRepo.GetMerchant(mchId)
-    if mch == nil {
-        return merchant.ErrNoSuchMerchant
-    }
-    return mch.Wholesaler().SaveGroupRebateRate(groupId, arr)
+func (m *merchantService) SaveGroupRebateRate(mchId, groupId int32,
+	arr []*wholesaler.WsRebateRate) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.Wholesaler().SaveGroupRebateRate(groupId, arr)
 }

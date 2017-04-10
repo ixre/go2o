@@ -15,6 +15,8 @@ type (
 		Abort() error
 		// 保存
 		Save() (int32, error)
+		// 同步商品
+		SyncItems() map[string]int32
 		// 保存客户分组的批发返点率
 		SaveGroupRebateRate(groupId int32, arr []*WsRebateRate) error
 		// 获取客户分组的批发返点率
@@ -28,6 +30,9 @@ type (
 		GetWsWholesaler(primary interface{}) *WsWholesaler
 		// Save WsWholesaler
 		SaveWsWholesaler(v *WsWholesaler, create bool) (int, error)
+		// 同步商品
+		SyncItems(mchId int32, shelve, review int32) (add int, del int)
+
 		// Select WsRebateRate
 		SelectWsRebateRate(where string, v ...interface{}) []*WsRebateRate
 		// Save WsRebateRate
