@@ -388,7 +388,7 @@ func (s *itemService) SetShelveState(vendorId int32, itemId int32,
 	} else {
 		switch itemType {
 		case item.ItemWholesale:
-			err = nil
+			err = it.Wholesale().SetShelve(state, remark)
 		default:
 			err = it.SetShelve(state, remark)
 		}
