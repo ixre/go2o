@@ -381,12 +381,17 @@ func (s *itemService) GetSnapshot(skuId int32) *item.Snapshot {
 
 // 设置商品货架状态
 func (s *itemService) SetShelveState(vendorId int32, itemId int32,
-	state int32, remark string) (_ *define.Result_, err error) {
+	itemType int32, state int32, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.SetShelve(state, remark)
+		switch itemType {
+		case item.ItemWholesale:
+			err = nil
+		default:
+			err = it.SetShelve(state, remark)
+		}
 	}
 	return parser.Result(0, err), nil
 }

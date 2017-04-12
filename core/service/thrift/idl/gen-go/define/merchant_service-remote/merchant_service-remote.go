@@ -23,6 +23,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  ComplexMerchant Complex(i32 mchId)")
 	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
 	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
+	fmt.Fprintln(os.Stderr, "   SyncWholesaleItem(i32 mchId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -122,8 +123,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err15 := (strconv.Atoi(flag.Arg(1)))
-		if err15 != nil {
+		tmp0, err19 := (strconv.Atoi(flag.Arg(1)))
+		if err19 != nil {
 			Usage()
 			return
 		}
@@ -149,14 +150,29 @@ func main() {
 			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err18 := (strconv.Atoi(flag.Arg(1)))
-		if err18 != nil {
+		tmp0, err22 := (strconv.Atoi(flag.Arg(1)))
+		if err22 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
 		fmt.Print(client.Stat(value0))
+		fmt.Print("\n")
+		break
+	case "SyncWholesaleItem":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
+			flag.Usage()
+		}
+		tmp0, err23 := (strconv.Atoi(flag.Arg(1)))
+		if err23 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		fmt.Print(client.SyncWholesaleItem(value0))
 		fmt.Print("\n")
 		break
 	case "":

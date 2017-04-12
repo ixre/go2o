@@ -119,16 +119,16 @@ func (p *SaleServiceClient) recvGetOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error176 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error177 error
-		error177, err = error176.Read(iprot)
+		error181 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error182 error
+		error182, err = error181.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error177
+		err = error182
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -196,16 +196,16 @@ func (p *SaleServiceClient) recvGetSubOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error178 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error179 error
-		error179, err = error178.Read(iprot)
+		error183 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error184 error
+		error184, err = error183.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error179
+		err = error184
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -273,16 +273,16 @@ func (p *SaleServiceClient) recvGetSubOrderByNo() (value *ComplexOrder, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error180 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error181 error
-		error181, err = error180.Read(iprot)
+		error185 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error186 error
+		error186, err = error185.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error181
+		err = error186
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -350,16 +350,16 @@ func (p *SaleServiceClient) recvGetSubOrderItems() (value []*ComplexItem, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error182 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error183 error
-		error183, err = error182.Read(iprot)
+		error187 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error188 error
+		error188, err = error187.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error183
+		err = error188
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -429,16 +429,16 @@ func (p *SaleServiceClient) recvSubmitTradeOrder() (value *Result64, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error184 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error185 error
-		error185, err = error184.Read(iprot)
+		error189 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error190 error
+		error190, err = error189.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error185
+		err = error190
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -506,16 +506,16 @@ func (p *SaleServiceClient) recvTradeOrderCashPay() (value *Result64, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error186 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error187 error
-		error187, err = error186.Read(iprot)
+		error191 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error192 error
+		error192, err = error191.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error187
+		err = error192
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -585,16 +585,16 @@ func (p *SaleServiceClient) recvTradeOrderUpdateTicket() (value *Result64, err e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error188 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error189 error
-		error189, err = error188.Read(iprot)
+		error193 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error194 error
+		error194, err = error193.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error189
+		err = error194
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -632,15 +632,15 @@ func (p *SaleServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewSaleServiceProcessor(handler SaleService) *SaleServiceProcessor {
 
-	self190 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self190.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
-	self190.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
-	self190.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
-	self190.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
-	self190.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
-	self190.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
-	self190.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
-	return self190
+	self195 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self195.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
+	self195.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
+	self195.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
+	self195.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
+	self195.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
+	self195.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
+	self195.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
+	return self195
 }
 
 func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -653,12 +653,12 @@ func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x191 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x196 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x191.Write(oprot)
+	x196.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x191
+	return false, x196
 
 }
 
@@ -1762,11 +1762,11 @@ func (p *SaleServiceGetSubOrderItemsResult) readField0(iprot thrift.TProtocol) e
 	tSlice := make([]*ComplexItem, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem192 := &ComplexItem{}
-		if err := _elem192.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem192), err)
+		_elem197 := &ComplexItem{}
+		if err := _elem197.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem197), err)
 		}
-		p.Success = append(p.Success, _elem192)
+		p.Success = append(p.Success, _elem197)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

@@ -51,10 +51,10 @@ func (w *wholesaleRepo) SaveWsWholesaler(v *wholesaler.WsWholesaler, create bool
 
 // 同步商品
 func (w *wholesaleRepo) SyncItems(vendorId int32, shelve, review int32) (add int, del int) {
-	add, _, err1 := w._conn.Exec(`INSERT INTO ws_item (item_id,shelve_state,review_state)
-    SELECT item_info.id,?,? FROM item_info WHERE item_info.vendor_id=?
+	add, _, err1 := w._conn.Exec(`INSERT INTO ws_item (vendor_id,item_id,shelve_state,review_state)
+    SELECT ?,item_info.id,?,? FROM item_info WHERE item_info.vendor_id=?
     AND item_info.id NOT IN (SELECT item_id FROM ws_item WHERE vendor_id=?)`,
-		shelve, review, vendorId, vendorId)
+		vendorId, shelve, review, vendorId, vendorId)
 	if err1 != nil {
 		log.Println("wholesale item sync fail:", err1.Error())
 	}
