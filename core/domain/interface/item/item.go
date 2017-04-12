@@ -293,6 +293,15 @@ type (
 		// 保存
 		Save() (int32, error)
 
+		// 是否上架
+		IsOnShelves() bool
+		// 设置上架
+		SetShelve(state int32, remark string) error
+		// 审核
+		Review(pass bool, remark string) error
+		// 标记为违规
+		Incorrect(remark string) error
+
 		// 根据商品金额获取折扣
 		GetWholesaleDiscount(groupId int32, amount int32) float64
 		// 获取全部批发折扣
@@ -352,9 +361,11 @@ type (
 		// 商品编号
 		ItemId int32 `db:"item_id"`
 		// 上架状态
-		ShelveState int32 `db:"shleve_state"`
+		ShelveState int32 `db:"shelve_state"`
 		// 是否审核通过
 		ReviewState int32 `db:"review_state"`
+		// 审核备注
+		ReviewRemark string `db:"review_remark"`
 		// 是否启用批发
 		EnableWholesale int32 `db:"-"`
 	}

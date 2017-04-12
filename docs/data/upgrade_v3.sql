@@ -667,12 +667,14 @@ CREATE TABLE ws_rebate_rate (
   PRIMARY KEY (id)) comment='批发客户分组返点比例设置';
 
 CREATE TABLE ws_item (
-  id           int(10) NOT NULL AUTO_INCREMENT comment '编号',
-  vendor_id    int(10) NOT NULL comment '运营商编号',
-  item_id      int(10) NOT NULL comment '商品编号',
-  shelve_state int(2) NOT NULL comment '上架状态',
-  review_state int(2) NOT NULL comment '是否审核通过',
+  id            int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  vendor_id     int(10) NOT NULL comment '运营商编号',
+  item_id       int(10) NOT NULL comment '商品编号',
+  shelve_state  int(2) NOT NULL comment '上架状态',
+  review_state  int(2) NOT NULL comment '是否审核通过',
+  review_remark varchar(45) NOT NULL comment '审核备注',
   PRIMARY KEY (id)) comment='批发商品';
+
 
 
 

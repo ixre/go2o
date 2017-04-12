@@ -4,6 +4,8 @@ import (
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
+	"strings"
 )
 
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
@@ -66,6 +68,47 @@ func (w *wholesaleItemImpl) TurnWholesale(on bool) error {
 // 保存
 func (w *wholesaleItemImpl) Save() (int32, error) {
 	return util.I32Err(w.repo.SaveWsItem(w.value, false))
+}
+
+// 是否上架
+func (g *wholesaleItemImpl) IsOnShelves() bool {
+	return g.value.ShelveState == item.ShelvesOn
+}
+
+// 设置上架
+func (g *wholesaleItemImpl) SetShelve(state int32, remark string) error {
+	if state == item.ShelvesIncorrect && len(remark) == 0 {
+		return product.ErrNilRejectRemark
+	}
+	g.value.ShelveState = state
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 标记为违规
+func (g *wholesaleItemImpl) Incorrect(remark string) error {
+	g.value.ShelveState = item.ShelvesIncorrect
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 审核
+func (g *wholesaleItemImpl) Review(pass bool, remark string) error {
+	if pass {
+		g.value.ReviewState = enum.ReviewPass
+
+	} else {
+		remark = strings.TrimSpace(remark)
+		if remark == "" {
+			return item.ErrEmptyReviewRemark
+		}
+		g.value.ReviewState = enum.ReviewReject
+	}
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
 }
 
 // 根据商品金额获取折扣
