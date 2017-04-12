@@ -17,6 +17,13 @@ import (
 )
 
 const (
+	// 普通商品
+	ItemNormal int32 = 1
+	// 批发商品
+	ItemWholesale int32 = 2
+)
+
+const (
 	// 仓库中的商品
 	ShelvesInWarehouse int32 = 0
 	// 已下架

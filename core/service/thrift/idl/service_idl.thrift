@@ -367,11 +367,13 @@ struct ComplexOrder {
 //商家服务
 service MerchantService{
    // 获取商家符合的信息
-   ComplexMerchant Complex(1:i32 mchId),
+   ComplexMerchant Complex(1:i32 mchId)
    // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-   Result CheckLogin(1:string usr,2:string oriPwd),
+   Result CheckLogin(1:string usr,2:string oriPwd)
    // 验证商户状态
-   Result Stat(1:i32 mchId),
+   Result Stat(1:i32 mchId)
+   // 同步批发商品
+   map<string,i32> SyncWholesaleItem(1:i32 mchId)
 }
 
 //会员服务

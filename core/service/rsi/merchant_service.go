@@ -653,6 +653,18 @@ func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
 //>>>>>>> echo3
 
 // 获取
+
+// 同步批发商品
+func (m *merchantService) SyncWholesaleItem(vendorId int32) (map[string]int32, error) {
+	mch := m._mchRepo.GetMerchant(vendorId)
+	if mch != nil {
+		return mch.Wholesaler().SyncItems(), nil
+	}
+	return map[string]int32{
+		"add": 0, "del": 0,
+	}, nil
+}
+
 func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerGroup {
 	mch := m._mchRepo.GetMerchant(mchId)
 	if mch != nil {
