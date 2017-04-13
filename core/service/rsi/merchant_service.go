@@ -684,6 +684,15 @@ func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGr
 	return parser.Result(v.ID, err), nil
 }
 
+// 获取顾客分组
+func (m *merchantService) GetBuyerGroups(mchId int32) []*merchant.BuyerGroup {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().SelectBuyerGroup()
+	}
+	return []*merchant.BuyerGroup{}
+}
+
 // 获取批发返点率
 func (m *merchantService) GetRebateRate(mchId, groupId int32) []*wholesaler.WsRebateRate {
 	mch := m._mchRepo.GetMerchant(mchId)

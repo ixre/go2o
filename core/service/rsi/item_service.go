@@ -20,6 +20,8 @@ import (
 	"go2o/core/service/thrift/parser"
 )
 
+var _ define.ItemService = new(itemService)
+
 type itemService struct {
 	itemRepo  item.IGoodsItemRepo
 	itemQuery *query.ItemQuery
@@ -45,6 +47,16 @@ func (s *itemService) GetItemValue(itemId int32) *define.Item {
 		return parser.ItemDto(item.GetValue())
 	}
 	return nil
+}
+
+// 获取SKU
+func (s *itemService) GetSku(itemId int32, skuId int32) (r *define.Sku, err error) {
+	item := s.itemRepo.GetItem(itemId)
+	if item != nil {
+		sku := item.GetSku(skuId)
+		return parser.SkuDto(sku), nil
+	}
+	return nil, nil
 }
 
 // 获取SKU数组
@@ -430,4 +442,16 @@ func (s *itemService) GetWholesalePriceArray(itemId int32, skuId int32) []*item.
 func (s *itemService) SaveWholesalePrice(itemId, skuId int32, arr []*item.WsSkuPrice) error {
 	it := s.itemRepo.GetItem(itemId)
 	return it.Wholesale().SaveSkuPrice(skuId, arr)
+}
+
+// 获取批发折扣数组
+func (s *itemService) GetWholesaleDiscountArray(itemId int32, groupId int32) []*item.WsItemDiscount {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().GetItemDiscount(groupId)
+}
+
+// 保存批发折扣
+func (s *itemService) SaveWholesaleDiscount(itemId, groupId int32, arr []*item.WsItemDiscount) error {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().SaveItemDiscount(groupId, arr)
 }
