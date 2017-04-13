@@ -20,10 +20,7 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "Usage of ", os.Args[0], " [-h host:port] [-u url] [-f[ramed]] function [arg1 [arg2...]]:")
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
-	fmt.Fprintln(os.Stderr, "  ComplexMerchant Complex(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "  Result CheckLogin(string usr, string oriPwd)")
-	fmt.Fprintln(os.Stderr, "  Result Stat(i32 mchId)")
-	fmt.Fprintln(os.Stderr, "   SyncWholesaleItem(i32 mchId)")
+	fmt.Fprintln(os.Stderr, "  Sku GetSku(i32 itemId, i32 skuId)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -111,68 +108,33 @@ func main() {
 		Usage()
 		os.Exit(1)
 	}
-	client := define.NewMerchantServiceClientFactory(trans, protocolFactory)
+	client := define.NewItemServiceClientFactory(trans, protocolFactory)
 	if err := trans.Open(); err != nil {
 		fmt.Fprintln(os.Stderr, "Error opening socket to ", host, ":", port, " ", err)
 		os.Exit(1)
 	}
 
 	switch cmd {
-	case "Complex":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Complex requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err176 := (strconv.Atoi(flag.Arg(1)))
-		if err176 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.Complex(value0))
-		fmt.Print("\n")
-		break
-	case "CheckLogin":
+	case "GetSku":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "CheckLogin requires 2 args")
+			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
 			flag.Usage()
 		}
-		argvalue0 := flag.Arg(1)
+		tmp0, err217 := (strconv.Atoi(flag.Arg(1)))
+		if err217 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		argvalue1 := flag.Arg(2)
+		tmp1, err218 := (strconv.Atoi(flag.Arg(2)))
+		if err218 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		fmt.Print(client.CheckLogin(value0, value1))
-		fmt.Print("\n")
-		break
-	case "Stat":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "Stat requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err179 := (strconv.Atoi(flag.Arg(1)))
-		if err179 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.Stat(value0))
-		fmt.Print("\n")
-		break
-	case "SyncWholesaleItem":
-		if flag.NArg()-1 != 1 {
-			fmt.Fprintln(os.Stderr, "SyncWholesaleItem requires 1 args")
-			flag.Usage()
-		}
-		tmp0, err180 := (strconv.Atoi(flag.Arg(1)))
-		if err180 != nil {
-			Usage()
-			return
-		}
-		argvalue0 := int32(tmp0)
-		value0 := argvalue0
-		fmt.Print(client.SyncWholesaleItem(value0))
+		fmt.Print(client.GetSku(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":

@@ -512,5 +512,6 @@ service SaleService {
 
 // 商品服务
 service ItemService{
-
+    // 获取SKU
+    Sku GetSku(1:i32 itemId,2:i32 skuId)
 }
