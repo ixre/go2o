@@ -61,7 +61,7 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 				WholesalePrice:  float64(sku.Price - 0.2),
 			},
 		}
-		err := wsIt.SaveSkuPrice(sku.Id, arr)
+		err := wsIt.SaveSkuPrice(sku.ID, arr)
 		if err != nil {
 			t.Error(err)
 			t.Fail()
@@ -69,7 +69,7 @@ func TestItemWholesaleSkuPrice(t *testing.T) {
 	}
 
 	sku0 := it.SkuArray()[0]
-	skuId := sku0.Id
+	skuId := sku0.ID
 	skuPrice := float64(sku0.Price)
 
 	//计算商品订单的折扣率

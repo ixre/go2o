@@ -364,52 +364,6 @@ struct ComplexOrder {
     22: map<string,string> Extend
 }
 
-//商家服务
-service MerchantService{
-   // 获取商家符合的信息
-   ComplexMerchant Complex(1:i32 mchId)
-   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
-   Result CheckLogin(1:string usr,2:string oriPwd)
-   // 验证商户状态
-   Result Stat(1:i32 mchId)
-   // 同步批发商品
-   map<string,i32> SyncWholesaleItem(1:i32 mchId)
-}
-
-//会员服务
-service MemberService{
-    // 登录，返回结果(Result)和会员编号(Id);
-    // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    Result64 CheckLogin(1:string user,2:string pwd,3:bool update),
-    // 根据会员编号获取会员信息
-    Member GetMember(1:i64 id),
-    // 根据用户名获取会员信息
-    Member GetMemberByUser(1:string user),
-    // 根据会员编号获取会员资料
-    Profile GetProfile(1:i64 id),
-    // 获取会员汇总信息
-    ComplexMember Complex(1:i64 memberId)
-     // 升级为高级会员
-    Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
-    // 获取会员的会员Token,reset表示是否重置token
-    string GetToken(1:i64 memberId,2:bool reset)
-    // 检查会员的会话Token是否正确，如正确返回: 1
-    bool CheckToken(1:i64 memberId,2:string token)
-    // 移除会员的Token
-    void RemoveToken(1:i64 memberId)
-    // 获取地址，如果addrId为0，则返回默认地址
-    Address GetAddress(1:i64 memberId,2:i64 addrId)
-    // 获取会员账户信息
-    Account GetAccount(1:i64 memberId)
-    // 获取邀请人会员编号数组
-    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
-    // 账户充值
-    Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
-      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
-    // 抵扣账户
-    Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
-      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
-}
 
 struct PlatformConf {
     1: string Name
@@ -464,6 +418,43 @@ service FoundationService{
    string GetSyncLoginUrl(1:string returnUrl)
 }
 
+
+
+//会员服务
+service MemberService{
+    // 登录，返回结果(Result)和会员编号(Id);
+    // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
+    Result64 CheckLogin(1:string user,2:string pwd,3:bool update),
+    // 根据会员编号获取会员信息
+    Member GetMember(1:i64 id),
+    // 根据用户名获取会员信息
+    Member GetMemberByUser(1:string user),
+    // 根据会员编号获取会员资料
+    Profile GetProfile(1:i64 id),
+    // 获取会员汇总信息
+    ComplexMember Complex(1:i64 memberId)
+     // 升级为高级会员
+    Result Premium(1:i64 memberId,2:i32 v,3:i64 expires)
+    // 获取会员的会员Token,reset表示是否重置token
+    string GetToken(1:i64 memberId,2:bool reset)
+    // 检查会员的会话Token是否正确，如正确返回: 1
+    bool CheckToken(1:i64 memberId,2:string token)
+    // 移除会员的Token
+    void RemoveToken(1:i64 memberId)
+    // 获取地址，如果addrId为0，则返回默认地址
+    Address GetAddress(1:i64 memberId,2:i64 addrId)
+    // 获取会员账户信息
+    Account GetAccount(1:i64 memberId)
+    // 获取邀请人会员编号数组
+    list<i64> InviterArray(1:i64 memberId,2:i32 depth)
+    // 账户充值
+    Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
+      4:string title,5:string outerNo,6:double amount,7:i64 relateUser)
+    // 抵扣账户
+    Result DiscountAccount(1:i64 memberId,2:i32 account,3:string title,
+      4:string outerNo,5:double amount,6:i64 relateUser,7:bool mustLargeZero)
+}
+
 // 支付服务
 service PaymentService{
     // 创建支付单并提交
@@ -488,6 +479,19 @@ service PaymentService{
     Result FinishPayment(1:string tradeNo ,2:string spName,3:string outerNo)
 }
 
+
+//商家服务
+service MerchantService{
+   // 获取商家符合的信息
+   ComplexMerchant Complex(1:i32 mchId)
+   // 验证用户密码,并返回编号。可传入商户或会员的账号密码
+   Result CheckLogin(1:string usr,2:string oriPwd)
+   // 验证商户状态
+   Result Stat(1:i32 mchId)
+   // 同步批发商品
+   map<string,i32> SyncWholesaleItem(1:i32 mchId)
+}
+
 // 销售服务
 service SaleService {
   // 获取订单信息
@@ -504,4 +508,9 @@ service SaleService {
   Result64 TradeOrderCashPay(1:i64 orderId)
   // 上传交易单发票
   Result64 TradeOrderUpdateTicket(1:i64 orderId,2:string img)
+}
+
+// 商品服务
+service ItemService{
+
 }
