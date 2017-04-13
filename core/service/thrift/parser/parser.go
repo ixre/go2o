@@ -429,7 +429,7 @@ func Item(src *define.Item) *item.GoodsItem {
 
 func SkuDto(src *item.Sku) *define.Sku {
 	return &define.Sku{
-		SkuId:       src.Id,
+		SkuId:       src.ID,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,
@@ -449,7 +449,7 @@ func SkuDto(src *item.Sku) *define.Sku {
 
 func Sku(src *define.Sku) *item.Sku {
 	return &item.Sku{
-		Id:          src.SkuId,
+		ID:          src.SkuId,
 		ProductId:   src.ProductId,
 		ItemId:      src.ItemId,
 		Title:       src.Title,

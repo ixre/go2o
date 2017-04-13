@@ -45,7 +45,7 @@ func joinItemsToCart(c cart.ICart, t *testing.T) {
 	gs := itemRepo.GetItem(3)
 	arr := gs.SkuArray()
 	itemId := gs.GetAggregateRootId()
-	skuId := arr[0].Id
+	skuId := arr[0].ID
 	err := c.Put(itemId, skuId, 1)
 	if err != nil {
 		t.Error("购物车加入失败:", err.Error())

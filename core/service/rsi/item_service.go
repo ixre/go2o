@@ -419,3 +419,15 @@ func (s *itemService) SignIncorrect(vendorId int32, itemId int32,
 	}
 	return parser.Result(0, err), nil
 }
+
+// 获取批发价格数组
+func (s *itemService) GetWholesalePriceArray(itemId int32, skuId int32) []*item.WsSkuPrice {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().GetSkuPrice(skuId)
+}
+
+// 保存批发价格
+func (s *itemService) SaveWholesalePrice(itemId, skuId int32, arr []*item.WsSkuPrice) error {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().SaveSkuPrice(skuId, arr)
+}
