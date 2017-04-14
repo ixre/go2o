@@ -44,6 +44,17 @@ func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {
 	}
 }
 
+func LevelDto(src *member.Level) *define.Level {
+	return &define.Level{
+		ID:            src.ID,
+		Name:          src.Name,
+		RequireExp:    src.RequireExp,
+		ProgramSignal: src.ProgramSignal,
+		Enabled:       src.Enabled,
+		IsOfficial:    src.IsOfficial,
+	}
+}
+
 func MemberDto(src *member.Member) *define.Member {
 	return &define.Member{
 		ID:             src.Id,

@@ -48,7 +48,7 @@ type (
 	//会员等级
 	Level struct {
 		//编号
-		Id int32 `db:"id" auto:"yes" pk:"yes"`
+		ID int32 `db:"id" auto:"yes" pk:"yes"`
 		//等级名称
 		Name string `db:"name"`
 		//需要经验值
@@ -56,7 +56,7 @@ type (
 		// 可编程等级签名,可根据此签名来进行编程
 		ProgramSignal string `db:"program_signal"`
 		//是否启用
-		Enabled int `db:"enabled"`
+		Enabled int32 `db:"enabled"`
 		//是否为正式会员/非正式
 		IsOfficial int32 `db:"is_official"`
 	}

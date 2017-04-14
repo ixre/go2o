@@ -11,14 +11,14 @@ package idl
 import (
 	"github.com/jsix/gof/generator"
 	//"go2o/core/domain/interface/order"
-	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/member"
 	"testing"
 )
 
 var (
 	//v = &member.Member{}
 	//v = &member.Profile{}
-	v = merchant.Merchant{}
+	v = member.Level{}
 )
 
 // 生成Thrift结构

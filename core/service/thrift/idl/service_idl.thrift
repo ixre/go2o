@@ -49,6 +49,15 @@ struct ComplexMerchant {
     17: i64 LastLoginTime
 }
 
+struct Level {
+    1: i32 Id
+    2: string Name
+    3: i32 RequireExp
+    4: string ProgramSignal
+    5: i32 IsOfficial
+    6: i32 Enabled
+}
+
 struct Member {
     1: i64 Id
     2: string Usr
@@ -424,13 +433,17 @@ service FoundationService{
 service MemberService{
     // 登录，返回结果(Result)和会员编号(Id);
     // Result值为：-1:会员不存在; -2:账号密码不正确; -3:账号被停用
-    Result64 CheckLogin(1:string user,2:string pwd,3:bool update),
+    Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
+    // 检查交易密码
+    Result CheckTradePwd(1:i64 id,2:string tradePwd)
+    // 获取等级信息
+    Level GetLevel(1:i32 id)
     // 根据会员编号获取会员信息
-    Member GetMember(1:i64 id),
+    Member GetMember(1:i64 id)
     // 根据用户名获取会员信息
-    Member GetMemberByUser(1:string user),
+    Member GetMemberByUser(1:string user)
     // 根据会员编号获取会员资料
-    Profile GetProfile(1:i64 id),
+    Profile GetProfile(1:i64 id)
     // 获取会员汇总信息
     ComplexMember Complex(1:i64 memberId)
      // 升级为高级会员
