@@ -218,8 +218,12 @@ func (ms *memberService) GetMemberLevels() []*member.Level {
 }
 
 // 根据编号获取会员等级信息
-func (ms *memberService) GetLevelById(id int32) *member.Level {
-	return ms._repo.GetManager().LevelManager().GetLevelById(id)
+func (ms *memberService) GetLevel(id int32) (*define.Level, error) {
+	lv := ms._repo.GetManager().LevelManager().GetLevelById(id)
+	if lv != nil {
+		return parser.LevelDto(lv), nil
+	}
+	return nil, nil
 }
 
 // 根据可编程字符获取会员等级
@@ -501,6 +505,22 @@ func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *def
 		err = m.UpdateLoginTime()
 	}
 	return parser.Result64(id, err), nil
+}
+
+// 检查交易密码
+func (ms *memberService) CheckTradePwd(id int64, tradePwd string) (r *define.Result_, err error) {
+	m := ms._repo.GetMember(id)
+	if m == nil {
+		return parser.Result(0, member.ErrNoSuchMember), nil
+	}
+	mv := m.GetValue()
+	if mv.TradePwd == "" {
+		return parser.Result(0, member.ErrNotSetTradePwd), nil
+	}
+	if mv.TradePwd != tradePwd {
+		return parser.Result(0, member.ErrIncorrectTradePwd), nil
+	}
+	return &define.Result_{Result_: true}, nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误

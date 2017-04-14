@@ -22,7 +22,7 @@ func GetHighestLevel() *member.Level {
 	lv := member.Level{}
 	if sto.Get(key, &lv) != nil {
 		lv = rsi.MemberService.GetHighestLevel()
-		if lv.Id > 0 {
+		if lv.ID > 0 {
 			sto.SetExpire(key, lv, DefaultMaxSeconds)
 		}
 	}
@@ -39,7 +39,7 @@ func GetLevelMapJson() string {
 		mp := make(map[string]string, 0)
 		for _, v := range list {
 			if v.Enabled == 1 {
-				mp[strconv.Itoa(int(v.Id))] = v.Name
+				mp[strconv.Itoa(int(v.ID))] = v.Name
 			}
 		}
 		data, _ := json.Marshal(mp)

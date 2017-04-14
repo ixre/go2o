@@ -285,7 +285,7 @@ func (l *levelManagerImpl) init() member.ILevelManager {
 		}
 		// 存储并设置编号
 		for _, v := range levels {
-			v.Id, _ = l.SaveLevel(v)
+			v.ID, _ = l.SaveLevel(v)
 		}
 	}
 	return l
@@ -304,9 +304,9 @@ func (l *levelManagerImpl) GetLevelById(id int32) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
-			return arr[i].Id >= id
+			return arr[i].ID >= id
 		})
-		if i < la && arr[i].Id == id {
+		if i < la && arr[i].ID == id {
 			return arr[i]
 		}
 	}
@@ -328,7 +328,7 @@ func (l *levelManagerImpl) GetNextLevelById(id int32) *member.Level {
 	arr := l.GetLevelSet()
 	if la := len(arr); la > 0 {
 		i := sort.Search(la, func(i int) bool {
-			return arr[i].Id >= id
+			return arr[i].ID >= id
 		})
 		// 获取一下个等级,如果等级未启用,则升级下一个等级
 		for j := 1; j < la-i; j++ {
@@ -358,14 +358,14 @@ func (l *levelManagerImpl) DeleteLevel(id int32) error {
 // 保存等级
 func (l *levelManagerImpl) SaveLevel(v *member.Level) (int32, error) {
 	v.ProgramSignal = strings.TrimSpace(v.ProgramSignal)
-	if !l.checkProgramSignal(v.ProgramSignal, v.Id) {
+	if !l.checkProgramSignal(v.ProgramSignal, v.ID) {
 		return -1, member.ErrExistsSameProgramSignalLevel
 	}
 	err := l.checkLevelExp(v)
 	if err == nil {
 		return l.rep.SaveMemberLevel_New(v)
 	}
-	return v.Id, err
+	return v.ID, err
 }
 
 // 判断等级与等级可编程签名是否一致
@@ -373,7 +373,7 @@ func (l *levelManagerImpl) checkProgramSignal(sign string, id int32) bool {
 	if sign != "" {
 		for _, v := range l.GetLevelSet() {
 			if v.ProgramSignal == sign {
-				return id == v.Id
+				return id == v.ID
 			}
 		}
 	}
@@ -383,7 +383,7 @@ func (l *levelManagerImpl) checkProgramSignal(sign string, id int32) bool {
 // 新增等级时检查经验值
 func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 	// 新增判断经验值
-	if lv.Id <= 0 {
+	if lv.ID <= 0 {
 		max := m.getMaxLevelId()
 		lvMax := m.GetLevelById(max)
 		if lvMax != nil && lv.RequireExp < lvMax.RequireExp {
@@ -397,7 +397,7 @@ func (m *levelManagerImpl) checkLevelExp(lv *member.Level) error {
 	la := len(arr)
 	for i, v := range arr {
 		// 如果为保存等级
-		if lv.Id > 0 && v.Id == lv.Id {
+		if lv.ID > 0 && v.ID == lv.ID {
 			err := m.checkBetweenRequireExp(arr, i, la, lv.RequireExp)
 			if err != nil {
 				return err
@@ -432,7 +432,7 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 		}
 		if lv == nil {
 			lv = v
-		} else if v.Id > lv.Id {
+		} else if v.ID > lv.ID {
 			lv = v
 		}
 	}
@@ -443,8 +443,8 @@ func (l *levelManagerImpl) GetHighestLevel() *member.Level {
 func (l *levelManagerImpl) getMaxLevelId() int32 {
 	var k int32
 	for _, v := range l.GetLevelSet() {
-		if v.Id > k {
-			k = v.Id
+		if v.ID > k {
+			k = v.ID
 		}
 	}
 	return k
@@ -457,8 +457,8 @@ func (l *levelManagerImpl) GetLevelIdByExp(exp int32) int32 {
 	arr := l.GetLevelSet()
 	for i := len(arr); i > 0; i-- {
 		lv = arr[i-1]
-		if exp >= lv.RequireExp && lv.Id > levelVal {
-			levelVal = lv.Id
+		if exp >= lv.RequireExp && lv.ID > levelVal {
+			levelVal = lv.ID
 		}
 	}
 	return levelVal
