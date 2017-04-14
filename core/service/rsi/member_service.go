@@ -538,6 +538,17 @@ func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, e
 	return []int64{}, nil
 }
 
+// 获取从指定时间到现在推荐指定等级会员的数量
+func (ms *memberService) GetInviterQuantity(memberId int64, level int32, begin int64) (int32, error) {
+	if level < 0 {
+		level = 0
+	}
+	if begin < 0 {
+		begin = 0
+	}
+	return ms._query.GetInviterQuantity(memberId, level, begin), nil
+}
+
 func (ms *memberService) GetBank(memberId int64) *member.BankInfo {
 	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	b := m.Profile().GetBank()
