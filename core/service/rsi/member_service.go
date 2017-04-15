@@ -217,6 +217,16 @@ func (ms *memberService) GetMemberLevels() []*member.Level {
 	return ms._repo.GetManager().LevelManager().GetLevelSet()
 }
 
+// 等级列表
+func (ms *memberService) LevelList() ([]*define.Level, error) {
+	arr := []*define.Level{}
+	list := ms._repo.GetManager().LevelManager().GetLevelSet()
+	for _, v := range list {
+		arr = append(arr, parser.LevelDto(v))
+	}
+	return arr, nil
+}
+
 // 根据编号获取会员等级信息
 func (ms *memberService) GetLevel(id int32) (*define.Level, error) {
 	lv := ms._repo.GetManager().LevelManager().GetLevelById(id)

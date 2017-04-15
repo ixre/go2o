@@ -138,8 +138,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err212 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err212 != nil {
+		argvalue0, err215 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err215 != nil {
 			Usage()
 			return
 		}
@@ -162,8 +162,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err214 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err214 != nil {
+		argvalue0, err217 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err217 != nil {
 			Usage()
 			return
 		}
@@ -176,25 +176,25 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SubmitTradeOrder requires 2 args")
 			flag.Usage()
 		}
-		arg215 := flag.Arg(1)
-		mbTrans216 := thrift.NewTMemoryBufferLen(len(arg215))
-		defer mbTrans216.Close()
-		_, err217 := mbTrans216.WriteString(arg215)
-		if err217 != nil {
-			Usage()
-			return
-		}
-		factory218 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt219 := factory218.GetProtocol(mbTrans216)
-		argvalue0 := define.NewComplexOrder()
-		err220 := argvalue0.Read(jsProt219)
+		arg218 := flag.Arg(1)
+		mbTrans219 := thrift.NewTMemoryBufferLen(len(arg218))
+		defer mbTrans219.Close()
+		_, err220 := mbTrans219.WriteString(arg218)
 		if err220 != nil {
 			Usage()
 			return
 		}
+		factory221 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt222 := factory221.GetProtocol(mbTrans219)
+		argvalue0 := define.NewComplexOrder()
+		err223 := argvalue0.Read(jsProt222)
+		if err223 != nil {
+			Usage()
+			return
+		}
 		value0 := argvalue0
-		argvalue1, err221 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err221 != nil {
+		argvalue1, err224 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err224 != nil {
 			Usage()
 			return
 		}
@@ -207,8 +207,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TradeOrderCashPay requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err222 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err222 != nil {
+		argvalue0, err225 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err225 != nil {
 			Usage()
 			return
 		}
@@ -221,8 +221,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TradeOrderUpdateTicket requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err223 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err223 != nil {
+		argvalue0, err226 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err226 != nil {
 			Usage()
 			return
 		}
