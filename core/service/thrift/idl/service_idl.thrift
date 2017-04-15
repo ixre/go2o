@@ -436,6 +436,8 @@ service MemberService{
     Result64 CheckLogin(1:string user,2:string pwd,3:bool update)
     // 检查交易密码
     Result CheckTradePwd(1:i64 id,2:string tradePwd)
+    // 等级列表
+    list<Level> LevelList()
     // 获取等级信息
     Level GetLevel(1:i32 id)
     // 根据会员编号获取会员信息

@@ -120,15 +120,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err229 := (strconv.Atoi(flag.Arg(1)))
-		if err229 != nil {
+		tmp0, err232 := (strconv.Atoi(flag.Arg(1)))
+		if err232 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err230 := (strconv.Atoi(flag.Arg(2)))
-		if err230 != nil {
+		tmp1, err233 := (strconv.Atoi(flag.Arg(2)))
+		if err233 != nil {
 			Usage()
 			return
 		}
