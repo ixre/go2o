@@ -597,12 +597,13 @@ func (ms *memberService) UnlockBankInfo(memberId int64) error {
 }
 
 // 实名认证信息
-func (ms *memberService) GetTrustedInfo(memberId int64) member.TrustedInfo {
+func (ms *memberService) GetTrustInfo(memberId int64) (*define.TrustedInfo, error) {
+	t := member.TrustedInfo{}
 	m := ms._repo.GetMember(memberId)
 	if m == nil {
-		return member.TrustedInfo{}
+		t = m.Profile().GetTrustedInfo()
 	}
-	return m.Profile().GetTrustedInfo()
+	return parser.TrustedInfoDto(&t), nil
 }
 
 // 保存实名认证信息
