@@ -177,9 +177,6 @@ type (
 		// 解冻赠送金额
 		UnfreezeWallet(title string, outerNo string, amount float32, relateUser int64) error
 
-		// 流通账户余额变动，如扣除,amount传入负数金额
-		ChargeFlowBalance(title string, tradeNo string, amount float32) error
-
 		// 支付单抵扣消费,tradeNo为支付单单号
 		PaymentDiscount(tradeNo string, amount float32, remark string) error
 

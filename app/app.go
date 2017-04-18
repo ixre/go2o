@@ -53,6 +53,7 @@ const (
 	FsShop
 	FsShopMobile
 	FsMch
+	FsWholesale
 	fsLast
 )
 

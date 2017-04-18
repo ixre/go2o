@@ -600,7 +600,7 @@ func (ms *memberService) UnlockBankInfo(memberId int64) error {
 func (ms *memberService) GetTrustInfo(memberId int64) (*define.TrustedInfo, error) {
 	t := member.TrustedInfo{}
 	m := ms._repo.GetMember(memberId)
-	if m == nil {
+	if m != nil {
 		t = m.Profile().GetTrustedInfo()
 	}
 	return parser.TrustedInfoDto(&t), nil
@@ -834,33 +834,15 @@ func (ms *memberService) DiscountAccount(memberId int64, account int32, title st
 	if err == nil {
 		acc := m.GetAccount()
 		switch int(account) {
+		case member.AccountBalance:
+			err = acc.DiscountBalance(title, outerNo, float32(amount),
+				member.DefaultRelateUser)
 		case member.AccountWallet:
 			err = acc.DiscountWallet(title, outerNo, float32(amount),
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
 	return parser.I64Result(memberId, err), nil
-}
-
-// 扣减奖金
-func (ms *memberService) DiscountWallet(memberId int64, title string,
-	tradeNo string, amount float32, mustLargeZero bool) error {
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().DiscountWallet(title, tradeNo, amount,
-		member.DefaultRelateUser, mustLargeZero)
-}
-
-// 流通账户
-func (ms *memberService) ChargeFlowBalance(memberId int64, title string,
-	tradeNo string, amount float32) error {
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().ChargeFlowBalance(title, tradeNo, amount)
 }
 
 // 验证交易密码
