@@ -110,7 +110,9 @@ func (a *accountImpl) Charge(account int32, kind int32, title, outerNo string,
 	case member.AccountBalance:
 		return a.chargeBalance(kind, title, outerNo, amount, relateUser)
 	case member.AccountWallet:
-		return a.chargePresent(kind, title, outerNo, amount, relateUser)
+		return a.chargeWallet(kind, title, outerNo, amount, relateUser)
+	case member.AccountFlow:
+		return a.chargeFlowBalance(title, outerNo, amount)
 	}
 	panic(errors.New("不支持的账户类型操作"))
 }
@@ -185,7 +187,7 @@ func (a *accountImpl) chargeBalanceNoLimit(kind int32, title string, outerNo str
 	return err
 }
 
-func (a *accountImpl) chargePresent(kind int32, title string,
+func (a *accountImpl) chargeWallet(kind int32, title string,
 	outerNo string, amount float32, relateUser int64) error {
 	switch kind {
 	case member.ChargeBySystem:
@@ -460,7 +462,7 @@ func (a *accountImpl) UnfreezeWallet(title string, outerNo string,
 }
 
 // 流通账户余额充值，如扣除,amount传入负数金额
-func (a *accountImpl) ChargeFlowBalance(title string,
+func (a *accountImpl) chargeFlowBalance(title string,
 	tradeNo string, amount float32) error {
 	if len(title) == 0 {
 		if amount > 0 {
