@@ -16,7 +16,8 @@ var (
 	DOMAIN_PREFIX_MOBILE = "m."
 	// 会员中心域名前缀
 	DOMAIN_PREFIX_MEMBER = "u."
-
+	// 批发系统域名前缀
+	DOMAIN_PREFIX_WHOLESALE = "whs."
 	// 商户系统域名前缀
 	DOMAIN_PREFIX_MERCHANT = "mch."
 	// 通行证域名前缀

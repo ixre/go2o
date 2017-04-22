@@ -30,9 +30,9 @@ func NewItemQuery(c db.Connector) *ItemQuery {
 
 //根据关键词搜索上架的商品
 func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
-	start, end int, where, orderBy string) (int, []*item.GoodsItem) {
+	start, end int32, where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string
-	total := 0
+	var total int32
 
 	if len(orderBy) != 0 {
 		orderBy += ","
@@ -49,6 +49,37 @@ func (i ItemQuery) GetPagedOnShelvesItem(catId int32,
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE item_info.cat_id=? AND item_info.review_state=?
 		 AND item_info.shelve_state=? %s
+		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+			where, orderBy)
+		i.Connector.GetOrm().SelectByQuery(&list, sql,
+			catId, enum.ReviewPass, item.ShelvesOn, start, (end - start))
+	}
+	return total, list
+}
+
+//根据关键词搜索上架的商品
+func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
+	start, end int32, where, orderBy string) (int32, []*item.GoodsItem) {
+	var sql string
+	var total int32
+
+	if len(orderBy) != 0 {
+		orderBy += ","
+	}
+
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
+         INNER JOIN item_info ON item_info.id=ws_item.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 AND ws_item.shelve_state=? %s`, where), &total,
+		catId, enum.ReviewPass, item.ShelvesOn)
+	list := []*item.GoodsItem{}
+	if total > 0 {
+		sql = fmt.Sprintf(`SELECT * FROM  ws_item
+         INNER JOIN item_info ON item_info.id=ws_item.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 AND ws_item.shelve_state=? %s
 		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,
