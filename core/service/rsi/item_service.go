@@ -105,9 +105,33 @@ R:
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
-	end int, where, sortBy string) (int, []*define.Item) {
+func (s *itemService) GetPagedOnShelvesItem(itemType int32, catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+	switch itemType {
+	case item.ItemNormal:
+		return s.getPagedOnShelvesItem(catId, start, end, where, sortBy)
+	case item.ItemWholesale:
+		return s.getPagedOnShelvesItemForWholesale(catId, start, end, where, sortBy)
+	}
+	return 0, []*define.Item{}
+}
+func (s *itemService) getPagedOnShelvesItem(catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
 	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		arr[i] = parser.ItemDto(v)
+	}
+	return total, arr
+}
+
+func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
+	total, list := s.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {
