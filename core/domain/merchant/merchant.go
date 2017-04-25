@@ -152,6 +152,8 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		Level: 1,
 		// 标志
 		Logo: "",
+		// 公司名称
+		CompanyName: "",
 		// 省
 		Province: v.Province,
 		// 市
@@ -182,8 +184,8 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		names := m.valRepo.GetAreaNames([]int32{v.Province, v.City, v.District})
 		location := strings.Join(names, "")
 		ev := &merchant.EnterpriseInfo{
-			MerchantId:   mchId,
-			Name:         v.CompanyName,
+			MchId:        mchId,
+			CompanyName:  v.CompanyName,
 			CompanyNo:    v.CompanyNo,
 			PersonName:   v.PersonName,
 			PersonIdNo:   v.PersonId,
@@ -198,7 +200,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 			AuthDoc:      v.AuthDoc,
 			Reviewed:     v.Reviewed,
 			ReviewTime:   unix,
-			Remark:       "",
+			ReviewRemark: "",
 			UpdateTime:   unix,
 		}
 		_, err = mch.ProfileManager().SaveEnterpriseInfo(ev)
@@ -297,6 +299,7 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 		SelfSales:     src.SelfSales,
 		Level:         src.Level,
 		Logo:          src.Logo,
+		CompanyName:   src.CompanyName,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
@@ -329,6 +332,9 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 
 		if len(v.Logo) != 0 {
 			tv.Logo = v.Logo
+		}
+		if len(v.CompanyName) != 0 {
+			tv.CompanyName = v.CompanyName
 		}
 		tv.Pwd = v.Pwd
 		tv.UpdateTime = time.Now().Unix()

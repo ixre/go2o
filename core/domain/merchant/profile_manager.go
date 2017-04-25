@@ -9,8 +9,11 @@
 package merchant
 
 import (
+	"errors"
 	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/tmp"
 	dm "go2o/core/infrastructure/domain"
@@ -22,7 +25,7 @@ var _ merchant.IProfileManager = new(profileManagerImpl)
 type profileManagerImpl struct {
 	*merchantImpl
 	//企业信息列表
-	list []*merchant.EnterpriseInfo
+	ent *merchant.EnterpriseInfo
 }
 
 func newProfileManager(m *merchantImpl) merchant.IProfileManager {
@@ -31,41 +34,21 @@ func newProfileManager(m *merchantImpl) merchant.IProfileManager {
 	}
 }
 
-func (p *profileManagerImpl) getAll() []*merchant.EnterpriseInfo {
-	if p.list == nil {
-		p.list = []*merchant.EnterpriseInfo{}
-		tmp.Db().GetOrm().Select(&p.list, "mch_id=?", p.GetAggregateRootId())
-	}
-	return p.list
-}
-
 // 获取企业信息
-func (p *profileManagerImpl) GetReviewingEnterpriseInfo() *merchant.EnterpriseInfo {
-	for _, v := range p.getAll() {
-		if v.Reviewed == 0 {
-			return v
-		}
+func (p *profileManagerImpl) GetEnterpriseInfo() *merchant.EnterpriseInfo {
+	if p.ent == nil {
+		p.ent = p._rep.GetMchEnterpriseInfo(p.GetAggregateRootId())
 	}
-	return nil
-}
-
-// 获取审核过的企业信息
-func (p *profileManagerImpl) GetReviewedEnterpriseInfo() *merchant.EnterpriseInfo {
-	for _, v := range p.getAll() {
-		if v.Reviewed == 1 {
-			return v
-		}
-	}
-	return nil
+	return p.ent
 }
 
 func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst *merchant.EnterpriseInfo) {
 	// 商户编号
-	dst.MerchantId = p.GetAggregateRootId()
+	dst.MchId = p.GetAggregateRootId()
 
 	// 公司名称
-	dst.Name = src.Name
+	dst.CompanyName = src.CompanyName
 	// 公司营业执照编号
 	dst.CompanyNo = src.CompanyNo
 	// 法人
@@ -90,67 +73,52 @@ func (p *profileManagerImpl) copy(src *merchant.EnterpriseInfo,
 	dst.CompanyImage = src.CompanyImage
 	// 授权书
 	dst.AuthDoc = src.AuthDoc
-
-	//是否已审核
-	//dst.Reviewed = src.Reviewed
-	// 审核时间
-	//dst.ReviewTime = src.ReviewTime
-	// 审核备注
-	//dst.Remark = src.Remark
 }
 
 // 保存企业信息
 func (p *profileManagerImpl) SaveEnterpriseInfo(v *merchant.EnterpriseInfo) (int32, error) {
-	e := p.GetReviewingEnterpriseInfo()
+	e := p.GetEnterpriseInfo()
 	if e == nil {
 		e = &merchant.EnterpriseInfo{}
 	}
 	p.copy(v, e)
 	dt := time.Now().Unix()
-	e.Reviewed = 0
-	e.IsHandled = 0
+	e.Reviewed = enum.ReviewAwaiting
 	e.ReviewTime = dt
 	e.UpdateTime = dt
-	p.list = nil //clean cache
-	return orm.I32(orm.Save(tmp.Db().GetOrm(), e, int(e.Id)))
+	p.ent = nil //clean cache
+	return util.I32Err(p._rep.SaveMchEnterpriseInfo(v))
 }
 
 // 标记企业为审核通过
 func (p *profileManagerImpl) ReviewEnterpriseInfo(pass bool, message string) error {
 	var err error
-	e := p.GetReviewingEnterpriseInfo()
-	if e != nil {
-		e.ReviewTime = time.Now().Unix()
-		e.IsHandled = 1
-
-		// 通过审核,将审批的记录删除,同时更新到审核数据
-		if pass {
-			v := p.GetReviewedEnterpriseInfo()
-			if v != nil {
-				p.copy(e, v)
-				tmp.Db().GetOrm().DeleteByPk(e, e.Id)
-				err = p.save(v)
-			} else {
-				e.Reviewed = 1
-				e.Remark = ""
-				err = p.save(e)
-			}
+	e := p.GetEnterpriseInfo()
+	if e == nil {
+		return errors.New("no such enterprise info for reviewed")
+	}
+	e.ReviewTime = time.Now().Unix()
+	// 通过审核,将审批的记录删除,同时更新到审核数据
+	if pass {
+		e.Reviewed = enum.ReviewPass
+		e.ReviewRemark = ""
+		_, err = p._rep.SaveMchEnterpriseInfo(e)
+		if err == nil {
+			// 保存省、市、区到Merchant
+			v := p.merchantImpl.GetValue()
+			v.CompanyName = e.CompanyName
+			v.Province = e.Province
+			v.City = e.City
+			v.District = e.District
+			err = p.SetValue(&v)
 			if err == nil {
-				// 保存省、市、区到Merchant
-				v := p.merchantImpl.GetValue()
-				v.Province = e.Province
-				v.City = e.City
-				v.District = e.District
-				err = p.SetValue(&v)
-				if err == nil {
-					_, err = p.merchantImpl.Save()
-				}
+				_, err = p.merchantImpl.Save()
 			}
-		} else {
-			e.Reviewed = 0
-			e.Remark = message
-			err = p.save(e)
 		}
+	} else {
+		e.Reviewed = enum.ReviewReject
+		e.ReviewRemark = message
+		_, err = p._rep.SaveMchEnterpriseInfo(e)
 	}
 	return err
 }
@@ -174,6 +142,6 @@ func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
 }
 
 func (p *profileManagerImpl) save(e *merchant.EnterpriseInfo) error {
-	_, err := orm.Save(tmp.Db().GetOrm(), e, int(e.Id))
+	_, err := orm.Save(tmp.Db().GetOrm(), e, int(e.ID))
 	return err
 }

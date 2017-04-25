@@ -32,6 +32,7 @@ func MerchantDto(src *merchant.ComplexMerchant) *define.ComplexMerchant {
 		SelfSales:     src.SelfSales,
 		Level:         src.Level,
 		Logo:          src.Logo,
+		CompanyName:   src.CompanyName,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,

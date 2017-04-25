@@ -13,7 +13,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
@@ -445,23 +444,32 @@ func (vp *valueRepo) GetChildAreas(id int32) []*valueobject.Area {
 	return v
 }
 
+// 获取区域名称
+func (v *valueRepo) GetAreaName(id int32) string {
+	if id <= 0 {
+		return ""
+	}
+	strId := strconv.Itoa(int(id))
+	key := "go2o:rep:area:name-" + strId
+	name, err := v.storage.GetString(key)
+	if err != nil {
+		err = v.Connector.ExecScalar("SELECT name FROM china_area WHERE code=?", &name, strId)
+		if err == nil {
+			if name == "市辖区" || name == "市辖县" || name == "县" {
+				name = ""
+			}
+			v.storage.Set(key, strings.TrimSpace(name))
+		}
+	}
+	return name
+}
+
 // 获取地区名称
 func (vp *valueRepo) GetAreaNames(id []int32) []string {
 	strArr := make([]string, len(id))
 	for i, v := range id {
-		strArr[i] = strconv.Itoa(int(v))
+		strArr[i] = vp.GetAreaName(v)
 	}
-	i := 0
-	vp.Connector.Query(fmt.Sprintf(
-		"SELECT name FROM china_area WHERE code IN (%s)",
-		strings.Join(strArr, ",")),
-		func(rows *sql.Rows) {
-			for rows.Next() {
-				rows.Scan(&strArr[i])
-				strArr[i] = strings.TrimSpace(strArr[i]) //去除空格
-				i++
-			}
-		})
 	return strArr
 }
 

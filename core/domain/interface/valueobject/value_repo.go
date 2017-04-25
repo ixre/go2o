@@ -338,6 +338,9 @@ type (
 		// 获取下级区域
 		GetChildAreas(id int32) []*Area
 
+		// 获取区域名称
+		GetAreaName(id int32) string
+
 		// 获取地区名称
 		GetAreaNames(id []int32) []string
 

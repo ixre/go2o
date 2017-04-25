@@ -220,6 +220,8 @@ type (
 		Level int32
 		// 标志
 		Logo string
+		// 公司名称
+		CompanyName string
 		// 省
 		Province int32
 		// 市
@@ -257,6 +259,8 @@ type (
 		Level int32 `db:"level"`
 		// 标志
 		Logo string `db:"logo"`
+		// 公司名称
+		CompanyName string `db:"company_name"`
 		// 省
 		Province int32 `db:"province"`
 		// 市
