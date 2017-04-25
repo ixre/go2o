@@ -38,15 +38,16 @@ struct ComplexMerchant {
     6: i32 SelfSales
     7: i32 Level
     8: string Logo
-    9: i32 Province
-    10: i32 City
-    11: i32 District
-    12: i32 Enabled
-    13: i64 ExpiresTime
-    14: i64 JoinTime
-    15: i64 UpdateTime
-    16: i64 LoginTime
-    17: i64 LastLoginTime
+    9: string CompanyName
+    10: i32 Province
+    11: i32 City
+    12: i32 District
+    13: i32 Enabled
+    14: i64 ExpiresTime
+    15: i64 JoinTime
+    16: i64 UpdateTime
+    17: i64 LoginTime
+    18: i64 LastLoginTime
 }
 
 struct Level {
@@ -236,6 +237,7 @@ struct Item {
     30: i64 UpdateTime
     31: double PromPrice
     32: list<Sku> SkuArray
+    33: map<string,string> Data;
 }
 
 struct Sku {

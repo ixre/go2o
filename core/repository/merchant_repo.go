@@ -351,6 +351,28 @@ func (m *merchantRepo) UpdateAccount(v *merchant.Account) error {
 	return err
 }
 
+// Get MchEnterpriseInfo
+func (m *merchantRepo) GetMchEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
+	e := merchant.EnterpriseInfo{}
+	err := m._orm.GetBy(&e, "mch_id=?", mchId)
+	if err == nil {
+		return &e
+	}
+	if err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchEnterpriseInfo")
+	}
+	return nil
+}
+
+// Save MchEnterpriseInfo
+func (m *merchantRepo) SaveMchEnterpriseInfo(v *merchant.EnterpriseInfo) (int, error) {
+	id, err := orm.Save(m._orm, v, int(v.ID))
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:MchEnterpriseInfo")
+	}
+	return id, err
+}
+
 // Get MchBuyerGroup
 func (m *merchantRepo) GetMchBuyerGroupByGroupId(mchId, groupId int32) *merchant.MchBuyerGroup {
 	e := merchant.MchBuyerGroup{}

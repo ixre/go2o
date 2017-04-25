@@ -89,10 +89,10 @@ func (i ItemQuery) GetPagedOnShelvesItemForWholesale(catId int32,
 }
 
 //根据关键词搜索上架的商品
-func (i ItemQuery) SearchOnShelvesItem(word string, start, end int,
-	where, orderBy string) (int, []*item.GoodsItem) {
+func (i ItemQuery) SearchOnShelvesItem(word string, start, end int32,
+	where, orderBy string) (int32, []*item.GoodsItem) {
 	var sql string
-	total := 0
+	var total int32
 
 	if len(orderBy) != 0 {
 		orderBy += ","
@@ -120,6 +120,48 @@ func (i ItemQuery) SearchOnShelvesItem(word string, start, end int,
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
 		 WHERE item_info.review_state=?
 		 AND item_info.shelve_state=? %s
+		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
+			where, orderBy)
+		i.Connector.GetOrm().SelectByQuery(&list, sql,
+			enum.ReviewPass, item.ShelvesOn, start, (end - start))
+	}
+	return total, list
+}
+
+//根据关键词搜索上架的商品
+func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32,
+	where, orderBy string) (int32, []*item.GoodsItem) {
+	var sql string
+	var total int32
+
+	if len(orderBy) != 0 {
+		orderBy += ","
+	}
+
+	buf := bytes.NewBuffer(nil)
+	if word != "" {
+		buf.WriteString(" AND (item_info.title LIKE '%")
+		buf.WriteString(word)
+		buf.WriteString("%' OR item_info.short_title LIKE '%")
+		buf.WriteString(word)
+		buf.WriteString("%')")
+	}
+	buf.WriteString(where)
+	where = buf.String()
+
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM FROM ws_item
+         INNER JOIN item_info ON item_info.id=ws_item.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 AND ws_item.shelve_state=?  %s`, where), &total,
+		enum.ReviewPass, item.ShelvesOn)
+	list := []*item.GoodsItem{}
+	if total > 0 {
+		sql = fmt.Sprintf(`SELECT * FROM FROM ws_item
+         INNER JOIN item_info ON item_info.id=ws_item.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 AND ws_item.shelve_state=? %s
 		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
 			where, orderBy)
 		i.Connector.GetOrm().SelectByQuery(&list, sql,

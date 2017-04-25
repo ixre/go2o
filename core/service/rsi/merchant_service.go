@@ -82,7 +82,8 @@ func (m *merchantService) SignUp(usr, pwd, companyName string,
 		// 商户等级
 		Level: 1,
 		// 标志
-		Logo: "",
+		Logo:        "",
+		CompanyName: companyName,
 		// 省
 		Province: province,
 		// 市
@@ -181,33 +182,11 @@ func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err
 	return parser.Result(mchId, err), nil
 }
 
-// 获取企业信息
-func (m *merchantService) GetReviewedEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
-	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.ProfileManager().GetReviewedEnterpriseInfo()
-	}
-	return nil
-}
-
 // 获取企业信息,并返回是否为提交的信息
-func (m *merchantService) GetReviewingEnterpriseInfo(mchId int32) (
-	e *merchant.EnterpriseInfo, isPost bool) {
+func (m *merchantService) GetEnterpriseInfo(mchId int32) (
+	e *merchant.EnterpriseInfo) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	mg := mch.ProfileManager()
-	e = mg.GetReviewingEnterpriseInfo()
-	if e != nil {
-		return e, true
-	}
-	e = mg.GetReviewedEnterpriseInfo()
-	if e != nil {
-		v := *e
-		v.IsHandled = 0
-		v.Reviewed = 0
-		return &v, false
-	}
-	return nil, false
-
+	return mch.ProfileManager().GetEnterpriseInfo()
 }
 
 // 保存企业信息

@@ -694,3 +694,24 @@ CREATE TABLE ws_item_discount (
   discount_rate  decimal(4, 2) NOT NULL comment '折扣率',
   PRIMARY KEY (id)) comment='批发商品折扣';
 
+/* 2017-04-24 */
+
+ALTER TABLE `mch_merchant`
+  ADD COLUMN `company_name` VARCHAR(45) NULL COMMENT '公司名称' AFTER `name`;
+
+ALTER TABLE `mch_enterprise_info`
+  DROP COLUMN `is_handled`,
+  CHANGE COLUMN `address` `address` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司地址' AFTER `location`,
+  CHANGE COLUMN `mch_id` `mch_id` INT(11) NULL DEFAULT NULL COMMENT '商户编号' ,
+  CHANGE COLUMN `name` `company_name` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司名称' ,
+  CHANGE COLUMN `company_no` `company_no` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照编号' ,
+  CHANGE COLUMN `person_name` `person_name` VARCHAR(10) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '法人姓名' ,
+  CHANGE COLUMN `tel` `tel` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司电话' ,
+  CHANGE COLUMN `province` `province` INT(11) NOT NULL COMMENT '所在省' ,
+  CHANGE COLUMN `city` `city` INT(11) NOT NULL COMMENT '所在市' ,
+  CHANGE COLUMN `district` `district` INT(11) NOT NULL COMMENT '所在区' ,
+  CHANGE COLUMN `location` `location` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '位置' ,
+  CHANGE COLUMN `person_image` `person_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '法人身份证照片' ,
+  CHANGE COLUMN `company_image` `company_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照照片' ,
+  CHANGE COLUMN `review_time` `review_time` INT(11) NULL DEFAULT NULL COMMENT '审核时间' ,
+  CHANGE COLUMN `remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '审核备注' ;

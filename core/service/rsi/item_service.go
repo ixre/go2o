@@ -12,6 +12,7 @@ package rsi
 import (
 	"fmt"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
@@ -27,16 +28,21 @@ type itemService struct {
 	itemQuery *query.ItemQuery
 	_cateRepo product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
+	mchRepo   merchant.IMerchantRepo
+	valueRepo valueobject.IValueRepo
 }
 
 func NewSaleService(cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
-	labelRepo item.ISaleLabelRepo) *itemService {
+	labelRepo item.ISaleLabelRepo, mchRepo merchant.IMerchantRepo,
+	valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
 		itemRepo:  goodsRepo,
 		itemQuery: goodsQuery,
 		_cateRepo: cateRepo,
 		labelRepo: labelRepo,
+		mchRepo:   mchRepo,
+		valueRepo: valueRepo,
 	}
 }
 
@@ -142,14 +148,49 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) SearchOnShelvesItem(word string, start,
-	end int, where, sortBy string) (int, []*define.Item) {
+func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
+	switch itemType {
+	case item.ItemNormal:
+		return s.searchOnShelveItem(word, start, end, where, sortBy)
+	case item.ItemWholesale:
+		return s.searchOnShelveItemForWholesale(word, start, end, where, sortBy)
+	}
+	return 0, []*define.Item{}
+}
+
+func (s itemService) searchOnShelveItem(word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
 	total, list := s.itemQuery.SearchOnShelvesItem(word,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		arr[i] = parser.ItemDto(v)
+	}
+	return total, arr
+}
+
+func (s itemService) searchOnShelveItemForWholesale(word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+	total, list := s.itemQuery.SearchOnShelvesItem(word,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		dto := parser.ItemDto(v)
+		dto.Data = make(map[string]string)
+		vendor := s.mchRepo.GetMerchant(dto.VendorId)
+		if vendor != nil {
+			vv := vendor.GetValue()
+			pStr := s.valueRepo.GetAreaName(vv.Province)
+			cStr := s.valueRepo.GetAreaName(vv.City)
+			dto.Data["VendorName"] = vv.CompanyName
+			dto.Data["ShipArea"] = pStr + cStr
+		}
+		arr[i] = dto
+
 	}
 	return total, arr
 }
