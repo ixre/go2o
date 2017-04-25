@@ -715,3 +715,9 @@ ALTER TABLE `mch_enterprise_info`
   CHANGE COLUMN `company_image` `company_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照照片' ,
   CHANGE COLUMN `review_time` `review_time` INT(11) NULL DEFAULT NULL COMMENT '审核时间' ,
   CHANGE COLUMN `remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '审核备注' ;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `vendor_id` `vendor_id` INT(10) NOT NULL COMMENT '运营商编号' AFTER `item_id`,
+  ADD COLUMN `price` DECIMAL(10,2) NULL COMMENT '价格' AFTER `vendor_id`,
+  ADD COLUMN `price_range` VARCHAR(45) NULL COMMENT '价格区间' AFTER `price`;
+

@@ -360,6 +360,10 @@ type (
 		VendorId int32 `db:"vendor_id"`
 		// 商品编号
 		ItemId int32 `db:"item_id"`
+		// 价格
+		Price float64 `db:"price"`
+		// 价格区间
+		PriceRange string `db:"price_range"`
 		// 上架状态
 		ShelveState int32 `db:"shelve_state"`
 		// 是否审核通过

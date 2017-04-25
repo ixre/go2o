@@ -149,18 +149,26 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 	buf.WriteString(where)
 	where = buf.String()
 
-	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM FROM ws_item
+	i.Connector.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
          INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 WHERE ws_item.review_state=?
 		 AND ws_item.shelve_state=?  %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	list := []*item.GoodsItem{}
 	if total > 0 {
-		sql = fmt.Sprintf(`SELECT * FROM FROM ws_item
-         INNER JOIN item_info ON item_info.id=ws_item.item_id
+		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.prom_flag,
+		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,
+		item_info.shop_cat_id,item_info.express_tid,item_info.title,
+		item_info.short_title,item_info.code,item_info.image,
+		item_info.is_present,ws_item.price_range,item_info.stock_num,
+		item_info.sale_num,item_info.sku_num,item_info.sku_id,item_info.cost,
+		ws_item.price,item_info.retail_price,item_info.weight,item_info.bulk,
+		item_info.shelve_state,item_info.review_state,item_info.review_remark,
+		item_info.sort_num,item_info.create_time,item_info.update_time
+		 FROM ws_item INNER JOIN item_info ON item_info.id=ws_item.item_id
          INNER JOIN pro_product ON pro_product.id = item_info.product_id
-		 WHERE item_info.cat_id=? AND ws_item.review_state=?
+		 WHERE ws_item.review_state=?
 		 AND ws_item.shelve_state=? %s
 		 ORDER BY %s item_info.update_time DESC LIMIT ?,?`,
 			where, orderBy)
