@@ -60,7 +60,9 @@ func (s *itemService) GetSku(itemId int32, skuId int32) (r *define.Sku, err erro
 	item := s.itemRepo.GetItem(itemId)
 	if item != nil {
 		sku := item.GetSku(skuId)
-		return parser.SkuDto(sku), nil
+		if sku != nil {
+			return parser.SkuDto(sku), nil
+		}
 	}
 	return nil, nil
 }
@@ -174,7 +176,7 @@ func (s itemService) searchOnShelveItem(word string, start,
 
 func (s itemService) searchOnShelveItemForWholesale(word string, start,
 	end int32, where, sortBy string) (int32, []*define.Item) {
-	total, list := s.itemQuery.SearchOnShelvesItem(word,
+	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {

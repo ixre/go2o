@@ -5,6 +5,7 @@ import (
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
+	"go2o/core/infrastructure/format"
 	"strings"
 )
 
@@ -79,6 +80,9 @@ func (g *wholesaleItemImpl) IsOnShelves() bool {
 func (g *wholesaleItemImpl) SetShelve(state int32, remark string) error {
 	if state == item.ShelvesIncorrect && len(remark) == 0 {
 		return product.ErrNilRejectRemark
+	}
+	if state == item.ShelvesOn && g.value.Price <= 0 {
+		return item.ErrNotSetWholesalePrice
 	}
 	g.value.ShelveState = state
 	g.value.ReviewRemark = remark
@@ -214,13 +218,37 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int32, arr []*item.WsSkuPrice) er
 		w.repo.BatchDeleteWsSkuPrice("id=?", v)
 	}
 	// 保存项
+	var min, max float64
 	for _, v := range arr {
+		if min == 0 || max == 0 {
+			min = v.WholesalePrice
+			max = v.WholesalePrice
+		}
+		if v.WholesalePrice > max {
+			max = v.WholesalePrice
+		}
+		if v.WholesalePrice < min {
+			min = v.WholesalePrice
+		}
+		// 保存SKU批发价格
 		v.ItemId = w.itemId
 		v.SkuId = skuId
 		i, err := util.I32Err(w.repo.SaveWsSkuPrice(v))
 		if err == nil {
 			v.ID = i
 		}
+	}
+	// 更新商品批发价格
+	if min > 0 && max > 0 {
+		w.value.Price = min
+		if min == max {
+			w.value.PriceRange = format.DecimalToString(min)
+		} else {
+			w.value.PriceRange = format.DecimalToString(min) +
+				"~" + format.DecimalToString(max)
+		}
+		_, err := w.Save()
+		return err
 	}
 	return nil
 }
