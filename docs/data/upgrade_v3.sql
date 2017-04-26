@@ -706,7 +706,8 @@ ALTER TABLE `mch_enterprise_info`
   CHANGE COLUMN `name` `company_name` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司名称' ,
   CHANGE COLUMN `company_no` `company_no` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照编号' ,
   CHANGE COLUMN `person_name` `person_name` VARCHAR(10) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '法人姓名' ,
-  CHANGE COLUMN `tel` `tel` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司电话' ,
+  CHANGE COLUMN `tel` `tel` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicm.A<QS,KKKKKKKKJUUFASDTHJJ MMGBV
+  MMode_ci' NULL DEFAULT NULL COMMENT '公司电话' ,
   CHANGE COLUMN `province` `province` INT(11) NOT NULL COMMENT '所在省' ,
   CHANGE COLUMN `city` `city` INT(11) NOT NULL COMMENT '所在市' ,
   CHANGE COLUMN `district` `district` INT(11) NOT NULL COMMENT '所在区' ,

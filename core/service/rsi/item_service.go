@@ -11,14 +11,17 @@ package rsi
 
 import (
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 )
 
 var _ define.ItemService = new(itemService)
@@ -28,19 +31,21 @@ type itemService struct {
 	itemQuery *query.ItemQuery
 	_cateRepo product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
+	promRepo  promodel.IProModelRepo
 	mchRepo   merchant.IMerchantRepo
 	valueRepo valueobject.IValueRepo
 }
 
 func NewSaleService(cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
-	labelRepo item.ISaleLabelRepo, mchRepo merchant.IMerchantRepo,
-	valueRepo valueobject.IValueRepo) *itemService {
+	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
+	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
 		itemRepo:  goodsRepo,
 		itemQuery: goodsQuery,
 		_cateRepo: cateRepo,
 		labelRepo: labelRepo,
+		promRepo:  promRepo,
 		mchRepo:   mchRepo,
 		valueRepo: valueRepo,
 	}
@@ -144,7 +149,9 @@ func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
 	arr := make([]*define.Item, len(list))
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDto(v)
+		dto := parser.ItemDto(v)
+		s.attachWholesaleItemData(dto)
+		arr[i] = dto
 	}
 	return total, arr
 }
@@ -182,19 +189,38 @@ func (s itemService) searchOnShelveItemForWholesale(word string, start,
 	for i, v := range list {
 		v.Image = format.GetGoodsImageUrl(v.Image)
 		dto := parser.ItemDto(v)
-		dto.Data = make(map[string]string)
-		vendor := s.mchRepo.GetMerchant(dto.VendorId)
-		if vendor != nil {
-			vv := vendor.GetValue()
-			pStr := s.valueRepo.GetAreaName(vv.Province)
-			cStr := s.valueRepo.GetAreaName(vv.City)
-			dto.Data["VendorName"] = vv.CompanyName
-			dto.Data["ShipArea"] = pStr + cStr
-		}
+		s.attachWholesaleItemData(dto)
 		arr[i] = dto
 
 	}
 	return total, arr
+}
+
+// 附加批发商品的信息
+func (i *itemService) attachWholesaleItemData(dto *define.Item) {
+	dto.Data = make(map[string]string)
+	vendor := i.mchRepo.GetMerchant(dto.VendorId)
+	if vendor != nil {
+		vv := vendor.GetValue()
+		pStr := i.valueRepo.GetAreaName(vv.Province)
+		cStr := i.valueRepo.GetAreaName(vv.City)
+		dto.Data["VendorName"] = vv.CompanyName
+		dto.Data["ShipArea"] = pStr + cStr
+		// 认证信息
+		ei := vendor.ProfileManager().GetEnterpriseInfo()
+		if ei != nil && ei.Reviewed == enum.ReviewPass {
+			dto.Data["Authorized"] = "true"
+		} else {
+			dto.Data["Authorized"] = "false"
+		}
+		// 品牌
+		b := i.promRepo.BrandService().Get(dto.BrandId)
+		if b != nil {
+			dto.Data["BrandName"] = b.Name
+			dto.Data["BrandImage"] = b.Image
+			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
+		}
+	}
 }
 
 // 获取上架商品数据（分页）
