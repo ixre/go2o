@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/domain/interface/merchant/wholesaler"
 	"go2o/core/dto"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
@@ -81,7 +82,8 @@ func (m *merchantService) SignUp(usr, pwd, companyName string,
 		// 商户等级
 		Level: 1,
 		// 标志
-		Logo: "",
+		Logo:        "",
+		CompanyName: companyName,
 		// 省
 		Province: province,
 		// 市
@@ -180,33 +182,11 @@ func (m *merchantService) CheckLogin(usr, oriPwd string) (r *define.Result_, err
 	return parser.Result(mchId, err), nil
 }
 
-// 获取企业信息
-func (m *merchantService) GetReviewedEnterpriseInfo(mchId int32) *merchant.EnterpriseInfo {
-	mch := m._mchRepo.GetMerchant(mchId)
-	if mch != nil {
-		return mch.ProfileManager().GetReviewedEnterpriseInfo()
-	}
-	return nil
-}
-
 // 获取企业信息,并返回是否为提交的信息
-func (m *merchantService) GetReviewingEnterpriseInfo(mchId int32) (
-	e *merchant.EnterpriseInfo, isPost bool) {
+func (m *merchantService) GetEnterpriseInfo(mchId int32) (
+	e *merchant.EnterpriseInfo) {
 	mch := m._mchRepo.GetMerchant(mchId)
-	mg := mch.ProfileManager()
-	e = mg.GetReviewingEnterpriseInfo()
-	if e != nil {
-		return e, true
-	}
-	e = mg.GetReviewedEnterpriseInfo()
-	if e != nil {
-		v := *e
-		v.IsHandled = 0
-		v.Reviewed = 0
-		return &v, false
-	}
-	return nil, false
-
+	return mch.ProfileManager().GetEnterpriseInfo()
 }
 
 // 保存企业信息
@@ -483,6 +463,12 @@ func (m *merchantService) PagedOrdersOfVendor(vendorId int32, begin, size int, p
 	return m._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
+// 查询分页订单
+func (m *merchantService) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+	where, orderBy string) (int32, []*define.ComplexOrder) {
+	return m._orderQuery.PagedTradeOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+}
+
 // 提到会员账户
 func (m *merchantService) TakeToMemberAccount(mchId int32, amount float32) error {
 	mch := m._mchRepo.GetMerchant(mchId)
@@ -501,6 +487,16 @@ func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) erro
 		return acc.TransferToMember1(amount)
 	}
 	return merchant.ErrNoSuchMerchant
+}
+
+// 账户充值
+func (m *merchantService) ChargeAccount(mchId int32, kind int32, title,
+	outerNo string, amount float64, relateUser int64) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.Account().Charge(kind, amount, title, outerNo, relateUser)
 }
 
 //
@@ -634,3 +630,63 @@ func (m *merchantService) TakeToMemberAccount1(mchId int32, amount float32) erro
 //	return nil
 //}
 //>>>>>>> echo3
+
+// 获取
+
+// 同步批发商品
+func (m *merchantService) SyncWholesaleItem(vendorId int32) (map[string]int32, error) {
+	mch := m._mchRepo.GetMerchant(vendorId)
+	if mch != nil {
+		return mch.Wholesaler().SyncItems(), nil
+	}
+	return map[string]int32{
+		"add": 0, "del": 0,
+	}, nil
+}
+
+func (m *merchantService) GetMchBuyerGroup_(mchId, id int32) *merchant.MchBuyerGroup {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().GetGroupByGroupId(id)
+	}
+	return nil
+}
+
+// 保存
+func (m *merchantService) SaveMchBuyerGroup_(mchId int32, v *merchant.MchBuyerGroup) (r *define.Result_, err error) {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		err = merchant.ErrNoSuchMerchant
+	} else {
+		_, err = mch.ConfManager().SaveMchBuyerGroup(v)
+	}
+	return parser.Result(v.ID, err), nil
+}
+
+// 获取顾客分组
+func (m *merchantService) GetBuyerGroups(mchId int32) []*merchant.BuyerGroup {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.ConfManager().SelectBuyerGroup()
+	}
+	return []*merchant.BuyerGroup{}
+}
+
+// 获取批发返点率
+func (m *merchantService) GetRebateRate(mchId, groupId int32) []*wholesaler.WsRebateRate {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch != nil {
+		return mch.Wholesaler().GetGroupRebateRate(groupId)
+	}
+	return []*wholesaler.WsRebateRate{}
+}
+
+// 保存分组返点率
+func (m *merchantService) SaveGroupRebateRate(mchId, groupId int32,
+	arr []*wholesaler.WsRebateRate) error {
+	mch := m._mchRepo.GetMerchant(mchId)
+	if mch == nil {
+		return merchant.ErrNoSuchMerchant
+	}
+	return mch.Wholesaler().SaveGroupRebateRate(groupId, arr)
+}

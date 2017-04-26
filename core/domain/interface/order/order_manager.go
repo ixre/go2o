@@ -18,7 +18,7 @@ type (
 	//　订单服务
 	IOrderManager interface {
 		// 统一调用
-		Unified(orderId int64, sub bool) IUnifiedOrderAdapter
+		Unified(orderNo string, sub bool) IUnifiedOrderAdapter
 		// 预创建普通订单
 		PrepareNormalOrder(c cart.ICart) (IOrder, error)
 		// 预创建批发订单

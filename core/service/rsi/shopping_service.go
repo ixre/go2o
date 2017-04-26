@@ -273,8 +273,8 @@ func (s *shoppingService) SubmitOrder(buyerId int64, cartCode string,
 }
 
 // 根据编号获取订单
-func (s *shoppingService) GetOrder(orderId int64, sub bool) (*define.ComplexOrder, error) {
-	c := s._manager.Unified(orderId, sub).Complex()
+func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrder, error) {
+	c := s._manager.Unified(orderNo, sub).Complex()
 	if c != nil {
 		return parser.OrderDto(c), nil
 	}
@@ -361,8 +361,8 @@ func (s *shoppingService) GetSubOrderAndItemsByNo(orderNo string) (*order.Normal
 }
 
 // 获取订单日志
-func (s *shoppingService) LogBytes(orderId int64, sub bool) []byte {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) LogBytes(orderNo string, sub bool) []byte {
+	c := s._manager.Unified(orderNo, sub)
 	return c.LogBytes()
 }
 
@@ -371,7 +371,12 @@ func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64)
 	if o.ShopId <= 0 {
 		mch := s._mchRepo.GetMerchant(o.VendorId)
 		if mch != nil {
-			o.ShopId = mch.ShopManager().GetOnlineShop().GetDomainId()
+			sp := mch.ShopManager().GetOnlineShop()
+			if sp != nil {
+				o.ShopId = sp.GetDomainId()
+			} else {
+				o.ShopId = 1
+			}
 		}
 	}
 	io, err := s._manager.SubmitTradeOrder(parser.Order(o), rate)
@@ -379,12 +384,13 @@ func (s *shoppingService) SubmitTradeOrder(o *define.ComplexOrder, rate float64)
 	if err == nil {
 		// 返回支付单号
 		ro := io.(order.ITradeOrder)
+		r.Code = io.OrderNo()
 		r.Message = ro.GetPaymentOrder().GetTradeNo()
 	}
 	return r, nil
 }
 
-// 提交订单
+// 交易单现金支付
 func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, err error) {
 	o := s._manager.GetOrderById(orderId)
 	if o == nil || o.Type() != order.TTrade {
@@ -396,33 +402,45 @@ func (s *shoppingService) TradeOrderCashPay(orderId int64) (r *define.Result64, 
 	return parser.Result64(o.GetAggregateRootId(), err), nil
 }
 
+// 上传交易单发票
+func (s *shoppingService) TradeOrderUpdateTicket(orderId int64, img string) (r *define.Result64, err error) {
+	o := s._manager.GetOrderById(orderId)
+	if o == nil || o.Type() != order.TTrade {
+		err = order.ErrNoSuchOrder
+	} else {
+		io := o.(order.ITradeOrder)
+		err = io.UpdateTicket(img)
+	}
+	return parser.Result64(o.GetAggregateRootId(), err), nil
+}
+
 // 取消订单
-func (s *shoppingService) CancelOrder(orderId int64, sub bool, reason string) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) CancelOrder(orderNo string, sub bool, reason string) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Cancel(reason)
 }
 
 // 确定订单
-func (s *shoppingService) ConfirmOrder(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) ConfirmOrder(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Confirm()
 }
 
 // 备货完成
-func (s *shoppingService) PickUp(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) PickUp(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.PickUp()
 }
 
 // 订单发货,并记录配送服务商编号及单号
-func (s *shoppingService) Ship(orderId int64, sub bool, spId int32, spOrder string) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) Ship(orderNo string, sub bool, spId int32, spOrder string) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.Ship(spId, spOrder)
 }
 
 // 消费者收货
-func (s *shoppingService) BuyerReceived(orderId int64, sub bool) error {
-	c := s._manager.Unified(orderId, sub)
+func (s *shoppingService) BuyerReceived(orderNo string, sub bool) error {
+	c := s._manager.Unified(orderNo, sub)
 	return c.BuyerReceived()
 }
 

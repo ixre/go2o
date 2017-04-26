@@ -16,9 +16,10 @@ import (
 )
 
 const (
-	KindAccountSettleOrder      = 1
-	KindAccountPresent          = 2
-	KindAccountTakePayment      = 3
+	KindAccountCharge           = 1
+	KindAccountSettleOrder      = 2
+	KindAccountPresent          = 3
+	KindAccountTakePayment      = 4
 	KindAccountTransferToMember = 5
 
 	//商户提现
@@ -122,6 +123,10 @@ type (
 
 		// 赠送
 		Present(amount float32, remark string) error
+
+		// 充值
+		Charge(kind int32, amount float64, title, outerNo string,
+			relateUser int64) error
 	}
 
 	IMerchantManager interface {
@@ -215,6 +220,8 @@ type (
 		Level int32
 		// 标志
 		Logo string
+		// 公司名称
+		CompanyName string
 		// 省
 		Province int32
 		// 市
@@ -252,6 +259,8 @@ type (
 		Level int32 `db:"level"`
 		// 标志
 		Logo string `db:"logo"`
+		// 公司名称
+		CompanyName string `db:"company_name"`
 		// 省
 		Province int32 `db:"province"`
 		// 市

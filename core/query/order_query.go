@@ -236,9 +236,6 @@ func (o *OrderQuery) QueryPagerTradeOrder(memberId int64, begin, size int, pagin
 		orderBy = " ORDER BY o.create_time desc "
 	}
 
-	log.Println(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
-		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id=? %s`,
-		where), memberId)
 	if pagination {
 		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
 		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE o.buyer_id=? %s`,
@@ -251,28 +248,89 @@ func (o *OrderQuery) QueryPagerTradeOrder(memberId int64, begin, size int, pagin
 	// 查询分页的订单
 	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
         ot.order_amount,ot.discount_amount,
-        ot.final_amount,o.state,ot.create_time
-         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time
+        FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
          WHERE o.buyer_id=? %s %s LIMIT ?,?`,
 		where, orderBy),
 		func(rs *sql.Rows) {
+			var cashPay int
+			var ticket string
 			for rs.Next() {
 				e := &define.ComplexOrder{}
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
-					&e.State, &e.CreateTime)
-				e.StateText = order.OrderState(e.State).String()
+					&cashPay, &ticket, &e.State, &e.CreateTime)
+				e.Extend = map[string]string{
+					"StateText":   order.OrderState(e.State).String(),
+					"CashPay":     strconv.Itoa(cashPay),
+					"TicketImage": ticket,
+				}
+
 				orderList = append(orderList, e)
 			}
 			rs.Close()
 		}, memberId, begin, size)
 
-	log.Println(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("QueryPagerTradeOrder: ", err)
+	}
+	return num, orderList
+}
+
+// 查询分页订单
+func (o *OrderQuery) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+	where, orderBy string) (int32, []*define.ComplexOrder) {
+	d := o.Connector
+	orderList := []*define.ComplexOrder{}
+	var num int32
+	if size == 0 || begin < 0 {
+		return 0, orderList
+	}
+	if where != "" {
+		where = "AND " + where
+	}
+	if orderBy != "" {
+		orderBy = "ORDER BY " + orderBy
+	} else {
+		orderBy = " ORDER BY o.create_time desc "
+	}
+
+	if pagination {
+		d.ExecScalar(fmt.Sprintf(`SELECT COUNT(0) FROM order_list o
+		  INNER JOIN order_trade_order ot ON ot.order_id = o.id WHERE ot.vendor_id=? %s`,
+			where), &num, vendorId)
+		if num == 0 {
+			return num, orderList
+		}
+	}
+
+	// 查询分页的订单
+	err := d.Query(fmt.Sprintf(`SELECT o.id,o.order_no,vendor_id,ot.subject,
         ot.order_amount,ot.discount_amount,
-        ot.final_amount,o.state,ot.create_time
-         FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
-         WHERE o.buyer_id=? %s %s LIMIT ?,?`,
-		where, orderBy))
+        ot.final_amount,ot.cash_pay,ot.ticket_image, o.state,o.create_time,
+        m.usr FROM order_list o INNER JOIN order_trade_order ot ON ot.order_id = o.id
+        LEFT JOIN mm_member m ON m.id = o.buyer_id
+         WHERE ot.vendor_id=? %s %s LIMIT ?,?`,
+		where, orderBy),
+		func(rs *sql.Rows) {
+			var cashPay int
+			var ticket string
+			var usr string
+			for rs.Next() {
+				e := &define.ComplexOrder{}
+				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
+					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
+					&cashPay, &ticket, &e.State, &e.CreateTime, &usr)
+				e.Extend = map[string]string{
+					"StateText":   order.OrderState(e.State).String(),
+					"CashPay":     strconv.Itoa(cashPay),
+					"TicketImage": ticket,
+					"Usr":         usr,
+				}
+				orderList = append(orderList, e)
+			}
+			rs.Close()
+		}, vendorId, begin, size)
 
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("QueryPagerTradeOrder: ", err)

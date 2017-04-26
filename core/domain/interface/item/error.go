@@ -42,4 +42,7 @@ var (
 
 	ErrCanNotDeleteItem *domain.DomainError = domain.NewDomainError(
 		"err_goods_can_not_delete_item", "已售出货品只允许下架。")
+
+	ErrNotSetWholesalePrice *domain.DomainError = domain.NewDomainError(
+		"err_not_set_wholesale_price", "请先设置批发价格！")
 )

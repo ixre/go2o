@@ -277,21 +277,22 @@ func (p *profileManagerImpl) sendNotifyMail(pt merchant.IMerchant) error {
 
 // 修改密码,旧密码可为空
 func (p *profileManagerImpl) ModifyPassword(newPwd, oldPwd string) error {
-	if newPwd == oldPwd {
-		return domain.ErrPwdCannotSame
-	}
 	if b, err := dm.ChkPwdRight(newPwd); !b {
 		return err
 	}
-
 	//log.Println("----",p.member.value.Pwd)
 	//log.Println("----",oldPwd)
+	//log.Println("----",newPwd)
 	//log.Println("---- 123000 / ",dm.MemberSha1Pwd("123000"))
 	//log.Println("---- 123456 / ",dm.MemberSha1Pwd("123456"))
-	if len(oldPwd) != 0 && oldPwd != p.member.value.Pwd {
-		return domain.ErrPwdOldPwdNotRight
+	if len(oldPwd) != 0 {
+		if newPwd == oldPwd {
+			return domain.ErrPwdCannotSame
+		}
+		if oldPwd != p.member.value.Pwd {
+			return domain.ErrPwdOldPwdNotRight
+		}
 	}
-
 	p.member.value.Pwd = newPwd
 	_, err := p.member.Save()
 	return err

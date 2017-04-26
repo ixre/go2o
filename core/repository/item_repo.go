@@ -289,7 +289,7 @@ func (i *goodsRepo) SelectItemSku(where string, v ...interface{}) []*item.Sku {
 
 // Save ItemSku
 func (i *goodsRepo) SaveItemSku(v *item.Sku) (int, error) {
-	id, err := orm.Save(i._orm, v, int(v.Id))
+	id, err := orm.Save(i._orm, v, int(v.ID))
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[ Orm][ Error]:", err.Error(), "; Entity:ItemSku")
 	}

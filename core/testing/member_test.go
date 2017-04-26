@@ -2,6 +2,7 @@ package testing
 
 import (
 	"go2o/core/domain/interface/member"
+	"go2o/core/infrastructure/domain"
 	"go2o/core/testing/ti"
 	"testing"
 	"time"
@@ -43,4 +44,19 @@ func TestToBePremium(t *testing.T) {
 	v := m.GetValue()
 	t.Logf("Premium: user:%d ; expires:%s", v.PremiumUser,
 		time.Unix(v.PremiumExpires, 0).Format("2006-01-02 15:04:05"))
+}
+
+func TestModifyPwd(t *testing.T) {
+	repo := ti.MemberRepo
+	m := repo.GetMember(2)
+	newPwd := domain.MemberSha1Pwd("13268240456")
+	err := m.Profile().ModifyPassword(newPwd, "")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if o := m.GetValue().Pwd; o != newPwd {
+		t.Logf("登陆密码不正确")
+		t.FailNow()
+	}
 }

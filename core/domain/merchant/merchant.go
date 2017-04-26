@@ -152,6 +152,8 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		Level: 1,
 		// 标志
 		Logo: "",
+		// 公司名称
+		CompanyName: "",
 		// 省
 		Province: v.Province,
 		// 市
@@ -182,8 +184,8 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 		names := m.valRepo.GetAreaNames([]int32{v.Province, v.City, v.District})
 		location := strings.Join(names, "")
 		ev := &merchant.EnterpriseInfo{
-			MerchantId:   mchId,
-			Name:         v.CompanyName,
+			MchId:        mchId,
+			CompanyName:  v.CompanyName,
 			CompanyNo:    v.CompanyNo,
 			PersonName:   v.PersonName,
 			PersonIdNo:   v.PersonId,
@@ -198,7 +200,7 @@ func (m *merchantManagerImpl) createNewMerchant(v *merchant.MchSignUp) error {
 			AuthDoc:      v.AuthDoc,
 			Reviewed:     v.Reviewed,
 			ReviewTime:   unix,
-			Remark:       "",
+			ReviewRemark: "",
 			UpdateTime:   unix,
 		}
 		_, err = mch.ProfileManager().SaveEnterpriseInfo(ev)
@@ -297,6 +299,7 @@ func (m *merchantImpl) Complex() *merchant.ComplexMerchant {
 		SelfSales:     src.SelfSales,
 		Level:         src.Level,
 		Logo:          src.Logo,
+		CompanyName:   src.CompanyName,
 		Province:      src.Province,
 		City:          src.City,
 		District:      src.District,
@@ -329,6 +332,9 @@ func (m *merchantImpl) SetValue(v *merchant.Merchant) error {
 
 		if len(v.Logo) != 0 {
 			tv.Logo = v.Logo
+		}
+		if len(v.CompanyName) != 0 {
+			tv.CompanyName = v.CompanyName
 		}
 		tv.Pwd = v.Pwd
 		tv.UpdateTime = time.Now().Unix()
@@ -416,9 +422,10 @@ func (m *merchantImpl) Wholesaler() wholesaler.IWholesaler {
 	if m._wholesaler == nil {
 		mchId := m.GetAggregateRootId()
 		v := m._wsRepo.GetWsWholesaler(mchId)
-		if v != nil {
-			m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
+		if v == nil {
+			v, _ = m.createWholesaler()
 		}
+		m._wholesaler = wsImpl.NewWholesaler(mchId, v, m._wsRepo)
 	}
 	return m._wholesaler
 }
@@ -428,13 +435,19 @@ func (m *merchantImpl) EnableWholesale() error {
 	if m.Wholesaler() != nil {
 		return errors.New("wholesale for merchant enabled!")
 	}
+	_, err := m.createWholesaler()
+	return err
+}
+
+func (m *merchantImpl) createWholesaler() (*wholesaler.WsWholesaler, error) {
 	v := &wholesaler.WsWholesaler{
 		MchId:       m.GetAggregateRootId(),
 		Rate:        1,
-		ReviewState: enum.ReviewAwaiting,
+		ReviewState: enum.ReviewPass,
+		//ReviewState: enum.ReviewAwaiting,
 	}
 	_, err := m._wsRepo.SaveWsWholesaler(v, true)
-	return err
+	return v, err
 }
 
 // 创建商户
@@ -818,6 +831,26 @@ func (a *accountImpl) Present(amount float32, remark string) error {
 		a.value.PresentAmount += amount
 		a.value.UpdateTime = time.Now().Unix()
 		err = a.Save()
+	}
+	return err
+}
+
+// 充值
+func (a *accountImpl) Charge(kind int32, amount float64,
+	title, outerNo string, relateUser int64) error {
+	if amount <= 0 || math.IsNaN(float64(amount)) {
+		return merchant.ErrAmount
+	}
+	l := a.createBalanceLog(merchant.KindAccountCharge,
+		title, outerNo, float32(amount), 0, 1)
+	_, err := a.SaveBalanceLog(l)
+	if err == nil {
+		a.value.Balance += float32(amount)
+		a.value.UpdateTime = time.Now().Unix()
+		err = a.Save()
+		if err != nil {
+			return err
+		}
 	}
 	return err
 }

@@ -129,7 +129,7 @@ CHANGE COLUMN `goods_no` `code` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_u
 ALTER TABLE `pro_product`
 ADD COLUMN `sort_num` INT(11) NULL COMMENT '排序序号' AFTER `update_time`;
 
-ALTER TABLE `gs_goods` 
+ALTER TABLE `gs_goods`
 CHANGE COLUMN `id` `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT '商品编号' ,
 CHANGE COLUMN `item_id` `product_id` INT(11) NULL DEFAULT NULL COMMENT '产品编号' ,
 CHANGE COLUMN `sku_id` `sku_id` INT(11) NULL DEFAULT NULL COMMENT '默认SKU编号' ,
@@ -515,7 +515,7 @@ CREATE TABLE sale_order_item (
 
 /* 2017-03-03 */
 
-ALTER TABLE `sale_sub_order` 
+ALTER TABLE `sale_sub_order`
 DROP COLUMN `order_pid`;
 
 
@@ -629,6 +629,9 @@ ADD COLUMN `premium_expires` INT(11) NOT NULL COMMENT '高级会员过期时间'
 
 /* 2017-03-09 */
 
+ALTER TABLE `order_trade_order`
+ADD COLUMN `ticket_image` VARCHAR(150) NOT NULL COMMENT '发票图片' AFTER `cash_pay`;
+
 
 
 
@@ -664,9 +667,16 @@ CREATE TABLE ws_rebate_rate (
   PRIMARY KEY (id)) comment='批发客户分组返点比例设置';
 
 CREATE TABLE ws_item (
-  item_id          int(10) NOT NULL AUTO_INCREMENT comment '产品编号',
-  enable_wholesale int(2) NOT NULL comment '是否启用批发',
-  PRIMARY KEY (item_id));
+  id            int(10) NOT NULL AUTO_INCREMENT comment '编号',
+  vendor_id     int(10) NOT NULL comment '运营商编号',
+  item_id       int(10) NOT NULL comment '商品编号',
+  shelve_state  int(2) NOT NULL comment '上架状态',
+  review_state  int(2) NOT NULL comment '是否审核通过',
+  review_remark varchar(45) NOT NULL comment '审核备注',
+  PRIMARY KEY (id)) comment='批发商品';
+
+
+
 
 CREATE TABLE ws_sku_price (
   id               int(10) NOT NULL AUTO_INCREMENT,
@@ -683,4 +693,32 @@ CREATE TABLE ws_item_discount (
   require_amount int(10) NOT NULL comment '要求金额，默认为0',
   discount_rate  decimal(4, 2) NOT NULL comment '折扣率',
   PRIMARY KEY (id)) comment='批发商品折扣';
+
+/* 2017-04-24 */
+
+ALTER TABLE `mch_merchant`
+  ADD COLUMN `company_name` VARCHAR(45) NULL COMMENT '公司名称' AFTER `name`;
+
+ALTER TABLE `mch_enterprise_info`
+  DROP COLUMN `is_handled`,
+  CHANGE COLUMN `address` `address` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司地址' AFTER `location`,
+  CHANGE COLUMN `mch_id` `mch_id` INT(11) NULL DEFAULT NULL COMMENT '商户编号' ,
+  CHANGE COLUMN `name` `company_name` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '公司名称' ,
+  CHANGE COLUMN `company_no` `company_no` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照编号' ,
+  CHANGE COLUMN `person_name` `person_name` VARCHAR(10) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '法人姓名' ,
+  CHANGE COLUMN `tel` `tel` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicm.A<QS,KKKKKKKKJUUFASDTHJJ MMGBV
+  MMode_ci' NULL DEFAULT NULL COMMENT '公司电话' ,
+  CHANGE COLUMN `province` `province` INT(11) NOT NULL COMMENT '所在省' ,
+  CHANGE COLUMN `city` `city` INT(11) NOT NULL COMMENT '所在市' ,
+  CHANGE COLUMN `district` `district` INT(11) NOT NULL COMMENT '所在区' ,
+  CHANGE COLUMN `location` `location` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '位置' ,
+  CHANGE COLUMN `person_image` `person_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '法人身份证照片' ,
+  CHANGE COLUMN `company_image` `company_image` VARCHAR(120) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '营业执照照片' ,
+  CHANGE COLUMN `review_time` `review_time` INT(11) NULL DEFAULT NULL COMMENT '审核时间' ,
+  CHANGE COLUMN `remark` `review_remark` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT '审核备注' ;
+
+ALTER TABLE `ws_item`
+  CHANGE COLUMN `vendor_id` `vendor_id` INT(10) NOT NULL COMMENT '运营商编号' AFTER `item_id`,
+  ADD COLUMN `price` DECIMAL(10,2) NULL COMMENT '价格' AFTER `vendor_id`,
+  ADD COLUMN `price_range` VARCHAR(45) NULL COMMENT '价格区间' AFTER `price`;
 

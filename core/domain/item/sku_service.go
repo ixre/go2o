@@ -131,8 +131,8 @@ func (s *skuServiceImpl) Merge(from []*item.Sku, to *[]*item.Sku) {
 	for _, v := range dst {
 		if fs, ok := fromMap[v.SpecData]; ok {
 			//log.Println("SKU MERGE > dst: ",v.Id,"; src:",fs.Id)
-			if v.Id == 0 {
-				v.Id = fs.Id
+			if v.ID == 0 {
+				v.ID = fs.ID
 			}
 		}
 	}
@@ -298,7 +298,7 @@ func (s *skuServiceImpl) GetSkuJson(skuArr []*item.Sku) []byte {
 	arr := make([]*skuDto, l)
 	for i, v := range skuArr {
 		arr[i] = &skuDto{
-			SkuId:    v.Id,
+			SkuId:    v.ID,
 			SpecData: v.SpecData,
 			SpecWord: v.SpecWord,
 			Price:    v.Price,

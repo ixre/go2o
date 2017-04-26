@@ -323,3 +323,13 @@ func (m *MemberQuery) PagedGoodsFav(memberId int64, begin, end int,
 	}
 	return num, rows
 }
+
+// 获取从指定时间到现在推荐指定等级会员的数量
+func (m *MemberQuery) GetInviterQuantity(memberId int64, level int32, begin int64) int32 {
+	var total int32
+	m.Connector.ExecScalar(`SELECT COUNT(0) FROM mm_relation
+        INNER JOIN mm_member ON mm_member.id = mm_relation.member_id
+        WHERE inviter_id = ? AND reg_time > ? AND level >= ?`,
+		&total, memberId, begin, level)
+	return total
+}

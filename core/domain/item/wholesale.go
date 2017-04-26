@@ -2,7 +2,11 @@ package item
 
 import (
 	"github.com/jsix/gof/util"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/product"
+	"go2o/core/infrastructure/format"
+	"strings"
 )
 
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
@@ -26,8 +30,13 @@ func newWholesaleItem(itemId int32, it item.IGoodsItem,
 func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 	v := w.repo.GetWsItem(w.itemId)
 	if v == nil {
+		iv := w.it.GetValue()
 		v = &item.WsItem{
-			ItemId:          w.itemId,
+			ItemId:      w.itemId,
+			VendorId:    iv.VendorId,
+			ShelveState: item.ShelvesInWarehouse,
+			//todo: test
+			ReviewState:     enum.ReviewPass,
 			EnableWholesale: 0,
 		}
 		w.repo.SaveWsItem(v, true)
@@ -60,6 +69,50 @@ func (w *wholesaleItemImpl) TurnWholesale(on bool) error {
 // 保存
 func (w *wholesaleItemImpl) Save() (int32, error) {
 	return util.I32Err(w.repo.SaveWsItem(w.value, false))
+}
+
+// 是否上架
+func (g *wholesaleItemImpl) IsOnShelves() bool {
+	return g.value.ShelveState == item.ShelvesOn
+}
+
+// 设置上架
+func (g *wholesaleItemImpl) SetShelve(state int32, remark string) error {
+	if state == item.ShelvesIncorrect && len(remark) == 0 {
+		return product.ErrNilRejectRemark
+	}
+	if state == item.ShelvesOn && g.value.Price <= 0 {
+		return item.ErrNotSetWholesalePrice
+	}
+	g.value.ShelveState = state
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 标记为违规
+func (g *wholesaleItemImpl) Incorrect(remark string) error {
+	g.value.ShelveState = item.ShelvesIncorrect
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
+}
+
+// 审核
+func (g *wholesaleItemImpl) Review(pass bool, remark string) error {
+	if pass {
+		g.value.ReviewState = enum.ReviewPass
+
+	} else {
+		remark = strings.TrimSpace(remark)
+		if remark == "" {
+			return item.ErrEmptyReviewRemark
+		}
+		g.value.ReviewState = enum.ReviewReject
+	}
+	g.value.ReviewRemark = remark
+	_, err := g.Save()
+	return err
 }
 
 // 根据商品金额获取折扣
@@ -165,13 +218,37 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int32, arr []*item.WsSkuPrice) er
 		w.repo.BatchDeleteWsSkuPrice("id=?", v)
 	}
 	// 保存项
+	var min, max float64
 	for _, v := range arr {
+		if min == 0 || max == 0 {
+			min = v.WholesalePrice
+			max = v.WholesalePrice
+		}
+		if v.WholesalePrice > max {
+			max = v.WholesalePrice
+		}
+		if v.WholesalePrice < min {
+			min = v.WholesalePrice
+		}
+		// 保存SKU批发价格
 		v.ItemId = w.itemId
 		v.SkuId = skuId
 		i, err := util.I32Err(w.repo.SaveWsSkuPrice(v))
 		if err == nil {
 			v.ID = i
 		}
+	}
+	// 更新商品批发价格
+	if min > 0 && max > 0 {
+		w.value.Price = min
+		if min == max {
+			w.value.PriceRange = format.DecimalToString(min)
+		} else {
+			w.value.PriceRange = format.DecimalToString(min) +
+				"~" + format.DecimalToString(max)
+		}
+		_, err := w.Save()
+		return err
 	}
 	return nil
 }
