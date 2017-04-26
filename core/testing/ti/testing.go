@@ -37,7 +37,7 @@ var (
 func GetApp() gof.App {
 	if app == nil {
 		app = new(testingApp)
-		app.Config().Set("redis_host", "172.16.69.128")
+		app.Config().Set("redis_host", "dbs.ts.com")
 		app.Config().Set("redis_db", "10")
 		app.Config().Set("redis_port", "6379")
 		app.Config().Set("redis_auth", "123456")
@@ -74,7 +74,7 @@ func (t *testingApp) Db() db.Connector {
 		connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&loc=Local",
 			"root",
 			"",
-			"172.16.69.128",
+			"dbs.ts.com",
 			"3306",
 			"txmall",
 			"utf8",

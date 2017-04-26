@@ -151,7 +151,12 @@ func (c *confManagerImpl) SelectBuyerGroup() []*merchant.BuyerGroup {
 
 // 保存客户分组
 func (c *confManagerImpl) SaveMchBuyerGroup(v *merchant.MchBuyerGroup) (int32, error) {
-	return util.I32Err(c.repo.SaveMchBuyerGroup(v))
+	g := c.GetGroupByGroupId(v.GroupId)
+	g.Alias = v.Alias
+	g.EnableRetail = v.EnableRetail
+	g.EnableWholesale = v.EnableWholesale
+	g.RebatePeriod = v.RebatePeriod
+	return util.I32Err(c.repo.SaveMchBuyerGroup(g))
 }
 
 // 根据分组编号获取分组设置
@@ -160,11 +165,16 @@ func (c *confManagerImpl) GetGroupByGroupId(groupId int32) *merchant.MchBuyerGro
 	if v != nil {
 		return v
 	}
-	return &merchant.MchBuyerGroup{
-		MchId:           c.mchId,
-		GroupId:         groupId,
-		EnableRetail:    1,
-		EnableWholesale: 1,
-		RebatePeriod:    1,
+	g := c.memberRepo.GetManager().GetBuyerGroup(groupId)
+	if g != nil {
+		return &merchant.MchBuyerGroup{
+			MchId:           c.mchId,
+			GroupId:         groupId,
+			Alias:           g.Name,
+			EnableRetail:    1,
+			EnableWholesale: 1,
+			RebatePeriod:    1,
+		}
 	}
+	return nil
 }

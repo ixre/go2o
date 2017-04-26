@@ -103,6 +103,9 @@ func Init(ctx gof.App) {
 
 	orderRepo.SetPaymentRepo(paymentRepo)
 
+	/* 初始化数据 */
+	memberRepo.GetManager().GetAllBuyerGroups()
+
 	/** Query **/
 	memberQue := query.NewMemberQuery(db)
 	mchQuery := query.NewMerchantQuery(ctx)
@@ -122,7 +125,7 @@ func Init(ctx gof.App) {
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(catRepo, itemRepo, goodsQuery, tagSaleRepo)
+	ItemService = NewSaleService(catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)

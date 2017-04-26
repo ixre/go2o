@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
+	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant/wholesaler"
 )
 
@@ -58,6 +59,15 @@ func (w *wholesalerImpl) Abort() error {
 // 保存
 func (w *wholesalerImpl) Save() (int32, error) {
 	return util.I32Err(w.repo.SaveWsWholesaler(w.value, false))
+}
+
+// 同步商品
+func (w *wholesalerImpl) SyncItems() map[string]int32 {
+	add, del := w.repo.SyncItems(w.mchId, item.ShelvesInWarehouse, enum.ReviewPass)
+	return map[string]int32{
+		"add": int32(add),
+		"del": int32(del),
+	}
 }
 
 // 保存客户分组的批发返点率

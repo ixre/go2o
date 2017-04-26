@@ -25,6 +25,9 @@ type MerchantService interface {
 	// Parameters:
 	//  - MchId
 	Stat(mchId int32) (r *Result_, err error)
+	// Parameters:
+	//  - MchId
+	SyncWholesaleItem(mchId int32) (r map[string]int32, err error)
 }
 
 type MerchantServiceClient struct {
@@ -103,16 +106,16 @@ func (p *MerchantServiceClient) recvComplex() (value *ComplexMerchant, err error
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error5 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error6 error
-		error6, err = error5.Read(iprot)
+		error184 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error185 error
+		error185, err = error184.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error6
+		err = error185
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -182,16 +185,16 @@ func (p *MerchantServiceClient) recvCheckLogin() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error7 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error8 error
-		error8, err = error7.Read(iprot)
+		error186 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error187 error
+		error187, err = error186.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error8
+		err = error187
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -259,16 +262,16 @@ func (p *MerchantServiceClient) recvStat() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error9 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error10 error
-		error10, err = error9.Read(iprot)
+		error188 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error189 error
+		error189, err = error188.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error10
+		err = error189
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -276,6 +279,83 @@ func (p *MerchantServiceClient) recvStat() (value *Result_, err error) {
 		return
 	}
 	result := MerchantServiceStatResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - MchId
+func (p *MerchantServiceClient) SyncWholesaleItem(mchId int32) (r map[string]int32, err error) {
+	if err = p.sendSyncWholesaleItem(mchId); err != nil {
+		return
+	}
+	return p.recvSyncWholesaleItem()
+}
+
+func (p *MerchantServiceClient) sendSyncWholesaleItem(mchId int32) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("SyncWholesaleItem", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := MerchantServiceSyncWholesaleItemArgs{
+		MchId: mchId,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *MerchantServiceClient) recvSyncWholesaleItem() (value map[string]int32, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "SyncWholesaleItem" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "SyncWholesaleItem failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "SyncWholesaleItem failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error190 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error191 error
+		error191, err = error190.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error191
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "SyncWholesaleItem failed: invalid message type")
+		return
+	}
+	result := MerchantServiceSyncWholesaleItemResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -306,11 +386,12 @@ func (p *MerchantServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFu
 
 func NewMerchantServiceProcessor(handler MerchantService) *MerchantServiceProcessor {
 
-	self11 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self11.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
-	self11.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
-	self11.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
-	return self11
+	self192 := &MerchantServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self192.processorMap["Complex"] = &merchantServiceProcessorComplex{handler: handler}
+	self192.processorMap["CheckLogin"] = &merchantServiceProcessorCheckLogin{handler: handler}
+	self192.processorMap["Stat"] = &merchantServiceProcessorStat{handler: handler}
+	self192.processorMap["SyncWholesaleItem"] = &merchantServiceProcessorSyncWholesaleItem{handler: handler}
+	return self192
 }
 
 func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -323,12 +404,12 @@ func (p *MerchantServiceProcessor) Process(iprot, oprot thrift.TProtocol) (succe
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x12 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x193 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x12.Write(oprot)
+	x193.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x12
+	return false, x193
 
 }
 
@@ -459,6 +540,54 @@ func (p *merchantServiceProcessorStat) Process(seqId int32, iprot, oprot thrift.
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("Stat", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type merchantServiceProcessorSyncWholesaleItem struct {
+	handler MerchantService
+}
+
+func (p *merchantServiceProcessorSyncWholesaleItem) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := MerchantServiceSyncWholesaleItemArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("SyncWholesaleItem", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := MerchantServiceSyncWholesaleItemResult{}
+	var retval map[string]int32
+	var err2 error
+	if retval, err2 = p.handler.SyncWholesaleItem(args.MchId); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing SyncWholesaleItem: "+err2.Error())
+		oprot.WriteMessageBegin("SyncWholesaleItem", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("SyncWholesaleItem", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1087,4 +1216,224 @@ func (p *MerchantServiceStatResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("MerchantServiceStatResult(%+v)", *p)
+}
+
+// Attributes:
+//  - MchId
+type MerchantServiceSyncWholesaleItemArgs struct {
+	MchId int32 `thrift:"mchId,1" json:"mchId"`
+}
+
+func NewMerchantServiceSyncWholesaleItemArgs() *MerchantServiceSyncWholesaleItemArgs {
+	return &MerchantServiceSyncWholesaleItemArgs{}
+}
+
+func (p *MerchantServiceSyncWholesaleItemArgs) GetMchId() int32 {
+	return p.MchId
+}
+func (p *MerchantServiceSyncWholesaleItemArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.MchId = v
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SyncWholesaleItem_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("mchId", thrift.I32, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:mchId: ", p), err)
+	}
+	if err := oprot.WriteI32(int32(p.MchId)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.mchId (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:mchId: ", p), err)
+	}
+	return err
+}
+
+func (p *MerchantServiceSyncWholesaleItemArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MerchantServiceSyncWholesaleItemArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type MerchantServiceSyncWholesaleItemResult struct {
+	Success map[string]int32 `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewMerchantServiceSyncWholesaleItemResult() *MerchantServiceSyncWholesaleItemResult {
+	return &MerchantServiceSyncWholesaleItemResult{}
+}
+
+var MerchantServiceSyncWholesaleItemResult_Success_DEFAULT map[string]int32
+
+func (p *MerchantServiceSyncWholesaleItemResult) GetSuccess() map[string]int32 {
+	return p.Success
+}
+func (p *MerchantServiceSyncWholesaleItemResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemResult) readField0(iprot thrift.TProtocol) error {
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
+	}
+	tMap := make(map[string]int32, size)
+	p.Success = tMap
+	for i := 0; i < size; i++ {
+		var _key194 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key194 = v
+		}
+		var _val195 int32
+		if v, err := iprot.ReadI32(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val195 = v
+		}
+		p.Success[_key194] = _val195
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("SyncWholesaleItem_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *MerchantServiceSyncWholesaleItemResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.MAP, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := oprot.WriteMapBegin(thrift.STRING, thrift.I32, len(p.Success)); err != nil {
+			return thrift.PrependError("error writing map begin: ", err)
+		}
+		for k, v := range p.Success {
+			if err := oprot.WriteString(string(k)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+			if err := oprot.WriteI32(int32(v)); err != nil {
+				return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+			}
+		}
+		if err := oprot.WriteMapEnd(); err != nil {
+			return thrift.PrependError("error writing map end: ", err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *MerchantServiceSyncWholesaleItemResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("MerchantServiceSyncWholesaleItemResult(%+v)", *p)
 }

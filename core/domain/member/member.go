@@ -73,12 +73,6 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 	acv := m.GetAccount().GetValue()
 	// 实名信息
 	tr := pf.GetTrustedInfo()
-	taState := tr.Reviewed
-	if tr.Reviewed == 1 {
-		taState = enum.ReviewPass
-	} else {
-		taState = enum.ReviewAwaiting
-	}
 
 	s := &member.ComplexMember{
 		MemberId:          m.GetAggregateRootId(),
@@ -91,7 +85,7 @@ func (m *memberImpl) Complex() *member.ComplexMember {
 		LevelSign:         lv.ProgramSignal,
 		LevelName:         lv.Name,
 		InvitationCode:    mv.InvitationCode,
-		TrustAuthState:    taState,
+		TrustAuthState:    tr.Reviewed,
 		PremiumUser:       mv.PremiumUser,
 		PremiumExpires:    mv.PremiumExpires,
 		State:             mv.State,

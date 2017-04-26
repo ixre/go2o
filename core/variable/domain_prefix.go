@@ -14,11 +14,10 @@ var (
 	DOMAIN_PREFIX_PORTAL = "www."
 	// 手机端域名前缀
 	DOMAIN_PREFIX_MOBILE = "m."
-	// 系统管理域名前缀
-	DOMAIN_PREFIX_WEBMASTER = "webmaster."
 	// 会员中心域名前缀
 	DOMAIN_PREFIX_MEMBER = "u."
-
+	// 批发系统域名前缀
+	DOMAIN_PREFIX_WHOLESALE = "whs."
 	// 商户系统域名前缀
 	DOMAIN_PREFIX_MERCHANT = "mch."
 	// 通行证域名前缀

@@ -11,30 +11,43 @@ package rsi
 
 import (
 	"fmt"
+	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
+	"go2o/core/domain/interface/merchant"
+	"go2o/core/domain/interface/pro_model"
 	"go2o/core/domain/interface/product"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 )
+
+var _ define.ItemService = new(itemService)
 
 type itemService struct {
 	itemRepo  item.IGoodsItemRepo
 	itemQuery *query.ItemQuery
 	_cateRepo product.ICategoryRepo
 	labelRepo item.ISaleLabelRepo
+	promRepo  promodel.IProModelRepo
+	mchRepo   merchant.IMerchantRepo
+	valueRepo valueobject.IValueRepo
 }
 
 func NewSaleService(cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
-	labelRepo item.ISaleLabelRepo) *itemService {
+	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
+	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
 		itemRepo:  goodsRepo,
 		itemQuery: goodsQuery,
 		_cateRepo: cateRepo,
 		labelRepo: labelRepo,
+		promRepo:  promRepo,
+		mchRepo:   mchRepo,
+		valueRepo: valueRepo,
 	}
 }
 
@@ -45,6 +58,18 @@ func (s *itemService) GetItemValue(itemId int32) *define.Item {
 		return parser.ItemDto(item.GetValue())
 	}
 	return nil
+}
+
+// 获取SKU
+func (s *itemService) GetSku(itemId int32, skuId int32) (r *define.Sku, err error) {
+	item := s.itemRepo.GetItem(itemId)
+	if item != nil {
+		sku := item.GetSku(skuId)
+		if sku != nil {
+			return parser.SkuDto(sku), nil
+		}
+	}
+	return nil, nil
 }
 
 // 获取SKU数组
@@ -93,8 +118,19 @@ R:
 }
 
 // 获取上架商品数据（分页）
-func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
-	end int, where, sortBy string) (int, []*define.Item) {
+func (s *itemService) GetPagedOnShelvesItem(itemType int32, catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+	switch itemType {
+	case item.ItemNormal:
+		return s.getPagedOnShelvesItem(catId, start, end, where, sortBy)
+	case item.ItemWholesale:
+		return s.getPagedOnShelvesItemForWholesale(catId, start, end, where, sortBy)
+	}
+	return 0, []*define.Item{}
+}
+func (s *itemService) getPagedOnShelvesItem(catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
 	total, list := s.itemQuery.GetPagedOnShelvesItem(catId,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
@@ -105,9 +141,36 @@ func (s *itemService) GetPagedOnShelvesItem(catId int32, start,
 	return total, arr
 }
 
+func (s *itemService) getPagedOnShelvesItemForWholesale(catId int32, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
+	total, list := s.itemQuery.GetPagedOnShelvesItemForWholesale(catId,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		dto := parser.ItemDto(v)
+		s.attachWholesaleItemData(dto)
+		arr[i] = dto
+	}
+	return total, arr
+}
+
 // 获取上架商品数据（分页）
-func (s *itemService) SearchOnShelvesItem(word string, start,
-	end int, where, sortBy string) (int, []*define.Item) {
+func (s *itemService) SearchOnShelvesItem(itemType int32, word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+
+	switch itemType {
+	case item.ItemNormal:
+		return s.searchOnShelveItem(word, start, end, where, sortBy)
+	case item.ItemWholesale:
+		return s.searchOnShelveItemForWholesale(word, start, end, where, sortBy)
+	}
+	return 0, []*define.Item{}
+}
+
+func (s itemService) searchOnShelveItem(word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
 	total, list := s.itemQuery.SearchOnShelvesItem(word,
 		start, end, where, sortBy)
 	arr := make([]*define.Item, len(list))
@@ -116,6 +179,48 @@ func (s *itemService) SearchOnShelvesItem(word string, start,
 		arr[i] = parser.ItemDto(v)
 	}
 	return total, arr
+}
+
+func (s itemService) searchOnShelveItemForWholesale(word string, start,
+	end int32, where, sortBy string) (int32, []*define.Item) {
+	total, list := s.itemQuery.SearchOnShelvesItemForWholesale(word,
+		start, end, where, sortBy)
+	arr := make([]*define.Item, len(list))
+	for i, v := range list {
+		v.Image = format.GetGoodsImageUrl(v.Image)
+		dto := parser.ItemDto(v)
+		s.attachWholesaleItemData(dto)
+		arr[i] = dto
+
+	}
+	return total, arr
+}
+
+// 附加批发商品的信息
+func (i *itemService) attachWholesaleItemData(dto *define.Item) {
+	dto.Data = make(map[string]string)
+	vendor := i.mchRepo.GetMerchant(dto.VendorId)
+	if vendor != nil {
+		vv := vendor.GetValue()
+		pStr := i.valueRepo.GetAreaName(vv.Province)
+		cStr := i.valueRepo.GetAreaName(vv.City)
+		dto.Data["VendorName"] = vv.CompanyName
+		dto.Data["ShipArea"] = pStr + cStr
+		// 认证信息
+		ei := vendor.ProfileManager().GetEnterpriseInfo()
+		if ei != nil && ei.Reviewed == enum.ReviewPass {
+			dto.Data["Authorized"] = "true"
+		} else {
+			dto.Data["Authorized"] = "false"
+		}
+		// 品牌
+		b := i.promRepo.BrandService().Get(dto.BrandId)
+		if b != nil {
+			dto.Data["BrandName"] = b.Name
+			dto.Data["BrandImage"] = b.Image
+			dto.Data["BrandId"] = strconv.Itoa(int(b.ID))
+		}
+	}
 }
 
 // 获取上架商品数据（分页）
@@ -381,12 +486,17 @@ func (s *itemService) GetSnapshot(skuId int32) *item.Snapshot {
 
 // 设置商品货架状态
 func (s *itemService) SetShelveState(vendorId int32, itemId int32,
-	state int32, remark string) (_ *define.Result_, err error) {
+	itemType int32, state int32, remark string) (_ *define.Result_, err error) {
 	it := s.itemRepo.GetItem(itemId)
 	if it == nil || it.GetValue().VendorId != vendorId {
 		err = item.ErrNoSuchItem
 	} else {
-		err = it.SetShelve(state, remark)
+		switch itemType {
+		case item.ItemWholesale:
+			err = it.Wholesale().SetShelve(state, remark)
+		default:
+			err = it.SetShelve(state, remark)
+		}
 	}
 	return parser.Result(0, err), nil
 }
@@ -413,4 +523,28 @@ func (s *itemService) SignIncorrect(vendorId int32, itemId int32,
 		err = it.Incorrect(remark)
 	}
 	return parser.Result(0, err), nil
+}
+
+// 获取批发价格数组
+func (s *itemService) GetWholesalePriceArray(itemId int32, skuId int32) []*item.WsSkuPrice {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().GetSkuPrice(skuId)
+}
+
+// 保存批发价格
+func (s *itemService) SaveWholesalePrice(itemId, skuId int32, arr []*item.WsSkuPrice) error {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().SaveSkuPrice(skuId, arr)
+}
+
+// 获取批发折扣数组
+func (s *itemService) GetWholesaleDiscountArray(itemId int32, groupId int32) []*item.WsItemDiscount {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().GetItemDiscount(groupId)
+}
+
+// 保存批发折扣
+func (s *itemService) SaveWholesaleDiscount(itemId, groupId int32, arr []*item.WsItemDiscount) error {
+	it := s.itemRepo.GetItem(itemId)
+	return it.Wholesale().SaveItemDiscount(groupId, arr)
 }

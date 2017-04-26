@@ -120,3 +120,17 @@ func SaleServeClient() (*define.SaleServiceClient, error) {
 	}
 	return nil, err
 }
+
+// 基础服务
+func ItemServeClient() (*define.ItemServiceClient, error) {
+	transport, protocol, err := getTransportAndProtocol()
+	if err == nil {
+		err = transport.Open()
+		if err == nil {
+			proto := protocol.GetProtocol(transport)
+			opProto := thrift.NewTMultiplexedProtocol(proto, "item")
+			return define.NewItemServiceClientProtocol(transport, proto, opProto), err
+		}
+	}
+	return nil, err
+}

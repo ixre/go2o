@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
-	dm "go2o/core/domain"
 	"go2o/core/domain/interface/member"
 	"go2o/core/domain/interface/mss/notify"
 	"go2o/core/domain/interface/valueobject"
@@ -218,9 +217,23 @@ func (ms *memberService) GetMemberLevels() []*member.Level {
 	return ms._repo.GetManager().LevelManager().GetLevelSet()
 }
 
+// 等级列表
+func (ms *memberService) LevelList() ([]*define.Level, error) {
+	arr := []*define.Level{}
+	list := ms._repo.GetManager().LevelManager().GetLevelSet()
+	for _, v := range list {
+		arr = append(arr, parser.LevelDto(v))
+	}
+	return arr, nil
+}
+
 // 根据编号获取会员等级信息
-func (ms *memberService) GetLevelById(id int32) *member.Level {
-	return ms._repo.GetManager().LevelManager().GetLevelById(id)
+func (ms *memberService) GetLevel(id int32) (*define.Level, error) {
+	lv := ms._repo.GetManager().LevelManager().GetLevelById(id)
+	if lv != nil {
+		return parser.LevelDto(lv), nil
+	}
+	return nil, nil
 }
 
 // 根据可编程字符获取会员等级
@@ -456,15 +469,7 @@ func (ms *memberService) ModifyPassword(memberId int64, newPwd, oldPwd string) e
 	if m == nil {
 		return member.ErrNoSuchMember
 	}
-	//return m.Profile().ModifyPassword(newPwd, oldPwd)
-
-	// 兼容旧加密的密码
-	pro := m.Profile()
-	err := pro.ModifyPassword(newPwd, oldPwd)
-	if err == dm.ErrPwdOldPwdNotRight {
-		err = pro.ModifyPassword(newPwd, domain.Sha1(oldPwd))
-	}
-	return err
+	return m.Profile().ModifyPassword(newPwd, oldPwd)
 }
 
 //修改密码,传入密文密码
@@ -483,7 +488,8 @@ func (ms *memberService) testLogin(usr string, pwd string) (id int64, err error)
 	usr = strings.ToLower(strings.TrimSpace(usr))
 	val := ms._repo.GetMemberByUsr(usr)
 	if val == nil {
-		val = ms._repo.GetMemberValueByPhone(usr)
+		//todo: 界面加上使用手机号码登陆
+		//val = ms._repo.GetMemberValueByPhone(usr)
 	}
 	if val == nil {
 		return 0, member.ErrNoSuchMember
@@ -509,6 +515,22 @@ func (ms *memberService) CheckLogin(usr string, pwd string, update bool) (r *def
 		err = m.UpdateLoginTime()
 	}
 	return parser.Result64(id, err), nil
+}
+
+// 检查交易密码
+func (ms *memberService) CheckTradePwd(id int64, tradePwd string) (r *define.Result_, err error) {
+	m := ms._repo.GetMember(id)
+	if m == nil {
+		return parser.Result(0, member.ErrNoSuchMember), nil
+	}
+	mv := m.GetValue()
+	if mv.TradePwd == "" {
+		return parser.Result(0, member.ErrNotSetTradePwd), nil
+	}
+	if mv.TradePwd != tradePwd {
+		return parser.Result(0, member.ErrIncorrectTradePwd), nil
+	}
+	return &define.Result_{Result_: true}, nil
 }
 
 // 检查与现有用户不同的用户是否存在,如存在则返回错误
@@ -546,6 +568,17 @@ func (ms *memberService) InviterArray(memberId int64, depth int32) (r []int64, e
 	return []int64{}, nil
 }
 
+// 获取从指定时间到现在推荐指定等级会员的数量
+func (ms *memberService) GetInviterQuantity(memberId int64, level int32, begin int64) (int32, error) {
+	if level < 0 {
+		level = 0
+	}
+	if begin < 0 {
+		begin = 0
+	}
+	return ms._query.GetInviterQuantity(memberId, level, begin), nil
+}
+
 func (ms *memberService) GetBank(memberId int64) *member.BankInfo {
 	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	b := m.Profile().GetBank()
@@ -564,12 +597,13 @@ func (ms *memberService) UnlockBankInfo(memberId int64) error {
 }
 
 // 实名认证信息
-func (ms *memberService) GetTrustedInfo(memberId int64) member.TrustedInfo {
+func (ms *memberService) GetTrustInfo(memberId int64) (*define.TrustedInfo, error) {
+	t := member.TrustedInfo{}
 	m := ms._repo.GetMember(memberId)
-	if m == nil {
-		return member.TrustedInfo{}
+	if m != nil {
+		t = m.Profile().GetTrustedInfo()
 	}
-	return m.Profile().GetTrustedInfo()
+	return parser.TrustedInfoDto(&t), nil
 }
 
 // 保存实名认证信息
@@ -800,33 +834,15 @@ func (ms *memberService) DiscountAccount(memberId int64, account int32, title st
 	if err == nil {
 		acc := m.GetAccount()
 		switch int(account) {
+		case member.AccountBalance:
+			err = acc.DiscountBalance(title, outerNo, float32(amount),
+				member.DefaultRelateUser)
 		case member.AccountWallet:
 			err = acc.DiscountWallet(title, outerNo, float32(amount),
 				member.DefaultRelateUser, mustLargeZero)
 		}
 	}
 	return parser.I64Result(memberId, err), nil
-}
-
-// 扣减奖金
-func (ms *memberService) DiscountWallet(memberId int64, title string,
-	tradeNo string, amount float32, mustLargeZero bool) error {
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().DiscountWallet(title, tradeNo, amount,
-		member.DefaultRelateUser, mustLargeZero)
-}
-
-// 流通账户
-func (ms *memberService) ChargeFlowBalance(memberId int64, title string,
-	tradeNo string, amount float32) error {
-	m, err := ms.getMember(memberId)
-	if err != nil {
-		return err
-	}
-	return m.GetAccount().ChargeFlowBalance(title, tradeNo, amount)
 }
 
 // 验证交易密码
@@ -1069,7 +1085,7 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 		outerNo = domain.NewTradeNo(int(mchId))
 		if amount > 0 {
 			//增加奖金
-			tit2 = "[KF]客服调整-" + variable.AliasWalletAccount
+			tit2 = "[KF]" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
@@ -1078,7 +1094,7 @@ func (ms *memberService) NewBalanceTicket(mchId int32, memberId int64, accountTy
 				tit2, outerNo, amount, relateUser)
 		} else {
 			//扣减奖金
-			tit2 = "[KF]客服扣减-" + variable.AliasWalletAccount
+			tit2 = "[KF]" + variable.AliasWalletAccount
 			if len(tit) > 0 {
 				tit2 = tit2 + "(" + tit + ")"
 			}
