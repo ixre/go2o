@@ -245,7 +245,7 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 
 // 获取商品的规格(从SKU中读取)
 func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
-	specArr []*promodel.Spec) {
+	specArr promodel.SpecList) {
 	sa, ia := s.GetSpecItemArray(skuArr) //规格与规格项编号的数组
 	if l := len(sa); l > 0 {
 		// 获取传入的规格信息,按传入规格名称SKU直到找到结果为止
@@ -279,9 +279,18 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 			i2 := imp[item.SpecId]
 			specArr[i2].Items = append(specArr[i2].Items, item)
 		}
+		// 排序
+		s.sortSpecArray(specArr)
 		return specArr
 	}
 	return []*promodel.Spec{}
+}
+
+func (s *skuServiceImpl) sortSpecArray(arr promodel.SpecList) {
+	for _, v := range arr {
+		sort.Sort(v.Items)
+	}
+	sort.Sort(arr)
 }
 
 // 获取规格选择HTML

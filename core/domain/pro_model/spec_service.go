@@ -3,6 +3,7 @@ package promodel
 import (
 	"database/sql"
 	"go2o/core/domain/interface/pro_model"
+	"sort"
 )
 
 var _ promodel.ISpecService = new(specServiceImpl)
@@ -116,10 +117,15 @@ func (s *specServiceImpl) GetItems(specId int32) []*promodel.SpecItem {
 }
 
 // 获取产品模型的规格
-func (s *specServiceImpl) GetModelSpecs(proModel int32) []*promodel.Spec {
-	arr := s.rep.SelectSpec("pro_model=?", proModel)
+func (s *specServiceImpl) GetModelSpecs(proModel int32) promodel.SpecList {
+	var arr promodel.SpecList
+	var items promodel.SpecItemList
+	arr = s.rep.SelectSpec("pro_model=?", proModel)
 	for _, v := range arr {
-		v.Items = s.GetItems(v.Id)
+		items = s.GetItems(v.Id)
+		sort.Sort(items)
+		v.Items = items
 	}
+	sort.Sort(arr)
 	return arr
 }

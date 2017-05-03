@@ -241,7 +241,7 @@ type (
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格
-		SpecArray() []*promodel.Spec
+		SpecArray() promodel.SpecList
 		// 获取SKU
 		GetSku(skuId int32) *Sku
 		// 获取促销信息
