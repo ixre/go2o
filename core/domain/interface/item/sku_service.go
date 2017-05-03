@@ -19,7 +19,7 @@ type (
 		// 获取SKU的JSON字符串
 		GetSkuJson(skuArr []*Sku) []byte
 		// 获取商品的规格(从SKU中读取)
-		GetSpecArray(skuArr []*Sku) []*promodel.Spec
+		GetSpecArray(skuArr []*Sku) promodel.SpecList
 		// 获取规格选择HTML
 		GetSpecHtml(spec []*promodel.Spec) string
 	}
