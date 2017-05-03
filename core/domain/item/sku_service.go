@@ -294,7 +294,7 @@ func (s *skuServiceImpl) sortSpecArray(arr promodel.SpecList) {
 }
 
 // 获取规格选择HTML
-func (s *skuServiceImpl) GetSpecHtml(spec []*promodel.Spec) string {
+func (s *skuServiceImpl) GetSpecHtml(spec promodel.SpecList) string {
 	return s.su.GetSpecHtml(spec)
 }
 
@@ -366,7 +366,7 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 }
 
 // 获取规格选择HTML
-func (s *skuServiceUtil) GetSpecHtml(spec []*promodel.Spec) string {
+func (s *skuServiceUtil) GetSpecHtml(spec promodel.SpecList) string {
 	if len(spec) == 0 {
 		return ""
 	}
