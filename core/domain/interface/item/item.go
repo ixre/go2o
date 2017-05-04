@@ -293,6 +293,9 @@ type (
 		// 保存
 		Save() (int32, error)
 
+		// 获取详细信息
+		GetJsonDetailData() []byte
+
 		// 是否上架
 		IsOnShelves() bool
 		// 设置上架

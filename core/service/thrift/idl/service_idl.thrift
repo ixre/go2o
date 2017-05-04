@@ -536,4 +536,8 @@ service SaleService {
 service ItemService{
     // 获取SKU
     Sku GetSku(1:i32 itemId,2:i32 skuId)
+    // 获取商品的Sku-JSON格式
+    string GetItemSkuJson(1:i32 itemId)
+    // 获取商品详细数据
+    string GetItemDetailData(1:i32 itemId,2:i32 iType)
 }

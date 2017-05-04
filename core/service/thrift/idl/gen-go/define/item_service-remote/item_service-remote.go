@@ -21,6 +21,8 @@ func Usage() {
 	flag.PrintDefaults()
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  Sku GetSku(i32 itemId, i32 skuId)")
+	fmt.Fprintln(os.Stderr, "  string GetItemSkuJson(i32 itemId)")
+	fmt.Fprintln(os.Stderr, "  string GetItemDetailData(i32 itemId, i32 iType)")
 	fmt.Fprintln(os.Stderr)
 	os.Exit(0)
 }
@@ -120,21 +122,58 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err237 := (strconv.Atoi(flag.Arg(1)))
-		if err237 != nil {
+		tmp0, err241 := (strconv.Atoi(flag.Arg(1)))
+		if err241 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err238 := (strconv.Atoi(flag.Arg(2)))
-		if err238 != nil {
+		tmp1, err242 := (strconv.Atoi(flag.Arg(2)))
+		if err242 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
 		fmt.Print(client.GetSku(value0, value1))
+		fmt.Print("\n")
+		break
+	case "GetItemSkuJson":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetItemSkuJson requires 1 args")
+			flag.Usage()
+		}
+		tmp0, err243 := (strconv.Atoi(flag.Arg(1)))
+		if err243 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		fmt.Print(client.GetItemSkuJson(value0))
+		fmt.Print("\n")
+		break
+	case "GetItemDetailData":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetItemDetailData requires 2 args")
+			flag.Usage()
+		}
+		tmp0, err244 := (strconv.Atoi(flag.Arg(1)))
+		if err244 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := int32(tmp0)
+		value0 := argvalue0
+		tmp1, err245 := (strconv.Atoi(flag.Arg(2)))
+		if err245 != nil {
+			Usage()
+			return
+		}
+		argvalue1 := int32(tmp1)
+		value1 := argvalue1
+		fmt.Print(client.GetItemDetailData(value0, value1))
 		fmt.Print("\n")
 		break
 	case "":
