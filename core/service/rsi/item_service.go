@@ -82,15 +82,28 @@ func (s *itemService) GetSkuArray(itemId int32) []*item.Sku {
 }
 
 // 获取商品规格HTML信息
-func (s *itemService) GetSkuHtmOfItem(itemId int32) (specJson string,
-	specHtm string) {
-	ss := s.itemRepo.SkuService()
+func (s *itemService) GetSkuHtmOfItem(itemId int32) (specHtm string) {
 	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
-	skuBytes := ss.GetSkuJson(it.SkuArray())
-	specJson = string(skuBytes)
 	specArr := it.SpecArray()
-	specHtm = ss.GetSpecHtml(specArr)
-	return specJson, specHtm
+	return s.itemRepo.SkuService().GetSpecHtml(specArr)
+}
+
+// 获取商品详细数据
+func (s *itemService) GetItemDetailData(itemId int32, iType int32) (r string, err error) {
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	switch iType {
+	case item.ItemWholesale:
+		data := it.Wholesale().GetJsonDetailData()
+		return string(data), nil
+	}
+	return "不支持的商品类型", nil
+}
+
+// 获取商品的Sku-JSON格式
+func (s *itemService) GetItemSkuJson(itemId int32) (r string, err error) {
+	it := s.itemRepo.CreateItem(&item.GoodsItem{Id: itemId})
+	skuBytes := s.itemRepo.SkuService().GetSkuJson(it.SkuArray())
+	return string(skuBytes), nil
 }
 
 // 保存商品

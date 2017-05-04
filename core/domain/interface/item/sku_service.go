@@ -22,6 +22,8 @@ type (
 		GetSpecArray(skuArr []*Sku) promodel.SpecList
 		// 获取规格选择HTML
 		GetSpecHtml(spec promodel.SpecList) string
+		// 获取规格JSON数据
+		GetSpecJson(spec promodel.SpecList) []byte
 	}
 
 	// 商品SKU

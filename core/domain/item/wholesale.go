@@ -1,11 +1,13 @@
 package item
 
 import (
+	"encoding/json"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/product"
 	"go2o/core/infrastructure/format"
+	"strconv"
 	"strings"
 )
 
@@ -251,4 +253,52 @@ func (w *wholesaleItemImpl) SaveSkuPrice(skuId int32, arr []*item.WsSkuPrice) er
 		return err
 	}
 	return nil
+}
+
+type itemDetailData struct {
+	SpecArray []specJdo `json:"specArray"`
+	SkuArray  []skuJdo  `json:"skuArray"`
+}
+
+// 获取详细信息
+func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
+	spec := w.it.SpecArray()
+	skuArr := w.it.SkuArray()
+	skuJdoArr := []skuJdo{}
+	for _, v := range skuArr {
+		pArr := w.GetSkuPrice(v.ID)
+		if len(pArr) == 0 {
+			continue
+		}
+		jdo := skuJdo{
+			SkuId:         strconv.Itoa(int(v.ID)),
+			SpecData:      v.SpecData,
+			SpecWord:      v.SpecWord,
+			Price:         float64(v.Price),
+			DiscountPrice: float64(v.Price),
+			PriceArray:    []skuPriceJdo{},
+		}
+		// 如果只包含一个价格，则不返回价格数组
+		for j, p := range pArr {
+			if j == 0 {
+				jdo.Price = p.WholesalePrice
+				jdo.DiscountPrice = p.WholesalePrice
+				if len(pArr) == 1 {
+					break
+				}
+			}
+			jdo.PriceArray = append(jdo.PriceArray, skuPriceJdo{
+				Quantity: p.RequireQuantity,
+				Price:    p.WholesalePrice,
+			})
+		}
+		skuJdoArr = append(skuJdoArr, jdo)
+	}
+
+	i := &itemDetailData{
+		SpecArray: iJsonUtil.getSpecJdo(spec),
+		SkuArray:  skuJdoArr,
+	}
+	data, _ := json.MarshalIndent(i, "", " ")
+	return data
 }
