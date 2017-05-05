@@ -38,8 +38,7 @@ func (w *wholesaleItemImpl) init() item.IWholesaleItem {
 			VendorId:    iv.VendorId,
 			ShelveState: item.ShelvesInWarehouse,
 			//todo: test
-			ReviewState:     enum.ReviewPass,
-			EnableWholesale: 0,
+			ReviewState: enum.ReviewPass,
 		}
 		w.repo.SaveWsItem(v, true)
 	}

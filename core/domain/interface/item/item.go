@@ -371,8 +371,6 @@ type (
 		ReviewState int32 `db:"review_state"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
-		// 是否启用批发
-		EnableWholesale int32 `db:"-"`
 	}
 
 	// 商品批发价
