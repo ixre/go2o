@@ -516,6 +516,8 @@ service MerchantService{
 
 // 销售服务
 service SaleService {
+  // 批发购物车接口
+  Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 获取订单信息
   ComplexOrder GetOrder(1:string order_id,2:bool sub_order)
   // 获取子订单
@@ -536,4 +538,8 @@ service SaleService {
 service ItemService{
     // 获取SKU
     Sku GetSku(1:i32 itemId,2:i32 skuId)
+    // 获取商品的Sku-JSON格式
+    string GetItemSkuJson(1:i32 itemId)
+    // 获取商品详细数据
+    string GetItemDetailData(1:i32 itemId,2:i32 iType)
 }

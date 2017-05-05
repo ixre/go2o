@@ -73,7 +73,7 @@ func (c *wholesaleCartImpl) Check() error {
 			}
 			// 验证批发权限
 			wsIt := it.Wholesale()
-			if wsIt == nil || !wsIt.Wholesale() {
+			if wsIt == nil || !wsIt.CanWholesale() {
 				return item.ErrItemWholesaleOff
 			}
 			// 验证库存
@@ -100,7 +100,6 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartIte
 	if c.value.Items == nil {
 		c.value.Items = []*cart.WsCartItem{}
 	}
-
 	var sku *item.Sku
 	it := c.goodsRepo.GetItem(itemId)
 	if it == nil {
@@ -115,7 +114,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartIte
 	}
 	// 验证批发权限
 	wsIt := it.Wholesale()
-	if wsIt == nil || !wsIt.Wholesale() {
+	if wsIt == nil || !wsIt.CanWholesale() {
 		return nil, item.ErrItemWholesaleOff
 	}
 	// 判断商品SkuId

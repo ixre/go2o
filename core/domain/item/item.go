@@ -245,7 +245,7 @@ func (g *itemImpl) SkuArray() []*item.Sku {
 }
 
 // 获取商品的规格
-func (g *itemImpl) SpecArray() []*promodel.Spec {
+func (g *itemImpl) SpecArray() promodel.SpecList {
 	return g.repo.SkuService().GetSpecArray(g.SkuArray())
 }
 

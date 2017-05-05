@@ -1,5 +1,9 @@
 package promodel
 
+import (
+	"sort"
+)
+
 type (
 	// 规格
 	Spec struct {
@@ -14,7 +18,7 @@ type (
 		// 排列序号
 		SortNum int32 `db:"sort_num"`
 		// 规格项
-		Items []*SpecItem `db:"-"`
+		Items SpecItemList `db:"-"`
 	}
 
 	// 规格项
@@ -49,7 +53,47 @@ type ISpecService interface {
 	// 获取规格的规格项
 	GetItems(specId int32) []*SpecItem
 	// 获取产品模型的规格
-	GetModelSpecs(proModel int32) []*Spec
+	GetModelSpecs(proModel int32) SpecList
 	// 保存模型的规格
 	// SaveModelSpecs(proModel int32, arr []*Spec)
+}
+
+var _ sort.Interface = SpecList{}
+
+type SpecList []*Spec
+
+func (s SpecList) Len() int {
+	return len(s)
+}
+
+// Less reports whether the element with
+// index i should sort before the element with index j.
+func (s SpecList) Less(i, j int) bool {
+	b := s[i].SortNum < s[j].SortNum
+	return b || !b && s[i].Id < s[j].Id
+}
+
+// Swap swaps the elements with indexes i and j.
+func (s SpecList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+var _ sort.Interface = SpecItemList{}
+
+type SpecItemList []*SpecItem
+
+func (s SpecItemList) Len() int {
+	return len(s)
+}
+
+// Less reports whether the element with
+// index i should sort before the element with index j.
+func (s SpecItemList) Less(i, j int) bool {
+	b := s[i].SortNum < s[j].SortNum
+	return b || !b && s[i].Id < s[j].Id
+}
+
+// Swap swaps the elements with indexes i and j.
+func (s SpecItemList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }
