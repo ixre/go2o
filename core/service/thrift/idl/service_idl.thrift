@@ -516,6 +516,8 @@ service MerchantService{
 
 // 销售服务
 service SaleService {
+  // 批发购物车接口
+  Result WholesaleCartV1(1:i64 memberId,2:string action,3:map<string,string> data)
   // 获取订单信息
   ComplexOrder GetOrder(1:string order_id,2:bool sub_order)
   // 获取子订单
