@@ -39,7 +39,7 @@ var (
 		"no_such_goods", "商品不存在")
 
 	ErrItemWholesaleOff *domain.DomainError = domain.NewDomainError(
-		"err_item_wholesale_off", "商品无法进行批发")
+		"err_item_wholesale_off", "商品已下架或待审核!")
 
 	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
 		"latest_snapshot", "已经是最新的快照")
@@ -241,7 +241,7 @@ type (
 		// 获取SKU数组
 		SkuArray() []*Sku
 		// 获取商品的规格
-		SpecArray() []*promodel.Spec
+		SpecArray() promodel.SpecList
 		// 获取SKU
 		GetSku(skuId int32) *Sku
 		// 获取促销信息
@@ -287,11 +287,12 @@ type (
 		// 获取领域编号
 		GetDomainId() int32
 		// 是否允许批发
-		Wholesale() bool
-		// 开启批发功能
-		TurnWholesale(on bool) error
+		CanWholesale() bool
 		// 保存
 		Save() (int32, error)
+
+		// 获取详细信息
+		GetJsonDetailData() []byte
 
 		// 是否上架
 		IsOnShelves() bool
@@ -370,8 +371,6 @@ type (
 		ReviewState int32 `db:"review_state"`
 		// 审核备注
 		ReviewRemark string `db:"review_remark"`
-		// 是否启用批发
-		EnableWholesale int32 `db:"-"`
 	}
 
 	// 商品批发价

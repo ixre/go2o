@@ -245,7 +245,7 @@ func (s *skuServiceImpl) RebuildSkuArray(sku *[]*item.Sku,
 
 // 获取商品的规格(从SKU中读取)
 func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
-	specArr []*promodel.Spec) {
+	specArr promodel.SpecList) {
 	sa, ia := s.GetSpecItemArray(skuArr) //规格与规格项编号的数组
 	if l := len(sa); l > 0 {
 		// 获取传入的规格信息,按传入规格名称SKU直到找到结果为止
@@ -279,46 +279,41 @@ func (s *skuServiceImpl) GetSpecArray(skuArr []*item.Sku) (
 			i2 := imp[item.SpecId]
 			specArr[i2].Items = append(specArr[i2].Items, item)
 		}
+		// 排序
+		s.sortSpecArray(specArr)
 		return specArr
 	}
 	return []*promodel.Spec{}
 }
 
+func (s *skuServiceImpl) sortSpecArray(arr promodel.SpecList) {
+	for _, v := range arr {
+		sort.Sort(v.Items)
+	}
+	sort.Sort(arr)
+}
+
 // 获取规格选择HTML
-func (s *skuServiceImpl) GetSpecHtml(spec []*promodel.Spec) string {
+func (s *skuServiceImpl) GetSpecHtml(spec promodel.SpecList) string {
 	return s.su.GetSpecHtml(spec)
+}
+
+// 获取规格JSON数据
+func (s *skuServiceImpl) GetSpecJson(spec promodel.SpecList) []byte {
+	arr := iJsonUtil.getSpecJdo(spec)
+	data, _ := json.Marshal(arr)
+	return data
 }
 
 // 获取SKU的JSON字符串
 func (s *skuServiceImpl) GetSkuJson(skuArr []*item.Sku) []byte {
-	l := len(skuArr)
-	if l == 0 {
-		return []byte("[]")
-	}
-	arr := make([]*skuDto, l)
-	for i, v := range skuArr {
-		arr[i] = &skuDto{
-			SkuId:    v.ID,
-			SpecData: v.SpecData,
-			SpecWord: v.SpecWord,
-			Price:    v.Price,
-		}
-	}
+	arr := iJsonUtil.getSkuJdo(skuArr)
 	b, _ := json.Marshal(arr)
 	return b
 }
 
 type skuTempStruct struct {
 	Spec []*promodel.Spec
-}
-
-// SKU传输对象
-type skuDto struct {
-	SkuId    int32
-	SpecData string
-	SpecWord string
-	Code     string
-	Price    float32 //todo:临时方便加了价格，实际应单独异步获取价格
 }
 
 type skuServiceUtil struct {
@@ -337,11 +332,11 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 	var err error
 	s.skuTemp = &template.Template{}
 	htm := `{{range $i,$v := .Spec}}
-        <div class="spec_arr">
-            <span class="spec_lab">{{$v.Name}}</span>
-            <p class="spec_opt">
+        <div class="mod-sku-spec">
+            <span class="spec-label">{{$v.Name}}</span>
+            <p class="spec-option">
                 {{range $i2,$vi := $v.Items}}
-                <a class="spec_i" href="javascript:void(0)" sid="{{$v.Id}}:{{$vi.Id}}">
+                <a class="spec-option-check spec-option-item" href="javascript:void(0)" sid="{{$v.Id}}:{{$vi.Id}}">
                     {{$vi.Value}}
                 </a>
                 {{end}}
@@ -357,7 +352,7 @@ func (s *skuServiceUtil) init() *skuServiceUtil {
 }
 
 // 获取规格选择HTML
-func (s *skuServiceUtil) GetSpecHtml(spec []*promodel.Spec) string {
+func (s *skuServiceUtil) GetSpecHtml(spec promodel.SpecList) string {
 	if len(spec) == 0 {
 		return ""
 	}
