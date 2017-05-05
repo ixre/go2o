@@ -11,6 +11,8 @@ package rsi
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	proItem "go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
@@ -21,6 +23,7 @@ import (
 	"go2o/core/query"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/service/thrift/parser"
+	"strconv"
 	"strings"
 )
 
@@ -51,7 +54,107 @@ func NewShoppingService(r order.IOrderRepo,
 	}
 }
 
-/*================ 购物车  ================*/
+/*------------------ 购物车  ------------------*/
+
+/* 批发购物车 */
+
+func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
+	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
+	switch action {
+	case "GET":
+		return s.wsGetCart(c)
+	case "PUT":
+		return s.wsPutItem(c, data)
+	case "POP":
+		return s.wsRemoveItem(c, data)
+	case "CHECK":
+		return s.wsCheckCart(c, data)
+	}
+	return &define.Result_{
+		Result_: false,
+		Message: "unknow action",
+	}, nil
+}
+
+func (s *shoppingService) wsGetCart(c cart.ICart) (*define.Result_, error) {
+	v := c.(cart.IWholesaleCart).GetValue()
+	data, _ := json.Marshal(v)
+	r := &define.Result_{
+		Result_: true,
+		Message: string(data),
+	}
+	return r, nil
+}
+
+func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	aId := c.GetAggregateRootId()
+	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
+	skuData := data["Data"]
+	arr := []*cart.ItemPair{}
+	splitArr := strings.Split(skuData, ";")
+	for _, str := range splitArr {
+		i := strings.Index(str, ":")
+		if i == -1 {
+			continue
+		}
+		skuId, err := util.I32Err(strconv.Atoi(str[:i]))
+		quantity, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
+		if err == nil && err1 == nil {
+			arr = append(arr, &cart.ItemPair{
+				SkuId:    skuId,
+				Quantity: quantity,
+			})
+		}
+	}
+	for _, v := range arr {
+		err = c.Put(itemId, v.SkuId, v.Quantity)
+		if err != nil {
+			break
+		}
+	}
+	return parser.Result(aId, err), nil
+}
+
+func (s *shoppingService) wsRemoveItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	aId := c.GetAggregateRootId()
+	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
+	skuId, err1 := util.I32Err(strconv.Atoi(data["SkuId"]))
+	quantity, err2 := util.I32Err(strconv.Atoi(data["Quantity"]))
+	if err != nil {
+		return parser.Result(aId, err), nil
+	}
+	if err1 != nil {
+		return parser.Result(aId, err1), nil
+	}
+	if err2 != nil {
+		return parser.Result(aId, err2), nil
+	}
+	err = c.Remove(itemId, skuId, quantity)
+	return parser.Result(aId, err), nil
+}
+
+// 勾选购物车，格式如：1:2;1:5
+func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	checked := data["Checked"]
+	arr := []*cart.ItemPair{}
+	splitArr := strings.Split(checked, ";")
+	for _, str := range splitArr {
+		i := strings.Index(str, ":")
+		if i == -1 {
+			continue
+		}
+		itemId, err := util.I32Err(strconv.Atoi(str[:i]))
+		skuId, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
+		if err == nil && err1 == nil {
+			arr = append(arr, &cart.ItemPair{
+				ItemId: itemId,
+				SkuId:  skuId,
+			})
+		}
+	}
+	err := c.SignItemChecked(arr)
+	return parser.Result(c.GetAggregateRootId(), err), nil
+}
 
 //  获取购物车
 func (s *shoppingService) getShoppingCart(buyerId int64, code string) cart.ICart {

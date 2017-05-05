@@ -122,15 +122,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSku requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err241 := (strconv.Atoi(flag.Arg(1)))
-		if err241 != nil {
+		tmp0, err253 := (strconv.Atoi(flag.Arg(1)))
+		if err253 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err242 := (strconv.Atoi(flag.Arg(2)))
-		if err242 != nil {
+		tmp1, err254 := (strconv.Atoi(flag.Arg(2)))
+		if err254 != nil {
 			Usage()
 			return
 		}
@@ -144,8 +144,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetItemSkuJson requires 1 args")
 			flag.Usage()
 		}
-		tmp0, err243 := (strconv.Atoi(flag.Arg(1)))
-		if err243 != nil {
+		tmp0, err255 := (strconv.Atoi(flag.Arg(1)))
+		if err255 != nil {
 			Usage()
 			return
 		}
@@ -159,15 +159,15 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetItemDetailData requires 2 args")
 			flag.Usage()
 		}
-		tmp0, err244 := (strconv.Atoi(flag.Arg(1)))
-		if err244 != nil {
+		tmp0, err256 := (strconv.Atoi(flag.Arg(1)))
+		if err256 != nil {
 			Usage()
 			return
 		}
 		argvalue0 := int32(tmp0)
 		value0 := argvalue0
-		tmp1, err245 := (strconv.Atoi(flag.Arg(2)))
-		if err245 != nil {
+		tmp1, err257 := (strconv.Atoi(flag.Arg(2)))
+		if err257 != nil {
 			Usage()
 			return
 		}

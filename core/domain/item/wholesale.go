@@ -271,12 +271,14 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 			continue
 		}
 		jdo := skuJdo{
-			SkuId:         strconv.Itoa(int(v.ID)),
-			SpecData:      v.SpecData,
-			SpecWord:      v.SpecWord,
-			Price:         float64(v.Price),
-			DiscountPrice: float64(v.Price),
-			PriceArray:    []skuPriceJdo{},
+			SkuId:            strconv.Itoa(int(v.ID)),
+			SpecData:         v.SpecData,
+			SpecWord:         v.SpecWord,
+			Price:            float64(v.Price),
+			DiscountPrice:    float64(v.Price),
+			CanSalesQuantity: v.Stock,
+			SalesCount:       v.SaleNum,
+			PriceArray:       []skuPriceJdo{},
 		}
 		// 如果只包含一个价格，则不返回价格数组
 		for j, p := range pArr {

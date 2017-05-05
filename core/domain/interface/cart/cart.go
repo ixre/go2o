@@ -159,6 +159,8 @@ type (
 		ItemId int32
 		// SKU编号
 		SkuId int32
+		// 数量
+		Quantity int32
 		// 是否勾选结算
 		Checked int32
 	}

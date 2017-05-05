@@ -41,6 +41,10 @@ type skuJdo struct {
 	Price float64
 	// 折扣价
 	DiscountPrice float64
+	// 可售数量
+	CanSalesQuantity int32
+	// 已售数量
+	SalesCount int32
 	// 数量与价格字典
 	PriceArray []skuPriceJdo
 }
