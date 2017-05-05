@@ -59,6 +59,7 @@ func NewShoppingService(r order.IOrderRepo,
 /* 批发购物车 */
 
 func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
+	//todo: check member
 	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
 	switch action {
 	case "GET":
@@ -112,6 +113,9 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 			break
 		}
 	}
+	if err == nil {
+		_, err = c.Save()
+	}
 	return parser.Result(aId, err), nil
 }
 
@@ -130,6 +134,9 @@ func (s *shoppingService) wsRemoveItem(c cart.ICart, data map[string]string) (*d
 		return parser.Result(aId, err2), nil
 	}
 	err = c.Remove(itemId, skuId, quantity)
+	if err == nil {
+		_, err = c.Save()
+	}
 	return parser.Result(aId, err), nil
 }
 

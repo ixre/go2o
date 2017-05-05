@@ -39,7 +39,7 @@ var (
 		"no_such_goods", "商品不存在")
 
 	ErrItemWholesaleOff *domain.DomainError = domain.NewDomainError(
-		"err_item_wholesale_off", "商品无法进行批发")
+		"err_item_wholesale_off", "商品已下架或待审核!")
 
 	ErrLatestSnapshot *domain.DomainError = domain.NewDomainError(
 		"latest_snapshot", "已经是最新的快照")
@@ -287,9 +287,7 @@ type (
 		// 获取领域编号
 		GetDomainId() int32
 		// 是否允许批发
-		Wholesale() bool
-		// 开启批发功能
-		TurnWholesale(on bool) error
+		CanWholesale() bool
 		// 保存
 		Save() (int32, error)
 
