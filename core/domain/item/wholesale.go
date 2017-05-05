@@ -53,19 +53,8 @@ func (w *wholesaleItemImpl) GetDomainId() int32 {
 }
 
 // 是否允许批发
-func (w *wholesaleItemImpl) Wholesale() bool {
-	return w.value.EnableWholesale == 1
-}
-
-// 开启批发功能
-func (w *wholesaleItemImpl) TurnWholesale(on bool) error {
-	var iv int32 = util.BoolExt.TInt32(on, 1, 0)
-	if w.value.EnableWholesale != iv {
-		w.value.EnableWholesale = iv
-		_, err := w.Save()
-		return err
-	}
-	return nil
+func (w *wholesaleItemImpl) CanWholesale() bool {
+	return w.IsOnShelves() && w.value.ReviewState == enum.ReviewPass
 }
 
 // 保存
