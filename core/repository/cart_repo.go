@@ -16,6 +16,7 @@ import (
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"log"
 	"time"
 )
@@ -25,17 +26,20 @@ var _ cart.ICartRepo = new(cartRepo)
 type cartRepo struct {
 	db.Connector
 	_orm        orm.Orm
-	_goodsRepo  item.IGoodsItemRepo
+	_itemRepo   item.IGoodsItemRepo
 	_memberRepo member.IMemberRepo
+	_mchRepo    merchant.IMerchantRepo
 }
 
 func NewCartRepo(conn db.Connector, memberRepo member.IMemberRepo,
-	goodsRepo item.IGoodsItemRepo) cart.ICartRepo {
+	_mchRepo merchant.IMerchantRepo,
+	itemRepo item.IGoodsItemRepo) cart.ICartRepo {
 	return &cartRepo{
 		Connector:   conn,
 		_orm:        conn.GetOrm(),
 		_memberRepo: memberRepo,
-		_goodsRepo:  goodsRepo,
+		_mchRepo:    _mchRepo,
+		_itemRepo:   itemRepo,
 	}
 }
 
@@ -62,7 +66,7 @@ func (c *cartRepo) getMyRetailCart(buyerId int64) cart.ICart {
 		}
 	}
 	return cartImpl.CreateCart(v, c,
-		c._memberRepo, c._goodsRepo)
+		c._memberRepo, c._itemRepo)
 }
 
 // 获取批发购物车
@@ -77,7 +81,7 @@ func (c *cartRepo) getMyWholesaleCart(buyerId int64) cart.ICart {
 		}
 	}
 	return cartImpl.CreateWholesaleCart(v, c,
-		c._memberRepo, c._goodsRepo)
+		c._memberRepo, c._mchRepo, c._itemRepo)
 }
 
 func (c *cartRepo) getRetailCart(buyerId int64) *cart.RetailCart {
@@ -106,12 +110,12 @@ func (w *cartRepo) getWholesaleCart(buyerId int64) *cart.WsCart {
 
 // 创建购物车对象
 func (c *cartRepo) createRetailCart(v *cart.RetailCart) cart.ICart {
-	return cartImpl.CreateCart(v, c, c._memberRepo, c._goodsRepo)
+	return cartImpl.CreateCart(v, c, c._memberRepo, c._itemRepo)
 }
 
 // 创建一个购物车
 func (c *cartRepo) NewRetailCart(code string) cart.ICart {
-	return cartImpl.NewRetailCart(code, c, c._memberRepo, c._goodsRepo)
+	return cartImpl.NewRetailCart(code, c, c._memberRepo, c._itemRepo)
 }
 
 // 获取购物车

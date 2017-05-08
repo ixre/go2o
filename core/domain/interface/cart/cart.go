@@ -103,6 +103,8 @@ type (
 		GetValue() WsCart
 		// 获取商品编号与购物车项的集合
 		Items() map[int32]*WsCartItem
+		// Jdo数据
+		JdoData() *WCartJdo
 	}
 
 	// 根据数据获取购物车,
@@ -238,6 +240,53 @@ type (
 		Checked int32 `db:"checked"`
 		// 订单依赖的SKU媒介
 		Sku *item.SkuMedia `db:"-"`
+	}
+
+	// 批发购物车JSON数据对象
+	WCartJdo []WCartVendorJdo
+
+	// 批发购物车商户JSON数据对象
+	WCartVendorJdo struct {
+		// 运营商编号
+		VendorId int32
+		// 购物车商品
+		Items []WCartItemJdo
+		// 其他数据
+		Data map[string]string
+	}
+
+	// 批发购物车商品JSON数据对象
+	WCartItemJdo struct {
+		// 商品编号
+		ItemId int64
+		// 商品标题
+		ItemName string
+		// 商品图片
+		ItemImage string
+		// SKU列表
+		SkuList []WCartSkuJdo
+		// 其他数据
+		Data map[string]string
+	}
+
+	// 批发购物车规格JSON数据对象
+	WCartSkuJdo struct {
+		// SKU编号
+		SkuId int64
+		// SKU图片
+		SkuImage string
+		// 规格文本
+		SpecWord string
+		// 数量
+		Quantity int32
+		// 价格
+		Price float64
+		// 折扣价
+		DiscountPrice float64
+		// 可售数量
+		CanSalesQuantity int32
+		// 数据JSON表示
+		JData string
 	}
 )
 

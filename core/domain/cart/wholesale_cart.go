@@ -1,11 +1,15 @@
 package cart
 
 import (
+	"encoding/json"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
+	"go2o/core/domain/interface/merchant"
 	"go2o/core/domain/interface/merchant/shop"
+	"go2o/core/infrastructure/format"
+	"strconv"
 	"time"
 )
 
@@ -15,8 +19,9 @@ var _ cart.IWholesaleCart = new(wholesaleCartImpl)
 type wholesaleCartImpl struct {
 	value      *cart.WsCart
 	rep        cart.ICartRepo
-	goodsRepo  item.IGoodsItemRepo
+	itemRepo   item.IGoodsItemRepo
 	memberRepo member.IMemberRepo
+	mchRepo    merchant.IMerchantRepo
 	summary    string
 	shop       shop.IShop
 	deliver    member.IDeliverAddress
@@ -24,12 +29,13 @@ type wholesaleCartImpl struct {
 }
 
 func CreateWholesaleCart(val *cart.WsCart, rep cart.ICartRepo,
-	memberRepo member.IMemberRepo, goodsRepo item.IGoodsItemRepo) cart.ICart {
+	memberRepo member.IMemberRepo, mchRepo merchant.IMerchantRepo,
+	itemRepo item.IGoodsItemRepo) cart.ICart {
 	return (&wholesaleCartImpl{
 		value:      val,
 		rep:        rep,
 		memberRepo: memberRepo,
-		goodsRepo:  goodsRepo,
+		itemRepo:   itemRepo,
 	}).init()
 }
 
@@ -67,7 +73,7 @@ func (c *wholesaleCartImpl) Check() error {
 	}
 	for _, v := range c.value.Items {
 		if v.Checked == 1 {
-			it := c.goodsRepo.GetItem(v.ItemId)
+			it := c.itemRepo.GetItem(v.ItemId)
 			if it == nil {
 				return item.ErrNoSuchItem // 没有商品
 			}
@@ -101,7 +107,7 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartIte
 		c.value.Items = []*cart.WsCartItem{}
 	}
 	var sku *item.Sku
-	it := c.goodsRepo.GetItem(itemId)
+	it := c.itemRepo.GetItem(itemId)
 	if it == nil {
 		return nil, item.ErrNoSuchItem // 没有商品
 	}
@@ -172,7 +178,7 @@ func (c *wholesaleCartImpl) getSnapshotsMap(items []*cart.WsCartItem) map[int32]
 			for i, v := range items {
 				ids[i] = v.ItemId
 			}
-			snapList := c.goodsRepo.GetSnapshots(ids)
+			snapList := c.itemRepo.GetSnapshots(ids)
 			for _, v := range snapList {
 				v2 := v
 				c.snapMap[v.ItemId] = &v2
@@ -195,7 +201,7 @@ func (c *wholesaleCartImpl) getBuyerLevelId() int32 {
 func (c *wholesaleCartImpl) setItemInfo(snap *item.GoodsItem, level int32) {
 	// 设置会员价
 	if level > 0 {
-		gds := c.goodsRepo.CreateItem(snap)
+		gds := c.itemRepo.CreateItem(snap)
 		snap.Price = gds.GetPromotionPrice(level)
 	}
 }
@@ -208,7 +214,7 @@ func (c *wholesaleCartImpl) setAttachGoodsInfo(items []*cart.WsCartItem) {
 	}
 	var sku *item.Sku
 	for _, v := range items {
-		it := c.goodsRepo.GetItem(v.ItemId)
+		it := c.itemRepo.GetItem(v.ItemId)
 		if it == nil {
 			continue
 		}
@@ -427,4 +433,95 @@ func (c *wholesaleCartImpl) Destroy() (err error) {
 		return c.rep.DeleteCart(c.GetAggregateRootId())
 	}
 	return err
+}
+
+// 获取购物车商品Jdo数据
+func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
+	itemId int32) cart.WCartItemJdo {
+	it := c.itemRepo.GetItem(itemId)
+	v := it.GetValue()
+	itw := it.Wholesale()
+	itJdo := cart.WCartItemJdo{
+		ItemId:    int64(itemId),
+		ItemName:  v.Title,
+		ItemImage: v.Image,
+		SkuList:   []cart.WCartSkuJdo{},
+		Data:      map[string]string{},
+	}
+	skuSignMap := make(map[int64]bool)
+	for _, v := range list {
+		if v.ItemId != itemId || skuSignMap[int64(v.SkuId)] {
+			continue
+		}
+		skuV := it.GetSku(v.SkuId)
+		skuJdo := cart.WCartSkuJdo{
+			SkuId:            int64(v.SkuId),
+			SkuImage:         skuV.Image,
+			SpecWord:         skuV.SpecWord,
+			Quantity:         v.Quantity,
+			Price:            0,
+			DiscountPrice:    0,
+			CanSalesQuantity: skuV.Stock,
+			JData:            "{}",
+		}
+		c.setJdoSkuData(&skuJdo, itw)
+		itJdo.SkuList = append(itJdo.SkuList, skuJdo)
+		skuSignMap[skuJdo.SkuId] = true
+	}
+	return itJdo
+}
+
+func (c *wholesaleCartImpl) setJdoSkuData(sku *cart.WCartSkuJdo, itw item.IWholesaleItem) {
+	prArr := itw.GetSkuPrice(int32(sku.SkuId))
+	mp := map[string]interface{}{}
+	var min float64
+	priceRange := [][]string{}
+	for _, v := range prArr {
+		if min == 0 {
+			min = v.WholesalePrice
+		}
+		if v.WholesalePrice < min {
+			min = v.WholesalePrice
+		}
+		priceRange = append(priceRange, []string{
+			strconv.Itoa(int(v.RequireQuantity)),
+			format.DecimalToString(v.WholesalePrice),
+		})
+	}
+	mp["priceRange"] = priceRange
+	data, _ := json.Marshal(mp)
+
+	sku.Price = min
+	sku.DiscountPrice = min
+	sku.JData = string(data)
+}
+
+// Jdo数据
+func (c *wholesaleCartImpl) JdoData() *cart.WCartJdo {
+	var jdo cart.WCartJdo = []cart.WCartVendorJdo{}
+	venMap := make(map[int32]int)
+	itSignMap := make(map[int64]bool)
+	for _, v := range c.value.Items {
+		// 如果已处理过商品，则跳过
+		if v.VendorId <= 0 || itSignMap[int64(v.ItemId)] {
+			continue
+		}
+		vi, ok := venMap[v.VendorId]
+		//初始化VendorJdo
+		if !ok {
+			vJdo := cart.WCartVendorJdo{
+				VendorId: v.VendorId,
+				Items:    []cart.WCartItemJdo{},
+				Data:     map[string]string{},
+			}
+			jdo = append(jdo, vJdo)
+			vi = len(jdo) - 1
+			venMap[v.VendorId] = vi
+		}
+		// 设置商品信息
+		itJdo := c.getJdoItemData(c.value.Items, v.ItemId)
+		jdo[vi].Items = append(jdo[vi].Items, itJdo)
+		itSignMap[int64(v.ItemId)] = true
+	}
+	return &jdo
 }
