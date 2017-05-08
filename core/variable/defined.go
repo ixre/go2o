@@ -10,14 +10,14 @@ package variable
 
 var (
 	AliasCommission             string = "手续费"
-	AliasBalanceAccount         string = "账户余额"
-	AliasFlowAccount            string = "流通金"
-	AliasRisePersonFinance      string = "余额宝"
+	AliasBalanceAccount         string = "余额"
 	AliasWalletAccount          string = "钱包"
-	AliasMerchantBalanceAccount string = "商户余额"
+	AliasRisePersonFinance      string = "余额宝"
 	AliasGrowAccount            string = "增利金"
+	AliasFlowAccount            string = "流通金"
+	AliasMerchantBalanceAccount string = "商户余额"
 	FlowConvertSlogan           string = "流通金作为可以转让的虚拟货币"
-	AliasIntegralAccount        string = "会员积分"
+	AliasIntegralAccount        string = "积分"
 
 	AliasMemberName string = "昵称"
 	MemberNameShow  bool   = true
