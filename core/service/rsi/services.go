@@ -88,10 +88,11 @@ func Init(ctx gof.App) {
 	promRepo := repository.NewPromotionRepo(db, itemRepo, memberRepo)
 	catRepo := repository.NewCategoryRepo(db, valueRepo, sto)
 	//afterSalesRepo := repository.NewAfterSalesRepo(db)
-	cartRepo := repository.NewCartRepo(db, memberRepo, itemRepo)
+
 	shopRepo := repository.NewShopRepo(db, sto)
 	wholesaleRepo := repository.NewWholesaleRepo(db)
 	mchRepo := repository.NewMerchantRepo(db, sto, wholesaleRepo, shopRepo, userRepo, memberRepo, mssRepo, valueRepo)
+	cartRepo := repository.NewCartRepo(db, memberRepo, mchRepo, itemRepo)
 	personFinanceRepo := repository.NewPersonFinanceRepository(db, memberRepo)
 	deliveryRepo := repository.NewDeliverRepo(db)
 	contentRepo := repository.NewContentRepo(db)
