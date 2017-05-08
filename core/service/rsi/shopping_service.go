@@ -78,13 +78,25 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 }
 
 func (s *shoppingService) wsGetCart(c cart.ICart) (*define.Result_, error) {
-	v := c.(cart.IWholesaleCart).GetValue()
-	data, _ := json.Marshal(v)
-	r := &define.Result_{
-		Result_: true,
-		Message: string(data),
+	v := c.(cart.IWholesaleCart).JdoData()
+	if v != nil {
+		for _, v2 := range *v {
+			mch := s._mchRepo.GetMerchant(v2.VendorId)
+			if mch != nil {
+				v2.Data["VendorName"] = mch.GetValue().CompanyName
+			}
+		}
 	}
-	return r, nil
+
+	data, err := json.Marshal(v)
+	if err == nil {
+		r := &define.Result_{
+			Result_: true,
+			Message: string(data),
+		}
+		return r, nil
+	}
+	return parser.Result(0, err), nil
 }
 
 func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
