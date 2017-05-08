@@ -101,7 +101,7 @@ func (g *itemImpl) Product() product.IProduct {
 func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	if i.wholesale == nil {
 		i.wholesale = newWholesaleItem(i.GetAggregateRootId(),
-			i, i.itemWsRepo)
+			i, i.repo, i.itemWsRepo)
 	}
 	return i.wholesale
 }
