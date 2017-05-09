@@ -464,16 +464,20 @@ func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
 			CanSalesQuantity: skuV.Stock,
 			JData:            "{}",
 		}
-		c.setJdoSkuData(&skuJdo, itw)
+		mp := map[string]interface{}{}
+		mp["canSalesQuantity"] = skuV.Stock
+		c.setJdoSkuData(itw, &skuJdo, mp)
+
 		itJdo.SkuList = append(itJdo.SkuList, skuJdo)
 		skuSignMap[skuJdo.SkuId] = true
 	}
 	return itJdo
 }
 
-func (c *wholesaleCartImpl) setJdoSkuData(sku *cart.WCartSkuJdo, itw item.IWholesaleItem) {
+func (c *wholesaleCartImpl) setJdoSkuData(itw item.IWholesaleItem,
+	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
 	prArr := itw.GetSkuPrice(int32(sku.SkuId))
-	mp := map[string]interface{}{}
+
 	var min float64
 	priceRange := [][]string{}
 	for _, v := range prArr {
@@ -488,17 +492,17 @@ func (c *wholesaleCartImpl) setJdoSkuData(sku *cart.WCartSkuJdo, itw item.IWhole
 			format.DecimalToString(v.WholesalePrice),
 		})
 	}
-	mp["priceRange"] = priceRange
-	data, _ := json.Marshal(mp)
-
 	sku.Price = min
 	sku.DiscountPrice = min
+	mp["priceRange"] = priceRange
+	data, _ := json.Marshal(mp)
 	sku.JData = string(data)
+
 }
 
 // Jdo数据
 func (c *wholesaleCartImpl) JdoData() *cart.WCartJdo {
-	var jdo cart.WCartJdo = []cart.WCartVendorJdo{}
+	var jdo cart.WCartJdo = []cart.WCartSellerJdo{}
 	venMap := make(map[int32]int)
 	itSignMap := make(map[int64]bool)
 	for _, v := range c.value.Items {
@@ -509,8 +513,8 @@ func (c *wholesaleCartImpl) JdoData() *cart.WCartJdo {
 		vi, ok := venMap[v.VendorId]
 		//初始化VendorJdo
 		if !ok {
-			vJdo := cart.WCartVendorJdo{
-				VendorId: v.VendorId,
+			vJdo := cart.WCartSellerJdo{
+				SellerId: v.VendorId,
 				Items:    []cart.WCartItemJdo{},
 				Data:     map[string]string{},
 			}

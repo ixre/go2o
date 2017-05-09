@@ -243,12 +243,12 @@ type (
 	}
 
 	// 批发购物车JSON数据对象
-	WCartJdo []WCartVendorJdo
+	WCartJdo []WCartSellerJdo
 
-	// 批发购物车商户JSON数据对象
-	WCartVendorJdo struct {
+	// 批发购物车卖家JSON数据对象
+	WCartSellerJdo struct {
 		// 运营商编号
-		VendorId int32
+		SellerId int32
 		// 购物车商品
 		Items []WCartItemJdo
 		// 其他数据
