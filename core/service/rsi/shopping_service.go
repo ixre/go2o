@@ -81,9 +81,9 @@ func (s *shoppingService) wsGetCart(c cart.ICart) (*define.Result_, error) {
 	v := c.(cart.IWholesaleCart).JdoData()
 	if v != nil {
 		for _, v2 := range *v {
-			mch := s._mchRepo.GetMerchant(v2.VendorId)
+			mch := s._mchRepo.GetMerchant(v2.SellerId)
 			if mch != nil {
-				v2.Data["VendorName"] = mch.GetValue().CompanyName
+				v2.Data["SellerName"] = mch.GetValue().CompanyName
 			}
 		}
 	}
