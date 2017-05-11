@@ -34,8 +34,9 @@ func SendMsgToMobile(account, pwd, phone, content string) error {
 		data, err = ioutil.ReadAll(rsp.Body)
 		if err == nil {
 			arr := strings.Split(string(data), ",")
-			if arr[1] != "0" {
-				err = errors.New("status code : " + arr[1])
+			if arr[1][0] != '0' {
+				err = errors.New("status code : " + arr[1] +
+					" ; response : " + string(data))
 			}
 		}
 	}
