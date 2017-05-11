@@ -61,13 +61,16 @@ func NewShoppingService(r order.IOrderRepo,
 func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data map[string]string) (*define.Result_, error) {
 	//todo: check member
 	c := s._cartRepo.GetMyCart(memberId, cart.KWholesale)
+	if data == nil {
+		data = map[string]string{}
+	}
 	switch action {
 	case "GET":
-		return s.wsGetCart(c)
+		return s.wsGetCart(c, data)
 	case "PUT":
 		return s.wsPutItem(c, data)
-	case "POP":
-		return s.wsRemoveItem(c, data)
+	case "UPDATE":
+		return s.wsUpdateItem(c, data)
 	case "CHECK":
 		return s.wsCheckCart(c, data)
 	}
@@ -77,8 +80,32 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	}, nil
 }
 
-func (s *shoppingService) wsGetCart(c cart.ICart) (*define.Result_, error) {
-	v := c.(cart.IWholesaleCart).JdoData()
+// 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
+func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
+	if data != "" || data != "{}" {
+		src := map[string][]string{}
+		err := json.Unmarshal([]byte(data), &src)
+		if err == nil {
+			m = map[int64][]int64{}
+			for k, v := range src {
+				itemId, _ := strconv.Atoi(k)
+				skuList := []int64{}
+				for _, v2 := range v {
+					skuId, _ := strconv.Atoi(v2)
+					skuList = append(skuList, int64(skuId))
+				}
+				m[int64(itemId)] = skuList
+			}
+			return m
+		}
+	}
+	return nil
+}
+
+func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	//统计checked
+	checked := s.parseCheckedMap(data["checked"])
+	v := c.(cart.IWholesaleCart).JdoData(checked)
 	if v != nil {
 		for _, v2 := range *v {
 			mch := s._mchRepo.GetMerchant(v2.SellerId)
@@ -87,12 +114,11 @@ func (s *shoppingService) wsGetCart(c cart.ICart) (*define.Result_, error) {
 			}
 		}
 	}
-
-	data, err := json.Marshal(v)
+	d, err := json.Marshal(v)
 	if err == nil {
 		r := &define.Result_{
 			Result_: true,
-			Message: string(data),
+			Message: string(d),
 		}
 		return r, nil
 	}
@@ -131,21 +157,32 @@ func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*defi
 	return parser.Result(aId, err), nil
 }
 
-func (s *shoppingService) wsRemoveItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
+func (s *shoppingService) wsUpdateItem(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	aId := c.GetAggregateRootId()
 	itemId, err := util.I32Err(strconv.Atoi(data["ItemId"]))
-	skuId, err1 := util.I32Err(strconv.Atoi(data["SkuId"]))
-	quantity, err2 := util.I32Err(strconv.Atoi(data["Quantity"]))
-	if err != nil {
-		return parser.Result(aId, err), nil
+	skuData := data["Data"]
+	arr := []*cart.ItemPair{}
+	splitArr := strings.Split(skuData, ";")
+	for _, str := range splitArr {
+		i := strings.Index(str, ":")
+		if i == -1 {
+			continue
+		}
+		skuId, err := util.I32Err(strconv.Atoi(str[:i]))
+		quantity, err1 := util.I32Err(strconv.Atoi(str[i+1:]))
+		if err == nil && err1 == nil {
+			arr = append(arr, &cart.ItemPair{
+				SkuId:    skuId,
+				Quantity: quantity,
+			})
+		}
 	}
-	if err1 != nil {
-		return parser.Result(aId, err1), nil
+	for _, v := range arr {
+		err = c.Update(itemId, v.SkuId, v.Quantity)
+		if err != nil {
+			break
+		}
 	}
-	if err2 != nil {
-		return parser.Result(aId, err2), nil
-	}
-	err = c.Remove(itemId, skuId, quantity)
 	if err == nil {
 		_, err = c.Save()
 	}
@@ -325,11 +362,13 @@ func (s *shoppingService) SetBuyerAddress(buyerId int64, cartCode string, addres
 func (s *shoppingService) PrepareOrder(buyerId int64, addressId int64,
 	cartCode string) *order.ComplexOrder {
 	cart := s.getShoppingCart(buyerId, cartCode)
+
 	o, err := s._manager.PrepareNormalOrder(cart)
 	if err == nil {
 		no := o.(order.INormalOrder)
 		err = no.SetAddress(addressId)
 	}
+	//log.Println("-------",o == nil,err)
 	return o.Complex()
 }
 
