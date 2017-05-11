@@ -68,6 +68,8 @@ type (
 		// todo: 这里有问题、如果是线下店的购物车,如何实现?
 		// 暂时以店铺区分,2017-02-28考虑单独的购物车或子系统
 		Put(itemId, skuId, quantity int32) error
+		// 更新商品数量，如数量为0，则删除
+		Update(itemId, skuId, quantity int32) error
 		// 移出项
 		Remove(itemId, skuId, quantity int32) error
 		// 保存购物车
@@ -103,8 +105,10 @@ type (
 		GetValue() WsCart
 		// 获取商品编号与购物车项的集合
 		Items() map[int32]*WsCartItem
+		// 获取勾选的商品
+		CheckedItems(checked map[int64][]int64) []*WsCartItem
 		// Jdo数据
-		JdoData() *WCartJdo
+		JdoData(checked map[int64][]int64) *WCartJdo
 	}
 
 	// 根据数据获取购物车,
@@ -227,7 +231,7 @@ type (
 		// 购物车编号
 		CartId int32 `db:"cart_id"`
 		// 运营商编号
-		VendorId int32 `db:"vendor_id"`
+		SellerId int32 `db:"vendor_id"`
 		// 店铺编号
 		ShopId int32 `db:"shop_id"`
 		// 商品编号
@@ -243,12 +247,12 @@ type (
 	}
 
 	// 批发购物车JSON数据对象
-	WCartJdo []WCartVendorJdo
+	WCartJdo []WCartSellerJdo
 
-	// 批发购物车商户JSON数据对象
-	WCartVendorJdo struct {
+	// 批发购物车卖家JSON数据对象
+	WCartSellerJdo struct {
 		// 运营商编号
-		VendorId int32
+		SellerId int32
 		// 购物车商品
 		Items []WCartItemJdo
 		// 其他数据
@@ -273,6 +277,8 @@ type (
 	WCartSkuJdo struct {
 		// SKU编号
 		SkuId int64
+		// SKU编码
+		SkuCode string
 		// SKU图片
 		SkuImage string
 		// 规格文本

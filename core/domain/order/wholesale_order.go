@@ -933,11 +933,11 @@ func (w *wholesaleOrderBreaker) breakVendorItemMap(items []*cart.WsCartItem) map
 	for _, v := range items {
 		//必须勾选为结算
 		if v.Checked == 1 {
-			list, ok := mp[v.VendorId]
+			list, ok := mp[v.SellerId]
 			if !ok {
 				list = []*cart.WsCartItem{}
 			}
-			mp[v.VendorId] = append(list, v)
+			mp[v.SellerId] = append(list, v)
 		}
 	}
 	return mp

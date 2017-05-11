@@ -1,6 +1,7 @@
 package cart
 
 import (
+	"errors"
 	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -264,6 +265,11 @@ func (c *cartImpl) put(itemId, skuId int32, num int32) (*cart.RetailCartItem, er
 	}
 	c.value.Items = append(c.value.Items, v)
 	return v, err
+}
+
+// 更新商品数量，如数量为0，则删除
+func (c *cartImpl) Update(itemId, skuId, quantity int32) error {
+	return errors.New("not implement")
 }
 
 // 移出项

@@ -14,18 +14,21 @@ import (
 var _ item.IWholesaleItem = new(wholesaleItemImpl)
 
 type wholesaleItemImpl struct {
-	itemId int32
-	value  *item.WsItem
-	it     item.IGoodsItem
-	repo   item.IItemWholesaleRepo
+	itemId   int32
+	value    *item.WsItem
+	it       item.IGoodsItem
+	itemRepo item.IGoodsItemRepo
+	repo     item.IItemWholesaleRepo
 }
 
 func newWholesaleItem(itemId int32, it item.IGoodsItem,
+	itemRepo item.IGoodsItemRepo,
 	repo item.IItemWholesaleRepo) item.IWholesaleItem {
 	return (&wholesaleItemImpl{
-		itemId: itemId,
-		it:     it,
-		repo:   repo,
+		itemId:   itemId,
+		it:       it,
+		itemRepo: itemRepo,
+		repo:     repo,
 	}).init()
 }
 
@@ -250,14 +253,15 @@ type itemDetailData struct {
 
 // 获取详细信息
 func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
-	spec := w.it.SpecArray()
 	skuArr := w.it.SkuArray()
+	okSkuArr := []*item.Sku{}
 	skuJdoArr := []skuJdo{}
 	for _, v := range skuArr {
 		pArr := w.GetSkuPrice(v.ID)
 		if len(pArr) == 0 {
 			continue
 		}
+		okSkuArr = append(okSkuArr, v)
 		jdo := skuJdo{
 			SkuId:            strconv.Itoa(int(v.ID)),
 			SpecData:         v.SpecData,
@@ -284,6 +288,8 @@ func (w *wholesaleItemImpl) GetJsonDetailData() []byte {
 		}
 		skuJdoArr = append(skuJdoArr, jdo)
 	}
+
+	spec := w.itemRepo.SkuService().GetSpecArray(okSkuArr)
 
 	i := &itemDetailData{
 		SpecArray: iJsonUtil.getSpecJdo(spec),

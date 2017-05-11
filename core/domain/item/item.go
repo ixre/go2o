@@ -101,7 +101,7 @@ func (g *itemImpl) Product() product.IProduct {
 func (i *itemImpl) Wholesale() item.IWholesaleItem {
 	if i.wholesale == nil {
 		i.wholesale = newWholesaleItem(i.GetAggregateRootId(),
-			i, i.itemWsRepo)
+			i, i.repo, i.itemWsRepo)
 	}
 	return i.wholesale
 }
@@ -468,6 +468,9 @@ func (g *itemImpl) SetShelve(state int32, remark string) error {
 		return product.ErrNilRejectRemark
 	}
 	g.value.ShelveState = state
+	if g.value.ReviewState != enum.ReviewPass {
+		g.value.ReviewState = enum.ReviewAwaiting
+	}
 	g.value.ReviewRemark = remark
 	_, err := g.Save()
 	return err

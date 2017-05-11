@@ -100,74 +100,6 @@ func (c *wholesaleCartImpl) Check() error {
 	return nil
 }
 
-// 添加项
-func (c *wholesaleCartImpl) put(itemId, skuId int32, num int32) (*cart.WsCartItem, error) {
-	var err error
-	if c.value.Items == nil {
-		c.value.Items = []*cart.WsCartItem{}
-	}
-	var sku *item.Sku
-	it := c.itemRepo.GetItem(itemId)
-	if it == nil {
-		return nil, item.ErrNoSuchItem // 没有商品
-	}
-	iv := it.GetValue()
-	// 库存,如有SKU，则使用SKU的库存
-	stock := iv.StockNum
-	// 判断是否上架
-	if iv.ShelveState != item.ShelvesOn {
-		return nil, item.ErrNotOnShelves //未上架
-	}
-	// 验证批发权限
-	wsIt := it.Wholesale()
-	if wsIt == nil || !wsIt.CanWholesale() {
-		return nil, item.ErrItemWholesaleOff
-	}
-	// 判断商品SkuId
-	if skuId > 0 {
-		sku = it.GetSku(skuId)
-		if sku == nil {
-			return nil, item.ErrNoSuchItemSku
-		}
-		stock = sku.Stock
-	} else if iv.SkuNum > 0 {
-		return nil, cart.ErrItemNoSku
-	}
-	// 检查是否已经卖完了
-	if stock == 0 {
-		return nil, item.ErrFullOfStock
-	}
-
-	// 添加数量
-	for _, v := range c.value.Items {
-		if v.ItemId == itemId && v.SkuId == skuId {
-			if v.Quantity+num > stock {
-				return v, item.ErrOutOfStock // 库存不足
-			}
-			v.Quantity += num
-			return v, err
-		}
-	}
-
-	c.snapMap = nil
-
-	// 设置商品的相关信息
-	c.setItemInfo(iv, c.getBuyerLevelId())
-
-	v := &cart.WsCartItem{
-		CartId:   c.GetAggregateRootId(),
-		VendorId: iv.VendorId,
-		ShopId:   iv.ShopId,
-		ItemId:   iv.Id,
-		SkuId:    skuId,
-		Quantity: num,
-		Sku:      item.ParseSkuMedia(iv, sku),
-		Checked:  1,
-	}
-	c.value.Items = append(c.value.Items, v)
-	return v, err
-}
-
 // 获取商品的快照列表
 func (c *wholesaleCartImpl) getSnapshotsMap(items []*cart.WsCartItem) map[int32]*item.Snapshot {
 	if c.snapMap == nil && items != nil {
@@ -258,10 +190,133 @@ func (c *wholesaleCartImpl) getItems() []*cart.WsCartItem {
 	return c.value.Items
 }
 
+// 根据SKU获取项
+func (c *wholesaleCartImpl) getSkuItem(itemId, skuId int32) *cart.WsCartItem {
+	for _, v := range c.value.Items {
+		if v.ItemId == itemId && v.SkuId == skuId {
+			return v
+		}
+	}
+	return nil
+}
+
+// 添加项
+func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCartItem, error) {
+	var err error
+	if c.value.Items == nil {
+		c.value.Items = []*cart.WsCartItem{}
+	}
+	var sku *item.Sku
+	it := c.itemRepo.GetItem(itemId)
+	if it == nil {
+		return nil, item.ErrNoSuchItem // 没有商品
+	}
+	iv := it.GetValue()
+	// 库存,如有SKU，则使用SKU的库存
+	stock := iv.StockNum
+	// 判断是否上架
+	if iv.ShelveState != item.ShelvesOn {
+		return nil, item.ErrNotOnShelves //未上架
+	}
+	// 验证批发权限
+	wsIt := it.Wholesale()
+	if wsIt == nil || !wsIt.CanWholesale() {
+		return nil, item.ErrItemWholesaleOff
+	}
+	// 判断商品SkuId
+	if skuId > 0 {
+		sku = it.GetSku(skuId)
+		if sku == nil {
+			return nil, item.ErrNoSuchItemSku
+		}
+		stock = sku.Stock
+	} else if iv.SkuNum > 0 {
+		return nil, cart.ErrItemNoSku
+	}
+	// 检查是否已经卖完了
+	if stock == 0 {
+		return nil, item.ErrFullOfStock
+	}
+
+	// 添加数量
+	for _, v := range c.value.Items {
+		if v.ItemId == itemId && v.SkuId == skuId {
+			if v.Quantity+quantity > stock {
+				return v, item.ErrOutOfStock // 库存不足
+			}
+			v.Quantity += quantity
+			return v, err
+		}
+	}
+
+	c.snapMap = nil
+
+	// 设置商品的相关信息
+	c.setItemInfo(iv, c.getBuyerLevelId())
+
+	v := &cart.WsCartItem{
+		CartId:   c.GetAggregateRootId(),
+		SellerId: iv.VendorId,
+		ShopId:   iv.ShopId,
+		ItemId:   iv.Id,
+		SkuId:    skuId,
+		Quantity: quantity,
+		Sku:      item.ParseSkuMedia(iv, sku),
+		Checked:  1,
+	}
+	c.value.Items = append(c.value.Items, v)
+	return v, err
+}
+
+// 更新项
+func (c *wholesaleCartImpl) update(itemId, skuId int32, quantity int32) error {
+	if c.value.Items == nil {
+		return cart.ErrEmptyShoppingCart
+	}
+	ci := c.getSkuItem(itemId, skuId)
+	if ci == nil {
+		return cart.ErrItemNoSku
+	}
+	it := c.itemRepo.GetItem(itemId)
+	if it == nil {
+		return item.ErrNoSuchItem // 没有商品
+	}
+	iv := it.GetValue()
+	// 库存,如有SKU，则使用SKU的库存
+	stock := iv.StockNum
+	if quantity > stock {
+		return item.ErrOutOfStock
+	}
+	// 判断商品SkuId
+	if skuId > 0 {
+		var sku *item.Sku
+		sku = it.GetSku(skuId)
+		if sku == nil {
+			return item.ErrNoSuchItemSku
+		}
+		stock = sku.Stock
+	}
+	// 检查是否已经卖完了
+	if stock == 0 {
+		return item.ErrFullOfStock
+	}
+	// 超出库存
+	if quantity > stock {
+		return item.ErrOutOfStock
+	}
+	ci.Quantity = quantity
+	return nil
+}
+
 // 添加项
 func (c *wholesaleCartImpl) Put(itemId, skuId int32, num int32) error {
 	_, err := c.put(itemId, skuId, num)
 	return err
+}
+
+// 更新商品数量，如数量为0，则删除
+func (c *wholesaleCartImpl) Update(itemId, skuId, quantity int32) error {
+	return c.update(itemId, skuId, quantity)
 }
 
 // 移出项
@@ -456,6 +511,7 @@ func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
 		skuV := it.GetSku(v.SkuId)
 		skuJdo := cart.WCartSkuJdo{
 			SkuId:            int64(v.SkuId),
+			SkuCode:          skuV.Code,
 			SkuImage:         skuV.Image,
 			SpecWord:         skuV.SpecWord,
 			Quantity:         v.Quantity,
@@ -464,16 +520,20 @@ func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
 			CanSalesQuantity: skuV.Stock,
 			JData:            "{}",
 		}
-		c.setJdoSkuData(&skuJdo, itw)
+		mp := map[string]interface{}{}
+		mp["canSalesQuantity"] = skuV.Stock
+		c.setJdoSkuData(itw, &skuJdo, mp)
+
 		itJdo.SkuList = append(itJdo.SkuList, skuJdo)
 		skuSignMap[skuJdo.SkuId] = true
 	}
 	return itJdo
 }
 
-func (c *wholesaleCartImpl) setJdoSkuData(sku *cart.WCartSkuJdo, itw item.IWholesaleItem) {
+func (c *wholesaleCartImpl) setJdoSkuData(itw item.IWholesaleItem,
+	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
 	prArr := itw.GetSkuPrice(int32(sku.SkuId))
-	mp := map[string]interface{}{}
+
 	var min float64
 	priceRange := [][]string{}
 	for _, v := range prArr {
@@ -488,38 +548,61 @@ func (c *wholesaleCartImpl) setJdoSkuData(sku *cart.WCartSkuJdo, itw item.IWhole
 			format.DecimalToString(v.WholesalePrice),
 		})
 	}
-	mp["priceRange"] = priceRange
-	data, _ := json.Marshal(mp)
-
 	sku.Price = min
 	sku.DiscountPrice = min
+	mp["priceRange"] = priceRange
+	data, _ := json.Marshal(mp)
 	sku.JData = string(data)
+
+}
+
+// 获取勾选的商品
+func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.WsCartItem {
+	items := []*cart.WsCartItem{}
+	if checked != nil {
+		for _, v := range c.value.Items {
+			arr, ok := checked[int64(v.ItemId)]
+			if !ok {
+				continue
+			}
+			for _, skuId := range arr {
+				if skuId == int64(v.SkuId) {
+					items = append(items, v)
+				}
+			}
+		}
+	}
+	return items
 }
 
 // Jdo数据
-func (c *wholesaleCartImpl) JdoData() *cart.WCartJdo {
-	var jdo cart.WCartJdo = []cart.WCartVendorJdo{}
+func (c *wholesaleCartImpl) JdoData(checked map[int64][]int64) *cart.WCartJdo {
+	items := c.value.Items
+	if checked != nil {
+		items = c.CheckedItems(checked)
+	}
+	var jdo cart.WCartJdo = []cart.WCartSellerJdo{}
 	venMap := make(map[int32]int)
 	itSignMap := make(map[int64]bool)
-	for _, v := range c.value.Items {
+	for _, v := range items {
 		// 如果已处理过商品，则跳过
-		if v.VendorId <= 0 || itSignMap[int64(v.ItemId)] {
+		if v.SellerId <= 0 || itSignMap[int64(v.ItemId)] {
 			continue
 		}
-		vi, ok := venMap[v.VendorId]
+		vi, ok := venMap[v.SellerId]
 		//初始化VendorJdo
 		if !ok {
-			vJdo := cart.WCartVendorJdo{
-				VendorId: v.VendorId,
+			vJdo := cart.WCartSellerJdo{
+				SellerId: v.SellerId,
 				Items:    []cart.WCartItemJdo{},
 				Data:     map[string]string{},
 			}
 			jdo = append(jdo, vJdo)
 			vi = len(jdo) - 1
-			venMap[v.VendorId] = vi
+			venMap[v.SellerId] = vi
 		}
 		// 设置商品信息
-		itJdo := c.getJdoItemData(c.value.Items, v.ItemId)
+		itJdo := c.getJdoItemData(items, v.ItemId)
 		jdo[vi].Items = append(jdo[vi].Items, itJdo)
 		itSignMap[int64(v.ItemId)] = true
 	}
