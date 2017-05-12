@@ -105,9 +105,10 @@ func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
 func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	//统计checked
 	checked := s.parseCheckedMap(data["checked"])
-	v := c.(cart.IWholesaleCart).JdoData(checked)
+	checkout := data["checkout"] == "true"
+	v := c.(cart.IWholesaleCart).JdoData(checkout, checked)
 	if v != nil {
-		for _, v2 := range *v {
+		for _, v2 := range v.Seller {
 			mch := s._mchRepo.GetMerchant(v2.SellerId)
 			if mch != nil {
 				v2.Data["SellerName"] = mch.GetValue().CompanyName

@@ -170,10 +170,13 @@ func (w *wholesaleItemImpl) GetWholesalePrice(skuId, quantity int32) float64 {
 	var price float64 = 0
 	arr := w.GetSkuPrice(skuId)
 	if len(arr) > 0 {
-		var maxRequire int32
+		var compare int32
 		for _, v := range arr {
-			if v.RequireQuantity > maxRequire && quantity >= v.RequireQuantity {
-				maxRequire = v.RequireQuantity
+			if quantity < v.RequireQuantity {
+				continue
+			}
+			if v.RequireQuantity > compare {
+				compare = v.RequireQuantity
 				price = v.WholesalePrice
 			}
 		}
