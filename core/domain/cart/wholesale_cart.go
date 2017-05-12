@@ -491,7 +491,7 @@ func (c *wholesaleCartImpl) Destroy() (err error) {
 }
 
 // 获取购物车商品Jdo数据
-func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
+func (c *wholesaleCartImpl) getItemJdoData(list []*cart.WsCartItem,
 	itemId int32) cart.WCartItemJdo {
 	it := c.itemRepo.GetItem(itemId)
 	v := it.GetValue()
@@ -500,7 +500,7 @@ func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
 		ItemId:    int64(itemId),
 		ItemName:  v.Title,
 		ItemImage: v.Image,
-		SkuList:   []cart.WCartSkuJdo{},
+		Sku:       []cart.WCartSkuJdo{},
 		Data:      map[string]string{},
 	}
 	skuSignMap := make(map[int64]bool)
@@ -522,34 +522,27 @@ func (c *wholesaleCartImpl) getJdoItemData(list []*cart.WsCartItem,
 		}
 		mp := map[string]interface{}{}
 		mp["canSalesQuantity"] = skuV.Stock
-		c.setJdoSkuData(itw, &skuJdo, mp)
+		c.setSkuJdoData(itw, &skuJdo, mp)
 
-		itJdo.SkuList = append(itJdo.SkuList, skuJdo)
+		itJdo.Sku = append(itJdo.Sku, skuJdo)
 		skuSignMap[skuJdo.SkuId] = true
 	}
 	return itJdo
 }
 
-func (c *wholesaleCartImpl) setJdoSkuData(itw item.IWholesaleItem,
+func (c *wholesaleCartImpl) setSkuJdoData(itw item.IWholesaleItem,
 	sku *cart.WCartSkuJdo, mp map[string]interface{}) {
 	prArr := itw.GetSkuPrice(int32(sku.SkuId))
-
-	var min float64
+	price := itw.GetWholesalePrice(int32(sku.SkuId), sku.Quantity)
 	priceRange := [][]string{}
 	for _, v := range prArr {
-		if min == 0 {
-			min = v.WholesalePrice
-		}
-		if v.WholesalePrice < min {
-			min = v.WholesalePrice
-		}
 		priceRange = append(priceRange, []string{
 			strconv.Itoa(int(v.RequireQuantity)),
 			format.DecimalToString(v.WholesalePrice),
 		})
 	}
-	sku.Price = min
-	sku.DiscountPrice = min
+	sku.Price = price
+	sku.DiscountPrice = price
 	mp["priceRange"] = priceRange
 	data, _ := json.Marshal(mp)
 	sku.JData = string(data)
@@ -576,35 +569,65 @@ func (c *wholesaleCartImpl) CheckedItems(checked map[int64][]int64) []*cart.WsCa
 }
 
 // Jdo数据
-func (c *wholesaleCartImpl) JdoData(checked map[int64][]int64) *cart.WCartJdo {
+func (c *wholesaleCartImpl) JdoData(checkout bool, checked map[int64][]int64) *cart.WCartJdo {
 	items := c.value.Items
 	if checked != nil {
 		items = c.CheckedItems(checked)
 	}
-	var jdo cart.WCartJdo = []cart.WCartSellerJdo{}
-	venMap := make(map[int32]int)
-	itSignMap := make(map[int64]bool)
+	jdo := &cart.WCartJdo{
+		Seller: []cart.WCartSellerJdo{},
+		Data:   map[string]string{},
+	}
+	sellerMap := make(map[int32]int)
+	itemSignMap := make(map[int64]bool)
 	for _, v := range items {
 		// 如果已处理过商品，则跳过
-		if v.SellerId <= 0 || itSignMap[int64(v.ItemId)] {
+		if v.SellerId <= 0 || itemSignMap[int64(v.ItemId)] {
 			continue
 		}
-		vi, ok := venMap[v.SellerId]
-		//初始化VendorJdo
+		vi, ok := sellerMap[v.SellerId]
+		//初始化SellerJdo
 		if !ok {
 			vJdo := cart.WCartSellerJdo{
 				SellerId: v.SellerId,
-				Items:    []cart.WCartItemJdo{},
+				Item:     []cart.WCartItemJdo{},
 				Data:     map[string]string{},
 			}
-			jdo = append(jdo, vJdo)
-			vi = len(jdo) - 1
-			venMap[v.SellerId] = vi
+			jdo.Seller = append(jdo.Seller, vJdo)
+			vi = len(jdo.Seller) - 1
+			sellerMap[v.SellerId] = vi
 		}
 		// 设置商品信息
-		itJdo := c.getJdoItemData(items, v.ItemId)
-		jdo[vi].Items = append(jdo[vi].Items, itJdo)
-		itSignMap[int64(v.ItemId)] = true
+		itJdo := c.getItemJdoData(items, v.ItemId)
+		jdo.Seller[vi].Item = append(jdo.Seller[vi].Item, itJdo)
+		itemSignMap[int64(v.ItemId)] = true
 	}
-	return &jdo
+	if checkout {
+		c.checkoutJdoData(jdo)
+	}
+	return jdo
+}
+
+// 附加结算数据
+func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
+	var totalAmount float64
+	sellerAmountMap := map[int32]float64{}
+	for _, s := range jdo.Seller {
+		for _, i := range s.Item {
+			for _, sku := range i.Sku {
+				v := sellerAmountMap[s.SellerId]
+				v += sku.Price * float64(sku.Quantity)
+				sellerAmountMap[s.SellerId] = v
+			}
+		}
+		sellerAmount := sellerAmountMap[s.SellerId]
+		totalAmount += sellerAmount
+		//卖家汇总
+		s.Data["ItemAmount"] = format.DecimalToString(sellerAmount)
+		s.Data["ExpressAmount"] = format.DecimalToString(0)
+	}
+	//总计
+	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
+	jdo.Data["TotalItemAmount"] = format.DecimalToString(totalAmount)
+	jdo.Data["FinalAmount"] = format.DecimalToString(totalAmount)
 }

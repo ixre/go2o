@@ -108,7 +108,7 @@ type (
 		// 获取勾选的商品
 		CheckedItems(checked map[int64][]int64) []*WsCartItem
 		// Jdo数据
-		JdoData(checked map[int64][]int64) *WCartJdo
+		JdoData(checkout bool, checked map[int64][]int64) *WCartJdo
 	}
 
 	// 根据数据获取购物车,
@@ -247,14 +247,17 @@ type (
 	}
 
 	// 批发购物车JSON数据对象
-	WCartJdo []WCartSellerJdo
+	WCartJdo struct {
+		Seller []WCartSellerJdo
+		Data   map[string]string
+	}
 
 	// 批发购物车卖家JSON数据对象
 	WCartSellerJdo struct {
 		// 运营商编号
 		SellerId int32
 		// 购物车商品
-		Items []WCartItemJdo
+		Item []WCartItemJdo
 		// 其他数据
 		Data map[string]string
 	}
@@ -268,7 +271,7 @@ type (
 		// 商品图片
 		ItemImage string
 		// SKU列表
-		SkuList []WCartSkuJdo
+		Sku []WCartSkuJdo
 		// 其他数据
 		Data map[string]string
 	}

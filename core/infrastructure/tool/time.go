@@ -25,7 +25,7 @@ func GetYesterdayStartDate() time.Time {
 func GetStartEndUnix(t time.Time) (int64, int64) {
 	y, m, d := t.Date()
 	return time.Date(y, m, d, 0, 0, 0, 0, time.Local).Unix(),
-		time.Date(y, m, d, 24, 59, 59, 999, time.Local).Unix()
+		time.Date(y, m, d, 23, 59, 59, 999, time.Local).Unix()
 }
 
 var monthDays []int = []int{31, 0, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
