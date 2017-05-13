@@ -447,7 +447,7 @@ func (c *cartImpl) Save() (int32, error) {
 }
 
 // 释放购物车,如果购物车的商品全部结算,则返回true
-func (c *cartImpl) Release() bool {
+func (c *cartImpl) Release(_checked map[int64][]int64) bool {
 	checked := []int{}
 	for i, v := range c.value.Items {
 		if v.Checked == 1 {

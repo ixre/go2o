@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"github.com/jsix/gof/util"
-	"go2o/core/domain/interface/cart"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/express"
 	"go2o/core/domain/interface/item"
@@ -872,73 +871,4 @@ func (o *wholesaleOrderImpl) Decline(reason string) error {
 	o.value.State = order.StatDeclined
 	o.value.UpdateTime = time.Now().Unix()
 	return o.saveWholesaleOrder()
-}
-
-// 订单拆单
-type wholesaleOrderBreaker struct {
-	repo order.IOrderRepo
-}
-
-func newWholesaleOrderBreaker(repo order.IOrderRepo) *wholesaleOrderBreaker {
-	return &wholesaleOrderBreaker{
-		repo: repo,
-	}
-}
-
-// 拆分订单
-func (w *wholesaleOrderBreaker) BreakUp(c cart.IWholesaleCart) ([]order.IOrder, error) {
-	items := c.GetValue().Items
-	if len(items) == 0 {
-		return []order.IOrder{}, cart.ErrEmptyShoppingCart
-	}
-	// 将购物车的商品按运营商拆分
-	vendorItemsMap := w.breakVendorItemMap(items)
-	if l := len(vendorItemsMap); l == 0 {
-		return []order.IOrder{}, cart.ErrNoChecked
-	}
-	list := []order.IOrder{}
-	cc := c.(cart.ICart)
-	buyerId := cc.BuyerId()
-	for _, items := range vendorItemsMap {
-		o := w.createOrder(buyerId, items)
-		list = append(list, o)
-	}
-	return list, nil
-}
-
-// 创建批发订单
-func (w *wholesaleOrderBreaker) createOrder(buyerId int64, items []*cart.WsCartItem) order.IOrder {
-	v := &order.Order{
-		BuyerId:   buyerId,
-		OrderType: int32(order.TWholesale),
-		State:     int32(order.StatAwaitingPayment),
-	}
-	o := w.repo.CreateOrder(v)
-	wo := o.(order.IWholesaleOrder)
-	list := make([]*order.MinifyItem, len(items))
-	for i, v := range items {
-		list[i] = &order.MinifyItem{
-			ItemId:   v.ItemId,
-			SkuId:    v.SkuId,
-			Quantity: v.Quantity,
-		}
-	}
-	wo.SetItems(list)
-	return o
-}
-
-// 生成运营商与订单商品的映射
-func (w *wholesaleOrderBreaker) breakVendorItemMap(items []*cart.WsCartItem) map[int32][]*cart.WsCartItem {
-	mp := make(map[int32][]*cart.WsCartItem)
-	for _, v := range items {
-		//必须勾选为结算
-		if v.Checked == 1 {
-			list, ok := mp[v.SellerId]
-			if !ok {
-				list = []*cart.WsCartItem{}
-			}
-			mp[v.SellerId] = append(list, v)
-		}
-	}
-	return mp
 }

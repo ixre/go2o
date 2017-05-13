@@ -213,6 +213,19 @@ func (s *shoppingService) wsCheckCart(c cart.ICart, data map[string]string) (*de
 	return parser.Result(c.GetAggregateRootId(), err), nil
 }
 
+// 提交订单
+func (s *shoppingService) SubmitOrderV1(buyerId int64, cartType int32,
+	data map[string]string) (map[string]string, error) {
+	c := s._cartRepo.GetMyCart(buyerId, cart.KWholesale)
+	rd, err := s._repo.Manager().SubmitWholesaleOrder(c, data)
+	if err != nil {
+		return map[string]string{
+			"error": err.Error(),
+		}, nil
+	}
+	return rd, nil
+}
+
 //  获取购物车
 func (s *shoppingService) getShoppingCart(buyerId int64, code string) cart.ICart {
 	var c cart.ICart
@@ -422,7 +435,7 @@ func (s *shoppingService) PrepareOrderWithCoupon(buyerId int64, cartCode string,
 	return data, err
 }
 
-func (s *shoppingService) SubmitOrder(buyerId int64, cartCode string,
+func (s *shoppingService) SubmitOrder_V1(buyerId int64, cartCode string,
 	addressId int64, subject string, couponCode string, balanceDiscount bool) (
 	orderNo string, paymentTradeNo string, err error) {
 	c := s.getShoppingCart(buyerId, cartCode)

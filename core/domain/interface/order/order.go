@@ -136,6 +136,9 @@ func (o LogType) String() string {
 }
 
 var (
+	ErrNoCheckedItem *domain.DomainError = domain.NewDomainError(
+		"err_order_no_checked_item", "没有可结算的商品")
+
 	ErrRequireCart *domain.DomainError = domain.NewDomainError(
 		"err_require_cart", "订单已生成,无法引入购物车")
 
@@ -362,6 +365,14 @@ type (
 		TradePaymentFinish() error
 		// 更新发票数据
 		UpdateTicket(img string) error
+	}
+
+	// 订单提交数据
+	PostedData struct {
+		//收货地址
+		AddressId int64
+		//订单留言
+		Comment string
 	}
 
 	// 订单

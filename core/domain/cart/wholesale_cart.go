@@ -72,29 +72,27 @@ func (c *wholesaleCartImpl) Check() error {
 		return cart.ErrEmptyShoppingCart
 	}
 	for _, v := range c.value.Items {
-		if v.Checked == 1 {
-			it := c.itemRepo.GetItem(v.ItemId)
-			if it == nil {
-				return item.ErrNoSuchItem // 没有商品
+		it := c.itemRepo.GetItem(v.ItemId)
+		if it == nil {
+			return item.ErrNoSuchItem // 没有商品
+		}
+		// 验证批发权限
+		wsIt := it.Wholesale()
+		if wsIt == nil || !wsIt.CanWholesale() {
+			return item.ErrItemWholesaleOff
+		}
+		// 验证库存
+		stock := it.GetValue().StockNum
+		if v.SkuId > 0 {
+			if sku := it.GetSku(v.SkuId); sku != nil {
+				stock = sku.Stock
 			}
-			// 验证批发权限
-			wsIt := it.Wholesale()
-			if wsIt == nil || !wsIt.CanWholesale() {
-				return item.ErrItemWholesaleOff
-			}
-			// 验证库存
-			stock := it.GetValue().StockNum
-			if v.SkuId > 0 {
-				if sku := it.GetSku(v.SkuId); sku != nil {
-					stock = sku.Stock
-				}
-			}
-			if stock == 0 {
-				return item.ErrFullOfStock // 已经卖完了
-			}
-			if stock < v.Quantity {
-				return item.ErrOutOfStock // 超出库存
-			}
+		}
+		if stock == 0 {
+			return item.ErrFullOfStock // 已经卖完了
+		}
+		if stock < v.Quantity {
+			return item.ErrOutOfStock // 超出库存
 		}
 	}
 	return nil
@@ -262,7 +260,6 @@ func (c *wholesaleCartImpl) put(itemId, skuId int32, quantity int32) (*cart.WsCa
 		SkuId:    skuId,
 		Quantity: quantity,
 		Sku:      item.ParseSkuMedia(iv, sku),
-		Checked:  1,
 	}
 	c.value.Items = append(c.value.Items, v)
 	return v, err
@@ -369,19 +366,7 @@ func (c *wholesaleCartImpl) setBuyerAddress(addressId int64) error {
 
 // 标记商品结算
 func (c *wholesaleCartImpl) SignItemChecked(items []*cart.ItemPair) error {
-	mp := c.getItems()
-	// 遍历购物车商品，默认不结算。
-	for _, item := range mp {
-		item.Checked = 0
-		// 如果传入结算商品信息，则标记购物车项结算状态
-		for _, v := range items {
-			if v.SkuId == item.SkuId && v.ItemId == item.ItemId {
-				item.Checked = v.Checked
-				break
-			}
-		}
-	}
-	return c.Check()
+	panic("not support")
 }
 
 // 结算数据持久化
@@ -462,23 +447,34 @@ func (c *wholesaleCartImpl) Save() (int32, error) {
 }
 
 // 释放购物车,如果购物车的商品全部结算,则返回true
-func (c *wholesaleCartImpl) Release() bool {
-	checked := []int{}
-	for i, v := range c.value.Items {
-		if v.Checked == 1 {
-			checked = append(checked, i)
+func (c *wholesaleCartImpl) Release(checked map[int64][]int64) bool {
+	if checked == nil {
+		return true
+	}
+	//部分计算
+	part := false
+	for _, v := range c.value.Items {
+		//判断sku是否被结算
+		skuChecked := false
+		//判断ItemId
+		for itemId, skuList := range checked {
+			if int64(v.ItemId) != itemId {
+				continue
+			}
+			//判断SkuId
+			for _, skuId := range skuList {
+				if int64(v.SkuId) == skuId {
+					skuChecked = true
+					c.Remove(v.ItemId, v.SkuId, v.Quantity)
+				}
+			}
+		}
+		if !part && !skuChecked {
+			part = true
 		}
 	}
-	// 如果为部分结算,则移除商品并返回false
-	if len(checked) < len(c.value.Items) {
-		for _, i := range checked {
-			v := c.value.Items[i]
-			c.Remove(v.ItemId, v.SkuId, v.Quantity)
-		}
-		c.Save()
-		return false
-	}
-	return true
+	c.Save()
+	return !part
 }
 
 // 销毁购物车

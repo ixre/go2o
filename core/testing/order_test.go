@@ -16,6 +16,8 @@ import (
 	"go2o/core/repository"
 	"go2o/core/testing/ti"
 	"go2o/core/variable"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -184,25 +186,32 @@ func TestWholesaleOrder(t *testing.T) {
 
 	buyer := ti.MemberRepo.GetMember(buyerId)
 	addressId := buyer.Profile().GetDefaultAddress().GetDomainId()
-	orders, err := manager.PrepareWholesaleOrder(c)
+	data := map[string]string{
+		"address_id": strconv.Itoa(int(addressId)),
+	}
+
+	rd, err := manager.SubmitWholesaleOrder(c, data)
+
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	t.Logf("批发单拆分数量：%d", len(orders))
 
-	orders, err = manager.SubmitWholesaleOrder(c, addressId, true)
+	arr := strings.Split(rd["order_no"], ",")
+	t.Logf("批发单拆分数量：%d , 订单号：%s", len(arr), rd["order_no"])
+
 	time.Sleep(time.Second * 2)
-	for _, o := range orders {
-		// 重新获取订单
-		o = manager.GetOrderById(o.GetAggregateRootId())
-		io := o.(order.IWholesaleOrder)
-
-		// 可能会自动完成
-		//logState(t, io.Confirm(), o)
-		logState(t, io.PickUp(), o)
-		logState(t, io.Ship(1, "123456"), o)
-		//logState(t, io.BuyerReceived(), o)
+	for _, orderNo := range arr {
+		if orderNo != "" {
+			// 重新获取订单
+			o := manager.GetOrderByNo(orderNo)
+			io := o.(order.IWholesaleOrder)
+			// 可能会自动完成
+			//logState(t, io.Confirm(), o)
+			logState(t, io.PickUp(), o)
+			logState(t, io.Ship(1, "123456"), o)
+			//logState(t, io.BuyerReceived(), o)
+		}
 	}
 }
 
