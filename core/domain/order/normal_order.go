@@ -668,7 +668,7 @@ func (o *normalOrderImpl) saveNewOrderOnSubmit() (int64, error) {
 	id, err := o.orderRepo.SaveNormalOrder(o.value)
 	if err == nil {
 		// 释放购物车并销毁
-		if o.cart.Release() {
+		if o.cart.Release(nil) {
 			o.cart.Destroy()
 		}
 	}

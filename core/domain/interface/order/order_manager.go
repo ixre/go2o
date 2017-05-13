@@ -24,8 +24,7 @@ type (
 		// 预创建批发订单
 		PrepareWholesaleOrder(c cart.ICart) ([]IOrder, error)
 		// 提交批发订单
-		SubmitWholesaleOrder(c cart.ICart, addressId int64,
-			balanceDiscount bool) ([]IOrder, error)
+		SubmitWholesaleOrder(c cart.ICart, data map[string]string) (map[string]string, error)
 		// 提交交易类订单
 		SubmitTradeOrder(o *ComplexOrder, tradeRate float64) (IOrder, error)
 		// 接收在线交易支付的通知，不主动调用

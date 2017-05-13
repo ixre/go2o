@@ -10,6 +10,7 @@
 package cart
 
 import (
+	"encoding/json"
 	"github.com/jsix/gof/util"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/member"
@@ -17,6 +18,7 @@ import (
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
 	"go2o/core/service/thrift/idl/gen-go/define"
+	"strconv"
 )
 
 var (
@@ -75,7 +77,7 @@ type (
 		// 保存购物车
 		Save() (int32, error)
 		// 释放购物车,如果购物车的商品全部结算,则返回true
-		Release() bool
+		Release(checked map[int64][]int64) bool
 		// 销毁购物车
 		Destroy() error
 
@@ -240,8 +242,6 @@ type (
 		SkuId int32 `db:"sku_id"`
 		// 数量
 		Quantity int32 `db:"quantity"`
-		// 是否勾选结算
-		Checked int32 `db:"checked"`
 		// 订单依赖的SKU媒介
 		Sku *item.SkuMedia `db:"-"`
 	}
@@ -357,4 +357,26 @@ func ParseToDtoCart(c ICart) *define.ShoppingCart {
 	}
 
 	return cart
+}
+
+// 转换勾选字典,数据如：{"1":["10","11"],"2":["20","21"]}
+func ParseCheckedMap(data string) (m map[int64][]int64) {
+	if data != "" || data != "{}" {
+		src := map[string][]string{}
+		err := json.Unmarshal([]byte(data), &src)
+		if err == nil {
+			m = map[int64][]int64{}
+			for k, v := range src {
+				itemId, _ := strconv.Atoi(k)
+				skuList := []int64{}
+				for _, v2 := range v {
+					skuId, _ := strconv.Atoi(v2)
+					skuList = append(skuList, int64(skuId))
+				}
+				m[int64(itemId)] = skuList
+			}
+			return m
+		}
+	}
+	return nil
 }
