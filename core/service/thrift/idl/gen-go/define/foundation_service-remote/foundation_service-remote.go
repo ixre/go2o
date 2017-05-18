@@ -25,11 +25,12 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "  string GetValue(string key)")
 	fmt.Fprintln(os.Stderr, "  Result SetValue(string key, string value)")
 	fmt.Fprintln(os.Stderr, "  Result DeleteValue(string key)")
+	fmt.Fprintln(os.Stderr, "   GetRegistryV1( keys)")
 	fmt.Fprintln(os.Stderr, "   GetValuesByPrefix(string prefix)")
 	fmt.Fprintln(os.Stderr, "  string RegisterApp(SsoApp app)")
 	fmt.Fprintln(os.Stderr, "  SsoApp GetApp(string name)")
 	fmt.Fprintln(os.Stderr, "   GetAllSsoApp()")
-	fmt.Fprintln(os.Stderr, "  bool ValidateSuper(string user, string pwd)")
+	fmt.Fprintln(os.Stderr, "  bool SuperValidate(string user, string pwd)")
 	fmt.Fprintln(os.Stderr, "  void FlushSuperPwd(string user, string pwd)")
 	fmt.Fprintln(os.Stderr, "  string GetSyncLoginUrl(string returnUrl)")
 	fmt.Fprintln(os.Stderr)
@@ -176,6 +177,32 @@ func main() {
 		fmt.Print(client.DeleteValue(value0))
 		fmt.Print("\n")
 		break
+	case "GetRegistryV1":
+		if flag.NArg()-1 != 1 {
+			fmt.Fprintln(os.Stderr, "GetRegistryV1 requires 1 args")
+			flag.Usage()
+		}
+		arg48 := flag.Arg(1)
+		mbTrans49 := thrift.NewTMemoryBufferLen(len(arg48))
+		defer mbTrans49.Close()
+		_, err50 := mbTrans49.WriteString(arg48)
+		if err50 != nil {
+			Usage()
+			return
+		}
+		factory51 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt52 := factory51.GetProtocol(mbTrans49)
+		containerStruct0 := define.NewFoundationServiceGetRegistryV1Args()
+		err53 := containerStruct0.ReadField1(jsProt52)
+		if err53 != nil {
+			Usage()
+			return
+		}
+		argvalue0 := containerStruct0.Keys
+		value0 := argvalue0
+		fmt.Print(client.GetRegistryV1(value0))
+		fmt.Print("\n")
+		break
 	case "GetValuesByPrefix":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetValuesByPrefix requires 1 args")
@@ -191,19 +218,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg44 := flag.Arg(1)
-		mbTrans45 := thrift.NewTMemoryBufferLen(len(arg44))
-		defer mbTrans45.Close()
-		_, err46 := mbTrans45.WriteString(arg44)
-		if err46 != nil {
+		arg55 := flag.Arg(1)
+		mbTrans56 := thrift.NewTMemoryBufferLen(len(arg55))
+		defer mbTrans56.Close()
+		_, err57 := mbTrans56.WriteString(arg55)
+		if err57 != nil {
 			Usage()
 			return
 		}
-		factory47 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt48 := factory47.GetProtocol(mbTrans45)
+		factory58 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt59 := factory58.GetProtocol(mbTrans56)
 		argvalue0 := define.NewSsoApp()
-		err49 := argvalue0.Read(jsProt48)
-		if err49 != nil {
+		err60 := argvalue0.Read(jsProt59)
+		if err60 != nil {
 			Usage()
 			return
 		}
@@ -229,16 +256,16 @@ func main() {
 		fmt.Print(client.GetAllSsoApp())
 		fmt.Print("\n")
 		break
-	case "ValidateSuper":
+	case "SuperValidate":
 		if flag.NArg()-1 != 2 {
-			fmt.Fprintln(os.Stderr, "ValidateSuper requires 2 args")
+			fmt.Fprintln(os.Stderr, "SuperValidate requires 2 args")
 			flag.Usage()
 		}
 		argvalue0 := flag.Arg(1)
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		fmt.Print(client.ValidateSuper(value0, value1))
+		fmt.Print(client.SuperValidate(value0, value1))
 		fmt.Print("\n")
 		break
 	case "FlushSuperPwd":

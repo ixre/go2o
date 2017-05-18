@@ -337,19 +337,54 @@ func (v *valueRepo) SaveMoAppConf(r *valueobject.MoAppConf) error {
 
 // 获取数据存储
 func (v *valueRepo) GetRegistry() valueobject.Registry {
-	v.checkReload()
-	if v._globRegistry == nil {
-		v2 := DefaultRegistry
-		v._globRegistry = &v2
-		v._rstGob.Unmarshal(v._globRegistry)
-	}
-	return *v._globRegistry
+	r := v.getRegistry()
+	return *r
 }
 
 // 保存数据存储
 func (v *valueRepo) SaveRegistry(r *valueobject.Registry) error {
 	if r != nil {
 		defer v.signReload()
+		v._globRegistry = r
+		return v._rstGob.Save(v._globRegistry)
+	}
+	return nil
+}
+
+// 获取数据存储
+func (v *valueRepo) getRegistry() *valueobject.Registry {
+	v.checkReload()
+	if v._globRegistry == nil {
+		v2 := DefaultRegistry
+		v._globRegistry = &v2
+		v._rstGob.Unmarshal(v._globRegistry)
+	}
+	return v._globRegistry
+}
+
+// 根据键获取数据值
+func (v *valueRepo) GetsRegistry(keys []string) map[string]string {
+	r := v.getRegistry()
+	mp := map[string]string{}
+	for _, key := range keys {
+		v, ok := r.RegistryData[key]
+		if ok {
+			mp[key] = v
+		} else {
+			mp[key] = "no value in registry"
+		}
+	}
+	return mp
+}
+
+// 保存数据值
+func (v *valueRepo) SavesRegistry(values map[string]string) error {
+	r := v.getRegistry()
+	if r != nil {
+		defer v.signReload()
+		for k, v := range values {
+			r.RegistryData[k] = v
+		}
 		v._globRegistry = r
 		return v._rstGob.Save(v._globRegistry)
 	}

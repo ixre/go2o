@@ -129,8 +129,8 @@ type (
 		CacheAdMaxAge int64
 		// 敏感词,以|分割
 		ShopIncorrectAliasWords string
-		// 其他扩展数据
-		Extend map[string]string
+		// 键值数据
+		RegistryData map[string]string
 	}
 
 	// 模板配置
@@ -307,6 +307,10 @@ type (
 
 		// 保存数据存储
 		SaveRegistry(v *Registry) error
+		// 根据键获取数据值
+		GetsRegistry(keys []string) map[string]string
+		// 保存数据值
+		SavesRegistry(values map[string]string) error
 
 		// 获取模板配置
 		GetTemplateConf() TemplateConf

@@ -111,6 +111,8 @@ type (
 		CheckedItems(checked map[int64][]int64) []*WsCartItem
 		// Jdo数据
 		JdoData(checkout bool, checked map[int64][]int64) *WCartJdo
+		// 简单Jdo数据,max为最多数量
+		QuickJdoData(max int) string
 	}
 
 	// 根据数据获取购物车,

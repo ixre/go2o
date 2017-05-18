@@ -67,6 +67,8 @@ func (s *shoppingService) WholesaleCartV1(memberId int64, action string, data ma
 	switch action {
 	case "GET":
 		return s.wsGetCart(c, data)
+	case "MINI":
+		return s.wsGetSimpleCart(c, data)
 	case "PUT":
 		return s.wsPutItem(c, data)
 	case "UPDATE":
@@ -102,6 +104,7 @@ func (s *shoppingService) parseCheckedMap(data string) (m map[int64][]int64) {
 	return nil
 }
 
+// 获取可结算的购物车
 func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
 	//统计checked
 	checked := s.parseCheckedMap(data["checked"])
@@ -124,6 +127,20 @@ func (s *shoppingService) wsGetCart(c cart.ICart, data map[string]string) (*defi
 		return r, nil
 	}
 	return parser.Result(0, err), nil
+}
+
+// 获取简易的购物车
+func (s *shoppingService) wsGetSimpleCart(c cart.ICart, data map[string]string) (*define.Result_, error) {
+	size, err := strconv.Atoi(data["size"])
+	if err != nil {
+		size = 5
+	}
+	qd := c.(cart.IWholesaleCart).QuickJdoData(size)
+	r := &define.Result_{
+		Result_: qd != "",
+		Message: qd,
+	}
+	return r, nil
 }
 
 func (s *shoppingService) wsPutItem(c cart.ICart, data map[string]string) (*define.Result_, error) {

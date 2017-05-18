@@ -16,6 +16,25 @@ import (
 var _ cart.ICart = new(wholesaleCartImpl)
 var _ cart.IWholesaleCart = new(wholesaleCartImpl)
 
+type wCartQuickSkuJdo struct {
+	// 商品编号
+	ItemId int64
+	// SKU编号
+	SkuId int64
+	// 商品名称
+	ItemName string
+	// SKU编码
+	SkuCode string
+	// SKU图片
+	SkuImage string
+	// 规格文本
+	SpecWord string
+	// 数量
+	Quantity int32
+	// 价格
+	Price float64
+}
+
 type wholesaleCartImpl struct {
 	value      *cart.WsCart
 	rep        cart.ICartRepo
@@ -626,4 +645,44 @@ func (c *wholesaleCartImpl) checkoutJdoData(jdo *cart.WCartJdo) {
 	jdo.Data["TotalExpressAmount"] = format.DecimalToString(0)
 	jdo.Data["TotalItemAmount"] = format.DecimalToString(totalAmount)
 	jdo.Data["FinalAmount"] = format.DecimalToString(totalAmount)
+}
+
+// 简单Jdo数据,max为最多数量
+func (c *wholesaleCartImpl) QuickJdoData(max int) string {
+	items := c.value.Items
+	l := len(items)
+	if max > l {
+		max = l
+	}
+	skuList := []wCartQuickSkuJdo{}
+	for _, v := range items[:max] {
+		// 如果已处理过商品，则跳过
+		if v.SellerId <= 0 {
+			continue
+		}
+		it := c.itemRepo.GetItem(v.ItemId)
+		itw := it.Wholesale()
+		wPrice := itw.GetWholesalePrice(v.SkuId, v.Quantity)
+		skuV := it.GetSku(v.SkuId)
+		skuJdo := wCartQuickSkuJdo{
+			ItemId:   int64(v.ItemId),
+			SkuId:    int64(v.SkuId),
+			ItemName: it.GetValue().Title,
+			SkuCode:  skuV.Code,
+			SkuImage: skuV.Image,
+			SpecWord: skuV.SpecWord,
+			Price:    wPrice,
+			Quantity: v.Quantity,
+		}
+		skuList = append(skuList, skuJdo)
+	}
+	mp := map[string]interface{}{
+		"len":  l,
+		"item": skuList,
+	}
+	d, err := json.Marshal(mp)
+	if err == nil {
+		return string(d)
+	}
+	return "{\"error\":\"" + err.Error() + "\"}"
 }
