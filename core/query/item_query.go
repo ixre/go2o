@@ -12,6 +12,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/log"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
@@ -156,6 +157,11 @@ func (i ItemQuery) SearchOnShelvesItemForWholesale(word string, start, end int32
 		 AND ws_item.shelve_state=?  %s`, where), &total,
 		enum.ReviewPass, item.ShelvesOn)
 	list := []*item.GoodsItem{}
+	log.Println("---", fmt.Sprintf(`SELECT COUNT(0) FROM ws_item
+         INNER JOIN item_info ON item_info.id=ws_item.item_id
+         INNER JOIN pro_product ON pro_product.id = item_info.product_id
+		 WHERE ws_item.review_state=?
+		 AND ws_item.shelve_state=?  %s`, where))
 	if total > 0 {
 		sql = fmt.Sprintf(`SELECT item_info.id,item_info.product_id,item_info.prom_flag,
 		item_info.cat_id,item_info.vendor_id,item_info.brand_id,item_info.shop_id,

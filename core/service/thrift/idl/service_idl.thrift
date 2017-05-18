@@ -410,6 +410,8 @@ service FoundationService{
    Result SetValue(1:string key,2:string value)
    // 删除值
    Result DeleteValue(1:string key)
+   // 获取键值存储数据
+   map<string,string> GetRegistryV1(1:list<string> keys)
    // 根据前缀获取值
    map<string,string> GetValuesByPrefix(1:string prefix)
    // 注册单点登录应用,返回值：
@@ -422,7 +424,7 @@ service FoundationService{
    // 获取单点登录应用
    list<string> GetAllSsoApp()
    // 验证超级用户账号和密码
-   bool ValidateSuper(1:string user,2:string pwd)
+   bool SuperValidate(1:string user,2:string pwd)
    // 保存超级用户账号和密码
    void FlushSuperPwd(1:string user,2:string pwd)
    // 创建同步登录的地址

@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/crypto"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/infrastructure/format"
@@ -57,8 +58,18 @@ func (s *foundationService) GetValuesByPrefix(prefix string) (r map[string]strin
 	return s._rep.GetValues(prefix), nil
 }
 
+// 获取键值存储数据
+func (f *foundationService) GetRegistryV1(keys []string) (map[string]string, error) {
+	return f._rep.GetsRegistry(keys), nil
+}
+
+// 保存键值存储数据
+func (f *foundationService) SavesRegistry(values map[string]string) error {
+	return f._rep.SavesRegistry(values)
+}
+
 // 验证超级用户账号和密码
-func (s *foundationService) ValidateSuper(user string, pwd string) (r bool, err error) {
+func (s *foundationService) SuperValidate(user string, pwd string) (r bool, err error) {
 	superPwd := gof.CurrentApp.Config().Get("super_login_md5")
 	encPwd := domain.Md5Pwd(pwd, user)
 	return superPwd == encPwd, nil
@@ -67,7 +78,8 @@ func (s *foundationService) ValidateSuper(user string, pwd string) (r bool, err 
 // 保存超级用户账号和密码
 func (s *foundationService) FlushSuperPwd(user string, pwd string) (err error) {
 	conf := gof.CurrentApp.Config()
-	encPwd := domain.Md5Pwd(pwd, user)
+	sha1 := crypto.Sha1([]byte(pwd + domain.Sha1OffSet))
+	encPwd := domain.Md5Pwd(sha1, user)
 	conf.Set("super_login_md5", encPwd)
 	//conf.Flush()
 	return errors.New("暂不支持保存")
