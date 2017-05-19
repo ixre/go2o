@@ -239,9 +239,6 @@ func Account(src *define.Account) *member.Account {
 
 func PlatformConfDto(src *valueobject.PlatformConf) *define.PlatformConf {
 	return &define.PlatformConf{
-		Name:             src.Name,
-		Logo:             src.Logo,
-		Telephone:        src.Telephone,
 		Suspend:          src.Suspend,
 		SuspendMessage:   src.SuspendMessage,
 		MchGoodsCategory: src.MchGoodsCategory,
@@ -251,9 +248,6 @@ func PlatformConfDto(src *valueobject.PlatformConf) *define.PlatformConf {
 
 func PlatFromConf(src *define.PlatformConf) *valueobject.PlatformConf {
 	return &valueobject.PlatformConf{
-		Name:             src.Name,
-		Logo:             src.Logo,
-		Telephone:        src.Telephone,
 		Suspend:          src.Suspend,
 		SuspendMessage:   src.SuspendMessage,
 		MchGoodsCategory: src.MchGoodsCategory,

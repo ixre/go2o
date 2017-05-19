@@ -50,8 +50,10 @@ func (s *serviceC) LoginState(c *echox.Context) error {
 		variable.DOMAIN_PREFIX_PASSPORT, mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
-		conf, _ := rsi.FoundationService.GetPlatformConf()
-		mp["PFName"] = conf.Name
+		registry, _ := rsi.FoundationService.GetRegistryV1([]string{
+			"PlatformName",
+		})
+		mp["PtName"] = registry["PlatformName"]
 		mp["LoginUrl"] = pstUrl + "/auth/login"
 		mp["RegisterUrl"] = pstUrl + "/register"
 		mp["Login"] = 0

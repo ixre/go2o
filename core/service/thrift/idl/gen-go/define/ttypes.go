@@ -11099,37 +11099,19 @@ func (p *ComplexOrder) String() string {
 }
 
 // Attributes:
-//  - Name
-//  - Logo
-//  - Telephone
 //  - Suspend
 //  - SuspendMessage
 //  - MchGoodsCategory
 //  - MchPageCategory
 type PlatformConf struct {
-	Name             string `thrift:"Name,1" json:"Name"`
-	Logo             string `thrift:"Logo,2" json:"Logo"`
-	Telephone        string `thrift:"Telephone,3" json:"Telephone"`
-	Suspend          bool   `thrift:"Suspend,4" json:"Suspend"`
-	SuspendMessage   string `thrift:"SuspendMessage,5" json:"SuspendMessage"`
-	MchGoodsCategory bool   `thrift:"MchGoodsCategory,6" json:"MchGoodsCategory"`
-	MchPageCategory  bool   `thrift:"MchPageCategory,7" json:"MchPageCategory"`
+	Suspend          bool   `thrift:"Suspend,1" json:"Suspend"`
+	SuspendMessage   string `thrift:"SuspendMessage,2" json:"SuspendMessage"`
+	MchGoodsCategory bool   `thrift:"MchGoodsCategory,3" json:"MchGoodsCategory"`
+	MchPageCategory  bool   `thrift:"MchPageCategory,4" json:"MchPageCategory"`
 }
 
 func NewPlatformConf() *PlatformConf {
 	return &PlatformConf{}
-}
-
-func (p *PlatformConf) GetName() string {
-	return p.Name
-}
-
-func (p *PlatformConf) GetLogo() string {
-	return p.Logo
-}
-
-func (p *PlatformConf) GetTelephone() string {
-	return p.Telephone
 }
 
 func (p *PlatformConf) GetSuspend() bool {
@@ -11177,18 +11159,6 @@ func (p *PlatformConf) Read(iprot thrift.TProtocol) error {
 			if err := p.readField4(iprot); err != nil {
 				return err
 			}
-		case 5:
-			if err := p.readField5(iprot); err != nil {
-				return err
-			}
-		case 6:
-			if err := p.readField6(iprot); err != nil {
-				return err
-			}
-		case 7:
-			if err := p.readField7(iprot); err != nil {
-				return err
-			}
 		default:
 			if err := iprot.Skip(fieldTypeId); err != nil {
 				return err
@@ -11205,10 +11175,10 @@ func (p *PlatformConf) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *PlatformConf) readField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadBool(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.Name = v
+		p.Suspend = v
 	}
 	return nil
 }
@@ -11217,16 +11187,16 @@ func (p *PlatformConf) readField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 2: ", err)
 	} else {
-		p.Logo = v
+		p.SuspendMessage = v
 	}
 	return nil
 }
 
 func (p *PlatformConf) readField3(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadBool(); err != nil {
 		return thrift.PrependError("error reading field 3: ", err)
 	} else {
-		p.Telephone = v
+		p.MchGoodsCategory = v
 	}
 	return nil
 }
@@ -11234,33 +11204,6 @@ func (p *PlatformConf) readField3(iprot thrift.TProtocol) error {
 func (p *PlatformConf) readField4(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadBool(); err != nil {
 		return thrift.PrependError("error reading field 4: ", err)
-	} else {
-		p.Suspend = v
-	}
-	return nil
-}
-
-func (p *PlatformConf) readField5(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
-		return thrift.PrependError("error reading field 5: ", err)
-	} else {
-		p.SuspendMessage = v
-	}
-	return nil
-}
-
-func (p *PlatformConf) readField6(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadBool(); err != nil {
-		return thrift.PrependError("error reading field 6: ", err)
-	} else {
-		p.MchGoodsCategory = v
-	}
-	return nil
-}
-
-func (p *PlatformConf) readField7(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadBool(); err != nil {
-		return thrift.PrependError("error reading field 7: ", err)
 	} else {
 		p.MchPageCategory = v
 	}
@@ -11283,15 +11226,6 @@ func (p *PlatformConf) Write(oprot thrift.TProtocol) error {
 	if err := p.writeField4(oprot); err != nil {
 		return err
 	}
-	if err := p.writeField5(oprot); err != nil {
-		return err
-	}
-	if err := p.writeField6(oprot); err != nil {
-		return err
-	}
-	if err := p.writeField7(oprot); err != nil {
-		return err
-	}
 	if err := oprot.WriteFieldStop(); err != nil {
 		return thrift.PrependError("write field stop error: ", err)
 	}
@@ -11302,92 +11236,53 @@ func (p *PlatformConf) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *PlatformConf) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Name: ", p), err)
+	if err := oprot.WriteFieldBegin("Suspend", thrift.BOOL, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:Suspend: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Name)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Name (1) field write error: ", p), err)
+	if err := oprot.WriteBool(bool(p.Suspend)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.Suspend (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Name: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:Suspend: ", p), err)
 	}
 	return err
 }
 
 func (p *PlatformConf) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Logo", thrift.STRING, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:Logo: ", p), err)
+	if err := oprot.WriteFieldBegin("SuspendMessage", thrift.STRING, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:SuspendMessage: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Logo)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Logo (2) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.SuspendMessage)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.SuspendMessage (2) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:Logo: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:SuspendMessage: ", p), err)
 	}
 	return err
 }
 
 func (p *PlatformConf) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Telephone", thrift.STRING, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:Telephone: ", p), err)
+	if err := oprot.WriteFieldBegin("MchGoodsCategory", thrift.BOOL, 3); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:MchGoodsCategory: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.Telephone)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Telephone (3) field write error: ", p), err)
+	if err := oprot.WriteBool(bool(p.MchGoodsCategory)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.MchGoodsCategory (3) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:Telephone: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:MchGoodsCategory: ", p), err)
 	}
 	return err
 }
 
 func (p *PlatformConf) writeField4(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("Suspend", thrift.BOOL, 4); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:Suspend: ", p), err)
-	}
-	if err := oprot.WriteBool(bool(p.Suspend)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.Suspend (4) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:Suspend: ", p), err)
-	}
-	return err
-}
-
-func (p *PlatformConf) writeField5(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("SuspendMessage", thrift.STRING, 5); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 5:SuspendMessage: ", p), err)
-	}
-	if err := oprot.WriteString(string(p.SuspendMessage)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.SuspendMessage (5) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 5:SuspendMessage: ", p), err)
-	}
-	return err
-}
-
-func (p *PlatformConf) writeField6(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("MchGoodsCategory", thrift.BOOL, 6); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 6:MchGoodsCategory: ", p), err)
-	}
-	if err := oprot.WriteBool(bool(p.MchGoodsCategory)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.MchGoodsCategory (6) field write error: ", p), err)
-	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 6:MchGoodsCategory: ", p), err)
-	}
-	return err
-}
-
-func (p *PlatformConf) writeField7(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("MchPageCategory", thrift.BOOL, 7); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 7:MchPageCategory: ", p), err)
+	if err := oprot.WriteFieldBegin("MchPageCategory", thrift.BOOL, 4); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 4:MchPageCategory: ", p), err)
 	}
 	if err := oprot.WriteBool(bool(p.MchPageCategory)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.MchPageCategory (7) field write error: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T.MchPageCategory (4) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 7:MchPageCategory: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 4:MchPageCategory: ", p), err)
 	}
 	return err
 }
