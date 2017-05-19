@@ -53,7 +53,13 @@ var (
 
 		// 商铺别名敏感词,以|分割
 		ShopIncorrectAliasWords: "shop|master|o2o|super|www|sys|system|mall|mch|system|passport|api|image|static|img",
-		RegistryData:            map[string]string{},
+		RegistryData: map[string]string{
+			"PlatformName":      "GO2O",
+			"Logo":              "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+			"RetailSiteLogo":    "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+			"WholesaleSiteLogo": "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
+			"Telephone":         "021-88888888",
+		},
 	}
 	systemIncorrectWords = `系统|官方|shop|www|政府|mall|mch|商户|客服|system|`
 
@@ -73,9 +79,7 @@ var (
 
 	// 默认平台设置
 	DefaultPlatformConf = valueobject.PlatformConf{
-		Name:             "GO2O",
-		Logo:             "https://raw.githubusercontent.com/jsix/go2o/master/docs/mark.gif",
-		Telephone:        "021-88888888",
+
 		MchGoodsCategory: false,
 		MchPageCategory:  false,
 		// 系统是否开挂起状态
@@ -87,9 +91,9 @@ var (
 	// 移动应用配置
 	DefaultMoAppConf = valueobject.MoAppConf{
 		// 应用名称
-		AppName: DefaultPlatformConf.Name,
+		AppName: DefaultRegistry.RegistryData["PlatformName"],
 		// APP图标地址
-		AppIcon: DefaultPlatformConf.Logo,
+		AppIcon: DefaultRegistry.RegistryData["RetailSiteLogo"],
 		// 描述
 		Description: "移动应用正在开发中",
 		// 模板文件

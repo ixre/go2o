@@ -377,13 +377,13 @@ struct ComplexOrder {
 
 
 struct PlatformConf {
-    1: string Name
-    2: string Logo
-    3: string Telephone
-    4: bool Suspend
-    5: string SuspendMessage
-    6: bool MchGoodsCategory
-    7: bool MchPageCategory
+   // 1: string Name
+   // 2: string Logo
+   // 3: string Telephone
+    1: bool Suspend
+    2: string SuspendMessage
+    3: bool MchGoodsCategory
+    4: bool MchPageCategory
 }
 
 // 单点登录应用

@@ -122,7 +122,21 @@ func (p *personFinanceService) RiseTransferOut(personId int64,
 		//转入余额
 		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
 			err = acc.Charge(member.AccountBalance,
-				member.KindBalanceSystemCharge, "理财转出",
+				member.KindBalanceSystemCharge, variable.AliasGrowAccount+"转出",
+				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
+			if err != nil {
+				log.Println("[ TransferOut][ Error]:", err.Error())
+			}
+			err = pf.SyncToAccount()
+		}
+		return err
+	}
+
+	if transferWith == personfinance.TransferFromWithWallet {
+		//转入钱包
+		if err = r.TransferOut(amount, transferWith, personfinance.RiseStateOk); err == nil {
+			err = acc.Charge(member.AccountWallet,
+				member.KindWalletAdd, variable.AliasGrowAccount+"转出",
 				domain.NewTradeNo(10000), amount, member.DefaultRelateUser)
 			if err != nil {
 				log.Println("[ TransferOut][ Error]:", err.Error())
