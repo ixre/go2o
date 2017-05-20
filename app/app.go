@@ -122,12 +122,12 @@ func resetFsOnDarwin() {
 	webFs[FsMainMobile] = false
 	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
-	webFs[FsUCenter] = false
+	webFs[FsUCenter] = !false
 	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
 	webFs[FsMch] = false
-	webFs[FsWholesale] = !false
+	webFs[FsWholesale] = false
 }
 
 // 获取模板是否监视更改

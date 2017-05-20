@@ -109,6 +109,8 @@ func (p *personFinanceService) RiseTransferIn(personId int64,
 // 转出
 func (p *personFinanceService) RiseTransferOut(personId int64,
 	transferWith personfinance.TransferWith, amount float32) (err error) {
+	//return errors.New("系统正在升级，暂停服务!")
+
 	pf := p._rep.GetPersonFinance(personId)
 	r := pf.GetRiseInfo()
 

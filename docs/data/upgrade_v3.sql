@@ -722,3 +722,23 @@ ALTER TABLE `ws_item`
   ADD COLUMN `price` DECIMAL(10,2) NULL COMMENT '价格' AFTER `vendor_id`,
   ADD COLUMN `price_range` VARCHAR(45) NULL COMMENT '价格区间' AFTER `price`;
 
+CREATE TABLE ws_cart (
+  id          int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  code        varchar(32) comment '购物车编码',
+  buyer_id    int(11) comment '买家编号',
+  deliver_id  int(11) comment '送货地址',
+  payment_opt int(11) comment '支付选项',
+  create_time int(11) comment '创建时间',
+  update_time int(11) comment '修改时间',
+  PRIMARY KEY (id)) comment='商品批发购物车';
+
+CREATE TABLE ws_cart_item (
+  id        int(11) NOT NULL AUTO_INCREMENT comment '编号',
+  cart_id   int(11) comment '购物车编号',
+  vendor_id int(11) comment '运营商编号',
+  shop_id   int(11) comment '店铺编号',
+  item_id   int(11) comment '商品编号',
+  sku_id    int(11) comment 'SKU编号',
+  quantity  int(8) comment '数量',
+  checked   int(2) comment '是否勾选结算',
+  PRIMARY KEY (id)) comment='批发购物车商品项';
