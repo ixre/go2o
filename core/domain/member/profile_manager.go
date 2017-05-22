@@ -578,7 +578,7 @@ func newDeliver(v *member.Address, memberRepo member.IMemberRepo,
 }
 
 func (p *addressImpl) GetDomainId() int64 {
-	return p._value.Id
+	return p._value.ID
 }
 
 func (p *addressImpl) GetValue() member.Address {

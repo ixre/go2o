@@ -84,21 +84,21 @@ func genDayChartForMch(wg *sync.WaitGroup, mchId int32, dateStr string, start in
 	db := appCtx.Db()
 	// 统计订单
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount),COUNT(distinct buyer_id)
- FROM sale_sub_order where vendor_id=? AND create_time BETWEEN ? AND ?`, func(r *sql.Row) {
-		r.Scan(&c.OrderNumber, &c.OrderAmount, &c.BuyerNumber)
+ FROM sale_sub_order where vendor_id=? AND create_time BETWEEN ? AND ?`, func(r *sql.Row) error {
+		return r.Scan(&c.OrderNumber, &c.OrderAmount, &c.BuyerNumber)
 	}, mchId, start, end)
 	// 支付单汇总
 	db.QueryRow(`SELECT COUNT(0),SUM(sale_sub_order.final_amount) FROM sale_sub_order
 INNER JOIN pay_order ON pay_order.order_id = sale_sub_order.order_id
 where sale_sub_order.vendor_id=? AND pay_order.state = 1 AND pay_order.paid_time
- BETWEEN ? AND ?`, func(r *sql.Row) {
-		r.Scan(&c.PaidNumber, &c.PaidAmount)
+ BETWEEN ? AND ?`, func(r *sql.Row) error {
+		return r.Scan(&c.PaidNumber, &c.PaidAmount)
 	}, mchId, start, end)
 	// 今日已完成订单,应进账数量
 	db.QueryRow(`SELECT COUNT(0),SUM(final_amount)
  FROM sale_sub_order where vendor_id=? AND state=?
- AND update_time BETWEEN ? AND ?`, func(r *sql.Row) {
-		r.Scan(&c.CompleteOrders, &c.InAmount)
+ AND update_time BETWEEN ? AND ?`, func(r *sql.Row) error {
+		return r.Scan(&c.CompleteOrders, &c.InAmount)
 	}, mchId, order.StatCompleted, start, end)
 	// 保存
 	orm.Save(db.GetOrm(), c, 0)

@@ -257,7 +257,7 @@ func PlatFromConf(src *define.PlatformConf) *valueobject.PlatformConf {
 
 func AddressDto(src *member.Address) *define.Address {
 	return &define.Address{
-		ID:        src.Id,
+		ID:        src.ID,
 		MemberId:  src.MemberId,
 		RealName:  src.RealName,
 		Phone:     src.Phone,
@@ -267,6 +267,21 @@ func AddressDto(src *member.Address) *define.Address {
 		Area:      src.Area,
 		Address:   src.Address,
 		IsDefault: int32(src.IsDefault),
+	}
+}
+
+func Address(src *define.Address) *member.Address {
+	return &member.Address{
+		ID:        src.ID,
+		MemberId:  src.MemberId,
+		RealName:  src.RealName,
+		Phone:     src.Phone,
+		Province:  src.Province,
+		City:      src.City,
+		District:  src.District,
+		Area:      src.Area,
+		Address:   src.Address,
+		IsDefault: int(src.IsDefault),
 	}
 }
 

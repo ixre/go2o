@@ -55,8 +55,8 @@ func (s *ShopQuery) QueryShopIdByHost(host string) (mchId int32, shopId int32) {
 		matches := reg.FindAllStringSubmatch(host, 1)
 		usr := matches[0][1]
 		err = s.Connector.QueryRow(`SELECT s.mch_id,o.shop_id FROM mch_online_shop o
-		    INNER JOIN mch_shop s ON s.id=o.shop_id WHERE o.alias=?`, func(row *sql.Row) {
-			row.Scan(&mchId, &shopId)
+		    INNER JOIN mch_shop s ON s.id=o.shop_id WHERE o.alias=?`, func(row *sql.Row) error {
+			return row.Scan(&mchId, &shopId)
 		}, usr)
 	} else {
 		err = s.Connector.ExecScalar(

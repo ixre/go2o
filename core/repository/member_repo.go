@@ -534,7 +534,7 @@ func (m *MemberRepo) SaveLevelUpLog(v *member.LevelUpLog) (int32, error) {
 
 // 保存地址
 func (m *MemberRepo) SaveDeliver(v *member.Address) (int64, error) {
-	return orm.I64(orm.Save(m.Connector.GetOrm(), v, int(v.Id)))
+	return orm.I64(orm.Save(m.Connector.GetOrm(), v, int(v.ID)))
 }
 
 // 获取全部配送地址
