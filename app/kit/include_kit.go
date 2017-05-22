@@ -88,6 +88,10 @@ func (t *templateIncludeToolkit) alias(s string) string {
 	switch s {
 	case "WalletAccount":
 		return variable.AliasWalletAccount
+	case "GrowAccount":
+		return variable.AliasGrowAccount
+	case "BalanceAccount":
+		return variable.AliasBalanceAccount
 	}
 	return s
 }

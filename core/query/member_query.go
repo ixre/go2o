@@ -165,9 +165,10 @@ func (m *MemberQuery) GetMemberByUsrOrPhone(key string) *dto.SimpleMember {
 	err := m.QueryRow(`SELECT id,usr,mm_profile.name,mm_profile.phone,
         mm_profile.avatar FROM mm_member
         INNER JOIN mm_profile ON mm_profile.member_id=mm_member.id
-        WHERE usr = ? OR mm_profile.phone = ?`, func(rows *sql.Row) {
-		rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
+        WHERE usr = ? OR mm_profile.phone = ?`, func(rows *sql.Row) error {
+		er := rows.Scan(&e.Id, &e.User, &e.Name, &e.Phone, &e.Avatar)
 		e.Avatar = format.GetResUrl(e.Avatar)
+		return er
 	}, key, key)
 	if err == nil {
 		return &e

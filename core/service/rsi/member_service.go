@@ -690,12 +690,13 @@ func (ms *memberService) GetAddress(memberId int64, addrId int64) (
 }
 
 //保存配送地址
-func (ms *memberService) SaveAddress(memberId int64, e *member.Address) (int64, error) {
+func (ms *memberService) SaveAddress(memberId int64, src *define.Address) (int64, error) {
+	e := parser.Address(src)
 	m := ms._repo.CreateMember(&member.Member{Id: memberId})
 	var v member.IDeliverAddress
 	var err error
-	if e.Id > 0 {
-		v = m.Profile().GetAddress(e.Id)
+	if e.ID > 0 {
+		v = m.Profile().GetAddress(e.ID)
 		err = v.SetValue(e)
 	} else {
 		v = m.Profile().CreateDeliver(e)
