@@ -464,9 +464,9 @@ func (m *merchantService) PagedOrdersOfVendor(vendorId int32, begin, size int, p
 }
 
 // 查询分页订单
-func (m *merchantService) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+func (m *merchantService) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int32, []*define.ComplexOrder) {
-	return m._orderQuery.PagedTradeOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+	return m._orderQuery.PagedTradeOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 提到会员账户

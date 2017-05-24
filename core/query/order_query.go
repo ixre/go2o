@@ -219,7 +219,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 }
 
 // 查询分页订单
-func (o *OrderQuery) QueryPagerTradeOrder(memberId int64, begin, size int, pagination bool,
+func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (int, []*define.ComplexOrder) {
 	d := o.Connector
 	orderList := []*define.ComplexOrder{}
@@ -278,7 +278,7 @@ func (o *OrderQuery) QueryPagerTradeOrder(memberId int64, begin, size int, pagin
 }
 
 // 查询分页订单
-func (o *OrderQuery) PagedTradeOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int32, []*define.ComplexOrder) {
 	d := o.Connector
 	orderList := []*define.ComplexOrder{}
