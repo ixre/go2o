@@ -92,6 +92,8 @@ func (t *templateIncludeToolkit) alias(s string) string {
 		return variable.AliasGrowAccount
 	case "BalanceAccount":
 		return variable.AliasBalanceAccount
+	case "TradeOrder":
+		return variable.AliasTradeOrder
 	}
 	return s
 }

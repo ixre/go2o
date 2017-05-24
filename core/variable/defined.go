@@ -19,6 +19,8 @@ var (
 	FlowConvertSlogan           string = "流通金作为可以转让的虚拟货币"
 	AliasIntegralAccount        string = "积分"
 
+	AliasTradeOrder string = "交易类订单"
+
 	AliasMemberName string = "昵称"
 	MemberNameShow  bool   = true
 
