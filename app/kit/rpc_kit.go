@@ -21,6 +21,7 @@ func (r *rpcToolkit) Registry(keys ...string) map[string]string {
 func (r *rpcToolkit) GetComplexMember(memberId int64) *define.ComplexMember {
 	cli, err := thrift.MemberServeClient()
 	if err == nil {
+		defer cli.Transport.Close()
 		mc, _ := cli.Complex(memberId)
 		return mc
 	}
@@ -30,6 +31,7 @@ func (r *rpcToolkit) GetComplexMember(memberId int64) *define.ComplexMember {
 func (r *rpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 	cli, err := thrift.MemberServeClient()
 	if err == nil {
+		defer cli.Transport.Close()
 		mc, _ := cli.InviterArray(memberId, depth)
 		return mc
 	}
@@ -39,6 +41,7 @@ func (r *rpcToolkit) InviterArray(memberId int64, depth int32) []int64 {
 func (r *rpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
 	cli, err := thrift.MerchantServeClient()
 	if err == nil {
+		defer cli.Transport.Close()
 		mc, _ := cli.Complex(mchId)
 		return mc
 	}
@@ -48,8 +51,20 @@ func (r *rpcToolkit) GetMerchant(mchId int32) *define.ComplexMerchant {
 func (r *rpcToolkit) GetLevel(levelId int32) *define.Level {
 	cli, err := thrift.MemberServeClient()
 	if err == nil {
+		defer cli.Transport.Close()
 		mc, _ := cli.GetLevel(levelId)
 		return mc
+	}
+	return nil
+}
+
+// 获取订单
+func (r *rpcToolkit) GetOrder(orderNo string, sub bool) *define.ComplexOrder {
+	cli, err := thrift.SaleServeClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		o, _ := cli.GetOrder(orderNo, sub)
+		return o
 	}
 	return nil
 }
