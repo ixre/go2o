@@ -651,10 +651,16 @@ func (ms *memberService) PagedWalletAccountLog(memberId int64, begin, end int,
 	return ms._query.PagedWalletAccountLog(memberId, begin, end, where, orderBy)
 }
 
-// 查询分页订单
-func (ms *memberService) QueryPagerOrder(memberId int64, begin, size int, pagination bool,
+// 查询分页普通订单
+func (ms *memberService) QueryNormalOrder(memberId int64, begin, size int, pagination bool,
 	where, orderBy string) (num int, rows []*dto.PagedMemberSubOrder) {
 	return ms._orderQuery.QueryPagerOrder(memberId, begin, size, pagination, where, orderBy)
+}
+
+// 查询分页批发订单
+func (ms *memberService) QueryWholesaleOrder(memberId int64, begin, size int, pagination bool,
+	where, orderBy string) (num int, rows []*dto.PagedMemberSubOrder) {
+	return ms._orderQuery.PagedWholesaleOrderOfBuyer(memberId, begin, size, pagination, where, orderBy)
 }
 
 // 查询分页订单
