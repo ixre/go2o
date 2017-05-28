@@ -84,7 +84,7 @@ QQ群：**338164725**
 	git clone https://github.com/jsix/go2o.git /home/usr/go/src/go2o
 	export GOPATH=$GOPATH:/home/usr/go/
 	cd /home/usr/go
-	go build go2o-server.go
+	go build go2o-serve.go
 	go build go2o-daemon.go
 	go build go2o-tcpserve.go
 

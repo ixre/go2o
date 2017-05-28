@@ -18,7 +18,7 @@ type (
 	*/
 	// 会员分页子订单
 	PagedMemberSubOrder struct {
-		Id             int
+		Id             int64
 		OrderNo        string
 		ParentNo       string
 		VendorId       int
@@ -37,7 +37,7 @@ type (
 	}
 
 	PagedVendorOrder struct {
-		Id        int
+		Id        int64
 		OrderNo   string
 		ParentNo  string
 		BuyerId   int
@@ -68,7 +68,7 @@ type (
 		// 编号
 		Id int
 		// 订单编号
-		OrderId int
+		OrderId int64
 		// 商品快照编号
 		SnapshotId int
 		// Sku编号

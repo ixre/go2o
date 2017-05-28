@@ -83,7 +83,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 		}
 	}
 
-	orderMap := make(map[int]int) //存储订单编号和对象的索引
+	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
 
 	// 查询分页的订单
@@ -110,7 +110,7 @@ func (o *OrderQuery) QueryPagerOrder(memberId int64, begin, size int, pagination
 				if i != 0 {
 					idBuf.WriteString(",")
 				}
-				idBuf.WriteString(strconv.Itoa(e.Id))
+				idBuf.WriteString(strconv.Itoa(int(e.Id)))
 				i++
 			}
 			rs.Close()
@@ -167,7 +167,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 		}
 	}
 
-	orderMap := make(map[int]int) //存储订单编号和对象的索引
+	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
 
 	// 查询分页的订单
@@ -193,7 +193,7 @@ func (o *OrderQuery) PagedOrdersOfVendor(vendorId int32, begin, size int, pagina
 				if i != 0 {
 					idBuf.WriteString(",")
 				}
-				idBuf.WriteString(strconv.Itoa(e.Id))
+				idBuf.WriteString(strconv.Itoa(int(e.Id)))
 				i++
 			}
 			rs.Close()
@@ -246,7 +246,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 		}
 	}
 
-	orderMap := make(map[int]int) //存储订单编号和对象的索引
+	orderMap := make(map[int64]int) //存储订单编号和对象的索引
 	idBuf := bytes.NewBufferString("")
 
 	// 查询分页的订单
@@ -274,7 +274,7 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 				if i != 0 {
 					idBuf.WriteString(",")
 				}
-				idBuf.WriteString(strconv.Itoa(e.Id))
+				idBuf.WriteString(strconv.Itoa(int(e.Id)))
 				i++
 			}
 			rs.Close()
@@ -283,14 +283,15 @@ func (o *OrderQuery) PagedWholesaleOrderOfBuyer(memberId int64, begin, size int,
 	// 查询分页订单的Item
 	idArr := idBuf.String()
 	if idArr != "" {
-		d.Query(fmt.Sprintf(` SELECT oi.id,oi.snapshot_id,sn.item_id,sn.sku_id,
+		log.Println("---", fmt.Sprintf("%#v", orderMap))
+		d.Query(fmt.Sprintf(` SELECT oi.id,oi.order_id,oi.snapshot_id,sn.item_id,sn.sku_id,
             sn.goods_title,sn.img,oi.quantity,oi.return_quantity,
             oi.amount,oi.final_amount,oi.is_shipped FROM order_wholesale_item oi
             INNER JOIN item_trade_snapshot sn ON sn.id=oi.snapshot_id
             WHERE oi.order_id IN(%s) ORDER BY oi.id ASC`, idArr), func(rs *sql.Rows) {
 			for rs.Next() {
 				e := &dto.OrderItem{}
-				rs.Scan(&e.Id, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
+				rs.Scan(&e.Id, &e.OrderId, &e.SnapshotId, &e.ItemId, &e.SkuId, &e.GoodsTitle,
 					&e.Image, &e.Quantity, &e.ReturnQuantity,
 					&e.Amount, &e.FinalAmount, &e.IsShipped)
 				e.FinalPrice = e.FinalAmount / float32(e.Quantity)
