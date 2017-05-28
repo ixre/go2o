@@ -182,19 +182,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetRegistryV1 requires 1 args")
 			flag.Usage()
 		}
-		arg48 := flag.Arg(1)
-		mbTrans49 := thrift.NewTMemoryBufferLen(len(arg48))
-		defer mbTrans49.Close()
-		_, err50 := mbTrans49.WriteString(arg48)
-		if err50 != nil {
+		arg50 := flag.Arg(1)
+		mbTrans51 := thrift.NewTMemoryBufferLen(len(arg50))
+		defer mbTrans51.Close()
+		_, err52 := mbTrans51.WriteString(arg50)
+		if err52 != nil {
 			Usage()
 			return
 		}
-		factory51 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt52 := factory51.GetProtocol(mbTrans49)
+		factory53 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt54 := factory53.GetProtocol(mbTrans51)
 		containerStruct0 := define.NewFoundationServiceGetRegistryV1Args()
-		err53 := containerStruct0.ReadField1(jsProt52)
-		if err53 != nil {
+		err55 := containerStruct0.ReadField1(jsProt54)
+		if err55 != nil {
 			Usage()
 			return
 		}
@@ -218,19 +218,19 @@ func main() {
 			fmt.Fprintln(os.Stderr, "RegisterApp requires 1 args")
 			flag.Usage()
 		}
-		arg55 := flag.Arg(1)
-		mbTrans56 := thrift.NewTMemoryBufferLen(len(arg55))
-		defer mbTrans56.Close()
-		_, err57 := mbTrans56.WriteString(arg55)
-		if err57 != nil {
+		arg57 := flag.Arg(1)
+		mbTrans58 := thrift.NewTMemoryBufferLen(len(arg57))
+		defer mbTrans58.Close()
+		_, err59 := mbTrans58.WriteString(arg57)
+		if err59 != nil {
 			Usage()
 			return
 		}
-		factory58 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt59 := factory58.GetProtocol(mbTrans56)
+		factory60 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt61 := factory60.GetProtocol(mbTrans58)
 		argvalue0 := define.NewSsoApp()
-		err60 := argvalue0.Read(jsProt59)
-		if err60 != nil {
+		err62 := argvalue0.Read(jsProt61)
+		if err62 != nil {
 			Usage()
 			return
 		}

@@ -18,6 +18,7 @@ import (
 	"go2o/core/variable"
 	ht "html/template"
 	"strings"
+	"sync"
 )
 
 var (
@@ -32,12 +33,16 @@ type templateIncludeKitWrapper struct {
 }
 
 type templateIncludeToolkit struct {
+	// 入口链接字点
+	entryUrlMap map[string]string
+	mutex       sync.Mutex
 }
 
 // 返回模板函数
 func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm := make(map[string]interface{})
 	fm["alias"] = t.alias
+	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
 	fm["catChild"] = t.catChild
@@ -96,6 +101,61 @@ func (t *templateIncludeToolkit) alias(s string) string {
 		return variable.AliasTradeOrder
 	}
 	return s
+}
+
+// 入口URL
+func (t *templateIncludeToolkit) entryUrl(k string) string {
+	if t.entryUrlMap == nil {
+		t.mutex.Lock()
+
+		t.entryUrlMap = make(map[string]string, 4)
+		serveHost := variable.Domain
+
+		//todo: ?? temp
+		cnf := gof.CurrentApp.Config()
+		t.entryUrlMap["static_serve"] = cnf.GetString(variable.StaticServer)
+		t.entryUrlMap["image_serve"] = cnf.GetString(variable.ImageServer)
+
+		t.entryUrlMap["retail_portal"] = fmt.Sprintf("http://%s%s",
+			variable.DOMAIN_PREFIX_PORTAL, serveHost)
+		t.entryUrlMap["wholesale_portal"] = fmt.Sprintf("http://%s%s",
+			variable.DOMAIN_PREFIX_WHOLESALE, serveHost)
+		t.entryUrlMap["ucenter"] = fmt.Sprintf("http://%s%s",
+			variable.DOMAIN_PREFIX_MEMBER, serveHost)
+		t.entryUrlMap["passport"] = fmt.Sprintf("%s://%s%s",
+			variable.DOMAIN_PASSPORT_PROTO,
+			variable.DOMAIN_PREFIX_PASSPORT, serveHost)
+		t.entryUrlMap["hapi"] = fmt.Sprintf("http://%s%s",
+			variable.DOMAIN_PREFIX_HAPI, serveHost)
+
+		t.entryUrlMap["retail_portal_m"] = fmt.Sprintf("http://%s%s%s",
+			variable.DOMAIN_PREFIX_MOBILE, variable.DOMAIN_PREFIX_PORTAL, serveHost)
+		t.entryUrlMap["ucenter_m"] = fmt.Sprintf("http://%s%s%s",
+			variable.DOMAIN_PREFIX_MOBILE, variable.DOMAIN_PREFIX_MEMBER, serveHost)
+		t.entryUrlMap["passport_m"] = fmt.Sprintf("%s://%s%s%s",
+			variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_MOBILE,
+			variable.DOMAIN_PREFIX_PASSPORT, serveHost)
+
+		t.mutex.Unlock()
+	}
+
+	k = strings.TrimSpace(k)
+
+	switch k {
+	case "retail", "retail_portal", "retailPortal":
+		return t.entryUrlMap["retail_portal"]
+	case "retail_m", "retail_portal_m":
+		return t.entryUrlMap["retail_portal_m"]
+	case "wholesale", "wholesale_portal", "wholesalePortal":
+		return t.entryUrlMap["wholesale_portal"]
+	case "image_serve", "img_serve", "img":
+		return t.entryUrlMap["image_serve"]
+	case "static", "static_serve":
+		return t.entryUrlMap["static_serve"]
+	default:
+		return t.entryUrlMap[k]
+	}
+	return ""
 }
 
 //

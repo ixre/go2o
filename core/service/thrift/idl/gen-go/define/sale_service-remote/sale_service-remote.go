@@ -22,7 +22,8 @@ func Usage() {
 	fmt.Fprintln(os.Stderr, "\nFunctions:")
 	fmt.Fprintln(os.Stderr, "  Result WholesaleCartV1(i64 memberId, string action,  data)")
 	fmt.Fprintln(os.Stderr, "   SubmitOrderV1(i64 buyerId, i32 cartType,  data)")
-	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(string order_id, bool sub_order)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrder(string order_no, bool sub_order)")
+	fmt.Fprintln(os.Stderr, "  ComplexOrder GetOrderAndItems(string order_no, bool sub_order)")
 	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrder(i64 id)")
 	fmt.Fprintln(os.Stderr, "  ComplexOrder GetSubOrderByNo(string orderNo)")
 	fmt.Fprintln(os.Stderr, "   GetSubOrderItems(i64 subOrderId)")
@@ -128,27 +129,27 @@ func main() {
 			fmt.Fprintln(os.Stderr, "WholesaleCartV1 requires 3 args")
 			flag.Usage()
 		}
-		argvalue0, err239 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err239 != nil {
+		argvalue0, err243 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err243 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
 		argvalue1 := flag.Arg(2)
 		value1 := argvalue1
-		arg241 := flag.Arg(3)
-		mbTrans242 := thrift.NewTMemoryBufferLen(len(arg241))
-		defer mbTrans242.Close()
-		_, err243 := mbTrans242.WriteString(arg241)
-		if err243 != nil {
+		arg245 := flag.Arg(3)
+		mbTrans246 := thrift.NewTMemoryBufferLen(len(arg245))
+		defer mbTrans246.Close()
+		_, err247 := mbTrans246.WriteString(arg245)
+		if err247 != nil {
 			Usage()
 			return
 		}
-		factory244 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt245 := factory244.GetProtocol(mbTrans242)
+		factory248 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt249 := factory248.GetProtocol(mbTrans246)
 		containerStruct2 := define.NewSaleServiceWholesaleCartV1Args()
-		err246 := containerStruct2.ReadField3(jsProt245)
-		if err246 != nil {
+		err250 := containerStruct2.ReadField3(jsProt249)
+		if err250 != nil {
 			Usage()
 			return
 		}
@@ -162,32 +163,32 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SubmitOrderV1 requires 3 args")
 			flag.Usage()
 		}
-		argvalue0, err247 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err247 != nil {
+		argvalue0, err251 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err251 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		tmp1, err248 := (strconv.Atoi(flag.Arg(2)))
-		if err248 != nil {
+		tmp1, err252 := (strconv.Atoi(flag.Arg(2)))
+		if err252 != nil {
 			Usage()
 			return
 		}
 		argvalue1 := int32(tmp1)
 		value1 := argvalue1
-		arg249 := flag.Arg(3)
-		mbTrans250 := thrift.NewTMemoryBufferLen(len(arg249))
-		defer mbTrans250.Close()
-		_, err251 := mbTrans250.WriteString(arg249)
-		if err251 != nil {
+		arg253 := flag.Arg(3)
+		mbTrans254 := thrift.NewTMemoryBufferLen(len(arg253))
+		defer mbTrans254.Close()
+		_, err255 := mbTrans254.WriteString(arg253)
+		if err255 != nil {
 			Usage()
 			return
 		}
-		factory252 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt253 := factory252.GetProtocol(mbTrans250)
+		factory256 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt257 := factory256.GetProtocol(mbTrans254)
 		containerStruct2 := define.NewSaleServiceSubmitOrderV1Args()
-		err254 := containerStruct2.ReadField3(jsProt253)
-		if err254 != nil {
+		err258 := containerStruct2.ReadField3(jsProt257)
+		if err258 != nil {
 			Usage()
 			return
 		}
@@ -208,13 +209,25 @@ func main() {
 		fmt.Print(client.GetOrder(value0, value1))
 		fmt.Print("\n")
 		break
+	case "GetOrderAndItems":
+		if flag.NArg()-1 != 2 {
+			fmt.Fprintln(os.Stderr, "GetOrderAndItems requires 2 args")
+			flag.Usage()
+		}
+		argvalue0 := flag.Arg(1)
+		value0 := argvalue0
+		argvalue1 := flag.Arg(2) == "true"
+		value1 := argvalue1
+		fmt.Print(client.GetOrderAndItems(value0, value1))
+		fmt.Print("\n")
+		break
 	case "GetSubOrder":
 		if flag.NArg()-1 != 1 {
 			fmt.Fprintln(os.Stderr, "GetSubOrder requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err257 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err257 != nil {
+		argvalue0, err263 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err263 != nil {
 			Usage()
 			return
 		}
@@ -237,8 +250,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "GetSubOrderItems requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err259 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err259 != nil {
+		argvalue0, err265 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err265 != nil {
 			Usage()
 			return
 		}
@@ -251,25 +264,25 @@ func main() {
 			fmt.Fprintln(os.Stderr, "SubmitTradeOrder requires 2 args")
 			flag.Usage()
 		}
-		arg260 := flag.Arg(1)
-		mbTrans261 := thrift.NewTMemoryBufferLen(len(arg260))
-		defer mbTrans261.Close()
-		_, err262 := mbTrans261.WriteString(arg260)
-		if err262 != nil {
+		arg266 := flag.Arg(1)
+		mbTrans267 := thrift.NewTMemoryBufferLen(len(arg266))
+		defer mbTrans267.Close()
+		_, err268 := mbTrans267.WriteString(arg266)
+		if err268 != nil {
 			Usage()
 			return
 		}
-		factory263 := thrift.NewTSimpleJSONProtocolFactory()
-		jsProt264 := factory263.GetProtocol(mbTrans261)
+		factory269 := thrift.NewTSimpleJSONProtocolFactory()
+		jsProt270 := factory269.GetProtocol(mbTrans267)
 		argvalue0 := define.NewComplexOrder()
-		err265 := argvalue0.Read(jsProt264)
-		if err265 != nil {
+		err271 := argvalue0.Read(jsProt270)
+		if err271 != nil {
 			Usage()
 			return
 		}
 		value0 := argvalue0
-		argvalue1, err266 := (strconv.ParseFloat(flag.Arg(2), 64))
-		if err266 != nil {
+		argvalue1, err272 := (strconv.ParseFloat(flag.Arg(2), 64))
+		if err272 != nil {
 			Usage()
 			return
 		}
@@ -282,8 +295,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TradeOrderCashPay requires 1 args")
 			flag.Usage()
 		}
-		argvalue0, err267 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err267 != nil {
+		argvalue0, err273 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err273 != nil {
 			Usage()
 			return
 		}
@@ -296,8 +309,8 @@ func main() {
 			fmt.Fprintln(os.Stderr, "TradeOrderUpdateTicket requires 2 args")
 			flag.Usage()
 		}
-		argvalue0, err268 := (strconv.ParseInt(flag.Arg(1), 10, 64))
-		if err268 != nil {
+		argvalue0, err274 := (strconv.ParseInt(flag.Arg(1), 10, 64))
+		if err274 != nil {
 			Usage()
 			return
 		}

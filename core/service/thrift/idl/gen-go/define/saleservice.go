@@ -26,9 +26,13 @@ type SaleService interface {
 	//  - Data
 	SubmitOrderV1(buyerId int64, cartType int32, data map[string]string) (r map[string]string, err error)
 	// Parameters:
-	//  - OrderID
+	//  - OrderNo
 	//  - SubOrder
-	GetOrder(order_id string, sub_order bool) (r *ComplexOrder, err error)
+	GetOrder(order_no string, sub_order bool) (r *ComplexOrder, err error)
+	// Parameters:
+	//  - OrderNo
+	//  - SubOrder
+	GetOrderAndItems(order_no string, sub_order bool) (r *ComplexOrder, err error)
 	// Parameters:
 	//  - ID
 	GetSubOrder(id int64) (r *ComplexOrder, err error)
@@ -131,16 +135,16 @@ func (p *SaleServiceClient) recvWholesaleCartV1() (value *Result_, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error212 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error213 error
-		error213, err = error212.Read(iprot)
+		error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error215 error
+		error215, err = error214.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error213
+		err = error215
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -212,16 +216,16 @@ func (p *SaleServiceClient) recvSubmitOrderV1() (value map[string]string, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error214 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error215 error
-		error215, err = error214.Read(iprot)
+		error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error217 error
+		error217, err = error216.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error215
+		err = error217
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -240,16 +244,16 @@ func (p *SaleServiceClient) recvSubmitOrderV1() (value map[string]string, err er
 }
 
 // Parameters:
-//  - OrderID
+//  - OrderNo
 //  - SubOrder
-func (p *SaleServiceClient) GetOrder(order_id string, sub_order bool) (r *ComplexOrder, err error) {
-	if err = p.sendGetOrder(order_id, sub_order); err != nil {
+func (p *SaleServiceClient) GetOrder(order_no string, sub_order bool) (r *ComplexOrder, err error) {
+	if err = p.sendGetOrder(order_no, sub_order); err != nil {
 		return
 	}
 	return p.recvGetOrder()
 }
 
-func (p *SaleServiceClient) sendGetOrder(order_id string, sub_order bool) (err error) {
+func (p *SaleServiceClient) sendGetOrder(order_no string, sub_order bool) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -260,7 +264,7 @@ func (p *SaleServiceClient) sendGetOrder(order_id string, sub_order bool) (err e
 		return
 	}
 	args := SaleServiceGetOrderArgs{
-		OrderID:  order_id,
+		OrderNo:  order_no,
 		SubOrder: sub_order,
 	}
 	if err = args.Write(oprot); err != nil {
@@ -291,16 +295,16 @@ func (p *SaleServiceClient) recvGetOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error216 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error217 error
-		error217, err = error216.Read(iprot)
+		error218 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error219 error
+		error219, err = error218.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error217
+		err = error219
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -308,6 +312,85 @@ func (p *SaleServiceClient) recvGetOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	result := SaleServiceGetOrderResult{}
+	if err = result.Read(iprot); err != nil {
+		return
+	}
+	if err = iprot.ReadMessageEnd(); err != nil {
+		return
+	}
+	value = result.GetSuccess()
+	return
+}
+
+// Parameters:
+//  - OrderNo
+//  - SubOrder
+func (p *SaleServiceClient) GetOrderAndItems(order_no string, sub_order bool) (r *ComplexOrder, err error) {
+	if err = p.sendGetOrderAndItems(order_no, sub_order); err != nil {
+		return
+	}
+	return p.recvGetOrderAndItems()
+}
+
+func (p *SaleServiceClient) sendGetOrderAndItems(order_no string, sub_order bool) (err error) {
+	oprot := p.OutputProtocol
+	if oprot == nil {
+		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.OutputProtocol = oprot
+	}
+	p.SeqId++
+	if err = oprot.WriteMessageBegin("GetOrderAndItems", thrift.CALL, p.SeqId); err != nil {
+		return
+	}
+	args := SaleServiceGetOrderAndItemsArgs{
+		OrderNo:  order_no,
+		SubOrder: sub_order,
+	}
+	if err = args.Write(oprot); err != nil {
+		return
+	}
+	if err = oprot.WriteMessageEnd(); err != nil {
+		return
+	}
+	return oprot.Flush()
+}
+
+func (p *SaleServiceClient) recvGetOrderAndItems() (value *ComplexOrder, err error) {
+	iprot := p.InputProtocol
+	if iprot == nil {
+		iprot = p.ProtocolFactory.GetProtocol(p.Transport)
+		p.InputProtocol = iprot
+	}
+	method, mTypeId, seqId, err := iprot.ReadMessageBegin()
+	if err != nil {
+		return
+	}
+	if method != "GetOrderAndItems" {
+		err = thrift.NewTApplicationException(thrift.WRONG_METHOD_NAME, "GetOrderAndItems failed: wrong method name")
+		return
+	}
+	if p.SeqId != seqId {
+		err = thrift.NewTApplicationException(thrift.BAD_SEQUENCE_ID, "GetOrderAndItems failed: out of sequence response")
+		return
+	}
+	if mTypeId == thrift.EXCEPTION {
+		error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error221 error
+		error221, err = error220.Read(iprot)
+		if err != nil {
+			return
+		}
+		if err = iprot.ReadMessageEnd(); err != nil {
+			return
+		}
+		err = error221
+		return
+	}
+	if mTypeId != thrift.REPLY {
+		err = thrift.NewTApplicationException(thrift.INVALID_MESSAGE_TYPE_EXCEPTION, "GetOrderAndItems failed: invalid message type")
+		return
+	}
+	result := SaleServiceGetOrderAndItemsResult{}
 	if err = result.Read(iprot); err != nil {
 		return
 	}
@@ -368,16 +451,16 @@ func (p *SaleServiceClient) recvGetSubOrder() (value *ComplexOrder, err error) {
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error218 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error219 error
-		error219, err = error218.Read(iprot)
+		error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error223 error
+		error223, err = error222.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error219
+		err = error223
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -445,16 +528,16 @@ func (p *SaleServiceClient) recvGetSubOrderByNo() (value *ComplexOrder, err erro
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error220 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error221 error
-		error221, err = error220.Read(iprot)
+		error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error225 error
+		error225, err = error224.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error221
+		err = error225
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -522,16 +605,16 @@ func (p *SaleServiceClient) recvGetSubOrderItems() (value []*ComplexItem, err er
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error222 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error223 error
-		error223, err = error222.Read(iprot)
+		error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error227 error
+		error227, err = error226.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error223
+		err = error227
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -601,16 +684,16 @@ func (p *SaleServiceClient) recvSubmitTradeOrder() (value *Result64, err error) 
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error224 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error225 error
-		error225, err = error224.Read(iprot)
+		error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error229 error
+		error229, err = error228.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error225
+		err = error229
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -678,16 +761,16 @@ func (p *SaleServiceClient) recvTradeOrderCashPay() (value *Result64, err error)
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error226 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error227 error
-		error227, err = error226.Read(iprot)
+		error230 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error231 error
+		error231, err = error230.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error227
+		err = error231
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -757,16 +840,16 @@ func (p *SaleServiceClient) recvTradeOrderUpdateTicket() (value *Result64, err e
 		return
 	}
 	if mTypeId == thrift.EXCEPTION {
-		error228 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
-		var error229 error
-		error229, err = error228.Read(iprot)
+		error232 := thrift.NewTApplicationException(thrift.UNKNOWN_APPLICATION_EXCEPTION, "Unknown Exception")
+		var error233 error
+		error233, err = error232.Read(iprot)
 		if err != nil {
 			return
 		}
 		if err = iprot.ReadMessageEnd(); err != nil {
 			return
 		}
-		err = error229
+		err = error233
 		return
 	}
 	if mTypeId != thrift.REPLY {
@@ -804,17 +887,18 @@ func (p *SaleServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFuncti
 
 func NewSaleServiceProcessor(handler SaleService) *SaleServiceProcessor {
 
-	self230 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self230.processorMap["WholesaleCartV1"] = &saleServiceProcessorWholesaleCartV1{handler: handler}
-	self230.processorMap["SubmitOrderV1"] = &saleServiceProcessorSubmitOrderV1{handler: handler}
-	self230.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
-	self230.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
-	self230.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
-	self230.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
-	self230.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
-	self230.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
-	self230.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
-	return self230
+	self234 := &SaleServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
+	self234.processorMap["WholesaleCartV1"] = &saleServiceProcessorWholesaleCartV1{handler: handler}
+	self234.processorMap["SubmitOrderV1"] = &saleServiceProcessorSubmitOrderV1{handler: handler}
+	self234.processorMap["GetOrder"] = &saleServiceProcessorGetOrder{handler: handler}
+	self234.processorMap["GetOrderAndItems"] = &saleServiceProcessorGetOrderAndItems{handler: handler}
+	self234.processorMap["GetSubOrder"] = &saleServiceProcessorGetSubOrder{handler: handler}
+	self234.processorMap["GetSubOrderByNo"] = &saleServiceProcessorGetSubOrderByNo{handler: handler}
+	self234.processorMap["GetSubOrderItems"] = &saleServiceProcessorGetSubOrderItems{handler: handler}
+	self234.processorMap["SubmitTradeOrder"] = &saleServiceProcessorSubmitTradeOrder{handler: handler}
+	self234.processorMap["TradeOrderCashPay"] = &saleServiceProcessorTradeOrderCashPay{handler: handler}
+	self234.processorMap["TradeOrderUpdateTicket"] = &saleServiceProcessorTradeOrderUpdateTicket{handler: handler}
+	return self234
 }
 
 func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -827,12 +911,12 @@ func (p *SaleServiceProcessor) Process(iprot, oprot thrift.TProtocol) (success b
 	}
 	iprot.Skip(thrift.STRUCT)
 	iprot.ReadMessageEnd()
-	x231 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
+	x235 := thrift.NewTApplicationException(thrift.UNKNOWN_METHOD, "Unknown function "+name)
 	oprot.WriteMessageBegin(name, thrift.EXCEPTION, seqId)
-	x231.Write(oprot)
+	x235.Write(oprot)
 	oprot.WriteMessageEnd()
 	oprot.Flush()
-	return false, x231
+	return false, x235
 
 }
 
@@ -952,7 +1036,7 @@ func (p *saleServiceProcessorGetOrder) Process(seqId int32, iprot, oprot thrift.
 	result := SaleServiceGetOrderResult{}
 	var retval *ComplexOrder
 	var err2 error
-	if retval, err2 = p.handler.GetOrder(args.OrderID, args.SubOrder); err2 != nil {
+	if retval, err2 = p.handler.GetOrder(args.OrderNo, args.SubOrder); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetOrder: "+err2.Error())
 		oprot.WriteMessageBegin("GetOrder", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -963,6 +1047,54 @@ func (p *saleServiceProcessorGetOrder) Process(seqId int32, iprot, oprot thrift.
 		result.Success = retval
 	}
 	if err2 = oprot.WriteMessageBegin("GetOrder", thrift.REPLY, seqId); err2 != nil {
+		err = err2
+	}
+	if err2 = result.Write(oprot); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.WriteMessageEnd(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err2 = oprot.Flush(); err == nil && err2 != nil {
+		err = err2
+	}
+	if err != nil {
+		return
+	}
+	return true, err
+}
+
+type saleServiceProcessorGetOrderAndItems struct {
+	handler SaleService
+}
+
+func (p *saleServiceProcessorGetOrderAndItems) Process(seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := SaleServiceGetOrderAndItemsArgs{}
+	if err = args.Read(iprot); err != nil {
+		iprot.ReadMessageEnd()
+		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
+		oprot.WriteMessageBegin("GetOrderAndItems", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return false, err
+	}
+
+	iprot.ReadMessageEnd()
+	result := SaleServiceGetOrderAndItemsResult{}
+	var retval *ComplexOrder
+	var err2 error
+	if retval, err2 = p.handler.GetOrderAndItems(args.OrderNo, args.SubOrder); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetOrderAndItems: "+err2.Error())
+		oprot.WriteMessageBegin("GetOrderAndItems", thrift.EXCEPTION, seqId)
+		x.Write(oprot)
+		oprot.WriteMessageEnd()
+		oprot.Flush()
+		return true, err2
+	} else {
+		result.Success = retval
+	}
+	if err2 = oprot.WriteMessageBegin("GetOrderAndItems", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -1362,19 +1494,19 @@ func (p *SaleServiceWholesaleCartV1Args) readField3(iprot thrift.TProtocol) erro
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key232 string
+		var _key236 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key232 = v
+			_key236 = v
 		}
-		var _val233 string
+		var _val237 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val233 = v
+			_val237 = v
 		}
-		p.Data[_key232] = _val233
+		p.Data[_key236] = _val237
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -1654,19 +1786,19 @@ func (p *SaleServiceSubmitOrderV1Args) readField3(iprot thrift.TProtocol) error 
 	tMap := make(map[string]string, size)
 	p.Data = tMap
 	for i := 0; i < size; i++ {
-		var _key234 string
+		var _key238 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key234 = v
+			_key238 = v
 		}
-		var _val235 string
+		var _val239 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val235 = v
+			_val239 = v
 		}
-		p.Data[_key234] = _val235
+		p.Data[_key238] = _val239
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -1813,19 +1945,19 @@ func (p *SaleServiceSubmitOrderV1Result) readField0(iprot thrift.TProtocol) erro
 	tMap := make(map[string]string, size)
 	p.Success = tMap
 	for i := 0; i < size; i++ {
-		var _key236 string
+		var _key240 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_key236 = v
+			_key240 = v
 		}
-		var _val237 string
+		var _val241 string
 		if v, err := iprot.ReadString(); err != nil {
 			return thrift.PrependError("error reading field 0: ", err)
 		} else {
-			_val237 = v
+			_val241 = v
 		}
-		p.Success[_key236] = _val237
+		p.Success[_key240] = _val241
 	}
 	if err := iprot.ReadMapEnd(); err != nil {
 		return thrift.PrependError("error reading map end: ", err)
@@ -1883,10 +2015,10 @@ func (p *SaleServiceSubmitOrderV1Result) String() string {
 }
 
 // Attributes:
-//  - OrderID
+//  - OrderNo
 //  - SubOrder
 type SaleServiceGetOrderArgs struct {
-	OrderID  string `thrift:"order_id,1" json:"order_id"`
+	OrderNo  string `thrift:"order_no,1" json:"order_no"`
 	SubOrder bool   `thrift:"sub_order,2" json:"sub_order"`
 }
 
@@ -1894,8 +2026,8 @@ func NewSaleServiceGetOrderArgs() *SaleServiceGetOrderArgs {
 	return &SaleServiceGetOrderArgs{}
 }
 
-func (p *SaleServiceGetOrderArgs) GetOrderID() string {
-	return p.OrderID
+func (p *SaleServiceGetOrderArgs) GetOrderNo() string {
+	return p.OrderNo
 }
 
 func (p *SaleServiceGetOrderArgs) GetSubOrder() bool {
@@ -1942,7 +2074,7 @@ func (p *SaleServiceGetOrderArgs) readField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return thrift.PrependError("error reading field 1: ", err)
 	} else {
-		p.OrderID = v
+		p.OrderNo = v
 	}
 	return nil
 }
@@ -1976,14 +2108,14 @@ func (p *SaleServiceGetOrderArgs) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *SaleServiceGetOrderArgs) writeField1(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("order_id", thrift.STRING, 1); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:order_id: ", p), err)
+	if err := oprot.WriteFieldBegin("order_no", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:order_no: ", p), err)
 	}
-	if err := oprot.WriteString(string(p.OrderID)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.order_id (1) field write error: ", p), err)
+	if err := oprot.WriteString(string(p.OrderNo)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.order_no (1) field write error: ", p), err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:order_id: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:order_no: ", p), err)
 	}
 	return err
 }
@@ -2107,6 +2239,233 @@ func (p *SaleServiceGetOrderResult) String() string {
 		return "<nil>"
 	}
 	return fmt.Sprintf("SaleServiceGetOrderResult(%+v)", *p)
+}
+
+// Attributes:
+//  - OrderNo
+//  - SubOrder
+type SaleServiceGetOrderAndItemsArgs struct {
+	OrderNo  string `thrift:"order_no,1" json:"order_no"`
+	SubOrder bool   `thrift:"sub_order,2" json:"sub_order"`
+}
+
+func NewSaleServiceGetOrderAndItemsArgs() *SaleServiceGetOrderAndItemsArgs {
+	return &SaleServiceGetOrderAndItemsArgs{}
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) GetOrderNo() string {
+	return p.OrderNo
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) GetSubOrder() bool {
+	return p.SubOrder
+}
+func (p *SaleServiceGetOrderAndItemsArgs) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 1:
+			if err := p.readField1(iprot); err != nil {
+				return err
+			}
+		case 2:
+			if err := p.readField2(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) readField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return thrift.PrependError("error reading field 1: ", err)
+	} else {
+		p.OrderNo = v
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) readField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadBool(); err != nil {
+		return thrift.PrependError("error reading field 2: ", err)
+	} else {
+		p.SubOrder = v
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetOrderAndItems_args"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField1(oprot); err != nil {
+		return err
+	}
+	if err := p.writeField2(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("order_no", thrift.STRING, 1); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:order_no: ", p), err)
+	}
+	if err := oprot.WriteString(string(p.OrderNo)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.order_no (1) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 1:order_no: ", p), err)
+	}
+	return err
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) writeField2(oprot thrift.TProtocol) (err error) {
+	if err := oprot.WriteFieldBegin("sub_order", thrift.BOOL, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:sub_order: ", p), err)
+	}
+	if err := oprot.WriteBool(bool(p.SubOrder)); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T.sub_order (2) field write error: ", p), err)
+	}
+	if err := oprot.WriteFieldEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:sub_order: ", p), err)
+	}
+	return err
+}
+
+func (p *SaleServiceGetOrderAndItemsArgs) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SaleServiceGetOrderAndItemsArgs(%+v)", *p)
+}
+
+// Attributes:
+//  - Success
+type SaleServiceGetOrderAndItemsResult struct {
+	Success *ComplexOrder `thrift:"success,0" json:"success,omitempty"`
+}
+
+func NewSaleServiceGetOrderAndItemsResult() *SaleServiceGetOrderAndItemsResult {
+	return &SaleServiceGetOrderAndItemsResult{}
+}
+
+var SaleServiceGetOrderAndItemsResult_Success_DEFAULT *ComplexOrder
+
+func (p *SaleServiceGetOrderAndItemsResult) GetSuccess() *ComplexOrder {
+	if !p.IsSetSuccess() {
+		return SaleServiceGetOrderAndItemsResult_Success_DEFAULT
+	}
+	return p.Success
+}
+func (p *SaleServiceGetOrderAndItemsResult) IsSetSuccess() bool {
+	return p.Success != nil
+}
+
+func (p *SaleServiceGetOrderAndItemsResult) Read(iprot thrift.TProtocol) error {
+	if _, err := iprot.ReadStructBegin(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read error: ", p), err)
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err := iprot.ReadFieldBegin()
+		if err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldId), err)
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+		switch fieldId {
+		case 0:
+			if err := p.readField0(iprot); err != nil {
+				return err
+			}
+		default:
+			if err := iprot.Skip(fieldTypeId); err != nil {
+				return err
+			}
+		}
+		if err := iprot.ReadFieldEnd(); err != nil {
+			return err
+		}
+	}
+	if err := iprot.ReadStructEnd(); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsResult) readField0(iprot thrift.TProtocol) error {
+	p.Success = &ComplexOrder{}
+	if err := p.Success.Read(iprot); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", p.Success), err)
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsResult) Write(oprot thrift.TProtocol) error {
+	if err := oprot.WriteStructBegin("GetOrderAndItems_result"); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+	}
+	if err := p.writeField0(oprot); err != nil {
+		return err
+	}
+	if err := oprot.WriteFieldStop(); err != nil {
+		return thrift.PrependError("write field stop error: ", err)
+	}
+	if err := oprot.WriteStructEnd(); err != nil {
+		return thrift.PrependError("write struct stop error: ", err)
+	}
+	return nil
+}
+
+func (p *SaleServiceGetOrderAndItemsResult) writeField0(oprot thrift.TProtocol) (err error) {
+	if p.IsSetSuccess() {
+		if err := oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field begin error 0:success: ", p), err)
+		}
+		if err := p.Success.Write(oprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error writing struct: ", p.Success), err)
+		}
+		if err := oprot.WriteFieldEnd(); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T write field end error 0:success: ", p), err)
+		}
+	}
+	return err
+}
+
+func (p *SaleServiceGetOrderAndItemsResult) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("SaleServiceGetOrderAndItemsResult(%+v)", *p)
 }
 
 // Attributes:
@@ -2644,11 +3003,11 @@ func (p *SaleServiceGetSubOrderItemsResult) readField0(iprot thrift.TProtocol) e
 	tSlice := make([]*ComplexItem, 0, size)
 	p.Success = tSlice
 	for i := 0; i < size; i++ {
-		_elem238 := &ComplexItem{}
-		if err := _elem238.Read(iprot); err != nil {
-			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem238), err)
+		_elem242 := &ComplexItem{}
+		if err := _elem242.Read(iprot); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T error reading struct: ", _elem242), err)
 		}
-		p.Success = append(p.Success, _elem238)
+		p.Success = append(p.Success, _elem242)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return thrift.PrependError("error reading list end: ", err)

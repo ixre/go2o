@@ -473,6 +473,15 @@ func (s *shoppingService) GetOrder(orderNo string, sub bool) (*define.ComplexOrd
 	return nil, nil
 }
 
+// 获取订单和商品项信息
+func (s *shoppingService) GetOrderAndItems(orderNo string, sub bool) (*define.ComplexOrder, error) {
+	c := s._manager.Unified(orderNo, sub).Complex()
+	if c != nil {
+		return parser.OrderDto(c), nil
+	}
+	return nil, nil
+}
+
 // 根据编号获取订单
 func (s *shoppingService) GetOrderById(id int64) *order.ComplexOrder {
 	o := s._manager.GetOrderById(id)
