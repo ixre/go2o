@@ -422,6 +422,8 @@ type (
 		ConsigneePerson string
 		// 收货人联系电话
 		ConsigneePhone string
+		// 买家留言
+		BuyerRemark string
 		// 收货地址
 		ShippingAddress string
 		// 订单是否拆分
@@ -437,7 +439,7 @@ type (
 		// 商品项
 		Items []*ComplexItem
 		// 扩展数据
-		Extend map[string]string
+		Data map[string]string
 	}
 	// 符合的订单项
 	ComplexItem struct {
@@ -461,6 +463,8 @@ type (
 		FinalAmount float64 `db:"final_amount"`
 		// 是否发货
 		IsShipped int32 `db:"is_shipped"`
+		// 其他数据
+		Data map[string]string
 	}
 
 	// 订单商品项

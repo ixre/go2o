@@ -181,6 +181,25 @@ func (w *wholesaleOrderImpl) appendToExpressCalculator(ue express.IUserExpress,
 	}
 }
 
+// 转换订单商品
+func (o *wholesaleOrderImpl) parseComplexItem(i *order.WholesaleItem) *order.ComplexItem {
+	it := &order.ComplexItem{
+		ID:             i.ID,
+		OrderId:        i.OrderId,
+		ItemId:         int64(i.ItemId),
+		SkuId:          int64(i.SkuId),
+		SnapshotId:     int64(i.SnapshotId),
+		Quantity:       i.Quantity,
+		ReturnQuantity: i.ReturnQuantity,
+		Amount:         float64(i.Amount),
+		FinalAmount:    float64(i.FinalAmount),
+		IsShipped:      i.IsShipped,
+		Data:           make(map[string]string),
+	}
+	o.baseOrderImpl.BindItemInfo(it)
+	return it
+}
+
 // 复合的订单信息
 func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	v := o.getValue()
@@ -197,8 +216,13 @@ func (o *wholesaleOrderImpl) Complex() *order.ComplexOrder {
 	co.ExpressFee = float64(v.ExpressFee)
 	co.PackageFee = float64(v.PackageFee)
 	co.FinalAmount = float64(v.FinalAmount)
+	co.BuyerRemark = v.BuyerRemark
 	co.IsBreak = 0
 	co.UpdateTime = v.UpdateTime
+	co.Items = []*order.ComplexItem{}
+	for _, v := range o.Items() {
+		co.Items = append(co.Items, o.parseComplexItem(v))
+	}
 	return co
 }
 

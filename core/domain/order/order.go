@@ -13,6 +13,7 @@ import (
 	"go2o/core/domain/interface/promotion"
 	"go2o/core/domain/interface/shipment"
 	"go2o/core/domain/interface/valueobject"
+	"go2o/core/infrastructure/format"
 	"time"
 )
 
@@ -61,6 +62,7 @@ type baseOrderImpl struct {
 	buyer      member.IMember
 	repo       order.IOrderRepo
 	memberRepo member.IMemberRepo
+	itemRepo   item.IGoodsItemRepo
 	manager    order.IOrderManager
 	complex    *order.ComplexOrder
 }
@@ -125,6 +127,17 @@ func (o *baseOrderImpl) saveOrderState(state order.OrderState) {
 	}
 }
 
+// 绑定商品信息
+func (o *baseOrderImpl) BindItemInfo(i *order.ComplexItem) {
+	unitPrice := i.FinalAmount / float64(i.Quantity)
+	i.Data["UnitPrice"] = format.DecimalToString(unitPrice)
+	it := o.itemRepo.GetSalesSnapshot(int32(i.SnapshotId))
+	i.Data["ItemImage"] = it.Image
+	i.Data["ItemName"] = it.GoodsTitle
+	i.Data["SpecWord"] = it.Sku
+	//todo: ??  SKU货号，供打出订单
+}
+
 // 复合的订单信息
 func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 	if o.complex == nil {
@@ -135,7 +148,7 @@ func (o *baseOrderImpl) Complex() *order.ComplexOrder {
 			BuyerId:    o.baseValue.BuyerId,
 			State:      o.baseValue.State,
 			CreateTime: o.baseValue.CreateTime,
-			Extend:     make(map[string]string),
+			Data:       make(map[string]string),
 		}
 	}
 	return o.complex
@@ -168,24 +181,25 @@ func (o *baseOrderImpl) createPaymentOrder() *payment.PaymentOrder {
 // 工厂方法生成订单
 func FactoryNew(v *order.Order, manager order.IOrderManager,
 	repo order.IOrderRepo, mchRepo merchant.IMerchantRepo,
-	goodsRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
+	itemRepo item.IGoodsItemRepo, productRepo product.IProductRepo,
 	promRepo promotion.IPromotionRepo, memberRepo member.IMemberRepo,
 	expressRepo express.IExpressRepo, shipRepo shipment.IShipmentRepo,
 	payRepo payment.IPaymentRepo, valRepo valueobject.IValueRepo) order.IOrder {
 	b := &baseOrderImpl{
 		baseValue:  v,
 		repo:       repo,
+		itemRepo:   itemRepo,
 		memberRepo: memberRepo,
 		manager:    manager,
 	}
 	t := order.OrderType(v.OrderType)
 	switch t {
 	case order.TRetail:
-		return newNormalOrder(manager, b, repo, goodsRepo,
+		return newNormalOrder(manager, b, repo, itemRepo,
 			productRepo, promRepo, expressRepo,
 			payRepo, valRepo)
 	case order.TWholesale:
-		return newWholesaleOrder(b, repo, goodsRepo,
+		return newWholesaleOrder(b, repo, itemRepo,
 			expressRepo, payRepo, shipRepo, mchRepo, valRepo)
 	case order.TTrade:
 		return newTradeOrder(b, payRepo, mchRepo, valRepo)

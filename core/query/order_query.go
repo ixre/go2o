@@ -345,7 +345,7 @@ func (o *OrderQuery) PagedTradeOrderOfBuyer(memberId int64, begin, size int, pag
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime)
-				e.Extend = map[string]string{
+				e.Data = map[string]string{
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,
@@ -406,7 +406,7 @@ func (o *OrderQuery) PagedTradeOrderOfVendor(vendorId int32, begin, size int, pa
 				rs.Scan(&e.OrderId, &e.OrderNo, &e.VendorId, &e.Subject,
 					&e.ItemAmount, &e.DiscountAmount, &e.FinalAmount,
 					&cashPay, &ticket, &e.State, &e.CreateTime, &usr)
-				e.Extend = map[string]string{
+				e.Data = map[string]string{
 					"StateText":   order.OrderState(e.State).String(),
 					"CashPay":     strconv.Itoa(cashPay),
 					"TicketImage": ticket,

@@ -346,6 +346,7 @@ struct ComplexItem {
     8: double Amount
     9: double FinalAmount
     10: i32 IsShipped
+    11: map<string,string> Data
 }
 
 // 子订单
@@ -366,13 +367,14 @@ struct ComplexOrder {
     14: string ConsigneePerson
     15: string ConsigneePhone
     16: string ShippingAddress
-    17: i32 IsBreak
-    18: i32 State
-    19: i64 CreateTime
-    20: i64 UpdateTime
-    21: list<ComplexItem> Items
+    17: string BuyerRemark
+    18: i32 IsBreak
+    19: i32 State
+    20: i64 CreateTime
+    21: i64 UpdateTime
+    22: list<ComplexItem> Items
     // 扩展信息
-    22: map<string,string> Extend
+    23: map<string,string> Data
 }
 
 
@@ -523,7 +525,10 @@ service SaleService {
   // 提交订单
   map<string,string> SubmitOrderV1(1:i64 buyerId,2:i32 cartType,3:map<string,string> data)
   // 获取订单信息
-  ComplexOrder GetOrder(1:string order_id,2:bool sub_order)
+  ComplexOrder GetOrder(1:string order_no,2:bool sub_order)
+  // 获取订单和商品项信息
+  ComplexOrder GetOrderAndItems(1:string order_no,2:bool sub_order)
+
   // 获取子订单
   ComplexOrder GetSubOrder(1:i64 id)
   // 根据订单号获取子订单

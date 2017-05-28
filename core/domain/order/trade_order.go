@@ -66,9 +66,9 @@ func (o *tradeOrderImpl) Complex() *order.ComplexOrder {
 		co.FinalAmount = v.FinalAmount
 		co.IsBreak = 0
 		co.UpdateTime = v.UpdateTime
-		co.Extend["TicketImage"] = v.TicketImage
-		co.Extend["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
-		co.Extend["CashPay"] = strconv.Itoa(int(v.CashPay))
+		co.Data["TicketImage"] = v.TicketImage
+		co.Data["TradeRate"] = strconv.FormatFloat(v.TradeRate, 'g', 2, 64)
+		co.Data["CashPay"] = strconv.FormatBool(v.CashPay == 1)
 	}
 	return co
 }

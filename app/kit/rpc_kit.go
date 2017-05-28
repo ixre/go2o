@@ -68,3 +68,14 @@ func (r *rpcToolkit) GetOrder(orderNo string, sub bool) *define.ComplexOrder {
 	}
 	return nil
 }
+
+// 获取订单和商品项信息
+func (r *rpcToolkit) GetOrderAndItems(orderNo string, sub bool) *define.ComplexOrder {
+	cli, err := thrift.SaleServeClient()
+	if err == nil {
+		defer cli.Transport.Close()
+		o, _ := cli.GetOrderAndItems(orderNo, sub)
+		return o
+	}
+	return nil
+}
