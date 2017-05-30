@@ -458,9 +458,15 @@ func (m *merchantService) SaveKeyMaps(mchId int32, data map[string]string) error
 }
 
 // 查询分页订单
-func (m *merchantService) PagedOrdersOfVendor(vendorId int32, begin, size int, pagination bool,
+func (m *merchantService) PagedNormalOrderOfVendor(vendorId int32, begin, size int, pagination bool,
 	where, orderBy string) (int, []*dto.PagedVendorOrder) {
-	return m._orderQuery.PagedOrdersOfVendor(vendorId, begin, size, pagination, where, orderBy)
+	return m._orderQuery.PagedNormalOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
+}
+
+// 查询分页订单
+func (m *merchantService) PagedWholesaleOrderOfVendor(vendorId int32, begin, size int, pagination bool,
+	where, orderBy string) (int, []*dto.PagedVendorOrder) {
+	return m._orderQuery.PagedWholesaleOrderOfVendor(vendorId, begin, size, pagination, where, orderBy)
 }
 
 // 查询分页订单

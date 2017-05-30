@@ -137,7 +137,7 @@ func getRealShipExpressTab() string {
 		letArr = append(letArr[l-1:], letArr[:l-1]...)
 	}
 
-	buf.WriteString(`<div class="ui-tabs" id="tab_express"><ul class="tabs">`)
+	buf.WriteString(`<div class="gra-tabs" id="express-tab"><ul class="tabs">`)
 	for _, v := range letArr {
 		buf.WriteString(`<li title="`)
 		buf.WriteString(v)
@@ -145,7 +145,7 @@ func getRealShipExpressTab() string {
 		buf.WriteString(v)
 		buf.WriteString(`"><span class="tab-title">`)
 		buf.WriteString(v)
-		buf.WriteString(`</li>`)
+		buf.WriteString(`</span></li>`)
 	}
 	buf.WriteString("</ul>")
 	buf.WriteString(`<div class="frames">`)
