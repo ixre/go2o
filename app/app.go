@@ -126,7 +126,7 @@ func resetFsOnDarwin() {
 	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
-	webFs[FsMch] = false
+	webFs[FsMch] = !false
 	webFs[FsWholesale] = false
 }
 

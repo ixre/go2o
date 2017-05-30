@@ -38,10 +38,10 @@ var (
 		"err_member_credential", "会员用户或密码不正确")
 
 	ErrCheckCodeError *domain.DomainError = domain.NewDomainError(
-		"err_member_check_code_err", "校验码不正确")
+		"err_member_check_code_err", "验证码不正确")
 
 	ErrCheckCodeExpires *domain.DomainError = domain.NewDomainError(
-		"err_member_check_code_expires", "校验码已失效")
+		"err_member_check_code_expires", "验证码已过期")
 
 	ErrInvalidSession *domain.DomainError = domain.NewDomainError(
 		"member_invalid_session", "异常会话")
