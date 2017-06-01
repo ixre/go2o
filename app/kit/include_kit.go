@@ -41,6 +41,7 @@ func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm := make(map[string]interface{})
 	fm["alias"] = t.alias
 	fm["script"] = t.scriptTag
+	fm["css"] = t.cssTag
 	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
@@ -102,16 +103,45 @@ func (t *templateIncludeToolkit) alias(s string) string {
 	return s
 }
 
-// 脚本标签
-func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
-	resPrefix := RPC.Registry("StaticServe")["StaticServe"]
+// CSS标签
+func (t *templateIncludeToolkit) cssTag(s string) template.HTML {
+	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	staticServe := registry[variable.DStaticServer]
+	urlHash := registry[variable.DUrlHash]
 	buf := bytes.NewBufferString("")
 	arr := strings.Split(s, ",")
-	for _, v := range arr {
-		buf.WriteString("<script type=\"text/javascript\" src=\"")
-		buf.WriteString(resPrefix)
+	for i, v := range arr {
+		if i != 0 {
+			buf.WriteString("\n")
+		}
+		buf.WriteString("<link rel=\"StyleSheet\" type=\"text/css\" href=\"")
+		buf.WriteString(staticServe)
 		buf.WriteString(v)
-		buf.WriteString("\"></script>\n")
+		buf.WriteString("?hash=")
+		buf.WriteString(urlHash)
+		buf.WriteString("\"/>")
+
+	}
+	return template.HTML(buf.String())
+}
+
+// 脚本标签
+func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
+	registry := RPC.Registry(variable.DStaticServer, variable.DUrlHash)
+	staticServe := registry[variable.DStaticServer]
+	urlHash := registry[variable.DUrlHash]
+	buf := bytes.NewBufferString("")
+	arr := strings.Split(s, ",")
+	for i, v := range arr {
+		if i != 0 {
+			buf.WriteString("\n")
+		}
+		buf.WriteString("<script type=\"text/javascript\" src=\"")
+		buf.WriteString(staticServe)
+		buf.WriteString(v)
+		buf.WriteString("?hash=")
+		buf.WriteString(urlHash)
+		buf.WriteString("\"></script>")
 	}
 	return template.HTML(buf.String())
 }
@@ -133,15 +163,6 @@ func (t *templateIncludeToolkit) entryUrl(k string) string {
 	}
 	return ""
 }
-
-//
-//func dict(s string)string{
-//    switch s {
-//    case "ServicePhoneNo":
-//
-//    }
-//    return s
-//}
 
 // 分类树形
 func (t *templateIncludeToolkit) CatTree(parentId int32) product.Category {
