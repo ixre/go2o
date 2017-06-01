@@ -1,6 +1,7 @@
 package kit
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/storage"
@@ -16,9 +17,9 @@ import (
 	"go2o/core/service/thrift"
 	"go2o/core/service/thrift/idl/gen-go/define"
 	"go2o/core/variable"
+	"html/template"
 	ht "html/template"
 	"strings"
-	"sync"
 )
 
 var (
@@ -33,15 +34,13 @@ type templateIncludeKitWrapper struct {
 }
 
 type templateIncludeToolkit struct {
-	// 入口链接字点
-	entryUrlMap map[string]string
-	mutex       sync.Mutex
 }
 
 // 返回模板函数
 func (t *templateIncludeToolkit) getFuncMap() ht.FuncMap {
 	fm := make(map[string]interface{})
 	fm["alias"] = t.alias
+	fm["script"] = t.scriptTag
 	fm["entry"] = t.entryUrl
 	fm["catTree"] = t.CatTree
 	fm["catParent"] = t.catParent
@@ -103,57 +102,34 @@ func (t *templateIncludeToolkit) alias(s string) string {
 	return s
 }
 
+// 脚本标签
+func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
+	resPrefix := RPC.Registry("StaticServe")["StaticServe"]
+	buf := bytes.NewBufferString("")
+	arr := strings.Split(s, ",")
+	for _, v := range arr {
+		buf.WriteString("<script type=\"text/javascript\" src=\"")
+		buf.WriteString(resPrefix)
+		buf.WriteString(v)
+		buf.WriteString("\"></script>\n")
+	}
+	return template.HTML(buf.String())
+}
+
 // 入口URL
 func (t *templateIncludeToolkit) entryUrl(k string) string {
-	if t.entryUrlMap == nil {
-		t.mutex.Lock()
-
-		t.entryUrlMap = make(map[string]string, 4)
-		serveHost := variable.Domain
-
-		//todo: ?? temp
-		cnf := gof.CurrentApp.Config()
-		t.entryUrlMap["static_serve"] = cnf.GetString(variable.StaticServer)
-		t.entryUrlMap["image_serve"] = cnf.GetString(variable.ImageServer)
-
-		t.entryUrlMap["retail_portal"] = fmt.Sprintf("http://%s%s",
-			variable.DOMAIN_PREFIX_PORTAL, serveHost)
-		t.entryUrlMap["wholesale_portal"] = fmt.Sprintf("http://%s%s",
-			variable.DOMAIN_PREFIX_WHOLESALE, serveHost)
-		t.entryUrlMap["ucenter"] = fmt.Sprintf("http://%s%s",
-			variable.DOMAIN_PREFIX_MEMBER, serveHost)
-		t.entryUrlMap["passport"] = fmt.Sprintf("%s://%s%s",
-			variable.DOMAIN_PASSPORT_PROTO,
-			variable.DOMAIN_PREFIX_PASSPORT, serveHost)
-		t.entryUrlMap["hapi"] = fmt.Sprintf("http://%s%s",
-			variable.DOMAIN_PREFIX_HAPI, serveHost)
-
-		t.entryUrlMap["retail_portal_m"] = fmt.Sprintf("http://%s%s%s",
-			variable.DOMAIN_PREFIX_MOBILE, variable.DOMAIN_PREFIX_PORTAL, serveHost)
-		t.entryUrlMap["ucenter_m"] = fmt.Sprintf("http://%s%s%s",
-			variable.DOMAIN_PREFIX_MOBILE, variable.DOMAIN_PREFIX_MEMBER, serveHost)
-		t.entryUrlMap["passport_m"] = fmt.Sprintf("%s://%s%s%s",
-			variable.DOMAIN_PASSPORT_PROTO, variable.DOMAIN_PREFIX_MOBILE,
-			variable.DOMAIN_PREFIX_PASSPORT, serveHost)
-
-		t.mutex.Unlock()
-	}
-
-	k = strings.TrimSpace(k)
-
-	switch k {
+	f := RPC.Registry
+	switch strings.TrimSpace(k) {
 	case "retail", "retail_portal", "retailPortal":
-		return t.entryUrlMap["retail_portal"]
+		return f(variable.DRetailPortal)[variable.DRetailPortal]
 	case "retail_m", "retail_portal_m":
-		return t.entryUrlMap["retail_portal_m"]
+		return f(variable.DRetailMobilePortal)[variable.DRetailMobilePortal]
 	case "wholesale", "wholesale_portal", "wholesalePortal":
-		return t.entryUrlMap["wholesale_portal"]
+		return f(variable.DWholesalePortal)[variable.DWholesalePortal]
 	case "image_serve", "img_serve", "img":
-		return t.entryUrlMap["image_serve"]
+		return f(variable.DImageServer)[variable.DImageServer]
 	case "static", "static_serve":
-		return t.entryUrlMap["static_serve"]
-	default:
-		return t.entryUrlMap[k]
+		return f(variable.DStaticServer)[variable.DStaticServer]
 	}
 	return ""
 }

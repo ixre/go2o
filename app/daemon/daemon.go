@@ -18,6 +18,7 @@ import (
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/util"
 	"github.com/robfig/cron"
+	"go2o/app"
 	"go2o/core"
 	"go2o/core/domain/interface/mss"
 	"go2o/core/domain/interface/order"
@@ -381,7 +382,7 @@ func FlagRun() {
 	_db = appCtx.Db()
 	_orm = _db.GetOrm()
 
-	rsi.Init(appCtx)
+	rsi.Init(appCtx, app.FlagDaemon)
 
 	//todo:???
 	//	if service != "all" {

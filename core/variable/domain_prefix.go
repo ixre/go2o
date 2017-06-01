@@ -39,3 +39,17 @@ var (
 	// 通行证域名前缀(移动端)
 	DOMAIN_PREFIX_M_PASSPORT = DOMAIN_PREFIX_PASSPORT + DOMAIN_PREFIX_MOBILE
 )
+
+const (
+	DEnabledSSL            = "D_EnabledSSL"
+	DStaticServer          = "D_StaticServer"
+	DImageServer           = "D_ImageServer"
+	DRetailPortal          = "D_RetailPortal"
+	DWholesalePortal       = "D_WholesalePortal"
+	DUCenter               = "D_UCenter"
+	DPassport              = "D_Passport"
+	DHApi                  = "D_HApi"
+	DRetailMobilePortal    = "D_RetailMobilePortal"
+	DWholesaleMobilePortal = "D_WholesaleMobilePortal"
+	DMobilePassport        = "D_MobilePassport"
+)

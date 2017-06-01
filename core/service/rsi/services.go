@@ -11,10 +11,18 @@ package rsi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/db"
+	"github.com/jsix/gof/db/orm"
+	"github.com/jsix/gof/storage"
+	"go2o/app"
 	"go2o/core/dao"
+	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/domain"
 	"go2o/core/query"
 	"go2o/core/repository"
+	"go2o/core/variable"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -56,6 +64,10 @@ var (
 	CommonDao *dao.CommonDao
 )
 
+var (
+	valueRepo valueobject.IValueRepo
+)
+
 // 处理错误
 func handleError(err error) error {
 	return domain.HandleError(err, "service")
@@ -65,15 +77,25 @@ func handleError(err error) error {
 	//return err
 }
 
-func Init(ctx gof.App) {
+func Init(ctx gof.App, appFlag int) {
 	Context := ctx
 	db := Context.Db()
 	orm := db.GetOrm()
 	sto := Context.Storage()
 
+	// 初始化服务
+	initService(ctx, db, orm, sto)
+	// RPC
+	if appFlag&app.FlagRpcServe == app.FlagRpcServe {
+		initRpcServe(ctx)
+	}
+}
+
+func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
+
 	/** Repository **/
 	proMRepo := repository.NewProModelRepo(db, orm)
-	valueRepo := repository.NewValueRepo(db, sto)
+	valueRepo = repository.NewValueRepo(db, sto)
 	userRepo := repository.NewUserRepo(db)
 	notifyRepo := repository.NewNotifyRepo(db)
 	mssRepo := repository.NewMssRepo(db, notifyRepo, valueRepo)
@@ -135,15 +157,43 @@ func Init(ctx gof.App) {
 	AdService = NewAdvertisementService(adRepo, sto)
 	PersonFinanceService = NewPersonFinanceService(personFinanceRepo, memberRepo)
 
-	//m := memberRepo.GetMember(1)
-	//d := m.ProfileManager().GetDeliverAddress()[0]
-	//v := d.GetValue()
-	//v.Province = 440000
-	//v.City = 440600
-	//v.District = 440605
-	//d.SetValue(&v)
-	//d.Save()
-
 	CommonDao = dao.NewCommDao(orm, sto, adRepo, catRepo)
 	PortalService = NewPortalService(CommonDao)
+}
+
+// RPC服务初始化
+func initRpcServe(ctx gof.App) {
+	gf := ctx.Config().GetString
+	mp := make(map[string]string)
+	domain := gf("domain")
+	ssl, _ := strconv.ParseBool(gf("ssl_enabled"))
+	mp[variable.DEnabledSSL] = gf("ssl_enabled")
+	mp[variable.DStaticServer] = gf("static_server")
+	mp[variable.DImageServer] = gf("image_server")
+	prefix := "http://"
+	if ssl {
+		prefix = "https://"
+	}
+	mp[variable.DRetailPortal] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+	mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_WHOLESALE, domain}, "")
+	mp[variable.DUCenter] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MEMBER, domain}, "")
+	mp[variable.DPassport] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+	mp[variable.DHApi] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_HAPI, domain}, "")
+
+	mp[variable.DRetailMobilePortal] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MOBILE,
+		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
+	mp[variable.DWholesaleMobilePortal] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MOBILE,
+		variable.DOMAIN_PREFIX_WHOLESALE, domain}, "")
+	mp[variable.DMobilePassport] = strings.Join([]string{prefix,
+		variable.DOMAIN_PREFIX_MOBILE,
+		variable.DOMAIN_PREFIX_PASSPORT, domain}, "")
+
+	valueRepo.SavesRegistry(mp)
 }
