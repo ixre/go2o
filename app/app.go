@@ -22,25 +22,27 @@ import (
 
 const (
 	// 网页服务
-	TagWebServe = 1 << iota
+	FlagWebServe = 1 << iota
 	// 常驻程序
-	TagDaemon
-	// 单元测试
-	TagTesting
-	// 二进制程序
-	TagBin
-	// 系统后台
-	TagMasterServe
+	FlagDaemon
+	// 远程调用服务
+	FlagRpcServe
 	// Tcp服务
-	TagTcpServe
+	FlagTcpServe
+	// 单元测试
+	FlagTesting
+	// 二进制程序
+	FlagBin
+	// 系统后台
+	FlagMasterServe
 	// 商户系统
-	TagMchServe
+	FlagMchServe
 	// 用户中心
-	TagUCenterServe
+	FlagUCenterServe
 	// 通行证
-	TagPassportServe
+	FlagPassportServe
 	// 商铺系统
-	TagShopServe
+	FlagShopServe
 )
 
 const (
@@ -58,8 +60,8 @@ const (
 )
 
 var (
-	TagWeb = TagWebServe | TagMchServe | TagUCenterServe |
-		TagPassportServe | TagShopServe
+	FlagWebApp = FlagWebServe | FlagMchServe | FlagUCenterServe |
+		FlagPassportServe | FlagShopServe
 
 	// 网站模板文件监视
 	webFs map[int]bool = make(map[int]bool)
@@ -70,7 +72,7 @@ type CustomConfig func(gof.App, int) error
 // 自定义配置应用系统
 func Configure(c CustomConfig, app gof.App, tag int) error {
 	err := c(app, tag)
-	if tag&TagWebServe == TagWebServe {
+	if tag&FlagWebServe == FlagWebServe {
 		defer flushJsGlob()
 	}
 	return err
