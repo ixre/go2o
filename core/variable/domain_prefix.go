@@ -44,6 +44,7 @@ const (
 	DEnabledSSL            = "D_EnabledSSL"
 	DStaticServer          = "D_StaticServer"
 	DImageServer           = "D_ImageServer"
+	DUrlHash               = "D_Hash"
 	DRetailPortal          = "D_RetailPortal"
 	DWholesalePortal       = "D_WholesalePortal"
 	DUCenter               = "D_UCenter"

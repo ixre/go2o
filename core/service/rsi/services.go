@@ -11,6 +11,7 @@ package rsi
 
 import (
 	"github.com/jsix/gof"
+	"github.com/jsix/gof/crypto"
 	"github.com/jsix/gof/db"
 	"github.com/jsix/gof/db/orm"
 	"github.com/jsix/gof/storage"
@@ -23,6 +24,7 @@ import (
 	"go2o/core/variable"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -166,14 +168,20 @@ func initRpcServe(ctx gof.App) {
 	gf := ctx.Config().GetString
 	mp := make(map[string]string)
 	domain := gf("domain")
+	hash := gf("url_hash")
+	if hash == "" {
+		hash = crypto.Md5([]byte(strconv.Itoa(int(time.Now().Unix()))))[8:14]
+	}
 	ssl, _ := strconv.ParseBool(gf("ssl_enabled"))
-	mp[variable.DEnabledSSL] = gf("ssl_enabled")
-	mp[variable.DStaticServer] = gf("static_server")
-	mp[variable.DImageServer] = gf("image_server")
 	prefix := "http://"
 	if ssl {
 		prefix = "https://"
 	}
+
+	mp[variable.DEnabledSSL] = gf("ssl_enabled")
+	mp[variable.DStaticServer] = gf("static_server")
+	mp[variable.DImageServer] = gf("image_server")
+	mp[variable.DUrlHash] = hash
 	mp[variable.DRetailPortal] = strings.Join([]string{prefix,
 		variable.DOMAIN_PREFIX_PORTAL, domain}, "")
 	mp[variable.DWholesalePortal] = strings.Join([]string{prefix,
