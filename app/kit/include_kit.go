@@ -20,6 +20,7 @@ import (
 	"html/template"
 	ht "html/template"
 	"strings"
+	"sync"
 )
 
 var (
@@ -34,6 +35,10 @@ type templateIncludeKitWrapper struct {
 }
 
 type templateIncludeToolkit struct {
+	// 入口链接字点
+	entryUrlMap map[string]string
+	mutex       sync.Mutex
+	rwMut       sync.RWMutex
 }
 
 // 返回模板函数
@@ -148,20 +153,35 @@ func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
 
 // 入口URL
 func (t *templateIncludeToolkit) entryUrl(k string) string {
-	f := RPC.Registry
+	key := k
 	switch strings.TrimSpace(k) {
 	case "retail", "retail_portal", "retailPortal":
-		return f(variable.DRetailPortal)[variable.DRetailPortal]
+		key = variable.DRetailPortal
 	case "retail_m", "retail_portal_m":
-		return f(variable.DRetailMobilePortal)[variable.DRetailMobilePortal]
+		key = variable.DRetailMobilePortal
 	case "wholesale", "wholesale_portal", "wholesalePortal":
-		return f(variable.DWholesalePortal)[variable.DWholesalePortal]
+		key = variable.DWholesalePortal
 	case "image_serve", "img_serve", "img":
-		return f(variable.DImageServer)[variable.DImageServer]
-	case "static", "static_serve":
-		return f(variable.DStaticServer)[variable.DStaticServer]
+		key = variable.DImageServer
+	case "static_serve", "static":
+		key = variable.DStaticServer
 	}
-	return ""
+	t.rwMut.RLock()
+	if t.entryUrlMap != nil {
+		if v, ok := t.entryUrlMap[k]; ok {
+			t.rwMut.RUnlock()
+			return v
+		}
+	}
+	t.rwMut.RUnlock()
+	t.rwMut.Lock()
+	if t.entryUrlMap == nil {
+		t.entryUrlMap = make(map[string]string)
+	}
+	v := RPC.Registry(key)[key]
+	t.entryUrlMap[key] = v
+	t.rwMut.Unlock()
+	return v
 }
 
 // 分类树形
