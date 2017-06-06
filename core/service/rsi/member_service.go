@@ -39,10 +39,10 @@ type memberService struct {
 	valRepo         valueobject.IValueRepo
 }
 
-func NewMemberService(mchService *merchantService, rep member.IMemberRepo,
+func NewMemberService(mchService *merchantService, repo member.IMemberRepo,
 	q *query.MemberQuery, oq *query.OrderQuery, valRepo valueobject.IValueRepo) *memberService {
 	ms := &memberService{
-		_repo:           rep,
+		_repo:           repo,
 		_query:          q,
 		_partnerService: mchService,
 		_orderQuery:     oq,
