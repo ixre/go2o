@@ -46,8 +46,8 @@ const (
 )
 
 const (
-	FsMain = iota
-	FsMainMobile
+	FsPortal = iota
+	FsPortalMobile
 	FsPassport
 	FsPassportMobile
 	FsUCenter
@@ -120,15 +120,15 @@ func FsInit(debug bool) {
 
 // 重设MAC OX下的文件监视更改
 func resetFsOnDarwin() {
-	webFs[FsMain] = false
-	webFs[FsMainMobile] = false
+	webFs[FsPortal] = !false
+	webFs[FsPortalMobile] = false
 	webFs[FsPassport] = false
 	webFs[FsPassportMobile] = false
-	webFs[FsUCenter] = !false
+	webFs[FsUCenter] = false
 	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false
 	webFs[FsShopMobile] = false
-	webFs[FsMch] = !false
+	webFs[FsMch] = false
 	webFs[FsWholesale] = false
 }
 
