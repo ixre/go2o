@@ -53,4 +53,5 @@ const (
 	DRetailMobilePortal    = "D_RetailMobilePortal"
 	DWholesaleMobilePortal = "D_WholesaleMobilePortal"
 	DMobilePassport        = "D_MobilePassport"
+	DMobileUCenter         = "D_MobileUCenter"
 )
