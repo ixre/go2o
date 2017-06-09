@@ -241,7 +241,7 @@ func (t *templateIncludeToolkit) portalNav(navType int32) []*model.PortalNav {
 }
 
 // 页面标题
-func (_t *templateIncludeToolkit) pageTitle(t string) string {
+func (t *templateIncludeToolkit) pageTitle(tit string) string {
 	if _TitleSuffix == "" {
 		cli, err := thrift.FoundationServeClient()
 		if err == nil {
@@ -250,10 +250,10 @@ func (_t *templateIncludeToolkit) pageTitle(t string) string {
 			_TitleSuffix = r["PlatformName"]
 		}
 	}
-	if t == "" {
+	if tit == "" {
 		return _TitleSuffix
 	}
-	return t + "-" + _TitleSuffix
+	return tit + "-" + _TitleSuffix
 }
 
 // 拼接属性URL-Query
@@ -383,6 +383,9 @@ func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*de
 
 // 获取随机商品
 func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.Item {
+	if catId <= 0 {
+		catId = 0
+	}
 	return rsi.ItemService.GetRandomItem(catId, quantity, "")
 }
 
@@ -415,12 +418,8 @@ func (t *templateIncludeToolkit) productAttrs(productId int32) []define.Pair {
 
 // 获取文章列表
 func (t *templateIncludeToolkit) articles(cat string, quantity int32) []*content.Article {
-	c := rsi.ContentService.GetArticleCatByAlias(cat)
-	if c != nil {
-		_, arr := rsi.ContentService.PagedArticleList(c.Id, 0, int(quantity), "")
-		return arr
-	}
-	return []*content.Article{}
+	_, arr := rsi.ContentService.PagedArticleList(cat, 0, int(quantity), "")
+	return arr
 }
 
 //求余

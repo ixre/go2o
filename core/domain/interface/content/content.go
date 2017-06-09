@@ -88,7 +88,7 @@ type (
 		SaveCategory(v *ArticleCategory) (int32, error)
 
 		// 判断栏目是否存在
-		CategoryExists(indent string, id int32) bool
+		CategoryExists(alias string, id int32) bool
 
 		// 删除栏目
 		DeleteCategory(id int32) error

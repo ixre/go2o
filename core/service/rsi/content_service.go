@@ -144,7 +144,7 @@ func (cs *contentService) DeleteArticle(id int32) error {
 // 保存文章
 func (cs *contentService) SaveArticle(e *content.Article) (int32, error) {
 	m := cs._sysContent.ArticleManager()
-	a := m.GetArticle(e.Id)
+	a := m.GetArticle(e.ID)
 	if a == nil {
 		a = m.CreateArticle(e)
 	}
@@ -155,7 +155,11 @@ func (cs *contentService) SaveArticle(e *content.Article) (int32, error) {
 	return -1, err
 }
 
-func (cs *contentService) PagedArticleList(catId int32, begin, size int,
+func (cs *contentService) PagedArticleList(catAlias string, begin, size int,
 	where string) (int, []*content.Article) {
-	return cs._query.PagedArticleList(catId, begin, size, where)
+	cat := cs._sysContent.ArticleManager().GetCategoryByAlias(catAlias)
+	if cat == nil || cat.GetDomainId() <= 0 {
+		return 0, []*content.Article{}
+	}
+	return cs._query.PagedArticleList(cat.GetDomainId(), begin, size, where)
 }

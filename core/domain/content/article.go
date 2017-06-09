@@ -86,7 +86,7 @@ func NewArticle(v *content.Article, m content.IArticleManager,
 
 // 获取领域编号
 func (a *articleImpl) GetDomainId() int32 {
-	return a._value.Id
+	return a._value.ID
 }
 
 // 获取值
@@ -96,7 +96,7 @@ func (a *articleImpl) GetValue() content.Article {
 
 // 设置值
 func (a *articleImpl) SetValue(v *content.Article) error {
-	v.Id = a.GetDomainId()
+	v.ID = a.GetDomainId()
 	a._value = v
 	return nil
 }
@@ -120,7 +120,7 @@ func (a *articleImpl) Save() (int32, error) {
 		a._value.CreateTime = unix
 	}
 	id, err := a._rep.SaveArticle(a._value)
-	a._value.Id = id
+	a._value.ID = id
 	return id, err
 }
 
