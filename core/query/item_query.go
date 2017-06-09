@@ -17,6 +17,7 @@ import (
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/valueobject"
 	"go2o/core/infrastructure/format"
+	"strings"
 )
 
 type ItemQuery struct {
@@ -215,20 +216,28 @@ func (i ItemQuery) GetRandomItem(catId, quantity int32, where string) []*item.Go
 
 	*/
 
+	s := []string{where}
+	if catId > 0 {
+		if where != "" {
+			s = append(s, " AND")
+		}
+		s = append(s, fmt.Sprintf("item_info.cat_id=%d)", catId))
+	}
+	search := strings.Join(s, "")
+
 	list := []*item.GoodsItem{}
 	sql := fmt.Sprintf(`SELECT * FROM item_info
-
     JOIN (SELECT ROUND(RAND() * (
-      SELECT MAX(id)-? FROM item_info WHERE item_info.cat_id=?
-        AND item_info.review_state=? AND item_info.shelve_state=? %s
+      SELECT MAX(id)-? FROM item_info WHERE  item_info.review_state=?
+         AND item_info.shelve_state=? %s
          )) AS id) AS r2
-		 WHERE item_info.Id > r2.id AND item_info.cat_id=?
+		 WHERE item_info.Id > r2.id
 		  AND item_info.review_state=?
 		 AND item_info.shelve_state=? %s LIMIT ?`,
-		where, where)
+		search, search)
 	i.Connector.GetOrm().SelectByQuery(&list, sql,
-		quantity, catId, enum.ReviewPass, item.ShelvesOn,
-		catId, enum.ReviewPass, item.ShelvesOn, quantity)
+		quantity, enum.ReviewPass, item.ShelvesOn,
+		enum.ReviewPass, item.ShelvesOn, quantity)
 	return list
 }
 

@@ -742,3 +742,17 @@ CREATE TABLE ws_cart_item (
   quantity  int(8) comment '数量',
   checked   int(2) comment '是否勾选结算',
   PRIMARY KEY (id)) comment='批发购物车商品项';
+
+
+/* 2017-06-09 */
+
+ALTER TABLE `con_article_category`
+  CHANGE COLUMN `alias` `cat_alias` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
+  RENAME TO  `article_category` ;
+
+ALTER TABLE `txmall`.`con_article`
+  RENAME TO  `txmall`.`article_list` ;
+
+ALTER TABLE `txmall`.`con_page`
+  RENAME TO  `txmall`.`content_page` ;
+

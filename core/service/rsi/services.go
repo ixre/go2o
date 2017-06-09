@@ -95,6 +95,8 @@ func Init(ctx gof.App, appFlag int) {
 
 func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interface) {
 
+	rds := sto.(storage.IRedisStorage)
+
 	/** Repository **/
 	proMRepo := repository.NewProModelRepo(db, orm)
 	valueRepo = repository.NewValueRepo(db, sto)
@@ -150,7 +152,7 @@ func initService(ctx gof.App, db db.Connector, orm orm.Orm, sto storage.Interfac
 	MerchantService = NewMerchantService(mchRepo, memberRepo, mchQuery, orderQuery)
 	ShopService = NewShopService(shopRepo, mchRepo, shopQuery)
 	MemberService = NewMemberService(MerchantService, memberRepo, memberQue, orderQuery, valueRepo)
-	ItemService = NewSaleService(catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
+	ItemService = NewSaleService(rds, catRepo, itemRepo, goodsQuery, tagSaleRepo, proMRepo, mchRepo, valueRepo)
 	PaymentService = NewPaymentService(paymentRepo, orderRepo)
 	MssService = NewMssService(mssRepo)
 	ExpressService = NewExpressService(expressRepo)
