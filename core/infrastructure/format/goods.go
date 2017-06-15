@@ -49,10 +49,13 @@ func getImageServe() string {
 	app := gof.CurrentApp
 	cfg := app.Config()
 	s := cfg.GetString(variable.ImageServer)
-	if s[0] == '/' {
-		s = fmt.Sprintf("http://www.%s%s", cfg.GetString(variable.ServerDomain), s)
+	if strings.HasPrefix(s, "//:") ||
+		strings.HasPrefix(s, "http://") ||
+		strings.HasPrefix(s, "https://") {
+		return s
 	}
-	return s
+	return fmt.Sprintf("//www.%s%s",
+		cfg.GetString(variable.ServerDomain), s)
 }
 
 // 获取资源前缀

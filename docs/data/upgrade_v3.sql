@@ -750,9 +750,9 @@ ALTER TABLE `con_article_category`
   CHANGE COLUMN `alias` `cat_alias` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL ,
   RENAME TO  `article_category` ;
 
-ALTER TABLE `txmall`.`con_article`
-  RENAME TO  `txmall`.`article_list` ;
+ALTER TABLE `con_article`
+  RENAME TO  `article_list` ;
 
-ALTER TABLE `txmall`.`con_page`
-  RENAME TO  `txmall`.`content_page` ;
+ALTER TABLE `con_page`
+  RENAME TO  `content_page` ;
 
