@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/util"
 	"go2o/core/variable"
 	"io/ioutil"
 	"os"
@@ -86,10 +85,8 @@ func flushJsGlob() {
 		defer fi.Close()
 		data, err := ioutil.ReadAll(fi)
 		if err == nil {
-			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='%s://%s'+domain;",
-				variable.Domain,
-				util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http"),
-				variable.DOMAIN_PREFIX_HAPI,
+			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='//%s'+domain;",
+				variable.Domain, variable.DOMAIN_PREFIX_HAPI,
 			))
 			txt := string(data)
 			delimer := "/*~*/"

@@ -258,7 +258,7 @@ func TestTradeOrder(t *testing.T) {
 	if requireTicket {
 		t.Log("上传发票")
 		io = o.(order.ITradeOrder)
-		err := io.UpdateTicket("http://img.ts.com/res/nopic.gif")
+		err := io.UpdateTicket("//img.ts.com/res/nopic.gif")
 		if err != nil {
 			t.Errorf("上传发票出错：%s", err.Error())
 			t.FailNow()
