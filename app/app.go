@@ -86,7 +86,7 @@ func flushJsGlob() {
 		data, err := ioutil.ReadAll(fi)
 		if err == nil {
 			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='//%s'+domain;",
-				variable.Domain, variable.DOMAIN_PREFIX_HAPI,
+				variable.Domain, variable.DOMAIN_PREFIX_HApi,
 			))
 			txt := string(data)
 			delimer := "/*~*/"
