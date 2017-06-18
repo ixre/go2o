@@ -10,9 +10,11 @@ package module
 
 import (
 	"errors"
+	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/crypto"
 	"go2o/core/service/thrift/idl/gen-go/define"
+	"go2o/core/variable"
 	"strings"
 )
 
@@ -27,23 +29,66 @@ type SSOModule struct {
 // 模块数据
 func (s *SSOModule) SetApp(app gof.App) {
 	s.app = app
+
 }
 
 // 初始化模块
 func (s *SSOModule) Init() {
 	s.appMap = make(map[string]*define.SsoApp)
+	domain := variable.Domain
+	s.Register(&define.SsoApp{
+		ID:   1,
+		Name: "RetailPortal",
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_PORTAL, domain),
+	})
+	s.Register(&define.SsoApp{
+		ID:   2,
+		Name: "WholesalePortal",
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_WHOLESALE, domain),
+	})
+	s.Register(&define.SsoApp{
+		ID:   3,
+		Name: "HApi",
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_HApi, domain),
+	})
+	s.Register(&define.SsoApp{
+		ID:   4,
+		Name: "Member",
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_MEMBER, domain),
+	})
+	s.Register(&define.SsoApp{
+		ID:   5,
+		Name: "MemberMobile",
+		ApiUrl: fmt.Sprintf("//%s%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_MEMBER, variable.DOMAIN_PREFIX_MOBILE,
+			domain),
+	})
+	s.Register(&define.SsoApp{
+		ID:   6,
+		Name: "RetailPortalMobile",
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_MOBILE, domain),
+	})
 }
 
 func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 	if app.Name == "" {
 		return "", errors.New("-1:app name is null")
 	}
-	if app.ApiUrl == "" || (!strings.HasPrefix(app.ApiUrl,
-		"https//") && !strings.HasPrefix(app.ApiUrl, "http://")) {
-		return "", errors.New("-1:api url error")
+	if app.ApiUrl == "" {
+		return "", errors.New("-2:api url is null")
+	}
+	if prefixRight := strings.HasPrefix(app.ApiUrl, "//") ||
+		strings.HasPrefix(app.ApiUrl, "http://") ||
+		strings.HasPrefix(app.ApiUrl, "https://"); !prefixRight {
+		return "", errors.New("-3:api url error")
 	}
 	if _, ok := s.appMap[app.Name]; ok {
-		return "", errors.New("-2:app has be registed")
+		return "", errors.New("-4:app has be resisted")
 	}
 	// 生成TOKEN
 	app.Token = crypto.Md5([]byte(app.Name + "#" + app.ApiUrl))
@@ -51,6 +96,7 @@ func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 	s.apiArr = nil
 	s.appMap[app.Name] = app
 	return app.Token, nil
+
 }
 
 // 获取APP的配置
