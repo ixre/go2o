@@ -62,8 +62,8 @@ func (s *SSOModule) Init() {
 	s.Register(&define.SsoApp{
 		ID:   5,
 		Name: "MemberMobile",
-		ApiUrl: fmt.Sprintf("//%s%s%s/user/sync_m.p",
-			variable.DOMAIN_PREFIX_MEMBER, variable.DOMAIN_PREFIX_MOBILE,
+		ApiUrl: fmt.Sprintf("//%s%s/user/sync_m.p",
+			variable.DOMAIN_PREFIX_M_MEMBER,
 			domain),
 	})
 	s.Register(&define.SsoApp{

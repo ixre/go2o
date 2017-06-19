@@ -44,9 +44,9 @@ func (m *serviceC) Device(c *echox.Context) error {
 func (s *serviceC) LoginState(c *echox.Context) error {
 	mp := make(map[string]interface{})
 	mobileReq := ut.MobileRequest(c.Request())
-	mPrefix := util.BoolExt.TString(mobileReq, variable.DOMAIN_PREFIX_MOBILE, "")
-	pstUrl := fmt.Sprintf("//%s%s%s",
-		variable.DOMAIN_PREFIX_PASSPORT, mPrefix, variable.Domain)
+	mPrefix := util.BoolExt.TString(mobileReq, variable.DOMAIN_PREFIX_M_PASSPORT,
+		variable.DOMAIN_PREFIX_PASSPORT)
+	pstUrl := fmt.Sprintf("//%s%s", mPrefix, variable.Domain)
 	memberId := getMemberId(c)
 	if memberId <= 0 {
 		registry, _ := rsi.FoundationService.GetRegistryV1([]string{
