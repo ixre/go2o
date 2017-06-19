@@ -21,15 +21,14 @@ import (
 var _ Module = new(SSOModule)
 
 type SSOModule struct {
-	app    gof.App
-	appMap map[string]*define.SsoApp
-	apiArr []string
+	app         gof.App
+	appMap      map[string]*define.SsoApp
+	apiUrlArray []string
 }
 
 // 模块数据
 func (s *SSOModule) SetApp(app gof.App) {
 	s.app = app
-
 }
 
 // 初始化模块
@@ -93,8 +92,10 @@ func (s *SSOModule) Register(app *define.SsoApp) (token string, err error) {
 	// 生成TOKEN
 	app.Token = crypto.Md5([]byte(app.Name + "#" + app.ApiUrl))
 	// 注册
-	s.apiArr = nil
+	s.apiUrlArray = nil
 	s.appMap[app.Name] = app
+	// 清除缓存
+	s.apiUrlArray = nil
 	return app.Token, nil
 
 }
@@ -109,15 +110,15 @@ func (s *SSOModule) Get(name string) *define.SsoApp {
 
 // 返回同步的应用API地址
 func (s *SSOModule) Array() []string {
-	if s.apiArr == nil && s.appMap != nil && len(s.appMap) > 0 {
-		s.apiArr = make([]string, len(s.appMap))
+	if s.apiUrlArray == nil && s.appMap != nil && len(s.appMap) > 0 {
+		s.apiUrlArray = make([]string, len(s.appMap))
 		i := 0
 		for _, v := range s.appMap {
-			s.apiArr[i] = s.formatApi(v.ApiUrl, v.Token)
+			s.apiUrlArray[i] = s.formatApi(v.ApiUrl, v.Token)
 			i++
 		}
 	}
-	return s.apiArr
+	return s.apiUrlArray
 }
 
 // 格式化API地址，加上token参数
