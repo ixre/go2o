@@ -20,6 +20,7 @@ import (
 	"html/template"
 	ht "html/template"
 	"strings"
+	"sync"
 )
 
 var (
@@ -34,6 +35,10 @@ type templateIncludeKitWrapper struct {
 }
 
 type templateIncludeToolkit struct {
+	// 入口链接字点
+	entryUrlMap map[string]string
+	mutex       sync.Mutex
+	rwMut       sync.RWMutex
 }
 
 // 返回模板函数
@@ -148,20 +153,35 @@ func (t *templateIncludeToolkit) scriptTag(s string) template.HTML {
 
 // 入口URL
 func (t *templateIncludeToolkit) entryUrl(k string) string {
-	f := RPC.Registry
+	key := k
 	switch strings.TrimSpace(k) {
 	case "retail", "retail_portal", "retailPortal":
-		return f(variable.DRetailPortal)[variable.DRetailPortal]
+		key = variable.DRetailPortal
 	case "retail_m", "retail_portal_m":
-		return f(variable.DRetailMobilePortal)[variable.DRetailMobilePortal]
+		key = variable.DRetailMobilePortal
 	case "wholesale", "wholesale_portal", "wholesalePortal":
-		return f(variable.DWholesalePortal)[variable.DWholesalePortal]
+		key = variable.DWholesalePortal
 	case "image_serve", "img_serve", "img":
-		return f(variable.DImageServer)[variable.DImageServer]
-	case "static", "static_serve":
-		return f(variable.DStaticServer)[variable.DStaticServer]
+		key = variable.DImageServer
+	case "static_serve", "static":
+		key = variable.DStaticServer
 	}
-	return ""
+	t.rwMut.RLock()
+	if t.entryUrlMap != nil {
+		if v, ok := t.entryUrlMap[k]; ok {
+			t.rwMut.RUnlock()
+			return v
+		}
+	}
+	t.rwMut.RUnlock()
+	t.rwMut.Lock()
+	if t.entryUrlMap == nil {
+		t.entryUrlMap = make(map[string]string)
+	}
+	v := RPC.Registry(key)[key]
+	t.entryUrlMap[key] = v
+	t.rwMut.Unlock()
+	return v
 }
 
 // 分类树形
@@ -221,7 +241,7 @@ func (t *templateIncludeToolkit) portalNav(navType int32) []*model.PortalNav {
 }
 
 // 页面标题
-func (_t *templateIncludeToolkit) pageTitle(t string) string {
+func (t *templateIncludeToolkit) pageTitle(tit string) string {
 	if _TitleSuffix == "" {
 		cli, err := thrift.FoundationServeClient()
 		if err == nil {
@@ -230,10 +250,10 @@ func (_t *templateIncludeToolkit) pageTitle(t string) string {
 			_TitleSuffix = r["PlatformName"]
 		}
 	}
-	if t == "" {
+	if tit == "" {
 		return _TitleSuffix
 	}
-	return t + "-" + _TitleSuffix
+	return tit + "-" + _TitleSuffix
 }
 
 // 拼接属性URL-Query
@@ -363,6 +383,9 @@ func (t *templateIncludeToolkit) hotSaleItems(catId int32, quantity int32) []*de
 
 // 获取随机商品
 func (t *templateIncludeToolkit) randItems(catId int32, quantity int32) []*define.Item {
+	if catId <= 0 {
+		catId = 0
+	}
 	return rsi.ItemService.GetRandomItem(catId, quantity, "")
 }
 
@@ -395,12 +418,8 @@ func (t *templateIncludeToolkit) productAttrs(productId int32) []define.Pair {
 
 // 获取文章列表
 func (t *templateIncludeToolkit) articles(cat string, quantity int32) []*content.Article {
-	c := rsi.ContentService.GetArticleCatByAlias(cat)
-	if c != nil {
-		_, arr := rsi.ContentService.PagedArticleList(c.Id, 0, int(quantity), "")
-		return arr
-	}
-	return []*content.Article{}
+	_, arr := rsi.ContentService.PagedArticleList(cat, 0, int(quantity), "")
+	return arr
 }
 
 //求余

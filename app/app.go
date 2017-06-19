@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"github.com/jsix/gof"
 	"github.com/jsix/gof/log"
-	"github.com/jsix/gof/util"
 	"go2o/core/variable"
 	"io/ioutil"
 	"os"
@@ -46,8 +45,8 @@ const (
 )
 
 const (
-	FsMain = iota
-	FsMainMobile
+	FsPortal = iota
+	FsPortalMobile
 	FsPassport
 	FsPassportMobile
 	FsUCenter
@@ -86,10 +85,8 @@ func flushJsGlob() {
 		defer fi.Close()
 		data, err := ioutil.ReadAll(fi)
 		if err == nil {
-			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='%s://%s'+domain;",
-				variable.Domain,
-				util.BoolExt.TString(variable.DOMAIN_PREFIX_SSL, "https", "http"),
-				variable.DOMAIN_PREFIX_HAPI,
+			newBytes := []byte(fmt.Sprintf("var domain='%s';var hapi='//%s'+domain;",
+				variable.Domain, variable.DOMAIN_PREFIX_HApi,
 			))
 			txt := string(data)
 			delimer := "/*~*/"
@@ -120,10 +117,10 @@ func FsInit(debug bool) {
 
 // 重设MAC OX下的文件监视更改
 func resetFsOnDarwin() {
-	webFs[FsMain] = false
-	webFs[FsMainMobile] = false
+	webFs[FsPortal] = !false
+	webFs[FsPortalMobile] = false
 	webFs[FsPassport] = false
-	webFs[FsPassportMobile] = false
+	webFs[FsPassportMobile] = !false
 	webFs[FsUCenter] = !false
 	webFs[FsUCenterMobile] = false
 	webFs[FsShop] = false

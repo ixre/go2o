@@ -11,6 +11,8 @@ package rsi
 
 import (
 	"fmt"
+	"github.com/jsix/gof/crypto"
+	"github.com/jsix/gof/storage"
 	"go2o/core/domain/interface/enum"
 	"go2o/core/domain/interface/item"
 	"go2o/core/domain/interface/merchant"
@@ -34,13 +36,15 @@ type itemService struct {
 	promRepo  promodel.IProModelRepo
 	mchRepo   merchant.IMerchantRepo
 	valueRepo valueobject.IValueRepo
+	sto       storage.IRedisStorage
 }
 
-func NewSaleService(cateRepo product.ICategoryRepo,
+func NewSaleService(sto storage.IRedisStorage, cateRepo product.ICategoryRepo,
 	goodsRepo item.IGoodsItemRepo, goodsQuery *query.ItemQuery,
 	labelRepo item.ISaleLabelRepo, promRepo promodel.IProModelRepo,
 	mchRepo merchant.IMerchantRepo, valueRepo valueobject.IValueRepo) *itemService {
 	return &itemService{
+		sto:       sto,
 		itemRepo:  goodsRepo,
 		itemQuery: goodsQuery,
 		_cateRepo: cateRepo,
@@ -238,12 +242,20 @@ func (i *itemService) attachWholesaleItemData(dto *define.Item) {
 
 // 获取上架商品数据（分页）
 func (s *itemService) GetRandomItem(catId int32, quantity int32, where string) []*define.Item {
-	list := s.itemQuery.GetRandomItem(catId, quantity, where)
-	arr := make([]*define.Item, len(list))
-	for i, v := range list {
-		v.Image = format.GetGoodsImageUrl(v.Image)
-		arr[i] = parser.ItemDto(v)
+	hash := fmt.Sprintf("%d-%d-%s", catId, quantity, where)
+	hash = crypto.Md5([]byte(hash))
+	key := "go2o:query:cache:rd-item:" + hash
+	arr := []*define.Item{}
+
+	fn := func() interface{} {
+		list := s.itemQuery.GetRandomItem(catId, quantity, where)
+		for _, v := range list {
+			v.Image = format.GetGoodsImageUrl(v.Image)
+			arr = append(arr, parser.ItemDto(v))
+		}
+		return arr
 	}
+	s.sto.(storage.IRedisStorage).RWJson(key, &arr, fn, 600)
 	return arr
 }
 
@@ -350,7 +362,7 @@ func (s *itemService) GetPagedOnShelvesGoodsByKeyword(shopId int32, start, end i
 		where = ""
 		orderBy = "it.sale_num DESC"
 	case "rate_0":
-	//todo:
+		//todo:
 	case "rate_1":
 		//todo:
 	}

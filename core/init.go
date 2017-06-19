@@ -93,9 +93,9 @@ func OrmMapping(conn db.Connector) {
 	orm.Mapping(mss.Replay{}, "msg_replay")
 
 	/* 内容 */
-	orm.Mapping(content.Page{}, "con_page")
-	orm.Mapping(content.Article{}, "con_article")
-	orm.Mapping(content.ArticleCategory{}, "con_article_category")
+	orm.Mapping(content.Page{}, "content_page")
+	orm.Mapping(content.Article{}, "article_list")
+	orm.Mapping(content.ArticleCategory{}, "article_category")
 
 	/** new **/
 	orm.Mapping(member.Level{}, "mm_level")
