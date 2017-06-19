@@ -72,9 +72,8 @@ type MemberService interface {
 	InviterArray(memberId int64, depth int32) (r []int64, err error)
 	// Parameters:
 	//  - MemberId
-	//  - Level
-	//  - BeginTime
-	GetInviterQuantity(memberId int64, level int32, beginTime int64) (r int32, err error)
+	//  - Data
+	GetInviterQuantity(memberId int64, data map[string]string) (r int32, err error)
 	// Parameters:
 	//  - MemberId
 	//  - Account
@@ -1368,16 +1367,15 @@ func (p *MemberServiceClient) recvInviterArray() (value []int64, err error) {
 
 // Parameters:
 //  - MemberId
-//  - Level
-//  - BeginTime
-func (p *MemberServiceClient) GetInviterQuantity(memberId int64, level int32, beginTime int64) (r int32, err error) {
-	if err = p.sendGetInviterQuantity(memberId, level, beginTime); err != nil {
+//  - Data
+func (p *MemberServiceClient) GetInviterQuantity(memberId int64, data map[string]string) (r int32, err error) {
+	if err = p.sendGetInviterQuantity(memberId, data); err != nil {
 		return
 	}
 	return p.recvGetInviterQuantity()
 }
 
-func (p *MemberServiceClient) sendGetInviterQuantity(memberId int64, level int32, beginTime int64) (err error) {
+func (p *MemberServiceClient) sendGetInviterQuantity(memberId int64, data map[string]string) (err error) {
 	oprot := p.OutputProtocol
 	if oprot == nil {
 		oprot = p.ProtocolFactory.GetProtocol(p.Transport)
@@ -1388,9 +1386,8 @@ func (p *MemberServiceClient) sendGetInviterQuantity(memberId int64, level int32
 		return
 	}
 	args := MemberServiceGetInviterQuantityArgs{
-		MemberId:  memberId,
-		Level:     level,
-		BeginTime: beginTime,
+		MemberId: memberId,
+		Data:     data,
 	}
 	if err = args.Write(oprot); err != nil {
 		return
@@ -2472,7 +2469,7 @@ func (p *memberServiceProcessorGetInviterQuantity) Process(seqId int32, iprot, o
 	result := MemberServiceGetInviterQuantityResult{}
 	var retval int32
 	var err2 error
-	if retval, err2 = p.handler.GetInviterQuantity(args.MemberId, args.Level, args.BeginTime); err2 != nil {
+	if retval, err2 = p.handler.GetInviterQuantity(args.MemberId, args.Data); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing GetInviterQuantity: "+err2.Error())
 		oprot.WriteMessageBegin("GetInviterQuantity", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -5939,12 +5936,10 @@ func (p *MemberServiceInviterArrayResult) String() string {
 
 // Attributes:
 //  - MemberId
-//  - Level
-//  - BeginTime
+//  - Data
 type MemberServiceGetInviterQuantityArgs struct {
-	MemberId  int64 `thrift:"memberId,1" json:"memberId"`
-	Level     int32 `thrift:"level,2" json:"level"`
-	BeginTime int64 `thrift:"beginTime,3" json:"beginTime"`
+	MemberId int64             `thrift:"memberId,1" json:"memberId"`
+	Data     map[string]string `thrift:"data,2" json:"data"`
 }
 
 func NewMemberServiceGetInviterQuantityArgs() *MemberServiceGetInviterQuantityArgs {
@@ -5955,12 +5950,8 @@ func (p *MemberServiceGetInviterQuantityArgs) GetMemberId() int64 {
 	return p.MemberId
 }
 
-func (p *MemberServiceGetInviterQuantityArgs) GetLevel() int32 {
-	return p.Level
-}
-
-func (p *MemberServiceGetInviterQuantityArgs) GetBeginTime() int64 {
-	return p.BeginTime
+func (p *MemberServiceGetInviterQuantityArgs) GetData() map[string]string {
+	return p.Data
 }
 func (p *MemberServiceGetInviterQuantityArgs) Read(iprot thrift.TProtocol) error {
 	if _, err := iprot.ReadStructBegin(); err != nil {
@@ -5982,10 +5973,6 @@ func (p *MemberServiceGetInviterQuantityArgs) Read(iprot thrift.TProtocol) error
 			}
 		case 2:
 			if err := p.readField2(iprot); err != nil {
-				return err
-			}
-		case 3:
-			if err := p.readField3(iprot); err != nil {
 				return err
 			}
 		default:
@@ -6013,19 +6000,29 @@ func (p *MemberServiceGetInviterQuantityArgs) readField1(iprot thrift.TProtocol)
 }
 
 func (p *MemberServiceGetInviterQuantityArgs) readField2(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI32(); err != nil {
-		return thrift.PrependError("error reading field 2: ", err)
-	} else {
-		p.Level = v
+	_, _, size, err := iprot.ReadMapBegin()
+	if err != nil {
+		return thrift.PrependError("error reading map begin: ", err)
 	}
-	return nil
-}
-
-func (p *MemberServiceGetInviterQuantityArgs) readField3(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadI64(); err != nil {
-		return thrift.PrependError("error reading field 3: ", err)
-	} else {
-		p.BeginTime = v
+	tMap := make(map[string]string, size)
+	p.Data = tMap
+	for i := 0; i < size; i++ {
+		var _key111 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_key111 = v
+		}
+		var _val112 string
+		if v, err := iprot.ReadString(); err != nil {
+			return thrift.PrependError("error reading field 0: ", err)
+		} else {
+			_val112 = v
+		}
+		p.Data[_key111] = _val112
+	}
+	if err := iprot.ReadMapEnd(); err != nil {
+		return thrift.PrependError("error reading map end: ", err)
 	}
 	return nil
 }
@@ -6038,9 +6035,6 @@ func (p *MemberServiceGetInviterQuantityArgs) Write(oprot thrift.TProtocol) erro
 		return err
 	}
 	if err := p.writeField2(oprot); err != nil {
-		return err
-	}
-	if err := p.writeField3(oprot); err != nil {
 		return err
 	}
 	if err := oprot.WriteFieldStop(); err != nil {
@@ -6066,27 +6060,25 @@ func (p *MemberServiceGetInviterQuantityArgs) writeField1(oprot thrift.TProtocol
 }
 
 func (p *MemberServiceGetInviterQuantityArgs) writeField2(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("level", thrift.I32, 2); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:level: ", p), err)
+	if err := oprot.WriteFieldBegin("data", thrift.MAP, 2); err != nil {
+		return thrift.PrependError(fmt.Sprintf("%T write field begin error 2:data: ", p), err)
 	}
-	if err := oprot.WriteI32(int32(p.Level)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.level (2) field write error: ", p), err)
+	if err := oprot.WriteMapBegin(thrift.STRING, thrift.STRING, len(p.Data)); err != nil {
+		return thrift.PrependError("error writing map begin: ", err)
 	}
-	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:level: ", p), err)
+	for k, v := range p.Data {
+		if err := oprot.WriteString(string(k)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
+		if err := oprot.WriteString(string(v)); err != nil {
+			return thrift.PrependError(fmt.Sprintf("%T. (0) field write error: ", p), err)
+		}
 	}
-	return err
-}
-
-func (p *MemberServiceGetInviterQuantityArgs) writeField3(oprot thrift.TProtocol) (err error) {
-	if err := oprot.WriteFieldBegin("beginTime", thrift.I64, 3); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field begin error 3:beginTime: ", p), err)
-	}
-	if err := oprot.WriteI64(int64(p.BeginTime)); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T.beginTime (3) field write error: ", p), err)
+	if err := oprot.WriteMapEnd(); err != nil {
+		return thrift.PrependError("error writing map end: ", err)
 	}
 	if err := oprot.WriteFieldEnd(); err != nil {
-		return thrift.PrependError(fmt.Sprintf("%T write field end error 3:beginTime: ", p), err)
+		return thrift.PrependError(fmt.Sprintf("%T write field end error 2:data: ", p), err)
 	}
 	return err
 }

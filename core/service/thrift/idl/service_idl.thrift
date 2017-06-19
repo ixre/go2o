@@ -471,7 +471,7 @@ service MemberService{
     // 获取邀请人会员编号数组
     list<i64> InviterArray(1:i64 memberId,2:i32 depth)
     // 获取从指定时间到现在推荐指定等级会员的数量
-    i32 GetInviterQuantity(1:i64 memberId,2:i32 level,3:i64 beginTime)
+    i32 GetInviterQuantity(1:i64 memberId,2:map<string,string> data)
 
     // 账户充值
     Result ChargeAccount(1:i64 memberId ,2:i32 account,3:i32 kind,
